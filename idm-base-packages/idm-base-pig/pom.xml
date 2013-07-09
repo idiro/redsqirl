@@ -1,0 +1,164 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+    http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>idiro</groupId>
+    <artifactId>idm-base-pig</artifactId>
+    <packaging>jar</packaging>
+    <version>0.1-SNAPSHOT</version>
+    <name>IDM Worflow Hive Base Package</name>
+    <description>Provide basic pig actions</description>
+    
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <dist>${project.build.directory}/${project.artifactId}/</dist>
+        <prod.resources>src/main/dist</prod.resources>
+    </properties>
+    
+    <parent>
+        <groupId>idiro</groupId>
+        <artifactId>idm-base-packages</artifactId>
+        <version>0.1-SNAPSHOT</version>
+    </parent>
+
+    <distributionManagement>
+        <repository>
+            <id>internal</id>
+            <name>Internal Release Repository</name>
+            <url>http://ns:8080/archiva/repository/internal</url>
+        </repository>
+
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>Internal Snapshot Repository</name>
+            <url>http://ns:8080/archiva/repository/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+ 
+    <organization>
+        <name>Idiro Technologies</name>
+        <url>http://www.idiro.com</url>
+    </organization>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.6</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9</version>
+                <configuration>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.2</version>
+                    <dependencies>
+                        <dependency><!-- add support for ssh/scp -->
+                            <groupId>org.apache.maven.wagon</groupId>
+                            <artifactId>wagon-ssh</artifactId>
+                            <version>1.0</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        
+        <plugins>
+	    	<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.3.1</version>
+				<configuration>
+		  	  	<outputDirectory>${dist}/lib/</outputDirectory>
+				</configuration>
+	    	</plugin>
+	    	<!-- Copy dependencies -->
+	    	<plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <!-- here the phase you need -->
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${dist}</outputDirectory>
+                            <resources>          
+                                <resource>
+                                    <directory>${prod.resources}</directory>
+                                </resource>
+                            </resources>              
+                        </configuration>            
+                    </execution>
+				</executions>
+            </plugin>
+
+	    	<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.4</version>
+				<executions>
+		   			<execution>
+						<id>zip</id> <!-- this is used for inheritance merges -->
+						<phase>package</phase> <!-- bind to the packaging phase -->
+						<goals>
+			    			<goal>single</goal>
+						</goals>
+						<configuration>
+			    			<finalName>${project.artifactId}</finalName>
+			    			<appendAssemblyId>false</appendAssemblyId>
+			    			<outputDirectory>${project.build.directory}</outputDirectory>
+			    			<descriptors>
+								<descriptor>src/main/assembly/zip.xml</descriptor>
+			    			</descriptors>
+						</configuration>
+		    		</execution>
+				</executions>
+	    	</plugin>
+		</plugins>
+    </build> 
+
+    <dependencies>
+	    <dependency>
+	      <groupId>org.antlr</groupId>
+	      <artifactId>antlr-runtime</artifactId>
+	      <version>3.4-beta4</version>
+	    </dependency>
+    	<dependency>
+		    <groupId>idiro</groupId>
+		    <artifactId>idm-wf-interface</artifactId>
+		    <version>${project.version}</version>
+		    <scope>compile</scope>
+		</dependency>
+        <dependency>
+            <groupId>idiro</groupId>
+            <artifactId>idm-workflow</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <!-- TEST -->
+		<dependency>
+		    <groupId>junit</groupId>
+		    <artifactId>junit</artifactId>
+		    <version>4.11</version>
+		    <scope>test</scope>
+		</dependency>
+    </dependencies>
+</project>

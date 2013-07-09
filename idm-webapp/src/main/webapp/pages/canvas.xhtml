@@ -1,0 +1,799 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j">
+
+<f:loadBundle basename="MessagesResources_em_US" var="messages" />
+
+<head>
+<link rel="stylesheet" type="text/css"
+	href='#{facesContext.externalContext.requestContextPath}/css/jquery-ui.css' />
+<link rel="stylesheet" type="text/css"
+	href='#{facesContext.externalContext.requestContextPath}/css/idm.css' />
+
+<script
+	src='#{facesContext.externalContext.requestContextPath}/js/jquery-1.9.1.js'
+	type="text/javascript"></script>
+<script
+	src="#{facesContext.externalContext.requestContextPath}/js/jquery-ui-1.10.0.custom.js"></script>
+<script
+	src='#{facesContext.externalContext.requestContextPath}/js/kinetic-v4.3.3.js'
+	type="text/javascript"></script>
+<script
+	src='#{facesContext.externalContext.requestContextPath}/js/jquery.cookie.js'
+	type="text/javascript"></script>
+
+<script
+	src='#{facesContext.externalContext.requestContextPath}/js/canvas.js'
+	type="text/javascript"></script>
+<script
+	src='#{facesContext.externalContext.requestContextPath}/js/idm.js'
+	type="text/javascript"></script>
+<script
+	src='#{facesContext.externalContext.requestContextPath}/js/splitter.js'
+	type="text/javascript"></script>
+<script
+	src='#{facesContext.externalContext.requestContextPath}/js/scrollabletab.js'
+	type="text/javascript"></script>
+<script
+	src='#{facesContext.externalContext.requestContextPath}/js/plusTabs.js'
+	type="text/javascript"></script>
+<script
+	src='#{facesContext.externalContext.requestContextPath}/js/jquery.blockUI.js'
+	type="text/javascript"></script>
+
+<title><h:outputText value="#{messages.label_sistem}" /></title>
+
+<script type="text/javascript">
+		//<![CDATA[
+		
+	    jQuery.noConflict();
+
+		  jQuery(function() {
+
+
+	    	  var tabsRemote = jQuery("#tabRemote").tabs().scrollabletab();
+	    	  tabsRemote.find(".ui-tabs-nav").sortable({
+	    	  axis: "x",
+	    	  stop: function() {
+	    		  tabsRemote.tabs("refresh");
+	    	  	}
+	    	  });
+
+	    	  var tabsFooter = jQuery("#tabsFooter").tabs().scrollabletab();
+	    	  tabsFooter.find(".ui-tabs-nav").sortable({
+	    	  axis: "x",
+	    	  stop: function() {
+	    		  tabsFooter.tabs("refresh");
+	    	  	}
+	    	  });
+
+	    	  var tabscanvas = jQuery("#canvas1").tabs().scrollabletab();
+	    	  tabscanvas.find(".ui-tabs-nav").sortable({
+	    	  axis: "x",
+	    	  stop: function() {
+	    		  tabscanvas.tabs("refresh");
+	    	  	}
+	    	  });
+
+	    	  jQuery("#tabs1").tabs().scrollabletab();
+	    	  jQuery("#tabs2").tabs().scrollabletab();
+	    	  
+  	        var tabsGroup = jQuery( "#tabs1, #tabs2, #tabFlowchart" ).tabs();
+  	        
+  	    	tabsGroup.find( ".ui-tabs-nav" ).sortable({
+  	            connectWith: '.ulCss',
+  	          	items: 'li:not(.locked)',
+  	            receive: function (event, ui) {
+  	            	
+  	            		var receiver = jQuery(this).parent(),
+  	                    sender = jQuery(ui.sender[0]).parent(),
+  	                    tab = ui.item[0],
+  	                    tab$ = jQuery(ui.item[0]),
+  	                    panelId = tab$.attr( "aria-controls" );
+
+  	            		insertBefore = document.elementFromPoint(event.pageX,event.pageY);
+
+	  	                tab$ = jQuery(tab$.removeAttr(jQuery.makeArray(tab.attributes).map(function(item){ return item.name;}).join(' ')).remove());
+	  	                tab$.find('a').removeAttr('id tabindex role class');
+
+	  	              	if(insertBefore.parentElement == tab){
+		                    insertBefore = document.elementFromPoint(event.pageX + insertBefore.offsetWidth, event.pageY);
+		                }
+		                insertBefore = jQuery(insertBefore).closest('li[role="tab"]').get(0);
+		                if(insertBefore)
+		                    tab$.insertBefore(insertBefore);
+		                else
+		                	jQuery(this).append(tab$);
+
+		                jQuery(jQuery( "#" + panelId ).remove()).appendTo(receiver);
+	  	              	tabsGroup.tabs('refresh');
+	
+
+		  	            //source
+	  	            	//jQuery(ui.sender[0]).parent().attr("id");
+	  	            	
+	  	            	//destination
+	  	            	//jQuery(this).parent().attr("id");
+	  	            	  	            	
+	  	            	//item
+	  	            	//jQuery(ui.item[0]).attr("aria-labelledby");
+	  	            	//aria-controls
+	  	              	
+	  	              	//copy on source and delete from destination
+	  	              	var allTabsDestination = jQuery("#" + jQuery(this).parent().attr("id")).find(".allTabs");
+	  	              	var allTabsSource = jQuery("#" + jQuery(ui.sender[0]).parent().attr("id")).find(".allTabs");
+
+	  	              	allTabsDestination.find("a[href$=" + jQuery(ui.item[0]).attr("aria-controls") + "]").clone().click(function (event) {
+			    		  event.preventDefault();
+			    		  $plusTabs.find('.allTabs').slideUp('fast');
+			    		}).appendTo(allTabsSource);
+	  	              	
+	  	            	allTabsDestination.find("a[href$=" + jQuery(ui.item[0]).attr("aria-controls") + "]").remove();
+
+	
+	  	              	jQuery("#canvas1").tabs().tabs('refresh');
+	  	              	jQuery("#tabRemote").tabs().tabs('refresh');
+	  	              	jQuery("#tabsFooter").tabs().tabs('refresh');
+	  	              	
+	  	              	jQuery("#"+jQuery(this).parent().attr("id")).tabs("option", "active", jQuery(ui.item[0]).index() );
+
+	  	              	validateArrows(jQuery("#tabs1"),jQuery("#buttonsTabs1"));
+		    		  	validateArrows(jQuery("#tabs2"),jQuery("#buttonsTabs2"));
+		    		  	validateArrows(jQuery("#tabRemote"),jQuery("#buttonstabRemote"));
+		    		  	validateArrows(jQuery("#canvas1"),jQuery("#buttonsCanvas1"));
+	  	  	            
+  	            }
+	            	            
+  	        });
+  	    	
+  	    	jQuery("#idtabs-8").click(function () {
+  	    		jQuery("#buttonstabRemote").hide();
+	  	    	jQuery("#buttonstabRemote").css("left", jQuery("#tabRemote").width()-30+'px');
+   				validateArrows(jQuery("#tabRemote"),jQuery("#buttonstabRemote"));
+	        });
+	        
+  	    	jQuery("#idtabFlowchart-1").click(function () {
+  	    		onPageReady();
+	        });
+
+  	    	var contTabRemote = 1;
+  	        
+  	    	jQuery('#addTabRemote').click( function(){
+
+  	  	    	jQuery("[id$='linkModalNewSsh']").click();
+
+  	  	  	});
+
+  	  	  	
+	          
+
+	          var contTabCanvas = 1;
+
+	    	  jQuery('#addtabCanvas').click( function(){
+	              //<![CDATA[
+	              
+	              contTabCanvas++;
+				  var tabs = jQuery("#canvas1").tabs();
+	              var ul = jQuery("#canvas1").tabs().find( "ul:first" );
+	              jQuery( "<li><a href='#canvas-"+ contTabCanvas +"'>canvas"+ contTabCanvas +"</a> <span class='ui-icon ui-icon-close' onclick='closeTab(this);'></span> </li>" ).appendTo( ul );
+	              jQuery( "<div id='canvas-"+ contTabCanvas +"'> bbb </div>" ).appendTo( tabs );
+	              tabs.tabs( "refresh" );
+
+	              validateArrows(jQuery("#canvas1"),jQuery("#buttonsCanvas1"));
+	              
+	              //]]>
+	          });
+	      
+
+	    	  jQuery(".splitterV").splitter({
+	    			type: "v",
+	    			minLeft: 200,
+	    			minRight: 200,
+	    			sizeLeft: jQuery(window).width()*2/3, 
+	    			sizeRight: jQuery(window).width()/3,
+	    			cookie: "splitterV"
+	    		});
+
+	    	  jQuery("#splitterH").splitter({
+	    			type: "h", 
+	    			minTop: 100,
+	    			minBottom: 100,
+	    			cookie: "splitterH"
+	    			//sizeTop: jQuery(window).height()/2 -60,
+	    			//sizeBottom: jQuery(window).height()/2 -60
+	    		});
+
+	    	  onPageReady();
+
+				var i = 0;
+	    	  
+		    	jQuery(window).resize(function() {
+		    	    clearTimeout(this.id);
+		    	    this.id = setTimeout(doneResizing, 100);
+		    	});
+	
+	    		function doneResizing(){
+		    		
+					if(i == 0){
+						clearTimeout(this.id);
+	    				resizing();
+			    	    this.id = setTimeout(changeValue, 100);
+	    				i++;
+					}
+					
+	    		}
+
+	    		function changeValue(){
+		    		i = 0;
+		    	}
+
+	    		jQuery( "#tabs1" ).plusTabs({
+		  	        className: "plusTabs",
+		  	        seeMore: true,
+		  	        seeMoreText: " ",
+		  	        showCount: false,
+		  	        expandIcon: "&#9660; ",
+		  	        dropWidth: "66%",
+		  	        sizeTweak: 30
+
+		  	    });
+
+	    		jQuery( "#tabs2" ).plusTabs({
+		  	        className: "plusTabs",
+		  	        seeMore: true,
+		  	        seeMoreText: " ",
+		  	        showCount: false,
+		  	        expandIcon: "&#9660; ",
+		  	        dropWidth: "66%",
+		  	        sizeTweak: 30
+
+		  	    });
+
+	    		jQuery( "#tabFlowchart" ).plusTabs({
+		  	        className: "plusTabs",
+		  	        seeMore: true,
+		  	        seeMoreText: " ",
+		  	        showCount: false,
+		  	        expandIcon: "&#9660; ",
+		  	        dropWidth: "66%",
+		  	        sizeTweak: 30
+
+		  	    });
+
+
+	    		var allTabs = jQuery("#tabs1").find(".allTabs");
+		  	    
+	    		 jQuery("#changeTabTabs1").click(function() {
+
+	    			 allTabs = jQuery("#tabs2").find(".allTabs");
+	    			 allTabs.hide();
+	    			 allTabs = jQuery("#tabFlowchart").find(".allTabs");
+	    			 allTabs.hide();
+	    			 
+	    			 allTabs = jQuery("#tabs1").find(".allTabs");
+
+	    			 var tabsRealWidth = 0;
+	    			 jQuery("#tabs1 ul:first li").each(function (index, element) {
+		    			 tabsRealWidth += jQuery(element).width();
+		    		 });
+	    			 allTabs.css("left", parseInt(tabsRealWidth) +'px');
+
+	    			 var $tabIndex = jQuery("#tabs1").tabs('option', 'active');
+	    			 var $selected = jQuery("#tabs1 ul>li a").eq($tabIndex).attr('href');
+	    			 allTabs.css("margin-top", -1 * jQuery($selected).height() + 'px');
+	    			 
+	    			 allTabs.show();
+
+
+		    		  allTabs.mouseleave(function() {
+			    			  allTabs.hide();
+		    		  });
+		    		  
+	    		  });
+
+	    		 jQuery("#changeTabTabs2").click(function() {
+
+	    			 allTabs = jQuery("#tabs1").find(".allTabs");
+	    			 allTabs.hide();
+	    			 allTabs = jQuery("#tabFlowchart").find(".allTabs");
+	    			 allTabs.hide();
+	    			 
+	    			 allTabs = jQuery("#tabs2").find(".allTabs");
+
+	    			 var tabsRealWidth = 0;
+	    			 jQuery("#tabs2 ul:first li").each(function (index, element) {
+		    			 tabsRealWidth += jQuery(element).width();
+		    		 });
+	    			 allTabs.css("left", parseInt(tabsRealWidth) +'px');
+
+	    			 var $tabIndex = jQuery("#tabs2").tabs('option', 'active');
+	    			 var $selected = jQuery("#tabs2 ul>li a").eq($tabIndex).attr('href');
+	    			 allTabs.css("margin-top", -1 * jQuery($selected).height() + 'px');
+	    			 
+	    			 allTabs.show();
+
+
+		    		  allTabs.mouseleave(function() {
+			    		  allTabs.hide();
+		    		  });
+		    		  
+	    		  });
+
+	    		 jQuery("#changeTabCanvas").click(function() {
+
+	    			 allTabs = jQuery("#tabs1").find(".allTabs");
+	    			 allTabs.hide();
+	    			 allTabs = jQuery("#tabs2").find(".allTabs");
+	    			 allTabs.hide();
+	    			 
+	    			 allTabs = jQuery("#tabFlowchart").find(".allTabs");
+
+	    			 var tabsRealWidth = 0;
+	    			 jQuery("#tabFlowchart ul:first li").each(function (index, element) {
+		    			 tabsRealWidth += jQuery(element).width();
+		    		 });
+	    			 allTabs.css("left", parseInt(tabsRealWidth) +'px');
+
+	    			 var $tabIndex = jQuery("#tabFlowchart").tabs('option', 'active');
+	    			 var $selected = jQuery("#tabFlowchart ul>li a").eq($tabIndex).attr('href');
+	    			 allTabs.css("margin-top", -1 * jQuery($selected).height() + 'px');
+	    			 
+	    			 allTabs.show();
+
+
+		    		  allTabs.mouseleave(function() {
+			    		  allTabs.hide();
+		    		  });
+		    		  
+	    		  });
+
+	    		 
+	    		 var isChrome = window.chrome;
+	    		 if(isChrome){
+		    		 
+		    		 //disable select in chrome
+		    		 jQuery('*').css('-webkit-user-select', 'none');
+		    		 jQuery('input').css('-webkit-user-select', 'text');
+		    		 
+		    		 jQuery('#canvas-1').css('position', 'fixed');
+		    		 
+				 }
+
+
+	    		 
+	    	});	//---------- END jQuery(function
+
+
+	    	function addTabRemoteArr(){
+  	  	  	  	//<![CDATA[
+  	  	  	  	
+  	  	  	  	var contTabRemote = 0;
+
+  	  	  		contTabRemote++;
+	  	  	  	var tabs = jQuery("#tabRemote").tabs();
+	  	  	  	var ul = jQuery("#tabRemote").tabs().find( "ul:first" );
+	  	  	  	jQuery( "<li><a href='#tabRemote-"+ contTabRemote +"'>New File System</a> <span class='ui-icon ui-icon-close' onclick='closeTab(this);'></span> </li>" ).appendTo( ul );
+	  	  	  	jQuery( "<div id='tabRemote-"+ contTabRemote +"'> bbb </div>" ).appendTo( tabs );
+
+		  	  	//jQuery('#tabRemote-'+contTabRemote).append("/pages/fileSystemGrid.xhtml");
+	  	  	  	
+	  	  	  	tabs.tabs( "refresh" );
+
+	  	  	  	validateArrows(jQuery("#tabRemote"),jQuery("#buttonstabRemote"));
+
+  	  	  	  	
+  	  	  	  	//]]>
+  	  	  	}
+
+	      function closeTab(arg){
+	    	  
+	    	  jQuery(jQuery( arg ).prev().attr('href')).remove();
+	    	  jQuery( arg ).offsetParent().remove();
+	    	  
+	      }
+
+	      
+		</script>
+
+
+</head>
+<body id="body">
+
+
+	<a4j:status
+		onstart="jQuery.blockUI({ message: jQuery('#domMessage') });"
+		onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
+		onstop="jQuery.unblockUI();" />
+
+	<div id="domMessage" style="display: none;">
+		<img src="../image/icons/waiting.gif" />
+	</div>
+
+
+
+	<div id="invisible"></div>
+
+	<div id="menu">
+
+		<h:form>
+
+			<rich:toolBar>
+
+				<rich:dropDownMenu>
+
+					<f:facet name="label">
+						<h:panelGroup>
+							<h:outputText value="#{messages.label_menu_file}" />
+						</h:panelGroup>
+					</f:facet>
+
+					<rich:menuItem submitMode="none" value="#{messages.label_menu_new}"
+						onclick="jQuery('#addtabCanvas').click();" />
+					<rich:menuItem submitMode="ajax"
+						value="#{messages.label_menu_open}" action="#{canvasBean.doOpen}" />
+					<rich:menuItem submitMode="none"
+						value="#{messages.label_menu_close}" onclick="closeTab(this);" />
+					<rich:menuItem submitMode="ajax"
+						value="#{messages.label_menu_closeall}"
+						action="#{canvasBean.doNew}" />
+					<rich:menuItem submitMode="ajax"
+						value="#{messages.label_menu_save}" action="#{canvasBean.doNew}" />
+					<rich:menuItem submitMode="ajax"
+						value="#{messages.label_menu_saveas}" action="#{canvasBean.doNew}" />
+					<rich:menuItem submitMode="ajax"
+						value="#{messages.label_menu_saveall}"
+						action="#{canvasBean.doNew}" />
+
+				</rich:dropDownMenu>
+
+				<rich:dropDownMenu>
+
+					<f:facet name="label">
+						<h:panelGrid cellpadding="0" cellspacing="0" columns="2"
+							style="vertical-align:middle">
+							<h:outputText value="#{messages.label_menu_edit}" />
+						</h:panelGrid>
+					</f:facet>
+
+					<rich:menuItem submitMode="ajax"
+						value="#{messages.label_menu_undo}" action="#{canvasBean.doNew}" />
+					<rich:menuItem submitMode="ajax"
+						value="#{messages.label_menu_redo}" action="#{canvasBean.doOpen}" />
+					<rich:menuItem submitMode="none"
+						value="#{messages.label_menu_delete}" onclick="deleteSelected();" />
+					<rich:menuItem submitMode="none"
+						value="#{messages.label_menu_selectall}" onclick="selectAll();" />
+					<rich:menuItem submitMode="none"
+						value="#{messages.label_menu_deselectall}"
+						onclick="deselectAll();" />
+
+				</rich:dropDownMenu>
+
+				<rich:dropDownMenu>
+
+					<f:facet name="label">
+						<h:panelGrid cellpadding="0" cellspacing="0" columns="2"
+							style="vertical-align:middle">
+							<h:outputText value="#{messages.label_menu_project}" />
+						</h:panelGrid>
+					</f:facet>
+
+					<rich:menuItem submitMode="ajax"
+						value="#{messages.label_menu_runproject}"
+						action="#{canvasBean.doNew}" />
+
+				</rich:dropDownMenu>
+
+				<rich:toolBarGroup location="right" onitemclick="signOut();">
+					<rich:dropDownMenu value="#{messages.label_menu_signout}"
+						direction="bottom-left" jointPoint="br" styleClass="search" />
+				</rich:toolBarGroup>
+
+			</rich:toolBar>
+
+			<a4j:jsFunction name="signOut" action="#{userInfoBean.signOut}" />
+
+			<a4j:commandLink id="linkCanvasModalPanel"
+				action="#{canvasModalBean.openTextEditor}"
+				oncomplete="#{rich:component('canvasModalPanel')}.show()"
+				style="display:none;" />
+
+		</h:form>
+
+
+		<rich:spacer width="1" height="15" />
+
+
+	</div>
+
+	<div id="shortMenu" class="divMenu">
+
+		<center>
+
+			<a onclick="jQuery('#addtabCanvas').click();"><img
+				src="../image/icons/button-new.png" alt="new" class="shortMenuIcon" /></a>
+			<a onclick="deleteSelected();"><img id="buttonDelete"
+				src="../image/icons/button-delete.png" alt="open"
+				class="shortMenuIcon" /></a> <img src="../image/icons/button-open.png"
+				alt="open" class="shortMenuIcon" /> <img
+				src="../image/icons/button-save.png" alt="save"
+				class="shortMenuIcon" /> <img
+				src="../image/icons/button-save-as.png" alt="saveas"
+				class="shortMenuIcon" /> <img
+				src="../image/icons/button-save-all.png" alt="saveall"
+				class="shortMenuIcon" /> <a onclick="undoHistory();"><img
+				src="../image/icons/button-undo.png" alt="undo"
+				class="shortMenuIcon" /></a> <a onclick="redoHistory();"><img
+				src="../image/icons/button-redo.png" alt="redo"
+				class="shortMenuIcon" /></a> <img src="../image/icons/button-cut.png"
+				alt="cut" class="shortMenuIcon" />
+		</center>
+
+		<rich:spacer height="5" />
+		<rich:messages globalOnly="false" layout="list" styleClass="message"
+			infoClass="messageok" errorClass="messageerro"
+			warnClass="messagealert" showDetail="true" showSummary="false" />
+
+	</div>
+
+
+	<div class="splitterV" id="splitterDiv">
+		<div>
+
+			<div id="tabFlowchart">
+				<ul class="ulCss">
+
+					<li class="locked"><a href="#tabFlowchart-1"
+						id="idtabFlowchart-1"> Flowchart </a></li>
+					<button id="changeTabCanvas" style="border: hidden;">
+						&#9660;</button>
+
+				</ul>
+				<div id="tabFlowchart-1">
+
+					<div id="canvas1">
+						<ul>
+							<li><a href="#canvas-1">Canvas 1</a> <span
+								class="ui-icon ui-icon-close" onclick="closeTab(this);"></span>
+							</li>
+							<button id="addtabCanvas" style="border: hidden;">+</button>
+						</ul>
+						<span id="buttonsCanvas1" class="spanButtons">
+							<button class="buttonsArrowsLeft">&#60;</button>
+							<button class="buttonsArrowsRight">&#62;</button>
+						</span>
+
+
+						<div id="canvas-1">
+
+							<div id="canvas" class="canvas"></div>
+							<div id="footer">
+
+
+								<div id="tabsFooter">
+									<ul>
+										<li><a href="#tabFooter1">Tab 1</a></li>
+										
+										<ui:repeat value="#{configureTabsBean.tabs}" var="tab" varStatus="status">
+											<li><a href="##{tab}">#{tab}</a></li>
+										</ui:repeat>
+										<a4j:commandButton value="?" id="configureFooterTabs" onclick="#{rich:component('modalConfigureFooterTabs')}.show()" 
+											style="border: hidden;"/>
+									</ul>
+
+									<span id="buttonsTabsFooter" class="spanButtons">
+										<button class="buttonsArrowsLeft">&#60;</button>
+										<button class="buttonsArrowsRight">&#62;</button>
+
+
+									</span>
+									
+									<div id="tabFooter1">
+
+										<div id="canvasTabFooter1"></div>
+
+									</div>
+									
+									<ui:repeat value="#{configureTabsBean.menuWAList}" var="tab" varStatus="status">
+										<div id="#{tab.key}">
+											<p>
+												<ui:repeat value="#{tab.value}" var="action">
+													<img src="../image/icons/open.gif" alt="action[]"
+														class="footerIcon" />
+												</ui:repeat>
+											</p>
+										</div>
+									</ui:repeat>
+								</div>
+
+							</div>
+
+						</div>
+
+					</div>
+
+				</div>
+			</div>
+
+
+		</div>
+
+		<div id="splitterH">
+			<div id="tabs1">
+				<ul class="ulCss">
+
+					<li><a href="#tabs-1"> <h:outputText
+								value="#{messages.label_tab_help}" />
+					</a></li>
+					<li><a href="#tabs-2"> <h:outputText
+								value="#{messages.label_tab_processmanager}" />
+					</a></li>
+					<li><a href="#tabs-3"> <h:outputText
+								value="#{messages.label_tab_error}" />
+					</a></li>
+					<li><a href="#tabs-4"> <h:outputText
+								value="#{messages.label_tab_hiveview}" />
+					</a></li>
+					<li><a href="#tabs-5"> <h:outputText
+								value="#{messages.label_tab_hbaseview}" />
+					</a></li>
+
+					<button id="changeTabTabs1" style="border: hidden;">
+						&#9660;</button>
+
+				</ul>
+
+				<span id="buttonsTabs1" class="spanButtons">
+					<button class="buttonsArrowsLeft">&#60;</button>
+					<button class="buttonsArrowsRight">&#62;</button>
+				</span>
+
+				<div id="tabs-1">
+					<ui:include src="/pages/help.xhtml" />
+				</div>
+				<div id="tabs-2">
+					<ui:include src="/pages/processManager.xhtml" />
+				</div>
+				<div id="tabs-3">
+					<p>bbbb</p>
+				</div>
+				<div id="tabs-4">
+
+					<!-- <ui:include src="/pages/hive/hivefileSystemGrid.xhtml" /> -->
+
+				</div>
+				<div id="tabs-5">
+					<p>bbbb</p>
+				</div>
+			</div>
+
+
+			<div id="tabs2">
+				<ul class="ulCss">
+					<li><a href="#tabs-6"> <h:outputText
+								value="#{messages.label_tab_serverfilesystem}" />
+					</a></li>
+					<li><a href="#tabs-7"> <h:outputText
+								value="#{messages.label_tab_hadoopfilesystem}" />
+					</a></li>
+					<li><a href="#tabs-8" id="idtabs-8"> <h:outputText
+								value="#{messages.label_tab_remotefilesystem}" />
+					</a></li>
+
+					<button id="changeTabTabs2" style="border: hidden;">
+						&#9660;</button>
+
+				</ul>
+
+				<span id="buttonsTabs2" class="spanButtons">
+					<button class="buttonsArrowsLeft">&#60;</button>
+					<button class="buttonsArrowsRight">&#62;</button>
+				</span>
+
+				<div id="tabs-6">
+					<p>zzz</p>
+				</div>
+				<div id="tabs-7">
+					
+					<!-- <ui:include src="/pages/hdfs/hdfsfileSystemGrid.xhtml" /> -->
+					
+				</div>
+				<div id="tabs-8">
+
+					<div id="tabRemote">
+						<ul>
+
+
+							<button id="addTabRemote" style="border: hidden;">+</button>
+
+						</ul>
+
+						<span id="buttonstabRemote" class="spanButtons">
+							<button class="buttonsArrowsLeft">&#60;</button>
+							<button class="buttonsArrowsRight">&#62;</button>
+						</span>
+
+
+						<h:form>
+
+							<a4j:commandLink id="linkModalNewSsh"
+								action="#{canvasBean.openNewSsh}"
+								oncomplete="#{rich:component('modalNewSsh')}.show()"
+								style="display:none;" />
+
+
+						</h:form>
+
+
+					</div>
+
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+
+
+	<rich:modalPanel id="canvasModalPanel" width="600" height="400"
+		style="overflow:auto;" resizeable="false">
+
+		<f:facet name="header">Configuration</f:facet>
+		<f:facet name="controls">
+			<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+				style="cursor:pointer"
+				onclick="#{rich:component('canvasModalPanel')}.hide()" />
+		</f:facet>
+
+		<h:form id="form1">
+			<ui:include src="/pages/canvasModal1.xhtml" />
+		</h:form>
+
+	</rich:modalPanel>
+
+	<rich:modalPanel id="modalNewSsh" width="600" height="400"
+		style="overflow:auto;" resizeable="false">
+
+		<f:facet name="header">Configuration</f:facet>
+		<f:facet name="controls">
+			<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+				style="cursor:pointer"
+				onclick="#{rich:component('modalNewSsh')}.hide()" />
+		</f:facet>
+
+		<h:form id="form6">
+			<h:panelGrid>
+				<a4j:include viewId="/pages/newSsh.xhtml" ajaxRendered="true" />
+			</h:panelGrid>
+		</h:form>
+
+	</rich:modalPanel>
+	
+	<rich:modalPanel id="modalConfigureFooterTabs" width="600" height="400"
+		style="overflow:auto;" resizeable="false">
+
+		<f:facet name="header">Configuration</f:facet>
+		<f:facet name="controls">
+			<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+				style="cursor:pointer"
+				onclick="#{rich:component('modalConfigureFooterTabs')}.hide()" />
+		</f:facet>
+
+		<h:form id="formConfigureFooterTabs">
+			<h:panelGrid>
+				<a4j:include viewId="/pages/configureFooterTabs.xhtml" ajaxRendered="false" />
+			</h:panelGrid>
+		</h:form>
+
+	</rich:modalPanel>
+
+
+
+</body>
+</html>

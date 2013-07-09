@@ -1,0 +1,3 @@
+hive_select
+hive_union
+hive_join

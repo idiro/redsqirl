@@ -1,0 +1,75 @@
+<h:panelGrid xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+	
+	<script>
+	
+	var oldTabName;
+	
+	var selected;
+	
+	function showPanel(tabName){
+		oldTabName = tabName;
+		jQuery("input[id$='renameTabValue']").val(tabName);
+		Richfaces.showModalPanel('editPane');
+	}
+	
+	function getOldTabName(){
+		return oldTabName;
+	}
+	
+</script>
+	
+	<h:panelGrid columns="2">
+		<rich:panel header="Tabs" style="overflow:auto;width:270px;height:300px;">
+			<h:panelGroup id="tabsMenu">
+				<ui:repeat value="#{configureTabsBean.tabs}" var="item">
+					<a4j:commandButton action="#{configureTabsBean.deleteTab}" type="button" value="x" reRender="tabsMenu">
+						<f:param name="selected" value="#{item}" />
+					</a4j:commandButton>
+                	<h:commandButton value="Edit" type="button" onclick="showPanel('#{item}');" />
+					<a4j:commandLink action="#{configureTabsBean.setSelected}" value="#{item}" reRender="actionsPanel">
+						<f:param name="selected" value="#{item}" />
+					</a4j:commandLink><br></br>
+					
+				</ui:repeat>
+			</h:panelGroup>
+			
+			<a4j:form ajaxRendered="false">
+				<h:outputText value="New tab:" />
+				<h:inputText label="Tab" value="#{configureTabsBean.tabName}"
+					maxlength="255" style="width:100px;" />
+				<a4j:commandButton action="#{configureTabsBean.createTab}" type="reset" value="+" reRender="tabsMenu">
+				</a4j:commandButton>
+			</a4j:form>
+		</rich:panel>
+		
+		<rich:panel id="actionsPanel" header="Actions" style="overflow:auto;width:270px;height:300px;" >
+	    	<h:selectManyCheckbox value="#{configureTabsBean.items}" layout="pageDirection" rendered="#{not empty configureTabsBean.selected}">
+				<f:selectItems value="#{configureTabsBean.menuActions}" var="n"
+		   			itemLabel="#{n.label}" itemValue="#{n.value}"/>
+	   		</h:selectManyCheckbox>
+	    </rich:panel>
+
+	</h:panelGrid>
+	<h:panelGrid columns="2">
+		<a4j:commandButton value="ok" action="#{configureTabsBean.saveTabs}" onclick="#{rich:component('modalConfigureFooterTabs')}.hide();window.location.reload();"/>
+		<a4j:commandButton value="Cancel" action="#{configureTabsBean.cancelChanges}" onclick="#{rich:component('modalConfigureFooterTabs')}.hide()" reRender="tabsMenu, actionsPanel"/>
+	</h:panelGrid>
+	
+	<rich:modalPanel header="Rename tab" id="editPane" domElementAttachment="parent" width="400" height="70">
+            <h:panelGrid columns="3">
+                <h:outputText value="NAME" />
+                <h:inputText id="renameTabValue" value="#{configureTabsBean.selected}"/>
+                <rich:message id="vinMsg" for="vin" />
+            </h:panelGrid>
+            <a4j:commandButton value="ok" action="#{configureTabsBean.changeTabName}"
+                oncomplete="#{rich:component('editPane')}.hide();" reRender="tabsMenu">
+                <a4j:actionparam name="oldName" noEscape="true" value="getOldTabName()"/>
+            </a4j:commandButton>
+            <a4j:commandButton value="Cancel" onclick="#{rich:component('editPane')}.hide();" />
+ 	</rich:modalPanel>
+</h:panelGrid>

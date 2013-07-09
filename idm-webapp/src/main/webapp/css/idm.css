@@ -1,0 +1,291 @@
+html,body {
+	height: 100%;
+	width: 100%
+}
+
+image {
+	border-width: 0px;
+}
+
+input {
+	font-size: 12px;
+	border-style: solid;
+	border-width: 1px;
+}
+
+.shortMenuIcon {
+	padding: 5px;
+	border: solid 1px;
+}
+
+.footerIcon {
+	padding: 20px;
+	border: solid 1px;
+}
+
+.divMenu {
+	border: 0px solid;
+	padding: 0px 0px 3px;
+}
+
+.divFooter {
+	border: 0px solid;
+	bottom: 0;
+	position: absolute;
+}
+
+.canvas {
+	border: 0px solid;
+}
+
+#tabsFooter {
+	margin-top: 0em;
+}
+
+#tabsFooter li .ui-icon-close {
+	float: left;
+	margin: 0em 0.2em 0 0;
+	cursor: pointer;
+}
+
+#canvas1 {
+	margin-top: 0em;
+}
+
+#canvas1 li .ui-icon-close {
+	float: left;
+	margin: 0em 0.2em 0 0;
+	cursor: pointer;
+}
+
+#tabRemote {
+	margin-top: 0em;
+}
+
+#tabRemote li .ui-icon-close {
+	float: left;
+	margin: 0em 0.2em 0 0;
+	cursor: pointer;
+}
+
+.splitterV {
+	width: 1700px;
+}
+
+.splitterV div {
+	overflow: auto;
+}
+
+.vsplitbar {
+	width: 5px;
+	background: #cab;
+}
+
+.hsplitbar {
+	height: 5px;
+	background: #cab;
+}
+
+.splitter {
+	height: 800px;
+	margin: 0em 0em;
+}
+
+.ui-state-default {
+	background-color: #aca
+}
+
+.ui-state-hover {
+	background-color: #bdb;
+	cursor: move;
+}
+
+.ui-state-highlight {
+	background-color: #add
+}
+
+.ui-state-error {
+	background-color: #eaa
+}
+
+.splitter-pane {
+	overflow: auto;
+}
+
+.splitter-bar-vertical {
+	width: 6px;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.splitter-bar-horizontal {
+	height: 6px;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.splitter-bar-vertical-docked {
+	width: 10px;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.splitter-bar-horizontal-docked {
+	height: 10px;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.splitter-bar.ui-state-highlight {
+	opacity: 0.7;
+}
+
+.splitter-iframe-hide {
+	visibility: hidden;
+}
+
+.divLogin {
+	position: absolute;
+	right: 45%;
+	top: 25%;
+}
+
+.buttonLogin {
+	margin-left: 95px;
+	padding: 5px 25px;
+}
+
+.ui-tabs .ui-tabs-nav {
+	position: relative;
+	width: 10000px;
+}
+
+.spanButtons {
+	margin-top: -20px;
+	left: 800px;
+	position: absolute;
+	z-index: 10000;
+	background:
+		url("http://code.jquery.com/ui/1.10.0/themes/base/images/ui-bg_highlight-soft_75_cccccc_1x100.png")
+		repeat-x scroll 50% 50% #CCCCCC;
+	border: 1px solid #AAAAAA;
+	color: #222222;
+	font-weight: bold;
+	height: 18px;
+	width: 36px;
+}
+
+.buttonsArrowsLeft {
+	border: medium hidden;
+	height: 18px;
+	width: 15px;
+}
+
+.buttonsArrowsRight {
+	border: medium hidden;
+	height: 18px;
+	width: 15px;
+}
+
+#tabs1 {
+	position: relative;
+	float: left;
+	margin-right: 30px;
+}
+
+.allTabs {
+	display: none;
+	position: absolute;
+	background: #e6e6e6;
+	/* right: 13px; */
+	border: 1px solid lightgrey;
+}
+
+.allTabs a {
+	display: block;
+	padding: 10px;
+	font-size: 14px;
+	text-decoration: none;
+}
+
+.allTabs a:hover {
+	background: #ffffff;
+}
+
+.allTabs .highlight {
+	font-weight: bold;
+}
+
+canvas {
+	-webkit-transform3d: translate(0, 0, 0);
+	-moz-transform3d: translate(0, 0, 0);
+	transform3d: translate(0, 0, 0);
+	-webkit-transform: translateZ(0);
+	-moz-transform: translateZ(0);
+	-ms-transform: translateZ(0);
+	-o-transform: translateZ(0);
+	transform: translateZ(0);
+	-moz-transition: all 1s;
+	-webkit-transition: all 1s;
+	-o-transition: all 1s;
+	transition: all 1s;
+}
+
+.canvas {
+	-webkit-transform3d: translate(0, 0, 0);
+	-moz-transform3d: translate(0, 0, 0);
+	transform3d: translate(0, 0, 0);
+	-webkit-transform: translateZ(0);
+	-moz-transform: translateZ(0);
+	-ms-transform: translateZ(0);
+	-o-transform: translateZ(0);
+	transform: translateZ(0);
+	-moz-transition: all 1s;
+	-webkit-transition: all 1s;
+	-o-transition: all 1s;
+	transition: all 1s;
+}
+
+.table {
+	border-collapse: collapse;
+	border: 1px solid #000000;
+}
+
+.tableHeader {
+	text-align: center;
+	background: none repeat scroll 0 0 #B5B5B5;
+	border-bottom: 1px solid #000000;
+	padding: 2px;
+}
+
+.tableOddRow {
+	/* text-align:center; */
+	background: none repeat scroll 0 0 #FFFFFFF;
+}
+
+.tableEvenRow {
+	/* text-align:center; */
+	background: none repeat scroll 0 0 #D3D3D3;
+}
+
+.message {
+	font-size: 10 px;
+	font-weight: bold;
+	color: #336699;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+.messageok {
+	list-style-image: url("../image/icons/li_msg_ok.gif");
+	font-size: 11px;
+}
+
+.messageerro {
+	list-style-image: url("../image/icons/li_msg_error.gif");
+	font-size: 11px;
+}
+
+.messagealert {
+	list-style-image: url("../image/icons/li_msg_warn.gif");
+	font-size: 11px;
+}

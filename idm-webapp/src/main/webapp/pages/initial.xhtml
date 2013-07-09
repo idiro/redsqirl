@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j">
+
+<f:loadBundle basename="MessagesResources_em_US" var="messages" />
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+</meta>
+<title><h:outputText value="#{messages.label_sistem}" /></title>
+
+<link rel="stylesheet" type="text/css"
+	href='#{facesContext.externalContext.requestContextPath}/css/idm.css' />
+
+<script
+	src='#{facesContext.externalContext.requestContextPath}/js/jquery-1.9.1.js'
+	type="text/javascript"></script>
+<script
+	src='#{facesContext.externalContext.requestContextPath}/js/jquery.cookie.js'
+	type="text/javascript"></script>
+
+</head>
+
+<body>
+
+	<script type="text/javascript">
+
+jQuery.noConflict();
+
+jQuery(document).ready(function() {
+	 //<![CDATA[
+
+    var remember = jQuery.cookie('remember');
+    
+
+    if (remember == 'true'){
+        
+        var username = jQuery.cookie('username');
+        var password = jQuery.cookie('password');
+        // autofill the fields
+        jQuery('#userLoginForm\\:username').val(username);
+        jQuery('#userLoginForm\\:password').val(password);
+        jQuery('#userLoginForm\\:loginCheck').attr('checked',true);
+
+    }
+
+
+  //]]> 
+});
+
+function cookiePassword(){
+    	    	
+    	   if (jQuery("#userLoginForm\\:loginCheck").prop("checked")) {
+    	        var username = jQuery("#userLoginForm\\:username").val();
+    	        var password = jQuery("#userLoginForm\\:password").val();
+    	        
+    	        // set cookies to expire in 14 days
+    	        jQuery.cookie('username', username, { expires: 14 });
+    	        jQuery.cookie('password', password, { expires: 14 });
+    	        jQuery.cookie('remember', true, { expires: 14 });
+    	    }
+    	    else
+    	    {
+    	        // reset cookies
+    	        jQuery.cookie('username', null);
+    	        jQuery.cookie('password', null);
+    	        jQuery.cookie('remember', null);
+    	    }
+	
+}
+
+
+</script>
+
+
+	<div class="divLogin">
+		<center>
+			<h2>
+				<h:outputText value="#{messages.label_sistem}" />
+			</h2>
+		</center>
+		<f:view>
+
+			<h:panelGrid width="320px">
+				<rich:panel>
+					<f:facet name="header">
+						<h:outputText value="#{messages.label_login}" />
+					</f:facet>
+
+					<h:form id="userLoginForm">
+
+						<h:outputText value="#{messages.label_username}"
+							style="padding-left:60px;" />
+						<br />
+						<h:inputText id="username" label="Username"
+							value="#{userInfoBean.userName}" required="true"
+							style="margin-left:58px;" />
+						<h:outputText value="" />
+						<br />
+						<h:message for="username" style="padding-left:60px;" />
+						<br />
+						<br />
+						<h:outputText value="#{messages.label_password}"
+							style="padding-left:60px;" />
+						<br />
+						<h:inputSecret id="password" label="Password"
+							value="#{userInfoBean.password}" required="true"
+							style="margin-left:58px;" />
+						<h:outputText value="" />
+						<br />
+						<h:message for="password" style="padding-left:60px;" />
+						<br />
+						<br />
+						<h:outputText value="#{messages.error_login}"
+							rendered="#{userInfoBean.msnError != null}"
+							style="padding-left:100px;" />
+						<br />
+						<h:outputText value="#{messages.label_rememberpassword}"
+							style="padding-left:80px;" />
+						<h:selectBooleanCheckbox value="#{userInfoBean.loginChek}"
+							id="loginCheck" />
+						<br />
+						<br />
+						<h:commandButton value="#{messages.label_login}"
+							action="#{userInfoBean.validateSecondLogin}"
+							styleClass="buttonLogin" onclick="cookiePassword();" />
+
+
+						<h:inputText id="twoLoginChek"
+							value="#{userInfoBean.twoLoginChek}" style="display:none;" />
+
+
+						<a4j:jsFunction name="reLogin" action="#{userInfoBean.login}"
+							oncomplete="#{rich:component('mensagem')}.hide();" />
+
+						<rich:modalPanel id="mensagem"
+							showWhenRendered="#{userInfoBean.twoLoginChek != null}">
+							<center>
+								<h:outputText value="#{messages.label_twoLoginChek}" />
+								<br />
+								<br />
+								<a4j:commandButton value="#{messages.button_cancel}"
+									onclick="#{rich:component('mensagem')}.hide(); return false;" />
+								<a4j:commandButton value="#{messages.button_ok}"
+									onclick="reLogin(); return false;" />
+							</center>
+						</rich:modalPanel>
+
+						<rich:modalPanel id="mensagemLoginTwice"
+							showWhenRendered="#{userInfoBean.msnLoginTwice != null}">
+							<center>
+								<h:outputText value="#{messages.label_mensagemLoginTwice}" />
+								<br />
+								<br />
+								<a4j:commandButton value="#{messages.button_ok}"
+									onclick="#{rich:component('mensagemLoginTwice')}.hide(); return false;" />
+							</center>
+						</rich:modalPanel>
+
+						<rich:modalPanel id="msnLoginError"
+							showWhenRendered="#{requestScope['msnLoginError'] != null}">
+							<center>
+								<h:outputText value="#{messages.label_msnLoginError}" />
+								<br />
+								<br />
+								<a4j:commandButton value="#{messages.button_ok}"
+									onclick="#{rich:component('msnLoginError')}.hide(); return false;" />
+							</center>
+						</rich:modalPanel>
+
+
+					</h:form>
+
+				</rich:panel>
+			</h:panelGrid>
+			<br />
+
+		</f:view>
+
+	</div>
+</body>
+</html>

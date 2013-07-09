@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j">
+
+<head>
+
+<script>
+
+	function openCopySsh(){
+  	  jQuery("[id$='linkCopyModalPanel']").click();
+    }
+
+    function openMoveSsh(){
+  	  jQuery("[id$='linkMoveModalPanel']").click();
+    }
+	
+</script>
+
+</head>
+
+<body>
+
+
+	<div id="sshFileSystem"
+		style="min-width: 400px; overflow: hidden; min-height: 400px;">
+		<h:form>
+
+			<a4j:commandLink id="linkCopyModalPanel"
+				action="#{canvasBean.copyFileBefore}"
+				oncomplete="#{rich:component('copyModalPanel')}.show()"
+				style="display:none;" />
+			<a4j:commandLink id="linkMoveModalPanel"
+				action="#{canvasBean.moveFileBefore}"
+				oncomplete="#{rich:component('moveModalPanel')}.show()"
+				style="display:none;" />
+
+			<br />
+
+			<h:outputText value="#{messages.label_path}" />
+			<br />
+			<h:inputText id="path" label="Path" value="#{canvasBean.path}"
+				maxlength="255" style="width:395px;" />
+			<a4j:commandButton type="submit" id="changePathBt"
+				action="#{canvasBean.changePath}" value="ok" reRender="sshfs" />
+
+			<br />
+			<br />
+
+			<a4j:commandLink action="#{canvasBean.addFileBefore}"
+				oncomplete="#{rich:component('addModalPanel')}.show()">
+				<img id="btAdd" src="../image/icons/button-plus.gif" />
+			</a4j:commandLink>
+
+			<a4j:commandLink action="#{canvasBean.deleteFile}" reRender="sshfs"
+				onclick="if(!confirm('Are you sure you want to delete the selected files?')){return false;}">
+				<img id="btDelete" src="../image/icons/button-delete.png" />
+			</a4j:commandLink>
+
+			<a href="#" onclick="openCopySsh();"><h:outputText
+					value="Copy to..." /></a>
+			<a href="#" onclick="openMoveSsh();"><h:outputText
+					value="Move to..." /></a>
+
+			<a4j:commandLink action="#{canvasBean.goPrevious}"
+				reRender="path,sshfs">
+				<img id="btUndo" src="../image/icons/button-undo.png" />
+			</a4j:commandLink>
+
+			<a4j:commandLink action="#{canvasBean.goNext}" reRender="path,sshfs">
+				<img id="btRedo" src="../image/icons/button-redo.png" />
+			</a4j:commandLink>
+
+
+			<rich:extendedDataTable id="sshfs" value="#{canvasBean.listGrid}"
+				var="item" width="100%" style="border:none;"
+				onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+				enableContextMenu="false"
+				onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
+
+				<f:facet name="header">
+					<h:outputText value="File System" />
+				</f:facet>
+
+				<rich:column style="border-bottom:0px;border-right:0px;"
+					width="30px;">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					<h:selectBooleanCheckbox id="select" value="#{item.selected}" />
+				</rich:column>
+				<rich:column style="border-bottom:0px;border-right:0px;"
+					width="30px;">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					<a4j:commandLink action="#{canvasBean.editFileBefore}"
+						oncomplete="#{rich:component('editModalPanel')}.show()">
+						<img src="../image/icons/button-save-all.png" />
+						<f:param name="nameFileEdit" value="#{item.name}" />
+					</a4j:commandLink>
+				</rich:column>
+
+				<rich:column sortBy="#{item.name}"
+					style="border-bottom:0px;border-right:0px;">
+					<f:facet name="header">
+						<h:outputText value="Name" />
+					</f:facet>
+					<a4j:commandLink value="#{item.name}"
+						action="#{canvasBean.selectFile}" reRender="path,sshfs">
+						<f:param name="nameFile" value="#{item.name}" />
+					</a4j:commandLink>
+				</rich:column>
+
+				<rich:columns value="#{canvasBean.keyAsListNameValue}" var="column"
+					index="ind" id="column#{ind}"
+					style="border-bottom:0px;border-right:0px;">
+					<f:facet name="header">
+						<h:outputText value="#{column}" />
+					</f:facet>
+					<h:outputText value="#{item.nameValue[column]}" id="value#{ind}" />
+				</rich:columns>
+
+			</rich:extendedDataTable>
+
+			<a4j:jsFunction name="reRenderSshfs" reRender="sshfs"
+				ajaxSingle="true" requestDelay="3000" />
+
+		</h:form>
+	</div>
+
+	<rich:modalPanel id="copyModalPanel" width="600" height="400"
+		style="overflow:auto;" resizeable="false">
+
+		<f:facet name="header">copy</f:facet>
+		<f:facet name="controls">
+			<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+				style="cursor:pointer"
+				onclick="#{rich:component('copyModalPanel')}.hide()" />
+		</f:facet>
+
+		<h:form id="form2">
+			<h:panelGrid>
+				<a4j:include viewId="/pages/copySsh.xhtml" ajaxRendered="true" />
+			</h:panelGrid>
+		</h:form>
+
+	</rich:modalPanel>
+
+	<rich:modalPanel id="moveModalPanel" width="600" height="400"
+		style="overflow:auto;" resizeable="false" onhide="reRenderSshfs();">
+
+		<f:facet name="header">move</f:facet>
+		<f:facet name="controls">
+			<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+				style="cursor:pointer"
+				onclick="#{rich:component('moveModalPanel')}.hide()" />
+		</f:facet>
+
+		<h:form id="form3">
+			<h:panelGrid>
+				<a4j:include viewId="/pages/moveSsh.xhtml" ajaxRendered="true" />
+			</h:panelGrid>
+		</h:form>
+
+	</rich:modalPanel>
+
+	<rich:modalPanel id="addModalPanel" width="600" height="400"
+		style="overflow:auto;" resizeable="false" onhide="reRenderSshfs();">
+
+		<f:facet name="header">file</f:facet>
+		<f:facet name="controls">
+			<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+				style="cursor:pointer"
+				onclick="#{rich:component('addModalPanel')}.hide()" />
+		</f:facet>
+
+		<h:form id="form4">
+			<h:panelGrid>
+				<a4j:include viewId="/pages/addSsh.xhtml" ajaxRendered="true" />
+			</h:panelGrid>
+		</h:form>
+
+	</rich:modalPanel>
+
+	<rich:modalPanel id="editModalPanel" width="600" height="400"
+		style="overflow:auto;" resizeable="false" onhide="reRenderSshfs();">
+
+		<f:facet name="header">file</f:facet>
+		<f:facet name="controls">
+			<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+				style="cursor:pointer"
+				onclick="#{rich:component('editModalPanel')}.hide()" />
+		</f:facet>
+
+		<h:form id="form5">
+			<h:panelGrid>
+				<a4j:include viewId="/pages/editSsh.xhtml" ajaxRendered="true" />
+			</h:panelGrid>
+		</h:form>
+
+	</rich:modalPanel>
+
+</body>
+</html>

@@ -1,0 +1,31 @@
+#!/bin/bash
+
+SCRIPT_LOCATION=${BASH_SOURCE[0]}
+SCRIPT_PATH="$(cd $(dirname "${SCRIPT_LOCATION}"); pwd -P)/$(basename "${SCRIPT_LOCATION}")"
+SCRIPT_PATH="${SCRIPT_PATH%/*}"
+
+INSTALLATION_FOLDER=${SCRIPT_PATH}/..
+
+PACKAGE_DIR=$1
+PACKAGE_NAME=`basename $PACKAGE_DIR`
+CUR_CD=$PWD
+echo $CUR_CD
+cd $PACKAGE_DIR
+files_in_package=`find -type f`
+
+if [ -e $INSTALLATION_FOLDER/packages/$PACKAGE_NAME ]; then
+    error="A package with this name already exists"
+else 
+    for i in $files_in_package; do
+        echo $i
+        if [ -e $INSTALLATION_FOLDER/$i ]; then
+            error="Error file $i already exists"
+        fi
+    done
+fi
+
+if [ -z "${error}" ]; then
+else
+    echo $error
+fi
+cd $CUR_CD

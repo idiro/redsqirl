@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j">
+
+<f:loadBundle basename="MessagesResources_em_US" var="messages" />
+
+<head>
+
+<script>
+
+
+</script>
+
+</head>
+
+<body>
+
+	
+
+	<a4j:commandButton action="#{canvasModalBean.confirm}" value="#{messages.button_ok}" onclick="#{rich:component('canvasModalPanel')}.hide();" />
+	<a4j:commandButton action="#{canvasModalBean.cancel}" value="#{messages.button_cancel}" onclick="#{rich:component('canvasModalPanel')}.hide();" />
+	<a4j:commandButton action="#{canvasModalBean.check}" value="#{messages.button_check}" />
+
+
+</body>
+</html>

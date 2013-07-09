@@ -1,0 +1,29 @@
+<h:panelGrid xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+
+	<h:outputText value="Name" />
+	<h:inputHidden value="#{canvasBean.name}" />
+	<h:inputText label="Name" value="#{canvasBean.newName}" />
+	<br />
+
+	<a4j:repeat value="#{canvasBean.item.keyAsListNameValueEdit}"
+		var="column" rowKeyVar="index">
+		<h:outputText value="#{canvasBean.item.keyAsListNameValueEdit[index]}" />
+		<br />
+		<h:inputText value="#{canvasBean.item.nameValue[column]}"
+			disabled="#{canvasBean.item.nameIsConst[column]}" />
+		<br />
+		<br />
+	</a4j:repeat>
+
+
+
+	<a4j:commandButton action="#{canvasBean.editFileAfter}" value="ok"
+		reRender="hivefs" onclick="#{rich:component('editModalPanel')}.hide()" />
+
+</h:panelGrid>

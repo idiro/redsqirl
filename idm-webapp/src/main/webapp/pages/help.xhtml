@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j">
+
+<head>
+
+<script>
+	jQuery(document).ready(function(){
+		jQuery("#helpIndex").find("a").click(function(e){
+			jQuery("#helpPanel").load(jQuery(this).attr("href"));
+			jQuery("#helpIndex").hide();
+		    e.preventDefault();
+		  });
+		
+		jQuery("#btIndex").click(function(){
+			jQuery("#helpIndex").show();
+			jQuery("#helpPanel").empty();
+		  });
+	});
+</script>
+</head>
+	
+
+<body>
+	<div id="helpIndex">
+		<h:outputText value="#{messages.label_index}" />
+		<ul>
+		    <ui:repeat value="#{canvasBean.helpItens}" var="item">
+		    	<li><a href="#{item[1]}">#{item[0]}</a></li>
+		    </ui:repeat>
+		</ul>
+	</div>
+	<div id="helpPanel"></div>
+	<button id="btIndex">#{messages.label_index}</button>
+</body>
+</html>
