@@ -645,5 +645,9 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 
 		return paramProp;
 	}
-
+	
+	public String getRelation(String path){
+		String[] relation = path.substring(1).split("/");
+		return relation[relation.length-1];
+	}
 }

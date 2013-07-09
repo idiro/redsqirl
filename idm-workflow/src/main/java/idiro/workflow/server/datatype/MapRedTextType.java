@@ -4,6 +4,7 @@ import idiro.hadoop.NameNodeVar;
 import idiro.hadoop.checker.HdfsFileChecker;
 import idiro.utils.RandomString;
 import idiro.workflow.server.DataOutput;
+import idiro.workflow.server.OozieManager;
 import idiro.workflow.server.connect.HDFSInterface;
 import idiro.workflow.server.enumeration.DataBrowser;
 import idiro.workflow.server.enumeration.FeatureType;
@@ -38,8 +39,7 @@ public class MapRedTextType extends DataOutput{
 	 */
 	private static final long serialVersionUID = 8260229620701006942L;
 
-	public final static String key_header = "header",
-			key_delimiter = "delimiter";
+	public final static String key_delimiter = "delimiter";
 
 	protected static HDFSInterface hdfsInt;
 
@@ -150,12 +150,12 @@ public class MapRedTextType extends DataOutput{
 		action.appendChild(fs);
 
 		Element rm = oozieDoc.createElement("delete");
-		rm.setAttribute("path", getPath());
+		rm.setAttribute("path", "${"+OozieManager.prop_namenode+"}"+getPath());
 		fs.appendChild(rm);
 
 		return true;
 	}
-
+	
 	@Override
 	public List<String> select(int maxToRead) throws RemoteException {
 		List<String> ans = null;

@@ -62,14 +62,13 @@ public class ConfigureTabsBean extends BaseBean{
 	}
 	
 	public String[] getItems() {  
-		String teste = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("selected");
-		System.out.println("getting items - " + teste);
+		String selectedTab = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("selected");
 		String[] items = new String[]{};
-		if (getMenuWA().containsKey(teste)){
-			items = new String[getMenuWA().get(teste).size()];
+		if (getMenuWA().containsKey(selectedTab)){
+			items = new String[getMenuWA().get(selectedTab).size()];
 			
 			for (int i = 0; i < items.length; ++i){
-				items[i] = getMenuWA().get(teste).get(i)[0];
+				items[i] = getMenuWA().get(selectedTab).get(i)[0];
 			}
 		}
         return items;  

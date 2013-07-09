@@ -600,12 +600,11 @@
 
 									</div>
 									
-									<ui:repeat value="#{configureTabsBean.menuWAList}" var="tab" varStatus="status">
+									<ui:repeat value="#{configureTabsBean.menuWAList}" var="tab">
 										<div id="#{tab.key}">
 											<p>
 												<ui:repeat value="#{tab.value}" var="action">
-													<img src="../image/icons/open.gif" alt="action[]"
-														class="footerIcon" />
+													<img src="#{action[2]}" class="footerIcon" />
 												</ui:repeat>
 											</p>
 										</div>

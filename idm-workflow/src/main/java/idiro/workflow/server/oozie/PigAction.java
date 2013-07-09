@@ -39,7 +39,7 @@ public class PigAction extends OozieActionAbs {
 
 	@Override
 	public String[] getFileExtensions() {
-		return new String[]{"pig"};
+		return new String[]{".pig", ".properties"};
 	}
 
 }

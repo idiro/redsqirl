@@ -8,8 +8,8 @@ public enum DisplayType {
 	appendList,
 	
 	//Browser
-	//Format in: browse>[type>DataType.getName()]/
-	//                  [output>[path>mypath]/[feature>[name>value]/[type>value]]]
+	//Format in: browse>[type>DataType.getName()]/[subtype>namei]
+	//                  [output>[path>mypath]/[feature>[name>value]/[type>value]]/[property>namei>valuei]]
 	browser,
 	
 	//Editor

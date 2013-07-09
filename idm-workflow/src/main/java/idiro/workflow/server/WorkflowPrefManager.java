@@ -50,7 +50,7 @@ public class WorkflowPrefManager extends BlockManager{
 	 */
 	pathSysImagePref = new Preference<String>(systemPrefs,
 			"Path to retrieve system image files",
-			pathSysHome.get()+"/images"),
+			"/packages/images"),
 	
 	/**
 	 * Path of the packages
@@ -64,7 +64,7 @@ public class WorkflowPrefManager extends BlockManager{
 	 */
 	pathSysHelpPref = new Preference<String>(
 			systemPrefs, "Path to retrieve system help files", 
-			pathSysHome.get() + "/help"),
+			"/packages/help"),
 			
 	/**
 	 * System preference
@@ -97,7 +97,7 @@ public class WorkflowPrefManager extends BlockManager{
 	 */
 	pathUserImagePref = new Preference<String>(userPrefs,
 			"Path to retrieve user image files",
-			pathUserPref.get()+"/images"),
+			"/packages/"+System.getProperty( "user.name" )+"/images"),
 			
 	/**
 	 * Path of the packages
@@ -111,7 +111,7 @@ public class WorkflowPrefManager extends BlockManager{
 	 */
 	pathUserHelpPref = new Preference<String>(
 			userPrefs, "Path to retrieve user help files", 
-			pathUserPref.get() + "/help"),
+			"/packages/"+System.getProperty( "user.name" )+"/help"),
 					
 	/**
 	 * The local directory to store oozie specific data
@@ -163,7 +163,8 @@ public class WorkflowPrefManager extends BlockManager{
 			sys_hive_default_xml = "hive_default_xml",
 			sys_hive_xml = "hive_xml",
 			sys_hive_extralib = "hive_extra_lib",
-			sys_allow_user_install="allow_user_install";
+			sys_allow_user_install="allow_user_install",
+			sys_tomcat_path="tomcat_path";
 	
 	public static final String user_hive = "hive_jdbc_url",
 			user_rsa_private= "private_rsa_key";

@@ -91,11 +91,12 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 	 * @throws RemoteException
 	 */
 	public String getHelp() throws RemoteException {
-		File f = new File(WorkflowPrefManager.pathSysHelpPref.get() + "/" + getName() + ".html");
+		String relativePath = WorkflowPrefManager.pathSysHelpPref.get() + "/" + getName() + ".html";
+		File f = new File(WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path)+relativePath);
 		if(!f.exists()){
-			f = new File(WorkflowPrefManager.pathUserHelpPref.get() + "/" + getName() + ".html");
+			relativePath = WorkflowPrefManager.pathUserHelpPref.get() + "/" + getName() + ".html";
 		}
-		return f.getAbsolutePath();
+		return relativePath;
 	}
 
 	/**
@@ -105,11 +106,12 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 	 * @throws RemoteException
 	 */
 	public String getImage() throws RemoteException {
-		File f = new File(WorkflowPrefManager.pathSysImagePref.get() + "/" + getName() + ".gif");
+		String relativePath = WorkflowPrefManager.pathSysImagePref.get() + "/" + getName() + ".gif";
+		File f = new File(WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path)+relativePath);
 		if(!f.exists()){
-			f = new File(WorkflowPrefManager.pathUserImagePref.get() + "/" + getName() + ".gif");
+			relativePath = WorkflowPrefManager.pathUserImagePref.get() + "/" + getName() + ".gif";
 		}
-		return f.getAbsolutePath();
+		return relativePath;
 	}
 
 	/**
@@ -214,8 +216,8 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 	public String checkInit() throws RemoteException {
 		String error = "";
 
-		FileChecker help = new FileChecker(getHelp());
-		FileChecker image = new FileChecker(getImage());
+		FileChecker help = new FileChecker(WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path)+getHelp());
+		FileChecker image = new FileChecker(WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path)+getImage());
 		if (!help.isFile()) {
 			error += "In '" + getClass().getCanonicalName()
 					+ "' help file not available\n";

@@ -500,16 +500,16 @@ public class PackageManager {
 
 	public static File getHelpDir(boolean sys_package){
 		return sys_package ?
-				new File(WorkflowPrefManager.pathSysHelpPref.get())
+				new File(WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path)+WorkflowPrefManager.pathSysHelpPref.get())
 		:
-			new File(WorkflowPrefManager.pathUserHelpPref.get());
+			new File(WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path)+WorkflowPrefManager.pathUserHelpPref.get());
 	}
 
 	public static File getImageDir(boolean sys_package){
 		return sys_package ?
-				new File(WorkflowPrefManager.pathSysImagePref.get())
+				new File(WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path)+WorkflowPrefManager.pathSysImagePref.get())
 		:
-			new File(WorkflowPrefManager.pathUserImagePref.get());
+			new File(WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path)+WorkflowPrefManager.pathUserImagePref.get());
 	}
 
 	public static File getLibDir(boolean sys_package){
