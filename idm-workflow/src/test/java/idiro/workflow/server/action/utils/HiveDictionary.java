@@ -4,6 +4,7 @@ import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.enumeration.FeatureType;
 
+import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -83,7 +84,7 @@ public class HiveDictionary {
 		new String[]{"MAX()","NUMBER","DOUBLE"}
 	};
 
-	public static Tree<String> createConditionHelpMenu(){
+	public static Tree<String> createConditionHelpMenu() throws RemoteException{
 		Tree<String> help = new TreeNonUnique<String>("help");
 		help.add(createMenu(new TreeNonUnique<String>("logic"),logicalOperators));
 		help.add(createMenu(new TreeNonUnique<String>("relation"),relationalOperators));
@@ -95,7 +96,7 @@ public class HiveDictionary {
 		return help;
 	}
 
-	public static Tree<String> createDefaultSelectHelpMenu(){
+	public static Tree<String> createDefaultSelectHelpMenu() throws RemoteException{
 		Tree<String> help = new TreeNonUnique<String>("help");
 		help.add(createMenu(new TreeNonUnique<String>("arithmetic"),arithmeticOperators));
 		help.add(createMenu(new TreeNonUnique<String>("string"),stringMethods));
@@ -107,7 +108,7 @@ public class HiveDictionary {
 		return help;
 	}
 
-	public static Tree<String> createGroupSelectHelpMenu(){
+	public static Tree<String> createGroupSelectHelpMenu() throws RemoteException{
 		Tree<String> help = new TreeNonUnique<String>("help");
 		help.add(createMenu(new TreeNonUnique<String>("aggregation"),agregationMethods));
 		help.add(createMenu(new TreeNonUnique<String>("arithmetic"),arithmeticOperators));
@@ -122,7 +123,7 @@ public class HiveDictionary {
 
 
 
-	protected static Tree<String> createMenu(Tree<String> root, String[][] list){
+	protected static Tree<String> createMenu(Tree<String> root, String[][] list) throws RemoteException{
 
 		for(String elStr[]: list){
 			Tree<String> suggestion = root.add("suggestion");

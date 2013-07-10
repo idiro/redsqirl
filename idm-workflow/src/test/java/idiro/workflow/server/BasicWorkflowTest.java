@@ -8,6 +8,7 @@ import idiro.workflow.server.interfaces.DataFlow;
 import idiro.workflow.test.SetupEnvironmentTest;
 
 import java.io.File;
+import java.rmi.RemoteException;
 
 import org.apache.log4j.Logger;
 
@@ -117,7 +118,7 @@ public class BasicWorkflowTest{
 		
 	}
 	
-	private TreeNonUnique<String> createComplexTree(){
+	private TreeNonUnique<String> createComplexTree() throws RemoteException{
 		TreeNonUnique<String> t1 = new TreeNonUnique<String>("list");
 		TreeNonUnique<String> e1 = new TreeNonUnique<String>("e1");
 		e1.add(new TreeNonUnique<String>("value1"));
@@ -134,7 +135,7 @@ public class BasicWorkflowTest{
 		
 	}
 	
-	private TreeNonUnique<String> createSimpleTree(){
+	private TreeNonUnique<String> createSimpleTree() throws RemoteException{
 		TreeNonUnique<String> t3 = new TreeNonUnique<String>("parameter");
 		t3.add(new TreeNonUnique<String>("value3"));
 		return t3;		

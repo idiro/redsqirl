@@ -11,6 +11,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Iterator;
 
 import org.apache.log4j.Logger;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -90,11 +91,11 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 
 
 	@Override
-	public void writeXml(Document doc, Node n) {
+	public void writeXml(Document doc, Node n) throws DOMException, RemoteException {
 		n.appendChild(writeXml(doc,getTree()));
 	}
 
-	protected Node writeXml(Document doc, Tree<String> t) {
+	protected Node writeXml(Document doc, Tree<String> t) throws RemoteException, DOMException {
 		Node elHead = null;
 		if(getTree().getSubTreeList().isEmpty()){
 			elHead = doc.createTextNode(t.getHead());
@@ -134,7 +135,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 
 	}
 
-	protected void readXml(Node n,Tree<String> curTree){
+	protected void readXml(Node n,Tree<String> curTree) throws RemoteException, DOMException{
 		NodeList nl = n.getChildNodes();
 		for(int i = 0; i < nl.getLength();++i){
 			Node curNode = nl.item(i);

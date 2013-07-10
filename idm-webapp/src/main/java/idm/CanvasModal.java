@@ -1,5 +1,6 @@
 package idm;
 
+import idiro.utils.Tree;
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.interfaces.DFEInteraction;
@@ -125,7 +126,9 @@ public class CanvasModal extends BaseBean {
 				for (DFEInteraction dfeInteraction : dfePage.getInteractions()) {
 					
 					DisplayType display = dfeInteraction.getDisplay();
-					dfeInteraction.getTree();
+					
+					//List<Tree<String>> lis =  dfeInteraction.getTree().getFirstChild("help").getChildren("submenu");
+					//lis.get(0).getFirstChild("name").getFirstChild().getHead();
 					
 					logger.info(display);
 					logger.info(dfeInteraction.getTree());

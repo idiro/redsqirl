@@ -32,7 +32,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({ActionTests.class,
-	WorkflowTests.class,
+	/*WorkflowTests.class,
 	CreateWorkflowTests.class,
 	HiveDictionaryTests.class,
 	HDFSInterfaceTests.class,
@@ -44,7 +44,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	HiveSelectTests.class,
 	OozieManagerTests.class,
 	PackageManagerTests.class,
-	OozieDagTests.class
+	OozieDagTests.class*/
 	})
 public class SetupEnvironmentTest {
 	

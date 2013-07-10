@@ -1,24 +1,10 @@
 package idm;
 
 
-import idm.BaseBean;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
 import idiro.workflow.server.interfaces.DataFlow;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.faces.model.SelectItem;
 
 import org.apache.log4j.Logger;
 

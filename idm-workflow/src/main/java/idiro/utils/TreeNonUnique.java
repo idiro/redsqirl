@@ -2,6 +2,9 @@ package idiro.utils;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.rmi.RemoteException;
+import java.rmi.server.RemoteObject;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -9,7 +12,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-public class TreeNonUnique<T> implements Tree<T>{
+public class TreeNonUnique<T> extends UnicastRemoteObject implements Tree<T>{
 
 	/**
 	 * 
@@ -24,11 +27,13 @@ public class TreeNonUnique<T> implements Tree<T>{
 			new LinkedList<Tree<T>>();
 
 
-	public TreeNonUnique(T head){
+	public TreeNonUnique(T head) throws RemoteException{
+		super();
 		this.head = head;
 	}
 
-	public TreeNonUnique(T head,TreeNonUnique<T> parent){
+	public TreeNonUnique(T head,TreeNonUnique<T> parent) throws RemoteException{
+		super();
 		this.head = head;
 		this.parent = parent;
 	}
@@ -97,7 +102,7 @@ public class TreeNonUnique<T> implements Tree<T>{
 		return ok;
 	}
 
-	public int getDepth(){
+	public int getDepth() throws RemoteException{
 		int i = 1;
 		Tree<T> ancestor = parent;
 		while(ancestor != null){
@@ -107,7 +112,7 @@ public class TreeNonUnique<T> implements Tree<T>{
 		return i;
 	}
 
-	public List<Tree<T>> findInTree(T element){
+	public List<Tree<T>> findInTree(T element) throws RemoteException{
 		TreeNonUnique<T> root = this;
 		while(root.getParent() != null){
 			root = root.getParent();
@@ -115,7 +120,7 @@ public class TreeNonUnique<T> implements Tree<T>{
 		return root.getChildren(element);
 	}
 
-	public List<Tree<T>> getChildren(T element){
+	public List<Tree<T>> getChildren(T element) throws RemoteException{
 		List<Tree<T>> ans = new LinkedList<Tree<T>>();
 		Iterator<Tree<T>> it = subTreeList.iterator();
 		while(it.hasNext()){
@@ -127,7 +132,7 @@ public class TreeNonUnique<T> implements Tree<T>{
 		return ans;
 	}
 	
-	public List<Tree<T>> findChildren(T element){
+	public List<Tree<T>> findChildren(T element) throws RemoteException{
 		List<Tree<T>> ans = new LinkedList<Tree<T>>();
 		Iterator<Tree<T>> it = subTreeList.iterator();
 		while(it.hasNext()){
@@ -145,7 +150,7 @@ public class TreeNonUnique<T> implements Tree<T>{
 	 * @param e
 	 * @return
 	 */
-	public void add(Tree<T> e) {
+	public void add(Tree<T> e) throws RemoteException {
 		if(e instanceof TreeNonUnique){
 			e.setParent(this);
 			subTreeList.add(e);
@@ -156,7 +161,7 @@ public class TreeNonUnique<T> implements Tree<T>{
 	 * @param e
 	 * @return
 	 */
-	public void addFirst(Tree<T> e) {
+	public void addFirst(Tree<T> e) throws RemoteException {
 		if(e instanceof TreeNonUnique){
 			e.setParent(this);
 			subTreeList.addFirst(e);
@@ -168,7 +173,7 @@ public class TreeNonUnique<T> implements Tree<T>{
 	 * @return
 	 * @see java.util.Set#addAll(java.util.Collection)
 	 */
-	public void addAll(Collection<Tree<T>> arg0) {
+	public void addAll(Collection<Tree<T>> arg0) throws RemoteException {
 		Iterator<Tree<T>> it = arg0.iterator();
 		while(it.hasNext()){
 			add(it.next());
@@ -211,23 +216,28 @@ public class TreeNonUnique<T> implements Tree<T>{
 
 		if(o instanceof Tree){
 			Tree<?> tree = (Tree<?>)o;
-			if( tree.getHead().getClass().getCanonicalName().equals(
-					head.getClass().getCanonicalName())){
-				@SuppressWarnings("unchecked")
-				Tree<T> treeT = (Tree<T>) tree;
+			try {
+				if( tree.getHead().getClass().getCanonicalName().equals(
+						head.getClass().getCanonicalName())){
+					@SuppressWarnings("unchecked")
+					Tree<T> treeT = (Tree<T>) tree;
 
-				if( treeT.getHead().equals(getHead())){
-					equal = true;
-					Iterator<Tree<T>> it = subTreeList.iterator();
-					Iterator<? extends Tree<T>> it2 = treeT.getSubTreeList().iterator();
-					while(it.hasNext() && equal){
-						if(!it2.hasNext()){
-							equal = false;
-						}else{
-							equal = it.next().equals(it2.next());
+					if( treeT.getHead().equals(getHead())){
+						equal = true;
+						Iterator<Tree<T>> it = subTreeList.iterator();
+						Iterator<? extends Tree<T>> it2 = treeT.getSubTreeList().iterator();
+						while(it.hasNext() && equal){
+							if(!it2.hasNext()){
+								equal = false;
+							}else{
+								equal = it.next().equals(it2.next());
+							}
 						}
 					}
 				}
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 
@@ -235,13 +245,13 @@ public class TreeNonUnique<T> implements Tree<T>{
 	}
 
 	@Override
-	public Tree<T> getFirstChild(T element) {
+	public Tree<T> getFirstChild(T element) throws RemoteException {
 		List<Tree<T>> list = getChildren(element);
 		return !list.isEmpty() ? list.get(0) : null;
 	}
 	
 	
-	public Tree<T> findFirstChild(T element){
+	public Tree<T> findFirstChild(T element) throws RemoteException{
 		Tree<T> ans = null;
 		Iterator<Tree<T>> it = subTreeList.iterator();
 		while(it.hasNext() && ans == null){
@@ -269,13 +279,18 @@ public class TreeNonUnique<T> implements Tree<T>{
 
 	@Override
 	public Tree<T> add(T element) {
-		Tree<T> ans = new TreeNonUnique<T>(element); 
-		add(ans);
+		Tree<T> ans = null;
+		try {
+			ans = new TreeNonUnique<T>(element);
+			add(ans);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} 
 		return ans;
 	}
 	
 	@Override
-	public void remove(T element){
+	public void remove(T element) throws RemoteException{
 		subTreeList.removeAll(getChildren(element));
 	}
 
