@@ -17,6 +17,8 @@ public class ItemList {
 	private String name;
 	private boolean selected;
 	private boolean selectedDestination;
+	private String typeTableInteraction;
+	private String idSelected;
 	
 	private Map<String, String> nameValue = new HashMap();
 	private Map<String, String> nameValueEdit = new HashMap();
@@ -89,6 +91,22 @@ public class ItemList {
 
 	public void setNameIsConst(Map<String, Boolean> nameIsConst) {
 		this.nameIsConst = nameIsConst;
+	}
+
+	public String getIdSelected() {
+		return idSelected;
+	}
+
+	public void setIdSelected(String idSelected) {
+		this.idSelected = idSelected;
+	}
+
+	public String getTypeTableInteraction() {
+		return typeTableInteraction;
+	}
+
+	public void setTypeTableInteraction(String typeTableInteraction) {
+		this.typeTableInteraction = typeTableInteraction;
 	}
 	
 }

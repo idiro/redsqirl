@@ -15,17 +15,100 @@
 <script>
 
 
+
 </script>
 
 </head>
 
 <body>
 
+
+	<h:outputText value="#{messages.label_generation}" />
+	
+	<table width="100%" id="table">
+		<tr>
+			<td width="200px">
+			
+				<rich:comboBox value="#{canvasModalBean.list}" selectFirstOnUpdate="false" defaultLabel="Enter some value" width="200" 
+					enableManualInput="false" id="generation" listWidth="150" listHeight="200" >
+					<f:selectItems value="#{canvasModalBean.listItens}" />
+				</rich:comboBox>
+				
+			</td>
+			<td>
+				
+				<a4j:commandButton type="submit" id="tableInteractionGenerationLines" 
+					action="#{canvasModalBean.tableInteractionGenerationLines}" value="ok" reRender="tableInteraction" />
+			
+			</td>
+		</tr>
+	</table>
+	
+	
+	
+	
+	<br/><br/>
+	
+	<div id="DivTableInteraction" style="width:580px; height:220px;  border:1px solid black; overflow-x: hidden;">
+	
+			<rich:dataTable id="tableInteraction" value="#{canvasModalBean.listGrid}"
+				var="item" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+				enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
+				
+				<rich:column style="border-bottom:0px;border-right:0px;" width="10px;">
+					<f:facet name="header">
+						<a4j:commandLink action="#{canvasModalBean.tableInteractionDeleteLine}" reRender="tableInteraction"
+							onclick="if(!confirm('Are you sure you want to delete the selected line?')){return false;}">
+							<img id="tableInteractionBtDelete" src="../image/icons/button-delete.png" />
+						</a4j:commandLink>
+					</f:facet>
+					
+					<h:selectBooleanCheckbox value="#{item.selected}" >
+						<f:selectItem itemValue="true" />
+					</h:selectBooleanCheckbox>
+		
+				</rich:column>
+
+				<rich:columns value="#{canvasModalBean.keyAsListNameValue}" var="column" index="ind" 
+					style="border-bottom:0px;border-right:0px;" >
+					<f:facet name="header">
+						<h:outputText value="#{column}" />
+					</f:facet>
+					
+					<h:inputText value="#{item.nameValue[column]}" rendered="#{item.typeTableInteraction == '1' }" style="width:125px;" />
+					
+					<rich:comboBox value="#{item.nameValue[column]}" selectFirstOnUpdate="false" defaultLabel="Enter some value" width="125" 
+						enableManualInput="false" listWidth="150" listHeight="150" rendered="#{item.typeTableInteraction == '2' }" >
+						<f:selectItems value="#{canvasModalBean.listItens}" />
+					</rich:comboBox>
+					
+					<h:inputText value="#{item.nameValue[column]}" rendered="#{item.typeTableInteraction == '3' }" onclick="#{rich:component('tableInteractionPanel')}.show()" style="width:125px;" />
+					
+				</rich:columns>
+
+			</rich:dataTable>
+	
+	</div>
+	
+					<rich:modalPanel id="tableInteractionPanel" width="600" height="400" style="overflow:auto;" resizeable="false" >
+						<f:facet name="header">Configuration</f:facet>
+						<f:facet name="controls">
+							<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer"
+								onclick="#{rich:component('tableInteractionPanel')}.hide()" />
+						</f:facet>
+						<ui:include src="/pages/canvasModal2.xhtml" />
+					</rich:modalPanel>
 	
 
-	<a4j:commandButton action="#{canvasModalBean.confirm}" value="#{messages.button_ok}" onclick="#{rich:component('canvasModalPanel')}.hide();" />
+	<a4j:commandButton action="#{canvasModalBean.confirmTableInteraction}" value="#{messages.button_ok}" onclick="#{rich:component('canvasModalPanel')}.hide();" />
+	<span>&nbsp;&nbsp;</span>
 	<a4j:commandButton action="#{canvasModalBean.cancel}" value="#{messages.button_cancel}" onclick="#{rich:component('canvasModalPanel')}.hide();" />
-	<a4j:commandButton action="#{canvasModalBean.check}" value="#{messages.button_check}" />
+	<span>&nbsp;&nbsp;</span>
+	<a4j:commandLink action="#{canvasModalBean.tableInteractionAddNewLine}" reRender="tableInteraction" >
+		<img id="tableInteractionBtAdd" src="../image/icons/button-plus.gif" />
+	</a4j:commandLink>
+
+
 
 
 </body>

@@ -1,15 +1,8 @@
 package idm;
 
-import idiro.utils.Tree;
-import idiro.workflow.server.connect.interfaces.DataFlowInterface;
-import idiro.workflow.server.enumeration.DisplayType;
-import idiro.workflow.server.interfaces.DFEInteraction;
-import idiro.workflow.server.interfaces.DFEPage;
-import idiro.workflow.server.interfaces.DataFlow;
-import idiro.workflow.server.interfaces.DataFlowElement;
-
-import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +28,19 @@ public class CanvasModal extends BaseBean {
 	private List<Entry> listFields = new ArrayList<Entry>();
 	private List<Entry> listFunctionsType = new ArrayList<Entry>();
 	private String command = "";
+	private Map<String, String> nameValue = new HashMap<String, String>();
+	private ArrayList<ItemList> listGrid = new ArrayList<ItemList>();
 
+	/** getKeyAsListNameValue
+	 * 
+	 * Method to retrieve the list of files
+	 * 
+	 * @return List<String>
+	 * @author Igor.Souza
+	 */
+	public List<String> getKeyAsListNameValue(){
+		return new ArrayList<String>(nameValue.keySet());
+	}
 
 	/** next
 	 * 
@@ -68,7 +73,7 @@ public class CanvasModal extends BaseBean {
 	@PostConstruct
 	public void openTextEditor() {
 
-		logger.info("openModal");
+		//logger.info("openModal");
 
 		List<SelectItem> selectItems = new ArrayList<SelectItem>();
 
@@ -87,7 +92,7 @@ public class CanvasModal extends BaseBean {
 			getListFields().add(e2);
 			getListFields().add(e3);
 		}
-		
+
 		if(getListFunctions().isEmpty()){
 			Entry e4 = new Entry("Function 1", "Return 1");
 			Entry e5 = new Entry("Function 2", "Return 2");
@@ -103,48 +108,62 @@ public class CanvasModal extends BaseBean {
 			getListFunctionsType().add(e7);
 			getListFunctionsType().add(e8);
 		}
-		
-		
-		
-		
-		try {
-			
+
+
+		if(getListGrid() != null && getListGrid().isEmpty()){
+			for (int i = 0; i < 4; i++) {
+
+				ItemList itemList = new ItemList("name"+i);
+				getNameValue().put("label"+i, "value"+i);
+				itemList.setSelected(false);
+				itemList.setTypeTableInteraction("3");
+				itemList.setNameValue(getNameValue());
+
+
+				getListGrid().add(itemList);
+			}
+		}
+
+
+
+		/*try {
+
 			DataFlowInterface dfi =  getworkFlowInterface();
 			dfi.addWorkflow("canvas1");
 			DataFlow df = dfi.getWorkflow("canvas1");
-			
+
 			//logger.info(df.getAllWANameWithClassName());
-			
+
 			String idElement = df.addElement("Source");
 			DataFlowElement dfe = df.getElement(idElement);
-			
+
 			for (DFEPage dfePage : dfe.getPageList()) {
-				
+
 				dfePage.getTitle();
 				dfePage.getNbColumn();
-				
+
 				for (DFEInteraction dfeInteraction : dfePage.getInteractions()) {
-					
+
 					DisplayType display = dfeInteraction.getDisplay();
-					
+
 					//List<Tree<String>> lis =  dfeInteraction.getTree().getFirstChild("help").getChildren("submenu");
 					//lis.get(0).getFirstChild("name").getFirstChild().getHead();
-					
-					logger.info(display);
-					logger.info(dfeInteraction.getTree());
-					
+
+					//logger.info(display);
+					//logger.info(dfeInteraction.getTree());
+
 				}
 			}
-			
+
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
-		
+		}*/
 
-		
-		
+
+
+
 	}
 
 	/** confirm
@@ -158,10 +177,10 @@ public class CanvasModal extends BaseBean {
 
 		logger.info("confirm");
 
-		
+
 		logger.info(getCommand());
-		
-		
+
+
 	}
 
 	/** cancel
@@ -177,71 +196,32 @@ public class CanvasModal extends BaseBean {
 
 	}
 
-	/** check
+	/** checkTextEditor
 	 * 
 	 * Methods to Check if the entry are correct or not for this action.
 	 * 
 	 * @return
 	 * @author Igor.Souza
 	 */
-	public void check() {
+	public void checkTextEditor() {
 
-		logger.info("check");
+		logger.info("checkTextEditor");
 
 	}
 
-	/** completeFunction
-	 * 
-	 * Methods to complete the field
-	 * 
-	 * @return
-	 * @author Igor.Souza
-	 */
-	/*public void completeFunction(){
-
-		logger.info("completeFunction");
-
-		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-		String nameFunction = params.get("nameFunctions");
-
-		logger.info("Command: " + getCommand());
-		logger.info("Function: " + nameFunction);
-		setCommand(getCommand() + " " + nameFunction);
-
-	}*/
-
-	/** completeFilds
-	 * 
-	 * Methods to complete the field
-	 * 
-	 * @return
-	 * @author Igor.Souza
-	 */
-	/*public void completeFilds(){
-
-		logger.info("completeFilds");
-
-		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-		String nameFild = params.get("nameFilds");
-
-		logger.info(getCommand() + " " + nameFild);
-		setCommand(getCommand() + " " + nameFild);
-
-	}*/
-
-	/** changeFunctions
+	/** changeFunctionsTextEditor
 	 * 
 	 * Methods to retrieve the new Functions
 	 * 
 	 * @return
 	 * @author Igor.Souza
 	 */
-	public void  changeFunctions(){
+	public void changeFunctionsTextEditor(){
 
 		logger.info("changeFunctions");
 
 		setListFunctions(new ArrayList<Entry>());
-		
+
 		Entry e1 = new Entry("Function 8", "Return 8");
 		Entry e2 = new Entry("Function 9", "Return 9");
 		Entry e3 = new Entry("Function 0", "Return 0");
@@ -251,13 +231,82 @@ public class CanvasModal extends BaseBean {
 
 	}
 
-	public void apply(){
+	/** tableInteractionAddNewLine
+	 * 
+	 * Methods to add a new line on table editor
+	 * 
+	 * @return 
+	 * @author Igor.Souza
+	 */
+	public void tableInteractionAddNewLine() {
+
+		logger.info("tableInteractionAddNewLine");
+
+
+		ItemList itemList = new ItemList();
+		itemList.setNameValue(getNameValue());
+		itemList.setSelected(false);
+		itemList.setTypeTableInteraction("2");
+
+		getListGrid().add(itemList);
 
 	}
 
-	public void reset(){
+	/** tableInteractionGenerationLines
+	 * 
+	 * Methods to add a several lines on table editor
+	 * 
+	 * @return 
+	 * @author Igor.Souza
+	 */
+	public void tableInteractionGenerationLines() {
+
+		logger.info("tableInteractionGenerationLines");
+
+
+		ItemList itemList = new ItemList();
+		itemList.setNameValue(getNameValue());
+		itemList.setSelected(false);
+
+		getListGrid().add(itemList);
 
 	}
+
+	/** tableInteractionDeleteLine
+	 * 
+	 * Methods to remove selected lines from table editor
+	 * 
+	 * @return 
+	 * @author Igor.Souza
+	 */
+	public void tableInteractionDeleteLine() {
+
+		logger.info("tableInteractionDeleteLine");
+
+		for (Iterator iterator = getListGrid().iterator(); iterator.hasNext();) {
+			ItemList itemList = (ItemList) iterator.next();
+
+			if(itemList.isSelected()){
+				iterator.remove();
+			}
+		}
+
+	}
+	
+	/** confirmTableInteraction
+	 * 
+	 * Method for validating the table interaction 
+	 * 
+	 * @return 
+	 * @author Igor.Souza
+	 */
+	public void confirmTableInteraction() {
+
+		logger.info("confirmTableInteraction");
+
+		
+	}
+
 
 	public List<SelectItem> getListItens() {
 		return listItens;
@@ -305,6 +354,22 @@ public class CanvasModal extends BaseBean {
 
 	public void setCommand(String command) {
 		this.command = command;
+	}
+
+	public Map<String, String> getNameValue() {
+		return nameValue;
+	}
+
+	public void setNameValue(Map<String, String> nameValue) {
+		this.nameValue = nameValue;
+	}
+
+	public ArrayList<ItemList> getListGrid() {
+		return listGrid;
+	}
+
+	public void setListGrid(ArrayList<ItemList> listGrid) {
+		this.listGrid = listGrid;
 	}
 
 }

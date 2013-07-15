@@ -63,7 +63,7 @@
 
 <body>
 
-	<a4j:commandLink id="btChangeFunctions" action="#{canvasModalBean.changeFunctions}" style="display:none;" reRender="lisFunctions" />
+	<a4j:commandLink id="btChangeFunctions" action="#{canvasModalBean.changeFunctionsTextEditor}" style="display:none;" reRender="lisFunctions" />
 
 	<h:inputTextarea maxlength="100" cols="70" rows="10" value="#{canvasModalBean.command}" style="resize:none;" id="commandText" />
 	
@@ -162,7 +162,7 @@
 	<span>&nbsp;&nbsp;</span>
 	<a4j:commandButton action="#{canvasModalBean.cancel}" value="#{messages.button_cancel}" onclick="#{rich:component('textEditorPanel')}.hide();" />
 	<span>&nbsp;&nbsp;</span>
-	<a4j:commandButton action="#{canvasModalBean.check}" value="#{messages.button_check}" />
+	<a4j:commandButton action="#{canvasModalBean.checkTextEditor}" value="#{messages.button_check}" />
 
 
 </body>

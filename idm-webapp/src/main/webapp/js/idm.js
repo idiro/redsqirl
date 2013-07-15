@@ -13,6 +13,7 @@ function canvasResizeSplitter(){
 	jQuery("#tabs-4").css("height", jQuery("#tabs1").height()-25+'px');
 	//jQuery("[id$='hivefs']").css("height", jQuery("#sshFileSystem").height()-100+'px');
 	//jQuery("[id$='hivefs:sd']").css("height", jQuery("#sshFileSystem").height()-150+'px');
+	jQuery("#canvasModalPanelContentDiv").css("overflow", "hidden");
 	
 	jQuery("#buttonsCanvas1").css("left", jQuery("#canvas1").width()-30+'px');
 	jQuery("#buttonsTabs1").css("left", jQuery("#tabs1").width()-30+'px');
@@ -72,6 +73,7 @@ function onPageReady(){
 	  //jQuery("[id$='hivefs:sd']").css("overflow-x", "hidden");
 	  //jQuery("[id$='hivefs:innerd']").css("overflow", "hidden");
 	  jQuery("#tabRemote").css("overflow", "hidden");
+	  jQuery("#canvasModalPanelContentDiv").css("overflow", "hidden");
 	  
 	  validateArrows(jQuery("#canvas1"),jQuery("#buttonsCanvas1"));
 	  validateArrows(jQuery("#tabs1"),jQuery("#buttonsTabs1"));
@@ -107,6 +109,7 @@ function resizing(){
 	  jQuery("#tabs-4").css("height", jQuery("#tabs1").height()-25+'px');
 	  //jQuery("[id$='hivefs']").css("height", jQuery("#sshFileSystem").height()-100+'px');
 	  //jQuery("[id$='hivefs:sd']").css("height", jQuery("#sshFileSystem").height()-150+'px');
+	  jQuery("#canvasModalPanelContentDiv").css("overflow", "hidden");
 	  
 	  jQuery("#buttonsCanvas1").css("left", jQuery("#canvas1").width()-30+'px');
 	  jQuery("#buttonsTabs1").css("left", jQuery("#tabs1").width()-30+'px');
