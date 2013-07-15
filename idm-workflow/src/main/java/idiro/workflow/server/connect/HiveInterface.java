@@ -387,7 +387,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore{
 			throws RemoteException {
 		String table = getTableAndPartitions(path)[0];
 		Map<String,String> ans = new HashMap<String,String>();
-		if(exists(table)){
+		if(exists("/"+table)){
 			ans.put(key_describe,getDescription(table));
 
 			if(!ans.isEmpty()){
@@ -409,16 +409,16 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore{
 			throws RemoteException {
 		String[] tableAndPartitions = getTableAndPartitions(history.get(cur));
 		Map<String, Map<String, String>> ans = 
-				new LinkedHashMap<String, Map<String,String> >();;
+				new LinkedHashMap<String, Map<String,String> >();
 				try {
 					if(tableAndPartitions[0].isEmpty()){
 
-						List<String> tables = conn.listTables(tableAndPartitions[0]);
+						List<String> tables = conn.listTables(null);
 						//Filter the list.
 						Iterator<String> it = tables.iterator();
 						while(it.hasNext()){
 							String table = it.next();
-							Map<String,String> prop = getProperties(table);
+							Map<String,String> prop = getProperties("/"+table);
 							if(!prop.isEmpty()){
 								ans.put(table, prop);
 							}
@@ -729,7 +729,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore{
 				new DSParamProperty(
 						"Table extended description", 
 						true,
-						false)
+						true)
 				);
 		
 		return paramProp;

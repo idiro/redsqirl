@@ -392,7 +392,7 @@ public class PigDictionary {
 		return editor;
 	}
 
-	public static Tree<String> createConditionHelpMenu(){
+	public static Tree<String> createConditionHelpMenu() throws RemoteException{
 		Tree<String> help = new TreeNonUnique<String>("help");
 		help.add(createMenu(new TreeNonUnique<String>("logic"),logicalOperators));
 		help.add(createMenu(new TreeNonUnique<String>("relation"),relationalOperators));
@@ -404,7 +404,7 @@ public class PigDictionary {
 		return help;
 	}
 
-	public static Tree<String> createDefaultSelectHelpMenu(){
+	public static Tree<String> createDefaultSelectHelpMenu() throws RemoteException{
 		Tree<String> help = new TreeNonUnique<String>("help");
 		help.add(createMenu(new TreeNonUnique<String>("arithmetic"),arithmeticOperators));
 		help.add(createMenu(new TreeNonUnique<String>("string"),stringMethods));
@@ -416,7 +416,7 @@ public class PigDictionary {
 		return help;
 	}
 
-	public static Tree<String> createGroupSelectHelpMenu(){
+	public static Tree<String> createGroupSelectHelpMenu() throws RemoteException{
 		Tree<String> help = new TreeNonUnique<String>("help");
 		help.add(createMenu(new TreeNonUnique<String>("aggregation"),agregationMethods));
 		help.add(createMenu(new TreeNonUnique<String>("arithmetic"),arithmeticOperators));
@@ -430,7 +430,7 @@ public class PigDictionary {
 	}
 
 
-	protected static Tree<String> createMenu(Tree<String> root, String[][] list){
+	protected static Tree<String> createMenu(Tree<String> root, String[][] list) throws RemoteException{
 
 		for(String elStr[]: list){
 			Tree<String> suggestion = root.add("suggestion");

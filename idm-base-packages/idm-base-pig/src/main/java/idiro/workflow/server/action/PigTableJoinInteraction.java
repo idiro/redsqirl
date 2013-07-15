@@ -214,7 +214,7 @@ public class PigTableJoinInteraction extends UserInteraction{
 		return input;
 	}
 
-	public Map<String,FeatureType> getNewFeatures(){
+	public Map<String,FeatureType> getNewFeatures() throws RemoteException{
 		Map<String,FeatureType> new_features = new LinkedHashMap<String,FeatureType>();
 		Iterator<Tree<String>> rowIt = getTree().getFirstChild("table")
 				.getChildren("row").iterator();

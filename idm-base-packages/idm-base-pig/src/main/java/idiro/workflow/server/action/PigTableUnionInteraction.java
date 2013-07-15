@@ -257,7 +257,7 @@ public class PigTableUnionInteraction extends UserInteraction{
 		return input;
 	}
 
-	public Map<String,FeatureType> getNewFeatures(){
+	public Map<String,FeatureType> getNewFeatures() throws RemoteException{
 		Map<String,FeatureType> new_features = new LinkedHashMap<String,FeatureType>();
 		Map<String,List<Tree<String> > > mapRelationRow = getSubQuery();
 
@@ -271,7 +271,7 @@ public class PigTableUnionInteraction extends UserInteraction{
 		return new_features;
 	}
 
-	public Map<String,List<Tree<String>>> getSubQuery(){
+	public Map<String,List<Tree<String>>> getSubQuery() throws RemoteException{
 		Map<String,List<Tree<String> > > mapRelationRow = 
 				new LinkedHashMap<String,List<Tree<String> >>();
 		List<Tree<String>> lRow = getTree()

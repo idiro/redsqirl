@@ -228,7 +228,7 @@ public class PigTableSelectInteraction extends UserInteraction{
 		return input;
 	}
 
-	public Map<String,FeatureType> getNewFeatures(){
+	public Map<String,FeatureType> getNewFeatures() throws RemoteException{
 		Map<String,FeatureType> new_features = new LinkedHashMap<String,FeatureType>();
 		Iterator<Tree<String>> rowIt = getTree().getFirstChild("table")
 				.getChildren("row").iterator();
@@ -286,7 +286,7 @@ public class PigTableSelectInteraction extends UserInteraction{
 	}
 	
 	
-	private List<String> getGroupByList(){
+	private List<String> getGroupByList() throws RemoteException{
 		List<String> resultList = new ArrayList<String>();
 		Tree<String> groupTree = hs.getGroupingInt().getTree();
 		
