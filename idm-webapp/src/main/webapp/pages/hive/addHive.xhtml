@@ -7,21 +7,19 @@
 
 
 	<h:outputText value="Name" />
-	<h:inputHidden value="#{hiveBean.name}" />
 	<h:inputText label="Name" value="#{hiveBean.newName}" />
 	<br />
 
-	<a4j:repeat value="#{hiveBean.item.keyAsListNameValueEdit}"
+	<a4j:repeat value="#{hiveBean.nameCreateFields}"
 		var="column" rowKeyVar="index">
-		<h:outputText value="#{hiveBean.item.keyAsListNameValueEdit[index]}" />
+		<h:outputText value="#{column}" />
 		<br />
-		<h:inputText value="#{hiveBean.item.nameValue[column]}"
-			disabled="#{hiveBean.item.nameIsConst[column]}" />
+		<h:inputText value="#{hiveBean.nameValue[column]}"/>
 		<br />
 		<br />
 	</a4j:repeat>
 
-	<a4j:commandButton action="#{hiveBean.addFileAfter}" value="ok"
-		reRender="hivefs" onclick="#{rich:component('addModalPanel')}.hide()" />
+	<a4j:commandButton action="#{hiveBean.addFileAfter}" value="ok" 
+		reRender="hivefs" oncomplete="#{rich:component('hiveaddModalPanel')}.hide();"/>
 
 </h:panelGrid>

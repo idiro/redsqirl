@@ -1,6 +1,7 @@
 package idm;
 
 import idiro.workflow.server.connect.interfaces.DataStore;
+import idiro.workflow.server.connect.interfaces.DataStore.ParamProperty;
 import idm.useful.MessageUseful;
 
 import java.rmi.RemoteException;
@@ -9,6 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -24,6 +26,7 @@ public class FileSystemBean extends BaseBean {
 	private String name;
 	private String newName;
 	private ArrayList<ItemList> listGrid = new ArrayList<ItemList>();
+	private List<String> nameCreateFields = new ArrayList<String>();
 	private ItemList item;
 
 	private Map<String, String> nameValue = new HashMap<String, String>();
@@ -70,7 +73,7 @@ public class FileSystemBean extends BaseBean {
 		setPath(hInt.getPath());
 
 		Map<String, Map<String, String>> mapSSH = hInt.getChildrenProperties();
-
+		Map<String, ParamProperty> paramProperties = hInt.getParamProperties();
 		for (String path : mapSSH.keySet()) {
 
 			String[] aux = path.split("/");
@@ -80,29 +83,46 @@ public class FileSystemBean extends BaseBean {
 			Map<String, String> nv = new HashMap<String, String>();
 			Map<String, String> nve = new HashMap<String, String>();
 			Map<String, Boolean> nc = new HashMap<String, Boolean>();
+			Map<String, Boolean> vlb = new HashMap<String, Boolean>();
 
-			for (String properties : hInt.getParamProperties().keySet()) {
+			for (String properties : paramProperties.keySet()) {
 
-				if(!hInt.getParamProperties().get(properties).editOnly()){
-					nv.put(properties, mapSSH.get(path).get(properties));
+				if(!hInt.getParamProperties().get(properties).editOnly() &&
+					!hInt.getParamProperties().get(properties).createOnly()){
+					nv.put(properties, getFormatedString(properties, mapSSH.get(path).get(properties)));
 				}
-				nve.put(properties, mapSSH.get(path).get(properties));
-
+				
+				if (hInt.getParamProperties().get(properties).editOnly()){
+					nve.put(properties, getFormatedString(properties, mapSSH.get(path).get(properties)));
+				}
+				
 				nc.put(properties, hInt.getParamProperties().get(properties).isConst());
+				vlb.put(properties, mapSSH.get(path).get(properties) != null && mapSSH.get(path).get(properties).contains("/n"));
 
 			}
 
 			itemList.setNameValue(nv);
 			itemList.setNameValueEdit(nve);
 			itemList.setNameIsConst(nc);
-
+			itemList.setValueHasLineBreak(vlb);
+			
 			setNameValue(nv);
 
 			itemList.setSelected(false);
 			getListGrid().add(itemList);
 
 		}
+		
+		for (String properties : paramProperties.keySet()) {
+			if (hInt.getParamProperties().get(properties).createOnly()){
+				nameCreateFields.add(properties);
+			}
+		}
 
+	}
+	
+	public String getFormatedString(String property, String value){
+		return value;
 	}
 
 	/** getKeyAsListNameValue
@@ -220,7 +240,6 @@ public class FileSystemBean extends BaseBean {
 	 * @author Igor.Souza
 	 */
 	public void addFileBefore() throws RemoteException{
-
 	}
 
 	/** addFileAfter
@@ -231,10 +250,19 @@ public class FileSystemBean extends BaseBean {
 	 * @author Igor.Souza
 	 */
 	public void addFileAfter() throws RemoteException{
-
-		String newDirectory = getDataStore().getPath() + "/" + getName();
-		getDataStore().create(newDirectory, nameValue);
-
+		String newDirectory = getDataStore().getPath();
+		if (!newDirectory.endsWith("/")){
+			newDirectory += "/";
+		}
+		newDirectory += getNewName();
+		
+		Map<String, String> properties = new HashMap<String, String>();
+		for (Entry<String, String> e : nameValue.entrySet()){
+			if (e.getValue() != null && !e.getValue().isEmpty()){
+				properties.put(e.getKey(), e.getValue());
+			}
+		}
+		getDataStore().create(newDirectory, properties);
 	}
 
 	/** editFileBefore
@@ -427,6 +455,14 @@ public class FileSystemBean extends BaseBean {
 
 	public void setDataStore(DataStore dataStore) {
 		this.dataStore = dataStore;
+	}
+	
+	public List<String> getNameCreateFields() {
+		return nameCreateFields;
+	}
+
+	public void setNameCreateFields(List<String> nameCreateFields) {
+		this.nameCreateFields = nameCreateFields;
 	}
 	
 }

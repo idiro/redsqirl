@@ -53,4 +53,12 @@ public class HiveBean extends FileSystemBean {
 
 	}
 	
+	@Override
+	public String getFormatedString(String property, String value){
+		if (property.equals("describe")){
+			return value.replace(",", " ").replace(";", ", ");
+		}
+		return value;
+	}
+	
 }

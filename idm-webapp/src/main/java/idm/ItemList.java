@@ -20,9 +20,10 @@ public class ItemList {
 	private String typeTableInteraction;
 	private String idSelected;
 	
-	private Map<String, String> nameValue = new HashMap();
-	private Map<String, String> nameValueEdit = new HashMap();
-	private Map<String, Boolean> nameIsConst = new HashMap();
+	private Map<String, String> nameValue = new HashMap<String, String>();
+	private Map<String, String> nameValueEdit = new HashMap<String, String>();
+	private Map<String, Boolean> nameIsConst = new HashMap<String, Boolean>();
+	private Map<String, Boolean> valueHasLineBreak = new HashMap<String, Boolean>();
 	
 	/*
 	 *
@@ -84,7 +85,7 @@ public class ItemList {
 	public void setNameValueEdit(Map<String, String> nameValueEdit) {
 		this.nameValueEdit = nameValueEdit;
 	}
-
+	
 	public Map<String, Boolean> getNameIsConst() {
 		return nameIsConst;
 	}
@@ -107,6 +108,14 @@ public class ItemList {
 
 	public void setTypeTableInteraction(String typeTableInteraction) {
 		this.typeTableInteraction = typeTableInteraction;
+	}
+	
+	public Map<String, Boolean> getValueHasLineBreak() {
+		return valueHasLineBreak;
+	}
+
+	public void setValueHasLineBreak(Map<String, Boolean> valueHasLineBreak) {
+		this.valueHasLineBreak = valueHasLineBreak;
 	}
 	
 }
