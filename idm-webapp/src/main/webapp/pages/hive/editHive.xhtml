@@ -15,10 +15,10 @@
 		var="column" rowKeyVar="index">
 		<h:outputText value="#{hiveBean.item.keyAsListNameValueEdit[index]}" />
 		<br />
-		<h:inputText value="#{hiveBean.item.nameValue[column]}"
+		<h:inputText value="#{hiveBean.item.nameValue[column]}" title="#{hiveBean.nameHelp[column]}"
 			disabled="#{hiveBean.item.nameIsConst[column]}" rendered="#{not hiveBean.item.valueHasLineBreak[column]}"
 		/>
-		<h:inputTextarea value="#{hiveBean.item.nameValue[column]}"
+		<h:inputTextarea value="#{hiveBean.item.nameValue[column]}" title="#{hiveBean.nameHelp[column]}"
 			disabled="#{hiveBean.item.nameIsConst[column]}" cols="30" rows="10" style="overflow:auto;resize:vertical"
 			rendered="#{hiveBean.item.valueHasLineBreak[column]}"
 		/>
@@ -28,5 +28,6 @@
 
 	<a4j:commandButton action="#{hiveBean.editFileAfter}" value="ok"
 		reRender="hivefs" onclick="#{rich:component('hiveeditModalPanel')}.hide()" />
+	<a4j:commandButton value="Cancel" onclick="#{rich:component('hiveeditModalPanel')}.hide();" />
 
 </h:panelGrid>

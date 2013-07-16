@@ -30,6 +30,7 @@ public class FileSystemBean extends BaseBean {
 	private ItemList item;
 
 	private Map<String, String> nameValue = new HashMap<String, String>();
+	private Map<String, String> nameHelp = new HashMap<String, String>();
 	private List<Entry> fieldsInitNeededTitleKey;
 	
 	private DataStore dataStore;
@@ -87,16 +88,16 @@ public class FileSystemBean extends BaseBean {
 
 			for (String properties : paramProperties.keySet()) {
 
-				if(!hInt.getParamProperties().get(properties).editOnly() &&
-					!hInt.getParamProperties().get(properties).createOnly()){
+				if(!paramProperties.get(properties).editOnly() &&
+					!paramProperties.get(properties).createOnly()){
 					nv.put(properties, getFormatedString(properties, mapSSH.get(path).get(properties)));
 				}
 				
-				if (hInt.getParamProperties().get(properties).editOnly()){
+				if (paramProperties.get(properties).editOnly()){
 					nve.put(properties, getFormatedString(properties, mapSSH.get(path).get(properties)));
 				}
 				
-				nc.put(properties, hInt.getParamProperties().get(properties).isConst());
+				nc.put(properties, paramProperties.get(properties).isConst());
 				vlb.put(properties, mapSSH.get(path).get(properties) != null && mapSSH.get(path).get(properties).contains("/n"));
 
 			}
@@ -114,7 +115,8 @@ public class FileSystemBean extends BaseBean {
 		}
 		
 		for (String properties : paramProperties.keySet()) {
-			if (hInt.getParamProperties().get(properties).createOnly()){
+			nameHelp.put(properties, paramProperties.get(properties).getHelp());
+			if (paramProperties.get(properties).createOnly()){
 				nameCreateFields.add(properties);
 			}
 		}
@@ -150,9 +152,15 @@ public class FileSystemBean extends BaseBean {
 
 			if(item.isSelected()){
 
-				logger.info("Delete -"+getDataStore().getPath() + "/" + item.getName());
+				String directory = getDataStore().getPath();
+				if (!directory.endsWith("/")){
+					directory += "/";
+				}
+				directory += item.getName();
+				
+				logger.info("Delete -"+directory);
 
-				getDataStore().delete(getDataStore().getPath() + "/" + item.getName());
+				getDataStore().delete(directory);
 				i.remove();
 
 			}
@@ -439,6 +447,14 @@ public class FileSystemBean extends BaseBean {
 
 	public void setNameValue(Map<String, String> nameValue) {
 		this.nameValue = nameValue;
+	}
+	
+	public Map<String, String> getNameHelp() {
+		return nameHelp;
+	}
+
+	public void setNameHelp(Map<String, String> nameHelp) {
+		this.nameHelp = nameHelp;
 	}
 
 	public List<Entry> getFieldsInitNeededTitleKey() {
