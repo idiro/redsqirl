@@ -83,18 +83,21 @@ public class SSHInterface extends UnicastRemoteObject implements  DataStore{
 					new DSParamProperty(
 							"Owner of the file", 
 							true,
+							false,
 							false)
 					);
 			paramProp.put(key_group,
 					new DSParamProperty(
 							"Group of the file", 
 							true,
+							false,
 							false)
 					);
 			paramProp.put(key_permission,
 					new DSParamProperty(
 							"Permission associated to the file", 
 							true,
+							false,
 							false)
 					);
 		}

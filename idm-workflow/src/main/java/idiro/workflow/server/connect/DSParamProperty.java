@@ -16,7 +16,8 @@ implements DataStore.ParamProperty{
 	private static final long serialVersionUID = 1L;
 	protected String help;
 	protected boolean constant,
-						editOnly;
+					  editOnly,
+					  createOnly;
 	
 	protected FeatureType type;
 	/**
@@ -25,9 +26,9 @@ implements DataStore.ParamProperty{
 	 * @param constant
 	 * @throws RemoteException
 	 */
-	public DSParamProperty(String help, boolean constant, boolean editOnly) throws RemoteException {
+	public DSParamProperty(String help, boolean constant, boolean editOnly, boolean createOnly) throws RemoteException {
 		super();
-		init(help,constant,editOnly,FeatureType.STRING);
+		init(help,constant,editOnly,createOnly,FeatureType.STRING);
 	}
 	
 	/**
@@ -36,15 +37,16 @@ implements DataStore.ParamProperty{
 	 * @param constant
 	 * @throws RemoteException
 	 */
-	public DSParamProperty(String help, boolean constant, boolean editOnly, FeatureType type) throws RemoteException {
+	public DSParamProperty(String help, boolean constant, boolean editOnly, boolean createOnly, FeatureType type) throws RemoteException {
 		super();
-		init(help,constant,editOnly,type);
+		init(help,constant,editOnly,createOnly,type);
 	}
 	
-	private void init(String help, boolean constant, boolean editOnly, FeatureType type){
+	private void init(String help, boolean constant, boolean editOnly, boolean createOnly, FeatureType type){
 		this.help = help;
 		this.constant = constant;
 		this.editOnly = editOnly;
+		this.createOnly = createOnly;
 		this.type = type;
 	}
 	
@@ -63,6 +65,11 @@ implements DataStore.ParamProperty{
 	@Override
 	public boolean editOnly() throws RemoteException {
 		return editOnly;
+	}
+	
+	@Override
+	public boolean createOnly() throws RemoteException {
+		return createOnly;
 	}
 
 

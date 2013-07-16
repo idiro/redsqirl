@@ -690,6 +690,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore{
 				new DSParamProperty(
 						"Partititions of the table", 
 						false,
+						true,
 						true)
 					);
 			
@@ -697,24 +698,28 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore{
 					new DSParamProperty(
 							"Change columns", 
 							false,
+							true,
 							true)
 					);
 			paramProp.put(key_comment,
 					new DSParamProperty(
 							"Associate a comment to the table", 
 							false,
+							true,
 							true)
 					);
 			paramProp.put(key_store,
 					new DSParamProperty(
 							"Storing strategy", 
 							false,
+							true,
 							true)
 					);
 			paramProp.put(key_field_sep,
 					new DSParamProperty(
 							"Table field separator", 
 							false,
+							true,
 							true)
 					);
 		}
@@ -723,13 +728,15 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore{
 				new DSParamProperty(
 						"Table description", 
 						true,
+						false,
 						false)
 				);
 		paramProp.put(key_describe_extended,
 				new DSParamProperty(
 						"Table extended description", 
 						true,
-						true)
+						true,
+						false)
 				);
 		
 		return paramProp;

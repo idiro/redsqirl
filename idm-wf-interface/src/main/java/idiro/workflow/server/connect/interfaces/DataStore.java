@@ -49,6 +49,13 @@ public interface DataStore extends Remote {
 		boolean editOnly() throws RemoteException;
 		
 		/**
+		 * Property that appears only for creating
+		 * @return
+		 * @throws RemoteException
+		 */
+		boolean createOnly() throws RemoteException;
+		
+		/**
 		 * Type associated to the property
 		 * @return
 		 * @throws RemoteException

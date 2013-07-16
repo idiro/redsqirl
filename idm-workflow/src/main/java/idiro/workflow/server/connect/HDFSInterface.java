@@ -3,7 +3,6 @@ package idiro.workflow.server.connect;
 import idiro.hadoop.NameNodeVar;
 import idiro.hadoop.checker.HdfsFileChecker;
 import idiro.tm.task.in.Preference;
-import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.interfaces.DataStore;
 import idiro.workflow.server.enumeration.FeatureType;
 
@@ -80,11 +79,13 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 					new DSParamProperty(
 							"Owner of the file", 
 							false,
+							false,
 							false)
 					);
 			paramProp.put(key_group,
 					new DSParamProperty(
 							"Group of the file", 
+							false,
 							false,
 							false)
 					);
@@ -92,12 +93,14 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 					new DSParamProperty(
 							"Permission associated to the file", 
 							false,
+							false,
 							false)
 					);
 			paramProp.put(key_size,
 					new DSParamProperty(
 							"Size of the file", 
 							true,
+							false,
 							false)
 					);
 			paramProp.put(key_recursive,
@@ -105,6 +108,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 							"Apply change reccursively", 
 							false,
 							true,
+							false,
 							FeatureType.BOOLEAN)
 					);
 		}
