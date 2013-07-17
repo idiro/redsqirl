@@ -28,6 +28,7 @@ public class FileSystemBean extends BaseBean {
 	private ArrayList<ItemList> listGrid = new ArrayList<ItemList>();
 	private List<String> nameCreateFields = new ArrayList<String>();
 	private ItemList item;
+	private String fileContent;
 
 	private Map<String, String> nameValue = new HashMap<String, String>();
 	private Map<String, String> nameHelp = new HashMap<String, String>();
@@ -68,7 +69,7 @@ public class FileSystemBean extends BaseBean {
 	 * @author Igor.Souza
 	 */
 	public void mountTable(DataStore hInt) throws RemoteException {
-
+		logger.info("Started mounting table");
 		setListGrid(new ArrayList<ItemList>());
 		
 		setPath(hInt.getPath());
@@ -107,8 +108,11 @@ public class FileSystemBean extends BaseBean {
 			itemList.setNameIsConst(nc);
 			itemList.setValueHasLineBreak(vlb);
 			
+			hInt.goTo(generatePath(hInt.getPath(), name));
+			itemList.setFile(hInt.getChildrenProperties().isEmpty());
+			hInt.goPrevious();
+			
 			setNameValue(nv);
-
 			itemList.setSelected(false);
 			getListGrid().add(itemList);
 
@@ -120,7 +124,7 @@ public class FileSystemBean extends BaseBean {
 				nameCreateFields.add(properties);
 			}
 		}
-
+		logger.info("Finished mounting table");
 	}
 	
 	public String getFormatedString(String property, String value){
@@ -152,11 +156,7 @@ public class FileSystemBean extends BaseBean {
 
 			if(item.isSelected()){
 
-				String directory = getDataStore().getPath();
-				if (!directory.endsWith("/")){
-					directory += "/";
-				}
-				directory += item.getName();
+				String directory = generatePath(getDataStore().getPath(), item.getName());
 				
 				logger.info("Delete -"+directory);
 
@@ -200,8 +200,10 @@ public class FileSystemBean extends BaseBean {
 			Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 			String name = params.get("nameFile");
 
-			if(getDataStore().goTo(getPath()+"/"+name)){
-				setPath(getPath()+"/"+name);
+			String path = generatePath(getPath(), name);
+			
+			if(getDataStore().goTo(path)){
+				setPath(path);
 				mountTable(getDataStore());
 			}else{
 				logger.error("Error this is not a directory");
@@ -212,6 +214,25 @@ public class FileSystemBean extends BaseBean {
 			MessageUseful.addErrorMessage(" ");
 		}
 
+	}
+	
+	/** open
+	 * 
+	 * Method to preview the contents of a file
+	 * 
+	 * @return 
+	 * @author Igor.Souza
+	 */
+	public void openFile() throws RemoteException{
+		String name = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("nameFileEdit");
+		String path = generatePath(getPath(), name);
+		getDataStore().goTo(path);
+		List<String> contents = getDataStore().select(" | ", 10);
+		fileContent = "";
+		for (String s : contents){
+			fileContent += s+"<br/>";
+		}
+		getDataStore().goPrevious();
 	}
 
 	/** copyFileBefore
@@ -258,11 +279,7 @@ public class FileSystemBean extends BaseBean {
 	 * @author Igor.Souza
 	 */
 	public void addFileAfter() throws RemoteException{
-		String newDirectory = getDataStore().getPath();
-		if (!newDirectory.endsWith("/")){
-			newDirectory += "/";
-		}
-		newDirectory += getNewName();
+		String newDirectory = generatePath(getDataStore().getPath(), getNewName());
 		
 		Map<String, String> properties = new HashMap<String, String>();
 		for (Entry<String, String> e : nameValue.entrySet()){
@@ -399,7 +416,21 @@ public class FileSystemBean extends BaseBean {
 
 	}
 	
+	public String getCanCopy() throws RemoteException{
+		return getDataStore().canCopy();
+	}
 	
+	public String getCanMove() throws RemoteException{
+		return getDataStore().canMove();
+	}
+	
+	public String getCanDelete() throws RemoteException{
+		return getDataStore().canDelete();
+	}
+	
+	public String getCanCreate() throws RemoteException{
+		return getDataStore().canCreate();
+	}
 
 	public String getPath() {
 		return path;
@@ -479,6 +510,23 @@ public class FileSystemBean extends BaseBean {
 
 	public void setNameCreateFields(List<String> nameCreateFields) {
 		this.nameCreateFields = nameCreateFields;
+	}
+	
+	public String getFileContent(){
+		return fileContent;
+	}
+	
+	public void setFileContent(String content){
+		fileContent = content;
+	}
+	
+	private String generatePath(String path, String name){
+		String resultPath = path;
+		if (!resultPath.endsWith("/")){
+			resultPath += "/";
+		}
+		resultPath += name;
+		return resultPath;
 	}
 	
 }

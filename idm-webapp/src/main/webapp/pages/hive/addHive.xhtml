@@ -20,7 +20,7 @@
 	</a4j:repeat>
 
 	<a4j:commandButton action="#{hiveBean.addFileAfter}" value="ok" 
-		reRender="hivefs" oncomplete="#{rich:component('hiveaddModalPanel')}.hide();"/>
+		oncomplete="#{rich:component('hiveaddModalPanel')}.hide();"/>
 	<a4j:commandButton value="Cancel" onclick="#{rich:component('hiveaddModalPanel')}.hide();" />
 
 </h:panelGrid>

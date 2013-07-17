@@ -7,6 +7,7 @@ import idiro.utils.db.JdbcConnection;
 import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.interfaces.DataStore;
 import idiro.workflow.server.enumeration.FeatureType;
+import idiro.workflow.utils.LanguageManager;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -56,7 +57,6 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore{
 	key_describe = "describe",
 	key_describe_extended = "describe_extended";
 
-	protected char delimOut = '\001';
 	public static final int historyMax = 50;
 
 	protected static Preference<String> pathDataDefault = 
@@ -338,7 +338,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore{
 
 
 	@Override
-	public List<String> select(String path, int maxToRead)
+	public List<String> select(String path, String delimOut, int maxToRead)
 			throws RemoteException {
 		List<String> ans = null;
 		if(exists(path)){
@@ -377,8 +377,8 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore{
 
 
 	@Override
-	public List<String> select(int maxToRead) throws RemoteException {
-		return select(history.get(cur),maxToRead);
+	public List<String> select(String delimiter, int maxToRead) throws RemoteException {
+		return select(history.get(cur), delimiter, maxToRead);
 	}
 
 
@@ -740,6 +740,27 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore{
 				);
 		
 		return paramProp;
+	}
+
+
+	@Override
+	public String canCreate() throws RemoteException{
+		return LanguageManager.getText("HiveInterface.create_help");
+	}
+
+	@Override
+	public String canDelete() throws RemoteException{
+		return LanguageManager.getText("HiveInterface.delete_help");
+	}
+
+	@Override
+	public String canMove() throws RemoteException{
+		return null;
+	}
+
+	@Override
+	public String canCopy() throws RemoteException{
+		return null;
 	}
 
 }

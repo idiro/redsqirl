@@ -302,7 +302,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 
 
 	@Override
-	public List<String> select(String path, int maxToRead) throws RemoteException{
+	public List<String> select(String path, String delimiter, int maxToRead) throws RemoteException{
 		Path p = new Path(path);
 		List<String> ans = null;
 		HdfsFileChecker fCh = new HdfsFileChecker(p);
@@ -336,7 +336,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 	}
 
 	@Override
-	public List<String> select(int maxToRead) throws RemoteException {
+	public List<String> select(String delimiter, int maxToRead) throws RemoteException {
 		return select(getPath(),maxToRead);
 	}
 
@@ -653,5 +653,33 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 	public String getRelation(String path){
 		String[] relation = path.substring(1).split("/");
 		return relation[relation.length-1];
+	}
+
+
+	@Override
+	public String canCreate() throws RemoteException{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public String canDelete() throws RemoteException{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public String canMove() throws RemoteException{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public String canCopy() throws RemoteException{
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

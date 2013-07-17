@@ -179,7 +179,7 @@ public interface DataStore extends Remote {
 	 * @return
 	 * @throws RemoteException
 	 */
-	List<String> select(String path, int maxToRead) throws RemoteException;
+	List<String> select(String path, String delimiter, int maxToRead) throws RemoteException;
 	
 	/**
 	 * Select in the path the n first elements.
@@ -187,7 +187,7 @@ public interface DataStore extends Remote {
 	 * @return
 	 * @throws RemoteException
 	 */
-	List<String> select(int maxToRead) throws RemoteException;
+	List<String> select(String delimiter, int maxToRead) throws RemoteException;
 	
 	
 	/**
@@ -247,4 +247,34 @@ public interface DataStore extends Remote {
 	 * @throws RemoteException
 	 */
 	String changeProperties(Map<String,String> newProperties) throws RemoteException;
+	
+	/**
+	 * Check if the DataStore supports create a new element
+	 * @return null if it doesn`t support or a String with the help
+	 * @throws RemoteException
+	 */
+	String canCreate() throws RemoteException;
+	
+	/**
+	 * Check if the DataStore supports delete an element
+	 * @return null if it doesn`t support or a String with the help
+	 * @throws RemoteException
+	 */
+	String canDelete() throws RemoteException;
+	
+	/**
+	 * Check if the DataStore supports move an element
+	 * @return null if it doesn`t support or a String with the help
+	 * @throws RemoteException
+	 */
+	String canMove() throws RemoteException;
+	
+	/**
+	 * Check if the DataStore supports copy of a element
+	 * @return null if it doesn`t support or a String with the help
+	 * @throws RemoteException
+	 */
+	String canCopy() throws RemoteException;
+	
+	
 }

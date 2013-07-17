@@ -125,7 +125,11 @@ public class ConfigureTabsBean extends BaseBean{
 	}
 	
 	public List<Entry<String, List<String[]>>> getMenuWAList() {
-		List<Entry<String, List<String[]>>> list = new ArrayList<Entry<String, List<String[]>>>(getMenuWA().entrySet());
+		List<Entry<String, List<String[]>>> list = new ArrayList<Entry<String, List<String[]>>>();
+		for (Entry<String, List<String[]>> e : getMenuWA().entrySet()){
+			getMenuWA().get(e.getKey());
+			list.add(e);
+		}
 		return list;        
 	}
 

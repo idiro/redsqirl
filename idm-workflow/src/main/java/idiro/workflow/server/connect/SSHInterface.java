@@ -336,13 +336,13 @@ public class SSHInterface extends UnicastRemoteObject implements  DataStore{
 	}
 
 	@Override
-	public List<String> select(String path, int maxToRead)
+	public List<String> select(String path, String delimiter, int maxToRead)
 			throws RemoteException {
 		throw new RemoteException("This datastore does not support reading into a file");
 	}
 
 	@Override
-	public List<String> select(int maxToRead) throws RemoteException {
+	public List<String> select(String delimiter, int maxToRead) throws RemoteException {
 		return select(history.get(cur),maxToRead);
 	}
 
@@ -444,6 +444,34 @@ public class SSHInterface extends UnicastRemoteObject implements  DataStore{
 			logger.debug(path+" does not exist");
 		}
 		return exist;
+	}
+
+
+	@Override
+	public String canCreate() throws RemoteException{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public String canDelete() throws RemoteException{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public String canMove() throws RemoteException{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public String canCopy() throws RemoteException{
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

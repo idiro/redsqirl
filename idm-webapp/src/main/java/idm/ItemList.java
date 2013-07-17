@@ -19,6 +19,7 @@ public class ItemList {
 	private boolean selectedDestination;
 	private String typeTableInteraction;
 	private String idSelected;
+	private boolean isFile;
 	
 	private Map<String, String> nameValue = new HashMap<String, String>();
 	private Map<String, String> nameValueEdit = new HashMap<String, String>();
@@ -64,6 +65,14 @@ public class ItemList {
 
 	public boolean isSelectedDestination() {
 		return selectedDestination;
+	}
+	
+	public boolean isFile() {
+		return isFile;
+	}
+
+	public void setFile(boolean isFile) {
+		this.isFile = isFile;
 	}
 
 	public void setSelectedDestination(boolean selectedDestination) {
