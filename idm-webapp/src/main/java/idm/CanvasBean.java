@@ -1,10 +1,14 @@
 package idm;
 
 
+import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idiro.workflow.server.interfaces.DataFlow;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 
@@ -30,9 +34,31 @@ public class CanvasBean extends BaseBean {
 
 	}
 
-	
-	
-	
+	/** openCanvas
+	 * 
+	 * Methods to mount the first canvas
+	 * 
+	 * @return 
+	 * @author Igor.Souza
+	 */
+	@PostConstruct
+	public void openCanvas() {
+		
+		DataFlowInterface dfi;
+		try {
+			
+			dfi = getworkFlowInterface();
+			if(dfi != null && dfi.getWorkflow("canvas1") == null){
+				dfi.addWorkflow("canvas1");
+			}
+			
+		} catch (RemoteException e) {
+			logger.error(e.getMessage());
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		}
+		
+	}
 	
 	
 	

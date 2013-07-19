@@ -1,5 +1,13 @@
 package idm;
 
+import idiro.workflow.server.connect.interfaces.DataFlowInterface;
+import idiro.workflow.server.enumeration.DisplayType;
+import idiro.workflow.server.interfaces.DFEInteraction;
+import idiro.workflow.server.interfaces.DFEPage;
+import idiro.workflow.server.interfaces.DataFlow;
+import idiro.workflow.server.interfaces.DataFlowElement;
+
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -7,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 import org.apache.log4j.Logger;
@@ -30,6 +37,11 @@ public class CanvasModal extends BaseBean {
 	private String command = "";
 	private Map<String, String> nameValue = new HashMap<String, String>();
 	private ArrayList<ItemList> listGrid = new ArrayList<ItemList>();
+	private ArrayList<ItemList> listFeature = new ArrayList<ItemList>();
+	private String pathBrowser = "";
+	private String nameWorkflow;
+	private String nameElement;
+
 
 	/** getKeyAsListNameValue
 	 * 
@@ -65,12 +77,81 @@ public class CanvasModal extends BaseBean {
 
 	/** openTextEditor
 	 * 
-	 * Methods to mount screen dynamic form
+	 * Methods to mount the dynamic form
 	 * 
 	 * @return 
 	 * @author Igor.Souza
 	 */
 	@PostConstruct
+	public void openCanvasModal() {
+
+		/*try {
+
+			DataFlowInterface dfi =  getworkFlowInterface();
+			
+			//dfi.addWorkflow("canvas1");
+			setNameWorkflow("canvas1");
+			
+			DataFlow df = dfi.getWorkflow(getNameWorkflow());
+			
+			setNameElement("Source");
+			
+			String idElement = df.addElement(getNameElement());
+			DataFlowElement dfe = df.getElement(idElement);
+
+			for (DFEPage dfePage : dfe.getPageList()) {
+
+				dfePage.getTitle();
+				dfePage.getLegend();
+				dfePage.getNbColumn();
+				
+				//on next button
+				dfePage.checkPage();
+
+				for (DFEInteraction dfeInteraction : dfePage.getInteractions()) {
+					
+					//before open
+					dfe.update(dfeInteraction);
+					
+					dfeInteraction.getColumn();
+					dfeInteraction.getPlaceInColumn();
+					dfeInteraction.getName();
+					dfeInteraction.getLegend();
+					DisplayType display = dfeInteraction.getDisplay();
+
+					//update tree add new tree
+					//on click button if necessary
+					dfeInteraction.check();
+					
+					//List<Tree<String>> lis =  dfeInteraction.getTree().getFirstChild("help").getChildren("submenu");
+					//lis.get(0).getFirstChild("name").getFirstChild().getHead();
+
+					//logger.info(display);
+					//logger.info(dfeInteraction.getTree());
+
+				}
+			}
+			
+			//update the output
+			dfe.updateOut();
+			
+		} catch (RemoteException e) {
+			logger.error(e.getMessage());
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		}*/
+
+		openTextEditor();
+
+	}
+
+	/** openTextEditor
+	 * 
+	 * Methods to mount screen dynamic form
+	 * 
+	 * @return 
+	 * @author Igor.Souza
+	 */
 	public void openTextEditor() {
 
 		//logger.info("openModal");
@@ -124,45 +205,27 @@ public class CanvasModal extends BaseBean {
 			}
 		}
 
+	}
 
+	/** openTableInteraction
+	 * 
+	 * Methods to mount screen Table Interaction
+	 * 
+	 * @return 
+	 * @author Igor.Souza
+	 */
+	public void openTableInteraction() {
 
-		/*try {
+	}
 
-			DataFlowInterface dfi =  getworkFlowInterface();
-			dfi.addWorkflow("canvas1");
-			DataFlow df = dfi.getWorkflow("canvas1");
-
-			//logger.info(df.getAllWANameWithClassName());
-
-			String idElement = df.addElement("Source");
-			DataFlowElement dfe = df.getElement(idElement);
-
-			for (DFEPage dfePage : dfe.getPageList()) {
-
-				dfePage.getTitle();
-				dfePage.getNbColumn();
-
-				for (DFEInteraction dfeInteraction : dfePage.getInteractions()) {
-
-					DisplayType display = dfeInteraction.getDisplay();
-
-					//List<Tree<String>> lis =  dfeInteraction.getTree().getFirstChild("help").getChildren("submenu");
-					//lis.get(0).getFirstChild("name").getFirstChild().getHead();
-
-					//logger.info(display);
-					//logger.info(dfeInteraction.getTree());
-
-				}
-			}
-
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}*/
-
-
-
+	/** openBrowser
+	 * 
+	 * Methods to mount screen Browser
+	 * 
+	 * @return 
+	 * @author Igor.Souza
+	 */
+	public void openBrowser() {
 
 	}
 
@@ -176,9 +239,6 @@ public class CanvasModal extends BaseBean {
 	public void confirm() {
 
 		logger.info("confirm");
-
-
-		logger.info(getCommand());
 
 
 	}
@@ -283,7 +343,7 @@ public class CanvasModal extends BaseBean {
 
 		logger.info("tableInteractionDeleteLine");
 
-		for (Iterator iterator = getListGrid().iterator(); iterator.hasNext();) {
+		for (Iterator<ItemList> iterator = getListGrid().iterator(); iterator.hasNext();) {
 			ItemList itemList = (ItemList) iterator.next();
 
 			if(itemList.isSelected()){
@@ -292,10 +352,10 @@ public class CanvasModal extends BaseBean {
 		}
 
 	}
-	
+
 	/** confirmTableInteraction
 	 * 
-	 * Method for validating the table interaction 
+	 * Method for validating and close the table interaction 
 	 * 
 	 * @return 
 	 * @author Igor.Souza
@@ -304,8 +364,51 @@ public class CanvasModal extends BaseBean {
 
 		logger.info("confirmTableInteraction");
 
-		
+
 	}
+
+	/** changePathBrowser
+	 * 
+	 * Method to chage path for the Browser screen
+	 * 
+	 * @return
+	 * @author Igor.Souza
+	 * @throws RemoteException
+	 */
+	public void changePathBrowser() throws RemoteException {
+
+		logger.info("changePathBrowser");
+
+		//getHDFS().select(getPathBrowser(), 10);
+		//getHiveInterface().select(getPathBrowser(), 10);
+
+		for (int i = 0; i < 4; i++) {
+
+			ItemList itemList = new ItemList();
+			getNameValue().put("label"+i, "value"+i);
+			itemList.setSelected(false);
+			itemList.setNameValue(getNameValue());
+
+			getListFeature().add(itemList);
+		}
+
+	}
+
+	/** confirmBrowser
+	 * 
+	 * Method for validating and close the browser
+	 * 
+	 * @return 
+	 * @author Igor.Souza
+	 */
+	public void confirmBrowser() {
+
+		logger.info("confirmBrowser");
+
+
+	}
+
+
 
 
 	public List<SelectItem> getListItens() {
@@ -372,4 +475,36 @@ public class CanvasModal extends BaseBean {
 		this.listGrid = listGrid;
 	}
 
+	public String getPathBrowser() {
+		return pathBrowser;
+	}
+
+	public void setPathBrowser(String pathBrowser) {
+		this.pathBrowser = pathBrowser;
+	}
+
+	public ArrayList<ItemList> getListFeature() {
+		return listFeature;
+	}
+
+	public void setListFeature(ArrayList<ItemList> listFeature) {
+		this.listFeature = listFeature;
+	}
+
+	public String getNameWorkflow() {
+		return nameWorkflow;
+	}
+
+	public void setNameWorkflow(String nameWorkflow) {
+		this.nameWorkflow = nameWorkflow;
+	}
+
+	public String getNameElement() {
+		return nameElement;
+	}
+
+	public void setNameElement(String nameElement) {
+		this.nameElement = nameElement;
+	}
+	
 }

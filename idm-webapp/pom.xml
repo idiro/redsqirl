@@ -48,7 +48,7 @@
         
         <repository>
 			<id>idm</id>
-			<url>file:///home/marcos/.m2/repository</url>
+			<url>file:///home/igor/.m2/repository</url>
 		</repository>
 		
     </distributionManagement>

@@ -219,4 +219,15 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 		this.checker = checker;
 	}
 
+
+	public String getLegend() {
+		return legend;
+	}
+
+
+	public void setLegend(String legend) {
+		this.legend = legend;
+	}
+	
+
 }

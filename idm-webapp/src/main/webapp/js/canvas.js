@@ -22,6 +22,23 @@ var countObj;
 
 		window.onload = function() {
 			
+			
+			/*jQuery( "#tabsFooter ul:first li" ).each(function(index) {
+				   
+				//alert(jQuery(this).attr("aria-controls"));
+				
+				var aux = jQuery(this).attr("aria-controls");
+				
+				jQuery( "#"+aux ).find("img").each(function(index) {
+					
+					alert(jQuery(this).attr("src"));
+					
+				});
+				   
+			});*/
+			
+			
+			
 			countObj = 0;
 			
 			//main stage
@@ -2002,6 +2019,247 @@ var countObj;
 		   function openModal() {
 			   
 			   jQuery("[id$='linkCanvasModalPanel']").click();
+			   
+		   }
+		   
+		   
+		   
+		   
+		   
+		   
+		   
+		   /**
+		   * 
+		   * Method to mount the footer of canvas and your tabs.
+		   * Makes one for the 'divs' and 'images' to create the objects and put their functionalities. 
+		   * generates javascript for HTML5 canvas 
+		   * 
+		   */
+		   function mountObj() {
+		   
+		   
+			   //for list divs
+			   jQuery( "#tabsFooter ul:first li" ).each(function(index) {
+				   
+				   	//alert(jQuery(this).attr("aria-controls"));
+				   	var nameDiv = jQuery(this).attr("aria-controls");
+				   
+				   
+				   
+				   
+				   	//------------ START TAB 1
+					
+					//stage to footer
+				    stageTab1 = new Kinetic.Stage({
+				        container: 'canvasTabFooter1',
+				        width: 500,
+				        height: 100
+				    });
+				    
+				    //layer to footer tab1
+				    layerTab1 = new Kinetic.Layer();
+				    
+				    
+				    
+				    //for list of obj imagens
+			    	jQuery( "#"+nameDiv ).find("img").each(function(index) {
+						
+						//alert(jQuery(this).attr("src"));
+				    	
+				    	
+					    //variable to control image of the object
+					    var imgTab1 = new Image();
+					    imgTab1.src = '../image/icons/button-cut.png';
+					      
+					    
+					    
+					  	//------------------ START GROUP 
+						
+					      var polygon1Tab1 = new Kinetic.RegularPolygon({
+						        x: 40,
+						        y: 50,
+						        radius: 27,
+						        sides: 4,
+						        stroke: 'black',
+						        strokeWidth: 4,
+						        fillPatternImage: imgTab1,
+						        fillPatternOffset: [7, 7],
+						        fillPatternRepeat: 'no-repeat',
+						        fillPatternScale: 1.8,
+						        fillPatternRotationDeg: 315,
+						        draggable: false
+						  });
+					      polygon1Tab1.rotateDeg(45);
+					      
+					      var polygon1Tab1Image = polygon1Tab1.toDataURL({
+					    	  width: 75,
+					    	  height: 75
+					      });
+					      
+					      polygon1Tab1.setStroke('red');
+					      var polygon1Tab1ImageRed = polygon1Tab1.toDataURL({
+					    	  width: 75,
+					    	  height: 75
+					      });
+					      polygon1Tab1.setStroke('black');
+					      
+					      var polygon1Tab1Fake = new Kinetic.RegularPolygon({
+						        x: 40,
+						        y: 50,
+						        opacity: 0,
+						        radius: 27,
+						        sides: 4,
+						        stroke: 'black',
+						        strokeWidth: 4,
+						        fillPatternImage: imgTab1,
+						        fillPatternOffset: [7, 7],
+						        fillPatternRepeat: 'no-repeat',
+						        fillPatternScale: 1.8,
+						        fillPatternRotationDeg: 315,
+						        draggable: true
+						  });
+					      polygon1Tab1Fake.rotateDeg(45);
+					      
+						var polygon1 = polygon1Tab1.clone({
+							name: 'polygon1',
+							draggable: false
+					    });
+						
+						polygon1.on('click', function(e) {
+							
+							deselectOnClick(this, e);
+							
+						});
+						
+						polygon1.on('mousedown', function(e) {
+							
+							deselectOnClick(this, e);
+							
+						});
+						
+						polygon1Tab1Fake.on('dragstart', function() {
+							
+							jQuery('#body').css('cursor','url('+ polygon1Tab1Image +') 30 30,default');
+							
+							this.remove();
+							layerTab1.add(polygon1Tab1Fake.clone());
+							layerTab1.draw();
+							
+						});
+						
+						//var countObj = 0;
+						
+						positionX = 0;
+						positionY = 0;
+						
+						polygon1Tab1Fake.on('dragend', function() {
+					    	
+							try {
+								
+								document.body.style.cursor = 'default';
+								
+								var mousePos = stageTab1.getMousePosition();
+								if(mousePos.x > 0 || mousePos.y > 0){
+									this.remove();
+									layerTab1.add(polygon1Tab1Fake.clone());
+									layerTab1.draw();
+								}
+					          
+							} catch(e) {
+								
+								try {
+								
+									document.body.style.cursor = 'default';
+									
+									deselectAll();
+									polygon1.setStroke("red");
+									
+									var mousePosStage = stage.getMousePosition();
+									
+									countObj++;
+									var group1 = new Kinetic.Group({
+										x: mousePosStage.x -30,
+								        y: mousePosStage.y -30,
+						        		  draggable: true,
+						        		  id: "group" + countObj,
+						        		  name: 'group1',
+						        		  dragBoundFunc: function(pos) {
+						        			  return rulesDragAndDropObj(pos, 80, 80);
+						        		  }
+						        	  });
+									
+									circle1.setId("circle" + countObj + "-1");
+									circle1.setName("circle" + countObj);
+									circle1.setPosition(40,50);
+									group1.add(circle1.clone());
+									group1.add(polygon1.clone());
+									
+									group1.on('mouseenter', function(e) {
+										
+										positionX = this.getX()+40;
+										positionY = this.getY()+50;
+										
+									});
+									
+									group1.on('dragstart dragmove', function(e) {
+										
+										rectSelect.remove();
+										
+										dragAndDropGroup(this, e);
+										changePositionArrow(this);
+										
+									});
+									
+									group1.on('dragend', function(e) {
+										
+										group1.setDragBoundFunc(function(pos){ return rulesDragAndDropObj(pos, 80, 80) });
+										makeHistory();
+									});
+									
+									group1.on('dblclick', function(e) {
+										
+										openModal();
+										
+									});
+									
+								  polygonLayer.add(group1);
+								  
+					        	  stage.draw();
+								
+					        	  this.remove();
+						    	  layerTab1.add(polygon1Tab1Fake.clone());
+						    	  layerTab1.draw();
+						    	  
+						    	  makeHistory();
+						    	  
+								} catch(e) {
+									
+									document.body.style.cursor = 'default';
+									this.remove();
+							    	layerTab1.add(polygon1Tab1Fake.clone());
+							    	layerTab1.draw();
+									
+								}
+								
+							}
+					          
+					    });
+						
+					      
+					    polygon1Tab1Fake.on('mouseup', function() {
+					    	this.remove();
+					    	layerTab1.add(polygon1Tab1Fake.clone());
+					    	layerTab1.draw();
+					    });
+					      
+						//------------------ END GROUP 
+			    
+				    });
+				    //END for obj imagens
+				    
+			    
+			   });
+			   //END for divs
 			   
 		   }
 		  

@@ -33,7 +33,7 @@ public class BaseBean {
 	 * @return
 	 * @author Igor.Souza
 	 */
-	public void getBundleMessage(String msg){
+	public static void getBundleMessage(String msg){
 
 		FacesContext facesContext = FacesContext.getCurrentInstance();
 		String messageBundleName = facesContext.getApplication().getMessageBundle();

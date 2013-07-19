@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j">
+
+<f:loadBundle basename="MessagesResources_em_US" var="messages" />
+
+<head>
+
+<script>
+
+
+
+</script>
+
+</head>
+
+<body>
+
+
+			<h:outputText value="#{messages.label_path}" />
+			<br/>
+			<h:inputText id="browserPath" label="Path" value="#{canvasModalBean.pathBrowser}"
+				maxlength="255" style="width:395px;" />
+				
+				<span>&nbsp;&nbsp;</span>
+				
+			<a4j:commandButton type="submit" id="browserChangePathBt"
+				action="#{canvasModalBean.changePathBrowser}" value="ok" reRender="browserTable2" />
+
+			<br/><br/>
+			
+			<div id="DivBrowserTable1" style="width:580px; height:120px;  border:1px solid black; overflow-x: hidden;">
+			
+				<rich:dataTable id="browserTable1" value="#{canvasModalBean.listGrid}"
+					var="item" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+					enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
+					
+					<rich:columns value="#{canvasModalBean.keyAsListNameValue}" var="column" index="ind" 
+						style="border-bottom:0px;border-right:0px;" >
+						<f:facet name="header">
+							<h:outputText value="#{column}" />
+						</f:facet>
+						
+						<h:inputText value="#{item.nameValue[column]}" style="width:125px;" />
+						
+					</rich:columns>
+	
+				</rich:dataTable>
+			
+			</div>
+			
+			<br/>
+			
+			<div id="DivBrowserTable2" style="width:580px; height:140px;  border:1px solid black; overflow-x: hidden;">
+			
+				<rich:dataTable id="browserTable2" value="#{canvasModalBean.listFeature}" 
+					var="item" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+					enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
+					
+					<rich:columns value="#{canvasModalBean.keyAsListNameValue}" var="column" index="ind" rendered="#{not empty canvasModalBean.listFeature}" 
+						style="border-bottom:0px;border-right:0px;" >
+						<f:facet name="header">
+							<h:outputText value="#{column}" />
+						</f:facet>
+						
+						<h:inputText value="#{item.nameValue[column]}" style="width:125px;" />
+						
+					</rich:columns>
+	
+				</rich:dataTable>
+	
+			</div>
+	<br/>
+	
+	<a4j:commandButton action="#{canvasModalBean.confirmBrowser}" value="#{messages.button_ok}" onclick="#{rich:component('canvasModalPanel')}.hide();" />
+	<span>&nbsp;&nbsp;</span>
+	
+
+</body>
+</html>

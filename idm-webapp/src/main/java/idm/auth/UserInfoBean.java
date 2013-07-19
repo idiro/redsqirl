@@ -6,6 +6,7 @@ import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idiro.workflow.server.connect.interfaces.DataStore;
 import idiro.workflow.server.connect.interfaces.DataStoreArray;
 import idiro.workflow.server.interfaces.JobManager;
+import idm.BaseBean;
 
 import java.io.IOException;
 import java.rmi.registry.LocateRegistry;
@@ -28,7 +29,7 @@ import ch.ethz.ssh2.Connection;
  * 
  * @author Igor.Souza
  */
-public class UserInfoBean {
+public class UserInfoBean extends BaseBean {
 
 	private static Logger logger = Logger.getLogger(UserInfoBean.class);
 
@@ -43,9 +44,9 @@ public class UserInfoBean {
 	private static int port = 2001;
 
 	private static Registry registry;
-	
+
 	private static Connection conn;
-	
+
 	public UserInfoBean() {
 
 	}
@@ -105,7 +106,12 @@ public class UserInfoBean {
 
 			setConn(conn);
 
-			createRegistry(userName, password);
+			//error with rmi connection
+			if(!createRegistry(userName, password)){
+				getBundleMessage("error.rmi.connection");
+				cleanSession();
+				return "failure";
+			}
 
 
 			setMsnError(null);
@@ -113,8 +119,8 @@ public class UserInfoBean {
 
 		} catch (IOException e) {
 
-			logger.info(e.getMessage());
-
+			logger.error(e.getMessage());
+			cleanSession();
 			setMsnError("error");
 			return "failure";
 		}
@@ -130,7 +136,7 @@ public class UserInfoBean {
 	 * @return
 	 * @author Igor.Souza
 	 */
-	public static void createRegistry(String user,String password){
+	public static boolean createRegistry(String user,String password){
 
 		logger.info("createRegistry");
 
@@ -182,9 +188,11 @@ public class UserInfoBean {
 			sc.setAttribute("ozzie", ozzie);
 			sc.setAttribute("dsHDFS", dsHDFS);
 
+			return true;
 
 		}catch(Exception e){
 			logger.error("Fail to initialise registry, Exception: "+e.getMessage());
+			return false;
 		}
 
 	}
@@ -240,14 +248,32 @@ public class UserInfoBean {
 
 		th.kill(getConn());
 
+		cleanSession();
+
+		return "signout";
+	}
+
+	/** cleanSession
+	 * 
+	 * Method to clean all Session and Context
+	 * 
+	 * @return
+	 * @author Igor.Souza
+	 */
+	public void cleanSession(){
+
 		FacesContext fCtx = FacesContext.getCurrentInstance();
 		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
 		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
 		Map<String, HttpSession> sessionLoginMap = (Map<String, HttpSession>) sc.getAttribute("sessionLoginMap");
 
 		String userName = (String) session.getAttribute("username");
-		sessionLoginMap.remove(userName);
-		sc.removeAttribute("userName");
+		if(sessionLoginMap != null){
+			sessionLoginMap.remove(userName);
+		}
+		if(userName != null){
+			sc.removeAttribute("userName");
+		}
 		session.invalidate();
 
 		sc.removeAttribute("dfi");
@@ -256,7 +282,6 @@ public class UserInfoBean {
 		sc.removeAttribute("ozzie");
 		sc.removeAttribute("dsHDFS");
 
-		return "signout";
 	}
 
 
