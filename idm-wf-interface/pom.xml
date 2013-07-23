@@ -5,6 +5,9 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <idiro-base.version>0.1-SNAPSHOT</idiro-base.version>
+        <idiro-hadoop.version>0.1-SNAPSHOT</idiro-hadoop.version>
+        <idiro-tm.version>0.1-SNAPSHOT</idiro-tm.version>
     </properties>
     <modelVersion>4.0.0</modelVersion>
     <groupId>idiro</groupId>
@@ -86,6 +89,24 @@
     </build> 
 
     <dependencies>
+    	<dependency>
+            <groupId>idiro</groupId>
+            <artifactId>idiro-hadoop</artifactId>
+            <version>${idiro-hadoop.version}</version>
+            <scope>compile</scope>
+        </dependency>
+      <dependency>
+            <groupId>idiro</groupId>
+            <artifactId>idiro-tm</artifactId>
+            <version>${idiro-tm.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>idiro</groupId>
+            <artifactId>idiro-base</artifactId>
+            <version>${idiro-base.version}</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 </project>

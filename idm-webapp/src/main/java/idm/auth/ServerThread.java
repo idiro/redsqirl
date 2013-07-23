@@ -1,6 +1,7 @@
 package idm.auth;
 
 
+import idiro.workflow.server.WorkflowPrefManager;
 import idm.useful.UserPrefManager;
 
 import java.io.File;
@@ -113,8 +114,8 @@ public class ServerThread{
 			path.append(files[i] + ":");
 		}
 		String p = path.substring(0, path.length()-1);
-
-		String classpath = " -classpath " + p;
+		String packagePath = getPackageClasspath(WorkflowPrefManager.userPackageLibPath);
+		String classpath = " -classpath " + p + packagePath;
 
 		String codebase =  " -Djava.rmi.server.codebase="+getRMICodeBase();
 		String hostname = " -Djava.rmi.server.hostname="+getRMIHost();
@@ -125,7 +126,7 @@ public class ServerThread{
 
 		return command;
 	}
-
+	
 	/** getRMICodeBase
 	 * 
 	 * method to retrieve the path of the main class
@@ -213,5 +214,15 @@ public class ServerThread{
 	public void setSess(Session sess) {
 		this.sess = sess;
 	}
-
+	
+	private String getPackageClasspath(String path){
+		File f = new File(path);
+		String classPath = "";
+		if (f.exists()){
+			for (String file : f.list()){
+				classPath += ":"+path+"/"+file;
+			}
+		}
+		return classPath;
+	}
 }

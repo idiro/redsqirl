@@ -1,5 +1,6 @@
 package idiro.workflow.client;
 
+import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.ServerMain;
 
 import java.io.File;
@@ -66,8 +67,10 @@ public class ServerThread{
 
 	protected String getBaseCommand(String user,String password){
 		String command = null;
+		String packagePath = getPackageClasspath(WorkflowPrefManager.userPackageLibPath);
 		String classpath = " -classpath "+
-				System.getProperties().getProperty("java.class.path", null);
+				System.getProperties().getProperty("java.class.path", null)+
+				packagePath;
 		String codebase =  " -Djava.rmi.server.codebase="+getRMICodeBase();
 		String hostname = " -Djava.rmi.server.hostname="+getRMIHost();
 		logger.debug("RMI: "+codebase);
@@ -82,7 +85,7 @@ public class ServerThread{
 		}
 		return command;
 	}
-
+	
 	protected String getRMICodeBase(){
 		String ans = null;
 		try {
@@ -144,5 +147,15 @@ public class ServerThread{
 	public final boolean isRun() {
 		return run;
 	}
-
+	
+	private String getPackageClasspath(String path){
+		File f = new File(path);
+		String classPath = "";
+		if (f.exists()){
+			for (String file : f.list()){
+				classPath += ":"+path+"/"+file;
+			}
+		}
+		return classPath;
+	}
 }
