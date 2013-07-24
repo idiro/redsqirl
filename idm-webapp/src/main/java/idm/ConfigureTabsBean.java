@@ -2,6 +2,8 @@ package idm;
 
 import idiro.workflow.server.interfaces.DataFlow;
 
+import java.io.File;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -124,13 +126,13 @@ public class ConfigureTabsBean extends BaseBean{
 		setTabName("");
 	}
 
-	public List<Entry<String, List<String[]>>> getMenuWAList() {
+	public List<Entry<String, List<String[]>>> getMenuWAList() throws IOException {
 		List<Entry<String, List<String[]>>> list = new ArrayList<Entry<String, List<String[]>>>();
 		for (Entry<String, List<String[]>> e : getMenuWA().entrySet()){
 			getMenuWA().get(e.getKey());
 			list.add(e);
 		}
-		return list;        
+		return list;
 	}
 
 }

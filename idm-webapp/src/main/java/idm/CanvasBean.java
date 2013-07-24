@@ -16,7 +16,7 @@ public class CanvasBean extends BaseBean {
 
 	
 	private static Logger logger = Logger.getLogger(CanvasBean.class);
-	
+	private int countObj;
 	
 	
 	
@@ -74,5 +74,15 @@ public class CanvasBean extends BaseBean {
 		}
 		return helpList;
 	}
+
+	public int getCountObj() {
+		return countObj;
+	}
+
+	public void setCountObj(int countObj) {
+		this.countObj = countObj;
+	}
+	
+	
 	
 }

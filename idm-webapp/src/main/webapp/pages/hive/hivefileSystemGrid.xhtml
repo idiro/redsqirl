@@ -113,25 +113,33 @@
 				<rich:column sortBy="#{item.name}"
 					style="border-bottom:0px;border-right:0px;" rendered="#{(not empty hiveBean.listGrid) and (not item.file)}">
 					<f:facet name="header">
-						<h:outputText value="Name" />
+					<h:outputText value="Name" />
 					</f:facet>
 					<a4j:commandLink value="#{item.name}"
-						action="#{hiveBean.selectFile}" reRender="hivefs,hivepath">
-						<f:param name="nameFile" value="#{item.name}" />
+					action="#{hiveBean.selectFile}" reRender="hivefs,hivepath">
+					<f:param name="nameFile" value="#{item.name}" />
 					</a4j:commandLink>
-				</rich:column>
-				
+					</rich:column>
+					
 				<rich:column sortBy="#{item.name}"
 					style="border-bottom:0px;border-right:0px;" rendered="#{(not empty hiveBean.listGrid) and (item.file)}">
 					<f:facet name="header">
-						<h:outputText value="Name" />
+					<h:outputText value="Name" />
 					</f:facet>
 					<a4j:commandLink value="#{item.name}" 
+<<<<<<< Upstream, based on master
 						action="#{hiveBean.openFile}"
 						oncomplete="#{rich:component('hiveOpenFileModalPanel')}.show()">
 						<f:param name="nameFileEdit" value="#{item.name}" />
+=======
+					action="#{hiveBean.openFile}"
+					oncomplete="#{rich:component('hiveOpenFileModalPanel')}.show()">
+					<f:param name="nameFileEdit" value="#{item.name}" />
+>>>>>>> bfcb304 dynamic footer
 					</a4j:commandLink>
 				</rich:column>
+					
+				
 				
 				<rich:columns value="#{hiveBean.keyAsListNameValue}" var="column"
 					index="ind" id="hivecolumn#{ind}"
