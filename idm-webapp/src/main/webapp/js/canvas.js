@@ -40,6 +40,9 @@ var countObj;
 			
 			
 			var countObj = 0;
+			if(jQuery("#countObj").val() != 0){
+				countObj = jQuery("#countObj").val();
+			}
 			
 			//main stage
 			stage = new Kinetic.Stage({
@@ -1615,7 +1618,7 @@ var countObj;
 			   
 			   	//variable to control image of the object
 			    var imgTab1 = new Image();
-			    imgTab1.src = '../image/icons/button-cut.png';
+			    //imgTab1.src = '../image/icons/button-cut.png';
 		    	  
 			    //control of the rectangle to select objects on the screen
 				moving = false;
@@ -1686,27 +1689,32 @@ var countObj;
 	                    rectSelect.remove();
 	              });
 			    
-			      countNumberObj = polygonLayer.get('.group1').length;
-			      countNumberObj = jQuery("#countObj").val();
+			      //countNumberObj = polygonLayer.get('.group1').length;
+			      //countNumberObj = jQuery("#countObj").val();
 			      
 			    jQuery.each(polygonLayer.get('.group1'), function(index, value) {
 			    	var group = this;
 					
 			    	var circle1 = value.getChildren()[0];
 			    	var polygon1 = value.getChildren()[1];
+			    	var text = value.getChildren()[2];
+			    	
+			    	//countNumberObj++;
+			    	
+			    	//updateArrow(group, countNumberObj);
+			    	
+			    	//group.setId("group" + countNumberObj);
+			    	//circle1.setId("circle" + countNumberObj + "-1");
+					//circle1.setName("circle" + countNumberObj);
+			    	
+					//jQuery("#countObj").val(countNumberObj);
+			    	
+			    	//alert(text.getText());
 			    	
 			    	
-			    	countNumberObj++;
-			    	
-			    	updateArrow(group, countNumberObj);
-			    	
-			    	group.setId("group" + countNumberObj);
-			    	circle1.setId("circle" + countNumberObj + "-1");
-					circle1.setName("circle" + countNumberObj);
-			    	
-					jQuery("#countObj").val(countNumberObj);
-			    	
+			    	imgTab1.src = text.getText().substring(1);
 			    	polygon1.setFillPatternImage(imgTab1);
+			    	
 			    	group.setDragBoundFunc(function(pos){ return rulesDragAndDropObj(pos, 80, 80); });
 			    	
 			    	group.on('mouseenter', function(e) {
@@ -1774,6 +1782,12 @@ var countObj;
 				    		  
 				    		  layer.draw();
 				    		  polygonLayer.draw();
+				    		  
+				    		  makeHistory();
+				    		  
+				    		  //call Method for add this link
+					    	  //jQuery("[id$='addLinkBt']").click();
+				    		  
 				    		  
 				    	  }else{
 				    		  down = true;
@@ -1927,14 +1941,15 @@ var countObj;
 			    
 		   }
 		   
-		   function openModal() {
+		   function openModal(obj) {
+			   
+			   //alert(obj.getText());
+			   
+			   jQuery("#nameElement").val(obj.getText());
 			   
 			   jQuery("[id$='linkCanvasModalPanel']").click();
 			   
 		   }
-		   
-		   
-		   
 		   
 		   
 		   
@@ -2003,8 +2018,8 @@ var countObj;
 			    		  
 			    		  //alert(arrow.getName());
 			    		  
-			    		  	//remove the arrows that are outside the standard
-							deleteArrowOutsideStandard();
+			    		  //remove the arrows that are outside the standard
+			    		  deleteArrowOutsideStandard();
 			    		  
 			    		  circle.setFill('white');
 			    		  
@@ -2012,6 +2027,9 @@ var countObj;
 			    		  polygonLayer.draw();
 			    		  
 			    		  makeHistory();
+			    		  
+			    		  //call Method for add this link
+				    	  //jQuery("[id$='addLinkBt']").click();
 			    		  
 			    	  }else{
 			    		  down = true;
@@ -2033,7 +2051,9 @@ var countObj;
 					 
 			      });
 			   
-			   
+				  /*var srcImageText = new Kinetic.Text({
+					  text: ' '
+				  });*/
 		   
 			   var posInitX = 40;
 			   var poxInitY = 50;
@@ -2064,12 +2084,23 @@ var countObj;
 					    //for list of obj imagens
 				    	jQuery( "#"+nameDiv ).find("img").each(function(index) {
 							
-				    		
 						    //variable to control image of the object
-						    var imgTab = new Image();
+						    var imgTab = new Image({
+						    	width: 16,
+						        height: 16
+						    });
 						    imgTab.src = jQuery(this).attr("src");
-						      
 						    
+						    var srcImageText = new Kinetic.Text({
+								text: jQuery(this).attr("src")
+							});
+						    srcImageText.setStroke(null);
+						    
+						    var srcTypeText = new Kinetic.Text({
+								text: jQuery(this).next().text()
+							});
+						    srcTypeText.setStroke(null);
+						   
 						    
 						  	//------------------ START GROUP 
 							
@@ -2180,6 +2211,7 @@ var countObj;
 										
 										var mousePosStage = stage.getMousePosition();
 										
+										
 										countObj++;
 										var group1 = new Kinetic.Group({
 											x: mousePosStage.x -30,
@@ -2200,6 +2232,10 @@ var countObj;
 										poly.setPosition(40,50);
 										group1.add(circ);
 										group1.add(poly);
+										group1.add(srcImageText.clone());
+										group1.add(srcTypeText.clone());
+										
+										jQuery("#countObj").val(countObj);
 										
 										group1.on('mouseenter', function(e) {
 											
@@ -2225,7 +2261,7 @@ var countObj;
 										
 										group1.on('dblclick', function(e) {
 											
-											openModal();
+											openModal(this.getChildren()[3]);
 											
 										});
 										
@@ -2238,6 +2274,11 @@ var countObj;
 							    	  layerTab.draw();
 							    	  
 							    	  makeHistory();
+							    	  
+							    	  //call Method for add this Element
+							    	  //jQuery("[id$='addElementBt']").click();
+							    	  
+							    	  
 							    	  
 									} catch(e) {
 										
@@ -2264,7 +2305,7 @@ var countObj;
 						    layerTab.add(polygonTab);
 						    layerTab.add(polygonTabFake.clone());
 						    
-						    jQuery( "#"+nameDiv ).find("img").remove();
+						    //jQuery( "#"+nameDiv ).find("img").remove();
 						    
 					    });
 					    //END for obj imagens

@@ -125,15 +125,9 @@
 					<h:outputText value="Name" />
 					</f:facet>
 					<a4j:commandLink value="#{item.name}" 
-<<<<<<< Upstream, based on master
 						action="#{hiveBean.openFile}"
 						oncomplete="#{rich:component('hiveOpenFileModalPanel')}.show()">
 						<f:param name="nameFileEdit" value="#{item.name}" />
-=======
-					action="#{hiveBean.openFile}"
-					oncomplete="#{rich:component('hiveOpenFileModalPanel')}.show()">
-					<f:param name="nameFileEdit" value="#{item.name}" />
->>>>>>> bfcb304 dynamic footer
 					</a4j:commandLink>
 				</rich:column>
 					

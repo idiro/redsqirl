@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 import org.apache.log4j.Logger;
@@ -85,17 +86,20 @@ public class CanvasModal extends BaseBean {
 	@PostConstruct
 	public void openCanvasModal() {
 
-		/*try {
+		logger.info("--> " + getNameElement());
+
+		try {
 
 			DataFlowInterface dfi =  getworkFlowInterface();
-			
-			//dfi.addWorkflow("canvas1");
+
 			setNameWorkflow("canvas1");
-			
+
 			DataFlow df = dfi.getWorkflow(getNameWorkflow());
+
+			/*
 			
 			setNameElement("Source");
-			
+
 			String idElement = df.addElement(getNameElement());
 			DataFlowElement dfe = df.getElement(idElement);
 
@@ -104,15 +108,15 @@ public class CanvasModal extends BaseBean {
 				dfePage.getTitle();
 				dfePage.getLegend();
 				dfePage.getNbColumn();
-				
+
 				//on next button
 				dfePage.checkPage();
 
 				for (DFEInteraction dfeInteraction : dfePage.getInteractions()) {
-					
+
 					//before open
 					dfe.update(dfeInteraction);
-					
+
 					dfeInteraction.getColumn();
 					dfeInteraction.getPlaceInColumn();
 					dfeInteraction.getName();
@@ -122,7 +126,7 @@ public class CanvasModal extends BaseBean {
 					//update tree add new tree
 					//on click button if necessary
 					dfeInteraction.check();
-					
+
 					//List<Tree<String>> lis =  dfeInteraction.getTree().getFirstChild("help").getChildren("submenu");
 					//lis.get(0).getFirstChild("name").getFirstChild().getHead();
 
@@ -130,16 +134,16 @@ public class CanvasModal extends BaseBean {
 					//logger.info(dfeInteraction.getTree());
 
 				}
-			}
-			
+			}*/
+
 			//update the output
-			dfe.updateOut();
-			
+			//dfe.updateOut();
+
 		} catch (RemoteException e) {
 			logger.error(e.getMessage());
 		} catch (Exception e) {
 			logger.error(e.getMessage());
-		}*/
+		}
 
 		openTextEditor();
 
@@ -408,7 +412,80 @@ public class CanvasModal extends BaseBean {
 
 	}
 
+	/** addElement
+	 * 
+	 * Method for add Element on canvas. set the new idElement on the element
+	 * 
+	 * @return 
+	 * @author Igor.Souza
+	 */
+	public void addElement() {
 
+		try {
+
+			DataFlowInterface dfi = getworkFlowInterface();
+
+			DataFlow df = dfi.getWorkflow(getNameWorkflow());
+
+			String idElement = df.addElement(getNameElement());
+
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	/** addLink
+	 * 
+	 * Method for add Link for two elements
+	 * 
+	 * @return 
+	 * @author Igor.Souza
+	 */
+	public void addLink() {
+
+		try {
+
+			DataFlowInterface dfi = getworkFlowInterface();
+
+			DataFlow df = dfi.getWorkflow(getNameWorkflow());
+
+			df.addLink("", "wlwmwntOut", "", "elementIN");
+
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+	
+	/** removeLink
+	 * 
+	 * Method for remove Link for two elements
+	 * 
+	 * @return
+	 * @author Igor.Souza
+	 */
+	public void removeLink() {
+
+		try {
+
+			DataFlowInterface dfi = getworkFlowInterface();
+
+			DataFlow df = dfi.getWorkflow(getNameWorkflow());
+
+			df.removeLink("", "wlwmwntOut", "", "elementIN");
+
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
 
 
 	public List<SelectItem> getListItens() {
@@ -506,5 +583,5 @@ public class CanvasModal extends BaseBean {
 	public void setNameElement(String nameElement) {
 		this.nameElement = nameElement;
 	}
-	
+
 }

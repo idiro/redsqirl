@@ -114,13 +114,8 @@ public class ServerThread{
 			path.append(files[i] + ":");
 		}
 		String p = path.substring(0, path.length()-1);
-<<<<<<< Upstream, based on master
 		String packagePath = getPackageClasspath(WorkflowPrefManager.userPackageLibPath);
 		String classpath = " -classpath " + p + packagePath;
-=======
-
-		String classpath = " -classpath /home/igor/.idiroDM/lib/packages/idm-base-pig-0.1-SNAPSHOT.jar:" + p;
->>>>>>> bfcb304 dynamic footer
 
 		String codebase =  " -Djava.rmi.server.codebase="+getRMICodeBase();
 		String hostname = " -Djava.rmi.server.hostname="+getRMIHost();

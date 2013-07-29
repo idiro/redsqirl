@@ -415,7 +415,17 @@
 		<img src="../image/icons/waiting.gif" />
 	</div>
 
+
 	<h:inputHidden value="#{canvasBean.countObj}" id="countObj" />
+	<h:inputHidden value="#{canvasModalBean.nameElement}" id="nameElement" />
+
+	
+	<a4j:commandLink id="linkCanvasModalPanel" action="#{canvasModalBean.openCanvasModal}"
+		oncomplete="#{rich:component('canvasModalPanel')}.show()" style="display:none;" />
+	<a4j:commandLink id="addElementBt" action="#{canvasModalBean.addElement}" style="display:none;" />
+	<a4j:commandLink id="addLinkBt" action="#{canvasModalBean.addLink}" style="display:none;" />
+	<a4j:commandLink id="removeLinkBt" action="#{canvasModalBean.removeLink}" style="display:none;" />
+
 
 	<div id="invisible"></div>
 
@@ -499,10 +509,6 @@
 
 			<a4j:jsFunction name="signOut" action="#{userInfoBean.signOut}" />
 
-			<a4j:commandLink id="linkCanvasModalPanel"
-				action="#{canvasModalBean.openTextEditor}"
-				oncomplete="#{rich:component('canvasModalPanel')}.show()"
-				style="display:none;" />
 
 		</h:form>
 
@@ -604,7 +610,10 @@
 										<div id="#{tab.key}">
 											<p>
 												<ui:repeat value="#{tab.value}" var="action">
-													<img src="./#{action[1]}" class="footerIcon" />
+													<span id="spanImagensObj" style="display:none" >
+														<img src="./#{action[1]}" class="footerIcon" />
+														<span>#{action[0]}</span>
+													</span>
 												</ui:repeat>
 											</p>
 										</div>
