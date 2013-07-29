@@ -16,7 +16,7 @@ public class ItemList {
 	
 	private String name;
 	private boolean selected;
-	private boolean selectedDestination;
+	private String stringSelectedDestination;
 	private String typeTableInteraction;
 	private String idSelected;
 	private boolean isFile;
@@ -63,9 +63,9 @@ public class ItemList {
 		this.selected = selected;
 	}
 
-	public boolean isSelectedDestination() {
-		return selectedDestination;
-	}
+//	public String getSelectedDestination() {
+//		return selectedDestination;
+//	}
 	
 	public boolean isFile() {
 		return isFile;
@@ -75,8 +75,20 @@ public class ItemList {
 		this.isFile = isFile;
 	}
 
+	public void setStringSelectedDestination(String selectedDestination) {
+		this.stringSelectedDestination = selectedDestination;
+	}
+	
+	public String getStringSelectedDestination() {
+		return stringSelectedDestination;
+	}
+	
+	public boolean isSelectedDestination() {
+		return ("true").equals(stringSelectedDestination);
+	}
+
 	public void setSelectedDestination(boolean selectedDestination) {
-		this.selectedDestination = selectedDestination;
+		this.stringSelectedDestination = String.valueOf(selectedDestination);
 	}
 
 	public Map<String, String> getNameValue() {

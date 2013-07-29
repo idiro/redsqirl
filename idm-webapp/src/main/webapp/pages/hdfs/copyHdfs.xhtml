@@ -52,7 +52,7 @@ function dataTableSelectOneRadio(radio) {
 			</f:facet>
 			<h:selectBooleanCheckbox id="select" value="#{item.selected}"
 				style="display:none;" />
-			<h:selectOneRadio value="#{item.selectedDestination}"
+			<h:selectOneRadio value="#{item.stringSelectedDestination}"
 				onclick="dataTableSelectOneRadio(this);">
 				<f:selectItem itemValue="true" />
 			</h:selectOneRadio>

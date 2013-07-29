@@ -1,5 +1,9 @@
 package idm;
 
+import java.rmi.RemoteException;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
@@ -52,6 +56,11 @@ public class HdfsBean extends FileSystemBean {
 	@PreDestroy
 	public void closeCanvasScreen() {
 
+	}
+	
+	public void addFileAfter() throws RemoteException{
+		setNameValue(new HashMap<String, String>());
+		super.addFileAfter();
 	}
 
 }

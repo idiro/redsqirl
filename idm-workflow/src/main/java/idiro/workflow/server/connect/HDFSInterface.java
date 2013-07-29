@@ -5,6 +5,7 @@ import idiro.hadoop.checker.HdfsFileChecker;
 import idiro.tm.task.in.Preference;
 import idiro.workflow.server.connect.interfaces.DataStore;
 import idiro.workflow.server.enumeration.FeatureType;
+import idiro.workflow.utils.LanguageManager;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -337,7 +338,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 
 	@Override
 	public List<String> select(String delimiter, int maxToRead) throws RemoteException {
-		return select(getPath(),maxToRead);
+		return select(getPath(),delimiter, maxToRead);
 	}
 
 	@Override
@@ -658,28 +659,24 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 
 	@Override
 	public String canCreate() throws RemoteException{
-		// TODO Auto-generated method stub
-		return null;
+		return LanguageManager.getText("HdfsInterface.create_help");
 	}
 
 
 	@Override
 	public String canDelete() throws RemoteException{
-		// TODO Auto-generated method stub
-		return null;
+		return LanguageManager.getText("HdfsInterface.delete_help");
 	}
 
 
 	@Override
 	public String canMove() throws RemoteException{
-		// TODO Auto-generated method stub
-		return null;
+		return LanguageManager.getText("HdfsInterface.move_help");
 	}
 
 
 	@Override
 	public String canCopy() throws RemoteException{
-		// TODO Auto-generated method stub
-		return null;
+		return LanguageManager.getText("HdfsInterface.copy_help");
 	}
 }

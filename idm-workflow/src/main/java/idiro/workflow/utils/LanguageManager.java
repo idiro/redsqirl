@@ -8,10 +8,17 @@ public class LanguageManager {
 	public static Locale locale = Locale.ENGLISH;
 	
 	public static String getText(String key) {
-		ResourceBundle labels = 
-			ResourceBundle.getBundle("MessageResources",locale);
+		String text;
+		try{
+			ResourceBundle labels = 
+					ResourceBundle.getBundle("MessageResources",locale);
+			text = labels.getString(key);
+		}
+		catch(Exception e){
+			text = "??"+key+"??";
+		}
 	    
-		return labels.getString(key);
+		return text;
 	 }
 	 
 	 public static void changeLocale(Locale loc){

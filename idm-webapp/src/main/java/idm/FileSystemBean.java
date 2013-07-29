@@ -151,8 +151,8 @@ public class FileSystemBean extends BaseBean {
 	 */
 	public void deleteFile() throws RemoteException{
 
-		for (Iterator i = getListGrid().iterator(); i.hasNext();) {
-			ItemList item = (ItemList) i.next();
+		for (Iterator<ItemList> i = getListGrid().iterator(); i.hasNext();) {
+			ItemList item = i.next();
 
 			if(item.isSelected()){
 
@@ -254,11 +254,25 @@ public class FileSystemBean extends BaseBean {
 	 * @author Igor.Souza
 	 */
 	public void copyFileAfter() throws RemoteException{
+		
+		ItemList itemSelect = null;
+		for (Iterator<ItemList> i = getListGrid().iterator(); i.hasNext();) {
+			ItemList item = i.next();
 
-		String msg = getDataStore().copy("", "");
+			if(item.isSelectedDestination()){
+				itemSelect = item;
+				break;
+			}
+		}
 
-		getBundleMessage(msg);
+		for (Iterator<ItemList> i = getListGrid().iterator(); i.hasNext();) {
+			ItemList item = i.next();
 
+			if(item.isSelected()){
+				logger.info("copy "+getDataStore().getPath() + "/" + item.getName() + " to " + getDataStore().getPath() + "/" + itemSelect.getName());
+				getDataStore().copy(getDataStore().getPath() + "/" + item.getName(), getDataStore().getPath() + "/" + itemSelect.getName()+ "/" + item.getName());
+			}
+		}
 	}
 
 	/** addFileBefore
@@ -336,8 +350,8 @@ public class FileSystemBean extends BaseBean {
 	 */
 	public void editFileAfter() throws RemoteException{
 
-		for (Iterator iterator = nameValue.keySet().iterator(); iterator.hasNext();) {
-			String key = (String) iterator.next();
+		for (Iterator<String> iterator = nameValue.keySet().iterator(); iterator.hasNext();) {
+			String key = iterator.next();
 			getDataStore().changeProperty(getDataStore().getPath() + "/" + getName(), key, nameValue.get(key) );
 		}
 
@@ -368,7 +382,7 @@ public class FileSystemBean extends BaseBean {
 	public void moveFileAfter() throws RemoteException{
 
 		ItemList itemSelect = null;
-		for (Iterator i = getListGrid().iterator(); i.hasNext();) {
+		for (Iterator<ItemList> i = getListGrid().iterator(); i.hasNext();) {
 			ItemList item = (ItemList) i.next();
 
 			if(item.isSelectedDestination()){
@@ -377,7 +391,7 @@ public class FileSystemBean extends BaseBean {
 			}
 		}
 
-		for (Iterator i = getListGrid().iterator(); i.hasNext();) {
+		for (Iterator<ItemList> i = getListGrid().iterator(); i.hasNext();) {
 			ItemList item = (ItemList) i.next();
 
 			if(item.isSelected()){
