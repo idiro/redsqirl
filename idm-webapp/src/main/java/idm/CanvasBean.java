@@ -44,12 +44,15 @@ public class CanvasBean extends BaseBean {
 	@PostConstruct
 	public void openCanvas() {
 		
+		setCountObj(0);
+		
 		DataFlowInterface dfi;
 		try {
 			
 			dfi = getworkFlowInterface();
 			if(dfi != null && dfi.getWorkflow("canvas1") == null){
 				dfi.addWorkflow("canvas1");
+				logger.info("add new Workflow canvas1");
 			}
 			
 		} catch (RemoteException e) {

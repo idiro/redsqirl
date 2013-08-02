@@ -15,7 +15,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.faces.component.html.HtmlInputHidden;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 
 import org.apache.log4j.Logger;
@@ -42,6 +44,15 @@ public class CanvasModal extends BaseBean {
 	private String pathBrowser = "";
 	private String nameWorkflow;
 	private String nameElement;
+	private String groupID;
+	private Entry entry;
+	private DataFlowInterface dfi;
+	private DataFlow df;
+	private List<DFEPage> listPage;
+	private int listPosition;
+	private DFEPage page;
+	private String pageTitle;
+	private String pageLegend;
 
 
 	/** getKeyAsListNameValue
@@ -75,6 +86,27 @@ public class CanvasModal extends BaseBean {
 
 		return "close";
 	}
+	
+	@PostConstruct
+	public void start() {
+		
+		setNameWorkflow("canvas1");
+
+		try {
+			
+			if(getDfi() == null){
+				setDfi(getworkFlowInterface());
+			}
+			if(getDf() == null){
+				setDf(dfi.getWorkflow(getNameWorkflow()));
+			}
+			
+		} catch (RemoteException e) {
+			logger.error(e.getMessage());
+		}
+
+		
+	}
 
 	/** openTextEditor
 	 * 
@@ -83,25 +115,56 @@ public class CanvasModal extends BaseBean {
 	 * @return 
 	 * @author Igor.Souza
 	 */
-	@PostConstruct
+	//@PostConstruct
 	public void openCanvasModal() {
 
-		logger.info("--> " + getNameElement());
+		//setNameWorkflow("canvas1");
+
+
+		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+
+		String nameElement = params.get("paramNameElement");
+		setNameElement(nameElement);
+
+		logger.info("open element id " + getNameElement());
 
 		try {
 
-			DataFlowInterface dfi =  getworkFlowInterface();
+			//DataFlowInterface dfi =  getworkFlowInterface();
 
-			setNameWorkflow("canvas1");
+			//DataFlow df = dfi.getWorkflow(getNameWorkflow());
 
-			DataFlow df = dfi.getWorkflow(getNameWorkflow());
+			//setNameElement("Source");
+			//String idElement = df.addElement(getNameElement());
 
-			/*
+			DataFlowElement dfe = getDf().getElement(getNameElement());
 			
-			setNameElement("Source");
+			setListPage(dfe.getPageList());
+			
+			//initialise the position of list
+			setListPosition(0);
+			
+			//retrieves the correct page
+			setPage(getListPage().get(getListPosition()));
 
-			String idElement = df.addElement(getNameElement());
-			DataFlowElement dfe = df.getElement(idElement);
+			setPageTitle(getPage().getTitle());
+			
+			setPageLegend(getPage().getLegend());
+			
+			//logger.info(" -> " + getPage().getTitle() + " -- " + getPage().getLegend());
+			
+			for (DFEInteraction dfeInteraction : getPage().getInteractions()) {
+				
+				//dfe.update(dfeInteraction);
+				
+				dfeInteraction.getName();
+				dfeInteraction.getLegend();
+				dfeInteraction.getDisplay();
+				
+			}
+			
+			
+			/*
 
 			for (DFEPage dfePage : dfe.getPageList()) {
 
@@ -142,10 +205,11 @@ public class CanvasModal extends BaseBean {
 		} catch (RemoteException e) {
 			logger.error(e.getMessage());
 		} catch (Exception e) {
+			logger.error(e);
 			logger.error(e.getMessage());
 		}
 
-		openTextEditor();
+		//openTextEditor();
 
 	}
 
@@ -421,6 +485,16 @@ public class CanvasModal extends BaseBean {
 	 */
 	public void addElement() {
 
+		setNameWorkflow("canvas1");
+
+		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+
+		String nameElement = params.get("paramNameElement");
+		setNameElement(nameElement);
+
+		String paramGroupID = params.get("paramGroupID");
+		setGroupID(paramGroupID);
+
 		try {
 
 			DataFlowInterface dfi = getworkFlowInterface();
@@ -429,6 +503,12 @@ public class CanvasModal extends BaseBean {
 
 			String idElement = df.addElement(getNameElement());
 
+			setNameElement(idElement);
+
+			logger.info("add element id " + getNameElement());
+
+			setEntry(new Entry(getNameElement(), getGroupID()));
+
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
@@ -436,6 +516,18 @@ public class CanvasModal extends BaseBean {
 		}
 
 	}
+
+	/*public void updateValue(ActionEvent event){
+
+		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String nameElement = params.get("param1");
+
+		logger.info("-> " + nameElement);
+		setNameElement(nameElement);
+
+		addElement();
+
+	}*/
 
 	/** addLink
 	 * 
@@ -452,7 +544,13 @@ public class CanvasModal extends BaseBean {
 
 			DataFlow df = dfi.getWorkflow(getNameWorkflow());
 
-			df.addLink("", "wlwmwntOut", "", "elementIN");
+			/*DataFlowElement dfeObjA = df.getElement("idElementA");
+			DataFlowElement dfeObjB = df.getElement("idElementB");
+
+			dfeObjB.getInput();
+			dfeObjA.getDFEOutput();
+
+			df.addLink("", "wlwmwntOut", "", "elementIN");*/
 
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -461,7 +559,7 @@ public class CanvasModal extends BaseBean {
 		}
 
 	}
-	
+
 	/** removeLink
 	 * 
 	 * Method for remove Link for two elements
@@ -584,4 +682,76 @@ public class CanvasModal extends BaseBean {
 		this.nameElement = nameElement;
 	}
 
+	public String getGroupID() {
+		return groupID;
+	}
+
+	public void setGroupID(String groupID) {
+		this.groupID = groupID;
+	}
+
+	public Entry getEntry() {
+		return entry;
+	}
+
+	public void setEntry(Entry entry) {
+		this.entry = entry;
+	}
+
+	public DataFlowInterface getDfi() {
+		return dfi;
+	}
+
+	public void setDfi(DataFlowInterface dfi) {
+		this.dfi = dfi;
+	}
+
+	public DataFlow getDf() {
+		return df;
+	}
+
+	public void setDf(DataFlow df) {
+		this.df = df;
+	}
+
+	public List<DFEPage> getListPage() {
+		return listPage;
+	}
+
+	public void setListPage(List<DFEPage> listPage) {
+		this.listPage = listPage;
+	}
+
+	public int getListPosition() {
+		return listPosition;
+	}
+
+	public void setListPosition(int listPosition) {
+		this.listPosition = listPosition;
+	}
+
+	public DFEPage getPage() {
+		return page;
+	}
+
+	public void setPage(DFEPage page) {
+		this.page = page;
+	}
+
+	public String getPageTitle() {
+		return pageTitle;
+	}
+
+	public void setPageTitle(String pageTitle) {
+		this.pageTitle = pageTitle;
+	}
+
+	public String getPageLegend() {
+		return pageLegend;
+	}
+
+	public void setPageLegend(String pageLegend) {
+		this.pageLegend = pageLegend;
+	}
+	
 }

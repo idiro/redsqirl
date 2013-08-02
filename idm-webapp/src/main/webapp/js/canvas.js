@@ -1,6 +1,7 @@
 
 var stage;
 var layer;
+var polygonLayer;
 var background;
 
 var history = new Array();
@@ -38,11 +39,13 @@ var countObj;
 			});*/
 			
 			
-			
-			var countObj = 0;
-			if(jQuery("#countObj").val() != 0){
-				countObj = jQuery("#countObj").val();
+			var countObj;
+			if(jQuery("[id$='countObj']").val() != 0){
+				countObj = jQuery("[id$='countObj']").val();
+			}else{
+				countObj = 0;
 			}
+			
 			
 			//main stage
 			stage = new Kinetic.Stage({
@@ -1712,7 +1715,8 @@ var countObj;
 			    	//alert(text.getText());
 			    	
 			    	
-			    	imgTab1.src = text.getText().substring(1);
+			    	//alert(text.getText().substring(2));
+			    	imgTab1.src = './'+text.getText().substring(2);
 			    	polygon1.setFillPatternImage(imgTab1);
 			    	
 			    	group.setDragBoundFunc(function(pos){ return rulesDragAndDropObj(pos, 80, 80); });
@@ -1941,7 +1945,7 @@ var countObj;
 			    
 		   }
 		   
-		   function openModal(obj) {
+		   /*function openModal(obj) {
 			   
 			   //alert(obj.getText());
 			   
@@ -1949,7 +1953,7 @@ var countObj;
 			   
 			   jQuery("[id$='linkCanvasModalPanel']").click();
 			   
-		   }
+		   }*/
 		   
 		   
 		   
@@ -2051,10 +2055,6 @@ var countObj;
 					 
 			      });
 			   
-				  /*var srcImageText = new Kinetic.Text({
-					  text: ' '
-				  });*/
-		   
 			   var posInitX = 40;
 			   var poxInitY = 50;
 			   
@@ -2096,10 +2096,10 @@ var countObj;
 							});
 						    srcImageText.setStroke(null);
 						    
-						    var srcTypeText = new Kinetic.Text({
+						    var typeText = new Kinetic.Text({
 								text: jQuery(this).next().text()
 							});
-						    srcTypeText.setStroke(null);
+						    typeText.setStroke(null);
 						   
 						    
 						  	//------------------ START GROUP 
@@ -2233,7 +2233,7 @@ var countObj;
 										group1.add(circ);
 										group1.add(poly);
 										group1.add(srcImageText.clone());
-										group1.add(srcTypeText.clone());
+										group1.add(typeText.clone());
 										
 										jQuery("#countObj").val(countObj);
 										
@@ -2241,6 +2241,8 @@ var countObj;
 											
 											positionX = this.getX()+40;
 											positionY = this.getY()+50;
+											
+											//alert(this.getChildren()[3].getText());
 											
 										});
 										
@@ -2261,11 +2263,12 @@ var countObj;
 										
 										group1.on('dblclick', function(e) {
 											
-											openModal(this.getChildren()[3]);
+											openModal(this.getChildren()[3].getText());
 											
 										});
 										
 									  polygonLayer.add(group1);
+									  
 									  
 						        	  stage.draw();
 									
@@ -2277,7 +2280,7 @@ var countObj;
 							    	  
 							    	  //call Method for add this Element
 							    	  //jQuery("[id$='addElementBt']").click();
-							    	  
+							    	  addElementBt(typeText.getText(), "group" + countObj);
 							    	  
 							    	  
 									} catch(e) {
@@ -2286,7 +2289,13 @@ var countObj;
 										this.remove();
 								    	layerTab.add(polygonTabFake.clone());
 								    	layerTab.draw();
-										
+								    	
+								    	makeHistory();
+								    	  
+								    	//call Method for add this Element
+								    	//jQuery("[id$='addElementBt']").click();
+								    	addElementBt(typeText.getText(), "group" + countObj);
+								    	
 									}
 									
 								}
@@ -2318,6 +2327,22 @@ var countObj;
 			   });
 			   //END for divs
 			   
+			   
+		   }
+		   
+		   /**
+		   * 
+		   * Method to update the new id of element. call by a4j:jsFunction oncomplete
+		   * add the new Element and retrive the new id. 
+		   * 
+		   */
+		   function updateTypeObj(elementID, groupID) {
+			   
+			   var text = polygonLayer.get('#' + groupID)[0].getChildren()[3];
+			   text.setText(elementID);
+			   text.getLayer().draw();
+			  
+			   //alert(text.getText());
 			   
 		   }
 		  
