@@ -48,11 +48,14 @@ public class CanvasModal extends BaseBean {
 	private Entry entry;
 	private DataFlowInterface dfi;
 	private DataFlow df;
-	private List<DFEPage> listPage;
+	private List<DFEPage> listPage = new ArrayList<DFEPage>();
 	private int listPosition;
 	private DFEPage page;
 	private String pageTitle;
 	private String pageLegend;
+	private String lastPage = "N";
+	private String firstPage = "S";
+	private int listPageSize;
 
 
 	/** getKeyAsListNameValue
@@ -66,27 +69,80 @@ public class CanvasModal extends BaseBean {
 		return new ArrayList<String>(nameValue.keySet());
 	}
 
-	/** next
+	/** nextPage
 	 * 
 	 * Methods to control the sequence of screens
 	 * 
-	 * @return String - to Navigation
+	 * @return 
 	 * @author Igor.Souza
 	 */
-	public String next() {
+	public void nextPage() {
 
-		logger.info("next ");
-
-		return "next";
+		logger.info("nextPage ");
+		
+		setListPosition(getListPosition()+1);
+		
+		if(getListPageSize() -1 > getListPosition()){
+			setLastPage("N");
+		}else{
+			setLastPage("S");
+		}
+		
+		if(getListPosition() == 0){
+			setFirstPage("S");
+		}else{
+			setFirstPage("N");
+		}
+		
+	}
+	
+	/** previous
+	 * 
+	 * Methods to control the sequence of screens
+	 * 
+	 * @return
+	 * @author Igor.Souza
+	 */
+	public void previousPage() {
+		
+		logger.info("previousPage ");
+		
+		setListPosition(getListPosition()-1);
+		
+		if(getListPageSize() -1 > getListPosition()){
+			setLastPage("N");
+		}else{
+			setLastPage("S");
+		}
+		
+		if(getListPosition() == 0){
+			setFirstPage("S");
+		}else{
+			setFirstPage("N");
+		}
+		
 	}
 
-	public String close() {
+	/** close
+	 * 
+	 * Methods to control the sequence of screens
+	 * 
+	 * @return
+	 * @author Igor.Souza
+	 */
+	public void close() {
 
 		logger.info("close ");
 
-		return "close";
 	}
 	
+	/** start
+	 * 
+	 * Methods to start the control of sequence of screens
+	 * 
+	 * @return
+	 * @author Igor.Souza
+	 */
 	@PostConstruct
 	public void start() {
 		
@@ -140,13 +196,15 @@ public class CanvasModal extends BaseBean {
 			DataFlowElement dfe = getDf().getElement(getNameElement());
 			
 			setListPage(dfe.getPageList());
+
+			setListPageSize(getListPage().size());
 			
 			//initialise the position of list
 			setListPosition(0);
 			
 			//retrieves the correct page
 			setPage(getListPage().get(getListPosition()));
-
+			
 			setPageTitle(getPage().getTitle());
 			
 			setPageLegend(getPage().getLegend());
@@ -157,9 +215,9 @@ public class CanvasModal extends BaseBean {
 				
 				//dfe.update(dfeInteraction);
 				
-				dfeInteraction.getName();
-				dfeInteraction.getLegend();
-				dfeInteraction.getDisplay();
+				logger.info(dfeInteraction.getName() + " -- " + dfeInteraction.getLegend() + " -- " + dfeInteraction.getDisplay());
+				logger.info(dfeInteraction.getColumn() + " -- " + dfeInteraction.getPlaceInColumn());
+				
 				
 			}
 			
@@ -201,6 +259,17 @@ public class CanvasModal extends BaseBean {
 
 			//update the output
 			//dfe.updateOut();
+			
+			setFirstPage("S");
+			
+			logger.info("List size " + getListPage().size());
+			
+			if(getListPageSize() -1 > getListPosition()){
+				setLastPage("N");
+			}else{
+				setLastPage("S");
+			}
+			
 
 		} catch (RemoteException e) {
 			logger.error(e.getMessage());
@@ -211,6 +280,19 @@ public class CanvasModal extends BaseBean {
 
 		//openTextEditor();
 
+	}
+	
+	/** endDynamicForm
+	 * 
+	 * Methods to process the dynamic form
+	 * 
+	 * @return
+	 * @author Igor.Souza
+	 */
+	public void endDynamicForm() {
+		
+		logger.info("endDynamicForm ");
+		
 	}
 
 	/** openTextEditor
@@ -752,6 +834,30 @@ public class CanvasModal extends BaseBean {
 
 	public void setPageLegend(String pageLegend) {
 		this.pageLegend = pageLegend;
+	}
+
+	public String getLastPage() {
+		return lastPage;
+	}
+
+	public void setLastPage(String lastPage) {
+		this.lastPage = lastPage;
+	}
+
+	public String getFirstPage() {
+		return firstPage;
+	}
+
+	public void setFirstPage(String firstPage) {
+		this.firstPage = firstPage;
+	}
+
+	public int getListPageSize() {
+		return listPageSize;
+	}
+
+	public void setListPageSize(int listPageSize) {
+		this.listPageSize = listPageSize;
 	}
 	
 }

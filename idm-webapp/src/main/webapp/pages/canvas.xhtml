@@ -404,6 +404,8 @@
 			<h:inputHidden value="#{canvasBean.countObj}" id="countObj" />
 			<h:inputHidden value="#{canvasModalBean.nameElement}" id="nameElement" />
 			<h:inputHidden value="#{canvasModalBean.groupID}" id="groupID" />
+			<h:inputHidden value="#{canvasModalBean.listPageSize}" />
+			
 
 			<a4j:commandLink id="addLinkBt" action="#{canvasModalBean.addLink}" style="display:none;" />
 			<a4j:commandLink id="removeLinkBt" action="#{canvasModalBean.removeLink}" style="display:none;" />
@@ -413,7 +415,7 @@
 				<a4j:actionparam name="paramGroupID" assignTo="#{canvasModalBean.groupID}" />
 			</a4j:jsFunction>
 			
-			<a4j:jsFunction name="openModal" action="#{canvasModalBean.openCanvasModal}" oncomplete="#{rich:component('canvasModalPanel')}.show()" reRender="pageTitle, pageLegend" >
+			<a4j:jsFunction name="openModal" action="#{canvasModalBean.openCanvasModal}" oncomplete="#{rich:component('canvasModalPanel')}.show()" reRender="pageTitle, pageLegend, panelBtCanvasModal, panelDynamicForm" >
 				<a4j:actionparam name="paramNameElement" assignTo="#{canvasModalBean.nameElement}" />
 			</a4j:jsFunction>
 
@@ -506,24 +508,15 @@
 	<div id="shortMenu" class="divMenu">
 
 		<center>
-
-			<a onclick="jQuery('#addtabCanvas').click();"><img
-				src="../image/icons/button-new.png" alt="new" class="shortMenuIcon" /></a>
-			<a onclick="deleteSelected();"><img id="buttonDelete"
-				src="../image/icons/button-delete.png" alt="open"
-				class="shortMenuIcon" /></a> <img src="../image/icons/button-open.png"
-				alt="open" class="shortMenuIcon" /> <img
-				src="../image/icons/button-save.png" alt="save"
-				class="shortMenuIcon" /> <img
-				src="../image/icons/button-save-as.png" alt="saveas"
-				class="shortMenuIcon" /> <img
-				src="../image/icons/button-save-all.png" alt="saveall"
-				class="shortMenuIcon" /> <a onclick="undoHistory();"><img
-				src="../image/icons/button-undo.png" alt="undo"
-				class="shortMenuIcon" /></a> <a onclick="redoHistory();"><img
-				src="../image/icons/button-redo.png" alt="redo"
-				class="shortMenuIcon" /></a> <img src="../image/icons/button-cut.png"
-				alt="cut" class="shortMenuIcon" />
+			<a onclick="jQuery('#addtabCanvas').click();"><img src="../image/icons/button-new.png" alt="new" class="shortMenuIcon" /></a>
+			<a onclick="deleteSelected();"><img id="buttonDelete" src="../image/icons/button-delete.png" alt="open" class="shortMenuIcon" /></a>
+			<img src="../image/icons/button-open.png" alt="open" class="shortMenuIcon" />
+			<img src="../image/icons/button-save.png" alt="save" class="shortMenuIcon" />
+			<img src="../image/icons/button-save-as.png" alt="saveas" class="shortMenuIcon" />
+			<img src="../image/icons/button-save-all.png" alt="saveall" class="shortMenuIcon" />
+			<a onclick="undoHistory();"><img src="../image/icons/button-undo.png" alt="undo" class="shortMenuIcon" /></a>
+			<a onclick="redoHistory();"><img src="../image/icons/button-redo.png" alt="redo" class="shortMenuIcon" /></a>
+			<img src="../image/icons/button-cut.png" alt="cut" class="shortMenuIcon" />
 		</center>
 
 		<rich:spacer height="5" />
