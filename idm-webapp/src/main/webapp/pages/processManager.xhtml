@@ -17,12 +17,13 @@
 </head>
 
 <body>
+	<a4j:keepAlive beanName = "processManagerBean"/>
 	<div id="processManager" 
 		style="min-width: 400px; overflow: hidden; min-height: 400px;">
 		<h:form>
 			<a href="#{processManagerBean.oozieUrl}" target="_blank">#{messages.label_oozie_console}</a>
-			<a4j:commandButton reRender="processManagerTable" value="Refresh"/>
-			<rich:extendedDataTable id="processManagerTable" value="#{processManagerBean.processesGrid}"
+			<a4j:commandButton action="#{processManagerBean.updateProcessesGrid}" reRender="processManagerTable" value="Refresh"/>
+			<rich:dataTable id="processManagerTable" value="#{processManagerBean.processesGrid}"
 				var="item" width="100%" style="border-bottom:0px;border-right:0px;"
 				onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 				enableContextMenu="false" selectionMode="none"
@@ -73,17 +74,17 @@
 					<a4j:commandLink action="#{processManagerBean.resumeProcess}"
 						reRender="processManagerTable"
 						rendered="#{item[3] == 'SUSPENDED'}">
-						<img src="../image/icons/li_msg_ok.gif" />
+						<h:graphicImage value="../image/icons/li_msg_ok.gif" />
 						<f:param name="id" value="#{item[0]}" />
 					</a4j:commandLink>
 					<a4j:commandLink action="#{processManagerBean.killProcess}"
 						reRender="processManagerTable"
 						rendered="#{item[3] == 'RUNNING' || item[3] == 'SUSPENDED'}">
-						<img src="../image/icons/buttonCloseWindow.gif" />
+						<h:graphicImage value="../image/icons/buttonCloseWindow.gif" />
 						<f:param name="id" value="#{item[0]}" />
 					</a4j:commandLink>
 				</rich:column>
-			</rich:extendedDataTable>
+			</rich:dataTable>
 		</h:form>
 	</div>
 </body>

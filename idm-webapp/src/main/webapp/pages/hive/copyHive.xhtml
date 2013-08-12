@@ -21,23 +21,23 @@ function dataTableSelectOneRadio(radio) {
 </script>
 
 	<h:outputText value="#{messages.label_path}" />
-	<h:inputText id="path" label="Path" value="#{hiveBean.path}"
+	<h:inputText id="pathCopy" label="Path" value="#{hiveBean.path}"
 		maxlength="255" style="width:395px;" />
 	<a4j:commandButton type="submit" id="changePathBt"
-		action="#{hiveBean.changePath}" value="ok" reRender="hivefs" />
+		action="#{hiveBean.changePath}" value="ok" reRender="hivefsCopy" />
 
 	<br />
 
 
 	<a4j:commandLink action="#{hiveBean.goPrevious}"
-		reRender="path,hivefs">
+		reRender="pathCopy,hivefsCopy">
 		<img id="btAdd" src="../image/icons/button-undo.png" />
 	</a4j:commandLink>
-	<a4j:commandLink action="#{hiveBean.goNext}" reRender="path,hivefs">
+	<a4j:commandLink action="#{hiveBean.goNext}" reRender="pathCopy,hivefsCopy">
 		<img id="btAdd" src="../image/icons/button-redo.png" />
 	</a4j:commandLink>
 
-	<rich:dataTable id="hivefs" value="#{hiveBean.listGrid}" var="item"
+	<rich:dataTable id="hivefsCopy" value="#{hiveBean.listGrid}" var="item"
 		width="100%" style="border:none;"
 		onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 		onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
@@ -52,7 +52,7 @@ function dataTableSelectOneRadio(radio) {
 			</f:facet>
 			<h:selectBooleanCheckbox id="select" value="#{item.selected}"
 				style="display:none;" />
-			<h:selectOneRadio value="#{item.selectedDestination}"
+			<h:selectOneRadio value="#{item.stringSelectedDestination}"
 				onclick="dataTableSelectOneRadio(this);">
 				<f:selectItem itemValue="true" />
 			</h:selectOneRadio>
@@ -64,7 +64,7 @@ function dataTableSelectOneRadio(radio) {
 				<h:outputText value="Name" />
 			</f:facet>
 			<a4j:commandLink value="#{item.name}"
-				action="#{hiveBean.selectFile}" reRender="path,hivefs">
+				action="#{hiveBean.selectFile}" reRender="pathCopy,hivefsCopy">
 				<f:param name="nameFile" value="#{item.name}" />
 			</a4j:commandLink>
 		</rich:column>
@@ -83,6 +83,6 @@ function dataTableSelectOneRadio(radio) {
 	<br />
 
 	<a4j:commandButton action="#{hiveBean.copyFileAfter}" value="ok"
-		onclick="#{rich:component('hivecopyModalPanel')}.hide()" />
+		reRender="hivefs" onclick="#{rich:component('hivecopyModalPanel')}.hide()" />
 
 </h:panelGrid>

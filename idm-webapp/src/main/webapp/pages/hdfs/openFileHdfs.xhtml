@@ -10,8 +10,7 @@
 	
 	<h:outputText value="#{hdfsBean.fileContent}" escape="false"/>
 	<br />
-
 	
-	<a4j:commandButton value="Ok" onclick="#{rich:component('hdfsOpenFileModalPanel')}.hide();" />
+	<h:commandButton value="Ok" type="button" onclick="#{rich:component('hdfsOpenFileModalPanel')}.hide();" />
 
 </h:panelGrid>

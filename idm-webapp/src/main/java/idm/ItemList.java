@@ -1,5 +1,6 @@
 package idm;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,14 +13,13 @@ import java.util.Map;
  * 
  * @author Igor.Souza
  */
-public class ItemList {
+public class ItemList implements Serializable{
 	
 	private String name;
 	private boolean selected;
 	private String stringSelectedDestination;
 	private String typeTableInteraction;
 	private String idSelected;
-	private boolean isFile;
 	
 	private Map<String, String> nameValue = new HashMap<String, String>();
 	private Map<String, String> nameValueEdit = new HashMap<String, String>();
@@ -67,14 +67,6 @@ public class ItemList {
 //		return selectedDestination;
 //	}
 	
-	public boolean isFile() {
-		return isFile;
-	}
-
-	public void setFile(boolean isFile) {
-		this.isFile = isFile;
-	}
-
 	public void setStringSelectedDestination(String selectedDestination) {
 		this.stringSelectedDestination = selectedDestination;
 	}

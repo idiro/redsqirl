@@ -24,6 +24,7 @@ public class HiveBean extends FileSystemBean {
 	 */
 	@PostConstruct
 	public void openCanvasScreen() {
+		logger.info("HiveOpenCanvasScreen");
 
 		try {
 

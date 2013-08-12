@@ -1,12 +1,12 @@
 package idm;
 
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
-import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEPage;
 import idiro.workflow.server.interfaces.DataFlow;
 import idiro.workflow.server.interfaces.DataFlowElement;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,9 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
-import javax.faces.component.html.HtmlInputHidden;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 
 import org.apache.log4j.Logger;
@@ -28,7 +26,7 @@ import org.apache.log4j.Logger;
  * 
  * @author Igor.Souza
  */
-public class CanvasModal extends BaseBean {
+public class CanvasModal extends BaseBean implements Serializable{
 
 	private static Logger logger = Logger.getLogger(CanvasModal.class);
 
@@ -176,7 +174,6 @@ public class CanvasModal extends BaseBean {
 
 		//setNameWorkflow("canvas1");
 
-
 		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 
 		String nameElement = params.get("paramNameElement");
@@ -277,7 +274,6 @@ public class CanvasModal extends BaseBean {
 			logger.error(e);
 			logger.error(e.getMessage());
 		}
-
 		//openTextEditor();
 
 	}
@@ -566,7 +562,6 @@ public class CanvasModal extends BaseBean {
 	 * @author Igor.Souza
 	 */
 	public void addElement() {
-
 		setNameWorkflow("canvas1");
 
 		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();

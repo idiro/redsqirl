@@ -4,6 +4,7 @@ package idm;
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idiro.workflow.server.interfaces.DataFlow;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +13,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 
-public class CanvasBean extends BaseBean {
+public class CanvasBean extends BaseBean implements Serializable{
 
 	
 	private static Logger logger = Logger.getLogger(CanvasBean.class);
