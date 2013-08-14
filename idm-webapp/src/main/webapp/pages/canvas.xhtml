@@ -8,7 +8,7 @@
 	xmlns:rich="http://richfaces.org/rich"
 	xmlns:a4j="http://richfaces.org/a4j">
 
-<f:loadBundle basename="MessagesResources_em_US" var="messages" />
+<a4j:loadBundle basename="MessagesResources_em_US" var="messages" />
 
 <head>
 <link rel="stylesheet" type="text/css" href='#{facesContext.externalContext.requestContextPath}/css/jquery-ui.css' />
@@ -384,7 +384,9 @@
 </head>
 <body id="body">
 
-
+	<a4j:keepAlive beanName = "canvasBean"/>
+	<a4j:keepAlive beanName = "canvasModalBean"/>
+	
 	<a4j:status
 		onstart="jQuery.blockUI({ message: jQuery('#domMessage') });"
 		onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
@@ -393,7 +395,6 @@
 	<div id="domMessage" style="display: none;">
 		<img src="../image/icons/waiting.gif" />
 	</div>
-
 
 	<div id="invisible"></div>
 
@@ -410,15 +411,18 @@
 			<a4j:commandLink id="addLinkBt" action="#{canvasModalBean.addLink}" style="display:none;" />
 			<a4j:commandLink id="removeLinkBt" action="#{canvasModalBean.removeLink}" style="display:none;" />
 
+			<a4j:region>
 			<a4j:jsFunction name="addElementBt" action="#{canvasModalBean.addElement}" data="#{canvasModalBean.entry}" oncomplete="updateTypeObj(data.key, data.value);" >
 				<a4j:actionparam name="paramNameElement" assignTo="#{canvasModalBean.nameElement}" />
 				<a4j:actionparam name="paramGroupID" assignTo="#{canvasModalBean.groupID}" />
 			</a4j:jsFunction>
+			</a4j:region>
 			
+			<a4j:region>
 			<a4j:jsFunction name="openModal" action="#{canvasModalBean.openCanvasModal}" oncomplete="#{rich:component('canvasModalPanel')}.show()" reRender="pageTitle, pageLegend, panelBtCanvasModal, panelDynamicForm" >
 				<a4j:actionparam name="paramNameElement" assignTo="#{canvasModalBean.nameElement}" />
 			</a4j:jsFunction>
-
+			</a4j:region>
 
 			<rich:toolBar>
 
@@ -562,7 +566,7 @@
 
 								<div id="tabsFooter">
 									<ul>
-										<!-- <li><a href="#tabFooter1">Tab 1</a></li> -->
+										<li><a href="#tabFooter1">Tab 1</a></li>
 										
 										<ui:repeat value="#{configureTabsBean.tabs}" var="tab" varStatus="status">
 											<li><a href="##{tab}">#{tab}</a></li>
@@ -578,11 +582,11 @@
 
 									</span>
 									
-									<!-- <div id="tabFooter1">
+									<div id="tabFooter1">
 
 										<div id="canvasTabFooter1"></div>
 
-									</div> -->
+									</div>
 									
 									<ui:repeat value="#{configureTabsBean.menuWAList}" var="tab">
 										<div id="#{tab.key}">
@@ -641,18 +645,28 @@
 				</span>
 
 				<div id="tabs-1">
-					<ui:include src="/pages/help.xhtml" />
+					<a4j:region>
+						<h:panelGroup>
+							<ui:include src="/pages/help.xhtml" />
+						</h:panelGroup>
+					</a4j:region>
 				</div>
 				<div id="tabs-2">
-					<!-- <ui:include src="/pages/processManager.xhtml" /> -->
+					<a4j:region>
+						<h:panelGroup>
+							<ui:include src="/pages/processManager.xhtml" />
+						</h:panelGroup>
+					</a4j:region>
 				</div>
 				<div id="tabs-3">
 					<p>bbbb</p>
 				</div>
 				<div id="tabs-4">
-
-					<!-- <ui:include src="/pages/hive/hivefileSystemGrid.xhtml" /> -->
-
+					<a4j:region>
+						<h:panelGroup>
+							<ui:include src="/pages/hive/hivefileSystemGrid.xhtml" />
+						</h:panelGroup>
+					</a4j:region>
 				</div>
 				<div id="tabs-5">
 					<p>bbbb</p>
@@ -686,9 +700,11 @@
 					<p>zzz</p>
 				</div>
 				<div id="tabs-7">
-					
-					<!-- <ui:include src="/pages/hdfs/hdfsfileSystemGrid.xhtml" /> -->
-					
+					<a4j:region>
+						<h:panelGroup>
+							<ui:include src="/pages/hdfs/hdfsfileSystemGrid.xhtml" />
+						</h:panelGroup>
+					</a4j:region>
 				</div>
 				<div id="tabs-8">
 
@@ -725,53 +741,59 @@
 		</div>
 	</div>
 
-
-
-	<rich:modalPanel id="canvasModalPanel" width="600" height="400" style="overflow:auto;" resizeable="false">
-
-		<f:facet name="header"><h:outputText value="#{canvasModalBean.pageTitle}" id="pageTitle" /></f:facet>
-		<f:facet name="controls">
-			<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer" 
-				onclick="#{rich:component('canvasModalPanel')}.hide()" />
-		</f:facet>
-
-		<h:form id="form1">
-			<ui:include src="/pages/canvasModal.xhtml" />
-		</h:form>
-
-	</rich:modalPanel>
-
-	<rich:modalPanel id="modalNewSsh" width="600" height="400" style="overflow:auto;" resizeable="false">
-
-		<f:facet name="header">Configuration</f:facet>
-		<f:facet name="controls">
-			<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer"
-				onclick="#{rich:component('modalNewSsh')}.hide()" />
-		</f:facet>
-
-		<h:form id="form6">
-			<h:panelGrid>
-				<a4j:include viewId="/pages/newSsh.xhtml" ajaxRendered="true" />
-			</h:panelGrid>
-		</h:form>
-
-	</rich:modalPanel>
+	<a4j:region>
+		<rich:modalPanel id="canvasModalPanel" width="600" height="400" style="overflow:auto;" resizeable="false">
 	
-	<rich:modalPanel id="modalConfigureFooterTabs" width="600" height="400" style="overflow:auto;" resizeable="false">
-
-		<f:facet name="header">Configuration</f:facet>
-		<f:facet name="controls">
-			<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer"
-				onclick="#{rich:component('modalConfigureFooterTabs')}.hide()" />
-		</f:facet>
-
-		<h:form id="formConfigureFooterTabs">
-			<h:panelGrid>
-				<a4j:include viewId="/pages/configureFooterTabs.xhtml" ajaxRendered="false" />
-			</h:panelGrid>
-		</h:form>
-
-	</rich:modalPanel>
+			<f:facet name="header"><h:outputText value="#{canvasModalBean.pageTitle}" id="pageTitle" /></f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer" 
+					onclick="#{rich:component('canvasModalPanel')}.hide()" />
+			</f:facet>
+	
+			<h:form id="form1">
+				<h:panelGroup>
+					<a4j:include viewId="/pages/canvasModal.xhtml" ajaxRendered="false"/>
+				</h:panelGroup>
+			</h:form>
+	
+		</rich:modalPanel>
+	</a4j:region>
+	
+	<a4j:region>
+		<rich:modalPanel id="modalNewSsh" width="600" height="400" style="overflow:auto;" resizeable="false">
+	
+			<f:facet name="header">Configuration</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer"
+					onclick="#{rich:component('modalNewSsh')}.hide()" />
+			</f:facet>
+	
+			<h:form id="form6">
+				<h:panelGroup>
+					<a4j:include viewId="/pages/newSsh.xhtml" ajaxRendered="false" />
+				</h:panelGroup>
+			</h:form>
+	
+		</rich:modalPanel>
+	</a4j:region>
+	
+	<a4j:region renderRegionOnly="true">
+		<rich:modalPanel id="modalConfigureFooterTabs" width="600" height="400" style="overflow:auto;" resizeable="false">
+	
+			<f:facet name="header">Configuration</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer"
+					onclick="#{rich:component('modalConfigureFooterTabs')}.hide()" />
+			</f:facet>
+	
+			<h:form id="formConfigureFooterTabs">
+				<h:panelGroup>
+					<a4j:include viewId="/pages/configureFooterTabs.xhtml" ajaxRendered="false" />
+				</h:panelGroup>
+			</h:form>
+	
+		</rich:modalPanel>
+	</a4j:region>
 
 </body>
 </html>

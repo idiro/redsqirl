@@ -17,9 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
-import javax.faces.component.html.HtmlInputHidden;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 
 import org.ajax4jsf.model.KeepAlive;
@@ -185,7 +183,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 		//setNameWorkflow("canvas1");
 
-
 		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 
 		String nameElement = params.get("paramNameElement");
@@ -307,7 +304,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 			logger.error(e);
 			logger.error(e.getMessage());
 		}
-
 		//openTextEditor();
 
 	}
@@ -596,7 +592,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 */
 	public void addElement() {
-
 		setNameWorkflow("canvas1");
 
 		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();

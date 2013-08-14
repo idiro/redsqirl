@@ -8,7 +8,7 @@ import java.io.Serializable;
  * 
  * @author Igor.Souza
  */
-public class Entry implements Serializable {
+public class Entry implements Serializable{
 	
     private String value;
     private String key;

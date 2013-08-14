@@ -29,7 +29,7 @@ public class HdfsBean extends FileSystemBean {
 	 */
 	@PostConstruct
 	public void openCanvasScreen() {
-
+		logger.info("HdfsOpenCanvasScreen");
 		try {
 
 			setDataStore(getHDFS());

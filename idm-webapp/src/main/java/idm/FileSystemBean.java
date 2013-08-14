@@ -4,6 +4,7 @@ import idiro.workflow.server.connect.interfaces.DataStore;
 import idiro.workflow.server.connect.interfaces.DataStore.ParamProperty;
 import idm.useful.MessageUseful;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,7 +19,7 @@ import javax.faces.context.FacesContext;
 
 import org.apache.log4j.Logger;
 
-public class FileSystemBean extends BaseBean {
+public class FileSystemBean extends BaseBean implements Serializable{
 
 	private static Logger logger = Logger.getLogger(FileSystemBean.class);
 
@@ -29,6 +30,7 @@ public class FileSystemBean extends BaseBean {
 	private List<String> nameCreateFields = new ArrayList<String>();
 	private ItemList item;
 	private String fileContent;
+	private boolean file;
 
 	private Map<String, String> nameValue = new HashMap<String, String>();
 	private Map<String, String> nameHelp = new HashMap<String, String>();
@@ -107,10 +109,6 @@ public class FileSystemBean extends BaseBean {
 			itemList.setNameValueEdit(nve);
 			itemList.setNameIsConst(nc);
 			itemList.setValueHasLineBreak(vlb);
-			
-			hInt.goTo(generatePath(hInt.getPath(), name));
-			itemList.setFile(hInt.getChildrenProperties().isEmpty());
-			hInt.goPrevious();
 			
 			setNameValue(nv);
 			itemList.setSelected(false);
@@ -224,7 +222,7 @@ public class FileSystemBean extends BaseBean {
 	 * @author Igor.Souza
 	 */
 	public void openFile() throws RemoteException{
-		String name = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("nameFileEdit");
+		String name = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("nameFile");
 		String path = generatePath(getPath(), name);
 		getDataStore().goTo(path);
 		List<String> contents = getDataStore().select(" | ", 10);
@@ -234,7 +232,21 @@ public class FileSystemBean extends BaseBean {
 		}
 		getDataStore().goPrevious();
 	}
-
+	
+	/** verifyIfIsFile
+	 * 
+	 * Method to verify if the selected path is a file or a directory
+	 * 
+	 * @return 
+	 * @author Igor.Souza
+	 */
+	public void verifyIfIsFile() throws RemoteException{
+		String name = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("nameFile");
+		getDataStore().goTo(generatePath(getDataStore().getPath(), name));
+		file = getDataStore().getChildrenProperties().isEmpty();
+		getDataStore().goPrevious();
+	}
+	
 	/** copyFileBefore
 	 * 
 	 * Method to execute before opening the screen to copy a file
@@ -254,7 +266,7 @@ public class FileSystemBean extends BaseBean {
 	 * @author Igor.Souza
 	 */
 	public void copyFileAfter() throws RemoteException{
-		
+		logger.info("copy file after");
 		ItemList itemSelect = null;
 		for (Iterator<ItemList> i = getListGrid().iterator(); i.hasNext();) {
 			ItemList item = i.next();
@@ -273,6 +285,7 @@ public class FileSystemBean extends BaseBean {
 				getDataStore().copy(getDataStore().getPath() + "/" + item.getName(), getDataStore().getPath() + "/" + itemSelect.getName()+ "/" + item.getName());
 			}
 		}
+		mountTable(getDataStore());
 	}
 
 	/** addFileBefore
@@ -302,6 +315,7 @@ public class FileSystemBean extends BaseBean {
 			}
 		}
 		getDataStore().create(newDirectory, properties);
+		mountTable(getDataStore());
 	}
 
 	/** editFileBefore
@@ -399,7 +413,7 @@ public class FileSystemBean extends BaseBean {
 				getDataStore().move(getDataStore().getPath() + "/" + item.getName(), getDataStore().getPath() + "/" + itemSelect.getName()+ "/" + item.getName());
 			}
 		}
-
+		mountTable(getDataStore());
 	}
 
 	/** goPrevious
@@ -532,6 +546,14 @@ public class FileSystemBean extends BaseBean {
 	
 	public void setFileContent(String content){
 		fileContent = content;
+	}
+	
+	public boolean isFile(){
+		return file;
+	}
+	
+	public void setFile(boolean file){
+		this.file = file;
 	}
 	
 	private String generatePath(String path, String name){

@@ -19,17 +19,33 @@
     function openMoveHdfs(){
   	  jQuery("[id$='hdfslinkMoveModalPanel']").click();
     }
-	
+    
+    function selectFile(isFile, nameFile){
+    	if (isFile == "true"){
+    		openFile(nameFile);
+    	}
+    	else{
+    		updateTable(nameFile);
+    	}
+    }
 </script>
 
 </head>
 
 <body>
 
-
+	<a4j:keepAlive beanName = "hdfsBean"/>
 	<div id="hdfsFileSystem"
 		style="min-width: 400px; overflow: hidden; min-height: 400px;">
 		<h:form>
+		
+			<a4j:jsFunction name="openFile" action="#{hdfsBean.openFile}" oncomplete="#{rich:component('hdfsOpenFileModalPanel')}.show();" >
+				<a4j:actionparam name="nameFile"/>
+			</a4j:jsFunction>
+			
+			<a4j:jsFunction name="updateTable" action="#{hdfsBean.selectFile}" reRender="hdfsfs,hdfspath">
+				<a4j:actionparam name="nameFile"/>
+			</a4j:jsFunction>
 
 			<a4j:commandLink id="hdfslinkCopyModalPanel"
 				action="#{hdfsBean.copyFileBefore}"
@@ -54,26 +70,24 @@
 
 			<a4j:commandLink action="#{hdfsBean.addFileBefore}"
 				oncomplete="#{rich:component('hdfsaddModalPanel')}.show()">
-				<img id="hdfsbtAdd" src="../image/icons/button-plus.gif" />
+				<h:graphicImage id="hdfsbtAdd" value="../image/icons/button-plus.gif" />
 			</a4j:commandLink>
 
 			<a4j:commandLink action="#{hdfsBean.deleteFile}" reRender="hdfsfs"
 				onclick="if(!confirm('Are you sure you want to delete the selected files?')){return false;}">
-				<img id="hdfsbtDelete" src="../image/icons/button-delete.png" />
+				<h:graphicImage id="hdfsbtDelete" value="../image/icons/button-delete.png" />
 			</a4j:commandLink>
 
-			<a href="#" onclick="openCopyHdfs();"><h:outputText
-					value="Copy to..." /></a>
-			<a href="#" onclick="openMoveHdfs();"><h:outputText
-					value="Move to..." /></a>
+			<h:commandLink value="Copy to..." onclick="openCopyHdfs();"/>
+			<h:commandLink value="Move to..." onclick="openMoveHdfs();"/>
 
 			<a4j:commandLink action="#{hdfsBean.goPrevious}"
 				reRender="hdfspath,hdfsfs">
-				<img id="hdfsbtUndo" src="../image/icons/button-undo.png" />
+				<h:graphicImage id="hdfsbtUndo" value="../image/icons/button-undo.png" />
 			</a4j:commandLink>
 
 			<a4j:commandLink action="#{hdfsBean.goNext}" reRender="hdfspath,hdfsfs">
-				<img id="hdfsbtRedo" src="../image/icons/button-redo.png" />
+				<h:graphicImage id="hdfsbtRedo" value="../image/icons/button-redo.png" />
 			</a4j:commandLink>
 
 
@@ -101,43 +115,20 @@
 					</f:facet>
 					<a4j:commandLink action="#{hdfsBean.editFileBefore}"
 						oncomplete="#{rich:component('hdfseditModalPanel')}.show()">
-						<img src="../image/icons/button-save-all.png" />
+						<h:graphicImage value="../image/icons/button-save-all.png" />
 						<f:param name="nameFileEdit" value="#{item.name}" />
 					</a4j:commandLink>
 				</rich:column>
-
-				<!-- <rich:column sortBy="#{item.name}"
+				
+				<rich:column sortBy="#{item.name}"
 					style="border-bottom:0px;border-right:0px;">
 					<f:facet name="header">
 						<h:outputText value="Name" />
 					</f:facet>
-					<a4j:commandLink value="#{item.name}"
-						action="#{hdfsBean.selectFile}" reRender="hdfspath,hdfsfs">
-						<f:param name="nameFile" value="#{item.name}" />
-					</a4j:commandLink>
-				</rich:column> -->
-				
-				<rich:column sortBy="#{item.name}"
-					style="border-bottom:0px;border-right:0px;" rendered="#{(not empty hdfsBean.listGrid) and (not item.file)}">
-					<f:facet name="header">
-						<h:outputText value="Name" />
-					</f:facet>
-					<a4j:commandLink value="#{item.name}"
-						action="#{hdfsBean.selectFile}" reRender="hdfsfs,hdfspath">
-						<f:param name="nameFile" value="#{item.name}" />
-					</a4j:commandLink>
-				</rich:column>
-				
-				<rich:column sortBy="#{item.name}"
-					style="border-bottom:0px;border-right:0px;" rendered="#{(not empty hdfsBean.listGrid) and (item.file)}">
-					<f:facet name="header">
-						<h:outputText value="Name" />
-					</f:facet>
-					<a4j:commandLink value="#{item.name}" 
-						action="#{hdfsBean.openFile}"
-						oncomplete="#{rich:component('hdfsOpenFileModalPanel')}.show()">
-						<f:param name="nameFileEdit" value="#{item.name}" />
-					</a4j:commandLink>
+					<a4j:commandLink value="#{item.name}" action="#{hdfsBean.verifyIfIsFile}"
+     					oncomplete="selectFile('#{hdfsBean.file}', '#{item.name}')">
+     						<f:param name="nameFile" value="#{item.name}" />
+     				</a4j:commandLink>
 				</rich:column>
 				
 				<rich:columns value="#{hdfsBean.keyAsListNameValue}" var="column"
@@ -150,102 +141,108 @@
 				</rich:columns>
 
 			</rich:dataTable>
-
-			<a4j:jsFunction name="reRenderHdfsfs" reRender="hdfsfs"
-				ajaxSingle="true" requestDelay="3000" />
-
 		</h:form>
 	</div>
 
-	<rich:modalPanel id="hdfscopyModalPanel" width="600" height="400"
-		style="overflow:auto;" resizeable="false" onhide="reRenderHdfsfs();">
-
-		<f:facet name="header">copy</f:facet>
-		<f:facet name="controls">
-			<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-				style="cursor:pointer"
-				onclick="#{rich:component('hdfscopyModalPanel')}.hide()" />
-		</f:facet>
-
-		<h:form id="hdfsform2">
-			<h:panelGrid>
-				<a4j:include viewId="/pages/hdfs/copyHdfs.xhtml" ajaxRendered="true" />
-			</h:panelGrid>
-		</h:form>
-
-	</rich:modalPanel>
-
-	<rich:modalPanel id="hdfsmoveModalPanel" width="600" height="400"
-		style="overflow:auto;" resizeable="false" onhide="reRenderHdfsfs();">
-
-		<f:facet name="header">move</f:facet>
-		<f:facet name="controls">
-			<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-				style="cursor:pointer"
-				onclick="#{rich:component('hdfsmoveModalPanel')}.hide()" />
-		</f:facet>
-
-		<h:form id="hdfsform3">
-			<h:panelGrid>
-				<a4j:include viewId="/pages/hdfs/moveHdfs.xhtml" ajaxRendered="true" />
-			</h:panelGrid>
-		</h:form>
-
-	</rich:modalPanel>
-
-	<rich:modalPanel id="hdfsaddModalPanel" width="600" height="400"
-		style="overflow:auto;" resizeable="false" onhide="reRenderHdfsfs();">
-
-		<f:facet name="header">file</f:facet>
-		<f:facet name="controls">
-			<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-				style="cursor:pointer"
-				onclick="#{rich:component('hdfsaddModalPanel')}.hide()" />
-		</f:facet>
-
-		<h:form id="hdfsform4">
-			<h:panelGrid>
-				<a4j:include viewId="/pages/hdfs/addHdfs.xhtml" ajaxRendered="true" />
-			</h:panelGrid>
-		</h:form>
-
-	</rich:modalPanel>
-
-	<rich:modalPanel id="hdfseditModalPanel" width="600" height="400"
-		style="overflow:auto;" resizeable="false" onhide="reRenderHdfsfs();">
-
-		<f:facet name="header">file</f:facet>
-		<f:facet name="controls">
-			<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-				style="cursor:pointer"
-				onclick="#{rich:component('hdfseditModalPanel')}.hide()" />
-		</f:facet>
-
-		<h:form id="hdfsform5">
-			<h:panelGrid>
-				<a4j:include viewId="/pages/hdfs/editHdfs.xhtml" ajaxRendered="true" />
-			</h:panelGrid>
-		</h:form>
-
-	</rich:modalPanel>
+	<a4j:region>
+		<rich:modalPanel id="hdfscopyModalPanel" width="600" height="400"
+			style="overflow:auto;" resizeable="false">
 	
-	<rich:modalPanel id="hdfsOpenFileModalPanel" width="600" height="400"
-		style="overflow:auto;" resizeable="false">
-
-		<f:facet name="header">file</f:facet>
-		<f:facet name="controls">
-			<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-				style="cursor:pointer"
-				onclick="#{rich:component('hdfsOpenFileModalPanel')}.hide()" />
-		</f:facet>
-
-		<h:form id="hdfsform6">
-			<h:panelGrid>
-				<a4j:include viewId="/pages/hdfs/openFileHdfs.xhtml" ajaxRendered="true" />
-			</h:panelGrid>
-		</h:form>
-
-	</rich:modalPanel>
+			<f:facet name="header">copy</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+					style="cursor:pointer"
+					onclick="#{rich:component('hdfscopyModalPanel')}.hide()" />
+			</f:facet>
+	
+			<h:form id="hdfsform2">
+				<h:panelGrid>
+					<a4j:include viewId="/pages/hdfs/copyHdfs.xhtml" ajaxRendered="true" />
+				</h:panelGrid>
+			</h:form>
+	
+		</rich:modalPanel>
+	</a4j:region>
+	
+	<a4j:region>
+		<rich:modalPanel id="hdfsmoveModalPanel" width="600" height="400"
+			style="overflow:auto;" resizeable="false">
+	
+			<f:facet name="header">move</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+					style="cursor:pointer"
+					onclick="#{rich:component('hdfsmoveModalPanel')}.hide()" />
+			</f:facet>
+	
+			<h:form id="hdfsform3">
+				<h:panelGrid>
+					<a4j:include viewId="/pages/hdfs/moveHdfs.xhtml" ajaxRendered="true" />
+				</h:panelGrid>
+			</h:form>
+	
+		</rich:modalPanel>
+	</a4j:region>
+	
+	<a4j:region>
+		<rich:modalPanel id="hdfsaddModalPanel" width="600" height="400"
+			style="overflow:auto;" resizeable="false">
+	
+			<f:facet name="header">file</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+					style="cursor:pointer"
+					onclick="#{rich:component('hdfsaddModalPanel')}.hide()" />
+			</f:facet>
+	
+			<h:form id="hdfsform4">
+				<h:panelGrid>
+					<a4j:include viewId="/pages/hdfs/addHdfs.xhtml" ajaxRendered="true" />
+				</h:panelGrid>
+			</h:form>
+	
+		</rich:modalPanel>
+	</a4j:region>
+	
+	<a4j:region>
+		<rich:modalPanel id="hdfseditModalPanel" width="600" height="400"
+			style="overflow:auto;" resizeable="false">
+	
+			<f:facet name="header">file</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+					style="cursor:pointer"
+					onclick="#{rich:component('hdfseditModalPanel')}.hide()" />
+			</f:facet>
+	
+			<h:form id="hdfsform5">
+				<h:panelGrid>
+					<a4j:include viewId="/pages/hdfs/editHdfs.xhtml" ajaxRendered="true" />
+				</h:panelGrid>
+			</h:form>
+	
+		</rich:modalPanel>
+	</a4j:region>
+	
+	<a4j:region>	
+		<rich:modalPanel id="hdfsOpenFileModalPanel" width="600" height="400"
+			style="overflow:auto;" resizeable="false">
+	
+			<f:facet name="header">file</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+					style="cursor:pointer"
+					onclick="#{rich:component('hdfsOpenFileModalPanel')}.hide()" />
+			</f:facet>
+	
+			<h:form id="hdfsform6">
+				<h:panelGrid>
+					<a4j:include viewId="/pages/hdfs/openFileHdfs.xhtml" ajaxRendered="true" />
+				</h:panelGrid>
+			</h:form>
+	
+		</rich:modalPanel>
+	</a4j:region>
 
 </body>
 </html>

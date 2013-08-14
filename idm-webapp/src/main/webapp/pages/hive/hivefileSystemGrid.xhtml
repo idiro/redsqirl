@@ -19,6 +19,15 @@
     function openMoveHive(){
   	  jQuery("[id$='hivelinkMoveModalPanel']").click();
     }
+    
+    function selectFile(isFile, nameFile){
+    	if (isFile == "true"){
+    		openFile(nameFile);
+    	}
+    	else{
+    		updateTable(nameFile);
+    	}
+    }
 	
 </script>
 
@@ -26,10 +35,18 @@
 
 <body>
 
-
+	<a4j:keepAlive beanName = "hiveBean"/>
 	<div id="hiveFileSystem"
 		style="min-width: 400px; overflow: hidden; min-height: 400px;">
 		<h:form>
+		
+			<a4j:jsFunction name="openFile" action="#{hiveBean.openFile}" oncomplete="#{rich:component('hiveOpenFileModalPanel')}.show();" >
+				<a4j:actionparam name="nameFile"/>
+			</a4j:jsFunction>
+			
+			<a4j:jsFunction name="updateTable" action="#{hiveBean.selectFile}" reRender="hivefs,hivepath">
+				<a4j:actionparam name="nameFile"/>
+			</a4j:jsFunction>
 
 			<a4j:commandLink id="hivelinkCopyModalPanel"
 				action="#{hiveBean.copyFileBefore}"
@@ -55,27 +72,27 @@
 			<a4j:commandLink action="#{hiveBean.addFileBefore}"
 				oncomplete="#{rich:component('hiveaddModalPanel')}.show()"
 				rendered="#{hiveBean.canCreate != null}">
-				<img id="hivebtAdd" src="../image/icons/button-plus.gif" title="#{hiveBean.canCreate}"/>
+				<h:graphicImage id="hivebtAdd" value="../image/icons/button-plus.gif" title="#{hiveBean.canCreate}"/>
 			</a4j:commandLink>
 
 			<a4j:commandLink action="#{hiveBean.deleteFile}" reRender="hivefs" 
 				onclick="if(!confirm('Are you sure you want to delete the selected files?')){return false;}"
 				rendered="#{hiveBean.canDelete != null}">
-				<img id="hivebtDelete" src="../image/icons/button-delete.png" title="#{hiveBean.canDelete}"/>
+				<h:graphicImage id="hivebtDelete" value="../image/icons/button-delete.png" title="#{hiveBean.canDelete}"/>
 			</a4j:commandLink>
 
-			<a href="#" onclick="openCopyHive();"><h:outputText rendered="#{hiveBean.canCopy != null}"
-					title="#{hiveBean.canCopy}" value="Copy to..." /></a>
-			<a href="#" onclick="openMoveHive();"><h:outputText rendered="#{hiveBean.canMove != null}"
-					title="#{hiveBean.canMove}" value="Move to..." /></a>
+			<h:commandLink value="Copy to..." onclick="openCopyHive();" 
+				rendered="#{hiveBean.canCopy != null}" title="#{hiveBean.canCopy}"/>
+			<h:commandLink value="Move to..." onclick="openMoveHive();"
+				rendered="#{hiveBean.canMove != null}" title="#{hiveBean.canMove}"/>
 
 			<a4j:commandLink action="#{hiveBean.goPrevious}"
 				reRender="hivepath,hivefs">
-				<img id="hivebtUndo" src="../image/icons/button-undo.png" />
+				<h:graphicImage id="hivebtUndo" value="../image/icons/button-undo.png" />
 			</a4j:commandLink>
 
 			<a4j:commandLink action="#{hiveBean.goNext}" reRender="hivepath,hivefs">
-				<img id="hivebtRedo" src="../image/icons/button-redo.png" />
+				<h:graphicImage id="hivebtRedo" value="../image/icons/button-redo.png" />
 			</a4j:commandLink>
 
 
@@ -103,36 +120,22 @@
 					</f:facet>
 					<a4j:commandLink action="#{hiveBean.editFileBefore}"
 						oncomplete="#{rich:component('hiveeditModalPanel')}.show()">
-						<img src="../image/icons/button-save-all.png" />
+						<h:graphicImage value="../image/icons/button-save-all.png" />
 						<f:param name="nameFileEdit" value="#{item.name}" />
 					</a4j:commandLink>
+				</rich:column>
+				
+				<rich:column sortBy="#{item.name}"
+					style="border-bottom:0px;border-right:0px;">
+					<f:facet name="header">
+						<h:outputText value="Name" />
+					</f:facet>
+					<a4j:commandLink value="#{item.name}" action="#{hiveBean.verifyIfIsFile}"
+     					oncomplete="selectFile('#{hiveBean.file}', '#{item.name}')">
+     						<f:param name="nameFile" value="#{item.name}" />
+     				</a4j:commandLink>
 				</rich:column>
 
-				<rich:column sortBy="#{item.name}"
-					style="border-bottom:0px;border-right:0px;" rendered="#{(not empty hiveBean.listGrid) and (not item.file)}">
-					<f:facet name="header">
-					<h:outputText value="Name" />
-					</f:facet>
-					<a4j:commandLink value="#{item.name}"
-					action="#{hiveBean.selectFile}" reRender="hivefs,hivepath">
-					<f:param name="nameFile" value="#{item.name}" />
-					</a4j:commandLink>
-					</rich:column>
-					
-				<rich:column sortBy="#{item.name}"
-					style="border-bottom:0px;border-right:0px;" rendered="#{(not empty hiveBean.listGrid) and (item.file)}">
-					<f:facet name="header">
-					<h:outputText value="Name" />
-					</f:facet>
-					<a4j:commandLink value="#{item.name}" 
-						action="#{hiveBean.openFile}"
-						oncomplete="#{rich:component('hiveOpenFileModalPanel')}.show()">
-						<f:param name="nameFileEdit" value="#{item.name}" />
-					</a4j:commandLink>
-				</rich:column>
-					
-				
-				
 				<rich:columns value="#{hiveBean.keyAsListNameValue}" var="column"
 					index="ind" id="hivecolumn#{ind}"
 					style="border-bottom:0px;border-right:0px;">
@@ -143,102 +146,108 @@
 				</rich:columns>
 
 			</rich:dataTable>
-
-			<a4j:jsFunction name="reRenderHivefs" reRender="hivefs"
-				ajaxSingle="true" requestDelay="3000" />
-			
 		</h:form>
 	</div>
-
-	<rich:modalPanel id="hivecopyModalPanel" width="600" height="400"
-		style="overflow:auto;" resizeable="false">
-
-		<f:facet name="header">copy</f:facet>
-		<f:facet name="controls">
-			<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-				style="cursor:pointer"
-				onclick="#{rich:component('hivecopyModalPanel')}.hide()" />
-		</f:facet>
-
-		<h:form id="hiveform2">
-			<h:panelGrid>
-				<a4j:include viewId="/pages/hive/copyHive.xhtml" ajaxRendered="true" />
-			</h:panelGrid>
-		</h:form>
-
-	</rich:modalPanel>
-
-	<rich:modalPanel id="hivemoveModalPanel" width="600" height="400"
-		style="overflow:auto;" resizeable="false" onhide="reRenderHivefs();">
-
-		<f:facet name="header">move</f:facet>
-		<f:facet name="controls">
-			<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-				style="cursor:pointer"
-				onclick="#{rich:component('hivemoveModalPanel')}.hide()" />
-		</f:facet>
-
-		<h:form id="hiveform3">
-			<h:panelGrid>
-				<a4j:include viewId="/pages/hive/moveHive.xhtml" ajaxRendered="true" />
-			</h:panelGrid>
-		</h:form>
-
-	</rich:modalPanel>
-
-	<rich:modalPanel id="hiveaddModalPanel" width="600" height="400"
-		style="overflow:auto;" resizeable="false" onhide="reRenderHivefs();">
-
-		<f:facet name="header">file</f:facet>
-		<f:facet name="controls">
-			<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-				style="cursor:pointer"
-				onclick="#{rich:component('hiveaddModalPanel')}.hide()" />
-		</f:facet>
-
-		<h:form id="hiveform4">
-			<h:panelGrid>
-				<a4j:include viewId="/pages/hive/addHive.xhtml" ajaxRendered="true" />
-			</h:panelGrid>
-		</h:form>
-
-	</rich:modalPanel>
-
-	<rich:modalPanel id="hiveeditModalPanel" width="600" height="400"
-		style="overflow:auto;" resizeable="false" onhide="reRenderHivefs();">
-
-		<f:facet name="header">file</f:facet>
-		<f:facet name="controls">
-			<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-				style="cursor:pointer"
-				onclick="#{rich:component('hiveeditModalPanel')}.hide()" />
-		</f:facet>
-
-		<h:form id="hiveform5">
-			<h:panelGrid>
-				<a4j:include viewId="/pages/hive/editHive.xhtml" ajaxRendered="true" />
-			</h:panelGrid>
-		</h:form>
-
-	</rich:modalPanel>
 	
-	<rich:modalPanel id="hiveOpenFileModalPanel" width="600" height="400"
-		style="overflow:auto;" resizeable="false">
-
-		<f:facet name="header">file</f:facet>
-		<f:facet name="controls">
-			<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-				style="cursor:pointer"
-				onclick="#{rich:component('hiveOpenFileModalPanel')}.hide()" />
-		</f:facet>
-
-		<h:form id="hiveform6">
-			<h:panelGrid>
-				<a4j:include viewId="/pages/hive/openFileHive.xhtml" ajaxRendered="true" />
-			</h:panelGrid>
-		</h:form>
-
-	</rich:modalPanel>
+	<a4j:region>
+		<rich:modalPanel id="hivecopyModalPanel" width="600" height="400"
+			style="overflow:auto;" resizeable="false">
+	
+			<f:facet name="header">copy</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+					style="cursor:pointer"
+					onclick="#{rich:component('hivecopyModalPanel')}.hide()" />
+			</f:facet>
+	
+			<h:form id="hiveform2">
+				<h:panelGrid>
+					<a4j:include viewId="/pages/hive/copyHive.xhtml" ajaxRendered="true" />
+				</h:panelGrid>
+			</h:form>
+	
+		</rich:modalPanel>
+	</a4j:region>
+	
+	<a4j:region>
+		<rich:modalPanel id="hivemoveModalPanel" width="600" height="400"
+			style="overflow:auto;" resizeable="false">
+	
+			<f:facet name="header">move</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+					style="cursor:pointer"
+					onclick="#{rich:component('hivemoveModalPanel')}.hide()" />
+			</f:facet>
+	
+			<h:form id="hiveform3">
+				<h:panelGrid>
+					<a4j:include viewId="/pages/hive/moveHive.xhtml" ajaxRendered="true" />
+				</h:panelGrid>
+			</h:form>
+	
+		</rich:modalPanel>
+	</a4j:region>
+	
+	<a4j:region>
+		<rich:modalPanel id="hiveaddModalPanel" width="600" height="400"
+			style="overflow:auto;" resizeable="false">
+	
+			<f:facet name="header">file</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+					style="cursor:pointer"
+					onclick="#{rich:component('hiveaddModalPanel')}.hide()" />
+			</f:facet>
+	
+			<h:form id="hiveform4">
+				<h:panelGrid>
+					<a4j:include viewId="/pages/hive/addHive.xhtml" ajaxRendered="true" />
+				</h:panelGrid>
+			</h:form>
+	
+		</rich:modalPanel>
+	</a4j:region>
+	
+	<a4j:region>
+		<rich:modalPanel id="hiveeditModalPanel" width="600" height="400"
+			style="overflow:auto;" resizeable="false">
+	
+			<f:facet name="header">file</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+					style="cursor:pointer"
+					onclick="#{rich:component('hiveeditModalPanel')}.hide()" />
+			</f:facet>
+	
+			<h:form id="hiveform5">
+				<h:panelGrid>
+					<a4j:include viewId="/pages/hive/editHive.xhtml" ajaxRendered="true" />
+				</h:panelGrid>
+			</h:form>
+	
+		</rich:modalPanel>
+	</a4j:region>
+	
+	<a4j:region>	
+		<rich:modalPanel id="hiveOpenFileModalPanel" width="600" height="400"
+			style="overflow:auto;" resizeable="false">
+	
+			<f:facet name="header">file</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+					style="cursor:pointer"
+					onclick="#{rich:component('hiveOpenFileModalPanel')}.hide()" />
+			</f:facet>
+	
+			<h:form id="hiveform6">
+				<h:panelGrid>
+					<a4j:include viewId="/pages/hive/openFileHive.xhtml" ajaxRendered="true" />
+				</h:panelGrid>
+			</h:form>
+	
+		</rich:modalPanel>
+	</a4j:region>
 
 </body>
 </html>
