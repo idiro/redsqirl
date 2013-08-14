@@ -30,13 +30,17 @@
 	
 		<h:outputText value="#{canvasModalBean.page.nbColumn}" /><br/>
 		
-		<a4j:repeat value="#{canvasModalBean.page.interactions}" var="item" rowKeyVar="index" id="dynamicFormInteraction" >
+		<a4j:repeat value="#{canvasModalBean.dynamicFormList}" var="item" rowKeyVar="index" id="dynamicFormInteraction" >
 			
 			<h:outputText value="#{item.name}" />
-			<br />
-			<h:outputText value="#{item.legend}" />
-			<br />
-			<h:outputText value="#{item.display}" />
+			<br/>
+			<rich:comboBox value="#{item.selectedListOptions}" selectFirstOnUpdate="false" width="200" 
+				listWidth="150" listHeight="200" enableManualInput="false" >
+				<f:selectItems value="#{item.listOptions}" />
+			</rich:comboBox>
+			
+			
+			
 			<br />
 			<br />
 			<br />
@@ -53,9 +57,9 @@
 		
 			<a4j:commandButton action="#{canvasModalBean.close}" value="#{messages.button_cancel}" onclick="#{rich:component('canvasModalPanel')}.hide()" reRender="panelBtCanvasModal" />
 			<span>&nbsp;&nbsp;</span>
-			<a4j:commandButton action="#{canvasModalBean.previousPage}" value="#{messages.button_previous}" rendered="#{canvasModalBean.firstPage == 'N'}" reRender="panelBtCanvasModal" />
+			<a4j:commandButton action="#{canvasModalBean.previousPage}" value="#{messages.button_previous}" rendered="#{canvasModalBean.firstPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal" />
 			<span>&nbsp;&nbsp;</span>
-			<a4j:commandButton action="#{canvasModalBean.nextPage}" value="#{messages.button_next}" rendered="#{canvasModalBean.lastPage == 'N'}" reRender="panelBtCanvasModal" />
+			<a4j:commandButton action="#{canvasModalBean.nextPage}" value="#{messages.button_next}" rendered="#{canvasModalBean.lastPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal" />
 			<span>&nbsp;&nbsp;</span>
 			<a4j:commandButton action="#{canvasModalBean.endDynamicForm}" value="#{messages.button_ok}" rendered="#{canvasModalBean.lastPage == 'S'}" reRender="panelBtCanvasModal" />
 		

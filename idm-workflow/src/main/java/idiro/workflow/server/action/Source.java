@@ -216,10 +216,10 @@ public class Source extends DataflowAction{
 
 	@Override
 	public void update(DFEInteraction interaction) throws RemoteException {
-		if(interaction == getInteraction(key_datatype)){
+		if(interaction.getName().equals(getInteraction(key_datatype).getName())){
 			updateDataType(interaction.getTree());
 		}
-		else if(interaction == getInteraction(key_datasubtype)){
+		else if(interaction.getName().equals(getInteraction(key_datasubtype).getName())){
 			updateDataSubType(interaction.getTree());
 		}
 		else{

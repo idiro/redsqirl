@@ -1,5 +1,6 @@
 package idm;
 
+import idiro.utils.Tree;
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.interfaces.DFEInteraction;
@@ -7,6 +8,7 @@ import idiro.workflow.server.interfaces.DFEPage;
 import idiro.workflow.server.interfaces.DataFlow;
 import idiro.workflow.server.interfaces.DataFlowElement;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,6 +22,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 
+import org.ajax4jsf.model.KeepAlive;
 import org.apache.log4j.Logger;
 
 /** CanvasModal
@@ -28,7 +31,8 @@ import org.apache.log4j.Logger;
  * 
  * @author Igor.Souza
  */
-public class CanvasModal extends BaseBean {
+@KeepAlive
+public class CanvasModal extends BaseBean implements Serializable {
 
 	private static Logger logger = Logger.getLogger(CanvasModal.class);
 
@@ -56,6 +60,7 @@ public class CanvasModal extends BaseBean {
 	private String lastPage = "N";
 	private String firstPage = "S";
 	private int listPageSize;
+	private List<DynamicForm> dynamicFormList = new ArrayList<DynamicForm>();
 
 
 	/** getKeyAsListNameValue
@@ -81,6 +86,8 @@ public class CanvasModal extends BaseBean {
 		logger.info("nextPage ");
 		
 		setListPosition(getListPosition()+1);
+		
+		setPage(getListPage().get(getListPosition()));
 		
 		if(getListPageSize() -1 > getListPosition()){
 			setLastPage("N");
@@ -108,6 +115,8 @@ public class CanvasModal extends BaseBean {
 		logger.info("previousPage ");
 		
 		setListPosition(getListPosition()-1);
+		
+		setPage(getListPage().get(getListPosition()));
 		
 		if(getListPageSize() -1 > getListPosition()){
 			setLastPage("N");
@@ -194,7 +203,7 @@ public class CanvasModal extends BaseBean {
 			//String idElement = df.addElement(getNameElement());
 
 			DataFlowElement dfe = getDf().getElement(getNameElement());
-			
+
 			setListPage(dfe.getPageList());
 
 			setListPageSize(getListPage().size());
@@ -211,15 +220,36 @@ public class CanvasModal extends BaseBean {
 			
 			//logger.info(" -> " + getPage().getTitle() + " -- " + getPage().getLegend());
 			
+			setDynamicFormList(new ArrayList<DynamicForm>());
+			
 			for (DFEInteraction dfeInteraction : getPage().getInteractions()) {
 				
-				//dfe.update(dfeInteraction);
+				DynamicForm dynamicF = new DynamicForm();
+				dfe.update(dfeInteraction);
 				
-				logger.info(dfeInteraction.getName() + " -- " + dfeInteraction.getLegend() + " -- " + dfeInteraction.getDisplay());
-				logger.info(dfeInteraction.getColumn() + " -- " + dfeInteraction.getPlaceInColumn());
+				//logger.info(dfeInteraction.getName() + " -- " + dfeInteraction.getLegend() + " -- " + dfeInteraction.getDisplay());
+				//logger.info(dfeInteraction.getColumn() + " -- " + dfeInteraction.getPlaceInColumn());
 				
+				dynamicF.setName(dfeInteraction.getName());
+				dynamicF.setLegend(dfeInteraction.getLegend());
+				dynamicF.setDisplayType(dfeInteraction.getDisplay());
+				
+				if(dfeInteraction.getDisplay().equals(DisplayType.list)){
+					
+					List<SelectItem> selectItems = new ArrayList<SelectItem>();
+					List<Tree<String>> list = dfeInteraction.getTree().getFirstChild("list").getChildren("value");
+					for (Tree<String> tree : list) {
+						//logger.info(dfeInteraction.getName() + " " + tree.getFirstChild().getHead());
+						selectItems.add(new SelectItem(tree.getHead(), tree.getHead()));
+					}
+					dynamicF.setListOptions(selectItems);
+					
+				}
+				
+				getDynamicFormList().add(dynamicF);
 				
 			}
+			
 			
 			
 			/*
@@ -858,6 +888,14 @@ public class CanvasModal extends BaseBean {
 
 	public void setListPageSize(int listPageSize) {
 		this.listPageSize = listPageSize;
+	}
+
+	public List<DynamicForm> getDynamicFormList() {
+		return dynamicFormList;
+	}
+
+	public void setDynamicFormList(List<DynamicForm> dynamicFormList) {
+		this.dynamicFormList = dynamicFormList;
 	}
 	
 }

@@ -1,12 +1,14 @@
 package idm;
 
+import java.io.Serializable;
+
 /** Entry
  * 
  * Class object used in screens dynamics
  * 
  * @author Igor.Souza
  */
-public class Entry {
+public class Entry implements Serializable {
 	
     private String value;
     private String key;
