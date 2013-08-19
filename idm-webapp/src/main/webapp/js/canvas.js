@@ -2049,8 +2049,7 @@ var countObj;
 										
 										//call Method for add this Element
 								    	  //jQuery("[id$='addElementBt']").click();
-								    	  addElementBt(typeText.getText(), "group" + countObj, positionX, positionY);
-						       	  
+								    	  addElementBt(typeText.getText(), "group" + countObj, mousePosStage.x -30, mousePosStage.y -30);
 							    	  layerTab.add(polygonTabFake.clone());
 							    	  layerTab.draw();
 							    	  

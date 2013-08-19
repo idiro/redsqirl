@@ -22,14 +22,14 @@
 	<h:inputText id="pathSaveFile" label="Path" value="#{hdfsBean.path}"
 		maxlength="255" style="width:395px;" />
 	<a4j:commandButton type="submit" id="changePathBt"
-		action="#{hdfsBean.changePath}" value="ok" reRender="hdfsfsSaveFile" />
+		action="#{hdfsBean.changePath}" value="ok" reRender="hdfsfsSaveFile,hdfsSaveFileBtn" />
 	<br />
 
 	<a4j:commandLink action="#{hdfsBean.goPrevious}"
-		reRender="pathSaveFile,hdfsfsSaveFile">
+		reRender="pathSaveFile,hdfsfsSaveFile,hdfsSaveFileBtn">
 		<img id="btAdd" src="../image/icons/button-undo.png" />
 	</a4j:commandLink>
-	<a4j:commandLink action="#{hdfsBean.goNext}" reRender="pathSaveFile,hdfsfsSaveFile">
+	<a4j:commandLink action="#{hdfsBean.goNext}" reRender="pathSaveFile,hdfsfsSaveFile,hdfsSaveFileBtn">
 		<img id="btAdd" src="../image/icons/button-redo.png" />
 	</a4j:commandLink>
 
@@ -48,7 +48,7 @@
 				<h:outputText value="Name" />
 			</f:facet>
 			<a4j:commandLink value="#{item.name}"
-				action="#{hdfsBean.selectFile}" reRender="pathSaveFile,hdfsfsSaveFile">
+				action="#{hdfsBean.selectFile}" reRender="pathSaveFile,hdfsfsSaveFile,hdfsSaveFileBtn">
 				<f:param name="nameFile" value="#{item.name}" />
 			</a4j:commandLink>
 		</rich:column>
@@ -69,7 +69,7 @@
 		maxlength="255" style="width:395px;" />
 	<br />
 
-	<a4j:commandButton action="#{canvasModalBean.save}" value="ok"
+	<a4j:commandButton id="hdfsSaveFileBtn" action="#{canvasModalBean.save}" value="ok"
 		onclick="#{rich:component('modalSaveWorkflow')}.hide();">
 		<a4j:actionparam name="pathFile" value="getPath('#{hdfsBean.path}')" noEscape="true"/>
 	</a4j:commandButton>

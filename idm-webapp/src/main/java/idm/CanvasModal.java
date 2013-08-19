@@ -60,7 +60,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	private String firstPage = "S";
 	private int listPageSize;
 	private List<DynamicForm> dynamicFormList = new ArrayList<DynamicForm>();
-	private Map<String, String> idMap = new HashMap<String, String>();
+//	private Map<String, String> idMap = new HashMap<String, String>();
 
 	private Map<String, String> nameValueFeature = new HashMap<String, String>();
 	private Map<String, String> nameValueListGrid = new HashMap<String, String>();
@@ -230,7 +230,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void start() {
 		logger.info("starCanvasModal");
 		setNameWorkflow("canvas1");
-
+		
 		try {
 
 			if(getDfi() == null){
@@ -795,7 +795,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 */
 	public void addElement() {
-		setNameWorkflow("canvas1");
+//		setNameWorkflow("canvas1");
 
 		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 
@@ -819,9 +819,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 			df.getElement(idElement).setPosition(Double.valueOf(posX).intValue(), Double.valueOf(posY).intValue());
 
 			setNameElement(idElement);
-			getIdMap().put(paramGroupID, idElement);
+//			getIdMap().put(paramGroupID, idElement);
 
-			logger.info("add element id " + getNameElement());
+			logger.info("add element id " + getNameElement()+" in workflow "+df.getName());
 
 			setEntry(new Entry(getNameElement(), getGroupID()));
 
@@ -959,17 +959,12 @@ public class CanvasModal extends BaseBean implements Serializable {
 		String path = FacesContext.getCurrentInstance().getExternalContext().
 				getRequestParameterMap().get("pathFile");
 		
-		logger.info("save "+path);
-		
-		setNameWorkflow("canvas1");
-
-		DataFlowInterface dfi;
 		try {
-			dfi = getworkFlowInterface();
-			
-			DataFlow df = dfi.getWorkflow(getNameWorkflow());
-
-			logger.info(df.save(path));
+//			dfi = getworkFlowInterface();
+//			
+//			DataFlow df = dfi.getWorkflow(getNameWorkflow());
+			logger.info("save workflow "+getDf().getName()+" in "+path);
+			logger.info(getDf().save(path));
 		} catch (Exception e) {
 			logger.info("Error saving workflow");
 			e.printStackTrace();
@@ -1022,8 +1017,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 		logger.info("closeWorkflow");
 		
 		setDf(null);
-		setIdMap(new HashMap<String, String>());
-		
+//		setIdMap(new HashMap<String, String>());
 	}
 
 
@@ -1243,13 +1237,14 @@ public class CanvasModal extends BaseBean implements Serializable {
 		this.nameValueListGrid = nameValueListGrid;
 	}
 
-	public Map<String, String> getIdMap() {
-		return idMap;
-	}
-
-	public void setIdMap(Map<String, String> idMap) {
-		this.idMap = idMap;
-	}
+	
+//	public Map<String, String> getIdMap() {
+//		return idMap;
+//	}
+//
+//	public void setIdMap(Map<String, String> idMap) {
+//		this.idMap = idMap;
+//	}
 
 	public String getPositions() throws Exception{
 		JSONArray json = new JSONArray();

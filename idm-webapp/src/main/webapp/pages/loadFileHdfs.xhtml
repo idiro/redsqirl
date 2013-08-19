@@ -31,6 +31,7 @@
 	<h:inputText id="pathOpenFile" label="Path" value="#{hdfsBean.path}"
 		maxlength="255" style="width:395px;" />
 	<a4j:commandButton type="submit" id="changePathBt"
+<<<<<<< HEAD
 		action="#{hdfsBean.changePath}" value="ok" reRender="hdfsfsOpenFile" />
 	<br />
 
@@ -39,6 +40,16 @@
 		<img id="btAdd" src="../image/icons/button-undo.png" />
 	</a4j:commandLink>
 	<a4j:commandLink action="#{hdfsBean.goNext}" reRender="pathOpenFile,hdfsfsOpenFile">
+=======
+		action="#{hdfsBean.changePath}" value="ok" reRender="hdfsfsOpenFile,hdfsOpenFileBtn" />
+	<br />
+
+	<a4j:commandLink action="#{hdfsBean.goPrevious}"
+		reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
+		<img id="btAdd" src="../image/icons/button-undo.png" />
+	</a4j:commandLink>
+	<a4j:commandLink action="#{hdfsBean.goNext}" reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
+>>>>>>> Load and save workflow
 		<img id="btAdd" src="../image/icons/button-redo.png" />
 	</a4j:commandLink>
 	<br/>
@@ -68,7 +79,11 @@
 				<h:outputText value="Name" />
 			</f:facet>
 			<a4j:commandLink value="#{item.name}"
+<<<<<<< HEAD
 				action="#{hdfsBean.selectFile}" reRender="pathOpenFile,hdfsfsOpenFile">
+=======
+				action="#{hdfsBean.selectFile}" reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
+>>>>>>> Load and save workflow
 				<f:param name="nameFile" value="#{item.name}" />
 			</a4j:commandLink>
 		</rich:column>
@@ -86,7 +101,11 @@
 
 	<br />
 
+<<<<<<< HEAD
 	<a4j:commandButton action="#{canvasModalBean.load}" value="ok"
+=======
+	<a4j:commandButton id="hdfsOpenFileBtn" action="#{canvasModalBean.load}" value="ok"
+>>>>>>> Load and save workflow
 		onclick="#{rich:component('modalLoadWorkflow')}.hide();clearCanvas();" oncomplete="loadWorkflow();">
 		<a4j:actionparam name="pathFile" value="getPath('#{hdfsBean.path}')" noEscape="true"/>
 	</a4j:commandButton>
