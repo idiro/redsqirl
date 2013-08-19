@@ -20,9 +20,6 @@ public class CanvasBean extends BaseBean implements Serializable{
 	private int countObj;
 	
 	
-	
-	
-	
 	public void doNew(){
 
 		logger.info("doNew");
@@ -64,12 +61,8 @@ public class CanvasBean extends BaseBean implements Serializable{
 		
 	}
 	
-	
-	
-	
 	public List<String[]> getHelpItens() throws Exception{
-		getworkFlowInterface().addWorkflow("new wf help2");
-		DataFlow wf = getworkFlowInterface().getWorkflow("new wf help2");
+		DataFlow wf = getworkFlowInterface().getWorkflow("canvas1");
 		wf.loadMenu();
 		
 		List<String[]> helpList = new ArrayList<String[]>();

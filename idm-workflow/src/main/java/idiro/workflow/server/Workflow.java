@@ -1,5 +1,6 @@
 package idiro.workflow.server;
 
+import idiro.hadoop.NameNodeVar;
 import idiro.utils.RandomString;
 import idiro.workflow.server.enumeration.SavingState;
 import idiro.workflow.server.interfaces.DFEOutput;
@@ -30,6 +31,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Attr;
@@ -346,7 +348,10 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 	public String save(final String filePath){
 		String error = null;
 		try{
-			File file = new File(filePath);
+			String[] path = filePath.split("/");
+			String fileName = path[path.length-1];
+			String tempPath = WorkflowPrefManager.pathUserPref.get()+"/tmp/"+fileName;
+			File file = new File(tempPath);
 			logger.debug("Save xml: "+file.getAbsolutePath());
 			file.getParentFile().mkdirs();
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -498,10 +503,14 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 				DOMSource source = new DOMSource(doc);
 				StreamResult result = new StreamResult(file);
 				transformer.transform(source, result);
+				
+				FileSystem fs = NameNodeVar.getFS();
+				fs.moveFromLocalFile(new Path(tempPath), new Path(filePath));
 				logger.debug("file saved successfully");
 			}
 		} catch (Exception e) {
 			error = "Fail to save the xml file";
+			
 			logger.error(error);
 			logger.error(e.getMessage());
 		}
@@ -518,8 +527,15 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 	public String read(String filePath){
 		String error = null;
 		element.clear();
+		
 		try {
-			File xmlFile = new File(filePath);
+			String[] path = filePath.split("/");
+			String fileName = path[path.length-1];
+			String tempPath = WorkflowPrefManager.pathUserPref.get()+"/tmp";
+			FileSystem fs = NameNodeVar.getFS();
+			fs.copyToLocalFile(new Path(filePath), new Path(tempPath));
+			
+			File xmlFile = new File(tempPath+"/"+fileName);
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(xmlFile);

@@ -376,6 +376,12 @@
 	    	  jQuery( arg ).offsetParent().remove();
 	    	  
 	      }
+	      
+	      function addElementJs(positions){
+	    	 	alert(positions);
+	    	  	addElements(positions);
+
+	      }
 
 	      
 		</script>
@@ -412,18 +418,32 @@
 			<a4j:commandLink id="removeLinkBt" action="#{canvasModalBean.removeLink}" style="display:none;" />
 
 			<a4j:region>
-			<a4j:jsFunction name="addElementBt" action="#{canvasModalBean.addElement}" data="#{canvasModalBean.entry}" oncomplete="updateTypeObj(data.key, data.value);" >
-				<a4j:actionparam name="paramNameElement" assignTo="#{canvasModalBean.nameElement}" />
-				<a4j:actionparam name="paramGroupID" assignTo="#{canvasModalBean.groupID}" />
-			</a4j:jsFunction>
+				<a4j:jsFunction name="addElementBt" action="#{canvasModalBean.addElement}" data="#{canvasModalBean.entry}" oncomplete="updateTypeObj(data.key, data.value);" >
+					<a4j:actionparam name="paramNameElement" assignTo="#{canvasModalBean.nameElement}" />
+					<a4j:actionparam name="paramGroupID" assignTo="#{canvasModalBean.groupID}" />
+					<a4j:actionparam name="paramPosX" />
+					<a4j:actionparam name="paramPosY"  />
+				</a4j:jsFunction>
 			</a4j:region>
 			
 			<a4j:region>
-			<a4j:jsFunction name="openModal" action="#{canvasModalBean.openCanvasModal}" oncomplete="#{rich:component('canvasModalPanel')}.show()" reRender="pageTitle, pageLegend, panelBtCanvasModal, panelDynamicForm" >
-				<a4j:actionparam name="paramNameElement" assignTo="#{canvasModalBean.nameElement}" />
-			</a4j:jsFunction>
+				<a4j:jsFunction name="addLinkBt" action="#{canvasModalBean.addLink}" >
+					<a4j:actionparam name="paramOutId"/>
+					<a4j:actionparam name="paramInId"/>
+				</a4j:jsFunction>
+			</a4j:region>
+			
+			<a4j:region>
+				<a4j:jsFunction name="openModal" action="#{canvasModalBean.openCanvasModal}" oncomplete="#{rich:component('canvasModalPanel')}.show()" reRender="pageTitle, pageLegend, panelBtCanvasModal, panelDynamicForm" >
+					<a4j:actionparam name="paramNameElement" assignTo="#{canvasModalBean.nameElement}" />
+				</a4j:jsFunction>
 			</a4j:region>
 
+			<a4j:jsFunction name="loadWorkflow" data="#{canvasModalBean.positions}" oncomplete="addElementJs(data)" />
+			
+			<a4j:jsFunction name="closeWorkflow" action="#{canvasModalBean.closeWorkflow}" oncomplete="clearCanvas();" />
+			
+			<a4j:region>
 			<rich:toolBar>
 
 				<rich:dropDownMenu>
@@ -437,14 +457,14 @@
 					<rich:menuItem submitMode="none" value="#{messages.label_menu_new}"
 						onclick="jQuery('#addtabCanvas').click();" />
 					<rich:menuItem submitMode="ajax"
-						value="#{messages.label_menu_open}" action="#{canvasBean.doOpen}" />
+						value="#{messages.label_menu_open}" onclick="#{rich:component('modalLoadWorkflow')}.show()" />
 					<rich:menuItem submitMode="none"
 						value="#{messages.label_menu_close}" onclick="closeTab(this);" />
 					<rich:menuItem submitMode="ajax"
 						value="#{messages.label_menu_closeall}"
 						action="#{canvasBean.doNew}" />
 					<rich:menuItem submitMode="ajax"
-						value="#{messages.label_menu_save}" action="#{canvasBean.doNew}" />
+						value="#{messages.label_menu_save}" onclick="#{rich:component('modalSaveWorkflow')}.show()" />
 					<rich:menuItem submitMode="ajax"
 						value="#{messages.label_menu_saveas}" action="#{canvasBean.doNew}" />
 					<rich:menuItem submitMode="ajax"
@@ -497,6 +517,7 @@
 				</rich:toolBarGroup>
 
 			</rich:toolBar>
+			</a4j:region>
 
 			<a4j:jsFunction name="signOut" action="#{userInfoBean.signOut}" />
 
@@ -794,6 +815,41 @@
 	
 		</rich:modalPanel>
 	</a4j:region>
-
+	
+	<a4j:region renderRegionOnly="true">
+		<rich:modalPanel id="modalSaveWorkflow" width="600" height="400" style="overflow:auto;" resizeable="false">
+	
+			<f:facet name="header">Save</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer"
+					onclick="#{rich:component('modalSaveWorkflow')}.hide()" />
+			</f:facet>
+	
+			<h:form id="formSaveWorkflow">
+				<h:panelGroup>
+					<a4j:include viewId="/pages/saveFileHdfs.xhtml" ajaxRendered="false" />
+				</h:panelGroup>
+			</h:form>
+	
+		</rich:modalPanel>
+	</a4j:region>
+	
+	<a4j:region renderRegionOnly="true">
+		<rich:modalPanel id="modalLoadWorkflow" width="600" height="400" style="overflow:auto;" resizeable="false">
+	
+			<f:facet name="header">Load</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer"
+					onclick="#{rich:component('modalLoadWorkflow')}.hide()" />
+			</f:facet>
+	
+			<h:form id="formLoadWorkflow">
+				<h:panelGroup>
+					<a4j:include viewId="/pages/loadFileHdfs.xhtml" ajaxRendered="false" />
+				</h:panelGroup>
+			</h:form>
+	
+		</rich:modalPanel>
+	</a4j:region>
 </body>
 </html>

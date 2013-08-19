@@ -4,6 +4,8 @@ import idiro.utils.Tree;
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.interfaces.DFEInteraction;
+import idiro.workflow.server.interfaces.DFELinkProperty;
+import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.interfaces.DFEPage;
 import idiro.workflow.server.interfaces.DataFlow;
 import idiro.workflow.server.interfaces.DataFlowElement;
@@ -22,6 +24,7 @@ import javax.faces.model.SelectItem;
 
 import org.ajax4jsf.model.KeepAlive;
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
 
 /** CanvasModal
  * 
@@ -59,6 +62,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	private String firstPage = "S";
 	private int listPageSize;
 	private List<DynamicForm> dynamicFormList = new ArrayList<DynamicForm>();
+	private Map<String, String> idMap = new HashMap<String, String>();
 
 
 	/** getKeyAsListNameValue
@@ -152,9 +156,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 */
 	@PostConstruct
 	public void start() {
-		
+		logger.info("starCanvasModal");
 		setNameWorkflow("canvas1");
-
+		
 		try {
 			
 			if(getDfi() == null){
@@ -602,15 +606,21 @@ public class CanvasModal extends BaseBean implements Serializable {
 		String paramGroupID = params.get("paramGroupID");
 		setGroupID(paramGroupID);
 
+		String posX = params.get("paramPosX");
+		String posY = params.get("paramPosY");
 		try {
 
-			DataFlowInterface dfi = getworkFlowInterface();
+//			DataFlowInterface dfi = getworkFlowInterface();
 
-			DataFlow df = dfi.getWorkflow(getNameWorkflow());
+//			DataFlow df = dfi.getWorkflow(getNameWorkflow());
 
+			DataFlow df = getDf();
+			
 			String idElement = df.addElement(getNameElement());
+			df.getElement(idElement).setPosition(Double.valueOf(posX).intValue(), Double.valueOf(posY).intValue());
 
 			setNameElement(idElement);
+			getIdMap().put(paramGroupID, idElement);
 
 			logger.info("add element id " + getNameElement());
 
@@ -644,28 +654,74 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 */
 	public void addLink() {
-
-		try {
-
-			DataFlowInterface dfi = getworkFlowInterface();
-
-			DataFlow df = dfi.getWorkflow(getNameWorkflow());
-
-			/*DataFlowElement dfeObjA = df.getElement("idElementA");
-			DataFlowElement dfeObjB = df.getElement("idElementB");
-
-			dfeObjB.getInput();
-			dfeObjA.getDFEOutput();
-
-			df.addLink("", "wlwmwntOut", "", "elementIN");*/
-
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		
+//		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+//		String idElementA = params.get("paramOutId");
+//		String idElementB = params.get("paramInId");
+//
+//		try {
+//
+//			DataFlowInterface dfi = getworkFlowInterface();
+//
+//			DataFlow df = dfi.getWorkflow(getNameWorkflow());
+//
+//			DataFlowElement dfeObjA = df.getElement(getIdMap().get(idElementA));
+//			DataFlowElement dfeObjB = df.getElement(getIdMap().get(idElementB));
+//
+//			
+//			dfeObjB.getInput();
+//			dfeObjA.getDFEOutput();
+//			
+//			df.addLink("output1", dfeObjA.getComponentId(), "input1", dfeObjB.getComponentId());
+//
+//		} catch (RemoteException e) {
+//			e.printStackTrace();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 
 	}
+	
+//	/** addLink
+//	 * 
+//	 * Method for add Link for two elements
+//	 * 
+//	 * @return 
+//	 * @author Igor.Souza
+//	 */
+//	public void getLinkPossibilities() {
+//		
+//		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+//		String idElementA = params.get("paramOutId");
+//		String idElementB = params.get("paramInId");
+//
+//		List<String> result = new ArrayList<String>();
+//		try {
+//
+//			DataFlowInterface dfi = getworkFlowInterface();
+//
+//			DataFlow df = dfi.getWorkflow(getNameWorkflow());
+//
+//			DataFlowElement dfeObjA = df.getElement(getIdMap().get(idElementA));
+//			dfeObjA.
+//			dfeObjA.updateOut();
+//			DataFlowElement dfeObjB = df.getElement(getIdMap().get(idElementB));
+//			
+//			for (Map.Entry<String, DFELinkProperty> entryOutput : dfeObjB.getInput().entrySet()){
+//				for (Map.Entry<String, DFEOutput> entryInput : dfeObjA.getDFEOutput().entrySet()){
+//					if (entryOutput.getValue().check(entryInput.getValue().getClass())){
+//						result.add(entryOutput.getKey()+" -> "+entryInput.getKey());
+//					}
+//				}
+//			}
+//
+//		} catch (RemoteException e) {
+//			e.printStackTrace();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//
+//	}
 
 	/** removeLink
 	 * 
@@ -690,6 +746,85 @@ public class CanvasModal extends BaseBean implements Serializable {
 			e.printStackTrace();
 		}
 
+	}
+	
+	/** save
+	 * 
+	 * Method to save the workflow
+	 * 
+	 * @return
+	 * @author Igor.Souza
+	 */
+	public void save() {
+
+		String path = FacesContext.getCurrentInstance().getExternalContext().
+				getRequestParameterMap().get("pathFile");
+		
+		logger.info("save "+path);
+		
+		setNameWorkflow("canvas1");
+
+		DataFlowInterface dfi;
+		try {
+			dfi = getworkFlowInterface();
+			
+			DataFlow df = dfi.getWorkflow(getNameWorkflow());
+
+			logger.info(df.save(path));
+		} catch (Exception e) {
+			logger.info("Error saving workflow");
+			e.printStackTrace();
+		}
+	}
+	
+	/** load
+	 * 
+	 * Method to save a workflow
+	 * 
+	 * @return
+	 * @author Igor.Souza
+	 */
+	public void load() {
+		
+		closeWorkflow();
+		
+		String path = FacesContext.getCurrentInstance().getExternalContext().
+				getRequestParameterMap().get("pathFile");
+		
+		logger.info("load "+path);
+		
+		setNameWorkflow(path);
+
+		DataFlowInterface dfi;
+		try {
+			dfi = getworkFlowInterface();
+			
+			dfi.addWorkflow(getNameWorkflow());
+			DataFlow df = dfi.getWorkflow(getNameWorkflow());
+			df.getElement();
+			logger.info(df.read(path));
+			df.getElement();
+			setDf(df);
+		} catch (Exception e) {
+			logger.info("Error saving workflow");
+			e.printStackTrace();
+		}
+	}
+	
+	/** closeWorkflow
+	 * 
+	 * Method to close a workflow
+	 * 
+	 * @return
+	 * @author Igor.Souza
+	 */
+	public void closeWorkflow() {
+		
+		logger.info("closeWorkflow");
+		
+		setDf(null);
+		setIdMap(new HashMap<String, String>());
+		
 	}
 
 
@@ -796,7 +931,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void setGroupID(String groupID) {
 		this.groupID = groupID;
 	}
-
+	
 	public Entry getEntry() {
 		return entry;
 	}
@@ -893,4 +1028,19 @@ public class CanvasModal extends BaseBean implements Serializable {
 		this.dynamicFormList = dynamicFormList;
 	}
 	
+	public Map<String, String> getIdMap() {
+		return idMap;
+	}
+
+	public void setIdMap(Map<String, String> idMap) {
+		this.idMap = idMap;
+	}
+
+	public String getPositions() throws Exception{
+		JSONArray json = new JSONArray();
+		for (DataFlowElement e : getDf().getElement()){
+			json.put(new Object[]{e.getComponentId(), e.getName(), e.getImage(), e.getX(), e.getY()});
+		}
+		return json.toString();
+	}
 }

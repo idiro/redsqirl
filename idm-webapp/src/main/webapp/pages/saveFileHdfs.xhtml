@@ -1,0 +1,81 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<script>
+//<![CDATA[
+	var file;
+	function getPath(p){
+		return p + "/"+ file;
+	}
+	
+	function changeFile(f){
+		file = f;
+	}
+//]]>
+</script>
+
+	<h:outputText value="#{messages.label_path}" />
+	<h:inputText id="pathSaveFile" label="Path" value="#{hdfsBean.path}"
+		maxlength="255" style="width:395px;" />
+	<a4j:commandButton type="submit" id="changePathBt"
+		action="#{hdfsBean.changePath}" value="ok" reRender="hdfsfsSaveFile" />
+	<br />
+
+	<a4j:commandLink action="#{hdfsBean.goPrevious}"
+		reRender="pathSaveFile,hdfsfsSaveFile">
+		<img id="btAdd" src="../image/icons/button-undo.png" />
+	</a4j:commandLink>
+	<a4j:commandLink action="#{hdfsBean.goNext}" reRender="pathSaveFile,hdfsfsSaveFile">
+		<img id="btAdd" src="../image/icons/button-redo.png" />
+	</a4j:commandLink>
+
+	<rich:dataTable id="hdfsfsSaveFile" value="#{hdfsBean.listGrid}" var="item"
+		width="100%" style="border:none;"
+		onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+		onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
+
+		<f:facet name="header">
+			<h:outputText value="File System" />
+		</f:facet>
+
+		<rich:column sortBy="#{item.name}"
+			style="border-bottom:0px;border-right:0px;">
+			<f:facet name="header">
+				<h:outputText value="Name" />
+			</f:facet>
+			<a4j:commandLink value="#{item.name}"
+				action="#{hdfsBean.selectFile}" reRender="pathSaveFile,hdfsfsSaveFile">
+				<f:param name="nameFile" value="#{item.name}" />
+			</a4j:commandLink>
+		</rich:column>
+
+		<rich:columns value="#{hdfsBean.keyAsListNameValue}" var="column"
+			index="ind" id="column#{ind}"
+			style="border-bottom:0px;border-right:0px;">
+			<f:facet name="header">
+				<h:outputText value="#{column}" />
+			</f:facet>
+			<h:outputText value="#{item.nameValue[column]}" id="value#{ind}" />
+		</rich:columns>
+
+	</rich:dataTable>
+	
+	<h:outputText value="#{messages.label_file_name}" />
+	<h:inputText id="nameSaveFile" label="Name" onchange="changeFile(this.value)"
+		maxlength="255" style="width:395px;" />
+	<br />
+
+	<a4j:commandButton action="#{canvasModalBean.save}" value="ok"
+		onclick="#{rich:component('modalSaveWorkflow')}.hide();">
+		<a4j:actionparam name="pathFile" value="getPath('#{hdfsBean.path}')" noEscape="true"/>
+	</a4j:commandButton>
+	
+	<a4j:commandButton value="Cancel"
+		onclick="#{rich:component('modalSaveWorkflow')}.hide();">
+	</a4j:commandButton>
+	
+</ui:composition>
