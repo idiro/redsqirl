@@ -67,6 +67,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 	private String pathBrowser = "";
 	private ArrayList<ItemList> listGrid = new ArrayList<ItemList>();
 	private ArrayList<ItemList> listFeature = new ArrayList<ItemList>();
+	private DataFlowElement dfe;
+	
 
 	/** getKeyAsListNameValue
 	 * 
