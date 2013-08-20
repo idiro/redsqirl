@@ -36,14 +36,6 @@
 		action="#{hdfsBean.changePath}" value="ok" reRender="hdfsfsOpenFile" />
 	<br />
 
-	<a4j:commandLink action="#{hdfsBean.goPrevious}"
-		reRender="pathOpenFile,hdfsfsOpenFile">
-		<img id="btAdd" src="../image/icons/button-undo.png" />
-	</a4j:commandLink>
-	<a4j:commandLink action="#{hdfsBean.goNext}" reRender="pathOpenFile,hdfsfsOpenFile">
-		action="#{hdfsLoadBean.changePath}" value="ok" reRender="hdfsfsOpenFile,hdfsOpenFileBtn" />
-	<br />
-
 	<a4j:commandLink action="#{hdfsLoadBean.goPrevious}"
 		reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
 		<img id="btAdd" src="../image/icons/button-undo.png" />

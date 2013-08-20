@@ -72,6 +72,9 @@ public class CanvasBean extends BaseBean implements Serializable{
 	}
 	
 	public List<String[]> getHelpItens() throws Exception{
+		if (getDf() == null){
+			openCanvas();
+		}
 		DataFlow wf = getDf();
 		wf.loadMenu();
 		
