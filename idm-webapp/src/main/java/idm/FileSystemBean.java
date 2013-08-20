@@ -37,6 +37,8 @@ public class FileSystemBean extends BaseBean implements Serializable{
 	private List<Entry> fieldsInitNeededTitleKey;
 	
 	private DataStore dataStore;
+	
+	private List<String[]> selectedFiles;
 
 
 	/** openCanvasScreen
@@ -255,7 +257,7 @@ public class FileSystemBean extends BaseBean implements Serializable{
 	 * @author Igor.Souza
 	 */
 	public void copyFileBefore() throws RemoteException{
-
+		mountSelectedFilesList();
 	}
 
 	/** copyFileAfter
@@ -277,14 +279,11 @@ public class FileSystemBean extends BaseBean implements Serializable{
 			}
 		}
 
-		for (Iterator<ItemList> i = getListGrid().iterator(); i.hasNext();) {
-			ItemList item = i.next();
-
-			if(item.isSelected()){
-				logger.info("copy "+getDataStore().getPath() + "/" + item.getName() + " to " + getDataStore().getPath() + "/" + itemSelect.getName());
-				getDataStore().copy(getDataStore().getPath() + "/" + item.getName(), getDataStore().getPath() + "/" + itemSelect.getName()+ "/" + item.getName());
-			}
+		for (String[] s : selectedFiles) {
+			logger.info("copy "+s[0] + "/" + s[1] + " to " + getDataStore().getPath() + "/" + itemSelect.getName());
+			getDataStore().copy(s[0] + "/" + s[1], getDataStore().getPath() + "/" + itemSelect.getName()+ "/" + s[1]);
 		}
+		
 		mountTable(getDataStore());
 	}
 
@@ -383,7 +382,7 @@ public class FileSystemBean extends BaseBean implements Serializable{
 	 * @author Igor.Souza
 	 */
 	public void moveFileBefore() throws RemoteException{
-
+		mountSelectedFilesList();
 	}
 
 	/** moveFileAfter
@@ -394,7 +393,7 @@ public class FileSystemBean extends BaseBean implements Serializable{
 	 * @author Igor.Souza
 	 */
 	public void moveFileAfter() throws RemoteException{
-
+		
 		ItemList itemSelect = null;
 		for (Iterator<ItemList> i = getListGrid().iterator(); i.hasNext();) {
 			ItemList item = (ItemList) i.next();
@@ -405,13 +404,9 @@ public class FileSystemBean extends BaseBean implements Serializable{
 			}
 		}
 
-		for (Iterator<ItemList> i = getListGrid().iterator(); i.hasNext();) {
-			ItemList item = (ItemList) i.next();
-
-			if(item.isSelected()){
-				logger.info("move "+getDataStore().getPath() + "/" + item.getName() + " to " + getDataStore().getPath() + "/" + itemSelect.getName());
-				getDataStore().move(getDataStore().getPath() + "/" + item.getName(), getDataStore().getPath() + "/" + itemSelect.getName()+ "/" + item.getName());
-			}
+		for (String[] s : selectedFiles) {
+			logger.info("move "+s[0] + "/" + s[1] + " to " + getDataStore().getPath() + "/" + itemSelect.getName());
+			getDataStore().move(s[0] + "/" + s[1], getDataStore().getPath() + "/" + itemSelect.getName()+ "/" + s[1]);
 		}
 		mountTable(getDataStore());
 	}
@@ -442,6 +437,15 @@ public class FileSystemBean extends BaseBean implements Serializable{
 		getDataStore().goNext();
 		mountTable(getDataStore());
 
+	}
+	
+	private void mountSelectedFilesList() throws RemoteException{
+		selectedFiles = new ArrayList<String[]>();
+		for (ItemList i : getListGrid()) {
+			if(i.isSelected()){
+				selectedFiles.add(new String[]{getDataStore().getPath(), i.getName()});
+			}
+		}
 	}
 	
 	public String getCanCopy() throws RemoteException{

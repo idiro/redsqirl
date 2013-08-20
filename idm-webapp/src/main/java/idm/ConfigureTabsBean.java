@@ -23,8 +23,7 @@ public class ConfigureTabsBean extends BaseBean{
 
 	@PostConstruct
 	public void openCanvasScreen() throws RemoteException {
-		getworkFlowInterface().addWorkflow("new wf tabs");
-		wf = getworkFlowInterface().getWorkflow("new wf tabs");
+		wf = getworkFlowInterface().getWorkflow("canvas0");
 		wf.loadMenu();
 	}
 

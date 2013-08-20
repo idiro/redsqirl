@@ -378,9 +378,7 @@
 	      }
 	      
 	      function addElementJs(positions){
-	    	 	alert(positions);
 	    	  	addElements(positions);
-
 	      }
 
 	      
@@ -406,7 +404,7 @@
 
 	<div id="menu">
 
-		<h:form>
+		<h:form id="formMenu">
 
 			<h:inputHidden value="#{canvasBean.countObj}" id="countObj" />
 			<h:inputHidden value="#{canvasModalBean.nameElement}" id="nameElement" />
@@ -414,34 +412,39 @@
 			<h:inputHidden value="#{canvasModalBean.listPageSize}" />
 			
 
-			<a4j:commandLink id="addLinkBt" action="#{canvasModalBean.addLink}" style="display:none;" />
-			<a4j:commandLink id="removeLinkBt" action="#{canvasModalBean.removeLink}" style="display:none;" />
+			<a4j:commandLink id="addLinkBt" action="#{canvasBean.addLink}" style="display:none;" />
+			<a4j:commandLink id="removeLinkBt" action="#{canvasBean.removeLink}" style="display:none;" />
 
 			<a4j:region>
-				<a4j:jsFunction name="addElementBt" action="#{canvasModalBean.addElement}" data="#{canvasModalBean.entry}" oncomplete="updateTypeObj(data.key, data.value);" >
-					<a4j:actionparam name="paramNameElement" assignTo="#{canvasModalBean.nameElement}" />
-					<a4j:actionparam name="paramGroupID" assignTo="#{canvasModalBean.groupID}" />
-					<a4j:actionparam name="paramPosX" />
-					<a4j:actionparam name="paramPosY"  />
+				<a4j:jsFunction name="addElementBt" action="#{canvasBean.addElement}" data="#{canvasBean.entry}" oncomplete="updateTypeObj(data.key, data.value);" >
+					<a4j:actionparam name="paramNameElement"/>
+					<a4j:actionparam name="paramGroupID"/>
+					<a4j:actionparam name="paramPosX"/>
+					<a4j:actionparam name="paramPosY"/>
 				</a4j:jsFunction>
 			</a4j:region>
 			
 			<a4j:region>
-				<a4j:jsFunction name="addLinkBt" action="#{canvasModalBean.addLink}" >
+				<a4j:jsFunction name="addLinkBt" action="#{canvasBean.addLink}" >
 					<a4j:actionparam name="paramOutId"/>
 					<a4j:actionparam name="paramInId"/>
 				</a4j:jsFunction>
 			</a4j:region>
 			
 			<a4j:region>
-				<a4j:jsFunction name="openModal" action="#{canvasModalBean.openCanvasModal}" oncomplete="#{rich:component('canvasModalPanel')}.show()" reRender="pageTitle, pageLegend, panelBtCanvasModal, panelDynamicForm" >
+				<a4j:jsFunction id="openModalFunction" name="openModal" action="#{canvasModalBean.openCanvasModal}" oncomplete="#{rich:component('canvasModalPanel')}.show()" reRender="pageTitle, pageLegend, panelBtCanvasModal, panelDynamicForm" >
 					<a4j:actionparam name="paramNameElement" assignTo="#{canvasModalBean.nameElement}" />
+					<a4j:actionparam name="paramNameWorkflow" value="#{canvasBean.nameWorkflow}" assignTo="#{canvasModalBean.nameElement}" />
 				</a4j:jsFunction>
 			</a4j:region>
 
-			<a4j:jsFunction name="loadWorkflow" data="#{canvasModalBean.positions}" oncomplete="addElementJs(data)" />
+			<a4j:region>
+				<a4j:jsFunction name="loadWorkflow" data="#{canvasBean.positions}" oncomplete="addElementJs(data)" reRender="formMenu"/>
+			</a4j:region>
 			
-			<a4j:jsFunction name="closeWorkflow" action="#{canvasModalBean.closeWorkflow}" oncomplete="clearCanvas();" />
+			<a4j:region>
+				<a4j:jsFunction name="closeWorkflow" action="#{canvasBean.closeWorkflow}" oncomplete="clearCanvas();"  reRender="formMenu"/>
+			</a4j:region>
 			
 			<a4j:region>
 			<rich:toolBar>
@@ -459,7 +462,7 @@
 					<rich:menuItem submitMode="ajax"
 						value="#{messages.label_menu_open}" onclick="#{rich:component('modalLoadWorkflow')}.show()" />
 					<rich:menuItem submitMode="none"
-						value="#{messages.label_menu_close}" onclick="closeTab(this);" />
+						value="#{messages.label_menu_close}" onclick="closeWorkflow();" />
 					<rich:menuItem submitMode="ajax"
 						value="#{messages.label_menu_closeall}"
 						action="#{canvasBean.doNew}" />
@@ -535,8 +538,8 @@
 		<center>
 			<a onclick="jQuery('#addtabCanvas').click();"><img src="../image/icons/button-new.png" alt="new" class="shortMenuIcon" /></a>
 			<a onclick="deleteSelected();"><img id="buttonDelete" src="../image/icons/button-delete.png" alt="open" class="shortMenuIcon" /></a>
-			<img src="../image/icons/button-open.png" alt="open" class="shortMenuIcon" />
-			<img src="../image/icons/button-save.png" alt="save" class="shortMenuIcon" />
+			<img src="../image/icons/button-open.png" alt="open" class="shortMenuIcon" onclick="#{rich:component('modalLoadWorkflow')}.show()"/>
+			<img src="../image/icons/button-save.png" alt="save" class="shortMenuIcon" onclick="#{rich:component('modalSaveWorkflow')}.show()"/>
 			<img src="../image/icons/button-save-as.png" alt="saveas" class="shortMenuIcon" />
 			<img src="../image/icons/button-save-all.png" alt="saveall" class="shortMenuIcon" />
 			<a onclick="undoHistory();"><img src="../image/icons/button-undo.png" alt="undo" class="shortMenuIcon" /></a>

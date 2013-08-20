@@ -17,6 +17,16 @@
   <managed-bean-scope>request</managed-bean-scope>
  </managed-bean>
  <managed-bean>
+  <managed-bean-name>hdfsLoadBean</managed-bean-name>
+  <managed-bean-class>idm.HdfsBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+  <managed-bean>
+  <managed-bean-name>hdfsSaveBean</managed-bean-name>
+  <managed-bean-class>idm.HdfsBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
   <managed-bean-name>hiveBean</managed-bean-name>
   <managed-bean-class>idm.HiveBean</managed-bean-class>
   <managed-bean-scope>request</managed-bean-scope>

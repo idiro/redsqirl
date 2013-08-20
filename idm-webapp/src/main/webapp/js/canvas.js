@@ -1935,12 +1935,13 @@ var countObj;
 			   
 			   configureCircle(circle1, polygonLayer);
 				
-			   var posInitX = 40;
-			   var poxInitY = 50;
+			   
 			   
 			   //for list divs
 			   jQuery( "#tabsFooter ul:first li" ).each(function(index) {
 				   
+				    var posInitX = 40;
+				    var poxInitY = 50;
 				   
 				   	var nameDiv = jQuery(this).attr("aria-controls");
 				   
@@ -1956,7 +1957,7 @@ var countObj;
 					    });
 					    
 					    //layer to footer tab1
-					    layerTab = new Kinetic.Layer();
+					    var layerTab = new Kinetic.Layer();
 					    
 					    
 					    //var countObj = 0;

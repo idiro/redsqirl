@@ -18,22 +18,24 @@
 //]]>
 </script>
 
+	<a4j:keepAlive beanName = "hdfsSaveBean"/>
+
 	<h:outputText value="#{messages.label_path}" />
-	<h:inputText id="pathSaveFile" label="Path" value="#{hdfsBean.path}"
+	<h:inputText id="pathSaveFile" label="Path" value="#{hdfsSaveBean.path}"
 		maxlength="255" style="width:395px;" />
 	<a4j:commandButton type="submit" id="changePathBt"
-		action="#{hdfsBean.changePath}" value="ok" reRender="hdfsfsSaveFile,hdfsSaveFileBtn" />
+		action="#{hdfsSaveBean.changePath}" value="ok" reRender="hdfsfsSaveFile,hdfsSaveFileBtn" />
 	<br />
 
-	<a4j:commandLink action="#{hdfsBean.goPrevious}"
+	<a4j:commandLink action="#{hdfsSaveBean.goPrevious}"
 		reRender="pathSaveFile,hdfsfsSaveFile,hdfsSaveFileBtn">
 		<img id="btAdd" src="../image/icons/button-undo.png" />
 	</a4j:commandLink>
-	<a4j:commandLink action="#{hdfsBean.goNext}" reRender="pathSaveFile,hdfsfsSaveFile,hdfsSaveFileBtn">
+	<a4j:commandLink action="#{hdfsSaveBean.goNext}" reRender="pathSaveFile,hdfsfsSaveFile,hdfsSaveFileBtn">
 		<img id="btAdd" src="../image/icons/button-redo.png" />
 	</a4j:commandLink>
 
-	<rich:dataTable id="hdfsfsSaveFile" value="#{hdfsBean.listGrid}" var="item"
+	<rich:dataTable id="hdfsfsSaveFile" value="#{hdfsSaveBean.listGrid}" var="item"
 		width="100%" style="border:none;"
 		onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 		onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
@@ -48,12 +50,12 @@
 				<h:outputText value="Name" />
 			</f:facet>
 			<a4j:commandLink value="#{item.name}"
-				action="#{hdfsBean.selectFile}" reRender="pathSaveFile,hdfsfsSaveFile,hdfsSaveFileBtn">
+				action="#{hdfsSaveBean.selectFile}" reRender="pathSaveFile,hdfsfsSaveFile,hdfsSaveFileBtn">
 				<f:param name="nameFile" value="#{item.name}" />
 			</a4j:commandLink>
 		</rich:column>
 
-		<rich:columns value="#{hdfsBean.keyAsListNameValue}" var="column"
+		<rich:columns value="#{hdfsSaveBean.keyAsListNameValue}" var="column"
 			index="ind" id="column#{ind}"
 			style="border-bottom:0px;border-right:0px;">
 			<f:facet name="header">
@@ -69,9 +71,9 @@
 		maxlength="255" style="width:395px;" />
 	<br />
 
-	<a4j:commandButton id="hdfsSaveFileBtn" action="#{canvasModalBean.save}" value="ok"
+	<a4j:commandButton id="hdfsSaveFileBtn" action="#{canvasBean.save}" value="ok"
 		onclick="#{rich:component('modalSaveWorkflow')}.hide();">
-		<a4j:actionparam name="pathFile" value="getPath('#{hdfsBean.path}')" noEscape="true"/>
+		<a4j:actionparam name="pathFile" value="getPath('#{hdfsSaveBean.path}')" noEscape="true"/>
 	</a4j:commandButton>
 	
 	<a4j:commandButton value="Cancel"
