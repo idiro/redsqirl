@@ -64,7 +64,10 @@ public class CanvasModal extends BaseBean implements Serializable {
 	private ArrayList<ItemList> listGrid = new ArrayList<ItemList>();
 	private ArrayList<ItemList> listFeature = new ArrayList<ItemList>();
 	private DataFlowElement dfe;
+<<<<<<< Upstream, based on master
 	
+=======
+>>>>>>> 334c1ae dynamic form
 
 	/** getKeyAsListNameValue
 	 * 
