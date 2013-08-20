@@ -1,8 +1,9 @@
 package idiro.workflow.server.interfaces;
 
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-public interface PageChecker {
+public interface PageChecker extends Remote{
 	
 	/**
 	 * Check something

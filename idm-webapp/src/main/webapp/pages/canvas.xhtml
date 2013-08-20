@@ -587,7 +587,6 @@
 
 								<div id="tabsFooter">
 									<ul>
-										<li><a href="#tabFooter1">Tab 1</a></li>
 										
 										<ui:repeat value="#{configureTabsBean.tabs}" var="tab" varStatus="status">
 											<li><a href="##{tab}">#{tab}</a></li>
@@ -603,11 +602,7 @@
 
 									</span>
 									
-									<div id="tabFooter1">
-
-										<div id="canvasTabFooter1"></div>
-
-									</div>
+									
 									
 									<ui:repeat value="#{configureTabsBean.menuWAList}" var="tab">
 										<div id="#{tab.key}">

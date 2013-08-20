@@ -22,6 +22,7 @@ import java.io.File;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -62,14 +63,6 @@ public class Source extends DataflowAction{
 
 		page1.addInteraction(dataType);
 		
-		DFEInteraction dataSubtype = new UserInteraction(
-				key_datasubtype,
-				"Please specify a data subtype",
-				DisplayType.list,
-				0,
-				1); 
-
-		page1.addInteraction(dataSubtype);
 		
 		page1.setChecker(new PageChecker(){
 
@@ -108,8 +101,115 @@ public class Source extends DataflowAction{
 			}
 
 		});
+		
+		
+		Page page2 = addPage("Source",
+				"Loads a data source",
+				1);
+		
+		
+		DFEInteraction dataSubtype = new UserInteraction(
+				key_datasubtype,
+				"Please specify a data subtype",
+				DisplayType.list,
+				0,
+				0); 
 
-		Page page2 = addPage("Browse Source",
+		page2.addInteraction(dataSubtype);
+		
+		page2.setChecker(new PageChecker(){
+
+			@Override
+			public String check(DFEPage page) throws RemoteException {
+				String error = null;
+				try{
+					if( getInteraction(key_datatype).getTree()
+							.getFirstChild("list").getFirstChild("output")
+							.getFirstChild().getHead().isEmpty()
+							){
+						error = "Data type cannot be empty";
+					}
+					else{
+						String dataType = getInteraction(key_datatype).getTree()
+								.getFirstChild("list").getFirstChild("output")
+								.getFirstChild().getHead();
+						
+						if (dataType.equalsIgnoreCase("hdfs")){
+							try{
+								if( getInteraction(key_datasubtype).getTree()
+										.getFirstChild("list").getFirstChild("output")
+										.getFirstChild().getHead().isEmpty()
+										){
+									error = "Data subtype cannot be empty";
+								}
+							}catch(Exception e){
+								error = "Data subtype cannot be empty";
+							}
+						}
+					}
+					
+					
+					
+						
+						String type = getInteraction(key_datatype).getTree()
+								.getFirstChild("list").getFirstChild("output")
+								.getFirstChild().getHead();
+						if(type.equalsIgnoreCase("hive")){
+							output.put(out_name, new HiveType());
+						}
+						else if(type.equalsIgnoreCase("hdfs")){
+							
+							String subtype = getInteraction(key_datasubtype).getTree()
+									.getFirstChild("list").getFirstChild("output")
+									.getFirstChild().getHead();
+							
+							Iterator<String> dataOutputClassName = 
+									WorkflowPrefManager.getInstance().getNonAbstractClassesFromSuperClass(
+											DataOutput.class.getCanonicalName()).iterator();
+							
+							Class<?> klass = null;
+							while (dataOutputClassName.hasNext()){
+								String className = dataOutputClassName.next();
+								String[] classNameArray = className.split("\\.");
+								if (classNameArray[classNameArray.length-1].equals(subtype)){
+									klass = Class.forName(className);
+									break;
+								}
+							}
+							
+							DFEOutput dataOutput = (DFEOutput)(klass.getConstructor(Map.class).newInstance());
+							
+							output.put(out_name, dataOutput);
+							
+							String delimiter = "\001";
+							try{
+								delimiter = getInteraction(key_dataset).getTree()
+									.getFirstChild("browse").
+									getFirstChild("output")
+									.getFirstChild("property").
+									getFirstChild(MapRedTextType.key_delimiter).
+									getFirstChild().getHead();
+							}catch(Exception e){
+								logger.debug("Delimiter not set, using default delimiter");
+							}
+							
+							output.get(out_name).addProperty(MapRedTextType.key_delimiter, delimiter);
+						}
+						
+						
+					
+					
+					
+				}catch(Exception e){
+					error = "Data type cannot be empty";
+				}
+				return error;
+			}
+
+		});
+		
+
+		Page page3 = addPage("Browse Source",
 				"Pick a data set",
 				1);
 
@@ -120,9 +220,9 @@ public class Source extends DataflowAction{
 				0,
 				0);
 
-		page2.addInteraction(browse);
+		page3.addInteraction(browse);
 		
-		page2.setChecker(new PageChecker(){
+		page3.setChecker(new PageChecker(){
 
 			@Override
 			public String check(DFEPage page) throws RemoteException {
@@ -246,6 +346,15 @@ public class Source extends DataflowAction{
 			list.add("output");
 
 			Tree<String> value = list.add("value");
+			
+			
+			
+			DFEInteraction interaction = getInteraction(key_datatype);
+			if(interaction.getTree().getFirstChild("list").getFirstChild("output").getFirstChild() != null &&
+					interaction.getTree().getFirstChild("list").getFirstChild("output").getFirstChild().getHead().equalsIgnoreCase("hive")){
+				treeDatasubtype.getFirstChild("list").getFirstChild("output").add("Hive");
+			}
+			
 			
 			Iterator<String> dataOutputClassName = 
 					WorkflowPrefManager.getInstance().getNonAbstractClassesFromSuperClass(

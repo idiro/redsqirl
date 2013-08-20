@@ -291,3 +291,7 @@ canvas {
 	list-style-image: url("../image/icons/li_msg_warn.gif");
 	font-size: 11px;
 }
+
+.rich-panel-body {
+    padding: 0px;
+}
