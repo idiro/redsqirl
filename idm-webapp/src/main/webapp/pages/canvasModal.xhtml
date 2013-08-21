@@ -13,7 +13,11 @@
 	<head>
 	
 		<script>
-		
+
+
+			function openBrowserChangePath(positions){
+				jQuery("[id$='browserChangePathBt']").click();
+			}
 			
 		</script>
 	
@@ -57,13 +61,13 @@
 			
 				<h:outputText value="#{messages.label_path}" />
 				<br/>
-				<h:inputText id="browserPath" label="Path" value="#{item.pathBrowser}"
-					maxlength="255" style="width:395px;" />
+				<h:inputText id="browserPath" label="Path" value="#{item.pathBrowser}" maxlength="255" 
+					style="width:395px;" onclick="openBrowserChangePath();" />
 					
 					<span>&nbsp;&nbsp;</span>
 					
-				<a4j:commandButton type="submit" id="browserChangePathBt" action="#{canvasModalBean.changePathBrowser}" 
-					value="ok" reRender="browserTable2" >
+				<a4j:commandButton type="submit" id="browserChangePathBt" action="#{canvasModalBean.changePathBrowserBefore}" 
+					reRender="browserTable2" oncomplete="#{rich:component('modalBrowser')}.show()" style="display:none;" >
 					<f:param name="numberDynamic" value="#{index}" />	
 				</a4j:commandButton>
 	
@@ -113,6 +117,22 @@
 				
 			</rich:panel>
 			
+			<rich:modalPanel id="modalBrowser" width="600" height="400" style="overflow:auto;" resizeable="false">
+	
+				<f:facet name="header">Browser</f:facet>
+				<f:facet name="controls">
+					<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer"
+						onclick="#{rich:component('modalBrowser')}.hide()" />
+				</f:facet>
+		
+				<h:form id="modalBrowserId">
+					<h:panelGroup>
+						<a4j:include viewId="/pages/modalBrowser.xhtml" ajaxRendered="false" />
+					</h:panelGroup>
+				</h:form>
+		
+			</rich:modalPanel>
+			
 			
 			<!-- helpTextEditor -->
 			<!-- table -->
@@ -120,6 +140,7 @@
 			<br />
 			
 		</a4j:repeat>
+		
 		
 	</rich:panel>
 		

@@ -34,14 +34,17 @@ public class HiveType extends DataOutput{
 	 */
 	private static final long serialVersionUID = -4797761333298548415L;
 	protected static HiveInterface hInt;
-	
 	public static final String key_partitions = "key_partitions";
+	private boolean constant; 
 
 	public HiveType() throws RemoteException {
 		super();
 		if(hInt == null){
 			hInt = new HiveInterface();
 		}
+		
+		setConstant(true);
+		
 	}
 
 	public HiveType(Map<String,FeatureType> features) throws RemoteException{
@@ -121,5 +124,14 @@ public class HiveType extends DataOutput{
 	public boolean isPathExists() throws RemoteException {
 		return hInt.exists(getPath());
 	}
+
+	public boolean isConstant() {
+		return constant;
+	}
+
+	public void setConstant(boolean constant) {
+		this.constant = constant;
+	}
+	
 
 }
