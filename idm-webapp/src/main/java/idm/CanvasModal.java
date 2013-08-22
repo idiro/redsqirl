@@ -2,27 +2,21 @@ package idm;
 
 import idiro.utils.Tree;
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
-import idiro.workflow.server.connect.interfaces.DataStore.ParamProperty;
 import idiro.workflow.server.enumeration.DisplayType;
+import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.interfaces.DFEInteraction;
-import idiro.workflow.server.interfaces.DFELinkProperty;
-import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.interfaces.DFEPage;
 import idiro.workflow.server.interfaces.DataFlow;
 import idiro.workflow.server.interfaces.DataFlowElement;
 import idm.useful.MessageUseful;
-
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
-
 import org.ajax4jsf.model.KeepAlive;
 import org.apache.log4j.Logger;
 
@@ -57,7 +51,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 	private String firstPage = "S";
 	private int listPageSize;
 	private List<DynamicForm> dynamicFormList = new ArrayList<DynamicForm>();
-
 	private Map<String, String> nameValueFeature = new HashMap<String, String>();
 	private Map<String, String> nameValueListGrid = new HashMap<String, String>();
 	private String pathBrowser = "";
@@ -557,34 +550,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 	}
 
-	/** openBrowser
-	 * 
-	 * Methods to mount screen Browser
-	 * 
-	 * @return 
-	 * @author Igor.Souza
-	 */
-	public void openBrowser() {
-		
-		logger.info("openBrowser");
-
-		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-		String positionElement = params.get("numberDynamic");
-		
-		logger.info("positionElement " + positionElement);
-		DynamicForm dynamicForm = getDynamicFormList().get(Integer.parseInt(positionElement));
-		
-		if(dynamicForm.getDataTypeName().equalsIgnoreCase("hive")){
-			
-			
-		} else if(dynamicForm.getDataTypeName().equalsIgnoreCase("hdfs")){
-			
-			
-		}
-		
-
-	}
-
 	/** confirm
 	 * 
 	 * Methods to confirm this action.
@@ -730,6 +695,15 @@ public class CanvasModal extends BaseBean implements Serializable {
 		logger.info("positionElement " + positionElement);
 		setDynamicFormBrowser(getDynamicFormList().get(Integer.parseInt(positionElement)));
 		
+		if(getDynamicFormBrowser().getDataTypeName().equalsIgnoreCase("hive")){
+			
+			
+		} else if(getDynamicFormBrowser().getDataTypeName().equalsIgnoreCase("hdfs")){
+			
+			
+		}
+		
+		
 	}
 
 	/** changePathBrowser
@@ -750,8 +724,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 		if(dynamicForm.getDataTypeName().equalsIgnoreCase("Hive")){
 			
-			Map<String, String> map = getHiveInterface().getProperties(path);
-			logger.info("map " + map);
+			Map<String, String> propertiesMap = getHiveInterface().getProperties(path);
+			logger.info("propertiesMap " + propertiesMap);
 			
 			//getDfe().getDFEOutput().get("source").setFeatures();
 			
@@ -768,8 +742,12 @@ public class CanvasModal extends BaseBean implements Serializable {
 		}
 		
 		getDfe().getDFEOutput().get("source").select(10);
-		getDfe().getDFEOutput().get("source").getProperties();
-		getDfe().getDFEOutput().get("source").getFeatures();
+		
+		Map<String, String> outputPropertiesMap = getDfe().getDFEOutput().get("source").getProperties();
+		logger.info("outputPropertiesMap " + outputPropertiesMap);
+		
+		Map<String, FeatureType> outputFeatureMap  = getDfe().getDFEOutput().get("source").getFeatures();
+		logger.info("outputFeatureMap " + outputFeatureMap);
 		
 		
 		dynamicForm.setPathBrowser(path);
