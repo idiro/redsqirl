@@ -2,6 +2,8 @@ package idiro.workflow.server.datatype;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import idiro.utils.OrderedFeatureList;
+import idiro.utils.FeatureList;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.test.TestUtils;
@@ -29,19 +31,19 @@ public class HiveTypeTests {
 		return ans;
 	}
 	
-	Map<String,FeatureType> getFeatures(){
-		Map<String,FeatureType> ans = new HashMap<String,FeatureType>();
-		ans.put("ID",FeatureType.STRING);
-		ans.put("VALUE",FeatureType.INT);
+	FeatureList getFeatures(){
+		FeatureList ans = new OrderedFeatureList();
+		ans.addFeature("ID",FeatureType.STRING);
+		ans.addFeature("VALUE",FeatureType.INT);
 		return ans;
 	}
 	
-	Map<String,FeatureType> getFeaturesWPart(){
-		Map<String,FeatureType> ans = new HashMap<String,FeatureType>();
-		ans.put("ID",FeatureType.STRING);
-		ans.put("VALUE",FeatureType.INT);
-		ans.put("COUNTRY",FeatureType.STRING);
-		ans.put("DT",FeatureType.STRING);
+	FeatureList getFeaturesWPart(){
+		FeatureList ans = new OrderedFeatureList();
+		ans.addFeature("ID",FeatureType.STRING);
+		ans.addFeature("VALUE",FeatureType.INT);
+		ans.addFeature("COUNTRY",FeatureType.STRING);
+		ans.addFeature("DT",FeatureType.STRING);
 		return ans;
 	}
 	

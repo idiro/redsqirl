@@ -1,13 +1,12 @@
 package idiro.workflow.server.action;
 
+import idiro.utils.FeatureList;
 import idiro.workflow.server.Page;
 import idiro.workflow.server.enumeration.DisplayType;
-import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEOutput;
 
 import java.rmi.RemoteException;
-import java.util.Map;
 
 /**
  * Action to do a simple select statement in Pig Latin.
@@ -162,12 +161,12 @@ public class PigSelect extends PigElement{
 	}
 
 	@Override
-	public Map<String, FeatureType> getInFeatures() throws RemoteException {
+	public FeatureList getInFeatures() throws RemoteException {
 		return getDFEInput().get(key_input).get(0).getFeatures();
 	}
 
 	@Override
-	public Map<String, FeatureType> getNewFeatures() throws RemoteException {
+	public FeatureList getNewFeatures() throws RemoteException {
 		return tSelInt.getNewFeatures();
 	}
 

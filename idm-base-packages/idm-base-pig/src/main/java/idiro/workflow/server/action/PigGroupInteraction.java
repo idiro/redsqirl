@@ -39,7 +39,7 @@ public class PigGroupInteraction extends UserInteraction{
 			list.remove("value");
 		}
 		Tree<String> value = list.add("value");
-		Iterator<String> it = in.getFeatures().keySet().iterator();
+		Iterator<String> it = in.getFeatures().getFeaturesNames().iterator();
 		while(it.hasNext()){
 			value.add(it.next());
 		}

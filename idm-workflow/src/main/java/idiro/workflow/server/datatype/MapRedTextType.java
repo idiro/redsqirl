@@ -2,6 +2,8 @@ package idiro.workflow.server.datatype;
 
 import idiro.hadoop.NameNodeVar;
 import idiro.hadoop.checker.HdfsFileChecker;
+import idiro.utils.OrderedFeatureList;
+import idiro.utils.FeatureList;
 import idiro.utils.RandomString;
 import idiro.workflow.server.DataOutput;
 import idiro.workflow.server.OozieManager;
@@ -14,7 +16,7 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -50,7 +52,7 @@ public class MapRedTextType extends DataOutput{
 		}
 	}
 
-	public MapRedTextType(Map<String,FeatureType> features) throws RemoteException {
+	public MapRedTextType(FeatureList features) throws RemoteException {
 		super(features);
 		if(hdfsInt == null){
 			hdfsInt = new HDFSInterface();
@@ -174,6 +176,7 @@ public class MapRedTextType extends DataOutput{
 				for(int i = 0; i < stat.length; ++i){
 					ans.addAll(
 							hdfsInt.select(stat[i].getPath().toString(),
+									getProperty(key_delimiter),
 									(maxToRead/stat.length)+1)
 									);
 				}
@@ -184,6 +187,145 @@ public class MapRedTextType extends DataOutput{
 			}
 		}
 		return ans;
+	}
+	
+	public void generateFeaturesMap(){
+		
+		features = new OrderedFeatureList();
+		try {
+			List<String> lines = this.select(10);
+			for (String line : lines){
+				if (!line.trim().isEmpty()){
+					int cont = 0;
+					for (String s : line.split(Pattern.quote(getProperty(key_delimiter)))){
+						String nameColumn = generateColumnName(cont++);
+						FeatureType type = getType(s);
+						if (features.containsFeature(nameColumn)){
+							if (!canCast(type, features.getFeatureType(nameColumn))){
+								features.addFeature(nameColumn, type);
+							}
+						}
+						else{
+							features.addFeature(nameColumn, type);
+						}
+					}
+				}
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private String getDefaultDelimiter(String text){
+		if (text.contains("\001")){
+			return "\001";
+		}
+		else if (text.contains("\002")){
+			return "\002";
+		}
+		else if (text.contains("|")){
+			return "|";
+		}
+		return "\001";
+	}
+	
+	
+	private FeatureType getType(String expr){
+		
+		FeatureType type = null;
+		if(expr.equalsIgnoreCase("TRUE")||
+				expr.equalsIgnoreCase("FALSE")){
+			type = FeatureType.BOOLEAN;
+		}
+		else{
+			try{
+				Integer.valueOf(expr);
+				type = FeatureType.INT;
+			}catch(Exception e){}
+			if(type == null){
+				try{
+					Long.valueOf(expr);
+					type = FeatureType.LONG;
+				}catch(Exception e){}
+			}
+			if(type == null){
+				try{
+					Float.valueOf(expr);
+					type = FeatureType.FLOAT;
+				}catch(Exception e){}
+			}
+			if(type == null){
+				try{
+					Double.valueOf(expr);
+					type = FeatureType.DOUBLE;
+				}catch(Exception e){}
+			}
+			if(type == null){
+				type = FeatureType.STRING;
+			}
+		}
+		
+		return type;
+	}
+	
+	private boolean canCast(FeatureType from, FeatureType to){
+		if (from.equals(to)){
+			return true;
+		}
+		
+		List<FeatureType> features = new ArrayList<FeatureType>();
+		features.add(FeatureType.INT);
+		features.add(FeatureType.LONG);
+		features.add(FeatureType.FLOAT);
+		features.add(FeatureType.DOUBLE);
+		features.add(FeatureType.STRING);
+		
+		if (from.equals(FeatureType.BOOLEAN)){
+			if (to.equals(FeatureType.STRING)){
+				return true;
+			}
+			return false;
+		}
+		else if (features.indexOf(from) <= features.indexOf(to)){
+			return true;
+		}
+		return false;
+	}
+	
+	@Override
+	public void addProperty(String key, String value){
+		super.addProperty(key, value);
+		if (key.equals(key_delimiter) && getPath() != null){
+			generateFeaturesMap();
+		}
+	}
+	
+	@Override
+	public void setPath(String path) throws RemoteException {
+		super.setPath(path);
+		
+		List<String> list = select(1);
+		if (!list.isEmpty()){
+			String text = list.get(0);
+			if (getProperty(key_delimiter) == null){
+				super.addProperty(key_delimiter, getDefaultDelimiter(text));
+			}
+			else{
+				if (!text.contains(getProperty(key_delimiter))){
+					super.addProperty(key_delimiter, getDefaultDelimiter(text));
+				}
+			}
+		}
+		
+		generateFeaturesMap();
+	}
+	
+	private String generateColumnName(int columnIndex){
+		if (columnIndex > 25){
+			return generateColumnName(((columnIndex)/26)-1) + 
+					generateColumnName(((columnIndex)%26));
+		}else
+			return String.valueOf((char)(columnIndex+65));
 	}
 
 }

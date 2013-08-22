@@ -1,6 +1,6 @@
 package idiro.workflow.server;
 
-import idiro.workflow.server.enumeration.FeatureType;
+import idiro.utils.FeatureList;
 import idiro.workflow.server.enumeration.SavingState;
 import idiro.workflow.server.interfaces.DFEOutput;
 
@@ -51,7 +51,7 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 	/**
 	 * Feature
 	 */
-	protected Map<String,FeatureType> features = null;
+	protected FeatureList features = null;
 	
 	/**
 	 * Property of an output, 
@@ -74,7 +74,7 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 		super();
 	}
 	
-	public DataOutput(Map<String,FeatureType> features) 
+	public DataOutput(FeatureList features) 
 			throws RemoteException{
 		super();
 		this.features = features;
@@ -142,14 +142,14 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 	/**
 	 * @return the features
 	 */
-	public final Map<String, FeatureType> getFeatures() {
+	public final FeatureList getFeatures() {
 		return features;
 	}
 
 	/**
 	 * @param features the features to set
 	 */
-	public final void setFeatures(Map<String, FeatureType> features) {
+	public final void setFeatures(FeatureList features) {
 		this.features = features;
 	}
 
@@ -200,7 +200,7 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 	 * @throws RemoteException 
 	 */
 	@Override
-	public final void setPath(String path) throws RemoteException {
+	public void setPath(String path) throws RemoteException {
 		this.path = path;
 	}
 	

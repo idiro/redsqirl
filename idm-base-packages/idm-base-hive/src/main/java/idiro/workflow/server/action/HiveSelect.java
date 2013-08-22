@@ -1,17 +1,16 @@
 package idiro.workflow.server.action;
 
+import idiro.utils.FeatureList;
 import idiro.utils.Tree;
 import idiro.workflow.server.Page;
 import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.enumeration.DisplayType;
-import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEOutput;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
-import java.util.Map;
 
 /**
  * Action to do a simple select statement in HiveQL.
@@ -115,7 +114,7 @@ public class HiveSelect extends HiveElement{
 			list.remove("value");
 		}
 		Tree<String> value = list.add("value");
-		Iterator<String> it = in.getFeatures().keySet().iterator();
+		Iterator<String> it = in.getFeatures().getFeaturesNames().iterator();
 		while(it.hasNext()){
 			value.add(it.next());
 		}
@@ -196,12 +195,12 @@ public class HiveSelect extends HiveElement{
 	}
 
 	@Override
-	public Map<String, FeatureType> getInFeatures() throws RemoteException {
+	public FeatureList getInFeatures() throws RemoteException {
 		return getDFEInput().get(key_input).get(0).getFeatures();
 	}
 
 	@Override
-	public Map<String, FeatureType> getNewFeatures() throws RemoteException {
+	public FeatureList getNewFeatures() throws RemoteException {
 		return tSelInt.getNewFeatures();
 	}
 

@@ -3,10 +3,10 @@ package idiro.workflow.server.connect;
 import idiro.hadoop.db.hive.HiveBasicStatement;
 import idiro.hadoop.utils.JdbcHdfsPrefsDetails;
 import idiro.tm.task.in.Preference;
+import idiro.utils.FeatureList;
 import idiro.utils.db.JdbcConnection;
 import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.interfaces.DataStore;
-import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.utils.LanguageManager;
 
 import java.rmi.RemoteException;
@@ -504,7 +504,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore{
 	}
 
 	public String isPathValid(String path,
-			Map<String,FeatureType> features,
+			FeatureList features,
 			String partitions){
 		String error = null;
 		boolean ok = false;
@@ -516,10 +516,10 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore{
 				boolean tableExists = !conn.listTables(tableAndPartitions[0]).isEmpty();
 				if(tableExists){
 					String[] feats = getDescription(tableAndPartitions[0]).split(";");
-					if(feats.length == features.size()){
+					if(feats.length == features.getSize()){
 						ok = true;
 						for(int i = 0; i < feats.length; ++i){
-							Iterator<String> itS = features.keySet().iterator();
+							Iterator<String> itS = features.getFeaturesNames().iterator();
 							boolean found = false;
 							while(itS.hasNext() && !found){
 								found = itS.next().equalsIgnoreCase(feats[i].split(",")[0]);

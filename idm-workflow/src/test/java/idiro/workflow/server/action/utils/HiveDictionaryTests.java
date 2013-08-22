@@ -2,12 +2,12 @@ package idiro.workflow.server.action.utils;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import idiro.utils.OrderedFeatureList;
+import idiro.utils.FeatureList;
 import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.test.TestUtils;
 
 import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -17,12 +17,12 @@ public class HiveDictionaryTests {
 
 	Logger logger = Logger.getLogger(getClass());
 
-	public Map<String,FeatureType> getFeatures(){
-		Map<String,FeatureType> features = new LinkedHashMap<String,FeatureType>();
-		features.put("col1", FeatureType.STRING);
-		features.put("col2", FeatureType.DOUBLE);
-		features.put("col3", FeatureType.INT);
-		features.put("col4", FeatureType.BOOLEAN);
+	public FeatureList getFeatures(){
+		FeatureList features = new OrderedFeatureList();
+		features.addFeature("col1", FeatureType.STRING);
+		features.addFeature("col2", FeatureType.DOUBLE);
+		features.addFeature("col3", FeatureType.INT);
+		features.addFeature("col4", FeatureType.BOOLEAN);
 		return features;
 	}
 	
@@ -32,19 +32,19 @@ public class HiveDictionaryTests {
 		return agg;
 	}
 
-	public void isBoolean(String expr,Map<String,FeatureType> features)throws Exception{
+	public void isBoolean(String expr,FeatureList features)throws Exception{
 		assertTrue(expr,
 				HiveDictionary.getReturnType(expr, features).equalsIgnoreCase("boolean")
 				);
 	}
 
-	public void isNotBoolean(String expr,Map<String,FeatureType> features)throws Exception{
+	public void isNotBoolean(String expr,FeatureList features)throws Exception{
 		assertFalse(expr,
 				HiveDictionary.getReturnType(expr, features).equalsIgnoreCase("boolean")
 				);
 	}
 
-	public void isNull(String expr,Map<String,FeatureType> features)throws Exception{
+	public void isNull(String expr,FeatureList features)throws Exception{
 		try{
 			assertTrue(expr,
 					HiveDictionary.getReturnType(expr, features) == null
@@ -52,7 +52,7 @@ public class HiveDictionaryTests {
 		}catch(Exception e){}
 	}
 	public void isNull(String expr,
-			Map<String,FeatureType> features,
+			FeatureList features,
 			Set<String> agg)throws Exception{
 		try{
 			assertTrue(expr,
@@ -61,20 +61,20 @@ public class HiveDictionaryTests {
 		}catch(Exception e){}
 	}
 
-	public void isNumber(String expr,Map<String,FeatureType> features)throws Exception{
+	public void isNumber(String expr,FeatureList features)throws Exception{
 		assertTrue(expr,
 				HiveDictionary.getReturnType(expr, features).equalsIgnoreCase("NUMBER")
 				);
 	}
 
-	public void isNotNumber(String expr,Map<String,FeatureType> features)throws Exception{
+	public void isNotNumber(String expr,FeatureList features)throws Exception{
 		assertFalse(expr,
 				HiveDictionary.getReturnType(expr, features).equalsIgnoreCase("NUMBER")
 				);
 	}
 
 	public void is(String expr,
-			Map<String,FeatureType> features,
+			FeatureList features,
 			String type)throws Exception{
 		assertTrue(expr,
 				HiveDictionary.getReturnType(expr, features).equalsIgnoreCase(type)
@@ -82,7 +82,7 @@ public class HiveDictionaryTests {
 	}
 	
 	public void is(String expr,
-			Map<String,FeatureType> features,
+			FeatureList features,
 			Set<String> agg,
 			String type)throws Exception{
 		assertTrue(expr,
@@ -91,7 +91,7 @@ public class HiveDictionaryTests {
 	}
 
 	public void isNot(String expr,
-			Map<String,FeatureType> features,
+			FeatureList features,
 			String type)throws Exception{
 		assertFalse(expr,
 				HiveDictionary.getReturnType(expr, features).equalsIgnoreCase(type)
@@ -101,7 +101,7 @@ public class HiveDictionaryTests {
 	@Test
 	public void testBooleanOperations(){
 		TestUtils.logTestTitle("HiveDictionaryTests#testBooleanOperations");
-		Map<String,FeatureType> features = getFeatures();
+		FeatureList features = getFeatures();
 		try{
 			isBoolean("TRUE",features);
 			isBoolean("col4",features);
@@ -141,7 +141,7 @@ public class HiveDictionaryTests {
 	@Test
 	public void testArithmeticOperations(){
 		TestUtils.logTestTitle("HiveDictionaryTests#testArithmeticOperations");
-		Map<String,FeatureType> features = getFeatures();
+		FeatureList features = getFeatures();
 		try{
 			isNumber("col2 + col3",features);
 			isNumber("col2 - col3",features);
@@ -161,7 +161,7 @@ public class HiveDictionaryTests {
 	@Test
 	public void testMethods(){
 		TestUtils.logTestTitle("HiveDictionaryTests#testMethods");
-		Map<String,FeatureType> features = getFeatures();
+		FeatureList features = getFeatures();
 		try{
 			is("substr('bla',1)",features,"STRING");
 			is( "substr('bla',1,2)",features,"STRING");
@@ -179,7 +179,7 @@ public class HiveDictionaryTests {
 	@Test
 	public void testAggreg(){
 		TestUtils.logTestTitle("HiveDictionaryTests#testAggreg");
-		Map<String,FeatureType> features = getFeatures();
+		FeatureList features = getFeatures();
 		Set<String> agg = getAgg();
 		try{
 			is("count(*)",features,agg,"BIGINT");

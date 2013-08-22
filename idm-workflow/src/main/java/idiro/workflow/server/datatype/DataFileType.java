@@ -2,17 +2,16 @@ package idiro.workflow.server.datatype;
 
 import idiro.hadoop.NameNodeVar;
 import idiro.hadoop.checker.HdfsFileChecker;
+import idiro.utils.FeatureList;
 import idiro.utils.RandomString;
 import idiro.workflow.server.DataOutput;
 import idiro.workflow.server.connect.HDFSInterface;
 import idiro.workflow.server.enumeration.DataBrowser;
-import idiro.workflow.server.enumeration.FeatureType;
 
 import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -43,7 +42,7 @@ public class DataFileType extends DataOutput{
 		}
 	}
 
-	public DataFileType(Map<String,FeatureType> features) throws RemoteException{
+	public DataFileType(FeatureList features) throws RemoteException{
 		super(features);
 		if(hdfsInt == null){
 			hdfsInt = new HDFSInterface();

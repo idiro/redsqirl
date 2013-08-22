@@ -1,19 +1,18 @@
 package idiro.workflow.server.action;
 
+import idiro.utils.OrderedFeatureList;
+import idiro.utils.FeatureList;
 import idiro.utils.Tree;
 import idiro.workflow.server.Page;
 import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.enumeration.DisplayType;
-import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEOutput;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Action to join several tables.
@@ -177,20 +176,20 @@ public class HiveJoin extends HiveElement{
 	}
 
 
-	public Map<String,FeatureType> getInFeatures() throws RemoteException{
-		Map<String,FeatureType> ans = 
-				new LinkedHashMap<String,FeatureType>();
+	public FeatureList getInFeatures() throws RemoteException{
+		FeatureList ans = 
+				new OrderedFeatureList();
 		HiveInterface hInt = new HiveInterface();
 		List<DFEOutput> lOut = getDFEInput().get(HiveJoin.key_input);
 		Iterator<DFEOutput> it = lOut.iterator();
 		while(it.hasNext()){
 			DFEOutput out = it.next();
 			String tableName = hInt.getTableAndPartitions(out.getPath())[0];
-			Map<String,FeatureType> mapTable = out.getFeatures();
-			Iterator<String> itFeat = mapTable.keySet().iterator();
+			FeatureList mapTable = out.getFeatures();
+			Iterator<String> itFeat = mapTable.getFeaturesNames().iterator();
 			while(itFeat.hasNext()){
 				String cur = itFeat.next();
-				ans.put(tableName+"."+cur, mapTable.get(cur));
+				ans.addFeature(tableName+"."+cur, mapTable.getFeatureType(cur));
 			}
 		}
 		return ans; 
@@ -218,7 +217,7 @@ public class HiveJoin extends HiveElement{
 	}
 
 	@Override
-	public Map<String, FeatureType> getNewFeatures() throws RemoteException {
+	public FeatureList getNewFeatures() throws RemoteException {
 		return tJoinInt.getNewFeatures();
 	}
 	

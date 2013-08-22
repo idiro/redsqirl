@@ -1,5 +1,7 @@
 package idiro.workflow.server.action;
 
+import idiro.utils.OrderedFeatureList;
+import idiro.utils.FeatureList;
 import idiro.utils.Tree;
 import idiro.workflow.server.DataOutput;
 import idiro.workflow.server.DataflowAction;
@@ -22,7 +24,6 @@ import java.io.File;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -420,13 +421,13 @@ public class Source extends DataflowAction{
 					.getFirstChild("browse").getFirstChild("output")
 					.getChildren("feature").iterator();
 
-			Map<String,FeatureType> out = new LinkedHashMap<String,FeatureType>();
+			FeatureList out = new OrderedFeatureList();
 			while(it.hasNext()){
 				Tree<String> cur = it.next();
 				String name = cur.getFirstChild("name").getFirstChild().getHead();
 				String type = cur.getFirstChild("type").getFirstChild().getHead();
 				try{
-					out.put(name, FeatureType.valueOf(type));
+					out.addFeature(name, FeatureType.valueOf(type));
 				}catch(Exception e){
 					error = "The type "+type+" does not exist";
 				}

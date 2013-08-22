@@ -1,5 +1,7 @@
 package idiro.workflow.server.action;
 
+import idiro.utils.OrderedFeatureList;
+import idiro.utils.FeatureList;
 import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.UserInteraction;
@@ -9,10 +11,8 @@ import idiro.workflow.server.enumeration.FeatureType;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -48,7 +48,7 @@ public class TableJoinInteraction extends UserInteraction{
 
 	@Override
 	public String check() throws RemoteException{
-		Map<String,FeatureType> features = hj.getInFeatures();
+		FeatureList features = hj.getInFeatures();
 		int rowNb = 0;
 		String msg = null;
 		List<Tree<String>> lRow;
@@ -133,7 +133,7 @@ public class TableJoinInteraction extends UserInteraction{
 		}
 
 
-		Map<String,FeatureType> feats = hj.getInFeatures();
+		FeatureList feats = hj.getInFeatures();
 
 		//Generate Editor
 		Tree<String> featEdit =
@@ -159,7 +159,7 @@ public class TableJoinInteraction extends UserInteraction{
 		//Copy Generator operation
 		Tree<String> operationCopy = generator.add("operation");
 		operationCopy.add("title").add("copy");
-		Iterator<String> featIt = feats.keySet().iterator();
+		Iterator<String> featIt = feats.getFeaturesNames().iterator();
 		while(featIt.hasNext()){
 			String cur = featIt.next();
 			//logger.debug(cur);
@@ -168,7 +168,7 @@ public class TableJoinInteraction extends UserInteraction{
 			row.add(table_op_title).add(cur);
 			row.add(table_feat_title).add(cur);
 			row.add(table_type_title).add(
-					HiveDictionary.getHiveType(feats.get(cur))
+					HiveDictionary.getHiveType(feats.getFeatureType(cur))
 					);
 		}
 	}
@@ -214,8 +214,8 @@ public class TableJoinInteraction extends UserInteraction{
 		return input;
 	}
 
-	public Map<String,FeatureType> getNewFeatures(){
-		Map<String,FeatureType> new_features = new LinkedHashMap<String,FeatureType>();
+	public FeatureList getNewFeatures() throws RemoteException{
+		FeatureList new_features = new OrderedFeatureList();
 		Iterator<Tree<String>> rowIt = getTree().getFirstChild("table")
 				.getChildren("row").iterator();
 
@@ -223,7 +223,7 @@ public class TableJoinInteraction extends UserInteraction{
 			Tree<String> rowCur = rowIt.next();
 			String name = rowCur.getFirstChild(table_feat_title).getFirstChild().getHead();
 			String type = rowCur.getFirstChild(table_type_title).getFirstChild().getHead();
-			new_features.put(name, FeatureType.valueOf(type));
+			new_features.addFeature(name, FeatureType.valueOf(type));
 		}
 		return new_features;
 	}

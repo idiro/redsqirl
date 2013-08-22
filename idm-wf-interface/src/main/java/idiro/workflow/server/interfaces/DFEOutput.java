@@ -1,7 +1,7 @@
 package idiro.workflow.server.interfaces;
 
+import idiro.utils.FeatureList;
 import idiro.workflow.server.enumeration.DataBrowser;
-import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.enumeration.SavingState;
 
 import java.io.File;
@@ -46,7 +46,7 @@ public interface DFEOutput extends Remote{
 	/**
 	 * @return the features
 	 */
-	public Map<String, FeatureType> getFeatures() throws RemoteException;
+	public FeatureList getFeatures() throws RemoteException;
 
 	/**
 	 * @return the properties
@@ -142,7 +142,7 @@ public interface DFEOutput extends Remote{
 	/**
 	 * @param features the features to set
 	 */
-	public void setFeatures(Map<String, FeatureType> features) throws RemoteException;
+	public void setFeatures(FeatureList features) throws RemoteException;
 
 	/**
 	 * @return the savingState

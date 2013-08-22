@@ -1,5 +1,6 @@
 package idiro.workflow.server.action;
 
+import idiro.utils.OrderedFeatureList;
 import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.UserInteraction;
@@ -67,7 +68,7 @@ public class TableUnionInteraction extends UserInteraction{
 		}else{
 
 			Map<String,List<Tree<String> > > mapTableRow = getSubQuery();
-			Map<String,FeatureType> mapFeatType = getNewFeatures();
+			OrderedFeatureList mapFeatType = getNewFeatures();
 
 			//Check if we have the right number of list
 			if(mapTableRow.keySet().size() != hu.getAllInputComponent().size()){
@@ -102,13 +103,13 @@ public class TableUnionInteraction extends UserInteraction{
 						}else{
 							String featureName = row.getFirstChild(table_feat_title).getFirstChild().getHead()
 									.toUpperCase();
-							if(!mapFeatType.containsKey(featureName)){
+							if(!mapFeatType.containsFeature(featureName)){
 								msg = "Some Features are not implemented for every table";
 							}else{
 								featuresTitle.add(featureName);
 								if(!HiveDictionary.getType(
 										row.getFirstChild(table_type_title).getFirstChild().getHead())
-										.equals(mapFeatType.get(featureName)
+										.equals(mapFeatType.getFeatureType(featureName)
 												)){
 									msg = "Type of "+featureName+ " inconsistant";
 								}
@@ -258,8 +259,8 @@ public class TableUnionInteraction extends UserInteraction{
 		return input;
 	}
 
-	public Map<String,FeatureType> getNewFeatures(){
-		Map<String,FeatureType> new_features = new LinkedHashMap<String,FeatureType>();
+	public OrderedFeatureList getNewFeatures() throws RemoteException{
+		OrderedFeatureList new_features = new OrderedFeatureList();
 		Map<String,List<Tree<String> > > mapTableRow = getSubQuery();
 
 		Iterator<Tree<String>> rowIt = mapTableRow.get(mapTableRow.keySet().iterator().next()).iterator();
@@ -267,12 +268,12 @@ public class TableUnionInteraction extends UserInteraction{
 			Tree<String> rowCur = rowIt.next();
 			String name = rowCur.getFirstChild(table_feat_title).getFirstChild().getHead();
 			String type = rowCur.getFirstChild(table_type_title).getFirstChild().getHead();
-			new_features.put(name, FeatureType.valueOf(type));
+			new_features.addFeature(name, FeatureType.valueOf(type));
 		}
 		return new_features;
 	}
 
-	public Map<String,List<Tree<String>>> getSubQuery(){
+	public Map<String,List<Tree<String>>> getSubQuery() throws RemoteException{
 		Map<String,List<Tree<String> > > mapTableRow = 
 				new LinkedHashMap<String,List<Tree<String> >>();
 		List<Tree<String>> lRow = getTree()
@@ -295,8 +296,8 @@ public class TableUnionInteraction extends UserInteraction{
 	public String getQueryPiece(DFEOutput out) throws RemoteException{
 		logger.debug("select...");
 		String select = "";
-		Map<String,FeatureType> features = getNewFeatures();
-		Iterator<String> it = features.keySet().iterator();
+		OrderedFeatureList features = getNewFeatures();
+		Iterator<String> it = features.getFeaturesNames().iterator();
 		if(it.hasNext()){
 			String featName = it.next();
 			select = "SELECT "+featName+" AS "+featName;
@@ -359,16 +360,16 @@ public class TableUnionInteraction extends UserInteraction{
 	public String getCreateQueryPiece(DFEOutput out) throws RemoteException{
 		logger.debug("create features...");
 		String createSelect = "";
-		Map<String,FeatureType> features = getNewFeatures();
-		Iterator<String> it = features.keySet().iterator();
+		OrderedFeatureList features = getNewFeatures();
+		Iterator<String> it = features.getFeaturesNames().iterator();
 		if(it.hasNext()){
 			String featName = it.next();
-			String type = HiveDictionary.getHiveType(features.get(featName));
+			String type = HiveDictionary.getHiveType(features.getFeatureType(featName));
 			createSelect = "("+featName+" "+type;
 		}
 		while(it.hasNext()){
 			String featName = it.next();
-			String type = HiveDictionary.getHiveType(features.get(featName));
+			String type = HiveDictionary.getHiveType(features.getFeatureType(featName));
 			createSelect+=","+featName+" "+type;
 		}
 		createSelect +=")";

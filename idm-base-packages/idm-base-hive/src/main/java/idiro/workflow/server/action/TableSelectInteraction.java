@@ -1,5 +1,7 @@
 package idiro.workflow.server.action;
 
+import idiro.utils.OrderedFeatureList;
+import idiro.utils.FeatureList;
 import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.UserInteraction;
@@ -11,10 +13,8 @@ import idiro.workflow.server.interfaces.DFEOutput;
 import java.rmi.RemoteException;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -174,14 +174,14 @@ public class TableSelectInteraction extends UserInteraction{
 		//Copy Generator operation
 		Tree<String> operationCopy = generator.add("operation");
 		operationCopy.add("title").add("copy");
-		Iterator<String> featIt = in.getFeatures().keySet().iterator();
+		Iterator<String> featIt = in.getFeatures().getFeaturesNames().iterator();
 		while(featIt.hasNext()){
 			String cur = featIt.next();
 			Tree<String> row = operationCopy.add("row"); 
 			row.add(table_op_title).add(cur);
 			row.add(table_feat_title).add(cur);
 			row.add(table_type_title).add(
-					HiveDictionary.getHiveType(in.getFeatures().get(cur))
+					HiveDictionary.getHiveType(in.getFeatures().getFeatureType(cur))
 					);
 		}
 	}
@@ -227,8 +227,8 @@ public class TableSelectInteraction extends UserInteraction{
 		return input;
 	}
 
-	public Map<String,FeatureType> getNewFeatures(){
-		Map<String,FeatureType> new_features = new LinkedHashMap<String,FeatureType>();
+	public FeatureList getNewFeatures() throws RemoteException{
+		FeatureList new_features = new OrderedFeatureList();
 		Iterator<Tree<String>> rowIt = getTree().getFirstChild("table")
 				.getChildren("row").iterator();
 
@@ -236,7 +236,7 @@ public class TableSelectInteraction extends UserInteraction{
 			Tree<String> rowCur = rowIt.next();
 			String name = rowCur.getFirstChild(table_feat_title).getFirstChild().getHead();
 			String type = rowCur.getFirstChild(table_type_title).getFirstChild().getHead();
-			new_features.put(name, FeatureType.valueOf(type));
+			new_features.addFeature(name, FeatureType.valueOf(type));
 		}
 		return new_features;
 	}

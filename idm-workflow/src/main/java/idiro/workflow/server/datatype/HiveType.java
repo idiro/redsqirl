@@ -1,10 +1,10 @@
 package idiro.workflow.server.datatype;
 
+import idiro.utils.FeatureList;
 import idiro.utils.RandomString;
 import idiro.workflow.server.DataOutput;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.enumeration.DataBrowser;
-import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.oozie.HiveAction;
 
 import java.io.BufferedWriter;
@@ -13,7 +13,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.List;
-import java.util.Map;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -47,7 +46,7 @@ public class HiveType extends DataOutput{
 		
 	}
 
-	public HiveType(Map<String,FeatureType> features) throws RemoteException{
+	public HiveType(FeatureList features) throws RemoteException{
 		super(features);
 	}
 	

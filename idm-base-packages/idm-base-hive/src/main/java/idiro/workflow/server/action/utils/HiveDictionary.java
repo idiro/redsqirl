@@ -1,18 +1,18 @@
 package idiro.workflow.server.action.utils;
 
+import idiro.utils.OrderedFeatureList;
+import idiro.utils.FeatureList;
 import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.interfaces.DFEOutput;
 
 import java.rmi.RemoteException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -125,7 +125,7 @@ public class HiveDictionary {
 	}
 
 	public static String getReturnType(String expr,
-			Map<String,FeatureType> features,
+			FeatureList features,
 			Set<String> featureAggreg) throws Exception{
 
 		if(expr == null || expr.trim().isEmpty()){
@@ -136,7 +136,7 @@ public class HiveDictionary {
 		Iterator<String> itFAgg = featureAggreg.iterator();
 		boolean ok = true;
 		while(itFAgg.hasNext() && ok){
-			ok = features.containsKey(itFAgg.next());
+			ok = features.containsFeature(itFAgg.next());
 		}
 
 		if(!ok){
@@ -194,14 +194,14 @@ public class HiveDictionary {
 		if(type == null){
 			Iterator<String> itS = null;
 			if(featureAggreg.isEmpty()){
-				itS = features.keySet().iterator();
+				itS = features.getFeaturesNames().iterator();
 			}else{
 				itS = featureAggreg.iterator();
 			}
 			while(itS.hasNext() && type == null){
 				String feat = itS.next();
 				if(feat.equalsIgnoreCase(expr)){
-					type = getHiveType(features.get(feat));
+					type = getHiveType(features.getFeatureType(feat));
 				}
 			}
 		}
@@ -235,7 +235,7 @@ public class HiveDictionary {
 	}
 
 	public static String getReturnType(String expr,
-			Map<String,FeatureType> features) throws Exception{
+			FeatureList features) throws Exception{
 		return getReturnType(expr,features,new HashSet<String>());
 	}
 
@@ -296,7 +296,7 @@ public class HiveDictionary {
 		Set<String> featureName = new LinkedHashSet<String>();
 		while(itIn.hasNext()){
 			DFEOutput inCur = itIn.next();
-			Iterator<String> it = inCur.getFeatures().keySet().iterator();
+			Iterator<String> it = inCur.getFeatures().getFeaturesNames().iterator();
 			logger.debug("add features...");
 			while(it.hasNext()){
 				String cur = it.next();
@@ -304,7 +304,7 @@ public class HiveDictionary {
 				if(!featureName.contains(cur)){
 					Tree<String> word = new TreeNonUnique<String>("word");
 					word.add("name").add(cur);
-					word.add("info").add(inCur.getFeatures().get(cur).name());
+					word.add("info").add(inCur.getFeatures().getFeatureType(cur).name());
 					keywords.add(word);
 					featureName.add(cur);
 				}
@@ -315,17 +315,17 @@ public class HiveDictionary {
 		return editor;
 	}
 
-	public static Tree<String> generateEditor(Tree<String> help,Map<String,FeatureType> inFeat) throws RemoteException{
+	public static Tree<String> generateEditor(Tree<String> help,FeatureList inFeat) throws RemoteException{
 		logger.debug("generate Editor...");
 		Tree<String> editor = new TreeNonUnique<String>("editor");
 		Tree<String> keywords = new TreeNonUnique<String>("keywords");
 		editor.add(keywords);
-		Iterator<String> itFeats = inFeat.keySet().iterator();
+		Iterator<String> itFeats = inFeat.getFeaturesNames().iterator();
 		while(itFeats.hasNext()){
 			String cur = itFeats.next();
 			Tree<String> word = new TreeNonUnique<String>("word");
 			word.add("name").add(cur);
-			word.add("info").add(inFeat.get(cur).name());
+			word.add("info").add(inFeat.getFeatureType(cur).name());
 			keywords.add(word);
 		}
 		editor.add(help);
@@ -333,7 +333,7 @@ public class HiveDictionary {
 		return editor;
 	}
 
-	public static Tree<String> createConditionHelpMenu(){
+	public static Tree<String> createConditionHelpMenu() throws RemoteException{
 		Tree<String> help = new TreeNonUnique<String>("help");
 		help.add(createMenu(new TreeNonUnique<String>("logic"),logicalOperators));
 		help.add(createMenu(new TreeNonUnique<String>("relation"),relationalOperators));
@@ -345,7 +345,7 @@ public class HiveDictionary {
 		return help;
 	}
 
-	public static Tree<String> createDefaultSelectHelpMenu(){
+	public static Tree<String> createDefaultSelectHelpMenu() throws RemoteException{
 		Tree<String> help = new TreeNonUnique<String>("help");
 		help.add(createMenu(new TreeNonUnique<String>("arithmetic"),arithmeticOperators));
 		help.add(createMenu(new TreeNonUnique<String>("string"),stringMethods));
@@ -357,7 +357,7 @@ public class HiveDictionary {
 		return help;
 	}
 
-	public static Tree<String> createGroupSelectHelpMenu(){
+	public static Tree<String> createGroupSelectHelpMenu() throws RemoteException{
 		Tree<String> help = new TreeNonUnique<String>("help");
 		help.add(createMenu(new TreeNonUnique<String>("aggregation"),agregationMethods));
 		help.add(createMenu(new TreeNonUnique<String>("arithmetic"),arithmeticOperators));
@@ -371,7 +371,7 @@ public class HiveDictionary {
 	}
 
 
-	protected static Tree<String> createMenu(Tree<String> root, String[][] list){
+	protected static Tree<String> createMenu(Tree<String> root, String[][] list) throws RemoteException{
 
 		for(String elStr[]: list){
 			Tree<String> suggestion = root.add("suggestion");
@@ -397,7 +397,7 @@ public class HiveDictionary {
 	}
 
 	private static boolean runLogicalOperation(String expr,
-			Map<String,FeatureType> features,
+			FeatureList features,
 			Set<String> aggregFeat) throws Exception{
 
 		String[] split= expr.split("OR|AND");
@@ -436,7 +436,7 @@ public class HiveDictionary {
 	}
 
 	private static boolean runRelationalOperation(String expr,
-			Map<String,FeatureType> features,
+			FeatureList features,
 			Set<String> aggregFeat) throws Exception{
 		return runOperation(relationalOperators, expr, features,aggregFeat);
 	}
@@ -447,7 +447,7 @@ public class HiveDictionary {
 	}
 
 	private static boolean runArithmeticOperation(String expr,
-			Map<String,FeatureType> features,
+			FeatureList features,
 			Set<String> aggregFeat) throws Exception{
 		return runOperation(arithmeticOperators, expr, features,aggregFeat);
 	}
@@ -463,7 +463,7 @@ public class HiveDictionary {
 
 
 	private static String runMethod(String expr,
-			Map<String,FeatureType> features,
+			FeatureList features,
 			Set<String> aggregFeat) throws Exception{
 		String type = null;
 		List<String[]> methodsFound = findAllMethod(expr,!aggregFeat.isEmpty());
@@ -527,7 +527,7 @@ public class HiveDictionary {
 
 	private static boolean runOperation(String[][] list,
 			String expr,
-			Map<String,FeatureType> features,
+			FeatureList features,
 			Set<String> aggregFeat) throws Exception{
 		boolean ok = false;
 		String[] method = HiveDictionary.find(list, expr);
@@ -537,11 +537,11 @@ public class HiveDictionary {
 			if(aggregFeat.isEmpty()){
 				ok = check(method,splitStr,features);
 			}else{
-				Map<String,FeatureType> AF = new HashMap<String,FeatureType>(aggregFeat.size());
+				FeatureList AF = new OrderedFeatureList();
 				Iterator<String> itA = aggregFeat.iterator();
 				while(itA.hasNext()){
 					String feat = itA.next();
-					AF.put(feat, features.get(feat));
+					AF.addFeature(feat, features.getFeatureType(feat));
 				}
 				ok = check(method,splitStr,AF);
 			}
@@ -572,7 +572,7 @@ public class HiveDictionary {
 
 	private static boolean check(String[] method, 
 			String[] args, 
-			Map<String,FeatureType> features) throws Exception{
+			FeatureList features) throws Exception{
 		boolean ok = false;
 		String[] argsTypeExpected = method[1].split(",");
 		if(argsTypeExpected[0].isEmpty() 

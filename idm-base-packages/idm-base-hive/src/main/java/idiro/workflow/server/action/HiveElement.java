@@ -1,5 +1,6 @@
 package idiro.workflow.server.action;
 
+import idiro.utils.FeatureList;
 import idiro.utils.Tree;
 import idiro.workflow.server.DataProperty;
 import idiro.workflow.server.DataflowAction;
@@ -9,7 +10,6 @@ import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.datatype.HiveTypeWithWhere;
 import idiro.workflow.server.enumeration.DisplayType;
-import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.oozie.HiveAction;
@@ -115,14 +115,14 @@ public abstract class HiveElement extends DataflowAction {
 	 * @return
 	 * @throws RemoteException
 	 */
-	public abstract Map<String,FeatureType> getInFeatures() throws RemoteException;
+	public abstract FeatureList getInFeatures() throws RemoteException;
 	
 	/**
 	 * New features
 	 * @return
 	 * @throws RemoteException
 	 */
-	public abstract Map<String,FeatureType> getNewFeatures() throws RemoteException;
+	public abstract FeatureList getNewFeatures() throws RemoteException;
 
 	
 	/**
@@ -169,7 +169,7 @@ public abstract class HiveElement extends DataflowAction {
 		String error = checkIntegrationUserVariables();
 		HiveInterface hInt = new HiveInterface();
 		if(error == null){
-			Map<String,FeatureType> new_features = getNewFeatures();
+			FeatureList new_features = getNewFeatures();
 			
 			String partitions = partInt.getPartitions(new_features);
 
@@ -238,8 +238,9 @@ public abstract class HiveElement extends DataflowAction {
 
 	/**
 	 * Update the output type
+	 * @throws RemoteException 
 	 */
-	public void updateType(){
+	public void updateType() throws RemoteException{
 		if(typeOutputInt != null){
 			Tree<String> type = typeOutputInt.getTree();
 			if(type.getSubTreeList().isEmpty()){

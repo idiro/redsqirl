@@ -1,17 +1,16 @@
 package idiro.workflow.server.action;
 
+import idiro.utils.FeatureList;
 import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.action.utils.PigDictionary;
 import idiro.workflow.server.enumeration.DisplayType;
-import idiro.workflow.server.enumeration.FeatureType;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -62,7 +61,7 @@ public class PigJoinRelationInteraction extends UserInteraction{
 		}else{
 
 			Set<String> featType = new LinkedHashSet<String>();
-			Map<String,FeatureType> inFeats = hj.getInFeatures();
+			FeatureList inFeats = hj.getInFeatures();
 			int rowNb = 0;
 
 

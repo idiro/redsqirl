@@ -1,11 +1,13 @@
 package idiro.workflow.server.action;
 
+import idiro.utils.OrderedFeatureList;
+import idiro.utils.FeatureList;
 import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.DataProperty;
+import idiro.workflow.server.DataflowAction;
 import idiro.workflow.server.Page;
 import idiro.workflow.server.UserInteraction;
-import idiro.workflow.server.DataflowAction;
 import idiro.workflow.server.action.utils.HiveDictionary;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.datatype.HiveType;
@@ -339,7 +341,7 @@ public class HiveSelectT extends DataflowAction{
 			list.remove("value");
 		}
 		Tree<String> value = list.add("value");
-		Iterator<String> it = in.getFeatures().keySet().iterator();
+		Iterator<String> it = in.getFeatures().getFeaturesNames().iterator();
 		while(it.hasNext()){
 			value.add(new TreeNonUnique<String>(it.next()));
 		}
@@ -402,14 +404,14 @@ public class HiveSelectT extends DataflowAction{
 		//Copy Generator operation
 		Tree<String> operationCopy = generator.add("operation");
 		operationCopy.add("title").add("copy");
-		Iterator<String> featIt = in.getFeatures().keySet().iterator();
+		Iterator<String> featIt = in.getFeatures().getFeaturesNames().iterator();
 		while(featIt.hasNext()){
 			String cur = featIt.next();
 			Tree<String> row = operationCopy.add("row"); 
 			row.add(table_op_title).add(cur);
 			row.add(table_feat_title).add(cur);
 			row.add(table_type_title).add(
-					in.getFeatures().get(cur).name()
+					in.getFeatures().getFeatureType(cur).name()
 					);
 		}
 	}
@@ -419,7 +421,7 @@ public class HiveSelectT extends DataflowAction{
 		String error = checkIntegrationUserVariables();
 
 		if(error == null){
-			Map<String,FeatureType> new_features = new LinkedHashMap<String,FeatureType>();
+			FeatureList new_features = new OrderedFeatureList();
 			Iterator<Tree<String>> rowIt = getInteraction(key_featureTable)
 					.getTree().getFirstChild("table").getChildren("row").iterator();
 
@@ -427,7 +429,7 @@ public class HiveSelectT extends DataflowAction{
 				Tree<String> rowCur = rowIt.next();
 				String name = rowCur.getFirstChild(table_feat_title).getFirstChild().getHead();
 				String type = rowCur.getFirstChild(table_type_title).getFirstChild().getHead();
-				new_features.put(name, FeatureType.valueOf(type));
+				new_features.addFeature(name, FeatureType.valueOf(type));
 			}
 
 			List<Tree<String>> treePart = getInteraction(key_partitions).getTree()
@@ -441,13 +443,13 @@ public class HiveSelectT extends DataflowAction{
 				if(it.hasNext()){
 					String part = it.next().getFirstChild().getHead();
 					String name = part.split("=")[0];
-					new_features.put(name, FeatureType.STRING);
+					new_features.addFeature(name, FeatureType.STRING);
 					partitions = part;
 				}
 				while(it.hasNext()){
 					String part = it.next().getFirstChild().getHead();
 					String name = part.split("=")[0];
-					new_features.put(name, FeatureType.STRING);
+					new_features.addFeature(name, FeatureType.STRING);
 					partitions += ","+part;
 				}
 			}
@@ -463,14 +465,14 @@ public class HiveSelectT extends DataflowAction{
 		Tree<String> editor = new TreeNonUnique<String>("editor");
 		Tree<String> keywords = new TreeNonUnique<String>("keywords");
 		editor.add(keywords);
-		Iterator<String> it = in.getFeatures().keySet().iterator();
+		Iterator<String> it = in.getFeatures().getFeaturesNames().iterator();
 		logger.debug("add features...");
 		while(it.hasNext()){
 			String cur = it.next();
 			logger.debug(cur);
 			Tree<String> word = new TreeNonUnique<String>("word");
 			word.add("name").add(cur);
-			word.add("info").add(in.getFeatures().get(cur).name());
+			word.add("info").add(in.getFeatures().getFeatureType(cur).name());
 			keywords.add(word);
 		}
 		editor.add(help);
@@ -592,7 +594,7 @@ public class HiveSelectT extends DataflowAction{
 						" AS "+featName
 						;
 				createSelect ="("+featName+" "+
-						getDFEOutput().get(key_output).getFeatures().get(featName).toString();
+						getDFEOutput().get(key_output).getFeatures().getFeatureType(featName).toString();
 			}
 			while(selIt.hasNext()){
 				Tree<String> cur = selIt.next();
@@ -600,7 +602,7 @@ public class HiveSelectT extends DataflowAction{
 				select += ",\n       "+cur.getFirstChild(table_op_title).getFirstChild().getHead()+
 						" AS "+featName;
 				createSelect +=","+featName+" "+
-						getDFEOutput().get(key_output).getFeatures().get(featName).toString();
+						getDFEOutput().get(key_output).getFeatures().getFeatureType(featName).toString();
 			}
 			createSelect +=")";
 			if(select.isEmpty()){

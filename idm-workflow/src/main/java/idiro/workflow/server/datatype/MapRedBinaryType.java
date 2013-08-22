@@ -1,9 +1,8 @@
 package idiro.workflow.server.datatype;
 
-import idiro.workflow.server.enumeration.FeatureType;
+import idiro.utils.FeatureList;
 
 import java.rmi.RemoteException;
-import java.util.Map;
 
 public class MapRedBinaryType extends MapRedTextType {
 	
@@ -17,7 +16,7 @@ public class MapRedBinaryType extends MapRedTextType {
 		super();
 	}
 
-	public MapRedBinaryType(Map<String, FeatureType> features)
+	public MapRedBinaryType(FeatureList features)
 			throws RemoteException {
 		super(features);
 	}

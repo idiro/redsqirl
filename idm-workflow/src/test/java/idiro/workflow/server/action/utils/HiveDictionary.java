@@ -1,16 +1,15 @@
 package idiro.workflow.server.action.utils;
 
+import idiro.utils.OrderedFeatureList;
+import idiro.utils.FeatureList;
 import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
-import idiro.workflow.server.enumeration.FeatureType;
 
 import java.rmi.RemoteException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -135,7 +134,7 @@ public class HiveDictionary {
 	}
 
 	public static String getReturnType(String expr,
-			Map<String,FeatureType> features,
+			FeatureList features,
 			Set<String> featureAggreg) throws Exception{
 		
 		if(expr == null || expr.trim().isEmpty()){
@@ -146,7 +145,7 @@ public class HiveDictionary {
 		Iterator<String> itFAgg = featureAggreg.iterator();
 		boolean ok = true;
 		while(itFAgg.hasNext() && ok){
-			ok = features.containsKey(itFAgg.next());
+			ok = features.containsFeature(itFAgg.next());
 		}
 		
 		if(!ok){
@@ -204,14 +203,14 @@ public class HiveDictionary {
 		if(type == null){
 			Iterator<String> itS = null;
 			if(featureAggreg.isEmpty()){
-				itS = features.keySet().iterator();
+				itS = features.getFeaturesNames().iterator();
 			}else{
 				itS = featureAggreg.iterator();
 			}
 			while(itS.hasNext() && type == null){
 				String feat = itS.next();
 				if(feat.equalsIgnoreCase(expr)){
-					type = features.get(feat).name();
+					type = features.getFeatureType(feat).name();
 				}
 			}
 		}
@@ -245,7 +244,7 @@ public class HiveDictionary {
 	}
 	
 	public static String getReturnType(String expr,
-			Map<String,FeatureType> features) throws Exception{
+			FeatureList features) throws Exception{
 		return getReturnType(expr,features,new HashSet<String>());
 	}
 
@@ -263,7 +262,7 @@ public class HiveDictionary {
 	}
 
 	private static boolean runLogicalOperation(String expr,
-			Map<String,FeatureType> features,
+			FeatureList features,
 			Set<String> aggregFeat) throws Exception{
 		
 		String[] split= expr.split("OR|AND");
@@ -302,7 +301,7 @@ public class HiveDictionary {
 	}
 
 	private static boolean runRelationalOperation(String expr,
-			Map<String,FeatureType> features,
+			FeatureList features,
 			Set<String> aggregFeat) throws Exception{
 		return runOperation(relationalOperators, expr, features,aggregFeat);
 	}
@@ -313,7 +312,7 @@ public class HiveDictionary {
 	}
 
 	private static boolean runArithmeticOperation(String expr,
-			Map<String,FeatureType> features,
+			FeatureList features,
 			Set<String> aggregFeat) throws Exception{
 		return runOperation(arithmeticOperators, expr, features,aggregFeat);
 	}
@@ -329,7 +328,7 @@ public class HiveDictionary {
 
 
 	private static String runMethod(String expr,
-			Map<String,FeatureType> features,
+			FeatureList features,
 			Set<String> aggregFeat) throws Exception{
 		String type = null;
 		List<String[]> methodsFound = findAllMethod(expr,!aggregFeat.isEmpty());
@@ -393,7 +392,7 @@ public class HiveDictionary {
 
 	private static boolean runOperation(String[][] list,
 			String expr,
-			Map<String,FeatureType> features,
+			FeatureList features,
 			Set<String> aggregFeat) throws Exception{
 		boolean ok = false;
 		String[] method = HiveDictionary.find(list, expr);
@@ -403,11 +402,11 @@ public class HiveDictionary {
 			if(aggregFeat.isEmpty()){
 				ok = check(method,splitStr,features);
 			}else{
-				Map<String,FeatureType> AF = new HashMap<String,FeatureType>(aggregFeat.size());
+				FeatureList AF = new OrderedFeatureList();
 				Iterator<String> itA = aggregFeat.iterator();
 				while(itA.hasNext()){
 					String feat = itA.next();
-					AF.put(feat, features.get(feat));
+					AF.addFeature(feat, features.getFeatureType(feat));
 				}
 				ok = check(method,splitStr,AF);
 			}
@@ -438,7 +437,7 @@ public class HiveDictionary {
 
 	private static boolean check(String[] method, 
 			String[] args, 
-			Map<String,FeatureType> features) throws Exception{
+			FeatureList features) throws Exception{
 		boolean ok = false;
 		String[] argsTypeExpected = method[1].split(",");
 		if(argsTypeExpected[0].isEmpty() 

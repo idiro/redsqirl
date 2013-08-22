@@ -1,5 +1,6 @@
 package idiro.workflow.server.action;
 
+import idiro.utils.FeatureList;
 import idiro.utils.Tree;
 import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.action.utils.HiveDictionary;
@@ -12,7 +13,6 @@ import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -90,7 +90,7 @@ public class PartitionInteraction extends UserInteraction{
 		}
 	}
 
-	public String getPartitions(Map<String,FeatureType> new_features){
+	public String getPartitions(FeatureList new_features) throws RemoteException{
 		List<Tree<String>> treePart = getTree()
 				.getFirstChild("applist").getFirstChild("output")
 				.getChildren("value");
@@ -102,20 +102,20 @@ public class PartitionInteraction extends UserInteraction{
 			if(it.hasNext()){
 				String part = it.next().getFirstChild().getHead();
 				String name = part.split("=")[0];
-				new_features.put(name, FeatureType.STRING);
+				new_features.addFeature(name, FeatureType.STRING);
 				partitions = part;
 			}
 			while(it.hasNext()){
 				String part = it.next().getFirstChild().getHead();
 				String name = part.split("=")[0];
-				new_features.put(name, FeatureType.STRING);
+				new_features.addFeature(name, FeatureType.STRING);
 				partitions += ","+part;
 			}
 		}
 		return partitions;
 	}
 
-	public String getPartitionsInWhere(String tableName){
+	public String getPartitionsInWhere(String tableName) throws RemoteException{
 		List<Tree<String>> treePart = getTree()
 				.getFirstChild("applist").getFirstChild("output")
 				.getChildren("value");

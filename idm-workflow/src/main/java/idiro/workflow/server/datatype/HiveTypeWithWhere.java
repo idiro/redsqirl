@@ -1,9 +1,8 @@
 package idiro.workflow.server.datatype;
 
-import idiro.workflow.server.enumeration.FeatureType;
+import idiro.utils.FeatureList;
 
 import java.rmi.RemoteException;
-import java.util.Map;
 
 /**
  * Hive Output Action Type.
@@ -26,7 +25,7 @@ public class HiveTypeWithWhere extends HiveType{
 		super();
 	}
 	
-	public HiveTypeWithWhere(Map<String, FeatureType> features)
+	public HiveTypeWithWhere(FeatureList features)
 			throws RemoteException {
 		super(features);
 	}

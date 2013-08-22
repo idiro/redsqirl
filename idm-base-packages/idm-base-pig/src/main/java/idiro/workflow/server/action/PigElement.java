@@ -1,5 +1,6 @@
 package idiro.workflow.server.action;
 
+import idiro.utils.FeatureList;
 import idiro.utils.Tree;
 import idiro.workflow.server.DataOutput;
 import idiro.workflow.server.DataProperty;
@@ -12,7 +13,6 @@ import idiro.workflow.server.datatype.MapRedBinaryType;
 import idiro.workflow.server.datatype.MapRedTextType;
 import idiro.workflow.server.enumeration.DataBrowser;
 import idiro.workflow.server.enumeration.DisplayType;
-import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.oozie.PigAction;
@@ -27,7 +27,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 /**
@@ -77,9 +76,9 @@ public abstract class PigElement extends DataflowAction {
 
 	public abstract String getQuery() throws RemoteException;
 
-	public abstract Map<String,FeatureType> getInFeatures() throws RemoteException;
+	public abstract FeatureList getInFeatures() throws RemoteException;
 	
-	public abstract Map<String,FeatureType> getNewFeatures() throws RemoteException;
+	public abstract FeatureList getNewFeatures() throws RemoteException;
 
 	public Set<String> getInRelations() throws RemoteException{
 		Set<String> ans = new LinkedHashSet<String>();
@@ -132,12 +131,12 @@ public abstract class PigElement extends DataflowAction {
 	public String getProperties(DFEOutput out) throws RemoteException{
 		String properties = "";
 		
-		properties += "number_features="+out.getFeatures().size()+"\n";
+		properties += "number_features="+out.getFeatures().getSize()+"\n";
 		
 		int cont = 0;
-		for (Entry<String, FeatureType> e : out.getFeatures().entrySet()){
-			properties += "feature"+cont+"_name="+e.getKey()+"\n";
-			properties += "feature"+cont+"_value="+e.getValue()+"\n";
+		for (String name : out.getFeatures().getFeaturesNames()){
+			properties += "feature"+cont+"_name="+name+"\n";
+			properties += "feature"+cont+"_value="+out.getFeatures().getFeatureType(name)+"\n";
 		}
 		
 		return properties;
@@ -147,7 +146,7 @@ public abstract class PigElement extends DataflowAction {
 	public String updateOut() throws RemoteException {
 		String error = checkIntegrationUserVariables();
 		if(error == null){
-			Map<String,FeatureType> new_features = getNewFeatures();
+			FeatureList new_features = getNewFeatures();
 			
 			if(output == null){
 				output = new LinkedHashMap<String, DFEOutput>();
@@ -272,10 +271,10 @@ public abstract class PigElement extends DataflowAction {
 		String function = getLoadStoreFuncion(out, delimiter);
 		String createSelect = "LOAD '" + out.getPath() + "' USING "+function+" as (";
 		
-		Iterator<Entry<String, FeatureType>> it = out.getFeatures().entrySet().iterator();
+		Iterator<String> it = out.getFeatures().getFeaturesNames().iterator();
 		while (it.hasNext()){
-			Entry<String, FeatureType> e = it.next();
-			createSelect += e.getKey()+":"+e.getValue();
+			String e = it.next();
+			createSelect += e+":"+out.getFeatures().getFeatureType(e);
 			if (it.hasNext()){
 				createSelect += ", ";
 			}

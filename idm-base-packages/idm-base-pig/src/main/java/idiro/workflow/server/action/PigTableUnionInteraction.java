@@ -1,5 +1,7 @@
 package idiro.workflow.server.action;
 
+import idiro.utils.OrderedFeatureList;
+import idiro.utils.FeatureList;
 import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.UserInteraction;
@@ -67,7 +69,7 @@ public class PigTableUnionInteraction extends UserInteraction{
 		}else{
 
 			Map<String,List<Tree<String> > > mapRelationRow = getSubQuery();
-			Map<String,FeatureType> mapFeatType = getNewFeatures();
+			FeatureList mapFeatType = getNewFeatures();
 
 			//Check if we have the right number of list
 			if(mapRelationRow.keySet().size() != hu.getAllInputComponent().size()){
@@ -102,13 +104,13 @@ public class PigTableUnionInteraction extends UserInteraction{
 						}else{
 							String featureName = row.getFirstChild(table_feat_title).getFirstChild().getHead()
 									.toUpperCase();
-							if(!mapFeatType.containsKey(featureName)){
+							if(!mapFeatType.containsFeature(featureName)){
 								msg = "Some Features are not implemented for every relation";
 							}else{
 								featuresTitle.add(featureName);
 								if(!PigDictionary.getType(
 										row.getFirstChild(table_type_title).getFirstChild().getHead())
-										.equals(mapFeatType.get(featureName)
+										.equals(mapFeatType.getFeatureType(featureName)
 												)){
 									msg = "Type of "+featureName+ " inconsistant";
 								}
@@ -257,8 +259,8 @@ public class PigTableUnionInteraction extends UserInteraction{
 		return input;
 	}
 
-	public Map<String,FeatureType> getNewFeatures() throws RemoteException{
-		Map<String,FeatureType> new_features = new LinkedHashMap<String,FeatureType>();
+	public FeatureList getNewFeatures() throws RemoteException{
+		FeatureList new_features = new OrderedFeatureList();
 		Map<String,List<Tree<String> > > mapRelationRow = getSubQuery();
 
 		Iterator<Tree<String>> rowIt = mapRelationRow.get(mapRelationRow.keySet().iterator().next()).iterator();
@@ -266,7 +268,7 @@ public class PigTableUnionInteraction extends UserInteraction{
 			Tree<String> rowCur = rowIt.next();
 			String name = rowCur.getFirstChild(table_feat_title).getFirstChild().getHead();
 			String type = rowCur.getFirstChild(table_type_title).getFirstChild().getHead();
-			new_features.put(name, FeatureType.valueOf(type));
+			new_features.addFeature(name, FeatureType.valueOf(type));
 		}
 		return new_features;
 	}
@@ -294,16 +296,16 @@ public class PigTableUnionInteraction extends UserInteraction{
 	public String getCreateQueryPiece(DFEOutput out) throws RemoteException{
 		logger.debug("create features...");
 		String createSelect = "";
-		Map<String,FeatureType> features = getNewFeatures();
-		Iterator<String> it = features.keySet().iterator();
+		FeatureList features = getNewFeatures();
+		Iterator<String> it = features.getFeaturesNames().iterator();
 		if(it.hasNext()){
 			String featName = it.next();
-			String type = PigDictionary.getPigType(features.get(featName));
+			String type = PigDictionary.getPigType(features.getFeatureType(featName));
 			createSelect = "("+featName+" "+type;
 		}
 		while(it.hasNext()){
 			String featName = it.next();
-			String type = PigDictionary.getPigType(features.get(featName));
+			String type = PigDictionary.getPigType(features.getFeatureType(featName));
 			createSelect+=","+featName+" "+type;
 		}
 		createSelect +=")";

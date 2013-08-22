@@ -1,10 +1,11 @@
 package idiro.workflow.server.action;
 
+import idiro.utils.OrderedFeatureList;
+import idiro.utils.FeatureList;
 import idiro.workflow.server.DataProperty;
 import idiro.workflow.server.Page;
 import idiro.workflow.server.connect.HDFSInterface;
 import idiro.workflow.server.datatype.MapRedTextType;
-import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
@@ -118,27 +119,27 @@ public class PigUnion  extends PigElement{
 	}
 
 	@Override
-	public Map<String,FeatureType> getInFeatures() throws RemoteException{
-		Map<String,FeatureType> ans = 
-				new LinkedHashMap<String,FeatureType>();
+	public FeatureList getInFeatures() throws RemoteException{
+		FeatureList ans = 
+				new OrderedFeatureList();
 		HDFSInterface hInt = new HDFSInterface();
 		List<DFEOutput> lOut = getDFEInput().get(PigUnion.key_input);
 		Iterator<DFEOutput> it = lOut.iterator();
 		while(it.hasNext()){
 			DFEOutput out = it.next();
 			String relationName = hInt.getRelation(out.getPath());
-			Map<String,FeatureType> mapRelation = out.getFeatures();
-			Iterator<String> itFeat = mapRelation.keySet().iterator();
+			FeatureList mapRelation = out.getFeatures();
+			Iterator<String> itFeat = mapRelation.getFeaturesNames().iterator();
 			while(itFeat.hasNext()){
 				String cur = itFeat.next();
-				ans.put(relationName+"."+cur, mapRelation.get(cur));
+				ans.addFeature(relationName+"."+cur, mapRelation.getFeatureType(cur));
 			}
 		}
 		return ans; 
 	}
 
 	@Override
-	public Map<String, FeatureType> getNewFeatures() throws RemoteException {
+	public FeatureList getNewFeatures() throws RemoteException {
 		return tUnionSelInt.getNewFeatures();
 	}
 
