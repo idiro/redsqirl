@@ -189,7 +189,7 @@ public class MapRedTextType extends DataOutput{
 		return ans;
 	}
 	
-	public void generateFeaturesMap(){
+	private void generateFeaturesMap(){
 		
 		features = new OrderedFeatureList();
 		try {

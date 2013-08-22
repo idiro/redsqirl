@@ -1,10 +1,12 @@
 package idiro.workflow.server.datatype;
 
 import idiro.utils.FeatureList;
+import idiro.utils.OrderedFeatureList;
 import idiro.utils.RandomString;
 import idiro.workflow.server.DataOutput;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.enumeration.DataBrowser;
+import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.oozie.HiveAction;
 
 import java.io.BufferedWriter;
@@ -132,5 +134,25 @@ public class HiveType extends DataOutput{
 		this.constant = constant;
 	}
 	
+	private void generateFeaturesMap(String table) throws RemoteException{
+		features = new OrderedFeatureList();
+		hInt.goTo("/");
+		String[] lines = hInt.getDescription(hInt.getTableAndPartitions(table)[0]).split(";");
+		for (String line : lines){
+			String[] feat = line.split(",");
+			try{
+				features.addFeature(feat[0], FeatureType.valueOf(feat[1].toUpperCase()));
+			}
+			catch (Exception e){
+				logger.error("Error adding feature: "+feat[0]+" - "+feat[1]);
+			}
+		}
+	}
+	
+	@Override
+	public void setPath(String path) throws RemoteException {
+		super.setPath(path);
+		generateFeaturesMap(path);
+	}
 
 }
