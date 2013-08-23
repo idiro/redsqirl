@@ -3,6 +3,7 @@ package idiro.workflow.server;
 import static org.junit.Assert.assertTrue;
 import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
+import idiro.workflow.server.connect.HDFSInterface;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DataFlow;
 import idiro.workflow.test.SetupEnvironmentTest;
@@ -46,7 +47,8 @@ public class BasicWorkflowTest{
 			error = dfIn.topoligicalSort();
 			assertTrue(error,error == null);
 			logger.debug("save...");
-			File wf = new File(SetupEnvironmentTest.testDirOut,"basictest1.iwf"); 
+			File wf = new File(SetupEnvironmentTest.pathSaveWorkflow,"basictest1.iwf"); 
+			logger.info(wf.getAbsolutePath());
 			error = dfIn.save(wf.getAbsolutePath());
 			assertTrue(error,error == null);
 			
@@ -67,6 +69,9 @@ public class BasicWorkflowTest{
 			
 			assertTrue("link not removed",
 					!dfIn.getElement(c1).getOutputComponent().get("output1").contains(dfIn.getElement(c2)));
+			
+			HDFSInterface hInt = new HDFSInterface();
+			hInt.delete(wf.getAbsolutePath());
 			
 		} catch (Exception e) {
 			logger.error(e.getMessage());
@@ -93,7 +98,7 @@ public class BasicWorkflowTest{
 			u1.setTree(ans);
 			
 			logger.debug("save workflow...");
-			File wf = new File(SetupEnvironmentTest.testDirOut,"test.iwf");
+			File wf = new File(SetupEnvironmentTest.pathSaveWorkflow,"test.iwf");
 			error = dfIn.save(wf.getAbsolutePath());
 			assertTrue(error,error == null);
 			
@@ -109,7 +114,8 @@ public class BasicWorkflowTest{
 			logger.debug("after saved:\n"+saved.toString());
 			assertTrue("The Tree has been modified during the save/read process", saved.equals(ans));
 			
-			wf.delete();
+			HDFSInterface hInt = new HDFSInterface();
+			hInt.delete(wf.getAbsolutePath());
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			e.printStackTrace();

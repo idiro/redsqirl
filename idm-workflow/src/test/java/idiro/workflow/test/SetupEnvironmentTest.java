@@ -2,12 +2,12 @@ package idiro.workflow.test;
 
 import idiro.Log;
 import idiro.ProjectID;
+import idiro.utils.OrderedFeatureListTests;
 import idiro.workflow.client.CreateWorkflowTests;
 import idiro.workflow.server.OozieDagTests;
 import idiro.workflow.server.OozieManagerTests;
 import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.WorkflowTests;
-import idiro.workflow.server.action.ActionTests;
 import idiro.workflow.server.action.HiveSelectTests;
 import idiro.workflow.server.action.SourceTests;
 import idiro.workflow.server.action.utils.HiveDictionaryTests;
@@ -31,8 +31,8 @@ import org.junit.runners.Suite.SuiteClasses;
 
 
 @RunWith(Suite.class)
-@SuiteClasses({ActionTests.class,
-	/*WorkflowTests.class,
+@SuiteClasses({//ActionTests.class,
+	WorkflowTests.class,
 	CreateWorkflowTests.class,
 	HiveDictionaryTests.class,
 	HDFSInterfaceTests.class,
@@ -44,12 +44,14 @@ import org.junit.runners.Suite.SuiteClasses;
 	HiveSelectTests.class,
 	OozieManagerTests.class,
 	PackageManagerTests.class,
-	OozieDagTests.class*/
+	OozieDagTests.class,
+	OrderedFeatureListTests.class
 	})
 public class SetupEnvironmentTest {
 	
 	static Logger logger = null;
 	static public File testDirOut = null;
+	static public String pathSaveWorkflow = null;
 	
 	@BeforeClass
 	public static void init() throws Exception{
@@ -90,6 +92,8 @@ public class SetupEnvironmentTest {
 		testDirOut = new File(new File(testProp).getParent(), prop.getProperty("outputDir"));
 		logger.debug("Create directory "+testDirOut.getCanonicalPath());
 		testDirOut.mkdir();
+		
+		pathSaveWorkflow = prop.getProperty("path_save_workflow");
 		
 		File home = new File(testDirOut,"home_project");
 		home.mkdir();

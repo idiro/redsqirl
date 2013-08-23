@@ -62,8 +62,8 @@ public class TableUnionInteractionTests {
 		TestUtils.logTestTitle(getClass().getName()+"#basic");
 		String error = null;
 		try{
-			String new_path1 = "/test_idm_1";
-			String new_path2 = "/test_idm_2";
+			String new_path1 = TestUtils.getTablePath(1);
+			String new_path2 = TestUtils.getTablePath(2);
 			DataFlowElement src1 = getSource(new_path1);
 			DataFlowElement src2 = getSource(new_path2);
 			HiveUnion hs = new HiveUnion();
@@ -100,7 +100,7 @@ public class TableUnionInteractionTests {
 				logger.debug("3");
 				Tree<String> rowId = out.add("row");
 				logger.debug("4");
-				rowId.add(TableUnionInteraction.table_table_title).add("test_idm_1");
+				rowId.add(TableUnionInteraction.table_table_title).add(TestUtils.getTableName(1));
 				rowId.add(TableUnionInteraction.table_op_title).add("ID");
 				rowId.add(TableUnionInteraction.table_feat_title).add("ID");
 				rowId.add(TableUnionInteraction.table_type_title).add("STRING");
@@ -113,13 +113,13 @@ public class TableUnionInteractionTests {
 				logger.debug("3");
 				Tree<String> rowId = out.add("row");
 				logger.debug("4");
-				rowId.add(TableUnionInteraction.table_table_title).add("test_idm_1");
+				rowId.add(TableUnionInteraction.table_table_title).add(TestUtils.getTableName(1));
 				rowId.add(TableUnionInteraction.table_op_title).add("ID");
 				rowId.add(TableUnionInteraction.table_feat_title).add("ID");
 				rowId.add(TableUnionInteraction.table_type_title).add("STRING");
 				logger.debug("5");
 				rowId = out.add("row");
-				rowId.add(TableUnionInteraction.table_table_title).add("test_idm_3");
+				rowId.add(TableUnionInteraction.table_table_title).add(TestUtils.getTableName(3));
 				rowId.add(TableUnionInteraction.table_op_title).add("ID");
 				rowId.add(TableUnionInteraction.table_feat_title).add("ID");
 				rowId.add(TableUnionInteraction.table_type_title).add("STRING");
@@ -132,13 +132,13 @@ public class TableUnionInteractionTests {
 				logger.debug("3");
 				Tree<String> rowId = out.add("row");
 				logger.debug("4");
-				rowId.add(TableUnionInteraction.table_table_title).add("test_idm_1");
+				rowId.add(TableUnionInteraction.table_table_title).add(TestUtils.getTableName(1));
 				rowId.add(TableUnionInteraction.table_op_title).add("VALUE");
 				rowId.add(TableUnionInteraction.table_feat_title).add("VALUE");
 				rowId.add(TableUnionInteraction.table_type_title).add("STRING");
 				logger.debug("5");
 				rowId = out.add("row");
-				rowId.add(TableUnionInteraction.table_table_title).add("test_idm_2");
+				rowId.add(TableUnionInteraction.table_table_title).add(TestUtils.getTableName(2));
 				rowId.add(TableUnionInteraction.table_op_title).add("VALUE");
 				rowId.add(TableUnionInteraction.table_feat_title).add("VALUE");
 				rowId.add(TableUnionInteraction.table_type_title).add("INT");
@@ -151,13 +151,13 @@ public class TableUnionInteractionTests {
 				logger.debug("3");
 				Tree<String> rowId = out.add("row");
 				logger.debug("4");
-				rowId.add(TableUnionInteraction.table_table_title).add("test_idm_1");
+				rowId.add(TableUnionInteraction.table_table_title).add(TestUtils.getTableName(1));
 				rowId.add(TableUnionInteraction.table_op_title).add("ID");
 				rowId.add(TableUnionInteraction.table_feat_title).add("ID");
 				rowId.add(TableUnionInteraction.table_type_title).add("STRING");
 				logger.debug("5");
 				rowId = out.add("row");
-				rowId.add(TableUnionInteraction.table_table_title).add("test_idm_2");
+				rowId.add(TableUnionInteraction.table_table_title).add(TestUtils.getTableName(2));
 				rowId.add(TableUnionInteraction.table_op_title).add("ID");
 				rowId.add(TableUnionInteraction.table_feat_title).add("ID");
 				rowId.add(TableUnionInteraction.table_type_title).add("STRING");

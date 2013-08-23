@@ -26,7 +26,7 @@ public class HiveSelectTests {
 		TestUtils.logTestTitle("HiveSelectTests#basic");
 		try{
 			HiveInterface hInt = new HiveInterface();
-			String new_path1 = "/test_idm_1"; 
+			String new_path1 = "/"+TestUtils.getTableName(1); 
 			hInt.delete(new_path1);
 			assertTrue("create "+new_path1,
 					hInt.create(new_path1, getColumns()) == null

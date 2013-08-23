@@ -58,7 +58,7 @@ public class HiveTypeTests {
 			HiveInterface hInt = new HiveInterface();
 			Map<String,String> columns = getColumns();
 
-			String new_path1 = "/test_idm_1"; 
+			String new_path1 = TestUtils.getTablePath(1); 
 			hInt.delete(new_path1);
 			assertTrue("create "+new_path1,
 					hInt.create(new_path1, columns) == null
@@ -96,7 +96,7 @@ public class HiveTypeTests {
 		try{
 			HiveInterface hInt = new HiveInterface();
 
-			String new_path1 = "/test_idm_1/COUNTRY='Ireland'/DT='20120201'"; 
+			String new_path1 = TestUtils.getTablePath(1)+"/COUNTRY='Ireland'/DT='20120201'"; 
 			hInt.delete(new_path1);
 			assertTrue("create "+new_path1,
 					hInt.create(new_path1, getPartitions()) == null
@@ -126,8 +126,8 @@ public class HiveTypeTests {
 			assertTrue("Valid "+new_path1,
 					ht.isPathValid() == null);
 			
-			assertTrue("Remove "+"/test_idm_1",
-					hInt.delete("/test_idm_1")== null
+			assertTrue("Remove "+TestUtils.getTablePath(1),
+					hInt.delete(TestUtils.getTablePath(1))== null
 					);
 			
 			assertTrue("Valid "+new_path1,

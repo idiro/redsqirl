@@ -21,22 +21,22 @@ public class HDFSInterfaceTests {
 		try{
 			HDFSInterface hInt = new HDFSInterface();
 			
-			String new_path0 = hInt.getPath()+"/test_idm_0";
+			String new_path0 = hInt.getPath()+TestUtils.getTablePath(0);
 			String new_path0_test = new_path0+"/test";
 			assertTrue("create "+new_path0_test,
 					hInt.create(new_path0_test, new HashMap<String,String>()) == null
 					);
 			
-			String new_path1 = hInt.getPath()+"/test_idm_1"; 
+			String new_path1 = hInt.getPath()+TestUtils.getTablePath(1); 
 			assertTrue("create "+new_path1,
 					hInt.create(new_path1, new HashMap<String,String>()) == null
 					);
 			
-			String new_path2 = hInt.getPath()+"/test_idm_2";
+			String new_path2 = hInt.getPath()+TestUtils.getTablePath(2);
 			assertTrue("copy to "+new_path2,
 					hInt.copy(new_path1, new_path2) == null);
 			
-			String new_path3 = hInt.getPath()+"/test_idm_3";
+			String new_path3 = hInt.getPath()+TestUtils.getTablePath(3);
 			assertTrue("move to "+new_path3,
 					hInt.move(new_path1, new_path3) == null);
 			
@@ -71,7 +71,7 @@ public class HDFSInterfaceTests {
 		TestUtils.logTestTitle("HDFSInterfaceTests#basic");
 		try{
 			HDFSInterface hInt = new HDFSInterface();
-			String new_path1 = hInt.getPath()+"/test_idm_1"; 
+			String new_path1 = hInt.getPath()+TestUtils.getTablePath(1); 
 			assertTrue("create "+new_path1,
 					hInt.create(new_path1, new HashMap<String,String>()) == null
 					);

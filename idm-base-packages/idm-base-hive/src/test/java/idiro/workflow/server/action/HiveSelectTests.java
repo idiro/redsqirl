@@ -162,8 +162,8 @@ public class HiveSelectTests {
 		try{
 			Workflow w = new Workflow("workflow1_"+getClass().getName());
 			HiveInterface hInt = new HiveInterface();
-			String new_path1 = "/test_idm_1";
-			String new_path2 = "/test_idm_2"; 
+			String new_path1 = "/"+TestUtils.getTableName(1);
+			String new_path2 = "/"+TestUtils.getTableName(2); 
 			
 			hInt.delete(new_path1);
 			hInt.delete(new_path2);
@@ -207,8 +207,8 @@ public class HiveSelectTests {
 			String error = null;
 			
 			HiveInterface hInt = new HiveInterface();
-			String new_path1 = "/test_idm_1";
-			String new_path2 = "/test_idm_2";
+			String new_path1 = TestUtils.getTablePath(1);
+			String new_path2 = TestUtils.getTablePath(2);
 			
 			hInt.delete(new_path1);
 			hInt.delete(new_path2);

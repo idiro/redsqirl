@@ -90,7 +90,7 @@ public class HiveJoinTests {
 				HiveJoin.key_input, idHS);
 		assertTrue("hive select add input: "+error,error == null);
 		
-		updateHive(w,hive,"test_idm_1","test_idm_2",hInt);
+		updateHive(w,hive,TestUtils.getTableName(1),TestUtils.getTableName(2),hInt);
 		logger.debug("Features "+hive.getDFEOutput().get(HiveJoin.key_output).getFeatures());
 		
 		hive.getDFEOutput().get(HiveJoin.key_output).generatePath(
@@ -157,9 +157,9 @@ public class HiveJoinTests {
 		try{
 			Workflow w = new Workflow("workflow1_"+getClass().getName());
 			HiveInterface hInt = new HiveInterface();
-			String new_path1 = "/test_idm_1";
-			String new_path2 = "/test_idm_2";
-			String new_path3 = "/test_idm_3"; 
+			String new_path1 = TestUtils.getTablePath(1);
+			String new_path2 = TestUtils.getTablePath(2);
+			String new_path3 = TestUtils.getTablePath(3); 
 			
 			hInt.delete(new_path1);
 			hInt.delete(new_path2);

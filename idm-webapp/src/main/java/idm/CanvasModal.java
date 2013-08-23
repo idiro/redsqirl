@@ -983,4 +983,10 @@ public class CanvasModal extends BaseBean implements Serializable {
 		DynamicFormBrowser = dynamicFormBrowser;
 	}
 	
+//	public List<SelectItem> getOutputOptions(){
+//		List<SelectItem> items = new ArrayList<SelectItem>():
+//			items.add(new SelectItem("Test1", ""))
+//		return items;
+//	}
+	
 }

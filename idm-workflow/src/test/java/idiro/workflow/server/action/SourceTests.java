@@ -27,7 +27,7 @@ public class SourceTests {
 		TestUtils.logTestTitle("SourceTests#basic");
 		try{
 			HiveInterface hInt = new HiveInterface();
-			String new_path1 = "/test_idm_1"; 
+			String new_path1 = "/"+TestUtils.getTableName(1); 
 			hInt.delete(new_path1);
 			assertTrue("create "+new_path1,
 					hInt.create(new_path1, getColumns()) == null
@@ -45,15 +45,16 @@ public class SourceTests {
 			assertTrue("check2",
 					src.getPageList().get(0).checkPage() == null
 					);
-
+			
 			DFEPage page2 = src.getPageList().get(1); 
-			assertTrue("check3",
-					page2.checkPage() != null
+			assertTrue("check3"+page2.checkPage(),
+					page2.checkPage() == null
 					);
 
+			DFEPage page3 = src.getPageList().get(2); 
 			src.update(src.getInteraction(Source.key_dataset));
 			assertTrue("check4",
-					page2.checkPage() != null
+					page3.checkPage() != null
 					);
 			Tree<String> dataSetTree = src.getInteraction(Source.key_dataset).getTree();
 			dataSetTree.getFirstChild("browse").getFirstChild("output").add("path").add(new_path1);
@@ -68,14 +69,14 @@ public class SourceTests {
 			feat2.add("name").add("VALUE");
 			feat2.add("type").add("INT");
 
-			String error = page2.checkPage(); 
+			String error = page3.checkPage(); 
 			assertTrue("check5: "+error,
 					 error == null
 					);
 
 			hInt.delete(new_path1);
 			assertTrue("check6",
-					page2.checkPage() != null
+					page3.checkPage() != null
 					);
 
 		}catch(Exception e){

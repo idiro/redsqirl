@@ -25,7 +25,7 @@ Logger logger = Logger.getLogger(getClass());
 	
 	public DataFlowElement getSource() throws RemoteException{
 		HiveInterface hInt = new HiveInterface();
-		String new_path1 = "/test_idm_1";
+		String new_path1 = TestUtils.getTablePath(1);
 		
 		hInt.delete(new_path1);
 		assertTrue("create "+new_path1,

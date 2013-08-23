@@ -43,14 +43,14 @@ public class HiveInterfaceTests {
 			HiveInterface hInt = new HiveInterface();
 			Map<String,String> columns = getColumns();
 
-			String new_path1 = "/test_idm_1";
+			String new_path1 = TestUtils.getTablePath(1);
 			hInt.delete(new_path1);
 			
 			assertTrue("create "+new_path1,
 					hInt.create(new_path1, columns) == null
 					);
 
-			String new_path2 = "/test_idm_2";
+			String new_path2 = TestUtils.getTablePath(2);
 			hInt.delete(new_path2);
 			assertTrue("copy to "+new_path2,
 					hInt.copy(new_path1, new_path2) == null);
@@ -58,7 +58,7 @@ public class HiveInterfaceTests {
 			assertTrue("copy to "+new_path2,
 					hInt.copy(new_path1, new_path2) != null);
 
-			String new_path3 = "/test_idm_3";
+			String new_path3 = TestUtils.getTablePath(3);
 			hInt.delete(new_path3);
 			assertTrue("move to "+new_path3,
 					hInt.move(new_path1, new_path3) == null);
@@ -94,7 +94,7 @@ public class HiveInterfaceTests {
 			Map<String,String> partitions = getPartitions();
 
 
-			String new_path1 = "/test_idm_1";
+			String new_path1 = TestUtils.getTablePath(1);
 			hInt.delete(new_path1);
 			assertTrue("create "+new_path1,
 					hInt.create(new_path1, partition) == null
@@ -109,7 +109,7 @@ public class HiveInterfaceTests {
 					hInt.create(new_partition, new HashMap<String,String>()) != null
 					);
 			
-			String new_path2 = "/test_idm_2";
+			String new_path2 = TestUtils.getTablePath(2);
 			hInt.delete(new_path2);
 			String new_partitions = new_path2+"/COUNTRY='Ireland'/DT='20120102'";
 			assertTrue("create "+new_partitions,

@@ -156,8 +156,8 @@ public class OozieManagerTests {
 			String error = null;
 			
 			HiveInterface hInt = new HiveInterface();
-			String new_path1 = "/test_idm_1";
-			String new_path2 = "/test_idm_2"; 
+			String new_path1 = TestUtils.getTablePath(1);
+			String new_path2 = TestUtils.getTablePath(2); 
 			
 			hInt.delete(new_path1);
 			hInt.delete(new_path2);
@@ -203,8 +203,8 @@ public class OozieManagerTests {
 			String error = null;
 			
 			HiveInterface hInt = new HiveInterface();
-			String new_path1 = "/test_idm_1";
-			String new_path2 = "/test_idm_2";
+			String new_path1 = TestUtils.getTablePath(1);
+			String new_path2 = TestUtils.getTablePath(2);
 			
 			hInt.delete(new_path1);
 			hInt.delete(new_path2);
@@ -253,9 +253,9 @@ public class OozieManagerTests {
 			String error = null;
 			
 			HiveInterface hInt = new HiveInterface();
-			String new_path1 = "/test_idm_1";
-			String new_path2 = "/test_idm_2";
-			String new_path3 = "/test_idm_3";
+			String new_path1 = TestUtils.getTablePath(1);
+			String new_path2 = TestUtils.getTablePath(2);
+			String new_path3 = TestUtils.getTablePath(3);
 			
 			hInt.delete(new_path1);
 			hInt.delete(new_path2);

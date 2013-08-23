@@ -62,8 +62,8 @@ public class TableJoinInteractionTests {
 		TestUtils.logTestTitle(getClass().getName()+"#basic");
 		String error = null;
 		try{
-			String new_path1 = "/test_idm_1";
-			String new_path2 = "/test_idm_2";
+			String new_path1 = TestUtils.getTablePath(1);
+			String new_path2 = TestUtils.getTablePath(2);
 			DataFlowElement src1 = getSource(new_path1);
 			DataFlowElement src2 = getSource(new_path2);
 			HiveJoin hs = new HiveJoin();
@@ -100,12 +100,12 @@ public class TableJoinInteractionTests {
 				logger.debug("3");
 				Tree<String> rowId = out.add("row");
 				logger.debug("4");
-				rowId.add(TableJoinInteraction.table_op_title).add("test_idm_1.ID");
+				rowId.add(TableJoinInteraction.table_op_title).add(TestUtils.getTableName(1)+".ID");
 				rowId.add(TableJoinInteraction.table_feat_title).add("ID");
 				rowId.add(TableJoinInteraction.table_type_title).add("STRING");
 				logger.debug("5");
 				rowId = out.add("row");
-				rowId.add(TableJoinInteraction.table_op_title).add("test_idm_2.VAL");
+				rowId.add(TableJoinInteraction.table_op_title).add(TestUtils.getTableName(2)+".VAL");
 				rowId.add(TableJoinInteraction.table_feat_title).add("ID");
 				rowId.add(TableJoinInteraction.table_type_title).add("STRING");
 				error = tji.check();
@@ -117,12 +117,12 @@ public class TableJoinInteractionTests {
 				logger.debug("3");
 				Tree<String> rowId = out.add("row");
 				logger.debug("4");
-				rowId.add(TableJoinInteraction.table_op_title).add("test_idm_1.ID");
+				rowId.add(TableJoinInteraction.table_op_title).add(TestUtils.getTableName(1)+".ID");
 				rowId.add(TableJoinInteraction.table_feat_title).add("ID");
 				rowId.add(TableJoinInteraction.table_type_title).add("STRING");
 				logger.debug("5");
 				rowId = out.add("row");
-				rowId.add(TableJoinInteraction.table_op_title).add("test_idm_3.VALUE");
+				rowId.add(TableJoinInteraction.table_op_title).add(TestUtils.getTableName(3)+".VALUE");
 				rowId.add(TableJoinInteraction.table_feat_title).add("ID");
 				rowId.add(TableJoinInteraction.table_type_title).add("STRING");
 				error = tji.check();
@@ -134,7 +134,7 @@ public class TableJoinInteractionTests {
 				logger.debug("3");
 				Tree<String> rowId = out.add("row");
 				logger.debug("4");
-				rowId.add(TableJoinInteraction.table_op_title).add("test_idm_1.ID");
+				rowId.add(TableJoinInteraction.table_op_title).add(TestUtils.getTableName(1)+".ID");
 				rowId.add(TableJoinInteraction.table_feat_title).add("ID");
 				rowId.add(TableJoinInteraction.table_type_title).add("STRING");
 				error = tji.check();
@@ -146,12 +146,12 @@ public class TableJoinInteractionTests {
 				logger.debug("3");
 				Tree<String> rowId = out.add("row");
 				logger.debug("4");
-				rowId.add(TableJoinInteraction.table_op_title).add("test_idm_1.ID");
+				rowId.add(TableJoinInteraction.table_op_title).add(TestUtils.getTableName(1)+".ID");
 				rowId.add(TableJoinInteraction.table_feat_title).add("ID");
 				rowId.add(TableJoinInteraction.table_type_title).add("STRING");
 				logger.debug("5");
 				rowId = out.add("row");
-				rowId.add(TableJoinInteraction.table_op_title).add("test_idm_2.VALUE");
+				rowId.add(TableJoinInteraction.table_op_title).add(TestUtils.getTableName(2)+".VALUE");
 				rowId.add(TableJoinInteraction.table_feat_title).add("VALUE");
 				rowId.add(TableJoinInteraction.table_type_title).add("INT");
 				error = tji.check();

@@ -29,21 +29,21 @@ public class SSHInterfaceTests {
 			
 			logger.debug("We are in: "+hInt.getPath());
 			
-			String new_path0 = hInt.getPath()+"/test_idm_0";
+			String new_path0 = hInt.getPath()+TestUtils.getTablePath(0);
 			assertTrue("create "+new_path0,
 					hInt.create(new_path0, new HashMap<String,String>()) == null
 					);
 			
-			String new_path1 = hInt.getPath()+"/test_idm_1"; 
+			String new_path1 = hInt.getPath()+TestUtils.getTablePath(1); 
 			assertTrue("create "+new_path1,
 					hInt.create(new_path1, new HashMap<String,String>()) == null
 					);
 			
-			String new_path2 = hInt.getPath()+"/test_idm_2";
+			String new_path2 = hInt.getPath()+TestUtils.getTablePath(2);
 			assertTrue("move to "+new_path2,
 					hInt.move(new_path1, new_path2) == null);
 			
-			String new_path3 = new_path2+"/test_idm_3";
+			String new_path3 = new_path2+TestUtils.getTablePath(3);
 			assertTrue("create "+new_path3,
 					hInt.create(new_path3, new HashMap<String,String>()) == null
 					);

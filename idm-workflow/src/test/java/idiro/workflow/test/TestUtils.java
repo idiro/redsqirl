@@ -7,7 +7,9 @@ import org.apache.log4j.Logger;
 public class TestUtils {
 
 	static protected Logger logger = Logger.getLogger(TestUtils.class);
-
+	
+	static private String user = System.getProperty("user.name");
+	
 	static public void logTestTitle(String title){
 		logTestTitle(title,80,'#');
 	}
@@ -35,5 +37,13 @@ public class TestUtils {
 			message += title;
 		}
 		logger.debug(message);
+	}
+	
+	static public String getTableName(int id){
+		return "test_idm_"+user+id;
+	}
+	
+	static public String getTablePath(int id){
+		return "/"+getTableName(id);
 	}
 }

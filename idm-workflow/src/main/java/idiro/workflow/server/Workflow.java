@@ -506,10 +506,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 				
 				FileSystem fs = NameNodeVar.getFS();
 				fs.moveFromLocalFile(new Path(tempPath), new Path(filePath));
+				fs.close();
 				logger.debug("file saved successfully");
 			}
 		} catch (Exception e) {
-			error = "Fail to save the xml file";
+			error = "Fail to save the xml file"+e;
 			
 			logger.error(error);
 			logger.error(e.getMessage());
