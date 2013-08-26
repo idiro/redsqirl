@@ -6,15 +6,15 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets">
 
 	
-		<script>
+	<script>
 
-			function openBrowserChangePath(positions){
-				jQuery("[id$='browserChangePathBt']").click();
-			}
-			
-		</script>
+		function openBrowserChangePath(positions){
+			jQuery("[id$='browserChangePathBt']").click();
+		}
 		
-		<h:form id="form1">
+	</script>
+	
+	<h:form id="form1">
 	
 	<a4j:keepAlive beanName="canvasModalBean" />
 	
@@ -60,8 +60,6 @@
 						<br/>
 						<h:inputText id="browserPath" label="Path" value="#{item.pathBrowser}" maxlength="255" 
 							style="width:395px;" onclick="openBrowserChangePath();" />
-							
-							<span>&nbsp;&nbsp;</span>
 							
 						<a4j:commandButton type="submit" id="browserChangePathBt" action="#{canvasModalBean.changePathBrowserBefore}" 
 							reRender="browserTable2" oncomplete="#{rich:component('modalBrowser')}.show()" style="display:none;" >
@@ -147,11 +145,11 @@
 			<rich:panel id="panelBtCanvasModal" style="border:none; float:right;" >
 			
 				<a4j:commandButton action="#{canvasModalBean.close}" value="#{messages.button_cancel}" onclick="#{rich:component('canvasModalPanel')}.hide()" reRender="panelBtCanvasModal" />
-				<span>&nbsp;&nbsp;</span>
+
 				<a4j:commandButton action="#{canvasModalBean.previousPage}" value="#{messages.button_previous}" rendered="#{canvasModalBean.firstPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel" />
-				<span>&nbsp;&nbsp;</span>
+
 				<a4j:commandButton action="#{canvasModalBean.nextPage}" value="#{messages.button_next}" rendered="#{canvasModalBean.lastPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel" />
-				<span>&nbsp;&nbsp;</span>
+
 				<a4j:commandButton action="#{canvasModalBean.endDynamicForm}" value="#{messages.button_ok}" rendered="#{canvasModalBean.lastPage == 'S'}" reRender="panelBtCanvasModal" />
 			
 			</rich:panel>
@@ -210,7 +208,8 @@
 					</h:panelGrid>
 				</a4j:repeat>
 				
-				<a4j:commandButton value="Ok" action="#{canvasModalBean.confirmOutput}"/>
+				<a4j:commandButton value="Apply" action="#{canvasModalBean.confirmOutput}"/>
+
 			</h:panelGrid>
 			
 			<rich:modalPanel id="modalOutputBrowserHive" width="600" height="400"
@@ -255,5 +254,5 @@
 			
 		</rich:tab>
 	</rich:tabPanel>
-	</body>
+	</h:form>
 </ui:composition>

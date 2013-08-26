@@ -99,7 +99,16 @@ public class HiveType extends DataOutput{
 
 	@Override
 	public String isPathValid() throws RemoteException {
-		return hInt.isPathValid(getPath(), features,getProperty(key_partitions));
+		if (isPathExists()){
+			return hInt.isPathValid(getPath(), features,getProperty(key_partitions));
+		}else{
+			for (String s : hInt.getTableAndPartitions(getPath())){
+				if (!s.matches("[a-zA-Z_]([A-Za-z0-9_]+)")){
+					return "Not a valid name: "+s;
+				}
+			}
+		}
+		return null;
 	}
 
 	@Override
@@ -152,7 +161,9 @@ public class HiveType extends DataOutput{
 	@Override
 	public void setPath(String path) throws RemoteException {
 		super.setPath(path);
-		generateFeaturesMap(path);
+		if (isPathExists()){
+			generateFeaturesMap(path);
+		}
 	}
 
 }

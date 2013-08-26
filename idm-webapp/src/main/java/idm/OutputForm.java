@@ -11,9 +11,14 @@ import java.util.List;
 
 import javax.faces.model.SelectItem;
 
+import org.apache.log4j.Logger;
+
 public class OutputForm implements Serializable {
 	
+	private static Logger logger = Logger.getLogger(OutputForm.class);
+	
 	private DFEOutput dfeOutput;
+	private String componentId;
 	private String name;
 	private List<SelectItem> savingStateList = new ArrayList<SelectItem>();
 	private boolean renderBrowserButton = false;
@@ -46,12 +51,10 @@ public class OutputForm implements Serializable {
 	}
 	
 	public String getPath() throws RemoteException {
-		System.out.println("get path "+path);
 		return path;
 	}
 
 	public void setPath(String path) throws RemoteException {
-		System.out.println("set path "+path);
 		this.path = path;
 	}
 	
@@ -83,9 +86,31 @@ public class OutputForm implements Serializable {
 		return savingState;
 	}
 
-	public void setSavingState(String savingState) {
-		this.savingState = savingState;
-		setRenderBrowserButton(getSavingState().equals(SavingState.RECORDED.toString()));
+	public void setSavingState(String savingState) throws RemoteException {
+		if (this.savingState == null || !this.savingState.equals(savingState)){
+			this.savingState = savingState;
+			if (savingState.equals(SavingState.RECORDED.toString())){
+				setRenderBrowserButton(true);
+				setPath(null);
+			}
+			else if (savingState.equals(SavingState.BUFFERED.toString()) ||
+					savingState.equals(SavingState.TEMPORARY.toString())){
+				setRenderBrowserButton(false);
+				getDfeOutput().generatePath(
+						System.getProperty("user.name"), 
+						getComponentId(), 
+						getName());
+				setPath(getDfeOutput().getPath());
+			}
+		}
+	}
+	
+	public String getComponentId() {
+		return componentId;
+	}
+
+	public void setComponentId(String componentId) {
+		this.componentId = componentId;
 	}
 
 	public List<String> getNameOutputs(){
@@ -96,16 +121,24 @@ public class OutputForm implements Serializable {
 	}
 	
 	public String updateDFEOutput() throws RemoteException{
-		String completePath = getPath();
-		if (!getPath().endsWith("/")){
-			completePath += "/";
+
+		if (getSavingState().equals(SavingState.RECORDED.toString())) {
+			if (getPath() == null || getPath().isEmpty() || getFile() == null
+					|| getFile().isEmpty()) {
+				return "Path cannot be null";
+			}
+
+			String completePath = getPath();
+			if (!getPath().endsWith("/")) {
+				completePath += "/";
+			}
+			completePath += getFile();
+			logger.info("path: " + completePath);
+			dfeOutput.setPath(completePath);
 		}
-		completePath += getFile();
-		
+
 		dfeOutput.setSavingState(SavingState.valueOf(getSavingState()));
-		dfeOutput.setPath(completePath);
-		System.out.println("complete path: "+dfeOutput.getPath());
-		
+
 		return dfeOutput.isPathValid();
 	}
 	

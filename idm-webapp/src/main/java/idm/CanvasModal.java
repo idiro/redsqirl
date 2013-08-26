@@ -3,8 +3,6 @@ package idm;
 import idiro.utils.Tree;
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idiro.workflow.server.enumeration.DisplayType;
-import idiro.workflow.server.enumeration.FeatureType;
-import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.enumeration.SavingState;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEOutput;
@@ -12,14 +10,17 @@ import idiro.workflow.server.interfaces.DFEPage;
 import idiro.workflow.server.interfaces.DataFlow;
 import idiro.workflow.server.interfaces.DataFlowElement;
 import idm.useful.MessageUseful;
+
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+
 import org.ajax4jsf.model.KeepAlive;
 import org.apache.log4j.Logger;
 
@@ -788,6 +789,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 				}
 				of.setSavingStateList(outputList);
 				of.setDfeOutput(e.getValue());
+				of.setComponentId(getDfe().getComponentId());
+				
 				getOutputFormList().add(of);
 			}
 		}
@@ -813,6 +816,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 			String error = f.updateDFEOutput();
 			if (error != null){
 				logger.error(error);
+				MessageUseful.addErrorMessage(error);
 			}
 		}
 	}
