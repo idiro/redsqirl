@@ -140,6 +140,19 @@ public class CanvasModal extends BaseBean implements Serializable {
 				dfi.getTree().getFirstChild("list").getFirstChild("output").removeAllChildren();
 				dfi.getTree().getFirstChild("list").getFirstChild("output").add(dynamicF.getSelectedListOptions());
 				
+			} else if(dynamicF.getDisplayType().equals(DisplayType.appendList)){
+				
+				
+				
+			} else if(dynamicF.getDisplayType().equals(DisplayType.browser)){
+				
+				logger.info("Browser path -> " + dynamicF.getPathBrowser());
+				dynamicF.getTree().getFirstChild("browse").getFirstChild("output").removeAllChildren();
+				dynamicF.getTree().getFirstChild("browse").getFirstChild("output").getFirstChild("path").add(dynamicF.getPathBrowser());
+				
+				dynamicF.getTree().getFirstChild("browse").getFirstChild("output").getChildren("feature");
+				dynamicF.getTree().getFirstChild("browse").getFirstChild("output").getChildren("property");
+				
 			}
 			
 			getPage().getInteractions().set(i, dfi);
@@ -362,9 +375,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 			DynamicForm dynamicF = new DynamicForm();
 			getDfe().update(dfeInteraction);
-
-			//logger.info(dfeInteraction.getName() + " -- " + dfeInteraction.getLegend() + " -- " + dfeInteraction.getDisplay());
-			//logger.info(dfeInteraction.getColumn() + " -- " + dfeInteraction.getPlaceInColumn());
 
 			logger.info("type  " + dfeInteraction.getDisplay());
 			
@@ -719,29 +729,17 @@ public class CanvasModal extends BaseBean implements Serializable {
 		logger.info("changePathBrowser");
 
 		String path = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("pathFile");
+		logger.info("pathFile " + path);
 		
 		DynamicForm dynamicForm = getDynamicFormBrowser();
-
-		if(dynamicForm.getDataTypeName().equalsIgnoreCase("Hive")){
-			
-			Map<String, String> propertiesMap = getHiveInterface().getProperties(path);
-			logger.info("propertiesMap " + propertiesMap);
-			
-			//getDfe().getDFEOutput().get("source").setFeatures();
-			
-			getDfe().getDFEOutput().get("source").setPath(path);
-			String error = getDfe().getDFEOutput().get("source").isPathValid();
-			logger.info("error hive " + error);
-			
-		}else if(dynamicForm.getDataTypeName().equalsIgnoreCase("HDFS")){
-			
-			getDfe().getDFEOutput().get("source").setPath(path);
-			String error = getDfe().getDFEOutput().get("source").isPathValid();
-			logger.info("error hdfs " + error);
-			
-		}
+		String name = path.substring(1, path.length());
 		
-		getDfe().getDFEOutput().get("source").select(10);
+		getDfe().getDFEOutput().get("source").setPath(name);
+		getDfe().getDFEOutput().get("source").isPathExists();
+		
+
+		List<String> outputLines = getDfe().getDFEOutput().get("source").select(10);
+		logger.info("outputLines " + outputLines);
 		
 		Map<String, String> outputPropertiesMap = getDfe().getDFEOutput().get("source").getProperties();
 		logger.info("outputPropertiesMap " + outputPropertiesMap);
@@ -749,8 +747,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 		Map<String, FeatureType> outputFeatureMap  = getDfe().getDFEOutput().get("source").getFeatures();
 		logger.info("outputFeatureMap " + outputFeatureMap);
 		
-		
 		dynamicForm.setPathBrowser(path);
+		
+		getDfe().updateOut();
 		
 	}
 

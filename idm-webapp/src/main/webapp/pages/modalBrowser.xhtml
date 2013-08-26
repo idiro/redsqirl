@@ -29,26 +29,26 @@
 //]]>
 </script>
 
-	<a4j:keepAlive beanName="hdfsLoadBean" />
+	<a4j:keepAlive beanName="browserHiveBean" />
 	<a4j:keepAlive beanName="canvasModalBean" />
 
 	<h:outputText value="#{messages.label_path}" />
-	<h:inputText id="pathOpenFile" label="Path" value="#{hdfsLoadBean.path}"
+	<h:inputText id="pathOpenFile" label="Path" value="#{browserHiveBean.path}"
 		maxlength="255" style="width:395px;" />
 	<a4j:commandButton type="submit" id="changePathBt"
 		action="#{hdfsBean.changePath}" value="ok" reRender="hdfsfsOpenFile" />
 	<br />
 
-	<a4j:commandLink action="#{hdfsLoadBean.goPrevious}"
+	<a4j:commandLink action="#{browserHiveBean.goPrevious}"
 		reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
 		<img id="btAdd" src="../image/icons/button-undo.png" />
 	</a4j:commandLink>
-	<a4j:commandLink action="#{hdfsLoadBean.goNext}" reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
+	<a4j:commandLink action="#{browserHiveBean.goNext}" reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
 		<img id="btAdd" src="../image/icons/button-redo.png" />
 	</a4j:commandLink>
 	<br/>
 	
-	<rich:dataTable id="hdfsfsOpenFile" value="#{hdfsLoadBean.listGrid}" var="item"
+	<rich:dataTable id="hdfsfsOpenFile" value="#{browserHiveBean.listGrid}" var="item"
 		width="100%" style="border:none;"
 		onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 		onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
@@ -73,12 +73,12 @@
 				<h:outputText value="Name" />
 			</f:facet>
 			<a4j:commandLink value="#{item.name}"
-				action="#{hdfsLoadBean.selectFile}" reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
+				action="#{browserHiveBean.selectFile}" reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
 				<f:param name="nameFile" value="#{item.name}" />
 			</a4j:commandLink>
 		</rich:column>
 
-		<rich:columns value="#{hdfsLoadBean.keyAsListNameValue}" var="column"
+		<rich:columns value="#{browserHiveBean.keyAsListNameValue}" var="column"
 			index="ind" id="column#{ind}"
 			style="border-bottom:0px;border-right:0px;">
 			<f:facet name="header">
@@ -91,10 +91,10 @@
 
 	<br />
 	
-	<a4j:commandButton action="#{canvasModalBean.changePathBrowser}" value="ok" oncomplete="#{rich:component('modalPanelBrowserId')}.hide();" >
-		<a4j:actionparam name="pathFile" value="getPath('#{hdfsLoadBean.path}')" noEscape="true"/>
+	<a4j:commandButton action="#{canvasModalBean.changePathBrowser}" value="ok" oncomplete="#{rich:component('modalPanelBrowserId')}.hide();" reRender="browserPanel" >
+		<a4j:actionparam name="pathFile" value="getPath('#{browserHiveBean.path}')" noEscape="true"/>
 	</a4j:commandButton>
 	
 	<a4j:commandButton value="Cancel" oncomplete="#{rich:component('modalPanelBrowserId')}.hide();" />
 	
-</ui:composition>   
+</ui:composition>

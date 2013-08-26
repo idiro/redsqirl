@@ -56,6 +56,16 @@
  	<managed-bean-class>idm.ProcessManagerBean</managed-bean-class>
  	<managed-bean-scope>request</managed-bean-scope>
  </managed-bean>
+ <managed-bean>
+  <managed-bean-name>browserHiveBean</managed-bean-name>
+  <managed-bean-class>idm.HiveBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
+  <managed-bean-name>browserHdfsBean</managed-bean-name>
+  <managed-bean-class>idm.HdfsBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
  
  <!-- **************************** NAVIGATION ******************************************************************* -->
  
