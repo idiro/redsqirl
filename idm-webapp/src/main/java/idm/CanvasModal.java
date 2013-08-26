@@ -741,11 +741,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 		List<String> outputLines = getDfe().getDFEOutput().get("source").select(10);
 		logger.info("outputLines " + outputLines);
 		
-		Map<String, String> outputPropertiesMap = getDfe().getDFEOutput().get("source").getProperties();
+		/*Map<String, String> outputPropertiesMap = getDfe().getDFEOutput().get("source").getProperties();
 		logger.info("outputPropertiesMap " + outputPropertiesMap);
 		
 		Map<String, FeatureType> outputFeatureMap  = getDfe().getDFEOutput().get("source").getFeatures();
-		logger.info("outputFeatureMap " + outputFeatureMap);
+		logger.info("outputFeatureMap " + outputFeatureMap);*/
 		
 		dynamicForm.setPathBrowser(path);
 		
