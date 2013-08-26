@@ -8,7 +8,11 @@
 	<script>
 //<![CDATA[
 	var file;
+	
 	function getPath(p){
+		if (!file){
+			return p;
+		}
 		return p + "/"+ file;
 	}
 	

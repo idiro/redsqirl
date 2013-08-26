@@ -507,6 +507,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 				FileSystem fs = NameNodeVar.getFS();
 				fs.moveFromLocalFile(new Path(tempPath), new Path(filePath));
 				fs.close();
+				
 				logger.debug("file saved successfully");
 			}
 		} catch (Exception e) {
@@ -635,6 +636,15 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 				}
 
 			}
+			
+			//clean temporary files
+			String tempPathCrc = WorkflowPrefManager.pathUserPref.get()+"/tmp/."+fileName+".crc";
+			File tempCrc = new File(tempPathCrc);
+			tempCrc.delete();
+			
+			xmlFile.delete();
+			
+			
 		} catch (Exception e) {
 			logger.error("Fail to read the xml file");
 			error = "Fail to read the xml file";

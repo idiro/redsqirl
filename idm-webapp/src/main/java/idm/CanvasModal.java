@@ -5,6 +5,9 @@ import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.interfaces.DFEInteraction;
+import idiro.workflow.server.enumeration.SavingState;
+import idiro.workflow.server.interfaces.DFEInteraction;
+import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.interfaces.DFEPage;
 import idiro.workflow.server.interfaces.DataFlow;
 import idiro.workflow.server.interfaces.DataFlowElement;
@@ -51,6 +54,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 	private String firstPage = "S";
 	private int listPageSize;
 	private List<DynamicForm> dynamicFormList = new ArrayList<DynamicForm>();
+	private List<OutputForm> outputFormList = new ArrayList<OutputForm>();
+	private String nameOutput;
+
 	private Map<String, String> nameValueFeature = new HashMap<String, String>();
 	private Map<String, String> nameValueListGrid = new HashMap<String, String>();
 	private String pathBrowser = "";
@@ -109,6 +115,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 			}
 
 			mountInteractionForm();
+			mountOutputForm();
 			
 		}
 
@@ -766,6 +773,49 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 
 	}
+	
+	public void mountOutputForm() throws RemoteException{
+		logger.info("mountOutputForm");
+		if (!getDfe().getDFEOutput().isEmpty()){
+			setOutputFormList(new ArrayList<OutputForm>());
+			for (Map.Entry<String, DFEOutput> e : getDfe().getDFEOutput().entrySet()){
+				OutputForm of = new OutputForm();
+				of.setName(e.getKey());
+				
+				List<SelectItem> outputList = new ArrayList<SelectItem>();
+				for (SavingState s : SavingState.values()){
+					outputList.add(new SelectItem(s.toString(), s.toString()));
+				}
+				of.setSavingStateList(outputList);
+				of.setDfeOutput(e.getValue());
+				getOutputFormList().add(of);
+			}
+		}
+	}
+	
+	public void changePathOutputBrowser() throws RemoteException {
+
+		logger.info("changePathOutputBrowser");
+		String path = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("pathFile");
+		logger.info("Output: "+getNameOutput()+" - path: "+path);
+		for (OutputForm f : getOutputFormList()){
+			if (f.getName().equals(getNameOutput())){
+				f.setPath(path);
+				logger.info("Output found: "+getNameOutput()+" - path: "+path);
+			}
+		}
+	}
+	
+	public void confirmOutput() throws RemoteException{
+		logger.info("confirmOutput");
+		
+		for (OutputForm f : getOutputFormList()){
+			String error = f.updateDFEOutput();
+			if (error != null){
+				logger.error(error);
+			}
+		}
+	}
 
 	public List<SelectItem> getListItens() {
 		return listItens;
@@ -982,11 +1032,20 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void setDynamicFormBrowser(DynamicForm dynamicFormBrowser) {
 		DynamicFormBrowser = dynamicFormBrowser;
 	}
-	
-//	public List<SelectItem> getOutputOptions(){
-//		List<SelectItem> items = new ArrayList<SelectItem>():
-//			items.add(new SelectItem("Test1", ""))
-//		return items;
-//	}
-	
+
+	public List<OutputForm> getOutputFormList() {
+		return outputFormList;
+	}
+
+	public void setOutputFormList(List<OutputForm> outputFormList) {
+		this.outputFormList = outputFormList;
+	}
+
+	public String getNameOutput() {
+		return nameOutput;
+	}
+
+	public void setNameOutput(String nameOutput) {
+		this.nameOutput = nameOutput;
+	}
 }

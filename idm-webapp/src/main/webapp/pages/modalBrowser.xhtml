@@ -23,6 +23,9 @@
 	}
 	
 	function getPath(p){
+		if (!file){
+			return p;
+		}
 		return p + "/"+ file;
 	}
 	
