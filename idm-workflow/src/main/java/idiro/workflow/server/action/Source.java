@@ -44,9 +44,9 @@ public class Source extends DataflowAction{
 
 	public static final String out_name = "source";
 
-	public static final String key_datatype = "Data type"; 
-	public static final String key_datasubtype = "Data subtype"; 
-	public static final String key_dataset = "Data set"; 
+	public static final String key_datatype = "Data_type"; 
+	public static final String key_datasubtype = "Data_subtype"; 
+	public static final String key_dataset = "Data_set"; 
 
 	public Source() throws RemoteException {
 		super(null);

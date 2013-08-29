@@ -84,12 +84,10 @@ public class HiveUnion  extends HiveElement{
 		}
 	}
 
-	@Override
 	public String getName() throws RemoteException {
 		return "hive_union";
 	}
 
-	@Override
 	public void update(DFEInteraction interaction) throws RemoteException {
 		List<DFEOutput> in = getDFEInput().get(key_input);
 		if(in.size() > 1){

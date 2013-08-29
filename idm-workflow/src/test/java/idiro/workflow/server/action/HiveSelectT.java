@@ -49,7 +49,7 @@ public class HiveSelectT extends DataflowAction{
 
 
 	public static final String table_op_title = "Operation",
-			table_feat_title = "Feature name",
+			table_feat_title = "Feature_name",
 			table_type_title = "Type";
 
 	private static Map<String, DFELinkProperty> input;

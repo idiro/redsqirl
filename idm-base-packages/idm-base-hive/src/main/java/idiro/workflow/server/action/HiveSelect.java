@@ -80,12 +80,10 @@ public class HiveSelect extends HiveElement{
 		
 	}
 	
-	@Override
 	public String getName() throws RemoteException {
 		return "hive_select";
 	}
 
-	@Override
 	public void update(DFEInteraction interaction) throws RemoteException {
 		DFEOutput in = getDFEInput().get(key_input).get(0);
 		if(in != null){

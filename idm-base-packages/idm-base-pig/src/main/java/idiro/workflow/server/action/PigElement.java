@@ -43,10 +43,10 @@ public abstract class PigElement extends DataflowAction {
 	 */
 	private static final long serialVersionUID = -1651299366774317959L;
 
-	public static final String key_output = "pig_realation",
+	public static final String key_output = "pig_relation",
 			key_input = "pig_relation",
 			key_condition = "Condition",
-			key_outputType = "Output Type",
+			key_outputType = "Output_Type",
 			default_delimiter = "\001";
 
 	protected UserInteraction delimiterOutputInt;
@@ -232,11 +232,11 @@ public abstract class PigElement extends DataflowAction {
 	
 	protected void addOutputPage() throws RemoteException{
 		Page page = addPage("Output",
-				"Output Options",
+				"Output_Options",
 				1);
 		
 		delimiterOutputInt = new UserInteraction(
-				"Output Delimiter",
+				"Output_Delimiter",
 				"Please specify the delimiter for the output file.",
 				DisplayType.list,
 				0,
@@ -245,7 +245,7 @@ public abstract class PigElement extends DataflowAction {
 		page.addInteraction(delimiterOutputInt);
 		
 		dataSubtypeInt = new UserInteraction(
-				"Data subtype",
+				"Data_subtype",
 				"Please specify a data subtype",
 				DisplayType.list,
 				0,

@@ -49,7 +49,7 @@ public abstract class HiveElement extends DataflowAction {
 			key_input = "hive_table",
 			key_condition = "Condition",
 			key_partitions = "Partitions",
-			key_outputType = "Output Type";
+			key_outputType = "Output_Type";
 
 	/**
 	 * Common interactions
@@ -164,7 +164,6 @@ public abstract class HiveElement extends DataflowAction {
 	}
 	
 
-	@Override
 	public String updateOut() throws RemoteException {
 		String error = checkIntegrationUserVariables();
 		HiveInterface hInt = new HiveInterface();
@@ -273,12 +272,10 @@ public abstract class HiveElement extends DataflowAction {
 	}
 
 
-	@Override
 	public Map<String, DFELinkProperty> getInput() throws RemoteException {
 		return input;
 	}
 
-	@Override
 	public Map<String, DFEOutput> getDFEOutput() throws RemoteException {
 		return output;
 	}

@@ -102,10 +102,9 @@ public class HiveType extends DataOutput{
 		if (isPathExists()){
 			return hInt.isPathValid(getPath(), features,getProperty(key_partitions));
 		}else{
-			for (String s : hInt.getTableAndPartitions(getPath())){
-				if (!s.matches("[a-zA-Z_]([A-Za-z0-9_]+)")){
-					return "Not a valid name: "+s;
-				}
+			String regex = "[a-zA-Z_]([A-Za-z0-9_]+)";
+			if (!hInt.getTableAndPartitions(getPath())[0].matches(regex)) {
+				return "Not a valid path";
 			}
 		}
 		return null;

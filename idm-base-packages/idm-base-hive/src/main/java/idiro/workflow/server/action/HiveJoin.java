@@ -28,8 +28,8 @@ public class HiveJoin extends HiveElement{
 	private static final long serialVersionUID = -3035179016090477413L;
 
 	public static final String key_featureTable = "Features",
-			key_joinType = "Join Type",
-			key_joinRelation = "Join Relationship";
+			key_joinType = "Join_Type",
+			key_joinRelation = "Join_Relationship";
 
 	private Page page1,
 			page2,
@@ -100,12 +100,10 @@ public class HiveJoin extends HiveElement{
 		
 	}
 
-	@Override
 	public String getName() throws RemoteException {
 		return "hive_join";
 	}
 
-	@Override
 	public void update(DFEInteraction interaction) throws RemoteException {
 		if(interaction == condInt){
 			condInt.update();
