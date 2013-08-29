@@ -2,6 +2,8 @@ package idm;
 
 
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
+import idiro.workflow.server.interfaces.DFELinkProperty;
+import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.interfaces.DataFlow;
 import idiro.workflow.server.interfaces.DataFlowElement;
 
@@ -13,6 +15,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -21,12 +24,16 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 	
 	private static Logger logger = Logger.getLogger(CanvasBean.class);
+	private List<SelectItem> linkPossibilities = new ArrayList<SelectItem>();
+	private String selectedLink;
 	private int countObj;
 	private int countWf;
-	private Entry entry;
 	private String nameWorkflow;
 	private DataFlow df;
-//	private Map<String, String> idMap = new HashMap<String, String>();
+	private String paramOutId;
+	private String paramInId;
+	private String paramNameLink;
+	private String[] result;
 	
 	public void doNew(){
 
@@ -109,7 +116,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 			
 			df.getElement(idElement).setPosition(Double.valueOf(posX).intValue(), Double.valueOf(posY).intValue());
 
-			setEntry(new Entry(idElement, paramGroupID));
+			setResult(new String[]{idElement, paramGroupID});
 			
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -119,18 +126,6 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 	}
 
-	/*public void updateValue(ActionEvent event){
-
-		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-		String nameElement = params.get("param1");
-
-		logger.info("-> " + nameElement);
-		setNameElement(nameElement);
-
-		addElement();
-
-	}*/
-
 	/** addLink
 	 * 
 	 * Method for add Link for two elements
@@ -139,74 +134,65 @@ public class CanvasBean extends BaseBean implements Serializable{
 	 * @author Igor.Souza
 	 */
 	public void addLink() {
+		logger.info("addLink");
+		String idElementA = getParamOutId();
+		String idElementB = getParamInId();
 		
-//		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-//		String idElementA = params.get("paramOutId");
-//		String idElementB = params.get("paramInId");
-//
-//		try {
-//
-//			DataFlowInterface dfi = getworkFlowInterface();
-//
-//			DataFlow df = dfi.getWorkflow(getNameWorkflow());
-//
-//			DataFlowElement dfeObjA = df.getElement(getIdMap().get(idElementA));
-//			DataFlowElement dfeObjB = df.getElement(getIdMap().get(idElementB));
-//
-//			
-//			dfeObjB.getInput();
-//			dfeObjA.getDFEOutput();
-//			
-//			df.addLink("output1", dfeObjA.getComponentId(), "input1", dfeObjB.getComponentId());
-//
-//		} catch (RemoteException e) {
-//			e.printStackTrace();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
+		String nameElementA = getSelectedLink().split(" -> ")[0];
+		String nameElementB = getSelectedLink().split(" -> ")[1];
+		
+		logger.info("AddLink A: "+idElementA+" - "+nameElementA);
+		logger.info("AddLink B: "+idElementB+" - "+nameElementB);
+
+		try {
+
+			DataFlowInterface dfi = getworkFlowInterface();
+			DataFlow df = dfi.getWorkflow(getNameWorkflow());
+
+			DataFlowElement dfeObjA = df.getElement(idElementA);
+			DataFlowElement dfeObjB = df.getElement(idElementB);
+
+			df.addLink(nameElementA, dfeObjA.getComponentId(), nameElementB, dfeObjB.getComponentId());
+			
+			setResult(new String[]{getParamNameLink(), nameElementA, nameElementB});
+
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 	}
 	
-//	/** addLink
-//	 * 
-//	 * Method for add Link for two elements
-//	 * 
-//	 * @return 
-//	 * @author Igor.Souza
-//	 */
-//	public void getLinkPossibilities() {
-//		
-//		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-//		String idElementA = params.get("paramOutId");
-//		String idElementB = params.get("paramInId");
-//
-//		List<String> result = new ArrayList<String>();
-//		try {
-//
-//			DataFlowInterface dfi = getworkFlowInterface();
-//
-//			DataFlow df = dfi.getWorkflow(getNameWorkflow());
-//
-//			DataFlowElement dfeObjA = df.getElement(getIdMap().get(idElementA));
-//			dfeObjA.
-//			dfeObjA.updateOut();
-//			DataFlowElement dfeObjB = df.getElement(getIdMap().get(idElementB));
-//			
-//			for (Map.Entry<String, DFELinkProperty> entryOutput : dfeObjB.getInput().entrySet()){
-//				for (Map.Entry<String, DFEOutput> entryInput : dfeObjA.getDFEOutput().entrySet()){
-//					if (entryOutput.getValue().check(entryInput.getValue().getClass())){
-//						result.add(entryOutput.getKey()+" -> "+entryInput.getKey());
-//					}
-//				}
-//			}
-//
-//		} catch (RemoteException e) {
-//			e.printStackTrace();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//
-//	}
+	public void updateLinkPossibilities() {
+		
+		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String idElementA = params.get("paramOutId");
+		String idElementB = params.get("paramInId");
+		
+		try {
+			linkPossibilities = new ArrayList<SelectItem>();
+			DataFlowInterface dfi = getworkFlowInterface();
+			DataFlow df = dfi.getWorkflow(getNameWorkflow());
+
+			DataFlowElement dfeObjA = df.getElement(idElementA);
+			DataFlowElement dfeObjB = df.getElement(idElementB);
+			
+			for (Map.Entry<String, DFELinkProperty> entryInput : dfeObjB.getInput().entrySet()){
+				for (Map.Entry<String, DFEOutput> entryOutput : dfeObjA.getDFEOutput().entrySet()){
+					if (df.check(entryOutput.getKey(), dfeObjA.getComponentId(), entryInput.getKey(), dfeObjB.getComponentId())){
+						linkPossibilities.add(new SelectItem(entryOutput.getKey()+" -> "+entryInput.getKey()));
+					}
+				}
+			}
+
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
 
 	/** removeLink
 	 * 
@@ -216,12 +202,16 @@ public class CanvasBean extends BaseBean implements Serializable{
 	 * @author Igor.Souza
 	 */
 	public void removeLink() {
+		logger.info("Remove link");
 
 		try {
-
-			DataFlow df = getDf();
+			Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+			String idElementA = params.get("paramOutId");
+			String idElementB = params.get("paramInId");
+			String nameElementA = params.get("paramOutName");
+			String nameElementB = params.get("paramInName");
 			
-			df.removeLink("", "wlwmwntOut", "", "elementIN");
+			getDf().removeLink(nameElementA, idElementA, nameElementB, idElementB);
 
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -317,14 +307,6 @@ public class CanvasBean extends BaseBean implements Serializable{
 		this.countObj = countObj;
 	}
 	
-	public Entry getEntry() {
-		return entry;
-	}
-
-	public void setEntry(Entry entry) {
-		this.entry = entry;
-	}
-	
 	public DataFlow getDf() {
 		return df;
 	}
@@ -341,14 +323,55 @@ public class CanvasBean extends BaseBean implements Serializable{
 		this.nameWorkflow = nameWorkflow;
 	}
 	
-//	public Map<String, String> getIdMap() {
-//	return idMap;
-//}
-//
-//public void setIdMap(Map<String, String> idMap) {
-//	this.idMap = idMap;
-//}
+	public String getParamOutId() {
+		return paramOutId;
+	}
+
+	public void setParamOutId(String paramOutId) {
+		this.paramOutId = paramOutId;
+	}
+
+	public String getParamInId() {
+		return paramInId;
+	}
+
+	public void setParamInId(String paramInId) {
+		this.paramInId = paramInId;
+	}
 	
+	public String getParamNameLink() {
+		return paramNameLink;
+	}
+
+	public void setParamNameLink(String paramNameLink) {
+		this.paramNameLink = paramNameLink;
+	}
+	
+	public String[] getResult() {
+		System.out.println("getResult "+result[0]);
+		return result;
+	}
+
+	public void setResult(String[] result) {
+		this.result = result;
+	}
+	
+	public List<SelectItem> getLinkPossibilities() {
+		return linkPossibilities;
+	}
+
+	public void setLinkPossibilities(List<SelectItem> linkPossibilities) {
+		this.linkPossibilities = linkPossibilities;
+	}
+	
+	public String getSelectedLink() {
+		return selectedLink;
+	}
+
+	public void setSelectedLink(String selectedLink) {
+		this.selectedLink = selectedLink;
+	}
+
 	public String getPositions() throws Exception{
 		JSONArray json = new JSONArray();
 		for (DataFlowElement e : getDf().getElement()){

@@ -2,6 +2,7 @@ package idiro.workflow.server;
 
 import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
+import idiro.workflow.server.interfaces.DataFlowElement;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -67,14 +68,14 @@ public class DataProperty extends UnicastRemoteObject implements DFELinkProperty
 		
 	}
 
-	public boolean check(Class<? extends DFEOutput> out){
+	public boolean check( DFEOutput out){
 		boolean ok = false;
 		Iterator<Class<? extends DFEOutput>> it = typeAccepted.iterator();
 		while(it.hasNext()&& !ok){
 			Class<?> cur = it.next();
 			while(cur != null && !ok){
-				logger.debug("Check if "+cur+" equals "+out);
-				if(cur.equals(out)){
+				logger.debug("Check if "+cur+" equals "+out.getClass());
+				if(cur.equals(out.getClass())){
 					ok = true;
 				}
 				cur = cur.getSuperclass();
@@ -100,5 +101,4 @@ public class DataProperty extends UnicastRemoteObject implements DFELinkProperty
 	public List<Class<? extends DFEOutput>> getTypeAccepted() {
 		return typeAccepted;
 	}
-
 }

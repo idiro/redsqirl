@@ -922,7 +922,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 				error = in.addInputComponent(inName, out);
 			}else{
 				if( ! in.getInput().get(inName).check(
-						out.getDFEOutput().get(outName).getClass())
+						out.getDFEOutput().get(outName))
 						){
 					error = "The type of the edge is not compatible";
 				}else{
@@ -941,6 +941,30 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 			logger.debug("Error when add link "+error);
 		}
 		return error;
+	}
+	
+	public boolean check( 
+			String outName,
+			String componentIdOut,
+			String inName,
+			String componentIdIn) throws RemoteException{
+
+		String error = null;
+		DataFlowElement out = getElement(componentIdOut);
+		DataFlowElement in = getElement(componentIdIn);
+		if(out == null || in == null){
+			error = "One of the element to link does not exist";
+		}else if(in.getInput().get(inName) == null){
+			error = "The entry name "+inName+" does not exist in input";
+		}else if(out.getDFEOutput().get(outName) == null){
+			error = "The entry name "+outName+" does not exist in output";
+		}else if( ! in.getInput().get(inName).check(out.getDFEOutput().get(outName))){
+			error = "The type of the edge is not compatible";
+		}
+		if(error != null){
+			return false;
+		}
+		return true;
 	}
 
 	/**

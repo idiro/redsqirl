@@ -412,11 +412,17 @@
 			<h:inputHidden value="#{canvasModalBean.listPageSize}" />
 			
 
-			<a4j:commandLink id="addLinkBt" action="#{canvasBean.addLink}" style="display:none;" />
-			<a4j:commandLink id="removeLinkBt" action="#{canvasBean.removeLink}" style="display:none;" />
+			<a4j:region>
+				<a4j:jsFunction name="removeLinkBt" action="#{canvasBean.removeLink}">
+					<a4j:actionparam name="paramOutId"/>
+					<a4j:actionparam name="paramOutName"/>
+					<a4j:actionparam name="paramInId"/>
+					<a4j:actionparam name="paramInName"/>
+				</a4j:jsFunction>
+			</a4j:region>
 
 			<a4j:region>
-				<a4j:jsFunction name="addElementBt" action="#{canvasBean.addElement}" data="#{canvasBean.entry}" oncomplete="updateTypeObj(data.key, data.value);" >
+				<a4j:jsFunction name="addElementBt" action="#{canvasBean.addElement}" data="#{canvasBean.result}" oncomplete="updateTypeObj(data[0], data[1]);" >
 					<a4j:actionparam name="paramNameElement"/>
 					<a4j:actionparam name="paramGroupID"/>
 					<a4j:actionparam name="paramPosX"/>
@@ -425,9 +431,15 @@
 			</a4j:region>
 			
 			<a4j:region>
-				<a4j:jsFunction name="addLinkBt" action="#{canvasBean.addLink}" >
-					<a4j:actionparam name="paramOutId"/>
-					<a4j:actionparam name="paramInId"/>
+				<a4j:jsFunction name="addLinkBt" data="#{canvasBean.result}" oncomplete="updateLink(data[0], data[1], data[2])" />
+			</a4j:region>
+			
+			<a4j:region>
+				<a4j:jsFunction name="addLinkModalBt" action="#{canvasBean.updateLinkPossibilities}" oncomplete="#{rich:component('modalSelectLink')}.show()"
+					reRender="selectLinkList">
+					<a4j:actionparam name="paramOutId" assignTo="#{canvasBean.paramOutId}"/>
+					<a4j:actionparam name="paramInId" assignTo="#{canvasBean.paramInId}"/>
+					<a4j:actionparam name="paramNameLink" assignTo="#{canvasBean.paramNameLink}"/>
 				</a4j:jsFunction>
 			</a4j:region>
 			
@@ -844,6 +856,24 @@
 			<h:form id="formLoadWorkflow">
 				<h:panelGroup>
 					<a4j:include viewId="/pages/loadFileHdfs.xhtml" ajaxRendered="false" />
+				</h:panelGroup>
+			</h:form>
+	
+		</rich:modalPanel>
+	</a4j:region>
+	
+	<a4j:region renderRegionOnly="true">
+		<rich:modalPanel id="modalSelectLink" width="600" height="400" style="overflow:auto;" resizeable="false">
+	
+			<f:facet name="header">Load</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer"
+					onclick="#{rich:component('modalSelectLink')}.hide()" />
+			</f:facet>
+	
+			<h:form id="formSelectLink">
+				<h:panelGroup>
+					<a4j:include viewId="/pages/selectLink.xhtml" ajaxRendered="true" />
 				</h:panelGroup>
 			</h:form>
 	

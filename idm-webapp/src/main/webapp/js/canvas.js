@@ -179,6 +179,7 @@ var countObj;
 										var regex = new RegExp("^arrow");
 							    		if(regex.test(value.getName())){
 							    			if(value.getStroke() == "red"){
+							    				removeLinkBt(value.output, value.nameOutput, value.input, value.nameInput);
 							    				value.remove();
 							    				return false;
 							    			}
@@ -1677,25 +1678,25 @@ var countObj;
 			    }
 			}
 			
-			function updateArrow(group, countObj) {
-				var groupNumber = group.getId().substring(5, group.getId().length);
-				jQuery.each(layer.getChildren(), function(index, value) {
-					if(value.getName() !== undefined){
-						
-						var regex = new RegExp("^arrow"+groupNumber+"-([0-9]+)");
-			    		if(regex.test(value.getName())){
-			    			var number = value.getName().split("-")[1];
-			    			value.setName("arrow" + countObj + "-" + number);
-			    		}
-			    		
-			    		var regex2 = new RegExp("^arrow([0-9]+)-"+groupNumber);
-			    		if(regex2.test(value.getName())){
-			    			value.setName(value.getName().split("-")[0] +"-"+ countObj);
-			    		}
-			    		
-					}
-				});
-			}
+//			function updateArrow(group, countObj) {
+//				var groupNumber = group.getId().substring(5, group.getId().length);
+//				jQuery.each(layer.getChildren(), function(index, value) {
+//					if(value.getName() !== undefined){
+//						
+//						var regex = new RegExp("^arrow"+groupNumber+"-([0-9]+)");
+//			    		if(regex.test(value.getName())){
+//			    			var number = value.getName().split("-")[1];
+//			    			value.setName("arrow" + countObj + "-" + number);
+//			    		}
+//			    		
+//			    		var regex2 = new RegExp("^arrow([0-9]+)-"+groupNumber);
+//			    		if(regex2.test(value.getName())){
+//			    			value.setName(value.getName().split("-")[0] +"-"+ countObj);
+//			    		}
+//			    		
+//					}
+//				});
+//			}
 			
 			
 		   function ready(layer, polygonLayer) {
@@ -2124,6 +2125,17 @@ var countObj;
 			   
 		   }
 		   
+		   function updateLink(linkName, nameOutput, nameInput) {
+			   
+				jQuery.each(layer.getChildren(), function(index, value) {
+					if(value.getName() == linkName){
+						value.nameOutput = nameOutput;
+						value.nameInput = nameInput;
+					}
+				});
+			   
+		   }
+		   
 		   function configureCircle(circle1, polygonLayer){
 			   
 				circle1.on('mouseover', function() {
@@ -2166,7 +2178,10 @@ var countObj;
 			    		                   newPoint2[0]-headlen2*Math.cos(angle+Math.PI/3), newPoint2[1]-headlen2*Math.sin(angle+Math.PI/3)
 			    		                   ]);
 			    		  
-			    		  layer.add(arrow.clone());
+			    		  var arrowClone = arrow.clone();
+			    		  arrowClone.input = this.getParent().getChildren()[3].getText();
+			    		  arrowClone.output = arrow.output;
+			    		  layer.add(arrowClone);
 			    		  
 			    		  //alert(arrow.getName());
 			    		  
@@ -2180,7 +2195,7 @@ var countObj;
 			    		  
 			    		  makeHistory();
 			    		  
-			    		  addLinkBt(arrow.out, this.getParent().getId());
+			    		  addLinkModalBt(arrowClone.output, arrowClone.input, arrowClone.getName());
 			    		  
 			    		  //call Method for add this link
 				    	  //jQuery("[id$='addLinkBt']").click();
@@ -2193,7 +2208,7 @@ var countObj;
 				          var polygonGroup = polygonLayer.get('#'+this.getParent().getId());
 				          arrow.setPoints([polygonGroup[0].getX()+40, polygonGroup[0].getY()+50, polygonGroup[0].getX()+40+1, polygonGroup[0].getY()+50+1 ]);
 				          arrow.setName("arrow"+this.getName().substring(6,this.getName().length));
-				          arrow.out = this.getParent().getId();
+				          arrow.output = this.getParent().getChildren()[3].getText();
 				          
 				          circle.setFill('white');
 				          

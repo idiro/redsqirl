@@ -262,4 +262,10 @@ public interface DataFlow extends Remote{
 	 */
 	public void setOozieJobId(String oozieJobId) throws RemoteException;
 	
+	public boolean check( 
+			String outName,
+			String componentIdOut,
+			String inName,
+			String componentIdIn)  throws RemoteException;
+	
 }
