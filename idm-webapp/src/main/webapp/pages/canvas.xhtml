@@ -412,7 +412,11 @@
 			<h:inputHidden value="#{canvasModalBean.listPageSize}" />
 			
 
-			<a4j:commandLink id="addLinkBt" action="#{canvasBean.addLink}" style="display:none;" />
+			<a4j:commandLink id="addLinkBt" action="#{canvasBean.addLink}" style="display:none;">
+				<a4j:actionparam name="paramOutId"/>
+				<a4j:actionparam name="paramInId"/>
+			</a4j:commandLink>
+				
 			<a4j:commandLink id="removeLinkBt" action="#{canvasBean.removeLink}" style="display:none;" />
 
 			<a4j:region>

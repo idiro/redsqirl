@@ -2,6 +2,8 @@ package idm;
 
 
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
+import idiro.workflow.server.interfaces.DFELinkProperty;
+import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.interfaces.DataFlow;
 import idiro.workflow.server.interfaces.DataFlowElement;
 
@@ -26,7 +28,6 @@ public class CanvasBean extends BaseBean implements Serializable{
 	private Entry entry;
 	private String nameWorkflow;
 	private DataFlow df;
-//	private Map<String, String> idMap = new HashMap<String, String>();
 	
 	public void doNew(){
 
@@ -140,30 +141,40 @@ public class CanvasBean extends BaseBean implements Serializable{
 	 */
 	public void addLink() {
 		
-//		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-//		String idElementA = params.get("paramOutId");
-//		String idElementB = params.get("paramInId");
-//
-//		try {
-//
-//			DataFlowInterface dfi = getworkFlowInterface();
-//
-//			DataFlow df = dfi.getWorkflow(getNameWorkflow());
-//
-//			DataFlowElement dfeObjA = df.getElement(getIdMap().get(idElementA));
-//			DataFlowElement dfeObjB = df.getElement(getIdMap().get(idElementB));
-//
-//			
-//			dfeObjB.getInput();
-//			dfeObjA.getDFEOutput();
-//			
-//			df.addLink("output1", dfeObjA.getComponentId(), "input1", dfeObjB.getComponentId());
-//
-//		} catch (RemoteException e) {
-//			e.printStackTrace();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
+		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String idElementA = params.get("paramOutId");
+		String idElementB = params.get("paramInId");
+		System.out.println("AddLink A: "+idElementA);
+		System.out.println("AddLink B: "+idElementB);
+
+		try {
+
+			DataFlowInterface dfi = getworkFlowInterface();
+
+			DataFlow df = dfi.getWorkflow(getNameWorkflow());
+
+			DataFlowElement dfeObjA = df.getElement(idElementA);
+			DataFlowElement dfeObjB = df.getElement(idElementB);
+
+			String inName = null;
+			String outName = null;
+			for (Map.Entry<String, DFELinkProperty> e : dfeObjB.getInput().entrySet()){
+				logger.info("B "+e.getKey() + " - " + e.getValue());
+				inName = e.getKey();
+			}
+			for (Map.Entry<String, DFEOutput> e : dfeObjA.getDFEOutput().entrySet()){
+				logger.info("A "+e.getKey() + " - " + e.getValue());
+				outName = e.getKey();
+			}
+			
+			String error = df.addLink(inName, dfeObjA.getComponentId(), outName, dfeObjB.getComponentId());
+			logger.info(error);
+
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 	}
 	
@@ -340,14 +351,6 @@ public class CanvasBean extends BaseBean implements Serializable{
 	public void setNameWorkflow(String nameWorkflow) {
 		this.nameWorkflow = nameWorkflow;
 	}
-	
-//	public Map<String, String> getIdMap() {
-//	return idMap;
-//}
-//
-//public void setIdMap(Map<String, String> idMap) {
-//	this.idMap = idMap;
-//}
 	
 	public String getPositions() throws Exception{
 		JSONArray json = new JSONArray();
