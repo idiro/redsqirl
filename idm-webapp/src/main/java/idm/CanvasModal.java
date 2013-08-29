@@ -1052,4 +1052,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void setNameOutput(String nameOutput) {
 		this.nameOutput = nameOutput;
 	}
+	
+	public boolean isRenderOutputTab() throws RemoteException{
+		return getDfe() != null && getDfe().getOozieAction() != null;
+	}
 }

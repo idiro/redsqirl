@@ -14,7 +14,7 @@
 		
 	</script>
 	
-	<h:form id="form1">
+	<h:form id="formCanvasModal">
 	
 	<a4j:keepAlive beanName="canvasModalBean" />
 	
@@ -173,7 +173,7 @@
 	
         </rich:tab>
         
-		<rich:tab label="Output">
+		<rich:tab label="Output" rendered="#{canvasModalBean.renderOutputTab}">
 
 			<h:panelGrid id="dataOutputForm">
 				<a4j:repeat value="#{canvasModalBean.outputFormList}" var="item"
