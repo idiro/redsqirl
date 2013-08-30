@@ -7,6 +7,7 @@ import idiro.utils.FeatureList;
 import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.test.TestUtils;
 
+import java.rmi.RemoteException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,7 +18,7 @@ public class HiveDictionaryTests {
 
 	Logger logger = Logger.getLogger(getClass());
 
-	public FeatureList getFeatures(){
+	public FeatureList getFeatures() throws RemoteException{
 		FeatureList features = new OrderedFeatureList();
 		features.addFeature("col1", FeatureType.STRING);
 		features.addFeature("col2", FeatureType.DOUBLE);
@@ -99,7 +100,7 @@ public class HiveDictionaryTests {
 	}
 
 	@Test
-	public void testBooleanOperations(){
+	public void testBooleanOperations() throws RemoteException{
 		TestUtils.logTestTitle("HiveDictionaryTests#testBooleanOperations");
 		FeatureList features = getFeatures();
 		try{
@@ -139,7 +140,7 @@ public class HiveDictionaryTests {
 	}
 
 	@Test
-	public void testArithmeticOperations(){
+	public void testArithmeticOperations() throws RemoteException{
 		TestUtils.logTestTitle("HiveDictionaryTests#testArithmeticOperations");
 		FeatureList features = getFeatures();
 		try{
@@ -159,7 +160,7 @@ public class HiveDictionaryTests {
 
 
 	@Test
-	public void testMethods(){
+	public void testMethods() throws RemoteException{
 		TestUtils.logTestTitle("HiveDictionaryTests#testMethods");
 		FeatureList features = getFeatures();
 		try{
@@ -177,7 +178,7 @@ public class HiveDictionaryTests {
 	}
 	
 	@Test
-	public void testAggreg(){
+	public void testAggreg() throws RemoteException{
 		TestUtils.logTestTitle("HiveDictionaryTests#testAggreg");
 		FeatureList features = getFeatures();
 		Set<String> agg = getAgg();

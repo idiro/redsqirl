@@ -34,6 +34,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 	private String paramInId;
 	private String paramNameLink;
 	private String[] result;
+
 	
 	public void doNew(){
 
@@ -147,6 +148,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 		try {
 
 			DataFlowInterface dfi = getworkFlowInterface();
+
 			DataFlow df = dfi.getWorkflow(getNameWorkflow());
 
 			DataFlowElement dfeObjA = df.getElement(idElementA);
@@ -155,6 +157,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 			df.addLink(nameElementA, dfeObjA.getComponentId(), nameElementB, dfeObjB.getComponentId());
 			
 			setResult(new String[]{getParamNameLink(), nameElementA, nameElementB});
+
 
 		} catch (RemoteException e) {
 			e.printStackTrace();

@@ -2,17 +2,21 @@ package idiro.utils;
 
 import idiro.workflow.server.enumeration.FeatureType;
 
+import java.io.Serializable;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class OrderedFeatureList implements FeatureList{
+public class OrderedFeatureList extends UnicastRemoteObject implements FeatureList {
 	
 	private Map<String, FeatureType> features;
 	private List<String> positions;
 	
-	public OrderedFeatureList() {
+	public OrderedFeatureList() throws RemoteException {
+		super();
 		features = new HashMap<String, FeatureType>();
 		positions = new ArrayList<String>();
 	}

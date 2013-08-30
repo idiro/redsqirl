@@ -2196,6 +2196,7 @@ var countObj;
 			    		  makeHistory();
 			    		  
 			    		  addLinkModalBt(arrowClone.output, arrowClone.input, arrowClone.getName());
+
 			    		  
 			    		  //call Method for add this link
 				    	  //jQuery("[id$='addLinkBt']").click();
@@ -2208,8 +2209,9 @@ var countObj;
 				          var polygonGroup = polygonLayer.get('#'+this.getParent().getId());
 				          arrow.setPoints([polygonGroup[0].getX()+40, polygonGroup[0].getY()+50, polygonGroup[0].getX()+40+1, polygonGroup[0].getY()+50+1 ]);
 				          arrow.setName("arrow"+this.getName().substring(6,this.getName().length));
+
 				          arrow.output = this.getParent().getChildren()[3].getText();
-				          
+
 				          circle.setFill('white');
 				          
 				          layer.add(arrow.clone());

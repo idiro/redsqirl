@@ -189,7 +189,7 @@ public class MapRedTextType extends DataOutput{
 		return ans;
 	}
 	
-	private void generateFeaturesMap(){
+	private void generateFeaturesMap() throws RemoteException{
 		
 		features = new OrderedFeatureList();
 		try {
@@ -296,7 +296,12 @@ public class MapRedTextType extends DataOutput{
 	public void addProperty(String key, String value){
 		super.addProperty(key, value);
 		if (key.equals(key_delimiter) && getPath() != null){
-			generateFeaturesMap();
+			try {
+				generateFeaturesMap();
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 	

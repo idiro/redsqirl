@@ -63,8 +63,8 @@ public class Source extends DataflowAction{
 				0); 
 
 		page1.addInteraction(dataType);
-		
-		
+
+
 		page1.setChecker(new PageChecker(){
 
 			@Override
@@ -81,7 +81,7 @@ public class Source extends DataflowAction{
 						String dataType = getInteraction(key_datatype).getTree()
 								.getFirstChild("list").getFirstChild("output")
 								.getFirstChild().getHead();
-						
+
 						if (dataType.equalsIgnoreCase("hdfs")){
 							try{
 								if( getInteraction(key_datasubtype).getTree()
@@ -102,13 +102,13 @@ public class Source extends DataflowAction{
 			}
 
 		});
-		
-		
+
+
 		Page page2 = addPage("Source",
 				"Loads a data source",
 				1);
-		
-		
+
+
 		DFEInteraction dataSubtype = new UserInteraction(
 				key_datasubtype,
 				"Please specify a data subtype",
@@ -117,7 +117,7 @@ public class Source extends DataflowAction{
 				0); 
 
 		page2.addInteraction(dataSubtype);
-		
+
 		page2.setChecker(new PageChecker(){
 
 			@Override
@@ -134,7 +134,7 @@ public class Source extends DataflowAction{
 						String dataType = getInteraction(key_datatype).getTree()
 								.getFirstChild("list").getFirstChild("output")
 								.getFirstChild().getHead();
-						
+
 						if (dataType.equalsIgnoreCase("hdfs")){
 							try{
 								if( getInteraction(key_datasubtype).getTree()
@@ -148,59 +148,65 @@ public class Source extends DataflowAction{
 							}
 						}
 					}
-					
-					
-					
-						
-						String type = getInteraction(key_datatype).getTree()
+
+
+					String type = getInteraction(key_datatype).getTree()
+							.getFirstChild("list").getFirstChild("output")
+							.getFirstChild().getHead();
+					if(type.equalsIgnoreCase("hive")){
+
+						if( output.get(out_name) == null ){
+
+							output.put(out_name, new HiveType());
+
+						}
+
+
+					}
+					else if(type.equalsIgnoreCase("hdfs")){
+
+						String subtype = getInteraction(key_datasubtype).getTree()
 								.getFirstChild("list").getFirstChild("output")
 								.getFirstChild().getHead();
-						if(type.equalsIgnoreCase("hive")){
-							output.put(out_name, new HiveType());
-						}
-						else if(type.equalsIgnoreCase("hdfs")){
-							
-							String subtype = getInteraction(key_datasubtype).getTree()
-									.getFirstChild("list").getFirstChild("output")
-									.getFirstChild().getHead();
-							
-							Iterator<String> dataOutputClassName = 
-									WorkflowPrefManager.getInstance().getNonAbstractClassesFromSuperClass(
-											DataOutput.class.getCanonicalName()).iterator();
-							
-							Class<?> klass = null;
-							while (dataOutputClassName.hasNext()){
-								String className = dataOutputClassName.next();
-								String[] classNameArray = className.split("\\.");
-								if (classNameArray[classNameArray.length-1].equals(subtype)){
-									klass = Class.forName(className);
-									break;
-								}
+
+						Iterator<String> dataOutputClassName = 
+								WorkflowPrefManager.getInstance().getNonAbstractClassesFromSuperClass(
+										DataOutput.class.getCanonicalName()).iterator();
+
+						Class<?> klass = null;
+						while (dataOutputClassName.hasNext()){
+							String className = dataOutputClassName.next();
+							String[] classNameArray = className.split("\\.");
+							if (classNameArray[classNameArray.length-1].equals(subtype)){
+								klass = Class.forName(className);
+								break;
 							}
-							
+						}
+
+						if( output.get(out_name) == null ){
+
 							DFEOutput dataOutput = (DFEOutput)(klass.getConstructor(Map.class).newInstance());
-							
 							output.put(out_name, dataOutput);
-							
-							String delimiter = "\001";
-							try{
-								delimiter = getInteraction(key_dataset).getTree()
+
+						}
+
+
+						String delimiter = "\001";
+						try{
+							delimiter = getInteraction(key_dataset).getTree()
 									.getFirstChild("browse").
 									getFirstChild("output")
 									.getFirstChild("property").
 									getFirstChild(MapRedTextType.key_delimiter).
 									getFirstChild().getHead();
-							}catch(Exception e){
-								logger.debug("Delimiter not set, using default delimiter");
-							}
-							
-							output.get(out_name).addProperty(MapRedTextType.key_delimiter, delimiter);
+						}catch(Exception e){
+							logger.debug("Delimiter not set, using default delimiter");
 						}
-						
-						
-					
-					
-					
+
+						output.get(out_name).addProperty(MapRedTextType.key_delimiter, delimiter);
+					}
+
+
 				}catch(Exception e){
 					error = "Data type cannot be empty";
 				}
@@ -208,7 +214,7 @@ public class Source extends DataflowAction{
 			}
 
 		});
-		
+
 
 		Page page3 = addPage("Browse Source",
 				"Pick a data set",
@@ -222,7 +228,7 @@ public class Source extends DataflowAction{
 				0);
 
 		page3.addInteraction(browse);
-		
+
 		page3.setChecker(new PageChecker(){
 
 			@Override
@@ -240,7 +246,7 @@ public class Source extends DataflowAction{
 						String type = getInteraction(key_datatype).getTree()
 								.getFirstChild("list").getFirstChild("output")
 								.getFirstChild().getHead();
-						
+
 						boolean exist = false;
 						if(type.equalsIgnoreCase("Hive")){
 							HiveInterface hInt = new HiveInterface(); 
@@ -249,11 +255,11 @@ public class Source extends DataflowAction{
 								String[] desc = 
 										hInt.getDescription(
 												hInt.getTableAndPartitions(path)[0]
-														).split(";");
+												).split(";");
 								for(int i = 0; i < desc.length && error == null; ++i){
 									String nameF = desc[i].split(",")[0];
 									String typeF = desc[i].split(",")[1];
-									
+
 									Iterator<Tree<String>> it = getInteraction(key_dataset).getTree()
 											.getFirstChild("browse")
 											.getFirstChild("output")
@@ -269,19 +275,19 @@ public class Source extends DataflowAction{
 									if(!found){
 										error = "The output does not contains the feature "+desc[i];
 									}
-											
+
 								}
 							}
 						}
-						
+
 						else if(type.equalsIgnoreCase("Hdfs")){
 							try{
 								getInteraction(key_dataset).getTree()
-										.getFirstChild("browse").
-										getFirstChild("output")
-										.getFirstChild("property").
-										getFirstChild(MapRedTextType.key_delimiter).
-										getFirstChild().getHead();
+								.getFirstChild("browse").
+								getFirstChild("output")
+								.getFirstChild("property").
+								getFirstChild(MapRedTextType.key_delimiter).
+								getFirstChild().getHead();
 							}
 							catch (Exception e){
 								error = "You must define a delimiter";
@@ -339,7 +345,7 @@ public class Source extends DataflowAction{
 			value.add("HDFS");
 		}
 	}
-	
+
 	public void updateDataSubType(Tree<String> treeDatasubtype) throws RemoteException{
 		Tree<String> list = null;
 		if(treeDatasubtype.getSubTreeList().isEmpty()){
@@ -347,20 +353,20 @@ public class Source extends DataflowAction{
 			list.add("output");
 
 			Tree<String> value = list.add("value");
-			
-			
-			
+
+
+
 			DFEInteraction interaction = getInteraction(key_datatype);
 			if(interaction.getTree().getFirstChild("list").getFirstChild("output").getFirstChild() != null &&
 					interaction.getTree().getFirstChild("list").getFirstChild("output").getFirstChild().getHead().equalsIgnoreCase("hive")){
 				treeDatasubtype.getFirstChild("list").getFirstChild("output").add("Hive");
 			}
-			
-			
+
+
 			Iterator<String> dataOutputClassName = 
 					WorkflowPrefManager.getInstance().getNonAbstractClassesFromSuperClass(
 							DataOutput.class.getCanonicalName()).iterator();
-				
+
 			while(dataOutputClassName.hasNext()){
 				String className = dataOutputClassName.next();
 				DataOutput wa = null;
@@ -369,7 +375,7 @@ public class Source extends DataflowAction{
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				
+
 				if (wa.getBrowser().equals(DataBrowser.HDFS)){
 					value.add(DataOutput.class.getSimpleName());
 				}
@@ -381,14 +387,14 @@ public class Source extends DataflowAction{
 		String newType = getInteraction(key_datatype).getTree()
 				.getFirstChild("list").getFirstChild("output")
 				.getFirstChild().getHead();
-		
+
 		String newSubtype = null;
 		if (newType.equalsIgnoreCase("HDFS")){
 			newSubtype = getInteraction(key_datasubtype).getTree()
-				.getFirstChild("list").getFirstChild("output")
-				.getFirstChild().getHead();
+					.getFirstChild("list").getFirstChild("output")
+					.getFirstChild().getHead();
 		}
-		
+
 		if(treeDataset.getSubTreeList().isEmpty()){
 			treeDataset.add("browse").add("output");
 			treeDataset.getFirstChild("browse").add("subtype").add(newSubtype);
@@ -440,15 +446,15 @@ public class Source extends DataflowAction{
 				output.get(out_name).setPath(path);
 			}
 			else if(type.equalsIgnoreCase("hdfs")){
-				
+
 				String subtype = getInteraction(key_datasubtype).getTree()
 						.getFirstChild("list").getFirstChild("output")
 						.getFirstChild().getHead();
-				
+
 				Iterator<String> dataOutputClassName = 
 						WorkflowPrefManager.getInstance().getNonAbstractClassesFromSuperClass(
 								DataOutput.class.getCanonicalName()).iterator();
-				
+
 				Class<?> klass = null;
 				while (dataOutputClassName.hasNext()){
 					String className = dataOutputClassName.next();
@@ -458,24 +464,24 @@ public class Source extends DataflowAction{
 						break;
 					}
 				}
-				
+
 				DFEOutput dataOutput = (DFEOutput)(klass.getConstructor(Map.class).newInstance(out));
-				
+
 				output.put(out_name, dataOutput);
 				output.get(out_name).setPath(path);
-				
+
 				String delimiter = "\001";
 				try{
 					delimiter = getInteraction(key_dataset).getTree()
-						.getFirstChild("browse").
-						getFirstChild("output")
-						.getFirstChild("property").
-						getFirstChild(MapRedTextType.key_delimiter).
-						getFirstChild().getHead();
+							.getFirstChild("browse").
+							getFirstChild("output")
+							.getFirstChild("property").
+							getFirstChild(MapRedTextType.key_delimiter).
+							getFirstChild().getHead();
 				}catch(Exception e){
 					logger.debug("Delimiter not set, using default delimiter");
 				}
-				
+
 				output.get(out_name).addProperty(MapRedTextType.key_delimiter, delimiter);
 			}
 		}catch(Exception e){
