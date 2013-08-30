@@ -67,7 +67,7 @@
 	
 				<br/><br/>
 				
-				<div id="DivBrowserTable1" style="width:580px; height:110px;  border:1px solid black; overflow-x: hidden;">
+				<div id="DivBrowserTable1" style="width:580px; height:50px;  border:1px solid black; overflow-x: hidden;">
 				
 					<rich:dataTable id="browserTable1" value="#{item.listGrid}"
 						var="item" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
@@ -139,21 +139,7 @@
 	 </rich:tab>
         </rich:tabPanel>
 	
-			<rich:modalPanel id="modalPanelBrowserId" width="600" height="400" style="overflow:auto;" resizeable="false">
-	
-				<f:facet name="header">Browser</f:facet>
-				<f:facet name="controls">
-					<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer"
-						onclick="#{rich:component('modalPanelBrowserId')}.hide()" />
-				</f:facet>
-		
-				<h:form id="modalBrowserId">
-					<h:panelGroup>
-						<a4j:include viewId="/pages/modalBrowser.xhtml" ajaxRendered="false" />
-					</h:panelGroup>
-				</h:form>
-		
-			</rich:modalPanel>
+			
        
         
         <rich:tabPanel switchType="ajax">
@@ -240,4 +226,22 @@
 		</rich:tab>
 	</rich:tabPanel>
 	</h:form>
+	
+	
+			<rich:modalPanel id="modalPanelBrowserId" width="600" height="400" style="overflow:auto;" resizeable="false">
+	
+				<f:facet name="header">Browser</f:facet>
+				<f:facet name="controls">
+					<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer"
+						onclick="#{rich:component('modalPanelBrowserId')}.hide()" />
+				</f:facet>
+		
+				<h:form id="modalBrowserId">
+					<h:panelGroup>
+						<a4j:include viewId="/pages/modalBrowser.xhtml" ajaxRendered="false" />
+					</h:panelGroup>
+				</h:form>
+		
+			</rich:modalPanel>
+	
 </ui:composition>
