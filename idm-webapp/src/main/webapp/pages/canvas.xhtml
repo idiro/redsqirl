@@ -445,7 +445,7 @@
 			
 			<a4j:region>
 				<a4j:jsFunction id="openModalFunction" name="openModal" action="#{canvasModalBean.openCanvasModal}" oncomplete="#{rich:component('canvasModalPanel')}.show()" 
-					reRender="pageTitle, pageLegend, formCanvasModal" >
+					reRender="pageTitle, panelDynamicForm, panelBtCanvasModal" >
 					<a4j:actionparam name="paramNameElement" assignTo="#{canvasModalBean.nameElement}" />
 					<a4j:actionparam name="paramNameWorkflow" value="#{canvasBean.nameWorkflow}" assignTo="#{canvasModalBean.nameElement}" />
 				</a4j:jsFunction>

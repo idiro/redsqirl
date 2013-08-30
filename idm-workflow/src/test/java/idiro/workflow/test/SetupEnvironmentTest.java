@@ -8,6 +8,7 @@ import idiro.workflow.server.OozieDagTests;
 import idiro.workflow.server.OozieManagerTests;
 import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.WorkflowTests;
+import idiro.workflow.server.action.ActionTests;
 import idiro.workflow.server.action.HiveSelectTests;
 import idiro.workflow.server.action.SourceTests;
 import idiro.workflow.server.action.utils.HiveDictionaryTests;
@@ -31,8 +32,8 @@ import org.junit.runners.Suite.SuiteClasses;
 
 
 @RunWith(Suite.class)
-@SuiteClasses({//ActionTests.class,
-	WorkflowTests.class,
+@SuiteClasses({ActionTests.class
+	/*WorkflowTests.class,
 	CreateWorkflowTests.class,
 	HiveDictionaryTests.class,
 	HDFSInterfaceTests.class,
@@ -45,7 +46,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	OozieManagerTests.class,
 	PackageManagerTests.class,
 	OozieDagTests.class,
-	OrderedFeatureListTests.class
+	OrderedFeatureListTests.class*/
 	})
 public class SetupEnvironmentTest {
 	

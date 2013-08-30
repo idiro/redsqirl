@@ -278,7 +278,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 	//@PostConstruct
 	public void openCanvasModal() {
 		start();
-		//setNameWorkflow("canvas1");
 
 		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 
@@ -288,13 +287,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 		logger.info("open element id " + getNameElement());
 
 		try {
-			//			setDf(getDfi().getWorkflow(params.get("paramNameWorkflow")));
-			//DataFlowInterface dfi =  getworkFlowInterface();
-
-			//DataFlow df = dfi.getWorkflow(getNameWorkflow());
-
-			//setNameElement("Source");
-			//String idElement = df.addElement(getNameElement());
 
 			setDfe(getDf().getElement(getNameElement()));
 
@@ -312,50 +304,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 			setPageLegend(getPage().getLegend());
 
-			//logger.info(" -> " + getPage().getTitle() + " -- " + getPage().getLegend());
-
-
 			mountInteractionForm();
-
-
-
-			/*
-
-			for (DFEPage dfePage : dfe.getPageList()) {
-
-				dfePage.getTitle();
-				dfePage.getLegend();
-				dfePage.getNbColumn();
-
-				//on next button
-				dfePage.checkPage();
-
-				for (DFEInteraction dfeInteraction : dfePage.getInteractions()) {
-
-					//before open
-					dfe.update(dfeInteraction);
-
-					dfeInteraction.getColumn();
-					dfeInteraction.getPlaceInColumn();
-					dfeInteraction.getName();
-					dfeInteraction.getLegend();
-					DisplayType display = dfeInteraction.getDisplay();
-
-					//update tree add new tree
-					//on click button if necessary
-					dfeInteraction.check();
-
-					//List<Tree<String>> lis =  dfeInteraction.getTree().getFirstChild("help").getChildren("submenu");
-					//lis.get(0).getFirstChild("name").getFirstChild().getHead();
-
-					//logger.info(display);
-					//logger.info(dfeInteraction.getTree());
-
-				}
-			}*/
-
-			//update the output
-			//dfe.updateOut();
 
 			setFirstPage("S");
 
@@ -374,8 +323,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 			logger.error(e);
 			logger.error(e.getMessage());
 		}
-		//openTextEditor();
-
 	}
 
 	/** mountInteractionForm
@@ -407,7 +354,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 				List<SelectItem> selectItems = new ArrayList<SelectItem>();
 				List<Tree<String>> list = dfeInteraction.getTree().getFirstChild("list").getChildren("value");
 				for (Tree<String> tree : list) {
-					//logger.info(dfeInteraction.getName() + " " + tree.getHead());
+					//logger.info("list value " + tree.getFirstChild().getHead());
 					selectItems.add(new SelectItem(tree.getFirstChild().getHead(), tree.getFirstChild().getHead()));
 				}
 				dynamicF.setListOptions(selectItems);
