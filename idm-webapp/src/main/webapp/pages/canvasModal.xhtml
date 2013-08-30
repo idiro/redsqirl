@@ -14,9 +14,12 @@
 			
 		</script>
 		
-		<h:form id="form1">
+		<h:form id="formCanvasModal">
 	
 	<a4j:keepAlive beanName="canvasModalBean" />
+	
+	<rich:tabPanel switchType="ajax">
+        <rich:tab label="First">
 	
 	<rich:panel id="panelDynamicForm" style="border:none;" >
 	
@@ -132,8 +135,6 @@
 			<a4j:commandButton action="#{canvasModalBean.endDynamicForm}" value="#{messages.button_ok}" rendered="#{canvasModalBean.lastPage == 'S'}" reRender="panelBtCanvasModal" oncomplete="#{rich:component('canvasModalPanel')}.hide()" />
 		
 		</rich:panel>
-	
-	</h:form>
 	
 	
 			<rich:modalPanel id="modalPanelBrowserId" width="600" height="400" style="overflow:auto;" resizeable="false">
