@@ -4,6 +4,7 @@ import idiro.utils.FeatureList;
 import idiro.utils.Tree;
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idiro.workflow.server.enumeration.DisplayType;
+import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.enumeration.SavingState;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEOutput;
@@ -795,13 +796,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 			}
 			dynamicForm.setPathBrowser(name);
 
-		List<String> outputLines = getDfe().getDFEOutput().get("source").select(10);
-		logger.info("outputLines " + outputLines);
-		
-		
-		dynamicForm.setPathBrowser(path);
-		
-		getDfe().updateOut();
+			getDfe().updateOut();
+		}
 		
 	}
 
