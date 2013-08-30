@@ -342,20 +342,22 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore{
 			throws RemoteException {
 		List<String> ans = null;
 		if(exists(path)){
+			
 			String[] tableAndPartition = getTableAndPartitions(path);
-
-
-			String statement = "SELECT * FROM "+
-					tableAndPartition[0];
+			
+			String statement = "SELECT * FROM "+ tableAndPartition[0];
 			if(tableAndPartition.length > 1){
+				
 				String partitionsList = " WHERE "+tableAndPartition[1];
 				for(int i = 2; i < tableAndPartition.length; ++i){
 					partitionsList += " AND "+tableAndPartition[i];
 				}
 				statement += partitionsList;
 			}
+			
 			statement += " limit "+maxToRead;
 			try{
+				
 				ResultSet rs = conn.executeQuery(statement);
 				int colNb = rs.getMetaData().getColumnCount();
 				ans = new ArrayList<String>(maxToRead);
@@ -366,12 +368,14 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore{
 					}
 					ans.add(line);
 				}
+				
 			} catch (SQLException e) {
 				logger.error("Fail to select the table "+tableAndPartition[0]);
 				logger.error(e.getMessage());
 			}
 
 		}
+		
 		return ans;
 	}
 
@@ -505,7 +509,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore{
 
 	public String isPathValid(String path,
 			FeatureList features,
-			String partitions){
+			String partitions) throws RemoteException{
 		String error = null;
 		boolean ok = false;
 

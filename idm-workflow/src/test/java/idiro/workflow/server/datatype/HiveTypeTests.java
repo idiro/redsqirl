@@ -8,6 +8,7 @@ import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.test.TestUtils;
 
+import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,14 +32,14 @@ public class HiveTypeTests {
 		return ans;
 	}
 	
-	FeatureList getFeatures(){
+	FeatureList getFeatures() throws RemoteException{
 		FeatureList ans = new OrderedFeatureList();
 		ans.addFeature("ID",FeatureType.STRING);
 		ans.addFeature("VALUE",FeatureType.INT);
 		return ans;
 	}
 	
-	FeatureList getFeaturesWPart(){
+	FeatureList getFeaturesWPart() throws RemoteException{
 		FeatureList ans = new OrderedFeatureList();
 		ans.addFeature("ID",FeatureType.STRING);
 		ans.addFeature("VALUE",FeatureType.INT);

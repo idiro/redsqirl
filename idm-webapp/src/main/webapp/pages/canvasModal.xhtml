@@ -67,9 +67,46 @@
 						</a4j:commandButton>
 			
 						<br/><br/>
-						
+
+				<a4j:commandButton type="submit" id="browserChangePathBt" action="#{canvasModalBean.changePathBrowserBefore}" 
+					reRender="browserTable1,browserTable2" oncomplete="#{rich:component('modalPanelBrowserId')}.show()" style="display:none;" >
+					<f:param name="numberDynamic" value="#{index}" />
+				</a4j:commandButton>
+	
+				<br/><br/>
+				
+				<div id="DivBrowserTable1" style="width:580px; height:110px;  border:1px solid black; overflow-x: hidden;">
+				
+					<rich:dataTable id="browserTable1" value="#{item.listGrid}"
+						var="item" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+						enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
+
 						<div id="DivBrowserTable1" style="width:580px; height:120px;  border:1px solid black; overflow-x: hidden;">
+
+						<rich:columns value="#{canvasModalBean.keyAsListNameValueListGrid}" var="column" index="ind" 
+							style="border-bottom:0px;border-right:0px;" >
+							<f:facet name="header">
+								<h:outputText value="#{column}" />
+							</f:facet>
+							
+							<h:inputText value="#{item.nameValue[column]}" style="width:125px;" />
+							
+						</rich:columns>
+		
+					</rich:dataTable>
+				
+				</div>
+				
+				<br/>
+				
+				<div id="DivBrowserTable2" style="width:580px; height:120px;  border:1px solid black; overflow-x: hidden;">
+				
+					<rich:dataTable id="browserTable2" value="#{item.listFeature}" 
+						var="itemDiv2" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+						enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
+>>>>>>> d19f00b dynamic form
 						
+<<<<<<< Upstream, based on master
 							<rich:dataTable id="browserTable1" value="#{item.listGrid}"
 								var="item" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 								enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
@@ -136,6 +173,21 @@
 					
 				</a4j:repeat>
 				
+=======
+						<rich:columns value="#{canvasModalBean.keyAsListNameValueFeature}" var="column" index="ind" rendered="#{not empty canvasModalBean.listFeature}" 
+							style="border-bottom:0px;border-right:0px;" >
+							<f:facet name="header">
+								<h:outputText value="#{column}" />
+							</f:facet>
+							
+							<h:inputText value="#{itemDiv2.nameValue[column]}" style="width:125px;" readonly="true" />
+							
+						</rich:columns>
+		
+					</rich:dataTable>
+		
+				</div>
+>>>>>>> d19f00b dynamic form
 				
 			</rich:panel>
 		
@@ -155,6 +207,19 @@
 			</rich:panel>
 			
 		
+			<a4j:commandButton action="#{canvasModalBean.close}" value="#{messages.button_cancel}" onclick="#{rich:component('canvasModalPanel')}.hide()" reRender="panelBtCanvasModal" />
+			
+			<a4j:commandButton action="#{canvasModalBean.previousPage}" value="#{messages.button_previous}" rendered="#{canvasModalBean.firstPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel" />
+			
+			<a4j:commandButton action="#{canvasModalBean.nextPage}" value="#{messages.button_next}" rendered="#{canvasModalBean.lastPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel" />
+			
+			<a4j:commandButton action="#{canvasModalBean.endDynamicForm}" value="#{messages.button_ok}" rendered="#{canvasModalBean.lastPage == 'S'}" reRender="panelBtCanvasModal" oncomplete="#{rich:component('canvasModalPanel')}.hide()" />
+		
+		</rich:panel>
+	
+	</h:form>
+	
+	
 			<rich:modalPanel id="modalPanelBrowserId" width="600" height="400" style="overflow:auto;" resizeable="false">
 	
 				<f:facet name="header">Browser</f:facet>

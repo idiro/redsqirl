@@ -1,5 +1,6 @@
 package idm;
 
+import idiro.utils.FeatureList;
 import idiro.utils.Tree;
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idiro.workflow.server.enumeration.DisplayType;
@@ -61,8 +62,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 	private Map<String, String> nameValueFeature = new HashMap<String, String>();
 	private Map<String, String> nameValueListGrid = new HashMap<String, String>();
 	private String pathBrowser = "";
-	private ArrayList<ItemList> listGrid = new ArrayList<ItemList>();
-	private ArrayList<ItemList> listFeature = new ArrayList<ItemList>();
+	private List<ItemList> listGrid = new ArrayList<ItemList>();
+	private List<ItemList> listFeature = new ArrayList<ItemList>();
 	private DataFlowElement dfe;
 	private DynamicForm DynamicFormBrowser;
 
@@ -76,7 +77,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public List<String> getKeyAsListNameValueListGrid(){
 		return new ArrayList<String>(nameValueListGrid.keySet());
 	}
-	
+
 	public List<String> getKeyAsListNameValueFeature(){
 		return new ArrayList<String>(nameValueFeature.keySet());
 	}
@@ -98,7 +99,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 		if(error.length() > 1){
 			MessageUseful.addErrorMessage(error);
 		}else{
-			
+
 			setListPosition(getListPosition()+1);
 
 			setPage(getListPage().get(getListPosition()));
@@ -117,7 +118,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 			mountInteractionForm();
 			mountOutputForm();
-			
+
 		}
 
 	}
@@ -133,36 +134,45 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public String checkNextPage() throws RemoteException {
 
 		StringBuffer error = new StringBuffer();
-		
+
 		for (int i = 0; i < getDynamicFormList().size(); i++) {
-			
+
 			DynamicForm dynamicF = getDynamicFormList().get(i);
 			DFEInteraction dfi = getPage().getInteractions().get(i);
-			
+
 			if(dynamicF.getDisplayType().equals(DisplayType.list)){
 
 				logger.info("value -> " + dynamicF.getSelectedListOptions());
 				dynamicF.getTree().getFirstChild("list").getFirstChild("output").removeAllChildren();
 				dynamicF.getTree().getFirstChild("list").getFirstChild("output").add(dynamicF.getSelectedListOptions());
-				
+
 				dfi.getTree().getFirstChild("list").getFirstChild("output").removeAllChildren();
 				dfi.getTree().getFirstChild("list").getFirstChild("output").add(dynamicF.getSelectedListOptions());
-				
+
 			} else if(dynamicF.getDisplayType().equals(DisplayType.appendList)){
-				
-				
-				
+
+
+
 			} else if(dynamicF.getDisplayType().equals(DisplayType.browser)){
-				
+
 				logger.info("Browser path -> " + dynamicF.getPathBrowser());
 				dynamicF.getTree().getFirstChild("browse").getFirstChild("output").removeAllChildren();
-				dynamicF.getTree().getFirstChild("browse").getFirstChild("output").getFirstChild("path").add(dynamicF.getPathBrowser());
-				
-				dynamicF.getTree().getFirstChild("browse").getFirstChild("output").getChildren("feature");
-				dynamicF.getTree().getFirstChild("browse").getFirstChild("output").getChildren("property");
-				
+				dynamicF.getTree().getFirstChild("browse").getFirstChild("output").add("path").add(dynamicF.getPathBrowser());
+
+
+				for (String nameValue : getKeyAsListNameValueFeature()) {
+					Tree<String> myFeature = dynamicF.getTree().getFirstChild("browse").getFirstChild("output").add("feature");
+					String value[] = nameValue.split(" ");
+					myFeature.add("name").add(value[0]);
+					myFeature.add("type").add(value[1]);
+				}
+
+				Tree<String> myProperty = dynamicF.getTree().getFirstChild("browse").getFirstChild("output").add("property");
+
+				getDfe().updateOut();
+
 			}
-			
+
 			getPage().getInteractions().set(i, dfi);
 			String e = dfi.check();
 			logger.info("error interaction -> " + e);
@@ -171,16 +181,16 @@ public class CanvasModal extends BaseBean implements Serializable {
 				error.append(System.getProperty("line.separator"));
 			}
 		}
-		
+
 		String e = getPage().checkPage();
 		logger.info("error page -> " + e);
 		if(e != null){
 			error.append(e);
 			error.append(System.getProperty("line.separator"));
 		}
-		
+
 		getDfe().getPageList().set(getListPosition(), getPage());
-		
+
 		return error.toString();
 	}
 
@@ -236,20 +246,20 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * @return
 	 * @author Igor.Souza
 	 */
-//	@PostConstruct
+	//	@PostConstruct
 	public void start() {
 		String nameWf = FacesContext.getCurrentInstance()
 				.getExternalContext().getRequestParameterMap().get("paramNameWorkflow");
 		setNameWorkflow(nameWf);
-		
+
 		try {
-//			if(getDfi() == null){
-				setDfi(getworkFlowInterface());
-//			}
-//			if(getDf() == null){
-				setDf(dfi.getWorkflow(getNameWorkflow()));
-//			}
-			
+			//			if(getDfi() == null){
+			setDfi(getworkFlowInterface());
+			//			}
+			//			if(getDf() == null){
+			setDf(dfi.getWorkflow(getNameWorkflow()));
+			//			}
+
 		} catch (RemoteException e) {
 			logger.error(e.getMessage());
 		}
@@ -273,11 +283,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 		String nameElement = params.get("paramNameElement");
 		setNameElement(nameElement);
-		
+
 		logger.info("open element id " + getNameElement());
 
 		try {
-//			setDf(getDfi().getWorkflow(params.get("paramNameWorkflow")));
+			//			setDf(getDfi().getWorkflow(params.get("paramNameWorkflow")));
 			//DataFlowInterface dfi =  getworkFlowInterface();
 
 			//DataFlow df = dfi.getWorkflow(getNameWorkflow());
@@ -385,7 +395,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 			getDfe().update(dfeInteraction);
 
 			logger.info("type  " + dfeInteraction.getDisplay());
-			
+
 			dynamicF.setName(dfeInteraction.getName());
 			dynamicF.setLegend(dfeInteraction.getLegend());
 			dynamicF.setDisplayType(dfeInteraction.getDisplay());
@@ -430,44 +440,15 @@ public class CanvasModal extends BaseBean implements Serializable {
 				String subtypeName = dfeInteraction.getTree().getFirstChild("browse").getFirstChild("subtype").getFirstChild().getHead();
 				logger.info("subtypeName " + subtypeName);
 				dynamicF.setSubtypeName(subtypeName);
-				
-				if(dfeInteraction.getTree().getFirstChild("browse").getFirstChild("output").getFirstChild("path") != null){
-					String mypath = dfeInteraction.getTree().getFirstChild("browse").getFirstChild("output").getFirstChild("path").getFirstChild().getHead();
+
+				if(getDfe().getDFEOutput().get("source").getPath() != null){
+					String mypath = getDfe().getDFEOutput().get("source").getPath();
 					dynamicF.setPathBrowser(mypath);
+					logger.info("path mount " + mypath);
+					setPathBrowser("/"+mypath);
+					changePathBrowser();
 				}
-				
-				if(dfeInteraction.getTree().getFirstChild("browse").getFirstChild("output").getChildren("feature") != null){
-					List<Tree<String>> listFeature = dfeInteraction.getTree().getFirstChild("browse").getFirstChild("output").getChildren("feature");
-					List<ItemList> listObj = new ArrayList<ItemList>();
-					Map<String, String> nameValueFeature = new HashMap<String, String>();
-					for (Tree<String> tree : listFeature) {
-						ItemList item = new ItemList(tree.getFirstChild("name").getFirstChild().getHead());
-						logger.info("value map feature -> " + tree.getFirstChild("name").getFirstChild().getHead() + "  " + tree.getFirstChild("type").getFirstChild().getHead());
-						nameValueFeature.put(tree.getFirstChild("name").getFirstChild().getHead(), tree.getFirstChild("type").getFirstChild().getHead());
-						item.setNameValue(nameValueFeature);
-						item.setSelected(false);
-						listObj.add(item);
-					}
-					setNameValueFeature(nameValueFeature);
-					dynamicF.setListFeature(listObj);
-				}
-				
-				if(dfeInteraction.getTree().getFirstChild("browse").getFirstChild("output").getChildren("property") != null){
-					List<Tree<String>> listProp = dfeInteraction.getTree().getFirstChild("browse").getFirstChild("output").getChildren("property");
-					List<ItemList> listObj = new ArrayList<ItemList>();
-					Map<String, String> nameValueListGrid = new HashMap<String, String>();
-					for (Tree<String> tree : listProp) {
-						ItemList item = new ItemList(tree.getFirstChild().getHead());
-						nameValueListGrid.put(tree.getFirstChild().getHead(), tree.getFirstChild().getFirstChild().getHead());
-						logger.info("value map Property -> " + tree.getFirstChild().getHead() + "  " + tree.getFirstChild().getFirstChild().getHead());
-						item.setNameValue(nameValueListGrid);
-						item.setSelected(false);
-						listObj.add(item);
-					}
-					setNameValueListGrid(nameValueListGrid);
-					dynamicF.setListGrid(listObj);
-				}
-				
+
 			}else if(dfeInteraction.getDisplay().equals(DisplayType.helpTextEditor)){
 
 			}else if(dfeInteraction.getDisplay().equals(DisplayType.table)){
@@ -488,10 +469,20 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * 
 	 * @return
 	 * @author Igor.Souza
+	 * @throws RemoteException 
 	 */
-	public void endDynamicForm() {
+	public void endDynamicForm() throws RemoteException {
 
 		logger.info("endDynamicForm ");
+
+		String error = checkNextPage();
+		if(error.length() > 1){
+			MessageUseful.addErrorMessage(error);
+		}else{
+
+
+
+		}
 
 	}
 
@@ -705,23 +696,23 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 
 	}
-	
+
 	public void changePathBrowserBefore() throws RemoteException {
-		
+
 		String positionElement = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("numberDynamic");
-		
+
 		logger.info("positionElement " + positionElement);
 		setDynamicFormBrowser(getDynamicFormList().get(Integer.parseInt(positionElement)));
-		
+
 		if(getDynamicFormBrowser().getDataTypeName().equalsIgnoreCase("hive")){
-			
-			
+
+
 		} else if(getDynamicFormBrowser().getDataTypeName().equalsIgnoreCase("hdfs")){
-			
-			
+
+
 		}
-		
-		
+
+
 	}
 
 	/** changePathBrowser
@@ -737,23 +728,76 @@ public class CanvasModal extends BaseBean implements Serializable {
 		logger.info("changePathBrowser");
 
 		String path = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("pathFile");
-		logger.info("pathFile " + path);
-		
-		DynamicForm dynamicForm = getDynamicFormBrowser();
-		String name = path.substring(1, path.length());
-		
-		getDfe().getDFEOutput().get("source").setPath(name);
-		getDfe().getDFEOutput().get("source").isPathExists();
-		
+		if(path == null){
+			path = getPathBrowser();
+			logger.info("getPathBrowser" + path);
+		}
+
+		if(path != null){
+
+			DynamicForm dynamicForm = getDynamicFormBrowser();
+			String name = path.substring(1);
+
+			logger.info("pathFile " + name);
+
+			getDfe().getDFEOutput().get("source").setPath(name);
+			getDfe().getDFEOutput().get("source").isPathExists();
+
+			List<String> outputLines = getDfe().getDFEOutput().get("source").select(10);
+			logger.info("outputLines " + outputLines);
+
+			Map<String, String> outputPropertiesMap = getDfe().getDFEOutput().get("source").getProperties();
+			logger.info("outputPropertiesMap " + outputPropertiesMap);
+
+			Map<String, String> nameValueFeature = new HashMap<String, String>();
+			List<ItemList> listObj = new ArrayList<ItemList>();
+			List<String> outputFeatureList  = getDfe().getDFEOutput().get("source").getFeatures().getFeaturesNames();
+
+			List<String> labels = new ArrayList<String>();
+
+			for (String outputFeature : outputFeatureList) {
+
+				logger.info("outputFeatureNames " + outputFeature);
+
+				FeatureType featureType = getDfe().getDFEOutput().get("source").getFeatures().getFeatureType(outputFeature);
+
+				logger.info("featureType " + featureType);
+
+				labels.add(outputFeature + " " + featureType.toString());
+
+			}
+
+			if(outputLines != null){
+				for (String output : outputLines) {
+					Map<String, String> nameValueFeatureItem = new HashMap<String, String>();
+					if(output != null){
+						String rows[] = output.split("'\001'");
+						for (int i = 0; i < rows.length; i++) {
+							logger.info("map to show " + labels.get(i) + " " + rows[i]);
+							nameValueFeature.put(labels.get(i), rows[i]);
+							nameValueFeatureItem.put(labels.get(i), rows[i]);
+						}
+					}
+					ItemList item = new ItemList();
+					item.setSelected(false);
+					item.setNameValue(nameValueFeatureItem);
+					logger.info("new item ");
+					listObj.add(item);
+					
+					logger.info("new nameValueFeature " + nameValueFeature);
+					logger.info("new nameValueFeatureItem " + nameValueFeatureItem);
+					logger.info("getKeyAsListNameValueFeature " + getKeyAsListNameValueFeature());
+					
+				}
+				setNameValueFeature(nameValueFeature);
+				dynamicForm.setListFeature(listObj);
+				setListFeature(listObj);
+			}
+			dynamicForm.setPathBrowser(name);
 
 		List<String> outputLines = getDfe().getDFEOutput().get("source").select(10);
 		logger.info("outputLines " + outputLines);
 		
-		/*Map<String, String> outputPropertiesMap = getDfe().getDFEOutput().get("source").getProperties();
-		logger.info("outputPropertiesMap " + outputPropertiesMap);
-		
-		Map<String, FeatureType> outputFeatureMap  = getDfe().getDFEOutput().get("source").getFeatures();
-		logger.info("outputFeatureMap " + outputFeatureMap);*/
 		
 		dynamicForm.setPathBrowser(path);
 		
@@ -868,13 +912,21 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void setCommand(String command) {
 		this.command = command;
 	}
-	
-	public ArrayList<ItemList> getListGrid() {
+
+	public List<ItemList> getListGrid() {
 		return listGrid;
 	}
 
-	public void setListGrid(ArrayList<ItemList> listGrid) {
+	public List<ItemList> getListFeature() {
+		return listFeature;
+	}
+
+	public void setListGrid(List<ItemList> listGrid) {
 		this.listGrid = listGrid;
+	}
+
+	public void setListFeature(List<ItemList> listFeature) {
+		this.listFeature = listFeature;
 	}
 
 	public String getPathBrowser() {
@@ -883,14 +935,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 	public void setPathBrowser(String pathBrowser) {
 		this.pathBrowser = pathBrowser;
-	}
-
-	public ArrayList<ItemList> getListFeature() {
-		return listFeature;
-	}
-
-	public void setListFeature(ArrayList<ItemList> listFeature) {
-		this.listFeature = listFeature;
 	}
 
 	public String getNameWorkflow() {
@@ -916,7 +960,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void setGroupID(String groupID) {
 		this.groupID = groupID;
 	}
-	
+
 	public DataFlowInterface getDfi() {
 		return dfi;
 	}
@@ -1052,7 +1096,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void setNameOutput(String nameOutput) {
 		this.nameOutput = nameOutput;
 	}
-	
+
 	public boolean isRenderOutputTab() throws RemoteException{
 		return getDfe() != null && getDfe().getOozieAction() != null;
 	}

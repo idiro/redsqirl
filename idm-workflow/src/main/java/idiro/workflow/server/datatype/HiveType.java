@@ -94,7 +94,7 @@ public class HiveType extends DataOutput{
 
 	@Override
 	public List<String> select(int maxToRead) throws RemoteException {
-		return hInt.select(getPath(),maxToRead);
+		return hInt.select(getPath(), "'\001'" ,maxToRead);
 	}
 
 	@Override
