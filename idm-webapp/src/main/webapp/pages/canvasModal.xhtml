@@ -19,8 +19,8 @@
 	<a4j:keepAlive beanName="canvasModalBean" />
 	
 	<rich:tabPanel switchType="ajax">
-        <rich:tab label="First">
 	
+        <rich:tab label="First">
 	<rich:panel id="panelDynamicForm" style="border:none;" >
 	
 		<h:outputText value="#{canvasModalBean.pageLegend}" id="pageLegend" />
@@ -136,6 +136,8 @@
 		
 		</rich:panel>
 	
+	 </rich:tab>
+        </rich:tabPanel>
 	
 			<rich:modalPanel id="modalPanelBrowserId" width="600" height="400" style="overflow:auto;" resizeable="false">
 	
@@ -152,8 +154,9 @@
 				</h:form>
 		
 			</rich:modalPanel>
-	
-        </rich:tab>
+       
+        
+        <rich:tabPanel switchType="ajax">
         
 		<rich:tab label="Output">
 
