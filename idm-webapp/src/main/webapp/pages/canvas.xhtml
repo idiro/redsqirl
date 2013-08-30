@@ -380,6 +380,10 @@
 	      function addElementJs(positions){
 	    	  	addElements(positions);
 	      }
+	      
+	      function addLinksJs(links){
+	    	  addLinks(links);
+	      }
 
 	      
 		</script>
@@ -452,7 +456,7 @@
 			</a4j:region>
 
 			<a4j:region>
-				<a4j:jsFunction name="loadWorkflow" data="#{canvasBean.positions}" oncomplete="addElementJs(data)" reRender="formMenu"/>
+				<a4j:jsFunction name="loadWorkflow" data="#{canvasBean.positions}" oncomplete="addElementJs(data[0]);addLinksJs(data[1]);" reRender="formMenu"/>
 			</a4j:region>
 			
 			<a4j:region>

@@ -1590,74 +1590,54 @@ var countObj;
 
 			}
 			
+			function addLinks(positions){
+				countObj = 0;
+				var linkArrays = JSON.parse(positions);
+				
+				for (var i=0; i< linkArrays.length;i++){
+		    	  	addLink(linkArrays[i][0], linkArrays[i][1]);
+		    	}
+			}
+			
 			function addLink(inId, outId){
-//				circle1.on("click", function(e) {
-
-//					var circle = this;
+				//out
+				var polygonGroupOut = getElement(inId);
+				var circleOut = polygonGroupOut.getChildren()[0];
+				circleOut.setFill('white');
+				arrow.setPoints([polygonGroupOut.getX()+40, polygonGroupOut.getY()+50, polygonGroupOut.getX()+40+1, polygonGroupOut.getY()+50+1 ]);
+//				arrow.setName("arrow"+circleOut.getName().substring(6,circleOut.getName().length));
+						
+				//in
+				var polygonGroupIn = getElement(outId);
+				var circleIn = polygonGroupIn.getChildren()[0];
+				circleIn.setFill('white');
 					
-//					else{
-//						down = true;
+				arrow.setName("arrow"+circleOut.getName().substring(6,circleOut.getName().length)+"-"+circleIn.getName().substring(6, circleIn.getName().length));
 
-						//alert(this.getParent().getId());
+				var newPoint = getCircleLineIntersectionPoint(arrow.getPoints()[0].x, arrow.getPoints()[0].y, polygonGroupIn.getX()+40, polygonGroupIn.getY()+50, polygonGroupIn.getX()+40, polygonGroupIn.getY()+50, 47);
+				var newPoint2 = getCircleLineIntersectionPoint(arrow.getPoints()[0].x, arrow.getPoints()[0].y, polygonGroupIn.getX()+40, polygonGroupIn.getY()+50, polygonGroupIn.getX()+40, polygonGroupIn.getY()+50, 60);
 
-						var polygonGroup = polygonLayer.get('#'+this.getParent().getId());
-						arrow.setPoints([polygonGroup[0].getX()+40, polygonGroup[0].getY()+50, polygonGroup[0].getX()+40+1, polygonGroup[0].getY()+50+1 ]);
-						arrow.setName("arrow"+this.getName().substring(6,this.getName().length));
+				var headlen = 20;
+				var headlen2 = 10;
+				var angle = Math.atan2(newPoint[1]-arrow.getPoints()[0].y,newPoint[0]-arrow.getPoints()[0].x);
 
-						circle.setFill('white');
+				arrow.setPoints([arrow.getPoints()[0].x, arrow.getPoints()[0].y, 
+				                 newPoint2[0], newPoint2[1], 
+				                 newPoint2[0], newPoint2[1], 
+				                 newPoint[0]-headlen*Math.cos(angle-Math.PI/6), newPoint[1]-headlen*Math.sin(angle-Math.PI/6), 
+				                 newPoint[0], newPoint[1], 
+				                 newPoint[0]-headlen*Math.cos(angle+Math.PI/6), newPoint[1]-headlen*Math.sin(angle+Math.PI/6), 
+				                 newPoint2[0], newPoint2[1], 
+				                 newPoint2[0]-headlen2*Math.cos(angle-Math.PI/3), newPoint2[1]-headlen2*Math.sin(angle-Math.PI/3), 
+				                 newPoint2[0], newPoint2[1], 
+				                 newPoint2[0]-headlen2*Math.cos(angle+Math.PI/3), newPoint2[1]-headlen2*Math.sin(angle+Math.PI/3)
+				                 ]);
 
-						layer.add(arrow.clone());
+				layer.add(arrow.clone());
+				layer.draw();
+				polygonLayer.draw();
 
-						layer.draw();
-						polygonLayer.draw();
-
-
-
-//					}
-//
-//					if (down) {
-//						down = false;
-
-						arrow.setName(arrow.getName()+"-"+this.getName().substring(6, this.getName().length));
-
-						var polygonGroup = polygonLayer.get('#'+this.getParent().getId());
-
-						var newPoint = getCircleLineIntersectionPoint(arrow.getPoints()[0].x, arrow.getPoints()[0].y, polygonGroup[0].getX()+40, polygonGroup[0].getY()+50, polygonGroup[0].getX()+40, polygonGroup[0].getY()+50, 47);
-						var newPoint2 = getCircleLineIntersectionPoint(arrow.getPoints()[0].x, arrow.getPoints()[0].y, polygonGroup[0].getX()+40, polygonGroup[0].getY()+50, polygonGroup[0].getX()+40, polygonGroup[0].getY()+50, 60);
-
-						var headlen = 20;
-						var headlen2 = 10;
-						var angle = Math.atan2(newPoint[1]-arrow.getPoints()[0].y,newPoint[0]-arrow.getPoints()[0].x);
-
-						arrow.setPoints([arrow.getPoints()[0].x, arrow.getPoints()[0].y, 
-						                 newPoint2[0], newPoint2[1], 
-						                 newPoint2[0], newPoint2[1], 
-						                 newPoint[0]-headlen*Math.cos(angle-Math.PI/6), newPoint[1]-headlen*Math.sin(angle-Math.PI/6), 
-						                 newPoint[0], newPoint[1], 
-						                 newPoint[0]-headlen*Math.cos(angle+Math.PI/6), newPoint[1]-headlen*Math.sin(angle+Math.PI/6), 
-						                 newPoint2[0], newPoint2[1], 
-						                 newPoint2[0]-headlen2*Math.cos(angle-Math.PI/3), newPoint2[1]-headlen2*Math.sin(angle-Math.PI/3), 
-						                 newPoint2[0], newPoint2[1], 
-						                 newPoint2[0]-headlen2*Math.cos(angle+Math.PI/3), newPoint2[1]-headlen2*Math.sin(angle+Math.PI/3)
-						                 ]);
-
-						layer.add(arrow.clone());
-
-						//remove the arrows that are outside the standard
-						deleteArrowOutsideStandard();
-
-						circle.setFill('white');
-
-						layer.draw();
-						polygonLayer.draw();
-
-						makeHistory();
-
-						//call Method for add this link
-						//jQuery("[id$='addLinkBt']").click();
-
-//					}
-
+				makeHistory();
 			}
 
 			function redoHistory() {
@@ -2107,6 +2087,14 @@ var countObj;
 			   polygonLayer.removeChildren();
 			   layer.removeChildren();
 			   stage.draw();
+		   }
+		   
+		   function getElement(id){
+			   for(var i = 0; i < polygonLayer.getChildren().length; i++) {
+					if(polygonLayer.getChildren()[i].getChildren()[3].getText() == id){
+						return polygonLayer.getChildren()[i];
+					}
+				}
 		   }
 		   
 		   /**

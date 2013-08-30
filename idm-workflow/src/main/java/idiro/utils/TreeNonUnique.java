@@ -39,15 +39,19 @@ public class TreeNonUnique<T> extends UnicastRemoteObject implements Tree<T>{
 
 	@Override
 	public String toString(){
-		String ans = head.toString();
+		String ans = "";
+		if(head != null){
+			ans = head.toString();
+		}
 		Iterator<Tree<T>> it = subTreeList.iterator();
 		while(it.hasNext()){
 			ans = ans + "\n\t" + it.next().toString().replaceAll("\n", "\n\t");
 		}
+
 		return ans;
-		
+
 	}
-	
+
 	public void write(FileWriter fw) throws IOException{
 		String root = head.toString();
 		Tree<T> ancestor = parent;
@@ -130,7 +134,7 @@ public class TreeNonUnique<T> extends UnicastRemoteObject implements Tree<T>{
 		}
 		return ans;
 	}
-	
+
 	public List<Tree<T>> findChildren(T element) throws RemoteException{
 		List<Tree<T>> ans = new LinkedList<Tree<T>>();
 		Iterator<Tree<T>> it = subTreeList.iterator();
@@ -152,7 +156,9 @@ public class TreeNonUnique<T> extends UnicastRemoteObject implements Tree<T>{
 	public void add(Tree<T> e) throws RemoteException {
 		if(e instanceof TreeNonUnique){
 			e.setParent(this);
-			subTreeList.add(e);
+			if(e.getHead() != null){
+				subTreeList.add(e);
+			}
 		}
 	}
 
@@ -163,7 +169,9 @@ public class TreeNonUnique<T> extends UnicastRemoteObject implements Tree<T>{
 	public void addFirst(Tree<T> e) throws RemoteException {
 		if(e instanceof TreeNonUnique){
 			e.setParent(this);
-			subTreeList.addFirst(e);
+			if(e.getHead() != null){
+				subTreeList.addFirst(e);
+			}
 		}
 	}
 
@@ -175,7 +183,10 @@ public class TreeNonUnique<T> extends UnicastRemoteObject implements Tree<T>{
 	public void addAll(Collection<Tree<T>> arg0) throws RemoteException {
 		Iterator<Tree<T>> it = arg0.iterator();
 		while(it.hasNext()){
-			add(it.next());
+			Tree<T> e = it.next();
+			if(e.getHead() != null){
+				add(e);
+			}
 		}
 	}
 
@@ -248,8 +259,8 @@ public class TreeNonUnique<T> extends UnicastRemoteObject implements Tree<T>{
 		List<Tree<T>> list = getChildren(element);
 		return !list.isEmpty() ? list.get(0) : null;
 	}
-	
-	
+
+
 	public Tree<T> findFirstChild(T element) throws RemoteException{
 		Tree<T> ans = null;
 		Iterator<Tree<T>> it = subTreeList.iterator();
@@ -261,10 +272,10 @@ public class TreeNonUnique<T> extends UnicastRemoteObject implements Tree<T>{
 				ans = cur.findFirstChild(element);
 			}
 		}
-		
+
 		return ans;
 	}
-	
+
 	@Override
 	public Tree<T> getFirstChild() {
 		Tree<T> ans = null;
@@ -281,13 +292,15 @@ public class TreeNonUnique<T> extends UnicastRemoteObject implements Tree<T>{
 		Tree<T> ans = null;
 		try {
 			ans = new TreeNonUnique<T>(element);
-			add(ans);
+			if(ans.getHead() != null){
+				add(ans);
+			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		} 
 		return ans;
 	}
-	
+
 	@Override
 	public void remove(T element) throws RemoteException{
 		subTreeList.removeAll(getChildren(element));

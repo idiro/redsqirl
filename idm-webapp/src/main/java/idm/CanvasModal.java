@@ -386,9 +386,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 				String dataTypeName = dfeInteraction.getTree().getFirstChild("browse").getFirstChild("type").getFirstChild().getHead();
 				logger.info("dataTypeName " + dataTypeName);
 				dynamicF.setDataTypeName(dataTypeName);
-				String subtypeName = dfeInteraction.getTree().getFirstChild("browse").getFirstChild("subtype").getFirstChild().getHead();
-				logger.info("subtypeName " + subtypeName);
-				dynamicF.setSubtypeName(subtypeName);
+				if (dataTypeName.equalsIgnoreCase("HDFS")){
+					String subtypeName = dfeInteraction.getTree().getFirstChild("browse").getFirstChild("subtype").getFirstChild().getHead();
+					logger.info("subtypeName " + subtypeName);
+					dynamicF.setSubtypeName(subtypeName);
+				}
 
 				if(getDfe().getDFEOutput().get("source").getPath() != null){
 					String mypath = getDfe().getDFEOutput().get("source").getPath();

@@ -351,7 +351,6 @@ public class CanvasBean extends BaseBean implements Serializable{
 	}
 	
 	public String[] getResult() {
-		System.out.println("getResult "+result[0]);
 		return result;
 	}
 
@@ -375,12 +374,21 @@ public class CanvasBean extends BaseBean implements Serializable{
 		this.selectedLink = selectedLink;
 	}
 
-	public String getPositions() throws Exception{
-		JSONArray json = new JSONArray();
+	public String[] getPositions() throws Exception{
+		JSONArray jsonElements = new JSONArray();
 		for (DataFlowElement e : getDf().getElement()){
-			json.put(new Object[]{e.getComponentId(), e.getName(), e.getImage(), e.getX(), e.getY()});
+			jsonElements.put(new Object[]{e.getComponentId(), e.getName(), e.getImage(), e.getX(), e.getY()});
 		}
-		return json.toString();
+		
+		JSONArray jsonLinks = new JSONArray();
+		for (DataFlowElement e : getDf().getElement()){
+			for (Map.Entry<String, List<DataFlowElement>> entry : e.getInputComponent().entrySet()){
+				for (DataFlowElement dfe : entry.getValue()){
+					jsonLinks.put(new Object[]{dfe.getComponentId(), e.getComponentId()});
+				}
+			}
+		}
+		
+		return new String[]{jsonElements.toString(), jsonLinks.toString()};
 	}
-	
 }
