@@ -85,6 +85,9 @@ public class HiveSelect extends HiveElement{
 	}
 
 	public void update(DFEInteraction interaction) throws RemoteException {
+		
+		logger.info("Hive Select interaction ");
+		
 		DFEOutput in = getDFEInput().get(key_input).get(0);
 		if(in != null){
 			if(interaction == condInt){

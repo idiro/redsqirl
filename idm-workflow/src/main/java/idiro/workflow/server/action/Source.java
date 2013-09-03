@@ -323,6 +323,9 @@ public class Source extends DataflowAction{
 
 	@Override
 	public void update(DFEInteraction interaction) throws RemoteException {
+		
+		logger.info("updateinteraction Source ");
+		
 		if(interaction.getName().equals(getInteraction(key_datatype).getName())){
 			updateDataType(interaction.getTree());
 		}

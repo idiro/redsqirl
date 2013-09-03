@@ -105,6 +105,9 @@ public class HiveJoin extends HiveElement{
 	}
 
 	public void update(DFEInteraction interaction) throws RemoteException {
+		
+		logger.info("Hive Join interaction ");
+		
 		if(interaction == condInt){
 			condInt.update();
 		}else if(interaction == partInt){

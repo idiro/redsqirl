@@ -69,7 +69,7 @@ public class ConditionInteractionTests {
 			hs.setComponentId("2");
 			error = src.addOutputComponent(Source.out_name, hs);
 			assertTrue("source add output: "+error,error == null);
-			error = hs.addInputComponent(HiveSelectT.key_input, src);
+			error = hs.addInputComponent(HiveSelect.key_input, src);
 			assertTrue("hive select add input: "+error,error == null);
 			
 			ConditionInteraction ci = hs.getCondInt();

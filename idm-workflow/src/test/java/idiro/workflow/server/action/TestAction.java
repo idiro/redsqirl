@@ -88,7 +88,10 @@ public class TestAction extends DataflowAction{
 	}
 
 	@Override
-	public void update(DFEInteraction interaction) {	
+	public void update(DFEInteraction interaction) {
+		
+		logger.info("updateinteraction TestAction ");
+		
 	}
 
 	@Override

@@ -247,19 +247,15 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * @return
 	 * @author Igor.Souza
 	 */
-	//	@PostConstruct
 	public void start() {
 		String nameWf = FacesContext.getCurrentInstance()
 				.getExternalContext().getRequestParameterMap().get("paramNameWorkflow");
 		setNameWorkflow(nameWf);
 
 		try {
-			//			if(getDfi() == null){
+
 			setDfi(getworkFlowInterface());
-			//			}
-			//			if(getDf() == null){
 			setDf(dfi.getWorkflow(getNameWorkflow()));
-			//			}
 
 		} catch (RemoteException e) {
 			logger.error(e.getMessage());
@@ -275,8 +271,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * @return 
 	 * @author Igor.Souza
 	 */
-	//@PostConstruct
 	public void openCanvasModal() {
+
 		start();
 
 		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
@@ -335,11 +331,16 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 */
 	public void mountInteractionForm() throws RemoteException {
 
+		logger.info("mountInteractionForm ");
+		
 		setDynamicFormList(new ArrayList<DynamicForm>());
 
 		for (DFEInteraction dfeInteraction : getPage().getInteractions()) {
 
 			DynamicForm dynamicF = new DynamicForm();
+			
+			logger.info("type " + dfeInteraction.getName() + " " + dfeInteraction.getDisplay());
+			
 			getDfe().update(dfeInteraction);
 
 			logger.info("type  " + dfeInteraction.getDisplay());
@@ -394,6 +395,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 					dynamicF.setPathBrowser(mypath);
 					logger.info("path mount " + mypath);
 					setPathBrowser("/"+mypath);
+					setDynamicFormBrowser(dynamicF);
 					changePathBrowser();
 				}
 
@@ -428,8 +430,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 			MessageUseful.addErrorMessage(error);
 		}else{
 
-
-
 		}
 
 	}
@@ -443,7 +443,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 */
 	public void openTextEditor() {
 
-		//logger.info("openModal");
+		//logger.info("openTextEditor");
 
 		List<SelectItem> selectItems = new ArrayList<SelectItem>();
 
@@ -731,11 +731,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 					item.setNameValue(nameValueFeatureItem);
 					logger.info("new item ");
 					listObj.add(item);
-					
+
 					logger.info("new nameValueFeature " + nameValueFeature);
 					logger.info("new nameValueFeatureItem " + nameValueFeatureItem);
 					logger.info("getKeyAsListNameValueFeature " + getKeyAsListNameValueFeature());
-					
+
 				}
 				setNameValueFeature(nameValueFeature);
 				dynamicForm.setListFeature(listObj);
@@ -745,7 +745,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 			getDfe().updateOut();
 		}
-		
+
 	}
 
 	/** confirmBrowser
@@ -761,7 +761,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 
 	}
-	
+
 	public void mountOutputForm() throws RemoteException{
 		logger.info("mountOutputForm");
 		if (!getDfe().getDFEOutput().isEmpty()){
@@ -769,7 +769,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 			for (Map.Entry<String, DFEOutput> e : getDfe().getDFEOutput().entrySet()){
 				OutputForm of = new OutputForm();
 				of.setName(e.getKey());
-				
+
 				List<SelectItem> outputList = new ArrayList<SelectItem>();
 				for (SavingState s : SavingState.values()){
 					outputList.add(new SelectItem(s.toString(), s.toString()));
@@ -777,12 +777,12 @@ public class CanvasModal extends BaseBean implements Serializable {
 				of.setSavingStateList(outputList);
 				of.setDfeOutput(e.getValue());
 				of.setComponentId(getDfe().getComponentId());
-				
+
 				getOutputFormList().add(of);
 			}
 		}
 	}
-	
+
 	public void changePathOutputBrowser() throws RemoteException {
 
 		logger.info("changePathOutputBrowser");
@@ -795,10 +795,10 @@ public class CanvasModal extends BaseBean implements Serializable {
 			}
 		}
 	}
-	
+
 	public void confirmOutput() throws RemoteException{
 		logger.info("confirmOutput");
-		
+
 		for (OutputForm f : getOutputFormList()){
 			String error = f.updateDFEOutput();
 			if (error != null){

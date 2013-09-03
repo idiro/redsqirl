@@ -89,6 +89,9 @@ public class HiveUnion  extends HiveElement{
 	}
 
 	public void update(DFEInteraction interaction) throws RemoteException {
+		
+		logger.info("Hive Union interaction ");
+		
 		List<DFEOutput> in = getDFEInput().get(key_input);
 		if(in.size() > 1){
 			if(interaction == partInt){
