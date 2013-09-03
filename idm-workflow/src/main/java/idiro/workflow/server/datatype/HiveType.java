@@ -50,6 +50,9 @@ public class HiveType extends DataOutput{
 
 	public HiveType(FeatureList features) throws RemoteException{
 		super(features);
+		if(hInt == null){
+			hInt = new HiveInterface();
+		}
 	}
 	
 
