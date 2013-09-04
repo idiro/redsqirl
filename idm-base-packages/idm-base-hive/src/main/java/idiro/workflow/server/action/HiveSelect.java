@@ -90,13 +90,13 @@ public class HiveSelect extends HiveElement{
 		
 		DFEOutput in = getDFEInput().get(key_input).get(0);
 		if(in != null){
-			if(interaction == condInt){
+			if(interaction.getName().equals(condInt.getName())){
 				condInt.update();
-			}else if(interaction == partInt){
+			}else if(interaction.getName().equals(partInt.getName())){
 				partInt.update();
-			}else if(interaction == groupingInt){
+			}else if(interaction.getName().equals(groupingInt.getName())){
 				updateGrouping(interaction.getTree(), in);
-			}else if(interaction == tSelInt){
+			}else if(interaction.getName().equals(tSelInt.getName())){
 				tSelInt.update(in);
 			}
 		}

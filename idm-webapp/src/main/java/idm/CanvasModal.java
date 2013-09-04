@@ -339,11 +339,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 			DynamicForm dynamicF = new DynamicForm();
 			
-			logger.info("type " + dfeInteraction.getName() + " " + dfeInteraction.getDisplay());
+			logger.info("type " + dfeInteraction.getName());
 			
 			getDfe().update(dfeInteraction);
 
-			logger.info("type  " + dfeInteraction.getDisplay());
+			logger.info("type " + dfeInteraction.getName() + " " + dfeInteraction.getDisplay() + " " + dfeInteraction.getTree());
 
 			dynamicF.setName(dfeInteraction.getName());
 			dynamicF.setLegend(dfeInteraction.getLegend());
@@ -355,7 +355,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 				List<SelectItem> selectItems = new ArrayList<SelectItem>();
 				List<Tree<String>> list = dfeInteraction.getTree().getFirstChild("list").getFirstChild("value").getSubTreeList();
 				for (Tree<String> tree : list) {
-					//logger.info("list value " + tree.getFirstChild().getHead());
+					logger.info("list value " + tree.getFirstChild().getHead());
 					selectItems.add(new SelectItem(tree.getHead(), tree.getHead()));
 				}
 				dynamicF.setListOptions(selectItems);
@@ -368,9 +368,12 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 			}else if(dfeInteraction.getDisplay().equals(DisplayType.appendList)){
 
+				logger.info("list value test " + dfeInteraction.getTree().getFirstChild("applist").getChildren("value"));
+				
 				List<SelectItem> selectItems = new ArrayList<SelectItem>();
 				List<Tree<String>> list = dfeInteraction.getTree().getFirstChild("applist").getChildren("value");
 				for (Tree<String> tree : list) {
+					logger.info("list value " + tree.getFirstChild().getHead());
 					selectItems.add(new SelectItem(tree.getFirstChild().getHead(), tree.getFirstChild().getHead()));
 				}
 				dynamicF.setListOptions(selectItems);

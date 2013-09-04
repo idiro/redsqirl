@@ -93,11 +93,14 @@ public class HiveUnion  extends HiveElement{
 		logger.info("Hive Union interaction ");
 		
 		List<DFEOutput> in = getDFEInput().get(key_input);
-		if(in.size() > 1){
-			if(interaction == partInt){
+		
+		logger.info("Hive Union interaction " + in);
+		
+		if(in != null && in.size() > 1){
+			if(interaction.getName().equals(partInt.getName())){
 				condInt.update();
 				partInt.update();
-			}else if(interaction == tUnionSelInt){
+			}else if(interaction.getName().equals(tUnionSelInt.getName())){
 				tUnionSelInt.update(in);
 			}
 		}

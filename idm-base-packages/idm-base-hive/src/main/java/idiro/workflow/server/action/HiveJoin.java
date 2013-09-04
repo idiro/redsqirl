@@ -108,15 +108,15 @@ public class HiveJoin extends HiveElement{
 		
 		logger.info("Hive Join interaction ");
 		
-		if(interaction == condInt){
+		if(interaction.getName().equals(condInt.getName())){
 			condInt.update();
-		}else if(interaction == partInt){
+		}else if(interaction.getName().equals(partInt.getName())){
 			partInt.update();
-		}else if(interaction == joinTypeInt){
+		}else if(interaction.getName().equals(joinTypeInt.getName())){
 			updateJoinType();
-		}else if(interaction == jrInt){
+		}else if(interaction.getName().equals(jrInt.getName())){
 			jrInt.update();
-		}else if(interaction == tJoinInt){
+		}else if(interaction.getName().equals(tJoinInt.getName())){
 			addOrRemoveOutPage();
 			tJoinInt.update();
 		}else if(typeOutputInt != null && interaction == typeOutputInt){
