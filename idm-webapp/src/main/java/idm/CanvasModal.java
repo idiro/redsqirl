@@ -353,10 +353,10 @@ public class CanvasModal extends BaseBean implements Serializable {
 			if(dfeInteraction.getDisplay().equals(DisplayType.list)){
 
 				List<SelectItem> selectItems = new ArrayList<SelectItem>();
-				List<Tree<String>> list = dfeInteraction.getTree().getFirstChild("list").getChildren("value");
+				List<Tree<String>> list = dfeInteraction.getTree().getFirstChild("list").getFirstChild("value").getSubTreeList();
 				for (Tree<String> tree : list) {
 					//logger.info("list value " + tree.getFirstChild().getHead());
-					selectItems.add(new SelectItem(tree.getFirstChild().getHead(), tree.getFirstChild().getHead()));
+					selectItems.add(new SelectItem(tree.getHead(), tree.getHead()));
 				}
 				dynamicF.setListOptions(selectItems);
 

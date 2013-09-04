@@ -24,6 +24,7 @@ import java.io.File;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -357,30 +358,26 @@ public class Source extends DataflowAction{
 
 			Tree<String> value = list.add("value");
 
-
-
 			DFEInteraction interaction = getInteraction(key_datatype);
-			if(interaction.getTree().getFirstChild("list").getFirstChild("output").getFirstChild() != null &&
-					interaction.getTree().getFirstChild("list").getFirstChild("output").getFirstChild().getHead().equalsIgnoreCase("hive")){
-				treeDatasubtype.getFirstChild("list").getFirstChild("output").add("Hive");
-			}
+			if(interaction.getTree().getFirstChild("list").getFirstChild("output").getFirstChild() != null){
+				
+				String type = interaction.getTree().getFirstChild("list").getFirstChild("output").getFirstChild().getHead();
+				
+				List<String> dataOutputClassName = 
+						WorkflowPrefManager.getInstance().getNonAbstractClassesFromSuperClass(
+								DataOutput.class.getCanonicalName());
+				
+				for(String className : dataOutputClassName){
+					DataOutput wa = null;
+					try {
+						wa = (DataOutput) Class.forName(className).newInstance();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 
-
-			Iterator<String> dataOutputClassName = 
-					WorkflowPrefManager.getInstance().getNonAbstractClassesFromSuperClass(
-							DataOutput.class.getCanonicalName()).iterator();
-
-			while(dataOutputClassName.hasNext()){
-				String className = dataOutputClassName.next();
-				DataOutput wa = null;
-				try {
-					wa = (DataOutput) Class.forName(className).newInstance();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-				if (wa.getBrowser().equals(DataBrowser.HDFS)){
-					value.add(DataOutput.class.getSimpleName());
+					if (wa.getBrowser().toString().equalsIgnoreCase(type)){
+						value.add(wa.getClass().getSimpleName());
+					}
 				}
 			}
 		}
