@@ -19,7 +19,7 @@ public class DynamicForm implements Serializable {
 	private List<SelectItem> listOptions = new ArrayList<SelectItem>();
 	private String selectedListOptions;
 	private List<SelectItem> appendListOptions = new ArrayList<SelectItem>();
-	private String selectedAppendListOptions;
+	private List<String> selectedAppendListOptions;
 	private List<SelectItem> listSelectedAppendListOptions = new ArrayList<SelectItem>();
 	private DisplayType displayType;
 	private String comboBox;
@@ -100,11 +100,11 @@ public class DynamicForm implements Serializable {
 		this.comboBox = comboBox;
 	}
 
-	public String getSelectedAppendListOptions() {
+	public List<String> getSelectedAppendListOptions() {
 		return selectedAppendListOptions;
 	}
 
-	public void setSelectedAppendListOptions(String selectedAppendListOptions) {
+	public void setSelectedAppendListOptions(List<String> selectedAppendListOptions) {
 		this.selectedAppendListOptions = selectedAppendListOptions;
 	}
 

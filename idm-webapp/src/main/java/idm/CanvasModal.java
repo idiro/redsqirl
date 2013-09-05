@@ -172,6 +172,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 				getDfe().updateOut();
 
+			}else if(dynamicF.getDisplayType().equals(DisplayType.helpTextEditor)){
+				
+				
+			}else if(dynamicF.getDisplayType().equals(DisplayType.table)){
+				
 			}
 
 			getPage().getInteractions().set(i, dfi);
@@ -332,15 +337,15 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void mountInteractionForm() throws RemoteException {
 
 		logger.info("mountInteractionForm ");
-		
+
 		setDynamicFormList(new ArrayList<DynamicForm>());
 
 		for (DFEInteraction dfeInteraction : getPage().getInteractions()) {
 
 			DynamicForm dynamicF = new DynamicForm();
-			
+
 			logger.info("type " + dfeInteraction.getName());
-			
+
 			getDfe().update(dfeInteraction);
 
 			logger.info("type " + dfeInteraction.getName() + " " + dfeInteraction.getDisplay() + " " + dfeInteraction.getTree());
@@ -354,11 +359,16 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 				List<SelectItem> selectItems = new ArrayList<SelectItem>();
 				List<Tree<String>> list = dfeInteraction.getTree().getFirstChild("list").getFirstChild("value").getSubTreeList();
-				for (Tree<String> tree : list) {
-					logger.info("list value " + tree.getFirstChild().getHead());
-					selectItems.add(new SelectItem(tree.getHead(), tree.getHead()));
+
+				logger.info("list value " + list);
+
+				if(list != null){
+					for (Tree<String> tree : list) {
+						logger.info("list value " + tree.getHead());
+						selectItems.add(new SelectItem(tree.getHead(), tree.getHead()));
+					}
+					dynamicF.setListOptions(selectItems);
 				}
-				dynamicF.setListOptions(selectItems);
 
 				if(dfeInteraction.getTree().getFirstChild("list").getFirstChild("output").getFirstChild() != null){
 					String value =  dfeInteraction.getTree().getFirstChild("list").getFirstChild("output").getFirstChild().getHead();
@@ -368,20 +378,56 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 			}else if(dfeInteraction.getDisplay().equals(DisplayType.appendList)){
 
-				logger.info("list value test " + dfeInteraction.getTree().getFirstChild("applist").getChildren("value"));
-				
+				logger.info("appendList ");
+
 				List<SelectItem> selectItems = new ArrayList<SelectItem>();
 				List<Tree<String>> list = dfeInteraction.getTree().getFirstChild("applist").getChildren("value");
-				for (Tree<String> tree : list) {
-					logger.info("list value " + tree.getFirstChild().getHead());
-					selectItems.add(new SelectItem(tree.getFirstChild().getHead(), tree.getFirstChild().getHead()));
+				if(list != null){
+					for (Tree<String> tree : list) {
+						logger.info("list value " + tree.getFirstChild().getHead());
+						selectItems.add(new SelectItem(tree.getFirstChild().getHead(), tree.getFirstChild().getHead()));
+					}
+					dynamicF.setListOptions(selectItems);
+					
+					if(selectItems.size() > 10){
+						dynamicF.setComboBox("Y");
+					}else{
+						dynamicF.setComboBox("N");
+					}
 				}
-				dynamicF.setListOptions(selectItems);
 
-				if(selectItems.size() > 10){
-					dynamicF.setComboBox("Y");
-				}else{
-					dynamicF.setComboBox("N");
+				/*List<SelectItem> selectItems = new ArrayList<SelectItem>();
+				List<Tree<String>> list = dfeInteraction.getTree().getFirstChild("applist").getFirstChild("value").getSubTreeList();
+
+				logger.info("appendList list ");
+				
+				if(list != null){
+					for (Tree<String> tree : list) {
+						logger.info("appendList value " + tree.getHead());
+						selectItems.add(new SelectItem(tree.getHead(), tree.getHead()));
+					}
+					
+					dynamicF.setListOptions(selectItems);
+
+					if(selectItems.size() > 10){
+						dynamicF.setComboBox("Y");
+					}else{
+						dynamicF.setComboBox("N");
+					}
+					
+				}
+				
+				logger.info("appendList value pass ");*/
+
+				if(dfeInteraction.getTree().getFirstChild("applist").getFirstChild("output").getChildren("value") != null){
+					List<Tree<String>> listOut = dfeInteraction.getTree().getFirstChild("applist").getFirstChild("output").getChildren("value");
+					if(listOut != null){
+						List<String> listSelected = new ArrayList<String>();
+						for (Tree<String> tree : listOut) {
+							listSelected.add(tree.getHead());
+						}
+						dynamicF.setSelectedAppendListOptions(listSelected);
+					}
 				}
 
 			}else if(dfeInteraction.getDisplay().equals(DisplayType.browser)){
@@ -406,6 +452,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 			}else if(dfeInteraction.getDisplay().equals(DisplayType.helpTextEditor)){
 
+				
 			}else if(dfeInteraction.getDisplay().equals(DisplayType.table)){
 
 			}
