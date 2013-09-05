@@ -438,10 +438,16 @@
 			</a4j:region>
 			
 			<a4j:region>
-				<a4j:jsFunction name="updatePosition" action="#{canvasBean.updatePosition}" >
+				<a4j:jsFunction name="updatePosition" action="#{canvasBean.updatePosition}">
 					<a4j:actionparam name="paramGroupID"/>
 					<a4j:actionparam name="paramPosX"/>
 					<a4j:actionparam name="paramPosY"/>
+				</a4j:jsFunction>
+			</a4j:region>
+			
+			<a4j:region>
+				<a4j:jsFunction name="saveWorkflow" action="#{canvasBean.save}" >
+					<a4j:actionparam name="pathFile"/>
 				</a4j:jsFunction>
 			</a4j:region>
 			

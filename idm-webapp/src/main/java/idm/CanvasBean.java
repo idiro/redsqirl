@@ -313,6 +313,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 	 * @author Igor.Souza
 	 */
 	public void save() {
+		logger.info("save");
 
 		String path = FacesContext.getCurrentInstance().getExternalContext().
 				getRequestParameterMap().get("pathFile");

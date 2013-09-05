@@ -75,9 +75,8 @@
 		maxlength="255" style="width:395px;" />
 	<br />
 
-	<a4j:commandButton id="hdfsSaveFileBtn" action="#{canvasBean.save}" value="ok"
-		onclick="#{rich:component('modalSaveWorkflow')}.hide();updateElementsPositions();">
-		<a4j:actionparam name="pathFile" value="getPath('#{hdfsSaveBean.path}')" noEscape="true"/>
+	<a4j:commandButton id="hdfsSaveFileBtn" value="ok"
+		onclick="#{rich:component('modalSaveWorkflow')}.hide();updateElementsPositions();saveWorkflow(getPath('#{hdfsSaveBean.path}'));">
 	</a4j:commandButton>
 	
 	<a4j:commandButton value="Cancel"

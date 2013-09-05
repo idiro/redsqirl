@@ -2338,12 +2338,6 @@ var countObj;
 
 			   });
 
-			   group1.on('dragend', function() {
-				   var mousePosStage = stage.getMousePosition();
-				   updatePosition(this.getChildren()[3].getText(), mousePosStage.x-30,
-						   mousePosStage.y-30);
-			   });
-
 			   makeHistory();
 		   }
 		   
