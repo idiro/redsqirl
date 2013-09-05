@@ -730,6 +730,41 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 
 		return addElement(waName,newId);
 	}
+	
+	public String removeElement(String componentId) throws RemoteException, Exception{
+		String error = null;
+		DataFlowElement dfe = getElement(componentId);
+		
+		for (Entry<String,List<DFEOutput>> dfeInput : dfe.getDFEInput().entrySet()){
+			for (DataFlowElement inputComponent : dfe.getInputComponent().get(dfeInput.getKey())){
+				for (Entry<String, List<DataFlowElement>> outputComponent : inputComponent.getOutputComponent().entrySet()){
+					if (outputComponent.getValue().contains(dfe)){
+						logger.info("Remove1 - "+outputComponent.getKey()+" "+inputComponent.getComponentId()+" "+dfeInput.getKey()+" "+dfe.getComponentId());
+						error = this.removeLink(outputComponent.getKey(), inputComponent.getComponentId(), dfeInput.getKey(), dfe.getComponentId(), true);
+					}
+					
+				}
+			}
+		}
+		
+		if (error != null && dfe.getDFEOutput() != null){
+			for (Entry<String,DFEOutput> dfeOutput : dfe.getDFEOutput().entrySet()){
+				for (DataFlowElement outputComponent : dfe.getOutputComponent().get(dfeOutput.getKey())){
+					for (Entry<String, List<DataFlowElement>> inputComponent : outputComponent.getInputComponent().entrySet()){
+						if (inputComponent.getValue().contains(dfe)){
+							logger.info("Remove2 - "+dfeOutput.getKey()+" "+dfe.getComponentId()+" "+inputComponent.getKey()+" "+outputComponent.getComponentId());
+							error = this.removeLink(dfeOutput.getKey(), dfe.getComponentId(), inputComponent.getKey(), outputComponent.getComponentId(), true);
+						}
+						
+					}
+				}
+			}
+		}
+
+		element.remove(element.indexOf(dfe));
+		return error;
+	}
+	
 	/**
 	 * Add a WorkflowAction in the Workflow.
 	 * The element is at the end of the workingWA list

@@ -154,6 +154,7 @@ var countObj;
 				    		var groupNumber = group.getId().substring(5, this.getId().length);
 				    		jQuery.each(value.getChildren(), function(index, value2) {
 				    			if(value2.getStroke() == "red"){
+				    				removeElement(group.getChildren()[3].getText());
 				    				deleteLayerChildren(groupNumber);
 				    				group.remove();
 								}
@@ -1584,9 +1585,19 @@ var countObj;
 			    });
 			    
 				countObj++;
-				createGroup(posx, posy, circle1, polygon, countObj, srcImageText, typeText,
-						rectSelect, positionX, positionY, polygonLayer, stage);
+				var group = createGroup(circle1, polygon, countObj, 
+						   srcImageText, typeText);
+				
+				polygonLayer.add(group);
 				updateTypeObj(elementId, "group"+countObj);
+				
+				configureGroup(group, posx, posy, polygon, countObj,
+						rectSelect, positionX, positionY, stage);
+				
+				
+				stage.draw();
+				
+				
 
 			}
 			
@@ -1744,7 +1755,7 @@ var countObj;
 			    	
 			    	group.setDragBoundFunc(function(pos){ return rulesDragAndDropObj(pos, 80, 80); });
 			    	
-			    	configureGroup(group, positionX, positionY, rectSelect);
+			    	configureGroupListeners(group, positionX, positionY, rectSelect);
 			    	
 			    	configureCircle(circle1, polygonLayer);
 			    	
@@ -2000,6 +2011,15 @@ var countObj;
 								layerTab.add(polygonTabFake.clone());
 								layerTab.draw();
 								
+								countObj++;
+								
+								var group1 = createGroup(circle1, polygon, countObj, 
+										   srcImageText, typeText);
+								
+								polygonLayer.add(group1);
+						    	addElementBt(typeText.getText(), "group" + countObj);
+						    	this.group = group1;
+								
 							});
 							
 							//var countObj = 0;
@@ -2008,52 +2028,39 @@ var countObj;
 							positionY = 0;
 							
 							polygonTabFake.on('dragend', function() {
-						    	
+
 								try {
-									
 									document.body.style.cursor = 'default';
-									
+
 									var mousePos = stageTab.getMousePosition();
 									if(mousePos.x > 0 || mousePos.y > 0){
 										this.remove();
 										layerTab.add(polygonTabFake.clone());
 										layerTab.draw();
 									}
-						          
+
 								} catch(e) {
-									
 									try {
-									
 										var mousePosStage = stage.getMousePosition();
-										countObj++;
-										createGroup(mousePosStage.x -30, mousePosStage.y -30, circle1, polygon, countObj, srcImageText, typeText,
-												rectSelect, positionX, positionY, polygonLayer, stage);
-										
-										//call Method for add this Element
-								    	  //jQuery("[id$='addElementBt']").click();
-								    	  addElementBt(typeText.getText(), "group" + countObj, mousePosStage.x -30, mousePosStage.y -30);
-							    	  layerTab.add(polygonTabFake.clone());
-							    	  layerTab.draw();
-							    	  
-							    	  
+
+										configureGroup(this.group, mousePosStage.x-30, mousePosStage.y-30, polygon, countObj,
+												rectSelect, positionX, positionY, stage);
+
+										layerTab.add(polygonTabFake.clone());
+										layerTab.draw();
+
 									} catch(e) {
-										
+
 										document.body.style.cursor = 'default';
+										removeElement(this.group.getChildren()[3].getText());
 										this.remove();
-								    	layerTab.add(polygonTabFake.clone());
-								    	layerTab.draw();
-								    	
-								    	makeHistory();
-								    	  
-								    	//call Method for add this Element
-								    	//jQuery("[id$='addElementBt']").click();
-								    	addElementBt(typeText.getText(), "group" + countObj, positionX, positionY);
-								    	
+										layerTab.add(polygonTabFake.clone());
+										layerTab.draw();
+
+										makeHistory();
 									}
-									
 								}
-						          
-						    });
+							});
 							
 						      
 						    polygonTabFake.on('mouseup', function() {
@@ -2107,7 +2114,7 @@ var countObj;
 			   
 			   var text = polygonLayer.get('#' + groupID)[0].getChildren()[3];
 			   text.setText(elementID);
-			   text.getLayer().draw();
+//			   text.getLayer().draw();
 			  
 			   //alert(text.getText());
 			   
@@ -2120,6 +2127,14 @@ var countObj;
 						value.nameOutput = nameOutput;
 						value.nameInput = nameInput;
 					}
+				});
+			   
+		   }
+		   
+		   function updateElementsPositions() {
+			   
+				jQuery.each(polygonLayer.getChildren(), function(index, value) {
+					updatePosition(value.getChildren()[3].getText(), value.getX(), value.getY());
 				});
 			   
 		   }
@@ -2256,7 +2271,7 @@ var countObj;
 	              });
 		   }
 		   
-		   function configureGroup(group, positionX, positionY, rectSelect){
+		   function configureGroupListeners(group, positionX, positionY, rectSelect){
 				group.on('mouseenter', function(e) {
 					positionX = this.getX()+40;
 					positionY = this.getY()+50;
@@ -2274,57 +2289,63 @@ var countObj;
 				});
 		   }
 		   
-		   function createGroup(mousePosX, mousePosY, circle1, polygon, countObj, srcImageText, typeText,
-					rectSelect, positionX, positionY, polygonLayer, stage){
-			   	
+		   
+
+		   function createGroup(circle1, polygon, countObj,
+				   srcImageText, typeText) {
+
+			   var group1 = new Kinetic.Group({
+				   draggable : true,
+				   id : "group" + countObj,
+				   name : 'group1',
+				   dragBoundFunc : function(pos) {
+					   return rulesDragAndDropObj(pos, 80, 80);
+				   }
+			   });
+
+			   var circ = circle1.clone();
+			   var poly = polygon.clone();
+			   circ.setId("circle" + countObj + "-1");
+			   circ.setName("circle" + countObj);
+			   circ.setPosition(40, 50);
+			   poly.setPosition(40, 50);
+			   group1.add(circ);
+			   group1.add(poly);
+			   group1.add(srcImageText.clone());
+			   group1.add(typeText.clone());
+
+			   return group1;
+		   }
+		   
+
+		   function configureGroup(group1, mousePosX, mousePosY, polygon, countObj,
+				   rectSelect, positionX, positionY, stage) {
+
 			   document.body.style.cursor = 'default';
-				
-				deselectAll();
-				polygon.setStroke("red");
-				
-				var group1 = new Kinetic.Group({
-					x: mousePosX,
-			        y: mousePosY,
-	        		  draggable: true,
-	        		  id: "group" + countObj,
-	        		  name: 'group1',
-	        		  dragBoundFunc: function(pos) {
-	        			  return rulesDragAndDropObj(pos, 80, 80);
-	        		  }
-	        	  });
-				
-				var circ = circle1.clone();
-				var poly = polygon.clone();
-				circ.setId("circle" + countObj + "-1");
-				circ.setName("circle" + countObj);
-				circ.setPosition(40,50);
-				poly.setPosition(40,50);
-				group1.add(circ);
-				group1.add(poly);
-				group1.add(srcImageText.clone());
-				group1.add(typeText.clone());
-				
-				jQuery("#countObj").val(countObj);
-				
-				configureGroup(group1, positionX, positionY, rectSelect);
-				
-				group1.on('dblclick', function(e) {
-					
-					openModal(this.getChildren()[3].getText());
-					
-				});
-				
-			  polygonLayer.add(group1);
-			  
-			  
-			  stage.draw();
-			
-       	  
-	    	  
-	    	  makeHistory();
-	    	  
-	    	  
-			}
+
+			   deselectAll();
+			   polygon.setStroke("red");
+
+			   group1.setPosition(mousePosX, mousePosY);
+
+			   jQuery("#countObj").val(countObj);
+
+			   configureGroupListeners(group1, positionX, positionY, rectSelect);
+
+			   group1.on('dblclick', function(e) {
+
+				   openModal(this.getChildren()[3].getText());
+
+			   });
+
+			   group1.on('dragend', function() {
+				   var mousePosStage = stage.getMousePosition();
+				   updatePosition(this.getChildren()[3].getText(), mousePosStage.x-30,
+						   mousePosStage.y-30);
+			   });
+
+			   makeHistory();
+		   }
 		   
 		   function createPolygon(imgTab, posInitX, poxInitY){
 

@@ -384,7 +384,6 @@
 	      function addLinksJs(links){
 	    	  addLinks(links);
 	      }
-
 	      
 		</script>
 
@@ -424,10 +423,22 @@
 					<a4j:actionparam name="paramInName"/>
 				</a4j:jsFunction>
 			</a4j:region>
+			
+			<a4j:region>
+				<a4j:jsFunction name="removeElement" action="#{canvasBean.removeElement}">
+					<a4j:actionparam name="paramGroupID"/>
+				</a4j:jsFunction>
+			</a4j:region>
 
 			<a4j:region>
 				<a4j:jsFunction name="addElementBt" action="#{canvasBean.addElement}" data="#{canvasBean.result}" oncomplete="updateTypeObj(data[0], data[1]);" >
 					<a4j:actionparam name="paramNameElement"/>
+					<a4j:actionparam name="paramGroupID"/>
+				</a4j:jsFunction>
+			</a4j:region>
+			
+			<a4j:region>
+				<a4j:jsFunction name="updatePosition" action="#{canvasBean.updatePosition}" >
 					<a4j:actionparam name="paramGroupID"/>
 					<a4j:actionparam name="paramPosX"/>
 					<a4j:actionparam name="paramPosY"/>
@@ -867,7 +878,7 @@
 	</a4j:region>
 	
 	<a4j:region renderRegionOnly="true">
-		<rich:modalPanel id="modalSelectLink" width="600" height="400" style="overflow:auto;" resizeable="false">
+		<rich:modalPanel id="modalSelectLink" width="300" height="200" style="overflow:auto;" resizeable="false">
 	
 			<f:facet name="header">Load</f:facet>
 			<f:facet name="controls">

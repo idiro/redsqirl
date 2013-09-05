@@ -12,6 +12,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
@@ -104,21 +105,67 @@ public class CanvasBean extends BaseBean implements Serializable{
 		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 
 		String nameElement = params.get("paramNameElement");
+		String paramGroupID = params.get("paramGroupID");
+
+		try {
+			DataFlow df = getDf();
+			String idElement = df.addElement(nameElement);
+			
+			setResult(new String[]{idElement, paramGroupID});
+			
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+	
+	/** removeElement
+	 * 
+	 * Method to remove Element on canvas.
+	 * 
+	 * @return 
+	 * @author Marcos.Freitas
+	 */
+	public void removeElement() {
+
+		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 
 		String paramGroupID = params.get("paramGroupID");
 
-		String posX = params.get("paramPosX");
-		String posY = params.get("paramPosY");
 		try {
 
 			DataFlow df = getDf();
+			logger.info("Remove element "+paramGroupID);
+			df.removeElement(paramGroupID);
 			
-			String idElement = df.addElement(nameElement);
-			
-			df.getElement(idElement).setPosition(Double.valueOf(posX).intValue(), Double.valueOf(posY).intValue());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-			setResult(new String[]{idElement, paramGroupID});
+	}
+	
+	/** updatePosition
+	 * 
+	 * Method for update the position of an Element
+	 * 
+	 * @return 
+	 * @author Igor.Souza
+	 */
+	public void updatePosition() {
+		logger.info("updatePosition");
+		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+
+		String paramGroupID = params.get("paramGroupID");
+		logger.info(paramGroupID);
+		String posX = params.get("paramPosX");
+		String posY = params.get("paramPosY");
+		try {
 			
+			DataFlow df = getDf();
+			df.getElement(paramGroupID).setPosition(Double.valueOf(posX).intValue(), Double.valueOf(posY).intValue());
+
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		} catch (Exception e) {

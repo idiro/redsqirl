@@ -104,6 +104,9 @@ public interface DataFlow extends Remote{
 	 */
 	public String addElement(String elementName) throws RemoteException, Exception;
 	
+	
+	public String removeElement(String componentId) throws RemoteException, Exception;
+	
 	/**
 	 * Get the WorkflowAction corresponding to the componentId.
 	 * 

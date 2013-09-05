@@ -6,13 +6,19 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets">
 
 
-	<h:panelGrid id="selectLinkList">
+	<h:panelGrid id="selectLinkList" rendered="#{!empty canvasBean.linkPossibilities}">
 		<h:selectOneRadio value="#{canvasBean.selectedLink}">
    			<f:selectItems value="#{canvasBean.linkPossibilities}" />
    		</h:selectOneRadio>
    		
    		<a4j:commandButton action="#{canvasBean.addLink}" value="ok"
 			oncomplete="#{rich:component('modalSelectLink')}.hide();addLinkBt()"/>
+	</h:panelGrid>
+	
+	<h:panelGrid rendered="#{empty canvasBean.linkPossibilities}">
+		<p>Impossible to create link</p>
+		<a4j:commandButton value="ok"
+			oncomplete="#{rich:component('modalSelectLink')}.hide();"/>
 	</h:panelGrid>
 	
 

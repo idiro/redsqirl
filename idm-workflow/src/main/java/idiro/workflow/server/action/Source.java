@@ -1,7 +1,7 @@
 package idiro.workflow.server.action;
 
-import idiro.utils.OrderedFeatureList;
 import idiro.utils.FeatureList;
+import idiro.utils.OrderedFeatureList;
 import idiro.utils.Tree;
 import idiro.workflow.server.DataOutput;
 import idiro.workflow.server.DataflowAction;
@@ -11,7 +11,6 @@ import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.datatype.MapRedTextType;
-import idiro.workflow.server.enumeration.DataBrowser;
 import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.interfaces.DFEInteraction;
