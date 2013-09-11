@@ -23,28 +23,12 @@ var countObj;
 
 		window.onload = function() {
 			
-			/*jQuery( "#tabsFooter ul:first li" ).each(function(index) {
-				   
-				//alert(jQuery(this).attr("aria-controls"));
-				
-				var aux = jQuery(this).attr("aria-controls");
-				
-				jQuery( "#"+aux ).find("img").each(function(index) {
-					
-					alert(jQuery(this).attr("src"));
-					
-				});
-				   
-			});*/
-			
-			
 			var countObj;
 			if(jQuery("[id$='countObj']").val() != 0){
 				countObj = jQuery("[id$='countObj']").val();
 			}else{
 				countObj = 0;
 			}
-			
 			
 			//main stage
 			stage = new Kinetic.Stage({
@@ -106,22 +90,6 @@ var countObj;
             });
 			
 			
-			
-			//------------ START TAB 1
-			/*
-				//stage to footer
-			    stageTab1 = new Kinetic.Stage({
-			        container: 'canvasTabFooter1',
-			        width: 500,
-			        height: 100
-			    });
-			    
-			    //layer to footer tab1
-			    layerTab1 = new Kinetic.Layer();
-			    
-			    //variable to control image of the object
-			    var imgTab1 = new Image();
-			    imgTab1.src = '../image/icons/button-cut.png';*/
 			      
 			    arrow = new Kinetic.Line({
 			    	//name: 'arrow',
@@ -131,15 +99,12 @@ var countObj;
 			    	draggable: false
 		        });
 
-			    
-			    
-			  //------------ START STAGE CONTROL
+			    //------------ START STAGE CONTROL
 			      
 			    configureStage(layer, stage, rectSelect);
 			    
 			    //------------ END STAGE CONTROL
 			      
-			     
 			      
 			    makeHistory();
 			      
@@ -160,17 +125,6 @@ var countObj;
 								}
 				    		});
 						});
-				    	
-				    /*	jQuery.each(polygonLayer.get('.group2'), function(index, value) {
-				    		var group = this;
-				    		var groupNumber = group.getId().substring(5, this.getId().length);
-				    		jQuery.each(value.getChildren(), function(index, value2) {
-				    			if(value2.getStroke() == "red"){
-				    				deleteLayerChildren(groupNumber);
-				    				group.remove();
-								}
-				    		});
-						});*/
 				    	
 				    	var listSize = layer.getChildren().size();
 						for (var i = 0; i < listSize; i++) {
@@ -228,10 +182,6 @@ var countObj;
 								value.setStroke("black");
 							});
 							
-							/*jQuery.each(polygonLayer.get('.polygon2'), function(index, value) {
-								value.setStroke("black");
-							});*/
-							
 							//checks if an arrow was clicked on metohd:arrow.'click'
 							if(!clickArrow){
 								jQuery.each(layer.getChildren(), function(index, value) {
@@ -265,498 +215,15 @@ var countObj;
 				
 				positionX = 0;
 				positionY = 0;
-				
-				
 
-				
-			      
-			  	//------------------ START GROUP 1
-				
-				
-				
-				
-				
-				/*
-			      var polygon1Tab1 = new Kinetic.RegularPolygon({
-				        x: 40,
-				        y: 50,
-				        radius: 27,
-				        sides: 4,
-				        stroke: 'black',
-				        strokeWidth: 4,
-				        fillPatternImage: imgTab1,
-				        fillPatternOffset: [7, 7],
-				        fillPatternRepeat: 'no-repeat',
-				        fillPatternScale: 1.8,
-				        fillPatternRotationDeg: 315,
-				        draggable: false
-				  });
-			      polygon1Tab1.rotateDeg(45);
-			      
-			      var polygon1Tab1Image = polygon1Tab1.toDataURL({
-			    	  width: 75,
-			    	  height: 75
-			      });
-			      
-			      polygon1Tab1.setStroke('red');
-			      var polygon1Tab1ImageRed = polygon1Tab1.toDataURL({
-			    	  width: 75,
-			    	  height: 75
-			      });
-			      polygon1Tab1.setStroke('black');
-			      
-			      var polygon1Tab1Fake = new Kinetic.RegularPolygon({
-				        x: 40,
-				        y: 50,
-				        opacity: 0,
-				        radius: 27,
-				        sides: 4,
-				        stroke: 'black',
-				        strokeWidth: 4,
-				        fillPatternImage: imgTab1,
-				        fillPatternOffset: [7, 7],
-				        fillPatternRepeat: 'no-repeat',
-				        fillPatternScale: 1.8,
-				        fillPatternRotationDeg: 315,
-				        draggable: true
-				  });
-			      polygon1Tab1Fake.rotateDeg(45);
-			      
-				var polygon1 = polygon1Tab1.clone({
-					name: 'polygon1',
-					draggable: false
-			    });
-				
-				polygon1.on('click', function(e) {
-					
-					deselectOnClick(this, e);
-					
-				});
-				
-				polygon1.on('mousedown', function(e) {
-					
-					deselectOnClick(this, e);
-					
-				});
-				
-				polygon1Tab1Fake.on('dragstart', function() {
-					
-					jQuery('#body').css('cursor','url('+ polygon1Tab1Image +') 30 30,default');
-					
-					this.remove();
-					layerTab1.add(polygon1Tab1Fake.clone());
-					layerTab1.draw();
-					
-				});
-				
-				//var countObj = 0;
-				
-				positionX = 0;
-				positionY = 0;
-				
-				polygon1Tab1Fake.on('dragend', function() {
-			    	
-					try {
-						
-						document.body.style.cursor = 'default';
-						
-						var mousePos = stageTab1.getMousePosition();
-						if(mousePos.x > 0 || mousePos.y > 0){
-							this.remove();
-							layerTab1.add(polygon1Tab1Fake.clone());
-							layerTab1.draw();
-						}
-			          
-					} catch(e) {
-						
-						try {
-						
-							document.body.style.cursor = 'default';
-							
-							deselectAll();
-							polygon1.setStroke("red");
-							
-							var mousePosStage = stage.getMousePosition();
-							
-							countObj++;
-							var group1 = new Kinetic.Group({
-								x: mousePosStage.x -30,
-						        y: mousePosStage.y -30,
-				        		  draggable: true,
-				        		  id: "group" + countObj,
-				        		  name: 'group1',
-				        		  dragBoundFunc: function(pos) {
-				        			  return rulesDragAndDropObj(pos, 80, 80);
-				        		  }
-				        	  });
-							
-							circle1.setId("circle" + countObj + "-1");
-							circle1.setName("circle" + countObj);
-							circle1.setPosition(40,50);
-							group1.add(circle1.clone());
-							group1.add(polygon1.clone());
-							
-
-							
-							group1.on('mouseenter', function(e) {
-								
-								positionX = this.getX()+40;
-								positionY = this.getY()+50;
-								
-							});
-							
-							group1.on('dragstart dragmove', function(e) {
-								
-								rectSelect.remove();
-								
-								dragAndDropGroup(this, e);
-								changePositionArrow(this);
-								
-							});
-							
-							group1.on('dragend', function(e) {
-								
-								group1.setDragBoundFunc(function(pos){ return rulesDragAndDropObj(pos, 80, 80) });
-								makeHistory();
-							});
-							
-							group1.on('dblclick', function(e) {
-								
-								openModal();
-								
-							});
-							
-							
-							
-						  polygonLayer.add(group1);
-						  
-			        	  stage.draw();
-						
-			        	  this.remove();
-				    	  layerTab1.add(polygon1Tab1Fake.clone());
-				    	  layerTab1.draw();
-				    	  
-				    	  makeHistory();
-				    	  
-						} catch(e) {
-							
-							document.body.style.cursor = 'default';
-							this.remove();
-					    	layerTab1.add(polygon1Tab1Fake.clone());
-					    	layerTab1.draw();
-							
-						}
-						
-					}
-			          
-			    });
-				
-			      
-			    polygon1Tab1Fake.on('mouseup', function() {
-			    	this.remove();
-			    	layerTab1.add(polygon1Tab1Fake.clone());
-			    	layerTab1.draw();
-			    });
-			      */
-			      
-					
-				//------------------ END GROUP 1
-			      
-			    
-			    
-			    
-			    //------------------ START GROUP 2
-			
-				  /*
-			    var circle2 = new Kinetic.Circle({
-					x: 100,
-			        y: 50,
-			        radius: 42,
-			        //fill: 'white',
-			        //stroke: 'black',
-			        //strokeWidth: 1,
-			        draggable: false
-			    });
-				
-				circle2.on('mouseover', function() {
-					document.body.style.cursor = 'pointer';
-				});
-				
-				circle2.on('mouseout', function() {
-					document.body.style.cursor = 'default';
-				});
-				
-				  down = false;
-				  
-				  circle2.on("click", function(e) {
-					  
-					  var circle = this;
-					  
-					 if (down) {
-						  down = false;
-			    		  
-			    		  arrow.setName(arrow.getName()+"-"+this.getName().substring(6, this.getName().length));
-			    		  
-			    		  var polygonGroup = polygonLayer.get('#'+this.getParent().getId());
-			    		  
-			    		  var newPoint = getCircleLineIntersectionPoint(arrow.getPoints()[0].x, arrow.getPoints()[0].y, polygonGroup[0].getX()+100, polygonGroup[0].getY()+50, polygonGroup[0].getX()+100, polygonGroup[0].getY()+50, 47);
-			    		  var newPoint2 = getCircleLineIntersectionPoint(arrow.getPoints()[0].x, arrow.getPoints()[0].y, polygonGroup[0].getX()+100, polygonGroup[0].getY()+50, polygonGroup[0].getX()+100, polygonGroup[0].getY()+50, 60);
-			    		  
-			    		  var headlen = 20;
-			    		  var headlen2 = 10;
-			    		  var angle = Math.atan2(newPoint[1]-arrow.getPoints()[0].y,newPoint[0]-arrow.getPoints()[0].x);
-			    		  
-			    		  arrow.setPoints([arrow.getPoints()[0].x, arrow.getPoints()[0].y, 
-			    		                   newPoint2[0], newPoint2[1], 
-			    		                   newPoint2[0], newPoint2[1], 
-			    		                   newPoint[0]-headlen*Math.cos(angle-Math.PI/6), newPoint[1]-headlen*Math.sin(angle-Math.PI/6), 
-			    		                   newPoint[0], newPoint[1], 
-			    		                   newPoint[0]-headlen*Math.cos(angle+Math.PI/6), newPoint[1]-headlen*Math.sin(angle+Math.PI/6), 
-			    		                   newPoint2[0], newPoint2[1], 
-			    		                   newPoint2[0]-headlen2*Math.cos(angle-Math.PI/3), newPoint2[1]-headlen2*Math.sin(angle-Math.PI/3), 
-			    		                   newPoint2[0], newPoint2[1], 
-			    		                   newPoint2[0]-headlen2*Math.cos(angle+Math.PI/3), newPoint2[1]-headlen2*Math.sin(angle+Math.PI/3)
-			    		                   ]);
-			    		  
-			    		  layer.add(arrow.clone());
-			    		  
-			    		  	//remove the arrows that are outside the standard
-							deleteArrowOutsideStandard();
-			    		  
-			    		  circle.setFill('white');
-			    		  
-			    		  layer.draw();
-			    		  polygonLayer.draw();
-			    		  
-			    		  makeHistory();
-			    		  
-			    	  }else{
-			    		  down = true;
-				          
-				          var polygonGroup = polygonLayer.get('#'+this.getParent().getId());
-				          arrow.setPoints([polygonGroup[0].getX()+100, polygonGroup[0].getY()+50, polygonGroup[0].getX()+100+1, polygonGroup[0].getY()+50+1 ]);
-				          arrow.setName("arrow"+this.getName().substring(6,this.getName().length));
-				          
-				          circle.setFill('white');
-				          
-				          layer.add(arrow.clone());
-				          
-				          layer.draw();
-				          polygonLayer.draw();
-				          
-			    	  }
-					 
-			      });
-			      
-			      var polygon2Tab1 = new Kinetic.RegularPolygon({
-				        x: 100,
-				        y: 50,
-				        radius: 27,
-				        sides: 5,
-				        stroke: 'black',
-				        strokeWidth: 4,
-				        fillPatternImage: imgTab1,
-				        fillPatternOffset: [7, 7],
-				        fillPatternRepeat: 'no-repeat',
-				        fillPatternScale: 1.8
-				  });
-			      
-			      var polygon2Tab1Image = polygon2Tab1.toDataURL({
-			    	  width: 127,
-			    	  height: 127
-			      });
 			      
 			      
-			      polygon2Tab1.setStroke('red');
-			      var polygon2Tab1ImageRed = polygon2Tab1.toDataURL({
-			    	  width: 127,
-			    	  height: 127
-			      });
-			      polygon2Tab1.setStroke('black');
+		      	mountObj(polygonLayer, stage, countObj);
 			      
+			    stage.add(layer);
+			    stage.add(polygonLayer);
 			      
-			      var polygon2Tab1Fake = new Kinetic.RegularPolygon({
-				        x: 100,
-				        y: 50,
-				        opacity: 0,
-				        radius: 27,
-				        sides: 5,
-				        stroke: 'black',
-				        strokeWidth: 4,
-				        fillPatternImage: imgTab1,
-				        fillPatternOffset: [7, 7],
-				        fillPatternRepeat: 'no-repeat',
-				        fillPatternScale: 1.8,
-				        draggable: true
-				  });
-			      
-			      var polygon2 = polygon2Tab1.clone({
-						name: 'polygon2',
-						draggable: false
-				    });
-			      
-			      polygon2.on('click', function(e) {
-			    	  
-			    	  deselectOnClick(this, e);
-			    	  
-			      });
-					
-			      polygon2.on('mousedown', function(e) {
-			    	  
-			    	  deselectOnClick(this, e);
-						
-			      });
-					
-					polygon2Tab1Fake.on('dragstart', function() {
-						
-						jQuery('#body').css('cursor','url('+ polygon2Tab1Image +') 80 50,default');
-						
-						this.remove();
-						layerTab1.add(polygon2Tab1Fake.clone());
-						layerTab1.draw();
-						
-					});
-					
-					positionX = 0;
-					positionY = 0;
-					
-					polygon2Tab1Fake.on('dragend', function() {
-				    	
-						try {
-							
-							document.body.style.cursor = 'default';
-							
-							var mousePos = stageTab1.getMousePosition();
-							if(mousePos.x > 0 || mousePos.y > 0){
-								this.remove();
-								layerTab1.add(polygon2Tab1Fake.clone());
-								layerTab1.draw();
-							}
-				          
-						} catch(e) {
-							
-							try {
-							
-								document.body.style.cursor = 'default';
-								
-								deselectAll();
-								polygon2.setStroke("red");
-								
-								var mousePosStage = stage.getMousePosition();
-								
-								countObj++;
-								var group2 = new Kinetic.Group({
-									x: mousePosStage.x -80,
-							        y: mousePosStage.y -50,
-					        		  draggable: true,
-					        		  id: "group" + countObj,
-					        		  name: 'group2',
-					        		  dragBoundFunc: function(pos) {
-					        			  return rulesDragAndDropObj(pos, 140, 100);
-					        		  }
-					        	});
-								
-								circle2.setId("circle" + countObj + "-2");
-								circle2.setName("circle" + countObj);
-								circle2.setPosition(100,50);
-								group2.add(circle2.clone());
-								group2.add(polygon2.clone());
-								
-								
-								group2.on('mouseenter', function(e) {
-									
-									positionX = this.getX()+100;
-									positionY = this.getY()+50;
-									
-								});
-								
-								group2.on('dragstart dragmove', function(e) {
-									
-									rectSelect.remove();
-									
-									dragAndDropGroup(this, e);
-									changePositionArrow2(this);
-									
-								});
-								
-								group2.on('dragend', function(e) {
-									
-									group2.setDragBoundFunc(function(pos){ return rulesDragAndDropObj(pos, 140, 100) });
-									makeHistory();
-								});
-								
-							  
-							  polygonLayer.add(group2);
-							  
-				        	  stage.draw();
-							
-				        	  this.remove();
-					    	  layerTab1.add(polygon2Tab1Fake.clone());
-					    	  layerTab1.draw();
-					    	  
-					    	  makeHistory();
-					    	  
-							} catch(e) {
-								
-								document.body.style.cursor = 'default';
-								this.remove();
-						    	layerTab1.add(polygon2Tab1Fake.clone());
-						    	layerTab1.draw();
-								
-							}
-							
-						}
-				          
-				    });
-					
-				      
-				    polygon2Tab1Fake.on('mouseup', function() {
-				    	this.remove();
-				    	layerTab1.add(polygon2Tab1Fake.clone());
-				    	layerTab1.draw();
-				    });
-					
-					
-					
-					*/
-			      
-			      
-			      
-					
-					
-					//------------------ END GROUP 2
-					
-					
-			  /*    
-			      
-			      layerTab1.add(polygon1Tab1);
-			      layerTab1.add(polygon2Tab1);
-			      
-			      layerTab1.add(polygon1Tab1Fake.clone());
-			      layerTab1.add(polygon2Tab1Fake.clone());
-			      
-			      stageTab1.add(layerTab1);*/
-			      
-			      
-			      
-			    //------------ END TAB 1
-			      
-			      
-			      
-			      	//------------ TAB 2
-					//------------ END TAB 2
-			      
-			      
-			      	mountObj(polygonLayer, stage, countObj);
-			      
-				      
-				    stage.add(layer);
-				    stage.add(polygonLayer);
-				      
-		      
-				      
-				      
-				    //------------- FIM CANVAS
+			    //------------- FIM CANVAS
 				    
 				      
 		  }; // FIM window.onload
@@ -809,19 +276,6 @@ var countObj;
   				  }
   			  });
   			  
-  			 /* jQuery.each(polygonLayer.get('.group2'), function(index, value) {
-  				if(collidesObj(rectSelect, value, value.getX()+100, value.getY()+50)){
-  					value.getChildren()[1].setStroke("red");
-  					polygonLayer.draw();
-  					select = true;
-  				}else{
-  					if(!e.ctrlKey && !dragDropGroup){
-  						value.getChildren()[1].setStroke("black");
-  						polygonLayer.draw();
-  					}
-  				}
-  			  });*/
-  			  
   			  return select;
           }
 		  
@@ -832,10 +286,6 @@ var countObj;
 	  					jQuery.each(polygonLayer.get('.polygon1'), function(index, value) {
 	  						value.setStroke("black");
 	  					});
-	  					
-	  					/*jQuery.each(polygonLayer.get('.polygon2'), function(index, value) {
-	  						value.setStroke("black");
-	  					});*/
 	  					
 	  					jQuery.each(layer.getChildren(), function(index, value) {
 	  						if(value.getName() !== undefined){
@@ -902,9 +352,6 @@ var countObj;
 										newY = value.getY();
 									}
 									
-									
-									
-									
 									var xCanvas = stage.getWidth();
 								    var yCanvas = stage.getHeight();
 								    
@@ -929,65 +376,6 @@ var countObj;
 						}
 					});
 					
-				/*	jQuery.each(polygonLayer.get('.group2'), function(index, value) {
-						if(value.getId() != group.getId()){
-							if(value.getChildren()[1] !== undefined && value.getChildren()[1].getStroke() == "red"){
-								if(mousePos !== undefined){
-								
-									if(group.getX() > positionX){
-										differenceX = mousePos.x - positionX;
-										newX = value.getX() + differenceX;
-									}else if(group.getX() < positionX){
-										differenceX = positionX - mousePos.x;
-										newX = value.getX() - differenceX;
-									}else if(group.getX() == positionX){
-										newX = group.getX();
-									}
-									
-									if(group.getY() > positionY){
-										differenceY = mousePos.y - positionY;
-										newY = value.getY() + differenceY;
-									}else if(group.getY() < positionY){
-										differenceY = positionY - mousePos.y;
-										newY = value.getY() - differenceY;
-									}else if(group.getY() == positionY){
-										newY = group.getY();
-									}
-									
-									if(mousePos.x < 60){
-										newX = value.getX();
-									}
-									if(mousePos.y < 60){
-										newY = value.getY();
-									}
-									
-									
-									
-									var xCanvas = stage.getWidth();
-								    var yCanvas = stage.getHeight();
-								    
-								    if(newX < 5){
-								    	newX = 5;
-									}else if(newX + 80 > xCanvas){
-										stage.setWidth(xCanvas + 200);
-										background.setWidth(stage.getWidth());
-									}
-								    
-								    if(newY < 5){
-								    	newY = 5;
-									}else if(newY + 80 > yCanvas){
-										stage.setHeight(yCanvas + 200);
-										background.setHeight(stage.getHeight());
-									}
-								    
-								    value.setPosition(newX, newY);
-									changePositionArrow2(value);
-								}
-							}
-						}
-					});
-					*/
-					
 					if(group.getX() > positionX){
 						positionX = positionX+differenceX;
 					}else if(group.getX() < positionX){
@@ -1009,11 +397,6 @@ var countObj;
 				  polygonLayer.draw();
 			  });
 			  
-		/*	  jQuery.each(polygonLayer.get('.polygon2'), function(index, value) {
-				  value.setStroke("red");
-				  polygonLayer.draw();
-			  });*/
-			  
 			  jQuery.each(layer.getChildren(), function(index, value) {
 				  if(value.getName() !== undefined){
 					  var regex = new RegExp("^arrow");
@@ -1032,11 +415,6 @@ var countObj;
 				  value.setStroke("black");
 				  polygonLayer.draw();
 			  });
-			  
-			/*  jQuery.each(polygonLayer.get('.polygon2'), function(index, value) {
-				  value.setStroke("black");
-				  polygonLayer.draw();
-			  });*/
 			  
 			  jQuery.each(layer.getChildren(), function(index, value) {
 				  if(value.getName() !== undefined){
@@ -1064,17 +442,6 @@ var countObj;
 					  }
 				  });
 			  });
-			  
-			/*  jQuery.each(polygonLayer.get('.group2'), function(index, value) {
-				  var group = this;
-				  var groupNumber = group.getId().substring(5, this.getId().length);
-				  jQuery.each(value.getChildren(), function(index, value2) {
-					  if(value2.getStroke() == "red"){
-						  deleteLayerChildren(groupNumber);
-						  group.remove();
-					  }
-				  });
-			  });*/
 			  
 			  	var listSize = layer.getChildren().size();
 				for (var i = 0; i < listSize; i++) {
@@ -1293,128 +660,6 @@ var countObj;
 		  }
 		  
 		  
-		/*  function changePositionArrow2(obj){
-			  
-			var group = obj;
-			var groupNumber = obj.getId().substring(5, obj.getId().length);
-				
-				jQuery.each(layer.getChildren(), function(index, value) {
-					if(value.getName() !== undefined){
-						//alert(value.getName());
-						var regex = new RegExp("^arrow"+groupNumber+"-([0-9]+)");
-			    		if(regex.test(value.getName())){
-			    			//alert(value.getName());
-			    			value.getPoints()[0].x = group.getX()+100;
-							value.getPoints()[0].y = group.getY()+50;
-							
-							var idGroup = value.getName().split("-");
-							var g = polygonLayer.get('#group'+idGroup[1]);
-							
-							var newPoint;
-							var newPoint2;
-							var angle;
-							
-							if(g[0] !== undefined){
-							
-								var idCircle = g[0].getChildren()[0].getId().split("-");
-								if(idCircle[1] == "2"){
-									newPoint = getCircleLineIntersectionPoint(group.getX()+100, group.getY()+50, g[0].getX()+100, g[0].getY()+50, g[0].getX()+100, g[0].getY()+50, 47);
-									newPoint2 = getCircleLineIntersectionPoint(group.getX()+100, group.getY()+50, g[0].getX()+100, g[0].getY()+50, g[0].getX()+100, g[0].getY()+50, 60);
-									angle = Math.atan2(newPoint[1]-group.getY()-50, newPoint[0]-group.getX()-100);
-								} else if(idCircle[1] == "1"){
-									newPoint = getCircleLineIntersectionPoint(group.getX()+100, group.getY()+50, g[0].getX()+40, g[0].getY()+50, g[0].getX()+40, g[0].getY()+50, 47);
-									newPoint2 = getCircleLineIntersectionPoint(group.getX()+100, group.getY()+50, g[0].getX()+40, g[0].getY()+50, g[0].getX()+40, g[0].getY()+50, 60);
-									angle = Math.atan2(newPoint[1]-group.getY()-50, newPoint[0]-group.getX()-100);
-								}
-								
-								var headlen = 20;
-								var headlen2 = 10;
-								
-				    			value.getPoints()[1].x = newPoint2[0];
-				    			value.getPoints()[1].y = newPoint2[1];
-				    			
-				    			value.getPoints()[2].x = newPoint2[0];
-				    			value.getPoints()[2].y = newPoint2[1];
-				    			
-				    			value.getPoints()[3].x = newPoint[0]-headlen*Math.cos(angle-Math.PI/6);
-				    			value.getPoints()[3].y = newPoint[1]-headlen*Math.sin(angle-Math.PI/6);
-				    			
-				    			value.getPoints()[4].x = newPoint[0];
-				    			value.getPoints()[4].y = newPoint[1];
-				    			
-				    			value.getPoints()[5].x = newPoint[0]-headlen*Math.cos(angle+Math.PI/6);
-				    			value.getPoints()[5].y = newPoint[1]-headlen*Math.sin(angle+Math.PI/6);
-				    			
-				    			value.getPoints()[6].x = newPoint2[0];
-				    			value.getPoints()[6].y = newPoint2[1];
-				    			
-				    			value.getPoints()[7].x = newPoint2[0]-headlen2*Math.cos(angle-Math.PI/3);
-				    			value.getPoints()[7].y = newPoint2[1]-headlen2*Math.sin(angle-Math.PI/3);
-				    			
-				    			value.getPoints()[8].x = newPoint2[0];
-				    			value.getPoints()[8].y = newPoint2[1];
-				    			
-				    			value.getPoints()[9].x = newPoint2[0]-headlen2*Math.cos(angle+Math.PI/3);
-				    			value.getPoints()[9].y = newPoint2[1]-headlen2*Math.sin(angle+Math.PI/3);
-								
-							}
-			    			
-			    		}
-					}
-		    	});
-				
-				jQuery.each(layer.getChildren(), function(index2, value2) {
-					if(value2.getName() !== undefined){
-						//alert(value2.getName());
-						var regex = new RegExp("^arrow([0-9]+)-"+groupNumber);
-						//alert(regex.test(value2.getName()));
-			    		if(regex.test(value2.getName())){
-			    			//alert(value2.getName());
-			    			
-			    			var newPoint = getCircleLineIntersectionPoint(value2.getPoints()[0].x, value2.getPoints()[0].y, group.getX()+100, group.getY()+50, group.getX()+100, group.getY()+50, 47);
-			    			var newPoint2 = getCircleLineIntersectionPoint(value2.getPoints()[0].x, value2.getPoints()[0].y, group.getX()+100, group.getY()+50, group.getX()+100, group.getY()+50, 60);
-			    			
-			    			value2.getPoints()[1].x = newPoint2[0];
-			    			value2.getPoints()[1].y = newPoint2[1];
-			    			
-			    			var headlen = 20;
-			    			var headlen2 = 10;
-			    			
-			    			var angle = Math.atan2(newPoint[1]-value2.getPoints()[0].y, newPoint[0]-value2.getPoints()[0].x);
-			    			
-			    			value2.getPoints()[2].x = newPoint2[0];
-			    			value2.getPoints()[2].y = newPoint2[1];
-			    			
-			    			value2.getPoints()[3].x = newPoint[0]-headlen*Math.cos(angle-Math.PI/6);
-			    			value2.getPoints()[3].y = newPoint[1]-headlen*Math.sin(angle-Math.PI/6);
-			    			
-			    			value2.getPoints()[4].x = newPoint[0];
-			    			value2.getPoints()[4].y = newPoint[1];
-			    			
-			    			value2.getPoints()[5].x = newPoint[0]-headlen*Math.cos(angle+Math.PI/6);
-			    			value2.getPoints()[5].y = newPoint[1]-headlen*Math.sin(angle+Math.PI/6);
-			    			
-			    			value2.getPoints()[6].x = newPoint2[0];
-			    			value2.getPoints()[6].y = newPoint2[1];
-			    			
-			    			value2.getPoints()[7].x = newPoint2[0]-headlen2*Math.cos(angle-Math.PI/3);
-			    			value2.getPoints()[7].y = newPoint2[1]-headlen2*Math.sin(angle-Math.PI/3);
-			    			
-			    			value2.getPoints()[8].x = newPoint2[0];
-			    			value2.getPoints()[8].y = newPoint2[1];
-			    			
-			    			value2.getPoints()[9].x = newPoint2[0]-headlen2*Math.cos(angle+Math.PI/3);
-			    			value2.getPoints()[9].y = newPoint2[1]-headlen2*Math.sin(angle+Math.PI/3);
-			    			
-			    		}
-					}
-		    	});
-				
-				layer.draw();
-				polygonLayer.draw();
-		  }
-*/
-		  
 		  function rulesDragAndDropObj(pos, valueX, valueY){
 			  
 			  var xCanvas = stage.getWidth();
@@ -1594,11 +839,8 @@ var countObj;
 				configureGroup(group, posx, posy, polygon, countObj,
 						rectSelect, positionX, positionY, stage);
 				
-				
 				stage.draw();
 				
-				
-
 			}
 			
 			function addLinks(positions){
@@ -1616,7 +858,7 @@ var countObj;
 				var circleOut = polygonGroupOut.getChildren()[0];
 				circleOut.setFill('white');
 				arrow.setPoints([polygonGroupOut.getX()+40, polygonGroupOut.getY()+50, polygonGroupOut.getX()+40+1, polygonGroupOut.getY()+50+1 ]);
-//				arrow.setName("arrow"+circleOut.getName().substring(6,circleOut.getName().length));
+				//arrow.setName("arrow"+circleOut.getName().substring(6,circleOut.getName().length));
 						
 				//in
 				var polygonGroupIn = getElement(outId);
@@ -1669,26 +911,6 @@ var countObj;
 			    }
 			}
 			
-//			function updateArrow(group, countObj) {
-//				var groupNumber = group.getId().substring(5, group.getId().length);
-//				jQuery.each(layer.getChildren(), function(index, value) {
-//					if(value.getName() !== undefined){
-//						
-//						var regex = new RegExp("^arrow"+groupNumber+"-([0-9]+)");
-//			    		if(regex.test(value.getName())){
-//			    			var number = value.getName().split("-")[1];
-//			    			value.setName("arrow" + countObj + "-" + number);
-//			    		}
-//			    		
-//			    		var regex2 = new RegExp("^arrow([0-9]+)-"+groupNumber);
-//			    		if(regex2.test(value.getName())){
-//			    			value.setName(value.getName().split("-")[0] +"-"+ countObj);
-//			    		}
-//			    		
-//					}
-//				});
-//			}
-			
 			
 		   function ready(layer, polygonLayer) {
 			   
@@ -1725,9 +947,6 @@ var countObj;
 		        stage.add(polygonLayer);
 				
 		        configureStage(layer, stage, rectSelect);
-		        
-			      //countNumberObj = polygonLayer.get('.group1').length;
-			      //countNumberObj = jQuery("#countObj").val();
 			      
 			    jQuery.each(polygonLayer.get('.group1'), function(index, value) {
 			    	var group = this;
@@ -1735,19 +954,6 @@ var countObj;
 			    	var circle1 = value.getChildren()[0];
 			    	var polygon1 = value.getChildren()[1];
 			    	var text = value.getChildren()[2];
-			    	
-			    	//countNumberObj++;
-			    	
-			    	//updateArrow(group, countNumberObj);
-			    	
-			    	//group.setId("group" + countNumberObj);
-			    	//circle1.setId("circle" + countNumberObj + "-1");
-					//circle1.setName("circle" + countNumberObj);
-			    	
-					//jQuery("#countObj").val(countNumberObj);
-			    	
-			    	//alert(text.getText());
-			    	
 			    	
 			    	//alert(text.getText().substring(2));
 			    	imgTab1.src = './'+text.getText().substring(2);
@@ -1758,151 +964,19 @@ var countObj;
 			    	configureGroupListeners(group, positionX, positionY, rectSelect);
 			    	
 			    	configureCircle(circle1, polygonLayer);
-			    	
 					  
-					  polygon1.on('click', function(e) {
-							deselectOnClick(this, e);
-					  });
+					polygon1.on('click', function(e) {
+						deselectOnClick(this, e);
+					});
 					  
-					  polygon1.on('mousedown', function(e) {
-						  deselectOnClick(this, e);
-					  });
-				      
+					polygon1.on('mousedown', function(e) {
+						deselectOnClick(this, e);
+					});
 			    	
 			    	polygonLayer.draw();
 			    });
 			    
-			    
-			    
-			    
-		/*	    
-			    jQuery.each(polygonLayer.get('.group2'), function(index, value) {
-			    	var group = this;
-					
-			    	var circle2 = value.getChildren()[0];
-			    	var polygon2 = value.getChildren()[1];
-			    	
-			    	countObj++;
-			    	
-			    	updateArrow(group, countObj);
-			    	
-			    	group.setId("group" + countObj);
-			    	circle2.setId("circle" + countObj + "-2");
-					circle2.setName("circle" + countObj);
-			    	
-			    	
-			    	polygon2.setFillPatternImage(imgTab1);
-			    	group.setDragBoundFunc(function(pos){ return rulesDragAndDropObj(pos, 140, 100) });
-			    	
-			    	group.on('mouseenter', function(e) {
-						positionX = this.getX()+100;
-						positionY = this.getY()+50;
-					});
-					
-					group.on('dragstart dragmove', function(e) {
-						rectSelect.remove();
-						dragAndDropGroup(this, e);
-						changePositionArrow2(this);
-					});
-					
-					group.on('dragend', function(e) {
-						group.setDragBoundFunc(function(pos){ return rulesDragAndDropObj(pos, 140, 100) });
-						makeHistory();
-					});
-					
-					circle2.on('mouseover', function() {
-						document.body.style.cursor = 'pointer';
-					});
-					
-					circle2.on('mouseout', function() {
-						document.body.style.cursor = 'default';
-					});
-					
-					down = false;
-					  
-					  circle2.on("click", function(e) {
-						  
-						  var circle = this;
-						  
-						 if (down) {
-							  down = false;
-				    		  
-				    		  arrow.setName(arrow.getName()+"-"+this.getName().substring(6, this.getName().length));
-				    		  
-				    		  var polygonGroup = polygonLayer.get('#'+this.getParent().getId());
-				    		  
-				    		  var newPoint = getCircleLineIntersectionPoint(arrow.getPoints()[0].x, arrow.getPoints()[0].y, polygonGroup[0].getX()+100, polygonGroup[0].getY()+50, polygonGroup[0].getX()+100, polygonGroup[0].getY()+50, 47);
-				    		  var newPoint2 = getCircleLineIntersectionPoint(arrow.getPoints()[0].x, arrow.getPoints()[0].y, polygonGroup[0].getX()+100, polygonGroup[0].getY()+50, polygonGroup[0].getX()+100, polygonGroup[0].getY()+50, 60);
-				    		  
-				    		  var headlen = 20;
-				    		  var headlen2 = 10;
-				    		  var angle = Math.atan2(newPoint[1]-arrow.getPoints()[0].y,newPoint[0]-arrow.getPoints()[0].x);
-				    		  
-				    		  arrow.setPoints([arrow.getPoints()[0].x, arrow.getPoints()[0].y, 
-				    		                   newPoint2[0], newPoint2[1], 
-				    		                   newPoint2[0], newPoint2[1], 
-				    		                   newPoint[0]-headlen*Math.cos(angle-Math.PI/6), newPoint[1]-headlen*Math.sin(angle-Math.PI/6), 
-				    		                   newPoint[0], newPoint[1], 
-				    		                   newPoint[0]-headlen*Math.cos(angle+Math.PI/6), newPoint[1]-headlen*Math.sin(angle+Math.PI/6), 
-				    		                   newPoint2[0], newPoint2[1], 
-				    		                   newPoint2[0]-headlen2*Math.cos(angle-Math.PI/3), newPoint2[1]-headlen2*Math.sin(angle-Math.PI/3), 
-				    		                   newPoint2[0], newPoint2[1], 
-				    		                   newPoint2[0]-headlen2*Math.cos(angle+Math.PI/3), newPoint2[1]-headlen2*Math.sin(angle+Math.PI/3)
-				    		                   ]);
-				    		  
-				    		  layer.add(arrow.clone());
-				    		  
-				    		  	//remove the arrows that are outside the standard
-								deleteArrowOutsideStandard();
-				    		  
-				    		  circle.setFill('white');
-				    		  
-				    		  layer.draw();
-				    		  polygonLayer.draw();
-				    		  
-				    	  }else{
-				    		  down = true;
-					          
-					          var polygonGroup = polygonLayer.get('#'+this.getParent().getId());
-					          arrow.setPoints([polygonGroup[0].getX()+100, polygonGroup[0].getY()+50, polygonGroup[0].getX()+100+1, polygonGroup[0].getY()+50+1 ]);
-					          arrow.setName("arrow"+this.getName().substring(6,this.getName().length));
-					          
-					          circle.setFill('white');
-					          
-					          layer.add(arrow.clone());
-					          
-					          layer.draw();
-					          polygonLayer.draw();
-					          
-				    	  }
-						 
-				      });
-					  
-					  polygon2.on('click', function(e) {
-							deselectOnClick(this, e);
-					  });
-					  
-					  polygon2.on('mousedown', function(e) {
-						  deselectOnClick(this, e);
-					  });
-				      
-					  
-			    	polygonLayer.draw();
-			    });*/
-			    
 		   }
-		   
-		   /*function openModal(obj) {
-			   
-			   //alert(obj.getText());
-			   
-			   jQuery("#nameElement").val(obj.getText());
-			   
-			   jQuery("[id$='linkCanvasModalPanel']").click();
-			   
-		   }*/
-		   
-		   
 		   
 		   
 		   /**
@@ -1926,8 +1000,6 @@ var countObj;
 			    });
 			   
 			   configureCircle(circle1, polygonLayer);
-				
-			   
 			   
 			   //for list divs
 			   jQuery( "#tabsFooter ul:first li" ).each(function(index) {
@@ -2069,7 +1141,6 @@ var countObj;
 						    	layerTab.draw();
 						    });
 						      
-							//------------------ END GROUP 
 				    
 						    layerTab.add(polygonTab);
 						    layerTab.add(polygonTabFake.clone());
@@ -2086,7 +1157,6 @@ var countObj;
 				     
 			   });
 			   //END for divs
-			   
 			   
 		   }
 		   
@@ -2114,9 +1184,6 @@ var countObj;
 			   
 			   var text = polygonLayer.get('#' + groupID)[0].getChildren()[3];
 			   text.setText(elementID);
-//			   text.getLayer().draw();
-			  
-			   //alert(text.getText());
 			   
 		   }
 		   
@@ -2186,8 +1253,6 @@ var countObj;
 			    		  arrowClone.output = arrow.output;
 			    		  layer.add(arrowClone);
 			    		  
-			    		  //alert(arrow.getName());
-			    		  
 			    		  //remove the arrows that are outside the standard
 			    		  deleteArrowOutsideStandard();
 			    		  
@@ -2199,10 +1264,6 @@ var countObj;
 			    		  makeHistory();
 			    		  
 			    		  addLinkModalBt(arrowClone.output, arrowClone.input, arrowClone.getName());
-
-			    		  
-			    		  //call Method for add this link
-				    	  //jQuery("[id$='addLinkBt']").click();
 			    		  
 			    	  }else{
 			    		  down = true;
@@ -2388,5 +1449,4 @@ var countObj;
 				
 				return [polygon, polygonTab, polygonTabImage];
 			}
-		   
 		  

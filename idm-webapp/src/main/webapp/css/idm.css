@@ -271,25 +271,27 @@ canvas {
 }
 
 .message {
-	font-size: 10 px;
+	font-size: 12 px;
 	font-weight: bold;
-	color: #336699;
-	font-family: Arial, Helvetica, sans-serif;
+	font-family: Verdana, Arial, sans-serif;
 }
 
 .messageok {
-	list-style-image: url("../image/icons/li_msg_ok.gif");
-	font-size: 11px;
+	background: url("../image/icons/li_msg_ok.gif") no-repeat;
+	padding-left: 20px;
+	color: #336699;
 }
 
 .messageerro {
-	list-style-image: url("../image/icons/li_msg_error.gif");
-	font-size: 11px;
+	background: url("../image/icons/li_msg_error.gif") no-repeat;
+	padding-left: 20px;
+	color: #336699;
 }
 
 .messagealert {
-	list-style-image: url("../image/icons/li_msg_warn.gif");
-	font-size: 11px;
+	background: url("../image/icons/li_msg_warn.gif") no-repeat;
+	padding-left: 20px;
+	color: #336699;
 }
 
 .rich-panel-body {

@@ -15,15 +15,10 @@
 </meta>
 <title><h:outputText value="#{messages.label_sistem}" /></title>
 
-<link rel="stylesheet" type="text/css"
-	href='#{facesContext.externalContext.requestContextPath}/css/idm.css' />
-
-<script
-	src='#{facesContext.externalContext.requestContextPath}/js/jquery-1.9.1.js'
-	type="text/javascript"></script>
-<script
-	src='#{facesContext.externalContext.requestContextPath}/js/jquery.cookie.js'
-	type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href='#{facesContext.externalContext.requestContextPath}/css/idm.css' />
+<script	src='#{facesContext.externalContext.requestContextPath}/js/jquery-1.9.1.js'	type="text/javascript"></script>
+<script	src='#{facesContext.externalContext.requestContextPath}/js/jquery.cookie.js' type="text/javascript"></script>
+<script	src='#{facesContext.externalContext.requestContextPath}/js/jquery.blockUI.js' type="text/javascript"></script>
 
 </head>
 
@@ -79,7 +74,9 @@ function cookiePassword(){
 </script>
 
 
-	
+	<div id="domMessageInitial" style="display: none;">
+		<img src="./image/icons/waiting.gif" />
+	</div>
 
 
 	<div class="divLogin">
@@ -132,7 +129,7 @@ function cookiePassword(){
 						<br />
 						<h:commandButton value="#{messages.label_login}"
 							action="#{userInfoBean.validateSecondLogin}"
-							styleClass="buttonLogin" onclick="cookiePassword();" />
+							styleClass="buttonLogin" onclick="cookiePassword(); jQuery.blockUI({ message: jQuery('#domMessageInitial') });" />
 
 
 						<h:inputText id="twoLoginChek"
@@ -182,10 +179,11 @@ function cookiePassword(){
 
 				
 					<rich:spacer height="5" />
+					
 					<center>
-					<rich:messages globalOnly="false" layout="list" styleClass="message"
-						infoClass="messageok" errorClass="messageerro"
-						warnClass="messagealert" showDetail="true" showSummary="false" />
+						<rich:messages globalOnly="false" layout="list" styleClass="message"
+							infoClass="messageok" errorClass="messageerro"
+							warnClass="messagealert" showDetail="true" showSummary="false" />
 					</center>
 
 

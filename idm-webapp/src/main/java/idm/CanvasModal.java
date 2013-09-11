@@ -22,6 +22,7 @@ import java.util.Map;
 
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.servlet.http.HttpServletRequest;
 
 import org.ajax4jsf.model.KeepAlive;
 import org.apache.log4j.Logger;
@@ -99,6 +100,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 		String error = checkNextPage();
 		if(error.length() > 1){
 			MessageUseful.addErrorMessage(error);
+			HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
 		}else{
 
 			setListPosition(getListPosition()+1);
@@ -480,6 +483,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 		String error = checkNextPage();
 		if(error.length() > 1){
 			MessageUseful.addErrorMessage(error);
+			HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
 		}else{
 
 		}
@@ -856,6 +861,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 			if (error != null){
 				logger.error(error);
 				MessageUseful.addErrorMessage(error);
+				HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
+				request.setAttribute("msnError", "msnError");
 			}
 		}
 	}
