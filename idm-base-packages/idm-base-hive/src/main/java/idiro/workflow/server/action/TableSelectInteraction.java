@@ -35,7 +35,7 @@ public class TableSelectInteraction extends UserInteraction{
 	private HiveSelect hs;
 
 	public static final String table_op_title = "Operation",
-			table_feat_title = "Feature name",
+			table_feat_title = "Feature_name",
 			table_type_title = "Type";
 
 	public TableSelectInteraction(String name, String legend,

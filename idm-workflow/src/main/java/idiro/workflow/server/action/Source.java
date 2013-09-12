@@ -399,10 +399,10 @@ public class Source extends DataflowAction{
 			treeDataset.getFirstChild("browse").add("subtype").add(newSubtype);
 			treeDataset.getFirstChild("browse").add("type").add(newType);
 		}else{
-			String oldType = treeDataset.getFirstChild("browse")
-					.getFirstChild("type").getFirstChild().getHead();
+			Tree<String> oldType = treeDataset.getFirstChild("browse")
+					.getFirstChild("type").getFirstChild();
 
-			if(oldType != newType){
+			if(oldType != null && !oldType.getHead().equals(newType)){
 				treeDataset.getFirstChild("browse").remove("type");
 				treeDataset.getFirstChild("browse").remove("output");
 				treeDataset.getFirstChild("browse").add("output");

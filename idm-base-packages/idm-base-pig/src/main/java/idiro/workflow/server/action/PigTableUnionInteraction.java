@@ -39,7 +39,7 @@ public class PigTableUnionInteraction extends UserInteraction{
 
 	public static final String table_relation_title = "Relation", 
 			table_op_title = "Operation",
-			table_feat_title = "Feature name",
+			table_feat_title = "Feature_name",
 			table_type_title = "Type";
 
 	public PigTableUnionInteraction(String name, String legend,

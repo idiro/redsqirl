@@ -36,7 +36,7 @@ public class PigTableJoinInteraction extends UserInteraction{
 	private PigJoin hj;
 
 	public static final String table_op_title = "Operation",
-			table_feat_title = "Feature name",
+			table_feat_title = "Feature_name",
 			table_type_title = "Type";
 
 	public PigTableJoinInteraction(String name, String legend,

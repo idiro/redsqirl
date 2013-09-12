@@ -41,7 +41,7 @@ public class HiveJoin extends HiveElement{
 	
 	
 	public HiveJoin() throws RemoteException {
-		super(2,2,Integer.MAX_VALUE);
+		super(3,2,Integer.MAX_VALUE);
 
 		page1 = addPage("Select",
 				"Select Conditions",

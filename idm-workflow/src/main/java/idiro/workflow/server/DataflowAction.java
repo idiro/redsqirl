@@ -296,7 +296,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 				parent.appendChild(inter);
 			}
 		} catch (Exception e) {
-			error = "Fail to set values in the workflow";
+			error = "Fail to set values in the workflow: "+e;
 		}
 		if (error != null) {
 			waLogger.error(error);

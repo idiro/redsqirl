@@ -38,7 +38,7 @@ public class TableUnionInteraction extends UserInteraction{
 
 	public static final String table_table_title = "Table", 
 			table_op_title = "Operation",
-			table_feat_title = "Feature name",
+			table_feat_title = "Feature_name",
 			table_type_title = "Type";
 
 	public TableUnionInteraction(String name, String legend,

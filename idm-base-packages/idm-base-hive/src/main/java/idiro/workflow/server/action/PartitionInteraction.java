@@ -87,6 +87,7 @@ public class PartitionInteraction extends UserInteraction{
 	public void update() throws RemoteException{
 		if(tree.getSubTreeList().isEmpty()){
 			tree.add("applist").add("output");
+			tree.getFirstChild("applist").add("value");
 		}
 	}
 

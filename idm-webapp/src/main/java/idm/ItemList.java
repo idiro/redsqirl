@@ -18,9 +18,9 @@ public class ItemList implements Serializable{
 	private String name;
 	private boolean selected;
 	private String stringSelectedDestination;
-	private String typeTableInteraction;
 	private String idSelected;
 	
+	private Map<String, String> typeTableInteraction = new HashMap<String, String>();
 	private Map<String, String> nameValue = new HashMap<String, String>();
 	private Map<String, String> nameValueEdit = new HashMap<String, String>();
 	private Map<String, Boolean> nameIsConst = new HashMap<String, Boolean>();
@@ -63,10 +63,6 @@ public class ItemList implements Serializable{
 		this.selected = selected;
 	}
 
-//	public String getSelectedDestination() {
-//		return selectedDestination;
-//	}
-	
 	public void setStringSelectedDestination(String selectedDestination) {
 		this.stringSelectedDestination = selectedDestination;
 	}
@@ -115,11 +111,11 @@ public class ItemList implements Serializable{
 		this.idSelected = idSelected;
 	}
 
-	public String getTypeTableInteraction() {
+	public Map<String, String> getTypeTableInteraction() {
 		return typeTableInteraction;
 	}
 
-	public void setTypeTableInteraction(String typeTableInteraction) {
+	public void setTypeTableInteraction(Map<String, String> typeTableInteraction) {
 		this.typeTableInteraction = typeTableInteraction;
 	}
 	

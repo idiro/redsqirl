@@ -36,7 +36,7 @@ public class TableJoinInteraction extends UserInteraction{
 	private HiveJoin hj;
 
 	public static final String table_op_title = "Operation",
-			table_feat_title = "Feature name",
+			table_feat_title = "Feature_name",
 			table_type_title = "Type";
 
 	public TableJoinInteraction(String name, String legend,

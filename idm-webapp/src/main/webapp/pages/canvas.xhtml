@@ -493,12 +493,10 @@
 			</a4j:region>
 			
 			<a4j:region>
-			
 				<a4j:status	onstart="jQuery('#canvas1').block({ message: jQuery('#domMessageDivCanvas1') });"
 							onerror="jQuery('#canvas1').unblock();" onsuccess="jQuery('#canvas1').unblock();"
 							onstop="jQuery('#canvas1').unblock();" />
 				
-			
 				<a4j:jsFunction id="openModalFunction" name="openModal" action="#{canvasModalBean.openCanvasModal}" oncomplete="#{rich:component('canvasModalPanel')}.show()" 
 					reRender="pageTitle, panelDynamicForm, panelBtCanvasModal" >
 					<a4j:actionparam name="paramNameElement" assignTo="#{canvasModalBean.nameElement}" />
@@ -876,7 +874,7 @@
 	</div>
 
 	<a4j:region>
-		<rich:modalPanel id="canvasModalPanel" width="600" height="400" style="overflow:auto;" resizeable="false">
+		<rich:modalPanel id="canvasModalPanel" width="800" height="600" style="overflow:auto;" resizeable="false">
 	
 			<f:facet name="header"><h:outputText value="#{canvasModalBean.pageTitle}" id="pageTitle" /></f:facet>
 			<f:facet name="controls">

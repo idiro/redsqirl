@@ -122,27 +122,27 @@ public class JoinRelationInteraction extends UserInteraction{
 			Tree<String> operation = tree.getFirstChild("table")
 					.getFirstChild("columns").findFirstChild(table_feat_title).getParent();
 			operation.remove("editor");
-			Iterator<String> tableIn = tablesIn.iterator();
-			while(tableIn.hasNext()){
-				tree.getFirstChild("table").add("row").add(tableIn.next());
-			}
+//			Iterator<String> tableIn = tablesIn.iterator();
+//			while(tableIn.hasNext()){
+//				tree.getFirstChild("table").add("row").add(tableIn.next());
+//			}
 
 		}
 		
-		//Set the constraint on first column
-		Tree<String> table = tree.getFirstChild("table")
-				.getFirstChild("columns").findFirstChild(table_table_title).getParent();
-		
-		Tree<String> constraintTable = table.add("constraint");
-		
-		constraintTable.add("count").add("1");
-
-		Tree<String> valsTable = constraintTable.add("value");
-
-		Iterator<String> itTable = tablesIn.iterator();
-		while(itTable.hasNext()){
-			valsTable.add(itTable.next());
-		}
+//		//Set the constraint on first column
+//		Tree<String> table = tree.getFirstChild("table")
+//				.getFirstChild("columns").findFirstChild(table_table_title).getParent();
+//		
+//		Tree<String> constraintTable = table.add("constraint");
+//		
+//		constraintTable.add("count").add("1");
+//
+//		Tree<String> valsTable = constraintTable.add("value");
+//
+//		Iterator<String> itTable = tablesIn.iterator();
+//		while(itTable.hasNext()){
+//			valsTable.add(itTable.next());
+//		}
 		
 		//Generate Editor
 		Tree<String> featEdit = HiveDictionary.generateEditor(
@@ -151,7 +151,7 @@ public class JoinRelationInteraction extends UserInteraction{
 		//Set the Editor of operation
 		Tree<String> operation = tree.getFirstChild("table")
 				.getFirstChild("columns").findFirstChild(table_feat_title);
-		operation.add(featEdit);
+		operation.getParent().getParent().add(featEdit);
 	}
 
 
@@ -170,7 +170,7 @@ public class JoinRelationInteraction extends UserInteraction{
 		table.add(constraintTable);
 		constraintTable.add("count").add("1");
 
-		columns.add("column").add(table_feat_title);
+		columns.add("column").add("title").add(table_feat_title);
 
 		return input;
 	}
