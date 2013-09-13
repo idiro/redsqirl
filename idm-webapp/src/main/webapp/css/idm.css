@@ -285,7 +285,7 @@ canvas {
 .messageerro {
 	background: url("../image/icons/li_msg_error.gif") no-repeat;
 	padding-left: 20px;
-	color: #336699;
+	color: #000000;
 }
 
 .messagealert {

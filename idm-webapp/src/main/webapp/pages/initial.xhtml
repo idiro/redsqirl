@@ -181,9 +181,15 @@ function cookiePassword(){
 					<rich:spacer height="5" />
 					
 					<center>
-						<rich:messages globalOnly="false" layout="list" styleClass="message"
-							infoClass="messageok" errorClass="messageerro"
-							warnClass="messagealert" showDetail="true" showSummary="false" />
+						<table>
+							<tr>
+								<td>
+									<rich:messages id="msg" globalOnly="false" layout="list" styleClass="message"
+										infoClass="messageok" errorClass="messageerro"
+										warnClass="messagealert" showDetail="true" showSummary="false" ajaxRendered="false" />
+								</td>
+							</tr>
+						</table>
 					</center>
 
 

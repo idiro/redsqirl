@@ -649,54 +649,24 @@
 
 					<div id="canvas1">
 						<ul>
-							<li><a href="#canvas-1">Canvas 1</a> <span
-								class="ui-icon ui-icon-close" onclick="closeTab(this);"></span>
+							<li><a href="#canvas-1">Canvas 1</a> 
+								<span class="ui-icon ui-icon-close" onclick="closeTab(this);"></span>
 							</li>
 							<button id="addtabCanvas" style="border: hidden;">+</button>
 						</ul>
+						
 						<span id="buttonsCanvas1" class="spanButtons">
 							<button class="buttonsArrowsLeft">&#60;</button>
 							<button class="buttonsArrowsRight">&#62;</button>
 						</span>
 
-
 						<div id="canvas-1">
 
 							<div id="canvas" class="canvas"></div>
 							
-							<div id="footer">
-
-								<div id="tabsFooter">
-									<ul>
-										
-										<ui:repeat value="#{configureTabsBean.tabs}" var="tab" varStatus="status">
-											<li><a href="##{tab}">#{tab}</a></li>
-										</ui:repeat>
-										<a4j:commandButton value="?" id="configureFooterTabs" onclick="#{rich:component('modalConfigureFooterTabs')}.show()" 
-											style="border: hidden;"/>
-									</ul>
-
-									<span id="buttonsTabsFooter" class="spanButtons">
-										<button class="buttonsArrowsLeft">&#60;</button>
-										<button class="buttonsArrowsRight">&#62;</button>
-
-									</span>
-									
-									<ui:repeat value="#{configureTabsBean.menuWAList}" var="tab">
-										<div id="#{tab.key}">
-											<p>
-												<ui:repeat value="#{tab.value}" var="action">
-													<span id="spanImagensObj" style="display:none" >
-														<img src="./#{action[1]}" class="footerIcon" />
-														<span>#{action[0]}</span>
-													</span>
-												</ui:repeat>
-											</p>
-										</div>
-									</ui:repeat>
-								</div>
-
-							</div>
+							<h:panelGroup>
+								<ui:include src="/pages/canvasFooter.xhtml" />
+							</h:panelGroup>
 
 						</div>
 
@@ -988,13 +958,21 @@
 		<rich:modalPanel id="msnError" showWhenRendered="#{requestScope['msnError'] != null}">
 			<center>
 			
-				<rich:messages id="msg" globalOnly="false" layout="list" styleClass="message"
-					infoClass="messageok" errorClass="messageerro"
-					warnClass="messagealert" showDetail="true" showSummary="false" ajaxRendered="false" />
+				<table>
+					<tr>
+						<td>
+							<rich:messages id="msg" globalOnly="false" layout="list" styleClass="message"
+								infoClass="messageok" errorClass="messageerro"
+								warnClass="messagealert" showDetail="true" showSummary="false" ajaxRendered="false" />
+						</td>
+					</tr>
+				</table>
 			
 				<br />
 				<br />
+				
 				<a4j:commandButton value="#{messages.button_ok}" onclick="#{rich:component('msnError')}.hide(); return false;" reRender="msnError, msg" />
+				
 			</center>
 		</rich:modalPanel>
 		
