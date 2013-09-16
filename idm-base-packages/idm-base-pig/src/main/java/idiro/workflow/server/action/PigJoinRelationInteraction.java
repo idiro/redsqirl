@@ -137,11 +137,11 @@ public class PigJoinRelationInteraction extends UserInteraction{
 		
 		constraintTable.add("count").add("1");
 
-		Tree<String> valsTable = constraintTable.add("value");
+		Tree<String> valsTable = constraintTable.add("values");
 
 		Iterator<String> itTable = relationsIn.iterator();
 		while(itTable.hasNext()){
-			valsTable.add(itTable.next());
+			valsTable.add("value").add(itTable.next());
 		}
 		
 		//Generate Editor

@@ -201,15 +201,15 @@ public class TableJoinInteraction extends UserInteraction{
 		Tree<String> constraintType = new TreeNonUnique<String>("constraint");
 		newType.add(constraintType);
 
-		Tree<String> valsType = new TreeNonUnique<String>("value");
+		Tree<String> valsType = new TreeNonUnique<String>("values");
 		constraintType.add(valsType);
 
-		valsType.add(FeatureType.BOOLEAN.name());
-		valsType.add(FeatureType.INT.name());
-		valsType.add(FeatureType.DOUBLE.name());
-		valsType.add(FeatureType.STRING.name());
-		valsType.add(FeatureType.FLOAT.name());
-		valsType.add("BIGINT");
+		valsType.add("value").add(FeatureType.BOOLEAN.name());
+		valsType.add("value").add(FeatureType.INT.name());
+		valsType.add("value").add(FeatureType.DOUBLE.name());
+		valsType.add("value").add(FeatureType.STRING.name());
+		valsType.add("value").add(FeatureType.FLOAT.name());
+		valsType.add("value").add("BIGINT");
 
 		return input;
 	}

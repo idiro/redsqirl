@@ -131,11 +131,11 @@ public class HiveJoin extends HiveElement{
 		if(joinTypeInt.getTree().getSubTreeList().isEmpty()){
 			list = joinTypeInt.getTree().add("list");
 			list.add("output").add("JOIN");
-			Tree<String> value = list.add("value");
-			value.add("JOIN");
-			value.add("LEFT OUTER JOIN");
-			value.add("RIGHT OUTER JOIN");
-			value.add("FULL OUTER JOIN");
+			Tree<String> values = list.add("values");
+			values.add("value").add("JOIN");
+			values.add("value").add("LEFT OUTER JOIN");
+			values.add("value").add("RIGHT OUTER JOIN");
+			values.add("value").add("FULL OUTER JOIN");
 		}
 	}
 	

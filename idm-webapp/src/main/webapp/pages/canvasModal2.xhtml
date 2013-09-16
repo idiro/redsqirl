@@ -159,7 +159,7 @@
 	<span>&nbsp;&nbsp;</span>
 	<a4j:commandButton action="#{canvasModalBean.cancel}" value="#{messages.button_cancel}" onclick="#{rich:component('textEditorPanel')}.hide();" />
 	<span>&nbsp;&nbsp;</span>
-	<a4j:commandButton action="#{canvasModalBean.checkTextEditor}" value="#{messages.button_check}" />
+	<a4j:commandButton action="#{canvasModalBean.checkTextEditor}" value="#{messages.button_check}" reRender="msnError"/>
 </h:form>
 </body>
 </html>

@@ -1,10 +1,10 @@
 package idiro.workflow.server.enumeration;
 
 public enum DisplayType {
-	//Format in: list>[value>choice1,choice2...]/[output>choicei]
+	//Format in: list>[values>[value>choice]]/[output>choicei]
 	list,
 	
-	//Format in: applist>[value>choice1,choice2...]/[output>[value>choicei]]
+	//Format in: applist>[values>[value>choice]]/[output>[value>choicei]]
 	appendList,
 	
 	//Browser
@@ -21,7 +21,7 @@ public enum DisplayType {
 	//Table
 	//Format in: table>[columns>column>[title>value]/
 	//                                 [constraint>[count>i(optional)]/
-	//                                             [value>choice1,choice2...(optional)]]/
+	//                                             [values>[value>choice(optional)]]]/
 	//                                 [editor (see helpTextEditor)]/
 	//                 [row>[col_title>value]]
 	//                 [generator>operation>[title>value]/

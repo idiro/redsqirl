@@ -112,12 +112,12 @@ public class HiveSelect extends HiveElement{
 			list.add("output");
 		}else{
 			list = treeGrouping.getFirstChild("applist"); 
-			list.remove("value");
+			list.remove("values");
 		}
-		Tree<String> value = list.add("value");
+		Tree<String> values = list.add("values");
 		Iterator<String> it = in.getFeatures().getFeaturesNames().iterator();
 		while(it.hasNext()){
-			value.add(it.next());
+			values.add("value").add(it.next());
 		}
 	}
 

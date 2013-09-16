@@ -343,9 +343,9 @@ public class Source extends DataflowAction{
 			list = treeDatatype.add("list");
 			list.add("output");
 
-			Tree<String> value = list.add("value");
-			value.add("Hive");
-			value.add("HDFS");
+			Tree<String> values = list.add("values");
+			values.add("value").add("Hive");
+			values.add("value").add("HDFS");
 		}
 	}
 
@@ -355,7 +355,7 @@ public class Source extends DataflowAction{
 			list = treeDatasubtype.add("list");
 			list.add("output");
 
-			Tree<String> value = list.add("value");
+			Tree<String> values = list.add("values");
 
 			DFEInteraction interaction = getInteraction(key_datatype);
 			if(interaction.getTree().getFirstChild("list").getFirstChild("output").getFirstChild() != null){
@@ -375,7 +375,7 @@ public class Source extends DataflowAction{
 					}
 
 					if (wa.getBrowser().toString().equalsIgnoreCase(type)){
-						value.add(wa.getClass().getSimpleName());
+						values.add("value").add(wa.getClass().getSimpleName());
 					}
 				}
 			}

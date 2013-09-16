@@ -217,12 +217,12 @@ public class TableUnionInteraction extends UserInteraction{
 		Tree<String> constraintTable = new TreeNonUnique<String>("constraint");
 		table.add(constraintTable);
 
-		Tree<String> valsTable = new TreeNonUnique<String>("value");
+		Tree<String> valsTable = new TreeNonUnique<String>("values");
 		constraintTable.add(valsTable);
 
 		Iterator<DFEOutput> it = hu.getDFEInput().get(HiveUnion.key_input).iterator();
 		while(it.hasNext()){
-			valsTable.add(hInt.getTableAndPartitions(it.next().getPath())[0]);
+			valsTable.add("value").add(hInt.getTableAndPartitions(it.next().getPath())[0]);
 		}
 
 		//operation
@@ -246,15 +246,15 @@ public class TableUnionInteraction extends UserInteraction{
 		Tree<String> constraintType = new TreeNonUnique<String>("constraint");
 		newType.add(constraintType);
 
-		Tree<String> valsType = new TreeNonUnique<String>("value");
+		Tree<String> valsType = new TreeNonUnique<String>("values");
 		constraintType.add(valsType);
 
-		valsType.add(FeatureType.BOOLEAN.name());
-		valsType.add(FeatureType.INT.name());
-		valsType.add(FeatureType.DOUBLE.name());
-		valsType.add(FeatureType.STRING.name());
-		valsType.add(FeatureType.FLOAT.name());
-		valsType.add("BIGINT");
+		valsType.add("value").add(FeatureType.BOOLEAN.name());
+		valsType.add("value").add(FeatureType.INT.name());
+		valsType.add("value").add(FeatureType.DOUBLE.name());
+		valsType.add("value").add(FeatureType.STRING.name());
+		valsType.add("value").add(FeatureType.FLOAT.name());
+		valsType.add("value").add("BIGINT");
 
 		return input;
 	}

@@ -36,12 +36,12 @@ public class PigGroupInteraction extends UserInteraction{
 			list.add("output");
 		}else{
 			list = tree.getFirstChild("applist"); 
-			list.remove("value");
+			list.remove("values");
 		}
-		Tree<String> value = list.add("value");
+		Tree<String> values = list.add("values");
 		Iterator<String> it = in.getFeatures().getFeaturesNames().iterator();
 		while(it.hasNext()){
-			value.add(it.next());
+			values.add("value").add(it.next());
 		}
 	}
 	

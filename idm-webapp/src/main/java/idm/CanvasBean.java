@@ -350,6 +350,19 @@ public class CanvasBean extends BaseBean implements Serializable{
 		}
 	}
 	
+	public void runWorkflow() throws Exception{
+		logger.info("runWorkflow");
+		
+		logger.info(getDf().getElement().size());
+		
+		getDf().setName(getNameWorkflow());
+		
+		logger.info(getDf().check());
+		
+		
+		getDf().run(false);
+	}
+	
 	public int getCountObj() {
 		return countObj;
 	}

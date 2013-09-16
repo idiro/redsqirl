@@ -34,6 +34,11 @@ public class HiveBean extends FileSystemBean {
 
 				mountTable(getDataStore());
 			}
+			else{
+				for (ItemList item : getListGrid()){
+					item.setSelected(false);
+				}
+			}
 
 		}catch(Exception e){
 			logger.error(e);
