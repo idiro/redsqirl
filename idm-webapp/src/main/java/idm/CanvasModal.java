@@ -77,6 +77,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	private String columnEdit;
 	private int rowEdit;
 	private String errorMsg;
+	private String pathImage;
 
 	/** getKeyAsListNameValue
 	 * 
@@ -309,8 +310,10 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 
+		String pathImage =  params.get("paramPathImage");
 		String nameElement = params.get("paramNameElement");
 		setNameElement(nameElement);
+		setPathImage(pathImage);
 
 		logger.info("open element id " + getNameElement());
 
@@ -328,9 +331,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 			//retrieves the correct page
 			setPage(getListPage().get(getListPosition()));
 
-			setPageTitle(getPage().getTitle());
+			setPageTitle(getDfe().getName().replace("_"," "));
 
-			setPageLegend(getPage().getLegend());
+			// setPageLegend(getPage().getLegend());
 
 			mountInteractionForm();
 			
@@ -368,6 +371,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 		setDynamicFormList(new ArrayList<DynamicForm>());
 
+		
 		for (DFEInteraction dfeInteraction : getPage().getInteractions()) {
 
 			DynamicForm dynamicF = new DynamicForm();
@@ -378,7 +382,10 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 			logger.info("type " + dfeInteraction.getName() + " " + dfeInteraction.getDisplay() + " " + dfeInteraction.getTree());
 
-			dynamicF.setName(dfeInteraction.getName());
+			dynamicF.setTabTitle(getPage().getTitle());
+			dynamicF.setTabLegend(getPage().getLegend());
+			
+			dynamicF.setName(dfeInteraction.getName().replace("_", " "));
 			dynamicF.setLegend(dfeInteraction.getLegend());
 			dynamicF.setDisplayType(dfeInteraction.getDisplay());
 			dynamicF.setTree(dfeInteraction.getTree());
@@ -1343,4 +1350,14 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void setErrorMsg(String errorMsg) {
 		this.errorMsg = errorMsg;
 	}
+	
+	public String getPathImage() {
+		return pathImage;
+	}
+
+	public void setPathImage(String pathImage) {
+		this.pathImage = pathImage;
+	}
+	
+	
 }

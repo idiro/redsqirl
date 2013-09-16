@@ -12,8 +12,8 @@ import java.util.Map;
 import javax.faces.model.SelectItem;
 
 public class DynamicForm implements Serializable {
-	
-	
+
+
 	private String name;
 	private String legend;
 	private List<SelectItem> listOptions = new ArrayList<SelectItem>();
@@ -26,36 +26,38 @@ public class DynamicForm implements Serializable {
 	private Tree<String> tree;
 	private String dataTypeName;
 	private String subtypeName;
-	
+	private String tabTitle;
+	private String tabLegend;
+
 	private String pathBrowser = "";
 	private List<ItemList> listGrid = new ArrayList<ItemList>();
 	private List<ItemList> listFeature = new ArrayList<ItemList>();
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	public DynamicForm() {
 		super();
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	public List<SelectItem> getListOptions() {
 		return listOptions;
 	}
-	
+
 	public void setListOptions(List<SelectItem> listOptions) {
 		this.listOptions = listOptions;
 	}
-	
+
 	public List<SelectItem> getAppendListOptions() {
 		return appendListOptions;
 	}
-	
+
 	public void setAppendListOptions(List<SelectItem> appendListOptions) {
 		this.appendListOptions = appendListOptions;
 	}
@@ -164,5 +166,21 @@ public class DynamicForm implements Serializable {
 	public void setSubtypeName(String subtypeName) {
 		this.subtypeName = subtypeName;
 	}
-	
+
+	public String getTabTitle() {
+		return tabTitle;
+	}
+
+	public String getTabLegend() {
+		return tabLegend;
+	}
+
+	public void setTabTitle(String tabTitle) {
+		this.tabTitle = tabTitle;
+	}
+
+	public void setTabLegend(String tabLegend) {
+		this.tabLegend = tabLegend;
+	}
+
 }

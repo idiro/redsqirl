@@ -1394,8 +1394,17 @@ var countObj;
 			   configureGroupListeners(group1, positionX, positionY, rectSelect);
 
 			   group1.on('dblclick', function(e) {
-
-				   openModal(this.getChildren()[3].getText());
+				   
+				   var objImg = this.getChildren()[1].clone();
+				   objImg.setStroke("black");
+				   var imagePath = objImg.toDataURL({
+				    	  width: 80,
+				    	  height: 80
+				      });
+				   
+				   //alert(imagePath);
+				   
+				   openModal(this.getChildren()[3].getText(), imagePath);
 
 			   });
 

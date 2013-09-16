@@ -500,6 +500,7 @@
 				<a4j:jsFunction id="openModalFunction" name="openModal" action="#{canvasModalBean.openCanvasModal}" oncomplete="#{rich:component('canvasModalPanel')}.show()" 
 					reRender="pageTitle, panelDynamicForm, panelBtCanvasModal" >
 					<a4j:actionparam name="paramNameElement" assignTo="#{canvasModalBean.nameElement}" />
+					<a4j:actionparam name="paramPathImage" assignTo="#{canvasModalBean.pathImage}" />
 					<a4j:actionparam name="paramNameWorkflow" value="#{canvasBean.nameWorkflow}" assignTo="#{canvasModalBean.nameElement}" />
 				</a4j:jsFunction>
 			</a4j:region>
@@ -598,15 +599,17 @@
 
 				</rich:dropDownMenu>
 
-				<rich:toolBarGroup location="right" onitemclick="signOut();">
+				<rich:toolBarGroup location="right" onitemclick="jQuery.blockUI({ message: jQuery('#domMessageDivCanvas1') }); signOut();">
 					<rich:dropDownMenu value="#{messages.label_menu_signout}"
 						direction="bottom-left" jointPoint="br" styleClass="search" />
 				</rich:toolBarGroup>
 
 			</rich:toolBar>
+			
 			</a4j:region>
+			
+				<a4j:jsFunction name="signOut" action="#{userInfoBean.signOut}" oncomplete="jQuery.unblockUI();" />
 
-			<a4j:jsFunction name="signOut" action="#{userInfoBean.signOut}" />
 
 
 		</h:form>

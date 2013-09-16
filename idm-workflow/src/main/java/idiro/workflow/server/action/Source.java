@@ -51,8 +51,8 @@ public class Source extends DataflowAction{
 	public Source() throws RemoteException {
 		super(null);
 
-		Page page1 = addPage("Source",
-				"Loads a data source",
+		Page page1 = addPage("Source: Data type",
+				"Choose the data type that you would like to load",
 				1);
 
 		DFEInteraction dataType = new UserInteraction(
@@ -104,8 +104,8 @@ public class Source extends DataflowAction{
 		});
 
 
-		Page page2 = addPage("Source",
-				"Loads a data source",
+		Page page2 = addPage("Source: Data sub-type",
+				"Choose the data sub-type that you would like to load",
 				1);
 
 
@@ -216,7 +216,7 @@ public class Source extends DataflowAction{
 		});
 
 
-		Page page3 = addPage("Browse Source",
+		Page page3 = addPage("Source: Browser",
 				"Pick a data set",
 				1);
 
