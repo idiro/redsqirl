@@ -6,6 +6,7 @@ import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.interfaces.DataFlow;
 import idiro.workflow.server.interfaces.DataFlowElement;
+import idm.useful.MessageUseful;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
@@ -17,6 +18,7 @@ import java.util.Map.Entry;
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -109,9 +111,17 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 		try {
 			DataFlow df = getDf();
-			String idElement = df.addElement(nameElement);
 			
-			setResult(new String[]{idElement, paramGroupID});
+			if(nameElement != null && paramGroupID != null){
+				String idElement = df.addElement(nameElement);
+				if(idElement != null){
+					setResult(new String[]{idElement, paramGroupID});
+				}else{
+					MessageUseful.addErrorMessage("NULL POINTER"); //FIXME
+					HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
+					request.setAttribute("msnError", "msnError");
+				}
+			}
 			
 		} catch (RemoteException e) {
 			e.printStackTrace();

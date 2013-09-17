@@ -26,8 +26,7 @@ public class DynamicForm implements Serializable {
 	private Tree<String> tree;
 	private String dataTypeName;
 	private String subtypeName;
-	private String tabTitle;
-	private String tabLegend;
+	
 
 	private String pathBrowser = "";
 	private List<ItemList> listGrid = new ArrayList<ItemList>();
@@ -165,22 +164,6 @@ public class DynamicForm implements Serializable {
 
 	public void setSubtypeName(String subtypeName) {
 		this.subtypeName = subtypeName;
-	}
-
-	public String getTabTitle() {
-		return tabTitle;
-	}
-
-	public String getTabLegend() {
-		return tabLegend;
-	}
-
-	public void setTabTitle(String tabTitle) {
-		this.tabTitle = tabTitle;
-	}
-
-	public void setTabLegend(String tabLegend) {
-		this.tabLegend = tabLegend;
 	}
 
 }

@@ -78,6 +78,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 	private int rowEdit;
 	private String errorMsg;
 	private String pathImage;
+	
+	private String tabTitle;
+	private String tabLegend;
 
 	/** getKeyAsListNameValue
 	 * 
@@ -382,8 +385,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 			logger.info("type " + dfeInteraction.getName() + " " + dfeInteraction.getDisplay() + " " + dfeInteraction.getTree());
 
-			dynamicF.setTabTitle(getPage().getTitle());
-			dynamicF.setTabLegend(getPage().getLegend());
+			setTabTitle(getPage().getTitle());
+			setTabLegend(getPage().getLegend());
 			
 			dynamicF.setName(dfeInteraction.getName().replace("_", " "));
 			dynamicF.setLegend(dfeInteraction.getLegend());
@@ -1358,6 +1361,21 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void setPathImage(String pathImage) {
 		this.pathImage = pathImage;
 	}
-	
+
+	public String getTabTitle() {
+		return tabTitle;
+	}
+
+	public String getTabLegend() {
+		return tabLegend;
+	}
+
+	public void setTabTitle(String tabTitle) {
+		this.tabTitle = tabTitle;
+	}
+
+	public void setTabLegend(String tabLegend) {
+		this.tabLegend = tabLegend;
+	}
 	
 }

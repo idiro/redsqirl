@@ -847,14 +847,13 @@
 	</div>
 
 	<a4j:region>
-		<rich:modalPanel id="canvasModalPanel" width="800" height="600" style="overflow:auto;" resizeable="false">
+		<rich:modalPanel id="canvasModalPanel" width="800" height="600" style="overflow-x:auto;" resizeable="false">
 	
 			<f:facet name="header"><h:outputText value="#{canvasModalBean.pageTitle}" id="pageTitle" /></f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer" 
 					onclick="#{rich:component('canvasModalPanel')}.hide()" />
 			</f:facet>
-	
 			
 				<h:panelGroup>
 					<a4j:include viewId="/pages/canvasModal.xhtml" ajaxRendered="false"/>
