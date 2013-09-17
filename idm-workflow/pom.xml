@@ -32,24 +32,32 @@
     </properties>
 
     <distributionManagement>
-        <repository>
-            <id>internal</id>
-            <name>Internal Release Repository</name>
-            <url>http://ns:8080/archiva/repository/internal</url>
-        </repository>
-
-        <snapshotRepository>
-            <id>snapshots</id>
-            <name>Internal Snapshot Repository</name>
-            <url>http://ns:8080/archiva/repository/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
+	      <repository>
+	          <id>internal</id>
+	          <name>Internal Release Repository</name>
+	          <url>scp://dev.local.net/var/www/html/apache-archiva-1.3.6/data/repositories/internal</url>
+	      </repository>
+	
+	      <snapshotRepository>
+	          <id>snapshots</id>
+	          <name>Internal Snapshot Repository</name>
+	          <url>scp://dev.local.net/var/www/html/apache-archiva-1.3.6/data/repositories/snapshots</url>
+	      </snapshotRepository>
+     </distributionManagement>
     
     <organization>
         <name>Idiro Technologies</name>
         <url>http://www.idiro.com</url>
     </organization>
     <build>
+    	<extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh</artifactId>
+                <version>1.0</version>
+            </extension>
+        </extensions>
+    
         <resources>
             <resource>
                 <directory>src/main/resources</directory>

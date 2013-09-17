@@ -30,18 +30,26 @@
 	
 	<rich:tabPanel id="canvasModalTabPanel" switchType="ajax">
 	
+	
+	
+			<div id="domMessageDivModal" style="display: none;">
+				<img src="../image/icons/waiting.gif" />
+			</div>
+			
+			<a4j:status	onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModal') });"
+				onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
+				onstop="jQuery.unblockUI();" />
+	
+	
+	
     <rich:tab id="tab1" label="#{messages.label_dynamic_configuration}">
 	<rich:panel id="panelDynamicForm" style="border:none;" >
 	
 	
-		<table style="width:100%">
-			<tr>
-				<td>
-					<img src="#{canvasModalBean.pathImage}" style="margin-top:-25px;margin-left:-15px;"/>
-					<h:outputText value="#{canvasModalBean.tabTitle}" style="padding-left:235px;font-size:30px;"/>
-				</td>
-			</tr>
-		</table>
+		
+		<img src="#{canvasModalBean.pathImage}" style="margin-top:-25px;margin-left:-15px;"/>
+		<center><h:outputText value="#{canvasModalBean.tabTitle}" style="font-size:30px;"/></center>
+				
 		
 		<br/>
 		<p><h:outputText value="#{canvasModalBean.tabLegend}"/></p>

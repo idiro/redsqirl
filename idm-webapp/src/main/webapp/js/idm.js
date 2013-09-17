@@ -17,7 +17,8 @@ function canvasResizeSplitter(){
 	jQuery("#tabs-6").css("height", jQuery("#tabs2").height()-25+'px');
 	jQuery("#tabs-7").css("height", jQuery("#tabs2").height()-25+'px');
 	jQuery("#tabs-8").css("height", jQuery("#tabs2").height()-25+'px');
-	jQuery("#canvasModalPanelContentDiv").css("overflow", "hidden");
+	//jQuery("#canvasModalPanelContentDiv").css("overflow-x", "hidden");
+	//jQuery("#canvasModalPanelContentDiv").css("overflow-y", "auto");
 	
 	jQuery("#buttonsCanvas1").css("left", jQuery("#canvas1").width()-30+'px');
 	jQuery("#buttonsTabs1").css("left", jQuery("#tabs1").width()-30+'px');
@@ -79,7 +80,8 @@ function onPageReady(){
 	  jQuery("#tabs2").css("overflow", "hidden");
 	  jQuery(".splitter-pane").css("overflow", "hidden");
 	  jQuery("#tabRemote").css("overflow", "hidden");
-	  jQuery("#canvasModalPanelContentDiv").css("overflow", "hidden");
+	  //jQuery("#canvasModalPanelContentDiv").css("overflow-x", "hidden");
+	  //jQuery("#canvasModalPanelContentDiv").css("overflow-y", "auto");
 	  
 	  validateArrows(jQuery("#canvas1"),jQuery("#buttonsCanvas1"));
 	  validateArrows(jQuery("#tabs1"),jQuery("#buttonsTabs1"));
@@ -119,7 +121,8 @@ function resizing(){
 	  jQuery("#tabs-6").css("height", jQuery("#tabs2").height()-25+'px');
 	  jQuery("#tabs-7").css("height", jQuery("#tabs2").height()-25+'px');
 	  jQuery("#tabs-8").css("height", jQuery("#tabs2").height()-25+'px');
-	  jQuery("#canvasModalPanelContentDiv").css("overflow", "hidden");
+	  //jQuery("#canvasModalPanelContentDiv").css("overflow-x", "hidden");
+	  //jQuery("#canvasModalPanelContentDiv").css("overflow-y", "auto");
 	  
 	  jQuery("#buttonsCanvas1").css("left", jQuery("#canvas1").width()-30+'px');
 	  jQuery("#buttonsTabs1").css("left", jQuery("#tabs1").width()-30+'px');
