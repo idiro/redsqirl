@@ -28,7 +28,7 @@
 	<h:inputText id="pathSaveFile" label="Path" value="#{hdfsSaveBean.path}"
 		maxlength="255" style="width:395px;" />
 	<a4j:commandButton type="submit" id="changePathBt"
-		action="#{hdfsSaveBean.changePath}" value="ok" reRender="hdfsfsSaveFile,hdfsSaveFileBtn" />
+		action="#{hdfsSaveBean.changePath}" value="#{messages.button_ok}" reRender="hdfsfsSaveFile,hdfsSaveFileBtn" />
 	<br />
 
 	<a4j:commandLink action="#{hdfsSaveBean.goPrevious}"
@@ -75,11 +75,11 @@
 		maxlength="255" style="width:395px;" />
 	<br />
 
-	<a4j:commandButton id="hdfsSaveFileBtn" value="ok"
+	<a4j:commandButton id="hdfsSaveFileBtn" value="#{messages.button_ok}"
 		onclick="#{rich:component('modalSaveWorkflow')}.hide();updateElementsPositions();saveWorkflow(getPath('#{hdfsSaveBean.path}'));">
 	</a4j:commandButton>
 	
-	<a4j:commandButton value="Cancel"
+	<a4j:commandButton value="#{messages.button_cancel}"
 		onclick="#{rich:component('modalSaveWorkflow')}.hide();">
 	</a4j:commandButton>
 	

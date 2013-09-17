@@ -398,7 +398,6 @@
 	<a4j:keepAlive beanName = "canvasBean"/>
 	<a4j:keepAlive beanName = "canvasModalBean"/>
 	
-	
 	<div id="domMessageDivCanvas1" style="display: none;">
 		<img src="../image/icons/waiting.gif" />
 	</div>
@@ -937,11 +936,7 @@
 	<a4j:region renderRegionOnly="true">
 		<rich:modalPanel id="modalSelectLink" width="300" height="200" style="overflow:auto;" resizeable="false">
 	
-			<br />
-			<br />
-			<a4j:commandButton value="#{messages.button_cancel}" onclick="#{rich:component('mensagem')}.hide(); return false;" />
-						
-			<f:facet name="header">Load</f:facet>
+			<f:facet name="header">Create Link</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer"
 					onclick="#{rich:component('modalSelectLink')}.hide()" />

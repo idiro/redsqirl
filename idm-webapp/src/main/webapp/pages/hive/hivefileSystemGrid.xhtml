@@ -64,7 +64,7 @@
 			<h:inputText id="hivepath" label="Path" value="#{hiveBean.path}"
 				maxlength="255" style="width:395px;" />
 			<a4j:commandButton type="submit" id="hivechangePathBt"
-				action="#{hiveBean.changePath}" value="ok" reRender="hivefs" />
+				action="#{hiveBean.changePath}" value="#{messages.button_ok}" reRender="hivefs" />
 
 			<br />
 			<br />
@@ -153,7 +153,7 @@
 		<rich:modalPanel id="hivecopyModalPanel" width="600" height="400"
 			style="overflow:auto;" resizeable="false">
 	
-			<f:facet name="header">copy</f:facet>
+			<f:facet name="header">Copy File</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
 					style="cursor:pointer"
@@ -173,7 +173,7 @@
 		<rich:modalPanel id="hivemoveModalPanel" width="600" height="400"
 			style="overflow:auto;" resizeable="false">
 	
-			<f:facet name="header">move</f:facet>
+			<f:facet name="header">Move File</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
 					style="cursor:pointer"
@@ -193,7 +193,7 @@
 		<rich:modalPanel id="hiveaddModalPanel" width="600" height="400"
 			style="overflow:auto;" resizeable="false">
 	
-			<f:facet name="header">file</f:facet>
+			<f:facet name="header">Create File</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
 					style="cursor:pointer"
@@ -213,7 +213,7 @@
 		<rich:modalPanel id="hiveeditModalPanel" width="600" height="400"
 			style="overflow:auto;" resizeable="false">
 	
-			<f:facet name="header">file</f:facet>
+			<f:facet name="header">Edit File</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
 					style="cursor:pointer"
@@ -233,7 +233,7 @@
 		<rich:modalPanel id="hiveOpenFileModalPanel" width="600" height="400"
 			style="overflow:auto;" resizeable="false">
 	
-			<f:facet name="header">file</f:facet>
+			<f:facet name="header">Preview File</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
 					style="cursor:pointer"

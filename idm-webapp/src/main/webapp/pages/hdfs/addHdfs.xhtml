@@ -21,7 +21,11 @@
 		<br />
 	</a4j:repeat>
 
-	<a4j:commandButton action="#{hdfsBean.addFileAfter}" value="ok"
-		reRender="hdfsfs" onclick="#{rich:component('hdfsaddModalPanel')}.hide()" />
+	<h:panelGrid columns="2">
+		<a4j:commandButton action="#{hdfsBean.addFileAfter}" value="#{messages.button_ok}"
+			reRender="hdfsfs" onclick="#{rich:component('hdfsaddModalPanel')}.hide()" />
+		<a4j:commandButton value="#{messages.button_cancel}" type="button" 
+			onclick="#{rich:component('hdfsaddModalPanel')}.hide();" />
+	</h:panelGrid>
 
 </h:panelGrid>

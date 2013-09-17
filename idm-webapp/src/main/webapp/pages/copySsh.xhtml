@@ -24,7 +24,7 @@ function dataTableSelectOneRadio(radio) {
 	<h:inputText id="path" label="Path" value="#{canvasBean.path}"
 		maxlength="255" style="width:395px;" />
 	<a4j:commandButton type="submit" id="changePathBt"
-		action="#{canvasBean.changePath}" value="ok" reRender="hivefs" />
+		action="#{canvasBean.changePath}" value="#{messages.button_ok}" reRender="hivefs" />
 
 	<br />
 
@@ -82,7 +82,7 @@ function dataTableSelectOneRadio(radio) {
 
 	<br />
 
-	<a4j:commandButton action="#{canvasBean.copyFileAfter}" value="ok"
+	<a4j:commandButton action="#{canvasBean.copyFileAfter}" value="#{messages.button_ok}"
 		onclick="#{rich:component('copyModalPanel')}.hide()" />
 
 </h:panelGrid>

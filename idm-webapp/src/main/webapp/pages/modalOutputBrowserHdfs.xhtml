@@ -36,7 +36,7 @@
 	<h:inputText id="pathOpenFile" label="Path" value="#{hdfsBean.path}"
 		maxlength="255" style="width:395px;" />
 	<a4j:commandButton type="submit" id="changePathBt"
-		action="#{hdfsBean.changePath}" value="ok" reRender="hdfsfsOpenFile" />
+		action="#{hdfsBean.changePath}" value="#{messages.button_ok}" reRender="hdfsfsOpenFile" />
 	<br />
 
 	<a4j:commandLink action="#{hdfsBean.goPrevious}"
@@ -93,14 +93,14 @@
 	<br />
 
 	<a4j:commandButton action="#{canvasModalBean.changePathOutputBrowser}"
-		value="ok"
+		value="#{messages.button_ok}"
 		onclick="#{rich:component('modalOutputBrowserHdfs')}.hide();"
 		reRender="dataOutputForm">
 		<a4j:actionparam name="pathFile" value="getPath('#{hdfsBean.path}')"
 			noEscape="true" />
 	</a4j:commandButton>
 
-	<a4j:commandButton value="Cancel"
+	<a4j:commandButton value="#{messages.button_cancel}"
 		onclick="#{rich:component('modalOutputBrowserHdfs')}.hide();" />
 
 </ui:composition>

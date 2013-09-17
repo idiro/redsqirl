@@ -24,7 +24,7 @@ function dataTableSelectOneRadio(radio) {
 	<h:inputText id="pathMove" label="Path" value="#{hiveBean.path}"
 		maxlength="255" style="width:395px;" />
 	<a4j:commandButton type="submit" id="changePathBt"
-		action="#{hiveBean.changePath}" value="ok" reRender="hivefsMove" />
+		action="#{hiveBean.changePath}" value="#{messages.button_ok}" reRender="hivefsMove" />
 
 	<br />
 
@@ -82,7 +82,12 @@ function dataTableSelectOneRadio(radio) {
 
 	<br />
 
-	<a4j:commandButton action="#{hiveBean.moveFileAfter}" value="ok"
-		reRender="hivefs" onclick="#{rich:component('hivemoveModalPanel')}.hide()" />
+
+	<h:panelGrid columns="2">
+		<a4j:commandButton action="#{hiveBean.moveFileAfter}" value="#{messages.button_ok}"
+			reRender="hivefs" onclick="#{rich:component('hivemoveModalPanel')}.hide()" />
+		<a4j:commandButton value="#{messages.button_cancel}" type="button" 
+			onclick="#{rich:component('hivemoveModalPanel')}.hide();" />
+	</h:panelGrid>
 
 </h:panelGrid>

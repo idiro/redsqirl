@@ -17,6 +17,6 @@
 
 	<h:selectBooleanCheckbox id="selectedSaveSsh" value="#{sshBean.selectedSaveSsh}" />
 
-	<a4j:commandButton action="#{sshBean.confirmNewSsh}" value="ok" onclick="#{rich:component('modalNewSsh')}.hide(); addTabRemoteArr();" />
+	<a4j:commandButton action="#{sshBean.confirmNewSsh}" value="#{messages.button_ok}" onclick="#{rich:component('modalNewSsh')}.hide(); addTabRemoteArr();" />
 
 </h:panelGrid>

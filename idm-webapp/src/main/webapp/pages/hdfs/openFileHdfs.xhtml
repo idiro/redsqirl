@@ -11,6 +11,6 @@
 	<h:outputText value="#{hdfsBean.fileContent}" escape="false"/>
 	<br />
 	
-	<h:commandButton value="Ok" type="button" onclick="#{rich:component('hdfsOpenFileModalPanel')}.hide();" />
+	<h:commandButton value="#{messages.button_ok}" type="button" onclick="#{rich:component('hdfsOpenFileModalPanel')}.hide();" />
 
 </h:panelGrid>

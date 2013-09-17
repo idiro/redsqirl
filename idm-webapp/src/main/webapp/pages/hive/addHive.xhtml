@@ -19,8 +19,12 @@
 		<br />
 	</a4j:repeat>
 
-	<a4j:commandButton action="#{hiveBean.addFileAfter}" value="ok" 
-		oncomplete="#{rich:component('hiveaddModalPanel')}.hide();"/>
-	<a4j:commandButton value="Cancel" onclick="#{rich:component('hiveaddModalPanel')}.hide();" />
+
+	<h:panelGrid columns="2">
+		<a4j:commandButton action="#{hiveBean.addFileAfter}" value="#{messages.button_ok}" 
+			oncomplete="#{rich:component('hiveaddModalPanel')}.hide();"/>
+		<a4j:commandButton value="#{messages.button_cancel}" type="button" 
+				onclick="#{rich:component('hiveaddModalPanel')}.hide();" />
+	</h:panelGrid>
 
 </h:panelGrid>

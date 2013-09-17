@@ -11,13 +11,16 @@
    			<f:selectItems value="#{canvasBean.linkPossibilities}" />
    		</h:selectOneRadio>
    		
-   		<a4j:commandButton action="#{canvasBean.addLink}" value="ok"
-			oncomplete="#{rich:component('modalSelectLink')}.hide();addLinkBt()"/>
+   		<h:panelGrid columns="2">
+	   		<a4j:commandButton action="#{canvasBean.addLink}" value="#{messages.button_ok}"
+				oncomplete="#{rich:component('modalSelectLink')}.hide();addLinkBt()"/>
+			<a4j:commandButton value="#{messages.button_cancel}" onclick="#{rich:component('modalSelectLink')}.hide(); return false;" />
+		</h:panelGrid>
 	</h:panelGrid>
 	
 	<h:panelGrid rendered="#{empty canvasBean.linkPossibilities}">
 		<p>Impossible to create link</p>
-		<a4j:commandButton value="ok"
+		<a4j:commandButton value="#{messages.button_ok}"
 			oncomplete="#{rich:component('modalSelectLink')}.hide();"/>
 	</h:panelGrid>
 	

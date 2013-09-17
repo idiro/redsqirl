@@ -20,22 +20,23 @@ function dataTableSelectOneRadio(radio) {
 //]]>
 </script>
 
-	<h:outputText value="#{messages.label_path}" />
-	<h:inputText id="pathMove" label="Path" value="#{hdfsBean.path}"
-		maxlength="255" style="width:395px;" />
-	<a4j:commandButton type="submit" id="changePathBt"
-		action="#{hdfsBean.changePath}" value="ok" reRender="hdfsfsMove" />
+	<h:panelGrid columns="3">
+		<h:outputText value="#{messages.label_path}" />
+		<h:inputText id="pathMove" label="Path" value="#{hdfsBean.path}"
+			maxlength="255" style="width:395px;" />
+		<a4j:commandButton type="submit" id="changePathBt"
+			action="#{hdfsBean.changePath}" value="#{messages.button_ok}" reRender="hdfsfsMove" />
+	</h:panelGrid>
 
-	<br />
-
-
-	<a4j:commandLink action="#{hdfsBean.goPrevious}"
-		reRender="pathMove,hdfsfsMove">
-		<img id="btAdd" src="../image/icons/button-undo.png" />
-	</a4j:commandLink>
-	<a4j:commandLink action="#{hdfsBean.goNext}" reRender="pathMove,dhfsfs">
-		<img id="btAdd" src="../image/icons/button-redo.png" />
-	</a4j:commandLink>
+	<h:panelGrid columns="2">
+		<a4j:commandLink action="#{hdfsBean.goPrevious}"
+			reRender="pathMove,hdfsfsMove">
+			<img id="btAdd" src="../image/icons/button-undo.png" />
+		</a4j:commandLink>
+		<a4j:commandLink action="#{hdfsBean.goNext}" reRender="pathMove,dhfsfs">
+			<img id="btAdd" src="../image/icons/button-redo.png" />
+		</a4j:commandLink>
+	</h:panelGrid>
 
 	<rich:dataTable id="hdfsfsMove" value="#{hdfsBean.listGrid}" var="item"
 		width="100%" style="border:none;"
@@ -82,7 +83,11 @@ function dataTableSelectOneRadio(radio) {
 
 	<br />
 
-	<a4j:commandButton action="#{hdfsBean.moveFileAfter}" value="ok"
-		reRender="hdfsfs" onclick="#{rich:component('hdfsmoveModalPanel')}.hide()" />
+	<h:panelGrid columns="2">
+		<a4j:commandButton action="#{hdfsBean.moveFileAfter}" value="#{messages.button_ok}"
+			reRender="hdfsfs" onclick="#{rich:component('hdfsmoveModalPanel')}.hide()" />
+		<a4j:commandButton value="#{messages.button_cancel}" type="button" 
+			onclick="#{rich:component('hdfsmoveModalPanel')}.hide();" />
+	</h:panelGrid>
 
 </h:panelGrid>

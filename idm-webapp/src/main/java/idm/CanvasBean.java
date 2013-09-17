@@ -13,7 +13,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
@@ -61,6 +60,8 @@ public class CanvasBean extends BaseBean implements Serializable{
 	@PostConstruct
 	public void openCanvas() {
 		
+		logger.info("openCanvas");
+		
 		setCountObj(0);
 		setNameWorkflow("canvas"+countWf);
 		
@@ -70,9 +71,9 @@ public class CanvasBean extends BaseBean implements Serializable{
 			dfi = getworkFlowInterface();
 			if(dfi != null && dfi.getWorkflow(getNameWorkflow()) == null){
 				dfi.addWorkflow(getNameWorkflow());
-				setDf(dfi.getWorkflow(getNameWorkflow()));
 				logger.info("add new Workflow "+getNameWorkflow());
 			}
+			setDf(dfi.getWorkflow(getNameWorkflow()));
 			
 		} catch (RemoteException e) {
 			logger.error(e.getMessage());
