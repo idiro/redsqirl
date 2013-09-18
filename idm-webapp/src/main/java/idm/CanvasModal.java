@@ -39,7 +39,9 @@ import org.apache.log4j.Logger;
 public class CanvasModal extends BaseBean implements Serializable {
 
 	private static Logger logger = Logger.getLogger(CanvasModal.class);
-
+	
+	private CanvasBean canvasBean;
+	
 	private String list = "";
 	private List<SelectItem> listItens = new ArrayList<SelectItem>();
 	private List<SelectItem> listItensTable = new ArrayList<SelectItem>();
@@ -298,6 +300,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 */
 	public void start() {
+		FacesContext context = FacesContext.getCurrentInstance();
+		canvasBean = (CanvasBean) context.getApplication().evaluateExpressionGet(context, "#{canvasBean}", CanvasBean.class);
+						
 		String nameWf = FacesContext.getCurrentInstance()
 				.getExternalContext().getRequestParameterMap().get("paramNameWorkflow");
 		setNameWorkflow(nameWf);
@@ -337,7 +342,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 		String pathImage =  params.get("paramPathImage");
 		String nameElement = params.get("paramNameElement");
-		setNameElement(nameElement);
+		setNameElement(canvasBean.getIdMap().get(nameElement));
 		setPathImage(pathImage);
 
 		logger.info("open element id " + getNameElement());
@@ -1436,6 +1441,14 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 	public void setSelectedTab(String selectedTab) {
 		this.selectedTab = selectedTab;
+	}
+
+	public CanvasBean getCanvasBean() {
+		return canvasBean;
+	}
+
+	public void setCanvasBean(CanvasBean canvasBean) {
+		this.canvasBean = canvasBean;
 	}
 	
 	public List<String> getTableInteractionsColumns() {

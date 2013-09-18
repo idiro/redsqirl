@@ -119,7 +119,7 @@ var countObj;
 				    		var groupNumber = group.getId().substring(5, this.getId().length);
 				    		jQuery.each(value.getChildren(), function(index, value2) {
 				    			if(value2.getStroke() == "red"){
-				    				removeElement(group.getChildren()[3].getText());
+				    				removeElement(group.getId());
 				    				deleteLayerChildren(groupNumber);
 				    				group.remove();
 								}
@@ -834,10 +834,12 @@ var countObj;
 						   srcImageText, typeText);
 				
 				polygonLayer.add(group);
-				updateTypeObj(elementId, "group"+countObj);
 				
 				configureGroup(group, posx, posy, polygon, countObj,
 						rectSelect, positionX, positionY, stage);
+				
+				updateIdObj("group"+countObj, elementId);
+				updateTypeObj("group"+countObj, elementId);
 				
 				stage.draw();
 				
@@ -1083,14 +1085,6 @@ var countObj;
 								layerTab.add(polygonTabFake.clone());
 								layerTab.draw();
 								
-								countObj++;
-								
-								var group1 = createGroup(circle1, polygon, countObj, 
-										   srcImageText, typeText);
-								
-								polygonLayer.add(group1);
-						    	addElementBt(typeText.getText(), "group" + countObj);
-						    	this.group = group1;
 								
 							});
 							
@@ -1113,6 +1107,17 @@ var countObj;
 
 								} catch(e) {
 									try {
+										
+										countObj++;
+										
+										var group1 = createGroup(circle1, polygon, countObj, 
+												   srcImageText, typeText);
+										
+										polygonLayer.add(group1);
+										this.group = group1;
+								    	
+								    	
+								    	//-----
 										var mousePosStage = stage.getMousePosition();
 
 										configureGroup(this.group, mousePosStage.x-30, mousePosStage.y-30, polygon, countObj,
@@ -1120,11 +1125,13 @@ var countObj;
 
 										layerTab.add(polygonTabFake.clone());
 										layerTab.draw();
+										
+										addElementBt(typeText.getText(), "group" + countObj);
 
 									} catch(e) {
 
 										document.body.style.cursor = 'default';
-										removeElement(this.group.getChildren()[3].getText());
+//										removeElement(this.group.getId());
 										this.remove();
 										layerTab.add(polygonTabFake.clone());
 										layerTab.draw();
@@ -1180,10 +1187,10 @@ var countObj;
 		   * add the new Element and retrive the new id. 
 		   * 
 		   */
-		   function updateTypeObj(elementID, groupID) {
+		   function updateTypeObj(groupID, elementId) {
 			   
 			   var text = polygonLayer.get('#' + groupID)[0].getChildren()[3];
-			   text.setText(elementID);
+			   text.setText(elementId);
 			   
 		   }
 		   
@@ -1201,7 +1208,7 @@ var countObj;
 		   function updateElementsPositions() {
 			   
 				jQuery.each(polygonLayer.getChildren(), function(index, value) {
-					updatePosition(value.getChildren()[3].getText(), value.getX(), value.getY());
+					updatePosition(value.getId(), value.getX(), value.getY());
 				});
 			   
 		   }
@@ -1249,7 +1256,7 @@ var countObj;
 			    		                   ]);
 			    		  
 			    		  var arrowClone = arrow.clone();
-			    		  arrowClone.input = this.getParent().getChildren()[3].getText();
+			    		  arrowClone.input = this.getParent().getId();
 			    		  arrowClone.output = arrow.output;
 			    		  layer.add(arrowClone);
 			    		  
@@ -1274,7 +1281,7 @@ var countObj;
 				          arrow.setPoints([polygonGroup[0].getX()+40, polygonGroup[0].getY()+50, polygonGroup[0].getX()+40+1, polygonGroup[0].getY()+50+1 ]);
 				          arrow.setName("arrow"+this.getName().substring(6,this.getName().length));
 
-				          arrow.output = this.getParent().getChildren()[3].getText();
+				          arrow.output = this.getParent().getId();
 
 				          circle.setFill('white');
 				          
@@ -1404,7 +1411,7 @@ var countObj;
 				   
 				   //alert(imagePath);
 				   
-				   openModal(this.getChildren()[3].getText(), imagePath);
+				   openModal(this.getId(), imagePath);
 
 			   });
 

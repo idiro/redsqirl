@@ -2,8 +2,8 @@ package idm;
 
 import idiro.workflow.server.interfaces.DataFlow;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
-public class ConfigureTabsBean extends BaseBean{
+public class ConfigureTabsBean extends BaseBean implements Serializable{
 
 	private DataFlow wf;
 	protected Map<String,List<String[]>> menuWA;
@@ -23,6 +23,9 @@ public class ConfigureTabsBean extends BaseBean{
 
 	@PostConstruct
 	public void openCanvasScreen() throws RemoteException {
+		if (getworkFlowInterface().getWorkflow("canvas0") == null){
+			getworkFlowInterface().addWorkflow("canvas0");
+		}
 		wf = getworkFlowInterface().getWorkflow("canvas0");
 		wf.loadMenu();
 	}

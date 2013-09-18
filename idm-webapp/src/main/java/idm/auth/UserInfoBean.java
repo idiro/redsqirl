@@ -180,6 +180,7 @@ public class UserInfoBean extends BaseBean {
 					}catch(Exception e ){
 						Thread.sleep(500);
 						logger.error(e.getMessage());
+
 						if(cont > 20){
 							throw e;
 						}

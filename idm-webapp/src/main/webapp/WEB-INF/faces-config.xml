@@ -9,7 +9,7 @@
  <managed-bean>
   <managed-bean-name>canvasBean</managed-bean-name>
   <managed-bean-class>idm.CanvasBean</managed-bean-class>
-  <managed-bean-scope>request</managed-bean-scope>
+  <managed-bean-scope>session</managed-bean-scope>
  </managed-bean>
  <managed-bean>
   <managed-bean-name>hdfsBean</managed-bean-name>
@@ -49,7 +49,7 @@
  <managed-bean>
  	<managed-bean-name>configureTabsBean</managed-bean-name>
  	<managed-bean-class>idm.ConfigureTabsBean</managed-bean-class>
- 	<managed-bean-scope>session</managed-bean-scope>
+ 	<managed-bean-scope>request</managed-bean-scope>
  </managed-bean>
  <managed-bean>
  	<managed-bean-name>processManagerBean</managed-bean-name>
@@ -92,9 +92,6 @@
    <to-view-id>/pages/initial.xhtml</to-view-id>
    <redirect/>
   </navigation-case>
- </navigation-rule>
- <navigation-rule>
-  <from-view-id>/pages/canvas.jsf</from-view-id>
   <navigation-case>
    <from-outcome>loginPage</from-outcome>
    <to-view-id>/pages/initial.xhtml</to-view-id>
