@@ -69,10 +69,13 @@ public class CanvasBean extends BaseBean implements Serializable{
 		try {
 			
 			dfi = getworkFlowInterface();
-			if(dfi != null && dfi.getWorkflow(getNameWorkflow()) == null){
+			if(dfi.getWorkflow(getNameWorkflow()) == null){
 				dfi.addWorkflow(getNameWorkflow());
-				logger.info("add new Workflow "+getNameWorkflow());
+			}else{
+				dfi.removeWorkflow(getNameWorkflow());
+				dfi.addWorkflow(getNameWorkflow());
 			}
+			logger.info("add new Workflow "+getNameWorkflow());
 			setDf(dfi.getWorkflow(getNameWorkflow()));
 			
 		} catch (RemoteException e) {

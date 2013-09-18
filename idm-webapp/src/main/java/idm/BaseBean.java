@@ -70,7 +70,7 @@ public class BaseBean {
 		FacesContext fCtx = FacesContext.getCurrentInstance();
 		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
 
-		return (DataFlowInterface) sc.getAttribute("dfi");
+		return (DataFlowInterface) sc.getAttribute("wfm");
 	}
 
 	/** getHiveInterface
@@ -85,7 +85,7 @@ public class BaseBean {
 		FacesContext fCtx = FacesContext.getCurrentInstance();
 		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
 
-		return (DataStore) sc.getAttribute("dsHive");
+		return (DataStore) sc.getAttribute("hive");
 	}
 
 	/** getHiveInterface
@@ -100,7 +100,7 @@ public class BaseBean {
 		FacesContext fCtx = FacesContext.getCurrentInstance();
 		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
 
-		return (DataStoreArray) sc.getAttribute("dsArray");
+		return (DataStoreArray) sc.getAttribute("ssharray");
 	}
 
 	/** getHDFS
@@ -115,7 +115,7 @@ public class BaseBean {
 		FacesContext fCtx = FacesContext.getCurrentInstance();
 		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
 
-		return (DataStore) sc.getAttribute("dsHDFS");
+		return (DataStore) sc.getAttribute("hdfs");
 	}
 
 	/** getOozie

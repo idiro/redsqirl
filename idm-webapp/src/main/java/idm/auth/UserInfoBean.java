@@ -9,9 +9,16 @@ import idiro.workflow.server.interfaces.JobManager;
 import idm.BaseBean;
 
 import java.io.IOException;
+import java.rmi.AccessException;
+import java.rmi.NotBoundException;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.RMISocketFactory;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.faces.context.FacesContext;
@@ -139,54 +146,46 @@ public class UserInfoBean extends BaseBean {
 	public static boolean createRegistry(String user,String password){
 
 		logger.info("createRegistry");
+		
+		List<String> beans = new ArrayList<String>();
+		beans.add("wfm");
+		beans.add("hive");
+		beans.add("ssharray");
+		beans.add("oozie");
+		beans.add("hdfs");
 
 		try{
-
 			th = new ServerThread(port);
-			th.run(user,password, getConn());
+			th.run(user,password);
 
 			registry = LocateRegistry.getRegistry(
 					"127.0.0.1",
 					port,
 					RMISocketFactory.getDefaultSocketFactory()
 					);
-
-			String nameWorkflow = System.getProperty("user.name")+"@wfm";
-			String nameHive = System.getProperty("user.name")+"@hive";
-			String nameSshArray = System.getProperty("user.name")+"@ssharray";
-			String nameOozie = System.getProperty("user.name")+"@oozie";
-			String nameHDFS = System.getProperty("user.name")+"@hdfs";
-
-			DataFlowInterface dfi = null;
-			boolean error = true;
-			int cont = 0;
-			while(error){
-				cont++;
-				try{
-					dfi = (DataFlowInterface) registry.lookup(nameWorkflow);
-					error = false;
-				}catch(Exception e ){
-					Thread.sleep(500);
-					logger.error(e.getMessage());
-					if(cont > 20){
-						throw e;
+			
+			FacesContext fCtx = FacesContext.getCurrentInstance();
+			ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
+			
+			for (String beanName : beans){
+				boolean error = true;
+				int cont = 0;
+				
+				while(error){
+					cont++;
+					try{
+						Remote dfi = registry.lookup(System.getProperty("user.name")+"@"+beanName);
+						error = false;
+						sc.setAttribute(beanName, dfi);
+					}catch(Exception e ){
+						Thread.sleep(500);
+						logger.error(e.getMessage());
+						if(cont > 20){
+							throw e;
+						}
 					}
 				}
 			}
-
-			DataStore dsHive = (DataStore) registry.lookup(nameHive);
-			DataStoreArray dsArray = (DataStoreArray) registry.lookup(nameSshArray);
-			JobManager ozzie = (JobManager) registry.lookup(nameOozie);
-			DataStore dsHDFS = (DataStore) registry.lookup(nameHDFS);
-
-			FacesContext fCtx = FacesContext.getCurrentInstance();
-			ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
-
-			sc.setAttribute("dfi", dfi);
-			sc.setAttribute("dsHive", dsHive);
-			sc.setAttribute("dsArray", dsArray);
-			sc.setAttribute("ozzie", ozzie);
-			sc.setAttribute("dsHDFS", dsHDFS);
 
 			return true;
 
@@ -245,8 +244,16 @@ public class UserInfoBean extends BaseBean {
 	public String signOut(){
 
 		logger.info("signOut");
+		
+		try {
+			for (String name : registry.list()){
+				registry.unbind(name);
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 
-		th.kill(getConn());
+		th.kill();
 
 		cleanSession();
 
@@ -276,11 +283,11 @@ public class UserInfoBean extends BaseBean {
 		}
 		session.invalidate();
 
-		sc.removeAttribute("dfi");
-		sc.removeAttribute("dsHive");
-		sc.removeAttribute("dsArray");
+		sc.removeAttribute("wfm");
+		sc.removeAttribute("hive");
+		sc.removeAttribute("ssharray");
 		sc.removeAttribute("ozzie");
-		sc.removeAttribute("dsHDFS");
+		sc.removeAttribute("hdfs");
 
 	}
 

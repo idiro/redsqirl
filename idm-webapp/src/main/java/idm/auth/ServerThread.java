@@ -5,6 +5,7 @@ import idiro.workflow.server.WorkflowPrefManager;
 import idm.useful.UserPrefManager;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,9 +15,6 @@ import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 
 import org.apache.log4j.Logger;
-
-import ch.ethz.ssh2.Connection;
-import ch.ethz.ssh2.Session;
 
 /** ServerThread
  * 
@@ -31,9 +29,6 @@ public class ServerThread{
 	private static Logger logger = Logger.getLogger(ServerThread.class);
 
 	private static List<ServerThread> list = new LinkedList<ServerThread>();
-
-	private Session sess;
-
 
 	private Process serverProc = null;
 	public final int port;
@@ -50,7 +45,7 @@ public class ServerThread{
 	 * @return
 	 * @author Igor.Souza
 	 */
-	public void run(String user,String password, final Connection conn){
+	public void run(String user,String password){
 
 		if(!run){
 			run = true;
@@ -65,19 +60,16 @@ public class ServerThread{
 					@Override
 					public void run() {
 						try{
+							serverProc = Runtime.getRuntime().exec(
+									new String[] { "/bin/bash", "-c", command});
 
-
-							sess = conn.openSession();
-							sess.execCommand(command);
-
-							setSess(sess);
-
+							serverProc.getInputStream().close();
+							serverProc.getOutputStream().close();
 						} catch (Exception e) {
 							logger.error("Fail to launch the server process");
 							logger.error(e.getMessage());
 						}
 					}
-
 				};
 				server.start();
 			} catch (Exception e) {
@@ -88,7 +80,7 @@ public class ServerThread{
 			}
 		}
 	}
-
+	
 	/** getBaseCommand
 	 * 
 	 * method to retrieve and generate the command line to be executed
@@ -179,18 +171,12 @@ public class ServerThread{
 	 * @return 
 	 * @author Igor.Souza
 	 */
-	public void kill(Connection conn){
+	public void kill(){
 		if(serverProc != null && run){
 			serverProc.destroy();
 			list.remove(this);
 			run = false;
 		}
-
-		if(getSess() != null && conn != null){
-			getSess().close();
-			conn.close();
-		}
-
 	}
 
 	/**
@@ -207,14 +193,6 @@ public class ServerThread{
 		return run;
 	}
 
-	public Session getSess() {
-		return sess;
-	}
-
-	public void setSess(Session sess) {
-		this.sess = sess;
-	}
-	
 	private String getPackageClasspath(String path){
 		File f = new File(path);
 		String classPath = "";
