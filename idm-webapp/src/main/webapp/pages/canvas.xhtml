@@ -343,8 +343,11 @@
 		    		 jQuery('#canvas-1').css('position', 'fixed');
 		    		 
 				 }
-
-
+	    		 
+	    		 window.onbeforeunload = function(){
+	    			 invalidateSession();
+	    		 }
+	    		 
 	    		 //removes the loading screen
 	    		 jQuery.unblockUI();
 	    		 
@@ -395,7 +398,6 @@
 </head>
 <body id="body">
 
-	<a4j:keepAlive beanName = "canvasBean"/>
 	<a4j:keepAlive beanName = "canvasModalBean"/>
 	
 	<div id="domMessageDivCanvas1" style="display: none;">
@@ -442,7 +444,7 @@
 			</a4j:region>
 
 			<a4j:region>
-				<a4j:jsFunction name="addElementBt" action="#{canvasBean.addElement}" data="#{canvasBean.result}" oncomplete="updateTypeObj(data[0], data[1]);" >
+				<a4j:jsFunction name="addElementBt" action="#{canvasBean.addElement}">
 					<a4j:actionparam name="paramNameElement"/>
 					<a4j:actionparam name="paramGroupID"/>
 				</a4j:jsFunction>
@@ -523,6 +525,13 @@
 							
 				<a4j:jsFunction name="closeWorkflow" action="#{canvasBean.closeWorkflow}" oncomplete="clearCanvas();"  reRender="formMenu"/>
 			</a4j:region>
+			
+			<a4j:jsFunction name="updateIdObj" action="#{canvasBean.updateIdObj}" >
+				<a4j:actionparam name="idGroup"/>
+				<a4j:actionparam name="id"/>
+			</a4j:jsFunction>
+			
+			<a4j:jsFunction name="invalidateSession" action="#{canvasBean.reinitialize}" />
 			
 			<a4j:region>
 			

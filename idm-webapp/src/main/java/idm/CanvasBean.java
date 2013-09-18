@@ -11,6 +11,7 @@ import idm.useful.MessageUseful;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +25,6 @@ import org.json.JSONArray;
 
 public class CanvasBean extends BaseBean implements Serializable{
 
-	
 	private static Logger logger = Logger.getLogger(CanvasBean.class);
 	private List<SelectItem> linkPossibilities = new ArrayList<SelectItem>();
 	private String selectedLink;
@@ -36,6 +36,8 @@ public class CanvasBean extends BaseBean implements Serializable{
 	private String paramInId;
 	private String paramNameLink;
 	private String[] result;
+	
+	private Map<String, String> idMap;
 
 	
 	public void doNew(){
@@ -57,13 +59,14 @@ public class CanvasBean extends BaseBean implements Serializable{
 	 * @return 
 	 * @author Igor.Souza
 	 */
-	@PostConstruct
-	public void openCanvas() {
+	public CanvasBean() {
 		
 		logger.info("openCanvas");
 		
 		setCountObj(0);
 		setNameWorkflow("canvas"+countWf);
+		
+		setIdMap(new HashMap<String, String>());
 		
 		DataFlowInterface dfi;
 		try {
@@ -77,6 +80,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 			}
 			logger.info("add new Workflow "+getNameWorkflow());
 			setDf(dfi.getWorkflow(getNameWorkflow()));
+			getDf().getAllWANameWithClassName();
 			
 		} catch (RemoteException e) {
 			logger.error(e.getMessage());
@@ -107,7 +111,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 	 * @author Igor.Souza
 	 */
 	public void addElement() {
-
+		
 		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 
 		String nameElement = params.get("paramNameElement");
@@ -119,7 +123,8 @@ public class CanvasBean extends BaseBean implements Serializable{
 			if(nameElement != null && paramGroupID != null){
 				String idElement = df.addElement(nameElement);
 				if(idElement != null){
-					setResult(new String[]{idElement, paramGroupID});
+					getIdMap().put(paramGroupID, idElement);
+					logger.info("idMap size add "+getIdMap().size());
 				}else{
 					MessageUseful.addErrorMessage("NULL POINTER"); //FIXME
 					HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
@@ -132,6 +137,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		logger.info("finish add element");
 
 	}
 	
@@ -143,6 +149,8 @@ public class CanvasBean extends BaseBean implements Serializable{
 	 * @author Marcos.Freitas
 	 */
 	public void removeElement() {
+		
+		logger.info("remove idMap size: "+getIdMap().size());
 
 		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 
@@ -151,8 +159,9 @@ public class CanvasBean extends BaseBean implements Serializable{
 		try {
 
 			DataFlow df = getDf();
-			logger.info("Remove element "+paramGroupID);
-			df.removeElement(paramGroupID);
+			logger.info("Remove element "+getIdMap().get(paramGroupID));
+			df.removeElement(getIdMap().get(paramGroupID));
+			getIdMap().remove(paramGroupID);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -178,7 +187,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 		try {
 			
 			DataFlow df = getDf();
-			df.getElement(paramGroupID).setPosition(Double.valueOf(posX).intValue(), Double.valueOf(posY).intValue());
+			df.getElement(getIdMap().get(paramGroupID)).setPosition(Double.valueOf(posX).intValue(), Double.valueOf(posY).intValue());
 
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -197,8 +206,8 @@ public class CanvasBean extends BaseBean implements Serializable{
 	 */
 	public void addLink() {
 		logger.info("addLink");
-		String idElementA = getParamOutId();
-		String idElementB = getParamInId();
+		String idElementA = getIdMap().get(getParamOutId());
+		String idElementB = getIdMap().get(getParamInId());
 		
 		String nameElementA = getSelectedLink().split(" -> ")[0];
 		String nameElementB = getSelectedLink().split(" -> ")[1];
@@ -231,8 +240,8 @@ public class CanvasBean extends BaseBean implements Serializable{
 	public void updateLinkPossibilities() {
 		
 		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-		String idElementA = params.get("paramOutId");
-		String idElementB = params.get("paramInId");
+		String idElementA = getIdMap().get(params.get("paramOutId"));
+		String idElementB = getIdMap().get(params.get("paramInId"));
 		
 		try {
 			linkPossibilities = new ArrayList<SelectItem>();
@@ -270,8 +279,8 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 		try {
 			Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-			String idElementA = params.get("paramOutId");
-			String idElementB = params.get("paramInId");
+			String idElementA = getIdMap().get(params.get("paramOutId"));
+			String idElementB = getIdMap().get(params.get("paramInId"));
 			String nameElementA = params.get("paramOutName");
 			String nameElementB = params.get("paramInName");
 			
@@ -377,6 +386,34 @@ public class CanvasBean extends BaseBean implements Serializable{
 		getDf().run(false);
 	}
 	
+	public void updateIdObj(){
+		String groupId = FacesContext.getCurrentInstance().getExternalContext().
+				getRequestParameterMap().get("groupId");
+		
+		String id = FacesContext.getCurrentInstance().getExternalContext().
+				getRequestParameterMap().get("id");
+		
+		getIdMap().put(groupId, id);
+		
+	}
+	
+	public void reinitialize() throws RemoteException{
+		logger.info("invalidate session");
+		
+		setIdMap(new HashMap<String, String>());
+		
+		if(getworkFlowInterface().getWorkflow(getNameWorkflow()) != null){
+			logger.info("removing workflow");
+			getworkFlowInterface().removeWorkflow(getNameWorkflow());
+			getworkFlowInterface().addWorkflow(getNameWorkflow());
+			setDf(getworkFlowInterface().getWorkflow(getNameWorkflow()));
+		}
+	}
+	
+	public String getIdElement(String idGroup){
+		return getIdMap().get(idGroup);
+	}
+	
 	public int getCountObj() {
 		return countObj;
 	}
@@ -447,6 +484,14 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 	public void setSelectedLink(String selectedLink) {
 		this.selectedLink = selectedLink;
+	}
+	
+	public Map<String, String> getIdMap() {
+		return idMap;
+	}
+
+	public void setIdMap(Map<String, String> idMap) {
+		this.idMap = idMap;
 	}
 
 	public String[] getPositions() throws Exception{
