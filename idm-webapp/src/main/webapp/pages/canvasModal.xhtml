@@ -28,8 +28,9 @@
 		reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, browserTable2, msnError"/>
 	<a4j:jsFunction name="closeDynamicForm" oncomplete="#{rich:component('canvasModalPanel')}.hide()" />
 	
-	<rich:tabPanel id="canvasModalTabPanel" switchType="ajax">
+	<a4j:region>
 	
+	<rich:tabPanel id="canvasModalTabPanel" switchType="ajax" selectedTab="#{canvasModalBean.selectedTab}" >
 	
 	
 			<div id="domMessageDivModal" style="display: none;">
@@ -42,7 +43,7 @@
 	
 	
 	
-    <rich:tab id="tab1" label="#{messages.label_dynamic_configuration}">
+    <rich:tab id="tab1" label="#{messages.label_dynamic_configuration}" >
 	<rich:panel id="panelDynamicForm" style="border:none;" >
 	
 	
@@ -362,6 +363,9 @@
 			
 		</rich:tab>
 	</rich:tabPanel>
+	
+	</a4j:region>
+	
 	</h:form>
 	
 	

@@ -18,7 +18,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
@@ -83,6 +85,15 @@ public class CanvasModal extends BaseBean implements Serializable {
 	private String tabLegend;
 	
 	private List<String> tableInteractionsColumns = new ArrayList<String>();
+	private String selectedTab;
+
+	public List<String> getTableInteractionsColumns() {
+		return tableInteractionsColumns;
+	}
+
+	public void setTableInteractionsColumns(List<String> tableInteractionsColumns) {
+		this.tableInteractionsColumns = tableInteractionsColumns;
+	}
 
 	/** getKeyAsListNameValue
 	 * 
@@ -308,7 +319,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 	}
 
-
 	/** openTextEditor
 	 * 
 	 * Methods to mount the dynamic form
@@ -320,6 +330,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void openCanvasModal() throws RemoteException {
 		HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
 		request.removeAttribute("msnError");
+		
+		//set the first tab for obj
+		setSelectedTab(getMessageResources("label_dynamic_configuration"));
 		
 		start();
 
@@ -1409,6 +1422,14 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 	public void setTabLegend(String tabLegend) {
 		this.tabLegend = tabLegend;
+	}
+
+	public String getSelectedTab() {
+		return selectedTab;
+	}
+
+	public void setSelectedTab(String selectedTab) {
+		this.selectedTab = selectedTab;
 	}
 
 }

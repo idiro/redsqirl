@@ -76,6 +76,9 @@ function cookiePassword(){
 
 	<div id="domMessageInitial" style="display: none;">
 		<img src="#{facesContext.externalContext.requestContextPath}/image/icons/waiting.gif" />
+		<h:form>
+			<a4j:commandButton value="#{messages.button_cancel}" action="#{userInfoBean.signOut}" onclick="window.stop();jQuery.unblockUI();window.location.reload();" />
+		</h:form>
 	</div>
 
 

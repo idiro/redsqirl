@@ -43,6 +43,23 @@ public class BaseBean {
 
 	}
 	
+	/** getMessageResources
+	 * 
+	 * Methods retrieve message . Retrieves the message from aplication.properties
+	 * 
+	 * @return
+	 * @author Igor.Souza
+	 */
+	public String getMessageResources(String msg){
+
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		String messageBundleName = facesContext.getApplication().getMessageBundle();
+		Locale locale = facesContext.getViewRoot().getLocale();
+		ResourceBundle bundle = ResourceBundle.getBundle(messageBundleName, locale);
+		return bundle.getString(msg);
+
+	}
+	
 	/** mapToList
 	 * 
 	 * Methods to transform the map into a list of the Entry object(value, key). Object used to display dynamic fields

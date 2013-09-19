@@ -497,7 +497,7 @@
 							onstop="jQuery('#canvas1').unblock();" />
 				
 				<a4j:jsFunction id="openModalFunction" name="openModal" action="#{canvasModalBean.openCanvasModal}" oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('canvasModalPanel')}.show() }" 
-					reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError" >
+					reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError, canvasModalTabPanel" >
 					<a4j:actionparam name="paramNameElement" assignTo="#{canvasModalBean.nameElement}" />
 					<a4j:actionparam name="paramPathImage" assignTo="#{canvasModalBean.pathImage}" />
 					<a4j:actionparam name="paramNameWorkflow" value="#{canvasBean.nameWorkflow}" assignTo="#{canvasModalBean.nameElement}" />
