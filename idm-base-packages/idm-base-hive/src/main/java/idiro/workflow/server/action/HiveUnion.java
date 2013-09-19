@@ -76,7 +76,7 @@ public class HiveUnion  extends HiveElement{
 
 	}
 
-	public static void init() throws RemoteException{
+	public void init() throws RemoteException{
 		if(input == null){
 			Map<String, DFELinkProperty> in = new LinkedHashMap<String, DFELinkProperty>();
 			in.put(key_input, new DataProperty(HiveType.class, 2, Integer.MAX_VALUE));

@@ -114,13 +114,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 		return relativePath;
 	}
 
-	/**
-	 * Check if the entry are correct or not for this action.
-	 * 
-	 * @return null if OK, or a description of the error.
-	 * @throws RemoteException
-	 */
-	public String checkEntry() throws RemoteException {
+	public String checkIn() throws RemoteException {
 		String ans = "";
 		Map<String, DFELinkProperty> entry = null;
 		entry = getInput();
@@ -140,7 +134,9 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 						|| prop.getMaxOccurence() < entryComp.size()) {
 					ans += getComponentId()
 							+ " have not the right number of occurence of "
-							+ entryName + "\n";
+							+ entryName +". "
+							+ entryComp.size()+ " is not between "+
+							prop.getMinOccurence() +" and "+prop.getMaxOccurence()+".\n";
 				} else {
 
 					Iterator<DataFlowElement> entryCompIt = entryComp
@@ -167,7 +163,24 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 				}
 			}
 		}
+		if (ans != null && ans.isEmpty()) {
+			ans = null;
+		}
 		logger.debug("Check Entry: "+ans);
+		return ans;
+	}
+	
+	/**
+	 * Check if the entry are correct or not for this action.
+	 * 
+	 * @return null if OK, or a description of the error.
+	 * @throws RemoteException
+	 */
+	public String checkEntry() throws RemoteException {
+		String ans = checkIn();
+		if (ans == null){
+			ans = "";
+		}
 		if (ans.isEmpty()) {
 			ans = checkIntegrationUserVariables();
 			if (ans != null && ans.isEmpty()) {

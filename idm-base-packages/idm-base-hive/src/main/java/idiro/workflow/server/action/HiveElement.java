@@ -61,7 +61,7 @@ public abstract class HiveElement extends DataflowAction {
 	/**
 	 * entries
 	 */
-	protected static Map<String, DFELinkProperty> input;
+	protected Map<String, DFELinkProperty> input;
 	protected Map<String, DFEOutput> output;
 
 	/**
@@ -94,7 +94,7 @@ public abstract class HiveElement extends DataflowAction {
 	 * @param nbInMax
 	 * @throws RemoteException
 	 */
-	protected static void init(int nbInMin, int nbInMax) throws RemoteException{
+	protected void init(int nbInMin, int nbInMax) throws RemoteException{
 		if(input == null){
 			Map<String, DFELinkProperty> in = new LinkedHashMap<String, DFELinkProperty>();
 			in.put(key_input, new DataProperty(HiveTypeWithWhere.class, nbInMin, nbInMax));
