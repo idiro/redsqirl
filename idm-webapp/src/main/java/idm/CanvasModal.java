@@ -73,12 +73,12 @@ public class CanvasModal extends BaseBean implements Serializable {
 	private List<ItemList> listFeature = new ArrayList<ItemList>();
 	private DataFlowElement dfe;
 	private DynamicForm DynamicFormBrowser;
-	
+
 	private String columnEdit;
 	private int rowEdit;
 	private String errorMsg;
 	private String pathImage;
-	
+
 	private String tabTitle;
 	private String tabLegend;
 
@@ -134,7 +134,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 			}
 
 			mountInteractionForm();
-			
+
 
 		}
 
@@ -163,10 +163,10 @@ public class CanvasModal extends BaseBean implements Serializable {
 				dynamicF.getTree().getFirstChild("list").getFirstChild("output").removeAllChildren();
 				dynamicF.getTree().getFirstChild("list").getFirstChild("output").add(dynamicF.getSelectedListOptions());
 
-				
+
 
 			} else if(dynamicF.getDisplayType().equals(DisplayType.appendList)){
-				
+
 				dynamicF.getTree().getFirstChild("applist").getFirstChild("output").removeAllChildren();
 				logger.info(dynamicF.getName()+ "value list size-> " + dynamicF.getSelectedAppendListOptions().size());
 				for (String s : dynamicF.getSelectedAppendListOptions()){
@@ -180,7 +180,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 				logger.info("Browser path -> " + dynamicF.getPathBrowser());
 				dynamicF.getTree().getFirstChild("browse").getFirstChild("output").removeAllChildren();
 				dynamicF.getTree().getFirstChild("browse").getFirstChild("output").add("path").add(dynamicF.getPathBrowser());
-				
+
 
 				for (String nameValue : getKeyAsListNameValueFeature()) {
 					Tree<String> myFeature = dynamicF.getTree().getFirstChild("browse").getFirstChild("output").add("feature");
@@ -195,9 +195,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 				dynamicF.getTree().getFirstChild("editor").getFirstChild("output").removeAllChildren();
 				dynamicF.getTree().getFirstChild("editor").getFirstChild("output").add(getCommand());
 			}else if(dynamicF.getDisplayType().equals(DisplayType.table)){
-				
+
 				dynamicF.getTree().getFirstChild("table").remove("row");
-				
+
 				for (ItemList item : getListGrid()){
 					Tree<String> row = dynamicF.getTree().getFirstChild("table").add("row");
 					logger.info("Table row");
@@ -219,7 +219,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 		}
 
 		String e = getPage().checkPage();
-		
+
 		logger.info("error page -> " + e);
 		if(e != null){
 			error.append(e);
@@ -300,15 +300,19 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 	}
 
+
 	/** openTextEditor
 	 * 
 	 * Methods to mount the dynamic form
 	 * 
 	 * @return 
 	 * @author Igor.Souza
+	 * @throws RemoteException 
 	 */
-	public void openCanvasModal() {
-
+	public void openCanvasModal() throws RemoteException {
+		HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
+		request.removeAttribute("msnError");
+		
 		start();
 
 		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
@@ -320,42 +324,61 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 		logger.info("open element id " + getNameElement());
 
-		try {
+		if(pathImage != null && nameElement != null){
 
-			setDfe(getDf().getElement(getNameElement()));
+			try {
 
-			setListPage(getDfe().getPageList());
+				setDfe(getDf().getElement(getNameElement()));
 
-			setListPageSize(getListPage().size());
+				//validate if you can open or not the dynamic form of the object
+				String error = getDfe().checkIn();
+				
+				logger.info("error " + error);
+				
+				if(error != null){
 
-			//initialise the position of list
-			setListPosition(0);
+					MessageUseful.addErrorMessage(error);
+					request.setAttribute("msnError", "msnError");
 
-			//retrieves the correct page
-			setPage(getListPage().get(getListPosition()));
+				}else{
 
-			setPageTitle(getDfe().getName().replace("_"," "));
 
-			// setPageLegend(getPage().getLegend());
+					setListPage(getDfe().getPageList());
 
-			mountInteractionForm();
-			
-			setFirstPage("S");
-			
-			logger.info("List size " + getListPage().size());
+					setListPageSize(getListPage().size());
 
-			if(getListPageSize() -1 > getListPosition()){
-				setLastPage("N");
-			}else{
-				setLastPage("S");
+					//initialise the position of list
+					setListPosition(0);
+
+					//retrieves the correct page
+					setPage(getListPage().get(getListPosition()));
+
+					setPageTitle(getDfe().getName().replace("_"," "));
+
+					// setPageLegend(getPage().getLegend());
+
+					mountInteractionForm();
+
+					setFirstPage("S");
+
+					logger.info("List size " + getListPage().size());
+
+					if(getListPageSize() -1 > getListPosition()){
+						setLastPage("N");
+					}else{
+						setLastPage("S");
+					}
+
+
+				}
+
+			} catch (RemoteException e) {
+				logger.error(e.getMessage());
+			} catch (Exception e) {
+				logger.error(e);
+				logger.error(e.getMessage());
 			}
 
-
-		} catch (RemoteException e) {
-			logger.error(e.getMessage());
-		} catch (Exception e) {
-			logger.error(e);
-			logger.error(e.getMessage());
 		}
 
 	}
@@ -374,7 +397,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 		setDynamicFormList(new ArrayList<DynamicForm>());
 
-		
+
 		for (DFEInteraction dfeInteraction : getPage().getInteractions()) {
 
 			DynamicForm dynamicF = new DynamicForm();
@@ -387,14 +410,14 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 			setTabTitle(getPage().getTitle());
 			setTabLegend(getPage().getLegend());
-			
+
 			dynamicF.setName(dfeInteraction.getName().replace("_", " "));
 			dynamicF.setLegend(dfeInteraction.getLegend());
 			dynamicF.setDisplayType(dfeInteraction.getDisplay());
 			dynamicF.setTree(dfeInteraction.getTree());
 
 			if(dfeInteraction.getDisplay().equals(DisplayType.list)){
-				
+
 				List<SelectItem> selectItems = new ArrayList<SelectItem>();
 				List<Tree<String>> list = dfeInteraction.getTree().getFirstChild("list").getFirstChild("values").getSubTreeList();
 
@@ -427,7 +450,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 							selectItems.add(new SelectItem(tree.getFirstChild().getHead(), tree.getFirstChild().getHead()));
 						}
 						dynamicF.setAppendListOptions(selectItems);
-						
+
 						if(selectItems.size() > 10){
 							dynamicF.setComboBox("Y");
 						}else{
@@ -450,7 +473,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 				}
 
 			}else if(dfeInteraction.getDisplay().equals(DisplayType.browser)){
-				
+
 				String dataTypeName = dfeInteraction.getTree().getFirstChild("browse").getFirstChild("type").getFirstChild().getHead();
 				logger.info("dataTypeName " + dataTypeName);
 				dynamicF.setDataTypeName(dataTypeName);
@@ -468,33 +491,33 @@ public class CanvasModal extends BaseBean implements Serializable {
 					setDynamicFormBrowser(dynamicF);
 					changePathBrowser();
 				}
-				
+
 
 			}else if(dfeInteraction.getDisplay().equals(DisplayType.helpTextEditor)){
 				setCommand("");
 				if (dfeInteraction.getTree().getFirstChild("editor").getFirstChild("output").getFirstChild() != null){
 					setCommand(dfeInteraction.getTree().getFirstChild("editor").getFirstChild("output").getFirstChild().getHead());
 				}
-				
+
 				mountHelpTextEditorInteraction(dfeInteraction.getTree());
-				
+
 			}else if(dfeInteraction.getDisplay().equals(DisplayType.table)){
 
 				setListConstraint(new HashMap<String, List<SelectItem>>());
-				
+
 				Map<String, List<Map<String, String>>> map = new HashMap<String, List<Map<String, String>>>();
 				List<SelectItem> listFields = new ArrayList<SelectItem>();
-				
+
 				if (dfeInteraction.getTree().getFirstChild("table").getFirstChild("generator") != null){
 					List<Tree<String>> list = dfeInteraction.getTree().getFirstChild("table").getFirstChild("generator").getSubTreeList();
 					if(list != null){
 						for (Tree<String> tree : list) {
 							logger.info("list value " + tree.getFirstChild().getHead());
 							SelectItem e = new SelectItem(tree.getFirstChild("title").getFirstChild().getHead(),
-												tree.getFirstChild("title").getFirstChild().getHead());
+									tree.getFirstChild("title").getFirstChild().getHead());
 							listFields.add(e);
 							map.put(tree.getFirstChild("title").getFirstChild().getHead(), new ArrayList<Map<String, String>>());
-							
+
 							for (Tree<String> treeRows : tree.getChildren("row")){
 								Map<String, String> t = new HashMap<String, String>();
 								for (Tree<String> treeFeat : treeRows.getSubTreeList()){
@@ -507,7 +530,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 				}
 				setRowsMap(map);
 				setListItens(listFields);
-				
+
 				Map<String, String> mapColumns = new HashMap<String, String>();
 				List<Tree<String>> list2 = dfeInteraction.getTree().getFirstChild("table").getFirstChild("columns").getSubTreeList();
 				if(list2 != null){
@@ -526,26 +549,26 @@ public class CanvasModal extends BaseBean implements Serializable {
 							aux = "editor";
 							mountHelpTextEditorInteraction(tree);
 						}
-						
+
 						mapColumns.put(tree.getFirstChild("title").getFirstChild().getHead(), aux);
 					}
 				}
 				setColumnsMap(mapColumns);
-				
+
 				nameValueListGrid = new HashMap<String, String>();
 				Map<String, String> columnsMap = new HashMap<String, String>();
 				for (String column : getColumnsMap().keySet()){
 					columnsMap.put(column,column);
 				}
 				setNameValueListGrid(columnsMap);
-				
+
 				List<ItemList> listGrid = new ArrayList<ItemList>();
 				if (dfeInteraction.getTree().getFirstChild("table").getChildren("row") != null){
 					List<Tree<String>> list = dfeInteraction.getTree().getFirstChild("table").getChildren("row");
 					for (Tree<String> rows : list) {
 
 						ItemList item = new ItemList();
-						
+
 						for (Tree<String> row : rows.getSubTreeList()){
 							item.getNameValue().put(row.getHead(), row.getFirstChild().getHead());
 							logger.info(row.getHead()+" -> "+row.getFirstChild().getHead());
@@ -561,12 +584,12 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 		}
 	}
-	
+
 	private void mountTableInteractionConstraint(Tree<String> dfeInteractionTree) throws RemoteException{
 		List<SelectItem> listFields = new ArrayList<SelectItem>();
 		if (dfeInteractionTree.getFirstChild("constraint").getFirstChild("values") != null){
 			List<Tree<String>> list = dfeInteractionTree.getFirstChild("constraint").getFirstChild("values").getSubTreeList();
-			
+
 			if(list != null){
 				logger.info("list not null: "+list.toString());
 				for (Tree<String> tree : list) {
@@ -577,9 +600,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 			getListConstraint().put(dfeInteractionTree.getFirstChild("title").getFirstChild().getHead(), listFields);
 		}
 	}
-		
-		
-	
+
+
+
 	private void mountHelpTextEditorInteraction(Tree<String> dfeInteractionTree) throws RemoteException{
 		List<Entry> listFields = new ArrayList<Entry>();
 		List<Tree<String>> list = dfeInteractionTree.getFirstChild("editor").getFirstChild("keywords").getSubTreeList();
@@ -588,13 +611,13 @@ public class CanvasModal extends BaseBean implements Serializable {
 			for (Tree<String> tree : list) {
 				logger.info("list value " + tree.getFirstChild().getHead());
 				Entry e = new Entry(tree.getFirstChild("name").getFirstChild().getHead(),
-									tree.getFirstChild("info").getFirstChild().getHead());
+						tree.getFirstChild("info").getFirstChild().getHead());
 				listFields.add(e);
 			}
 		}
 		setListFields(listFields);
-		
-		
+
+
 		List<SelectItem> listCategories = new ArrayList<SelectItem>();
 		list = dfeInteractionTree.getFirstChild("editor").getFirstChild("help").getSubTreeList();
 		if(list != null){
@@ -602,13 +625,13 @@ public class CanvasModal extends BaseBean implements Serializable {
 			for (Tree<String> tree : list) {
 				logger.info("list value " + tree.getHead());
 				SelectItem e = new SelectItem(tree.getHead(),
-											tree.getHead());
+						tree.getHead());
 				listCategories.add(e);
 			}
 		}
 		setListItensTable(listCategories);
-		
-		
+
+
 		Map<String, List<String[]>> map = new HashMap<String, List<String[]>>();
 		list = dfeInteractionTree.getFirstChild("editor").getFirstChild("help").getSubTreeList();
 		if(list != null){
@@ -618,26 +641,26 @@ public class CanvasModal extends BaseBean implements Serializable {
 				if (!map.containsKey(tree.getHead())){
 					map.put(tree.getHead(), new ArrayList<String[]>());
 				}
-				
+
 				for (Tree<String> tree2 : tree.getSubTreeList()){
-					
+
 					String nameFunction = tree2.getFirstChild("name").getFirstChild() != null ? 
 							tree2.getFirstChild("name").getFirstChild().getHead() : "";
-					String inputFunction = tree2.getFirstChild("input").getFirstChild() != null ?
-							tree2.getFirstChild("input").getFirstChild().getHead() : "";
-					String returnFunction = tree2.getFirstChild("return").getFirstChild() != null ?
-							tree2.getFirstChild("return").getFirstChild().getHead() : "";
-				
-					map.get(tree.getHead()).add(new String[]{nameFunction,
-							inputFunction,
-							returnFunction});
+							String inputFunction = tree2.getFirstChild("input").getFirstChild() != null ?
+									tree2.getFirstChild("input").getFirstChild().getHead() : "";
+									String returnFunction = tree2.getFirstChild("return").getFirstChild() != null ?
+											tree2.getFirstChild("return").getFirstChild().getHead() : "";
+
+											map.get(tree.getHead()).add(new String[]{nameFunction,
+													inputFunction,
+													returnFunction});
 				}
 			}
 		}
-		
+
 		setFunctionsMap(map);
 	}
-	
+
 	/** endDynamicForm
 	 * 
 	 * Methods to process the dynamic form
@@ -649,7 +672,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void endDynamicForm() throws RemoteException {
 
 		logger.info("endDynamicForm ");
-		
+
 		mountOutputForm();
 
 		String error = checkNextPage();
@@ -657,7 +680,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 			MessageUseful.addErrorMessage(error);
 			HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
-			
+
 		}
 		setErrorMsg(error);
 
@@ -684,7 +707,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void confirm() {
 
 		logger.info("confirm");
-		
+
 		if (getColumnEdit() != null){
 			getListGrid().get(getRowEdit()).getNameValue().put(getColumnEdit(), getCommandEdit());
 		}
@@ -730,22 +753,22 @@ public class CanvasModal extends BaseBean implements Serializable {
 				if (dfi.getTree().getFirstChild("editor").getFirstChild("output").getFirstChild() != null){
 					oldCommand = dfi.getTree().getFirstChild("editor").getFirstChild("output").getFirstChild().getHead();
 				}
-				
+
 				logger.info("oldCommand -> " + oldCommand);
-				
+
 				dfi.getTree().getFirstChild("editor").getFirstChild("output").removeAllChildren();
 				dfi.getTree().getFirstChild("editor").getFirstChild("output").add(getCommandEdit());
-				
+
 				String e = dfi.check();
-				
+
 				logger.info("error interaction -> " + e);
-				
+
 				if(e != null && e.length() > 0){
 					MessageUseful.addErrorMessage(e);
 					HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
 					request.setAttribute("msnError", "msnError");
 				}
-				
+
 				dfi.getTree().getFirstChild("editor").getFirstChild("output").removeAllChildren();
 				if (oldCommand != null){
 					dfi.getTree().getFirstChild("editor").getFirstChild("output").add(oldCommand);
@@ -780,7 +803,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 		logger.info("tableInteractionAddNewLine");
 
 		ItemList item = new ItemList();
-		
+
 		Map<String, String> type = new HashMap<String, String>();
 		Map<String, String> value = new HashMap<String, String>();
 		logger.info("num columns: "+getColumnsMap().keySet().size());
@@ -790,7 +813,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 		}
 		item.setTypeTableInteraction(type);
 		item.setNameValue(value);
-			
+
 		getListGrid().add(item);
 	}
 
@@ -804,22 +827,22 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void tableInteractionGenerationLines() {
 
 		logger.info("tableInteractionGenerationLines");
-		
+
 		List<ItemList> itemList = new ArrayList<ItemList>();
 		for (Map<String, String> l : getRowsMap().get(this.getList())){
-			
+
 			ItemList item = new ItemList();
-			
+
 			Map<String, String> type = new HashMap<String, String>();
 			Map<String, String> value = new HashMap<String, String>();
-			
+
 			for (String column : getColumnsMap().keySet()){
 				type.put(column, getColumnsMap().get(column));
 				value.put(column, l.get(column));
 			}
 			item.setTypeTableInteraction(type);
 			item.setNameValue(value);
-			
+
 			itemList.add(item);
 		}
 		setListGrid(itemList);
@@ -1033,27 +1056,27 @@ public class CanvasModal extends BaseBean implements Serializable {
 			logger.info("output ok");
 		}
 	}
-	
+
 	public void openHelpTextEditorModal(){
 		logger.info("openHelpTextEditorModal");
 		String command = FacesContext.getCurrentInstance()
-			.getExternalContext().getRequestParameterMap().get("command");
-		
+				.getExternalContext().getRequestParameterMap().get("command");
+
 		String rowKey = FacesContext.getCurrentInstance()
 				.getExternalContext().getRequestParameterMap().get("rowKey");
-		
+
 		String column = FacesContext.getCurrentInstance()
 				.getExternalContext().getRequestParameterMap().get("column");
-		
+
 		if (rowKey != null){
 			setRowEdit(Integer.valueOf(rowKey));
 		}
 		setColumnEdit(column);
-		
+
 		setCommandEdit(command);
 		setList(null);
 	}
-	
+
 	public List<SelectItem> getListItens() {
 		return listItens;
 	}
@@ -1061,7 +1084,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void setListItens(List<SelectItem> listItens) {
 		this.listItens = listItens;
 	}
-	
+
 	public List<SelectItem> getListItensTable() {
 		return listItensTable;
 	}
@@ -1353,7 +1376,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void setErrorMsg(String errorMsg) {
 		this.errorMsg = errorMsg;
 	}
-	
+
 	public String getPathImage() {
 		return pathImage;
 	}
@@ -1377,5 +1400,5 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void setTabLegend(String tabLegend) {
 		this.tabLegend = tabLegend;
 	}
-	
+
 }

@@ -59,7 +59,14 @@ public interface DataFlowElement extends Remote{
 	public String getImage() throws RemoteException;
 	
 	/**
-	 * Check if the entry are correct or not for this action.
+	 * Check if the inputs are correct or not for this action.
+	 * 
+	 * @return null if OK, or a description of the error.
+	 */
+	public String checkIn() throws RemoteException;
+	
+	/**
+	 * Check if the entries (input AND output) are correct or not for this action.
 	 * 
 	 * @return null if OK, or a description of the error.
 	 */
