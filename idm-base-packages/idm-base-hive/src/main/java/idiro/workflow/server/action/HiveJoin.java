@@ -1,7 +1,7 @@
 package idiro.workflow.server.action;
 
-import idiro.utils.OrderedFeatureList;
 import idiro.utils.FeatureList;
+import idiro.utils.OrderedFeatureList;
 import idiro.utils.Tree;
 import idiro.workflow.server.Page;
 import idiro.workflow.server.UserInteraction;
@@ -43,13 +43,14 @@ public class HiveJoin extends HiveElement{
 	public HiveJoin() throws RemoteException {
 		super(3,2,Integer.MAX_VALUE);
 
-		page1 = addPage("Select",
-				"Select Conditions",
+		page1 = addPage("Filters",
+				"Add a condition and/or a partition filter. Note that these filters are applied after joining.",
 				1);
 
 		joinTypeInt = new UserInteraction(
 				key_joinType,
-				"Please specify a join type",
+				"Please specify a join type. The join order is given from top to bottom, "+
+				"left to right in the join relationship, next page.",
 				DisplayType.list,
 				0,
 				0); 
@@ -57,12 +58,12 @@ public class HiveJoin extends HiveElement{
 
 		partInt = new PartitionInteraction(
 				key_partitions,
-				"Please specify the partitions",
+				"",
 				0,
 				1);
 		
 		condInt = new ConditionInteraction(key_condition,
-				"Please specify the condition of the select",
+				"",
 				0,
 				2, 
 				this, 
@@ -72,8 +73,9 @@ public class HiveJoin extends HiveElement{
 		page1.addInteraction(partInt);
 		page1.addInteraction(condInt);
 
-		page2 = addPage("Relationship",
-				"Join Relationship",
+		page2 = addPage("Join Relationship",
+				"Join Relationship to use. The join will be applied from top to bottom. "+
+				"All the tables need to share one column in common.",
 				1);
 
 		jrInt = new JoinRelationInteraction(
@@ -85,13 +87,14 @@ public class HiveJoin extends HiveElement{
 		
 		page2.addInteraction(jrInt);
 		
-		page3 = addPage("Operations",
-				"Join operations",
+		page3 = addPage("Join Operations",
+				"The columns generated are defined on this page. Each row of the table is a new column to generate. "+
+				"The feature name have to be unique and a correct type needs to be assign.",
 				1);
 		
 		tJoinInt = new TableJoinInteraction(
 				key_featureTable,
-				"Please specify the operations to be executed for each feature",
+				"",
 				0,
 				0,
 				this);

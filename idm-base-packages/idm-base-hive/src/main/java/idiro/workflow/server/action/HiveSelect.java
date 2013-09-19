@@ -37,12 +37,15 @@ public class HiveSelect extends HiveElement{
 	public HiveSelect() throws RemoteException {
 		super(2,1,1);
 
-		page1 = addPage("Select",
-				"Select Conditions",
+		page1 = addPage("Filters",
+				"Condition the numbers of row in and out. "+
+			    " The input is controled by a condition, similar to a 'where' statement "+
+				" and the partitions of the input table that is processed. "+
+			    " You can also group on one or several features in order to aggregate data.",
 				1);
 
 		condInt = new ConditionInteraction(key_condition,
-				"Please specify the condition of the select",
+				"Please specify the condition of the select.",
 				0,
 				0, 
 				this, 
@@ -50,13 +53,13 @@ public class HiveSelect extends HiveElement{
 		
 		partInt = new PartitionInteraction(
 				key_partitions,
-				"Please specify the partitions",
+				"Please specify the partitions, if any, on which the statement is processed.",
 				0,
 				1);
 		
 		groupingInt = new UserInteraction(
 				key_grouping,
-				"Please specify to group",
+				"Please specify, if any, the grouping condition.",
 				DisplayType.appendList,
 				0,
 				2); 
@@ -67,11 +70,12 @@ public class HiveSelect extends HiveElement{
 
 
 		page2 = addPage("Feature operations",
-				"Create operation feature per feature",
+				"The columns generated are defined on this page. Each row of the table is a new column to generate. "+
+		        "The feature name have to be unique and a correct type needs to be assign.",
 				1);
 		tSelInt = new TableSelectInteraction(
 				key_featureTable,
-				"Please specify the operations to be executed for each feature",
+				"Please specify the column you would like to generate.",
 				0,
 				0,
 				this);

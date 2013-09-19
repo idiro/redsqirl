@@ -1,7 +1,7 @@
 package idiro.workflow.server.action;
 
-import idiro.utils.OrderedFeatureList;
 import idiro.utils.FeatureList;
+import idiro.utils.OrderedFeatureList;
 import idiro.workflow.server.DataProperty;
 import idiro.workflow.server.Page;
 import idiro.workflow.server.connect.HiveInterface;
@@ -40,12 +40,12 @@ public class HiveUnion  extends HiveElement{
 	public HiveUnion() throws RemoteException {
 		super(2,2,Integer.MAX_VALUE);
 
-		page1 = addPage("Select",
-				"Select Conditions",
+		page1 = addPage("Filters",
+				"Add a condition and/or a partition filter. Note that these filters are applied after the union.",
 				1);
 
 		condInt = new ConditionInteraction(key_condition,
-				"Please specify the condition of the select",
+				"",
 				0,
 				0, 
 				this, 
@@ -54,7 +54,7 @@ public class HiveUnion  extends HiveElement{
 
 		partInt = new PartitionInteraction(
 				key_partitions,
-				"Please specify the partitions",
+				"",
 				0,
 				0); 
 
@@ -62,12 +62,13 @@ public class HiveUnion  extends HiveElement{
 		page1.addInteraction(partInt);
 
 		page2 = addPage("Operations",
-				"Union operations",
+				"The column generated are defined on this page. Each row of the table is a new column to generate. "+
+				"The feature name have to be unique and a correct type needs to be assign.",
 				1);
 		
 		tUnionSelInt = new TableUnionInteraction(
 				key_featureTable,
-				"Please specify the operations to be executed for each feature",
+				"",
 				0,
 				0,
 				this);
