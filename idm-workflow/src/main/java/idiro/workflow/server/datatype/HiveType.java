@@ -58,7 +58,7 @@ public class HiveType extends DataOutput{
 
 	@Override
 	public String getTypeName() throws RemoteException {
-		return "HIVE TABLE";
+		return "Hive Table";
 	}
 
 	@Override

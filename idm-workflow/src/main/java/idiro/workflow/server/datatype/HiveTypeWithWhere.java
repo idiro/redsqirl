@@ -33,6 +33,6 @@ public class HiveTypeWithWhere extends HiveType{
 
 	@Override
 	public String getTypeName() throws RemoteException {
-		return "HIVE TABLE WITH WHERE STATEMENT";
+		return "Hive Partition";
 	}
 }

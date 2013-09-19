@@ -375,7 +375,7 @@ public class Source extends DataflowAction{
 					}
 
 					if (wa.getBrowser().toString().equalsIgnoreCase(type)){
-						values.add("value").add(wa.getClass().getSimpleName());
+						values.add("value").add(wa.getTypeName());
 					}
 				}
 			}
