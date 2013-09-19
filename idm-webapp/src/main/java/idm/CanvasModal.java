@@ -81,6 +81,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 	private String tabTitle;
 	private String tabLegend;
+	
+	private List<String> tableInteractionsColumns = new ArrayList<String>();
 
 	/** getKeyAsListNameValue
 	 * 
@@ -95,6 +97,10 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 	public List<String> getKeyAsListNameValueFeature(){
 		return new ArrayList<String>(nameValueFeature.keySet());
+	}
+	
+	public List<String> getTableInteractionColumns(){
+		return tableInteractionsColumns;
 	}
 
 
@@ -242,6 +248,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void previousPage() throws RemoteException {
 
 		logger.info("previousPage ");
+		
+		checkNextPage();
 
 		setListPosition(getListPosition()-1);
 
@@ -533,6 +541,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 				Map<String, String> mapColumns = new HashMap<String, String>();
 				List<Tree<String>> list2 = dfeInteraction.getTree().getFirstChild("table").getFirstChild("columns").getSubTreeList();
+				tableInteractionsColumns = new ArrayList<String>();
 				if(list2 != null){
 					for (Tree<String> tree : list2) {
 						logger.info("list2 value " + tree.getHead());
@@ -551,6 +560,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 						}
 
 						mapColumns.put(tree.getFirstChild("title").getFirstChild().getHead(), aux);
+						tableInteractionsColumns.add(tree.getFirstChild("title").getFirstChild().getHead());
 					}
 				}
 				setColumnsMap(mapColumns);
