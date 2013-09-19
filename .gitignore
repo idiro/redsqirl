@@ -1,2 +1,7 @@
 bin/
+idm-webapp/src/main/webapp/pages/packages/
 *~
+.classpath
+.project
+.settings
+idm-webapp/src/main/webapp/WEB-INF/classes/
