@@ -166,7 +166,7 @@ public class JoinRelationInteraction extends UserInteraction{
 		//Add rows
 		Iterator<String> tableIn = tablesIn.iterator();
 		while(tableIn.hasNext()){
-			tree.getFirstChild("table").add("row").add(table_table_title).add(tableIn.next());
+			input.add("row").add(table_table_title).add(tableIn.next());
 		}
 
 		return input;

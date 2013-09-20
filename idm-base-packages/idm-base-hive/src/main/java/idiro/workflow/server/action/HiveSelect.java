@@ -73,11 +73,20 @@ public class HiveSelect extends HiveElement{
 				"The columns generated are defined on this page. Each row of the table is a new column to generate. "+
 		        "The feature name have to be unique and a correct type needs to be assign.",
 				1);
+		
+		aliasInt = new AliasInteraction(
+				key_alias, 
+				"Alias under the name the output is recognized", 
+				0, 
+				0);
+		
+		page2.addInteraction(aliasInt);
+		
 		tSelInt = new TableSelectInteraction(
 				key_featureTable,
 				"Please specify the column you would like to generate.",
 				0,
-				0,
+				1,
 				this);
 
 		page2.addInteraction(tSelInt);
@@ -100,6 +109,8 @@ public class HiveSelect extends HiveElement{
 				partInt.update();
 			}else if(interaction.getName().equals(groupingInt.getName())){
 				updateGrouping(interaction.getTree(), in);
+			}else if(interaction.getName().equals(aliasInt.getName())){
+				aliasInt.update();
 			}else if(interaction.getName().equals(tSelInt.getName())){
 				tSelInt.update(in);
 			}

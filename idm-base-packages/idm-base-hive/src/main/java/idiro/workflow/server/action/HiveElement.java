@@ -49,7 +49,8 @@ public abstract class HiveElement extends DataflowAction {
 			key_input = "hive_table",
 			key_condition = "Condition",
 			key_partitions = "Partitions",
-			key_outputType = "Output_Type";
+			key_outputType = "Output_Type",
+			key_alias = "Alias";
 
 	/**
 	 * Common interactions
@@ -57,6 +58,7 @@ public abstract class HiveElement extends DataflowAction {
 	protected ConditionInteraction condInt;
 	protected PartitionInteraction partInt;
 	protected UserInteraction typeOutputInt;
+	protected AliasInteraction aliasInt;
 
 	/**
 	 * entries
@@ -199,6 +201,7 @@ public abstract class HiveElement extends DataflowAction {
 			
 			output.get(key_output).setFeatures(new_features);
 			output.get(key_output).addProperty(HiveType.key_partitions, partitions);
+			output.get(key_output).addProperty(HiveType.key_alias, aliasInt.getAlias());
 		}
 		return error;
 	}

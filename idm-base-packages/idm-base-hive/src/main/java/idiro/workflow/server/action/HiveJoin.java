@@ -92,11 +92,20 @@ public class HiveJoin extends HiveElement{
 				"The feature name have to be unique and a correct type needs to be assign.",
 				1);
 		
+
+		aliasInt = new AliasInteraction(
+				key_alias, 
+				"Alias under the name the output is recognized", 
+				0, 
+				0);
+		
+		page3.addInteraction(aliasInt);
+		
 		tJoinInt = new TableJoinInteraction(
 				key_featureTable,
 				"",
 				0,
-				0,
+				1,
 				this);
 		
 		page3.addInteraction(tJoinInt);
@@ -119,6 +128,8 @@ public class HiveJoin extends HiveElement{
 			updateJoinType();
 		}else if(interaction.getName().equals(jrInt.getName())){
 			jrInt.update();
+		}else if(interaction.getName().equals(aliasInt.getName())){
+			aliasInt.update();
 		}else if(interaction.getName().equals(tJoinInt.getName())){
 			addOrRemoveOutPage();
 			tJoinInt.update();

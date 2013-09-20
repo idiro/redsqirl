@@ -56,7 +56,7 @@ public class HiveUnion  extends HiveElement{
 				key_partitions,
 				"",
 				0,
-				0); 
+				1); 
 
 		//page1.addInteraction(condInt);
 		page1.addInteraction(partInt);
@@ -66,11 +66,19 @@ public class HiveUnion  extends HiveElement{
 				"The feature name have to be unique and a correct type needs to be assign.",
 				1);
 		
+		aliasInt = new AliasInteraction(
+				key_alias, 
+				"Alias under the name the output is recognized", 
+				0, 
+				0);
+		
+		page2.addInteraction(aliasInt);
+		
 		tUnionSelInt = new TableUnionInteraction(
 				key_featureTable,
 				"",
 				0,
-				0,
+				1,
 				this);
 
 		page2.addInteraction(tUnionSelInt);
@@ -101,6 +109,8 @@ public class HiveUnion  extends HiveElement{
 			if(interaction.getName().equals(partInt.getName())){
 				condInt.update();
 				partInt.update();
+			}else if(interaction.getName().equals(aliasInt.getName())){
+				aliasInt.update();
 			}else if(interaction.getName().equals(tUnionSelInt.getName())){
 				tUnionSelInt.update(in);
 			}
