@@ -86,14 +86,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 	
 	private List<String> tableInteractionsColumns = new ArrayList<String>();
 	private String selectedTab;
+	private String showOutputForm;
 
-	public List<String> getTableInteractionsColumns() {
-		return tableInteractionsColumns;
-	}
-
-	public void setTableInteractionsColumns(List<String> tableInteractionsColumns) {
-		this.tableInteractionsColumns = tableInteractionsColumns;
-	}
+	
 
 	/** getKeyAsListNameValue
 	 * 
@@ -328,13 +323,15 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * @throws RemoteException 
 	 */
 	public void openCanvasModal() throws RemoteException {
+		
+		start();
+		
 		HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
 		request.removeAttribute("msnError");
 		
 		//set the first tab for obj
 		setSelectedTab(getMessageResources("label_dynamic_configuration"));
 		
-		start();
 
 		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 
@@ -376,8 +373,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 					setPageTitle(getDfe().getName().replace("_"," "));
 
-					// setPageLegend(getPage().getLegend());
-
 					mountInteractionForm();
 
 					setFirstPage("S");
@@ -400,6 +395,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 				logger.error(e.getMessage());
 			}
 
+			//mount output tab
+			mountOutputForm();
+			
 		}
 
 	}
@@ -1024,11 +1022,12 @@ public class CanvasModal extends BaseBean implements Serializable {
 	}
 
 	public void mountOutputForm() throws RemoteException{
+		
 		logger.info("mountOutputForm");
+		
 		if (getDfe().getDFEOutput() == null){
 			getDfe().updateOut();
-		}
-		else if (!getDfe().getDFEOutput().isEmpty()){
+		}else if (!getDfe().getDFEOutput().isEmpty()){
 			setOutputFormList(new ArrayList<OutputForm>());
 			for (Map.Entry<String, DFEOutput> e : getDfe().getDFEOutput().entrySet()){
 				OutputForm of = new OutputForm();
@@ -1050,6 +1049,13 @@ public class CanvasModal extends BaseBean implements Serializable {
 		}else{
 			setOutputFormList(new ArrayList<OutputForm>());
 		}
+		
+		if(getOutputFormList().isEmpty()){
+			setShowOutputForm("N");
+		}else{
+			setShowOutputForm("S");
+		}
+		
 	}
 
 	public void changePathOutputBrowser() throws RemoteException {
@@ -1430,6 +1436,22 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 	public void setSelectedTab(String selectedTab) {
 		this.selectedTab = selectedTab;
+	}
+	
+	public List<String> getTableInteractionsColumns() {
+		return tableInteractionsColumns;
+	}
+
+	public void setTableInteractionsColumns(List<String> tableInteractionsColumns) {
+		this.tableInteractionsColumns = tableInteractionsColumns;
+	}
+
+	public String getShowOutputForm() {
+		return showOutputForm;
+	}
+
+	public void setShowOutputForm(String showOutputForm) {
+		this.showOutputForm = showOutputForm;
 	}
 
 }
