@@ -280,7 +280,7 @@
 	
 	 </rich:tab>
         
-		<rich:tab id="outputTab" action="#{canvasModalBean.mountOutputForm}" label="#{messages.label_dynamic_data}" rerender="dataOutputForm">
+		<rich:tab id="outputTab" label="#{messages.label_dynamic_data}" rerender="dataOutputForm" rendered="#{canvasModalBean.showOutputForm == 'S'}" >
 
 			<h:panelGrid id="dataOutputForm">
 				<a4j:repeat value="#{canvasModalBean.outputFormList}" var="item"
@@ -316,8 +316,10 @@
 					</h:panelGrid>
 				</a4j:repeat>
 				
-				<a4j:commandButton value="Apply" action="#{canvasModalBean.confirmOutput}" 
-					oncomplete="#{rich:component('canvasModalPanel')}.hide()"/>
+				<h:panelGrid columns="2">
+					<a4j:commandButton value="#{messages.button_apply}" action="#{canvasModalBean.confirmOutput}" />
+					<a4j:commandButton value="#{messages.button_ok}" action="#{canvasModalBean.confirmOutput}" oncomplete="#{rich:component('canvasModalPanel')}.hide()"/>
+				</h:panelGrid>
 
 			</h:panelGrid>
 			
