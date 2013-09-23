@@ -20,6 +20,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.WordUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 
@@ -98,7 +99,8 @@ public class CanvasBean extends BaseBean implements Serializable{
 		
 		List<String[]> helpList = new ArrayList<String[]>();
 		for (String[] e : wf.getAllWA()){
-			helpList.add(new String[]{e[0], e[2]});
+			String name = WordUtils.capitalizeFully(e[0].replace("_", " "));
+			helpList.add(new String[]{name, e[2]});
 		}
 		return helpList;
 	}
