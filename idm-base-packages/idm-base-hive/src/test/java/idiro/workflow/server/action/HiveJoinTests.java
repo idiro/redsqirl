@@ -11,6 +11,7 @@ import idiro.workflow.test.TestUtils;
 
 import java.rmi.RemoteException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -90,7 +91,7 @@ public class HiveJoinTests {
 				HiveJoin.key_input, idHS);
 		assertTrue("hive select add input: "+error,error == null);
 		
-		updateHive(w,hive,TestUtils.getTableName(1),TestUtils.getTableName(2),hInt);
+		updateHive(w,hive,TestUtils.getTablePath(1),TestUtils.getTablePath(2),hInt);
 		logger.debug("Features "+hive.getDFEOutput().get(HiveJoin.key_output).getFeatures());
 		
 		hive.getDFEOutput().get(HiveJoin.key_output).generatePath(
@@ -105,11 +106,22 @@ public class HiveJoinTests {
 	public void updateHive(
 			Workflow w,
 			HiveJoin hive,
-			String table_from_1,
-			String table_from_2,
+			String path_1,
+			String path_2,
 			HiveInterface hInt) throws RemoteException, Exception{
 		
 		logger.debug("update hive...");
+		String alias1 = null;
+		String alias2 = null;
+		Iterator<String> itAlias = hive.getAliases().keySet().iterator();
+		while(itAlias.hasNext()){
+			String swp = itAlias.next();
+			if(hive.getAliases().get(swp).getPath().equals(path_1)){
+				alias1 = swp;
+			}else{
+				alias2 = swp;
+			}
+		}
 		hive.updateJoinType();
 		hive.update(hive.getCondInt());
 		hive.update(hive.getPartInt());
@@ -117,12 +129,13 @@ public class HiveJoinTests {
 		hive.update(jri);
 		{
 			Tree<String> out = jri.getTree().getFirstChild("table");
+			out.removeAllChildren();
 			Tree<String> rowId = out.add("row");
-			rowId.add(JoinRelationInteraction.table_table_title).add(table_from_1);
-			rowId.add(JoinRelationInteraction.table_feat_title).add(table_from_1+".ID");
+			rowId.add(JoinRelationInteraction.table_table_title).add(alias1);
+			rowId.add(JoinRelationInteraction.table_feat_title).add(alias1+".ID");
 			rowId = out.add("row");
-			rowId.add(JoinRelationInteraction.table_table_title).add(table_from_2);
-			rowId.add(JoinRelationInteraction.table_feat_title).add(table_from_2+".ID");
+			rowId.add(JoinRelationInteraction.table_table_title).add(alias2);
+			rowId.add(JoinRelationInteraction.table_feat_title).add(alias2+".ID");
 		}
 		
 		TableJoinInteraction tsi = hive.gettJoinInt();
@@ -131,15 +144,15 @@ public class HiveJoinTests {
 			Tree<String> out = tsi.getTree().getFirstChild("table");
 			Tree<String> rowId = out.add("row");
 			rowId.add(TableJoinInteraction.table_feat_title).add("ID");
-			rowId.add(TableJoinInteraction.table_op_title).add(table_from_1+".ID");
+			rowId.add(TableJoinInteraction.table_op_title).add(alias1+".ID");
 			rowId.add(TableJoinInteraction.table_type_title).add("STRING");
 			rowId = out.add("row");
 			rowId.add(TableJoinInteraction.table_feat_title).add("VALUE_1");
-			rowId.add(TableJoinInteraction.table_op_title).add(table_from_1+".VALUE");
+			rowId.add(TableJoinInteraction.table_op_title).add(alias1+".VALUE");
 			rowId.add(TableJoinInteraction.table_type_title).add("INT");
 			rowId = out.add("row");
 			rowId.add(TableJoinInteraction.table_feat_title).add("VALUE_2");
-			rowId.add(TableJoinInteraction.table_op_title).add(table_from_2+".VALUE");
+			rowId.add(TableJoinInteraction.table_op_title).add(alias2+".VALUE");
 			rowId.add(TableJoinInteraction.table_type_title).add("INT");
 		}
 

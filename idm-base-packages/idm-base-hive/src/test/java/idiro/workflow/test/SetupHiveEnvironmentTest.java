@@ -28,7 +28,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-	/*ConditionInteractionTests.class,
+	ConditionInteractionTests.class,
 	PartitionInteractionTests.class,
 	TableSelectInteractionTests.class,
 	JoinRelationInteractionTests.class,
@@ -36,7 +36,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	TableUnionInteractionTests.class,
 	HiveSelectTests.class,
 	HiveUnionTests.class,
-	HiveJoinTests.class*/
+	HiveJoinTests.class
 	})
 public class SetupHiveEnvironmentTest {
 

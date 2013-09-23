@@ -65,8 +65,8 @@ Logger logger = Logger.getLogger(getClass());
 		try{
 			DataFlowElement src = getSource();
 			HiveElement hs = new HiveSelect();
-			src.setComponentId("1");
-			hs.setComponentId("2");
+			src.setComponentId("a1");
+			hs.setComponentId("a2");
 			error = src.addOutputComponent(Source.out_name, hs);
 			assertTrue("source add output: "+error,error == null);
 			error = hs.addInputComponent(HiveSelect.key_input, src);
@@ -80,31 +80,31 @@ Logger logger = Logger.getLogger(getClass());
 			{
 				out.add("value").add("dt='blablabla'");
 				error = pi.check();
-				assertTrue("check: "+out.getFirstChild().getFirstChild().getHead(),error == null);
+				assertTrue("check: "+out.getFirstChild("value").getFirstChild().getHead(),error == null);
 				out.removeAllChildren();
 			}
 			{
 				out.add("value").add("dt=blablabla");
 				error = pi.check();
-				assertTrue("check: "+out.getFirstChild().getFirstChild().getHead(),error != null);
+				assertTrue("check: "+out.getFirstChild("value").getFirstChild().getHead(),error != null);
 				out.removeAllChildren();
 			}
 			{
 				out.add("value").add("dt=\"blablabla\"");
 				error = pi.check();
-				assertTrue("check: "+out.getFirstChild().getFirstChild().getHead(),error != null);
+				assertTrue("check: "+out.getFirstChild("value").getFirstChild().getHead(),error != null);
 				out.removeAllChildren();
 			}
 			{
 				out.add("value").add("dt='blab=labla'");
 				error = pi.check();
-				assertTrue("check: "+out.getFirstChild().getFirstChild().getHead(),error == null);
+				assertTrue("check: "+out.getFirstChild("value").getFirstChild().getHead(),error == null);
 				out.removeAllChildren();
 			}
 			{
 				out.add("value").add("dt'=blablabla'");
 				error = pi.check();
-				assertTrue("check: "+out.getFirstChild().getFirstChild().getHead(),error != null);
+				assertTrue("check: "+out.getFirstChild("value").getFirstChild().getHead(),error != null);
 				out.removeAllChildren();
 			}
 			

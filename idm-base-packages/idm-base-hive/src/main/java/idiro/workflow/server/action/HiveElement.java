@@ -19,12 +19,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Common functionalities for a Hive action.
@@ -45,8 +42,8 @@ public abstract class HiveElement extends DataflowAction {
 	/**
 	 * Names of different elements
 	 */
-	public static final String key_output = "hive_table",
-			key_input = "hive_table",
+	public static final String key_output = "out",
+			key_input = "in",
 			key_condition = "Condition",
 			key_partitions = "Partitions",
 			key_outputType = "Output_Type",
@@ -58,7 +55,6 @@ public abstract class HiveElement extends DataflowAction {
 	protected ConditionInteraction condInt;
 	protected PartitionInteraction partInt;
 	protected UserInteraction typeOutputInt;
-	protected AliasInteraction aliasInt;
 
 	/**
 	 * entries
@@ -125,23 +121,6 @@ public abstract class HiveElement extends DataflowAction {
 	 * @throws RemoteException
 	 */
 	public abstract FeatureList getNewFeatures() throws RemoteException;
-
-	
-	/**
-	 * Get the input tables.
-	 * @return
-	 * @throws RemoteException
-	 */
-	public Set<String> getInTables() throws RemoteException{
-		Set<String> ans = new LinkedHashSet<String>();
-		HiveInterface hInt = new HiveInterface();
-		List<DFEOutput> lOut = getDFEInput().get(key_input);
-		Iterator<DFEOutput> it = lOut.iterator();
-		while(it.hasNext()){
-			ans.add(hInt.getTableAndPartitions(it.next().getPath())[0]);
-		}
-		return ans; 
-	}
 	
 	@Override
 	public boolean writeOozieActionFiles(File[] files) throws RemoteException {
@@ -201,7 +180,6 @@ public abstract class HiveElement extends DataflowAction {
 			
 			output.get(key_output).setFeatures(new_features);
 			output.get(key_output).addProperty(HiveType.key_partitions, partitions);
-			output.get(key_output).addProperty(HiveType.key_alias, aliasInt.getAlias());
 		}
 		return error;
 	}
