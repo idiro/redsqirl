@@ -1465,4 +1465,15 @@ var countObj;
 				
 				return [polygon, polygonTab, polygonTabImage];
 			}
+		   
+		    function removeLink(name){
+		    	for(var i = 0; i < layer.getChildren().length; i++) {
+		    		var arrow = layer.getChildren()[i];
+					if(arrow.getName() == name){
+						arrow.remove();
+						layer.draw();
+						return;
+					}
+				}
+		    }
 		  
