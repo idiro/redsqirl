@@ -22,14 +22,8 @@
    <PROCESS-ITEM-OUTPUT ID="signout::#pages#initial.xhtml" NAME="output"
     PATH="/pages/initial.xhtml" TARGET="rules:#pages#initial.xhtml"
     TITLE="signout" model-entity="JSFProcessItemOutput"/>
-  </PROCESS-ITEM>
- </PROCESS-ITEM>
- <PROCESS-ITEM NAME="rules:#pages#canvas.jsf" PATH="/pages/canvas.jsf"
-  SHAPE="32,17,0,0" model-entity="JSFProcessGroup">
-  <PROCESS-ITEM ID="rules:#pages#canvas.jsf:0" NAME="item"
-   PATH="/pages/canvas.jsf" model-entity="JSFProcessItem">
    <PROCESS-ITEM-OUTPUT ID="loginPage::#pages#initial.xhtml"
-    NAME="output" PATH="/pages/initial.xhtml"
+    NAME="output1" PATH="/pages/initial.xhtml"
     TARGET="rules:#pages#initial.xhtml" TITLE="loginPage" model-entity="JSFProcessItemOutput"/>
   </PROCESS-ITEM>
  </PROCESS-ITEM>
