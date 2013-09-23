@@ -169,7 +169,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 		logger.debug("Check Entry: "+ans);
 		return ans;
 	}
-	
+
 	/**
 	 * Check if the entry are correct or not for this action.
 	 * 
@@ -268,23 +268,23 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 
 	public String readValuesXml(Node n) {
 		String error = null;
-		
-			NodeList nl = n.getChildNodes();
-			for(int i = 0; i < nl.getLength(); ++i){
-				Node cur = nl.item(i);
-				String name =  cur.getNodeName();
-				logger.debug(componentId+": loads "+name+"...");
-				try {
-					DFEInteraction intCur = getInteraction(name);
-					if(intCur != null){
-						intCur.readXml(cur.getFirstChild());
-					}
-				} catch (Exception e) {
-					error = componentId+": Fail to set values in the workflow";
-				}
-			}
 
-		
+		NodeList nl = n.getChildNodes();
+		for(int i = 0; i < nl.getLength(); ++i){
+			Node cur = nl.item(i);
+			String name =  cur.getNodeName();
+			logger.debug(componentId+": loads "+name+"...");
+			try {
+				DFEInteraction intCur = getInteraction(name);
+				if(intCur != null){
+					intCur.readXml(cur.getFirstChild());
+				}
+			} catch (Exception e) {
+				error = componentId+": Fail to set values in the workflow";
+			}
+		}
+
+
 		if (error != null) {
 			waLogger.error(error);
 		}
@@ -342,6 +342,48 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 		return ans;
 	}
 
+
+	public Map<String,DFEOutput> getAliases()  throws RemoteException {
+		Map<String,DFEOutput> ans = new LinkedHashMap<String,DFEOutput>();
+		Map<String,List<DataFlowElement> > in = getInputComponent(); 
+		Iterator<String> it = in.keySet().iterator();
+		while(it.hasNext()){
+			Iterator<DataFlowElement> it2 = in.get(it.next()).iterator();
+			while(it2.hasNext()){
+				DataFlowElement cur = it2.next();
+				String out_id = findNameOf(
+						cur.getOutputComponent(),
+						this); 
+				ans.put(
+						cur.getComponentId()+"_"+out_id,
+						cur.getDFEOutput().get(out_id));
+			}
+		}
+		return ans;
+	}
+	
+	public Map<String,Map<String,DFEOutput>> getAliasesPerInput() throws RemoteException {
+		Map<String,Map<String,DFEOutput> > ans = new LinkedHashMap<String,Map<String,DFEOutput>>();
+		Map<String,List<DataFlowElement> > in = getInputComponent(); 
+		Iterator<String> it = in.keySet().iterator();
+		while(it.hasNext()){
+			String inName = it.next();
+			Map<String,DFEOutput> ansCur = new LinkedHashMap<String,DFEOutput>();
+			ans.put(inName,ansCur);
+			Iterator<DataFlowElement> it2 = in.get(inName).iterator();
+			while(it2.hasNext()){
+				DataFlowElement cur = it2.next();
+				String out_id = findNameOf(
+						cur.getOutputComponent(),
+						this); 
+				ansCur.put(
+						cur.getComponentId()+"_"+out_id,
+						cur.getDFEOutput().get(out_id));
+			}
+		}
+		return ans;
+	}
+
 	/**
 	 * Find in which name a WorkflowAction is classified
 	 * 
@@ -349,7 +391,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 	 * @param wa
 	 * @return
 	 */
-	protected String findNameOf(Map<String, List<DataFlowElement>> map,
+	public String findNameOf(Map<String, List<DataFlowElement>> map,
 			DataflowAction wa) {
 		String ans = null;
 		Iterator<String> itS = map.keySet().iterator();

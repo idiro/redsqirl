@@ -1,5 +1,7 @@
 package idiro.workflow.server.interfaces;
 
+import idiro.workflow.server.WorkflowPrefManager;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
@@ -104,6 +106,14 @@ public interface DataFlow extends Remote{
 	 */
 	public String addElement(String elementName) throws RemoteException, Exception;
 	
+	/**
+	 * Change the id of an element
+	 * @param oldId The old id
+	 * @param newId The new id
+	 * @return The error if any or null
+	 * @throws RemoteException
+	 */
+	public String changeElementId(String oldId, String newId) throws RemoteException;
 	
 	public String removeElement(String componentId) throws RemoteException, Exception;
 	

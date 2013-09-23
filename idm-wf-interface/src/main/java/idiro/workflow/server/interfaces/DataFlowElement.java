@@ -107,6 +107,20 @@ public interface DataFlowElement extends Remote{
 	public Map<String, List<DFEOutput>> getDFEInput() throws RemoteException;
 
 	/**
+	 * Get a suggested alias to use in the interactions for each output order by input.
+	 * @return
+	 * @throws RemoteException
+	 */
+	public Map<String,Map<String,DFEOutput>> getAliasesPerInput() throws RemoteException;
+	
+	/**
+	 * Get a suggested alias to use in the interactions for each output.
+	 * @return
+	 * @throws RemoteException
+	 */
+	public Map<String,DFEOutput> getAliases()  throws RemoteException;
+	
+	/**
 	 * Get the interaction corresponding to a name
 	 * @param name name of the interaction
 	 * @return
