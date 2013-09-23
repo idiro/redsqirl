@@ -119,6 +119,9 @@ public class CanvasBean extends BaseBean implements Serializable{
 		String nameElement = params.get("paramNameElement");
 		String paramGroupID = params.get("paramGroupID");
 
+		logger.info("nameElement " + nameElement);
+		logger.info("paramGroupID " + paramGroupID);
+		
 		try {
 			DataFlow df = getDf();
 			
@@ -410,6 +413,20 @@ public class CanvasBean extends BaseBean implements Serializable{
 			getworkFlowInterface().addWorkflow(getNameWorkflow());
 			setDf(getworkFlowInterface().getWorkflow(getNameWorkflow()));
 		}
+	}
+	
+	
+	/** openCanvas
+	 * 
+	 * Methods to clean the outputs from all canvas
+	 * 
+	 * @return 
+	 * @author Igor.Souza
+	 */
+	public void cleanCanvas() {
+		
+		
+		
 	}
 	
 	public String getIdElement(String idGroup){

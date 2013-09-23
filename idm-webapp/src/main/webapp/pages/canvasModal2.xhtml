@@ -155,7 +155,7 @@
 	
 	<br/>
 
-	<a4j:commandButton action="#{canvasModalBean.confirm}" value="#{messages.button_ok}" onclick="#{rich:component('textEditorPanel')}.hide();" reRender="command,tableInteraction" />
+	<a4j:commandButton action="#{canvasModalBean.confirm}" value="#{messages.button_ok}" oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('textEditorPanel')}.hide() };" reRender="command,tableInteraction, msnError" />
 	<span>&nbsp;&nbsp;</span>
 	<a4j:commandButton action="#{canvasModalBean.cancel}" value="#{messages.button_cancel}" onclick="#{rich:component('textEditorPanel')}.hide();" />
 	<span>&nbsp;&nbsp;</span>

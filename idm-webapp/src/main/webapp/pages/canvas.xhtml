@@ -600,6 +600,10 @@
 					</f:facet>
 
 					<rich:menuItem submitMode="ajax"
+						value="#{messages.label_menu_clean}"
+						action="#{canvasBean.cleanCanvas}" />
+
+					<rich:menuItem submitMode="ajax"
 						value="#{messages.label_menu_runproject}"
 						action="#{canvasBean.runWorkflow}" />
 
