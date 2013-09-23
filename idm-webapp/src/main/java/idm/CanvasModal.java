@@ -1171,7 +1171,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * 
 	 * Methods to clean the outputs from the obj
 	 * 
-	 * @return 
+	 * @return
 	 * @author Igor.Souza
 	 */
 	public void cleanObj() {
