@@ -102,15 +102,18 @@
 						var="item" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 						enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
 						
-						<rich:columns value="#{canvasModalBean.keyAsListNameValueListGrid}" var="column" index="ind" 
-							style="border-bottom:0px;border-right:0px;" >
+						<rich:column id="browserTable1Col1" rendered="#{canvasModalBean.listGrid != null and not empty canvasModalBean.listGrid}" >
 							<f:facet name="header">
-								<h:outputText value="#{column}" />
+								<h:outputText value="#{messages.label_properties}" />
 							</f:facet>
-							
-							<h:inputText value="#{item.nameValue[column]}" style="width:125px;" />
-							
-						</rich:columns>
+							<h:inputText value="#{item.propertie}" style="width:125px;" readonly="true" />
+						</rich:column>
+						<rich:column id="browserTable1Col2" rendered="#{canvasModalBean.listGrid != null and not empty canvasModalBean.listGrid}" >
+							<f:facet name="header">
+								<h:outputText value="#{messages.label_value}" />
+							</f:facet>
+							<h:inputText value="#{item.value}" style="width:125px;" />
+						</rich:column>
 		
 					</rich:dataTable>
 				
@@ -270,6 +273,8 @@
 			
 			<a4j:commandButton action="#{canvasModalBean.previousPage}" value="#{messages.button_previous}" rendered="#{canvasModalBean.firstPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, msnError" />
 			
+			<a4j:commandButton action="#{canvasModalBean.applyPage}" value="#{messages.button_apply}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, browserTable2, msnError" />
+
 			<a4j:commandButton action="#{canvasModalBean.nextPage}" value="#{messages.button_next}" rendered="#{canvasModalBean.lastPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, browserTable2, msnError" />
 			
 			<a4j:commandButton onclick="endDynamicForm()" value="#{messages.button_ok}" rendered="#{canvasModalBean.lastPage == 'S'}"/>
