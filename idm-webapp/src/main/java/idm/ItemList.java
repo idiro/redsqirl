@@ -19,12 +19,15 @@ public class ItemList implements Serializable{
 	private boolean selected;
 	private String stringSelectedDestination;
 	private String idSelected;
+	private String propertie;
+	private String value;
 	
 	private Map<String, String> typeTableInteraction = new HashMap<String, String>();
 	private Map<String, String> nameValue = new HashMap<String, String>();
 	private Map<String, String> nameValueEdit = new HashMap<String, String>();
 	private Map<String, Boolean> nameIsConst = new HashMap<String, Boolean>();
 	private Map<String, Boolean> valueHasLineBreak = new HashMap<String, Boolean>();
+	private Map<String, String> nameValueGrid = new HashMap<String, String>();
 	
 	/*
 	 *
@@ -125,6 +128,30 @@ public class ItemList implements Serializable{
 
 	public void setValueHasLineBreak(Map<String, Boolean> valueHasLineBreak) {
 		this.valueHasLineBreak = valueHasLineBreak;
+	}
+
+	public Map<String, String> getNameValueGrid() {
+		return nameValueGrid;
+	}
+
+	public void setNameValueGrid(Map<String, String> nameValueGrid) {
+		this.nameValueGrid = nameValueGrid;
+	}
+
+	public String getPropertie() {
+		return propertie;
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setPropertie(String propertie) {
+		this.propertie = propertie;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
 	}
 	
 }

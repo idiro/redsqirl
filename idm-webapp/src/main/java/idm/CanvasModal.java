@@ -110,7 +110,28 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public List<String> getTableInteractionColumns(){
 		return tableInteractionsColumns;
 	}
+	
+	
+	/** applyPage
+	 * 
+	 * Methods to apply the page
+	 * 
+	 * @return 
+	 * @author Igor.Souza
+	 * @throws RemoteException 
+	 */
+	public void applyPage() throws RemoteException {
+		
+		logger.info("applyPage ");
 
+		String error = checkNextPage();
+		if(error.length() > 1){
+			MessageUseful.addErrorMessage(error);
+			HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
+		}
+		
+	}
 
 	/** nextPage
 	 * 
@@ -195,6 +216,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 				dynamicF.getTree().getFirstChild("browse").getFirstChild("output").removeAllChildren();
 				dynamicF.getTree().getFirstChild("browse").getFirstChild("output").add("path").add(dynamicF.getPathBrowser());
 
+				
+				for (ItemList itemList : dynamicF.getListGrid()) {
+					Tree<String> myProperty = dynamicF.getTree().getFirstChild("browse").getFirstChild("output").add("property");
+					myProperty.add(itemList.getPropertie()).add(itemList.getValue());
+				}
 
 				for (String nameValue : getKeyAsListNameValueFeature()) {
 					Tree<String> myFeature = dynamicF.getTree().getFirstChild("browse").getFirstChild("output").add("feature");
@@ -497,6 +523,10 @@ public class CanvasModal extends BaseBean implements Serializable {
 				}
 
 			}else if(dfeInteraction.getDisplay().equals(DisplayType.browser)){
+				
+				//clean the map
+				setListFeature(new ArrayList<ItemList>());
+				setListGrid(new ArrayList<ItemList>());
 
 				String dataTypeName = dfeInteraction.getTree().getFirstChild("browse").getFirstChild("type").getFirstChild().getHead();
 				logger.info("dataTypeName " + dataTypeName);
@@ -958,8 +988,25 @@ public class CanvasModal extends BaseBean implements Serializable {
 			List<String> outputLines = getDfe().getDFEOutput().get("source").select(10);
 			logger.info("outputLines " + outputLines);
 
+			
+			//getDfe().getDFEOutput().get("source").addProperty("alias", "xxx");
+			
+			List<ItemList> listObjGrid = new ArrayList<ItemList>();
 			Map<String, String> outputPropertiesMap = getDfe().getDFEOutput().get("source").getProperties();
 			logger.info("outputPropertiesMap " + outputPropertiesMap);
+			
+			for (String value : outputPropertiesMap.keySet()) {
+				
+				ItemList item = new ItemList();
+				item.setSelected(false);
+				item.setPropertie(value);
+				item.setValue(outputPropertiesMap.get(value));
+				
+				listObjGrid.add(item);
+			}
+			dynamicForm.setListGrid(listObjGrid);
+			setListGrid(listObjGrid);
+			
 
 			Map<String, String> nameValueFeature = new HashMap<String, String>();
 			List<ItemList> listObj = new ArrayList<ItemList>();
