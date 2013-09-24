@@ -35,7 +35,7 @@ public class JoinRelationInteraction extends UserInteraction{
 	private HiveJoin hj;
 
 	public static final String table_table_title = "Table",
-			table_feat_title = "Join Feature";
+			table_feat_title = "Joining-condition";
 
 	public JoinRelationInteraction(String name, String legend,
 			int column, int placeInColumn, HiveJoin hj)

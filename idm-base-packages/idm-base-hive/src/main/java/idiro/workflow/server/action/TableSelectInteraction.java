@@ -1,7 +1,7 @@
 package idiro.workflow.server.action;
 
-import idiro.utils.OrderedFeatureList;
 import idiro.utils.FeatureList;
+import idiro.utils.OrderedFeatureList;
 import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.UserInteraction;
@@ -35,7 +35,7 @@ public class TableSelectInteraction extends UserInteraction{
 	private HiveSelect hs;
 
 	public static final String table_op_title = "Operation",
-			table_feat_title = "Feature_name",
+			table_feat_title = "Name",
 			table_type_title = "Type";
 
 	public TableSelectInteraction(String name, String legend,
