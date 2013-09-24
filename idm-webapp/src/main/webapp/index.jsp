@@ -2,6 +2,6 @@
 <html>
 <head></head>
 <body>
-	<jsp:forward page="/pages/initial.jsf" />
+	<jsp:forward page="/pages/initial.xhtml" />
 </body>
 </html>

@@ -439,6 +439,20 @@ public class CanvasBean extends BaseBean implements Serializable{
 		getDf().changeElementId(oldId, getIdElement());
 	}
 	
+	/** initial
+	 * 
+	 * Methods to drive to the main screen
+	 * 
+	 * @return 
+	 * @author Igor.Souza
+	 */
+	public String initial(){
+
+		logger.info("initial");
+
+		return "initial";
+	}
+	
 	public String getIdElement(String idGroup){
 		return getIdMap().get(idGroup);
 	}
