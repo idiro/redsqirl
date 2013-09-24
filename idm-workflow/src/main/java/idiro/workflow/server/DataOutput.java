@@ -186,6 +186,15 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 	public void removeProperty(String key){
 		dataProperty.remove(key);
 	}
+	
+	@Override
+	public String clean() throws RemoteException{
+		String err = null;
+		if(savingState != SavingState.RECORDED && isPathExists()){
+			err = remove();
+		}
+		return err;
+	}
 
 	/**
 	 * @return the path

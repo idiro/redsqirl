@@ -123,6 +123,11 @@ public interface DFEOutput extends Remote{
 	public String remove() throws RemoteException;
 	
 	/**
+	 * Delete immediately the pointed output if it is a temporary or a buffered output.
+	 */
+	public String clean() throws RemoteException;
+	
+	/**
 	 * Xml code to Delete the pointed output from an oozie action
 	 * @throws RemoteException
 	 */

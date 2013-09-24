@@ -7,7 +7,6 @@ import idiro.workflow.server.action.HiveSelectT;
 import idiro.workflow.server.action.Source;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.enumeration.SavingState;
-import idiro.workflow.server.interfaces.DataFlowElement;
 import idiro.workflow.test.TestUtils;
 
 import java.rmi.RemoteException;
@@ -28,13 +27,13 @@ public class OozieManagerTests {
 		return ans;
 	}
 	
-	public DataFlowElement createSrc(
+	public DataflowAction createSrc(
 			Workflow w,
 			HiveInterface hInt, 
 			String new_path1 ) throws RemoteException, Exception{
 		
 		String idSource = w.addElement((new Source()).getName());
-		DataFlowElement src = w.getElement(idSource);
+		DataflowAction src = (DataflowAction) w.getElement(idSource);
 		
 		assertTrue("create "+new_path1,
 				hInt.create(new_path1, getColumns()) == null
@@ -63,15 +62,15 @@ public class OozieManagerTests {
 		return src;
 	}
 	
-	public DataFlowElement createHiveWithSrc(
+	public DataflowAction createHiveWithSrc(
 			Workflow w,
-			DataFlowElement src,
+			DataflowAction src,
 			HiveInterface hInt) throws RemoteException, Exception{
 		String error = null;
 		String idHS = w.addElement((new HiveSelectT()).getName());
 		logger.debug("Hive select: "+idHS);
 		
-		DataFlowElement hive = w.getElement(idHS);
+		DataflowAction hive = (DataflowAction) w.getElement(idHS);
 		
 		w.addLink(
 				Source.out_name, src.getComponentId(), 
@@ -95,15 +94,15 @@ public class OozieManagerTests {
 		return hive;
 	}
 	
-	public DataFlowElement createHiveWithHive(
+	public DataflowAction createHiveWithHive(
 			Workflow w,
-			DataFlowElement src,
+			DataflowAction src,
 			HiveInterface hInt) throws RemoteException, Exception{
 		String error = null;
 		String idHS = w.addElement((new HiveSelectT()).getName());
 		logger.debug("Hive select: "+idHS);
 		
-		DataFlowElement hive = w.getElement(idHS);
+		DataflowAction hive = (DataflowAction) w.getElement(idHS);
 		
 		w.addLink(
 				HiveSelectT.key_output, src.getComponentId(), 
@@ -122,7 +121,7 @@ public class OozieManagerTests {
 	
 	public void updateHive(
 			Workflow w,
-			DataFlowElement hive,
+			DataflowAction hive,
 			HiveInterface hInt) throws RemoteException, Exception{
 		
 		hive.update(hive.getInteraction(HiveSelectT.key_partitions));
@@ -162,8 +161,8 @@ public class OozieManagerTests {
 			hInt.delete(new_path1);
 			hInt.delete(new_path2);
 			
-			DataFlowElement src = createSrc(w,hInt,new_path1);
-			DataFlowElement hive = createHiveWithSrc(w,src,hInt);
+			DataflowAction src = createSrc(w,hInt,new_path1);
+			DataflowAction hive = createHiveWithSrc(w,src,hInt);
 
 			hive.getDFEOutput().get(HiveSelectT.key_output).setSavingState(SavingState.RECORDED);
 			hive.getDFEOutput().get(HiveSelectT.key_output).setPath(new_path2);
@@ -209,8 +208,8 @@ public class OozieManagerTests {
 			hInt.delete(new_path1);
 			hInt.delete(new_path2);
 			
-			DataFlowElement src = createSrc(w,hInt,new_path1);
-			DataFlowElement hive = createHiveWithHive(w,
+			DataflowAction src = createSrc(w,hInt,new_path1);
+			DataflowAction hive = createHiveWithHive(w,
 					createHiveWithSrc(w,src,hInt), 
 					hInt);
 
@@ -261,12 +260,12 @@ public class OozieManagerTests {
 			hInt.delete(new_path2);
 			hInt.delete(new_path3);
 			
-			DataFlowElement src = createSrc(w,hInt,new_path1);
-			DataFlowElement hiveSrc = createHiveWithSrc(w,src,hInt); 
-			DataFlowElement hive1 = createHiveWithHive(w,
+			DataflowAction src = createSrc(w,hInt,new_path1);
+			DataflowAction hiveSrc = createHiveWithSrc(w,src,hInt); 
+			DataflowAction hive1 = createHiveWithHive(w,
 					hiveSrc, 
 					hInt);
-			DataFlowElement hive2 = createHiveWithHive(w,
+			DataflowAction hive2 = createHiveWithHive(w,
 					hiveSrc, 
 					hInt);
 

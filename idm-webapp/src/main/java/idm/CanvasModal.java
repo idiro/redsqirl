@@ -18,9 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.ResourceBundle;
 
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
@@ -450,15 +448,13 @@ public class CanvasModal extends BaseBean implements Serializable {
 		logger.info("mountInteractionForm ");
 
 		setDynamicFormList(new ArrayList<DynamicForm>());
-
+		getDfe().update(getListPosition());
 
 		for (DFEInteraction dfeInteraction : getPage().getInteractions()) {
 
 			DynamicForm dynamicF = new DynamicForm();
 
 			logger.info("type " + dfeInteraction.getName());
-
-			getDfe().update(dfeInteraction);
 
 			logger.info("type " + dfeInteraction.getName() + " " + dfeInteraction.getDisplay() + " " + dfeInteraction.getTree());
 

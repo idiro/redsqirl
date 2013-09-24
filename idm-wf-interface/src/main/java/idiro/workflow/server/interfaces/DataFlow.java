@@ -68,6 +68,13 @@ public interface DataFlow extends Remote{
 	public String isrunning() throws RemoteException;
 
 	/**
+	 * Remove temporary and buffered data for the entire project.
+	 * @return
+	 * @throws RemoteException
+	 */
+	public String cleanProject() throws RemoteException;
+	
+	/**
 	 * Save a workflow.
 	 * A workflow is a zip file containing two files:
 	 * - an xml representing the workflow

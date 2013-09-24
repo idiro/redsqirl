@@ -40,12 +40,12 @@ public interface DataFlowElement extends Remote{
 	 * @return
 	 */
 	public Map<String, DFEOutput> getDFEOutput() throws RemoteException;
-	
-	/**
-	 * Update the UserInteraction values @see {@link UserInteraction#inputFromAction}
-	 */
-	public void update(DFEInteraction interaction) throws RemoteException;
 
+	/**
+	 * Update the all the interaction of one page.
+	 */
+	public void update(int pageNb) throws RemoteException;
+	
 	/**
 	 * Static methods, get the html help file
 	 * @return the help file
@@ -217,6 +217,13 @@ public interface DataFlowElement extends Remote{
 			String fileNameWithoutExtension) throws RemoteException;
 
 	public String updateOut() throws RemoteException;
+	
+	/**
+	 * Clean all the outputs of the element
+	 * @return
+	 * @throws RemoteException
+	 */
+	public String cleanDataOut() throws RemoteException;
 
 
 }

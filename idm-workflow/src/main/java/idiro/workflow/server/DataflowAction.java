@@ -316,6 +316,27 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 		}
 		return error;
 	}
+	
+	public void update(int pageNb) throws RemoteException{
+		try{
+			DFEPage page = getPageList().get(pageNb);
+			Iterator<DFEInteraction> it = page.getInteractions().iterator();
+			while(it.hasNext()){
+				try{
+					update(it.next());
+				}catch(Exception e){
+					logger.error("Error when updating an element");
+				}
+			}
+		}catch(Exception e){
+			logger.error("The page number "+pageNb+" does not exist");
+		}
+	}
+	
+	/**
+	 * Update the UserInteraction values @see {@link UserInteraction#inputFromAction}
+	 */
+	public abstract void update(DFEInteraction interaction) throws RemoteException;
 
 	/**
 	 * Get the data inputed in the node
@@ -803,6 +824,22 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 	@Override
 	public final OozieAction getOozieAction() {
 		return oozieAction;
+	}
+	
+	@Override
+	public String cleanDataOut() throws RemoteException{
+		Iterator<DFEOutput> it = getDFEOutput().values().iterator();
+		String err = "";
+		while(it.hasNext()){
+			String curErr = it.next().clean();
+			if(curErr != null){
+				err = err +curErr+"\n";
+			}
+		}
+		if(err.isEmpty()){
+			err = null;
+		}
+		return err;
 	}
 
 }

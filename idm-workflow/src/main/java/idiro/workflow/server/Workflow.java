@@ -331,6 +331,23 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 
 		return jobId;
 	}
+	
+	public String cleanProject() throws RemoteException{
+		String err = "";
+		Iterator<DataFlowElement> it = element.iterator();
+		while(it.hasNext()){
+			DataFlowElement cur = it.next();
+			String curErr = cur.cleanDataOut();
+			if(curErr != null){
+				err = err + "Error in the element "+cur.getComponentId()+": \n"
+						+curErr+"\n";
+			}
+		}
+		if(err.isEmpty()){
+			err = null;
+		}
+		return err;
+	}
 
 	/**
 	 * Null if it is not running, or the status if it runs
