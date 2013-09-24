@@ -37,6 +37,8 @@ public class CanvasBean extends BaseBean implements Serializable{
 	private String paramInId;
 	private String paramNameLink;
 	private String[] result;
+	private String idElement;
+	private String idGroup;
 	
 	private Map<String, String> idMap;
 
@@ -393,11 +395,10 @@ public class CanvasBean extends BaseBean implements Serializable{
 	
 	public void updateIdObj(){
 		String groupId = FacesContext.getCurrentInstance().getExternalContext().
-				getRequestParameterMap().get("groupId");
+				getRequestParameterMap().get("idGroup");
 		
 		String id = FacesContext.getCurrentInstance().getExternalContext().
 				getRequestParameterMap().get("id");
-		
 		getIdMap().put(groupId, id);
 		
 	}
@@ -426,7 +427,16 @@ public class CanvasBean extends BaseBean implements Serializable{
 	public void cleanCanvas() {
 		
 		
-		
+	}
+	
+	public void openChangeIdModal(){
+		setIdElement(getIdMap().get(getIdGroup()));
+	}
+	
+	public void changeIdElement() throws RemoteException{
+		String oldId = getIdMap().get(getIdGroup());
+		getIdMap().put(getIdGroup(), getIdElement());
+		getDf().changeElementId(oldId, getIdElement());
 	}
 	
 	public String getIdElement(String idGroup){
@@ -511,6 +521,22 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 	public void setIdMap(Map<String, String> idMap) {
 		this.idMap = idMap;
+	}
+	
+	public String getIdElement() {
+		return idElement;
+	}
+
+	public void setIdElement(String idElement) {
+		this.idElement = idElement;
+	}
+	
+	public String getIdGroup() {
+		return idGroup;
+	}
+
+	public void setIdGroup(String idGroup) {
+		this.idGroup = idGroup;
 	}
 
 	public String[] getPositions() throws Exception{

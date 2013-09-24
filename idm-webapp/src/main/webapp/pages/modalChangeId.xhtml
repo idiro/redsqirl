@@ -1,0 +1,17 @@
+<h:panelGrid xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+
+	<h:outputText value="Name" />
+	<h:inputText label="Name" value="#{canvasBean.idElement}" />
+
+	<h:panelGrid columns="1">
+		<a4j:commandButton action="#{canvasBean.changeIdElement}" value="#{messages.button_ok}" 
+			oncomplete="#{rich:component('modalChangeId')}.hide();openModal('#{canvasBean.idGroup}','#{canvasModalBean.pathImage}')"/>
+	</h:panelGrid>
+
+</h:panelGrid>

@@ -227,8 +227,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 					myFeature.add("type").add(value[1]);
 				}
 
-				getDfe().updateOut();
-
 			}else if(dynamicF.getDisplayType().equals(DisplayType.helpTextEditor)){
 				dynamicF.getTree().getFirstChild("editor").getFirstChild("output").removeAllChildren();
 				dynamicF.getTree().getFirstChild("editor").getFirstChild("output").add(getCommand());
@@ -265,6 +263,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 		}
 
 		getDfe().getPageList().set(getListPosition(), getPage());
+		
+		getDfe().updateOut();
 
 		return error.toString();
 	}
@@ -366,7 +366,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 		String pathImage =  params.get("paramPathImage");
 		String nameElement = params.get("paramNameElement");
-
+		logger.info("open group id " + getNameElement());
 		logger.info("nameElement " + nameElement);
 		logger.info("size of map " + canvasBean.getIdMap().size());
 
@@ -1535,5 +1535,4 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void setShowOutputForm(String showOutputForm) {
 		this.showOutputForm = showOutputForm;
 	}
-
 }
