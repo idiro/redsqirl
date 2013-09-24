@@ -62,10 +62,9 @@ public interface DataFlow extends Remote{
 	public String run(List<String> dataFlowElement) throws RemoteException, Exception;
 
 	/**
-	 * Null if it is not running, or the status if it runs
-	 * @return
+	 * @return true if the workflow is running currently.
 	 */
-	public String isrunning() throws RemoteException;
+	public boolean isrunning() throws RemoteException;
 
 	/**
 	 * Remove temporary and buffered data for the entire project.

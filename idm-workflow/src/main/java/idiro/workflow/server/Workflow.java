@@ -34,6 +34,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
+import org.apache.oozie.client.OozieClient;
+import org.apache.oozie.client.OozieClientException;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -353,8 +355,19 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 	 * Null if it is not running, or the status if it runs
 	 * @return
 	 */
-	public String isrunning(){
-		return null;
+	public boolean isrunning(){
+		OozieClient wc = OozieManager.getInstance().getOc();
+		boolean running = false;
+		try{
+		if(oozieJobId != null && 
+				wc.getJobInfo(oozieJobId).getStatus() == 
+	    		org.apache.oozie.client.WorkflowJob.Status.RUNNING){
+			running = true;
+		}
+		}catch(Exception e){
+			logger.error(e.getMessage());
+		}
+		return running;
 	}
 
 	/**
