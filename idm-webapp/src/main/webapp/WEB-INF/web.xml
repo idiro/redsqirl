@@ -87,6 +87,9 @@
 		<exception-type>javax.faces.application.ViewExpiredException</exception-type>
 		<location>/pages/initial.xhtml</location>
 	</error-page>
+	
+	
+	
 	<session-config>
 		<session-timeout>30</session-timeout>
 	</session-config>

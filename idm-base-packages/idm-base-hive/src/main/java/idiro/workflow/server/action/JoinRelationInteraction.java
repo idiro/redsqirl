@@ -5,12 +5,15 @@ import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.action.utils.HiveDictionary;
+import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.enumeration.DisplayType;
+import idiro.workflow.server.interfaces.DFEOutput;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -55,7 +58,7 @@ public class JoinRelationInteraction extends UserInteraction{
 			logger.error(msg);
 			return msg;
 		}
-		Set<String> tables = hj.getInTables();
+		Set<String> tables = hj.getAliases().keySet();
 		if(tables.size() != lRow.size()){
 			msg = "The table needs to have one and only one row for each entry";
 		}else{
@@ -109,7 +112,7 @@ public class JoinRelationInteraction extends UserInteraction{
 
 	public void update() throws RemoteException{
 
-		Set<String> tablesIn = hj.getInTables();
+		Set<String> tablesIn = hj.getAliases().keySet();
 		if(tree.getSubTreeList().isEmpty()){
 			tree.add(getRootTable(tablesIn));		
 		}else{
@@ -166,7 +169,7 @@ public class JoinRelationInteraction extends UserInteraction{
 		//Add rows
 		Iterator<String> tableIn = tablesIn.iterator();
 		while(tableIn.hasNext()){
-			tree.getFirstChild("table").add("row").add(table_table_title).add(tableIn.next());
+			input.add("row").add(table_table_title).add(tableIn.next());
 		}
 
 		return input;
@@ -181,18 +184,26 @@ public class JoinRelationInteraction extends UserInteraction{
 		
 		String join = "";
 		String prev = "";
+		Map<String,DFEOutput> aliases = hj.getAliases();
+		HiveInterface hi = new HiveInterface();
 		Iterator<Tree<String>> it = getTree().getFirstChild("table")
 				.getChildren("row").iterator();
 		if(it.hasNext()){
 			Tree<String> cur = it.next();
+			String curAlias = cur.getFirstChild(table_table_title).getFirstChild().getHead();
 			prev = cur.getFirstChild(table_feat_title).getFirstChild().getHead();
-			join = cur.getFirstChild(table_table_title).getFirstChild().getHead();
+			join = hi.getTableAndPartitions(aliases.get(curAlias).getPath())[0]
+					+" "
+					+curAlias;
 		}
 		while(it.hasNext()){
 			Tree<String> cur = it.next();
 			String curFeat =  cur.getFirstChild(table_feat_title).getFirstChild().getHead();
-			String curTable = cur.getFirstChild(table_table_title).getFirstChild().getHead();
-			join += " "+joinType+" "+curTable+" ON ("+prev+" = "+curFeat+")";
+			String curAlias = cur.getFirstChild(table_table_title).getFirstChild().getHead();
+			join += " "+joinType+" "
+					+hi.getTableAndPartitions(aliases.get(curAlias).getPath())[0]
+					+" "
+					+curAlias+" ON ("+prev+" = "+curFeat+")";
 			prev = curFeat;
 		}
 

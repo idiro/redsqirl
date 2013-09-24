@@ -77,13 +77,13 @@ public class TableUnionInteraction extends UserInteraction{
 
 			Iterator<String> itTable = mapTableRow.keySet().iterator();
 			while(itTable.hasNext() && msg == null){
-				String tableName = itTable.next();
-				List<Tree<String>> listRow = mapTableRow.get(tableName);
-				DFEOutput in = getInput(tableName);
+				String alias = itTable.next();
+				List<Tree<String>> listRow = mapTableRow.get(alias);
+				DFEOutput in = hu.getAliases().get(alias);
 
 				//Check if there is the same number of row for each input
 				if(listRow.size() != lRow.size() / mapTableRow.keySet().size()){
-					msg = tableName+ " does not have the right number of rows compare to others";
+					msg = alias+ " does not have the right number of rows compare to others";
 				}
 
 				Set<String> featuresTitle = new LinkedHashSet<String>();
@@ -133,24 +133,6 @@ public class TableUnionInteraction extends UserInteraction{
 
 		return msg;
 	}
-
-
-	private DFEOutput getInput(String tableName) throws RemoteException {
-		HiveInterface hInt = new HiveInterface();
-		DFEOutput out = null;
-		Iterator<DFEOutput> itOut = hu.getDFEInput()
-				.get(HiveUnion.key_input).iterator();
-		while(itOut.hasNext() && out == null){
-			out = itOut.next();
-
-			if(!hInt.getTableAndPartitions(out.getPath())[0]
-					.equals(tableName)){
-				out = null;
-			}
-		}
-		return out;
-	}
-
 
 	public void update(List<DFEOutput> in) throws RemoteException{
 
@@ -220,9 +202,11 @@ public class TableUnionInteraction extends UserInteraction{
 		Tree<String> valsTable = new TreeNonUnique<String>("values");
 		constraintTable.add(valsTable);
 
-		Iterator<DFEOutput> it = hu.getDFEInput().get(HiveUnion.key_input).iterator();
+		
+		Iterator<String> it = hu.getAliases().keySet().iterator();
 		while(it.hasNext()){
-			valsTable.add("value").add(hInt.getTableAndPartitions(it.next().getPath())[0]);
+			//valsTable.add("value").add(hInt.getTableAndPartitions(it.next().getPath())[0]);
+			valsTable.add("value").add(it.next());
 		}
 
 		//operation
@@ -282,12 +266,12 @@ public class TableUnionInteraction extends UserInteraction{
 
 		while(rows.hasNext()){
 			Tree<String> row = rows.next();
-			String tableName = row.getFirstChild(table_table_title).getFirstChild().getHead();
-			if(!mapTableRow.containsKey(tableName)){
+			String alias = row.getFirstChild(table_table_title).getFirstChild().getHead();
+			if(!mapTableRow.containsKey(alias)){
 				List<Tree<String>> list = new LinkedList<Tree<String>>();
-				mapTableRow.put(tableName, list);
+				mapTableRow.put(alias, list);
 			}
-			mapTableRow.get(tableName).add(row);
+			mapTableRow.get(alias).add(row);
 		}
 
 		return mapTableRow;
@@ -295,6 +279,7 @@ public class TableUnionInteraction extends UserInteraction{
 
 	public String getQueryPiece(DFEOutput out) throws RemoteException{
 		logger.debug("select...");
+		HiveInterface hi = new HiveInterface();
 		String select = "";
 		OrderedFeatureList features = getNewFeatures();
 		Iterator<String> it = features.getFeaturesNames().iterator();
@@ -307,12 +292,16 @@ public class TableUnionInteraction extends UserInteraction{
 			select += ",\n      "+featName+" AS "+featName;
 		}
 		select +="\nFROM (\n";
-
+		logger.debug("sub query...");
 		Map<String,List<Tree<String>>> subQuery = getSubQuery();
+		Map<String,DFEOutput> aliases = hu.getAliases();
+		logger.debug("aliases: "+aliases.keySet());
 		it = subQuery.keySet().iterator();
 		if(it.hasNext()){
-			String tableName = it.next();
-			Iterator<Tree<String>> itTree = subQuery.get(tableName).iterator();
+			String alias = it.next();
+			logger.debug(alias+"...");
+			Iterator<Tree<String>> itTree = subQuery.get(alias).iterator();
+			logger.debug("subselect...");
 			if(itTree.hasNext()){
 				Tree<String> featTree = itTree.next();
 				String featName = featTree.getFirstChild(table_feat_title).getFirstChild().getHead();
@@ -325,16 +314,21 @@ public class TableUnionInteraction extends UserInteraction{
 				String op = featTree.getFirstChild(table_op_title).getFirstChild().getHead();
 				select +=",\n             "+op+" AS "+featName;
 			}
-			select +="\n      FROM "+tableName+"\n";
-			String where = hu.getCondInt().getInputWhere(tableName);
+			logger.debug("from...");
+			select +="\n      FROM "
+					+ hi.getTableAndPartitions(aliases.get(alias).getPath())[0]
+					+" "+alias+"\n";
+			logger.debug("where...");
+			String where = hu.getCondInt().getInputWhere(alias);
 			if(!where.isEmpty()){
 				select +="\n      WHERE "+where+"\n";
 			}
 		}
 		while(it.hasNext()){
 			select +="      UNION ALL\n";
-			String tableName = it.next();
-			Iterator<Tree<String>> itTree = subQuery.get(tableName).iterator();
+			String alias = it.next();
+			logger.debug(alias+"...");
+			Iterator<Tree<String>> itTree = subQuery.get(alias).iterator();
 			if(itTree.hasNext()){
 				Tree<String> featTree = itTree.next();
 				String featName = featTree.getFirstChild(table_feat_title).getFirstChild().getHead();
@@ -347,8 +341,10 @@ public class TableUnionInteraction extends UserInteraction{
 				String op = featTree.getFirstChild(table_op_title).getFirstChild().getHead();
 				select +=",\n             "+op+" AS "+featName;
 			}
-			select +="\n      FROM "+tableName+"\n";
-			String where = hu.getCondInt().getInputWhere(tableName);
+			select +="\n      FROM "
+					+ hi.getTableAndPartitions(aliases.get(alias).getPath())[0]
+					+" "+alias+"\n";
+			String where = hu.getCondInt().getInputWhere(alias);
 			if(!where.isEmpty()){
 				select +="\n      WHERE "+where+"\n";
 			}

@@ -319,7 +319,8 @@
 					</h:panelGrid>
 				</a4j:repeat>
 				
-				<h:panelGrid columns="2">
+				<h:panelGrid columns="3">
+					<a4j:commandButton value="#{messages.button_remove}" action="#{canvasModalBean.cleanObj}" />
 					<a4j:commandButton value="#{messages.button_apply}" action="#{canvasModalBean.confirmOutput}" />
 					<a4j:commandButton value="#{messages.button_ok}" action="#{canvasModalBean.confirmOutput}" oncomplete="#{rich:component('canvasModalPanel')}.hide()"/>
 				</h:panelGrid>

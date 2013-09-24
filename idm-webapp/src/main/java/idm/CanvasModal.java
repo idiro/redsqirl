@@ -39,9 +39,9 @@ import org.apache.log4j.Logger;
 public class CanvasModal extends BaseBean implements Serializable {
 
 	private static Logger logger = Logger.getLogger(CanvasModal.class);
-	
+
 	private CanvasBean canvasBean;
-	
+
 	private String list = "";
 	private List<SelectItem> listItens = new ArrayList<SelectItem>();
 	private List<SelectItem> listItensTable = new ArrayList<SelectItem>();
@@ -85,12 +85,12 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 	private String tabTitle;
 	private String tabLegend;
-	
+
 	private List<String> tableInteractionsColumns = new ArrayList<String>();
 	private String selectedTab;
 	private String showOutputForm;
 
-	
+
 
 	/** getKeyAsListNameValue
 	 * 
@@ -106,12 +106,12 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public List<String> getKeyAsListNameValueFeature(){
 		return new ArrayList<String>(nameValueFeature.keySet());
 	}
-	
+
 	public List<String> getTableInteractionColumns(){
 		return tableInteractionsColumns;
 	}
-	
-	
+
+
 	/** applyPage
 	 * 
 	 * Methods to apply the page
@@ -121,7 +121,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * @throws RemoteException 
 	 */
 	public void applyPage() throws RemoteException {
-		
+
 		logger.info("applyPage ");
 
 		String error = checkNextPage();
@@ -130,7 +130,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 			HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
 		}
-		
+
 	}
 
 	/** nextPage
@@ -216,7 +216,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 				dynamicF.getTree().getFirstChild("browse").getFirstChild("output").removeAllChildren();
 				dynamicF.getTree().getFirstChild("browse").getFirstChild("output").add("path").add(dynamicF.getPathBrowser());
 
-				
+
 				for (ItemList itemList : dynamicF.getListGrid()) {
 					Tree<String> myProperty = dynamicF.getTree().getFirstChild("browse").getFirstChild("output").add("property");
 					myProperty.add(itemList.getPropertie()).add(itemList.getValue());
@@ -282,7 +282,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void previousPage() throws RemoteException {
 
 		logger.info("previousPage ");
-		
+
 		checkNextPage();
 
 		setListPosition(getListPosition()-1);
@@ -328,7 +328,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void start() {
 		FacesContext context = FacesContext.getCurrentInstance();
 		canvasBean = (CanvasBean) context.getApplication().evaluateExpressionGet(context, "#{canvasBean}", CanvasBean.class);
-						
+
 		String nameWf = FacesContext.getCurrentInstance()
 				.getExternalContext().getRequestParameterMap().get("paramNameWorkflow");
 		setNameWorkflow(nameWf);
@@ -354,26 +354,30 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * @throws RemoteException 
 	 */
 	public void openCanvasModal() throws RemoteException {
-		
+
 		start();
-		
+
 		HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
 		request.removeAttribute("msnError");
-		
+
 		//set the first tab for obj
 		setSelectedTab(getMessageResources("label_dynamic_configuration"));
-		
+
 
 		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 
 		String pathImage =  params.get("paramPathImage");
 		String nameElement = params.get("paramNameElement");
+
+		logger.info("nameElement " + nameElement);
+		logger.info("size of map " + canvasBean.getIdMap().size());
+
 		setNameElement(canvasBean.getIdMap().get(nameElement));
 		setPathImage(pathImage);
 
 		logger.info("open element id " + getNameElement());
 
-		if(pathImage != null && nameElement != null){
+		if(getPathImage() != null && getNameElement() != null){
 
 			try {
 
@@ -381,9 +385,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 				//validate if you can open or not the dynamic form of the object
 				String error = getDfe().checkIn();
-				
+
 				logger.info("error " + error);
-				
+
 				if(error != null){
 
 					MessageUseful.addErrorMessage(error);
@@ -428,7 +432,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 			//mount output tab
 			mountOutputForm();
-			
+
 		}
 
 	}
@@ -523,7 +527,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 				}
 
 			}else if(dfeInteraction.getDisplay().equals(DisplayType.browser)){
-				
+
 				//clean the map
 				setListFeature(new ArrayList<ItemList>());
 				setListGrid(new ArrayList<ItemList>());
@@ -715,6 +719,13 @@ public class CanvasModal extends BaseBean implements Serializable {
 		}
 
 		setFunctionsMap(map);
+		
+		if(getListItensTable() != null && !getListItensTable().isEmpty()){
+			setList(getListItensTable().get(0).getLabel());
+			setListFunctions(getFunctionsMap().get(getList()));
+		}
+		
+		
 	}
 
 	/** endDynamicForm
@@ -759,10 +770,13 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * 
 	 * @return 
 	 * @author Igor.Souza
+	 * @throws RemoteException 
 	 */
-	public void confirm() {
+	public void confirm() throws RemoteException {
 
 		logger.info("confirm");
+
+		checkTextEditor();
 
 		if (getColumnEdit() != null){
 			getListGrid().get(getRowEdit()).getNameValue().put(getColumnEdit(), getCommandEdit());
@@ -770,7 +784,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 		else{
 			setCommand(getCommandEdit());
 		}
-
 
 	}
 
@@ -988,25 +1001,25 @@ public class CanvasModal extends BaseBean implements Serializable {
 			List<String> outputLines = getDfe().getDFEOutput().get("source").select(10);
 			logger.info("outputLines " + outputLines);
 
-			
+
 			//getDfe().getDFEOutput().get("source").addProperty("alias", "xxx");
-			
+
 			List<ItemList> listObjGrid = new ArrayList<ItemList>();
 			Map<String, String> outputPropertiesMap = getDfe().getDFEOutput().get("source").getProperties();
 			logger.info("outputPropertiesMap " + outputPropertiesMap);
-			
+
 			for (String value : outputPropertiesMap.keySet()) {
-				
+
 				ItemList item = new ItemList();
 				item.setSelected(false);
 				item.setPropertie(value);
 				item.setValue(outputPropertiesMap.get(value));
-				
+
 				listObjGrid.add(item);
 			}
 			dynamicForm.setListGrid(listObjGrid);
 			setListGrid(listObjGrid);
-			
+
 
 			Map<String, String> nameValueFeature = new HashMap<String, String>();
 			List<ItemList> listObj = new ArrayList<ItemList>();
@@ -1074,9 +1087,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 	}
 
 	public void mountOutputForm() throws RemoteException{
-		
+
 		logger.info("mountOutputForm");
-		
+
 		if (getDfe().getDFEOutput() == null){
 			getDfe().updateOut();
 		}else if (!getDfe().getDFEOutput().isEmpty()){
@@ -1101,13 +1114,13 @@ public class CanvasModal extends BaseBean implements Serializable {
 		}else{
 			setOutputFormList(new ArrayList<OutputForm>());
 		}
-		
+
 		if(getOutputFormList().isEmpty()){
 			setShowOutputForm("N");
 		}else{
 			setShowOutputForm("S");
 		}
-		
+
 	}
 
 	public void changePathOutputBrowser() throws RemoteException {
@@ -1156,6 +1169,19 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 		setCommandEdit(command);
 		setList(null);
+	}
+	
+	/** openCanvas
+	 * 
+	 * Methods to clean the outputs from the obj
+	 * 
+	 * @return
+	 * @author Igor.Souza
+	 */
+	public void cleanObj() {
+		
+		
+		
 	}
 
 	public List<SelectItem> getListItens() {
@@ -1497,7 +1523,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void setCanvasBean(CanvasBean canvasBean) {
 		this.canvasBean = canvasBean;
 	}
-	
+
 	public List<String> getTableInteractionsColumns() {
 		return tableInteractionsColumns;
 	}

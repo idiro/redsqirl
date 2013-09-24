@@ -12,7 +12,7 @@ import idiro.workflow.server.interfaces.DFEOutput;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Map;
 
 /**
  * Action to join several tables.
@@ -91,6 +91,7 @@ public class HiveJoin extends HiveElement{
 				"The columns generated are defined on this page. Each row of the table is a new column to generate. "+
 				"The feature name have to be unique and a correct type needs to be assign.",
 				1);
+		
 		
 		tJoinInt = new TableJoinInteraction(
 				key_featureTable,
@@ -183,17 +184,16 @@ public class HiveJoin extends HiveElement{
 	public FeatureList getInFeatures() throws RemoteException{
 		FeatureList ans = 
 				new OrderedFeatureList();
-		HiveInterface hInt = new HiveInterface();
-		List<DFEOutput> lOut = getDFEInput().get(HiveJoin.key_input);
-		Iterator<DFEOutput> it = lOut.iterator();
+		Map<String,DFEOutput> aliases = getAliases();
+		
+		Iterator<String> it = aliases.keySet().iterator();
 		while(it.hasNext()){
-			DFEOutput out = it.next();
-			String tableName = hInt.getTableAndPartitions(out.getPath())[0];
-			FeatureList mapTable = out.getFeatures();
+			String alias = it.next();
+			FeatureList mapTable = aliases.get(alias).getFeatures();
 			Iterator<String> itFeat = mapTable.getFeaturesNames().iterator();
 			while(itFeat.hasNext()){
 				String cur = itFeat.next();
-				ans.addFeature(tableName+"."+cur, mapTable.getFeatureType(cur));
+				ans.addFeature(alias+"."+cur, mapTable.getFeatureType(cur));
 			}
 		}
 		return ans; 

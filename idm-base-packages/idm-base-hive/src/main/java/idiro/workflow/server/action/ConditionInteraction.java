@@ -4,7 +4,6 @@ import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.action.utils.HiveDictionary;
-import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.datatype.HiveTypeWithWhere;
 import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.interfaces.DFEOutput;
@@ -121,20 +120,16 @@ public class ConditionInteraction extends UserInteraction{
 		return where;
 	}
 	
-	public String getInputWhere(String tableName) throws RemoteException{
+	public String getInputWhere(String alias) throws RemoteException{
 		String where = "";
-		List<DFEOutput> out = el.getDFEInput().get(HiveElement.key_input);
-		Iterator<DFEOutput> it = out.iterator();
-		HiveInterface hi = new HiveInterface();
-		while(it.hasNext() && where.isEmpty()){
-			DFEOutput cur = it.next();
-			if(hi.getTableAndPartitions(cur.getPath())[0].equalsIgnoreCase(tableName)){
-				where = cur.getProperty(HiveTypeWithWhere.key_where);
-				if(where == null){
-					where = "";
-				}
+		DFEOutput out = el.getAliases().get(alias);
+		if(out != null){
+			where = out.getProperty(HiveTypeWithWhere.key_where);
+			if(where == null){
+				where = "";
 			}
 		}
+		
 		return where;
 	}
 

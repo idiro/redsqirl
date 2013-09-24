@@ -73,6 +73,7 @@ public class HiveSelect extends HiveElement{
 				"The columns generated are defined on this page. Each row of the table is a new column to generate. "+
 		        "The feature name have to be unique and a correct type needs to be assign.",
 				1);
+		
 		tSelInt = new TableSelectInteraction(
 				key_featureTable,
 				"Please specify the column you would like to generate.",

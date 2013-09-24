@@ -56,7 +56,7 @@ public class HiveUnion  extends HiveElement{
 				key_partitions,
 				"",
 				0,
-				0); 
+				1); 
 
 		//page1.addInteraction(condInt);
 		page1.addInteraction(partInt);

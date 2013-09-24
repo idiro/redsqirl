@@ -701,6 +701,32 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 
 		return error;
 	}
+	
+	public String changeElementId(String oldId, String newId) throws RemoteException{
+		String err = null;
+		String regex = "[a-zA-Z]([A-Za-z0-9_]{0,15})";
+		boolean found = false;
+		if(!newId.matches(regex)){
+			err = "The new id does not matches a name ("+regex+").";
+		}
+		if(! oldId.equals(newId)){
+			Iterator<DataFlowElement> itA = element.iterator();
+			while(itA.hasNext()&&!found){
+				found = itA.next().getComponentId().equals(newId);
+			}
+			if(found){
+				err = "The id '"+newId+"' is already used.";
+			}else{
+				DataFlowElement el = getElement(oldId);
+				if(el == null){
+					err = "Id '"+oldId+"' unknown.";
+				}else{
+					el.setComponentId(newId);
+				}
+			}
+		}
+		return err;
+	}
 
 	/**
 	 * Add a WorkflowAction in the Workflow.
@@ -715,7 +741,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 		int length = (int) (Math.log10(element.size()+1) + 2);
 
 		while(newId == null){
-			newId = RandomString.getRandomName(length,"1234567890");
+			newId = "a" + RandomString.getRandomName(length,"1234567890");
 			Iterator<DataFlowElement> itA = element.iterator();
 			found = false;
 			while(itA.hasNext()&&!found){
