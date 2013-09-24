@@ -69,7 +69,7 @@
 	<!-- Faces Servlet Mapping -->
 	<servlet-mapping>
 		<servlet-name>Faces Servlet</servlet-name>
-		<url-pattern>*.jsf</url-pattern>
+		<url-pattern>*.xhtml</url-pattern>
 	</servlet-mapping>
 
 	<!-- Facelets -->
@@ -82,12 +82,22 @@
 	<welcome-file-list>
 		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
+	
+	<context-param>
+	    <param-name>javax.faces.PROJECT_STAGE</param-name>
+	    <param-value>Development</param-value>
+	</context-param>
+	
 
 	<error-page>
 		<exception-type>javax.faces.application.ViewExpiredException</exception-type>
 		<location>/pages/initial.xhtml</location>
 	</error-page>
 	
+	<!-- <error-page>
+		<error-code>500</error-code>
+		<location>/pages/error.xhtml</location>
+	</error-page> -->
 	
 	
 	<session-config>

@@ -67,6 +67,12 @@
   <managed-bean-scope>request</managed-bean-scope>
  </managed-bean>
  
+ <managed-bean>
+  <managed-bean-name>error</managed-bean-name>
+  <managed-bean-class>idm.useful.Error</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ 
  <!-- **************************** NAVIGATION ******************************************************************* -->
  
  <navigation-rule>
@@ -98,13 +104,6 @@
   </navigation-case>
  </navigation-rule>
  <navigation-rule>
-  <from-view-id>/pages/initial.jsf</from-view-id>
-  <navigation-case>
-   <from-outcome>loginPage</from-outcome>
-   <to-view-id>/pages/initial.xhtml</to-view-id>
-  </navigation-case>
- </navigation-rule>
- <navigation-rule>
   <from-view-id>/pages/canvasModal1.xhtml</from-view-id>
   <navigation-case>
    <from-outcome>next</from-outcome>
@@ -116,6 +115,13 @@
   <navigation-case>
    <from-outcome>close</from-outcome>
    <to-view-id>/pages/canvasModal1.xhtml</to-view-id>
+  </navigation-case>
+ </navigation-rule>
+ <navigation-rule>
+  <from-view-id>/pages/erro.xhtml</from-view-id>
+  <navigation-case>
+   <from-outcome>initial</from-outcome>
+   <to-view-id>/pages/initial.xhtml</to-view-id>
   </navigation-case>
  </navigation-rule>
  
