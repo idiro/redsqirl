@@ -837,6 +837,7 @@ var countObj;
 				
 				configureGroup(group, posx, posy, polygon, countObj,
 						rectSelect, positionX, positionY, stage);
+				group.hasChangedId = true;
 				
 				updateIdObj("group"+countObj, elementId);
 				updateTypeObj("group"+countObj, elementId);
@@ -1395,6 +1396,7 @@ var countObj;
 			   polygon.setStroke("red");
 
 			   group1.setPosition(mousePosX, mousePosY);
+			   group1.hasChangedId = false;
 
 			   jQuery("#countObj").val(countObj);
 
@@ -1411,7 +1413,13 @@ var countObj;
 				   
 				   //alert(imagePath);
 				   
-				   openModal(this.getId(), imagePath);
+				   if (!this.hasChangedId){
+					   openChangeIdModal(this.getId(), imagePath);
+					   this.hasChangedId = true;
+				   	   
+				   }else{
+					   openModal(this.getId(), imagePath);
+				   }
 
 			   });
 

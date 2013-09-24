@@ -503,6 +503,17 @@
 					<a4j:actionparam name="paramNameWorkflow" value="#{canvasBean.nameWorkflow}" assignTo="#{canvasModalBean.nameElement}" />
 				</a4j:jsFunction>
 			</a4j:region>
+			
+			<a4j:region>
+				<a4j:status	onstart="jQuery('#canvas1').block({ message: jQuery('#domMessageDivCanvas1') });"
+							onerror="jQuery('#canvas1').unblock();" onsuccess="jQuery('#canvas1').unblock();"
+							onstop="jQuery('#canvas1').unblock();" />
+				
+				<a4j:jsFunction name="openChangeIdModal" action="#{canvasBean.openChangeIdModal}" oncomplete="#{rich:component('modalChangeId')}.show()">
+					<a4j:actionparam name="paramIdGroup" assignTo="#{canvasBean.idGroup}"/>
+					<a4j:actionparam name="paramPathImage" assignTo="#{canvasModalBean.pathImage}" />
+				</a4j:jsFunction>
+			</a4j:region>
 
 			<a4j:region>
 			
@@ -524,10 +535,15 @@
 				<a4j:jsFunction name="closeWorkflow" action="#{canvasBean.closeWorkflow}" oncomplete="clearCanvas();"  reRender="formMenu"/>
 			</a4j:region>
 			
-			<a4j:jsFunction name="updateIdObj" action="#{canvasBean.updateIdObj}" >
-				<a4j:actionparam name="idGroup"/>
-				<a4j:actionparam name="id"/>
-			</a4j:jsFunction>
+			<a4j:region>
+				<a4j:status	onstart="jQuery('#canvas1').block({ message: jQuery('#domMessageDivCanvas1') });"
+								onerror="jQuery('#canvas1').unblock();" onsuccess="jQuery('#canvas1').unblock();"
+								onstop="jQuery('#canvas1').unblock();" />
+				<a4j:jsFunction name="updateIdObj" action="#{canvasBean.updateIdObj}" >
+					<a4j:actionparam name="idGroup"/>
+					<a4j:actionparam name="id"/>
+				</a4j:jsFunction>
+			</a4j:region>
 			
 			<a4j:jsFunction name="invalidateSession" action="#{canvasBean.reinitialize}" />
 			
@@ -961,6 +977,24 @@
 			<h:form id="formSelectLink">
 				<h:panelGroup>
 					<a4j:include viewId="/pages/selectLink.xhtml" ajaxRendered="true" />
+				</h:panelGroup>
+			</h:form>
+	
+		</rich:modalPanel>
+	</a4j:region>
+	
+	<a4j:region renderRegionOnly="true">
+		<rich:modalPanel id="modalChangeId" width="300" height="200" style="overflow:auto;" resizeable="false">
+	
+			<f:facet name="header">Change Element Id</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer"
+					onclick="#{rich:component('modalChangeId')}.hide()" />
+			</f:facet>
+	
+			<h:form>
+				<h:panelGroup>
+					<a4j:include viewId="/pages/modalChangeId.xhtml" ajaxRendered="true" />
 				</h:panelGroup>
 			</h:form>
 	
