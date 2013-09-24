@@ -2,11 +2,11 @@ package idiro.workflow.server.action;
 
 import static org.junit.Assert.assertTrue;
 import idiro.utils.Tree;
+import idiro.workflow.server.DataflowAction;
 import idiro.workflow.server.OozieManager;
 import idiro.workflow.server.Workflow;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.enumeration.SavingState;
-import idiro.workflow.server.interfaces.DataFlowElement;
 import idiro.workflow.test.TestUtils;
 
 import java.rmi.RemoteException;
@@ -29,13 +29,13 @@ public class HiveUnionTests {
 		return ans;
 	}
 	
-	public DataFlowElement createSrc(
+	public DataflowAction createSrc(
 			Workflow w,
 			HiveInterface hInt, 
 			String new_path1 ) throws RemoteException, Exception{
 		
 		String idSource = w.addElement((new Source()).getName());
-		DataFlowElement src = w.getElement(idSource);
+		DataflowAction src = (DataflowAction) w.getElement(idSource);
 		
 		assertTrue("create "+new_path1,
 				hInt.create(new_path1, getColumns()) == null
@@ -64,10 +64,10 @@ public class HiveUnionTests {
 		return src;
 	}
 	
-	public DataFlowElement createHiveWithSrc(
+	public DataflowAction createHiveWithSrc(
 			Workflow w,
-			DataFlowElement src1,
-			DataFlowElement src2,
+			DataflowAction src1,
+			DataflowAction src2,
 			HiveInterface hInt) throws RemoteException, Exception{
 		String error = null;
 		String idHS = w.addElement((new HiveUnion()).getName());
@@ -131,22 +131,22 @@ public class HiveUnionTests {
 			Tree<String> rowId = out.add("row");
 			rowId.add(TableUnionInteraction.table_table_title).add(alias1);
 			rowId.add(TableUnionInteraction.table_feat_title).add("ID");
-			rowId.add(TableUnionInteraction.table_op_title).add("ID");
+			rowId.add(TableUnionInteraction.table_op_title).add(alias1+".ID");
 			rowId.add(TableUnionInteraction.table_type_title).add("STRING");
 			rowId = out.add("row");
 			rowId.add(TableUnionInteraction.table_table_title).add(alias1);
 			rowId.add(TableUnionInteraction.table_feat_title).add("VALUE");
-			rowId.add(TableUnionInteraction.table_op_title).add("VALUE");
+			rowId.add(TableUnionInteraction.table_op_title).add(alias1+".VALUE");
 			rowId.add(TableUnionInteraction.table_type_title).add("INT");
 			rowId = out.add("row");
 			rowId.add(TableUnionInteraction.table_table_title).add(alias2);
 			rowId.add(TableUnionInteraction.table_feat_title).add("ID");
-			rowId.add(TableUnionInteraction.table_op_title).add("ID");
+			rowId.add(TableUnionInteraction.table_op_title).add(alias2+".ID");
 			rowId.add(TableUnionInteraction.table_type_title).add("STRING");
 			rowId = out.add("row");
 			rowId.add(TableUnionInteraction.table_table_title).add(alias2);
 			rowId.add(TableUnionInteraction.table_feat_title).add("VALUE");
-			rowId.add(TableUnionInteraction.table_op_title).add("VALUE");
+			rowId.add(TableUnionInteraction.table_op_title).add(alias2+".VALUE");
 			rowId.add(TableUnionInteraction.table_type_title).add("INT");
 		}
 
@@ -172,9 +172,9 @@ public class HiveUnionTests {
 			hInt.delete(new_path2);
 			hInt.delete(new_path3);
 			
-			DataFlowElement src1 = createSrc(w,hInt,new_path1);
-			DataFlowElement src2 = createSrc(w,hInt,new_path2);
-			DataFlowElement hive = createHiveWithSrc(w,src1,src2,hInt);
+			DataflowAction src1 = createSrc(w,hInt,new_path1);
+			DataflowAction src2 = createSrc(w,hInt,new_path2);
+			DataflowAction hive = createHiveWithSrc(w,src1,src2,hInt);
 
 			hive.getDFEOutput().get(HiveUnion.key_output).setSavingState(SavingState.RECORDED);
 			hive.getDFEOutput().get(HiveUnion.key_output).setPath(new_path3);

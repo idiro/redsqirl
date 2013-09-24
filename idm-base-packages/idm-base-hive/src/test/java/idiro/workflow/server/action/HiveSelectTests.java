@@ -2,11 +2,11 @@ package idiro.workflow.server.action;
 
 import static org.junit.Assert.assertTrue;
 import idiro.utils.Tree;
+import idiro.workflow.server.DataflowAction;
 import idiro.workflow.server.OozieManager;
 import idiro.workflow.server.Workflow;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.enumeration.SavingState;
-import idiro.workflow.server.interfaces.DataFlowElement;
 import idiro.workflow.test.TestUtils;
 
 import java.rmi.RemoteException;
@@ -27,13 +27,13 @@ public class HiveSelectTests {
 		return ans;
 	}
 	
-	public DataFlowElement createSrc(
+	public DataflowAction createSrc(
 			Workflow w,
 			HiveInterface hInt, 
 			String new_path1 ) throws RemoteException, Exception{
 		
 		String idSource = w.addElement((new Source()).getName());
-		DataFlowElement src = w.getElement(idSource);
+		DataflowAction src = (DataflowAction)w.getElement(idSource);
 		
 		assertTrue("create "+new_path1,
 				hInt.create(new_path1, getColumns()) == null
@@ -62,9 +62,9 @@ public class HiveSelectTests {
 		return src;
 	}
 	
-	public DataFlowElement createHiveWithSrc(
+	public DataflowAction createHiveWithSrc(
 			Workflow w,
-			DataFlowElement src,
+			DataflowAction src,
 			HiveInterface hInt) throws RemoteException, Exception{
 		String error = null;
 		String idHS = w.addElement((new HiveSelect()).getName());
@@ -97,9 +97,9 @@ public class HiveSelectTests {
 	}
 	
 
-	public DataFlowElement createHiveWithHive(
+	public DataflowAction createHiveWithHive(
 			Workflow w,
-			DataFlowElement src,
+			DataflowAction src,
 			HiveInterface hInt) throws RemoteException, Exception{
 		String error = null;
 		String idHS = w.addElement((new HiveSelect()).getName());
@@ -168,8 +168,8 @@ public class HiveSelectTests {
 			hInt.delete(new_path1);
 			hInt.delete(new_path2);
 			
-			DataFlowElement src = createSrc(w,hInt,new_path1);
-			DataFlowElement hive = createHiveWithSrc(w,src,hInt);
+			DataflowAction src = createSrc(w,hInt,new_path1);
+			DataflowAction hive = createHiveWithSrc(w,src,hInt);
 
 			hive.getDFEOutput().get(HiveSelect.key_output).setSavingState(SavingState.RECORDED);
 			hive.getDFEOutput().get(HiveSelect.key_output).setPath(new_path2);
@@ -213,8 +213,8 @@ public class HiveSelectTests {
 			hInt.delete(new_path1);
 			hInt.delete(new_path2);
 			
-			DataFlowElement src = createSrc(w,hInt,new_path1);
-			DataFlowElement hive = createHiveWithHive(w,
+			DataflowAction src = createSrc(w,hInt,new_path1);
+			DataflowAction hive = createHiveWithHive(w,
 					createHiveWithSrc(w,src,hInt), 
 					hInt);
 

@@ -1,5 +1,6 @@
 package idiro.workflow.server.action;
 
+import idiro.utils.FeatureList;
 import idiro.utils.OrderedFeatureList;
 import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
@@ -76,10 +77,10 @@ public class TableUnionInteraction extends UserInteraction{
 			}
 
 			Iterator<String> itTable = mapTableRow.keySet().iterator();
+			Map<String,DFEOutput> aliases = hu.getAliases(); 
 			while(itTable.hasNext() && msg == null){
 				String alias = itTable.next();
 				List<Tree<String>> listRow = mapTableRow.get(alias);
-				DFEOutput in = hu.getAliases().get(alias);
 
 				//Check if there is the same number of row for each input
 				if(listRow.size() != lRow.size() / mapTableRow.keySet().size()){
@@ -96,7 +97,7 @@ public class TableUnionInteraction extends UserInteraction{
 								row.getFirstChild(table_type_title).getFirstChild().getHead(), 
 								HiveDictionary.getReturnType(
 										row.getFirstChild(table_op_title).getFirstChild().getHead(),
-										in.getFeatures())
+										hu.getInFeatures(aliases,alias))
 								)){
 							msg = "Error the type returned does not correspond for feature "+
 									row.getFirstChild(table_feat_title).getFirstChild().getHead();
@@ -148,7 +149,7 @@ public class TableUnionInteraction extends UserInteraction{
 
 		//Generate Editor
 		Tree<String> featEdit =
-				HiveDictionary.generateEditor(HiveDictionary.createDefaultSelectHelpMenu(),in);
+				HiveDictionary.generateEditor(HiveDictionary.createDefaultSelectHelpMenu(),hu.getInFeatures());
 
 		//Set the Editor of operation
 		logger.debug("Set the editor...");
@@ -165,27 +166,41 @@ public class TableUnionInteraction extends UserInteraction{
 		operation.getParent().getParent().add(featEdit);
 
 		//Set the Generator
-		//Tree<String> generator = 
-		tree.getFirstChild("table").add("generator");
+		Tree<String> generator = tree.getFirstChild("table").add("generator");
 		//Copy Generator operation
-		/*
 		Tree<String> operationCopy = generator.add("operation");
 		operationCopy.add("title").add("copy");
-		Iterator<String> featIt = in.getFeatures().keySet().iterator();
+		FeatureList firstIn = in.get(0).getFeatures();
+		Iterator<String> featIt = firstIn.getFeaturesNames().iterator();
 		while(featIt.hasNext()){
-			String cur = featIt.next();
-			Tree<String> row = operationCopy.add("row"); 
-			row.add(table_op_title).add(cur);
-			row.add(table_feat_title).add(cur);
-			row.add(table_type_title).add(
-					in.getFeatures().get(cur).name()
-					);
-		}*/
+			String feature = featIt.next();
+			FeatureType featureType = firstIn.getFeatureType(feature); 
+			Iterator<DFEOutput> itIn = in.iterator();
+			itIn.next();
+			boolean found = true;
+			while(itIn.hasNext() && found){
+				DFEOutput cur = itIn.next();
+				found = featureType.equals(cur.getFeatures().getFeatureType(feature));
+			}
+			if(found){
+				Iterator<String> aliases = hu.getAliases().keySet().iterator();
+				while(aliases.hasNext()){
+					String alias = aliases.next();
+					Tree<String> row = operationCopy.add("row");
+					row.add(table_table_title).add(alias); 
+					row.add(table_op_title).add(alias+"."+feature);
+					row.add(table_feat_title).add(feature);
+					row.add(table_type_title).add(
+							HiveDictionary.getHiveType(featureType)
+							);
+				}
+			}
+		}
+		
 	}
 
 
 	protected Tree<String> getRootTable() throws RemoteException{
-		HiveInterface hInt = new HiveInterface();
 		//table
 		Tree<String> input = new TreeNonUnique<String>("table");
 		Tree<String> columns = new TreeNonUnique<String>("columns");
@@ -252,7 +267,7 @@ public class TableUnionInteraction extends UserInteraction{
 			Tree<String> rowCur = rowIt.next();
 			String name = rowCur.getFirstChild(table_feat_title).getFirstChild().getHead();
 			String type = rowCur.getFirstChild(table_type_title).getFirstChild().getHead();
-			new_features.addFeature(name, FeatureType.valueOf(type));
+			new_features.addFeature(name.toUpperCase(), FeatureType.valueOf(type));
 		}
 		return new_features;
 	}

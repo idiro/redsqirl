@@ -1,7 +1,7 @@
 package idiro.workflow.server.action;
 
-import idiro.utils.OrderedFeatureList;
 import idiro.utils.FeatureList;
+import idiro.utils.OrderedFeatureList;
 import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.UserInteraction;
@@ -36,7 +36,7 @@ public class TableJoinInteraction extends UserInteraction{
 	private HiveJoin hj;
 
 	public static final String table_op_title = "Operation",
-			table_feat_title = "Feature_name",
+			table_feat_title = "Name",
 			table_type_title = "Type";
 
 	public TableJoinInteraction(String name, String legend,
@@ -166,7 +166,7 @@ public class TableJoinInteraction extends UserInteraction{
 			//logger.debug(feats.get(cur));
 			Tree<String> row = operationCopy.add("row"); 
 			row.add(table_op_title).add(cur);
-			row.add(table_feat_title).add(cur);
+			row.add(table_feat_title).add(cur.replaceAll("\\.", "_"));
 			row.add(table_type_title).add(
 					HiveDictionary.getHiveType(feats.getFeatureType(cur))
 					);

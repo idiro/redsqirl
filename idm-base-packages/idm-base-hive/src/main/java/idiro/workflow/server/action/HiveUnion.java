@@ -56,7 +56,7 @@ public class HiveUnion  extends HiveElement{
 				key_partitions,
 				"",
 				0,
-				1); 
+				0); 
 
 		//page1.addInteraction(condInt);
 		page1.addInteraction(partInt);
@@ -139,25 +139,40 @@ public class HiveUnion  extends HiveElement{
 		return query;
 	}
 
-	@Override
 	public FeatureList getInFeatures() throws RemoteException{
 		FeatureList ans = 
 				new OrderedFeatureList();
-		HiveInterface hInt = new HiveInterface();
-		List<DFEOutput> lOut = getDFEInput().get(HiveUnion.key_input);
-		Iterator<DFEOutput> it = lOut.iterator();
+		Map<String,DFEOutput> aliases = getAliases();
+		
+		Iterator<String> it = aliases.keySet().iterator();
 		while(it.hasNext()){
-			DFEOutput out = it.next();
-			String tableName = hInt.getTableAndPartitions(out.getPath())[0];
-			FeatureList mapTable = out.getFeatures();
+			String alias = it.next();
+			FeatureList mapTable = aliases.get(alias).getFeatures();
 			Iterator<String> itFeat = mapTable.getFeaturesNames().iterator();
 			while(itFeat.hasNext()){
 				String cur = itFeat.next();
-				ans.addFeature(tableName+"."+cur, mapTable.getFeatureType(cur));
+				ans.addFeature(alias+"."+cur, mapTable.getFeatureType(cur));
 			}
 		}
 		return ans; 
 	}
+	
+	/** 
+	 * Get the feature list for the given alias.
+	 * @param alias
+	 * @return
+	 * @throws RemoteException
+	 */
+	public FeatureList getInFeatures(Map<String,DFEOutput> aliases,String alias) throws RemoteException{
+		FeatureList ans = new OrderedFeatureList();
+		FeatureList mapTable = aliases.get(alias).getFeatures();
+		Iterator<String> itFeat = mapTable.getFeaturesNames().iterator();
+		while(itFeat.hasNext()){
+			String cur = itFeat.next();
+			ans.addFeature(alias+"."+cur, mapTable.getFeatureType(cur));
+		}
+		return ans; 
+	} 
 
 	@Override
 	public FeatureList getNewFeatures() throws RemoteException {
