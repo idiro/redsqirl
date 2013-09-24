@@ -551,7 +551,7 @@
 					<rich:menuItem submitMode="none" value="#{messages.label_menu_new}"
 						onclick="jQuery('#addtabCanvas').click();" />
 					<rich:menuItem submitMode="ajax"
-						value="#{messages.label_menu_open}" onclick="#{rich:component('modalLoadWorkflow')}.show()" />
+						value="#{messages.label_menu_open}" onclick="#{rich:component('modalLoadWorkflow')}.show()" rerender="hdfsfsOpenFile"/>
 					<rich:menuItem submitMode="none"
 						value="#{messages.label_menu_close}" onclick="closeWorkflow();" />
 					<rich:menuItem submitMode="ajax"
@@ -635,7 +635,9 @@
 		<center>
 			<a onclick="jQuery('#addtabCanvas').click();"><img src="../image/icons/button-new.png" alt="new" class="shortMenuIcon" /></a>
 			<a onclick="deleteSelected();"><img id="buttonDelete" src="../image/icons/button-delete.png" alt="open" class="shortMenuIcon" /></a>
-			<img src="../image/icons/button-open.png" alt="open" class="shortMenuIcon" onclick="#{rich:component('modalLoadWorkflow')}.show()"/>
+			<img src="../image/icons/button-open.png" alt="open" class="shortMenuIcon" onclick="#{rich:component('modalLoadWorkflow')}.show()">
+				<a4j:support event="onclick" rerender="hdfsfsOpenFile"/>
+			</img>
 			<img src="../image/icons/button-save.png" alt="save" class="shortMenuIcon" onclick="#{rich:component('modalSaveWorkflow')}.show()"/>
 			<img src="../image/icons/button-save-as.png" alt="saveas" class="shortMenuIcon" />
 			<img src="../image/icons/button-save-all.png" alt="saveall" class="shortMenuIcon" />
@@ -927,7 +929,10 @@
 	</a4j:region>
 	
 	<a4j:region renderRegionOnly="true">
-		<rich:modalPanel id="modalLoadWorkflow" width="600" height="400" style="overflow:auto;" resizeable="false">
+		
+							
+		<rich:modalPanel id="modalLoadWorkflow" width="600" height="400" style="overflow:auto;" resizeable="false"
+		 onbeforeshow="refreshHdfsOpenFileTable()">
 	
 			<f:facet name="header">Load</f:facet>
 			<f:facet name="controls">
