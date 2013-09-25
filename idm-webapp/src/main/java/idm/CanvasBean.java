@@ -433,7 +433,6 @@ public class CanvasBean extends BaseBean implements Serializable{
 	 */
 	public void cleanCanvasProject() throws RemoteException {
 		
-		
 		DataFlow wf = getworkFlowInterface().getWorkflow(getNameWorkflow());
 		String error = wf.cleanProject();
 		if(error != null){
