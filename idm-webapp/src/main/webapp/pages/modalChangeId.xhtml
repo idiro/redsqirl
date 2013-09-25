@@ -7,11 +7,11 @@
 
 
 	<h:outputText value="Name" />
-	<h:inputText label="Name" value="#{canvasBean.idElement}" />
+	<h:inputText label="Name" value="#{canvasBean.idElement}" size="16" maxlength="15" />
 
 	<h:panelGrid columns="1">
 		<a4j:commandButton action="#{canvasBean.changeIdElement}" value="#{messages.button_ok}" 
-			oncomplete="#{rich:component('modalChangeId')}.hide();openModal('#{canvasBean.idGroup}','#{canvasModalBean.pathImage}')"/>
+			oncomplete="#{rich:component('modalChangeId')}.hide();updateLabelObj('#{canvasBean.idGroup}','#{canvasBean.idElement}');openModal('#{canvasBean.idGroup}','#{canvasModalBean.pathImage}')"/>
 	</h:panelGrid>
 
 </h:panelGrid>

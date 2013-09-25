@@ -1411,8 +1411,6 @@ var countObj;
 				    	  height: 80
 				      });
 				   
-				   //alert(imagePath);
-				   
 				   if (!this.hasChangedId){
 					   openChangeIdModal(this.getId(), imagePath);
 					   this.hasChangedId = true;
@@ -1483,5 +1481,34 @@ var countObj;
 						return;
 					}
 				}
+		    }
+		    
+		    function updateLabelObj(groupId, newGroupId){
+		    	
+		    	var group = polygonLayer.get("#"+groupId);
+		    	
+		    	var px = group[0].getChildren()[1].getX()-40;
+		    	var py = group[0].getChildren()[1].getY()+30;
+		    	if(newGroupId.length > 10 && newGroupId.length < 15){
+		    		px = px + 10
+		    	}
+		    	if(newGroupId.length > 5 && newGroupId.length <= 10){
+		    		px = px + 20
+		    	}
+		    	if(newGroupId.length >= 1 && newGroupId.length <= 5){
+		    		px = px + 30
+		    	}
+		    	
+		    	var textLabelObj = new Kinetic.Text({
+					text: newGroupId,
+					fontSize: 10,
+					fill: 'black',
+					x: px,
+					y: py
+			    });
+		    	
+		    	group[0].add(textLabelObj);
+		    	polygonLayer.draw();
+		    	
 		    }
 		  
