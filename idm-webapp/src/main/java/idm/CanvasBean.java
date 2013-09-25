@@ -11,6 +11,7 @@ import idm.useful.MessageUseful;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -27,6 +28,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class CanvasBean extends BaseBean implements Serializable{
+	
+	private CanvasModal canvasModalBean;
 
 	private static Logger logger = Logger.getLogger(CanvasBean.class);
 	private List<SelectItem> linkPossibilities = new ArrayList<SelectItem>();
@@ -67,7 +70,10 @@ public class CanvasBean extends BaseBean implements Serializable{
 	public CanvasBean() {
 
 		logger.info("openCanvas");
-
+		
+		FacesContext context = FacesContext.getCurrentInstance();
+		canvasModalBean = (CanvasModal) context.getApplication().evaluateExpressionGet(context, "#{canvasModalBean}", CanvasModal.class);
+		
 		setCountObj(0);
 		setNameWorkflow("canvas"+countWf);
 
@@ -348,6 +354,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 	 * 
 	 * @return
 	 * @author Igor.Souza
+	 * @throws JSONException 
 	 */
 	@SuppressWarnings("rawtypes")
 	public void save() {
@@ -437,12 +444,21 @@ public class CanvasBean extends BaseBean implements Serializable{
 			HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
 		}else{
-		
 		    while(getDf().isrunning()){
 		    	Thread.sleep(500);
 		    }
 		}
 		
+	}
+	
+	public String getWorkflowUrl() throws Exception{
+		logger.info("getWorkflowUrl");
+		logger.info(getDf().getOozieJobId());
+		setDf(getworkFlowInterface().getWorkflow(getNameWorkflow()));
+		logger.info(getDf().getOozieJobId());
+		String url = getOozie().getConsoleUrl(getDf());
+		logger.info(url);
+		return url;
 	}
 
 	public void updateIdObj(){
@@ -488,9 +504,12 @@ public class CanvasBean extends BaseBean implements Serializable{
 		}
 		
 	}
-
-	public void openChangeIdModal(){
+	
+	public void openChangeIdModal() throws RemoteException{
 		setIdElement(getIdMap().get(getIdGroup()));
+		
+		canvasModalBean.openCanvasModal();
+		
 	}
 
 	public void changeIdElement() throws RemoteException{

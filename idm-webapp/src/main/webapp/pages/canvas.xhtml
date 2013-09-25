@@ -383,6 +383,7 @@
 	      }
 	      
 	      function addElementJs(positions){
+	    	  alert(positions);
 	    	  	addElements(positions);
 	      }
 	      
@@ -448,7 +449,6 @@
 				</a4j:jsFunction>
 			</a4j:region>
 			
-						
 			<a4j:region>
 			
 				<a4j:status	onstart="jQuery('#canvas1').block({ message: jQuery('#domMessageDivCanvas1') });"
@@ -503,9 +503,21 @@
 							onerror="jQuery('#canvas1').unblock();" onsuccess="jQuery('#canvas1').unblock();"
 							onstop="jQuery('#canvas1').unblock();" />
 				
-				<a4j:jsFunction name="openChangeIdModal" action="#{canvasBean.openChangeIdModal}" oncomplete="#{rich:component('modalChangeId')}.show()">
-					<a4j:actionparam name="paramIdGroup" assignTo="#{canvasBean.idGroup}"/>
+				<a4j:jsFunction name="openChangeIdModal" action="#{canvasBean.openChangeIdModal}" oncomplete="#{rich:component('modalChangeId')}.show();">
+					<a4j:actionparam name="paramNameElement" assignTo="#{canvasBean.idGroup}"/>
 					<a4j:actionparam name="paramPathImage" assignTo="#{canvasModalBean.pathImage}" />
+					<a4j:actionparam name="paramNameWorkflow" value="#{canvasBean.nameWorkflow}" assignTo="#{canvasModalBean.nameElement}" />
+				</a4j:jsFunction>
+			</a4j:region>
+			
+			<a4j:region>
+				<a4j:status	onstart="jQuery('#canvas1').block({ message: jQuery('#domMessageDivCanvas1') });"
+							onerror="jQuery('#canvas1').unblock();" onsuccess="jQuery('#canvas1').unblock();"
+							onstop="jQuery('#canvas1').unblock();" />
+				
+				<a4j:jsFunction name="closeChangeIdModal" action="#{canvasBean.changeIdElement}" 
+					oncomplete="#{rich:component('modalChangeId')}.hide();#{rich:component('canvasModalPanel')}.show();updateLabelObj('#{canvasBean.idGroup}','#{canvasBean.idElement}');"
+					reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError, canvasModalTabPanel">
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -543,12 +555,17 @@
 			
 			<a4j:region>
 			
-			<a4j:status	onstart="jQuery('#canvas1').block({ message: jQuery('#domMessageDivCanvas1') });"
-							onerror="jQuery('#canvas1').unblock();" onsuccess="jQuery('#canvas1').unblock();"
-							onstop="jQuery('#canvas1').unblock();" />
+			<div id="domMessageDivCanvas2" style="display: none;">
+				<img src="../image/icons/waiting.gif" />
+				<h:panelGroup id="right_area" layout="block">
+					<h:outputText id="workflowText" value="#{canvasBean.workflowUrl}" />
+					<h:outputLink id="workflowUrl" value="#{canvasBean.workflowUrl}" target="_blank">Oozie Console</h:outputLink>
+				</h:panelGroup>
+			</div>
 				
-						
-			<rich:toolBar>
+			
+			<h:panelGroup id="toolBar">		
+			<rich:toolBar >
 
 				<rich:dropDownMenu>
 
@@ -612,10 +629,17 @@
 					<rich:menuItem submitMode="ajax"
 						value="#{messages.label_menu_clean_project}"
 						action="#{canvasBean.cleanCanvasProject}" rerender="msnError" />
+		
+					<rich:menuItem MenusubmitMode="none">
+						<h:outputLink value="#{canvasBean.workflowUrl}" >#{messages.label_menu_see_oozie_job}</h:outputLink>
+					</rich:menuItem>
 
 					<rich:menuItem submitMode="ajax"
 						value="#{messages.label_menu_runproject}"
-						action="#{canvasBean.runWorkflow}" />
+						action="#{canvasBean.runWorkflow}"
+						oncomplete="jQuery('#canvas1').unblock();">
+						<a4j:support event="onclick" requestDelay="1000" rerender="workflowText, workflowUrl,right_area" oncomplete="jQuery('#canvas1').block({ message: jQuery('#domMessageDivCanvas2') });"/>
+					</rich:menuItem>	
 
 				</rich:dropDownMenu>
 
@@ -626,6 +650,7 @@
 				</rich:toolBarGroup>
 
 			</rich:toolBar>
+			</h:panelGroup>	
 			
 			</a4j:region>
 			
