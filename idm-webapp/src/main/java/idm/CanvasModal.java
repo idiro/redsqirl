@@ -893,7 +893,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 		logger.info("tableInteractionGenerationLines");
 
-		List<ItemList> itemList = new ArrayList<ItemList>();
+		List<ItemList> itemList = getListGrid();
 		for (Map<String, String> l : getRowsMap().get(this.getList())){
 
 			ItemList item = new ItemList();
