@@ -625,7 +625,7 @@
 
 				</rich:dropDownMenu>
 
-				<rich:toolBarGroup location="right" onitemclick="jQuery.blockUI({ message: jQuery('#domMessageDivCanvas1') }); signOut();">
+				<rich:toolBarGroup location="right"  onitemclick="jQuery.blockUI({ message: jQuery('#domMessageDivCanvas1') });closeWorkflow();signOut();">
 					<rich:dropDownMenu value="#{messages.label_menu_signout}"
 						direction="bottom-left" jointPoint="br" styleClass="search" />
 				</rich:toolBarGroup>
@@ -635,6 +635,7 @@
 			</a4j:region>
 			
 				<a4j:jsFunction name="signOut" action="#{userInfoBean.signOut}" oncomplete="jQuery.unblockUI();" />
+				<a4j:jsFunction name="closeWorkflow" action="#{canvasBean.closeWorkflow}" oncomplete="jQuery.unblockUI();" />
 
 
 

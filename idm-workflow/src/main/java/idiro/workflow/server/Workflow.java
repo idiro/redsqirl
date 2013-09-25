@@ -85,6 +85,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 
 	protected String name,
 	oozieJobId;
+	
+	protected boolean saved = false;
 
 	public Workflow() throws RemoteException{
 		super();
@@ -537,6 +539,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 				fs.moveFromLocalFile(new Path(tempPath), new Path(filePath));
 				fs.close();
 				
+				saved = true;
 				logger.debug("file saved successfully");
 			}
 		} catch (Exception e) {
@@ -549,6 +552,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 		return error;
 	}
 
+	public boolean isSaved(){
+		return saved;
+	}
 
 	/**
 	 * Reads the xml part of a workflow @see {@link Workflow#read(Path)}
@@ -665,14 +671,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 				}
 
 			}
+			saved = true;
 			
 			//clean temporary files
 			String tempPathCrc = WorkflowPrefManager.pathUserPref.get()+"/tmp/."+fileName+".crc";
 			File tempCrc = new File(tempPathCrc);
 			tempCrc.delete();
-			
 			xmlFile.delete();
-			
 			
 		} catch (Exception e) {
 			logger.error("Fail to read the xml file");

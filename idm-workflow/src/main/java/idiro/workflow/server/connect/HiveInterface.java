@@ -472,7 +472,9 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore{
 
 	public boolean exists(String path){
 		boolean ok = false;
-
+		if(path == null)
+			return ok;
+		
 		try {
 			if(path.equals("/")){
 				ok = true;

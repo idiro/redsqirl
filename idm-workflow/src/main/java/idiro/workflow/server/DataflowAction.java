@@ -316,7 +316,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 		}
 		return error;
 	}
-	
+
 	public void update(int pageNb) throws RemoteException{
 		try{
 			DFEPage page = getPageList().get(pageNb);
@@ -332,7 +332,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 			logger.error("The page number "+pageNb+" does not exist");
 		}
 	}
-	
+
 	/**
 	 * Update the UserInteraction values @see {@link UserInteraction#inputFromAction}
 	 */
@@ -382,7 +382,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 		}
 		return ans;
 	}
-	
+
 	public Map<String,Map<String,DFEOutput>> getAliasesPerInput() throws RemoteException {
 		Map<String,Map<String,DFEOutput> > ans = new LinkedHashMap<String,Map<String,DFEOutput>>();
 		Map<String,List<DataFlowElement> > in = getInputComponent(); 
@@ -825,15 +825,20 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 	public final OozieAction getOozieAction() {
 		return oozieAction;
 	}
-	
+
 	@Override
 	public String cleanDataOut() throws RemoteException{
-		Iterator<DFEOutput> it = getDFEOutput().values().iterator();
 		String err = "";
-		while(it.hasNext()){
-			String curErr = it.next().clean();
-			if(curErr != null){
-				err = err +curErr+"\n";
+		if(getDFEOutput() != null){
+			Iterator<DFEOutput> it = getDFEOutput().values().iterator();
+			while(it.hasNext()){
+				DFEOutput cur = it.next();
+				if(cur != null){
+					String curErr = cur.clean();
+					if(curErr != null){
+						err = err +curErr+"\n";
+					}
+				}
 			}
 		}
 		if(err.isEmpty()){

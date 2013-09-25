@@ -260,11 +260,26 @@ public class CanvasModal extends BaseBean implements Serializable {
 		if(e != null){
 			error.append(e);
 			error.append(System.getProperty("line.separator"));
+		}else{
+			//Update output only if it is the last page
+			//or an output already exist 
+			if(getListPageSize() - 1 == getListPosition() || (
+					getDfe().getDFEOutput() != null &&
+					!getDfe().getDFEOutput().isEmpty())
+					){
+				getDfe().cleanThisAndAllElementAfter();
+				e = getDfe().updateOut();
+				if(getListPageSize() - 1 == getListPosition()){
+					mountOutputForm();
+					if( e != null){
+						error.append(e);
+						error.append(System.getProperty("line.separator"));
+					}
+				}
+			}
 		}
-
-		getDfe().getPageList().set(getListPosition(), getPage());
-		
-		getDfe().updateOut();
+		//This should not be necessary
+		//getDfe().getPageList().set(getListPosition(), getPage());
 
 		return error.toString();
 	}
@@ -280,7 +295,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void previousPage() throws RemoteException {
 
 		logger.info("previousPage ");
-
+		//Save current page 
 		checkNextPage();
 
 		setListPosition(getListPosition()-1);
@@ -715,13 +730,13 @@ public class CanvasModal extends BaseBean implements Serializable {
 		}
 
 		setFunctionsMap(map);
-		
+
 		if(getListItensTable() != null && !getListItensTable().isEmpty()){
 			setList(getListItensTable().get(0).getLabel());
 			setListFunctions(getFunctionsMap().get(getList()));
 		}
-		
-		
+
+
 	}
 
 	/** endDynamicForm
@@ -735,9 +750,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void endDynamicForm() throws RemoteException {
 
 		logger.info("endDynamicForm ");
-
-		mountOutputForm();
-
+		applyPage();
 		String error = checkNextPage();
 		if(error.length() > 1){
 			MessageUseful.addErrorMessage(error);
@@ -745,6 +758,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 			request.setAttribute("msnError", "msnError");
 
 		}
+
 		setErrorMsg(error);
 
 	}
@@ -1085,10 +1099,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void mountOutputForm() throws RemoteException{
 
 		logger.info("mountOutputForm");
-
-		if (getDfe().getDFEOutput() == null){
-			getDfe().updateOut();
-		}else if (!getDfe().getDFEOutput().isEmpty()){
+		if(getDfe() != null && getDfe().getOozieAction() != null &&
+			getDfe().getDFEOutput() != null && !getDfe().getDFEOutput().isEmpty()){
 			setOutputFormList(new ArrayList<OutputForm>());
 			for (Map.Entry<String, DFEOutput> e : getDfe().getDFEOutput().entrySet()){
 				OutputForm of = new OutputForm();
@@ -1166,7 +1178,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 		setCommandEdit(command);
 		setList(null);
 	}
-	
+
 	/** openCanvas
 	 * 
 	 * Methods to clean the outputs from the obj
@@ -1175,9 +1187,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 */
 	public void cleanObj() {
-		
-		
-		
+
+
+
 	}
 
 	public List<SelectItem> getListItens() {

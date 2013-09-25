@@ -84,6 +84,13 @@ public interface DataFlow extends Remote{
 	public String save(String file) throws RemoteException;
 
 	/**
+	 * Return true if the dataflow has been loaded or has been saved.
+	 * @return
+	 * @throws RemoteException
+	 */
+	public boolean isSaved() throws RemoteException;
+	
+	/**
 	 * Reads a workflow
 	 * 
 	 * A workflow is a zip file containing two files:
