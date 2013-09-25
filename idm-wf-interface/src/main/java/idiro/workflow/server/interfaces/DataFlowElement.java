@@ -225,5 +225,10 @@ public interface DataFlowElement extends Remote{
 	 */
 	public String cleanDataOut() throws RemoteException;
 
+	/**
+	 * Clean all output of this element and every element after it.
+	 * @throws RemoteException
+	 */
+	public void cleanThisAndAllElementAfter() throws RemoteException;
 
 }

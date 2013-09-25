@@ -35,7 +35,6 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
 import org.apache.oozie.client.OozieClient;
-import org.apache.oozie.client.OozieClientException;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -790,7 +789,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 	public String removeElement(String componentId) throws RemoteException, Exception{
 		String error = null;
 		DataFlowElement dfe = getElement(componentId);
-		
+		dfe.cleanThisAndAllElementAfter();
 		for (Entry<String,List<DFEOutput>> dfeInput : dfe.getDFEInput().entrySet()){
 			for (DataFlowElement inputComponent : dfe.getInputComponent().get(dfeInput.getKey())){
 				for (Entry<String, List<DataFlowElement>> outputComponent : inputComponent.getOutputComponent().entrySet()){
@@ -963,6 +962,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 		if(out == null || in == null){
 			error = "One of the element to link does not exist";
 		}else{
+			in.cleanThisAndAllElementAfter();
 			out.removeOutputComponent(outName, in);
 			error = in.removeInputComponent(inName, out);
 			if(!force && error == null){

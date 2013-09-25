@@ -842,4 +842,13 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 		return err;
 	}
 
+	@Override
+	public void cleanThisAndAllElementAfter() throws RemoteException{
+		cleanDataOut();
+		Iterator<DataFlowElement> it = getAllOutputComponent().iterator();
+		while(it.hasNext()){
+			it.next().cleanThisAndAllElementAfter();
+		}
+	}
+
 }
