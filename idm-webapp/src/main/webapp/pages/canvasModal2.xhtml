@@ -77,11 +77,9 @@
 			
 			<br/>
 			<form>
-				<rich:comboBox id="listCategories" value="#{canvasModalBean.list}" selectFirstOnUpdate="false" 
-					defaultLabel="Enter some value" width="200" listWidth="150" listHeight="200">
+				<rich:comboBox id="listCategories" value="#{canvasModalBean.list}" enableManualInput="false" width="200" listWidth="150" listHeight="200">
 					<a4j:support event="onselect" action="#{canvasModalBean.changeFunctionsTextEditor}" reRender="lisFunctions"/> 
 					<f:selectItems value="#{canvasModalBean.listItensTable}" />
-			
 				</rich:comboBox>
 			</form>
 			<br/>
@@ -160,6 +158,7 @@
 	<a4j:commandButton action="#{canvasModalBean.cancel}" value="#{messages.button_cancel}" onclick="#{rich:component('textEditorPanel')}.hide();" />
 	<span>&nbsp;&nbsp;</span>
 	<a4j:commandButton action="#{canvasModalBean.checkTextEditor}" value="#{messages.button_check}" reRender="msnError"/>
+	
 </h:form>
 </body>
 </html>

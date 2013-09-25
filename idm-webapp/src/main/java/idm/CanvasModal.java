@@ -1164,7 +1164,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 		setColumnEdit(column);
 
 		setCommandEdit(command);
-		setList(null);
+		//setList(null);
 	}
 	
 	/** openCanvas
@@ -1173,10 +1173,25 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * 
 	 * @return
 	 * @author Igor.Souza
+	 * @throws RemoteException 
 	 */
-	public void cleanObj() {
+	public void removeCleanOutput() throws RemoteException {
 		
+		String nameOutputClean = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("nameOutputClean");
+		String error = null;
+		for (OutputForm outputForm : getOutputFormList()) {
+			
+			if(outputForm.getName().equalsIgnoreCase(nameOutputClean)){
+				error = outputForm.getDfeOutput().remove();
+			}
+			
+		}
 		
+		if(error != null){
+			MessageUseful.addErrorMessage(error);
+			HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
+		}
 		
 	}
 
