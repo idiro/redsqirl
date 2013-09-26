@@ -1069,8 +1069,10 @@ var countObj;
 							        strokeWidth: 4,
 							        fillPatternImage: imgTab,
 							        fillPatternOffset: [7, 7],
+							        fillPatternX: -18,
+							        fillPatternY: 0,
 							        fillPatternRepeat: 'no-repeat',
-							        fillPatternScale: 1.8,
+							        fillPatternScale: 0.9,
 							        fillPatternRotationDeg: 315,
 							        draggable: true
 							  });
@@ -1437,8 +1439,10 @@ var countObj;
 				        strokeWidth: 4,
 				        fillPatternImage: imgTab,
 				        fillPatternOffset: [7, 7],
+				        fillPatternX: -18,
+				        fillPatternY: 0,
 				        fillPatternRepeat: 'no-repeat',
-				        fillPatternScale: 1.8,
+				        fillPatternScale: 0.9,
 				        fillPatternRotationDeg: 315,
 				        draggable: false
 				  });
