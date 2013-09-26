@@ -281,7 +281,7 @@
 			
 			<a4j:commandButton action="#{canvasModalBean.previousPage}" value="#{messages.button_previous}" rendered="#{canvasModalBean.firstPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, msnError" />
 			
-			<a4j:commandButton action="#{canvasModalBean.applyPage}" value="#{messages.button_apply}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, browserTable2, msnError" />
+			<a4j:commandButton action="#{canvasModalBean.applyPage}" value="#{messages.button_apply}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, browserTable2, msnError, canvasModalTabPanel" />
 
 			<a4j:commandButton action="#{canvasModalBean.nextPage}" value="#{messages.button_next}" rendered="#{canvasModalBean.lastPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, browserTable2, msnError" />
 			
@@ -296,7 +296,7 @@
 			<h:panelGrid id="dataOutputForm">
 				<a4j:repeat value="#{canvasModalBean.outputFormList}" var="item"
 					rowKeyVar="index">
-					<h:panelGrid columns="5">
+					<h:panelGrid columns="6">
 						<h:outputText value="#{item.name}" />
 						<rich:comboBox id="outputCombo" selectFirstOnUpdate="false"
 							width="200" value="#{item.savingState}" listWidth="150"
@@ -324,11 +324,15 @@
 						
 						<h:inputText value="#{item.file}"
 							maxlength="40" style="width:100px;" rendered="#{item.renderBrowserButton}"/>
+							
+						<a4j:commandButton value="#{messages.button_remove}" action="#{canvasModalBean.removeCleanOutput}" >
+							<a4j:actionparam name="nameOutputClean" value="#{item.name}" assignTo="#{canvasModalBean.nameOutput}" />
+						</a4j:commandButton>
+							
 					</h:panelGrid>
 				</a4j:repeat>
 				
-				<h:panelGrid columns="3">
-					<a4j:commandButton value="#{messages.button_remove}" action="#{canvasModalBean.cleanObj}" />
+				<h:panelGrid columns="2">
 					<a4j:commandButton value="#{messages.button_apply}" action="#{canvasModalBean.confirmOutput}" />
 					<a4j:commandButton value="#{messages.button_ok}" action="#{canvasModalBean.confirmOutput}" oncomplete="#{rich:component('canvasModalPanel')}.hide()"/>
 				</h:panelGrid>

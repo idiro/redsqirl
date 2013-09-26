@@ -13,6 +13,7 @@ import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.datatype.MapRedTextType;
 import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.enumeration.FeatureType;
+import idiro.workflow.server.enumeration.SavingState;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
@@ -205,8 +206,12 @@ public class Source extends DataflowAction{
 
 						output.get(out_name).addProperty(MapRedTextType.key_delimiter, delimiter);
 					}
+					
+					if(output.get(out_name) != null){
+						output.get(out_name).setSavingState(SavingState.RECORDED);
+					}
 
-
+					
 				}catch(Exception e){
 					error = "Data type cannot be empty";
 				}
@@ -273,7 +278,7 @@ public class Source extends DataflowAction{
 												.equalsIgnoreCase(typeF);
 									}
 									if(!found){
-										error = "The output does not contains the feature "+desc[i];
+										error = "The output does not contain the feature "+desc[i];
 									}
 
 								}
@@ -294,7 +299,7 @@ public class Source extends DataflowAction{
 							}
 						}
 						if(!exist){
-							error = "The file does not exist";
+							error = "The path does not exist";
 						}
 					}
 				}catch(Exception e){
@@ -443,8 +448,7 @@ public class Source extends DataflowAction{
 			if(type.equalsIgnoreCase("hive")){
 				output.put(out_name, new HiveType(out));
 				output.get(out_name).setPath(path);
-			}
-			else if(type.equalsIgnoreCase("hdfs")){
+			}else if(type.equalsIgnoreCase("hdfs")){
 
 				String subtype = getInteraction(key_datasubtype).getTree()
 						.getFirstChild("list").getFirstChild("output")
@@ -483,6 +487,10 @@ public class Source extends DataflowAction{
 
 				output.get(out_name).addProperty(MapRedTextType.key_delimiter, delimiter);
 			}
+			if(output.get(out_name) != null){
+				output.get(out_name).setSavingState(SavingState.RECORDED);
+			}
+			
 		}catch(Exception e){
 			error = "Needs a data set";
 		}
