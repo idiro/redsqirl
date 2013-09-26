@@ -395,8 +395,12 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 		logger.info(getDf().check());
 
-
 		getDf().run(false);
+		
+		while(getDf().isrunning()){
+			Thread.sleep(500);
+		}
+		
 	}
 
 	public void updateIdObj(){
