@@ -287,7 +287,7 @@ public class UserInfoBean extends BaseBean {
 		sc.removeAttribute("wfm");
 		sc.removeAttribute("hive");
 		sc.removeAttribute("ssharray");
-		sc.removeAttribute("ozzie");
+		sc.removeAttribute("oozie");
 		sc.removeAttribute("hdfs");
 
 	}

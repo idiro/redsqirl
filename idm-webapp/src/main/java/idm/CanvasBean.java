@@ -325,9 +325,17 @@ public class CanvasBean extends BaseBean implements Serializable{
 			dfi.addWorkflow(getNameWorkflow());
 			DataFlow df = dfi.getWorkflow(getNameWorkflow());
 			df.getElement();
-			logger.info(df.read(path));
+			
+			String error = df.read(path);
+			if(error != null){
+			    MessageUseful.addErrorMessage(error);
+			    HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			    request.setAttribute("msnError", "msnError");
+		    }
+			
 			df.getElement();
 			setDf(df);
+			
 		} catch (Exception e) {
 			logger.info("Error saving workflow");
 			e.printStackTrace();
@@ -348,9 +356,17 @@ public class CanvasBean extends BaseBean implements Serializable{
 				getRequestParameterMap().get("pathFile");
 
 		try {
+			
 			logger.info("save workflow in "+path);
 			String msg = getDf().save(path);
 			logger.info(msg);
+			
+			if(msg != null ){
+			    MessageUseful.addErrorMessage(msg);
+			    HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			    request.setAttribute("msnError", "msnError");
+		    }
+			
 		} catch (Exception e) {
 			logger.info("Error saving workflow");
 			e.printStackTrace();
@@ -399,7 +415,13 @@ public class CanvasBean extends BaseBean implements Serializable{
 			MessageUseful.addErrorMessage(error);
 			HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
+		}else{
+		
+		    while(getDf().isrunning()){
+		    	Thread.sleep(500);
+		    }
 		}
+		
 	}
 
 	public void updateIdObj(){

@@ -62,7 +62,7 @@ public class CanvasModal extends BaseBean implements Serializable {
     private String pageTitle;
     private String pageLegend;
     private String lastPage = "N";
-    private String firstPage = "S";
+    private String firstPage = "Y";
     private int listPageSize;
     private List<DynamicForm> dynamicFormList = new ArrayList<DynamicForm>();
     private List<OutputForm> outputFormList = new ArrayList<OutputForm>();
@@ -157,11 +157,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 		    if(getListPageSize() -1 > getListPosition()){
 			    setLastPage("N");
 		    }else{
-			    setLastPage("S");
+			    setLastPage("Y");
 		    }
 
 		    if(getListPosition() == 0){
-			    setFirstPage("S");
+			    setFirstPage("Y");
 		    }else{
 			    setFirstPage("N");
 		    }
@@ -305,11 +305,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 	    if(getListPageSize() -1 > getListPosition()){
 		    setLastPage("N");
 	    }else{
-		    setLastPage("S");
+		    setLastPage("Y");
 	    }
 
 	    if(getListPosition() == 0){
-		    setFirstPage("S");
+		    setFirstPage("Y");
 	    }else{
 		    setFirstPage("N");
 	    }
@@ -423,14 +423,14 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 				    mountInteractionForm();
 
-				    setFirstPage("S");
+				    setFirstPage("Y");
 
 				    logger.info("List size " + getListPage().size());
 
 				    if(getListPageSize() -1 > getListPosition()){
 					    setLastPage("N");
 				    }else{
-					    setLastPage("S");
+					    setLastPage("Y");
 				    }
 
 
@@ -494,6 +494,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 					    selectItems.add(new SelectItem(tree.getFirstChild().getHead(), tree.getFirstChild().getHead()));
 				    }
 				    dynamicF.setListOptions(selectItems);
+				    dynamicF.setSelectedListOptions(selectItems.get(0).getLabel());
 			    }
 
 			    if(dfeInteraction.getTree().getFirstChild("list").getFirstChild("output").getFirstChild() != null){
@@ -1126,7 +1127,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	    if(getOutputFormList().isEmpty()){
 		    setShowOutputForm("N");
 	    }else{
-		    setShowOutputForm("S");
+		    setShowOutputForm("Y");
 	    }
 
     }

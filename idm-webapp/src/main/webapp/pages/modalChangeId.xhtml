@@ -11,7 +11,7 @@
 
 	<h:panelGrid columns="1">
 		<a4j:commandButton action="#{canvasBean.changeIdElement}" value="#{messages.button_ok}" 
-			oncomplete="#{rich:component('modalChangeId')}.hide();updateLabelObj('#{canvasBean.idGroup}','#{canvasBean.idElement}');openModal('#{canvasBean.idGroup}','#{canvasModalBean.pathImage}')"/>
+			oncomplete="#{rich:component('modalChangeId')}.hide();openModal('#{canvasBean.idGroup}','#{canvasModalBean.pathImage}');updateLabelObj('#{canvasBean.idGroup}','#{canvasBean.idElement}');"/>
 	</h:panelGrid>
 
 </h:panelGrid>

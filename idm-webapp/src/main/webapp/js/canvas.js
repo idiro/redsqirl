@@ -757,14 +757,14 @@ var countObj;
 			    json2 = json2.replace(/\\/g, "");
 			    
 			    history2.push(json2);
-			    console.log(json2);
+			    //console.log(json2);
 			    
 			    var json = polygonLayer.toJSON();
 			    json = json.replace('"children":"', '"children":');
 			    json = json.substring(0, json.length-2) + json.substring(json.length-1, json.length);
 			    json = json.replace(/\\/g, "");
 			    history.push(json);
-			    console.log(json);
+			    //console.log(json);
 			    
 			}
 		  
@@ -792,12 +792,14 @@ var countObj;
 			}
 			
 			function addElement(elementId, elementType, elementImg, posx, posy){
-				console.log('addElement');
-
+				
+				//alert(elementId + " " + elementType + " " + elementImg + " " + posx + " " + posy);
+				
 				var img = new Image({
 					width: 16,
 					height: 16
 				});
+				//img.src = "./"+elementImg;
 				img.src = elementImg;
 
 				var posInitX = 40;
@@ -904,8 +906,8 @@ var countObj;
 			        var json = history[historyStep];
 			        var json2 = history2[historyStep];
 			        
-			        console.log(json2);
-			        console.log('test');
+			        //console.log(json2);
+			        //console.log('test');
 			        
 			        polygonLayer = Kinetic.Node.create(json, 'canvas');
 			        layer = Kinetic.Node.create(json2, 'canvas');
@@ -1067,8 +1069,10 @@ var countObj;
 							        strokeWidth: 4,
 							        fillPatternImage: imgTab,
 							        fillPatternOffset: [7, 7],
+							        fillPatternX: -18,
+							        fillPatternY: 0,
 							        fillPatternRepeat: 'no-repeat',
-							        fillPatternScale: 1.8,
+							        fillPatternScale: 0.9,
 							        fillPatternRotationDeg: 315,
 							        draggable: true
 							  });
@@ -1435,8 +1439,10 @@ var countObj;
 				        strokeWidth: 4,
 				        fillPatternImage: imgTab,
 				        fillPatternOffset: [7, 7],
+				        fillPatternX: -18,
+				        fillPatternY: 0,
 				        fillPatternRepeat: 'no-repeat',
-				        fillPatternScale: 1.8,
+				        fillPatternScale: 0.9,
 				        fillPatternRotationDeg: 315,
 				        draggable: false
 				  });

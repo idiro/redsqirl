@@ -62,201 +62,209 @@
 			
 			<!-- list -->
 			
-			<rich:comboBox value="#{item.selectedListOptions}" selectFirstOnUpdate="false" width="200" 
-				listWidth="150" listHeight="200" enableManualInput="false" rendered="#{item.displayType == 'list'}" >
-				<f:selectItems value="#{item.listOptions}" />
-			</rich:comboBox>
+			<a4j:region>
+				<rich:comboBox value="#{item.selectedListOptions}" selectFirstOnUpdate="false" width="200" 
+					listWidth="150" listHeight="200" enableManualInput="false" rendered="#{item.displayType == 'list'}" >
+					<f:selectItems value="#{item.listOptions}" />
+				</rich:comboBox>
+			</a4j:region>
 			
 			<!-- appendList -->
 			
-			<rich:comboBox value="#{item.selectedAppendListOptions}" selectFirstOnUpdate="false" width="200" 
-				listWidth="150" listHeight="200" enableManualInput="false" rendered="#{item.displayType == 'appendList' and item.comboBox == 'Y'}" >
-				<f:selectItems value="#{item.appendListOptions}" />
-			</rich:comboBox>
-			
-			<h:selectManyListbox value="#{item.selectedAppendListOptions}" rendered="#{item.displayType == 'appendList' and item.comboBox == 'N'}" >
-				<f:selectItems value="#{item.appendListOptions}" />
-			</h:selectManyListbox>
+			<a4j:region>
+				<rich:comboBox value="#{item.selectedAppendListOptions}" selectFirstOnUpdate="false" width="200" 
+					listWidth="150" listHeight="200" enableManualInput="false" rendered="#{item.displayType == 'appendList' and item.comboBox == 'Y'}" >
+					<f:selectItems value="#{item.appendListOptions}" />
+				</rich:comboBox>
+				
+				<h:selectManyListbox value="#{item.selectedAppendListOptions}" rendered="#{item.displayType == 'appendList' and item.comboBox == 'N'}" >
+					<f:selectItems value="#{item.appendListOptions}" />
+				</h:selectManyListbox>
+			</a4j:region>
 			
 			
 			<!-- browser -->
-			
-			<rich:panel style="border:none;" rendered="#{item.displayType == 'browser'}" id="browserPanel" >
-			
-			
-				<h:outputText value="#{messages.label_path}" />
-				<br/>
-				<h:inputText id="browserPath" label="Path" value="#{item.pathBrowser}" maxlength="255" 
-					style="width:395px;" onclick="openBrowserChangePath();" />
+			<a4j:region>
+				<rich:panel style="border:none;" rendered="#{item.displayType == 'browser'}" id="browserPanel" >
+				
+				
+					<h:outputText value="#{messages.label_path}" />
+					<br/>
+					<h:inputText id="browserPath" label="Path" value="#{item.pathBrowser}" maxlength="255" 
+						style="width:395px;" onclick="openBrowserChangePath();" />
+						
+					<a4j:commandButton type="submit" id="browserChangePathBt" action="#{canvasModalBean.changePathBrowserBefore}" 
+						reRender="browserTable1,browserTable2" oncomplete="#{rich:component('modalPanelBrowserId')}.show()" style="display:none;" >
+						<f:param name="numberDynamic" value="#{index}" />
+					</a4j:commandButton>
+		
+					<br/><br/>
 					
-				<a4j:commandButton type="submit" id="browserChangePathBt" action="#{canvasModalBean.changePathBrowserBefore}" 
-					reRender="browserTable1,browserTable2" oncomplete="#{rich:component('modalPanelBrowserId')}.show()" style="display:none;" >
-					<f:param name="numberDynamic" value="#{index}" />
-				</a4j:commandButton>
-	
-				<br/><br/>
-				
-				<div id="DivBrowserTable1" style="width:580px; height:50px;  border:1px solid black; overflow-x: hidden;">
-				
-					<rich:dataTable id="browserTable1" value="#{item.listGrid}"
-						var="item" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-						enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
-						
-						<rich:column id="browserTable1Col1" rendered="#{canvasModalBean.listGrid != null and not empty canvasModalBean.listGrid}" >
-							<f:facet name="header">
-								<h:outputText value="#{messages.label_properties}" />
-							</f:facet>
-							<h:inputText value="#{item.propertie}" style="width:125px;" readonly="true" />
-						</rich:column>
-						<rich:column id="browserTable1Col2" rendered="#{canvasModalBean.listGrid != null and not empty canvasModalBean.listGrid}" >
-							<f:facet name="header">
-								<h:outputText value="#{messages.label_value}" />
-							</f:facet>
-							<h:inputText value="#{item.value}" style="width:125px;" />
-						</rich:column>
-		
-					</rich:dataTable>
-				
-				</div>
-				
-				<br/>
-				
-				<div id="DivBrowserTable2" style="width:580px; height:120px;  border:1px solid black; overflow-x: hidden;">
-				
-					<rich:dataTable id="browserTable2" value="#{item.listFeature}" 
-						var="itemDiv2" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-						enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
-						
-						<rich:columns value="#{canvasModalBean.keyAsListNameValueFeature}" var="column" index="ind" rendered="#{not empty canvasModalBean.listFeature}" 
-							style="border-bottom:0px;border-right:0px;" >
-							<f:facet name="header">
-								<h:outputText value="#{column}" />
-							</f:facet>
+					<div id="DivBrowserTable1" style="width:580px; height:50px;  border:1px solid black; overflow-x: hidden;">
+					
+						<rich:dataTable id="browserTable1" value="#{item.listGrid}"
+							var="item" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+							enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
 							
-							<h:inputText value="#{itemDiv2.nameValue[column]}" style="width:125px;" readonly="true" />
+							<rich:column id="browserTable1Col1" rendered="#{canvasModalBean.listGrid != null and not empty canvasModalBean.listGrid}" >
+								<f:facet name="header">
+									<h:outputText value="#{messages.label_properties}" />
+								</f:facet>
+								<h:inputText value="#{item.propertie}" style="width:125px;" readonly="true" />
+							</rich:column>
+							<rich:column id="browserTable1Col2" rendered="#{canvasModalBean.listGrid != null and not empty canvasModalBean.listGrid}" >
+								<f:facet name="header">
+									<h:outputText value="#{messages.label_value}" />
+								</f:facet>
+								<h:inputText value="#{item.value}" style="width:125px;" />
+							</rich:column>
+			
+						</rich:dataTable>
+					
+					</div>
+					
+					<br/>
+					
+					<div id="DivBrowserTable2" style="width:580px; height:120px;  border:1px solid black; overflow-x: hidden;">
+					
+						<rich:dataTable id="browserTable2" value="#{item.listFeature}" 
+							var="itemDiv2" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+							enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
 							
-						</rich:columns>
-		
-					</rich:dataTable>
-		
-				</div>
-				
-			</rich:panel>
+							<rich:columns value="#{canvasModalBean.keyAsListNameValueFeature}" var="column" index="ind" rendered="#{not empty canvasModalBean.listFeature}" 
+								style="border-bottom:0px;border-right:0px;" >
+								<f:facet name="header">
+									<h:outputText value="#{column}" />
+								</f:facet>
+								
+								<h:inputText value="#{itemDiv2.nameValue[column]}" style="width:125px;" readonly="true" />
+								
+							</rich:columns>
+			
+						</rich:dataTable>
+			
+					</div>
+					
+				</rich:panel>
+			</a4j:region>
 			
 			<!-- helpTextEditor -->
 			
-			<rich:panel style="border:none;" rendered="#{item.displayType == 'helpTextEditor'}" id="helpTextEditorPanel" >
-				<h:outputText value="#{messages.label_formula}" /> <br/>
-				<h:inputTextarea maxlength="100" cols="70" rows="10" value="#{canvasModalBean.command}" style="resize:none;" id="command">
-					<a4j:support event="onclick" action="#{canvasModalBean.openHelpTextEditorModal}" oncomplete="#{rich:component('textEditorPanel')}.show()" 
-						reRender="commandText,listFields,lisFunctions,listCategories">
-						<a4j:actionparam  name="command" value="#{canvasModalBean.command}"/>
-					</a4j:support>
-				</h:inputTextarea>
-				
-				<br/><br/>
-			</rich:panel>
+			<a4j:region>
+				<rich:panel style="border:none;" rendered="#{item.displayType == 'helpTextEditor'}" id="helpTextEditorPanel" >
+					<h:outputText value="#{messages.label_formula}" /> <br/>
+					<h:inputTextarea maxlength="100" cols="70" rows="10" value="#{canvasModalBean.command}" style="resize:none;" id="command">
+						<a4j:support event="onclick" action="#{canvasModalBean.openHelpTextEditorModal}" oncomplete="#{rich:component('textEditorPanel')}.show()" 
+							reRender="commandText,listFields,lisFunctions,listCategories">
+							<a4j:actionparam  name="command" value="#{canvasModalBean.command}"/>
+						</a4j:support>
+					</h:inputTextarea>
+					
+					<br/><br/>
+				</rich:panel>
+			</a4j:region>
 			
 			<!-- table -->
+			<a4j:region>
+				<rich:panel style="border:none;"
+					rendered="#{item.displayType == 'table'}" id="tablePanel">
+					<h:outputText value="#{messages.label_generation}" />
+	
+					<table width="100%" id="table">
+						<tr>
+							<td width="200px"><rich:comboBox
+									value="#{canvasModalBean.list}" selectFirstOnUpdate="false"
+									defaultLabel="Enter some value" width="200"
+									enableManualInput="false" id="generation" listWidth="150"
+									listHeight="200">
+									<f:selectItems value="#{canvasModalBean.listItens}" />
+								</rich:comboBox></td>
+							<td><a4j:commandButton type="submit"
+									id="tableInteractionGenerationLines"
+									action="#{canvasModalBean.tableInteractionGenerationLines}"
+									value="#{messages.button_ok}" reRender="tableInteraction"/></td>
+						</tr>
+					</table>
+					
+					<br />
+					<br />
+	
+					<div id="DivTableInteraction"
+						style="width: 580px; height: 220px; border: 1px solid black; overflow-x: hidden;">
+	
+						<rich:dataTable id="tableInteraction"
+							value="#{canvasModalBean.listGrid}" var="item" width="100%"
+							style="border:none;"
+							rowKeyVar="row"
+							onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+							enableContextMenu="false"
+							onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
+	
+							<rich:column style="border-bottom:0px;border-right:0px;"
+								width="10px;">
+								<f:facet name="header">
+									<a4j:commandLink
+										action="#{canvasModalBean.tableInteractionDeleteLine}"
+										reRender="tableInteraction"
+										onclick="if(!confirm('Are you sure you want to delete the selected line?')){return false;}">
+										<img id="tableInteractionBtDelete"
+											src="../image/icons/button-delete.png" />
+									</a4j:commandLink>
+								</f:facet>
+	
+								<h:selectBooleanCheckbox value="#{item.selected}">
+									<f:selectItem itemValue="true" />
+								</h:selectBooleanCheckbox>
+	
+							</rich:column>
+							
+							<rich:columns value="#{canvasModalBean.tableInteractionColumns}"
+								var="column" index="ind"
+								style="border-bottom:0px;border-right:0px;">
+								<f:facet name="header">
+									<h:outputText value="#{column}" />
+								</f:facet>
+	
+								<h:inputText value="#{item.nameValue[column]}"
+									rendered="#{canvasModalBean.columnsMap[column] == 'textField' }"
+									style="width:125px;" />
+	
+								<rich:comboBox value="#{item.nameValue[column]}"
+									selectFirstOnUpdate="false" defaultLabel="Enter some value"
+									width="125" enableManualInput="false" listWidth="150"
+									listHeight="150"
+									rendered="#{canvasModalBean.columnsMap[column] == 'comboBox' }">
+									<f:selectItems value="#{canvasModalBean.listConstraint[column]}" />
+								</rich:comboBox>
+	
+								<h:inputText value="#{item.nameValue[column]}"
+									rendered="#{canvasModalBean.columnsMap[column] == 'editor' }"
+									style="width:125px;" >
+									<a4j:support event="onclick" action="#{canvasModalBean.openHelpTextEditorModal}" 
+										oncomplete="#{rich:component('textEditorPanel')}.show()" 
+										reRender="commandText,listFields,lisFunctions,listCategories">
+										<a4j:actionparam  name="command" value="#{item.nameValue[column]}"/>
+										<a4j:actionparam  name="rowKey" value="#{row}"/>
+										<a4j:actionparam  name="column" value="#{column}"/>
+									</a4j:support>
+								</h:inputText>
+	
+							</rich:columns>
+	
+						</rich:dataTable>
+	
+					</div>
+					
+					<a4j:commandLink
+						action="#{canvasModalBean.tableInteractionAddNewLine}"
+						reRender="tableInteraction">
+						<img id="tableInteractionBtAdd"
+							src="../image/icons/button-plus.gif" />
+					</a4j:commandLink>
+					
+				</rich:panel>
 
-			<rich:panel style="border:none;"
-				rendered="#{item.displayType == 'table'}" id="tablePanel">
-				<h:outputText value="#{messages.label_generation}" />
-
-				<table width="100%" id="table">
-					<tr>
-						<td width="200px"><rich:comboBox
-								value="#{canvasModalBean.list}" selectFirstOnUpdate="false"
-								defaultLabel="Enter some value" width="200"
-								enableManualInput="false" id="generation" listWidth="150"
-								listHeight="200">
-								<f:selectItems value="#{canvasModalBean.listItens}" />
-							</rich:comboBox></td>
-						<td><a4j:commandButton type="submit"
-								id="tableInteractionGenerationLines"
-								action="#{canvasModalBean.tableInteractionGenerationLines}"
-								value="#{messages.button_ok}" reRender="tableInteraction"/></td>
-					</tr>
-				</table>
-				
-				<br />
-				<br />
-
-				<div id="DivTableInteraction"
-					style="width: 580px; height: 220px; border: 1px solid black; overflow-x: hidden;">
-
-					<rich:dataTable id="tableInteraction"
-						value="#{canvasModalBean.listGrid}" var="item" width="100%"
-						style="border:none;"
-						rowKeyVar="row"
-						onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-						enableContextMenu="false"
-						onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
-
-						<rich:column style="border-bottom:0px;border-right:0px;"
-							width="10px;">
-							<f:facet name="header">
-								<a4j:commandLink
-									action="#{canvasModalBean.tableInteractionDeleteLine}"
-									reRender="tableInteraction"
-									onclick="if(!confirm('Are you sure you want to delete the selected line?')){return false;}">
-									<img id="tableInteractionBtDelete"
-										src="../image/icons/button-delete.png" />
-								</a4j:commandLink>
-							</f:facet>
-
-							<h:selectBooleanCheckbox value="#{item.selected}">
-								<f:selectItem itemValue="true" />
-							</h:selectBooleanCheckbox>
-
-						</rich:column>
-						
-						<rich:columns value="#{canvasModalBean.tableInteractionColumns}"
-							var="column" index="ind"
-							style="border-bottom:0px;border-right:0px;">
-							<f:facet name="header">
-								<h:outputText value="#{column}" />
-							</f:facet>
-
-							<h:inputText value="#{item.nameValue[column]}"
-								rendered="#{canvasModalBean.columnsMap[column] == 'textField' }"
-								style="width:125px;" />
-
-							<rich:comboBox value="#{item.nameValue[column]}"
-								selectFirstOnUpdate="false" defaultLabel="Enter some value"
-								width="125" enableManualInput="false" listWidth="150"
-								listHeight="150"
-								rendered="#{canvasModalBean.columnsMap[column] == 'comboBox' }">
-								<f:selectItems value="#{canvasModalBean.listConstraint[column]}" />
-							</rich:comboBox>
-
-							<h:inputText value="#{item.nameValue[column]}"
-								rendered="#{canvasModalBean.columnsMap[column] == 'editor' }"
-								style="width:125px;" >
-								<a4j:support event="onclick" action="#{canvasModalBean.openHelpTextEditorModal}" 
-									oncomplete="#{rich:component('textEditorPanel')}.show()" 
-									reRender="commandText,listFields,lisFunctions,listCategories">
-									<a4j:actionparam  name="command" value="#{item.nameValue[column]}"/>
-									<a4j:actionparam  name="rowKey" value="#{row}"/>
-									<a4j:actionparam  name="column" value="#{column}"/>
-								</a4j:support>
-							</h:inputText>
-
-						</rich:columns>
-
-					</rich:dataTable>
-
-				</div>
-				
-				<a4j:commandLink
-					action="#{canvasModalBean.tableInteractionAddNewLine}"
-					reRender="tableInteraction">
-					<img id="tableInteractionBtAdd"
-						src="../image/icons/button-plus.gif" />
-				</a4j:commandLink>
-				
-			</rich:panel>
-
+			</a4j:region>
 		<br />
 			
 		</a4j:repeat>
@@ -277,13 +285,13 @@
 
 			<a4j:commandButton action="#{canvasModalBean.nextPage}" value="#{messages.button_next}" rendered="#{canvasModalBean.lastPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, browserTable2, msnError" />
 			
-			<a4j:commandButton onclick="endDynamicForm()" value="#{messages.button_ok}" rendered="#{canvasModalBean.lastPage == 'S'}"/>
+			<a4j:commandButton onclick="endDynamicForm()" value="#{messages.button_ok}" rendered="#{canvasModalBean.lastPage == 'Y'}"/>
 		
 		</rich:panel>
 	
 	 </rich:tab>
         
-		<rich:tab id="outputTab" label="#{messages.label_dynamic_data}" rerender="dataOutputForm" rendered="#{canvasModalBean.showOutputForm == 'S'}" >
+		<rich:tab id="outputTab" label="#{messages.label_dynamic_data}" rerender="dataOutputForm" rendered="#{canvasModalBean.showOutputForm == 'Y'}" >
 
 			<h:panelGrid id="dataOutputForm">
 				<a4j:repeat value="#{canvasModalBean.outputFormList}" var="item"
