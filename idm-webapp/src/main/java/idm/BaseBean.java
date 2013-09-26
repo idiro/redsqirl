@@ -147,7 +147,7 @@ public class BaseBean {
 		FacesContext fCtx = FacesContext.getCurrentInstance();
 		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
 
-		return (JobManager) sc.getAttribute("ozzie");
+		return (JobManager) sc.getAttribute("oozie");
 	}
 
 
