@@ -14,9 +14,9 @@ import javax.faces.model.SelectItem;
 import org.apache.log4j.Logger;
 
 public class OutputForm implements Serializable {
-	
+
 	private static Logger logger = Logger.getLogger(OutputForm.class);
-	
+
 	private DFEOutput dfeOutput;
 	private String componentId;
 	private String name;
@@ -49,7 +49,7 @@ public class OutputForm implements Serializable {
 	public void setRenderBrowserButton(boolean renderButton) {
 		this.renderBrowserButton = renderButton;
 	}
-	
+
 	public String getPath() throws RemoteException {
 		return path;
 	}
@@ -57,7 +57,7 @@ public class OutputForm implements Serializable {
 	public void setPath(String path) throws RemoteException {
 		this.path = path;
 	}
-	
+
 	public String getFile() {
 		return file;
 	}
@@ -73,15 +73,15 @@ public class OutputForm implements Serializable {
 	public void setDfeOutput(DFEOutput dfeOutput) {
 		this.dfeOutput = dfeOutput;
 	}
-	
+
 	public boolean isHiveBrowser() throws RemoteException{
 		return dfeOutput.getBrowser().equals(DataBrowser.HIVE);
 	}
-	
+
 	public boolean isHdfsBrowser() throws RemoteException{
 		return dfeOutput.getBrowser().equals(DataBrowser.HDFS);
 	}
-	
+
 	public String getSavingState() {
 		return savingState;
 	}
@@ -96,15 +96,17 @@ public class OutputForm implements Serializable {
 			else if (savingState.equals(SavingState.BUFFERED.toString()) ||
 					savingState.equals(SavingState.TEMPORARY.toString())){
 				setRenderBrowserButton(false);
-				getDfeOutput().generatePath(
-						System.getProperty("user.name"), 
-						getComponentId(), 
-						getName());
+				if(getDfeOutput().isPathValid() != null){
+					getDfeOutput().generatePath(
+							System.getProperty("user.name"), 
+							getComponentId(), 
+							getName());
+				}
 				setPath(getDfeOutput().getPath());
 			}
 		}
 	}
-	
+
 	public String getComponentId() {
 		return componentId;
 	}
@@ -119,7 +121,7 @@ public class OutputForm implements Serializable {
 		list.add("Output2");
 		return list;
 	}
-	
+
 	public String updateDFEOutput() throws RemoteException{
 
 		if (getSavingState().equals(SavingState.RECORDED.toString())) {
@@ -141,5 +143,5 @@ public class OutputForm implements Serializable {
 
 		return dfeOutput.isPathValid();
 	}
-	
+
 }

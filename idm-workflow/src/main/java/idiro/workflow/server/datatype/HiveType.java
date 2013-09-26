@@ -46,7 +46,6 @@ public class HiveType extends DataOutput{
 		}
 		addProperty(key_alias,"");
 		setConstant(true);
-		
 	}
 
 	public HiveType(FeatureList features) throws RemoteException{
@@ -103,6 +102,9 @@ public class HiveType extends DataOutput{
 
 	@Override
 	public String isPathValid() throws RemoteException {
+		if(getPath() == null){
+			return "A path needs to be specified";
+		}
 		if (isPathExists()){
 			return hInt.isPathValid(getPath(), features,getProperty(key_partitions));
 		}else{

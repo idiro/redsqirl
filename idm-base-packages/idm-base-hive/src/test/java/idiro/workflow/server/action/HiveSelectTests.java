@@ -203,7 +203,7 @@ public class HiveSelectTests {
 		TestUtils.logTestTitle(getClass().getName()+"#oneBridge");
 		
 		try {
-			Workflow w = new Workflow("workflow_test2");
+			Workflow w = new Workflow("test_one_bridge");
 			String error = null;
 			
 			HiveInterface hInt = new HiveInterface();
@@ -222,11 +222,10 @@ public class HiveSelectTests {
 			hive.getDFEOutput().get(HiveSelect.key_output).setPath(new_path2);
 			
 			logger.debug("run...");
-			assertTrue("create "+new_path2,
-					hInt.create(new_path2, getColumns()) == null
-					);
-			String jobId = w.run(false);
+			error = w.run();
+			assertTrue("Launch join: "+error, error == null);
 			OozieClient wc = OozieManager.getInstance().getOc();
+			String jobId = w.getOozieJobId();
 			
 			// wait until the workflow job finishes printing the status every 10 seconds
 		    while(

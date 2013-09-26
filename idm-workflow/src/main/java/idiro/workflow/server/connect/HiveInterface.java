@@ -481,7 +481,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore{
 			}else if(path.startsWith("/") && path.length() > 1 ){
 				String[] tableAndPartitions = getTableAndPartitions(path);
 
-				ok = ! conn.listTables(tableAndPartitions[0]).isEmpty();
+				ok = ! conn.listTables(tableAndPartitions[0].toLowerCase()).isEmpty();
 
 				if(ok && tableAndPartitions.length > 1){
 					ok = false;

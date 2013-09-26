@@ -302,8 +302,10 @@ extends OozieXmlCreatorAbs{
 				}
 				Iterator<DataFlowElement> itOut = cur.getAllOutputComponent().iterator();
 				while(itOut.hasNext()){
-					out.add(getNameAction(itOut.next()));
-
+					DataFlowElement outEl = itOut.next();
+					if(list.contains(outEl)){
+						out.add(getNameAction(outEl));
+					}
 				}
 				if(out.isEmpty()){
 					out.add(endElement);

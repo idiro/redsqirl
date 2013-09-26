@@ -162,7 +162,7 @@ public class HiveUnionTests {
 		TestUtils.logTestTitle(getClass().getName()+"#basic");
 		String error = null;
 		try{
-			Workflow w = new Workflow("workflow1_"+getClass().getName());
+			Workflow w = new Workflow("test_hive_union");
 			HiveInterface hInt = new HiveInterface();
 			String new_path1 = TestUtils.getTablePath(1);
 			String new_path2 = TestUtils.getTablePath(2);
@@ -182,8 +182,10 @@ public class HiveUnionTests {
 					hInt.create(new_path3, getColumns()) == null
 					);*/
 			logger.debug("run...");
-			String jobId = w.run(false);
+			error = w.run();
+			assertTrue("Launch join: "+error, error == null);
 			OozieClient wc = OozieManager.getInstance().getOc();
+			String jobId = w.getOozieJobId();
 			
 			// wait until the workflow job finishes printing the status every 10 seconds
 		    while(

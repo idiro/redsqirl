@@ -1110,7 +1110,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 			    for (SavingState s : SavingState.values()){
 				    outputList.add(new SelectItem(s.toString(), s.toString()));
 			    }
-			    of.setSavingStateList(outputList);
+			    //of.setSavingStateList(outputList);
 			    of.setDfeOutput(e.getValue());
 			    of.setComponentId(getDfe().getComponentId());
 			    of.setSavingState(e.getValue().getSavingState().toString());

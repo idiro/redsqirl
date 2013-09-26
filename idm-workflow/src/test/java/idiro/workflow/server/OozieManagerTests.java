@@ -170,7 +170,7 @@ public class OozieManagerTests {
 					hInt.create(new_path2, getColumns()) == null
 					);
 			logger.debug("run...");
-			String jobId = w.run(false);
+			String jobId = w.run();
 			OozieClient wc = OozieManager.getInstance().getOc();
 			
 			// wait until the workflow job finishes printing the status every 10 seconds
@@ -220,7 +220,7 @@ public class OozieManagerTests {
 			assertTrue("create "+new_path2,
 					hInt.create(new_path2, getColumns()) == null
 					);
-			String jobId = w.run(false);
+			String jobId = w.run();
 			OozieClient wc = OozieManager.getInstance().getOc();
 			
 			// wait until the workflow job finishes printing the status every 10 seconds
@@ -276,7 +276,7 @@ public class OozieManagerTests {
 			hive2.getDFEOutput().get(HiveSelectT.key_output).setPath(new_path3);
 			
 			logger.debug("run...");
-			String jobId = w.run(false);
+			String jobId = w.run();
 			OozieClient wc = OozieManager.getInstance().getOc();
 			
 			// wait until the workflow job finishes printing the status every 10 seconds

@@ -14,14 +14,14 @@ import java.io.FileReader;
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -85,7 +85,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 
 	protected String name,
 	oozieJobId;
-	
+
 	protected boolean saved = false;
 
 	public Workflow() throws RemoteException{
@@ -167,7 +167,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 
 		return error;
 	}
-	
+
 	/**
 	 * Save the icon menu.
 	 * 
@@ -175,17 +175,17 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 	 * 
 	 */
 	public String saveMenu(){
-		
+
 		String error = "";
-		
+
 		File menuDir = new File(WorkflowPrefManager.pathIconMenu.get());
-		
+
 		try {
 			FileUtils.cleanDirectory(menuDir);
-			
+
 			for (Entry<String,List<String[]>> e : menuWA.entrySet()){
 				File file = new File(menuDir.getAbsolutePath()+"/"+e.getKey());
-				
+
 				PrintWriter s = new PrintWriter(file);
 				for (String[] string : e.getValue()){
 					s.println(string[0]);
@@ -195,13 +195,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 		} catch (Exception e) {
 			error +="Fail to write menu files\n";
 		}
-		
+
 		if(error.isEmpty()){
 			error = null;
 		}else{
 			logger.error(error);
 		}
-		
+
 		return error;
 	}
 
@@ -259,82 +259,126 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 	 * @throws Exception 
 	 */
 	@Override
-	public String run(boolean cleanup) throws Exception{
-		String error = null;
-		String jobId = null;
+	public String run() throws RemoteException{
+		return run(getIds(element));
+	}
 
-		if(cleanup){
-			Iterator<DataFlowElement> itE = element.iterator();
-			while(itE.hasNext() && error == null){
-				DataFlowElement cur = itE.next();
-				if(cur.getOozieAction() != null){
-					Iterator<DFEOutput> itO = cur.getDFEOutput().values().iterator();
-					while(itO.hasNext() && error == null){
-						DFEOutput o = itO.next();
-						if(o.isPathExists() && 
-								o.getSavingState() != SavingState.RECORDED){
-							error = o.remove();
+
+	public String run(List<String> dataFlowElement) throws RemoteException{
+		String error = check();
+
+		LinkedList<DataFlowElement> elsIn = new LinkedList<DataFlowElement>();
+		if(dataFlowElement.size() < element.size()){
+			Iterator<DataFlowElement> itIn = getEls(dataFlowElement).iterator();
+			while(itIn.hasNext()){
+				DataFlowElement cur = itIn.next();
+				elsIn = getAllWithoutDuplicate(elsIn, getItAndAllElementsNeeded(cur));
+			}
+		}else{
+			elsIn.addAll(getEls(dataFlowElement));
+		}
+
+		//Run only what have not been calculated in the workflow.
+		List<DataFlowElement> toRun = new LinkedList<DataFlowElement>();
+		Iterator<DataFlowElement> itE = elsIn.descendingIterator();
+		while(itE.hasNext() && error == null){
+			DataFlowElement cur = itE.next();
+			if(!toRun.contains(cur)){
+				boolean haveTobeRun = false;
+				List<DataFlowElement> outAllComp = cur.getAllOutputComponent();
+				Collection<DFEOutput> outData = cur.getDFEOutput().values();
+				Map<String,List<DataFlowElement>> outComp = cur.getOutputComponent();
+				if(outAllComp.size() == 0){
+					//Check if one element buffered/recorded exist or not
+					//if all elements are temporary and not exist calculate the element
+					Iterator<DFEOutput> itOutData = outData.iterator();
+					int nbTemporary = 0;
+					while(itOutData.hasNext() && !haveTobeRun){
+						DFEOutput outC = itOutData.next();
+						if( (outC.getSavingState() != SavingState.TEMPORARY )&&
+								!outC.isPathExists()){
+							haveTobeRun = true;
+						}else if(outC.getSavingState() == SavingState.TEMPORARY &&
+								!outC.isPathExists()){
+							++nbTemporary;
+						}
+					}
+					if(nbTemporary == outData.size()){
+						haveTobeRun = true;
+					}
+
+				}else{
+					//Check if among the output several elements some are recorded/buffered and does not exist
+					Iterator<DFEOutput> itOutData = outData.iterator();
+					while(itOutData.hasNext() && !haveTobeRun){
+						DFEOutput outC = itOutData.next();
+						if( (outC.getSavingState() != SavingState.TEMPORARY )&&
+								!outC.isPathExists()){
+							haveTobeRun = true;
+						}
+					}
+					if(!haveTobeRun){
+						//Check if among the output several elements to run are in the list
+						//Check if it is true the corresponded outputs is saved or not
+						Iterator<String> searchOutIt = outComp.keySet().iterator();
+						while(searchOutIt.hasNext() && !haveTobeRun){
+							boolean foundOne = false;
+							String searchOut = searchOutIt.next();
+							Iterator<DataFlowElement> outCIt = outComp.get(searchOut).iterator();
+							while(outCIt.hasNext() && !foundOne){
+								foundOne = toRun.contains(outCIt.next());
+							}
+							if(foundOne ){
+								haveTobeRun = !cur.getDFEOutput().get(searchOut).isPathExists();
+							}
 						}
 					}
 				}
+				//Never run an element that have no action
+				if(cur.getOozieAction() == null){
+					haveTobeRun = false;
+				}
+				if(haveTobeRun){
+					//If this element have to be run
+					//if one element exist and one recorded/buffered does not send an error
+					cur.cleanDataOut();
+					boolean errorToSend = false;
+					Iterator<DFEOutput> itOutData = outData.iterator();
+					while(itOutData.hasNext() && !haveTobeRun){
+						DFEOutput outC = itOutData.next();
+						errorToSend = outC.isPathExists();
+					}
+					if(errorToSend){
+						error = cur.getComponentId()
+								+": Element have to be run but one or several elements are recorded";
+					}else{
+						toRun.add(cur);
+					}
+				}
+
 			}
+		}
+
+		if(error == null && toRun.isEmpty()){
+			error = "Everything is up to date.";
 		}
 
 		if(error == null){
-			jobId = OozieManager.getInstance().run(this,
-					element);
-		}else{
-			logger.debug(error);
-			throw new Exception(error);
-		}
-
-		return jobId;
-	}
-
-	/**
-	 * Run a workflow
-	 * @return
-	 * @throws Exception 
-	 */
-	@Override
-	public String run(List<String> dataFlowElement) throws Exception{
-
-		Set<DataFlowElement> dependency = new HashSet<DataFlowElement>(element.size());
-		Iterator<String> it = dataFlowElement.iterator();
-		int nbChange = 0;
-		while(it.hasNext()){
-			DataFlowElement dfe = getElement(it.next());
-			List<DataFlowElement> tmp = dfe.getInputElementToBeCalculated();
-			dependency.addAll(tmp);
-			nbChange += tmp.size();
-		}
-
-		while(nbChange > 0){
-			Iterator<DataFlowElement> itE = dependency.iterator();
-			while(itE.hasNext()){
-				DataFlowElement dfe = getElement(it.next());
-				List<DataFlowElement> tmp = dfe.getInputElementToBeCalculated(); 
-				dependency.addAll(tmp);
-
-			}
-			nbChange = dependency.size() - nbChange;
-		}
-
-		List<DataFlowElement> toProcess = new LinkedList<DataFlowElement>();
-		Iterator<DataFlowElement> itE = element.iterator();
-		while(itE.hasNext()){
-			DataFlowElement cur = itE.next();
-			if(dependency.contains(cur)){
-				toProcess.add(cur);
+			try {
+				setOozieJobId(OozieManager.getInstance().run(this,
+						toRun));
+			} catch (Exception e) {
+				error = e.getMessage();
 			}
 		}
 
-		String jobId = OozieManager.getInstance().run(this,
-				toProcess);
+		if(error != null){
+			logger.error(error);
+		}
 
-		return jobId;
+		return error;
 	}
-	
+
 	public String cleanProject() throws RemoteException{
 		String err = "";
 		Iterator<DataFlowElement> it = element.iterator();
@@ -360,11 +404,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 		OozieClient wc = OozieManager.getInstance().getOc();
 		boolean running = false;
 		try{
-		if(oozieJobId != null && 
-				wc.getJobInfo(oozieJobId).getStatus() == 
-	    		org.apache.oozie.client.WorkflowJob.Status.RUNNING){
-			running = true;
-		}
+			if(oozieJobId != null && 
+					wc.getJobInfo(oozieJobId).getStatus() == 
+					org.apache.oozie.client.WorkflowJob.Status.RUNNING){
+				running = true;
+			}
 		}catch(Exception e){
 			logger.error(e.getMessage());
 		}
@@ -534,17 +578,17 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 				DOMSource source = new DOMSource(doc);
 				StreamResult result = new StreamResult(file);
 				transformer.transform(source, result);
-				
+
 				FileSystem fs = NameNodeVar.getFS();
 				fs.moveFromLocalFile(new Path(tempPath), new Path(filePath));
 				fs.close();
-				
+
 				saved = true;
 				logger.debug("file saved successfully");
 			}
 		} catch (Exception e) {
 			error = "Fail to save the xml file"+e;
-			
+
 			logger.error(error);
 			logger.error(e.getMessage());
 		}
@@ -564,14 +608,14 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 	public String read(String filePath){
 		String error = null;
 		element.clear();
-		
+
 		try {
 			String[] path = filePath.split("/");
 			String fileName = path[path.length-1];
 			String tempPath = WorkflowPrefManager.pathUserPref.get()+"/tmp";
 			FileSystem fs = NameNodeVar.getFS();
 			fs.copyToLocalFile(new Path(filePath), new Path(tempPath));
-			
+
 			File xmlFile = new File(tempPath+"/"+fileName);
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -672,13 +716,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 
 			}
 			saved = true;
-			
+
 			//clean temporary files
 			String tempPathCrc = WorkflowPrefManager.pathUserPref.get()+"/tmp/."+fileName+".crc";
 			File tempCrc = new File(tempPathCrc);
 			tempCrc.delete();
 			xmlFile.delete();
-			
+
 		} catch (Exception e) {
 			logger.error("Fail to read the xml file");
 			error = "Fail to read the xml file";
@@ -735,7 +779,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 
 		return error;
 	}
-	
+
 	public String changeElementId(String oldId, String newId) throws RemoteException{
 		String err = null;
 		String regex = "[a-zA-Z]([A-Za-z0-9_]{0,15})";
@@ -790,7 +834,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 
 		return addElement(waName,newId);
 	}
-	
+
 	public String removeElement(String componentId) throws RemoteException, Exception{
 		String error = null;
 		DataFlowElement dfe = getElement(componentId);
@@ -802,11 +846,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 						logger.info("Remove1 - "+outputComponent.getKey()+" "+inputComponent.getComponentId()+" "+dfeInput.getKey()+" "+dfe.getComponentId());
 						error = this.removeLink(outputComponent.getKey(), inputComponent.getComponentId(), dfeInput.getKey(), dfe.getComponentId(), true);
 					}
-					
+
 				}
 			}
 		}
-		
+
 		if (error != null && dfe.getDFEOutput() != null){
 			for (Entry<String,DFEOutput> dfeOutput : dfe.getDFEOutput().entrySet()){
 				for (DataFlowElement outputComponent : dfe.getOutputComponent().get(dfeOutput.getKey())){
@@ -815,7 +859,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 							logger.info("Remove2 - "+dfeOutput.getKey()+" "+dfe.getComponentId()+" "+inputComponent.getKey()+" "+outputComponent.getComponentId());
 							error = this.removeLink(dfeOutput.getKey(), dfe.getComponentId(), inputComponent.getKey(), outputComponent.getComponentId(), true);
 						}
-						
+
 					}
 				}
 			}
@@ -824,7 +868,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 		element.remove(element.indexOf(dfe));
 		return error;
 	}
-	
+
 	/**
 	 * Add a WorkflowAction in the Workflow.
 	 * The element is at the end of the workingWA list
@@ -1038,7 +1082,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 		}
 		return error;
 	}
-	
+
 	public boolean check( 
 			String outName,
 			String componentIdOut,
@@ -1091,7 +1135,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 		}
 		return flowElement;
 	}
-	
+
 	/**
 	 * Get all the WorkflowAction available in the jars file.
 	 * 
@@ -1106,8 +1150,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 		List<String[]> result = new LinkedList<String[]>();
 
 		Iterator<String> actionClassName = 
-					WorkflowPrefManager.getInstance().getNonAbstractClassesFromSuperClass(
-							DataflowAction.class.getCanonicalName()).iterator();
+				WorkflowPrefManager.getInstance().getNonAbstractClassesFromSuperClass(
+						DataflowAction.class.getCanonicalName()).iterator();
 
 		while(actionClassName.hasNext()){
 			String className = actionClassName.next();
@@ -1176,6 +1220,54 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 
 	public void setOozieJobId(String oozieJobId){
 		this.oozieJobId = oozieJobId;
+	}
+
+	protected List<String> getIds(List<DataFlowElement> els) throws RemoteException{
+		List<String> ans = new ArrayList<String>(els.size());
+		Iterator<DataFlowElement> it = els.iterator();
+		while(it.hasNext()){
+			ans.add(it.next().getComponentId());
+		}
+		return ans;
+	}
+
+	protected List<DataFlowElement> getEls(List<String> ids) throws RemoteException{
+		List<DataFlowElement> ans = new ArrayList<DataFlowElement>(ids.size());
+		Iterator<String> it = ids.iterator();
+		while(it.hasNext()){
+			ans.add(getElement(it.next()));
+		}
+		return ans;
+	}
+
+	protected LinkedList<DataFlowElement> getItAndAllElementsNeeded(DataFlowElement el) throws RemoteException{
+		LinkedList<DataFlowElement> ans = new LinkedList<DataFlowElement>();
+		ans.add(el);
+		Iterator<DataFlowElement> it = el.getAllInputComponent().iterator();
+		while(it.hasNext()){
+			Iterator<DataFlowElement> itCur = getItAndAllElementsNeeded(it.next()).iterator();
+			while(itCur.hasNext()){
+				DataFlowElement cans = itCur.next();
+				if(!ans.contains(cans)){
+					ans.add(cans);
+				}
+			}
+		}
+		return ans;
+	}
+
+	protected LinkedList<DataFlowElement> getAllWithoutDuplicate(List<DataFlowElement> l1,
+			List<DataFlowElement> l2){
+		LinkedList<DataFlowElement> ans = new LinkedList<DataFlowElement>();
+		ans.addAll(l1);
+		Iterator<DataFlowElement> itCur = l2.iterator();
+		while(itCur.hasNext()){
+			DataFlowElement cans = itCur.next();
+			if(!ans.contains(cans)){
+				ans.add(cans);
+			}
+		}
+		return ans;
 	}
 
 }

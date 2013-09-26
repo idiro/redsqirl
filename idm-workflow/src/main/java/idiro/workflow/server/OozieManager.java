@@ -230,7 +230,6 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 			try {
 				jobId = oc.run(conf);
 				logger.debug("Workflow job submitted succesfully");
-				df.setOozieJobId(jobId);
 			} catch (OozieClientException e) {
 				error = "Fail to launch the job with oozie "+e.getMessage();
 			}

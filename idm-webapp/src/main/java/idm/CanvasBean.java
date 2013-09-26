@@ -393,10 +393,13 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 		getDf().setName(getNameWorkflow());
 
-		logger.info(getDf().check());
-
-
-		getDf().run(false);
+		String error = getDf().run();
+		if(error != null){
+			logger.error(error);
+			MessageUseful.addErrorMessage(error);
+			HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
+		}
 	}
 
 	public void updateIdObj(){

@@ -48,18 +48,18 @@ public interface DataFlow extends Remote{
 	/**
 	 * Run a workflow
 	 * @param true to cleanup the dependency before launching the process
-	 * @return the oozie job id
+	 * @return the error
 	 * @throws Exception an exception with a message if something goes wrong
 	 */
-	public String run(boolean cleanup) throws RemoteException, Exception;
+	public String run() throws RemoteException, Exception;
 
 	/**
 	 * Run a workflow
 	 * @param list of element to run
-	 * @return the oozie job id
+	 * @return the error
 	 * @throws Exception an exception with a message if something goes wrong
 	 */
-	public String run(List<String> dataFlowElement) throws RemoteException, Exception;
+	public String run(List<String> dataFlowElement) throws RemoteException;
 
 	/**
 	 * @return true if the workflow is running currently.
