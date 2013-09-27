@@ -843,6 +843,7 @@ var countObj;
 				
 				updateIdObj("group"+countObj, elementId);
 				updateTypeObj("group"+countObj, elementId);
+				updateLabelObj("group"+countObj, elementId);
 				
 				stage.draw();
 				

@@ -152,7 +152,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 							cur_ans += getComponentId() + " Link between " + getName() + " and "
 									+ cur.getName() + " conflict\n";
 						}
-						if( !prop.check(cur.getDFEOutput().get(nonEntryName))){
+						else if( !prop.check(cur.getDFEOutput().get(nonEntryName))){
 							cur_ans += getComponentId() + "The link between " + getName()
 									+ " and " + cur.getName()
 									+ " is not compatible\n";
