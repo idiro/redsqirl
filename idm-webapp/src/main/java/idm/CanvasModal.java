@@ -613,7 +613,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 							    aux = "comboBox";
 							    mountTableInteractionConstraint(tree);
 						    }
-						    else if (tree.getFirstChild("constraint").findFirstChild("count") != null){
+						    else {
 							    aux = "textField";
 						    }
 					    }else if (tree.getFirstChild("editor") != null){

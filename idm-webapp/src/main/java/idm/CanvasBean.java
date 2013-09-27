@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +23,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.WordUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class CanvasBean extends BaseBean implements Serializable{
 
@@ -182,25 +185,19 @@ public class CanvasBean extends BaseBean implements Serializable{
 	 * @return 
 	 * @author Igor.Souza
 	 */
-	public void updatePosition() {
+	public void updatePosition(String paramGroupID, String posX, String posY) {
 		logger.info("updatePosition");
-		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-
-		String paramGroupID = params.get("paramGroupID");
-		logger.info(paramGroupID);
-		String posX = params.get("paramPosX");
-		String posY = params.get("paramPosY");
 		try {
-
 			DataFlow df = getDf();
 			df.getElement(getIdMap().get(paramGroupID)).setPosition(Double.valueOf(posX).intValue(), Double.valueOf(posY).intValue());
+			
+			logger.info(getIdMap().get(paramGroupID) + " - " + Double.valueOf(posX).intValue() + " - "+Double.valueOf(posY).intValue());
 
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	/** addLink
@@ -349,12 +346,31 @@ public class CanvasBean extends BaseBean implements Serializable{
 	 * @return
 	 * @author Igor.Souza
 	 */
+	@SuppressWarnings("rawtypes")
 	public void save() {
 		logger.info("save");
 
 		String path = FacesContext.getCurrentInstance().getExternalContext().
 				getRequestParameterMap().get("pathFile");
-
+		
+		String positions = FacesContext.getCurrentInstance().getExternalContext().
+				getRequestParameterMap().get("positions");
+		
+		try{
+			JSONObject positionsArray = new JSONObject(positions);
+			Iterator it = positionsArray.keys();
+			while (it.hasNext()){
+				String groupId = (String) it.next();
+				Object objc = positionsArray.get(groupId);
+				
+				JSONArray elementArray = new JSONArray(objc.toString());
+				updatePosition(groupId, elementArray.get(0).toString(), elementArray.get(1).toString());
+			}
+		} catch (JSONException e){
+			logger.info("Error updating positions");
+			e.printStackTrace();
+		}
+		
 		try {
 			
 			logger.info("save workflow in "+path);
