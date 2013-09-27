@@ -313,25 +313,28 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 		logger.info("load "+path);
 
-		setNameWorkflow(path);
-
 		DataFlowInterface dfi;
 		try {
 			dfi = getworkFlowInterface();
 
 			dfi.addWorkflow(getNameWorkflow());
 			DataFlow df = dfi.getWorkflow(getNameWorkflow());
-			df.getElement();
 			
 			String error = df.read(path);
 			if(error != null){
 			    MessageUseful.addErrorMessage(error);
 			    HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			    request.setAttribute("msnError", "msnError");
+		    }else{
+		    	
+		    	logger.info("workflow name: "+df.getName());
+		    	
+		    	setNameWorkflow(df.getName());
+				setDf(df);
+				while (df.isrunning()){
+					Thread.sleep(500);
+				}
 		    }
-			
-			df.getElement();
-			setDf(df);
 			
 		} catch (Exception e) {
 			logger.info("Error saving workflow");
@@ -374,6 +377,8 @@ public class CanvasBean extends BaseBean implements Serializable{
 		try {
 			
 			logger.info("save workflow in "+path);
+			setNameWorkflow(generateWorkflowName(path));
+			getDf().setName(getNameWorkflow());
 			String msg = getDf().save(path);
 			logger.info(msg);
 			
@@ -506,6 +511,17 @@ public class CanvasBean extends BaseBean implements Serializable{
 		logger.info("initial");
 
 		return "initial";
+	}
+	
+	private String generateWorkflowName(String path){
+		String name;
+		int index = path.lastIndexOf("/");
+		if (index + 1 < path.length()){
+			name = path.substring(index+1);
+		}else{
+			name = path;
+		}
+		return name.replace(".xml", "");
 	}
 
 	public String getIdElement(String idGroup){

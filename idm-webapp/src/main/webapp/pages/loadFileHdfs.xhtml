@@ -33,6 +33,15 @@
 	<a4j:jsFunction name="refreshHdfsOpenFileTable" action="#{hdfsLoadBean.changePath}" reRender="hdfsfsOpenFile"/>
 
 	<a4j:keepAlive beanName = "hdfsLoadBean"/>
+	
+	<div id="domMessageDivLoadFile" style="display: none;">
+				<img src="../image/icons/waiting.gif" />
+			</div>
+			
+	<a4j:status	onstart="jQuery.blockUI({ message: jQuery('#domMessageDivLoadFile') });"
+		onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
+		onstop="jQuery.unblockUI();" />
+				
 
 	<h:outputText value="#{messages.label_path}" />
 	<h:inputText id="pathOpenFile" label="Path" value="#{hdfsLoadBean.path}"

@@ -620,6 +620,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 						    aux = "editor";
 						    mountHelpTextEditorInteraction(tree);
 					    }
+					    else{
+					    	aux = "textField";
+					    }
 
 					    mapColumns.put(tree.getFirstChild("title").getFirstChild().getHead(), aux);
 					    tableInteractionsColumns.add(tree.getFirstChild("title").getFirstChild().getHead());
