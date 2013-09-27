@@ -685,13 +685,22 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 				NodeList outList = ((Element) compCur).getElementsByTagName("outputs").item(0).getChildNodes();
 				if(outList != null){
 					for (int index = 0; index < outList.getLength(); index++) {
-						logger.debug(compId+": output index "+index);
-						Node outCur = outList.item(index);
-
-						String nameOut = ((Element) outCur).getElementsByTagName("name").item(0).getChildNodes().item(0).getNodeValue();
-						String id = ((Element) outCur).getElementsByTagName("id").item(0).getChildNodes().item(0).getNodeValue();
-
-						getElement(compId).addOutputComponent(nameOut, getElement(id));
+						try{
+							logger.debug(compId+": output index "+index);
+							Node outCur = outList.item(index);
+	
+							String nameOut = ((Element) outCur).getElementsByTagName("name").item(0).getChildNodes().item(0).getNodeValue();
+							String id = ((Element) outCur).getElementsByTagName("id").item(0).getChildNodes().item(0).getNodeValue();
+	
+							if (getElement(compId).getDFEOutput() == null || getElement(compId).getDFEOutput().isEmpty()){
+								getElement(compId).updateOut();
+							}
+							getElement(compId).addOutputComponent(nameOut, getElement(id));
+						}
+						catch (Exception e){
+							logger.error("Fail to load output");
+							error = "Fail to load output";
+						}
 					}
 				}
 
