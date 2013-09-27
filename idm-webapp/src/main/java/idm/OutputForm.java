@@ -87,6 +87,30 @@ public class OutputForm implements Serializable {
 	}
 
 	public void setSavingState(String savingState) throws RemoteException {
+		try{
+			this.savingState = SavingState.valueOf(savingState).name();
+			if (savingState.equals(SavingState.RECORDED.toString())){
+				setRenderBrowserButton(true);
+				setPath("/");
+			}else if (savingState.equals(SavingState.BUFFERED.toString()) ||
+					savingState.equals(SavingState.TEMPORARY.toString())){
+				setRenderBrowserButton(false);
+				if(getDfeOutput().isPathValid() != null){
+					getDfeOutput().generatePath(
+							System.getProperty("user.name"), 
+							getComponentId(), 
+							getName());
+				}
+				setPath(getDfeOutput().getPath());
+			}
+		}catch(Exception e){
+			logger.error("Fail to set the saving state");
+			if(this.savingState == null){
+				this.savingState = SavingState.TEMPORARY.toString();
+			}
+		}
+		/*
+		if(this.savingState == null)
 		if (this.savingState == null || !this.savingState.equals(savingState)){
 			this.savingState = savingState;
 			if (savingState.equals(SavingState.RECORDED.toString())){
@@ -104,7 +128,7 @@ public class OutputForm implements Serializable {
 				}
 				setPath(getDfeOutput().getPath());
 			}
-		}
+		}*/
 	}
 
 	public String getComponentId() {
@@ -124,9 +148,9 @@ public class OutputForm implements Serializable {
 
 	public String updateDFEOutput() throws RemoteException{
 
+		
 		if (getSavingState().equals(SavingState.RECORDED.toString())) {
-			if (getPath() == null || getPath().isEmpty() || getFile() == null
-					|| getFile().isEmpty()) {
+			if ( getFile() == null || getFile().isEmpty()) {
 				return "Path cannot be null";
 			}
 
@@ -136,9 +160,12 @@ public class OutputForm implements Serializable {
 			}
 			completePath += getFile();
 			logger.info("path: " + completePath);
+			if(dfeOutput.getSavingState() != SavingState.RECORDED){
+				dfeOutput.remove();
+			}
 			dfeOutput.setPath(completePath);
 		}
-
+		
 		dfeOutput.setSavingState(SavingState.valueOf(getSavingState()));
 
 		return dfeOutput.isPathValid();

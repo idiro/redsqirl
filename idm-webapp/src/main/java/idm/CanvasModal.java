@@ -1111,12 +1111,22 @@ public class CanvasModal extends BaseBean implements Serializable {
 			    for (SavingState s : SavingState.values()){
 				    outputList.add(new SelectItem(s.toString(), s.toString()));
 			    }
-			    //of.setSavingStateList(outputList);
+			    of.setSavingStateList(outputList);
 			    of.setDfeOutput(e.getValue());
 			    of.setComponentId(getDfe().getComponentId());
 			    of.setSavingState(e.getValue().getSavingState().toString());
 			    logger.info("saving state "+e.getValue().getSavingState().toString());
-			    of.setPath(e.getValue().getPath());
+			    if(e.getValue().getSavingState() == SavingState.RECORDED){
+			    	int lastSlash = e.getValue().getPath().lastIndexOf('/');
+			    	if(lastSlash != -1){
+			    		if(lastSlash == 0){
+			    			of.setPath("/");
+			    		}else{
+			    			of.setPath(e.getValue().getPath().substring(0,lastSlash));
+			    		}
+			    		of.setFile(e.getValue().getPath().substring(lastSlash+1));
+			    	}
+			    }
 
 			    getOutputFormList().add(of);
 		    }
