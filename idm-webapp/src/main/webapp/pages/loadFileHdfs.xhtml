@@ -34,15 +34,6 @@
 
 	<a4j:keepAlive beanName = "hdfsLoadBean"/>
 	
-	<div id="domMessageDivLoadFile" style="display: none;">
-				<img src="../image/icons/waiting.gif" />
-			</div>
-			
-	<a4j:status	onstart="jQuery.blockUI({ message: jQuery('#domMessageDivLoadFile') });"
-		onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
-		onstop="jQuery.unblockUI();" />
-				
-
 	<h:outputText value="#{messages.label_path}" />
 	<h:inputText id="pathOpenFile" label="Path" value="#{hdfsLoadBean.path}"
 		maxlength="255" style="width:395px;" />
@@ -103,7 +94,8 @@
 	<br />
 
 	<a4j:commandButton id="hdfsOpenFileBtn" action="#{canvasBean.load}" value="#{messages.button_ok}"
-		onclick="#{rich:component('modalLoadWorkflow')}.hide();clearCanvas();" oncomplete="loadWorkflow();">
+		onclick="jQuery('#canvas1').block({ message: jQuery('#domMessageDivCanvas1') });#{rich:component('modalLoadWorkflow')}.hide();clearCanvas();" 
+		oncomplete="loadWorkflow();jQuery('#canvas1').unblock();">
 		<a4j:actionparam name="pathFile" value="getPath('#{hdfsLoadBean.path}')" noEscape="true"/>
 	</a4j:commandButton>
 	
