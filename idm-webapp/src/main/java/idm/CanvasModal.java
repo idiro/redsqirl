@@ -67,7 +67,6 @@ public class CanvasModal extends BaseBean implements Serializable {
     private List<DynamicForm> dynamicFormList = new ArrayList<DynamicForm>();
     private List<OutputForm> outputFormList = new ArrayList<OutputForm>();
     private String nameOutput;
-
     private Map<String, String> nameValueFeature = new HashMap<String, String>();
     private Map<String, String> nameValueListGrid = new HashMap<String, String>();
     private String pathBrowser = "";
@@ -75,18 +74,17 @@ public class CanvasModal extends BaseBean implements Serializable {
     private List<ItemList> listFeature = new ArrayList<ItemList>();
     private DataFlowElement dfe;
     private DynamicForm DynamicFormBrowser;
-
     private String columnEdit;
     private int rowEdit;
     private String errorMsg;
     private String pathImage;
-
     private String tabTitle;
     private String tabLegend;
-
     private List<String> tableInteractionsColumns = new ArrayList<String>();
+    private List<String> browserNameFeatureColumns = new ArrayList<String>();
     private String selectedTab;
     private String showOutputForm;
+    private String hiveHdfs;
 
 
 
@@ -974,13 +972,10 @@ public class CanvasModal extends BaseBean implements Serializable {
 	    setDynamicFormBrowser(getDynamicFormList().get(Integer.parseInt(positionElement)));
 
 	    if(getDynamicFormBrowser().getDataTypeName().equalsIgnoreCase("hive")){
-
-
+	    	setHiveHdfs("hive");
 	    } else if(getDynamicFormBrowser().getDataTypeName().equalsIgnoreCase("hdfs")){
-
-
+	    	setHiveHdfs("hdfs");
 	    }
-
 
     }
 
@@ -1051,6 +1046,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 			    labels.add(outputFeature + " " + featureType.toString());
 
+			    getBrowserNameFeatureColumns().add(outputFeature + " " + featureType.toString());
+			    
 		    }
 
 		    if(outputLines != null){
@@ -1576,4 +1573,21 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void setShowOutputForm(String showOutputForm) {
 		this.showOutputForm = showOutputForm;
 	}
+
+	public List<String> getBrowserNameFeatureColumns() {
+		return browserNameFeatureColumns;
+	}
+
+	public void setBrowserNameFeatureColumns(List<String> browserNameFeatureColumns) {
+		this.browserNameFeatureColumns = browserNameFeatureColumns;
+	}
+
+	public String getHiveHdfs() {
+		return hiveHdfs;
+	}
+
+	public void setHiveHdfs(String hiveHdfs) {
+		this.hiveHdfs = hiveHdfs;
+	}
+	
 }
