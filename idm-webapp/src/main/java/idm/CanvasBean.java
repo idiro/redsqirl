@@ -443,21 +443,19 @@ public class CanvasBean extends BaseBean implements Serializable{
 			MessageUseful.addErrorMessage(error);
 			HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
-		}else{
-		    while(getDf().isrunning()){
-		    	Thread.sleep(500);
-		    }
 		}
-		
+	}
+	
+	public void blockRunningWorkflow() throws Exception{
+		while(getDf().isrunning()){
+	    	Thread.sleep(500);
+	    }
 	}
 	
 	public String getWorkflowUrl() throws Exception{
 		logger.info("getWorkflowUrl");
-		logger.info(getDf().getOozieJobId());
 		setDf(getworkFlowInterface().getWorkflow(getNameWorkflow()));
-		logger.info(getDf().getOozieJobId());
 		String url = getOozie().getConsoleUrl(getDf());
-		logger.info(url);
 		return url;
 	}
 
@@ -507,9 +505,6 @@ public class CanvasBean extends BaseBean implements Serializable{
 	
 	public void openChangeIdModal() throws RemoteException{
 		setIdElement(getIdMap().get(getIdGroup()));
-		
-		canvasModalBean.openCanvasModal();
-		
 	}
 
 	public void changeIdElement() throws RemoteException{
