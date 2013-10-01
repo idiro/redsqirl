@@ -53,9 +53,7 @@ public class AuthorizationListener implements PhaseListener {
 			NavigationHandler nh = facesContext.getApplication().getNavigationHandler();
 			nh.handleNavigation(facesContext, null, "loginPage");
 			
-		}
-
-		else{
+		}else{
 			Object currentUser = session.getAttribute("username");
 			
 			if (!isLoginPage && (currentUser == null || currentUser == "")) {

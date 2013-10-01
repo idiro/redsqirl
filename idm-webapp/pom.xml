@@ -192,7 +192,9 @@
 				<version>1.0</version>
 			</extension>
 		</extensions>
+		
 		<plugins>
+		
 			<plugin>
 				<groupId>org.apache.tomcat.maven</groupId>
 				<artifactId>tomcat6-maven-plugin</artifactId>
@@ -208,6 +210,7 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
+			
 		</plugins>
 
 	</build>
