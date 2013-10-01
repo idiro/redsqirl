@@ -76,36 +76,37 @@ Logger logger = Logger.getLogger(getClass());
 			
 			logger.debug(hs.getDFEInput());
 			hs.update(pi);
-			Tree<String> out = pi.getTree().getFirstChild("applist").getFirstChild("output");
+			Tree<String> out = pi.getTree().getFirstChild("table");
 			{
-				out.add("value").add("dt='blablabla'");
+				Tree<String> row = out.add("row");
+				row.add(PartitionInteraction.table_name_title).add("dt");
+				row.add(PartitionInteraction.table_value_title).add("blablabla");
 				error = pi.check();
-				assertTrue("check: "+out.getFirstChild("value").getFirstChild().getHead(),error == null);
-				out.removeAllChildren();
+				assertTrue("check1: "+error,error == null);
+				out.remove("row");
 			}
 			{
-				out.add("value").add("dt=blablabla");
+				Tree<String> row = out.add("row");
+				row.add(PartitionInteraction.table_name_title).add("dt");
 				error = pi.check();
-				assertTrue("check: "+out.getFirstChild("value").getFirstChild().getHead(),error != null);
-				out.removeAllChildren();
+				assertTrue("check2: no values",error != null);
+				out.remove("row");
 			}
 			{
-				out.add("value").add("dt=\"blablabla\"");
+				Tree<String> row = out.add("row");
+				row.add(PartitionInteraction.table_name_title).add("dt");
+				row.add(PartitionInteraction.table_value_title).add("blabla'bla");
 				error = pi.check();
-				assertTrue("check: "+out.getFirstChild("value").getFirstChild().getHead(),error != null);
-				out.removeAllChildren();
+				assertTrue("check3: blabla'bla"+error,error != null);
+				out.remove("row");
 			}
 			{
-				out.add("value").add("dt='blab=labla'");
+				Tree<String> row = out.add("row");
+				row.add(PartitionInteraction.table_name_title).add("dt");
+				row.add(PartitionInteraction.table_value_title).add("bla\"blabla");
 				error = pi.check();
-				assertTrue("check: "+out.getFirstChild("value").getFirstChild().getHead(),error == null);
-				out.removeAllChildren();
-			}
-			{
-				out.add("value").add("dt'=blablabla'");
-				error = pi.check();
-				assertTrue("check: "+out.getFirstChild("value").getFirstChild().getHead(),error != null);
-				out.removeAllChildren();
+				assertTrue("check4: bla\"blabla",error != null);
+				out.remove("row");
 			}
 			
 			

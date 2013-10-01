@@ -2,8 +2,8 @@ package idiro.workflow.server.action;
 
 import idiro.utils.FeatureList;
 import idiro.utils.Tree;
+import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.UserInteraction;
-import idiro.workflow.server.action.utils.HiveDictionary;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.enumeration.FeatureType;
@@ -28,46 +28,54 @@ public class PartitionInteraction extends UserInteraction{
 	 */
 	private static final long serialVersionUID = 2340747244540498757L;
 
+	private String regex = "[a-zA-Z_]([A-Za-z0-9_]+)";
+
+	public static final String table_name_title = "Name",
+			table_value_title = "Value";
+
 	public PartitionInteraction(String name, String legend,
 			int column, int placeInColumn)
 					throws RemoteException {
-		super(name, legend, DisplayType.appendList, column, placeInColumn);
+		super(name, legend, DisplayType.table, column, placeInColumn);
 	}
 
 	@Override
 	public String check() throws RemoteException{
 		String msg = null;
+		List<Tree<String>> lRow;
+		Set<String> partNames = new LinkedHashSet<String>();
+		Iterator<Tree<String>> rows;
+		try{
+			lRow = getTree()
+					.getFirstChild("table").getChildren("row"); 
+			rows = lRow.iterator();
+		}catch(Exception e){
+			msg = "Null pointer exception in check";
+			logger.error(msg);
+			return msg;
+		}
 		if(msg == null){
 			try{
-				List<Tree<String>> partTreeL = getTree().getFirstChild("applist")
-						.getFirstChild("output").getChildren("value");
 
-				if(!partTreeL.isEmpty()){
-					Iterator<Tree<String>> it = partTreeL.iterator();
-					Set<String> partName = new LinkedHashSet<String>();
-					while(it.hasNext()){
-						String part = it.next().getFirstChild().getHead();
-						int index = part.indexOf('=');
-						if(index == -1){
-							msg = "Each partitions should be associated with a value '=' sign required";
+				if(!lRow.isEmpty()){
+					while(rows.hasNext()){
+						Tree<String> row = rows.next();
+						String partName = row.getFirstChild(table_name_title).getFirstChild().getHead();
+						String partValue = row.getFirstChild(table_value_title).getFirstChild().getHead();
+
+						if(partName.matches(regex)){
+							partNames.add(partName);
 						}else{
-							String name = part.substring(0,index);
-							String value = part.substring(index+1);
-							logger.debug("New partition, name "+name+" value "+value);
-							if(!HiveDictionary.isVariableName(name)){
-								msg = "The name '"+name+"' is not a valid variable name";
-							}else{
-								if(! (value.startsWith("'") && value.endsWith("'"))){
-									msg = "The partition value have to start and end with \"'\"";
-								}else if(value.substring(1,value.lastIndexOf('\'')).contains("'")){
-									msg = "The special character \"'\" is forbiden in a partition value";
-								}
-								
-							}
-							partName.add(name);
+							msg = "The partition name does not have a correct format (regex: "+regex+").";
+						}
+						
+						if(partValue == null || partValue.isEmpty()){
+							msg = "The partition value cannot be empty";
+						}else if(partValue.contains("'") || partValue.contains("\"")){
+							msg = "The partition value cannot contain quotes: ''' or '\"'";
 						}
 					}
-					if(msg == null && partName.size() != partTreeL.size()){
+					if(msg == null && partNames.size() != lRow.size()){
 						msg = "The name of a partition have to be unique";
 					}
 				}
@@ -86,51 +94,69 @@ public class PartitionInteraction extends UserInteraction{
 
 	public void update() throws RemoteException{
 		if(tree.getSubTreeList().isEmpty()){
-			tree.add("applist").add("output").add("");
-			tree.getFirstChild("applist").add("values").add("");
+			tree.add(getRootTable());		
 		}
 	}
 
+	protected Tree<String> getRootTable() throws RemoteException{
+		//Table
+		Tree<String> input = new TreeNonUnique<String>("table");
+		Tree<String> columns = new TreeNonUnique<String>("columns");
+		input.add(columns);
+
+		//Partition name
+		Tree<String> nameCol = new TreeNonUnique<String>("column");
+		columns.add(nameCol);
+		nameCol.add("title").add(table_value_title);
+
+		//Partition value
+		Tree<String> valueCol = new TreeNonUnique<String>("column");
+		columns.add(valueCol);
+		valueCol.add("title").add(table_value_title);
+
+		Tree<String> constraintFeat = new TreeNonUnique<String>("constraint");
+		nameCol.add(constraintFeat);
+		constraintFeat.add("count").add("1");
+
+		return input;
+	}
+
 	public String getPartitions(FeatureList new_features) throws RemoteException{
-		List<Tree<String>> treePart = getTree()
-				.getFirstChild("applist").getFirstChild("output")
-				.getChildren("value");
-
-
 		String partitions = "";
-		if(!treePart.isEmpty()){
-			Iterator<Tree<String>> it = treePart.iterator();
-			if(it.hasNext()){
-				String part = it.next().getFirstChild().getHead();
-				String name = part.split("=")[0];
-				new_features.addFeature(name, FeatureType.STRING);
-				partitions = part;
-			}
-			while(it.hasNext()){
-				String part = it.next().getFirstChild().getHead();
-				String name = part.split("=")[0];
-				new_features.addFeature(name, FeatureType.STRING);
-				partitions += ","+part;
+		List<Tree<String>> lRow;
+		Iterator<Tree<String>> rows;
+		lRow = getTree()
+				.getFirstChild("table").getChildren("row");
+		rows = lRow.iterator();
+		while(rows.hasNext()){
+			Tree<String> row = rows.next();
+			String partName = row.getFirstChild(table_name_title).getFirstChild().getHead();
+			String partValue = row.getFirstChild(table_value_title).getFirstChild().getHead();
+			new_features.addFeature(partName, FeatureType.STRING);
+			if(partitions.isEmpty()){
+				partitions = partName+"='"+partValue+"'"; 
+			}else{
+				partitions += ","+partName+"='"+partValue+"'";
 			}
 		}
 		return partitions;
 	}
 
 	public String getPartitionsInWhere(String tableName) throws RemoteException{
-		List<Tree<String>> treePart = getTree()
-				.getFirstChild("applist").getFirstChild("output")
-				.getChildren("value");
-
 		String partitions = "";
-		if(!treePart.isEmpty()){
-			Iterator<Tree<String>> it = treePart.iterator();
-			if(it.hasNext()){
-				String part = it.next().getFirstChild().getHead().trim();
-				partitions = tableName+"."+part;
-			}
-			while(it.hasNext()){
-				String part = it.next().getFirstChild().getHead().trim();
-				partitions += " AND "+tableName+"."+part;
+		List<Tree<String>> lRow;
+		Iterator<Tree<String>> rows;
+		lRow = getTree()
+				.getFirstChild("table").getChildren("row");
+		rows = lRow.iterator();
+		while(rows.hasNext()){
+			Tree<String> row = rows.next();
+			String partName = row.getFirstChild(table_name_title).getFirstChild().getHead();
+			String partValue = row.getFirstChild(table_value_title).getFirstChild().getHead();
+			if(partitions.isEmpty()){
+				partitions = tableName+"."+partName+"='"+partValue+"'"; 
+			}else{
+				partitions += " AND "+tableName+"."+partName+"='"+partValue+"'";
 			}
 		}
 		return partitions;

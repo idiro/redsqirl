@@ -799,8 +799,8 @@ var countObj;
 					width: 16,
 					height: 16
 				});
-				//img.src = "./"+elementImg;
-				img.src = elementImg;
+				img.src = "./"+elementImg;
+				//img.src = elementImg;
 
 				var posInitX = 40;
 				var poxInitY = 50;
@@ -1211,12 +1211,14 @@ var countObj;
 			   
 		   }
 		   
-		   function updateElementsPositions() {
-			   
-				jQuery.each(polygonLayer.getChildren(), function(index, value) {
-					updatePosition(value.getId(), value.getX(), value.getY());
-				});
-			   
+		   function save(path) {
+			    var positions = new Object();
+			   	//update element positions
+			   	for(var i = 0; i < polygonLayer.getChildren().length; i++) {
+			   		var element = polygonLayer.getChildren()[i];
+			   		positions[element.getId()] = [element.getX(), element.getY()];
+				}
+			   	saveWorkflow(path, JSON.stringify(positions));
 		   }
 		   
 		   function configureCircle(circle1, polygonLayer){

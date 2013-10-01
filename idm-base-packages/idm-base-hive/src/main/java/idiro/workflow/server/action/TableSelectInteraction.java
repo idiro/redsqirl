@@ -143,13 +143,8 @@ public class TableSelectInteraction extends UserInteraction{
 
 		//Generate Editor
 		Tree<String> featEdit = null;
-		if(! hs.getGroupingInt().getTree()
-				.getFirstChild("applist").getFirstChild("output").getSubTreeList().isEmpty()
-				&&
-				! hs.getGroupingInt().getTree()
-				.getFirstChild("applist").getFirstChild("output")
-				.getChildren("value").isEmpty()
-				){
+		Set<String> gbFeats = hs.getGroupByFeatures();
+		if(gbFeats.size() > 0){
 			featEdit = HiveDictionary.generateEditor(HiveDictionary.createGroupSelectHelpMenu(),in);
 		}else{
 			featEdit = HiveDictionary.generateEditor(HiveDictionary.createDefaultSelectHelpMenu(),in);
@@ -174,7 +169,12 @@ public class TableSelectInteraction extends UserInteraction{
 		//Copy Generator operation
 		Tree<String> operationCopy = generator.add("operation");
 		operationCopy.add("title").add("copy");
-		Iterator<String> featIt = in.getFeatures().getFeaturesNames().iterator();
+		Iterator<String> featIt = null;
+		if(gbFeats.size() > 0){
+			featIt = gbFeats.iterator();
+		}else{
+			featIt = in.getFeatures().getFeaturesNames().iterator();
+		}
 		while(featIt.hasNext()){
 			String cur = featIt.next();
 			Tree<String> row = operationCopy.add("row"); 

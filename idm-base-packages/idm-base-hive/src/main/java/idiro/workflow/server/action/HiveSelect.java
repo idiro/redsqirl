@@ -11,6 +11,8 @@ import idiro.workflow.server.interfaces.DFEOutput;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Action to do a simple select statement in HiveQL.
@@ -30,7 +32,7 @@ public class HiveSelect extends HiveElement{
 
 	private Page page1;
 	private Page page2;
-	
+
 	private TableSelectInteraction tSelInt;
 	private DFEInteraction groupingInt;
 
@@ -39,10 +41,10 @@ public class HiveSelect extends HiveElement{
 
 		page1 = addPage("Filters",
 				"Condition the numbers of row in and out. "+
-			    " The input is controled by a condition, similar to a 'where' statement "+
-				" and the partitions of the input table that is processed. "+
-			    " You can also group on one or several features in order to aggregate data.",
-				1);
+						" The input is controled by a condition, similar to a 'where' statement "+
+						" and the partitions of the input table that is processed. "+
+						" You can also group on one or several features in order to aggregate data.",
+						1);
 
 		condInt = new ConditionInteraction(key_condition,
 				"Please specify the condition of the select.",
@@ -50,13 +52,13 @@ public class HiveSelect extends HiveElement{
 				0, 
 				this, 
 				key_input);
-		
+
 		partInt = new PartitionInteraction(
 				key_partitions,
 				"Please specify the partitions, if any, on which the statement is processed.",
 				0,
 				1);
-		
+
 		groupingInt = new UserInteraction(
 				key_grouping,
 				"Please specify, if any, the grouping condition.",
@@ -71,9 +73,9 @@ public class HiveSelect extends HiveElement{
 
 		page2 = addPage("Feature operations",
 				"The columns generated are defined on this page. Each row of the table is a new column to generate. "+
-		        "The feature name have to be unique and a correct type needs to be assign.",
-				1);
-		
+						"The feature name have to be unique and a correct type needs to be assign.",
+						1);
+
 		tSelInt = new TableSelectInteraction(
 				key_featureTable,
 				"Please specify the column you would like to generate.",
@@ -82,17 +84,17 @@ public class HiveSelect extends HiveElement{
 				this);
 
 		page2.addInteraction(tSelInt);
-		
+
 	}
-	
+
 	public String getName() throws RemoteException {
 		return "hive_select";
 	}
 
 	public void update(DFEInteraction interaction) throws RemoteException {
-		
+
 		logger.info("Hive Select interaction ");
-		
+
 		DFEOutput in = getDFEInput().get(key_input).get(0);
 		if(in != null){
 			if(interaction.getName().equals(condInt.getName())){
@@ -139,43 +141,37 @@ public class HiveSelect extends HiveElement{
 			//Output
 			DFEOutput out = output.values().iterator().next();
 			String tableOut = hInt.getTableAndPartitions(out.getPath())[0];
-			
+
 			String insert = "INSERT OVERWRITE TABLE "+tableOut+partInt.getQueryPiece(out);
 			String from = " FROM "+tableIn+" ";
 			String create = "CREATE TABLE IF NOT EXISTS "+tableOut;
 			String createPartition = partInt.getCreateQueryPiece(out);
 			String where = condInt.getQueryPiece();
-			
+
 
 			logger.debug("group by...");
 			String groupby = "";
-			if(getInteraction(key_grouping).getTree()
-					.getFirstChild("applist")
-					.getFirstChild("output").getSubTreeList().size() > 0){
-				Iterator<Tree<String>> gIt = getInteraction(key_grouping).getTree()
-						.getFirstChild("applist")
-						.getFirstChild("output").getChildren("value").iterator();
-				if(gIt.hasNext()){
-					groupby = gIt.next().getFirstChild().getHead();
-				}
-				while(gIt.hasNext()){
-					groupby = ","+gIt.next().getFirstChild().getHead();
-				}
-				if(!groupby.isEmpty()){
-					groupby = " GROUP BY "+groupby;
-				}
+			Iterator<String> gIt = getGroupByFeatures().iterator();
+			if(gIt.hasNext()){
+				groupby = gIt.next();
+			}
+			while(gIt.hasNext()){
+				groupby += ","+gIt.next();
+			}
+			if(!groupby.isEmpty()){
+				groupby = " GROUP BY "+groupby;
 			}
 			String select = tSelInt.getQueryPiece(out);
 			String createSelect = tSelInt.getCreateQueryPiece(out);
-			
-			
+
+
 			if(select.isEmpty()){
 				logger.debug("Nothing to select");
 			}else{
 				query = create+"\n"+
 						createSelect+"\n"+
 						createPartition+";\n\n";
-				
+
 				query += insert+"\n"+
 						select+"\n"+
 						from+"\n"+
@@ -184,6 +180,26 @@ public class HiveSelect extends HiveElement{
 		}
 
 		return query;
+	}
+
+	public Set<String> getGroupByFeatures() throws RemoteException{
+		//logger.debug(getInteraction(key_grouping).getTree());
+		Set<String> gbFeats = new LinkedHashSet<String>();
+		if(getInteraction(key_grouping).getTree()
+				.getFirstChild("applist")
+				.getFirstChild("output").getSubTreeList().size() > 0){
+			Iterator<Tree<String>> gIt = getInteraction(key_grouping).getTree()
+					.getFirstChild("applist")
+					.getFirstChild("output").getChildren("value").iterator();
+			while(gIt.hasNext()){
+				String curVal = gIt.next().getFirstChild().getHead();
+				if(curVal != null && !curVal.isEmpty()){
+					gbFeats.add(curVal);
+				}
+			}
+		}
+		//logger.debug(gbFeats);
+		return gbFeats;
 	}
 
 	/**

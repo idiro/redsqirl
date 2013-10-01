@@ -217,7 +217,10 @@ extends OozieXmlCreatorAbs{
 				while(itS.hasNext()){
 					String key = itS.next();
 					DFEOutput o = cur.getDFEOutput().get(key);
-					if(o != null && o.getSavingState() == SavingState.TEMPORARY){
+					
+					if(o != null && o.getSavingState() == SavingState.TEMPORARY
+							&& (cur.getOutputComponent().get(key) != null 
+							&& !cur.getOutputComponent().get(key).isEmpty())){
 						mapO.put(key,o);
 					}
 				}
