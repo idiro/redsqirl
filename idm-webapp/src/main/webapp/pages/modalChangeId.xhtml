@@ -6,11 +6,13 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets">
 
 
-	<h:outputText value="Name" />
-	<h:inputText label="Name" value="#{canvasBean.idElement}" size="16" maxlength="15" />
-
-	<h:panelGrid columns="1">
-		<a4j:commandButton type="button" oncomplete="closeChangeIdModal()" value="#{messages.button_ok}"/>
-	</h:panelGrid>
+	<h:form>
+		<h:outputText value="Name" />
+		<h:inputText label="Name" value="#{canvasBean.idElement}" size="16" maxlength="15" />
+	
+		<h:panelGrid columns="1">
+			<a4j:commandButton type="submit" oncomplete="closeChangeIdModal()" value="#{messages.button_ok}"/>
+		</h:panelGrid>
+	</h:form>
 
 </h:panelGrid>

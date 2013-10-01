@@ -305,7 +305,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 	/** load
 	 * 
-	 * Method to save a workflow
+	 * Method to load a workflow
 	 * 
 	 * @return
 	 * @author Igor.Souza
@@ -323,6 +323,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 		try {
 			dfi = getworkFlowInterface();
 
+			setNameWorkflow(generateWorkflowName(path));
 			dfi.addWorkflow(getNameWorkflow());
 			DataFlow df = dfi.getWorkflow(getNameWorkflow());
 			
@@ -335,11 +336,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 		    	
 		    	logger.info("workflow name: "+df.getName());
 		    	
-		    	setNameWorkflow(df.getName());
 				setDf(df);
-				while (df.isrunning()){
-					Thread.sleep(500);
-				}
 		    }
 			
 		} catch (Exception e) {
@@ -454,7 +451,6 @@ public class CanvasBean extends BaseBean implements Serializable{
 	
 	public String getWorkflowUrl() throws Exception{
 		logger.info("getWorkflowUrl");
-		setDf(getworkFlowInterface().getWorkflow(getNameWorkflow()));
 		String url = getOozie().getConsoleUrl(getDf());
 		return url;
 	}
