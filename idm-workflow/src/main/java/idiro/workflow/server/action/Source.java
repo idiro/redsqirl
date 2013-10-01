@@ -27,6 +27,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.hadoop.hdfs.web.resources.DoAsParam;
+import org.apache.log4j.Logger;
+
 /**
  * Action that read a source file.
  * For now, only Hive type is supported.
@@ -71,30 +74,13 @@ public class Source extends DataflowAction{
 			@Override
 			public String check(DFEPage page) throws RemoteException {
 				String error = null;
+				logger = Logger.getRootLogger();
 				try{
 					if( getInteraction(key_datatype).getTree()
 							.getFirstChild("list").getFirstChild("output")
 							.getFirstChild().getHead().isEmpty()
 							){
 						error = "Data type cannot be empty";
-					}
-					else{
-						String dataType = getInteraction(key_datatype).getTree()
-								.getFirstChild("list").getFirstChild("output")
-								.getFirstChild().getHead();
-
-						if (dataType.equalsIgnoreCase("hdfs")){
-							try{
-								if( getInteraction(key_datasubtype).getTree()
-										.getFirstChild("list").getFirstChild("output")
-										.getFirstChild().getHead().isEmpty()
-										){
-									error = "Data subtype cannot be empty";
-								}
-							}catch(Exception e){
-								error = "Data subtype cannot be empty";
-							}
-						}
 					}
 				}catch(Exception e){
 					error = "Data type cannot be empty";
@@ -125,29 +111,12 @@ public class Source extends DataflowAction{
 			public String check(DFEPage page) throws RemoteException {
 				String error = null;
 				try{
+
 					if( getInteraction(key_datatype).getTree()
 							.getFirstChild("list").getFirstChild("output")
 							.getFirstChild().getHead().isEmpty()
 							){
-						error = "Data type cannot be empty";
-					}
-					else{
-						String dataType = getInteraction(key_datatype).getTree()
-								.getFirstChild("list").getFirstChild("output")
-								.getFirstChild().getHead();
-
-						if (dataType.equalsIgnoreCase("hdfs")){
-							try{
-								if( getInteraction(key_datasubtype).getTree()
-										.getFirstChild("list").getFirstChild("output")
-										.getFirstChild().getHead().isEmpty()
-										){
-									error = "Data subtype cannot be empty";
-								}
-							}catch(Exception e){
-								error = "Data subtype cannot be empty";
-							}
-						}
+						error = "Error : Data type cannot be empty";
 					}
 
 
@@ -163,57 +132,66 @@ public class Source extends DataflowAction{
 						}
 
 
-					}
-					else if(type.equalsIgnoreCase("hdfs")){
+					}else if(type.equalsIgnoreCase("hdfs")){
+						logger.info("Getting output type ");
 
 						String subtype = getInteraction(key_datasubtype).getTree()
 								.getFirstChild("list").getFirstChild("output")
 								.getFirstChild().getHead();
 
+
 						Iterator<String> dataOutputClassName = 
 								WorkflowPrefManager.getInstance().getNonAbstractClassesFromSuperClass(
 										DataOutput.class.getCanonicalName()).iterator();
 
-						Class<?> klass = null;
+						logger.info("output type : "+subtype);
+						DFEOutput outNew = null;
 						while (dataOutputClassName.hasNext()){
 							String className = dataOutputClassName.next();
-							String[] classNameArray = className.split("\\.");
-							if (classNameArray[classNameArray.length-1].equals(subtype)){
-								klass = Class.forName(className);
+							outNew = (DFEOutput) Class.forName(className).newInstance();
+							if(outNew.getTypeName().equalsIgnoreCase(subtype)){
 								break;
+
+							}else{
+								outNew = null;
 							}
-						}
-
-						if( output.get(out_name) == null ){
-
-							DFEOutput dataOutput = (DFEOutput)(klass.getConstructor(Map.class).newInstance());
-							output.put(out_name, dataOutput);
 
 						}
-
-
-						String delimiter = "\001";
-						try{
-							delimiter = getInteraction(key_dataset).getTree()
-									.getFirstChild("browse").
-									getFirstChild("output")
-									.getFirstChild("property").
-									getFirstChild(MapRedTextType.key_delimiter).
-									getFirstChild().getHead();
-						}catch(Exception e){
-							logger.debug("Delimiter not set, using default delimiter");
+						if(outNew !=null){
+							if( output.get(out_name) == null ){
+								output.put(out_name, (DFEOutput) outNew);
+							}
+							logger.info("output set");
+						}else{
+							error = "The user have to make  choice";
+							logger.error(error);
 						}
+						if(error == null){
 
-						output.get(out_name).addProperty(MapRedTextType.key_delimiter, delimiter);
+
+							String delimiter = "\001";
+							try{
+								delimiter = getInteraction(key_dataset).getTree()
+										.getFirstChild("browse").
+										getFirstChild("output")
+										.getFirstChild("property").
+										getFirstChild(MapRedTextType.key_delimiter).
+										getFirstChild().getHead();
+							}catch(Exception e){
+								logger.debug("Delimiter not set, using default delimiter");
+							}
+
+							output.get(out_name).addProperty(MapRedTextType.key_delimiter, delimiter);
+						}
 					}
-					
+
 					if(output.get(out_name) != null){
 						output.get(out_name).setSavingState(SavingState.RECORDED);
 					}
 
-					
+
 				}catch(Exception e){
-					error = "Data type cannot be empty";
+					error = "Exception : Data type cannot be empty " + e.getMessage();
 				}
 				return error;
 			}
@@ -328,9 +306,9 @@ public class Source extends DataflowAction{
 
 	@Override
 	public void update(DFEInteraction interaction) throws RemoteException {
-		
+
 		logger.info("updateinteraction Source ");
-		
+
 		if(interaction.getName().equals(getInteraction(key_datatype).getName())){
 			updateDataType(interaction.getTree());
 		}
@@ -364,13 +342,13 @@ public class Source extends DataflowAction{
 
 			DFEInteraction interaction = getInteraction(key_datatype);
 			if(interaction.getTree().getFirstChild("list").getFirstChild("output").getFirstChild() != null){
-				
+
 				String type = interaction.getTree().getFirstChild("list").getFirstChild("output").getFirstChild().getHead();
-				
+
 				List<String> dataOutputClassName = 
 						WorkflowPrefManager.getInstance().getNonAbstractClassesFromSuperClass(
 								DataOutput.class.getCanonicalName());
-				
+
 				for(String className : dataOutputClassName){
 					DataOutput wa = null;
 					try {
@@ -490,7 +468,7 @@ public class Source extends DataflowAction{
 			if(output.get(out_name) != null){
 				output.get(out_name).setSavingState(SavingState.RECORDED);
 			}
-			
+
 		}catch(Exception e){
 			error = "Needs a data set";
 		}
