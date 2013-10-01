@@ -94,8 +94,9 @@
 	<br />
 
 	<a4j:commandButton id="hdfsOpenFileBtn" action="#{canvasBean.load}" value="#{messages.button_ok}"
-		onclick="jQuery('#canvas1').block({ message: jQuery('#domMessageDivCanvas1') });#{rich:component('modalLoadWorkflow')}.hide();clearCanvas();" 
-		oncomplete="loadWorkflow();jQuery('#canvas1').unblock();">
+		onclick="#{rich:component('modalLoadWorkflow')}.hide();clearCanvas();jQuery('#canvas1').block({ message: jQuery('#domMessageDivCanvas1') });" 
+		rerender="formMenu"
+		oncomplete="loadWorkflow();">
 		<a4j:actionparam name="pathFile" value="getPath('#{hdfsLoadBean.path}')" noEscape="true"/>
 	</a4j:commandButton>
 	
