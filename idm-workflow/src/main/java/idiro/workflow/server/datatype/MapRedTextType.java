@@ -58,7 +58,7 @@ public class MapRedTextType extends DataOutput{
 			hdfsInt = new HDFSInterface();
 		}
 	}
-	
+
 
 	@Override
 	public String getTypeName() throws RemoteException {
@@ -157,10 +157,11 @@ public class MapRedTextType extends DataOutput{
 
 		return true;
 	}
-	
+
 	@Override
 	public List<String> select(int maxToRead) throws RemoteException {
 		List<String> ans = null;
+
 		if(isPathValid() == null && isPathExists()){
 			try {
 				final FileSystem fs = NameNodeVar.getFS();
@@ -178,7 +179,7 @@ public class MapRedTextType extends DataOutput{
 							hdfsInt.select(stat[i].getPath().toString(),
 									getProperty(key_delimiter),
 									(maxToRead/stat.length)+1)
-									);
+							);
 				}
 			} catch (IOException e) {
 				String error = "Unexpected error: "+e.getMessage();
@@ -188,25 +189,27 @@ public class MapRedTextType extends DataOutput{
 		}
 		return ans;
 	}
-	
+
 	private void generateFeaturesMap() throws RemoteException{
-		
+
 		features = new OrderedFeatureList();
 		try {
 			List<String> lines = this.select(10);
-			for (String line : lines){
-				if (!line.trim().isEmpty()){
-					int cont = 0;
-					for (String s : line.split(Pattern.quote(getProperty(key_delimiter)))){
-						String nameColumn = generateColumnName(cont++);
-						FeatureType type = getType(s);
-						if (features.containsFeature(nameColumn)){
-							if (!canCast(type, features.getFeatureType(nameColumn))){
+			if(lines != null){
+				for (String line : lines){
+					if (!line.trim().isEmpty()){
+						int cont = 0;
+						for (String s : line.split(Pattern.quote(getProperty(key_delimiter)))){
+							String nameColumn = generateColumnName(cont++);
+							FeatureType type = getType(s);
+							if (features.containsFeature(nameColumn)){
+								if (!canCast(type, features.getFeatureType(nameColumn))){
+									features.addFeature(nameColumn, type);
+								}
+							}
+							else{
 								features.addFeature(nameColumn, type);
 							}
-						}
-						else{
-							features.addFeature(nameColumn, type);
 						}
 					}
 				}
@@ -215,7 +218,7 @@ public class MapRedTextType extends DataOutput{
 			e.printStackTrace();
 		}
 	}
-	
+
 	private String getDefaultDelimiter(String text){
 		if (text.contains("\001")){
 			return "\001";
@@ -228,10 +231,10 @@ public class MapRedTextType extends DataOutput{
 		}
 		return "\001";
 	}
-	
-	
+
+
 	private FeatureType getType(String expr){
-		
+
 		FeatureType type = null;
 		if(expr.equalsIgnoreCase("TRUE")||
 				expr.equalsIgnoreCase("FALSE")){
@@ -264,22 +267,22 @@ public class MapRedTextType extends DataOutput{
 				type = FeatureType.STRING;
 			}
 		}
-		
+
 		return type;
 	}
-	
+
 	private boolean canCast(FeatureType from, FeatureType to){
 		if (from.equals(to)){
 			return true;
 		}
-		
+
 		List<FeatureType> features = new ArrayList<FeatureType>();
 		features.add(FeatureType.INT);
 		features.add(FeatureType.LONG);
 		features.add(FeatureType.FLOAT);
 		features.add(FeatureType.DOUBLE);
 		features.add(FeatureType.STRING);
-		
+
 		if (from.equals(FeatureType.BOOLEAN)){
 			if (to.equals(FeatureType.STRING)){
 				return true;
@@ -291,7 +294,7 @@ public class MapRedTextType extends DataOutput{
 		}
 		return false;
 	}
-	
+
 	@Override
 	public void addProperty(String key, String value){
 		super.addProperty(key, value);
@@ -304,13 +307,16 @@ public class MapRedTextType extends DataOutput{
 			}
 		}
 	}
-	
+
 	@Override
 	public void setPath(String path) throws RemoteException {
 		super.setPath(path);
-		
+
+		logger.info("setPath() " + path);
+
 		List<String> list = select(1);
-		if (!list.isEmpty()){
+
+		if (list != null && !list.isEmpty()){
 			String text = list.get(0);
 			if (getProperty(key_delimiter) == null){
 				super.addProperty(key_delimiter, getDefaultDelimiter(text));
@@ -321,10 +327,10 @@ public class MapRedTextType extends DataOutput{
 				}
 			}
 		}
-		
+
 		generateFeaturesMap();
 	}
-	
+
 	private String generateColumnName(int columnIndex){
 		if (columnIndex > 25){
 			return generateColumnName(((columnIndex)/26)-1) + 
