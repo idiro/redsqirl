@@ -383,8 +383,7 @@
 	      }
 	      
 	      function addElementJs(positions){
-	    	  alert(positions);
-	    	  	addElements(positions);
+	    	  addElements(positions);
 	      }
 	      
 	      function addLinksJs(links){
@@ -519,12 +518,12 @@
 
 			<a4j:region>
 			
-				<a4j:status	onstart="jQuery('#canvas1').block({ message: jQuery('#domMessageDivCanvas1') });"
+				<a4j:status	onstart="jQuery('#canvas1').block({ message: jQuery('#domMessageDivCanvas2') });"
 							onerror="jQuery('#canvas1').unblock();" onsuccess="jQuery('#canvas1').unblock();"
 							onstop="jQuery('#canvas1').unblock();" />
-				
-							
-				<a4j:jsFunction name="loadWorkflow" data="#{canvasBean.positions}" oncomplete="addElementJs(data[0]);addLinksJs(data[1]);" reRender="formMenu"/>
+			
+				<a4j:jsFunction name="loadWorkflow" action="#{canvasBean.blockRunningWorkflow}" data="#{canvasBean.positions}" 
+					oncomplete="addElementJs(data[0]);addLinksJs(data[1]);" reRender="formMenu"/>
 			</a4j:region>
 			
 			<a4j:region>
