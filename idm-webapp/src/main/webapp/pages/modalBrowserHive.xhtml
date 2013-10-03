@@ -26,7 +26,12 @@
 		if (!file){
 			return p;
 		}
-		return p + "/"+ file;
+		var lastCHar = p.charAt(p.length-1);
+		if(lastCHar == "/"){
+			return p + file;
+		}else{
+			return p + "/"+ file;
+		}
 	}
 	
 //]]>
