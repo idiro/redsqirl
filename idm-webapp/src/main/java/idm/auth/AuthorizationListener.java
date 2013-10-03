@@ -1,5 +1,10 @@
 package idm.auth;
 
+import idiro.workflow.server.connect.interfaces.DataFlowInterface;
+import idiro.workflow.server.interfaces.DataFlow;
+import idm.useful.MessageUseful;
+
+import java.rmi.RemoteException;
 import java.util.Map;
 
 import javax.faces.application.NavigationHandler;
@@ -49,6 +54,22 @@ public class AuthorizationListener implements PhaseListener {
 			if (!isLoginPage){
 				request.setAttribute("msnLoginError", "msnLoginError");
 			}
+			
+			
+			DataFlowInterface dataFlowInterface = (DataFlowInterface) sc.getAttribute("wfm");
+			try {
+				
+				DataFlow wf = dataFlowInterface.getWorkflow("canvas1");
+				String error = wf.cleanProject();
+				if(error != null){
+					MessageUseful.addErrorMessage(error);
+					request.setAttribute("msnError", "msnError");
+				}
+				
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+			
 			
 			NavigationHandler nh = facesContext.getApplication().getNavigationHandler();
 			nh.handleNavigation(facesContext, null, "loginPage");
