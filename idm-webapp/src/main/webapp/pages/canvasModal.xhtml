@@ -22,16 +22,9 @@
 		
 		<h:form id="formCanvasModal">
 	
-	<h:inputHidden value="#{canvasModalBean.listPageSize}"/>
-	<h:inputHidden value="#{canvasModalBean.page}"/>
-	<h:inputHidden value="#{canvasModalBean.listPageSize}"/>
-	
-	
 	<a4j:jsFunction name="endDynamicForm" action="#{canvasModalBean.endDynamicForm}" data="#{canvasModalBean.errorMsg}" oncomplete="verifyErrors(data);" 
 		reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, browserTable2, msnError"/>
 	<a4j:jsFunction name="closeDynamicForm" oncomplete="#{rich:component('canvasModalPanel')}.hide()" />
-	
-	<a4j:region>
 	
 	<rich:tabPanel id="canvasModalTabPanel" switchType="ajax" selectedTab="#{canvasModalBean.selectedTab}" >
 	
@@ -388,8 +381,6 @@
 			
 		</rich:tab>
 	</rich:tabPanel>
-	
-	</a4j:region>
 	
 	</h:form>
 	

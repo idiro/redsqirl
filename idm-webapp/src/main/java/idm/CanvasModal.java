@@ -126,6 +126,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 			HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
 		}
+		
+		setErrorMsg(error);
 
 	}
 
@@ -156,7 +158,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 			logger.info(getListPage().size());
 			
-			if(!getListPage().isEmpty() && getListPage().size()-1 >= getListPosition()){
+//			if(!getListPage().isEmpty() && getListPage().size()-1 >= getListPosition()){
 				
 				setPage(getListPage().get(getListPosition()));
 
@@ -174,7 +176,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 				mountInteractionForm();
 				
-			}
+//			}
 
 		}
 
@@ -261,7 +263,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 			}
 		}
 
-		if(getPage() != null){
+//		if(getPage() != null){
 
 			String e = getPage().checkPage();
 
@@ -290,7 +292,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 			//This should not be necessary
 			//getDfe().getPageList().set(getListPosition(), getPage());
 
-		}
+//		}
 
 		return error.toString();
 	}
@@ -766,15 +768,15 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 		logger.info("endDynamicForm ");
 		applyPage();
-		String error = checkNextPage();
-		if(error.length() > 1){
-			MessageUseful.addErrorMessage(error);
-			HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
-			request.setAttribute("msnError", "msnError");
-
-		}
-
-		setErrorMsg(error);
+//		String error = checkNextPage();
+//		if(error.length() > 1){
+//			MessageUseful.addErrorMessage(error);
+//			HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
+//			request.setAttribute("msnError", "msnError");
+//
+//		}
+//
+//		setErrorMsg(error);
 
 	}
 

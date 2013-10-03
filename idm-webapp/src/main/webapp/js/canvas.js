@@ -799,8 +799,8 @@ var countObj;
 					width: 16,
 					height: 16
 				});
-				img.src = "./"+elementImg;
-				//img.src = elementImg;
+//				img.src = "./"+elementImg;
+				img.src = elementImg;
 
 				var posInitX = 40;
 				var poxInitY = 50;
