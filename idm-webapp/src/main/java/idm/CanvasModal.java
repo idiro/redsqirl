@@ -1013,11 +1013,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 		if(path != null){
 
 			DynamicForm dynamicForm = getDynamicFormBrowser();
-			String name = path.substring(1);
+			//String name = path.substring(1);
 
-			logger.info("pathFile " + name);
+			logger.info("pathFile " + path);
 
-			getDfe().getDFEOutput().get("source").setPath(name);
+			getDfe().getDFEOutput().get("source").setPath(path);
 			getDfe().getDFEOutput().get("source").isPathExists();
 
 			List<String> outputLines = getDfe().getDFEOutput().get("source").select(10);
@@ -1090,7 +1090,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 				dynamicForm.setListFeature(listObj);
 				setListFeature(listObj);
 			}
-			dynamicForm.setPathBrowser(name);
+			dynamicForm.setPathBrowser(path);
 
 			getDfe().updateOut();
 		}
