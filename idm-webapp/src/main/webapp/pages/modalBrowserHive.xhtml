@@ -22,7 +22,7 @@
 	    file = name;
 	}
 	
-	function getPath(p){
+	function getPathHive(p){
 		if (!file){
 			return p;
 		}
@@ -100,7 +100,7 @@
 	<br />
 	
 	<a4j:commandButton action="#{canvasModalBean.changePathBrowser}" value="#{messages.button_ok}" oncomplete="#{rich:component('modalPanelBrowserHiveId')}.hide();" reRender="browserPanel, browserTable1, browserTable2, browserTable1Col1, browserTable1Col2" >
-		<a4j:actionparam name="pathFile" value="getPath('#{browserHiveBean.path}')" noEscape="true"/>
+		<a4j:actionparam name="pathFile" value="getPathHive('#{browserHiveBean.path}')" noEscape="true"/>
 	</a4j:commandButton>
 	
 	<a4j:commandButton value="#{messages.button_cancel}" oncomplete="#{rich:component('modalPanelBrowserHiveId')}.hide();" />
