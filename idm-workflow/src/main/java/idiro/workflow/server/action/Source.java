@@ -8,6 +8,7 @@ import idiro.workflow.server.DataflowAction;
 import idiro.workflow.server.Page;
 import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.WorkflowPrefManager;
+import idiro.workflow.server.connect.HDFSInterface;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.datatype.MapRedTextType;
@@ -230,10 +231,11 @@ public class Source extends DataflowAction{
 								.getFirstChild("list").getFirstChild("output")
 								.getFirstChild().getHead();
 
-						boolean exist = false;
+						boolean existAndValid = true;
 						if(type.equalsIgnoreCase("Hive")){
+							/*
 							HiveInterface hInt = new HiveInterface(); 
-							exist = hInt.exists(path);
+							existAndValid = hInt.exists(path);
 							if(exist){
 								String[] desc = 
 										hInt.getDescription(
@@ -260,23 +262,26 @@ public class Source extends DataflowAction{
 									}
 
 								}
-							}
+							}*/
 						}
 
 						else if(type.equalsIgnoreCase("Hdfs")){
 							try{
+								 
 								getInteraction(key_dataset).getTree()
 								.getFirstChild("browse").
 								getFirstChild("output")
 								.getFirstChild("property").
 								getFirstChild(MapRedTextType.key_delimiter).
 								getFirstChild().getHead();
+								
 							}
 							catch (Exception e){
 								error = "You must define a delimiter";
 							}
 						}
-						if(!exist){
+						existAndValid &= output.get(out_name).isPathExists() && output.get(out_name).isPathValid() == null;
+						if(!existAndValid){
 							error = "The path does not exist";
 						}
 					}
@@ -436,17 +441,20 @@ public class Source extends DataflowAction{
 						WorkflowPrefManager.getInstance().getNonAbstractClassesFromSuperClass(
 								DataOutput.class.getCanonicalName()).iterator();
 
-				Class<?> klass = null;
+				
+				DFEOutput dataOutput = null;
 				while (dataOutputClassName.hasNext()){
 					String className = dataOutputClassName.next();
-					String[] classNameArray = className.split("\\.");
-					if (classNameArray[classNameArray.length-1].equals(subtype)){
-						klass = Class.forName(className);
+					dataOutput = (DFEOutput) Class.forName(className).newInstance();
+					if(dataOutput.getTypeName().equalsIgnoreCase(subtype)){
 						break;
+					}else{
+						dataOutput = null;
 					}
-				}
 
-				DFEOutput dataOutput = (DFEOutput)(klass.getConstructor(Map.class).newInstance(out));
+				}
+				
+				dataOutput.setFeatures(out);
 
 				output.put(out_name, dataOutput);
 				output.get(out_name).setPath(path);

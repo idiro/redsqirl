@@ -556,6 +556,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 				//clean the map
 				setListFeature(new ArrayList<ItemList>());
 				setListGrid(new ArrayList<ItemList>());
+				setBrowserNameFeatureColumns(new ArrayList<String>());
 
 				String dataTypeName = dfeInteraction.getTree().getFirstChild("browse").getFirstChild("type").getFirstChild().getHead();
 				logger.info("dataTypeName " + dataTypeName);
@@ -570,7 +571,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 					String mypath = dfeInteraction.getTree().getFirstChild("browse").getFirstChild("output").getFirstChild("path").getFirstChild().getHead();
 					dynamicF.setPathBrowser(mypath);
 					logger.info("path mount " + mypath);
-					setPathBrowser("/"+mypath);
+					//setPathBrowser("/"+mypath);
+					setPathBrowser(mypath);
 					setDynamicFormBrowser(dynamicF);
 					changePathBrowser();
 				}
@@ -1070,12 +1072,25 @@ public class CanvasModal extends BaseBean implements Serializable {
 				for (String output : outputLines) {
 					Map<String, String> nameValueFeatureItem = new HashMap<String, String>();
 					if(output != null){
-						String rows[] = output.split("'\001'");
-						for (int i = 0; i < rows.length; i++) {
-							logger.info("map to show " + labels.get(i) + " " + rows[i]);
-							nameValueFeature.put(labels.get(i), rows[i]);
-							nameValueFeatureItem.put(labels.get(i), rows[i]);
+						
+						logger.info("Hive or Hdfs " + getHiveHdfs());
+						
+						if(getHiveHdfs() != null && getHiveHdfs().equalsIgnoreCase("hive")){
+							String rows[] = output.split("'\001'");
+							for (int i = 0; i < rows.length; i++) {
+								logger.info("map to show " + labels.get(i) + " " + rows[i]);
+								nameValueFeature.put(labels.get(i), rows[i]);
+								nameValueFeatureItem.put(labels.get(i), rows[i]);
+							}
+						}else{
+							String rows[] = output.split("\\|");
+							for (int i = 0; i < rows.length; i++) {
+								logger.info("map to show " + labels.get(i) + " " + rows[i]);
+								nameValueFeature.put(labels.get(i), rows[i]);
+								nameValueFeatureItem.put(labels.get(i), rows[i]);
+							}
 						}
+						
 					}
 					ItemList item = new ItemList();
 					item.setSelected(false);
