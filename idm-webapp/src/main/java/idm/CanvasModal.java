@@ -174,7 +174,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 					setFirstPage("N");
 				}
 
-				mountInteractionForm();
+				mountInteractionForm(getListPosition());
 				
 //			}
 
@@ -327,7 +327,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 			setFirstPage("N");
 		}
 
-		mountInteractionForm();
+		mountInteractionForm(getListPosition());
 
 	}
 
@@ -434,7 +434,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 					setPageTitle(getDfe().getName().replace("_"," "));
 
-					mountInteractionForm();
+					mountInteractionForm(getListPosition());
 
 					setFirstPage("Y");
 
@@ -471,14 +471,14 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 * @throws RemoteException 
 	 */
-	public void mountInteractionForm() throws RemoteException {
+	public void mountInteractionForm(int page) throws RemoteException {
 
 		logger.info("mountInteractionForm ");
 
 		setDynamicFormList(new ArrayList<DynamicForm>());
-		getDfe().update(getListPosition());
+		getDfe().update(page);
 
-		for (DFEInteraction dfeInteraction : getPage().getInteractions()) {
+		for (DFEInteraction dfeInteraction : getDfe().getPageList().get(page).getInteractions()) {
 
 			DynamicForm dynamicF = new DynamicForm();
 
@@ -672,7 +672,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 		}
 	}
-
+	
 	private void mountTableInteractionConstraint(Tree<String> dfeInteractionTree) throws RemoteException{
 		List<SelectItem> listFields = new ArrayList<SelectItem>();
 		if (dfeInteractionTree.getFirstChild("constraint").getFirstChild("values") != null){

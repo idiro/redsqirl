@@ -11,7 +11,7 @@
 		<h:inputText label="Name" value="#{canvasBean.idElement}" size="16" maxlength="15" />
 	
 		<h:panelGrid columns="1">
-			<a4j:commandButton type="submit" oncomplete="closeChangeIdModal()" value="#{messages.button_ok}"/>
+			<a4j:commandButton type="submit" onclick="#{rich:component('modalChangeId')}.hide();" oncomplete="closeChangeIdModal()" value="#{messages.button_ok}"/>
 		</h:panelGrid>
 	</h:form>
 
