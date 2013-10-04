@@ -16,6 +16,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Logger;
+
 /** AuthorizationListener
  * 
  * Class to control the User and application. checks if the User logged in
@@ -23,6 +25,8 @@ import javax.servlet.http.HttpSession;
  * @author Igor.Souza
  */
 public class AuthorizationListener implements PhaseListener {
+	
+	private static Logger logger = Logger.getLogger(AuthorizationListener.class);
 
 	/** afterPhase
 	 * 
@@ -55,21 +59,22 @@ public class AuthorizationListener implements PhaseListener {
 				request.setAttribute("msnLoginError", "msnLoginError");
 			}
 			
-			
-			DataFlowInterface dataFlowInterface = (DataFlowInterface) sc.getAttribute("wfm");
-			try {
-				
-				DataFlow wf = dataFlowInterface.getWorkflow("canvas1");
-				String error = wf.cleanProject();
-				if(error != null){
-					MessageUseful.addErrorMessage(error);
-					request.setAttribute("msnError", "msnError");
+			if (sc.getAttribute("signOut") == null){
+				DataFlowInterface dataFlowInterface = (DataFlowInterface) sc.getAttribute("wfm");
+				try {
+					logger.info(sc.getAttribute("signOut"));
+					DataFlow wf = dataFlowInterface.getWorkflow("canvas1");
+					String error = wf.cleanProject();
+					if(error != null){
+						MessageUseful.addErrorMessage(error);
+						request.setAttribute("msnError", "msnError");
+					}
+					
+				} catch (RemoteException e) {
+					e.printStackTrace();
 				}
-				
-			} catch (RemoteException e) {
-				e.printStackTrace();
+				sc.removeAttribute("signOut");
 			}
-			
 			
 			NavigationHandler nh = facesContext.getApplication().getNavigationHandler();
 			nh.handleNavigation(facesContext, null, "loginPage");

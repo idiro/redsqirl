@@ -23,6 +23,7 @@ import java.util.Map;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
@@ -257,6 +258,9 @@ public class UserInfoBean extends BaseBean {
 		th.kill();
 
 		cleanSession();
+		
+		ServletContext sc = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
+		sc.setAttribute("signOut", "signOut");
 
 		return "signout";
 	}
