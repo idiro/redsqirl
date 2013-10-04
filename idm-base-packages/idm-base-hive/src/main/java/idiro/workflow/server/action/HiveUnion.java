@@ -116,9 +116,9 @@ public class HiveUnion  extends HiveElement{
 			DFEOutput out = output.values().iterator().next();
 			String tableOut = hInt.getTableAndPartitions(out.getPath())[0];
 
-			String insert = "INSERT OVERWRITE TABLE "+tableOut+partInt.getQueryPiece(out);
+			String insert = "INSERT OVERWRITE TABLE "+tableOut+partInt.getQueryPiece();
 			String create = "CREATE TABLE IF NOT EXISTS "+tableOut;
-			String createPartition = partInt.getCreateQueryPiece(out);
+			String createPartition = partInt.getCreateQueryPiece();
 
 			String select = tUnionSelInt.getQueryPiece(out);
 			String createSelect = tUnionSelInt.getCreateQueryPiece(out);

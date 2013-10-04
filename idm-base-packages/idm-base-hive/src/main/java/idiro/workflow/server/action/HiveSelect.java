@@ -142,10 +142,13 @@ public class HiveSelect extends HiveElement{
 			DFEOutput out = output.values().iterator().next();
 			String tableOut = hInt.getTableAndPartitions(out.getPath())[0];
 
-			String insert = "INSERT OVERWRITE TABLE "+tableOut+partInt.getQueryPiece(out);
+			String insert = "INSERT OVERWRITE TABLE "+tableOut+partInt.getQueryPiece();
 			String from = " FROM "+tableIn+" ";
 			String create = "CREATE TABLE IF NOT EXISTS "+tableOut;
-			String createPartition = partInt.getCreateQueryPiece(out);
+			String createPartition = partInt.getCreateQueryPiece();
+			if(createPartition.isEmpty()){
+				createPartition = partInt.getPartitions();
+			}
 			String where = condInt.getQueryPiece();
 
 

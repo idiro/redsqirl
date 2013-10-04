@@ -151,7 +151,7 @@ public abstract class HiveElement extends DataflowAction {
 		if(error == null){
 			FeatureList new_features = getNewFeatures();
 			if(new_features.getSize() > 0){
-				String partitions = partInt.getPartitions(new_features);
+				partInt.addPartitions(new_features);
 
 				if(useTable()){
 					if(output == null){
@@ -179,7 +179,7 @@ public abstract class HiveElement extends DataflowAction {
 				}
 
 				output.get(key_output).setFeatures(new_features);
-				output.get(key_output).addProperty(HiveType.key_partitions, partitions);
+				output.get(key_output).addProperty(HiveType.key_partitions, partInt.getPartitions());
 			}
 		}
 		return error;
@@ -192,8 +192,8 @@ public abstract class HiveElement extends DataflowAction {
 	 * @throws RemoteException
 	 */
 	public void addOrRemoveOutPage() throws RemoteException{
-		List<Tree<String>> parts = partInt.getTree().getFirstChild("applist")
-				.getFirstChild("output").getChildren("value");
+		List<Tree<String>> parts = partInt.getTree()
+				.getFirstChild("table").getChildren("row");
 
 		if(parts.isEmpty()){
 			if(pageList.size() > minNbOfPage){
@@ -201,8 +201,8 @@ public abstract class HiveElement extends DataflowAction {
 				pageList.remove(pageList.size()-1);
 			}
 		}else if(pageList.size() == minNbOfPage){
-			Page page = addPage("Select",
-					"Select Conditions",
+			Page page = addPage("Output selection",
+					"",
 					1);
 
 			typeOutputInt = new UserInteraction(
@@ -247,7 +247,6 @@ public abstract class HiveElement extends DataflowAction {
 						.getFirstChild("output").getFirstChild().getHead()
 						.equalsIgnoreCase(messageTypeTable);
 			}catch(Exception e){
-
 			}
 		}
 		return ans;

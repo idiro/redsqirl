@@ -4,10 +4,8 @@ import idiro.utils.FeatureList;
 import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.UserInteraction;
-import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.enumeration.FeatureType;
-import idiro.workflow.server.interfaces.DFEOutput;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
@@ -121,7 +119,20 @@ public class PartitionInteraction extends UserInteraction{
 		return input;
 	}
 
-	public String getPartitions(FeatureList new_features) throws RemoteException{
+	public void addPartitions(FeatureList new_features) throws RemoteException{
+		List<Tree<String>> lRow;
+		Iterator<Tree<String>> rows;
+		lRow = getTree()
+				.getFirstChild("table").getChildren("row");
+		rows = lRow.iterator();
+		while(rows.hasNext()){
+			Tree<String> row = rows.next();
+			String partName = row.getFirstChild(table_name_title).getFirstChild().getHead();
+			new_features.addFeature(partName, FeatureType.STRING);
+		}
+	}
+	
+	public String getPartitions() throws RemoteException{
 		String partitions = "";
 		List<Tree<String>> lRow;
 		Iterator<Tree<String>> rows;
@@ -132,7 +143,6 @@ public class PartitionInteraction extends UserInteraction{
 			Tree<String> row = rows.next();
 			String partName = row.getFirstChild(table_name_title).getFirstChild().getHead();
 			String partValue = row.getFirstChild(table_value_title).getFirstChild().getHead();
-			new_features.addFeature(partName, FeatureType.STRING);
 			if(partitions.isEmpty()){
 				partitions = partName+"='"+partValue+"'"; 
 			}else{
@@ -162,32 +172,50 @@ public class PartitionInteraction extends UserInteraction{
 		return partitions;
 	}
 
-	public String getQueryPiece(DFEOutput out) throws RemoteException{
-		HiveInterface hInt = new HiveInterface();
-		String[] tableAndPartsOut = hInt.getTableAndPartitions(out.getPath());
-		String partitionsOut = "";
-		if(tableAndPartsOut.length > 1){
-			partitionsOut = " PARTITION("+tableAndPartsOut[1];
-			for(int i = 2; i < tableAndPartsOut.length;++i){
-				partitionsOut += ","+tableAndPartsOut[i];
+	public String getQueryPiece() throws RemoteException{
+		String partitions = "";
+		List<Tree<String>> lRow;
+		Iterator<Tree<String>> rows;
+		lRow = getTree()
+				.getFirstChild("table").getChildren("row");
+		rows = lRow.iterator();
+		while(rows.hasNext()){
+			Tree<String> row = rows.next();
+			String partName = row.getFirstChild(table_name_title).getFirstChild().getHead();
+			String partValue = row.getFirstChild(table_value_title).getFirstChild().getHead();
+			if(partitions.isEmpty()){
+				partitions = partName+"='"+partValue+"'"; 
+			}else{
+				partitions += ","+partName+"='"+partValue+"'";
 			}
-			partitionsOut += ") ";
 		}
-		return partitionsOut;
+		if(!partitions.isEmpty()){
+			partitions = " PARTITION("+partitions+")";
+		}
+		return partitions;
 	}
 
-	public String getCreateQueryPiece(DFEOutput out) throws RemoteException{
-		HiveInterface hInt = new HiveInterface();
-		String[] tableAndPartsOut = hInt.getTableAndPartitions(out.getPath());
-		String createPartition = "";
-		if(tableAndPartsOut.length > 1){
-			createPartition = " PARTITIONED BY("+tableAndPartsOut[1]+" STRING";
-			for(int i = 2; i < tableAndPartsOut.length;++i){
-				createPartition += ","+tableAndPartsOut[i]+ " STRING";
+	public String getCreateQueryPiece() throws RemoteException{
+		String partitions = "";
+		List<Tree<String>> lRow;
+		Iterator<Tree<String>> rows;
+		lRow = getTree()
+				.getFirstChild("table").getChildren("row");
+		rows = lRow.iterator();
+		while(rows.hasNext()){
+			Tree<String> row = rows.next();
+			String partName = row.getFirstChild(table_name_title).getFirstChild().getHead();
+			if(partitions.isEmpty()){
+				partitions = partName+" STRING"; 
+			}else{
+				partitions += ","+partName+" STRING";
 			}
-			createPartition+=") ";
 		}
-		return createPartition;
+		if(!partitions.isEmpty()){
+			partitions = " PARTITIONED BY("+partitions+")";
+		}
+		
+		return partitions;
 	}
 
 }
