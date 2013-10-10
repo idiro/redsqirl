@@ -59,7 +59,6 @@ public class MapRedTextType extends DataOutput{
 		}
 	}
 
-
 	@Override
 	public String getTypeName() throws RemoteException {
 		return "TEXT MAP-REDUCE DIRECTORY";
@@ -232,7 +231,6 @@ public class MapRedTextType extends DataOutput{
 		return "\001";
 	}
 
-
 	private FeatureType getType(String expr){
 
 		FeatureType type = null;
@@ -298,37 +296,48 @@ public class MapRedTextType extends DataOutput{
 	@Override
 	public void addProperty(String key, String value){
 		super.addProperty(key, value);
+
 		if (key.equals(key_delimiter) && getPath() != null){
+
 			try {
+				
+				logger.info("addProperty() ");
+
 				generateFeaturesMap();
+
 			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
+
 	}
 
 	@Override
 	public void setPath(String path) throws RemoteException {
-		super.setPath(path);
+		String oldPath = getPath();
 
-		logger.info("setPath() " + path);
+		if(! path.equalsIgnoreCase(oldPath)){
 
-		List<String> list = select(1);
+			super.setPath(path);
 
-		if (list != null && !list.isEmpty()){
-			String text = list.get(0);
-			if (getProperty(key_delimiter) == null){
-				super.addProperty(key_delimiter, getDefaultDelimiter(text));
-			}
-			else{
-				if (!text.contains(getProperty(key_delimiter))){
+			logger.info("setPath() " + path);
+
+			List<String> list = select(1);
+
+			if (list != null && !list.isEmpty()){
+				String text = list.get(0);
+				if (getProperty(key_delimiter) == null){
 					super.addProperty(key_delimiter, getDefaultDelimiter(text));
 				}
+				else{
+					if (!text.contains(getProperty(key_delimiter))){
+						super.addProperty(key_delimiter, getDefaultDelimiter(text));
+					}
+				}
 			}
+			generateFeaturesMap();
 		}
 
-		generateFeaturesMap();
 	}
 
 	private String generateColumnName(int columnIndex){
