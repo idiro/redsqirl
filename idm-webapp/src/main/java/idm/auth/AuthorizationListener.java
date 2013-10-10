@@ -1,18 +1,10 @@
 package idm.auth;
 
-import idiro.workflow.server.connect.interfaces.DataFlowInterface;
-import idiro.workflow.server.interfaces.DataFlow;
-import idm.useful.MessageUseful;
-
-import java.rmi.RemoteException;
-import java.util.Map;
-
 import javax.faces.application.NavigationHandler;
 import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseEvent;
 import javax.faces.event.PhaseId;
 import javax.faces.event.PhaseListener;
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -36,12 +28,11 @@ public class AuthorizationListener implements PhaseListener {
 	 * @author Igor.Souza
 	 */
 	public void afterPhase(PhaseEvent event) {
-
+		
 		FacesContext facesContext = event.getFacesContext();
 		String currentPage = facesContext.getViewRoot().getViewId();
 		HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
-		ServletContext sc = (ServletContext) facesContext.getExternalContext().getContext();
-		
+//		ServletContext sc = (ServletContext) facesContext.getExternalContext().getContext();
 		
 		boolean isLoginPage = (currentPage.lastIndexOf("initial.xhtml") > -1) || (currentPage.lastIndexOf("initial.jsf") > -1);
 		HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(false);
@@ -50,31 +41,33 @@ public class AuthorizationListener implements PhaseListener {
 			
 			System.out.println("session null");
 			
-			Map<String, HttpSession> sessionLoginMap = (Map<String, HttpSession>) sc.getAttribute("sessionLoginMap");
-			String userName = (String) sc.getAttribute("userName");
-			sessionLoginMap.remove(userName);
-			sc.removeAttribute("userName");
+//			Map<String, HttpSession> sessionLoginMap = (Map<String, HttpSession>) sc.getAttribute("sessionLoginMap");
+//			String userName = (String) sc.getAttribute("userName");
+//			sessionLoginMap.remove(userName);
+//			sc.removeAttribute("userName");
 			
 			if (!isLoginPage){
 				request.setAttribute("msnLoginError", "msnLoginError");
 			}
 			
-			if (sc.getAttribute("signOut") == null){
-				DataFlowInterface dataFlowInterface = (DataFlowInterface) sc.getAttribute("wfm");
-				try {
-					logger.info(sc.getAttribute("signOut"));
-					DataFlow wf = dataFlowInterface.getWorkflow("canvas1");
-					String error = wf.cleanProject();
-					if(error != null){
-						MessageUseful.addErrorMessage(error);
-						request.setAttribute("msnError", "msnError");
-					}
-					
-				} catch (RemoteException e) {
-					e.printStackTrace();
-				}
-				sc.removeAttribute("signOut");
-			}
+//			logger.info("request signOut: "+request.getAttribute("signOut"));
+//			
+//			if (request.getAttribute("signOut") == null){
+//				DataFlowInterface dataFlowInterface = (DataFlowInterface) sc.getAttribute("wfm");
+//				try {
+//					logger.info(sc.getAttribute("signOut"));
+//					DataFlow wf = dataFlowInterface.getWorkflow("canvas1");
+//					String error = wf.cleanProject();
+//					if(error != null){
+//						MessageUseful.addErrorMessage(error);
+//						request.setAttribute("msnError", "msnError");
+//					}
+//					
+//				} catch (RemoteException e) {
+//					e.printStackTrace();
+//				}
+//				request.removeAttribute("signOut");
+//			}
 			
 			NavigationHandler nh = facesContext.getApplication().getNavigationHandler();
 			nh.handleNavigation(facesContext, null, "loginPage");
@@ -82,7 +75,7 @@ public class AuthorizationListener implements PhaseListener {
 		}else{
 			Object currentUser = session.getAttribute("username");
 			
-			if (!isLoginPage && (currentUser == null || currentUser == "")) {
+			if (!isLoginPage && (currentUser == null || currentUser.equals(""))) {
 				
 				System.out.println(currentPage);
 				
@@ -92,7 +85,7 @@ public class AuthorizationListener implements PhaseListener {
 			}
 		}
 	}
-
+	
 	/** beforePhase
 	 * 
 	 */

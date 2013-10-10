@@ -11,7 +11,6 @@ import idm.useful.MessageUseful;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -29,8 +28,6 @@ import org.json.JSONObject;
 
 public class CanvasBean extends BaseBean implements Serializable{
 	
-	private CanvasModal canvasModalBean;
-
 	private static Logger logger = Logger.getLogger(CanvasBean.class);
 	private List<SelectItem> linkPossibilities = new ArrayList<SelectItem>();
 	private String selectedLink;
@@ -70,9 +67,6 @@ public class CanvasBean extends BaseBean implements Serializable{
 	public CanvasBean() {
 
 		logger.info("openCanvas");
-		
-		FacesContext context = FacesContext.getCurrentInstance();
-		canvasModalBean = (CanvasModal) context.getApplication().evaluateExpressionGet(context, "#{canvasModalBean}", CanvasModal.class);
 		
 		setCountObj(0);
 		setNameWorkflow("canvas"+countWf);
@@ -266,6 +260,11 @@ public class CanvasBean extends BaseBean implements Serializable{
 						linkPossibilities.add(new SelectItem(entryOutput.getKey()+" -> "+entryInput.getKey()));
 					}
 				}
+			}
+			
+			if (!linkPossibilities.isEmpty()){
+				logger.info("link selected: "+linkPossibilities.get(0).getValue().toString());
+				setSelectedLink(linkPossibilities.get(0).getValue().toString());
 			}
 
 		} catch (RemoteException e) {

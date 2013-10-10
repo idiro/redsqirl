@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import javax.faces.context.FacesContext;
-import javax.servlet.ServletContext;
+import javax.servlet.http.HttpSession;
 
 /** BaseBean
  * 
@@ -85,9 +85,9 @@ public class BaseBean {
 	public DataFlowInterface getworkFlowInterface() throws RemoteException{
 
 		FacesContext fCtx = FacesContext.getCurrentInstance();
-		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
+		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
 
-		return (DataFlowInterface) sc.getAttribute("wfm");
+		return (DataFlowInterface) session.getAttribute("wfm");
 	}
 
 	/** getHiveInterface
@@ -100,9 +100,9 @@ public class BaseBean {
 	public DataStore getHiveInterface() throws RemoteException{
 
 		FacesContext fCtx = FacesContext.getCurrentInstance();
-		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
+		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
 
-		return (DataStore) sc.getAttribute("hive");
+		return (DataStore) session.getAttribute("hive");
 	}
 
 	/** getHiveInterface
@@ -115,9 +115,9 @@ public class BaseBean {
 	public DataStoreArray getDataStoreArray() throws RemoteException{
 
 		FacesContext fCtx = FacesContext.getCurrentInstance();
-		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
+		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
 
-		return (DataStoreArray) sc.getAttribute("ssharray");
+		return (DataStoreArray) session.getAttribute("ssharray");
 	}
 
 	/** getHDFS
@@ -130,9 +130,9 @@ public class BaseBean {
 	public DataStore getHDFS() throws RemoteException{
 
 		FacesContext fCtx = FacesContext.getCurrentInstance();
-		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
+		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
 
-		return (DataStore) sc.getAttribute("hdfs");
+		return (DataStore) session.getAttribute("hdfs");
 	}
 
 	/** getOozie
@@ -145,9 +145,9 @@ public class BaseBean {
 	public JobManager getOozie() throws RemoteException{
 
 		FacesContext fCtx = FacesContext.getCurrentInstance();
-		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
+		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
 
-		return (JobManager) sc.getAttribute("oozie");
+		return (JobManager) session.getAttribute("oozie");
 	}
 
 

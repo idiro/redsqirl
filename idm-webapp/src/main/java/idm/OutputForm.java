@@ -86,7 +86,7 @@ public class OutputForm implements Serializable {
 		return savingState;
 	}
 
-	public void setSavingState(String savingState) throws RemoteException {
+	public void setSavingState(String savingState, String user) throws RemoteException {
 		try{
 			this.savingState = SavingState.valueOf(savingState).name();
 			if (savingState.equals(SavingState.RECORDED.toString())){
@@ -97,7 +97,7 @@ public class OutputForm implements Serializable {
 				setRenderBrowserButton(false);
 				if(getDfeOutput().isPathValid() != null){
 					getDfeOutput().generatePath(
-							System.getProperty("user.name"), 
+							user, 
 							getComponentId(), 
 							getName());
 				}
@@ -109,26 +109,6 @@ public class OutputForm implements Serializable {
 				this.savingState = SavingState.TEMPORARY.toString();
 			}
 		}
-		/*
-		if(this.savingState == null)
-		if (this.savingState == null || !this.savingState.equals(savingState)){
-			this.savingState = savingState;
-			if (savingState.equals(SavingState.RECORDED.toString())){
-				setRenderBrowserButton(true);
-				setPath(null);
-			}
-			else if (savingState.equals(SavingState.BUFFERED.toString()) ||
-					savingState.equals(SavingState.TEMPORARY.toString())){
-				setRenderBrowserButton(false);
-				if(getDfeOutput().isPathValid() != null){
-					getDfeOutput().generatePath(
-							System.getProperty("user.name"), 
-							getComponentId(), 
-							getName());
-				}
-				setPath(getDfeOutput().getPath());
-			}
-		}*/
 	}
 
 	public String getComponentId() {

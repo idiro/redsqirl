@@ -23,6 +23,7 @@ import java.util.Map;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.ajax4jsf.model.KeepAlive;
 import org.apache.log4j.Logger;
@@ -158,26 +159,21 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 			logger.info(getListPage().size());
 			
-//			if(!getListPage().isEmpty() && getListPage().size()-1 >= getListPosition()){
-				
-				setPage(getListPage().get(getListPosition()));
+			setPage(getListPage().get(getListPosition()));
 
-				if(getListPageSize() -1 > getListPosition()){
-					setLastPage("N");
-				}else{
-					setLastPage("Y");
-				}
+			if(getListPageSize() -1 > getListPosition()){
+				setLastPage("N");
+			}else{
+				setLastPage("Y");
+			}
 
-				if(getListPosition() == 0){
-					setFirstPage("Y");
-				}else{
-					setFirstPage("N");
-				}
+			if(getListPosition() == 0){
+				setFirstPage("Y");
+			}else{
+				setFirstPage("N");
+			}
 
-				mountInteractionForm(getListPosition());
-				
-//			}
-
+			mountInteractionForm(getListPosition());
 		}
 
 	}
@@ -263,37 +259,30 @@ public class CanvasModal extends BaseBean implements Serializable {
 			}
 		}
 
-//		if(getPage() != null){
+		String e = getPage().checkPage();
 
-			String e = getPage().checkPage();
-
-			logger.info("error page -> " + e);
-			if(e != null){
-				error.append(e);
-				error.append(System.getProperty("line.separator"));
-			}else{
-				//Update output only if it is the last page
-				//or an output already exist 
-				if(getListPageSize() - 1 == getListPosition() || (
-						getDfe().getDFEOutput() != null &&
-						!getDfe().getDFEOutput().isEmpty())
-						){
-					getDfe().cleanThisAndAllElementAfter();
-					e = getDfe().updateOut();
-					if(getListPageSize() - 1 == getListPosition()){
-						mountOutputForm();
-						if( e != null){
-							error.append(e);
-							error.append(System.getProperty("line.separator"));
-						}
+		logger.info("error page -> " + e);
+		if(e != null){
+			error.append(e);
+			error.append(System.getProperty("line.separator"));
+		}else{
+			//Update output only if it is the last page
+			//or an output already exist 
+			if(getListPageSize() - 1 == getListPosition() || (
+					getDfe().getDFEOutput() != null &&
+					!getDfe().getDFEOutput().isEmpty())
+					){
+				getDfe().cleanThisAndAllElementAfter();
+				e = getDfe().updateOut();
+				if(getListPageSize() - 1 == getListPosition()){
+					mountOutputForm();
+					if( e != null){
+						error.append(e);
+						error.append(System.getProperty("line.separator"));
 					}
 				}
 			}
-			//This should not be necessary
-			//getDfe().getPageList().set(getListPosition(), getPage());
-
-//		}
-
+		}
 		return error.toString();
 	}
 
@@ -571,7 +560,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 					String mypath = dfeInteraction.getTree().getFirstChild("browse").getFirstChild("output").getFirstChild("path").getFirstChild().getHead();
 					dynamicF.setPathBrowser(mypath);
 					logger.info("path mount " + mypath);
-					//setPathBrowser("/"+mypath);
+					if (!mypath.startsWith("/")){
+						mypath = "/"+mypath;
+					}
 					setPathBrowser(mypath);
 					setDynamicFormBrowser(dynamicF);
 					changePathBrowser();
@@ -770,16 +761,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 		logger.info("endDynamicForm ");
 		applyPage();
-//		String error = checkNextPage();
-//		if(error.length() > 1){
-//			MessageUseful.addErrorMessage(error);
-//			HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
-//			request.setAttribute("msnError", "msnError");
-//
-//		}
-//
-//		setErrorMsg(error);
-
 	}
 
 	/** openTableInteraction
@@ -1017,7 +998,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 		if(path != null){
 
 			DynamicForm dynamicForm = getDynamicFormBrowser();
-			//String name = path.substring(1);
 
 			logger.info("pathFile " + path);
 
@@ -1028,8 +1008,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 			if(outputLines != null){
 				logger.info("outputLines " + outputLines);
 			}
-
-			//getDfe().getDFEOutput().get("source").addProperty("alias", "xxx");
 
 			List<ItemList> listObjGrid = new ArrayList<ItemList>();
 			Map<String, String> outputPropertiesMap = getDfe().getDFEOutput().get("source").getProperties();
@@ -1054,6 +1032,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 			List<String> labels = new ArrayList<String>();
 
+			setBrowserNameFeatureColumns(new ArrayList<String>());
 			for (String outputFeature : outputFeatureList) {
 
 				logger.info("outputFeatureNames " + outputFeature);
@@ -1134,6 +1113,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 		if(getDfe() != null && getDfe().getOozieAction() != null &&
 				getDfe().getDFEOutput() != null && !getDfe().getDFEOutput().isEmpty()){
 			setOutputFormList(new ArrayList<OutputForm>());
+			
+			HttpSession session = (HttpSession) FacesContext.getCurrentInstance().
+					getExternalContext().getSession(false);
+			String user = (String) session.getAttribute("username");
+			
 			for (Map.Entry<String, DFEOutput> e : getDfe().getDFEOutput().entrySet()){
 				OutputForm of = new OutputForm();
 				of.setName(e.getKey());
@@ -1145,7 +1129,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 				of.setSavingStateList(outputList);
 				of.setDfeOutput(e.getValue());
 				of.setComponentId(getDfe().getComponentId());
-				of.setSavingState(e.getValue().getSavingState().toString());
+				of.setSavingState(e.getValue().getSavingState().toString(), user);
 				logger.info("saving state "+e.getValue().getSavingState().toString());
 				if(e.getValue().getSavingState() == SavingState.RECORDED){
 					int lastSlash = e.getValue().getPath().lastIndexOf('/');
@@ -1218,7 +1202,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 		setColumnEdit(column);
 
 		setCommandEdit(command);
-		//setList(null);
 	}
 
 	/** openCanvas

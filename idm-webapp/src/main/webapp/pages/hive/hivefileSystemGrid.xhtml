@@ -20,12 +20,12 @@
   	  jQuery("[id$='hivelinkMoveModalPanel']").click();
     }
     
-    function selectFile(isFile, nameFile){
+    function selectFileHive(isFile, nameFile){
     	if (isFile == "true"){
-    		openFile(nameFile);
+    		openFileHive(nameFile);
     	}
     	else{
-    		updateTable(nameFile);
+    		updateTableHive(nameFile);
     	}
     }
 	
@@ -40,11 +40,11 @@
 		style="min-width: 400px; overflow: hidden; min-height: 400px;">
 		<h:form>
 		
-			<a4j:jsFunction name="openFile" action="#{hiveBean.openFile}" oncomplete="#{rich:component('hiveOpenFileModalPanel')}.show();" >
+			<a4j:jsFunction name="openFileHive" action="#{hiveBean.openFile}" oncomplete="#{rich:component('hiveOpenFileModalPanel')}.show();" >
 				<a4j:actionparam name="nameFile"/>
 			</a4j:jsFunction>
 			
-			<a4j:jsFunction name="updateTable" action="#{hiveBean.selectFile}" reRender="hivefs,hivepath">
+			<a4j:jsFunction name="updateTableHive" action="#{hiveBean.selectFile}" reRender="hivefs,hivepath">
 				<a4j:actionparam name="nameFile"/>
 			</a4j:jsFunction>
 
@@ -131,7 +131,7 @@
 						<h:outputText value="Name" />
 					</f:facet>
 					<a4j:commandLink value="#{item.name}" action="#{hiveBean.verifyIfIsFile}"
-     					oncomplete="selectFile('#{hiveBean.file}', '#{item.name}')">
+     					oncomplete="selectFileHive('#{hiveBean.file}', '#{item.name}')">
      						<f:param name="nameFile" value="#{item.name}" />
      				</a4j:commandLink>
 				</rich:column>

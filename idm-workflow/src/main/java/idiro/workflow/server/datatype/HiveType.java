@@ -167,7 +167,7 @@ public class HiveType extends DataOutput{
 	public void setPath(String path) throws RemoteException {
 		//String old_path = super.getPath();
 		super.setPath(path);
-		if (isPathExists()){
+		if (!path.equals("/") && isPathExists()){
 			generateFeaturesMap(path);
 			/*if(path != null && !path.equals(old_path)){
 				addProperty(key_alias, hInt.getTableAndPartitions(getPath())[0]);

@@ -4,17 +4,21 @@ package idm.auth;
 import idiro.workflow.server.WorkflowPrefManager;
 import idm.useful.UserPrefManager;
 
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
-import javax.faces.context.FacesContext;
-import javax.servlet.ServletContext;
-
 import org.apache.log4j.Logger;
+
+import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.ChannelExec;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
 
 /** ServerThread
  * 
@@ -30,9 +34,11 @@ public class ServerThread{
 
 	private static List<ServerThread> list = new LinkedList<ServerThread>();
 
-	private Process serverProc = null;
 	public final int port;
 	private boolean run;
+	private Channel channel;
+	private String pid;
+	private Session session;
 
 	public ServerThread(int port){
 		this.port = port;
@@ -45,26 +51,39 @@ public class ServerThread{
 	 * @return
 	 * @author Igor.Souza
 	 */
-	public void run(String user,String password){
+	public void run(final String user,final String password){
 
 		if(!run){
 			run = true;
 			try {
 				list.add(this);
-				final String command = getBaseCommand(user, password)+" "+port;
-				if(user == null || password == null){
-					logger.info("command to launch:\n"+command);
-				}
+				final String command = getBaseCommand(user, password, port) + " & echo $!";
+				logger.info("command to launch:\n"+command);
+				
 				Thread server = new Thread(){
 
 					@Override
 					public void run() {
 						try{
-							serverProc = Runtime.getRuntime().exec(
-									new String[] { "/bin/bash", "-c", command});
-
-							serverProc.getInputStream().close();
-							serverProc.getOutputStream().close();
+							Properties config = new Properties(); 
+							config.put("StrictHostKeyChecking", "no");
+							
+							JSch shell = new JSch();
+					        session = shell.getSession(user, "localhost");
+					        session.setPassword(password);
+					        session.setConfig(config);
+					        session.connect();
+					        
+					        channel = session.openChannel("exec");
+				            ((ChannelExec)channel).setCommand(command);
+				            channel.connect();
+				            
+				            BufferedReader br = new BufferedReader(new InputStreamReader(channel.getInputStream()));
+					        pid = br.readLine();
+					        logger.info("dataIn: "+pid);
+					        channel.getInputStream().close();
+					        channel.disconnect();
+														
 						} catch (Exception e) {
 							logger.error("Fail to launch the server process");
 							logger.error(e.getMessage());
@@ -88,10 +107,7 @@ public class ServerThread{
 	 * @return String - command
 	 * @author Igor.Souza
 	 */
-	protected String getBaseCommand(String user,String password){
-
-		FacesContext fCtx = FacesContext.getCurrentInstance();
-		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
+	protected String getBaseCommand(String user,String password, int port){
 
 		String command = null;
 
@@ -112,9 +128,7 @@ public class ServerThread{
 		String codebase =  " -Djava.rmi.server.codebase="+getRMICodeBase();
 		String hostname = " -Djava.rmi.server.hostname="+getRMIHost();
 
-		command = "java" + classpath + codebase + hostname + " idiro.workflow.server.connect.ServerMain";
-
-		logger.info(command);
+		command = "java" + classpath + codebase + hostname + " idiro.workflow.server.connect.ServerMain "+port;
 
 		return command;
 	}
@@ -172,8 +186,19 @@ public class ServerThread{
 	 * @author Igor.Souza
 	 */
 	public void kill(){
-		if(serverProc != null && run){
-			serverProc.destroy();
+		if(session != null && run){
+			
+			Channel channel;
+			try {
+				channel = session.openChannel("exec");
+				((ChannelExec)channel).setCommand("kill -9 "+pid);
+	            channel.connect();
+	            channel.disconnect();
+	            session.disconnect();
+			} catch (JSchException e) {
+				e.printStackTrace();
+			}
+			
 			list.remove(this);
 			run = false;
 		}
