@@ -920,23 +920,25 @@ public class CanvasModal extends BaseBean implements Serializable {
 		logger.info("tableInteractionGenerationLines");
 
 		List<ItemList> itemList = new ArrayList<ItemList>();
-		for (Map<String, String> l : getRowsMap().get(this.getList())){
-
-			ItemList item = new ItemList();
-
-			Map<String, String> type = new HashMap<String, String>();
-			Map<String, String> value = new HashMap<String, String>();
-
-			for (String column : getColumnsMap().keySet()){
-				type.put(column, getColumnsMap().get(column));
-				value.put(column, l.get(column));
+		if (getRowsMap().get(this.getList()) != null){
+			for (Map<String, String> l : getRowsMap().get(this.getList())){
+	
+				ItemList item = new ItemList();
+	
+				Map<String, String> type = new HashMap<String, String>();
+				Map<String, String> value = new HashMap<String, String>();
+	
+				for (String column : getColumnsMap().keySet()){
+					type.put(column, getColumnsMap().get(column));
+					value.put(column, l.get(column));
+				}
+				item.setTypeTableInteraction(type);
+				item.setNameValue(value);
+	
+				itemList.add(item);
 			}
-			item.setTypeTableInteraction(type);
-			item.setNameValue(value);
-
-			itemList.add(item);
+			setListGrid(itemList);
 		}
-		setListGrid(itemList);
 	}
 
 	/** tableInteractionDeleteLine
