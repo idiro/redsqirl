@@ -227,63 +227,29 @@ public class Source extends DataflowAction{
 					if( path.isEmpty() ){
 						error = "Data set cannot be empty";
 					}else{
-						String type = getInteraction(key_datatype).getTree()
-								.getFirstChild("list").getFirstChild("output")
-								.getFirstChild().getHead();
-
+						
 						boolean existAndValid = true;
-						if(type.equalsIgnoreCase("Hive")){
-							/*
-							HiveInterface hInt = new HiveInterface(); 
-							existAndValid = hInt.exists(path);
-							if(exist){
-								String[] desc = 
-										hInt.getDescription(
-												hInt.getTableAndPartitions(path)[0]
-												).split(";");
-								for(int i = 0; i < desc.length && error == null; ++i){
-									String nameF = desc[i].split(",")[0];
-									String typeF = desc[i].split(",")[1];
 
-									Iterator<Tree<String>> it = getInteraction(key_dataset).getTree()
-											.getFirstChild("browse")
-											.getFirstChild("output")
-											.getChildren("feature").iterator();
-									boolean found = false;
-									while(it.hasNext() && !found){
-										Tree<String> cur = it.next();
-										found = cur.getFirstChild("name").getFirstChild().getHead()
-												.equalsIgnoreCase(nameF) &&
-												cur.getFirstChild("type").getFirstChild().getHead()
-												.equalsIgnoreCase(typeF);
-									}
-									if(!found){
-										error = "The output does not contain the feature "+desc[i];
-									}
+						try{
 
-								}
-							}*/
+							getInteraction(key_dataset).getTree()
+							.getFirstChild("browse").
+							getFirstChild("output")
+							.getFirstChild("property").
+							getFirstChild(MapRedTextType.key_delimiter).
+							getFirstChild().getHead();
+
+						}
+						catch (Exception e){
+							error = "You must define a delimiter";
 						}
 
-						else if(type.equalsIgnoreCase("Hdfs")){
-							try{
-
-								getInteraction(key_dataset).getTree()
-								.getFirstChild("browse").
-								getFirstChild("output")
-								.getFirstChild("property").
-								getFirstChild(MapRedTextType.key_delimiter).
-								getFirstChild().getHead();
-
-							}
-							catch (Exception e){
-								error = "You must define a delimiter";
-							}
-						}
 						existAndValid &= output.get(out_name).isPathExists() && output.get(out_name).isPathValid() == null;
+
 						if(!existAndValid){
 							error = "The path does not exist";
 						}
+
 					}
 				}catch(Exception e){
 					error = "Data set cannot be empty";
@@ -344,7 +310,7 @@ public class Source extends DataflowAction{
 			outputT = treeDatasubtype.getFirstChild("list").getFirstChild("output");
 			treeDatasubtype.removeAllChildren();
 		}
-		
+
 		list = treeDatasubtype.add("list");
 		if(outputT != null){
 			list.add(outputT);
@@ -424,51 +390,29 @@ public class Source extends DataflowAction{
 					.getFirstChild("browse").getFirstChild("output")
 					.getFirstChild("path").getFirstChild().getHead();
 
-//			Iterator<Tree<String>> it =  getInteraction(key_dataset).getTree()
-//					.getFirstChild("browse").getFirstChild("output")
-//					.getChildren("feature").iterator();
-
-			
 			FeatureList out = new OrderedFeatureList();
-			
-			for (Iterator iterator = getInteraction(key_dataset).getTree()
+
+			for (Iterator<Tree<String>> iterator = getInteraction(key_dataset).getTree()
 					.getFirstChild("browse").getFirstChild("output")
 					.getChildren("feature").iterator(); iterator.hasNext();) {
 				Tree<String> cur = (Tree<String>) iterator.next();
-				
+
 				String name = cur.getFirstChild("name").getFirstChild().getHead();
 				String type = cur.getFirstChild("type").getFirstChild().getHead();
-				
+
 				logger.info("updateOut name " + name);
 				logger.info("updateOut type " + type);
-				
+
 				try{
 					out.addFeature(name, FeatureType.valueOf(type));
 				}catch(Exception e){
 					error = "The type "+type+" does not exist";
 				}
-				
+
 			}
-			
-			
-			
-//			while(it.hasNext()){
-//				Tree<String> cur = it.next();
-//				String name = cur.getFirstChild("name").getFirstChild().getHead();
-//				String type = cur.getFirstChild("type").getFirstChild().getHead();
-//				
-//				logger.info("updateOut name " + name);
-//				logger.info("updateOut type " + type);
-//				
-//				try{
-//					out.addFeature(name, FeatureType.valueOf(type));
-//				}catch(Exception e){
-//					error = "The type "+type+" does not exist";
-//				}
-//			}
-			
+
 			logger.info("listaddFeature " + out.getFeaturesNames());
-			
+
 			String type = getInteraction(key_datatype).getTree()
 					.getFirstChild("list").getFirstChild("output")
 					.getFirstChild().getHead();

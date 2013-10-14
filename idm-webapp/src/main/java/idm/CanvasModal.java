@@ -775,30 +775,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 		logger.info("endDynamicForm ");
 		
-		logger.info(getNameBrowserLabel1());
-		logger.info(getNameBrowserLabel2());
-		
-		for (int i = 0; i < getDynamicFormList().size(); i++) {
-
-			DynamicForm dynamicF = getDynamicFormList().get(i);
-			DFEInteraction dfi = getPage().getInteractions().get(i);
-
-			if(dynamicF.getDisplayType().equals(DisplayType.browser)){
-				if(getHiveHdfs() != null && getHiveHdfs().equalsIgnoreCase("hdfs")){
-					for (String nameValue : getBrowserNameFeatureColumns()) {
-						Tree<String> myFeature = dynamicF.getTree().getFirstChild("browse").getFirstChild("output").add("feature");
-						
-						logger.info(nameValue);
-						logger.info("update NameBrowserLabel = " + getNameBrowserLabel1().get(nameValue)+" -> "+getNameBrowserLabel2().get(nameValue));
-						
-						myFeature.add("name").add(getNameBrowserLabel1().get(nameValue));
-						myFeature.add("type").add(getNameBrowserLabel2().get(nameValue));
-					}
-				}
-			}
-		}
-		
-		//applyPage();
+		applyPage();
 		
 	}
 
