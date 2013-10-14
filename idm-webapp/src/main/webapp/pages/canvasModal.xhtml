@@ -26,7 +26,7 @@
 		
 	<a4j:region>
 		<a4j:jsFunction name="endDynamicForm" action="#{canvasModalBean.endDynamicForm}" data="#{canvasModalBean.errorMsg}" oncomplete="verifyErrors(data);" 
-			reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, browserTable2, msnError"/>
+		reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, browserTable2, msnError"/>
 		
 		<a4j:jsFunction name="closeDynamicForm" oncomplete="#{rich:component('canvasModalPanel')}.hide()" />
 	</a4j:region>
@@ -151,8 +151,8 @@
 								style="border-bottom:0px;border-right:0px;" >
 								<f:facet name="header" rendered="#{canvasModalBean.hiveHdfs == 'hdfs'}">
 									 <h:panelGrid columns="2" width="100%" >
-							            <h:inputText value="#{item.nameBrowserLabel1[column]}" style="width:75px;" />
-							            <h:outputText value="#{item.nameBrowserLabel2[column]}" />
+							            <h:inputText value="#{canvasModalBean.nameBrowserLabel1[column]}" style="width:75px;" />
+							            <h:outputText value="#{canvasModalBean.nameBrowserLabel2[column]}" />
 							        </h:panelGrid>
 								</f:facet>
 								

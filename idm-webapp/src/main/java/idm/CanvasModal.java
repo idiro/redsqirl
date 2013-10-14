@@ -87,6 +87,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 	private String showOutputForm;
 	private String hiveHdfs;
 	
+	private Map<String, String> nameBrowserLabel1 = new HashMap<String, String>();
+	private Map<String, String> nameBrowserLabel2 = new HashMap<String, String>();
 
 
 	/** getKeyAsListNameValue
@@ -236,10 +238,10 @@ public class CanvasModal extends BaseBean implements Serializable {
 					for (String nameValue : getBrowserNameFeatureColumns()) {
 						Tree<String> myFeature = dynamicF.getTree().getFirstChild("browse").getFirstChild("output").add("feature");
 						
-						logger.info("update NameBrowserLabel = " + dynamicF.getNameBrowserLabel1().get(nameValue)+" -> "+dynamicF.getNameBrowserLabel2().get(nameValue));
+						logger.info("update NameBrowserLabel = " + getNameBrowserLabel1().get(nameValue)+" -> "+getNameBrowserLabel2().get(nameValue));
 						
-						myFeature.add("name").add(dynamicF.getNameBrowserLabel1().get(nameValue));
-						myFeature.add("type").add(dynamicF.getNameBrowserLabel2().get(nameValue));
+						myFeature.add("name").add(getNameBrowserLabel1().get(nameValue));
+						myFeature.add("type").add(getNameBrowserLabel2().get(nameValue));
 					}
 				}
 
@@ -772,7 +774,32 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void endDynamicForm() throws RemoteException {
 
 		logger.info("endDynamicForm ");
-		applyPage();
+		
+		logger.info(getNameBrowserLabel1());
+		logger.info(getNameBrowserLabel2());
+		
+		for (int i = 0; i < getDynamicFormList().size(); i++) {
+
+			DynamicForm dynamicF = getDynamicFormList().get(i);
+			DFEInteraction dfi = getPage().getInteractions().get(i);
+
+			if(dynamicF.getDisplayType().equals(DisplayType.browser)){
+				if(getHiveHdfs() != null && getHiveHdfs().equalsIgnoreCase("hdfs")){
+					for (String nameValue : getBrowserNameFeatureColumns()) {
+						Tree<String> myFeature = dynamicF.getTree().getFirstChild("browse").getFirstChild("output").add("feature");
+						
+						logger.info(nameValue);
+						logger.info("update NameBrowserLabel = " + getNameBrowserLabel1().get(nameValue)+" -> "+getNameBrowserLabel2().get(nameValue));
+						
+						myFeature.add("name").add(getNameBrowserLabel1().get(nameValue));
+						myFeature.add("type").add(getNameBrowserLabel2().get(nameValue));
+					}
+				}
+			}
+		}
+		
+		//applyPage();
+		
 	}
 
 	/** openTableInteraction
@@ -1065,8 +1092,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 				nameBrowserLabel2.put(outputFeature + " " + featureType.toString(), featureType.toString());
 			}
 			
-			dynamicForm.setNameBrowserLabel1(nameBrowserLabel1);
-			dynamicForm.setNameBrowserLabel2(nameBrowserLabel2);
+			setNameBrowserLabel1(nameBrowserLabel1);
+			setNameBrowserLabel2(nameBrowserLabel2);
 
 			if(outputLines != null){
 				for (String output : outputLines) {
@@ -1623,6 +1650,22 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 	public void setHiveHdfs(String hiveHdfs) {
 		this.hiveHdfs = hiveHdfs;
+	}
+
+	public Map<String, String> getNameBrowserLabel1() {
+		return nameBrowserLabel1;
+	}
+
+	public Map<String, String> getNameBrowserLabel2() {
+		return nameBrowserLabel2;
+	}
+
+	public void setNameBrowserLabel1(Map<String, String> nameBrowserLabel1) {
+		this.nameBrowserLabel1 = nameBrowserLabel1;
+	}
+
+	public void setNameBrowserLabel2(Map<String, String> nameBrowserLabel2) {
+		this.nameBrowserLabel2 = nameBrowserLabel2;
 	}
 	
 }
