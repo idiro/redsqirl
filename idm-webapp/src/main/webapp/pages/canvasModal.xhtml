@@ -187,23 +187,24 @@
 			<a4j:region>
 				<rich:panel style="border:none;"
 					rendered="#{item.displayType == 'table'}" id="tablePanel">
-					<h:outputText value="#{messages.label_generation}" />
+					
 	
-					<table width="100%" id="table">
-						<tr>
-							<td width="200px"><rich:comboBox
-									value="#{canvasModalBean.list}" selectFirstOnUpdate="false"
-									defaultLabel="Enter some value" width="200"
-									enableManualInput="false" id="generation" listWidth="150"
-									listHeight="200">
-									<f:selectItems value="#{canvasModalBean.listItens}" />
-								</rich:comboBox></td>
-							<td><a4j:commandButton type="submit"
-									id="tableInteractionGenerationLines"
-									action="#{canvasModalBean.tableInteractionGenerationLines}"
-									value="#{messages.button_ok}" reRender="tableInteraction"/></td>
-						</tr>
-					</table>
+					<h:panelGrid id="table" columns="3" rendered="#{!empty canvasModalBean.listItens}">
+					<h:outputText value="#{messages.label_generation}" />
+						<rich:comboBox
+							value="#{canvasModalBean.selectedGenerator}" width="200"
+							enableManualInput="false" id="generation" listWidth="150"
+							listHeight="200">
+							<f:selectItems value="#{canvasModalBean.listItens}" />
+						</rich:comboBox>
+
+						<a4j:commandButton type="submit"
+							id="tableInteractionGenerationLines"
+							action="#{canvasModalBean.tableInteractionGenerationLines}"
+							value="#{messages.button_ok}" reRender="tableInteraction">
+						</a4j:commandButton>
+						
+					</h:panelGrid>
 					
 					<br />
 					<br />

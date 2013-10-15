@@ -42,6 +42,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	private CanvasBean canvasBean;
 
 	private String list = "";
+	private String selectedGenerator = "";
 	private List<SelectItem> listItens = new ArrayList<SelectItem>();
 	private List<SelectItem> listItensTable = new ArrayList<SelectItem>();
 	private Map<String, List<SelectItem>> listConstraint = new HashMap<String, List<SelectItem>>();
@@ -620,6 +621,14 @@ public class CanvasModal extends BaseBean implements Serializable {
 				}
 				setRowsMap(map);
 				setListItens(listFields);
+				
+				if (!listFields.isEmpty()){
+					logger.info("link selected: "+listFields.get(0).getValue().toString());
+					setSelectedGenerator(listFields.get(0).getValue().toString());
+				}
+				else{
+					setSelectedGenerator(null);
+				}
 
 				Map<String, String> mapColumns = new HashMap<String, String>();
 				List<Tree<String>> list2 = dfeInteraction.getTree().getFirstChild("table").getFirstChild("columns").getSubTreeList();
@@ -924,8 +933,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 		logger.info("tableInteractionGenerationLines");
 
 		List<ItemList> itemList = new ArrayList<ItemList>();
-		if (getRowsMap().get(this.getList()) != null){
-			for (Map<String, String> l : getRowsMap().get(this.getList())){
+		if (getRowsMap().get(this.getSelectedGenerator()) != null){
+			for (Map<String, String> l : getRowsMap().get(this.getSelectedGenerator())){
 	
 				ItemList item = new ItemList();
 	
@@ -1279,6 +1288,14 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 	public void setList(String list) {
 		this.list = list;
+	}
+	
+	public String getSelectedGenerator() {
+		return selectedGenerator;
+	}
+
+	public void setSelectedGenerator(String selectedGenerator) {
+		this.selectedGenerator = selectedGenerator;
 	}
 
 	public List<String[]> getListFunctions() {
