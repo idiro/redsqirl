@@ -288,7 +288,21 @@ public class CanvasModal extends BaseBean implements Serializable {
 					){
 				getDfe().cleanThisAndAllElementAfter();
 				logger.info(" updateOut ");
+				//save old paths and update out
+				Map<String, String> pathMap = new HashMap<String, String>();
+				if (getDfe().getDFEOutput() != null){
+					for (Map.Entry<String, DFEOutput> entry : getDfe().getDFEOutput().entrySet()){
+						pathMap.put(entry.getKey(), entry.getValue().getPath());
+					}
+				}
+				
 				e = getDfe().updateOut();
+				for (String out : pathMap.keySet()){
+					if (getDfe().getDFEOutput().containsKey(out) && pathMap.get(out) != null){
+						getDfe().getDFEOutput().get(out).setPath(pathMap.get(out));
+					}
+				}
+				
 				if(getListPageSize() - 1 == getListPosition()){
 					mountOutputForm();
 					if( e != null){

@@ -130,10 +130,16 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 		NodeList property = parent.getElementsByTagName("properties").item(0).getChildNodes();
 		for(int i = 0; i < property.getLength(); ++i){
 			
+			String value = null;
+			if (((Element)property.item(i)).getElementsByTagName("value")
+					.item(0).getChildNodes().item(0) != null){
+				value =((Element)property.item(i)).getElementsByTagName("value")
+						.item(0).getChildNodes().item(0).getNodeValue();
+			}
+			
 			addProperty(((Element)property.item(i)).getElementsByTagName("key")
 					.item(0).getChildNodes().item(0).getNodeValue(), 
-					((Element)property.item(i)).getElementsByTagName("value")
-					.item(0).getChildNodes().item(0).getNodeValue());
+					value);
 		}
 		
 	}

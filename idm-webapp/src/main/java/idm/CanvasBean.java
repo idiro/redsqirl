@@ -339,7 +339,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 		    }
 			
 		} catch (Exception e) {
-			logger.info("Error saving workflow");
+			logger.info("Error loading workflow");
 			e.printStackTrace();
 		}
 	}
