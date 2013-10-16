@@ -1,9 +1,10 @@
 package idiro.workflow.server.action.utils;
 
-import idiro.utils.OrderedFeatureList;
 import idiro.utils.FeatureList;
+import idiro.utils.OrderedFeatureList;
 import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
+import idiro.workflow.server.action.AbstractDictionary;
 import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.interfaces.DFEOutput;
 
@@ -14,7 +15,6 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -27,12 +27,10 @@ import org.apache.log4j.Logger;
  * @author etienne
  *
  */
-public class PigDictionary {
+public class PigDictionary extends AbstractDictionary{
 
 
 	private static Logger logger = Logger.getLogger(PigDictionary.class);
-	
-	private Map<String, String[][]> functionsMap;
 	
 	private static final String logicalOperators = "logicalOperators";
 	private static final String relationalOperators = "relationalOperators";
@@ -53,6 +51,15 @@ public class PigDictionary {
 	}
 	
 	private PigDictionary(){
+		super();
+	}
+	
+	@Override
+	protected String getNameFile() {
+		return "functionsPig.txt";
+	}
+	
+	protected void loadDefaultFunctions(){
 		
 		functionsMap = new HashMap<String, String[][]>();
 		
@@ -132,7 +139,7 @@ public class PigDictionary {
 			new String[]{"MAX()","NUMBER","DOUBLE"}
 		});
 	}
-
+	
 	public static FeatureType getType(String pigType){
 		FeatureType ans = null;
 		if(pigType.equalsIgnoreCase("BIGINT")){

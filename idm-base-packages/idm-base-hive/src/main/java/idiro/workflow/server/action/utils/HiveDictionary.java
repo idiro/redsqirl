@@ -1,20 +1,19 @@
 package idiro.workflow.server.action.utils;
 
-import idiro.utils.OrderedFeatureList;
 import idiro.utils.FeatureList;
+import idiro.utils.OrderedFeatureList;
 import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
+import idiro.workflow.server.action.AbstractDictionary;
 import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.interfaces.DFEOutput;
 
 import java.rmi.RemoteException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -27,11 +26,9 @@ import org.apache.log4j.Logger;
  * @author etienne
  *
  */
-public class HiveDictionary {
+public class HiveDictionary extends AbstractDictionary{
 
 	private static Logger logger = Logger.getLogger(HiveDictionary.class);
-	
-	private Map<String, String[][]> functionsMap;
 	
 	private static final String logicalOperators = "logicalOperators";
 	private static final String relationalOperators = "relationalOperators";
@@ -51,15 +48,25 @@ public class HiveDictionary {
 	}
 	
 	private HiveDictionary(){
+		super();
+	}
+	
+	@Override
+	protected String getNameFile(){
+		return "functionsHive.txt";
+	}
+	
+	@Override
+	protected void loadDefaultFunctions(){
 		
-		functionsMap = new HashMap<String, String[][]>();
+		logger.info("loadDefaultFunctions");
 		
 		functionsMap.put(logicalOperators, new String[][]{
 			new String[]{"AND","BOOLEAN,BOOLEAN","BOOLEAN"},
 			new String[]{"OR","BOOLEAN,BOOLEAN","BOOLEAN"},
 			new String[]{"NOT",",BOOLEAN","BOOLEAN"}
 		});
-		
+
 		functionsMap.put(relationalOperators, new String[][]{
 			new String[]{"<=","ANY,ANY","BOOLEAN"},
 			new String[]{">=","ANY,ANY","BOOLEAN"},
@@ -73,7 +80,7 @@ public class HiveDictionary {
 			new String[]{"LIKE","STRING,STRING","BOOLEAN"},
 			new String[]{"REGEXP","STRING,STRING","BOOLEAN"}
 		});
-		
+
 		functionsMap.put(arithmeticOperators, new String[][]{
 			new String[]{"+","NUMBER,NUMBER","NUMBER"},
 			new String[]{"-","NUMBER,NUMBER","NUMBER"},
@@ -106,7 +113,11 @@ public class HiveDictionary {
 			new String[]{"TO_DATE()","STRING","STRING"},
 			new String[]{"YEAR()","STRING","INT"},
 			new String[]{"MONTH()","STRING","INT"},
-			new String[]{"DAY()","STRING","INT"}
+			new String[]{"DAY()","STRING","INT"},
+			new String[]{"CONCAT()","STRING,STRING","STRING"},
+			new String[]{"CONCAT()","STRING,STRING,STRING","STRING"},
+			new String[]{"CONCAT()","STRING,STRING,STRING,STRING","STRING"},
+			new String[]{"CONCAT()","STRING,STRING,STRING,STRING","STRING"}
 		});
 
 		functionsMap.put(agregationMethods, new String[][]{
