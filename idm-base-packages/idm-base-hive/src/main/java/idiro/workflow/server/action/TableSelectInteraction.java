@@ -97,7 +97,7 @@ public class TableSelectInteraction extends UserInteraction{
 				try{
 					if( ! HiveDictionary.check(
 							row.getFirstChild(table_type_title).getFirstChild().getHead(), 
-							HiveDictionary.getReturnType(
+							HiveDictionary.getInstance().getReturnType(
 									row.getFirstChild(table_op_title).getFirstChild().getHead(),
 									in.getFeatures(),
 									featGrouped
@@ -145,9 +145,9 @@ public class TableSelectInteraction extends UserInteraction{
 		Tree<String> featEdit = null;
 		Set<String> gbFeats = hs.getGroupByFeatures();
 		if(gbFeats.size() > 0){
-			featEdit = HiveDictionary.generateEditor(HiveDictionary.createGroupSelectHelpMenu(),in);
+			featEdit = HiveDictionary.generateEditor(HiveDictionary.getInstance().createGroupSelectHelpMenu(),in);
 		}else{
-			featEdit = HiveDictionary.generateEditor(HiveDictionary.createDefaultSelectHelpMenu(),in);
+			featEdit = HiveDictionary.generateEditor(HiveDictionary.getInstance().createDefaultSelectHelpMenu(),in);
 		}
 		//Set the Editor of operation
 		logger.debug("Set the editor...");

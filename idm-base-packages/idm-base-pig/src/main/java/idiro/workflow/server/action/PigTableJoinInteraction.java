@@ -92,7 +92,7 @@ public class PigTableJoinInteraction extends UserInteraction{
 					try{
 						if( ! PigDictionary.check(
 								type, 
-								PigDictionary.getReturnType(
+								PigDictionary.getInstance().getReturnType(
 										op,
 										features
 										)
@@ -137,7 +137,7 @@ public class PigTableJoinInteraction extends UserInteraction{
 
 		//Generate Editor
 		Tree<String> featEdit =
-				PigDictionary.generateEditor(PigDictionary.createDefaultSelectHelpMenu(),feats);
+				PigDictionary.generateEditor(PigDictionary.getInstance().createDefaultSelectHelpMenu(),feats);
 		
 		//Set the Editor of operation
 		logger.debug("Set the editor...");

@@ -48,7 +48,7 @@ public class PigFilterInteraction extends UserInteraction{
 				if(!condition.isEmpty()){
 					logger.debug("Condition: "+ condition);
 					String type = null;
-					if(! (type = PigDictionary.getReturnType(
+					if(! (type = PigDictionary.getInstance().getReturnType(
 							condition,
 							el.getInFeatures()
 							)).equalsIgnoreCase("boolean")){
@@ -74,7 +74,7 @@ public class PigFilterInteraction extends UserInteraction{
 			output = tree.getFirstChild("editor").getFirstChild("output");
 			tree.remove("editor");
 		}
-		Tree<String> base = PigDictionary.generateEditor(PigDictionary.createConditionHelpMenu(),
+		Tree<String> base = PigDictionary.generateEditor(PigDictionary.getInstance().createConditionHelpMenu(),
 				el.getInFeatures());
 		base.add(output);
 		tree.add(base);

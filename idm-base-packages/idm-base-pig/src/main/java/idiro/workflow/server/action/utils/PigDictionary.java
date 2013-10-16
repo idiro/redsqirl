@@ -8,11 +8,13 @@ import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.interfaces.DFEOutput;
 
 import java.rmi.RemoteException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -29,85 +31,107 @@ public class PigDictionary {
 
 
 	private static Logger logger = Logger.getLogger(PigDictionary.class);
-
-	public static final String[][] logicalOperators = {
-		new String[]{"AND","BOOLEAN,BOOLEAN","BOOLEAN"},
-		new String[]{"OR","BOOLEAN,BOOLEAN","BOOLEAN"},
-		new String[]{"NOT",",BOOLEAN","BOOLEAN"},
-	};
-
-	public static final String[][] relationalOperators = {
-		new String[]{"<=","ANY,ANY","BOOLEAN"},
-		new String[]{">=","ANY,ANY","BOOLEAN"},
-		new String[]{"<","ANY,ANY","BOOLEAN"},
-		new String[]{">","ANY,ANY","BOOLEAN"},
-		new String[]{"!=","ANY,ANY","BOOLEAN"},
-		new String[]{"==","ANY,ANY","BOOLEAN"},
-		new String[]{"IS NOT NULL","ANY,","BOOLEAN"},
-		new String[]{"IS NULL","ANY,","BOOLEAN"},
-		new String[]{"REGEX_EXTRACT","CHARARRAY,CHARARRAY, INT","CHARARRAY"}
-
-	};
 	
-	public static final String[][] castOperator = {
-		new String[]{"()","TYPE,ANY","TYPE"}
-	};
-
-	public static final String[][] arithmeticOperators = {
-		new String[]{"+","NUMBER,NUMBER","NUMBER"},
-		new String[]{"-","NUMBER,NUMBER","NUMBER"},
-		new String[]{"*","NUMBER,NUMBER","NUMBER"},
-		new String[]{"/","NUMBER,NUMBER","NUMBER"},
-		new String[]{"%","NUMBER,NUMBER","NUMBER"},
-	};
-
-	public static final String[][] utilsMethods = {
-		new String[]{"RANDOM()","","DOUBLE"},
-	};
+	private Map<String, String[][]> functionsMap;
 	
-
-	public static final String[][] mathMethods = {
-		new String[]{"ROUND()","DOUBLE","BIGINT"},
-		new String[]{"FLOOR()","DOUBLE","BIGINT"},
-		new String[]{"CEIL()","DOUBLE","BIGINT"},
-		new String[]{"ABS()","NUMBER","NUMBER"},
-		new String[]{"ACOS()","DOUBLE","DOUBLE"},
-		new String[]{"ASIN()","DOUBLE","DOUBLE"},
-		new String[]{"ATAN()","DOUBLE","DOUBLE"},
-		new String[]{"CBRT()","DOUBLE","DOUBLE"},
-		new String[]{"COS()","DOUBLE","DOUBLE"},
-		new String[]{"COSH()","DOUBLE","DOUBLE"},
-		new String[]{"EXP()","DOUBLE","DOUBLE"},
-		new String[]{"LOG()","DOUBLE","DOUBLE"},
-		new String[]{"LOG10()","DOUBLE","DOUBLE"},
-		new String[]{"SIN()","DOUBLE","DOUBLE"},
-		new String[]{"SINH()","DOUBLE","DOUBLE"},
-		new String[]{"SQRT()","DOUBLE","DOUBLE"},
-		new String[]{"TAN()","DOUBLE","DOUBLE"},
-		new String[]{"TANH()","DOUBLE","DOUBLE"},
-	};
-
-	public static final String[][] stringMethods = {
-		new String[]{"SUBSTRING()","CHARARRAY,INT,INT","CHARARRAY"},
-		new String[]{"UPPER()","CHARARRAY","CHARARRAY"},
-		new String[]{"LOWER()","CHARARRAY","CHARARRAY"},
-		new String[]{"LCFIRST()","CHARARRAY","CHARARRAY"},
-		new String[]{"UCFIRST()","CHARARRAY","CHARARRAY"},
-		new String[]{"TRIM()","CHARARRAY","CHARARRAY"},
-		new String[]{"INDEXOF()","CHARARRAY,CHARARRAY,INT","INT"},
-		new String[]{"LAST_INDEX_OF()","CHARARRAY,CHAR,INT","INT"},
-		new String[]{"REGEX_EXTRACT()","CHARARRAY,CHARARRAY,INT","INT"},
-		new String[]{"REPLACE()","CHARARRAY,CHARARRAY,CHARARRAY","INT"},
-	};
-
-	public static final String[][] agregationMethods = {
-		new String[]{"COUNT_STAR()","ANY","BIGINT"},
-		new String[]{"COUNT()","ANY","BIGINT"},
-		new String[]{"SUM()","NUMBER","DOUBLE"},
-		new String[]{"AVG()","NUMBER","DOUBLE"},
-		new String[]{"MIN()","NUMBER","DOUBLE"},
-		new String[]{"MAX()","NUMBER","DOUBLE"}
-	};
+	private static final String logicalOperators = "logicalOperators";
+	private static final String relationalOperators = "relationalOperators";
+	private static final String castOperator = "castOperator";
+	private static final String arithmeticOperators = "arithmeticOperators";
+	private static final String utilsMethods = "utilsMethods";
+	private static final String mathMethods = "mathMethods";
+	private static final String stringMethods = "stringMethods";
+	private static final String agregationMethods = "agregationMethods";
+	
+	private static PigDictionary instance;
+	
+	public static PigDictionary getInstance(){
+		if (instance == null){
+			instance = new PigDictionary();
+		}
+		return instance;
+	}
+	
+	private PigDictionary(){
+		
+		functionsMap = new HashMap<String, String[][]>();
+		
+		functionsMap.put(logicalOperators, new String[][]{
+			new String[]{"AND","BOOLEAN,BOOLEAN","BOOLEAN"},
+			new String[]{"OR","BOOLEAN,BOOLEAN","BOOLEAN"},
+			new String[]{"NOT",",BOOLEAN","BOOLEAN"}
+		});
+		
+		functionsMap.put(relationalOperators, new String[][]{
+			new String[]{"<=","ANY,ANY","BOOLEAN"},
+			new String[]{">=","ANY,ANY","BOOLEAN"},
+			new String[]{"<","ANY,ANY","BOOLEAN"},
+			new String[]{">","ANY,ANY","BOOLEAN"},
+			new String[]{"!=","ANY,ANY","BOOLEAN"},
+			new String[]{"==","ANY,ANY","BOOLEAN"},
+			new String[]{"IS NOT NULL","ANY,","BOOLEAN"},
+			new String[]{"IS NULL","ANY,","BOOLEAN"},
+			new String[]{"REGEX_EXTRACT","CHARARRAY,CHARARRAY, INT","CHARARRAY"}
+		});
+		
+		functionsMap.put(castOperator, new String[][]{
+			new String[]{"()","TYPE,ANY","TYPE"}
+		});
+		
+		functionsMap.put(arithmeticOperators, new String[][]{
+			new String[]{"+","NUMBER,NUMBER","NUMBER"},
+			new String[]{"-","NUMBER,NUMBER","NUMBER"},
+			new String[]{"*","NUMBER,NUMBER","NUMBER"},
+			new String[]{"/","NUMBER,NUMBER","NUMBER"},
+			new String[]{"%","NUMBER,NUMBER","NUMBER"}
+		});
+		
+		functionsMap.put(utilsMethods, new String[][]{
+			new String[]{"RANDOM()","","DOUBLE"},
+		});
+		
+		functionsMap.put(mathMethods, new String[][]{
+			new String[]{"ROUND()","DOUBLE","BIGINT"},
+			new String[]{"FLOOR()","DOUBLE","BIGINT"},
+			new String[]{"CEIL()","DOUBLE","BIGINT"},
+			new String[]{"ABS()","NUMBER","NUMBER"},
+			new String[]{"ACOS()","DOUBLE","DOUBLE"},
+			new String[]{"ASIN()","DOUBLE","DOUBLE"},
+			new String[]{"ATAN()","DOUBLE","DOUBLE"},
+			new String[]{"CBRT()","DOUBLE","DOUBLE"},
+			new String[]{"COS()","DOUBLE","DOUBLE"},
+			new String[]{"COSH()","DOUBLE","DOUBLE"},
+			new String[]{"EXP()","DOUBLE","DOUBLE"},
+			new String[]{"LOG()","DOUBLE","DOUBLE"},
+			new String[]{"LOG10()","DOUBLE","DOUBLE"},
+			new String[]{"SIN()","DOUBLE","DOUBLE"},
+			new String[]{"SINH()","DOUBLE","DOUBLE"},
+			new String[]{"SQRT()","DOUBLE","DOUBLE"},
+			new String[]{"TAN()","DOUBLE","DOUBLE"},
+			new String[]{"TANH()","DOUBLE","DOUBLE"},
+		});
+		
+		functionsMap.put(stringMethods, new String[][]{
+			new String[]{"SUBSTRING()","CHARARRAY,INT,INT","CHARARRAY"},
+			new String[]{"UPPER()","CHARARRAY","CHARARRAY"},
+			new String[]{"LOWER()","CHARARRAY","CHARARRAY"},
+			new String[]{"LCFIRST()","CHARARRAY","CHARARRAY"},
+			new String[]{"UCFIRST()","CHARARRAY","CHARARRAY"},
+			new String[]{"TRIM()","CHARARRAY","CHARARRAY"},
+			new String[]{"INDEXOF()","CHARARRAY,CHARARRAY,INT","INT"},
+			new String[]{"LAST_INDEX_OF()","CHARARRAY,CHAR,INT","INT"},
+			new String[]{"REGEX_EXTRACT()","CHARARRAY,CHARARRAY,INT","INT"},
+			new String[]{"REPLACE()","CHARARRAY,CHARARRAY,CHARARRAY","INT"},
+		});
+		functionsMap.put(agregationMethods, new String[][]{
+			new String[]{"COUNT_STAR()","ANY","BIGINT"},
+			new String[]{"COUNT()","ANY","BIGINT"},
+			new String[]{"SUM()","NUMBER","DOUBLE"},
+			new String[]{"AVG()","NUMBER","DOUBLE"},
+			new String[]{"MIN()","NUMBER","DOUBLE"},
+			new String[]{"MAX()","NUMBER","DOUBLE"}
+		});
+	}
 
 	public static FeatureType getType(String pigType){
 		FeatureType ans = null;
@@ -142,7 +166,7 @@ public class PigDictionary {
 		return featureType;
 	}
 
-	public static String getReturnType(String expr,
+	public String getReturnType(String expr,
 			FeatureList features,
 			Set<String> featureAggreg) throws Exception{
 
@@ -257,10 +281,10 @@ public class PigDictionary {
 	}
 
 
-	private static String runCastOperation(String expr,
+	private String runCastOperation(String expr,
 			FeatureList features, Set<String> featureAggreg) throws Exception{
 		String type = null;
-		List<String[]> methodsFound = findAll(castOperator,expr);
+		List<String[]> methodsFound = findAll(functionsMap.get(castOperator),expr);
 		if(!methodsFound.isEmpty()){
 			String arg = expr.substring(expr.indexOf("(")+1,expr.length()-1).replace(")", ",");
 			String[] argSplit = null;
@@ -293,7 +317,7 @@ public class PigDictionary {
 		return type;
 	}
 
-	public static String getReturnType(String expr,
+	public String getReturnType(String expr,
 			FeatureList features) throws Exception{
 		return getReturnType(expr,features,new HashSet<String>());
 	}
@@ -392,39 +416,39 @@ public class PigDictionary {
 		return editor;
 	}
 
-	public static Tree<String> createConditionHelpMenu() throws RemoteException{
+	public Tree<String> createConditionHelpMenu() throws RemoteException{
 		Tree<String> help = new TreeNonUnique<String>("help");
-		help.add(createMenu(new TreeNonUnique<String>("logic"),logicalOperators));
-		help.add(createMenu(new TreeNonUnique<String>("relation"),relationalOperators));
-		help.add(createMenu(new TreeNonUnique<String>("arithmetic"),arithmeticOperators));
-		help.add(createMenu(new TreeNonUnique<String>("string"),stringMethods));
-		help.add(createMenu(new TreeNonUnique<String>("math"),mathMethods));
-		help.add(createMenu(new TreeNonUnique<String>("utils"),utilsMethods));
+		help.add(createMenu(new TreeNonUnique<String>("logic"),functionsMap.get(logicalOperators)));
+		help.add(createMenu(new TreeNonUnique<String>("relation"),functionsMap.get(relationalOperators)));
+		help.add(createMenu(new TreeNonUnique<String>("arithmetic"),functionsMap.get(arithmeticOperators)));
+		help.add(createMenu(new TreeNonUnique<String>("string"),functionsMap.get(stringMethods)));
+		help.add(createMenu(new TreeNonUnique<String>("math"),functionsMap.get(mathMethods)));
+		help.add(createMenu(new TreeNonUnique<String>("utils"),functionsMap.get(utilsMethods)));
 		logger.debug("create Condition Help Menu");
 		return help;
 	}
 
-	public static Tree<String> createDefaultSelectHelpMenu() throws RemoteException{
+	public Tree<String> createDefaultSelectHelpMenu() throws RemoteException{
 		Tree<String> help = new TreeNonUnique<String>("help");
-		help.add(createMenu(new TreeNonUnique<String>("arithmetic"),arithmeticOperators));
-		help.add(createMenu(new TreeNonUnique<String>("string"),stringMethods));
-		help.add(createMenu(new TreeNonUnique<String>("math"),mathMethods));
-		help.add(createMenu(new TreeNonUnique<String>("utils"),utilsMethods));
-		help.add(createMenu(new TreeNonUnique<String>("relation"),relationalOperators));
-		help.add(createMenu(new TreeNonUnique<String>("logic"),logicalOperators));
+		help.add(createMenu(new TreeNonUnique<String>("arithmetic"),functionsMap.get(arithmeticOperators)));
+		help.add(createMenu(new TreeNonUnique<String>("string"),functionsMap.get(stringMethods)));
+		help.add(createMenu(new TreeNonUnique<String>("math"),functionsMap.get(mathMethods)));
+		help.add(createMenu(new TreeNonUnique<String>("utils"),functionsMap.get(utilsMethods)));
+		help.add(createMenu(new TreeNonUnique<String>("relation"),functionsMap.get(relationalOperators)));
+		help.add(createMenu(new TreeNonUnique<String>("logic"),functionsMap.get(logicalOperators)));
 		logger.debug("create Select Help Menu");
 		return help;
 	}
 
-	public static Tree<String> createGroupSelectHelpMenu() throws RemoteException{
+	public Tree<String> createGroupSelectHelpMenu() throws RemoteException{
 		Tree<String> help = new TreeNonUnique<String>("help");
-		help.add(createMenu(new TreeNonUnique<String>("aggregation"),agregationMethods));
-		help.add(createMenu(new TreeNonUnique<String>("arithmetic"),arithmeticOperators));
-		help.add(createMenu(new TreeNonUnique<String>("string"),stringMethods));
-		help.add(createMenu(new TreeNonUnique<String>("math"),mathMethods));
-		help.add(createMenu(new TreeNonUnique<String>("integer"),utilsMethods));
-		help.add(createMenu(new TreeNonUnique<String>("relation"),relationalOperators));
-		help.add(createMenu(new TreeNonUnique<String>("logic"),logicalOperators));
+		help.add(createMenu(new TreeNonUnique<String>("aggregation"),functionsMap.get(agregationMethods)));
+		help.add(createMenu(new TreeNonUnique<String>("arithmetic"),functionsMap.get(arithmeticOperators)));
+		help.add(createMenu(new TreeNonUnique<String>("string"),functionsMap.get(stringMethods)));
+		help.add(createMenu(new TreeNonUnique<String>("math"),functionsMap.get(mathMethods)));
+		help.add(createMenu(new TreeNonUnique<String>("integer"),functionsMap.get(utilsMethods)));
+		help.add(createMenu(new TreeNonUnique<String>("relation"),functionsMap.get(relationalOperators)));
+		help.add(createMenu(new TreeNonUnique<String>("logic"),functionsMap.get(logicalOperators)));
 		logger.debug("create Group Select Help Menu");
 		return help;
 	}
@@ -455,7 +479,7 @@ public class PigDictionary {
 		return cleanUp.startsWith("NOT ") || cleanUp.contains(" OR ") || cleanUp.contains(" AND ");
 	}
 
-	private static boolean runLogicalOperation(String expr,
+	private boolean runLogicalOperation(String expr,
 			FeatureList features,
 			Set<String> aggregFeat) throws Exception{
 
@@ -490,42 +514,42 @@ public class PigDictionary {
 		return ok;
 	}
 
-	private static boolean isRelationalOperation(String expr){
-		return isInList(relationalOperators, expr);
+	private boolean isRelationalOperation(String expr){
+		return isInList(functionsMap.get(relationalOperators), expr);
 	}
 
-	private static boolean runRelationalOperation(String expr,
+	private boolean runRelationalOperation(String expr,
 			FeatureList features,
 			Set<String> aggregFeat) throws Exception{
-		return runOperation(relationalOperators, expr, features,aggregFeat);
+		return runOperation(functionsMap.get(relationalOperators), expr, features,aggregFeat);
 	}
 
 
-	private static boolean isArithmeticOperation(String expr){
-		return isInList(arithmeticOperators, expr);
+	private boolean isArithmeticOperation(String expr){
+		return isInList(functionsMap.get(arithmeticOperators), expr);
 	}
 	
-	private static boolean isCastOperation(String expr){
-		return isInList(castOperator, expr);
+	private boolean isCastOperation(String expr){
+		return isInList(functionsMap.get(castOperator), expr);
 	}
 
-	private static boolean runArithmeticOperation(String expr,
+	private boolean runArithmeticOperation(String expr,
 			FeatureList features,
 			Set<String> aggregFeat) throws Exception{
-		return runOperation(arithmeticOperators, expr, features,aggregFeat);
+		return runOperation(functionsMap.get(arithmeticOperators), expr, features,aggregFeat);
 	}
 
-	private static boolean isMethod(String expr, boolean agregation){
-		return agregation ? isInList(agregationMethods,expr)
+	private boolean isMethod(String expr, boolean agregation){
+		return agregation ? isInList(functionsMap.get(agregationMethods),expr)
 				:
-					isInList(utilsMethods, expr) ||
-					isInList(mathMethods,expr) ||
-					isInList(stringMethods,expr);
+					isInList(functionsMap.get(utilsMethods), expr) ||
+					isInList(functionsMap.get(mathMethods),expr) ||
+					isInList(functionsMap.get(stringMethods),expr);
 
 	}
 
 
-	private static String runMethod(String expr,
+	private String runMethod(String expr,
 			FeatureList features,
 			Set<String> aggregFeat) throws Exception{
 		String type = null;
@@ -589,7 +613,7 @@ public class PigDictionary {
 
 
 
-	private static boolean runOperation(String[][] list,
+	private boolean runOperation(String[][] list,
 			String expr,
 			FeatureList features,
 			Set<String> aggregFeat) throws Exception{
@@ -634,7 +658,7 @@ public class PigDictionary {
 	}
 
 
-	private static boolean check(String[] method, 
+	private boolean check(String[] method, 
 			String[] args, 
 			FeatureList features) throws Exception{
 		boolean ok = false;
@@ -719,14 +743,14 @@ public class PigDictionary {
 		return ans;
 	}
 
-	private static List<String[]> findAllMethod(String expr,boolean aggregMethod){
+	private List<String[]> findAllMethod(String expr,boolean aggregMethod){
 		List<String[]> ans = null;
 		if(aggregMethod){
-			ans = findAll(agregationMethods,expr);
+			ans = findAll(functionsMap.get(agregationMethods),expr);
 		}else{
-			ans = findAll(utilsMethods,expr);
-			ans.addAll(findAll(mathMethods,expr));
-			ans.addAll(findAll(stringMethods,expr));
+			ans = findAll(functionsMap.get(utilsMethods),expr);
+			ans.addAll(findAll(functionsMap.get(mathMethods),expr));
+			ans.addAll(findAll(functionsMap.get(stringMethods),expr));
 		}
 		return ans;
 	}

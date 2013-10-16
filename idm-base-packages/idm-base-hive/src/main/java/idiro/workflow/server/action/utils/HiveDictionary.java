@@ -8,11 +8,13 @@ import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.interfaces.DFEOutput;
 
 import java.rmi.RemoteException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -28,71 +30,94 @@ import org.apache.log4j.Logger;
 public class HiveDictionary {
 
 	private static Logger logger = Logger.getLogger(HiveDictionary.class);
+	
+	private Map<String, String[][]> functionsMap;
+	
+	private static final String logicalOperators = "logicalOperators";
+	private static final String relationalOperators = "relationalOperators";
+	private static final String arithmeticOperators = "arithmeticOperators";
+	private static final String utilsMethods = "utilsMethods";
+	private static final String doubleMethods = "doubleMethods";
+	private static final String stringMethods = "stringMethods";
+	private static final String agregationMethods = "agregationMethods";
+	
+	private static HiveDictionary instance;
+	
+	public static HiveDictionary getInstance(){
+		if (instance == null){
+			instance = new HiveDictionary();
+		}
+		return instance;
+	}
+	
+	private HiveDictionary(){
+		
+		functionsMap = new HashMap<String, String[][]>();
+		
+		functionsMap.put(logicalOperators, new String[][]{
+			new String[]{"AND","BOOLEAN,BOOLEAN","BOOLEAN"},
+			new String[]{"OR","BOOLEAN,BOOLEAN","BOOLEAN"},
+			new String[]{"NOT",",BOOLEAN","BOOLEAN"}
+		});
+		
+		functionsMap.put(relationalOperators, new String[][]{
+			new String[]{"<=","ANY,ANY","BOOLEAN"},
+			new String[]{">=","ANY,ANY","BOOLEAN"},
+			new String[]{"<","ANY,ANY","BOOLEAN"},
+			new String[]{">","ANY,ANY","BOOLEAN"},
+			new String[]{"!=","ANY,ANY","BOOLEAN"},
+			new String[]{"=","ANY,ANY","BOOLEAN"},
+			new String[]{"IS NOT NULL","ANY,","BOOLEAN"},
+			new String[]{"IS NULL","ANY,","BOOLEAN"},
+			new String[]{"RLIKE","STRING,STRING","BOOLEAN"},
+			new String[]{"LIKE","STRING,STRING","BOOLEAN"},
+			new String[]{"REGEXP","STRING,STRING","BOOLEAN"}
+		});
+		
+		functionsMap.put(arithmeticOperators, new String[][]{
+			new String[]{"+","NUMBER,NUMBER","NUMBER"},
+			new String[]{"-","NUMBER,NUMBER","NUMBER"},
+			new String[]{"*","NUMBER,NUMBER","NUMBER"},
+			new String[]{"/","NUMBER,NUMBER","NUMBER"},
+			new String[]{"%","NUMBER,NUMBER","NUMBER"},
+		});
 
-	public static final String[][] logicalOperators = {
-		new String[]{"AND","BOOLEAN,BOOLEAN","BOOLEAN"},
-		new String[]{"OR","BOOLEAN,BOOLEAN","BOOLEAN"},
-		new String[]{"NOT",",BOOLEAN","BOOLEAN"},
-	};
+		functionsMap.put(utilsMethods, new String[][]{
+			new String[]{"RAND()","","DOUBLE"},
+			new String[]{"FROM_UNIXTIME()","INT","STRING"},
+			new String[]{"CAST( AS )","ANY,TYPE","TYPE"}
+		});
 
-	public static final String[][] relationalOperators = {
-		new String[]{"<=","ANY,ANY","BOOLEAN"},
-		new String[]{">=","ANY,ANY","BOOLEAN"},
-		new String[]{"<","ANY,ANY","BOOLEAN"},
-		new String[]{">","ANY,ANY","BOOLEAN"},
-		new String[]{"!=","ANY,ANY","BOOLEAN"},
-		new String[]{"=","ANY,ANY","BOOLEAN"},
-		new String[]{"IS NOT NULL","ANY,","BOOLEAN"},
-		new String[]{"IS NULL","ANY,","BOOLEAN"},
-		new String[]{"RLIKE","STRING,STRING","BOOLEAN"},
-		new String[]{"LIKE","STRING,STRING","BOOLEAN"},
-		new String[]{"REGEXP","STRING,STRING","BOOLEAN"}
+		functionsMap.put(doubleMethods, new String[][]{
+			new String[]{"ROUND()","DOUBLE","BIGINT"},
+			new String[]{"FLOOR()","DOUBLE","BIGINT"},
+			new String[]{"CEIL()","DOUBLE","BIGINT"}
+		});
 
-	};
+		functionsMap.put(stringMethods, new String[][]{
+			new String[]{"SUBSTR()","STRING,INT","STRING"},
+			new String[]{"SUBSTR()","STRING,INT,INT","STRING"},
+			new String[]{"UPPER()","STRING","STRING"},
+			new String[]{"LOWER()","STRING","STRING"},
+			new String[]{"TRIM()","STRING","STRING"},
+			new String[]{"LTRIM()","STRING","STRING"},
+			new String[]{"RTRIM()","STRING","STRING"},
+			new String[]{"REGEXP_REPLACE()","STRING,STRING,STRING","STRING"},
+			new String[]{"TO_DATE()","STRING","STRING"},
+			new String[]{"YEAR()","STRING","INT"},
+			new String[]{"MONTH()","STRING","INT"},
+			new String[]{"DAY()","STRING","INT"}
+		});
 
-	public static final String[][] arithmeticOperators = {
-		new String[]{"+","NUMBER,NUMBER","NUMBER"},
-		new String[]{"-","NUMBER,NUMBER","NUMBER"},
-		new String[]{"*","NUMBER,NUMBER","NUMBER"},
-		new String[]{"/","NUMBER,NUMBER","NUMBER"},
-		new String[]{"%","NUMBER,NUMBER","NUMBER"},
-	};
-
-	public static final String[][] utilsMethods = {
-		new String[]{"RAND()","","DOUBLE"},
-		new String[]{"FROM_UNIXTIME()","INT","STRING"},
-		new String[]{"CAST( AS )","ANY,TYPE","TYPE"}
-	};
-
-	public static final String[][] doubleMethods = {
-		new String[]{"ROUND()","DOUBLE","BIGINT"},
-		new String[]{"FLOOR()","DOUBLE","BIGINT"},
-		new String[]{"CEIL()","DOUBLE","BIGINT"}
-	};
-
-	public static final String[][] stringMethods = {
-		new String[]{"SUBSTR()","STRING,INT","STRING"},
-		new String[]{"SUBSTR()","STRING,INT,INT","STRING"},
-		new String[]{"UPPER()","STRING","STRING"},
-		new String[]{"LOWER()","STRING","STRING"},
-		new String[]{"TRIM()","STRING","STRING"},
-		new String[]{"LTRIM()","STRING","STRING"},
-		new String[]{"RTRIM()","STRING","STRING"},
-		new String[]{"REGEXP_REPLACE()","STRING,STRING,STRING","STRING"},
-		new String[]{"TO_DATE()","STRING","STRING"},
-		new String[]{"YEAR()","STRING","INT"},
-		new String[]{"MONTH()","STRING","INT"},
-		new String[]{"DAY()","STRING","INT"}
-	};
-
-	public static final String[][] agregationMethods = {
-		new String[]{"COUNT(*)","","BIGINT"},
-		new String[]{"COUNT()","ANY","BIGINT"},
-		new String[]{"SUM()","NUMBER","DOUBLE"},
-		new String[]{"AVG()","NUMBER","DOUBLE"},
-		new String[]{"MIN()","NUMBER","DOUBLE"},
-		new String[]{"MAX()","NUMBER","DOUBLE"}
-	};
+		functionsMap.put(agregationMethods, new String[][]{
+			new String[]{"COUNT(*)","","BIGINT"},
+			new String[]{"COUNT()","ANY","BIGINT"},
+			new String[]{"SUM()","NUMBER","DOUBLE"},
+			new String[]{"AVG()","NUMBER","DOUBLE"},
+			new String[]{"MIN()","NUMBER","DOUBLE"},
+			new String[]{"MAX()","NUMBER","DOUBLE"}
+		});
+	}
 
 	public static FeatureType getType(String hiveType){
 		FeatureType ans = null;
@@ -124,7 +149,7 @@ public class HiveDictionary {
 		return featureType;
 	}
 
-	public static String getReturnType(String expr,
+	public String getReturnType(String expr,
 			FeatureList features,
 			Set<String> featureAggreg) throws Exception{
 
@@ -234,7 +259,7 @@ public class HiveDictionary {
 
 	}
 
-	public static String getReturnType(String expr,
+	public String getReturnType(String expr,
 			FeatureList features) throws Exception{
 		return getReturnType(expr,features,new HashSet<String>());
 	}
@@ -333,39 +358,39 @@ public class HiveDictionary {
 		return editor;
 	}
 
-	public static Tree<String> createConditionHelpMenu() throws RemoteException{
+	public Tree<String> createConditionHelpMenu() throws RemoteException{
 		Tree<String> help = new TreeNonUnique<String>("help");
-		help.add(createMenu(new TreeNonUnique<String>("logic"),logicalOperators));
-		help.add(createMenu(new TreeNonUnique<String>("relation"),relationalOperators));
-		help.add(createMenu(new TreeNonUnique<String>("arithmetic"),arithmeticOperators));
-		help.add(createMenu(new TreeNonUnique<String>("string"),stringMethods));
-		help.add(createMenu(new TreeNonUnique<String>("double"),doubleMethods));
-		help.add(createMenu(new TreeNonUnique<String>("utils"),utilsMethods));
+		help.add(createMenu(new TreeNonUnique<String>("logic"),functionsMap.get(logicalOperators)));
+		help.add(createMenu(new TreeNonUnique<String>("relation"),functionsMap.get(relationalOperators)));
+		help.add(createMenu(new TreeNonUnique<String>("arithmetic"),functionsMap.get(arithmeticOperators)));
+		help.add(createMenu(new TreeNonUnique<String>("string"),functionsMap.get(stringMethods)));
+		help.add(createMenu(new TreeNonUnique<String>("double"),functionsMap.get(doubleMethods)));
+		help.add(createMenu(new TreeNonUnique<String>("utils"),functionsMap.get(utilsMethods)));
 		logger.debug("create Condition Help Menu");
 		return help;
 	}
 
-	public static Tree<String> createDefaultSelectHelpMenu() throws RemoteException{
+	public Tree<String> createDefaultSelectHelpMenu() throws RemoteException{
 		Tree<String> help = new TreeNonUnique<String>("help");
-		help.add(createMenu(new TreeNonUnique<String>("arithmetic"),arithmeticOperators));
-		help.add(createMenu(new TreeNonUnique<String>("string"),stringMethods));
-		help.add(createMenu(new TreeNonUnique<String>("double"),doubleMethods));
-		help.add(createMenu(new TreeNonUnique<String>("utils"),utilsMethods));
-		help.add(createMenu(new TreeNonUnique<String>("relation"),relationalOperators));
-		help.add(createMenu(new TreeNonUnique<String>("logic"),logicalOperators));
+		help.add(createMenu(new TreeNonUnique<String>("arithmetic"),functionsMap.get(arithmeticOperators)));
+		help.add(createMenu(new TreeNonUnique<String>("string"),functionsMap.get(stringMethods)));
+		help.add(createMenu(new TreeNonUnique<String>("double"),functionsMap.get(doubleMethods)));
+		help.add(createMenu(new TreeNonUnique<String>("utils"),functionsMap.get(utilsMethods)));
+		help.add(createMenu(new TreeNonUnique<String>("relation"),functionsMap.get(relationalOperators)));
+		help.add(createMenu(new TreeNonUnique<String>("logic"),functionsMap.get(logicalOperators)));
 		logger.debug("create Select Help Menu");
 		return help;
 	}
 
-	public static Tree<String> createGroupSelectHelpMenu() throws RemoteException{
+	public Tree<String> createGroupSelectHelpMenu() throws RemoteException{
 		Tree<String> help = new TreeNonUnique<String>("help");
-		help.add(createMenu(new TreeNonUnique<String>("aggregation"),agregationMethods));
-		help.add(createMenu(new TreeNonUnique<String>("arithmetic"),arithmeticOperators));
-		help.add(createMenu(new TreeNonUnique<String>("string"),stringMethods));
-		help.add(createMenu(new TreeNonUnique<String>("double"),doubleMethods));
-		help.add(createMenu(new TreeNonUnique<String>("integer"),utilsMethods));
-		help.add(createMenu(new TreeNonUnique<String>("relation"),relationalOperators));
-		help.add(createMenu(new TreeNonUnique<String>("logic"),logicalOperators));
+		help.add(createMenu(new TreeNonUnique<String>("aggregation"),functionsMap.get(agregationMethods)));
+		help.add(createMenu(new TreeNonUnique<String>("arithmetic"),functionsMap.get(arithmeticOperators)));
+		help.add(createMenu(new TreeNonUnique<String>("string"),functionsMap.get(stringMethods)));
+		help.add(createMenu(new TreeNonUnique<String>("double"),functionsMap.get(doubleMethods)));
+		help.add(createMenu(new TreeNonUnique<String>("integer"),functionsMap.get(utilsMethods)));
+		help.add(createMenu(new TreeNonUnique<String>("relation"),functionsMap.get(relationalOperators)));
+		help.add(createMenu(new TreeNonUnique<String>("logic"),functionsMap.get(logicalOperators)));
 		logger.debug("create Group Select Help Menu");
 		return help;
 	}
@@ -396,7 +421,7 @@ public class HiveDictionary {
 		return cleanUp.startsWith("NOT ") || cleanUp.contains(" OR ") || cleanUp.contains(" AND ");
 	}
 
-	private static boolean runLogicalOperation(String expr,
+	private boolean runLogicalOperation(String expr,
 			FeatureList features,
 			Set<String> aggregFeat) throws Exception{
 
@@ -431,38 +456,38 @@ public class HiveDictionary {
 		return ok;
 	}
 
-	private static boolean isRelationalOperation(String expr){
-		return isInList(relationalOperators, expr);
+	private boolean isRelationalOperation(String expr){
+		return isInList(functionsMap.get(relationalOperators), expr);
 	}
 
-	private static boolean runRelationalOperation(String expr,
+	private boolean runRelationalOperation(String expr,
 			FeatureList features,
 			Set<String> aggregFeat) throws Exception{
-		return runOperation(relationalOperators, expr, features,aggregFeat);
+		return runOperation(functionsMap.get(relationalOperators), expr, features,aggregFeat);
 	}
 
 
-	private static boolean isArithmeticOperation(String expr){
-		return isInList(arithmeticOperators, expr);
+	private boolean isArithmeticOperation(String expr){
+		return isInList(functionsMap.get(arithmeticOperators), expr);
 	}
 
-	private static boolean runArithmeticOperation(String expr,
+	private boolean runArithmeticOperation(String expr,
 			FeatureList features,
 			Set<String> aggregFeat) throws Exception{
-		return runOperation(arithmeticOperators, expr, features,aggregFeat);
+		return runOperation(functionsMap.get(arithmeticOperators), expr, features,aggregFeat);
 	}
 
-	private static boolean isMethod(String expr, boolean agregation){
-		return agregation ? isInList(agregationMethods,expr)
+	private boolean isMethod(String expr, boolean agregation){
+		return agregation ? isInList(functionsMap.get(agregationMethods),expr)
 				:
-					isInList(utilsMethods, expr) ||
-					isInList(doubleMethods,expr) ||
-					isInList(stringMethods,expr);
+					isInList(functionsMap.get(utilsMethods), expr) ||
+					isInList(functionsMap.get(doubleMethods),expr) ||
+					isInList(functionsMap.get(stringMethods),expr);
 
 	}
 
 
-	private static String runMethod(String expr,
+	private String runMethod(String expr,
 			FeatureList features,
 			Set<String> aggregFeat) throws Exception{
 		String type = null;
@@ -525,7 +550,7 @@ public class HiveDictionary {
 
 
 
-	private static boolean runOperation(String[][] list,
+	private boolean runOperation(String[][] list,
 			String expr,
 			FeatureList features,
 			Set<String> aggregFeat) throws Exception{
@@ -570,7 +595,7 @@ public class HiveDictionary {
 	}
 
 
-	private static boolean check(String[] method, 
+	private boolean check(String[] method, 
 			String[] args, 
 			FeatureList features) throws Exception{
 		boolean ok = false;
@@ -655,14 +680,14 @@ public class HiveDictionary {
 		return ans;
 	}
 
-	private static List<String[]> findAllMethod(String expr,boolean aggregMethod){
+	private List<String[]> findAllMethod(String expr,boolean aggregMethod){
 		List<String[]> ans = null;
 		if(aggregMethod){
-			ans = findAll(agregationMethods,expr);
+			ans = findAll(functionsMap.get(agregationMethods),expr);
 		}else{
-			ans = findAll(utilsMethods,expr);
-			ans.addAll(findAll(doubleMethods,expr));
-			ans.addAll(findAll(stringMethods,expr));
+			ans = findAll(functionsMap.get(utilsMethods),expr);
+			ans.addAll(findAll(functionsMap.get(doubleMethods),expr));
+			ans.addAll(findAll(functionsMap.get(stringMethods),expr));
 		}
 		return ans;
 	}
