@@ -23,7 +23,6 @@ import java.util.Map;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.ajax4jsf.model.KeepAlive;
 import org.apache.log4j.Logger;
@@ -288,20 +287,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 					){
 				getDfe().cleanThisAndAllElementAfter();
 				logger.info(" updateOut ");
-				//save old paths and update out
-				Map<String, String> pathMap = new HashMap<String, String>();
-				if (getDfe().getDFEOutput() != null){
-					for (Map.Entry<String, DFEOutput> entry : getDfe().getDFEOutput().entrySet()){
-						pathMap.put(entry.getKey(), entry.getValue().getPath());
-					}
-				}
-				
 				e = getDfe().updateOut();
-				for (String out : pathMap.keySet()){
-					if (getDfe().getDFEOutput().containsKey(out) && pathMap.get(out) != null){
-						getDfe().getDFEOutput().get(out).setPath(pathMap.get(out));
-					}
-				}
 				
 				if(getListPageSize() - 1 == getListPosition()){
 					mountOutputForm();
@@ -1162,22 +1148,14 @@ public class CanvasModal extends BaseBean implements Serializable {
 				getDfe().getDFEOutput() != null && !getDfe().getDFEOutput().isEmpty()){
 			setOutputFormList(new ArrayList<OutputForm>());
 			
-			HttpSession session = (HttpSession) FacesContext.getCurrentInstance().
-					getExternalContext().getSession(false);
-			String user = (String) session.getAttribute("username");
-			
 			for (Map.Entry<String, DFEOutput> e : getDfe().getDFEOutput().entrySet()){
-				OutputForm of = new OutputForm();
-				of.setName(e.getKey());
+				OutputForm of = new OutputForm(e.getValue(), getDfe().getComponentId(), e.getKey());
 
 				List<SelectItem> outputList = new ArrayList<SelectItem>();
 				for (SavingState s : SavingState.values()){
 					outputList.add(new SelectItem(s.toString(), s.toString()));
 				}
 				of.setSavingStateList(outputList);
-				of.setDfeOutput(e.getValue());
-				of.setComponentId(getDfe().getComponentId());
-				of.setSavingState(e.getValue().getSavingState().toString(), user);
 				logger.info("saving state "+e.getValue().getSavingState().toString());
 				if(e.getValue().getSavingState() == SavingState.RECORDED){
 					int lastSlash = e.getValue().getPath().lastIndexOf('/');
