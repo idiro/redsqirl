@@ -1123,8 +1123,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 				setListFeature(listObj);
 			}
 			dynamicForm.setPathBrowser(path);
-
-			getDfe().updateOut();
 		}
 
 	}
