@@ -230,24 +230,29 @@ public class Source extends DataflowAction{
 						
 						boolean existAndValid = true;
 
-						try{
+						String type = getInteraction(key_datatype).getTree()
+								.getFirstChild("list").getFirstChild("output")
+								.getFirstChild().getHead();
+						if(type.equalsIgnoreCase("hdfs")){
+							try{
 
-							getInteraction(key_dataset).getTree()
-							.getFirstChild("browse").
-							getFirstChild("output")
-							.getFirstChild("property").
-							getFirstChild(MapRedTextType.key_delimiter).
-							getFirstChild().getHead();
+								getInteraction(key_dataset).getTree()
+								.getFirstChild("browse").
+								getFirstChild("output")
+								.getFirstChild("property").
+								getFirstChild(MapRedTextType.key_delimiter).
+								getFirstChild().getHead();
 
-						}
-						catch (Exception e){
-							error = "You must define a delimiter";
+							}
+							catch (Exception e){
+								error = "You must define a delimiter";
+							}
 						}
 
 						existAndValid &= output.get(out_name).isPathExists() && output.get(out_name).isPathValid() == null;
 
 						if(!existAndValid){
-							error = "The path does not exist";
+							error = "The path does not exist: "+output.get(out_name)+" "+output.get(out_name).isPathExists() + " "+output.get(out_name).isPathValid();
 						}
 
 					}
