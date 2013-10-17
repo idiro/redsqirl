@@ -503,6 +503,9 @@ public class CanvasBean extends BaseBean implements Serializable{
 	}
 
 	public void changeIdElement() throws RemoteException{
+		
+		logger.info("id new -> " + getIdElement());
+		
 		String oldId = getIdMap().get(getIdGroup());
 		getIdMap().put(getIdGroup(), getIdElement());
 		getDf().changeElementId(oldId, getIdElement());

@@ -6,7 +6,6 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets">
 
 
-	<h:form>
 		<h:outputText value="Name" />
 		<h:inputText label="Name" value="#{canvasBean.idElement}" size="16" maxlength="15" />
 	
@@ -14,6 +13,5 @@
 			<a4j:commandButton action="#{canvasBean.changeIdElement}" 
 				onclick="#{rich:component('modalChangeId')}.hide();" oncomplete="closeChangeIdModal()" value="#{messages.button_ok}"/>
 		</h:panelGrid>
-	</h:form>
 
 </h:panelGrid>

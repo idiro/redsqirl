@@ -1494,6 +1494,8 @@ var countObj;
 		    
 		    function updateLabelObj(groupId, newGroupId){
 		    	
+		    	//alert(groupId + " " + newGroupId);
+		    	
 		    	var group = polygonLayer.get("#"+groupId);
 		    	
 		    	var px = group[0].getChildren()[1].getX()-40;
