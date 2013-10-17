@@ -70,12 +70,18 @@ function cookiePassword(){
 	
 }
 
+function progress(percent, element) {
+	var progressBarWidth = percent * element.width() / 100;
+	element.find('div').animate({ width: progressBarWidth }, 30000).html(percent + "%&nbsp;");
+}
 
 </script>
 
 
 	<div id="domMessageInitial" style="display: none;">
-		<img src="#{facesContext.externalContext.requestContextPath}/image/icons/waiting.gif" />
+		
+		<div id="progressBar"><div></div></div>
+		
 		<h:form>
 			<a4j:commandButton value="#{messages.button_cancel}" action="#{userInfoBean.signOut}" onclick="window.stop();jQuery.unblockUI();window.location.reload();" />
 		</h:form>
@@ -132,7 +138,7 @@ function cookiePassword(){
 						<br />
 						<h:commandButton value="#{messages.label_login}"
 							action="#{userInfoBean.validateSecondLogin}"
-							styleClass="buttonLogin" onclick="cookiePassword(); jQuery.blockUI({ message: jQuery('#domMessageInitial') });" />
+							styleClass="buttonLogin" onclick="cookiePassword(); jQuery.blockUI({ message: jQuery('#domMessageInitial') }); progress(100, jQuery('#progressBar'));" />
 
 
 						<h:inputText id="twoLoginChek"

@@ -239,6 +239,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 						Tree<String> myFeature = dynamicF.getTree().getFirstChild("browse").getFirstChild("output").add("feature");
 						
 						logger.info("update NameBrowserLabel = " + getNameBrowserLabel1().get(nameValue)+" -> "+getNameBrowserLabel2().get(nameValue));
+						logger.info(getNameBrowserLabel1());
+						logger.info(getNameBrowserLabel2());
 						
 						myFeature.add("name").add(getNameBrowserLabel1().get(nameValue));
 						myFeature.add("type").add(getNameBrowserLabel2().get(nameValue));

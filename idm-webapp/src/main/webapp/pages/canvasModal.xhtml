@@ -151,8 +151,8 @@
 								style="border-bottom:0px;border-right:0px;" >
 								<f:facet name="header" rendered="#{canvasModalBean.hiveHdfs == 'hdfs'}">
 									 <h:panelGrid columns="2" width="100%" >
-							            <h:inputText value="#{canvasModalBean.nameBrowserLabel1[column]}" style="width:75px;" />
 							            <h:outputText value="#{canvasModalBean.nameBrowserLabel2[column]}" />
+							            <h:inputText value="#{canvasModalBean.nameBrowserLabel1[column]}" style="width:75px;" />
 							        </h:panelGrid>
 								</f:facet>
 								
@@ -369,7 +369,7 @@
 						onclick="#{rich:component('modalOutputBrowserHive')}.hide()" />
 				</f:facet>
 	
-					<h:form id="modalOutputBrowserHiveId">
+				<h:form id="modalOutputBrowserHiveId">
 					<h:panelGroup>
 						<a4j:include viewId="/pages/modalOutputBrowserHive.xhtml"
 							ajaxRendered="true">
