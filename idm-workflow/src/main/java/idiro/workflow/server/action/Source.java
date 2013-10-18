@@ -446,9 +446,7 @@ public class Source extends DataflowAction{
 					}
 
 				}
-
-				dataOutput.setFeatures(out);
-
+				
 				output.put(out_name, dataOutput);
 				output.get(out_name).setPath(path);
 
@@ -463,6 +461,8 @@ public class Source extends DataflowAction{
 				}
 
 				output.get(out_name).addProperty(MapRedTextType.key_delimiter, delimiter);
+				
+				dataOutput.setFeatures(out);
 			}
 			if(output.get(out_name) != null){
 				output.get(out_name).setSavingState(SavingState.RECORDED);
