@@ -153,11 +153,11 @@
 	
 	<br/>
 
-	<a4j:commandButton action="#{canvasModalBean.confirm}" value="#{messages.button_ok}" oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('textEditorPanel')}.hide() };" reRender="command,tableInteraction, msnError" />
+	<a4j:commandButton action="#{canvasModalBean.confirm}" value="#{messages.button_ok}" oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('textEditorPanel')}.hide() };" reRender="command,tableInteraction, msnError, errorTable" />
 	<span>&nbsp;&nbsp;</span>
 	<a4j:commandButton action="#{canvasModalBean.cancel}" value="#{messages.button_cancel}" onclick="#{rich:component('textEditorPanel')}.hide();" />
 	<span>&nbsp;&nbsp;</span>
-	<a4j:commandButton action="#{canvasModalBean.checkTextEditor}" value="#{messages.button_check}" reRender="msnError"/>
+	<a4j:commandButton action="#{canvasModalBean.checkTextEditor}" value="#{messages.button_check}" reRender="msnError, errorTable"/>
 	
 </h:form>
 </body>

@@ -41,6 +41,11 @@ public class ItemList implements Serializable{
 		super();
 		this.name = name;
 	}
+	
+	public ItemList(String name, String value) {
+		this.name = name;
+		this.value = value;
+	}
 
 	public List<String> getKeyAsListNameValue(){
 		return new ArrayList<String>(nameValue.keySet());

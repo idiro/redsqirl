@@ -1,7 +1,16 @@
 package idm.useful;
 
+import idm.ItemList;
+
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpSession;
 
 
 /** MessageUseful
@@ -40,6 +49,18 @@ public class MessageUseful {
 	 * @see MessageUseful#addErrorMessage(String, String)
 	 */
 	public static void addErrorMessage(String msg) {
+		
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(false);
+		
+		if(session.getAttribute("listError") == null){
+			List<ItemList> listError = new ArrayList<ItemList>(); 
+			session.setAttribute("listError", listError);
+		}
+		
+		Format formatter = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss");
+		((ArrayList<ItemList>)session.getAttribute("listError")).add(new ItemList(formatter.format(new Date()), msg));
+		
 		addErrorMessage(null, msg);
 	}
 

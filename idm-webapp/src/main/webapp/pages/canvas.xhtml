@@ -488,7 +488,7 @@
 							onstop="jQuery('#canvas1').unblock();" />
 				
 				<a4j:jsFunction name="openModal" action="#{canvasModalBean.openCanvasModal}" oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('canvasModalPanel')}.show() }" 
-					reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError, canvasModalTabPanel" >
+					reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError, errorTable, canvasModalTabPanel" >
 					<a4j:actionparam name="paramNameElement" assignTo="#{canvasModalBean.nameElement}" />
 					<a4j:actionparam name="paramPathImage" assignTo="#{canvasModalBean.pathImage}" />
 					<a4j:actionparam name="paramNameWorkflow" value="#{canvasBean.nameWorkflow}" assignTo="#{canvasModalBean.nameElement}" />
@@ -626,7 +626,7 @@
 
 					<rich:menuItem submitMode="ajax"
 						value="#{messages.label_menu_clean_project}"
-						action="#{canvasBean.cleanCanvasProject}" rerender="msnError" />
+						action="#{canvasBean.cleanCanvasProject}" rerender="msnError, errorTable" />
 		
 					<rich:menuItem submitMode="none">
 						<h:outputLink value="#{canvasBean.workflowUrl}" target="_blank">#{messages.label_menu_see_oozie_job}</h:outputLink>
@@ -1033,7 +1033,7 @@
 				<br />
 				<br />
 				
-				<a4j:commandButton value="#{messages.button_ok}" onclick="#{rich:component('msnError')}.hide(); return false;" reRender="msnError, msg" />
+				<a4j:commandButton value="#{messages.button_ok}" onclick="#{rich:component('msnError')}.hide(); return false;" reRender="msnError, msg, errorTable" />
 				
 			</center>
 		</rich:modalPanel>
