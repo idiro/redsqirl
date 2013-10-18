@@ -72,10 +72,18 @@ public class ServerThread{
 					        session = shell.getSession(user, "localhost");
 					        session.setPassword(password);
 					        session.setConfig(config);
+					        logger.info("session config set");
 					        session.connect();
+					        logger.info("session connected");
+					        
+					        Runtime rt = Runtime.getRuntime();
+					        Process pr = rt.exec("which java");
+							BufferedReader stdInput = new BufferedReader(
+									new InputStreamReader(pr.getInputStream()));
 					        
 					        channel = session.openChannel("exec");
-				            ((ChannelExec)channel).setCommand(command);
+					        String javahome = stdInput.readLine();
+				            ((ChannelExec)channel).setCommand(javahome+" "+command);
 				            channel.connect();
 				            
 				            BufferedReader br = new BufferedReader(new InputStreamReader(channel.getInputStream()));
@@ -87,6 +95,13 @@ public class ServerThread{
 						} catch (Exception e) {
 							logger.error("Fail to launch the server process");
 							logger.error(e.getMessage());
+							StackTraceElement[] message = e.getStackTrace();
+							
+							for (int i = 0; i < message.length;++i){
+								logger.info(message[i].getMethodName() + " "+message[i].getFileName() +" "+message[i].getLineNumber() );
+							}
+									
+							
 						}
 					}
 				};
@@ -128,7 +143,7 @@ public class ServerThread{
 		String codebase =  " -Djava.rmi.server.codebase="+getRMICodeBase();
 		String hostname = " -Djava.rmi.server.hostname="+getRMIHost();
 
-		command = "java" + classpath + codebase + hostname + " idiro.workflow.server.connect.ServerMain "+port;
+		command =  classpath + codebase + hostname + " idiro.workflow.server.connect.ServerMain "+port;
 
 		return command;
 	}
