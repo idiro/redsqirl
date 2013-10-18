@@ -95,7 +95,7 @@ public class PigTableUnionInteraction extends UserInteraction{
 					try{
 						if( ! PigDictionary.check(
 								row.getFirstChild(table_type_title).getFirstChild().getHead(), 
-								PigDictionary.getReturnType(
+								PigDictionary.getInstance().getReturnType(
 										row.getFirstChild(table_op_title).getFirstChild().getHead(),
 										in.getFeatures())
 								)){
@@ -166,7 +166,7 @@ public class PigTableUnionInteraction extends UserInteraction{
 
 		//Generate Editor
 		Tree<String> featEdit =
-				PigDictionary.generateEditor(PigDictionary.createDefaultSelectHelpMenu(),in);
+				PigDictionary.generateEditor(PigDictionary.getInstance().createDefaultSelectHelpMenu(),in);
 
 		//Set the Editor of operation
 		logger.debug("Set the editor...");

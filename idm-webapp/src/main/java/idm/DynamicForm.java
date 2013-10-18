@@ -26,8 +26,7 @@ public class DynamicForm implements Serializable {
 	private Tree<String> tree;
 	private String dataTypeName;
 	private String subtypeName;
-	private Map<String, String> nameBrowserLabel1 = new HashMap<String, String>();
-	private Map<String, String> nameBrowserLabel2 = new HashMap<String, String>();
+	
 
 
 	private String pathBrowser = "";
@@ -159,22 +158,6 @@ public class DynamicForm implements Serializable {
 
 	public void setSubtypeName(String subtypeName) {
 		this.subtypeName = subtypeName;
-	}
-
-	public Map<String, String> getNameBrowserLabel1() {
-		return nameBrowserLabel1;
-	}
-
-	public Map<String, String> getNameBrowserLabel2() {
-		return nameBrowserLabel2;
-	}
-
-	public void setNameBrowserLabel1(Map<String, String> nameBrowserLabel1) {
-		this.nameBrowserLabel1 = nameBrowserLabel1;
-	}
-
-	public void setNameBrowserLabel2(Map<String, String> nameBrowserLabel2) {
-		this.nameBrowserLabel2 = nameBrowserLabel2;
 	}
 
 }

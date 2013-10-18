@@ -339,7 +339,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 		    }
 			
 		} catch (Exception e) {
-			logger.info("Error saving workflow");
+			logger.info("Error loading workflow");
 			e.printStackTrace();
 		}
 	}
@@ -503,6 +503,9 @@ public class CanvasBean extends BaseBean implements Serializable{
 	}
 
 	public void changeIdElement() throws RemoteException{
+		
+		logger.info("id new -> " + getIdElement());
+		
 		String oldId = getIdMap().get(getIdGroup());
 		getIdMap().put(getIdGroup(), getIdElement());
 		getDf().changeElementId(oldId, getIdElement());

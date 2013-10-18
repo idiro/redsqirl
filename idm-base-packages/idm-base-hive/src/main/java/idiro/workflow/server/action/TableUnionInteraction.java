@@ -95,7 +95,7 @@ public class TableUnionInteraction extends UserInteraction{
 					try{
 						if( ! HiveDictionary.check(
 								row.getFirstChild(table_type_title).getFirstChild().getHead(), 
-								HiveDictionary.getReturnType(
+								HiveDictionary.getInstance().getReturnType(
 										row.getFirstChild(table_op_title).getFirstChild().getHead(),
 										hu.getInFeatures(aliases,alias))
 								)){
@@ -149,7 +149,7 @@ public class TableUnionInteraction extends UserInteraction{
 
 		//Generate Editor
 		Tree<String> featEdit =
-				HiveDictionary.generateEditor(HiveDictionary.createDefaultSelectHelpMenu(),hu.getInFeatures());
+				HiveDictionary.generateEditor(HiveDictionary.getInstance().createDefaultSelectHelpMenu(),hu.getInFeatures());
 
 		//Set the Editor of operation
 		logger.debug("Set the editor...");

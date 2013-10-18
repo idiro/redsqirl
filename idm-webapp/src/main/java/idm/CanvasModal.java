@@ -23,7 +23,6 @@ import java.util.Map;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.ajax4jsf.model.KeepAlive;
 import org.apache.log4j.Logger;
@@ -42,6 +41,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	private CanvasBean canvasBean;
 
 	private String list = "";
+	private String selectedGenerator = "";
 	private List<SelectItem> listItens = new ArrayList<SelectItem>();
 	private List<SelectItem> listItensTable = new ArrayList<SelectItem>();
 	private Map<String, List<SelectItem>> listConstraint = new HashMap<String, List<SelectItem>>();
@@ -87,6 +87,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 	private String showOutputForm;
 	private String hiveHdfs;
 	
+	private Map<String, String> nameBrowserLabel1 = new HashMap<String, String>();
+	private Map<String, String> nameBrowserLabel2 = new HashMap<String, String>();
 
 
 	/** getKeyAsListNameValue
@@ -236,10 +238,12 @@ public class CanvasModal extends BaseBean implements Serializable {
 					for (String nameValue : getBrowserNameFeatureColumns()) {
 						Tree<String> myFeature = dynamicF.getTree().getFirstChild("browse").getFirstChild("output").add("feature");
 						
-						logger.info("update NameBrowserLabel = " + dynamicF.getNameBrowserLabel1().get(nameValue)+" -> "+dynamicF.getNameBrowserLabel2().get(nameValue));
+						logger.info("update NameBrowserLabel = " + getNameBrowserLabel1().get(nameValue)+" -> "+getNameBrowserLabel2().get(nameValue));
+						logger.info(getNameBrowserLabel1());
+						logger.info(getNameBrowserLabel2());
 						
-						myFeature.add("name").add(dynamicF.getNameBrowserLabel1().get(nameValue));
-						myFeature.add("type").add(dynamicF.getNameBrowserLabel2().get(nameValue));
+						myFeature.add("name").add(getNameBrowserLabel1().get(nameValue));
+						myFeature.add("type").add(getNameBrowserLabel2().get(nameValue));
 					}
 				}
 
@@ -286,6 +290,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 				getDfe().cleanThisAndAllElementAfter();
 				logger.info(" updateOut ");
 				e = getDfe().updateOut();
+				
 				if(getListPageSize() - 1 == getListPosition()){
 					mountOutputForm();
 					if( e != null){
@@ -618,6 +623,14 @@ public class CanvasModal extends BaseBean implements Serializable {
 				}
 				setRowsMap(map);
 				setListItens(listFields);
+				
+				if (!listFields.isEmpty()){
+					logger.info("link selected: "+listFields.get(0).getValue().toString());
+					setSelectedGenerator(listFields.get(0).getValue().toString());
+				}
+				else{
+					setSelectedGenerator(null);
+				}
 
 				Map<String, String> mapColumns = new HashMap<String, String>();
 				List<Tree<String>> list2 = dfeInteraction.getTree().getFirstChild("table").getFirstChild("columns").getSubTreeList();
@@ -772,7 +785,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void endDynamicForm() throws RemoteException {
 
 		logger.info("endDynamicForm ");
+		
 		applyPage();
+		
 	}
 
 	/** openTableInteraction
@@ -920,8 +935,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 		logger.info("tableInteractionGenerationLines");
 
 		List<ItemList> itemList = new ArrayList<ItemList>();
-		if (getRowsMap().get(this.getList()) != null){
-			for (Map<String, String> l : getRowsMap().get(this.getList())){
+		if (getRowsMap().get(this.getSelectedGenerator()) != null){
+			for (Map<String, String> l : getRowsMap().get(this.getSelectedGenerator())){
 	
 				ItemList item = new ItemList();
 	
@@ -1065,8 +1080,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 				nameBrowserLabel2.put(outputFeature + " " + featureType.toString(), featureType.toString());
 			}
 			
-			dynamicForm.setNameBrowserLabel1(nameBrowserLabel1);
-			dynamicForm.setNameBrowserLabel2(nameBrowserLabel2);
+			setNameBrowserLabel1(nameBrowserLabel1);
+			setNameBrowserLabel2(nameBrowserLabel2);
 
 			if(outputLines != null){
 				for (String output : outputLines) {
@@ -1108,8 +1123,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 				setListFeature(listObj);
 			}
 			dynamicForm.setPathBrowser(path);
-
-			getDfe().updateOut();
 		}
 
 	}
@@ -1135,22 +1148,14 @@ public class CanvasModal extends BaseBean implements Serializable {
 				getDfe().getDFEOutput() != null && !getDfe().getDFEOutput().isEmpty()){
 			setOutputFormList(new ArrayList<OutputForm>());
 			
-			HttpSession session = (HttpSession) FacesContext.getCurrentInstance().
-					getExternalContext().getSession(false);
-			String user = (String) session.getAttribute("username");
-			
 			for (Map.Entry<String, DFEOutput> e : getDfe().getDFEOutput().entrySet()){
-				OutputForm of = new OutputForm();
-				of.setName(e.getKey());
+				OutputForm of = new OutputForm(e.getValue(), getDfe().getComponentId(), e.getKey());
 
 				List<SelectItem> outputList = new ArrayList<SelectItem>();
 				for (SavingState s : SavingState.values()){
 					outputList.add(new SelectItem(s.toString(), s.toString()));
 				}
 				of.setSavingStateList(outputList);
-				of.setDfeOutput(e.getValue());
-				of.setComponentId(getDfe().getComponentId());
-				of.setSavingState(e.getValue().getSavingState().toString(), user);
 				logger.info("saving state "+e.getValue().getSavingState().toString());
 				if(e.getValue().getSavingState() == SavingState.RECORDED){
 					int lastSlash = e.getValue().getPath().lastIndexOf('/');
@@ -1275,6 +1280,14 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 	public void setList(String list) {
 		this.list = list;
+	}
+	
+	public String getSelectedGenerator() {
+		return selectedGenerator;
+	}
+
+	public void setSelectedGenerator(String selectedGenerator) {
+		this.selectedGenerator = selectedGenerator;
 	}
 
 	public List<String[]> getListFunctions() {
@@ -1623,6 +1636,22 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 	public void setHiveHdfs(String hiveHdfs) {
 		this.hiveHdfs = hiveHdfs;
+	}
+
+	public Map<String, String> getNameBrowserLabel1() {
+		return nameBrowserLabel1;
+	}
+
+	public Map<String, String> getNameBrowserLabel2() {
+		return nameBrowserLabel2;
+	}
+
+	public void setNameBrowserLabel1(Map<String, String> nameBrowserLabel1) {
+		this.nameBrowserLabel1 = nameBrowserLabel1;
+	}
+
+	public void setNameBrowserLabel2(Map<String, String> nameBrowserLabel2) {
+		this.nameBrowserLabel2 = nameBrowserLabel2;
 	}
 	
 }
