@@ -70,17 +70,21 @@ function cookiePassword(){
 	
 }
 
-function progress(percent, element) {
-	var progressBarWidth = percent * element.width() / 100;
-	element.find('div').animate({ width: progressBarWidth }, 30000).html(percent + "%&nbsp;");
-}
-
 </script>
 
 
 	<div id="domMessageInitial" style="display: none;">
 		
-		<div id="progressBar"><div></div></div>
+		<h:form>
+	        <a4j:outputPanel id="progressPanel">
+	            <rich:progressBar value="#{userInfoBean.currentValue}"
+	                interval="500" label="#{userInfoBean.currentValue} %"
+	                enabled="#{userInfoBean.enabled}" minValue="-1" maxValue="100"
+	                reRenderAfterComplete="progressPanel">
+	                
+	            </rich:progressBar>
+	        </a4j:outputPanel>
+	    </h:form>
 		
 		<h:form>
 			<a4j:commandButton value="#{messages.button_cancel}" action="#{userInfoBean.signOut}" onclick="window.stop();jQuery.unblockUI();window.location.reload();" />
@@ -136,9 +140,14 @@ function progress(percent, element) {
 							id="loginCheck" />
 						<br />
 						<br />
-						<h:commandButton value="#{messages.label_login}"
-							action="#{userInfoBean.validateSecondLogin}"
-							styleClass="buttonLogin" onclick="cookiePassword(); jQuery.blockUI({ message: jQuery('#domMessageInitial') }); progress(100, jQuery('#progressBar'));" />
+						
+						<a4j:commandButton value="#{messages.label_login}"
+							action="#{userInfoBean.startProcess}"
+							reRender="progressPanel"
+							styleClass="buttonLogin" onclick="cookiePassword(); jQuery.blockUI({ message: jQuery('#domMessageInitial') }); "
+								oncomplete="validateSecondLogin();" />
+								
+						<a4j:jsFunction name="validateSecondLogin" action="#{userInfoBean.validateSecondLogin}"  />
 
 
 						<h:inputText id="twoLoginChek"

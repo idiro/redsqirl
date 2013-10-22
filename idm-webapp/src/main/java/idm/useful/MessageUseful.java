@@ -58,8 +58,10 @@ public class MessageUseful {
 			session.setAttribute("listError", listError);
 		}
 		
-		Format formatter = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss");
-		((ArrayList<ItemList>)session.getAttribute("listError")).add(new ItemList(formatter.format(new Date()), msg));
+		if(((ArrayList<ItemList>)session.getAttribute("listError")).size() <= 500){
+			Format formatter = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss");
+			((ArrayList<ItemList>)session.getAttribute("listError")).add(new ItemList(formatter.format(new Date()), msg));
+		}
 		
 		addErrorMessage(null, msg);
 	}

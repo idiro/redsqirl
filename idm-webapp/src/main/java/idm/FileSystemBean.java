@@ -2,6 +2,7 @@ package idm;
 
 import idiro.workflow.server.connect.interfaces.DataStore;
 import idiro.workflow.server.connect.interfaces.DataStore.ParamProperty;
+import idm.auth.UserInfoBean;
 import idm.useful.MessageUseful;
 
 import java.io.Serializable;
@@ -31,14 +32,12 @@ public class FileSystemBean extends BaseBean implements Serializable{
 	private ItemList item;
 	private String fileContent;
 	private boolean file;
-
 	private Map<String, String> nameValue = new HashMap<String, String>();
 	private Map<String, String> nameHelp = new HashMap<String, String>();
 	private List<Entry> fieldsInitNeededTitleKey;
-	
 	private DataStore dataStore;
-	
 	private List<String[]> selectedFiles;
+	private UserInfoBean userInfoBean;
 
 
 	/** openCanvasScreen
@@ -78,6 +77,9 @@ public class FileSystemBean extends BaseBean implements Serializable{
 		
 		setPath(hInt.getPath());
 
+		FacesContext context = FacesContext.getCurrentInstance();
+		userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
+		
 		Map<String, Map<String, String>> mapSSH = hInt.getChildrenProperties();
 		Map<String, ParamProperty> paramProperties = hInt.getParamProperties();
 		for (String path : mapSSH.keySet()) {
@@ -116,6 +118,10 @@ public class FileSystemBean extends BaseBean implements Serializable{
 			itemList.setSelected(false);
 			getListGrid().add(itemList);
 
+		}
+		
+		if(userInfoBean.getCurrentValue() < 96){
+			userInfoBean.setCurrentValue(userInfoBean.getCurrentValue()+5);
 		}
 		
 		for (String properties : paramProperties.keySet()) {
@@ -567,6 +573,14 @@ public class FileSystemBean extends BaseBean implements Serializable{
 		}
 		resultPath += name;
 		return resultPath;
+	}
+
+	public UserInfoBean getUserInfoBean() {
+		return userInfoBean;
+	}
+
+	public void setUserInfoBean(UserInfoBean userInfoBean) {
+		this.userInfoBean = userInfoBean;
 	}
 	
 }

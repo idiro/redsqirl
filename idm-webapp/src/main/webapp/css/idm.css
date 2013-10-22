@@ -310,7 +310,10 @@ canvas {
 	color: #fff;
 	text-align: right;
 	line-height: 22px;
-	/* same as #progressBar height if we want text middle aligned */
 	width: 0;
 	background-color: #0099ff;
+}
+
+.rich-progress-bar-width{
+	width: 100%;	
 }
