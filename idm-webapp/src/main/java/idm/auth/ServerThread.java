@@ -5,6 +5,7 @@ import idm.useful.UserPrefManager;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
@@ -71,16 +72,12 @@ public class ServerThread{
 					        session.connect();
 					        logger.info("session connected");
 					        
-					        Runtime rt = Runtime.getRuntime();
-					        Process pr = rt.exec("which java");
-							BufferedReader stdInput = new BufferedReader(
-									new InputStreamReader(pr.getInputStream()));
-					        
 					        final String command = getBaseCommand(user, password, port) + " & echo $!";
-							logger.info("command to launch:\n"+command);
+					        
+					        String javahome = getJava();
 					        
 					        channel = session.openChannel("exec");
-					        String javahome = stdInput.readLine();
+					        logger.info("command to launch:\n"+javahome+" "+command);
 				            ((ChannelExec)channel).setCommand(javahome+" "+command);
 				            channel.connect();
 				            
@@ -130,7 +127,7 @@ public class ServerThread{
 			String p = path.substring(0, path.length()-1);
 			
 			channel = session.openChannel("exec");
-			String c = "java -cp "+p+":"+ServerThread.class.getProtectionDomain().getCodeSource().getLocation().getPath().replace("idm/auth/ServerThread.class", "")+" idm.auth.BaseCommand "+port;
+			String c = getJava() + " -cp "+p+":"+ServerThread.class.getProtectionDomain().getCodeSource().getLocation().getPath().replace("idm/auth/ServerThread.class", "")+" idm.auth.BaseCommand "+port;
 			((ChannelExec)channel).setCommand(c);
 		    channel.connect();
 		    
@@ -144,6 +141,15 @@ public class ServerThread{
 			e.printStackTrace();
 		}
 	    return command;
+	}
+	
+	private String getJava() throws IOException{
+		Runtime rt = Runtime.getRuntime();
+        Process pr = rt.exec("which java");
+		BufferedReader stdInput = new BufferedReader(
+				new InputStreamReader(pr.getInputStream()));
+        
+        return stdInput.readLine();
 	}
 
 	
