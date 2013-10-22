@@ -3,8 +3,8 @@ var layerArray;
 var polygonLayerArray;
 var backgroundArray;
 
-var history = new Array();
-var history2 = new Array();
+var history = [];
+var history2 = [];
 
 var historyStep = -1;
 var rectSelect;
@@ -17,6 +17,7 @@ var moving;
 var down;
 var select;
 var clickArrow;
+var arrow;
 
 var countObj;
 
@@ -116,130 +117,105 @@ function configureCanvas(canvasName){
 
 	makeHistory(canvasName);
 
-	jQuery("#body")
-			.keydown(
-					function(event) {
-						if (event.keyCode == 46) { // Delete
+	jQuery("#body").keydown(
+		function(event) {
+			if (event.keyCode == 46) { // Delete
 
-							makeHistory(canvasName);
+				makeHistory(canvasName);
 
-							jQuery.each(polygonLayer.get('.group1'), function(
-									index, value) {
-								var group = this;
-								var groupNumber = group.getId().substring(5,
-										this.getId().length);
-								jQuery.each(value.getChildren(), function(
-										index, value2) {
-									if (value2.getStroke() == "red") {
-										removeElement(group.getId());
-										deleteLayerChildren(canvasName, groupNumber);
-										group.remove();
-									}
-								});
-							});
-
-							var listSize = layer.getChildren().size();
-							for ( var i = 0; i < listSize; i++) {
-								jQuery
-										.each(
-												layer.getChildren(),
-												function(index, value) {
-													if (value !== undefined) {
-														if (value.getName() !== undefined) {
-															var regex = new RegExp(
-																	"^arrow");
-															if (regex
-																	.test(value
-																			.getName())) {
-																if (value
-																		.getStroke() == "red") {
-																	removeLinkBt(
-																			value.output,
-																			value.nameOutput,
-																			value.input,
-																			value.nameInput);
-																	value
-																			.remove();
-																	return false;
-																}
-															}
-														}
-													}
-												});
-							}
-
-							layer.draw();
-							polygonLayer.draw();
-
+				jQuery.each(polygonLayer.get('.group1'), function(index, value) {
+					var group = this;
+					var groupNumber = group.getId().substring(5,this.getId().length);
+					jQuery.each(value.getChildren(), function(index, value2) {
+						if (value2.selected) {
+							removeElement(group.getId());
+							deleteLayerChildren(canvasName, groupNumber);
+							group.remove();
 						}
 					});
+				});
+
+				var listSize = layer.getChildren().size();
+				for ( var i = 0; i < listSize; i++) {
+					jQuery.each(layer.getChildren(), function(index, value) {
+						if (value !== undefined && value.isArrow == true) {
+							if (value.selected) {
+								removeLinkBt(
+									value.output,
+									value.nameOutput,
+									value.input,
+									value.nameInput);
+								value.remove();
+								return false;
+							}
+						}
+					});
+				}
+				layer.draw();
+				polygonLayer.draw();
+			}
+		});
 
 	arrow.on('click', function(e) {
 
 		if (!e.ctrlKey) {
 			jQuery.each(layer.getChildren(), function(index, value) {
-				if (value.getName() !== undefined) {
-					var regex = new RegExp("^arrow");
-					if (regex.test(value.getName())) {
-						value.setStroke("black");
-					}
+				if (value.isArrow == true) {
+					value.setStroke("black");
 				}
 			});
 		}
 
 		this.setStroke("red");
+		this.selected = true;
 		clickArrow = true;
 		stage.draw();
 	});
 
 	jQuery("#canvas").click(
-			function(e) {
+		function(e) {
 
-				// remove the arrows that are outside the standard
-				deleteArrowOutsideStandard(canvasName);
+			// remove the arrows that are outside the standard
+			deleteArrowOutsideStandard(canvasName);
 
-				if (!e.ctrlKey) {
+			if (!e.ctrlKey) {
 
-					// checks if something was selected on
-					// method:rectSelectAllObj
-					if (!select) {
+				// checks if something was selected on
+				// method:rectSelectAllObj
+				if (!select) {
 
-						jQuery.each(polygonLayer.get('.polygon1'), function(
-								index, value) {
-							value.setStroke("black");
+					jQuery.each(polygonLayer.get('.polygon1'), function(index, value) {
+						value.setStroke("black");
+						value.selected = false;
+					});
+
+					// checks if an arrow was clicked on
+					// metohd:arrow.'click'
+					if (!clickArrow) {
+						jQuery.each(layer.getChildren(), function(index, value) {
+							if (value.isArrow == true) {
+								value.setStroke("black");
+								value.selected = false;
+								layer.draw();
+							}
 						});
-
-						// checks if an arrow was clicked on
-						// metohd:arrow.'click'
-						if (!clickArrow) {
-							jQuery.each(layer.getChildren(), function(index,
-									value) {
-								if (value.getName() !== undefined) {
-									var regex = new RegExp("^arrow");
-									if (regex.test(value.getName())) {
-										value.setStroke("black");
-										layer.draw();
-									}
-								}
-							});
-						}
-						clickArrow = false;
-
 					}
+					clickArrow = false;
 				}
+			}
 
-				down = false;
+			down = false;
 
-				moving = false;
+			moving = false;
 
-				select = rectSelectAllObj(canvasName, e);
+			select = rectSelectAllObj(canvasName, e);
 
-				rectSelect.remove();
+			rectSelect.remove();
 
-				layer.draw();
-				polygonLayer.draw();
-
-			});
+			layer.draw();
+			polygonLayer.draw();
+		}
+	);
 
 	positionX = 0;
 	positionY = 0;
@@ -255,18 +231,14 @@ function configureCanvas(canvasName){
 // a = retangle, b = object, bx = object.getX() and by = object.getY()
 function collidesObj(a, b, bx, by) {
 
-	if (a.getX() < bx + b.getWidth() && a.getX() + a.getWidth() > bx
-			&& a.getY() < by + b.getHeight() && a.getY() + a.getHeight() > by) {
+	if (a.getX() < bx + b.getWidth() && a.getX() + a.getWidth() > bx && a.getY() < by + b.getHeight() && a.getY() + a.getHeight() > by) {
 		return true;
-	} else if (a.getX() > bx + b.getWidth() && a.getX() + a.getWidth() < bx
-			&& a.getY() < by + b.getHeight() && a.getY() + a.getHeight() > by) {
+	} else if (a.getX() > bx + b.getWidth() && a.getX() + a.getWidth() < bx && a.getY() < by + b.getHeight() && a.getY() + a.getHeight() > by) {
 		return true;
-	} else if (a.getX() > bx + b.getWidth() && a.getX() + a.getWidth() < bx
-			&& a.getY() > by + b.getHeight() && a.getY() + a.getHeight() < by) {
+	} else if (a.getX() > bx + b.getWidth() && a.getX() + a.getWidth() < bx	&& a.getY() > by + b.getHeight() && a.getY() + a.getHeight() < by) {
 		return true;
 	}
-	if (a.getX() < bx + b.getWidth() && a.getX() + a.getWidth() > bx
-			&& a.getY() > by + b.getHeight() && a.getY() + a.getHeight() < by) {
+	if (a.getX() < bx + b.getWidth() && a.getX() + a.getWidth() > bx && a.getY() > by + b.getHeight() && a.getY() + a.getHeight() < by) {
 		return true;
 	} else {
 		return false;
@@ -285,11 +257,13 @@ function rectSelectAllObj(canvasName, e) {
 				if (collidesObj(rectSelect, value, value.getX() + 40, value
 						.getY() + 50)) {
 					value.getChildren()[1].setStroke("red");
+					value.getChildren()[1].selected = true;
 					polygonLayer.draw();
 					select = true;
 				} else {
 					if (!e.ctrlKey && !dragDropGroup) {
 						value.getChildren()[1].setStroke("black");
+						value.getChildren()[1].selected = false;
 						polygonLayer.draw();
 					}
 				}
@@ -308,15 +282,14 @@ function deselectOnClick(canvasName, obj, e) {
 	if (!e.ctrlKey && !dragDropGroup) {
 		jQuery.each(polygonLayer.get('.polygon1'), function(index, value) {
 			value.setStroke("black");
+			value.selected = false;
 		});
 
 		jQuery.each(layer.getChildren(), function(index, value) {
-			if (value.getName() !== undefined) {
-				var regex = new RegExp("^arrow");
-				if (regex.test(value.getName())) {
-					value.setStroke("black");
-					layer.draw();
-				}
+			if (value.isArrow == true) {
+				value.setStroke("black");
+				value.selected = false;
+				layer.draw();
 			}
 		});
 
@@ -325,6 +298,7 @@ function deselectOnClick(canvasName, obj, e) {
 	dragDropGroup = false;
 
 	obj.setStroke("red");
+	obj.selected = true;
 
 	stage.draw();
 
@@ -349,8 +323,7 @@ function dragAndDropGroup(canvasName, obj, e) {
 	// if(e.ctrlKey){
 	jQuery.each(polygonLayer.get('.group1'), function(index, value) {
 		if (value.getId() != group.getId()) {
-			if (value.getChildren()[1] !== undefined
-					&& value.getChildren()[1].getStroke() == "red") {
+			if (value.getChildren()[1] !== undefined && value.getChildren()[1].selected == true) {
 				if (mousePos !== undefined) {
 
 					if (group.getX() > positionX) {
@@ -426,16 +399,15 @@ function selectAll(canvasName) {
 	
 	jQuery.each(polygonLayer.get('.polygon1'), function(index, value) {
 		value.setStroke("red");
+		value.selected = true;
 		polygonLayer.draw();
 	});
 
 	jQuery.each(layer.getChildren(), function(index, value) {
-		if (value.getName() !== undefined) {
-			var regex = new RegExp("^arrow");
-			if (regex.test(value.getName())) {
-				value.setStroke("red");
-				layer.draw();
-			}
+		if (value.isArrow == true) {
+			value.setStroke("red");
+			value.selected = true;
+			layer.draw();
 		}
 	});
 
@@ -448,16 +420,15 @@ function deselectAll(canvasName) {
 
 	jQuery.each(polygonLayer.get('.polygon1'), function(index, value) {
 		value.setStroke("black");
+		value.selected = false;
 		polygonLayer.draw();
 	});
 
 	jQuery.each(layer.getChildren(), function(index, value) {
-		if (value.getName() !== undefined) {
-			var regex = new RegExp("^arrow");
-			if (regex.test(value.getName())) {
-				value.setStroke("black");
-				layer.draw();
-			}
+		if (value.isArrow == true) {
+			value.setStroke("black");
+			value.selected = false;
+			layer.draw();
 		}
 	});
 
@@ -474,7 +445,7 @@ function deleteSelected(canvasName) {
 		var group = this;
 		var groupNumber = group.getId().substring(5, this.getId().length);
 		jQuery.each(value.getChildren(), function(index, value2) {
-			if (value2.getStroke() == "red") {
+			if (value2.selected == true) {
 				deleteLayerChildren(canvasName, groupNumber);
 				group.remove();
 			}
@@ -485,13 +456,10 @@ function deleteSelected(canvasName) {
 	for ( var i = 0; i < listSize; i++) {
 		jQuery.each(layer.getChildren(), function(index, value) {
 			if (value !== undefined) {
-				if (value.getName() !== undefined) {
-					var regex = new RegExp("^arrow");
-					if (regex.test(value.getName())) {
-						if (value.getStroke() == "red") {
-							value.remove();
-							return false;
-						}
+				if (value.isArrow == true) {
+					if (value.selected == true) {
+						value.remove();
+						return false;
 					}
 				}
 			}
@@ -557,29 +525,15 @@ function deleteLayerChildren(canvasName, groupNumber) {
 	var listSize = layer.getChildren().size();
 	for ( var i = 0; i < listSize; i++) {
 		jQuery.each(layer.getChildren(),
-				function(index, value) {
-					if (value !== undefined) {
-						if (value.getName() !== undefined) {
-
-							var regex = new RegExp("^arrow" + groupNumber
-									+ "-([0-9]+)");
-							if (regex.test(value.getName())) {
-								value.remove();
-								return false;
-							}
-
-							var regex2 = new RegExp("^arrow([0-9]+)-"
-									+ groupNumber);
-							if (regex2.test(value.getName())) {
-								value.remove();
-								return false;
-							}
-
-						}
+			function(index, value) {
+				if (value !== undefined && value.isArrow == true) {
+					if (value.idOutput == groupNumber || value.idInput == groupNumber){
+						value.remove();
+						return false;
 					}
-				});
+				}
+			});
 	}
-
 }
 
 function changePositionArrow(canvasName, obj) {
@@ -591,10 +545,9 @@ function changePositionArrow(canvasName, obj) {
 	var groupNumber = obj.getId().substring(5, obj.getId().length);
 
 	jQuery.each(layer.getChildren(), function(index, value) {
-		if (value.getName() !== undefined) {
+		if (value.isArrow == true) {
 			// alert(value.getName());
-			var regex = new RegExp("^arrow" + groupNumber + "-([0-9]+)");
-			if (regex.test(value.getName())) {
+			if (value.idOutput == groupNumber) {
 				// alert(value.getName());
 				value.getPoints()[0].x = group.getX() + 40;
 				value.getPoints()[0].y = group.getY() + 50;
@@ -642,34 +595,26 @@ function changePositionArrow(canvasName, obj) {
 					value.getPoints()[2].x = newPoint2[0];
 					value.getPoints()[2].y = newPoint2[1];
 
-					value.getPoints()[3].x = newPoint[0] - headlen
-							* Math.cos(angle - Math.PI / 6);
-					value.getPoints()[3].y = newPoint[1] - headlen
-							* Math.sin(angle - Math.PI / 6);
+					value.getPoints()[3].x = newPoint[0] - headlen * Math.cos(angle - Math.PI / 6);
+					value.getPoints()[3].y = newPoint[1] - headlen * Math.sin(angle - Math.PI / 6);
 
 					value.getPoints()[4].x = newPoint[0];
 					value.getPoints()[4].y = newPoint[1];
 
-					value.getPoints()[5].x = newPoint[0] - headlen
-							* Math.cos(angle + Math.PI / 6);
-					value.getPoints()[5].y = newPoint[1] - headlen
-							* Math.sin(angle + Math.PI / 6);
+					value.getPoints()[5].x = newPoint[0] - headlen * Math.cos(angle + Math.PI / 6);
+					value.getPoints()[5].y = newPoint[1] - headlen * Math.sin(angle + Math.PI / 6);
 
 					value.getPoints()[6].x = newPoint2[0];
 					value.getPoints()[6].y = newPoint2[1];
 
-					value.getPoints()[7].x = newPoint2[0] - headlen2
-							* Math.cos(angle - Math.PI / 3);
-					value.getPoints()[7].y = newPoint2[1] - headlen2
-							* Math.sin(angle - Math.PI / 3);
+					value.getPoints()[7].x = newPoint2[0] - headlen2 * Math.cos(angle - Math.PI / 3);
+					value.getPoints()[7].y = newPoint2[1] - headlen2 * Math.sin(angle - Math.PI / 3);
 
 					value.getPoints()[8].x = newPoint2[0];
 					value.getPoints()[8].y = newPoint2[1];
 
-					value.getPoints()[9].x = newPoint2[0] - headlen2
-							* Math.cos(angle + Math.PI / 3);
-					value.getPoints()[9].y = newPoint2[1] - headlen2
-							* Math.sin(angle + Math.PI / 3);
+					value.getPoints()[9].x = newPoint2[0] - headlen2 * Math.cos(angle + Math.PI / 3);
+					value.getPoints()[9].y = newPoint2[1] - headlen2 * Math.sin(angle + Math.PI / 3);
 
 				}
 
@@ -677,63 +622,54 @@ function changePositionArrow(canvasName, obj) {
 		}
 	});
 
-	jQuery.each(layer.getChildren(), function(index2, value2) {
-		if (value2.getName() !== undefined) {
+	jQuery.each(layer.getChildren(), function(index, value) {
+		if (value.isArrow == true) {
 			// alert(value2.getName());
-			var regex = new RegExp("^arrow([0-9]+)-" + groupNumber);
 			// alert(regex.test(value2.getName()));
-			if (regex.test(value2.getName())) {
+			if (value.idInput == groupNumber) {
 				// alert(value2.getName());
 
-				var newPoint = getCircleLineIntersectionPoint(value2
-						.getPoints()[0].x, value2.getPoints()[0].y, group
+				var newPoint = getCircleLineIntersectionPoint(value
+						.getPoints()[0].x, value.getPoints()[0].y, group
 						.getX() + 40, group.getY() + 50, group.getX() + 40,
 						group.getY() + 50, 47);
-				var newPoint2 = getCircleLineIntersectionPoint(value2
-						.getPoints()[0].x, value2.getPoints()[0].y, group
+				var newPoint2 = getCircleLineIntersectionPoint(value
+						.getPoints()[0].x, value.getPoints()[0].y, group
 						.getX() + 40, group.getY() + 50, group.getX() + 40,
 						group.getY() + 50, 60);
 
-				value2.getPoints()[1].x = newPoint2[0];
-				value2.getPoints()[1].y = newPoint2[1];
+				value.getPoints()[1].x = newPoint2[0];
+				value.getPoints()[1].y = newPoint2[1];
 
 				var headlen = 20;
 				var headlen2 = 10;
 
-				var angle = Math.atan2(newPoint[1] - value2.getPoints()[0].y,
-						newPoint[0] - value2.getPoints()[0].x);
+				var angle = Math.atan2(newPoint[1] - value.getPoints()[0].y,
+						newPoint[0] - value.getPoints()[0].x);
 
-				value2.getPoints()[2].x = newPoint2[0];
-				value2.getPoints()[2].y = newPoint2[1];
+				value.getPoints()[2].x = newPoint2[0];
+				value.getPoints()[2].y = newPoint2[1];
 
-				value2.getPoints()[3].x = newPoint[0] - headlen
-						* Math.cos(angle - Math.PI / 6);
-				value2.getPoints()[3].y = newPoint[1] - headlen
-						* Math.sin(angle - Math.PI / 6);
+				value.getPoints()[3].x = newPoint[0] - headlen * Math.cos(angle - Math.PI / 6);
+				value.getPoints()[3].y = newPoint[1] - headlen	* Math.sin(angle - Math.PI / 6);
 
-				value2.getPoints()[4].x = newPoint[0];
-				value2.getPoints()[4].y = newPoint[1];
+				value.getPoints()[4].x = newPoint[0];
+				value.getPoints()[4].y = newPoint[1];
 
-				value2.getPoints()[5].x = newPoint[0] - headlen
-						* Math.cos(angle + Math.PI / 6);
-				value2.getPoints()[5].y = newPoint[1] - headlen
-						* Math.sin(angle + Math.PI / 6);
+				value.getPoints()[5].x = newPoint[0] - headlen	* Math.cos(angle + Math.PI / 6);
+				value.getPoints()[5].y = newPoint[1] - headlen	* Math.sin(angle + Math.PI / 6);
 
-				value2.getPoints()[6].x = newPoint2[0];
-				value2.getPoints()[6].y = newPoint2[1];
+				value.getPoints()[6].x = newPoint2[0];
+				value.getPoints()[6].y = newPoint2[1];
 
-				value2.getPoints()[7].x = newPoint2[0] - headlen2
-						* Math.cos(angle - Math.PI / 3);
-				value2.getPoints()[7].y = newPoint2[1] - headlen2
-						* Math.sin(angle - Math.PI / 3);
+				value.getPoints()[7].x = newPoint2[0] - headlen2	* Math.cos(angle - Math.PI / 3);
+				value.getPoints()[7].y = newPoint2[1] - headlen2	* Math.sin(angle - Math.PI / 3);
 
-				value2.getPoints()[8].x = newPoint2[0];
-				value2.getPoints()[8].y = newPoint2[1];
+				value.getPoints()[8].x = newPoint2[0];
+				value.getPoints()[8].y = newPoint2[1];
 
-				value2.getPoints()[9].x = newPoint2[0] - headlen2
-						* Math.cos(angle + Math.PI / 3);
-				value2.getPoints()[9].y = newPoint2[1] - headlen2
-						* Math.sin(angle + Math.PI / 3);
+				value.getPoints()[9].x = newPoint2[0] - headlen2	* Math.cos(angle + Math.PI / 3);
+				value.getPoints()[9].y = newPoint2[1] - headlen2	* Math.sin(angle + Math.PI / 3);
 			}
 		}
 	});
@@ -743,6 +679,35 @@ function changePositionArrow(canvasName, obj) {
 
 }
 
+function updatePositionArrow(value, newPoint, newPoint2){
+	value.getPoints()[1].x = newPoint2[0];
+	value.getPoints()[1].y = newPoint2[1];
+
+	value.getPoints()[2].x = newPoint2[0];
+	value.getPoints()[2].y = newPoint2[1];
+
+	value.getPoints()[3].x = newPoint[0] - headlen * Math.cos(angle - Math.PI / 6);
+	value.getPoints()[3].y = newPoint[1] - headlen * Math.sin(angle - Math.PI / 6);
+
+	value.getPoints()[4].x = newPoint[0];
+	value.getPoints()[4].y = newPoint[1];
+
+	value.getPoints()[5].x = newPoint[0] - headlen * Math.cos(angle + Math.PI / 6);
+	value.getPoints()[5].y = newPoint[1] - headlen * Math.sin(angle + Math.PI / 6);
+
+	value.getPoints()[6].x = newPoint2[0];
+	value.getPoints()[6].y = newPoint2[1];
+
+	value.getPoints()[7].x = newPoint2[0] - headlen2 * Math.cos(angle - Math.PI / 3);
+	value.getPoints()[7].y = newPoint2[1] - headlen2 * Math.sin(angle - Math.PI / 3);
+
+	value.getPoints()[8].x = newPoint2[0];
+	value.getPoints()[8].y = newPoint2[1];
+
+	value.getPoints()[9].x = newPoint2[0] - headlen2 * Math.cos(angle + Math.PI / 3);
+	value.getPoints()[9].y = newPoint2[1] - headlen2 * Math.sin(angle + Math.PI / 3);
+}
+
 function rulesDragAndDropObj(canvasName, pos, valueX, valueY) {
 	
 	var stage = stageArray[canvasName];
@@ -750,9 +715,10 @@ function rulesDragAndDropObj(canvasName, pos, valueX, valueY) {
 
 	var xCanvas = stage.getWidth();
 	var yCanvas = stage.getHeight();
-
+	
+	var newX;
 	if (pos.x < 5) {
-		var newX = 5;
+		newX = 5;
 	} else if (pos.x + valueX > xCanvas) {
 		newX = pos.x;
 		stage.setWidth(xCanvas + 200);
@@ -761,8 +727,9 @@ function rulesDragAndDropObj(canvasName, pos, valueX, valueY) {
 		newX = pos.x;
 	}
 
+	var newY;
 	if (pos.y < 5) {
-		var newY = 5;
+		newY = 5;
 	} else if (pos.y + valueY > yCanvas) {
 		newY = pos.y;
 		stage.setHeight(yCanvas + 200);
@@ -845,8 +812,7 @@ function makeHistory(canvasName) {
 
 	var json2 = layer.toJSON();
 	json2 = json2.replace('"children":"', '"children":');
-	json2 = json2.substring(0, json2.length - 2)
-			+ json2.substring(json2.length - 1, json2.length);
+	json2 = json2.substring(0, json2.length - 2) + json2.substring(json2.length - 1, json2.length);
 	json2 = json2.replace(/\\/g, "");
 
 	history2.push(json2);
@@ -854,8 +820,7 @@ function makeHistory(canvasName) {
 
 	var json = polygonLayer.toJSON();
 	json = json.replace('"children":"', '"children":');
-	json = json.substring(0, json.length - 2)
-			+ json.substring(json.length - 1, json.length);
+	json = json.substring(0, json.length - 2) + json.substring(json.length - 1, json.length);
 	json = json.replace(/\\/g, "");
 	history.push(json);
 	// console.log(json);
@@ -870,8 +835,8 @@ function undoHistory(canvasName) {
 		var json = history[historyStep];
 		var json2 = history2[historyStep];
 
-		polygonLayerArray[canvasName] = Kinetic.Node.create(json, 'canvas');
-		layerArray[canvasName] = Kinetic.Node.create(json2, 'canvas');
+		polygonLayerArray[canvasName] = Kinetic.Node.create(json, canvasName);
+		layerArray[canvasName] = Kinetic.Node.create(json2, canvasName);
 
 		ready(canvasName);
 	}
@@ -936,7 +901,7 @@ function addElement(canvasName, elementId, elementType, elementImg, posx, posy) 
 	polygonLayer.add(group);
 
 	configureGroup(canvasName, group, posx, posy, polygon, countObj, rectSelect, positionX,
-			positionY, stage);
+			positionY);
 	group.hasChangedId = true;
 
 	updateIdObj("group" + countObj, elementId);
@@ -973,9 +938,9 @@ function addLink(canvasName, inId, outId) {
 	var circleIn = polygonGroupIn.getChildren()[0];
 	circleIn.setFill('white');
 
-	arrow.setName("arrow"
-			+ circleOut.getName().substring(6, circleOut.getName().length)
-			+ "-" + circleIn.getName().substring(6, circleIn.getName().length));
+	var idOutput = circleOut.getName().substring(6, circleOut.getName().length);
+	var idInput = circleIn.getName().substring(6, circleIn.getName().length);
+	arrow.setName("arrow" + idOutput + "-" + idInput);
 
 	var newPoint = getCircleLineIntersectionPoint(arrow.getPoints()[0].x, arrow
 			.getPoints()[0].y, polygonGroupIn.getX() + 40, polygonGroupIn
@@ -988,8 +953,7 @@ function addLink(canvasName, inId, outId) {
 
 	var headlen = 20;
 	var headlen2 = 10;
-	var angle = Math.atan2(newPoint[1] - arrow.getPoints()[0].y, newPoint[0]
-			- arrow.getPoints()[0].x);
+	var angle = Math.atan2(newPoint[1] - arrow.getPoints()[0].y, newPoint[0] - arrow.getPoints()[0].x);
 
 	arrow.setPoints([ arrow.getPoints()[0].x, arrow.getPoints()[0].y,
 			newPoint2[0], newPoint2[1], newPoint2[0], newPoint2[1],
@@ -1004,7 +968,11 @@ function addLink(canvasName, inId, outId) {
 			newPoint2[0] - headlen2 * Math.cos(angle + Math.PI / 3),
 			newPoint2[1] - headlen2 * Math.sin(angle + Math.PI / 3) ]);
 
-	layer.add(arrow.clone());
+	var arrowClone = arrow.clone();
+	arrowClone.idInput = idInput;
+	arrowClone.idOutput = idOutput;
+	arrowClone.isArrow = true;
+	layer.add(arrowClone);
 	layer.draw();
 	polygonLayer.draw();
 
@@ -1019,11 +987,8 @@ function redoHistory(canvasName) {
 		var json = history[historyStep];
 		var json2 = history2[historyStep];
 
-		// console.log(json2);
-		// console.log('test');
-
-		polygonLayerArray[canvasName] = Kinetic.Node.create(json, 'canvas');
-		layerArray[canvasName] = Kinetic.Node.create(json2, 'canvas');
+		polygonLayerArray[canvasName] = Kinetic.Node.create(json, canvasName);
+		layerArray[canvasName] = Kinetic.Node.create(json2, canvasName);
 
 		ready(canvasName);
 	}
@@ -1127,238 +1092,177 @@ function mountObj(canvasName, countObj) {
 	configureCircle(canvasName, circle1);
 
 	// for list divs
-	jQuery("#tabsFooter ul:first li")
-			.each(
-					function(index) {
+	jQuery("#tabsFooter ul:first li").each(function(index) {
 
-						var posInitX = 40;
-						var poxInitY = 50;
+		var posInitX = 40;
+		var poxInitY = 50;
 
-						var nameDiv = jQuery(this).attr("aria-controls");
+		var nameDiv = jQuery(this).attr("aria-controls");
 
-						if (nameDiv != undefined) { // groupNumber
+		if (nameDiv != undefined) { // groupNumber
 
-							// ------------ START TAB
+			// ------------ START TAB
 
-							// stage to footer
-							stageTab = new Kinetic.Stage({
-								container : nameDiv,
-								width : 500,
-								height : 100
-							});
+			// stage to footer
+			stageTab = new Kinetic.Stage({
+				container : nameDiv,
+				width : 500,
+				height : 100
+			});
 
-							// layer to footer tab1
-							var layerTab = new Kinetic.Layer();
+			// layer to footer tab1
+			var layerTab = new Kinetic.Layer();
 
-							// var countObj = 0;
+			// var countObj = 0;
 
-							// for list of obj imagens
-							jQuery("#" + nameDiv)
-									.find("img")
-									.each(
-											function(index) {
+			// for list of obj imagens
+			jQuery("#" + nameDiv).find("img").each(function(index) {
 
-												// variable to control image of
-												// the object
-												var imgTab = new Image({
-													width : 16,
-													height : 16
-												});
-												imgTab.src = jQuery(this).attr(
-														"src");
+				// variable to control image of
+				// the object
+				var imgTab = new Image({
+					width : 16,
+					height : 16
+				});
+				imgTab.src = jQuery(this).attr("src");
 
-												var srcImageText = new Kinetic.Text(
-														{
-															text : jQuery(this)
-																	.attr("src")
-														});
-												srcImageText.setStroke(null);
+				var srcImageText = new Kinetic.Text({
+					text : jQuery(this).attr("src")
+				});
+				srcImageText.setStroke(null);
 
-												var typeText = new Kinetic.Text(
-														{
-															text : jQuery(this)
-																	.next()
-																	.text()
-														});
-												typeText.setStroke(null);
+				var typeText = new Kinetic.Text({
+					text : jQuery(this).next().text()
+				});
+				typeText.setStroke(null);
 
-												// ------------------ START
-												// GROUP
+				// ------------------ START
+				// GROUP
 
-												var result = createPolygon(
-														canvasName, 
-														imgTab, posInitX,
-														poxInitY);
-												var polygon = result[0];
-												var polygonTab = result[1];
-												var polygonTabImage = result[2];
+				var result = createPolygon(
+					canvasName, 
+					imgTab, posInitX,
+					poxInitY);
+				var polygon = result[0];
+				var polygonTab = result[1];
+				var polygonTabImage = result[2];
 
-												var polygonTabFake = new Kinetic.RegularPolygon(
-														{
-															x : 40,
-															y : 50,
-															opacity : 0,
-															radius : 27,
-															sides : 4,
-															stroke : 'black',
-															strokeWidth : 4,
-															fillPatternImage : imgTab,
-															fillPatternOffset : [
-																	7, 7 ],
-															fillPatternX : -18,
-															fillPatternY : 0,
-															fillPatternRepeat : 'no-repeat',
-															fillPatternScale : 0.9,
-															fillPatternRotationDeg : 315,
-															draggable : true
-														});
-												polygonTabFake.rotateDeg(45);
-												polygonTabFake
-														.setAbsolutePosition(
-																posInitX,
-																poxInitY);
+				var polygonTabFake = new Kinetic.RegularPolygon({
+					x : 40,
+					y : 50,
+					opacity : 0,
+					radius : 27,
+					sides : 4,
+					stroke : 'black',
+					strokeWidth : 4,
+					fillPatternImage : imgTab,
+					fillPatternOffset : [7, 7 ],
+					fillPatternX : -18,
+					fillPatternY : 0,
+					fillPatternRepeat : 'no-repeat',
+					fillPatternScale : 0.9,
+					fillPatternRotationDeg : 315,
+					draggable : true
+				});
+				polygonTabFake.rotateDeg(45);
+				polygonTabFake.setAbsolutePosition(posInitX,poxInitY);
 
-												posInitX = posInitX + 60;
+				posInitX = posInitX + 60;
 
-												polygonTabFake
-														.on(
-																'dragstart',
-																function() {
+				polygonTabFake.on('dragstart',function() {
+					jQuery('#body').css('cursor','url('+ polygonTabImage+ ') 30 30,default');
 
-																	jQuery(
-																			'#body')
-																			.css(
-																					'cursor',
-																					'url('
-																							+ polygonTabImage
-																							+ ') 30 30,default');
+					this.remove();
+					layerTab.add(polygonTabFake.clone());
+					layerTab.draw();
 
-																	this
-																			.remove();
-																	layerTab
-																			.add(polygonTabFake
-																					.clone());
-																	layerTab
-																			.draw();
+				});
 
-																});
+				// var countObj = 0;
 
-												// var countObj = 0;
+				positionX = 0;
+				positionY = 0;
 
-												positionX = 0;
-												positionY = 0;
+				polygonTabFake.on('dragend',function() {
 
-												polygonTabFake
-														.on(
-																'dragend',
-																function() {
+					try {
+						document.body.style.cursor = 'default';
 
-																	try {
-																		document.body.style.cursor = 'default';
+						var mousePos = stageTab.getMousePosition();
+						if (mousePos.x > 0 || mousePos.y > 0) {
+							this.remove();
+							layerTab.add(polygonTabFake.clone());
+							layerTab.draw();
+						}
 
-																		var mousePos = stageTab
-																				.getMousePosition();
-																		if (mousePos.x > 0
-																				|| mousePos.y > 0) {
-																			this
-																					.remove();
-																			layerTab
-																					.add(polygonTabFake
-																							.clone());
-																			layerTab
-																					.draw();
-																		}
+					} catch (e) {
+						try {
 
-																	} catch (e) {
-																		try {
+							countObj++;
 
-																			countObj++;
+							var group1 = createGroup(
+								canvasName,
+								circle1,
+								polygon,
+								countObj,
+								srcImageText,
+								typeText);
 
-																			var group1 = createGroup(
-																					canvasName,
-																					circle1,
-																					polygon,
-																					countObj,
-																					srcImageText,
-																					typeText);
+							polygonLayer.add(group1);
+							this.group = group1;
 
-																			polygonLayer
-																					.add(group1);
-																			this.group = group1;
+							// -----
+							var mousePosStage = stage.getMousePosition();
 
-																			// -----
-																			var mousePosStage = stage
-																					.getMousePosition();
+							configureGroup(
+								canvasName,
+								this.group,
+								mousePosStage.x - 30,
+								mousePosStage.y - 30,
+								polygon,
+								countObj,
+								rectSelect,
+								positionX,
+								positionY);
 
-																			configureGroup(
-																					canvasName,
-																					this.group,
-																					mousePosStage.x - 30,
-																					mousePosStage.y - 30,
-																					polygon,
-																					countObj,
-																					rectSelect,
-																					positionX,
-																					positionY,
-																					stage);
+							layerTab.add(polygonTabFake.clone());
+							layerTab.draw();
 
-																			layerTab
-																					.add(polygonTabFake
-																							.clone());
-																			layerTab
-																					.draw();
+							addElementBt(typeText.getText(),"group"+ countObj);
 
-																			addElementBt(
-																					typeText
-																							.getText(),
-																					"group"
-																							+ countObj);
+						} catch (e) {
 
-																		} catch (e) {
+							document.body.style.cursor = 'default';
+							// removeElement(this.group.getId());
+							this.remove();
+							layerTab.add(polygonTabFake.clone());
+							layerTab.draw();
 
-																			document.body.style.cursor = 'default';
-																			// removeElement(this.group.getId());
-																			this
-																					.remove();
-																			layerTab
-																					.add(polygonTabFake
-																							.clone());
-																			layerTab
-																					.draw();
+							makeHistory(canvasName);
+						}
+					}
+				});
 
-																			makeHistory(canvasName);
-																		}
-																	}
-																});
+				polygonTabFake.on('mouseup',function() {
+					this.remove();
+					layerTab.add(polygonTabFake.clone());
+					layerTab.draw();
+				});
 
-												polygonTabFake
-														.on(
-																'mouseup',
-																function() {
-																	this
-																			.remove();
-																	layerTab
-																			.add(polygonTabFake
-																					.clone());
-																	layerTab
-																			.draw();
-																});
+				layerTab.add(polygonTab);
+				layerTab.add(polygonTabFake.clone());
 
-												layerTab.add(polygonTab);
-												layerTab.add(polygonTabFake
-														.clone());
+				// jQuery( "#"+nameDiv
+				// ).find("img").remove();
 
-												// jQuery( "#"+nameDiv
-												// ).find("img").remove();
+			});
+			// END for obj imagens
 
-											});
-							// END for obj imagens
+			stageTab.add(layerTab);
 
-							stageTab.add(layerTab);
+		}// END IF
 
-						}// END IF
-
-					});
+	});
 	// END for divs
 
 }
@@ -1407,7 +1311,8 @@ function updateLink(canvasName, linkName, nameOutput, nameInput) {
 
 function save(canvasName, path) {
 	var polygonLayer = polygonLayerArray[canvasName];
-	var positions = new Object();
+    var positions = {};
+
 	// update element positions
 	for ( var i = 0; i < polygonLayer.getChildren().length; i++) {
 		var element = polygonLayer.getChildren()[i];
@@ -1439,13 +1344,10 @@ function configureCircle(canvasName, circle1) {
 				if (down) {
 					down = false;
 
-					arrow.setName(arrow.getName()
-							+ "-"
-							+ this.getName()
-									.substring(6, this.getName().length));
+					var idInput = this.getName().substring(6, this.getName().length);
+					arrow.setName(arrow.getName() + "-" + idInput);
 
-					var polygonGroup = polygonLayer.get('#'
-							+ this.getParent().getId());
+					var polygonGroup = polygonLayer.get('#'	+ this.getParent().getId());
 
 					var newPoint = getCircleLineIntersectionPoint(arrow
 							.getPoints()[0].x, arrow.getPoints()[0].y,
@@ -1463,8 +1365,7 @@ function configureCircle(canvasName, circle1) {
 					var headlen = 20;
 					var headlen2 = 10;
 					var angle = Math.atan2(
-							newPoint[1] - arrow.getPoints()[0].y, newPoint[0]
-									- arrow.getPoints()[0].x);
+							newPoint[1] - arrow.getPoints()[0].y, newPoint[0]	- arrow.getPoints()[0].x);
 
 					arrow.setPoints([
 							arrow.getPoints()[0].x,
@@ -1473,32 +1374,28 @@ function configureCircle(canvasName, circle1) {
 							newPoint2[1],
 							newPoint2[0],
 							newPoint2[1],
-							newPoint[0] - headlen
-									* Math.cos(angle - Math.PI / 6),
-							newPoint[1] - headlen
-									* Math.sin(angle - Math.PI / 6),
+							newPoint[0] - headlen	* Math.cos(angle - Math.PI / 6),
+							newPoint[1] - headlen	* Math.sin(angle - Math.PI / 6),
 							newPoint[0],
 							newPoint[1],
-							newPoint[0] - headlen
-									* Math.cos(angle + Math.PI / 6),
-							newPoint[1] - headlen
-									* Math.sin(angle + Math.PI / 6),
+							newPoint[0] - headlen	* Math.cos(angle + Math.PI / 6),
+							newPoint[1] - headlen	* Math.sin(angle + Math.PI / 6),
 							newPoint2[0],
 							newPoint2[1],
-							newPoint2[0] - headlen2
-									* Math.cos(angle - Math.PI / 3),
-							newPoint2[1] - headlen2
-									* Math.sin(angle - Math.PI / 3),
+							newPoint2[0] - headlen2	* Math.cos(angle - Math.PI / 3),
+							newPoint2[1] - headlen2	* Math.sin(angle - Math.PI / 3),
 							newPoint2[0],
 							newPoint2[1],
-							newPoint2[0] - headlen2
-									* Math.cos(angle + Math.PI / 3),
-							newPoint2[1] - headlen2
-									* Math.sin(angle + Math.PI / 3) ]);
+							newPoint2[0] - headlen2	* Math.cos(angle + Math.PI / 3),
+							newPoint2[1] - headlen2	* Math.sin(angle + Math.PI / 3) ]);
 
 					var arrowClone = arrow.clone();
 					arrowClone.input = this.getParent().getId();
 					arrowClone.output = arrow.output;
+					arrowClone.idOutput = arrow.idOutput;
+					arrowClone.idInput = idInput;
+					arrowClone.isArrow = true;
+
 					layer.add(arrowClone);
 
 					// remove the arrows that are outside the standard
@@ -1519,21 +1416,22 @@ function configureCircle(canvasName, circle1) {
 
 					// alert(this.getParent().getId());
 
-					var polygonGroup = polygonLayer.get('#'
-							+ this.getParent().getId());
+					var polygonGroup = polygonLayer.get('#'	+ this.getParent().getId());
 					arrow.setPoints([ polygonGroup[0].getX() + 40,
 							polygonGroup[0].getY() + 50,
 							polygonGroup[0].getX() + 40 + 1,
 							polygonGroup[0].getY() + 50 + 1 ]);
-					arrow.setName("arrow"
-							+ this.getName()
-									.substring(6, this.getName().length));
+
+					var idOutput = this.getName().substring(6, this.getName().length);
+					arrow.setName("arrow" + idOutput);
 
 					arrow.output = this.getParent().getId();
+					arrow.idOutput = idOutput;
 
 					circle.setFill('white');
 
-					layer.add(arrow.clone());
+					var cloneArrow = arrow.clone();
+					layer.add(cloneArrow);
 
 					layer.draw();
 					polygonLayer.draw();
@@ -1637,12 +1535,13 @@ function createGroup(canvasName, circle1, polygon, countObj, srcImageText, typeT
 }
 
 function configureGroup(canvasName, group1, mousePosX, mousePosY, polygon, countObj,
-		rectSelect, positionX, positionY, stage) {
+		rectSelect, positionX, positionY) {
 
 	document.body.style.cursor = 'default';
 
 	deselectAll(canvasName);
 	polygon.setStroke("red");
+	polygon.selected = true;
 
 	group1.setPosition(mousePosX, mousePosY);
 	group1.hasChangedId = false;
@@ -1655,6 +1554,7 @@ function configureGroup(canvasName, group1, mousePosX, mousePosY, polygon, count
 
 		var objImg = this.getChildren()[1].clone();
 		objImg.setStroke("black");
+		objImg.selected = false;
 		var imagePath = objImg.toDataURL({
 			width : 80,
 			height : 80
@@ -1700,8 +1600,9 @@ function createPolygon(canvasName, imgTab, posInitX, poxInitY) {
 	});
 
 	polygonTab.setAbsolutePosition(posInitX, poxInitY);
-	polygonTab.setStroke('red');
+//	polygonTab.setStroke('red');
 	polygonTab.setStroke('black');
+	polygonTab.selected = false;
 
 	var polygon = polygonTab.clone({
 		name : 'polygon1',

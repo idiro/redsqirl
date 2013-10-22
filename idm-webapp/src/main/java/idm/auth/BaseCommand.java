@@ -48,7 +48,7 @@ public class BaseCommand {
 		String codebase =  " -Djava.rmi.server.codebase="+getRMICodeBase();
 		String hostname = " -Djava.rmi.server.hostname="+getRMIHost();
 
-		command = "java" + classpath + codebase + hostname + " idiro.workflow.server.connect.ServerMain "+port;
+		command = classpath + codebase + hostname + " idiro.workflow.server.connect.ServerMain "+port;
 
 		return command;
 	}
