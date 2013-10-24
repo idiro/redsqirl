@@ -584,7 +584,7 @@ function changePositionArrow(canvasName, obj) {
 
 				var newPoint = getArrowPositions(value, group, 47);
 				var newPoint2 = getArrowPositions(value, group, 60);
-
+				
 				var angle = getArrowAngle2(newPoint, value);
 				
 				updatePositionArrow(value, newPoint, newPoint2, 20, 10, angle);
@@ -594,7 +594,6 @@ function changePositionArrow(canvasName, obj) {
 
 	layer.draw();
 	polygonLayer.draw();
-
 }
 
 function addLinks(canvasName, positions) {
@@ -681,6 +680,35 @@ function updatePositionArrow(arrow, newPoint, newPoint2, headlen, headlen2, angl
 		newPoint2[0], newPoint2[1],
 		newPoint2[0] - headlen2 * Math.cos(angle + Math.PI / 3),
 		newPoint2[1] - headlen2 * Math.sin(angle + Math.PI / 3) ]);
+}
+
+function updatePositionArrow(value, newPoint, newPoint2){
+	value.getPoints()[1].x = newPoint2[0];
+	value.getPoints()[1].y = newPoint2[1];
+
+	value.getPoints()[2].x = newPoint2[0];
+	value.getPoints()[2].y = newPoint2[1];
+
+	value.getPoints()[3].x = newPoint[0] - headlen * Math.cos(angle - Math.PI / 6);
+	value.getPoints()[3].y = newPoint[1] - headlen * Math.sin(angle - Math.PI / 6);
+
+	value.getPoints()[4].x = newPoint[0];
+	value.getPoints()[4].y = newPoint[1];
+
+	value.getPoints()[5].x = newPoint[0] - headlen * Math.cos(angle + Math.PI / 6);
+	value.getPoints()[5].y = newPoint[1] - headlen * Math.sin(angle + Math.PI / 6);
+
+	value.getPoints()[6].x = newPoint2[0];
+	value.getPoints()[6].y = newPoint2[1];
+
+	value.getPoints()[7].x = newPoint2[0] - headlen2 * Math.cos(angle - Math.PI / 3);
+	value.getPoints()[7].y = newPoint2[1] - headlen2 * Math.sin(angle - Math.PI / 3);
+
+	value.getPoints()[8].x = newPoint2[0];
+	value.getPoints()[8].y = newPoint2[1];
+
+	value.getPoints()[9].x = newPoint2[0] - headlen2 * Math.cos(angle + Math.PI / 3);
+	value.getPoints()[9].y = newPoint2[1] - headlen2 * Math.sin(angle + Math.PI / 3);
 }
 
 function rulesDragAndDropObj(canvasName, pos, valueX, valueY) {
@@ -886,7 +914,6 @@ function addElement(canvasName, elementId, elementType, elementImg, posx, posy) 
 
 }
 
-
 function redoHistory(canvasName) {
 	
 	if (canvasArray[canvasName].historyStep < history.length - 1) {
@@ -986,7 +1013,6 @@ function mountObj(canvasName) {
 	
 	var polygonLayer = canvasArray[canvasName].polygonLayer;
 	var stage = canvasArray[canvasName].stage;
-	var countObj = canvasArray[canvasName].countObj;
 
 	var circle1 = new Kinetic.Circle({
 		x : 40,
