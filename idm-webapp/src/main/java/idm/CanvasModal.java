@@ -41,13 +41,17 @@ public class CanvasModal extends BaseBean implements Serializable {
 	private CanvasBean canvasBean;
 
 	private String list = "";
+	private String listOp = "";
 	private String selectedGenerator = "";
 	private List<SelectItem> listItens = new ArrayList<SelectItem>();
 	private List<SelectItem> listItensTable = new ArrayList<SelectItem>();
+	private List<SelectItem> listItensTableOperation = new ArrayList<SelectItem>();
 	private Map<String, List<SelectItem>> listConstraint = new HashMap<String, List<SelectItem>>();
 	private List<String[]> listFunctions = new ArrayList<String[]>();
+	private List<String[]> listOperation = new ArrayList<String[]>();
 	private List<Entry> listFields = new ArrayList<Entry>();
 	private Map<String, List<String[]>> functionsMap = new HashMap<String, List<String[]>>();
+	private Map<String, List<String[]>> operationMap = new HashMap<String, List<String[]>>();
 	private Map<String, List<Map<String, String>>> rowsMap = new HashMap<String, List<Map<String, String>>>();
 	private Map<String, String> columnsMap = new HashMap<String, String>();
 	private String command = "";
@@ -725,50 +729,100 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 
 		List<SelectItem> listCategories = new ArrayList<SelectItem>();
+		List<SelectItem> listCategoriesOperation = new ArrayList<SelectItem>();
 		list = dfeInteractionTree.getFirstChild("editor").getFirstChild("help").getSubTreeList();
 		if(list != null){
 			logger.info("list not null: "+list.toString());
 			for (Tree<String> tree : list) {
 				logger.info("list value " + tree.getHead());
-				SelectItem e = new SelectItem(tree.getHead(),
-						tree.getHead());
-				listCategories.add(e);
+				if(tree.getHead().startsWith("operation_")){
+					String valueOperation[] = tree.getHead().split("_");
+					logger.info("list value startsWith: " + valueOperation[1]);
+					SelectItem e = new SelectItem(valueOperation[1], valueOperation[1]);
+					listCategoriesOperation.add(e);
+				}else{
+					SelectItem e = new SelectItem(tree.getHead(), tree.getHead());
+					listCategories.add(e);
+				}
 			}
 		}
 		setListItensTable(listCategories);
+		setListItensTableOperation(listCategoriesOperation);
 
 
 		Map<String, List<String[]>> map = new HashMap<String, List<String[]>>();
+		Map<String, List<String[]>> mapOp = new HashMap<String, List<String[]>>();
 		list = dfeInteractionTree.getFirstChild("editor").getFirstChild("help").getSubTreeList();
 		if(list != null){
 			logger.info("list not null: "+list.toString());
 			for (Tree<String> tree : list) {
 				logger.info("list value " + tree.getHead());
-				if (!map.containsKey(tree.getHead())){
-					map.put(tree.getHead(), new ArrayList<String[]>());
+				
+				if(tree.getHead().startsWith("operation_")){
+					
+					String valueOperation[] = tree.getHead().split("_");
+					
+					if (!mapOp.containsKey(valueOperation[1])){
+						mapOp.put(valueOperation[1], new ArrayList<String[]>());
+					}
+
+					for (Tree<String> tree2 : tree.getSubTreeList()){
+
+						String nameFunction = tree2.getFirstChild("name").getFirstChild() != null ? 
+								tree2.getFirstChild("name").getFirstChild().getHead() : "";
+								String inputFunction = tree2.getFirstChild("input").getFirstChild() != null ?
+										tree2.getFirstChild("input").getFirstChild().getHead() : "";
+										String returnFunction = tree2.getFirstChild("return").getFirstChild() != null ?
+												tree2.getFirstChild("return").getFirstChild().getHead() : "";
+
+												mapOp.get(valueOperation[1]).add(new String[]{nameFunction,
+														inputFunction,
+														returnFunction});
+					}
+					
+					
+				}else{
+					
+					if (!map.containsKey(tree.getHead())){
+						map.put(tree.getHead(), new ArrayList<String[]>());
+					}
+
+					for (Tree<String> tree2 : tree.getSubTreeList()){
+
+						String nameFunction = tree2.getFirstChild("name").getFirstChild() != null ? 
+								tree2.getFirstChild("name").getFirstChild().getHead() : "";
+								String inputFunction = tree2.getFirstChild("input").getFirstChild() != null ?
+										tree2.getFirstChild("input").getFirstChild().getHead() : "";
+										String returnFunction = tree2.getFirstChild("return").getFirstChild() != null ?
+												tree2.getFirstChild("return").getFirstChild().getHead() : "";
+
+												map.get(tree.getHead()).add(new String[]{nameFunction,
+														inputFunction,
+														returnFunction});
+					}
+					
 				}
-
-				for (Tree<String> tree2 : tree.getSubTreeList()){
-
-					String nameFunction = tree2.getFirstChild("name").getFirstChild() != null ? 
-							tree2.getFirstChild("name").getFirstChild().getHead() : "";
-							String inputFunction = tree2.getFirstChild("input").getFirstChild() != null ?
-									tree2.getFirstChild("input").getFirstChild().getHead() : "";
-									String returnFunction = tree2.getFirstChild("return").getFirstChild() != null ?
-											tree2.getFirstChild("return").getFirstChild().getHead() : "";
-
-											map.get(tree.getHead()).add(new String[]{nameFunction,
-													inputFunction,
-													returnFunction});
-				}
+				
 			}
 		}
 
 		setFunctionsMap(map);
+		setOperationMap(mapOp);
 
 		if(getListItensTable() != null && !getListItensTable().isEmpty()){
+			
+			logger.info("list getListItensTable " + getListItensTable().get(0).getLabel());
+			
 			setList(getListItensTable().get(0).getLabel());
 			setListFunctions(getFunctionsMap().get(getList()));
+		}
+		
+		if(getListItensTableOperation() != null && !getListItensTableOperation().isEmpty()){
+			
+			logger.info("list getListItensTableOperation " + getListItensTableOperation().get(0).getLabel());
+			
+			setListOp(getListItensTableOperation().get(0).getLabel());
+			setListOperation(getOperationMap().get(getListOp()));
 		}
 
 
@@ -861,9 +915,10 @@ public class CanvasModal extends BaseBean implements Serializable {
 				}
 
 				logger.info("oldCommand -> " + oldCommand);
+				logger.info("newCommand -> " + getCommandEdit());
 
 				dfi.getTree().getFirstChild("editor").getFirstChild("output").removeAllChildren();
-				dfi.getTree().getFirstChild("editor").getFirstChild("output").add(getCommandEdit());
+				dfi.getTree().getFirstChild("editor").getFirstChild("output").add(getCommandEdit().trim());
 
 				String e = dfi.check();
 
@@ -895,6 +950,20 @@ public class CanvasModal extends BaseBean implements Serializable {
 		logger.info("changeFunctions: "+getList());
 
 		setListFunctions(getFunctionsMap().get(getList()));
+	}
+	
+	/** changeOperationTextEditor
+	 * 
+	 * Methods to retrieve the new Functions
+	 * 
+	 * @return
+	 * @author Igor.Souza
+	 */
+	public void changeOperationTextEditor(){
+
+		logger.info("changeOperation: "+getListOp());
+
+		setListOperation(getOperationMap().get(getListOp()));
 	}
 
 	/** tableInteractionAddNewLine
@@ -1652,6 +1721,38 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 	public void setNameBrowserLabel2(Map<String, String> nameBrowserLabel2) {
 		this.nameBrowserLabel2 = nameBrowserLabel2;
+	}
+
+	public List<String[]> getListOperation() {
+		return listOperation;
+	}
+
+	public void setListOperation(List<String[]> listOperation) {
+		this.listOperation = listOperation;
+	}
+
+	public List<SelectItem> getListItensTableOperation() {
+		return listItensTableOperation;
+	}
+
+	public void setListItensTableOperation(List<SelectItem> listItensTableOperation) {
+		this.listItensTableOperation = listItensTableOperation;
+	}
+
+	public String getListOp() {
+		return listOp;
+	}
+
+	public void setListOp(String listOp) {
+		this.listOp = listOp;
+	}
+
+	public Map<String, List<String[]>> getOperationMap() {
+		return operationMap;
+	}
+
+	public void setOperationMap(Map<String, List<String[]>> operationMap) {
+		this.operationMap = operationMap;
 	}
 	
 }
