@@ -14,21 +14,17 @@
 
 <script>
 
-	function changeFunctions(){
-  	  jQuery("[id$='btChangeFunctions']").click();
-    }
-
-		function completeCommand(text) {
+	function completeCommand(text){
 	    var txtarea = jQuery("[id$='commandText']");
 	    var scrollPos = txtarea.scrollTop;
 	    var strPos = 0;
 	    
 	    strPos = txtarea.getCursorPosition();
 
-	    var front = (txtarea.val()).substring(0,strPos);  
-	    var back = (txtarea.val()).substring(strPos,txtarea.val().length); 
+	    var front = (txtarea.val().trim()).substring(0,strPos);  
+	    var back = (txtarea.val().trim()).substring(strPos,txtarea.val().length); 
 
-	    txtarea.val(front + text + back);
+	    txtarea.val(front + text.trim() + back);
 
 	    strPos = strPos + text.length;
 
@@ -40,13 +36,13 @@
 	    
 	}
 
-	(function (jQuery, undefined) {
-		jQuery.fn.getCursorPosition = function() {
+	(function (jQuery, undefined){
+		jQuery.fn.getCursorPosition = function(){
 	        var el = jQuery(this).get(0);
 	        var pos = 0;
-	        if('selectionStart' in el) {
+	        if('selectionStart' in el){
 	            pos = el.selectionStart;
-	        } else if('selection' in document) {
+	        } else if('selection' in document){
 	            el.focus();
 	            var Sel = document.selection.createRange();
 	            var SelLength = document.selection.createRange().text.length;
@@ -63,33 +59,29 @@
 <body>
 
 	<h:form>
-		<a4j:jsFunction name="changeFunctions2" action="#{canvasModalBean.changeFunctionsTextEditor}" reRender="lisFunctions"/>
-	
-	<a4j:commandLink id="btChangeFunctions" action="#{canvasModalBean.changeFunctionsTextEditor}" onclick="alert('test')" style="display:none;" reRender="lisFunctions" />
-
-	<h:inputText maxlength="100" cols="70" rows="10" value="#{canvasModalBean.commandEdit}" style="resize:none;" id="commandText" />
-	
-	<br/><br/>
-	
-	<table width="100%" id="table">
-		<tr>
-			<td width="50%">
-			
-			<br/>
-			<form>
-				<rich:comboBox id="listCategories" value="#{canvasModalBean.list}" enableManualInput="false" width="200" listWidth="150" listHeight="200">
-					<a4j:support event="onselect" action="#{canvasModalBean.changeFunctionsTextEditor}" reRender="lisFunctions"/> 
-					<f:selectItems value="#{canvasModalBean.listItensTable}" />
-				</rich:comboBox>
-			</form>
-			<br/>
 		
-				<rich:dataTable id="lisFunctions" value="#{canvasModalBean.listFunctions}"
-					var="item" style="border:1px solid;" width="100%" 
-					onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-					enableContextMenu="false"
-					onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
-					
+		
+		<h:inputTextarea maxlength="100" cols="70" rows="10" value="#{canvasModalBean.commandEdit}" style="resize:none;border:1px solid;" id="commandText" />
+	
+		<br/><br/>
+		
+		<table width="100%" id="table">
+			<tr style="vertical-align:top;">
+				<td width="45%">
+				
+					<br/>
+						<rich:comboBox id="listCategories" value="#{canvasModalBean.list}" enableManualInput="false" width="200" listWidth="150" listHeight="200">
+							<a4j:support event="onselect" action="#{canvasModalBean.changeFunctionsTextEditor}" reRender="listFunctions"/> 
+							<f:selectItems value="#{canvasModalBean.listItensTable}" />
+						</rich:comboBox>
+					<br/>
+				
+					<rich:dataTable id="listFunctions" value="#{canvasModalBean.listFunctions}"
+						var="item" style="border:1px solid;" width="100%" 
+						onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+						enableContextMenu="false"
+						onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
+						
 						<rich:column style="border-bottom:0px;border-right:0px;" >
 							<f:facet name="header">
 								<h:outputText value="#{messages.label_word}" />
@@ -113,52 +105,83 @@
 							</f:facet>
 							<h:outputText value="#{item[2]}" />
 						</rich:column>
+						
+					</rich:dataTable>
 					
-				</rich:dataTable>
-				
-				
+					
 				</td>
-				<td width="50%">
+					
+				<td width="10%">
+							
+					<br/>
+						<rich:comboBox id="listCategoriesOperation" value="#{canvasModalBean.listOp}" enableManualInput="false" width="100" listWidth="150" listHeight="100">
+							<a4j:support event="onselect" action="#{canvasModalBean.changeOperationTextEditor}" reRender="listOperation"/> 
+							<f:selectItems value="#{canvasModalBean.listItensTableOperation}" />
+						</rich:comboBox>
+					<br/>
 				
-				<br/><br/><br/>
-				
-				<rich:dataTable id="listFields" value="#{canvasModalBean.listFields}"
-					var="item" style="border:1px solid;" width="100%" onRowClick="completeFilds"
-					onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-					enableContextMenu="false"
-					onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
+					<rich:dataTable id="listOperation" value="#{canvasModalBean.listOperation}"
+						var="item" style="border:1px solid;" width="100%" 
+						onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+						enableContextMenu="false"
+						onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
+						
+						<rich:column style="border-bottom:0px;border-right:0px;" >
+							<f:facet name="header">
+								<h:outputText value="#{messages.label_operation}" />
+							</f:facet>
+							<a4j:commandLink id="btCompleteFunction" onclick="completeCommand('#{item[0]}');" >
+								<f:param name="nameFunctions" value="#{item[0]}" />
+								<h:outputText value="#{item[0]}" />
+							</a4j:commandLink>
+						</rich:column>
+							
+					</rich:dataTable>
+								
+				</td>
 					
-					<rich:column style="border-bottom:0px;border-right:0px;" >
-						<f:facet name="header">
-							<h:outputText value="#{messages.label_name}" />
-						</f:facet>
-						<a4j:commandLink id="btCompleteFilds" onclick="completeCommand('#{item.key}');" >
-							<f:param name="nameFilds" value="#{item.key}" />
-							<h:outputText value="#{item.key}" />
-						</a4j:commandLink>
-					</rich:column>
 					
-					<rich:column style="border-bottom:0px;border-right:0px;" >
-						<f:facet name="header">
-							<h:outputText value="#{messages.label_type}" />
-						</f:facet>
-						<h:outputText value="#{item.value}" />
-					</rich:column>
+				<td width="45%">
 					
-				</rich:dataTable>
-
-			</td>
-		</tr>
-	</table>
+					<br/><br/><br/>
+					
+					<rich:dataTable id="listFields" value="#{canvasModalBean.listFields}"
+						var="item" style="border:1px solid;" width="100%" onRowClick="completeFilds"
+						onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+						enableContextMenu="false"
+						onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
+						
+						<rich:column style="border-bottom:0px;border-right:0px;" >
+							<f:facet name="header">
+								<h:outputText value="#{messages.label_name}" />
+							</f:facet>
+							<a4j:commandLink id="btCompleteFilds" onclick="completeCommand('#{item.key}');" >
+								<f:param name="nameFilds" value="#{item.key}" />
+								<h:outputText value="#{item.key}" />
+							</a4j:commandLink>
+						</rich:column>
+						
+						<rich:column style="border-bottom:0px;border-right:0px;" >
+							<f:facet name="header">
+								<h:outputText value="#{messages.label_type}" />
+							</f:facet>
+							<h:outputText value="#{item.value}" />
+						</rich:column>
+						
+					</rich:dataTable>
 	
-	<br/>
-
-	<a4j:commandButton action="#{canvasModalBean.confirm}" value="#{messages.button_ok}" oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('textEditorPanel')}.hide() };" reRender="command,tableInteraction, msnError" />
-	<span>&nbsp;&nbsp;</span>
-	<a4j:commandButton action="#{canvasModalBean.cancel}" value="#{messages.button_cancel}" onclick="#{rich:component('textEditorPanel')}.hide();" />
-	<span>&nbsp;&nbsp;</span>
-	<a4j:commandButton action="#{canvasModalBean.checkTextEditor}" value="#{messages.button_check}" reRender="msnError"/>
+				</td>
+			</tr>
+		</table>
+		
+		<br/>
 	
+		<a4j:commandButton action="#{canvasModalBean.confirm}" value="#{messages.button_ok}" oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('textEditorPanel')}.hide() };" reRender="command,tableInteraction, msnError, errorTable" />
+		<span>&nbsp;&nbsp;</span>
+		<a4j:commandButton action="#{canvasModalBean.cancel}" value="#{messages.button_cancel}" onclick="#{rich:component('textEditorPanel')}.hide();" />
+		<span>&nbsp;&nbsp;</span>
+		<a4j:commandButton action="#{canvasModalBean.checkTextEditor}" value="#{messages.button_check}" reRender="msnError, errorTable"/>
+		
 </h:form>
 </body>
 </html>

@@ -39,7 +39,7 @@
  <managed-bean>
   <managed-bean-name>userInfoBean</managed-bean-name>
   <managed-bean-class>idm.auth.UserInfoBean</managed-bean-class>
-  <managed-bean-scope>request</managed-bean-scope>
+  <managed-bean-scope>session</managed-bean-scope>
  </managed-bean>
  <managed-bean>
   <managed-bean-name>canvasModalBean</managed-bean-name>

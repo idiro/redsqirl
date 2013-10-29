@@ -381,11 +381,11 @@
 	      }
 	      
 	      function addElementJs(positions){
-	    	  addElements(positions);
+	    	  addElements('canvas', positions);
 	      }
 	      
 	      function addLinksJs(links){
-	    	  addLinks(links);
+	    	  addLinks('canvas', links);
 	      }
 
 		</script>
@@ -464,7 +464,7 @@
 							onerror="jQuery('#canvas1').unblock();" onsuccess="jQuery('#canvas1').unblock();"
 							onstop="jQuery('#canvas1').unblock();" />
 				
-				<a4j:jsFunction name="addLinkBt" data="#{canvasBean.result}" oncomplete="updateLink(data[0], data[1], data[2])" />
+				<a4j:jsFunction name="addLinkBt" data="#{canvasBean.result}" oncomplete="updateLink('canvas', data[0], data[1], data[2])" />
 			</a4j:region>
 			
 			<a4j:region>
@@ -488,7 +488,7 @@
 							onstop="jQuery('#canvas1').unblock();" />
 				
 				<a4j:jsFunction name="openModal" action="#{canvasModalBean.openCanvasModal}" oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('canvasModalPanel')}.show() }" 
-					reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError, canvasModalTabPanel" >
+					reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError, errorTable, canvasModalTabPanel" >
 					<a4j:actionparam name="paramNameElement" assignTo="#{canvasModalBean.nameElement}" />
 					<a4j:actionparam name="paramPathImage" assignTo="#{canvasModalBean.pathImage}" />
 					<a4j:actionparam name="paramNameWorkflow" value="#{canvasBean.nameWorkflow}" assignTo="#{canvasModalBean.nameElement}" />
@@ -510,7 +510,7 @@
 			
 			<a4j:region>
 				<a4j:jsFunction name="closeChangeIdModal"  
-					oncomplete="updateLabelObj('#{canvasBean.idGroup}','#{canvasBean.idElement}');openModal('#{canvasBean.idGroup}','#{canvasModalBean.pathImage}','#{canvasBean.nameWorkflow}');">
+					oncomplete="updateLabelObj('canvas','#{canvasBean.idGroup}','#{canvasBean.idElement}');openModal('#{canvasBean.idGroup}','#{canvasModalBean.pathImage}','#{canvasBean.nameWorkflow}');">
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -531,7 +531,7 @@
 							onstop="jQuery('#canvas1').unblock();" />
 				
 							
-				<a4j:jsFunction name="closeWorkflow" action="#{canvasBean.closeWorkflow}" oncomplete="clearCanvas();"  reRender="formMenu"/>
+				<a4j:jsFunction name="closeWorkflow" action="#{canvasBean.closeWorkflow}" oncomplete="clearCanvas('canvas');"  reRender="formMenu"/>
 			</a4j:region>
 			
 			<a4j:region>
@@ -626,7 +626,7 @@
 
 					<rich:menuItem submitMode="ajax"
 						value="#{messages.label_menu_clean_project}"
-						action="#{canvasBean.cleanCanvasProject}" rerender="msnError" />
+						action="#{canvasBean.cleanCanvasProject}" rerender="msnError, errorTable" />
 		
 					<rich:menuItem submitMode="none">
 						<h:outputLink value="#{canvasBean.workflowUrl}" target="_blank">#{messages.label_menu_see_oozie_job}</h:outputLink>
@@ -673,8 +673,8 @@
 			<img src="../image/icons/button-save.png" alt="save" class="shortMenuIcon" onclick="#{rich:component('modalSaveWorkflow')}.show()"/>
 			<img src="../image/icons/button-save-as.png" alt="saveas" class="shortMenuIcon" />
 			<img src="../image/icons/button-save-all.png" alt="saveall" class="shortMenuIcon" />
-			<a onclick="undoHistory();"><img src="../image/icons/button-undo.png" alt="undo" class="shortMenuIcon" /></a>
-			<a onclick="redoHistory();"><img src="../image/icons/button-redo.png" alt="redo" class="shortMenuIcon" /></a>
+			<a onclick="undoHistory('canvas');"><img src="../image/icons/button-undo.png" alt="undo" class="shortMenuIcon" /></a>
+			<a onclick="redoHistory('canvas');"><img src="../image/icons/button-redo.png" alt="redo" class="shortMenuIcon" /></a>
 			<img src="../image/icons/button-cut.png" alt="cut" class="shortMenuIcon" />
 		</center>
 
@@ -1033,7 +1033,7 @@
 				<br />
 				<br />
 				
-				<a4j:commandButton value="#{messages.button_ok}" onclick="#{rich:component('msnError')}.hide(); return false;" reRender="msnError, msg" />
+				<a4j:commandButton value="#{messages.button_ok}" onclick="#{rich:component('msnError')}.hide(); return false;" reRender="msnError, msg, errorTable" />
 				
 			</center>
 		</rich:modalPanel>

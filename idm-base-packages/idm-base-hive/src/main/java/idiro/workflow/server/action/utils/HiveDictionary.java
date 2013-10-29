@@ -371,9 +371,9 @@ public class HiveDictionary extends AbstractDictionary{
 
 	public Tree<String> createConditionHelpMenu() throws RemoteException{
 		Tree<String> help = new TreeNonUnique<String>("help");
-		help.add(createMenu(new TreeNonUnique<String>("logic"),functionsMap.get(logicalOperators)));
-		help.add(createMenu(new TreeNonUnique<String>("relation"),functionsMap.get(relationalOperators)));
-		help.add(createMenu(new TreeNonUnique<String>("arithmetic"),functionsMap.get(arithmeticOperators)));
+		help.add(createMenu(new TreeNonUnique<String>("operation_relation"),functionsMap.get(relationalOperators)));
+		help.add(createMenu(new TreeNonUnique<String>("operation_logic"),functionsMap.get(logicalOperators)));
+		help.add(createMenu(new TreeNonUnique<String>("operation_arithmetic"),functionsMap.get(arithmeticOperators)));
 		help.add(createMenu(new TreeNonUnique<String>("string"),functionsMap.get(stringMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("double"),functionsMap.get(doubleMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("utils"),functionsMap.get(utilsMethods)));
@@ -383,12 +383,12 @@ public class HiveDictionary extends AbstractDictionary{
 
 	public Tree<String> createDefaultSelectHelpMenu() throws RemoteException{
 		Tree<String> help = new TreeNonUnique<String>("help");
-		help.add(createMenu(new TreeNonUnique<String>("arithmetic"),functionsMap.get(arithmeticOperators)));
+		help.add(createMenu(new TreeNonUnique<String>("operation_arithmetic"),functionsMap.get(arithmeticOperators)));
 		help.add(createMenu(new TreeNonUnique<String>("string"),functionsMap.get(stringMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("double"),functionsMap.get(doubleMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("utils"),functionsMap.get(utilsMethods)));
-		help.add(createMenu(new TreeNonUnique<String>("relation"),functionsMap.get(relationalOperators)));
-		help.add(createMenu(new TreeNonUnique<String>("logic"),functionsMap.get(logicalOperators)));
+		help.add(createMenu(new TreeNonUnique<String>("operation_relation"),functionsMap.get(relationalOperators)));
+		help.add(createMenu(new TreeNonUnique<String>("operation_logic"),functionsMap.get(logicalOperators)));
 		logger.debug("create Select Help Menu");
 		return help;
 	}
@@ -396,12 +396,12 @@ public class HiveDictionary extends AbstractDictionary{
 	public Tree<String> createGroupSelectHelpMenu() throws RemoteException{
 		Tree<String> help = new TreeNonUnique<String>("help");
 		help.add(createMenu(new TreeNonUnique<String>("aggregation"),functionsMap.get(agregationMethods)));
-		help.add(createMenu(new TreeNonUnique<String>("arithmetic"),functionsMap.get(arithmeticOperators)));
+		help.add(createMenu(new TreeNonUnique<String>("operation_arithmetic"),functionsMap.get(arithmeticOperators)));
 		help.add(createMenu(new TreeNonUnique<String>("string"),functionsMap.get(stringMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("double"),functionsMap.get(doubleMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("integer"),functionsMap.get(utilsMethods)));
-		help.add(createMenu(new TreeNonUnique<String>("relation"),functionsMap.get(relationalOperators)));
-		help.add(createMenu(new TreeNonUnique<String>("logic"),functionsMap.get(logicalOperators)));
+		help.add(createMenu(new TreeNonUnique<String>("operation_relation"),functionsMap.get(relationalOperators)));
+		help.add(createMenu(new TreeNonUnique<String>("operation_logic"),functionsMap.get(logicalOperators)));
 		logger.debug("create Group Select Help Menu");
 		return help;
 	}

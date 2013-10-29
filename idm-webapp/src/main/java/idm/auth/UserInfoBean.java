@@ -5,6 +5,7 @@ package idm.auth;
 import idm.BaseBean;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.rmi.Remote;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -27,7 +28,7 @@ import ch.ethz.ssh2.Connection;
  * 
  * @author Igor.Souza
  */
-public class UserInfoBean extends BaseBean {
+public class UserInfoBean extends BaseBean implements Serializable {
 
 	private static Logger logger = Logger.getLogger(UserInfoBean.class);
 
@@ -44,6 +45,9 @@ public class UserInfoBean extends BaseBean {
 	private static Registry registry;
 
 	private static Connection conn;
+
+	private long currentValue;
+	private boolean enabled;
 
 	public UserInfoBean() {
 
@@ -102,6 +106,8 @@ public class UserInfoBean extends BaseBean {
 
 			setConn(conn);
 
+			setCurrentValue(getCurrentValue()+3);
+
 			//error with rmi connection
 			if(!createRegistry(userName, password)){
 				getBundleMessage("error.rmi.connection");
@@ -109,6 +115,7 @@ public class UserInfoBean extends BaseBean {
 				return "failure";
 			}
 
+			setCurrentValue(getCurrentValue()+5);
 
 			setMsnError(null);
 			return "success";
@@ -132,10 +139,10 @@ public class UserInfoBean extends BaseBean {
 	 * @return
 	 * @author Igor.Souza
 	 */
-	public static boolean createRegistry(String user,String password){
+	public boolean createRegistry(String user,String password){
 
 		logger.info("createRegistry");
-		
+
 		List<String> beans = new ArrayList<String>();
 		beans.add("wfm");
 		beans.add("hive");
@@ -148,27 +155,35 @@ public class UserInfoBean extends BaseBean {
 			th.run(user,password);
 
 			registry = LocateRegistry.getRegistry(port);
+
+			setCurrentValue(getCurrentValue()+1);
 			
 			FacesContext fCtx = FacesContext.getCurrentInstance();
 			ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
 			HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
-			
+
 			session.setAttribute("serverThread", th);
 			sc.setAttribute("registry", registry);
-			
+
 			for (String beanName : beans){
+				
+				logger.info("createRegistry - " + beanName);
+				setCurrentValue(getCurrentValue()+2);
+				
 				boolean error = true;
 				int cont = 0;
-				
+
 				while(error){
 					cont++;
 					try{
 						Remote dfi = registry.lookup(user+"@"+beanName);
 						error = false;
 						session.setAttribute(beanName, dfi);
-					}catch(Exception e ){
+						setCurrentValue(getCurrentValue()+1);
+					}catch(Exception e){
 						Thread.sleep(500);
 						logger.error(e.getMessage());
+						setCurrentValue(getCurrentValue()+1);
 
 						if(cont > 20){
 							throw e;
@@ -217,6 +232,8 @@ public class UserInfoBean extends BaseBean {
 			return "failure";
 		}
 
+		setCurrentValue(getCurrentValue()+5);
+		
 		setTwoLoginChek(null);
 		String aux = login();
 
@@ -234,20 +251,28 @@ public class UserInfoBean extends BaseBean {
 	public String signOut(){
 
 		logger.info("signOut");
-		
+
 		invalidateSession();
-		
+
 		return "signout";
 	}
-	
+
 	private void invalidateSession(){
 
 		FacesContext fCtx = FacesContext.getCurrentInstance();
 		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
-		
+
 		logger.info("before invalidade session");
 		session.invalidate();
 		logger.info("after invalidade session");
+	}
+
+	public String startProcess() {
+
+		setEnabled(true);
+		setCurrentValue(Long.valueOf(10));
+		
+		return null;
 	}
 
 
@@ -313,6 +338,22 @@ public class UserInfoBean extends BaseBean {
 
 	public static void setConn(Connection conn) {
 		UserInfoBean.conn = conn;
+	}
+
+	public long getCurrentValue() {
+		return currentValue;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setCurrentValue(long currentValue) {
+		this.currentValue = currentValue;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 }

@@ -6,6 +6,7 @@ import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.interfaces.DataFlow;
 import idiro.workflow.server.interfaces.DataFlowElement;
+import idm.auth.UserInfoBean;
 import idm.useful.MessageUseful;
 
 import java.io.Serializable;
@@ -29,6 +30,7 @@ import org.json.JSONObject;
 public class CanvasBean extends BaseBean implements Serializable{
 	
 	private static Logger logger = Logger.getLogger(CanvasBean.class);
+	
 	private List<SelectItem> linkPossibilities = new ArrayList<SelectItem>();
 	private String selectedLink;
 	private int countObj;
@@ -41,8 +43,8 @@ public class CanvasBean extends BaseBean implements Serializable{
 	private String[] result;
 	private String idElement;
 	private String idGroup;
-
 	private Map<String, String> idMap;
+	private UserInfoBean userInfoBean;
 
 
 	public void doNew(){
@@ -68,6 +70,11 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 		logger.info("openCanvas");
 		
+		FacesContext context = FacesContext.getCurrentInstance();
+		userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
+		
+		userInfoBean.setCurrentValue(Long.valueOf(78));
+		
 		setCountObj(0);
 		setNameWorkflow("canvas"+countWf);
 
@@ -84,6 +91,11 @@ public class CanvasBean extends BaseBean implements Serializable{
 				dfi.addWorkflow(getNameWorkflow());
 			}
 			logger.info("add new Workflow "+getNameWorkflow());
+			
+			if(userInfoBean.getCurrentValue() < 98){
+				userInfoBean.setCurrentValue(userInfoBean.getCurrentValue()+3);
+			}
+			
 			setDf(dfi.getWorkflow(getNameWorkflow()));
 			getDf().getAllWANameWithClassName();
 
@@ -440,6 +452,14 @@ public class CanvasBean extends BaseBean implements Serializable{
 			HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
 		}
+		
+		FacesContext context = FacesContext.getCurrentInstance();
+		userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
+		
+		if(userInfoBean.getCurrentValue() < 98){
+			userInfoBean.setCurrentValue(userInfoBean.getCurrentValue()+3);
+		}
+		
 	}
 	
 	public void blockRunningWorkflow() throws Exception{
@@ -451,6 +471,12 @@ public class CanvasBean extends BaseBean implements Serializable{
 	public String getWorkflowUrl() throws Exception{
 		logger.info("getWorkflowUrl");
 		String url = getOozie().getConsoleUrl(getDf());
+		
+		FacesContext context = FacesContext.getCurrentInstance();
+		userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
+		
+		userInfoBean.setCurrentValue(Long.valueOf(100));
+		
 		return url;
 	}
 
@@ -653,4 +679,13 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 		return new String[]{jsonElements.toString(), jsonLinks.toString()};
 	}
+
+	public UserInfoBean getUserInfoBean() {
+		return userInfoBean;
+	}
+
+	public void setUserInfoBean(UserInfoBean userInfoBean) {
+		this.userInfoBean = userInfoBean;
+	}
+	
 }
