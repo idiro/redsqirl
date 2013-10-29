@@ -180,7 +180,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 						error = false;
 						session.setAttribute(beanName, dfi);
 						setCurrentValue(getCurrentValue()+1);
-					}catch(Exception e ){
+					}catch(Exception e){
 						Thread.sleep(500);
 						logger.error(e.getMessage());
 						setCurrentValue(getCurrentValue()+1);
