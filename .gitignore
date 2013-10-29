@@ -5,3 +5,5 @@ idm-webapp/src/main/webapp/pages/packages/
 .project
 .settings
 idm-webapp/src/main/webapp/WEB-INF/classes/
+idm-workflow/idiro.tm.task.in.Preference@73d6776d/
+idm-webapp/src/test/

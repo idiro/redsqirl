@@ -71,7 +71,7 @@ public class PigJoinRelationInteraction extends UserInteraction{
 				try{
 					String relation = row.getFirstChild(table_relation_title).getFirstChild().getHead();
 					String rel = row.getFirstChild(table_feat_title).getFirstChild().getHead(); 
-					String type = PigDictionary.getReturnType(
+					String type = PigDictionary.getInstance().getReturnType(
 							rel,
 							inFeats
 							);
@@ -146,7 +146,7 @@ public class PigJoinRelationInteraction extends UserInteraction{
 		
 		//Generate Editor
 		Tree<String> featEdit = PigDictionary.generateEditor(
-				PigDictionary.createDefaultSelectHelpMenu(),hj.getInFeatures());
+				PigDictionary.getInstance().createDefaultSelectHelpMenu(),hj.getInFeatures());
 
 		//Set the Editor of operation
 		Tree<String> operation = tree.getFirstChild("table")

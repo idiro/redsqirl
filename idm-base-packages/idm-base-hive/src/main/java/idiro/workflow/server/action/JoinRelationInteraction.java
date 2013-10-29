@@ -74,7 +74,7 @@ public class JoinRelationInteraction extends UserInteraction{
 				try{
 					String table = row.getFirstChild(table_table_title).getFirstChild().getHead();
 					String rel = row.getFirstChild(table_feat_title).getFirstChild().getHead(); 
-					String type = HiveDictionary.getReturnType(
+					String type = HiveDictionary.getInstance().getReturnType(
 							rel,
 							inFeats
 							);
@@ -144,7 +144,7 @@ public class JoinRelationInteraction extends UserInteraction{
 		
 		//Generate Editor
 		Tree<String> featEdit = HiveDictionary.generateEditor(
-				HiveDictionary.createDefaultSelectHelpMenu(),hj.getInFeatures());
+				HiveDictionary.getInstance().createDefaultSelectHelpMenu(),hj.getInFeatures());
 
 		//Set the Editor of operation
 		Tree<String> operation = tree.getFirstChild("table")

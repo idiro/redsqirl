@@ -92,7 +92,7 @@ public class TableJoinInteraction extends UserInteraction{
 					try{
 						if( ! HiveDictionary.check(
 								type, 
-								HiveDictionary.getReturnType(
+								HiveDictionary.getInstance().getReturnType(
 										op,
 										features
 										)
@@ -137,7 +137,7 @@ public class TableJoinInteraction extends UserInteraction{
 
 		//Generate Editor
 		Tree<String> featEdit =
-				HiveDictionary.generateEditor(HiveDictionary.createDefaultSelectHelpMenu(),feats);
+				HiveDictionary.generateEditor(HiveDictionary.getInstance().createDefaultSelectHelpMenu(),feats);
 		
 		//Set the Editor of operation
 		logger.debug("Set the editor...");

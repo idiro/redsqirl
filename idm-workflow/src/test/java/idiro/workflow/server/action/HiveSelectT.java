@@ -104,7 +104,7 @@ public class HiveSelectT extends DataflowAction{
 							.getFirstChild().getHead(); 
 					logger.debug("Condition: "+ condition);
 					String type = null;
-					if(! (type = HiveDictionary.getReturnType(
+					if(! (type = HiveDictionary.getInstance().getReturnType(
 							condition,
 							getDFEInput().get(key_input).get(0).getFeatures()
 							)).equalsIgnoreCase("boolean")){
@@ -210,7 +210,7 @@ public class HiveSelectT extends DataflowAction{
 						try{
 							if( ! HiveDictionary.check(
 									row.getFirstChild(table_type_title).getFirstChild().getHead(), 
-									HiveDictionary.getReturnType(
+									HiveDictionary.getInstance().getReturnType(
 											row.getFirstChild(table_op_title).getFirstChild().getHead(),
 											in.getFeatures(),
 											featGrouped
@@ -315,7 +315,7 @@ public class HiveSelectT extends DataflowAction{
 			output = treeCondition.getFirstChild("editor").getFirstChild("output");
 			treeCondition.remove("editor");
 		}
-		Tree<String> base = generateEditor(HiveDictionary.createConditionHelpMenu(), in);
+		Tree<String> base = generateEditor(HiveDictionary.getInstance().createConditionHelpMenu(), in);
 		base.add(output);
 		treeCondition.add(base);
 	}
@@ -380,9 +380,9 @@ public class HiveSelectT extends DataflowAction{
 				.getFirstChild("applist").getFirstChild("output")
 				.getChildren("value").isEmpty()
 				){
-			featEdit = generateEditor(HiveDictionary.createGroupSelectHelpMenu(),in);
+			featEdit = generateEditor(HiveDictionary.getInstance().createGroupSelectHelpMenu(),in);
 		}else{
-			featEdit = generateEditor(HiveDictionary.createDefaultSelectHelpMenu(),in);
+			featEdit = generateEditor(HiveDictionary.getInstance().createDefaultSelectHelpMenu(),in);
 		}
 		//Set the Editor of operation
 		Tree<String> operation = null;

@@ -22,12 +22,14 @@
 		
 		<h:form id="formCanvasModal">
 	
-
 		
-	
-	<a4j:jsFunction name="endDynamicForm" action="#{canvasModalBean.endDynamicForm}" data="#{canvasModalBean.errorMsg}" oncomplete="verifyErrors(data);" 
-		reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, browserTable2, msnError"/>
-	<a4j:jsFunction name="closeDynamicForm" oncomplete="#{rich:component('canvasModalPanel')}.hide()" />
+		
+	<a4j:region>
+		<a4j:jsFunction name="endDynamicForm" action="#{canvasModalBean.endDynamicForm}" data="#{canvasModalBean.errorMsg}" oncomplete="verifyErrors(data);" 
+		reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, browserTable2, msnError, errorTable"/>
+		
+		<a4j:jsFunction name="closeDynamicForm" oncomplete="#{rich:component('canvasModalPanel')}.hide()" />
+	</a4j:region>
 	
 	<rich:tabPanel id="canvasModalTabPanel" switchType="ajax" selectedTab="#{canvasModalBean.selectedTab}" >
 	
@@ -39,8 +41,6 @@
 			<a4j:status	onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModal') });"
 				onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
 				onstop="jQuery.unblockUI();" />
-	
-	
 	
     <rich:tab id="tab1" label="#{messages.label_dynamic_configuration}" >
 	<rich:panel id="panelDynamicForm" style="border:none;" >
@@ -134,10 +134,24 @@
 							var="itemDiv2" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 							enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
 							
-							<rich:columns value="#{canvasModalBean.browserNameFeatureColumns}" var="column" index="ind" rendered="#{not empty canvasModalBean.listFeature}" 
+							<rich:columns value="#{canvasModalBean.browserNameFeatureColumns}" var="column" index="ind" rendered="#{not empty canvasModalBean.listFeature and canvasModalBean.hiveHdfs == 'hive'}" 
 								style="border-bottom:0px;border-right:0px;" >
-								<f:facet name="header">
-									<h:outputText value="#{column}" />
+								
+								<f:facet name="header" rendered="#{canvasModalBean.hiveHdfs == 'hive'}">
+							            <h:outputText value="#{column}" />
+								</f:facet>
+								
+								<h:inputText value="#{itemDiv2.nameValue[column]}" style="width:125px;" readonly="true" />
+								
+							</rich:columns>
+							
+							<rich:columns value="#{canvasModalBean.browserNameFeatureColumns}" var="column" index="ind" rendered="#{not empty canvasModalBean.listFeature and canvasModalBean.hiveHdfs == 'hdfs'}" 
+								style="border-bottom:0px;border-right:0px;" >
+								<f:facet name="header" rendered="#{canvasModalBean.hiveHdfs == 'hdfs'}">
+									 <h:panelGrid columns="2" width="100%" >
+							            <h:outputText value="#{canvasModalBean.nameBrowserLabel2[column]}" />
+							            <h:inputText value="#{canvasModalBean.nameBrowserLabel1[column]}" style="width:75px;" />
+							        </h:panelGrid>
 								</f:facet>
 								
 								<h:inputText value="#{itemDiv2.nameValue[column]}" style="width:125px;" readonly="true" />
@@ -171,23 +185,24 @@
 			<a4j:region>
 				<rich:panel style="border:none;"
 					rendered="#{item.displayType == 'table'}" id="tablePanel">
-					<h:outputText value="#{messages.label_generation}" />
+					
 	
-					<table width="100%" id="table">
-						<tr>
-							<td width="200px"><rich:comboBox
-									value="#{canvasModalBean.list}" selectFirstOnUpdate="false"
-									defaultLabel="Enter some value" width="200"
-									enableManualInput="false" id="generation" listWidth="150"
-									listHeight="200">
-									<f:selectItems value="#{canvasModalBean.listItens}" />
-								</rich:comboBox></td>
-							<td><a4j:commandButton type="submit"
-									id="tableInteractionGenerationLines"
-									action="#{canvasModalBean.tableInteractionGenerationLines}"
-									value="#{messages.button_ok}" reRender="tableInteraction"/></td>
-						</tr>
-					</table>
+					<h:panelGrid id="table" columns="3" rendered="#{!empty canvasModalBean.listItens}">
+					<h:outputText value="#{messages.label_generation}" />
+						<rich:comboBox
+							value="#{canvasModalBean.selectedGenerator}" width="200"
+							enableManualInput="false" id="generation" listWidth="150"
+							listHeight="200">
+							<f:selectItems value="#{canvasModalBean.listItens}" />
+						</rich:comboBox>
+
+						<a4j:commandButton type="submit"
+							id="tableInteractionGenerationLines"
+							action="#{canvasModalBean.tableInteractionGenerationLines}"
+							value="#{messages.button_ok}" reRender="tableInteraction">
+						</a4j:commandButton>
+						
+					</h:panelGrid>
 					
 					<br />
 					<br />
@@ -280,15 +295,15 @@
 	
 		<rich:panel id="panelBtCanvasModal" style="border:none; float:right;" >
 		
-			<a4j:commandButton action="#{canvasModalBean.close}" value="#{messages.button_cancel}" onclick="#{rich:component('canvasModalPanel')}.hide()" reRender="panelBtCanvasModal, msnError" />
+			<a4j:commandButton action="#{canvasModalBean.close}" value="#{messages.button_cancel}" onclick="#{rich:component('canvasModalPanel')}.hide()" reRender="panelBtCanvasModal, msnError, errorTable" />
 			
-			<a4j:commandButton action="#{canvasModalBean.previousPage}" value="#{messages.button_previous}" rendered="#{canvasModalBean.firstPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, msnError" />
+			<a4j:commandButton action="#{canvasModalBean.previousPage}" value="#{messages.button_previous}" rendered="#{canvasModalBean.firstPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, msnError, errorTable" />
 			
-			<a4j:commandButton action="#{canvasModalBean.applyPage}" value="#{messages.button_apply}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, browserTable2, msnError, canvasModalTabPanel" />
+			<a4j:commandButton action="#{canvasModalBean.applyPage}" value="#{messages.button_apply}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, browserTable2, msnError, errorTable, canvasModalTabPanel" />
 
-			<a4j:commandButton action="#{canvasModalBean.nextPage}" value="#{messages.button_next}" rendered="#{canvasModalBean.lastPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, browserTable2, msnError" />
+			<a4j:commandButton action="#{canvasModalBean.nextPage}" value="#{messages.button_next}" rendered="#{canvasModalBean.lastPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, browserTable2, msnError, errorTable" />
 			
-			<a4j:commandButton onclick="endDynamicForm()" value="#{messages.button_ok}" rendered="#{canvasModalBean.lastPage == 'Y'}"/>
+			<a4j:commandButton oncomplete="endDynamicForm()" value="#{messages.button_ok}" rendered="#{canvasModalBean.lastPage == 'Y'}"/>
 		
 		</rich:panel>
 	
@@ -352,7 +367,7 @@
 						onclick="#{rich:component('modalOutputBrowserHive')}.hide()" />
 				</f:facet>
 	
-					<h:form id="modalOutputBrowserHiveId">
+				<h:form id="modalOutputBrowserHiveId">
 					<h:panelGroup>
 						<a4j:include viewId="/pages/modalOutputBrowserHive.xhtml"
 							ajaxRendered="true">

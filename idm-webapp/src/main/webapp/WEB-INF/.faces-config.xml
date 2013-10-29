@@ -39,7 +39,7 @@
  <managed-bean>
   <managed-bean-name>userInfoBean</managed-bean-name>
   <managed-bean-class>idm.auth.UserInfoBean</managed-bean-class>
-  <managed-bean-scope>session</managed-bean-scope>
+  <managed-bean-scope>request</managed-bean-scope>
  </managed-bean>
  <managed-bean>
   <managed-bean-name>canvasModalBean</managed-bean-name>
@@ -131,7 +131,7 @@
   <view-handler>org.ajax4jsf.application.AjaxViewHandler</view-handler>
   <message-bundle>MessagesResources</message-bundle>
   <locale-config>
-   <default-locale>em_US</default-locale>
+   <default-locale>en</default-locale>
    <supported-locale>em_US</supported-locale>
   </locale-config>
  </application>

@@ -98,7 +98,7 @@ public class PigTableSelectInteraction extends UserInteraction{
 				try{
 					if( ! PigDictionary.check(
 							row.getFirstChild(table_type_title).getFirstChild().getHead(), 
-							PigDictionary.getReturnType(
+							PigDictionary.getInstance().getReturnType(
 									row.getFirstChild(table_op_title).getFirstChild().getHead(),
 									in.getFeatures(),
 									featGrouped
@@ -151,9 +151,9 @@ public class PigTableSelectInteraction extends UserInteraction{
 				.getFirstChild("applist").getFirstChild("output")
 				.getChildren("value").isEmpty()
 				){
-			featEdit = PigDictionary.generateEditor(PigDictionary.createGroupSelectHelpMenu(),in);
+			featEdit = PigDictionary.generateEditor(PigDictionary.getInstance().createGroupSelectHelpMenu(),in);
 		}else{
-			featEdit = PigDictionary.generateEditor(PigDictionary.createDefaultSelectHelpMenu(),in);
+			featEdit = PigDictionary.generateEditor(PigDictionary.getInstance().createDefaultSelectHelpMenu(),in);
 		}
 		//Set the Editor of operation
 		logger.debug("Set the editor...");

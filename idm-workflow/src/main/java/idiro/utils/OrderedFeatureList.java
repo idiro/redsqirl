@@ -2,7 +2,6 @@ package idiro.utils;
 
 import idiro.workflow.server.enumeration.FeatureType;
 
-import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -10,10 +9,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 public class OrderedFeatureList extends UnicastRemoteObject implements FeatureList {
 	
 	private Map<String, FeatureType> features;
 	private List<String> positions;
+	
+	private static Logger logger = Logger.getLogger(OrderedFeatureList.class);
 	
 	public OrderedFeatureList() throws RemoteException {
 		super();
@@ -30,9 +33,14 @@ public class OrderedFeatureList extends UnicastRemoteObject implements FeatureLi
 	}
 	
 	public void addFeature(String name, FeatureType type){
+		
 		if (!features.containsKey(name)){
+			logger.info("addFeature name " + name);
 			positions.add(name);
+		}else{
+			logger.info("addFeature name no " + name);
 		}
+		
 		features.put(name, type);
 	}
 	

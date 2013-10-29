@@ -8,6 +8,7 @@ import idiro.workflow.server.DataflowAction;
 import idiro.workflow.server.Page;
 import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.WorkflowPrefManager;
+import idiro.workflow.server.connect.HDFSInterface;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.datatype.MapRedTextType;
@@ -226,59 +227,34 @@ public class Source extends DataflowAction{
 					if( path.isEmpty() ){
 						error = "Data set cannot be empty";
 					}else{
+						
+						boolean existAndValid = true;
+
 						String type = getInteraction(key_datatype).getTree()
 								.getFirstChild("list").getFirstChild("output")
 								.getFirstChild().getHead();
-
-						boolean exist = false;
-						if(type.equalsIgnoreCase("Hive")){
-							HiveInterface hInt = new HiveInterface(); 
-							exist = hInt.exists(path);
-							if(exist){
-								String[] desc = 
-										hInt.getDescription(
-												hInt.getTableAndPartitions(path)[0]
-												).split(";");
-								for(int i = 0; i < desc.length && error == null; ++i){
-									String nameF = desc[i].split(",")[0];
-									String typeF = desc[i].split(",")[1];
-
-									Iterator<Tree<String>> it = getInteraction(key_dataset).getTree()
-											.getFirstChild("browse")
-											.getFirstChild("output")
-											.getChildren("feature").iterator();
-									boolean found = false;
-									while(it.hasNext() && !found){
-										Tree<String> cur = it.next();
-										found = cur.getFirstChild("name").getFirstChild().getHead()
-												.equalsIgnoreCase(nameF) &&
-												cur.getFirstChild("type").getFirstChild().getHead()
-												.equalsIgnoreCase(typeF);
-									}
-									if(!found){
-										error = "The output does not contain the feature "+desc[i];
-									}
-
-								}
-							}
-						}
-
-						else if(type.equalsIgnoreCase("Hdfs")){
+						if(type.equalsIgnoreCase("hdfs")){
 							try{
+
 								getInteraction(key_dataset).getTree()
 								.getFirstChild("browse").
 								getFirstChild("output")
 								.getFirstChild("property").
 								getFirstChild(MapRedTextType.key_delimiter).
 								getFirstChild().getHead();
+
 							}
 							catch (Exception e){
 								error = "You must define a delimiter";
 							}
 						}
-						if(!exist){
-							error = "The path does not exist";
+
+						existAndValid &= output.get(out_name).isPathExists() && output.get(out_name).isPathValid() == null;
+
+						if(!existAndValid){
+							error = "The path does not exist: "+output.get(out_name)+" "+output.get(out_name).isPathExists() + " "+output.get(out_name).isPathValid();
 						}
+
 					}
 				}catch(Exception e){
 					error = "Data set cannot be empty";
@@ -334,31 +310,45 @@ public class Source extends DataflowAction{
 
 	public void updateDataSubType(Tree<String> treeDatasubtype) throws RemoteException{
 		Tree<String> list = null;
-		if(treeDatasubtype.getSubTreeList().isEmpty()){
-			list = treeDatasubtype.add("list");
+		Tree<String> outputT = null;
+		if(! treeDatasubtype.getSubTreeList().isEmpty()){
+			outputT = treeDatasubtype.getFirstChild("list").getFirstChild("output");
+			treeDatasubtype.removeAllChildren();
+		}
+
+		list = treeDatasubtype.add("list");
+		if(outputT != null){
+			list.add(outputT);
+		}else{
 			list.add("output");
+			outputT = treeDatasubtype.getFirstChild("list").getFirstChild("output");
+		}
 
-			Tree<String> values = list.add("values");
+		Tree<String> values = list.add("values");
 
-			DFEInteraction interaction = getInteraction(key_datatype);
-			if(interaction.getTree().getFirstChild("list").getFirstChild("output").getFirstChild() != null){
+		DFEInteraction interaction = getInteraction(key_datatype);
+		if(interaction.getTree().getFirstChild("list").getFirstChild("output").getFirstChild() != null){
 
-				String type = interaction.getTree().getFirstChild("list").getFirstChild("output").getFirstChild().getHead();
+			String type = interaction.getTree().getFirstChild("list").getFirstChild("output").getFirstChild().getHead();
 
-				List<String> dataOutputClassName = 
-						WorkflowPrefManager.getInstance().getNonAbstractClassesFromSuperClass(
-								DataOutput.class.getCanonicalName());
+			List<String> dataOutputClassName = 
+					WorkflowPrefManager.getInstance().getNonAbstractClassesFromSuperClass(
+							DataOutput.class.getCanonicalName());
 
-				for(String className : dataOutputClassName){
-					DataOutput wa = null;
-					try {
-						wa = (DataOutput) Class.forName(className).newInstance();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+			for(String className : dataOutputClassName){
+				DataOutput wa = null;
+				try {
+					wa = (DataOutput) Class.forName(className).newInstance();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 
-					if (wa.getBrowser().toString().equalsIgnoreCase(type)){
-						values.add("value").add(wa.getTypeName());
+				if (wa.getBrowser().toString().equalsIgnoreCase(type)){
+					values.add("value").add(wa.getTypeName());
+					if((wa.getTypeName().equalsIgnoreCase( (new HiveType()).getTypeName()) || 
+							wa.getTypeName().equalsIgnoreCase((new MapRedTextType()).getTypeName()))&&
+							outputT.getSubTreeList().size() == 0){
+						outputT.add(wa.getTypeName());
 					}
 				}
 			}
@@ -405,21 +395,29 @@ public class Source extends DataflowAction{
 					.getFirstChild("browse").getFirstChild("output")
 					.getFirstChild("path").getFirstChild().getHead();
 
-			Iterator<Tree<String>> it =  getInteraction(key_dataset).getTree()
-					.getFirstChild("browse").getFirstChild("output")
-					.getChildren("feature").iterator();
-
 			FeatureList out = new OrderedFeatureList();
-			while(it.hasNext()){
-				Tree<String> cur = it.next();
+
+			for (Iterator<Tree<String>> iterator = getInteraction(key_dataset).getTree()
+					.getFirstChild("browse").getFirstChild("output")
+					.getChildren("feature").iterator(); iterator.hasNext();) {
+				Tree<String> cur = (Tree<String>) iterator.next();
+
 				String name = cur.getFirstChild("name").getFirstChild().getHead();
 				String type = cur.getFirstChild("type").getFirstChild().getHead();
+
+				logger.info("updateOut name " + name);
+				logger.info("updateOut type " + type);
+
 				try{
 					out.addFeature(name, FeatureType.valueOf(type));
 				}catch(Exception e){
 					error = "The type "+type+" does not exist";
 				}
+
 			}
+
+			logger.info("listaddFeature " + out.getFeaturesNames());
+
 			String type = getInteraction(key_datatype).getTree()
 					.getFirstChild("list").getFirstChild("output")
 					.getFirstChild().getHead();
@@ -436,34 +434,35 @@ public class Source extends DataflowAction{
 						WorkflowPrefManager.getInstance().getNonAbstractClassesFromSuperClass(
 								DataOutput.class.getCanonicalName()).iterator();
 
-				Class<?> klass = null;
+
+				DFEOutput dataOutput = null;
 				while (dataOutputClassName.hasNext()){
 					String className = dataOutputClassName.next();
-					String[] classNameArray = className.split("\\.");
-					if (classNameArray[classNameArray.length-1].equals(subtype)){
-						klass = Class.forName(className);
+					dataOutput = (DFEOutput) Class.forName(className).newInstance();
+					if(dataOutput.getTypeName().equalsIgnoreCase(subtype)){
 						break;
+					}else{
+						dataOutput = null;
 					}
+
 				}
-
-				DFEOutput dataOutput = (DFEOutput)(klass.getConstructor(Map.class).newInstance(out));
-
+				
 				output.put(out_name, dataOutput);
 				output.get(out_name).setPath(path);
 
-				String delimiter = "\001";
+				String delimiter = "'\001'";
+
 				try{
-					delimiter = getInteraction(key_dataset).getTree()
-							.getFirstChild("browse").
-							getFirstChild("output")
-							.getFirstChild("property").
-							getFirstChild(MapRedTextType.key_delimiter).
-							getFirstChild().getHead();
+					delimiter = getInteraction(key_dataset).getTree().getFirstChild("browse")
+							.getFirstChild("output").getFirstChild("property")
+							.getFirstChild(MapRedTextType.key_delimiter).getFirstChild().getHead();
 				}catch(Exception e){
 					logger.debug("Delimiter not set, using default delimiter");
 				}
 
 				output.get(out_name).addProperty(MapRedTextType.key_delimiter, delimiter);
+				
+				dataOutput.setFeatures(out);
 			}
 			if(output.get(out_name) != null){
 				output.get(out_name).setSavingState(SavingState.RECORDED);
@@ -476,12 +475,9 @@ public class Source extends DataflowAction{
 		return error;
 	}
 
-
-
 	@Override
 	public boolean writeOozieActionFiles(File[] files) throws RemoteException {
 		return false;
 	}
 
 }
-

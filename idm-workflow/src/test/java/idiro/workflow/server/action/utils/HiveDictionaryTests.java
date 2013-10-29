@@ -35,20 +35,20 @@ public class HiveDictionaryTests {
 
 	public void isBoolean(String expr,FeatureList features)throws Exception{
 		assertTrue(expr,
-				HiveDictionary.getReturnType(expr, features).equalsIgnoreCase("boolean")
+				HiveDictionary.getInstance().getReturnType(expr, features).equalsIgnoreCase("boolean")
 				);
 	}
 
 	public void isNotBoolean(String expr,FeatureList features)throws Exception{
 		assertFalse(expr,
-				HiveDictionary.getReturnType(expr, features).equalsIgnoreCase("boolean")
+				HiveDictionary.getInstance().getReturnType(expr, features).equalsIgnoreCase("boolean")
 				);
 	}
 
 	public void isNull(String expr,FeatureList features)throws Exception{
 		try{
 			assertTrue(expr,
-					HiveDictionary.getReturnType(expr, features) == null
+					HiveDictionary.getInstance().getReturnType(expr, features) == null
 					);
 		}catch(Exception e){}
 	}
@@ -57,20 +57,20 @@ public class HiveDictionaryTests {
 			Set<String> agg)throws Exception{
 		try{
 			assertTrue(expr,
-					HiveDictionary.getReturnType(expr, features,agg) == null
+					HiveDictionary.getInstance().getReturnType(expr, features,agg) == null
 					);
 		}catch(Exception e){}
 	}
 
 	public void isNumber(String expr,FeatureList features)throws Exception{
 		assertTrue(expr,
-				HiveDictionary.getReturnType(expr, features).equalsIgnoreCase("NUMBER")
+				HiveDictionary.getInstance().getReturnType(expr, features).equalsIgnoreCase("NUMBER")
 				);
 	}
 
 	public void isNotNumber(String expr,FeatureList features)throws Exception{
 		assertFalse(expr,
-				HiveDictionary.getReturnType(expr, features).equalsIgnoreCase("NUMBER")
+				HiveDictionary.getInstance().getReturnType(expr, features).equalsIgnoreCase("NUMBER")
 				);
 	}
 
@@ -78,7 +78,7 @@ public class HiveDictionaryTests {
 			FeatureList features,
 			String type)throws Exception{
 		assertTrue(expr,
-				HiveDictionary.getReturnType(expr, features).equalsIgnoreCase(type)
+				HiveDictionary.getInstance().getReturnType(expr, features).equalsIgnoreCase(type)
 				);
 	}
 	
@@ -87,7 +87,7 @@ public class HiveDictionaryTests {
 			Set<String> agg,
 			String type)throws Exception{
 		assertTrue(expr,
-				HiveDictionary.getReturnType(expr, features,agg).equalsIgnoreCase(type)
+				HiveDictionary.getInstance().getReturnType(expr, features,agg).equalsIgnoreCase(type)
 				);
 	}
 
@@ -95,7 +95,7 @@ public class HiveDictionaryTests {
 			FeatureList features,
 			String type)throws Exception{
 		assertFalse(expr,
-				HiveDictionary.getReturnType(expr, features).equalsIgnoreCase(type)
+				HiveDictionary.getInstance().getReturnType(expr, features).equalsIgnoreCase(type)
 				);
 	}
 

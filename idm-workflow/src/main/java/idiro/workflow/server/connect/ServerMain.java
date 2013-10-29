@@ -86,35 +86,35 @@ public class ServerMain {
 						(DataFlowInterface) WorkflowInterface.getInstance()
 						);
 
-				logger.info("nameWorkflow");
+				logger.info("nameWorkflow: "+nameWorkflow);
 
 				registry.rebind(
 						nameHive,
 						(DataStore) new HiveInterface()
 						);
 
-				logger.info("nameHive");
+				logger.info("nameHive: "+nameHive);
 
 				registry.rebind(
 						nameOozie,
 						(JobManager) OozieManager.getInstance()
 						);
 
-				logger.info("nameOozie");
+				logger.info("nameOozie: "+nameOozie);
 
 				registry.rebind(
 						nameSshArray,
 						(DataStoreArray) new SSHInterfaceArray()
 						);
 
-				logger.info("nameSshArray");
+				logger.info("nameSshArray: "+nameSshArray);
 
 				registry.rebind(
 						nameHDFS,
 						(DataStore) new HDFSInterface()
 						);
 
-				logger.info("nameHDFS");
+				logger.info("nameHDFS: "+nameHDFS);
 
 
 				logger.info("end server main");

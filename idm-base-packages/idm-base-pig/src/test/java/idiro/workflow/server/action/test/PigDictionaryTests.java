@@ -8,6 +8,7 @@ import idiro.workflow.server.action.utils.PigDictionary;
 import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.test.TestUtils;
 
+import java.rmi.RemoteException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,9 +19,9 @@ public class PigDictionaryTests {
 
 	Logger logger = Logger.getLogger(getClass());
 
-	public FeatureList getFeatures(){
+	public FeatureList getFeatures() throws RemoteException{
 		FeatureList features = new OrderedFeatureList();
-		features.addFeature("col1", FeatureType.STRING);
+		features.addFeature("col1", FeatureType.CHARARRAY);
 		features.addFeature("col2", FeatureType.DOUBLE);
 		features.addFeature("col3", FeatureType.INT);
 		features.addFeature("col4", FeatureType.BOOLEAN);
@@ -35,20 +36,20 @@ public class PigDictionaryTests {
 
 	public void isBoolean(String expr,FeatureList features)throws Exception{
 		assertTrue(expr,
-				PigDictionary.getReturnType(expr, features).equalsIgnoreCase("boolean")
+				PigDictionary.getInstance().getReturnType(expr, features).equalsIgnoreCase("boolean")
 				);
 	}
 
 	public void isNotBoolean(String expr,FeatureList features)throws Exception{
 		assertFalse(expr,
-				PigDictionary.getReturnType(expr, features).equalsIgnoreCase("boolean")
+				PigDictionary.getInstance().getReturnType(expr, features).equalsIgnoreCase("boolean")
 				);
 	}
 
 	public void isNull(String expr,FeatureList features)throws Exception{
 		try{
 			assertTrue(expr,
-					PigDictionary.getReturnType(expr, features) == null
+					PigDictionary.getInstance().getReturnType(expr, features) == null
 					);
 		}catch(Exception e){}
 	}
@@ -57,20 +58,20 @@ public class PigDictionaryTests {
 			Set<String> agg)throws Exception{
 		try{
 			assertTrue(expr,
-					PigDictionary.getReturnType(expr, features,agg) == null
+					PigDictionary.getInstance().getReturnType(expr, features,agg) == null
 					);
 		}catch(Exception e){}
 	}
 
 	public void isNumber(String expr,FeatureList features)throws Exception{
 		assertTrue(expr,
-				PigDictionary.getReturnType(expr, features).equalsIgnoreCase("NUMBER")
+				PigDictionary.getInstance().getReturnType(expr, features).equalsIgnoreCase("NUMBER")
 				);
 	}
 
 	public void isNotNumber(String expr,FeatureList features)throws Exception{
 		assertFalse(expr,
-				PigDictionary.getReturnType(expr, features).equalsIgnoreCase("NUMBER")
+				PigDictionary.getInstance().getReturnType(expr, features).equalsIgnoreCase("NUMBER")
 				);
 	}
 
@@ -78,7 +79,7 @@ public class PigDictionaryTests {
 			FeatureList features,
 			String type)throws Exception{
 		assertTrue(expr,
-				PigDictionary.getReturnType(expr, features).equalsIgnoreCase(type)
+				PigDictionary.getInstance().getReturnType(expr, features).equalsIgnoreCase(type)
 				);
 	}
 	
@@ -87,7 +88,7 @@ public class PigDictionaryTests {
 			Set<String> agg,
 			String type)throws Exception{
 		assertTrue(expr,
-				PigDictionary.getReturnType(expr, features,agg).equalsIgnoreCase(type)
+				PigDictionary.getInstance().getReturnType(expr, features,agg).equalsIgnoreCase(type)
 				);
 	}
 
@@ -95,12 +96,12 @@ public class PigDictionaryTests {
 			FeatureList features,
 			String type)throws Exception{
 		assertFalse(expr,
-				PigDictionary.getReturnType(expr, features).equalsIgnoreCase(type)
+				PigDictionary.getInstance().getReturnType(expr, features).equalsIgnoreCase(type)
 				);
 	}
 
 	@Test
-	public void testBooleanOperations(){
+	public void testBooleanOperations() throws RemoteException{
 		TestUtils.logTestTitle("PigDictionaryTests#testBooleanOperations");
 		FeatureList features = getFeatures();
 		try{
@@ -136,7 +137,7 @@ public class PigDictionaryTests {
 	}
 
 	@Test
-	public void testArithmeticOperations(){
+	public void testArithmeticOperations() throws RemoteException{
 		TestUtils.logTestTitle("PigDictionaryTests#testArithmeticOperations");
 		FeatureList features = getFeatures();
 		try{
@@ -156,15 +157,15 @@ public class PigDictionaryTests {
 
 
 	@Test
-	public void testMethods(){
+	public void testMethods() throws RemoteException{
 		TestUtils.logTestTitle("PigDictionaryTests#testMethods");
 		FeatureList features = getFeatures();
 		try{
-			is( "substring('bla',1,2)",features,"STRING");
-			is( "substring(substring('bla',1,2),1,2)",features,"STRING");
+			is( "substring('bla',1,2)",features,"CHARARRAY");
+			is( "substring(substring('bla',1,2),1,2)",features,"CHARARRAY");
 			isNull("substring('bla',1,2,3)",features);
-			is("(STRING) `bla`",features,"STRING");
-			is("(STRING)(SUBSTRING('bla',1,2))",features,"STRING");
+			is("(CHARARRAY) `bla`",features,"CHARARRAY");
+			is("(CHARARRAY)(SUBSTRING('bla',1,2))",features,"CHARARRAY");
 		}catch(Exception e){
 			logger.error("Exception when testing boolean operations: "+e.getMessage());
 			assertTrue("Fail on exception",false);
@@ -173,18 +174,18 @@ public class PigDictionaryTests {
 	}
 	
 	@Test
-	public void testAggreg(){
+	public void testAggreg() throws RemoteException{
 		TestUtils.logTestTitle("PigDictionaryTests#testAggreg");
 		FeatureList features = getFeatures();
 		Set<String> agg = getAgg();
 		try{
 			is("count_star(col2)",features,agg,"BIGINT");
-			is("(STRING) count_star(col2)",features,agg,"STRING");
+			is("(CHARARRAY) count_star(col2)",features,agg,"CHARARRAY");
 			is("sum(col2)",features,agg,"DOUBLE");
 			is("avg(col2)",features,agg,"DOUBLE");
 			is("max(col2)",features,agg,"DOUBLE");
 			is("min(col2)",features,agg,"DOUBLE");
-			is("col1",features,agg,"STRING");
+			is("col1",features,agg,"CHARARRAY");
 			isNull("col2",features,agg);
 			is("min(round(col2)+random())",features,agg,"DOUBLE");
 		}catch(Exception e){

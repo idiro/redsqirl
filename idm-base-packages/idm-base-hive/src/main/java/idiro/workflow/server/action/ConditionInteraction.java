@@ -49,7 +49,7 @@ public class ConditionInteraction extends UserInteraction{
 				if(!condition.isEmpty()){
 					logger.debug("Condition: "+ condition);
 					String type = null;
-					if(! (type = HiveDictionary.getReturnType(
+					if(! (type = HiveDictionary.getInstance().getReturnType(
 							condition,
 							el.getInFeatures()
 							)).equalsIgnoreCase("boolean")){
@@ -75,7 +75,7 @@ public class ConditionInteraction extends UserInteraction{
 			output = tree.getFirstChild("editor").getFirstChild("output");
 			tree.remove("editor");
 		}
-		Tree<String> base = HiveDictionary.generateEditor(HiveDictionary.createConditionHelpMenu(),
+		Tree<String> base = HiveDictionary.generateEditor(HiveDictionary.getInstance().createConditionHelpMenu(),
 				el.getInFeatures());
 		base.add(output);
 		tree.add(base);

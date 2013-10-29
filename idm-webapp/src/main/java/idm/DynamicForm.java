@@ -28,21 +28,15 @@ public class DynamicForm implements Serializable {
 	private String subtypeName;
 	
 
+
 	private String pathBrowser = "";
 	private List<ItemList> listGrid = new ArrayList<ItemList>();
 	private List<ItemList> listFeature = new ArrayList<ItemList>();
 
 
-
-
-
-
 	public DynamicForm() {
 		super();
 	}
-
-
-
 
 
 	public List<SelectItem> getListOptions() {

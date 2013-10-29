@@ -15,14 +15,14 @@
 		   		<a4j:commandButton action="#{canvasBean.addLink}" value="#{messages.button_ok}"
 					oncomplete="#{rich:component('modalSelectLink')}.hide();addLinkBt()"/>
 				<a4j:commandButton value="#{messages.button_cancel}" 
-				    onclick="removeLink('#{canvasBean.paramNameLink}'); #{rich:component('modalSelectLink')}.hide();"/>
+				    onclick="removeLink('canvas', '#{canvasBean.paramNameLink}'); #{rich:component('modalSelectLink')}.hide();"/>
 			</h:panelGrid>
 		</h:panelGrid>
 		
 		<h:panelGrid rendered="#{empty canvasBean.linkPossibilities}">
 			<p>Impossible to create link</p>
 			<a4j:commandButton value="#{messages.button_ok}"
-				oncomplete="removeLink('#{canvasBean.paramNameLink}'); #{rich:component('modalSelectLink')}.hide();"/>
+				oncomplete="removeLink('canvas', '#{canvasBean.paramNameLink}'); #{rich:component('modalSelectLink')}.hide();"/>
 		</h:panelGrid>
 	</h:panelGrid>
 	

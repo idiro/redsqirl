@@ -56,6 +56,9 @@
 	<listener>
 		<listener-class>idm.auth.ServletContextApp</listener-class>
 	</listener>
+	<listener>
+		<listener-class>idm.auth.SessionListener</listener-class>
+	</listener>
 
 
 
