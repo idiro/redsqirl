@@ -249,6 +249,47 @@ public class WorkflowPrefManager extends BlockManager{
 		return getUserProperties().getProperty(key);
 	}
 	
-
+	
+	public static void main(String[] args){
+		for(int i = 0; i < args.length;++i){
+			if(args[i].contains("=") && args[i].indexOf('=') == args[i].lastIndexOf('=')){
+				String[] pref = args[i].split("=");
+				
+				if(pref[0].equalsIgnoreCase("pathSystemPref")){
+					pathSystemPref.put(pref[1]);
+				}else if(pref[0].equalsIgnoreCase("pathSysHome")){
+					pathSysHome.put(pref[1]);
+				}else if(pref[0].equalsIgnoreCase("pathSysImagePref")){
+					pathSysImagePref.put(pref[1]);
+				}else if(pref[0].equalsIgnoreCase("pathSysPackagePref")){
+					pathSysPackagePref.put(pref[1]);
+				}else if(pref[0].equalsIgnoreCase("pathSysHelpPref")){
+					pathSysHelpPref.put(pref[1]);
+				}else if(pref[0].equalsIgnoreCase("pathSysCfgPref")){
+					pathSysCfgPref.put(pref[1]);
+				}else if(pref[0].equalsIgnoreCase("pathUserPref")){
+					pathUserPref.put(pref[1]);
+				}else if(pref[0].equalsIgnoreCase("pathIconMenu")){
+					pathIconMenu.put(pref[1]);
+				}else if(pref[0].equalsIgnoreCase("pathUserImagePref")){
+					pathUserImagePref.put(pref[1]);
+				}else if(pref[0].equalsIgnoreCase("pathUserPackagePref")){
+					pathUserPackagePref.put(pref[1]);
+				}else if(pref[0].equalsIgnoreCase("pathUserHelpPref")){
+					pathUserHelpPref.put(pref[1]);
+				}else if(pref[0].equalsIgnoreCase("pathOozieJob")){
+					pathOozieJob.put(pref[1]);
+				}else if(pref[0].equalsIgnoreCase("pathWorkflow")){
+					pathWorkflow.put(pref[1]);
+				}else if(pref[0].equalsIgnoreCase("pathUserCfgPref")){
+					pathUserCfgPref.put(pref[1]);
+				}else if(pref[0].equalsIgnoreCase("hdfsPathOozieJobs")){
+					hdfsPathOozieJobs.put(pref[1]);
+				}else if(pref[0].equalsIgnoreCase("pathUserDFEOutputColour")){
+					pathUserDFEOutputColour.put(pref[1]);
+				}
+			}
+		}
+	}
 	
 }
