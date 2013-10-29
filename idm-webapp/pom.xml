@@ -97,6 +97,7 @@
 		<artifactId>maven-war-plugin</artifactId>
 		<configuration>
 		    <outputDirectory>${dist.war}</outputDirectory>
+		    <warName>idm</warName>
 		</configuration>
 	    </plugin>
 
