@@ -30,11 +30,11 @@
 
 <script type="text/javascript">
 		//<![CDATA[
-		
+		           
 	    jQuery.noConflict();
 
 		  jQuery(function() {
-
+			  nameTabs[0] = "canvas-1";
 
 	    	  var tabsRemote = jQuery("#tabRemote").tabs().scrollabletab();
 	    	  tabsRemote.find(".ui-tabs-nav").sortable({
@@ -44,15 +44,9 @@
 	    	  	}
 	    	  });
 
-	    	  var tabsFooter = jQuery("#tabsFooter").tabs().scrollabletab();
-	    	  tabsFooter.find(".ui-tabs-nav").sortable({
-	    	  axis: "x",
-	    	  stop: function() {
-	    		  tabsFooter.tabs("refresh");
-	    	  	}
-	    	  });
+	    	  configureFooter();
 
-	    	  var tabscanvas = jQuery("#canvas1").tabs().scrollabletab();
+	    	  var tabscanvas = jQuery("#canvas-tabs").tabs().scrollabletab();
 	    	  tabscanvas.find(".ui-tabs-nav").sortable({
 	    	  axis: "x",
 	    	  stop: function() {
@@ -116,16 +110,16 @@
 	  	            	allTabsDestination.find("a[href$=" + jQuery(ui.item[0]).attr("aria-controls") + "]").remove();
 
 	
-	  	              	jQuery("#canvas1").tabs().tabs('refresh');
+	  	              	jQuery("#canvas-tabs").tabs().tabs('refresh');
 	  	              	jQuery("#tabRemote").tabs().tabs('refresh');
-	  	              	jQuery("#tabsFooter").tabs().tabs('refresh');
+	  	              	
 	  	              	
 	  	              	jQuery("#"+jQuery(this).parent().attr("id")).tabs("option", "active", jQuery(ui.item[0]).index() );
 
 	  	              	validateArrows(jQuery("#tabs1"),jQuery("#buttonsTabs1"));
 		    		  	validateArrows(jQuery("#tabs2"),jQuery("#buttonsTabs2"));
 		    		  	validateArrows(jQuery("#tabRemote"),jQuery("#buttonstabRemote"));
-		    		  	validateArrows(jQuery("#canvas1"),jQuery("#buttonsCanvas1"));
+		    		  	validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
 	  	  	            
   	            }
 	            	            
@@ -149,22 +143,22 @@
 
   	  	  	});
 
-  	  	  	
-	          
 
-	          var contTabCanvas = 1;
-
+  	    	  var contTabCanvas = 1;
+  	    	
 	    	  jQuery('#addtabCanvas').click( function(){
 	              //<![CDATA[
 	              
 	              contTabCanvas++;
-				  var tabs = jQuery("#canvas1").tabs();
-	              var ul = jQuery("#canvas1").tabs().find( "ul:first" );
-	              jQuery( "<li><a href='#canvas-"+ contTabCanvas +"'>canvas"+ contTabCanvas +"</a> <span class='ui-icon ui-icon-close' onclick='closeTab(this);'></span> </li>" ).appendTo( ul );
-	              jQuery( "<div id='canvas-"+ contTabCanvas +"'> not ready yet </div>" ).appendTo( tabs );
-	              tabs.tabs( "refresh" );
+	              
+	              addWorkflowTab("canvas-"+ contTabCanvas);
+	              
+	              addWorkflow("canvas-"+ contTabCanvas);
+	              configureCanvas("canvas-"+ contTabCanvas);
+	              
+	              setWorkflow("canvas-"+ contTabCanvas);
 
-	              validateArrows(jQuery("#canvas1"),jQuery("#buttonsCanvas1"));
+	              validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
 	              
 	              //]]>
 	          });
@@ -350,6 +344,20 @@
 
 	    		 
 	    	});	//---------- END jQuery(function
+	    			
+	    	function configureFooter(){
+	    		 var tabsFooter = jQuery("#tabsFooter").tabs().scrollabletab();
+		    	  tabsFooter.find(".ui-tabs-nav").sortable({
+		    	  axis: "x",
+		    	  stop: function() {
+		    		  tabsFooter.tabs("refresh");
+		    	  	}
+		    	  });
+		    	  
+		    	  jQuery("#tabsFooter").tabs().tabs('refresh');
+		    	  
+		    	  configureFooterCss();
+	    	}
 
 	    	function addTabRemoteArr(){
   	  	  	  	//<![CDATA[
@@ -379,13 +387,59 @@
 	    	  
 	      }
 	      
-	      function addElementJs(positions){
-	    	  addElements('canvas', positions);
+	      function addElementJs(canvasName, positions){
+	    	  addWorkflowTab(canvasName);
+	    	  configureCanvas(canvasName);
+	    	  addElements(canvasName, positions);
 	      }
 	      
-	      function addLinksJs(links){
-	    	  addLinks('canvas', links);
+	      function addLinksJs(canvasName, links){
+	    	  addLinks(canvasName, links);
 	      }
+	      
+	      var numTabs = 1;
+	      var nameTabs = {};
+	      
+	      function addWorkflowTab(tabName){
+	    	//<![CDATA[
+	    	  var tabs = jQuery("#canvas-tabs").tabs();
+              var ul = jQuery("#canvas-tabs").tabs().find( "ul:first" );
+             
+              jQuery( "<li><a href='#"+ tabName +"' onclick=\"setWorkflow('"+tabName+"');\">"+ 
+            		  tabName +"</a> <span class='ui-icon ui-icon-close' onclick=\"closeWorkflowTab(this, '"+tabName+"')\"></span> </li>" ).appendTo( ul );
+              
+              var div = "<div id='"+tabName+"'>"+
+				"<div id='container-"+tabName+"' class='container-"+tabName+"'></div>"+
+				"<h:panelGroup>"+
+				"	<ui:include src=''/pages/canvasFooter.xhtml' />"+
+				"</h:panelGroup>"+
+				"</div>";
+              
+              jQuery(div).appendTo( tabs );
+              tabs.tabs( "refresh" );
+              
+              //select new tab
+              tabs.tabs("option", "active", numTabs);
+              nameTabs[numTabs] = tabName;
+              numTabs++;
+              setSelected(tabName);
+            //]]>
+	      }
+	      
+	      function closeWorkflowTab(tab, tabName){
+	    	  closeTab(tab);
+	    	  closeWorkflow(tabName);
+	    	  numTabs--;
+	    	  jQuery("#canvas-tabs").tabs( "refresh" );
+	    	  
+	    	  selectTab(numTabs-1);
+	      }
+	      
+	     function selectTab(tabIndex){
+	    	 var tabs = jQuery("#canvas-tabs").tabs();
+	    	 tabs.tabs("option", "active", tabIndex);
+	    	 setWorkflow(nameTabs[tabIndex]);
+	     }
 
 	   	jQuery(document).bind('keypress', function (e) {
 			if (e.which == 13) { // Delete
@@ -420,20 +474,46 @@
 
 <div id="invisible"></div>
 
-<div id="menu">
-
-	<h:form id="formMenu">
-
-		<h:inputHidden value="#{canvasBean.countObj}" id="countObj" />
-		<h:inputHidden value="#{canvasModalBean.nameElement}" id="nameElement" />
-		<h:inputHidden value="#{canvasModalBean.groupID}" id="groupID" />
-		<h:inputHidden value="#{canvasModalBean.listPageSize}" />
+	<div id="menu">
+		<h:form id="formMenu">
+			<h:inputHidden value="#{canvasModalBean.nameElement}" id="nameElement" />
+			<h:inputHidden value="#{canvasModalBean.groupID}" id="groupID" />
+			<h:inputHidden value="#{canvasModalBean.listPageSize}" />
+				
+			<a4j:region>
+				<a4j:status	onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+							onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
+							onstop="jQuery('#canvas-tabs').unblock();" />
+				
+				<a4j:jsFunction name="reRenderFooter" oncomplete="mountFooter()" reRender="tabsFooterForm"/>
+				<a4j:jsFunction name="mountFooter" oncomplete="configureFooter();mountObj()"/>
+			</a4j:region>
+	
+			<a4j:region>
+				<a4j:status	onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+							onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
+							onstop="jQuery('#canvas-tabs').unblock();" />
+					
+				<a4j:jsFunction name="setWorkflow" action="#{canvasBean.changeWorkflow}" oncomplete="setSelected('#{canvasBean.nameWorkflow}');">
+					<a4j:actionparam name="selectedCanvas" assignTo="#{canvasBean.nameWorkflow}"/>
+				</a4j:jsFunction>
+			</a4j:region>
+				
+			<a4j:region>
+				<a4j:status	onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+							onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
+							onstop="jQuery('#canvas-tabs').unblock();" />
+				
+				<a4j:jsFunction name="addWorkflow" action="#{canvasBean.addWorkflow}">
+					<a4j:actionparam name="name"/>
+				</a4j:jsFunction>
+			</a4j:region>
 		
 			<a4j:region>
 			
-				<a4j:status	onstart="jQuery('#canvas1').block({ message: jQuery('#domMessageDivCanvas1') });"
-							onerror="jQuery('#canvas1').unblock();" onsuccess="jQuery('#canvas1').unblock();"
-							onstop="jQuery('#canvas1').unblock();" />
+				<a4j:status	onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+							onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
+							onstop="jQuery('#canvas-tabs').unblock();" />
 				
 				<a4j:jsFunction name="removeLinkBt" action="#{canvasBean.removeLink}">
 					<a4j:actionparam name="paramOutId"/>
@@ -445,9 +525,9 @@
 			
 			<a4j:region>
 			
-				<a4j:status	onstart="jQuery('#canvas1').block({ message: jQuery('#domMessageDivCanvas1') });"
-							onerror="jQuery('#canvas1').unblock();" onsuccess="jQuery('#canvas1').unblock();"
-							onstop="jQuery('#canvas1').unblock();" />
+				<a4j:status	onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+							onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
+							onstop="jQuery('#canvas-tabs').unblock();" />
 				
 								
 				<a4j:jsFunction name="removeElement" action="#{canvasBean.removeElement}">
@@ -464,9 +544,9 @@
 			
 			<a4j:region>
 			
-				<a4j:status	onstart="jQuery('#canvas1').block({ message: jQuery('#domMessageDivCanvas1') });"
-							onerror="jQuery('#canvas1').unblock();" onsuccess="jQuery('#canvas1').unblock();"
-							onstop="jQuery('#canvas1').unblock();" />
+				<a4j:status	onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+							onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
+							onstop="jQuery('#canvas-tabs').unblock();" />
 				
 				<a4j:jsFunction name="saveWorkflow" action="#{canvasBean.save}" >
 					<a4j:actionparam name="pathFile"/>
@@ -476,18 +556,18 @@
 			
 			<a4j:region>
 				
-				<a4j:status	onstart="jQuery('#canvas1').block({ message: jQuery('#domMessageDivCanvas1') });"
-							onerror="jQuery('#canvas1').unblock();" onsuccess="jQuery('#canvas1').unblock();"
-							onstop="jQuery('#canvas1').unblock();" />
+				<a4j:status	onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+							onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
+							onstop="jQuery('#canvas-tabs').unblock();" />
 				
-				<a4j:jsFunction name="addLinkBt" data="#{canvasBean.result}" oncomplete="updateLink('canvas', data[0], data[1], data[2])" />
+				<a4j:jsFunction name="addLinkBt" data="#{canvasBean.result}" oncomplete="updateLink(data[0], data[1], data[2])" />
 			</a4j:region>
 			
 			<a4j:region>
 			
-				<a4j:status	onstart="jQuery('#canvas1').block({ message: jQuery('#domMessageDivCanvas1') });"
-							onerror="jQuery('#canvas1').unblock();" onsuccess="jQuery('#canvas1').unblock();"
-							onstop="jQuery('#canvas1').unblock();" />
+				<a4j:status	onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+							onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
+							onstop="jQuery('#canvas-tabs').unblock();" />
 				
 							
 				<a4j:jsFunction name="addLinkModalBt" action="#{canvasBean.updateLinkPossibilities}" oncomplete="#{rich:component('modalSelectLink')}.show()"
@@ -499,22 +579,22 @@
 			</a4j:region>
 			
 			<a4j:region>
-				<a4j:status	onstart="jQuery('#canvas1').block({ message: jQuery('#domMessageDivCanvas1') });"
-							onerror="jQuery('#canvas1').unblock();" onsuccess="jQuery('#canvas1').unblock();"
-							onstop="jQuery('#canvas1').unblock();" />
+				<a4j:status	onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+							onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
+							onstop="jQuery('#canvas-tabs').unblock();" />
 				
 				<a4j:jsFunction name="openModal" action="#{canvasModalBean.openCanvasModal}" oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('canvasModalPanel')}.show() }" 
 					reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError, errorTable, canvasModalTabPanel" >
 					<a4j:actionparam name="paramNameElement" assignTo="#{canvasModalBean.nameElement}" />
 					<a4j:actionparam name="paramPathImage" assignTo="#{canvasModalBean.pathImage}" />
-					<a4j:actionparam name="paramNameWorkflow" value="#{canvasBean.nameWorkflow}" assignTo="#{canvasModalBean.nameElement}" />
+					<a4j:actionparam name="paramNameWorkflow" assignTo="#{canvasModalBean.nameWorkflow}" />
 				</a4j:jsFunction>
 			</a4j:region>
 			
 			<a4j:region>
-				<a4j:status	onstart="jQuery('#canvas1').block({ message: jQuery('#domMessageDivCanvas1') });"
-							onerror="jQuery('#canvas1').unblock();" onsuccess="jQuery('#canvas1').unblock();"
-							onstop="jQuery('#canvas1').unblock();" />
+				<a4j:status	onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+							onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
+							onstop="jQuery('#canvas-tabs').unblock();" />
 				
 				<a4j:jsFunction name="openChangeIdModal" action="#{canvasBean.openChangeIdModal}" 
 					oncomplete="#{rich:component('modalChangeId')}.show();">
@@ -526,34 +606,36 @@
 			
 			<a4j:region>
 				<a4j:jsFunction name="closeChangeIdModal"  
-					oncomplete="updateLabelObj('canvas','#{canvasBean.idGroup}','#{canvasBean.idElement}');openModal('#{canvasBean.idGroup}','#{canvasModalBean.pathImage}','#{canvasBean.nameWorkflow}');">
+					oncomplete="updateLabelObj('#{canvasBean.idGroup}','#{canvasBean.idElement}');openModal('#{canvasBean.idGroup}','#{canvasModalBean.pathImage}','#{canvasBean.nameWorkflow}');">
 				</a4j:jsFunction>
 			</a4j:region>
 
 			<a4j:region>
 			
-				<a4j:status	onstart="jQuery('#canvas1').block({ message: jQuery('#domMessageDivCanvas2') });"
-							onerror="jQuery('#canvas1').unblock();" onsuccess="jQuery('#canvas1').unblock();"
-							onstop="jQuery('#canvas1').unblock();" />
+				<a4j:status	onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas2') });"
+							onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
+							onstop="jQuery('#canvas-tabs').unblock();" />
 			
 				<a4j:jsFunction name="loadWorkflow" action="#{canvasBean.blockRunningWorkflow}" data="#{canvasBean.positions}" 
-					oncomplete="addElementJs(data[0]);addLinksJs(data[1]);" reRender="formMenu"/>
+					oncomplete="addElementJs(data[0],data[1]);addLinksJs(data[0],data[2]);" reRender="formMenu"/>
 			</a4j:region>
 			
 			<a4j:region>
 			
-				<a4j:status	onstart="jQuery('#canvas1').block({ message: jQuery('#domMessageDivCanvas1') });"
-							onerror="jQuery('#canvas1').unblock();" onsuccess="jQuery('#canvas1').unblock();"
-							onstop="jQuery('#canvas1').unblock();" />
+				<a4j:status	onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivcanvas-tabs') });"
+							onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
+							onstop="jQuery('#canvas-tabs').unblock();" />
 				
 							
-				<a4j:jsFunction name="closeWorkflow" action="#{canvasBean.closeWorkflow}" oncomplete="clearCanvas('canvas');"  reRender="formMenu"/>
+				<a4j:jsFunction name="closeWorkflow" action="#{canvasBean.closeWorkflow}">
+					<a4j:actionparam name="workflow"/>
+				</a4j:jsFunction>
 			</a4j:region>
 			
 			<a4j:region>
-				<a4j:status	onstart="jQuery('#canvas1').block({ message: jQuery('#domMessageDivCanvas1') });"
-								onerror="jQuery('#canvas1').unblock();" onsuccess="jQuery('#canvas1').unblock();"
-								onstop="jQuery('#canvas1').unblock();" />
+				<a4j:status	onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+								onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
+								onstop="jQuery('#canvas-tabs').unblock();" />
 				<a4j:jsFunction name="updateIdObj" action="#{canvasBean.updateIdObj}" >
 					<a4j:actionparam name="idGroup"/>
 					<a4j:actionparam name="id"/>
@@ -562,7 +644,7 @@
 			
 			<a4j:region>
 			
-				<a4j:status	onerror="jQuery('#canvas1').unblock();" />
+				<a4j:status	onerror="jQuery('#canvas-tabs').unblock();" />
 			
 				<div id="domMessageDivCanvas2" style="display: none;">
 					<img src="../image/icons/waiting.gif" />
@@ -571,7 +653,7 @@
 					</h:panelGroup>
 				</div>
 			
-				<a4j:jsFunction name="updateWorkflowUrl" action="#{canvasBean.blockRunningWorkflow}" oncomplete="jQuery('#canvas1').unblock();">
+				<a4j:jsFunction name="updateWorkflowUrl" action="#{canvasBean.blockRunningWorkflow}" oncomplete="jQuery('#canvas-tabs').unblock();">
 			</a4j:jsFunction>
 			
 			</a4j:region>
@@ -594,7 +676,7 @@
 					<rich:menuItem submitMode="ajax"
 						value="#{messages.label_menu_open}" onclick="#{rich:component('modalLoadWorkflow')}.show()" rerender="hdfsfsOpenFile"/>
 					<rich:menuItem submitMode="none"
-						value="#{messages.label_menu_close}" onclick="closeWorkflow();" />
+						value="#{messages.label_menu_close}" onclick="closeWorkflow(getSelected());" />
 					<rich:menuItem submitMode="ajax"
 						value="#{messages.label_menu_closeall}"
 						action="#{canvasBean.doNew}" />
@@ -651,15 +733,15 @@
 					<rich:menuItem submitMode="ajax"
 						value="#{messages.label_menu_runproject}"
 						action="#{canvasBean.runWorkflow}"
-						onclick="jQuery('#canvas1').block({ message: jQuery('#domMessageDivCanvas1') })"
-						oncomplete="jQuery('#canvas1').block({ message: jQuery('#domMessageDivCanvas2') });updateWorkflowUrl();"
+						onclick="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') })"
+						oncomplete="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas2') });updateWorkflowUrl();"
 						reRender="formMenu,domMessageDivCanvas2">
 					</rich:menuItem>	
 
 				</rich:dropDownMenu>
 
 				<rich:toolBarGroup location="right"  
-				    onitemclick="closeWorkflow();jQuery.blockUI({ message: jQuery('#domMessageDivCanvas1') });signOut();">
+				    onitemclick="closeWorkflow(getSelected());jQuery.blockUI({ message: jQuery('#domMessageDivCanvas1') });signOut();">
 					<rich:dropDownMenu value="#{messages.label_menu_signout}"
 						direction="bottom-left" jointPoint="br" styleClass="search" />
 				</rich:toolBarGroup>
@@ -689,8 +771,8 @@
 			<img src="../image/icons/button-save.png" alt="save" class="shortMenuIcon" onclick="#{rich:component('modalSaveWorkflow')}.show()"/>
 			<img src="../image/icons/button-save-as.png" alt="saveas" class="shortMenuIcon" />
 			<img src="../image/icons/button-save-all.png" alt="saveall" class="shortMenuIcon" />
-			<a onclick="undoHistory('canvas');"><img src="../image/icons/button-undo.png" alt="undo" class="shortMenuIcon" /></a>
-			<a onclick="redoHistory('canvas');"><img src="../image/icons/button-redo.png" alt="redo" class="shortMenuIcon" /></a>
+			<a onclick="undoHistory();"><img src="../image/icons/button-undo.png" alt="undo" class="shortMenuIcon" /></a>
+			<a onclick="redoHistory();"><img src="../image/icons/button-redo.png" alt="redo" class="shortMenuIcon" /></a>
 			<img src="../image/icons/button-cut.png" alt="cut" class="shortMenuIcon" />
 		</center>
 
@@ -710,10 +792,10 @@
 				</ul>
 				<div id="tabFlowchart-1">
 
-					<div id="canvas1">
+					<div id="canvas-tabs">
 						<ul>
-							<li><a href="#canvas-1">Canvas 1</a> 
-								<span class="ui-icon ui-icon-close" onclick="closeTab(this);"></span>
+							<li><a href="#canvas-1" onclick="setWorkflow('canvas-1');">Canvas 1</a> 
+								<span class="ui-icon ui-icon-close" onclick="closeWorkflowTab(this,'canvas-1')"></span>
 							</li>
 							<button id="addtabCanvas" style="border: hidden;">+</button>
 						</ul>
@@ -725,13 +807,41 @@
 
 						<div id="canvas-1">
 
-							<div id="canvas" class="canvas"></div>
+							<div id="container-canvas-1" class="container-canvas-1"></div>
 							
-							<h:panelGroup>
-								<ui:include src="/pages/canvasFooter.xhtml" />
-							</h:panelGroup>
-
 						</div>
+						<h:panelGroup id="tabsFooterForm">
+							<div id="tabsFooter">
+								<ul>
+									
+									<ui:repeat id="tabsRepeat1" value="#{configureTabsBean.tabs}" var="tab" varStatus="status">
+										<li><a href="##{tab}">#{tab}</a></li>
+									</ui:repeat>
+									<a4j:region>
+									<a4j:commandButton value="?" onclick="#{rich:component('modalConfigureFooterTabs')}.show()" 
+										style="border: hidden;"/>
+									</a4j:region>
+								</ul>
+					
+								<span id="buttonsTabsFooter" class="spanButtons">
+									<button class="buttonsArrowsLeft">&#60;</button>
+									<button class="buttonsArrowsRight">&#62;</button>
+								</span>
+								
+								<ui:repeat value="#{configureTabsBean.menuWAList}" var="tab">
+									<div id="#{tab.key}">
+										<p>
+											<ui:repeat value="#{tab.value}" var="action">
+												<span id="spanImagensObj" style="display:none" >
+													<img src="#{action[1]}" class="footerIcon" onError="this.onerror=null;this.src='./#{action[1]}';" />
+													<span>#{action[0]}</span>
+												</span>
+											</ui:repeat>
+										</p>
+									</div>
+								</ui:repeat>
+							</div>
+						</h:panelGroup>
 
 					</div>
 

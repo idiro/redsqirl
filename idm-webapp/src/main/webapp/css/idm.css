@@ -50,11 +50,11 @@ input {
 	cursor: pointer;
 }
 
-#canvas1 {
+#canvas-tabs {
 	margin-top: 0em;
 }
 
-#canvas1 li .ui-icon-close {
+#canvas-tabs li .ui-icon-close {
 	float: left;
 	margin: 0em 0.2em 0 0;
 	cursor: pointer;
