@@ -114,7 +114,8 @@ public class ServerThread{
 		String command = "";
 		try {
 			
-			File file = new File(WorkflowPrefManager.getUserProperty("workflow_lib_path"));
+			logger.info("system properties: " + WorkflowPrefManager.pathSysCfgPref.get());
+			File file = new File(WorkflowPrefManager.getSysProperty("workflow_lib_path"));
 
 			// Reading directory contents
 			File[] files = file.listFiles();

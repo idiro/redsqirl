@@ -29,7 +29,7 @@ public class BaseCommand {
 
 		String command = null;
 
-		File file = new File(WorkflowPrefManager.getUserProperty("workflow_lib_path"));
+		File file = new File(WorkflowPrefManager.getSysProperty("workflow_lib_path"));
 
 		// Reading directory contents
 		File[] files = file.listFiles();
@@ -98,7 +98,7 @@ public class BaseCommand {
 			Properties prop = new Properties();
 			prop.load(is);
 
-			String inClasspath = WorkflowPrefManager.getUserProperty("idiro_interface_path");
+			String inClasspath = WorkflowPrefManager.getSysProperty("idiro_interface_path");
 
 			return "file:"+inClasspath;
 
