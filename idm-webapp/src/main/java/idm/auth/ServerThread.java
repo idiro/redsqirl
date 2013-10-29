@@ -1,7 +1,7 @@
 package idm.auth;
 
 
-import idm.useful.UserPrefManager;
+import idiro.workflow.server.WorkflowPrefManager;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -114,7 +114,7 @@ public class ServerThread{
 		String command = "";
 		try {
 			
-			File file = new File(UserPrefManager.getUserProperty("workflow_lib_path"));
+			File file = new File(WorkflowPrefManager.getUserProperty("workflow_lib_path"));
 
 			// Reading directory contents
 			File[] files = file.listFiles();

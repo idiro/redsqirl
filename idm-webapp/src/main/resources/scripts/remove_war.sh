@@ -8,4 +8,4 @@ SCRIPT_PATH="${SCRIPT_PATH%/*}"
 CONF_FILE=${SCRIPT_PATH}/../conf/.internal.conf
 
 source ${CONF_FILE} 2> /dev/null
-rm -r ${TOMCAT_PATH}/idm-webapp*
+rm -r ${TOMCAT_PATH}/idm*
