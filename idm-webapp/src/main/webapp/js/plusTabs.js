@@ -97,7 +97,7 @@
 									    		  validateArrows(jQuery("#tabs1"),jQuery("#buttonsTabs1"));
 									    		  validateArrows(jQuery("#tabs2"),jQuery("#buttonsTabs2"));
 									    		  validateArrows(jQuery("#tabRemote"),jQuery("#buttonstabRemote"));
-									    		  validateArrows(jQuery("#canvas1"),jQuery("#buttonsCanvas1"));
+									    		  validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
 									    		  
 									    		  }).appendTo(allTabsNavTab1);
 								    		  
@@ -150,7 +150,7 @@
 									    		  validateArrows(jQuery("#tabs1"),jQuery("#buttonsTabs1"));
 									    		  validateArrows(jQuery("#tabs2"),jQuery("#buttonsTabs2"));
 									    		  validateArrows(jQuery("#tabRemote"),jQuery("#buttonstabRemote"));
-									    		  validateArrows(jQuery("#canvas1"),jQuery("#buttonsCanvas1"));
+									    		  validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
 									    		  
 									    		  }).appendTo(allTabsNavTab1);
 		
@@ -210,7 +210,7 @@
 									    		  validateArrows(jQuery("#tabs1"),jQuery("#buttonsTabs1"));
 									    		  validateArrows(jQuery("#tabs2"),jQuery("#buttonsTabs2"));
 									    		  validateArrows(jQuery("#tabRemote"),jQuery("#buttonstabRemote"));
-									    		  validateArrows(jQuery("#canvas1"),jQuery("#buttonsCanvas1"));
+									    		  validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
 									    		  
 									    		  }).appendTo(allTabsNavTab2);
 		
@@ -263,7 +263,7 @@
 									    		  validateArrows(jQuery("#tabs1"),jQuery("#buttonsTabs1"));
 									    		  validateArrows(jQuery("#tabs2"),jQuery("#buttonsTabs2"));
 									    		  validateArrows(jQuery("#tabRemote"),jQuery("#buttonstabRemote"));
-									    		  validateArrows(jQuery("#canvas1"),jQuery("#buttonsCanvas1"));
+									    		  validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
 									    		  
 									    		  }).appendTo(allTabsNavTab2);
 								  			
@@ -322,7 +322,7 @@
 									    		  validateArrows(jQuery("#tabs1"),jQuery("#buttonsTabs1"));
 									    		  validateArrows(jQuery("#tabs2"),jQuery("#buttonsTabs2"));
 									    		  validateArrows(jQuery("#tabRemote"),jQuery("#buttonstabRemote"));
-									    		  validateArrows(jQuery("#canvas1"),jQuery("#buttonsCanvas1"));
+									    		  validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
 									    		  
 									    		  }).appendTo(allTabsNavCanvas);
 		
@@ -375,7 +375,7 @@
 									    		  validateArrows(jQuery("#tabs1"),jQuery("#buttonsTabs1"));
 									    		  validateArrows(jQuery("#tabs2"),jQuery("#buttonsTabs2"));
 									    		  validateArrows(jQuery("#tabRemote"),jQuery("#buttonstabRemote"));
-									    		  validateArrows(jQuery("#canvas1"),jQuery("#buttonsCanvas1"));
+									    		  validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
 									    		  
 									    		  }).appendTo(allTabsNavCanvas);
 								  			
