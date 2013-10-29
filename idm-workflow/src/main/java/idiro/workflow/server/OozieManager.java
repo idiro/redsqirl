@@ -61,6 +61,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 	public static final String prop_namenode = "namenode",
 			prop_jobtracker = "jobtracker",
 			prop_queue = "queue",
+			prop_user = "user.name",
 			prop_libpath = "oozie.libpath";
 
 
@@ -285,11 +286,12 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 				propSys.getProperty(WorkflowPrefManager.sys_namenode));
 		properties.put(prop_queue, 
 				propSys.getProperty(WorkflowPrefManager.sys_oozie_queue));
-		/*properties.put(prop_libpath, 
-				propSys.getProperty(WorkflowPrefManager.sys_idiroEngine_path));*/
+		properties.put(prop_libpath, 
+				propSys.getProperty(WorkflowPrefManager.sys_idiroEngine_path));
 		properties.put(OozieClient.APP_PATH,
 				propSys.getProperty(WorkflowPrefManager.sys_namenode)+
 				hdfsWfPath);
+		properties.put(prop_user, System.getProperty(prop_user));
 		properties.put("oozie.use.system.libpath","true");
 		
 		return properties;
@@ -302,6 +304,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 
 		BufferedWriter bf = new BufferedWriter( 
 				new FileWriter(workflowPropWriter));
+		bf.write("-Duser.name="+System.getProperty("user.name")+"\n");
 		Iterator<String> itKey = properties.keySet().iterator();
 		while(itKey.hasNext()){
 			String key = itKey.next();
