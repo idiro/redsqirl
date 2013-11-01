@@ -40,9 +40,10 @@ public class BaseCommand {
 			path.append(files[i] + ":");
 		}
 		String p = path.substring(0, path.length()-1);
-		String packagePath = getPackageClasspath(WorkflowPrefManager.userPackageLibPath);
+		String userPackagePath = getPackageClasspath(WorkflowPrefManager.userPackageLibPath);
+		String sysPackagePath = getPackageClasspath(WorkflowPrefManager.sysPackageLibPath);
 		
-		String classpath = " -classpath " + p + packagePath;
+		String classpath = " -classpath " + p + userPackagePath + sysPackagePath;
 
 		String codebase =  " -Djava.rmi.server.codebase="+getRMICodeBase();
 		String hostname = " -Djava.rmi.server.hostname="+getRMIHost();
@@ -56,8 +57,10 @@ public class BaseCommand {
 		File f = new File(path);
 		String classPath = "";
 		if (f.exists()){
-			for (String file : f.list()){
-				classPath += ":"+path+"/"+file;
+			for (File file : f.listFiles()){
+				if (file.isFile()){
+					classPath += ":"+path+"/"+file.getName();
+				}
 			}
 		}
 		return classPath;
