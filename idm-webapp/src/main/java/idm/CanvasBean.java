@@ -428,6 +428,13 @@ public class CanvasBean extends BaseBean implements Serializable{
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
+		//Back up the project
+		try {
+			df.backup();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		
 		countWf++;
 		setNameWorkflow("canvas"+countWf);
 		try {
@@ -445,6 +452,13 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 		getDf().setName(getNameWorkflow());
 
+		//Back up the project
+		try {
+			df.backup();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		
 		String error = getDf().run();
 		if(error != null){
 			logger.error(error);
