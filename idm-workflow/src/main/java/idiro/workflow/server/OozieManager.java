@@ -286,12 +286,11 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 				propSys.getProperty(WorkflowPrefManager.sys_namenode));
 		properties.put(prop_queue, 
 				propSys.getProperty(WorkflowPrefManager.sys_oozie_queue));
-		properties.put(prop_libpath, 
-				propSys.getProperty(WorkflowPrefManager.sys_idiroEngine_path));
+//		properties.put(prop_libpath, 
+//				propSys.getProperty(WorkflowPrefManager.sys_idiroEngine_path));
 		properties.put(OozieClient.APP_PATH,
 				propSys.getProperty(WorkflowPrefManager.sys_namenode)+
 				hdfsWfPath);
-		properties.put(prop_user, System.getProperty(prop_user));
 		properties.put("oozie.use.system.libpath","true");
 		
 		return properties;

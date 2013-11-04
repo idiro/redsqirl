@@ -1,0 +1,39 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="style.css">
+<title>Technologies</title>
+</head>
+<body>
+	<h1>Technologies</h1>
+	<h2><a href="http://hadoop.apache.org/">Hadoop</a></h2>
+	<p>Hadoop is distrubuted system that is implemented over a cluster
+		of computers. There can be many nodes in a cluster but there can only
+		be one control node known as namnode. A cluster can contain many nodes
+		that are slaves to the namenode these are known as datanodes. These
+		datanodes can usually hold the storage space for HDFS or Hive but also
+		has resources to perform processes like Map/Reduce</p>
+	<h2><a href="http://hive.apache.org/">Hive</a></h2>
+	<p>Hive is a hadoop implementation of a relational database that is
+		used for data warehousing for large data sets. Each query written in
+		it's own language called HiveQl that acts like a normal SQL query but
+		runs as a Map/Reduce job. Indexing is made easier and makes querying
+		large datasets quicker and more eficient</p>
+	<h2><a href="http://hadoop.apache.org/docs/r1.2.1/hdfs_design.html">HDFS</a></h2>
+	<p>HDFS is the distributed storage facility that is included within
+		hadoop. Any datanode that is in the cluster and configured to use HDFS
+		will be a replication of all other datanode , this means that all data
+		is synchronized across the cluster. In the event that a datanode has
+		to be excluded from the cluster the data that is stored on that
+		datanode is already available within the cluster.</p>
+	<h2><a href="http://oozie.apache.org/">Oozie</a></h2>
+	<p>To run a chain of processes together it can be difficult , Oozie
+		is technology that provides workflow functionality to the processes
+		available in hadoop. A workflow can contain many actions/processes and
+		it is often important to run each process sequentially. Oozie provides
+		this functionality</p>
+	<p>To build a workflow, actions have to be generated and configured
+		and linked to other actions.</p>
+
+	<a href="index.html">return to IDM help</a>
+</body>
+</html>

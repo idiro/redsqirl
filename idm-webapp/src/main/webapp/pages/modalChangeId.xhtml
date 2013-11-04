@@ -5,12 +5,11 @@
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets">
 
-
 		<h:outputText value="Name" />
-		<h:inputText label="Name" value="#{canvasBean.idElement}" size="16" maxlength="15" />
+		<h:inputText label="Name" value="#{canvasBean.idElement}" size="16" maxlength="15" id="newIdElement" onkeypress="return disableEnterKey(event);" />
 	
 		<h:panelGrid columns="1">
-			<a4j:commandButton action="#{canvasBean.changeIdElement}" 
+			<a4j:commandButton action="#{canvasBean.changeIdElement}" id="changeIdElementBt"
 				onclick="#{rich:component('modalChangeId')}.hide();" oncomplete="closeChangeIdModal()" value="#{messages.button_ok}"/>
 		</h:panelGrid>
 

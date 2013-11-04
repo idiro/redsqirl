@@ -4,8 +4,42 @@
 <title>Canvas</title>
 </head>
 <body>
-<img src="" width="42" height="42">
-<h1>Canvas</h1>
+	<h1>Canvas</h1>
+	<h2>
+		<a href="../helpimages/Workflow.png">Workflow</a>
+	</h2>
+	<p>The canvas area is designated to build workflows, theses
+		workflows that are used in IDM are controlled by Oozie to run jobs. A
+		workflow can contain many linked actions that produce results. When an
+		action is added to the canvas it will have an auto generated name
+		which can be renamed. This new action must be configured to ensure
+		that the workflow will run correctly. Source should be the first
+		action that is added to the workflow, this action will identify the
+		type and source location of the data. From there linking actions
+		together is now possible. Linking actions together depends on what the
+		input and output types of each action is. To link a source and and
+		Hive action together, the source data type has to be Hive .</p>
 
+	<p>
+	<table class="secondtable">
+		<tr>
+			<td>This is a blank canvas</td>
+			<td><img src="../helpimages/CanvasBlank.png" width="200"/></td>
+		</tr>
+		<tr>
+			<td>A source has been added to the workflow</td>
+			<td><img src="../helpimages/CanvasWithSource.png"width="200"/></td>
+		</tr>
+		<tr>
+			<td>Added an action to the workflow</td>
+			<td><img src="../helpimages/AddedAction.png"width="200"/></td>
+		</tr>
+		<tr>
+			<td>Linked source and action together to complete the action</td>
+			<td><img src="../helpimages/LinkingSourceAndAction.png"width="200"/></td>
+		</tr>
+	</table>
+	</p>
+	<a href="index.html">return to IDM help</a>
 </body>
 </html>
