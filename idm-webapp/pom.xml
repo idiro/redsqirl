@@ -30,7 +30,7 @@
 	<idm-wf-interface.target>${basedir}/../idm-wf-interface/target</idm-wf-interface.target>
 	<idm-wf-interface.jar>idm-wf-interface-0.1-SNAPSHOT.jar</idm-wf-interface.jar>
 	<idm-workflow.target>${basedir}/../idm-workflow/target</idm-workflow.target>
-	<idm-workflow.jar>idm-workflow-0.1-SNAPSHOT.jar</idm-workflow.jar>
+	<idm-workflow.lib>${idm-workflow.target}/idm-workflow/lib</idm-workflow.lib>
 	<main.resources.script>${basedir}/src/main/resources/scripts</main.resources.script>
 	<main.resources.conf>${basedir}/src/main/resources/conf</main.resources.conf>
     </properties>
@@ -103,58 +103,24 @@
 
 	    <!-- Copy dependencies -->
 	    <plugin>
-		<groupId>org.apache.maven.plugins</groupId>
-		<artifactId>maven-dependency-plugin</artifactId>
+		<artifactId>maven-resources-plugin</artifactId>
 		<version>2.6</version>
 		<executions>
-		    <execution>
-			<phase>compile</phase>
-			<goals>
-			    <goal>analyze-dep-mgt</goal>
-			</goals>
-			<configuration>
-			    <ignoreNonCompile>true</ignoreNonCompile>
-			    <verbose>true</verbose>
-			</configuration>
-		    </execution>
-		    <execution>
-			<id>copy-dependencies</id>
-			<phase>package</phase>
-			<goals>
-			    <goal>copy-dependencies</goal>
-			</goals>
-			<configuration>
-			    <outputDirectory>${dist.lib}</outputDirectory>
-			    <!--includeArtifactIds>idm-wf-interface</includeArtifactIds-->
-			</configuration>
-		    </execution>
 		    <execution>
 			<id>copy-workflow</id>
 			<phase>package</phase>
 			<goals>
-			    <goal>copy</goal>
+			    <goal>copy-resources</goal>
 			</goals>
 			<configuration>
 			    <outputDirectory>${dist.lib}</outputDirectory>
-
-			    <artifactItems>
-				<artifactItem>
-				    <groupId>idiro</groupId> 
-				    <artifactId>idm-workflow</artifactId> 
-				    <version>${project.version}</version>
-				    <type>jar</type>
-				    <outputDirectory>${dist.lib}</outputDirectory>
-				</artifactItem>
-			    </artifactItems>
-			</configuration>
+			    <resources>          
+				<resource>
+				    <directory>${idm-workflow.lib}</directory>
+				</resource>
+			    </resources>              
+			</configuration>            
 		    </execution>
-
-		</executions>
-	    </plugin>
-	    <plugin>
-		<artifactId>maven-resources-plugin</artifactId>
-		<version>2.6</version>
-		<executions>
 		    <execution>
 			<id>copy-resources-bin</id>
 			<!-- here the phase you need -->

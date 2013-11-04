@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 public class UnZip {
 
 	private Logger logger = Logger.getLogger(getClass());
-	
+
 	/**
 	 * Unzip it
 	 * @param zipFile input zip file
@@ -37,22 +37,25 @@ public class UnZip {
 			while(ze!=null){
 
 				String fileName = ze.getName();
-				File newFile = new File(outputFolder + File.separator + fileName);
+				File newFile = new File(outputFolder, fileName);
 
 				logger.debug("file unzip : "+ newFile.getAbsoluteFile());
 
-				//create all non exists folders
-				//else you will hit FileNotFoundException for compressed folder
-				new File(newFile.getParent()).mkdirs();
+				if(ze.isDirectory()){
+					newFile.mkdirs();
+				}else{
+					//create all non exists folders
+					//else you will hit FileNotFoundException for compressed folder
+					newFile.getParentFile().mkdirs();
+					FileOutputStream fos = new FileOutputStream(newFile);             
 
-				FileOutputStream fos = new FileOutputStream(newFile);             
+					int len;
+					while ((len = zis.read(buffer)) > 0) {
+						fos.write(buffer, 0, len);
+					}
 
-				int len;
-				while ((len = zis.read(buffer)) > 0) {
-					fos.write(buffer, 0, len);
+					fos.close();   
 				}
-
-				fos.close();   
 				ze = zis.getNextEntry();
 			}
 

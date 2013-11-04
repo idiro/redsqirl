@@ -154,11 +154,18 @@ public class PackageManager {
 
 		File[] packs = new File[packStr.length];
 		for(int i = 0; i < packStr.length;++i){
+			File curPackage = new File(packStr[i]); 
 			if(packStr[i].endsWith(".zip")){
-				String tmp = WorkflowPrefManager.pathUserPref+"/tmp/";
+				String tmp = null;
+				if(sys_package){
+					tmp = WorkflowPrefManager.pathSysHome.get();
+				}else{
+					tmp = WorkflowPrefManager.pathUserPref.get(); 
+				}
+				tmp +="/tmp";
 				UnZip uz = new UnZip();
-				uz.unZipIt(new File(packStr[i]), new File(tmp));
-				packs[i] = new File(tmp,packStr[i].substring(0,packStr[i].length()-4));
+				uz.unZipIt(curPackage , new File(tmp));
+				packs[i] = new File(tmp,curPackage.getName().substring(0,curPackage.getName().length()-4));
 			}else{
 				packs[i] = new File(packStr[i]);
 			}
@@ -175,7 +182,7 @@ public class PackageManager {
 						checkNoActionDuplicate(packs[i]) &&
 						checkNoJarFileDuplicate(packs[i],sys_package)
 						){
-					logger.debug("check successful...");
+					logger.info("Installing "+packs[i].getName()+"...");
 					List<String> files = getFileNames(packs[i],"");
 					files.remove("/"+action_file);
 
@@ -188,7 +195,7 @@ public class PackageManager {
 								packs[i].getName());
 					}
 					logger.debug("install...");
-					newPack.mkdir();
+					newPack.mkdirs();
 					try{
 						logger.debug("create stucture...");
 						createFileList(newPack,files);
@@ -219,7 +226,11 @@ public class PackageManager {
 
 		for(int i = 0; i < packStr.length;++i){
 			if(packStr[i].endsWith(".zip")){
-				packs[i].delete();
+				try {
+					LocalFileSystem.delete(packs[i]);
+				} catch (IOException e) {
+					logger.warn("Fail to free tmp directory");
+				}
 			}
 		}
 
