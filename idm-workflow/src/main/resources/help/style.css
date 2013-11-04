@@ -4,6 +4,7 @@ body {
 }
 
 h1 {
+	padding-top:3%;
 	text-align: center;
 }
 
@@ -30,4 +31,31 @@ img {
 
 a {
 	text-decoration: none;
+}
+table.firsttable {
+	border:1px solid black;
+	border-collapse:collapse;
+	border-spacing:3;
+}
+table.firsttable tr{
+	border-bottom:1px solid black;
+	text-align:center;
+	
+}
+table.firsttable td{
+	border-right:1px solid black; 
+}
+table.secondtable {
+	border-collapse:collapse;
+	border:1px solid black; 
+}
+table.secondtable td{
+	border-right:1px solid black;
+	border-bottom:1px solid black;
+	padding-right:2%;
+	width:2%%;
+}
+ul
+{
+    list-style-type: none;
 }

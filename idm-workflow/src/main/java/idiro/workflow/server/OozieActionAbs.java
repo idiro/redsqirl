@@ -62,15 +62,10 @@ public abstract class OozieActionAbs  extends UnicastRemoteObject implements Ooz
 		Element configuration = oozieXmlDoc.createElement("configuration");
 		configuration.appendChild(property);
 		
-		property = oozieXmlDoc.createElement("property");
-		confName = oozieXmlDoc.createElement("name");
-		confName.appendChild(oozieXmlDoc.createTextNode("oozie.launcher.fs.hdfs.impl.disable.cache"));
-		confValue = confValue = oozieXmlDoc.createElement("value");
-		confValue.appendChild(oozieXmlDoc.createTextNode("true"));
 		
-		property.appendChild(confName);
-		property.appendChild(confValue);
-		configuration.appendChild(property);
+//		property.appendChild(confName);
+//		property.appendChild(confValue);
+//		configuration.appendChild(property);
 		subAction.appendChild(configuration);
 	}
 	
