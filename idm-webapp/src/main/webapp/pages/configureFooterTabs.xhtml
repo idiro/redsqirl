@@ -58,7 +58,7 @@
 
 	</h:panelGrid>
 	<h:panelGrid columns="2">
-		<a4j:commandButton value="#{messages.button_ok}" action="#{configureTabsBean.saveTabs}" onclick="#{rich:component('modalConfigureFooterTabs')}.hide();window.location.reload();"/>
+		<a4j:commandButton value="#{messages.button_ok}" action="#{configureTabsBean.saveTabs}" oncomplete="#{rich:component('modalConfigureFooterTabs')}.hide();reRenderFooter()"/>
 		<a4j:commandButton value="#{messages.button_cancel}" action="#{configureTabsBean.cancelChanges}" onclick="#{rich:component('modalConfigureFooterTabs')}.hide()" reRender="tabsMenu, actionsPanel"/>
 	</h:panelGrid>
 	
