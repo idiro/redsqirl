@@ -10,16 +10,8 @@ function canvasResizeSplitter(){
 	jQuery(".splitter-bar-horizontal").css("width", jQuery(window).width()-jQuery(".splitter-pane").width()-28 +'px');
 	jQuery("#tabs1").css("width", jQuery("#splitterH").width()-10 +'px');
 	jQuery("#tabs2").css("width", jQuery("#splitterH").width()-10 +'px');
-	jQuery("#tabs-1").css("height", jQuery("#tabs1").height()-25+'px');
-	jQuery("#tabs-2").css("height", jQuery("#tabs1").height()-25+'px');
-	jQuery("#tabs-3").css("height", jQuery("#tabs1").height()-25+'px');
-	jQuery("#tabs-4").css("height", jQuery("#tabs1").height()-25+'px');
-	jQuery("#tabs-5").css("height", jQuery("#tabs1").height()-25+'px');
-	jQuery("#tabs-6").css("height", jQuery("#tabs2").height()-25+'px');
-	jQuery("#tabs-7").css("height", jQuery("#tabs2").height()-25+'px');
-	jQuery("#tabs-8").css("height", jQuery("#tabs2").height()-25+'px');
-	//jQuery("#canvasModalPanelContentDiv").css("overflow-x", "hidden");
-	//jQuery("#canvasModalPanelContentDiv").css("overflow", "auto");
+	
+	resizeTabs();
 	
 	jQuery("#buttonsCanvas1").css("left", jQuery("#canvas-tabs").width()-30+'px');
 	jQuery("#buttonsTabs1").css("left", jQuery("#tabs1").width()-30+'px');
@@ -58,14 +50,8 @@ function onPageReady(){
 	  jQuery("#canvas-tabs").css("height", jQuery(window).height()-160+'px');
 	  jQuery("#canvas").css("height", jQuery("#canvas-tabs").height()-160+'px');
 	  jQuery("#canvas").css("width", jQuery("#canvas-tabs").width()+'px');
-	  jQuery("#tabs-1").css("height", jQuery("#tabs1").height()-25+'px');
-	  jQuery("#tabs-2").css("height", jQuery("#tabs1").height()-25+'px');
-	  jQuery("#tabs-3").css("height", jQuery("#tabs1").height()-25+'px');
-	  jQuery("#tabs-4").css("height", jQuery("#tabs1").height()-25+'px');
-	  jQuery("#tabs-5").css("height", jQuery("#tabs1").height()-25+'px');
-	  jQuery("#tabs-6").css("height", jQuery("#tabs2").height()-25+'px');
-	  jQuery("#tabs-7").css("height", jQuery("#tabs2").height()-25+'px');
-	  jQuery("#tabs-8").css("height", jQuery("#tabs2").height()-25+'px');
+	  
+	  resizeTabs();
 	  
 	  jQuery("#buttonsCanvas1").hide();
 	  jQuery("#buttonsTabs1").hide();
@@ -126,16 +112,8 @@ function resizing(){
 	  jQuery("#canvas").css("width", jQuery("#canvas-tabs").width()+'px');
 	  jQuery("#canvas-1").css("height", jQuery("#canvas-tabs").height()+'px');
 	  jQuery("#canvas-1").css("width", jQuery("#canvas-tabs").width()+'px');
-	  jQuery("#tabs-1").css("height", jQuery("#tabs1").height()-25+'px');
-	  jQuery("#tabs-2").css("height", jQuery("#tabs1").height()-25+'px');
-	  jQuery("#tabs-3").css("height", jQuery("#tabs1").height()-25+'px');
-	  jQuery("#tabs-4").css("height", jQuery("#tabs1").height()-25+'px');
-	  jQuery("#tabs-5").css("height", jQuery("#tabs1").height()-25+'px');
-	  jQuery("#tabs-6").css("height", jQuery("#tabs2").height()-25+'px');
-	  jQuery("#tabs-7").css("height", jQuery("#tabs2").height()-25+'px');
-	  jQuery("#tabs-8").css("height", jQuery("#tabs2").height()-25+'px');
-	  //jQuery("#canvasModalPanelContentDiv").css("overflow-x", "hidden");
-	  //jQuery("#canvasModalPanelContentDiv").css("overflow", "auto");
+	  
+	  resizeTabs();
 	  
 	  jQuery("#buttonsCanvas1").css("left", jQuery("#canvas-tabs").width()-30+'px');
 	  jQuery("#buttonsTabs1").css("left", jQuery("#tabs1").width()-30+'px');
