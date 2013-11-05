@@ -179,3 +179,74 @@ function validateArrows(tabPrincipal, spanButtons){
 	    }
     
 }
+
+
+
+function resizeTabs(){
+	
+	
+	if(jQuery("#tabs-1").parent("div").attr('id') == jQuery("#tabs1").attr('id')){
+		jQuery("#tabs-1").css("height", jQuery("#tabs1").height()-25+'px');
+	}else if(jQuery("#tabs-1").parent("div").attr('id') == jQuery("#tabs2").attr('id')){
+		jQuery("#tabs-1").css("height", jQuery("#tabs2").height()-25+'px');
+	} else{
+		
+	}
+	
+	if(jQuery("#tabs-2").parent("div").attr('id') == jQuery("#tabs1").attr('id')){
+		jQuery("#tabs-2").css("height", jQuery("#tabs1").height()-25+'px');
+	}else if(jQuery("#tabs-1").parent("div").attr('id') == jQuery("#tabs2").attr('id')){
+		jQuery("#tabs-2").css("height", jQuery("#tabs2").height()-25+'px');
+	} else{
+		
+	}
+	
+	if(jQuery("#tabs-3").parent("div").attr('id') == jQuery("#tabs1").attr('id')){
+		jQuery("#tabs-3").css("height", jQuery("#tabs1").height()-25+'px');
+	}else if(jQuery("#tabs-3").parent("div").attr('id') == jQuery("#tabs2").attr('id')){
+		jQuery("#tabs-3").css("height", jQuery("#tabs2").height()-25+'px');
+	} else{
+		
+	}
+	
+	if(jQuery("#tabs-4").parent("div").attr('id') == jQuery("#tabs1").attr('id')){
+		jQuery("#tabs-4").css("height", jQuery("#tabs1").height()-25+'px');
+	}else if(jQuery("#tabs-4").parent("div").attr('id') == jQuery("#tabs2").attr('id')){
+		jQuery("#tabs-4").css("height", jQuery("#tabs2").height()-25+'px');
+	} else{
+		
+	}
+	
+	if(jQuery("#tabs-5").parent("div").attr('id') == jQuery("#tabs1").attr('id')){
+		jQuery("#tabs-5").css("height", jQuery("#tabs1").height()-25+'px');
+	}else if(jQuery("#tabs-5").parent("div").attr('id') == jQuery("#tabs2").attr('id')){
+		jQuery("#tabs-5").css("height", jQuery("#tabs2").height()-25+'px');
+	} else{
+		
+	}
+	
+	if(jQuery("#tabs-6").parent("div").attr('id') == jQuery("#tabs1").attr('id')){
+		jQuery("#tabs-6").css("height", jQuery("#tabs1").height()-25+'px');
+	}else if(jQuery("#tabs-6").parent("div").attr('id') == jQuery("#tabs2").attr('id')){
+		jQuery("#tabs-6").css("height", jQuery("#tabs2").height()-25+'px');
+	} else{
+		
+	}
+	
+	if(jQuery("#tabs-7").parent("div").attr('id') == jQuery("#tabs1").attr('id')){
+		jQuery("#tabs-7").css("height", jQuery("#tabs1").height()-25+'px');
+	}else if(jQuery("#tabs-7").parent("div").attr('id') == jQuery("#tabs2").attr('id')){
+		jQuery("#tabs-7").css("height", jQuery("#tabs2").height()-25+'px');
+	} else{
+		
+	}
+	
+	if(jQuery("#tabs-8").parent("div").attr('id') == jQuery("#tabs1").attr('id')){
+		jQuery("#tabs-8").css("height", jQuery("#tabs1").height()-25+'px');
+	}else if(jQuery("#tabs-8").parent("div").attr('id') == jQuery("#tabs2").attr('id')){
+		jQuery("#tabs-8").css("height", jQuery("#tabs2").height()-25+'px');
+	} else{
+		
+	}
+	
+}
