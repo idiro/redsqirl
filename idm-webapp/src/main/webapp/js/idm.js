@@ -90,7 +90,7 @@ function onPageReady(){
 	  validateArrows(jQuery("#tabs1"),jQuery("#buttonsTabs1"));
 	  validateArrows(jQuery("#tabs2"),jQuery("#buttonsTabs2"));
 	  validateArrows(jQuery("#tabRemote"),jQuery("#buttonstabRemote"));
-	  validateArrows(jQuery("#tabsFooter"),jQuery("#buttonsTabsFooter"));
+	  
     
 }
 
@@ -102,6 +102,8 @@ function configureFooterCss(){
 	  jQuery("#tabsFooter").css("position", "absolute");
 	  jQuery("#tabsFooter").css("bottom", "0");
 	  jQuery("#tabsFooter").css("z-index", jQuery("#canvas-tabs").zIndex()+1);
+	  
+	  validateArrows(jQuery("#tabsFooter"),jQuery("#buttonsTabsFooter"));
 }
 
 function resizing(){
@@ -126,6 +128,7 @@ function resizing(){
 	  jQuery("#canvas").css("width", jQuery("#canvas-tabs").width()+'px');
 	  jQuery("#canvas-1").css("height", jQuery("#canvas-tabs").height()+'px');
 	  jQuery("#canvas-1").css("width", jQuery("#canvas-tabs").width()+'px');
+	  jQuery("#tabsFooter").css("width", jQuery("#canvas-tabs").width()-10+'px');
 	  jQuery("#tabs-1").css("height", jQuery("#tabs1").height()-25+'px');
 	  jQuery("#tabs-2").css("height", jQuery("#tabs1").height()-25+'px');
 	  jQuery("#tabs-3").css("height", jQuery("#tabs1").height()-25+'px');
