@@ -571,13 +571,28 @@
 					</h:panelGroup>
 				</div>
 			
-				<a4j:jsFunction name="updateWorkflowUrl" action="#{canvasBean.blockRunningWorkflow}" oncomplete="jQuery('#canvas1').unblock();">
+				<a4j:jsFunction 
+				    name="updateWorkflowUrl" 
+				    action="#{canvasBean.blockRunningWorkflow}" 
+				    oncomplete="jQuery('#canvas1').unblock();">
 			</a4j:jsFunction>
 			
 			</a4j:region>
-				<a4j:jsFunction name="invalidateSession" action="#{canvasBean.reinitialize}" />
 			<a4j:region>
+			   <a4j:jsFunction name="invalidateSession" action="#{canvasBean.reinitialize}" />
+			</a4j:region>
 			
+		    <a4j:region>
+		        <a4j:status   onstart="jQuery('#canvas1').block({ message: jQuery('#domMessageDivCanvas1') });"/>
+				<a4j:jsFunction name="runWorkflow" 
+				                action="#{canvasBean.runWorkflow}"
+				                oncomplete="jQuery('#canvas1').block({ message: jQuery('#domMessageDivCanvas2') });updateWorkflowUrl();"
+                                reRender="formMenu,domMessageDivCanvas2" >
+                            <a4j:actionparam name="positions"/>
+                </a4j:jsFunction>
+            </a4j:region>
+            
+			<a4j:region>
 			
 			<rich:toolBar >
 
@@ -650,10 +665,8 @@
 
 					<rich:menuItem submitMode="ajax"
 						value="#{messages.label_menu_runproject}"
-						action="#{canvasBean.runWorkflow}"
-						onclick="jQuery('#canvas1').block({ message: jQuery('#domMessageDivCanvas1') })"
-						oncomplete="jQuery('#canvas1').block({ message: jQuery('#domMessageDivCanvas2') });updateWorkflowUrl();"
-						reRender="formMenu,domMessageDivCanvas2">
+						onclick="runWorkflow(getIconPositions('canvas'))"
+						>
 					</rich:menuItem>	
 
 				</rich:dropDownMenu>

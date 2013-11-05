@@ -668,14 +668,19 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 			logger.warn(e.getMessage());
 			logger.warn("Fail creating backup directory");
 		}
-		if(isSaved()){
+		if(isSaved() && getName() != null){
 			path += "/"+getName()+"-"+dateFormat.format(date)+".xml";
 		}else{
 			path += "/idm-backup-"+dateFormat.format(date)+".xml";
 		}
-		save(path);
+		String error = save(path);
 		
 		try{
+			if(error != null){
+				FileSystem fs = NameNodeVar.getFS();
+				fs.delete(new Path(path),false);
+				fs.close();
+			}
 			cleanUpBackup();
 		}catch(Exception e){
 			logger.warn(e.getMessage());

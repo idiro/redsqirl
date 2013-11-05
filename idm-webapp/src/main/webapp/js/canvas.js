@@ -1100,7 +1100,7 @@ function updateLink(canvasName, linkName, nameOutput, nameInput) {
 
 }
 
-function save(canvasName, path) {
+function getIconPositions(canvasName){
 	var polygonLayer = canvasArray[canvasName].polygonLayer;
     var positions = {};
 
@@ -1109,7 +1109,11 @@ function save(canvasName, path) {
 		var element = polygonLayer.getChildren()[i];
 		positions[element.getId()] = [ element.getX(), element.getY() ];
 	}
-	saveWorkflow(path, JSON.stringify(positions));
+	return JSON.stringify(positions);
+}
+
+function save(canvasName, path) {
+	saveWorkflow(path, getIconPositions(canvasName));
 }
 
 function configureCircle(canvasName, circle1) {
