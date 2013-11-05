@@ -76,7 +76,7 @@ function onPageReady(){
 	  validateArrows(jQuery("#tabs1"),jQuery("#buttonsTabs1"));
 	  validateArrows(jQuery("#tabs2"),jQuery("#buttonsTabs2"));
 	  validateArrows(jQuery("#tabRemote"),jQuery("#buttonstabRemote"));
-	  validateArrows(jQuery("#tabsFooter"),jQuery("#buttonsTabsFooter"));
+	  
     
 }
 
@@ -88,6 +88,8 @@ function configureFooterCss(){
 	  jQuery("#tabsFooter").css("position", "absolute");
 	  jQuery("#tabsFooter").css("bottom", "0");
 	  jQuery("#tabsFooter").css("z-index", jQuery("#canvas-tabs").zIndex()+1);
+	  
+	  validateArrows(jQuery("#tabsFooter"),jQuery("#buttonsTabsFooter"));
 }
 
 function resizing(){
@@ -112,7 +114,7 @@ function resizing(){
 	  jQuery("#canvas").css("width", jQuery("#canvas-tabs").width()+'px');
 	  jQuery("#canvas-1").css("height", jQuery("#canvas-tabs").height()+'px');
 	  jQuery("#canvas-1").css("width", jQuery("#canvas-tabs").width()+'px');
-	  
+
 	  resizeTabs();
 	  
 	  jQuery("#buttonsCanvas1").css("left", jQuery("#canvas-tabs").width()-30+'px');

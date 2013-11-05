@@ -167,7 +167,9 @@ public class WorkflowPrefManager extends BlockManager{
 			sys_tomcat_path="tomcat_path";
 	
 	public static final String user_hive = "hive_jdbc_url",
-			user_rsa_private= "private_rsa_key";
+			user_rsa_private= "private_rsa_key",
+			user_backup="backup_path",
+			user_nb_backup="number_backup";
 
 	/**
 	 * Constructor.

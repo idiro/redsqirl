@@ -29,9 +29,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class CanvasBean extends BaseBean implements Serializable{
-	
+
 	private static Logger logger = Logger.getLogger(CanvasBean.class);
-	
+
 	private List<SelectItem> linkPossibilities = new ArrayList<SelectItem>();
 	private String selectedLink;
 	private String nameWorkflow;
@@ -74,12 +74,12 @@ public class CanvasBean extends BaseBean implements Serializable{
 	@PostConstruct
 	public void init(){
 		logger.info("openCanvas");
-		
+
 		FacesContext context = FacesContext.getCurrentInstance();
 		userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
-		
+
 		userInfoBean.setCurrentValue(Long.valueOf(78));
-		
+	
 		workflowMap = new HashMap<String, DataFlow>();
 		
 		setNameWorkflow("canvas-1");
@@ -98,11 +98,11 @@ public class CanvasBean extends BaseBean implements Serializable{
 				dfi.addWorkflow(getNameWorkflow());
 			}
 			logger.info("add new Workflow "+getNameWorkflow());
-			
+
 			if(userInfoBean.getCurrentValue() < 98){
 				userInfoBean.setCurrentValue(userInfoBean.getCurrentValue()+3);
 			}
-			
+
 			setDf(dfi.getWorkflow(getNameWorkflow()));
 			getDf().getAllWANameWithClassName();
 			
@@ -209,7 +209,6 @@ public class CanvasBean extends BaseBean implements Serializable{
 		try {
 			DataFlow df = getDf();
 			df.getElement(getIdMap().get(getNameWorkflow()).get(paramGroupID)).setPosition(Double.valueOf(posX).intValue(), Double.valueOf(posY).intValue());
-			
 			logger.info(getIdMap().get(paramGroupID) + " - " + Double.valueOf(posX).intValue() + " - "+Double.valueOf(posY).intValue());
 
 		} catch (RemoteException e) {
@@ -276,7 +275,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 					}
 				}
 			}
-			
+
 			if (!linkPossibilities.isEmpty()){
 				setSelectedLink(linkPossibilities.get(0).getValue().toString());
 			}
@@ -337,7 +336,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 			setNameWorkflow(generateWorkflowName(path));
 			dfi.addWorkflow(getNameWorkflow());
 			DataFlow df = dfi.getWorkflow(getNameWorkflow());
-			
+
 			String error = df.read(path);
 			if(error != null){
 			    MessageUseful.addErrorMessage(error);
@@ -360,6 +359,30 @@ public class CanvasBean extends BaseBean implements Serializable{
 		}
 	}
 
+
+	/**
+	 * Push the object position on the backend
+	 */
+	protected void updatePosition(){
+		String positions = FacesContext.getCurrentInstance().getExternalContext().
+				getRequestParameterMap().get("positions");
+
+		try{
+			JSONObject positionsArray = new JSONObject(positions);
+			Iterator it = positionsArray.keys();
+			while (it.hasNext()){
+				String groupId = (String) it.next();
+				Object objc = positionsArray.get(groupId);
+
+				JSONArray elementArray = new JSONArray(objc.toString());
+				updatePosition(groupId, elementArray.get(0).toString(), elementArray.get(1).toString());
+			}
+		} catch (JSONException e){
+			logger.info("Error updating positions");
+			e.printStackTrace();
+		}
+	}
+	
 	/** save
 	 * 
 	 * Method to save the workflow
@@ -372,41 +395,27 @@ public class CanvasBean extends BaseBean implements Serializable{
 	public void save() {
 		logger.info("save");
 
+		//Set path
 		String path = FacesContext.getCurrentInstance().getExternalContext().
 				getRequestParameterMap().get("pathFile");
-		
-		String positions = FacesContext.getCurrentInstance().getExternalContext().
-				getRequestParameterMap().get("positions");
-		
-		try{
-			JSONObject positionsArray = new JSONObject(positions);
-			Iterator it = positionsArray.keys();
-			while (it.hasNext()){
-				String groupId = (String) it.next();
-				Object objc = positionsArray.get(groupId);
-				
-				JSONArray elementArray = new JSONArray(objc.toString());
-				updatePosition(groupId, elementArray.get(0).toString(), elementArray.get(1).toString());
-			}
-		} catch (JSONException e){
-			logger.info("Error updating positions");
-			e.printStackTrace();
-		}
+
+		//Update the object positions
+		updatePosition();
 		
 		try {
-			
+
 			logger.info("save workflow in "+path);
 			setNameWorkflow(generateWorkflowName(path));
 			getDf().setName(getNameWorkflow());
 			String msg = getDf().save(path);
 			logger.info(msg);
-			
+
 			if(msg != null ){
-			    MessageUseful.addErrorMessage(msg);
-			    HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
-			    request.setAttribute("msnError", "msnError");
-		    }
-			
+				MessageUseful.addErrorMessage(msg);
+				HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
+				request.setAttribute("msnError", "msnError");
+			}
+
 		} catch (Exception e) {
 			logger.info("Error saving workflow");
 			e.printStackTrace();
@@ -438,7 +447,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
-		
+	
 		getWorkflowMap().remove(workflow);
 		getIdMap().remove(workflow);
 	}
@@ -449,6 +458,14 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 		getDf().setName(getNameWorkflow());
 
+		//Back up the project
+		try {
+			updatePosition();
+			df.backup();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+
 		String error = getDf().run();
 		if(error != null){
 			logger.error(error);
@@ -456,22 +473,22 @@ public class CanvasBean extends BaseBean implements Serializable{
 			HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
 		}
-		
+
 		FacesContext context = FacesContext.getCurrentInstance();
 		userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
-		
+
 		if(userInfoBean.getCurrentValue() < 98){
 			userInfoBean.setCurrentValue(userInfoBean.getCurrentValue()+3);
 		}
-		
+
 	}
-	
+
 	public void blockRunningWorkflow() throws Exception{
 		while(getDf().isrunning()){
-	    	Thread.sleep(500);
-	    }
+			Thread.sleep(500);
+		}
 	}
-	
+
 	public String getWorkflowUrl(){
 		logger.info("getWorkflowUrl");
 		String url = null;
@@ -484,9 +501,9 @@ public class CanvasBean extends BaseBean implements Serializable{
 		
 		FacesContext context = FacesContext.getCurrentInstance();
 		userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
-		
+
 		userInfoBean.setCurrentValue(Long.valueOf(100));
-		
+
 		return url;
 	}
 
@@ -521,7 +538,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 	 * @throws RemoteException 
 	 */
 	public void cleanCanvasProject() throws RemoteException {
-		
+
 		DataFlow wf = getworkFlowInterface().getWorkflow(getNameWorkflow());
 		String error = wf.cleanProject();
 		if(error != null){
@@ -529,18 +546,16 @@ public class CanvasBean extends BaseBean implements Serializable{
 			HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
 		}
-		
+
 	}
-	
+
 	public void openChangeIdModal() throws RemoteException{
 		logger.info("openChangeIdModal");
 		setIdElement(getIdMap().get(getNameWorkflow()).get(getIdGroup()));
 	}
 
 	public void changeIdElement() throws RemoteException{
-		
 		logger.info("id new -> " + getIdElement());
-		
 		String oldId = getIdMap().get(getNameWorkflow()).get(getIdGroup());
 		getIdMap().get(getNameWorkflow()).put(getIdGroup(), getIdElement());
 		getDf().changeElementId(oldId, getIdElement());
@@ -559,7 +574,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 		return "initial";
 	}
-	
+
 	private String generateWorkflowName(String path){
 		String name;
 		int index = path.lastIndexOf("/");
@@ -721,5 +736,5 @@ public class CanvasBean extends BaseBean implements Serializable{
 	public void setUserInfoBean(UserInfoBean userInfoBean) {
 		this.userInfoBean = userInfoBean;
 	}
-	
+
 }
