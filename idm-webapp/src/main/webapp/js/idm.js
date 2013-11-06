@@ -10,28 +10,12 @@ function canvasResizeSplitter(){
 	jQuery(".splitter-bar-horizontal").css("width", jQuery(window).width()-jQuery(".splitter-pane").width()-28 +'px');
 	jQuery("#tabs1").css("width", jQuery("#splitterH").width()-10 +'px');
 	jQuery("#tabs2").css("width", jQuery("#splitterH").width()-10 +'px');
-	jQuery("#tabs-1").css("height", jQuery("#tabs1").height()-25+'px');
-	jQuery("#tabs-2").css("height", jQuery("#tabs1").height()-25+'px');
-	jQuery("#tabs-3").css("height", jQuery("#tabs1").height()-25+'px');
-	jQuery("#tabs-4").css("height", jQuery("#tabs1").height()-25+'px');
-	jQuery("#tabs-5").css("height", jQuery("#tabs1").height()-25+'px');
-	jQuery("#tabs-6").css("height", jQuery("#tabs2").height()-25+'px');
-	jQuery("#tabs-7").css("height", jQuery("#tabs2").height()-25+'px');
-	jQuery("#tabs-8").css("height", jQuery("#tabs2").height()-25+'px');
-	//jQuery("#canvasModalPanelContentDiv").css("overflow-x", "hidden");
-	//jQuery("#canvasModalPanelContentDiv").css("overflow", "auto");
 	
-	jQuery("#buttonsCanvas1").css("left", jQuery("#canvas-tabs").width()-30+'px');
-	jQuery("#buttonsTabs1").css("left", jQuery("#tabs1").width()-30+'px');
-	jQuery("#buttonsTabs2").css("left", jQuery("#tabs2").width()-30+'px');
-	jQuery("#buttonstabRemote").css("left", jQuery("#tabRemote").width()-30+'px');
-	jQuery("#buttonsTabsFooter").css("left", jQuery("#tabsFooter").width()-30+'px');
+	resizeTabs();
+	
+	configureLeft();
 
-	validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
-	validateArrows(jQuery("#tabs1"),jQuery("#buttonsTabs1"));
-	validateArrows(jQuery("#tabs2"),jQuery("#buttonsTabs2"));
-	validateArrows(jQuery("#tabRemote"),jQuery("#buttonstabRemote"));
-	validateArrows(jQuery("#tabsFooter"),jQuery("#buttonsTabsFooter"));
+	validateArrowsAll();
 	
 	//]]>
   }
@@ -58,14 +42,8 @@ function onPageReady(){
 	  jQuery("#canvas-tabs").css("height", jQuery(window).height()-160+'px');
 	  jQuery("#canvas").css("height", jQuery("#canvas-tabs").height()-160+'px');
 	  jQuery("#canvas").css("width", jQuery("#canvas-tabs").width()+'px');
-	  jQuery("#tabs-1").css("height", jQuery("#tabs1").height()-25+'px');
-	  jQuery("#tabs-2").css("height", jQuery("#tabs1").height()-25+'px');
-	  jQuery("#tabs-3").css("height", jQuery("#tabs1").height()-25+'px');
-	  jQuery("#tabs-4").css("height", jQuery("#tabs1").height()-25+'px');
-	  jQuery("#tabs-5").css("height", jQuery("#tabs1").height()-25+'px');
-	  jQuery("#tabs-6").css("height", jQuery("#tabs2").height()-25+'px');
-	  jQuery("#tabs-7").css("height", jQuery("#tabs2").height()-25+'px');
-	  jQuery("#tabs-8").css("height", jQuery("#tabs2").height()-25+'px');
+	  
+	  resizeTabs();
 	  
 	  jQuery("#buttonsCanvas1").hide();
 	  jQuery("#buttonsTabs1").hide();
@@ -82,23 +60,15 @@ function onPageReady(){
 	  jQuery("#tabRemote").css("overflow", "hidden");
 	  
 	  configureFooterCss();
-	  
-	  //jQuery("#canvasModalPanelContentDiv").css("overflow-x", "hidden");
-	  //jQuery("#canvasModalPanelContentDiv").css("overflow", "auto");
-	  
-	  validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
-	  validateArrows(jQuery("#tabs1"),jQuery("#buttonsTabs1"));
-	  validateArrows(jQuery("#tabs2"),jQuery("#buttonsTabs2"));
-	  validateArrows(jQuery("#tabRemote"),jQuery("#buttonstabRemote"));
-	  
+
+	  validateArrowsAll();
     
 }
 
 function configureFooterCss(){
-	  jQuery("#tabsFooter").css("width", jQuery("#canvas-tabs").width()+5+'px');
-	  
-	  jQuery("#tabsFooter").css("overflow", "hidden");
 	
+	  jQuery("#tabsFooter").css("width", jQuery("#canvas-tabs").width()+5+'px');
+	  jQuery("#tabsFooter").css("overflow", "hidden");
 	  jQuery("#tabsFooter").css("position", "absolute");
 	  jQuery("#tabsFooter").css("bottom", "0");
 	  jQuery("#tabsFooter").css("z-index", jQuery("#canvas-tabs").zIndex()+1);
@@ -116,10 +86,8 @@ function resizing(){
 	  jQuery("#splitterDiv").css('width', jQuery(window).width()-20+'px');
 	  jQuery("#splitterDiv").css('height', jQuery(window).height()-120+'px');
 	  jQuery(".splitter-pane").css("height", jQuery(window).height()-120+'px');
-	 
 	  jQuery("#splitterH").css("height", jQuery(window).height()-130+'px');
 	  jQuery(".splitter-bar-horizontal").css("width", jQuery(window).width()-jQuery(".splitter-pane").width()-28 +'px').trigger("resize");
-	  
 	  jQuery("#tabs1").css("width", jQuery("#splitterH").width()-10 +'px');
 	  jQuery("#tabs2").css("width", jQuery("#splitterH").width()-10 +'px');
 	  jQuery("#tabFlowchart-1").css("height", jQuery(window).height()-150+'px');
@@ -128,30 +96,32 @@ function resizing(){
 	  jQuery("#canvas").css("width", jQuery("#canvas-tabs").width()+'px');
 	  jQuery("#canvas-1").css("height", jQuery("#canvas-tabs").height()+'px');
 	  jQuery("#canvas-1").css("width", jQuery("#canvas-tabs").width()+'px');
-	  jQuery("#tabsFooter").css("width", jQuery("#canvas-tabs").width()-10+'px');
-	  jQuery("#tabs-1").css("height", jQuery("#tabs1").height()-25+'px');
-	  jQuery("#tabs-2").css("height", jQuery("#tabs1").height()-25+'px');
-	  jQuery("#tabs-3").css("height", jQuery("#tabs1").height()-25+'px');
-	  jQuery("#tabs-4").css("height", jQuery("#tabs1").height()-25+'px');
-	  jQuery("#tabs-5").css("height", jQuery("#tabs1").height()-25+'px');
-	  jQuery("#tabs-6").css("height", jQuery("#tabs2").height()-25+'px');
-	  jQuery("#tabs-7").css("height", jQuery("#tabs2").height()-25+'px');
-	  jQuery("#tabs-8").css("height", jQuery("#tabs2").height()-25+'px');
-	  //jQuery("#canvasModalPanelContentDiv").css("overflow-x", "hidden");
-	  //jQuery("#canvasModalPanelContentDiv").css("overflow", "auto");
-	  
-	  jQuery("#buttonsCanvas1").css("left", jQuery("#canvas-tabs").width()-30+'px');
-	  jQuery("#buttonsTabs1").css("left", jQuery("#tabs1").width()-30+'px');
-	  jQuery("#buttonsTabs2").css("left", jQuery("#tabs2").width()-30+'px');
-	  jQuery("#buttonstabRemote").css("left", jQuery("#tabRemote").width()-30+'px');
-	  jQuery("#buttonsTabsFooter").css("left", jQuery("#tabsFooter").width()-30+'px');
-	  
-	  validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
-	  validateArrows(jQuery("#tabs1"),jQuery("#buttonsTabs1"));
-	  validateArrows(jQuery("#tabs2"),jQuery("#buttonsTabs2"));
-	  validateArrows(jQuery("#tabRemote"),jQuery("#buttonstabRemote"));
-	  validateArrows(jQuery("#tabsFooter"),jQuery("#buttonsTabsFooter"));
 
+	  resizeTabs();
+	  
+	  configureLeft();
+	  
+	  validateArrowsAll();
+
+}
+
+function configureLeft(){
+	
+	jQuery("#buttonsCanvas1").css("left", jQuery("#canvas-tabs").width()-30+'px');
+	jQuery("#buttonsTabs1").css("left", jQuery("#tabs1").width()-30+'px');
+	jQuery("#buttonsTabs2").css("left", jQuery("#tabs2").width()-30+'px');
+	jQuery("#buttonstabRemote").css("left", jQuery("#tabRemote").width()-30+'px');
+	jQuery("#buttonsTabsFooter").css("left", jQuery("#tabsFooter").width()-30+'px');
+	
+}
+
+function validateArrowsAll(){
+	
+	validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
+	validateArrows(jQuery("#tabs1"),jQuery("#buttonsTabs1"));
+	validateArrows(jQuery("#tabs2"),jQuery("#buttonsTabs2"));
+	validateArrows(jQuery("#tabRemote"),jQuery("#buttonstabRemote"));
+	validateArrows(jQuery("#tabsFooter"),jQuery("#buttonsTabsFooter"));
 }
 
 function validateArrows(tabPrincipal, spanButtons){
@@ -181,4 +151,73 @@ function validateArrows(tabPrincipal, spanButtons){
   		ul.stop().animate({ left: '0' }, 'slow');
 	    }
     
+}
+
+function resizeTabs(){
+	
+	
+	if(jQuery("#tabs-1").parent("div").attr('id') == jQuery("#tabs1").attr('id')){
+		jQuery("#tabs-1").css("height", jQuery("#tabs1").height()-25+'px');
+	}else if(jQuery("#tabs-1").parent("div").attr('id') == jQuery("#tabs2").attr('id')){
+		jQuery("#tabs-1").css("height", jQuery("#tabs2").height()-25+'px');
+	} else{
+		jQuery("#tabs-1").css("height", jQuery(".splitter-pane").height()-25+'px');
+	}
+	
+	if(jQuery("#tabs-2").parent("div").attr('id') == jQuery("#tabs1").attr('id')){
+		jQuery("#tabs-2").css("height", jQuery("#tabs1").height()-25+'px');
+	}else if(jQuery("#tabs-1").parent("div").attr('id') == jQuery("#tabs2").attr('id')){
+		jQuery("#tabs-2").css("height", jQuery("#tabs2").height()-25+'px');
+	} else{
+		jQuery("#tabs-2").css("height", jQuery(".splitter-pane").height()-25+'px');
+	}
+	
+	if(jQuery("#tabs-3").parent("div").attr('id') == jQuery("#tabs1").attr('id')){
+		jQuery("#tabs-3").css("height", jQuery("#tabs1").height()-25+'px');
+	}else if(jQuery("#tabs-3").parent("div").attr('id') == jQuery("#tabs2").attr('id')){
+		jQuery("#tabs-3").css("height", jQuery("#tabs2").height()-25+'px');
+	} else{
+		jQuery("#tabs-3").css("height", jQuery(".splitter-pane").height()-25+'px');
+	}
+	
+	if(jQuery("#tabs-4").parent("div").attr('id') == jQuery("#tabs1").attr('id')){
+		jQuery("#tabs-4").css("height", jQuery("#tabs1").height()-25+'px');
+	}else if(jQuery("#tabs-4").parent("div").attr('id') == jQuery("#tabs2").attr('id')){
+		jQuery("#tabs-4").css("height", jQuery("#tabs2").height()-25+'px');
+	} else{
+		jQuery("#tabs-4").css("height", jQuery(".splitter-pane").height()-25+'px');
+	}
+	
+	if(jQuery("#tabs-5").parent("div").attr('id') == jQuery("#tabs1").attr('id')){
+		jQuery("#tabs-5").css("height", jQuery("#tabs1").height()-25+'px');
+	}else if(jQuery("#tabs-5").parent("div").attr('id') == jQuery("#tabs2").attr('id')){
+		jQuery("#tabs-5").css("height", jQuery("#tabs2").height()-25+'px');
+	} else{
+		jQuery("#tabs-5").css("height", jQuery(".splitter-pane").height()-25+'px');
+	}
+	
+	if(jQuery("#tabs-6").parent("div").attr('id') == jQuery("#tabs1").attr('id')){
+		jQuery("#tabs-6").css("height", jQuery("#tabs1").height()-25+'px');
+	}else if(jQuery("#tabs-6").parent("div").attr('id') == jQuery("#tabs2").attr('id')){
+		jQuery("#tabs-6").css("height", jQuery("#tabs2").height()-25+'px');
+	} else{
+		jQuery("#tabs-6").css("height", jQuery(".splitter-pane").height()-25+'px');
+	}
+	
+	if(jQuery("#tabs-7").parent("div").attr('id') == jQuery("#tabs1").attr('id')){
+		jQuery("#tabs-7").css("height", jQuery("#tabs1").height()-25+'px');
+	}else if(jQuery("#tabs-7").parent("div").attr('id') == jQuery("#tabs2").attr('id')){
+		jQuery("#tabs-7").css("height", jQuery("#tabs2").height()-25+'px');
+	} else{
+		jQuery("#tabs-7").css("height", jQuery(".splitter-pane").height()-25+'px');
+	}
+	
+	if(jQuery("#tabs-8").parent("div").attr('id') == jQuery("#tabs1").attr('id')){
+		jQuery("#tabs-8").css("height", jQuery("#tabs1").height()-25+'px');
+	}else if(jQuery("#tabs-8").parent("div").attr('id') == jQuery("#tabs2").attr('id')){
+		jQuery("#tabs-8").css("height", jQuery("#tabs2").height()-25+'px');
+	} else{
+		jQuery("#tabs-8").css("height", jQuery(".splitter-pane").height()-25+'px');
+	}
+	
 }
