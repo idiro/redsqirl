@@ -155,6 +155,7 @@ public class WorkflowPrefManager extends BlockManager{
 	
 	public static final String sys_namenode = "namenode",
 			sys_idiroEngine_path = "idiroengine_path",
+			sys_max_workers = "max_workers",
 			sys_jobtracker = "jobtracker",
 			sys_oozie_queue = "queue",
 			sys_oozie = "oozie_url",
