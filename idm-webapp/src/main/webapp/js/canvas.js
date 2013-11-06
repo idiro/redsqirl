@@ -1105,7 +1105,7 @@ function save(path) {
 		var element = polygonLayer.getChildren()[i];
 		positions[element.getId()] = [ element.getX(), element.getY() ];
 	}
-	saveWorkflow(path, JSON.stringify(positions));
+	saveWorkflow(selectedCanvas, path, JSON.stringify(positions));
 }
 
 function configureCircle(canvasName, circle1) {
