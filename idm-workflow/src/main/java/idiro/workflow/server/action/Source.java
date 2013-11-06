@@ -280,13 +280,14 @@ public class Source extends DataflowAction{
 	//Override default static methods
 	@Override
 	public String getHelp() throws RemoteException {
-		return "idm/help/"+getName()+".html";
+		return "../help/"+getName().toLowerCase()+".html";
 	}
 	
 	@Override
 	public String getImage() throws RemoteException {
-		return "idm/images/"+getName()+".gif";
+		return "../image/"+getName().toLowerCase()+".gif";
 	}
+	
 	@Override
 	public void update(DFEInteraction interaction) throws RemoteException {
 
