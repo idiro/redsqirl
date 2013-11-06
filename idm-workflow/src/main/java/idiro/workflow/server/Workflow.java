@@ -609,12 +609,14 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 		String path = WorkflowPrefManager.getUserProperty(WorkflowPrefManager.user_backup);
 		String numberBackup = WorkflowPrefManager.getUserProperty(WorkflowPrefManager.user_nb_backup);
 		int nbBackup = 25;
-		try{
-			nbBackup = Integer.valueOf(numberBackup);
-			if(nbBackup < 0){
-				nbBackup = 25;
-			}
-		}catch(Exception e){}
+		if(numberBackup != null){
+			try{
+				nbBackup = Integer.valueOf(numberBackup);
+				if(nbBackup < 0){
+					nbBackup = 25;
+				}
+			}catch(Exception e){}
+		}
 
 		FileSystem fs = NameNodeVar.getFS();
 		//FileStatus stat = fs.getFileStatus(new Path(path));
@@ -625,8 +627,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 				return arg0.getName().matches(".*[0-9]{14}.xml$");
 			}
 		});
-		if(fsA.length > 25){
-			int numberToRemove = fsA.length - 25;
+		if(fsA.length > nbBackup){
+			int numberToRemove = fsA.length - nbBackup;
 			Map<Long,Path> pathToRemove = new HashMap<Long,Path>();
 			for(FileStatus stat: fsA){
 				if(pathToRemove.size() < numberToRemove){
@@ -668,7 +670,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 			logger.warn(e.getMessage());
 			logger.warn("Fail creating backup directory");
 		}
-		if(getName() != null){
+		if(getName() != null && !getName().isEmpty()){
 			path += "/"+getName()+"-"+dateFormat.format(date)+".xml";
 		}else{
 			path += "/idm-backup-"+dateFormat.format(date)+".xml";
