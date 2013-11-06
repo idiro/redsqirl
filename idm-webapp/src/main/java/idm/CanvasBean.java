@@ -844,5 +844,4 @@ public class CanvasBean extends BaseBean implements Serializable{
 	public void setNbLinkPossibilities(int nbLinkPossibilities) {
 		this.nbLinkPossibilities = nbLinkPossibilities;
 	}
-
 }
