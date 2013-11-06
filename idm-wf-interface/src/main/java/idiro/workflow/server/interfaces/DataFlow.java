@@ -84,6 +84,11 @@ public interface DataFlow extends Remote{
 	public String save(String file) throws RemoteException;
 
 	/**
+	 * Do an automatic backup of the workflow.
+	 */
+	public void backup() throws RemoteException;
+	
+	/**
 	 * Return true if the dataflow has been loaded or has been saved.
 	 * @return
 	 * @throws RemoteException

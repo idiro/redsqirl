@@ -93,6 +93,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	
 	private Map<String, String> nameBrowserLabel1 = new HashMap<String, String>();
 	private Map<String, String> nameBrowserLabel2 = new HashMap<String, String>();
+	private String confirm = "N";
 
 
 	/** getKeyAsListNameValue
@@ -866,6 +867,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 		logger.info("confirm");
 
+		setConfirm("S");
 		checkTextEditor();
 
 		if (getColumnEdit() != null){
@@ -927,6 +929,12 @@ public class CanvasModal extends BaseBean implements Serializable {
 					MessageUseful.addErrorMessage(e);
 					HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
 					request.setAttribute("msnError", "msnError");
+				}else{
+					if(getConfirm() != null && !getConfirm().equalsIgnoreCase("S")){
+						MessageUseful.addInfoMessage(getMessageResources("success_message"));
+						HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
+						request.setAttribute("msnError", "msnError");
+					}
 				}
 
 				dfi.getTree().getFirstChild("editor").getFirstChild("output").removeAllChildren();
@@ -935,6 +943,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 				}
 			}
 		}
+		
+		setConfirm("N");
+		
 	}
 
 	/** changeFunctionsTextEditor
@@ -1756,6 +1767,14 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 	public void setOperationMap(Map<String, List<String[]>> operationMap) {
 		this.operationMap = operationMap;
+	}
+
+	public String getConfirm() {
+		return confirm;
+	}
+
+	public void setConfirm(String confirm) {
+		this.confirm = confirm;
 	}
 	
 }
