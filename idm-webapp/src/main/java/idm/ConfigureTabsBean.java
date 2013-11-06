@@ -15,7 +15,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 public class ConfigureTabsBean extends BaseBean implements Serializable{
-
+	
 	private DataFlow wf;
 	protected Map<String,List<String[]>> menuWA;
 	private String tabName;
@@ -33,8 +33,6 @@ public class ConfigureTabsBean extends BaseBean implements Serializable{
 	public List<String> getTabs(){
 		return new ArrayList<String>(getMenuWA().keySet());
 	}
-
-
 
 	public List<SelectItem> getMenuActions() throws RemoteException, Exception{
 		List<SelectItem> result = new ArrayList<SelectItem>();
@@ -108,6 +106,8 @@ public class ConfigureTabsBean extends BaseBean implements Serializable{
 		selected = null;
 		setTabName("");
 		wf.saveMenu();
+		wf.loadMenu();
+		menuWA = wf.getMenuWA();
 	}
 
 	public void setSelected(){
@@ -136,5 +136,4 @@ public class ConfigureTabsBean extends BaseBean implements Serializable{
 		}
 		return list;
 	}
-
 }

@@ -11,11 +11,16 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -31,8 +36,10 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.PathFilter;
 import org.apache.log4j.Logger;
 import org.apache.oozie.client.OozieClient;
 import org.w3c.dom.Attr;
@@ -596,6 +603,90 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 		}
 
 		return error;
+	}
+	
+	public void cleanUpBackup() throws IOException{
+		String path = WorkflowPrefManager.getUserProperty(WorkflowPrefManager.user_backup);
+		String numberBackup = WorkflowPrefManager.getUserProperty(WorkflowPrefManager.user_nb_backup);
+		int nbBackup = 25;
+		try{
+			nbBackup = Integer.valueOf(numberBackup);
+			if(nbBackup < 0){
+				nbBackup = 25;
+			}
+		}catch(Exception e){}
+		
+		FileSystem fs = NameNodeVar.getFS();
+		//FileStatus stat = fs.getFileStatus(new Path(path));
+		FileStatus[] fsA = fs.listStatus(new Path(path), new PathFilter() {
+			
+			@Override
+			public boolean accept(Path arg0) {
+				return arg0.getName().matches(".*[0-9]{14}.xml$");
+			}
+		});
+		if(fsA.length > 25){
+			int numberToRemove = fsA.length - 25;
+			Map<Long,Path> pathToRemove = new HashMap<Long,Path>();
+			for(FileStatus stat: fsA){
+				if(pathToRemove.size() < numberToRemove){
+					pathToRemove.put(stat.getModificationTime(), stat.getPath());
+				}else{
+					Iterator<Long> it = pathToRemove.keySet().iterator();
+					Long min = it.next();
+					while(it.hasNext()){
+						Long cur = it.next();
+						if(min > cur ){
+							cur = min;
+						}
+					}
+					if(min > stat.getModificationTime()){
+						pathToRemove.remove(min);
+						pathToRemove.put(stat.getModificationTime(), stat.getPath());
+					}
+				}
+			}
+			for(Path pathDel: pathToRemove.values()){
+				fs.delete(pathDel,false);
+			}
+		}
+		fs.close();
+	}
+	
+	public void backup() throws RemoteException{
+		String path = WorkflowPrefManager.getUserProperty(WorkflowPrefManager.user_backup);
+		DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+		Date date = new Date();
+		if(path == null || path.isEmpty()){
+			path = "/user/"+System.getProperty("user.name")+"/idm-backup";
+		}
+		try{
+			FileSystem fs = NameNodeVar.getFS();
+			fs.mkdirs(new Path(path));
+			fs.close();
+		}catch(Exception e){
+			logger.warn(e.getMessage());
+			logger.warn("Fail creating backup directory");
+		}
+		if(isSaved() && getName() != null){
+			path += "/"+getName()+"-"+dateFormat.format(date)+".xml";
+		}else{
+			path += "/idm-backup-"+dateFormat.format(date)+".xml";
+		}
+		String error = save(path);
+		
+		try{
+			if(error != null){
+				FileSystem fs = NameNodeVar.getFS();
+				fs.delete(new Path(path),false);
+				fs.close();
+			}
+			cleanUpBackup();
+		}catch(Exception e){
+			logger.warn(e.getMessage());
+			logger.warn("Fail cleaning up backup directory");
+		}
+		
 	}
 
 	public boolean isSaved(){

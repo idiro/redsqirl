@@ -93,6 +93,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	
 	private Map<String, String> nameBrowserLabel1 = new HashMap<String, String>();
 	private Map<String, String> nameBrowserLabel2 = new HashMap<String, String>();
+	private String confirm = "N";
 
 
 	/** getKeyAsListNameValue
@@ -392,7 +393,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void openCanvasModal() throws RemoteException {
 
 		start();
-
+		logger.info("openCanvasModal " + getNameWorkflow());
 		HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
 		request.removeAttribute("msnError");
 
@@ -406,9 +407,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 		String nameElement = params.get("paramNameElement");
 		logger.info("open group id " + getNameElement());
 		logger.info("nameElement " + nameElement);
-		logger.info("size of map " + canvasBean.getIdMap().size());
+		logger.info("size of map " + canvasBean.getIdMap().get(getNameWorkflow()).size());
 
-		setNameElement(canvasBean.getIdMap().get(nameElement));
+		setNameElement(canvasBean.getIdMap().get(getNameWorkflow()).get(nameElement));
 		setPathImage(pathImage);
 
 		logger.info("open element id " + getNameElement());
@@ -460,9 +461,10 @@ public class CanvasModal extends BaseBean implements Serializable {
 				}
 
 			} catch (RemoteException e) {
+				e.printStackTrace();
 				logger.error(e.getMessage());
 			} catch (Exception e) {
-				logger.error(e);
+				e.printStackTrace();
 				logger.error(e.getMessage());
 			}
 
@@ -491,8 +493,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 		for (DFEInteraction dfeInteraction : getDfe().getPageList().get(page).getInteractions()) {
 
 			DynamicForm dynamicF = new DynamicForm();
-
-			logger.info("type " + dfeInteraction.getName());
 
 			logger.info("type " + dfeInteraction.getName() + " " + dfeInteraction.getDisplay() + " " + dfeInteraction.getTree());
 
@@ -867,6 +867,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 		logger.info("confirm");
 
+		setConfirm("S");
 		checkTextEditor();
 
 		if (getColumnEdit() != null){
@@ -928,6 +929,12 @@ public class CanvasModal extends BaseBean implements Serializable {
 					MessageUseful.addErrorMessage(e);
 					HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
 					request.setAttribute("msnError", "msnError");
+				}else{
+					if(getConfirm() != null && !getConfirm().equalsIgnoreCase("S")){
+						MessageUseful.addInfoMessage(getMessageResources("success_message"));
+						HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
+						request.setAttribute("msnError", "msnError");
+					}
 				}
 
 				dfi.getTree().getFirstChild("editor").getFirstChild("output").removeAllChildren();
@@ -936,6 +943,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 				}
 			}
 		}
+		
+		setConfirm("N");
+		
 	}
 
 	/** changeFunctionsTextEditor
@@ -1092,7 +1102,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 			path = getPathBrowser();
 			logger.info("getPathBrowser" + path);
 		}
-
+		logger.info("path: "+path);
 		if(path != null){
 
 			DynamicForm dynamicForm = getDynamicFormBrowser();
@@ -1126,70 +1136,74 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 			Map<String, String> nameValueFeature = new HashMap<String, String>();
 			List<ItemList> listObj = new ArrayList<ItemList>();
-			List<String> outputFeatureList  = getDfe().getDFEOutput().get("source").getFeatures().getFeaturesNames();
-			List<String> labels = new ArrayList<String>();
 			
-			Map<String, String> nameBrowserLabel1 = new HashMap<String, String>();
-			Map<String, String> nameBrowserLabel2 = new HashMap<String, String>();
-
-			setBrowserNameFeatureColumns(new ArrayList<String>());
-			for (String outputFeature : outputFeatureList) {
-
-				logger.info("outputFeatureNames " + outputFeature);
-
-				FeatureType featureType = getDfe().getDFEOutput().get("source").getFeatures().getFeatureType(outputFeature);
-
-				logger.info("featureType " + featureType);
-
-				labels.add(outputFeature + " " + featureType.toString());
-
-				getBrowserNameFeatureColumns().add(outputFeature + " " + featureType.toString());
+			if (getDfe().getDFEOutput().get("source").getFeatures() != null){
+				List<String> outputFeatureList  = getDfe().getDFEOutput().get("source").getFeatures().getFeaturesNames();
+				List<String> labels = new ArrayList<String>();
 				
-				nameBrowserLabel1.put(outputFeature + " " + featureType.toString(), outputFeature);
-				nameBrowserLabel2.put(outputFeature + " " + featureType.toString(), featureType.toString());
-			}
-			
-			setNameBrowserLabel1(nameBrowserLabel1);
-			setNameBrowserLabel2(nameBrowserLabel2);
-
-			if(outputLines != null){
-				for (String output : outputLines) {
-					Map<String, String> nameValueFeatureItem = new HashMap<String, String>();
-					if(output != null){
-						
-						logger.info("Hive or Hdfs " + getHiveHdfs());
-						
-						if(getHiveHdfs() != null && getHiveHdfs().equalsIgnoreCase("hive")){
-							String rows[] = output.split("'\001'");
-							for (int i = 0; i < rows.length; i++) {
-								logger.info("map to show " + labels.get(i) + " " + rows[i]);
-								nameValueFeature.put(labels.get(i), rows[i]);
-								nameValueFeatureItem.put(labels.get(i), rows[i]);
-							}
-						}else{
-							String rows[] = output.split("\\|");
-							for (int i = 0; i < rows.length; i++) {
-								logger.info("map to show " + labels.get(i) + " " + rows[i]);
-								nameValueFeature.put(labels.get(i), rows[i]);
-								nameValueFeatureItem.put(labels.get(i), rows[i]);
-							}
-						}
-						
-					}
-					ItemList item = new ItemList();
-					item.setSelected(false);
-					item.setNameValue(nameValueFeatureItem);
-					logger.info("new item ");
-					listObj.add(item);
-
-					logger.info("new nameValueFeature " + nameValueFeature);
-					logger.info("new nameValueFeatureItem " + nameValueFeatureItem);
-					logger.info("getKeyAsListNameValueFeature " + getKeyAsListNameValueFeature());
-
+				Map<String, String> nameBrowserLabel1 = new HashMap<String, String>();
+				Map<String, String> nameBrowserLabel2 = new HashMap<String, String>();
+	
+				setBrowserNameFeatureColumns(new ArrayList<String>());
+				for (String outputFeature : outputFeatureList) {
+	
+					logger.info("outputFeatureNames " + outputFeature);
+	
+					FeatureType featureType = getDfe().getDFEOutput().get("source").getFeatures().getFeatureType(outputFeature);
+	
+					logger.info("featureType " + featureType);
+	
+					labels.add(outputFeature + " " + featureType.toString());
+	
+					getBrowserNameFeatureColumns().add(outputFeature + " " + featureType.toString());
+					
+					nameBrowserLabel1.put(outputFeature + " " + featureType.toString(), outputFeature);
+					nameBrowserLabel2.put(outputFeature + " " + featureType.toString(), featureType.toString());
 				}
-				setNameValueFeature(nameValueFeature);
-				dynamicForm.setListFeature(listObj);
-				setListFeature(listObj);
+			
+			
+				setNameBrowserLabel1(nameBrowserLabel1);
+				setNameBrowserLabel2(nameBrowserLabel2);
+	
+				if(outputLines != null){
+					for (String output : outputLines) {
+						Map<String, String> nameValueFeatureItem = new HashMap<String, String>();
+						if(output != null){
+							
+							logger.info("Hive or Hdfs " + getHiveHdfs());
+							
+							if(getHiveHdfs() != null && getHiveHdfs().equalsIgnoreCase("hive")){
+								String rows[] = output.split("'\001'");
+								for (int i = 0; i < rows.length; i++) {
+									logger.info("map to show " + labels.get(i) + " " + rows[i]);
+									nameValueFeature.put(labels.get(i), rows[i]);
+									nameValueFeatureItem.put(labels.get(i), rows[i]);
+								}
+							}else{
+								String rows[] = output.split("\\|");
+								for (int i = 0; i < rows.length; i++) {
+									logger.info("map to show " + labels.get(i) + " " + rows[i]);
+									nameValueFeature.put(labels.get(i), rows[i]);
+									nameValueFeatureItem.put(labels.get(i), rows[i]);
+								}
+							}
+							
+						}
+						ItemList item = new ItemList();
+						item.setSelected(false);
+						item.setNameValue(nameValueFeatureItem);
+						logger.info("new item ");
+						listObj.add(item);
+	
+						logger.info("new nameValueFeature " + nameValueFeature);
+						logger.info("new nameValueFeatureItem " + nameValueFeatureItem);
+						logger.info("getKeyAsListNameValueFeature " + getKeyAsListNameValueFeature());
+	
+					}
+					setNameValueFeature(nameValueFeature);
+					dynamicForm.setListFeature(listObj);
+					setListFeature(listObj);
+				}
 			}
 			dynamicForm.setPathBrowser(path);
 		}
@@ -1753,6 +1767,14 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 	public void setOperationMap(Map<String, List<String[]>> operationMap) {
 		this.operationMap = operationMap;
+	}
+
+	public String getConfirm() {
+		return confirm;
+	}
+
+	public void setConfirm(String confirm) {
+		this.confirm = confirm;
 	}
 	
 }

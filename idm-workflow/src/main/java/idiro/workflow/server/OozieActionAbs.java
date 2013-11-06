@@ -62,7 +62,7 @@ public abstract class OozieActionAbs  extends UnicastRemoteObject implements Ooz
 		Element configuration = oozieXmlDoc.createElement("configuration");
 		configuration.appendChild(property);
 		
-		
+	
 //		property.appendChild(confName);
 //		property.appendChild(confValue);
 //		configuration.appendChild(property);
