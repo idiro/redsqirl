@@ -376,14 +376,12 @@ public class CanvasBean extends BaseBean implements Serializable{
 		}
 	}
 
-
 	/**
 	 * Push the object position on the backend
 	 */
 	protected void updatePosition(){
 		String positions = FacesContext.getCurrentInstance().getExternalContext().
 				getRequestParameterMap().get("positions");
-
 		try{
 			JSONObject positionsArray = new JSONObject(positions);
 			Iterator it = positionsArray.keys();
@@ -477,8 +475,9 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 			logger.info("save workflow in "+path);
 			setNameWorkflow(generateWorkflowName(path));
-			getDf().setName(getNameWorkflow());
-			String msg = getDf().save(path);
+			DataFlow df = getWorkflowMap().get(nameWorkflow);
+			df.setName(getNameWorkflow());
+			String msg = df.save(path);
 			logger.info(msg);
 
 			if(msg != null ){

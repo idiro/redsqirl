@@ -1141,7 +1141,7 @@ function getAllIconPositions(){
 }
 
 function save(path) {
-	saveWorkflow(path, getIconPositions());
+	saveWorkflow(selectedCanvas, path, getIconPositions());
 }
 
 function configureCircle(canvasName, circle1) {
