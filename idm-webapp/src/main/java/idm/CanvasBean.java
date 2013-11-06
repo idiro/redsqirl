@@ -825,5 +825,4 @@ public class CanvasBean extends BaseBean implements Serializable{
 	public void setUserInfoBean(UserInfoBean userInfoBean) {
 		this.userInfoBean = userInfoBean;
 	}
-
 }
