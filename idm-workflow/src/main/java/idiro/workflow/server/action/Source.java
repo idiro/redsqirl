@@ -8,8 +8,6 @@ import idiro.workflow.server.DataflowAction;
 import idiro.workflow.server.Page;
 import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.WorkflowPrefManager;
-import idiro.workflow.server.connect.HDFSInterface;
-import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.datatype.MapRedTextType;
 import idiro.workflow.server.enumeration.DisplayType;
@@ -28,7 +26,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.hadoop.hdfs.web.resources.DoAsParam;
 import org.apache.log4j.Logger;
 
 /**
@@ -279,7 +276,17 @@ public class Source extends DataflowAction{
 	public Map<String, DFEOutput> getDFEOutput() throws RemoteException {
 		return output;
 	}
-
+	
+	//Override default static methods
+	@Override
+	public String getHelp() throws RemoteException {
+		return "idm/help/"+getName()+".html";
+	}
+	
+	@Override
+	public String getImage() throws RemoteException {
+		return "idm/images/"+getName()+".gif";
+	}
 	@Override
 	public void update(DFEInteraction interaction) throws RemoteException {
 
