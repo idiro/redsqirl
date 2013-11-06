@@ -1096,6 +1096,22 @@ function updateLink(linkName, nameOutput, nameInput) {
 
 }
 
+function getSelectedIconsCommaDelimited(){
+	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+    var ans = "";
+
+	// update element positions
+    jQuery.each(polygonLayer.get('.polygon1'), function(index, value) {
+    	if(value.selected){
+    		ans = ans.concat(",",value.getParent().getChildren()[3].getText());
+    	}
+	});
+    if(ans.length > 0){
+    	return ans.substring(1);
+    }
+    return ans;
+}
+
 function getIconPositions(){
 	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
     var positions = {};
@@ -1106,6 +1122,22 @@ function getIconPositions(){
 		positions[element.getId()] = [ element.getX(), element.getY() ];
 	}
 	return JSON.stringify(positions);
+}
+
+function getAllIconPositions(){
+    var canvas = {};
+    
+    jQuery.each(canvasArray, function(index, value) {
+    	var polygonLayer = value.polygonLayer;
+    	var positions = {};
+    	// update element positions
+    	for ( var i = 0; i < polygonLayer.getChildren().length; i++) {
+    		var element = polygonLayer.getChildren()[i];
+    		positions[element.getId()] = [ element.getX(), element.getY() ];
+    	}
+    	canvas[index] = positions;
+	});
+	return JSON.stringify(canvas);
 }
 
 function save(path) {
