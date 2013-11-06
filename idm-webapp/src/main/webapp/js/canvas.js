@@ -30,6 +30,10 @@ function Canvas(name){
 	this.stage = null;
 	this.layer = null;
 	this.polygonLayer = null;
+	
+	this.running = false;
+	this.isSaved = false;
+	this.pathFile = null;
 }
 
 var selectedCanvas = "canvas-1";
@@ -1110,6 +1114,8 @@ function getIconPositions(){
 
 function save(path) {
 	saveWorkflow(selectedCanvas, path, getIconPositions());
+	setSaved(selectedCanvas, true);
+	setPathFile(selectedCanvas, path);
 }
 
 function configureCircle(canvasName, circle1) {
@@ -1398,4 +1404,28 @@ function setSelected(selected){
 
 function getSelected(){
 	return selectedCanvas;
+}
+
+function setRunning(canvasName, value){
+	canvasArray[canvasName].running = value;
+}
+
+function isRunning(canvasName){
+	return canvasArray[canvasName].running;
+}
+
+function setSaved(canvasName, value){
+	canvasArray[canvasName].saved = value;
+}
+
+function isSaved(canvasName){
+	return canvasArray[canvasName].saved;
+}
+
+function setPathFile(canvasName, value){
+	canvasArray[canvasName].pathFile = value;
+}
+
+function getPathFile(canvasName){
+	return canvasArray[canvasName].pathFile;
 }

@@ -44,6 +44,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 	private String idGroup;
 	private Map<String, Map<String, String>> idMap;
 	private UserInfoBean userInfoBean;
+	private String path;
 	
 	private Map<String, DataFlow> workflowMap;
 
@@ -324,8 +325,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 	 */
 	public void load() {
 
-		String path = FacesContext.getCurrentInstance().getExternalContext().
-				getRequestParameterMap().get("pathFile");
+		String path = getPath();
 
 		logger.info("load "+path);
 
@@ -402,10 +402,10 @@ public class CanvasBean extends BaseBean implements Serializable{
 		
 		try {
 
-			logger.info("save workflow in "+path);
-			setNameWorkflow(generateWorkflowName(path));
+			logger.info("save workflow "+nameWorkflow+" in "+path);
 			DataFlow df = getWorkflowMap().get(nameWorkflow);
-			df.setName(getNameWorkflow());
+//			setNameWorkflow(generateWorkflowName(path));
+			df.setName(generateWorkflowName(path));
 			String msg = df.save(path);
 			logger.info(msg);
 
@@ -709,6 +709,14 @@ public class CanvasBean extends BaseBean implements Serializable{
 	public void setWorkflowMap(Map<String, DataFlow> workflowMap) {
 		this.workflowMap = workflowMap;
 	}
+	
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
 
 	public String[] getPositions() throws Exception{
 		logger.info("getPositions");
@@ -725,7 +733,8 @@ public class CanvasBean extends BaseBean implements Serializable{
 				}
 			}
 		}
-		return new String[]{getNameWorkflow(), jsonElements.toString(), jsonLinks.toString()};
+		
+		return new String[]{getNameWorkflow(), getPath(), jsonElements.toString(), jsonLinks.toString()};
 	}
 
 	public UserInfoBean getUserInfoBean() {
