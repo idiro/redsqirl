@@ -5,8 +5,9 @@ function canvasResizeSplitter(){
 	jQuery("#canvas").css("height", jQuery("#canvas-tabs").height()-160+'px');
 	jQuery("#canvas").css("width", jQuery("#canvas-tabs").width()+'px');
 	jQuery("#tabsFooter").css("width", jQuery("#canvas-tabs").width()-10+'px');
-	jQuery("#canvas-1").css("height", jQuery("#canvas-tabs").height()+'px');
-	jQuery("#canvas-1").css("width", jQuery("#canvas-tabs").width()+'px');
+
+	resizeCanvas();
+	
 	jQuery(".splitter-bar-horizontal").css("width", jQuery(window).width()-jQuery(".splitter-pane").width()-28 +'px');
 	jQuery("#tabs1").css("width", jQuery("#splitterH").width()-10 +'px');
 	jQuery("#tabs2").css("width", jQuery("#splitterH").width()-10 +'px');
@@ -19,6 +20,28 @@ function canvasResizeSplitter(){
 	
 	//]]>
   }
+
+function resizeCanvas(){
+	
+	for (var i in nameTabs){
+		//alert(nameTabs[i]);
+		jQuery("#"+nameTabs[i]).css("height", jQuery("#canvas-tabs").height()-jQuery("#tabsFooter").height()-30+'px');
+		jQuery("#"+nameTabs[i]).css("width", jQuery("#canvas-tabs").width()+'px');
+		jQuery("#container-"+nameTabs[i]).css("height", jQuery("#canvas-tabs").height()-jQuery("#tabsFooter").height()-30+'px');
+	}
+	
+}
+
+function resizeCanvasOnPageReady(){
+	
+	for (var i in nameTabs){
+		//alert(nameTabs[i]);
+		jQuery("#"+nameTabs[i]).css("height", jQuery("#canvas-tabs").height()-jQuery("#tabsFooter").height()-30+'px');
+		jQuery("#"+nameTabs[i]).css("width", jQuery("#canvas-tabs").width()+'px');
+		jQuery("#container-"+nameTabs[i]).css("height", jQuery("#canvas-tabs").height()-jQuery("#tabsFooter").height()-130+'px');
+	}
+	
+}
 
 function onPageReady(){
 
@@ -59,6 +82,8 @@ function onPageReady(){
 	  jQuery(".splitter-pane").css("overflow", "hidden");
 	  jQuery("#tabRemote").css("overflow", "hidden");
 	  
+	  resizeCanvasOnPageReady();
+	  
 	  configureFooterCss();
 
 	  validateArrowsAll();
@@ -94,8 +119,8 @@ function resizing(){
 	  jQuery("#canvas-tabs").css("height", jQuery(window).height()-160+'px');
 	  jQuery("#canvas").css("height", jQuery("#canvas-tabs").height()-160+'px');
 	  jQuery("#canvas").css("width", jQuery("#canvas-tabs").width()+'px');
-	  jQuery("#canvas-1").css("height", jQuery("#canvas-tabs").height()+'px');
-	  jQuery("#canvas-1").css("width", jQuery("#canvas-tabs").width()+'px');
+	  
+	  resizeCanvas();
 
 	  resizeTabs();
 	  
