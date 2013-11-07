@@ -97,7 +97,7 @@
 		onclick="#{rich:component('modalLoadWorkflow')}.hide();" 
 		rerender="formMenu"
 		oncomplete="loadWorkflow();">
-		<a4j:actionparam name="pathFile" value="getPath('#{hdfsLoadBean.path}')" noEscape="true"/>
+		<a4j:actionparam value="getPath('#{hdfsLoadBean.path}')" assignTo="#{canvasBean.path}" noEscape="true"/>
 	</a4j:commandButton>
 	
 	<a4j:commandButton value="#{messages.button_cancel}"
