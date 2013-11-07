@@ -62,7 +62,7 @@ public interface DataFlow extends Remote{
 	public String run(List<String> dataFlowElement) throws RemoteException;
 
 	/**
-	 * @return true if the workflow is running currently.
+	 * @return true if the workflow is currently processed (for Oozie running OR suspended).
 	 */
 	public boolean isrunning() throws RemoteException;
 

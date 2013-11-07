@@ -42,6 +42,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.PathFilter;
 import org.apache.log4j.Logger;
 import org.apache.oozie.client.OozieClient;
+import org.apache.oozie.client.WorkflowJob;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -409,12 +410,15 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 	 */
 	public boolean isrunning(){
 		OozieClient wc = OozieManager.getInstance().getOc();
+		
 		boolean running = false;
 		try{
-			if(oozieJobId != null && 
-					wc.getJobInfo(oozieJobId).getStatus() == 
-					org.apache.oozie.client.WorkflowJob.Status.RUNNING){
-				running = true;
+			if(oozieJobId != null){
+				WorkflowJob.Status status = wc.getJobInfo(oozieJobId).getStatus();
+				if(status == WorkflowJob.Status.RUNNING ||
+						status == WorkflowJob.Status.SUSPENDED){
+					running = true;
+				}
 			}
 		}catch(Exception e){
 			logger.error(e.getMessage());
