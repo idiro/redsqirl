@@ -35,6 +35,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 	private List<SelectItem> linkPossibilities = new ArrayList<SelectItem>();
 	private String selectedLink;
+	private int nbLinkPossibilities = 0;
 	private String nameWorkflow;
 	private DataFlow df;
 	private String paramOutId;
@@ -278,6 +279,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 		try {
 			linkPossibilities = new ArrayList<SelectItem>();
+			nbLinkPossibilities = 0;
 
 			DataFlow df = getDf();
 
@@ -295,6 +297,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 			if (!linkPossibilities.isEmpty()){
 				setSelectedLink(linkPossibilities.get(0).getValue().toString());
+				nbLinkPossibilities = linkPossibilities.size();
 			}
 
 		} catch (RemoteException e) {
@@ -824,6 +827,20 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 	public void setUserInfoBean(UserInfoBean userInfoBean) {
 		this.userInfoBean = userInfoBean;
+	}
+
+	/**
+	 * @return the nbLinkPossibilities
+	 */
+	public int getNbLinkPossibilities() {
+		return nbLinkPossibilities;
+	}
+
+	/**
+	 * @param nbLinkPossibilities the nbLinkPossibilities to set
+	 */
+	public void setNbLinkPossibilities(int nbLinkPossibilities) {
+		this.nbLinkPossibilities = nbLinkPossibilities;
 	}
 
 }
