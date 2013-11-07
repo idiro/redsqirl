@@ -576,8 +576,10 @@ public class CanvasBean extends BaseBean implements Serializable{
 	}
 
 	public void blockRunningWorkflow() throws Exception{
-		while(getDf().isrunning()){
-			Thread.sleep(500);
+		if(getDf() != null){
+			while(getDf().isrunning()){
+				Thread.sleep(500);
+			}
 		}
 	}
 
