@@ -342,9 +342,16 @@
 	    		 window.onbeforeunload = function(){
 	    			 invalidateSession();
 	    		 }
+	    		 
+	    		 setTimeout(function(){refreshProcManager()}, 20*1000);
 
 	    		 
 	    	});	//---------- END jQuery(function
+	    	
+	        function refreshProcManager(){
+	    		jQuery("[id$='RefreshProcessManager']").click();
+	    		setTimeout(function(){refreshProcManager()},20*1000);
+	    	}
 	    			
 	    	function configureFooter(){
 	    		 var tabsFooter = jQuery("#tabsFooter").tabs().scrollabletab();
@@ -573,27 +580,31 @@
 			</a4j:region>
 			
 			<a4j:region>
-				
-				<a4j:status	onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
-							onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
-							onstop="jQuery('#canvas-tabs').unblock();" />
-				
-				<a4j:jsFunction name="addLinkBt" data="#{canvasBean.result}" oncomplete="updateLink(data[0], data[1], data[2])" />
+                
+                <a4j:status onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
+                            onstop="jQuery('#canvas-tabs').unblock();" />
+                
+                <a4j:jsFunction name="addLinkBt" data="#{canvasBean.result}" oncomplete="updateLink(data[0], data[1], data[2])" />
+            </a4j:region>
+			
+			<a4j:region>
+			     <a4j:status onerror="jQuery('#canvas-tabs').unblock();"
+                            onstop="jQuery('#canvas-tabs').unblock();" />
+                
+                <a4j:jsFunction name="addLinkWhenUniq" 
+                                action="#{canvasBean.addLink}" 
+                                oncomplete="addLinkBt()"/>
 			</a4j:region>
 			
 			<a4j:region>
 			
 				<a4j:status	onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
-							onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
+							onerror="jQuery('#canvas-tabs').unblock();"
 							onstop="jQuery('#canvas-tabs').unblock();" />
-				
-				<a4j:jsFunction name="addLinkWhenUniq" 
-                                action="#{canvasBean.addLink}" 
-                                oncomplete="addLinkBt()"/>
 							
 				<a4j:jsFunction name="addLinkModalBt" 
 				                action="#{canvasBean.updateLinkPossibilities}" 
-				                oncomplete="if(#{canvasBean.nbLinkPossibilities} == 1){addLinkWhenUniq();}else{#{rich:component('modalSelectLink')}.show();}"
+				                oncomplete="if(#{canvasBean.nbLinkPossibilities} == 1){addLinkWhenUniq();}else{jQuery('#canvas-tabs').unblock();#{rich:component('modalSelectLink')}.show();}"
 					reRender="selectLinkList">
 					<a4j:actionparam name="paramOutId" assignTo="#{canvasBean.paramOutId}"/>
 					<a4j:actionparam name="paramInId" assignTo="#{canvasBean.paramInId}"/>

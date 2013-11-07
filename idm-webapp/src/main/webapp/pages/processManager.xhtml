@@ -22,7 +22,7 @@
 		style="min-width: 400px; overflow: hidden; min-height: 400px;">
 		<h:form>
 			<a href="#{processManagerBean.oozieUrl}" target="_blank">#{messages.label_oozie_console}</a>
-			<a4j:commandButton action="#{processManagerBean.updateProcessesGrid}" reRender="processManagerTable" value="Refresh"/>
+			<a4j:commandButton id="RefreshProcessManager" action="#{processManagerBean.updateProcessesGrid}" reRender="processManagerTable" value="Refresh"/>
 			<rich:dataTable id="processManagerTable" value="#{processManagerBean.processesGrid}"
 				var="item" width="100%" style="border-bottom:0px;border-right:0px;"
 				onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
