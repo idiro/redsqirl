@@ -68,7 +68,6 @@ public class PigSelect extends PigElement{
 
 		page2.addInteraction(tSelInt);
 		
-		addOutputPage();
 	}
 	
 //	@Override
@@ -88,6 +87,8 @@ public class PigSelect extends PigElement{
 				groupingInt.update(in);
 			}else if(interaction == tSelInt){
 				tSelInt.update(in);
+//				addOrRemoveOutPage();
+				logger.info("updating table select");
 			}else if(interaction == dataSubtypeInt){
 				updateDataSubTypeInt();
 			}
@@ -135,28 +136,28 @@ public class PigSelect extends PigElement{
 				query += store;
 			}
 		}
-
+		logger.info(query);
 		return query;
 	}
 
 	/**
 	 * @return the tSelInt
 	 */
-	public final PigTableSelectInteraction gettSelInt() {
+	public PigTableSelectInteraction gettSelInt() {
 		return tSelInt;
 	}
 	
 	/**
 	 * @return the condInt
 	 */
-	public final PigFilterInteraction getCondInt() {
+	public PigFilterInteraction getCondInt() {
 		return filterInt;
 	}
 
 	/**
 	 * @return the groupingInt
 	 */
-	public final PigGroupInteraction getGroupingInt() {
+	public PigGroupInteraction getGroupingInt() {
 		return groupingInt;
 	}
 
