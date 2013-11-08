@@ -460,7 +460,6 @@
               
               jQuery.each(ul, function(index, value){
             	  closeTab(value);
-            	  closeWorkflow(nameTabs[index]);
               });
              
               contTabCanvas = 1;
@@ -566,6 +565,14 @@
 			<h:inputHidden value="#{canvasModalBean.nameElement}" id="nameElement" />
 			<h:inputHidden value="#{canvasModalBean.groupID}" id="groupID" />
 			<h:inputHidden value="#{canvasModalBean.listPageSize}" />
+			
+			<a4j:region>
+				<a4j:status	onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+							onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
+							onstop="jQuery('#canvas-tabs').unblock();" />
+				
+				<a4j:jsFunction name="closeAll" action="#{canvasBean.closeAll}" oncomplete="closeAllWorkflowTabs()"/>
+			</a4j:region>
 				
 			<a4j:region>
 				<a4j:status	onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
@@ -796,7 +803,7 @@
 					<rich:menuItem submitMode="none"
 						value="#{messages.label_menu_close}" onclick="menuCloseTab();" />
 					<rich:menuItem submitMode="ajax"
-						value="#{messages.label_menu_closeall}" onclick="closeAllWorkflowTabs();"
+						value="#{messages.label_menu_closeall}" onclick="closeAll();"
 						action="#{canvasBean.doNew}" />
 					<rich:menuItem submitMode="ajax"
 						value="#{messages.label_menu_save}" onclick="menuSave();" />

@@ -143,6 +143,10 @@ public class CanvasBean extends BaseBean implements Serializable{
 	 * @author Igor.Souza
 	 */
 	public void addElement() {
+		
+		logger.info("addElement");
+		logger.info("numWorkflows: "+getWorkflowMap().size());
+		logger.info("numIdMap: "+getIdMap().size());
 
 		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 
@@ -586,11 +590,12 @@ public class CanvasBean extends BaseBean implements Serializable{
 	public String getWorkflowUrl(){
 		logger.info("getWorkflowUrl");
 		String url = null;
-		try {
-			url = getOozie().getConsoleUrl(getDf());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (getDf() != null){
+			try {
+				url = getOozie().getConsoleUrl(getDf());
+			} catch (Exception e) {
+				logger.error("error", e);
+			}
 		}
 
 		FacesContext context = FacesContext.getCurrentInstance();
@@ -713,6 +718,13 @@ public class CanvasBean extends BaseBean implements Serializable{
 			getIdMap().put(name, new HashMap<String, String>());
 		}
 
+	}
+	
+	public void closeAll(){
+		logger.info("closeAll");
+		getWorkflowMap().clear();
+		getIdMap().clear();
+		setDf(null);
 	}
 
 
