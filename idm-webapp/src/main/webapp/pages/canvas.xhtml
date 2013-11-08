@@ -344,12 +344,33 @@
 	    		 }
 	    		 
 	    		 setTimeout(function(){refreshProcManager()}, 20*1000);
-
+	    		 setTimeout(function(){saveAll()}, 10*60*1000);
 	    		 
 	    	});	//---------- END jQuery(function
+	    			
+	    	function saveAll(){
+	    		try{
+	    			var currentSelect = getAllIconPositions();
+	                if(allPositionIcons === undefined){
+	                	if(currentSelect !== undefined){
+	                		allPositionIcons = currentSelect;
+	                        saveAllPositions(currentSelect);
+	                	}
+	                }else if(currentSelect !== allPositionIcons){
+	                	allPositionIcons = currentSelect;
+                        saveAllPositions(currentSelect);
+                        refreshProcManagerCount = 30;
+	                }
+                }catch(err){
+                }
+	    		setTimeout(function(){saveAll()},10*60*1000);
+            }
 	    	
 	        function refreshProcManager(){
-	    		jQuery("[id$='RefreshProcessManager']").click();
+	        	if(refreshProcManagerCount > 0){
+	        	 jQuery("[id$='RefreshProcessManager']").click();
+	        	 --refreshProcManagerCount;
+	        	}
 	    		setTimeout(function(){refreshProcManager()},20*1000);
 	    	}
 	    			
@@ -504,6 +525,13 @@
 			<h:inputHidden value="#{canvasModalBean.nameElement}" id="nameElement" />
 			<h:inputHidden value="#{canvasModalBean.groupID}" id="groupID" />
 			<h:inputHidden value="#{canvasModalBean.listPageSize}" />
+			
+			<a4j:region>
+                <a4j:jsFunction name="saveAllPositions" 
+                                action="#{canvasBean.updateAllPosition}">
+                    <a4j:actionparam name="allpositions"/>
+                </a4j:jsFunction>
+            </a4j:region>
 				
 			<a4j:region>
 				<a4j:status	onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
@@ -800,7 +828,7 @@
 				</rich:dropDownMenu>
 
 				<rich:toolBarGroup location="right"  
-				    onitemclick="backupAll(getAllIconPositions());jQuery.blockUI({ message: jQuery('#domMessageDivCanvas1') });signOut();">
+				    onitemclick="saveAllPositions(getAllIconPositions());jQuery.blockUI({ message: jQuery('#domMessageDivCanvas1') });signOut();">
 					<rich:dropDownMenu value="#{messages.label_menu_signout}"
 						direction="bottom-left" jointPoint="br" styleClass="search" />
 				</rich:toolBarGroup>

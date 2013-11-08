@@ -2,14 +2,18 @@ package idm.auth;
 
 
 import idiro.workflow.server.WorkflowPrefManager;
+import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.rmi.RemoteException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
@@ -162,22 +166,43 @@ public class ServerThread{
 	 * @return 
 	 * @author Igor.Souza
 	 */
-	public void kill(){
+	public void kill(HttpSession httpSession ){
+		logger.info("kill attempt");
 		if(session != null && run){
-			
+			logger.info(1);
+			try{
+				DataFlowInterface dataFlowInterface = (DataFlowInterface) httpSession.getAttribute("wfm");
+				try {
+					logger.info("Clean and Close");
+					dataFlowInterface.backupAll();
+					dataFlowInterface.autoCleanAll();
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				}
+			}catch(Exception e){
+				e.printStackTrace();
+				logger.error(e.getMessage());
+			}
+			logger.info(2);
 			Channel channel;
 			try {
+				logger.info(3);
 				channel = session.openChannel("exec");
+				logger.info("kill -9 "+pid);
 				((ChannelExec)channel).setCommand("kill -9 "+pid);
 	            channel.connect();
 	            channel.disconnect();
 	            session.disconnect();
+	            logger.info(3.5);
 			} catch (JSchException e) {
 				e.printStackTrace();
 			}
-			
+			logger.info(4);
 			list.remove(this);
+			logger.info(5);
 			run = false;
+		}else{
+			logger.info("Cannot kill thread");
 		}
 	}
 

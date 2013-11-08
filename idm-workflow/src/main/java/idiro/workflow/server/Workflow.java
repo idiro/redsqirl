@@ -611,6 +611,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 
 	public void cleanUpBackup() throws IOException{
 		String path = WorkflowPrefManager.getUserProperty(WorkflowPrefManager.user_backup);
+		if(path == null || path.isEmpty()){
+			path = "/user/"+System.getProperty("user.name")+"/idm-backup";
+		}
 		String numberBackup = WorkflowPrefManager.getUserProperty(WorkflowPrefManager.user_nb_backup);
 		int nbBackup = 25;
 		if(numberBackup != null){
@@ -633,30 +636,44 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 		});
 		if(fsA.length > nbBackup){
 			int numberToRemove = fsA.length - nbBackup;
-			Map<Long,Path> pathToRemove = new HashMap<Long,Path>();
+			Map<Path,Long> pathToRemove = new HashMap<Path,Long>();
 			for(FileStatus stat: fsA){
 				if(pathToRemove.size() < numberToRemove){
-					pathToRemove.put(stat.getModificationTime(), stat.getPath());
+					pathToRemove.put(stat.getPath(),stat.getModificationTime());
 				}else{
-					Iterator<Long> it = pathToRemove.keySet().iterator();
-					Long min = it.next();
+					Iterator<Path> it = pathToRemove.keySet().iterator();
+					Path pathCur = it.next();
+					Long min = pathToRemove.get(pathCur);
 					while(it.hasNext()){
-						Long cur = it.next();
+						pathCur = it.next();
+						Long cur = pathToRemove.get(pathCur);
 						if(min > cur ){
 							cur = min;
 						}
 					}
 					if(min > stat.getModificationTime()){
 						pathToRemove.remove(min);
-						pathToRemove.put(stat.getModificationTime(), stat.getPath());
+						pathToRemove.put(stat.getPath(),stat.getModificationTime());
 					}
 				}
 			}
-			for(Path pathDel: pathToRemove.values()){
+			for(Path pathDel: pathToRemove.keySet()){
 				fs.delete(pathDel,false);
 			}
 		}
 		fs.close();
+	}
+	
+	public void close() throws RemoteException{
+		logger.info("auto clean "+getName());
+		try {
+			//Remove the temporary data that cannot be reused
+			if(!isSaved() && !isrunning()){
+				cleanProject();
+			}
+		} catch (Exception e) {
+			logger.warn("Error closing "+getName());
+		}
 	}
 
 	public void backup() throws RemoteException{

@@ -35,6 +35,8 @@ function Canvas(name){
 var selectedCanvas = "canvas-1";
 
 var canvasArray;
+var allPositionIcons;
+var refreshProcManagerCount = 30;
 
 window.onload = function() {
 	var canvasName = "canvas-1";
@@ -1125,7 +1127,7 @@ function getIconPositions(){
 }
 
 function getAllIconPositions(){
-    var canvas = {};
+    var canvasPos = {};
     
     jQuery.each(canvasArray, function(index, value) {
     	var polygonLayer = value.polygonLayer;
@@ -1135,9 +1137,9 @@ function getAllIconPositions(){
     		var element = polygonLayer.getChildren()[i];
     		positions[element.getId()] = [ element.getX(), element.getY() ];
     	}
-    	canvas[index] = positions;
+    	canvasPos[index] = positions;
 	});
-	return JSON.stringify(canvas);
+	return JSON.stringify(canvasPos);
 }
 
 function save(path) {

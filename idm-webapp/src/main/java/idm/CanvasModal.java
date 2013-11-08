@@ -1033,7 +1033,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 				itemList.add(item);
 			}
-			setListGrid(itemList);
+			getListGrid().addAll(itemList);
 		}
 	}
 

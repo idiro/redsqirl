@@ -83,6 +83,13 @@ public interface DataFlow extends Remote{
 	 */
 	public String save(String file) throws RemoteException;
 
+	
+	/**
+	 * Close a workflow, clean temporary data if necessary.
+	 * @throws RemoteException
+	 */
+	public void close() throws RemoteException;
+	
 	/**
 	 * Do an automatic backup of the workflow.
 	 */

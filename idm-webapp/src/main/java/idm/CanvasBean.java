@@ -404,7 +404,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 	/**
 	 * Push the object position on the backend for all workflows
 	 */
-	protected void updateAllPosition(){
+	public void updateAllPosition(){
 		String allPositions = FacesContext.getCurrentInstance().getExternalContext().
 				getRequestParameterMap().get("allpositions");
 		logger.info(allPositions);
@@ -442,16 +442,11 @@ public class CanvasBean extends BaseBean implements Serializable{
 		logger.info("backupAll");
 		updateAllPosition();
 		try {
-			Iterator<String> itWorkflow = workflowMap.keySet().iterator();
-			while(itWorkflow.hasNext()){
-				String workflowNameCur = itWorkflow.next();
-				logger.info("backup "+workflowNameCur);
-				workflowMap.get(workflowNameCur).setName(workflowNameCur);
-				workflowMap.get(workflowNameCur).backup();
-			}
-		} catch (Exception e) {
-			logger.info("Error loading workflow");
-			e.printStackTrace();
+			getworkFlowInterface().backupAll();
+			
+		} catch (RemoteException e) {
+			logger.info("Error backing up all workflows");
+			e.printStackTrace();;
 		}
 	}
 
@@ -510,14 +505,10 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 		logger.info("closeWorkflow:" + workflow);
 
-		DataFlow df = getWorkflowMap().get(workflow);
-
 		try {
-			//Remove the temporary data that cannot be reused
-			if(df != null && !df.isSaved() && !df.isrunning()){
-				df.cleanProject();
-			}
+			workflowMap.get(workflow).close();
 		} catch (RemoteException e) {
+			logger.error("Fail auto clean "+workflow);
 			e.printStackTrace();
 		}
 
@@ -600,6 +591,10 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 		return url;
 	}
+	/*
+	public String getPackageManagerUrl(){
+		return WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_pack_manager_url, "http://dev.local.net/idiro-ops");
+	}*/
 
 	public void updateIdObj(){
 		String groupId = FacesContext.getCurrentInstance().getExternalContext().
