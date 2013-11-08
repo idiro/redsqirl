@@ -51,6 +51,7 @@
 	    	  var tabscanvas = jQuery("#canvas-tabs").tabs().scrollabletab();
 	    	  tabscanvas.find(".ui-tabs-nav").sortable({
 	    	  axis: "x",
+	    	  items: 'li:not(.locked)',
 	    	  stop: function() {
 	    		  tabscanvas.tabs("refresh");
 	    	  	}
@@ -116,14 +117,9 @@
 	  	              	jQuery("#tabRemote").tabs().tabs('refresh');
 	  	              	
 	  	              	
-	  	              	jQuery("#"+jQuery(this).parent().attr("id")).tabs("option", "active", jQuery(ui.item[0]).index() );
+	  	              	jQuery("#"+jQuery(this).parent().attr("id")).tabs("option", "active", jQuery(ui.item[0]).index());
 
-	  	              	resizeTabs();
-
-	  	              	validateArrows(jQuery("#tabs1"),jQuery("#buttonsTabs1"));
-		    		  	validateArrows(jQuery("#tabs2"),jQuery("#buttonsTabs2"));
-		    		  	validateArrows(jQuery("#tabRemote"),jQuery("#buttonstabRemote"));
-		    		  	validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
+	  	              	canvasResizeSplitter();
 
   	            }
 
@@ -134,10 +130,11 @@
 	  	    	jQuery("#buttonstabRemote").css("left", jQuery("#tabRemote").width()-30+'px');
    				validateArrows(jQuery("#tabRemote"),jQuery("#buttonstabRemote"));
 	        });
-	        
+
   	    	jQuery("#idtabFlowchart-1").click(function () {
-  	    		onPageReady();
+  	    		resizing();
 	        });
+  	    	
 
   	    	var contTabRemote = 1;
   	        
@@ -417,7 +414,7 @@
 	    	  var tabs = jQuery("#canvas-tabs").tabs();
               var ul = jQuery("#canvas-tabs").tabs().find( "ul:first" );
              
-              jQuery( "<li><a href='#"+ tabName +"' onclick=\"jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('"+tabName+"');\">"+ 
+              jQuery( "<li class='locked'><a href='#"+ tabName +"' onclick=\"jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('"+tabName+"');\">"+ 
             		  tabName +"</a> <span id='"+tabName+"-icon-close' class='ui-icon ui-icon-close' onclick=\"closeWorkflowTab(this, '"+tabName+"')\"></span> </li>" ).appendTo( ul );
               
               var div = "<div id='"+tabName+"'>"+
@@ -907,17 +904,15 @@
 			<div id="tabFlowchart">
 				<ul class="ulCss">
 
-					<li class="locked"><a href="#tabFlowchart-1"
-						id="idtabFlowchart-1"> Flowchart </a></li>
-					<button id="changeTabCanvas" style="border: hidden;">
-						&#9660;</button>
+					<li class="locked"><a href="#tabFlowchart-1" id="idtabFlowchart-1"> Flowchart </a></li>
+					<button id="changeTabCanvas" style="border: hidden;">&#9660;</button>
 
 				</ul>
 				<div id="tabFlowchart-1">
 
 					<div id="canvas-tabs">
 						<ul>
-							<li><a href="#canvas-1" onclick="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('canvas-1');">Canvas 1</a> 
+							<li class="locked"><a href="#canvas-1" onclick="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('canvas-1');">Canvas 1</a> 
 								<span id="canvas-1-icon-close" class="ui-icon ui-icon-close" onclick="closeWorkflowTab(this,'canvas-1')"></span>
 							</li>
 							<button id="addtabCanvas" style="border: hidden;">+</button>
