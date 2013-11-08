@@ -997,12 +997,13 @@ function mountObj() {
 				});
 				polygonTabFake.rotateDeg(rotateDeg);
 				polygonTabFake.setAbsolutePosition(posInitX,poxInitY);
+				polygonTabFake.posInitX = posInitX;
+				polygonTabFake.posInitY = poxInitY;
 
 				posInitX = posInitX + 60;
 
 				polygonTabFake.on('dragstart',function() {
 					jQuery('#body').css('cursor','url('+ polygonTabImage+ ') 30 30,default');
-					layerTab.add(polygonTabFake.clone());
 				});
 
 				polygonTabFake.on('dragend',function() {
@@ -1025,13 +1026,25 @@ function mountObj() {
 						
 					}
 					document.body.style.cursor = 'default';
+					
+					var polygonTabFakeClone = polygonTabFake.clone();
+					polygonTabFakeClone.setAbsolutePosition(polygonTabFake.posInitX,polygonTabFake.posInitY);
+					layerTab.add(polygonTabFakeClone);
 					this.remove();
+					
+					layerTab.draw();
 					canvasArray[selectedCanvas].polygonLayer.draw();
 				});
 
 				polygonTabFake.on('mouseup',function() {
 					document.body.style.cursor = 'default';
+					
+					var polygonTabFakeClone = polygonTabFake.clone();
+					polygonTabFakeClone.setAbsolutePosition(polygonTabFake.posInitX,polygonTabFake.posInitY);
+					layerTab.add(polygonTabFakeClone);
 					this.remove();
+					
+					layerTab.draw();
 				});
 
 				layerTab.add(polygonTab);
