@@ -19,6 +19,7 @@
 	function changeFile(f){
 		file = f;
 	}
+	
 //]]>
 </script>
 
@@ -76,11 +77,13 @@
 	<br />
 
 	<a4j:commandButton id="hdfsSaveFileBtn" value="#{messages.button_ok}"
-		onclick="#{rich:component('modalSaveWorkflow')}.hide();save(getPath('#{hdfsSaveBean.path}'));">
+		onclick="#{rich:component('modalSaveWorkflow')}.hide();save(getPath('#{hdfsSaveBean.path}'));"
+		oncomplete="onHideModalSaveWorkflow();">
 	</a4j:commandButton>
 	
 	<a4j:commandButton value="#{messages.button_cancel}"
-		onclick="#{rich:component('modalSaveWorkflow')}.hide();">
+		onclick="#{rich:component('modalSaveWorkflow')}.hide();"
+		oncomplete="onHideModalSaveWorkflow();">
 	</a4j:commandButton>
 	
 </ui:composition>

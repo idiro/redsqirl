@@ -30,6 +30,10 @@ function Canvas(name){
 	this.stage = null;
 	this.layer = null;
 	this.polygonLayer = null;
+	
+	this.running = false;
+	this.isSaved = false;
+	this.pathFile = null;
 }
 
 var selectedCanvas = "canvas-1";
@@ -995,12 +999,13 @@ function mountObj() {
 				});
 				polygonTabFake.rotateDeg(rotateDeg);
 				polygonTabFake.setAbsolutePosition(posInitX,poxInitY);
+				polygonTabFake.posInitX = posInitX;
+				polygonTabFake.posInitY = poxInitY;
 
 				posInitX = posInitX + 60;
 
 				polygonTabFake.on('dragstart',function() {
 					jQuery('#body').css('cursor','url('+ polygonTabImage+ ') 30 30,default');
-					layerTab.add(polygonTabFake.clone());
 				});
 
 				polygonTabFake.on('dragend',function() {
@@ -1023,13 +1028,25 @@ function mountObj() {
 						
 					}
 					document.body.style.cursor = 'default';
+					
+					var polygonTabFakeClone = polygonTabFake.clone();
+					polygonTabFakeClone.setAbsolutePosition(polygonTabFake.posInitX,polygonTabFake.posInitY);
+					layerTab.add(polygonTabFakeClone);
 					this.remove();
+					
+					layerTab.draw();
 					canvasArray[selectedCanvas].polygonLayer.draw();
 				});
 
 				polygonTabFake.on('mouseup',function() {
 					document.body.style.cursor = 'default';
+					
+					var polygonTabFakeClone = polygonTabFake.clone();
+					polygonTabFakeClone.setAbsolutePosition(polygonTabFake.posInitX,polygonTabFake.posInitY);
+					layerTab.add(polygonTabFakeClone);
 					this.remove();
+					
+					layerTab.draw();
 				});
 
 				layerTab.add(polygonTab);
@@ -1144,6 +1161,8 @@ function getAllIconPositions(){
 
 function save(path) {
 	saveWorkflow(selectedCanvas, path, getIconPositions());
+	setSaved(selectedCanvas, true);
+	setPathFile(selectedCanvas, path);
 }
 
 function configureCircle(canvasName, circle1) {
@@ -1432,4 +1451,28 @@ function setSelected(selected){
 
 function getSelected(){
 	return selectedCanvas;
+}
+
+function setRunning(canvasName, value){
+	canvasArray[canvasName].running = value;
+}
+
+function isRunning(canvasName){
+	return canvasArray[canvasName].running;
+}
+
+function setSaved(canvasName, value){
+	canvasArray[canvasName].saved = value;
+}
+
+function isSaved(canvasName){
+	return canvasArray[canvasName].saved;
+}
+
+function setPathFile(canvasName, value){
+	canvasArray[canvasName].pathFile = value;
+}
+
+function getPathFile(canvasName){
+	return canvasArray[canvasName].pathFile;
 }

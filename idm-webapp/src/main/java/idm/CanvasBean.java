@@ -46,6 +46,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 	private String idGroup;
 	private Map<String, Map<String, String>> idMap;
 	private UserInfoBean userInfoBean;
+	private String path;
 
 	private Map<String, DataFlow> workflowMap;
 
@@ -142,6 +143,10 @@ public class CanvasBean extends BaseBean implements Serializable{
 	 * @author Igor.Souza
 	 */
 	public void addElement() {
+		
+		logger.info("addElement");
+		logger.info("numWorkflows: "+getWorkflowMap().size());
+		logger.info("numIdMap: "+getIdMap().size());
 
 		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 
@@ -344,8 +349,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 	 */
 	public void load() {
 
-		String path = FacesContext.getCurrentInstance().getExternalContext().
-				getRequestParameterMap().get("pathFile");
+		String path = getPath();
 
 		logger.info("load "+path);
 
@@ -471,10 +475,10 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 		try {
 
-			logger.info("save workflow in "+path);
-			setNameWorkflow(generateWorkflowName(path));
+			logger.info("save workflow "+nameWorkflow+" in "+path);
 			DataFlow df = getWorkflowMap().get(nameWorkflow);
-			df.setName(getNameWorkflow());
+//			setNameWorkflow(generateWorkflowName(path));
+			df.setName(generateWorkflowName(path));
 			String msg = df.save(path);
 			logger.info(msg);
 
@@ -577,11 +581,12 @@ public class CanvasBean extends BaseBean implements Serializable{
 	public String getWorkflowUrl(){
 		logger.info("getWorkflowUrl");
 		String url = null;
-		try {
-			url = getOozie().getConsoleUrl(getDf());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (getDf() != null){
+			try {
+				url = getOozie().getConsoleUrl(getDf());
+			} catch (Exception e) {
+				logger.error("error", e);
+			}
 		}
 
 		FacesContext context = FacesContext.getCurrentInstance();
@@ -609,12 +614,23 @@ public class CanvasBean extends BaseBean implements Serializable{
 	public void reinitialize() throws RemoteException{
 		logger.info("invalidate session");
 
-		if(getworkFlowInterface().getWorkflow(getNameWorkflow()) != null){
-			logger.info("removing workflow");
-			getworkFlowInterface().removeWorkflow(getNameWorkflow());
-			getworkFlowInterface().addWorkflow(getNameWorkflow());
-			setDf(getworkFlowInterface().getWorkflow(getNameWorkflow()));
+		for (java.util.Map.Entry<String, DataFlow> e : getWorkflowMap().entrySet()){
+			if(getworkFlowInterface().getWorkflow(e.getKey()) != null){
+				logger.info("removing workflow");
+				getworkFlowInterface().removeWorkflow(e.getKey());
+				
+			}
 		}
+		
+		getworkFlowInterface().addWorkflow("canvas-1");
+		setDf(getworkFlowInterface().getWorkflow("canvas-1"));
+		
+		getWorkflowMap().clear();
+		getWorkflowMap().put(getNameWorkflow(), getDf());
+		
+		getIdMap().clear();
+		getIdMap().put(getNameWorkflow(), new HashMap<String, String>());
+		
 	}
 
 
@@ -697,6 +713,13 @@ public class CanvasBean extends BaseBean implements Serializable{
 			getIdMap().put(name, new HashMap<String, String>());
 		}
 
+	}
+	
+	public void closeAll(){
+		logger.info("closeAll");
+		getWorkflowMap().clear();
+		getIdMap().clear();
+		setDf(null);
 	}
 
 
@@ -799,6 +822,14 @@ public class CanvasBean extends BaseBean implements Serializable{
 	public void setWorkflowMap(Map<String, DataFlow> workflowMap) {
 		this.workflowMap = workflowMap;
 	}
+	
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
 
 	public String[] getPositions() throws Exception{
 		logger.info("getPositions");
@@ -815,7 +846,8 @@ public class CanvasBean extends BaseBean implements Serializable{
 				}
 			}
 		}
-		return new String[]{getNameWorkflow(), jsonElements.toString(), jsonLinks.toString()};
+		
+		return new String[]{getNameWorkflow(), getPath(), jsonElements.toString(), jsonLinks.toString()};
 	}
 
 	public UserInfoBean getUserInfoBean() {
@@ -839,5 +871,4 @@ public class CanvasBean extends BaseBean implements Serializable{
 	public void setNbLinkPossibilities(int nbLinkPossibilities) {
 		this.nbLinkPossibilities = nbLinkPossibilities;
 	}
-
 }
