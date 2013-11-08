@@ -439,16 +439,17 @@
 	    	//<![CDATA[
 	    	  closeTab(tab);
 	    	  closeWorkflow(tabName);
-	    	  numTabs--;
+	    	  
 	    	  jQuery("#canvas-tabs").tabs( "refresh" );
 	    	  
 	    	  var names = {};
 	    	  var cont = 0;
-	    	  for (var i = 0; i < nameTabs.length; ++i){
+	    	  for (var i = 0; i < numTabs; ++i){
 	    		  if (nameTabs[i] != tabName){
 	    			  names[cont++] = nameTabs[i];
 	    		  }
 	    	  }
+	    	  numTabs--;
 	    	  nameTabs = names;
 	    	  selectTab(numTabs-1);
 	    	//]]>
@@ -508,7 +509,12 @@
 	   		indexSaving++;
 	   		if (isSaveAll == true && indexSaving < numTabs){
 	   			setWorkflow(nameTabs[indexSaving]);
-		   		Richfaces.showModalPanel('modalSaveWorkflow');
+	   			if (isSaved(nameTabs[indexSaving])){
+		   			save(getPathFile(nameTabs[indexSaving]));
+		   		}
+		   		else{
+		   			Richfaces.showModalPanel('modalSaveWorkflow');
+		   		}
 	   		}
 	   		else{
 	   			isSaveAll = false;
@@ -524,7 +530,7 @@
 	   		indexSaving = 0;
 	   		setWorkflow(nameTabs[indexSaving]);
 	   		if (isSaved(nameTabs[indexSaving])){
-	   			save(getPathFile(getSelected()));
+	   			save(getPathFile(nameTabs[indexSaving]));
 	   		}
 	   		else{
 	   			Richfaces.showModalPanel('modalSaveWorkflow');
