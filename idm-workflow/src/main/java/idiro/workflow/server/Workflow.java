@@ -497,7 +497,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 							data.setAttributeNode(attrDataName);
 							logger.debug("Enter in write...");
 							saveMap.get(outName).write(doc,data);
-							
+
 							component.appendChild(data);
 						}
 					}
@@ -604,29 +604,31 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 
 		return error;
 	}
-	
+
 	public void cleanUpBackup() throws IOException{
 		String path = WorkflowPrefManager.getUserProperty(WorkflowPrefManager.user_backup);
 		String numberBackup = WorkflowPrefManager.getUserProperty(WorkflowPrefManager.user_nb_backup);
 		int nbBackup = 25;
-		try{
-			nbBackup = Integer.valueOf(numberBackup);
-			if(nbBackup < 0){
-				nbBackup = 25;
-			}
-		}catch(Exception e){}
-		
+		if(numberBackup != null){
+			try{
+				nbBackup = Integer.valueOf(numberBackup);
+				if(nbBackup < 0){
+					nbBackup = 25;
+				}
+			}catch(Exception e){}
+		}
+
 		FileSystem fs = NameNodeVar.getFS();
 		//FileStatus stat = fs.getFileStatus(new Path(path));
 		FileStatus[] fsA = fs.listStatus(new Path(path), new PathFilter() {
-			
+
 			@Override
 			public boolean accept(Path arg0) {
 				return arg0.getName().matches(".*[0-9]{14}.xml$");
 			}
 		});
-		if(fsA.length > 25){
-			int numberToRemove = fsA.length - 25;
+		if(fsA.length > nbBackup){
+			int numberToRemove = fsA.length - nbBackup;
 			Map<Long,Path> pathToRemove = new HashMap<Long,Path>();
 			for(FileStatus stat: fsA){
 				if(pathToRemove.size() < numberToRemove){
@@ -652,7 +654,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 		}
 		fs.close();
 	}
-	
+
 	public void backup() throws RemoteException{
 		String path = WorkflowPrefManager.getUserProperty(WorkflowPrefManager.user_backup);
 		DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -668,13 +670,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 			logger.warn(e.getMessage());
 			logger.warn("Fail creating backup directory");
 		}
-		if(isSaved() && getName() != null){
+		if(getName() != null && !getName().isEmpty()){
 			path += "/"+getName()+"-"+dateFormat.format(date)+".xml";
 		}else{
 			path += "/idm-backup-"+dateFormat.format(date)+".xml";
 		}
 		String error = save(path);
-		
+
 		try{
 			if(error != null){
 				FileSystem fs = NameNodeVar.getFS();
@@ -686,7 +688,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 			logger.warn(e.getMessage());
 			logger.warn("Fail cleaning up backup directory");
 		}
-		
+
 	}
 
 	public boolean isSaved(){
@@ -785,10 +787,10 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 						try{
 							logger.debug(compId+": output index "+index);
 							Node outCur = outList.item(index);
-	
+
 							String nameOut = ((Element) outCur).getElementsByTagName("name").item(0).getChildNodes().item(0).getNodeValue();
 							String id = ((Element) outCur).getElementsByTagName("id").item(0).getChildNodes().item(0).getNodeValue();
-	
+
 							getElement(compId).addOutputComponent(nameOut, getElement(id));
 						}
 						catch (Exception e){
@@ -806,7 +808,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 
 				Node compCur = compList.item(temp);
 				String id = compCur.getAttributes().getNamedItem("id").getNodeValue();
-				
+
 				//Save element
 				Map<String,DFEOutput> mapOutput = getElement(id).getDFEOutput();
 				NodeList dataList = ((Element)compCur).getElementsByTagName("data");
@@ -1233,8 +1235,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 			while(actionClassName.hasNext()){
 				String className = actionClassName.next();
 				try{
-				DataflowAction wa = (DataflowAction) Class.forName(className).newInstance();
-				flowElement.put(wa.getName(),className);
+					DataflowAction wa = (DataflowAction) Class.forName(className).newInstance();
+					flowElement.put(wa.getName(),className);
 				}catch(Exception e){
 					logger.error("Error instanciating class : "+className);
 				}
@@ -1343,12 +1345,16 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 	}
 
 	protected List<DataFlowElement> getEls(List<String> ids) throws RemoteException{
-		List<DataFlowElement> ans = new ArrayList<DataFlowElement>(ids.size());
-		Iterator<String> it = ids.iterator();
-		while(it.hasNext()){
-			ans.add(getElement(it.next()));
+		if(ids == null){
+			return new ArrayList<DataFlowElement>();
+		}else{
+			List<DataFlowElement> ans = new ArrayList<DataFlowElement>(ids.size());
+			Iterator<String> it = ids.iterator();
+			while(it.hasNext()){
+				ans.add(getElement(it.next()));
+			}
+			return ans;
 		}
-		return ans;
 	}
 
 	protected LinkedList<DataFlowElement> getItAndAllElementsNeeded(DataFlowElement el) throws RemoteException{
