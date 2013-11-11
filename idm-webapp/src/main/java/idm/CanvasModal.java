@@ -186,6 +186,25 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 	}
 
+	/** checkListvalue
+	 * 
+	 * Method to check if the selected value exist on the list
+	 * 
+	 * @return boolean
+	 * @author Igor.Souza
+	 * @throws RemoteException 
+	 */
+	public boolean checkListvalue(DFEInteraction dfeInteraction, String selectedListOptions) throws RemoteException {
+		
+		for (Tree<String> item : dfeInteraction.getTree().getFirstChild("list").getFirstChild("values").getSubTreeList()) {
+			logger.info("checkListvalue -> " + item.getFirstChild().getHead() + " - " + selectedListOptions);
+			if(item.getFirstChild().getHead().equalsIgnoreCase(selectedListOptions)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	/** checkNextPage
 	 * 
 	 * Method to check the fields before change to the next page
@@ -204,12 +223,14 @@ public class CanvasModal extends BaseBean implements Serializable {
 			DFEInteraction dfi = getPage().getInteractions().get(i);
 
 			if(dynamicF.getDisplayType().equals(DisplayType.list)){
-
+				
 				logger.info("value list -> " + dynamicF.getSelectedListOptions());
-				dynamicF.getTree().getFirstChild("list").getFirstChild("output").removeAllChildren();
-				dynamicF.getTree().getFirstChild("list").getFirstChild("output").add(dynamicF.getSelectedListOptions());
-
-
+				if(checkListvalue(dfi,dynamicF.getSelectedListOptions())){
+					dynamicF.getTree().getFirstChild("list").getFirstChild("output").removeAllChildren();
+					dynamicF.getTree().getFirstChild("list").getFirstChild("output").add(dynamicF.getSelectedListOptions());
+				}else{
+					error.append(getMessageResources("msg_error_list_selected_value"));
+				}
 
 			} else if(dynamicF.getDisplayType().equals(DisplayType.appendList)){
 
@@ -1042,7 +1063,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 				itemList.add(item);
 			}
-			setListGrid(itemList);
+			getListGrid().addAll(itemList);
 		}
 	}
 

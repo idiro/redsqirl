@@ -32,42 +32,19 @@ public class AuthorizationListener implements PhaseListener {
 		FacesContext facesContext = event.getFacesContext();
 		String currentPage = facesContext.getViewRoot().getViewId();
 		HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
-//		ServletContext sc = (ServletContext) facesContext.getExternalContext().getContext();
 		
-		boolean isLoginPage = (currentPage.lastIndexOf("initial.xhtml") > -1) || (currentPage.lastIndexOf("initial.jsf") > -1);
 		HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(false);
+		boolean isLoginPage = (currentPage.lastIndexOf("initial.xhtml") > -1) || (currentPage.lastIndexOf("initial.jsf") > -1);
 
 		if(session==null){
 			
 			System.out.println("session null");
-			
-//			Map<String, HttpSession> sessionLoginMap = (Map<String, HttpSession>) sc.getAttribute("sessionLoginMap");
-//			String userName = (String) sc.getAttribute("userName");
-//			sessionLoginMap.remove(userName);
-//			sc.removeAttribute("userName");
 			
 			if (!isLoginPage){
 				request.setAttribute("msnLoginError", "msnLoginError");
 			}
 			
 //			logger.info("request signOut: "+request.getAttribute("signOut"));
-//			
-//			if (request.getAttribute("signOut") == null){
-//				DataFlowInterface dataFlowInterface = (DataFlowInterface) sc.getAttribute("wfm");
-//				try {
-//					logger.info(sc.getAttribute("signOut"));
-//					DataFlow wf = dataFlowInterface.getWorkflow("canvas1");
-//					String error = wf.cleanProject();
-//					if(error != null){
-//						MessageUseful.addErrorMessage(error);
-//						request.setAttribute("msnError", "msnError");
-//					}
-//					
-//				} catch (RemoteException e) {
-//					e.printStackTrace();
-//				}
-//				request.removeAttribute("signOut");
-//			}
 			
 			NavigationHandler nh = facesContext.getApplication().getNavigationHandler();
 			nh.handleNavigation(facesContext, null, "loginPage");

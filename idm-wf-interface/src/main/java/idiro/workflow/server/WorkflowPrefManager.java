@@ -165,7 +165,8 @@ public class WorkflowPrefManager extends BlockManager{
 			sys_hive_xml = "hive_xml",
 			sys_hive_extralib = "hive_extra_lib",
 			sys_allow_user_install="allow_user_install",
-			sys_tomcat_path="tomcat_path";
+			sys_tomcat_path="tomcat_path",
+			sys_pack_manager_url="pack_manager_url";
 	
 	public static final String user_hive = "hive_jdbc_url",
 			user_rsa_private= "private_rsa_key",
@@ -247,9 +248,17 @@ public class WorkflowPrefManager extends BlockManager{
 	public static String getSysProperty(String key){
 		return getSysProperties().getProperty(key);
 	}
-	
+
+	public static String getSysProperty(String key,String defaultValue){
+		return getSysProperties().getProperty(key,defaultValue);
+	}
+
 	public static String getUserProperty(String key){
 		return getUserProperties().getProperty(key);
+	}
+	
+	public static String getUserProperty(String key,String defaultValue){
+		return getUserProperties().getProperty(key,defaultValue);
 	}
 	
 	

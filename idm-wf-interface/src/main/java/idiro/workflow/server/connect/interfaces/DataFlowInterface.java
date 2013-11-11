@@ -18,5 +18,7 @@ public interface DataFlowInterface extends Remote{
 	
 	public DataFlow getWorkflow(String name)throws RemoteException;
 	
-
+	public void backupAll() throws RemoteException;
+	
+	public void autoCleanAll() throws RemoteException;
 }

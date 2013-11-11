@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 
 public class SessionListener implements HttpSessionListener{
 	
-	private static Logger logger = Logger.getLogger(UserInfoBean.class);
+	private static Logger logger = Logger.getLogger(SessionListener.class);
 	
 	@Override
 	public void sessionCreated(HttpSessionEvent arg0) {
@@ -25,19 +25,15 @@ public class SessionListener implements HttpSessionListener{
 		ServletContext sc = session.getServletContext();
 		Map<String, HttpSession> sessionLoginMap = (Map<String, HttpSession>) sc.getAttribute("sessionLoginMap");
 
-		String userName = (String) session.getAttribute("username");
-		if(sessionLoginMap != null){
-			sessionLoginMap.remove(userName);
+		ServerThread th = (ServerThread) session.getAttribute("serverThread");
+		if (th != null){
+			logger.info("kill serverThread");
+			th.kill(session);
 		}
-		
-//		session.removeAttribute("wfm");
-//		session.removeAttribute("hive");
-//		session.removeAttribute("ssharray");
-//		session.removeAttribute("oozie");
-//		session.removeAttribute("hdfs");
-		
-		Registry registry = (Registry) sc.getAttribute("registry");
+		String userName = (String) session.getAttribute("username");
+
 		try {
+			Registry registry = (Registry) sc.getAttribute("registry");
 			for (String name : registry.list()){
 				if (name.startsWith(userName+"@")){
 					registry.unbind(name);
@@ -46,12 +42,11 @@ public class SessionListener implements HttpSessionListener{
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		ServerThread th = (ServerThread) session.getAttribute("serverThread");
-		if (th != null){
-			logger.info("kill serverThread");
-			th.kill();
+		
+		if(sessionLoginMap != null){
+			sessionLoginMap.remove(userName);
 		}
+		
 //		session.removeAttribute("serverThread");
 	}
 

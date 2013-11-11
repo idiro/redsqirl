@@ -13,7 +13,7 @@
 	   		
 	   		<h:panelGrid columns="2">
 		   		<a4j:commandButton action="#{canvasBean.addLink}" value="#{messages.button_ok}"
-					oncomplete="#{rich:component('modalSelectLink')}.hide();addLinkBt()"/>
+					oncomplete="#{rich:component('modalSelectLink')}.hide();jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });addLinkBt()"/>
 				<a4j:commandButton value="#{messages.button_cancel}" 
 				    onclick="removeLink('#{canvasBean.paramNameLink}'); #{rich:component('modalSelectLink')}.hide();"/>
 			</h:panelGrid>

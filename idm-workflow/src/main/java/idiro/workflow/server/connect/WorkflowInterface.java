@@ -6,6 +6,7 @@ import idiro.workflow.server.interfaces.DataFlow;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -29,14 +30,14 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	 * The logger.
 	 */
 	private static Logger logger = Logger.getLogger(WorkflowInterface.class);
-	
+
 	private Map<String,DataFlow> wf = new LinkedHashMap<String,DataFlow>();
-	
+
 	private WorkflowInterface() throws RemoteException{
 		super();
 	}
 
-	
+
 	public String addWorkflow(String name){
 		String error = null;
 		if(!wf.containsKey(name)){
@@ -53,16 +54,16 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 		}
 		return error;
 	}
-	
+
 	public void removeWorkflow(String name){
 		wf.remove(name);
 	}
-	
+
 	public DataFlow getWorkflow(String name){
 		return wf.get(name);
 	}
-	
-	
+
+
 	/**
 	 * @return the instance
 	 */
@@ -75,9 +76,31 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 				logger.error("RemoteException");
 				logger.error(e.getMessage());
 			}
-			
+
 		}
 		return instance;
 	}
-	
+
+	public void backupAll() {
+		Iterator<String> itWorkflow = wf.keySet().iterator();
+		while(itWorkflow.hasNext()){
+			String workflowNameCur = itWorkflow.next();
+			logger.info("backup "+workflowNameCur);
+			try {
+				wf.get(workflowNameCur).setName(workflowNameCur);
+				wf.get(workflowNameCur).backup();
+			} catch (Exception e) {
+				logger.warn("Error backing up workflow "+workflowNameCur);
+			}
+		}
+	}
+
+	public void autoCleanAll() throws RemoteException{
+		Iterator<String> itWorkflow = wf.keySet().iterator();
+		while(itWorkflow.hasNext()){
+			String workflowNameCur = itWorkflow.next();
+			wf.get(workflowNameCur).close();
+		}
+	}
+
 }
