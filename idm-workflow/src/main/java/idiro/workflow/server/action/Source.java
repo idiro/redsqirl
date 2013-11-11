@@ -368,12 +368,9 @@ public class Source extends DataflowAction{
 				.getFirstChild("list").getFirstChild("output")
 				.getFirstChild().getHead();
 
-		String newSubtype = null;
-		if (newType.equalsIgnoreCase("HDFS")){
-			newSubtype = getInteraction(key_datasubtype).getTree()
-					.getFirstChild("list").getFirstChild("output")
-					.getFirstChild().getHead();
-		}
+		String newSubtype = getInteraction(key_datasubtype).getTree()
+				.getFirstChild("list").getFirstChild("output")
+				.getFirstChild().getHead();
 
 		if(treeDataset.getSubTreeList().isEmpty()){
 			treeDataset.add("browse").add("output");
