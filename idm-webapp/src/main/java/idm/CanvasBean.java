@@ -122,9 +122,11 @@ public class CanvasBean extends BaseBean implements Serializable{
 	}
 
 	public List<String[]> getHelpItens() throws Exception{
-		getworkFlowInterface().addWorkflow("wf help");
+		if(getworkFlowInterface().getWorkflow("canvas-1") == null){
+			getworkFlowInterface().addWorkflow("canvas-1");
+		}
 
-		DataFlow wf = getworkFlowInterface().getWorkflow("wf help");
+		DataFlow wf = getworkFlowInterface().getWorkflow("canvas-1");
 		wf.loadMenu();
 
 		List<String[]> helpList = new ArrayList<String[]>();
