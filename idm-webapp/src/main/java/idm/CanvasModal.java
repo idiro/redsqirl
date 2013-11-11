@@ -660,7 +660,16 @@ public class CanvasModal extends BaseBean implements Serializable {
 						else{
 							aux = "textField";
 						}
-
+						String ans="";
+						if(tree.getHead() != null){
+							ans = tree.getHead().toString();
+						}
+						Iterator<Tree<String>> it = tree.getSubTreeList().iterator();
+						while(it.hasNext()){
+							ans = ans + "\n\t" + it.next().toString().replaceAll("\n", "\n\t");
+						}
+						logger.info(aux);
+						logger.info(ans);
 						mapColumns.put(tree.getFirstChild("title").getFirstChild().getHead(), aux);
 						tableInteractionsColumns.add(tree.getFirstChild("title").getFirstChild().getHead());
 					}

@@ -136,7 +136,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 							+ " have not the right number of occurence of "
 							+ entryName +". "
 							+ entryComp.size()+ " is not between "+
-							prop.getMinOccurence() +" and "+prop.getMaxOccurence()+".\n";
+							prop.getMinOccurence() +" and "+prop.getMaxOccurence()+" for "+entryName+".\n";
 				} else {
 
 					Iterator<DataFlowElement> entryCompIt = entryComp
