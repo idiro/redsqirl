@@ -15,6 +15,7 @@ import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
 
 import org.apache.log4j.Logger;
+import org.richfaces.event.DropEvent;
 
 /** HiveBean
  * 
@@ -166,6 +167,18 @@ public class SshBean extends FileSystemBean implements Serializable{
 //		}
 		
 	}
+	
+	public void processDrop(DropEvent dropEvent) { 
+		logger.info("processDrop");
+		
+		FacesContext context = FacesContext.getCurrentInstance();
+		String file = context.getExternalContext().getRequestParameterMap().get("file");
+		String path = context.getExternalContext().getRequestParameterMap().get("path");
+		String type = context.getExternalContext().getRequestParameterMap().get("type");
+		
+		logger.info("copy from "+type+":"+path+"/"+file+" to "+getPath());
+		
+	} 
 	
 	public List<Entry<String, String>> getFieldsInitNeededNewSsh() {
 		return fieldsInitNeededNewSsh;
