@@ -1,0 +1,117 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<div id="sshFileSystem"
+		style="min-width: 400px; overflow: hidden; min-height: 400px;">
+		<a4j:form>
+		
+			<a4j:jsFunction name="openFile" action="#{sshBean.openFile}" oncomplete="#{rich:component('sshOpenFileModalPanel')}.show();" >
+				<a4j:actionparam name="nameFile"/>
+			</a4j:jsFunction>
+			
+			<a4j:jsFunction name="updateTableSsh" action="#{sshBean.selectFile}" reRender="sshfs,sshpath">
+				<a4j:actionparam name="nameFile"/>
+			</a4j:jsFunction>
+
+			<a4j:commandLink id="sshlinkCopyModalPanel"
+				action="#{sshBean.copyFileBefore}"
+				oncomplete="#{rich:component('sshcopyModalPanel')}.show()"
+				style="display:none;" />
+			<a4j:commandLink id="sshlinkMoveModalPanel"
+				action="#{sshBean.moveFileBefore}"
+				oncomplete="#{rich:component('sshmoveModalPanel')}.show()"
+				style="display:none;" />
+
+			<br />
+
+			<h:outputText value="#{messages.label_path}" />
+			<br />
+			<h:inputText id="sshpath" label="Path" value="#{sshBean.path}"
+				maxlength="255" style="width:395px;" />
+			<a4j:commandButton type="submit" id="sshchangePathBt"
+				action="#{sshBean.changePath}" value="#{messages.button_ok}" reRender="sshfs" />
+
+			<br />
+			<br />
+
+			<a4j:commandLink action="#{sshBean.addFileBefore}"
+				oncomplete="#{rich:component('sshaddModalPanel')}.show()">
+				<h:graphicImage id="sshbtAdd" value="../image/icons/button-plus.gif" />
+			</a4j:commandLink>
+
+			<a4j:commandLink action="#{sshBean.deleteFile}" reRender="sshfs"
+				onclick="if(!confirm('Are you sure you want to delete the selected files?')){return false;}">
+				<h:graphicImage id="sshbtDelete" value="../image/icons/button-delete.png" />
+			</a4j:commandLink>
+
+			<h:commandLink value="Copy to..." onclick="openCopySsh();"/>
+			<h:commandLink value="Move to..." onclick="openMoveSsh();"/>
+
+			<a4j:commandLink action="#{sshBean.goPrevious}"
+				reRender="sshpath,sshfs">
+				<h:graphicImage id="sshbtUndo" value="../image/icons/button-undo.png" />
+			</a4j:commandLink>
+
+			<a4j:commandLink action="#{sshBean.goNext}" reRender="sshpath,sshfs">
+				<h:graphicImage id="sshbtRedo" value="../image/icons/button-redo.png" />
+			</a4j:commandLink>
+
+
+			<rich:dataTable id="sshfs" value="#{sshBean.listGrid}"
+				var="item" width="100%" style="border:none;"
+				onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+				enableContextMenu="false"
+				onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
+
+				<f:facet name="header">
+					<h:outputText value="File System" />
+				</f:facet>
+
+				<rich:column style="border-bottom:0px;border-right:0px;"
+					width="30px;">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					<h:selectBooleanCheckbox id="sshselect" value="#{item.selected}" />
+				</rich:column>
+				<rich:column style="border-bottom:0px;border-right:0px;"
+					width="30px;">
+					<f:facet name="header">
+						<h:outputText value="" />
+					</f:facet>
+					<a4j:commandLink action="#{sshBean.editFileBefore}"
+						oncomplete="#{rich:component('ssheditModalPanel')}.show()">
+						<h:graphicImage value="../image/icons/button-save-all.png" />
+						<f:param name="nameFileEdit" value="#{item.name}" />
+					</a4j:commandLink>
+				</rich:column>
+				
+				<rich:column sortBy="#{item.name}"
+					style="border-bottom:0px;border-right:0px;">
+					<f:facet name="header">
+						<h:outputText value="Name" />
+					</f:facet>
+					<a4j:commandLink value="#{item.name}" action="#{sshBean.verifyIfIsFile}"
+     					oncomplete="selectFileSsh('#{sshBean.file}', '#{item.name}')">
+     						<f:param name="nameFile" value="#{item.name}" />
+     				</a4j:commandLink>
+				</rich:column>
+				
+				<rich:columns value="#{sshBean.keyAsListNameValue}" var="column"
+					index="ind" id="sshcolumn#{ind}"
+					style="border-bottom:0px;border-right:0px;">
+					<f:facet name="header">
+						<h:outputText value="#{column}" />
+					</f:facet>
+					<h:outputText value="#{item.nameValue[column]}" id="sshvalue#{ind}" />
+				</rich:columns>
+
+			</rich:dataTable>
+			</a4j:form>
+	</div>
+	
+	</ui:composition>

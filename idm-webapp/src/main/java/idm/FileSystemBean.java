@@ -34,7 +34,7 @@ public class FileSystemBean extends BaseBean implements Serializable{
 	private boolean file;
 	private Map<String, String> nameValue = new HashMap<String, String>();
 	private Map<String, String> nameHelp = new HashMap<String, String>();
-	private List<Entry> fieldsInitNeededTitleKey;
+	private List<Entry<String, String>> fieldsInitNeededTitleKey;
 	private DataStore dataStore;
 	private List<String[]> selectedFiles;
 	private UserInfoBean userInfoBean;
@@ -182,7 +182,7 @@ public class FileSystemBean extends BaseBean implements Serializable{
 	 * @author Igor.Souza
 	 */
 	public void changePath() throws RemoteException{
-
+		logger.info("changePath: "+getPath());
 		if(getDataStore().goTo(getPath())){
 			getDataStore().getPath();
 			mountTable(getDataStore());
@@ -526,11 +526,11 @@ public class FileSystemBean extends BaseBean implements Serializable{
 		this.nameHelp = nameHelp;
 	}
 
-	public List<Entry> getFieldsInitNeededTitleKey() {
+	public List<Entry<String, String>> getFieldsInitNeededTitleKey() {
 		return fieldsInitNeededTitleKey;
 	}
 
-	public void setFieldsInitNeededTitleKey(List<Entry> fieldsInitNeededTitleKey) {
+	public void setFieldsInitNeededTitleKey(List<Entry<String, String>> fieldsInitNeededTitleKey) {
 		this.fieldsInitNeededTitleKey = fieldsInitNeededTitleKey;
 	}
 

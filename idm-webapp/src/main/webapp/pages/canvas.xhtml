@@ -38,14 +38,7 @@
 		  jQuery(function() {
 			  nameTabs[0] = "canvas-1";
 
-	    	  var tabsRemote = jQuery("#tabRemote").tabs().scrollabletab();
-	    	  tabsRemote.find(".ui-tabs-nav").sortable({
-	    	  axis: "x",
-	    	  stop: function() {
-	    		  tabsRemote.tabs("refresh");
-	    	  	}
-	    	  });
-
+	    	  configureTabsRemote();
 	    	  configureFooter();
 
 	    	  var tabscanvas = jQuery("#canvas-tabs").tabs().scrollabletab();
@@ -141,11 +134,11 @@
 
   	    	var contTabRemote = 1;
   	        
-  	    	jQuery('#addTabRemote').click( function(){
+  	    	/* jQuery('#addTabRemote').click( function(){
 
   	  	    	jQuery("[id$='linkModalNewSsh']").click();
 
-  	  	  	});
+  	  	  	}); */
 
 	    	  jQuery('#addtabCanvas').click( function(){
 	              //<![CDATA[
@@ -361,26 +354,7 @@
 		    	  configureFooterCss();
 	    	}
 
-	    	function addTabRemoteArr(){
-  	  	  	  	//<![CDATA[
-  	  	  	  	
-  	  	  	  	var contTabRemote = 0;
-
-  	  	  		contTabRemote++;
-	  	  	  	var tabs = jQuery("#tabRemote").tabs();
-	  	  	  	var ul = jQuery("#tabRemote").tabs().find( "ul:first" );
-	  	  	  	jQuery( "<li><a href='#tabRemote-"+ contTabRemote +"'>New File System</a> <span class='ui-icon ui-icon-close' onclick='closeTab(this);'></span> </li>" ).appendTo( ul );
-	  	  	  	jQuery( "<div id='tabRemote-"+ contTabRemote +"'> not ready yet </div>" ).appendTo( tabs );
-
-		  	  	//jQuery('#tabRemote-'+contTabRemote).append("/pages/fileSystemGrid.xhtml");
-	  	  	  	
-	  	  	  	tabs.tabs( "refresh" );
-
-	  	  	  	validateArrows(jQuery("#tabRemote"),jQuery("#buttonstabRemote"));
-
-  	  	  	  	
-  	  	  	  	//]]>
-  	  	  	}
+	    	
 
 	      function closeTab(arg){
 	    	  
@@ -543,6 +517,20 @@
 	   		else{
 	   			Richfaces.showModalPanel('modalSaveWorkflow');
 	   		}
+	   	}
+	   	
+	   	function configureTabsRemote(){
+	   	
+		    var tabsRemote = jQuery("#tabRemote").tabs().scrollabletab();
+		  	tabsRemote.find(".ui-tabs-nav").sortable({
+		  	  axis: "x",
+		  	  stop: function() {
+		  		  tabsRemote.tabs("refresh");
+		  	  	}
+	  	 	 });
+		  	
+		  	jQuery("#tabRemote").tabs().tabs('refresh');
+		  	
 	   	}
 
 	</script>
@@ -937,7 +925,7 @@
 							<div id="tabsFooter">
 								<ul>
 									
-									<ui:repeat id="tabsRepeat1" value="#{configureTabsBean.tabs}" var="tab" varStatus="status">
+									<ui:repeat value="#{configureTabsBean.tabs}" var="tab" varStatus="status">
 										<li><a href="##{tab}">#{tab}</a></li>
 									</ui:repeat>
 									<a4j:region>
@@ -1093,13 +1081,13 @@
 				<div id="tabs-7">
 					<a4j:region>
 					
-					<a4j:status	onstart="jQuery('#tabs-7').block({ message: jQuery('#domMessageDiv7') });"
-						onerror="jQuery('#tabs-7').unblock();" onsuccess="jQuery('#tabs-7').unblock();"
-						onstop="jQuery('#tabs-7').unblock();" />
-				
-					<div id="domMessageDiv7" style="display: none;">
-						<img src="../image/icons/waiting.gif" />
-					</div>
+						<a4j:status	onstart="jQuery('#tabs-7').block({ message: jQuery('#domMessageDiv7') });"
+							onerror="jQuery('#tabs-7').unblock();" onsuccess="jQuery('#tabs-7').unblock();"
+							onstop="jQuery('#tabs-7').unblock();" />
+					
+						<div id="domMessageDiv7" style="display: none;">
+							<img src="../image/icons/waiting.gif" />
+						</div>
 					
 						<h:panelGroup>
 							<ui:include src="/pages/hdfs/hdfsfileSystemGrid.xhtml" />
@@ -1107,31 +1095,20 @@
 					</a4j:region>
 				</div>
 				<div id="tabs-8">
-
-					<div id="tabRemote">
-						<ul>
-							<button id="addTabRemote" style="border: hidden;">+</button>
-						</ul>
-
-						<span id="buttonstabRemote" class="spanButtons">
-							<button class="buttonsArrowsLeft">&#60;</button>
-							<button class="buttonsArrowsRight">&#62;</button>
-						</span>
-
-
-						<h:form>
-
-							<a4j:commandLink id="linkModalNewSsh"
-								action="#{canvasBean.openNewSsh}"
-								oncomplete="#{rich:component('modalNewSsh')}.show()"
-								style="display:none;" />
-
-
-						</h:form>
-
-
-					</div>
-
+					<a4j:region>
+					
+						<a4j:status	onstart="jQuery('#tabs-8').block({ message: jQuery('#domMessageDiv8') });"
+							onerror="jQuery('#tabs-8').unblock();" onsuccess="jQuery('#tabs-8').unblock();"
+							onstop="jQuery('#tabs-8').unblock();" />
+					
+						<div id="domMessageDiv8" style="display: none;">
+							<img src="../image/icons/waiting.gif" />
+						</div>
+						
+						<h:panelGroup>
+							<ui:include src="/pages/ssh/sshfileSystemGrid.xhtml" />
+						</h:panelGroup>
+					</a4j:region>
 				</div>
 			</div>
 
@@ -1150,24 +1127,6 @@
 				<h:panelGroup>
 					<a4j:include viewId="/pages/canvasModal.xhtml" ajaxRendered="false"/>
 				</h:panelGroup>
-	
-		</rich:modalPanel>
-	</a4j:region>
-	
-	<a4j:region>
-		<rich:modalPanel id="modalNewSsh" width="600" height="400" style="overflow:auto;" resizeable="false">
-	
-			<f:facet name="header">Configuration</f:facet>
-			<f:facet name="controls">
-				<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer"
-					onclick="#{rich:component('modalNewSsh')}.hide()" />
-			</f:facet>
-	
-			<h:form id="form6">
-				<h:panelGroup>
-					<a4j:include viewId="/pages/newSsh.xhtml" ajaxRendered="false" />
-				</h:panelGroup>
-			</h:form>
 	
 		</rich:modalPanel>
 	</a4j:region>

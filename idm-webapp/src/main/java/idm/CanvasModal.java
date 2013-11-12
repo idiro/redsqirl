@@ -10,6 +10,7 @@ import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.interfaces.DFEPage;
 import idiro.workflow.server.interfaces.DataFlow;
 import idiro.workflow.server.interfaces.DataFlowElement;
+import idm.useful.IdmEntry;
 import idm.useful.MessageUseful;
 
 import java.io.Serializable;
@@ -19,6 +20,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
@@ -49,7 +51,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	private Map<String, List<SelectItem>> listConstraint = new HashMap<String, List<SelectItem>>();
 	private List<String[]> listFunctions = new ArrayList<String[]>();
 	private List<String[]> listOperation = new ArrayList<String[]>();
-	private List<Entry> listFields = new ArrayList<Entry>();
+	private List<Entry<String, String>> listFields = new ArrayList<Entry<String, String>>();
 	private Map<String, List<String[]>> functionsMap = new HashMap<String, List<String[]>>();
 	private Map<String, List<String[]>> operationMap = new HashMap<String, List<String[]>>();
 	private Map<String, List<Map<String, String>>> rowsMap = new HashMap<String, List<Map<String, String>>>();
@@ -716,13 +718,13 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 
 	private void mountHelpTextEditorInteraction(Tree<String> dfeInteractionTree) throws RemoteException{
-		List<Entry> listFields = new ArrayList<Entry>();
+		List<Entry<String, String>> listFields = new ArrayList<Entry<String, String>>();
 		List<Tree<String>> list = dfeInteractionTree.getFirstChild("editor").getFirstChild("keywords").getSubTreeList();
 		if(list != null){
 			logger.info("list not null: "+list.toString());
 			for (Tree<String> tree : list) {
 				logger.info("list value " + tree.getFirstChild().getHead());
-				Entry e = new Entry(tree.getFirstChild("name").getFirstChild().getHead(),
+				Entry<String, String> e = new IdmEntry<String, String>(tree.getFirstChild("name").getFirstChild().getHead(),
 						tree.getFirstChild("info").getFirstChild().getHead());
 				listFields.add(e);
 			}
@@ -1248,7 +1250,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 				getDfe().getDFEOutput() != null && !getDfe().getDFEOutput().isEmpty()){
 			setOutputFormList(new ArrayList<OutputForm>());
 
-			for (Map.Entry<String, DFEOutput> e : getDfe().getDFEOutput().entrySet()){
+			for (Entry<String, DFEOutput> e : getDfe().getDFEOutput().entrySet()){
 				OutputForm of = new OutputForm(e.getValue(), getDfe().getComponentId(), e.getKey());
 
 				List<SelectItem> outputList = new ArrayList<SelectItem>();
@@ -1398,11 +1400,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 		this.listFunctions = listFunctions;
 	}
 
-	public List<Entry> getListFields() {
+	public List<Entry<String, String>> getListFields() {
 		return listFields;
 	}
 
-	public void setListFields(List<Entry> listFields) {
+	public void setListFields(List<Entry<String, String>> listFields) {
 		this.listFields = listFields;
 	}
 

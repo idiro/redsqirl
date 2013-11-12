@@ -726,7 +726,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 		getIdMap().clear();
 		setDf(null);
 	}
-
+	
 
 	public String getIdElement(String idGroup){
 		return getIdMap().get(getNameWorkflow()).get(idGroup);

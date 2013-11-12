@@ -1,10 +1,15 @@
 package idm;
 
+import idiro.workflow.server.connect.interfaces.DataStore;
 import idiro.workflow.server.connect.interfaces.DataStoreArray;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
@@ -16,13 +21,20 @@ import org.apache.log4j.Logger;
  * 
  * @author Igor.Souza
  */
-public class SshBean extends BaseBean {
+public class SshBean extends FileSystemBean implements Serializable{
 
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	private static Logger logger = Logger.getLogger(SshBean.class);
 
-	private List<Entry> fieldsInitNeededNewSsh = new ArrayList<Entry>();
-	private List<Entry> fieldsInitNeededTitleKey = new ArrayList<Entry>();
+	private List<Entry<String, String>> fieldsInitNeededNewSsh = new ArrayList<Entry<String, String>>();
+	private List<Entry<String, String>> fieldsInitNeededTitleKey = new ArrayList<Entry<String, String>>();
+	
+	private List<String> tabs;
 
 	private boolean selectedSaveSsh;
 
@@ -32,19 +44,47 @@ public class SshBean extends BaseBean {
 	 * 
 	 * @return
 	 * @author Igor.Souza
+	 * @throws Exception 
 	 */
 	@PostConstruct
 	public void openCanvasScreen() {
-
+		
 		try {
+			
+			logger.info(getDataStoreArray().initKnownStores());
 
-			if(getFieldsInitNeededNewSsh().isEmpty()){
-				openNewSsh();
+			setDataStore(getDataStoreArray().getStores().get("dev"));
+
+			if(getListGrid().isEmpty()){
+
+				mountTable(getDataStore());
 			}
+			
+			DataStoreArray arr = getDataStoreArray();
 
-		} catch (RemoteException e) {
+			setFieldsInitNeededNewSsh(mapToList(arr.getFieldsInitNeeded()));
+			setFieldsInitNeededTitleKey(mapToList(arr.getFieldsInitNeeded()));
+
+			for (Entry entry : getFieldsInitNeededNewSsh()) {
+				entry.setValue("");
+			}
+			
+			
+
+		}catch(Exception e){
 			logger.error(e);
+			getBundleMessage("error.mount.table");
 		}
+
+//		try {
+//
+//			if(getFieldsInitNeededNewSsh().isEmpty()){
+//				openNewSsh();
+//			}
+//
+//		} catch (Exception e) {
+//			logger.error(e);
+//		}
 
 	}
 
@@ -54,20 +94,13 @@ public class SshBean extends BaseBean {
 	 * 
 	 * @return
 	 * @author Igor.Souza
+	 * @throws Exception 
 	 */
-	public void openNewSsh() throws RemoteException{
+	public void openNewSsh() throws Exception{
+		
+		logger.info("openNewSsh");
 
-		DataStoreArray arr = getDataStoreArray();
-
-		setFieldsInitNeededNewSsh(mapToList(arr.getFieldsInitNeeded()));
-		setFieldsInitNeededTitleKey(mapToList(arr.getFieldsInitNeeded()));
-
-		for (Entry entry : getFieldsInitNeededNewSsh()) {
-			entry.setValue("");
-		}
-
-
-
+		
 	}
 
 	/** confirmNewSsh
@@ -76,25 +109,54 @@ public class SshBean extends BaseBean {
 	 * 
 	 * @return
 	 * @author Igor.Souza
+	 * @throws Exception 
 	 */
-	public void confirmNewSsh() throws RemoteException{
+	public void confirmNewSsh() throws Exception{
+		
+		logger.info("confirmNewSsh");
+		
+//		Map<String, String> values = new HashMap<String, String>();
+//		values.put("host name", "dev");
+//		values.put("port", "");
+//		for (Entry<String, String> e : getFieldsInitNeededNewSsh()){
+//			logger.info(e.getKey()+" - "+e.getValue());
+//			values.put(e.getKey(), "dev");
+//		}
+		
+//		logger.info(getDataStoreArray().addKnownStore(values));
+//		logger.info(getDataStoreArray().addStore(values));
 
 
+		logger.info(getDataStoreArray().initKnownStores());
+		logger.info("Stores");
+		for (Entry<String, DataStore> e : getDataStoreArray().getStores().entrySet()){
+			logger.info(e.getKey()+" - "+e.getValue());
+		}
+		logger.info("Known Stores");
+		for (Map<String, String> e2 : getDataStoreArray().getKnownStoreDetails()){
+			for (Entry<String, String> e : e2.entrySet()){
+				logger.info(e.getKey()+" - "+e.getValue());
+			}
+		}
+		
+	}
+	
+	public void aaa(){
 	}
 
-	public List<Entry> getFieldsInitNeededNewSsh() {
+	public List<Entry<String, String>> getFieldsInitNeededNewSsh() {
 		return fieldsInitNeededNewSsh;
 	}
 
-	public void setFieldsInitNeededNewSsh(List<Entry> fieldsInitNeededNewSsh) {
+	public void setFieldsInitNeededNewSsh(List<Entry<String, String>> fieldsInitNeededNewSsh) {
 		this.fieldsInitNeededNewSsh = fieldsInitNeededNewSsh;
 	}
 
-	public List<Entry> getFieldsInitNeededTitleKey() {
+	public List<Entry<String, String>> getFieldsInitNeededTitleKey() {
 		return fieldsInitNeededTitleKey;
 	}
 
-	public void setFieldsInitNeededTitleKey(List<Entry> fieldsInitNeededTitleKey) {
+	public void setFieldsInitNeededTitleKey(List<Entry<String, String>> fieldsInitNeededTitleKey) {
 		this.fieldsInitNeededTitleKey = fieldsInitNeededTitleKey;
 	}
 
@@ -104,6 +166,23 @@ public class SshBean extends BaseBean {
 
 	public void setSelectedSaveSsh(boolean selectedSaveSsh) {
 		this.selectedSaveSsh = selectedSaveSsh;
+	}
+	
+	public List<String> getTabs(){
+		
+		if (tabs == null){
+			logger.info("creatingTabs");
+			tabs = new ArrayList<String>();
+			tabs.add("tab1");
+			tabs.add("tab2");
+		}
+		logger.info("getTabs:"+tabs.size());
+		return tabs;
+	}
+	
+	public void addTab(){
+		logger.info("addTab");
+		tabs.add("tab3");
 	}
 
 

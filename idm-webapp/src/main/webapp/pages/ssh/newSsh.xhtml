@@ -16,7 +16,15 @@
 
 
 	<h:selectBooleanCheckbox id="selectedSaveSsh" value="#{sshBean.selectedSaveSsh}" />
+	
+	<h:panelGrid columns="2">		
 
-	<a4j:commandButton action="#{sshBean.confirmNewSsh}" value="#{messages.button_ok}" onclick="#{rich:component('modalNewSsh')}.hide(); addTabRemoteArr();" />
+		<a4j:commandButton action="#{sshBean.addTab}"  oncomplete="configureTabsRemote();#{rich:component('modalNewSsh')}.hide();" 
+			value="#{messages.button_ok}" reRender="tabRemote"/>
+			
+		<a4j:commandButton value="#{messages.button_cancel}" type="button" 
+			onclick="#{rich:component('modalNewSsh')}.hide();" />
+
+	</h:panelGrid>
 
 </h:panelGrid>
