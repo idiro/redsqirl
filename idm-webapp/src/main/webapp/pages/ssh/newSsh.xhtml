@@ -5,26 +5,32 @@
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets">
 
-
-	<a4j:repeat value="#{sshBean.fieldsInitNeededNewSsh}" var="obj" rowKeyVar="index">
-		<h:outputText value="#{obj.key}" />
+		<!-- <a4j:repeat value="#{sshBean.fieldsInitNeededNewSsh}" var="obj" rowKeyVar="index">
+			<h:outputText value="#{obj.key}" />
+			<br />
+			<h:inputText id="newSshInput#{index}" value="#{obj.value}" />
+			<br />
+			<br />
+		</a4j:repeat> -->
+		
+		<h:outputText value="host" />
 		<br />
-		<h:inputText value="#{obj.value}" />
+		<h:inputText value="#{sshBean.host}" />
+				
+		<h:outputText value="port" />
 		<br />
-		<br />
-	</a4j:repeat>
-
-
-	<h:selectBooleanCheckbox id="selectedSaveSsh" value="#{sshBean.selectedSaveSsh}" />
+		<h:inputText value="#{sshBean.port}" />
 	
-	<h:panelGrid columns="2">		
-
-		<a4j:commandButton action="#{sshBean.addTab}"  oncomplete="configureTabsRemote();#{rich:component('modalNewSsh')}.hide();" 
-			value="#{messages.button_ok}" reRender="tabRemote"/>
-			
-		<a4j:commandButton value="#{messages.button_cancel}" type="button" 
-			onclick="#{rich:component('modalNewSsh')}.hide();" />
-
-	</h:panelGrid>
+		<h:selectBooleanCheckbox id="selectedSaveSsh" value="#{sshBean.selectedSaveSsh}" />
+		
+		<h:panelGrid columns="2">		
+	
+			<a4j:commandButton action="#{sshBean.confirmNewSsh}" onclick="#{rich:component('modalNewSsh')}.hide();" oncomplete="configureTabsRemote();" 
+				value="#{messages.button_ok}" reRender="tabRemote"/>
+				
+			<a4j:commandButton value="#{messages.button_cancel}" type="button" 
+				onclick="#{rich:component('modalNewSsh')}.hide();" />
+	
+		</h:panelGrid>
 
 </h:panelGrid>

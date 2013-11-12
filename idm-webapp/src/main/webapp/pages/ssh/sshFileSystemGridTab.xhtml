@@ -9,14 +9,6 @@
 		style="min-width: 400px; overflow: hidden; min-height: 400px;">
 		<a4j:form>
 		
-			<a4j:jsFunction name="openFile" action="#{sshBean.openFile}" oncomplete="#{rich:component('sshOpenFileModalPanel')}.show();" >
-				<a4j:actionparam name="nameFile"/>
-			</a4j:jsFunction>
-			
-			<a4j:jsFunction name="updateTableSsh" action="#{sshBean.selectFile}" reRender="sshfs,sshpath">
-				<a4j:actionparam name="nameFile"/>
-			</a4j:jsFunction>
-
 			<a4j:commandLink id="sshlinkCopyModalPanel"
 				action="#{sshBean.copyFileBefore}"
 				oncomplete="#{rich:component('sshcopyModalPanel')}.show()"

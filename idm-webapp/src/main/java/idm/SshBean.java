@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
+import javax.faces.context.FacesContext;
 
 import org.apache.log4j.Logger;
 
@@ -37,6 +38,9 @@ public class SshBean extends FileSystemBean implements Serializable{
 	private List<String> tabs;
 
 	private boolean selectedSaveSsh;
+	
+	private String host;
+	private String port;
 
 	/** openCanvasScreen
 	 * 
@@ -52,6 +56,11 @@ public class SshBean extends FileSystemBean implements Serializable{
 		try {
 			
 			logger.info(getDataStoreArray().initKnownStores());
+			
+			tabs = new ArrayList<String>();
+			for (Entry<String, DataStore> e : getDataStoreArray().getStores().entrySet()){
+				tabs.add(e.getKey());
+			}
 
 			setDataStore(getDataStoreArray().getStores().get("dev"));
 
@@ -65,7 +74,7 @@ public class SshBean extends FileSystemBean implements Serializable{
 			setFieldsInitNeededNewSsh(mapToList(arr.getFieldsInitNeeded()));
 			setFieldsInitNeededTitleKey(mapToList(arr.getFieldsInitNeeded()));
 
-			for (Entry entry : getFieldsInitNeededNewSsh()) {
+			for (Entry<String, String> entry : getFieldsInitNeededNewSsh()) {
 				entry.setValue("");
 			}
 			
@@ -115,35 +124,49 @@ public class SshBean extends FileSystemBean implements Serializable{
 		
 		logger.info("confirmNewSsh");
 		
-//		Map<String, String> values = new HashMap<String, String>();
-//		values.put("host name", "dev");
-//		values.put("port", "");
-//		for (Entry<String, String> e : getFieldsInitNeededNewSsh()){
-//			logger.info(e.getKey()+" - "+e.getValue());
-//			values.put(e.getKey(), "dev");
-//		}
+		Map<String, String> values = new HashMap<String, String>();
+		values.put("host name", getHost());
+		values.put("port", getPort());
+		logger.info("host name: "+getHost());
+		logger.info("port: "+getPort());
 		
-//		logger.info(getDataStoreArray().addKnownStore(values));
-//		logger.info(getDataStoreArray().addStore(values));
-
-
+		logger.info(isSelectedSaveSsh());
+		
+		if (isSelectedSaveSsh()){
+			logger.info(getDataStoreArray().addKnownStore(values));
+		}
+		else{
+			logger.info(getDataStoreArray().addStore(values));
+		}
+		
 		logger.info(getDataStoreArray().initKnownStores());
-		logger.info("Stores");
+		
+		tabs = new ArrayList<String>();
 		for (Entry<String, DataStore> e : getDataStoreArray().getStores().entrySet()){
-			logger.info(e.getKey()+" - "+e.getValue());
+			tabs.add(e.getKey());
 		}
-		logger.info("Known Stores");
-		for (Map<String, String> e2 : getDataStoreArray().getKnownStoreDetails()){
-			for (Entry<String, String> e : e2.entrySet()){
-				logger.info(e.getKey()+" - "+e.getValue());
-			}
-		}
+	}
+	
+	public void changeTab() throws RemoteException, Exception{
+		
+		logger.info("changeTab");
+		
+		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String name = params.get("nameTab");
+		
+		logger.info("changeTab: "+name);
+		
+		setDataStore(getDataStoreArray().getStores().get(name));
+		
+		setPath(getDataStore().getPath());
+		logger.info("path: "+getPath());
+//		if(getListGrid().isEmpty()){
+
+			mountTable(getDataStore());
+//		}
 		
 	}
 	
-	public void aaa(){
-	}
-
 	public List<Entry<String, String>> getFieldsInitNeededNewSsh() {
 		return fieldsInitNeededNewSsh;
 	}
@@ -169,22 +192,24 @@ public class SshBean extends FileSystemBean implements Serializable{
 	}
 	
 	public List<String> getTabs(){
-		
-		if (tabs == null){
-			logger.info("creatingTabs");
-			tabs = new ArrayList<String>();
-			tabs.add("tab1");
-			tabs.add("tab2");
-		}
 		logger.info("getTabs:"+tabs.size());
 		return tabs;
 	}
-	
-	public void addTab(){
-		logger.info("addTab");
-		tabs.add("tab3");
+
+	public String getHost() {
+		return host;
 	}
 
+	public void setHost(String host) {
+		this.host = host;
+	}
 
+	public String getPort() {
+		return port;
+	}
+
+	public void setPort(String port) {
+		this.port = port;
+	}
 
 }

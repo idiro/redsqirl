@@ -34,9 +34,15 @@
   	  	
   	  	//]]>
   	}
-	function updateTabRemote2(){
-		udatetabRemote();
-	}
+	
+	 function selectFileSsh(isFile, nameFile){
+	    	if (isFile == "true"){
+	    		openFileSsh(nameFile);
+	    	}
+	    	else{
+	    		updateTableSsh(nameFile);
+	    	}
+	    }
 
 </script>
 
@@ -44,43 +50,50 @@
 
 <body>
 
+
+
 	<a4j:keepAlive beanName = "sshBean"/>
 	<h:panelGroup id="tabRemote" layout="block">
+		
+		<h:form>
+			<a4j:jsFunction name="setSelectedRemoteTab" action="#{sshBean.changeTab}" reRender="sshfs,sshpath" >
+				<a4j:actionparam name="nameTab"/>
+			</a4j:jsFunction>
 			
-		<ul>
-			<ui:repeat value="#{sshBean.tabs}" var="tab">
-				<li><a href="##{tab}">#{tab}</a> <span class='ui-icon ui-icon-close' onclick='closeTab(this);'></span> </li>
-			</ui:repeat>
+			<a4j:jsFunction name="openFile" action="#{sshBean.openFile}" oncomplete="#{rich:component('sshOpenFileModalPanel')}.show();" >
+				<a4j:actionparam name="nameFile"/>
+			</a4j:jsFunction>
 			
-			<a4j:region>
-				<a4j:commandButton value="+" onclick="#{rich:component('modalNewSsh')}.show()" 
+			<a4j:jsFunction name="updateTableSsh" action="#{sshBean.selectFile}" reRender="sshfs,sshpath">
+				<a4j:actionparam name="nameFile"/>
+			</a4j:jsFunction>
+		
+			<ul>
+				<ui:repeat value="#{sshBean.tabs}" var="tab">
+					<li><a href="##{tab}" onclick="setSelectedRemoteTab('#{tab}')">#{tab}</a> <span class='ui-icon ui-icon-close' onclick='closeTab(this);'></span> </li>
+				</ui:repeat>
+				
+				<a4j:commandButton value="+" action="#{sshBean.openNewSsh}" oncomplete="#{rich:component('modalNewSsh')}.show()" 
 					style="border: hidden;"/>
-			</a4j:region>
-		</ul>
+			</ul>
+				
+			<span id="buttonstabRemote" class="spanButtons">
+				<button class="buttonsArrowsLeft">&#60;</button>
+				<button class="buttonsArrowsRight">&#62;</button>
+			</span>
+					
+		</h:form>
 			
-		<span id="buttonstabRemote" class="spanButtons">
-			<button class="buttonsArrowsLeft">&#60;</button>
-			<button class="buttonsArrowsRight">&#62;</button>
-		</span>
-					
 		<a4j:repeat value="#{sshBean.tabs}" var="tab" rowKeyVar="index">
-					
+						
 			<div id="#{tab}"> #{tab}
-						
-				<ui:include src="/pages/ssh/sshFileSystemGridTab.xhtml" >
-					<ui:param name="tabId" value="#{tab}" />
-				</ui:include>
-						
+							
+				<ui:include src="/pages/ssh/sshFileSystemGridTab.xhtml" />
+							
 			</div>
 		</a4j:repeat>
-			
-		<h:form>	
-			<a4j:commandButton onclick="updatetabRemote()" value="#{messages.button_ok}"/>
-		</h:form>
 	
 	</h:panelGroup>
-		
-		
 	
 	<a4j:region>
 		<rich:modalPanel id="modalNewSsh" width="600" height="400" style="overflow:auto;" resizeable="false">
@@ -91,7 +104,7 @@
 					onclick="#{rich:component('modalNewSsh')}.hide()" />
 			</f:facet>
 	
-			<h:form id="form6">
+			<h:form>
 				<h:panelGrid>
 					<a4j:include viewId="/pages/ssh/newSsh.xhtml" ajaxRendered="true" />
 				</h:panelGrid>
