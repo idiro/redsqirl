@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j">
+
+<head>
+<link rel="stylesheet" type="text/css" href='css/table-style.css' />
+<script>
+    function downloadPage(sUrl) {
+    	alert(1);
+    	window.downloadFile = window.open(sUrl, '_self');
+    }
+</script>
+</head>
+
+<body>
+	<h:panelGroup id="all" layout="block">
+		<div id="header">
+			<h1>Package #{idmpackage.packageName}</h1>
+		</div>
+		<div id="left">
+			<p>#{idmpackage.idmPck.short_description}</p>
+
+			<h2>Description</h2>
+			#{idmpackage.idmPck.description}
+
+			<h2>Release Notes</h2>
+			#{idmpackage.idmPck.release}
+			<h:form>
+				<h:dataTable value="#{idmpackage.versions}" var="p"
+					styleClass="order-table" headerClass="order-table-header"
+					rowClasses="order-table-odd-row,order-table-even-row"
+					style="margin-top:10px">
+
+					<h:column>
+						<f:facet name="header">
+                    Versions
+                </f:facet>
+						<a4j:commandLink value="#{p}" action="#{idmpackage.setVersion}"
+							reRender="all">
+							<a4j:actionparam name="pckVersion" value="#{p}" />
+						</a4j:commandLink>
+					</h:column>
+
+				</h:dataTable>
+			</h:form>
+
+		</div>
+		<div id="right">
+			Date: #{idmpackage.idmPck.package_date} <br /> License:
+			#{idmpackage.idmPck.license} <br /> Version:
+			#{idmpackage.idmPck.version} <br /> Price:
+			#{idmpackage.idmPck.price} <br />
+			<button type="button" onclick="downloadPage('#{idmpackage.idmPck.url}');">Download</button>
+		</div>
+	</h:panelGroup>
+</body>
+
+</html>
