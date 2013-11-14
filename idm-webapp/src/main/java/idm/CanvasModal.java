@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
@@ -226,13 +227,17 @@ public class CanvasModal extends BaseBean implements Serializable {
 			} else if(dynamicF.getDisplayType().equals(DisplayType.browser)){
 
 				logger.info("Browser path -> " + dynamicF.getPathBrowser());
+				
+				String oldDelimiter = getDfe().getDFEOutput().get("source").getProperty("delimiter");
+				
 				dynamicF.getTree().getFirstChild("browse").getFirstChild("output").removeAllChildren();
 				dynamicF.getTree().getFirstChild("browse").getFirstChild("output").add("path").add(dynamicF.getPathBrowser());
 
-
 				for (ItemList itemList : dynamicF.getListGrid()) {
 					Tree<String> myProperty = dynamicF.getTree().getFirstChild("browse").getFirstChild("output").add("property");
-					myProperty.add(itemList.getPropertie()).add(itemList.getValue());
+					myProperty.add(itemList.getProperty()).add(itemList.getValue());
+					
+					getDfe().getDFEOutput().get("source").addProperty(itemList.getProperty(), itemList.getValue());
 				}
 
 				if(getHiveHdfs() != null && getHiveHdfs().equalsIgnoreCase("hive")){
@@ -253,6 +258,10 @@ public class CanvasModal extends BaseBean implements Serializable {
 						myFeature.add("name").add(getNameBrowserLabel1().get(nameValue));
 						myFeature.add("type").add(getNameBrowserLabel2().get(nameValue));
 					}
+				}
+				
+				if (!getDfe().getDFEOutput().get("source").getProperty("delimiter").equals(oldDelimiter)){
+					updateDFEOUtputTable(getDfe().getDFEOutput().get("source"),getDynamicFormBrowser());
 				}
 
 			}else if(dynamicF.getDisplayType().equals(DisplayType.helpTextEditor)){
@@ -1124,7 +1133,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 				ItemList item = new ItemList();
 				item.setSelected(false);
-				item.setPropertie(value);
+				item.setProperty(value);
 				item.setValue(outputPropertiesMap.get(value));
 
 				listObjGrid.add(item);
@@ -1202,7 +1211,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 								nameValueFeatureItem.put(labels.get(i), rows[i]);
 							}
 						}else{
-							String rows[] = output.split("\\|");
+							String delimiter = String.valueOf(Character.toChars(Integer.valueOf(dfeOut.getProperty("delimiter").substring(1))));
+							String rows[] = output.split(Pattern.quote(delimiter));
 							for (int i = 0; i < rows.length; i++) {
 								logger.info("map to show " + labels.get(i) + " " + rows[i]);
 								nameValueFeature.put(labels.get(i), rows[i]);

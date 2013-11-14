@@ -768,5 +768,14 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore{
 	public String canCopy() throws RemoteException{
 		return null;
 	}
-
+	
+	@Override
+	public String copyFromRemote(String in_path, String out_path, String remoteServer){
+		throw new UnsupportedOperationException("Unsupported Operation");
+	}
+	
+	@Override
+	public String copyToRemote(String in_path, String out_path, String remoteServer){
+		throw new UnsupportedOperationException("Unsupported Operation");
+	}
 }
