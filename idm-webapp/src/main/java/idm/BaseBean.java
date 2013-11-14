@@ -4,6 +4,7 @@ import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idiro.workflow.server.connect.interfaces.DataStore;
 import idiro.workflow.server.connect.interfaces.DataStoreArray;
 import idiro.workflow.server.interfaces.JobManager;
+import idm.useful.IdmEntry;
 import idm.useful.MessageUseful;
 
 import java.rmi.RemoteException;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
 
 import javax.faces.context.FacesContext;
@@ -67,10 +69,10 @@ public class BaseBean {
 	 * @return List<Entry>
 	 * @author Igor.Souza
 	 */
-	public List<Entry> mapToList(Map<String,String> map) {
-		List<Entry> list = new ArrayList<Entry>();
-		for(String key: map.keySet()) {
-			list.add(new Entry(key, map.get(key)));
+	public <K, V> List<Entry<K,V>> mapToList(Map<K,V> map) {
+		List<Entry<K,V>> list = new ArrayList<Entry<K,V>>();
+		for(K key: map.keySet()) {
+			list.add(new IdmEntry<K,V>(key, map.get(key)));
 		}
 		return list;        
 	}
@@ -105,7 +107,7 @@ public class BaseBean {
 		return (DataStore) session.getAttribute("hive");
 	}
 
-	/** getHiveInterface
+	/** getDataStoreArray
 	 * 
 	 * Methods to retrieve the object DataStoreArray from context
 	 * 
@@ -119,7 +121,7 @@ public class BaseBean {
 
 		return (DataStoreArray) session.getAttribute("ssharray");
 	}
-
+	
 	/** getHDFS
 	 * 
 	 * Methods to retrieve the object DataStore HDFS from context

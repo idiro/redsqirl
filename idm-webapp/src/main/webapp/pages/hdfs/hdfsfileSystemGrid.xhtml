@@ -37,6 +37,9 @@
 	<a4j:keepAlive beanName = "hdfsBean"/>
 	<div id="hdfsFileSystem"
 		style="min-width: 400px; overflow: hidden; min-height: 400px;">
+		
+		<rich:dragIndicator id="indicator" />
+		
 		<h:form>
 		
 			<a4j:jsFunction name="openFileHdfs" action="#{hdfsBean.openFile}" oncomplete="#{rich:component('hdfsOpenFileModalPanel')}.show();" >
@@ -128,6 +131,13 @@
 					<a4j:commandLink value="#{item.name}" action="#{hdfsBean.verifyIfIsFile}"
      					oncomplete="selectFileHdfs('#{hdfsBean.file}', '#{item.name}')">
      						<f:param name="nameFile" value="#{item.name}" />
+     						<rich:dragSupport dragIndicator=":indicator"
+                                dragValue="#{item.name}" dragType="text">
+                                <rich:dndParam name="label" value="#{item.name}" />
+                                <a4j:actionparam name="file" value="#{item.name}" />
+                                <a4j:actionparam name="path" value="#{hdfsBean.path}" />
+                                <a4j:actionparam name="type" value="hdfs" />
+                            </rich:dragSupport>
      				</a4j:commandLink>
 				</rich:column>
 				

@@ -474,4 +474,14 @@ public class SSHInterface extends UnicastRemoteObject implements  DataStore{
 		return null;
 	}
 
+
+	@Override
+	public String copyToRemote(String in_path, String out_path, String remoteServer){
+		throw new UnsupportedOperationException("Unsupported Operation");
+	}
+	
+	@Override
+	public String copyFromRemote(String in_path, String out_path, String remoteServer){
+		throw new UnsupportedOperationException("Unsupported Operation");
+	}
 }

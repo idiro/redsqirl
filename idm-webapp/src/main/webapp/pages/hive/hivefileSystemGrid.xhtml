@@ -133,6 +133,13 @@
 					<a4j:commandLink value="#{item.name}" action="#{hiveBean.verifyIfIsFile}"
      					oncomplete="selectFileHive('#{hiveBean.file}', '#{item.name}')">
      						<f:param name="nameFile" value="#{item.name}" />
+     						<rich:dragSupport dragIndicator=":indicator"
+                                dragValue="#{item.name}" dragType="text">
+                                <rich:dndParam name="label" value="#{item.name}" />
+                                <a4j:actionparam name="file" value="#{item.name}" />
+                                <a4j:actionparam name="path" value="#{hiveBean.path}" />
+                                <a4j:actionparam name="type" value="hive" />
+                            </rich:dragSupport>
      				</a4j:commandLink>
 				</rich:column>
 
