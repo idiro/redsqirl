@@ -2,12 +2,13 @@ package idm;
 
 import java.rmi.RemoteException;
 import java.util.HashMap;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.faces.context.FacesContext;
 
 import org.apache.log4j.Logger;
+import org.richfaces.event.DropEvent;
 
 /** HdfsBean
  * 
@@ -62,5 +63,24 @@ public class HdfsBean extends FileSystemBean {
 		setNameValue(new HashMap<String, String>());
 		super.addFileAfter();
 	}
+	
+	public void processDrop(DropEvent dropEvent) throws RemoteException { 
+		logger.info("processDrop");
+		
+		FacesContext context = FacesContext.getCurrentInstance();
+		String file = context.getExternalContext().getRequestParameterMap().get("file");
+		String path = context.getExternalContext().getRequestParameterMap().get("path");
+		String server = context.getExternalContext().getRequestParameterMap().get("server");
+		
+		logger.info("copy from "+path+"/"+file+" to "+server+":"+getPath()+"/"+file);
+		
+		try{
+			getHDFS().copyFromRemote(path+"/"+file, getPath()+"/"+file, server);
+			mountTable(getDataStore());
+		}
+		catch(Exception e){
+			logger.info("", e);
+		}
+	} 
 
 }

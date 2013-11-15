@@ -7,7 +7,6 @@ import idiro.workflow.server.connect.interfaces.DataStore;
 import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.utils.LanguageManager;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -20,7 +19,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.prefs.Preferences;
 
 import org.apache.hadoop.fs.FSDataInputStream;
@@ -824,7 +822,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 			channel.connect();
 
 			if (checkAck(in) != 0) {
-				System.exit(0);
+				return null;
 			}
 
 			FileSystem fs = NameNodeVar.getFS();
@@ -838,7 +836,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 				out.write(command.getBytes());
 				out.flush();
 				if (checkAck(in) != 0) {
-					System.exit(0);
+					return null;
 				}
 			}
 
@@ -855,7 +853,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 			out.write(command.getBytes());
 			out.flush();
 			if (checkAck(in) != 0) {
-				System.exit(0);
+				return null;
 			}
 
 			// send a content of lfile
@@ -877,14 +875,14 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 			out.write(buf, 0, 1);
 			out.flush();
 			if (checkAck(in) != 0) {
-				System.exit(0);
+				return null;
 			}
 			out.close();
 
 			channel.disconnect();
 			session.disconnect();
 
-			System.exit(0);
+			return null;
 		} catch (Exception e) {
 			System.out.println(e);
 			try {

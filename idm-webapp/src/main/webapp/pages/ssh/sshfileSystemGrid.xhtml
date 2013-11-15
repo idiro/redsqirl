@@ -86,9 +86,11 @@
 			
 		<a4j:repeat value="#{sshBean.tabs}" var="tab" rowKeyVar="index">
 						
-			<div id="#{tab}"> #{tab}
+			<div id="#{tab}">
 							
-				<ui:include src="/pages/ssh/sshFileSystemGridTab.xhtml" />
+				<ui:include src="/pages/ssh/sshFileSystemGridTab.xhtml" >
+					<ui:param name="tab" value="#{tab}" />
+				</ui:include>
 							
 			</div>
 		</a4j:repeat>
