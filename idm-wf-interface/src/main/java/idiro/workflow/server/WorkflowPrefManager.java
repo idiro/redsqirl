@@ -166,7 +166,9 @@ public class WorkflowPrefManager extends BlockManager{
 			sys_hive_extralib = "hive_extra_lib",
 			sys_allow_user_install="allow_user_install",
 			sys_tomcat_path="tomcat_path",
-			sys_pack_manager_url="pack_manager_url";
+			sys_pack_manager_url="pack_manager_url",
+			sys_pack_download_trust="trusted_pack_hosts",
+			sys_admin_user="admin_user";
 	
 	public static final String user_hive = "hive_jdbc_url",
 			user_rsa_private= "private_rsa_key",

@@ -3,6 +3,7 @@ package idiro.workflow.utils;
 import idiro.utils.LocalFileSystem;
 import idiro.utils.UnZip;
 import idiro.workflow.server.WorkflowPrefManager;
+import idiro.workflow.server.connect.interfaces.PckManager;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -11,6 +12,8 @@ import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,7 +32,12 @@ import org.apache.log4j.Logger;
  * @author etienne
  *
  */
-public class PackageManager {
+public class PackageManager extends UnicastRemoteObject implements PckManager {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5328659434051680675L;
 
 	static Logger logger = Logger.getLogger(PackageManager.class);
 
@@ -39,12 +47,17 @@ public class PackageManager {
 			action_file = "actions.txt",
 			list_files = "files.txt";
 
+	public PackageManager() throws RemoteException{
+		super();
+	}
+	
 	/**
 	 * Can call the package manager directly.
 	 * 
 	 * @param arg
+	 * @throws RemoteException 
 	 */
-	public static void main(String[] arg){
+	public static void main(String[] arg) throws RemoteException{
 		if(arg.length < 3){
 			logger.info("Synopsis");
 			logger.info("Takes at least three arguments");
@@ -75,11 +88,13 @@ public class PackageManager {
 		for(int i = 2; i < arg.length;++i){
 			packs[i-2] = arg[i];
 		}
+		
+		PackageManager mng = new PackageManager();
 
 		if(arg[0].equalsIgnoreCase("add")){
-			addPackage(sys_package, packs);
+			mng.addPackage(sys_package, packs);
 		}else if(arg[0].equalsIgnoreCase("remove")){
-			removePackage(sys_package, packs);
+			mng.removePackage(sys_package, packs);
 		}else{
 			logger.info("First argument should be 'add' or 'remove'");
 		}
@@ -92,7 +107,7 @@ public class PackageManager {
 	 * @param packStr
 	 * @return
 	 */
-	public static boolean removePackage(boolean sys_package,String[] packStr){
+	public boolean removePackage(boolean sys_package,String[] packStr){
 		boolean ok = true;
 
 		File[] packs = new File[packStr.length];
@@ -147,7 +162,7 @@ public class PackageManager {
 	 * @param packStr
 	 * @return
 	 */
-	public static boolean addPackage(boolean sys_package,String[] packStr){
+	public boolean addPackage(boolean sys_package,String[] packStr){
 		boolean ok = true;
 
 		init(sys_package);
@@ -237,7 +252,7 @@ public class PackageManager {
 		return ok;
 	}
 
-	public static void init(boolean sys_package){
+	public void init(boolean sys_package){
 		File dir = null;
 		if(sys_package){
 			dir = new File(WorkflowPrefManager.pathSysPackagePref.get());
@@ -261,7 +276,7 @@ public class PackageManager {
 		}
 	}
 
-	public static List<File> getAllPackages(){
+	public List<File> getAllPackages(){
 		List<File> ans = new LinkedList<File>();
 		File sysPack = new File(WorkflowPrefManager.pathSysPackagePref.get());
 		if(sysPack.exists()){
@@ -294,7 +309,7 @@ public class PackageManager {
 		return ans;
 	}
 
-	public static boolean isPackageValid(File pack){
+	public boolean isPackageValid(File pack){
 		boolean ok = true;
 
 		if(pack.exists() && pack.isDirectory()){
@@ -321,8 +336,26 @@ public class PackageManager {
 
 		return ok;
 	}
+	
+	public List<String> getPackageNames(boolean root_pack){
+		List<String> packageNames = new LinkedList<String>();
+		File packDir = null;
+		if(root_pack){
+			packDir = new File(WorkflowPrefManager.pathSysPackagePref.get());
+		}else{
+			packDir = new File(WorkflowPrefManager.pathUserPackagePref.get());
+		}
+		try{
+			for(File cur : packDir.listFiles()){
+				packageNames.add(cur.getName());
+			}
+		}catch(Exception e){
+			logger.error("Package directory not found");
+		}
+		return packageNames;
+	}
 
-	public static boolean checkNoPackageNameDuplicate(final File pack, 
+	public boolean checkNoPackageNameDuplicate(final File pack, 
 			boolean root_pack){
 		logger.debug("check no package name duplicate...");
 		boolean ok = true;
@@ -351,7 +384,7 @@ public class PackageManager {
 		return root_pack || !ok ? ok : checkNoPackageNameDuplicate(pack,true);
 	}
 
-	public static boolean checkNoHelpFileDuplicate(File pack, boolean sys_package){
+	public boolean checkNoHelpFileDuplicate(File pack, boolean sys_package){
 		logger.debug("check no help file duplicate...");
 		File helpDir = getHelpDir(sys_package);
 		File packHelp = new File(pack, help_dir);
@@ -361,7 +394,7 @@ public class PackageManager {
 				helpDir);
 	}
 
-	public static boolean checkNoJarFileDuplicate(File pack,boolean sys_package){
+	public boolean checkNoJarFileDuplicate(File pack,boolean sys_package){
 		logger.debug("check no jar file duplicate...");
 		File libDir = getLibDir(sys_package);
 		File packHelp = new File(pack, lib_dir);
@@ -371,7 +404,7 @@ public class PackageManager {
 				libDir);
 	}
 
-	public static boolean checkNoImageFileDuplicate(File pack,boolean sys_package){
+	public boolean checkNoImageFileDuplicate(File pack,boolean sys_package){
 		logger.debug("check no image file duplicate...");
 		File imageDir = getImageDir(sys_package);
 		File packImage = new File(pack, image_dir);
@@ -380,7 +413,7 @@ public class PackageManager {
 				packImage,
 				imageDir);
 	}
-	public static boolean checkNoFileNameDuplicate(
+	public boolean checkNoFileNameDuplicate(
 			String packageName,
 			File srcDir,
 			File destDir){
@@ -402,7 +435,7 @@ public class PackageManager {
 		return ok;
 	}
 
-	public static boolean checkNoActionDuplicate(
+	public boolean checkNoActionDuplicate(
 			File pack){	
 		logger.debug("check no action duplicate...");
 		boolean ok = true;
@@ -434,7 +467,7 @@ public class PackageManager {
 		return ok;
 	}
 
-	protected static boolean noAction(File f, List<String> actions){
+	protected boolean noAction(File f, List<String> actions){
 		boolean ok = true;
 		try{
 			BufferedReader br = new BufferedReader(
@@ -453,7 +486,7 @@ public class PackageManager {
 		return ok;
 	}
 
-	public static List<String> getFileNames(File dir, String root){
+	public List<String> getFileNames(File dir, String root){
 		List<String> ans = new LinkedList<String>();
 		if(dir.exists()){
 			File[] children = dir.listFiles();
@@ -468,7 +501,7 @@ public class PackageManager {
 		return ans;
 	}
 
-	public static void createFileList(File dir, List<String> fileNames)
+	public void createFileList(File dir, List<String> fileNames)
 			throws IOException{
 		BufferedWriter bw = new BufferedWriter(
 				new FileWriter(new File(dir,list_files)));
@@ -485,7 +518,7 @@ public class PackageManager {
 	}
 
 
-	public static File getPackage(String packName,boolean sys_package){
+	public File getPackage(String packName,boolean sys_package){
 		File packDir = null;
 		if(sys_package){
 			packDir = new File(WorkflowPrefManager.pathSysPackagePref.get());
@@ -495,7 +528,7 @@ public class PackageManager {
 		return new File(packDir,packName);
 	}
 
-	public static List<String> getFiles(File dir)
+	public List<String> getFiles(File dir)
 			throws IOException{
 		List<String> listFiles = new LinkedList<String>();
 		BufferedReader br = new BufferedReader(
@@ -509,21 +542,21 @@ public class PackageManager {
 		return listFiles;
 	}
 
-	public static File getHelpDir(boolean sys_package){
+	public File getHelpDir(boolean sys_package){
 		return sys_package ?
 				new File(WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path)+WorkflowPrefManager.pathSysHelpPref.get())
 		:
 			new File(WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path)+WorkflowPrefManager.pathUserHelpPref.get());
 	}
 
-	public static File getImageDir(boolean sys_package){
+	public File getImageDir(boolean sys_package){
 		return sys_package ?
 				new File(WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path)+WorkflowPrefManager.pathSysImagePref.get())
 		:
 			new File(WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path)+WorkflowPrefManager.pathUserImagePref.get());
 	}
 
-	public static File getLibDir(boolean sys_package){
+	public File getLibDir(boolean sys_package){
 		return sys_package ?
 				new File(WorkflowPrefManager.sysPackageLibPath)
 		:

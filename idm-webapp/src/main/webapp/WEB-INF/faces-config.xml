@@ -66,7 +66,11 @@
   <managed-bean-class>idm.HdfsBean</managed-bean-class>
   <managed-bean-scope>request</managed-bean-scope>
  </managed-bean>
- 
+ <managed-bean>
+  <managed-bean-name>PackageMngBean</managed-bean-name>
+  <managed-bean-class>idm.PackageMngBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
  <managed-bean>
   <managed-bean-name>error</managed-bean-name>
   <managed-bean-class>idm.useful.Error</managed-bean-class>
