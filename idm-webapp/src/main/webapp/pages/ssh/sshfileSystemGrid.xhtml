@@ -58,7 +58,7 @@
 				</ui:repeat>
 				
 				<a4j:commandButton value="+" action="#{sshBean.openNewSsh}" oncomplete="#{rich:component('modalNewSsh')}.show()" 
-					style="border: hidden;"/>
+					style="border: hidden;" rerender="modalNewSsh"/>
 			</ul>
 				
 			<span id="buttonstabRemote" class="spanButtons">

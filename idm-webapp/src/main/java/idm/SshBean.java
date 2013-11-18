@@ -114,7 +114,9 @@ public class SshBean extends FileSystemBean implements Serializable{
 	public void openNewSsh() throws Exception{
 		
 		logger.info("openNewSsh");
-
+		setHost("");
+		setPort("");
+		setSelectedSaveSsh(false);
 		
 	}
 

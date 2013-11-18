@@ -13,14 +13,13 @@
 			<br />
 		</a4j:repeat> -->
 		
-		<h:outputText value="host" />
-		<br />
+		<h:outputText value="Host" />
 		<h:inputText value="#{sshBean.host}" />
 				
-		<h:outputText value="port" />
-		<br />
+		<h:outputText value="Port" />
 		<h:inputText value="#{sshBean.port}" />
 	
+		<h:outputText value="Save" />
 		<h:selectBooleanCheckbox id="selectedSaveSsh" value="#{sshBean.selectedSaveSsh}" />
 		
 		<h:panelGrid columns="2">		
