@@ -26,7 +26,7 @@
 		<h:panelGrid columns="2">		
 	
 			<a4j:commandButton action="#{sshBean.confirmNewSsh}" onclick="#{rich:component('modalNewSsh')}.hide();" oncomplete="configureTabsRemote();" 
-				value="#{messages.button_ok}" reRender="tabRemote"/>
+				value="#{messages.button_ok}" reRender="tabRemote,msnError"/>
 				
 			<a4j:commandButton value="#{messages.button_cancel}" type="button" 
 				onclick="#{rich:component('modalNewSsh')}.hide();" />

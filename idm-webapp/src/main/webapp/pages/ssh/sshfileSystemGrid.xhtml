@@ -12,37 +12,16 @@
 
 <script>
 
-	function addTabRemoteArr(){
-  	  	//<![CDATA[
-  	  	
-  	  	var contTabRemote = 0;
-
-  		contTabRemote++;
-	  	var tabs = jQuery("#tabRemote").tabs();
-	  	var ul = jQuery("#tabRemote").tabs().find( "ul:first" );
-	  	jQuery( "<li><a href='#tabRemote-"+ contTabRemote +"'>New File System</a> <span class='ui-icon ui-icon-close' onclick='closeTab(this);'></span> </li>" ).appendTo( ul );
-	  	jQuery( "<div id='tabRemote-"+ contTabRemote +"'> not ready yet </div>" ).appendTo( tabs );
-
-	  	jQuery('#tabRemote-'+contTabRemote).append("<h:panelGroup>"+
-				"<ui:include src='/pages/ssh/sshFileSystemGridTab.xhtml' />"+
-				"</h:panelGroup>");
-	  	
-	  	tabs.tabs( "refresh" );
-
-	  	validateArrows(jQuery("#tabRemote"),jQuery("#buttonstabRemote"));
-
-  	  	
-  	  	//]]>
-  	}
 	
-	 function selectFileSsh(isFile, nameFile){
-	    	if (isFile == "true"){
-	    		openFileSsh(nameFile);
-	    	}
-	    	else{
-	    		updateTableSsh(nameFile);
-	    	}
-	    }
+	function selectFileSsh(isFile, nameFile){
+		if (isFile == "true"){
+			openFileSsh(nameFile);
+		}
+		else{
+			updateTableSsh(nameFile);
+		}
+	}
+	 
 
 </script>
 
@@ -67,10 +46,15 @@
 			<a4j:jsFunction name="updateTableSsh" action="#{sshBean.selectFile}" reRender="sshfs,sshpath">
 				<a4j:actionparam name="nameFile"/>
 			</a4j:jsFunction>
+			
+			<a4j:jsFunction name="closeServer" action="#{sshBean.closeTab}" oncomplete="configureTabsRemote();" reRender="tabRemote">
+				<a4j:actionparam name="nameTab"/>
+			</a4j:jsFunction>
 		
 			<ul>
 				<ui:repeat value="#{sshBean.tabs}" var="tab">
-					<li><a href="##{tab}" onclick="setSelectedRemoteTab('#{tab}')">#{tab}</a> <span class='ui-icon ui-icon-close' onclick='closeTab(this);'></span> </li>
+					<li><a href="##{tab}" onclick="setSelectedRemoteTab('#{tab}')">#{tab}</a> 
+						<span class='ui-icon ui-icon-close' onclick="closeTab(this);closeServer('#{tab}');"></span> </li>
 				</ui:repeat>
 				
 				<a4j:commandButton value="+" action="#{sshBean.openNewSsh}" oncomplete="#{rich:component('modalNewSsh')}.show()" 
