@@ -34,6 +34,7 @@ public abstract class AbstractDictionary {
 		try {
 			br = new BufferedReader(new FileReader(f));
 			String line = br.readLine();
+			logger.info("loadFunctionsFile");
 			while (line != null) {
 				System.out.println(line);
 				if (line.startsWith("#")) {
@@ -59,6 +60,7 @@ public abstract class AbstractDictionary {
 					line = br.readLine();
 				}
 			}
+			logger.info("finishedLoadingFunctions");
 		} catch (Exception e) {
 			logger.error("Error loading hive functions file: " + e);
 			e.printStackTrace();

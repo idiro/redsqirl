@@ -92,7 +92,7 @@ public class PigJoin extends PigElement{
 		
 		page3.addInteraction(tJoinInt);
 		
-		addOutputPage();
+//		addOutputPage();
 		
 	}
 

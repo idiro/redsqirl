@@ -113,7 +113,7 @@
 								<f:facet name="header">
 									<h:outputText value="#{messages.label_properties}" />
 								</f:facet>
-								<h:inputText value="#{item.propertie}" style="width:125px;" readonly="true" />
+								<h:inputText value="#{item.property}" style="width:125px;" readonly="true" />
 							</rich:column>
 							<rich:column id="browserTable1Col2" rendered="#{canvasModalBean.listGrid != null and not empty canvasModalBean.listGrid}" >
 								<f:facet name="header">
@@ -299,7 +299,7 @@
 			
 			<a4j:commandButton action="#{canvasModalBean.previousPage}" value="#{messages.button_previous}" rendered="#{canvasModalBean.firstPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, msnError, errorTable" />
 			
-			<a4j:commandButton action="#{canvasModalBean.applyPage}" value="#{messages.button_apply}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, browserTable2, msnError, errorTable, canvasModalTabPanel" />
+			<a4j:commandButton action="#{canvasModalBean.applyPage}" value="#{messages.button_apply}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, msnError, errorTable, canvasModalTabPanel, browserTable1, browserTable2, browserTable1Col1, browserTable1Col2" />
 
 			<a4j:commandButton action="#{canvasModalBean.nextPage}" value="#{messages.button_next}" rendered="#{canvasModalBean.lastPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, browserTable2, msnError, errorTable" />
 			

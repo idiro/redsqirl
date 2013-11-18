@@ -8,6 +8,8 @@ import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.utils.LanguageManager;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.text.DecimalFormat;
@@ -20,6 +22,7 @@ import java.util.Map;
 import java.util.prefs.Preferences;
 
 import org.apache.hadoop.fs.FSDataInputStream;
+import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileUtil;
@@ -28,6 +31,11 @@ import org.apache.hadoop.fs.permission.FsPermission;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.util.LineReader;
 import org.apache.log4j.Logger;
+
+import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.ChannelExec;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.Session;
 
 /**
  * Interface for browsing HDFS.
@@ -678,5 +686,239 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 	@Override
 	public String canCopy() throws RemoteException{
 		return LanguageManager.getText("HdfsInterface.copy_help");
+	}
+	
+	@Override
+	public String copyFromRemote(String rfile, String lfile, String remoteServer){
+		String error = null;
+		try{
+			JSch shell = new JSch();
+			Session session = shell.getSession(System.getProperty("user.name"), remoteServer);
+			
+			
+			session.setConfig("PreferredAuthentications", "publickey");
+			shell.setKnownHosts(System.getProperty("user.home")+"/.ssh/known_hosts");
+			shell.addIdentity(System.getProperty("user.home")+"/.ssh/id_rsa");
+			session.setConfig("StrictHostKeyChecking", "no");
+			
+			logger.info("session config set");
+			session.connect();
+	
+			// exec 'scp -f rfile' remotely
+			String command="scp -f "+rfile;
+			Channel channel=session.openChannel("exec");
+			((ChannelExec)channel).setCommand(command);
+	
+			// get I/O streams for remote scp
+			OutputStream out=channel.getOutputStream();
+			InputStream in=channel.getInputStream();
+	
+			channel.connect();
+	
+			byte[] buf=new byte[1024];
+	
+			// send '\0'
+			buf[0]=0; out.write(buf, 0, 1); out.flush();
+	
+			while(true){
+				int c=checkAck(in);
+				if(c!='C'){
+					break;
+				}
+	
+				// read '0644 '
+				in.read(buf, 0, 5);
+	
+				long filesize=0L;
+				while(true){
+					if(in.read(buf, 0, 1)<0){
+						// error
+						break; 
+					}
+					if(buf[0]==' ')break;
+					filesize=filesize*10L+(long)(buf[0]-'0');
+				}
+	
+				String file=null;
+				for(int i=0;;i++){
+					in.read(buf, i, 1);
+					if(buf[i]==(byte)0x0a){
+						file=new String(buf, 0, i);
+						break;
+					}
+				}
+	
+				logger.info("filesize="+filesize+", file="+file);
+	
+				// send '\0'
+				buf[0]=0; out.write(buf, 0, 1); out.flush();
+				
+				FileSystem fs = NameNodeVar.getFS();
+					
+				FSDataOutputStream fosd = fs.create(new Path(lfile));
+	
+				// read a content of lfile
+				int foo;
+				while(true){
+					if(buf.length<filesize) foo=buf.length;
+					else foo=(int)filesize;
+					foo=in.read(buf, 0, foo);
+					if(foo<0){
+						// error 
+						break;
+					}
+					fosd.write(buf, 0, foo);
+					filesize-=foo;
+					if(filesize==0L) break;
+				}
+				fosd.close();
+	//			fos=null;
+	
+				if(checkAck(in)!=0){
+					return null;
+				}
+	
+				// send '\0'
+				buf[0]=0; out.write(buf, 0, 1); out.flush();
+			}
+	
+			session.disconnect();
+		}
+		
+		catch(Exception e){
+			logger.info("error", e);
+			error = e.getMessage();
+		}
+		return error;
+	}
+	
+	@Override
+	public String copyToRemote(String lfile, String rfile, String remoteServer) {
+		String error = null;
+		FSDataInputStream fisd = null;
+		try {
+			JSch shell = new JSch();
+			Session session = shell.getSession(System.getProperty("user.name"), remoteServer);
+
+			session.setConfig("PreferredAuthentications", "publickey");
+			shell.setKnownHosts(System.getProperty("user.home")+"/.ssh/known_hosts");
+			shell.addIdentity(System.getProperty("user.home")+"/.ssh/id_rsa");
+			session.setConfig("StrictHostKeyChecking", "no");
+
+			logger.info("session config set");
+			session.connect();
+
+			boolean ptimestamp = true;
+
+			// exec 'scp -t rfile' remotely
+			String command = "scp " + (ptimestamp ? "-p" : "") + " -t " + rfile;
+			Channel channel = session.openChannel("exec");
+			((ChannelExec) channel).setCommand(command);
+
+			// get I/O streams for remote scp
+			OutputStream out = channel.getOutputStream();
+			InputStream in = channel.getInputStream();
+
+			channel.connect();
+
+			if (checkAck(in) != 0) {
+				return null;
+			}
+
+			FileSystem fs = NameNodeVar.getFS();
+			FileStatus fstatus = fs.getFileStatus(new Path(lfile));
+
+			if (ptimestamp) {
+				command = "T " + (fstatus.getModificationTime() / 1000) + " 0";
+				// The access time should be sent here,
+				// but it is not accessible with JavaAPI ;-<
+				command += (" " + (fstatus.getModificationTime() / 1000) + " 0\n");
+				out.write(command.getBytes());
+				out.flush();
+				if (checkAck(in) != 0) {
+					return null;
+				}
+			}
+
+			// send "C0644 filesize filename", where filename should not include
+			// '/'
+			long filesize = fstatus.getLen();
+			command = "C0644 " + filesize + " ";
+			if (lfile.lastIndexOf('/') > 0) {
+				command += lfile.substring(lfile.lastIndexOf('/') + 1);
+			} else {
+				command += lfile;
+			}
+			command += "\n";
+			out.write(command.getBytes());
+			out.flush();
+			if (checkAck(in) != 0) {
+				return null;
+			}
+
+			// send a content of lfile
+			
+			
+			fisd = fs.open(new Path(lfile));
+			
+			byte[] buf = new byte[1024];
+			while (true) {
+				int len = fisd.read(buf, 0, buf.length);
+				if (len <= 0)
+					break;
+				out.write(buf, 0, len); // out.flush();
+			}
+			fisd.close();
+			fisd = null;
+			// send '\0'
+			buf[0] = 0;
+			out.write(buf, 0, 1);
+			out.flush();
+			if (checkAck(in) != 0) {
+				return null;
+			}
+			out.close();
+
+			channel.disconnect();
+			session.disconnect();
+
+			return null;
+		} catch (Exception e) {
+			System.out.println(e);
+			try {
+				if (fisd != null)
+					fisd.close();
+			} catch (Exception ee) {
+			}
+		}
+		return error;
+	}
+
+	private static int checkAck(InputStream in) throws IOException {
+		int b = in.read();
+		// b may be 0 for success,
+		// 1 for error,
+		// 2 for fatal error,
+		// -1
+		if (b == 0)
+			return b;
+		if (b == -1)
+			return b;
+
+		if (b == 1 || b == 2) {
+			StringBuffer sb = new StringBuffer();
+			int c;
+			do {
+				c = in.read();
+				sb.append((char) c);
+			} while (c != '\n');
+			if (b == 1) { // error
+				System.out.print(sb.toString());
+			}
+			if (b == 2) { // fatal error
+				System.out.print(sb.toString());
+			}
+		}
+		return b;
 	}
 }

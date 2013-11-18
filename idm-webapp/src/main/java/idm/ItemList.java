@@ -19,7 +19,7 @@ public class ItemList implements Serializable{
 	private boolean selected;
 	private String stringSelectedDestination;
 	private String idSelected;
-	private String propertie;
+	private String property;
 	private String value;
 	
 	private Map<String, String> typeTableInteraction = new HashMap<String, String>();
@@ -143,16 +143,16 @@ public class ItemList implements Serializable{
 		this.nameValueGrid = nameValueGrid;
 	}
 
-	public String getPropertie() {
-		return propertie;
+	public String getProperty() {
+		return property;
 	}
 
 	public String getValue() {
 		return value;
 	}
 
-	public void setPropertie(String propertie) {
-		this.propertie = propertie;
+	public void setProperty(String property) {
+		this.property = property;
 	}
 
 	public void setValue(String value) {

@@ -418,6 +418,7 @@ public class PigDictionary extends AbstractDictionary{
 			word.add("info").add(inFeat.getFeatureType(cur).name());
 			keywords.add(word);
 		}
+		logger.info("added features");
 		editor.add(help);
 
 		return editor;

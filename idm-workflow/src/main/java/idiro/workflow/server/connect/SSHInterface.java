@@ -35,7 +35,7 @@ public class SSHInterface extends UnicastRemoteObject implements  DataStore{
 	/**
 	 * The logger.
 	 */
-	protected Logger logger = Logger.getLogger(this.getClass());
+	protected static Logger logger = Logger.getLogger(SSHInterface.class);
 
 	/**
 	 * Preferences
@@ -136,7 +136,12 @@ public class SSHInterface extends UnicastRemoteObject implements  DataStore{
 			for(int i = 0; i < sp.length;++i){
 				String host = sp[i].split(":")[0];
 				int port = Integer.valueOf(sp[i].split(":")[1]);
-				ans.put(host,new SSHInterface(host, port));
+				try{
+					ans.put(host,new SSHInterface(host, port));
+				}
+				catch (Exception e){
+					logger.error("Could not connect to host "+host);
+				}
 			}
 		}
 		return ans;
@@ -474,4 +479,14 @@ public class SSHInterface extends UnicastRemoteObject implements  DataStore{
 		return null;
 	}
 
+
+	@Override
+	public String copyToRemote(String in_path, String out_path, String remoteServer){
+		throw new UnsupportedOperationException("Unsupported Operation");
+	}
+	
+	@Override
+	public String copyFromRemote(String in_path, String out_path, String remoteServer){
+		throw new UnsupportedOperationException("Unsupported Operation");
+	}
 }

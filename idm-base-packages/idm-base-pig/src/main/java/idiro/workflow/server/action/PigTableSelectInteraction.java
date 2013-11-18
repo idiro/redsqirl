@@ -48,7 +48,7 @@ public class PigTableSelectInteraction extends UserInteraction{
 
 	@Override
 	public String check() throws RemoteException{
-		DFEOutput in = hs.getDFEInput().get(PigSelect.key_input).get(0);
+		DFEOutput in = hs.getDFEInput().get(PigElement.key_input).get(0);
 		String msg = null;
 		List<Tree<String>> lRow;
 		Iterator<Tree<String>> rows;

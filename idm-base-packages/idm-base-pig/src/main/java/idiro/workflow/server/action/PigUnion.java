@@ -52,11 +52,11 @@ public class PigUnion  extends PigElement{
 
 		page1.addInteraction(tUnionSelInt);
 		
-		addOutputPage();
+//		addOutputPage();
 
 	}
 
-	public static void init() throws RemoteException{
+	public void init() throws RemoteException{
 		if(input == null){
 			Map<String, DFELinkProperty> in = new LinkedHashMap<String, DFELinkProperty>();
 			in.put(key_input, new DataProperty(MapRedTextType.class, 2, Integer.MAX_VALUE));
