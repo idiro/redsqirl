@@ -16,9 +16,6 @@
 
     <properties>
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	<idiro-base.version>0.1-SNAPSHOT</idiro-base.version>
-	<idiro-hadoop.version>0.1-SNAPSHOT</idiro-hadoop.version>
-	<idiro-tm.version>0.1-SNAPSHOT</idiro-tm.version>
 	<oozie.version>3.1.3</oozie.version>
 	<prod.resources>src/main/dist</prod.resources>
 	<dist>${project.build.directory}/${project.artifactId}/</dist>
@@ -26,16 +23,13 @@
 	<dist.lib>${project.build.directory}/${project.artifactId}/lib</dist.lib>
 	<dist.bin>${project.build.directory}/${project.artifactId}/bin</dist.bin>
 	<dist.conf>${project.build.directory}/${project.artifactId}/conf</dist.conf>
-	<java.rmi.server.codebase>${project.artifactId}-${project.version}.jar</java.rmi.server.codebase>
-	<idm-wf-interface.target>${basedir}/../idm-wf-interface/target</idm-wf-interface.target>
-	<idm-wf-interface.jar>idm-wf-interface-0.1-SNAPSHOT.jar</idm-wf-interface.jar>
-	<idm-workflow.target>${basedir}/../idm-workflow/target</idm-workflow.target>
-	<idm-workflow.lib>${idm-workflow.target}/idm-workflow/lib</idm-workflow.lib>
 	<main.resources.script>${basedir}/src/main/resources/scripts</main.resources.script>
 	<main.resources.conf>${basedir}/src/main/resources/conf</main.resources.conf>
+        <jersey.version>2.4.1</jersey.version>
+	<maven.tomcat.port>9090</maven.tomcat.port>
     </properties>
 
-
+    <!--
     <distributionManagement>
 	<repository>
 	    <id>internal</id>
@@ -48,7 +42,7 @@
 	    <name>Internal Snapshot Repository</name>
 	    <url>scp://dev.local.net/var/www/html/apache-archiva-1.3.6/data/repositories/snapshots</url>
 	</snapshotRepository>
-    </distributionManagement>
+    </distributionManagement>   -->
 
     <repositories>
 
@@ -66,6 +60,18 @@
 	</repository>
 
     </repositories>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.glassfish.jersey</groupId>
+                <artifactId>jersey-bom</artifactId>
+                <version>${jersey.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
 	<extensions>
@@ -179,50 +185,19 @@
 
     <dependencies>
 
-	<!-- Idiro Dep -->
-
-	<dependency>
-	    <groupId>idiro</groupId>
-	    <artifactId>idm-wf-interface</artifactId>
-	    <version>${project.version}</version>
-	    <exclusions>
-		<exclusion>
-		    <groupId>org.mortbay.jetty</groupId>
-		    <artifactId>servlet-api</artifactId>
-		</exclusion>
-		<exclusion>
-		    <groupId>org.mortbay.jetty</groupId>
-		    <artifactId>servlet-api-2.5</artifactId>
-		</exclusion>
-		<exclusion>
-		    <groupId>javax.servlet</groupId>
-		    <artifactId>servlet-api</artifactId>
-		</exclusion>
-		<exclusion>
-		    <groupId>org.mortbay.jetty</groupId>
-		    <artifactId>jsp-2.1</artifactId>
-		</exclusion>
-		<exclusion>
-		    <groupId>org.mortbay.jetty</groupId>
-		    <artifactId>jsp-api-2.1</artifactId>
-		</exclusion>
-	    </exclusions>
-	    <!-- <scope>runtime</scope> -->
-	</dependency>
-	<dependency>
-	    <groupId>idiro</groupId>
-	    <artifactId>idiro-tm</artifactId>
-	    <version>${idiro-tm.version}</version>
-	    <scope>compile</scope>
-	</dependency>
-
-	<!-- Other -->
-
 	<dependency>
 	    <groupId>org.apache.tomcat</groupId>
 	    <artifactId>servlet-api</artifactId>
 	    <version>6.0.37</version>
 	    <scope>provided</scope>
+	</dependency>
+
+
+	<!-- MySQL database driver -->
+	<dependency>
+	    <groupId>mysql</groupId>
+	    <artifactId>mysql-connector-java</artifactId>
+	    <version>5.1.9</version>
 	</dependency>
 
 	<!-- <dependency> <groupId>org.glassfish.web</groupId> <artifactId>el-impl</artifactId><version>2.2</version> </dependency> <dependency> <groupId>javax.el</groupId> <artifactId>javax.el-api</artifactId> <version>2.2.1</version> </dependency> -->
@@ -284,14 +259,26 @@
 	    <version>20090211</version>
 	</dependency>
 
-	<!-- TEST -->
-
+	<!-- Jersey -->
 	<dependency>
-	    <groupId>log4j</groupId>
-	    <artifactId>log4j</artifactId>
-	    <version>1.2.16</version>
-	</dependency>
+	    <groupId>org.glassfish.jersey.containers</groupId>
+	    <artifactId>jersey-container-servlet-core</artifactId>
+	    <!-- use the following artifactId if you don't need servlet 2.x compatibility -->
+	    <!-- artifactId>jersey-container-servlet</artifactId -->
+    </dependency>
+    <dependency>
+	<groupId>org.glassfish.jersey.media</groupId>
+	<artifactId>jersey-media-moxy</artifactId>
+    </dependency>
+
+    <!-- TEST -->
+
+    <dependency>
+	<groupId>log4j</groupId>
+	<artifactId>log4j</artifactId>
+	<version>1.2.16</version>
+    </dependency>
 
 
-    </dependencies>
+</dependencies>
 </project>

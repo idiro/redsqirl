@@ -11,11 +11,6 @@
   <managed-bean-class>idm.pckmng.IdmPackagesBean</managed-bean-class>
   <managed-bean-scope>session</managed-bean-scope>
  </managed-bean>
-  <managed-bean>
-  <managed-bean-name>idmpackage</managed-bean-name>
-  <managed-bean-class>idm.pckmng.IdmPackageBean</managed-bean-class>
-  <managed-bean-scope>session</managed-bean-scope>
- </managed-bean>
 
  <!-- **************************** NAVIGATION ******************************************************************* -->
  <!-- 
