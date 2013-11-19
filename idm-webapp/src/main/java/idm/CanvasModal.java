@@ -281,7 +281,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 					}
 				}
 				
-				if (!getDfe().getDFEOutput().get("source").getProperty("delimiter").equals(oldDelimiter)){
+				if (oldDelimiter != null && !oldDelimiter.equals(getDfe().getDFEOutput().get("source").getProperty("delimiter"))){
 					updateDFEOUtputTable(getDfe().getDFEOutput().get("source"),getDynamicFormBrowser());
 				}
 
@@ -433,17 +433,10 @@ public class CanvasModal extends BaseBean implements Serializable {
 		//set the first tab for obj
 		setSelectedTab(getMessageResources("label_dynamic_configuration"));
 
-
-		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-
-		String pathImage =  params.get("paramPathImage");
-		String nameElement = params.get("paramNameElement");
-		logger.info("open group id " + getNameElement());
-		logger.info("nameElement " + nameElement);
+		logger.info("open group id " + getGroupID());
 		logger.info("size of map " + canvasBean.getIdMap().get(getNameWorkflow()).size());
 
-		setNameElement(canvasBean.getIdMap().get(getNameWorkflow()).get(nameElement));
-		setPathImage(pathImage);
+		setNameElement(canvasBean.getIdMap().get(getNameWorkflow()).get(getGroupID()));
 		setDynamicFormDataOutput(null);
 
 		logger.info("open element id " + getNameElement());

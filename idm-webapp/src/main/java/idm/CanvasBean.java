@@ -2,6 +2,7 @@ package idm;
 
 
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
+import idiro.workflow.server.enumeration.SavingState;
 import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.interfaces.DataFlow;
@@ -17,6 +18,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
@@ -722,6 +724,23 @@ public class CanvasBean extends BaseBean implements Serializable{
 		getWorkflowMap().clear();
 		getIdMap().clear();
 		setDf(null);
+	}
+	
+	public String[] getOutputStatus() throws RemoteException{
+		logger.info("getOutputStats");
+		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String groupId = params.get("groupId");
+		
+		DataFlowElement df = getDf().getElement(getIdMap().get(getNameWorkflow()).get(groupId));
+		
+		SavingState state = null;
+		for (Entry<String, DFEOutput> e : df.getDFEOutput().entrySet()){
+			state = e.getValue().getSavingState();
+		}
+		
+//		logger.info("getOuptuStatus: "+name);
+		
+		return new String[]{groupId, state.toString()};
 	}
 	
 

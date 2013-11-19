@@ -295,7 +295,7 @@
 	
 		<rich:panel id="panelBtCanvasModal" style="border:none; float:right;" >
 		
-			<a4j:commandButton action="#{canvasModalBean.close}" value="#{messages.button_cancel}" onclick="#{rich:component('canvasModalPanel')}.hide()" reRender="panelBtCanvasModal, msnError, errorTable" />
+			<a4j:commandButton action="#{canvasModalBean.close}" value="#{messages.button_cancel}" onclick="#{rich:component('canvasModalPanel')}.hide();updateOutputStatus('#{canvasModalBean.groupID}')" reRender="panelBtCanvasModal, msnError, errorTable" />
 			
 			<a4j:commandButton action="#{canvasModalBean.previousPage}" value="#{messages.button_previous}" rendered="#{canvasModalBean.firstPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, msnError, errorTable" />
 			
@@ -303,7 +303,7 @@
 
 			<a4j:commandButton action="#{canvasModalBean.nextPage}" value="#{messages.button_next}" rendered="#{canvasModalBean.lastPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, browserTable2, msnError, errorTable" />
 			
-			<a4j:commandButton oncomplete="endDynamicForm()" value="#{messages.button_ok}" rendered="#{canvasModalBean.lastPage == 'Y'}"/>
+			<a4j:commandButton oncomplete="endDynamicForm();updateOutputStatus('#{canvasModalBean.groupID}');" value="#{messages.button_ok}" rendered="#{canvasModalBean.lastPage == 'Y'}"/>
 		
 		</rich:panel>
 	
@@ -356,7 +356,7 @@
 				
 				<h:panelGrid columns="2">
 					<a4j:commandButton value="#{messages.button_apply}" action="#{canvasModalBean.confirmOutput}" />
-					<a4j:commandButton value="#{messages.button_ok}" action="#{canvasModalBean.confirmOutput}" oncomplete="#{rich:component('canvasModalPanel')}.hide()"/>
+					<a4j:commandButton value="#{messages.button_ok}" action="#{canvasModalBean.confirmOutput}" oncomplete="#{rich:component('canvasModalPanel')}.hide();updateOutputStatus('#{canvasModalBean.groupID}')"/>
 				</h:panelGrid>
 
 			</h:panelGrid>
