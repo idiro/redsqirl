@@ -67,6 +67,7 @@ public class PackageMngBean extends BaseBean{
 		logger.info("url: "+uri);
 
 		URL url = new URL(uri);
+		try{
 		HttpURLConnection connection =
 				(HttpURLConnection) url.openConnection();
 		connection.setRequestMethod("GET");
@@ -121,6 +122,9 @@ public class PackageMngBean extends BaseBean{
 		logger.info("date: "+curPackage.getDateStr());
 		logger.info("url: "+curPackage.getUrl());
 		logger.info("show main: "+showMain);
+		}catch(Exception e){
+			logger.error("Connection refused to package manager");
+		}
 		return lAns;
 	}
 
