@@ -247,10 +247,25 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 	public String getConsoleUrl(DataFlow df) throws RemoteException, Exception{
 		String console = null;
 		String jobId = df.getOozieJobId();
+		
 		if(jobId != null){
 			console = oc.getJobInfo(jobId).getConsoleUrl();
 		}
 		return console;
+	}
+	
+	public String getElementStatus(DataFlow df, DataFlowElement dfe) throws RemoteException, Exception{
+		String status = null;
+		String jobId = df.getOozieJobId();
+		
+		if (jobId != null){
+			for (WorkflowAction wfa : oc.getJobInfo(jobId).getActions()){
+				if (wfa.getName().equals("act_"+dfe.getComponentId())){
+					status = wfa.getStatus().toString();
+				}
+			}
+		}
+		return status;
 	}
 	
 	public String getConsoleElementUrl(DataFlow df,DataFlowElement e) throws RemoteException, Exception{

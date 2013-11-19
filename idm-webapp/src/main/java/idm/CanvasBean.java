@@ -726,8 +726,8 @@ public class CanvasBean extends BaseBean implements Serializable{
 		setDf(null);
 	}
 	
-	public String[] getOutputStatus() throws RemoteException{
-		logger.info("getOutputStats");
+	public String[] getOutputStatus() throws Exception{
+		logger.info("getOutputStatus");
 		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String groupId = params.get("groupId");
 		
@@ -738,9 +738,25 @@ public class CanvasBean extends BaseBean implements Serializable{
 			state = e.getValue().getSavingState();
 		}
 		
-//		logger.info("getOuptuStatus: "+name);
-		
 		return new String[]{groupId, state.toString()};
+	}
+	
+	public String[][] getRunningStatus() throws Exception{
+		logger.info("getRunningStatus");
+		String[][] result = new String[getIdMap().size()][];
+		
+		int i = 0;
+		for (Entry<String, String> e : getIdMap().get(getNameWorkflow()).entrySet()){
+			
+			
+			String status = getOozie().getElementStatus(getDf(), getDf().getElement(e.getValue()));
+			
+			logger.info(e.getKey()+" - "+status);
+			
+			result[i] = new String[]{e.getKey(), status};
+		}
+		
+		return result;
 	}
 	
 

@@ -818,7 +818,7 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
 		y : 50,
 		radius : 42,
 		draggable : false,
-		fill :'green'
+		fill :'white'
 	});
 	configureCircle(canvasName, circle1);
 
@@ -1457,14 +1457,17 @@ function updateLabelObj(groupId, newGroupId) {
 }
 
 function getColor(status){
-	if (status == "sucess" || status == "TEMPORARY"){
+	if (status == "OK" || status == "TEMPORARY"){
 		return "green";
 	}
-	else if (status == "failure" || status == "RECORDED"){
+	else if (status == "RECORDED"){
 		return "blue";
 	}
-	else if (status == "failure" || status == "BUFFERED"){
+	else if (status == "ERROR" || status == "BUFFERED"){
 		return "red";
+	}
+	else if (status == "KILLED"){
+		return "yellow";
 	}
 	else {
 		return "white";
