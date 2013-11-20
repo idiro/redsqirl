@@ -1456,14 +1456,29 @@ function updateLabelObj(groupId, newGroupId) {
 
 }
 
-function getColor(status){
-	if (status == "OK" || status == "TEMPORARY"){
+function getColorOutput(status, fileExists){
+	if (fileExists == "TRUE"){
+		return "pink";
+	}
+	if (status == "TEMPORARY"){
 		return "green";
 	}
 	else if (status == "RECORDED"){
 		return "blue";
 	}
-	else if (status == "ERROR" || status == "BUFFERED"){
+	else if (status == "BUFFERED"){
+		return "red";
+	}
+	else {
+		return "white";
+	}
+}
+
+function getColorRunning(status){
+	if (status == "OK"){
+		return "green";
+	}
+	else if (status == "ERROR"){
 		return "red";
 	}
 	else if (status == "KILLED"){
@@ -1474,13 +1489,13 @@ function getColor(status){
 	}
 }
 
-function updateActionOutputStatus(groupId, status) {
+function updateActionOutputStatus(groupId, status, fileExists) {
 	
 	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
 	
 	var group = getElement(polygonLayer, groupId);
 	
-	group.getChildren()[1].setFill(getColor(status));
+	group.getChildren()[1].setFill(getColorOutput(status, fileExists));
 	
 	polygonLayer.draw();
 
@@ -1492,7 +1507,7 @@ function updateActionRunningStatus(groupId, status) {
 	
 	var group = getElement(polygonLayer, groupId);
 	
-	group.getChildren()[0].setFill(getColor(status));
+	group.getChildren()[0].setFill(getColorRunning(status));
 	
 	polygonLayer.draw();
 

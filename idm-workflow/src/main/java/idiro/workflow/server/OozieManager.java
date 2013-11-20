@@ -260,7 +260,8 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 		
 		if (jobId != null){
 			for (WorkflowAction wfa : oc.getJobInfo(jobId).getActions()){
-				if (wfa.getName().equals("act_"+dfe.getComponentId())){
+				String actionName = "act_"+dfe.getComponentId();
+				if (actionName.equals(wfa.getName())){
 					status = wfa.getStatus().toString();
 				}
 			}
