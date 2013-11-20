@@ -67,7 +67,7 @@
   <managed-bean-scope>request</managed-bean-scope>
  </managed-bean>
  <managed-bean>
-  <managed-bean-name>PackageMngBean</managed-bean-name>
+  <managed-bean-name>packageMngBean</managed-bean-name>
   <managed-bean-class>idm.PackageMngBean</managed-bean-class>
   <managed-bean-scope>request</managed-bean-scope>
  </managed-bean>
@@ -126,6 +126,14 @@
   <navigation-case>
    <from-outcome>initial</from-outcome>
    <to-view-id>/pages/initial.xhtml</to-view-id>
+  </navigation-case>
+ </navigation-rule>
+ <navigation-rule>
+  <from-view-id>/pages/signout.xhtml</from-view-id>
+  <navigation-case>
+   <from-outcome>signout</from-outcome>
+   <to-view-id>/pages/initial.xhtml</to-view-id>
+   <redirect/>
   </navigation-case>
  </navigation-rule>
  

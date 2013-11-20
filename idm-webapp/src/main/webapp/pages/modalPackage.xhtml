@@ -30,7 +30,7 @@
             onsuccess="jQuery('#body').unblock();"
             onstop="jQuery('#body').unblock();" />
         <a4j:jsFunction name="openInstallPackageModal"
-            action="#{PackageMngBean.setPackageScope}"
+            action="#{packageMngBean.setPackageScope}"
             oncomplete="#{rich:component('modalInstallPackage')}.show();">
             <a4j:actionparam name="user" />
         </a4j:jsFunction>
@@ -40,23 +40,23 @@
             style="overflow:auto;width:270px;height:390px;">
             <h:panelGroup id="sysPckMenu"
                 style="overflow:auto;height:350px;"
-                rendered="#{PackageMngBean.admin}">
+                rendered="#{packageMngBean.admin}">
                 <h:selectManyCheckbox
-                    value="#{PackageMngBean.unSysPackage}">
+                    value="#{packageMngBean.unSysPackage}">
                     <f:selectItems
-                        value="#{PackageMngBean.systemPackages}" var="n"
+                        value="#{packageMngBean.systemPackages}" var="n"
                         itemLabel="#{n.label}" itemValue="#{n.value}" />
                 </h:selectManyCheckbox>
             </h:panelGroup>
             <h:panelGroup id="sysPckList"
-                rendered="#{not PackageMngBean.admin}">
-                <ui:repeat value="#{PackageMngBean.systemPackages}"
+                rendered="#{not packageMngBean.admin}">
+                <ui:repeat value="#{packageMngBean.systemPackages}"
                     var="item">
                     #{item}<br />
                 </ui:repeat>
             </h:panelGroup>
             <h:panelGrid id="pck_sys_buttons" columns="2"
-                rendered="#{PackageMngBean.admin}">
+                rendered="#{packageMngBean.admin}">
                 <rich:panel id="pck_sys_install">
                     <a4j:commandButton
                         value="#{messages.button_sys_install}"
@@ -73,23 +73,23 @@
             style="overflow:auto;width:270px;height:390px;">
             <h:panelGroup id="usPckMenu"
                 style="overflow:auto;height:350px;"
-                rendered="#{PackageMngBean.userAllowInstall}">
+                rendered="#{packageMngBean.userAllowInstall}">
                 <h:selectManyCheckbox
-                    value="#{PackageMngBean.unUserPackage}">
+                    value="#{packageMngBean.unUserPackage}">
                     <f:selectItems
-                        value="#{PackageMngBean.userPackages}" var="n"
+                        value="#{packageMngBean.userPackages}" var="n"
                         itemLabel="#{n.label}" itemValue="#{n.value}" />
                 </h:selectManyCheckbox>
             </h:panelGroup>
             <h:panelGroup id="usPckList"
-                rendered="#{not PackageMngBean.userAllowInstall}">
-                <ui:repeat value="#{PackageMngBean.userPackages}"
+                rendered="#{not packageMngBean.userAllowInstall}">
+                <ui:repeat value="#{packageMngBean.userPackages}"
                     var="item">
                     #{item}<br />
                 </ui:repeat>
             </h:panelGroup>
             <h:panelGrid id="pck_user_buttons" columns="2"
-                rendered="#{PackageMngBean.userAllowInstall}">
+                rendered="#{packageMngBean.userAllowInstall}">
                 <rich:panel id="pck_user_install">
                     <a4j:commandButton
                         value="#{messages.button_user_install}"
