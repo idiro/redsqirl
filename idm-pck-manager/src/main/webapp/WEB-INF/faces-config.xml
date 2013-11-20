@@ -7,78 +7,13 @@
 		************************** MANAGED BEANS ******************************************************* -->
 		
  <managed-bean>
-  <managed-bean-name>canvasBean</managed-bean-name>
-  <managed-bean-class>idm.CanvasBean</managed-bean-class>
+  <managed-bean-name>idmpackages</managed-bean-name>
+  <managed-bean-class>idm.pckmng.IdmPackagesBean</managed-bean-class>
   <managed-bean-scope>session</managed-bean-scope>
  </managed-bean>
- <managed-bean>
-  <managed-bean-name>hdfsBean</managed-bean-name>
-  <managed-bean-class>idm.HdfsBean</managed-bean-class>
-  <managed-bean-scope>request</managed-bean-scope>
- </managed-bean>
- <managed-bean>
-  <managed-bean-name>hdfsLoadBean</managed-bean-name>
-  <managed-bean-class>idm.HdfsBean</managed-bean-class>
-  <managed-bean-scope>request</managed-bean-scope>
- </managed-bean>
-  <managed-bean>
-  <managed-bean-name>hdfsSaveBean</managed-bean-name>
-  <managed-bean-class>idm.HdfsBean</managed-bean-class>
-  <managed-bean-scope>request</managed-bean-scope>
- </managed-bean>
- <managed-bean>
-  <managed-bean-name>hiveBean</managed-bean-name>
-  <managed-bean-class>idm.HiveBean</managed-bean-class>
-  <managed-bean-scope>request</managed-bean-scope>
- </managed-bean>
- <managed-bean>
-  <managed-bean-name>sshBean</managed-bean-name>
-  <managed-bean-class>idm.SshBean</managed-bean-class>
-  <managed-bean-scope>request</managed-bean-scope>
- </managed-bean>
- <managed-bean>
-  <managed-bean-name>userInfoBean</managed-bean-name>
-  <managed-bean-class>idm.auth.UserInfoBean</managed-bean-class>
-  <managed-bean-scope>session</managed-bean-scope>
- </managed-bean>
- <managed-bean>
-  <managed-bean-name>canvasModalBean</managed-bean-name>
-  <managed-bean-class>idm.CanvasModal</managed-bean-class>
-  <managed-bean-scope>request</managed-bean-scope>
- </managed-bean>
- <managed-bean>
- 	<managed-bean-name>configureTabsBean</managed-bean-name>
- 	<managed-bean-class>idm.ConfigureTabsBean</managed-bean-class>
- 	<managed-bean-scope>request</managed-bean-scope>
- </managed-bean>
- <managed-bean>
- 	<managed-bean-name>processManagerBean</managed-bean-name>
- 	<managed-bean-class>idm.ProcessManagerBean</managed-bean-class>
- 	<managed-bean-scope>request</managed-bean-scope>
- </managed-bean>
- <managed-bean>
-  <managed-bean-name>browserHiveBean</managed-bean-name>
-  <managed-bean-class>idm.HiveBean</managed-bean-class>
-  <managed-bean-scope>request</managed-bean-scope>
- </managed-bean>
- <managed-bean>
-  <managed-bean-name>browserHdfsBean</managed-bean-name>
-  <managed-bean-class>idm.HdfsBean</managed-bean-class>
-  <managed-bean-scope>request</managed-bean-scope>
- </managed-bean>
- <managed-bean>
-  <managed-bean-name>PackageMngBean</managed-bean-name>
-  <managed-bean-class>idm.PackageMngBean</managed-bean-class>
-  <managed-bean-scope>request</managed-bean-scope>
- </managed-bean>
- <managed-bean>
-  <managed-bean-name>error</managed-bean-name>
-  <managed-bean-class>idm.useful.Error</managed-bean-class>
-  <managed-bean-scope>request</managed-bean-scope>
- </managed-bean>
- 
+
  <!-- **************************** NAVIGATION ******************************************************************* -->
- 
+ <!-- 
  <navigation-rule>
   <from-view-id>/pages/initial.xhtml</from-view-id>
   <navigation-case>
@@ -128,9 +63,9 @@
    <to-view-id>/pages/initial.xhtml</to-view-id>
   </navigation-case>
  </navigation-rule>
- 
+ -->
  <!-- *************************** RESOURCES ********************************************************** -->
- 
+ <!-- 
  <application>
   <view-handler>org.ajax4jsf.application.AjaxViewHandler</view-handler>
   <message-bundle>MessagesResources</message-bundle>
@@ -142,4 +77,5 @@
  <lifecycle>
   <phase-listener>idm.auth.AuthorizationListener</phase-listener>
  </lifecycle>
+-->
 </faces-config>

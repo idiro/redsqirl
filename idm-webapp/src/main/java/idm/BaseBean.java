@@ -3,6 +3,7 @@ package idm;
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idiro.workflow.server.connect.interfaces.DataStore;
 import idiro.workflow.server.connect.interfaces.DataStoreArray;
+import idiro.workflow.server.connect.interfaces.PckManager;
 import idiro.workflow.server.interfaces.JobManager;
 import idm.useful.IdmEntry;
 import idm.useful.MessageUseful;
@@ -152,5 +153,18 @@ public class BaseBean {
 		return (JobManager) session.getAttribute("oozie");
 	}
 
+	/** getPckManager
+	 * 
+	 * Methods to retrieve the object Package Manager from context
+	 * 
+	 * @return JobManager
+	 * @author Igor.Souza
+	 */
+	public PckManager getPckMng() throws RemoteException{
 
+		FacesContext fCtx = FacesContext.getCurrentInstance();
+		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
+
+		return (PckManager) session.getAttribute("pckmng");
+	}
 }

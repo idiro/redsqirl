@@ -149,6 +149,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		beans.add("ssharray");
 		beans.add("oozie");
 		beans.add("hdfs");
+		beans.add("pckmng");
 
 		try{
 			th = new ServerThread(port);

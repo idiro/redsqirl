@@ -600,10 +600,6 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 		return url;
 	}
-	/*
-	public String getPackageManagerUrl(){
-		return WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_pack_manager_url, "http://dev.local.net/idiro-ops");
-	}*/
 
 	public void updateIdObj(){
 		String groupId = FacesContext.getCurrentInstance().getExternalContext().

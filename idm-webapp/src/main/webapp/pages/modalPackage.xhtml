@@ -1,0 +1,106 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets">
+    <a4j:region renderRegionOnly="true">
+        <rich:modalPanel id="modalInstallPackage" width="900"
+            height="600" style="overflow:auto;" resizeable="true">
+            <f:facet name="header">Packages</f:facet>
+            <f:facet name="controls">
+                <h:graphicImage
+                    value="../image/icons/buttonCloseWindow.gif"
+                    style="cursor:pointer"
+                    onclick="#{rich:component('modalInstallPackage')}.hide()" />
+            </f:facet>
+            <h:form>
+                <h:panelGroup>
+                    <a4j:include
+                        viewId="/pages/modalInstallPackage.xhtml"
+                        ajaxRendered="true" />
+                </h:panelGroup>
+            </h:form>
+        </rich:modalPanel>
+    </a4j:region>
+    <a4j:region>
+        <a4j:status
+            onstart="jQuery('#body').block({ message: jQuery('#domMessageDivCanvas1') });"
+            onerror="jQuery('#body').unblock();"
+            onsuccess="jQuery('#body').unblock();"
+            onstop="jQuery('#body').unblock();" />
+        <a4j:jsFunction name="openInstallPackageModal"
+            action="#{PackageMngBean.setPackageScope}"
+            oncomplete="#{rich:component('modalInstallPackage')}.show();">
+            <a4j:actionparam name="user" />
+        </a4j:jsFunction>
+    </a4j:region>
+    <h:panelGrid id="packageList" columns="2">
+        <rich:panel id="systemPck" header="System Packages"
+            style="overflow:auto;width:270px;height:390px;">
+            <h:panelGroup id="sysPckMenu"
+                style="overflow:auto;height:350px;"
+                rendered="#{PackageMngBean.admin}">
+                <h:selectManyCheckbox
+                    value="#{PackageMngBean.unSysPackage}">
+                    <f:selectItems
+                        value="#{PackageMngBean.systemPackages}" var="n"
+                        itemLabel="#{n.label}" itemValue="#{n.value}" />
+                </h:selectManyCheckbox>
+            </h:panelGroup>
+            <h:panelGroup id="sysPckList"
+                rendered="#{not PackageMngBean.admin}">
+                <ui:repeat value="#{PackageMngBean.systemPackages}"
+                    var="item">
+                    #{item}<br />
+                </ui:repeat>
+            </h:panelGroup>
+            <h:panelGrid id="pck_sys_buttons" columns="2"
+                rendered="#{PackageMngBean.admin}">
+                <rich:panel id="pck_sys_install">
+                    <a4j:commandButton
+                        value="#{messages.button_sys_install}"
+                        onclick="openInstallPackageModal('false');" />
+                </rich:panel>
+                <rich:panel id="pck_sys_uninstall">
+                    <a4j:commandButton
+                        value="#{messages.button_sys_uninstall}"
+                        oncomplete="" />
+                </rich:panel>
+            </h:panelGrid>
+        </rich:panel>
+        <rich:panel id="userPck" header="User Packages"
+            style="overflow:auto;width:270px;height:390px;">
+            <h:panelGroup id="usPckMenu"
+                style="overflow:auto;height:350px;"
+                rendered="#{PackageMngBean.userAllowInstall}">
+                <h:selectManyCheckbox
+                    value="#{PackageMngBean.unUserPackage}">
+                    <f:selectItems
+                        value="#{PackageMngBean.userPackages}" var="n"
+                        itemLabel="#{n.label}" itemValue="#{n.value}" />
+                </h:selectManyCheckbox>
+            </h:panelGroup>
+            <h:panelGroup id="usPckList"
+                rendered="#{not PackageMngBean.userAllowInstall}">
+                <ui:repeat value="#{PackageMngBean.userPackages}"
+                    var="item">
+                    #{item}<br />
+                </ui:repeat>
+            </h:panelGroup>
+            <h:panelGrid id="pck_user_buttons" columns="2"
+                rendered="#{PackageMngBean.userAllowInstall}">
+                <rich:panel id="pck_user_install">
+                    <a4j:commandButton
+                        value="#{messages.button_user_install}"
+                        onclick="openInstallPackageModal('true');" />
+                </rich:panel>
+                <rich:panel id="pck_user_uninstall">
+                    <a4j:commandButton
+                        value="#{messages.button_user_uninstall}"
+                        oncomplete="" />
+                </rich:panel>
+            </h:panelGrid>
+        </rich:panel>
+    </h:panelGrid>
+</ui:composition>

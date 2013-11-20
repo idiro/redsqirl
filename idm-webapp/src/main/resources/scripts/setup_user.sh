@@ -71,7 +71,7 @@ if [ ! -e ${IDM_USER} ]; then
 	exit;
     fi
 
-    echo hive_jdbc_url=jdbc:hive://${namenode}:${HIVE_PORT_CUR}/default > ${IDM_USER}
+    echo hive_jdbc_url=jdbc:hive://${{jdbc_hive_server}:${HIVE_PORT_CUR}/default > ${IDM_USER}
 
     #Update internal conf
     if [ -n "${manual_assign}" ]; then

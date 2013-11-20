@@ -6,7 +6,9 @@ import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idiro.workflow.server.connect.interfaces.DataStore;
 import idiro.workflow.server.connect.interfaces.DataStoreArray;
+import idiro.workflow.server.connect.interfaces.PckManager;
 import idiro.workflow.server.interfaces.JobManager;
+import idiro.workflow.utils.PackageManager;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -73,6 +75,7 @@ public class ServerMain {
 				String nameSshArray = System.getProperty("user.name")+"@ssharray";
 				String nameOozie = System.getProperty("user.name")+"@oozie";
 				String nameHDFS = System.getProperty("user.name")+"@hdfs";
+				String namePckMng = System.getProperty("user.name")+"@pckmng";
 
 				registry = LocateRegistry.getRegistry(
 						"127.0.0.1",
@@ -116,7 +119,13 @@ public class ServerMain {
 
 				logger.info("nameHDFS: "+nameHDFS);
 
-
+				registry.rebind(
+						namePckMng,
+						(PckManager) new PackageManager()
+						);
+				
+				logger.info("namePckManager: "+namePckMng);
+				
 				logger.info("end server main");
 				
 			} catch (IOException e) {
