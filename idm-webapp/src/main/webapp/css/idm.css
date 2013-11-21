@@ -314,6 +314,23 @@ canvas {
 	background-color: #0099ff;
 }
 
-.rich-progress-bar-width{
-	width: 100%;	
+.rich-progress-bar-width {
+	width: 100%;
+}
+
+.help {
+	position: absolute;
+	background-color: #eeeeee;
+	padding-left: 10%;
+	padding-right: 10%;
+	z-index: 9002;
+	font-family:verdana;
+}
+
+.tooltip {
+	left:30%;
+	width:50%;
+	background-color: #111;
+	position: absolute;
+	z-index: 9001;
 }

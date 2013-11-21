@@ -11,34 +11,41 @@
 <head>
 
 <script>
-	jQuery(document).ready(function(){
+	jQuery(document).ready(function() {
 		jQuery("#btIndex").hide();
-		
-		jQuery("#helpIndex").find("a").click(function(e){
+
+		jQuery("#helpIndex").find("a").click(function(e) {
 			jQuery("#helpPanel").load(jQuery(this).attr("href"));
 			jQuery("#helpIndex").hide();
 			jQuery("#btIndex").show();
-		    e.preventDefault();
-		  });
-		
-		jQuery("#btIndex").click(function(){
+			e.preventDefault();
+		});
+
+		jQuery("#btIndex").click(function() {
 			jQuery("#helpIndex").show();
 			jQuery("#btIndex").hide();
 			jQuery("#helpPanel").empty();
-		  });
+		});
 	});
 </script>
 </head>
-	
+
 
 <body>
 	<button id="btIndex">#{messages.label_index}</button>
 	<div id="helpIndex">
+	<h1>IDM Help</h1>
+	<p>
+		IDM is a platform that builds data related workflows that runs on
+		hadoop. For more help on IDM click <a href="../help/index.html"
+			target="_blank">here</a>
+	</p>
+	<h3>Available Actions</h3>
 		<h:outputText value="#{messages.label_index}" />
 		<ul>
-		    <ui:repeat value="#{canvasBean.helpItens}" var="item">
-		    	<li><a href="#{item[1]}">#{item[0]}</a></li>
-		    </ui:repeat>
+			<ui:repeat value="#{canvasBean.helpItens}" var="item">
+				<li><a href="#{item[1]}">#{item[0]}</a></li>
+			</ui:repeat>
 		</ul>
 	</div>
 	<div id="helpPanel"></div>

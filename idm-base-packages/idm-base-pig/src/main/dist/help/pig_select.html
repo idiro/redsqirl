@@ -1,12 +1,93 @@
 
 <!DOCTYPE html>
 <html>
+<head>
+<title>Pig Select Help</title>
+<style>
+h1 {
+	text-align: center;
+}
+
+body {
+	font-family: Verdana, Geneva, sans-serif;
+	padding-left: 2%;
+}
+
+p {
+	padding-left: 3%;
+	width: 50%;
+}
+
+li {
+	padding-left: 3%;
+	padding-top: 1%;
+	width: 50%;
+	list-style: none;
+}
+
+td {
+	padding: 1% 7% 1% 0.5%;
+}
+</style>
+</head>
 <body>
 
-<h1>Pig Select</h1>
+	<h1>Pig Select</h1>
+	<h2>Descriptiom</h2>
+	<p>Perform an select satement over a data set that is stored as an
+		hdfs file/MapReduce file.</p>
+	<h2>Source</h2>
+	<p>The Source can be only HDFS (TEXT MAP REDUCE DIRECTORY). It has
+		to be a delimiter separated value. An example is when | is the
+		delimiter then the format for a line would be (X|Y|Z)</p>
+	<h2>Select - Page 1</h2>
+	<p>This page lets filters/conditions to be set over the dataset
+		that is being imported from.</p>
+	<h3>Condition</h3>
+	<p>Conditions can be set to filter out the data of interest. The
+		query can be as complicated and complex as needed.</p>
+	<h3>Group By</h3>
+	<p>The attribute that the group by action can be set here which is
+		the same as group by in an SQL statement.</p>
+	<h2>Feature operations</h2>
+	<p>Perform operations on data to transform/format the data into a
+		desired output</p>
 
-<p>Perform any pig transformation on a relation, the result is given in
-another relation.</p>
-
+	<h3>Features</h3>
+	<p>Add filters for the query to filter out the data that is desired
+		and needed.</p>
+		
+			<h1>IDM Pig</h1>
+	<p>
+		Idm Pig is a package that contains actions that interface with <a
+			href="http://pig.apache.org/">Pig</a> on the IDM platform to perform
+		Pig actions. There are two other actions available from this package <a
+			href="pig_join.html">Pig Join</a> and <a href="pig_union.html">Pig
+			Union</a>
+	</p>
+	<p>Apache Pig is a platform for analyzing large data sets that
+		consists of a high-level language for expressing data analysis
+		programs, coupled with infrastructure for evaluating these programs.
+		The salient property of Pig programs is that their structure is
+		amenable to substantial parallelization, which in turns enables them
+		to handle very large data sets. At the present time, Pig's
+		infrastructure layer consists of a compiler that produces sequences of
+		Map-Reduce programs, for which large-scale parallel implementations
+		already exist (e.g., the Hadoop subproject). Pig's language layer
+		currently consists of a textual language called Pig Latin, which has
+		the following key properties:
+	<ul>
+		<li>Ease of programming. It is trivial to achieve parallel
+			execution of simple, "embarrassingly parallel" data analysis tasks.
+			Complex tasks comprised of multiple interrelated data transformations
+			are explicitly encoded as data flow sequences, making them easy to
+			write, understand, and maintain.</li>
+		<li>Optimization opportunities. The way in which tasks are
+			encoded permits the system to optimize their execution automatically,
+			allowing the user to focus on semantics rather than efficiency.</li>
+		<li>Extensibility. Users can create their own functions to do
+			special-purpose processing.</li>
+	</ul>
+	</p>
 </body>
 </html>

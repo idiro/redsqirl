@@ -65,19 +65,25 @@ public class PigFilterInteraction extends UserInteraction{
 		return msg;
 	}
 
-
-	public void update() throws RemoteException{
-		Tree<String> output;
-		if(tree.getSubTreeList().isEmpty()){
-			output = new TreeNonUnique<String>("output");
-		}else{
-			output = tree.getFirstChild("editor").getFirstChild("output");
-			tree.remove("editor");
+	public void update() throws RemoteException {
+		try {
+			Tree<String> output;
+			if (tree.getSubTreeList().isEmpty()) {
+				output = new TreeNonUnique<String>("output");
+			} else {
+				output = tree.getFirstChild("editor").getFirstChild("output");
+				tree.remove("editor");
+			}
+			logger.info("trying to get editor");
+			Tree<String> base = PigDictionary.generateEditor(PigDictionary
+					.getInstance().createConditionHelpMenu(), el
+					.getInFeatures());
+			logger.info("editor ok");
+			base.add(output);
+			tree.add(base);
+		} catch (Exception ec) {
+			logger.info("There was an error updating " + getName());
 		}
-		Tree<String> base = PigDictionary.generateEditor(PigDictionary.getInstance().createConditionHelpMenu(),
-				el.getInFeatures());
-		base.add(output);
-		tree.add(base);
 	}
 
 	public String getQueryPiece(String relationName) throws RemoteException{

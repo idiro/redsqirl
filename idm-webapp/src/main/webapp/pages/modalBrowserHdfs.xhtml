@@ -42,7 +42,7 @@
 
 	<h:outputText value="#{messages.label_path}" />
 	<h:inputText id="pathOpenFile" label="Path" value="#{browserHdfsBean.path}"	maxlength="255" style="width:395px;" />
-	<a4j:commandButton type="submit" id="changePathBt" action="#{browserHdfsBean.changePath}" value="#{messages.button_ok}" reRender="hdfsfsOpenFile" />
+	<a4j:commandButton type="submit" id="changePathBt" action="#{browserHdfsBean.changePath}" value="#{messages.button_ok}" reRender="hdfsfsOpenFile,hdfsOpenFileBtn" />
 	<br />
 
 	<a4j:commandLink action="#{browserHdfsBean.goPrevious}"
@@ -97,7 +97,7 @@
 
 	<br />
 	
-	<a4j:commandButton action="#{canvasModalBean.changePathBrowser}" value="#{messages.button_ok}" oncomplete="#{rich:component('modalPanelBrowserHdfsId')}.hide();" reRender="browserPanel, browserTable1, browserTable2, browserTable1Col1, browserTable1Col2" >
+	<a4j:commandButton id="hdfsOpenFileBtn" action="#{canvasModalBean.changePathBrowser}" value="#{messages.button_ok}" oncomplete="#{rich:component('modalPanelBrowserHdfsId')}.hide();" reRender="browserPanel, browserTable1, browserTable2, browserTable1Col1, browserTable1Col2" >
 		<a4j:actionparam name="pathFile" value="getPathHdfs('#{browserHdfsBean.path}')" noEscape="true"/>
 	</a4j:commandButton>
 	

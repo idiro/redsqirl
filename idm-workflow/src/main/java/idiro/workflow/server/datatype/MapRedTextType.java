@@ -130,8 +130,9 @@ public class MapRedTextType extends DataOutput{
 	@Override
 	public boolean isPathExists() throws RemoteException {
 		boolean ok = false;
+		logger.info("checking if path exitst :"+getPath().toString());
 		HdfsFileChecker hCh = new HdfsFileChecker(getPath());
-		if(hCh.isDirectory()){
+		if(hCh.exists()){
 			ok = true;
 		}
 		hCh.close();

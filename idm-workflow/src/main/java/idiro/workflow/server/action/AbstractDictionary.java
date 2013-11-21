@@ -10,6 +10,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -20,6 +22,11 @@ public abstract class AbstractDictionary {
 
 	private static Logger logger = Logger.getLogger(AbstractDictionary.class);
 
+	public static String function = "function";
+	public static String short_desc = "short";
+	public static String param = "param";
+	public static String example = "example";
+	public static String description = "description";
 	protected Map<String, String[][]> functionsMap;
 	
 	protected AbstractDictionary(){
@@ -27,7 +34,7 @@ public abstract class AbstractDictionary {
 	}
 
 	private void loadFunctionsFile(File f) {
-
+		
 		logger.info("loadFunctionsFile");
 
 		BufferedReader br = null;
@@ -45,7 +52,7 @@ public abstract class AbstractDictionary {
 							&& !line.startsWith("#")) {
 						if (!line.trim().isEmpty()) {
 							String[] function = line.split(";");
-							System.out.println(line);
+							logger.info(line);
 							functions.add(function);
 						}
 					}
@@ -96,8 +103,8 @@ public abstract class AbstractDictionary {
 		for (Entry<String, String[][]> e : functionsMap.entrySet()) {
 			System.out.println("#" + e.getKey());
 			for (String[] function : e.getValue()) {
-				System.out.println(function[0] + ";" + function[1] + ";"
-						+ function[2]);
+//				System.out.println(function[0] + ";" + function[1] + ";"
+//						+ function[2]);
 			}
 		}
 	}
@@ -114,8 +121,16 @@ public abstract class AbstractDictionary {
 				bw.newLine();
 
 				for (String[] function : e.getValue()) {
+//					logger.info(function[0] + ";" + function[1] + ";"
+//							+ function[2]);
+					String tempVal = "There is no Help for "+function[0];
+					try{
+						tempVal = function[3];
+					}catch(Exception exc){
+						
+					}
 					bw.write(function[0] + ";" + function[1] + ";"
-							+ function[2]);
+							+ function[2]+";"+tempVal);
 					bw.newLine();
 				}
 			}
@@ -136,4 +151,81 @@ public abstract class AbstractDictionary {
 	protected abstract void loadDefaultFunctions();
 	
 	protected abstract String getNameFile();
+	
+	public static String convertStringtoHelp(String helpString){
+		Map<String,List<String>> functions = new HashMap<String,List<String>>();
+		String output = "";
+		String template= "<div class=\'help\'>";
+		logger.info(helpString);
+		if(helpString.contains("@")){
+			String[] element = helpString.split("@");
+			for(String function : element){
+				logger.info(function);
+				if (function.contains(":")) {
+					String[] titleAndValue = function.split(":");
+					
+						List<String> vals;
+						if(functions.containsKey(titleAndValue[0])){
+							logger.info("getting list for "+titleAndValue[0]);
+							vals = functions.get(titleAndValue[0]);
+						}else{
+							vals = new LinkedList<String>();
+						}
+						
+						vals.add(titleAndValue[1]);
+						
+						logger.info(titleAndValue[0]+" , "+vals);
+						functions.put(titleAndValue[0], vals);
+				}
+				
+			}
+			
+		}
+		Iterator<String> keys = functions.keySet().iterator();
+		List<String> values;
+		Iterator<String> valsIt;
+//			logger.info("building help");
+			
+			if(functions.containsKey(function)){
+				values = functions.get(function);
+//				logger.info(function+" "+values.get(0));
+				template=template.concat("<p><b>"+values.get(0)+"</b></p>");
+			}
+			if (functions.containsKey(short_desc)){
+				values = functions.get(short_desc);
+//				logger.info("short desc");
+//				logger.info(values.get(0));
+				template=template.concat("<p><i>"+values.get(0)+"</i></p>");
+			}if (functions.containsKey(param)){
+				values = functions.get(param);
+				valsIt = values.iterator();
+				template=template.concat("<ul>");
+//				logger.info("params");
+				while(valsIt.hasNext()){
+					String val = valsIt.next();
+//					logger.info(val);
+					template=template.concat("<li>"+val+"</li>");
+				}
+				template=template.concat("</ul>");
+			}
+			if(functions.containsKey(description)){
+				values = functions.get(description);
+				template=template.concat("<p><i>"+values.get(0)+"</i></p>");
+			}
+			if (functions.containsKey(example)){
+				values = functions.get(example);
+				valsIt = values.iterator();
+				template=template.concat("<p><b>Examples</b></p>");
+				while(valsIt.hasNext()){
+					String val = valsIt.next();
+//					logger.info(val);
+					template=template.concat("<p>"+val+"</p>");
+				}
+			}
+			
+			logger.info("help: "+template);
+		
+		output = output.concat(template+"</div>");
+		return output;
+	}
 }

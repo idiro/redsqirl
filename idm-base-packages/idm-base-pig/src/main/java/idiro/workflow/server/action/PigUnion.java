@@ -15,6 +15,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 
 /**
  * Action to do a union statement in Pig Latin.
@@ -92,11 +94,20 @@ public class PigUnion  extends PigElement{
 			
 			String remove = getRemoveQueryPiece(out.getPath())+"\n\n";
 			
+			Map<String, DFEOutput> x = getAliases();
+			Set<Entry<String,DFEOutput>> p =x.entrySet();
+			Iterator<Entry<String,DFEOutput>> it = p.iterator();
 			String load = "";
 			for (DFEOutput in : getDFEInput().get(key_input)){
-				load += hInt.getRelation(in.getPath()) + " = "+getLoadQueryPiece(in) + ";\n";
+				while(it.hasNext()){
+					Entry<String,DFEOutput>next = it.next();
+					if(next.getValue().getPath().equalsIgnoreCase(in.getPath())){
+						load += next.getKey() + " = "+getLoadQueryPiece(in) + ";\n";
+					}
+				}
+				it = p.iterator();
 			}
-			load += "\n";
+			load +="\n";
 
 			String select = tUnionSelInt.getQueryPiece(out)+"\n\n";
 
@@ -122,17 +133,16 @@ public class PigUnion  extends PigElement{
 	public FeatureList getInFeatures() throws RemoteException{
 		FeatureList ans = 
 				new OrderedFeatureList();
-		HDFSInterface hInt = new HDFSInterface();
-		List<DFEOutput> lOut = getDFEInput().get(PigUnion.key_input);
-		Iterator<DFEOutput> it = lOut.iterator();
+		Map<String,DFEOutput> aliases = getAliases();
+		
+		Iterator<String> it = aliases.keySet().iterator();
 		while(it.hasNext()){
-			DFEOutput out = it.next();
-			String relationName = hInt.getRelation(out.getPath());
-			FeatureList mapRelation = out.getFeatures();
-			Iterator<String> itFeat = mapRelation.getFeaturesNames().iterator();
+			String alias = it.next();
+			FeatureList mapTable = aliases.get(alias).getFeatures();
+			Iterator<String> itFeat = mapTable.getFeaturesNames().iterator();
 			while(itFeat.hasNext()){
 				String cur = itFeat.next();
-				ans.addFeature(relationName+"."+cur, mapRelation.getFeatureType(cur));
+				ans.addFeature(alias+"."+cur, mapTable.getFeatureType(cur));
 			}
 		}
 		return ans; 

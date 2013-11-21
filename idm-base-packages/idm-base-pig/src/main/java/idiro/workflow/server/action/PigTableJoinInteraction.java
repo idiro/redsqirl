@@ -166,7 +166,7 @@ public class PigTableJoinInteraction extends UserInteraction{
 			//logger.debug(feats.get(cur));
 			Tree<String> row = operationCopy.add("row"); 
 			row.add(table_op_title).add(cur);
-			row.add(table_feat_title).add(cur);
+			row.add(table_feat_title).add(cur.replaceAll("\\.","_"));
 			row.add(table_type_title).add(
 					PigDictionary.getPigType(feats.getFeatureType(cur))
 					);
@@ -236,13 +236,13 @@ public class PigTableJoinInteraction extends UserInteraction{
 		if(selIt.hasNext()){
 			Tree<String> cur = selIt.next();
 			String featName = cur.getFirstChild(table_feat_title).getFirstChild().getHead(); 
-			select = "FOREACH "+relationName+" GENERATE "+cur.getFirstChild(table_op_title).getFirstChild().getHead()+
+			select = "FOREACH "+relationName+" GENERATE "+cur.getFirstChild(table_op_title).getFirstChild().getHead().replace(".","::")+
 					" AS "+featName;
 		}
 		while(selIt.hasNext()){
 			Tree<String> cur = selIt.next();
 			String featName = cur.getFirstChild(table_feat_title).getFirstChild().getHead();
-			select += ",\n       "+cur.getFirstChild(table_op_title).getFirstChild().getHead()+
+			select += ",\n       "+cur.getFirstChild(table_op_title).getFirstChild().getHead().replace(".","::")+
 					" AS "+featName;
 		}
 
