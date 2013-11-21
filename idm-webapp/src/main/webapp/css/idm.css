@@ -329,7 +329,7 @@ canvas {
 
 .tooltip {
 	left:30%;
-	width:50%;
+	width:25%;
 	background-color: #111;
 	position: absolute;
 	z-index: 9001;
