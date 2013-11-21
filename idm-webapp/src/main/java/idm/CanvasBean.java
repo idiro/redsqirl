@@ -730,20 +730,21 @@ public class CanvasBean extends BaseBean implements Serializable{
 		DataFlowElement df = getDf().getElement(getIdMap().get(getNameWorkflow()).get(groupId));
 		
 		SavingState state = null;
-		boolean pathExists = false;
+		boolean pathExists = true;
 		for (Entry<String, DFEOutput> e : df.getDFEOutput().entrySet()){
 			state = e.getValue().getSavingState();
 			
 			logger.info("path: "+e.getValue().getPath());
 			
-			pathExists = e.getValue().isPathExists();
-			
+//			pathExists = e.getValue().isPathExists();
 			
 			logger.info(e.getKey()+" - "+state+" - "+pathExists);
 		}
 		
 		return new String[]{groupId, state.toString(), String.valueOf(pathExists)};
 	}
+	
+	
 	
 	public String[][] getRunningStatus() throws Exception{
 		logger.info("getRunningStatus");
@@ -761,6 +762,24 @@ public class CanvasBean extends BaseBean implements Serializable{
 		}
 		
 		return result;
+	}
+	
+	public String[] getArrowType() throws Exception{
+		logger.info("getArrowType");
+		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String groupOutId = params.get("groupOutId");
+		String groupInId = params.get("groupInId");
+		logger.info(groupOutId);
+		DataFlowElement df = getDf().getElement(getIdMap().get(getNameWorkflow()).get(groupOutId));
+		
+		String color = null;
+		for (Entry<String, DFEOutput> e : df.getDFEOutput().entrySet()){
+			
+			color = e.getValue().getColour();
+			logger.info(e.getKey()+" - "+color);
+		}
+		
+		return new String[]{groupOutId, groupInId, color};
 	}
 	
 

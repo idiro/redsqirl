@@ -82,4 +82,11 @@ public class OutputActionTest extends DataOutput{
 		return null;
 	}
 
+
+	@Override
+	protected String getDefaultColor() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

@@ -359,4 +359,9 @@ public class MapRedTextType extends DataOutput{
 		return result;
 	}
 
+	@Override
+	protected String getDefaultColor() {
+		return "green";
+	}
+
 }

@@ -28,7 +28,7 @@
 		<a4j:jsFunction name="endDynamicForm" action="#{canvasModalBean.endDynamicForm}" data="#{canvasModalBean.errorMsg}" oncomplete="verifyErrors(data);" 
 		reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, browserTable2, msnError, errorTable"/>
 		
-		<a4j:jsFunction name="closeDynamicForm" oncomplete="#{rich:component('canvasModalPanel')}.hide()" />
+		<a4j:jsFunction name="closeDynamicForm" oncomplete="#{rich:component('canvasModalPanel')}.hide();updateOutputStatus('#{canvasModalBean.groupID}');" />
 	</a4j:region>
             
 	<rich:tabPanel id="canvasModalTabPanel" switchType="ajax" selectedTab="#{canvasModalBean.selectedTab}" >
@@ -303,7 +303,7 @@
 
 			<a4j:commandButton action="#{canvasModalBean.nextPage}" value="#{messages.button_next}" rendered="#{canvasModalBean.lastPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, browserTable2, msnError, errorTable" />
 			
-			<a4j:commandButton oncomplete="endDynamicForm();updateOutputStatus('#{canvasModalBean.groupID}');" value="#{messages.button_ok}" rendered="#{canvasModalBean.lastPage == 'Y'}"/>
+			<a4j:commandButton oncomplete="endDynamicForm();" value="#{messages.button_ok}" rendered="#{canvasModalBean.lastPage == 'Y'}"/>
 		
 		</rich:panel>
 	

@@ -221,7 +221,7 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 	
 	@Override
 	public String getColour() throws RemoteException {
-		String defaultCol = "black";
+		String defaultCol = getDefaultColor();
 		String colour_pref = null;
 		Properties prop = new Properties();
 		try {
@@ -294,4 +294,6 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 					e.getMessage());
 		}
 	}
+	
+	protected abstract String getDefaultColor();
 }

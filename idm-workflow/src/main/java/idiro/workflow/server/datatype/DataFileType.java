@@ -145,4 +145,9 @@ public class DataFileType extends DataOutput{
 		return ok;
 	}
 
+	@Override
+	protected String getDefaultColor() {
+		return "orange";
+	}
+
 }
