@@ -587,7 +587,6 @@ function addLink(canvasName, outId, inId) {
 	arrowClone.idInput = inId;
 	arrowClone.idOutput = outId;
 	arrowClone.isArrow = true;
-	arrowClone.originalColor = "yellow";
 	layer.add(arrowClone);
 	layer.draw();
 	polygonLayer.draw();
@@ -1226,7 +1225,6 @@ function configureCircle(canvasName, circle1) {
 
 					var cloneArrow = arrow.clone();
 					cloneArrow.isArrow = true;
-					cloneArrow.originalColor = "yellow";
 					layer.add(cloneArrow);
 
 					layer.draw();
