@@ -709,7 +709,7 @@
                 
                 <a4j:jsFunction name="addLinkWhenUniq" 
                                 action="#{canvasBean.addLink}" 
-                                oncomplete="addLinkBt()"/>
+                                oncomplete="addLinkBt();updateArrowColor('#{canvasBean.paramOutId}','#{canvasBean.paramInId}', '#{canvasBean.paramNameLink}');"/>
 			</a4j:region>
 			
 			<a4j:region>
@@ -721,7 +721,7 @@
 				<a4j:jsFunction name="addLinkModalBt" 
 				                action="#{canvasBean.updateLinkPossibilities}" 
 				                oncomplete="if(#{canvasBean.nbLinkPossibilities} == 1){addLinkWhenUniq();}else{jQuery('#canvas-tabs').unblock();#{rich:component('modalSelectLink')}.show();};
-				                updateArrowColor('#{canvasBean.paramOutId}','#{canvasBean.paramInId}');"
+				                "
 					reRender="selectLinkList">
 					<a4j:actionparam name="paramOutId" assignTo="#{canvasBean.paramOutId}"/>
 					<a4j:actionparam name="paramInId" assignTo="#{canvasBean.paramInId}"/>
@@ -737,6 +737,7 @@
 				<a4j:jsFunction name="updateArrowColor" data="#{canvasBean.arrowType}" oncomplete="updateArrowType(data[0], data[1], data[2]);">
 					<a4j:actionparam name="groupOutId"/>
 					<a4j:actionparam name="groupInId"/>
+					<a4j:actionparam name="outputName"/>
 				</a4j:jsFunction>
 			</a4j:region>
 			

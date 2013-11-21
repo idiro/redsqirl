@@ -769,14 +769,17 @@ public class CanvasBean extends BaseBean implements Serializable{
 		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String groupOutId = params.get("groupOutId");
 		String groupInId = params.get("groupInId");
-		logger.info(groupOutId);
+//		String outputName = params.get("outputName");
+//		logger.info("link: "+groupOutId+"-"+outputName+"->"+groupInId);
 		DataFlowElement df = getDf().getElement(getIdMap().get(getNameWorkflow()).get(groupOutId));
 		
 		String color = null;
 		for (Entry<String, DFEOutput> e : df.getDFEOutput().entrySet()){
-			
-			color = e.getValue().getColour();
-			logger.info(e.getKey()+" - "+color);
+//			if (e.getKey().endsWith(outputName)){
+				color = e.getValue().getColour();
+				logger.info(e.getKey()+" - "+color);
+				break;
+//			}
 		}
 		
 		return new String[]{groupOutId, groupInId, color};
