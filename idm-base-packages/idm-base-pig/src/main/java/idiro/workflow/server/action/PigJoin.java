@@ -13,6 +13,9 @@ import idiro.workflow.server.interfaces.DFEOutput;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * Action to join several relations.
@@ -139,10 +142,18 @@ public class PigJoin extends PigElement{
 		if(getDFEInput() != null){
 			//Output
 			DFEOutput out = output.values().iterator().next();
-			
+			Map<String, DFEOutput> x = getAliases();
+			Set<Entry<String,DFEOutput>> p =x.entrySet();
+			Iterator<Entry<String,DFEOutput>> it = p.iterator();
 			String load = "";
 			for (DFEOutput in : getDFEInput().get(key_input)){
-				load += hInt.getRelation(in.getPath()) + " = "+getLoadQueryPiece(in) + ";\n";
+				while(it.hasNext()){
+					Entry<String,DFEOutput>next = it.next();
+					if(next.getValue().getPath().equalsIgnoreCase(in.getPath())){
+						load += next.getKey() + " = "+getLoadQueryPiece(in) + ";\n";
+					}
+				}
+				it = p.iterator();
 			}
 			load +="\n";
 			
@@ -177,25 +188,41 @@ public class PigJoin extends PigElement{
 				query += store;
 			}
 		}
-
+		logger.info(query);
 		return query;
 	}
 
 
 	public FeatureList getInFeatures() throws RemoteException{
+//		FeatureList ans = 
+//				new OrderedFeatureList();
+//		HDFSInterface hInt = new HDFSInterface();
+//		List<DFEOutput> lOut = getDFEInput().get(PigJoin.key_input);
+//		Iterator<DFEOutput> it = lOut.iterator();
+//		while(it.hasNext()){
+//			DFEOutput out = it.next();
+//			String relationName = hInt.getRelation(out.getPath());
+//			FeatureList mapTable = out.getFeatures();
+//			Iterator<String> itFeat = mapTable.getFeaturesNames().iterator();
+//			while(itFeat.hasNext()){
+//				String cur = itFeat.next();
+//				ans.addFeature(relationName+"."+cur, mapTable.getFeatureType(cur));
+//			}
+//		}
+//		return ans; 
+		
 		FeatureList ans = 
 				new OrderedFeatureList();
-		HDFSInterface hInt = new HDFSInterface();
-		List<DFEOutput> lOut = getDFEInput().get(PigJoin.key_input);
-		Iterator<DFEOutput> it = lOut.iterator();
+		Map<String,DFEOutput> aliases = getAliases();
+		
+		Iterator<String> it = aliases.keySet().iterator();
 		while(it.hasNext()){
-			DFEOutput out = it.next();
-			String relationName = hInt.getRelation(out.getPath());
-			FeatureList mapTable = out.getFeatures();
+			String alias = it.next();
+			FeatureList mapTable = aliases.get(alias).getFeatures();
 			Iterator<String> itFeat = mapTable.getFeaturesNames().iterator();
 			while(itFeat.hasNext()){
 				String cur = itFeat.next();
-				ans.addFeature(relationName+"."+cur, mapTable.getFeatureType(cur));
+				ans.addFeature(alias+"."+cur, mapTable.getFeatureType(cur));
 			}
 		}
 		return ans; 

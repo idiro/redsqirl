@@ -6,13 +6,13 @@
     xmlns:ui="http://java.sun.com/jsf/facelets">
     <a4j:outputPanel id="form_all" ajaxRendered="true" >
         <h:panelGroup id="install_pck_main"
-            rendered="#{PackageMngBean.showMain}" >
-            #{PackageMngBean.showMain}
+            rendered="#{packageMngBean.showMain}" >
+            #{packageMngBean.showMain}
             <h1>IDM Package Manager</h1>
             <p>Welcome to IDM Package manager. The website aims to
                 gather all the official package available on the IDM
                 platform.</p>
-            <h:dataTable value="#{PackageMngBean.extPackages}" var="c"
+            <h:dataTable value="#{packageMngBean.extPackages}" var="c"
                 styleClass="order-table"
                 headerClass="order-table-header"
                 rowClasses="order-table-odd-row,order-table-even-row">
@@ -21,7 +21,7 @@
                     Name
                 </f:facet>
                     <a4j:commandLink value="#{c.name}"
-                        action="#{PackageMngBean.getExtPackages}"
+                        action="#{packageMngBean.getExtPackages}"
                         reRender="form_all,install_pck_spec">
                         <a4j:actionparam name="packageName"
                             value="#{c.name}" />
@@ -42,19 +42,19 @@
             </h:dataTable>
         </h:panelGroup>
         <h:panelGroup id="install_pck_spec"
-            rendered="#{not PackageMngBean.showMain}" >
+            rendered="#{not packageMngBean.showMain}" >
             <div id="header">
                 <a4j:commandLink value="back"
-                    action="#{PackageMngBean.getExtPackages}"
+                    action="#{packageMngBean.getExtPackages}"
                     reRender="form_all,install_pck_main" />
                     
-                <h1>Package #{PackageMngBean.curPackage.name}</h1>
+                <h1>Package #{packageMngBean.curPackage.name}</h1>
             </div>
             <div id="left">
-                <p>#{PackageMngBean.curPackage.short_description}</p>
+                <p>#{packageMngBean.curPackage.short_description}</p>
                 <h2>Description</h2>
-                #{PackageMngBean.curPackage.description}
-                <h:dataTable value="#{PackageMngBean.extPackages}"
+                #{packageMngBean.curPackage.description}
+                <h:dataTable value="#{packageMngBean.extPackages}"
                     var="c" styleClass="order-table"
                     headerClass="order-table-header"
                     rowClasses="order-table-odd-row,order-table-even-row">
@@ -63,7 +63,7 @@
                     Version
                 </f:facet>
                         <a4j:commandLink value="#{c.version}"
-                            action="#{PackageMngBean.getExtPackages}"
+                            action="#{packageMngBean.getExtPackages}"
                             reRender="form_all,install_pck_spec">
                             <a4j:actionparam name="packageName"
                                 value="#{c.name}" />
@@ -74,14 +74,14 @@
                 </h:dataTable>
             </div>
             <div id="right">
-                Date: #{PackageMngBean.curPackage.dateStr}<br />
-                License: #{PackageMngBean.curPackage.license}<br />
-                Version: #{PackageMngBean.curPackage.version}<br />
-                Price: #{PackageMngBean.curPackage.price}<br />
+                Date: #{packageMngBean.curPackage.dateStr}<br />
+                License: #{packageMngBean.curPackage.license}<br />
+                Version: #{packageMngBean.curPackage.version}<br />
+                Price: #{packageMngBean.curPackage.price}<br />
                 <a4j:commandButton
-                    action="#{PackageMngBean.installPackage}"
+                    action="#{packageMngBean.installPackage}"
                     value="#{messages.button_install}" oncomplete="">
-                    <a4j:actionparam name="downloadUrl" value="#{PackageMngBean.curPackage.url}" />
+                    <a4j:actionparam name="downloadUrl" value="#{packageMngBean.curPackage.url}" />
                 </a4j:commandButton>
             </div>
         </h:panelGroup>

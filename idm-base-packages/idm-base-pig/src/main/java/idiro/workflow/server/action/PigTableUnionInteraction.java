@@ -77,6 +77,7 @@ public class PigTableUnionInteraction extends UserInteraction{
 			}
 
 			Iterator<String> itRelation = mapRelationRow.keySet().iterator();
+			Map<String,DFEOutput> aliases = hu.getAliases(); 
 			while(itRelation.hasNext() && msg == null){
 				String relationName = itRelation.next();
 				List<Tree<String>> listRow = mapRelationRow.get(relationName);
@@ -97,13 +98,14 @@ public class PigTableUnionInteraction extends UserInteraction{
 								row.getFirstChild(table_type_title).getFirstChild().getHead(), 
 								PigDictionary.getInstance().getReturnType(
 										row.getFirstChild(table_op_title).getFirstChild().getHead(),
-										in.getFeatures())
+										hu.getInFeatures())
 								)){
 							msg = "Error the type returned does not correspond for feature "+
 									row.getFirstChild(table_feat_title).getFirstChild().getHead();
 						}else{
 							String featureName = row.getFirstChild(table_feat_title).getFirstChild().getHead()
 									.toUpperCase();
+							logger.info("is it contained in map : "+featureName);
 							if(!mapFeatType.containsFeature(featureName)){
 								msg = "Some Features are not implemented for every relation";
 							}else{
@@ -126,7 +128,7 @@ public class PigTableUnionInteraction extends UserInteraction{
 						listRow.size() !=
 						featuresTitle.size()){
 					msg = lRow.size()-featuresTitle.size()+
-							" features has the same name, total "+lRow.size();
+							" features has the same name, total "+lRow.size() +" featuresTitle "+featuresTitle.size();
 					logger.debug(featuresTitle);
 				}
 			}
@@ -153,6 +155,7 @@ public class PigTableUnionInteraction extends UserInteraction{
 
 
 	public void update(List<DFEOutput> in) throws RemoteException{
+		/*
 
 		if(tree.getSubTreeList().isEmpty()){
 			tree.add(getRootTable());		
@@ -186,7 +189,6 @@ public class PigTableUnionInteraction extends UserInteraction{
 		//Tree<String> generator = 
 		tree.getFirstChild("table").add("generator");
 		//Copy Generator operation
-		/*
 		Tree<String> operationCopy = generator.add("operation");
 		operationCopy.add("title").add("copy");
 		Iterator<String> featIt = in.getFeatures().keySet().iterator();
@@ -199,64 +201,125 @@ public class PigTableUnionInteraction extends UserInteraction{
 					in.getFeatures().get(cur).name()
 					);
 		}*/
+		
+		if(tree.getSubTreeList().isEmpty()){
+			tree.add(getRootTable());		
+		}else{
+			//Remove generator
+			tree.getFirstChild("table").remove("generator");
+			//Remove Editor of operation
+			tree.getFirstChild("table").getFirstChild("columns").
+			findFirstChild(table_op_title).getParent().remove("editor");
+		}
+
+		//Generate Editor
+		Tree<String> featEdit =
+				PigDictionary.generateEditor(PigDictionary.getInstance().createDefaultSelectHelpMenu(),hu.getInFeatures());
+
+		//Set the Editor of operation
+		logger.debug("Set the editor...");
+		Tree<String> operation = tree.getFirstChild("table").getFirstChild("columns").
+				findFirstChild(table_op_title);
+		if(operation == null){
+			logger.warn("Operation is null, it shouldn't happened");
+		}else{
+			logger.debug(operation.getHead());
+			logger.debug(operation.getParent().getHead());
+			logger.debug(operation.getParent().getParent().getHead());
+		}
+
+		operation.getParent().getParent().add(featEdit);
+
+		//Set the Generator
+		Tree<String> generator = tree.getFirstChild("table").add("generator");
+		//Copy Generator operation
+		Tree<String> operationCopy = generator.add("operation");
+		operationCopy.add("title").add("copy");
+		FeatureList firstIn = in.get(0).getFeatures();
+		Iterator<String> featIt = firstIn.getFeaturesNames().iterator();
+		while(featIt.hasNext()){
+			String feature = featIt.next();
+			FeatureType featureType = firstIn.getFeatureType(feature); 
+			Iterator<DFEOutput> itIn = in.iterator();
+			itIn.next();
+			boolean found = true;
+			while(itIn.hasNext() && found){
+				DFEOutput cur = itIn.next();
+				found = featureType.equals(cur.getFeatures().getFeatureType(feature));
+			}
+			if(found){
+				Iterator<String> aliases = hu.getAliases().keySet().iterator();
+				while(aliases.hasNext()){
+					String alias = aliases.next();
+					Tree<String> row = operationCopy.add("row");
+					row.add(table_relation_title).add(alias); 
+					row.add(table_op_title).add(alias+"."+feature);
+					row.add(table_feat_title).add(feature);
+					row.add(table_type_title).add(
+							PigDictionary.getPigType(featureType)
+							);
+				}
+			}
+		}
 	}
 
 
 	protected Tree<String> getRootTable() throws RemoteException{
-		HDFSInterface hInt = new HDFSInterface();
 		//table
-		Tree<String> input = new TreeNonUnique<String>("table");
-		Tree<String> columns = new TreeNonUnique<String>("columns");
-		input.add(columns);
+				Tree<String> input = new TreeNonUnique<String>("table");
+				Tree<String> columns = new TreeNonUnique<String>("columns");
+				input.add(columns);
 
-		//Table
-		Tree<String> table = new TreeNonUnique<String>("column");
-		columns.add(table);
-		table.add("title").add(table_relation_title);
+				//Table
+				Tree<String> table = new TreeNonUnique<String>("column");
+				columns.add(table);
+				table.add("title").add(table_relation_title);
 
-		Tree<String> constraintTable = new TreeNonUnique<String>("constraint");
-		table.add(constraintTable);
+				Tree<String> constraintTable = new TreeNonUnique<String>("constraint");
+				table.add(constraintTable);
 
-		Tree<String> valsTable = new TreeNonUnique<String>("values");
-		constraintTable.add(valsTable);
+				Tree<String> valsTable = new TreeNonUnique<String>("values");
+				constraintTable.add(valsTable);
 
-		Iterator<DFEOutput> it = hu.getDFEInput().get(PigUnion.key_input).iterator();
-		while(it.hasNext()){
-			valsTable.add("value").add(hInt.getRelation(it.next().getPath()));
-		}
+				
+				Iterator<String> it = hu.getAliases().keySet().iterator();
+				while(it.hasNext()){
+					//valsTable.add("value").add(hInt.getTableAndPartitions(it.next().getPath())[0]);
+					valsTable.add("value").add(it.next());
+				}
 
-		//operation
-		columns.add("column").add("title").add(table_op_title);
+				//operation
+				columns.add("column").add("title").add(table_op_title);
 
-		//Feature name
-		Tree<String> newFeatureName = new TreeNonUnique<String>("column");
-		columns.add(newFeatureName);
-		newFeatureName.add("title").add(table_feat_title);
+				//Feature name
+				Tree<String> newFeatureName = new TreeNonUnique<String>("column");
+				columns.add(newFeatureName);
+				newFeatureName.add("title").add(table_feat_title);
 
-		Tree<String> constraintFeat = new TreeNonUnique<String>("constraint");
-		newFeatureName.add(constraintFeat);
-		constraintFeat.add("count").add(Integer.toString(hu.getAllInputComponent().size()));
+				Tree<String> constraintFeat = new TreeNonUnique<String>("constraint");
+				newFeatureName.add(constraintFeat);
+				constraintFeat.add("count").add(Integer.toString(hu.getAllInputComponent().size()));
 
 
-		//Type
-		Tree<String> newType = new TreeNonUnique<String>("column");
-		columns.add(newType);
-		newType.add("title").add(table_type_title);
+				//Type
+				Tree<String> newType = new TreeNonUnique<String>("column");
+				columns.add(newType);
+				newType.add("title").add(table_type_title);
 
-		Tree<String> constraintType = new TreeNonUnique<String>("constraint");
-		newType.add(constraintType);
+				Tree<String> constraintType = new TreeNonUnique<String>("constraint");
+				newType.add(constraintType);
 
-		Tree<String> valsType = new TreeNonUnique<String>("values");
-		constraintType.add(valsType);
+				Tree<String> valsType = new TreeNonUnique<String>("values");
+				constraintType.add(valsType);
 
-		valsType.add("value").add(FeatureType.BOOLEAN.name());
-		valsType.add("value").add(FeatureType.INT.name());
-		valsType.add("value").add(FeatureType.DOUBLE.name());
-		valsType.add("value").add(FeatureType.CHARARRAY.name());
-		valsType.add("value").add(FeatureType.FLOAT.name());
-		valsType.add("value").add("BIGINT");
+				valsType.add("value").add(FeatureType.BOOLEAN.name());
+				valsType.add("value").add(FeatureType.INT.name());
+				valsType.add("value").add(FeatureType.DOUBLE.name());
+				valsType.add("value").add(FeatureType.STRING.name());
+				valsType.add("value").add(FeatureType.FLOAT.name());
+				valsType.add("value").add("BIGINT");
 
-		return input;
+				return input;
 	}
 
 	public FeatureList getNewFeatures() throws RemoteException{
@@ -271,6 +334,8 @@ public class PigTableUnionInteraction extends UserInteraction{
 			new_features.addFeature(name, FeatureType.valueOf(type));
 		}
 		return new_features;
+		
+		
 	}
 
 	public Map<String,List<Tree<String>>> getSubQuery() throws RemoteException{
@@ -286,6 +351,7 @@ public class PigTableUnionInteraction extends UserInteraction{
 			if(!mapRelationRow.containsKey(relationName)){
 				List<Tree<String>> list = new LinkedList<Tree<String>>();
 				mapRelationRow.put(relationName, list);
+				logger.info("adding to "+relationName);
 			}
 			mapRelationRow.get(relationName).add(row);
 		}
@@ -327,14 +393,13 @@ public class PigTableUnionInteraction extends UserInteraction{
 				Tree<String> featTree = itTree.next();
 				String featName = featTree.getFirstChild(table_feat_title).getFirstChild().getHead();
 				String op = featTree.getFirstChild(table_op_title).getFirstChild().getHead();
-				select += hu.getNextName() +" = FOREACH " + relationName + " GENERATE "+op+
-						" AS "+featName;
+				select += hu.getNextName() +" = FOREACH " + relationName + " GENERATE "+featName;
 			}
 			while(itTree.hasNext()){
 				Tree<String> featTree = itTree.next();
 				String featName = featTree.getFirstChild(table_feat_title).getFirstChild().getHead();
 				String op = featTree.getFirstChild(table_op_title).getFirstChild().getHead();
-				select +=", "+op+" AS "+featName;
+				select +=", "+featName;
 			}
 			select +=";\n\n";
 			

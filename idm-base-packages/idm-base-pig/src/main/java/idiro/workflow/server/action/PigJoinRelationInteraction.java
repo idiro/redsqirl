@@ -6,12 +6,17 @@ import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.action.utils.PigDictionary;
 import idiro.workflow.server.enumeration.DisplayType;
+import idiro.workflow.server.interfaces.DFEOutput;
+import idiro.workflow.server.interfaces.DataFlowElement;
 
 import java.rmi.RemoteException;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.jruby.compiler.ir.instructions.GetInstr;
 
 /**
  * Specify the relationship between joined relations. The order is important as
@@ -51,7 +56,7 @@ public class PigJoinRelationInteraction extends UserInteraction {
 			logger.error(msg);
 			return msg;
 		}
-		Set<String> relations = hj.getInRelations();
+		Set<String> relations = hj.getAliases().keySet();
 		if (relations.size() != lRow.size()) {
 			msg = "The relation needs to have one and only one row for each entry";
 		} else {
@@ -80,7 +85,8 @@ public class PigJoinRelationInteraction extends UserInteraction {
 					Iterator<String> itRelation = relations.iterator();
 					while (itRelation.hasNext() && msg == null) {
 						String curTab = itRelation.next();
-						if (!curTab.equalsIgnoreCase(relation)) {
+						if (rel.contains(curTab+".") &&
+								!curTab.equalsIgnoreCase(relation)) {
 							msg = "row "
 									+ rowNb
 									+ ": Cannot have an operation with several relations here ("
@@ -102,8 +108,8 @@ public class PigJoinRelationInteraction extends UserInteraction {
 	}
 
 	public void update() throws RemoteException {
-
 		Set<String> tablesIn = hj.getAliases().keySet();
+		
 		if (tree.getSubTreeList().isEmpty()) {
 			tree.add(getRootTable(tablesIn));
 		} else {
@@ -133,7 +139,9 @@ public class PigJoinRelationInteraction extends UserInteraction {
 
 		Iterator<String> itTable = tablesIn.iterator();
 		while (itTable.hasNext()) {
-			valsTable.add("value").add(itTable.next());
+			String tableName = itTable.next();
+			logger.info("adding "+tableName+"as a value");
+			valsTable.add("value").add(tableName);
 		}
 
 		// Generate Editor
@@ -141,11 +149,11 @@ public class PigJoinRelationInteraction extends UserInteraction {
 				.getInstance().createDefaultSelectHelpMenu(), hj
 				.getInFeatures());
 
+		logger.info(((TreeNonUnique<String>) featEdit).toString());
 		// Set the Editor of operation
 		Tree<String> operation = tree.getFirstChild("table")
 				.getFirstChild("columns").findFirstChild(table_feat_title);
 		operation.getParent().getParent().add(featEdit);
-		logger.info(((TreeNonUnique<String>) tree).toString());
 		logger.info("finished update for join relationship");
 	}
 
@@ -188,10 +196,13 @@ public class PigJoinRelationInteraction extends UserInteraction {
 			Tree<String> cur = it.next();
 			String feat = cur.getFirstChild(table_feat_title).getFirstChild()
 					.getHead();
+			logger.info(feat);
+			String[] ans = feat.split("\\.");
+			
 			String relation = cur.getFirstChild(table_relation_title)
 					.getFirstChild().getHead();
 
-			join += " " + relation + " BY " + feat;
+			join += " " + relation + " BY " + ans[ans.length-1];
 			if (!joinType.isEmpty()) {
 				join += " " + joinType;
 			}
