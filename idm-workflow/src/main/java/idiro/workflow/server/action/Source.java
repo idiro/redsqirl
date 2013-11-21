@@ -150,17 +150,15 @@ public class Source extends DataflowAction {
 						}
 						if (error == null) {
 
-							String delimiter = "\001";
-							try {
-								delimiter = getInteraction(key_dataset)
-										.getTree()
-										.getFirstChild("browse")
-										.getFirstChild("output")
-										.getFirstChild("property")
-										.getFirstChild(
-												MapRedTextType.key_delimiter)
-										.getFirstChild().getHead();
-							} catch (Exception e) {
+							String delimiter = "#1";
+							try{
+								delimiter = getInteraction(key_dataset).getTree()
+										.getFirstChild("browse").
+										getFirstChild("output")
+										.getFirstChild("property").
+										getFirstChild(MapRedTextType.key_delimiter).
+										getFirstChild().getHead();
+							}catch(Exception e){
 								logger.debug("Delimiter not set, using default delimiter");
 							}
 
@@ -451,7 +449,7 @@ public class Source extends DataflowAction {
 				output.put(out_name, dataOutput);
 				output.get(out_name).setPath(path);
 
-				String delimiter = "'\001'";
+				String delimiter = "#1";
 
 				try {
 					delimiter = getInteraction(key_dataset).getTree()
@@ -472,7 +470,8 @@ public class Source extends DataflowAction {
 				output.get(out_name).setSavingState(SavingState.RECORDED);
 			}
 
-		} catch (Exception e) {
+		}catch(Exception e){
+			logger.error("Needs a data set", e);
 			error = "Needs a data set";
 		}
 

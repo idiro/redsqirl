@@ -1,0 +1,89 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets">
+    <a4j:outputPanel id="form_all" ajaxRendered="true" >
+        <h:panelGroup id="install_pck_main"
+            rendered="#{packageMngBean.showMain}" >
+            #{packageMngBean.showMain}
+            <h1>IDM Package Manager</h1>
+            <p>Welcome to IDM Package manager. The website aims to
+                gather all the official package available on the IDM
+                platform.</p>
+            <h:dataTable value="#{packageMngBean.extPackages}" var="c"
+                styleClass="order-table"
+                headerClass="order-table-header"
+                rowClasses="order-table-odd-row,order-table-even-row">
+                <h:column>
+                    <f:facet name="header">
+                    Name
+                </f:facet>
+                    <a4j:commandLink value="#{c.name}"
+                        action="#{packageMngBean.getExtPackages}"
+                        reRender="form_all,install_pck_spec">
+                        <a4j:actionparam name="packageName"
+                            value="#{c.name}" />
+                    </a4j:commandLink>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">
+                    License
+                </f:facet>
+                    #{c.license}
+            </h:column>
+                <h:column>
+                    <f:facet name="header">
+                    Description
+                </f:facet>
+                    #{c.short_description}
+            </h:column>
+            </h:dataTable>
+        </h:panelGroup>
+        <h:panelGroup id="install_pck_spec"
+            rendered="#{not packageMngBean.showMain}" >
+            <div id="header">
+                <a4j:commandLink value="back"
+                    action="#{packageMngBean.getExtPackages}"
+                    reRender="form_all,install_pck_main" />
+                    
+                <h1>Package #{packageMngBean.curPackage.name}</h1>
+            </div>
+            <div id="left">
+                <p>#{packageMngBean.curPackage.short_description}</p>
+                <h2>Description</h2>
+                #{packageMngBean.curPackage.description}
+                <h:dataTable value="#{packageMngBean.extPackages}"
+                    var="c" styleClass="order-table"
+                    headerClass="order-table-header"
+                    rowClasses="order-table-odd-row,order-table-even-row">
+                    <h:column>
+                        <f:facet name="header">
+                    Version
+                </f:facet>
+                        <a4j:commandLink value="#{c.version}"
+                            action="#{packageMngBean.getExtPackages}"
+                            reRender="form_all,install_pck_spec">
+                            <a4j:actionparam name="packageName"
+                                value="#{c.name}" />
+                            <a4j:actionparam name="version"
+                                value="#{c.version}" />
+                        </a4j:commandLink>
+                    </h:column>
+                </h:dataTable>
+            </div>
+            <div id="right">
+                Date: #{packageMngBean.curPackage.dateStr}<br />
+                License: #{packageMngBean.curPackage.license}<br />
+                Version: #{packageMngBean.curPackage.version}<br />
+                Price: #{packageMngBean.curPackage.price}<br />
+                <a4j:commandButton
+                    action="#{packageMngBean.installPackage}"
+                    value="#{messages.button_install}" oncomplete="">
+                    <a4j:actionparam name="downloadUrl" value="#{packageMngBean.curPackage.url}" />
+                </a4j:commandButton>
+            </div>
+        </h:panelGroup>
+    </a4j:outputPanel>
+</ui:composition>

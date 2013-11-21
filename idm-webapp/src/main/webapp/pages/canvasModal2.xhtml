@@ -19,16 +19,8 @@ function addtooltip(text){
     jQuery('div.tooltip').remove();
     var y=event.layerY;
     var help = jQuery('<div class="tooltip">'+text+'</div>').hide().fadeIn("slow");
-    //var thelp = help;
-    //jQuery(thelp).css("display","none");
-    //jQuery(window.event.target).append(thelp);
-    //var height = jQuery(thelp).height();
-    //jQuery(thelp).remove();
-    //var halfheight = height/2;
-    //y=y-halfheight
-    jQuery(help).css("top",(y-10)+"px")
-    //help.style.top = (y + 20) + 'px';
-    //help.style.left = (x + 20) + 'px';
+    console.log("something");
+    //jQuery(help).css("top",(y-10)+"px");
     jQuery("body").append(help);
 }
 

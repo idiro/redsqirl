@@ -29,5 +29,7 @@ public interface JobManager extends Remote{
 	public List<String[]> getJobs() throws RemoteException, Exception;
 	
 	public String getUrl() throws RemoteException;
+	
+	public String getElementStatus(DataFlow df, DataFlowElement e) throws RemoteException, Exception;
 
 }

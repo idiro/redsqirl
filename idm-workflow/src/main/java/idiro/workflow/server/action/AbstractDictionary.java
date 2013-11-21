@@ -155,7 +155,7 @@ public abstract class AbstractDictionary {
 	public static String convertStringtoHelp(String helpString){
 		Map<String,List<String>> functions = new HashMap<String,List<String>>();
 		String output = "";
-		String template= "<div class=\'help\'>";
+		String template= "<div class=\"help\">";
 		logger.info(helpString);
 		if(helpString.contains("@")){
 			String[] element = helpString.split("@");

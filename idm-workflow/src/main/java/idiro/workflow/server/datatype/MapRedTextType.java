@@ -177,7 +177,7 @@ public class MapRedTextType extends DataOutput{
 				for(int i = 0; i < stat.length; ++i){
 					ans.addAll(
 							hdfsInt.select(stat[i].getPath().toString(),
-									getProperty(key_delimiter),
+									getChar(getProperty(key_delimiter)),
 									(maxToRead/stat.length)+1)
 							);
 				}
@@ -199,9 +199,9 @@ public class MapRedTextType extends DataOutput{
 				for (String line : lines){
 					if (!line.trim().isEmpty()){
 						int cont = 0;
-						for (String s : line.split(Pattern.quote(getProperty(key_delimiter)))){
+						for (String s : line.split(Pattern.quote(getChar(getProperty(key_delimiter))))){
 							String nameColumn = generateColumnName(cont++);
-							FeatureType type = getType(s);
+							FeatureType type = getType(s.trim());
 							if (features.containsFeature(nameColumn)){
 								if (!canCast(type, features.getFeatureType(nameColumn))){
 									features.addFeature(nameColumn, type);
@@ -221,15 +221,15 @@ public class MapRedTextType extends DataOutput{
 
 	private String getDefaultDelimiter(String text){
 		if (text.contains("\001")){
-			return "\001";
+			return "#1";
 		}
 		else if (text.contains("\002")){
-			return "\002";
+			return "#2";
 		}
 		else if (text.contains("|")){
-			return "|";
+			return "#124";
 		}
-		return "\001";
+		return "#1";
 	}
 
 	private FeatureType getType(String expr){
@@ -266,7 +266,7 @@ public class MapRedTextType extends DataOutput{
 				type = FeatureType.STRING;
 			}
 		}
-
+		logger.info("getType: "+expr + " - " + type);
 		return type;
 	}
 
@@ -296,21 +296,22 @@ public class MapRedTextType extends DataOutput{
 
 	@Override
 	public void addProperty(String key, String value){
+		
+		if (key.equals(key_delimiter) && value.length() == 1){
+			value = "#"+String.valueOf((int) value.charAt(0));
+		}
+		
 		super.addProperty(key, value);
-
+		
 		if (key.equals(key_delimiter) && getPath() != null){
-
 			try {
-				
 				logger.info("addProperty() ");
-
 				generateFeaturesMap();
 
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
 		}
-
 	}
 
 	@Override
@@ -328,11 +329,13 @@ public class MapRedTextType extends DataOutput{
 			if (list != null && !list.isEmpty()){
 				String text = list.get(0);
 				if (getProperty(key_delimiter) == null){
-					super.addProperty(key_delimiter, getDefaultDelimiter(text));
+					String delimiter = getDefaultDelimiter(text);
+					super.addProperty(key_delimiter, delimiter);
 				}
 				else{
 					if (!text.contains(getProperty(key_delimiter))){
-						super.addProperty(key_delimiter, getDefaultDelimiter(text));
+						String delimiter = getDefaultDelimiter(text);
+						super.addProperty(key_delimiter, delimiter);
 					}
 				}
 			}
@@ -347,6 +350,14 @@ public class MapRedTextType extends DataOutput{
 					generateColumnName(((columnIndex)%26));
 		}else
 			return String.valueOf((char)(columnIndex+65));
+	}
+	
+	private String getChar(String asciiCode){
+		String result = null;
+		if (asciiCode != null && asciiCode.startsWith("#") && asciiCode.length() > 1){
+			result = String.valueOf(Character.toChars(Integer.valueOf(asciiCode.substring(1))));
+		}
+		return result;
 	}
 
 }

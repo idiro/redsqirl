@@ -2,6 +2,7 @@ package idm;
 
 
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
+import idiro.workflow.server.enumeration.SavingState;
 import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.interfaces.DataFlow;
@@ -17,6 +18,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
@@ -598,10 +600,6 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 		return url;
 	}
-	/*
-	public String getPackageManagerUrl(){
-		return WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_pack_manager_url, "http://dev.local.net/idiro-ops");
-	}*/
 
 	public void updateIdObj(){
 		String groupId = FacesContext.getCurrentInstance().getExternalContext().
@@ -723,7 +721,48 @@ public class CanvasBean extends BaseBean implements Serializable{
 		getIdMap().clear();
 		setDf(null);
 	}
-
+	
+	public String[] getOutputStatus() throws Exception{
+		logger.info("getOutputStatus");
+		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String groupId = params.get("groupId");
+		
+		DataFlowElement df = getDf().getElement(getIdMap().get(getNameWorkflow()).get(groupId));
+		
+		SavingState state = null;
+		boolean pathExists = false;
+		for (Entry<String, DFEOutput> e : df.getDFEOutput().entrySet()){
+			state = e.getValue().getSavingState();
+			
+			logger.info("path: "+e.getValue().getPath());
+			
+			pathExists = e.getValue().isPathExists();
+			
+			
+			logger.info(e.getKey()+" - "+state+" - "+pathExists);
+		}
+		
+		return new String[]{groupId, state.toString(), String.valueOf(pathExists)};
+	}
+	
+	public String[][] getRunningStatus() throws Exception{
+		logger.info("getRunningStatus");
+		String[][] result = new String[getIdMap().get(getNameWorkflow()).size()][];
+		
+		int i = 0;
+		for (Entry<String, String> e : getIdMap().get(getNameWorkflow()).entrySet()){
+			
+			
+			String status = getOozie().getElementStatus(getDf(), getDf().getElement(e.getValue()));
+			
+			logger.info(e.getKey()+" - "+status);
+			
+			result[i++] = new String[]{e.getKey(), status};
+		}
+		
+		return result;
+	}
+	
 
 	public String getIdElement(String idGroup){
 		return getIdMap().get(getNameWorkflow()).get(idGroup);

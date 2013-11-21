@@ -74,40 +74,41 @@ public class PackageManagerTests{
 			File pack = createPackage(packName);
 			File pack3 = createMixPackage(packName3,packName);
 			
-			PackageManager.removePackage(false, new String[]{packName});
-			PackageManager.removePackage(false, new String[]{packName2});
-			PackageManager.removePackage(false, new String[]{packName3});
+			PackageManager pkm = new PackageManager();
+			pkm.removePackage(false, new String[]{packName});
+			pkm.removePackage(false, new String[]{packName2});
+			pkm.removePackage(false, new String[]{packName3});
 			
 			logger.debug("Add packages...");
 			assertTrue(
 					"Fail to add "+packName,
-					PackageManager.addPackage(false, new String[]{pack.getAbsolutePath()}));
+					pkm.addPackage(false, new String[]{pack.getAbsolutePath()}));
 			
 			assertFalse(
 					"Success to add "+packName,
-					PackageManager.addPackage(false, new String[]{pack.getAbsolutePath()}));
+					pkm.addPackage(false, new String[]{pack.getAbsolutePath()}));
 			
 
 			assertFalse(
 					"Success to add "+packName3,
-					PackageManager.addPackage(false, new String[]{pack3.getAbsolutePath()}));
+					pkm.addPackage(false, new String[]{pack3.getAbsolutePath()}));
 			
 			assertTrue(
 					"Success to add "+packName2,
-					PackageManager.addPackage(false, new String[]{pack2.getAbsolutePath()}));
+					pkm.addPackage(false, new String[]{pack2.getAbsolutePath()}));
 			
 			logger.debug("Remove packages....");
 			assertTrue(
 					"Fail to remove "+packName,
-					PackageManager.removePackage(false, new String[]{packName}));
+					pkm.removePackage(false, new String[]{packName}));
 			
 			assertFalse(
 					"Fail to remove "+packName,
-					PackageManager.removePackage(false, new String[]{packName}));
+					pkm.removePackage(false, new String[]{packName}));
 			
 			assertTrue(
 					"Fail to remove "+packName2,
-					PackageManager.removePackage(false, new String[]{packName2}));
+					pkm.removePackage(false, new String[]{packName2}));
 			
 		}catch(Exception e){
 			error = "Unexpected exception "+e.getMessage();

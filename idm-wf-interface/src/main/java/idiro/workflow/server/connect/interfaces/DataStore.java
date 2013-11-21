@@ -165,6 +165,25 @@ public interface DataStore extends Remote {
 	String copy(String in_path, String out_path) throws RemoteException;
 	
 	/**
+	 * Copy a datastore element from a remote server
+	 * @param in_path
+	 * @param out_path
+	 * @return Error message
+	 * @throws RemoteException
+	 */
+	String copyFromRemote(String in_path, String out_path, String remoteServer) throws RemoteException;
+	
+	/**
+	 * Copy a datastore element to a remote server
+	 * @param in_path
+	 * @param out_path
+	 * @return Error message
+	 * @throws RemoteException
+	 */
+	String copyToRemote(String in_path, String out_path, String remoteServer) throws RemoteException;
+	
+	
+	/**
 	 * Delete a datastore element
 	 * @param path path to delete
 	 * @return true if deleted successfully
