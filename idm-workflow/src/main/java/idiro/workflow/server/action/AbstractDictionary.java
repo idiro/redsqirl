@@ -156,17 +156,17 @@ public abstract class AbstractDictionary {
 		Map<String,List<String>> functions = new HashMap<String,List<String>>();
 		String output = "";
 		String template= "<div class=\"help\">";
-		logger.info(helpString);
+		logger.debug(helpString);
 		if(helpString.contains("@")){
 			String[] element = helpString.split("@");
 			for(String function : element){
-				logger.info(function);
+				logger.debug(function);
 				if (function.contains(":")) {
 					String[] titleAndValue = function.split(":");
 					
 						List<String> vals;
 						if(functions.containsKey(titleAndValue[0])){
-							logger.info("getting list for "+titleAndValue[0]);
+							logger.debug("getting list for "+titleAndValue[0]);
 							vals = functions.get(titleAndValue[0]);
 						}else{
 							vals = new LinkedList<String>();
@@ -174,7 +174,7 @@ public abstract class AbstractDictionary {
 						
 						vals.add(titleAndValue[1]);
 						
-						logger.info(titleAndValue[0]+" , "+vals);
+						logger.debug(titleAndValue[0]+" , "+vals);
 						functions.put(titleAndValue[0], vals);
 				}
 				
@@ -227,5 +227,12 @@ public abstract class AbstractDictionary {
 		
 		output = output.concat(template+"</div>");
 		return output;
+	}
+
+	/**
+	 * @return the functionsMap
+	 */
+	public final Map<String, String[][]> getFunctionsMap() {
+		return functionsMap;
 	}
 }
