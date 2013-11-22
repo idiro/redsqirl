@@ -1460,17 +1460,14 @@ function updateLabelObj(groupId, newGroupId) {
 }
 
 function getColorOutput(status, fileExists){
-	if (fileExists == "TRUE"){
-		return "pink";
-	}
 	if (status == "TEMPORARY"){
-		return "green";
+		return "purple";
 	}
 	else if (status == "RECORDED"){
-		return "blue";
+		return "orange";
 	}
 	else if (status == "BUFFERED"){
-		return "red";
+		return "blue";
 	}
 	else {
 		return "white";
@@ -1483,9 +1480,6 @@ function getColorRunning(status){
 	}
 	else if (status == "ERROR"){
 		return "red";
-	}
-	else if (status == "KILLED"){
-		return "yellow";
 	}
 	else {
 		return "white";

@@ -35,4 +35,9 @@ public class HiveTypeWithWhere extends HiveType{
 	public String getTypeName() throws RemoteException {
 		return "Hive Partition";
 	}
+	
+	@Override
+	protected String getDefaultColor(){
+		return "SkyBlue"; 
+	}
 }
