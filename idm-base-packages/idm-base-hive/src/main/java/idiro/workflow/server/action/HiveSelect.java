@@ -73,7 +73,7 @@ public class HiveSelect extends HiveElement{
 
 		page2 = addPage("Feature operations",
 				"The columns generated are defined on this page. Each row of the table is a new column to generate. "+
-						"The feature name have to be unique and a correct type needs to be assign.",
+						"The feature name has to be unique and a correct type needs to be assign.",
 						1);
 
 		tSelInt = new TableSelectInteraction(
