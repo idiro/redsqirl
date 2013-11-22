@@ -1542,7 +1542,6 @@ function updateArrowType(idOutput, idInput, color) {
 		function(index, value) {
 			if (value !== undefined && value.isArrow == true) {
 				if (value.idOutput == idOutput && value.idInput == idInput){
-//					var color = getColorArrowType(fileType);
 					value.setStroke(color);
 					value.originalColor = color;
 					return false;
