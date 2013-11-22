@@ -46,6 +46,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 	private String[] result;
 	private String idElement;
 	private String idGroup;
+	private String nameOutput;
 	private Map<String, Map<String, String>> idMap;
 	private UserInfoBean userInfoBean;
 	private String path;
@@ -271,7 +272,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 			setResult(new String[]{getParamNameLink(), nameElementA, nameElementB});
 
-
+			setNameOutput(nameElementA);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
@@ -769,17 +770,16 @@ public class CanvasBean extends BaseBean implements Serializable{
 		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String groupOutId = params.get("groupOutId");
 		String groupInId = params.get("groupInId");
-//		String outputName = params.get("outputName");
-//		logger.info("link: "+groupOutId+"-"+outputName+"->"+groupInId);
+		String outputName = params.get("outputName");
 		DataFlowElement df = getDf().getElement(getIdMap().get(getNameWorkflow()).get(groupOutId));
 		
 		String color = null;
 		for (Entry<String, DFEOutput> e : df.getDFEOutput().entrySet()){
-//			if (e.getKey().endsWith(outputName)){
+			if (e.getKey().endsWith(outputName)){
 				color = e.getValue().getColour();
 				logger.info(e.getKey()+" - "+color);
 				break;
-//			}
+			}
 		}
 		
 		return new String[]{groupOutId, groupInId, color};
@@ -933,5 +933,13 @@ public class CanvasBean extends BaseBean implements Serializable{
 	 */
 	public void setNbLinkPossibilities(int nbLinkPossibilities) {
 		this.nbLinkPossibilities = nbLinkPossibilities;
+	}
+
+	public String getNameOutput() {
+		return nameOutput;
+	}
+
+	public void setNameOutput(String nameOutput) {
+		this.nameOutput = nameOutput;
 	}
 }

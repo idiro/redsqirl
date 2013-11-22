@@ -700,7 +700,8 @@
                 <a4j:status onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
                             onstop="jQuery('#canvas-tabs').unblock();" />
                 
-                <a4j:jsFunction name="addLinkBt" data="#{canvasBean.result}" oncomplete="updateLink(data[0], data[1], data[2])" />
+                <a4j:jsFunction name="addLinkBt" data="#{canvasBean.result}" oncomplete="updateLink(data[0], data[1], data[2]);
+                	updateArrowColor('#{canvasBean.paramOutId}','#{canvasBean.paramInId}', '#{canvasBean.nameOutput}');" />
             </a4j:region>
 			
 			<a4j:region>
@@ -709,7 +710,7 @@
                 
                 <a4j:jsFunction name="addLinkWhenUniq" 
                                 action="#{canvasBean.addLink}" 
-                                oncomplete="addLinkBt();updateArrowColor('#{canvasBean.paramOutId}','#{canvasBean.paramInId}', '#{canvasBean.paramNameLink}');"/>
+                                oncomplete="addLinkBt();"/>
 			</a4j:region>
 			
 			<a4j:region>
