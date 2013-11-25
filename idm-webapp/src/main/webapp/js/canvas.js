@@ -1349,9 +1349,12 @@ function configureGroup(canvasName, group, mousePosX, mousePosY, polygon) {
 
 	group.on('dblclick', function(e) {
 
+		this.getChildren()[2].setStroke('black');
+		this.getChildren()[2].selected = false;
+
+		canvasArray[selectedCanvas].polygonLayer.draw();
+		
 		var objImg = this.getChildren()[2].clone();
-		objImg.setStroke('black');
-		objImg.selected = false;
 		var imagePath = objImg.toDataURL({
 			width : 80,
 			height : 80
