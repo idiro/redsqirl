@@ -106,6 +106,13 @@
    <from-outcome>loginPage</from-outcome>
    <to-view-id>/pages/initial.xhtml</to-view-id>
   </navigation-case>
+  
+  <navigation-case>
+   <from-outcome>reStart</from-outcome>
+   <to-view-id>/pages/restart.xhtml</to-view-id>
+   <redirect/>
+  </navigation-case>
+  
  </navigation-rule>
  <navigation-rule>
   <from-view-id>/pages/canvasModal1.xhtml</from-view-id>
@@ -136,6 +143,24 @@
    <redirect/>
   </navigation-case>
  </navigation-rule>
+ 
+ <navigation-rule>
+  <from-view-id>/pages/restart.xhtml</from-view-id>
+  <navigation-case>
+   <from-outcome>reStart</from-outcome>
+   <to-view-id>/pages/restart2.xhtml</to-view-id>
+  </navigation-case>
+ </navigation-rule>
+ 
+ <navigation-rule>
+  <from-view-id>/pages/restart2.xhtml</from-view-id>
+  <navigation-case>
+   <from-outcome>success</from-outcome>
+   <to-view-id>/pages/canvas.xhtml</to-view-id>
+   <redirect/>
+  </navigation-case>
+ </navigation-rule>
+ 
  
  <!-- *************************** RESOURCES ********************************************************** -->
  

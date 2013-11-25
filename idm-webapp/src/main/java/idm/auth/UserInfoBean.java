@@ -15,9 +15,13 @@ import java.util.Map;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+
+import com.jcraft.jsch.Session;
+import com.jcraft.jsch.UserInfo;
 
 import ch.ethz.ssh2.Connection;
 
@@ -129,6 +133,91 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		}
 
 	}
+	
+	private void invalidateSessionReLogin(){
+
+		FacesContext fCtx = FacesContext.getCurrentInstance();
+		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
+
+		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
+		sc.setAttribute("userName", userName);
+		
+		logger.info("before invalidade session");
+		session.invalidate();
+		logger.info("after invalidade session");
+	}
+
+	public String signOutReLogin(){
+
+		logger.info("signOutReLogin");
+
+		//invalidateSessionReLogin();
+
+		return "reStart";
+	}
+	
+	public String reStart(){
+
+		logger.info("reStart");
+
+		return "success";
+	}
+	
+	
+	public String reLogin() {
+
+		FacesContext fCtx = FacesContext.getCurrentInstance();
+		
+		ServletContext scOld = (ServletContext) fCtx.getExternalContext().getContext();
+		
+		if(scOld.getAttribute("UserInfo") != null && password == null){
+			password = ((UserInfo)scOld.getAttribute("UserInfo")).getPassword();
+		}
+		
+		if(scOld.getAttribute("userName") != null && userName == null){
+			userName = (String) scOld.getAttribute("userName");
+		}
+		
+		invalidateSessionReLogin();
+		
+		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(true);
+		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
+		Map<String, HttpSession> sessionLoginMap = (Map<String, HttpSession>) sc.getAttribute("sessionLoginMap");
+		
+		logger.info("reLogin: " + userName);
+
+		String hostname = "localhost";
+
+		HttpSession sessionLogin = sessionLoginMap.get(userName);
+
+		if(sessionLogin != null && !sessionLogin.getId().equals(session.getId())){
+			sessionLoginMap.remove(userName);
+			setTwoLoginChek(null);
+			sessionLogin.invalidate();
+
+			logger.info("Change Session");
+
+		}
+
+		session.setAttribute("username", userName);
+		sessionLoginMap.put(userName, session);
+		sc.setAttribute("sessionLoginMap", sessionLoginMap);
+
+		logger.info("Authentication Success");
+
+		//error with rmi connection
+		if(!createRegistry(userName, password)){
+			getBundleMessage("error.rmi.connection");
+			invalidateSession();
+			return "failure";
+		}
+
+		HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
+		request.setAttribute("msnReLogin", "msnReLogin");
+		
+		setMsnError(null);
+		return "reStart";
+	}
 
 
 	/** createRegistry
@@ -151,26 +240,31 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		beans.add("hdfs");
 		beans.add("pckmng");
 
+		FacesContext fCtx = FacesContext.getCurrentInstance();
+		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
+		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
+		
 		try{
+			
 			th = new ServerThread(port);
-			th.run(user,password);
+			Session s = th.run(user,password);
+			
+			if(s != null){
+				sc.setAttribute("UserInfo", s.getUserInfo());
+			}
 
 			registry = LocateRegistry.getRegistry(port);
 
 			setCurrentValue(getCurrentValue()+1);
-			
-			FacesContext fCtx = FacesContext.getCurrentInstance();
-			ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
-			HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
 
 			session.setAttribute("serverThread", th);
 			sc.setAttribute("registry", registry);
 
 			for (String beanName : beans){
-				
+
 				logger.info("createRegistry - " + beanName);
 				setCurrentValue(getCurrentValue()+2);
-				
+
 				boolean error = true;
 				int cont = 0;
 
@@ -234,7 +328,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		}
 
 		setCurrentValue(getCurrentValue()+5);
-		
+
 		setTwoLoginChek(null);
 		String aux = login();
 
@@ -272,7 +366,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 		setEnabled(true);
 		setCurrentValue(Long.valueOf(10));
-		
+
 		return null;
 	}
 
