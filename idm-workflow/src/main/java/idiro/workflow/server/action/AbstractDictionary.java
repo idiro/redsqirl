@@ -29,6 +29,10 @@ public abstract class AbstractDictionary {
 	public static String description = "description";
 	protected Map<String, String[][]> functionsMap;
 	
+	public Map<String, String[][]> getFunctionsMap() {
+		return functionsMap;
+	}
+
 	protected AbstractDictionary(){
 		init();
 	}

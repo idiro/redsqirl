@@ -3,6 +3,7 @@ package idiro.workflow.server.connect;
 import idiro.hadoop.NameNodeVar;
 import idiro.hadoop.checker.HdfsFileChecker;
 import idiro.tm.task.in.Preference;
+import idiro.utils.FeatureList;
 import idiro.workflow.server.connect.interfaces.DataStore;
 import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.utils.LanguageManager;
@@ -15,6 +16,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,6 +30,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.permission.FsPermission;
+import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.util.LineReader;
 import org.apache.log4j.Logger;
@@ -332,6 +335,68 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 				int lineNb = 0;
 				while ( reader.readLine(line) != 0 && lineNb < maxToRead){
 					ans.add(line.toString());
+				}
+			}
+			fs.close();
+		} catch (IOException e) {
+			logger.error("Cannot select the file or directory: "+p);
+			logger.error(e.getMessage());
+		}
+		fCh.close();
+
+		return ans;
+	}
+	
+	
+	public List<String> selectSeq(String path, String delimiter, int maxToRead,FeatureList feats) throws RemoteException{
+		
+		Path p = new Path(path);
+		List<String> ans = null;
+		HdfsFileChecker fCh = new HdfsFileChecker(p);
+		try {
+			FileSystem fs = NameNodeVar.getFS();
+			if(fCh.isDirectory()){
+				FileStatus[] fsA = fs.listStatus(p);
+				int listSize = Math.min(maxToRead, fsA.length);
+				ans  = new ArrayList<String>(listSize);
+				for(int i = 0; i < listSize; ++i){
+					ans.add(fsA[i].getPath().toString());
+				}
+			}else if(fCh.isFile()){
+				FSDataInputStream in = fs.open(p);
+				LineReader reader = new LineReader(in);
+				ans = new ArrayList<String>(maxToRead);
+				Text line = new Text();
+				reader.readLine(line);
+				int lineNb = 0;
+				maxToRead*= feats.getSize();
+				while ( reader.readLine(line) != 0 && lineNb < maxToRead){
+					int val = BytesWritable.Comparator.readInt(line.getBytes(), 0);
+					String value = String.valueOf(val);
+					String toWrite = "";
+					int i = 0;
+					FeatureType type =feats.getFeatureType(feats.getFeaturesNames().get(i%feats.getSize()));
+						if(type == FeatureType.BOOLEAN){
+							toWrite+= BytesWritable.Comparator.readInt(line.getBytes(), 0);
+						}else if(type == FeatureType.INT){
+							toWrite+= BytesWritable.Comparator.readInt(line.getBytes(), 0);
+						}else if(type == FeatureType.FLOAT){
+							toWrite+= BytesWritable.Comparator.readFloat(line.getBytes(), 0);
+						} else if(type == FeatureType.DOUBLE){
+							toWrite+= BytesWritable.Comparator.readDouble(line.getBytes(), 0);
+						} else if(type == FeatureType.LONG){
+							toWrite+= BytesWritable.Comparator.readLong(line.getBytes(), 0);
+						} else if(type == FeatureType.STRING ){
+							toWrite+= line.getBytes().toString();
+						}   
+					if((i+1)%feats.getSize() == 0){
+						ans.add(toWrite);
+						toWrite="";
+					}else{
+						toWrite+=delimiter;
+					}
+					++i;
+					
 				}
 			}
 			fs.close();

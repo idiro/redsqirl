@@ -19,6 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
@@ -731,7 +732,9 @@ public class CanvasBean extends BaseBean implements Serializable{
 		
 		SavingState state = null;
 		boolean pathExists = false;
-		for (Entry<String, DFEOutput> e : df.getDFEOutput().entrySet()){
+		Set<Entry<String, DFEOutput>> entryset = df.getDFEOutput().entrySet();
+		logger.info("got set");
+		for (Entry<String, DFEOutput> e : entryset){
 			state = e.getValue().getSavingState();
 			
 			logger.info("path: "+e.getValue().getPath());

@@ -427,7 +427,7 @@ public class Source extends DataflowAction {
 				String subtype = getInteraction(key_datasubtype).getTree()
 						.getFirstChild("list").getFirstChild("output")
 						.getFirstChild().getHead();
-
+/*
 				Iterator<String> dataOutputClassName = WorkflowPrefManager
 						.getInstance()
 						.getNonAbstractClassesFromSuperClass(
@@ -448,7 +448,7 @@ public class Source extends DataflowAction {
 
 				output.put(out_name, dataOutput);
 				output.get(out_name).setPath(path);
-
+*/
 				String delimiter = "#1";
 
 				try {
@@ -463,8 +463,15 @@ public class Source extends DataflowAction {
 
 				output.get(out_name).addProperty(MapRedTextType.key_delimiter,
 						delimiter);
-
-				dataOutput.setFeatures(out);
+				String stringdelim = "";
+				if (delimiter != null && delimiter.startsWith("#") && delimiter.length() > 1){
+					stringdelim = String.valueOf(Character.toChars(Integer.valueOf(delimiter.substring(1))));
+					output.get(out_name).addProperty(MapRedTextType.key_delimiter_char,
+							stringdelim);
+				}
+				
+				output.get(out_name).setFeatures(out);
+//				dataOutput.setFeatures(out);
 			}
 			if (output.get(out_name) != null) {
 				output.get(out_name).setSavingState(SavingState.RECORDED);
