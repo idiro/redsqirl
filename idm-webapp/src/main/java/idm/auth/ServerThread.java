@@ -42,6 +42,7 @@ public class ServerThread{
 	private Channel channel;
 	private String pid;
 	private Session session;
+	private Session s;
 
 	public ServerThread(int port){
 		this.port = port;
@@ -54,23 +55,31 @@ public class ServerThread{
 	 * @return
 	 * @author Igor.Souza
 	 */
-	public void run(final String user,final String password){
+	public Session run(final String user,final String password){
 
 		if(!run){
 			run = true;
 			try {
 				list.add(this);
+				
+				JSch shell = new JSch();
+		        session = shell.getSession(user, "localhost");
+		        session.setPassword(password);
+		        setS(session);
+				
 				Thread server = new Thread(){
 
 					@Override
 					public void run() {
 						try{
-							Properties config = new Properties(); 
+							Properties config = new Properties();
 							config.put("StrictHostKeyChecking", "no");
 							
 							JSch shell = new JSch();
 					        session = shell.getSession(user, "localhost");
+					        
 					        session.setPassword(password);
+					        
 					        session.setConfig(config);
 					        logger.info("session config set");
 					        session.connect();
@@ -112,6 +121,7 @@ public class ServerThread{
 				logger.error(e.getMessage());
 			}
 		}
+		return getS();
 	}
 	
 	private String getBaseCommand(String user, String password, int port){
@@ -219,4 +229,13 @@ public class ServerThread{
 	public final boolean isRun() {
 		return run;
 	}
+
+	public Session getS() {
+		return s;
+	}
+
+	public void setS(Session s) {
+		this.s = s;
+	}
+	
 }
