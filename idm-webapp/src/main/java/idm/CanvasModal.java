@@ -1151,7 +1151,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 					dfi.getTree().getFirstChild("editor").getFirstChild("output")
 							.removeAllChildren();
 					dfi.getTree().getFirstChild("editor").getFirstChild("output")
-							.add(getCommandEdit().trim());
+							.add(getCommandEdit());
 	
 					String e = dfi.check();
 	
