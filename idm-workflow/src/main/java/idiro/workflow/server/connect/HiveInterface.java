@@ -480,9 +480,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore{
 				ok = true;
 			}else if(path.startsWith("/") && path.length() > 1 ){
 				String[] tableAndPartitions = getTableAndPartitions(path);
-
 				ok = ! conn.listTables(tableAndPartitions[0].toLowerCase()).isEmpty();
-
 				if(ok && tableAndPartitions.length > 1){
 					ok = false;
 					Iterator<String> itP = getPartitions(tableAndPartitions[0]).iterator();
@@ -503,7 +501,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore{
 				}
 			}
 		} catch (SQLException e) {
-			logger.error("Fail to check the existence");
+			logger.error("Fail to check the existence", e);
 		}
 
 		return ok;

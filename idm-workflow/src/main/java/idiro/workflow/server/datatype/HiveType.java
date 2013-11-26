@@ -175,4 +175,9 @@ public class HiveType extends DataOutput{
 		}
 	}
 
+	@Override
+	protected String getDefaultColor() {
+		return "DodgerBlue";
+	}
+
 }

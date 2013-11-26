@@ -3,14 +3,11 @@ package idiro.workflow.server.action.utils;
 
 import java.util.Set;
 
-import idiro.workflow.server.action.utils.HiveDictionary;
-
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
 public class HiveDictionaryTest {
 	private Logger logger =Logger.getLogger(getClass());
-	
 	@Test
 	public void DictionaryTestLoad(){
 		HiveDictionary dictionary = HiveDictionary.getInstance();

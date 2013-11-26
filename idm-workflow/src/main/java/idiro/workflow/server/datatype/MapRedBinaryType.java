@@ -35,6 +35,9 @@ public class MapRedBinaryType extends MapRedTextType {
 	public String getTypeName() throws RemoteException {
 		return "BINARY MAP-REDUCE DIRECTORY";
 	}
+	protected String getDefaultColor() {
+		return "Coral";
+	}
 	
 	@Override
 	public List<String> select(int maxToRead) throws RemoteException {

@@ -131,7 +131,7 @@ public class PackageMngBean extends BaseBean{
 
 	public boolean isAdmin(){
 		boolean admin = false;
-		logger.info("is admin");
+//		logger.info("is admin");
 		String user = System.getProperty( "user.name" );
 		String[] admins = WorkflowPrefManager.
 		getSysProperty(
@@ -143,7 +143,7 @@ public class PackageMngBean extends BaseBean{
 	}
 
 	public boolean isUserAllowInstall(){
-		logger.info("is user");
+//		logger.info("is user");
 		return WorkflowPrefManager.
 				getSysProperty(
 						WorkflowPrefManager.sys_allow_user_install, "FALSE").

@@ -135,7 +135,7 @@ function configureCanvas(canvasName){
 		if (!e.ctrlKey) {
 			jQuery.each(layer.getChildren(), function(index, value) {
 				if (value.isArrow == true) {
-					value.setStroke("black");
+					value.setStroke(value.originalColor);
 					value.selected = false;
 				}
 			});
@@ -169,7 +169,7 @@ function configureCanvas(canvasName){
 					if (!canvasArray[canvasName].clickArrow) {
 						jQuery.each(layer.getChildren(), function(index, value) {
 							if (value.isArrow == true) {
-								value.setStroke('black');
+								value.setStroke(value.originalColor);
 								value.selected = false;
 								layer.draw();
 							}
@@ -254,7 +254,7 @@ function deselectOnClick(canvasName, obj, e) {
 
 		jQuery.each(layer.getChildren(), function(index, value) {
 			if (value.isArrow == true) {
-				value.setStroke('black');
+				value.setStroke(value.originalColor);
 				value.selected = false;
 				layer.draw();
 			}
@@ -394,7 +394,7 @@ function deselectAll(canvasName) {
 
 	jQuery.each(layer.getChildren(), function(index, value) {
 		if (value.isArrow == true) {
-			value.setStroke('black');
+			value.setStroke(value.originalColor);
 			value.selected = false;
 			layer.draw();
 		}
@@ -810,7 +810,9 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
 		y : 50,
 		radius : 32,
 		draggable : false,
-		fill :'white'
+		fill :'white',
+		stroke : 'white',
+		strokeWidth : 5
 	});
 
 	var circle1 = new Kinetic.Circle({
@@ -818,7 +820,9 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
 		y : 50,
 		radius : 42,
 		draggable : false,
-		fill :'white'
+		fill :'white',
+		stroke : 'white',
+		strokeWidth : 5
 	});
 	configureCircle(canvasName, circle1);
 
@@ -1201,7 +1205,6 @@ function configureCircle(canvasName, circle1) {
 					
 					addLinkModalBt(arrow.output.getId(), this.getParent().getId(), arrowClone.getName());
 
-
 				} else {
 					var polygonLayer = canvasArray[canvasName].polygonLayer;
 					var layer = canvasArray[canvasName].layer;
@@ -1346,9 +1349,12 @@ function configureGroup(canvasName, group, mousePosX, mousePosY, polygon) {
 
 	group.on('dblclick', function(e) {
 
+		this.getChildren()[2].setStroke('black');
+		this.getChildren()[2].selected = false;
+
+		canvasArray[selectedCanvas].polygonLayer.draw();
+		
 		var objImg = this.getChildren()[2].clone();
-		objImg.setStroke('black');
-		objImg.selected = false;
 		var imagePath = objImg.toDataURL({
 			width : 80,
 			height : 80
@@ -1457,17 +1463,14 @@ function updateLabelObj(groupId, newGroupId) {
 }
 
 function getColorOutput(status, fileExists){
-	if (fileExists == "TRUE"){
-		return "pink";
-	}
 	if (status == "TEMPORARY"){
-		return "green";
+		return "purple";
 	}
 	else if (status == "RECORDED"){
-		return "blue";
+		return "orange";
 	}
 	else if (status == "BUFFERED"){
-		return "red";
+		return "blue";
 	}
 	else {
 		return "white";
@@ -1481,9 +1484,6 @@ function getColorRunning(status){
 	else if (status == "ERROR"){
 		return "red";
 	}
-	else if (status == "KILLED"){
-		return "yellow";
-	}
 	else {
 		return "white";
 	}
@@ -1495,7 +1495,7 @@ function updateActionOutputStatus(groupId, status, fileExists) {
 	
 	var group = getElement(polygonLayer, groupId);
 	
-	group.getChildren()[1].setFill(getColorOutput(status, fileExists));
+	group.getChildren()[1].setStroke(getColorOutput(status, fileExists));
 	
 	polygonLayer.draw();
 
@@ -1507,9 +1507,53 @@ function updateActionRunningStatus(groupId, status) {
 	
 	var group = getElement(polygonLayer, groupId);
 	
-	group.getChildren()[0].setFill(getColorRunning(status));
+	group.getChildren()[0].setStroke(getColorRunning(status));
 	
 	polygonLayer.draw();
+
+}
+
+//function getColorArrowType(fileType){
+//	if (fileType == "DATA FILE"){
+//		return "grey";
+//	}
+//	else if (fileType == "Hive Table"){
+//		return "green";
+//	}
+//	else if (fileType == "Hive Partition"){
+//		return "yellow";
+//	}
+//	else if (fileType == "TEXT MAP-REDUCE DIRECTORY"){
+//		return "blue";
+//	}
+//	else if (fileType == "BINARY MAP-REDUCE DIRECTORY"){
+//		return "orange";
+//	}
+//	else if (fileType == "TEXT MAP-REDUCE DIRECTORY"){
+//		return "brown";
+//	}
+//	else {
+//		return "black";
+//	}
+//}
+
+function updateArrowType(idOutput, idInput, color) {
+	
+	var layer = canvasArray[selectedCanvas].layer;
+
+	jQuery.each(layer.getChildren(),
+		function(index, value) {
+			if (value !== undefined && value.isArrow == true) {
+				if (value.idOutput == idOutput && value.idInput == idInput){
+					value.setStroke(color);
+					value.originalColor = color;
+					return false;
+				}
+			}
+		}
+	);
+	
+	layer.draw();
 
 }
 

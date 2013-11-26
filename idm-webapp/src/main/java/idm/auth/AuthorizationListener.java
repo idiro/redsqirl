@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
  * @author Igor.Souza
  */
 public class AuthorizationListener implements PhaseListener {
-	
+
 	private static Logger logger = Logger.getLogger(AuthorizationListener.class);
 
 	/** afterPhase
@@ -28,41 +28,37 @@ public class AuthorizationListener implements PhaseListener {
 	 * @author Igor.Souza
 	 */
 	public void afterPhase(PhaseEvent event) {
-		
+
 		FacesContext facesContext = event.getFacesContext();
 		String currentPage = facesContext.getViewRoot().getViewId();
 		HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
-		
-		HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(false);
-		boolean isLoginPage = (currentPage.lastIndexOf("initial.xhtml") > -1) || (currentPage.lastIndexOf("initial.jsf") > -1);
 
+		HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(false);
+		boolean isLoginPage = (currentPage.lastIndexOf("initial.xhtml") > -1) || (currentPage.lastIndexOf("restart.xhtml") > -1) || (currentPage.lastIndexOf("restart2.xhtml") > -1);
+
+		//logger.info("currentPage " + currentPage);
+		
 		if(session==null){
-			
-			System.out.println("session null");
-			
+
 			if (!isLoginPage){
 				request.setAttribute("msnLoginError", "msnLoginError");
 			}
-			
-//			logger.info("request signOut: "+request.getAttribute("signOut"));
-			
+
 			NavigationHandler nh = facesContext.getApplication().getNavigationHandler();
 			nh.handleNavigation(facesContext, null, "loginPage");
-			
+
 		}else{
 			Object currentUser = session.getAttribute("username");
-			
+
 			if (!isLoginPage && (currentUser == null || currentUser.equals(""))) {
-				
-				System.out.println(currentPage);
-				
+
 				request.setAttribute("msnLoginError", "msnLoginError");
 				NavigationHandler nh = facesContext.getApplication().getNavigationHandler();
 				nh.handleNavigation(facesContext, null, "loginPage");
 			}
 		}
 	}
-	
+
 	/** beforePhase
 	 * 
 	 */
@@ -73,5 +69,5 @@ public class AuthorizationListener implements PhaseListener {
 	public PhaseId getPhaseId() {
 		return PhaseId.RESTORE_VIEW;
 	}
-	
+
 }
