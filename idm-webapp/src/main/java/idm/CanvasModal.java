@@ -1094,7 +1094,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 						String value = item.getNameValue().get(column);
 							
 						if (column.equals(getColumnEdit())){
-							row.add(column).add(getCommandEdit().trim());
+							row.add(column).add(getCommandEdit());
 						}
 						else{
 							row.add(column).add(value);

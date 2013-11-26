@@ -14,40 +14,34 @@
 
 <script>
 
-function addtooltip(text){
-    jQuery('div.help').remove();
-    jQuery('div.tooltip').remove();
-    var y=event.layerY;
-    var help = jQuery('<div class="tooltip">'+text+'</div>').hide().fadeIn("slow");
-    console.log("something");
-    //jQuery(help).css("top",(y-10)+"px");
-    jQuery("body").append(help);
-}
-
-function removetoottip(){
-	jQuery("div.tooltip").remove();
-	jQuery('div.help').remove();
-}
-   
+	function addtooltip(text){
+	    jQuery('div.help').remove();
+	    jQuery('div.tooltip').remove();
+	    var y=event.layerY;
+	    var help = jQuery('<div class="tooltip">'+text+'</div>').hide().fadeIn("slow");
+	    console.log("something");
+	    //jQuery(help).css("top",(y-10)+"px");
+	    jQuery("body").append(help);
+	}
+	
+	function removetoottip(){
+		jQuery("div.tooltip").remove();
+		jQuery('div.help').remove();
+	}
 
 	function completeCommand(text){
+		
 	    var txtarea = jQuery("[id$='commandText']");
 	    var scrollPos = txtarea.scrollTop;
 	    var strPos = 0;
-	    
 	    strPos = txtarea.getCursorPosition();
-
-	    var front = (txtarea.val().trim()).substring(0,strPos);  
-	    var back = (txtarea.val().trim()).substring(strPos,txtarea.val().length); 
-
-	    txtarea.val(front + text.trim() + back);
-
+	    var front = (txtarea.val()).substring(0,strPos);  
+	    var back = (txtarea.val()).substring(strPos,txtarea.val().length); 
+	    txtarea.val(front + text + back);
 	    strPos = strPos + text.length;
-
 	    txtarea.selectionStart = strPos;
 	    txtarea.selectionEnd = strPos;
 	    txtarea.focus();
-	    
 	    txtarea.scrollTop = scrollPos;
 	    
 	}
@@ -67,7 +61,8 @@ function removetoottip(){
 	        }
 	        return pos;
 	    }
-	})(jQuery);	
+	})(jQuery);
+	
 </script>
 
 </head>
@@ -75,7 +70,6 @@ function removetoottip(){
 <body>
 
 	<h:form>
-
 
 		<h:inputTextarea maxlength="100" cols="70" rows="10"
 			value="#{canvasModalBean.commandEdit}"
@@ -86,14 +80,18 @@ function removetoottip(){
 
 		<table width="100%" id="table">
 			<tr style="vertical-align: top;">
-				<td width="45%"><br /> <rich:comboBox id="listCategories"
+				<td width="45%">
+					<br />
+					<rich:comboBox id="listCategories"
 						value="#{canvasModalBean.list}" enableManualInput="false"
 						width="200" listWidth="150" listHeight="200">
 						<a4j:support event="onselect"
 							action="#{canvasModalBean.changeFunctionsTextEditor}"
 							reRender="listFunctions,btCompleteFunction" />
 						<f:selectItems value="#{canvasModalBean.listItensTable}" />
-					</rich:comboBox> <br /> <rich:dataTable id="listFunctions"
+					</rich:comboBox>
+					<br />
+					<rich:dataTable id="listFunctions"
 						value="#{canvasModalBean.listFunctions}" var="item"
 						style="border:1px solid;" width="100%"
 						onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
@@ -127,9 +125,12 @@ function removetoottip(){
 							<h:outputText value="#{item[2]}" />
 						</rich:column>
 
-					</rich:dataTable></td>
+					</rich:dataTable>
+				</td>
 
-				<td width="10%"><br /> <rich:comboBox
+				<td width="10%">
+					<br />
+					<rich:comboBox
 						id="listCategoriesOperation" value="#{canvasModalBean.listOp}"
 						enableManualInput="false" width="100" listWidth="150"
 						listHeight="100">
@@ -137,7 +138,9 @@ function removetoottip(){
 							action="#{canvasModalBean.changeOperationTextEditor}"
 							reRender="listOperation" />
 						<f:selectItems value="#{canvasModalBean.listItensTableOperation}" />
-					</rich:comboBox> <br /> <rich:dataTable id="listOperation"
+					</rich:comboBox>
+					<br />
+					<rich:dataTable id="listOperation"
 						value="#{canvasModalBean.listOperation}" var="item"
 						style="border:1px solid;" width="100%"
 						onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
@@ -157,18 +160,20 @@ function removetoottip(){
 							</a4j:commandLink>
 						</rich:column>
 
-					</rich:dataTable></td>
+					</rich:dataTable>
+				</td>
 
-
-				<td width="45%"><br />
-				<br />
-				<br /> <rich:dataTable id="listFields"
-						value="#{canvasModalBean.listFields}" var="item"
-						style="border:1px solid;" width="100%" onRowClick="completeFilds"
-						onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-						enableContextMenu="false"
-						onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
-
+				<td width="45%">
+					<br />
+					<br />
+					<br /> 
+					<rich:dataTable id="listFields"
+							value="#{canvasModalBean.listFields}" var="item"
+							style="border:1px solid;" width="100%"
+							onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+							enableContextMenu="false"
+							onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
+	
 						<rich:column style="border-bottom:0px;border-right:0px;">
 							<f:facet name="header">
 								<h:outputText value="#{messages.label_name}" />
@@ -187,7 +192,8 @@ function removetoottip(){
 							<h:outputText value="#{item.value}" />
 						</rich:column>
 
-					</rich:dataTable></td>
+					</rich:dataTable>
+				</td>
 			</tr>
 		</table>
 
