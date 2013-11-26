@@ -1072,7 +1072,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 		logger.info("checkTextEditor");
 		
 		if (getColumnEdit() != null) {
-			logger.info("1-"+getColumnEdit()+" - "+getRowEdit());
 			
 			for (int i = 0; i < getDynamicFormList().size(); i++) {
 
@@ -1081,20 +1080,12 @@ public class CanvasModal extends BaseBean implements Serializable {
 	
 				if (dynamicF.getDisplayType().equals(DisplayType.table)) {
 					List<Tree<String>> oldCommand = null;
-//					System.out.println(toString(dfi.getTree()));
 					oldCommand = dfi.getTree().getFirstChild("table").findChildren("row");
 					
-					for (Tree<String> t : oldCommand){
-						System.out.println(toString(t));
-					}
-					
-	
 					logger.info("oldCommand -> " + oldCommand);
 					logger.info("newCommand -> " + getCommandEdit());
 	
 					dfi.getTree().getFirstChild("table").remove("row");
-					
-//					System.out.println(toString(dfi.getTree()));
 					
 					ItemList item = getListGrid().get(getRowEdit());
 					Tree<String> row = dynamicF.getTree()
@@ -1110,11 +1101,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 						}
 					}
 					
-					
-//					dfi.getTree().getFirstChild("table").add("row").add(getColumnEdit()).add(getCommandEdit().trim());
-					
-//					System.out.println(toString(dfi.getTree()));
-	
 					String e = dfi.check();
 	
 					logger.info("error interaction -> " + e);
@@ -1143,11 +1129,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 					}
 				}
 			}
-			
 		}
 
 		else{
-			logger.info("2");
 			for (int i = 0; i < getDynamicFormList().size(); i++) {
 
 				DynamicForm dynamicF = getDynamicFormList().get(i);
@@ -1205,20 +1189,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 	}
 	
-	public String toString(Tree<String> tree) throws RemoteException{
-		String ans = "";
-		if(tree.getHead() != null){
-			ans = tree.getHead().toString();
-		}
-		Iterator<Tree<String>> it = tree.getSubTreeList().iterator();
-		while(it.hasNext()){
-			ans = ans + "\n\t" + toString(it.next()).replaceAll("\n", "\n\t");
-		}
-
-		return ans;
-
-	}
-
 	/**
 	 * changeFunctionsTextEditor
 	 * 
