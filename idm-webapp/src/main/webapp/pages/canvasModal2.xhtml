@@ -198,12 +198,12 @@ function removetoottip(){
 			oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('textEditorPanel')}.hide() };"
 			reRender="command,tableInteraction, msnError, errorTable" />
 		<span>&nbsp;&nbsp;</span>
-		<a4j:commandButton action="#{canvasModalBean.cancel}"
-			value="#{messages.button_cancel}"
-			onclick="#{rich:component('textEditorPanel')}.hide();" />
+		<h:commandButton value="#{messages.button_cancel}"
+			type="button"
+			onclick="#{rich:component('textEditorPanel')}.hide();"/>
 		<span>&nbsp;&nbsp;</span>
 		<a4j:commandButton action="#{canvasModalBean.checkTextEditor}"
-			value="#{messages.button_check}" reRender="msnError, errorTable" />
+			value="#{messages.button_check}" reRender="command,tableInteraction, msnError, errorTable" />
 
 	</h:form>
 </body>

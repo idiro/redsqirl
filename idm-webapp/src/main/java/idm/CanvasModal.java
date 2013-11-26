@@ -1070,60 +1070,152 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void checkTextEditor() throws RemoteException {
 
 		logger.info("checkTextEditor");
+		
+		if (getColumnEdit() != null) {
+			logger.info("1-"+getColumnEdit()+" - "+getRowEdit());
+			
+			for (int i = 0; i < getDynamicFormList().size(); i++) {
 
-		for (int i = 0; i < getDynamicFormList().size(); i++) {
-
-			DynamicForm dynamicF = getDynamicFormList().get(i);
-			DFEInteraction dfi = getPage().getInteractions().get(i);
-
-			if (dynamicF.getDisplayType().equals(DisplayType.helpTextEditor)) {
-				String oldCommand = null;
-				if (dfi.getTree().getFirstChild("editor")
-						.getFirstChild("output").getFirstChild() != null) {
-					oldCommand = dfi.getTree().getFirstChild("editor")
-							.getFirstChild("output").getFirstChild().getHead();
-				}
-
-				logger.info("oldCommand -> " + oldCommand);
-				logger.info("newCommand -> " + getCommandEdit());
-
-				dfi.getTree().getFirstChild("editor").getFirstChild("output")
-						.removeAllChildren();
-				dfi.getTree().getFirstChild("editor").getFirstChild("output")
-						.add(getCommandEdit().trim());
-
-				String e = dfi.check();
-
-				logger.info("error interaction -> " + e);
-
-				if (e != null && e.length() > 0) {
-					MessageUseful.addErrorMessage(e);
-					HttpServletRequest request = (HttpServletRequest) FacesContext
-							.getCurrentInstance().getExternalContext()
-							.getRequest();
-					request.setAttribute("msnError", "msnError");
-				} else {
-					if (getConfirm() != null
-							&& !getConfirm().equalsIgnoreCase("S")) {
-						MessageUseful
-								.addInfoMessage(getMessageResources("success_message"));
+				DynamicForm dynamicF = getDynamicFormList().get(i);
+				DFEInteraction dfi = getPage().getInteractions().get(i);
+	
+				if (dynamicF.getDisplayType().equals(DisplayType.table)) {
+					List<Tree<String>> oldCommand = null;
+//					System.out.println(toString(dfi.getTree()));
+					oldCommand = dfi.getTree().getFirstChild("table").findChildren("row");
+					
+					for (Tree<String> t : oldCommand){
+						System.out.println(toString(t));
+					}
+					
+	
+					logger.info("oldCommand -> " + oldCommand);
+					logger.info("newCommand -> " + getCommandEdit());
+	
+					dfi.getTree().getFirstChild("table").remove("row");
+					
+//					System.out.println(toString(dfi.getTree()));
+					
+					ItemList item = getListGrid().get(getRowEdit());
+					Tree<String> row = dynamicF.getTree()
+							.getFirstChild("table").add("row");
+					for (String column : getKeyAsListNameValueListGrid()) {
+						String value = item.getNameValue().get(column);
+							
+						if (column.equals(getColumnEdit())){
+							row.add(column).add(getCommandEdit().trim());
+						}
+						else{
+							row.add(column).add(value);
+						}
+					}
+					
+					
+//					dfi.getTree().getFirstChild("table").add("row").add(getColumnEdit()).add(getCommandEdit().trim());
+					
+//					System.out.println(toString(dfi.getTree()));
+	
+					String e = dfi.check();
+	
+					logger.info("error interaction -> " + e);
+	
+					if (e != null && e.length() > 0) {
+						MessageUseful.addErrorMessage(e);
 						HttpServletRequest request = (HttpServletRequest) FacesContext
 								.getCurrentInstance().getExternalContext()
 								.getRequest();
 						request.setAttribute("msnError", "msnError");
+					} else {
+						if (getConfirm() != null
+								&& !getConfirm().equalsIgnoreCase("S")) {
+							MessageUseful
+									.addInfoMessage(getMessageResources("success_message"));
+							HttpServletRequest request = (HttpServletRequest) FacesContext
+									.getCurrentInstance().getExternalContext()
+									.getRequest();
+							request.setAttribute("msnError", "msnError");
+						}
+					}
+	
+					dfi.getTree().getFirstChild("table").remove("row");
+					if (oldCommand != null) {
+						dfi.getTree().getFirstChild("table").addAll(oldCommand);
 					}
 				}
+			}
+			
+		}
 
-				dfi.getTree().getFirstChild("editor").getFirstChild("output")
-						.removeAllChildren();
-				if (oldCommand != null) {
-					dfi.getTree().getFirstChild("editor")
-							.getFirstChild("output").add(oldCommand);
+		else{
+			logger.info("2");
+			for (int i = 0; i < getDynamicFormList().size(); i++) {
+
+				DynamicForm dynamicF = getDynamicFormList().get(i);
+				DFEInteraction dfi = getPage().getInteractions().get(i);
+	
+				if (dynamicF.getDisplayType().equals(DisplayType.helpTextEditor)) {
+					String oldCommand = null;
+					if (dfi.getTree().getFirstChild("editor")
+							.getFirstChild("output").getFirstChild() != null) {
+						oldCommand = dfi.getTree().getFirstChild("editor")
+								.getFirstChild("output").getFirstChild().getHead();
+					}
+	
+					logger.info("oldCommand -> " + oldCommand);
+					logger.info("newCommand -> " + getCommandEdit());
+	
+					dfi.getTree().getFirstChild("editor").getFirstChild("output")
+							.removeAllChildren();
+					dfi.getTree().getFirstChild("editor").getFirstChild("output")
+							.add(getCommandEdit().trim());
+	
+					String e = dfi.check();
+	
+					logger.info("error interaction -> " + e);
+	
+					if (e != null && e.length() > 0) {
+						MessageUseful.addErrorMessage(e);
+						HttpServletRequest request = (HttpServletRequest) FacesContext
+								.getCurrentInstance().getExternalContext()
+								.getRequest();
+						request.setAttribute("msnError", "msnError");
+					} else {
+						if (getConfirm() != null
+								&& !getConfirm().equalsIgnoreCase("S")) {
+							MessageUseful
+									.addInfoMessage(getMessageResources("success_message"));
+							HttpServletRequest request = (HttpServletRequest) FacesContext
+									.getCurrentInstance().getExternalContext()
+									.getRequest();
+							request.setAttribute("msnError", "msnError");
+						}
+					}
+	
+					dfi.getTree().getFirstChild("editor").getFirstChild("output")
+							.removeAllChildren();
+					if (oldCommand != null) {
+						dfi.getTree().getFirstChild("editor")
+								.getFirstChild("output").add(oldCommand);
+					}
 				}
 			}
 		}
-
+		
 		setConfirm("N");
+
+	}
+	
+	public String toString(Tree<String> tree) throws RemoteException{
+		String ans = "";
+		if(tree.getHead() != null){
+			ans = tree.getHead().toString();
+		}
+		Iterator<Tree<String>> it = tree.getSubTreeList().iterator();
+		while(it.hasNext()){
+			ans = ans + "\n\t" + toString(it.next()).replaceAll("\n", "\n\t");
+		}
+
+		return ans;
 
 	}
 
@@ -1545,6 +1637,10 @@ public class CanvasModal extends BaseBean implements Serializable {
 		setColumnEdit(column);
 
 		setCommandEdit(command);
+		
+		logger.info("row: "+rowKey);
+		logger.info("column: "+column);
+		logger.info("command: "+command);
 	}
 
 	/**
