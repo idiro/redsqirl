@@ -1,6 +1,7 @@
 package idm;
 
 import idiro.utils.Tree;
+//import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.enumeration.FeatureType;
@@ -572,11 +573,19 @@ public class CanvasModal extends BaseBean implements Serializable {
 			dynamicF.setTree(dfeInteraction.getTree());
 
 			if (dfeInteraction.getDisplay().equals(DisplayType.list)) {
-
+				logger.info(dfeInteraction.getName());
 				List<SelectItem> selectItems = new ArrayList<SelectItem>();
-				List<Tree<String>> list = dfeInteraction.getTree()
-						.getFirstChild("list").getFirstChild("values")
-						.getSubTreeList();
+				Tree<String> dfetree = dfeInteraction.getTree();
+				logger.info("got tree");
+				Tree<String> lists = dfetree.getFirstChild("list");
+				logger.info("got tree -> list");
+				Tree<String> values = lists.getFirstChild("values");
+				logger.info("got tree -> list -> values");
+				List<Tree<String>> list = values.getSubTreeList();
+				logger.info("got tree -> list -> values -> tree");
+//						.getFirstChild("list").getFirstChild("values")
+//						.getSubTreeList();
+				
 
 				logger.info("list value " + list);
 
@@ -1070,63 +1079,125 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void checkTextEditor() throws RemoteException {
 
 		logger.info("checkTextEditor");
+		
+		if (getColumnEdit() != null) {
+			
+			for (int i = 0; i < getDynamicFormList().size(); i++) {
 
-		for (int i = 0; i < getDynamicFormList().size(); i++) {
-
-			DynamicForm dynamicF = getDynamicFormList().get(i);
-			DFEInteraction dfi = getPage().getInteractions().get(i);
-
-			if (dynamicF.getDisplayType().equals(DisplayType.helpTextEditor)) {
-				String oldCommand = null;
-				if (dfi.getTree().getFirstChild("editor")
-						.getFirstChild("output").getFirstChild() != null) {
-					oldCommand = dfi.getTree().getFirstChild("editor")
-							.getFirstChild("output").getFirstChild().getHead();
-				}
-
-				logger.info("oldCommand -> " + oldCommand);
-				logger.info("newCommand -> " + getCommandEdit());
-
-				dfi.getTree().getFirstChild("editor").getFirstChild("output")
-						.removeAllChildren();
-				dfi.getTree().getFirstChild("editor").getFirstChild("output")
-						.add(getCommandEdit().trim());
-
-				String e = dfi.check();
-
-				logger.info("error interaction -> " + e);
-
-				if (e != null && e.length() > 0) {
-					MessageUseful.addErrorMessage(e);
-					HttpServletRequest request = (HttpServletRequest) FacesContext
-							.getCurrentInstance().getExternalContext()
-							.getRequest();
-					request.setAttribute("msnError", "msnError");
-				} else {
-					if (getConfirm() != null
-							&& !getConfirm().equalsIgnoreCase("S")) {
-						MessageUseful
-								.addInfoMessage(getMessageResources("success_message"));
+				DynamicForm dynamicF = getDynamicFormList().get(i);
+				DFEInteraction dfi = getPage().getInteractions().get(i);
+	
+				if (dynamicF.getDisplayType().equals(DisplayType.table)) {
+					List<Tree<String>> oldCommand = null;
+					oldCommand = dfi.getTree().getFirstChild("table").findChildren("row");
+					
+					logger.info("oldCommand -> " + oldCommand);
+					logger.info("newCommand -> " + getCommandEdit());
+	
+					dfi.getTree().getFirstChild("table").remove("row");
+					
+					ItemList item = getListGrid().get(getRowEdit());
+					Tree<String> row = dynamicF.getTree()
+							.getFirstChild("table").add("row");
+					for (String column : getKeyAsListNameValueListGrid()) {
+						String value = item.getNameValue().get(column);
+							
+						if (column.equals(getColumnEdit())){
+							row.add(column).add(getCommandEdit().trim());
+						}
+						else{
+							row.add(column).add(value);
+						}
+					}
+					
+					String e = dfi.check();
+	
+					logger.info("error interaction -> " + e);
+	
+					if (e != null && e.length() > 0) {
+						MessageUseful.addErrorMessage(e);
 						HttpServletRequest request = (HttpServletRequest) FacesContext
 								.getCurrentInstance().getExternalContext()
 								.getRequest();
 						request.setAttribute("msnError", "msnError");
+					} else {
+						if (getConfirm() != null
+								&& !getConfirm().equalsIgnoreCase("S")) {
+							MessageUseful
+									.addInfoMessage(getMessageResources("success_message"));
+							HttpServletRequest request = (HttpServletRequest) FacesContext
+									.getCurrentInstance().getExternalContext()
+									.getRequest();
+							request.setAttribute("msnError", "msnError");
+						}
 					}
-				}
-
-				dfi.getTree().getFirstChild("editor").getFirstChild("output")
-						.removeAllChildren();
-				if (oldCommand != null) {
-					dfi.getTree().getFirstChild("editor")
-							.getFirstChild("output").add(oldCommand);
+	
+					dfi.getTree().getFirstChild("table").remove("row");
+					if (oldCommand != null) {
+						dfi.getTree().getFirstChild("table").addAll(oldCommand);
+					}
 				}
 			}
 		}
 
+		else{
+			for (int i = 0; i < getDynamicFormList().size(); i++) {
+
+				DynamicForm dynamicF = getDynamicFormList().get(i);
+				DFEInteraction dfi = getPage().getInteractions().get(i);
+	
+				if (dynamicF.getDisplayType().equals(DisplayType.helpTextEditor)) {
+					String oldCommand = null;
+					if (dfi.getTree().getFirstChild("editor")
+							.getFirstChild("output").getFirstChild() != null) {
+						oldCommand = dfi.getTree().getFirstChild("editor")
+								.getFirstChild("output").getFirstChild().getHead();
+					}
+	
+					logger.info("oldCommand -> " + oldCommand);
+					logger.info("newCommand -> " + getCommandEdit());
+	
+					dfi.getTree().getFirstChild("editor").getFirstChild("output")
+							.removeAllChildren();
+					dfi.getTree().getFirstChild("editor").getFirstChild("output")
+							.add(getCommandEdit().trim());
+	
+					String e = dfi.check();
+	
+					logger.info("error interaction -> " + e);
+	
+					if (e != null && e.length() > 0) {
+						MessageUseful.addErrorMessage(e);
+						HttpServletRequest request = (HttpServletRequest) FacesContext
+								.getCurrentInstance().getExternalContext()
+								.getRequest();
+						request.setAttribute("msnError", "msnError");
+					} else {
+						if (getConfirm() != null
+								&& !getConfirm().equalsIgnoreCase("S")) {
+							MessageUseful
+									.addInfoMessage(getMessageResources("success_message"));
+							HttpServletRequest request = (HttpServletRequest) FacesContext
+									.getCurrentInstance().getExternalContext()
+									.getRequest();
+							request.setAttribute("msnError", "msnError");
+						}
+					}
+	
+					dfi.getTree().getFirstChild("editor").getFirstChild("output")
+							.removeAllChildren();
+					if (oldCommand != null) {
+						dfi.getTree().getFirstChild("editor")
+								.getFirstChild("output").add(oldCommand);
+					}
+				}
+			}
+		}
+		
 		setConfirm("N");
 
 	}
-
+	
 	/**
 	 * changeFunctionsTextEditor
 	 * 
@@ -1545,6 +1616,10 @@ public class CanvasModal extends BaseBean implements Serializable {
 		setColumnEdit(column);
 
 		setCommandEdit(command);
+		
+		logger.info("row: "+rowKey);
+		logger.info("column: "+column);
+		logger.info("command: "+command);
 	}
 
 	/**

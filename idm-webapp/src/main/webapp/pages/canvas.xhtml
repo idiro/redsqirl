@@ -590,11 +590,10 @@
 			<h:inputHidden value="#{canvasModalBean.listPageSize}" />
 			
 			<a4j:region>
-	                        <a4j:jsFunction name="saveAllPositions" 
-                                action="#{canvasBean.updateAllPosition}">
-                                     <a4j:actionparam name="allpositions"/>
-                                </a4j:jsFunction>
-                        </a4j:region>
+				<a4j:jsFunction name="saveAllPositions" action="#{canvasBean.updateAllPosition}">
+					<a4j:actionparam name="allpositions"/>
+				</a4j:jsFunction>
+            </a4j:region>
 			<a4j:region>
 				<a4j:status	onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
 							onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
@@ -858,7 +857,7 @@
 			<a4j:region>
 			
 			<rich:toolBar >
-
+			
 				<rich:dropDownMenu>
 
 					<f:facet name="label">
@@ -939,23 +938,34 @@
 
 				</rich:dropDownMenu>
 
-				<rich:toolBarGroup location="right"  
-				    onitemclick="saveAllPositions(getAllIconPositions());jQuery.blockUI({ message: jQuery('#domMessageDivCanvas1') });signOut();">
-					<rich:dropDownMenu value="#{messages.label_menu_signout}"
-						direction="bottom-left" jointPoint="br" styleClass="search" />
-				</rich:toolBarGroup>
 
-			</rich:toolBar>
-			
+					<rich:toolBarGroup location="right" >
+						<rich:dropDownMenu value="#{messages.label_menu_signout}" direction="bottom-left" jointPoint="br" styleClass="search" >
+						
+							<f:facet name="label">
+								<h:panelGrid cellpadding="0" cellspacing="0" columns="2" style="vertical-align:middle">
+									<h:outputText value="#{messages.label_menu_signout}" />
+								</h:panelGrid>
+							</f:facet>
+							
+							<rich:menuItem submitMode="ajax" value="#{messages.label_menu_signout}" onclick="saveAllPositions(getAllIconPositions());jQuery.blockUI({ message: jQuery('#domMessageDivCanvas1') });signOut();" />
+		                    
+		                    <rich:menuItem submitMode="ajax" value="#{messages.label_menu_restart}" onclick="jQuery.blockUI({ message: jQuery('#domMessageDivCanvas1') });signOutReLogin();" />
+								
+						</rich:dropDownMenu>
+					</rich:toolBarGroup>
+
+				</rich:toolBar>
+				
 			</a4j:region>
 			
-			<a4j:jsFunction name="signOut" action="#{userInfoBean.signOut}" oncomplete="jQuery.unblockUI();" />
+				<a4j:jsFunction name="signOut" action="#{userInfoBean.signOut}" oncomplete="jQuery.unblockUI();" />
+				<a4j:jsFunction name="signOutReLogin" action="#{userInfoBean.signOutReLogin}" oncomplete="jQuery.unblockUI();" />
+				
 
 		</h:form>
 
-
 		<rich:spacer width="1" height="15" />
-
 
 	</div>
 
@@ -1090,7 +1100,7 @@
 						</div>
 					
 						<h:panelGroup>
-							<ui:include src="/pages/help.xhtml" />
+							<ui:include src="/pages/help.xhtml" /> 
 						</h:panelGroup>
 					</a4j:region>
 				</div>

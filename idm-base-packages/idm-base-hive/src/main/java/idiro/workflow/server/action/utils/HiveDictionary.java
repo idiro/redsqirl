@@ -214,7 +214,7 @@ public class HiveDictionary extends AbstractDictionary {
 										"YEAR()",
 										"STRING",
 										"INT",
-										"@function:YEAR( STRING )@short:Extracts the year from String timestamps @param:STRING the string that contains a date@description:Returns the year part of a timestamp string@example: YEAR(\"1970-01-01 \") returns \"1970\"" },
+										"@function:YEAR( STRING )@short:Extracts the year from String timestamps @param:STRING the string that contains a date@description:Returns the year part of a timestamp string@example: YEAR(\"1970-01-01\") returns \"1970\"" },
 								new String[] {
 										"MONTH()",
 										"STRING",
@@ -230,8 +230,11 @@ public class HiveDictionary extends AbstractDictionary {
 										"STRING,STRING",
 										"STRING",
 										"@function:CONCAT( STRING , OTHERSTRING )@short:Adds two strings together@param:STRING the string that is added to @param:OTHERSTRING the string that is added to STRING@description:Adds two strings together to make a larger on@example: CONCAT(\"hello \", \"world\") returns \"hello world\"" },
-								new String[] { "CONCAT()",
-										"STRING,STRING,STRING", "STRING" },
+								new String[] {
+										"CONCAT()",
+										"STRING,STRING,STRING",
+										"STRING",
+										"@function:CONCAT( STRING , OTHERSTRING ,ANOTHERSTRING )@short:Adds two strings together@param:STRING the string that is added to @param:OTHERSTRING the string that is added to STRING@param:ANOTHERSTRING string to concatonate to the end of the resulting string@description:Adds two strings together to make a larger on@example: CONCAT(\"hello \", \"world\", \" !!!\" ) returns \"hello world !!!\"" },
 								new String[] {
 										"CONCAT()",
 										"STRING,STRING,STRING,STRING",

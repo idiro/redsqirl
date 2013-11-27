@@ -14,21 +14,6 @@
 
 <script>
 
-function addtooltip(text){
-    jQuery('div.help').remove();
-    jQuery('div.tooltip').remove();
-    var y=event.layerY;
-    var help = jQuery('<div class="tooltip">'+text+'</div>').hide().fadeIn("slow");
-    console.log("something");
-    //jQuery(help).css("top",(y-10)+"px");
-    jQuery("body").append(help);
-}
-
-function removetoottip(){
-	jQuery("div.tooltip").remove();
-	jQuery('div.help').remove();
-}
-   
 
 	function completeCommand(text){
 	    var txtarea = jQuery("[id$='commandText']");
@@ -198,12 +183,12 @@ function removetoottip(){
 			oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('textEditorPanel')}.hide() };"
 			reRender="command,tableInteraction, msnError, errorTable" />
 		<span>&nbsp;&nbsp;</span>
-		<a4j:commandButton action="#{canvasModalBean.cancel}"
-			value="#{messages.button_cancel}"
-			onclick="#{rich:component('textEditorPanel')}.hide();" />
+		<h:commandButton value="#{messages.button_cancel}"
+			type="button"
+			onclick="#{rich:component('textEditorPanel')}.hide();"/>
 		<span>&nbsp;&nbsp;</span>
 		<a4j:commandButton action="#{canvasModalBean.checkTextEditor}"
-			value="#{messages.button_check}" reRender="msnError, errorTable" />
+			value="#{messages.button_check}" reRender="command,tableInteraction, msnError, errorTable" />
 
 	</h:form>
 </body>

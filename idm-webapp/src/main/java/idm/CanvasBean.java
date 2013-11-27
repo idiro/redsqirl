@@ -19,6 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
@@ -730,19 +731,23 @@ public class CanvasBean extends BaseBean implements Serializable{
 		
 		DataFlowElement df = getDf().getElement(getIdMap().get(getNameWorkflow()).get(groupId));
 		
-		SavingState state = null;
+
+		String state = null;
 		boolean pathExists = true;
-		for (Entry<String, DFEOutput> e : df.getDFEOutput().entrySet()){
-			state = e.getValue().getSavingState();
-			
-			logger.info("path: "+e.getValue().getPath());
-			
-//			pathExists = e.getValue().isPathExists();
-			
-			logger.info(e.getKey()+" - "+state+" - "+pathExists);
+		
+		if (df.getDFEOutput() != null){
+			for (Entry<String, DFEOutput> e : df.getDFEOutput().entrySet()){
+				state = e.getValue().getSavingState().toString();
+				
+				logger.info("path: "+e.getValue().getPath());
+				
+	//			pathExists = e.getValue().isPathExists();
+				
+				logger.info(e.getKey()+" - "+state+" - "+pathExists);
+			}
 		}
 		
-		return new String[]{groupId, state.toString(), String.valueOf(pathExists)};
+		return new String[]{groupId, state, String.valueOf(pathExists)};
 	}
 	
 	

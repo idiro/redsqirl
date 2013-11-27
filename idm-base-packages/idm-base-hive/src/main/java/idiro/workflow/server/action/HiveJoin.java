@@ -42,6 +42,20 @@ public class HiveJoin extends HiveElement{
 	
 	public HiveJoin() throws RemoteException {
 		super(3,2,Integer.MAX_VALUE);
+		
+		page2 = addPage("Join Relationship",
+				"Join Relationship to use. The join will be applied from top to bottom. "+
+				"All the tables need to share one column in common.",
+				1);
+
+		jrInt = new JoinRelationInteraction(
+				key_joinRelation,
+				"Please specify the relationship, top to bottom is like left to right", 
+				0,
+				0,
+				this);
+		
+		page2.addInteraction(jrInt);
 
 		page1 = addPage("Filters",
 				"Add a condition and/or a partition filter. Note that these filters are applied after joining.",
@@ -73,19 +87,7 @@ public class HiveJoin extends HiveElement{
 		page1.addInteraction(partInt);
 		page1.addInteraction(condInt);
 
-		page2 = addPage("Join Relationship",
-				"Join Relationship to use. The join will be applied from top to bottom. "+
-				"All the tables need to share one column in common.",
-				1);
-
-		jrInt = new JoinRelationInteraction(
-				key_joinRelation,
-				"Please specify the relationship, top to bottom is like left to right", 
-				0,
-				0,
-				this);
 		
-		page2.addInteraction(jrInt);
 		
 		page3 = addPage("Join Operations",
 				"The columns generated are defined on this page. Each row of the table is a new column to generate. "+

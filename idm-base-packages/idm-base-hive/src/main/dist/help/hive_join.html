@@ -23,7 +23,7 @@ td {
 </style>
 </head>
 <body>
-
+	<div id="body">
 	<h1>Hive Join</h1>
 
 	<h2>Description</h2>
@@ -36,7 +36,7 @@ td {
 	<h2>Source</h2>
 	<p>The source type for Hive Select has to be Hive and the sub types
 		Hive Table or Hive Partition. Any number of inputs are allowed in Hive
-		Join</p>
+		Join as long as there is at least one</p>
 
 	<h2>Filters - Page 1</h2>
 	<p>Filters will let the Join type be selected and add conditions
@@ -50,26 +50,26 @@ td {
 	<p>Join Relationship is where the relationship between the inputs
 		is set. By selecting what columns from the inputs, the join
 		relationship can be set</p>
-	<h2>Join Operations</h2>
+	<h3>Join Operations</h3>
 	<p>Join Operations provides the ability to copy the input data to
 		the output data with the conditions and filters that have been set
 		previously. Other operations can be performed on the data like casting
 		and other data transformations.</p>
-	<h1>IDM Hive</h1>
+	<h2>IDM Hive</h2>
 	<p>
 		IDM Hive is the interface for IDM to interact with Hive on the hadoop
 		cluster. There are two other actions that are apart of IDM Hive
-		package <a href="hive_select.html">Hive Select</a> and <a
-			href="hive_union.html">Hive Union.</a>
+		package <a href="hive_select.html" target="_self">Hive Select</a> and <a
+			href="hive_union.html" target="_self">Hive Union.</a>
 	</p>
 	<p>
-		<a href="http://hive.apache.org/">Hive</a> is a hadoop implementation
+		<a href="http://hive.apache.org/" target="_blank">Hive</a> is a hadoop implementation
 		of a relational database that is used for data warehousing for large
 		data sets. Each query written in it's own language called HiveQl that
 		acts like a normal SQL query but runs as a Map/Reduce job. Indexing is
 		made easier and makes querying large datasets quicker and more
 		efficient.
 	</p>
-
+	</div>
 </body>
 </html>

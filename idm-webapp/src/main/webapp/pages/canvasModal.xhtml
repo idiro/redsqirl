@@ -260,7 +260,7 @@
 									style="width:125px;" >
 									<a4j:support event="onclick" action="#{canvasModalBean.openHelpTextEditorModal}" 
 										oncomplete="#{rich:component('textEditorPanel')}.show()" 
-										reRender="commandText,listFields,listFunctions,listCategories,listOperation,listCategoriesOperation">
+										reRender="commandText,listFields,listFunctions,listCategories,listOperation,listCategoriesOperation,command,tableInteraction">
 										<a4j:actionparam  name="command" value="#{item.nameValue[column]}"/>
 										<a4j:actionparam  name="rowKey" value="#{row}"/>
 										<a4j:actionparam  name="column" value="#{column}"/>
