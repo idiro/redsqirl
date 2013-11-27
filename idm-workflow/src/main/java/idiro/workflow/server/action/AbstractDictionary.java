@@ -97,16 +97,18 @@ public abstract class AbstractDictionary {
 			} else {
 				loadDefaultFunctions();
 				saveFile(file);
+				functionsMap = new HashMap<String, String[][]>();
+				loadFunctionsFile(file);
 			}
 		}
 
-		for (Entry<String, String[][]> e : functionsMap.entrySet()) {
-			System.out.println("#" + e.getKey());
-			for (String[] function : e.getValue()) {
+//		for (Entry<String, String[][]> e : functionsMap.entrySet()) {
+//			System.out.println("#" + e.getKey());
+//			for (String[] function : e.getValue()) {
 //				System.out.println(function[0] + ";" + function[1] + ";"
 //						+ function[2]);
-			}
-		}
+//			}
+//		}
 	}
 
 	private void saveFile(File file) {
