@@ -3,6 +3,7 @@ package idiro.workflow.server.action;
 import idiro.utils.FeatureList;
 import idiro.utils.OrderedFeatureList;
 import idiro.utils.Tree;
+import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.DataOutput;
 import idiro.workflow.server.DataProperty;
 import idiro.workflow.server.DataflowAction;
@@ -54,6 +55,7 @@ public abstract class PigElement extends DataflowAction {
 	protected UserInteraction delimiterOutputInt;
 	protected UserInteraction dataSubtypeInt;
 	protected UserInteraction typeOutputInt;
+	protected UserInteraction savetypeOutputInt;
 
 	protected Map<String, DFELinkProperty> input;
 	protected Map<String, DFEOutput> output;
@@ -66,7 +68,14 @@ public abstract class PigElement extends DataflowAction {
 		super(new PigAction());
 		init(nbInMin,nbInMax);
 		this.minNbOfPage = minNbOfPage;
-		delimiterOutputInt = new UserInteraction("Delimiter", "Setting output delimiter", DisplayType.list, 0, 1);
+		delimiterOutputInt = new UserInteraction("Delimiter", "Setting output delimiter", DisplayType.list, 0, 0);
+		
+		savetypeOutputInt = new UserInteraction(
+				"Output Type",
+				"Setting the output type",
+						DisplayType.list,
+						0,
+						0);
 
 	}
 
@@ -184,18 +193,35 @@ public abstract class PigElement extends DataflowAction {
 		return delimiterOutputInt;
 	}
 
+	public void updateOutputType() throws RemoteException, InstantiationException, IllegalAccessException{
+		Tree<String> list= null;
+		if(savetypeOutputInt.getTree().isEmpty()){
+			list = savetypeOutputInt.getTree().add("list");
+			String k = MapRedTextType.class.newInstance().getTypeName();
+			list.add("output").add(k);
+			Tree<String> values = list.add("values");
+			values.add("value").add(k);
+			values.add("value").add(MapRedBinaryType.class.newInstance().getTypeName());
+		}
+	}
+	
 	public void updateDelimiterOutputInt() throws RemoteException{
-
+		logger.debug("updating default delimiter");
 		Tree<String> list = null;
-		if(delimiterOutputInt.getTree().getSubTreeList().isEmpty()){
+		delimiterOutputInt.setTree(new TreeNonUnique<String>(componentId));
+		Tree<String>tree = delimiterOutputInt.getTree();
+		if(tree.isEmpty()){
 			list = delimiterOutputInt.getTree().add("list");
 			list.add("output").add(default_delimiter);
-			Tree<String> value = list.add("value");
-			value.add("\001");
-			value.add(",");
-			value.add("|");
-			value.add(";");
+			Tree<String> value = list.add("values");
+			value.add("value").add("\001");
+			value.add("value").add(",");
+			value.add("value").add("|");
+			value.add("value").add(";");
+			logger.debug("delimiters added");
+			
 		}
+		logger.debug("updating default delimiter complete");
 	}
 	
 	/**
@@ -235,29 +261,29 @@ public abstract class PigElement extends DataflowAction {
 	}
 	
 	public void addOrRemoveOutPage() throws RemoteException{
-		logger.info("getting parts");
-		List<Tree<String>> parts = dataSubtypeInt.getTree()
-				.getFirstChild("table").getChildren("row");
-		if(parts.isEmpty()){
-			if(pageList.size() > minNbOfPage){
-				typeOutputInt = null;
-				pageList.remove(pageList.size()-1);
-			}
-		}else if(pageList.size() == minNbOfPage){
-			Page page = addPage("Output selection",
-					"",
-					1);
-
-			typeOutputInt = new UserInteraction(
-					key_outputType,
-					"Specify Partition only, if you want to use "+
-							"only the newly created partition in the next actions",
-							DisplayType.list,
-							0,
-							0);
-
-			page.addInteraction(typeOutputInt);
-		}
+//		logger.info("getting parts");
+//		List<Tree<String>> parts = dataSubtypeInt.getTree()
+//				.getFirstChild("table").getChildren("row");
+//		if(parts.isEmpty()){
+//			if(pageList.size() > minNbOfPage){
+//				typeOutputInt = null;
+//				pageList.remove(pageList.size()-1);
+//			}
+//		}else if(pageList.size() == minNbOfPage){
+//			Page page = addPage("Output selection",
+//					"",
+//					1);
+//
+//			typeOutputInt = new UserInteraction(
+//					key_outputType,
+//					"Specify Partition only, if you want to use "+
+//							"only the newly created partition in the next actions",
+//							DisplayType.list,
+//							0,
+//							0);
+//
+//			page.addInteraction(typeOutputInt);
+//		}
 	}
 	
 	
@@ -293,7 +319,7 @@ public abstract class PigElement extends DataflowAction {
 	public String getLoadQueryPiece(DFEOutput out) throws RemoteException{
 		logger.debug("create load...");
 		
-		String delimiter = out.getProperty(MapRedTextType.key_delimiter);
+		String delimiter = out.getProperty(MapRedTextType.key_delimiter_char);
 		
 		if (delimiter == null){
 			delimiter = default_delimiter;
@@ -326,37 +352,59 @@ public abstract class PigElement extends DataflowAction {
 		
 		String type = null;
 		DFEOutput typeOutput = null;
-		try{
-			type = dataSubtypeInt.getTree().getFirstChild("list").getFirstChild("output").getFirstChild().getHead();
-			
-			Iterator<String> dataOutputClassName = 
-					WorkflowPrefManager.getInstance().getNonAbstractClassesFromSuperClass(
-							DataOutput.class.getCanonicalName()).iterator();
-			
-			Class<?> klass = null;
-			while (dataOutputClassName.hasNext()){
-				String className = dataOutputClassName.next();
-				String[] classNameArray = className.split("\\.");
-				if (classNameArray[classNameArray.length-1].equals(type)){
-					klass = Class.forName(className);
-					break;
-				}
-			}
-			
-			typeOutput = (DFEOutput)(klass.newInstance());
-		}
-		catch(Exception e){
-			logger.debug("Output type not set, using type from source");
-		}
-		if (typeOutput == null){
-			typeOutput = out;
-		}
+//		try{
+//			type = dataSubtypeInt.getTree().getFirstChild("list").getFirstChild("output").getFirstChild().getHead();
+//			
+//			Iterator<String> dataOutputClassName = 
+//					WorkflowPrefManager.getInstance().getNonAbstractClassesFromSuperClass(
+//							DataOutput.class.getCanonicalName()).iterator();
+//			
+//			Class<?> klass = null;
+//			while (dataOutputClassName.hasNext()){
+//				String className = dataOutputClassName.next();
+//				String[] classNameArray = className.split("\\.");
+//				if (classNameArray[classNameArray.length-1].equals(type)){
+//					klass = Class.forName(className);
+//					break;
+//				}
+//			}
+//			
+//			typeOutput = (DFEOutput)(klass.newInstance());
+//		}
+//		catch(Exception e){
+//			logger.debug("Output type not set, using type from source");
+//		}
+//		if (typeOutput == null){
+//			typeOutput = out;
+//		}
 		
-		String function = getLoadStoreFuncion(typeOutput, delimiter);
-		
+//		String function = getLoadStoreFuncion(typeOutput, delimiter);
+		String function = getStoreFunction(delimiter);
+		logger.info(function);
 		return "STORE "+relationName+" INTO '" + out.getPath() + "' USING "+function+";";
 	}
 	
+	
+	public String getStoreFunction(String delimiter) throws RemoteException{
+		String type = "";
+		String function = "";
+		try{
+			type = savetypeOutputInt.getTree().getFirstChild("list").getFirstChild("output").getFirstChild().getHead();
+			logger.info("type: "+type);
+			if(type.equalsIgnoreCase("TEXT MAP-REDUCE DIRECTORY")){
+				function = "PigStorage('"+delimiter+"')";
+			}
+			if (type.equalsIgnoreCase("BINARY MAP-REDUCE DIRECTORY")){
+				function = "BinStorage()";
+			}
+			logger.info("Storeing via "+function);
+			return function;
+		}catch (Exception e){
+			logger.error("There was an error getting the output type");
+		}
+		return null;
+			
+	}
 	private String getLoadStoreFuncion(DFEOutput out, String delimiter) throws RemoteException{
 		String function = null;
 		if (out.getTypeName().equals("TEXT MAP-REDUCE DIRECTORY")){

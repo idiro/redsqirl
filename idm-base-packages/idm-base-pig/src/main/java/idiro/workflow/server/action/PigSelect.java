@@ -2,6 +2,7 @@ package idiro.workflow.server.action;
 
 import idiro.utils.FeatureList;
 import idiro.workflow.server.Page;
+import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEOutput;
@@ -58,7 +59,7 @@ public class PigSelect extends PigElement{
 
 		page2 = addPage("Feature operations",
 				"Create operation feature per feature",
-				1);
+				3);
 		tSelInt = new PigTableSelectInteraction(
 				key_featureTable,
 				"Please specify the operations to be executed for each feature",
@@ -67,6 +68,15 @@ public class PigSelect extends PigElement{
 				this);
 
 		page2.addInteraction(tSelInt);
+//		delimiterOutputInt = new UserInteraction("Delimiter", "Setting output delimiter", DisplayType.list, 1, 0);
+		page2.addInteraction(delimiterOutputInt);
+//		typeOutputInt = new UserInteraction(
+//				"Output Type",
+//				"Setting the output type",
+//						DisplayType.list,
+//						2,
+//						0);
+		page2.addInteraction(savetypeOutputInt);
 		
 	}
 	
@@ -88,9 +98,17 @@ public class PigSelect extends PigElement{
 			}else if(interaction == tSelInt){
 				tSelInt.update(in);
 //				addOrRemoveOutPage();
-				logger.info("updating table select");
 			}else if(interaction == dataSubtypeInt){
 				updateDataSubTypeInt();
+			}else if(interaction == savetypeOutputInt){
+				try {
+					updateOutputType();
+					logger.info("output type");
+				} catch (InstantiationException e) {
+					logger.error("Instanciatin error");
+				} catch (IllegalAccessException e) {
+					logger.error("Illegal Access error");
+				}
 			}
 		}
 	}

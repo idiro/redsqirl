@@ -42,6 +42,7 @@ public class MapRedTextType extends DataOutput{
 	private static final long serialVersionUID = 8260229620701006942L;
 
 	public final static String key_delimiter = "delimiter";
+	public final static String key_delimiter_char = "delimiter_char";
 
 	protected static HDFSInterface hdfsInt;
 
@@ -352,7 +353,7 @@ public class MapRedTextType extends DataOutput{
 			return String.valueOf((char)(columnIndex+65));
 	}
 	
-	private String getChar(String asciiCode){
+	protected String getChar(String asciiCode){
 		String result = null;
 		if (asciiCode != null && asciiCode.startsWith("#") && asciiCode.length() > 1){
 			result = String.valueOf(Character.toChars(Integer.valueOf(asciiCode.substring(1))));

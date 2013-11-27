@@ -53,7 +53,8 @@ public class PigUnion  extends PigElement{
 				this);
 
 		page1.addInteraction(tUnionSelInt);
-		
+		page1.addInteraction(delimiterOutputInt);
+		page1.addInteraction(savetypeOutputInt);
 //		addOutputPage();
 
 	}
@@ -79,6 +80,16 @@ public class PigUnion  extends PigElement{
 				tUnionSelInt.update(in);
 			}else if(interaction == dataSubtypeInt){
 				updateDataSubTypeInt();
+			}else if(interaction == typeOutputInt){
+				try {
+					updateOutputType();
+				} catch (InstantiationException e) {
+					logger.error("Instanciatin error");
+				} catch (IllegalAccessException e) {
+					logger.error("Illegal Access error");
+				}
+			}else if(interaction == delimiterOutputInt){
+				updateDelimiterOutputInt();
 			}
 		}
 		

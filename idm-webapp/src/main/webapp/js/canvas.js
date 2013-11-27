@@ -389,16 +389,19 @@ function deselectAll(canvasName) {
 	jQuery.each(polygonLayer.get('.polygon1'), function(index, value) {
 		value.setStroke('black');
 		value.selected = false;
-		polygonLayer.draw();
 	});
-
+	try{
+		polygonLayer.draw();
+	}catch(exception){
+		//alert(exception);
+	}
 	jQuery.each(layer.getChildren(), function(index, value) {
 		if (value.isArrow == true) {
 			value.setStroke(value.originalColor);
 			value.selected = false;
-			layer.draw();
 		}
 	});
+	layer.draw();
 
 }
 
@@ -1398,10 +1401,13 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides) {
 	polygonTab.rotateDeg(rotateDeg);
 	
 
-	var polygonTabImage = polygonTab.toDataURL({
+	var polygonTabImage;
+	try{
+	polygonTabImage = polygonTab.toDataURL({
 		width : 75,
 		height : 75
 	});
+	}catch(exception){}
 
 	polygonTab.setAbsolutePosition(posInitX, poxInitY);
 	polygonTab.selected = false;
@@ -1507,7 +1513,9 @@ function updateActionRunningStatus(groupId, status) {
 	
 	var group = getElement(polygonLayer, groupId);
 	
-	group.getChildren()[0].setStroke(getColorRunning(status));
+	//group.getChildren()[0].setStroke(getColorRunning(status));
+	group.getChildren()[0].setFill(getColorRunning(status));
+	
 	
 	polygonLayer.draw();
 

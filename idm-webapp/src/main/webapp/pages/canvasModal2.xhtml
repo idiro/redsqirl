@@ -14,21 +14,6 @@
 
 <script>
 
-function addtooltip(text){
-    jQuery('div.help').remove();
-    jQuery('div.tooltip').remove();
-    var y=event.layerY;
-    var help = jQuery('<div class="tooltip">'+text+'</div>').hide().fadeIn("slow");
-    console.log("something");
-    //jQuery(help).css("top",(y-10)+"px");
-    jQuery("body").append(help);
-}
-
-function removetoottip(){
-	jQuery("div.tooltip").remove();
-	jQuery('div.help').remove();
-}
-   
 
 	function completeCommand(text){
 	    var txtarea = jQuery("[id$='commandText']");

@@ -246,3 +246,41 @@ function resizeTabs(){
 	}
 	
 }
+function showImg(url){
+	var img = jQuery("<img src="+url+">");
+	console.log(img);
+	jQuery("#helpImg").append(img);
+	jQuery("#helpPage").hide();
+	jQuery("#btIndex").show();
+};
+
+ function showHelp(url) {
+	console.log("updating help panel");
+	jQuery("#helpPanel").load(url);
+	jQuery("#helpIndex").hide();
+	jQuery("#btIndex").show();
+	//e.preventDefault();
+};
+
+
+function hideHelp() {
+	jQuery("#helpIndex").show();
+	jQuery("#btIndex").hide();
+	jQuery("#helpPanel").empty();
+};
+
+function addtooltip(text){
+    jQuery('div.help').remove();
+    jQuery('div.tooltip').remove();
+    var y=event.layerY;
+    console.log(text);
+    var help = jQuery('<div class="tooltip">'+text+'</div>').hide().fadeIn("slow");
+    //console.log("something");
+    jQuery(help).css("top",(y-10)+"px");
+    jQuery("body").append(help);
+}
+
+function removetoottip(){
+	jQuery("div.tooltip").remove();
+	jQuery('div.help').remove();
+}

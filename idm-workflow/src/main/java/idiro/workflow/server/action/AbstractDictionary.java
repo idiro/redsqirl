@@ -28,7 +28,7 @@ public abstract class AbstractDictionary {
 	public static String example = "example";
 	public static String description = "description";
 	protected Map<String, String[][]> functionsMap;
-	
+
 	protected AbstractDictionary(){
 		init();
 	}

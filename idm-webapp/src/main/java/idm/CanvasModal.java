@@ -1,6 +1,7 @@
 package idm;
 
 import idiro.utils.Tree;
+//import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.enumeration.FeatureType;
@@ -572,11 +573,19 @@ public class CanvasModal extends BaseBean implements Serializable {
 			dynamicF.setTree(dfeInteraction.getTree());
 
 			if (dfeInteraction.getDisplay().equals(DisplayType.list)) {
-
+				logger.info(dfeInteraction.getName());
 				List<SelectItem> selectItems = new ArrayList<SelectItem>();
-				List<Tree<String>> list = dfeInteraction.getTree()
-						.getFirstChild("list").getFirstChild("values")
-						.getSubTreeList();
+				Tree<String> dfetree = dfeInteraction.getTree();
+				logger.info("got tree");
+				Tree<String> lists = dfetree.getFirstChild("list");
+				logger.info("got tree -> list");
+				Tree<String> values = lists.getFirstChild("values");
+				logger.info("got tree -> list -> values");
+				List<Tree<String>> list = values.getSubTreeList();
+				logger.info("got tree -> list -> values -> tree");
+//						.getFirstChild("list").getFirstChild("values")
+//						.getSubTreeList();
+				
 
 				logger.info("list value " + list);
 
