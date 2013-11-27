@@ -236,7 +236,7 @@ public class TableSelectInteraction extends UserInteraction{
 			Tree<String> rowCur = rowIt.next();
 			String name = rowCur.getFirstChild(table_feat_title).getFirstChild().getHead();
 			String type = rowCur.getFirstChild(table_type_title).getFirstChild().getHead();
-			new_features.addFeature(name, FeatureType.valueOf(type));
+			new_features.addFeature(name, HiveDictionary.getType(type));
 		}
 		return new_features;
 	}

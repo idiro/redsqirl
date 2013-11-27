@@ -286,19 +286,19 @@ public class HiveDictionary extends AbstractDictionary {
 	public static String getHiveType(FeatureType feat) {
 		String featureType = feat.name();
 		switch (feat) {
-		case BOOLEAN:
-			break;
-		case INT:
-			break;
-		case FLOAT:
-			break;
-		case LONG:
-			featureType = "BIGINT";
-			break;
-		case DOUBLE:
-			break;
-		case STRING:
-			break;
+			case BOOLEAN:
+				break;
+			case INT:
+				break;
+			case FLOAT:
+				break;
+			case LONG:
+				featureType = "BIGINT";
+				break;
+			case DOUBLE:
+				break;
+			case STRING:
+				break;
 		}
 		return featureType;
 	}

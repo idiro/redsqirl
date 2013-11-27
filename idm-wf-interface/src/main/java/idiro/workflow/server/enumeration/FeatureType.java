@@ -8,7 +8,6 @@ package idiro.workflow.server.enumeration;
 public enum FeatureType {
 	BOOLEAN,
 	INT,
-	BIGINT,
 	LONG,
 	FLOAT,
 	DOUBLE,

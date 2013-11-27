@@ -36,7 +36,7 @@ public class HiveType extends DataOutput{
 	private static final long serialVersionUID = -4797761333298548415L;
 	protected static HiveInterface hInt;
 	public static final String key_partitions = "key_partitions";
-	public static final String key_alias = "alias";
+//	public static final String key_alias = "alias";
 	private boolean constant; 
 
 	public HiveType() throws RemoteException {
@@ -44,7 +44,7 @@ public class HiveType extends DataOutput{
 		if(hInt == null){
 			hInt = new HiveInterface();
 		}
-		addProperty(key_alias,"");
+//		addProperty(key_alias,"");
 		setConstant(true);
 	}
 
