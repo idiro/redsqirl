@@ -36,6 +36,8 @@ public abstract class AbstractDictionary {
 	private void loadFunctionsFile(File f) {
 		
 		logger.info("loadFunctionsFile");
+		
+		functionsMap = new HashMap<String, String[][]>();
 
 		BufferedReader br = null;
 		try {
@@ -83,7 +85,6 @@ public abstract class AbstractDictionary {
 	}
 
 	private void init() {
-		functionsMap = new HashMap<String, String[][]>();
 
 		File file = new File(WorkflowPrefManager.pathSystemPref.get() + "/"
 				+ getNameFile());
@@ -97,7 +98,6 @@ public abstract class AbstractDictionary {
 			} else {
 				loadDefaultFunctions();
 				saveFile(file);
-				functionsMap = new HashMap<String, String[][]>();
 				loadFunctionsFile(file);
 			}
 		}

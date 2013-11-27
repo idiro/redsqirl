@@ -9,6 +9,7 @@ import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.interfaces.DFEOutput;
 
 import java.rmi.RemoteException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -59,6 +60,8 @@ public class HiveDictionary extends AbstractDictionary {
 	protected void loadDefaultFunctions() {
 
 		logger.info("loadDefaultFunctions");
+		
+		functionsMap = new HashMap<String, String[][]>();
 
 		functionsMap
 				.put(logicalOperators,
