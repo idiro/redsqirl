@@ -110,5 +110,10 @@ public class TestAction extends DataflowAction{
 		// TODO Auto-generated method stub
 		return false;
 	}
+	
+	@Override
+	public String getReturnType(String expression) throws RemoteException{
+		return null;
+	}
 
 }
