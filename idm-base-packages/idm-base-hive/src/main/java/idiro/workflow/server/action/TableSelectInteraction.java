@@ -285,11 +285,6 @@ public class TableSelectInteraction extends UserInteraction{
 		return createSelect;
 	}
 	
-	/**
-	 * Get the return type of an expression
-	 * @return
-	 * @throws RemoteException
-	 */
 	public String checkExpression(String expression, String modifier) throws RemoteException{
 		String error = null;
 		try{

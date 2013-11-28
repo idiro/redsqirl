@@ -66,7 +66,7 @@ public interface DFEInteraction extends Remote{
 	public String check() throws RemoteException;
 	
 	/**
-	 * Check if the interaction is correct
+	 * Check if the expression is correct
 	 * @return
 	 * @throws RemoteException
 	 */
