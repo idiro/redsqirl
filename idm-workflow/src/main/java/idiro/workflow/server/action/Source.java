@@ -489,14 +489,4 @@ public class Source extends DataflowAction {
 	public boolean writeOozieActionFiles(File[] files) throws RemoteException {
 		return false;
 	}
-	
-	/**
-	 * Get the return type of an expression
-	 * @return
-	 * @throws RemoteException
-	 */
-	public String getReturnType(String expression) throws RemoteException{
-		return null;
-	}
-
 }

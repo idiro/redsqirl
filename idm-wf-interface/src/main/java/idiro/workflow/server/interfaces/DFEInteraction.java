@@ -66,6 +66,13 @@ public interface DFEInteraction extends Remote{
 	public String check() throws RemoteException;
 	
 	/**
+	 * Check if the interaction is correct
+	 * @return
+	 * @throws RemoteException
+	 */
+	public String checkExpression(String expression, String modifier) throws RemoteException;
+	
+	/**
 	 * Return a short description.
 	 * Return a short description of what the interaction is suppose to do.
 	 * @return the legend

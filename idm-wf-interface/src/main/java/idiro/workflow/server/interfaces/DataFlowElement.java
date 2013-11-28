@@ -230,12 +230,4 @@ public interface DataFlowElement extends Remote{
 	 * @throws RemoteException
 	 */
 	public void cleanThisAndAllElementAfter() throws RemoteException;
-	
-	/**
-	 * Get the return type of an expression
-	 * @return
-	 * @throws RemoteException
-	 */
-	public String getReturnType(String expression) throws RemoteException;
-
 }

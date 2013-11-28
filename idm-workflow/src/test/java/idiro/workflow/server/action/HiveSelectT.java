@@ -621,10 +621,4 @@ public class HiveSelectT extends DataflowAction{
 
 		return query;
 	}
-	
-	@Override
-	public String getReturnType(String expression) throws RemoteException{
-		return null;
-	}
-
 }
