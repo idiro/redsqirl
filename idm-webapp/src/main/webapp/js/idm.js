@@ -147,34 +147,39 @@ function validateArrowsAll(){
 	validateArrows(jQuery("#tabs2"),jQuery("#buttonsTabs2"));
 	validateArrows(jQuery("#tabRemote"),jQuery("#buttonstabRemote"));
 	validateArrows(jQuery("#tabsFooter"),jQuery("#buttonsTabsFooter"));
+	
 }
 
 function validateArrows(tabPrincipal, spanButtons){
-    
-	  var ul = tabPrincipal.tabs().children('ul').first();
-	  var tabsRealWidth = 0;
-	  ul.find('li').each(function (index, element) {
-          tabsRealWidth += jQuery(element).width();
-          tabsRealWidth += (jQuery(element).css('margin-right').replace('px', '') / 1);
+	
+	var ul = tabPrincipal.tabs().children('ul').first();
+	var tabsRealWidth = 0;
+	
+	ul.find('li').each(function (index, element) {
+		tabsRealWidth += jQuery(element).width();
+		tabsRealWidth += jQuery(element).css('margin-right').replace('px', '') / 1;
     });
 
-	  if(tabsRealWidth - tabPrincipal.width() > -35){
-  	  
-		  spanButtons.show();
-
-  	  var disTab = tabsRealWidth - -1*ul.css("left").replace('px', '');
-  	  
-  	  if( tabPrincipal.tabs().children('span').first().css("left").replace('px', '') - disTab > 40 ){
-
-			  var dist = tabPrincipal.tabs().children('span').first().css("left").replace('px', '') - disTab - 40;
-
-	    	  ul.stop().animate({ left: parseInt(ul.css("left").replace('px', '')) + parseInt(dist) + 'px' }, 'slow');
-		  }
+	if(tabsRealWidth - tabPrincipal.width() > -35){
+		
+		spanButtons.show();
+		
+		var disTab = tabsRealWidth - -1*ul.css("left");
+		//var disTab = tabsRealWidth - -1*ul.css("left").replace('px', '');
+		
+		if( tabPrincipal.tabs().children('span').first().css("left") - disTab > 40 ){
+			
+			var dist = tabPrincipal.tabs().children('span').first().css("left") - disTab - 40;
+			ul.stop().animate({ left: parseInt(ul.css("left")) + parseInt(dist) + 'px' }, 'slow');
+		
+		}
   	  
   	}else{
+  		
   		spanButtons.hide();
   		ul.stop().animate({ left: '0' }, 'slow');
-	    }
+  		
+  	}
     
 }
 
