@@ -1,7 +1,6 @@
 package idm;
 
 import idiro.utils.Tree;
-//import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.enumeration.FeatureType;
@@ -30,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.ajax4jsf.model.KeepAlive;
 import org.apache.log4j.Logger;
+//import idiro.utils.TreeNonUnique;
 
 /**
  * CanvasModal
@@ -1085,28 +1085,36 @@ public class CanvasModal extends BaseBean implements Serializable {
 		boolean result = false;
 		
 		if (getColumnEdit() != null) {
+			for (int i = 0; i < getDynamicFormList().size(); i++) {
+
+				DynamicForm dynamicF = getDynamicFormList().get(i);
+				DFEInteraction dfi = getPage().getInteractions().get(i);
+	
+				if (dynamicF.getDisplayType().equals(DisplayType.table)) {
 			
-			logger.info("newCommand -> " + getCommandEdit());
-			String type = getDfe().getReturnType(getCommandEdit());
-			logger.info("Return Type: "+type);
-					
-			if (type == null) {
-				MessageUseful.addErrorMessage("Expression does not return any type");
-				HttpServletRequest request = (HttpServletRequest) FacesContext
-						.getCurrentInstance().getExternalContext()
-						.getRequest();
-				request.setAttribute("msnError", "msnError");
-			} else {
-				if (getConfirm() != null
-						&& !getConfirm().equalsIgnoreCase("S")) {
-					MessageUseful
-							.addInfoMessage(getMessageResources("success_message"));
-					HttpServletRequest request = (HttpServletRequest) FacesContext
-							.getCurrentInstance().getExternalContext()
-							.getRequest();
-					request.setAttribute("msnError", "msnError");
+					logger.info("newCommand -> " + getCommandEdit());
+					String e = dfi.checkExpression(getCommandEdit(), null);
+					logger.info("error interaction ->  "+e);
+							
+					if (e != null && e.length() > 0) {
+						MessageUseful.addErrorMessage(e);
+						HttpServletRequest request = (HttpServletRequest) FacesContext
+								.getCurrentInstance().getExternalContext()
+								.getRequest();
+						request.setAttribute("msnError", "msnError");
+					} else {
+						if (getConfirm() != null
+								&& !getConfirm().equalsIgnoreCase("S")) {
+							MessageUseful
+									.addInfoMessage(getMessageResources("success_message"));
+							HttpServletRequest request = (HttpServletRequest) FacesContext
+									.getCurrentInstance().getExternalContext()
+									.getRequest();
+							request.setAttribute("msnError", "msnError");
+						}
+						result = true;
+					}
 				}
-				result = true;
 			}
 		}
 

@@ -8,7 +8,6 @@ import idiro.workflow.server.DataProperty;
 import idiro.workflow.server.DataflowAction;
 import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.WorkflowPrefManager;
-import idiro.workflow.server.action.utils.HiveDictionary;
 import idiro.workflow.server.connect.HDFSInterface;
 import idiro.workflow.server.datatype.MapRedBinaryType;
 import idiro.workflow.server.datatype.MapRedTextType;
@@ -422,21 +421,4 @@ public abstract class PigElement extends DataflowAction {
 		nameCont++;
 		return "A"+nameCont;
 	}
-	
-	/**
-	 * Get the return type of an expression
-	 * @return
-	 * @throws RemoteException
-	 */
-	public String getReturnType(String expression) throws RemoteException{
-		String returnType = null;
-		try{
-			returnType = HiveDictionary.getInstance().getReturnType(expression, getInFeatures());
-		}
-		catch (Exception e){
-			logger.error("Error trying to get expression return type.", e);
-		}
-		return returnType;
-	}
-
 }

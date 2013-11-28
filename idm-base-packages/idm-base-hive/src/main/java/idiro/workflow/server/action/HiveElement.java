@@ -6,7 +6,6 @@ import idiro.workflow.server.DataProperty;
 import idiro.workflow.server.DataflowAction;
 import idiro.workflow.server.Page;
 import idiro.workflow.server.UserInteraction;
-import idiro.workflow.server.action.utils.HiveDictionary;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.datatype.HiveTypeWithWhere;
@@ -276,21 +275,4 @@ public abstract class HiveElement extends DataflowAction {
 	public final PartitionInteraction getPartInt() {
 		return partInt;
 	}
-	
-	/**
-	 * Get the return type of an expression
-	 * @return
-	 * @throws RemoteException
-	 */
-	public String getReturnType(String expression) throws RemoteException{
-		String returnType = null;
-		try{
-			returnType = HiveDictionary.getInstance().getReturnType(expression, getInFeatures());
-		}
-		catch (Exception e){
-			logger.error("Error trying to get expression return type.", e);
-		}
-		return returnType;
-	}
-
 }
