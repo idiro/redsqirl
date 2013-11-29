@@ -151,7 +151,7 @@ public abstract class HiveElement extends DataflowAction {
 		if(error == null){
 			FeatureList new_features = getNewFeatures();
 			if(new_features.getSize() > 0){
-				partInt.addPartitions(new_features);
+//				partInt.addPartitions(new_features);
 
 				if(useTable()){
 					if(output == null){
@@ -174,12 +174,12 @@ public abstract class HiveElement extends DataflowAction {
 						}
 					}
 					String tableName = hInt.getTableAndPartitions(output.get(key_output).getPath())[0];
-					output.get(key_output).addProperty(HiveTypeWithWhere.key_where,
-							partInt.getPartitionsInWhere(tableName));
+//					output.get(key_output).addProperty(HiveTypeWithWhere.key_where,
+//							partInt.getPartitionsInWhere(tableName));
 				}
 
 				output.get(key_output).setFeatures(new_features);
-				output.get(key_output).addProperty(HiveType.key_partitions, partInt.getPartitions());
+//				output.get(key_output).addProperty(HiveType.key_partitions, partInt.getPartitions());
 			}
 		}
 		return error;
@@ -192,29 +192,29 @@ public abstract class HiveElement extends DataflowAction {
 	 * @throws RemoteException
 	 */
 	public void addOrRemoveOutPage() throws RemoteException{
-		List<Tree<String>> parts = partInt.getTree()
-				.getFirstChild("table").getChildren("row");
-
-		if(parts.isEmpty()){
-			if(pageList.size() > minNbOfPage){
-				typeOutputInt = null;
-				pageList.remove(pageList.size()-1);
-			}
-		}else if(pageList.size() == minNbOfPage){
-			Page page = addPage("Output selection",
-					"",
-					1);
-
-			typeOutputInt = new UserInteraction(
-					key_outputType,
-					"Specify Partition only, if you want to use "+
-							"only the newly created partition in the next actions",
-							DisplayType.list,
-							0,
-							0);
-
-			page.addInteraction(typeOutputInt);
-		}
+//		List<Tree<String>> parts = partInt.getTree()
+//				.getFirstChild("table").getChildren("row");
+//
+//		if(parts.isEmpty()){
+//			if(pageList.size() > minNbOfPage){
+//				typeOutputInt = null;
+//				pageList.remove(pageList.size()-1);
+//			}
+//		}else if(pageList.size() == minNbOfPage){
+//			Page page = addPage("Output selection",
+//					"",
+//					1);
+//
+//			typeOutputInt = new UserInteraction(
+//					key_outputType,
+//					"Specify Partition only, if you want to use "+
+//							"only the newly created partition in the next actions",
+//							DisplayType.list,
+//							0,
+//							0);
+//
+//			page.addInteraction(typeOutputInt);
+//		}
 	}
 
 	/**

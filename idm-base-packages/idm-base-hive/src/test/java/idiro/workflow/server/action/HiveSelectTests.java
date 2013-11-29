@@ -5,9 +5,9 @@ import idiro.utils.Tree;
 import idiro.workflow.server.DataflowAction;
 import idiro.workflow.server.OozieManager;
 import idiro.workflow.server.Workflow;
+import idiro.workflow.server.action.utils.TestUtils;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.enumeration.SavingState;
-import idiro.workflow.test.TestUtils;
 
 import java.rmi.RemoteException;
 import java.util.HashMap;
@@ -243,11 +243,12 @@ public class HiveSelectTests {
 			String error = null;
 			
 			HiveInterface hInt = new HiveInterface();
+			logger.info(hInt.open());
 			String new_path1 = TestUtils.getTablePath(1);
 			String new_path2 = TestUtils.getTablePath(2);
 			
-			hInt.delete(new_path1);
-			hInt.delete(new_path2);
+			//hInt.delete(new_path1);
+			//hInt.delete(new_path2);
 			
 			DataflowAction src = createSrc(w,hInt,new_path1);
 			DataflowAction hive = createHiveWithHive(w,
@@ -278,5 +279,11 @@ public class HiveSelectTests {
 			logger.error("Unexpected exception: "+e.getMessage());
 			assertTrue(e.getMessage(),false);
 		}
+	}
+	
+	@Test
+	public void HiveSelectinteractionstest() throws RemoteException{
+		HiveSelect select = new HiveSelect();
+		TableSelectInteraction tsel = select.gettSelInt();
 	}
 }

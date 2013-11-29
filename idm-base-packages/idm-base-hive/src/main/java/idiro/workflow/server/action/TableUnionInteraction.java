@@ -136,8 +136,8 @@ public class TableUnionInteraction extends UserInteraction{
 	}
 
 	public void update(List<DFEOutput> in) throws RemoteException{
-
-		if(tree.getSubTreeList().isEmpty()){
+		logger.info("updating " + getName());
+		if(tree.isEmpty() || tree.getSubTreeList().isEmpty()){
 			tree.add(getRootTable());		
 		}else{
 			//Remove generator

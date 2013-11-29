@@ -39,29 +39,8 @@ public class HiveUnion  extends HiveElement{
 
 	public HiveUnion() throws RemoteException {
 		super(2,2,Integer.MAX_VALUE);
-
-		page1 = addPage("Filters",
-				"Add a condition and/or a partition filter. Note that these filters are applied after the union.",
-				1);
-
-		condInt = new ConditionInteraction(key_condition,
-				"",
-				0,
-				0, 
-				this, 
-				key_input);
-
-
-		partInt = new PartitionInteraction(
-				key_partitions,
-				"",
-				0,
-				0); 
-
-		//page1.addInteraction(condInt);
-		page1.addInteraction(partInt);
-
-		page2 = addPage("Operations",
+		
+		page1 = addPage("Operations",
 				"The column generated are defined on this page. Each row of the table is a new column to generate. "+
 				"The feature name have to be unique and a correct type needs to be assign.",
 				1);
@@ -73,7 +52,30 @@ public class HiveUnion  extends HiveElement{
 				0,
 				this);
 
-		page2.addInteraction(tUnionSelInt);
+		page1.addInteraction(tUnionSelInt);
+
+		page2 = addPage("Filters",
+				"Add a condition filter. Note that these filters are applied after the union.",
+				1);
+
+		condInt = new ConditionInteraction(key_condition,
+				"",
+				0,
+				0, 
+				this, 
+				key_input);
+
+
+//		partInt = new PartitionInteraction(
+//				key_partitions,
+//				"",
+//				0,
+//				0); 
+
+		page2.addInteraction(condInt);
+//		page2.addInteraction(partInt);
+
+	
 
 	}
 
@@ -95,12 +97,12 @@ public class HiveUnion  extends HiveElement{
 		
 		List<DFEOutput> in = getDFEInput().get(key_input);
 		
-		logger.info("Hive Union interaction " + in);
+		logger.info("Hive Union interaction " + in.get(in.size()-1).getPath());
 		
 		if(in != null && in.size() > 1){
-			if(interaction.getName().equals(partInt.getName())){
+			if(interaction.getName().equals(condInt.getName())){
 				condInt.update();
-				partInt.update();
+//				partInt.update();
 			}else if(interaction.getName().equals(tUnionSelInt.getName())){
 				tUnionSelInt.update(in);
 			}

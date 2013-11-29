@@ -39,37 +39,9 @@ public class HiveSelect extends HiveElement{
 	public HiveSelect() throws RemoteException {
 		super(2,1,1);
 
-		page1 = addPage("Filters",
-				"Condition the numbers of row in and out. "+
-						" The input is controled by a condition, similar to a 'where' statement "+
-						" and the partitions of the input table that is processed. "+
-						" You can also group on one or several features in order to aggregate data.",
-						1);
+		 
 
-		condInt = new ConditionInteraction(key_condition,
-				"Please specify the condition of the select.",
-				0,
-				0, 
-				this, 
-				key_input);
-
-		partInt = new PartitionInteraction(
-				key_partitions,
-				"Please specify the partitions, if any, on which the statement is processed.",
-				0,
-				1);
-
-		groupingInt = new UserInteraction(
-				key_grouping,
-				"Please specify, if any, the grouping condition.",
-				DisplayType.appendList,
-				0,
-				2); 
-
-		page1.addInteraction(condInt);
-		page1.addInteraction(partInt);
-		page1.addInteraction(groupingInt);
-
+		
 
 		page2 = addPage("Feature operations",
 				"The columns generated are defined on this page. Each row of the table is a new column to generate. "+
@@ -84,6 +56,38 @@ public class HiveSelect extends HiveElement{
 				this);
 
 		page2.addInteraction(tSelInt);
+		
+		page1 = addPage("Filters",
+				"Condition the numbers of row in and out. "+
+						" The input is controled by a condition, similar to a 'where' statement "+
+						" and the partitions of the input table that is processed. "+
+						" You can also group on one or several features in order to aggregate data.",
+						1);
+
+		condInt = new ConditionInteraction(key_condition,
+				"Please specify the condition of the select.",
+				0,
+				0, 
+				this, 
+				key_input);
+
+//		partInt = new PartitionInteraction(
+//				key_partitions,
+//				"Please specify the partitions, if any, on which the statement is processed.",
+//				0,
+//				1);
+
+//		groupingInt = new UserInteraction(
+//				key_grouping,
+//				"Please specify, if any, the grouping condition.",
+//				DisplayType.appendList,
+//				0,
+//				2);
+		
+		page1.addInteraction(condInt);
+//		page1.addInteraction(partInt);
+//		page1.addInteraction(groupingInt);
+
 
 	}
 
@@ -93,17 +97,22 @@ public class HiveSelect extends HiveElement{
 
 	public void update(DFEInteraction interaction) throws RemoteException {
 
-		logger.info("Hive Select interaction ");
+		logger.info("Hive Select interaction : "+interaction.getName());
 
 		DFEOutput in = getDFEInput().get(key_input).get(0);
 		if(in != null){
 			if(interaction.getName().equals(condInt.getName())){
+				logger.info("Hive condition interaction updating");
 				condInt.update();
-			}else if(interaction.getName().equals(partInt.getName())){
-				partInt.update();
-			}else if(interaction.getName().equals(groupingInt.getName())){
-				updateGrouping(interaction.getTree(), in);
-			}else if(interaction.getName().equals(tSelInt.getName())){
+			}//else if(interaction.getName().equals(partInt.getName())){
+//				partInt.update();
+		//	}
+//		else if(interaction.getName().equals(groupingInt.getName())){
+//				logger.info("Hive grouping interaction updating");
+//				updateGrouping(interaction.getTree(), in);
+//			}
+		else if(interaction.getName().equals(tSelInt.getName())){
+				logger.info("Hive tableSelect interaction updating");
 				tSelInt.update(in);
 			}
 		}

@@ -321,11 +321,17 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 		try{
 			DFEPage page = getPageList().get(pageNb);
 			Iterator<DFEInteraction> it = page.getInteractions().iterator();
+			DFEInteraction interaction;
 			while(it.hasNext()){
+				interaction = it.next();
 				try{
-					update(it.next());
+					
+					update(interaction);
 				}catch(Exception e){
+					
 					logger.error("Error when updating an element");
+					logger.error(interaction.getName());
+					
 				}
 			}
 		}catch(Exception e){

@@ -2,9 +2,9 @@ package idiro.workflow.server.action;
 
 import static org.junit.Assert.assertTrue;
 import idiro.utils.Tree;
+import idiro.workflow.server.action.utils.TestUtils;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.interfaces.DataFlowElement;
-import idiro.workflow.test.TestUtils;
 
 import java.rmi.RemoteException;
 import java.util.HashMap;

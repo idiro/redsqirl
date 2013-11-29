@@ -316,13 +316,15 @@ public class HiveDictionary extends AbstractDictionary {
 		// Test if all the featureAggreg have a type
 		Iterator<String> itFAgg = featureAggreg.iterator();
 		boolean ok = true;
+		String feature = "";
 		while (itFAgg.hasNext() && ok) {
-			ok = features.containsFeature(itFAgg.next());
+			feature = itFAgg.next();
+			ok = features.containsFeature(feature);
 		}
 
 		if (!ok) {
-			throw new Exception("Parameters invalid" + featureAggreg
-					+ "needs to be in " + features);
+			throw new Exception("Parameters invalid " + featureAggreg.toArray()
+					+ " needs to be in " + features.getFeaturesNames() +" "+feature);
 		}
 
 		expr = expr.trim().toUpperCase();

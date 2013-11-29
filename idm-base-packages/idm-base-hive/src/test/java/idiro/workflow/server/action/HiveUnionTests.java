@@ -5,9 +5,9 @@ import idiro.utils.Tree;
 import idiro.workflow.server.DataflowAction;
 import idiro.workflow.server.OozieManager;
 import idiro.workflow.server.Workflow;
+import idiro.workflow.server.action.utils.TestUtils;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.enumeration.SavingState;
-import idiro.workflow.test.TestUtils;
 
 import java.rmi.RemoteException;
 import java.util.HashMap;

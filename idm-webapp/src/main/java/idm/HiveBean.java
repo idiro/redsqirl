@@ -27,11 +27,12 @@ public class HiveBean extends FileSystemBean {
 		logger.info("HiveOpenCanvasScreen");
 
 		try {
-
+			logger.debug("Setting datasore");
 			setDataStore(getHiveInterface());
 
 			if(getListGrid().isEmpty()){
 
+				logger.debug("mounting datasore");
 				mountTable(getDataStore());
 			}
 			else{
