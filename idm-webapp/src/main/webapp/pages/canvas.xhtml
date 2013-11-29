@@ -333,11 +333,11 @@
 	    		 }
 	    		 
 	    		 //setTimeout(function(){refreshProcManager()}, 20*1000);
-	    		 setTimeout(function(){saveAll()}, 10*60*1000);
+	    		 setTimeout(function(){autoSaveAll()}, 10*1000);
 	    		 
 	    	});	//---------- END jQuery(function
 	    			
-	    	function saveAll(){
+	    	function autoSaveAll(){
 	    		try{
 	    			var currentSelect = getAllIconPositions();
 	                if(allPositionIcons === undefined){
@@ -352,7 +352,7 @@
 	                }
                 }catch(err){
                 }
-	    		setTimeout(function(){saveAll()},10*60*1000);
+	    		setTimeout(function(){autoSaveAll()},10*60*1000);
             }
 	    	
 	        function refreshProcManager(){
