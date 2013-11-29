@@ -230,5 +230,4 @@ public interface DataFlowElement extends Remote{
 	 * @throws RemoteException
 	 */
 	public void cleanThisAndAllElementAfter() throws RemoteException;
-
 }

@@ -621,5 +621,4 @@ public class HiveSelectT extends DataflowAction{
 
 		return query;
 	}
-
 }

@@ -238,11 +238,9 @@ public class TableSelectInteraction extends UserInteraction {
 
 		while (rowIt.hasNext()) {
 			Tree<String> rowCur = rowIt.next();
-			String name = rowCur.getFirstChild(table_feat_title)
-					.getFirstChild().getHead();
-			String type = rowCur.getFirstChild(table_type_title)
-					.getFirstChild().getHead();
-			new_features.addFeature(name, FeatureType.valueOf(type));
+			String name = rowCur.getFirstChild(table_feat_title).getFirstChild().getHead();
+			String type = rowCur.getFirstChild(table_type_title).getFirstChild().getHead();
+			new_features.addFeature(name, HiveDictionary.getType(type));
 		}
 		return new_features;
 	}
@@ -300,5 +298,19 @@ public class TableSelectInteraction extends UserInteraction {
 		createSelect += ")";
 
 		return createSelect;
+	}
+	
+	public String checkExpression(String expression, String modifier) throws RemoteException{
+		String error = null;
+		try{
+			if (HiveDictionary.getInstance().getReturnType(expression, hs.getInFeatures()) == null){
+				error = "Expression does not have a return type";
+			}
+		}
+		catch (Exception e){
+			error = "Error trying to get expression return type";
+			logger.error(error, e);
+		}
+		return error;
 	}
 }

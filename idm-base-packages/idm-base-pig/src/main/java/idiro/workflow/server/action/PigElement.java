@@ -1,13 +1,11 @@
 package idiro.workflow.server.action;
 
 import idiro.utils.FeatureList;
-import idiro.utils.OrderedFeatureList;
 import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.DataOutput;
 import idiro.workflow.server.DataProperty;
 import idiro.workflow.server.DataflowAction;
-import idiro.workflow.server.Page;
 import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.HDFSInterface;
@@ -17,7 +15,6 @@ import idiro.workflow.server.enumeration.DataBrowser;
 import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
-import idiro.workflow.server.oozie.IdiroEngineAction;
 import idiro.workflow.server.oozie.PigAction;
 
 import java.io.BufferedWriter;
@@ -424,5 +421,4 @@ public abstract class PigElement extends DataflowAction {
 		nameCont++;
 		return "A"+nameCont;
 	}
-
 }

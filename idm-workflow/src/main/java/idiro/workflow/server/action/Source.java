@@ -489,5 +489,4 @@ public class Source extends DataflowAction {
 	public boolean writeOozieActionFiles(File[] files) throws RemoteException {
 		return false;
 	}
-
 }

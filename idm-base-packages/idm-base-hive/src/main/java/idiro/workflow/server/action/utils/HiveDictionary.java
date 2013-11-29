@@ -9,6 +9,7 @@ import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.interfaces.DFEOutput;
 
 import java.rmi.RemoteException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -59,6 +60,8 @@ public class HiveDictionary extends AbstractDictionary {
 	protected void loadDefaultFunctions() {
 
 		logger.info("loadDefaultFunctions");
+		
+		functionsMap = new HashMap<String, String[][]>();
 
 		functionsMap
 				.put(logicalOperators,
@@ -289,19 +292,19 @@ public class HiveDictionary extends AbstractDictionary {
 	public static String getHiveType(FeatureType feat) {
 		String featureType = feat.name();
 		switch (feat) {
-		case BOOLEAN:
-			break;
-		case INT:
-			break;
-		case FLOAT:
-			break;
-		case LONG:
-			featureType = "BIGINT";
-			break;
-		case DOUBLE:
-			break;
-		case STRING:
-			break;
+			case BOOLEAN:
+				break;
+			case INT:
+				break;
+			case FLOAT:
+				break;
+			case LONG:
+				featureType = "BIGINT";
+				break;
+			case DOUBLE:
+				break;
+			case STRING:
+				break;
 		}
 		return featureType;
 	}

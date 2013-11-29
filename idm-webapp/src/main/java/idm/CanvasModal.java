@@ -1,7 +1,6 @@
 package idm;
 
 import idiro.utils.Tree;
-//import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.enumeration.FeatureType;
@@ -30,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.ajax4jsf.model.KeepAlive;
 import org.apache.log4j.Logger;
+//import idiro.utils.TreeNonUnique;
 
 /**
  * CanvasModal
@@ -1042,13 +1042,15 @@ public class CanvasModal extends BaseBean implements Serializable {
 		logger.info("confirm");
 
 		setConfirm("S");
-		checkTextEditor();
+		boolean success = checkTextEditor();
 
-		if (getColumnEdit() != null) {
-			getListGrid().get(getRowEdit()).getNameValue()
-					.put(getColumnEdit(), getCommandEdit());
-		} else {
-			setCommand(getCommandEdit());
+		if (success){
+			if (getColumnEdit() != null) {
+				getListGrid().get(getRowEdit()).getNameValue()
+						.put(getColumnEdit(), getCommandEdit());
+			} else {
+				setCommand(getCommandEdit());
+			}
 		}
 
 	}
@@ -1076,44 +1078,24 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 * @throws RemoteException
 	 */
-	public void checkTextEditor() throws RemoteException {
+	public boolean checkTextEditor() throws RemoteException {
 
 		logger.info("checkTextEditor");
 		
+		boolean result = false;
+		
 		if (getColumnEdit() != null) {
-			
 			for (int i = 0; i < getDynamicFormList().size(); i++) {
 
 				DynamicForm dynamicF = getDynamicFormList().get(i);
 				DFEInteraction dfi = getPage().getInteractions().get(i);
 	
 				if (dynamicF.getDisplayType().equals(DisplayType.table)) {
-					List<Tree<String>> oldCommand = null;
-					oldCommand = dfi.getTree().getFirstChild("table").findChildren("row");
-					
-					logger.info("oldCommand -> " + oldCommand);
+			
 					logger.info("newCommand -> " + getCommandEdit());
-	
-					dfi.getTree().getFirstChild("table").remove("row");
-					
-					ItemList item = getListGrid().get(getRowEdit());
-					Tree<String> row = dynamicF.getTree()
-							.getFirstChild("table").add("row");
-					for (String column : getKeyAsListNameValueListGrid()) {
-						String value = item.getNameValue().get(column);
+					String e = dfi.checkExpression(getCommandEdit(), null);
+					logger.info("error interaction ->  "+e);
 							
-						if (column.equals(getColumnEdit())){
-							row.add(column).add(getCommandEdit().trim());
-						}
-						else{
-							row.add(column).add(value);
-						}
-					}
-					
-					String e = dfi.check();
-	
-					logger.info("error interaction -> " + e);
-	
 					if (e != null && e.length() > 0) {
 						MessageUseful.addErrorMessage(e);
 						HttpServletRequest request = (HttpServletRequest) FacesContext
@@ -1130,17 +1112,13 @@ public class CanvasModal extends BaseBean implements Serializable {
 									.getRequest();
 							request.setAttribute("msnError", "msnError");
 						}
-					}
-	
-					dfi.getTree().getFirstChild("table").remove("row");
-					if (oldCommand != null) {
-						dfi.getTree().getFirstChild("table").addAll(oldCommand);
+						result = true;
 					}
 				}
 			}
 		}
 
-		else{
+		else {
 			for (int i = 0; i < getDynamicFormList().size(); i++) {
 
 				DynamicForm dynamicF = getDynamicFormList().get(i);
@@ -1182,6 +1160,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 									.getRequest();
 							request.setAttribute("msnError", "msnError");
 						}
+						result = true;
 					}
 	
 					dfi.getTree().getFirstChild("editor").getFirstChild("output")
@@ -1195,7 +1174,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 		}
 		
 		setConfirm("N");
-
+		
+		return result;
 	}
 	
 	/**

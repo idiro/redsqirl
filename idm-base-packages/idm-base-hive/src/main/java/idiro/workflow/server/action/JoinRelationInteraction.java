@@ -209,5 +209,19 @@ public class JoinRelationInteraction extends UserInteraction{
 
 		return join;
 	}
+	
+	public String checkExpression(String expression, String modifier) throws RemoteException{
+		String error = null;
+		try{
+			if (HiveDictionary.getInstance().getReturnType(expression, hj.getInFeatures()) == null){
+				error = "Expression does not have a return type";
+			}
+		}
+		catch (Exception e){
+			error = "Error trying to get expression return type";
+			logger.error(error, e);
+		}
+		return error;
+	}
 
 }

@@ -228,5 +228,9 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 		this.legend = legend;
 	}
 	
+	public String checkExpression(String expression, String modifier) throws RemoteException{
+		return null;
+	}
+	
 
 }

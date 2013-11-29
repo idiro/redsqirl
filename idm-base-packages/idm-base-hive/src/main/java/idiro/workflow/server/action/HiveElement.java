@@ -275,5 +275,4 @@ public abstract class HiveElement extends DataflowAction {
 	public final PartitionInteraction getPartInt() {
 		return partInt;
 	}
-
 }
