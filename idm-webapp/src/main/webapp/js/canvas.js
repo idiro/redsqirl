@@ -1504,6 +1504,15 @@ function getColorRunning(status){
 	}
 }
 
+function updateAllOutputStatus() {
+	
+	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+	
+	for ( var i = 0; i < polygonLayer.getChildren().length; i++) {
+		updateOutputStatus(polygonLayer.getChildren()[i].getChildren()[4].getText());
+	}
+}
+
 function updateActionOutputStatus(groupId, status, fileExists) {
 	
 	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;

@@ -820,7 +820,7 @@
 					</h:panelGroup>
 				</div>
 
-				<a4j:jsFunction name="updateWorkflowUrl" action="#{canvasBean.blockRunningWorkflow}" oncomplete="jQuery('#'+getSelected()).unblock();setRunning(getSelected(), false);updateRunningStatus();">
+				<a4j:jsFunction name="updateWorkflowUrl" action="#{canvasBean.blockRunningWorkflow}" oncomplete="jQuery('#'+getSelected()).unblock();setRunning(getSelected(), false);updateRunningStatus();updateAllOutputStatus();">
 			</a4j:jsFunction>
 			
 			</a4j:region>
