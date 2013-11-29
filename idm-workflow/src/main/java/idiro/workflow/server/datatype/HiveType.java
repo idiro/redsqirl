@@ -155,10 +155,10 @@ public class HiveType extends DataOutput{
 		for (String line : lines){
 			String[] feat = line.split(",");
 			try{
-				features.addFeature(feat[0], FeatureType.valueOf(feat[1].toUpperCase()));
+				features.addFeature(feat[0], FeatureType.valueOf(feat[1].trim().toUpperCase()));
 			}
 			catch (Exception e){
-				logger.error("Error adding feature: "+feat[0]+" - "+feat[1]);
+				logger.error("Error adding feature: "+feat[0]+" - "+feat[1], e);
 			}
 		}
 	}
