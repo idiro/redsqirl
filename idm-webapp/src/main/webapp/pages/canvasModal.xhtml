@@ -98,7 +98,7 @@
 			
 						<br/><br/>
 						
-						<div id="DivBrowserTable1" style="width:580px; height:50px;  border:1px solid black; overflow-x: hidden;">
+						<div id="DivBrowserTable1" style="width:100%; height:50px;  border:1px solid black; overflow-x: hidden;">
 						
 							<rich:dataTable id="browserTable1" value="#{item.listGrid}"
 								var="item" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
@@ -123,25 +123,26 @@
 						
 						<br/>
 						
-						<div id="DivBrowserTable2" style="width:580px; height:120px;  border:1px solid black; overflow-x: hidden;">
+						<div id="DivBrowserTable2" style="width:100%; height:120px;  border:1px solid black; overflow-x: hidden;">
 						
-							<rich:dataTable id="browserTable2" value="#{item.listFeature}" 
+							<rich:scrollableDataTable id="browserTable2" value="#{item.listFeature}" height="100%"
 								var="itemDiv2" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 								enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
 								
 								<rich:columns value="#{canvasModalBean.browserNameFeatureColumns}" var="column" index="ind" rendered="#{not empty canvasModalBean.listFeature and canvasModalBean.hiveHdfs == 'hive'}" 
-									style="border-bottom:0px;border-right:0px;" >
+									style="border-bottom:0px;border-right:0px;" sortable="false" >
 									
 									<f:facet name="header" rendered="#{canvasModalBean.hiveHdfs == 'hive'}">
-								            <h:outputText value="#{column}" />
+								    	<h:outputText value="#{column}" />
 									</f:facet>
 									
-									<h:inputText value="#{itemDiv2.nameValue[column]}" style="width:125px;" readonly="true" />
+									<h:outputText value="#{itemDiv2.nameValue[column]}" />
 									
 								</rich:columns>
 								
 								<rich:columns value="#{canvasModalBean.browserNameFeatureColumns}" var="column" index="ind" rendered="#{not empty canvasModalBean.listFeature and canvasModalBean.hiveHdfs == 'hdfs'}" 
-									style="border-bottom:0px;border-right:0px;" >
+									style="border-bottom:0px;border-right:0px;" sortable="false" >
+									
 									<f:facet name="header" rendered="#{canvasModalBean.hiveHdfs == 'hdfs'}">
 										 <h:panelGrid columns="2" width="100%" >
 								            <h:outputText value="#{canvasModalBean.nameBrowserLabel2[column]}" />
@@ -149,11 +150,11 @@
 								        </h:panelGrid>
 									</f:facet>
 									
-									<h:inputText value="#{itemDiv2.nameValue[column]}" style="width:125px;" readonly="true" />
+									<h:outputText value="#{itemDiv2.nameValue[column]}" />
 									
 								</rich:columns>
 				
-							</rich:dataTable>
+							</rich:scrollableDataTable>
 				
 						</div>
 						
@@ -402,10 +403,10 @@
 	                
 	                    <h:outputText  value="#{canvasModalBean.dynamicFormDataOutput.name}" id="titleDisplay" rendered="#{canvasModalBean.dynamicFormDataOutput != null}"/>
 	                    <br/>
-	                    <div id="displayTableDiv" style="width:580px; height:120px;  overflow-x: hidden;">
+	                    <div id="displayTableDiv" style="width:100%; height:120px;  overflow-x: hidden;">
 	                    
-	                        <rich:dataTable id="browserTable2" value="#{canvasModalBean.dynamicFormDataOutput.listFeature}" 
-	                            var="itemDiv2" width="100%" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+	                        <rich:scrollableDataTable id="browserTable2" value="#{canvasModalBean.dynamicFormDataOutput.listFeature}" 
+	                            var="itemDiv2" width="100%" height="100%" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 	                            enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'"
 	                            rendered="#{canvasModalBean.dynamicFormDataOutput != null}"
 	                            style="border:1px solid black" >
@@ -417,11 +418,11 @@
 	                                        <h:outputText value="#{column}" />
 	                                </f:facet>
 	                                
-	                                <h:inputText value="#{itemDiv2.nameValue[column]}" style="width:125px;" readonly="true" />
+	                                <h:outputText value="#{itemDiv2.nameValue[column]}" />
 	                                
 	                            </rich:columns>
 	            
-	                        </rich:dataTable>
+	                        </rich:scrollableDataTable>
 	            
 	                    </div>
 	                    
