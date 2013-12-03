@@ -88,10 +88,10 @@ public class ServerThread{
 					        final String command = getBaseCommand(user, password, port) + " & echo $!";
 					        
 					        String javahome = getJava();
-					        
+					        String argJava = " -Xmx1500m ";
 					        channel = session.openChannel("exec");
-					        logger.info("command to launch:\n"+javahome+" "+command);
-				            ((ChannelExec)channel).setCommand(javahome+" "+command);
+					        logger.info("command to launch:\n"+javahome+argJava+command);
+				            ((ChannelExec)channel).setCommand(javahome+argJava+command);
 				            channel.connect();
 				            
 				            BufferedReader br = new BufferedReader(new InputStreamReader(channel.getInputStream()));
