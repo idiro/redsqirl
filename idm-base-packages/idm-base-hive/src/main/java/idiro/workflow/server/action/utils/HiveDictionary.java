@@ -5,7 +5,7 @@ import idiro.utils.OrderedFeatureList;
 import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.action.AbstractDictionary;
-import idiro.workflow.server.enumeration.FeatureType;
+import idiro.workflow.server.action.HiveTypeConvert;
 import idiro.workflow.server.interfaces.DFEOutput;
 
 import java.rmi.RemoteException;
@@ -279,36 +279,6 @@ public class HiveDictionary extends AbstractDictionary {
 										"@function:MAX( ELEMENT )@short:Use the MAX function to compute the maximum of a set of numeric values in a single-column table@param: ELEMENT item to get the maximum@description:Computes the maximum of the numeric values in a single-column table. @example: MAX(A.id) returns the maximum value of A.id" } });
 	}
 
-	public static FeatureType getType(String hiveType) {
-		FeatureType ans = null;
-		if (hiveType.equalsIgnoreCase("BIGINT")) {
-			ans = FeatureType.LONG;
-		} else {
-			ans = FeatureType.valueOf(hiveType);
-		}
-		return ans;
-	}
-
-	public static String getHiveType(FeatureType feat) {
-		String featureType = feat.name();
-		switch (feat) {
-			case BOOLEAN:
-				break;
-			case INT:
-				break;
-			case FLOAT:
-				break;
-			case LONG:
-				featureType = "BIGINT";
-				break;
-			case DOUBLE:
-				break;
-			case STRING:
-				break;
-		}
-		return featureType;
-	}
-
 	public String getReturnType(String expr, FeatureList features,
 			Set<String> featureAggreg) throws Exception {
 
@@ -384,7 +354,7 @@ public class HiveDictionary extends AbstractDictionary {
 			while (itS.hasNext() && type == null) {
 				String feat = itS.next();
 				if (feat.equalsIgnoreCase(expr)) {
-					type = getHiveType(features.getFeatureType(feat));
+					type = HiveTypeConvert.getHiveType(features.getFeatureType(feat));
 				}
 			}
 		}

@@ -168,7 +168,7 @@ public class TableJoinInteraction extends UserInteraction{
 			row.add(table_op_title).add(cur);
 			row.add(table_feat_title).add(cur.replaceAll("\\.", "_"));
 			row.add(table_type_title).add(
-					HiveDictionary.getHiveType(feats.getFeatureType(cur))
+					HiveTypeConvert.getHiveType(feats.getFeatureType(cur))
 					);
 		}
 	}

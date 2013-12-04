@@ -181,7 +181,7 @@ public class TableSelectInteraction extends UserInteraction{
 			row.add(table_op_title).add(cur);
 			row.add(table_feat_title).add(cur);
 			row.add(table_type_title).add(
-					HiveDictionary.getHiveType(in.getFeatures().getFeatureType(cur))
+					HiveTypeConvert.getHiveType(in.getFeatures().getFeatureType(cur))
 					);
 		}
 	}
@@ -236,7 +236,7 @@ public class TableSelectInteraction extends UserInteraction{
 			Tree<String> rowCur = rowIt.next();
 			String name = rowCur.getFirstChild(table_feat_title).getFirstChild().getHead();
 			String type = rowCur.getFirstChild(table_type_title).getFirstChild().getHead();
-			new_features.addFeature(name, HiveDictionary.getType(type));
+			new_features.addFeature(name, HiveTypeConvert.getType(type));
 		}
 		return new_features;
 	}

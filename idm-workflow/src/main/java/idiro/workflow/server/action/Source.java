@@ -466,8 +466,6 @@ public class Source extends DataflowAction {
 				String stringdelim = "";
 				if (delimiter != null && delimiter.startsWith("#") && delimiter.length() > 1){
 					stringdelim = String.valueOf(Character.toChars(Integer.valueOf(delimiter.substring(1))));
-					output.get(out_name).addProperty(MapRedTextType.key_delimiter_char,
-							stringdelim);
 				}
 				
 				output.get(out_name).setFeatures(out);

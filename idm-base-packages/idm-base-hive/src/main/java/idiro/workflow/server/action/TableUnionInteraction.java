@@ -108,7 +108,7 @@ public class TableUnionInteraction extends UserInteraction{
 								msg = "Some Features are not implemented for every table";
 							}else{
 								featuresTitle.add(featureName);
-								if(!HiveDictionary.getType(
+								if(!HiveTypeConvert.getType(
 										row.getFirstChild(table_type_title).getFirstChild().getHead())
 										.equals(mapFeatType.getFeatureType(featureName)
 												)){
@@ -191,7 +191,7 @@ public class TableUnionInteraction extends UserInteraction{
 					row.add(table_op_title).add(alias+"."+feature);
 					row.add(table_feat_title).add(feature);
 					row.add(table_type_title).add(
-							HiveDictionary.getHiveType(featureType)
+							HiveTypeConvert.getHiveType(featureType)
 							);
 				}
 			}
@@ -375,12 +375,12 @@ public class TableUnionInteraction extends UserInteraction{
 		Iterator<String> it = features.getFeaturesNames().iterator();
 		if(it.hasNext()){
 			String featName = it.next();
-			String type = HiveDictionary.getHiveType(features.getFeatureType(featName));
+			String type = HiveTypeConvert.getHiveType(features.getFeatureType(featName));
 			createSelect = "("+featName+" "+type;
 		}
 		while(it.hasNext()){
 			String featName = it.next();
-			String type = HiveDictionary.getHiveType(features.getFeatureType(featName));
+			String type = HiveTypeConvert.getHiveType(features.getFeatureType(featName));
 			createSelect+=","+featName+" "+type;
 		}
 		createSelect +=")";
