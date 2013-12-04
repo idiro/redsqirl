@@ -24,6 +24,12 @@ public class StringTest {
 		String expr ="SUM(A)";
 		logger.info(expr.trim().toUpperCase());
 	}
+	@Test
+	public void RegexTest(){
+		String expr= "SUM(A)";
+		logger.info(expr.contains("\\b(\\b)"));
+		logger.info(expr.contains("\\b)"));
+	}
 	
 
 }
