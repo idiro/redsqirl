@@ -526,7 +526,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore{
 							Iterator<String> itS = features.getFeaturesNames().iterator();
 							boolean found = false;
 							while(itS.hasNext() && !found){
-								found = itS.next().equalsIgnoreCase(feats[i].split(",")[0]);
+								found = itS.next().trim().equalsIgnoreCase(feats[i].split(",")[0].trim());
 							}
 							if(!found){
 								error = feats[i].split(",")[0]+" not found in "+features;

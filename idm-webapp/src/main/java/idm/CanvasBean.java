@@ -2,7 +2,6 @@ package idm;
 
 
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
-import idiro.workflow.server.enumeration.SavingState;
 import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.interfaces.DataFlow;
@@ -19,7 +18,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
@@ -741,7 +739,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 				
 				logger.info("path: "+e.getValue().getPath());
 				
-	//			pathExists = e.getValue().isPathExists();
+				pathExists = e.getValue().isPathExists();
 				
 				logger.info(e.getKey()+" - "+state+" - "+pathExists);
 			}

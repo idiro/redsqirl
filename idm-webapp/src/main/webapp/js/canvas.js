@@ -1470,13 +1470,22 @@ function updateLabelObj(groupId, newGroupId) {
 
 function getColorOutput(status, fileExists){
 	if (status == "TEMPORARY"){
-		return "purple";
+		if (fileExists != "false"){
+			return "purple";
+		}
+		return "plum";
 	}
 	else if (status == "RECORDED"){
-		return "orange";
+		if (fileExists != "false"){
+			return "DarkOrange";
+		}
+		return "LightSalmon";
 	}
 	else if (status == "BUFFERED"){
-		return "blue";
+		if (fileExists != "false"){
+			return "blue";
+		}
+		return "LighSkyBlue";
 	}
 	else {
 		return "white";
@@ -1492,6 +1501,15 @@ function getColorRunning(status){
 	}
 	else {
 		return "white";
+	}
+}
+
+function updateAllOutputStatus() {
+	
+	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+	
+	for ( var i = 0; i < polygonLayer.getChildren().length; i++) {
+		updateOutputStatus(polygonLayer.getChildren()[i].getChildren()[4].getText());
 	}
 }
 
