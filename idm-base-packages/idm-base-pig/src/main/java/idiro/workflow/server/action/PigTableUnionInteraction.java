@@ -341,6 +341,7 @@ public class PigTableUnionInteraction extends UserInteraction{
 	public Map<String,List<Tree<String>>> getSubQuery() throws RemoteException{
 		Map<String,List<Tree<String> > > mapRelationRow = 
 				new LinkedHashMap<String,List<Tree<String> >>();
+		logger.info(((TreeNonUnique<String>)getTree()).toString());
 		List<Tree<String>> lRow = getTree()
 				.getFirstChild("table").getChildren("row");
 		Iterator<Tree<String>> rows = lRow.iterator();

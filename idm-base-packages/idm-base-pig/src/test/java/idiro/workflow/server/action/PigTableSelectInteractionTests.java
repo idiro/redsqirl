@@ -25,15 +25,16 @@ public class PigTableSelectInteractionTests {
 	
 	public DataFlowElement getSource() throws RemoteException{
 		HDFSInterface hInt = new HDFSInterface();
-		String new_path1 = "/user/marcos/test_idm_1";
-		
-		hInt.delete(new_path1);
-		assertTrue("create "+new_path1,
-				hInt.create(new_path1, getProperties()) == null
-				);
+		String new_path1 = "/user/keith/test_dir";
+//		hInt.delete(new_path1);
+//		assertTrue("create "+new_path1,
+//				hInt.create(new_path1, getProperties()) == null
+//				);
 		
 		Source src = new Source();
-
+		logger.info("getting hdfs interface");
+		MapRedTextType map = new MapRedTextType();
+		src.getDFEOutput().put(Source.out_name, map);
 		src.update(src.getInteraction(Source.key_datatype));
 		Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype).getTree();
 		dataTypeTree.getFirstChild("list").getFirstChild("output").add("HDFS");
@@ -49,7 +50,7 @@ public class PigTableSelectInteractionTests {
 		Tree<String> feat1 = dataSetTree.getFirstChild("browse")
 				.getFirstChild("output").add("feature");
 		feat1.add("name").add("ID");
-		feat1.add("type").add("CHARARRAY");
+		feat1.add("type").add("STRING");
 
 		Tree<String> feat2 = dataSetTree.getFirstChild("browse")
 				.getFirstChild("output").add("feature");
@@ -64,7 +65,7 @@ public class PigTableSelectInteractionTests {
 	
 	@Test
 	public void basic(){
-		TestUtils.logTestTitle(getClass().getName()+"#basic");
+//		TestUtils.logTestTitle(getClass().getName()+"#basic");
 		String error = null;
 		try{
 			DataFlowElement src = getSource();
@@ -75,11 +76,11 @@ public class PigTableSelectInteractionTests {
 			assertTrue("source add output: "+error,error == null);
 			error = hs.addInputComponent(PigElement.key_input, src);
 			assertTrue("pig select add input: "+error,error == null);
-			
 			logger.debug(hs.getDFEInput());
 			
 			PigTableSelectInteraction tsi = hs.gettSelInt();
-			hs.update(hs.getGroupingInt());
+//			hs.update(hs.getGroupingInt());
+			logger.info("updating table select interaction");
 			hs.update(tsi);
 			{
 				Tree<String> out = tsi.getTree().getFirstChild("table");

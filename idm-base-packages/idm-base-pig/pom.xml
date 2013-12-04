@@ -8,7 +8,7 @@
     <artifactId>idm-base-pig</artifactId>
     <packaging>jar</packaging>
     <version>0.1-SNAPSHOT</version>
-    <name>IDM Worflow Hive Base Package</name>
+    <name>IDM Worflow Pig Base Package</name>
     <description>Provide basic pig actions</description>
     
     <properties>

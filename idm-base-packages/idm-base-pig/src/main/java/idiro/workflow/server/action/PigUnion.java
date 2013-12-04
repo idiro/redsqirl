@@ -4,8 +4,10 @@ import idiro.utils.OrderedFeatureList;
 import idiro.utils.FeatureList;
 import idiro.workflow.server.DataProperty;
 import idiro.workflow.server.Page;
+import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.connect.HDFSInterface;
 import idiro.workflow.server.datatype.MapRedTextType;
+import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
@@ -20,16 +22,16 @@ import java.util.Map.Entry;
 
 /**
  * Action to do a union statement in Pig Latin.
+ * 
  * @author marcos
- *
+ * 
  */
-public class PigUnion  extends PigElement{
+public class PigUnion extends PigElement {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -2971963679008329394L;
-
 
 	public static final String key_featureTable = "Features";
 
@@ -37,102 +39,115 @@ public class PigUnion  extends PigElement{
 
 	private PigTableUnionInteraction tUnionSelInt;
 
-
 	public PigUnion() throws RemoteException {
-		super(2,2,Integer.MAX_VALUE);
+		super(2, 2, Integer.MAX_VALUE);
 
 		page1 = addPage("Operations",
-				"Union operations",
-				1);
-		
+				"Union operations and output preferences", 1);
+
 		tUnionSelInt = new PigTableUnionInteraction(
 				key_featureTable,
 				"Please specify the operations to be executed for each feature",
-				0,
-				0,
-				this);
+				0, 0, this);
+
+		delimiterOutputInt = new UserInteraction("Delimiter",
+				"Setting output delimiter", DisplayType.list, 1, 0);
+
+		savetypeOutputInt = new UserInteraction("Output Type",
+				"Setting the output type", DisplayType.list, 2, 0);
 
 		page1.addInteraction(tUnionSelInt);
 		page1.addInteraction(delimiterOutputInt);
 		page1.addInteraction(savetypeOutputInt);
-//		addOutputPage();
+		// addOutputPage();
 
 	}
 
-	public void init() throws RemoteException{
-		if(input == null){
+	public void init() throws RemoteException {
+		if (input == null) {
 			Map<String, DFELinkProperty> in = new LinkedHashMap<String, DFELinkProperty>();
-			in.put(key_input, new DataProperty(MapRedTextType.class, 2, Integer.MAX_VALUE));
+			in.put(key_input, new DataProperty(MapRedTextType.class, 2,
+					Integer.MAX_VALUE));
 			input = in;
 		}
 	}
 
-//	@Override
+	// @Override
 	public String getName() throws RemoteException {
 		return "pig_union";
 	}
 
-//	@Override
+	// @Override
 	public void update(DFEInteraction interaction) throws RemoteException {
 		List<DFEOutput> in = getDFEInput().get(key_input);
-		if(in.size() > 1){
-			if(interaction == tUnionSelInt){
+		logger.info("interaction to update : " + interaction.getName());
+		logger.info("delimiter interaction : " + delimiterOutputInt.getName());
+		logger.info(interaction.getName() + " " + delimiterOutputInt.getName());
+		if (in.size() > 1) {
+			logger.debug("in size > 1");
+			if (interaction == tUnionSelInt) {
+				logger.info("updating union seletion");
 				tUnionSelInt.update(in);
-			}else if(interaction == dataSubtypeInt){
+			} else if (interaction == dataSubtypeInt) {
+				logger.info("updating data subtypes");
 				updateDataSubTypeInt();
-			}else if(interaction == typeOutputInt){
+			} else if (interaction == savetypeOutputInt) {
+				logger.info("updating save output");
 				try {
 					updateOutputType();
 				} catch (InstantiationException e) {
-					logger.error("Instanciatin error");
+					logger.error("Instanciation error");
 				} catch (IllegalAccessException e) {
 					logger.error("Illegal Access error");
 				}
-			}else if(interaction == delimiterOutputInt){
+			} else if (interaction == delimiterOutputInt) {
+				logger.info("updating delimiter output");
 				updateDelimiterOutputInt();
 			}
 		}
-		
+
 	}
 
-	public String getQuery() throws RemoteException{
+	public String getQuery() throws RemoteException {
 
 		HDFSInterface hInt = new HDFSInterface();
 		String query = null;
-		if(getDFEInput() != null){
-			//Output
+		if (getDFEInput() != null) {
+			// Output
 			DFEOutput out = output.values().iterator().next();
-			
-			String remove = getRemoveQueryPiece(out.getPath())+"\n\n";
-			
+
+			String remove = getRemoveQueryPiece(out.getPath()) + "\n\n";
+
 			Map<String, DFEOutput> x = getAliases();
-			Set<Entry<String,DFEOutput>> p =x.entrySet();
-			Iterator<Entry<String,DFEOutput>> it = p.iterator();
+			Set<Entry<String, DFEOutput>> p = x.entrySet();
+			Iterator<Entry<String, DFEOutput>> it = p.iterator();
 			String load = "";
-			for (DFEOutput in : getDFEInput().get(key_input)){
-				while(it.hasNext()){
-					Entry<String,DFEOutput>next = it.next();
-					if(next.getValue().getPath().equalsIgnoreCase(in.getPath())){
-						load += next.getKey() + " = "+getLoadQueryPiece(in) + ";\n";
+			for (DFEOutput in : getDFEInput().get(key_input)) {
+				while (it.hasNext()) {
+					Entry<String, DFEOutput> next = it.next();
+					if (next.getValue().getPath()
+							.equalsIgnoreCase(in.getPath())) {
+						load += next.getKey() + " = " + getLoadQueryPiece(in)
+								+ ";\n";
 					}
 				}
 				it = p.iterator();
 			}
-			load +="\n";
+			load += "\n";
 
-			String select = tUnionSelInt.getQueryPiece(out)+"\n\n";
+			String select = tUnionSelInt.getQueryPiece(out) + "\n\n";
 
 			String store = getStoreQueryPiece(out, getCurrentName());
-			
-			if(select.isEmpty()){
+
+			if (select.isEmpty()) {
 				logger.debug("Nothing to select");
-			}else{
+			} else {
 				query = remove;
-				
+
 				query += load;
-				
+
 				query += select;
-				
+
 				query += store;
 			}
 		}
@@ -141,22 +156,21 @@ public class PigUnion  extends PigElement{
 	}
 
 	@Override
-	public FeatureList getInFeatures() throws RemoteException{
-		FeatureList ans = 
-				new OrderedFeatureList();
-		Map<String,DFEOutput> aliases = getAliases();
-		
+	public FeatureList getInFeatures() throws RemoteException {
+		FeatureList ans = new OrderedFeatureList();
+		Map<String, DFEOutput> aliases = getAliases();
+
 		Iterator<String> it = aliases.keySet().iterator();
-		while(it.hasNext()){
+		while (it.hasNext()) {
 			String alias = it.next();
 			FeatureList mapTable = aliases.get(alias).getFeatures();
 			Iterator<String> itFeat = mapTable.getFeaturesNames().iterator();
-			while(itFeat.hasNext()){
+			while (itFeat.hasNext()) {
 				String cur = itFeat.next();
-				ans.addFeature(alias+"."+cur, mapTable.getFeatureType(cur));
+				ans.addFeature(alias + "." + cur, mapTable.getFeatureType(cur));
 			}
 		}
-		return ans; 
+		return ans;
 	}
 
 	@Override
@@ -170,6 +184,5 @@ public class PigUnion  extends PigElement{
 	public final PigTableUnionInteraction gettUnionSelInt() {
 		return tUnionSelInt;
 	}
-
 
 }

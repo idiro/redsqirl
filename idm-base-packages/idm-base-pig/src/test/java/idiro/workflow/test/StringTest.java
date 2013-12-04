@@ -19,6 +19,11 @@ public class StringTest {
 		String result = a.replace(".","::");
 		logger.info(result);
 	}
+	@Test
+	public void TrimEndsWith(){
+		String expr ="SUM(A)";
+		logger.info(expr.trim().toUpperCase());
+	}
 	
 
 }

@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.ajax4jsf.model.KeepAlive;
 import org.apache.log4j.Logger;
-//import idiro.utils.TreeNonUnique;
 
 /**
  * CanvasModal
@@ -574,6 +573,13 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 			if (dfeInteraction.getDisplay().equals(DisplayType.list)) {
 				logger.info(dfeInteraction.getName());
+				List<Tree<String>> treelist =dfeInteraction.getTree().getSubTreeList();
+				String ans = "";
+				Iterator<Tree<String>> it = treelist.iterator();
+				while(it.hasNext()){
+					ans = ans + "\n\t" + it.next().toString().replaceAll("\n", "\n\t");
+				}
+				logger.info("tree :"+ans);
 				List<SelectItem> selectItems = new ArrayList<SelectItem>();
 				Tree<String> dfetree = dfeInteraction.getTree();
 				logger.info("got tree");

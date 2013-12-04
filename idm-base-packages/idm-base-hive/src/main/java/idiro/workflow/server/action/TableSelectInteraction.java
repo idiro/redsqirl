@@ -57,8 +57,6 @@ public class TableSelectInteraction extends UserInteraction {
 			logger.error(msg);
 			return msg;
 		}
-		logger.debug("tree gotten : "
-				+ ((TreeNonUnique<String>) tree).toString());
 		Set<String> featGrouped = new HashSet<String>();
 		if (!tree.getFirstChild("table").getFirstChild("generator")
 				.getFirstChild("operation").isEmpty()
@@ -70,7 +68,7 @@ public class TableSelectInteraction extends UserInteraction {
 					.getChildren("row").iterator();
 			while (it.hasNext()) {
 				String featurtoadd = it.next().getFirstChild(table_op_title).getFirstChild().getHead();
-				logger.info(featurtoadd+" added");
+				logger.debug(featurtoadd+" added");
 				featGrouped.add(featurtoadd);
 			}
 		} else {

@@ -53,6 +53,7 @@ public abstract class PigElement extends DataflowAction {
 	protected UserInteraction dataSubtypeInt;
 	protected UserInteraction typeOutputInt;
 	protected UserInteraction savetypeOutputInt;
+	public PigGroupInteraction groupingInt;
 
 	protected Map<String, DFELinkProperty> input;
 	protected Map<String, DFEOutput> output;
@@ -65,14 +66,14 @@ public abstract class PigElement extends DataflowAction {
 		super(new PigAction());
 		init(nbInMin,nbInMax);
 		this.minNbOfPage = minNbOfPage;
-		delimiterOutputInt = new UserInteraction("Delimiter", "Setting output delimiter", DisplayType.list, 0, 0);
-		
-		savetypeOutputInt = new UserInteraction(
-				"Output Type",
-				"Setting the output type",
-						DisplayType.list,
-						0,
-						0);
+//		delimiterOutputInt = new UserInteraction("Delimiter", "Setting output delimiter", DisplayType.list, 0, 0);
+//		
+//		savetypeOutputInt = new UserInteraction(
+//				"Output Type",
+//				"Setting the output type",
+//						DisplayType.list,
+//						0,
+//						0);
 
 	}
 
@@ -200,6 +201,7 @@ public abstract class PigElement extends DataflowAction {
 			values.add("value").add(k);
 			values.add("value").add(MapRedBinaryType.class.newInstance().getTypeName());
 		}
+		logger.info("output tree : "+((TreeNonUnique<String>) list).toString());
 	}
 	
 	public void updateDelimiterOutputInt() throws RemoteException{
@@ -385,6 +387,9 @@ public abstract class PigElement extends DataflowAction {
 	public String getStoreFunction(String delimiter) throws RemoteException{
 		String type = "";
 		String function = "";
+		if(delimiter==null || delimiter.equalsIgnoreCase("")){
+			delimiter ="|";
+		}
 		try{
 			type = savetypeOutputInt.getTree().getFirstChild("list").getFirstChild("output").getFirstChild().getHead();
 			logger.info("type: "+type);
@@ -420,5 +425,9 @@ public abstract class PigElement extends DataflowAction {
 	protected String getNextName(){
 		nameCont++;
 		return "A"+nameCont;
+	}
+	
+	public PigGroupInteraction getGroupingInt() {
+		return groupingInt;
 	}
 }

@@ -4,14 +4,22 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import idiro.utils.OrderedFeatureList;
 import idiro.utils.FeatureList;
+import idiro.utils.Tree;
+import idiro.workflow.server.DataOutput;
 import idiro.workflow.server.WorkflowPrefManager;
+import idiro.workflow.server.action.PigAggregator;
+import idiro.workflow.server.action.Source;
 import idiro.workflow.server.action.utils.PigDictionary;
+import idiro.workflow.server.datatype.MapRedTextType;
 import idiro.workflow.server.enumeration.FeatureType;
+import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.test.TestUtils;
 
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -23,7 +31,6 @@ public class PigDictionaryTests {
 
 	public FeatureList getFeatures() throws RemoteException {
 		FeatureList features = new OrderedFeatureList();
-		features.addFeature("col1", FeatureType.CHARARRAY);
 		features.addFeature("col2", FeatureType.DOUBLE);
 		features.addFeature("col3", FeatureType.INT);
 		features.addFeature("col4", FeatureType.BOOLEAN);
@@ -219,6 +226,8 @@ public class PigDictionaryTests {
 		// File file = new File(WorkflowPrefManager.pathSystemPref.get() +
 		// "/testPigFeat.txt");
 		logger.info(dictionary
-				.convertStringtoHelp("@function:REPLACE()@short:Replaces existing characters in a string with new characters@param:CHARARRAY string to replace@param:CHARARRAY character to replace@param:CHARRAY character to replace with@description:Use the REPLACE function to replace existing characters in a string with new characters@example:REPLACE(\'open source software\',\'software\',\'wiki\') returns \'open source wiki\'" ));
+				.convertStringtoHelp("@function:REPLACE()@short:Replaces existing characters in a string with new characters@param:CHARARRAY string to replace@param:CHARARRAY character to replace@param:CHARRAY character to replace with@description:Use the REPLACE function to replace existing characters in a string with new characters@example:REPLACE(\'open source software\',\'software\',\'wiki\') returns \'open source wiki\'"));
 	}
+
+	
 }

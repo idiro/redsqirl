@@ -19,6 +19,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.kenai.jffi.Aggregate;
+
 /**
  * Utilities for writing Pig Latin operations. The class can: - generate a help
  * for editing operations - check an operation
@@ -369,8 +371,6 @@ public class PigDictionary extends AbstractDictionary {
 		case STRING:
 			featureType = "CHARARRAY";
 			break;
-		case CHARARRAY:
-			break;
 		}
 		return featureType;
 	}
@@ -395,6 +395,7 @@ public class PigDictionary extends AbstractDictionary {
 		}
 
 		expr = expr.trim().toUpperCase();
+		logger.debug("expresion :"+ expr +" feature agg : " +featureAggreg.size());
 		if (expr.startsWith("(") && expr.endsWith(")")) {
 			int count = 1;
 			int index = 1;
@@ -413,6 +414,7 @@ public class PigDictionary extends AbstractDictionary {
 			}
 			if (index == expr.length()) {
 				expr = expr.substring(1, expr.length() - 1);
+				logger.debug("expresion after manipulations:"+ expr);
 			}
 		}
 		String type = null;
@@ -454,7 +456,6 @@ public class PigDictionary extends AbstractDictionary {
 				}
 			}
 		}
-
 		if (type == null) {
 			if (isLogicalOperation(expr)) {
 				logger.debug(expr + ", is a logical operation");
@@ -663,10 +664,10 @@ public class PigDictionary extends AbstractDictionary {
 
 	public Tree<String> createGroupSelectHelpMenu() throws RemoteException {
 		Tree<String> help = new TreeNonUnique<String>("help");
-		help.add(createMenu(new TreeNonUnique<String>("aggregation"),
-				functionsMap.get(agregationMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("arithmetic"),
 				functionsMap.get(arithmeticOperators)));
+		help.add(createMenu(new TreeNonUnique<String>("aggregation"),
+				functionsMap.get(agregationMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("string"),
 				functionsMap.get(stringMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("math"),
@@ -771,16 +772,24 @@ public class PigDictionary extends AbstractDictionary {
 	}
 
 	private boolean isMethod(String expr, boolean agregation) {
-		return agregation ? isInList(functionsMap.get(agregationMethods), expr)
-				: isInList(functionsMap.get(utilsMethods), expr)
-						|| isInList(functionsMap.get(mathMethods), expr)
-						|| isInList(functionsMap.get(stringMethods), expr);
+		if(isInList(functionsMap.get(agregationMethods), expr)){
+			return true;
+		}else if (isInList(functionsMap.get(utilsMethods), expr)){
+			return true;
+		}else if (isInList(functionsMap.get(mathMethods), expr)){
+			return true;
+		}else if (isInList(functionsMap.get(stringMethods), expr)){
+			return true;
+		}
+		return false;
+		
 
 	}
 
 	private String runMethod(String expr, FeatureList features,
 			Set<String> aggregFeat) throws Exception {
 		String type = null;
+		logger.debug("..runMethod aggfeat: "+ aggregFeat.isEmpty());
 		List<String[]> methodsFound = findAllMethod(expr, !aggregFeat.isEmpty());
 		if (!methodsFound.isEmpty()) {
 			String arg = expr.substring(expr.indexOf("(") + 1,
@@ -874,7 +883,7 @@ public class PigDictionary extends AbstractDictionary {
 		while (!found && list.length > i) {
 			String regex = getRegexToFind(removeBracketContent(list[i][0]
 					.trim()));
-			logger.trace("Is " + cleanUp + " contains " + regex);
+//			logger.debug("Is " + cleanUp + " contains " + regex);
 			found = cleanUp.matches(regex);
 			++i;
 		}
@@ -962,7 +971,7 @@ public class PigDictionary extends AbstractDictionary {
 		while (list.length > i) {
 			String regex = getRegexToFind(removeBracketContent(list[i][0]
 					.trim()));
-			logger.trace("equals? " + search + " " + regex);
+			logger.debug("equals? " + search + " " + regex);
 			if (search.matches(regex)) {
 				ans.add(list[i]);
 			}
@@ -976,6 +985,7 @@ public class PigDictionary extends AbstractDictionary {
 
 	private List<String[]> findAllMethod(String expr, boolean aggregMethod) {
 		List<String[]> ans = null;
+		logger.debug("search aggregation method :"+ aggregMethod);
 		if (aggregMethod) {
 			ans = findAll(functionsMap.get(agregationMethods), expr);
 		} else {
@@ -983,6 +993,7 @@ public class PigDictionary extends AbstractDictionary {
 			ans.addAll(findAll(functionsMap.get(mathMethods), expr));
 			ans.addAll(findAll(functionsMap.get(stringMethods), expr));
 		}
+		logger.debug("found results for : "+ expr + " with "+ans.size());
 		return ans;
 	}
 

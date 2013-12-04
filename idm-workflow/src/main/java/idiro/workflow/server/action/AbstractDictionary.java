@@ -54,7 +54,7 @@ public abstract class AbstractDictionary {
 							&& !line.startsWith("#")) {
 						if (!line.trim().isEmpty()) {
 							String[] function = line.split(";");
-							logger.info(line);
+//							logger.info(line);
 							functions.add(function);
 						}
 					}
@@ -158,17 +158,17 @@ public abstract class AbstractDictionary {
 		Map<String,List<String>> functions = new HashMap<String,List<String>>();
 		String output = "";
 		String template= "<div class=\"help\">";
-		logger.debug(helpString);
+//		logger.debug(helpString);
 		if(helpString.contains("@")){
 			String[] element = helpString.split("@");
 			for(String function : element){
-				logger.debug(function);
+//				logger.debug(function);
 				if (function.contains(":")) {
 					String[] titleAndValue = function.split(":");
 					
 						List<String> vals;
 						if(functions.containsKey(titleAndValue[0])){
-							logger.debug("getting list for "+titleAndValue[0]);
+//							logger.debug("getting list for "+titleAndValue[0]);
 							vals = functions.get(titleAndValue[0]);
 						}else{
 							vals = new LinkedList<String>();
@@ -176,7 +176,7 @@ public abstract class AbstractDictionary {
 						
 						vals.add(titleAndValue[1]);
 						
-						logger.debug(titleAndValue[0]+" , "+vals);
+//						logger.debug(titleAndValue[0]+" , "+vals);
 						functions.put(titleAndValue[0], vals);
 				}
 				
@@ -220,12 +220,11 @@ public abstract class AbstractDictionary {
 				template=template.concat("<p><b>Examples</b></p>");
 				while(valsIt.hasNext()){
 					String val = valsIt.next();
-//					logger.info(val);
 					template=template.concat("<p>"+val+"</p>");
 				}
 			}
 			
-			logger.info("help: "+template);
+//			logger.debug("help: "+template);
 		
 		output = output.concat(template+"</div>");
 		return output;

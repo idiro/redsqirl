@@ -66,8 +66,8 @@ Logger logger = Logger.getLogger(getClass());
 		TestUtils.logTestTitle(getClass().getName()+"#basic");
 		String error = null;
 		try{
-			String new_path1 = "/user/marcos/test_idm_1";
-			String new_path2 = "/user/marcos/test_idm_2";
+			String new_path1 = "/user/keith/testdir";
+			String new_path2 = "/user/keith/testdir";
 			DataFlowElement src1 = getSource(new_path1);
 			DataFlowElement src2 = getSource(new_path2);
 			PigJoin hs = new PigJoin();

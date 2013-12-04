@@ -25,7 +25,7 @@ public class PigFilterInteractionTests {
 	
 	public DataFlowElement getSource() throws RemoteException{
 		HDFSInterface hInt = new HDFSInterface();
-		String new_path1 = "/user/marcos/test_idm_1";
+		String new_path1 = "/user/keith/testdir";
 		
 		hInt.delete(new_path1);
 		assertTrue("create "+new_path1,

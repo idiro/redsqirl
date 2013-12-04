@@ -7,8 +7,12 @@ import idiro.workflow.server.interfaces.DFEOutput;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 
 import org.apache.log4j.Logger;
+
 
 /**
  * 
@@ -61,10 +65,27 @@ public class PigGroupInteraction extends UserInteraction{
 			while(gIt.hasNext()){
 				groupby += ","+gIt.next().getFirstChild().getHead();
 			}
-			if(!groupby.isEmpty()){
+			if(!groupby.isEmpty() || !groupby.equalsIgnoreCase("")){
 				groupby = "GROUP "+relationName+" BY ("+groupby+")";
-			}
+			} 
+		}else{
+			groupby = "GROUP "+relationName+" ALL";
+			
 		}
 		return groupby;
+	}
+	
+	public Set<String> getAggregationFeatures(DFEOutput in) throws RemoteException{
+		Set<String> aggregationFeatures = new HashSet<String>();
+		
+		in.getFeatures().getFeaturesNames();
+		if(in.getFeatures().getFeaturesNames().size() > 0){
+			Iterator<String> gIt =in.getFeatures().getFeaturesNames().iterator();
+			while (gIt.hasNext()){
+				aggregationFeatures.add(gIt.next());
+			}
+		}
+	
+		return aggregationFeatures;
 	}
 }

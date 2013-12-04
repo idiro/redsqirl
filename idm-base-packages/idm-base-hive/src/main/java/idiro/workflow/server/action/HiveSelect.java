@@ -162,17 +162,17 @@ public class HiveSelect extends HiveElement{
 
 
 			logger.debug("group by...");
-			String groupby = "";
-			Iterator<String> gIt = getGroupByFeatures().iterator();
-			if(gIt.hasNext()){
-				groupby = gIt.next();
-			}
-			while(gIt.hasNext()){
-				groupby += ","+gIt.next();
-			}
-			if(!groupby.isEmpty()){
-				groupby = " GROUP BY "+groupby;
-			}
+//			String groupby = "";
+//			Iterator<String> gIt = getGroupByFeatures().iterator();
+//			if(gIt.hasNext()){
+//				groupby = gIt.next();
+//			}
+//			while(gIt.hasNext()){
+//				groupby += ","+gIt.next();
+//			}
+//			if(!groupby.isEmpty()){
+//				groupby = " GROUP BY "+groupby;
+//			}
 			String select = tSelInt.getQueryPiece(out);
 			String createSelect = tSelInt.getCreateQueryPiece(out);
 
@@ -187,7 +187,8 @@ public class HiveSelect extends HiveElement{
 				query += insert+"\n"+
 						select+"\n"+
 						from+"\n"+
-						where+groupby+";";
+//						where+groupby+";";
+						where+";";
 			}
 		}
 

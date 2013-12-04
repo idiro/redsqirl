@@ -15,189 +15,196 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 /**
- * Interaction for selecting columns of the output.
- * The output table has three columns: 'Operation',
- * 'Feature name', 'Type'.
+ * Interaction for selecting columns of the output. The output table has three
+ * columns: 'Operation', 'Feature name', 'Type'.
  * 
  * @author marcos
- *
+ * 
  */
-public class PigTableSelectInteraction extends UserInteraction{
+public class PigTableSelectInteraction extends UserInteraction {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 8521366798554741811L;
 
-	private PigSelect hs;
+	private PigElement hs;
 
 	public static final String table_op_title = "Operation",
-			table_feat_title = "Feature_name",
-			table_type_title = "Type";
+			table_feat_title = "Feature_name", table_type_title = "Type";
 
-	public PigTableSelectInteraction(String name, String legend,
-			int column, int placeInColumn, PigSelect hs)
-					throws RemoteException {
+	public PigTableSelectInteraction(String name, String legend, int column,
+			int placeInColumn, PigElement hs) throws RemoteException {
 		super(name, legend, DisplayType.table, column, placeInColumn);
 		this.hs = hs;
 	}
 
 	@Override
-	public String check() throws RemoteException{
+	public String check() throws RemoteException {
 		DFEOutput in = hs.getDFEInput().get(PigElement.key_input).get(0);
 		String msg = null;
 		List<Tree<String>> lRow;
 		Iterator<Tree<String>> rows;
-		try{
-			lRow = getTree()
-					.getFirstChild("table").getChildren("row"); 
+		try {
+			lRow = getTree().getFirstChild("table").getFirstChild("generator")
+					.getFirstChild("operation").getChildren("row");
 			rows = lRow.iterator();
-		}catch(Exception e){
+		} catch (Exception e) {
 			msg = "Null pointer exception in check";
 			logger.error(msg);
 			return msg;
 		}
 
 		Set<String> featGrouped = new HashSet<String>();
-		if(! hs.getGroupingInt().getTree()
-				.getFirstChild("applist").getFirstChild("output").getSubTreeList().isEmpty()
-				&&
-				! hs.getGroupingInt().getTree()
-				.getFirstChild("applist").getFirstChild("output")
-				.getChildren("value").isEmpty()
-				){
-			Iterator<Tree<String>> it = hs.getGroupingInt().getTree()
-					.getFirstChild("applist").getFirstChild("output")
-					.getChildren("value").iterator();
-			while(it.hasNext()){
-				featGrouped.add(it.next().getFirstChild().getHead());
+		if (!tree.getFirstChild("table").getFirstChild("generator")
+				.getFirstChild("operation").isEmpty()
+				&& !tree.getFirstChild("table").getFirstChild("generator")
+						.getFirstChild("operation").getChildren("row")
+						.isEmpty()) {
+			Iterator<Tree<String>> it = tree.getFirstChild("table")
+					.getFirstChild("generator").getFirstChild("operation")
+					.getChildren("row").iterator();
+			while (it.hasNext()) {
+				featGrouped.add(it.next().getFirstChild(table_op_title)
+						.getFirstChild().getHead());
 			}
 		}
-		if(lRow.isEmpty()){
+		if (lRow.isEmpty()) {
 			msg = "A relation is composed of at least 1 column";
 		}
 		Set<String> featuresTitle = new LinkedHashSet<String>();
-		while(rows.hasNext() && msg == null){
+		while (rows.hasNext() && msg == null) {
 			Tree<String> row = rows.next();
-			if(row.getChildren(table_type_title).size() != 1 ||
-					row.getChildren(table_feat_title).size() != 1 ||
-					row.getChildren(table_op_title).size() != 1){
+			if (row.getChildren(table_type_title).size() != 1
+					|| row.getChildren(table_feat_title).size() != 1
+					|| row.getChildren(table_op_title).size() != 1) {
 				msg = "Tree not well formed";
-				logger.debug(table_type_title+" "+
-						row.getChildren(table_type_title).size());
-				logger.debug(table_feat_title+" "+
-						row.getChildren(table_feat_title).size());
-				logger.debug(table_op_title+" "+
-						row.getChildren(table_op_title).size());
+				logger.debug(table_type_title + " "
+						+ row.getChildren(table_type_title).size());
+				logger.debug(table_feat_title + " "
+						+ row.getChildren(table_feat_title).size());
+				logger.debug(table_op_title + " "
+						+ row.getChildren(table_op_title).size());
 
-			}else{
-				try{
-					if( ! PigDictionary.check(
-							row.getFirstChild(table_type_title).getFirstChild().getHead(), 
+			} else {
+				try {
+					if (!PigDictionary.check(
+							row.getFirstChild(table_type_title).getFirstChild()
+									.getHead(),
 							PigDictionary.getInstance().getReturnType(
-									row.getFirstChild(table_op_title).getFirstChild().getHead(),
-									in.getFeatures(),
-									featGrouped
-									)
-							)){
-						msg = "Error the type returned does not correspond for feature "+
-								row.getFirstChild(table_feat_title).getFirstChild().getHead();
+									row.getFirstChild(table_op_title)
+											.getFirstChild().getHead(),
+									in.getFeatures(), featGrouped))) {
+						msg = "Error the type returned does not correspond for feature "
+								+ row.getFirstChild(table_feat_title)
+										.getFirstChild().getHead();
 					}
-					featuresTitle.add(
-							row.getFirstChild(table_feat_title).getFirstChild().getHead()
-							.toUpperCase()
-							);
-				}catch(Exception e){
+					featuresTitle.add(row.getFirstChild(table_feat_title)
+							.getFirstChild().getHead().toUpperCase());
+				} catch (Exception e) {
 					msg = e.getMessage();
 				}
 			}
 		}
 
-		if(msg == null && 
-				lRow.size() !=
-				featuresTitle.size()){
-			msg = lRow.size()-featuresTitle.size()+
-					" features has the same name, total "+lRow.size();
+		if (msg == null && lRow.size() != featuresTitle.size()) {
+			msg = lRow.size() - featuresTitle.size()
+					+ " features has the same name, total " + lRow.size();
 			logger.debug(featuresTitle);
 		}
 
 		return msg;
 	}
 
+	public void update(DFEOutput in) throws RemoteException {
 
-	public void update(
-			DFEOutput in) throws RemoteException{
-
-		if(tree.getSubTreeList().isEmpty()){
-			tree.add(getRootTable());		
-		}else{
-			//Remove generator
+		if (tree.isEmpty() || tree.getSubTreeList().isEmpty()) {
+			tree.add(getRootTable());
+		} else {
+			// Remove generator
 			tree.getFirstChild("table").remove("generator");
-			//Remove Editor of operation
-			tree.getFirstChild("table").getFirstChild("columns").
-			findFirstChild(table_op_title).getParent().remove("editor");
+			// Remove Editor of operation
+			tree.getFirstChild("table").getFirstChild("columns")
+					.findFirstChild(table_op_title).getParent()
+					.remove("editor");
 		}
 
-		//Generate Editor
+		// Generate Editor
 		Tree<String> featEdit = null;
-		if(! hs.getGroupingInt().getTree()
-				.getFirstChild("applist").getFirstChild("output").getSubTreeList().isEmpty()
-				&&
-				! hs.getGroupingInt().getTree()
-				.getFirstChild("applist").getFirstChild("output")
-				.getChildren("value").isEmpty()
-				){
-			featEdit = PigDictionary.generateEditor(PigDictionary.getInstance().createGroupSelectHelpMenu(),in);
+		Iterator<String> gbFeats= null;
+		if(hs.groupingInt!=null && hs.groupingInt.getTree().getFirstChild("applist")
+				.getFirstChild("output").getSubTreeList().size()>0){
+			Iterator<Tree<String>> grIt = hs.groupingInt.getTree().getFirstChild("applist")
+					.getFirstChild("output").getSubTreeList().iterator();
+			List<String> groupings = new LinkedList<String>();
+			while(grIt.hasNext()){
+				groupings.add(grIt.next().getFirstChild().getHead());
+			}
+			gbFeats = groupings.iterator();
 		}else{
-			featEdit = PigDictionary.generateEditor(PigDictionary.getInstance().createDefaultSelectHelpMenu(),in);
+			gbFeats = hs.getInFeatures().getFeaturesNames()
+			.iterator();
 		}
-		//Set the Editor of operation
+		if (gbFeats.hasNext()) {
+			logger.debug("GroupBy functions");
+			featEdit = PigDictionary.generateEditor(PigDictionary.getInstance()
+					.createGroupSelectHelpMenu(), in);
+		} else {
+			logger.debug("default functions");
+			featEdit = PigDictionary.generateEditor(PigDictionary.getInstance()
+					.createDefaultSelectHelpMenu(), in);
+		}
+		// Set the Editor of operation
 		logger.debug("Set the editor...");
-		Tree<String> operation = tree.getFirstChild("table").getFirstChild("columns").
-				findFirstChild(table_op_title);
-		if(operation == null){
+		Tree<String> operation = tree.getFirstChild("table")
+				.getFirstChild("columns").findFirstChild(table_op_title);
+		if (operation == null) {
 			logger.warn("Operation is null, it shouldn't happened");
-		}else{
+		} else {
 			logger.debug(operation.getHead());
 			logger.debug(operation.getParent().getHead());
 			logger.debug(operation.getParent().getParent().getHead());
 		}
-		
+
 		operation.getParent().getParent().add(featEdit);
-		
-		//Set the Generator
+		logger.info("functions tree has :"
+				+ ((TreeNonUnique<String>) operation).toString());
+		// logger.info("functions tree has :"+((TreeNonUnique<String>)featEdit).toString());
+
+		// Set the Generator
 		logger.debug("Set the generator...");
 		Tree<String> generator = tree.getFirstChild("table").add("generator");
-		//Copy Generator operation
+		// Copy Generator operation
 		Tree<String> operationCopy = generator.add("operation");
 		operationCopy.add("title").add("copy");
-		Iterator<String> featIt = in.getFeatures().getFeaturesNames().iterator();
-		while(featIt.hasNext()){
+		Iterator<String> featIt = in.getFeatures().getFeaturesNames()
+				.iterator();
+		while (featIt.hasNext()) {
 			String cur = featIt.next();
-			Tree<String> row = operationCopy.add("row"); 
+			Tree<String> row = operationCopy.add("row");
 			row.add(table_op_title).add(cur);
 			row.add(table_feat_title).add(cur);
 			row.add(table_type_title).add(
-					PigDictionary.getPigType(in.getFeatures().getFeatureType(cur))
-					);
+					PigDictionary.getPigType(in.getFeatures().getFeatureType(
+							cur)));
 		}
 	}
 
-
-	protected Tree<String> getRootTable() throws RemoteException{
-		//Table
+	protected Tree<String> getRootTable() throws RemoteException {
+		// Table
 		Tree<String> input = new TreeNonUnique<String>("table");
 		Tree<String> columns = new TreeNonUnique<String>("columns");
 		input.add(columns);
 
-		//operation
+		// operation
 		columns.add("column").add("title").add(table_op_title);
 
-		//Feature name
+		// Feature name
 		Tree<String> newFeatureName = new TreeNonUnique<String>("column");
 		columns.add(newFeatureName);
 		newFeatureName.add("title").add(table_feat_title);
@@ -206,8 +213,7 @@ public class PigTableSelectInteraction extends UserInteraction{
 		newFeatureName.add(constraintFeat);
 		constraintFeat.add("count").add("1");
 
-
-		//Type
+		// Type
 		Tree<String> newType = new TreeNonUnique<String>("column");
 		columns.add(newType);
 		newType.add("title").add(table_type_title);
@@ -221,105 +227,183 @@ public class PigTableSelectInteraction extends UserInteraction{
 		valsType.add("value").add(FeatureType.BOOLEAN.name());
 		valsType.add("value").add(FeatureType.INT.name());
 		valsType.add("value").add(FeatureType.DOUBLE.name());
-		valsType.add("value").add(FeatureType.CHARARRAY.name());
 		valsType.add("value").add(FeatureType.FLOAT.name());
 		valsType.add("value").add("BIGINT");
 
 		return input;
 	}
 
-	public FeatureList getNewFeatures() throws RemoteException{
+	public FeatureList getNewFeatures() throws RemoteException {
 		FeatureList new_features = new OrderedFeatureList();
 		Iterator<Tree<String>> rowIt = getTree().getFirstChild("table")
 				.getChildren("row").iterator();
 
-		while(rowIt.hasNext()){
+		while (rowIt.hasNext()) {
 			Tree<String> rowCur = rowIt.next();
-			String name = rowCur.getFirstChild(table_feat_title).getFirstChild().getHead();
-			String type = rowCur.getFirstChild(table_type_title).getFirstChild().getHead();
+			String name = rowCur.getFirstChild(table_feat_title)
+					.getFirstChild().getHead();
+			String type = rowCur.getFirstChild(table_type_title)
+					.getFirstChild().getHead();
 			new_features.addFeature(name, FeatureType.valueOf(type));
 		}
 		return new_features;
 	}
 
-	public String getQueryPiece(DFEOutput out, String tableName) throws RemoteException{
+	public String getQueryPiece(DFEOutput out, String tableName)
+			throws RemoteException {
 		logger.debug("select...");
 		String select = "";
 		Iterator<Tree<String>> selIt = getTree().getFirstChild("table")
+				.getFirstChild("generator").getFirstChild("operation")
 				.getChildren("row").iterator();
-		List<String> grList = getGroupByList();
-		if(selIt.hasNext()){
+		// List<String> grList = getGroupByList();
+		if (selIt.hasNext()) {
 			Tree<String> cur = selIt.next();
-			String featName = cur.getFirstChild(table_feat_title).getFirstChild().getHead();
-			String opTitle = cur.getFirstChild(table_op_title).getFirstChild().getHead();
-			select = "FOREACH " + tableName + " GENERATE "+getOpTitle(grList, opTitle)+
-					" AS "+featName
-					;
+			String featName = cur.getFirstChild(table_feat_title)
+					.getFirstChild().getHead();
+			String opTitle = cur.getFirstChild(table_op_title).getFirstChild()
+					.getHead();
+			// select = "FOREACH " + tableName + " GENERATE "+getOpTitle(grList,
+			// opTitle)+
+			// " AS "+featName
+			// ;
+			select = "FOREACH " + tableName + " GENERATE " + opTitle + " AS "
+					+ featName;
+			logger.debug("set select statement");
 		}
-		while(selIt.hasNext()){
+		while (selIt.hasNext()) {
 			Tree<String> cur = selIt.next();
-			String featName = cur.getFirstChild(table_feat_title).getFirstChild().getHead();
-			String opTitle = cur.getFirstChild(table_op_title).getFirstChild().getHead();
-			
-			select += ",\n       "+getOpTitle(grList, opTitle)+
-					" AS "+featName;
+			String featName = cur.getFirstChild(table_feat_title)
+					.getFirstChild().getHead();
+			String opTitle = cur.getFirstChild(table_op_title).getFirstChild()
+					.getHead();
+
+			// select += ",\n       "+getOpTitle(grList, opTitle)+
+			// " AS "+featName;
+			select += ",\n       " + opTitle + " AS " + featName;
+		}
+		logger.debug("select looks like : " + select);
+
+		return select;
+	}
+
+	public String getQueryPieceGroup(DFEOutput out, String tableName,
+			String aggregate) throws RemoteException {
+		logger.debug("select...");
+		String select = "";
+		Iterator<Tree<String>> selIt = getTree().getFirstChild("table")
+				.getFirstChild("generator").getFirstChild("operation")
+				.getChildren("row").iterator();
+
+		if (hs.groupingInt != null) {
+			Iterator<Tree<String>> gIt = hs.groupingInt.getTree()
+					.getFirstChild("applist").getFirstChild("output")
+					.getChildren("value").iterator();
+			List<String> features = hs.getDFEInput().get(hs.key_input).get(0)
+					.getFeatures().getFeaturesNames();
+			List<Integer> groupIndex = new LinkedList<Integer>();
+			int gIndex = 0;
+			while (gIt.hasNext()) {
+				String groupItem = gIt.next().getFirstChild().getHead();
+				for (int i = 0; i < features.size(); ++i) {
+					logger.debug("comparing features: " + features.get(i) + " to "
+							+ groupItem + " "
+							+ features.get(i).equals(groupItem));
+					if (features.get(i).equalsIgnoreCase(groupItem)) {
+						groupIndex.add(Integer.valueOf(i));
+					}
+				}
+			}
+
+			if (!groupIndex.isEmpty()) {
+				Iterator<Integer> indexIt = groupIndex.iterator();
+				if (indexIt.hasNext()) {
+					int index = indexIt.next().intValue();
+					select = "FOREACH " + tableName + " GENERATE group.$"
+							+ String.valueOf(index);
+				}
+				while (indexIt.hasNext()) {
+					int index = indexIt.next().intValue();
+					select += ",\n       group.$" + String.valueOf(index);
+				}
+			} else {
+				Iterator<String> indexIt = hs.getDFEInput().get(hs.key_input).get(0)
+						.getFeatures().getFeaturesNames().iterator();
+				int index = 0;
+				if (indexIt.hasNext()) {
+					indexIt.next();
+					select = "FOREACH " + tableName + " GENERATE group.$"
+							+ String.valueOf(index);
+					++index;
+				}
+				while (indexIt.hasNext()) {
+					indexIt.next();
+					select += ",\n       group.$" + String.valueOf(index);
+					++index;
+				}
+			}
+
 		}
 
 		return select;
 	}
-	
-	private String getOpTitle(List<String> grList, String opTitle){
-		if (!grList.isEmpty()){
-			if (grList.contains(opTitle)){
-				if (grList.size()>1){
-					opTitle = "group."+opTitle;
-				}
-				else{
+
+	private String getOpTitle(List<String> grList, String opTitle) {
+		if (!grList.isEmpty()) {
+			if (grList.contains(opTitle)) {
+				if (grList.size() > 1) {
+					opTitle = "group." + opTitle;
+				} else {
 					opTitle = "group";
 				}
-			}
-			else{
-				opTitle = "A."+opTitle;
+			} else {
+				opTitle = "A." + opTitle;
 			}
 		}
 		return opTitle;
 	}
-	
-	
-	private List<String> getGroupByList() throws RemoteException{
+
+	private List<String> getGroupByList() throws RemoteException {
 		List<String> resultList = new ArrayList<String>();
 		Tree<String> groupTree = hs.getGroupingInt().getTree();
-		
-		if(groupTree.getFirstChild("applist")
-				.getFirstChild("output").getSubTreeList().size() > 0){
-			Iterator<Tree<String>> gIt = groupTree
-					.getFirstChild("applist")
+
+		if (groupTree.getFirstChild("applist").getFirstChild("output")
+				.getSubTreeList().size() > 0) {
+			Iterator<Tree<String>> gIt = groupTree.getFirstChild("applist")
 					.getFirstChild("output").getChildren("value").iterator();
-			while(gIt.hasNext()){
+			while (gIt.hasNext()) {
 				resultList.add(gIt.next().getFirstChild().getHead());
 			}
 		}
 		return resultList;
 	}
 
-	public String getCreateQueryPiece(DFEOutput out) throws RemoteException{
+	public String getCreateQueryPiece(DFEOutput out) throws RemoteException {
 		logger.debug("create features...");
 		String createSelect = "";
 		Iterator<Tree<String>> selIt = getTree().getFirstChild("table")
 				.getChildren("row").iterator();
-		if(selIt.hasNext()){
+		if (selIt.hasNext()) {
 			Tree<String> cur = selIt.next();
-			String featName = cur.getFirstChild(table_feat_title).getFirstChild().getHead(); 
-			createSelect ="("+featName+":"+
-					cur.getFirstChild(table_type_title).getFirstChild().getHead();
+			String featName = cur.getFirstChild(table_feat_title)
+					.getFirstChild().getHead();
+			createSelect = "("
+					+ featName
+					+ ":"
+					+ cur.getFirstChild(table_type_title).getFirstChild()
+							.getHead();
 		}
-		while(selIt.hasNext()){
+		while (selIt.hasNext()) {
 			Tree<String> cur = selIt.next();
-			String featName = cur.getFirstChild(table_feat_title).getFirstChild().getHead();
-			createSelect +=","+featName+" "+
-					cur.getFirstChild(table_type_title).getFirstChild().getHead();
+			String featName = cur.getFirstChild(table_feat_title)
+					.getFirstChild().getHead();
+			createSelect += ","
+					+ featName
+					+ " "
+					+ cur.getFirstChild(table_type_title).getFirstChild()
+							.getHead();
 		}
-		createSelect +=")";
+		createSelect += ")";
 
 		return createSelect;
 	}

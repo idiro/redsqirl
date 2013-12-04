@@ -35,7 +35,26 @@ public class PigSelect extends PigElement{
 	public PigSelect() throws RemoteException {
 		super(2,1,1);
 
-		page1 = addPage("Select",
+
+		page1 = addPage("Feature operations",
+				"Create operation feature per feature",
+				3);
+		tSelInt = new PigTableSelectInteraction(
+				key_featureTable,
+				"Please specify the operations to be executed for each feature",
+				0,
+				0,
+				this);
+
+//		typeOutputInt = new UserInteraction(
+//				"Output Type",
+//				"Setting the output type",
+//						DisplayType.list,
+//						2,
+//						0);
+		page1.addInteraction(tSelInt);
+		
+		page2 = addPage("Select",
 				"Select Conditions",
 				1);
 
@@ -46,37 +65,25 @@ public class PigSelect extends PigElement{
 				this, 
 				key_input);
 		
-		groupingInt = new PigGroupInteraction(
-				key_grouping,
-				"Please specify to group",
-				DisplayType.appendList,
-				0,
-				1); 
+		delimiterOutputInt = new UserInteraction("Delimiter", "Setting output delimiter", DisplayType.list, 1, 0);
+		
+		savetypeOutputInt = new UserInteraction(
+		"Output Type",
+		"Setting the output type",
+				DisplayType.list,
+				2,
+				0);
+//		groupingInt = new PigGroupInteraction(
+//				key_grouping,
+//				"Please specify to group",
+//				DisplayType.appendList,
+//				0,
+//				1); 
 
-		page1.addInteraction(filterInt);
-		page1.addInteraction(groupingInt);
-
-
-		page2 = addPage("Feature operations",
-				"Create operation feature per feature",
-				3);
-		tSelInt = new PigTableSelectInteraction(
-				key_featureTable,
-				"Please specify the operations to be executed for each feature",
-				0,
-				0,
-				this);
-
-		page2.addInteraction(tSelInt);
-//		delimiterOutputInt = new UserInteraction("Delimiter", "Setting output delimiter", DisplayType.list, 1, 0);
+		page2.addInteraction(filterInt);
 		page2.addInteraction(delimiterOutputInt);
-//		typeOutputInt = new UserInteraction(
-//				"Output Type",
-//				"Setting the output type",
-//						DisplayType.list,
-//						2,
-//						0);
 		page2.addInteraction(savetypeOutputInt);
+//		page1.addInteraction(groupingInt);
 		
 	}
 	
@@ -93,11 +100,9 @@ public class PigSelect extends PigElement{
 				filterInt.update();
 			}else if(interaction == delimiterOutputInt){
 				updateDelimiterOutputInt();
-			}else if(interaction == groupingInt){
-				groupingInt.update(in);
-			}else if(interaction == tSelInt){
+			}
+			else if(interaction == tSelInt){
 				tSelInt.update(in);
-//				addOrRemoveOutPage();
 			}else if(interaction == dataSubtypeInt){
 				updateDataSubTypeInt();
 			}else if(interaction == savetypeOutputInt){
@@ -131,10 +136,10 @@ public class PigSelect extends PigElement{
 				filter = getNextName()+" = "+filter+";\n\n";
 			}
 			
-			String groupby = groupingInt.getQueryPiece(getCurrentName());
-			if (!groupby.isEmpty()){
-				groupby = getNextName()+" = "+groupby+";\n\n";
-			}
+//			String groupby = groupingInt.getQueryPiece(getCurrentName());
+//			if (!groupby.isEmpty()){
+//				groupby = getNextName()+" = "+groupby+";\n\n";
+//			}
 			
 			String select=tSelInt.getQueryPiece(out, getCurrentName());
 			if (!select.isEmpty()){
@@ -149,7 +154,7 @@ public class PigSelect extends PigElement{
 				query = remove;
 				query += load;
 				query += filter;
-				query += groupby;
+//				query += groupby;
 				query += select;
 				query += store;
 			}

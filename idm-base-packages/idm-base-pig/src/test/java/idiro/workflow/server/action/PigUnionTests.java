@@ -35,7 +35,7 @@ public class PigUnionTests {
 			String new_path1 ) throws RemoteException, Exception{
 		
 		String idSource = w.addElement((new Source()).getName());
-		DataFlowElement src = w.getElement(idSource);
+		Source src = (Source)w.getElement(idSource);
 		
 		assertTrue("create "+new_path1,
 				hInt.create(new_path1, getProperties()) == null
@@ -171,7 +171,7 @@ public class PigUnionTests {
 			pig.getDFEOutput().get(PigUnion.key_output).setSavingState(SavingState.RECORDED);
 			pig.getDFEOutput().get(PigUnion.key_output).setPath(new_path3);
 			logger.debug("run...");
-			String jobId = w.run(false);
+			String jobId = w.run();
 			OozieClient wc = OozieManager.getInstance().getOc();
 			
 			// wait until the workflow job finishes printing the status every 10 seconds

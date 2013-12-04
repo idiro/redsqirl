@@ -207,7 +207,6 @@ public class PigTableJoinInteraction extends UserInteraction{
 		valsType.add("value").add(FeatureType.BOOLEAN.name());
 		valsType.add("value").add(FeatureType.INT.name());
 		valsType.add("value").add(FeatureType.DOUBLE.name());
-		valsType.add("value").add(FeatureType.CHARARRAY.name());
 		valsType.add("value").add(FeatureType.FLOAT.name());
 		valsType.add("value").add("BIGINT");
 

@@ -97,7 +97,7 @@ public class PigJoinTests {
 				PigJoin.key_input, idHS);
 		assertTrue("pig select add input: "+error,error == null);
 		
-		updatePig(w,pig,"test_idm_1","test_idm_2",hInt);
+		updatePig(w,pig,"testdir","testdir",hInt);
 		logger.debug("Features "+pig.getDFEOutput().get(PigJoin.key_output).getFeatures());
 		
 		pig.getDFEOutput().get(PigJoin.key_output).generatePath(
