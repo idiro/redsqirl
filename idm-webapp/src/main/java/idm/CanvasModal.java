@@ -1388,7 +1388,13 @@ public class CanvasModal extends BaseBean implements Serializable {
 			if (dynamicFormDataOutput == null) {
 				setDynamicFormDataOutput(new DynamicForm());
 			}
+			if(getDfe().getDFEOutput().get(outputName).getTypeName().toLowerCase().contains("hive")){
+				setHiveHdfs("hive");
+			}else{
+				setHiveHdfs("hdfs");
+			}
 			getDynamicFormDataOutput().setName(outputName);
+			
 			updateDFEOUtputTable(getDfe().getDFEOutput().get(outputName),
 					getDynamicFormDataOutput());
 		}
