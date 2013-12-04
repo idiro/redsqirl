@@ -1231,6 +1231,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 			error = "The type of the edge is not compatible";
 		}
 		if(error != null){
+			logger.info(error);
 			return false;
 		}
 		return true;

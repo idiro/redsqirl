@@ -830,6 +830,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 	public String cleanDataOut() throws RemoteException{
 		String err = "";
 		if(getDFEOutput() != null){
+			try{
 			Iterator<DFEOutput> it = getDFEOutput().values().iterator();
 			while(it.hasNext()){
 				DFEOutput cur = it.next();
@@ -839,6 +840,9 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 						err = err +curErr+"\n";
 					}
 				}
+			}
+			}catch(Exception e){
+				logger.debug("Cannot clean data output, map null");
 			}
 		}
 		if(err.isEmpty()){

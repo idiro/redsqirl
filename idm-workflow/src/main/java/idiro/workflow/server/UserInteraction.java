@@ -98,8 +98,10 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	protected Node writeXml(Document doc, Tree<String> t) throws RemoteException, DOMException {
 		Node elHead = null;
 		if(t.isEmpty()){
+			logger.debug("Create text element: "+t.getHead());
 			elHead = doc.createTextNode(t.getHead());
 		}else{
+			logger.debug("Create element: "+t.getHead());
 			elHead = doc.createElement(t.getHead().toString());
 			Iterator<Tree<String>> it = t.getSubTreeList().iterator();
 			while(it.hasNext()){
