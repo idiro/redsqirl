@@ -2,8 +2,8 @@ package idiro.workflow.server.datatype;
 
 import idiro.hadoop.NameNodeVar;
 import idiro.hadoop.checker.HdfsFileChecker;
-import idiro.utils.OrderedFeatureList;
 import idiro.utils.FeatureList;
+import idiro.utils.OrderedFeatureList;
 import idiro.utils.RandomString;
 import idiro.workflow.server.DataOutput;
 import idiro.workflow.server.OozieManager;
@@ -42,7 +42,6 @@ public class MapRedTextType extends DataOutput{
 	private static final long serialVersionUID = 8260229620701006942L;
 
 	public final static String key_delimiter = "delimiter";
-	public final static String key_delimiter_char = "delimiter_char";
 
 	protected static HDFSInterface hdfsInt;
 
@@ -359,6 +358,21 @@ public class MapRedTextType extends DataOutput{
 			result = String.valueOf(Character.toChars(Integer.valueOf(asciiCode.substring(1))));
 		}
 		return result;
+	}
+	
+	public String getOctalDelimiter(){
+		String asciiCode = getProperty(key_delimiter);
+		String result = null;
+		if (asciiCode != null && asciiCode.startsWith("#") && asciiCode.length() > 1){
+			result = "\\"+Integer.toOctalString(Integer.valueOf(asciiCode.substring(1)));
+		}
+		return result;
+	}
+	
+	public String getDelimiterOrOctal(){
+		String octal = getOctalDelimiter(); 
+		return  octal != null? 
+				octal:getProperty(MapRedTextType.key_delimiter);
 	}
 
 	@Override
