@@ -9,6 +9,8 @@ import idiro.workflow.server.interfaces.DFEInteractionChecker;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.DOMException;
@@ -117,10 +119,10 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 			this.tree = new TreeNonUnique<String>(name);
 			if(n.getNodeType() == Node.ELEMENT_NODE){
 				NodeList nl = n.getChildNodes();
-				
+
 				for(int i = 0; i < nl.getLength();++i){
 					Node cur = nl.item(i);
-					
+
 					if(cur.getNodeType() == Node.TEXT_NODE){
 						tree.add(cur.getNodeName());
 					}else if(cur.getNodeType() == Node.ELEMENT_NODE){
@@ -193,13 +195,108 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	public final String getName() {
 		return name;
 	}
+	
+	
+
+
+	protected List<String> getPossibleValuesFromList(){
+		List<String> possibleValues = null;
+		if(display == DisplayType.list || display == DisplayType.appendList){
+			possibleValues = new LinkedList<String>();
+			List<Tree<String>> lRow = null;
+			Iterator<Tree<String>> rows = null;
+			try{
+				if(display == DisplayType.list){
+					lRow = getTree()
+							.getFirstChild("list").getFirstChild("values").getChildren("value");
+				}else{
+					lRow = getTree()
+							.getFirstChild("applist").getFirstChild("values").getChildren("value");
+				}
+				rows = lRow.iterator();
+				while(rows.hasNext()){
+					possibleValues.add(rows.next().getFirstChild().getHead());
+				}
+			}catch(Exception e){
+				possibleValues = null;
+				logger.error("Tree structure incorrect");
+			}
+		}
+		return possibleValues;
+	}
+
+	protected String checkList(){
+		String error = null;
+		if(display != DisplayType.list){
+			logger.warn(getName()+" is not a list.");
+		}else{
+			List<String> possibleValues = getPossibleValuesFromList();
+			try{
+				String value = getTree()
+						.getFirstChild("list").getFirstChild("output").getFirstChild().getHead();
+				if(!possibleValues.contains(value)){
+					error = "Value "+value + " invalid.";
+				}
+			}catch(Exception e){
+				error = "Tree structure incorrect";
+				logger.error(error);
+			}
+		}
+		return error;
+	}
+
+	protected String checkAppendList(){
+		String error = null;
+		if(display != DisplayType.appendList){
+			logger.warn(getName()+" is not a list.");
+		}else{
+			List<String> possibleValues = getPossibleValuesFromList();
+			List<Tree<String>> lRow = null;
+			Iterator<Tree<String>> rows = null;
+			try{
+				lRow = getTree()
+						.getFirstChild("applist").getFirstChild("output").getChildren("value");
+				rows = lRow.iterator();
+				while(rows.hasNext() && error == null){
+					Tree<String> rowCur = rows.next();
+					String cur = rowCur.getFirstChild().getHead();
+					if(!possibleValues.contains(cur)){
+						error = "Value "+cur + " invalid.";
+					}
+				}
+			}catch(Exception e){
+				error = "Tree structure incorrect";
+				logger.error(error);
+			}
+		}
+		return error;
+	}
 
 
 	@Override
 	public String check() throws RemoteException {
 		String error = null;
 		if(getChecker() != null){
-			error = getChecker().check(this);
+			switch(display){
+			case list:
+				error = checkList();
+				break;
+			case appendList:
+				error = checkAppendList();
+				break;
+			case helpTextEditor:
+				break;
+			case browser:
+				break;
+			case table:
+				break;
+			default:
+				break;
+
+			}
+			if(error == null){
+				error = getChecker().check(this);
+			}
 		}
 		return error;
 	}
@@ -229,10 +326,10 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	public void setLegend(String legend) {
 		this.legend = legend;
 	}
-	
+
 	public String checkExpression(String expression, String modifier) throws RemoteException{
 		return null;
 	}
-	
+
 
 }
