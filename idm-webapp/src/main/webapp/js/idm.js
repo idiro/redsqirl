@@ -185,7 +185,6 @@ function validateArrows(tabPrincipal, spanButtons){
 
 function resizeTabs(){
 	
-	
 	if(jQuery("#tabs-1").parent("div").attr('id') == jQuery("#tabs1").attr('id')){
 		jQuery("#tabs-1").css("height", jQuery("#tabs1").height()-25+'px');
 	}else if(jQuery("#tabs-1").parent("div").attr('id') == jQuery("#tabs2").attr('id')){
@@ -251,36 +250,31 @@ function resizeTabs(){
 	}
 	
 }
+
 function showImg(url){
 	var img = jQuery("<img src="+url+">");
-	console.log(img);
 	jQuery("#helpImg").append(img);
 	jQuery("#helpPage").hide();
 	jQuery("#btIndex").show();
-};
+}
 
  function showHelp(url) {
-	console.log("updating help panel");
 	jQuery("#helpPanel").load(url);
 	jQuery("#helpIndex").hide();
 	jQuery("#btIndex").show();
-	//e.preventDefault();
-};
-
+}
 
 function hideHelp() {
 	jQuery("#helpIndex").show();
 	jQuery("#btIndex").hide();
 	jQuery("#helpPanel").empty();
-};
+}
 
 function addtooltip(text){
     jQuery('div.help').remove();
     jQuery('div.tooltip').remove();
     var y=event.layerY;
-    console.log(text);
     var help = jQuery('<div class="tooltip">'+text+'</div>').hide().fadeIn("slow");
-    //console.log("something");
     jQuery(help).css("top",(y-10)+"px");
     jQuery("body").append(help);
 }
