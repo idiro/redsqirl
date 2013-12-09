@@ -17,6 +17,8 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 /**
@@ -52,8 +54,7 @@ public class PigTableSelectInteraction extends UserInteraction {
 		List<Tree<String>> lRow;
 		Iterator<Tree<String>> rows;
 		try {
-			lRow = getTree().getFirstChild("table").getFirstChild("generator")
-					.getFirstChild("operation").getChildren("row");
+			lRow = getTree().getFirstChild("table").getChildren("row");
 			rows = lRow.iterator();
 		} catch (Exception e) {
 			msg = "Null pointer exception in check";
@@ -70,6 +71,10 @@ public class PigTableSelectInteraction extends UserInteraction {
 			Iterator<Tree<String>> it = tree.getFirstChild("table")
 					.getFirstChild("generator").getFirstChild("operation")
 					.getChildren("row").iterator();
+			// only show what is in grouped interaction
+			if (hs.groupingInt != null) {
+				hs.groupingInt.getTree();
+			}
 			while (it.hasNext()) {
 				featGrouped.add(it.next().getFirstChild(table_op_title)
 						.getFirstChild().getHead());
@@ -94,6 +99,8 @@ public class PigTableSelectInteraction extends UserInteraction {
 
 			} else {
 				try {
+					logger.info("checking : "+row.getFirstChild(table_op_title)
+									.getFirstChild().getHead().toUpperCase());
 					if (!PigDictionary.check(
 							row.getFirstChild(table_type_title).getFirstChild()
 									.getHead(),
@@ -105,6 +112,10 @@ public class PigTableSelectInteraction extends UserInteraction {
 								+ row.getFirstChild(table_feat_title)
 										.getFirstChild().getHead();
 					}
+					logger.info("added : "
+							+ row.getFirstChild(table_feat_title)
+									.getFirstChild().getHead().toUpperCase()
+							+ " to features list");
 					featuresTitle.add(row.getFirstChild(table_feat_title)
 							.getFirstChild().getHead().toUpperCase());
 				} catch (Exception e) {
@@ -115,7 +126,9 @@ public class PigTableSelectInteraction extends UserInteraction {
 
 		if (msg == null && lRow.size() != featuresTitle.size()) {
 			msg = lRow.size() - featuresTitle.size()
-					+ " features has the same name, total " + lRow.size();
+					+ " features has the same name, total " + lRow.size()
+					+ " and  " + featuresTitle.size() + " from "
+					+ featGrouped.size();
 			logger.debug(featuresTitle);
 		}
 
@@ -133,6 +146,17 @@ public class PigTableSelectInteraction extends UserInteraction {
 			tree.getFirstChild("table").getFirstChild("columns")
 					.findFirstChild(table_op_title).getParent()
 					.remove("editor");
+		}
+		// get Alias
+		Iterator<Entry<String, DFEOutput>> aliases = hs.getAliases().entrySet()
+				.iterator();
+		String alias = "";
+		DFEOutput input = hs.getDFEInput().get(hs.key_input).get(0);
+		for (; aliases.hasNext();) {
+			Entry<String, DFEOutput> entry = aliases.next();
+			if (entry.getValue() == input) {
+				alias = entry.getKey();
+			}
 		}
 
 		// Generate Editor
@@ -189,7 +213,7 @@ public class PigTableSelectInteraction extends UserInteraction {
 		while (featIt.hasNext()) {
 			String cur = featIt.next();
 			Tree<String> row = operationCopy.add("row");
-			row.add(table_op_title).add(cur);
+			row.add(table_op_title).add(alias + "." + cur);
 			row.add(table_feat_title).add(cur);
 			row.add(table_type_title).add(
 					PigDictionary.getPigType(in.getFeatures().getFeatureType(
@@ -258,7 +282,8 @@ public class PigTableSelectInteraction extends UserInteraction {
 		Iterator<Tree<String>> selIt = getTree().getFirstChild("table")
 				.getChildren("row").iterator();
 		List<String> grList;
-		logger.debug("table select tree : "+((TreeNonUnique<String>)tree).toString());
+		logger.debug("table select tree : "
+				+ ((TreeNonUnique<String>) tree).toString());
 		if (hs.getGroupingInt() != null) {
 			logger.info("getting grouped items");
 			grList = getGroupByList();
@@ -270,7 +295,7 @@ public class PigTableSelectInteraction extends UserInteraction {
 		}
 		if (selIt.hasNext()) {
 			Tree<String> cur = selIt.next();
-			logger.debug("cur : "+((TreeNonUnique<String>)cur).toString());
+			logger.debug("cur : " + ((TreeNonUnique<String>) cur).toString());
 			String featName = cur.getFirstChild(table_feat_title)
 					.getFirstChild().getHead();
 			String opTitle = cur.getFirstChild(table_op_title).getFirstChild()
@@ -361,20 +386,16 @@ public class PigTableSelectInteraction extends UserInteraction {
 
 	private String getOpTitle(List<String> grList, String opTitle) {
 		if (!grList.isEmpty()) {
-			if (grList.contains(opTitle)) {
-				opTitle = "group." + opTitle;
-			} else {
-				opTitle = loader + "." + opTitle;
-			}
+			opTitle = loader + "." + opTitle;
 		}
 
 		logger.debug("optitle : " + opTitle);
 		return opTitle;
 	}
-	
-	public boolean isInMethod(String operation){
+
+	public boolean isInMethod(String operation) {
 		boolean inmethod = false;
-//		if(operation.)
+		// if(operation.)
 		return inmethod;
 	}
 

@@ -236,7 +236,7 @@ public class Source extends DataflowAction {
 
 					}
 				} catch (Exception e) {
-					error = "Data set cannot be empty";
+					error = "Data set error : "+ error;
 				}
 				return error;
 			}
@@ -273,15 +273,15 @@ public class Source extends DataflowAction {
 	@Override
 	public void update(DFEInteraction interaction) throws RemoteException {
 
-		logger.info("updateinteraction Source ");
+		logger.info("updateinteraction Source : "+ interaction.getName());
 
-		if (interaction.getName()
-				.equals(getInteraction(key_datatype).getName())) {
+		if (interaction.getName().equals(getInteraction(key_datatype).getName())) {
 			updateDataType(interaction.getTree());
 		} else if (interaction.getName().equals(
 				getInteraction(key_datasubtype).getName())) {
 			updateDataSubType(interaction.getTree());
-		} else {
+		} else if(interaction.getName().equals(
+				getInteraction(key_dataset).getName())) {
 			updateDataSet(interaction.getTree());
 		}
 	}
@@ -384,7 +384,7 @@ public class Source extends DataflowAction {
 
 	@Override
 	public String updateOut() throws RemoteException {
-		String error = null;
+		String error = checkIntegrationUserVariables();
 
 		try {
 			String path = getInteraction(key_dataset).getTree()
@@ -419,6 +419,7 @@ public class Source extends DataflowAction {
 			String type = getInteraction(key_datatype).getTree()
 					.getFirstChild("list").getFirstChild("output")
 					.getFirstChild().getHead();
+			logger.info("no output");
 			if (type.equalsIgnoreCase("hive")) {
 				output.put(out_name, new HiveType(out));
 				output.get(out_name).setPath(path);
@@ -450,7 +451,6 @@ public class Source extends DataflowAction {
 				output.get(out_name).setPath(path);
 */
 				String delimiter = "#1";
-
 				try {
 					delimiter = getInteraction(key_dataset).getTree()
 							.getFirstChild("browse").getFirstChild("output")
@@ -466,8 +466,6 @@ public class Source extends DataflowAction {
 				String stringdelim = "";
 				if (delimiter != null && delimiter.startsWith("#") && delimiter.length() > 1){
 					stringdelim = String.valueOf(Character.toChars(Integer.valueOf(delimiter.substring(1))));
-					output.get(out_name).addProperty(MapRedTextType.key_delimiter_char,
-							stringdelim);
 				}
 				
 				output.get(out_name).setFeatures(out);

@@ -127,8 +127,8 @@ public class PigDictionary extends AbstractDictionary {
 										"@function:IS NULL@short:Is empty/null@param:Any value@description:Checks the value if it is null@example:x IS NULL" },
 								new String[] {
 										"REGEX_EXTRACT",
-										"CHARARRAY,CHARARRAY, INT",
-										"CHARARRAY",
+										"STRING,STRING, INT",
+										"STRING",
 										"@function:REGEX_EXTRACT( MYSTRING , CHAR , INDEX )@short:Performs regular expression matching and extracts the matched group defined by an index parameter@param:MYSTRING string to search@param:CHAR The regular expression@param:INDEX The index of the matched group to return@description:Use the REGEX_EXTRACT function to perform regular expression matching and to extract the matched group defined by the index parameter (where the index is a 1-based parameter.) The function uses Java regular expression form."
 												+ "The function returns a string that corresponds to the matched group in the position specified by the index. If there is no matched expression at that position, NULL is returned@example:REGEX_EXTRACT(\"helloworld#8020\", \"(.*)\\#(.*)\", 1) returns \"helloworld\"" } });
 
@@ -254,55 +254,55 @@ public class PigDictionary extends AbstractDictionary {
 						new String[][] {
 								new String[] {
 										"SUBSTRING()",
-										"CHARARRAY,INT,INT",
-										"CHARARRAY",
+										"STRING,INT,INT",
+										"STRING",
 										"@function:SUBSTRING( MYSTRING , INDEX , LENGTH )@short:Returns a substring from a given string@param:MYSTRING The string from which a substring will be extracted@param: INDEX The index (type integer) of the first character of the substring."
 												+ "The index of a string begins with zero (0)@param:LENGTH The index (type integer) of the character following the last character of the substring@description:Use the SUBSTRING function to return a substring from a given string."
 												+ "Given a field named alpha whose value is ABCDEF, to return substring BCD use this statement: SUBSTRING(alpha,1,4). Note that 1 is the index of B (the first character of the substring) and 4 is the index of E (the character following the last character of the substring)@example:SUBSTR(\"help\",1,4) returns \"elp\"; @example:SUBSTR(\"example\",6,7) returns  \"le\"" },
 								new String[] {
 										"UPPER()",
-										"CHARARRAY",
-										"CHARARRAY",
+										"STRING",
+										"STRING",
 										"@function:UPPER( MYSTRING )@short:Returns a string converted to upper case@param:MYSTRING@description:Use the UPPER function to convert all characters in a string to upper case@example:UPPER(\"hello\") returns \"HELLO\"@example:UPPER(\"Example\") returns  \"EXAMPLE\"" },
 								new String[] {
 										"LOWER()",
-										"CHARARRAY",
-										"CHARARRAY",
+										"STRING",
+										"STRING",
 										"@function:LOWER( MYSTRING )@short:Converts all characters in a string to lower case@param:MYSTRING@description:Use the LOWER function to convert all characters in a string to lower case@example:LOWER(\"HELLO\") returns \"hello\"@example:LOWER(\"Example\") returns  \"example\"" },
 								new String[] {
 										"LCFIRST()",
-										"CHARARRAY",
-										"CHARARRAY",
+										"STRING",
+										"STRING",
 										"@function:LCFIRST( MYSTRING )@short:Converts the first character in a string to lower case@param:MYSTRING@description:Use the LCFIRST function to convert only the first character in a string to lower case@example:LCFIRST(\"HELLO\") returns \"hELLO\"@example:LCFIRST(\"Example\") returns  \"example\"" },
 								new String[] {
 										"UCFIRST()",
-										"CHARARRAY",
-										"CHARARRAY",
+										"STRING",
+										"STRING",
 										"@function:UCFIRST( MYSTRING )@short:Converts the first character in a string to upper case@param:MYSTRING@description:Use the UCFIRST function to convert only the first character in a string to upper case@example:UCFIRST(\"hELLO\") returns \"HELLO\"@example:UCFIRST(\"example\") returns  \"Example\"" },
 								new String[] {
 										"TRIM()",
-										"CHARARRAY",
-										"CHARARRAY",
+										"STRING",
+										"STRING",
 										"@function:TRIM( MYSTRING )@short:Returns a copy of a string with leading and trailing white space removed@param:MYSTRING@description:Use the TRIM function to remove leading and trailing white space from a string@example:TRIM(\" hello \") returns \"hello\"@example:TRIM(\" example \") returns  \"example\"" },
 								new String[] {
 										"INDEXOF()",
-										"CHARARRAY,CHARARRAY,INT",
+										"STRING,STRING,INT",
 										"INT",
 										"@function:INDEXOF( MYSTRING , CHAR , INDEX )@short:Returns the index of the first occurrence of a character in a string. Searching forward from a start index@param:MYSTRING string to search@param:CHAR character to search for@param:INDEX index to start foreward search from@description:Use the INDEXOF function to determine the index of the first occurrence of a character in a string. The forward search for the character begins at the designated start index@example:INDEXOF(\"hello\",\"e\",0) returns 1@example:INDEXOF(\"example\",\"l\",1) returns  5" },
 								new String[] {
 										"LAST_INDEX_OF()",
-										"CHARARRAY,CHAR,INT",
+										"STRING,CHAR,INT",
 										"INT",
 										"@function:LAST_INDEX_OF( MYSTRING , CHAR , INDEX )@short:Returns the index of the last occurrence of a character in a string. Searching backward from a start index@param:MYSTRING string to search@param:CHAR character to search for@param:INDEX index to start backward search from@description:Use the INDEXOF function to determine the index of the first occurrence of a character in a string. The forward search for the character begins at the designated start index@example:LAST_INDEX_OF(\"hello\",\"l\",0) returns 3@example:LAST_INDEX_OF(\"eeeee\",\"e\",4) returns  4" },
 								new String[] {
 										"REGEX_EXTRACT()",
-										"CHARARRAY,CHARARRAY,INT",
+										"STRING,STRING,INT",
 										"INT",
 										"@function:REGEX_EXTRACT( MYSTRING , CHAR , INDEX )@short:Performs regular expression matching and extracts the matched group defined by an index parameter@param:MYSTRING string to search@param:CHAR The regular expression@param:INDEX The index of the matched group to return@description:Use the REGEX_EXTRACT function to perform regular expression matching and to extract the matched group defined by the index parameter (where the index is a 1-based parameter.) The function uses Java regular expression form."
 												+ "The function returns a string that corresponds to the matched group in the position specified by the index. If there is no matched expression at that position, NULL is returned@example:REGEX_EXTRACT(\"helloworld#8020\", \"(.*)\\#(.*)\", 1) returns \"helloworld\"" },
 								new String[] {
 										"REPLACE()",
-										"CHARARRAY,CHARARRAY,CHARARRAY",
+										"STRING,STRING,STRING",
 										"INT",
 										"@function:REPLACE(MYSTRING , OLDCHAR , NEWCHAR)@short:Replaces existing characters in a string with new characters@param:MYSTRING string to replace@param:OLDCHAR character to replace@param:NEWCHAR character to replace with@description:Use the REPLACE function to replace existing characters in a string with new characters@example:REPLACE(\"open source software\",\"software\",\"wiki\") returns \"open source wiki\"" }, });
 		functionsMap
@@ -311,7 +311,7 @@ public class PigDictionary extends AbstractDictionary {
 								new String[] {
 										"COUNT_STAR()",
 										"ANY",
-										"BIGINT",
+										"NUMBER",
 										"@function:COUNT_STAR( ELEMENT )@short:Computes the number of elements in a bag@param:ELEMENT item to count@description:Use the COUNT_STAR function to compute the number of elements in a bag. COUNT_STAR requires a preceding GROUP ALL statement for global counts and a GROUP BY statement for group counts."
 												+ "COUNT_STAR includes NULL values in the count computation (unlike COUNT, which ignores NULL values)@example: COUNT_STAR(A) returns the frequency of A" },
 								new String[] {
@@ -324,23 +324,23 @@ public class PigDictionary extends AbstractDictionary {
 								new String[] {
 										"SUM()",
 										"NUMBER",
-										"DOUBLE",
+										"NUMBER",
 										"@function:SUM( ELEMENT )@short:Use the SUM function to compute the sum of a set of numeric values in a single-column bag@param: ELEMENT item to sum@description:Use the SUM function to compute the sum of the numeric values in a single-column bag. SUM requires a preceding GROUP ALL statement for global averages and a GROUP BY statement for group averages."
 												+ "The SUM function now ignores NULL values.@example: SUM(A.id) returns the sum value of A.id" },
 								new String[] {
 										"AVG()",
 										"NUMBER",
-										"DOUBLE",
+										"NUMBER",
 										"@function:AVG( ELEMENT )@short:Use the AVG function to compute the average of a set of numeric values in a single-column bag@param: ELEMENT item to average@description:Computes the average of the numeric values in a single-column bag. AVG requires a preceding GROUP ALL statement for global sums and a GROUP BY statement for group sums@example: AVG(A.id) returns the average value of A.id" },
 								new String[] {
 										"MIN()",
 										"NUMBER",
-										"DOUBLE",
+										"NUMBER",
 										"@function:MIN( ELEMENT )@short:Use the MIN function to compute the minimum of a set of numeric values in a single-column bag@param: ELEMENT item to get the minimum@description:Computes the minimum of the numeric values in a single-column bag. MIN requires a preceding GROUP ALL statement for global sums and a GROUP BY statement for group sums@example: MIN(A.id) returns the minimum value of A.id" },
 								new String[] {
 										"MAX()",
 										"NUMBER",
-										"DOUBLE",
+										"NUMBER",
 										"@function:MAX( ELEMENT )@short:Use the MAX function to compute the maximum of a set of numeric values in a single-column bag@param: ELEMENT item to get the maximum@description:Computes the maximum of the numeric values in a single-column bag. MAX requires a preceding GROUP ALL statement for global sums and a GROUP BY statement for group sums@example: MAX(A.id) returns the maximum value of A.id" } });
 	}
 
@@ -369,10 +369,21 @@ public class PigDictionary extends AbstractDictionary {
 		case DOUBLE:
 			break;
 		case STRING:
-			featureType = "CHARARRAY";
+			featureType = "STRING";
 			break;
 		}
 		return featureType;
+	}
+
+	public String returnFeature(String operationString) {
+		String temp = operationString;
+		temp = removeBracketContent(temp);
+		if (temp.contains(".")) {
+			String[] operationsplit = temp.split("\\.");
+			operationString = operationsplit[operationsplit.length - 1];
+		}
+
+		return operationString;
 	}
 
 	public String getReturnType(String expr, FeatureList features,
@@ -382,20 +393,41 @@ public class PigDictionary extends AbstractDictionary {
 			throw new Exception("No expressions to test");
 		}
 
+		expr = returnFeature(expr);
 		// Test if all the featureAggreg have a type
 		Iterator<String> itFAgg = featureAggreg.iterator();
 		boolean ok = true;
 		while (itFAgg.hasNext() && ok) {
-			ok = features.containsFeature(itFAgg.next());
+			String featuragg = returnFeature(itFAgg.next());
+			// String featuragg = itFAgg.next();
+			logger.info("checking for : " + featuragg);
+			ok = features.containsFeature(featuragg);
 		}
 
 		if (!ok) {
-			throw new Exception("Parameters invalid" + featureAggreg
-					+ "needs to be in " + features);
+			itFAgg = featureAggreg.iterator();
+			String tempagg = "";
+			while (itFAgg.hasNext()) {
+				tempagg += itFAgg.next();
+				if (itFAgg.hasNext()) {
+					tempagg += " , ";
+				}
+			}
+			Iterator<String> fit = features.getFeaturesNames().iterator();
+			String tempfit = "";
+			while (fit.hasNext()) {
+				tempfit += fit.next();
+				if (fit.hasNext()) {
+					tempfit += " , ";
+				}
+			}
+			throw new Exception("Parameters invalid \n" + tempagg
+					+ " needs to be in \n" + tempfit);
 		}
 
 		expr = expr.trim().toUpperCase();
-		logger.debug("expresion :"+ expr +" feature agg : " +featureAggreg.size());
+		logger.info("expresion :" + expr + " feature agg : "
+				+ featureAggreg.size());
 		if (expr.startsWith("(") && expr.endsWith(")")) {
 			int count = 1;
 			int index = 1;
@@ -414,7 +446,7 @@ public class PigDictionary extends AbstractDictionary {
 			}
 			if (index == expr.length()) {
 				expr = expr.substring(1, expr.length() - 1);
-				logger.debug("expresion after manipulations:"+ expr);
+				logger.debug("expresion after manipulations:" + expr);
 			}
 		}
 		String type = null;
@@ -422,7 +454,7 @@ public class PigDictionary extends AbstractDictionary {
 			type = "BOOLEAN";
 		} else if (expr.startsWith("'")) {
 			if (expr.endsWith("'") && expr.length() > 1) {
-				type = "CHARARRAY";
+				type = "STRING";
 			} else {
 				String error = "string quote \"'\" not closed";
 				logger.debug(error);
@@ -444,19 +476,22 @@ public class PigDictionary extends AbstractDictionary {
 		}
 		if (type == null) {
 			Iterator<String> itS = null;
+
 			if (featureAggreg.isEmpty()) {
 				itS = features.getFeaturesNames().iterator();
 			} else {
 				itS = featureAggreg.iterator();
 			}
 			while (itS.hasNext() && type == null) {
-				String feat = itS.next();
+				String feat = returnFeature(itS.next());
+				logger.info("feat : " + feat + " == " + expr);
 				if (feat.equalsIgnoreCase(expr)) {
 					type = getPigType(features.getFeatureType(feat));
 				}
 			}
 		}
 		if (type == null) {
+			logger.debug("type is null : trying to find operator");
 			if (isLogicalOperation(expr)) {
 				logger.debug(expr + ", is a logical operation");
 				if (runLogicalOperation(expr, features, featureAggreg)) {
@@ -481,7 +516,7 @@ public class PigDictionary extends AbstractDictionary {
 			}
 		}
 
-		logger.debug("type returned for '" + expr + "': " + type);
+		logger.info("type returned for '" + expr + "': " + type);
 		return type;
 
 	}
@@ -530,6 +565,8 @@ public class PigDictionary extends AbstractDictionary {
 	}
 
 	public static boolean check(String typeToBe, String typeGiven) {
+		logger.info("checking type to be : " + typeToBe + " and type given "
+				+ typeGiven);
 		boolean ok = false;
 		if (typeGiven == null || typeToBe == null) {
 			return false;
@@ -540,18 +577,23 @@ public class PigDictionary extends AbstractDictionary {
 		if (typeToBe.equalsIgnoreCase("ANY")) {
 			ok = true;
 		} else if (typeToBe.equalsIgnoreCase("NUMBER")) {
-			ok = !typeGiven.equals("CHARARRAY") && !typeGiven.equals("BOOLEAN");
+			ok = !typeGiven.equals("STRING") && !typeGiven.equals("BOOLEAN");
 		} else if (typeToBe.equalsIgnoreCase("DOUBLE")) {
-			ok = !typeGiven.equals("CHARARRAY") && !typeGiven.equals("BOOLEAN");
+			ok = !typeGiven.equals("STRING") && !typeGiven.equals("BOOLEAN");
 		} else if (typeToBe.equalsIgnoreCase("BIGINT")) {
 			ok = typeGiven.equals("INT") || typeGiven.equals("TINYINT");
 		} else if (typeToBe.equalsIgnoreCase("INT")) {
-			ok = typeGiven.equals("TINYINT");
+			if (typeGiven.equals("TINYINT")) {
+				ok = true;
+			} else if (typeGiven.equalsIgnoreCase("NUMBER")) {
+				ok = true;
+				typeToBe = typeGiven;
+			}
 		} else if (typeToBe.equalsIgnoreCase("TINYINT")) {
 			ok = false;
 		} else if (typeToBe.equalsIgnoreCase("FLOAT")) {
 			ok = false;
-		} else if (typeToBe.equalsIgnoreCase("CHARARRAY")) {
+		} else if (typeToBe.equalsIgnoreCase("STRING")) {
 			ok = false;
 		} else if (typeToBe.equalsIgnoreCase("BOOLEAN")) {
 			ok = false;
@@ -562,10 +604,15 @@ public class PigDictionary extends AbstractDictionary {
 					|| typeGiven.equalsIgnoreCase("BIGINT")
 					|| typeGiven.equalsIgnoreCase("FLOAT")
 					|| typeGiven.equalsIgnoreCase("DOUBLE")
-					|| typeGiven.equalsIgnoreCase("CHARARRAY");
+					|| typeGiven.equalsIgnoreCase("STRING");
 
 		}
-		return typeToBe.equalsIgnoreCase(typeGiven) || ok;
+		logger.info("checked type to be : " + typeToBe + " and type given "
+				+ typeGiven + " : " + ok);
+		if (!ok && typeToBe.equalsIgnoreCase(typeGiven)) {
+			ok = true;
+		}
+		return ok;
 	}
 
 	public static Tree<String> generateEditor(Tree<String> help, DFEOutput in)
@@ -772,24 +819,23 @@ public class PigDictionary extends AbstractDictionary {
 	}
 
 	private boolean isMethod(String expr, boolean agregation) {
-		if(isInList(functionsMap.get(agregationMethods), expr)){
+		if (isInList(functionsMap.get(agregationMethods), expr)) {
 			return true;
-		}else if (isInList(functionsMap.get(utilsMethods), expr)){
+		} else if (isInList(functionsMap.get(utilsMethods), expr)) {
 			return true;
-		}else if (isInList(functionsMap.get(mathMethods), expr)){
+		} else if (isInList(functionsMap.get(mathMethods), expr)) {
 			return true;
-		}else if (isInList(functionsMap.get(stringMethods), expr)){
+		} else if (isInList(functionsMap.get(stringMethods), expr)) {
 			return true;
 		}
 		return false;
-		
 
 	}
 
 	private String runMethod(String expr, FeatureList features,
 			Set<String> aggregFeat) throws Exception {
 		String type = null;
-		logger.debug("..runMethod aggfeat: "+ aggregFeat.isEmpty());
+		logger.debug("..runMethod aggfeat: " + aggregFeat.isEmpty());
 		List<String[]> methodsFound = findAllMethod(expr, !aggregFeat.isEmpty());
 		if (!methodsFound.isEmpty()) {
 			String arg = expr.substring(expr.indexOf("(") + 1,
@@ -883,7 +929,7 @@ public class PigDictionary extends AbstractDictionary {
 		while (!found && list.length > i) {
 			String regex = getRegexToFind(removeBracketContent(list[i][0]
 					.trim()));
-//			logger.debug("Is " + cleanUp + " contains " + regex);
+			// logger.debug("Is " + cleanUp + " contains " + regex);
 			found = cleanUp.matches(regex);
 			++i;
 		}
@@ -901,7 +947,7 @@ public class PigDictionary extends AbstractDictionary {
 			ok = true;
 			for (int i = 1; i < argsTypeExpected.length; ++i) {
 				ok &= check(argsTypeExpected[i],
-						getReturnType(args[i - 1], features));
+						getReturnType(returnFeature(args[i - 1]), features));
 			}
 		} else if (argsTypeExpected[argsTypeExpected.length - 1].isEmpty()
 				&& argsTypeExpected.length - 1 == args.length) {
@@ -909,13 +955,13 @@ public class PigDictionary extends AbstractDictionary {
 			ok = true;
 			for (int i = 0; i < argsTypeExpected.length - 1; ++i) {
 				ok &= check(argsTypeExpected[i],
-						getReturnType(args[i], features));
+						getReturnType(returnFeature(args[i]), features));
 			}
 		} else if (argsTypeExpected.length == args.length) {
 			ok = true;
 			for (int i = 0; i < argsTypeExpected.length; ++i) {
 				ok &= check(argsTypeExpected[i],
-						getReturnType(args[i], features));
+						getReturnType(returnFeature(args[i]), features));
 			}
 		}
 
@@ -971,7 +1017,6 @@ public class PigDictionary extends AbstractDictionary {
 		while (list.length > i) {
 			String regex = getRegexToFind(removeBracketContent(list[i][0]
 					.trim()));
-			logger.debug("equals? " + search + " " + regex);
 			if (search.matches(regex)) {
 				ans.add(list[i]);
 			}
@@ -985,7 +1030,6 @@ public class PigDictionary extends AbstractDictionary {
 
 	private List<String[]> findAllMethod(String expr, boolean aggregMethod) {
 		List<String[]> ans = null;
-		logger.debug("search aggregation method :"+ aggregMethod);
 		if (aggregMethod) {
 			ans = findAll(functionsMap.get(agregationMethods), expr);
 		} else {
@@ -993,7 +1037,7 @@ public class PigDictionary extends AbstractDictionary {
 			ans.addAll(findAll(functionsMap.get(mathMethods), expr));
 			ans.addAll(findAll(functionsMap.get(stringMethods), expr));
 		}
-		logger.debug("found results for : "+ expr + " with "+ans.size());
+		logger.debug("found results for : " + expr + " with " + ans.size());
 		return ans;
 	}
 

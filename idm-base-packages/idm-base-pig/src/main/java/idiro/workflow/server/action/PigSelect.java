@@ -46,12 +46,6 @@ public class PigSelect extends PigElement{
 				0,
 				this);
 
-//		typeOutputInt = new UserInteraction(
-//				"Output Type",
-//				"Setting the output type",
-//						DisplayType.list,
-//						2,
-//						0);
 		page1.addInteraction(tSelInt);
 		
 		page2 = addPage("Select",
@@ -73,17 +67,10 @@ public class PigSelect extends PigElement{
 				DisplayType.list,
 				2,
 				0);
-//		groupingInt = new PigGroupInteraction(
-//				key_grouping,
-//				"Please specify to group",
-//				DisplayType.appendList,
-//				0,
-//				1); 
 
 		page2.addInteraction(filterInt);
 		page2.addInteraction(delimiterOutputInt);
 		page2.addInteraction(savetypeOutputInt);
-//		page1.addInteraction(groupingInt);
 		
 	}
 	

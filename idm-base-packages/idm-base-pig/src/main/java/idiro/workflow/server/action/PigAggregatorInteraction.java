@@ -13,22 +13,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Interaction for storing/checking Pig Latin filter condition.
- * 
- * @author marcos
- * 
- */
-public class PigFilterInteraction extends UserInteraction {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 6688812502383438930L;
+public class PigAggregatorInteraction extends UserInteraction{
 
 	private PigElement el;
 
-	public PigFilterInteraction(String name, String legend, int column,
+	public PigAggregatorInteraction(String name, String legend, int column,
 			int placeInColumn, PigElement el, String key_in)
 			throws RemoteException {
 		super(name, legend, DisplayType.helpTextEditor, column, placeInColumn);
@@ -57,12 +46,10 @@ public class PigFilterInteraction extends UserInteraction {
 					logger.debug("aggregation set size : "+ aggregation.size());
 					type = PigDictionary.getInstance().getReturnType(
 							condition, el.getInFeatures(),aggregation);
-					if (type.equalsIgnoreCase("boolean")&& !aggregation.isEmpty()) {
-					}else{
-						msg = "The condition have to return a boolean not a "
+					if (aggregation.isEmpty()) {
+						msg = "The condition have to return a "
 								+ type;
 						logger.info(msg);
-						
 					}
 				}
 			}
@@ -86,15 +73,9 @@ public class PigFilterInteraction extends UserInteraction {
 			}
 			logger.info("trying to get editor");
 			Tree<String> base = null;
-			if (el.groupingInt != null) {
-				base = PigDictionary.generateEditor(PigDictionary.getInstance()
-						.createGroupSelectHelpMenu(), el.getInFeatures());
-
-			} else {
-
-				base = PigDictionary.generateEditor(PigDictionary.getInstance()
-						.createConditionHelpMenu(), el.getInFeatures());
-			}
+			base = PigDictionary.generateEditor(PigDictionary.getInstance()
+					.createGroupSelectHelpMenu(), el.getInFeatures());
+			
 			logger.info("editor ok");
 			base.add(output);
 			tree.add(base);
@@ -112,15 +93,6 @@ public class PigFilterInteraction extends UserInteraction {
 					.getFirstChild().getHead();
 		}
 		
-		String whereIn = getInputWhere();
-		if (!where.isEmpty()) {
-			if (!whereIn.isEmpty()) {
-				where = "(" + where + ") AND (" + whereIn + ")";
-			}
-			where = "FILTER " + relationName + " BY " + where;
-		} else if (!whereIn.isEmpty()) {
-			where = "FILTER " + relationName + " BY " + whereIn;
-		}
 		return where;
 	}
 	public String getQueryPieceGroup(String relationName) throws RemoteException {
@@ -138,7 +110,9 @@ public class PigFilterInteraction extends UserInteraction {
 				where = "(" + where + ") AND (" + whereIn + ")";
 			}
 			where = "FILTER " + relationName + " BY " + where;
-		} 
+		} else if (!whereIn.isEmpty()) {
+			where = "FILTER " + relationName + " BY " + whereIn;
+		}
 		return where;
 	}
 
@@ -159,22 +133,4 @@ public class PigFilterInteraction extends UserInteraction {
 		}
 		return where;
 	}
-
-	// public String getInputWhere(String relationName) throws RemoteException{
-	// String where = "";
-	// List<DFEOutput> out = el.getDFEInput().get(PigElement.key_input);
-	// Iterator<DFEOutput> it = out.iterator();
-	// HDFSInterface hi = new HDFSInterface();
-	// while(it.hasNext() && where.isEmpty()){
-	// DFEOutput cur = it.next();
-	// if(hi.getRelation(cur.getPath()).equalsIgnoreCase(relationName)){
-	// where = cur.getProperty("where");
-	// if(where == null){
-	// where = "";
-	// }
-	// }
-	// }
-	// return where;
-	// }
-
 }
