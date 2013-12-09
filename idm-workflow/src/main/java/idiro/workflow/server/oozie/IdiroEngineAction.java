@@ -8,15 +8,11 @@ import idiro.workflow.server.WorkflowPrefManager;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.fs.PathFilter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -113,9 +109,9 @@ public class IdiroEngineAction extends OozieActionAbs {
 						+ OozieManager.prop_namenode + "}"));
 				java.appendChild(arg1);
 
-				Element arg3 = oozieXmlDoc.createElement("arg");
+				/*Element arg3 = oozieXmlDoc.createElement("arg");
 				arg3.appendChild(oozieXmlDoc.createTextNode("-nologinit"));
-				java.appendChild(arg3);
+				java.appendChild(arg3);*/
 
 				Element arg2 = oozieXmlDoc.createElement("arg");
 				String[] filename = fileNames[0].split("/");
