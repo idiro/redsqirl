@@ -427,28 +427,7 @@ public class Source extends DataflowAction {
 				String subtype = getInteraction(key_datasubtype).getTree()
 						.getFirstChild("list").getFirstChild("output")
 						.getFirstChild().getHead();
-/*
-				Iterator<String> dataOutputClassName = WorkflowPrefManager
-						.getInstance()
-						.getNonAbstractClassesFromSuperClass(
-								DataOutput.class.getCanonicalName()).iterator();
 
-				DFEOutput dataOutput = null;
-				while (dataOutputClassName.hasNext()) {
-					String className = dataOutputClassName.next();
-					dataOutput = (DFEOutput) Class.forName(className)
-							.newInstance();
-					if (dataOutput.getTypeName().equalsIgnoreCase(subtype)) {
-						break;
-					} else {
-						dataOutput = null;
-					}
-
-				}
-
-				output.put(out_name, dataOutput);
-				output.get(out_name).setPath(path);
-*/
 				String delimiter = "#1";
 
 				try {

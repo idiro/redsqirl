@@ -42,9 +42,7 @@ import org.apache.log4j.Logger;
 public class CanvasModal extends BaseBean implements Serializable {
 
 	private static Logger logger = Logger.getLogger(CanvasModal.class);
-
 	private CanvasBean canvasBean;
-
 	private String list = "";
 	private String listOp = "";
 	private String selectedGenerator = "";
@@ -96,7 +94,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 	private String selectedTab;
 	private String showOutputForm;
 	private String hiveHdfs;
-
 	private Map<String, String> nameBrowserLabel1 = new HashMap<String, String>();
 	private Map<String, String> nameBrowserLabel2 = new HashMap<String, String>();
 	private String confirm = "N";
@@ -218,6 +215,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 		return false;
 	}
 
+
 	/**
 	 * checkNextPage
 	 * 
@@ -242,10 +240,10 @@ public class CanvasModal extends BaseBean implements Serializable {
 						+ dynamicF.getSelectedListOptions());
 				if (checkListvalue(dfi, dynamicF.getSelectedListOptions())) {
 					dynamicF.getTree().getFirstChild("list")
-							.getFirstChild("output").removeAllChildren();
+					.getFirstChild("output").removeAllChildren();
 					dynamicF.getTree().getFirstChild("list")
-							.getFirstChild("output")
-							.add(dynamicF.getSelectedListOptions());
+					.getFirstChild("output")
+					.add(dynamicF.getSelectedListOptions());
 				} else {
 					error.append(getMessageResources("msg_error_list_selected_value"));
 				}
@@ -253,33 +251,39 @@ public class CanvasModal extends BaseBean implements Serializable {
 			} else if (dynamicF.getDisplayType().equals(DisplayType.appendList)) {
 
 				dynamicF.getTree().getFirstChild("applist")
-						.getFirstChild("output").removeAllChildren();
+				.getFirstChild("output").removeAllChildren();
 				logger.info(dynamicF.getName() + "value list size-> "
 						+ dynamicF.getSelectedAppendListOptions().size());
 				for (String s : dynamicF.getSelectedAppendListOptions()) {
 					logger.info("appendList seleted: " + s);
 					dynamicF.getTree().getFirstChild("applist")
-							.getFirstChild("output").add("value").add(s);
+					.getFirstChild("output").add("value").add(s);
 				}
 
 			} else if (dynamicF.getDisplayType().equals(DisplayType.browser)) {
 
 				logger.info("Browser path -> " + dynamicF.getPathBrowser());
-				
+
 				String oldDelimiter = getDfe().getDFEOutput().get("source").getProperty("delimiter");
-				
+
 				dynamicF.getTree().getFirstChild("browse").getFirstChild("output").removeAllChildren();
 				dynamicF.getTree().getFirstChild("browse").getFirstChild("output").add("path").add(dynamicF.getPathBrowser());
 
 				for (ItemList itemList : dynamicF.getListGrid()) {
-					Tree<String> myProperty = dynamicF.getTree().getFirstChild("browse").getFirstChild("output").add("property");
-					myProperty.add(itemList.getProperty()).add(itemList.getValue());
+
+					String er = checkHeader(getDfe().getDFEOutput().get("source"), itemList);
+					if(er != null){
+						error.append(er);
+					}else{
+						
+						Tree<String> myProperty = dynamicF.getTree().getFirstChild("browse").getFirstChild("output").add("property");
+						myProperty.add(itemList.getProperty()).add(itemList.getValue());
+						getDfe().getDFEOutput().get("source").addProperty(itemList.getProperty(), itemList.getValue());
+					}
 					
-					getDfe().getDFEOutput().get("source").addProperty(itemList.getProperty(), itemList.getValue());
 				}
 
-				if (getHiveHdfs() != null
-						&& getHiveHdfs().equalsIgnoreCase("hive")) {
+				if (getHiveHdfs() != null && getHiveHdfs().equalsIgnoreCase("hive")) {
 					for (String nameValue : getBrowserNameFeatureColumns()) {
 						Tree<String> myFeature = dynamicF.getTree()
 								.getFirstChild("browse")
@@ -288,12 +292,13 @@ public class CanvasModal extends BaseBean implements Serializable {
 						myFeature.add("name").add(value[0]);
 						myFeature.add("type").add(value[1]);
 					}
-				} else if (getHiveHdfs() != null
-						&& getHiveHdfs().equalsIgnoreCase("hdfs")) {
+				} else if (getHiveHdfs() != null && getHiveHdfs().equalsIgnoreCase("hdfs")) {
 					for (String nameValue : getBrowserNameFeatureColumns()) {
 						Tree<String> myFeature = dynamicF.getTree()
 								.getFirstChild("browse")
 								.getFirstChild("output").add("feature");
+
+						logger.info("nameValue " + nameValue);
 
 						logger.info("update NameBrowserLabel = "
 								+ getNameBrowserLabel1().get(nameValue)
@@ -302,23 +307,22 @@ public class CanvasModal extends BaseBean implements Serializable {
 						logger.info(getNameBrowserLabel1());
 						logger.info(getNameBrowserLabel2());
 
-						myFeature.add("name").add(
-								getNameBrowserLabel1().get(nameValue));
-						myFeature.add("type").add(
-								getNameBrowserLabel2().get(nameValue));
+						myFeature.add("name").add(getNameBrowserLabel1().get(nameValue));
+						myFeature.add("type").add(getNameBrowserLabel2().get(nameValue));
+						
 					}
 				}
-				
+
+				//check and change delimiter
 				if (oldDelimiter != null && !oldDelimiter.equals(getDfe().getDFEOutput().get("source").getProperty("delimiter"))){
 					updateDFEOUtputTable(getDfe().getDFEOutput().get("source"),getDynamicFormBrowser());
 				}
 
-			} else if (dynamicF.getDisplayType().equals(
-					DisplayType.helpTextEditor)) {
-				dynamicF.getTree().getFirstChild("editor")
-						.getFirstChild("output").removeAllChildren();
-				dynamicF.getTree().getFirstChild("editor")
-						.getFirstChild("output").add(getCommand());
+			} else if (dynamicF.getDisplayType().equals(DisplayType.helpTextEditor)) {
+
+				dynamicF.getTree().getFirstChild("editor").getFirstChild("output").removeAllChildren();
+				dynamicF.getTree().getFirstChild("editor").getFirstChild("output").add(getCommand());
+
 			} else if (dynamicF.getDisplayType().equals(DisplayType.table)) {
 
 				dynamicF.getTree().getFirstChild("table").remove("row");
@@ -355,7 +359,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 			// or an output already exist
 			if (getListPageSize() - 1 == getListPosition()
 					|| (getDfe().getDFEOutput() != null && !getDfe()
-							.getDFEOutput().isEmpty())) {
+					.getDFEOutput().isEmpty())) {
 				getDfe().cleanThisAndAllElementAfter();
 				logger.info(" updateOut ");
 				e = getDfe().updateOut();
@@ -583,9 +587,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 				logger.info("got tree -> list -> values");
 				List<Tree<String>> list = values.getSubTreeList();
 				logger.info("got tree -> list -> values -> tree");
-//						.getFirstChild("list").getFirstChild("values")
-//						.getSubTreeList();
-				
+				//						.getFirstChild("list").getFirstChild("values")
+				//						.getSubTreeList();
+
 
 				logger.info("list value " + list);
 
@@ -626,9 +630,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 							logger.info("list value "
 									+ tree.getFirstChild().getHead());
 							selectItems
-									.add(new SelectItem(tree.getFirstChild()
-											.getHead(), tree.getFirstChild()
-											.getHead()));
+							.add(new SelectItem(tree.getFirstChild()
+									.getHead(), tree.getFirstChild()
+									.getHead()));
 						}
 						dynamicF.setAppendListOptions(selectItems);
 
@@ -651,7 +655,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 							List<String> listSelected = new ArrayList<String>();
 							for (Tree<String> tree : listOut) {
 								listSelected
-										.add(tree.getFirstChild().getHead());
+								.add(tree.getFirstChild().getHead());
 							}
 							dynamicF.setSelectedAppendListOptions(listSelected);
 						}
@@ -691,6 +695,13 @@ public class CanvasModal extends BaseBean implements Serializable {
 					setPathBrowser(mypath);
 					setDynamicFormBrowser(dynamicF);
 					changePathBrowser();
+				}
+				
+				//clean header value
+				for (ItemList itemList : dynamicF.getListGrid()) {
+					if(itemList.getProperty().equalsIgnoreCase("header") && itemList.getValue() != null && !"".equalsIgnoreCase(itemList.getValue())){
+						itemList.setValue("");
+					}
 				}
 
 			} else if (dfeInteraction.getDisplay().equals(
@@ -788,7 +799,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 							ans = ans
 									+ "\n\t"
 									+ it.next().toString()
-											.replaceAll("\n", "\n\t");
+									.replaceAll("\n", "\n\t");
 						}
 						logger.info(aux);
 						logger.info(ans);
@@ -854,7 +865,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 			}
 			getListConstraint().put(
 					dfeInteractionTree.getFirstChild("title").getFirstChild()
-							.getHead(), listFields);
+					.getHead(), listFields);
 		}
 	}
 
@@ -920,24 +931,24 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 						String nameFunction = tree2.getFirstChild("name")
 								.getFirstChild() != null ? tree2
-								.getFirstChild("name").getFirstChild()
-								.getHead() : "";
-						String inputFunction = tree2.getFirstChild("input")
-								.getFirstChild() != null ? tree2
-								.getFirstChild("input").getFirstChild()
-								.getHead() : "";
-						String returnFunction = tree2.getFirstChild("return")
-								.getFirstChild() != null ? tree2
-								.getFirstChild("return").getFirstChild()
-								.getHead() : "";
-						String helpFunction = tree2.getFirstChild("help")
-								.getFirstChild() != null ? tree2
-								.getFirstChild("help").getFirstChild()
-								.getHead() : "";
+										.getFirstChild("name").getFirstChild()
+										.getHead() : "";
+										String inputFunction = tree2.getFirstChild("input")
+												.getFirstChild() != null ? tree2
+														.getFirstChild("input").getFirstChild()
+														.getHead() : "";
+														String returnFunction = tree2.getFirstChild("return")
+																.getFirstChild() != null ? tree2
+																		.getFirstChild("return").getFirstChild()
+																		.getHead() : "";
+																		String helpFunction = tree2.getFirstChild("help")
+																				.getFirstChild() != null ? tree2
+																						.getFirstChild("help").getFirstChild()
+																						.getHead() : "";
 
-						mapOp.get(valueOperation[1]).add(
-								new String[] { nameFunction, inputFunction,
-										returnFunction,helpFunction});
+																						mapOp.get(valueOperation[1]).add(
+																								new String[] { nameFunction, inputFunction,
+																										returnFunction,helpFunction});
 					}
 
 				} else {
@@ -950,24 +961,24 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 						String nameFunction = tree2.getFirstChild("name")
 								.getFirstChild() != null ? tree2
-								.getFirstChild("name").getFirstChild()
-								.getHead() : "";
-						String inputFunction = tree2.getFirstChild("input")
-								.getFirstChild() != null ? tree2
-								.getFirstChild("input").getFirstChild()
-								.getHead() : "";
-						String returnFunction = tree2.getFirstChild("return")
-								.getFirstChild() != null ? tree2
-								.getFirstChild("return").getFirstChild()
-								.getHead() : "";
-						String helpFunction = tree2.getFirstChild("help")
-								.getFirstChild() != null ? tree2
-								.getFirstChild("help").getFirstChild()
-								.getHead() : "";
+										.getFirstChild("name").getFirstChild()
+										.getHead() : "";
+										String inputFunction = tree2.getFirstChild("input")
+												.getFirstChild() != null ? tree2
+														.getFirstChild("input").getFirstChild()
+														.getHead() : "";
+														String returnFunction = tree2.getFirstChild("return")
+																.getFirstChild() != null ? tree2
+																		.getFirstChild("return").getFirstChild()
+																		.getHead() : "";
+																		String helpFunction = tree2.getFirstChild("help")
+																				.getFirstChild() != null ? tree2
+																						.getFirstChild("help").getFirstChild()
+																						.getHead() : "";
 
-						map.get(tree.getHead()).add(
-								new String[] { nameFunction, inputFunction,
-										returnFunction, helpFunction });
+																						map.get(tree.getHead()).add(
+																								new String[] { nameFunction, inputFunction,
+																										returnFunction, helpFunction });
 					}
 
 				}
@@ -1047,7 +1058,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 		if (success){
 			if (getColumnEdit() != null) {
 				getListGrid().get(getRowEdit()).getNameValue()
-						.put(getColumnEdit(), getCommandEdit());
+				.put(getColumnEdit(), getCommandEdit());
 			} else {
 				setCommand(getCommandEdit());
 			}
@@ -1081,21 +1092,21 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public boolean checkTextEditor() throws RemoteException {
 
 		logger.info("checkTextEditor");
-		
+
 		boolean result = false;
-		
+
 		if (getColumnEdit() != null) {
 			for (int i = 0; i < getDynamicFormList().size(); i++) {
 
 				DynamicForm dynamicF = getDynamicFormList().get(i);
 				DFEInteraction dfi = getPage().getInteractions().get(i);
-	
+
 				if (dynamicF.getDisplayType().equals(DisplayType.table)) {
-			
+
 					logger.info("newCommand -> " + getCommandEdit());
 					String e = dfi.checkExpression(getCommandEdit(), null);
 					logger.info("error interaction ->  "+e);
-							
+
 					if (e != null && e.length() > 0) {
 						MessageUseful.addErrorMessage(e);
 						HttpServletRequest request = (HttpServletRequest) FacesContext
@@ -1106,7 +1117,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 						if (getConfirm() != null
 								&& !getConfirm().equalsIgnoreCase("S")) {
 							MessageUseful
-									.addInfoMessage(getMessageResources("success_message"));
+							.addInfoMessage(getMessageResources("success_message"));
 							HttpServletRequest request = (HttpServletRequest) FacesContext
 									.getCurrentInstance().getExternalContext()
 									.getRequest();
@@ -1123,7 +1134,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 				DynamicForm dynamicF = getDynamicFormList().get(i);
 				DFEInteraction dfi = getPage().getInteractions().get(i);
-	
+
 				if (dynamicF.getDisplayType().equals(DisplayType.helpTextEditor)) {
 					String oldCommand = null;
 					if (dfi.getTree().getFirstChild("editor")
@@ -1131,19 +1142,19 @@ public class CanvasModal extends BaseBean implements Serializable {
 						oldCommand = dfi.getTree().getFirstChild("editor")
 								.getFirstChild("output").getFirstChild().getHead();
 					}
-	
+
 					logger.info("oldCommand -> " + oldCommand);
 					logger.info("newCommand -> " + getCommandEdit());
-	
+
 					dfi.getTree().getFirstChild("editor").getFirstChild("output")
-							.removeAllChildren();
+					.removeAllChildren();
 					dfi.getTree().getFirstChild("editor").getFirstChild("output")
-							.add(getCommandEdit().trim());
-	
+					.add(getCommandEdit().trim());
+
 					String e = dfi.check();
-	
+
 					logger.info("error interaction -> " + e);
-	
+
 					if (e != null && e.length() > 0) {
 						MessageUseful.addErrorMessage(e);
 						HttpServletRequest request = (HttpServletRequest) FacesContext
@@ -1154,7 +1165,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 						if (getConfirm() != null
 								&& !getConfirm().equalsIgnoreCase("S")) {
 							MessageUseful
-									.addInfoMessage(getMessageResources("success_message"));
+							.addInfoMessage(getMessageResources("success_message"));
 							HttpServletRequest request = (HttpServletRequest) FacesContext
 									.getCurrentInstance().getExternalContext()
 									.getRequest();
@@ -1162,22 +1173,22 @@ public class CanvasModal extends BaseBean implements Serializable {
 						}
 						result = true;
 					}
-	
+
 					dfi.getTree().getFirstChild("editor").getFirstChild("output")
-							.removeAllChildren();
+					.removeAllChildren();
 					if (oldCommand != null) {
 						dfi.getTree().getFirstChild("editor")
-								.getFirstChild("output").add(oldCommand);
+						.getFirstChild("output").add(oldCommand);
 					}
 				}
 			}
 		}
-		
+
 		setConfirm("N");
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * changeFunctionsTextEditor
 	 * 
@@ -1356,9 +1367,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 			getDfe().getDFEOutput().get("source").isPathExists();
 
 			List<ItemList> listObjGrid = new ArrayList<ItemList>();
-			Map<String, String> outputPropertiesMap = getDfe().getDFEOutput()
-					.get("source").getProperties();
-			logger.info("outputPropertiesMap " + outputPropertiesMap);
+			Map<String, String> outputPropertiesMap = getDfe().getDFEOutput().get("source").getProperties();
+			logger.info("outputPropertiesMap -> " + outputPropertiesMap);
 
 			for (String value : outputPropertiesMap.keySet()) {
 
@@ -1400,14 +1410,268 @@ public class CanvasModal extends BaseBean implements Serializable {
 		}
 	}
 
-	protected void updateDFEOUtputTable(DFEOutput dfeOut,
-			DynamicForm dynamicForm) throws RemoteException {
+	private FeatureType getType(String expr){
+
+		FeatureType type = null;
+		if(expr.equalsIgnoreCase("TRUE")||
+				expr.equalsIgnoreCase("FALSE")){
+			type = FeatureType.BOOLEAN;
+		}
+		else{
+			try{
+				Integer.valueOf(expr);
+				type = FeatureType.INT;
+			}catch(Exception e){}
+			if(type == null){
+				try{
+					Long.valueOf(expr);
+					type = FeatureType.LONG;
+				}catch(Exception e){}
+			}
+			if(type == null){
+				try{
+					Float.valueOf(expr);
+					type = FeatureType.FLOAT;
+				}catch(Exception e){}
+			}
+			if(type == null){
+				try{
+					Double.valueOf(expr);
+					type = FeatureType.DOUBLE;
+				}catch(Exception e){}
+			}
+			if(type == null){
+				type = FeatureType.STRING;
+			}
+		}
+		logger.info("getType: "+expr + " - " + type);
+		return type;
+	}
+
+	/**
+	 * checkHeader
+	 * 
+	 * Method to check the new header
+	 * 
+	 * @return String msg error
+	 * @author Igor.Souza
+	 * @throws 
+	 */
+	public String checkHeader(DFEOutput dfeOut, ItemList itemList) {
+
+		String error = null;
+
+		if(getHiveHdfs() != null && getHiveHdfs().equalsIgnoreCase("hdfs")){
+
+			//check new header
+			if(itemList.getProperty().equalsIgnoreCase("header") && itemList.getValue() != null && !"".equalsIgnoreCase(itemList.getValue())){
+
+				String newLabels[] = itemList.getValue().split(",");
+
+				error = checkNewHeaderNames(newLabels);
+				if(error == null){
+
+					//logger.info("newLabels[] " + newLabels);
+
+					if(newLabels.length == getNameBrowserLabel2().size()){
+
+						Map<String, String> nameBrowserLabel1 = new HashMap<String, String>();
+						Map<String, String> nameBrowserLabel2 = new HashMap<String, String>();
+						List<String> browserNameFeatureColumns = new ArrayList<String>();
+
+						for (int j = 0; j < newLabels.length; j++) {
+
+							logger.info("newLabels[j] " + newLabels[j].trim());
+
+							String featureValue = ((ItemList)getListFeature().get(0)).getNameValue().get(getBrowserNameFeatureColumns().get(j));
+
+							if(featureValue != null){
+
+								FeatureType type = getType(featureValue);
+
+								if(newLabels[j].trim().split(" ").length > 1){
+
+									String valueNewLabels[] = newLabels[j].trim().split(" ");
+									String valueNewLabelsValue = valueNewLabels[0];
+									String valueNewLabelsType = valueNewLabels[1]; 
+
+									logger.info("nameBrowserLabel " + valueNewLabelsValue + " " +valueNewLabelsType);
+
+									if(type.toString().equalsIgnoreCase(valueNewLabelsType)){
+										nameBrowserLabel2.put(valueNewLabelsValue + " " +valueNewLabelsType, type.toString());
+									}else{
+										//erro type
+										error = getMessageResourcesWithParameter("msg_error_type_new_header", new Object[]{type.toString()});
+									}
+
+									nameBrowserLabel1.put(valueNewLabelsValue + " " +valueNewLabelsType, valueNewLabelsValue);
+									browserNameFeatureColumns.add(valueNewLabelsValue + " " +valueNewLabelsType);
+
+								}else{
+
+									nameBrowserLabel2.put(newLabels[j].trim() + " " +type.toString(), type.toString());
+									nameBrowserLabel1.put(newLabels[j].trim() + " " +type.toString(), newLabels[j].trim());
+									browserNameFeatureColumns.add(newLabels[j].trim() + " " + type.toString());
+
+								}
+
+							}else{
+								//error featureValue
+								error = getMessageResources("msg_error_generic_header");
+							}
+
+						}
+						
+						if(error == null){
+							
+							for (int j = 0; j < newLabels.length; j++) {
+								
+								String featureValue = ((ItemList)getListFeature().get(0)).getNameValue().get(getBrowserNameFeatureColumns().get(j));
+
+								if(featureValue != null){
+									
+									FeatureType type = getType(featureValue);
+									
+									if(newLabels[j].trim().split(" ").length > 1){
+										
+										String valueNewLabels[] = newLabels[j].trim().split(" ");
+										String valueNewLabelsValue = valueNewLabels[0];
+										String valueNewLabelsType = valueNewLabels[1];
+										
+										updateItemNameValueList(j, valueNewLabelsValue + " " +valueNewLabelsType);
+									}else{
+										updateItemNameValueList(j, newLabels[j].trim() + " " +type.toString());
+									}
+									
+								}else{
+									//error featureValue
+									error = getMessageResources("msg_error_generic_header");
+								}
+								
+							}
+
+							setNameBrowserLabel1(nameBrowserLabel1);
+							setNameBrowserLabel2(nameBrowserLabel2);
+							setBrowserNameFeatureColumns(browserNameFeatureColumns);
+							
+							logger.info("checkHeader update ");
+							
+						}
+
+					}else{
+						//erro size
+						error = getMessageResources("msg_error_size_new_header");
+					}
+
+				}
+
+			}
+
+		}
+		
+		logger.info("checkHeader error -> " + error);
+
+		return error;
+	}
+
+
+	/**
+	 * checkNewHeaderNames
+	 * 
+	 * Method to check the new header. 
+	 * checks if there are two of the same name. 
+	 * checks if the size is less than 30 characters
+	 * 
+	 * @return String msg error
+	 * @author Igor.Souza
+	 * @throws 
+	 */
+	public String checkNewHeaderNames(String newLabels[]){
+
+		String error = null;
+
+		for (int i = 0; i < newLabels.length; i++) {
+
+			String newValues[] = newLabels[i].trim().split(" ");
+			
+			if(newValues.length > 2){
+				error = getMessageResources("msg_error_name_header");
+			}
+			
+			if(newValues.length >1 && newValues[0].length() > 30){
+				error = getMessageResourcesWithParameter("msg_error_size_name_header", new Object[]{newValues[0]});
+			}else if(newLabels[i].trim().length() > 30){
+				error = getMessageResourcesWithParameter("msg_error_size_name_header", new Object[]{newLabels[i]});
+			}
+
+			String regex = "[a-zA-Z]+[a-zA-Z0-9_]*"; //[a-zA-Z]{1}[a-zA-Z0-9_]{0,29}
+			
+			if(newValues.length > 1){
+				if(!newValues[0].matches(regex)){
+					error = getMessageResourcesWithParameter("msg_error_name_header", new Object[]{newValues[0]});
+				}
+			}else if(!newLabels[i].trim().matches(regex)){
+				error = getMessageResourcesWithParameter("msg_error_name_header", new Object[]{newLabels[i]});
+			}
+
+			if(error == null){
+				//check if exist 2 names equal
+				for (int j = 0; j < newLabels.length; j++) {
+
+					if(newValues.length > 1){
+						String newValues2[] = newLabels[j].trim().split(" ");
+						if(newValues2.length > 1){
+							if(i != j && newValues2[0].equalsIgnoreCase(newValues[0])){
+								error = getMessageResourcesWithParameter("msg_error_same_name_header", new Object[]{newValues[0]});
+							}
+						}else{
+							error = getMessageResources("msg_error_name_header");
+						}
+					}else{
+						if(i != j && newLabels[i].trim().equalsIgnoreCase(newLabels[j].trim())){
+							error = getMessageResourcesWithParameter("msg_error_same_name_header", new Object[]{newLabels[i]});
+						}
+					}
+
+				}
+			}
+			
+		}
+
+		logger.info("checkNewHeaderNames error -> " + error);
+		
+		return error;
+	}
+
+	/**
+	 * updateItemNameValueList
+	 * 
+	 * Method to update the list of items used on the screen
+	 * 
+	 * @return
+	 * @author Igor.Souza
+	 * @throws 
+	 */
+	public void updateItemNameValueList(int j, String newKey){
+
+		for (ItemList item : getListFeature()) {
+			String featureValueOld = item.getNameValue().get(getBrowserNameFeatureColumns().get(j));
+			if(featureValueOld != null){
+				item.getNameValue().remove(getBrowserNameFeatureColumns().get(j));
+				item.getNameValue().put(newKey, featureValueOld);
+			}
+		}
+
+	}
+
+	protected void updateDFEOUtputTable(DFEOutput dfeOut, DynamicForm dynamicForm) throws RemoteException {
+
 		Map<String, String> nameValueFeature = new HashMap<String, String>();
 		List<ItemList> listObj = new ArrayList<ItemList>();
 
 		if (dfeOut.getFeatures() != null) {
-			List<String> outputFeatureList = dfeOut.getFeatures()
-					.getFeaturesNames();
+
+			List<String> outputFeatureList = dfeOut.getFeatures().getFeaturesNames();
 			List<String> labels = new ArrayList<String>();
 
 			Map<String, String> nameBrowserLabel1 = new HashMap<String, String>();
@@ -1418,22 +1682,17 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 				logger.info("outputFeatureNames " + outputFeature);
 
-				FeatureType featureType = dfeOut.getFeatures().getFeatureType(
-						outputFeature);
+				FeatureType featureType = dfeOut.getFeatures().getFeatureType(outputFeature);
 
 				logger.info("featureType " + featureType);
 
 				labels.add(outputFeature + " " + featureType.toString());
 
-				getBrowserNameFeatureColumns().add(
-						outputFeature + " " + featureType.toString());
+				getBrowserNameFeatureColumns().add(outputFeature + " " + featureType.toString());
 
-				nameBrowserLabel1.put(
-						outputFeature + " " + featureType.toString(),
-						outputFeature);
-				nameBrowserLabel2.put(
-						outputFeature + " " + featureType.toString(),
-						featureType.toString());
+				nameBrowserLabel1.put(outputFeature + " " + featureType.toString(),outputFeature);
+				nameBrowserLabel2.put(outputFeature + " " + featureType.toString(),featureType.toString());
+
 			}
 
 			setNameBrowserLabel1(nameBrowserLabel1);
@@ -1451,29 +1710,30 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 						logger.info("Hive or Hdfs " + getHiveHdfs());
 
-						if (getHiveHdfs() != null
-								&& getHiveHdfs().equalsIgnoreCase("hive")) {
+						if (getHiveHdfs() != null && getHiveHdfs().equalsIgnoreCase("hive")) {
+
 							String rows[] = output.split("'\001'");
 							for (int i = 0; i < rows.length; i++) {
 								logger.info("map to show " + labels.get(i)
 										+ " " + rows[i]);
 								nameValueFeature.put(labels.get(i), rows[i]);
-								nameValueFeatureItem
-										.put(labels.get(i), rows[i]);
+								nameValueFeatureItem.put(labels.get(i), rows[i]);
 							}
 						}else{
+
 							String delimiter = String.valueOf(Character.toChars(Integer.valueOf(dfeOut.getProperty("delimiter").substring(1))));
 							String rows[] = output.split(Pattern.quote(delimiter));
 							for (int i = 0; i < rows.length; i++) {
-								logger.info("map to show " + labels.get(i)
-										+ " " + rows[i]);
+								logger.info("map to show " + labels.get(i) + " " + rows[i]);
 								nameValueFeature.put(labels.get(i), rows[i]);
-								nameValueFeatureItem
-										.put(labels.get(i), rows[i]);
+								nameValueFeatureItem.put(labels.get(i), rows[i]);
+
 							}
+
 						}
 
 					}
+
 					ItemList item = new ItemList();
 					item.setSelected(false);
 					item.setNameValue(nameValueFeatureItem);
@@ -1481,15 +1741,15 @@ public class CanvasModal extends BaseBean implements Serializable {
 					listObj.add(item);
 
 					logger.info("new nameValueFeature " + nameValueFeature);
-					logger.info("new nameValueFeatureItem "
-							+ nameValueFeatureItem);
-					logger.info("getKeyAsListNameValueFeature "
-							+ getKeyAsListNameValueFeature());
+					logger.info("new nameValueFeatureItem "	+ nameValueFeatureItem);
+					logger.info("getKeyAsListNameValueFeature "	+ getKeyAsListNameValueFeature());
 
 				}
+
 				setNameValueFeature(nameValueFeature);
 				dynamicForm.setListFeature(listObj);
 				setListFeature(listObj);
+
 			}
 		}
 	}
@@ -1602,7 +1862,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 		setColumnEdit(column);
 
 		setCommandEdit(command);
-		
+
 		logger.info("row: "+rowKey);
 		logger.info("column: "+column);
 		logger.info("command: "+command);

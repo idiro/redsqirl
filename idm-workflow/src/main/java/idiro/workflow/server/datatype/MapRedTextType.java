@@ -42,6 +42,8 @@ public class MapRedTextType extends DataOutput{
 	private static final long serialVersionUID = 8260229620701006942L;
 
 	public final static String key_delimiter = "delimiter";
+	public final static String key_header = "header";
+	//public final static String key_delimiter_char = "delimiter_char";
 
 	protected static HDFSInterface hdfsInt;
 
@@ -331,11 +333,13 @@ public class MapRedTextType extends DataOutput{
 				if (getProperty(key_delimiter) == null){
 					String delimiter = getDefaultDelimiter(text);
 					super.addProperty(key_delimiter, delimiter);
+					super.addProperty(key_header, "");
 				}
 				else{
 					if (!text.contains(getProperty(key_delimiter))){
 						String delimiter = getDefaultDelimiter(text);
 						super.addProperty(key_delimiter, delimiter);
+						super.addProperty(key_header, "");
 					}
 				}
 			}

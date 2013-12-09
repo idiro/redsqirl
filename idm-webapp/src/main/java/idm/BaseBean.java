@@ -9,6 +9,7 @@ import idm.useful.IdmEntry;
 import idm.useful.MessageUseful;
 
 import java.rmi.RemoteException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -18,6 +19,7 @@ import java.util.ResourceBundle;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
+
 
 /** BaseBean
  * 
@@ -43,14 +45,13 @@ public class BaseBean {
 		Locale locale = facesContext.getViewRoot().getLocale();
 		ResourceBundle bundle = ResourceBundle.getBundle(messageBundleName, locale);
 		MessageUseful.addErrorMessage(bundle.getString(msg));
-
 	}
 	
 	/** getMessageResources
 	 * 
-	 * Methods retrieve message . Retrieves the message from aplication.properties
+	 * Methods retrieve message. Retrieves the message from aplication.properties
 	 * 
-	 * @return
+	 * @return string message
 	 * @author Igor.Souza
 	 */
 	public String getMessageResources(String msg){
@@ -60,7 +61,21 @@ public class BaseBean {
 		Locale locale = facesContext.getViewRoot().getLocale();
 		ResourceBundle bundle = ResourceBundle.getBundle(messageBundleName, locale);
 		return bundle.getString(msg);
-
+	}
+	
+	/** getMessageResourcesWithParameter
+	 * 
+	 * Methods retrieve message. Retrieves the message from aplication.properties with parameters
+	 * 
+	 * @return string message
+	 * @author Igor.Souza
+	 */
+	public static String getMessageResourcesWithParameter(String msgid, Object[] args){
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		String messageBundleName = facesContext.getApplication().getMessageBundle();
+		Locale locale = facesContext.getViewRoot().getLocale();
+		ResourceBundle bundle = ResourceBundle.getBundle(messageBundleName, locale);
+		return MessageFormat.format(bundle.getString(msgid), args);
 	}
 	
 	/** mapToList
