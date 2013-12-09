@@ -12,6 +12,8 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 
+import com.sun.faces.util.MessageFactory;
+
 
 /** MessageUseful
  * 
@@ -74,6 +76,17 @@ public class MessageUseful {
 	 */
 	public static void addErrorMessage(String id, String msg) {
 		FacesContext.getCurrentInstance().addMessage(id, new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, msg));
+	}
+	
+	/**
+	 * Add message of error(FacesMessage.SEVERITY_WARN) on request with parameters
+	 * 
+	 * @param id or <code>null</code> for global message
+	 * @param msg idmessage
+	 * @param arg array of parameters
+	 */
+	public static void addErrorMessageParameter(String id, String msg, Object[] arg) {
+		FacesContext.getCurrentInstance().addMessage(id, MessageFactory.getMessage(FacesContext.getCurrentInstance(), msg, arg));
 	}
 	
 	/**

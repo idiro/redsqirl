@@ -12,26 +12,12 @@
 <script	src='#{facesContext.externalContext.requestContextPath}/js/idm.js' type="text/javascript"></script>
 <script>
 
-	jQuery(document).on("click" , "a" ,function(e) {
-        console.log("kinda working");
-        jQuery("#helpIndex").hide();
-        console.log(jQuery.get(jQuery(this).attr("href")));
-        //jQuery.get( jQuery(this).attr("href"), function( data ) {
-        	//var body = jQuery(data);
-        console.log(jQuery(this).attr("href")+ ' #body');
-        	//jQuery( "#helpPanel" ).append( jQuery(data).html() );
-        //});
-        jQuery("#helpPanel").load(jQuery(this).attr("href")+ " #body");
-        jQuery("#btIndex").show();
-    });
-	
-	jQuery(document).on("click", "#btIndex", function(e) {
-        jQuery("#helpIndex").show();
-        jQuery("#helpPanel").empty();
-        jQuery("#btIndex").hide();
+	jQuery(document).on("click" , "stopLink a" ,function(e) {
+	    jQuery("#helpIndex").hide();
+	    jQuery("#helpPanel").load(jQuery(this).attr("href")+ " #body");
+	    jQuery("#btIndex").show();
 	});
-	jQuery(document).ready(function ($) {
-});
+	
 </script>
 </head>
 

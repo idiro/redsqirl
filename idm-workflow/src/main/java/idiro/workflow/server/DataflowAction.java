@@ -163,7 +163,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 				}
 			}
 		}
-		if (ans != null && ans.isEmpty()) {
+		if(ans != null && (ans.isEmpty() || ans.equalsIgnoreCase("null")) ) {
 			ans = null;
 		}
 		logger.debug("Check Entry: "+ans);
