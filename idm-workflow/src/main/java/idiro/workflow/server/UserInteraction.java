@@ -9,10 +9,8 @@ import idiro.workflow.server.interfaces.DFEInteractionChecker;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.DOMException;
@@ -197,87 +195,11 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	public final String getName() {
 		return name;
 	}
-
-	public String getValueFromList(){
-		String ans = null;
-		if(display == DisplayType.list){
-			try{
-				ans = getTree().getFirstChild("list").getFirstChild("output").getFirstChild().getHead();
-			}catch(Exception e){
-				logger.error("Tree structure incorrect");
-			}
-		}
-		return ans;
-	}
-
-
-	public List<String> getValuesFromAppList(){
-		List<String> values = null;
-		if(display == DisplayType.appendList){
-			values = new LinkedList<String>();
-			List<Tree<String>> lRow = null;
-			Iterator<Tree<String>> rows = null;
-			try{
-				lRow = getTree()
-						.getFirstChild("applist").getFirstChild("output").getChildren("value");
-				rows = lRow.iterator();
-				while(rows.hasNext()){
-					values.add(rows.next().getFirstChild().getHead());
-				}
-			}catch(Exception e){
-				values = null;
-				logger.error("Tree structure incorrect");
-			}
-		}
-		return values;
-	}
 	
-	public String getValueFromEditor(){
-		String ans = null;
-		if(display == DisplayType.helpTextEditor){
-			try{
-				ans = getTree().getFirstChild("editor").getFirstChild("output").getFirstChild().getHead();
-			}catch(Exception e){
-				logger.error("Tree structure incorrect");
-			}
-		}
-		return ans;
-	}
 	
-	public List<Map<String,String>> getValuesFromTable(){
-		List<Map<String,String>> values = null;
-		if(display == DisplayType.appendList){
-			values = new LinkedList<Map<String,String>>();
-			List<Tree<String>> lRow = null;
-			Iterator<Tree<String>> rows = null;
-			try{
-				lRow = getTree()
-						.getFirstChild("table").getChildren("row"); 
-				rows = lRow.iterator();
-				while(rows.hasNext()){
-					Tree<String> row = rows.next();
-					Map<String,String> curMap = new LinkedHashMap<String,String>();
-					Iterator<Tree<String>> lColRowIt = row.getSubTreeList().iterator();
-					while(lColRowIt.hasNext()){
-						Tree<String> lColRow = lColRowIt.next();
-						String colName = lColRow.getHead();
-						String colValue = lColRow.getFirstChild().getHead();
-						curMap.put(colName, colValue);
-					}
-					if(!curMap.isEmpty()){
-						values.add(curMap);
-					}
-				}
-			}catch(Exception e){
-				values = null;
-				logger.error("Tree structure incorrect");
-			}
-		}
-		return values;
-	}
 
 
-	public List<String> getPossibleValuesFromList(){
+	protected List<String> getPossibleValuesFromList(){
 		List<String> possibleValues = null;
 		if(display == DisplayType.list || display == DisplayType.appendList){
 			possibleValues = new LinkedList<String>();
@@ -303,7 +225,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 		return possibleValues;
 	}
 
-	public String checkList(){
+	protected String checkList(){
 		String error = null;
 		if(display != DisplayType.list){
 			logger.warn(getName()+" is not a list.");
@@ -323,7 +245,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 		return error;
 	}
 
-	public String checkAppendList(){
+	protected String checkAppendList(){
 		String error = null;
 		if(display != DisplayType.appendList){
 			logger.warn(getName()+" is not a list.");
