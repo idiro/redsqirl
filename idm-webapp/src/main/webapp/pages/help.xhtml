@@ -12,10 +12,16 @@
 <script	src='#{facesContext.externalContext.requestContextPath}/js/idm.js' type="text/javascript"></script>
 <script>
 
-	jQuery(document).on("click" , "stopLink a" ,function(e) {
+	jQuery(document).on("click" , "#stopLink" ,function(e) {
 	    jQuery("#helpIndex").hide();
 	    jQuery("#helpPanel").load(jQuery(this).attr("href")+ " #body");
 	    jQuery("#btIndex").show();
+	});
+
+	jQuery(document).on("click", "#btIndex", function(e) {
+	    jQuery("#helpIndex").show();
+	    jQuery("#helpPanel").empty();
+	    jQuery("#btIndex").hide();
 	});
 	
 </script>

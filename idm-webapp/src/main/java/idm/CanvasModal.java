@@ -911,7 +911,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 			// does not open pop up in text editor
 			setOpenPopUp("N");
 		}
-		setOpenPopUp("N");
 		
 		setListItensTable(listCategories);
 		setListItensTableOperation(listCategoriesOperation);
@@ -993,7 +992,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 			// does not open pop up in text editor
 			setOpenPopUp("N");
 		}
-		setOpenPopUp("N");
 
 		setFunctionsMap(map);
 		setOperationMap(mapOp);
