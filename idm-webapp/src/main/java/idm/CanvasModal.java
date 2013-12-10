@@ -1501,7 +1501,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 										nameBrowserLabel2.put(valueNewLabelsValue + " " +valueNewLabelsType, type.toString());
 									}else{
 										//erro type
-										error = getMessageResourcesWithParameter("msg_error_type_new_header", new Object[]{type.toString()});
+										error = getMessageResourcesWithParameter("msg_error_type_new_header", new Object[]{valueNewLabelsType});
 									}
 
 									nameBrowserLabel1.put(valueNewLabelsValue + " " +valueNewLabelsType, valueNewLabelsValue);
