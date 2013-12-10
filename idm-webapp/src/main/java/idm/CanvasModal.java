@@ -97,6 +97,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	private Map<String, String> nameBrowserLabel1 = new HashMap<String, String>();
 	private Map<String, String> nameBrowserLabel2 = new HashMap<String, String>();
 	private String confirm = "N";
+	private String openPopUp = "S";
 
 	/**
 	 * getKeyAsListNameValue
@@ -349,7 +350,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 		}
 
 		String e = getPage().checkPage();
-
 		logger.info("error page -> " + e);
 		if (e != null) {
 			error.append(e);
@@ -707,6 +707,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 			} else if (dfeInteraction.getDisplay().equals(
 					DisplayType.helpTextEditor)) {
 				setCommand("");
+				
 				if (dfeInteraction.getTree().getFirstChild("editor")
 						.getFirstChild("output").getFirstChild() != null) {
 					setCommand(dfeInteraction.getTree().getFirstChild("editor")
@@ -873,6 +874,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 
 	private void mountHelpTextEditorInteraction(Tree<String> dfeInteractionTree) throws RemoteException{
+		
 		List<Entry<String, String>> listFields = new ArrayList<Entry<String, String>>();
 		List<Tree<String>> list = dfeInteractionTree.getFirstChild("editor").getFirstChild("keywords").getSubTreeList();
 		if(list != null){
@@ -888,8 +890,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 		List<SelectItem> listCategories = new ArrayList<SelectItem>();
 		List<SelectItem> listCategoriesOperation = new ArrayList<SelectItem>();
-		list = dfeInteractionTree.getFirstChild("editor").getFirstChild("help")
-				.getSubTreeList();
+		list = dfeInteractionTree.getFirstChild("editor").getFirstChild("help").getSubTreeList();
 		if (list != null) {
 			logger.info("list not null: " + list.toString());
 			for (Tree<String> tree : list) {
@@ -906,14 +907,18 @@ public class CanvasModal extends BaseBean implements Serializable {
 					listCategories.add(e);
 				}
 			}
+		}else{
+			// does not open pop up in text editor
+			setOpenPopUp("N");
 		}
+		setOpenPopUp("N");
+		
 		setListItensTable(listCategories);
 		setListItensTableOperation(listCategoriesOperation);
 
 		Map<String, List<String[]>> map = new HashMap<String, List<String[]>>();
 		Map<String, List<String[]>> mapOp = new HashMap<String, List<String[]>>();
-		list = dfeInteractionTree.getFirstChild("editor").getFirstChild("help")
-				.getSubTreeList();
+		list = dfeInteractionTree.getFirstChild("editor").getFirstChild("help").getSubTreeList();
 		if (list != null) {
 			logger.info("list not null: " + list.toString());
 			for (Tree<String> tree : list) {
@@ -984,7 +989,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 				}
 
 			}
+		}else{
+			// does not open pop up in text editor
+			setOpenPopUp("N");
 		}
+		setOpenPopUp("N");
 
 		setFunctionsMap(map);
 		setOperationMap(mapOp);
@@ -2352,6 +2361,14 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 */
 	public void setDynamicFormDataOutput(DynamicForm dynamicFormDataOutput) {
 		this.dynamicFormDataOutput = dynamicFormDataOutput;
+	}
+
+	public String getOpenPopUp() {
+		return openPopUp;
+	}
+
+	public void setOpenPopUp(String openPopUp) {
+		this.openPopUp = openPopUp;
 	}
 
 }

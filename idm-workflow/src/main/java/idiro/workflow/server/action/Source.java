@@ -173,6 +173,7 @@ public class Source extends DataflowAction {
 
 			@Override
 			public String check(DFEPage page) throws RemoteException {
+			
 				String error = null;
 				try {
 					//Add properties
