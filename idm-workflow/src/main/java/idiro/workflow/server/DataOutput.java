@@ -194,6 +194,11 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 	}
 	
 	@Override
+	public void removeAllProperties(){
+		dataProperty.clear();
+	}
+	
+	@Override
 	public String clean() throws RemoteException{
 		String err = null;
 		if(savingState != SavingState.RECORDED && isPathExists()){

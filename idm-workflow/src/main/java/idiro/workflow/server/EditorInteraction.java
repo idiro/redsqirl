@@ -46,7 +46,7 @@ public class EditorInteraction extends UserInteraction{
 			editor = tree.add("editor");
 			editor.add("output");
 			editor.add("keywords");
-			editor.add("help");
+			//editor.add("help");
 		}
 	}
 	

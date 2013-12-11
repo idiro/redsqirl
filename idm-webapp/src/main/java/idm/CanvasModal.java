@@ -229,7 +229,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public String checkNextPage() throws RemoteException {
 
 		StringBuffer error = new StringBuffer();
-
+		DynamicForm browserDF = null;
 		for (int i = 0; i < getDynamicFormList().size(); i++) {
 
 			DynamicForm dynamicF = getDynamicFormList().get(i);
@@ -264,8 +264,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 			} else if (dynamicF.getDisplayType().equals(DisplayType.browser)) {
 
 				logger.info("Browser path -> " + dynamicF.getPathBrowser());
-
-				String oldDelimiter = getDfe().getDFEOutput().get("source").getProperty("delimiter");
+				browserDF = dynamicF;
 
 				dynamicF.getTree().getFirstChild("browse").getFirstChild("output").removeAllChildren();
 				dynamicF.getTree().getFirstChild("browse").getFirstChild("output").add("path").add(dynamicF.getPathBrowser());
@@ -279,7 +278,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 						
 						Tree<String> myProperty = dynamicF.getTree().getFirstChild("browse").getFirstChild("output").add("property");
 						myProperty.add(itemList.getProperty()).add(itemList.getValue());
-						getDfe().getDFEOutput().get("source").addProperty(itemList.getProperty(), itemList.getValue());
 					}
 					
 				}
@@ -312,11 +310,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 						myFeature.add("type").add(getNameBrowserLabel2().get(nameValue));
 						
 					}
-				}
-
-				//check and change delimiter
-				if (oldDelimiter != null && !oldDelimiter.equals(getDfe().getDFEOutput().get("source").getProperty("delimiter"))){
-					updateDFEOUtputTable(getDfe().getDFEOutput().get("source"),getDynamicFormBrowser());
 				}
 
 			} else if (dynamicF.getDisplayType().equals(DisplayType.helpTextEditor)) {
@@ -355,6 +348,10 @@ public class CanvasModal extends BaseBean implements Serializable {
 			error.append(e);
 			error.append(System.getProperty("line.separator"));
 		} else {
+			if (browserDF != null){
+				//Update table
+				updateDFEOUtputTable(getDfe().getDFEOutput().get("source"),getDynamicFormBrowser());
+			}
 			// Update output only if it is the last page
 			// or an output already exist
 			if (getListPageSize() - 1 == getListPosition()
@@ -876,8 +873,13 @@ public class CanvasModal extends BaseBean implements Serializable {
 	private void mountHelpTextEditorInteraction(Tree<String> dfeInteractionTree) throws RemoteException{
 		
 		List<Entry<String, String>> listFields = new ArrayList<Entry<String, String>>();
-		List<Tree<String>> list = dfeInteractionTree.getFirstChild("editor").getFirstChild("keywords").getSubTreeList();
-		if(list != null){
+		List<Tree<String>> list = null;
+		try{
+			list = dfeInteractionTree.getFirstChild("editor").getFirstChild("keywords").getSubTreeList();
+		}catch(Exception e){
+			list = null;
+		}
+		if(list != null && ! list.isEmpty()){
 			logger.info("list not null: "+list.toString());
 			for (Tree<String> tree : list) {
 				logger.info("list value " + tree.getFirstChild().getHead());
@@ -890,7 +892,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 		List<SelectItem> listCategories = new ArrayList<SelectItem>();
 		List<SelectItem> listCategoriesOperation = new ArrayList<SelectItem>();
-		list = dfeInteractionTree.getFirstChild("editor").getFirstChild("help").getSubTreeList();
+		try{
+			list = dfeInteractionTree.getFirstChild("editor").getFirstChild("help").getSubTreeList();
+		}catch(Exception e){
+			list = null;
+		}
 		if (list != null) {
 			logger.info("list not null: " + list.toString());
 			for (Tree<String> tree : list) {
@@ -917,8 +923,12 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 		Map<String, List<String[]>> map = new HashMap<String, List<String[]>>();
 		Map<String, List<String[]>> mapOp = new HashMap<String, List<String[]>>();
-		list = dfeInteractionTree.getFirstChild("editor").getFirstChild("help").getSubTreeList();
-		if (list != null) {
+		try{
+			list = dfeInteractionTree.getFirstChild("editor").getFirstChild("help").getSubTreeList();
+		}catch(Exception e){
+			list = null;
+		}
+		if (list != null  && ! list.isEmpty()) {
 			logger.info("list not null: " + list.toString());
 			for (Tree<String> tree : list) {
 				logger.info("list value " + tree.getHead());

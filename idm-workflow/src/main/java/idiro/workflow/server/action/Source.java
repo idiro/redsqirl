@@ -128,7 +128,6 @@ public class Source extends DataflowAction {
 								.newInstance();
 						if (outNew.getTypeName().equalsIgnoreCase(subtype)) {
 							break;
-
 						} else {
 							outNew = null;
 						}
@@ -141,16 +140,13 @@ public class Source extends DataflowAction {
 								!output.get(out_name).getTypeName().equalsIgnoreCase(subtype)) {
 							logger.info("output set");
 							output.put(out_name, (DFEOutput) outNew);
+							//Set the Output as RECORDED ALWAYS
+							output.get(out_name).setSavingState(
+									SavingState.RECORDED);
 						}
 					} else {
 						error = "The user have to make  choice";
 						logger.error(error);
-					}
-
-					//Set the Output as RECORDED ALWAYS
-					if (output.get(out_name) != null) {
-						output.get(out_name).setSavingState(
-								SavingState.RECORDED);
 					}
 
 				} catch (Exception e) {
@@ -173,9 +169,26 @@ public class Source extends DataflowAction {
 
 			@Override
 			public String check(DFEPage page) throws RemoteException {
-			
+
 				String error = null;
+				DFEOutput out = null;
+				try{
+					out = output.get(out_name);
+				}catch(Exception e){
+					error = "Output cannot be null";
+				}
 				try {
+					//Set path to null to avoid unnecessary check
+					if(error == null){
+						try{
+							out.setPath(null);
+							out.setFeatures(null);
+							out.removeAllProperties();
+						}catch(Exception e){
+							error = "Error reseting output";
+						}
+					}
+
 					//Add properties
 					if (error == null) {
 						try{
@@ -187,61 +200,78 @@ public class Source extends DataflowAction {
 								Tree<String> prop = itProp.next();
 								String name = prop.getHead();
 								String value = prop.getFirstChild().getHead();
-								output.get(out_name).addProperty(name, value);
+								out.addProperty(name, value);
 							}	
 						}catch(Exception e){
 							logger.debug("No properties");
 						}
 					}
 
-					List<Tree<String>> features =  getInteraction(key_dataset)
-							.getTree().getFirstChild("browse").getFirstChild("output")
-							.getChildren("feature");
-					if(features == null || features.isEmpty()){
-						error = "The list of features cannot be null or empty";
-					}else{
-						FeatureList out = new OrderedFeatureList();
-
-						for (Iterator<Tree<String>> iterator =features.iterator(); iterator.hasNext();) {
-							Tree<String> cur = iterator.next();
-
-							String name = cur.getFirstChild("name").getFirstChild()
-									.getHead();
-							String type = cur.getFirstChild("type").getFirstChild()
-									.getHead();
-
-							logger.info("updateOut name " + name);
-							logger.info("updateOut type " + type);
-
-							try {
-								out.addFeature(name, FeatureType.valueOf(type));
-							} catch (Exception e) {
-								error = "The type " + type + " does not exist";
+					//Check path
+					if(error == null){
+						try{
+							String path = getInteraction(key_dataset).getTree()
+									.getFirstChild("browse").getFirstChild("output")
+									.getFirstChild("path").getFirstChild().getHead();
+							if (path.isEmpty()) {
+								error = "Path cannot be empty";
+							}else{
+								out.setPath(path);
 							}
-
+						}catch(Exception e){
+							error = "A path have to be specified";
 						}
-						output.get(out_name).setFeatures(out);
 					}
 
-					//Check path
-					String path = getInteraction(key_dataset).getTree()
-							.getFirstChild("browse").getFirstChild("output")
-							.getFirstChild("path").getFirstChild().getHead();
-					if (path.isEmpty()) {
-						error = "Path cannot be empty";
-					} else {
 
-						if(output.get(out_name) == null){
-							error = "The output is null!";
-							logger.error(error);
-							return error;
-						}
-						output.get(out_name).setPath(path);
+					//Set features
+					if(error == null){
 						try{
-							if(!output.get(out_name).isPathExists()){
+							List<Tree<String>> features =  getInteraction(key_dataset)
+									.getTree().getFirstChild("browse").getFirstChild("output")
+									.getChildren("feature");
+							if(features == null || features.isEmpty()){
+								logger.warn("The list of features cannot be null or empty, could be calculated automatically from the path");
+							}else{
+								FeatureList outF = new OrderedFeatureList();
+
+								for (Iterator<Tree<String>> iterator =features.iterator(); iterator.hasNext();) {
+									Tree<String> cur = iterator.next();
+
+									String name = cur.getFirstChild("name").getFirstChild()
+											.getHead();
+									String type = cur.getFirstChild("type").getFirstChild()
+											.getHead();
+
+									logger.info("updateOut name " + name);
+									logger.info("updateOut type " + type);
+
+									try {
+										outF.addFeature(name, FeatureType.valueOf(type));
+									} catch (Exception e) {
+										error = "The type " + type + " does not exist";
+									}
+
+								}
+								//Update the feature list only if it looks good
+								String warn = out.checkFeatures(outF); 
+								if(warn == null){
+									out.setFeatures(outF);
+								}else{
+									logger.info(warn);
+								}
+							}
+						}catch(Exception e){
+							error = "Error in the tree";
+						}
+					}
+
+					if(error == null){
+						try{
+							if(!out.isPathExists()){
 								error = "The path does not exist";
-							}else if(output.get(out_name).isPathValid() != null){
-								error = "The path is not valid: "+output.get(out_name).isPathValid();
+							}else if(out.isPathValid() != null){
+								error = "The path is not valid: "+out.isPathValid();
 							}
 						}catch(Exception e){
 							error = "Fail to check the existence or the validity of the path: "+e;
