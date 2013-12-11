@@ -219,7 +219,7 @@ public class Source extends DataflowAction {
 								out.setPath(path);
 							}
 						}catch(Exception e){
-							error = "A path have to be specified";
+							error = "Error when setting the path: "+e.getMessage();
 						}
 					}
 

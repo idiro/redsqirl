@@ -37,7 +37,7 @@ public class HiveType extends DataOutput{
 	private static final long serialVersionUID = -4797761333298548415L;
 	protected static HiveInterface hInt;
 	public static final String key_partitions = "key_partitions";
-//	public static final String key_alias = "alias";
+	//	public static final String key_alias = "alias";
 	private boolean constant; 
 
 	public HiveType() throws RemoteException {
@@ -45,7 +45,7 @@ public class HiveType extends DataOutput{
 		if(hInt == null){
 			hInt = new HiveInterface();
 		}
-//		addProperty(key_alias,"");
+		//		addProperty(key_alias,"");
 		setConstant(true);
 	}
 
@@ -55,7 +55,7 @@ public class HiveType extends DataOutput{
 			hInt = new HiveInterface();
 		}
 	}
-	
+
 
 	@Override
 	public String getTypeName() throws RemoteException {
@@ -66,7 +66,7 @@ public class HiveType extends DataOutput{
 	public DataBrowser getBrowser() throws RemoteException {
 		return DataBrowser.HIVE;
 	}
-	
+
 	@Override
 	public String remove() throws RemoteException {
 		return hInt.delete(getPath());
@@ -148,7 +148,7 @@ public class HiveType extends DataOutput{
 	public void setConstant(boolean constant) {
 		this.constant = constant;
 	}
-	
+
 	private void generateFeaturesMap(String table) throws RemoteException{
 		features = new OrderedFeatureList();
 		String[] lines = hInt.getDescription(hInt.getTableAndPartitions(table)[0]).split(";");
@@ -162,12 +162,14 @@ public class HiveType extends DataOutput{
 			}
 		}
 	}
-	
+
 	@Override
 	public void setPath(String path) throws RemoteException {
 		super.setPath(path);
-		if (!path.equals("/") && isPathExists()){
-			generateFeaturesMap(path);
+		if(path != null){
+			if (!path.equals("/") && isPathExists()){
+				generateFeaturesMap(path);
+			}
 		}
 	}
 

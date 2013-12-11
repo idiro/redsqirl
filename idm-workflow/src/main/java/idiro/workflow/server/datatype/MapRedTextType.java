@@ -54,6 +54,7 @@ public class MapRedTextType extends DataOutput{
 		if(hdfsInt == null){
 			hdfsInt = new HDFSInterface();
 		}
+		//addProperty(key_header, "");
 	}
 
 	public MapRedTextType(FeatureList features) throws RemoteException {
@@ -61,6 +62,7 @@ public class MapRedTextType extends DataOutput{
 		if(hdfsInt == null){
 			hdfsInt = new HDFSInterface();
 		}
+		//addProperty(key_header, "");
 	}
 
 	@Override
@@ -194,6 +196,65 @@ public class MapRedTextType extends DataOutput{
 			}
 		}
 		return ans;
+	}
+	
+	private String setFeaturesFromHeader() throws RemoteException {
+		String header = getProperty(key_header);
+		String error = null;
+
+		if(header != null && !header.isEmpty()){
+
+			String newLabels[] = header.split(",");
+			FeatureList newFL = new OrderedFeatureList();
+			try{
+				if(newLabels[0].trim().split("\\s+").length > 1){
+					for (int j = 0; j < newLabels.length && error == null; j++) {
+						String label = newLabels[j].trim();
+						String[] nameType = label.split("\\s+");
+						if(nameType.length !=2){
+							error = "The header have to contains name and type paired";
+						}else{
+							newFL.addFeature(nameType[0], FeatureType.valueOf(nameType[1]));
+						}
+					}
+				}else{
+					if(features.getSize() != newLabels.length){
+						error = "The number of labels and the number of column are different";
+					}else{
+						Iterator<String> it = features.getFeaturesNames().iterator();
+						int j = 0;
+						while(it.hasNext()){
+							String featName = it.next();
+							newFL.addFeature(newLabels[j].trim(),features.getFeatureType(featName));
+							++j;
+						}
+					}
+				}
+			}catch(Exception e){
+				logger.error(e);
+				error = "Type unknown";
+			}
+
+			if(error == null){
+				error = checkFeatures(newFL);
+			}
+
+			if(error == null){
+				setFeatures(newFL);
+			}else{
+				removeProperty(key_header);
+			}
+
+		}
+
+		return error;
+	}
+	
+	@Override
+	public void setFeatures(FeatureList fl){
+		if(getProperty(key_header) == null || getProperty(key_header).trim().isEmpty()){
+			super.setFeatures(fl);
+		}
 	}
 
 	private void generateFeaturesMap() throws RemoteException{
@@ -332,17 +393,20 @@ public class MapRedTextType extends DataOutput{
 					if (getProperty(key_delimiter) == null){
 						String delimiter = getDefaultDelimiter(text);
 						super.addProperty(key_delimiter, delimiter);
-						super.addProperty(key_header, "");
 					}
 					else{
 						if (!text.contains(getChar(getProperty(key_delimiter)))){
 							String delimiter = getDefaultDelimiter(text);
 							super.addProperty(key_delimiter, delimiter);
-							super.addProperty(key_header, "");
+							
 						}
 					}
 				}
 				generateFeaturesMap();
+				String error = setFeaturesFromHeader();
+				if(error != null){
+					throw new RemoteException(error);
+				}
 			}
 		}
 
@@ -368,7 +432,7 @@ public class MapRedTextType extends DataOutput{
 			}
 		}
 		return error;
-	}
+	}	
 
 	private String generateColumnName(int columnIndex){
 		if (columnIndex > 25){
