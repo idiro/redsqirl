@@ -686,13 +686,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 					setDynamicFormBrowser(dynamicF);
 					changePathBrowser();
 				}
-				
-				//clean header value
-				for (ItemList itemList : dynamicF.getListGrid()) {
-					if(itemList.getProperty().equalsIgnoreCase("header") && itemList.getValue() != null && !"".equalsIgnoreCase(itemList.getValue())){
-						itemList.setValue("");
-					}
-				}
 
 			} else if (dfeInteraction.getDisplay().equals(
 					DisplayType.helpTextEditor)) {
