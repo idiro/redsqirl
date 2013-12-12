@@ -235,13 +235,13 @@ public class MapRedTextType extends DataOutput{
 				error = "Type unknown";
 			}
 
-			if(error == null){
+			if(error == null  && !newFL.getFeaturesNames().isEmpty()){
 				error = checkFeatures(newFL);
 			}
 
-			if(error == null){
+			if(error == null && !newFL.getFeaturesNames().isEmpty()){
 				setFeatures(newFL);
-			}else{
+			}else if(error != null){
 				removeProperty(key_header);
 			}
 
