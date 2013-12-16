@@ -62,18 +62,18 @@ public class TableSelectInteraction extends UserInteraction{
 		}
 
 		Set<String> featGrouped = new HashSet<String>();
-		if(! hs.getGroupingInt().getTree()
-				.getFirstChild("applist").getFirstChild("output").getSubTreeList().isEmpty()
-				&&
-				! hs.getGroupingInt().getTree()
-				.getFirstChild("applist").getFirstChild("output")
-				.getChildren("value").isEmpty()
-				){
-			Iterator<Tree<String>> it = hs.getGroupingInt().getTree()
-					.getFirstChild("applist").getFirstChild("output")
-					.getChildren("value").iterator();
-			while(it.hasNext()){
-				featGrouped.add(it.next().getFirstChild().getHead());
+		if(hs.getGroupingInt() != null){
+			if (!hs.getGroupingInt().getTree().getFirstChild("applist")
+					.getFirstChild("output").getSubTreeList().isEmpty()
+					&& !hs.getGroupingInt().getTree().getFirstChild("applist")
+							.getFirstChild("output").getChildren("value")
+							.isEmpty()) {
+				Iterator<Tree<String>> it = hs.getGroupingInt().getTree()
+						.getFirstChild("applist").getFirstChild("output")
+						.getChildren("value").iterator();
+				while (it.hasNext()) {
+					featGrouped.add(it.next().getFirstChild().getHead());
+				}
 			}
 		}
 		if(lRow.isEmpty()){

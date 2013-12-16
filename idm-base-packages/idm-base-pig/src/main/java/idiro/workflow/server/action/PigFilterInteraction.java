@@ -41,7 +41,6 @@ public class PigFilterInteraction extends UserInteraction {
 		try {
 			Tree<String> cond = getTree().getFirstChild("editor")
 					.getFirstChild("output").getFirstChild();
-			logger.info("got output");
 
 			if (cond != null) {
 				String condition = cond.getHead();
@@ -54,11 +53,10 @@ public class PigFilterInteraction extends UserInteraction {
 					if(el.groupingInt != null){
 						aggregation = el.groupingInt.getAggregationFeatures(el.getDFEInput().get(el.key_input).get(0));
 					}
-					logger.debug("aggregation set size : "+ aggregation.size());
+					logger.info("aggregation set size : "+ aggregation.size());
 					type = PigDictionary.getInstance().getReturnType(
 							condition, el.getInFeatures(),aggregation);
-					if (type.equalsIgnoreCase("boolean")&& !aggregation.isEmpty()) {
-					}else{
+					if (!type.equalsIgnoreCase("boolean")) {
 						msg = "The condition have to return a boolean not a "
 								+ type;
 						logger.info(msg);

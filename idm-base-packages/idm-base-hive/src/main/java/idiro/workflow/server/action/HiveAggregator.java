@@ -19,9 +19,10 @@ public class HiveAggregator  extends HiveElement{
 	 */
 	private static final long serialVersionUID = 3535152473335173532L;
 
-	private Page page1;
+	private Page page1,page2,page3;
 	
 	public static final String key_grouping = "Grouping";
+	public static final String key_tableSel = "Table Select";
 	
 	private DFEInteraction groupingInt;
 	
@@ -37,6 +38,8 @@ public class HiveAggregator  extends HiveElement{
 				0,
 				0);
 		page1.addInteraction(groupingInt);
+		
+		page2 = addPage(key_tableSel, "Specify the attributes ", 0);
 	}
 
 	@Override

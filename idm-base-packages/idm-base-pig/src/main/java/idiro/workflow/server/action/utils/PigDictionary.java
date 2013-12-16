@@ -369,65 +369,37 @@ public class PigDictionary extends AbstractDictionary {
 		case DOUBLE:
 			break;
 		case STRING:
-			featureType = "STRING";
 			break;
 		}
 		return featureType;
 	}
 
-	public String returnFeature(String operationString) {
-		String temp = operationString;
-		temp = removeBracketContent(temp);
-		if (temp.contains(".")) {
-			String[] operationsplit = temp.split("\\.");
-			operationString = operationsplit[operationsplit.length - 1];
-		}
-
-		return operationString;
-	}
+	/*
+	 * public String returnFeature(String operationString) { String temp =
+	 * operationString; temp = removeBracketContent(temp); if
+	 * (temp.contains(".")) { String[] operationsplit = temp.split("\\.");
+	 * operationString = operationsplit[operationsplit.length - 1]; }
+	 * 
+	 * return operationString; }
+	 */
 
 	public String getReturnType(String expr, FeatureList features,
-			Set<String> featureAggreg) throws Exception {
-
+			Set<String> nonAggregFeats) throws Exception {
 		if (expr == null || expr.trim().isEmpty()) {
+			logger.error("No expressions to test");
 			throw new Exception("No expressions to test");
 		}
 
-		expr = returnFeature(expr);
-		// Test if all the featureAggreg have a type
-		Iterator<String> itFAgg = featureAggreg.iterator();
-		boolean ok = true;
-		while (itFAgg.hasNext() && ok) {
-			String featuragg = returnFeature(itFAgg.next());
-			// String featuragg = itFAgg.next();
-			logger.info("checking for : " + featuragg);
-			ok = features.containsFeature(featuragg);
-		}
-
-		if (!ok) {
-			itFAgg = featureAggreg.iterator();
-			String tempagg = "";
-			while (itFAgg.hasNext()) {
-				tempagg += itFAgg.next();
-				if (itFAgg.hasNext()) {
-					tempagg += " , ";
-				}
-			}
-			Iterator<String> fit = features.getFeaturesNames().iterator();
-			String tempfit = "";
-			while (fit.hasNext()) {
-				tempfit += fit.next();
-				if (fit.hasNext()) {
-					tempfit += " , ";
-				}
-			}
-			throw new Exception("Parameters invalid \n" + tempagg
-					+ " needs to be in \n" + tempfit);
+		if (nonAggregFeats != null
+				&& !features.getFeaturesNames().containsAll(nonAggregFeats)) {
+			logger.error("Aggregation features unknown");
+			throw new Exception("Aggregation features unknown("
+					+ nonAggregFeats.toString() + "): "
+					+ features.getFeaturesNames().toString());
 		}
 
 		expr = expr.trim().toUpperCase();
-		logger.info("expresion :" + expr + " feature agg : "
-				+ featureAggreg.size());
+		logger.debug("expression : "+expr);
 		if (expr.startsWith("(") && expr.endsWith(")")) {
 			int count = 1;
 			int index = 1;
@@ -451,6 +423,7 @@ public class PigDictionary extends AbstractDictionary {
 		}
 		String type = null;
 		if (expr.equalsIgnoreCase("TRUE") || expr.equalsIgnoreCase("FALSE")) {
+			logger.debug("expression is boolean: "+expr);
 			type = "BOOLEAN";
 		} else if (expr.startsWith("'")) {
 			if (expr.endsWith("'") && expr.length() > 1) {
@@ -474,55 +447,93 @@ public class PigDictionary extends AbstractDictionary {
 				}
 			}
 		}
+		
+		logger.debug("getting feature type if null "   +type +" "+expr);
 		if (type == null) {
 			Iterator<String> itS = null;
-
-			if (featureAggreg.isEmpty()) {
-				itS = features.getFeaturesNames().iterator();
+			if (nonAggregFeats != null&&!nonAggregFeats.isEmpty()) {
+				logger.debug("feataggreg is not empty : "+nonAggregFeats.toString());
+				itS = nonAggregFeats.iterator();
 			} else {
-				itS = featureAggreg.iterator();
+				itS = features.getFeaturesNames().iterator();
+//				logger.debug("using features list "+features.getSize());
 			}
 			while (itS.hasNext() && type == null) {
-				String feat = returnFeature(itS.next());
-				logger.info("feat : " + feat + " == " + expr);
+				String feat = itS.next();
+				logger.debug("feat "+feat + " expr "+ expr);
 				if (feat.equalsIgnoreCase(expr)) {
 					type = getPigType(features.getFeatureType(feat));
+					logger.debug("type : "+type);
 				}
 			}
 		}
+
+		logger.debug("if expression is an operator or function if type null : "  +type +" "+expr);
 		if (type == null) {
-			logger.debug("type is null : trying to find operator");
+			logger.debug("checking all types of functions");
 			if (isLogicalOperation(expr)) {
 				logger.debug(expr + ", is a logical operation");
-				if (runLogicalOperation(expr, features, featureAggreg)) {
+				if (runLogicalOperation(expr, features, nonAggregFeats)) {
 					type = "BOOLEAN";
 				}
 			} else if (isRelationalOperation(expr)) {
 				logger.debug(expr + ", is a relational operation");
-				if (runRelationalOperation(expr, features, featureAggreg)) {
+				if (runRelationalOperation(expr, features, nonAggregFeats)) {
 					type = "BOOLEAN";
 				}
 			} else if (isArithmeticOperation(expr)) {
 				logger.debug(expr + ", is an arithmetic operation");
-				if (runArithmeticOperation(expr, features, featureAggreg)) {
+				if (runArithmeticOperation(expr, features, nonAggregFeats)) {
 					type = "NUMBER";
 				}
-			} else if (isMethod(expr, !featureAggreg.isEmpty())) {
+			} else if (isAggregatorMethod(expr)) {
+				if (nonAggregFeats == null) {
+					throw new Exception("Cannot use aggregation method");
+				}
+				logger.debug(expr + ", is an agg method");
+				FeatureList fl = new OrderedFeatureList();
+				List<String> l = new LinkedList<String>();
+				l.addAll(features.getFeaturesNames());
+				l.removeAll(nonAggregFeats);
+				logger.debug("feats list size "+l.size());
+				Iterator<String> lIt = l.iterator();
+				while (lIt.hasNext()) {
+					String nameF = lIt.next();
+					logger.debug("name "+nameF);
+					fl.addFeature(nameF, features.getFeatureType(nameF));
+				}
+				type = runMethod(expr, fl, true);
+			} else if (isNonAggMethod(expr, !nonAggregFeats.isEmpty())) {
 				logger.debug(expr + ", is a method");
-				type = runMethod(expr, features, featureAggreg);
+				if (nonAggregFeats != null && nonAggregFeats.isEmpty()) {
+					throw new Exception("Cannot use non aggregation method");
+				}
+				FeatureList fl = features;
+				if (nonAggregFeats != null) {
+					fl = new OrderedFeatureList();
+					Iterator<String> featureAggIterator = nonAggregFeats
+							.iterator();
+					while (featureAggIterator.hasNext()) {
+						String nameF = featureAggIterator.next().toUpperCase();
+						fl.addFeature(nameF, features.getFeatureType(nameF));
+					}
+				}
+				type = runMethod(expr, fl, false);
 			} else if (isCastOperation(expr)) {
 				logger.debug(expr + ", is an cast operation");
-				type = runCastOperation(expr, features, featureAggreg);
+				type = runCastOperation(expr, features, nonAggregFeats);
 			}
 		}
 
-		logger.info("type returned for '" + expr + "': " + type);
+		
+		logger.debug("type returning: "+type);
 		return type;
 
 	}
 
 	private String runCastOperation(String expr, FeatureList features,
 			Set<String> featureAggreg) throws Exception {
+		logger.debug("casting");
 		String type = null;
 		List<String[]> methodsFound = findAll(functionsMap.get(castOperator),
 				expr);
@@ -565,9 +576,8 @@ public class PigDictionary extends AbstractDictionary {
 	}
 
 	public static boolean check(String typeToBe, String typeGiven) {
-		logger.info("checking type to be : " + typeToBe + " and type given "
-				+ typeGiven);
 		boolean ok = false;
+		logger.debug("type to be : "+typeToBe + " given "+ typeGiven);
 		if (typeGiven == null || typeToBe == null) {
 			return false;
 		}
@@ -607,8 +617,8 @@ public class PigDictionary extends AbstractDictionary {
 					|| typeGiven.equalsIgnoreCase("STRING");
 
 		}
-		logger.info("checked type to be : " + typeToBe + " and type given "
-				+ typeGiven + " : " + ok);
+		// logger.debug("checked type to be : " + typeToBe + " and type given "
+		// + typeGiven + " : " + ok);
 		if (!ok && typeToBe.equalsIgnoreCase(typeGiven)) {
 			ok = true;
 		}
@@ -667,7 +677,6 @@ public class PigDictionary extends AbstractDictionary {
 			word.add("info").add(inFeat.getFeatureType(cur).name());
 			keywords.add(word);
 		}
-		logger.info("added features");
 		editor.add(help);
 
 		return editor;
@@ -758,7 +767,8 @@ public class PigDictionary extends AbstractDictionary {
 
 	private boolean runLogicalOperation(String expr, FeatureList features,
 			Set<String> aggregFeat) throws Exception {
-
+		
+		logger.debug("logical operator ");
 		String[] split = expr.split("OR|AND");
 		boolean ok = true;
 		int i = 0;
@@ -818,10 +828,12 @@ public class PigDictionary extends AbstractDictionary {
 				features, aggregFeat);
 	}
 
-	private boolean isMethod(String expr, boolean agregation) {
-		if (isInList(functionsMap.get(agregationMethods), expr)) {
-			return true;
-		} else if (isInList(functionsMap.get(utilsMethods), expr)) {
+	public boolean isAggregatorMethod(String expr) {
+		return isInList(functionsMap.get(agregationMethods), expr);
+	}
+
+	private boolean isNonAggMethod(String expr, boolean agregation) {
+		if (isInList(functionsMap.get(utilsMethods), expr)) {
 			return true;
 		} else if (isInList(functionsMap.get(mathMethods), expr)) {
 			return true;
@@ -833,13 +845,13 @@ public class PigDictionary extends AbstractDictionary {
 	}
 
 	private String runMethod(String expr, FeatureList features,
-			Set<String> aggregFeat) throws Exception {
+			boolean isAggregMethod) throws Exception {
 		String type = null;
-		logger.debug("..runMethod aggfeat: " + aggregFeat.isEmpty());
-		List<String[]> methodsFound = findAllMethod(expr, !aggregFeat.isEmpty());
+		List<String[]> methodsFound = findAllMethod(expr, isAggregMethod);
 		if (!methodsFound.isEmpty()) {
 			String arg = expr.substring(expr.indexOf("(") + 1,
 					expr.lastIndexOf(")"));
+			logger.debug("argument " + arg);
 			String[] argSplit = null;
 			int sizeSearched = -1;
 			// Find a method with the same number of argument
@@ -847,15 +859,23 @@ public class PigDictionary extends AbstractDictionary {
 			String[] method = null;
 			while (it.hasNext() && method == null) {
 				method = it.next();
+				logger.debug("method " + method[0] + " " + method[1] + " "
+						+ method[2]);
 
 				String delimiter = method[0].substring(
 						method[0].indexOf("(") + 1, method[0].lastIndexOf(")"));
+				logger.debug("delimiter " + delimiter);
 				if (delimiter.isEmpty()) {
 					delimiter = ",";
 				}
 				argSplit = arg
 						.split(escapeString(delimiter) + "(?![^\\(]*\\))");
 				sizeSearched = argSplit.length;
+				logger.debug("argsplit last el" + argSplit[sizeSearched - 1]);
+				logger.debug("argsplit size : " + sizeSearched);
+				logger.debug("test " + method[1].trim().isEmpty());
+				logger.debug("test "
+						+ expr.trim().equalsIgnoreCase(method[0].trim()));
 				if (method[1].trim().isEmpty()
 						&& expr.trim().equalsIgnoreCase(method[0].trim())) {
 					// Hard-copy method
@@ -919,6 +939,7 @@ public class PigDictionary extends AbstractDictionary {
 			logger.debug(error);
 			throw new Exception(error);
 		}
+		logger.debug("operation ok : "+ ok );
 		return ok;
 	}
 
@@ -941,30 +962,35 @@ public class PigDictionary extends AbstractDictionary {
 			throws Exception {
 		boolean ok = false;
 		String[] argsTypeExpected = method[1].split(",");
+		logger.debug("check");
 		if (argsTypeExpected[0].isEmpty()
 				&& argsTypeExpected.length - 1 == args.length) {
 			// Left operator
+			logger.debug("left operaor");
 			ok = true;
 			for (int i = 1; i < argsTypeExpected.length; ++i) {
 				ok &= check(argsTypeExpected[i],
-						getReturnType(returnFeature(args[i - 1]), features));
+						getReturnType(args[i - 1], features));
 			}
 		} else if (argsTypeExpected[argsTypeExpected.length - 1].isEmpty()
 				&& argsTypeExpected.length - 1 == args.length) {
 			// Right operator
 			ok = true;
+			logger.debug("right operator");
 			for (int i = 0; i < argsTypeExpected.length - 1; ++i) {
 				ok &= check(argsTypeExpected[i],
-						getReturnType(returnFeature(args[i]), features));
+						getReturnType(args[i], features));
 			}
 		} else if (argsTypeExpected.length == args.length) {
 			ok = true;
 			for (int i = 0; i < argsTypeExpected.length; ++i) {
+				logger.debug("only one arg : "+argsTypeExpected.length);
+				logger.debug(argsTypeExpected[i] + " "+
+						getReturnType(args[i], features));
 				ok &= check(argsTypeExpected[i],
-						getReturnType(returnFeature(args[i]), features));
+						getReturnType(args[i], features));
 			}
 		}
-
 		if (!ok) {
 			String arg = "";
 			if (args.length > 0) {

@@ -255,7 +255,7 @@ public abstract class PigElement extends DataflowAction {
 		logger.debug("create load...");
 		
 		String delimiter = out.getProperty(MapRedTextType.key_delimiter);
-		
+		delimiter = ((MapRedTextType)out).getChar(delimiter);
 		if (delimiter == null){
 			delimiter = default_delimiter;
 		}
@@ -264,9 +264,10 @@ public abstract class PigElement extends DataflowAction {
 		String createSelect = "LOAD '" + out.getPath() + "' USING "+function+" as (";
 		
 		Iterator<String> it = out.getFeatures().getFeaturesNames().iterator();
+		logger.info("attribute list size : "+out.getFeatures().getSize());
 		while (it.hasNext()){
 			String e = it.next();
-			createSelect += e+":"+out.getFeatures().getFeatureType(e);
+			createSelect += e+":"+PigTypeConvert.getPigType(out.getFeatures().getFeatureType(e));
 			if (it.hasNext()){
 				createSelect += ", ";
 			}

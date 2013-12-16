@@ -232,7 +232,6 @@ public class MapRedTextType extends DataOutput {
 	}
 
 	private FeatureType getType(String expr) {
-
 		FeatureType type = null;
 		if (expr.equalsIgnoreCase("TRUE") || expr.equalsIgnoreCase("FALSE")) {
 			type = FeatureType.BOOLEAN;
@@ -354,7 +353,7 @@ public class MapRedTextType extends DataOutput {
 			return String.valueOf((char) (columnIndex + 65));
 	}
 
-	protected String getChar(String asciiCode) {
+	public String getChar(String asciiCode) {
 		String result = null;
 		if (asciiCode != null && asciiCode.startsWith("#")
 				&& asciiCode.length() > 1) {
