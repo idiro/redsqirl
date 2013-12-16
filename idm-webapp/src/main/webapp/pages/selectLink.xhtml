@@ -7,7 +7,7 @@
 
 	<h:panelGrid id="selectLinkList">
 		<h:panelGrid rendered="#{!empty canvasBean.linkPossibilities}">
-			<h:selectOneRadio value="#{canvasBean.selectedLink}">
+			<h:selectOneRadio value="#{canvasBean.selectedLink}" layout="pageDirection" >
 	   			<f:selectItems value="#{canvasBean.linkPossibilities}" />
 	   		</h:selectOneRadio>
 	   		

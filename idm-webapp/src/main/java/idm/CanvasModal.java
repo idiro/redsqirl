@@ -96,6 +96,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	private Map<String, String> nameBrowserLabel1 = new HashMap<String, String>();
 	private Map<String, String> nameBrowserLabel2 = new HashMap<String, String>();
 	private String confirm = "N";
+	private String openPopUp = "S";
 
 	/**
 	 * getKeyAsListNameValue
@@ -227,7 +228,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public String checkNextPage() throws RemoteException {
 
 		StringBuffer error = new StringBuffer();
-
+		DynamicForm browserDF = null;
 		for (int i = 0; i < getDynamicFormList().size(); i++) {
 
 			DynamicForm dynamicF = getDynamicFormList().get(i);
@@ -262,24 +263,15 @@ public class CanvasModal extends BaseBean implements Serializable {
 			} else if (dynamicF.getDisplayType().equals(DisplayType.browser)) {
 
 				logger.info("Browser path -> " + dynamicF.getPathBrowser());
-
-				String oldDelimiter = getDfe().getDFEOutput().get("source").getProperty("delimiter");
+				browserDF = dynamicF;
 
 				dynamicF.getTree().getFirstChild("browse").getFirstChild("output").removeAllChildren();
 				dynamicF.getTree().getFirstChild("browse").getFirstChild("output").add("path").add(dynamicF.getPathBrowser());
 
-				for (ItemList itemList : dynamicF.getListGrid()) {
-
-					String er = checkHeader(getDfe().getDFEOutput().get("source"), itemList);
-					if(er != null){
-						error.append(er);
-					}else{
-						
-						Tree<String> myProperty = dynamicF.getTree().getFirstChild("browse").getFirstChild("output").add("property");
-						myProperty.add(itemList.getProperty()).add(itemList.getValue());
-						getDfe().getDFEOutput().get("source").addProperty(itemList.getProperty(), itemList.getValue());
-					}
-					
+				for (ItemList itemList : dynamicF.getListGrid()) {	
+					Tree<String> myProperty = dynamicF.getTree().getFirstChild("browse").getFirstChild("output").add("property");
+					logger.info("Add property: "+itemList.getProperty()+": "+itemList.getValue());
+					myProperty.add(itemList.getProperty()).add(itemList.getValue());
 				}
 
 				if (getHiveHdfs() != null && getHiveHdfs().equalsIgnoreCase("hive")) {
@@ -310,11 +302,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 						myFeature.add("type").add(getNameBrowserLabel2().get(nameValue));
 						
 					}
-				}
-
-				//check and change delimiter
-				if (oldDelimiter != null && !oldDelimiter.equals(getDfe().getDFEOutput().get("source").getProperty("delimiter"))){
-					updateDFEOUtputTable(getDfe().getDFEOutput().get("source"),getDynamicFormBrowser());
 				}
 
 			} else if (dynamicF.getDisplayType().equals(DisplayType.helpTextEditor)) {
@@ -348,12 +335,15 @@ public class CanvasModal extends BaseBean implements Serializable {
 		}
 
 		String e = getPage().checkPage();
-
 		logger.info("error page -> " + e);
 		if (e != null) {
 			error.append(e);
 			error.append(System.getProperty("line.separator"));
 		} else {
+			if (browserDF != null){
+				//Update table
+				updateDFEOUtputTable(getDfe().getDFEOutput().get("source"),getDynamicFormBrowser());
+			}
 			// Update output only if it is the last page
 			// or an output already exist
 			if (getListPageSize() - 1 == getListPosition()
@@ -702,17 +692,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 					setDynamicFormBrowser(dynamicF);
 					changePathBrowser();
 				}
-				
-				//clean header value
-				for (ItemList itemList : dynamicF.getListGrid()) {
-					if(itemList.getProperty().equalsIgnoreCase("header") && itemList.getValue() != null && !"".equalsIgnoreCase(itemList.getValue())){
-						itemList.setValue("");
-					}
-				}
 
 			} else if (dfeInteraction.getDisplay().equals(
 					DisplayType.helpTextEditor)) {
 				setCommand("");
+				
 				if (dfeInteraction.getTree().getFirstChild("editor")
 						.getFirstChild("output").getFirstChild() != null) {
 					setCommand(dfeInteraction.getTree().getFirstChild("editor")
@@ -879,9 +863,15 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 
 	private void mountHelpTextEditorInteraction(Tree<String> dfeInteractionTree) throws RemoteException{
+		
 		List<Entry<String, String>> listFields = new ArrayList<Entry<String, String>>();
-		List<Tree<String>> list = dfeInteractionTree.getFirstChild("editor").getFirstChild("keywords").getSubTreeList();
-		if(list != null){
+		List<Tree<String>> list = null;
+		try{
+			list = dfeInteractionTree.getFirstChild("editor").getFirstChild("keywords").getSubTreeList();
+		}catch(Exception e){
+			list = null;
+		}
+		if(list != null && ! list.isEmpty()){
 			logger.info("list not null: "+list.toString());
 			for (Tree<String> tree : list) {
 				logger.info("list value " + tree.getFirstChild().getHead());
@@ -894,8 +884,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 		List<SelectItem> listCategories = new ArrayList<SelectItem>();
 		List<SelectItem> listCategoriesOperation = new ArrayList<SelectItem>();
-		list = dfeInteractionTree.getFirstChild("editor").getFirstChild("help")
-				.getSubTreeList();
+		try{
+			list = dfeInteractionTree.getFirstChild("editor").getFirstChild("help").getSubTreeList();
+		}catch(Exception e){
+			list = null;
+		}
 		if (list != null) {
 			logger.info("list not null: " + list.toString());
 			for (Tree<String> tree : list) {
@@ -912,15 +905,22 @@ public class CanvasModal extends BaseBean implements Serializable {
 					listCategories.add(e);
 				}
 			}
+		}else{
+			// does not open pop up in text editor
+			setOpenPopUp("N");
 		}
+		
 		setListItensTable(listCategories);
 		setListItensTableOperation(listCategoriesOperation);
 
 		Map<String, List<String[]>> map = new HashMap<String, List<String[]>>();
 		Map<String, List<String[]>> mapOp = new HashMap<String, List<String[]>>();
-		list = dfeInteractionTree.getFirstChild("editor").getFirstChild("help")
-				.getSubTreeList();
-		if (list != null) {
+		try{
+			list = dfeInteractionTree.getFirstChild("editor").getFirstChild("help").getSubTreeList();
+		}catch(Exception e){
+			list = null;
+		}
+		if (list != null  && ! list.isEmpty()) {
 			logger.info("list not null: " + list.toString());
 			for (Tree<String> tree : list) {
 				logger.info("list value " + tree.getHead());
@@ -990,6 +990,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 				}
 
 			}
+		}else{
+			// does not open pop up in text editor
+			setOpenPopUp("N");
 		}
 
 		setFunctionsMap(map);
@@ -1410,238 +1413,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 		}
 	}
 
-	private FeatureType getType(String expr){
-
-		FeatureType type = null;
-		if(expr.equalsIgnoreCase("TRUE")||
-				expr.equalsIgnoreCase("FALSE")){
-			type = FeatureType.BOOLEAN;
-		}
-		else{
-			try{
-				Integer.valueOf(expr);
-				type = FeatureType.INT;
-			}catch(Exception e){}
-			if(type == null){
-				try{
-					Long.valueOf(expr);
-					type = FeatureType.LONG;
-				}catch(Exception e){}
-			}
-			if(type == null){
-				try{
-					Float.valueOf(expr);
-					type = FeatureType.FLOAT;
-				}catch(Exception e){}
-			}
-			if(type == null){
-				try{
-					Double.valueOf(expr);
-					type = FeatureType.DOUBLE;
-				}catch(Exception e){}
-			}
-			if(type == null){
-				type = FeatureType.STRING;
-			}
-		}
-		logger.info("getType: "+expr + " - " + type);
-		return type;
-	}
-
-	/**
-	 * checkHeader
-	 * 
-	 * Method to check the new header
-	 * 
-	 * @return String msg error
-	 * @author Igor.Souza
-	 * @throws 
-	 */
-	public String checkHeader(DFEOutput dfeOut, ItemList itemList) {
-
-		String error = null;
-
-		if(getHiveHdfs() != null && getHiveHdfs().equalsIgnoreCase("hdfs")){
-
-			//check new header
-			if(itemList.getProperty().equalsIgnoreCase("header") && itemList.getValue() != null && !"".equalsIgnoreCase(itemList.getValue())){
-
-				String newLabels[] = itemList.getValue().split(",");
-
-				error = checkNewHeaderNames(newLabels);
-				if(error == null){
-
-					//logger.info("newLabels[] " + newLabels);
-
-					if(newLabels.length == getNameBrowserLabel2().size()){
-
-						Map<String, String> nameBrowserLabel1 = new HashMap<String, String>();
-						Map<String, String> nameBrowserLabel2 = new HashMap<String, String>();
-						List<String> browserNameFeatureColumns = new ArrayList<String>();
-
-						for (int j = 0; j < newLabels.length; j++) {
-
-							logger.info("newLabels[j] " + newLabels[j].trim());
-
-							String featureValue = ((ItemList)getListFeature().get(0)).getNameValue().get(getBrowserNameFeatureColumns().get(j));
-
-							if(featureValue != null){
-
-								FeatureType type = getType(featureValue);
-
-								if(newLabels[j].trim().split(" ").length > 1){
-
-									String valueNewLabels[] = newLabels[j].trim().split(" ");
-									String valueNewLabelsValue = valueNewLabels[0];
-									String valueNewLabelsType = valueNewLabels[1]; 
-
-									logger.info("nameBrowserLabel " + valueNewLabelsValue + " " +valueNewLabelsType);
-
-									if(type.toString().equalsIgnoreCase(valueNewLabelsType)){
-										nameBrowserLabel2.put(valueNewLabelsValue + " " +valueNewLabelsType, type.toString());
-									}else{
-										//erro type
-										error = getMessageResourcesWithParameter("msg_error_type_new_header", new Object[]{type.toString()});
-									}
-
-									nameBrowserLabel1.put(valueNewLabelsValue + " " +valueNewLabelsType, valueNewLabelsValue);
-									browserNameFeatureColumns.add(valueNewLabelsValue + " " +valueNewLabelsType);
-
-								}else{
-
-									nameBrowserLabel2.put(newLabels[j].trim() + " " +type.toString(), type.toString());
-									nameBrowserLabel1.put(newLabels[j].trim() + " " +type.toString(), newLabels[j].trim());
-									browserNameFeatureColumns.add(newLabels[j].trim() + " " + type.toString());
-
-								}
-
-							}else{
-								//error featureValue
-								error = getMessageResources("msg_error_generic_header");
-							}
-
-						}
-						
-						if(error == null){
-							
-							for (int j = 0; j < newLabels.length; j++) {
-								
-								String featureValue = ((ItemList)getListFeature().get(0)).getNameValue().get(getBrowserNameFeatureColumns().get(j));
-
-								if(featureValue != null){
-									
-									FeatureType type = getType(featureValue);
-									
-									if(newLabels[j].trim().split(" ").length > 1){
-										
-										String valueNewLabels[] = newLabels[j].trim().split(" ");
-										String valueNewLabelsValue = valueNewLabels[0];
-										String valueNewLabelsType = valueNewLabels[1];
-										
-										updateItemNameValueList(j, valueNewLabelsValue + " " +valueNewLabelsType);
-									}else{
-										updateItemNameValueList(j, newLabels[j].trim() + " " +type.toString());
-									}
-									
-								}else{
-									//error featureValue
-									error = getMessageResources("msg_error_generic_header");
-								}
-								
-							}
-
-							setNameBrowserLabel1(nameBrowserLabel1);
-							setNameBrowserLabel2(nameBrowserLabel2);
-							setBrowserNameFeatureColumns(browserNameFeatureColumns);
-							
-							logger.info("checkHeader update ");
-							
-						}
-
-					}else{
-						//erro size
-						error = getMessageResources("msg_error_size_new_header");
-					}
-
-				}
-
-			}
-
-		}
-		
-		logger.info("checkHeader error -> " + error);
-
-		return error;
-	}
-
-
-	/**
-	 * checkNewHeaderNames
-	 * 
-	 * Method to check the new header. 
-	 * checks if there are two of the same name. 
-	 * checks if the size is less than 30 characters
-	 * 
-	 * @return String msg error
-	 * @author Igor.Souza
-	 * @throws 
-	 */
-	public String checkNewHeaderNames(String newLabels[]){
-
-		String error = null;
-
-		for (int i = 0; i < newLabels.length; i++) {
-
-			String newValues[] = newLabels[i].trim().split(" ");
-			
-			if(newValues.length > 2){
-				error = getMessageResources("msg_error_name_header");
-			}
-			
-			if(newValues.length >1 && newValues[0].length() > 30){
-				error = getMessageResourcesWithParameter("msg_error_size_name_header", new Object[]{newValues[0]});
-			}else if(newLabels[i].trim().length() > 30){
-				error = getMessageResourcesWithParameter("msg_error_size_name_header", new Object[]{newLabels[i]});
-			}
-
-			String regex = "[a-zA-Z]+[a-zA-Z0-9_]*"; //[a-zA-Z]{1}[a-zA-Z0-9_]{0,29}
-			
-			if(newValues.length > 1){
-				if(!newValues[0].matches(regex)){
-					error = getMessageResourcesWithParameter("msg_error_name_header", new Object[]{newValues[0]});
-				}
-			}else if(!newLabels[i].trim().matches(regex)){
-				error = getMessageResourcesWithParameter("msg_error_name_header", new Object[]{newLabels[i]});
-			}
-
-			if(error == null){
-				//check if exist 2 names equal
-				for (int j = 0; j < newLabels.length; j++) {
-
-					if(newValues.length > 1){
-						String newValues2[] = newLabels[j].trim().split(" ");
-						if(newValues2.length > 1){
-							if(i != j && newValues2[0].equalsIgnoreCase(newValues[0])){
-								error = getMessageResourcesWithParameter("msg_error_same_name_header", new Object[]{newValues[0]});
-							}
-						}else{
-							error = getMessageResources("msg_error_name_header");
-						}
-					}else{
-						if(i != j && newLabels[i].trim().equalsIgnoreCase(newLabels[j].trim())){
-							error = getMessageResourcesWithParameter("msg_error_same_name_header", new Object[]{newLabels[i]});
-						}
-					}
-
-				}
-			}
-			
-		}
-
-		logger.info("checkNewHeaderNames error -> " + error);
-		
-		return error;
-	}
+	
 
 	/**
 	 * updateItemNameValueList
@@ -1652,7 +1424,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 * @throws 
 	 */
-	public void updateItemNameValueList(int j, String newKey){
+	/*public void updateItemNameValueList(int j, String newKey){
 
 		for (ItemList item : getListFeature()) {
 			String featureValueOld = item.getNameValue().get(getBrowserNameFeatureColumns().get(j));
@@ -1662,7 +1434,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 			}
 		}
 
-	}
+	}*/
 
 	protected void updateDFEOUtputTable(DFEOutput dfeOut, DynamicForm dynamicForm) throws RemoteException {
 
@@ -1720,8 +1492,10 @@ public class CanvasModal extends BaseBean implements Serializable {
 								nameValueFeatureItem.put(labels.get(i), rows[i]);
 							}
 						}else{
-
-							String delimiter = String.valueOf(Character.toChars(Integer.valueOf(dfeOut.getProperty("delimiter").substring(1))));
+							String delimiter =  dfeOut.getProperty("delimiter");
+							if(delimiter.length() > 1){
+								delimiter = String.valueOf(Character.toChars(Integer.valueOf(dfeOut.getProperty("delimiter").substring(1))));
+							}
 							String rows[] = output.split(Pattern.quote(delimiter));
 							for (int i = 0; i < rows.length; i++) {
 								logger.info("map to show " + labels.get(i) + " " + rows[i]);
@@ -2352,6 +2126,14 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 */
 	public void setDynamicFormDataOutput(DynamicForm dynamicFormDataOutput) {
 		this.dynamicFormDataOutput = dynamicFormDataOutput;
+	}
+
+	public String getOpenPopUp() {
+		return openPopUp;
+	}
+
+	public void setOpenPopUp(String openPopUp) {
+		this.openPopUp = openPopUp;
 	}
 
 }

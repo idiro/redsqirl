@@ -155,7 +155,7 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 	/**
 	 * @param features the features to set
 	 */
-	public final void setFeatures(FeatureList features) {
+	public void setFeatures(FeatureList features) {
 		this.features = features;
 	}
 
@@ -191,6 +191,14 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 	@Override
 	public void removeProperty(String key){
 		dataProperty.remove(key);
+	}
+	
+	@Override
+	public void removeAllProperties(){
+		Iterator<String> it = dataProperty.keySet().iterator();
+		while(it.hasNext()){
+			dataProperty.put(it.next(), "");
+		}
 	}
 	
 	@Override

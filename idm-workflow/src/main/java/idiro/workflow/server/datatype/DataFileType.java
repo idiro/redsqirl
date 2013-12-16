@@ -150,4 +150,10 @@ public class DataFileType extends DataOutput{
 		return "orange";
 	}
 
+	@Override
+	public String checkFeatures(FeatureList fl) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

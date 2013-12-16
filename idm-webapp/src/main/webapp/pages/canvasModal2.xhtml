@@ -92,7 +92,7 @@
 								</f:facet>
 								<a4j:commandLink id="btCompleteFunction"
 									onclick="completeCommand('#{item[0]}');"
-									onmouseover="addtooltip('#{item[3]}')"
+									onmouseover="addtooltip('#{item[3]}', event)"
 									onmouseout="removetoottip()">
 									<f:param name="nameFunctions" value="#{item[0]}" />
 									<h:outputText value="#{item[0]}" />
@@ -136,7 +136,7 @@
 								</f:facet>
 								<a4j:commandLink id="btCompleteFunction"
 									onclick="completeCommand('#{item[0]}');"
-									onmouseover="addtooltip('#{item[3]}')"
+									onmouseover="addtooltip('#{item[3]}', event)"
 									onmouseout="removetoottip()">
 									<f:param name="nameFunctions" value="#{item[0]}" />
 									<h:outputText value="#{item[0]}" />

@@ -164,15 +164,16 @@
 				
 				<a4j:region>
 					<rich:panel style="border:none;" rendered="#{item.displayType == 'helpTextEditor'}" id="helpTextEditorPanel" >
-						<h:outputText value="#{messages.label_formula}" /> <br/>
+						<h:outputText value="#{messages.label_formula}" />
+						<br/>
 						<h:inputTextarea maxlength="100" cols="70" rows="10" value="#{canvasModalBean.command}" style="resize:none;border:1px solid;" id="command">
 							<a4j:support event="onclick" action="#{canvasModalBean.openHelpTextEditorModal}" oncomplete="#{rich:component('textEditorPanel')}.show()" 
-								reRender="commandText,listFields,listFunctions,listCategories,listOperation,listCategoriesOperation">
+								reRender="commandText,listFields,listFunctions,listCategories,listOperation,listCategoriesOperation" rendered="#{canvasModalBean.openPopUp == 'S'}" >
 								<a4j:actionparam name="command" value="#{canvasModalBean.command}"/>
 							</a4j:support>
 						</h:inputTextarea>
-						
-						<br/><br/>
+						<br/>
+						<br/>
 					</rich:panel>
 				</a4j:region>
 				

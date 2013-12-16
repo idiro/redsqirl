@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.Iterator;
 import java.util.List;
 
 import org.w3c.dom.Document;
@@ -36,7 +37,7 @@ public class HiveType extends DataOutput{
 	private static final long serialVersionUID = -4797761333298548415L;
 	protected static HiveInterface hInt;
 	public static final String key_partitions = "key_partitions";
-//	public static final String key_alias = "alias";
+	//	public static final String key_alias = "alias";
 	private boolean constant; 
 
 	public HiveType() throws RemoteException {
@@ -44,7 +45,7 @@ public class HiveType extends DataOutput{
 		if(hInt == null){
 			hInt = new HiveInterface();
 		}
-//		addProperty(key_alias,"");
+		//		addProperty(key_alias,"");
 		setConstant(true);
 	}
 
@@ -54,7 +55,7 @@ public class HiveType extends DataOutput{
 			hInt = new HiveInterface();
 		}
 	}
-	
+
 
 	@Override
 	public String getTypeName() throws RemoteException {
@@ -65,7 +66,7 @@ public class HiveType extends DataOutput{
 	public DataBrowser getBrowser() throws RemoteException {
 		return DataBrowser.HIVE;
 	}
-	
+
 	@Override
 	public String remove() throws RemoteException {
 		return hInt.delete(getPath());
@@ -137,7 +138,7 @@ public class HiveType extends DataOutput{
 
 	@Override
 	public boolean isPathExists() throws RemoteException {
-		return hInt.exists(getPath());
+		return getPath() == null?false:hInt.exists(getPath());
 	}
 
 	public boolean isConstant() {
@@ -147,10 +148,9 @@ public class HiveType extends DataOutput{
 	public void setConstant(boolean constant) {
 		this.constant = constant;
 	}
-	
+
 	private void generateFeaturesMap(String table) throws RemoteException{
 		features = new OrderedFeatureList();
-		hInt.goTo("/");
 		String[] lines = hInt.getDescription(hInt.getTableAndPartitions(table)[0]).split(";");
 		for (String line : lines){
 			String[] feat = line.split(",");
@@ -162,22 +162,45 @@ public class HiveType extends DataOutput{
 			}
 		}
 	}
-	
+
 	@Override
 	public void setPath(String path) throws RemoteException {
-		//String old_path = super.getPath();
 		super.setPath(path);
-		if (!path.equals("/") && isPathExists()){
-			generateFeaturesMap(path);
-			/*if(path != null && !path.equals(old_path)){
-				addProperty(key_alias, hInt.getTableAndPartitions(getPath())[0]);
-			}*/
+		if(path != null){
+			if (!path.equals("/") && isPathExists()){
+				generateFeaturesMap(path);
+			}
 		}
 	}
 
 	@Override
 	protected String getDefaultColor() {
 		return "DodgerBlue";
+	}
+
+	@Override
+	public String checkFeatures(FeatureList fl) throws RemoteException {
+		String error = null;
+		if( isPathExists() && features != null){
+			if(features.getSize() != fl.getSize()){
+				error = "The list is not of the right size";
+			}
+			if(!features.getFeaturesNames().containsAll(fl.getFeaturesNames())){
+				error = "The list of name have to be the same";
+			}
+			if(error == null){
+				Iterator<String> flIt = fl.getFeaturesNames().iterator();
+				Iterator<String> featuresIt = features.getFeaturesNames().iterator();
+				while(flIt.hasNext() && error != null){
+					String flName = flIt.next();
+					String featName = featuresIt.next();
+					if(!fl.getFeatureType(flName).equals(features.getFeatureType(featName))){
+						error = "The feature type does not correspond between "+flName+" and "+featName;
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 }

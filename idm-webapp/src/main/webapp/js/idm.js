@@ -270,12 +270,13 @@ function hideHelp() {
 	jQuery("#helpPanel").empty();
 }
 
-function addtooltip(text){
+function addtooltip(text, event){
     jQuery('div.help').remove();
     jQuery('div.tooltip').remove();
-    var y=event.layerY;
-    var help = jQuery('<div class="tooltip">'+text+'</div>').hide().fadeIn("slow");
-    jQuery(help).css("top",(y-10)+"px");
+    var y = event.layerY;
+    var help = jQuery('<div class="tooltip">'+text+'</div>').fadeToggle('slow', function(){
+    	jQuery( this ).css("top",(y-10)+"px" );
+    });
     jQuery("body").append(help);
 }
 

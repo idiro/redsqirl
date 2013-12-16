@@ -2,6 +2,7 @@ package idiro.workflow.server.datatype;
 
 import idiro.hadoop.NameNodeVar;
 import idiro.hadoop.checker.HdfsFileChecker;
+import idiro.hadoop.pig.PigUtils;
 import idiro.utils.FeatureList;
 import idiro.utils.OrderedFeatureList;
 import idiro.utils.RandomString;
@@ -15,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -52,6 +54,7 @@ public class MapRedTextType extends DataOutput{
 		if(hdfsInt == null){
 			hdfsInt = new HDFSInterface();
 		}
+		//addProperty(key_header, "");
 	}
 
 	public MapRedTextType(FeatureList features) throws RemoteException {
@@ -59,6 +62,7 @@ public class MapRedTextType extends DataOutput{
 		if(hdfsInt == null){
 			hdfsInt = new HDFSInterface();
 		}
+		//addProperty(key_header, "");
 	}
 
 	@Override
@@ -132,12 +136,14 @@ public class MapRedTextType extends DataOutput{
 	@Override
 	public boolean isPathExists() throws RemoteException {
 		boolean ok = false;
-		logger.info("checking if path exitst :"+getPath().toString());
-		HdfsFileChecker hCh = new HdfsFileChecker(getPath());
-		if(hCh.exists()){
-			ok = true;
+		if(getPath() != null){
+			logger.info("checking if path exitst :"+getPath().toString());
+			HdfsFileChecker hCh = new HdfsFileChecker(getPath());
+			if(hCh.exists()){
+				ok = true;
+			}
+			hCh.close();
 		}
-		hCh.close();
 		return ok;
 	}
 
@@ -190,6 +196,65 @@ public class MapRedTextType extends DataOutput{
 			}
 		}
 		return ans;
+	}
+	
+	private String setFeaturesFromHeader() throws RemoteException {
+		String header = getProperty(key_header);
+		String error = null;
+
+		if(header != null && !header.isEmpty()){
+
+			String newLabels[] = header.split(",");
+			FeatureList newFL = new OrderedFeatureList();
+			try{
+				if(newLabels[0].trim().split("\\s+").length > 1){
+					for (int j = 0; j < newLabels.length && error == null; j++) {
+						String label = newLabels[j].trim();
+						String[] nameType = label.split("\\s+");
+						if(nameType.length !=2){
+							error = "The header have to contains name and type paired";
+						}else{
+							newFL.addFeature(nameType[0], FeatureType.valueOf(nameType[1]));
+						}
+					}
+				}else{
+					if(features.getSize() != newLabels.length){
+						error = "The number of labels and the number of column are different";
+					}else{
+						Iterator<String> it = features.getFeaturesNames().iterator();
+						int j = 0;
+						while(it.hasNext()){
+							String featName = it.next();
+							newFL.addFeature(newLabels[j].trim(),features.getFeatureType(featName));
+							++j;
+						}
+					}
+				}
+			}catch(Exception e){
+				logger.error(e);
+				error = "Type unknown";
+			}
+
+			if(error == null  && !newFL.getFeaturesNames().isEmpty()){
+				error = checkFeatures(newFL);
+			}
+
+			if(error == null && !newFL.getFeaturesNames().isEmpty()){
+				setFeatures(newFL);
+			}else if(error != null){
+				removeProperty(key_header);
+			}
+
+		}
+
+		return error;
+	}
+	
+	@Override
+	public void setFeatures(FeatureList fl){
+		if(getProperty(key_header) == null || getProperty(key_header).trim().isEmpty()){
+			super.setFeatures(fl);
+		}
 	}
 
 	private void generateFeaturesMap() throws RemoteException{
@@ -298,55 +363,76 @@ public class MapRedTextType extends DataOutput{
 
 	@Override
 	public void addProperty(String key, String value){
-		
+
 		if (key.equals(key_delimiter) && value.length() == 1){
 			value = "#"+String.valueOf((int) value.charAt(0));
 		}
-		
 		super.addProperty(key, value);
-		
-		if (key.equals(key_delimiter) && getPath() != null){
-			try {
-				logger.info("addProperty() ");
-				generateFeaturesMap();
-
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
-		}
 	}
 
 	@Override
 	public void setPath(String path) throws RemoteException {
 		String oldPath = getPath();
 
+		if(path == null){
+			super.setPath(path);
+			setFeatures(null);
+			return;
+		}
+
 		if(! path.equalsIgnoreCase(oldPath)){
 
 			super.setPath(path);
 
 			logger.info("setPath() " + path);
+			if(isPathExists()){
+				List<String> list = select(1);
 
-			List<String> list = select(1);
-
-			if (list != null && !list.isEmpty()){
-				String text = list.get(0);
-				if (getProperty(key_delimiter) == null){
-					String delimiter = getDefaultDelimiter(text);
-					super.addProperty(key_delimiter, delimiter);
-					super.addProperty(key_header, "");
-				}
-				else{
-					if (!text.contains(getProperty(key_delimiter))){
+				if (list != null && !list.isEmpty()){
+					String text = list.get(0);
+					if (getProperty(key_delimiter) == null){
 						String delimiter = getDefaultDelimiter(text);
 						super.addProperty(key_delimiter, delimiter);
-						super.addProperty(key_header, "");
+					}
+					else{
+						if (!text.contains(getChar(getProperty(key_delimiter)))){
+							String delimiter = getDefaultDelimiter(text);
+							super.addProperty(key_delimiter, delimiter);
+							
+						}
 					}
 				}
+				generateFeaturesMap();
+				String error = setFeaturesFromHeader();
+				if(error != null){
+					throw new RemoteException(error);
+				}
 			}
-			generateFeaturesMap();
 		}
 
 	}
+
+	@Override
+	public String checkFeatures(FeatureList fl) throws RemoteException{
+		String error = null;
+		if(isPathExists() && features != null){
+			if(features.getSize() != fl.getSize()){
+				error = "The list is not of the right size";
+			}
+			if(error == null){
+				Iterator<String> flIt = fl.getFeaturesNames().iterator();
+				Iterator<String> featuresIt = features.getFeaturesNames().iterator();
+				while(flIt.hasNext() && error != null){
+					String flName = flIt.next();
+					String featName = featuresIt.next();
+					if(!fl.getFeatureType(flName).equals(features.getFeatureType(featName))){
+						error = "The feature type does not correspond between "+flName+" and "+featName;
+					}
+				}
+			}
+		}
+		return error;
+	}	
 
 	private String generateColumnName(int columnIndex){
 		if (columnIndex > 25){
@@ -355,24 +441,43 @@ public class MapRedTextType extends DataOutput{
 		}else
 			return String.valueOf((char)(columnIndex+65));
 	}
-	
+
 	protected String getChar(String asciiCode){
 		String result = null;
 		if (asciiCode != null && asciiCode.startsWith("#") && asciiCode.length() > 1){
 			result = String.valueOf(Character.toChars(Integer.valueOf(asciiCode.substring(1))));
+		}else{
+			result = asciiCode;
 		}
 		return result;
 	}
-	
+
 	public String getOctalDelimiter(){
 		String asciiCode = getProperty(key_delimiter);
 		String result = null;
 		if (asciiCode != null && asciiCode.startsWith("#") && asciiCode.length() > 1){
-			result = "\\"+Integer.toOctalString(Integer.valueOf(asciiCode.substring(1)));
+			result = Integer.toOctalString(Integer.valueOf(asciiCode.substring(1)));
+			if(result.length() == 2){
+				result = "\\0"+result;
+			}else{
+				result = "\\"+result;
+			}
 		}
 		return result;
 	}
-	
+
+	public String getPigDelimiter(){
+		String asciiCode = getProperty(key_delimiter);
+		Character c = null;
+		if (asciiCode != null && asciiCode.startsWith("#") && asciiCode.length() > 1){
+			int i = Integer.valueOf(asciiCode.substring(1));
+			c = new Character((char) i);
+		}else if(asciiCode.length() == 1){
+			c = asciiCode.charAt(0);
+		}
+		return c!=null? PigUtils.getDelimiter(c):asciiCode;
+	}
+
 	public String getDelimiterOrOctal(){
 		String octal = getOctalDelimiter(); 
 		return  octal != null? 

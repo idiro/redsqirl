@@ -181,4 +181,18 @@ public interface DFEOutput extends Remote{
 	 * @throws RemoteException
 	 */
 	public void removeProperty(String key) throws RemoteException;
+
+	/**
+	 * Remove all properties
+	 * @throws RemoteException
+	 */
+	void removeAllProperties() throws RemoteException;
+
+	/**
+	 * Check if a set of feature looks correct
+	 * @param fl
+	 * @return
+	 * @throws RemoteException
+	 */
+	String checkFeatures(FeatureList fl) throws RemoteException;
 }

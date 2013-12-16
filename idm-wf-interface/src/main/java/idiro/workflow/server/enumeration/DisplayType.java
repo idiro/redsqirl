@@ -1,6 +1,10 @@
 package idiro.workflow.server.enumeration;
 
 public enum DisplayType {
+
+	//Format in: input>[regex>re]/[output>choice]
+	input,
+	
 	//Format in: list>[values>[value>choice]]/[output>choicei]
 	list,
 	
@@ -27,4 +31,5 @@ public enum DisplayType {
 	//                 [generator>operation>[title>value]/
 	//                                      [row>col_title>value]]
 	table,
+	
 }

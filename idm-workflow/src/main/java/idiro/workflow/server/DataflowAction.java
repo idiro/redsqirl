@@ -91,10 +91,10 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 	 * @throws RemoteException
 	 */
 	public String getHelp() throws RemoteException {
-		String relativePath = WorkflowPrefManager.pathSysHelpPref.get() + "/" + getName() + ".html";
+		String relativePath = WorkflowPrefManager.pathSysHelpPref.get() + "/" + getName().toLowerCase() + ".html";
 		File f = new File(WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path)+relativePath);
 		if(!f.exists()){
-			relativePath = WorkflowPrefManager.pathUserHelpPref.get() + "/" + getName() + ".html";
+			relativePath = WorkflowPrefManager.pathUserHelpPref.get() + "/" + getName().toLowerCase() + ".html";
 		}
 		return relativePath;
 	}
@@ -106,10 +106,10 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 	 * @throws RemoteException
 	 */
 	public String getImage() throws RemoteException {
-		String relativePath = WorkflowPrefManager.pathSysImagePref.get() + "/" + getName() + ".gif";
+		String relativePath = WorkflowPrefManager.pathSysImagePref.get() + "/" + getName().toLowerCase() + ".gif";
 		File f = new File(WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path)+relativePath);
 		if(!f.exists()){
-			relativePath = WorkflowPrefManager.pathUserImagePref.get() + "/" + getName() + ".gif";
+			relativePath = WorkflowPrefManager.pathUserImagePref.get() + "/" + getName().toLowerCase() + ".gif";
 		}
 		return relativePath;
 	}
