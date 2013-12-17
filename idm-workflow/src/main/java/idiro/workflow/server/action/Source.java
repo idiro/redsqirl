@@ -172,6 +172,9 @@ public class Source extends DataflowAction {
 
 				String error = null;
 				DFEOutput out = null;
+				
+				boolean setHeader = true;
+				
 				try{
 					out = output.get(out_name);
 				}catch(Exception e){
@@ -196,12 +199,21 @@ public class Source extends DataflowAction {
 									.getFirstChild("browse").
 									getFirstChild("output")
 									.getFirstChild("property").getSubTreeList().iterator();
+							
 							while(itProp.hasNext()){
 								Tree<String> prop = itProp.next();
 								String name = prop.getHead();
 								String value = prop.getFirstChild().getHead();
+								
+								logger.info("out addProperty " + name + " " + value);
+								
 								out.addProperty(name, value);
-							}	
+								
+								if(name.equalsIgnoreCase("header") && value != null && !"".equals(value)){
+									setHeader = false;
+								}
+								
+							}
 						}catch(Exception e){
 							logger.debug("No properties");
 						}
@@ -213,9 +225,11 @@ public class Source extends DataflowAction {
 							String path = getInteraction(key_dataset).getTree()
 									.getFirstChild("browse").getFirstChild("output")
 									.getFirstChild("path").getFirstChild().getHead();
+							
 							if (path.isEmpty()) {
 								error = "Path cannot be empty";
 							}else{
+								logger.info("Checkpath : " + path);
 								out.setPath(path);
 							}
 						}catch(Exception e){
@@ -223,47 +237,55 @@ public class Source extends DataflowAction {
 						}
 					}
 
-
-					//Set features
-					if(error == null){
-						try{
-							List<Tree<String>> features =  getInteraction(key_dataset)
-									.getTree().getFirstChild("browse").getFirstChild("output")
-									.getChildren("feature");
-							if(features == null || features.isEmpty()){
-								logger.warn("The list of features cannot be null or empty, could be calculated automatically from the path");
-							}else{
-								FeatureList outF = new OrderedFeatureList();
-
-								for (Iterator<Tree<String>> iterator =features.iterator(); iterator.hasNext();) {
-									Tree<String> cur = iterator.next();
-
-									String name = cur.getFirstChild("name").getFirstChild()
-											.getHead();
-									String type = cur.getFirstChild("type").getFirstChild()
-											.getHead();
-
-									logger.info("updateOut name " + name);
-									logger.info("updateOut type " + type);
-
-									try {
-										outF.addFeature(name, FeatureType.valueOf(type));
-									} catch (Exception e) {
-										error = "The type " + type + " does not exist";
-									}
-
-								}
-								//Update the feature list only if it looks good
-								String warn = out.checkFeatures(outF); 
-								if(warn == null){
-									out.setFeatures(outF);
+					logger.info("setHeader : " + setHeader);
+					
+					if(setHeader){
+						
+						//Set features
+						if(error == null){
+							try{
+								List<Tree<String>> features =  getInteraction(key_dataset)
+										.getTree().getFirstChild("browse").getFirstChild("output")
+										.getChildren("feature");
+								
+								if(features == null || features.isEmpty()){
+									logger.warn("The list of features cannot be null or empty, could be calculated automatically from the path");
 								}else{
-									logger.info(warn);
+									FeatureList outF = new OrderedFeatureList();
+
+									for (Iterator<Tree<String>> iterator =features.iterator(); iterator.hasNext();) {
+										Tree<String> cur = iterator.next();
+
+										String name = cur.getFirstChild("name").getFirstChild()
+												.getHead();
+										String type = cur.getFirstChild("type").getFirstChild()
+												.getHead();
+
+										logger.info("updateOut name " + name);
+										logger.info("updateOut type " + type);
+
+										try {
+											
+											logger.info("outF.addFeature "+name +" "+type);
+											outF.addFeature(name, FeatureType.valueOf(type));
+										} catch (Exception e) {
+											error = "The type " + type + " does not exist";
+										}
+
+									}
+									//Update the feature list only if it looks good
+									String warn = out.checkFeatures(outF); 
+									if(warn == null){
+										out.setFeatures(outF);
+									}else{
+										logger.info(warn);
+									}
 								}
+							}catch(Exception e){
+								error = "Error in the tree";
 							}
-						}catch(Exception e){
-							error = "Error in the tree";
 						}
+						
 					}
 
 					if(error == null){

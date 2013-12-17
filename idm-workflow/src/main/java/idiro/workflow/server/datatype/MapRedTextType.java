@@ -45,7 +45,6 @@ public class MapRedTextType extends DataOutput{
 
 	public final static String key_delimiter = "delimiter";
 	public final static String key_header = "header";
-	//public final static String key_delimiter_char = "delimiter_char";
 
 	protected static HDFSInterface hdfsInt;
 
@@ -54,7 +53,7 @@ public class MapRedTextType extends DataOutput{
 		if(hdfsInt == null){
 			hdfsInt = new HDFSInterface();
 		}
-		//addProperty(key_header, "");
+		addProperty(key_header, "");
 	}
 
 	public MapRedTextType(FeatureList features) throws RemoteException {
@@ -62,7 +61,7 @@ public class MapRedTextType extends DataOutput{
 		if(hdfsInt == null){
 			hdfsInt = new HDFSInterface();
 		}
-		//addProperty(key_header, "");
+		addProperty(key_header, "");
 	}
 
 	@Override
@@ -144,6 +143,9 @@ public class MapRedTextType extends DataOutput{
 			}
 			hCh.close();
 		}
+		
+		logger.info("checking if path exitst " + ok );
+		
 		return ok;
 	}
 
@@ -197,8 +199,11 @@ public class MapRedTextType extends DataOutput{
 		}
 		return ans;
 	}
-	
+
 	private String setFeaturesFromHeader() throws RemoteException {
+		
+		logger.info("setFeaturesFromHeader --");
+		
 		String header = getProperty(key_header);
 		String error = null;
 
@@ -214,7 +219,8 @@ public class MapRedTextType extends DataOutput{
 						if(nameType.length !=2){
 							error = "The header have to contains name and type paired";
 						}else{
-							newFL.addFeature(nameType[0], FeatureType.valueOf(nameType[1]));
+							logger.info("nameType[1] " + nameType[1]);
+							newFL.addFeature(nameType[0], FeatureType.valueOf(nameType[1].toUpperCase()));
 						}
 					}
 				}else{
@@ -225,6 +231,7 @@ public class MapRedTextType extends DataOutput{
 						int j = 0;
 						while(it.hasNext()){
 							String featName = it.next();
+							logger.info("getFeatureType featName " + featName);
 							newFL.addFeature(newLabels[j].trim(),features.getFeatureType(featName));
 							++j;
 						}
@@ -247,17 +254,21 @@ public class MapRedTextType extends DataOutput{
 
 		}
 
+		logger.info("setFeaturesFromHeader error " + error);
 		return error;
 	}
-	
+
 	@Override
 	public void setFeatures(FeatureList fl){
-		if(getProperty(key_header) == null || getProperty(key_header).trim().isEmpty()){
-			super.setFeatures(fl);
-		}
+		//if(getProperty(key_header) == null || getProperty(key_header).trim().isEmpty()){
+		logger.info("setFeatures :");	
+		super.setFeatures(fl);
+		//}
 	}
 
 	private void generateFeaturesMap() throws RemoteException{
+
+		logger.info("generateFeaturesMap --");
 
 		features = new OrderedFeatureList();
 		try {
@@ -266,8 +277,16 @@ public class MapRedTextType extends DataOutput{
 				for (String line : lines){
 					if (!line.trim().isEmpty()){
 						int cont = 0;
+
+
 						for (String s : line.split(Pattern.quote(getChar(getProperty(key_delimiter))))){
 							String nameColumn = generateColumnName(cont++);
+
+							logger.info("line: " + line);
+							logger.info("s: " + s);
+							logger.info("key_delimiter: "+Pattern.quote(getChar(getProperty(key_delimiter))));
+							logger.info("new nameColumn: " + nameColumn);
+
 							FeatureType type = getType(s.trim());
 							if (features.containsFeature(nameColumn)){
 								if (!canCast(type, features.getFeatureType(nameColumn))){
@@ -278,12 +297,15 @@ public class MapRedTextType extends DataOutput{
 								features.addFeature(nameColumn, type);
 							}
 						}
+
 					}
 				}
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
+
+
 	}
 
 	private String getDefaultDelimiter(String text){
@@ -392,21 +414,36 @@ public class MapRedTextType extends DataOutput{
 					String text = list.get(0);
 					if (getProperty(key_delimiter) == null){
 						String delimiter = getDefaultDelimiter(text);
+
+						logger.info("delimiter -> " + delimiter);
+
 						super.addProperty(key_delimiter, delimiter);
 					}
 					else{
 						if (!text.contains(getChar(getProperty(key_delimiter)))){
 							String delimiter = getDefaultDelimiter(text);
+
+							logger.info("delimiter -> " + delimiter);
+
 							super.addProperty(key_delimiter, delimiter);
-							
+
 						}
 					}
 				}
-				generateFeaturesMap();
-				String error = setFeaturesFromHeader();
-				if(error != null){
-					throw new RemoteException(error);
+
+				String header = getProperty(key_header);
+				if(header != null && !"".equalsIgnoreCase(header)){
+
+					String error = setFeaturesFromHeader();
+					if(error != null){
+						logger.info("error setFeaturesFromHeader -> " + error);
+						throw new RemoteException(error);
+					}
+
+				}else{
+					generateFeaturesMap();
 				}
+
 			}
 		}
 
@@ -414,25 +451,41 @@ public class MapRedTextType extends DataOutput{
 
 	@Override
 	public String checkFeatures(FeatureList fl) throws RemoteException{
+		
+		logger.info("checkFeatures");
+		
 		String error = null;
 		if(isPathExists() && features != null){
+			
+			logger.info("features.getSize " + features.getSize());
+			logger.info("fl.getSize " + fl.getSize());
+			
 			if(features.getSize() != fl.getSize()){
 				error = "The list is not of the right size";
 			}
+			
 			if(error == null){
 				Iterator<String> flIt = fl.getFeaturesNames().iterator();
 				Iterator<String> featuresIt = features.getFeaturesNames().iterator();
 				while(flIt.hasNext() && error != null){
 					String flName = flIt.next();
 					String featName = featuresIt.next();
+					
+					logger.info("flName " + flName);
+					logger.info("featName " + featName);
+					
 					if(!fl.getFeatureType(flName).equals(features.getFeatureType(featName))){
 						error = "The feature type does not correspond between "+flName+" and "+featName;
 					}
 				}
 			}
+			
 		}
+		
+		logger.info("checkFeatures error " + error);
+		
 		return error;
-	}	
+	}
 
 	private String generateColumnName(int columnIndex){
 		if (columnIndex > 25){
