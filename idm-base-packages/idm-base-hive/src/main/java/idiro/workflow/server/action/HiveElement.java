@@ -2,6 +2,7 @@ package idiro.workflow.server.action;
 
 import idiro.utils.FeatureList;
 import idiro.utils.Tree;
+import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.DataProperty;
 import idiro.workflow.server.DataflowAction;
 import idiro.workflow.server.Page;
@@ -10,6 +11,7 @@ import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.datatype.HiveTypeWithWhere;
 import idiro.workflow.server.enumeration.DisplayType;
+import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.oozie.HiveAction;
@@ -19,9 +21,12 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Common functionalities for a Hive action.
@@ -55,6 +60,7 @@ public abstract class HiveElement extends DataflowAction {
 	protected ConditionInteraction condInt;
 	protected PartitionInteraction partInt;
 	protected UserInteraction typeOutputInt;
+	protected UserInteraction groupingInt;
 
 	/**
 	 * entries
@@ -185,38 +191,24 @@ public abstract class HiveElement extends DataflowAction {
 		return error;
 	}
 
-	/**
-	 * Add or Remove the last page.
-	 * If a new partition is created by the element,
-	 * a choice of data type have to be done.
-	 * @throws RemoteException
-	 */
-	public void addOrRemoveOutPage() throws RemoteException{
-//		List<Tree<String>> parts = partInt.getTree()
-//				.getFirstChild("table").getChildren("row");
-//
-//		if(parts.isEmpty()){
-//			if(pageList.size() > minNbOfPage){
-//				typeOutputInt = null;
-//				pageList.remove(pageList.size()-1);
-//			}
-//		}else if(pageList.size() == minNbOfPage){
-//			Page page = addPage("Output selection",
-//					"",
-//					1);
-//
-//			typeOutputInt = new UserInteraction(
-//					key_outputType,
-//					"Specify Partition only, if you want to use "+
-//							"only the newly created partition in the next actions",
-//							DisplayType.list,
-//							0,
-//							0);
-//
-//			page.addInteraction(typeOutputInt);
-//		}
-	}
 
+	public void UpdateGroupInt(DFEInteraction interaction,DFEOutput in) throws RemoteException{
+		Tree<String> list = null;
+		Tree<String> tree = interaction.getTree();
+		if(tree.getSubTreeList().isEmpty()){
+			list = tree.add("applist");
+			list.add("output");
+		}else{
+			list = tree.getFirstChild("applist"); 
+			list.remove("values");
+		}
+		Tree<String> values = list.add("values");
+		Iterator<String> it = in.getFeatures().getFeaturesNames().iterator();
+		while(it.hasNext()){
+			values.add("value").add(it.next());
+		}
+	}
+	
 	/**
 	 * Update the output type
 	 * @throws RemoteException 
@@ -274,5 +266,26 @@ public abstract class HiveElement extends DataflowAction {
 	 */
 	public final PartitionInteraction getPartInt() {
 		return partInt;
+	}
+
+	public UserInteraction getGroupingInt() {
+		
+		return groupingInt;
+	}
+
+	public Set<String> getGroupByFeatures() throws RemoteException {
+		Set<String> features =new HashSet<String>();
+		Tree<String> tree = getGroupingInt().getTree();
+		logger.info("group tree : "+((TreeNonUnique<String>)tree).toString());
+		if(tree.getFirstChild("applist")
+				.getFirstChild("output").getSubTreeList().size() > 0){
+			Iterator<Tree<String>>values = tree.getFirstChild("applist")
+			.getFirstChild("output").getChildren("value").iterator();
+			while(values.hasNext()){
+				features.add(values.next().getFirstChild().getHead());
+			}
+		}
+		
+		return features;
 	}
 }

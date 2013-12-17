@@ -128,8 +128,11 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore{
 				}
 				
 				logger.info("new jdbc");
-				
-				conn = new JdbcConnection(new JdbcHdfsPrefsDetails(url), new HiveBasicStatement());
+				JdbcHdfsPrefsDetails pref = new JdbcHdfsPrefsDetails(url);
+				logger.info("user is ");
+				logger.info( pref.getUsername());
+				logger.info( pref.getPassword());
+				conn = new JdbcConnection(pref, new HiveBasicStatement());
 				isInit = true;
 				
 				logger.info("Pass ... new jdbc ");

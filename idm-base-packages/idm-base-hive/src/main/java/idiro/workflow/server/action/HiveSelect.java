@@ -34,7 +34,7 @@ public class HiveSelect extends HiveElement{
 	private Page page2;
 
 	private TableSelectInteraction tSelInt;
-	private DFEInteraction groupingInt;
+	
 
 	public HiveSelect() throws RemoteException {
 		super(2,1,1);
@@ -225,7 +225,7 @@ public class HiveSelect extends HiveElement{
 	/**
 	 * @return the groupingInt
 	 */
-	public final DFEInteraction getGroupingInt() {
+	public final UserInteraction getGroupingInt() {
 		return groupingInt;
 	}
 

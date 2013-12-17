@@ -27,7 +27,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	TableUnionInteractionTests.class,
 	HiveSelectTests.class,
 	HiveUnionTests.class,
-	HiveJoinTests.class*/
+	HiveJoinTests.class
+	HiveAggregTests.class*/
 	})
 public class SetupHiveEnvironmentTest {
 

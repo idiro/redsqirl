@@ -123,7 +123,6 @@ public class HiveJoin extends HiveElement{
 		}else if(interaction.getName().equals(jrInt.getName())){
 			jrInt.update();
 		}else if(interaction.getName().equals(tJoinInt.getName())){
-			addOrRemoveOutPage();
 			tJoinInt.update();
 		}else if(typeOutputInt != null && interaction == typeOutputInt){
 			updateType();

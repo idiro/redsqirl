@@ -259,57 +259,6 @@ public abstract class PigElement extends DataflowAction {
 		}
 	}
 	
-	public void addOrRemoveOutPage() throws RemoteException{
-//		logger.info("getting parts");
-//		List<Tree<String>> parts = dataSubtypeInt.getTree()
-//				.getFirstChild("table").getChildren("row");
-//		if(parts.isEmpty()){
-//			if(pageList.size() > minNbOfPage){
-//				typeOutputInt = null;
-//				pageList.remove(pageList.size()-1);
-//			}
-//		}else if(pageList.size() == minNbOfPage){
-//			Page page = addPage("Output selection",
-//					"",
-//					1);
-//
-//			typeOutputInt = new UserInteraction(
-//					key_outputType,
-//					"Specify Partition only, if you want to use "+
-//							"only the newly created partition in the next actions",
-//							DisplayType.list,
-//							0,
-//							0);
-//
-//			page.addInteraction(typeOutputInt);
-//		}
-	}
-	
-	
-//	protected void addOutputPage() throws RemoteException{
-//		Page page = addPage("Output",
-//				"Output_Options",
-//				1);
-//		
-//		delimiterOutputInt = new UserInteraction(
-//				"Output_Delimiter",
-//				"Please specify the delimiter for the output file.",
-//				DisplayType.list,
-//				0,
-//				0);
-//		
-//		page.addInteraction(delimiterOutputInt);
-//		
-//		dataSubtypeInt = new UserInteraction(
-//				"Data_subtype",
-//				"Please specify a data subtype",
-//				DisplayType.list,
-//				0,
-//				1); 
-//
-//		page.addInteraction(dataSubtypeInt);
-//	}
-	
 	public String getRemoveQueryPiece(String out) throws RemoteException{
 		logger.debug("create remove...");
 		return "rmf "+out;
@@ -318,7 +267,7 @@ public abstract class PigElement extends DataflowAction {
 	public String getLoadQueryPiece(DFEOutput out) throws RemoteException{
 		logger.debug("create load...");
 		
-		String delimiter = out.getProperty(MapRedTextType.key_delimiter_char);
+		String delimiter = out.getProperty(MapRedTextType.key_delimiter);
 		
 		if (delimiter == null){
 			delimiter = default_delimiter;

@@ -3,6 +3,7 @@ package idiro.workflow.server.action;
 import idiro.utils.FeatureList;
 import idiro.utils.OrderedFeatureList;
 import idiro.utils.Tree;
+import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.DataOutput;
 import idiro.workflow.server.DataflowAction;
 import idiro.workflow.server.Page;
@@ -104,21 +105,19 @@ public class Source extends DataflowAction {
 
 					logger.info("Getting CheckDirectory output type ");
 
-					//Get the subtype
-					String subtype = getInteraction(key_datasubtype)
-							.getTree().getFirstChild("list")
-							.getFirstChild("output").getFirstChild()
-							.getHead();
+					// Get the subtype
+					String subtype = getInteraction(key_datasubtype).getTree()
+							.getFirstChild("list").getFirstChild("output")
+							.getFirstChild().getHead();
 
-
-					if(dataOutputClassName == null){
-						dataOutputClassName = WorkflowPrefManager
-								.getInstance()
+					if (dataOutputClassName == null) {
+						dataOutputClassName = WorkflowPrefManager.getInstance()
 								.getNonAbstractClassesFromSuperClass(
 										DataOutput.class.getCanonicalName());
 					}
-					//Find the class and create an instance
-					Iterator<String> dataOutputClassNameIt = dataOutputClassName.iterator();
+					// Find the class and create an instance
+					Iterator<String> dataOutputClassNameIt = dataOutputClassName
+							.iterator();
 
 					logger.info("output type : " + subtype);
 					DFEOutput outNew = null;
@@ -134,13 +133,14 @@ public class Source extends DataflowAction {
 
 					}
 
-					//Set the instance as output if necessary
+					// Set the instance as output if necessary
 					if (outNew != null) {
-						if (output.get(out_name) == null ||
-								!output.get(out_name).getTypeName().equalsIgnoreCase(subtype)) {
+						if (output.get(out_name) == null
+								|| !output.get(out_name).getTypeName()
+										.equalsIgnoreCase(subtype)) {
 							logger.info("output set");
 							output.put(out_name, (DFEOutput) outNew);
-							//Set the Output as RECORDED ALWAYS
+							// Set the Output as RECORDED ALWAYS
 							output.get(out_name).setSavingState(
 									SavingState.RECORDED);
 						}
@@ -172,115 +172,127 @@ public class Source extends DataflowAction {
 
 				String error = null;
 				DFEOutput out = null;
-				try{
+				try {
 					out = output.get(out_name);
-				}catch(Exception e){
+				} catch (Exception e) {
 					error = "Output cannot be null";
 				}
 				try {
-					//Set path to null to avoid unnecessary check
-					if(error == null){
-						try{
+					// Set path to null to avoid unnecessary check
+					if (error == null) {
+						try {
 							out.setPath(null);
 							out.setFeatures(null);
 							out.removeAllProperties();
-						}catch(Exception e){
+						} catch (Exception e) {
 							error = "Error reseting output";
 						}
 					}
 
-					//Add properties
+					// Add properties
 					if (error == null) {
-						try{
-							Iterator<Tree<String>> itProp = getInteraction(key_dataset).getTree()
-									.getFirstChild("browse").
-									getFirstChild("output")
-									.getFirstChild("property").getSubTreeList().iterator();
-							while(itProp.hasNext()){
+						try {
+							Iterator<Tree<String>> itProp = getInteraction(
+									key_dataset).getTree()
+									.getFirstChild("browse")
+									.getFirstChild("output")
+									.getFirstChild("property").getSubTreeList()
+									.iterator();
+							while (itProp.hasNext()) {
 								Tree<String> prop = itProp.next();
 								String name = prop.getHead();
 								String value = prop.getFirstChild().getHead();
 								out.addProperty(name, value);
-							}	
-						}catch(Exception e){
+							}
+						} catch (Exception e) {
 							logger.debug("No properties");
 						}
 					}
 
-					//Check path
-					if(error == null){
-						try{
+					// Check path
+					if (error == null) {
+						try {
+							logger.info("dataset tree "+((TreeNonUnique<String>)getInteraction(key_dataset).getTree()).toString());
 							String path = getInteraction(key_dataset).getTree()
-									.getFirstChild("browse").getFirstChild("output")
-									.getFirstChild("path").getFirstChild().getHead();
+									.getFirstChild("browse")
+									.getFirstChild("output")
+									.getFirstChild("path").getFirstChild()
+									.getHead();
 							if (path.isEmpty()) {
 								error = "Path cannot be empty";
-							}else{
+							} else {
 								out.setPath(path);
 							}
-						}catch(Exception e){
-							error = "Error when setting the path: "+e.getMessage();
+						} catch (Exception e) {
+							error = "Error when setting the path: "
+									+ e.getMessage();
 						}
 					}
 
-
-					//Set features
-					if(error == null){
-						try{
-							List<Tree<String>> features =  getInteraction(key_dataset)
-									.getTree().getFirstChild("browse").getFirstChild("output")
+					// Set features
+					if (error == null) {
+						try {
+							List<Tree<String>> features = getInteraction(
+									key_dataset).getTree()
+									.getFirstChild("browse")
+									.getFirstChild("output")
 									.getChildren("feature");
-							if(features == null || features.isEmpty()){
+							if (features == null || features.isEmpty()) {
 								logger.warn("The list of features cannot be null or empty, could be calculated automatically from the path");
-							}else{
+							} else {
 								FeatureList outF = new OrderedFeatureList();
 
-								for (Iterator<Tree<String>> iterator =features.iterator(); iterator.hasNext();) {
+								for (Iterator<Tree<String>> iterator = features
+										.iterator(); iterator.hasNext();) {
 									Tree<String> cur = iterator.next();
 
-									String name = cur.getFirstChild("name").getFirstChild()
-											.getHead();
-									String type = cur.getFirstChild("type").getFirstChild()
-											.getHead();
+									String name = cur.getFirstChild("name")
+											.getFirstChild().getHead();
+									String type = cur.getFirstChild("type")
+											.getFirstChild().getHead();
 
 									logger.info("updateOut name " + name);
 									logger.info("updateOut type " + type);
 
 									try {
-										outF.addFeature(name, FeatureType.valueOf(type));
+										outF.addFeature(name,
+												FeatureType.valueOf(type));
 									} catch (Exception e) {
-										error = "The type " + type + " does not exist";
+										error = "The type " + type
+												+ " does not exist";
 									}
 
 								}
-								//Update the feature list only if it looks good
-								String warn = out.checkFeatures(outF); 
-								if(warn == null){
+								// Update the feature list only if it looks good
+								String warn = out.checkFeatures(outF);
+								if (warn == null) {
 									out.setFeatures(outF);
-								}else{
+								} else {
 									logger.info(warn);
 								}
 							}
-						}catch(Exception e){
+						} catch (Exception e) {
 							error = "Error in the tree";
 						}
 					}
 
-					if(error == null){
-						try{
-							if(!out.isPathExists()){
+					if (error == null) {
+						try {
+							if (!out.isPathExists()) {
 								error = "The path does not exist";
-							}else if(out.isPathValid() != null){
-								error = "The path is not valid: "+out.isPathValid();
+							} else if (out.isPathValid() != null) {
+								error = "The path is not valid: "
+										+ out.isPathValid();
 							}
-						}catch(Exception e){
-							error = "Fail to check the existence or the validity of the path: "+e;
+						} catch (Exception e) {
+							error = "Fail to check the existence or the validity of the path: "
+									+ e;
 							logger.error(error);
 						}
 
 					}
 				} catch (Exception e) {
-					error = "Get exception in source: "+e;
+					error = "Get exception in source: " + e;
 				}
 				return error;
 			}
@@ -317,10 +329,11 @@ public class Source extends DataflowAction {
 	@Override
 	public void update(DFEInteraction interaction) throws RemoteException {
 
-		logger.info("updateinteraction Source ");
+		logger.info("updateinteraction Source " + interaction.getName() + " "
+				+ getInteraction(key_datatype).getName());
 
-		if (interaction.getName()
-				.equals(getInteraction(key_datatype).getName())) {
+		if (interaction.getName() == getInteraction(key_datatype).getName()) {
+			logger.info("update " + interaction.getName());
 			updateDataType(interaction.getTree());
 		} else if (interaction.getName().equals(
 				getInteraction(key_datasubtype).getName())) {
@@ -333,6 +346,7 @@ public class Source extends DataflowAction {
 	public void updateDataType(Tree<String> treeDatatype)
 			throws RemoteException {
 		Tree<String> list = null;
+		logger.info("updating datatype tree");
 		if (treeDatatype.getSubTreeList().isEmpty()) {
 			list = treeDatatype.add("list");
 			list.add("output");
@@ -340,6 +354,7 @@ public class Source extends DataflowAction {
 			Tree<String> values = list.add("values");
 			values.add("value").add("Hive");
 			values.add("value").add("HDFS");
+			logger.info("added values to datatype tree");
 		}
 	}
 
@@ -371,10 +386,8 @@ public class Source extends DataflowAction {
 			String type = interaction.getTree().getFirstChild("list")
 					.getFirstChild("output").getFirstChild().getHead();
 
-
-			if(dataOutputClassName == null){
-				dataOutputClassName = WorkflowPrefManager
-						.getInstance()
+			if (dataOutputClassName == null) {
+				dataOutputClassName = WorkflowPrefManager.getInstance()
 						.getNonAbstractClassesFromSuperClass(
 								DataOutput.class.getCanonicalName());
 			}
@@ -393,7 +406,7 @@ public class Source extends DataflowAction {
 							(new HiveType()).getTypeName()) || wa.getTypeName()
 							.equalsIgnoreCase(
 									(new MapRedTextType()).getTypeName()))
-									&& outputT.getSubTreeList().size() == 0) {
+							&& outputT.getSubTreeList().size() == 0) {
 						outputT.add(wa.getTypeName());
 					}
 				}
@@ -425,7 +438,7 @@ public class Source extends DataflowAction {
 				treeDataset.getFirstChild("browse").add("output");
 				treeDataset.getFirstChild("browse").add("type").add(newType);
 				treeDataset.getFirstChild("browse").add("subtype")
-				.add(newSubtype);
+						.add(newSubtype);
 			}
 		}
 	}
