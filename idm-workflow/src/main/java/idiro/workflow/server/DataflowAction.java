@@ -304,6 +304,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 			Iterator<DFEInteraction> itInter = getInteractions().iterator();
 			while(itInter.hasNext()){
 				DFEInteraction interCur = itInter.next();
+				logger.info("action name to write xml: "+interCur.getName());
 				Element inter = doc.createElement(interCur.getName());
 				interCur.writeXml(doc, inter);
 				parent.appendChild(inter);

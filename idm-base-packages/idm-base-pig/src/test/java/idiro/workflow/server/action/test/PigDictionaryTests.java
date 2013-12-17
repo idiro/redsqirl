@@ -8,6 +8,7 @@ import idiro.utils.Tree;
 import idiro.workflow.server.DataOutput;
 import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.action.PigAggregator;
+import idiro.workflow.server.action.PigTypeConvert;
 import idiro.workflow.server.action.Source;
 import idiro.workflow.server.action.utils.PigDictionary;
 import idiro.workflow.server.datatype.MapRedTextType;
@@ -227,6 +228,23 @@ public class PigDictionaryTests {
 		// "/testPigFeat.txt");
 		logger.info(dictionary
 				.convertStringtoHelp("@function:REPLACE()@short:Replaces existing characters in a string with new characters@param:CHARARRAY string to replace@param:CHARARRAY character to replace@param:CHARRAY character to replace with@description:Use the REPLACE function to replace existing characters in a string with new characters@example:REPLACE(\'open source software\',\'software\',\'wiki\') returns \'open source wiki\'"));
+	}
+	
+//	@Test(expected = Exception.class)
+	@Test
+	public void GetReturnType() throws Exception{
+		PigDictionary dict = PigDictionary.getInstance();
+		
+		String expr="AVG(A)";
+		FeatureList features = new OrderedFeatureList();
+		features.addFeature("A", FeatureType.INT);
+		features.addFeature("B",FeatureType.INT);
+		Set<String> featureAggreg = new HashSet<String>();
+//		featureAggreg.add("A");
+		featureAggreg.add("B");
+		String type = dict.getReturnType(expr, features, featureAggreg);
+		logger.info("check returns "+dict.check(type,features.getFeatureType("A").name()));
+		logger.info("type returnred : "+type);
 	}
 
 	

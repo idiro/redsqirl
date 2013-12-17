@@ -8,14 +8,15 @@ import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEOutput;
 
 import java.rmi.RemoteException;
+import java.util.Iterator;
 
 /**
  * Action to do a simple select statement in Pig Latin.
  * 
  * @author marcos
- *
+ * 
  */
-public class PigSelect extends PigElement{
+public class PigSelect extends PigElement {
 
 	/**
 	 * 
@@ -27,85 +28,59 @@ public class PigSelect extends PigElement{
 
 	private Page page1;
 	private Page page2;
-	
+
 	private PigTableSelectInteraction tSelInt;
 	private PigGroupInteraction groupingInt;
 	private PigFilterInteraction filterInt;
 
 	public PigSelect() throws RemoteException {
-		super(2,1,1);
-
+		super(2, 1, 1);
 
 		page1 = addPage("Feature operations",
-				"Create operation feature per feature",
-				3);
+				"Create operation feature per feature", 3);
 		tSelInt = new PigTableSelectInteraction(
 				key_featureTable,
 				"Please specify the operations to be executed for each feature",
-				0,
-				0,
-				this);
+				0, 0, this);
 
-//		typeOutputInt = new UserInteraction(
-//				"Output Type",
-//				"Setting the output type",
-//						DisplayType.list,
-//						2,
-//						0);
 		page1.addInteraction(tSelInt);
-		
-		page2 = addPage("Select",
-				"Select Conditions",
-				1);
+
+		page2 = addPage("Select", "Select Conditions", 1);
 
 		filterInt = new PigFilterInteraction(key_condition,
-				"Please specify the condition of the select",
-				0,
-				0, 
-				this, 
+				"Please specify the condition of the select", 0, 0, this,
 				key_input);
-		
-		delimiterOutputInt = new UserInteraction("Delimiter", "Setting output delimiter", DisplayType.list, 1, 0);
-		
-		savetypeOutputInt = new UserInteraction(
-		"Output Type",
-		"Setting the output type",
-				DisplayType.list,
-				2,
-				0);
-//		groupingInt = new PigGroupInteraction(
-//				key_grouping,
-//				"Please specify to group",
-//				DisplayType.appendList,
-//				0,
-//				1); 
+
+		delimiterOutputInt = new UserInteraction("Delimiter",
+				"Setting output delimiter", DisplayType.list, 1, 0);
+
+		savetypeOutputInt = new UserInteraction("Output Type",
+				"Setting the output type", DisplayType.list, 2, 0);
 
 		page2.addInteraction(filterInt);
 		page2.addInteraction(delimiterOutputInt);
 		page2.addInteraction(savetypeOutputInt);
-//		page1.addInteraction(groupingInt);
-		
+
 	}
-	
-//	@Override
+
+	// @Override
 	public String getName() throws RemoteException {
 		return "pig_select";
 	}
 
-//	@Override
+	// @Override
 	public void update(DFEInteraction interaction) throws RemoteException {
 		DFEOutput in = getDFEInput().get(key_input).get(0);
-		if(in != null){
-			if(interaction == filterInt){
+		if (in != null) {
+			if (interaction == filterInt) {
 				filterInt.update();
-			}else if(interaction == delimiterOutputInt){
+			} else if (interaction == delimiterOutputInt) {
 				updateDelimiterOutputInt();
-			}
-			else if(interaction == tSelInt){
+			} else if (interaction == tSelInt) {
 				tSelInt.update(in);
-			}else if(interaction == dataSubtypeInt){
+			} else if (interaction == dataSubtypeInt) {
 				updateDataSubTypeInt();
-			}else if(interaction == savetypeOutputInt){
+			} else if (interaction == savetypeOutputInt) {
 				try {
 					updateOutputType();
 					logger.info("output type");
@@ -118,43 +93,60 @@ public class PigSelect extends PigElement{
 		}
 	}
 
-	public String getQuery() throws RemoteException{
+	public String getQuery() throws RemoteException {
 
 		String query = null;
-		if(getDFEInput() != null){
+		if (getDFEInput() != null) {
 			DFEOutput in = getDFEInput().get(key_input).get(0);
 			logger.debug("In and out...");
-			//Output
+			// Output
 			DFEOutput out = output.values().iterator().next();
 			
-			String remove = getRemoveQueryPiece(out.getPath())+"\n\n";
-			
-			String load = getCurrentName()+" = "+getLoadQueryPiece(in)+";\n\n";
-			
 			String filter = filterInt.getQueryPiece(getCurrentName());
-			if (!filter.isEmpty()){
-				filter = getNextName()+" = "+filter+";\n\n";
+			
+			String loader = "";
+			String filterLoader = "";
+			Iterator<String> aliases = getAliases().keySet().iterator();
+
+			if (!filter.isEmpty()) {
+				if (aliases.hasNext()) {
+					logger.info("load data by alias");
+					loader = aliases.next();
+					filter = loader + " = " + filter + ";\n\n";
+					filterLoader = loader;
+					loader = getCurrentName();
+				}
+			} else {
+				if (aliases.hasNext()) {
+					loader = aliases.next();
+				}
+			}
+
+			String remove = getRemoveQueryPiece(out.getPath()) + "\n\n";
+
+			String load = loader + " = " + getLoadQueryPiece(in)
+					+ ";\n\n";
+			
+			if (filterLoader.isEmpty()) {
+				filterLoader = getCurrentName();
 			}
 			
-//			String groupby = groupingInt.getQueryPiece(getCurrentName());
-//			if (!groupby.isEmpty()){
-//				groupby = getNextName()+" = "+groupby+";\n\n";
-//			}
-			
-			String select=tSelInt.getQueryPiece(out, getCurrentName());
-			if (!select.isEmpty()){
-				select = getNextName()+" = "+select+";\n\n";
+			String select = tSelInt.getQueryPiece(out, filterLoader);
+			if (!select.isEmpty()) {
+				select = getNextName() + " = " + select + ";\n\n";
 			}
+
 			
+
+
 			String store = getStoreQueryPiece(out, getCurrentName());
-			
-			if(select.isEmpty()){
+
+			if (select.isEmpty()) {
 				logger.debug("Nothing to select");
-			}else{
+			} else {
 				query = remove;
 				query += load;
 				query += filter;
-//				query += groupby;
 				query += select;
 				query += store;
 			}
@@ -169,7 +161,7 @@ public class PigSelect extends PigElement{
 	public PigTableSelectInteraction gettSelInt() {
 		return tSelInt;
 	}
-	
+
 	/**
 	 * @return the condInt
 	 */

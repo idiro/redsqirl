@@ -56,7 +56,7 @@ public class HiveAggregator extends HiveElement {
 
 	@Override
 	public FeatureList getNewFeatures() throws RemoteException {
-		return null;
+		return getDFEInput().get(key_input).get(0).getFeatures();
 	}
 
 	@Override
@@ -85,5 +85,24 @@ public class HiveAggregator extends HiveElement {
 		return tSelInt;
 	}
 	
+	
+	public void updateGrouping(
+			Tree<String> treeGrouping,
+			DFEOutput in) throws RemoteException{
+
+		Tree<String> list = null;
+		if(treeGrouping.getSubTreeList().isEmpty()){
+			list = treeGrouping.add("applist");
+			list.add("output");
+		}else{
+			list = treeGrouping.getFirstChild("applist"); 
+			list.remove("values");
+		}
+		Tree<String> values = list.add("values");
+		Iterator<String> it = in.getFeatures().getFeaturesNames().iterator();
+		while(it.hasNext()){
+			values.add("value").add(it.next());
+		}
+	}
 
 }

@@ -66,14 +66,6 @@ public abstract class PigElement extends DataflowAction {
 		super(new PigAction());
 		init(nbInMin,nbInMax);
 		this.minNbOfPage = minNbOfPage;
-//		delimiterOutputInt = new UserInteraction("Delimiter", "Setting output delimiter", DisplayType.list, 0, 0);
-//		
-//		savetypeOutputInt = new UserInteraction(
-//				"Output Type",
-//				"Setting the output type",
-//						DisplayType.list,
-//						0,
-//						0);
 
 	}
 
@@ -104,11 +96,11 @@ public abstract class PigElement extends DataflowAction {
 	
 	@Override
 	public boolean writeOozieActionFiles(File[] files) throws RemoteException {
-		logger.debug("Write queries in file: "+files[0].getAbsolutePath());
+		logger.info("Write queries in file: "+files[0].getAbsolutePath());
 		String toWrite = getQuery();
 		boolean ok = toWrite != null;
 		if(ok){
-			logger.debug("Content of "+files[0].getName()+": "+toWrite);
+			logger.info("Content of "+files[0].getName()+": "+toWrite);
 			try {
 				FileWriter fw = new FileWriter(files[0]);
 				BufferedWriter bw = new BufferedWriter(fw);
@@ -121,7 +113,7 @@ public abstract class PigElement extends DataflowAction {
 			}
 		}
 		
-		logger.debug("Write properties in file: "+files[1].getAbsolutePath());
+		logger.info("Write properties in file: "+files[1].getName());
 		toWrite = getProperties(output.values().iterator().next());
 		ok = toWrite != null;
 		if(ok){
@@ -161,12 +153,6 @@ public abstract class PigElement extends DataflowAction {
 			if(output == null){
 				output = new LinkedHashMap<String, DFEOutput>();
 				output.put(key_output, new MapRedTextType());
-			}else{
-				/*if(output.get(key_output) instanceof MapRedTextType){
-					output.clear();
-					output.put(key_output, new MapRedTextType());
-					logger.info("setting output if instance exists"+output.get(key_output).getPath());
-				}*/
 			}
 			output.get(key_output).setFeatures(new_features);
 		}
@@ -268,7 +254,7 @@ public abstract class PigElement extends DataflowAction {
 		logger.debug("create load...");
 		
 		String delimiter = out.getProperty(MapRedTextType.key_delimiter);
-		
+		delimiter = ((MapRedTextType)out).getPigDelimiter();
 		if (delimiter == null){
 			delimiter = default_delimiter;
 		}
@@ -277,9 +263,10 @@ public abstract class PigElement extends DataflowAction {
 		String createSelect = "LOAD '" + out.getPath() + "' USING "+function+" as (";
 		
 		Iterator<String> it = out.getFeatures().getFeaturesNames().iterator();
+		logger.info("attribute list size : "+out.getFeatures().getSize());
 		while (it.hasNext()){
 			String e = it.next();
-			createSelect += e+":"+out.getFeatures().getFeatureType(e);
+			createSelect += e+":"+PigTypeConvert.getPigType(out.getFeatures().getFeatureType(e));
 			if (it.hasNext()){
 				createSelect += ", ";
 			}
@@ -348,7 +335,7 @@ public abstract class PigElement extends DataflowAction {
 			if (type.equalsIgnoreCase("BINARY MAP-REDUCE DIRECTORY")){
 				function = "BinStorage()";
 			}
-			logger.info("Storeing via "+function);
+			logger.info("Storing via "+function);
 			return function;
 		}catch (Exception e){
 			logger.error("There was an error getting the output type");
