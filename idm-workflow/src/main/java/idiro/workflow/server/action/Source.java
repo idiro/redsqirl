@@ -3,6 +3,7 @@ package idiro.workflow.server.action;
 import idiro.utils.FeatureList;
 import idiro.utils.OrderedFeatureList;
 import idiro.utils.Tree;
+import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.DataOutput;
 import idiro.workflow.server.DataflowAction;
 import idiro.workflow.server.Page;
@@ -222,6 +223,7 @@ public class Source extends DataflowAction {
 					//Check path
 					if(error == null){
 						try{
+							logger.info("tree is : "+((TreeNonUnique<String>)getInteraction(key_dataset).getTree()).toString());
 							String path = getInteraction(key_dataset).getTree()
 									.getFirstChild("browse").getFirstChild("output")
 									.getFirstChild("path").getFirstChild().getHead();
@@ -229,7 +231,7 @@ public class Source extends DataflowAction {
 							if (path.isEmpty()) {
 								error = "Path cannot be empty";
 							}else{
-								logger.info("Checkpath : " + path);
+								logger.info("Checkpath : " + path + " for " +out.getPath());
 								out.setPath(path);
 							}
 						}catch(Exception e){

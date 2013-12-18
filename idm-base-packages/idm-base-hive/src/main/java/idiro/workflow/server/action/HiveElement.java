@@ -269,7 +269,6 @@ public abstract class HiveElement extends DataflowAction {
 	}
 
 	public UserInteraction getGroupingInt() {
-		
 		return groupingInt;
 	}
 
