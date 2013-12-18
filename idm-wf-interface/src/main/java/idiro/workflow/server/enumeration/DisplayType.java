@@ -5,10 +5,10 @@ public enum DisplayType {
 	//Format in: input>[regex>re]/[output>choice]
 	input,
 	
-	//Format in: list>[values>[value>choice]]/[output>choicei]
+	//Format in: list>[values>[value>choice]]/[display>type]/[output>choicei]
 	list,
 	
-	//Format in: applist>[values>[value>choice]]/[output>[value>choicei]]
+	//Format in: applist>[values>[value>choice]]/[display>type]/[output>[value>choicei]]
 	appendList,
 	
 	//Browser

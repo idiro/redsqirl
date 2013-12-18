@@ -30,6 +30,9 @@ function resizeCanvas(){
 		jQuery("#container-"+nameTabs[i]).css("height", jQuery("#canvas-tabs").height()-jQuery("#tabsFooter").height()-30+'px');
 	}
 	
+	jQuery("#tabsFooter canvas").parent().remove();
+	mountObj();
+	
 }
 
 function resizeCanvasOnPageReady(){

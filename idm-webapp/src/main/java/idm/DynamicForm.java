@@ -20,15 +20,15 @@ public class DynamicForm implements Serializable {
 	private String selectedListOptions;
 	private List<SelectItem> appendListOptions = new ArrayList<SelectItem>();
 	private List<String> selectedAppendListOptions;
+	private List<String> selectedListcheckOptions;
 	private List<SelectItem> listSelectedAppendListOptions = new ArrayList<SelectItem>();
 	private DisplayType displayType;
 	private String comboBox;
 	private Tree<String> tree;
 	private String dataTypeName;
 	private String subtypeName;
-	
-
-
+	private String inputValue;
+	private String inputRegex;
 	private String pathBrowser = "";
 	private List<ItemList> listGrid = new ArrayList<ItemList>();
 	private List<ItemList> listFeature = new ArrayList<ItemList>();
@@ -158,6 +158,36 @@ public class DynamicForm implements Serializable {
 
 	public void setSubtypeName(String subtypeName) {
 		this.subtypeName = subtypeName;
+	}
+
+
+	public String getInputValue() {
+		return inputValue;
+	}
+
+
+	public void setInputValue(String inputValue) {
+		this.inputValue = inputValue;
+	}
+
+
+	public String getInputRegex() {
+		return inputRegex;
+	}
+
+
+	public void setInputRegex(String inputRegex) {
+		this.inputRegex = inputRegex;
+	}
+
+
+	public List<String> getSelectedListcheckOptions() {
+		return selectedListcheckOptions;
+	}
+
+
+	public void setSelectedListcheckOptions(List<String> selectedListcheckOptions) {
+		this.selectedListcheckOptions = selectedListcheckOptions;
 	}
 
 }

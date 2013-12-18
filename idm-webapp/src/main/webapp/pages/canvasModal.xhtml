@@ -56,13 +56,23 @@
 				
 				<p><h:outputText value="#{item.legend}"/></p>
 				
+				<!-- input -->
+				
+				<a4j:region>
+					<h:inputText value="#{item.inputValue}" maxlength="255" style="width:395px;" rendered="#{item.displayType == 'input'}" />
+				</a4j:region>
+				
 				<!-- list -->
 				
 				<a4j:region>
 					<rich:comboBox value="#{item.selectedListOptions}" selectFirstOnUpdate="false" width="200" 
-						listWidth="150" listHeight="200" enableManualInput="false" rendered="#{item.displayType == 'list'}" >
+						listWidth="150" listHeight="200" enableManualInput="false" rendered="#{item.displayType == 'list' and item.comboBox == 'Y'}" >
 						<f:selectItems value="#{item.listOptions}" />
 					</rich:comboBox>
+					
+					<h:selectOneRadio value="#{item.selectedListOptions}" rendered="#{item.displayType == 'list' and item.comboBox == 'N'}" layout="pageDirection" >
+						<f:selectItems value="#{item.listOptions}" />
+					</h:selectOneRadio>
 				</a4j:region>
 				
 				<!-- appendList -->
@@ -73,9 +83,9 @@
 						<f:selectItems value="#{item.appendListOptions}" />
 					</rich:comboBox>
 					
-					<h:selectManyListbox value="#{item.selectedAppendListOptions}" rendered="#{item.displayType == 'appendList' and item.comboBox == 'N'}" >
+					<h:selectManyCheckbox value="#{item.selectedAppendListOptions}" rendered="#{item.displayType == 'appendList' and item.comboBox == 'N'}" layout="pageDirection" >
 						<f:selectItems value="#{item.appendListOptions}" />
-					</h:selectManyListbox>
+					</h:selectManyCheckbox>
 				</a4j:region>
 				
 				
