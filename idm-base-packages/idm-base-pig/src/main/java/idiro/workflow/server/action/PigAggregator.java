@@ -133,7 +133,7 @@ public class PigAggregator extends PigElement {
 			tSelInt.setLoader(getCurrentName());
 
 			if (filterLoader.isEmpty()) {
-				filterLoader = getCurrentName();
+				filterLoader = loader;
 			}
 
 			String groupby = groupingInt.getQueryPiece(filterLoader);
