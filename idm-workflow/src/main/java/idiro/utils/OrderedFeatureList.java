@@ -34,6 +34,8 @@ public class OrderedFeatureList extends UnicastRemoteObject implements FeatureLi
 	
 	public void addFeature(String name, FeatureType type){
 		
+		logger.info("addFeature name " + name + " " + type.toString());
+		
 		if (!features.containsKey(name)){
 			logger.info("addFeature name " + name);
 			positions.add(name);

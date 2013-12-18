@@ -229,6 +229,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 		StringBuffer error = new StringBuffer();
 		DynamicForm browserDF = null;
+		boolean updateTable = false;
 		for (int i = 0; i < getDynamicFormList().size(); i++) {
 
 			DynamicForm dynamicF = getDynamicFormList().get(i);
@@ -263,15 +264,16 @@ public class CanvasModal extends BaseBean implements Serializable {
 			} else if (dynamicF.getDisplayType().equals(DisplayType.browser)) {
 
 				logger.info("Browser path -> " + dynamicF.getPathBrowser());
-				browserDF = dynamicF;
+				updateTable = true;
 
 				dynamicF.getTree().getFirstChild("browse").getFirstChild("output").removeAllChildren();
 				dynamicF.getTree().getFirstChild("browse").getFirstChild("output").add("path").add(dynamicF.getPathBrowser());
 
-				for (ItemList itemList : dynamicF.getListGrid()) {	
-					Tree<String> myProperty = dynamicF.getTree().getFirstChild("browse").getFirstChild("output").add("property");
+				Tree<String> myProperty = dynamicF.getTree().getFirstChild("browse").getFirstChild("output").add("property");
+				for (ItemList itemList : dynamicF.getListGrid()) {
 					logger.info("Add property: "+itemList.getProperty()+": "+itemList.getValue());
 					myProperty.add(itemList.getProperty()).add(itemList.getValue());
+					//getDfe().getDFEOutput().get("source").addProperty(itemList.getProperty(), itemList.getValue());
 				}
 
 				if (getHiveHdfs() != null && getHiveHdfs().equalsIgnoreCase("hive")) {
@@ -340,7 +342,10 @@ public class CanvasModal extends BaseBean implements Serializable {
 			error.append(e);
 			error.append(System.getProperty("line.separator"));
 		} else {
-			if (browserDF != null){
+			
+			logger.info("updateTable " + updateTable);
+			
+			if (updateTable){
 				//Update table
 				updateDFEOUtputTable(getDfe().getDFEOutput().get("source"),getDynamicFormBrowser());
 			}
