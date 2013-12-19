@@ -2,7 +2,6 @@ package idiro.workflow.server.action;
 
 import static org.junit.Assert.assertTrue;
 import idiro.utils.Tree;
-import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.DataflowAction;
 import idiro.workflow.server.OozieManager;
 import idiro.workflow.server.Workflow;
@@ -16,7 +15,6 @@ import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.oozie.client.OozieClient;

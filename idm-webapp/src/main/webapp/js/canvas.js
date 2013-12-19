@@ -960,18 +960,22 @@ function mountObj() {
 			// stage to footer
 			stageTab = new Kinetic.Stage({
 				container : nameDiv,
-				width : 500,
+				width : jQuery("#canvas-tabs").width()-10,
 				height : 100
-			});
+			});	
 
 			// layer to footer tab1
 			var layerTab = new Kinetic.Layer();
 			
 			var numSides = 4;
 
+			var numObjs = 0;
+			
 			// for list of obj imagens
 			jQuery("#" + nameDiv).find("img").each(function(index) {
 
+				numObjs++;
+				
 				// variable to control image of
 				// the object
 				var imgTab = new Image({
@@ -1073,6 +1077,10 @@ function mountObj() {
 			});
 			// END for obj imagens
 
+			if(stageTab.getWidth() < numObjs * 70){
+				stageTab.setWidth(numObjs * 70);
+			}
+			
 			stageTab.add(layerTab);
 
 		}// END IF
