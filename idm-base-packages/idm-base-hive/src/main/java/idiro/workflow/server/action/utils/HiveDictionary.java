@@ -428,6 +428,8 @@ public class HiveDictionary extends AbstractDictionary {
 		if (typeGiven == null || typeToBe == null) {
 			return false;
 		}
+		logger.info(typeToBe+" , "+typeGiven);
+	
 		typeGiven = typeGiven.trim();
 		typeToBe = typeToBe.trim();
 
@@ -440,7 +442,12 @@ public class HiveDictionary extends AbstractDictionary {
 		} else if (typeToBe.equalsIgnoreCase("BIGINT")) {
 			ok = typeGiven.equals("INT") || typeGiven.equals("TINYINT");
 		} else if (typeToBe.equalsIgnoreCase("INT")) {
-			ok = typeGiven.equals("TINYINT");
+			if (typeGiven.equals("TINYINT")) {
+				ok = true;
+			} else if (typeGiven.equalsIgnoreCase("NUMBER")||typeGiven.equalsIgnoreCase("DOUBLE")) {
+				ok = true;
+				typeToBe = typeGiven;
+			}
 		} else if (typeToBe.equalsIgnoreCase("TINYINT")) {
 			ok = false;
 		} else if (typeToBe.equalsIgnoreCase("FLOAT")) {
@@ -459,7 +466,11 @@ public class HiveDictionary extends AbstractDictionary {
 					|| typeGiven.equalsIgnoreCase("STRING");
 
 		}
-		return typeToBe.equalsIgnoreCase(typeGiven) || ok;
+		if (!ok && typeToBe.equalsIgnoreCase(typeGiven)) {
+			ok = true;
+		}
+		logger.info(ok);
+		return ok;
 	}
 
 	public static Tree<String> generateEditor(Tree<String> help, DFEOutput in)

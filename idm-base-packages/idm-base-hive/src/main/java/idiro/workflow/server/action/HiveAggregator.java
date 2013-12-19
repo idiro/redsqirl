@@ -4,6 +4,7 @@ import idiro.utils.FeatureList;
 import idiro.utils.Tree;
 import idiro.workflow.server.Page;
 import idiro.workflow.server.UserInteraction;
+import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEOutput;
@@ -46,8 +47,59 @@ public class HiveAggregator extends HiveElement {
 
 	@Override
 	public String getQuery() throws RemoteException {
-		return null;
-	}
+		HiveInterface hInt = new HiveInterface();
+		String query = null;
+		if(getDFEInput() != null){
+			DFEOutput in = getDFEInput().get(key_input).get(0);
+			logger.debug("In and out...");
+			//Input
+			String[] tableAndPartsIn = hInt.getTableAndPartitions(in.getPath());
+			String tableIn = tableAndPartsIn[0];
+			//Output
+			DFEOutput out = output.values().iterator().next();
+			String tableOut = hInt.getTableAndPartitions(out.getPath())[0];
+
+			String insert = "INSERT OVERWRITE TABLE "+tableOut+partInt.getQueryPiece();
+			String from = " FROM "+tableIn+" ";
+			String create = "CREATE TABLE IF NOT EXISTS "+tableOut;
+			String createPartition = partInt.getCreateQueryPiece();
+			if(createPartition.isEmpty()){
+				createPartition = partInt.getPartitions();
+			}
+			String where = condInt.getQueryPiece();
+
+
+			logger.debug("group by...");
+			String groupby = "";
+			Iterator<String> gIt = getGroupByFeatures().iterator();
+			if(gIt.hasNext()){
+				groupby = gIt.next();
+			}
+			while(gIt.hasNext()){
+				groupby += ","+gIt.next();
+			}
+			if(!groupby.isEmpty()){
+				groupby = " GROUP BY "+groupby;
+			}
+			String select = tSelInt.getQueryPiece(out);
+			String createSelect = tSelInt.getCreateQueryPiece(out);
+
+
+			if(select.isEmpty()){
+				logger.debug("Nothing to select");
+			}else{
+				query = create+"\n"+
+						createSelect+"\n"+
+						createPartition+";\n\n";
+
+				query += insert+"\n"+
+						select+"\n"+
+						from+"\n"+
+						where+groupby+";";
+			}
+		}
+
+		return query;	}
 
 	@Override
 	public FeatureList getInFeatures() throws RemoteException {

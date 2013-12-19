@@ -202,5 +202,9 @@ public class HiveType extends DataOutput{
 		}
 		return null;
 	}
+	
+	public String closeInterface() throws RemoteException{
+		return hInt.close();
+	}
 
 }

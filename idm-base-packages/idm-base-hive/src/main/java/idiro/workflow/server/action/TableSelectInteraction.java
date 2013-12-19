@@ -60,7 +60,7 @@ public class TableSelectInteraction extends UserInteraction {
 		Set<String> featGrouped = new HashSet<String>();
 		if (hs.getGroupingInt() != null
 				&& hs.getGroupingInt().getTree().getFirstChild("applist")
-						.getChildren("output").size()>0) {
+						.getChildren("output").size() > 0) {
 			Iterator<Tree<String>> it = hs.getGroupingInt().getTree()
 					.getFirstChild("applist").getFirstChild("output")
 					.getChildren("value").iterator();
@@ -87,13 +87,16 @@ public class TableSelectInteraction extends UserInteraction {
 
 			} else {
 				try {
-					if (!HiveDictionary.check(
-							row.getFirstChild(table_type_title).getFirstChild()
-									.getHead(),
-							HiveDictionary.getInstance().getReturnType(
-									row.getFirstChild(table_op_title)
-											.getFirstChild().getHead(),
-									in.getFeatures(), featGrouped))) {
+					String type = row.getFirstChild(table_type_title)
+							.getFirstChild().getHead();
+					String operation = row.getFirstChild(table_op_title)
+							.getFirstChild().getHead();
+					logger.info(type + " , " + operation);
+					String returntype = HiveDictionary.getInstance()
+							.getReturnType(operation, in.getFeatures(),
+									featGrouped);
+					logger.info("return type : " + returntype + " , " + type);
+					if (!HiveDictionary.check(type, returntype)) {
 						msg = "Error the type returned does not correspond for feature "
 								+ row.getFirstChild(table_feat_title)
 										.getFirstChild().getHead();
@@ -130,7 +133,7 @@ public class TableSelectInteraction extends UserInteraction {
 
 		// Generate Editor
 		Tree<String> featEdit = null;
-		
+		logger.info("trying to get group items");
 		Set<String> gbFeats = hs.getGroupByFeatures();
 		if (gbFeats.size() > 0) {
 			featEdit = HiveDictionary.generateEditor(HiveDictionary
@@ -160,13 +163,10 @@ public class TableSelectInteraction extends UserInteraction {
 		Tree<String> operationCopy = generator.add("operation");
 		operationCopy.add("title").add("copy");
 		Iterator<String> featIt = null;
-		if (gbFeats.size() > 0) {
-			featIt = gbFeats.iterator();
-		} else {
-			featIt = in.getFeatures().getFeaturesNames().iterator();
-		}
+		featIt = in.getFeatures().getFeaturesNames().iterator();
 		while (featIt.hasNext()) {
 			String cur = featIt.next();
+			logger.info("adding to table : " + cur);
 			Tree<String> row = operationCopy.add("row");
 			row.add(table_op_title).add(cur);
 			row.add(table_feat_title).add(cur);
@@ -290,8 +290,12 @@ public class TableSelectInteraction extends UserInteraction {
 			throws RemoteException {
 		String error = null;
 		try {
+
+			logger.info(expression + " "
+					+ hs.getInFeatures().getFeaturesNames().toString() + " "
+					+ hs.getGroupByFeatures().toArray().toString());
 			if (HiveDictionary.getInstance().getReturnType(expression,
-					hs.getInFeatures()) == null) {
+					hs.getInFeatures(), hs.getGroupByFeatures()) == null) {
 				error = "Expression does not have a return type";
 			}
 		} catch (Exception e) {

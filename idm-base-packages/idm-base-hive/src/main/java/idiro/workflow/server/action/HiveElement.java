@@ -269,21 +269,35 @@ public abstract class HiveElement extends DataflowAction {
 	}
 
 	public UserInteraction getGroupingInt() {
-		return groupingInt;
+		if(groupingInt!=null){
+			
+			return groupingInt;
+		}else{
+			return null;
+		}
 	}
 
 	public Set<String> getGroupByFeatures() throws RemoteException {
 		Set<String> features =new HashSet<String>();
-		Tree<String> tree = getGroupingInt().getTree();
-		logger.info("group tree : "+((TreeNonUnique<String>)tree).toString());
-		if(tree.getFirstChild("applist")
-				.getFirstChild("output").getSubTreeList().size() > 0){
-			Iterator<Tree<String>>values = tree.getFirstChild("applist")
-			.getFirstChild("output").getChildren("value").iterator();
-			while(values.hasNext()){
-				features.add(values.next().getFirstChild().getHead());
+		UserInteraction group =getGroupingInt();
+		if(group !=null){
+			Tree<String> tree = group.getTree();
+			logger.info("group tree : "
+					+ ((TreeNonUnique<String>) tree).toString());
+			if (tree != null
+					&& tree.getFirstChild("applist").getFirstChild("output")
+							.getSubTreeList().size() > 0) {
+				Iterator<Tree<String>> values = tree.getFirstChild("applist")
+						.getFirstChild("output").getChildren("value")
+						.iterator();
+				while (values.hasNext()) {
+					features.add(values.next().getFirstChild().getHead());
+				}
 			}
+		}else{
+			logger.info("group interaction is null");
 		}
+	
 		
 		return features;
 	}

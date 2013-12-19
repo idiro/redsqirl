@@ -11,7 +11,6 @@ import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.enumeration.SavingState;
 import idiro.workflow.server.interfaces.DFEOutput;
-import idiro.workflow.test.HiveInterfaceTester;
 
 import java.rmi.RemoteException;
 import java.util.HashMap;
@@ -235,7 +234,7 @@ public class HiveAggregTests {
 		String error = null;
 		try {
 			Workflow w = new Workflow("workflow1_" + getClass().getName());
-			HiveInterfaceTester hInt = null;// = new HiveInterfaceTester();
+			HiveInterface hInt = null;// = new HiveInterfaceTester();
 			// String new_path1 = "/" + TestUtils.getTableName(1);
 			String new_path1 = "/keith_test2";
 			String new_path2 = "/" + TestUtils.getTableName(2);

@@ -39,10 +39,6 @@ public class HiveSelect extends HiveElement{
 	public HiveSelect() throws RemoteException {
 		super(2,1,1);
 
-		 
-
-		
-
 		page2 = addPage("Feature operations",
 				"The columns generated are defined on this page. Each row of the table is a new column to generate. "+
 						"The feature name has to be unique and a correct type needs to be assign.",
@@ -71,22 +67,8 @@ public class HiveSelect extends HiveElement{
 				this, 
 				key_input);
 
-//		partInt = new PartitionInteraction(
-//				key_partitions,
-//				"Please specify the partitions, if any, on which the statement is processed.",
-//				0,
-//				1);
-
-//		groupingInt = new UserInteraction(
-//				key_grouping,
-//				"Please specify, if any, the grouping condition.",
-//				DisplayType.appendList,
-//				0,
-//				2);
 		
 		page1.addInteraction(condInt);
-//		page1.addInteraction(partInt);
-//		page1.addInteraction(groupingInt);
 
 
 	}
@@ -195,25 +177,25 @@ public class HiveSelect extends HiveElement{
 		return query;
 	}
 
-	public Set<String> getGroupByFeatures() throws RemoteException{
-		//logger.debug(getInteraction(key_grouping).getTree());
-		Set<String> gbFeats = new LinkedHashSet<String>();
-		if(getInteraction(key_grouping).getTree()
-				.getFirstChild("applist")
-				.getFirstChild("output").getSubTreeList().size() > 0){
-			Iterator<Tree<String>> gIt = getInteraction(key_grouping).getTree()
-					.getFirstChild("applist")
-					.getFirstChild("output").getChildren("value").iterator();
-			while(gIt.hasNext()){
-				String curVal = gIt.next().getFirstChild().getHead();
-				if(curVal != null && !curVal.isEmpty()){
-					gbFeats.add(curVal);
-				}
-			}
-		}
-		//logger.debug(gbFeats);
-		return gbFeats;
-	}
+//	public Set<String> getGroupByFeatures() throws RemoteException{
+//		//logger.debug(getInteraction(key_grouping).getTree());
+//		Set<String> gbFeats = new LinkedHashSet<String>();
+//		if(getInteraction(key_grouping).getTree()
+//				.getFirstChild("applist")
+//				.getFirstChild("output").getSubTreeList().size() > 0){
+//			Iterator<Tree<String>> gIt = getInteraction(key_grouping).getTree()
+//					.getFirstChild("applist")
+//					.getFirstChild("output").getChildren("value").iterator();
+//			while(gIt.hasNext()){
+//				String curVal = gIt.next().getFirstChild().getHead();
+//				if(curVal != null && !curVal.isEmpty()){
+//					gbFeats.add(curVal);
+//				}
+//			}
+//		}
+//		//logger.debug(gbFeats);
+//		return gbFeats;
+//	}
 
 	/**
 	 * @return the tSelInt

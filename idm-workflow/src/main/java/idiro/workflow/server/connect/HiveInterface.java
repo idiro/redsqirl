@@ -132,7 +132,8 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore{
 				logger.info("user is ");
 				logger.info( pref.getUsername());
 				logger.info( pref.getPassword());
-				conn = new JdbcConnection(pref, new HiveBasicStatement());
+				HiveBasicStatement stm = new HiveBasicStatement();
+				conn = new JdbcConnection(pref, stm);
 				isInit = true;
 				
 				logger.info("Pass ... new jdbc ");
@@ -154,7 +155,13 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore{
 		//Command to get the process to kill:
 		// ps aux | grep "hive" | grep "etienne" | grep "Sl " |  tr -s ' '|cut -f 2 -d' '
 		// However it may kill ALL the jdbc server running, may be not a good idea
-		return null;
+		String close=null;
+		try {
+			conn.closeConnection();
+		} catch (SQLException e) {
+			close= e.getMessage();
+		}
+		return close;
 	}
 
 	@Override
@@ -371,6 +378,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore{
 					}
 					ans.add(line);
 				}
+				rs.close();
 				
 			} catch (SQLException e) {
 				logger.error("Fail to select the table "+tableAndPartition[0]);
@@ -484,6 +492,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore{
 			}else if(path.startsWith("/") && path.length() > 1 ){
 				String[] tableAndPartitions = getTableAndPartitions(path);
 				ok = ! conn.listTables(tableAndPartitions[0].toLowerCase()).isEmpty();
+				
 				if(ok && tableAndPartitions.length > 1){
 					ok = false;
 					Iterator<String> itP = getPartitions(tableAndPartitions[0]).iterator();
@@ -612,9 +621,10 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore{
 			}
 		}
 		String ans = null;
+		ResultSet rs=null;
 		try {
 			if(partition == null){
-				ResultSet rs = conn.executeQuery("DESCRIBE EXTENDED "+table);
+				 rs= conn.executeQuery("DESCRIBE EXTENDED "+table);
 				if(rs.next()){
 					ans = rs.getString(1);
 				}
@@ -623,7 +633,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore{
 				}
 				rs.close();
 			}else{
-				ResultSet rs = conn.executeQuery("DESCRIBE EXTENDED "+
+				rs = conn.executeQuery("DESCRIBE EXTENDED "+
 						table+" PARTITION ("+partition+")");
 				if(rs.next()){
 					ans = rs.getString(1);
@@ -635,6 +645,10 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore{
 			}
 		} catch (SQLException e) {
 			logger.error("Fail to check the existence");
+			try {
+				rs.close();
+			} catch (SQLException e1) {
+			}
 		}
 		return ans;
 	}
