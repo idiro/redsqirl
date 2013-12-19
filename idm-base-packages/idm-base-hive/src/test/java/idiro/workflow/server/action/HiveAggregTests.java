@@ -2,7 +2,6 @@ package idiro.workflow.server.action;
 
 import static org.junit.Assert.assertTrue;
 import idiro.utils.Tree;
-import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.DataflowAction;
 import idiro.workflow.server.OozieManager;
 import idiro.workflow.server.Workflow;
@@ -11,13 +10,11 @@ import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.enumeration.SavingState;
 import idiro.workflow.server.interfaces.DFEOutput;
-import idiro.workflow.test.HiveInterfaceTester;
 
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.oozie.client.OozieClient;
@@ -235,7 +232,7 @@ public class HiveAggregTests {
 		String error = null;
 		try {
 			Workflow w = new Workflow("workflow1_" + getClass().getName());
-			HiveInterfaceTester hInt = null;// = new HiveInterfaceTester();
+			HiveInterface hInt = null;// = new HiveInterfaceTester();
 			// String new_path1 = "/" + TestUtils.getTableName(1);
 			String new_path1 = "/keith_test2";
 			String new_path2 = "/" + TestUtils.getTableName(2);

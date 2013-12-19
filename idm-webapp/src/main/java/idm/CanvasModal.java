@@ -609,6 +609,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 					ans = ans + "\n\t" + it.next().toString().replaceAll("\n", "\n\t");
 				}
 				logger.info("tree :"+ans);
+				
 				List<SelectItem> selectItems = new ArrayList<SelectItem>();
 				Tree<String> dfetree = dfeInteraction.getTree();
 				logger.info("got tree");
@@ -705,9 +706,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 				}
 
 				//check display type
-				if(dfeInteraction.getTree().getFirstChild("list").getFirstChild("display") != null && 
-						dfeInteraction.getTree().getFirstChild("list").getFirstChild("display").getFirstChild() != null){
-					String displayType = dfeInteraction.getTree().getFirstChild("list").getFirstChild("display").getFirstChild().getHead();
+				if(dfeInteraction.getTree().getFirstChild("applist").getFirstChild("display") != null && 
+						dfeInteraction.getTree().getFirstChild("applist").getFirstChild("display").getFirstChild() != null){
+					String displayType = dfeInteraction.getTree().getFirstChild("applist").getFirstChild("display").getFirstChild().getHead();
 					if(displayType.equalsIgnoreCase("combobox")){
 						dynamicF.setComboBox("Y");
 					}else{
