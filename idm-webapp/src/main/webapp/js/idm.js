@@ -261,13 +261,13 @@ function showImg(url){
 	jQuery("#btIndex").show();
 }
 
- function showHelp(url) {
+ function showHelp(url){
 	jQuery("#helpPanel").load(url);
 	jQuery("#helpIndex").hide();
 	jQuery("#btIndex").show();
 }
 
-function hideHelp() {
+function hideHelp(){
 	jQuery("#helpIndex").show();
 	jQuery("#btIndex").hide();
 	jQuery("#helpPanel").empty();
@@ -276,11 +276,11 @@ function hideHelp() {
 function addtooltip(text, event){
     jQuery('div.help').remove();
     jQuery('div.tooltip').remove();
-    var y = event.layerY;
-    var help = jQuery('<div class="tooltip">'+text+'</div>').fadeToggle('slow', function(){
-    	jQuery( this ).css("top",(y-10)+"px" );
-    });
+    var y = event.pageY;
+    var help = jQuery('<div class="tooltip">'+text+'</div>');
+    help.css("top",(y+10)+"px" );
     jQuery("body").append(help);
+    help.fadeIn("slow");
 }
 
 function removetoottip(){
