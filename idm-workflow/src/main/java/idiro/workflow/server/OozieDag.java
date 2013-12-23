@@ -1,5 +1,7 @@
 package idiro.workflow.server;
 
+import idiro.workflow.utils.LanguageManager;
+
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -87,7 +89,7 @@ public class OozieDag {
 		}
 
 		if(newList.size() < graphOut.keySet().size()){
-			error = "The graph contains at least one cycle";
+			error = LanguageManager.getText("ooziedag.cycleerror");	
 			logger.error(error);
 		}
 
