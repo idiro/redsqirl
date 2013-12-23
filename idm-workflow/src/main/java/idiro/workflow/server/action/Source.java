@@ -364,6 +364,9 @@ public class Source extends DataflowAction {
 			Tree<String> values = list.add("values");
 			values.add("value").add("Hive");
 			values.add("value").add("HDFS");
+			
+			Tree<String> display = list.add("display");
+			display.add("combobox");
 		}
 	}
 
@@ -422,6 +425,10 @@ public class Source extends DataflowAction {
 					}
 				}
 			}
+			
+			Tree<String> display = list.add("display");
+			display.add("combobox");
+			
 		}
 	}
 

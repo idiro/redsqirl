@@ -601,15 +601,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 			}else if (dfeInteraction.getDisplay().equals(DisplayType.list)) {
 
-				logger.info(dfeInteraction.getName());
-				List<Tree<String>> treelist =dfeInteraction.getTree().getSubTreeList();
-				String ans = "";
-				Iterator<Tree<String>> it = treelist.iterator();
-				while(it.hasNext()){
-					ans = ans + "\n\t" + it.next().toString().replaceAll("\n", "\n\t");
-				}
-				logger.info("tree :"+ans);
-				
 				List<SelectItem> selectItems = new ArrayList<SelectItem>();
 				Tree<String> dfetree = dfeInteraction.getTree();
 				logger.info("got tree");
@@ -679,11 +670,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 						}
 						dynamicF.setAppendListOptions(selectItems);
 
-						/*if (selectItems.size() > 10) {
-							dynamicF.setComboBox("Y");
-						} else {
-							dynamicF.setComboBox("N");
-						}*/
 					}
 				}
 

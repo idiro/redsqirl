@@ -23,15 +23,15 @@ function canvasResizeSplitter(){
 
 function resizeCanvas(){
 	
+	jQuery("#tabsFooter canvas").parent().remove();
+	mountObj();
+	
 	for (var i in nameTabs){
 		//alert(nameTabs[i]);
 		jQuery("#"+nameTabs[i]).css("height", jQuery("#canvas-tabs").height()-jQuery("#tabsFooter").height()-30+'px');
 		jQuery("#"+nameTabs[i]).css("width", jQuery("#canvas-tabs").width()+'px');
 		jQuery("#container-"+nameTabs[i]).css("height", jQuery("#canvas-tabs").height()-jQuery("#tabsFooter").height()-30+'px');
 	}
-	
-	jQuery("#tabsFooter canvas").parent().remove();
-	mountObj();
 	
 }
 
@@ -286,4 +286,11 @@ function addtooltip(text, event){
 function removetoottip(){
 	jQuery("div.tooltip").remove();
 	jQuery('div.help').remove();
+}
+
+function resizeCanvasChangeTab(){
+	for (var i in nameTabs){
+		jQuery("#"+nameTabs[i]).css("height", jQuery("#canvas-tabs").height()-jQuery("#tabsFooter").height()-30+'px');
+		jQuery("#container-"+nameTabs[i]).css("height", jQuery("#canvas-tabs").height()-jQuery("#tabsFooter").height()-30+'px');
+	}
 }

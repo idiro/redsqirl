@@ -316,7 +316,6 @@
 		    		  });
 		    		  
 	    		  });
-
 	    		 
 	    		 var isChrome = window.chrome;
 	    		 if(isChrome){
@@ -327,6 +326,12 @@
 		    		 jQuery('#canvas-1').css('position', 'fixed');
 		    		 
 				 }
+
+
+	    		 jQuery("#tabsFooter").find("a").click(function() {
+	    			 resizeCanvasChangeTab();
+	    		 });
+				 
 	    		 
 	    		 window.onbeforeunload = function(){
 	    			 invalidateSession();
