@@ -8,6 +8,7 @@ import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.enumeration.DataBrowser;
 import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.oozie.HiveAction;
+import idiro.workflow.utils.LanguageManager;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -103,18 +104,19 @@ public class HiveType extends DataOutput{
 
 	@Override
 	public String isPathValid() throws RemoteException {
+		String error=null;
 		if(getPath() == null){
-			return "A path needs to be specified";
+			error = LanguageManager.getText("hivetype.ispathvalid.pathnull");
 		}
 		if (isPathExists()){
 			return hInt.isPathValid(getPath(), features,getProperty(key_partitions));
 		}else{
 			String regex = "[a-zA-Z_]([A-Za-z0-9_]+)";
 			if (!hInt.getTableAndPartitions(getPath())[0].matches(regex)) {
-				return "Not a valid path";
+				error = LanguageManager.getText("hivetype.ispathvalid.invalid");
 			}
 		}
-		return null;
+		return error;
 	}
 
 	@Override
@@ -183,10 +185,10 @@ public class HiveType extends DataOutput{
 		String error = null;
 		if( isPathExists() && features != null){
 			if(features.getSize() != fl.getSize()){
-				error = "The list is not of the right size";
+				error = LanguageManager.getText("hivetype.checkfeatures.incorrectsize");
 			}
 			if(!features.getFeaturesNames().containsAll(fl.getFeaturesNames())){
-				error = "The list of name have to be the same";
+				error = LanguageManager.getText("hivetype.checkfeatures.incorrectlist");
 			}
 			if(error == null){
 				Iterator<String> flIt = fl.getFeaturesNames().iterator();
@@ -195,7 +197,7 @@ public class HiveType extends DataOutput{
 					String flName = flIt.next();
 					String featName = featuresIt.next();
 					if(!fl.getFeatureType(flName).equals(features.getFeatureType(featName))){
-						error = "The feature type does not correspond between "+flName+" and "+featName;
+						error = LanguageManager.getText("hivetype.checkfeatures.incorrectfeatures",new Object[]{flName,featName});
 					}
 				}
 			}

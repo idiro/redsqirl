@@ -4,6 +4,7 @@ import idiro.workflow.server.enumeration.SavingState;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.interfaces.DataFlow;
 import idiro.workflow.server.interfaces.DataFlowElement;
+import idiro.workflow.utils.LanguageManager;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -120,7 +121,7 @@ extends OozieXmlCreatorAbs{
 				//Need to start by the start action
 				firstElements = outEdges.get(startNode);
 				if(firstElements.size() != 1){
-					error = "The start node have to be unique";
+					error = LanguageManager.getText("ooziexmlforkjoinpaired.createxml.firstelnotone");
 				}else{
 					Element start = doc.createElement("start");
 					Attr attrStartTo = doc.createAttribute("to");
@@ -138,7 +139,7 @@ extends OozieXmlCreatorAbs{
 						
 					}else if(cur.startsWith("join")){
 						if(out.size() != 1){
-							error = "No nodes takes more than 1 element except a fork";
+							error = LanguageManager.getText("ooziexmlforkjoinpaired.createxml.outsizenotone");
 						}else{
 							createJoinNode(doc, rootElement, cur, out.iterator().next());
 						}
@@ -146,7 +147,7 @@ extends OozieXmlCreatorAbs{
 						createForkNode(doc, rootElement, cur, out);
 					}else{
 						if(out.size() != 1){
-							error = "No nodes takes more than 1 element except a fork";
+							error = LanguageManager.getText("ooziexmlforkjoinpaired.createxml.outsizenotone");
 						}else{
 							Element element = elements.get(cur);
 							createOKNode(doc, element, out.iterator().next());
@@ -189,8 +190,7 @@ extends OozieXmlCreatorAbs{
 				transformer.transform(source, result);
 			}
 		}catch(Exception e){
-			error = "Fail to create a workflow.xml file "+
-					e.getMessage();
+			error = LanguageManager.getText("ooziexmlforkjoinpaired.createxml.fail",new Object[]{e.getMessage()});
 			logger.error(error);
 		}
 

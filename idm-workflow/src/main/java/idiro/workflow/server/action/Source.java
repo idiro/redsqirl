@@ -19,6 +19,7 @@ import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.interfaces.DFEPage;
 import idiro.workflow.server.interfaces.PageChecker;
+import idiro.workflow.utils.LanguageManager;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -72,10 +73,10 @@ public class Source extends DataflowAction {
 					if (getInteraction(key_datatype).getTree()
 							.getFirstChild("list").getFirstChild("output")
 							.getFirstChild().getHead().isEmpty()) {
-						error = "Data type cannot be empty";
+						error = LanguageManager.getText("source.datatypeempty");
 					}
 				} catch (Exception e) {
-					error = "Data type cannot be empty";
+					error = LanguageManager.getText("source.datatypeempty");
 				}
 				return error;
 			}
@@ -100,7 +101,7 @@ public class Source extends DataflowAction {
 					if (getInteraction(key_datatype).getTree()
 							.getFirstChild("list").getFirstChild("output")
 							.getFirstChild().getHead().isEmpty()) {
-						error = "Error : Data type cannot be empty";
+						error = LanguageManager.getText("source.datatypeempty");
 					}
 
 					logger.info("Getting CheckDirectory output type ");
@@ -146,13 +147,12 @@ public class Source extends DataflowAction {
 									SavingState.RECORDED);
 						}
 					} else {
-						error = "The user have to make  choice";
+						error = LanguageManager.getText("source.outputnull");
 						logger.error(error);
 					}
 
 				} catch (Exception e) {
-					error = "Exception : Data type cannot be empty "
-							+ e.getMessage();
+					error = LanguageManager.getText("source.outputnull",new Object[]{e.getMessage()});
 				}
 				return error;
 			}
@@ -179,7 +179,7 @@ public class Source extends DataflowAction {
 				try{
 					out = output.get(out_name);
 				}catch(Exception e){
-					error = "Output cannot be null";
+					error = LanguageManager.getText("source.outputchecknull");
 				}
 				try {
 					//Set path to null to avoid unnecessary check
@@ -189,7 +189,7 @@ public class Source extends DataflowAction {
 							out.setFeatures(null);
 							out.removeAllProperties();
 						}catch(Exception e){
-							error = "Error reseting output";
+							error = LanguageManager.getText("source.outputreset");
 						}
 					}
 
@@ -229,13 +229,13 @@ public class Source extends DataflowAction {
 									.getFirstChild("path").getFirstChild().getHead();
 							
 							if (path.isEmpty()) {
-								error = "Path cannot be empty";
+								error = LanguageManager.getText("source.pathempty");
 							}else{
 								logger.info("Checkpath : " + path + " for " +out.getPath());
 								out.setPath(path);
 							}
 						}catch(Exception e){
-							error = "Error when setting the path: "+e.getMessage();
+							error = LanguageManager.getText("source.setpatherror",new Object[]{e.getMessage()});
 						}
 					}
 
@@ -271,7 +271,7 @@ public class Source extends DataflowAction {
 											logger.info("outF.addFeature "+name +" "+type);
 											outF.addFeature(name, FeatureType.valueOf(type));
 										} catch (Exception e) {
-											error = "The type " + type + " does not exist";
+											error = LanguageManager.getText("source.featuretypeerror",new Object[]{type});
 										}
 
 									}
@@ -284,7 +284,7 @@ public class Source extends DataflowAction {
 									}
 								}
 							}catch(Exception e){
-								error = "Error in the tree";
+								error = LanguageManager.getText("source.treeerror");
 							}
 						}
 						
@@ -293,18 +293,18 @@ public class Source extends DataflowAction {
 					if(error == null){
 						try{
 							if(!out.isPathExists()){
-								error = "The path does not exist";
+								error = LanguageManager.getText("source.pathnotexist");
 							}else if(out.isPathValid() != null){
-								error = "The path is not valid: "+out.isPathValid();
+								error = LanguageManager.getText("source.pathinvalid",new Object[]{out.isPathValid()});
 							}
 						}catch(Exception e){
-							error = "Fail to check the existence or the validity of the path: "+e;
+							error = LanguageManager.getText("source.pathexceptions",new Object[]{e.getMessage()});
 							logger.error(error);
 						}
 
 					}
 				} catch (Exception e) {
-					error = "Get exception in source: "+e;
+					error = LanguageManager.getText("source.exception",new Object[]{e.getMessage()});
 				}
 				return error;
 			}

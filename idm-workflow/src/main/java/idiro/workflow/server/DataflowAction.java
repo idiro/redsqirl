@@ -8,6 +8,7 @@ import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.interfaces.DFEPage;
 import idiro.workflow.server.interfaces.DataFlowElement;
 import idiro.workflow.server.interfaces.OozieAction;
+import idiro.workflow.utils.LanguageManager;
 
 import java.awt.Point;
 import java.io.File;
@@ -29,9 +30,10 @@ import org.w3c.dom.NodeList;
  * Actions/Icons that compose a workflow.
  * 
  * @author etienne
- *
+ * 
  */
-public abstract class DataflowAction extends UnicastRemoteObject implements DataFlowElement{
+public abstract class DataflowAction extends UnicastRemoteObject implements
+		DataFlowElement {
 
 	/**
 	 * 
@@ -80,9 +82,11 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 
 	/**
 	 * Write into local files what needs to be parse within the oozie action
+	 * 
 	 * @param files
 	 */
-	public abstract boolean writeOozieActionFiles(File[] files) throws RemoteException;
+	public abstract boolean writeOozieActionFiles(File[] files)
+			throws RemoteException;
 
 	/**
 	 * Static methods, get the html help file
@@ -91,10 +95,15 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 	 * @throws RemoteException
 	 */
 	public String getHelp() throws RemoteException {
-		String relativePath = WorkflowPrefManager.pathSysHelpPref.get() + "/" + getName().toLowerCase() + ".html";
-		File f = new File(WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path)+relativePath);
-		if(!f.exists()){
-			relativePath = WorkflowPrefManager.pathUserHelpPref.get() + "/" + getName().toLowerCase() + ".html";
+		String relativePath = WorkflowPrefManager.pathSysHelpPref.get() + "/"
+				+ getName().toLowerCase() + ".html";
+		File f = new File(
+				WorkflowPrefManager
+						.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
+						+ relativePath);
+		if (!f.exists()) {
+			relativePath = WorkflowPrefManager.pathUserHelpPref.get() + "/"
+					+ getName().toLowerCase() + ".html";
 		}
 		return relativePath;
 	}
@@ -106,10 +115,15 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 	 * @throws RemoteException
 	 */
 	public String getImage() throws RemoteException {
-		String relativePath = WorkflowPrefManager.pathSysImagePref.get() + "/" + getName().toLowerCase() + ".gif";
-		File f = new File(WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path)+relativePath);
-		if(!f.exists()){
-			relativePath = WorkflowPrefManager.pathUserImagePref.get() + "/" + getName().toLowerCase() + ".gif";
+		String relativePath = WorkflowPrefManager.pathSysImagePref.get() + "/"
+				+ getName().toLowerCase() + ".gif";
+		File f = new File(
+				WorkflowPrefManager
+						.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
+						+ relativePath);
+		if (!f.exists()) {
+			relativePath = WorkflowPrefManager.pathUserImagePref.get() + "/"
+					+ getName().toLowerCase() + ".gif";
 		}
 		return relativePath;
 	}
@@ -134,9 +148,10 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 						|| prop.getMaxOccurence() < entryComp.size()) {
 					ans += getComponentId()
 							+ " have not the right number of occurence of "
-							+ entryName +". "
-							+ entryComp.size()+ " is not between "+
-							prop.getMinOccurence() +" and "+prop.getMaxOccurence()+" for "+entryName+".\n";
+							+ entryName + ". " + entryComp.size()
+							+ " is not between " + prop.getMinOccurence()
+							+ " and " + prop.getMaxOccurence() + " for "
+							+ entryName + ".\n";
 				} else {
 
 					Iterator<DataFlowElement> entryCompIt = entryComp
@@ -145,16 +160,16 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 						String cur_ans = "";
 						DataFlowElement cur = entryCompIt.next();
 						String nonEntryName = findNameOf(
-								cur.getOutputComponent()
-								, this);
+								cur.getOutputComponent(), this);
 
 						if (nonEntryName == null) {
-							cur_ans += getComponentId() + " Link between " + getName() + " and "
-									+ cur.getName() + " conflict\n";
-						}
-						else if( !prop.check(cur.getDFEOutput().get(nonEntryName))){
-							cur_ans += getComponentId() + "The link between " + getName()
-									+ " and " + cur.getName()
+							cur_ans += getComponentId() + " Link between "
+									+ getName() + " and " + cur.getName()
+									+ " conflict\n";
+						} else if (!prop.check(cur.getDFEOutput().get(
+								nonEntryName))) {
+							cur_ans += getComponentId() + "The link between "
+									+ getName() + " and " + cur.getName()
 									+ " is not compatible\n";
 						}
 
@@ -163,10 +178,10 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 				}
 			}
 		}
-		if(ans != null && (ans.isEmpty() || ans.equalsIgnoreCase("null")) ) {
+		if (ans != null && (ans.isEmpty() || ans.equalsIgnoreCase("null"))) {
 			ans = null;
 		}
-		logger.debug("Check Entry: "+ans);
+		logger.debug("Check Entry: " + ans);
 		return ans;
 	}
 
@@ -178,7 +193,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 	 */
 	public String checkEntry() throws RemoteException {
 		String ans = checkIn();
-		if (ans == null){
+		if (ans == null) {
 			ans = "";
 		}
 		if (ans.isEmpty()) {
@@ -190,7 +205,6 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 
 		return ans;
 	}
-
 
 	/**
 	 * Check the integration of the variables within the workflow. check the
@@ -204,17 +218,22 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 		String error = null;
 		Iterator<DFEPage> it = getPageList().iterator();
 		int pageNb = 0;
-		while(it.hasNext() && error == null){
+		while (it.hasNext() && error == null) {
 			++pageNb;
-			try{
+			try {
 				error = it.next().checkPage();
-				if(error != null){
-					error = "Page "+pageNb+": "+error;
+				if (error != null) {
+					error = LanguageManager.getText(
+							"dataflowaction.checkuservariables", new Object[] {
+									String.valueOf(pageNb), error });
+					error = "Page " + pageNb + ": " + error;
 				}
-			}catch(Exception e){
-				error = "Exception when checking page "+
-						pageNb+" "+
-						e.getMessage();
+			} catch (Exception e) {
+				error = LanguageManager
+						.getText(
+								"dataflowaction.checkuservariablesexception",
+								new Object[] { String.valueOf(pageNb),
+										e.getMessage() });
 			}
 		}
 		return error;
@@ -229,23 +248,29 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 	public String checkInit() throws RemoteException {
 		String error = "";
 
-		FileChecker help = new FileChecker(WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path)+getHelp());
-		FileChecker image = new FileChecker(WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path)+getImage());
+		FileChecker help = new FileChecker(
+				WorkflowPrefManager
+						.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
+						+ getHelp());
+		FileChecker image = new FileChecker(
+				WorkflowPrefManager
+						.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
+						+ getImage());
 		if (!help.isFile()) {
-			error += "In '" + getClass().getCanonicalName()
-					+ "' help file not available\n";
+			error = LanguageManager.getText("dataflowaction.checkinit.gethelp",
+					new Object[] { getClass().getCanonicalName() });
 		}
 		if (!image.isFile()) {
-			error += "In '" + getClass().getCanonicalName()
-					+ "' image file not available\n";
+			error = LanguageManager.getText("dataflowaction.checkinit.getimage",
+					new Object[] { getClass().getCanonicalName() });
 		}
 		if (getOozieType() == null) {
-			error += "In '" + getClass().getCanonicalName()
-					+ "' oozie type not set\n";
+			error = LanguageManager.getText("dataflowaction.checkinit.getoozietype",
+					new Object[] { getClass().getCanonicalName() });
 		}
 		if (getName() == null || getName().isEmpty()) {
-			error += "In '" + getClass().getCanonicalName()
-					+ "' name not set\n";
+			error = LanguageManager.getText("dataflowaction.checkinit.getname",
+					new Object[] { getClass().getCanonicalName() });
 		}
 
 		Iterator<DFEPage> it = pageList.iterator();
@@ -254,8 +279,9 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 			ok = it.next().checkInitPage();
 		}
 		if (!ok) {
-			error += "In '" + getClass().getCanonicalName()
-					+ "' one or several page are not set correctly\n";
+			error = LanguageManager.getText(
+					"dataflowaction.checkinit.pagesnotok",
+					new Object[] { getClass().getCanonicalName() });
 		}
 		if (error.isEmpty()) {
 			error = null;
@@ -270,20 +296,20 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 		String error = null;
 
 		NodeList nl = n.getChildNodes();
-		for(int i = 0; i < nl.getLength(); ++i){
+		for (int i = 0; i < nl.getLength(); ++i) {
 			Node cur = nl.item(i);
-			String name =  cur.getNodeName();
-			logger.debug(componentId+": loads "+name+"...");
+			String name = cur.getNodeName();
+			logger.debug(componentId + ": loads " + name + "...");
 			try {
 				DFEInteraction intCur = getInteraction(name);
-				if(intCur != null){
+				if (intCur != null) {
 					intCur.readXml(cur.getFirstChild());
 				}
 			} catch (Exception e) {
-				error = componentId+": Fail to set values in the workflow";
+				error = LanguageManager.getText("dataflowaction.readvaluesxml",
+						new Object[] { componentId });
 			}
 		}
-
 
 		if (error != null) {
 			waLogger.error(error);
@@ -296,21 +322,23 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 	 * 
 	 * @param fw
 	 * @return null if OK, or a description of the error.
-	 * @throws RemoteException 
+	 * @throws RemoteException
 	 */
-	public String writeValuesXml(Document doc, Node parent) throws RemoteException {
+	public String writeValuesXml(Document doc, Node parent)
+			throws RemoteException {
 		String error = null;
 		try {
 			Iterator<DFEInteraction> itInter = getInteractions().iterator();
-			while(itInter.hasNext()){
+			while (itInter.hasNext()) {
 				DFEInteraction interCur = itInter.next();
-				logger.info("action name to write xml: "+interCur.getName());
+				logger.info("action name to write xml: " + interCur.getName());
 				Element inter = doc.createElement(interCur.getName());
 				interCur.writeXml(doc, inter);
 				parent.appendChild(inter);
 			}
 		} catch (Exception e) {
-			error = "Fail to set values in the workflow: "+e;
+			error = LanguageManager.getText("dataflowaction.writevaluesxml",
+					new Object[] { e.getMessage() });
 		}
 		if (error != null) {
 			waLogger.error(error);
@@ -318,32 +346,34 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 		return error;
 	}
 
-	public void update(int pageNb) throws RemoteException{
-		try{
+	public void update(int pageNb) throws RemoteException {
+		try {
 			DFEPage page = getPageList().get(pageNb);
 			Iterator<DFEInteraction> it = page.getInteractions().iterator();
 			DFEInteraction interaction;
-			while(it.hasNext()){
+			while (it.hasNext()) {
 				interaction = it.next();
-				try{
-					
+				try {
+
 					update(interaction);
-				}catch(Exception e){
-					
+				} catch (Exception e) {
+
 					logger.error("Error when updating an element");
 					logger.error(interaction.getName());
-					
+
 				}
 			}
-		}catch(Exception e){
-			logger.error("The page number "+pageNb+" does not exist");
+		} catch (Exception e) {
+			logger.error("The page number " + pageNb + " does not exist");
 		}
 	}
 
 	/**
-	 * Update the UserInteraction values @see {@link UserInteraction#inputFromAction}
+	 * Update the UserInteraction values @see
+	 * {@link UserInteraction#inputFromAction}
 	 */
-	public abstract void update(DFEInteraction interaction) throws RemoteException;
+	public abstract void update(DFEInteraction interaction)
+			throws RemoteException;
 
 	/**
 	 * Get the data inputed in the node
@@ -370,43 +400,37 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 		return ans;
 	}
 
-
-	public Map<String,DFEOutput> getAliases()  throws RemoteException {
-		Map<String,DFEOutput> ans = new LinkedHashMap<String,DFEOutput>();
-		Map<String,List<DataFlowElement> > in = getInputComponent(); 
+	public Map<String, DFEOutput> getAliases() throws RemoteException {
+		Map<String, DFEOutput> ans = new LinkedHashMap<String, DFEOutput>();
+		Map<String, List<DataFlowElement>> in = getInputComponent();
 		Iterator<String> it = in.keySet().iterator();
-		while(it.hasNext()){
+		while (it.hasNext()) {
 			Iterator<DataFlowElement> it2 = in.get(it.next()).iterator();
-			while(it2.hasNext()){
+			while (it2.hasNext()) {
 				DataFlowElement cur = it2.next();
-				String out_id = findNameOf(
-						cur.getOutputComponent(),
-						this); 
-				ans.put(
-						cur.getComponentId()+"_"+out_id,
-						cur.getDFEOutput().get(out_id));
+				String out_id = findNameOf(cur.getOutputComponent(), this);
+				ans.put(cur.getComponentId() + "_" + out_id, cur.getDFEOutput()
+						.get(out_id));
 			}
 		}
 		return ans;
 	}
 
-	public Map<String,Map<String,DFEOutput>> getAliasesPerInput() throws RemoteException {
-		Map<String,Map<String,DFEOutput> > ans = new LinkedHashMap<String,Map<String,DFEOutput>>();
-		Map<String,List<DataFlowElement> > in = getInputComponent(); 
+	public Map<String, Map<String, DFEOutput>> getAliasesPerInput()
+			throws RemoteException {
+		Map<String, Map<String, DFEOutput>> ans = new LinkedHashMap<String, Map<String, DFEOutput>>();
+		Map<String, List<DataFlowElement>> in = getInputComponent();
 		Iterator<String> it = in.keySet().iterator();
-		while(it.hasNext()){
+		while (it.hasNext()) {
 			String inName = it.next();
-			Map<String,DFEOutput> ansCur = new LinkedHashMap<String,DFEOutput>();
-			ans.put(inName,ansCur);
+			Map<String, DFEOutput> ansCur = new LinkedHashMap<String, DFEOutput>();
+			ans.put(inName, ansCur);
 			Iterator<DataFlowElement> it2 = in.get(inName).iterator();
-			while(it2.hasNext()){
+			while (it2.hasNext()) {
 				DataFlowElement cur = it2.next();
-				String out_id = findNameOf(
-						cur.getOutputComponent(),
-						this); 
-				ansCur.put(
-						cur.getComponentId()+"_"+out_id,
-						cur.getDFEOutput().get(out_id));
+				String out_id = findNameOf(cur.getOutputComponent(), this);
+				ansCur.put(cur.getComponentId() + "_" + out_id, cur
+						.getDFEOutput().get(out_id));
 			}
 		}
 		return ans;
@@ -553,8 +577,8 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 		while (it.hasNext() && found == null) {
 			found = it.next().getInteraction(name);
 		}
-		if(found == null){
-			logger.info("Interaction '"+name+"' not found");
+		if (found == null) {
+			logger.info("Interaction '" + name + "' not found");
 		}
 		return found;
 	}
@@ -588,8 +612,8 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 		if (getInput().get(inputName) != null) {
 			addComponent(inputComponent, inputName, wa);
 		} else {
-			error = "Input '" + inputName + "' unknown in the workflow action "
-					+ getName();
+			error = LanguageManager.getText("dataflowaction.addinputcomponent",
+					new Object[] { inputName, getName() });
 			waLogger.error(error);
 		}
 		return error;
@@ -608,13 +632,15 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 		String error = null;
 		if (getInput().get(inputName) != null) {
 			if (!removeComponent(inputComponent, inputName, wa)) {
-				error = componentId + " is not linked to "
-						+ wa.getComponentId();
+				error = LanguageManager.getText(
+						"dataflowaction.removeinputcomponent", new Object[] {
+								componentId, wa.getComponentId() });
 			}
 
 		} else {
-			error = "Input '" + inputName + "' unknown in the workflow action "
-					+ getName();
+			error = LanguageManager.getText(
+					"dataflowaction.removeinputcomponent", new Object[] {
+							inputName, getName() });
 		}
 		return error;
 	}
@@ -633,8 +659,9 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 		if (getDFEOutput().get(outputName) != null) {
 			addComponent(outputComponent, outputName, wa);
 		} else {
-			error = "output '" + outputName
-					+ "' unknown in the workflow action " + getName();
+			error = LanguageManager.getText(
+					"dataflowaction.addoutputcomponent", new Object[] {
+							outputName, getName() });
 		}
 		return error;
 	}
@@ -652,13 +679,15 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 		String error = null;
 		if (getDFEOutput().get(outputName) != null) {
 			if (!removeComponent(outputComponent, outputName, wa)) {
-				error = componentId + " is not linked to "
-						+ wa.getComponentId();
+				error = LanguageManager.getText(
+						"dataflowaction.removecomponentidnolink", new Object[] {
+								componentId, wa.getComponentId() });
 			}
 
 		} else {
-			error = "Output '" + outputName
-					+ "' unknown in the workflow action " + getName();
+			error = LanguageManager.getText(
+					"dataflowaction.removecomponentiderror", new Object[] {
+							outputName, getName() });
 		}
 		return error;
 	}
@@ -736,7 +765,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 	 * @return the inputComponent
 	 */
 	public Map<String, List<DataFlowElement>> getInputComponent() {
-		//logger.debug("Input components: "+inputComponent.toString());
+		// logger.debug("Input components: "+inputComponent.toString());
 		return inputComponent;
 	}
 
@@ -753,7 +782,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 	 * @return the outputComponent
 	 */
 	public Map<String, List<DataFlowElement>> getOutputComponent() {
-		//logger.debug("Output components: "+inputComponent.toString());
+		// logger.debug("Output components: "+inputComponent.toString());
 		return outputComponent;
 	}
 
@@ -767,18 +796,18 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 	}
 
 	@Override
-	public void writeProcess(Document oozieXmlDoc, 
-			Element action,
-			File localDirectoryToWrite,
-			String pathFromOozieDir,
-			String fileNameWithoutExtension) throws RemoteException{
+	public void writeProcess(Document oozieXmlDoc, Element action,
+			File localDirectoryToWrite, String pathFromOozieDir,
+			String fileNameWithoutExtension) throws RemoteException {
 
 		String[] extensions = oozieAction.getFileExtensions();
 		String[] fileNames = new String[extensions.length];
 		File[] files = new File[extensions.length];
-		for(int i = 0; i < extensions.length;++i){
-			fileNames[i] = pathFromOozieDir+"/"+fileNameWithoutExtension+extensions[i];
-			files[i] = new File(localDirectoryToWrite,fileNameWithoutExtension+extensions[i]);
+		for (int i = 0; i < extensions.length; ++i) {
+			fileNames[i] = pathFromOozieDir + "/" + fileNameWithoutExtension
+					+ extensions[i];
+			files[i] = new File(localDirectoryToWrite, fileNameWithoutExtension
+					+ extensions[i]);
 		}
 		oozieAction.createOozieElement(oozieXmlDoc, action, fileNames);
 		writeOozieActionFiles(files);
@@ -788,7 +817,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 	public List<DataFlowElement> getAllInputComponent() throws RemoteException {
 		List<DataFlowElement> inputL = new LinkedList<DataFlowElement>();
 		Iterator<String> it = getInputComponent().keySet().iterator();
-		while(it.hasNext()){
+		while (it.hasNext()) {
 			inputL.addAll(getInputComponent().get(it.next()));
 		}
 		return inputL;
@@ -798,14 +827,15 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 	public List<DataFlowElement> getAllOutputComponent() throws RemoteException {
 		List<DataFlowElement> outputL = new LinkedList<DataFlowElement>();
 		Iterator<String> it = getOutputComponent().keySet().iterator();
-		while(it.hasNext()){
+		while (it.hasNext()) {
 			outputL.addAll(getOutputComponent().get(it.next()));
 		}
 		return outputL;
 	}
 
 	@Override
-	public List<DataFlowElement> getInputElementToBeCalculated() throws RemoteException{
+	public List<DataFlowElement> getInputElementToBeCalculated()
+			throws RemoteException {
 		List<DataFlowElement> ans = new LinkedList<DataFlowElement>();
 
 		Iterator<String> itS = inputComponent.keySet().iterator();
@@ -814,9 +844,8 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 			Iterator<DataFlowElement> itW = inputComponent.get(name).iterator();
 			while (itW.hasNext()) {
 				DataFlowElement cur = itW.next();
-				if((cur.getDFEOutput().get(
-						findNameOf(outputComponent, this))).getSavingState()
-						== SavingState.TEMPORARY){
+				if ((cur.getDFEOutput().get(findNameOf(outputComponent, this)))
+						.getSavingState() == SavingState.TEMPORARY) {
 					ans.add(cur);
 				}
 			}
@@ -834,31 +863,31 @@ public abstract class DataflowAction extends UnicastRemoteObject implements Data
 	}
 
 	@Override
-	public String cleanDataOut() throws RemoteException{
+	public String cleanDataOut() throws RemoteException {
 		String err = "";
-		if(getDFEOutput() != null){
+		if (getDFEOutput() != null) {
 			Iterator<DFEOutput> it = getDFEOutput().values().iterator();
-			while(it.hasNext()){
+			while (it.hasNext()) {
 				DFEOutput cur = it.next();
-				if(cur != null){
+				if (cur != null) {
 					String curErr = cur.clean();
-					if(curErr != null){
-						err = err +curErr+"\n";
+					if (curErr != null) {
+						err = err + curErr + "\n";
 					}
 				}
 			}
 		}
-		if(err.isEmpty()){
+		if (err.isEmpty()) {
 			err = null;
 		}
 		return err;
 	}
 
 	@Override
-	public void cleanThisAndAllElementAfter() throws RemoteException{
+	public void cleanThisAndAllElementAfter() throws RemoteException {
 		cleanDataOut();
 		Iterator<DataFlowElement> it = getAllOutputComponent().iterator();
-		while(it.hasNext()){
+		while (it.hasNext()) {
 			it.next().cleanThisAndAllElementAfter();
 		}
 	}

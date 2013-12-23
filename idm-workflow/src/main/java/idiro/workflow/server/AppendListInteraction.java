@@ -2,6 +2,7 @@ package idiro.workflow.server;
 
 import idiro.utils.Tree;
 import idiro.workflow.server.enumeration.DisplayType;
+import idiro.workflow.utils.LanguageManager;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
@@ -76,7 +77,7 @@ public class AppendListInteraction extends UserInteraction{
 				output.add("value").add(it.next());
 			}
 		}else{
-			error = "Values "+values+" are not all available";
+			error = LanguageManager.getText("AppendListInteraction.setValues", new Object[]{values.toString()});
 		}
 		return error;
 	}

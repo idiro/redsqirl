@@ -3,6 +3,7 @@ package idiro.workflow.server.connect;
 import idiro.tm.task.in.Preference;
 import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.interfaces.DataStore;
+import idiro.workflow.utils.LanguageManager;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -150,7 +151,7 @@ public class SSHInterface extends UnicastRemoteObject implements  DataStore{
 	public static String addKnownHost(String host,int port){
 		String error = null;
 		if(getKnownHost().contains(host)){
-			error = "Host "+host+" is already recorded";
+			error = LanguageManager.getText("sshinterface.addknownhost",new Object[]{host});
 		}else{
 			String hosts = known_host.get();
 			if(hosts.isEmpty()){
@@ -166,7 +167,7 @@ public class SSHInterface extends UnicastRemoteObject implements  DataStore{
 	public static String removeKnownHost(String host){
 		String error = null;
 		if(!getKnownHost().contains(host)){
-			error = "Host "+host+" is not recorded";
+			error = LanguageManager.getText("sshinterface.removeknownhost",new Object[]{host});
 		}else{
 			String new_hosts = "";
 			String hosts = known_host.get();
@@ -208,9 +209,9 @@ public class SSHInterface extends UnicastRemoteObject implements  DataStore{
 				goTo(channel.getHome());
 			}
 		} catch (JSchException e) {
-			error = "Fail to connect to the channel "+e.getMessage();
+			error = LanguageManager.getText("sshinterface.connectchannelfail",new Object[]{e.getMessage()});
 		} catch (SftpException e) {
-			error = "Fail to go to the remote home directory "+e.getMessage();
+			error = LanguageManager.getText("sshinterface.homedirfail",new Object[]{e.getMessage()});
 		}
 		return error;
 	}
@@ -305,7 +306,7 @@ public class SSHInterface extends UnicastRemoteObject implements  DataStore{
 		try {
 			channel.rename(old_path,new_path);
 		} catch (SftpException e) {
-			error = "Fail to move '"+old_path+"' to '"+new_path+"'\n"+e.getMessage();
+			error = LanguageManager.getText("sshinterface.move",new Object[]{old_path,new_path,e.getMessage()});
 			logger.warn(error);
 		}
 		return error;
@@ -320,7 +321,7 @@ public class SSHInterface extends UnicastRemoteObject implements  DataStore{
 	public String delete(String path) throws RemoteException {
 		String error = null;
 		if(!exists(path)){
-			error = "'"+path+"' does not exist";
+			error = LanguageManager.getText("sshinterface.deletenotexist", new Object[]{path});
 		}
 		logger.debug("Attempt to delete "+path);
 		try {
@@ -334,7 +335,7 @@ public class SSHInterface extends UnicastRemoteObject implements  DataStore{
 				channel.rm(path);
 			}
 		} catch (SftpException e) {
-			error = "Fail to delete the directory '"+path+"' \n"+e.getMessage();
+			error = LanguageManager.getText("sshinterface.deletefail", new Object[]{path,e.getMessage()});
 			logger.warn(error);
 		}
 		return error;
