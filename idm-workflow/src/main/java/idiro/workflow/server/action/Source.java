@@ -306,6 +306,10 @@ public class Source extends DataflowAction {
 				} catch (Exception e) {
 					error = LanguageManager.getText("source.exception",new Object[]{e.getMessage()});
 				}
+				
+				
+				logger.info("checkpage3 "+error);
+				
 				return error;
 			}
 
