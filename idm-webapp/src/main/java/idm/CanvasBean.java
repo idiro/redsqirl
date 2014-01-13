@@ -226,8 +226,15 @@ public class CanvasBean extends BaseBean implements Serializable{
 	 * @param posY
 	 */
 	public void updatePosition(String workflowName, String paramGroupID, String posX, String posY) {
+		
 		logger.info("updatePosition");
 		logger.info("canvas Name: "+getIdMap().keySet());
+		
+		logger.info("getIdMap1 :" + getIdMap());
+		logger.info("getIdMap2 :" + getIdMap().get(workflowName));
+		logger.info("getIdMap3 :" + paramGroupID);
+		logger.info("getIdMap4 :" + getIdMap().get(workflowName).get(paramGroupID));
+		
 		try {
 			DataFlow df = getDf();
 			df.getElement(getIdMap().get(workflowName).get(paramGroupID)).setPosition(
@@ -391,6 +398,9 @@ public class CanvasBean extends BaseBean implements Serializable{
 	 * Push the object position on the backend
 	 */
 	protected void updatePosition(){
+		
+		logger.info("updatePosition");
+		
 		String positions = FacesContext.getCurrentInstance().getExternalContext().
 				getRequestParameterMap().get("positions");
 		try{
@@ -401,7 +411,11 @@ public class CanvasBean extends BaseBean implements Serializable{
 				Object objc = positionsArray.get(groupId);
 
 				JSONArray elementArray = new JSONArray(objc.toString());
-				updatePosition(groupId, elementArray.get(0).toString(), elementArray.get(1).toString());
+				
+				if(!groupId.equalsIgnoreCase("legend")){
+					updatePosition(groupId, elementArray.get(0).toString(), elementArray.get(1).toString());
+				}
+				
 			}
 		} catch (JSONException e){
 			logger.info("Error updating positions");
@@ -434,10 +448,14 @@ public class CanvasBean extends BaseBean implements Serializable{
 								   groupId+" "+
 								   elementArray.get(0).toString()+" "+
 								   elementArray.get(1).toString());
-					updatePosition(workflowId,
+					
+					if(!groupId.equalsIgnoreCase("legend")){
+						updatePosition(workflowId,
 								   groupId, 
 								   elementArray.get(0).toString(), 
 								   elementArray.get(1).toString());
+					}
+					
 				}
 			}
 		} catch (JSONException e){
@@ -468,6 +486,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 	 */
 	@SuppressWarnings("rawtypes")
 	public void save() {
+		
 		logger.info("save");
 
 		//Set path
@@ -480,11 +499,13 @@ public class CanvasBean extends BaseBean implements Serializable{
 		try {
 
 			logger.info("save workflow "+nameWorkflow+" in "+path);
+			
 			DataFlow df = getWorkflowMap().get(nameWorkflow);
 //			setNameWorkflow(generateWorkflowName(path));
 			df.setName(generateWorkflowName(path));
 			String msg = df.save(path);
-			logger.info(msg);
+			
+			logger.info("save msg :" + msg);
 
 			if(msg != null ){
 				MessageUseful.addErrorMessage(msg);

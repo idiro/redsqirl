@@ -370,7 +370,7 @@ public class Source extends DataflowAction {
 			values.add("value").add("HDFS");
 			
 			Tree<String> display = list.add("display");
-			display.add("combobox");
+			display.add("checkbox");
 		}
 	}
 
@@ -431,7 +431,7 @@ public class Source extends DataflowAction {
 			}
 			
 			Tree<String> display = list.add("display");
-			display.add("combobox");
+			display.add("checkbox");
 			
 		}
 	}

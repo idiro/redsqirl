@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -328,6 +329,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			throws RemoteException {
 		String error = null;
 		try {
+			
 			Iterator<DFEInteraction> itInter = getInteractions().iterator();
 			while (itInter.hasNext()) {
 				DFEInteraction interCur = itInter.next();
@@ -336,13 +338,22 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 				interCur.writeXml(doc, inter);
 				parent.appendChild(inter);
 			}
+		
+		} catch (DOMException dme) {
+			
+			logger.info("writeValuesXml error dme " + dme + " -- " + dme.getMessage());
+			
 		} catch (Exception e) {
 			error = LanguageManager.getText("dataflowaction.writevaluesxml",
 					new Object[] { e.getMessage() });
 		}
+		
+		logger.info("writeValuesXml error: " + error);
+		
 		if (error != null) {
 			waLogger.error(error);
 		}
+		
 		return error;
 	}
 

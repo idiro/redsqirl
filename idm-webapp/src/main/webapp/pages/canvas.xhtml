@@ -127,7 +127,6 @@
   	    		resizing();
 	        });
   	    	
-
   	    	var contTabRemote = 1;
   	        
   	    	/* jQuery('#addTabRemote').click( function(){
@@ -153,7 +152,6 @@
 	              
 	              //]]>
 	          });
-	      
 
 	    	  jQuery(".splitterV").splitter({
 	    			type: "v",
@@ -254,7 +252,6 @@
 	    			 
 	    			 allTabs.show();
 
-
 		    		  allTabs.mouseleave(function() {
 			    			  allTabs.hide();
 		    		  });
@@ -281,7 +278,6 @@
 	    			 allTabs.css("margin-top", -1 * jQuery($selected).height() + 'px');
 	    			 
 	    			 allTabs.show();
-
 
 		    		  allTabs.mouseleave(function() {
 			    		  allTabs.hide();
@@ -310,7 +306,6 @@
 	    			 
 	    			 allTabs.show();
 
-
 		    		  allTabs.mouseleave(function() {
 			    		  allTabs.hide();
 		    		  });
@@ -327,11 +322,9 @@
 		    		 
 				 }
 
-
 	    		 jQuery("#tabsFooter").find("a").click(function() {
 	    			 resizeCanvasChangeTab();
 	    		 });
-				 
 	    		 
 	    		 window.onbeforeunload = function(){
 	    			 invalidateSession();

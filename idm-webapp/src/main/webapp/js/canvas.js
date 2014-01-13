@@ -34,6 +34,8 @@ function Canvas(name){
 	this.running = false;
 	this.isSaved = false;
 	this.pathFile = null;
+	
+	this.legend = null;
 }
 
 var selectedCanvas = "canvas-1";
@@ -115,20 +117,15 @@ function configureCanvas(canvasName){
 		draggable : false
 	});
 
-	// ------------ START STAGE CONTROL
-
 	configureStage(canvasName);
-
-	// ------------ END STAGE CONTROL
 
 	makeHistory(canvasName);
 
-	jQuery("#body").keydown(
-		function(event) {
-			if (event.keyCode == 46) { // Delete
-				deleteSelected();
-			}
-		});
+	jQuery("#body").keydown(function(event) {
+		if (event.keyCode == 46) { // Delete
+			deleteSelected();
+		}
+	});
 
 	canvasArray[canvasName].arrow.on('click', function(e) {
 
@@ -189,10 +186,222 @@ function configureCanvas(canvasName){
 		}
 	);
 	
+	createLegend(canvasName, polygonLayer);
+	
 	stage.add(layer);
 	stage.add(polygonLayer);
 
-	// ------------- FIM CANVAS
+}
+
+function createLegend(canvasName) {
+
+	var polygonLayer = canvasArray[canvasName].polygonLayer;
+	
+	var rectangle = new Kinetic.Rect({
+		x : 0,
+		y : 0,
+		width : 90,
+		height : 190,
+		stroke : 'black',
+		strokeWidth : 1,
+		dashArray : [ 33, 10 ],
+		draggable : false
+	});
+	
+	var rec1 = new Kinetic.Rect({
+		x : 10,
+		y : 10,
+		width : 10,
+		height : 10,
+		stroke : 'red',
+		fill: 'red',
+		strokeWidth : 1,
+		draggable : false
+	});
+	
+	var labelRec1 = new Kinetic.Text({
+		text : 'bla bla 1',
+		fontSize : 10,
+		fill : 'black',
+		x : 25,
+		y : 10
+	});
+	
+	var rec2 = new Kinetic.Rect({
+		x : 10,
+		y : 30,
+		width : 10,
+		height : 10,
+		stroke : 'green',
+		fill: 'green',
+		strokeWidth : 1,
+		draggable : false
+	});
+	
+	var labelRec2 = new Kinetic.Text({
+		text : 'bla bla 2',
+		fontSize : 10,
+		fill : 'black',
+		x : 25,
+		y : 30
+	});
+	
+	var rec3 = new Kinetic.Rect({
+		x : 10,
+		y : 50,
+		width : 10,
+		height : 10,
+		stroke : 'orange',
+		fill: 'orange',
+		strokeWidth : 1,
+		draggable : false
+	});
+	
+	var labelRec3 = new Kinetic.Text({
+		text : 'bla bla 3',
+		fontSize : 10,
+		fill : 'black',
+		x : 25,
+		y : 50
+	});
+	
+	var rec4 = new Kinetic.Rect({
+		x : 10,
+		y : 70,
+		width : 10,
+		height : 10,
+		stroke : 'blue',
+		fill: 'blue',
+		strokeWidth : 1,
+		draggable : false
+	});
+	
+	var labelRec4 = new Kinetic.Text({
+		text : 'bla bla 4',
+		fontSize : 10,
+		fill : 'black',
+		x : 25,
+		y : 70
+	});
+	
+	var rec5 = new Kinetic.Rect({
+		x : 10,
+		y : 90,
+		width : 10,
+		height : 10,
+		stroke : 'purple',
+		fill: 'purple',
+		strokeWidth : 1,
+		draggable : false
+	});
+	
+	var labelRec5 = new Kinetic.Text({
+		text : 'bla bla 5',
+		fontSize : 10,
+		fill : 'black',
+		x : 25,
+		y : 90
+	});
+	
+	var rec6 = new Kinetic.Rect({
+		x : 10,
+		y : 110,
+		width : 10,
+		height : 10,
+		stroke : 'DarkOrange',
+		fill: 'DarkOrange',
+		strokeWidth : 1,
+		draggable : false
+	});
+	
+	var labelRec6 = new Kinetic.Text({
+		text : 'bla bla 6',
+		fontSize : 10,
+		fill : 'black',
+		x : 25,
+		y : 110
+	});
+	
+	var rec7 = new Kinetic.Rect({
+		x : 10,
+		y : 130,
+		width : 10,
+		height : 10,
+		stroke : 'LighSkyBlue',
+		fill: 'LighSkyBlue',
+		strokeWidth : 1,
+		draggable : false
+	});
+	
+	var labelRec7 = new Kinetic.Text({
+		text : 'bla bla 7',
+		fontSize : 10,
+		fill : 'black',
+		x : 25,
+		y : 130
+	});
+	
+	var rec8 = new Kinetic.Rect({
+		x : 10,
+		y : 150,
+		width : 10,
+		height : 10,
+		stroke : 'LightSalmon',
+		fill: 'LightSalmon',
+		strokeWidth : 1,
+		draggable : false
+	});
+	
+	var labelRec8 = new Kinetic.Text({
+		text : 'bla bla 8',
+		fontSize : 10,
+		fill : 'black',
+		x : 25,
+		y : 150
+	});
+	
+	var groupLegend = new Kinetic.Group({
+		draggable : true,
+		id : "legend",
+		dragBoundFunc : function(pos) {
+			return rulesDragAndDropObj(canvasName, pos, 80, 80);
+		}
+	});
+	
+	groupLegend.on('dragstart dragmove', function(e) {
+		canvasArray[canvasName].rectSelect.remove();
+	});
+	
+	groupLegend.add(rectangle);
+	
+	groupLegend.add(rec1);
+	groupLegend.add(labelRec1);
+	
+	groupLegend.add(rec2);
+	groupLegend.add(labelRec2);
+	
+	groupLegend.add(rec3);
+	groupLegend.add(labelRec3);
+	
+	groupLegend.add(rec4);
+	groupLegend.add(labelRec4);
+	
+	groupLegend.add(rec5);
+	groupLegend.add(labelRec5);
+	
+	groupLegend.add(rec6);
+	groupLegend.add(labelRec6);
+	
+	groupLegend.add(rec7);
+	groupLegend.add(labelRec7);
+	
+	groupLegend.add(rec8);
+	groupLegend.add(labelRec8);
+	
+	polygonLayer.add(groupLegend);
+	
+	canvasArray[canvasName].legend = groupLegend;
+	
 }
 
 // a = retangle, b = object, bx = object.getX() and by = object.getY()
@@ -757,21 +966,6 @@ function makeHistory(canvasName) {
 
 }
 
-function undoHistory() {
-	
-	if (canvasArray[selectedCanvas].historyStep > 0) {
-		canvasArray[selectedCanvas].historyStep--;
-
-		var json = canvasArray[selectedCanvas].history[canvasArray[selectedCanvas].historyStep];
-		var json2 = canvasArray[selectedCanvas].history2[canvasArray[selectedCanvas].historyStep];
-
-		canvasArray[selectedCanvas].polygonLayer = Kinetic.Node.create(json, selectedCanvas);
-		canvasArray[selectedCanvas].layer = Kinetic.Node.create(json2, selectedCanvas);
-
-		ready(selectedCanvas);
-	}
-}
-
 function addElements(canvasName, positions) {
 	canvasArray[canvasName].countObj = 0;
 	var positionsArrays = JSON.parse(positions);
@@ -817,6 +1011,7 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
 		stroke : 'white',
 		strokeWidth : 5
 	});
+	configureCircle(canvasName, circle0);
 
 	var circle1 = new Kinetic.Circle({
 		x : 40,
@@ -828,6 +1023,68 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
 		strokeWidth : 5
 	});
 	configureCircle(canvasName, circle1);
+	
+	
+	
+	var arc1 = new Kinetic.Shape({
+	    drawFunc: function(canvas) {
+	        var context = canvas.getContext();
+	        var x = 40;
+	        var y = 50;
+	        var radius = 42;
+	        var startAngle = 0.1 * Math.PI;
+	        var endAngle = 0.6 * Math.PI;
+	        var context = canvas.getContext('2d');
+	        context.beginPath();
+	        context.arc(x, y, radius, startAngle, endAngle, false);
+	        canvas.stroke(this);
+	    },
+	    fill: '#00D2FF',
+	    stroke: 'silver',
+	    strokeWidth: 4,
+	    draggable:false
+	});
+	
+	var arc2 = new Kinetic.Shape({
+	    drawFunc: function(canvas) {
+	        var context = canvas.getContext();
+	        var x = 40;
+	        var y = 50;
+	        var radius = 42;
+	        var startAngle = 0.8 * Math.PI;
+	        var endAngle = 1.3 * Math.PI;
+	        var context = canvas.getContext('2d');
+	        context.beginPath();
+	        context.arc(x, y, radius, startAngle, endAngle, false);
+	        canvas.stroke(this);
+	    },
+	    fill: '#00D2FF',
+	    stroke: 'silver',
+	    strokeWidth: 4,
+	    draggable:false
+	});
+	
+	var arc3 = new Kinetic.Shape({
+	    drawFunc: function(canvas) {
+	        var context = canvas.getContext();
+	        var x = 40;
+	        var y = 50;
+	        var radius = 42;
+	        var startAngle = 1.5 * Math.PI;
+	        var endAngle = 1.9 * Math.PI;
+	        var context = canvas.getContext('2d');
+	        context.beginPath();
+	        context.arc(x, y, radius, startAngle, endAngle, false);
+	        canvas.stroke(this);
+	    },
+	    fill: '#00D2FF',
+	    stroke: 'silver',
+	    strokeWidth: 4,
+	    draggable:false
+	});
+	
+	
+	
 
 	var srcImageText = new Kinetic.Text({
 		text : "srcImageText"
@@ -839,13 +1096,29 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
 	});
 
 	canvasArray[canvasName].countObj++;
-	var group = createGroup(canvasName, circle0, circle1, polygon, srcImageText, typeText, idElement);
+	var group = createGroup(canvasName, circle0, circle1, polygon, srcImageText, typeText, idElement, arc1,arc2,arc3);
 	
 	polygonLayer.add(group);
 
 	configureGroup(canvasName, group, posx, posy, polygon);
 	
 	return group;
+}
+
+function undoHistory() {
+	
+	if (canvasArray[selectedCanvas].historyStep > 0) {
+		canvasArray[selectedCanvas].historyStep--;
+
+		var json = canvasArray[selectedCanvas].history[canvasArray[selectedCanvas].historyStep];
+		var json2 = canvasArray[selectedCanvas].history2[canvasArray[selectedCanvas].historyStep];
+
+		canvasArray[selectedCanvas].polygonLayer = Kinetic.Node.create(json, selectedCanvas);
+		canvasArray[selectedCanvas].layer = Kinetic.Node.create(json2, selectedCanvas);
+
+		ready(selectedCanvas);
+	}
+	
 }
 
 function redoHistory() {
@@ -962,7 +1235,7 @@ function mountObj() {
 				container : nameDiv,
 				width : jQuery("#canvas-tabs").width()-10,
 				height : 100
-			});	
+			});
 
 			// layer to footer tab1
 			var layerTab = new Kinetic.Layer();
@@ -1034,10 +1307,10 @@ function mountObj() {
 					var mousePosStage = stage.getMousePosition();
 					if (mousePosStage !== undefined){
 
-						addElement(selectedCanvas, 
-								typeText.getText(), 
+						addElement(selectedCanvas,
+								typeText.getText(),
 								srcImageText.getText(),
-								mousePosStage.x - 30, 
+								mousePosStage.x - 30,
 								mousePosStage.y - 30,
 								numSides,
 								"group" + (+canvasArray[selectedCanvas].countObj+1));
@@ -1071,8 +1344,7 @@ function mountObj() {
 				layerTab.add(polygonTab);
 				layerTab.add(polygonTabFake.clone());
 
-				// jQuery( "#"+nameDiv
-				// ).find("img").remove();
+				// jQuery( "#"+nameDiv ).find("img").remove();
 
 			});
 			// END for obj imagens
@@ -1313,7 +1585,7 @@ function configureGroupListeners(canvasName, group) {
 	});
 }
 
-function createGroup(canvasName, circle0, circle1, polygon, srcImageText, typeText, groupId) {
+function createGroup(canvasName, circle0, circle1, polygon, srcImageText, typeText, groupId, arc1,arc2,arc3) {
 	
 	var countObj = canvasArray[canvasName].countObj;
 
@@ -1339,6 +1611,9 @@ function createGroup(canvasName, circle0, circle1, polygon, srcImageText, typeTe
 	group1.add(poly);
 	group1.add(srcImageText.clone());
 	group1.add(typeText.clone());
+	group1.add(arc1);
+	group1.add(arc2);
+	group1.add(arc3);
 
 	return group1;
 }
@@ -1496,7 +1771,7 @@ function getColorOutput(status, fileExists){
 		return "LighSkyBlue";
 	}
 	else {
-		return "white";
+		return "silve";
 	}
 }
 
@@ -1508,7 +1783,7 @@ function getColorRunning(status){
 		return "red";
 	}
 	else {
-		return "white";
+		return "silve";
 	}
 }
 
@@ -1527,7 +1802,8 @@ function updateActionOutputStatus(groupId, status, fileExists) {
 	
 	var group = getElement(polygonLayer, groupId);
 	
-	group.getChildren()[1].setStroke(getColorOutput(status, fileExists));
+	//group.getChildren()[1].setStroke(getColorOutput(status, fileExists));
+	group.getChildren()[5].setStroke(getColorOutput(status, fileExists));
 	
 	polygonLayer.draw();
 
@@ -1539,9 +1815,7 @@ function updateActionRunningStatus(groupId, status) {
 	
 	var group = getElement(polygonLayer, groupId);
 	
-	//group.getChildren()[0].setStroke(getColorRunning(status));
 	group.getChildren()[0].setFill(getColorRunning(status));
-	
 	
 	polygonLayer.draw();
 
@@ -1590,7 +1864,6 @@ function updateArrowType(idOutput, idInput, color) {
 	layer.draw();
 
 }
-
 
 function setSelected(selected){
 	selectedCanvas = selected;

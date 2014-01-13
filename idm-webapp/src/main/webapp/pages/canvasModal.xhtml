@@ -78,16 +78,14 @@
 				<!-- appendList -->
 				
 				<a4j:region>
-					<rich:comboBox value="#{item.selectedAppendListOptions}" selectFirstOnUpdate="false" width="200" 
-						listWidth="150" listHeight="200" enableManualInput="false" rendered="#{item.displayType == 'appendList' and item.comboBox == 'Y'}" >
+					<h:selectManyListbox value="#{item.selectedAppendListOptions}" rendered="#{item.displayType == 'appendList' and item.comboBox == 'Y'}" >
 						<f:selectItems value="#{item.appendListOptions}" />
-					</rich:comboBox>
+					</h:selectManyListbox>
 					
 					<h:selectManyCheckbox value="#{item.selectedAppendListOptions}" rendered="#{item.displayType == 'appendList' and item.comboBox == 'N'}" layout="pageDirection" >
 						<f:selectItems value="#{item.appendListOptions}" />
 					</h:selectManyCheckbox>
 				</a4j:region>
-				
 				
 				<!-- browser -->
 				<a4j:region>
