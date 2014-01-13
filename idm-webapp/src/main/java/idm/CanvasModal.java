@@ -404,7 +404,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 		logger.info("previousPage ");
 		// Save current page
-		checkNextPage();
+		//checkNextPage();
 
 		setListPosition(getListPosition() - 1);
 

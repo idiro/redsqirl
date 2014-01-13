@@ -749,12 +749,11 @@ public class CanvasBean extends BaseBean implements Serializable{
 		String groupId = params.get("groupId");
 		
 		DataFlowElement df = getDf().getElement(getIdMap().get(getNameWorkflow()).get(groupId));
-		
 
 		String state = null;
 		boolean pathExists = true;
 		
-		if (df.getDFEOutput() != null){
+		if (df != null && df.getDFEOutput() != null){
 			for (Entry<String, DFEOutput> e : df.getDFEOutput().entrySet()){
 				state = e.getValue().getSavingState().toString();
 				
@@ -768,8 +767,6 @@ public class CanvasBean extends BaseBean implements Serializable{
 		
 		return new String[]{groupId, state, String.valueOf(pathExists)};
 	}
-	
-	
 	
 	public String[][] getRunningStatus() throws Exception{
 		logger.info("getRunningStatus");

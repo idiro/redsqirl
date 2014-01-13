@@ -1751,26 +1751,27 @@ function updateLabelObj(groupId, newGroupId) {
 
 }
 
-function getColorOutput(status, fileExists){
+function getColorOutputType(status){
 	if (status == "TEMPORARY"){
-		if (fileExists != "false"){
-			return "purple";
-		}
-		return "plum";
+		return "purple";
 	}
 	else if (status == "RECORDED"){
-		if (fileExists != "false"){
-			return "DarkOrange";
-		}
 		return "LightSalmon";
 	}
 	else if (status == "BUFFERED"){
-		if (fileExists != "false"){
-			return "blue";
-		}
 		return "LighSkyBlue";
 	}
 	else {
+		return "silve";
+	}
+}
+
+function getColorOutputExistence(fileExists){
+	if (fileExists == "true"){
+		return "lightBrown";
+	}else if (fileExists == "false"){
+		return "chocolate"
+	}else {
 		return "silve";
 	}
 }
@@ -1802,8 +1803,8 @@ function updateActionOutputStatus(groupId, status, fileExists) {
 	
 	var group = getElement(polygonLayer, groupId);
 	
-	//group.getChildren()[1].setStroke(getColorOutput(status, fileExists));
-	group.getChildren()[5].setStroke(getColorOutput(status, fileExists));
+	group.getChildren()[5].setStroke(getColorOutputType(status));
+	group.getChildren()[7].setStroke(getColorOutputExistence(fileExists));
 	
 	polygonLayer.draw();
 
@@ -1815,7 +1816,8 @@ function updateActionRunningStatus(groupId, status) {
 	
 	var group = getElement(polygonLayer, groupId);
 	
-	group.getChildren()[0].setFill(getColorRunning(status));
+	//group.getChildren()[0].setFill(getColorRunning(status));
+	group.getChildren()[6].setStroke(getColorRunning(status));
 	
 	polygonLayer.draw();
 
