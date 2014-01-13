@@ -210,10 +210,6 @@ public class Source extends DataflowAction {
 								
 								out.addProperty(name, value);
 								
-								if(name.equalsIgnoreCase("header") && value != null && !"".equals(value)){
-									setHeader = false;
-								}
-								
 							}
 						}catch(Exception e){
 							logger.debug("No properties");
@@ -240,55 +236,6 @@ public class Source extends DataflowAction {
 					}
 
 					logger.info("setHeader : " + setHeader);
-					
-					if(setHeader){
-						
-						//Set features
-						if(error == null){
-							try{
-								List<Tree<String>> features =  getInteraction(key_dataset)
-										.getTree().getFirstChild("browse").getFirstChild("output")
-										.getChildren("feature");
-								
-								if(features == null || features.isEmpty()){
-									logger.warn("The list of features cannot be null or empty, could be calculated automatically from the path");
-								}else{
-									FeatureList outF = new OrderedFeatureList();
-
-									for (Iterator<Tree<String>> iterator =features.iterator(); iterator.hasNext();) {
-										Tree<String> cur = iterator.next();
-
-										String name = cur.getFirstChild("name").getFirstChild()
-												.getHead();
-										String type = cur.getFirstChild("type").getFirstChild()
-												.getHead();
-
-										logger.info("updateOut name " + name);
-										logger.info("updateOut type " + type);
-
-										try {
-											
-											logger.info("outF.addFeature "+name +" "+type);
-											outF.addFeature(name, FeatureType.valueOf(type));
-										} catch (Exception e) {
-											error = LanguageManager.getText("source.featuretypeerror",new Object[]{type});
-										}
-
-									}
-									//Update the feature list only if it looks good
-									String warn = out.checkFeatures(outF); 
-									if(warn == null){
-										out.setFeatures(outF);
-									}else{
-										logger.info(warn);
-									}
-								}
-							}catch(Exception e){
-								error = LanguageManager.getText("source.treeerror");
-							}
-						}
-						
-					}
 
 					if(error == null){
 						try{

@@ -326,19 +326,17 @@ public class MapRedTextType extends DataOutput {
 					if (!line.trim().isEmpty()) {
 						int cont = 0;
 
-						for (String s : line
-								.split(Pattern
-										.quote(getChar(getProperty(key_delimiter))))) {
+						for (String s : line.split(Pattern.quote(getChar(getProperty(key_delimiter))))) {
+							
 							String nameColumn = generateColumnName(cont++);
 
 							logger.info("line: " + line);
+							logger.info("key_delimiter: " + Pattern.quote(getChar(getProperty(key_delimiter))));
 							logger.info("s: " + s);
-							logger.info("key_delimiter: "
-									+ Pattern
-									.quote(getChar(getProperty(key_delimiter))));
 							logger.info("new nameColumn: " + nameColumn);
 
 							FeatureType type = getType(s.trim());
+							
 							if (features.containsFeature(nameColumn)) {
 								if (!canCast(type,
 										features.getFeatureType(nameColumn))) {
@@ -347,6 +345,7 @@ public class MapRedTextType extends DataOutput {
 							} else {
 								features.addFeature(nameColumn, type);
 							}
+							
 						}
 
 					}
@@ -461,22 +460,15 @@ public class MapRedTextType extends DataOutput {
 
 				if (list != null && !list.isEmpty()) {
 					String text = list.get(0);
+					
 					if (getProperty(key_delimiter) == null) {
 						String delimiter = getDefaultDelimiter(text);
 
 						logger.info("delimiter -> " + delimiter);
 
 						super.addProperty(key_delimiter, delimiter);
-					} else {
-						if (!text.contains(getChar(getProperty(key_delimiter)))) {
-							String delimiter = getDefaultDelimiter(text);
-
-							logger.info("delimiter -> " + delimiter);
-
-							super.addProperty(key_delimiter, delimiter);
-
-						}
 					}
+					
 				}
 
 				generateFeaturesMap();

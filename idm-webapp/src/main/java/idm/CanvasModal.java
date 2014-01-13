@@ -1510,22 +1510,24 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 							String rows[] = output.split("'\001'");
 							for (int i = 0; i < rows.length; i++) {
-								logger.info("map to show " + labels.get(i)
-										+ " " + rows[i]);
+								logger.info("map to show " + labels.get(i) + " " + rows[i]);
 								nameValueFeature.put(labels.get(i), rows[i]);
 								nameValueFeatureItem.put(labels.get(i), rows[i]);
 							}
 						}else{
 							String delimiter =  dfeOut.getProperty("delimiter");
+							
 							if(delimiter.length() > 1){
 								delimiter = String.valueOf(Character.toChars(Integer.valueOf(dfeOut.getProperty("delimiter").substring(1))));
 							}
+							
+							logger.info("delimiter " + delimiter);
+							
 							String rows[] = output.split(Pattern.quote(delimiter));
 							for (int i = 0; i < rows.length; i++) {
 								logger.info("map to show " + labels.get(i) + " " + rows[i]);
 								nameValueFeature.put(labels.get(i), rows[i]);
 								nameValueFeatureItem.put(labels.get(i), rows[i]);
-
 							}
 
 						}
