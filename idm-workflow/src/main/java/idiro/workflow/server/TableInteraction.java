@@ -56,6 +56,17 @@ public class TableInteraction extends UserInteraction {
 		}
 		return colNames;
 	}
+	
+	public void removeColumns() throws RemoteException{
+		tree.getFirstChild("table").remove("columns");
+	}
+	
+	public void removeColumn(String columnName) throws RemoteException{
+		Tree<String> col = findColumn(columnName);
+		if(col != null){
+			tree.getFirstChild("table").getSubTreeList().remove(col);
+		}
+	}
 
 	public void addColumn(String columnName, 
 			Integer constraintCount,
