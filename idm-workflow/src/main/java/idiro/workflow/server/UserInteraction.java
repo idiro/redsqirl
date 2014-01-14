@@ -5,6 +5,7 @@ import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEInteractionChecker;
+import idiro.workflow.utils.LanguageManager;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -193,8 +194,8 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	public final String getName() {
 		return name;
 	}
-	
-	
+
+
 
 
 	protected List<String> getPossibleValuesFromList(){
@@ -217,10 +218,44 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 				}
 			}catch(Exception e){
 				possibleValues = null;
-				logger.error("Tree structure incorrect");
+				logger.error(LanguageManager.getText("UserInteraction.treeIncorrect"));
 			}
 		}
 		return possibleValues;
+	}
+
+	protected String checkInput(){
+		String error = null;
+		if(display != DisplayType.input){
+			logger.warn(getName()+" is not a input.");
+		}else{
+
+			try{
+				String value = null;
+				String regex = null;
+				if(getTree()
+						.getFirstChild("input").getFirstChild("output") != null){
+					value = getTree()
+							.getFirstChild("input").getFirstChild("output").getFirstChild().getHead();
+				}
+				if(getTree()
+						.getFirstChild("input").getFirstChild("regex") != null){
+					regex = getTree()
+						.getFirstChild("input").getFirstChild("regex").getFirstChild().getHead();
+				}
+				if(regex != null){
+					if(value == null){
+						error = LanguageManager.getText("UserInteraction.valueMatch", new String[]{regex});
+					}else if(!value.matches(regex)){
+						error = LanguageManager.getText("UserInteraction.valueIncorrectMatch", new String[]{value,regex});
+					}
+				}
+			}catch(Exception e){
+				error = LanguageManager.getText("UserInteraction.treeIncorrect");
+				logger.error(error);
+			}
+		}
+		return error;
 	}
 
 	protected String checkList(){
@@ -236,7 +271,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 					error = "Value "+value + " invalid.";
 				}
 			}catch(Exception e){
-				error = "Tree structure incorrect";
+				error = LanguageManager.getText("UserInteraction.treeIncorrect");
 				logger.error(error);
 			}
 		}
@@ -263,7 +298,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 					}
 				}
 			}catch(Exception e){
-				error = "Tree structure incorrect";
+				error = LanguageManager.getText("UserInteraction.treeIncorrect");
 				logger.error(error);
 			}
 		}
@@ -288,6 +323,8 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 				break;
 			case table:
 				break;
+			case input:
+				error = checkInput();
 			default:
 				break;
 

@@ -21,14 +21,15 @@ public class TableInteraction extends UserInteraction {
 	public TableInteraction(String name, String legend,
 			int column, int placeInColumn) throws RemoteException {
 		super(name, legend, DisplayType.table, column, placeInColumn);
+		init();
 	}
 
-	public void init() throws RemoteException{
+	protected void init() throws RemoteException{
 		if(tree.isEmpty()){
 			tree.add("table").add("columns");
 		}
 	}
-	
+
 	protected String getColumnName( String columnName){
 		if(columnName.contains(" ")){
 			logger.warn("Column name with space is not supported");
@@ -41,7 +42,6 @@ public class TableInteraction extends UserInteraction {
 			Integer constraintCount,
 			Collection<String> constraintValue,
 			EditorInteraction editor) throws RemoteException{
-		init();
 		Tree<String> columns = tree.getFirstChild("table").getFirstChild("columns");
 		Tree<String> column = columns.add("column");
 		columnName = getColumnName(columnName);
@@ -50,16 +50,18 @@ public class TableInteraction extends UserInteraction {
 		updateEditor(columnName,editor);
 	}
 
-	private Tree<String> findColumn(String columnName) throws RemoteException{
+	protected Tree<String> findColumn(String columnName) throws RemoteException{
 		columnName = getColumnName(columnName);
 		Tree<String> columns = tree.getFirstChild("table").getFirstChild("columns");
 		Tree<String> found = null;
-		Iterator<Tree<String>> it = columns.getChildren("column").iterator();
-		while(it.hasNext() && found == null){
-			found = it.next();
-			//logger.debug(columnName+"? "+found);
-			if(!found.getFirstChild("title").getFirstChild().getHead().equals(columnName)){
-				found = null;
+		if(columns.getChildren("column") != null){
+			Iterator<Tree<String>> it = columns.getChildren("column").iterator();
+			while(it.hasNext() && found == null){
+				found = it.next();
+				//logger.debug(columnName+"? "+found);
+				if(!found.getFirstChild("title").getFirstChild().getHead().equals(columnName)){
+					found = null;
+				}
 			}
 		}
 		if(found == null){
@@ -104,7 +106,6 @@ public class TableInteraction extends UserInteraction {
 	}
 
 	public List<Map<String,String>> getValues() throws RemoteException{
-		init();
 		List<Map<String,String>> values = null;
 		values = new LinkedList<Map<String,String>>();
 		List<Tree<String>> lRow = null;
@@ -135,7 +136,6 @@ public class TableInteraction extends UserInteraction {
 	}
 
 	public void setValues(List<Map<String,String>> values) throws RemoteException{
-		init();
 		getTree().getFirstChild("table").remove("row");
 		if(values != null){
 			Iterator<Map<String,String>> it = values.iterator();
@@ -147,7 +147,6 @@ public class TableInteraction extends UserInteraction {
 
 	public void addRow(Map<String,String> rowVals) throws RemoteException{
 		if(!rowVals.isEmpty()){
-			init();
 			Tree<String> newRow = getTree().getFirstChild("table").add("row");
 			Iterator<String> colNameIt = rowVals.keySet().iterator();
 			while(colNameIt.hasNext()){

@@ -20,14 +20,30 @@ public class AppendListInteraction extends UserInteraction{
 			int column, int placeInColumn)
 					throws RemoteException {
 		super(name, legend, DisplayType.appendList, column, placeInColumn);
+		init();
 	}
 
-	public void init() throws RemoteException{
+	protected void init() throws RemoteException{
 		Tree<String> list= null;
 		if(tree.isEmpty()){
 			list = tree.add("applist");
 			list.add("values");
 			list.add("output");
+		}
+	}
+	
+	public void setDisplayCheckBox(boolean checkBox) throws RemoteException{
+		if(checkBox){
+			if(tree.getFirstChild("applist").getFirstChild("display") != null){
+				tree.getFirstChild("applist").getFirstChild("display").removeAllChildren();
+				tree.getFirstChild("applist").getFirstChild("display").add("");
+			}else{
+				tree.getFirstChild("applist").add("display").add("checkbox");
+			}
+		}else{
+			if(tree.getFirstChild("applist").getFirstChild("display") != null){
+				tree.getFirstChild("applist").remove("display");
+			}
 		}
 	}
 
@@ -36,7 +52,6 @@ public class AppendListInteraction extends UserInteraction{
 	}
 	
 	public void setPossibleValues(List<String> values) throws RemoteException{
-		init();
 		Tree<String> vals = tree.getFirstChild("applist").getFirstChild("values");
 		vals.removeAllChildren();
 		Iterator<String> it = values.iterator();
@@ -47,7 +62,6 @@ public class AppendListInteraction extends UserInteraction{
 	
 
 	public List<String> getValues() throws RemoteException{
-		init();
 		List<String> values = null;
 		values = new LinkedList<String>();
 		List<Tree<String>> lRow = null;
@@ -61,14 +75,13 @@ public class AppendListInteraction extends UserInteraction{
 			}
 		}catch(Exception e){
 			values = null;
-			logger.error("Tree structure incorrect");
+			logger.error(LanguageManager.getText("UserInteraction.treeIncorrect"));
 		}
 		return values;
 	}
 	
 	public String setValues(List<String> values)  throws RemoteException{
 		String error = null;
-		init();
 		Tree<String> output =  tree.getFirstChild("applist").getFirstChild("output");
 		if(getPossibleValues().containsAll(values)){
 			output.removeAllChildren();

@@ -18,11 +18,20 @@ public class EditorInteraction extends UserInteraction{
 	public EditorInteraction(String name, String legend,
 			int column, int placeInColumn) throws RemoteException {
 		super(name, legend, DisplayType.helpTextEditor, column, placeInColumn);
+		init();
 	}
-	
+
+	protected void init() throws RemoteException{
+		Tree<String> editor= null;
+		if(tree.isEmpty()){
+			editor = tree.add("editor");
+			editor.add("output");
+			editor.add("keywords");
+			//editor.add("help");
+		}
+	}
 
 	public void setValue(String value)  throws RemoteException{
-		init();
 		Tree<String> output =  tree.getFirstChild("editor").getFirstChild("output");
 		output.removeAllChildren();
 		output.add(value);
@@ -40,18 +49,8 @@ public class EditorInteraction extends UserInteraction{
 		return ans;
 	}
 	
-	public void init() throws RemoteException{
-		Tree<String> editor= null;
-		if(tree.isEmpty()){
-			editor = tree.add("editor");
-			editor.add("output");
-			editor.add("keywords");
-			//editor.add("help");
-		}
-	}
 	
 	public void addFeatures(FeatureList fl) throws RemoteException{
-		init();
 		Iterator<String> it = fl.getFeaturesNames().iterator();
 		Tree<String> feats = tree.getFirstChild("editor").getFirstChild("keywords").getFirstChild("features");
 		if(feats == null){
@@ -67,7 +66,6 @@ public class EditorInteraction extends UserInteraction{
 	}
 	
 	public void addFeatures(Map<String,String> fl) throws RemoteException{
-		init();
 		Iterator<String> it = fl.keySet().iterator();
 		Tree<String> feats = tree.getFirstChild("editor").getFirstChild("keywords").getFirstChild("features");
 		if(feats == null){
@@ -84,12 +82,10 @@ public class EditorInteraction extends UserInteraction{
 	}
 	
 	public void removeFeatures() throws RemoteException{
-		init();
 		tree.getFirstChild("editor").getFirstChild("keywords").remove("features");
 	}
 	
 	public void addHelpMenu(Tree<String> submenu) throws RemoteException{
-		init();
 		Tree<String> help = tree.getFirstChild("editor").getFirstChild("help");
 		if(help == null){
 			help = tree.getFirstChild("editor").add("help");
@@ -98,7 +94,6 @@ public class EditorInteraction extends UserInteraction{
 	}
 	
 	public void removeHelpMenu() throws RemoteException{
-		init();
 		tree.getFirstChild("editor").remove("help");
 	}
 

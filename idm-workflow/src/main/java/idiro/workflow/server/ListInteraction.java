@@ -18,9 +18,34 @@ public class ListInteraction extends UserInteraction {
 	public ListInteraction(String name, String legend,
 			int column, int placeInColumn) throws RemoteException {
 		super(name, legend, DisplayType.list, column, placeInColumn);
+		init();
+	}
+	
+	protected void init() throws RemoteException{
+		Tree<String> list= null;
+		if(tree.isEmpty()){
+			list = tree.add("list");
+			list.add("values");
+			list.add("output");
+		}
 	}
 	
 
+	public void setDisplayRadioButton(boolean radioButton) throws RemoteException{
+		if(radioButton){
+			if(tree.getFirstChild("list").getFirstChild("display") != null){
+				tree.getFirstChild("list").getFirstChild("display").removeAllChildren();
+				tree.getFirstChild("list").getFirstChild("display").add("checkbox");
+			}else{
+				tree.getFirstChild("list").add("display").add("checkbox");
+			}
+		}else{
+			if(tree.getFirstChild("list").getFirstChild("display") != null){
+				tree.getFirstChild("list").remove("display");
+			}
+		}
+	}
+	
 	public String getValue(){
 		String ans = null;
 		if(display == DisplayType.list){
@@ -37,17 +62,7 @@ public class ListInteraction extends UserInteraction {
 		return getPossibleValuesFromList();
 	}
 	
-	public void init() throws RemoteException{
-		Tree<String> list= null;
-		if(tree.isEmpty()){
-			list = tree.add("list");
-			list.add("values");
-			list.add("output");
-		}
-	}
-	
 	public void setPossibleValues(List<String> values) throws RemoteException{
-		init();
 		Tree<String> vals = tree.getFirstChild("list").getFirstChild("values");
 		vals.removeAllChildren();
 		Iterator<String> it = values.iterator();
@@ -58,7 +73,6 @@ public class ListInteraction extends UserInteraction {
 	
 	public String setValue(String value)  throws RemoteException{
 		String error = null;
-		init();
 		Tree<String> output =  tree.getFirstChild("list").getFirstChild("output");
 		if(getPossibleValues().contains(value)){
 			output.removeAllChildren();
