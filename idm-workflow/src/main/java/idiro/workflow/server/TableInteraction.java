@@ -28,6 +28,14 @@ public class TableInteraction extends UserInteraction {
 			tree.add("table").add("columns");
 		}
 	}
+	
+	protected String getColumnName( String columnName){
+		if(columnName.contains(" ")){
+			logger.warn("Column name with space is not supported");
+			columnName = columnName.replaceAll(" ", "_");
+		}
+		return columnName;
+	}
 
 	public void addColumn(String columnName, 
 			Integer constraintCount,
@@ -36,12 +44,14 @@ public class TableInteraction extends UserInteraction {
 		init();
 		Tree<String> columns = tree.getFirstChild("table").getFirstChild("columns");
 		Tree<String> column = columns.add("column");
+		columnName = getColumnName(columnName);
 		column.add("title").add(columnName);
 		updateColumnConstraint(columnName, constraintCount, constraintValue);
 		updateEditor(columnName,editor);
 	}
 
 	private Tree<String> findColumn(String columnName) throws RemoteException{
+		columnName = getColumnName(columnName);
 		Tree<String> columns = tree.getFirstChild("table").getFirstChild("columns");
 		Tree<String> found = null;
 		Iterator<Tree<String>> it = columns.getChildren("column").iterator();
@@ -61,6 +71,7 @@ public class TableInteraction extends UserInteraction {
 	public void updateColumnConstraint(String columnName,
 			Integer constraintCount,
 			Collection<String> constraintValue) throws RemoteException{
+		columnName = getColumnName(columnName);
 		Tree<String> column = findColumn(columnName);
 		column.remove("constraint");
 		if( constraintCount != null||
@@ -84,6 +95,7 @@ public class TableInteraction extends UserInteraction {
 
 	public void updateEditor(String columnName,
 			EditorInteraction editor) throws RemoteException{
+		columnName = getColumnName(columnName);
 		Tree<String> column = findColumn(columnName);
 		column.remove("editor");
 		if(editor != null){
@@ -140,7 +152,8 @@ public class TableInteraction extends UserInteraction {
 			Iterator<String> colNameIt = rowVals.keySet().iterator();
 			while(colNameIt.hasNext()){
 				String colName = colNameIt.next();
-				newRow.add(colName).add(rowVals.get(colName));
+				String columnName = getColumnName(colName);
+				newRow.add(columnName).add(rowVals.get(colName));
 			}
 		}
 	}
