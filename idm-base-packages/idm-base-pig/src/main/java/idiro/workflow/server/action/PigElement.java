@@ -58,14 +58,12 @@ public abstract class PigElement extends DataflowAction {
 	protected Map<String, DFELinkProperty> input;
 	protected Map<String, DFEOutput> output;
 
-	protected int minNbOfPage;
-	
+	private String alias = "";
 	private int nameCont;
 
-	public PigElement(int minNbOfPage, int nbInMin, int nbInMax) throws RemoteException {
+	public PigElement( int nbInMin, int nbInMax) throws RemoteException {
 		super(new PigAction());
 		init(nbInMin,nbInMax);
-		this.minNbOfPage = minNbOfPage;
 
 	}
 
@@ -287,33 +285,6 @@ public abstract class PigElement extends DataflowAction {
 		
 		String type = null;
 		DFEOutput typeOutput = null;
-//		try{
-//			type = dataSubtypeInt.getTree().getFirstChild("list").getFirstChild("output").getFirstChild().getHead();
-//			
-//			Iterator<String> dataOutputClassName = 
-//					WorkflowPrefManager.getInstance().getNonAbstractClassesFromSuperClass(
-//							DataOutput.class.getCanonicalName()).iterator();
-//			
-//			Class<?> klass = null;
-//			while (dataOutputClassName.hasNext()){
-//				String className = dataOutputClassName.next();
-//				String[] classNameArray = className.split("\\.");
-//				if (classNameArray[classNameArray.length-1].equals(type)){
-//					klass = Class.forName(className);
-//					break;
-//				}
-//			}
-//			
-//			typeOutput = (DFEOutput)(klass.newInstance());
-//		}
-//		catch(Exception e){
-//			logger.debug("Output type not set, using type from source");
-//		}
-//		if (typeOutput == null){
-//			typeOutput = out;
-//		}
-		
-//		String function = getLoadStoreFuncion(typeOutput, delimiter);
 		String function = getStoreFunction(delimiter);
 		logger.info(function);
 		return "STORE "+relationName+" INTO '" + out.getPath() + "' USING "+function+";";
@@ -365,5 +336,13 @@ public abstract class PigElement extends DataflowAction {
 	
 	public PigGroupInteraction getGroupingInt() {
 		return groupingInt;
+	}
+
+	public String getAlias() {
+		return alias;
+	}
+
+	public void setAlias(String alias) {
+		this.alias = alias;
 	}
 }

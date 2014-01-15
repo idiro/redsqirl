@@ -20,6 +20,8 @@ public class TableInteraction extends UserInteraction {
 	 * 
 	 */
 	private static final long serialVersionUID = 3738450546567160164L;
+	
+	
 
 
 	private Map<String,EditorInteraction> editors = new LinkedHashMap<String,EditorInteraction>();

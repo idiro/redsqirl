@@ -34,7 +34,7 @@ public class PigSelect extends PigElement {
 	private PigFilterInteraction filterInt;
 
 	public PigSelect() throws RemoteException {
-		super(2, 1, 1);
+		super(1, 1);
 
 		page1 = addPage("Feature operations",
 				"Create operation feature per feature", 3);

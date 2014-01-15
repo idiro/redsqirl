@@ -1,6 +1,7 @@
 package idiro.workflow.server.action;
 
 import idiro.utils.Tree;
+import idiro.workflow.server.AppendListInteraction;
 import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.interfaces.DFEOutput;
@@ -19,7 +20,7 @@ import org.apache.log4j.Logger;
  * @author marcos
  *
  */
-public class PigGroupInteraction extends UserInteraction{
+public class PigGroupInteraction extends AppendListInteraction{
 	
 	/**
 	 * 
@@ -30,7 +31,7 @@ public class PigGroupInteraction extends UserInteraction{
 
 	public PigGroupInteraction(String name, String legend, DisplayType display,
 			int column, int placeInColumn) throws RemoteException {
-		super(name, legend, display, column, placeInColumn);
+		super(name, legend, column, placeInColumn);
 	}
 	
 	public void update(DFEOutput in) throws RemoteException{
@@ -43,6 +44,8 @@ public class PigGroupInteraction extends UserInteraction{
 			list.remove("values");
 		}
 		Tree<String> values = list.add("values");
+		Tree<String> display = list.add("display");
+		display.add("checkbox");
 		Iterator<String> it = in.getFeatures().getFeaturesNames().iterator();
 		while(it.hasNext()){
 			values.add("value").add(it.next());
