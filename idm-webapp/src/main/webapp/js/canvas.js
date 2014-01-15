@@ -1764,38 +1764,40 @@ function updateLabelObj(groupId, newGroupId) {
 
 function getColorOutputType(status){
 	if (status == "TEMPORARY"){
-		return "purple";
+		return "#800080"; //purple
 	}
 	else if (status == "RECORDED"){
-		return "LightSalmon";
+		return "#f08080"; //lightcoral
 	}
 	else if (status == "BUFFERED"){
-		return "LighSkyBlue";
+		return "#4682b4"; //steelblue
 	}
 	else {
-		return "silve";
+		return "#c0c0c0"; //silver
 	}
 }
 
 function getColorOutputExistence(fileExists){
+	
 	if (fileExists == "true"){
-		return "lightBrown";
+		return "#adff2f"; //greenyellow
 	}else if (fileExists == "false"){
-		return "chocolate"
+		return "#d2691e" //chocolate
 	}else {
-		return "silve";
+		return "#c0c0c0"; //silver
 	}
 }
 
 function getColorRunning(status){
+
 	if (status == "OK"){
-		return "green";
+		return "#008000"; //green
 	}
 	else if (status == "ERROR"){
-		return "red";
+		return "#ff0000"; //red
 	}
 	else {
-		return "silve";
+		return "#c0c0c0"; //silver
 	}
 }
 
@@ -1821,42 +1823,18 @@ function updateActionOutputStatus(groupId, status, fileExists) {
 
 }
 
-function updateActionRunningStatus(groupId, status) {
+function updateActionRunningStatus(groupId, status, fileExists) {
 	
 	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
 	
 	var group = getElement(polygonLayer, groupId);
 	
-	//group.getChildren()[0].setFill(getColorRunning(status));
 	group.getChildren()[6].setStroke(getColorRunning(status));
+	group.getChildren()[7].setStroke(getColorOutputExistence(fileExists));
 	
 	polygonLayer.draw();
 
 }
-
-//function getColorArrowType(fileType){
-//	if (fileType == "DATA FILE"){
-//		return "grey";
-//	}
-//	else if (fileType == "Hive Table"){
-//		return "green";
-//	}
-//	else if (fileType == "Hive Partition"){
-//		return "yellow";
-//	}
-//	else if (fileType == "TEXT MAP-REDUCE DIRECTORY"){
-//		return "blue";
-//	}
-//	else if (fileType == "BINARY MAP-REDUCE DIRECTORY"){
-//		return "orange";
-//	}
-//	else if (fileType == "TEXT MAP-REDUCE DIRECTORY"){
-//		return "brown";
-//	}
-//	else {
-//		return "black";
-//	}
-//}
 
 function updateArrowType(idOutput, idInput, color) {
 	

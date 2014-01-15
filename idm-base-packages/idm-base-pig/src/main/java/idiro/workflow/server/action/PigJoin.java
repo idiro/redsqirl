@@ -41,7 +41,7 @@ public class PigJoin extends PigElement {
 	private DFEInteraction joinTypeInt;
 
 	public PigJoin() throws RemoteException {
-		super(3, 2, Integer.MAX_VALUE);
+		super(2, Integer.MAX_VALUE);
 
 		page1 = addPage("Operations", "Join operations", 1);
 
