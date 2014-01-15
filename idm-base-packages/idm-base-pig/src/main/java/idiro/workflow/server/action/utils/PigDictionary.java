@@ -343,7 +343,11 @@ public class PigDictionary extends AbstractDictionary {
 										"NUMBER",
 										"@function:MAX( ELEMENT )@short:Use the MAX function to compute the maximum of a set of numeric values in a single-column bag@param: ELEMENT item to get the maximum@description:Computes the maximum of the numeric values in a single-column bag. MAX requires a preceding GROUP ALL statement for global sums and a GROUP BY statement for group sums@example: MAX(A.id) returns the maximum value of A.id" } });
 	}
-
+	/**
+	 * Get the Pig type of the variable passed
+	 * @param String of the variable type
+	 * @return FeatureType of Pig variable
+	*/
 	public static FeatureType getType(String pigType) {
 		FeatureType ans = null;
 		if (pigType.equalsIgnoreCase("BIGINT")) {
@@ -353,7 +357,11 @@ public class PigDictionary extends AbstractDictionary {
 		}
 		return ans;
 	}
-
+	/**
+	 * Return the 
+	 * @param feat a feature type that will be checked
+	 * @return Pig Type of the feature type given 
+	 */
 	public static String getPigType(FeatureType feat) {
 		String featureType = feat.name();
 		switch (feat) {
@@ -382,14 +390,21 @@ public class PigDictionary extends AbstractDictionary {
 	 * 
 	 * return operationString; }
 	 */
-
+	
+	/**
+	 * Get the return type of a pig based expression
+	 * @param expr operation to check return type
+	 * @param features list of features to check
+	 * @param nonAggregFeats set of non aggregated features
+	 * @return type of the expression
+	 * @throws Exception
+	 */
 	public String getReturnType(String expr, FeatureList features,
 			Set<String> nonAggregFeats) throws Exception {
 		if (expr == null || expr.trim().isEmpty()) {
 			logger.error("No expressions to test");
 			throw new Exception("No expressions to test");
 		}
-
 		if (nonAggregFeats != null
 				&& !features.getFeaturesNames().containsAll(nonAggregFeats)) {
 			logger.error("Aggregation features unknown");
@@ -399,7 +414,7 @@ public class PigDictionary extends AbstractDictionary {
 		}
 
 		expr = expr.trim().toUpperCase();
-		logger.debug("expression : "+expr);
+		logger.debug("expression : " + expr);
 		if (expr.startsWith("(") && expr.endsWith(")")) {
 			int count = 1;
 			int index = 1;
@@ -423,7 +438,7 @@ public class PigDictionary extends AbstractDictionary {
 		}
 		String type = null;
 		if (expr.equalsIgnoreCase("TRUE") || expr.equalsIgnoreCase("FALSE")) {
-			logger.debug("expression is boolean: "+expr);
+			logger.debug("expression is boolean: " + expr);
 			type = "BOOLEAN";
 		} else if (expr.startsWith("'")) {
 			if (expr.endsWith("'") && expr.length() > 1) {
@@ -447,28 +462,30 @@ public class PigDictionary extends AbstractDictionary {
 				}
 			}
 		}
-		
-		logger.debug("getting feature type if null "   +type +" "+expr);
+
+		logger.debug("getting feature type if null " + type + " " + expr);
 		if (type == null) {
 			Iterator<String> itS = null;
-			if (nonAggregFeats != null&&!nonAggregFeats.isEmpty()) {
-				logger.debug("feataggreg is not empty : "+nonAggregFeats.toString());
+			if (nonAggregFeats != null && !nonAggregFeats.isEmpty()) {
+				logger.debug("feataggreg is not empty : "
+						+ nonAggregFeats.toString());
 				itS = nonAggregFeats.iterator();
 			} else {
 				itS = features.getFeaturesNames().iterator();
-//				logger.debug("using features list "+features.getSize());
+				// logger.debug("using features list "+features.getSize());
 			}
 			while (itS.hasNext() && type == null) {
 				String feat = itS.next();
-				logger.debug("feat "+feat + " expr "+ expr);
+				logger.debug("feat " + feat + " expr " + expr);
 				if (feat.equalsIgnoreCase(expr)) {
 					type = getPigType(features.getFeatureType(feat));
-					logger.debug("type : "+type);
+					logger.debug("type : " + type);
 				}
 			}
 		}
 
-		logger.debug("if expression is an operator or function if type null : "  +type +" "+expr);
+		logger.debug("if expression is an operator or function if type null : "
+				+ type + " " + expr);
 		if (type == null) {
 			logger.debug("checking all types of functions");
 			if (isLogicalOperation(expr)) {
@@ -495,11 +512,11 @@ public class PigDictionary extends AbstractDictionary {
 				List<String> l = new LinkedList<String>();
 				l.addAll(features.getFeaturesNames());
 				l.removeAll(nonAggregFeats);
-				logger.debug("feats list size "+l.size());
+				logger.debug("feats list size " + l.size());
 				Iterator<String> lIt = l.iterator();
 				while (lIt.hasNext()) {
 					String nameF = lIt.next();
-					logger.debug("name "+nameF);
+					logger.debug("name " + nameF);
 					fl.addFeature(nameF, features.getFeatureType(nameF));
 				}
 				type = runMethod(expr, fl, true);
@@ -525,8 +542,7 @@ public class PigDictionary extends AbstractDictionary {
 			}
 		}
 
-		
-		logger.debug("type returning: "+type);
+		logger.debug("type returning: " + type);
 		return type;
 
 	}
@@ -577,7 +593,7 @@ public class PigDictionary extends AbstractDictionary {
 
 	public static boolean check(String typeToBe, String typeGiven) {
 		boolean ok = false;
-		logger.debug("type to be : "+typeToBe + " given "+ typeGiven);
+		logger.debug("type to be : " + typeToBe + " given " + typeGiven);
 		if (typeGiven == null || typeToBe == null) {
 			return false;
 		}
@@ -767,7 +783,7 @@ public class PigDictionary extends AbstractDictionary {
 
 	private boolean runLogicalOperation(String expr, FeatureList features,
 			Set<String> aggregFeat) throws Exception {
-		
+
 		logger.debug("logical operator ");
 		String[] split = expr.split("OR|AND");
 		boolean ok = true;
@@ -939,7 +955,7 @@ public class PigDictionary extends AbstractDictionary {
 			logger.debug(error);
 			throw new Exception(error);
 		}
-		logger.debug("operation ok : "+ ok );
+		logger.debug("operation ok : " + ok);
 		return ok;
 	}
 
@@ -984,9 +1000,10 @@ public class PigDictionary extends AbstractDictionary {
 		} else if (argsTypeExpected.length == args.length) {
 			ok = true;
 			for (int i = 0; i < argsTypeExpected.length; ++i) {
-				logger.debug("only one arg : "+argsTypeExpected.length);
-				logger.debug(argsTypeExpected[i] + " "+
-						getReturnType(args[i], features));
+				logger.debug("only one arg : " + argsTypeExpected.length);
+				logger.debug("features "+features.getFeaturesNames());
+				logger.debug("arg "+args[i]);
+				logger.info("return type : "+ getReturnType(args[i], features));
 				ok &= check(argsTypeExpected[i],
 						getReturnType(args[i], features));
 			}

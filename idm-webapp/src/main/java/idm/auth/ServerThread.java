@@ -1,6 +1,8 @@
 package idm.auth;
 
 
+import idiro.tm.ProcessManager;
+import idiro.workflow.server.ProcessesManager;
 import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 
@@ -86,17 +88,30 @@ public class ServerThread{
 					        logger.info("session connected");
 					        
 					        final String command = getBaseCommand(user, password, port) + " & echo $!";
+					        ProcessesManager pm = ProcessesManager.getInstance();
+					        String old_pid = pm.getWorkflowProcess();
+					        
+					        if(!old_pid.isEmpty()){
+					        	channel = session.openChannel("exec");
+					        	logger.debug("killing workflow process : "+old_pid);
+					        	((ChannelExec)channel).setCommand("kill - 9 "+old_pid);
+					        	channel.connect();
+					        	channel.getInputStream().close();
+					        	channel.disconnect();
+					        }
 					        
 					        String javahome = getJava();
 					        String argJava = " -Xmx1500m ";
 					        channel = session.openChannel("exec");
-					        logger.info("command to launch:\n"+javahome+argJava+command);
+					        logger.info("command to launch:\n"+javahome+"\n"+argJava+"\n"+command);
 				            ((ChannelExec)channel).setCommand(javahome+argJava+command);
 				            channel.connect();
 				            
 				            BufferedReader br = new BufferedReader(new InputStreamReader(channel.getInputStream()));
 					        pid = br.readLine();
 					        logger.info("dataIn: "+pid);
+					        pm.setWorkflowProcess(pid);
+					        pm.storePids();
 					        channel.getInputStream().close();
 					        channel.disconnect();
 														
@@ -128,15 +143,15 @@ public class ServerThread{
 		String command = "";
 		try {
 			
-			logger.info("system properties: " + WorkflowPrefManager.pathSysCfgPref.get());
+//			logger.info("system properties: " + WorkflowPrefManager.pathSysCfgPref.get());
 			File file = new File(WorkflowPrefManager.getSysProperty("workflow_lib_path"));
-
 			// Reading directory contents
 			File[] files = file.listFiles();
 
 			StringBuffer path = new StringBuffer();
 
 			for (int i = 0; i < files.length; i++) {
+				
 				path.append(files[i] + ":");
 			}
 			String p = path.substring(0, path.length()-1);
@@ -155,10 +170,21 @@ public class ServerThread{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		logger.info("command : "+ command);
 	    return command;
 	}
 	
-	private String getJava() throws IOException{
+	private String getJava(Session session) throws IOException, JSchException{
+		Channel channel = session.openChannel("exec");
+		((ChannelExec)channel).setCommand("which java");
+		channel.connect();
+		BufferedReader br = new BufferedReader(new InputStreamReader(channel.getInputStream()));
+		String java = br.readLine();
+		logger.info("java path : "+ java);
+		channel.disconnect();
+		return java;
+	}
+	private String getJava() throws IOException, JSchException{
 		Runtime rt = Runtime.getRuntime();
         Process pr = rt.exec("which java");
 		BufferedReader stdInput = new BufferedReader(
