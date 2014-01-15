@@ -3,7 +3,6 @@ package idiro.workflow.server.action;
 import static org.junit.Assert.assertTrue;
 import idiro.utils.Tree;
 import idiro.workflow.server.OozieManager;
-import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.Workflow;
 import idiro.workflow.server.connect.HDFSInterface;
 import idiro.workflow.server.datatype.MapRedTextType;
@@ -116,16 +115,11 @@ public class PigJoinTests {
 			HDFSInterface hInt) throws RemoteException, Exception{
 		
 		logger.debug("update pig...");
-		pig.updateDelimiterOutputInt();
 		PigFilterInteraction ci = pig.getCondInt();
 		pig.update(ci);
 		Tree<String> cond = ci.getTree()
 				.getFirstChild("editor").getFirstChild("output");
 		cond.add(relation_from_1+".VALUE < 10");
-		
-		UserInteraction dataSubtypeInt = pig.getDataSubtypeInt();
-		pig.update(dataSubtypeInt);
-		dataSubtypeInt.getTree().getFirstChild("list").getFirstChild("output").add(MapRedTextType.class.getSimpleName());
 		
 		PigJoinRelationInteraction jri = pig.getJrInt();
 		pig.update(jri);

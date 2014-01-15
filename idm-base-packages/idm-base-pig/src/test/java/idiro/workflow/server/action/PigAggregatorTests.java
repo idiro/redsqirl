@@ -37,7 +37,7 @@ import org.apache.log4j.Logger;
 import org.apache.oozie.client.OozieClient;
 import org.junit.Test;
 
-public class PigAggregatorTest {
+public class PigAggregatorTests {
 	private Logger logger = Logger.getLogger(getClass());
 	private String id;
 

@@ -3,7 +3,7 @@ package idiro.workflow.test;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
-public class StringTest {
+public class StringTests {
 	
 	private Logger logger = Logger.getLogger(getClass());
 	

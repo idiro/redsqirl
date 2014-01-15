@@ -1,7 +1,7 @@
 package idiro.workflow.server.action;
 
-import idiro.utils.OrderedFeatureList;
 import idiro.utils.FeatureList;
+import idiro.utils.OrderedFeatureList;
 import idiro.utils.Tree;
 import idiro.workflow.server.Page;
 import idiro.workflow.server.UserInteraction;
@@ -12,7 +12,6 @@ import idiro.workflow.server.interfaces.DFEOutput;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -41,7 +40,7 @@ public class PigJoin extends PigElement {
 	private DFEInteraction joinTypeInt;
 
 	public PigJoin() throws RemoteException {
-		super(2, Integer.MAX_VALUE);
+		super(2, Integer.MAX_VALUE,0);
 
 		page1 = addPage("Operations", "Join operations", 1);
 
@@ -66,19 +65,11 @@ public class PigJoin extends PigElement {
 
 		page3 = addPage("Select", "Select Conditions", 1);
 
-		filterInt = new PigFilterInteraction(key_condition,
-				"Please specify the condition of the select", 0, 1, this,
-				key_input);
+		filterInt = new PigFilterInteraction(0, 1, this);
 
 		page3.addInteraction(filterInt);
 
 		page4 = addPage("Output", "Output configurations", 1);
-
-		delimiterOutputInt = new UserInteraction("Delimiter",
-				"Setting output delimiter", DisplayType.list, 1, 0);
-
-		savetypeOutputInt = new UserInteraction("Output Type",
-				"Setting the output type", DisplayType.list, 2, 0);
 
 		page4.addInteraction(delimiterOutputInt);
 		page4.addInteraction(savetypeOutputInt);
@@ -92,28 +83,14 @@ public class PigJoin extends PigElement {
 
 	// @Override
 	public void update(DFEInteraction interaction) throws RemoteException {
-		if (interaction == filterInt) {
+		if (interaction.getName().equals(filterInt.getName())) {
 			filterInt.update();
-		} else if (interaction == joinTypeInt) {
+		} else if (interaction.getName().equals(joinTypeInt.getName())) {
 			updateJoinInt();
-		} else if (interaction == jrInt) {
+		} else if (interaction.getName().equals(jrInt.getName())) {
 			jrInt.update();
-		} else if (interaction == tJoinInt) {
+		} else if (interaction.getName().equals(tJoinInt.getName())) {
 			tJoinInt.update();
-		} else if (interaction == dataSubtypeInt) {
-			updateDataSubTypeInt();
-		} else if ( interaction == savetypeOutputInt){
-			logger.info("updating save type");
-			try {
-				updateOutputType();
-			} catch (InstantiationException e) {
-				logger.error("Instanciation error");
-			} catch (IllegalAccessException e) {
-				logger.error("Illegal Access error");
-			}
-		}else if ( interaction == delimiterOutputInt){
-			logger.info("updating delimiter");
-			updateDelimiterOutputInt();
 		}
 	}
 

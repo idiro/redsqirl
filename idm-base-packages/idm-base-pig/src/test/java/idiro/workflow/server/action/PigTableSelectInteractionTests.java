@@ -1,13 +1,16 @@
 package idiro.workflow.server.action;
 
 import static org.junit.Assert.assertTrue;
+import idiro.utils.FeatureList;
+import idiro.utils.OrderedFeatureList;
 import idiro.utils.Tree;
+import idiro.workflow.server.Workflow;
 import idiro.workflow.server.connect.HDFSInterface;
 import idiro.workflow.server.datatype.MapRedTextType;
+import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.interfaces.DataFlowElement;
 import idiro.workflow.test.TestUtils;
 
-import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,15 +26,17 @@ public class PigTableSelectInteractionTests {
 		return ans;
 	}
 	
-	public DataFlowElement getSource() throws RemoteException{
+	public DataFlowElement getSource(Workflow w) throws Exception{
 		HDFSInterface hInt = new HDFSInterface();
-		String new_path1 = "/user/keith/test_dir";
+		String new_path1 = TestUtils.getPath(1);
 //		hInt.delete(new_path1);
 //		assertTrue("create "+new_path1,
 //				hInt.create(new_path1, getProperties()) == null
 //				);
 		
-		Source src = new Source();
+		String idSource = w.addElement((new Source()).getName());
+		Source src = (Source)w.getElement(idSource);
+		
 		logger.info("getting hdfs interface");
 		MapRedTextType map = new MapRedTextType();
 		src.getDFEOutput().put(Source.out_name, map);
@@ -60,6 +65,18 @@ public class PigTableSelectInteractionTests {
 		String error = src.updateOut();
 		assertTrue("source update: "+error,error == null);
 		
+
+		FeatureList fl = new OrderedFeatureList();
+		fl.addFeature("ID", FeatureType.STRING);
+		fl.addFeature("VALUE", FeatureType.INT);
+		src.getDFEOutput().get(Source.out_name).setFeatures(fl);
+		
+		assertTrue("number of features in source should be 2 instead of " + 
+				src.getDFEOutput().get(Source.out_name).getFeatures().getSize(),
+				src.getDFEOutput().get(Source.out_name).getFeatures().getSize() == 2);
+		
+		
+		
 		return src;
 	}
 	
@@ -68,18 +85,18 @@ public class PigTableSelectInteractionTests {
 //		TestUtils.logTestTitle(getClass().getName()+"#basic");
 		String error = null;
 		try{
-			DataFlowElement src = getSource();
-			PigSelect hs = new PigSelect();
-			src.setComponentId("1");
-			hs.setComponentId("2");
-			error = src.addOutputComponent(Source.out_name, hs);
-			assertTrue("source add output: "+error,error == null);
-			error = hs.addInputComponent(PigElement.key_input, src);
-			assertTrue("pig select add input: "+error,error == null);
-			logger.debug(hs.getDFEInput());
+			Workflow w = new Workflow("workflow1_"+getClass().getName());
+			DataFlowElement src = getSource(w);
+			
+			String idHs = w.addElement((new PigSelect()).getName());
+			PigSelect hs = (PigSelect)w.getElement(idHs);
+			
+			error = w.addLink(
+					Source.out_name, src.getComponentId(), 
+					PigSelect.key_input, idHs);
+			assertTrue("pig select link: "+error,error == null);
 			
 			PigTableSelectInteraction tsi = hs.gettSelInt();
-//			hs.update(hs.getGroupingInt());
 			logger.info("updating table select interaction");
 			hs.update(tsi);
 			{
@@ -89,10 +106,10 @@ public class PigTableSelectInteractionTests {
 				logger.debug("4");
 				rowId.add(PigTableSelectInteraction.table_feat_title).add("ID");
 				rowId.add(PigTableSelectInteraction.table_op_title).add("ID");
-				rowId.add(PigTableSelectInteraction.table_type_title).add("CHARARRAY");
+				rowId.add(PigTableSelectInteraction.table_type_title).add("STRING");
 				logger.debug("5");
 				error = tsi.check();
-				assertTrue("check1",error == null);
+				assertTrue("check1: "+error,error == null);
 				out.remove("row");
 			}
 			

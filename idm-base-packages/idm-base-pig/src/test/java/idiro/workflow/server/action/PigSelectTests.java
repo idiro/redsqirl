@@ -2,19 +2,21 @@ package idiro.workflow.server.action;
 
 import static org.junit.Assert.assertTrue;
 import idiro.hadoop.NameNodeVar;
+import idiro.utils.FeatureList;
+import idiro.utils.OrderedFeatureList;
 import idiro.utils.Tree;
 import idiro.workflow.server.OozieManager;
 import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.Workflow;
 import idiro.workflow.server.connect.HDFSInterface;
 import idiro.workflow.server.datatype.MapRedTextType;
+import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.enumeration.SavingState;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.interfaces.DataFlowElement;
 import idiro.workflow.test.TestUtils;
 
-import java.io.File;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
@@ -61,7 +63,7 @@ public class PigSelectTests {
 		Tree<String> feat1 = dataSetTree.getFirstChild("browse")
 				.getFirstChild("output").add("feature");
 		feat1.add("name").add("ID");
-		feat1.add("type").add("CHARARRAY");
+		feat1.add("type").add("STRING");
 
 		Tree<String> feat2 = dataSetTree.getFirstChild("browse")
 				.getFirstChild("output").add("feature");
@@ -71,6 +73,15 @@ public class PigSelectTests {
 		
 		String error = src.updateOut();
 		assertTrue("source update: "+error,error == null);
+		
+		FeatureList fl = new OrderedFeatureList();
+		fl.addFeature("ID", FeatureType.STRING);
+		fl.addFeature("VALUE", FeatureType.INT);
+		src.getDFEOutput().get(Source.out_name).setFeatures(fl);
+		
+		assertTrue("number of features in source should be 2 instead of " + 
+				src.getDFEOutput().get(Source.out_name).getFeatures().getSize(),
+				src.getDFEOutput().get(Source.out_name).getFeatures().getSize() == 2);
 		
 		return src;
 	}
@@ -88,10 +99,11 @@ public class PigSelectTests {
 		logger.info(Source.out_name+" "+src.getComponentId());
 		logger.debug(PigSelect.key_input+" "+idHS);
 		
-		w.addLink(
+		error = w.addLink(
 				Source.out_name, src.getComponentId(), 
 				PigSelect.key_input, idHS);
-		assertTrue("pig select add input: "+error,error == null);
+		assertTrue("pig select add link: "+error,error == null);
+		
 		updatePig(w,pig,hInt);
 		
 		
@@ -139,14 +151,8 @@ public class PigSelectTests {
 			HDFSInterface hInt) throws RemoteException, Exception{
 		
 		logger.info("update pig...");
-		PigGroupInteraction groupingInt = (PigGroupInteraction) pig.getInteraction("Grouping");
-		logger.info("update pig... get groupinint");
 		DFEOutput in = pig.getDFEInput().get(PigElement.key_input).get(0);
 		logger.info("got dfe");
-		groupingInt.update(in);
-		logger.info("update pig... updated groupinint");
-		pig.update(groupingInt);
-		logger.info("update pig... updated groupinint in pig");
 		PigFilterInteraction ci = pig.getCondInt();
 		logger.info("update pig... get condition");
 		pig.update(ci);
@@ -170,7 +176,7 @@ public class PigSelectTests {
 			Tree<String> rowId = out.add("row");
 			rowId.add(PigTableSelectInteraction.table_feat_title).add("ID");
 			rowId.add(PigTableSelectInteraction.table_op_title).add("ID");
-			rowId.add(PigTableSelectInteraction.table_type_title).add("CHARARRAY");
+			rowId.add(PigTableSelectInteraction.table_type_title).add("STRING");
 			rowId = out.add("row");
 			rowId.add(PigTableSelectInteraction.table_feat_title).add("VALUE");
 			rowId.add(PigTableSelectInteraction.table_op_title).add("VALUE");
@@ -210,7 +216,7 @@ public class PigSelectTests {
 			Tree<String> rowId = out.add("row");
 			rowId.add(PigTableSelectInteraction.table_feat_title).add("ID");
 			rowId.add(PigTableSelectInteraction.table_op_title).add("ID");
-			rowId.add(PigTableSelectInteraction.table_type_title).add("CHARARRAY");
+			rowId.add(PigTableSelectInteraction.table_type_title).add("STRING");
 			rowId = out.add("row");
 			rowId.add(PigTableSelectInteraction.table_feat_title).add("VALUE");
 			rowId.add(PigTableSelectInteraction.table_op_title).add("VALUE");
@@ -232,8 +238,8 @@ public class PigSelectTests {
 		try{
 			Workflow w = new Workflow("workflow1_"+getClass().getName());
 			HDFSInterface hInt = new HDFSInterface();
-			String new_path1 = "/user/keith/test_idm_1";
-			String new_path2 = "/user/keith/test_idm_2"; 
+			String new_path1 = TestUtils.getPath(1);
+			String new_path2 = TestUtils.getPath(2); 
 			
 			hInt.delete(new_path1);
 			hInt.delete(new_path2);
@@ -261,25 +267,20 @@ public class PigSelectTests {
 			OozieClient wc = OozieManager.getInstance().getOc();
 			logger.info("Got Oozie Client");
 			
-			File[] files = new File[1];
-			files[0] = new File("/home/keith/test.xml");
-			
-			pig.writeOozieActionFiles(files);
-			logger.info("written file");
-//			String jobId = w.run();
-//			logger.info(jobId);
+			String jobId = w.run();
+			logger.info(jobId);
 			
 			// wait until the workflow job finishes printing the status every 10 seconds
-//		    while(
-//		    		wc.getJobInfo(jobId).getStatus() == 
-//		    		org.apache.oozie.client.WorkflowJob.Status.RUNNING) {
-//		    	System.out.println("Workflow job running ...");
-//		    	logger.info("Workflow job running ...");
-//		        Thread.sleep(10 * 1000);
-//		    }
-//		    logger.info("Workflow job completed ...");
-//		    logger.info(wc.getJobInfo(jobId));
-//		    error = wc.getJobInfo(jobId).toString();
+		    while(
+		    		wc.getJobInfo(jobId).getStatus() == 
+		    		org.apache.oozie.client.WorkflowJob.Status.RUNNING) {
+		    	System.out.println("Workflow job running ...");
+		    	logger.info("Workflow job running ...");
+		        Thread.sleep(10 * 1000);
+		    }
+		    logger.info("Workflow job completed ...");
+		    logger.info(wc.getJobInfo(jobId));
+		    error = wc.getJobInfo(jobId).toString();
 		    assertTrue(error, error.contains("SUCCEEDED"));
 		}catch(Exception e){
 			logger.error(e.getMessage());
@@ -287,6 +288,7 @@ public class PigSelectTests {
 		}
 	}
 	
+	/*
 	
 	@Test
 	public void oneBridge(){
@@ -298,13 +300,14 @@ public class PigSelectTests {
 			
 			HDFSInterface hInt = new HDFSInterface();
 //			String new_path1 = "/user/keith/testfile";
-			String new_path1 = "/user/keith/test_idm_1";
-			String new_path2 = "/user/keith/test_idm_2";
+			String new_path1 = TestUtils.getPath(1);
+			String new_path2 = TestUtils.getPath(2);
 			
 			NameNodeVar.set("hdfs://namenode:9000");
 			FileSystem fs = NameNodeVar.getFS();
 			Path newPath1 = new Path(new_path1);
 			Path newPath2 = new Path(new_path2);
+			
 			if(fs.isDirectory(newPath1)){
 				fs.delete(newPath1, true);
 			}
@@ -346,4 +349,6 @@ public class PigSelectTests {
 			assertTrue(e.getMessage(),false);
 		}
 	}
+	
+	*/
 }

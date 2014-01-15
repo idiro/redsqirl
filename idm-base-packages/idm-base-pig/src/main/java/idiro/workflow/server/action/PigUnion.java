@@ -1,13 +1,11 @@
 package idiro.workflow.server.action;
 
-import idiro.utils.OrderedFeatureList;
 import idiro.utils.FeatureList;
+import idiro.utils.OrderedFeatureList;
 import idiro.workflow.server.DataProperty;
 import idiro.workflow.server.Page;
-import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.connect.HDFSInterface;
 import idiro.workflow.server.datatype.MapRedTextType;
-import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
@@ -17,8 +15,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * Action to do a union statement in Pig Latin.
@@ -40,7 +38,7 @@ public class PigUnion extends PigElement {
 	private PigTableUnionInteraction tUnionSelInt;
 
 	public PigUnion() throws RemoteException {
-		super(2, Integer.MAX_VALUE);
+		super(2, Integer.MAX_VALUE,1);
 
 		page1 = addPage("Operations",
 				"Union operations and output preferences", 1);
@@ -50,16 +48,9 @@ public class PigUnion extends PigElement {
 				"Please specify the operations to be executed for each feature",
 				0, 0, this);
 
-		delimiterOutputInt = new UserInteraction("Delimiter",
-				"Setting output delimiter", DisplayType.list, 1, 0);
-
-		savetypeOutputInt = new UserInteraction("Output Type",
-				"Setting the output type", DisplayType.list, 2, 0);
-
 		page1.addInteraction(tUnionSelInt);
 		page1.addInteraction(delimiterOutputInt);
 		page1.addInteraction(savetypeOutputInt);
-		// addOutputPage();
 
 	}
 
@@ -85,24 +76,9 @@ public class PigUnion extends PigElement {
 		logger.info(interaction.getName() + " " + delimiterOutputInt.getName());
 		if (in.size() > 1) {
 			logger.debug("in size > 1");
-			if (interaction == tUnionSelInt) {
+			if (interaction.getName().equals(tUnionSelInt.getName())) {
 				logger.info("updating union seletion");
 				tUnionSelInt.update(in);
-			} else if (interaction == dataSubtypeInt) {
-				logger.info("updating data subtypes");
-				updateDataSubTypeInt();
-			} else if (interaction == savetypeOutputInt) {
-				logger.info("updating save output");
-				try {
-					updateOutputType();
-				} catch (InstantiationException e) {
-					logger.error("Instanciation error");
-				} catch (IllegalAccessException e) {
-					logger.error("Illegal Access error");
-				}
-			} else if (interaction == delimiterOutputInt) {
-				logger.info("updating delimiter output");
-				updateDelimiterOutputInt();
 			}
 		}
 
