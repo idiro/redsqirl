@@ -20,8 +20,8 @@ public class TableInteraction extends UserInteraction {
 	 * 
 	 */
 	private static final long serialVersionUID = 3738450546567160164L;
-	
-	
+
+
 
 
 	private Map<String,EditorInteraction> editors = new LinkedHashMap<String,EditorInteraction>();
@@ -58,11 +58,11 @@ public class TableInteraction extends UserInteraction {
 		}
 		return colNames;
 	}
-	
+
 	public void removeColumns() throws RemoteException{
 		tree.getFirstChild("table").remove("columns");
 	}
-	
+
 	public void removeColumn(String columnName) throws RemoteException{
 		Tree<String> col = findColumn(columnName);
 		if(col != null){
@@ -72,14 +72,26 @@ public class TableInteraction extends UserInteraction {
 
 	public void addColumn(String columnName, 
 			Integer constraintCount,
+			String regex,
 			Collection<String> constraintValue,
 			EditorInteraction editor) throws RemoteException{
 		Tree<String> columns = tree.getFirstChild("table").getFirstChild("columns");
 		Tree<String> column = columns.add("column");
 		columnName = removeSpaceColumnName(columnName);
 		column.add("title").add(columnName);
-		updateColumnConstraint(columnName, constraintCount, constraintValue);
+		updateColumnConstraint(columnName,regex, constraintCount, constraintValue);
 		updateEditor(columnName,editor);
+	}
+
+	public void addColumn(String columnName, 
+			Integer constraintCount,
+			Collection<String> constraintValue,
+			EditorInteraction editor) throws RemoteException{
+		addColumn(columnName, 
+				constraintCount,
+				null,
+				constraintValue,
+				editor);
 	}
 
 	protected Tree<String> findColumn(String columnName) throws RemoteException{
@@ -102,7 +114,30 @@ public class TableInteraction extends UserInteraction {
 		return found;
 	}
 
+	protected Tree<String> findGenerator(String genName) throws RemoteException{
+		Tree<String> gen = tree.getFirstChild("table").getFirstChild("generator");
+		Tree<String> found = null;
+		if(gen != null){
+			List<Tree<String>> genOps = gen.getChildren("operation");
+			if(genOps != null){
+				Iterator<Tree<String>> it = genOps.iterator();
+				while(it.hasNext() && found == null){
+					found = it.next();
+					//logger.debug(columnName+"? "+found);
+					if(!found.getFirstChild("title").getFirstChild().getHead().equals(genName)){
+						found = null;
+					}
+				}
+			}
+		}
+		if(found == null){
+			logger.warn("Generator "+genName+" not found");
+		}
+		return found;
+	}
+
 	public void updateColumnConstraint(String columnName,
+			String regex,
 			Integer constraintCount,
 			Collection<String> constraintValue) throws RemoteException{
 		columnName = removeSpaceColumnName(columnName);
@@ -111,6 +146,9 @@ public class TableInteraction extends UserInteraction {
 		if( constraintCount != null||
 				(constraintValue != null && !constraintValue.isEmpty())){
 			Tree<String> constraint = column.add("constraint");
+			if(regex != null){
+				constraint.add("regex").add(regex);
+			}
 			if(constraintCount != null){
 				logger.debug("add count constraint...");
 				constraint.add("count").add(Integer.toString(constraintCount));
@@ -156,12 +194,14 @@ public class TableInteraction extends UserInteraction {
 	protected String checkValue(String columnName, String value) throws RemoteException{
 		String error = null;
 		List<Tree<String>> values = null;
+		Tree<String> constraint = null;
 		//logger.info(tree);
 		try{
+			constraint = findColumn(columnName).getFirstChild("constraint"); 
 			//logger.info(findColumn(columnName));
 			//logger.info(findColumn(columnName).getFirstChild("constraint").getFirstChild("values"));
-			values = findColumn(columnName).getFirstChild("constraint").getFirstChild("values").getChildren("value");
-			
+			values = constraint.getFirstChild("values").getChildren("value");
+
 			if(values != null && !values.isEmpty()){
 				Set<String> valuesPos = new HashSet<String>();
 				Iterator<Tree<String>> itTree = values.iterator();
@@ -175,10 +215,18 @@ public class TableInteraction extends UserInteraction {
 				}
 			}
 		}catch(Exception e){}
-		
+
+		if( constraint != null && constraint.getFirstChild("regex") != null){
+			String regex = constraint.getFirstChild("regex").getFirstChild().getHead();
+			if(!value.matches(regex)){
+				error = LanguageManager.getText("tableInteraction.NotMatchRegex",new String[]{value,regex});
+			}
+		}
+
 		if(editors.containsKey(columnName) && error == null){
 			error = editors.get(columnName).check();
 		}
+
 		return error;
 	}
 
@@ -297,14 +345,36 @@ public class TableInteraction extends UserInteraction {
 	}
 
 	public void addRow(Map<String,String> rowVals) throws RemoteException{
-		if(!rowVals.isEmpty()){
-			Tree<String> newRow = getTree().getFirstChild("table").add("row");
+		addRow(getTree().getFirstChild("table"),rowVals);
+	}
+	
+	private void addRow(Tree<String> parent, Map<String,String> rowVals) throws RemoteException{
+		if(rowVals != null && !rowVals.isEmpty()){
+			Tree<String> newRow = parent.add("row");
 			Iterator<String> colNameIt = rowVals.keySet().iterator();
 			while(colNameIt.hasNext()){
 				String colName = colNameIt.next();
 				String columnName = removeSpaceColumnName(colName);
 				newRow.add(columnName).add(rowVals.get(colName));
 			}
+		}
+	}
+
+	public void updateGenerator(String name, List<Map<String,String>> rowVals) throws RemoteException{
+		Tree<String> generator = getTree().getFirstChild("table").getFirstChild("generator");
+		if(generator == null){
+			generator = getTree().getFirstChild("table").add("generator");
+		}
+		Tree<String> genOp = findGenerator(name);
+		if(genOp == null){
+			genOp = generator.add("operation");
+			genOp.add("title").add(name);
+		}else{
+			genOp.remove("row");
+		}
+		Iterator<Map<String,String>> it = rowVals.iterator();
+		while(it.hasNext()){
+			addRow(genOp,it.next());
 		}
 	}
 }
