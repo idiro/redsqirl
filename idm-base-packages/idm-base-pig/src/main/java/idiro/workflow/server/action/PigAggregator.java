@@ -1,6 +1,7 @@
 package idiro.workflow.server.action;
 
 import idiro.utils.FeatureList;
+import idiro.utils.OrderedFeatureList;
 import idiro.utils.Tree;
 import idiro.workflow.server.Page;
 import idiro.workflow.server.UserInteraction;
@@ -12,7 +13,10 @@ import idiro.workflow.server.interfaces.DFEPage;
 import idiro.workflow.server.interfaces.PageChecker;
 
 import java.rmi.RemoteException;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 public class PigAggregator extends PigElement {
 
@@ -20,13 +24,13 @@ public class PigAggregator extends PigElement {
 
 	private PigTableSelectInteraction tSelInt;
 	private PigFilterInteraction filterInt;
-
+	
 	public static final String key_grouping = "Grouping";
 
 	private static final String key_featureTable = "Features";
 
 	public PigAggregator() throws RemoteException {
-		super(1, 1, 1);
+		super(1, 1);
 		page1 = addPage("Aggregator", "Aggregate the data for the output", 1);
 
 		tSelInt = new PigTableSelectInteraction(
@@ -59,8 +63,10 @@ public class PigAggregator extends PigElement {
 								.getFirstChild(
 										PigTableSelectInteraction.table_op_title)
 								.getFirstChild().getHead().toUpperCase();
+						
 						type = PigDictionary.getInstance().getReturnType(op,
-								tSelInt.getNewFeatures());
+								getInFeaturesWithAlias(),
+								getGroupedWithAlias());
 						if (type == null && type.isEmpty()) {
 							error += op + " has no return type\n";
 						}
@@ -115,13 +121,12 @@ public class PigAggregator extends PigElement {
 			Iterator<String> aliases = getAliases().keySet().iterator();
 
 			if (!filter.isEmpty()) {
-				if (aliases.hasNext()) {
+				
 					logger.info("load data by alias");
-					loader = aliases.next();
+					loader = getAlias();
 					filter = loader + " = " + filter + ";\n\n";
 					filterLoader = loader;
 					loader = getCurrentName();
-				}
 			} else {
 				if (aliases.hasNext()) {
 					loader = aliases.next();
@@ -166,6 +171,30 @@ public class PigAggregator extends PigElement {
 	public FeatureList getInFeatures() throws RemoteException {
 		return getDFEInput().get(key_input).get(0).getFeatures();
 	}
+	
+	public FeatureList getInFeaturesWithAlias() throws RemoteException{
+		FeatureList fl = new OrderedFeatureList();
+		String alias = getAlias();
+		FeatureList in = getInFeatures();
+		Iterator<String> featsName = in.getFeaturesNames().iterator();
+		while(featsName.hasNext()){
+			String feat = featsName.next();
+			fl.addFeature(alias.toUpperCase()+"."+feat, in.getFeatureType(feat));
+		}
+		
+		return fl;
+	}
+	
+	public Set<String> getGroupedWithAlias() throws RemoteException{
+		Set<String> grouped = new HashSet<String>();
+		String alias = getAlias();
+		Iterator<String> iter = getGroupingInt().getValues().iterator();
+		while(iter.hasNext()){
+			String feat = iter.next();
+			grouped.add(alias.toUpperCase()+"."+feat.toUpperCase());
+		}
+		return grouped;
+	}
 
 	@Override
 	public FeatureList getNewFeatures() throws RemoteException {
@@ -174,7 +203,10 @@ public class PigAggregator extends PigElement {
 
 	@Override
 	public void update(DFEInteraction interaction) throws RemoteException {
+		
+		
 		DFEOutput in = getDFEInput().get(key_input).get(0);
+		logger.info(in.getFeatures().getFeaturesNames());
 		if (in != null) {
 			if (interaction == tSelInt) {
 				tSelInt.update(in);

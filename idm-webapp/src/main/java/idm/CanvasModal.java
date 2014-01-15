@@ -439,6 +439,21 @@ public class CanvasModal extends BaseBean implements Serializable {
 		logger.info("close ");
 
 	}
+	
+	public String printTree(Tree<String> tree) throws RemoteException {
+		String ans = "";
+		String head = tree.getHead();
+		if (head != null) {
+			ans = head.toString();
+		}
+		Iterator<Tree<String>> it = tree.getSubTreeList().iterator();
+		while (it.hasNext()) {
+			ans = ans + "\n\t" + printTree(it.next()).replaceAll("\n", "\n\t");
+		}
+
+		return ans;
+	}
+
 
 	/**
 	 * start
@@ -581,7 +596,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 			logger.info("type " + dfeInteraction.getName() + " "
 					+ dfeInteraction.getDisplay() + " "
-					+ dfeInteraction.getTree());
+					+ printTree(dfeInteraction.getTree()));
 
 			setTabTitle(getPage().getTitle());
 			setTabLegend(getPage().getLegend());
@@ -609,7 +624,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 					ans = ans + "\n\t" + it.next().toString().replaceAll("\n", "\n\t");
 				}
 				logger.info("tree :"+ans);
-				
 				List<SelectItem> selectItems = new ArrayList<SelectItem>();
 				Tree<String> dfetree = dfeInteraction.getTree();
 				logger.info("got tree");
@@ -779,6 +793,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 							.getSubTreeList();
 					if (list != null) {
 						for (Tree<String> tree : list) {
+							logger.info(printTree(tree));
 							logger.info("list value "
 									+ tree.getFirstChild().getHead());
 							SelectItem e = new SelectItem(tree
@@ -795,6 +810,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 								Map<String, String> t = new HashMap<String, String>();
 								for (Tree<String> treeFeat : treeRows
 										.getSubTreeList()) {
+									logger.info(printTree(treeFeat));
 									t.put(treeFeat.getHead(), treeFeat
 											.getFirstChild().getHead());
 								}

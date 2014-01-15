@@ -17,6 +17,8 @@ public class TableInteraction extends UserInteraction {
 	 * 
 	 */
 	private static final long serialVersionUID = 3738450546567160164L;
+	
+	
 
 	public TableInteraction(String name, String legend,
 			int column, int placeInColumn) throws RemoteException {

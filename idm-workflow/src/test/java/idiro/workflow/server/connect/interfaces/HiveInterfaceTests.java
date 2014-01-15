@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.test.TestUtils;
 
+import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,6 +34,12 @@ public class HiveInterfaceTests {
 		ans.put(HiveInterface.key_columns,"ID STRING, VALUE INT");
 		ans.put(HiveInterface.key_partitions,"DT STRING");
 		return ans;
+	}
+	
+	@Test
+	public void basicHiveInterface() throws RemoteException{
+		HiveInterface hInt = new HiveInterface();
+		hInt.open();
 	}
 
 	@Test

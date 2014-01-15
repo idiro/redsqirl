@@ -40,7 +40,7 @@ public class PigUnion extends PigElement {
 	private PigTableUnionInteraction tUnionSelInt;
 
 	public PigUnion() throws RemoteException {
-		super(2, 2, Integer.MAX_VALUE);
+		super(2, Integer.MAX_VALUE);
 
 		page1 = addPage("Operations",
 				"Union operations and output preferences", 1);
