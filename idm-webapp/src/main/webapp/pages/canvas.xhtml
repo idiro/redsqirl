@@ -726,7 +726,7 @@
 				<a4j:status	onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
 							onstop="jQuery('#canvas-tabs').unblock();" />
 				
-				<a4j:jsFunction name="updateArrowColor" data="#{canvasBean.arrowType}" oncomplete="updateArrowType(data[0], data[1], data[2]);">
+				<a4j:jsFunction name="updateArrowColor" data="#{canvasBean.arrowType}" oncomplete="updateArrowType(data[0], data[1], data[2]);updateArrowLabel(data[0], data[1], '#{canvasBean.linkLabel}');">
 					<a4j:actionparam name="groupOutId"/>
 					<a4j:actionparam name="groupInId"/>
 					<a4j:actionparam name="outputName"/>

@@ -46,6 +46,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 	private String idElement;
 	private String idGroup;
 	private String nameOutput;
+	private String linkLabel;
 	private Map<String, Map<String, String>> idMap;
 	private UserInfoBean userInfoBean;
 	private String path;
@@ -279,6 +280,23 @@ public class CanvasBean extends BaseBean implements Serializable{
 			setResult(new String[]{getParamNameLink(), nameElementA, nameElementB});
 
 			setNameOutput(nameElementA);
+			
+			
+			//generate the label to put in the arrow
+			String label = "";
+			
+			if (dfeObjA.getDFEOutput().entrySet().size() > 1 ||
+					dfeObjB.getInput().entrySet().size() > 1){
+				if (dfeObjA.getDFEOutput().entrySet().size() > 1){
+					label += nameElementA;
+				}
+				label += " -> ";
+				if (dfeObjB.getInput().entrySet().size() > 1){
+					label += nameElementB;
+				}
+			}
+			setLinkLabel(label);
+			
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
@@ -962,5 +980,13 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 	public void setNameOutput(String nameOutput) {
 		this.nameOutput = nameOutput;
+	}
+	
+	public String getLinkLabel() {
+		return linkLabel;
+	}
+
+	public void setLinkLabel(String nameLink) {
+		this.linkLabel = nameLink;
 	}
 }

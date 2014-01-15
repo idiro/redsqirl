@@ -845,6 +845,17 @@ function updatePositionArrow(arrow, newPoint, newPoint2, headlen, headlen2, angl
 		newPoint2[0], newPoint2[1],
 		newPoint2[0] - headlen2 * Math.cos(angle + Math.PI / 3),
 		newPoint2[1] - headlen2 * Math.sin(angle + Math.PI / 3) ]);
+	
+	if (arrow.label != null){
+		var x1 = arrow.getPoints()[0].x
+		var y1 = arrow.getPoints()[0].y
+		
+		var x2 = arrow.getPoints()[1].x
+		var y2 = arrow.getPoints()[1].y
+		
+		arrow.label.setX((x1 + x2 + (Math.cos(angle) * 50))/2);
+		arrow.label.setY((y1 + y2 + (Math.sin(angle) * 50))/2);
+	}
 }
 
 function rulesDragAndDropObj(canvasName, pos, valueX, valueY) {
@@ -1862,6 +1873,57 @@ function updateArrowType(idOutput, idInput, color) {
 			}
 		}
 	);
+	
+	layer.draw();
+
+}
+
+
+function updateArrowLabel(idOutput, idInput, label) {
+	
+	var layer = canvasArray[selectedCanvas].layer;
+	
+	var posx;
+	var posy;
+	
+	var arrow;
+	
+
+	jQuery.each(layer.getChildren(),
+		function(index, value) {
+			if (value !== undefined && value.isArrow == true) {
+				if (value.idOutput == idOutput && value.idInput == idInput){
+				
+					var x1 = value.getPoints()[0].x
+					var y1 = value.getPoints()[0].y
+					
+					var x2 = value.getPoints()[1].x
+					var y2 = value.getPoints()[1].y
+					
+					var angle = Math.atan2(y2 - y1,
+							x2 - x1);
+					
+					posx = (x1 + x2 + (Math.cos(angle) * 50))/2;
+					posy = (y1 + y2 + (Math.sin(angle) * 50))/2;
+					
+					arrow = value;
+					//value.add(textLabelObj);
+					return false;
+				}
+			}
+		}
+	);
+	
+	var textLabelObj = new Kinetic.Text({
+		text : label,
+		fontSize : 10,
+		fill : 'black',
+		x : posx,
+		y : posy
+	});
+	arrow.label = textLabelObj;
+	
+	layer.add(textLabelObj)
 	
 	layer.draw();
 
