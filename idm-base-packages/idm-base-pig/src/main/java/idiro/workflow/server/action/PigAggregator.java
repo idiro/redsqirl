@@ -1,21 +1,19 @@
 package idiro.workflow.server.action;
 
 import idiro.utils.FeatureList;
-import idiro.utils.OrderedFeatureList;
-import idiro.utils.Tree;
 import idiro.workflow.server.Page;
-import idiro.workflow.server.action.utils.PigDictionary;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEOutput;
-import idiro.workflow.server.interfaces.DFEPage;
-import idiro.workflow.server.interfaces.PageChecker;
 
 import java.rmi.RemoteException;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 
 public class PigAggregator extends PigElement {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4640611831909705304L;
 
 	private Page page1, page2, page3, page4;
 
@@ -43,7 +41,8 @@ public class PigAggregator extends PigElement {
 		page2 = addPage("Attributes", "Select table atributes ", 1);
 
 		page2.addInteraction(tSelInt);
-
+		
+		/*
 		page2.setChecker(new PageChecker() {
 
 			public String check(DFEPage page) throws RemoteException {
@@ -74,7 +73,7 @@ public class PigAggregator extends PigElement {
 				}
 				return error;
 			}
-		});
+		});*/
 
 		page3 = addPage("Filter", "Add filter for data set", 1);
 
@@ -161,6 +160,7 @@ public class PigAggregator extends PigElement {
 		return getDFEInput().get(key_input).get(0).getFeatures();
 	}
 	
+	/*
 	public FeatureList getInFeaturesWithAlias() throws RemoteException{
 		FeatureList fl = new OrderedFeatureList();
 		String alias = getAlias();
@@ -172,8 +172,9 @@ public class PigAggregator extends PigElement {
 		}
 		
 		return fl;
-	}
+	}*/
 	
+	/*
 	public Set<String> getGroupedWithAlias() throws RemoteException{
 		Set<String> grouped = new HashSet<String>();
 		String alias = getAlias();
@@ -183,7 +184,7 @@ public class PigAggregator extends PigElement {
 			grouped.add(alias.toUpperCase()+"."+feat.toUpperCase());
 		}
 		return grouped;
-	}
+	}*/
 
 	@Override
 	public FeatureList getNewFeatures() throws RemoteException {

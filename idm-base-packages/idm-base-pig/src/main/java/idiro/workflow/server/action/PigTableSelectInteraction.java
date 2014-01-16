@@ -61,29 +61,24 @@ public class PigTableSelectInteraction extends TableInteraction {
 		if(msg == null){
 			List<Map<String,String>> lRow = getValues();
 
-			Set<String> featGrouped = null;
+			
 			if(lRow == null || lRow.isEmpty()){
 				msg = "A relation is composed of at least 1 column";
 			}else{
-				Iterator<String> inputFeatsIt= in.getFeatures().getFeaturesNames().iterator();
 				logger.info("Feats "+in.getFeatures().getFeaturesNames());
-				
-				
+				Set<String> featGrouped = null;
+
 				// only show what is in grouped interaction
 				if (hs.getGroupingInt() != null) {
-
+					Iterator<String> inputFeatsIt= in.getFeatures().getFeaturesNames().iterator();
 					while (inputFeatsIt.hasNext()) {
 						String nameF = inputFeatsIt.next().toUpperCase();
 						String nameFwithAlias = hs.getAlias().toUpperCase()+"."+nameF;
-						String typeF = in.getFeatures().getFeatureType(nameF).toString().toUpperCase();
-						fl.addFeature(nameFwithAlias, FeatureType.valueOf(typeF));
-						//fl.addFeature(nameF, FeatureType.valueOf(typeF));
+						fl.addFeature(nameFwithAlias, in.getFeatures().getFeatureType(nameF));
 					}
-					
+
 					featGrouped = new HashSet<String>();
 					logger.info("group interaction was not null");
-					logger.info(((TreeNonUnique<String>) hs.groupingInt.getTree())
-							.toString());
 					Iterator<String> grInt = hs.getGroupingInt()
 							.getValues().iterator();
 					if (grInt.hasNext()) {
@@ -96,37 +91,37 @@ public class PigTableSelectInteraction extends TableInteraction {
 				}else{
 					fl = in.getFeatures();
 				}
-				
+
 				Iterator<Map<String,String>> rows = lRow.iterator();
 				while(rows.hasNext() && msg == null){
 					Map<String,String> cur = rows.next();
-					String feattitle = cur.get(table_type_title);
+					String feattype = cur.get(table_type_title);
+					String feattitle = cur.get(table_feat_title);
 					String featoperation = cur.get(table_op_title);
 					logger.debug("checking : " + featoperation + " "
 							+ feattitle + " ");
 					try{
-					String typeRetuned = PigDictionary.getInstance()
-							.getReturnType(featoperation, fl, featGrouped);
-					logger.info("type returned : " + typeRetuned);
-					if (!PigDictionary.check(feattitle, typeRetuned)) {
-						msg = "Error the type returned does not correspond for feature "
-								+ featoperation
-								+ "("
-								+ typeRetuned
-								+ " , "
-								+ feattitle + ")";
-					}
-					logger.info("added : " + featoperation
-							+ " to features type list");
+						String typeRetuned = PigDictionary.getInstance()
+								.getReturnType(featoperation, fl, featGrouped);
+						logger.info("type returned : " + typeRetuned);
+						if (!PigDictionary.check(feattype, typeRetuned)) {
+							msg = "Error the type returned does not correspond for feature "
+									+ featoperation
+									+ "("
+									+ typeRetuned
+									+ " , "
+									+ feattype + ")";
+						}
+						logger.info("added : " + featoperation
+								+ " to features type list");
 					}catch(Exception e){
 						msg = "Error when attempting to test an expression";
 					}
 				}
-				
-				
+
 			}
 		}
-		
+
 		return msg;
 	}
 
@@ -143,7 +138,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 
 	public void update(DFEOutput in) throws RemoteException {
 
-		
+
 		EditorInteraction ei = new EditorInteraction(
 				"editor_table_select", "", 0,0);
 		ei.getTree().remove("editor");
@@ -160,9 +155,9 @@ public class PigTableSelectInteraction extends TableInteraction {
 			ei.getTree().add(PigDictionary.generateEditor(PigDictionary.getInstance()
 					.createDefaultSelectHelpMenu(), in));
 		}
-		
+
 		updateEditor(table_op_title, ei);
-		
+
 
 		// Set the Generator
 		logger.debug("Set the generator...");
@@ -235,7 +230,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 
 		}
 
-		logger.info("pig tsel tree "+ tree.toString());
+		//logger.info("pig tsel tree "+ tree.toString());
 	}
 
 	protected void addGeneratorRows(String title,
@@ -254,7 +249,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 			while (featIt.hasNext()) {
 				String cur = featIt.next();
 				Map<String,String> row = new LinkedHashMap<String,String>();
-				
+
 				String optitleRow = "";
 				String featname;
 				if (alias.isEmpty()) {
@@ -262,7 +257,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 				} else {
 					optitleRow = addOperation(alias + "." + cur, operation);
 				}
-				
+
 				row.put(table_op_title,optitleRow);
 				if (operation.isEmpty()) {
 					featname = cur;
@@ -283,31 +278,31 @@ public class PigTableSelectInteraction extends TableInteraction {
 			featIt = feats.iterator();
 		}
 		updateGenerator(title,rows);
-		
+
 	}
 
 	protected void createColumns() throws RemoteException {
-		
+
 		addColumn(
 				table_op_title, 
 				null, 
 				null, 
 				null);
-		
+
 		addColumn(
 				table_feat_title,
 				1,
 				"[a-zA-Z]([A-Za-z0-9_]{0,29})",
 				null,
 				null);
-		
+
 		List<String> types = new LinkedList<String>();
 		types.add(FeatureType.BOOLEAN.name());
 		types.add(FeatureType.INT.name());
 		types.add(FeatureType.DOUBLE.name());
 		types.add(FeatureType.FLOAT.name());
 		types.add(FeatureType.STRING.name());
-		
+
 		addColumn(
 				table_type_title,
 				null,
@@ -322,9 +317,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 
 		while (rowIt.hasNext()) {
 			Tree<String> rowCur = rowIt.next();
-			String name = hs.getAlias().toUpperCase()
-					+ "."
-					+ rowCur.getFirstChild(table_feat_title).getFirstChild()
+			String name = rowCur.getFirstChild(table_feat_title).getFirstChild()
 					.getHead();
 			String type = rowCur.getFirstChild(table_type_title)
 					.getFirstChild().getHead();
@@ -380,13 +373,13 @@ public class PigTableSelectInteraction extends TableInteraction {
 			String aggregate) throws RemoteException {
 		logger.debug("select...");
 		String select = "";
-		
+
 		if (hs.groupingInt != null) {
 			Iterator<String> gIt = hs.getGroupingInt().getValues().iterator();
 			List<String> features = hs.getDFEInput().get(PigElement.key_input).get(0)
 					.getFeatures().getFeaturesNames();
 			List<Integer> groupIndex = new LinkedList<Integer>();
-			
+
 			while (gIt.hasNext()) {
 				String groupItem = gIt.next();
 				for (int i = 0; i < features.size(); ++i) {

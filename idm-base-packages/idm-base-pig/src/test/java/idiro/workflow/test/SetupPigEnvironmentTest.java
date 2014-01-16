@@ -3,7 +3,6 @@ package idiro.workflow.test;
 import idiro.Log;
 import idiro.ProjectID;
 import idiro.workflow.server.WorkflowPrefManager;
-import idiro.workflow.server.action.PigSelectTests;
 
 import java.io.File;
 import java.io.FileReader;
@@ -22,12 +21,13 @@ import org.junit.runners.Suite.SuiteClasses;
 	//PigDictionaryTests.class,
 	//PigFilterInteractionTests.class,
 	//PigTableSelectInteractionTests.class,
-	/*PigJoinRelationInteractionTests.class,
-	PigTableJoinInteractionTests.class,
-	PigTableUnionInteractionTests.class,*/
-	PigSelectTests.class,
-	/*PigUnionTests.class,
-	PigJoinTests.class*/
+	//PigJoinRelationInteractionTests.class,
+	//PigTableJoinInteractionTests.class,
+	//PigTableUnionInteractionTests.class,
+	//PigSelectTests.class,
+	//PigAggregatorTests.class,
+	//PigUnionTests.class,
+	//PigJoinTests.class
 	})
 public class SetupPigEnvironmentTest {
 

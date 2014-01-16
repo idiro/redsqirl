@@ -396,8 +396,8 @@ public class PigDictionary extends AbstractDictionary {
 	 * @return type of the expression
 	 * @throws Exception
 	 */
-	public String getReturnType(String expr, FeatureList features,
-			Set<String> nonAggregFeats) throws Exception {
+	public String getReturnType(String expr, final FeatureList features,
+			final Set<String> nonAggregFeats) throws Exception {
 		if (expr == null || expr.trim().isEmpty()) {
 			logger.error("No expressions to test");
 			throw new Exception("No expressions to test");
@@ -463,7 +463,7 @@ public class PigDictionary extends AbstractDictionary {
 		logger.debug("getting feature type if null " + type + " " + expr);
 		if (type == null) {
 			Iterator<String> itS = null;
-			if (nonAggregFeats != null && !nonAggregFeats.isEmpty()) {
+			if (nonAggregFeats != null) {
 				logger.debug("feataggreg is not empty : "
 						+ nonAggregFeats.toString());
 				itS = nonAggregFeats.iterator();

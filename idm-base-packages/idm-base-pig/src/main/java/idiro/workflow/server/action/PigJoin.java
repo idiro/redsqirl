@@ -2,16 +2,16 @@ package idiro.workflow.server.action;
 
 import idiro.utils.FeatureList;
 import idiro.utils.OrderedFeatureList;
-import idiro.utils.Tree;
+import idiro.workflow.server.ListInteraction;
 import idiro.workflow.server.Page;
-import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.connect.HDFSInterface;
-import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEOutput;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -37,7 +37,7 @@ public class PigJoin extends PigElement {
 	private PigTableJoinInteraction tJoinInt;
 	private PigJoinRelationInteraction jrInt;
 	private PigFilterInteraction filterInt;
-	private DFEInteraction joinTypeInt;
+	private ListInteraction joinTypeInt;
 
 	public PigJoin() throws RemoteException {
 		super(2, Integer.MAX_VALUE,0);
@@ -53,13 +53,21 @@ public class PigJoin extends PigElement {
 
 		page2 = addPage("Relationship", "Join Relationship", 1);
 
-		joinTypeInt = new UserInteraction(key_joinType,
-				"Please specify a join type", DisplayType.list, 0, 0);
+		joinTypeInt = new ListInteraction(key_joinType,
+				"Please specify a join type", 0, 0);
+		List<String> valueJoinTypeInt = new LinkedList<String>();
+		valueJoinTypeInt.add("JOIN");
+		valueJoinTypeInt.add("LEFT OUTER JOIN");
+		valueJoinTypeInt.add("RIGHT OUTER JOIN");
+		valueJoinTypeInt.add("FULL OUTER JOIN");
+		joinTypeInt.setPossibleValues(valueJoinTypeInt);
+		joinTypeInt.setValue("JOIN");
 
 		jrInt = new PigJoinRelationInteraction(
 				key_joinRelation,
 				"Please specify the relationship, top to bottom is like left to right",
 				0, 0, this);
+		
 		page2.addInteraction(joinTypeInt);
 		page2.addInteraction(jrInt);
 
@@ -85,26 +93,10 @@ public class PigJoin extends PigElement {
 	public void update(DFEInteraction interaction) throws RemoteException {
 		if (interaction.getName().equals(filterInt.getName())) {
 			filterInt.update();
-		} else if (interaction.getName().equals(joinTypeInt.getName())) {
-			updateJoinInt();
 		} else if (interaction.getName().equals(jrInt.getName())) {
 			jrInt.update();
 		} else if (interaction.getName().equals(tJoinInt.getName())) {
 			tJoinInt.update();
-		}
-	}
-
-	public void updateJoinInt() throws RemoteException {
-
-		Tree<String> list = null;
-		if (joinTypeInt.getTree().getSubTreeList().isEmpty()) {
-			list = joinTypeInt.getTree().add("list");
-			list.add("output").add("");
-			Tree<String> values = list.add("values");
-			values.add("value").add("JOIN");
-			values.add("value").add("LEFT OUTER JOIN");
-			values.add("value").add("RIGHT OUTER JOIN");
-			values.add("value").add("FULL OUTER JOIN");
 		}
 	}
 

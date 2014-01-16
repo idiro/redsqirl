@@ -1,7 +1,7 @@
 package idiro.workflow.server.action;
 
-import idiro.utils.OrderedFeatureList;
 import idiro.utils.FeatureList;
+import idiro.utils.OrderedFeatureList;
 import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.UserInteraction;
@@ -44,6 +44,8 @@ public class PigTableJoinInteraction extends UserInteraction{
 					throws RemoteException {
 		super(name, legend, DisplayType.table, column, placeInColumn);
 		this.hj = hj;
+		tree.removeAllChildren();
+		tree.add(getRootTable());
 	}
 
 	@Override
@@ -62,7 +64,7 @@ public class PigTableJoinInteraction extends UserInteraction{
 			logger.error(msg);
 			return msg;
 		}
-		
+
 		if(lRow.isEmpty()){
 			msg = "A table is composed of at least 1 column";
 		}
@@ -122,15 +124,11 @@ public class PigTableJoinInteraction extends UserInteraction{
 
 	public void update() throws RemoteException{
 
-		if(tree.getSubTreeList().isEmpty()){
-			tree.add(getRootTable());		
-		}else{
-			//Remove generator
-			tree.getFirstChild("table").remove("generator");
-			//Remove Editor of operation
-			tree.getFirstChild("table").getFirstChild("columns").
-			findFirstChild(table_op_title).getParent().remove("editor");
-		}
+		//Remove generator
+		tree.getFirstChild("table").remove("generator");
+		//Remove Editor of operation
+		tree.getFirstChild("table").getFirstChild("columns").
+		findFirstChild(table_op_title).getParent().remove("editor");
 
 
 		FeatureList feats = hj.getInFeatures();
@@ -138,7 +136,7 @@ public class PigTableJoinInteraction extends UserInteraction{
 		//Generate Editor
 		Tree<String> featEdit =
 				PigDictionary.generateEditor(PigDictionary.getInstance().createDefaultSelectHelpMenu(),feats);
-		
+
 		//Set the Editor of operation
 		logger.debug("Set the editor...");
 		Tree<String> operation = tree.getFirstChild("table").getFirstChild("columns").

@@ -30,12 +30,14 @@ public class PigJoinRelationInteraction extends TableInteraction {
 	private PigJoin hj;
 
 	public static final String table_relation_title = "Relation",
-			table_feat_title = "Join Feature";
+			table_feat_title = "Join_Feature";
 
 	public PigJoinRelationInteraction(String name, String legend, int column,
 			int placeInColumn, PigJoin hj) throws RemoteException {
 		super(name, legend, column, placeInColumn);
 		this.hj = hj;
+		tree.removeAllChildren();
+		tree.add(getRootTable());
 	}
 
 	@Override
@@ -96,21 +98,18 @@ public class PigJoinRelationInteraction extends TableInteraction {
 	public void update() throws RemoteException {
 		Set<String> tablesIn = hj.getAliases().keySet();
 
-		if (tree.getSubTreeList().isEmpty()) {
-			tree.add(getRootTable(tablesIn));
-		} else {
-			// Remove constraint on first column
-			tree.getFirstChild("table").getFirstChild("columns")
-			.findFirstChild(table_relation_title).getParent()
-			.remove("constraint");
+		// Remove constraint on first column
+		tree.getFirstChild("table").getFirstChild("columns")
+		.findFirstChild(table_relation_title).getParent()
+		.remove("constraint");
 
-			// Remove Editor of operation
-			tree.getFirstChild("table").remove("generator");
-			Tree<String> operation = tree.getFirstChild("table")
-					.getFirstChild("columns").findFirstChild(table_feat_title)
-					.getParent();
-			operation.remove("editor");
-		}
+		// Remove Editor of operation
+		tree.getFirstChild("table").remove("generator");
+		Tree<String> operation = tree.getFirstChild("table")
+				.getFirstChild("columns").findFirstChild(table_feat_title)
+				.getParent();
+		operation.remove("editor");
+
 
 		// Set the constraint on first column
 		Tree<String> table = tree.getFirstChild("table")
@@ -136,14 +135,20 @@ public class PigJoinRelationInteraction extends TableInteraction {
 				.getInFeatures());
 
 		logger.info(((TreeNonUnique<String>) featEdit).toString());
+		
 		// Set the Editor of operation
-		Tree<String> operation = tree.getFirstChild("table")
-				.getFirstChild("columns").findFirstChild(table_feat_title);
 		operation.getParent().getParent().add(featEdit);
 		logger.info("finished update for join relationship");
+		
+		if(tree.getFirstChild("table").getChildren("row").isEmpty()){
+			Iterator<String> tableIn = tablesIn.iterator();
+			while (tableIn.hasNext()) {
+				tree.getFirstChild("table").add("row").add(table_relation_title).add(tableIn.next());
+			}
+		}
 	}
 
-	protected Tree<String> getRootTable(Set<String> tablesIn)
+	protected Tree<String> getRootTable()
 			throws RemoteException {
 		// Table
 		Tree<String> input = new TreeNonUnique<String>("table");
@@ -156,11 +161,6 @@ public class PigJoinRelationInteraction extends TableInteraction {
 		table.add("title").add(table_relation_title);
 
 		columns.add("column").add("title").add(table_feat_title);
-
-		Iterator<String> tableIn = tablesIn.iterator();
-		while (tableIn.hasNext()) {
-			input.add("row").add(table_relation_title).add(tableIn.next());
-		}
 
 		return input;
 	}
