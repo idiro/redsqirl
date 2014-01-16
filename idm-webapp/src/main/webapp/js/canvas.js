@@ -642,6 +642,9 @@ function deleteSelected() {
 						value.nameOutput,
 						value.input,
 						value.nameInput);
+					if (value.label != null){
+						value.label.remove();
+					}
 					value.remove();
 					return false;
 				}
@@ -662,6 +665,9 @@ function deleteArrowOutsideStandard(canvasName) {
 		jQuery.each(layer.getChildren(), function(index, value) {
 			if (value !== undefined) {
 				if (value.isArrow && (value.idOutput == null || value.idInput == null)) {
+					if (value.label != null){
+						value.label.remove();
+					}
 					value.remove();
 					return false;
 				}
@@ -706,6 +712,9 @@ function deleteLayerChildren(canvasName, idGroup) {
 			function(index, value) {
 				if (value !== undefined && value.isArrow == true) {
 					if (value.idOutput == idGroup || value.idInput == idGroup){
+						if (value.label != null){
+							value.label.remove();
+						}
 						value.remove();
 						return false;
 					}
@@ -853,8 +862,8 @@ function updatePositionArrow(arrow, newPoint, newPoint2, headlen, headlen2, angl
 		var x2 = arrow.getPoints()[1].x
 		var y2 = arrow.getPoints()[1].y
 		
-		arrow.label.setX((x1 + x2 + (Math.cos(angle) * 50))/2);
-		arrow.label.setY((y1 + y2 + (Math.sin(angle) * 50))/2);
+		arrow.label.setX((x1 + x2 + (Math.cos(angle) * 42))/2  - Math.abs((Math.cos(angle) * arrow.label.getText().length*2.7)));
+		arrow.label.setY((y1 + y2 + (Math.sin(angle) * 42))/2);
 	}
 }
 
@@ -1378,6 +1387,9 @@ function clearCanvas() {
 	
 	jQuery.each(canvasArray[selectedCanvas].layer.getChildren(), function(index, value) {
 		if (value.isArrow == true) {
+			if (value.label != null){
+				value.label.remove();
+			}
 			value.remove();
 		}
 	});
@@ -1734,6 +1746,9 @@ function removeLink(name) {
 		var arrow = layer.getChildren()[i];
 		if (arrow.getName() == name) {
 			arrow.remove();
+			if (arrow.label != null){
+				arrow.label.remove();
+			}
 			layer.draw();
 			return;
 		}
@@ -1881,8 +1896,10 @@ function updateArrowLabel(idOutput, idInput, label) {
 					var angle = Math.atan2(y2 - y1,
 							x2 - x1);
 					
-					posx = (x1 + x2 + (Math.cos(angle) * 50))/2;
-					posy = (y1 + y2 + (Math.sin(angle) * 50))/2;
+					
+					
+					posx = (x1 + x2 + (Math.cos(angle) * 42))/2  - Math.abs((Math.cos(angle) * label.length*2.7));
+					posy = (y1 + y2 + (Math.sin(angle) * 42))/2;
 					
 					arrow = value;
 					//value.add(textLabelObj);
@@ -1894,7 +1911,8 @@ function updateArrowLabel(idOutput, idInput, label) {
 	
 	var textLabelObj = new Kinetic.Text({
 		text : label,
-		fontSize : 10,
+		fontSize : 11,
+		fontStyle : 'bold',
 		fill : 'black',
 		x : posx,
 		y : posy
