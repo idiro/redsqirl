@@ -213,25 +213,7 @@ public class Source extends DataflowAction {
 							logger.debug("No properties");
 						}
 					}
-
-					//Set path
-					if(error == null){
-						try{
-							logger.info("tree is : "+((TreeNonUnique<String>)getInteraction(key_dataset).getTree()).toString());
-							String path = getInteraction(key_dataset).getTree()
-									.getFirstChild("browse").getFirstChild("output")
-									.getFirstChild("path").getFirstChild().getHead();
-							
-							if (path.isEmpty()) {
-								error = LanguageManager.getText("source.pathempty");
-							}else{
-								logger.info("Checkpath : " + path + " for " +out.getPath());
-								out.setPath(path);
-							}
-						}catch(Exception e){
-							error = LanguageManager.getText("source.setpatherror",new Object[]{e.getMessage()});
-						}
-					}
+					
 					
 					//Set features
 					if(error == null){
@@ -272,6 +254,25 @@ public class Source extends DataflowAction {
 							}
 						}catch(Exception e){
 							error = "Error in the tree";
+						}
+					}
+
+					//Set path
+					if(error == null){
+						try{
+							logger.info("tree is : "+((TreeNonUnique<String>)getInteraction(key_dataset).getTree()).toString());
+							String path = getInteraction(key_dataset).getTree()
+									.getFirstChild("browse").getFirstChild("output")
+									.getFirstChild("path").getFirstChild().getHead();
+							
+							if (path.isEmpty()) {
+								error = LanguageManager.getText("source.pathempty");
+							}else{
+								logger.info("Checkpath : " + path + " for " +out.getPath());
+								out.setPath(path);
+							}
+						}catch(Exception e){
+							error = LanguageManager.getText("source.setpatherror",new Object[]{e.getMessage()});
 						}
 					}
 
