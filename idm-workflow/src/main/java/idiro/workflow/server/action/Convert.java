@@ -2,16 +2,14 @@ package idiro.workflow.server.action;
 
 import idiro.utils.FeatureList;
 import idiro.utils.OrderedFeatureList;
-import idiro.utils.Tree;
 import idiro.workflow.server.DataProperty;
 import idiro.workflow.server.DataflowAction;
+import idiro.workflow.server.ListInteraction;
 import idiro.workflow.server.Page;
-import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.datatype.HiveTypeWithWhere;
 import idiro.workflow.server.datatype.MapRedTextType;
-import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEInteractionChecker;
 import idiro.workflow.server.interfaces.DFELinkProperty;
@@ -49,7 +47,7 @@ public class Convert extends DataflowAction {
 	 */
 	page2;
 
-	private UserInteraction formats;
+	private ListInteraction formats;
 
 	private ConvertPropertiesInteraction cpi;
 
@@ -66,13 +64,13 @@ public class Convert extends DataflowAction {
 				"Choose which format you would like to export",
 				1);
 
-		formats = new UserInteraction(
+		formats = new ListInteraction(
 				key_formats,
 				"Please specify the output format to generate.",
-				DisplayType.list,
 				0,
-				0); 
-
+				0);
+		
+		formats.setDisplayRadioButton(true);
 		formats.setChecker(new DFEInteractionChecker(){
 
 			@Override
@@ -139,22 +137,14 @@ public class Convert extends DataflowAction {
 	}
 
 	protected void updateFormat() throws RemoteException{
-		Tree<String> treeFormat = formats.getTree();
-		Tree<String> list = null;
-		if(treeFormat.getSubTreeList().isEmpty()){
-			list = treeFormat.add("list");
-			list.add("output");
-		}else{
-			list = treeFormat.getFirstChild("list"); 
-			list.remove("values");
-		}
-		Tree<String> values = list.add("values");
+		List<String> values = new LinkedList<String>();
 		DFEOutput in = getDFEInput().get(key_input).get(0);
 		if(in.getClass().equals(MapRedTextType.class)){
-			values.add("value").add((new HiveType()).getTypeName());
+			values.add((new HiveType()).getTypeName());
 		}else{
-			values.add("value").add((new MapRedTextType()).getTypeName());
+			values.add((new MapRedTextType()).getTypeName());
 		}
+		formats.setPossibleValues(values);
 	}
 
 	@Override

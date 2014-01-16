@@ -1,14 +1,11 @@
 package idiro.workflow.server.action;
 
 import idiro.utils.Tree;
-import idiro.utils.TreeNonUnique;
-import idiro.workflow.server.UserInteraction;
+import idiro.workflow.server.EditorInteraction;
 import idiro.workflow.server.action.utils.PigDictionary;
-import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.interfaces.DFEOutput;
 
 import java.rmi.RemoteException;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -19,7 +16,7 @@ import java.util.Set;
  * @author marcos
  * 
  */
-public class PigFilterInteraction extends UserInteraction {
+public class PigFilterInteraction extends EditorInteraction {
 
 	/**
 	 * 
@@ -28,10 +25,13 @@ public class PigFilterInteraction extends UserInteraction {
 
 	private PigElement el;
 
-	public PigFilterInteraction(String name, String legend, int column,
-			int placeInColumn, PigElement el, String key_in)
-			throws RemoteException {
-		super(name, legend, DisplayType.helpTextEditor, column, placeInColumn);
+	public PigFilterInteraction(int column,
+			int placeInColumn, PigElement el)
+					throws RemoteException {
+		super(PigElement.key_condition, 
+				"Please specify the condition of the select", 
+				column, 
+				placeInColumn);
 		this.el = el;
 	}
 
@@ -39,29 +39,25 @@ public class PigFilterInteraction extends UserInteraction {
 	public String check() {
 		String msg = null;
 		try {
-			Tree<String> cond = getTree().getFirstChild("editor")
-					.getFirstChild("output").getFirstChild();
 
-			if (cond != null) {
-				String condition = cond.getHead();
-				if (!condition.isEmpty()) {
-					logger.debug("Condition: " + condition
-							+ " features list size : "
-							+ el.getInFeatures().getSize());
-					String type = null;
-					Set<String> aggregation = new HashSet<String>();
-					if(el.groupingInt != null){
-						aggregation = el.groupingInt.getAggregationFeatures(el.getDFEInput().get(el.key_input).get(0));
-					}
+			String condition = getValue();
+			if (condition != null && !condition.isEmpty()) {
+				logger.debug("Condition: " + condition
+						+ " features list size : "
+						+ el.getInFeatures().getSize());
+				String type = null;
+				Set<String> aggregation = null;
+				if(el.groupingInt != null){
+					aggregation = el.groupingInt.getAggregationFeatures(el.getDFEInput().get(PigElement.key_input).get(0));
 					logger.info("aggregation set size : "+ aggregation.size());
-					type = PigDictionary.getInstance().getReturnType(
-							condition, el.getInFeatures(),aggregation);
-					if (!type.equalsIgnoreCase("boolean")) {
-						msg = "The condition have to return a boolean not a "
-								+ type;
-						logger.info(msg);
-						
-					}
+				}
+				type = PigDictionary.getInstance().getReturnType(
+						condition, el.getInFeatures(),aggregation);
+				if (!type.equalsIgnoreCase("boolean")) {
+					msg = "The condition have to return a boolean not a "
+							+ type;
+					logger.info(msg);
+
 				}
 			}
 		} catch (Exception e) {
@@ -74,27 +70,18 @@ public class PigFilterInteraction extends UserInteraction {
 	}
 
 	public void update() throws RemoteException {
+
 		try {
-			Tree<String> output;
-			if (tree.getSubTreeList().isEmpty()) {
-				output = new TreeNonUnique<String>("output");
-			} else {
-				output = tree.getFirstChild("editor").getFirstChild("output");
-				tree.remove("editor");
-			}
-			logger.info("trying to get editor");
+			String output = getValue();
+			tree.remove("editor");
+
 			Tree<String> base = null;
-			if (el.groupingInt != null) {
-				base = PigDictionary.generateEditor(PigDictionary.getInstance()
-						.createGroupSelectHelpMenu(), el.getInFeatures());
 
-			} else {
-
-				base = PigDictionary.generateEditor(PigDictionary.getInstance()
-						.createConditionHelpMenu(), el.getInFeatures());
-			}
+			base = PigDictionary.generateEditor(PigDictionary.getInstance()
+					.createConditionHelpMenu(), el.getInFeatures());
+			
 			logger.info("editor ok");
-			base.add(output);
+			base.add("output").add(output);
 			tree.add(base);
 		} catch (Exception ec) {
 			logger.info("There was an error updating " + getName());
@@ -109,7 +96,7 @@ public class PigFilterInteraction extends UserInteraction {
 			where = getTree().getFirstChild("editor").getFirstChild("output")
 					.getFirstChild().getHead();
 		}
-		
+
 		String whereIn = getInputWhere();
 		if (!where.isEmpty()) {
 			if (!whereIn.isEmpty()) {
@@ -157,22 +144,4 @@ public class PigFilterInteraction extends UserInteraction {
 		}
 		return where;
 	}
-
-	// public String getInputWhere(String relationName) throws RemoteException{
-	// String where = "";
-	// List<DFEOutput> out = el.getDFEInput().get(PigElement.key_input);
-	// Iterator<DFEOutput> it = out.iterator();
-	// HDFSInterface hi = new HDFSInterface();
-	// while(it.hasNext() && where.isEmpty()){
-	// DFEOutput cur = it.next();
-	// if(hi.getRelation(cur.getPath()).equalsIgnoreCase(relationName)){
-	// where = cur.getProperty("where");
-	// if(where == null){
-	// where = "";
-	// }
-	// }
-	// }
-	// return where;
-	// }
-
 }

@@ -2,7 +2,6 @@ package idiro.workflow.server.datatype;
 
 import idiro.hadoop.NameNodeVar;
 import idiro.hadoop.checker.HdfsFileChecker;
-import idiro.hadoop.pig.PigUtils;
 import idiro.utils.FeatureList;
 import idiro.utils.OrderedFeatureList;
 import idiro.utils.RandomString;
@@ -277,10 +276,6 @@ public class MapRedTextType extends DataOutput {
 
 					logger.info("setFeaturesFromHeader else ");
 
-					/*if (features != null && features.getSize() != newLabels.length) {
-						error = LanguageManager.getText("mapredtexttype.setheaders.wronglabels");
-					}*/
-
 					logger.info("setFeaturesFromHeader else error  "+ error);
 					//logger.info("setFeaturesFromHeader else features "+ features);
 
@@ -317,7 +312,6 @@ public class MapRedTextType extends DataOutput {
 			} else if (error != null) {
 				removeProperty(key_header);
 			}
-
 		}
 
 		logger.info("setFeaturesFromHeader-error " + error);
@@ -331,7 +325,6 @@ public class MapRedTextType extends DataOutput {
 		// getProperty(key_header).trim().isEmpty()){
 		logger.info("setFeatures :");
 		super.setFeatures(fl);
-		// }
 	}
 
 	private void generateFeaturesMap() throws RemoteException {
@@ -495,7 +488,7 @@ public class MapRedTextType extends DataOutput {
 
 				String error = null;
 				String header = getProperty(key_header);
-				if (header != null && !"".equalsIgnoreCase(header)) {
+				if (header != null && !header.isEmpty()) {
 					logger.info("setFeaturesFromHeader --");
 					error = setFeaturesFromHeader();
 					if (error != null) {
@@ -615,14 +608,16 @@ public class MapRedTextType extends DataOutput {
 	public String getPigDelimiter() {
 		String asciiCode = getProperty(key_delimiter);
 		Character c = null;
-		if (asciiCode != null && asciiCode.startsWith("#")
+		if(asciiCode == null){
+			c = '|';
+		}else if (asciiCode != null && asciiCode.startsWith("#")
 				&& asciiCode.length() > 1) {
 			int i = Integer.valueOf(asciiCode.substring(1));
 			c = new Character((char) i);
 		} else if (asciiCode.length() == 1) {
 			c = asciiCode.charAt(0);
 		}
-		return c != null ? PigUtils.getDelimiter(c) : asciiCode;
+		return new String()+c;
 	}
 
 	public String getDelimiterOrOctal() {

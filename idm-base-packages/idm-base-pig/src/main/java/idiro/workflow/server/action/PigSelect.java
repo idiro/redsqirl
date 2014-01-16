@@ -2,8 +2,6 @@ package idiro.workflow.server.action;
 
 import idiro.utils.FeatureList;
 import idiro.workflow.server.Page;
-import idiro.workflow.server.UserInteraction;
-import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEOutput;
 
@@ -34,7 +32,7 @@ public class PigSelect extends PigElement {
 	private PigFilterInteraction filterInt;
 
 	public PigSelect() throws RemoteException {
-		super(1, 1);
+		super(1,1,1);
 
 		page1 = addPage("Feature operations",
 				"Create operation feature per feature", 3);
@@ -47,15 +45,7 @@ public class PigSelect extends PigElement {
 
 		page2 = addPage("Select", "Select Conditions", 1);
 
-		filterInt = new PigFilterInteraction(key_condition,
-				"Please specify the condition of the select", 0, 0, this,
-				key_input);
-
-		delimiterOutputInt = new UserInteraction("Delimiter",
-				"Setting output delimiter", DisplayType.list, 1, 0);
-
-		savetypeOutputInt = new UserInteraction("Output Type",
-				"Setting the output type", DisplayType.list, 2, 0);
+		filterInt = new PigFilterInteraction(0, 0, this);
 
 		page2.addInteraction(filterInt);
 		page2.addInteraction(delimiterOutputInt);
@@ -72,23 +62,10 @@ public class PigSelect extends PigElement {
 	public void update(DFEInteraction interaction) throws RemoteException {
 		DFEOutput in = getDFEInput().get(key_input).get(0);
 		if (in != null) {
-			if (interaction == filterInt) {
+			if (interaction.getName().equals(filterInt.getName())) {
 				filterInt.update();
-			} else if (interaction == delimiterOutputInt) {
-				updateDelimiterOutputInt();
-			} else if (interaction == tSelInt) {
+			} else if (interaction.getName().equals(tSelInt.getName())) {
 				tSelInt.update(in);
-			} else if (interaction == dataSubtypeInt) {
-				updateDataSubTypeInt();
-			} else if (interaction == savetypeOutputInt) {
-				try {
-					updateOutputType();
-					logger.info("output type");
-				} catch (InstantiationException e) {
-					logger.error("Instanciatin error");
-				} catch (IllegalAccessException e) {
-					logger.error("Illegal Access error");
-				}
 			}
 		}
 	}

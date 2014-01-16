@@ -10,7 +10,6 @@ import idiro.workflow.server.interfaces.DFEOutput;
 
 import java.rmi.RemoteException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -18,8 +17,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-
-import com.kenai.jffi.Aggregate;
 
 /**
  * Utilities for writing Pig Latin operations. The class can: - generate a help
@@ -399,8 +396,8 @@ public class PigDictionary extends AbstractDictionary {
 	 * @return type of the expression
 	 * @throws Exception
 	 */
-	public String getReturnType(String expr, FeatureList features,
-			Set<String> nonAggregFeats) throws Exception {
+	public String getReturnType(String expr, final FeatureList features,
+			final Set<String> nonAggregFeats) throws Exception {
 		if (expr == null || expr.trim().isEmpty()) {
 			logger.error("No expressions to test");
 			throw new Exception("No expressions to test");
@@ -466,7 +463,7 @@ public class PigDictionary extends AbstractDictionary {
 		logger.debug("getting feature type if null " + type + " " + expr);
 		if (type == null) {
 			Iterator<String> itS = null;
-			if (nonAggregFeats != null && !nonAggregFeats.isEmpty()) {
+			if (nonAggregFeats != null) {
 				logger.debug("feataggreg is not empty : "
 						+ nonAggregFeats.toString());
 				itS = nonAggregFeats.iterator();
@@ -520,11 +517,13 @@ public class PigDictionary extends AbstractDictionary {
 					fl.addFeature(nameF, features.getFeatureType(nameF));
 				}
 				type = runMethod(expr, fl, true);
-			} else if (isNonAggMethod(expr, !nonAggregFeats.isEmpty())) {
+			} else if (isNonAggMethod(expr)) {
 				logger.debug(expr + ", is a method");
+				
 				if (nonAggregFeats != null && nonAggregFeats.isEmpty()) {
 					throw new Exception("Cannot use non aggregation method");
 				}
+				
 				FeatureList fl = features;
 				if (nonAggregFeats != null) {
 					fl = new OrderedFeatureList();
@@ -588,7 +587,7 @@ public class PigDictionary extends AbstractDictionary {
 
 	public String getReturnType(String expr, FeatureList features)
 			throws Exception {
-		return getReturnType(expr, features, new HashSet<String>());
+		return getReturnType(expr, features, null);
 	}
 
 	public static boolean check(String typeToBe, String typeGiven) {
@@ -700,11 +699,11 @@ public class PigDictionary extends AbstractDictionary {
 
 	public Tree<String> createConditionHelpMenu() throws RemoteException {
 		Tree<String> help = new TreeNonUnique<String>("help");
-		help.add(createMenu(new TreeNonUnique<String>("logic"),
+		help.add(createMenu(new TreeNonUnique<String>("operation_logic"),
 				functionsMap.get(logicalOperators)));
-		help.add(createMenu(new TreeNonUnique<String>("relation"),
+		help.add(createMenu(new TreeNonUnique<String>("operation_relation"),
 				functionsMap.get(relationalOperators)));
-		help.add(createMenu(new TreeNonUnique<String>("arithmetic"),
+		help.add(createMenu(new TreeNonUnique<String>("operation_arithmetic"),
 				functionsMap.get(arithmeticOperators)));
 		help.add(createMenu(new TreeNonUnique<String>("string"),
 				functionsMap.get(stringMethods)));
@@ -718,7 +717,7 @@ public class PigDictionary extends AbstractDictionary {
 
 	public Tree<String> createDefaultSelectHelpMenu() throws RemoteException {
 		Tree<String> help = new TreeNonUnique<String>("help");
-		help.add(createMenu(new TreeNonUnique<String>("arithmetic"),
+		help.add(createMenu(new TreeNonUnique<String>("operation_arithmetic"),
 				functionsMap.get(arithmeticOperators)));
 		help.add(createMenu(new TreeNonUnique<String>("string"),
 				functionsMap.get(stringMethods)));
@@ -726,9 +725,9 @@ public class PigDictionary extends AbstractDictionary {
 				functionsMap.get(mathMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("utils"),
 				functionsMap.get(utilsMethods)));
-		help.add(createMenu(new TreeNonUnique<String>("relation"),
+		help.add(createMenu(new TreeNonUnique<String>("operation_relation"),
 				functionsMap.get(relationalOperators)));
-		help.add(createMenu(new TreeNonUnique<String>("logic"),
+		help.add(createMenu(new TreeNonUnique<String>("operation_logic"),
 				functionsMap.get(logicalOperators)));
 		logger.debug("create Select Help Menu");
 		return help;
@@ -736,7 +735,7 @@ public class PigDictionary extends AbstractDictionary {
 
 	public Tree<String> createGroupSelectHelpMenu() throws RemoteException {
 		Tree<String> help = new TreeNonUnique<String>("help");
-		help.add(createMenu(new TreeNonUnique<String>("arithmetic"),
+		help.add(createMenu(new TreeNonUnique<String>("operation_arithmetic"),
 				functionsMap.get(arithmeticOperators)));
 		help.add(createMenu(new TreeNonUnique<String>("aggregation"),
 				functionsMap.get(agregationMethods)));
@@ -746,9 +745,9 @@ public class PigDictionary extends AbstractDictionary {
 				functionsMap.get(mathMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("integer"),
 				functionsMap.get(utilsMethods)));
-		help.add(createMenu(new TreeNonUnique<String>("relation"),
+		help.add(createMenu(new TreeNonUnique<String>("operation_relation"),
 				functionsMap.get(relationalOperators)));
-		help.add(createMenu(new TreeNonUnique<String>("logic"),
+		help.add(createMenu(new TreeNonUnique<String>("operation_logic"),
 				functionsMap.get(logicalOperators)));
 		logger.debug("create Group Select Help Menu");
 		return help;
@@ -848,7 +847,7 @@ public class PigDictionary extends AbstractDictionary {
 		return isInList(functionsMap.get(agregationMethods), expr);
 	}
 
-	private boolean isNonAggMethod(String expr, boolean agregation) {
+	private boolean isNonAggMethod(String expr) {
 		if (isInList(functionsMap.get(utilsMethods), expr)) {
 			return true;
 		} else if (isInList(functionsMap.get(mathMethods), expr)) {
@@ -919,12 +918,10 @@ public class PigDictionary extends AbstractDictionary {
 				String error = "No method " + methodsFound.get(0)[0] + " with "
 						+ sizeSearched + " arguments, expr:" + expr;
 				logger.debug(error);
-				throw new Exception(error);
 			}
 		} else {
 			String error = "No method matching " + expr;
 			logger.debug(error);
-			throw new Exception(error);
 		}
 
 		return type;
@@ -937,9 +934,12 @@ public class PigDictionary extends AbstractDictionary {
 		if (method != null) {
 			logger.debug("In " + expr + ", method found: " + method[0]);
 			String[] splitStr = expr.split(escapeString(method[0]));
-			if (aggregFeat.isEmpty()) {
+			if (aggregFeat == null){
 				ok = check(method, splitStr, features);
-			} else {
+			} else if(aggregFeat.isEmpty()){
+				//No addition in a total aggregation
+				ok = false;
+			}else{
 				FeatureList AF = new OrderedFeatureList();
 				Iterator<String> itA = aggregFeat.iterator();
 				while (itA.hasNext()) {
@@ -953,7 +953,6 @@ public class PigDictionary extends AbstractDictionary {
 		if (!ok) {
 			String error = "Error in expression: '" + expr + "'";
 			logger.debug(error);
-			throw new Exception(error);
 		}
 		logger.debug("operation ok : " + ok);
 		return ok;
@@ -1019,7 +1018,6 @@ public class PigDictionary extends AbstractDictionary {
 			String error = "Method " + method[0]
 					+ " does not accept parameter(s) " + arg;
 			logger.debug(error);
-			throw new Exception(error);
 		}
 
 		return ok;

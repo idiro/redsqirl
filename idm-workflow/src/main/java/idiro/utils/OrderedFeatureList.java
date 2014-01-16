@@ -6,6 +6,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -47,7 +48,9 @@ public class OrderedFeatureList extends UnicastRemoteObject implements FeatureLi
 	}
 	
 	public List<String> getFeaturesNames(){
-		return positions;
+		List<String> tmp = new LinkedList<String>();
+		tmp.addAll(positions);
+		return tmp;
 	}
 	
 	public int getSize(){

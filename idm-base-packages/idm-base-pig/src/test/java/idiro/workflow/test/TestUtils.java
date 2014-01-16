@@ -13,7 +13,8 @@ import org.apache.log4j.Logger;
 public class TestUtils {
 
 	static protected Logger logger = Logger.getLogger(TestUtils.class);
-
+	static private String user = System.getProperty("user.name");
+	
 	static public void logTestTitle(String title){
 		logTestTitle(title,80,'#');
 	}
@@ -59,4 +60,8 @@ public class TestUtils {
         out.close();
         fileSystem.close();
     }
+	
+	static public String getPath(int id) {
+		return "/user/" + user + "/tmp/test_idm_" + id;
+	}
 }

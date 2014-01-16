@@ -174,8 +174,6 @@ public class Source extends DataflowAction {
 				String error = null;
 				DFEOutput out = null;
 				
-				boolean setHeader = true;
-				
 				try{
 					out = output.get(out_name);
 				}catch(Exception e){
@@ -215,8 +213,51 @@ public class Source extends DataflowAction {
 							logger.debug("No properties");
 						}
 					}
+					
+					
+					//Set features
+					if(error == null){
+						try{
+							List<Tree<String>> features =  getInteraction(key_dataset)
+									.getTree().getFirstChild("browse").getFirstChild("output")
+									.getChildren("feature");
+							if(features == null || features.isEmpty()){
+								logger.warn("The list of features cannot be null or empty, could be calculated automatically from the path");
+							}else{
+								FeatureList outF = new OrderedFeatureList();
 
-					//Check path
+								for (Iterator<Tree<String>> iterator =features.iterator(); iterator.hasNext();) {
+									Tree<String> cur = iterator.next();
+
+									String name = cur.getFirstChild("name").getFirstChild()
+											.getHead();
+									String type = cur.getFirstChild("type").getFirstChild()
+											.getHead();
+
+									logger.info("updateOut name " + name);
+									logger.info("updateOut type " + type);
+
+									try {
+										outF.addFeature(name, FeatureType.valueOf(type));
+									} catch (Exception e) {
+										error = "The type " + type + " does not exist";
+									}
+
+								}
+								//Update the feature list only if it looks good
+								String warn = out.checkFeatures(outF); 
+								if(warn == null){
+									out.setFeatures(outF);
+								}else{
+									logger.info(warn);
+								}
+							}
+						}catch(Exception e){
+							error = "Error in the tree";
+						}
+					}
+
+					//Set path
 					if(error == null){
 						try{
 							logger.info("tree is : "+((TreeNonUnique<String>)getInteraction(key_dataset).getTree()).toString());
@@ -235,8 +276,7 @@ public class Source extends DataflowAction {
 						}
 					}
 
-					logger.info("setHeader : " + setHeader);
-
+					//Check path
 					if(error == null){
 						try{
 							if(!out.isPathExists()){

@@ -25,7 +25,8 @@ public enum DisplayType {
 	//Table
 	//Format in: table>[columns>column>[title>value]/
 	//                                 [constraint>[count>i(optional)]/
-	//                                             [values>[value>choice(optional)]]]/
+	//                                             [values>[value>choice(optional)]]/
+	//											   [regex>reg(optional)]]/
 	//                                 [editor (see helpTextEditor)]/
 	//                 [row>[col_title>value]]
 	//                 [generator>operation>[title>value]/
