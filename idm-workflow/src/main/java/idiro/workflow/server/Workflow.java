@@ -273,7 +273,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 
 
 	public String run(List<String> dataFlowElement) throws RemoteException{
+		
 		String error = check();
+		logger.info("run check: " + error);
 
 		LinkedList<DataFlowElement> elsIn = new LinkedList<DataFlowElement>();
 		if(dataFlowElement.size() < element.size()){
@@ -357,8 +359,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 						errorToSend = outC.isPathExists();
 					}
 					if(errorToSend){
-						error = cur.getComponentId()
-								+": Element have to be run but one or several elements are recorded";
+						error = cur.getComponentId() +": Element have to be run but one or several elements are recorded";
+						logger.info("run errorToSend: " + error);
 					}else{
 						toRun.add(cur);
 					}
@@ -369,6 +371,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 
 		if(error == null && toRun.isEmpty()){
 			error = "Everything is up to date.";
+			logger.info("run toRun: " + error);
 		}
 
 		if(error == null){
@@ -381,7 +384,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 		}
 
 		if(error != null){
-			logger.error(error);
+			logger.info(error);
 		}
 
 		return error;

@@ -164,6 +164,9 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 	}
 
 	public String run(DataFlow df, List<DataFlowElement> list) throws Exception{
+		
+		logger.info("run");
+		
 		String jobId = null;
 		String error = null;
 		File parentDir = new File(WorkflowPrefManager.pathOozieJob.get()+"/"+df.getName());
@@ -185,6 +188,11 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 
 			OozieXmlCreator xmlCreator = null;
 			xmlCreator = new OozieXmlForkJoinPaired();
+			
+			logger.info("run df " + df);
+			logger.info("run list " + list);
+			logger.info("run parentDir " + parentDir);
+			
 			error = xmlCreator.createXml(df, list, parentDir);
 
 			if(error == null){

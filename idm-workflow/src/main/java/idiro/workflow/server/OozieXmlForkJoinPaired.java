@@ -61,8 +61,10 @@ extends OozieXmlCreatorAbs{
 
 
 	@Override
-	public String createXml(DataFlow df, List<DataFlowElement> list,
-			File directory) throws RemoteException {
+	public String createXml(DataFlow df, List<DataFlowElement> list, File directory) throws RemoteException {
+		
+		logger.info("createXml");
+		
 		String error = null;
 
 		File scripts = new File(directory, "scripts");
@@ -90,25 +92,38 @@ extends OozieXmlCreatorAbs{
 			String errorNodeName = "error";
 			String okEndNodeName = "end";
 
+			logger.info("createXml 1");
+			
 			if(error == null){
 
 				elements.clear();
 				outEdges.clear();
+				
+				logger.info("createXml 2");
+				
 				createOozieJob(doc,
 						errorNodeName, 
 						 okEndNodeName, 
 						scripts, 
 						list);
 				
+				logger.info("createXml 3");
+				
+				
 				Iterator<String> keys = outEdges.keySet().iterator();
 				Set<String> outNodes = new LinkedHashSet<String>();
 				while(keys.hasNext()){
 					outNodes.addAll(outEdges.get(keys.next()));
 				}
+				
+				logger.info("createXml 4");
+				
 				Set<String> firstElements = new LinkedHashSet<String>();
 				firstElements.addAll(outEdges.keySet());
 				firstElements.removeAll(outNodes);
 				outEdges.put(startNode, firstElements);
+				
+				logger.info("createXml 5");
 				
 				OozieDag od = new OozieDag();
 				od.initWithOutGraph(outEdges);
@@ -122,6 +137,7 @@ extends OozieXmlCreatorAbs{
 				firstElements = outEdges.get(startNode);
 				if(firstElements.size() != 1){
 					error = LanguageManager.getText("ooziexmlforkjoinpaired.createxml.firstelnotone");
+					logger.info("createXml firstElements " + error);
 				}else{
 					Element start = doc.createElement("start");
 					Attr attrStartTo = doc.createAttribute("to");
@@ -130,6 +146,7 @@ extends OozieXmlCreatorAbs{
 					rootElement.appendChild(start);
 				}
 				
+				logger.info("createXml 6");
 				
 				while(it.hasNext() && error == null){
 					String cur = it.next();
@@ -140,6 +157,7 @@ extends OozieXmlCreatorAbs{
 					}else if(cur.startsWith("join")){
 						if(out.size() != 1){
 							error = LanguageManager.getText("ooziexmlforkjoinpaired.createxml.outsizenotone");
+							logger.info("createXml join " + error);
 						}else{
 							createJoinNode(doc, rootElement, cur, out.iterator().next());
 						}
@@ -148,6 +166,7 @@ extends OozieXmlCreatorAbs{
 					}else{
 						if(out.size() != 1){
 							error = LanguageManager.getText("ooziexmlforkjoinpaired.createxml.outsizenotone");
+							logger.info("createXml else fork " + error);
 						}else{
 							Element element = elements.get(cur);
 							createOKNode(doc, element, out.iterator().next());
@@ -158,6 +177,8 @@ extends OozieXmlCreatorAbs{
 				}
 			}
 
+			logger.info("createXml 7");
+			
 			if(error == null){
 				logger.debug("Finish up the xml generation...");
 				//Node kill
@@ -192,6 +213,7 @@ extends OozieXmlCreatorAbs{
 		}catch(Exception e){
 			error = LanguageManager.getText("ooziexmlforkjoinpaired.createxml.fail",new Object[]{e.getMessage()});
 			logger.error(error);
+			logger.error(e);
 		}
 
 		return error;
@@ -204,6 +226,8 @@ extends OozieXmlCreatorAbs{
 			File directoryToWrite,
 			List<DataFlowElement> list) throws RemoteException{
 
+		logger.info("createDelete");
+		
 		List<String> deleteList = new ArrayList<String>(list.size());
 		//Do action
 		Iterator<DataFlowElement> it = list.iterator();
@@ -262,6 +286,8 @@ extends OozieXmlCreatorAbs{
 			File directoryToWrite,
 			List<DataFlowElement> list) throws RemoteException{
 
+		logger.info("createOozieJob");
+		
 		//Get delete list
 		List<String> deleteList = createDelete(doc, 
 				error, 

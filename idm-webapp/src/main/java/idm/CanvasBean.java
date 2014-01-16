@@ -566,7 +566,6 @@ public class CanvasBean extends BaseBean implements Serializable{
 	public void runWorkflow() throws Exception{
 		logger.info("runWorkflow");
 
-
 		getDf().setName(getNameWorkflow());
 
 		//Back up the project
@@ -585,6 +584,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 		if(select == null || select.isEmpty()){
 			logger.info("Run a complete workflow");
 			error = getDf().run();
+			logger.info("Run error:" + error);
 		}else{
 			List<String> elements = new LinkedList<String>();
 			String[] groupIds = select.split(",");
@@ -596,6 +596,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 				error = "Dev - Error front-end, list contains null values.";
 			}else{
 				error = getDf().run(elements);
+				logger.info("Run elements error:" + error);
 			}
 		}
 		if(error != null){
