@@ -76,15 +76,10 @@ public class PigFilterInteraction extends EditorInteraction {
 			tree.remove("editor");
 
 			Tree<String> base = null;
-			if (el.groupingInt != null) {
-				base = PigDictionary.generateEditor(PigDictionary.getInstance()
-						.createGroupSelectHelpMenu(), el.getInFeatures());
 
-			} else {
-
-				base = PigDictionary.generateEditor(PigDictionary.getInstance()
-						.createConditionHelpMenu(), el.getInFeatures());
-			}
+			base = PigDictionary.generateEditor(PigDictionary.getInstance()
+					.createConditionHelpMenu(), el.getInFeatures());
+			
 			logger.info("editor ok");
 			base.add("output").add(output);
 			tree.add(base);

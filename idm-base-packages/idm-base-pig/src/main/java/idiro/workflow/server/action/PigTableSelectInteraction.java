@@ -146,9 +146,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 		String alias = hs.getAlias();
 
 		// Generate Editor
-		Iterator<String> gbFeats = null;
-		gbFeats = hs.getInFeatures().getFeaturesNames().iterator();
-		if (gbFeats.hasNext()) {
+		if (hs.getGroupingInt() != null) {
 			ei.getTree().add(PigDictionary.generateEditor(PigDictionary.getInstance()
 					.createGroupSelectHelpMenu(), in));
 		} else {
@@ -250,6 +248,15 @@ public class PigTableSelectInteraction extends TableInteraction {
 				String cur = featIt.next();
 				Map<String,String> row = new LinkedHashMap<String,String>();
 
+				if(operation.equalsIgnoreCase(gen_operation_sum)){
+					if(in.getFeatureType(cur) == FeatureType.STRING){
+						continue;
+					}
+				}else if(operation.equalsIgnoreCase(gen_operation_avg)){
+					if(in.getFeatureType(cur) == FeatureType.STRING){
+						continue;
+					}
+				}
 				String optitleRow = "";
 				String featname;
 				if (alias.isEmpty()) {
@@ -267,11 +274,13 @@ public class PigTableSelectInteraction extends TableInteraction {
 				}
 				row.put(table_feat_title,featname);
 				logger.info("trying to add type for " + cur);
-				if (!operation.equalsIgnoreCase(gen_operation_avg)) {
+				if (operation.equalsIgnoreCase(gen_operation_avg)) {
+					row.put(table_type_title,"DOUBLE");
+				} else if (operation.equalsIgnoreCase(gen_operation_count)) {
+					row.put(table_type_title,"INT");
+				}else{
 					row.put(table_type_title,
 							PigDictionary.getPigType(in.getFeatureType(cur)));
-				} else {
-					row.put(table_type_title,"DOUBLE");
 				}
 				rows.add(row);
 			}

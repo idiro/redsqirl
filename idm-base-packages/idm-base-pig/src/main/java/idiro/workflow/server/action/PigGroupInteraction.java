@@ -30,8 +30,6 @@ public class PigGroupInteraction extends AppendListInteraction{
 	public PigGroupInteraction(String name, String legend,
 			int column, int placeInColumn) throws RemoteException {
 		super(name, legend, column, placeInColumn);
-		setDisplayCheckBox(true);
-		
 	}
 	
 	public void update(DFEOutput in) throws RemoteException{

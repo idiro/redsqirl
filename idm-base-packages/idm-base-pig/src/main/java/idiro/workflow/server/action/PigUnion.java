@@ -72,8 +72,6 @@ public class PigUnion extends PigElement {
 	public void update(DFEInteraction interaction) throws RemoteException {
 		List<DFEOutput> in = getDFEInput().get(key_input);
 		logger.info("interaction to update : " + interaction.getName());
-		logger.info("delimiter interaction : " + delimiterOutputInt.getName());
-		logger.info(interaction.getName() + " " + delimiterOutputInt.getName());
 		if (in.size() > 1) {
 			logger.debug("in size > 1");
 			if (interaction.getName().equals(tUnionSelInt.getName())) {
