@@ -2,7 +2,6 @@ package idiro.workflow.server.datatype;
 
 import idiro.hadoop.NameNodeVar;
 import idiro.hadoop.checker.HdfsFileChecker;
-import idiro.hadoop.pig.PigUtils;
 import idiro.utils.FeatureList;
 import idiro.utils.OrderedFeatureList;
 import idiro.utils.RandomString;
@@ -595,14 +594,16 @@ public class MapRedTextType extends DataOutput {
 	public String getPigDelimiter() {
 		String asciiCode = getProperty(key_delimiter);
 		Character c = null;
-		if (asciiCode != null && asciiCode.startsWith("#")
+		if(asciiCode == null){
+			c = '|';
+		}else if (asciiCode != null && asciiCode.startsWith("#")
 				&& asciiCode.length() > 1) {
 			int i = Integer.valueOf(asciiCode.substring(1));
 			c = new Character((char) i);
 		} else if (asciiCode.length() == 1) {
 			c = asciiCode.charAt(0);
 		}
-		return c != null ? PigUtils.getDelimiter(c) : asciiCode;
+		return new String()+c;
 	}
 
 	public String getDelimiterOrOctal() {
