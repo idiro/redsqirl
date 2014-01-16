@@ -11,6 +11,5 @@ public enum FeatureType {
 	LONG,
 	FLOAT,
 	DOUBLE,
-	STRING//,
-//	CHARARRAY
+	STRING
 }

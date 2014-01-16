@@ -158,17 +158,17 @@ public class PigDictionary extends AbstractDictionary {
 								new String[] {
 										"ROUND()",
 										"DOUBLE",
-										"BIGINT",
+										"INT",
 										"@function:ROUND()@short:Returns the value of an expression rounded to an integer@param:DOUBLE@description:Use the ROUND function to return the value of an expression rounded to an integer (if the result type is float) or rounded to a long (if the result type is double)@example:ROUND(4.6) returns 5@example:ROUND(2.3) returns 2" },
 								new String[] {
 										"FLOOR()",
 										"DOUBLE",
-										"BIGINT",
+										"INT",
 										"@function:FLOOR()@short:Returns the value of an expression rounded down to the nearest integer@param:DOUBLE@description:Use the FLOOR function to return the value of an expression rounded down to the nearest integer. This function never increases the result value@example:FLOOR(4.6) returns 4@example:FLOOR(2.3) returns 2" },
 								new String[] {
 										"CEIL()",
 										"DOUBLE",
-										"BIGINT",
+										"INT",
 										"@function:CEIL()@short:Returns the value of an expression rounded up to the nearest integer@param:DOUBLE@description:Use the CEIL function to return the value of an expression rounded up to the nearest integer. This function never decreases the result value@example:CEIL(4.6) returns 5@example:CEIL(2.3) returns 3" },
 								new String[] {
 										"ABS()",
@@ -314,7 +314,7 @@ public class PigDictionary extends AbstractDictionary {
 								new String[] {
 										"COUNT()",
 										"ANY",
-										"BIGINT",
+										"INT",
 										"@function:COUNT( ELEMENT )@short:Computes the number of elements in a bag@param:ELEMENT item to count@description:Use the COUNT function to compute the number of elements in a bag. COUNT requires a preceding GROUP ALL statement for global counts and a GROUP BY statement for group counts."
 												+ "The COUNT function follows syntax semantics and ignores nulls. What this means is that a tuple in the bag will not be counted if the FIRST FIELD in this tuple is NULL. If you want to include NULL values in the count computation, use COUNT_STAR."
 												+ "Note: You cannot use the tuple designator (*) with COUNT; that is, COUNT(*) will not work.@example: COUNT(A) returns the frequency of A" },
@@ -347,8 +347,8 @@ public class PigDictionary extends AbstractDictionary {
 	*/
 	public static FeatureType getType(String pigType) {
 		FeatureType ans = null;
-		if (pigType.equalsIgnoreCase("BIGINT")) {
-			ans = FeatureType.LONG;
+		if (pigType.equalsIgnoreCase("CHARARRAY")) {
+			ans = FeatureType.STRING;
 		} else {
 			ans = FeatureType.valueOf(pigType);
 		}
@@ -369,7 +369,6 @@ public class PigDictionary extends AbstractDictionary {
 		case FLOAT:
 			break;
 		case LONG:
-			featureType = "BIGINT";
 			break;
 		case DOUBLE:
 			break;
@@ -378,15 +377,6 @@ public class PigDictionary extends AbstractDictionary {
 		}
 		return featureType;
 	}
-
-	/*
-	 * public String returnFeature(String operationString) { String temp =
-	 * operationString; temp = removeBracketContent(temp); if
-	 * (temp.contains(".")) { String[] operationsplit = temp.split("\\.");
-	 * operationString = operationsplit[operationsplit.length - 1]; }
-	 * 
-	 * return operationString; }
-	 */
 	
 	/**
 	 * Get the return type of a pig based expression
@@ -605,35 +595,24 @@ public class PigDictionary extends AbstractDictionary {
 			ok = !typeGiven.equals("STRING") && !typeGiven.equals("BOOLEAN");
 		} else if (typeToBe.equalsIgnoreCase("DOUBLE")) {
 			ok = !typeGiven.equals("STRING") && !typeGiven.equals("BOOLEAN");
-		} else if (typeToBe.equalsIgnoreCase("BIGINT")) {
-			ok = typeGiven.equals("INT") || typeGiven.equals("TINYINT");
 		} else if (typeToBe.equalsIgnoreCase("INT")) {
-			if (typeGiven.equals("TINYINT")) {
-				ok = true;
-			} else if (typeGiven.equalsIgnoreCase("NUMBER")) {
-				ok = true;
-				typeToBe = typeGiven;
-			}
-		} else if (typeToBe.equalsIgnoreCase("TINYINT")) {
-			ok = false;
+			ok = typeGiven.equalsIgnoreCase("NUMBER");
 		} else if (typeToBe.equalsIgnoreCase("FLOAT")) {
-			ok = false;
-		} else if (typeToBe.equalsIgnoreCase("STRING")) {
-			ok = false;
-		} else if (typeToBe.equalsIgnoreCase("BOOLEAN")) {
-			ok = false;
+			ok = typeGiven.equalsIgnoreCase("NUMBER");
 		} else if (typeToBe.equalsIgnoreCase("TYPE")) {
 			ok = typeGiven.equalsIgnoreCase("BOOLEAN")
-					|| typeGiven.equalsIgnoreCase("TINYINT")
 					|| typeGiven.equalsIgnoreCase("INT")
-					|| typeGiven.equalsIgnoreCase("BIGINT")
+					|| typeGiven.equalsIgnoreCase("LONG")
 					|| typeGiven.equalsIgnoreCase("FLOAT")
 					|| typeGiven.equalsIgnoreCase("DOUBLE")
 					|| typeGiven.equalsIgnoreCase("STRING");
 
+		} else if (typeToBe.equalsIgnoreCase("STRING")) {
+			ok = false;
+		} else if (typeToBe.equalsIgnoreCase("BOOLEAN")) {
+			ok = false;
 		}
-		// logger.debug("checked type to be : " + typeToBe + " and type given "
-		// + typeGiven + " : " + ok);
+
 		if (!ok && typeToBe.equalsIgnoreCase(typeGiven)) {
 			ok = true;
 		}

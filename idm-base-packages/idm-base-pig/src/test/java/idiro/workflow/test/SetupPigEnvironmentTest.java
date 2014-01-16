@@ -3,6 +3,7 @@ package idiro.workflow.test;
 import idiro.Log;
 import idiro.ProjectID;
 import idiro.workflow.server.WorkflowPrefManager;
+import idiro.workflow.server.action.test.PigDictionaryTests;
 
 import java.io.File;
 import java.io.FileReader;
@@ -18,7 +19,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-	//PigDictionaryTests.class,
+	PigDictionaryTests.class,
 	//PigFilterInteractionTests.class,
 	//PigTableSelectInteractionTests.class,
 	//PigJoinRelationInteractionTests.class,
