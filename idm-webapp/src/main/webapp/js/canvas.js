@@ -1483,48 +1483,46 @@ function configureCircle(canvasName, circle1) {
 
 	canvasArray[canvasName].down = false;
 
-	circle1.on("click",
-			function(e) {
+	circle1.on("click",	function(e) {
 
-				var arrow = canvasArray[canvasName].arrow;
+		var arrow = canvasArray[canvasName].arrow;
 
-				if (canvasArray[canvasName].down) {
-					canvasArray[canvasName].down = false;
-					
-					deleteArrowOutsideStandard(canvasName);
-					
-					var output = arrow.output.getChildren()[4].getText();
-					var input = this.getParent().getChildren()[4].getText();
-					var arrowClone = addLink(canvasName, output, input);
-					
-					addLinkModalBt(arrow.output.getId(), this.getParent().getId(), arrowClone.getName());
+		if (canvasArray[canvasName].down) {
+			canvasArray[canvasName].down = false;
+			
+			deleteArrowOutsideStandard(canvasName);
+			
+			var output = arrow.output.getChildren()[4].getText();
+			var input = this.getParent().getChildren()[4].getText();
+			var arrowClone = addLink(canvasName, output, input);
+			
+			addLinkModalBt(arrow.output.getId(), this.getParent().getId(), arrowClone.getName());
 
-				} else {
-					var polygonLayer = canvasArray[canvasName].polygonLayer;
-					var layer = canvasArray[canvasName].layer;
-					
-					canvasArray[canvasName].down = true;
+		} else {
+			var polygonLayer = canvasArray[canvasName].polygonLayer;
+			var layer = canvasArray[canvasName].layer;
+			
+			canvasArray[canvasName].down = true;
 
-//					var polygonGroup = polygonLayer.get('#'	+ this.getParent().getId());
-					var polygonGroup = getElement(polygonLayer, this.getParent().getId());
-					arrow.setPoints([ polygonGroup.getX() + 40,
-							polygonGroup.getY() + 50,
-							polygonGroup.getX() + 40 + 1,
-							polygonGroup.getY() + 50 + 1 ]);
+			var polygonGroup = getElement(polygonLayer, this.getParent().getId());
+			arrow.setPoints([ polygonGroup.getX() + 40,
+					polygonGroup.getY() + 50,
+					polygonGroup.getX() + 40 + 1,
+					polygonGroup.getY() + 50 + 1 ]);
 
-					var idOutput = this.getName();
-					arrow.setName("arrow" + idOutput);
+			var idOutput = this.getName();
+			arrow.setName("arrow" + idOutput);
 
-					arrow.output = this.getParent();
+			arrow.output = this.getParent();
 
-					var cloneArrow = arrow.clone();
-					cloneArrow.isArrow = true;
-					layer.add(cloneArrow);
+			var cloneArrow = arrow.clone();
+			cloneArrow.isArrow = true;
+			layer.add(cloneArrow);
 
-					layer.draw();
-				}
+			layer.draw();
+		}
 
-			});
+	});
 
 	return circle1;
 }

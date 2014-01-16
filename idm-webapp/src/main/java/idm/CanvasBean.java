@@ -566,7 +566,6 @@ public class CanvasBean extends BaseBean implements Serializable{
 	public void runWorkflow() throws Exception{
 		logger.info("runWorkflow");
 
-
 		getDf().setName(getNameWorkflow());
 
 		//Back up the project
