@@ -131,12 +131,12 @@ public class MapRedTextType extends DataOutput {
 						+ outputName + "_");
 	}
 
-	@Override
-	public boolean isPathExists() throws RemoteException {
+	
+	public boolean isPathExists2() throws RemoteException {
 		boolean ok = false;
 		if (getPath() != null) {
 			logger.info("checking if path exitst :" + getPath().toString());
-			HdfsFileChecker hCh = new HdfsFileChecker(getPath());
+			HdfsFileChecker hCh = new HdfsFileChecker(new Path(getPath()));
 			if (hCh.exists()) {
 				ok = true;
 			}
@@ -144,6 +144,26 @@ public class MapRedTextType extends DataOutput {
 		}
 		return ok;
 	}
+	
+	@Override
+	public boolean isPathExists() throws RemoteException {
+		boolean ok = false;
+		if (getPath() != null) {
+			logger.info("checking if path exists :" + getPath().toString());
+			try{
+				FileSystem fs = NameNodeVar.getFS();
+				if (fs.exists(new Path(getPath()))) {
+					ok = true;
+				}
+				//fs.close();
+			}catch(Exception e){
+				logger.error(e);
+				isPathExists2();
+			}
+		}
+		return ok;
+	}
+	
 
 	@Override
 	public String remove() throws RemoteException {

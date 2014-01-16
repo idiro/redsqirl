@@ -810,9 +810,14 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	public void writeProcess(Document oozieXmlDoc, Element action,
 			File localDirectoryToWrite, String pathFromOozieDir,
 			String fileNameWithoutExtension) throws RemoteException {
+		
+		logger.info("writeProcess");
 
 		String[] extensions = oozieAction.getFileExtensions();
 		String[] fileNames = new String[extensions.length];
+		
+		logger.info("writeProcess extensionslength " + extensions.length);
+		
 		File[] files = new File[extensions.length];
 		for (int i = 0; i < extensions.length; ++i) {
 			fileNames[i] = pathFromOozieDir + "/" + fileNameWithoutExtension
@@ -820,8 +825,16 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			files[i] = new File(localDirectoryToWrite, fileNameWithoutExtension
 					+ extensions[i]);
 		}
+		
+		logger.info("writeProcess 1");
+		
 		oozieAction.createOozieElement(oozieXmlDoc, action, fileNames);
+		
+		logger.info("writeProcess 2");
+		
 		writeOozieActionFiles(files);
+		
+		logger.info("writeProcess 3");
 	}
 
 	@Override
