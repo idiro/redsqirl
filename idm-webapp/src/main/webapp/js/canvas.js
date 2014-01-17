@@ -30,6 +30,7 @@ function Canvas(name){
 	this.stage = null;
 	this.layer = null;
 	this.polygonLayer = null;
+	this.legendLayer = null;
 	
 	this.running = false;
 	this.isSaved = false;
@@ -79,6 +80,10 @@ function configureCanvas(canvasName){
 	// layer to polygons
 	var polygonLayer = new Kinetic.Layer();
 	canvasArray[canvasName].polygonLayer = polygonLayer;
+	
+	// layer to legend
+	var legendLayer = new Kinetic.Layer();
+	canvasArray[canvasName].legendLayer = legendLayer;
 
 	// set width of the canvas
 	jQuery("#"+canvasContainer).css("width", jQuery(canvasName).width() + 'px');
@@ -194,12 +199,13 @@ function configureCanvas(canvasName){
 	
 	stage.add(layer);
 	stage.add(polygonLayer);
+	stage.add(legendLayer);
 
 }
 
 function createLegend(canvasName) {
 
-	var polygonLayer = canvasArray[canvasName].polygonLayer;
+	var legendLayer = canvasArray[canvasName].legendLayer;
 
 	var linkTypeColours = canvasArray[canvasName].outputTypeColours;
 
@@ -229,7 +235,7 @@ function createLegend(canvasName) {
 	var rectangleTitle = new Kinetic.Rect({
         x : 0,
         y : 0,
-        width : 150,
+        width : 170,
         height : 20,
         stroke : 'black',
         strokeWidth : 1,
@@ -249,7 +255,7 @@ function createLegend(canvasName) {
         text : '-',
         fontSize : 18,
         fill : 'black',
-        x : 140,
+        x : 160,
         y : 0
     });
 	
@@ -264,19 +270,19 @@ function createLegend(canvasName) {
 	        labelTitle.setText('-');
 	       
 	    }
-	    polygonLayer.draw();
+	    legendLayer.draw();
 	   
 	});
 	
 	labelButton.on('mouseover', function(){
 	    labelTitle.setFill('green');
-	    polygonLayer.draw();
+	    legendLayer.draw();
 	});
 
 
 	labelButton.on('mouseout', function(){
 	    labelTitle.setFill('black');
-	    polygonLayer.draw();
+	    legendLayer.draw();
 	});
 
 
@@ -300,7 +306,7 @@ function createLegend(canvasName) {
 	var rectangle = new Kinetic.Rect({
 		x : 0,
 		y : 20,
-		width : 150,
+		width : 170,
 		height : 10 + coloursArrayLength * 20,
 		stroke : 'black',
 		strokeWidth : 1,
@@ -323,19 +329,19 @@ function createLegend(canvasName) {
 		
 	var contPosition = 0;
 	for (var v in coloursArray){
-	    
-	    var labelTitle = new Kinetic.Text({
-			text : v,
-			fontSize : 10,
-			fill : 'black',
-	        fontStyle : 'bold',
-	        x : 25,
-			y : 30 + 20*contPosition
-		});
 			
 	    var array = coloursArray[v];
 	    
 	    if (array.length > 0){
+	    	var labelTitle = new Kinetic.Text({
+				text : v,
+				fontSize : 10,
+				fill : 'black',
+		        fontStyle : 'bold',
+		        x : 25,
+				y : 30 + 20*contPosition
+			});
+	    	
 			groupLegend.add(labelTitle);
 			++contPosition;
 	    
@@ -369,7 +375,8 @@ function createLegend(canvasName) {
 	groupTitle.add(groupLegend);
 	
 	canvasArray[canvasName].legend = groupTitle;
-	polygonLayer.add(groupTitle);
+	legendLayer.add(groupTitle);
+	legendLayer.draw();
 }
 
 // a = retangle, b = object, bx = object.getX() and by = object.getY()
