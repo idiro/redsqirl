@@ -180,18 +180,9 @@ public class Source extends DataflowAction {
 					error = LanguageManager.getText("source.outputchecknull");
 				}
 				try {
-					//Set path to null to avoid unnecessary check
-					if(error == null){
-						try{
-							out.setPath(null);
-							out.setFeatures(null);
-							out.removeAllProperties();
-						}catch(Exception e){
-							error = LanguageManager.getText("source.outputreset");
-						}
-					}
 
-					//Add properties
+					//Properties
+					Map<String,String> props = new LinkedHashMap<String,String>();
 					if (error == null) {
 						try{
 							Iterator<Tree<String>> itProp = getInteraction(key_dataset).getTree()
@@ -206,8 +197,7 @@ public class Source extends DataflowAction {
 								
 								logger.info("out addProperty " + name + " " + value);
 								
-								out.addProperty(name, value);
-								
+								props.put(name, value);
 							}
 						}catch(Exception e){
 							logger.debug("No properties");
@@ -215,7 +205,8 @@ public class Source extends DataflowAction {
 					}
 					
 					
-					//Set features
+					//Features
+					FeatureList outF = new OrderedFeatureList();
 					if(error == null){
 						try{
 							List<Tree<String>> features =  getInteraction(key_dataset)
@@ -224,7 +215,6 @@ public class Source extends DataflowAction {
 							if(features == null || features.isEmpty()){
 								logger.warn("The list of features cannot be null or empty, could be calculated automatically from the path");
 							}else{
-								FeatureList outF = new OrderedFeatureList();
 
 								for (Iterator<Tree<String>> iterator =features.iterator(); iterator.hasNext();) {
 									Tree<String> cur = iterator.next();
@@ -243,36 +233,55 @@ public class Source extends DataflowAction {
 										error = "The type " + type + " does not exist";
 									}
 
-								}
-								//Update the feature list only if it looks good
-								String warn = out.checkFeatures(outF); 
-								if(warn == null){
-									out.setFeatures(outF);
-								}else{
-									logger.info(warn);
-								}
+								} 
 							}
 						}catch(Exception e){
-							error = "Error in the tree";
+							error = LanguageManager.getText("source.treeerror");
 						}
 					}
 
 					//Set path
+					String path = null;
 					if(error == null){
 						try{
 							logger.info("tree is : "+((TreeNonUnique<String>)getInteraction(key_dataset).getTree()).toString());
-							String path = getInteraction(key_dataset).getTree()
+							path = getInteraction(key_dataset).getTree()
 									.getFirstChild("browse").getFirstChild("output")
 									.getFirstChild("path").getFirstChild().getHead();
 							
 							if (path.isEmpty()) {
 								error = LanguageManager.getText("source.pathempty");
-							}else{
-								logger.info("Checkpath : " + path + " for " +out.getPath());
-								out.setPath(path);
 							}
 						}catch(Exception e){
 							error = LanguageManager.getText("source.setpatherror",new Object[]{e.getMessage()});
+						}
+					}
+					
+					
+					
+					if(error == null){
+						if(!out.compare(path, outF, props)){
+							try{
+								out.setPath(null);
+								out.setFeatures(null);
+								out.removeAllProperties();
+							}catch(Exception e){
+								error = LanguageManager.getText("source.outputreset");
+							}
+							if(error == null){
+								Iterator<String> propsIt = props.keySet().iterator();
+								while(propsIt.hasNext()){
+									String cur = propsIt.next();
+									out.addProperty(cur, props.get(cur));
+								}
+								
+								//Update the feature list only if it looks good
+								out.setFeatures(outF);
+
+								logger.info("Setpath : " + path);
+								out.setPath(path);
+								
+							}
 						}
 					}
 

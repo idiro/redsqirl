@@ -220,6 +220,11 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 						true,
 						new Path(parentDir.getAbsolutePath()), 
 						wCur);
+				try{
+					fs.close();
+				}catch(Exception e){
+					logger.error("Fail to close HDFS: "+e);
+				}
 			}catch(Exception e){
 				error = LanguageManager.getText("ooziemanager.copydependencies",new Object[]{e.getMessage()});
 			}

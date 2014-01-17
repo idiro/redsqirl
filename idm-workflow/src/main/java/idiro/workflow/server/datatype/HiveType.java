@@ -180,7 +180,6 @@ public class HiveType extends DataOutput{
 		return "DodgerBlue";
 	}
 
-	@Override
 	public String checkFeatures(FeatureList fl) throws RemoteException {
 		String error = null;
 		if( isPathExists() && features != null){

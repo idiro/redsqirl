@@ -57,5 +57,16 @@ public class OrderedFeatureList extends UnicastRemoteObject implements FeatureLi
 		return positions.size();
 	}
 	
+	@Override
+	public boolean equals(Object o){
+		boolean ok = false;
+		if(o instanceof OrderedFeatureList){
+			OrderedFeatureList comp = (OrderedFeatureList) o;
+			ok = comp.positions.equals(this.positions) &&
+				 comp.features.equals(this.features);
+		}
+		return ok;
+	}
+	
 	
 }
