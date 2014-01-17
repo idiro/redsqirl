@@ -226,7 +226,7 @@ function createLegend(canvasName) {
 
 	var coloursArrayLength = outputTypeColours.length + outputExistenceColours.length + runningStatusColours.length + linkTypeColours.length + 4;
 	
-	var title = new Kinetic.Rect({
+	var rectangleTitle = new Kinetic.Rect({
         x : 0,
         y : 0,
         width : 150,
@@ -245,7 +245,7 @@ function createLegend(canvasName) {
         y : 5
     });
 	
-	var labelTitle = new Kinetic.Text({
+	var labelButton = new Kinetic.Text({
         text : '-',
         fontSize : 18,
         fill : 'black',
@@ -253,7 +253,7 @@ function createLegend(canvasName) {
         y : 0
     });
 	
-	labelTitle.on('mousedown', function(){
+	labelButton.on('mousedown', function(){
 	    if (groupLegend.isVisible()){
 	        groupLegend.hide();
 	        labelTitle.setText('+');
@@ -268,13 +268,13 @@ function createLegend(canvasName) {
 	   
 	});
 	
-	labelTitle.on('mouseover', function(){
+	labelButton.on('mouseover', function(){
 	    labelTitle.setFill('green');
 	    polygonLayer.draw();
 	});
 
 
-	labelTitle.on('mouseout', function(){
+	labelButton.on('mouseout', function(){
 	    labelTitle.setFill('black');
 	    polygonLayer.draw();
 	});
@@ -291,8 +291,8 @@ function createLegend(canvasName) {
 			canvasArray[canvasName].rectSelect.remove();
 	 });
 	 
-	 groupTitle.add(title);
-	 groupTitle.add(labelTitle);
+	 groupTitle.add(rectangleTitle);
+	 groupTitle.add(labelButton);
 	 groupTitle.add(labelTitleLegend);
 	
 	
@@ -304,7 +304,7 @@ function createLegend(canvasName) {
 		height : 10 + coloursArrayLength * 20,
 		stroke : 'black',
 		strokeWidth : 1,
-		dashArray : [ 33, 10 ],
+		//dashArray : [ 33, 10 ],
 		draggable : false
 	});
 		
@@ -333,35 +333,37 @@ function createLegend(canvasName) {
 			y : 30 + 20*contPosition
 		});
 			
-//		groupLegend.add(labelTitle);
-	    ++contPosition;
-	    
 	    var array = coloursArray[v];
 	    
-		for (var i = 0; i < array.length; i++) {
-			var rec = new Kinetic.Rect({
-				x : 10,
-				y : 30 + 20*contPosition,
-				width : 10,
-				height : 10,
-				stroke : array[i][1],
-				fill: array[i][1],
-				strokeWidth : 1,
-				draggable : false
-			});
-				
-			var labelRec = new Kinetic.Text({
-				text : array[i][0],
-				fontSize : 10,
-				fill : 'black',
-				x : 25,
-				y : 30 + 20*contPosition
-			});
-				
-			groupLegend.add(rec);
-			groupLegend.add(labelRec);
-	        ++contPosition;
-		}
+	    if (array.length > 0){
+			groupLegend.add(labelTitle);
+			++contPosition;
+	    
+			for (var i = 0; i < array.length; i++) {
+				var rec = new Kinetic.Rect({
+					x : 10,
+					y : 30 + 20*contPosition,
+					width : 10,
+					height : 10,
+					stroke : array[i][1],
+					fill: array[i][1],
+					strokeWidth : 1,
+					draggable : false
+				});
+					
+				var labelRec = new Kinetic.Text({
+					text : array[i][0],
+					fontSize : 10,
+					fill : 'black',
+					x : 25,
+					y : 30 + 20*contPosition
+				});
+					
+				groupLegend.add(rec);
+				groupLegend.add(labelRec);
+		        ++contPosition;
+			}
+	    }
 	}
 	
 	groupTitle.add(groupLegend);
