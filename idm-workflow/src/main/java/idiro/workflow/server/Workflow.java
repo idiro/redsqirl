@@ -274,6 +274,14 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 
 	public String run(List<String> dataFlowElement) throws RemoteException{
 		
+		//Close all file systems
+		try {
+			FileSystem.closeAll();
+		} catch (IOException e1) {
+			logger.error("Fail to close all filesystem: "+e1);
+		}
+		
+		
 		String error = check();
 		logger.info("run check: " + error);
 

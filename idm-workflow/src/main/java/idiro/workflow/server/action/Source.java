@@ -261,6 +261,7 @@ public class Source extends DataflowAction {
 					
 					if(error == null){
 						if(!out.compare(path, outF, props)){
+							logger.info("The output need to be changed in source "+componentId);
 							try{
 								out.setPath(null);
 								out.setFeatures(null);

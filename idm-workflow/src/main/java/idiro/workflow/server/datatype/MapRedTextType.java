@@ -18,6 +18,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.hadoop.fs.FileStatus;
@@ -86,7 +87,7 @@ public class MapRedTextType extends DataOutput {
 		if (!hCh.isInitialized() || hCh.isFile()) {
 			error = LanguageManager.getText("mapredtexttype.dirisfile");
 		} else {
-			final FileSystem fs;
+			FileSystem fs;
 			try {
 				fs = NameNodeVar.getFS();
 				hCh.setPath(new Path(getPath()).getParent());
@@ -108,7 +109,11 @@ public class MapRedTextType extends DataOutput {
 								new Object[] { getPath() });
 					}
 				}
-				fs.close();
+				try{
+					fs.close();
+				}catch(Exception e){
+					logger.error("Fail to close FileSystem: "+e);
+				}
 			} catch (IOException e) {
 
 				error = LanguageManager.getText("unexpectedexception",
@@ -206,7 +211,11 @@ public class MapRedTextType extends DataOutput {
 							getChar(getProperty(key_delimiter)),
 							(maxToRead / stat.length) + 1));
 				}
-				fs.close();
+				try{
+					fs.close();
+				}catch(Exception e){
+					logger.error("Fail to close FileSystem: "+e);
+				}
 			} catch (IOException e) {
 				String error = "Unexpected error: " + e.getMessage();
 				logger.error(error);
@@ -552,6 +561,25 @@ public class MapRedTextType extends DataOutput {
 		logger.info("checkFeatures-error " + error);
 
 		return error;
+	}
+	
+	@Override
+	public boolean compare(String path, FeatureList fl, Map<String,String> props){
+		logger.debug("Comparaison MapRed:");
+		logger.debug(this.getPath()+" "+path);
+		try {
+			logger.debug(features.getFeaturesNames()+" "+fl.getFeaturesNames());
+		} catch (RemoteException e) {}
+		logger.debug(dataProperty+" "+props);
+		
+		String delimProp = props.get(key_delimiter);
+		if (delimProp != null && delimProp.length() == 1) {
+			delimProp = "#" + String.valueOf((int) delimProp.charAt(0));
+		}
+		return this.getPath().equals(path) && 
+				features.equals(fl) && 
+				dataProperty.get(key_header).equals(props.get(key_header)) &&
+				dataProperty.get(key_delimiter).equals(delimProp);
 	}
 
 	private String generateColumnName(int columnIndex) {
