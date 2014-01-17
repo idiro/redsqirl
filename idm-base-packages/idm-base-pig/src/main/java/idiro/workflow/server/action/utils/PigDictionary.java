@@ -4,6 +4,7 @@ import idiro.utils.FeatureList;
 import idiro.utils.OrderedFeatureList;
 import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
+import idiro.workflow.server.EditorInteraction;
 import idiro.workflow.server.action.AbstractDictionary;
 import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.interfaces.DFEOutput;
@@ -347,9 +348,12 @@ public class PigDictionary extends AbstractDictionary {
 	*/
 	public static FeatureType getType(String pigType) {
 		FeatureType ans = null;
+		logger.debug("Type of: "+pigType);
 		if (pigType.equalsIgnoreCase("CHARARRAY")) {
 			ans = FeatureType.STRING;
-		} else {
+		} else if (pigType.equalsIgnoreCase("NUMBER")) {
+			ans = FeatureType.DOUBLE;
+		} else{
 			ans = FeatureType.valueOf(pigType);
 		}
 		return ans;
@@ -619,14 +623,14 @@ public class PigDictionary extends AbstractDictionary {
 		return ok;
 	}
 
-	public static Tree<String> generateEditor(Tree<String> help, DFEOutput in)
+	public static EditorInteraction generateEditor(Tree<String> help, DFEOutput in)
 			throws RemoteException {
 		List<DFEOutput> lOut = new LinkedList<DFEOutput>();
 		lOut.add(in);
 		return generateEditor(help, lOut);
 	}
 
-	public static Tree<String> generateEditor(Tree<String> help,
+	public static EditorInteraction generateEditor(Tree<String> help,
 			List<DFEOutput> in) throws RemoteException {
 		logger.debug("generate Editor...");
 		Tree<String> editor = new TreeNonUnique<String>("editor");
@@ -653,11 +657,15 @@ public class PigDictionary extends AbstractDictionary {
 			}
 		}
 		editor.add(help);
-
-		return editor;
+		editor.add("output");
+		
+		EditorInteraction ei = new EditorInteraction("auto-gen", "", 0,0);
+		ei.getTree().removeAllChildren();
+		ei.getTree().add(editor);
+		return ei;
 	}
 
-	public static Tree<String> generateEditor(Tree<String> help,
+	public static EditorInteraction generateEditor(Tree<String> help,
 			FeatureList inFeat) throws RemoteException {
 		logger.debug("generate Editor...");
 		Tree<String> editor = new TreeNonUnique<String>("editor");
@@ -672,8 +680,11 @@ public class PigDictionary extends AbstractDictionary {
 			keywords.add(word);
 		}
 		editor.add(help);
-
-		return editor;
+		editor.add("output");
+		EditorInteraction ei = new EditorInteraction("auto-gen", "", 0,0);
+		ei.getTree().removeAllChildren();
+		ei.getTree().add(editor);
+		return ei;
 	}
 
 	public Tree<String> createConditionHelpMenu() throws RemoteException {

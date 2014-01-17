@@ -43,7 +43,7 @@ public class PigSelect extends PigElement {
 
 		page1.addInteraction(tSelInt);
 
-		page2 = addPage("Select", "Select Conditions", 1);
+		page2 = addPage("Select", "Select Configuration", 1);
 
 		filterInt = new PigFilterInteraction(0, 0, this);
 

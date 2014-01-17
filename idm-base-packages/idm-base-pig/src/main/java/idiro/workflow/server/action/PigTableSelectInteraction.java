@@ -4,7 +4,6 @@ import idiro.utils.FeatureList;
 import idiro.utils.OrderedFeatureList;
 import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
-import idiro.workflow.server.EditorInteraction;
 import idiro.workflow.server.TableInteraction;
 import idiro.workflow.server.action.utils.PigDictionary;
 import idiro.workflow.server.enumeration.FeatureType;
@@ -19,6 +18,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Interaction for selecting columns of the output. The output table has three
@@ -61,7 +61,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 		if(msg == null){
 			List<Map<String,String>> lRow = getValues();
 
-			
+
 			if(lRow == null || lRow.isEmpty()){
 				msg = "A relation is composed of at least 1 column";
 			}else{
@@ -137,24 +137,17 @@ public class PigTableSelectInteraction extends TableInteraction {
 	}
 
 	public void update(DFEOutput in) throws RemoteException {
-
-
-		EditorInteraction ei = new EditorInteraction(
-				"editor_table_select", "", 0,0);
-		ei.getTree().remove("editor");
 		// get Alias
 		String alias = hs.getAlias();
 
 		// Generate Editor
 		if (hs.getGroupingInt() != null) {
-			ei.getTree().add(PigDictionary.generateEditor(PigDictionary.getInstance()
+			updateEditor(table_op_title, PigDictionary.generateEditor(PigDictionary.getInstance()
 					.createGroupSelectHelpMenu(), in));
 		} else {
-			ei.getTree().add(PigDictionary.generateEditor(PigDictionary.getInstance()
+			updateEditor(table_op_title, PigDictionary.generateEditor(PigDictionary.getInstance()
 					.createDefaultSelectHelpMenu(), in));
 		}
-
-		updateEditor(table_op_title, ei);
 
 
 		// Set the Generator
@@ -248,15 +241,16 @@ public class PigTableSelectInteraction extends TableInteraction {
 				String cur = featIt.next();
 				Map<String,String> row = new LinkedHashMap<String,String>();
 
-				if(operation.equalsIgnoreCase(gen_operation_sum)){
-					if(in.getFeatureType(cur) == FeatureType.STRING){
-						continue;
-					}
-				}else if(operation.equalsIgnoreCase(gen_operation_avg)){
-					if(in.getFeatureType(cur) == FeatureType.STRING){
+				if(in.getFeatureType(cur) == FeatureType.STRING){
+					if(operation.equalsIgnoreCase(gen_operation_sum)||
+							operation.equalsIgnoreCase(gen_operation_avg)||
+							operation.equalsIgnoreCase(gen_operation_min)||
+							operation.equalsIgnoreCase(gen_operation_max)
+							){
 						continue;
 					}
 				}
+
 				String optitleRow = "";
 				String featname;
 				if (alias.isEmpty()) {
@@ -339,45 +333,49 @@ public class PigTableSelectInteraction extends TableInteraction {
 			throws RemoteException {
 		logger.debug("select...");
 		String select = "";
-		Iterator<Tree<String>> selIt = getTree().getFirstChild("table")
-				.getChildren("row").iterator();
-		List<String> grList = null;
-		// logger.debug("table select tree : "
-		// + ((TreeNonUnique<String>) tree).toString());
-		if (hs.getGroupingInt() != null) {
-			logger.info("getting grouped items");
-			grList = getGroupByList();
-		}
-		if (grList == null) {
-			logger.info("getting input items");
-			grList = hs.getDFEInput().get(PigElement.key_input)
-					.get(hs.getDFEInput().get(PigElement.key_input).size() - 1)
-					.getFeatures().getFeaturesNames();
-		}
-		if (selIt.hasNext()) {
-			Tree<String> cur = selIt.next();
-			String featName = cur.getFirstChild(table_feat_title)
-					.getFirstChild().getHead();
-			String opTitle = cur.getFirstChild(table_op_title).getFirstChild()
-					.getHead();
-			select = "FOREACH " + tableName + " GENERATE "
-					+ getOpTitle(grList, opTitle) + " AS " + featName;
-		}
-		while (selIt.hasNext()) {
-			Tree<String> cur = selIt.next();
-			String featName = cur.getFirstChild(table_feat_title)
-					.getFirstChild().getHead();
-			String opTitle = cur.getFirstChild(table_op_title).getFirstChild()
-					.getHead();
+		Iterator<Map<String,String>> selIt = getValues().iterator();
 
-			select += ",\n       " + getOpTitle(grList, opTitle) + " AS "
+		if (selIt.hasNext()) {
+			Map<String,String> cur = selIt.next();
+			String featName = cur.get(table_feat_title);
+			String opTitle = cur.get(table_op_title);
+			select = "FOREACH " + tableName + " GENERATE "
+					+ opTitle + " AS " + featName;
+		}
+
+		while (selIt.hasNext()) {
+			Map<String,String> cur = selIt.next();
+			String featName = cur.get(table_feat_title);
+			String opTitle = cur.get(table_op_title);
+
+			select += ",\n       " + opTitle + " AS "
 					+ featName;
 		}
+
 		logger.debug("select looks like : " + select);
+
+		if (hs.getGroupingInt() != null) {
+			List<String> grList = hs.getGroupingInt().getValues();
+			if(grList.size() > 1){
+				Iterator<String> grListIt = grList.iterator();
+				while(grListIt.hasNext()){
+					String cur = grListIt.next();
+					select = select.replaceAll(Pattern.quote(hs.getAlias()+"."+cur), "group."+cur);
+				}
+			}else if( grList.size() == 1){
+				Iterator<String> grListIt = grList.iterator();
+				while(grListIt.hasNext()){
+					String cur = grListIt.next();
+					select = select.replaceAll(Pattern.quote(hs.getAlias()+"."+cur), "group");
+				}
+			}
+		}
+
 
 		return select;
 	}
 
+	/*
 	public String getQueryPieceGroup(DFEOutput out, String tableName,
 			String aggregate) throws RemoteException {
 		logger.debug("select...");
@@ -432,16 +430,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 		}
 
 		return select;
-	}
-
-	private String getOpTitle(List<String> grList, String opTitle) {
-		if (!grList.isEmpty()) {
-			// opTitle = loader + "." + opTitle;
-		}
-
-		logger.debug("optitle : " + opTitle);
-		return opTitle;
-	}
+	}*/
 
 	public boolean isInMethod(String operation) {
 		boolean inmethod = false;

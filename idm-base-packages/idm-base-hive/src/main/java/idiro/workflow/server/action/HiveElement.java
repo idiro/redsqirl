@@ -5,12 +5,10 @@ import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.DataProperty;
 import idiro.workflow.server.DataflowAction;
-import idiro.workflow.server.Page;
 import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.datatype.HiveTypeWithWhere;
-import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
@@ -24,7 +22,6 @@ import java.rmi.RemoteException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -270,7 +267,6 @@ public abstract class HiveElement extends DataflowAction {
 
 	public UserInteraction getGroupingInt() {
 		if(groupingInt!=null){
-			
 			return groupingInt;
 		}else{
 			return null;

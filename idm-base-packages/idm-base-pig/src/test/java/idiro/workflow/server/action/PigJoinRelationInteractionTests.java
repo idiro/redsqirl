@@ -119,6 +119,8 @@ Logger logger = Logger.getLogger(getClass());
 			PigJoinRelationInteraction jri = hs.getJrInt();
 			hs.update(jri);
 			{
+				Tree<String> out = jri.getTree().getFirstChild("table");
+				out.remove("row");
 				error = jri.check();
 				assertTrue("Should at least have one entry",error != null);
 			}

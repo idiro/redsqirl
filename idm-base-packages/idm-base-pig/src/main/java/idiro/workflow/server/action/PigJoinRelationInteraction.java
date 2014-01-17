@@ -8,7 +8,9 @@ import idiro.workflow.server.action.utils.PigDictionary;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,6 +48,8 @@ public class PigJoinRelationInteraction extends TableInteraction {
 		if(msg != null){
 			return msg;
 		}
+		
+		
 		List<Map<String,String>> lRow = getValues();
 		Set<String> relations = hj.getAliases().keySet();
 		if( relations.size() != lRow.size()){
@@ -53,6 +57,7 @@ public class PigJoinRelationInteraction extends TableInteraction {
 		}else{
 			Set<String> featType = new LinkedHashSet<String>();
 			FeatureList inFeats = hj.getInFeatures();
+			logger.debug(inFeats.getFeaturesNames());
 			Iterator<Map<String,String>> rows = lRow.iterator();
 			int rowNb = 0;
 			while (rows.hasNext() && msg == null) {
@@ -99,52 +104,34 @@ public class PigJoinRelationInteraction extends TableInteraction {
 		Set<String> tablesIn = hj.getAliases().keySet();
 
 		// Remove constraint on first column
-		tree.getFirstChild("table").getFirstChild("columns")
-		.findFirstChild(table_relation_title).getParent()
-		.remove("constraint");
+		updateColumnConstraint(
+				table_relation_title, 
+				null, 
+				1, 
+				tablesIn);
+		
 
-		// Remove Editor of operation
-		tree.getFirstChild("table").remove("generator");
-		Tree<String> operation = tree.getFirstChild("table")
-				.getFirstChild("columns").findFirstChild(table_feat_title)
-				.getParent();
-		operation.remove("editor");
-
-
-		// Set the constraint on first column
-		Tree<String> table = tree.getFirstChild("table")
-				.getFirstChild("columns").findFirstChild(table_relation_title)
-				.getParent().getParent();
-
-		Tree<String> constraintTable = table.add("constraint");
-
-		constraintTable.add("count").add("1");
-
-		Tree<String> valsTable = constraintTable.add("values");
-
-		Iterator<String> itTable = tablesIn.iterator();
-		while (itTable.hasNext()) {
-			String tableName = itTable.next();
-			logger.info("adding "+tableName+"as a value");
-			valsTable.add("value").add(tableName);
-		}
-
-		// Generate Editor
-		Tree<String> featEdit = PigDictionary.generateEditor(PigDictionary
+		updateColumnConstraint(
+				table_feat_title, 
+				null, 
+				null,
+				null);
+		updateEditor(
+				table_feat_title,
+				PigDictionary.generateEditor(PigDictionary
 				.getInstance().createDefaultSelectHelpMenu(), hj
-				.getInFeatures());
-
-		logger.info(((TreeNonUnique<String>) featEdit).toString());
+				.getInFeatures()));
 		
-		// Set the Editor of operation
-		operation.getParent().getParent().add(featEdit);
-		logger.info("finished update for join relationship");
-		
-		if(tree.getFirstChild("table").getChildren("row").isEmpty()){
+		if(getValues().isEmpty()){
+			List<Map<String,String>> lrows = new LinkedList<Map<String,String>>();
 			Iterator<String> tableIn = tablesIn.iterator();
 			while (tableIn.hasNext()) {
-				tree.getFirstChild("table").add("row").add(table_relation_title).add(tableIn.next());
+				Map<String,String> curMap = new LinkedHashMap<String,String>();
+				curMap.put(table_relation_title,tableIn.next());
+				curMap.put(table_feat_title,"");
+				lrows.add(curMap);
 			}
+			setValues(lrows);
 		}
 	}
 

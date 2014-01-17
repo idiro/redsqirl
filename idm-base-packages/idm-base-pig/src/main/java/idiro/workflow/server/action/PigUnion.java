@@ -4,7 +4,6 @@ import idiro.utils.FeatureList;
 import idiro.utils.OrderedFeatureList;
 import idiro.workflow.server.DataProperty;
 import idiro.workflow.server.Page;
-import idiro.workflow.server.connect.HDFSInterface;
 import idiro.workflow.server.datatype.MapRedTextType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFELinkProperty;
@@ -84,7 +83,6 @@ public class PigUnion extends PigElement {
 
 	public String getQuery() throws RemoteException {
 
-		HDFSInterface hInt = new HDFSInterface();
 		String query = null;
 		if (getDFEInput() != null) {
 			// Output

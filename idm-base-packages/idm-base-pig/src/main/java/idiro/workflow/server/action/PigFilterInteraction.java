@@ -75,14 +75,11 @@ public class PigFilterInteraction extends EditorInteraction {
 			String output = getValue();
 			tree.remove("editor");
 
-			Tree<String> base = null;
-
-			base = PigDictionary.generateEditor(PigDictionary.getInstance()
-					.createConditionHelpMenu(), el.getInFeatures());
-			
-			logger.info("editor ok");
-			base.add("output").add(output);
-			tree.add(base);
+			Tree<String> base = PigDictionary.generateEditor(PigDictionary.getInstance()
+					.createConditionHelpMenu(), el.getInFeatures()).getTree();
+			//logger.debug(base);
+			tree.add(base.getFirstChild("editor"));
+			setValue(output);
 		} catch (Exception ec) {
 			logger.info("There was an error updating " + getName());
 		}
@@ -94,10 +91,10 @@ public class PigFilterInteraction extends EditorInteraction {
 		if (getTree().getFirstChild("editor").getFirstChild("output")
 				.getSubTreeList().size() > 0) {
 			where = getTree().getFirstChild("editor").getFirstChild("output")
-					.getFirstChild().getHead();
+					.getFirstChild().getHead().replaceAll("\\.", "::");
 		}
 
-		String whereIn = getInputWhere();
+		String whereIn = getInputWhere().replaceAll("\\.", "::");
 		if (!where.isEmpty()) {
 			if (!whereIn.isEmpty()) {
 				where = "(" + where + ") AND (" + whereIn + ")";

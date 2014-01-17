@@ -4,7 +4,6 @@ import idiro.utils.FeatureList;
 import idiro.utils.OrderedFeatureList;
 import idiro.workflow.server.ListInteraction;
 import idiro.workflow.server.Page;
-import idiro.workflow.server.connect.HDFSInterface;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEOutput;
 
@@ -32,7 +31,7 @@ public class PigJoin extends PigElement {
 	public static final String key_featureTable = "Features",
 			key_joinType = "Join_Type", key_joinRelation = "Join_Relationship";
 
-	private Page page1, page2, page3, page4;
+	private Page page1, page2, page3;
 
 	private PigTableJoinInteraction tJoinInt;
 	private PigJoinRelationInteraction jrInt;
@@ -40,7 +39,7 @@ public class PigJoin extends PigElement {
 	private ListInteraction joinTypeInt;
 
 	public PigJoin() throws RemoteException {
-		super(2, Integer.MAX_VALUE,0);
+		super(2, Integer.MAX_VALUE,1);
 
 		page1 = addPage("Operations", "Join operations", 1);
 
@@ -53,6 +52,7 @@ public class PigJoin extends PigElement {
 
 		page2 = addPage("Relationship", "Join Relationship", 1);
 
+		
 		joinTypeInt = new ListInteraction(key_joinType,
 				"Please specify a join type", 0, 0);
 		List<String> valueJoinTypeInt = new LinkedList<String>();
@@ -71,16 +71,13 @@ public class PigJoin extends PigElement {
 		page2.addInteraction(joinTypeInt);
 		page2.addInteraction(jrInt);
 
-		page3 = addPage("Select", "Select Conditions", 1);
+		page3 = addPage("Select", "Join Configuration", 1);
 
 		filterInt = new PigFilterInteraction(0, 1, this);
 
 		page3.addInteraction(filterInt);
-
-		page4 = addPage("Output", "Output configurations", 1);
-
-		page4.addInteraction(delimiterOutputInt);
-		page4.addInteraction(savetypeOutputInt);
+		page3.addInteraction(delimiterOutputInt);
+		page3.addInteraction(savetypeOutputInt);
 
 	}
 
@@ -103,7 +100,6 @@ public class PigJoin extends PigElement {
 	@Override
 	public String getQuery() throws RemoteException {
 
-		HDFSInterface hInt = new HDFSInterface();
 		String query = null;
 		if (getDFEInput() != null) {
 			// Output
@@ -130,14 +126,14 @@ public class PigJoin extends PigElement {
 			String from = getCurrentName() + " = " + jrInt.getQueryPiece()
 					+ ";\n\n";
 
-			String select = tJoinInt.getQueryPiece(getCurrentName());
-			if (!select.isEmpty()) {
-				select = getNextName() + " = " + select + ";\n\n";
-			}
-
 			String filter = filterInt.getQueryPiece(getCurrentName());
 			if (!filter.isEmpty()) {
 				filter = getNextName() + " = " + filter + ";\n\n";
+			}
+			
+			String select = tJoinInt.getQueryPiece(getCurrentName());
+			if (!select.isEmpty()) {
+				select = getNextName() + " = " + select + ";\n\n";
 			}
 
 			String store = getStoreQueryPiece(out, getCurrentName());
@@ -149,9 +145,11 @@ public class PigJoin extends PigElement {
 
 				query += load;
 
-				query += from + select;
-
+				query += from;
+						
 				query += filter;
+				
+				 query += select;
 
 				query += store;
 			}

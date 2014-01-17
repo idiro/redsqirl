@@ -99,7 +99,7 @@ public class PigDictionaryTests {
 				PigDictionary.getInstance().getReturnType(expr, features)
 						.equalsIgnoreCase(type));
 	}
-
+	
 	@Test
 	public void testBooleanOperations() throws RemoteException {
 		TestUtils.logTestTitle("PigDictionaryTests#testBooleanOperations");
@@ -166,7 +166,7 @@ public class PigDictionaryTests {
 			is("substring('bla',1,2)", features, "STRING");
 			is("substring(substring('bla',1,2),1,2)", features, "STRING");
 			isNull("substring('bla',1,2,3)", features);
-			isNull("substring(1,1,2",features);
+			isNull("substring(1,1,2)",features);
 			isNull("round('1')",features);
 			//is("(CHARARRAY) `bla`", features, "STRING");
 			//is("(CHARARRAY)(SUBSTRING('bla',1,2))", features, "STRING");

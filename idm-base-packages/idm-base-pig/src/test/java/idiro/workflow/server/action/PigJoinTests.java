@@ -71,9 +71,8 @@ public class PigJoinTests {
 		String idSource = w.addElement((new Source()).getName());
 		Source src = (Source)w.getElement(idSource);
 		
-		assertTrue("create "+new_path1,
-				hInt.create(new_path1, getProperties()) == null
-				);
+		createInput(new Path(new_path1));
+		
 		src.update(src.getInteraction(Source.key_datatype));
 		Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype).getTree();
 		dataTypeTree.getFirstChild("list").getFirstChild("output").add("HDFS");
@@ -99,6 +98,17 @@ public class PigJoinTests {
 		
 		String error = src.updateOut();
 		assertTrue("source update: "+error,error == null);
+		
+		assertTrue("number of features in source should be 2 instead of " + 
+				src.getDFEOutput().get(Source.out_name).getFeatures().getSize(),
+				src.getDFEOutput().get(Source.out_name).getFeatures().getSize() == 2);
+		
+		assertTrue("Feature list " + 
+				src.getDFEOutput().get(Source.out_name).getFeatures().getFeaturesNames(),
+				src.getDFEOutput().get(Source.out_name).getFeatures().getFeaturesNames().contains("ID"));
+		assertTrue("Feature list " + 
+				src.getDFEOutput().get(Source.out_name).getFeatures().getFeaturesNames(),
+				src.getDFEOutput().get(Source.out_name).getFeatures().getFeaturesNames().contains("VALUE"));
 		
 		return src;
 	}

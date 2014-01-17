@@ -15,7 +15,7 @@ public class PigAggregator extends PigElement {
 	 */
 	private static final long serialVersionUID = 4640611831909705304L;
 
-	private Page page1, page2, page3, page4;
+	private Page page1, page2, page3;
 
 	private PigTableSelectInteraction tSelInt;
 	private PigFilterInteraction filterInt;
@@ -25,7 +25,7 @@ public class PigAggregator extends PigElement {
 	private static final String key_featureTable = "Features";
 
 	public PigAggregator() throws RemoteException {
-		super(1, 1,0);
+		super(1, 1,1);
 		page1 = addPage("Aggregator", "Aggregate the data for the output", 1);
 
 		tSelInt = new PigTableSelectInteraction(
@@ -75,17 +75,13 @@ public class PigAggregator extends PigElement {
 			}
 		});*/
 
-		page3 = addPage("Filter", "Add filter for data set", 1);
+		page3 = addPage("Filter", "Aggregator Configuration", 1);
 
 		filterInt = new PigFilterInteraction(0, 0, this);
 
 		page3.addInteraction(filterInt);
-
-		page4 = addPage("Output", "Output configurations", 1);
-
-		page4.addInteraction(delimiterOutputInt);
-		page4.addInteraction(savetypeOutputInt);
-
+		page3.addInteraction(delimiterOutputInt);
+		page3.addInteraction(savetypeOutputInt);
 	}
 
 	public String getName() throws RemoteException {
