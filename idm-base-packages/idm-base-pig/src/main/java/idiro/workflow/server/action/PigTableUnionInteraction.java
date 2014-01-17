@@ -123,21 +123,22 @@ public class PigTableUnionInteraction extends TableInteraction{
 		return msg;
 	}
 
-
-	/*private DFEOutput getInput(String relationName) throws RemoteException {
-		HDFSInterface hInt = new HDFSInterface();
-		DFEOutput out = null;
-		Iterator<DFEOutput> itOut = hu.getDFEInput()
-				.get(PigUnion.key_input).iterator();
-		while(itOut.hasNext() && out == null){
-			out = itOut.next();
-			if(!hInt.getRelation(out.getPath())
-					.equals(relationName)){
-				out = null;
+	public String checkExpression(String expression, String modifier)
+			throws RemoteException {
+		String error = null;
+		try {
+			if (PigDictionary.getInstance().getReturnType(
+					expression,
+					hu.getInFeatures()
+					) == null) {
+				error = "Expression does not have a return type";
 			}
+		} catch (Exception e) {
+			error = "Error trying to get expression return type";
+			logger.error(error, e);
 		}
-		return out;
-	}*/
+		return error;
+	}
 
 
 	public void update(List<DFEOutput> in) throws RemoteException{
@@ -204,6 +205,12 @@ public class PigTableUnionInteraction extends TableInteraction{
 				null, 
 				null);
 		
+		addColumn(
+				table_op_title,
+				null,
+				null,
+				null
+				);
 		
 		addColumn(
 				table_feat_title,
@@ -213,12 +220,6 @@ public class PigTableUnionInteraction extends TableInteraction{
 				null
 				);
 		
-		addColumn(
-				table_op_title,
-				null,
-				null,
-				null
-				);
 		
 		List<String> types = new LinkedList<String>();
 		types.add(FeatureType.BOOLEAN.name());

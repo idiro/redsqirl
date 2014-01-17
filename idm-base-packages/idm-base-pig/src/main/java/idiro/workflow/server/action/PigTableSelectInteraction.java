@@ -124,6 +124,48 @@ public class PigTableSelectInteraction extends TableInteraction {
 
 		return msg;
 	}
+	
+	public String checkExpression(String expression, String modifier)
+			throws RemoteException {
+		String error = null;
+		try {
+			DFEOutput in = hs.getDFEInput().get(PigElement.key_input).get(0);
+			Set<String> featGrouped = null;
+			FeatureList fl = new OrderedFeatureList();
+			
+			// only show what is in grouped interaction
+			if (hs.getGroupingInt() != null) {
+				Iterator<String> inputFeatsIt= in.getFeatures().getFeaturesNames().iterator();
+				while (inputFeatsIt.hasNext()) {
+					String nameF = inputFeatsIt.next().toUpperCase();
+					String nameFwithAlias = hs.getAlias().toUpperCase()+"."+nameF;
+					fl.addFeature(nameFwithAlias, in.getFeatures().getFeatureType(nameF));
+				}
+
+				featGrouped = new HashSet<String>();
+				logger.info("group interaction was not null");
+				Iterator<String> grInt = hs.getGroupingInt()
+						.getValues().iterator();
+				if (grInt.hasNext()) {
+					while (grInt.hasNext()) {
+						String feat = hs.getAlias().toUpperCase() + "." +
+								grInt.next().toUpperCase();
+						featGrouped.add(feat);
+					}
+				}
+			}else{
+				fl = in.getFeatures();
+			}
+			if (PigDictionary.getInstance()
+					.getReturnType(expression, fl, featGrouped) == null) {
+				error = "Expression does not have a return type";
+			}
+		} catch (Exception e) {
+			error = "Error trying to get expression return type";
+			logger.error(error, e);
+		}
+		return error;
+	}
 
 	public String addOperation(String feat, String operation) {
 		String result = "";
