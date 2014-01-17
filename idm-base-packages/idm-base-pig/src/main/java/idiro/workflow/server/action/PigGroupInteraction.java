@@ -1,16 +1,14 @@
 package idiro.workflow.server.action;
 
-import idiro.utils.Tree;
 import idiro.workflow.server.AppendListInteraction;
-import idiro.workflow.server.UserInteraction;
-import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.interfaces.DFEOutput;
 
 import java.rmi.RemoteException;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 
@@ -29,44 +27,33 @@ public class PigGroupInteraction extends AppendListInteraction{
 
 	protected static Logger logger = Logger.getLogger(PigGroupInteraction.class);
 
-	public PigGroupInteraction(String name, String legend, DisplayType display,
+	public PigGroupInteraction(String name, String legend,
 			int column, int placeInColumn) throws RemoteException {
 		super(name, legend, column, placeInColumn);
 	}
 	
 	public void update(DFEOutput in) throws RemoteException{
-		Tree<String> list = null;
-		if(tree.getSubTreeList().isEmpty()){
-			list = tree.add("applist");
-			list.add("output");
-		}else{
-			list = tree.getFirstChild("applist"); 
-			list.remove("values");
-		}
-		Tree<String> values = list.add("values");
-		Tree<String> display = list.add("display");
-		display.add("checkbox");
+		List<String> posValues = new LinkedList<String>();
+		
 		Iterator<String> it = in.getFeatures().getFeaturesNames().iterator();
 		while(it.hasNext()){
-			values.add("value").add(it.next());
+			posValues.add(it.next());
 		}
+		setPossibleValues(posValues);
 	}
 	
 	public String getQueryPiece(String relationName) throws RemoteException{
 		logger.debug("group...");
 		String groupby = "";
 		
-		if(getTree()
-				.getFirstChild("applist")
-				.getFirstChild("output").getSubTreeList().size() > 0){
-			Iterator<Tree<String>> gIt = getTree()
-					.getFirstChild("applist")
-					.getFirstChild("output").getChildren("value").iterator();
+		List<String> values = getValues();
+		if(values != null && values.size() > 0){
+			Iterator<String> gIt = values.iterator();
 			if(gIt.hasNext()){
-				groupby = gIt.next().getFirstChild().getHead();
+				groupby = gIt.next();
 			}
 			while(gIt.hasNext()){
-				groupby += ","+gIt.next().getFirstChild().getHead();
+				groupby += ","+gIt.next();
 			}
 			if(!groupby.isEmpty() || !groupby.equalsIgnoreCase("")){
 				groupby = "GROUP "+relationName+" BY ("+groupby+")";

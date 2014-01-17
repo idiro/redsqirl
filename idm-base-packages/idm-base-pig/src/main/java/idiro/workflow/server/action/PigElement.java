@@ -1,18 +1,13 @@
 package idiro.workflow.server.action;
 
 import idiro.utils.FeatureList;
-import idiro.utils.Tree;
-import idiro.utils.TreeNonUnique;
-import idiro.workflow.server.DataOutput;
 import idiro.workflow.server.DataProperty;
 import idiro.workflow.server.DataflowAction;
-import idiro.workflow.server.UserInteraction;
-import idiro.workflow.server.WorkflowPrefManager;
+import idiro.workflow.server.InputInteraction;
+import idiro.workflow.server.ListInteraction;
 import idiro.workflow.server.connect.HDFSInterface;
 import idiro.workflow.server.datatype.MapRedBinaryType;
 import idiro.workflow.server.datatype.MapRedTextType;
-import idiro.workflow.server.enumeration.DataBrowser;
-import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.oozie.PigAction;
@@ -25,6 +20,7 @@ import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,10 +45,8 @@ public abstract class PigElement extends DataflowAction {
 			key_outputType = "Output_Type",
 			default_delimiter = "\001";
 
-	protected UserInteraction delimiterOutputInt;
-	protected UserInteraction dataSubtypeInt;
-	protected UserInteraction typeOutputInt;
-	protected UserInteraction savetypeOutputInt;
+	protected InputInteraction delimiterOutputInt;
+	protected ListInteraction savetypeOutputInt;
 	public PigGroupInteraction groupingInt;
 
 	protected Map<String, DFELinkProperty> input;
@@ -61,10 +55,24 @@ public abstract class PigElement extends DataflowAction {
 	private String alias = "";
 	private int nameCont;
 
-	public PigElement( int nbInMin, int nbInMax) throws RemoteException {
+	public PigElement( int nbInMin, int nbInMax,int placeDelimiterInPage) throws RemoteException {
 		super(new PigAction());
 		init(nbInMin,nbInMax);
 
+		delimiterOutputInt = new InputInteraction("Delimiter",
+				"Setting output delimiter", placeDelimiterInPage, 0);
+		delimiterOutputInt.setRegex("^(#\\d{1,3}|.)?$");
+		delimiterOutputInt.setValue("#1");
+
+
+		savetypeOutputInt = new ListInteraction("Output Type",
+				"Setting the output type", placeDelimiterInPage+1, 0);
+		savetypeOutputInt.setDisplayRadioButton(true);
+		List<String> saveTypePos = new LinkedList<String>();
+		saveTypePos.add( new MapRedTextType().getTypeName());
+		saveTypePos.add( new MapRedBinaryType().getTypeName());
+		savetypeOutputInt.setPossibleValues(saveTypePos);
+		savetypeOutputInt.setValue(new MapRedTextType().getTypeName());
 	}
 
 	protected void init(int nbInMin, int nbInMax) throws RemoteException{
@@ -78,7 +86,7 @@ public abstract class PigElement extends DataflowAction {
 	public abstract String getQuery() throws RemoteException;
 
 	public abstract FeatureList getInFeatures() throws RemoteException;
-	
+
 	public abstract FeatureList getNewFeatures() throws RemoteException;
 
 	public Set<String> getInRelations() throws RemoteException{
@@ -91,7 +99,7 @@ public abstract class PigElement extends DataflowAction {
 		}
 		return ans; 
 	}
-	
+
 	@Override
 	public boolean writeOozieActionFiles(File[] files) throws RemoteException {
 		logger.info("Write queries in file: "+files[0].getAbsolutePath());
@@ -110,7 +118,7 @@ public abstract class PigElement extends DataflowAction {
 				logger.error("Fail to write into the file "+files[0].getAbsolutePath());
 			}
 		}
-		
+
 		logger.info("Write properties in file: "+files[1].getName());
 		toWrite = getProperties(output.values().iterator().next());
 		ok = toWrite != null;
@@ -128,22 +136,21 @@ public abstract class PigElement extends DataflowAction {
 		}
 		return ok;
 	}
-	
+
 	public String getProperties(DFEOutput out) throws RemoteException{
 		String properties = "";
-		
+
 		properties += "number_features="+out.getFeatures().getSize()+"\n";
-		
+
 		int cont = 0;
 		for (String name : out.getFeatures().getFeaturesNames()){
 			properties += "feature"+cont+"_name="+name+"\n";
 			properties += "feature"+cont+"_value="+out.getFeatures().getFeatureType(name)+"\n";
 		}
-		
+
 		return properties;
 	}
 
-//	@Override
 	public String updateOut() throws RemoteException {
 		String error = checkIntegrationUserVariables();
 		if(error == null){
@@ -153,113 +160,38 @@ public abstract class PigElement extends DataflowAction {
 				output.put(key_output, new MapRedTextType());
 			}
 			output.get(key_output).setFeatures(new_features);
+			output.get(key_output).addProperty(MapRedTextType.key_delimiter, delimiterOutputInt.getValue());
 		}
 		return error;
 	}
 
-//	@Override
+
 	public Map<String, DFELinkProperty> getInput() throws RemoteException {
 		return input;
 	}
 
-//	@Override
+
 	public Map<String, DFEOutput> getDFEOutput() throws RemoteException {
 		return output;
 	}
 
-
-	/**
-	 * @return the delimiterOutputInt
-	 */
-	public UserInteraction getDelimiterOutputInt() {
-		return delimiterOutputInt;
-	}
-
-	public void updateOutputType() throws RemoteException, InstantiationException, IllegalAccessException{
-		Tree<String> list= null;
-		if(savetypeOutputInt.getTree().isEmpty()){
-			list = savetypeOutputInt.getTree().add("list");
-			String k = MapRedTextType.class.newInstance().getTypeName();
-			list.add("output").add(k);
-			Tree<String> values = list.add("values");
-			values.add("value").add(k);
-			values.add("value").add(MapRedBinaryType.class.newInstance().getTypeName());
-		}
-		logger.info("output tree : "+((TreeNonUnique<String>) list).toString());
-	}
-	
-	public void updateDelimiterOutputInt() throws RemoteException{
-		logger.debug("updating default delimiter");
-		Tree<String> list = null;
-		delimiterOutputInt.setTree(new TreeNonUnique<String>(componentId));
-		Tree<String>tree = delimiterOutputInt.getTree();
-		if(tree.isEmpty()){
-			list = delimiterOutputInt.getTree().add("list");
-			list.add("output").add(default_delimiter);
-			Tree<String> value = list.add("values");
-			value.add("value").add("\001");
-			value.add("value").add(",");
-			value.add("value").add("|");
-			value.add("value").add(";");
-			logger.debug("delimiters added");
-			
-		}
-		logger.debug("updating default delimiter complete");
-	}
-	
-	/**
-	 * @return the delimiterOutputInt
-	 */
-	public final UserInteraction getDataSubtypeInt() {
-		return dataSubtypeInt;
-	}
-
-	public void updateDataSubTypeInt() throws RemoteException{
-		Tree<String> treeDatasubtype = dataSubtypeInt.getTree();
-		Tree<String> list = null;
-		if(treeDatasubtype.getSubTreeList().isEmpty()){
-			list = treeDatasubtype.add("list");
-			list.add("output");
-
-			Tree<String> value = list.add("value");
-			
-			Iterator<String> dataOutputClassName = 
-					WorkflowPrefManager.getInstance().getNonAbstractClassesFromSuperClass(
-							DataOutput.class.getCanonicalName()).iterator();
-				
-			while(dataOutputClassName.hasNext()){
-				String className = dataOutputClassName.next();
-				DataOutput wa = null;
-				try {
-					wa = (DataOutput) Class.forName(className).newInstance();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				
-				if (wa.getBrowser().equals(DataBrowser.HDFS)){
-					value.add(DataOutput.class.getSimpleName());
-				}
-			}
-		}
-	}
-	
 	public String getRemoveQueryPiece(String out) throws RemoteException{
 		logger.debug("create remove...");
 		return "rmf "+out;
 	}
-	
+
 	public String getLoadQueryPiece(DFEOutput out) throws RemoteException{
 		logger.debug("create load...");
-		
+
 		String delimiter = out.getProperty(MapRedTextType.key_delimiter);
 		delimiter = ((MapRedTextType)out).getPigDelimiter();
 		if (delimiter == null){
 			delimiter = default_delimiter;
 		}
-		
+
 		String function = getLoadStoreFuncion(out, delimiter);
 		String createSelect = "LOAD '" + out.getPath() + "' USING "+function+" as (";
-		
+
 		Iterator<String> it = out.getFeatures().getFeaturesNames().iterator();
 		logger.info("attribute list size : "+out.getFeatures().getSize());
 		while (it.hasNext()){
@@ -273,24 +205,17 @@ public abstract class PigElement extends DataflowAction {
 
 		return createSelect;
 	}
-	
+
 	public String getStoreQueryPiece(DFEOutput out, String relationName) throws RemoteException{
-		String delimiter = default_delimiter;
-		try{
-			delimiter = delimiterOutputInt.getTree().getFirstChild("list").getFirstChild("output").getFirstChild().getHead();
-		}
-		catch(Exception e){
-			logger.debug("Delimiter not set, using default delimiter");
-		}
-		
-		String type = null;
-		DFEOutput typeOutput = null;
+		MapRedTextType output = (MapRedTextType) getDFEOutput().get(key_output); 
+		String delimiter = output.getPigDelimiter();
+
 		String function = getStoreFunction(delimiter);
 		logger.info(function);
 		return "STORE "+relationName+" INTO '" + out.getPath() + "' USING "+function+";";
 	}
-	
-	
+
+
 	public String getStoreFunction(String delimiter) throws RemoteException{
 		String type = "";
 		String function = "";
@@ -312,7 +237,7 @@ public abstract class PigElement extends DataflowAction {
 			logger.error("There was an error getting the output type");
 		}
 		return null;
-			
+
 	}
 	private String getLoadStoreFuncion(DFEOutput out, String delimiter) throws RemoteException{
 		String function = null;
@@ -324,16 +249,16 @@ public abstract class PigElement extends DataflowAction {
 		}
 		return function;
 	}
-	
+
 	protected String getCurrentName(){
 		return "A"+nameCont;
 	}
-	
+
 	protected String getNextName(){
 		nameCont++;
 		return "A"+nameCont;
 	}
-	
+
 	public PigGroupInteraction getGroupingInt() {
 		return groupingInt;
 	}

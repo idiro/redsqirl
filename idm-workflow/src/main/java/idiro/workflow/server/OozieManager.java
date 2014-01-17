@@ -209,18 +209,43 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 		if(error == null){
 			logger.debug("copy from "+
 					parentDir.getAbsolutePath()+" to "+hdfsWfPath);
-			try{
-				FileSystem fs = NameNodeVar.getFS();
-				Path wCur = new Path(hdfsWfPath);
-				if(fs.exists(wCur)){
-					fs.delete(wCur,true);
+			int again = 5;
+			FileSystem fs = null;
+			Exception e = null;
+			while(again > 0){
+				try{
+					logger.debug("Attempt "+ (6-again) +" to copy.");
+					fs = NameNodeVar.getFS();
+					Path wCur = new Path(hdfsWfPath);
+					if(fs.exists(wCur)){
+						fs.delete(wCur,true);
+					}
+					fs.copyFromLocalFile(
+							false,
+							true,
+							new Path(parentDir.getAbsolutePath()), 
+							wCur);
+					again = -1;
+				}catch(Exception e1){
+					e = e1;
+					logger.error(e1);
+					--again;
 				}
-				fs.copyFromLocalFile(
-						false,
-						true,
-						new Path(parentDir.getAbsolutePath()), 
-						wCur);
-			}catch(Exception e){
+				try{
+					fs.close();
+				}catch(Exception e2){
+					logger.error("Fail to close HDFS: "+e2);
+				}
+				if(again > 0){
+					try {
+						Thread.sleep(10);
+					} catch (InterruptedException e1) {
+						logger.error(e1);
+					}
+				}
+			}
+			
+			if(again == 0){
 				error = LanguageManager.getText("ooziemanager.copydependencies",new Object[]{e.getMessage()});
 			}
 		}

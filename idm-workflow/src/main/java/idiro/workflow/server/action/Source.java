@@ -174,26 +174,15 @@ public class Source extends DataflowAction {
 				String error = null;
 				DFEOutput out = null;
 				
-				boolean setHeader = true;
-				
 				try{
 					out = output.get(out_name);
 				}catch(Exception e){
 					error = LanguageManager.getText("source.outputchecknull");
 				}
 				try {
-					//Set path to null to avoid unnecessary check
-					if(error == null){
-						try{
-							out.setPath(null);
-							out.setFeatures(null);
-							out.removeAllProperties();
-						}catch(Exception e){
-							error = LanguageManager.getText("source.outputreset");
-						}
-					}
 
-					//Add properties
+					//Properties
+					Map<String,String> props = new LinkedHashMap<String,String>();
 					if (error == null) {
 						try{
 							Iterator<Tree<String>> itProp = getInteraction(key_dataset).getTree()
@@ -208,35 +197,96 @@ public class Source extends DataflowAction {
 								
 								logger.info("out addProperty " + name + " " + value);
 								
-								out.addProperty(name, value);
-								
+								props.put(name, value);
 							}
 						}catch(Exception e){
 							logger.debug("No properties");
 						}
 					}
+					
+					
+					//Features
+					FeatureList outF = new OrderedFeatureList();
+					if(error == null){
+						try{
+							List<Tree<String>> features =  getInteraction(key_dataset)
+									.getTree().getFirstChild("browse").getFirstChild("output")
+									.getChildren("feature");
+							if(features == null || features.isEmpty()){
+								logger.warn("The list of features cannot be null or empty, could be calculated automatically from the path");
+							}else{
 
-					//Check path
+								for (Iterator<Tree<String>> iterator =features.iterator(); iterator.hasNext();) {
+									Tree<String> cur = iterator.next();
+
+									String name = cur.getFirstChild("name").getFirstChild()
+											.getHead();
+									String type = cur.getFirstChild("type").getFirstChild()
+											.getHead();
+
+									logger.info("updateOut name " + name);
+									logger.info("updateOut type " + type);
+
+									try {
+										outF.addFeature(name, FeatureType.valueOf(type));
+									} catch (Exception e) {
+										error = "The type " + type + " does not exist";
+									}
+
+								} 
+							}
+						}catch(Exception e){
+							error = LanguageManager.getText("source.treeerror");
+						}
+					}
+
+					//Set path
+					String path = null;
 					if(error == null){
 						try{
 							logger.info("tree is : "+((TreeNonUnique<String>)getInteraction(key_dataset).getTree()).toString());
-							String path = getInteraction(key_dataset).getTree()
+							path = getInteraction(key_dataset).getTree()
 									.getFirstChild("browse").getFirstChild("output")
 									.getFirstChild("path").getFirstChild().getHead();
 							
 							if (path.isEmpty()) {
 								error = LanguageManager.getText("source.pathempty");
-							}else{
-								logger.info("Checkpath : " + path + " for " +out.getPath());
-								out.setPath(path);
 							}
 						}catch(Exception e){
 							error = LanguageManager.getText("source.setpatherror",new Object[]{e.getMessage()});
 						}
 					}
+					
+					
+					
+					if(error == null){
+						if(!out.compare(path, outF, props)){
+							logger.info("The output need to be changed in source "+componentId);
+							try{
+								out.setPath(null);
+								out.setFeatures(null);
+								out.removeAllProperties();
+							}catch(Exception e){
+								error = LanguageManager.getText("source.outputreset");
+							}
+							if(error == null){
+								Iterator<String> propsIt = props.keySet().iterator();
+								while(propsIt.hasNext()){
+									String cur = propsIt.next();
+									out.addProperty(cur, props.get(cur));
+								}
+								
+								//Update the feature list only if it looks good
+								out.setFeatures(outF);
 
-					logger.info("setHeader : " + setHeader);
+								logger.info("Setpath : " + path);
+								out.setPath(path);
+								
+							}
+						}
+					}
 
+					//Check path
 					if(error == null){
 						try{
 							if(!out.isPathExists()){

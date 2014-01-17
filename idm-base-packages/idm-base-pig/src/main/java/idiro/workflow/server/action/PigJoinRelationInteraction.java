@@ -3,20 +3,17 @@ package idiro.workflow.server.action;
 import idiro.utils.FeatureList;
 import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
-import idiro.workflow.server.UserInteraction;
+import idiro.workflow.server.TableInteraction;
 import idiro.workflow.server.action.utils.PigDictionary;
-import idiro.workflow.server.enumeration.DisplayType;
-import idiro.workflow.server.interfaces.DFEOutput;
-import idiro.workflow.server.interfaces.DataFlowElement;
 
 import java.rmi.RemoteException;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-
-import org.jruby.compiler.ir.instructions.GetInstr;
 
 /**
  * Specify the relationship between joined relations. The order is important as
@@ -25,7 +22,7 @@ import org.jruby.compiler.ir.instructions.GetInstr;
  * @author marcos
  * 
  */
-public class PigJoinRelationInteraction extends UserInteraction {
+public class PigJoinRelationInteraction extends TableInteraction {
 
 	/**
 	 * 
@@ -35,44 +32,40 @@ public class PigJoinRelationInteraction extends UserInteraction {
 	private PigJoin hj;
 
 	public static final String table_relation_title = "Relation",
-			table_feat_title = "Join Feature";
+			table_feat_title = "Join_Feature";
 
 	public PigJoinRelationInteraction(String name, String legend, int column,
 			int placeInColumn, PigJoin hj) throws RemoteException {
-		super(name, legend, DisplayType.table, column, placeInColumn);
+		super(name, legend, column, placeInColumn);
 		this.hj = hj;
+		tree.removeAllChildren();
+		tree.add(getRootTable());
 	}
 
 	@Override
 	public String check() throws RemoteException {
-		String msg = null;
-		List<Tree<String>> lRow;
-		Iterator<Tree<String>> rows;
-		try {
-			lRow = getTree().getFirstChild("table").getChildren("row");
-			rows = lRow.iterator();
-		} catch (Exception e) {
-			msg = "Not Enougn relations";
-			logger.error(msg);
+		String msg = super.check();
+		if(msg != null){
 			return msg;
 		}
+		
+		
+		List<Map<String,String>> lRow = getValues();
 		Set<String> relations = hj.getAliases().keySet();
-		if (relations.size() != lRow.size()) {
+		if( relations.size() != lRow.size()){
 			msg = "The relation needs to have one and only one row for each entry";
-		} else {
-
+		}else{
 			Set<String> featType = new LinkedHashSet<String>();
 			FeatureList inFeats = hj.getInFeatures();
+			logger.debug(inFeats.getFeaturesNames());
+			Iterator<Map<String,String>> rows = lRow.iterator();
 			int rowNb = 0;
-
 			while (rows.hasNext() && msg == null) {
 				++rowNb;
-				Tree<String> row = rows.next();
+				Map<String,String> row = rows.next();
 				try {
-					String relation = row.getFirstChild(table_relation_title)
-							.getFirstChild().getHead();
-					String rel = row.getFirstChild(table_feat_title)
-							.getFirstChild().getHead();
+					String relation = row.get(table_relation_title);
+					String rel = row.get(table_feat_title);
 					String type = PigDictionary.getInstance().getReturnType(
 							rel, inFeats);
 
@@ -109,55 +102,40 @@ public class PigJoinRelationInteraction extends UserInteraction {
 
 	public void update() throws RemoteException {
 		Set<String> tablesIn = hj.getAliases().keySet();
+
+		// Remove constraint on first column
+		updateColumnConstraint(
+				table_relation_title, 
+				null, 
+				1, 
+				tablesIn);
 		
-		if (tree.getSubTreeList().isEmpty()) {
-			tree.add(getRootTable(tablesIn));
-		} else {
-			// Remove constraint on first column
-			tree.getFirstChild("table").getFirstChild("columns")
-					.findFirstChild(table_relation_title).getParent()
-					.remove("constraint");
 
-			// Remove Editor of operation
-			tree.getFirstChild("table").remove("generator");
-			Tree<String> operation = tree.getFirstChild("table")
-					.getFirstChild("columns").findFirstChild(table_feat_title)
-					.getParent();
-			operation.remove("editor");
-		}
-
-		// Set the constraint on first column
-		Tree<String> table = tree.getFirstChild("table")
-				.getFirstChild("columns").findFirstChild(table_relation_title)
-				.getParent().getParent();
-
-		Tree<String> constraintTable = table.add("constraint");
-
-		constraintTable.add("count").add("1");
-
-		Tree<String> valsTable = constraintTable.add("values");
-
-		Iterator<String> itTable = tablesIn.iterator();
-		while (itTable.hasNext()) {
-			String tableName = itTable.next();
-			logger.info("adding "+tableName+"as a value");
-			valsTable.add("value").add(tableName);
-		}
-
-		// Generate Editor
-		Tree<String> featEdit = PigDictionary.generateEditor(PigDictionary
+		updateColumnConstraint(
+				table_feat_title, 
+				null, 
+				null,
+				null);
+		updateEditor(
+				table_feat_title,
+				PigDictionary.generateEditor(PigDictionary
 				.getInstance().createDefaultSelectHelpMenu(), hj
-				.getInFeatures());
-
-		logger.info(((TreeNonUnique<String>) featEdit).toString());
-		// Set the Editor of operation
-		Tree<String> operation = tree.getFirstChild("table")
-				.getFirstChild("columns").findFirstChild(table_feat_title);
-		operation.getParent().getParent().add(featEdit);
-		logger.info("finished update for join relationship");
+				.getInFeatures()));
+		
+		if(getValues().isEmpty()){
+			List<Map<String,String>> lrows = new LinkedList<Map<String,String>>();
+			Iterator<String> tableIn = tablesIn.iterator();
+			while (tableIn.hasNext()) {
+				Map<String,String> curMap = new LinkedHashMap<String,String>();
+				curMap.put(table_relation_title,tableIn.next());
+				curMap.put(table_feat_title,"");
+				lrows.add(curMap);
+			}
+			setValues(lrows);
+		}
 	}
 
-	protected Tree<String> getRootTable(Set<String> tablesIn)
+	protected Tree<String> getRootTable()
 			throws RemoteException {
 		// Table
 		Tree<String> input = new TreeNonUnique<String>("table");
@@ -171,11 +149,6 @@ public class PigJoinRelationInteraction extends UserInteraction {
 
 		columns.add("column").add("title").add(table_feat_title);
 
-		Iterator<String> tableIn = tablesIn.iterator();
-		while (tableIn.hasNext()) {
-			input.add("row").add(table_relation_title).add(tableIn.next());
-		}
-
 		return input;
 	}
 
@@ -187,20 +160,17 @@ public class PigJoinRelationInteraction extends UserInteraction {
 				.replace("JOIN", "");
 
 		String join = "";
-		Iterator<Tree<String>> it = getTree().getFirstChild("table")
-				.getChildren("row").iterator();
+		Iterator<Map<String,String>> it = getValues().iterator();
 		if (it.hasNext()) {
 			join += "JOIN";
 		}
 		while (it.hasNext()) {
-			Tree<String> cur = it.next();
-			String feat = cur.getFirstChild(table_feat_title).getFirstChild()
-					.getHead();
+			Map<String,String> cur = it.next();
+			String feat = cur.get(table_feat_title);
 			logger.info(feat);
 			String[] ans = feat.split("\\.");
-			
-			String relation = cur.getFirstChild(table_relation_title)
-					.getFirstChild().getHead();
+
+			String relation = cur.get(table_relation_title);
 
 			join += " " + relation + " BY " + ans[ans.length-1];
 			if (!joinType.isEmpty()) {

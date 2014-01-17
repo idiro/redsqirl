@@ -304,4 +304,14 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 	}
 	
 	protected abstract String getDefaultColor();
+	
+	public boolean compare(String path, FeatureList fl, Map<String,String> props){
+		logger.debug("Comparaison dataoutput:");
+		logger.debug(this.path+" "+path);
+		try {
+			logger.debug(features.getFeaturesNames()+" "+fl.getFeaturesNames());
+		} catch (RemoteException e) {}
+		logger.debug(dataProperty+" "+props);
+		return this.path.equals(path) && features.equals(fl) && dataProperty.equals(props);
+	}
 }

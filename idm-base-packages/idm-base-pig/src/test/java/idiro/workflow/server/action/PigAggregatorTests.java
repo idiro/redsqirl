@@ -2,60 +2,47 @@ package idiro.workflow.server.action;
 
 import static org.junit.Assert.assertTrue;
 import idiro.hadoop.NameNodeVar;
-import idiro.hadoop.checker.HdfsFileChecker;
 import idiro.utils.Tree;
-import idiro.utils.TreeNonUnique;
-import idiro.workflow.server.DataOutput;
 import idiro.workflow.server.OozieManager;
 import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.Workflow;
-import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.HDFSInterface;
 import idiro.workflow.server.datatype.MapRedTextType;
 import idiro.workflow.server.enumeration.SavingState;
-import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.interfaces.DataFlowElement;
-import idiro.workflow.test.TestUtils.*;
+import idiro.workflow.test.TestUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.hadoop.fs.FSDataOutputStream;
-import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.fs.PathFilter;
-import org.apache.hadoop.hdfs.server.namenode.NameNode;
 import org.apache.log4j.Logger;
 import org.apache.oozie.client.OozieClient;
 import org.junit.Test;
 
-public class PigAggregatorTest {
+public class PigAggregatorTests {
 	private Logger logger = Logger.getLogger(getClass());
-	private String id;
 
 	Map<String, String> getProperties() {
 		Map<String, String> ans = new HashMap<String, String>();
 		return ans;
 	}
+	
+	
 
 	public DataFlowElement createSrc(Workflow w, HDFSInterface hInt,
 			String new_path1) throws RemoteException, Exception {
 
 		String idSource = w.addElement((new Source()).getName());
 		Source src = (Source) w.getElement(idSource);
-		// hInt.delete(new_path1);
-		// hInt.create(new_path1, getProperties());
-		// assertTrue("create "+new_path1,
-		// hInt.create(new_path1, getProperties());//) == null
-		// );
+
 		src.update(src.getInteraction(Source.key_datatype));
 		Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype)
 				.getTree();
@@ -91,8 +78,20 @@ public class PigAggregatorTest {
 		
 		
 		String error = src.updateOut();
-		error = src.updateOut();
 		assertTrue("source update: " + error, error == null);
+		
+		assertTrue("number of features in source should be 3 instead of " + 
+				src.getDFEOutput().get(Source.out_name).getFeatures().getSize(),
+				src.getDFEOutput().get(Source.out_name).getFeatures().getSize() == 3);
+		
+		List<String> feats = new LinkedList<String>();
+		feats.add("ID");
+		feats.add("VALUE");
+		feats.add("RAW");
+		assertTrue("Feature list " + 
+				src.getDFEOutput().get(Source.out_name).getFeatures().getFeaturesNames(),
+				src.getDFEOutput().get(Source.out_name).getFeatures().getFeaturesNames().containsAll(feats));
+		
 		return src;
 	}
 
@@ -101,15 +100,14 @@ public class PigAggregatorTest {
 		String error = null;
 		String idHS = w.addElement((new PigAggregator()).getName());
 		logger.info("Pig agge: " + idHS);
-//		id = src.getAliases().keySet().iterator().next();
-		id = idHS;
+		
 		PigAggregator pig = (PigAggregator) w.getElement(idHS);
-//		pig.getComponentId()
 		logger.info(Source.out_name + " " + src.getComponentId());
 		logger.debug(PigAggregator.key_input + " " + idHS);
 
 		w.addLink(Source.out_name, src.getComponentId(),
 				PigAggregator.key_input, idHS);
+		
 		assertTrue("pig aggreg add input: " + error, error == null);
 		updatePig(w, pig, hInt);
 		error = pig.updateOut();
@@ -150,41 +148,20 @@ public class PigAggregatorTest {
 
 
 		DFEOutput in = pig.getDFEInput().get(PigElement.key_input).get(0);
-		DataFlowElement src= w.getElement(id);
 		
-		logger.info("checkin for aliases");
-		if(src.getAliases().keySet().iterator().hasNext()){
-			id =src.getAliases().keySet().iterator().next();
-			
-		}
 		pig.update(groupingInt);
-		{
-			groupingInt.getTree().getFirstChild("applist")
-			.getFirstChild("output").add("value").add("VALUE");
-		}
+		List<String> val = new LinkedList<String>();
+		val.add("VALUE");
+		groupingInt.setValues(val);
 		assertTrue("group check : "+groupingInt.check(),groupingInt.check()==null);
 
 		PigFilterInteraction ci = pig.getFilterInt();
-
-		pig.update(ci);
-
-		Tree<String> cond = ci.getTree().getFirstChild("editor")
-				.getFirstChild("output");
-
-		cond.add("VALUE < 10");
+		ci.setValue("VALUE < 10");
 		assertTrue("condition check : "+ci.check(),ci.check()==null);
 
-		UserInteraction di = pig.getDelimiterOutputInt();
-		pig.update(di);
-		{
-			Tree<String> out = di.getTree().getFirstChild("list");
-			out.add("output").add(";");
-		}
-		assertTrue("delim check : "+di.check(),di.check()==null);
-
 		PigTableSelectInteraction tsi = pig.gettSelInt();
-
 		w.getElement(pig.getName());
+		String inAlias = pig.getAliases().keySet().iterator().next();
 		pig.update(tsi);
 		{
 //			tsi.getTree().getFirstChild("table").getFirstChild("generator").getFirstChild("operation").remove("row");
@@ -196,11 +173,11 @@ public class PigAggregatorTest {
 //			rowId.add(PigTableSelectInteraction.table_type_title).add("INT");
 //			rowId = out.add("row");
 			rowId.add(PigTableSelectInteraction.table_feat_title).add("VALUE");
-			rowId.add(PigTableSelectInteraction.table_op_title).add(id + ".VALUE");
+			rowId.add(PigTableSelectInteraction.table_op_title).add(inAlias + ".VALUE");
 			rowId.add(PigTableSelectInteraction.table_type_title).add("INT");
 			rowId = out.add("row");
 			rowId.add(PigTableSelectInteraction.table_feat_title).add("RAW");
-			rowId.add(PigTableSelectInteraction.table_op_title).add("SUM("+id + ".RAW)");
+			rowId.add(PigTableSelectInteraction.table_op_title).add("SUM("+inAlias + ".RAW)");
 			rowId.add(PigTableSelectInteraction.table_type_title).add("INT");
 		}
 		assertTrue("table select : "+tsi.check(),tsi.check()==null);
@@ -216,6 +193,8 @@ public class PigAggregatorTest {
 		assertTrue("pig select update: " + error, error == null);
 	}
 
+	
+	/*
 	// @Test
 	public void testPigAggregator() throws RemoteException,
 			InstantiationException, IllegalAccessException {
@@ -227,7 +206,7 @@ public class PigAggregatorTest {
 		while (x.hasNext()) {
 			DFEInteraction inter = x.next();
 			logger.info("interaction : " + inter.getName());
-			if (inter == src.getInteraction(src.key_datatype)) {
+			if (inter == src.getInteraction(Source.key_datatype)) {
 				Tree<String> tree = inter.getTree();
 
 				tree.add("list").add("output").add("hdfs");
@@ -235,7 +214,7 @@ public class PigAggregatorTest {
 
 				inter.setTree(tree);
 
-			} else if (inter == src.getInteraction(src.key_datasubtype)) {
+			} else if (inter == src.getInteraction(Source.key_datasubtype)) {
 				Tree<String> tree = inter.getTree();
 				tree.add("list").add("output")
 						.add(MapRedTextType.class.newInstance().getTypeName());
@@ -243,7 +222,7 @@ public class PigAggregatorTest {
 				// logger.info(((TreeNonUnique<String>) tree).toString());
 				inter.setTree(tree);
 
-			} else if (inter == src.getInteraction(src.key_dataset)) {
+			} else if (inter == src.getInteraction(Source.key_dataset)) {
 				Tree<String> tree = inter.getTree();
 				tree.add("browse").add("output").add("path")
 						.add("/user/keith/testfile");
@@ -263,31 +242,12 @@ public class PigAggregatorTest {
 		((MapRedTextType) list.get(0)).addProperty(
 				MapRedTextType.key_delimiter, ";");
 		src.getDFEOutput().put(Source.out_name, (DFEOutput) list.get(0));
-		agg.getDFEInput().put(agg.key_input, list);
+		agg.getDFEInput().put(PigElement.key_input, list);
 		logger.info(src.getDFEOutput().size());
 		logger.info(src.updateOut());
 
-	}
-
-	// @Test
-	public void fsChecher() throws IOException {
-		FileSystem fs = NameNodeVar.getFS();
-		HdfsFileChecker hCh = new HdfsFileChecker(new Path(
-				"/user/keith/testfile"));
-		logger.info("namenode var");
-		hCh.setPath(new Path("/user/keith/testfile"));
-		logger.info("namenode path set");
-		if (!hCh.isDirectory()) {
-			String error = "The parent of the file does not exists";
-		}
-		logger.info("namenode path is ok");
-		final Path newp = new Path("/user/keith/testfile");
-		logger.info(fs.isDirectory(newp));
-
-		FileStatus[] stat = fs.listStatus(newp);
-		logger.info("got status");
-	}
-
+	}*/
+	
 	public void createTraining(Path p) throws IOException {
 
 		String training = "1;44;10\n";
@@ -319,28 +279,24 @@ public class PigAggregatorTest {
 
 	@Test
 	public void basic() {
-
+		TestUtils.logTestTitle(getClass().getName()+"#basic");
+		
 		String error = null;
-		String new_path1 = "/user/keith/test_idm_1";
-		String new_path2 = "/user/keith/test_idm_2";
+		String new_path1 = TestUtils.getPath(1);
+		String new_path2 = TestUtils.getPath(2);
 		try {
 			HDFSInterface hInt = new HDFSInterface();
-			logger.info("basic test");
+			hInt.delete(new_path1);
+			hInt.delete(new_path2);
+			
 			Workflow w = new Workflow("workflow1_" + getClass().getName());
 			logger.info("built workflow");
-			NameNodeVar.set(WorkflowPrefManager
-					.getSysProperty(WorkflowPrefManager.sys_namenode));
 
 			createTraining(new Path(new_path1));
 
-//			hInt.delete(new_path2);
-
 			DataFlowElement src = createSrc(w, hInt, new_path1);
 			PigAggregator pig = (PigAggregator) createPigWithSrc(w, src, hInt);
-			logger.info("created elements");
-			List<DFEOutput> list = new LinkedList<DFEOutput>();
-			list.add(src.getDFEOutput().get(Source.out_name));
-			pig.getDFEInput().put(pig.key_input, list);
+			
 			pig.getDFEOutput().get(PigAggregator.key_output)
 					.setSavingState(SavingState.RECORDED);
 			pig.getDFEOutput().get(PigAggregator.key_output).setPath(new_path2);
@@ -351,9 +307,13 @@ public class PigAggregatorTest {
 			OozieClient wc = OozieManager.getInstance().getOc();
 			logger.info("Got Oozie Client");
 
-			logger.info("written file");
-			String jobId = w.run();
-			logger.info("jobId : " + jobId);
+			error = w.run();
+			assertTrue("Job submition failed: "+error, error == null);
+			String jobId = w.getOozieJobId();
+			if(jobId == null){
+				assertTrue("jobId cannot be null", false);
+			}
+			logger.info(jobId);
 
 			// wait until the workflow job finishes printing the status every 10
 			// seconds
