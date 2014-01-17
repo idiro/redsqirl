@@ -1,6 +1,7 @@
 package idm;
 
 
+import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
@@ -837,17 +838,18 @@ public class CanvasBean extends BaseBean implements Serializable{
 		DataFlowElement df = getDf().getElement(getIdMap().get(getNameWorkflow()).get(groupOutId));
 
 		String color = null;
+		String typeName = null;
 		for (Entry<String, DFEOutput> e : df.getDFEOutput().entrySet()){
 			if (e.getKey().endsWith(outputName)){
 				color = e.getValue().getColour();
+				typeName = e.getValue().getTypeName();
 				logger.info(e.getKey()+" - "+color);
 				break;
 			}
 		}
 
-		return new String[]{groupOutId, groupInId, color};
+		return new String[]{groupOutId, groupInId, color, typeName};
 	}
-
 
 	public String getIdElement(String idGroup){
 		return getIdMap().get(getNameWorkflow()).get(idGroup);
