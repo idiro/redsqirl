@@ -569,17 +569,40 @@ public class MapRedTextType extends DataOutput {
 		logger.debug(this.getPath()+" "+path);
 		try {
 			logger.debug(features.getFeaturesNames()+" "+fl.getFeaturesNames());
-		} catch (RemoteException e) {}
+		} catch (Exception e) {}
 		logger.debug(dataProperty+" "+props);
 		
-		String delimProp = props.get(key_delimiter);
-		if (delimProp != null && delimProp.length() == 1) {
-			delimProp = "#" + String.valueOf((int) delimProp.charAt(0));
+		String delimNew = props.get(key_delimiter);
+		if (delimNew != null && delimNew.length() == 1) {
+			delimNew = "#" + String.valueOf((int) delimNew.charAt(0));
 		}
-		return this.getPath().equals(path) && 
-				features.equals(fl) && 
-				dataProperty.get(key_header).equals(props.get(key_header)) &&
-				dataProperty.get(key_delimiter).equals(delimProp);
+		
+		boolean compProps = false;
+		if(dataProperty != null){
+			String headOld = dataProperty.get(key_header),
+				headNew = props.get(key_header),
+				delimOld = dataProperty.get(key_delimiter);
+			if(headNew == null){
+				compProps = headOld == null;
+			}else{
+				compProps = headNew.equals(headOld);
+			}
+			if(compProps){
+				if(delimNew == null){
+					compProps = delimNew == null;
+				}else{
+					compProps = delimNew.equals(delimOld);
+				}
+			}
+		}else if(props.isEmpty()){
+			compProps = true;
+		}
+		
+		return !(this.getPath() == null ||
+				features == null) &&
+				compProps &&
+				(this.getPath().equals(path) && 
+				features.equals(fl));
 	}
 
 	private String generateColumnName(int columnIndex) {

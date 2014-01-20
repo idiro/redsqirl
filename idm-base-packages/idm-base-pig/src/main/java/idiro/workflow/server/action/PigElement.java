@@ -50,7 +50,7 @@ public abstract class PigElement extends DataflowAction {
 	public PigGroupInteraction groupingInt;
 
 	protected Map<String, DFELinkProperty> input;
-	protected Map<String, DFEOutput> output;
+	protected Map<String, DFEOutput> output = new LinkedHashMap<String, DFEOutput>();
 
 	private String alias = "";
 	private int nameCont;
@@ -65,7 +65,7 @@ public abstract class PigElement extends DataflowAction {
 		delimiterOutputInt.setValue("#1");
 
 
-		savetypeOutputInt = new ListInteraction("Output Type",
+		savetypeOutputInt = new ListInteraction(key_outputType,
 				"Setting the output type", placeDelimiterInPage+1, 0);
 		savetypeOutputInt.setDisplayRadioButton(true);
 		List<String> saveTypePos = new LinkedList<String>();
@@ -155,8 +155,7 @@ public abstract class PigElement extends DataflowAction {
 		String error = checkIntegrationUserVariables();
 		if(error == null){
 			FeatureList new_features = getNewFeatures();
-			if(output == null){
-				output = new LinkedHashMap<String, DFEOutput>();
+			if(output.get(key_output) == null){
 				output.put(key_output, new MapRedTextType());
 			}
 			output.get(key_output).setFeatures(new_features);

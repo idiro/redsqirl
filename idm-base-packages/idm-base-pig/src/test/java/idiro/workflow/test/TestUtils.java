@@ -1,6 +1,7 @@
 package idiro.workflow.test;
 
 import idiro.hadoop.NameNodeVar;
+import idiro.utils.RandomString;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -63,5 +64,10 @@ public class TestUtils {
 	
 	static public String getPath(int id) {
 		return "/user/" + user + "/tmp/test_idm_" + id;
+	}
+	
+
+	static public String getRandomPath() {
+		return "/user/" + user + "/tmp/" + RandomString.getRandomName(20);
 	}
 }
