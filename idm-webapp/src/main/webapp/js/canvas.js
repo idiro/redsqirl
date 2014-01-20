@@ -1652,6 +1652,7 @@ function configureGroup(canvasName, group, mousePosX, mousePosY, polygon) {
 
 		this.getChildren()[2].setStroke('black');
 		this.getChildren()[2].selected = false;
+		canvasArray[selectedCanvas].down = false;
 
 		canvasArray[selectedCanvas].polygonLayer.draw();
 		
@@ -1738,6 +1739,7 @@ function polygonOnClick(obj,e, canvasName){
 
 	if (!e.ctrlKey) {
 		if (canvasArray[canvasName].down) {
+			
 			canvasArray[canvasName].down = false;
 			
 			if(canvasArray[canvasName].oldIdSelected != obj.getParent().getId()){
@@ -1752,7 +1754,8 @@ function polygonOnClick(obj,e, canvasName){
 				
 			}
 
-		} else {
+		} 
+		/*else {
 			var polygonLayer = canvasArray[canvasName].polygonLayer;
 			var layer = canvasArray[canvasName].layer;
 			
@@ -1776,7 +1779,7 @@ function polygonOnClick(obj,e, canvasName){
 			canvasArray[canvasName].oldIdSelected = obj.getParent().getId();
 			
 			layer.draw();
-		}
+		}*/
 	}
 	
 }
