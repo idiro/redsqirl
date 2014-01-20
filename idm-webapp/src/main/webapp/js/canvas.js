@@ -39,6 +39,10 @@ function Canvas(name){
 	this.oldIdSelected = null;
 	
 	this.legend = null;
+	this.legendPosX = 400;
+	this.legendPosY = 0;
+	this.legendWidth = 170;
+	this.legendHidden = false;
 	this.outputTypeColours = [];
 }
 
@@ -206,6 +210,10 @@ function configureCanvas(canvasName){
 }
 
 function createLegend(canvasName) {
+	
+	var posX = canvasArray[canvasName].legendPosX;
+	var posY = canvasArray[canvasName].legendPosY;
+	var width = canvasArray[canvasName].legendWidth;
 
 	var legendLayer = canvasArray[canvasName].legendLayer;
 
@@ -227,17 +235,17 @@ function createLegend(canvasName) {
 	    	                 ['UNDEFINED',getColorRunning('UNDEFINED')]];
 		
 	var coloursArray = {};
-	    coloursArray['Arch - Output Type'] = outputTypeColours;
-	    coloursArray['Arch - Output File'] = outputExistenceColours;
-	    coloursArray['Arch - Running Status'] = runningStatusColours;
+	    coloursArray['Arc - Output Type'] = outputTypeColours;
+	    coloursArray['Arc - Output File'] = outputExistenceColours;
+	    coloursArray['Arc - Running Status'] = runningStatusColours;
 	    coloursArray['Link - Output Type'] = linkTypeColours;
 
 	var coloursArrayLength = outputTypeColours.length + outputExistenceColours.length + runningStatusColours.length + linkTypeColours.length + 4;
 	
 	var rectangleTitle = new Kinetic.Rect({
-        x : 0,
-        y : 0,
-        width : 170,
+        x : posX,
+        y : posY,
+        width : width,
         height : 20,
         stroke : 'black',
         strokeWidth : 1,
@@ -249,27 +257,28 @@ function createLegend(canvasName) {
         fontSize : 11,
         fill : 'black',
         fontStyle : 'bold',
-        x : 10,
-        y : 5
+        x : posX + 10,
+        y : posY + 5
     });
 	
 	var labelButton = new Kinetic.Text({
         text : '-',
         fontSize : 18,
         fill : 'black',
-        x : 160,
-        y : 0
+        x : posX + width - 20,
+        y : posY + 2
     });
 	
 	labelButton.on('mousedown', function(){
 	    if (groupLegend.isVisible()){
 	        groupLegend.hide();
-	        labelTitle.setText('+');
-	        //alert('hide');
+	        canvasArray[canvasName].legendHidden = true;
+	        labelButton.setText('+');
 	    }
 	    else{
 	        groupLegend.show();
-	        labelTitle.setText('-');
+	        canvasArray[canvasName].legendHidden = false;
+	        labelButton.setText('-');
 	       
 	    }
 	    legendLayer.draw();
@@ -277,38 +286,33 @@ function createLegend(canvasName) {
 	});
 	
 	labelButton.on('mouseover', function(){
-	    labelTitle.setFill('green');
+		labelButton.setFill('red');
 	    legendLayer.draw();
 	});
 
 
 	labelButton.on('mouseout', function(){
-	    labelTitle.setFill('black');
+		labelButton.setFill('black');
 	    legendLayer.draw();
 	});
 
-
-
-	
-	 var groupTitle = new Kinetic.Group({
-		 draggable : true,
-		 id : "title"
-	 });
+	var groupTitle = new Kinetic.Group({
+		draggable : true,
+		id : "title"
+	});
 	 
-	 groupTitle.on('dragstart dragmove', function(e) {
-			canvasArray[canvasName].rectSelect.remove();
-	 });
+	groupTitle.on('dragstart dragmove', function(e) {
+		canvasArray[canvasName].rectSelect.remove();
+	});
 	 
-	 groupTitle.add(rectangleTitle);
-	 groupTitle.add(labelButton);
-	 groupTitle.add(labelTitleLegend);
-	
-	
+	groupTitle.add(rectangleTitle);
+	groupTitle.add(labelButton);
+	groupTitle.add(labelTitleLegend);
 	
 	var rectangle = new Kinetic.Rect({
-		x : 0,
-		y : 20,
-		width : 170,
+		x : posX,
+		y : posY + 20,
+		width : width,
 		height : 10 + coloursArrayLength * 20,
 		stroke : 'black',
 		strokeWidth : 1,
@@ -340,8 +344,8 @@ function createLegend(canvasName) {
 				fontSize : 10,
 				fill : 'black',
 		        fontStyle : 'bold',
-		        x : 25,
-				y : 30 + 20*contPosition
+		        x : posX + 25,
+				y : posY + 30 + 20*contPosition
 			});
 	    	
 			groupLegend.add(labelTitle);
@@ -349,8 +353,8 @@ function createLegend(canvasName) {
 	    
 			for (var i = 0; i < array.length; i++) {
 				var rec = new Kinetic.Rect({
-					x : 10,
-					y : 30 + 20*contPosition,
+					x : posX + 10,
+					y : posY + 30 + 20*contPosition,
 					width : 10,
 					height : 10,
 					stroke : array[i][1],
@@ -363,8 +367,8 @@ function createLegend(canvasName) {
 					text : array[i][0],
 					fontSize : 10,
 					fill : 'black',
-					x : 25,
-					y : 30 + 20*contPosition
+					x : posX + 25,
+					y : posY + 30 + 20*contPosition
 				});
 					
 				groupLegend.add(rec);
@@ -375,6 +379,11 @@ function createLegend(canvasName) {
 	}
 	
 	groupTitle.add(groupLegend);
+	
+	if (canvasArray[canvasName].legendHidden){
+		groupLegend.hide();
+		labelButton.setText('+');
+	}
 	
 	canvasArray[canvasName].legend = groupTitle;
 	legendLayer.add(groupTitle);
@@ -1151,8 +1160,8 @@ function ready(canvasName) {
 	// main stage
 	stage = new Kinetic.Stage({
 		container : "canvas",
-		width : 600,
-		height : 400
+		width : 800,
+		height : 600
 	});
 	canvasArray[canvasName].stage = stage;
 
@@ -1904,7 +1913,7 @@ function updateArrowType(idOutput, idInput, color, type) {
 	var coloursArray = canvasArray[selectedCanvas].outputTypeColours;
 	var existLegend = false;
 	for (var i=0; i < coloursArray.length; ++i){
-		if (coloursArray[i] == type){
+		if (coloursArray[i][0] == type){
 			existLegend = true;
 			break;
 		}
@@ -1912,7 +1921,16 @@ function updateArrowType(idOutput, idInput, color, type) {
 	
 	if (!existLegend){
 		coloursArray[coloursArray.length] = [type, color];
+		
+		canvasArray[selectedCanvas].legendPosX = canvasArray[selectedCanvas].legend.getX()+400;
+		canvasArray[selectedCanvas].legendPosY = canvasArray[selectedCanvas].legend.getY();
+		
 		canvasArray[selectedCanvas].legend.remove();
+		var width = type.length * 8;
+		if (width > canvasArray[selectedCanvas].legendWidth){
+			canvasArray[selectedCanvas].legendWidth = width;
+		}
+		
 		createLegend(selectedCanvas);
 	}
 	
