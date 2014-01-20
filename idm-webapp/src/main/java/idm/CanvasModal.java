@@ -99,6 +99,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 	private String openPopUp = "S";
 
 	/**
+	 * Update the element when closing.
+	 */
+	private boolean elementToUpdate = false;
+
+	/**
 	 * getKeyAsListNameValue
 	 * 
 	 * Method to retrieve the list of files
@@ -260,6 +265,12 @@ public class CanvasModal extends BaseBean implements Serializable {
 					}
 
 					if(valid){
+						try{
+							elementToUpdate = !dynamicF.getInputValue().equals(
+									dynamicF.getTree().getFirstChild("input").getFirstChild("output").getFirstChild().getHead());
+						}catch(Exception e){
+							elementToUpdate = true;
+						}
 						dynamicF.getTree().getFirstChild("input").getFirstChild("output").removeAllChildren();
 						dynamicF.getTree().getFirstChild("input").getFirstChild("output").add(dynamicF.getInputValue());
 					}
@@ -271,7 +282,12 @@ public class CanvasModal extends BaseBean implements Serializable {
 				logger.info("value list -> " + dynamicF.getSelectedListOptions());
 
 				if (checkListvalue(dfi, dynamicF.getSelectedListOptions())) {
-
+					try{
+						elementToUpdate = !dynamicF.getSelectedListOptions().equals(
+								dynamicF.getTree().getFirstChild("list").getFirstChild("output").getFirstChild().getHead());
+					}catch(Exception e){
+						elementToUpdate = true;
+					}
 					dynamicF.getTree().getFirstChild("list").getFirstChild("output").removeAllChildren();
 					dynamicF.getTree().getFirstChild("list").getFirstChild("output").add(dynamicF.getSelectedListOptions());
 
@@ -281,7 +297,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 
 			} else if (dynamicF.getDisplayType().equals(DisplayType.appendList)) {
-
+				try{	
+					//elementToUpdate = dynamicF.
+				}catch(Exception e){
+					elementToUpdate = true;
+				}
 				dynamicF.getTree().getFirstChild("applist")
 				.getFirstChild("output").removeAllChildren();
 				logger.info(dynamicF.getName() + "value list size-> "
@@ -296,7 +316,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 				logger.info("Browser path -> " + dynamicF.getPathBrowser());
 				updateTable = true;
-
+				try{	
+					//elementToUpdate = dynamicF.
+				}catch(Exception e){
+					elementToUpdate = true;
+				}
 				dynamicF.getTree().getFirstChild("browse").getFirstChild("output").removeAllChildren();
 				dynamicF.getTree().getFirstChild("browse").getFirstChild("output").add("path").add(dynamicF.getPathBrowser());
 
@@ -338,12 +362,22 @@ public class CanvasModal extends BaseBean implements Serializable {
 				}
 
 			} else if (dynamicF.getDisplayType().equals(DisplayType.helpTextEditor)) {
+				try{
+					elementToUpdate = !getCommand().equals(
+							dynamicF.getTree().getFirstChild("editor").getFirstChild("output").getFirstChild().getHead());
+				}catch(Exception e){
+					elementToUpdate = true;
+				}
 
 				dynamicF.getTree().getFirstChild("editor").getFirstChild("output").removeAllChildren();
 				dynamicF.getTree().getFirstChild("editor").getFirstChild("output").add(getCommand());
 
 			} else if (dynamicF.getDisplayType().equals(DisplayType.table)) {
-
+				try{
+					//elementToUpdate = dynamicF.
+				}catch(Exception e){
+					elementToUpdate = true;
+				}
 				dynamicF.getTree().getFirstChild("table").remove("row");
 
 				for (ItemList item : getListGrid()) {
@@ -510,6 +544,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 		HttpServletRequest request = (HttpServletRequest) FacesContext
 				.getCurrentInstance().getExternalContext().getRequest();
 		request.removeAttribute("msnError");
+
+		//Don't update the element if close immediately
+		elementToUpdate = false;
 
 		// set the first tab for obj
 		setSelectedTab(getMessageResources("label_dynamic_configuration"));
