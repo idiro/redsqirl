@@ -807,19 +807,16 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 			logger.info(e.getKey()+" - "+status);
 
-			//String state = null;
 			String pathExists = null;
 			
 			DataFlowElement cur = getDf().getElement(e.getValue());
 			if (cur  != null){
 				for (Entry<String, DFEOutput> e2 : cur.getDFEOutput().entrySet()){
-					//state = e2.getValue().getSavingState().toString();
 
 					logger.info("path: "+e2.getValue().getPath());
 
 					pathExists = String.valueOf(e2.getValue().isPathExists());
 
-					//logger.info(e2.getKey()+" - "+state+" - "+pathExists);
 				}
 			}
 

@@ -36,6 +36,8 @@ function Canvas(name){
 	this.isSaved = false;
 	this.pathFile = null;
 	
+	this.oldIdSelected = null;
+	
 	this.legend = null;
 	this.outputTypeColours = [];
 }
@@ -51,7 +53,7 @@ window.onload = function() {
 	
 	canvasArray = {};
 	
-	mountObj();
+	mountObj(canvasName);
 	configureCanvas(canvasName);
 };
 
@@ -634,7 +636,6 @@ function deleteSelected() {
 // remove the arrows that are outside the standard
 function deleteArrowOutsideStandard(canvasName) {
 	var layer = canvasArray[canvasName].layer;
-	
 	var listSize = layer.getChildren().size();
 	for ( var i = 0; i < listSize; i++) {
 		jQuery.each(layer.getChildren(), function(index, value) {
@@ -994,7 +995,7 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
 	// img.src = "./"+elementImg;
 	img.src = elementImg;
 
-	var result = createPolygon(img, 40, 50, numSides);
+	var result = createPolygon(img, 40, 50, numSides, canvasName);
 	var polygon = result[0];
 	
 	var circle0 = new Kinetic.Circle({
@@ -1211,7 +1212,7 @@ function ready(canvasName) {
  * javascript for HTML5 canvas
  * 
  */
-function mountObj() {
+function mountObj(canvasName) {
 
 	// for list divs
 	jQuery("#tabsFooter ul:first li").each(function(index) {
@@ -1268,7 +1269,8 @@ function mountObj() {
 				var result = createPolygon(
 					imgTab, posInitX,
 					poxInitY,
-					numSides);
+					numSides,
+					canvasName);
 				var polygonTab = result[1];
 				var polygonTabImage = result[2];
 
@@ -1571,6 +1573,7 @@ function configureGroupListeners(canvasName, group) {
 		canvasArray[canvasName].rectSelect.remove();
 		dragAndDropGroup(canvasName, this, e);
 		changePositionArrow(canvasName, this);
+		group.getChildren()[2].off('click');
 	});
 
 	group.on('dragend', function(e) {
@@ -1579,6 +1582,13 @@ function configureGroupListeners(canvasName, group) {
 		});
 		makeHistory(canvasName);
 	});
+	
+	group.on('click', function(e) {
+		group.getChildren()[2].on('click', function(e) {
+			polygonOnClick(this, e, canvasName);
+		});
+	});
+	
 }
 
 function createGroup(canvasName, circle0, circle1, polygon, srcImageText, typeText, groupId, arc1,arc2,arc3) {
@@ -1655,7 +1665,7 @@ function configureGroup(canvasName, group, mousePosX, mousePosY, polygon) {
 	makeHistory(canvasName);
 }
 
-function createPolygon(imgTab, posInitX, poxInitY, numSides) {
+function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
 	
 	var rotateDeg = 0;
 	if (numSides%2 == 0 ){
@@ -1682,10 +1692,10 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides) {
 
 	var polygonTabImage;
 	try{
-	polygonTabImage = polygonTab.toDataURL({
-		width : 75,
-		height : 75
-	});
+		polygonTabImage = polygonTab.toDataURL({
+			width : 75,
+			height : 75
+		});
 	}catch(exception){}
 
 	polygonTab.setAbsolutePosition(posInitX, poxInitY);
@@ -1698,7 +1708,7 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides) {
 
 	polygon.on('click', function(e) {
 
-		deselectOnClick(selectedCanvas, this, e);
+		polygonOnClick(this, e, canvasName);
 
 	});
 
@@ -1709,6 +1719,57 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides) {
 	});
 
 	return [ polygon, polygonTab, polygonTabImage ];
+}
+
+function polygonOnClick(obj,e, canvasName){
+	
+	deselectOnClick(selectedCanvas, obj, e);
+	
+	var arrow = canvasArray[canvasName].arrow;
+
+	if (!e.ctrlKey) {
+		if (canvasArray[canvasName].down) {
+			canvasArray[canvasName].down = false;
+			
+			if(canvasArray[canvasName].oldIdSelected != obj.getParent().getId()){
+				
+				deleteArrowOutsideStandard(canvasName);
+				
+				var output = arrow.output.getChildren()[4].getText();
+				var input = obj.getParent().getChildren()[4].getText();
+				var arrowClone = addLink(canvasName, output, input);
+				
+				addLinkModalBt(arrow.output.getId(), obj.getParent().getId(), arrowClone.getName());
+				
+			}
+
+		} else {
+			var polygonLayer = canvasArray[canvasName].polygonLayer;
+			var layer = canvasArray[canvasName].layer;
+			
+			canvasArray[canvasName].down = true;
+			
+			var polygonGroup = getElement(polygonLayer, obj.getParent().getId());
+			arrow.setPoints([ polygonGroup.getX() + 40,
+					polygonGroup.getY() + 50,
+					polygonGroup.getX() + 40 + 1,
+					polygonGroup.getY() + 50 + 1 ]);
+
+			var idOutput = obj.getName();
+			arrow.setName("arrow" + idOutput);
+
+			arrow.output = obj.getParent();
+
+			var cloneArrow = arrow.clone();
+			cloneArrow.isArrow = true;
+			layer.add(cloneArrow);
+			
+			canvasArray[canvasName].oldIdSelected = obj.getParent().getId();
+			
+			layer.draw();
+		}
+	}
+	
 }
 
 function removeLink(name) {
