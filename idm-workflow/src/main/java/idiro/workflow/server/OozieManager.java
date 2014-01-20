@@ -209,12 +209,12 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 		if(error == null){
 			logger.debug("copy from "+
 					parentDir.getAbsolutePath()+" to "+hdfsWfPath);
-			int again = 5;
+			int again = 10;
 			FileSystem fs = null;
 			Exception e = null;
 			while(again > 0){
 				try{
-					logger.debug("Attempt "+ (6-again) +" to copy.");
+					logger.debug("Attempt "+ (11-again) +" to copy.");
 					fs = NameNodeVar.getFS();
 					Path wCur = new Path(hdfsWfPath);
 					if(fs.exists(wCur)){
