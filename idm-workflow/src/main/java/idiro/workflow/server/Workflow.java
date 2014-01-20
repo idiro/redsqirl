@@ -510,6 +510,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 							Attr attrDataName = doc.createAttribute("name");
 							attrDataName.setValue(outName);
 							data.setAttributeNode(attrDataName);
+							
+							Attr attrTypeName = doc.createAttribute("typename");
+							attrTypeName.setValue(saveMap.get(outName).getTypeName());
+							data.setAttributeNode(attrTypeName);
+							
 							logger.debug("Enter in write...");
 							saveMap.get(outName).write(doc,data);
 
@@ -840,7 +845,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 
 				Node compCur = compList.item(temp);
 				String id = compCur.getAttributes().getNamedItem("id").getNodeValue();
-
+				logger.debug("loads state: "+id);
+				
 				//Save element
 				Map<String,DFEOutput> mapOutput = getElement(id).getDFEOutput();
 				NodeList dataList = ((Element)compCur).getElementsByTagName("data");
@@ -848,11 +854,20 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 					Node dataCur = dataList.item(ind);
 
 					String dataName =  dataCur.getAttributes().getNamedItem("name").getNodeValue();
-					mapOutput.get(dataName).read((Element)dataCur);
-					if(mapOutput.get(dataName).getSavingState() != SavingState.RECORDED &&
-							mapOutput.get(dataName).getPath() == null){
-						mapOutput.get(dataName).generatePath(userName, id, dataName);
+					String typeName =  dataCur.getAttributes().getNamedItem("typename").getNodeValue();
+					DFEOutput cur = DataOutput.getOutput(typeName);
+					if(cur != null){
+						mapOutput.put(dataName,cur);
+						logger.debug("loads state dataset: "+dataName);
+						mapOutput.get(dataName).read((Element)dataCur);
+						if(mapOutput.get(dataName).getSavingState() != SavingState.RECORDED &&
+								mapOutput.get(dataName).getPath() == null){
+							mapOutput.get(dataName).generatePath(userName, id, dataName);
+						}
+					}else{
+						error = "Unknown typename "+typeName;
 					}
+					
 				}
 			}
 			saved = true;

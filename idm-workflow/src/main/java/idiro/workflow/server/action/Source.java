@@ -8,7 +8,6 @@ import idiro.workflow.server.DataOutput;
 import idiro.workflow.server.DataflowAction;
 import idiro.workflow.server.Page;
 import idiro.workflow.server.UserInteraction;
-import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.datatype.MapRedTextType;
 import idiro.workflow.server.enumeration.DisplayType;
@@ -49,8 +48,6 @@ public class Source extends DataflowAction {
 	public static final String key_datatype = "Data_type";
 	public static final String key_datasubtype = "Data_subtype";
 	public static final String key_dataset = "Data_set";
-
-	private static List<String> dataOutputClassName = null;
 
 	public Source() throws RemoteException {
 		super(null);
@@ -112,29 +109,8 @@ public class Source extends DataflowAction {
 							.getFirstChild("output").getFirstChild()
 							.getHead();
 
-
-					if(dataOutputClassName == null){
-						dataOutputClassName = WorkflowPrefManager
-								.getInstance()
-								.getNonAbstractClassesFromSuperClass(
-										DataOutput.class.getCanonicalName());
-					}
-					//Find the class and create an instance
-					Iterator<String> dataOutputClassNameIt = dataOutputClassName.iterator();
-
 					logger.info("output type : " + subtype);
-					DFEOutput outNew = null;
-					while (dataOutputClassNameIt.hasNext()) {
-						String className = dataOutputClassNameIt.next();
-						outNew = (DFEOutput) Class.forName(className)
-								.newInstance();
-						if (outNew.getTypeName().equalsIgnoreCase(subtype)) {
-							break;
-						} else {
-							outNew = null;
-						}
-
-					}
+					DFEOutput outNew = DataOutput.getOutput(subtype);
 
 					//Set the instance as output if necessary
 					if (outNew != null) {
@@ -400,13 +376,8 @@ public class Source extends DataflowAction {
 					.getFirstChild("output").getFirstChild().getHead();
 
 
-			if(dataOutputClassName == null){
-				dataOutputClassName = WorkflowPrefManager
-						.getInstance()
-						.getNonAbstractClassesFromSuperClass(
-								DataOutput.class.getCanonicalName());
-			}
-
+			
+			List<String> dataOutputClassName = DataOutput.getAllClassDataOutput();
 			for (String className : dataOutputClassName) {
 				DataOutput wa = null;
 				try {
