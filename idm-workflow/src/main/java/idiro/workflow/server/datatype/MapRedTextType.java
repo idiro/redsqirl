@@ -140,12 +140,12 @@ public class MapRedTextType extends DataOutput {
 		boolean ok = false;
 		if (getPath() != null) {
 			logger.info("checking if path exists: " + getPath().toString());
-			int again = 5;
+			int again = 10;
 			FileSystem fs = null;
 			while(again > 0){
 				try{
 					fs = NameNodeVar.getFS();
-					logger.debug("Attempt "+ (6-again) +": existence "+getPath());
+					logger.debug("Attempt "+ (11-again) +": existence "+getPath());
 					ok = fs.exists(new Path(getPath()));
 					again = 0;
 				}catch(Exception e){
