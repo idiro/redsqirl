@@ -151,7 +151,7 @@ public class PigTestUtils {
 		
 		src.update(src.getInteraction(Source.key_datasubtype));
 		Tree<String> dataSubTypeTree = src.getInteraction(Source.key_datasubtype).getTree();
-		dataSubTypeTree.getFirstChild("list").getFirstChild("output").add(MapRedTextType.class.getSimpleName());
+		dataSubTypeTree.getFirstChild("list").getFirstChild("output").add(new MapRedTextType().getTypeName());
 
 		src.update(src.getInteraction(Source.key_dataset));
 		Tree<String> dataSetTree = src.getInteraction(Source.key_dataset).getTree();
@@ -200,7 +200,7 @@ public class PigTestUtils {
 		
 		src.update(src.getInteraction(Source.key_datasubtype));
 		Tree<String> dataSubTypeTree = src.getInteraction(Source.key_datasubtype).getTree();
-		dataSubTypeTree.getFirstChild("list").getFirstChild("output").add(MapRedTextType.class.getSimpleName());
+		dataSubTypeTree.getFirstChild("list").getFirstChild("output").add(new MapRedTextType().getTypeName());
 
 		src.update(src.getInteraction(Source.key_dataset));
 		Tree<String> dataSetTree = src.getInteraction(Source.key_dataset).getTree();
