@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Interaction for selecting output of a union action.
@@ -307,14 +308,14 @@ public class PigTableUnionInteraction extends TableInteraction{
 			if(itTree.hasNext()){
 				Map<String,String> featTree = itTree.next();
 				String featName = featTree.get(table_feat_title);
-				String op = featTree.get(table_op_title);
-				select += hu.getNextName() +" = FOREACH " + relationName + " GENERATE "+featName;
+				String op = featTree.get(table_op_title).replaceAll(Pattern.quote(relationName+"."), "");
+				select += hu.getNextName() +" = FOREACH " + relationName + " GENERATE "+op+" AS "+featName;
 			}
 			while(itTree.hasNext()){
 				Map<String,String> featTree = itTree.next();
 				String featName = featTree.get(table_feat_title);
-				String op = featTree.get(table_op_title);
-				select +=", "+featName;
+				String op = featTree.get(table_op_title).replaceAll(Pattern.quote(relationName+"."), "");;
+				select +=", "+op+" AS "+featName;
 			}
 			select +=";\n\n";
 

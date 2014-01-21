@@ -1,6 +1,10 @@
 package idiro.workflow.server;
 
 import idiro.utils.FeatureList;
+import idiro.utils.OrderedFeatureList;
+import idiro.utils.Tree;
+import idiro.utils.TreeNonUnique;
+import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.enumeration.SavingState;
 import idiro.workflow.server.interfaces.DFEOutput;
 
@@ -13,6 +17,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -28,31 +33,38 @@ import org.w3c.dom.NodeList;
  */
 public abstract class DataOutput extends UnicastRemoteObject implements DFEOutput{
 
+	private static List<String> dataOutputClassName = null;
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1572828858159640436L;
+
+	/**
+	 * The logger.
+	 */
+	protected static Logger statLogger = Logger.getLogger(DataOutput.class);
 	
 	/**
 	 * The logger.
 	 */
 	protected Logger logger = Logger.getLogger(this.getClass());
-	
+
 	/**
 	 * Saving state
 	 */
 	protected SavingState savingState = SavingState.TEMPORARY;
-	
+
 	/**
 	 * The path
 	 */
 	private String path;
-	
+
 	/**
 	 * Feature
 	 */
 	protected FeatureList features = null;
-	
+
 	/**
 	 * Property of an output, 
 	 * This map gather information needed to plug the output,
@@ -66,85 +78,186 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 	 * new features '|' delimited
 	 */
 	protected Map<String,String> dataProperty = new LinkedHashMap<String,String>();
-	
-	
+
+
 	//public static final String hbase_new_feature = "hbase_new_feature";
-	
+
 	public DataOutput() throws RemoteException{
 		super();
 	}
-	
+
 	public DataOutput(FeatureList features) 
 			throws RemoteException{
 		super();
 		this.features = features;
 	}
 	
-	
+	public static List<String> getAllClassDataOutput(){
+		if(dataOutputClassName == null){
+			dataOutputClassName = WorkflowPrefManager
+					.getInstance()
+					.getNonAbstractClassesFromSuperClass(
+							DataOutput.class.getCanonicalName());
+		}
+		return dataOutputClassName;
+	}
+
+	public static DataOutput getOutput(String typeName){
+		
+		//Find the class and create an instance
+		Iterator<String> dataOutputClassNameIt = getAllClassDataOutput().iterator();
+
+
+		DataOutput outNew = null;
+		while (dataOutputClassNameIt.hasNext()) {
+			String className = dataOutputClassNameIt.next();
+			try{
+
+				outNew = (DataOutput) Class.forName(className)
+						.newInstance();
+				if (outNew.getTypeName().equalsIgnoreCase(typeName)) {
+					break;
+				} else {
+					outNew = null;
+				}
+			}catch(Exception e){
+				statLogger.warn("Fail to instanciate "+className);
+			}
+
+		}
+		return outNew;
+	}
+
+	/**
+	 * Write the browser tree corresponding to this data output
+	 * @return
+	 * @throws RemoteException 
+	 */
+	public Tree<String> getTree() throws RemoteException{
+		Tree<String> root = new TreeNonUnique<String>("browse");
+		root.add("type").add(getBrowser().name());
+		root.add("subtype").add(getTypeName());
+		Tree<String> output = root.add("output");
+		output.add("path").add(getPath());
+		
+		Tree<String> property = output.add("property");
+		Iterator<String> propIt = dataProperty.keySet().iterator();
+		while(propIt.hasNext()){
+			String key = propIt.next();
+			property.add(key).add(dataProperty.get(key));
+		}
+		
+		Iterator<String> featIt = features.getFeaturesNames().iterator();
+		while(featIt.hasNext()){
+			String featName = featIt.next();
+			Tree<String> feat = output.add("feature");
+			feat.add("name").add(featName);
+			feat.add("type").add(features.getFeatureType(featName).name());
+		}
+		return root;
+	}
+
 	@Override
-	public void write(Document doc,Element parent){
+	public void write(Document doc,Element parent) throws RemoteException{
 		logger.debug("into write...");
+
 		logger.debug("state "+savingState.toString());
 		Element state = doc.createElement("state");
 		state.appendChild(doc.createTextNode(savingState.toString()));
 		parent.appendChild(state);
-		
+
 		logger.debug("path: "+path);
 		Element pathE = doc.createElement("path");
 		pathE.appendChild(doc.createTextNode(path));
 		parent.appendChild(pathE);
-		
+
 		Element properties = doc.createElement("properties");
 		Iterator<String> itStr = dataProperty.keySet().iterator();
 		while(itStr.hasNext()){
 			String cur = itStr.next();
 			logger.debug("property "+cur+","+dataProperty.get(cur));
 			Element property = doc.createElement("property"); 
-			
+
 			Element key = doc.createElement("key");
 			key.appendChild(doc.createTextNode(cur));
 			property.appendChild(key);
-			
+
 			Element value = doc.createElement("value");
 			value.appendChild(doc.createTextNode(dataProperty.get(cur)));
 			property.appendChild(value);
-			
+
 			properties.appendChild(property);
-			
+
 		}
 		parent.appendChild(properties);
+		
+		Element featuresEl = doc.createElement("features");
+		itStr = features.getFeaturesNames().iterator();
+		while(itStr.hasNext()){
+			String cur = itStr.next();
+			logger.debug("feature "+cur+","+features.getFeatureType(cur));
+			Element feat = doc.createElement("feature"); 
+
+			Element name = doc.createElement("name");
+			name.appendChild(doc.createTextNode(cur));
+			feat.appendChild(name);
+
+			Element type = doc.createElement("type");
+			type.appendChild(doc.createTextNode(features.getFeatureType(cur).name()));
+			feat.appendChild(type);
+
+			featuresEl.appendChild(feat);
+		}
+		parent.appendChild(featuresEl);
 	}
-	
+
 	@Override
 	public void read(Element parent) throws RemoteException{
-		
-		savingState = SavingState.valueOf(parent.getElementsByTagName("state")
-		.item(0).getChildNodes().item(0).getNodeValue());
-		
+
+		String savStateStr = parent.getElementsByTagName("state")
+				.item(0).getChildNodes().item(0).getNodeValue();
+		logger.debug("Saving state: "+savStateStr);
+		savingState = SavingState.valueOf(savStateStr);
+
 		path = parent.getElementsByTagName("path")
 				.item(0).getChildNodes().item(0).getNodeValue();
+		logger.debug("Path: "+path);
 		if(path.equals("null")){
 			path = null;
 		}
-		
+
+		logger.debug("properties");
 		NodeList property = parent.getElementsByTagName("properties").item(0).getChildNodes();
 		for(int i = 0; i < property.getLength(); ++i){
-			
+			String key = ((Element)property.item(i)).getElementsByTagName("key")
+					.item(0).getChildNodes().item(0).getNodeValue();
+			logger.debug("key: "+key);
 			String value = null;
 			if (((Element)property.item(i)).getElementsByTagName("value")
 					.item(0).getChildNodes().item(0) != null){
 				value =((Element)property.item(i)).getElementsByTagName("value")
 						.item(0).getChildNodes().item(0).getNodeValue();
 			}
-			
-			addProperty(((Element)property.item(i)).getElementsByTagName("key")
-					.item(0).getChildNodes().item(0).getNodeValue(), 
-					value);
+			logger.debug("value: "+value);
+			addProperty(key,value);
 		}
 		
+		logger.debug("features");
+		features = new OrderedFeatureList();
+		NodeList featuresEl = parent.getElementsByTagName("features").item(0).getChildNodes();
+		for(int i = 0; i < featuresEl.getLength(); ++i){
+			String name = ((Element)featuresEl.item(i)).getElementsByTagName("name")
+					.item(0).getChildNodes().item(0).getNodeValue();
+			logger.debug("name: "+name);
+			String type = ((Element)featuresEl.item(i)).getElementsByTagName("type")
+						.item(0).getChildNodes().item(0).getNodeValue();
+			logger.debug("type: "+type);
+			features.addFeature(name, FeatureType.valueOf(type));
+		}
+
 	}
 
-	
+
 	/**
 	 * @return the features
 	 */
@@ -172,27 +285,27 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 	public final void setSavingState(SavingState savingState) {
 		this.savingState = savingState;
 	}
-	
+
 	@Override
 	public Map<String, String> getProperties() throws RemoteException {
 		return dataProperty;
 	}
-	
+
 	@Override
 	public void addProperty(String key, String value){
 		dataProperty.put(key, value);
 	}
-	
+
 	@Override
 	public String getProperty(String key){
 		return dataProperty.get(key);
 	}
-	
+
 	@Override
 	public void removeProperty(String key){
 		dataProperty.remove(key);
 	}
-	
+
 	@Override
 	public void removeAllProperties(){
 		Iterator<String> it = dataProperty.keySet().iterator();
@@ -200,7 +313,7 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 			dataProperty.put(it.next(), "");
 		}
 	}
-	
+
 	@Override
 	public String clean() throws RemoteException{
 		String err = null;
@@ -226,7 +339,7 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 	public void setPath(String path) throws RemoteException {
 		this.path = path;
 	}
-	
+
 	@Override
 	public String getColour() throws RemoteException {
 		String defaultCol = getDefaultColor();
@@ -267,7 +380,7 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 		}
 		return colour_pref != null ? colour_pref : defaultCol;
 	}
-	
+
 	@Override
 	public void setColour(String colour) throws RemoteException {
 		Properties prop = new Properties();
@@ -277,11 +390,11 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 							new File(WorkflowPrefManager.pathUserDFEOutputColour.get()))
 					);
 			prop.put(getTypeName(), colour);
-				prop.store(
-						new FileWriter(
-								new File(WorkflowPrefManager.
-										pathUserDFEOutputColour.get())), 
-										"Add "+getTypeName()+" to the file");
+			prop.store(
+					new FileWriter(
+							new File(WorkflowPrefManager.
+									pathUserDFEOutputColour.get())), 
+									"Add "+getTypeName()+" to the file");
 			prop.clear();
 		} catch (FileNotFoundException e) {
 			logger.debug("No file found initialize one");
@@ -302,9 +415,9 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 					e.getMessage());
 		}
 	}
-	
+
 	protected abstract String getDefaultColor();
-	
+
 	public boolean compare(String path, FeatureList fl, Map<String,String> props){
 		logger.debug("Comparaison dataoutput:");
 		logger.debug(this.path+" "+path);

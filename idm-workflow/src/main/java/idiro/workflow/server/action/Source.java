@@ -6,9 +6,9 @@ import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.DataOutput;
 import idiro.workflow.server.DataflowAction;
+import idiro.workflow.server.ListInteraction;
 import idiro.workflow.server.Page;
 import idiro.workflow.server.UserInteraction;
-import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.datatype.MapRedTextType;
 import idiro.workflow.server.enumeration.DisplayType;
@@ -25,6 +25,7 @@ import java.io.File;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +51,8 @@ public class Source extends DataflowAction {
 	public static final String key_datasubtype = "Data_subtype";
 	public static final String key_dataset = "Data_set";
 
-	private static List<String> dataOutputClassName = null;
+	protected ListInteraction dataType;
+	protected ListInteraction dataSubtype;
 
 	public Source() throws RemoteException {
 		super(null);
@@ -58,8 +60,13 @@ public class Source extends DataflowAction {
 		Page page1 = addPage("Source: Data type",
 				"Choose the data type that you would like to load", 1);
 
-		DFEInteraction dataType = new UserInteraction(key_datatype,
-				"Please specify a data type", DisplayType.list, 0, 0);
+		dataType = new ListInteraction(key_datatype,
+				"Please specify a data type", 0, 0);
+		dataType.setDisplayRadioButton(true);
+		List<String> posValues = new LinkedList<String>();
+		posValues.add("Hive");
+		posValues.add("HDFS");
+		dataType.setPossibleValues(posValues);
 
 		page1.addInteraction(dataType);
 
@@ -70,9 +77,7 @@ public class Source extends DataflowAction {
 				String error = null;
 				logger = Logger.getRootLogger();
 				try {
-					if (getInteraction(key_datatype).getTree()
-							.getFirstChild("list").getFirstChild("output")
-							.getFirstChild().getHead().isEmpty()) {
+					if (dataType.getValue().isEmpty()) {
 						error = LanguageManager.getText("source.datatypeempty");
 					}
 				} catch (Exception e) {
@@ -86,8 +91,9 @@ public class Source extends DataflowAction {
 		Page page2 = addPage("Source: Data sub-type",
 				"Choose the data sub-type that you would like to load", 1);
 
-		DFEInteraction dataSubtype = new UserInteraction(key_datasubtype,
-				"Please specify a data subtype", DisplayType.list, 0, 0);
+		dataSubtype = new ListInteraction(key_datasubtype,
+				"Please specify a data subtype", 0, 0);
+		dataSubtype.setDisplayRadioButton(true);
 
 		page2.addInteraction(dataSubtype);
 
@@ -98,57 +104,32 @@ public class Source extends DataflowAction {
 				String error = null;
 				try {
 
-					if (getInteraction(key_datatype).getTree()
-							.getFirstChild("list").getFirstChild("output")
-							.getFirstChild().getHead().isEmpty()) {
+					//Get the subtype
+					String subtype = dataSubtype.getValue();
+					logger.info("output type : " + subtype);
+
+					if (dataSubtype.getValue().isEmpty()) {
 						error = LanguageManager.getText("source.datatypeempty");
 					}
 
-					logger.info("Getting CheckDirectory output type ");
+					if(error == null){
+						logger.info("Getting CheckDirectory output type ");
+						DFEOutput outNew = DataOutput.getOutput(subtype);
 
-					//Get the subtype
-					String subtype = getInteraction(key_datasubtype)
-							.getTree().getFirstChild("list")
-							.getFirstChild("output").getFirstChild()
-							.getHead();
-
-
-					if(dataOutputClassName == null){
-						dataOutputClassName = WorkflowPrefManager
-								.getInstance()
-								.getNonAbstractClassesFromSuperClass(
-										DataOutput.class.getCanonicalName());
-					}
-					//Find the class and create an instance
-					Iterator<String> dataOutputClassNameIt = dataOutputClassName.iterator();
-
-					logger.info("output type : " + subtype);
-					DFEOutput outNew = null;
-					while (dataOutputClassNameIt.hasNext()) {
-						String className = dataOutputClassNameIt.next();
-						outNew = (DFEOutput) Class.forName(className)
-								.newInstance();
-						if (outNew.getTypeName().equalsIgnoreCase(subtype)) {
-							break;
+						//Set the instance as output if necessary
+						if (outNew != null) {
+							if (output.get(out_name) == null ||
+									!output.get(out_name).getTypeName().equalsIgnoreCase(subtype)) {
+								logger.info("output set");
+								output.put(out_name, (DFEOutput) outNew);
+								//Set the Output as RECORDED ALWAYS
+								output.get(out_name).setSavingState(
+										SavingState.RECORDED);
+							}
 						} else {
-							outNew = null;
+							error = LanguageManager.getText("source.outputnull");
+							logger.error(error);
 						}
-
-					}
-
-					//Set the instance as output if necessary
-					if (outNew != null) {
-						if (output.get(out_name) == null ||
-								!output.get(out_name).getTypeName().equalsIgnoreCase(subtype)) {
-							logger.info("output set");
-							output.put(out_name, (DFEOutput) outNew);
-							//Set the Output as RECORDED ALWAYS
-							output.get(out_name).setSavingState(
-									SavingState.RECORDED);
-						}
-					} else {
-						error = LanguageManager.getText("source.outputnull");
-						logger.error(error);
 					}
 
 				} catch (Exception e) {
@@ -172,14 +153,15 @@ public class Source extends DataflowAction {
 			public String check(DFEPage page) throws RemoteException {
 
 				String error = null;
-				DFEOutput out = null;
-				
+				DataOutput out = null;
+
 				try{
-					out = output.get(out_name);
+					out = (DataOutput) output.get(out_name);
 				}catch(Exception e){
 					error = LanguageManager.getText("source.outputchecknull");
 				}
 				try {
+					logger.info("tree is : "+((TreeNonUnique<String>)getInteraction(key_dataset).getTree()).toString());
 
 					//Properties
 					Map<String,String> props = new LinkedHashMap<String,String>();
@@ -189,22 +171,22 @@ public class Source extends DataflowAction {
 									.getFirstChild("browse").
 									getFirstChild("output")
 									.getFirstChild("property").getSubTreeList().iterator();
-							
+
 							while(itProp.hasNext()){
 								Tree<String> prop = itProp.next();
 								String name = prop.getHead();
 								String value = prop.getFirstChild().getHead();
-								
+
 								logger.info("out addProperty " + name + " " + value);
-								
+
 								props.put(name, value);
 							}
 						}catch(Exception e){
 							logger.debug("No properties");
 						}
 					}
-					
-					
+
+
 					//Features
 					FeatureList outF = new OrderedFeatureList();
 					if(error == null){
@@ -240,15 +222,14 @@ public class Source extends DataflowAction {
 						}
 					}
 
-					//Set path
+					//Path
 					String path = null;
 					if(error == null){
 						try{
-							logger.info("tree is : "+((TreeNonUnique<String>)getInteraction(key_dataset).getTree()).toString());
 							path = getInteraction(key_dataset).getTree()
 									.getFirstChild("browse").getFirstChild("output")
 									.getFirstChild("path").getFirstChild().getHead();
-							
+
 							if (path.isEmpty()) {
 								error = LanguageManager.getText("source.pathempty");
 							}
@@ -256,9 +237,9 @@ public class Source extends DataflowAction {
 							error = LanguageManager.getText("source.setpatherror",new Object[]{e.getMessage()});
 						}
 					}
-					
-					
-					
+
+
+
 					if(error == null){
 						if(!out.compare(path, outF, props)){
 							logger.info("The output need to be changed in source "+componentId);
@@ -266,25 +247,24 @@ public class Source extends DataflowAction {
 								out.setPath(null);
 								out.setFeatures(null);
 								out.removeAllProperties();
-							}catch(Exception e){
-								error = LanguageManager.getText("source.outputreset");
+							}catch(Exception e){}
+							Iterator<String> propsIt = props.keySet().iterator();
+							while(propsIt.hasNext()){
+								String cur = propsIt.next();
+								out.addProperty(cur, props.get(cur));
 							}
-							if(error == null){
-								Iterator<String> propsIt = props.keySet().iterator();
-								while(propsIt.hasNext()){
-									String cur = propsIt.next();
-									out.addProperty(cur, props.get(cur));
-								}
-								
-								//Update the feature list only if it looks good
-								out.setFeatures(outF);
 
-								logger.info("Setpath : " + path);
-								out.setPath(path);
-								
-							}
+							//Update the feature list only if it looks good
+							out.setFeatures(outF);
+
+							logger.info("Setpath : " + path);
+							out.setPath(path);
+
 						}
+						getInteraction(key_dataset).getTree().removeAllChildren();
+						getInteraction(key_dataset).getTree().add(out.getTree());
 					}
+					
 
 					//Check path
 					if(error == null){
@@ -303,10 +283,10 @@ public class Source extends DataflowAction {
 				} catch (Exception e) {
 					error = LanguageManager.getText("source.exception",new Object[]{e.getMessage()});
 				}
-				
-				
+
+
 				logger.info("checkpage3 "+error);
-				
+
 				return error;
 			}
 
@@ -357,56 +337,16 @@ public class Source extends DataflowAction {
 
 	public void updateDataType(Tree<String> treeDatatype)
 			throws RemoteException {
-		Tree<String> list = null;
-		if (treeDatatype.getSubTreeList().isEmpty()) {
-			list = treeDatatype.add("list");
-			list.add("output");
-
-			Tree<String> values = list.add("values");
-			values.add("value").add("Hive");
-			values.add("value").add("HDFS");
-			
-			Tree<String> display = list.add("display");
-			display.add("checkbox");
-		}
 	}
 
 	public void updateDataSubType(Tree<String> treeDatasubtype)
 			throws RemoteException {
-		Tree<String> list = null;
-		Tree<String> outputT = null;
-		if (!treeDatasubtype.getSubTreeList().isEmpty()) {
-			outputT = treeDatasubtype.getFirstChild("list").getFirstChild(
-					"output");
-			treeDatasubtype.removeAllChildren();
-		}
 
-		list = treeDatasubtype.add("list");
-		if (outputT != null) {
-			list.add(outputT);
-		} else {
-			list.add("output");
-			outputT = treeDatasubtype.getFirstChild("list").getFirstChild(
-					"output");
-		}
-
-		Tree<String> values = list.add("values");
-
-		DFEInteraction interaction = getInteraction(key_datatype);
-		if (interaction.getTree().getFirstChild("list").getFirstChild("output")
-				.getFirstChild() != null) {
-
-			String type = interaction.getTree().getFirstChild("list")
-					.getFirstChild("output").getFirstChild().getHead();
-
-
-			if(dataOutputClassName == null){
-				dataOutputClassName = WorkflowPrefManager
-						.getInstance()
-						.getNonAbstractClassesFromSuperClass(
-								DataOutput.class.getCanonicalName());
-			}
-
+		String type = dataType.getValue();
+		if (type != null) {
+			String setValue = null;
+			List<String> posValues = new LinkedList<String>();
+			List<String> dataOutputClassName = DataOutput.getAllClassDataOutput();
 			for (String className : dataOutputClassName) {
 				DataOutput wa = null;
 				try {
@@ -416,32 +356,28 @@ public class Source extends DataflowAction {
 				}
 
 				if (wa.getBrowser().toString().equalsIgnoreCase(type)) {
-					values.add("value").add(wa.getTypeName());
+					posValues.add(wa.getTypeName());
 					if ((wa.getTypeName().equalsIgnoreCase(
 							(new HiveType()).getTypeName()) || wa.getTypeName()
 							.equalsIgnoreCase(
 									(new MapRedTextType()).getTypeName()))
-									&& outputT.getSubTreeList().size() == 0) {
-						outputT.add(wa.getTypeName());
+									&& dataSubtype.getValue() == null) {
+						setValue = wa.getTypeName();
 					}
 				}
 			}
-			
-			Tree<String> display = list.add("display");
-			display.add("checkbox");
-			
+			dataSubtype.setPossibleValues(posValues);
+			if(setValue != null){
+				dataSubtype.setValue(setValue);
+			}
 		}
 	}
 
 	public void updateDataSet(Tree<String> treeDataset) throws RemoteException {
 
-		String newType = getInteraction(key_datatype).getTree()
-				.getFirstChild("list").getFirstChild("output").getFirstChild()
-				.getHead();
+		String newType = dataType.getValue();
 
-		String newSubtype = getInteraction(key_datasubtype).getTree()
-				.getFirstChild("list").getFirstChild("output").getFirstChild()
-				.getHead();
+		String newSubtype = dataSubtype.getValue();
 
 		if (treeDataset.getSubTreeList().isEmpty()) {
 			treeDataset.add("browse").add("output");

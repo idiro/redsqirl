@@ -248,6 +248,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 			if(again == 0){
 				error = LanguageManager.getText("ooziemanager.copydependencies",new Object[]{e.getMessage()});
 			}
+			LocalFileSystem.delete(parentDir);
 		}
 
 

@@ -1,7 +1,6 @@
 package idm;
 
 
-import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
@@ -235,22 +234,25 @@ public class CanvasBean extends BaseBean implements Serializable{
 		logger.info("getIdMap1 :" + getIdMap());
 		logger.info("getIdMap2 :" + getIdMap().get(workflowName));
 		logger.info("getIdMap3 :" + paramGroupID);
-		logger.info("getIdMap4 :" + getIdMap().get(workflowName).get(paramGroupID));
+		if(getIdMap().get(workflowName) != null){
+			logger.info("getIdMap4 :" + getIdMap().get(workflowName).get(paramGroupID));
+			if(getIdMap().get(workflowName).get(paramGroupID) != null){
+				try {
+					DataFlow df = getDf();
+					df.getElement(getIdMap().get(workflowName).get(paramGroupID)).setPosition(
+							Double.valueOf(posX).intValue(), 
+							Double.valueOf(posY).intValue());
+					logger.info(workflowName + " - "+
+							getIdMap().get(workflowName).get(paramGroupID) + " - " + 
+							Double.valueOf(posX).intValue() + " - "+
+							Double.valueOf(posY).intValue());
 
-		try {
-			DataFlow df = getDf();
-			df.getElement(getIdMap().get(workflowName).get(paramGroupID)).setPosition(
-					Double.valueOf(posX).intValue(), 
-					Double.valueOf(posY).intValue());
-			logger.info(workflowName + " - "+
-					getIdMap().get(workflowName).get(paramGroupID) + " - " + 
-					Double.valueOf(posX).intValue() + " - "+
-					Double.valueOf(posY).intValue());
-
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
@@ -281,11 +283,11 @@ public class CanvasBean extends BaseBean implements Serializable{
 			setResult(new String[]{getParamNameLink(), nameElementA, nameElementB});
 
 			setNameOutput(nameElementA);
-			
-			
+
+
 			//generate the label to put in the arrow
 			String label = "";
-			
+
 			if (dfeObjA.getDFEOutput().entrySet().size() > 1 ||
 					dfeObjB.getInput().entrySet().size() > 1){
 				if (dfeObjA.getDFEOutput().entrySet().size() > 1){
@@ -297,7 +299,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 				}
 			}
 			setLinkLabel(label);
-			
+
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
@@ -795,9 +797,9 @@ public class CanvasBean extends BaseBean implements Serializable{
 	}
 
 	public String[][] getRunningStatus() throws Exception{
-		
+
 		logger.info("getRunningStatus");
-		
+
 		String[][] result = new String[getIdMap().get(getNameWorkflow()).size()][];
 
 		int i = 0;
@@ -808,7 +810,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 			logger.info(e.getKey()+" - "+status);
 
 			String pathExists = null;
-			
+
 			DataFlowElement cur = getDf().getElement(e.getValue());
 			if (cur  != null){
 				for (Entry<String, DFEOutput> e2 : cur.getDFEOutput().entrySet()){
@@ -1004,7 +1006,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 	public void setNameOutput(String nameOutput) {
 		this.nameOutput = nameOutput;
 	}
-	
+
 	public String getLinkLabel() {
 		return linkLabel;
 	}

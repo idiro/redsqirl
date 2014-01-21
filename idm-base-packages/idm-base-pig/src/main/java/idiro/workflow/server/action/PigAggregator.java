@@ -41,39 +41,6 @@ public class PigAggregator extends PigElement {
 		page2 = addPage("Attributes", "Select table atributes ", 1);
 
 		page2.addInteraction(tSelInt);
-		
-		/*
-		page2.setChecker(new PageChecker() {
-
-			public String check(DFEPage page) throws RemoteException {
-				String error = null;
-				String type = null;
-				try {
-					Iterator<Tree<String>> rows = getInteraction(
-							key_featureTable).getTree().getFirstChild("table")
-							.getChildren("row").iterator();
-
-					while (rows.hasNext()) {
-						String op = rows
-								.next()
-								.getFirstChild(
-										PigTableSelectInteraction.table_op_title)
-								.getFirstChild().getHead().toUpperCase();
-						
-						type = PigDictionary.getInstance().getReturnType(op,
-								getInFeaturesWithAlias(),
-								getGroupedWithAlias());
-						if (type == null && type.isEmpty()) {
-							error += op + " has no return type\n";
-						}
-					}
-				} catch (Exception e) {
-					error = "\nThere was a problem checking the Page : "
-							+ e.getMessage();
-				}
-				return error;
-			}
-		});*/
 
 		page3 = addPage("Filter", "Aggregator Configuration", 1);
 
