@@ -50,6 +50,7 @@ public class MessageUseful {
 	 * @param msg message
 	 * @see MessageUseful#addErrorMessage(String, String)
 	 */
+	@SuppressWarnings("unchecked")
 	public static void addErrorMessage(String msg) {
 		
 		FacesContext facesContext = FacesContext.getCurrentInstance();
@@ -60,7 +61,7 @@ public class MessageUseful {
 			session.setAttribute("listError", listError);
 		}
 		
-		if(((ArrayList<ItemList>)session.getAttribute("listError")).size() <= 500){
+		if( ((ArrayList<ItemList>)session.getAttribute("listError")).size() <= 500){
 			Format formatter = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss");
 			((ArrayList<ItemList>)session.getAttribute("listError")).add(new ItemList(formatter.format(new Date()), msg));
 		}
