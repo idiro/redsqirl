@@ -816,9 +816,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 
 				logger.debug(compId+": output...");
 				NodeList outList = ((Element) compCur).getElementsByTagName("outputs").item(0).getChildNodes();
-				if (getElement(compId).getDFEOutput() == null || getElement(compId).getDFEOutput().isEmpty()){
-					getElement(compId).updateOut();
-				}
 				if(outList != null){
 					for (int index = 0; index < outList.getLength(); index++) {
 						try{

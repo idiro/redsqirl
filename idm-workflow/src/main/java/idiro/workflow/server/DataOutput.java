@@ -1,8 +1,10 @@
 package idiro.workflow.server;
 
 import idiro.utils.FeatureList;
+import idiro.utils.OrderedFeatureList;
 import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
+import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.enumeration.SavingState;
 import idiro.workflow.server.interfaces.DFEOutput;
 
@@ -188,6 +190,25 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 
 		}
 		parent.appendChild(properties);
+		
+		Element featuresEl = doc.createElement("features");
+		itStr = features.getFeaturesNames().iterator();
+		while(itStr.hasNext()){
+			String cur = itStr.next();
+			logger.debug("feature "+cur+","+features.getFeatureType(cur));
+			Element feat = doc.createElement("feature"); 
+
+			Element name = doc.createElement("name");
+			name.appendChild(doc.createTextNode(cur));
+			feat.appendChild(name);
+
+			Element type = doc.createElement("type");
+			type.appendChild(doc.createTextNode(features.getFeatureType(cur).name()));
+			feat.appendChild(type);
+
+			featuresEl.appendChild(feat);
+		}
+		parent.appendChild(featuresEl);
 	}
 
 	@Override
@@ -219,6 +240,19 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 			}
 			logger.debug("value: "+value);
 			addProperty(key,value);
+		}
+		
+		logger.debug("features");
+		features = new OrderedFeatureList();
+		NodeList featuresEl = parent.getElementsByTagName("features").item(0).getChildNodes();
+		for(int i = 0; i < featuresEl.getLength(); ++i){
+			String name = ((Element)featuresEl.item(i)).getElementsByTagName("name")
+					.item(0).getChildNodes().item(0).getNodeValue();
+			logger.debug("name: "+name);
+			String type = ((Element)featuresEl.item(i)).getElementsByTagName("type")
+						.item(0).getChildNodes().item(0).getNodeValue();
+			logger.debug("type: "+type);
+			features.addFeature(name, FeatureType.valueOf(type));
 		}
 
 	}
