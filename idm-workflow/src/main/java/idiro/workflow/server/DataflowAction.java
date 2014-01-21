@@ -223,19 +223,14 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			++pageNb;
 			try {
 				error = it.next().checkPage();
-				if (error != null) {
-					error = LanguageManager.getText(
-							"dataflowaction.checkuservariables", new Object[] {
-									String.valueOf(pageNb), error });
-					error = "Page " + pageNb + ": " + error;
-				}
 			} catch (Exception e) {
-				error = LanguageManager
-						.getText(
-								"dataflowaction.checkuservariablesexception",
-								new Object[] { String.valueOf(pageNb),
-										e.getMessage() });
+				error = e.getMessage();
 			}
+		}
+		if(error != null){
+			error = LanguageManager.getText(
+					"dataflowaction.checkuservariables", new Object[] {
+							String.valueOf(pageNb), error });
 		}
 		return error;
 	}
