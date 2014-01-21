@@ -1,6 +1,8 @@
 package idiro.workflow.server;
 
 import idiro.utils.FeatureList;
+import idiro.utils.Tree;
+import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.enumeration.SavingState;
 import idiro.workflow.server.interfaces.DFEOutput;
 
@@ -124,6 +126,34 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 		return outNew;
 	}
 
+	/**
+	 * Write the browser tree corresponding to this data output
+	 * @return
+	 * @throws RemoteException 
+	 */
+	public Tree<String> getTree() throws RemoteException{
+		Tree<String> root = new TreeNonUnique<String>("browse");
+		root.add("type").add(getBrowser().name());
+		root.add("subtype").add(getTypeName());
+		Tree<String> output = root.add("output");
+		output.add("path").add(getPath());
+		
+		Tree<String> property = output.add("property");
+		Iterator<String> propIt = dataProperty.keySet().iterator();
+		while(propIt.hasNext()){
+			String key = propIt.next();
+			property.add(key).add(dataProperty.get(key));
+		}
+		
+		Iterator<String> featIt = features.getFeaturesNames().iterator();
+		while(featIt.hasNext()){
+			String featName = featIt.next();
+			Tree<String> feat = output.add("feature");
+			feat.add("name").add(featName);
+			feat.add("type").add(features.getFeatureType(featName).name());
+		}
+		return root;
+	}
 
 	@Override
 	public void write(Document doc,Element parent) throws RemoteException{
