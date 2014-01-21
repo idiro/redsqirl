@@ -426,7 +426,11 @@
             		  tabName +"</a> <span id='"+tabName+"-icon-close' class='ui-icon ui-icon-close' onclick=\"closeWorkflowTab(this, '"+tabName+"')\"></span> </li>" ).appendTo( ul );
               
               var div = "<div id='"+tabName+"'>"+
-				"<div id='container-"+tabName+"' class='container-"+tabName+"'></div>"+
+				"<div id='container-"+tabName+"' class='container-"+tabName+"'>"+
+					"<rich:panel header='Legend' style='position: fixed; z-index:9999999;'>"+
+						"<div id='container-legend-"+tabName+"' class='container-legend-"+tabName+"' />"+
+	        		"</rich:panel>"+
+              	"</div>"+
 				"</div>";
               
               jQuery(div).appendTo( tabs );
@@ -1011,7 +1015,12 @@
 
 						<div id="canvas-1">
 
-							<div id="container-canvas-1" class="container-canvas-1"></div>
+							<div id="container-canvas-1" class="container-canvas-1" >
+								 <rich:panel id="header-legend-canvas-1" header="Legend" onclick="jQuery('#panelTest').toggle();return false;" width="170px" style="position: fixed; z-index:99999999;"/>
+								 <rich:panel id="panelTest" width="190px" style="position: fixed; z-index:9999999;">
+									 <div id="container-legend-canvas-1" class="container-legend-canvas-1" style="position: relative; top:20px;"/>
+						        </rich:panel>
+							</div>
 							
 						</div>
 						<h:panelGroup id="tabsFooterForm">
