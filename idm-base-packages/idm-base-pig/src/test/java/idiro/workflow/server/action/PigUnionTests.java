@@ -91,7 +91,7 @@ public class PigUnionTests {
 			rowId = out.add("row");
 			rowId.add(PigTableUnionInteraction.table_relation_title).add(relation_from_1);
 			rowId.add(PigTableUnionInteraction.table_feat_title).add("VALUE");
-			rowId.add(PigTableUnionInteraction.table_op_title).add(relation_from_1+".VALUE");
+			rowId.add(PigTableUnionInteraction.table_op_title).add(relation_from_1+".VALUE + 1");
 			rowId.add(PigTableUnionInteraction.table_type_title).add("INT");
 			rowId = out.add("row");
 			rowId.add(PigTableUnionInteraction.table_relation_title).add(relation_from_2);

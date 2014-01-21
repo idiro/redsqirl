@@ -23,53 +23,36 @@ public class PigAggregatorTests {
 
 
 	public static DataFlowElement createPigWithSrc(Workflow w, DataFlowElement src,
-			HDFSInterface hInt) throws RemoteException, Exception {
+			HDFSInterface hInt,boolean filter) throws RemoteException, Exception {
 		String error = null;
 		String idHS = w.addElement((new PigAggregator()).getName());
 		logger.info("Pig agge: " + idHS);
-		
+
 		PigAggregator pig = (PigAggregator) w.getElement(idHS);
 		logger.info(Source.out_name + " " + src.getComponentId());
 		logger.debug(PigAggregator.key_input + " " + idHS);
 
 		w.addLink(Source.out_name, src.getComponentId(),
 				PigAggregator.key_input, idHS);
-		
+
 		assertTrue("pig aggreg add input: " + error, error == null);
-		updatePig(w, pig, hInt);
+		updatePig(w, pig, hInt,filter);
 		error = pig.updateOut();
 		assertTrue("pig aggreg update: " + error, error == null);
 		logger.debug("Features "
 				+ pig.getDFEOutput().get(PigAggregator.key_output)
-						.getFeatures());
+				.getFeatures());
 
 		pig.getDFEOutput()
-				.get(PigAggregator.key_output)
-				.generatePath(System.getProperty("user.name"),
-						pig.getComponentId(), PigSelect.key_output);
+		.get(PigAggregator.key_output)
+		.generatePath(System.getProperty("user.name"),
+				pig.getComponentId(), PigSelect.key_output);
 		return pig;
 	}
 
-	public static DataFlowElement createPigWithPig(Workflow w, DataFlowElement src,
-			HDFSInterface hInt) throws RemoteException, Exception {
-		String error = null;
-		String idHS = w.addElement(new PigAggregator().getName());
-		PigAggregator pig = (PigAggregator) w.getElement(idHS);
-		logger.info("Pig select: " + idHS);
-
-		w.addLink(PigAggregator.key_output, src.getComponentId(),
-				PigAggregator.key_input, idHS);
-		assertTrue("pig agg add input: " + error, error == null);
-
-		updatePig(w, pig, hInt);
-		logger.info("Updating Pig");
-
-		return pig;
-	}
-
-	public static void updatePig(Workflow w, PigAggregator pig, HDFSInterface hInt)
+	public static void updatePig(Workflow w, PigAggregator pig, HDFSInterface hInt,boolean filter)
 			throws RemoteException, Exception {
-		
+
 		logger.info("update pig...");
 		PigGroupInteraction groupingInt = (PigGroupInteraction) pig.getGroupingInt();
 
@@ -81,7 +64,11 @@ public class PigAggregatorTests {
 		assertTrue("group check : "+groupingInt.check(),groupingInt.check()==null);
 
 		PigFilterInteraction ci = pig.getFilterInt();
-		ci.setValue("VALUE < 10");
+		if(filter){
+			ci.setValue("VALUE < 10");
+		}else{
+			ci.setValue("");
+		}
 		assertTrue("condition check : "+ci.check(),ci.check()==null);
 
 		PigTableSelectInteraction tsi = pig.gettSelInt();
@@ -89,14 +76,8 @@ public class PigAggregatorTests {
 		String inAlias = pig.getAliases().keySet().iterator().next();
 		pig.update(tsi);
 		{
-//			tsi.getTree().getFirstChild("table").getFirstChild("generator").getFirstChild("operation").remove("row");
-//			Tree<String> out = tsi.getTree().getFirstChild("table").getFirstChild("generator").getFirstChild("operation");
 			Tree<String> out = tsi.getTree().getFirstChild("table");
 			Tree<String> rowId = out.add("row");
-//			rowId.add(PigTableSelectInteraction.table_feat_title).add("ID");
-//			rowId.add(PigTableSelectInteraction.table_op_title).add(id + ".ID");
-//			rowId.add(PigTableSelectInteraction.table_type_title).add("INT");
-//			rowId = out.add("row");
 			rowId.add(PigTableSelectInteraction.table_feat_title).add("VALUE");
 			rowId.add(PigTableSelectInteraction.table_op_title).add(inAlias + ".VALUE");
 			rowId.add(PigTableSelectInteraction.table_type_title).add("INT");
@@ -117,11 +98,11 @@ public class PigAggregatorTests {
 		String error = pig.updateOut();
 		assertTrue("pig select update: " + error, error == null);
 	}
+	
 
-	@Test
-	public void basic() {
-		TestUtils.logTestTitle(getClass().getName()+"#basic");
+	public void runWorkflow(boolean filter) {
 		
+
 		String error = null;
 		String new_path1 = TestUtils.getPath(1);
 		String new_path2 = TestUtils.getPath(2);
@@ -129,15 +110,15 @@ public class PigAggregatorTests {
 			HDFSInterface hInt = new HDFSInterface();
 			hInt.delete(new_path1);
 			hInt.delete(new_path2);
-			
+
 			Workflow w = new Workflow("workflow1_" + getClass().getName());
 			logger.info("built workflow");
 
 			DataFlowElement src = PigTestUtils.createSrc_ID_VALUE_RAW(w, hInt, new_path1);
-			PigAggregator pig = (PigAggregator) createPigWithSrc(w, src, hInt);
-			
+			PigAggregator pig = (PigAggregator) createPigWithSrc(w, src, hInt,filter);
+
 			pig.getDFEOutput().get(PigAggregator.key_output)
-					.setSavingState(SavingState.RECORDED);
+			.setSavingState(SavingState.RECORDED);
 			pig.getDFEOutput().get(PigAggregator.key_output).setPath(new_path2);
 			logger.info("run...");
 
@@ -163,16 +144,24 @@ public class PigAggregatorTests {
 			}
 			logger.info("Workflow job completed ...");
 			logger.info(wc.getJobInfo(jobId));
-			
+
 			hInt.delete(new_path1);
 			hInt.delete(new_path2);
-			
+
 			error = wc.getJobInfo(jobId).toString();
 			assertTrue(error, error.contains("SUCCEEDED"));
 		} catch (Exception e) {
 			logger.error("something went wrong : " + e.getMessage());
 			assertTrue(e.getMessage(), false);
-			
+
 		}
 	}
+	
+	@Test
+	public void basic() {
+		TestUtils.logTestTitle(getClass().getName()+"#basic");
+		runWorkflow(false);
+		runWorkflow(true);
+	}
+
 }

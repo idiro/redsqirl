@@ -71,7 +71,8 @@ public class PigWorkflowMngtTests {
 					PigElement.key_output);
 			
 			//Aggregation
-			PigAggregator pigA = (PigAggregator) PigAggregatorTests.createPigWithSrc(w,PigTestUtils.createSrc_ID_VALUE_RAW(w, hInt, new_path3),hInt);
+			PigAggregator pigA = (PigAggregator) PigAggregatorTests.createPigWithSrc(
+					w,PigTestUtils.createSrc_ID_VALUE_RAW(w, hInt, new_path3),hInt,false);
 			element = pigA.getComponentId();
 
 			pigA.getDFEOutput().get(PigSelect.key_output).setSavingState(SavingState.RECORDED);
@@ -98,7 +99,6 @@ public class PigWorkflowMngtTests {
 		}catch (Exception e) {
 			logger.error("something went wrong : " + e.getMessage());
 			assertTrue(e.getMessage(), false);
-
 		}
 	}
 }
