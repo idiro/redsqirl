@@ -382,10 +382,14 @@ public class MapRedTextType extends DataOutput {
 				Iterator<String> flIt = fl.getFeaturesNames().iterator();
 				Iterator<String> featIt = features.getFeaturesNames().iterator();
 				boolean ok = true;
+				int i = 1;
 				while(flIt.hasNext() && ok){
 					String nf = flIt.next();
 					String of = featIt.next();
-					ok &= fl.getFeatureType(nf) == features.getFeatureType(of);
+					logger.debug("types feat "+i+": "+fl.getFeatureType(nf)+" , "+features.getFeatureType(of));
+					
+					ok &= canCast(fl.getFeatureType(nf),features.getFeatureType(of));
+					++i;
 				}
 				if(!ok){
 					features = fl;
