@@ -51,8 +51,8 @@ public class Source extends DataflowAction {
 	public static final String key_datasubtype = "Data_subtype";
 	public static final String key_dataset = "Data_set";
 
-	private ListInteraction dataType;
-	private ListInteraction dataSubtype;
+	protected ListInteraction dataType;
+	protected ListInteraction dataSubtype;
 
 	public Source() throws RemoteException {
 		super(null);
