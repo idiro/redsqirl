@@ -98,7 +98,7 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 		}else{
 			logger.info("First argument should be 'add' or 'remove'");
 		}
-
+		System.exit(0);
 	}
 
 	/**

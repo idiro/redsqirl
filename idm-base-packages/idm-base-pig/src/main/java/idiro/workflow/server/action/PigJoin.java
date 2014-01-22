@@ -1,17 +1,15 @@
 package idiro.workflow.server.action;
 
-import idiro.utils.OrderedFeatureList;
 import idiro.utils.FeatureList;
-import idiro.utils.Tree;
+import idiro.utils.OrderedFeatureList;
+import idiro.workflow.server.ListInteraction;
 import idiro.workflow.server.Page;
-import idiro.workflow.server.UserInteraction;
-import idiro.workflow.server.connect.HDFSInterface;
-import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEOutput;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -33,15 +31,15 @@ public class PigJoin extends PigElement {
 	public static final String key_featureTable = "Features",
 			key_joinType = "Join_Type", key_joinRelation = "Join_Relationship";
 
-	private Page page1, page2, page3, page4;
+	private Page page1, page2, page3;
 
 	private PigTableJoinInteraction tJoinInt;
 	private PigJoinRelationInteraction jrInt;
 	private PigFilterInteraction filterInt;
-	private DFEInteraction joinTypeInt;
+	private ListInteraction joinTypeInt;
 
 	public PigJoin() throws RemoteException {
-		super(2, Integer.MAX_VALUE);
+		super(2, Integer.MAX_VALUE,1);
 
 		page1 = addPage("Operations", "Join operations", 1);
 
@@ -54,34 +52,32 @@ public class PigJoin extends PigElement {
 
 		page2 = addPage("Relationship", "Join Relationship", 1);
 
-		joinTypeInt = new UserInteraction(key_joinType,
-				"Please specify a join type", DisplayType.list, 0, 0);
+		
+		joinTypeInt = new ListInteraction(key_joinType,
+				"Please specify a join type", 0, 0);
+		List<String> valueJoinTypeInt = new LinkedList<String>();
+		valueJoinTypeInt.add("JOIN");
+		valueJoinTypeInt.add("LEFT OUTER JOIN");
+		valueJoinTypeInt.add("RIGHT OUTER JOIN");
+		valueJoinTypeInt.add("FULL OUTER JOIN");
+		joinTypeInt.setPossibleValues(valueJoinTypeInt);
+		joinTypeInt.setValue("JOIN");
 
 		jrInt = new PigJoinRelationInteraction(
 				key_joinRelation,
 				"Please specify the relationship, top to bottom is like left to right",
 				0, 0, this);
+		
 		page2.addInteraction(joinTypeInt);
 		page2.addInteraction(jrInt);
 
-		page3 = addPage("Select", "Select Conditions", 1);
+		page3 = addPage("Select", "Join Configuration", 1);
 
-		filterInt = new PigFilterInteraction(key_condition,
-				"Please specify the condition of the select", 0, 1, this,
-				key_input);
+		filterInt = new PigFilterInteraction(0, 1, this);
 
 		page3.addInteraction(filterInt);
-
-		page4 = addPage("Output", "Output configurations", 1);
-
-		delimiterOutputInt = new UserInteraction("Delimiter",
-				"Setting output delimiter", DisplayType.list, 1, 0);
-
-		savetypeOutputInt = new UserInteraction("Output Type",
-				"Setting the output type", DisplayType.list, 2, 0);
-
-		page4.addInteraction(delimiterOutputInt);
-		page4.addInteraction(savetypeOutputInt);
+		page3.addInteraction(delimiterOutputInt);
+		page3.addInteraction(savetypeOutputInt);
 
 	}
 
@@ -92,49 +88,18 @@ public class PigJoin extends PigElement {
 
 	// @Override
 	public void update(DFEInteraction interaction) throws RemoteException {
-		if (interaction == filterInt) {
+		if (interaction.getName().equals(filterInt.getName())) {
 			filterInt.update();
-		} else if (interaction == joinTypeInt) {
-			updateJoinInt();
-		} else if (interaction == jrInt) {
+		} else if (interaction.getName().equals(jrInt.getName())) {
 			jrInt.update();
-		} else if (interaction == tJoinInt) {
+		} else if (interaction.getName().equals(tJoinInt.getName())) {
 			tJoinInt.update();
-		} else if (interaction == dataSubtypeInt) {
-			updateDataSubTypeInt();
-		} else if ( interaction == savetypeOutputInt){
-			logger.info("updating save type");
-			try {
-				updateOutputType();
-			} catch (InstantiationException e) {
-				logger.error("Instanciation error");
-			} catch (IllegalAccessException e) {
-				logger.error("Illegal Access error");
-			}
-		}else if ( interaction == delimiterOutputInt){
-			logger.info("updating delimiter");
-			updateDelimiterOutputInt();
-		}
-	}
-
-	public void updateJoinInt() throws RemoteException {
-
-		Tree<String> list = null;
-		if (joinTypeInt.getTree().getSubTreeList().isEmpty()) {
-			list = joinTypeInt.getTree().add("list");
-			list.add("output").add("");
-			Tree<String> values = list.add("values");
-			values.add("value").add("JOIN");
-			values.add("value").add("LEFT OUTER JOIN");
-			values.add("value").add("RIGHT OUTER JOIN");
-			values.add("value").add("FULL OUTER JOIN");
 		}
 	}
 
 	@Override
 	public String getQuery() throws RemoteException {
 
-		HDFSInterface hInt = new HDFSInterface();
 		String query = null;
 		if (getDFEInput() != null) {
 			// Output
@@ -161,14 +126,14 @@ public class PigJoin extends PigElement {
 			String from = getCurrentName() + " = " + jrInt.getQueryPiece()
 					+ ";\n\n";
 
-			String select = tJoinInt.getQueryPiece(getCurrentName());
-			if (!select.isEmpty()) {
-				select = getNextName() + " = " + select + ";\n\n";
-			}
-
 			String filter = filterInt.getQueryPiece(getCurrentName());
 			if (!filter.isEmpty()) {
 				filter = getNextName() + " = " + filter + ";\n\n";
+			}
+			
+			String select = tJoinInt.getQueryPiece(getCurrentName());
+			if (!select.isEmpty()) {
+				select = getNextName() + " = " + select + ";\n\n";
 			}
 
 			String store = getStoreQueryPiece(out, getCurrentName());
@@ -180,9 +145,11 @@ public class PigJoin extends PigElement {
 
 				query += load;
 
-				query += from + select;
-
+				query += from;
+						
 				query += filter;
+				
+				 query += select;
 
 				query += store;
 			}

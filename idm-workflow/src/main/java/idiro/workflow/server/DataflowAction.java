@@ -223,19 +223,14 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			++pageNb;
 			try {
 				error = it.next().checkPage();
-				if (error != null) {
-					error = LanguageManager.getText(
-							"dataflowaction.checkuservariables", new Object[] {
-									String.valueOf(pageNb), error });
-					error = "Page " + pageNb + ": " + error;
-				}
 			} catch (Exception e) {
-				error = LanguageManager
-						.getText(
-								"dataflowaction.checkuservariablesexception",
-								new Object[] { String.valueOf(pageNb),
-										e.getMessage() });
+				error = e.getMessage();
 			}
+		}
+		if(error != null){
+			error = LanguageManager.getText(
+					"dataflowaction.checkuservariables", new Object[] {
+							String.valueOf(pageNb), error });
 		}
 		return error;
 	}
@@ -340,9 +335,8 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			}
 		
 		} catch (DOMException dme) {
-			
+			error = dme.getMessage();
 			logger.info("writeValuesXml error dme " + dme + " -- " + dme.getMessage());
-			
 		} catch (Exception e) {
 			error = LanguageManager.getText("dataflowaction.writevaluesxml",
 					new Object[] { e.getMessage() });
@@ -810,9 +804,14 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	public void writeProcess(Document oozieXmlDoc, Element action,
 			File localDirectoryToWrite, String pathFromOozieDir,
 			String fileNameWithoutExtension) throws RemoteException {
+		
+		logger.info("writeProcess");
 
 		String[] extensions = oozieAction.getFileExtensions();
 		String[] fileNames = new String[extensions.length];
+		
+		logger.info("writeProcess extensionslength " + extensions.length);
+		
 		File[] files = new File[extensions.length];
 		for (int i = 0; i < extensions.length; ++i) {
 			fileNames[i] = pathFromOozieDir + "/" + fileNameWithoutExtension
@@ -820,8 +819,16 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			files[i] = new File(localDirectoryToWrite, fileNameWithoutExtension
 					+ extensions[i]);
 		}
+		
+		logger.info("writeProcess 1");
+		
 		oozieAction.createOozieElement(oozieXmlDoc, action, fileNames);
+		
+		logger.info("writeProcess 2");
+		
 		writeOozieActionFiles(files);
+		
+		logger.info("writeProcess 3");
 	}
 
 	@Override

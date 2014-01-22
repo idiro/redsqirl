@@ -187,12 +187,15 @@ public interface DFEOutput extends Remote{
 	 * @throws RemoteException
 	 */
 	void removeAllProperties() throws RemoteException;
-
+	
 	/**
-	 * Check if a set of feature looks correct
+	 * Compare the arguments with what is inside the object
+	 * True if they are the same.
+	 * @param path
 	 * @param fl
+	 * @param props
 	 * @return
 	 * @throws RemoteException
 	 */
-	String checkFeatures(FeatureList fl) throws RemoteException;
+	boolean compare(String path, FeatureList fl, Map<String,String> props) throws RemoteException;
 }

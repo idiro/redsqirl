@@ -2,25 +2,14 @@ package idiro.workflow.server.action.test;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import idiro.utils.OrderedFeatureList;
 import idiro.utils.FeatureList;
-import idiro.utils.Tree;
-import idiro.workflow.server.DataOutput;
-import idiro.workflow.server.WorkflowPrefManager;
-import idiro.workflow.server.action.PigAggregator;
-import idiro.workflow.server.action.PigTypeConvert;
-import idiro.workflow.server.action.Source;
+import idiro.utils.OrderedFeatureList;
 import idiro.workflow.server.action.utils.PigDictionary;
-import idiro.workflow.server.datatype.MapRedTextType;
 import idiro.workflow.server.enumeration.FeatureType;
-import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.test.TestUtils;
 
-import java.io.File;
 import java.rmi.RemoteException;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -32,6 +21,7 @@ public class PigDictionaryTests {
 
 	public FeatureList getFeatures() throws RemoteException {
 		FeatureList features = new OrderedFeatureList();
+		features.addFeature("colAgg", FeatureType.STRING);
 		features.addFeature("col2", FeatureType.DOUBLE);
 		features.addFeature("col3", FeatureType.INT);
 		features.addFeature("col4", FeatureType.BOOLEAN);
@@ -40,7 +30,7 @@ public class PigDictionaryTests {
 
 	public Set<String> getAgg() {
 		Set<String> agg = new HashSet<String>();
-		agg.add("col1");
+		agg.add("colAgg");
 		return agg;
 	}
 
@@ -52,9 +42,9 @@ public class PigDictionaryTests {
 
 	public void isNotBoolean(String expr, FeatureList features)
 			throws Exception {
+		String ans = PigDictionary.getInstance().getReturnType(expr, features); 
 		assertFalse(expr,
-				PigDictionary.getInstance().getReturnType(expr, features)
-						.equalsIgnoreCase("boolean"));
+				ans != null && ans.equalsIgnoreCase("boolean"));
 	}
 
 	public void isNull(String expr, FeatureList features) throws Exception {
@@ -109,7 +99,7 @@ public class PigDictionaryTests {
 				PigDictionary.getInstance().getReturnType(expr, features)
 						.equalsIgnoreCase(type));
 	}
-
+	
 	@Test
 	public void testBooleanOperations() throws RemoteException {
 		TestUtils.logTestTitle("PigDictionaryTests#testBooleanOperations");
@@ -137,7 +127,7 @@ public class PigDictionaryTests {
 			isBoolean("col2 IS NULL", features);
 			isBoolean("col2 IS NOT NULL", features);
 			isBoolean("col2 IS NOT NULL", features);
-			isBoolean("col1 <= col3 ", features);
+			isNotBoolean("col1 <= col3 ", features);
 
 		} catch (Exception e) {
 			logger.error("Exception when testing boolean operations: "
@@ -146,7 +136,8 @@ public class PigDictionaryTests {
 		}
 		TestUtils.logTestTitle("success");
 	}
-
+	
+	
 	@Test
 	public void testArithmeticOperations() throws RemoteException {
 		TestUtils.logTestTitle("PigDictionaryTests#testArithmeticOperations");
@@ -166,17 +157,19 @@ public class PigDictionaryTests {
 			assertTrue("Fail on exception", false);
 		}
 	}
-
+	
 	@Test
 	public void testMethods() throws RemoteException {
 		TestUtils.logTestTitle("PigDictionaryTests#testMethods");
 		FeatureList features = getFeatures();
 		try {
-			is("substring('bla',1,2)", features, "CHARARRAY");
-			is("substring(substring('bla',1,2),1,2)", features, "CHARARRAY");
+			is("substring('bla',1,2)", features, "STRING");
+			is("substring(substring('bla',1,2),1,2)", features, "STRING");
 			isNull("substring('bla',1,2,3)", features);
-			is("(CHARARRAY) `bla`", features, "CHARARRAY");
-			is("(CHARARRAY)(SUBSTRING('bla',1,2))", features, "CHARARRAY");
+			isNull("substring(1,1,2)",features);
+			isNull("round('1')",features);
+			//is("(CHARARRAY) `bla`", features, "STRING");
+			//is("(CHARARRAY)(SUBSTRING('bla',1,2))", features, "STRING");
 		} catch (Exception e) {
 			logger.error("Exception when testing boolean operations: "
 					+ e.getMessage());
@@ -185,67 +178,28 @@ public class PigDictionaryTests {
 
 	}
 
+	
 	@Test
 	public void testAggreg() throws RemoteException {
 		TestUtils.logTestTitle("PigDictionaryTests#testAggreg");
 		FeatureList features = getFeatures();
 		Set<String> agg = getAgg();
 		try {
-			is("count_star(col2)", features, agg, "BIGINT");
-			is("(CHARARRAY) count_star(col2)", features, agg, "CHARARRAY");
-			is("sum(col2)", features, agg, "DOUBLE");
-			is("avg(col2)", features, agg, "DOUBLE");
-			is("max(col2)", features, agg, "DOUBLE");
-			is("min(col2)", features, agg, "DOUBLE");
-			is("col1", features, agg, "CHARARRAY");
+			is("count_star(col2)", features, agg, "NUMBER");
+			//is("(CHARARRAY) count_star(col2)", features, agg, "CHARARRAY");
+			is("sum(col2)", features, agg, "NUMBER");
+			is("avg(col2)", features, agg, "NUMBER");
+			is("max(col2)", features, agg, "NUMBER");
+			is("min(col2)", features, agg, "NUMBER");
+			is("colAgg", features, agg, "STRING");
 			isNull("col2", features, agg);
-			is("min(round(col2)+random())", features, agg, "DOUBLE");
+			is("min(round(col2))", features, agg, "NUMBER");
+			is("min(round(col2)+random())", features, agg, "NUMBER");
 		} catch (Exception e) {
-			logger.error("Exception when testing boolean operations: "
+			logger.error("Exception when testing aggregation operations: "
 					+ e.getMessage());
 			assertTrue("Fail on exception", false);
 		}
 	}
-
-	@Test
-	public void testSaveFunctionFile() {
-		TestUtils.logTestTitle("PigDictionaryTests#testSaveFunctionFile");
-		PigDictionary dictionary = PigDictionary.getInstance();
-
-		// File file = new File(WorkflowPrefManager.pathSystemPref.get() +
-		// "/testPigFeat.txt");
-		File file = new File("/home/keith/testPigFeat.txt");
-		// dictionary.loadDefaultFunctions();
-		// dictionary.saveFile(file);
-	}
-
-	@Test
-	public void testConvertHelpText() {
-		TestUtils.logTestTitle("PigDictionaryTests#testSaveFunctionFile");
-		PigDictionary dictionary = PigDictionary.getInstance();
-
-		// File file = new File(WorkflowPrefManager.pathSystemPref.get() +
-		// "/testPigFeat.txt");
-		logger.info(dictionary
-				.convertStringtoHelp("@function:REPLACE()@short:Replaces existing characters in a string with new characters@param:CHARARRAY string to replace@param:CHARARRAY character to replace@param:CHARRAY character to replace with@description:Use the REPLACE function to replace existing characters in a string with new characters@example:REPLACE(\'open source software\',\'software\',\'wiki\') returns \'open source wiki\'"));
-	}
-	
-//	@Test(expected = Exception.class)
-	@Test
-	public void GetReturnType() throws Exception{
-		PigDictionary dict = PigDictionary.getInstance();
-		
-		String expr="AVG(A)";
-		FeatureList features = new OrderedFeatureList();
-		features.addFeature("A", FeatureType.INT);
-		features.addFeature("B",FeatureType.INT);
-		Set<String> featureAggreg = new HashSet<String>();
-//		featureAggreg.add("A");
-		featureAggreg.add("B");
-		String type = dict.getReturnType(expr, features, featureAggreg);
-		logger.info("check returns "+dict.check(type,features.getFeatureType("A").name()));
-		logger.info("type returnred : "+type);
-	}
-
 	
 }

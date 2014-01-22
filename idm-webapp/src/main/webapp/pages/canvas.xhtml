@@ -392,12 +392,13 @@
 	    	  
 	      }
 	      
-	      function addElementJs(canvasName, path, positions){
+	      function addElementJs(canvasName, path, positions, links){
 	    	  addWorkflowTab(canvasName);
 	    	  configureCanvas(canvasName);
 	    	  addElements(canvasName, positions);
 	    	  setSaved(canvasName, true);
 	    	  setPathFile(canvasName, path);
+	    	  addLinks(canvasName, links);
 	      }
 	      
 	      function addLinksJs(canvasName, links){
@@ -426,7 +427,16 @@
             		  tabName +"</a> <span id='"+tabName+"-icon-close' class='ui-icon ui-icon-close' onclick=\"closeWorkflowTab(this, '"+tabName+"')\"></span> </li>" ).appendTo( ul );
               
               var div = "<div id='"+tabName+"'>"+
-				"<div id='container-"+tabName+"' class='container-"+tabName+"'></div>"+
+				"<div id='container-"+tabName+"' class='container-"+tabName+"'>"+
+				"<div class='rich-panel' onclick=\"jQuery('#panelLegend-"+tabName+"').toggle();return false;\"  style='position: fixed; z-index:101; width:190px'>"+
+					"<div class='rich-panel-header'>Legend</div>"+
+				"</div>"+
+				"<div class='rich-panel' id='panelLegend-"+tabName+"'  style='position: fixed; z-index:100; visible:false; width:190px; height:300px'>"+
+					"<div class='rich-panel-body' style='overflow:hidden;'>"+
+						"<div id='container-legend-"+tabName+"' class='container-legend-"+tabName+"' style='overflow:hidden; position: relative; top:20px;'/>"+
+					"</div>"+
+	        	"</div>"+
+              	"</div>"+
 				"</div>";
               
               jQuery(div).appendTo( tabs );
@@ -591,6 +601,7 @@
 					<a4j:actionparam name="allpositions"/>
 				</a4j:jsFunction>
             </a4j:region>
+            
 			<a4j:region>
 				<a4j:status	onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
 							onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
@@ -613,7 +624,7 @@
 							onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
 							onstop="jQuery('#canvas-tabs').unblock();" />
 				
-				<a4j:jsFunction name="updateOutputStatus" data="#{canvasBean.outputStatus}" oncomplete="updateActionOutputStatus(data[0], data[1], data[2]);">
+				<a4j:jsFunction name="updateOutputStatus" data="#{canvasBean.outputStatus}" oncomplete="updateActionOutputStatus(data[0], data[1], data[2]);" reRender="errorTable" >
 					<a4j:actionparam name="groupId"/>
 				</a4j:jsFunction>
 			</a4j:region>
@@ -623,7 +634,7 @@
 							onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
 							onstop="jQuery('#canvas-tabs').unblock();" />
 				
-				<a4j:jsFunction name="updateRunningStatus" data="#{canvasBean.runningStatus}" oncomplete="updateCanvasRunningStatus(data);"/>
+				<a4j:jsFunction name="updateRunningStatus" data="#{canvasBean.runningStatus}" oncomplete="updateCanvasRunningStatus(data);" reRender="errorTable" />
 			</a4j:region>
 	
 			<a4j:region>
@@ -684,7 +695,7 @@
 							onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
 							onstop="jQuery('#canvas-tabs').unblock();" />
 				
-				<a4j:jsFunction name="saveWorkflow" action="#{canvasBean.save}" >
+				<a4j:jsFunction name="saveWorkflow" action="#{canvasBean.save}" reRender="errorTable" >
 					<a4j:actionparam name="nameWorkflow"/>
 					<a4j:actionparam name="pathFile"/>
 					<a4j:actionparam name="positions"/>
@@ -727,7 +738,7 @@
 				<a4j:status	onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
 							onstop="jQuery('#canvas-tabs').unblock();" />
 				
-				<a4j:jsFunction name="updateArrowColor" data="#{canvasBean.arrowType}" oncomplete="updateArrowType(data[0], data[1], data[2]);">
+				<a4j:jsFunction name="updateArrowColor" data="#{canvasBean.arrowType}" oncomplete="updateArrowType(data[0], data[1], data[2], data[3]);updateArrowLabel(data[0], data[1], '#{canvasBean.linkLabel}');">
 					<a4j:actionparam name="groupOutId"/>
 					<a4j:actionparam name="groupInId"/>
 					<a4j:actionparam name="outputName"/>
@@ -783,7 +794,7 @@
 							onstop="jQuery('#canvas-tabs').unblock();" />
 			
 				<a4j:jsFunction name="loadWorkflow" action="#{canvasBean.blockRunningWorkflow}" data="#{canvasBean.positions}" 
-					oncomplete="addElementJs(data[0],data[1],data[2]);addLinksJs(data[0],data[3]);" reRender="tabFlowchart"/>
+					oncomplete="addElementJs(data[0],data[1],data[2],data[3]);" reRender="tabFlowchart"/>
 			</a4j:region>
 			
 			<a4j:region>
@@ -1011,7 +1022,16 @@
 
 						<div id="canvas-1">
 
-							<div id="container-canvas-1" class="container-canvas-1"></div>
+							<div id="container-canvas-1" class="container-canvas-1" >
+								<div class="rich-panel" onclick="jQuery('#panelLegend-canvas-1').toggle();return false;"  style="position: fixed; z-index:101; width:190px">
+									<div class="rich-panel-header">Legend</div>
+								</div>
+								<div class="rich-panel" id="panelLegend-canvas-1"  style="position: fixed;  z-index:100; visible:false; width:190px; height:300px">
+									<div class="rich-panel-body" style="overflow:hidden;">
+										<div id="container-legend-canvas-1" class="container-legend-canvas-1" style="overflow:hidden; position: relative; top:20px;"/>
+									</div>
+						        </div>
+							</div>
 							
 						</div>
 						<h:panelGroup id="tabsFooterForm">

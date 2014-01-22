@@ -41,7 +41,9 @@ public class EditorInteraction extends UserInteraction{
 		String ans = null;
 		if(display == DisplayType.helpTextEditor){
 			try{
-				ans = getTree().getFirstChild("editor").getFirstChild("output").getFirstChild().getHead();
+				if(getTree().getFirstChild("editor").getFirstChild("output").getFirstChild() != null){
+					ans = getTree().getFirstChild("editor").getFirstChild("output").getFirstChild().getHead();
+				}
 			}catch(Exception e){
 				logger.error("Tree structure incorrect");
 			}

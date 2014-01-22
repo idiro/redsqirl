@@ -273,7 +273,17 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 
 
 	public String run(List<String> dataFlowElement) throws RemoteException{
+
+		//Close all file systems
+		try {
+			FileSystem.closeAll();
+		} catch (IOException e1) {
+			logger.error("Fail to close all filesystem: "+e1);
+		}
+
+
 		String error = check();
+		logger.info("run check: " + error);
 
 		LinkedList<DataFlowElement> elsIn = new LinkedList<DataFlowElement>();
 		if(dataFlowElement.size() < element.size()){
@@ -357,8 +367,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 						errorToSend = outC.isPathExists();
 					}
 					if(errorToSend){
-						error = cur.getComponentId()
-								+": Element have to be run but one or several elements are recorded";
+						error = cur.getComponentId() +": Element have to be run but one or several elements are recorded";
+						logger.info("run errorToSend: " + error);
 					}else{
 						toRun.add(cur);
 					}
@@ -369,6 +379,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 
 		if(error == null && toRun.isEmpty()){
 			error = "Everything is up to date.";
+			logger.info("run toRun: " + error);
 		}
 
 		if(error == null){
@@ -381,7 +392,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 		}
 
 		if(error != null){
-			logger.error(error);
+			logger.info(error);
 		}
 
 		return error;
@@ -410,7 +421,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 	 */
 	public boolean isrunning(){
 		OozieClient wc = OozieManager.getInstance().getOc();
-		
+
 		boolean running = false;
 		try{
 			if(oozieJobId != null){
@@ -499,6 +510,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 							Attr attrDataName = doc.createAttribute("name");
 							attrDataName.setValue(outName);
 							data.setAttributeNode(attrDataName);
+
+							Attr attrTypeName = doc.createAttribute("typename");
+							attrTypeName.setValue(saveMap.get(outName).getTypeName());
+							data.setAttributeNode(attrTypeName);
+
 							logger.debug("Enter in write...");
 							saveMap.get(outName).write(doc,data);
 
@@ -663,7 +679,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 		}
 		fs.close();
 	}
-	
+
 	public void close() throws RemoteException{
 		logger.info("auto clean "+getName());
 		try {
@@ -800,9 +816,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 
 				logger.debug(compId+": output...");
 				NodeList outList = ((Element) compCur).getElementsByTagName("outputs").item(0).getChildNodes();
-				if (getElement(compId).getDFEOutput() == null || getElement(compId).getDFEOutput().isEmpty()){
-					getElement(compId).updateOut();
-				}
 				if(outList != null){
 					for (int index = 0; index < outList.getLength(); index++) {
 						try{
@@ -829,6 +842,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 
 				Node compCur = compList.item(temp);
 				String id = compCur.getAttributes().getNamedItem("id").getNodeValue();
+				logger.debug("loads state: "+id);
 
 				//Save element
 				Map<String,DFEOutput> mapOutput = getElement(id).getDFEOutput();
@@ -837,11 +851,20 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 					Node dataCur = dataList.item(ind);
 
 					String dataName =  dataCur.getAttributes().getNamedItem("name").getNodeValue();
-					mapOutput.get(dataName).read((Element)dataCur);
-					if(mapOutput.get(dataName).getSavingState() != SavingState.RECORDED &&
-							mapOutput.get(dataName).getPath() == null){
-						mapOutput.get(dataName).generatePath(userName, id, dataName);
+					String typeName =  dataCur.getAttributes().getNamedItem("typename").getNodeValue();
+					DFEOutput cur = DataOutput.getOutput(typeName);
+					if(cur != null){
+						mapOutput.put(dataName,cur);
+						logger.debug("loads state dataset: "+dataName);
+						mapOutput.get(dataName).read((Element)dataCur);
+						if(mapOutput.get(dataName).getSavingState() != SavingState.RECORDED &&
+								mapOutput.get(dataName).getPath() == null){
+							mapOutput.get(dataName).generatePath(userName, id, dataName);
+						}
+					}else{
+						error = "Unknown typename "+typeName;
 					}
+
 				}
 			}
 			saved = true;
@@ -965,36 +988,41 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 	}
 
 	public String removeElement(String componentId) throws RemoteException, Exception{
+		logger.debug("remove element: "+componentId);
 		String error = null;
 		DataFlowElement dfe = getElement(componentId);
-		dfe.cleanThisAndAllElementAfter();
-		for (Entry<String,List<DFEOutput>> dfeInput : dfe.getDFEInput().entrySet()){
-			for (DataFlowElement inputComponent : dfe.getInputComponent().get(dfeInput.getKey())){
-				for (Entry<String, List<DataFlowElement>> outputComponent : inputComponent.getOutputComponent().entrySet()){
-					if (outputComponent.getValue().contains(dfe)){
-						logger.info("Remove1 - "+outputComponent.getKey()+" "+inputComponent.getComponentId()+" "+dfeInput.getKey()+" "+dfe.getComponentId());
-						error = this.removeLink(outputComponent.getKey(), inputComponent.getComponentId(), dfeInput.getKey(), dfe.getComponentId(), true);
-					}
-
-				}
-			}
-		}
-
-		if (error != null && dfe.getDFEOutput() != null){
-			for (Entry<String,DFEOutput> dfeOutput : dfe.getDFEOutput().entrySet()){
-				for (DataFlowElement outputComponent : dfe.getOutputComponent().get(dfeOutput.getKey())){
-					for (Entry<String, List<DataFlowElement>> inputComponent : outputComponent.getInputComponent().entrySet()){
-						if (inputComponent.getValue().contains(dfe)){
-							logger.info("Remove2 - "+dfeOutput.getKey()+" "+dfe.getComponentId()+" "+inputComponent.getKey()+" "+outputComponent.getComponentId());
-							error = this.removeLink(dfeOutput.getKey(), dfe.getComponentId(), inputComponent.getKey(), outputComponent.getComponentId(), true);
+		if(dfe == null){
+			error = "The element "+componentId+" does not exist";
+		}else{
+			dfe.cleanThisAndAllElementAfter();
+			for (Entry<String,List<DFEOutput>> dfeInput : dfe.getDFEInput().entrySet()){
+				for (DataFlowElement inputComponent : dfe.getInputComponent().get(dfeInput.getKey())){
+					for (Entry<String, List<DataFlowElement>> outputComponent : inputComponent.getOutputComponent().entrySet()){
+						if (outputComponent.getValue().contains(dfe)){
+							logger.info("Remove1 - "+outputComponent.getKey()+" "+inputComponent.getComponentId()+" "+dfeInput.getKey()+" "+dfe.getComponentId());
+							error = this.removeLink(outputComponent.getKey(), inputComponent.getComponentId(), dfeInput.getKey(), dfe.getComponentId(), true);
 						}
 
 					}
 				}
 			}
-		}
 
-		element.remove(element.indexOf(dfe));
+			if (error != null && dfe.getDFEOutput() != null){
+				for (Entry<String,DFEOutput> dfeOutput : dfe.getDFEOutput().entrySet()){
+					for (DataFlowElement outputComponent : dfe.getOutputComponent().get(dfeOutput.getKey())){
+						for (Entry<String, List<DataFlowElement>> inputComponent : outputComponent.getInputComponent().entrySet()){
+							if (inputComponent.getValue().contains(dfe)){
+								logger.info("Remove2 - "+dfeOutput.getKey()+" "+dfe.getComponentId()+" "+inputComponent.getKey()+" "+outputComponent.getComponentId());
+								error = this.removeLink(dfeOutput.getKey(), dfe.getComponentId(), inputComponent.getKey(), outputComponent.getComponentId(), true);
+							}
+
+						}
+					}
+				}
+			}
+
+			element.remove(element.indexOf(dfe));
+		}
 		return error;
 	}
 
@@ -1296,7 +1324,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 				e.printStackTrace();
 			}
 		}
-//		result.add(new String[]{"IDM Help", "", "test.html"});
+		//		result.add(new String[]{"IDM Help", "", "test.html"});
 		return result;
 	}
 

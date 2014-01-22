@@ -1,26 +1,21 @@
 package idiro.workflow.server.action;
 
 import idiro.utils.FeatureList;
-import idiro.utils.OrderedFeatureList;
-import idiro.utils.Tree;
 import idiro.workflow.server.Page;
-import idiro.workflow.server.UserInteraction;
-import idiro.workflow.server.action.utils.PigDictionary;
-import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEOutput;
-import idiro.workflow.server.interfaces.DFEPage;
-import idiro.workflow.server.interfaces.PageChecker;
 
 import java.rmi.RemoteException;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 
 public class PigAggregator extends PigElement {
 
-	private Page page1, page2, page3, page4;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4640611831909705304L;
+
+	private Page page1, page2, page3;
 
 	private PigTableSelectInteraction tSelInt;
 	private PigFilterInteraction filterInt;
@@ -30,7 +25,7 @@ public class PigAggregator extends PigElement {
 	private static final String key_featureTable = "Features";
 
 	public PigAggregator() throws RemoteException {
-		super(1, 1);
+		super(1, 1,1);
 		page1 = addPage("Aggregator", "Aggregate the data for the output", 1);
 
 		tSelInt = new PigTableSelectInteraction(
@@ -39,7 +34,7 @@ public class PigAggregator extends PigElement {
 				0, 0, this);
 
 		groupingInt = new PigGroupInteraction(key_grouping,
-				"Please specify to group", DisplayType.appendList, 0, 1);
+				"Please specify to group", 0, 1);
 
 		page1.addInteraction(groupingInt);
 
@@ -47,57 +42,13 @@ public class PigAggregator extends PigElement {
 
 		page2.addInteraction(tSelInt);
 
-		page2.setChecker(new PageChecker() {
+		page3 = addPage("Filter", "Aggregator Configuration", 1);
 
-			public String check(DFEPage page) throws RemoteException {
-				String error = null;
-				String type = null;
-				try {
-					Iterator<Tree<String>> rows = getInteraction(
-							key_featureTable).getTree().getFirstChild("table")
-							.getChildren("row").iterator();
-
-					while (rows.hasNext()) {
-						String op = rows
-								.next()
-								.getFirstChild(
-										PigTableSelectInteraction.table_op_title)
-								.getFirstChild().getHead().toUpperCase();
-						
-						type = PigDictionary.getInstance().getReturnType(op,
-								getInFeaturesWithAlias(),
-								getGroupedWithAlias());
-						if (type == null && type.isEmpty()) {
-							error += op + " has no return type\n";
-						}
-					}
-				} catch (Exception e) {
-					error = "\nThere was a problem checking the Page : "
-							+ e.getMessage();
-				}
-				return error;
-			}
-		});
-
-		page3 = addPage("Filter", "Add filter for data set", 1);
-
-		filterInt = new PigFilterInteraction(key_condition,
-				"Please specify the condition of the select", 0, 0, this,
-				key_input);
+		filterInt = new PigFilterInteraction(0, 0, this);
 
 		page3.addInteraction(filterInt);
-
-		page4 = addPage("Output", "Output configurations", 1);
-
-		delimiterOutputInt = new UserInteraction("Delimiter",
-				"Setting output delimiter", DisplayType.list, 1, 0);
-
-		savetypeOutputInt = new UserInteraction("Output Type",
-				"Setting the output type", DisplayType.list, 2, 0);
-
-		page4.addInteraction(delimiterOutputInt);
-		page4.addInteraction(savetypeOutputInt);
-
+		page3.addInteraction(delimiterOutputInt);
+		page3.addInteraction(savetypeOutputInt);
 	}
 
 	public String getName() throws RemoteException {
@@ -172,6 +123,7 @@ public class PigAggregator extends PigElement {
 		return getDFEInput().get(key_input).get(0).getFeatures();
 	}
 	
+	/*
 	public FeatureList getInFeaturesWithAlias() throws RemoteException{
 		FeatureList fl = new OrderedFeatureList();
 		String alias = getAlias();
@@ -183,8 +135,9 @@ public class PigAggregator extends PigElement {
 		}
 		
 		return fl;
-	}
+	}*/
 	
+	/*
 	public Set<String> getGroupedWithAlias() throws RemoteException{
 		Set<String> grouped = new HashSet<String>();
 		String alias = getAlias();
@@ -194,7 +147,7 @@ public class PigAggregator extends PigElement {
 			grouped.add(alias.toUpperCase()+"."+feat.toUpperCase());
 		}
 		return grouped;
-	}
+	}*/
 
 	@Override
 	public FeatureList getNewFeatures() throws RemoteException {
@@ -208,22 +161,11 @@ public class PigAggregator extends PigElement {
 		DFEOutput in = getDFEInput().get(key_input).get(0);
 		logger.info(in.getFeatures().getFeaturesNames());
 		if (in != null) {
-			if (interaction == tSelInt) {
+			if (interaction.getName().equals(tSelInt.getName())) {
 				tSelInt.update(in);
-			} else if (interaction == groupingInt) {
+			} else if (interaction.getName().equals(groupingInt.getName())) {
 				groupingInt.update(in);
-			} else if (interaction == savetypeOutputInt) {
-				try {
-					updateOutputType();
-					logger.info("output type");
-				} catch (InstantiationException e) {
-					logger.error("Instanciatin error");
-				} catch (IllegalAccessException e) {
-					logger.error("Illegal Access error");
-				}
-			} else if (interaction == delimiterOutputInt) {
-				updateDelimiterOutputInt();
-			} else if (interaction == filterInt) {
+			}  else if (interaction.getName().equals(filterInt.getName())) {
 				filterInt.update();
 			}
 

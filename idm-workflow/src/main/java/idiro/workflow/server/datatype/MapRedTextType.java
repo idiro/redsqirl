@@ -2,7 +2,6 @@ package idiro.workflow.server.datatype;
 
 import idiro.hadoop.NameNodeVar;
 import idiro.hadoop.checker.HdfsFileChecker;
-import idiro.hadoop.pig.PigUtils;
 import idiro.utils.FeatureList;
 import idiro.utils.OrderedFeatureList;
 import idiro.utils.RandomString;
@@ -19,6 +18,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.hadoop.fs.FileStatus;
@@ -87,7 +87,7 @@ public class MapRedTextType extends DataOutput {
 		if (!hCh.isInitialized() || hCh.isFile()) {
 			error = LanguageManager.getText("mapredtexttype.dirisfile");
 		} else {
-			final FileSystem fs;
+			FileSystem fs;
 			try {
 				fs = NameNodeVar.getFS();
 				hCh.setPath(new Path(getPath()).getParent());
@@ -109,7 +109,11 @@ public class MapRedTextType extends DataOutput {
 								new Object[] { getPath() });
 					}
 				}
-				fs.close();
+				try{
+					fs.close();
+				}catch(Exception e){
+					logger.error("Fail to close FileSystem: "+e);
+				}
 			} catch (IOException e) {
 
 				error = LanguageManager.getText("unexpectedexception",
@@ -135,15 +139,36 @@ public class MapRedTextType extends DataOutput {
 	public boolean isPathExists() throws RemoteException {
 		boolean ok = false;
 		if (getPath() != null) {
-			logger.info("checking if path exitst :" + getPath().toString());
-			HdfsFileChecker hCh = new HdfsFileChecker(getPath());
-			if (hCh.exists()) {
-				ok = true;
+			logger.info("checking if path exists: " + getPath().toString());
+			int again = 10;
+			FileSystem fs = null;
+			while(again > 0){
+				try{
+					fs = NameNodeVar.getFS();
+					logger.debug("Attempt "+ (11-again) +": existence "+getPath());
+					ok = fs.exists(new Path(getPath()));
+					again = 0;
+				}catch(Exception e){
+					logger.error(e);
+					--again;
+				}
+				try{
+					fs.close();
+				}catch(Exception e){
+					logger.error(e);
+				}
+				if(again > 0){
+					try {
+						Thread.sleep(10);
+					} catch (InterruptedException e1) {
+						logger.error(e1);
+					}
+				}
 			}
-			hCh.close();
 		}
 		return ok;
 	}
+
 
 	@Override
 	public String remove() throws RemoteException {
@@ -171,7 +196,7 @@ public class MapRedTextType extends DataOutput {
 
 		if (isPathValid() == null && isPathExists()) {
 			try {
-				final FileSystem fs = NameNodeVar.getFS();
+				FileSystem fs = NameNodeVar.getFS();
 				FileStatus[] stat = fs.listStatus(new Path(getPath()),
 						new PathFilter() {
 
@@ -185,6 +210,11 @@ public class MapRedTextType extends DataOutput {
 					ans.addAll(hdfsInt.select(stat[i].getPath().toString(),
 							getChar(getProperty(key_delimiter)),
 							(maxToRead / stat.length) + 1));
+				}
+				try{
+					fs.close();
+				}catch(Exception e){
+					logger.error("Fail to close FileSystem: "+e);
 				}
 			} catch (IOException e) {
 				String error = "Unexpected error: " + e.getMessage();
@@ -237,7 +267,7 @@ public class MapRedTextType extends DataOutput {
 							logger.info("nameType[1] " + nameType[0] + " " + nameType[1]);
 
 							if(isVariableName(nameType[0])){
-								
+
 								try {
 									newFL.addFeature(nameType[0], FeatureType.valueOf(nameType[1].toUpperCase()));
 								}
@@ -256,10 +286,6 @@ public class MapRedTextType extends DataOutput {
 				} else {
 
 					logger.info("setFeaturesFromHeader else ");
-
-					/*if (features != null && features.getSize() != newLabels.length) {
-						error = LanguageManager.getText("mapredtexttype.setheaders.wronglabels");
-					}*/
 
 					logger.info("setFeaturesFromHeader else error  "+ error);
 					//logger.info("setFeaturesFromHeader else features "+ features);
@@ -294,10 +320,7 @@ public class MapRedTextType extends DataOutput {
 
 			if (error == null && !newFL.getFeaturesNames().isEmpty()) {
 				setFeatures(newFL);
-			} else if (error != null) {
-				removeProperty(key_header);
 			}
-
 		}
 
 		logger.info("setFeaturesFromHeader-error " + error);
@@ -307,18 +330,15 @@ public class MapRedTextType extends DataOutput {
 
 	@Override
 	public void setFeatures(FeatureList fl) {
-		// if(getProperty(key_header) == null ||
-		// getProperty(key_header).trim().isEmpty()){
 		logger.info("setFeatures :");
 		super.setFeatures(fl);
-		// }
 	}
 
 	private void generateFeaturesMap() throws RemoteException {
 
 		logger.info("generateFeaturesMap --");
 
-		features = new OrderedFeatureList();
+		FeatureList fl = new OrderedFeatureList();
 		try {
 			List<String> lines = this.select(10);
 			if (lines != null) {
@@ -327,7 +347,7 @@ public class MapRedTextType extends DataOutput {
 						int cont = 0;
 
 						for (String s : line.split(Pattern.quote(getChar(getProperty(key_delimiter))))) {
-							
+
 							String nameColumn = generateColumnName(cont++);
 
 							logger.info("line: " + line);
@@ -336,19 +356,43 @@ public class MapRedTextType extends DataOutput {
 							logger.info("new nameColumn: " + nameColumn);
 
 							FeatureType type = getType(s.trim());
-							
-							if (features.containsFeature(nameColumn)) {
+							if (fl.containsFeature(nameColumn)) {
 								if (!canCast(type,
-										features.getFeatureType(nameColumn))) {
-									features.addFeature(nameColumn, type);
+										fl.getFeatureType(nameColumn))) {
+									fl.addFeature(nameColumn, type);
 								}
 							} else {
-								features.addFeature(nameColumn, type);
+								fl.addFeature(nameColumn, type);
 							}
-							
+
 						}
 
 					}
+				}
+			}
+			if(features != null){
+				logger.debug(features.getFeaturesNames());
+				logger.debug(fl.getFeaturesNames());
+			}
+			if(features == null){
+				features = fl;
+			}else if(features.getSize() != fl.getSize()){
+				features = fl;
+			}else{
+				Iterator<String> flIt = fl.getFeaturesNames().iterator();
+				Iterator<String> featIt = features.getFeaturesNames().iterator();
+				boolean ok = true;
+				int i = 1;
+				while(flIt.hasNext() && ok){
+					String nf = flIt.next();
+					String of = featIt.next();
+					logger.debug("types feat "+i+": "+fl.getFeatureType(nf)+" , "+features.getFeatureType(of));
+					
+					ok &= canCast(fl.getFeatureType(nf),features.getFeatureType(of));
+					++i;
+				}
+				if(!ok){
+					features = fl;
 				}
 			}
 		} catch (RemoteException e) {
@@ -460,7 +504,7 @@ public class MapRedTextType extends DataOutput {
 
 				if (list != null && !list.isEmpty()) {
 					String text = list.get(0);
-					
+
 					if (getProperty(key_delimiter) == null) {
 						String delimiter = getDefaultDelimiter(text);
 
@@ -468,43 +512,32 @@ public class MapRedTextType extends DataOutput {
 
 						super.addProperty(key_delimiter, delimiter);
 					}
-					
+
 				}
 
 				generateFeaturesMap();
 
 				String error = null;
 				String header = getProperty(key_header);
-				if (header != null && !"".equalsIgnoreCase(header)) {
+				if (header != null && !header.isEmpty()) {
 					logger.info("setFeaturesFromHeader --");
 					error = setFeaturesFromHeader();
 					if (error != null) {
 						throw new RemoteException(error);
 					}
 				}
-				/*else {
-					generateFeaturesMap();
-				}*/
 
 			}
 		}
 
 	}
 
-	@Override
 	public String checkFeatures(FeatureList fl) throws RemoteException {
 		String error = null;
 
 		logger.info("checkFeatures- ");
 
 		if (isPathExists() && features != null) {
-
-			/*logger.info("checkFeatures-features " + features.getSize());
-			logger.info("checkFeatures-fl " + fl.getSize());
-
-			if (features.getSize() != fl.getSize()) {
-				error = LanguageManager.getText("mapredtexttype.checkfeatures.incorrectsize");
-			}*/
 
 			//if (error == null) {
 
@@ -527,33 +560,53 @@ public class MapRedTextType extends DataOutput {
 
 			}
 
-
-
-			/*Iterator<String> flIt = fl.getFeaturesNames().iterator();
-			Iterator<String> featuresIt = features.getFeaturesNames().iterator();
-
-			while (flIt.hasNext() && error != null) {
-				String flName = flIt.next();
-				String featName = featuresIt.next();
-
-				logger.info("checkFeatures-flName " + flName);
-				logger.info("checkFeatures-featName " + featName);
-				logger.info("checkFeatures-flNameType " + fl.getFeatureType(flName));
-				logger.info("checkFeatures-featNameType " + features.getFeatureType(featName));
-
-				if (!fl.getFeatureType(flName).equals(features.getFeatureType(featName))) {
-					error = LanguageManager.getText("mapredtexttype.checkfeatures.incorrectnames", new Object[] { flName, featName });
-				}
-			}
-			 */
-
-			//}
-
 		}
 
 		logger.info("checkFeatures-error " + error);
 
 		return error;
+	}
+	
+	@Override
+	public boolean compare(String path, FeatureList fl, Map<String,String> props){
+		logger.debug("Comparaison MapRed:");
+		logger.debug(this.getPath()+" "+path);
+		try {
+			logger.debug(features.getFeaturesNames()+" "+fl.getFeaturesNames());
+		} catch (Exception e) {}
+		logger.debug(dataProperty+" "+props);
+		
+		String delimNew = props.get(key_delimiter);
+		if (delimNew != null && delimNew.length() == 1) {
+			delimNew = "#" + String.valueOf((int) delimNew.charAt(0));
+		}
+		
+		boolean compProps = false;
+		if(dataProperty != null){
+			String headOld = dataProperty.get(key_header),
+				headNew = props.get(key_header),
+				delimOld = dataProperty.get(key_delimiter);
+			if(headNew == null){
+				compProps = headOld == null;
+			}else{
+				compProps = headNew.equals(headOld);
+			}
+			if(compProps){
+				if(delimNew == null){
+					compProps = delimNew == null;
+				}else{
+					compProps = delimNew.equals(delimOld);
+				}
+			}
+		}else if(props.isEmpty()){
+			compProps = true;
+		}
+		
+		return !(this.getPath() == null ||
+				features == null) &&
+				compProps &&
+				(this.getPath().equals(path) && 
+				features.equals(fl));
 	}
 
 	private String generateColumnName(int columnIndex) {
@@ -595,14 +648,16 @@ public class MapRedTextType extends DataOutput {
 	public String getPigDelimiter() {
 		String asciiCode = getProperty(key_delimiter);
 		Character c = null;
-		if (asciiCode != null && asciiCode.startsWith("#")
+		if(asciiCode == null){
+			c = '|';
+		}else if (asciiCode != null && asciiCode.startsWith("#")
 				&& asciiCode.length() > 1) {
 			int i = Integer.valueOf(asciiCode.substring(1));
 			c = new Character((char) i);
 		} else if (asciiCode.length() == 1) {
 			c = asciiCode.charAt(0);
 		}
-		return c != null ? PigUtils.getDelimiter(c) : asciiCode;
+		return new String()+c;
 	}
 
 	public String getDelimiterOrOctal() {
