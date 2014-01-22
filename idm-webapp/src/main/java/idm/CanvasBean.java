@@ -584,7 +584,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 		logger.info("Select: "+select);
 
 		String error = null;
-		if(select == null || select.isEmpty()){
+		if(select == null || select.isEmpty() || select.equals("undefined")){
 			logger.info("Run a complete workflow");
 			error = getDf().run();
 			logger.info("Run error:" + error);
