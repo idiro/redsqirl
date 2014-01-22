@@ -88,9 +88,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 		userInfoBean.setCurrentValue(Long.valueOf(78));
 
 		workflowMap = new HashMap<String, DataFlow>();
-		logger.info("setting workflow name");
 		setNameWorkflow("canvas-1");
-		logger.info("setting workflow name");
 
 		setIdMap(new HashMap<String, Map<String, String>>());
 		getIdMap().put(getNameWorkflow(), new HashMap<String, String>());
@@ -99,7 +97,6 @@ public class CanvasBean extends BaseBean implements Serializable{
 		try {
 
 			dfi = getworkFlowInterface();
-			logger.info("the workflow name is : "+ getNameWorkflow());
 			if(dfi.getWorkflow(getNameWorkflow()) == null){
 				dfi.addWorkflow(getNameWorkflow());
 			}else{
@@ -112,12 +109,9 @@ public class CanvasBean extends BaseBean implements Serializable{
 				userInfoBean.setCurrentValue(userInfoBean.getCurrentValue()+3);
 			}
 
-			logger.info("set dfi");
 			setDf(dfi.getWorkflow(getNameWorkflow()));
-			logger.info("get all wWA name with class");
 			getDf().getAllWANameWithClassName();
 
-			logger.info("workflow map load");
 			workflowMap.put(getNameWorkflow(), getDf());
 
 		} catch (RemoteException e) {
@@ -638,20 +632,13 @@ public class CanvasBean extends BaseBean implements Serializable{
 		logger.info("getWorkflowUrl");
 		String url = null;
 		try {
-			logger.info("getting df");
 			DataFlow df= getDf();
 			if (df != null) {
-				logger.info("df not null");
 				if(df.getOozieJobId() != null){
 					try {
-						logger.info("getting jobmanager");
 						JobManager jm = getOozie();
-						logger.info("getting url");
 						jm.getUrl();
-
-						logger.info("getting console url");
 						url = jm.getConsoleUrl(df);
-						logger.info("got url");
 					} catch (Exception e) {
 						logger.error("error " + e.getMessage());
 					}

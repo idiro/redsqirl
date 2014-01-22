@@ -91,7 +91,7 @@ public class OutputActionTest extends DataOutput{
 	}
 
 
-	@Override
+//	@Override
 	public String checkFeatures(FeatureList fl) throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;

@@ -106,22 +106,22 @@ public class ServerProcess {
 						logger.debug("getting pid : ");
 						String pid1 = br1.readLine();
 						channel.disconnect();
-						logger.info("got pid : " + pid1);
+						logger.debug("got pid : " + pid1);
 
 						if (pid1 != null
 								&& pid1.trim().equalsIgnoreCase(old_pid)) {
 							try {
-								logger.info("get registry");
+								logger.debug("get registry");
 								Registry registry = LocateRegistry
 										.getRegistry(2001);
-								logger.info("get dfi");
+								logger.debug("get dfi");
 								DataFlowInterface dfi = (DataFlowInterface) registry
 										.lookup(user + "@wfm");
-								logger.info("back up ");
+								logger.debug("back up ");
 								dfi.backupAll();
-								logger.info("clean up");
+								logger.debug("clean up");
 								dfi.autoCleanAll();
-								logger.info("shutdown");
+								logger.debug("shutdown");
 								dfi.shutdown();
 							} catch (Exception e) {
 								FacesContext facesContext = FacesContext.getCurrentInstance();
@@ -131,25 +131,16 @@ public class ServerProcess {
 								logger.info(bundle.getString("old_workflow_deleted"));
 							}
 							
-//							String killPid = "kill -9 "+old_pid;
-//							channel = session.openChannel("exec");
-//							((ChannelExec) channel).setCommand(killPid);
-//							channel.connect();
-//							BufferedReader br2 = new BufferedReader(
-//									new InputStreamReader(channel.getInputStream()));
-//							channel.getInputStream().close();
-//							channel.disconnect();
-							
 							pm.deleteFile();
 							pm = new WorkflowProcessesManager().getInstance();
-							logger.info("killed old process");
+							logger.debug("killed old process");
 						}
 
 					}
-					logger.info("getting java");
+					logger.debug("getting java");
 					String javahome = getJava();
 					String argJava = " -Xmx1500m ";
-					logger.info("opening channel");
+					logger.debug("opening channel");
 					if(channel.isConnected()){
 						channel.disconnect();
 					}
@@ -158,13 +149,13 @@ public class ServerProcess {
 							+ argJava + "\n" + command);
 					((ChannelExec) channel).setCommand(javahome + argJava
 							+ command);
-					logger.info("connecting channel");
+					logger.debug("connecting channel");
 					channel.connect();
 
-					logger.info("getting channel buffer");
+					logger.debug("getting channel buffer");
 					BufferedReader br = new BufferedReader(
 							new InputStreamReader(channel.getInputStream()));
-					logger.info("reading buffer");
+					logger.debug("reading buffer");
 					pid = br.readLine();
 					logger.info("dataIn: " + pid);
 					
@@ -185,19 +176,6 @@ public class ServerProcess {
 					}
 
 				}
-//				boolean inactive = true;
-//				while(inactive){
-//					try{
-//						DataFlowInterface dfi = (DataFlowInterface) LocateRegistry.getRegistry(2001).lookup(user+"@wfm");
-//						inactive = false;
-//					}catch(Exception e){
-//						try {
-//							Thread.sleep(250);
-//						} catch (Exception e1) {
-//							Thread.currentThread().interrupt();
-//						}
-//					}
-//				}
 				run = true;
 			} catch (Exception e) {
 				run = false;
@@ -213,8 +191,6 @@ public class ServerProcess {
 		String command = "";
 		try {
 
-			// logger.debug("system properties: " +
-			// WorkflowPrefManager.pathSysCfgPref.get());
 			File file = new File(
 					WorkflowPrefManager.getSysProperty("workflow_lib_path"));
 			// Reading directory contents
