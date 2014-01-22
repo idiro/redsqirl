@@ -989,21 +989,20 @@
 
 	<div id="shortMenu" class="divMenu">
 
-		<center>
-			<a onclick="jQuery('#addtabCanvas').click();"><img src="../image/icons/button-new.png" alt="new" class="shortMenuIcon" /></a>
-			<a onclick="deleteSelected();"><img id="buttonDelete" src="../image/icons/button-delete.png" alt="open" class="shortMenuIcon" /></a>
 			<img src="../image/icons/button-open.png" alt="open" class="shortMenuIcon" onclick="#{rich:component('modalLoadWorkflow')}.show()">
 				<a4j:support event="onclick" rerender="hdfsfsOpenFile"/>
 			</img>
 			<img src="../image/icons/button-save.png" alt="save" class="shortMenuIcon" onclick="#{rich:component('modalSaveWorkflow')}.show()"/>
 			<img src="../image/icons/button-save-as.png" alt="saveas" class="shortMenuIcon" />
 			<img src="../image/icons/button-save-all.png" alt="saveall" class="shortMenuIcon" />
-			<!-- 
+			<!--
+			<a onclick="jQuery('#addtabCanvas').click();"><img src="../image/icons/button-new.png" alt="new" class="shortMenuIcon" /></a> 
 			<a onclick="undoHistory();"><img src="../image/icons/button-undo.png" alt="undo" class="shortMenuIcon" /></a>
 			<a onclick="redoHistory();"><img src="../image/icons/button-redo.png" alt="redo" class="shortMenuIcon" /></a>
 			<img src="../image/icons/button-cut.png" alt="cut" class="shortMenuIcon" />
+            <a onclick="deleteSelected();"><img id="buttonDelete" src="../image/icons/button-delete.png" alt="open" class="shortMenuIcon" /></a>
             -->
-		</center>
+            
 
 	</div>
 	
