@@ -1,16 +1,25 @@
 body {
-	padding-left: 2%;
 	font-family: Verdana, Geneva, sans-serif;
 }
 
 h1 {
 	padding-top:3%;
 	text-align: center;
+	color: #505050 
+}
+
+h2 {
+    color: #888888
+}
+
+h3 {
+    color: #C0C0C0
 }
 
 p {
 	padding-left: 3%;
-	width: 50%;
+	padding-right: 3%;
+	/*width: 50%;*/
 }
 
 td {
@@ -30,7 +39,8 @@ img {
 }
 
 a {
-	text-decoration: none;
+    text-decoration:underline;
+	/*text-decoration: none;*/
 }
 table.firsttable {
 	border:1px solid black;
