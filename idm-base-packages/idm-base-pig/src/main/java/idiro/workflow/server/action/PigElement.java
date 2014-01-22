@@ -11,6 +11,7 @@ import idiro.workflow.server.datatype.MapRedTextType;
 import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.oozie.PigAction;
+import idiro.workflow.utils.PigLanguageManager;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -41,6 +42,7 @@ public abstract class PigElement extends DataflowAction {
 
 	public static final String key_output = "out",
 			key_input = "in",
+			key_delimiter="delimiter",
 			key_condition = "Condition",
 			key_outputType = "Output_Type",
 			default_delimiter = "\001";
@@ -59,14 +61,19 @@ public abstract class PigElement extends DataflowAction {
 		super(new PigAction());
 		init(nbInMin,nbInMax);
 
-		delimiterOutputInt = new InputInteraction("Delimiter",
-				"Setting output delimiter", placeDelimiterInPage, 0);
+		delimiterOutputInt = new InputInteraction(
+				key_delimiter,
+				PigLanguageManager.getText("pig.delimiter_interaction.title"),
+				PigLanguageManager.getText("pig.delimiter_interaction.legend"), 
+				placeDelimiterInPage, 0);
 		delimiterOutputInt.setRegex("^(#\\d{1,3}|.)?$");
 		delimiterOutputInt.setValue("#1");
 
 
-		savetypeOutputInt = new ListInteraction(key_outputType,
-				"Setting the output type", placeDelimiterInPage+1, 0);
+		savetypeOutputInt = new ListInteraction(
+				key_outputType,
+				PigLanguageManager.getText("pig.outputtype_interaction.title"),
+				PigLanguageManager.getText("pig.outputtype_interaction.legend"), placeDelimiterInPage+1, 0);
 		savetypeOutputInt.setDisplayRadioButton(true);
 		List<String> saveTypePos = new LinkedList<String>();
 		saveTypePos.add( new MapRedTextType().getTypeName());

@@ -8,6 +8,7 @@ import idiro.workflow.server.datatype.MapRedTextType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
+import idiro.workflow.utils.PigLanguageManager;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
@@ -39,12 +40,14 @@ public class PigUnion extends PigElement {
 	public PigUnion() throws RemoteException {
 		super(2, Integer.MAX_VALUE,1);
 
-		page1 = addPage("Operations",
-				"Union operations and output preferences", 1);
+		page1 = addPage(
+				PigLanguageManager.getText("pig.union_page1.title"),
+				PigLanguageManager.getText("pig.union_page1.legend"), 1);
 
 		tUnionSelInt = new PigTableUnionInteraction(
 				key_featureTable,
-				"Please specify the operations to be executed for each feature",
+				PigLanguageManager.getText("pig.union_features_interaction.title"),
+				PigLanguageManager.getText("pig.union_features_interaction.legend"),
 				0, 0, this);
 
 		page1.addInteraction(tUnionSelInt);

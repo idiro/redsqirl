@@ -4,6 +4,7 @@ import idiro.utils.FeatureList;
 import idiro.workflow.server.Page;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEOutput;
+import idiro.workflow.utils.PigLanguageManager;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
@@ -26,23 +27,37 @@ public class PigAggregator extends PigElement {
 
 	public PigAggregator() throws RemoteException {
 		super(1, 1,1);
-		page1 = addPage("Aggregator", "Aggregate the data for the output", 1);
+		
+		page1 = addPage(
+				PigLanguageManager.getText("pig.aggregator_page1.title"), 
+				PigLanguageManager.getText("pig.aggregator_page1.legend"), 
+				1);
 
 		tSelInt = new PigTableSelectInteraction(
 				key_featureTable,
-				"Please specify the operations to be executed for each feature",
+				PigLanguageManager.getText("pig.aggregator_features_interaction.title"),
+				PigLanguageManager.getText("pig.aggregator_features_interaction.legend"),
 				0, 0, this);
 
-		groupingInt = new PigGroupInteraction(key_grouping,
-				"Please specify to group", 0, 1);
+		groupingInt = new PigGroupInteraction(
+				key_grouping,
+				PigLanguageManager.getText("pig.aggregator_group_interaction.title"),
+				PigLanguageManager.getText("pig.aggregator_group_interaction.legend"), 
+				0, 1);
 
 		page1.addInteraction(groupingInt);
 
-		page2 = addPage("Attributes", "Select table atributes ", 1);
+		page2 = addPage(
+				PigLanguageManager.getText("pig.aggregator_page2.title"), 
+				PigLanguageManager.getText("pig.aggregator_page2.legend"), 
+				1);
 
 		page2.addInteraction(tSelInt);
 
-		page3 = addPage("Filter", "Aggregator Configuration", 1);
+		page3 = addPage(
+				PigLanguageManager.getText("pig.aggregator_page3.title"), 
+				PigLanguageManager.getText("pig.aggregator_page3.legend"), 
+				1);
 
 		filterInt = new PigFilterInteraction(0, 0, this);
 
@@ -86,7 +101,6 @@ public class PigAggregator extends PigElement {
 
 
 			String load = loader + " = " + getLoadQueryPiece(in) + ";\n\n";
-			tSelInt.setLoader(getCurrentName());
 
 			if (filterLoader.isEmpty()) {
 				filterLoader = loader;
@@ -122,32 +136,6 @@ public class PigAggregator extends PigElement {
 	public FeatureList getInFeatures() throws RemoteException {
 		return getDFEInput().get(key_input).get(0).getFeatures();
 	}
-	
-	/*
-	public FeatureList getInFeaturesWithAlias() throws RemoteException{
-		FeatureList fl = new OrderedFeatureList();
-		String alias = getAlias();
-		FeatureList in = getInFeatures();
-		Iterator<String> featsName = in.getFeaturesNames().iterator();
-		while(featsName.hasNext()){
-			String feat = featsName.next();
-			fl.addFeature(alias.toUpperCase()+"."+feat, in.getFeatureType(feat));
-		}
-		
-		return fl;
-	}*/
-	
-	/*
-	public Set<String> getGroupedWithAlias() throws RemoteException{
-		Set<String> grouped = new HashSet<String>();
-		String alias = getAlias();
-		Iterator<String> iter = getGroupingInt().getValues().iterator();
-		while(iter.hasNext()){
-			String feat = iter.next();
-			grouped.add(alias.toUpperCase()+"."+feat.toUpperCase());
-		}
-		return grouped;
-	}*/
 
 	@Override
 	public FeatureList getNewFeatures() throws RemoteException {

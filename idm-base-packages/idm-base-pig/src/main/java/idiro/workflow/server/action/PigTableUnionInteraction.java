@@ -6,6 +6,7 @@ import idiro.workflow.server.TableInteraction;
 import idiro.workflow.server.action.utils.PigDictionary;
 import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.interfaces.DFEOutput;
+import idiro.workflow.utils.PigLanguageManager;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
@@ -34,15 +35,15 @@ public class PigTableUnionInteraction extends TableInteraction{
 
 	private PigUnion hu;
 
-	public static final String table_relation_title = "Relation", 
-			table_op_title = "Operation",
-			table_feat_title = "Feature_name",
-			table_type_title = "Type";
+	public static final String table_relation_title = PigLanguageManager.getTextWithoutSpace("pig.union_features_interaction.relation_column"), 
+			table_op_title = PigLanguageManager.getTextWithoutSpace("pig.union_features_interaction.op_column"),
+			table_feat_title = PigLanguageManager.getTextWithoutSpace("pig.union_features_interaction.feat_column"),
+			table_type_title = PigLanguageManager.getTextWithoutSpace("pig.union_features_interaction.type_column");
 
-	public PigTableUnionInteraction(String name, String legend,
+	public PigTableUnionInteraction(String id, String name, String legend,
 			int column, int placeInColumn, PigUnion hu)
 					throws RemoteException {
-		super(name, legend, column, placeInColumn);
+		super(id, name, legend, column, placeInColumn);
 		this.hu = hu;
 		getRootTable();
 	}
@@ -55,7 +56,7 @@ public class PigTableUnionInteraction extends TableInteraction{
 		Iterator<Map<String,String>> rows;
 
 		if(lRow.isEmpty()){
-			msg = "A relation is composed of at least 1 column";
+			msg = PigLanguageManager.getText("pig.union_features_interaction.checkrownb");
 		}else{
 
 			Map<String,List<Map<String,String> > > mapRelationRow = getSubQuery();
@@ -63,7 +64,7 @@ public class PigTableUnionInteraction extends TableInteraction{
 
 			//Check if we have the right number of list
 			if(mapRelationRow.keySet().size() != hu.getAllInputComponent().size()){
-				msg = "One or several input relation are missing in the query";
+				msg = PigLanguageManager.getText("pig.union_features_interaction.checkrownb");
 			}
 
 			Iterator<String> itRelation = mapRelationRow.keySet().iterator();
@@ -72,7 +73,8 @@ public class PigTableUnionInteraction extends TableInteraction{
 				List<Map<String,String>> listRow = mapRelationRow.get(relationName);
 				//Check if there is the same number of row for each input
 				if(listRow.size() != lRow.size() / mapRelationRow.keySet().size()){
-					msg = relationName+ " does not have the right number of rows compare to others";
+					msg = PigLanguageManager.getText("pig.union_features_interaction.checkrowbalance",
+							new Object[]{relationName});
 				}
 
 				Set<String> featuresTitle = new LinkedHashSet<String>();
@@ -87,21 +89,21 @@ public class PigTableUnionInteraction extends TableInteraction{
 										row.get(table_op_title),
 										hu.getInFeatures())
 								)){
-							msg = "Error the type returned does not correspond for feature "+
-									row.get(table_feat_title);
+							msg = PigLanguageManager.getText("pig.union_features_interaction.checkreturntype",
+									new String[]{row.get(table_feat_title)});
 						}else{
 							String featureName = row.get(table_feat_title)
 									.toUpperCase();
 							logger.info("is it contained in map : "+featureName);
 							if(!mapFeatType.containsFeature(featureName)){
-								msg = "Some Features are not implemented for every relation";
+								msg = PigLanguageManager.getText("pig.union_features_interaction.checkfeatimplemented");
 							}else{
 								featuresTitle.add(featureName);
 								if(!PigDictionary.getType(
 										row.get(table_type_title))
 										.equals(mapFeatType.getFeatureType(featureName)
 												)){
-									msg = "Type of "+featureName+ " inconsistant";
+									msg = PigLanguageManager.getText("pig.union_features_interaction.checktype");
 								}
 							}
 						}
@@ -114,8 +116,8 @@ public class PigTableUnionInteraction extends TableInteraction{
 				if(msg == null && 
 						listRow.size() !=
 						featuresTitle.size()){
-					msg = lRow.size()-featuresTitle.size()+
-							" features has the same name, total "+lRow.size() +" featuresTitle "+featuresTitle.size();
+					msg = PigLanguageManager.getText("pig.union_features_interaction.checknbfeat",
+							new Object[]{lRow.size()-featuresTitle.size(),lRow.size(),featuresTitle.size()});
 					logger.debug(featuresTitle);
 				}
 			}
@@ -132,10 +134,10 @@ public class PigTableUnionInteraction extends TableInteraction{
 					expression,
 					hu.getInFeatures()
 					) == null) {
-				error = "Expression does not have a return type";
+				error =PigLanguageManager.getText("pig.expressionnull");
 			}
 		} catch (Exception e) {
-			error = "Error trying to get expression return type";
+			error = PigLanguageManager.getText("pig.expressionexception");
 			logger.error(error, e);
 		}
 		return error;

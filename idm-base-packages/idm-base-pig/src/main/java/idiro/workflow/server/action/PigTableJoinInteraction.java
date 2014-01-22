@@ -6,6 +6,7 @@ import idiro.utils.Tree;
 import idiro.workflow.server.TableInteraction;
 import idiro.workflow.server.action.utils.PigDictionary;
 import idiro.workflow.server.enumeration.FeatureType;
+import idiro.workflow.utils.PigLanguageManager;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
@@ -34,14 +35,14 @@ public class PigTableJoinInteraction extends TableInteraction{
 
 	private PigJoin hj;
 
-	public static final String table_op_title = "Operation",
-			table_feat_title = "Feature_name",
-			table_type_title = "Type";
+	public static final String table_op_title = PigLanguageManager.getTextWithoutSpace("pig.join_features_interaction.op_column"),
+			table_feat_title = PigLanguageManager.getTextWithoutSpace("pig.join_features_interaction.feat_column"),
+			table_type_title = PigLanguageManager.getTextWithoutSpace("pig.join_features_interaction.type_column");
 
-	public PigTableJoinInteraction(String name, String legend,
+	public PigTableJoinInteraction(String id, String name, String legend,
 			int column, int placeInColumn, PigJoin hj)
 					throws RemoteException {
-		super(name, legend, column, placeInColumn);
+		super(id, name, legend, column, placeInColumn);
 		this.hj = hj;
 		getRootTable();
 	}
@@ -55,7 +56,7 @@ public class PigTableJoinInteraction extends TableInteraction{
 		List<Map<String,String>> lRow = getValues();
 
 		if(lRow.isEmpty()){
-			msg = "A table is composed of at least 1 column";
+			msg = PigLanguageManager.getText("pig.join_features_interaction.checkempty");
 		}
 		
 		logger.debug(features.getFeaturesNames());
@@ -68,7 +69,7 @@ public class PigTableJoinInteraction extends TableInteraction{
 				String op = row.get(table_op_title);
 				String feature = row.get(table_feat_title);
 				if(!PigDictionary.isVariableName(feature)){
-					msg = "row "+rowNb+"': "+feature+"' is not a valid name";
+					msg = PigLanguageManager.getText("pig.join_features_interaction.featureinvalid",new Object[]{rowNb,feature});
 				}else{
 					try{
 						if( ! PigDictionary.check(
@@ -78,8 +79,7 @@ public class PigTableJoinInteraction extends TableInteraction{
 										features
 										)
 								)){
-							msg = "row "+rowNb+": Error the type returned does not correspond for feature "+
-									feature;
+							msg = PigLanguageManager.getText("pig.join_features_interaction.typeinvalid",new Object[]{rowNb,feature});
 						}
 					}catch(Exception e){
 						msg = e.getMessage();
@@ -98,10 +98,10 @@ public class PigTableJoinInteraction extends TableInteraction{
 					expression,
 					hj.getInFeatures()
 					) == null) {
-				error = "Expression does not have a return type";
+				error = PigLanguageManager.getText("pig.expressionnull");
 			}
 		} catch (Exception e) {
-			error = "Error trying to get expression return type";
+			error = PigLanguageManager.getText("pig.expressionexception");
 			logger.error(error, e);
 		}
 		return error;
