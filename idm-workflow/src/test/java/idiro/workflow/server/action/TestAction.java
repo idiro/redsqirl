@@ -46,12 +46,14 @@ public class TestAction extends DataflowAction{
 		
 		page1.addInteraction(new UserInteraction(
 				"interaction1",
+				"interaction1",
 				"Please specify a table",
 				DisplayType.browser,
 				0,
 				0) );
 		
 		page1.addInteraction(new UserInteraction(
+				"interaction2",
 				"interaction2",
 				"Please specify a output table",
 				DisplayType.appendList,

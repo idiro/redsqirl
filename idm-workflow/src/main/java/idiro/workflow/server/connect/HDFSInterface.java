@@ -6,7 +6,7 @@ import idiro.tm.task.in.Preference;
 import idiro.utils.FeatureList;
 import idiro.workflow.server.connect.interfaces.DataStore;
 import idiro.workflow.server.enumeration.FeatureType;
-import idiro.workflow.utils.LanguageManager;
+import idiro.workflow.utils.LanguageManagerWF;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -212,15 +212,15 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 				if(ok){
 					changeProperties(path, properties);
 				}else{
-					error = LanguageManager.getText("HdfsInterface.createdirfail",new Object[]{path});
+					error = LanguageManagerWF.getText("HdfsInterface.createdirfail",new Object[]{path});
 				}
 			} catch (IOException e) {
-				error = LanguageManager.getText("HdfsInterface.cannotcreate",new Object[]{path});
+				error = LanguageManagerWF.getText("HdfsInterface.cannotcreate",new Object[]{path});
 				logger.error(error);
 				logger.error(e.getMessage());
 			}
 		}else{
-			error = LanguageManager.getText("HdfsInterface.pathexists",new Object[]{path});
+			error = LanguageManagerWF.getText("HdfsInterface.pathexists",new Object[]{path});
 		}
 		fCh.close();
 		if(error != null){
@@ -240,16 +240,16 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 				ok = fs.delete(new Path(path), true);
 				fs.close();
 				if(!ok){
-					error = LanguageManager.getText("HdfsInterface.deletefail",new Object[]{path});
+					error = LanguageManagerWF.getText("HdfsInterface.deletefail",new Object[]{path});
 				}
 			} catch (IOException e) {
 				ok = false;
-				error = LanguageManager.getText("HdfsInterface.cannotdelete",new Object[]{path});
+				error = LanguageManagerWF.getText("HdfsInterface.cannotdelete",new Object[]{path});
 				logger.error(error);
 				logger.error(e.getMessage());
 			}
 		}else{
-			error = LanguageManager.getText("HdfsInterface.notdir",new Object[]{path});
+			error = LanguageManagerWF.getText("HdfsInterface.notdir",new Object[]{path});
 		}
 		fCh.close();
 		if(error != null){
@@ -271,13 +271,13 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 				fs.rename(oldP, newP);
 				fs.close();
 			}else{
-				error = LanguageManager.getText("HdfsInterface.ouputexists");
+				error = LanguageManagerWF.getText("HdfsInterface.ouputexists");
 			}
 			hCh.close();
 
 		} catch (IOException e) {
 			logger.error(e.getMessage());
-			error = LanguageManager.getText("HdfsInterface.errormove",new Object[]{e.getMessage()});
+			error = LanguageManagerWF.getText("HdfsInterface.errormove",new Object[]{e.getMessage()});
 		}
 		if(error != null){
 			logger.debug(error);
@@ -297,14 +297,14 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 				FileSystem fs = NameNodeVar.getFS();
 				FileUtil.copy(fs, oldP, fs, newP, false, NameNodeVar.getConf());
 			}else{
-				error = LanguageManager.getText("HdfsInterface.ouputexists");
+				error = LanguageManagerWF.getText("HdfsInterface.ouputexists");
 			}
 			hChN.close();
 			hChO.close();
 
 		} catch (IOException e) {
 			logger.error(e.getMessage());
-			error = LanguageManager.getText("HdfsInterface.errormove",new Object[]{e.getMessage()});
+			error = LanguageManagerWF.getText("HdfsInterface.errormove",new Object[]{e.getMessage()});
 		}
 		if(error != null){
 			logger.debug(error);
@@ -536,7 +536,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 		}else if(key.equals(key_group)){
 			error = changeOwnership(p, System.getProperty("user.name"), newValue,false);
 		}else{
-			error = LanguageManager.getText("HdfsInterface.changeprop.keyunsupported",new Object[]{key});
+			error = LanguageManagerWF.getText("HdfsInterface.changeprop.keyunsupported",new Object[]{key});
 		}
 		return error;
 	}
@@ -573,7 +573,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 		}
 
 		if(error == null && !prop.isEmpty()){
-			error = LanguageManager.getText("HdfsInterface.changeprop.permissionerror");
+			error = LanguageManagerWF.getText("HdfsInterface.changeprop.permissionerror");
 		}
 		if(error != null){
 			logger.debug(error);
@@ -608,13 +608,13 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 					fs.setOwner(path, owner, group);
 				}
 			}else{
-				error = LanguageManager.getText("HdfsInterface.changeprop.ownererror", new Object[]{path.toString()});
+				error = LanguageManagerWF.getText("HdfsInterface.changeprop.ownererror", new Object[]{path.toString()});
 			}
 			fs.close();
 		} catch (IOException e) {
 			logger.error("Cannot operate on the file or directory: "+path.toString());
 			logger.error(e.getMessage());
-			error = LanguageManager.getText("HdfsInterface.changeprop.fileaccess", new Object[]{path});
+			error = LanguageManagerWF.getText("HdfsInterface.changeprop.fileaccess", new Object[]{path});
 		}
 
 		if(error != null){
@@ -645,13 +645,13 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 					fs.setOwner(path, owner, group);
 				}
 			}else{
-				error = LanguageManager.getText("HdfsInterface.changeprop.ownererror", new Object[]{path.toString()});
+				error = LanguageManagerWF.getText("HdfsInterface.changeprop.ownererror", new Object[]{path.toString()});
 			}
 			fs.close();
 		} catch (IOException e) {
 			logger.error("Cannot operate on the file or directory: "+path.toString());
 			logger.error(e.getMessage());
-			error = LanguageManager.getText("HdfsInterface.changeprop.fileaccess", new Object[]{path});
+			error = LanguageManagerWF.getText("HdfsInterface.changeprop.fileaccess", new Object[]{path});
 		}
 		if(error != null){
 			logger.debug(error);
@@ -674,12 +674,12 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 					fs.setPermission(path, new FsPermission(permission));
 				}
 			}else{
-				error = LanguageManager.getText("HdfsInterface.changeprop.ownererror", new Object[]{path.toString()});
+				error = LanguageManagerWF.getText("HdfsInterface.changeprop.ownererror", new Object[]{path.toString()});
 			}
 		} catch (IOException e) {
 			logger.error("Cannot operate on the file or directory: "+path.toString());
 			logger.error(e.getMessage());
-			error = LanguageManager.getText("HdfsInterface.changeprop.fileaccess", new Object[]{path});
+			error = LanguageManagerWF.getText("HdfsInterface.changeprop.fileaccess", new Object[]{path});
 		}
 		if(error != null){
 			logger.debug(error);
@@ -703,13 +703,13 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 					fs.setPermission(path, new FsPermission(permission));
 				}
 			}else{
-				error = LanguageManager.getText("HdfsInterface.changeprop.ownererror", new Object[]{path.toString()});
+				error = LanguageManagerWF.getText("HdfsInterface.changeprop.ownererror", new Object[]{path.toString()});
 			}
 			fs.close();
 		} catch (IOException e) {
 			logger.error("Cannot operate on the file or directory: "+path.toString());
 			logger.error(e.getMessage());
-			error = LanguageManager.getText("HdfsInterface.changeprop.fileaccess", new Object[]{path});
+			error = LanguageManagerWF.getText("HdfsInterface.changeprop.fileaccess", new Object[]{path});
 		}
 		if(error != null){
 			logger.debug(error);
@@ -732,25 +732,25 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 
 	@Override
 	public String canCreate() throws RemoteException{
-		return LanguageManager.getText("HdfsInterface.create_help");
+		return LanguageManagerWF.getText("HdfsInterface.create_help");
 	}
 
 
 	@Override
 	public String canDelete() throws RemoteException{
-		return LanguageManager.getText("HdfsInterface.delete_help");
+		return LanguageManagerWF.getText("HdfsInterface.delete_help");
 	}
 
 
 	@Override
 	public String canMove() throws RemoteException{
-		return LanguageManager.getText("HdfsInterface.move_help");
+		return LanguageManagerWF.getText("HdfsInterface.move_help");
 	}
 
 
 	@Override
 	public String canCopy() throws RemoteException{
-		return LanguageManager.getText("HdfsInterface.copy_help");
+		return LanguageManagerWF.getText("HdfsInterface.copy_help");
 	}
 	
 	@Override
@@ -853,7 +853,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 		catch(Exception e){
 			logger.info("error", e);
 			
-			error = LanguageManager.getText("unexpectedexception",new Object[]{e.getMessage()});
+			error = LanguageManagerWF.getText("unexpectedexception",new Object[]{e.getMessage()});
 		}
 		return error;
 	}

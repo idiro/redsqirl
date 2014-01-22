@@ -5,7 +5,7 @@ import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEInteractionChecker;
-import idiro.workflow.utils.LanguageManager;
+import idiro.workflow.utils.LanguageManagerWF;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -81,10 +81,10 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	 * @param placeInColumn
 	 * @throws RemoteException 
 	 */
-	public UserInteraction(String name, String legend,DisplayType display, int column, int placeInColumn) throws RemoteException{
+	public UserInteraction(String id, String name, String legend,DisplayType display, int column, int placeInColumn) throws RemoteException{
 		super();
 		this.name = name;
-		this.tree = new TreeNonUnique<String>(name);
+		this.tree = new TreeNonUnique<String>(id);
 		this.legend = legend;
 		this.display = display;
 		this.column = column;
@@ -221,7 +221,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 				}
 			}catch(Exception e){
 				possibleValues = null;
-				logger.error(LanguageManager.getText("UserInteraction.treeIncorrect"));
+				logger.error(LanguageManagerWF.getText("UserInteraction.treeIncorrect"));
 			}
 		}
 		return possibleValues;
@@ -248,13 +248,13 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 				}
 				if(regex != null){
 					if(value == null){
-						error = LanguageManager.getText("UserInteraction.valueMatch", new String[]{regex});
+						error = LanguageManagerWF.getText("UserInteraction.valueMatch", new String[]{regex});
 					}else if(!value.matches(regex)){
-						error = LanguageManager.getText("UserInteraction.valueIncorrectMatch", new String[]{value,regex});
+						error = LanguageManagerWF.getText("UserInteraction.valueIncorrectMatch", new String[]{value,regex});
 					}
 				}
 			}catch(Exception e){
-				error = LanguageManager.getText("UserInteraction.treeIncorrect");
+				error = LanguageManagerWF.getText("UserInteraction.treeIncorrect");
 				logger.error(error);
 			}
 		}
@@ -274,7 +274,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 					error = "Value "+value + " invalid.";
 				}
 			}catch(Exception e){
-				error = LanguageManager.getText("UserInteraction.treeIncorrect");
+				error = LanguageManagerWF.getText("UserInteraction.treeIncorrect");
 				logger.error(error);
 			}
 		}
@@ -301,7 +301,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 					}
 				}
 			}catch(Exception e){
-				error = LanguageManager.getText("UserInteraction.treeIncorrect");
+				error = LanguageManagerWF.getText("UserInteraction.treeIncorrect");
 				logger.error(error);
 			}
 		}
@@ -367,6 +367,12 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 
 	public String checkExpression(String expression, String modifier) throws RemoteException{
 		return null;
+	}
+
+
+	@Override
+	public String getId() throws RemoteException {
+		return getTree().getHead();
 	}
 
 

@@ -11,9 +11,9 @@ public class BrowserInteraction extends UserInteraction{
 	 */
 	private static final long serialVersionUID = 4244649045214883613L;
 
-	public BrowserInteraction(String name, String legend,
+	public BrowserInteraction(String id, String name, String legend,
 			int column, int placeInColumn) throws RemoteException {
-		super(name, legend, DisplayType.browser, column, placeInColumn);
+		super(id, name, legend, DisplayType.browser, column, placeInColumn);
 	}
 
 }

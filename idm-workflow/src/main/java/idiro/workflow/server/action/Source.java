@@ -19,7 +19,7 @@ import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.interfaces.DFEPage;
 import idiro.workflow.server.interfaces.PageChecker;
-import idiro.workflow.utils.LanguageManager;
+import idiro.workflow.utils.LanguageManagerWF;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -57,11 +57,14 @@ public class Source extends DataflowAction {
 	public Source() throws RemoteException {
 		super(null);
 
-		Page page1 = addPage("Source: Data type",
-				"Choose the data type that you would like to load", 1);
+		Page page1 = addPage(LanguageManagerWF.getText("source.page1.title"),
+				LanguageManagerWF.getText("source.page1.legend"), 1);
 
 		dataType = new ListInteraction(key_datatype,
-				"Please specify a data type", 0, 0);
+				LanguageManagerWF.getText("source.datatype_interaction.title"),
+				LanguageManagerWF.getText("source.datatype_interaction.legend"), 
+				0, 0);
+		
 		dataType.setDisplayRadioButton(true);
 		List<String> posValues = new LinkedList<String>();
 		posValues.add("Hive");
@@ -78,21 +81,24 @@ public class Source extends DataflowAction {
 				logger = Logger.getRootLogger();
 				try {
 					if (dataType.getValue().isEmpty()) {
-						error = LanguageManager.getText("source.datatypeempty");
+						error = LanguageManagerWF.getText("source.datatypeempty");
 					}
 				} catch (Exception e) {
-					error = LanguageManager.getText("source.datatypeempty");
+					error = LanguageManagerWF.getText("source.datatypeempty");
 				}
 				return error;
 			}
 
 		});
 
-		Page page2 = addPage("Source: Data sub-type",
-				"Choose the data sub-type that you would like to load", 1);
+		Page page2 = addPage(LanguageManagerWF.getText("source.page2.title"),
+				LanguageManagerWF.getText("source.page2.legend"), 1);
 
 		dataSubtype = new ListInteraction(key_datasubtype,
-				"Please specify a data subtype", 0, 0);
+				LanguageManagerWF.getText("source.datasubtype_interaction.title"),
+				LanguageManagerWF.getText("source.datasubtype_interaction.legend"),
+				0, 0);
+		
 		dataSubtype.setDisplayRadioButton(true);
 
 		page2.addInteraction(dataSubtype);
@@ -109,7 +115,7 @@ public class Source extends DataflowAction {
 					logger.info("output type : " + subtype);
 
 					if (dataSubtype.getValue().isEmpty()) {
-						error = LanguageManager.getText("source.datatypeempty");
+						error = LanguageManagerWF.getText("source.datatypeempty");
 					}
 
 					if(error == null){
@@ -127,23 +133,28 @@ public class Source extends DataflowAction {
 										SavingState.RECORDED);
 							}
 						} else {
-							error = LanguageManager.getText("source.outputnull");
+							error = LanguageManagerWF.getText("source.outputnull");
 							logger.error(error);
 						}
 					}
 
 				} catch (Exception e) {
-					error = LanguageManager.getText("source.outputnull",new Object[]{e.getMessage()});
+					error = LanguageManagerWF.getText("source.outputnull",new Object[]{e.getMessage()});
 				}
 				return error;
 			}
 
 		});
 
-		Page page3 = addPage("Source: Browser", "Pick a data set", 1);
+		Page page3 = addPage(
+				LanguageManagerWF.getText("source.page3.title"), 
+				LanguageManagerWF.getText("source.page3.legend"),
+				1);
 
 		DFEInteraction browse = new UserInteraction(key_dataset,
-				"Please specify a data set", DisplayType.browser, 0, 0);
+				LanguageManagerWF.getText("source.browse_interaction.title"),
+						LanguageManagerWF.getText("source.browse_interaction.legend"),
+						DisplayType.browser, 0, 0);
 
 		page3.addInteraction(browse);
 
@@ -158,7 +169,7 @@ public class Source extends DataflowAction {
 				try{
 					out = (DataOutput) output.get(out_name);
 				}catch(Exception e){
-					error = LanguageManager.getText("source.outputchecknull");
+					error = LanguageManagerWF.getText("source.outputchecknull");
 				}
 				try {
 					logger.info("tree is : "+((TreeNonUnique<String>)getInteraction(key_dataset).getTree()).toString());
@@ -218,7 +229,7 @@ public class Source extends DataflowAction {
 								} 
 							}
 						}catch(Exception e){
-							error = LanguageManager.getText("source.treeerror");
+							error = LanguageManagerWF.getText("source.treeerror");
 						}
 					}
 
@@ -231,10 +242,10 @@ public class Source extends DataflowAction {
 									.getFirstChild("path").getFirstChild().getHead();
 
 							if (path.isEmpty()) {
-								error = LanguageManager.getText("source.pathempty");
+								error = LanguageManagerWF.getText("source.pathempty");
 							}
 						}catch(Exception e){
-							error = LanguageManager.getText("source.setpatherror",new Object[]{e.getMessage()});
+							error = LanguageManagerWF.getText("source.setpatherror",new Object[]{e.getMessage()});
 						}
 					}
 
@@ -270,18 +281,18 @@ public class Source extends DataflowAction {
 					if(error == null){
 						try{
 							if(!out.isPathExists()){
-								error = LanguageManager.getText("source.pathnotexist");
+								error = LanguageManagerWF.getText("source.pathnotexist");
 							}else if(out.isPathValid() != null){
-								error = LanguageManager.getText("source.pathinvalid",new Object[]{out.isPathValid()});
+								error = LanguageManagerWF.getText("source.pathinvalid",new Object[]{out.isPathValid()});
 							}
 						}catch(Exception e){
-							error = LanguageManager.getText("source.pathexceptions",new Object[]{e.getMessage()});
+							error = LanguageManagerWF.getText("source.pathexceptions",new Object[]{e.getMessage()});
 							logger.error(error);
 						}
 
 					}
 				} catch (Exception e) {
-					error = LanguageManager.getText("source.exception",new Object[]{e.getMessage()});
+					error = LanguageManagerWF.getText("source.exception",new Object[]{e.getMessage()});
 				}
 
 

@@ -8,7 +8,7 @@ import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.enumeration.DataBrowser;
 import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.oozie.HiveAction;
-import idiro.workflow.utils.LanguageManager;
+import idiro.workflow.utils.LanguageManagerWF;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -106,14 +106,14 @@ public class HiveType extends DataOutput{
 	public String isPathValid() throws RemoteException {
 		String error=null;
 		if(getPath() == null){
-			error = LanguageManager.getText("hivetype.ispathvalid.pathnull");
+			error = LanguageManagerWF.getText("hivetype.ispathvalid.pathnull");
 		}
 		if (isPathExists()){
 			return hInt.isPathValid(getPath(), features,getProperty(key_partitions));
 		}else{
 			String regex = "[a-zA-Z_]([A-Za-z0-9_]+)";
 			if (!hInt.getTableAndPartitions(getPath())[0].matches(regex)) {
-				error = LanguageManager.getText("hivetype.ispathvalid.invalid");
+				error = LanguageManagerWF.getText("hivetype.ispathvalid.invalid");
 			}
 		}
 		return error;
@@ -184,10 +184,10 @@ public class HiveType extends DataOutput{
 		String error = null;
 		if( isPathExists() && features != null){
 			if(features.getSize() != fl.getSize()){
-				error = LanguageManager.getText("hivetype.checkfeatures.incorrectsize");
+				error = LanguageManagerWF.getText("hivetype.checkfeatures.incorrectsize");
 			}
 			if(!features.getFeaturesNames().containsAll(fl.getFeaturesNames())){
-				error = LanguageManager.getText("hivetype.checkfeatures.incorrectlist");
+				error = LanguageManagerWF.getText("hivetype.checkfeatures.incorrectlist");
 			}
 			if(error == null){
 				Iterator<String> flIt = fl.getFeaturesNames().iterator();
@@ -196,7 +196,7 @@ public class HiveType extends DataOutput{
 					String flName = flIt.next();
 					String featName = featuresIt.next();
 					if(!fl.getFeatureType(flName).equals(features.getFeatureType(featName))){
-						error = LanguageManager.getText("hivetype.checkfeatures.incorrectfeatures",new Object[]{flName,featName});
+						error = LanguageManagerWF.getText("hivetype.checkfeatures.incorrectfeatures",new Object[]{flName,featName});
 					}
 				}
 			}

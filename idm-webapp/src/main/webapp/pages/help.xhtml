@@ -9,11 +9,11 @@
 	xmlns:a4j="http://richfaces.org/a4j">
 
 <head>
-<script	src='#{facesContext.externalContext.requestContextPath}/js/idm.js' type="text/javascript"></script>
 <script>
 
 	jQuery(document).on("click" , "#stopLink" ,function(e) {
 	    jQuery("#helpIndex").hide();
+        jQuery("#helpPanel").empty();
 	    jQuery("#helpPanel").load(jQuery(this).attr("href")+ " #body");
 	    jQuery("#btIndex").show();
 	});
@@ -34,16 +34,15 @@
 	<h1>IDM Help</h1>
 	<p>
 		IDM is a platform that builds data related workflows that runs on
-		hadoop. For more help on IDM click <a href="../help/index.html"
-			target="_blank">here</a>
+		hadoop. For more help on IDM click 
+		<a id="stopLink" onclick="return false;" href="../help/main.html">here</a>
 	</p>
-	<h3>Available Actions</h3>
-		<h:outputText value="#{messages.label_index}" />
-		<ul>
+	<h2>Available Actions</h2>
+		<ol>
 			<ui:repeat value="#{canvasBean.helpItens}" var="item">
 				<li><a id="stopLink" href="#{item[1]}" onclick="return false;">#{item[0]}</a></li>
 			</ui:repeat>
-		</ul>
+		</ol>
 	</div>
 	<div id="helpPanel"></div>
 </body>

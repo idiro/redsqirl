@@ -2,7 +2,7 @@ package idiro.workflow.server;
 
 import idiro.utils.Tree;
 import idiro.workflow.server.enumeration.DisplayType;
-import idiro.workflow.utils.LanguageManager;
+import idiro.workflow.utils.LanguageManagerWF;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
@@ -15,9 +15,9 @@ public class ListInteraction extends UserInteraction {
 	 */
 	private static final long serialVersionUID = -410867993847056485L;
 
-	public ListInteraction(String name, String legend,
+	public ListInteraction(String id, String name, String legend,
 			int column, int placeInColumn) throws RemoteException {
-		super(name, legend, DisplayType.list, column, placeInColumn);
+		super(id, name, legend, DisplayType.list, column, placeInColumn);
 		init();
 	}
 	
@@ -78,7 +78,7 @@ public class ListInteraction extends UserInteraction {
 			output.removeAllChildren();
 			output.add(value);
 		}else{
-			error = LanguageManager.getText("listinteractions.setvalue");
+			error = LanguageManagerWF.getText("listinteractions.setvalue");
 		}
 		return error;
 	}

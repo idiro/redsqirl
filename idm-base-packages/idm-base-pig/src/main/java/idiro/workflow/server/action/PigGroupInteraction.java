@@ -27,9 +27,9 @@ public class PigGroupInteraction extends AppendListInteraction{
 
 	protected static Logger logger = Logger.getLogger(PigGroupInteraction.class);
 
-	public PigGroupInteraction(String name, String legend,
+	public PigGroupInteraction(String id, String name, String legend,
 			int column, int placeInColumn) throws RemoteException {
-		super(name, legend, column, placeInColumn);
+		super(id, name, legend, column, placeInColumn);
 	}
 	
 	public void update(DFEOutput in) throws RemoteException{

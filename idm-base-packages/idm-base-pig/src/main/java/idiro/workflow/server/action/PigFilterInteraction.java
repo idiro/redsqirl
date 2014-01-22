@@ -4,6 +4,7 @@ import idiro.utils.Tree;
 import idiro.workflow.server.EditorInteraction;
 import idiro.workflow.server.action.utils.PigDictionary;
 import idiro.workflow.server.interfaces.DFEOutput;
+import idiro.workflow.utils.PigLanguageManager;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
@@ -28,8 +29,9 @@ public class PigFilterInteraction extends EditorInteraction {
 	public PigFilterInteraction(int column,
 			int placeInColumn, PigElement el)
 					throws RemoteException {
-		super(PigElement.key_condition, 
-				"Please specify the condition of the select", 
+		super(PigElement.key_condition,
+				PigLanguageManager.getText("pig.filter_interaction.title"), 
+				PigLanguageManager.getText("pig.filter_interaction.title"), 
 				column, 
 				placeInColumn);
 		this.el = el;
@@ -54,15 +56,13 @@ public class PigFilterInteraction extends EditorInteraction {
 				type = PigDictionary.getInstance().getReturnType(
 						condition, el.getInFeatures(),aggregation);
 				if (!type.equalsIgnoreCase("boolean")) {
-					msg = "The condition have to return a boolean not a "
-							+ type;
+					msg = PigLanguageManager.getText("pig.filter_interaction.checkerror",new String[]{type});
 					logger.info(msg);
 
 				}
 			}
 		} catch (Exception e) {
-			msg = "Fail to calculate the type of the conditon "
-					+ e.getMessage();
+			msg = PigLanguageManager.getText("pig.filter_interaction.checkexception");
 			logger.error(msg);
 
 		}
