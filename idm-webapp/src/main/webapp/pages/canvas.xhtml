@@ -427,9 +427,16 @@
               
               var div = "<div id='"+tabName+"'>"+
 				"<div id='container-"+tabName+"' class='container-"+tabName+"'>"+
-					"<rich:panel header='Legend' style='position: fixed; z-index:9999999;'>"+
-						"<div id='container-legend-"+tabName+"' class='container-legend-"+tabName+"' />"+
-	        		"</rich:panel>"+
+				
+				"<div class='rich-panel' onclick=\"jQuery('#panelLegend-"+tabName+"').toggle();return false;\"  style='position: fixed; z-index:101; width:190px'>"+
+					"<div class='rich-panel-header'>Legend</div>"+
+				"</div>"+
+				"<div class='rich-panel' id='panelLegend-"+tabName+"'  style='position: fixed; z-index:100; visible:false; width:190px; height:300px'>"+
+					"<div class='rich-panel-body' style='overflow:hidden;'>"+
+						"<div id='container-legend-"+tabName+"' class='container-legend-"+tabName+"' style='overflow:hidden; position: relative; top:20px;'/>"+
+					"</div>"+
+	        	"</div>"+
+				
               	"</div>"+
 				"</div>";
               
@@ -1016,10 +1023,14 @@
 						<div id="canvas-1">
 
 							<div id="container-canvas-1" class="container-canvas-1" >
-								 <rich:panel id="header-legend-canvas-1" header="Legend" onclick="jQuery('#panelTest').toggle();return false;" width="170px" style="position: fixed; z-index:99999999;"/>
-								 <rich:panel id="panelTest" width="190px" style="position: fixed; z-index:9999999;">
-									 <div id="container-legend-canvas-1" class="container-legend-canvas-1" style="position: relative; top:20px;"/>
-						        </rich:panel>
+								<div class="rich-panel" onclick="jQuery('#panelLegend-canvas-1').toggle();return false;"  style="position: fixed; z-index:101; width:190px">
+									<div class="rich-panel-header">Legend</div>
+								</div>
+								<div class="rich-panel" id="panelLegend-canvas-1"  style="position: fixed;  z-index:100; visible:false; width:190px; height:300px">
+									<div class="rich-panel-body" style="overflow:hidden;">
+										<div id="container-legend-canvas-1" class="container-legend-canvas-1" style="overflow:hidden; position: relative; top:20px;"/>
+									</div>
+						        </div>
 							</div>
 							
 						</div>

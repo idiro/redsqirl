@@ -223,7 +223,7 @@ function configureCanvas(canvasName){
 function createLegend(canvasName) {
 	
 	var posX = 0;
-	var posY = 0;
+	var posY = 10;
 	var width = canvasArray[canvasName].legendWidth;
 
 	var legendLayer = canvasArray[canvasName].legendLayer;
@@ -231,9 +231,9 @@ function createLegend(canvasName) {
 
 	var linkTypeColours = canvasArray[canvasName].outputTypeColours;
 
-	var outputTypeColours = [['TEMPORARY',getColorOutputType('TEMPORARY')],
-	    	                 ['RECORDED',getColorOutputType('RECORDED')],
-	    	                 ['BUFFERED',getColorOutputType('BUFFERED')]];
+	var outputTypeColours = [['RECORDED',getColorOutputType('RECORDED')],
+	    	                 ['BUFFERED',getColorOutputType('BUFFERED')],
+	    	                 ['TEMPORARY',getColorOutputType('TEMPORARY')]];
 
 	var outputExistenceColours = [
 	    	                 ['File exists',getColorOutputExistence('true')],
@@ -267,11 +267,11 @@ function createLegend(canvasName) {
 	
 	var labelTitle = new Kinetic.Text({
 		text : 'Arc',
-		fontSize : 12,
+		fontSize : 14,
 		fill : 'black',
         fontStyle : 'bold',
         x : posX + 25,
-		y : posY + 30 + 20*contPosition
+		y : posY + 20*contPosition
 	});
 	
 	groupLegend.add(labelTitle);
@@ -279,7 +279,7 @@ function createLegend(canvasName) {
 	
 	var rec = new Kinetic.Rect({
 		x : posX + 10,
-		y : posY + 30 + 20*contPosition,
+		y : posY + 20*contPosition,
 		width : 10,
 		height : 10,
 		stroke : getColorOutputType('UNDEFINED'),
@@ -289,11 +289,11 @@ function createLegend(canvasName) {
 	});
 		
 	var labelRec = new Kinetic.Text({
-		text : 'UNDEFINED',
+		text : 'Undefined',
 		fontSize : 10,
 		fill : 'black',
 		x : posX + 25,
-		y : posY + 30 + 20*contPosition
+		y : posY + 20*contPosition
 	});
 	groupLegend.add(rec);
 	groupLegend.add(labelRec);
@@ -310,7 +310,7 @@ function createLegend(canvasName) {
 				fill : 'black',
 		        fontStyle : 'bold',
 		        x : posX + 25,
-				y : posY + 30 + 20*contPosition
+				y : posY + 20*contPosition
 			});
 	    	
 			groupLegend.add(labelTitle);
@@ -319,7 +319,7 @@ function createLegend(canvasName) {
 			for (var i = 0; i < array.length; i++) {
 				rec = new Kinetic.Rect({
 					x : posX + 10,
-					y : posY + 30 + 20*contPosition,
+					y : posY + 20*contPosition,
 					width : 10,
 					height : 10,
 					stroke : array[i][1],
@@ -329,11 +329,11 @@ function createLegend(canvasName) {
 				});
 					
 				labelRec = new Kinetic.Text({
-					text : array[i][0],
+					text : capitaliseFirstLetter(array[i][0]),
 					fontSize : 10,
 					fill : 'black',
 					x : posX + 25,
-					y : posY + 30 + 20*contPosition
+					y : posY + 20*contPosition
 				});
 					
 				groupLegend.add(rec);
@@ -347,11 +347,11 @@ function createLegend(canvasName) {
 	if (linkTypeColours.length > 0){
 		var labelTitle = new Kinetic.Text({
 			text : 'Link',
-			fontSize : 12,
+			fontSize : 14,
 			fill : 'black',
 	        fontStyle : 'bold',
 	        x : posX + 25,
-			y : posY + 30 + 20*contPosition
+			y : posY + 20*contPosition
 		});
 		
 		groupLegend.add(labelTitle);
@@ -361,7 +361,7 @@ function createLegend(canvasName) {
 		for (var i = 0; i < linkTypeColours.length; i++) {
 			var rec = new Kinetic.Rect({
 				x : posX + 10,
-				y : posY + 30 + 20*contPosition,
+				y : posY + 20*contPosition,
 				width : 10,
 				height : 10,
 				stroke : linkTypeColours[i][1],
@@ -371,11 +371,11 @@ function createLegend(canvasName) {
 			});
 						
 			var labelRec = new Kinetic.Text({
-				text : linkTypeColours[i][0],
+				text : capitaliseFirstLetter(linkTypeColours[i][0]),
 				fontSize : 10,
 				fill : 'black',
 				x : posX + 25,
-				y : posY + 30 + 20*contPosition
+				y : posY + 20*contPosition
 			});
 						
 			groupLegend.add(rec);
@@ -385,12 +385,12 @@ function createLegend(canvasName) {
 	}
 	
 	legendStage.setWidth(width+10);
-	legendStage.setHeight((30 + arcColoursArrayLength * 20) +30);
+	legendStage.setHeight((arcColoursArrayLength * 20) + 40);
 	
 	// set width of the canvas
 	var legendCanvasContainer = canvasArray[canvasName].legendCanvasContainer;
 	jQuery("#"+legendCanvasContainer).css("width", legendStage.getWidth()+ 20 + 'px');
-	jQuery("#"+legendCanvasContainer).css("height", legendStage.getHeight()+ 20 + 'px');
+	jQuery("#"+legendCanvasContainer).css("height", legendStage.getHeight()+ 30 + 'px');
 	
 	jQuery("#header-legend-"+canvasName).css("width", legendStage.getWidth()+ 20 + 'px');
 	
@@ -2031,4 +2031,8 @@ function setPathFile(canvasName, value){
 
 function getPathFile(canvasName){
 	return canvasArray[canvasName].pathFile;
+}
+
+function capitaliseFirstLetter(string){
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();;
 }
