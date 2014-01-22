@@ -1,5 +1,7 @@
 package idm;
 
+import idiro.workflow.server.connect.interfaces.DataStore;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
@@ -27,15 +29,22 @@ public class HiveBean extends FileSystemBean {
 		logger.info("HiveOpenCanvasScreen");
 
 		try {
-			logger.debug("Setting datasore");
+			logger.info("Setting datasore");
 			setDataStore(getHiveInterface());
 
+			logger.info("Set datasore");
 			if(getListGrid().isEmpty()){
 
-				logger.debug("mounting datasore");
-				mountTable(getDataStore());
+				logger.info("mounting datasore");
+				
+				DataStore ds = getDataStore();
+				logger.info("got datasore");
+				
+				mountTable(ds);
+				logger.info("mounted datasore");
 			}
 			else{
+				logger.info("list not empty");
 				for (ItemList item : getListGrid()){
 					item.setSelected(false);
 				}

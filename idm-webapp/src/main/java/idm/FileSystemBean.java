@@ -72,16 +72,21 @@ public class FileSystemBean extends BaseBean implements Serializable{
 	 * @author Igor.Souza
 	 */
 	public void mountTable(DataStore hInt) throws RemoteException {
-		logger.info("Started mounting table");
+		logger.debug("Started mounting table");
 		setListGrid(new ArrayList<ItemList>());
-		
+		logger.debug("set the list");
 		setPath(hInt.getPath());
+		logger.debug("getting path");
 
 		FacesContext context = FacesContext.getCurrentInstance();
+		logger.debug("getting faces context");
 		userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
+		logger.info("getting userinfoBean");
 		
 		Map<String, Map<String, String>> mapSSH = hInt.getChildrenProperties();
+		logger.info("getting interface child processes");
 		Map<String, ParamProperty> paramProperties = hInt.getParamProperties();
+		logger.debug("getting interface param properties");
 		for (String path : mapSSH.keySet()) {
 
 			String[] aux = path.split("/");
@@ -98,30 +103,45 @@ public class FileSystemBean extends BaseBean implements Serializable{
 				if(!paramProperties.get(properties).editOnly() &&
 					!paramProperties.get(properties).createOnly()){
 					nv.put(properties, getFormatedString(properties, mapSSH.get(path).get(properties)));
+					logger.debug("nv put prperties ");
 				}
 				
 				if (paramProperties.get(properties).editOnly()){
+					logger.debug("nve put prperties ");
 					nve.put(properties, getFormatedString(properties, mapSSH.get(path).get(properties)));
 				}
 				
 				nc.put(properties, paramProperties.get(properties).isConst());
+				logger.debug("nc put prperties from paramproperties");
 				vlb.put(properties, mapSSH.get(path).get(properties) != null && mapSSH.get(path).get(properties).contains("/n"));
+				logger.debug("vlb put prperties mapSSh");
 
 			}
+			logger.debug("getting interface param properties");
 
+			
+			logger.debug("item list");
 			itemList.setNameValue(nv);
+			logger.debug("set name value ");
 			itemList.setNameValueEdit(nve);
+			logger.debug("set name value edit");
 			itemList.setNameIsConst(nc);
+			logger.debug("set name const");
 			itemList.setValueHasLineBreak(vlb);
+			logger.debug("set value has line break");
 			
 			setNameValue(nv);
+			logger.debug("set name vlaue");
 			itemList.setSelected(false);
+			logger.debug("value list set selected");
 			getListGrid().add(itemList);
 
 		}
 		
+		logger.debug("user info bean get current value");
 		if(userInfoBean.getCurrentValue() < 96){
 			userInfoBean.setCurrentValue(userInfoBean.getCurrentValue()+5);
+			logger.debug("user info bean set current value");
 		}
 		
 		for (String properties : paramProperties.keySet()) {

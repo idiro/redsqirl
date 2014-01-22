@@ -103,4 +103,8 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 		}
 	}
 
+	public void shutdown() throws RemoteException{
+		ServerMain.shutdown();
+	}
+	
 }

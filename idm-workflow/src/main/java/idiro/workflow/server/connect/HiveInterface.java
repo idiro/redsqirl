@@ -5,6 +5,7 @@ import idiro.hadoop.utils.JdbcHdfsPrefsDetails;
 import idiro.tm.task.in.Preference;
 import idiro.utils.FeatureList;
 import idiro.utils.db.JdbcConnection;
+import idiro.workflow.server.HiveJdbcProcessesManager;
 import idiro.workflow.server.ProcessesManager;
 import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.interfaces.DataStore;
@@ -81,8 +82,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 	protected List<String> history = new LinkedList<String>();
 	protected int cur = 0;
 	private static boolean isInit = false;
-	
-	private Channel channel;
+
 
 	public HiveInterface() throws RemoteException {
 		super();
@@ -113,60 +113,72 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 						@Override
 						public void run() {
 							try {
-
-								Process proc = Runtime.getRuntime().exec(
-										new String[] { "/bin/bash", "-c",
-												"hostname" });
-//								logger.info("possible process : ");
-								BufferedReader br2 = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-								logger.info(br2.readLine());
-								
 								Properties config = new Properties();
 								config.put("StrictHostKeyChecking", "no");
 								
+								ProcessesManager hjdbc = new HiveJdbcProcessesManager().getInstance();
 								
-								JSch shell = new JSch();
-								String user = System.getProperty("user.name");
-								String identity = "/home/"+user+"/.ssh/id_dsa";
-								File f = new File(identity);
-								shell.addIdentity(identity);
-								Session session = shell.getSession(user, nameStore);
-								session.setConfig(config);
-						        session.connect();
+								String old_pid = hjdbc.getPid();
 								
-						        ProcessesManager pm = ProcessesManager.getInstance();
-						        String old_pid = pm.getHiveProcess();
-						        logger.info("old hive process : "+old_pid);
-						        if(!old_pid.isEmpty()){
-						        	channel = session.openChannel("exec");
-						        	logger.info("killing hive jdbc process : "+old_pid);
-						        	((ChannelExec)channel).setCommand("kill - 9 "+old_pid);
-						        	channel.connect();
-						        	channel.getInputStream().close();
-						        	channel.disconnect();
-						        }
+								logger.info("old hive process : " + old_pid);
+								if (!old_pid.isEmpty()) {
+									String getPid = "ssh "
+											+ nameStore
+											+ " <<< \"ps -eo pid | grep -w \"" + old_pid+"\"\"";
+									Process p = Runtime.getRuntime().exec(new String[]{"/bin/bash","-c",getPid});
+									BufferedReader br1 = new BufferedReader(
+											new InputStreamReader(
+													p.getInputStream()));
+//									br1.readLine();
+									String pid1 = br1.readLine();
+									logger.info("gotten pid : "+pid1 );
+									
+									if(pid1!=null &&pid1.trim().equalsIgnoreCase(old_pid)){
+										String kill_pid = "ssh "
+												+ nameStore
+												+ " <<< \"kill -9 " + old_pid+"\"";
+										
+										logger.info("killing hive jdbc process : "
+												+ kill_pid);
+										p = Runtime.getRuntime().exec(new String[]{"/bin/bash","-c",kill_pid});
+										
+										BufferedReader br = new BufferedReader(
+												new InputStreamReader(
+														p.getErrorStream()));
+										
+										String pid = br.readLine();
+										hjdbc.deleteFile();
+										hjdbc = new HiveJdbcProcessesManager().getInstance();
+										logger.info("kill pid result: " + pid);
+									}
+									
+//								Thread.sleep(1000*5);
+								}
 								logger.info("Launch ... test ");
-//								Connection connection = new Connection(nameStore);
-								String command =
-//										"ssh "
-//										+ nameStore
-//										+ " <<< "
-										 "nohup hive --service hiveserver -p "
-										+ port + " > /dev/null &";
+
+								
+								String command = "ssh "
+										+ nameStore
+										+ " <<< 'nohup hive --service hiveserver -p "
+										+ port + " > out 2> err < /dev/null & echo $!'";
+
+								Process proc = Runtime.getRuntime().exec(
+										new String[] { "/bin/bash", "-c",
+												command });
 
 								logger.info("Launch hive server : " + command);
-								channel = session.openChannel("exec");
-								((ChannelExec)channel).setCommand(command);
-								 channel.connect();
 								
-								 
-					            BufferedReader br = new BufferedReader(new InputStreamReader(channel.getInputStream()));
-						        String pid = br.readLine();
-						        logger.info("new pid for jdbc : "+pid);
-						        pm.setHiveProcess(pid);
-						        pm.storePids();
-						        channel.getInputStream().close();
-						        channel.disconnect();
+
+								BufferedReader br = new BufferedReader(
+										new InputStreamReader(
+												proc.getInputStream()));
+								
+								String pid = br.readLine();
+								logger.info("new pid for jdbc: " + pid);
+								
+								hjdbc.storePid(pid);
+								logger.info("Stored pid");
+								
 								logger.info("Pass ... test ");
 
 							} catch (Exception e) {
@@ -177,26 +189,43 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 
 					};
 					serverThrift.start();
-					Thread.sleep(1000 * 5);
+//					Thread.sleep(1000 * 5);
+					
 					logger.info(serverThrift.getState().name());
-					while(serverThrift.getState() == Thread.State.RUNNABLE){
-						if(System.currentTimeMillis()%5000==0){
-							logger.info(System.currentTimeMillis()%5000);
-						}
-					}
+
 					logger.debug("Application launched");
 				} catch (Exception e) {
 					logger.error(e.getMessage());
 					logger.error("Fail to initialse the Thrift server but maybe already on service");
 				}
+				JdbcHdfsPrefsDetails jdbcHdfspref;
+				HiveBasicStatement stm;
+				boolean started = false;
+				int maxattempts = 20;
+				int attempts = 1;
+				while (!started && attempts <= maxattempts) {
+					
+					try {
+						jdbcHdfspref = new JdbcHdfsPrefsDetails(url);
+						logger.info("new jdbc");
+						 stm = new HiveBasicStatement();
+						logger.info("got prefs");
+						logger.info("got statement");
+						conn = new JdbcConnection(jdbcHdfspref, stm);
+						logger.info("got connection");
+						started = conn.showAllTables().next();
+					} catch (Exception e) {
+						logger.error("error checking connection : "+ e.getMessage());
+					}
+					logger.info("attempt number : "+maxattempts);
+					--maxattempts;
+					Thread.sleep(500);
 
-				logger.info("new jdbc");
-				JdbcHdfsPrefsDetails pref = new JdbcHdfsPrefsDetails(url);
-				logger.info("got prefs");
-//				logger.info(pref.getPassword());
-				HiveBasicStatement stm = new HiveBasicStatement();
-				conn = new JdbcConnection(pref, stm);
+				}
+				
 				isInit = true;
+				
+			
 
 				logger.info("Pass ... new jdbc ");
 
@@ -487,33 +516,45 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 	@Override
 	public Map<String, Map<String, String>> getChildrenProperties()
 			throws RemoteException {
+		logger.info("###################################");
+		logger.info("is init : "+isInit);
 		String[] tableAndPartitions = getTableAndPartitions(history.get(cur));
+		logger.info("getting table and partitions");
 		Map<String, Map<String, String>> ans = new LinkedHashMap<String, Map<String, String>>();
 		try {
 			if (tableAndPartitions[0].isEmpty()) {
 
+				logger.info("table and partitions 0 is empty");
 				List<String> tables = conn.listTables(null);
 				// Filter the list.
+				logger.info("connection has listed tables");
 				Iterator<String> it = tables.iterator();
 				while (it.hasNext()) {
 					String table = it.next();
 					Map<String, String> prop = getProperties("/" + table);
+					logger.info("prop map : "+prop);
 					if (!prop.isEmpty()) {
+						logger.info("prop map not empty: "+prop);
 						ans.put(table, prop);
+						logger.info("prop map added table ");
 					}
 				}
 			} else if (tableAndPartitions.length == 1) {
+				logger.info("table an partitions not empty");
 				Iterator<String> itP = getPartitions(tableAndPartitions[0])
 						.iterator();
+				logger.info("table getting partitions");
 				while (itP.hasNext()) {
 					String partition = itP.next();
 					ans.put(partition, getProperties("/"
 							+ tableAndPartitions[0] + "/" + partition));
+					logger.info("putting partition and table in map");
 				}
 			}
 		} catch (Exception e) {
 			logger.error("Unexpected exception: " + e.getMessage());
 		}
+		logger.info("###################################");
 		return ans;
 	}
 

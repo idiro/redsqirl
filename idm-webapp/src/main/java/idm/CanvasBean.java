@@ -6,6 +6,7 @@ import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.interfaces.DataFlow;
 import idiro.workflow.server.interfaces.DataFlowElement;
+import idiro.workflow.server.interfaces.JobManager;
 import idm.auth.UserInfoBean;
 import idm.useful.MessageUseful;
 
@@ -49,7 +50,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 	private Map<String, Map<String, String>> idMap;
 	private UserInfoBean userInfoBean;
 	private String path;
-
+	
 	private Map<String, DataFlow> workflowMap;
 
 
@@ -73,7 +74,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 	 * @author Igor.Souza
 	 */
 	public CanvasBean() {
-
+		
 	}
 
 	@PostConstruct
@@ -86,8 +87,9 @@ public class CanvasBean extends BaseBean implements Serializable{
 		userInfoBean.setCurrentValue(Long.valueOf(78));
 
 		workflowMap = new HashMap<String, DataFlow>();
-
+		logger.info("setting workflow name");
 		setNameWorkflow("canvas-1");
+		logger.info("setting workflow name");
 
 		setIdMap(new HashMap<String, Map<String, String>>());
 		getIdMap().put(getNameWorkflow(), new HashMap<String, String>());
@@ -96,6 +98,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 		try {
 
 			dfi = getworkFlowInterface();
+			logger.info("the workflow name is : "+ getNameWorkflow());
 			if(dfi.getWorkflow(getNameWorkflow()) == null){
 				dfi.addWorkflow(getNameWorkflow());
 			}else{
@@ -108,9 +111,12 @@ public class CanvasBean extends BaseBean implements Serializable{
 				userInfoBean.setCurrentValue(userInfoBean.getCurrentValue()+3);
 			}
 
+			logger.info("set dfi");
 			setDf(dfi.getWorkflow(getNameWorkflow()));
+			logger.info("get all wWA name with class");
 			getDf().getAllWANameWithClassName();
 
+			logger.info("workflow map load");
 			workflowMap.put(getNameWorkflow(), getDf());
 
 		} catch (RemoteException e) {
@@ -604,16 +610,43 @@ public class CanvasBean extends BaseBean implements Serializable{
 	}
 
 	public String getWorkflowUrl(){
+		
 		logger.info("getWorkflowUrl");
 		String url = null;
-		if (getDf() != null){
+		try {
+			logger.info("getting df");
+			DataFlow df= getDf();
+			if (df != null) {
+				logger.info("df not null");
+				if(df.getOozieJobId() != null){
+					try {
+						logger.info("getting jobmanager");
+						JobManager jm = getOozie();
+						logger.info("getting url");
+						jm.getUrl();
+
+						logger.info("getting console url");
+						url = jm.getConsoleUrl(df);
+						logger.info("got url");
+					} catch (Exception e) {
+						logger.error("error " + e.getMessage());
+					}
+				}else{
+					url = null;
+				}
+			}
+		} catch (Exception e) {
+			logger.error("error get df: " +  e.getMessage());
+		}
+		
+		if(url == null ){
 			try {
-				url = getOozie().getConsoleUrl(getDf());
-			} catch (Exception e) {
-				logger.error("error", e);
+				url = getOozie().getUrl();
+			} catch (RemoteException e) {
+				logger.error("error getting Oozie url : "+e.getMessage());
 			}
 		}
-
+		
 		FacesContext context = FacesContext.getCurrentInstance();
 		userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
 
@@ -775,9 +808,9 @@ public class CanvasBean extends BaseBean implements Serializable{
 	}
 
 	public String[][] getRunningStatus() throws Exception{
-		
+
 		logger.info("getRunningStatus");
-		
+
 		String[][] result = new String[getIdMap().get(getNameWorkflow()).size()][];
 
 		int i = 0;
@@ -789,7 +822,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 			//String state = null;
 			String pathExists = null;
-			
+
 			DataFlowElement cur = getDf().getElement(e.getValue());
 			if (cur  != null){
 				for (Entry<String, DFEOutput> e2 : cur.getDFEOutput().entrySet()){
