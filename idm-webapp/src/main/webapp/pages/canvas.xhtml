@@ -893,18 +893,22 @@
 							<h:outputText value="#{messages.label_menu_edit}" />
 						</h:panelGrid>
 					</f:facet>
-
+                    <!--
 					<rich:menuItem submitMode="ajax"
 						value="#{messages.label_menu_undo}" action="#{canvasBean.doNew}" />
 					<rich:menuItem submitMode="ajax"
 						value="#{messages.label_menu_redo}" action="#{canvasBean.doOpen}" />
+						-->
+					<rich:menuItem submitMode="none"
+                        value="#{messages.label_menu_selectall}" onclick="selectAll();" />
+                    <rich:menuItem submitMode="none"
+                        value="#{messages.label_menu_deselectall}"
+                        onclick="deselectAll();" />
+                    <rich:menuSeparator />
 					<rich:menuItem submitMode="none"
 						value="#{messages.label_menu_delete}" onclick="deleteSelected();" />
-					<rich:menuItem submitMode="none"
-						value="#{messages.label_menu_selectall}" onclick="selectAll();" />
-					<rich:menuItem submitMode="none"
-						value="#{messages.label_menu_deselectall}"
-						onclick="deselectAll();" />
+					
+					
 
 				</rich:dropDownMenu>
 
@@ -916,21 +920,34 @@
 							<h:outputText value="#{messages.label_menu_project}" />
 						</h:panelGrid>
 					</f:facet>
-
-					<rich:menuItem submitMode="ajax"
-						value="#{messages.label_menu_clean_project}"
-						action="#{canvasBean.cleanCanvasProject}" rerender="msnError, errorTable" />
 		
 					<rich:menuItem submitMode="none">
 						<h:outputLink value="#{canvasBean.workflowUrl}" target="_blank">#{messages.label_menu_see_oozie_job}</h:outputLink>
 					</rich:menuItem>
+                    
+                    <rich:menuSeparator />
 
 					<rich:menuItem submitMode="ajax"
-						value="#{messages.label_menu_runproject}"
+						value="#{messages.label_menu_runitems}"
 						onclick="jQuery('#'+getSelected()).block({ message: jQuery('#domMessageDivCanvas1') });runWorkflow(getIconPositions(),getSelectedIconsCommaDelimited())"
 						oncomplete="updateWorkflowUrl();"
 						reRender="formMenu,domMessageDivCanvas2">
 					</rich:menuItem>
+                    
+                    <rich:menuItem submitMode="ajax"
+                        value="#{messages.label_menu_runproject}"
+                        onclick="jQuery('#'+getSelected()).block({ message: jQuery('#domMessageDivCanvas1') });runWorkflow(getIconPositions())"
+                        oncomplete="updateWorkflowUrl();"
+                        reRender="formMenu,domMessageDivCanvas2">
+                    </rich:menuItem>
+                    
+                    <rich:menuSeparator />
+                    
+                    <rich:menuItem submitMode="ajax"
+                        value="#{messages.label_menu_clean_project}"
+                        action="#{canvasBean.cleanCanvasProject}" rerender="msnError, errorTable" />
+                    
+                    <rich:menuSeparator />
                     
                     <rich:menuItem submitMode="ajax"
                         value="#{messages.label_menu_package}"
@@ -981,9 +998,11 @@
 			<img src="../image/icons/button-save.png" alt="save" class="shortMenuIcon" onclick="#{rich:component('modalSaveWorkflow')}.show()"/>
 			<img src="../image/icons/button-save-as.png" alt="saveas" class="shortMenuIcon" />
 			<img src="../image/icons/button-save-all.png" alt="saveall" class="shortMenuIcon" />
+			<!-- 
 			<a onclick="undoHistory();"><img src="../image/icons/button-undo.png" alt="undo" class="shortMenuIcon" /></a>
 			<a onclick="redoHistory();"><img src="../image/icons/button-redo.png" alt="redo" class="shortMenuIcon" /></a>
 			<img src="../image/icons/button-cut.png" alt="cut" class="shortMenuIcon" />
+            -->
 		</center>
 
 	</div>
