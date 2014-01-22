@@ -4,7 +4,7 @@ import idiro.workflow.server.enumeration.SavingState;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.interfaces.DataFlow;
 import idiro.workflow.server.interfaces.DataFlowElement;
-import idiro.workflow.utils.LanguageManager;
+import idiro.workflow.utils.LanguageManagerWF;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -136,7 +136,7 @@ extends OozieXmlCreatorAbs{
 				//Need to start by the start action
 				firstElements = outEdges.get(startNode);
 				if(firstElements.size() != 1){
-					error = LanguageManager.getText("ooziexmlforkjoinpaired.createxml.firstelnotone");
+					error = LanguageManagerWF.getText("ooziexmlforkjoinpaired.createxml.firstelnotone");
 					logger.info("createXml firstElements " + error);
 				}else{
 					Element start = doc.createElement("start");
@@ -156,7 +156,7 @@ extends OozieXmlCreatorAbs{
 						
 					}else if(cur.startsWith("join")){
 						if(out.size() != 1){
-							error = LanguageManager.getText("ooziexmlforkjoinpaired.createxml.outsizenotone");
+							error = LanguageManagerWF.getText("ooziexmlforkjoinpaired.createxml.outsizenotone");
 							logger.info("createXml join " + error);
 						}else{
 							createJoinNode(doc, rootElement, cur, out.iterator().next());
@@ -165,7 +165,7 @@ extends OozieXmlCreatorAbs{
 						createForkNode(doc, rootElement, cur, out);
 					}else{
 						if(out.size() != 1){
-							error = LanguageManager.getText("ooziexmlforkjoinpaired.createxml.outsizenotone");
+							error = LanguageManagerWF.getText("ooziexmlforkjoinpaired.createxml.outsizenotone");
 							logger.info("createXml else fork " + error);
 						}else{
 							Element element = elements.get(cur);
@@ -211,7 +211,7 @@ extends OozieXmlCreatorAbs{
 				transformer.transform(source, result);
 			}
 		}catch(Exception e){
-			error = LanguageManager.getText("ooziexmlforkjoinpaired.createxml.fail",new Object[]{e.getMessage()});
+			error = LanguageManagerWF.getText("ooziexmlforkjoinpaired.createxml.fail",new Object[]{e.getMessage()});
 			logger.error(error);
 			logger.error(e);
 		}

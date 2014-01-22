@@ -2,7 +2,7 @@ package idiro.workflow.server;
 
 import idiro.utils.Tree;
 import idiro.workflow.server.enumeration.DisplayType;
-import idiro.workflow.utils.LanguageManager;
+import idiro.workflow.utils.LanguageManagerWF;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
@@ -75,7 +75,7 @@ public class AppendListInteraction extends UserInteraction{
 			}
 		}catch(Exception e){
 			values = null;
-			logger.error(LanguageManager.getText("UserInteraction.treeIncorrect"));
+			logger.error(LanguageManagerWF.getText("UserInteraction.treeIncorrect"));
 		}
 		return values;
 	}
@@ -90,7 +90,7 @@ public class AppendListInteraction extends UserInteraction{
 				output.add("value").add(it.next());
 			}
 		}else{
-			error = LanguageManager.getText("AppendListInteraction.setValues", new Object[]{values.toString()});
+			error = LanguageManagerWF.getText("AppendListInteraction.setValues", new Object[]{values.toString()});
 		}
 		return error;
 	}

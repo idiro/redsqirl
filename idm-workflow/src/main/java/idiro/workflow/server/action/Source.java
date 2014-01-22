@@ -19,7 +19,7 @@ import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.interfaces.DFEPage;
 import idiro.workflow.server.interfaces.PageChecker;
-import idiro.workflow.utils.LanguageManager;
+import idiro.workflow.utils.LanguageManagerWF;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -78,10 +78,10 @@ public class Source extends DataflowAction {
 				logger = Logger.getRootLogger();
 				try {
 					if (dataType.getValue().isEmpty()) {
-						error = LanguageManager.getText("source.datatypeempty");
+						error = LanguageManagerWF.getText("source.datatypeempty");
 					}
 				} catch (Exception e) {
-					error = LanguageManager.getText("source.datatypeempty");
+					error = LanguageManagerWF.getText("source.datatypeempty");
 				}
 				return error;
 			}
@@ -109,7 +109,7 @@ public class Source extends DataflowAction {
 					logger.info("output type : " + subtype);
 
 					if (dataSubtype.getValue().isEmpty()) {
-						error = LanguageManager.getText("source.datatypeempty");
+						error = LanguageManagerWF.getText("source.datatypeempty");
 					}
 
 					if(error == null){
@@ -127,13 +127,13 @@ public class Source extends DataflowAction {
 										SavingState.RECORDED);
 							}
 						} else {
-							error = LanguageManager.getText("source.outputnull");
+							error = LanguageManagerWF.getText("source.outputnull");
 							logger.error(error);
 						}
 					}
 
 				} catch (Exception e) {
-					error = LanguageManager.getText("source.outputnull",new Object[]{e.getMessage()});
+					error = LanguageManagerWF.getText("source.outputnull",new Object[]{e.getMessage()});
 				}
 				return error;
 			}
@@ -158,7 +158,7 @@ public class Source extends DataflowAction {
 				try{
 					out = (DataOutput) output.get(out_name);
 				}catch(Exception e){
-					error = LanguageManager.getText("source.outputchecknull");
+					error = LanguageManagerWF.getText("source.outputchecknull");
 				}
 				try {
 					logger.info("tree is : "+((TreeNonUnique<String>)getInteraction(key_dataset).getTree()).toString());
@@ -218,7 +218,7 @@ public class Source extends DataflowAction {
 								} 
 							}
 						}catch(Exception e){
-							error = LanguageManager.getText("source.treeerror");
+							error = LanguageManagerWF.getText("source.treeerror");
 						}
 					}
 
@@ -231,10 +231,10 @@ public class Source extends DataflowAction {
 									.getFirstChild("path").getFirstChild().getHead();
 
 							if (path.isEmpty()) {
-								error = LanguageManager.getText("source.pathempty");
+								error = LanguageManagerWF.getText("source.pathempty");
 							}
 						}catch(Exception e){
-							error = LanguageManager.getText("source.setpatherror",new Object[]{e.getMessage()});
+							error = LanguageManagerWF.getText("source.setpatherror",new Object[]{e.getMessage()});
 						}
 					}
 
@@ -270,18 +270,18 @@ public class Source extends DataflowAction {
 					if(error == null){
 						try{
 							if(!out.isPathExists()){
-								error = LanguageManager.getText("source.pathnotexist");
+								error = LanguageManagerWF.getText("source.pathnotexist");
 							}else if(out.isPathValid() != null){
-								error = LanguageManager.getText("source.pathinvalid",new Object[]{out.isPathValid()});
+								error = LanguageManagerWF.getText("source.pathinvalid",new Object[]{out.isPathValid()});
 							}
 						}catch(Exception e){
-							error = LanguageManager.getText("source.pathexceptions",new Object[]{e.getMessage()});
+							error = LanguageManagerWF.getText("source.pathexceptions",new Object[]{e.getMessage()});
 							logger.error(error);
 						}
 
 					}
 				} catch (Exception e) {
-					error = LanguageManager.getText("source.exception",new Object[]{e.getMessage()});
+					error = LanguageManagerWF.getText("source.exception",new Object[]{e.getMessage()});
 				}
 
 

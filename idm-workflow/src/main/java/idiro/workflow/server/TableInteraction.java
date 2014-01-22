@@ -2,7 +2,7 @@ package idiro.workflow.server;
 
 import idiro.utils.Tree;
 import idiro.workflow.server.enumeration.DisplayType;
-import idiro.workflow.utils.LanguageManager;
+import idiro.workflow.utils.LanguageManagerWF;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -184,7 +184,7 @@ public class TableInteraction extends UserInteraction {
 				colValues.removeAll(el);
 				int endSize = colValues.size();
 				if( curSize - endSize != countConst){
-					error = LanguageManager.getText("tableInteraction.countConst",new Object[]{val,countConst});
+					error = LanguageManagerWF.getText("tableInteraction.countConst",new Object[]{val,countConst});
 				}
 			}
 		}
@@ -211,7 +211,7 @@ public class TableInteraction extends UserInteraction {
 
 				//logger.info("Possible values: "+valuesPos);
 				if(!valuesPos.contains(value)){
-					error = LanguageManager.getText("tableInteraction.NotInValue",new String[]{value,valuesPos.toString()});
+					error = LanguageManagerWF.getText("tableInteraction.NotInValue",new String[]{value,valuesPos.toString()});
 				}
 			}
 		}catch(Exception e){}
@@ -219,7 +219,7 @@ public class TableInteraction extends UserInteraction {
 		if( constraint != null && constraint.getFirstChild("regex") != null){
 			String regex = constraint.getFirstChild("regex").getFirstChild().getHead();
 			if(!value.matches(regex)){
-				error = LanguageManager.getText("tableInteraction.NotMatchRegex",new String[]{value,regex});
+				error = LanguageManagerWF.getText("tableInteraction.NotMatchRegex",new String[]{value,regex});
 			}
 		}
 
@@ -268,7 +268,7 @@ public class TableInteraction extends UserInteraction {
 			}
 		}catch(Exception e){
 			logger.error(e);
-			error = LanguageManager.getText("UserInteraction.treeIncorrect");
+			error = LanguageManagerWF.getText("UserInteraction.treeIncorrect");
 		}
 
 		return error;

@@ -8,7 +8,7 @@ import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.interfaces.DFEPage;
 import idiro.workflow.server.interfaces.DataFlowElement;
 import idiro.workflow.server.interfaces.OozieAction;
-import idiro.workflow.utils.LanguageManager;
+import idiro.workflow.utils.LanguageManagerWF;
 
 import java.awt.Point;
 import java.io.File;
@@ -228,7 +228,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			}
 		}
 		if(error != null){
-			error = LanguageManager.getText(
+			error = LanguageManagerWF.getText(
 					"dataflowaction.checkuservariables", new Object[] {
 							String.valueOf(pageNb), error });
 		}
@@ -253,19 +253,19 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 						.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
 						+ getImage());
 		if (!help.isFile()) {
-			error = LanguageManager.getText("dataflowaction.checkinit.gethelp",
+			error = LanguageManagerWF.getText("dataflowaction.checkinit.gethelp",
 					new Object[] { getClass().getCanonicalName() });
 		}
 		if (!image.isFile()) {
-			error = LanguageManager.getText("dataflowaction.checkinit.getimage",
+			error = LanguageManagerWF.getText("dataflowaction.checkinit.getimage",
 					new Object[] { getClass().getCanonicalName() });
 		}
 		if (getOozieType() == null) {
-			error = LanguageManager.getText("dataflowaction.checkinit.getoozietype",
+			error = LanguageManagerWF.getText("dataflowaction.checkinit.getoozietype",
 					new Object[] { getClass().getCanonicalName() });
 		}
 		if (getName() == null || getName().isEmpty()) {
-			error = LanguageManager.getText("dataflowaction.checkinit.getname",
+			error = LanguageManagerWF.getText("dataflowaction.checkinit.getname",
 					new Object[] { getClass().getCanonicalName() });
 		}
 
@@ -275,7 +275,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			ok = it.next().checkInitPage();
 		}
 		if (!ok) {
-			error = LanguageManager.getText(
+			error = LanguageManagerWF.getText(
 					"dataflowaction.checkinit.pagesnotok",
 					new Object[] { getClass().getCanonicalName() });
 		}
@@ -302,7 +302,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 					intCur.readXml(cur.getFirstChild());
 				}
 			} catch (Exception e) {
-				error = LanguageManager.getText("dataflowaction.readvaluesxml",
+				error = LanguageManagerWF.getText("dataflowaction.readvaluesxml",
 						new Object[] { componentId });
 			}
 		}
@@ -338,7 +338,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			error = dme.getMessage();
 			logger.info("writeValuesXml error dme " + dme + " -- " + dme.getMessage());
 		} catch (Exception e) {
-			error = LanguageManager.getText("dataflowaction.writevaluesxml",
+			error = LanguageManagerWF.getText("dataflowaction.writevaluesxml",
 					new Object[] { e.getMessage() });
 		}
 		
@@ -617,7 +617,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		if (getInput().get(inputName) != null) {
 			addComponent(inputComponent, inputName, wa);
 		} else {
-			error = LanguageManager.getText("dataflowaction.addinputcomponent",
+			error = LanguageManagerWF.getText("dataflowaction.addinputcomponent",
 					new Object[] { inputName, getName() });
 			waLogger.error(error);
 		}
@@ -637,13 +637,13 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		String error = null;
 		if (getInput().get(inputName) != null) {
 			if (!removeComponent(inputComponent, inputName, wa)) {
-				error = LanguageManager.getText(
+				error = LanguageManagerWF.getText(
 						"dataflowaction.removeinputcomponent", new Object[] {
 								componentId, wa.getComponentId() });
 			}
 
 		} else {
-			error = LanguageManager.getText(
+			error = LanguageManagerWF.getText(
 					"dataflowaction.removeinputcomponent", new Object[] {
 							inputName, getName() });
 		}
@@ -664,7 +664,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		if (getDFEOutput().get(outputName) != null) {
 			addComponent(outputComponent, outputName, wa);
 		} else {
-			error = LanguageManager.getText(
+			error = LanguageManagerWF.getText(
 					"dataflowaction.addoutputcomponent", new Object[] {
 							outputName, getName() });
 		}
@@ -684,13 +684,13 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		String error = null;
 		if (getDFEOutput().get(outputName) != null) {
 			if (!removeComponent(outputComponent, outputName, wa)) {
-				error = LanguageManager.getText(
+				error = LanguageManagerWF.getText(
 						"dataflowaction.removecomponentidnolink", new Object[] {
 								componentId, wa.getComponentId() });
 			}
 
 		} else {
-			error = LanguageManager.getText(
+			error = LanguageManagerWF.getText(
 					"dataflowaction.removecomponentiderror", new Object[] {
 							outputName, getName() });
 		}

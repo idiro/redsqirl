@@ -8,7 +8,7 @@ import idiro.utils.db.JdbcConnection;
 import idiro.workflow.server.ProcessesManager;
 import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.interfaces.DataStore;
-import idiro.workflow.utils.LanguageManager;
+import idiro.workflow.utils.LanguageManagerWF;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -204,7 +204,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		} catch (Exception e) {
 
 			logger.error(e);
-			error = LanguageManager.getText("hiveinterface.jdbcfail",
+			error = LanguageManagerWF.getText("hiveinterface.jdbcfail",
 					new Object[] { url, e.getMessage() });
 			logger.error(error);
 		}
@@ -308,12 +308,12 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 				try {
 					ok = conn.execute(statement);
 					if (!ok && error == null) {
-						error = LanguageManager.getText(
+						error = LanguageManagerWF.getText(
 								"hiveinterface.statementfail",
 								new Object[] { statement });
 					}
 				} catch (SQLException e) {
-					error = LanguageManager.getText(
+					error = LanguageManagerWF.getText(
 							"hiveinterface.createtablefail",
 							new Object[] { tableAndPartition[0] });
 					logger.error(error);
@@ -331,12 +331,12 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 				try {
 					ok = conn.execute(statement);
 					if (!ok && error == null) {
-						error = LanguageManager.getText(
+						error = LanguageManagerWF.getText(
 								"hiveinterface.statementfail",
 								new Object[] { statement });
 					}
 				} catch (SQLException e) {
-					error = LanguageManager.getText(
+					error = LanguageManagerWF.getText(
 							"hiveinterface.createpartfail",
 							new Object[] { path });
 					logger.error(error);
@@ -345,7 +345,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 			}
 
 		} else {
-			error = LanguageManager.getText("hiveinterface.createpartfail",
+			error = LanguageManagerWF.getText("hiveinterface.createpartfail",
 					new Object[] { path });
 		}
 
@@ -378,17 +378,17 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 				}
 			} catch (SQLException e) {
 				ok = false;
-				error = LanguageManager.getText("hiveinterface.changetable",
+				error = LanguageManagerWF.getText("hiveinterface.changetable",
 						new Object[] { tableAndPartition[0] });
 				logger.error(error);
 				logger.error(e.getMessage());
 			}
 		} else {
-			error = LanguageManager.getText("hiveinterface.nopath",
+			error = LanguageManagerWF.getText("hiveinterface.nopath",
 					new Object[] { path });
 		}
 		if (!ok && error == null) {
-			error = LanguageManager.getText("hiveinterface.deletepath",
+			error = LanguageManagerWF.getText("hiveinterface.deletepath",
 					new Object[] { path });
 		}
 
@@ -612,7 +612,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 												feats[i].split(",")[0].trim());
 							}
 							if (!found) {
-								error = LanguageManager.getText(
+								error = LanguageManagerWF.getText(
 										"hiveinterface.featsnotin",
 										new Object[] {
 												feats[i].split(",")[0],
@@ -629,7 +629,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 						ok = partitions.matches("(^|.*,)\\Q"
 								+ tableAndPartitions[j] + "\\E($|,.*)");
 						if (!ok) {
-							error = LanguageManager.getText(
+							error = LanguageManagerWF.getText(
 									"hiveinterface.partnotfound",
 									new Object[] { tableAndPartitions[j] });
 						}
@@ -637,7 +637,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 				}
 			}
 		} catch (SQLException e) {
-			error = LanguageManager.getText("unexpectedexception",
+			error = LanguageManagerWF.getText("unexpectedexception",
 					new Object[] { e.getMessage() });
 			logger.error(error);
 		}
@@ -742,10 +742,10 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 				boolean ok = conn.execute("ALTER TABLE " + oldTable[0]
 						+ " RENAME TO " + newTable[0]);
 				if (!ok) {
-					error = LanguageManager.getText("hiveinterface.movefail");
+					error = LanguageManagerWF.getText("hiveinterface.movefail");
 				}
 			} else {
-				error = LanguageManager.getText("hiveinterface.movesamename");
+				error = LanguageManagerWF.getText("hiveinterface.movesamename");
 			}
 		} catch (SQLException e) {
 			logger.error("Unexpected sql exception: " + e.getMessage());
@@ -764,10 +764,10 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 				boolean ok = conn.execute("CREATE TABLE " + outTable[0]
 						+ " AS SELECT * FROM " + inTable[0]);
 				if (!ok) {
-					error = LanguageManager.getText("hiveinterface.copyfail");
+					error = LanguageManagerWF.getText("hiveinterface.copyfail");
 				}
 			} else {
-				error = LanguageManager.getText("hiveinterface.copysamename");
+				error = LanguageManagerWF.getText("hiveinterface.copysamename");
 			}
 		} catch (SQLException e) {
 			error = "Unexpected sql exception: " + e.getMessage();
@@ -806,12 +806,12 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 
 	@Override
 	public String canCreate() throws RemoteException {
-		return LanguageManager.getText("HiveInterface.create_help");
+		return LanguageManagerWF.getText("HiveInterface.create_help");
 	}
 
 	@Override
 	public String canDelete() throws RemoteException {
-		return LanguageManager.getText("HiveInterface.delete_help");
+		return LanguageManagerWF.getText("HiveInterface.delete_help");
 	}
 
 	@Override

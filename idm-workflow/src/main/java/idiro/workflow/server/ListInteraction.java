@@ -2,7 +2,7 @@ package idiro.workflow.server;
 
 import idiro.utils.Tree;
 import idiro.workflow.server.enumeration.DisplayType;
-import idiro.workflow.utils.LanguageManager;
+import idiro.workflow.utils.LanguageManagerWF;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
@@ -78,7 +78,7 @@ public class ListInteraction extends UserInteraction {
 			output.removeAllChildren();
 			output.add(value);
 		}else{
-			error = LanguageManager.getText("listinteractions.setvalue");
+			error = LanguageManagerWF.getText("listinteractions.setvalue");
 		}
 		return error;
 	}
