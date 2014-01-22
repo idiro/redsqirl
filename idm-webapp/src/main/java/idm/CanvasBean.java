@@ -394,12 +394,14 @@ public class CanvasBean extends BaseBean implements Serializable{
 			DataFlow df = dfi.getWorkflow(getNameWorkflow());
 
 			String error = df.read(path);
+			
+			logger.info("load error " + error);
+			
 			if(error != null){
 				MessageUseful.addErrorMessage(error);
 				HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
 				request.setAttribute("msnError", "msnError");
 			}else{
-
 
 				setDf(df);
 
@@ -959,10 +961,21 @@ public class CanvasBean extends BaseBean implements Serializable{
 	}
 
 	public String[] getPositions() throws Exception{
+		
 		logger.info("getPositions");
+		
 		JSONArray jsonElements = new JSONArray();
 		for (DataFlowElement e : getDf().getElement()){
+
+			/*//FIXME add ./ on image path just for local environment (canvas.js addElements)
+			if(e.getImage().startsWith("/packages")){
+				jsonElements.put(new Object[]{e.getComponentId(), e.getName(), "./"+e.getImage(), e.getX(), e.getY()});
+			}else{
+				jsonElements.put(new Object[]{e.getComponentId(), e.getName(), e.getImage(), e.getX(), e.getY()});
+			}*/
+			
 			jsonElements.put(new Object[]{e.getComponentId(), e.getName(), e.getImage(), e.getX(), e.getY()});
+			
 		}
 
 		JSONArray jsonLinks = new JSONArray();
@@ -974,6 +987,11 @@ public class CanvasBean extends BaseBean implements Serializable{
 			}
 		}
 
+		logger.info("getPositions getNameWorkflow " + getNameWorkflow());
+		logger.info("getPositions getPath " + getPath());
+		logger.info("getPositions jsonElements.toString " + jsonElements.toString());
+		logger.info("getPositions jsonLinks.toString " + jsonLinks.toString());
+		
 		return new String[]{getNameWorkflow(), getPath(), jsonElements.toString(), jsonLinks.toString()};
 	}
 
