@@ -15,9 +15,9 @@ public class ListInteraction extends UserInteraction {
 	 */
 	private static final long serialVersionUID = -410867993847056485L;
 
-	public ListInteraction(String name, String legend,
+	public ListInteraction(String id, String name, String legend,
 			int column, int placeInColumn) throws RemoteException {
-		super(name, legend, DisplayType.list, column, placeInColumn);
+		super(id, name, legend, DisplayType.list, column, placeInColumn);
 		init();
 	}
 	

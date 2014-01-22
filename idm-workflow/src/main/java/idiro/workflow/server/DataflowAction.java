@@ -294,10 +294,10 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		NodeList nl = n.getChildNodes();
 		for (int i = 0; i < nl.getLength(); ++i) {
 			Node cur = nl.item(i);
-			String name = cur.getNodeName();
-			logger.debug(componentId + ": loads " + name + "...");
+			String id = cur.getNodeName();
+			logger.debug(componentId + ": loads " + id + "...");
 			try {
-				DFEInteraction intCur = getInteraction(name);
+				DFEInteraction intCur = getInteraction(id);
 				if (intCur != null) {
 					intCur.readXml(cur.getFirstChild());
 				}
@@ -328,8 +328,8 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			Iterator<DFEInteraction> itInter = getInteractions().iterator();
 			while (itInter.hasNext()) {
 				DFEInteraction interCur = itInter.next();
-				logger.info("action name to write xml: " + interCur.getName());
-				Element inter = doc.createElement(interCur.getName());
+				logger.info("action name to write xml: " + interCur.getId());
+				Element inter = doc.createElement(interCur.getId());
 				interCur.writeXml(doc, inter);
 				parent.appendChild(inter);
 			}
@@ -576,14 +576,14 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	 * @return
 	 * @throws RemoteException
 	 */
-	public DFEInteraction getInteraction(String name) throws RemoteException {
+	public DFEInteraction getInteraction(String id) throws RemoteException {
 		DFEInteraction found = null;
 		Iterator<DFEPage> it = getPageList().iterator();
 		while (it.hasNext() && found == null) {
-			found = it.next().getInteraction(name);
+			found = it.next().getInteraction(id);
 		}
 		if (found == null) {
-			logger.info("Interaction '" + name + "' not found");
+			logger.info("Interaction '" + id + "' not found");
 		}
 		return found;
 	}

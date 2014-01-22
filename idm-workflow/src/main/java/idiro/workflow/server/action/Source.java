@@ -57,11 +57,14 @@ public class Source extends DataflowAction {
 	public Source() throws RemoteException {
 		super(null);
 
-		Page page1 = addPage("Source: Data type",
-				"Choose the data type that you would like to load", 1);
+		Page page1 = addPage(LanguageManagerWF.getText("source.page1.title"),
+				LanguageManagerWF.getText("source.page1.legend"), 1);
 
 		dataType = new ListInteraction(key_datatype,
-				"Please specify a data type", 0, 0);
+				LanguageManagerWF.getText("source.datatype_interaction.title"),
+				LanguageManagerWF.getText("source.datatype_interaction.legend"), 
+				0, 0);
+		
 		dataType.setDisplayRadioButton(true);
 		List<String> posValues = new LinkedList<String>();
 		posValues.add("Hive");
@@ -88,11 +91,14 @@ public class Source extends DataflowAction {
 
 		});
 
-		Page page2 = addPage("Source: Data sub-type",
-				"Choose the data sub-type that you would like to load", 1);
+		Page page2 = addPage(LanguageManagerWF.getText("source.page2.title"),
+				LanguageManagerWF.getText("source.page2.legend"), 1);
 
 		dataSubtype = new ListInteraction(key_datasubtype,
-				"Please specify a data subtype", 0, 0);
+				LanguageManagerWF.getText("source.datasubtype_interaction.title"),
+				LanguageManagerWF.getText("source.datasubtype_interaction.legend"),
+				0, 0);
+		
 		dataSubtype.setDisplayRadioButton(true);
 
 		page2.addInteraction(dataSubtype);
@@ -140,10 +146,15 @@ public class Source extends DataflowAction {
 
 		});
 
-		Page page3 = addPage("Source: Browser", "Pick a data set", 1);
+		Page page3 = addPage(
+				LanguageManagerWF.getText("source.page3.title"), 
+				LanguageManagerWF.getText("source.page3.legend"),
+				1);
 
 		DFEInteraction browse = new UserInteraction(key_dataset,
-				"Please specify a data set", DisplayType.browser, 0, 0);
+				LanguageManagerWF.getText("source.browse_interaction.title"),
+						LanguageManagerWF.getText("source.browse_interaction.legend"),
+						DisplayType.browser, 0, 0);
 
 		page3.addInteraction(browse);
 

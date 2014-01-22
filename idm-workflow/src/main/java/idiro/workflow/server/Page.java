@@ -181,11 +181,11 @@ public class Page extends UnicastRemoteObject implements DFEPage{
 	 * @return
 	 * @throws RemoteException 
 	 */
-	public DFEInteraction getInteraction(String name) throws RemoteException {
+	public DFEInteraction getInteraction(String id) throws RemoteException {
 		Iterator<DFEInteraction> it = getInteractions().iterator();
 		DFEInteraction found = null;
 		while(it.hasNext() && found == null){
-			if( ! (found = it.next()).getName().equals(name)){
+			if( ! (found = it.next()).getId().equals(id)){
 				found = null;
 			}
 		}

@@ -81,10 +81,10 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	 * @param placeInColumn
 	 * @throws RemoteException 
 	 */
-	public UserInteraction(String name, String legend,DisplayType display, int column, int placeInColumn) throws RemoteException{
+	public UserInteraction(String id, String name, String legend,DisplayType display, int column, int placeInColumn) throws RemoteException{
 		super();
 		this.name = name;
-		this.tree = new TreeNonUnique<String>(name);
+		this.tree = new TreeNonUnique<String>(id);
 		this.legend = legend;
 		this.display = display;
 		this.column = column;
@@ -367,6 +367,12 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 
 	public String checkExpression(String expression, String modifier) throws RemoteException{
 		return null;
+	}
+
+
+	@Override
+	public String getId() throws RemoteException {
+		return getTree().getHead();
 	}
 
 

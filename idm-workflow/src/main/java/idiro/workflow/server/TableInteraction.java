@@ -26,9 +26,9 @@ public class TableInteraction extends UserInteraction {
 
 	private Map<String,EditorInteraction> editors = new LinkedHashMap<String,EditorInteraction>();
 
-	public TableInteraction(String name, String legend,
+	public TableInteraction(String id, String name, String legend,
 			int column, int placeInColumn) throws RemoteException {
-		super(name, legend, DisplayType.table, column, placeInColumn);
+		super(id, name, legend, DisplayType.table, column, placeInColumn);
 		init();
 	}
 

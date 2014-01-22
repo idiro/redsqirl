@@ -16,10 +16,10 @@ public class AppendListInteraction extends UserInteraction{
 	 */
 	private static final long serialVersionUID = -6059678937933664413L;
 
-	public AppendListInteraction(String name, String legend,
+	public AppendListInteraction(String id,String name, String legend,
 			int column, int placeInColumn)
 					throws RemoteException {
-		super(name, legend, DisplayType.appendList, column, placeInColumn);
+		super(id,name, legend, DisplayType.appendList, column, placeInColumn);
 		init();
 	}
 

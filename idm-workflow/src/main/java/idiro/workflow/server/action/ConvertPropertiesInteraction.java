@@ -29,10 +29,10 @@ public class ConvertPropertiesInteraction extends TableInteraction{
 	public static final String table_property_title = "Property",
 			table_value_title = "Value";
 
-	public ConvertPropertiesInteraction(String name, String legend,
+	public ConvertPropertiesInteraction(String id, String name, String legend,
 			int column, int placeInColumn, Convert cv)
 					throws RemoteException {
-		super(name, legend, column, placeInColumn);
+		super(id, name, legend, column, placeInColumn);
 		this.cv = cv;
 	}
 

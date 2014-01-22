@@ -44,6 +44,13 @@ public interface DFEInteraction extends Remote{
 	public int getPlaceInColumn() throws RemoteException;
 
 	/**
+	 * The id of the interaction (unique inside an action).
+	 * @return
+	 * @throws RemoteException
+	 */
+	public String getId() throws RemoteException;
+	
+	/**
 	 * @return the inputToDisplay
 	 */
 	public String getName() throws RemoteException;
