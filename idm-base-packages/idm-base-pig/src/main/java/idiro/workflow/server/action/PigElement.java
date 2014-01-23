@@ -54,7 +54,6 @@ public abstract class PigElement extends DataflowAction {
 
 	protected Map<String, DFELinkProperty> input;
 
-	private String alias = "";
 	private int nameCont;
 
 	public PigElement( int nbInMin, int nbInMax,int placeDelimiterInPage) throws RemoteException {
@@ -262,13 +261,5 @@ public abstract class PigElement extends DataflowAction {
 
 	public PigGroupInteraction getGroupingInt() {
 		return groupingInt;
-	}
-
-	public String getAlias() {
-		return alias;
-	}
-
-	public void setAlias(String alias) {
-		this.alias = alias;
 	}
 }
