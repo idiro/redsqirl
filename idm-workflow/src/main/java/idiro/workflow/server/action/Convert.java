@@ -292,9 +292,10 @@ public class Convert extends DataflowAction {
 
 	@Override
 	public void update(DFEInteraction interaction) throws RemoteException {
-		if(interaction.getName().equals(formats.getName())){
+		String interId = interaction.getId();
+		if(interId.equals(key_formats)){
 			updateFormat();
-		}else if(interaction.getName().equals(cpi.getName())){
+		}else if(interId.equals(key_properties)){
 			cpi.update();
 		}
 	}
