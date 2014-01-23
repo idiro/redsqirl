@@ -211,7 +211,7 @@ public class ServerProcess {
 					+ ":"
 					+ ServerProcess.class.getProtectionDomain().getCodeSource()
 							.getLocation().getPath()
-							.replace("idm/auth/ServerThread.class", "")
+							.replace("idm/auth/ServerProcess.class", "")
 					+ " idm.auth.BaseCommand " + port;
 			((ChannelExec) channel).setCommand(c);
 			channel.connect();
