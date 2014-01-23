@@ -904,17 +904,19 @@
 						onclick="jQuery('#addtabCanvas').click();" />
 					<rich:menuItem submitMode="ajax"
 						value="#{messages.label_menu_open}" onclick="#{rich:component('modalLoadWorkflow')}.show()" rerender="hdfsfsOpenFile"/>
-					<rich:menuItem submitMode="none"
-						value="#{messages.label_menu_close}" onclick="menuCloseTab();" />
-					<rich:menuItem submitMode="ajax"
-						value="#{messages.label_menu_closeall}" onclick="closeAll();"
-						action="#{canvasBean.doNew}" />
+				    <rich:menuSeparator />
 					<rich:menuItem submitMode="ajax"
 						value="#{messages.label_menu_save}" onclick="menuSave();" />
 					<rich:menuItem submitMode="ajax"
 						value="#{messages.label_menu_saveas}" onclick="#{rich:component('modalSaveWorkflow')}.show()" />
 					<rich:menuItem submitMode="ajax"
 						value="#{messages.label_menu_saveall}" onclick="saveAll();"/>
+                    <rich:menuSeparator />
+                    <rich:menuItem submitMode="none"
+                        value="#{messages.label_menu_close}" onclick="menuCloseTab();" />
+                    <rich:menuItem submitMode="ajax"
+                        value="#{messages.label_menu_closeall}" onclick="closeAll();"
+                        action="#{canvasBean.doNew}" />
 
 				</rich:dropDownMenu>
 
