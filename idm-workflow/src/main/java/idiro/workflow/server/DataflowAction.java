@@ -460,7 +460,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	 * @return
 	 */
 	public String findNameOf(Map<String, List<DataFlowElement>> map,
-			DataflowAction wa) {
+			DataFlowElement wa) {
 		String ans = null;
 		Iterator<String> itS = map.keySet().iterator();
 		while (itS.hasNext() && ans == null) {
@@ -646,7 +646,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	public String removeInputComponent(String inputName, DataFlowElement wa)
 			throws RemoteException {
 		String error = null;
-		if (getInput().get(inputName) != null) {
+		if (inputComponent.get(inputName) != null) {
 			if (!removeComponent(inputComponent, inputName, wa)) {
 				error = LanguageManagerWF.getText(
 						"dataflowaction.removeinputcomponent", new Object[] {
@@ -693,7 +693,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	public String removeOutputComponent(String outputName, DataFlowElement wa)
 			throws RemoteException {
 		String error = null;
-		if (getDFEOutput().get(outputName) != null) {
+		if (outputComponent.get(outputName) != null) {
 			if (!removeComponent(outputComponent, outputName, wa)) {
 				error = LanguageManagerWF.getText(
 						"dataflowaction.removecomponentidnolink", new Object[] {

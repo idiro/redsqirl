@@ -827,7 +827,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 						}
 					}
 				}
-				
+
 
 				//Save element
 				logger.debug("loads dataset: "+compId);
@@ -852,7 +852,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 					}
 
 				}
-				
+
 
 				logger.debug(compId+": output...");
 				NodeList outList = ((Element) compCur).getElementsByTagName("outputs").item(0).getChildNodes();
@@ -885,7 +885,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 				}
 
 			}
-			
+
 			//This workflow has been saved
 			saved = true;
 
@@ -956,22 +956,25 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 		String err = null;
 		String regex = "[a-zA-Z]([A-Za-z0-9_]{0,15})";
 		boolean found = false;
-		if(!newId.matches(regex)){
+		if(newId == null){
+			err = "The new id cannot be null.";
+		}else if(!newId.matches(regex)){
 			err = "The new id does not matches a name ("+regex+").";
-		}
-		if(! oldId.equals(newId)){
-			Iterator<DataFlowElement> itA = element.iterator();
-			while(itA.hasNext()&&!found){
-				found = itA.next().getComponentId().equals(newId);
-			}
-			if(found){
-				err = "The id '"+newId+"' is already used.";
-			}else{
-				DataFlowElement el = getElement(oldId);
-				if(el == null){
-					err = "Id '"+oldId+"' unknown.";
+		}else{
+			if(oldId == null || ! oldId.equals(newId)){
+				Iterator<DataFlowElement> itA = element.iterator();
+				while(itA.hasNext()&&!found){
+					found = itA.next().getComponentId().equals(newId);
+				}
+				if(found){
+					err = "The id '"+newId+"' is already used.";
 				}else{
-					el.setComponentId(newId);
+					DataFlowElement el = getElement(oldId);
+					if(el == null){
+						err = "Id '"+oldId+"' unknown.";
+					}else{
+						el.setComponentId(newId);
+					}
 				}
 			}
 		}
@@ -1015,28 +1018,20 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 			error = "The element "+componentId+" does not exist";
 		}else{
 			dfe.cleanThisAndAllElementAfter();
-			for (Entry<String,List<DFEOutput>> dfeInput : dfe.getDFEInput().entrySet()){
-				for (DataFlowElement inputComponent : dfe.getInputComponent().get(dfeInput.getKey())){
-					for (Entry<String, List<DataFlowElement>> outputComponent : inputComponent.getOutputComponent().entrySet()){
-						if (outputComponent.getValue().contains(dfe)){
-							logger.info("Remove1 - "+outputComponent.getKey()+" "+inputComponent.getComponentId()+" "+dfeInput.getKey()+" "+dfe.getComponentId());
-							error = this.removeLink(outputComponent.getKey(), inputComponent.getComponentId(), dfeInput.getKey(), dfe.getComponentId(), true);
-						}
 
+			for (Entry<String, List<DataFlowElement>> inputComponent : dfe.getInputComponent().entrySet()){
+				for(DataFlowElement inEl : inputComponent.getValue()){
+					error = inEl.removeOutputComponent(((DataflowAction)inEl).findNameOf(inEl.getOutputComponent(), dfe), dfe);
+					if(error != null){
+						break;
 					}
 				}
 			}
-
-			if (error != null && dfe.getDFEOutput() != null){
-				for (Entry<String,DFEOutput> dfeOutput : dfe.getDFEOutput().entrySet()){
-					for (DataFlowElement outputComponent : dfe.getOutputComponent().get(dfeOutput.getKey())){
-						for (Entry<String, List<DataFlowElement>> inputComponent : outputComponent.getInputComponent().entrySet()){
-							if (inputComponent.getValue().contains(dfe)){
-								logger.info("Remove2 - "+dfeOutput.getKey()+" "+dfe.getComponentId()+" "+inputComponent.getKey()+" "+outputComponent.getComponentId());
-								error = this.removeLink(dfeOutput.getKey(), dfe.getComponentId(), inputComponent.getKey(), outputComponent.getComponentId(), true);
-							}
-
-						}
+			for (Entry<String, List<DataFlowElement>> outputComponent : dfe.getOutputComponent().entrySet()){
+				for(DataFlowElement outEl : outputComponent.getValue()){
+					error = outEl.removeInputComponent(((DataflowAction)outEl).findNameOf(outEl.getInputComponent(), dfe), dfe);
+					if(error != null){
+						break;
 					}
 				}
 			}

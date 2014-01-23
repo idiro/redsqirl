@@ -15,7 +15,7 @@ import org.junit.Test;
 public class PigWorkflowMngtTests {
 
 	private Logger logger = Logger.getLogger(getClass());
-
+	
 	@Test
 	public void saveLoad() {
 		TestUtils.logTestTitle(getClass().getName()+"#saveLoad");
@@ -95,6 +95,59 @@ public class PigWorkflowMngtTests {
 			assertTrue("Pig join not initialized correctly ",w.getElement(elementJ).updateOut() == null);
 			assertTrue("Pig union not initialized correctly ",w.getElement(elementU).updateOut() == null);
 
+		} catch (Exception e) {
+			logger.error("something went wrong : " + e);
+			assertTrue(e.getMessage(), false);
+
+		}
+		try{
+			hInt.delete(wfFile);
+		}catch (Exception e) {
+			logger.error("something went wrong : " + e.getMessage());
+			assertTrue(e.getMessage(), false);
+		}
+	}
+	
+	@Test
+	public void removeElement() {
+		TestUtils.logTestTitle(getClass().getName()+"#removeElement");
+		HDFSInterface hInt = null;
+		try {
+			hInt = new HDFSInterface();
+		} catch (RemoteException e1) {
+			logger.error("HDFS interface init went wrong : " + e1.getMessage());
+			assertTrue(e1.getMessage(), false);
+		}
+		String wfFile = TestUtils.getRandomPath();
+		try{
+
+			Workflow w = new Workflow("workflow1_"+getClass().getName());
+			String new_path1 = TestUtils.getPath(1);
+			String new_path2 = TestUtils.getPath(2);
+			//String new_path3 = TestUtils.getPath(3);
+
+			hInt.delete(new_path1);
+			hInt.delete(new_path2);
+
+			DataFlowElement src1 = PigTestUtils.createSrc_ID_VALUE(w,hInt,new_path1);
+			//DataFlowElement src2= PigTestUtils.createSrc_ID_VALUE(w,hInt,new_path2);
+			
+			//Select
+			PigSelect pigS = (PigSelect) PigSelectTests.createPigWithSrc(w,src1,hInt);
+			String elementS = pigS.getComponentId();
+
+			pigS.getDFEOutput().get(PigSelect.key_output).setSavingState(SavingState.RECORDED);
+			pigS.getDFEOutput().get(PigSelect.key_output).generatePath(
+					System.getProperty("user.name"), 
+					elementS, 
+					PigElement.key_output);
+			
+			assertTrue("Element does not exist.", w.getElement(elementS) != null);
+			logger.info("Remove element...");
+			String error = w.removeElement(elementS);
+			assertTrue("Remove element failed: "+error, error == null);
+			assertTrue("Element not deleted.", w.getElement(elementS)== null);
+			
 		} catch (Exception e) {
 			logger.error("something went wrong : " + e);
 			assertTrue(e.getMessage(), false);
