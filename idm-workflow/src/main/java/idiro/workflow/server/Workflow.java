@@ -869,10 +869,10 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 							if(warn != null){
 								logger.warn(warn);
 								warn = null;
-								List<DataFlowElement> lwa = elInputComponent.get(nameOut);
+								List<DataFlowElement> lwa = elOutputComponent.get(nameOut);
 								if (lwa == null) {
 									lwa = new LinkedList<DataFlowElement>();
-									elInputComponent.put(name, lwa);
+									elOutputComponent.put(name, lwa);
 								}
 								lwa.add(getElement(id));
 							}
