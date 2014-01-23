@@ -146,12 +146,13 @@ public class PigAggregator extends PigElement {
 		
 		DFEOutput in = getDFEInput().get(key_input).get(0);
 		logger.info(in.getFeatures().getFeaturesNames());
+		String interId = interaction.getId();
 		if (in != null) {
-			if (interaction.getName().equals(tSelInt.getName())) {
+			if (interId.equals(tSelInt.getId())) {
 				tSelInt.update(in);
-			} else if (interaction.getName().equals(groupingInt.getName())) {
+			} else if (interId.equals(key_grouping)) {
 				groupingInt.update(in);
-			}  else if (interaction.getName().equals(filterInt.getName())) {
+			}  else if (interId.equals(key_condition)) {
 				filterInt.update();
 			}
 

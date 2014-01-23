@@ -327,12 +327,10 @@ public class Source extends DataflowAction {
 	public void update(DFEInteraction interaction) throws RemoteException {
 
 		logger.info("updateinteraction Source ");
-
-		if (interaction.getName()
-				.equals(getInteraction(key_datatype).getName())) {
+		String interId = interaction.getId(); 
+		if (interId.equals(key_datatype)) {
 			updateDataType(interaction.getTree());
-		} else if (interaction.getName().equals(
-				getInteraction(key_datasubtype).getName())) {
+		} else if (interId.equals(key_datasubtype)) {
 			updateDataSubType(interaction.getTree());
 		} else {
 			updateDataSet(interaction.getTree());

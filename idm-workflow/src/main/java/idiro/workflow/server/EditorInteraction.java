@@ -37,7 +37,7 @@ public class EditorInteraction extends UserInteraction{
 		output.add(value);
 	}
 	
-	public String getValue(){
+	public String getValue() throws RemoteException{
 		String ans = null;
 		if(display == DisplayType.helpTextEditor){
 			try{
@@ -45,7 +45,7 @@ public class EditorInteraction extends UserInteraction{
 					ans = getTree().getFirstChild("editor").getFirstChild("output").getFirstChild().getHead();
 				}
 			}catch(Exception e){
-				logger.error("Tree structure incorrect");
+				logger.error(getId()+": Tree structure incorrect");
 			}
 		}
 		return ans;

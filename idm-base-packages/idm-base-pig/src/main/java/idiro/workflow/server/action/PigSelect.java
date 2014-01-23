@@ -64,10 +64,11 @@ public class PigSelect extends PigElement {
 	// @Override
 	public void update(DFEInteraction interaction) throws RemoteException {
 		DFEOutput in = getDFEInput().get(key_input).get(0);
+		String interId = interaction.getId(); 
 		if (in != null) {
-			if (interaction.getName().equals(filterInt.getName())) {
+			if (interId.equals(key_condition)) {
 				filterInt.update();
-			} else if (interaction.getName().equals(tSelInt.getName())) {
+			} else if (interId.equals(tSelInt.getId())) {
 				tSelInt.update(in);
 			}
 		}

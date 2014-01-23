@@ -46,13 +46,13 @@ public class ListInteraction extends UserInteraction {
 		}
 	}
 	
-	public String getValue(){
+	public String getValue() throws RemoteException{
 		String ans = null;
 		if(display == DisplayType.list){
 			try{
 				ans = getTree().getFirstChild("list").getFirstChild("output").getFirstChild().getHead();
 			}catch(Exception e){
-				logger.error("Tree structure incorrect");
+				logger.error(getId()+": Tree structure incorrect");
 			}
 		}
 		return ans;
