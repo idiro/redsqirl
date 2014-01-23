@@ -1,7 +1,6 @@
 package idm.auth;
 
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
-import idiro.workflow.server.interfaces.JobManager;
 import idm.BaseBean;
 
 import java.io.IOException;
@@ -20,10 +19,10 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
+import ch.ethz.ssh2.Connection;
+
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
-
-import ch.ethz.ssh2.Connection;
 
 /**
  * UserInfoBean
@@ -341,7 +340,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 						logger.error(e.getMessage());
 						setCurrentValue(getCurrentValue()+1);
 
-						if(cont > 20){
+						if(cont > 40){
 							throw e;
 						}
 					}
