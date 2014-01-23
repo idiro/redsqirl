@@ -1009,10 +1009,6 @@ function addElements(canvasName, positions) {
 		updateTypeObj(canvasName, positionsArrays[i][0], positionsArrays[i][0]);
 		updateLabelObj(positionsArrays[i][0], positionsArrays[i][0]);
 		
-		//change arc's colors
-		updateOutputStatus(group.getId());
-		updateRunningStatus();
-		
 		group.hasChangedId = true;
 	}
 	

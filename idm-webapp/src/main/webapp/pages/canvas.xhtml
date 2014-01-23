@@ -399,6 +399,11 @@
 	    	  setSaved(canvasName, true);
 	    	  setPathFile(canvasName, path);
 	    	  addLinks(canvasName, links);
+
+	    	//change arc's colors
+	  		//updateObjArcStatus();
+	  		//updateRunningStatus();
+	    	  
 	      }
 	      
 	      function addLinksJs(canvasName, links){
@@ -589,7 +594,6 @@
 <body id="body">
 
 <a4j:keepAlive beanName = "canvasModalBean"/>
-<a4j:keepAlive beanName = "canvasBean"/>
 
 <div id="domMessageDivCanvas1" style="display: none;">
 	<img src="../image/icons/waiting.gif" />
