@@ -2,22 +2,8 @@ package idiro.workflow.test;
 
 import idiro.Log;
 import idiro.ProjectID;
-import idiro.utils.OrderedFeatureListTests;
-import idiro.workflow.client.CreateWorkflowTests;
-import idiro.workflow.server.OozieDagTests;
-import idiro.workflow.server.OozieManagerTests;
 import idiro.workflow.server.WorkflowPrefManager;
-import idiro.workflow.server.WorkflowTests;
 import idiro.workflow.server.action.ActionTests;
-import idiro.workflow.server.action.HiveSelectTests;
-import idiro.workflow.server.action.SourceTests;
-import idiro.workflow.server.action.utils.HiveDictionaryTests;
-import idiro.workflow.server.connect.interfaces.HDFSInterfaceTests;
-import idiro.workflow.server.connect.interfaces.HiveInterfaceTests;
-import idiro.workflow.server.connect.interfaces.SSHInterfaceArrayTests;
-import idiro.workflow.server.connect.interfaces.SSHInterfaceTests;
-import idiro.workflow.server.datatype.HiveTypeTests;
-import idiro.workflow.utils.PackageManagerTests;
 
 import java.io.File;
 import java.io.FileReader;
