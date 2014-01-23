@@ -43,8 +43,6 @@ public class Source extends DataflowAction {
 
 	private static Map<String, DFELinkProperty> input = new LinkedHashMap<String, DFELinkProperty>();
 
-	private Map<String, DFEOutput> output = new LinkedHashMap<String, DFEOutput>();
-
 	public static final String out_name = "source";
 
 	public static final String key_datatype = "Data_type";
@@ -312,11 +310,6 @@ public class Source extends DataflowAction {
 	@Override
 	public Map<String, DFELinkProperty> getInput() throws RemoteException {
 		return input;
-	}
-
-	@Override
-	public Map<String, DFEOutput> getDFEOutput() throws RemoteException {
-		return output;
 	}
 
 	// Override default static methods

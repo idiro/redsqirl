@@ -73,6 +73,11 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 
 	private static Logger waLogger = Logger.getLogger(DataflowAction.class);
 
+	/** 
+	 * The output that the user have to update.
+	 */
+	protected Map<String, DFEOutput> output = new LinkedHashMap<String, DFEOutput>();
+	
 	protected Logger logger = Logger.getLogger(getClass());
 
 	public DataflowAction(OozieAction oozieAction) throws RemoteException {
@@ -380,6 +385,12 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	public abstract void update(DFEInteraction interaction)
 			throws RemoteException;
 
+	
+	@Override
+	public final Map<String, DFEOutput> getDFEOutput() throws RemoteException {
+		return output;
+	}
+	
 	/**
 	 * Get the data inputed in the node
 	 * 

@@ -37,8 +37,6 @@ public class Convert extends DataflowAction {
 
 	private static Map<String, DFELinkProperty> input = null;
 
-	private Map<String, DFEOutput> output = new LinkedHashMap<String, DFEOutput>();
-
 	/**
 	 * Choose the Output Format
 	 */
@@ -158,11 +156,6 @@ public class Convert extends DataflowAction {
 	@Override
 	public Map<String, DFELinkProperty> getInput() throws RemoteException {
 		return input;
-	}
-
-	@Override
-	public Map<String, DFEOutput> getDFEOutput() throws RemoteException {
-		return output;
 	}
 
 	@Override

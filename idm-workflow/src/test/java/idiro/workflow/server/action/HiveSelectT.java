@@ -54,7 +54,6 @@ public class HiveSelectT extends DataflowAction{
 
 	private static Map<String, DFELinkProperty> input;
 
-	private Map<String, DFEOutput> output;
 	private Page page1;
 	private Page page2;
 
@@ -264,12 +263,6 @@ public class HiveSelectT extends DataflowAction{
 	public Map<String, DFELinkProperty> getInput() throws RemoteException {
 		return input;
 	}
-
-	@Override
-	public Map<String, DFEOutput> getDFEOutput() throws RemoteException {
-		return output;
-	}
-
 
 	@Override
 	public boolean writeOozieActionFiles(File[] files) throws RemoteException {
