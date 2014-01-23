@@ -1,5 +1,7 @@
 package idm.auth;
 
+import idm.CanvasBean;
+
 import javax.faces.application.NavigationHandler;
 import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseEvent;
@@ -35,8 +37,25 @@ public class AuthorizationListener implements PhaseListener {
 
 		HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(false);
 		boolean isLoginPage = (currentPage.lastIndexOf("initial.xhtml") > -1) || (currentPage.lastIndexOf("restart.xhtml") > -1) || (currentPage.lastIndexOf("restart2.xhtml") > -1);
-
+		boolean iscanvasPage = (currentPage.lastIndexOf("canvas.xhtml") > -1);
+		
 		//logger.info("currentPage " + currentPage);
+		
+		
+		//call init if the startInit is set to s then set it to n. This is needed as itit needs to be called at least once before 
+		// the canvas has loaded otherwise Dataflowinterface is wrong. This is the event that tomcat has crashed and the interface is still running the next time.
+		if(iscanvasPage){
+			if(session.getAttribute("startInit") != null && session.getAttribute("startInit").equals("s")){
+				FacesContext context = FacesContext.getCurrentInstance();
+				String url = context.getCurrentInstance().getViewRoot().getViewId();
+				logger.info("url : " + url);
+				CanvasBean cb = (CanvasBean) context.getApplication()
+						.evaluateExpressionGet(context, "#{canvasBean}",
+								CanvasBean.class);
+				cb.init();
+				session.setAttribute("startInit","n");
+			}
+		}
 		
 		if(session==null){
 

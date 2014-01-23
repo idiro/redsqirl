@@ -72,10 +72,11 @@ public class FileSystemBean extends BaseBean implements Serializable{
 	 * @author Igor.Souza
 	 */
 	public void mountTable(DataStore hInt) throws RemoteException {
-		logger.info("Started mounting table");
+		logger.debug("Started mounting table");
 		setListGrid(new ArrayList<ItemList>());
-		
+		logger.debug("set the list");
 		setPath(hInt.getPath());
+		logger.debug("getting path");
 
 		FacesContext context = FacesContext.getCurrentInstance();
 		userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
@@ -109,6 +110,7 @@ public class FileSystemBean extends BaseBean implements Serializable{
 
 			}
 
+			
 			itemList.setNameValue(nv);
 			itemList.setNameValueEdit(nve);
 			itemList.setNameIsConst(nc);

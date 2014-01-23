@@ -3,7 +3,7 @@ package idiro.workflow.server.connect;
 import idiro.tm.task.in.Preference;
 import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.interfaces.DataStore;
-import idiro.workflow.utils.LanguageManager;
+import idiro.workflow.utils.LanguageManagerWF;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -151,7 +151,7 @@ public class SSHInterface extends UnicastRemoteObject implements  DataStore{
 	public static String addKnownHost(String host,int port){
 		String error = null;
 		if(getKnownHost().contains(host)){
-			error = LanguageManager.getText("sshinterface.addknownhost",new Object[]{host});
+			error = LanguageManagerWF.getText("sshinterface.addknownhost",new Object[]{host});
 		}else{
 			String hosts = known_host.get();
 			if(hosts.isEmpty()){
@@ -167,7 +167,7 @@ public class SSHInterface extends UnicastRemoteObject implements  DataStore{
 	public static String removeKnownHost(String host){
 		String error = null;
 		if(!getKnownHost().contains(host)){
-			error = LanguageManager.getText("sshinterface.removeknownhost",new Object[]{host});
+			error = LanguageManagerWF.getText("sshinterface.removeknownhost",new Object[]{host});
 		}else{
 			String new_hosts = "";
 			String hosts = known_host.get();
@@ -209,9 +209,9 @@ public class SSHInterface extends UnicastRemoteObject implements  DataStore{
 				goTo(channel.getHome());
 			}
 		} catch (JSchException e) {
-			error = LanguageManager.getText("sshinterface.connectchannelfail",new Object[]{e.getMessage()});
+			error = LanguageManagerWF.getText("sshinterface.connectchannelfail",new Object[]{e.getMessage()});
 		} catch (SftpException e) {
-			error = LanguageManager.getText("sshinterface.homedirfail",new Object[]{e.getMessage()});
+			error = LanguageManagerWF.getText("sshinterface.homedirfail",new Object[]{e.getMessage()});
 		}
 		return error;
 	}
@@ -306,7 +306,7 @@ public class SSHInterface extends UnicastRemoteObject implements  DataStore{
 		try {
 			channel.rename(old_path,new_path);
 		} catch (SftpException e) {
-			error = LanguageManager.getText("sshinterface.move",new Object[]{old_path,new_path,e.getMessage()});
+			error = LanguageManagerWF.getText("sshinterface.move",new Object[]{old_path,new_path,e.getMessage()});
 			logger.warn(error);
 		}
 		return error;
@@ -321,7 +321,7 @@ public class SSHInterface extends UnicastRemoteObject implements  DataStore{
 	public String delete(String path) throws RemoteException {
 		String error = null;
 		if(!exists(path)){
-			error = LanguageManager.getText("sshinterface.deletenotexist", new Object[]{path});
+			error = LanguageManagerWF.getText("sshinterface.deletenotexist", new Object[]{path});
 		}
 		logger.debug("Attempt to delete "+path);
 		try {
@@ -335,7 +335,7 @@ public class SSHInterface extends UnicastRemoteObject implements  DataStore{
 				channel.rm(path);
 			}
 		} catch (SftpException e) {
-			error = LanguageManager.getText("sshinterface.deletefail", new Object[]{path,e.getMessage()});
+			error = LanguageManagerWF.getText("sshinterface.deletefail", new Object[]{path,e.getMessage()});
 			logger.warn(error);
 		}
 		return error;

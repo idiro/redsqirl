@@ -1,7 +1,6 @@
 package idm.auth;
 
-
-
+import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idm.BaseBean;
 
 import java.io.IOException;
@@ -20,13 +19,13 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
+import ch.ethz.ssh2.Connection;
+
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
 
-import ch.ethz.ssh2.Connection;
-
-
-/** UserInfoBean
+/**
+ * UserInfoBean
  * 
  * Class/bean to control user permission and user authentication
  * 
@@ -43,7 +42,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 	private boolean loginChek;
 	private String twoLoginChek;
 
-	private static ServerThread th;
+	private static ServerProcess th;
 	private static int port = 2001;
 
 	private static Registry registry;
@@ -57,21 +56,26 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 	}
 
-	/** Login
+	/**
+	 * Login
 	 * 
-	 * Method to validate permission of the user. Receives as input the login and password of the user.
+	 * Method to validate permission of the user. Receives as input the login
+	 * and password of the user.
 	 * 
 	 * @return String - success or failure
 	 * @author Igor.Souza
 	 */
 	public String login() {
 
-		logger.info("login: "+userName);
+		logger.info("login: " + userName);
 
 		FacesContext fCtx = FacesContext.getCurrentInstance();
-		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
-		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
-		Map<String, HttpSession> sessionLoginMap = (Map<String, HttpSession>) sc.getAttribute("sessionLoginMap");
+		HttpSession session = (HttpSession) fCtx.getExternalContext()
+				.getSession(false);
+		ServletContext sc = (ServletContext) fCtx.getExternalContext()
+				.getContext();
+		Map<String, HttpSession> sessionLoginMap = (Map<String, HttpSession>) sc
+				.getAttribute("sessionLoginMap");
 
 		try {
 
@@ -80,9 +84,10 @@ public class UserInfoBean extends BaseBean implements Serializable {
 			conn = new Connection(hostname);
 			conn.connect();
 
-			boolean isAuthenticated = conn.authenticateWithPassword(userName, password);
+			boolean isAuthenticated = conn.authenticateWithPassword(userName,
+					password);
 
-			if (isAuthenticated == false){
+			if (isAuthenticated == false) {
 				setMsnError("error");
 				setTwoLoginChek(null);
 
@@ -93,7 +98,8 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 			HttpSession sessionLogin = sessionLoginMap.get(userName);
 
-			if(sessionLogin != null && !sessionLogin.getId().equals(session.getId())){
+			if (sessionLogin != null
+					&& !sessionLogin.getId().equals(session.getId())) {
 				sessionLoginMap.remove(userName);
 				setTwoLoginChek(null);
 				sessionLogin.invalidate();
@@ -106,20 +112,22 @@ public class UserInfoBean extends BaseBean implements Serializable {
 			sessionLoginMap.put(userName, session);
 			sc.setAttribute("sessionLoginMap", sessionLoginMap);
 
+			session.setAttribute("startInit", "s");
+			
 			logger.info("Authentication Success");
 
 			setConn(conn);
 
-			setCurrentValue(getCurrentValue()+3);
+			setCurrentValue(getCurrentValue() + 3);
 
-			//error with rmi connection
-			if(!createRegistry(userName, password)){
+			// error with rmi connection
+			if (!createRegistry(userName, password)) {
 				getBundleMessage("error.rmi.connection");
 				invalidateSession();
 				return "failure";
 			}
 
-			setCurrentValue(getCurrentValue()+5);
+			setCurrentValue(getCurrentValue() + 5);
 
 			setMsnError(null);
 			return "success";
@@ -133,64 +141,71 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		}
 
 	}
-	
-	private void invalidateSessionReLogin(){
+
+	private void invalidateSessionReLogin() {
 
 		FacesContext fCtx = FacesContext.getCurrentInstance();
-		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
+		HttpSession session = (HttpSession) fCtx.getExternalContext()
+				.getSession(false);
 
-		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
+		ServletContext sc = (ServletContext) fCtx.getExternalContext()
+				.getContext();
 		sc.setAttribute("userName", userName);
-		
+
 		logger.info("before invalidade session");
 		session.invalidate();
 		logger.info("after invalidade session");
 	}
 
-	public String signOutReLogin(){
+	public String signOutReLogin() {
 
 		logger.info("signOutReLogin");
 
-		//invalidateSessionReLogin();
+		// invalidateSessionReLogin();
 
 		return "reStart";
 	}
-	
-	public String reStart(){
+
+	public String reStart() {
 
 		logger.info("reStart");
 
 		return "success";
 	}
-	
-	
+
 	public String reLogin() {
 
 		FacesContext fCtx = FacesContext.getCurrentInstance();
-		
-		ServletContext scOld = (ServletContext) fCtx.getExternalContext().getContext();
-		
-		if(scOld.getAttribute("UserInfo") != null && password == null){
-			password = ((UserInfo)scOld.getAttribute("UserInfo")).getPassword();
+
+		ServletContext scOld = (ServletContext) fCtx.getExternalContext()
+				.getContext();
+
+		if (scOld.getAttribute("UserInfo") != null && password == null) {
+			password = ((UserInfo) scOld.getAttribute("UserInfo"))
+					.getPassword();
 		}
-		
-		if(scOld.getAttribute("userName") != null && userName == null){
+
+		if (scOld.getAttribute("userName") != null && userName == null) {
 			userName = (String) scOld.getAttribute("userName");
 		}
-		
+
 		invalidateSessionReLogin();
-		
-		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(true);
-		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
-		Map<String, HttpSession> sessionLoginMap = (Map<String, HttpSession>) sc.getAttribute("sessionLoginMap");
-		
+
+		HttpSession session = (HttpSession) fCtx.getExternalContext()
+				.getSession(true);
+		ServletContext sc = (ServletContext) fCtx.getExternalContext()
+				.getContext();
+		Map<String, HttpSession> sessionLoginMap = (Map<String, HttpSession>) sc
+				.getAttribute("sessionLoginMap");
+
 		logger.info("reLogin: " + userName);
 
 		String hostname = "localhost";
 
 		HttpSession sessionLogin = sessionLoginMap.get(userName);
 
-		if(sessionLogin != null && !sessionLogin.getId().equals(session.getId())){
+		if (sessionLogin != null
+				&& !sessionLogin.getId().equals(session.getId())) {
 			sessionLoginMap.remove(userName);
 			setTwoLoginChek(null);
 			sessionLogin.invalidate();
@@ -205,25 +220,26 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 		logger.info("Authentication Success");
 
-		//error with rmi connection
-		if(!createRegistry(userName, password)){
+		// error with rmi connection
+		if (!createRegistry(userName, password)) {
 			getBundleMessage("error.rmi.connection");
 			invalidateSession();
 			return "failure";
 		}
 
-		HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
+		HttpServletRequest request = (HttpServletRequest) FacesContext
+				.getCurrentInstance().getExternalContext().getRequest();
 		request.setAttribute("msnReLogin", "msnReLogin");
-		
+
 		setMsnError(null);
 		return "reStart";
 	}
 
-
-	/** createRegistry
+	/**
+	 * createRegistry
 	 * 
-	 * Method to create the connection to the server rmi.
-	 * Retrieve objects and places them in the context of the application
+	 * Method to create the connection to the server rmi. Retrieve objects and
+	 * places them in the context of the application
 	 * 
 	 * @return
 	 * @author Igor.Souza
@@ -234,8 +250,8 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 		List<String> beans = new ArrayList<String>();
 		beans.add("wfm");
-		beans.add("hive");
 		beans.add("ssharray");
+		beans.add("hive");
 		beans.add("oozie");
 		beans.add("hdfs");
 		beans.add("pckmng");
@@ -245,8 +261,20 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
 		
 		try{
+			for (String bean : beans){
+				if(session.getAttribute(bean)!=null){
+					session.removeAttribute(bean);
+				}
+			}
 			
-			th = new ServerThread(port);
+			if(session.getAttribute("serverThread")!=null){
+				session.removeAttribute("serverThread");
+			}
+			if(sc.getAttribute("registry")!=null){
+				sc.removeAttribute("registry");
+			}
+			
+			th = new ServerProcess(port);
 			Session s = th.run(user,password);
 			
 			if(s != null){
@@ -265,22 +293,54 @@ public class UserInfoBean extends BaseBean implements Serializable {
 				logger.info("createRegistry - " + beanName);
 				setCurrentValue(getCurrentValue()+2);
 
+				if(beanName.equalsIgnoreCase("wfm")){
+					boolean error = true;
+					int tryNumb = 0;
+					while(error){
+						++tryNumb;
+						try{
+							DataFlowInterface dfi = (DataFlowInterface)registry.lookup(user+"@"+beanName);
+							dfi.addWorkflow("test");
+							error = false;
+							dfi.removeWorkflow("test");
+							logger.info("workflow is running ");
+						}catch(Exception e ){
+							logger.info("workflow not running ");
+							try {
+								Thread.sleep(500);
+							} catch (InterruptedException ex) {
+								Thread.currentThread().interrupt();
+							}
+						}
+					}
+				}
+				
+//				if(beanName.equalsIgnoreCase("oozie")){
+//					try{
+//						JobManager jm = (JobManager) registry.lookup(user+"@"+beanName);
+//						logger.info(jm.getUrl());
+//						
+//					}catch(Exception e){
+//						logger.error("trying to get oozie url : "+ e.getMessage());
+//					}
+//				}
+				
 				boolean error = true;
 				int cont = 0;
 
 				while(error){
 					cont++;
 					try{
-						Remote dfi = registry.lookup(user+"@"+beanName);
+						Remote remoteObject = registry.lookup(user+"@"+beanName);
 						error = false;
-						session.setAttribute(beanName, dfi);
+						session.setAttribute(beanName, remoteObject);
 						setCurrentValue(getCurrentValue()+1);
 					}catch(Exception e){
 						Thread.sleep(500);
 						logger.error(e.getMessage());
 						setCurrentValue(getCurrentValue()+1);
 
-						if(cont > 20){
+						if(cont > 40){
 							throw e;
 						}
 					}
@@ -296,8 +356,8 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 	}
 
-
-	/** validateSecondLogin
+	/**
+	 * validateSecondLogin
 	 * 
 	 * Method to validate permission of the user.
 	 * 
@@ -307,14 +367,17 @@ public class UserInfoBean extends BaseBean implements Serializable {
 	public String validateSecondLogin() {
 
 		FacesContext fCtx = FacesContext.getCurrentInstance();
-		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
-		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
-		Map<String, HttpSession> sessionLoginMap = (Map<String, HttpSession>) sc.getAttribute("sessionLoginMap");
+		ServletContext sc = (ServletContext) fCtx.getExternalContext()
+				.getContext();
+		HttpSession session = (HttpSession) fCtx.getExternalContext()
+				.getSession(false);
+		Map<String, HttpSession> sessionLoginMap = (Map<String, HttpSession>) sc
+				.getAttribute("sessionLoginMap");
 
 		HttpSession sessionLogin = sessionLoginMap.get(userName);
-		if(sessionLogin != null){
+		if (sessionLogin != null) {
 
-			if(sessionLogin.getId().equals(session.getId())){
+			if (sessionLogin.getId().equals(session.getId())) {
 				setTwoLoginChek(null);
 				setMsnLoginTwice("twice");
 
@@ -327,7 +390,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 			return "failure";
 		}
 
-		setCurrentValue(getCurrentValue()+5);
+		setCurrentValue(getCurrentValue() + 5);
 
 		setTwoLoginChek(null);
 		String aux = login();
@@ -335,15 +398,16 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		return aux;
 	}
 
-
-	/** signOut
+	/**
+	 * signOut
 	 * 
-	 * Method to logs out user of the application. Removes data so User context and removes the session
+	 * Method to logs out user of the application. Removes data so User context
+	 * and removes the session
 	 * 
 	 * @return string - to navigation
 	 * @author Igor.Souza
 	 */
-	public String signOut(){
+	public String signOut() {
 
 		logger.info("signOut");
 
@@ -352,10 +416,11 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		return "signout";
 	}
 
-	private void invalidateSession(){
+	private void invalidateSession() {
 
 		FacesContext fCtx = FacesContext.getCurrentInstance();
-		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
+		HttpSession session = (HttpSession) fCtx.getExternalContext()
+				.getSession(false);
 
 		logger.info("before invalidade session");
 		session.invalidate();
@@ -370,8 +435,8 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		return null;
 	}
 
-
-	/** cleanSession
+	/**
+	 * cleanSession
 	 * 
 	 * Method to clean all Session and Context
 	 * 

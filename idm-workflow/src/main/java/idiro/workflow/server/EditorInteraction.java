@@ -15,9 +15,9 @@ public class EditorInteraction extends UserInteraction{
 	 */
 	private static final long serialVersionUID = -834634281289412942L;
 
-	public EditorInteraction(String name, String legend,
+	public EditorInteraction(String id, String name, String legend,
 			int column, int placeInColumn) throws RemoteException {
-		super(name, legend, DisplayType.helpTextEditor, column, placeInColumn);
+		super(id, name, legend, DisplayType.helpTextEditor, column, placeInColumn);
 		init();
 	}
 
@@ -37,7 +37,7 @@ public class EditorInteraction extends UserInteraction{
 		output.add(value);
 	}
 	
-	public String getValue(){
+	public String getValue() throws RemoteException{
 		String ans = null;
 		if(display == DisplayType.helpTextEditor){
 			try{
@@ -45,7 +45,7 @@ public class EditorInteraction extends UserInteraction{
 					ans = getTree().getFirstChild("editor").getFirstChild("output").getFirstChild().getHead();
 				}
 			}catch(Exception e){
-				logger.error("Tree structure incorrect");
+				logger.error(getId()+": Tree structure incorrect");
 			}
 		}
 		return ans;

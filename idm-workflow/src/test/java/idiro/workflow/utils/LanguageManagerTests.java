@@ -17,7 +17,7 @@ public class LanguageManagerTests {
 		vals.add("test1");
 		vals.add("test2");
 
-		logger.info(LanguageManager.getText("AppendListInteraction.setValues",
+		logger.info(LanguageManagerWF.getText("AppendListInteraction.setValues",
 				new Object[] { vals.toString() }));
 	}
 }

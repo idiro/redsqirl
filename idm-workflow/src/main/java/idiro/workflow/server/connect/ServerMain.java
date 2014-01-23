@@ -14,10 +14,13 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.rmi.AccessException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.RMISocketFactory;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -83,7 +86,7 @@ public class ServerMain {
 						RMISocketFactory.getDefaultSocketFactory()
 						//new ClientRMIRegistry()	
 						);
-
+				
 				registry.rebind(
 						nameWorkflow,
 						(DataFlowInterface) WorkflowInterface.getInstance()
@@ -143,5 +146,25 @@ public class ServerMain {
 		Thread.currentThread().setContextClassLoader(urlCL);
 
 	}
-
+	
+	public static void shutdown() {
+		String[] threads;
+		try {
+			threads = registry.list();
+			for (String thread : threads) {
+				logger.info("unbinding : " + thread);
+				registry.unbind(thread);
+			}
+		} catch (AccessException e) {
+			logger.info("Access Exception : "+e.getMessage());
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			logger.info("Remote Exception : "+e.getMessage());
+			e.printStackTrace();
+		} catch (NotBoundException e) {
+			logger.info("NotBound Exception : "+e.getMessage());
+			e.printStackTrace();
+		}
+		System.exit(0);
+	}
 }

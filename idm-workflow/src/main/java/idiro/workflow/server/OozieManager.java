@@ -6,7 +6,7 @@ import idiro.workflow.server.interfaces.DataFlow;
 import idiro.workflow.server.interfaces.DataFlowElement;
 import idiro.workflow.server.interfaces.JobManager;
 import idiro.workflow.server.interfaces.OozieXmlCreator;
-import idiro.workflow.utils.LanguageManager;
+import idiro.workflow.utils.LanguageManagerWF;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -200,7 +200,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 					writeWorkflowProp(new File(parentDir,"job.properties"),
 							hdfsWfPath);
 				}catch(Exception e){
-					error = LanguageManager.getText("ooziemanager.createproperties",new Object[]{e.getMessage()});
+					error = LanguageManagerWF.getText("ooziemanager.createproperties",new Object[]{e.getMessage()});
 				}
 			}
 
@@ -246,7 +246,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 			}
 			
 			if(again == 0){
-				error = LanguageManager.getText("ooziemanager.copydependencies",new Object[]{e.getMessage()});
+				error = LanguageManagerWF.getText("ooziemanager.copydependencies",new Object[]{e.getMessage()});
 			}
 			LocalFileSystem.delete(parentDir);
 		}
@@ -266,7 +266,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 				jobId = oc.run(conf);
 				logger.debug("Workflow job submitted succesfully");
 			} catch (OozieClientException e) {
-				error = LanguageManager.getText("ooziemanager.launchjob",new Object[]{e.getMessage()});
+				error = LanguageManagerWF.getText("ooziemanager.launchjob",new Object[]{e.getMessage()});
 			}
 
 		}

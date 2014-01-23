@@ -7,7 +7,7 @@ import idiro.utils.RandomString;
 import idiro.workflow.server.DataOutput;
 import idiro.workflow.server.connect.HDFSInterface;
 import idiro.workflow.server.enumeration.DataBrowser;
-import idiro.workflow.utils.LanguageManager;
+import idiro.workflow.utils.LanguageManagerWF;
 
 import java.io.File;
 import java.io.IOException;
@@ -101,11 +101,11 @@ public class DataFileType extends DataOutput {
 				fs = NameNodeVar.getFS();
 				hCh.setPath(new Path(getPath()).getParent());
 				if (!hCh.isDirectory()) {
-					error = LanguageManager.getText("datafiletype.notpath");
+					error = LanguageManagerWF.getText("datafiletype.notpath");
 				}
 				fs.close();
 			} catch (IOException e) {
-				error = LanguageManager.getText("unexpectedexception",
+				error = LanguageManagerWF.getText("unexpectedexception",
 						new Object[] { e.getMessage() });
 				logger.error(error);
 			}

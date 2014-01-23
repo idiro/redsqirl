@@ -985,25 +985,57 @@ function addElements(canvasName, positions) {
 	var positionsArrays = JSON.parse(positions);
 	var numSides = 4;
 
+	//try{
+	
 	for ( var i = 0; i < positionsArrays.length; i++) {
-		var group = addElement(canvasName, positionsArrays[i][1],
-				positionsArrays[i][2], positionsArrays[i][3],
-				positionsArrays[i][4],
-				numSides,
-				positionsArrays[i][0]);
+		
+		if(checkImg(positionsArrays[i][2])){
+			var group = addElement(canvasName, positionsArrays[i][1],
+					positionsArrays[i][2], positionsArrays[i][3],
+					positionsArrays[i][4],
+					numSides,
+					positionsArrays[i][0]);
+		}else{
+			
+			var group = addElement(canvasName, positionsArrays[i][1],
+					"./"+positionsArrays[i][2], positionsArrays[i][3],
+					positionsArrays[i][4],
+					numSides,
+					positionsArrays[i][0]);
+			
+		}
 		
 		updateIdObj(positionsArrays[i][0], positionsArrays[i][0]);
 		updateTypeObj(canvasName, positionsArrays[i][0], positionsArrays[i][0]);
 		updateLabelObj(positionsArrays[i][0], positionsArrays[i][0]);
 		
+		//change arc's colors
+		updateOutputStatus(group.getId());
+		updateRunningStatus();
+		
 		group.hasChangedId = true;
 	}
 	
 	canvasArray[canvasName].stage.draw();
+	
+	/*}catch(exception){
+		alert(exception);
+	}*/
+	
 }
 
-function addElement(canvasName, elementType, elementImg, posx, posy, numSides, idElement) {
+	function checkImg(src){
+	   var jqxhr = jQuery.get(src, function() {
+	     return true;
+	   }).fail(function() { 
+	    return false;
+	   });
+	}
 
+
+
+function addElement(canvasName, elementType, elementImg, posx, posy, numSides, idElement) {
+	
 	var polygonLayer = canvasArray[canvasName].polygonLayer;
 
 	var img = new Image({
@@ -1602,6 +1634,9 @@ function configureGroupListeners(canvasName, group) {
 	});
 	
 	group.on('click', function(e) {
+		
+		deselectOnClick(canvasName, group.getChildren()[2], e);
+		
 		group.getChildren()[2].on('click', function(e) {
 			polygonOnClick(this, e, canvasName);
 		});

@@ -21,4 +21,6 @@ public interface DataFlowInterface extends Remote{
 	public void backupAll() throws RemoteException;
 	
 	public void autoCleanAll() throws RemoteException;
+	
+	public void shutdown() throws RemoteException;
 }

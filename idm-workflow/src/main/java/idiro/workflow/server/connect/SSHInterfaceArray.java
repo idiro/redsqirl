@@ -2,7 +2,7 @@ package idiro.workflow.server.connect;
 
 import idiro.workflow.server.connect.interfaces.DataStore;
 import idiro.workflow.server.connect.interfaces.DataStoreArray;
-import idiro.workflow.utils.LanguageManager;
+import idiro.workflow.utils.LanguageManagerWF;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -92,7 +92,7 @@ public class SSHInterfaceArray extends UnicastRemoteObject implements DataStoreA
 			ds.close();
 			stores.remove(name);
 		}else{
-			error = LanguageManager.getText("sshinterfacearray.removestorefail",new Object[]{name});
+			error = LanguageManagerWF.getText("sshinterfacearray.removestorefail",new Object[]{name});
 		}
 		
 		return error; 
@@ -148,7 +148,7 @@ public class SSHInterfaceArray extends UnicastRemoteObject implements DataStoreA
 			try{
 				pInt = Integer.valueOf(p.trim());
 			}catch(NumberFormatException e){
-				error = LanguageManager.getText("sshinterfacearray.porthostfail");
+				error = LanguageManagerWF.getText("sshinterfacearray.porthostfail");
 			}
 		}
 		if(error == null){

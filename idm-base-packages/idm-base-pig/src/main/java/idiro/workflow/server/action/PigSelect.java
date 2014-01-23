@@ -4,6 +4,7 @@ import idiro.utils.FeatureList;
 import idiro.workflow.server.Page;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEOutput;
+import idiro.workflow.utils.PigLanguageManager;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
@@ -21,9 +22,6 @@ public class PigSelect extends PigElement {
 	 */
 	private static final long serialVersionUID = 8969124219285130345L;
 
-	public static final String key_grouping = "Grouping",
-			key_featureTable = "Features";
-
 	private Page page1;
 	private Page page2;
 
@@ -34,16 +32,21 @@ public class PigSelect extends PigElement {
 	public PigSelect() throws RemoteException {
 		super(1,1,1);
 
-		page1 = addPage("Feature operations",
-				"Create operation feature per feature", 3);
+		page1 = addPage(
+				PigLanguageManager.getText("pig.select_page1.title"),
+				PigLanguageManager.getText("pig.select_page1.legend"), 3);
+		
 		tSelInt = new PigTableSelectInteraction(
 				key_featureTable,
-				"Please specify the operations to be executed for each feature",
+				PigLanguageManager.getText("pig.select_features_interaction.title"),
+				PigLanguageManager.getText("pig.select_features_interaction.legend"),
 				0, 0, this);
 
 		page1.addInteraction(tSelInt);
 
-		page2 = addPage("Select", "Select Configuration", 1);
+		page2 = addPage(
+				PigLanguageManager.getText("pig.select_page2.title"), 
+				PigLanguageManager.getText("pig.select_page2.legend"), 1);
 
 		filterInt = new PigFilterInteraction(0, 0, this);
 
@@ -61,10 +64,11 @@ public class PigSelect extends PigElement {
 	// @Override
 	public void update(DFEInteraction interaction) throws RemoteException {
 		DFEOutput in = getDFEInput().get(key_input).get(0);
+		String interId = interaction.getId(); 
 		if (in != null) {
-			if (interaction.getName().equals(filterInt.getName())) {
+			if (interId.equals(key_condition)) {
 				filterInt.update();
-			} else if (interaction.getName().equals(tSelInt.getName())) {
+			} else if (interId.equals(tSelInt.getId())) {
 				tSelInt.update(in);
 			}
 		}

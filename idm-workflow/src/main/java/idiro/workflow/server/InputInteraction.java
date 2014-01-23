@@ -12,9 +12,9 @@ public class InputInteraction extends UserInteraction{
 	 */
 	private static final long serialVersionUID = -7192633417256406554L;
 
-	public InputInteraction(String name, String legend,
+	public InputInteraction(String id, String name, String legend,
 			int column, int placeInColumn) throws RemoteException {
-		super(name, legend, DisplayType.input, column, placeInColumn);
+		super(id, name, legend, DisplayType.input, column, placeInColumn);
 		init();
 	}
 
@@ -27,26 +27,26 @@ public class InputInteraction extends UserInteraction{
 		}
 	}
 
-	public String getValue(){
+	public String getValue() throws RemoteException{
 		String ans = null;
 		try{
 			if(getTree().getFirstChild("input").getFirstChild("output").getFirstChild() != null){
 				ans = getTree().getFirstChild("input").getFirstChild("output").getFirstChild().getHead();
 			}
 		}catch(Exception e){
-			logger.error("Tree structure incorrect");
+			logger.error(getId()+": Tree structure incorrect");
 		}
 		return ans;
 	}
 	
-	public String getRegex(){
+	public String getRegex() throws RemoteException{
 		String ans = null;
 		try{
 			if(getTree().getFirstChild("input").getFirstChild("regex").getFirstChild() != null ){
 				ans = getTree().getFirstChild("input").getFirstChild("regex").getFirstChild().getHead();
 			}
 		}catch(Exception e){
-			logger.error("Tree structure incorrect");
+			logger.error(getId()+": Tree structure incorrect");
 		}
 		return ans;
 	}

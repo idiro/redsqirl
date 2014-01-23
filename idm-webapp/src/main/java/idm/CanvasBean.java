@@ -6,6 +6,7 @@ import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.interfaces.DataFlow;
 import idiro.workflow.server.interfaces.DataFlowElement;
+import idiro.workflow.server.interfaces.JobManager;
 import idm.auth.UserInfoBean;
 import idm.useful.MessageUseful;
 
@@ -50,7 +51,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 	private Map<String, Map<String, String>> idMap;
 	private UserInfoBean userInfoBean;
 	private String path;
-
+	
 	private Map<String, DataFlow> workflowMap;
 
 
@@ -74,7 +75,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 	 * @author Igor.Souza
 	 */
 	public CanvasBean() {
-
+		
 	}
 
 	@PostConstruct
@@ -87,7 +88,6 @@ public class CanvasBean extends BaseBean implements Serializable{
 		userInfoBean.setCurrentValue(Long.valueOf(78));
 
 		workflowMap = new HashMap<String, DataFlow>();
-
 		setNameWorkflow("canvas-1");
 
 		setIdMap(new HashMap<String, Map<String, String>>());
@@ -394,12 +394,14 @@ public class CanvasBean extends BaseBean implements Serializable{
 			DataFlow df = dfi.getWorkflow(getNameWorkflow());
 
 			String error = df.read(path);
+			
+			logger.info("load error " + error);
+			
 			if(error != null){
 				MessageUseful.addErrorMessage(error);
 				HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
 				request.setAttribute("msnError", "msnError");
 			}else{
-
 
 				setDf(df);
 
@@ -584,7 +586,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 		logger.info("Select: "+select);
 
 		String error = null;
-		if(select == null || select.isEmpty()){
+		if(select == null || select.isEmpty() || select.equals("undefined")){
 			logger.info("Run a complete workflow");
 			error = getDf().run();
 			logger.info("Run error:" + error);
@@ -626,16 +628,36 @@ public class CanvasBean extends BaseBean implements Serializable{
 	}
 
 	public String getWorkflowUrl(){
+		
 		logger.info("getWorkflowUrl");
 		String url = null;
-		if (getDf() != null){
+		try {
+			DataFlow df= getDf();
+			if (df != null) {
+				if(df.getOozieJobId() != null){
+					try {
+						JobManager jm = getOozie();
+						jm.getUrl();
+						url = jm.getConsoleUrl(df);
+					} catch (Exception e) {
+						logger.error("error " + e.getMessage());
+					}
+				}else{
+					url = null;
+				}
+			}
+		} catch (Exception e) {
+			logger.error("error get df: " +  e.getMessage());
+		}
+		
+		if(url == null ){
 			try {
-				url = getOozie().getConsoleUrl(getDf());
-			} catch (Exception e) {
-				logger.error("error", e);
+				url = getOozie().getUrl();
+			} catch (RemoteException e) {
+				logger.error("error getting Oozie url : "+e.getMessage());
 			}
 		}
-
+		
 		FacesContext context = FacesContext.getCurrentInstance();
 		userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
 
@@ -959,10 +981,21 @@ public class CanvasBean extends BaseBean implements Serializable{
 	}
 
 	public String[] getPositions() throws Exception{
+		
 		logger.info("getPositions");
+		
 		JSONArray jsonElements = new JSONArray();
 		for (DataFlowElement e : getDf().getElement()){
+
+			/*//FIXME add ./ on image path just for local environment (canvas.js addElements)
+			if(e.getImage().startsWith("/packages")){
+				jsonElements.put(new Object[]{e.getComponentId(), e.getName(), "./"+e.getImage(), e.getX(), e.getY()});
+			}else{
+				jsonElements.put(new Object[]{e.getComponentId(), e.getName(), e.getImage(), e.getX(), e.getY()});
+			}*/
+			
 			jsonElements.put(new Object[]{e.getComponentId(), e.getName(), e.getImage(), e.getX(), e.getY()});
+			
 		}
 
 		JSONArray jsonLinks = new JSONArray();
@@ -974,6 +1007,11 @@ public class CanvasBean extends BaseBean implements Serializable{
 			}
 		}
 
+		logger.info("getPositions getNameWorkflow " + getNameWorkflow());
+		logger.info("getPositions getPath " + getPath());
+		logger.info("getPositions jsonElements.toString " + jsonElements.toString());
+		logger.info("getPositions jsonLinks.toString " + jsonLinks.toString());
+		
 		return new String[]{getNameWorkflow(), getPath(), jsonElements.toString(), jsonLinks.toString()};
 	}
 

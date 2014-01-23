@@ -10,7 +10,7 @@ import idiro.workflow.server.OozieManager;
 import idiro.workflow.server.connect.HDFSInterface;
 import idiro.workflow.server.enumeration.DataBrowser;
 import idiro.workflow.server.enumeration.FeatureType;
-import idiro.workflow.utils.LanguageManager;
+import idiro.workflow.utils.LanguageManagerWF;
 
 import java.io.File;
 import java.io.IOException;
@@ -85,14 +85,14 @@ public class MapRedTextType extends DataOutput {
 		String error = null;
 		HdfsFileChecker hCh = new HdfsFileChecker(getPath());
 		if (!hCh.isInitialized() || hCh.isFile()) {
-			error = LanguageManager.getText("mapredtexttype.dirisfile");
+			error = LanguageManagerWF.getText("mapredtexttype.dirisfile");
 		} else {
 			FileSystem fs;
 			try {
 				fs = NameNodeVar.getFS();
 				hCh.setPath(new Path(getPath()).getParent());
 				if (!hCh.isDirectory()) {
-					error = LanguageManager.getText("mapredtexttype.nodir");
+					error = LanguageManagerWF.getText("mapredtexttype.nodir");
 				}
 				FileStatus[] stat = fs.listStatus(new Path(getPath()),
 						new PathFilter() {
@@ -104,7 +104,7 @@ public class MapRedTextType extends DataOutput {
 				});
 				for (int i = 0; i < stat.length && error == null; ++i) {
 					if (stat[i].isDir()) {
-						error = LanguageManager.getText(
+						error = LanguageManagerWF.getText(
 								"mapredtexttype.notmrdir",
 								new Object[] { getPath() });
 					}
@@ -116,7 +116,7 @@ public class MapRedTextType extends DataOutput {
 				}
 			} catch (IOException e) {
 
-				error = LanguageManager.getText("unexpectedexception",
+				error = LanguageManagerWF.getText("unexpectedexception",
 						new Object[] { e.getMessage() });
 
 				logger.error(error);
@@ -243,11 +243,11 @@ public class MapRedTextType extends DataOutput {
 
 			logger.info("setFeaturesFromHeader features "+ features);
 			if (features != null && features.getSize() != newLabels.length) {
-				error = LanguageManager.getText("mapredtexttype.setheaders.wronglabels");
+				error = LanguageManagerWF.getText("mapredtexttype.setheaders.wronglabels");
 			}
 
 			if(header.trim().endsWith(",")){
-				error = LanguageManager.getText("mapredtexttype.setheaders.wronglabels");
+				error = LanguageManagerWF.getText("mapredtexttype.setheaders.wronglabels");
 			}
 
 			FeatureList newFL = new OrderedFeatureList();
@@ -262,7 +262,7 @@ public class MapRedTextType extends DataOutput {
 						String label = newLabels[j].trim();
 						String[] nameType = label.split("\\s+");
 						if (nameType.length != 2) {
-							error = LanguageManager.getText("mapredtexttype.setheaders.wrongpair");
+							error = LanguageManagerWF.getText("mapredtexttype.setheaders.wrongpair");
 						} else {
 							logger.info("nameType[1] " + nameType[0] + " " + nameType[1]);
 
@@ -273,11 +273,11 @@ public class MapRedTextType extends DataOutput {
 								}
 								catch (Exception e) {
 									logger.error(e);
-									error = LanguageManager.getText("mapredtexttype.msg_error_type_new_header", new Object[] { nameType[1] });
+									error = LanguageManagerWF.getText("mapredtexttype.msg_error_type_new_header", new Object[] { nameType[1] });
 								}
 
 							}else{
-								error = LanguageManager.getText("mapredtexttype.msg_error_name_header", new Object[] { nameType[0] });
+								error = LanguageManagerWF.getText("mapredtexttype.msg_error_name_header", new Object[] { nameType[0] });
 							}
 
 						}
@@ -300,7 +300,7 @@ public class MapRedTextType extends DataOutput {
 							if(isVariableName(newLabels[j].trim())){
 								newFL.addFeature(newLabels[j].trim(),features.getFeatureType(featName));
 							}else{
-								error = LanguageManager.getText("mapredtexttype.msg_error_name_header", new Object[] { newLabels[j].trim() });
+								error = LanguageManagerWF.getText("mapredtexttype.msg_error_name_header", new Object[] { newLabels[j].trim() });
 								break;
 							}
 
@@ -311,7 +311,7 @@ public class MapRedTextType extends DataOutput {
 				}
 			} catch (Exception e) {
 				logger.error(e);
-				error = LanguageManager.getText("mapredtexttype.setheaders.typeunknown");
+				error = LanguageManagerWF.getText("mapredtexttype.setheaders.typeunknown");
 			}
 
 			if (error == null && !newFL.getFeaturesNames().isEmpty()) {
@@ -555,7 +555,7 @@ public class MapRedTextType extends DataOutput {
 				logger.info("checkFeatures-flNameType " + fl.getFeatureType(featName));
 
 				if (!fl.getFeatureType(featName).equals(features.getFeatureType(flName))) {
-					error = LanguageManager.getText("mapredtexttype.checkfeatures.incorrectnames", new Object[] { flName, featName });
+					error = LanguageManagerWF.getText("mapredtexttype.checkfeatures.incorrectnames", new Object[] { flName, featName });
 				}
 
 			}

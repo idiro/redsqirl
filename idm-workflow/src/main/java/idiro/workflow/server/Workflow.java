@@ -770,7 +770,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 			logger.debug("loads elements...");
 			NodeList compList = doc.getElementsByTagName("component");
 			//Init element
-			for (int temp = 0; temp < compList.getLength(); ++temp) {
+			for (int temp = 0; temp < compList.getLength() && error == null; ++temp) {
 
 				Node compCur = compList.item(temp);
 
@@ -791,63 +791,49 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 				logger.debug("create new Action: "+name+" "+id+": ("+x+","+y+")");
 				addElement(name,id);
 				getElement(id).setPosition(x,y);
-				getElement(id).readValuesXml(((Element) compCur).getElementsByTagName("interactions").item(0));
+				error = getElement(id).readValuesXml(((Element) compCur).getElementsByTagName("interactions").item(0));
 			}
 
-			//Link
+			//Link and data
+			String warn = null;
 			logger.debug("loads links...");
-			for (int temp = 0; temp < compList.getLength(); ++temp) {
+			for (int temp = 0; temp < compList.getLength() && error == null; ++temp) {
 
 				Node compCur = compList.item(temp);
 				String compId = compCur.getAttributes().getNamedItem("id").getNodeValue();
+				DataFlowElement el = getElement(compId);
+				Map<String, List<DataFlowElement>> elInputComponent = el.getInputComponent();
+				Map<String, List<DataFlowElement>> elOutputComponent = el.getOutputComponent();
 
 				logger.debug(compId+": input...");
 				NodeList inList = ((Element) compCur).getElementsByTagName("inputs").item(0).getChildNodes();
 				if(inList != null){
-					for (int index = 0; index < inList.getLength(); index++) {
+					for (int index = 0; index < inList.getLength() && error == null; index++) {
 						logger.debug(compId+": input index "+index);
 						Node inCur = inList.item(index);
 						String nameIn = ((Element) inCur).getElementsByTagName("name").item(0).getChildNodes().item(0).getNodeValue();
 						String id = ((Element) inCur).getElementsByTagName("id").item(0).getChildNodes().item(0).getNodeValue();
 
-						getElement(compId).addInputComponent(nameIn, getElement(id));
-					}
-				}
-
-				logger.debug(compId+": output...");
-				NodeList outList = ((Element) compCur).getElementsByTagName("outputs").item(0).getChildNodes();
-				if(outList != null){
-					for (int index = 0; index < outList.getLength(); index++) {
-						try{
-							logger.debug(compId+": output index "+index);
-							Node outCur = outList.item(index);
-
-							String nameOut = ((Element) outCur).getElementsByTagName("name").item(0).getChildNodes().item(0).getNodeValue();
-							String id = ((Element) outCur).getElementsByTagName("id").item(0).getChildNodes().item(0).getNodeValue();
-
-							getElement(compId).addOutputComponent(nameOut, getElement(id));
-						}
-						catch (Exception e){
-							logger.error("Fail to load output");
-							error = "Fail to load output";
+						warn = el.addInputComponent(nameIn, getElement(id));
+						if(warn != null){
+							logger.warn(warn);
+							warn = null;
+							List<DataFlowElement> lwa = elInputComponent.get(nameIn);
+							if (lwa == null) {
+								lwa = new LinkedList<DataFlowElement>();
+								elInputComponent.put(name, lwa);
+							}
+							lwa.add(getElement(id));
 						}
 					}
 				}
-
-			}
-
-			//Saved Element
-			logger.debug("loads saved states...");
-			for (int temp = 0; temp < compList.getLength(); ++temp) {
-
-				Node compCur = compList.item(temp);
-				String id = compCur.getAttributes().getNamedItem("id").getNodeValue();
-				logger.debug("loads state: "+id);
+				
 
 				//Save element
-				Map<String,DFEOutput> mapOutput = getElement(id).getDFEOutput();
+				logger.debug("loads dataset: "+compId);
+				Map<String,DFEOutput> mapOutput = el.getDFEOutput();
 				NodeList dataList = ((Element)compCur).getElementsByTagName("data");
-				for(int ind = 0; ind < dataList.getLength(); ++ind){
+				for(int ind = 0; ind < dataList.getLength() && error == null; ++ind){
 					Node dataCur = dataList.item(ind);
 
 					String dataName =  dataCur.getAttributes().getNamedItem("name").getNodeValue();
@@ -859,14 +845,48 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 						mapOutput.get(dataName).read((Element)dataCur);
 						if(mapOutput.get(dataName).getSavingState() != SavingState.RECORDED &&
 								mapOutput.get(dataName).getPath() == null){
-							mapOutput.get(dataName).generatePath(userName, id, dataName);
+							mapOutput.get(dataName).generatePath(userName, compId, dataName);
 						}
 					}else{
 						error = "Unknown typename "+typeName;
 					}
 
 				}
+				
+
+				logger.debug(compId+": output...");
+				NodeList outList = ((Element) compCur).getElementsByTagName("outputs").item(0).getChildNodes();
+				if(outList != null){
+					for (int index = 0; index < outList.getLength() && error == null; index++) {
+						try{
+							logger.debug(compId+": output index "+index);
+							Node outCur = outList.item(index);
+
+							String nameOut = ((Element) outCur).getElementsByTagName("name").item(0).getChildNodes().item(0).getNodeValue();
+							String id = ((Element) outCur).getElementsByTagName("id").item(0).getChildNodes().item(0).getNodeValue();
+
+							warn = el.addOutputComponent(nameOut, getElement(id));
+							if(warn != null){
+								logger.warn(warn);
+								warn = null;
+								List<DataFlowElement> lwa = elOutputComponent.get(nameOut);
+								if (lwa == null) {
+									lwa = new LinkedList<DataFlowElement>();
+									elOutputComponent.put(name, lwa);
+								}
+								lwa.add(getElement(id));
+							}
+						}
+						catch (Exception e){
+							logger.error("Fail to load output");
+							error = "Fail to load output";
+						}
+					}
+				}
+
 			}
+			
+			//This workflow has been saved
 			saved = true;
 
 			//clean temporary files

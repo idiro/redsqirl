@@ -1,6 +1,6 @@
 package idiro.workflow.server;
 
-import idiro.workflow.utils.LanguageManager;
+import idiro.workflow.utils.LanguageManagerWF;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -89,7 +89,7 @@ public class OozieDag {
 		}
 
 		if(newList.size() < graphOut.keySet().size()){
-			error = LanguageManager.getText("ooziedag.cycleerror");	
+			error = LanguageManagerWF.getText("ooziedag.cycleerror");	
 			logger.error(error);
 		}
 
