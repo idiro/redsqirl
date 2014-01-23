@@ -41,44 +41,44 @@ public class PigWorkflowMngtTests {
 			DataFlowElement src2= PigTestUtils.createSrc_ID_VALUE(w,hInt,new_path2);
 			
 			//Select
-			PigSelect pig = (PigSelect) PigSelectTests.createPigWithSrc(w,src1,hInt);
-			String element = pig.getComponentId();
+			PigSelect pigS = (PigSelect) PigSelectTests.createPigWithSrc(w,src1,hInt);
+			String elementS = pigS.getComponentId();
 
-			pig.getDFEOutput().get(PigSelect.key_output).setSavingState(SavingState.RECORDED);
-			pig.getDFEOutput().get(PigSelect.key_output).generatePath(
+			pigS.getDFEOutput().get(PigSelect.key_output).setSavingState(SavingState.RECORDED);
+			pigS.getDFEOutput().get(PigSelect.key_output).generatePath(
 					System.getProperty("user.name"), 
-					element, 
+					elementS, 
 					PigElement.key_output);
 			
 			//Join
 			PigJoin pigJ = (PigJoin) PigJoinTests.createPigWithSrc(w,src1,src2,hInt);
-			element = pigJ.getComponentId();
+			String elementJ = pigJ.getComponentId();
 
 			pigJ.getDFEOutput().get(PigSelect.key_output).setSavingState(SavingState.RECORDED);
 			pigJ.getDFEOutput().get(PigSelect.key_output).generatePath(
 					System.getProperty("user.name"), 
-					element, 
+					elementJ, 
 					PigElement.key_output);
 			
 			//Union
 			PigUnion pigU = (PigUnion) PigUnionTests.createPigWithSrc(w,src1,src2,hInt);
-			element = pigU.getComponentId();
+			String elementU = pigU.getComponentId();
 
 			pigU.getDFEOutput().get(PigSelect.key_output).setSavingState(SavingState.RECORDED);
 			pigU.getDFEOutput().get(PigSelect.key_output).generatePath(
 					System.getProperty("user.name"), 
-					element, 
+					elementU, 
 					PigElement.key_output);
 			
 			//Aggregation
 			PigAggregator pigA = (PigAggregator) PigAggregatorTests.createPigWithSrc(
 					w,PigTestUtils.createSrc_ID_VALUE_RAW(w, hInt, new_path3),hInt,false);
-			element = pigA.getComponentId();
+			String elementA = pigA.getComponentId();
 
 			pigA.getDFEOutput().get(PigSelect.key_output).setSavingState(SavingState.RECORDED);
 			pigA.getDFEOutput().get(PigSelect.key_output).generatePath(
 					System.getProperty("user.name"), 
-					element, 
+					elementA, 
 					PigElement.key_output);
 			
 			
@@ -87,7 +87,13 @@ public class PigWorkflowMngtTests {
 			error = w.read(wfFile);
 			assertTrue("pig read: "+error,error == null);
 
-			assertTrue("Old element not found",w.getElement(element) != null);
+			
+			
+			assertTrue("Old element not found",w.getElement(elementS) != null);
+			assertTrue("Pig select not initialized correctly ",w.getElement(elementS).updateOut() == null);
+			assertTrue("Pig aggregator not initialized correctly ",w.getElement(elementA).updateOut() == null);
+			assertTrue("Pig join not initialized correctly ",w.getElement(elementJ).updateOut() == null);
+			assertTrue("Pig union not initialized correctly ",w.getElement(elementU).updateOut() == null);
 
 		} catch (Exception e) {
 			logger.error("something went wrong : " + e);
