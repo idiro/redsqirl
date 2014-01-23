@@ -43,9 +43,10 @@ public abstract class PigElement extends DataflowAction {
 	public static final String key_output = "out",
 			key_input = "in",
 			key_delimiter="delimiter",
-			key_condition = "Condition",
-			key_outputType = "Output_Type",
-			default_delimiter = "\001";
+			key_condition = "condition",
+			key_outputType = "output_type",
+			default_delimiter = "\001",
+			key_featureTable = "features";
 
 	protected InputInteraction delimiterOutputInt;
 	protected ListInteraction savetypeOutputInt;

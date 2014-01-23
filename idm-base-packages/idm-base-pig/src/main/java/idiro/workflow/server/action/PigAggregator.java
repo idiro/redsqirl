@@ -21,9 +21,7 @@ public class PigAggregator extends PigElement {
 	private PigTableSelectInteraction tSelInt;
 	private PigFilterInteraction filterInt;
 	
-	public static final String key_grouping = "Grouping";
-
-	private static final String key_featureTable = "Features";
+	public static final String key_grouping = "grouping";
 
 	public PigAggregator() throws RemoteException {
 		super(1, 1,1);

@@ -22,8 +22,6 @@ public class PigSelect extends PigElement {
 	 */
 	private static final long serialVersionUID = 8969124219285130345L;
 
-	public static final String key_featureTable = "Features";
-
 	private Page page1;
 	private Page page2;
 

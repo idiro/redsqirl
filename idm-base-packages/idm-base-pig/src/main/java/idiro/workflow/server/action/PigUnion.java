@@ -31,8 +31,6 @@ public class PigUnion extends PigElement {
 	 */
 	private static final long serialVersionUID = -2971963679008329394L;
 
-	public static final String key_featureTable = "Features";
-
 	private Page page1;
 
 	private PigTableUnionInteraction tUnionSelInt;

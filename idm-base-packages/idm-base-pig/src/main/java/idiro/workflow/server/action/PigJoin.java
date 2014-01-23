@@ -29,8 +29,7 @@ public class PigJoin extends PigElement {
 	 */
 	private static final long serialVersionUID = -3035179016090477413L;
 
-	public static final String key_featureTable = "Features",
-			key_joinType = "Join_Type", key_joinRelation = "Join_Relationship";
+	public static final String key_joinType = "join_type", key_joinRelation = "join_relationship";
 
 	private Page page1, page2, page3;
 
