@@ -99,11 +99,12 @@ public class PigJoin extends PigElement {
 
 	// @Override
 	public void update(DFEInteraction interaction) throws RemoteException {
-		if (interaction.getName().equals(filterInt.getName())) {
+		String interId = interaction.getId(); 
+		if (interId.equals(key_condition)) {
 			filterInt.update();
-		} else if (interaction.getName().equals(jrInt.getName())) {
+		} else if (interId.equals(jrInt.getId())) {
 			jrInt.update();
-		} else if (interaction.getName().equals(tJoinInt.getName())) {
+		} else if (interId.equals(tJoinInt.getId())) {
 			tJoinInt.update();
 		}
 	}
