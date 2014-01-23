@@ -52,7 +52,6 @@ public abstract class PigElement extends DataflowAction {
 	public PigGroupInteraction groupingInt;
 
 	protected Map<String, DFELinkProperty> input;
-	protected Map<String, DFEOutput> output = new LinkedHashMap<String, DFEOutput>();
 
 	private String alias = "";
 	private int nameCont;
@@ -174,11 +173,6 @@ public abstract class PigElement extends DataflowAction {
 
 	public Map<String, DFELinkProperty> getInput() throws RemoteException {
 		return input;
-	}
-
-
-	public Map<String, DFEOutput> getDFEOutput() throws RemoteException {
-		return output;
 	}
 
 	public String getRemoveQueryPiece(String out) throws RemoteException{
