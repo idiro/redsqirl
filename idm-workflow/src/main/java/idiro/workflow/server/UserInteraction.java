@@ -84,6 +84,19 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	public UserInteraction(String id, String name, String legend,DisplayType display, int column, int placeInColumn) throws RemoteException{
 		super();
 		this.name = name;
+		if(id.contains(" ")){
+			logger.warn("ID cannot contain space");
+			id = id.replaceAll(" ", "_");
+		}
+		if(id.matches("^.*[A-Z].*$")){
+			logger.warn("ID does not accept uppercase, change to lower case");
+			id = id.toLowerCase();
+		}
+		String regex = "[a-z]([a-z0-9_]*)";
+		if(!id.matches(regex)){
+			logger.warn("id "+id+" does not match '"+regex+"' can be dangerous during xml export.");
+		}
+		
 		this.tree = new TreeNonUnique<String>(id);
 		this.legend = legend;
 		this.display = display;
@@ -374,6 +387,5 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	public String getId() throws RemoteException {
 		return getTree().getHead();
 	}
-
 
 }

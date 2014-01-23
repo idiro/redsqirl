@@ -52,8 +52,8 @@ public class Convert extends DataflowAction {
 
 	public static final String key_output = "out",
 			key_input = "in",
-			key_formats = "Format",
-			key_properties= "Data_set_properties";
+			key_formats = "format",
+			key_properties= "data_set_properties";
 
 	public Convert() throws RemoteException {
 		super(new HiveAction());
