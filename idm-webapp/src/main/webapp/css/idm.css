@@ -1,4 +1,5 @@
 html,body {
+    font-family: Verdana, Geneva, sans-serif;
 	height: 100%;
 	width: 100%
 }
@@ -28,6 +29,7 @@ input {
 .divMenu {
 	border: 0px solid;
 	padding: 0px 0px 3px;
+	margin-left: 350px;
 }
 
 .divFooter {
@@ -370,11 +372,74 @@ canvas {
     max-width:600px;
 }
 
-h1{
-    text-align:center;
-}
-
 #all{
     max-width:1000px;
     margin:0 auto;
+}
+
+/* Text CSS */
+
+
+h1 {
+    padding-top:3%;
+    text-align: center;
+    color: #505050 
+}
+
+h2 {
+    color: #888888
+}
+
+h3 {
+    color: #C0C0C0
+}
+
+h4 {
+    padding-left: 12%;
+}
+
+h5 {
+    padding-left: 12%;
+}
+
+p {
+    padding-left: 3%;
+    padding-right: 3%;
+    /*width: 50%;*/
+}
+
+/* Images */
+
+img {
+    border: 0;
+}
+
+/* Table */
+
+/* td {
+    padding: 1% 7% 1% 0.5%;
+}*/
+
+table.firsttable {
+    border:1px solid black;
+    border-collapse:collapse;
+    border-spacing:3;
+}
+table.firsttable tr{
+    border-bottom:1px solid black;
+    text-align:center;
+    
+}
+table.firsttable td{
+    border-right:1px solid black; 
+}
+table.secondtable {
+    border-collapse:collapse;
+    border:1px solid black; 
+}
+table.secondtable td{
+    border-right:1px solid black;
+    border-bottom:1px solid black;
+    padding-right:2%;
+    width:2%%;
 }

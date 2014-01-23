@@ -15,6 +15,7 @@ import idiro.workflow.server.interfaces.DFEInteractionChecker;
 import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.oozie.HiveAction;
+import idiro.workflow.utils.LanguageManagerWF;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -36,8 +37,6 @@ public class Convert extends DataflowAction {
 
 	private static Map<String, DFELinkProperty> input = null;
 
-	private Map<String, DFEOutput> output = new LinkedHashMap<String, DFEOutput>();
-
 	/**
 	 * Choose the Output Format
 	 */
@@ -53,20 +52,21 @@ public class Convert extends DataflowAction {
 
 	public static final String key_output = "out",
 			key_input = "in",
-			key_formats = "Format",
-			key_properties= "Data set properties";
+			key_formats = "format",
+			key_properties= "data_set_properties";
 
 	public Convert() throws RemoteException {
 		super(new HiveAction());
 		init();
 
-		page1 = addPage("Output Format",
-				"Choose which format you would like to export",
+		page1 = addPage(LanguageManagerWF.getText("convert.page1.title"),
+				LanguageManagerWF.getText("convert.page1.legend"),
 				1);
 
 		formats = new ListInteraction(
 				key_formats,
-				"Please specify the output format to generate.",
+				LanguageManagerWF.getText("convert.formats_interaction.title"),
+				LanguageManagerWF.getText("convert.formats_interaction.legend"),
 				0,
 				0);
 		
@@ -115,7 +115,8 @@ public class Convert extends DataflowAction {
 				1);
 		cpi = new ConvertPropertiesInteraction(
 				key_properties,
-				"Add properties to the dataset",
+				LanguageManagerWF.getText("convert.props_interaction.title"),
+				LanguageManagerWF.getText("convert.props_interaction.legend"),
 				0,
 				0,
 				this);
@@ -155,11 +156,6 @@ public class Convert extends DataflowAction {
 	@Override
 	public Map<String, DFELinkProperty> getInput() throws RemoteException {
 		return input;
-	}
-
-	@Override
-	public Map<String, DFEOutput> getDFEOutput() throws RemoteException {
-		return output;
 	}
 
 	@Override

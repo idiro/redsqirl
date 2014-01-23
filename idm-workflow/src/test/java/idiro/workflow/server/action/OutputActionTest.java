@@ -1,6 +1,5 @@
 package idiro.workflow.server.action;
 
-import idiro.utils.FeatureList;
 import idiro.workflow.server.DataOutput;
 import idiro.workflow.server.enumeration.DataBrowser;
 
@@ -86,13 +85,6 @@ public class OutputActionTest extends DataOutput{
 
 	@Override
 	protected String getDefaultColor() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-//	@Override
-	public String checkFeatures(FeatureList fl) throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
 	}

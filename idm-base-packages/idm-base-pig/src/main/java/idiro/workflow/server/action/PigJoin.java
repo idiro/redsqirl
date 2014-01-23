@@ -6,6 +6,7 @@ import idiro.workflow.server.ListInteraction;
 import idiro.workflow.server.Page;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEOutput;
+import idiro.workflow.utils.PigLanguageManager;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
@@ -28,8 +29,7 @@ public class PigJoin extends PigElement {
 	 */
 	private static final long serialVersionUID = -3035179016090477413L;
 
-	public static final String key_featureTable = "Features",
-			key_joinType = "Join_Type", key_joinRelation = "Join_Relationship";
+	public static final String key_joinType = "join_type", key_joinRelation = "join_relationship";
 
 	private Page page1, page2, page3;
 
@@ -41,20 +41,28 @@ public class PigJoin extends PigElement {
 	public PigJoin() throws RemoteException {
 		super(2, Integer.MAX_VALUE,1);
 
-		page1 = addPage("Operations", "Join operations", 1);
+		page1 = addPage(
+				PigLanguageManager.getText("pig.join_page1.title"), 
+				PigLanguageManager.getText("pig.join_page1.legend"), 1);
 
 		tJoinInt = new PigTableJoinInteraction(
 				key_featureTable,
-				"Please specify the operations to be executed for each feature",
+				PigLanguageManager.getText("pig.join_features_interaction.title"),
+				PigLanguageManager.getText("pig.join_features_interaction.legend"),
 				0, 0, this);
 
 		page1.addInteraction(tJoinInt);
 
-		page2 = addPage("Relationship", "Join Relationship", 1);
+		page2 = addPage(
+				PigLanguageManager.getText("pig.join_page2.title"), 
+				PigLanguageManager.getText("pig.join_page2.legend"), 1);
 
 		
-		joinTypeInt = new ListInteraction(key_joinType,
-				"Please specify a join type", 0, 0);
+		joinTypeInt = new ListInteraction(
+				key_joinType,
+				PigLanguageManager.getText("pig.join_jointype_interaction.title"),
+				PigLanguageManager.getText("pig.join_jointype_interaction.legend"), 
+				0, 0);
 		List<String> valueJoinTypeInt = new LinkedList<String>();
 		valueJoinTypeInt.add("JOIN");
 		valueJoinTypeInt.add("LEFT OUTER JOIN");
@@ -65,13 +73,16 @@ public class PigJoin extends PigElement {
 
 		jrInt = new PigJoinRelationInteraction(
 				key_joinRelation,
-				"Please specify the relationship, top to bottom is like left to right",
+				PigLanguageManager.getText("pig.join_relationship_interaction.title"),
+				PigLanguageManager.getText("pig.join_relationship_interaction.legend"),
 				0, 0, this);
 		
 		page2.addInteraction(joinTypeInt);
 		page2.addInteraction(jrInt);
 
-		page3 = addPage("Select", "Join Configuration", 1);
+		page3 = addPage(
+				PigLanguageManager.getText("pig.join_page3.title"), 
+				PigLanguageManager.getText("pig.join_page3.title"), 1);
 
 		filterInt = new PigFilterInteraction(0, 1, this);
 
@@ -159,22 +170,6 @@ public class PigJoin extends PigElement {
 	}
 
 	public FeatureList getInFeatures() throws RemoteException {
-		// FeatureList ans =
-		// new OrderedFeatureList();
-		// HDFSInterface hInt = new HDFSInterface();
-		// List<DFEOutput> lOut = getDFEInput().get(PigJoin.key_input);
-		// Iterator<DFEOutput> it = lOut.iterator();
-		// while(it.hasNext()){
-		// DFEOutput out = it.next();
-		// String relationName = hInt.getRelation(out.getPath());
-		// FeatureList mapTable = out.getFeatures();
-		// Iterator<String> itFeat = mapTable.getFeaturesNames().iterator();
-		// while(itFeat.hasNext()){
-		// String cur = itFeat.next();
-		// ans.addFeature(relationName+"."+cur, mapTable.getFeatureType(cur));
-		// }
-		// }
-		// return ans;
 
 		FeatureList ans = new OrderedFeatureList();
 		Map<String, DFEOutput> aliases = getAliases();

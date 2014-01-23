@@ -12,9 +12,9 @@ public class InputInteraction extends UserInteraction{
 	 */
 	private static final long serialVersionUID = -7192633417256406554L;
 
-	public InputInteraction(String name, String legend,
+	public InputInteraction(String id, String name, String legend,
 			int column, int placeInColumn) throws RemoteException {
-		super(name, legend, DisplayType.input, column, placeInColumn);
+		super(id, name, legend, DisplayType.input, column, placeInColumn);
 		init();
 	}
 

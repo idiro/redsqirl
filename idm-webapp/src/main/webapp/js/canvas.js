@@ -986,7 +986,6 @@ function addElements(canvasName, positions) {
 	var numSides = 4;
 
 	//try{
-		
 	
 	for ( var i = 0; i < positionsArrays.length; i++) {
 		
@@ -1009,6 +1008,10 @@ function addElements(canvasName, positions) {
 		updateIdObj(positionsArrays[i][0], positionsArrays[i][0]);
 		updateTypeObj(canvasName, positionsArrays[i][0], positionsArrays[i][0]);
 		updateLabelObj(positionsArrays[i][0], positionsArrays[i][0]);
+		
+		//change arc's colors
+		updateOutputStatus(group.getId());
+		updateRunningStatus();
 		
 		group.hasChangedId = true;
 	}

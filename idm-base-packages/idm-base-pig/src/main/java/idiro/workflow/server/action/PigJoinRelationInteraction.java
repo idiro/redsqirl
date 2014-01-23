@@ -5,6 +5,7 @@ import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.TableInteraction;
 import idiro.workflow.server.action.utils.PigDictionary;
+import idiro.workflow.utils.PigLanguageManager;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
@@ -31,12 +32,12 @@ public class PigJoinRelationInteraction extends TableInteraction {
 
 	private PigJoin hj;
 
-	public static final String table_relation_title = "Relation",
-			table_feat_title = "Join_Feature";
+	public static final String table_relation_title = PigLanguageManager.getTextWithoutSpace("pig.join_relationship_interaction.relation_column"),
+			table_feat_title = PigLanguageManager.getTextWithoutSpace("pig.join_relationship_interaction.op_column");
 
-	public PigJoinRelationInteraction(String name, String legend, int column,
+	public PigJoinRelationInteraction(String id, String name, String legend, int column,
 			int placeInColumn, PigJoin hj) throws RemoteException {
-		super(name, legend, column, placeInColumn);
+		super(id, name, legend, column, placeInColumn);
 		this.hj = hj;
 		tree.removeAllChildren();
 		tree.add(getRootTable());
@@ -53,7 +54,7 @@ public class PigJoinRelationInteraction extends TableInteraction {
 		List<Map<String,String>> lRow = getValues();
 		Set<String> relations = hj.getAliases().keySet();
 		if( relations.size() != lRow.size()){
-			msg = "The relation needs to have one and only one row for each entry";
+			msg = PigLanguageManager.getText("pig.join_relationship_interaction.checkrownb");
 		}else{
 			Set<String> featType = new LinkedHashSet<String>();
 			FeatureList inFeats = hj.getInFeatures();
@@ -70,7 +71,7 @@ public class PigJoinRelationInteraction extends TableInteraction {
 							rel, inFeats);
 
 					if (type == null) {
-						msg = "row " + rowNb + ": Pig Latin code not correct";
+						msg = PigLanguageManager.getText("pig.join_relationship_interaction.checkexpressionnull",new Object[]{rowNb});
 					} else {
 						featType.add(type);
 					}
@@ -80,10 +81,8 @@ public class PigJoinRelationInteraction extends TableInteraction {
 						String curTab = itRelation.next();
 						if (rel.contains(curTab+".") &&
 								!curTab.equalsIgnoreCase(relation)) {
-							msg = "row "
-									+ rowNb
-									+ ": Cannot have an operation with several relations here ("
-									+ curTab + ") " + "(" + relation + ")";
+							msg = PigLanguageManager.getText("pig.join_relationship_interaction.checktable2times",
+									new Object[]{rowNb,curTab,relation});
 						}
 					}
 
@@ -93,7 +92,7 @@ public class PigJoinRelationInteraction extends TableInteraction {
 			}
 
 			if (msg == null && featType.size() != 1) {
-				msg = "The features need to be all of same type";
+				msg = PigLanguageManager.getText("pig.join_relationship_interaction.checksametype");
 			}
 		}
 
@@ -133,6 +132,23 @@ public class PigJoinRelationInteraction extends TableInteraction {
 			}
 			setValues(lrows);
 		}
+	}
+	
+	public String checkExpression(String expression, String modifier)
+			throws RemoteException {
+		String error = null;
+		try {
+			if (PigDictionary.getInstance().getReturnType(
+					expression,
+					hj.getInFeatures()
+					) == null) {
+				error = PigLanguageManager.getText("pig.expressionnull");
+			}
+		} catch (Exception e) {
+			error = PigLanguageManager.getText("pig.expressionexception");
+			logger.error(error, e);
+		}
+		return error;
 	}
 
 	protected Tree<String> getRootTable()

@@ -1,7 +1,7 @@
 package idiro.workflow.server.action;
 
-import idiro.utils.OrderedFeatureList;
 import idiro.utils.FeatureList;
+import idiro.utils.OrderedFeatureList;
 import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.DataProperty;
@@ -54,7 +54,6 @@ public class HiveSelectT extends DataflowAction{
 
 	private static Map<String, DFELinkProperty> input;
 
-	private Map<String, DFEOutput> output;
 	private Page page1;
 	private Page page2;
 
@@ -70,6 +69,7 @@ public class HiveSelectT extends DataflowAction{
 
 		DFEInteraction condition = new UserInteraction(
 				key_condition,
+				key_condition,
 				"Please specify the condition of the select",
 				DisplayType.helpTextEditor,
 				0,
@@ -77,12 +77,14 @@ public class HiveSelectT extends DataflowAction{
 
 		DFEInteraction partitions = new UserInteraction(
 				key_partitions,
+				key_partitions,
 				"Please specify the partitions",
 				DisplayType.appendList,
 				0,
 				1); 
 
 		DFEInteraction grouping = new UserInteraction(
+				key_grouping,
 				key_grouping,
 				"Please specify to group",
 				DisplayType.appendList,
@@ -152,6 +154,7 @@ public class HiveSelectT extends DataflowAction{
 				1);
 
 		DFEInteraction featureTable = new UserInteraction(
+				key_featureTable,
 				key_featureTable,
 				"Please specify the operations to be executed for each feature",
 				DisplayType.table,
@@ -260,12 +263,6 @@ public class HiveSelectT extends DataflowAction{
 	public Map<String, DFELinkProperty> getInput() throws RemoteException {
 		return input;
 	}
-
-	@Override
-	public Map<String, DFEOutput> getDFEOutput() throws RemoteException {
-		return output;
-	}
-
 
 	@Override
 	public boolean writeOozieActionFiles(File[] files) throws RemoteException {

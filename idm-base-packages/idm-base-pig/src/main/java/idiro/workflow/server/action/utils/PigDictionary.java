@@ -659,7 +659,7 @@ public class PigDictionary extends AbstractDictionary {
 		editor.add(help);
 		editor.add("output");
 		
-		EditorInteraction ei = new EditorInteraction("auto-gen", "", 0,0);
+		EditorInteraction ei = new EditorInteraction("autogen","auto-gen", "", 0,0);
 		ei.getTree().removeAllChildren();
 		ei.getTree().add(editor);
 		return ei;
@@ -681,7 +681,7 @@ public class PigDictionary extends AbstractDictionary {
 		}
 		editor.add(help);
 		editor.add("output");
-		EditorInteraction ei = new EditorInteraction("auto-gen", "", 0,0);
+		EditorInteraction ei = new EditorInteraction("autogen","auto-gen", "", 0,0);
 		ei.getTree().removeAllChildren();
 		ei.getTree().add(editor);
 		return ei;
