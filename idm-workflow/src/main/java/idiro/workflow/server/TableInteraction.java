@@ -165,7 +165,7 @@ public class TableInteraction extends UserInteraction {
 		}
 	}
 
-	protected String checkCountConstraint(String columnName){
+	protected String checkCountConstraint(String columnName) throws RemoteException{
 		String error = null;
 		int countConst = 0;
 		try{
@@ -274,7 +274,7 @@ public class TableInteraction extends UserInteraction {
 		return error;
 	}
 
-	protected List<String> getValuesFromColumn(String columnName){
+	protected List<String> getValuesFromColumn(String columnName) throws RemoteException{
 		List<String> values = null;
 		values = new LinkedList<String>();
 		List<Tree<String>> lRow = null;
@@ -299,7 +299,7 @@ public class TableInteraction extends UserInteraction {
 			}
 		}catch(Exception e){
 			values = null;
-			logger.error("Tree structure incorrect");
+			logger.error(getId()+": Tree structure incorrect");
 		}
 		return values;
 	}
@@ -329,7 +329,7 @@ public class TableInteraction extends UserInteraction {
 			}
 		}catch(Exception e){
 			values = null;
-			logger.error("Tree structure incorrect");
+			logger.error(getId()+": Tree structure incorrect");
 		}
 		return values;
 	}

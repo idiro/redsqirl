@@ -27,26 +27,26 @@ public class InputInteraction extends UserInteraction{
 		}
 	}
 
-	public String getValue(){
+	public String getValue() throws RemoteException{
 		String ans = null;
 		try{
 			if(getTree().getFirstChild("input").getFirstChild("output").getFirstChild() != null){
 				ans = getTree().getFirstChild("input").getFirstChild("output").getFirstChild().getHead();
 			}
 		}catch(Exception e){
-			logger.error("Tree structure incorrect");
+			logger.error(getId()+": Tree structure incorrect");
 		}
 		return ans;
 	}
 	
-	public String getRegex(){
+	public String getRegex() throws RemoteException{
 		String ans = null;
 		try{
 			if(getTree().getFirstChild("input").getFirstChild("regex").getFirstChild() != null ){
 				ans = getTree().getFirstChild("input").getFirstChild("regex").getFirstChild().getHead();
 			}
 		}catch(Exception e){
-			logger.error("Tree structure incorrect");
+			logger.error(getId()+": Tree structure incorrect");
 		}
 		return ans;
 	}

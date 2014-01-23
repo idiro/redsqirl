@@ -75,7 +75,7 @@ public class AppendListInteraction extends UserInteraction{
 			}
 		}catch(Exception e){
 			values = null;
-			logger.error(LanguageManagerWF.getText("UserInteraction.treeIncorrect"));
+			logger.error(getId()+": Tree structure incorrect");
 		}
 		return values;
 	}
