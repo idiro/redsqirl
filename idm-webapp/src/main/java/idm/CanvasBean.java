@@ -51,7 +51,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 	private Map<String, Map<String, String>> idMap;
 	private UserInfoBean userInfoBean;
 	private String path;
-	
+
 	private Map<String, DataFlow> workflowMap;
 
 
@@ -75,7 +75,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 	 * @author Igor.Souza
 	 */
 	public CanvasBean() {
-		
+
 	}
 
 	@PostConstruct
@@ -394,9 +394,9 @@ public class CanvasBean extends BaseBean implements Serializable{
 			DataFlow df = dfi.getWorkflow(getNameWorkflow());
 
 			String error = df.read(path);
-			
+
 			logger.info("load error " + error);
-			
+
 			if(error != null){
 				MessageUseful.addErrorMessage(error);
 				HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
@@ -628,7 +628,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 	}
 
 	public String getWorkflowUrl(){
-		
+
 		logger.info("getWorkflowUrl");
 		String url = null;
 		try {
@@ -649,7 +649,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 		} catch (Exception e) {
 			logger.error("error get df: " +  e.getMessage());
 		}
-		
+
 		if(url == null ){
 			try {
 				url = getOozie().getUrl();
@@ -657,7 +657,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 				logger.error("error getting Oozie url : "+e.getMessage());
 			}
 		}
-		
+
 		FacesContext context = FacesContext.getCurrentInstance();
 		userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
 
@@ -827,24 +827,31 @@ public class CanvasBean extends BaseBean implements Serializable{
 		int i = 0;
 		for (Entry<String, String> e : getIdMap().get(getNameWorkflow()).entrySet()){
 
-			String status = getOozie().getElementStatus(getDf(), getDf().getElement(e.getValue()));
-
-			logger.info(e.getKey()+" - "+status);
-
-			String pathExists = null;
-
 			DataFlowElement cur = getDf().getElement(e.getValue());
-			if (cur  != null){
-				for (Entry<String, DFEOutput> e2 : cur.getDFEOutput().entrySet()){
+			if(cur == null){
+				String msg = "Element "+e.getValue()+" does not exist.";
+				logger.warn(msg);
+				MessageUseful.addErrorMessage(msg);
+			}else{
+				String status = getOozie().getElementStatus(getDf(), cur);
 
-					logger.info("path: "+e2.getValue().getPath());
+				logger.info(e.getKey()+" - "+status);
 
-					pathExists = String.valueOf(e2.getValue().isPathExists());
+				String pathExists = null;
 
+
+				if (cur  != null){
+					for (Entry<String, DFEOutput> e2 : cur.getDFEOutput().entrySet()){
+
+						logger.info("path: "+e2.getValue().getPath());
+
+						pathExists = String.valueOf(e2.getValue().isPathExists());
+
+					}
 				}
-			}
 
-			result[i++] = new String[]{e.getKey(), status, pathExists};
+				result[i++] = new String[]{e.getKey(), status, pathExists};
+			}
 		}
 
 		return result;
@@ -981,9 +988,9 @@ public class CanvasBean extends BaseBean implements Serializable{
 	}
 
 	public String[] getPositions() throws Exception{
-		
+
 		logger.info("getPositions");
-		
+
 		JSONArray jsonElements = new JSONArray();
 		for (DataFlowElement e : getDf().getElement()){
 
@@ -993,9 +1000,9 @@ public class CanvasBean extends BaseBean implements Serializable{
 			}else{
 				jsonElements.put(new Object[]{e.getComponentId(), e.getName(), e.getImage(), e.getX(), e.getY()});
 			}*/
-			
+
 			jsonElements.put(new Object[]{e.getComponentId(), e.getName(), e.getImage(), e.getX(), e.getY()});
-			
+
 		}
 
 		JSONArray jsonLinks = new JSONArray();
@@ -1011,7 +1018,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 		logger.info("getPositions getPath " + getPath());
 		logger.info("getPositions jsonElements.toString " + jsonElements.toString());
 		logger.info("getPositions jsonLinks.toString " + jsonLinks.toString());
-		
+
 		return new String[]{getNameWorkflow(), getPath(), jsonElements.toString(), jsonLinks.toString()};
 	}
 

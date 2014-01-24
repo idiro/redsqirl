@@ -72,7 +72,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 					Iterator<String> inputFeatsIt= in.getFeatures().getFeaturesNames().iterator();
 					while (inputFeatsIt.hasNext()) {
 						String nameF = inputFeatsIt.next().toUpperCase();
-						String nameFwithAlias = hs.getAlias().toUpperCase()+"."+nameF;
+						String nameFwithAlias = getAlias().toUpperCase()+"."+nameF;
 						fl.addFeature(nameFwithAlias, in.getFeatures().getFeatureType(nameF));
 					}
 
@@ -82,7 +82,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 							.getValues().iterator();
 					if (grInt.hasNext()) {
 						while (grInt.hasNext()) {
-							String feat = hs.getAlias().toUpperCase() + "." +
+							String feat = getAlias().toUpperCase() + "." +
 									grInt.next().toUpperCase();
 							featGrouped.add(feat);
 						}
@@ -121,7 +121,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 
 		return msg;
 	}
-	
+
 	public String checkExpression(String expression, String modifier)
 			throws RemoteException {
 		String error = null;
@@ -129,13 +129,13 @@ public class PigTableSelectInteraction extends TableInteraction {
 			DFEOutput in = hs.getDFEInput().get(PigElement.key_input).get(0);
 			Set<String> featGrouped = null;
 			FeatureList fl = new OrderedFeatureList();
-			
+
 			// only show what is in grouped interaction
 			if (hs.getGroupingInt() != null) {
 				Iterator<String> inputFeatsIt= in.getFeatures().getFeaturesNames().iterator();
 				while (inputFeatsIt.hasNext()) {
 					String nameF = inputFeatsIt.next().toUpperCase();
-					String nameFwithAlias = hs.getAlias().toUpperCase()+"."+nameF;
+					String nameFwithAlias = getAlias().toUpperCase()+"."+nameF;
 					fl.addFeature(nameFwithAlias, in.getFeatures().getFeatureType(nameF));
 				}
 
@@ -145,7 +145,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 						.getValues().iterator();
 				if (grInt.hasNext()) {
 					while (grInt.hasNext()) {
-						String feat = hs.getAlias().toUpperCase() + "." +
+						String feat = getAlias().toUpperCase() + "." +
 								grInt.next().toUpperCase();
 						featGrouped.add(feat);
 					}
@@ -177,7 +177,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 
 	public void update(DFEOutput in) throws RemoteException {
 		// get Alias
-		String alias = hs.getAlias();
+		String alias = getAlias();
 
 		// Generate Editor
 		if (hs.getGroupingInt() != null) {
@@ -194,13 +194,8 @@ public class PigTableSelectInteraction extends TableInteraction {
 		// Copy Generator operation
 		List<String> featList = in.getFeatures().getFeaturesNames();
 		logger.info("setting alias");
-		Iterator<String> aliases = hs.getAliases().keySet().iterator();
-		if (aliases.hasNext()&&hs.getAlias().isEmpty()) {
-			hs.setAlias(aliases.next());
-			alias = hs.getAlias();
-		}
+		
 		logger.info("alias : "+alias);
-
 		if (hs.getGroupingInt() != null) {
 			logger.info("there is a grouping : "
 					+ hs.getGroupingInt().getValues().size());
@@ -372,6 +367,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 			throws RemoteException {
 		logger.debug("select...");
 		String select = "";
+		String alias = getAlias();
 		Iterator<Map<String,String>> selIt = getValues().iterator();
 
 		if (selIt.hasNext()) {
@@ -399,13 +395,13 @@ public class PigTableSelectInteraction extends TableInteraction {
 				Iterator<String> grListIt = grList.iterator();
 				while(grListIt.hasNext()){
 					String cur = grListIt.next();
-					select = select.replaceAll(Pattern.quote(hs.getAlias()+"."+cur), "group."+cur);
+					select = select.replaceAll(Pattern.quote(alias+"."+cur), "group."+cur);
 				}
 			}else if( grList.size() == 1){
 				Iterator<String> grListIt = grList.iterator();
 				while(grListIt.hasNext()){
 					String cur = grListIt.next();
-					select = select.replaceAll(Pattern.quote(hs.getAlias()+"."+cur), "group");
+					select = select.replaceAll(Pattern.quote(alias+"."+cur), "group");
 				}
 			}
 		}
@@ -442,5 +438,9 @@ public class PigTableSelectInteraction extends TableInteraction {
 		createSelect += ")";
 
 		return createSelect;
+	}
+
+	public String getAlias() throws RemoteException {
+		return hs.getAliases().keySet().iterator().next();
 	}
 }

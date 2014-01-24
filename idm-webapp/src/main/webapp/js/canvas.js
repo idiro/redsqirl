@@ -236,17 +236,17 @@ function createLegend(canvasName) {
 	    	                 ['TEMPORARY',getColorOutputType('TEMPORARY')]];
 
 	var outputExistenceColours = [
-	    	                 ['File exists',getColorOutputExistence('true')],
-	    	                 ['File does not exist',getColorOutputExistence('false')]];
+	    	                 ['Dataset exists',getColorOutputExistence('true')],
+	    	                 ['Dataset does not exist',getColorOutputExistence('false')]];
 
 	var runningStatusColours = [
 	    	                 ['OK',getColorRunning('OK')],
 	    	                 ['ERROR',getColorRunning('ERROR')]];
 		
 	var arcColoursArray = {};
-		arcColoursArray['Output Type'] = outputTypeColours;
-		arcColoursArray['Output File'] = outputExistenceColours;
 		arcColoursArray['Running Status'] = runningStatusColours;
+		arcColoursArray['Output Dataset'] = outputExistenceColours;
+		arcColoursArray['Output Type'] = outputTypeColours;
 
 	var arcColoursArrayLength = outputTypeColours.length + outputExistenceColours.length + runningStatusColours.length + linkTypeColours.length + 4;
 	
@@ -1008,10 +1008,6 @@ function addElements(canvasName, positions) {
 		updateIdObj(positionsArrays[i][0], positionsArrays[i][0]);
 		updateTypeObj(canvasName, positionsArrays[i][0], positionsArrays[i][0]);
 		updateLabelObj(positionsArrays[i][0], positionsArrays[i][0]);
-		
-		//change arc's colors
-		updateOutputStatus(group.getId());
-		updateRunningStatus();
 		
 		group.hasChangedId = true;
 	}

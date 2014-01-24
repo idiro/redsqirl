@@ -87,7 +87,7 @@ public class PigAggregator extends PigElement {
 			if (!filter.isEmpty()) {
 				
 					logger.info("load data by alias");
-					loader = getAlias();
+					loader = getAliases().keySet().iterator().next();
 					filter = loader + " = " + filter + ";\n\n";
 					filterLoader = loader;
 					loader = getCurrentName();
