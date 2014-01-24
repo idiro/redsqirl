@@ -46,4 +46,8 @@ public class TestUtils {
 	static public String getTablePath(int id){
 		return "/"+getTableName(id);
 	}
+	
+	static public String getPath(int id) {
+		return "/user/" + user + "/tmp/test_idm_" + id;
+	}
 }

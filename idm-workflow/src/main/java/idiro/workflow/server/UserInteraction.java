@@ -96,7 +96,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 		if(!id.matches(regex)){
 			logger.warn("id "+id+" does not match '"+regex+"' can be dangerous during xml export.");
 		}
-		
+
 		this.tree = new TreeNonUnique<String>(id);
 		this.legend = legend;
 		this.display = display;
@@ -113,7 +113,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 
 	protected Node writeXml(Document doc, Tree<String> t) throws RemoteException, DOMException {
 		Node elHead = null;
-		
+
 		if(t.isEmpty()){
 			logger.debug("to write text: "+t.getHead());
 			elHead = doc.createTextNode(t.getHead());
@@ -131,7 +131,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 
 	public void readXml(Node n) throws Exception{
 		try{
-			this.tree = new TreeNonUnique<String>(name);
+			this.tree = new TreeNonUnique<String>(getId());
 			if(n.getNodeType() == Node.ELEMENT_NODE){
 				NodeList nl = n.getChildNodes();
 
@@ -147,7 +147,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 			}
 		}catch(Exception e){
 			logger.warn("Have to reset the tree...");
-			this.tree = new TreeNonUnique<String>(name);
+			this.tree = new TreeNonUnique<String>(getId());
 			throw e;
 		}
 
@@ -257,7 +257,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 				if(getTree()
 						.getFirstChild("input").getFirstChild("regex") != null){
 					regex = getTree()
-						.getFirstChild("input").getFirstChild("regex").getFirstChild().getHead();
+							.getFirstChild("input").getFirstChild("regex").getFirstChild().getHead();
 				}
 				if(regex != null){
 					if(value == null){
@@ -280,9 +280,11 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 			logger.warn(getName()+" is not a list.");
 		}else{
 			List<String> possibleValues = getPossibleValuesFromList();
+			logger.debug(possibleValues);
 			try{
 				String value = getTree()
 						.getFirstChild("list").getFirstChild("output").getFirstChild().getHead();
+				logger.debug(value);
 				if(!possibleValues.contains(value)){
 					error = "Value "+value + " invalid.";
 				}
@@ -325,29 +327,27 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	@Override
 	public String check() throws RemoteException {
 		String error = null;
-		if(getChecker() != null){
-			switch(display){
-			case list:
-				error = checkList();
-				break;
-			case appendList:
-				error = checkAppendList();
-				break;
-			case helpTextEditor:
-				break;
-			case browser:
-				break;
-			case table:
-				break;
-			case input:
-				error = checkInput();
-			default:
-				break;
+		switch(display){
+		case list:
+			error = checkList();
+			break;
+		case appendList:
+			error = checkAppendList();
+			break;
+		case helpTextEditor:
+			break;
+		case browser:
+			break;
+		case table:
+			break;
+		case input:
+			error = checkInput();
+		default:
+			break;
 
-			}
-			if(error == null){
-				error = getChecker().check(this);
-			}
+		}
+		if(error == null && getChecker() != null){
+			error = getChecker().check(this);
 		}
 		return error;
 	}

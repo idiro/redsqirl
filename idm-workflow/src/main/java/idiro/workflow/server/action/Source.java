@@ -29,8 +29,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-
 /**
  * Action that read a source file. For now, only Hive type is supported.
  * 
@@ -62,7 +60,7 @@ public class Source extends DataflowAction {
 				LanguageManagerWF.getText("source.datatype_interaction.title"),
 				LanguageManagerWF.getText("source.datatype_interaction.legend"), 
 				0, 0);
-		
+
 		dataType.setDisplayRadioButton(true);
 		List<String> posValues = new LinkedList<String>();
 		posValues.add("Hive");
@@ -71,24 +69,6 @@ public class Source extends DataflowAction {
 
 		page1.addInteraction(dataType);
 
-		page1.setChecker(new PageChecker() {
-
-			@Override
-			public String check(DFEPage page) throws RemoteException {
-				String error = null;
-				logger = Logger.getRootLogger();
-				try {
-					if (dataType.getValue().isEmpty()) {
-						error = LanguageManagerWF.getText("source.datatypeempty");
-					}
-				} catch (Exception e) {
-					error = LanguageManagerWF.getText("source.datatypeempty");
-				}
-				return error;
-			}
-
-		});
-
 		Page page2 = addPage(LanguageManagerWF.getText("source.page2.title"),
 				LanguageManagerWF.getText("source.page2.legend"), 1);
 
@@ -96,7 +76,7 @@ public class Source extends DataflowAction {
 				LanguageManagerWF.getText("source.datasubtype_interaction.title"),
 				LanguageManagerWF.getText("source.datasubtype_interaction.legend"),
 				0, 0);
-		
+
 		dataSubtype.setDisplayRadioButton(true);
 
 		page2.addInteraction(dataSubtype);
@@ -105,18 +85,14 @@ public class Source extends DataflowAction {
 
 			@Override
 			public String check(DFEPage page) throws RemoteException {
-				String error = null;
-				try {
+				String error = dataSubtype.check();
+				if(error == null){
+					try {
+						
+						//Get the subtype
+						String subtype = dataSubtype.getValue();
+						logger.info("output type : " + subtype);
 
-					//Get the subtype
-					String subtype = dataSubtype.getValue();
-					logger.info("output type : " + subtype);
-
-					if (dataSubtype.getValue().isEmpty()) {
-						error = LanguageManagerWF.getText("source.datatypeempty");
-					}
-
-					if(error == null){
 						logger.info("Getting CheckDirectory output type ");
 						DFEOutput outNew = DataOutput.getOutput(subtype);
 
@@ -130,14 +106,11 @@ public class Source extends DataflowAction {
 								output.get(out_name).setSavingState(
 										SavingState.RECORDED);
 							}
-						} else {
-							error = LanguageManagerWF.getText("source.outputnull");
-							logger.error(error);
 						}
-					}
 
-				} catch (Exception e) {
-					error = LanguageManagerWF.getText("source.outputnull",new Object[]{e.getMessage()});
+					} catch (Exception e) {
+						error = LanguageManagerWF.getText("source.outputnull",new Object[]{e.getMessage()});
+					}
 				}
 				return error;
 			}
@@ -151,8 +124,8 @@ public class Source extends DataflowAction {
 
 		DFEInteraction browse = new UserInteraction(key_dataset,
 				LanguageManagerWF.getText("source.browse_interaction.title"),
-						LanguageManagerWF.getText("source.browse_interaction.legend"),
-						DisplayType.browser, 0, 0);
+				LanguageManagerWF.getText("source.browse_interaction.legend"),
+				DisplayType.browser, 0, 0);
 
 		page3.addInteraction(browse);
 
@@ -273,7 +246,7 @@ public class Source extends DataflowAction {
 						getInteraction(key_dataset).getTree().removeAllChildren();
 						getInteraction(key_dataset).getTree().add(out.getTree());
 					}
-					
+
 
 					//Check path
 					if(error == null){
@@ -350,6 +323,7 @@ public class Source extends DataflowAction {
 			List<String> posValues = new LinkedList<String>();
 			List<String> dataOutputClassName = DataOutput.getAllClassDataOutput();
 			for (String className : dataOutputClassName) {
+				logger.debug(className);
 				DataOutput wa = null;
 				try {
 					wa = (DataOutput) Class.forName(className).newInstance();
@@ -357,7 +331,7 @@ public class Source extends DataflowAction {
 					e.printStackTrace();
 				}
 
-				if (wa.getBrowser().toString().equalsIgnoreCase(type)) {
+				if (wa.getBrowser() != null && wa.getBrowser().toString().equalsIgnoreCase(type)) {
 					posValues.add(wa.getTypeName());
 					if ((wa.getTypeName().equalsIgnoreCase(
 							(new HiveType()).getTypeName()) || wa.getTypeName()
@@ -368,10 +342,14 @@ public class Source extends DataflowAction {
 					}
 				}
 			}
+			logger.debug("set possibilities...");
 			dataSubtype.setPossibleValues(posValues);
 			if(setValue != null){
+				logger.debug("set value...");
 				dataSubtype.setValue(setValue);
 			}
+		}else{
+			logger.error("No type specified");
 		}
 	}
 

@@ -1,4 +1,4 @@
-package idiro.workflow.test;
+package idiro.workflow.server;
 
 import static org.junit.Assert.*;
 

@@ -3,9 +3,13 @@ package idiro.workflow.server.action;
 import static org.junit.Assert.assertTrue;
 import idiro.utils.Tree;
 import idiro.workflow.server.connect.HiveInterface;
+import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.interfaces.DFEPage;
+import idiro.workflow.server.interfaces.DataFlow;
+import idiro.workflow.server.interfaces.DataFlowElement;
 import idiro.workflow.test.TestUtils;
 
+import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,10 +20,63 @@ public class SourceTests {
 
 	Logger logger = Logger.getLogger(getClass());
 
-	Map<String,String> getColumns(){
+	static Map<String,String> getColumns(){
 		Map<String,String> ans = new HashMap<String,String>();
 		ans.put(HiveInterface.key_columns,"ID STRING, VALUE INT");
 		return ans;
+	}
+	
+	
+	
+	public static DataFlowElement createSrc_ID_VALUE(
+			DataFlow w,
+			HiveInterface hInt, 
+			String new_path1 ) throws RemoteException, Exception{
+		
+		String idSource = w.addElement((new Source()).getName());
+		Source src = (Source)w.getElement(idSource);
+		
+		assertTrue("create "+new_path1,
+				hInt.create(new_path1, getColumns()) == null
+				);
+		
+		src.update(src.getInteraction(Source.key_datatype));
+		Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype).getTree();
+		dataTypeTree.getFirstChild("list").getFirstChild("output").add("Hive");
+		
+		src.update(src.getInteraction(Source.key_datasubtype));
+		Tree<String> dataSubTypeTree = src.getInteraction(Source.key_datasubtype).getTree();
+		dataSubTypeTree.getFirstChild("list").getFirstChild("output").add(new HiveType().getTypeName());
+
+		src.update(src.getInteraction(Source.key_dataset));
+		Tree<String> dataSetTree = src.getInteraction(Source.key_dataset).getTree();
+		dataSetTree.getFirstChild("browse").getFirstChild("output").add("path").add(new_path1);
+
+		Tree<String> feat1 = dataSetTree.getFirstChild("browse")
+				.getFirstChild("output").add("feature");
+		feat1.add("name").add("ID");
+		feat1.add("type").add("STRING");
+
+		Tree<String> feat2 = dataSetTree.getFirstChild("browse")
+				.getFirstChild("output").add("feature");
+		feat2.add("name").add("VALUE");
+		feat2.add("type").add("INT");
+		
+		String error = src.updateOut();
+		assertTrue("source update: "+error,error == null);
+		
+		assertTrue("number of features in source should be 2 instead of " + 
+				src.getDFEOutput().get(Source.out_name).getFeatures().getSize(),
+				src.getDFEOutput().get(Source.out_name).getFeatures().getSize() == 2);
+		
+		assertTrue("Feature list " + 
+				src.getDFEOutput().get(Source.out_name).getFeatures().getFeaturesNames(),
+				src.getDFEOutput().get(Source.out_name).getFeatures().getFeaturesNames().contains("id"));
+		assertTrue("Feature list " + 
+				src.getDFEOutput().get(Source.out_name).getFeatures().getFeaturesNames(),
+				src.getDFEOutput().get(Source.out_name).getFeatures().getFeaturesNames().contains("value"));
+		
+		return src;
 	}
 
 	@Test
@@ -35,27 +92,42 @@ public class SourceTests {
 
 
 			Source src = new Source();
+			logger.debug("Tree: "+src.getInteraction(Source.key_datatype).getTree());
 			assertTrue("check1",
 					src.getPageList().get(0).checkPage() != null
 					);
-
+			
+			logger.debug("update datatype");
 			src.update(src.getInteraction(Source.key_datatype));
 			Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype).getTree();
-			dataTypeTree.getFirstChild("list").getFirstChild("output").add("Hive");
-			assertTrue("check2",
-					src.getPageList().get(0).checkPage() == null
+			dataTypeTree.getFirstChild("list").getFirstChild("output").add("Hive"); 
+			String error = src.getPageList().get(0).checkPage(); 
+			assertTrue("check page 1: "+error,
+					 error == null
 					);
 			
-			DFEPage page2 = src.getPageList().get(1); 
-			assertTrue("check3"+page2.checkPage(),
-					page2.checkPage() == null
+			logger.debug("update datasubtype");
+			src.update(src.getInteraction(Source.key_datasubtype));
+			logger.debug("get page 2");;
+			//((ListInteraction) src.getInteraction(Source.key_datasubtype)).setValue(new HiveType().getTypeName());
+			DFEPage page2 = src.getPageList().get(1);
+			logger.debug("check page 2");;
+			error = page2.checkPage();
+			
+			assertTrue("check page 2: "+error,
+					error == null
 					);
 
-			DFEPage page3 = src.getPageList().get(2); 
+			logger.debug("page 3");
+			DFEPage page3 = src.getPageList().get(2);
+			logger.debug("update data set");
 			src.update(src.getInteraction(Source.key_dataset));
-			assertTrue("check4",
-					page3.checkPage() != null
+			error = page3.checkPage();
+			assertTrue("check page 3",
+					error != null
 					);
+			
+			logger.debug("update data set");
 			Tree<String> dataSetTree = src.getInteraction(Source.key_dataset).getTree();
 			dataSetTree.getFirstChild("browse").getFirstChild("output").add("path").add(new_path1);
 
@@ -69,19 +141,20 @@ public class SourceTests {
 			feat2.add("name").add("VALUE");
 			feat2.add("type").add("INT");
 
-			String error = page3.checkPage(); 
-			assertTrue("check5: "+error,
+			error = page3.checkPage(); 
+			assertTrue("check page 3: "+error,
 					 error == null
 					);
-
+			logger.debug("delete data set");
 			hInt.delete(new_path1);
-			assertTrue("check6",
-					page3.checkPage() != null
+			error = page3.checkPage();
+			assertTrue("check page3 path delete.",
+					 error != null
 					);
 
 		}catch(Exception e){
 			logger.error(e.getMessage());
-			assertTrue(e.getMessage(),false);
+			assertTrue(e.toString(),false);
 		}
 	}
 

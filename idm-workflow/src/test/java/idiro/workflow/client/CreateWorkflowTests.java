@@ -45,8 +45,10 @@ public class CreateWorkflowTests{
 			
 			
 			th = new ServerThread(port);
-			th.run(null,null);
-			
+			th.run();
+			if(!th.isRunning()){
+				assertTrue("Fail to create the idm-workflow job",false);
+			}
 			
 			registry = LocateRegistry.getRegistry(
 					"127.0.0.1",
@@ -128,7 +130,7 @@ public class CreateWorkflowTests{
 			DataFlow dfOut = dfi.getWorkflow("testOut");
 			
 			bwt = new BasicWorkflowTest(dfIn,dfOut);
-			bwt.basicTest1();
+			bwt.linkCreationDeletion();
 			
 			dfi.removeWorkflow("testIn");
 			dfi.removeWorkflow("testOut");
