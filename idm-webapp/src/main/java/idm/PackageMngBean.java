@@ -176,18 +176,18 @@ public class PackageMngBean extends BaseBean{
 	public void removeSystemPackage(){
 		logger.info("rm sys packages");
 		if(isAdmin()){
-			String packageNames = FacesContext.getCurrentInstance().getExternalContext().
-					getRequestParameterMap().get("packageNames");
-			sysPckManager.removePackage(true,packageNames.split(","));
+//			String packageNames = FacesContext.getCurrentInstance().getExternalContext().
+//					getRequestParameterMap().get("packageNames");
+			sysPckManager.removePackage(true,unSysPackage);
 		}
 	}
 
 	public void removeUserPackage() throws RemoteException{
 		logger.info("rm user packages");
 		if(isUserAllowInstall()){
-			String packageNames = FacesContext.getCurrentInstance().getExternalContext().
-					getRequestParameterMap().get("packageNames");
-			userPckManager.removePackage(false,packageNames.split(","));
+//			String packageNames = FacesContext.getCurrentInstance().getExternalContext().
+//					getRequestParameterMap().get("packageNames");
+			userPckManager.removePackage(false,unUserPackage);
 		}
 	}
 	
