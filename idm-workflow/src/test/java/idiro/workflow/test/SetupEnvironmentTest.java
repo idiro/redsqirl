@@ -83,6 +83,10 @@ public class SetupEnvironmentTest {
 		logger.debug("Log4j initialised");
 		WorkflowPrefManager.pathUserPref.put(userPrefFile);
 		logger.debug("user preferences initialised");
+		HiveInterface.setUrl(
+				WorkflowPrefManager.getUserProperty(
+						WorkflowPrefManager.user_hive+"_"+System.getProperty("user.name")));
+		
 		
 		Properties prop = new Properties();
 		try {

@@ -12,10 +12,7 @@ import idiro.workflow.server.connect.interfaces.DataStore;
 import idiro.workflow.utils.LanguageManagerWF;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.ResultSet;
@@ -31,12 +28,6 @@ import java.util.Properties;
 import java.util.prefs.Preferences;
 
 import org.apache.log4j.Logger;
-
-import com.jcraft.jsch.Channel;
-import com.jcraft.jsch.ChannelExec;
-import com.jcraft.jsch.Identity;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.Session;
 
 /**
  * Interface for browsing Hive.
@@ -83,6 +74,8 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 	protected int cur = 0;
 	private static boolean isInit = false;
 
+	
+	private static String url;
 
 	public HiveInterface() throws RemoteException {
 		super();
@@ -94,8 +87,10 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 	@Override
 	public String open() throws RemoteException {
 		String error = null;
-		String url = WorkflowPrefManager
+		if(url == null){
+			url = WorkflowPrefManager
 				.getUserProperty(WorkflowPrefManager.user_hive);
+		}
 		try {
 			logger.info("hive interface init : "+isInit);
 			if (!isInit) {
@@ -876,5 +871,19 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 	public String copyToRemote(String in_path, String out_path,
 			String remoteServer) {
 		throw new UnsupportedOperationException("Unsupported Operation");
+	}
+
+	/**
+	 * @return the url
+	 */
+	public static String getUrl() {
+		return url;
+	}
+
+	/**
+	 * @param url the url to set
+	 */
+	public static void setUrl(String url) {
+		HiveInterface.url = url;
 	}
 }
