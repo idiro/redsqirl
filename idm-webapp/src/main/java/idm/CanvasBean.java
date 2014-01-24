@@ -786,6 +786,48 @@ public class CanvasBean extends BaseBean implements Serializable{
 		getIdMap().clear();
 		setDf(null);
 	}
+	
+	public String[][] getAllOutputStatus() throws Exception{
+
+		logger.info("getAllOutputStatus");
+
+		logger.info("getAllOutputStatus nameWorkflow " + getNameWorkflow());
+		
+		String[][] result = new String[getIdMap().get(getNameWorkflow()).size()][];
+		
+		String state = null;
+		String pathExists = null;
+		
+		int i = 0;
+		for (Entry<String, String> el : getIdMap().get(getNameWorkflow()).entrySet()){
+			
+			DataFlowElement df = getDf().getElement(el.getValue());
+			
+			logger.info("name obj: " + el.getValue());
+			
+			state = null;
+			pathExists = null;
+
+			if (df != null && df.getDFEOutput() != null){
+				for (Entry<String, DFEOutput> e : df.getDFEOutput().entrySet()){
+					
+					state = e.getValue().getSavingState().toString();
+
+					logger.info("path: "+e.getValue().getPath());
+
+					pathExists = String.valueOf(e.getValue().isPathExists());
+
+					//logger.info(e.getKey()+" - "+state+" - "+pathExists);
+				}
+			}
+
+			logger.info("add result " + el.getValue()+" - "+state+" - "+pathExists);
+			result[i++] = new String[]{el.getValue(), state, pathExists};
+			
+		}
+		
+		return result;
+	}
 
 	public String[] getOutputStatus() throws Exception{
 

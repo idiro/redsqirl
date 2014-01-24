@@ -19,7 +19,7 @@ public class WorkflowTests {
 		BasicWorkflowTest bwt;
 		try {
 			bwt = new BasicWorkflowTest(new Workflow(),new Workflow());
-			bwt.basicTest1();
+			bwt.linkCreationDeletion();
 		} catch (RemoteException e) {
 			logger.error(e.getMessage());
 			assertTrue(false);
@@ -33,7 +33,7 @@ public class WorkflowTests {
 		BasicWorkflowTest bwt;
 		try {
 			bwt = new BasicWorkflowTest(new Workflow(),new Workflow());
-			bwt.readAndSaveTest();
+			bwt.readSaveElementDeletion();
 		} catch (RemoteException e) {
 			logger.error(e.getMessage());
 			assertTrue(false);

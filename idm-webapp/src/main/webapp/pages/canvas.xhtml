@@ -400,9 +400,9 @@
 	    	  setPathFile(canvasName, path);
 	    	  addLinks(canvasName, links);
 
-	    	//change arc's colors
-	  		//updateObjArcStatus();
-	  		//updateRunningStatus();
+	    	  //change arc's colors
+	    	  updateAllArcsStatus();
+	    	  updateRunningStatus();
 	    	  
 	      }
 	      
@@ -413,7 +413,7 @@
 	      function updateCanvasRunningStatus(status){
 	    	//<![CDATA[
 	    	  for (var i = 0; i < status.length; i++) {
-	    	  	updateActionRunningStatus(status[i][0], status[i][1], status[i][2]);
+		    	  updateActionRunningStatus(status[i][0], status[i][1], status[i][2]);
 	    	  }
 	    	//]]>
 	      }
@@ -421,11 +421,11 @@
 	      function updateArcStatus(status){
 	    	//<![CDATA[
 	    	  for (var i = 0; i < status.length; i++) {
-	    		updateActionOutputStatus(status[i][0], status[i][1], status[i][2]);
+		    	  //alert(status[i][0] + " " + status[i][1] + " " + status[i][2]);
+		    	  updateActionOutputStatus(status[i][0], status[i][1], status[i][2]);
 	    	  }
 	    	//]]>
 	      }
-	      
 	      
 	      
 	      var numTabs = 1;
@@ -639,6 +639,14 @@
 				<a4j:jsFunction name="updateOutputStatus" data="#{canvasBean.outputStatus}" oncomplete="updateActionOutputStatus(data[0], data[1], data[2]);" reRender="errorTable" >
 					<a4j:actionparam name="groupId"/>
 				</a4j:jsFunction>
+			</a4j:region>
+			
+			<a4j:region>
+				<a4j:status	onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+							onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
+							onstop="jQuery('#canvas-tabs').unblock();" />
+				
+				<a4j:jsFunction name="updateAllArcsStatus" data="#{canvasBean.allOutputStatus}" oncomplete="updateArcStatus(data);" reRender="errorTable" />
 			</a4j:region>
 			
 			<a4j:region>
@@ -882,16 +890,6 @@
                 </a4j:jsFunction>
             </a4j:region>
             
-            <a4j:region>
-            
-                <a4j:status onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivcanvas-tabs') });"
-                            onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
-                            onstop="jQuery('#canvas-tabs').unblock();" />
-                
-                <a4j:jsFunction name="updateObjArcStatus" data="#{canvasBean.runningStatus}" oncomplete="updateArcStatus(data);" reRender="msnError, errorTable" />
-               
-            </a4j:region>
-            
 			<a4j:region>
 			
 			<rich:toolBar >
@@ -960,9 +958,6 @@
 						</h:panelGrid>
 					</f:facet>
 
-					<rich:menuItem submitMode="ajax"
-						value="#{messages.label_menu_clean_project}"
-						action="#{canvasBean.cleanCanvasProject}" oncomplete="updateObjArcStatus();" />
 		
 					<rich:menuItem submitMode="none">
 						<h:outputLink value="#{canvasBean.workflowUrl}" target="_blank">#{messages.label_menu_see_oozie_job}</h:outputLink>
@@ -983,10 +978,10 @@
                     </rich:menuItem>
                     
                     <rich:menuSeparator />
-                    
+
                     <rich:menuItem submitMode="ajax"
                         value="#{messages.label_menu_clean_project}"
-                        action="#{canvasBean.cleanCanvasProject}" rerender="msnError, errorTable" />
+                        action="#{canvasBean.cleanCanvasProject}" oncomplete="updateAllArcsStatus();" />
                     
                     <rich:menuSeparator />
                     
