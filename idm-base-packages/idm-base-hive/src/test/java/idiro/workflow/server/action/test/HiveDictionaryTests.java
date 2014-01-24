@@ -1,17 +1,19 @@
-package idiro.workflow.server.action.utils;
+package idiro.workflow.server.action.test;
 
+
+import idiro.workflow.server.action.utils.HiveDictionary;
 
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
-public class HiveDictionaryTest {
+public class HiveDictionaryTests {
 	private Logger logger =Logger.getLogger(getClass());
 	@Test
 	public void DictionaryTestLoad(){
 		HiveDictionary dictionary = HiveDictionary.getInstance();
-		dictionary.loadDefaultFunctions();
+//		dictionary.loadDefaultFunctions();
 		Set<String> keys = dictionary.getFunctionsMap().keySet();
 		
 		for(String key : keys){
@@ -21,7 +23,7 @@ public class HiveDictionaryTest {
 				for(String functionStrings : functions){
 					if(functionStrings.contains("@")){
 						
-						logger.info(dictionary.convertStringtoHelp(functionStrings));
+						logger.debug(dictionary.convertStringtoHelp(functionStrings));
 					}
 				}
 			}

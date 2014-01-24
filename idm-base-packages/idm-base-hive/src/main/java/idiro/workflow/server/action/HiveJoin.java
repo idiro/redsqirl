@@ -62,7 +62,7 @@ public class HiveJoin extends HiveElement{
 				1);
 
 		joinTypeInt = new UserInteraction(
-				key_joinType,
+				key_joinType,"",
 				"Please specify a join type. The join order is given from top to bottom, "+
 				"left to right in the join relationship, next page.",
 				DisplayType.list,
@@ -76,12 +76,11 @@ public class HiveJoin extends HiveElement{
 				0,
 				1);
 		
-		condInt = new ConditionInteraction(key_condition,
-				"",
+		condInt = new ConditionInteraction(
 				0,
 				2, 
-				this, 
-				key_input);
+				this 
+				);
 
 		page1.addInteraction(joinTypeInt);
 		page1.addInteraction(partInt);

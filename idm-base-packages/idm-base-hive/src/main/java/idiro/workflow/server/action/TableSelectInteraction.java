@@ -4,11 +4,13 @@ import idiro.utils.FeatureList;
 import idiro.utils.OrderedFeatureList;
 import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
+import idiro.workflow.server.TableInteraction;
 import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.action.utils.HiveDictionary;
 import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.interfaces.DFEOutput;
+import idiro.workflow.utils.HiveLanguageManager;
 
 import java.rmi.RemoteException;
 import java.util.HashSet;
@@ -24,7 +26,7 @@ import java.util.Set;
  * @author etienne
  * 
  */
-public class TableSelectInteraction extends UserInteraction {
+public class TableSelectInteraction extends TableInteraction {
 
 	/**
 	 * 
@@ -33,12 +35,17 @@ public class TableSelectInteraction extends UserInteraction {
 
 	private HiveElement hs;
 
-	public static final String table_op_title = "Operation",
-			table_feat_title = "Name", table_type_title = "Type";
+	public static final String table_op_title = HiveLanguageManager
+			.getText("hive.select_features_interaction.op_column"),
+			table_feat_title = HiveLanguageManager
+					.getText("hive.select_features_interaction.feat_column"),
+			table_type_title = HiveLanguageManager
+					.getText("hive.select_features_interaction.type_column");
 
-	public TableSelectInteraction(String name, String legend, int column,
-			int placeInColumn, HiveElement hs) throws RemoteException {
-		super(name, legend, DisplayType.table, column, placeInColumn);
+	public TableSelectInteraction(String id, String name, String legend,
+			int column, int placeInColumn, HiveElement hs)
+			throws RemoteException {
+		super(id, name, legend, column, placeInColumn);
 		this.hs = hs;
 	}
 

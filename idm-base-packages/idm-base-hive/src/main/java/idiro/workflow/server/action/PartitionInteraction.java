@@ -3,6 +3,7 @@ package idiro.workflow.server.action;
 import idiro.utils.FeatureList;
 import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
+import idiro.workflow.server.TableInteraction;
 import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.enumeration.FeatureType;
@@ -19,7 +20,7 @@ import java.util.Set;
  * @author etienne
  *
  */
-public class PartitionInteraction extends UserInteraction{
+public class PartitionInteraction extends TableInteraction{
 
 	/**
 	 * 
@@ -34,7 +35,7 @@ public class PartitionInteraction extends UserInteraction{
 	public PartitionInteraction(String name, String legend,
 			int column, int placeInColumn)
 					throws RemoteException {
-		super(name, legend, DisplayType.table, column, placeInColumn);
+		super("",name, legend, column, placeInColumn);
 	}
 
 	@Override

@@ -7,19 +7,13 @@ import idiro.workflow.server.HiveJdbcProcessesManager;
 import idiro.workflow.server.OozieManager;
 import idiro.workflow.server.ProcessesManager;
 import idiro.workflow.server.Workflow;
-import idiro.workflow.server.WorkflowProcessesManager;
 import idiro.workflow.server.action.utils.TestUtils;
 import idiro.workflow.server.connect.HiveInterface;
-import idiro.workflow.server.connect.interfaces.DataFlowInterface;
-import idiro.workflow.server.connect.interfaces.DataStore;
+import idiro.workflow.server.datatype.HiveType;
+import idiro.workflow.server.datatype.MapRedTextType;
 import idiro.workflow.server.enumeration.SavingState;
 
-import java.io.IOException;
-import java.rmi.NotBoundException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,21 +36,32 @@ public class HiveSelectTests {
 
 		String idSource = w.addElement((new Source()).getName());
 		Source src = (Source) w.getElement(idSource);
-		logger.info("creating stuff");
-		// assertTrue("create "+new_path1,
-		hInt.create(new_path1, getColumns());// == null
-		// );
-		logger.info("created stuff");
+		
+		//delete and create path
+		assertTrue("delete " + new_path1,
+				hInt.delete(new_path1)== null);
+		assertTrue("create " + new_path1,
+				hInt.create(new_path1, getColumns()) == null);
+		
+		//set type (hive type)
 		src.update(src.getInteraction(Source.key_datatype));
 		Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype)
 				.getTree();
 		dataTypeTree.getFirstChild("list").getFirstChild("output").add("Hive");
 
+		//set subtype (hive table)
+		Tree<String> dataSubtypeTree = src.getInteraction(
+				Source.key_datasubtype).getTree();
+		dataSubtypeTree.getFirstChild("list").getFirstChild("output")
+		.add(new HiveType().getTypeName());
+		
+		//set path
 		src.update(src.getInteraction(Source.key_dataset));
 		Tree<String> dataSetTree = src.getInteraction(Source.key_dataset)
 				.getTree();
 		dataSetTree.getFirstChild("browse").getFirstChild("output").add("path")
 				.add(new_path1);
+
 
 		Tree<String> feat1 = dataSetTree.getFirstChild("browse")
 				.getFirstChild("output").add("feature");
@@ -185,19 +190,6 @@ public class HiveSelectTests {
 		String error = hive.updateOut();
 		assertTrue("hive select update: " + error, error == null);
 	}
-	
-	@Test 
-	public void HiveInterfaceGet() throws IOException, NotBoundException {
-		ProcessesManager hpm = new HiveJdbcProcessesManager().getInstance();
-		String pid = hpm.getPid();
-		assertTrue("Pid :" + pid, pid != null || !pid.isEmpty());
-		Remote tdfs = LocateRegistry.getRegistry(2001).lookup(
-				System.getProperty("user.name") + "@hive");
-		DataStore ds = (DataStore) tdfs;
-		HiveInterface hds = (HiveInterface) ds;
-
-		logger.info(hds.getPath());
-	}
 
 	@Test
 	public void basic() {
@@ -206,13 +198,11 @@ public class HiveSelectTests {
 		String error = null;
 		try {
 			Workflow w = new Workflow("workflow1_" + getClass().getName());
-			
 
 			ProcessesManager hpm = new HiveJdbcProcessesManager().getInstance();
-			
+
 			hpm.getPid();
-			
-			
+
 			HiveInterface hInt = new HiveInterface();
 			String new_path1 = "/" + TestUtils.getTableName(1);
 			String new_path2 = "/" + TestUtils.getTableName(2);

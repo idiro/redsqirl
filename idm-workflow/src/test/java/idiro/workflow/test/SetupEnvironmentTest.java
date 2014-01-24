@@ -32,13 +32,13 @@ import org.junit.runners.Suite.SuiteClasses;
 
 
 @RunWith(Suite.class)
-@SuiteClasses({ActionTests.class
+@SuiteClasses({//ActionTests.class
 	/*WorkflowTests.class,
 	CreateWorkflowTests.class,
 	HiveDictionaryTests.class,
-	HDFSInterfaceTests.class,
+	HDFSInterfaceTests.class,*/
 	HiveInterfaceTests.class,
-	SSHInterfaceTests.class,
+	/*SSHInterfaceTests.class,
 	SSHInterfaceArrayTests.class,
 	HiveTypeTests.class,
 	SourceTests.class,

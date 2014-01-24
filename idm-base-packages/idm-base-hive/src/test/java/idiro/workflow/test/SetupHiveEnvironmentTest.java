@@ -2,7 +2,10 @@ package idiro.workflow.test;
 
 import idiro.Log;
 import idiro.ProjectID;
+import idiro.workflow.server.HiveJdbcProcessesManager;
+import idiro.workflow.server.ProcessesManager;
 import idiro.workflow.server.WorkflowPrefManager;
+import idiro.workflow.server.action.HiveSelectTests;
 
 import java.io.File;
 import java.io.FileReader;
@@ -24,11 +27,12 @@ import org.junit.runners.Suite.SuiteClasses;
 	TableSelectInteractionTests.class,
 	JoinRelationInteractionTests.class,
 	TableJoinInteractionTests.class,
-	TableUnionInteractionTests.class,
-	HiveSelectTests.class,
-	HiveUnionTests.class,
+	TableUnionInteractionTests.class,*/
+	HiveSelectTests.class
+/*	HiveUnionTests.class,
 	HiveJoinTests.class
-	HiveAggregTests.class*/
+	HiveAggregTests.class,
+	HiveDictionaryTest.class*/
 	})
 public class SetupHiveEnvironmentTest {
 
@@ -43,7 +47,6 @@ public class SetupHiveEnvironmentTest {
 		System.out.println(userPrefFile);
 		String testProp = SetupHiveEnvironmentTest.class.getResource( "/test.properties" ).getFile();
 		System.out.println(testProp);
-		
 		
 		WorkflowPrefManager.pathSysCfgPref.put(testProp);
 		WorkflowPrefManager.pathUserCfgPref.put(testProp);
@@ -77,9 +80,15 @@ public class SetupHiveEnvironmentTest {
 		
 		File home = new File(testDirOut,"home_project");
 		home.mkdir();
+		logger.debug("made home dir");
 		WorkflowPrefManager.pathUserPref.put(home.getAbsolutePath());
 		WorkflowPrefManager.pathSysHome.put(home.getAbsolutePath());
-		
+		try {
+			ProcessesManager hjdbc = new HiveJdbcProcessesManager()
+					.getInstance();
+		} catch (Exception e) {
+			logger.error("error creating hive jdbc file : " + e.getMessage());
+		}
 	}
 	
 	@AfterClass
