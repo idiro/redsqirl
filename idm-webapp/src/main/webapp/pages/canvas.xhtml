@@ -956,9 +956,6 @@
 						</h:panelGrid>
 					</f:facet>
 
-					<rich:menuItem submitMode="ajax"
-						value="#{messages.label_menu_clean_project}"
-						action="#{canvasBean.cleanCanvasProject}" oncomplete="updateObjArcStatus();" />
 		
 					<rich:menuItem submitMode="none">
 						<h:outputLink value="#{canvasBean.workflowUrl}" target="_blank">#{messages.label_menu_see_oozie_job}</h:outputLink>
@@ -979,10 +976,10 @@
                     </rich:menuItem>
                     
                     <rich:menuSeparator />
-                    
+
                     <rich:menuItem submitMode="ajax"
                         value="#{messages.label_menu_clean_project}"
-                        action="#{canvasBean.cleanCanvasProject}" rerender="msnError, errorTable" />
+                        action="#{canvasBean.cleanCanvasProject}" oncomplete="updateObjArcStatus();" />
                     
                     <rich:menuSeparator />
                     
