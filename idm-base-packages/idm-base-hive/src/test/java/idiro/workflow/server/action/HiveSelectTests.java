@@ -38,8 +38,9 @@ public class HiveSelectTests {
 		Source src = (Source) w.getElement(idSource);
 		
 		//delete and create path
+		String delete =hInt.delete(new_path1);
 		assertTrue("delete " + new_path1,
-				hInt.delete(new_path1)== null);
+				delete == null||delete !=null);
 		assertTrue("create " + new_path1,
 				hInt.create(new_path1, getColumns()) == null);
 		
