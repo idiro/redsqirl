@@ -791,6 +791,8 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 		logger.info("getAllOutputStatus");
 
+		logger.info("getAllOutputStatus nameWorkflow " + getNameWorkflow());
+		
 		String[][] result = new String[getIdMap().get(getNameWorkflow()).size()][];
 		
 		String state = null;
