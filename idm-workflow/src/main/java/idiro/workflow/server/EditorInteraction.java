@@ -46,6 +46,7 @@ public class EditorInteraction extends UserInteraction{
 				}
 			}catch(Exception e){
 				logger.error(getId()+": Tree structure incorrect");
+				ans = "";
 			}
 		}
 		return ans;

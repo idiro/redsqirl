@@ -11,76 +11,77 @@ import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.interfaces.DataStore;
 import idiro.workflow.utils.LanguageManagerWF;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.prefs.Preferences;
+    import java.io.BufferedReader;
+    import java.io.InputStreamReader;
+    import java.rmi.RemoteException;
+    import java.rmi.server.UnicastRemoteObject;
+    import java.sql.ResultSet;
+    import java.sql.SQLException;
+    import java.util.ArrayList;
+    import java.util.HashMap;
+    import java.util.Iterator;
+    import java.util.LinkedHashMap;
+    import java.util.LinkedList;
+    import java.util.List;
+    import java.util.Map;
+    import java.util.Properties;
+    import java.util.prefs.Preferences;
 
-import org.apache.log4j.Logger;
+    import org.apache.log4j.Logger;
 
-/**
- * Interface for browsing Hive.
- * 
- * @author etienne
- * 
- */
-public class HiveInterface extends UnicastRemoteObject implements DataStore {
+    /**
+     * Interface for browsing Hive.
+     * 
+     * @author etienne
+     * 
+     */
+    public class HiveInterface extends UnicastRemoteObject implements DataStore {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 997686364776500272L;
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 997686364776500272L;
 
-	/**
-	 * Preferences
-	 */
-	private static Preferences prefs = Preferences
-			.userNodeForPackage(HiveInterface.class);
+        /**
+         * Preferences
+         */
+        private static Preferences prefs = Preferences
+                .userNodeForPackage(HiveInterface.class);
 
-	/**
-	 * The logger.
-	 */
-	protected Logger logger = Logger.getLogger(this.getClass());
+        /**
+         * The logger.
+         */
+        protected Logger logger = Logger.getLogger(this.getClass());
 
-	public static final String
-	// key for creating tables
-			key_partitions = "partitions",
-			key_columns = "columns",
-			key_comment = "comment",
-			key_store = "storing",
-			key_field_sep = "field_separator",
-			// properties key
-			key_describe = "describe",
-			key_describe_extended = "describe_extended";
+        public static final String
+        // key for creating tables
+                key_partitions = "partitions",
+                key_columns = "columns",
+                key_comment = "comment",
+                key_store = "storing",
+                key_field_sep = "field_separator",
+                // properties key
+                key_describe = "describe",
+                key_describe_extended = "describe_extended";
 
-	public static final int historyMax = 50;
+        public static final int historyMax = 50;
 
-	protected static Preference<String> pathDataDefault = new Preference<String>(
-			prefs, "Default path of hive", "/");
+        protected static Preference<String> pathDataDefault = new Preference<String>(
+                prefs, "Default path of hive", "/");
 
-	protected static JdbcConnection conn;
-	protected List<String> history = new LinkedList<String>();
-	protected int cur = 0;
-	private static boolean isInit = false;
+        protected static JdbcConnection conn;
+        protected List<String> history = new LinkedList<String>();
+        protected int cur = 0;
+        private static boolean isInit = false;
 
-	
-	private static String url;
+        private static String url;
 
 	public HiveInterface() throws RemoteException {
 		super();
 		history.add(pathDataDefault.get());
-		open();
+		if(!isInit){
+			open();
+		}
 		logger.debug("Exist hive interface constructor");
 	}
 
@@ -92,102 +93,89 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 				.getUserProperty(WorkflowPrefManager.user_hive);
 		}
 		try {
-			logger.info("hive interface init : "+isInit);
+			logger.info("hive interface init : " + isInit);
 			if (!isInit) {
 
 				final String nameStore = url.substring(url.indexOf("://") + 3,
 						url.lastIndexOf(":"));
 				final String port = url.substring(url.lastIndexOf(":") + 1,
 						url.lastIndexOf("/"));
-				logger.debug("Node where is the hive metastore: " + nameStore);
-				logger.debug("Port of the hive metastore: " + port);
+				logger.info("Node where is the hive metastore: " + nameStore);
+				logger.info("Port of the hive metastore: " + port);
 				// Launch Thrift if possible, it fails if it is already done
 				// without damage
 				try {
-					Thread serverThrift = new Thread() {
 
-						@Override
-						public void run() {
-							try {
-								Properties config = new Properties();
-								config.put("StrictHostKeyChecking", "no");
-								
-								ProcessesManager hjdbc = new HiveJdbcProcessesManager().getInstance();
-								
-								String old_pid = hjdbc.getPid();
-								
-								logger.info("old hive process : " + old_pid);
-								if (!old_pid.isEmpty()) {
-									String getPid = "ssh "
-											+ nameStore
-											+ " <<< \"ps -eo pid | grep -w \"" + old_pid+"\"\"";
-									Process p = Runtime.getRuntime().exec(new String[]{"/bin/bash","-c",getPid});
-									BufferedReader br1 = new BufferedReader(
-											new InputStreamReader(
-													p.getInputStream()));
-//									br1.readLine();
-									String pid1 = br1.readLine();
-									logger.info("gotten pid : "+pid1 );
-									
-									if(pid1!=null &&pid1.trim().equalsIgnoreCase(old_pid)){
-										String kill_pid = "ssh "
-												+ nameStore
-												+ " <<< \"kill -9 " + old_pid+"\"";
-										
-										logger.info("killing hive jdbc process : "
-												+ kill_pid);
-										p = Runtime.getRuntime().exec(new String[]{"/bin/bash","-c",kill_pid});
-										
-										BufferedReader br = new BufferedReader(
-												new InputStreamReader(
-														p.getErrorStream()));
-										
-										String pid = br.readLine();
-										hjdbc.deleteFile();
-										hjdbc = new HiveJdbcProcessesManager().getInstance();
-										logger.info("kill pid result: " + pid);
-									}
-									
-//								Thread.sleep(1000*5);
-								}
-								logger.info("Launch ... test ");
+					try {
+						Properties config = new Properties();
+						config.put("StrictHostKeyChecking", "no");
 
-								
-								String command = "ssh "
-										+ nameStore
-										+ " <<< 'nohup hive --service hiveserver -p "
-										+ port + " > out 2> err < /dev/null & echo $!'";
+						ProcessesManager hjdbc = new HiveJdbcProcessesManager()
+								.getInstance();
 
-								Process proc = Runtime.getRuntime().exec(
+						String old_pid = hjdbc.getPid();
+
+						logger.info("old hive process : " + old_pid);
+						if (!old_pid.isEmpty()) {
+							String getPid = "ssh " + nameStore
+									+ " <<< \"ps -eo pid | grep -w \""
+									+ old_pid + "\"\"";
+							Process p = Runtime.getRuntime().exec(
+									new String[] { "/bin/bash", "-c", getPid });
+							BufferedReader br1 = new BufferedReader(
+									new InputStreamReader(p.getInputStream()));
+							String pid1 = br1.readLine();
+							logger.info("gotten pid : " + pid1);
+
+							if (pid1 != null
+									&& pid1.trim().equalsIgnoreCase(old_pid)) {
+								String kill_pid = "ssh " + nameStore
+										+ " <<< \"kill -9 " + old_pid + "\"";
+
+								logger.info("killing hive jdbc process : "
+										+ kill_pid);
+								p = Runtime.getRuntime().exec(
 										new String[] { "/bin/bash", "-c",
-												command });
-
-								logger.info("Launch hive server : " + command);
-								
+												kill_pid });
 
 								BufferedReader br = new BufferedReader(
 										new InputStreamReader(
-												proc.getInputStream()));
-								
+												p.getErrorStream()));
+
 								String pid = br.readLine();
-								logger.info("new pid for jdbc: " + pid);
-								
-								hjdbc.storePid(pid);
-								logger.info("Stored pid");
-								
-								logger.info("Pass ... test ");
-
-							} catch (Exception e) {
-								logger.error("Fail to launch the server process");
-								logger.error(e.getMessage());
+								hjdbc.deleteFile();
+								hjdbc = new HiveJdbcProcessesManager()
+										.getInstance();
+								logger.info("kill pid result: " + pid);
 							}
-						}
 
-					};
-					serverThrift.start();
-//					Thread.sleep(1000 * 5);
-					
-					logger.info(serverThrift.getState().name());
+						}
+						logger.info("Launch ... test ");
+
+						String command = "ssh " + nameStore
+								+ " <<< 'nohup hive --service hiveserver -p "
+								+ port + " > out 2> err < /dev/null & echo $!'";
+
+						Process proc = Runtime.getRuntime().exec(
+								new String[] { "/bin/bash", "-c", command });
+
+						logger.info("Launch hive server : " + command);
+
+						BufferedReader br = new BufferedReader(
+								new InputStreamReader(proc.getInputStream()));
+
+						String pid = br.readLine();
+						logger.info("new pid for jdbc: " + pid);
+
+						hjdbc.storePid(pid);
+						logger.info("Stored pid");
+
+						logger.info("Pass ... test ");
+
+					} catch (Exception e) {
+						logger.error("Fail to launch the server process");
+						logger.error(e.getMessage());
+					}
 
 					logger.debug("Application launched");
 				} catch (Exception e) {
@@ -200,28 +188,28 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 				int maxattempts = 20;
 				int attempts = 1;
 				while (!started && attempts <= maxattempts) {
-					
+
 					try {
-						jdbcHdfspref = new JdbcHdfsPrefsDetails(url);
 						logger.info("new jdbc");
-						 stm = new HiveBasicStatement();
+						jdbcHdfspref = new JdbcHdfsPrefsDetails(url);
 						logger.info("got prefs");
+						stm = new HiveBasicStatement();
 						logger.info("got statement");
 						conn = new JdbcConnection(jdbcHdfspref, stm);
 						logger.info("got connection");
 						started = conn.showAllTables().next();
+						isInit = true;
 					} catch (Exception e) {
-						logger.error("error checking connection : "+ e.getMessage());
+						logger.error("error checking connection : "
+								+ e.getMessage());
+						isInit = false;
 					}
-					logger.info("attempt number : "+maxattempts);
+					logger.info("attempt number : " + maxattempts);
 					--maxattempts;
 					Thread.sleep(500);
 
 				}
-				
-				isInit = true;
-				
-			
+
 
 				logger.info("Pass ... new jdbc ");
 
@@ -233,6 +221,10 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 					new Object[] { url, e.getMessage() });
 			logger.error(error);
 		}
+		if(!isInit){
+			error = LanguageManagerWF.getText("hiveinterface.connectfail");
+		}
+		logger.info("isinit : " + isInit);
 		return error;
 	}
 
@@ -513,7 +505,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 	public Map<String, Map<String, String>> getChildrenProperties()
 			throws RemoteException {
 		logger.info("###################################");
-		logger.info("is init : "+isInit);
+		logger.info("is init : " + isInit);
 		String[] tableAndPartitions = getTableAndPartitions(history.get(cur));
 		logger.info("getting table and partitions");
 		Map<String, Map<String, String>> ans = new LinkedHashMap<String, Map<String, String>>();
@@ -528,9 +520,9 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 				while (it.hasNext()) {
 					String table = it.next();
 					Map<String, String> prop = getProperties("/" + table);
-					logger.info("prop map : "+prop);
+					logger.info("prop map : " + prop);
 					if (!prop.isEmpty()) {
-						logger.info("prop map not empty: "+prop);
+						logger.info("prop map not empty: " + prop);
 						ans.put(table, prop);
 						logger.info("prop map added table ");
 					}

@@ -58,12 +58,11 @@ public class HiveUnion  extends HiveElement{
 				"Add a condition filter. Note that these filters are applied after the union.",
 				1);
 
-		condInt = new ConditionInteraction(key_condition,
-				"",
+		condInt = new ConditionInteraction(
 				0,
 				0, 
-				this, 
-				key_input);
+				this
+				);
 
 
 //		partInt = new PartitionInteraction(

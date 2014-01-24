@@ -4,7 +4,7 @@ import java.rmi.RemoteException;
 
 import org.junit.Test;
 
-public class HiveAggregatorTest {
+public class HiveAggregatorTests {
 	
 	@Test
 	public void HiveAggregatortest() throws RemoteException{

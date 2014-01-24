@@ -422,12 +422,12 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 		logger.debug("Comparaison dataoutput:");
 		logger.debug(this.path+" "+path);
 		if(this.path == null){
-			return false;
+		return false;
 		}
 		try {
-			logger.debug(features.getFeaturesNames()+" "+fl.getFeaturesNames());
+		logger.debug(features.getFeaturesNames()+" "+fl.getFeaturesNames());
 		} catch (RemoteException e) {}
 		logger.debug(dataProperty+" "+props);
 		return this.path.equals(path) && features.equals(fl) && dataProperty.equals(props);
-	}
+		}
 }

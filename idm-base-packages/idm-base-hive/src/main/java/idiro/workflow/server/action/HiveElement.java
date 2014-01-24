@@ -57,13 +57,12 @@ public abstract class HiveElement extends DataflowAction {
 	protected ConditionInteraction condInt;
 	protected PartitionInteraction partInt;
 	protected UserInteraction typeOutputInt;
-	protected UserInteraction groupingInt;
+	protected GroupByInteraction groupingInt;
 
 	/**
 	 * entries
 	 */
 	protected Map<String, DFELinkProperty> input;
-	protected Map<String, DFEOutput> output;
 
 	/**
 	 * Number of page minimum (all HiveElement can have +-1 page)
@@ -246,9 +245,6 @@ public abstract class HiveElement extends DataflowAction {
 		return input;
 	}
 
-	public Map<String, DFEOutput> getDFEOutput() throws RemoteException {
-		return output;
-	}
 
 
 	/**
@@ -257,9 +253,10 @@ public abstract class HiveElement extends DataflowAction {
 	public final ConditionInteraction getCondInt() {
 		return condInt;
 	}
-
+	
 	/**
 	 * @return the partInt
+	 *
 	 */
 	public final PartitionInteraction getPartInt() {
 		return partInt;

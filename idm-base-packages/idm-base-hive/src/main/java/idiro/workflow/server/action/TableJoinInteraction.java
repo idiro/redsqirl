@@ -4,6 +4,7 @@ import idiro.utils.FeatureList;
 import idiro.utils.OrderedFeatureList;
 import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
+import idiro.workflow.server.TableInteraction;
 import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.action.utils.HiveDictionary;
 import idiro.workflow.server.enumeration.DisplayType;
@@ -24,7 +25,7 @@ import org.apache.log4j.Logger;
  * @author etienne
  *
  */
-public class TableJoinInteraction extends UserInteraction{
+public class TableJoinInteraction extends TableInteraction{
 
 	/**
 	 * 
@@ -42,7 +43,7 @@ public class TableJoinInteraction extends UserInteraction{
 	public TableJoinInteraction(String name, String legend,
 			int column, int placeInColumn, HiveJoin hj)
 					throws RemoteException {
-		super(name, legend, DisplayType.table, column, placeInColumn);
+		super("",name, legend, column, placeInColumn);
 		this.hj = hj;
 	}
 

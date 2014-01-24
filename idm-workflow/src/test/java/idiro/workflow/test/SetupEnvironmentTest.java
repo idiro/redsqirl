@@ -34,12 +34,13 @@ import org.junit.runners.Suite.SuiteClasses;
 
 
 @RunWith(Suite.class)
-@SuiteClasses({ActionTests.class,
-	WorkflowTests.class,
-	//CreateWorkflowTests.class,
-	 HDFSInterfaceTests.class,
+@SuiteClasses({//ActionTests.class
+	/*WorkflowTests.class,
+	CreateWorkflowTests.class,
+	HiveDictionaryTests.class,
+	HDFSInterfaceTests.class,*/
 	HiveInterfaceTests.class,
-	SSHInterfaceTests.class,
+	/*SSHInterfaceTests.class,
 	SSHInterfaceArrayTests.class,
 	HiveTypeTests.class, 
 	SourceTests.class,
@@ -49,7 +50,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	OozieDagTests.class,
 	OrderedFeatureListTests.class,
 	TreeTests.class,
-	ConvertTests.class,
+	ConvertTests.class,*/
 	})
 public class SetupEnvironmentTest {
 	

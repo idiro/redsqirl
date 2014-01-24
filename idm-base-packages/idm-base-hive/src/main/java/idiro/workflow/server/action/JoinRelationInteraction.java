@@ -3,6 +3,7 @@ package idiro.workflow.server.action;
 import idiro.utils.FeatureList;
 import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
+import idiro.workflow.server.TableInteraction;
 import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.action.utils.HiveDictionary;
 import idiro.workflow.server.connect.HiveInterface;
@@ -24,7 +25,7 @@ import java.util.Set;
  * @author etienne
  *
  */
-public class JoinRelationInteraction extends UserInteraction{
+public class JoinRelationInteraction extends TableInteraction{
 
 
 	/**
@@ -40,7 +41,7 @@ public class JoinRelationInteraction extends UserInteraction{
 	public JoinRelationInteraction(String name, String legend,
 			int column, int placeInColumn, HiveJoin hj)
 					throws RemoteException {
-		super(name, legend, DisplayType.table, column, placeInColumn);
+		super("",name, legend, column, placeInColumn);//FIXME 
 		this.hj = hj;
 	}
 
