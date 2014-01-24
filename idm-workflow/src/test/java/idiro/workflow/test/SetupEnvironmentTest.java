@@ -4,6 +4,7 @@ import idiro.Log;
 import idiro.ProjectID;
 import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.action.ActionTests;
+import idiro.workflow.server.connect.interfaces.HiveInterfaceTests;
 
 import java.io.File;
 import java.io.FileReader;
