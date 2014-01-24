@@ -37,8 +37,6 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	private static Logger logger = Logger.getLogger(PackageMngBean.class);
 
-//	private PckManager userPckManager;
-//	private PackageManager sysPckManager;
 	private boolean showMain;
 	private boolean userInstall = true;
 	private IdmPackage curPackage;
@@ -47,8 +45,6 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	unSysPackage;
 
 	public PackageMngBean() throws RemoteException{
-//		userPckManager = getPckMng();
-//		sysPckManager = new PackageManager();
 	}
 
 	public List<IdmPackage> getExtPackages() throws IOException{
@@ -183,8 +179,6 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	public void removeSystemPackage() throws RemoteException{
 		logger.info("rm sys packages");
 		if(isAdmin()){
-//			String packageNames = FacesContext.getCurrentInstance().getExternalContext().
-//					getRequestParameterMap().get("packageNames");
 			PackageManager sysPckManager = new PackageManager();
 			sysPckManager.removePackage(true,unSysPackage);
 		}
@@ -193,8 +187,6 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	public void removeUserPackage() throws RemoteException{
 		logger.info("rm user packages");
 		if(isUserAllowInstall()){
-//			String packageNames = FacesContext.getCurrentInstance().getExternalContext().
-//					getRequestParameterMap().get("packageNames");
 			getPckMng().removePackage(false,unUserPackage);
 		}
 	}
