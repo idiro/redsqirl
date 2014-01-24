@@ -140,13 +140,21 @@ public class TableInteraction extends UserInteraction {
 			String regex,
 			Integer constraintCount,
 			Collection<String> constraintValue) throws RemoteException{
+		logger.debug("update column constraint...");
 		columnName = removeSpaceColumnName(columnName);
 		Tree<String> column = findColumn(columnName);
+		logger.debug("remove all constraint...");
+		if(column == null){
+			logger.warn(columnName + " does not exist!");
+			return;
+		}
 		column.remove("constraint");
 		if( constraintCount != null||
-				(constraintValue != null && !constraintValue.isEmpty())){
+				(constraintValue != null && !constraintValue.isEmpty()) ||
+				(regex != null && !regex.isEmpty())){
 			Tree<String> constraint = column.add("constraint");
 			if(regex != null){
+				logger.debug("update regex...");
 				constraint.add("regex").add(regex);
 			}
 			if(constraintCount != null){

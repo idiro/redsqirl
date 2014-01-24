@@ -34,15 +34,32 @@ public class ConvertPropertiesInteraction extends TableInteraction{
 					throws RemoteException {
 		super(id, name, legend, column, placeInColumn);
 		this.cv = cv;
+		addColumn(
+				table_property_title, 
+				null, 
+				null, 
+				null);
+		addColumn(
+				table_value_title, 
+				1, 
+				null, 
+				null);
 	}
 
 
 	public void update() throws RemoteException{
-		//Map<String, String> properties = cv.getDFEOutput().get(Convert.key_output).getProperties();
-		logger.debug("enter here");
-		tree.getFirstChild("table").remove("columns");
-		getRootTable();
-		//logger.info(tree);
+		logger.debug("generate columns of convert properties table");
+		
+		Set<String> props = null;
+		if(cv.getDFEOutput().get(Convert.key_output).getProperties() != null &&
+				!cv.getDFEOutput().get(Convert.key_output).getProperties().isEmpty()){
+			props = cv.getDFEOutput().get(Convert.key_output).getProperties().keySet();
+		}
+		updateColumnConstraint(
+				table_value_title, 
+				null, 
+				1, 
+				props);
 	}
 
 	public Map<String,String> getProperties() throws RemoteException{
@@ -60,30 +77,5 @@ public class ConvertPropertiesInteraction extends TableInteraction{
 
 		return prop;
 	}
-
-
-	protected void getRootTable() throws RemoteException{
-		logger.info(4);
-		//Table
-		addColumn(
-				table_property_title, 
-				null, 
-				null, 
-				null);
-		Set<String> props = null;
-		if(cv.getDFEOutput().get(Convert.key_output).getProperties() != null &&
-				!cv.getDFEOutput().get(Convert.key_output).getProperties().isEmpty()){
-			props = cv.getDFEOutput().get(Convert.key_output).getProperties().keySet();
-		}
-		
-		addColumn(
-				table_value_title, 
-				1, 
-				props, 
-				null);
-		
-	}
-
-
 
 }

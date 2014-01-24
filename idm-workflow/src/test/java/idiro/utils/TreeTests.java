@@ -1,12 +1,9 @@
 package idiro.utils;
 
+import static org.junit.Assert.assertTrue;
 import idiro.workflow.server.enumeration.FeatureType;
 
 import java.rmi.RemoteException;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -54,8 +51,10 @@ public class TreeTests {
 		valsType.add("value").add(FeatureType.FLOAT.name());
 		valsType.add("value").add("BIGINT");
 		
-		logger.info(""+((TreeNonUnique<String>) input).toString());
-		logger.info(input.getHead());
+		assertTrue("Input head incorrect",input.getHead().equals("table"));
+		assertTrue("Input child incorrect",input.getFirstChild().getHead().equals("columns"));
+		assertTrue("Input size",input.getSubTreeList().size() == 1);
+		assertTrue("Input size 2",input.getFirstChild().getSubTreeList().size() == 3); 
 		logger.info(input.getFirstChild().getHead());
 	}
 	
@@ -64,26 +63,9 @@ public class TreeTests {
 	public void TreeDepth() throws RemoteException{
 		
 		Tree<String> tree = new TreeNonUnique<String>("test"); 
-		
 		tree.add("testl1");
-		logger.info(""+((TreeNonUnique<String>) tree).toString());
+		assertTrue("Search incorrect.",tree.getFirstChild("test2") == null);
 		
-		logger.info(tree.getFirstChild("test2").isEmpty());
-		
-		
-		
-	}
-	@Test
-	public void ListTest(){
-		List<String> list = new LinkedList<String>();
-		list.add("A");
-		list.add("B");
-		list.add("C");
-		
-		Set<String> set = new HashSet();
-		set.add("A");
-		
-		logger.info(list.containsAll(set));
 	}
 
 }

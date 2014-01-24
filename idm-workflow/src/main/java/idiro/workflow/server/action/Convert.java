@@ -11,7 +11,6 @@ import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.datatype.HiveTypeWithWhere;
 import idiro.workflow.server.datatype.MapRedTextType;
 import idiro.workflow.server.interfaces.DFEInteraction;
-import idiro.workflow.server.interfaces.DFEInteractionChecker;
 import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.oozie.HiveAction;
@@ -71,42 +70,6 @@ public class Convert extends DataflowAction {
 				0);
 		
 		formats.setDisplayRadioButton(true);
-		formats.setChecker(new DFEInteractionChecker(){
-
-			@Override
-			public String check(DFEInteraction interaction)
-					throws RemoteException {
-				logger.info("Initialise convert");
-				DFEOutput in = getDFEInput().get(key_input).get(0);
-				FeatureList new_features = new OrderedFeatureList();
-
-				FeatureList in_feat = in.getFeatures();
-				Iterator<String> it = in_feat.getFeaturesNames().iterator();
-				while(it.hasNext()){
-					String name = it.next();
-					new_features.addFeature(name, in_feat.getFeatureType(name));
-				}
-
-
-				String convert = interaction.getTree().getFirstChild("list").getFirstChild("output").getFirstChild().getHead();
-
-				if(convert.equalsIgnoreCase((new MapRedTextType()).getTypeName()) && (
-						output.get(key_output) == null ||
-						!output.get(key_output).getTypeName().equalsIgnoreCase(convert))
-						){
-					output.put(key_output, new MapRedTextType());
-					output.get(key_output).addProperty(MapRedTextType.key_delimiter, "|");
-				}else if(convert.equalsIgnoreCase((new HiveType()).getTypeName())  && (
-						output.get(key_output) == null ||
-						!output.get(key_output).getTypeName().equalsIgnoreCase(convert))
-						){
-					output.put(key_output, new HiveType());
-				}
-				output.get(key_output).setFeatures(new_features);
-				return null;
-			}
-
-		});
 
 		page1.addInteraction(formats);
 
@@ -146,6 +109,7 @@ public class Convert extends DataflowAction {
 			values.add((new MapRedTextType()).getTypeName());
 		}
 		formats.setPossibleValues(values);
+		formats.setValue(values.get(0));
 	}
 
 	@Override
@@ -157,11 +121,46 @@ public class Convert extends DataflowAction {
 	public Map<String, DFELinkProperty> getInput() throws RemoteException {
 		return input;
 	}
+	
+	public void updateOutput() throws RemoteException{
+		logger.info("Initialise convert");
+		DFEOutput in = getDFEInput().get(key_input).get(0);
+		FeatureList new_features = new OrderedFeatureList();
+
+		FeatureList in_feat = in.getFeatures();
+		Iterator<String> it = in_feat.getFeaturesNames().iterator();
+		while(it.hasNext()){
+			String name = it.next();
+			new_features.addFeature(name, in_feat.getFeatureType(name));
+		}
+
+
+		String convert = formats.getValue();
+		if(convert == null){
+			logger.error("Format interaction has not been initialized!");
+			return;
+		}else if(convert.equalsIgnoreCase((new MapRedTextType()).getTypeName()) && (
+				output.get(key_output) == null ||
+				!output.get(key_output).getTypeName().equalsIgnoreCase(convert))
+				){
+			output.put(key_output, new MapRedTextType());
+			output.get(key_output).addProperty(MapRedTextType.key_delimiter, "|");
+		}else if(convert.equalsIgnoreCase((new HiveType()).getTypeName())  && (
+				output.get(key_output) == null ||
+				!output.get(key_output).getTypeName().equalsIgnoreCase(convert))
+				){
+			output.put(key_output, new HiveType());
+		}
+		output.get(key_output).setFeatures(new_features);
+	}
 
 	@Override
 	public String updateOut() throws RemoteException {
 		logger.info("Initialize update out");
 		String error = checkIntegrationUserVariables();
+		if( error == null && output.get(key_output) == null){
+			error = LanguageManagerWF.getText("convert.output_null");
+		}
 		if(error == null){
 			DFEOutput in = getDFEInput().get(key_input).get(0);
 			FeatureList new_features = new OrderedFeatureList();
@@ -173,11 +172,6 @@ public class Convert extends DataflowAction {
 				new_features.addFeature(name, in_feat.getFeatureType(name));
 			}
 
-			/*if(in.getClass().equals(MapRedTextType.class)){
-				output.put(key_output, new HiveType());
-			}else{
-				output.put(key_output, new MapRedTextType());
-			}*/
 			output.get(key_output).setFeatures(new_features);
 			Map<String,String> properties = cpi.getProperties();
 			if(properties != null && !properties.isEmpty()){
@@ -296,7 +290,10 @@ public class Convert extends DataflowAction {
 		if(interId.equals(key_formats)){
 			updateFormat();
 		}else if(interId.equals(key_properties)){
-			cpi.update();
+			updateOutput();
+			if(getDFEOutput().get(key_output)!= null){
+				cpi.update();
+			}
 		}
 	}
 
@@ -309,6 +306,20 @@ public class Convert extends DataflowAction {
 	@Override
 	public String getImage() throws RemoteException {
 		return "../image/" + getName().toLowerCase() + ".gif";
+	}
+
+	/**
+	 * @return the formats
+	 */
+	public final ListInteraction getFormats() {
+		return formats;
+	}
+
+	/**
+	 * @return the cpi
+	 */
+	public final ConvertPropertiesInteraction getCpi() {
+		return cpi;
 	}
 
 }

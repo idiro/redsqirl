@@ -2,8 +2,24 @@ package idiro.workflow.test;
 
 import idiro.Log;
 import idiro.ProjectID;
+import idiro.utils.OrderedFeatureListTests;
+import idiro.utils.TreeTests;
+import idiro.workflow.server.OozieDagTests;
+import idiro.workflow.server.OozieManagerTests;
 import idiro.workflow.server.WorkflowPrefManager;
+import idiro.workflow.server.WorkflowProcessesManagerTests;
+import idiro.workflow.server.WorkflowTests;
 import idiro.workflow.server.action.ActionTests;
+import idiro.workflow.server.action.ConvertTests;
+import idiro.workflow.server.action.SourceTests;
+import idiro.workflow.server.connect.HDFSInterface;
+import idiro.workflow.server.connect.HiveInterface;
+import idiro.workflow.server.connect.interfaces.HDFSInterfaceTests;
+import idiro.workflow.server.connect.interfaces.HiveInterfaceTests;
+import idiro.workflow.server.connect.interfaces.SSHInterfaceArrayTests;
+import idiro.workflow.server.connect.interfaces.SSHInterfaceTests;
+import idiro.workflow.server.datatype.HiveTypeTests;
+import idiro.workflow.utils.PackageManagerTests;
 
 import java.io.File;
 import java.io.FileReader;
@@ -18,21 +34,22 @@ import org.junit.runners.Suite.SuiteClasses;
 
 
 @RunWith(Suite.class)
-@SuiteClasses({ActionTests.class
-	/*WorkflowTests.class,
-	CreateWorkflowTests.class,
-	HiveDictionaryTests.class,
-	HDFSInterfaceTests.class,
+@SuiteClasses({ActionTests.class,
+	WorkflowTests.class,
+	//CreateWorkflowTests.class,
+	 HDFSInterfaceTests.class,
 	HiveInterfaceTests.class,
 	SSHInterfaceTests.class,
 	SSHInterfaceArrayTests.class,
-	HiveTypeTests.class,
+	HiveTypeTests.class, 
 	SourceTests.class,
-	HiveSelectTests.class,
+	WorkflowProcessesManagerTests.class,
 	OozieManagerTests.class,
 	PackageManagerTests.class,
 	OozieDagTests.class,
-	OrderedFeatureListTests.class*/
+	OrderedFeatureListTests.class,
+	TreeTests.class,
+	ConvertTests.class,
 	})
 public class SetupEnvironmentTest {
 	
@@ -91,6 +108,27 @@ public class SetupEnvironmentTest {
 	
 	@AfterClass
 	public static void end(){
+		HDFSInterface hdfsInt = null;
+		try {
+			hdfsInt = new HDFSInterface();
+			for(int i = 0; i < 4; ++i){
+				hdfsInt.delete(TestUtils.getPath(i));
+			}
+		}catch (Exception e) {
+			logger.error("something went wrong : " + e.getMessage());
+			
+		}
+		HiveInterface hiveInt = null;
+		try {
+			hiveInt = new HiveInterface();
+			for(int i = 0; i < 4; ++i){
+				hiveInt.delete(TestUtils.getTablePath(i));
+			}
+		}catch (Exception e) {
+			logger.error("something went wrong : " + e.getMessage());
+			
+		}
+		
 		WorkflowPrefManager.resetSys();
 		WorkflowPrefManager.resetUser();
 	}
