@@ -79,11 +79,14 @@ public class ConditionInteraction extends EditorInteraction {
 
 			Tree<String> base = HiveDictionary.generateEditor(HiveDictionary.getInstance()
 					.createConditionHelpMenu(), el.getInFeatures());
-			//logger.debug(base);
+//			logger.debug(base);
+			logger.debug("value is : "+output);
 			tree.add(base.getFirstChild("editor"));
 			setValue(output);
+			logger.debug("set value");
 		} catch (Exception ec) {
 			logger.info("There was an error updating " + getName());
+			logger.info("error : "+ ec.getMessage());
 		}
 	}
 

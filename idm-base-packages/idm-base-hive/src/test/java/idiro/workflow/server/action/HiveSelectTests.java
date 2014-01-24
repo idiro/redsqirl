@@ -132,8 +132,6 @@ public class HiveSelectTests {
 
 		logger.debug("update hive...");
 
-		hive.update(hive.getPartInt());
-		hive.update(hive.getGroupingInt());
 		ConditionInteraction ci = hive.getCondInt();
 		hive.update(ci);
 

@@ -131,11 +131,11 @@ public class HiveSelect extends HiveElement {
 	}
 
 	/**
-	 * @return the groupingInt
-	 */
-	public final UserInteraction getGroupingInt() {
-		return groupingInt;
-	}
+//	 * @return the groupingInt
+//	 */
+//	public final UserInteraction getGroupingInt() {
+//		return groupingInt;
+//	}
 
 	@Override
 	public FeatureList getInFeatures() throws RemoteException {

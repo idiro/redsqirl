@@ -253,9 +253,10 @@ public abstract class HiveElement extends DataflowAction {
 	public final ConditionInteraction getCondInt() {
 		return condInt;
 	}
-
+	
 	/**
 	 * @return the partInt
+	 *
 	 */
 	public final PartitionInteraction getPartInt() {
 		return partInt;
