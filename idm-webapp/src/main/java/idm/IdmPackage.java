@@ -1,10 +1,16 @@
 package idm;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
-public class IdmPackage {
+public class IdmPackage implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	private String name,
 				   version,

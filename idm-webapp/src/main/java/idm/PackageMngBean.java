@@ -7,6 +7,7 @@ import idiro.workflow.utils.PackageManager;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -27,12 +28,17 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class PackageMngBean extends BaseBean{
+public class PackageMngBean extends BaseBean implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	private static Logger logger = Logger.getLogger(PackageMngBean.class);
 
-	private PckManager userPckManager;
-	private PackageManager sysPckManager;
+//	private PckManager userPckManager;
+//	private PackageManager sysPckManager;
 	private boolean showMain;
 	private boolean userInstall = true;
 	private IdmPackage curPackage;
@@ -41,8 +47,8 @@ public class PackageMngBean extends BaseBean{
 	unSysPackage;
 
 	public PackageMngBean() throws RemoteException{
-		userPckManager = getPckMng();
-		sysPckManager = new PackageManager();
+//		userPckManager = getPckMng();
+//		sysPckManager = new PackageManager();
 	}
 
 	public List<IdmPackage> getExtPackages() throws IOException{
@@ -150,8 +156,9 @@ public class PackageMngBean extends BaseBean{
 						equalsIgnoreCase("true");
 	}
 
-	public List<SelectItem> getSystemPackages(){
+	public List<SelectItem> getSystemPackages() throws RemoteException{
 		logger.info("sys package");
+		PackageManager sysPckManager = new PackageManager();
 		Iterator<String> it = sysPckManager.getPackageNames(true).iterator();
 		List<SelectItem> result = new ArrayList<SelectItem>();
 		while(it.hasNext()){
@@ -163,7 +170,7 @@ public class PackageMngBean extends BaseBean{
 
 	public List<SelectItem> getUserPackages() throws RemoteException{
 		logger.info("user packages");
-		Iterator<String> it = userPckManager.getPackageNames(false).iterator();
+		Iterator<String> it = getPckMng().getPackageNames(false).iterator();
 		List<SelectItem> result = new ArrayList<SelectItem>();
 		while(it.hasNext()){
 			String pck = it.next();
@@ -173,11 +180,12 @@ public class PackageMngBean extends BaseBean{
 	}
 
 
-	public void removeSystemPackage(){
+	public void removeSystemPackage() throws RemoteException{
 		logger.info("rm sys packages");
 		if(isAdmin()){
 //			String packageNames = FacesContext.getCurrentInstance().getExternalContext().
 //					getRequestParameterMap().get("packageNames");
+			PackageManager sysPckManager = new PackageManager();
 			sysPckManager.removePackage(true,unSysPackage);
 		}
 	}
@@ -187,7 +195,7 @@ public class PackageMngBean extends BaseBean{
 		if(isUserAllowInstall()){
 //			String packageNames = FacesContext.getCurrentInstance().getExternalContext().
 //					getRequestParameterMap().get("packageNames");
-			userPckManager.removePackage(false,unUserPackage);
+			getPckMng().removePackage(false,unUserPackage);
 		}
 	}
 	
@@ -245,10 +253,11 @@ public class PackageMngBean extends BaseBean{
 					fos.close();
 					//Install Package
 					if(sys){
+						PackageManager sysPckManager = new PackageManager();
 						sysPckManager.addPackage(true, 
 								new String[]{pckFile.getAbsolutePath()});
 					}else{
-						userPckManager.addPackage(false, 
+						getPckMng().addPackage(false, 
 								new String[]{pckFile.getAbsolutePath()});
 					}
 				} catch (MalformedURLException e) {
