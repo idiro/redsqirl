@@ -73,11 +73,11 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 
 	private static Logger waLogger = Logger.getLogger(DataflowAction.class);
 
-	/** 
+	/**
 	 * The output that the user have to update.
 	 */
 	protected Map<String, DFEOutput> output = new LinkedHashMap<String, DFEOutput>();
-	
+
 	protected Logger logger = Logger.getLogger(getClass());
 
 	public DataflowAction(OozieAction oozieAction) throws RemoteException {
@@ -147,17 +147,17 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			entryComp = inputComponent.get(entryName);
 
 			if (entryComp == null && prop.getMinOccurence() != 0) {
-				ans += getComponentId() + " have no input " + entryName
-						+ ", it is mandatory\n";
+				ans += LanguageManagerWF.getText(
+						"dataflowaction.checkIn_noinput", new Object[] {
+								getComponentId(), entryName });
 			} else if (entryComp != null) {
 				if (prop.getMinOccurence() > entryComp.size()
 						|| prop.getMaxOccurence() < entryComp.size()) {
-					ans += getComponentId()
-							+ " have not the right number of occurence of "
-							+ entryName + ". " + entryComp.size()
-							+ " is not between " + prop.getMinOccurence()
-							+ " and " + prop.getMaxOccurence() + " for "
-							+ entryName + ".\n";
+					ans += LanguageManagerWF.getText(
+							"dataflowaction.checkIn_numinputwrong",
+							new Object[] { getComponentId(), entryName,
+									entryComp.size(), prop.getMinOccurence(),
+									prop.getMaxOccurence(), entryName });
 				} else {
 
 					Iterator<DataFlowElement> entryCompIt = entryComp
@@ -169,14 +169,16 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 								cur.getOutputComponent(), this);
 
 						if (nonEntryName == null) {
-							cur_ans += getComponentId() + " Link between "
-									+ getName() + " and " + cur.getName()
-									+ " conflict\n";
+							cur_ans += LanguageManagerWF.getText(
+									"dataflowaction.checkIn_linkConflict",
+									new Object[] { getComponentId(), getName(),
+											cur.getName() });
 						} else if (!prop.check(cur.getDFEOutput().get(
 								nonEntryName))) {
-							cur_ans += getComponentId() + "The link between "
-									+ getName() + " and " + cur.getName()
-									+ " is not compatible\n";
+							cur_ans += LanguageManagerWF.getText(
+									"dataflowaction.checkIn_linkIncompatible",
+									new Object[] { getComponentId(), getName(),
+											cur.getName() });
 						}
 
 						ans += cur_ans;
@@ -232,10 +234,10 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 				error = e.getMessage();
 			}
 		}
-		if(error != null){
+		if (error != null) {
 			error = LanguageManagerWF.getText(
-					"dataflowaction.checkuservariables", new Object[] {
-							String.valueOf(pageNb), error });
+					"dataflowaction.checkuservariables",
+					new Object[] { String.valueOf(pageNb), error });
 		}
 		return error;
 	}
@@ -258,19 +260,23 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 						.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
 						+ getImage());
 		if (!help.isFile()) {
-			error = LanguageManagerWF.getText("dataflowaction.checkinit.gethelp",
+			error = LanguageManagerWF.getText(
+					"dataflowaction.checkinit.gethelp",
 					new Object[] { getClass().getCanonicalName() });
 		}
 		if (!image.isFile()) {
-			error = LanguageManagerWF.getText("dataflowaction.checkinit.getimage",
+			error = LanguageManagerWF.getText(
+					"dataflowaction.checkinit.getimage",
 					new Object[] { getClass().getCanonicalName() });
 		}
 		if (getOozieType() == null) {
-			error = LanguageManagerWF.getText("dataflowaction.checkinit.getoozietype",
+			error = LanguageManagerWF.getText(
+					"dataflowaction.checkinit.getoozietype",
 					new Object[] { getClass().getCanonicalName() });
 		}
 		if (getName() == null || getName().isEmpty()) {
-			error = LanguageManagerWF.getText("dataflowaction.checkinit.getname",
+			error = LanguageManagerWF.getText(
+					"dataflowaction.checkinit.getname",
 					new Object[] { getClass().getCanonicalName() });
 		}
 
@@ -307,7 +313,8 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 					intCur.readXml(cur.getFirstChild());
 				}
 			} catch (Exception e) {
-				error = LanguageManagerWF.getText("dataflowaction.readvaluesxml",
+				error = LanguageManagerWF.getText(
+						"dataflowaction.readvaluesxml",
 						new Object[] { componentId });
 			}
 		}
@@ -329,7 +336,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			throws RemoteException {
 		String error = null;
 		try {
-			
+
 			Iterator<DFEInteraction> itInter = getInteractions().iterator();
 			while (itInter.hasNext()) {
 				DFEInteraction interCur = itInter.next();
@@ -338,21 +345,22 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 				interCur.writeXml(doc, inter);
 				parent.appendChild(inter);
 			}
-		
+
 		} catch (DOMException dme) {
-			error = LanguageManagerWF.getText("dataflowaction.writevaluesxml_domexception",
+			error = LanguageManagerWF.getText(
+					"dataflowaction.writevaluesxml_domexception",
 					new Object[] { dme.getMessage() });
 		} catch (Exception e) {
 			error = LanguageManagerWF.getText("dataflowaction.writevaluesxml",
 					new Object[] { e.getMessage() });
 		}
-		
+
 		logger.info("writeValuesXml error: " + error);
-		
+
 		if (error != null) {
 			waLogger.error(error);
 		}
-		
+
 		return error;
 	}
 
@@ -385,12 +393,11 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	public abstract void update(DFEInteraction interaction)
 			throws RemoteException;
 
-	
 	@Override
 	public final Map<String, DFEOutput> getDFEOutput() throws RemoteException {
 		return output;
 	}
-	
+
 	/**
 	 * Get the data inputed in the node
 	 * 
@@ -628,8 +635,9 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		if (getInput().get(inputName) != null) {
 			addComponent(inputComponent, inputName, wa);
 		} else {
-			error = LanguageManagerWF.getText("dataflowaction.addinputcomponent",
-					new Object[] { inputName, getName() });
+			error = LanguageManagerWF.getText(
+					"dataflowaction.addinputcomponent", new Object[] {
+							inputName, getName() });
 			waLogger.error(error);
 		}
 		return error;
@@ -815,14 +823,14 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	public void writeProcess(Document oozieXmlDoc, Element action,
 			File localDirectoryToWrite, String pathFromOozieDir,
 			String fileNameWithoutExtension) throws RemoteException {
-		
+
 		logger.info("writeProcess");
 
 		String[] extensions = oozieAction.getFileExtensions();
 		String[] fileNames = new String[extensions.length];
-		
+
 		logger.info("writeProcess extensionslength " + extensions.length);
-		
+
 		File[] files = new File[extensions.length];
 		for (int i = 0; i < extensions.length; ++i) {
 			fileNames[i] = pathFromOozieDir + "/" + fileNameWithoutExtension
@@ -830,15 +838,15 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			files[i] = new File(localDirectoryToWrite, fileNameWithoutExtension
 					+ extensions[i]);
 		}
-		
+
 		logger.info("writeProcess 1");
-		
+
 		oozieAction.createOozieElement(oozieXmlDoc, action, fileNames);
-		
+
 		logger.info("writeProcess 2");
-		
+
 		writeOozieActionFiles(files);
-		
+
 		logger.info("writeProcess 3");
 	}
 
