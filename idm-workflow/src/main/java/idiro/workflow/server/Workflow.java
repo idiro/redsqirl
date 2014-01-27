@@ -465,9 +465,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		String error = null;
 		try {
 			String[] path = filePath.split("/");
-			String fileName = path[path.length - 1];
-			String tempPath = WorkflowPrefManager.pathUserPref.get() + "/tmp/"
-					+ fileName;
+			String fileName = path[path.length-1];
+			String tempPath = WorkflowPrefManager.pathUserPref.get()+"/tmp/"+fileName+"_"+RandomString.getRandomName(4);
 			File file = new File(tempPath);
 			logger.debug("Save xml: " + file.getAbsolutePath());
 			file.getParentFile().mkdirs();
@@ -783,13 +782,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			String[] path = filePath.split("/");
 			String fileName = path[path.length - 1];
 			String userName = System.getProperty("user.name");
-			String tempPath = WorkflowPrefManager.pathUserPref.get() + "/tmp";
+			String tempPath = WorkflowPrefManager.pathUserPref.get()+"/tmp/"+
+					fileName+"_"+RandomString.getRandomName(4);
 			FileSystem fs = NameNodeVar.getFS();
 			fs.copyToLocalFile(new Path(filePath), new Path(tempPath));
 
-			File xmlFile = new File(tempPath + "/" + fileName);
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory
-					.newInstance();
+			File xmlFile = new File(tempPath);
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(xmlFile);
 			doc.getDocumentElement().normalize();

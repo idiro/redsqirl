@@ -2,6 +2,7 @@ package idm;
 
 
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
+import idiro.workflow.server.enumeration.SavingState;
 import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.interfaces.DataFlow;
@@ -786,78 +787,118 @@ public class CanvasBean extends BaseBean implements Serializable{
 		getIdMap().clear();
 		setDf(null);
 	}
-	
+
 	public String[][] getAllOutputStatus() throws Exception{
 
 		logger.info("getAllOutputStatus");
 
 		logger.info("getAllOutputStatus nameWorkflow " + getNameWorkflow());
-		
+
 		String[][] result = new String[getIdMap().get(getNameWorkflow()).size()][];
-		
-		String state = null;
-		String pathExists = null;
-		
+
 		int i = 0;
-		for (Entry<String, String> el : getIdMap().get(getNameWorkflow()).entrySet()){
-			
+		for (Entry<String, String> el : getIdMap().get(getNameWorkflow()).entrySet()){			
 			DataFlowElement df = getDf().getElement(el.getValue());
-			
-			logger.info("name obj: " + el.getValue());
-			
-			state = null;
-			pathExists = null;
+			result[i++] = getOutputStatus(df,el.getKey());
 
-			if (df != null && df.getDFEOutput() != null){
-				for (Entry<String, DFEOutput> e : df.getDFEOutput().entrySet()){
-					
-					state = e.getValue().getSavingState().toString();
-
-					logger.info("path: "+e.getValue().getPath());
-
-					pathExists = String.valueOf(e.getValue().isPathExists());
-
-					//logger.info(e.getKey()+" - "+state+" - "+pathExists);
-				}
-			}
-
-			logger.info("add result " + el.getValue()+" - "+state+" - "+pathExists);
-			result[i++] = new String[]{el.getValue(), state, pathExists};
-			
 		}
-		
+
 		return result;
 	}
 
-	public String[] getOutputStatus() throws Exception{
+	private String[] getOutputStatus( DataFlowElement dfe, String groupId) throws RemoteException{
+		String state = null;
+		String pathExistsStr = null;
+
+		if (dfe != null && dfe.getDFEOutput() != null){
+			boolean pathExists = false;
+			for (Entry<String, DFEOutput> e : dfe.getDFEOutput().entrySet()){
+
+				String stateCur = e.getValue().getSavingState().toString();
+
+				logger.info("path: "+e.getValue().getPath());
+
+				pathExists |= e.getValue().isPathExists();
+				if(stateCur != null){
+					if(state == null){
+						state = stateCur;
+					}else if(state.equalsIgnoreCase(SavingState.BUFFERED.toString()) &&
+							stateCur.equalsIgnoreCase(SavingState.RECORDED.toString())){
+						state = stateCur;
+					}else if(state.equalsIgnoreCase(SavingState.TEMPORARY.toString()) &&
+							(stateCur.equalsIgnoreCase(SavingState.RECORDED.toString()) ||
+									stateCur.equalsIgnoreCase(SavingState.BUFFERED.toString())
+									)){
+						state = stateCur;
+					}
+				}
+
+			}
+			if(!dfe.getDFEOutput().isEmpty()){
+				pathExistsStr = String.valueOf(pathExists);
+			}
+
+			logger.info("element " + dfe.getComponentId());
+			logger.info("state " + state);
+			logger.info("pathExists " + String.valueOf(pathExistsStr));
+		}
+		logger.info("output status result " + groupId+" - "+state+" - "+pathExistsStr);
+		return new String[]{groupId, state, pathExistsStr};
+	}
+
+	/**
+	 * Recursive function to get the 
+	 * output status of all the elements after the one specified
+	 * @param dfe The data flow element
+	 * @param status the list to append the result 
+	 * @throws RemoteException 
+	 */
+	private void getOutputStatus( DataFlowElement dfe,List<String[]> status) throws RemoteException{
+
+		if (dfe != null && dfe.getDFEOutput() != null){
+			String compId = dfe.getComponentId();
+			if(compId == null){
+				logger.info("Error component id cannot be null");
+			}else{
+				String groupId = null;
+				Map<String,String> mapIdW = getIdMap().get(getNameWorkflow());
+				for (Entry<String, String> e : mapIdW.entrySet()){
+					if(compId.equals(e.getValue())){
+						groupId = e.getKey();
+					}
+				}
+				if(groupId == null){
+					logger.info("Error getting status: "+compId);
+				}else{
+					status.add(getOutputStatus(dfe, groupId));
+
+					for(DataFlowElement cur:dfe.getAllOutputComponent()){
+						getOutputStatus(cur,status);
+					}
+				}
+			}
+		}
+
+	}
+
+	public String[][] getOutputStatus() throws Exception{
 
 		logger.info("getOutputStatus");
 
 		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String groupId = params.get("groupId");
 
-		DataFlowElement df = getDf().getElement(getIdMap().get(getNameWorkflow()).get(groupId));
+		DataFlowElement df = getDf().getElement(getIdElement(groupId));
 
-		String state = null;
-		String pathExists = null;
-
-		if (df != null && df.getDFEOutput() != null){
-			for (Entry<String, DFEOutput> e : df.getDFEOutput().entrySet()){
-				state = e.getValue().getSavingState().toString();
-
-				logger.info("path: "+e.getValue().getPath());
-
-				pathExists = String.valueOf(e.getValue().isPathExists());
-
-				logger.info(e.getKey()+" - "+state+" - "+pathExists);
-			}
+		List<String[]> status = new LinkedList<String[]>();
+		getOutputStatus(df,status);
+		String[][] ans = new String[status.size()][];
+		int i = 0;
+		for(String[] elStat : status){
+			ans[i++] = elStat;
 		}
 
-		logger.info("groupId " + groupId);
-		logger.info("state " + state);
-		logger.info("pathExists " + String.valueOf(pathExists));
-
-		return new String[]{groupId, state, pathExists};
+		return ans;
 	}
 
 	public String[][] getRunningStatus() throws Exception{
@@ -879,20 +920,22 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 				logger.info(e.getKey()+" - "+status);
 
-				String pathExists = null;
-
-
+				String pathExistsStr = null;
 				if (cur  != null){
+					boolean pathExists = false;
 					for (Entry<String, DFEOutput> e2 : cur.getDFEOutput().entrySet()){
 
 						logger.info("path: "+e2.getValue().getPath());
 
-						pathExists = String.valueOf(e2.getValue().isPathExists());
+						pathExists |= e2.getValue().isPathExists();
 
+					}
+					if(!cur.getDFEOutput().isEmpty()){
+						pathExistsStr = String.valueOf(pathExists);
 					}
 				}
 
-				result[i++] = new String[]{e.getKey(), status, pathExists};
+				result[i++] = new String[]{e.getKey(), status, pathExistsStr};
 			}
 		}
 

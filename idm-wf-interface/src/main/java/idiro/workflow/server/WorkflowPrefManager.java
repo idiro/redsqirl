@@ -173,7 +173,8 @@ public class WorkflowPrefManager extends BlockManager{
 	public static final String user_hive = "hive_jdbc_url",
 			user_rsa_private= "private_rsa_key",
 			user_backup="backup_path",
-			user_nb_backup="number_backup";
+			user_nb_backup="number_backup",
+			user_nb_oozie_dir_tokeep="number_oozie_job_directory_tokeep";
 
 	/**
 	 * Constructor.
