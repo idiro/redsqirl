@@ -236,8 +236,8 @@ function createLegend(canvasName) {
 	    	                 ['TEMPORARY',getColorOutputType('TEMPORARY')]];
 
 	var outputExistenceColours = [
-	    	                 ['Dataset exists',getColorOutputExistence('true')],
-	    	                 ['Dataset does not exist',getColorOutputExistence('false')]];
+	    	                 ['At least one dataset exists',getColorOutputExistence('true')],
+	    	                 ['No Dataset exist',getColorOutputExistence('false')]];
 
 	var runningStatusColours = [
 	    	                 ['OK',getColorRunning('OK')],
