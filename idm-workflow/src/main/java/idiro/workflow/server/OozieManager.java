@@ -2,6 +2,7 @@ package idiro.workflow.server;
 
 import idiro.hadoop.NameNodeVar;
 import idiro.utils.LocalFileSystem;
+import idiro.utils.RandomString;
 import idiro.workflow.server.interfaces.DataFlow;
 import idiro.workflow.server.interfaces.DataFlowElement;
 import idiro.workflow.server.interfaces.JobManager;
@@ -20,14 +21,18 @@ import java.net.URLConnection;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.PathFilter;
 import org.apache.log4j.Logger;
 import org.apache.oozie.client.OozieClient;
 import org.apache.oozie.client.OozieClientException;
@@ -163,14 +168,137 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 		return run(df,df.getElement());
 	}
 
+	public void cleanJobDirectory(final String nameWf) throws RemoteException{
+		Path hdfsWfPath = new Path(WorkflowPrefManager.hdfsPathOozieJobs.get());
+		FileSystem fs = null;
+		int again = 10;
+		int numberToKeep = 0;
+		{
+			String nbToKeepStr = WorkflowPrefManager.getUserProperty(WorkflowPrefManager.user_nb_oozie_dir_tokeep,"20");
+			try{
+				numberToKeep = Integer.valueOf(nbToKeepStr);
+			}catch(Exception e){
+				logger.warn("'"+nbToKeepStr+"' is not an integer");
+				numberToKeep = 20;
+			}
+		}
+		
+		if( numberToKeep < 1){
+			logger.warn(WorkflowPrefManager.user_nb_oozie_dir_tokeep+" set to 1");
+			logger.warn("We have to keep at least the current process");
+			numberToKeep = 1;
+		}
+		while(again > 0){
+			try{
+				logger.debug("Attempt "+ (11-again) +" to get a name.");
+				fs = NameNodeVar.getFS();
+				FileStatus[] children = fs.listStatus(hdfsWfPath, new PathFilter(){
+
+					@Override
+					public boolean accept(Path arg0) {
+						return arg0.getName().startsWith(nameWf+"_");
+					}
+				});
+				Arrays.sort(children,0,children.length,new Comparator<FileStatus>() {
+
+					@Override
+					public int compare(FileStatus arg0, FileStatus arg1) {
+						return (int) ((arg0.getModificationTime() - arg1.getModificationTime())/10000);
+					}
+				});
+				for(int i = 0; i < children.length - numberToKeep;++i){
+					fs.delete(children[i].getPath(),true);
+				}
+				again = -1;
+			}catch(Exception e1){
+				logger.error(e1);
+				--again;
+			}
+			try{
+				fs.close();
+			}catch(Exception e2){
+				logger.error("Fail to close HDFS: "+e2);
+			}
+			if(again > 0){
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e1) {
+					logger.error(e1);
+				}
+			}
+		}
+	}
+
+
+	protected String buildFileName(DataFlow df) throws RemoteException{
+		final String nameWf = df.getName();
+		String ans = null;
+		Path hdfsWfPath = new Path(WorkflowPrefManager.hdfsPathOozieJobs.get());
+		FileSystem fs = null;
+		int again = 10;
+		int number = 0;
+		while(again > 0){
+			try{
+				logger.debug("Attempt "+ (11-again) +" to get a name.");
+				fs = NameNodeVar.getFS();
+				FileStatus[] children = fs.listStatus(hdfsWfPath, new PathFilter(){
+
+					@Override
+					public boolean accept(Path arg0) {
+						if(arg0.getName().startsWith(nameWf)){
+							try{
+								@SuppressWarnings("unused")
+								int i = Integer.valueOf(arg0.getName().substring(nameWf.length()+1));
+								return true;
+							}catch(Exception e){}
+						}
+						return false;
+					}
+				});
+				for(FileStatus child: children){
+					number = Math.max(number, 
+							Integer.valueOf(
+									child.getPath().getName().substring(nameWf.length()+1))
+							);
+				}
+				again = -1;
+			}catch(Exception e1){
+				logger.error(e1);
+				--again;
+			}
+			try{
+				fs.close();
+			}catch(Exception e2){
+				logger.error("Fail to close HDFS: "+e2);
+			}
+			if(again > 0){
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e1) {
+					logger.error(e1);
+				}
+			}
+		}
+
+		if(again == -1){
+			ans = nameWf+"_"+(number+1);
+		}else{
+			ans = nameWf+"_"+ RandomString.getRandomName(6);
+		}
+
+		return ans;
+	}
+
 	public String run(DataFlow df, List<DataFlowElement> list) throws Exception{
-		
+
 		logger.info("run");
-		
+
 		String jobId = null;
 		String error = null;
-		File parentDir = new File(WorkflowPrefManager.pathOozieJob.get()+"/"+df.getName());
-		String hdfsWfPath = WorkflowPrefManager.hdfsPathOozieJobs.get()+"/"+df.getName();
+		final String nameWF = df.getName();
+		String fileName = buildFileName(df);
+		File parentDir = new File(WorkflowPrefManager.pathOozieJob.get()+"/"+fileName);
+		String hdfsWfPath = WorkflowPrefManager.hdfsPathOozieJobs.get()+"/"+fileName;
 		if(!parentDir.exists()){
 			parentDir.mkdirs();
 		}else{
@@ -188,11 +316,11 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 
 			OozieXmlCreator xmlCreator = null;
 			xmlCreator = new OozieXmlForkJoinPaired();
-			
+
 			logger.info("run df " + df);
 			logger.info("run list " + list);
 			logger.info("run parentDir " + parentDir);
-			
+
 			error = xmlCreator.createXml(df, list, parentDir);
 
 			if(error == null){
@@ -218,13 +346,15 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 					fs = NameNodeVar.getFS();
 					Path wCur = new Path(hdfsWfPath);
 					if(fs.exists(wCur)){
-						fs.delete(wCur,true);
+						error = LanguageManagerWF.getText("ooziemanager.filenotexist", new String[]{hdfsWfPath});
+						logger.error(error);
+					}else{
+						fs.copyFromLocalFile(
+								false,
+								true,
+								new Path(parentDir.getAbsolutePath()), 
+								wCur);
 					}
-					fs.copyFromLocalFile(
-							false,
-							true,
-							new Path(parentDir.getAbsolutePath()), 
-							wCur);
 					again = -1;
 				}catch(Exception e1){
 					e = e1;
@@ -244,11 +374,16 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 					}
 				}
 			}
-			
+
 			if(again == 0){
 				error = LanguageManagerWF.getText("ooziemanager.copydependencies",new Object[]{e.getMessage()});
 			}
-			LocalFileSystem.delete(parentDir);
+
+			try{
+				LocalFileSystem.delete(parentDir);
+			}catch(Exception e1){
+				logger.error("Fail to remove local directory: "+e1);
+			}
 		}
 
 
@@ -270,28 +405,45 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 			}
 
 		}
+
 		if(error != null){
 			logger.debug(error);
 			throw new Exception(error);
 		}
+		
+		/* Logically this could be in a separate Thread.
+		 * However we had issues with Hadoop FileSystem
+		 * object, so let's be careful.
+		 */
+		/*(new Thread(){
+			@Override
+			public void run(){*/
+		try {
+			cleanJobDirectory(nameWF);
+		} catch (RemoteException e) {
+			logger.warn("Fail clean oozie directory for job "+nameWF);
+		}
+		/*}
+
+		}).start();*/
 
 		return jobId;
 	}
-	
+
 	public String getConsoleUrl(DataFlow df) throws RemoteException, Exception{
 		String console = null;
 		String jobId = df.getOozieJobId();
-		
+
 		if(jobId != null){
 			console = oc.getJobInfo(jobId).getConsoleUrl();
 		}
 		return console;
 	}
-	
+
 	public String getElementStatus(DataFlow df, DataFlowElement dfe) throws RemoteException, Exception{
 		String status = null;
 		String jobId = df.getOozieJobId();
-		
+
 		if (jobId != null){
 			for (WorkflowAction wfa : oc.getJobInfo(jobId).getActions()){
 				String actionName = "act_"+dfe.getComponentId();
@@ -302,7 +454,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 		}
 		return status;
 	}
-	
+
 	public String getConsoleElementUrl(DataFlow df,DataFlowElement e) throws RemoteException, Exception{
 		String found = null;
 		String jobId = df.getOozieJobId();
@@ -325,8 +477,8 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 	public final OozieClient getOc() {
 		return oc;
 	}
-	
-	
+
+
 	protected Map<String,String> defaultMap(String hdfsWfPath){
 		Map<String,String> properties = new HashMap<String,String>(5);
 		Properties propSys = WorkflowPrefManager.getSysProperties();
@@ -336,13 +488,13 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 				propSys.getProperty(WorkflowPrefManager.sys_namenode));
 		properties.put(prop_queue, 
 				propSys.getProperty(WorkflowPrefManager.sys_oozie_queue));
-//		properties.put(prop_libpath, 
-//				propSys.getProperty(WorkflowPrefManager.sys_idiroEngine_path));
+		//		properties.put(prop_libpath, 
+		//				propSys.getProperty(WorkflowPrefManager.sys_idiroEngine_path));
 		properties.put(OozieClient.APP_PATH,
 				propSys.getProperty(WorkflowPrefManager.sys_namenode)+
 				hdfsWfPath);
 		properties.put("oozie.use.system.libpath","true");
-		
+
 		return properties;
 	}
 
@@ -361,7 +513,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 		}
 		bf.close();
 	}
-	
+
 	protected Properties addProperties(Properties prop,Map<String,String> map){
 		Iterator<String> itKey = map.keySet().iterator();
 		while(itKey.hasNext()){
@@ -370,7 +522,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 		}
 		return prop;
 	}
-	
+
 	/**
 	 * 
 	 * @return Returns an array containing the jobs
@@ -378,38 +530,38 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 	public List<String[]> getJobs() {
 		List<String[]> listGrid = new ArrayList<String[]>();
 		String str = oc.getOozieUrl()+"v1/jobs";
-	    try {
-	        URL url = new URL(str);
-	        URLConnection urlc = url.openConnection();
-	        BufferedReader bfr = new BufferedReader(new InputStreamReader(urlc.getInputStream()));
+		try {
+			URL url = new URL(str);
+			URLConnection urlc = url.openConnection();
+			BufferedReader bfr = new BufferedReader(new InputStreamReader(urlc.getInputStream()));
 
-	        String line;
-	        final StringBuilder builder = new StringBuilder(2048);
+			String line;
+			final StringBuilder builder = new StringBuilder(2048);
 
-	        while ((line = bfr.readLine()) != null) {
-	            builder.append(line);
-	        }
-	        // convert response to JSON array
-	        final JSONObject jso = new JSONObject(builder.toString());
-	        JSONArray jsa = jso.getJSONArray("workflows");
-	        // extract out data of interest
-	        for (int i = 0; i < jsa.length(); i++) {
-	            final JSONObject jo = (JSONObject) jsa.get(i);
-	            String[] result = new String[5];
-	            result[0] = jo.getString("id");
-	            result[1] = jo.getString("user"); 
-	            result[2] = jo.getString("appName"); 
-	            result[3] = jo.getString("status"); 
-	            result[4] = jo.getString("createdTime"); 
-	            listGrid.add(result);
-	        }
-	        
-	    } catch (Exception e) {
-	    	logger.error(e.getMessage());
-	    }
-	    return listGrid;
+			while ((line = bfr.readLine()) != null) {
+				builder.append(line);
+			}
+			// convert response to JSON array
+			final JSONObject jso = new JSONObject(builder.toString());
+			JSONArray jsa = jso.getJSONArray("workflows");
+			// extract out data of interest
+			for (int i = 0; i < jsa.length(); i++) {
+				final JSONObject jo = (JSONObject) jsa.get(i);
+				String[] result = new String[5];
+				result[0] = jo.getString("id");
+				result[1] = jo.getString("user"); 
+				result[2] = jo.getString("appName"); 
+				result[3] = jo.getString("status"); 
+				result[4] = jo.getString("createdTime"); 
+				listGrid.add(result);
+			}
+
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		}
+		return listGrid;
 	}
-	
+
 	/**
 	 * 
 	 * @return Returns a String with the Oozie URL
