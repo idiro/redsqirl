@@ -75,6 +75,7 @@ public class AppendListInteraction extends UserInteraction{
 			}
 		}catch(Exception e){
 			values = null;
+			 
 			logger.error(getId()+": Tree structure incorrect");
 		}
 		return values;

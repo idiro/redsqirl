@@ -16,8 +16,13 @@ public class LanguageManagerTests {
 		vals.add("test");
 		vals.add("test1");
 		vals.add("test2");
-
-		logger.info(LanguageManagerWF.getText("AppendListInteraction.setValues",
-				new Object[] { vals.toString() }));
+		
+		String error = LanguageManagerWF.getText("workflow.cleanProject",
+				new Object[] { vals.get(0) , vals.get(1) , vals.get(2) });
+		
+		error = error + LanguageManagerWF.getText("workflow.cleanProject",
+				new Object[] { "", vals.get(1) , vals.get(2) });
+		
+		logger.info(error);
 	}
 }

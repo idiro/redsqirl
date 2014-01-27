@@ -301,6 +301,7 @@ public class Source extends DataflowAction {
 
 		logger.info("updateinteraction Source ");
 		String interId = interaction.getId(); 
+		logger.info("interaction : "+interId);
 		if (interId.equals(key_datatype)) {
 			updateDataType(interaction.getTree());
 		} else if (interId.equals(key_datasubtype)) {
@@ -316,8 +317,9 @@ public class Source extends DataflowAction {
 
 	public void updateDataSubType(Tree<String> treeDatasubtype)
 			throws RemoteException {
-
+		logger.info("updating data subtype");
 		String type = dataType.getValue();
+		logger.info("data type : "+type);
 		if (type != null) {
 			String setValue = null;
 			List<String> posValues = new LinkedList<String>();
@@ -330,7 +332,7 @@ public class Source extends DataflowAction {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-
+				logger.info("wa type : "+ wa.getTypeName());
 				if (wa.getBrowser() != null && wa.getBrowser().toString().equalsIgnoreCase(type)) {
 					posValues.add(wa.getTypeName());
 					if ((wa.getTypeName().equalsIgnoreCase(
@@ -343,6 +345,7 @@ public class Source extends DataflowAction {
 				}
 			}
 			logger.debug("set possibilities...");
+			logger.info(" is "+posValues.toString());
 			dataSubtype.setPossibleValues(posValues);
 			if(setValue != null){
 				logger.debug("set value...");
@@ -356,8 +359,9 @@ public class Source extends DataflowAction {
 	public void updateDataSet(Tree<String> treeDataset) throws RemoteException {
 
 		String newType = dataType.getValue();
-
+		logger.info("type : "+ newType);
 		String newSubtype = dataSubtype.getValue();
+		logger.info("subtype : "+ newSubtype);
 
 		if (treeDataset.getSubTreeList().isEmpty()) {
 			treeDataset.add("browse").add("output");

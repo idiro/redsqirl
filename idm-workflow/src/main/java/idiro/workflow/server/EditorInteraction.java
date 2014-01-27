@@ -43,10 +43,11 @@ public class EditorInteraction extends UserInteraction{
 			try{
 				if(getTree().getFirstChild("editor").getFirstChild("output").getFirstChild() != null){
 					ans = getTree().getFirstChild("editor").getFirstChild("output").getFirstChild().getHead();
+				}else{
+					ans = "";
 				}
 			}catch(Exception e){
 				logger.error(getId()+": Tree structure incorrect");
-				ans = "";
 			}
 		}
 		return ans;

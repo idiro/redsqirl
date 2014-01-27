@@ -279,6 +279,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 		if(display != DisplayType.list){
 			logger.warn(getName()+" is not a list.");
 		}else{
+			logger.info("interaction : "+getName());
 			List<String> possibleValues = getPossibleValuesFromList();
 			logger.debug(possibleValues);
 			try{
@@ -286,7 +287,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 						.getFirstChild("list").getFirstChild("output").getFirstChild().getHead();
 				logger.debug(value);
 				if(!possibleValues.contains(value)){
-					error = "Value "+value + " invalid.";
+					error = LanguageManagerWF.getText("UserInteraction.invalidvalue",new Object[]{value});
 				}
 			}catch(Exception e){
 				error = LanguageManagerWF.getText("UserInteraction.treeIncorrect");
@@ -312,7 +313,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 					Tree<String> rowCur = rows.next();
 					String cur = rowCur.getFirstChild().getHead();
 					if(!possibleValues.contains(cur)){
-						error = "Value "+cur + " invalid.";
+						error = LanguageManagerWF.getText("UserInteraction.invalidvalue",new Object[]{cur});
 					}
 				}
 			}catch(Exception e){

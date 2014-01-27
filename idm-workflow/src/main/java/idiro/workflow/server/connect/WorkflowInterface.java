@@ -3,6 +3,7 @@ package idiro.workflow.server.connect;
 import idiro.workflow.server.Workflow;
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idiro.workflow.server.interfaces.DataFlow;
+import idiro.workflow.utils.LanguageManagerWF;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -47,7 +48,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 				error = e.getMessage();
 			}
 		}else{
-			error = "Workflow "+name+" already exists";
+			error=LanguageManagerWF.getText("workflowinterface.addWorkflow_workflowexists",new Object[]{name});
 		}
 		if(error != null){
 			logger.error(error);

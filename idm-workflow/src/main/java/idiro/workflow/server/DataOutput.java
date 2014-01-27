@@ -25,13 +25,16 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
 /**
- * Data Output of a WorkflowAction. 
+ * Data Output of a WorkflowAction.
+ * 
  * @see DataflowAction
  * @author etienne
- *
+ * 
  */
-public abstract class DataOutput extends UnicastRemoteObject implements DFEOutput{
+public abstract class DataOutput extends UnicastRemoteObject implements
+		DFEOutput {
 
 	private static List<String> dataOutputClassName = null;
 
@@ -44,7 +47,7 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 	 * The logger.
 	 */
 	protected static Logger statLogger = Logger.getLogger(DataOutput.class);
-	
+
 	/**
 	 * The logger.
 	 */
@@ -66,62 +69,51 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 	protected FeatureList features = null;
 
 	/**
-	 * Property of an output, 
-	 * This map gather information needed to plug the output,
-	 * the key depends on the data type:
-	 * For DATAFILE:
-	 * header
-	 * delimiter
-	 * For MapRedDirectory:
-	 * delimiter
-	 * For HBase:
-	 * new features '|' delimited
+	 * Property of an output, This map gather information needed to plug the
+	 * output, the key depends on the data type: For DATAFILE: header delimiter
+	 * For MapRedDirectory: delimiter For HBase: new features '|' delimited
 	 */
-	protected Map<String,String> dataProperty = new LinkedHashMap<String,String>();
+	protected Map<String, String> dataProperty = new LinkedHashMap<String, String>();
 
+	// public static final String hbase_new_feature = "hbase_new_feature";
 
-	//public static final String hbase_new_feature = "hbase_new_feature";
-
-	public DataOutput() throws RemoteException{
+	public DataOutput() throws RemoteException {
 		super();
 	}
 
-	public DataOutput(FeatureList features) 
-			throws RemoteException{
+	public DataOutput(FeatureList features) throws RemoteException {
 		super();
 		this.features = features;
 	}
-	
-	public static List<String> getAllClassDataOutput(){
-		if(dataOutputClassName == null){
-			dataOutputClassName = WorkflowPrefManager
-					.getInstance()
+
+	public static List<String> getAllClassDataOutput() {
+		if (dataOutputClassName == null) {
+			dataOutputClassName = WorkflowPrefManager.getInstance()
 					.getNonAbstractClassesFromSuperClass(
 							DataOutput.class.getCanonicalName());
 		}
 		return dataOutputClassName;
 	}
 
-	public static DataOutput getOutput(String typeName){
-		
-		//Find the class and create an instance
-		Iterator<String> dataOutputClassNameIt = getAllClassDataOutput().iterator();
+	public static DataOutput getOutput(String typeName) {
 
+		// Find the class and create an instance
+		Iterator<String> dataOutputClassNameIt = getAllClassDataOutput()
+				.iterator();
 
 		DataOutput outNew = null;
 		while (dataOutputClassNameIt.hasNext()) {
 			String className = dataOutputClassNameIt.next();
-			try{
+			try {
 
-				outNew = (DataOutput) Class.forName(className)
-						.newInstance();
+				outNew = (DataOutput) Class.forName(className).newInstance();
 				if (outNew.getTypeName().equalsIgnoreCase(typeName)) {
 					break;
 				} else {
 					outNew = null;
 				}
-			}catch(Exception e){
-				statLogger.warn("Fail to instanciate "+className);
+			} catch (Exception e) {
+				statLogger.warn("Fail to instanciate " + className);
 			}
 
 		}
@@ -130,25 +122,26 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 
 	/**
 	 * Write the browser tree corresponding to this data output
+	 * 
 	 * @return
-	 * @throws RemoteException 
+	 * @throws RemoteException
 	 */
-	public Tree<String> getTree() throws RemoteException{
+	public Tree<String> getTree() throws RemoteException {
 		Tree<String> root = new TreeNonUnique<String>("browse");
 		root.add("type").add(getBrowser().name());
 		root.add("subtype").add(getTypeName());
 		Tree<String> output = root.add("output");
 		output.add("path").add(getPath());
-		
+
 		Tree<String> property = output.add("property");
 		Iterator<String> propIt = dataProperty.keySet().iterator();
-		while(propIt.hasNext()){
+		while (propIt.hasNext()) {
 			String key = propIt.next();
 			property.add(key).add(dataProperty.get(key));
 		}
-		
+
 		Iterator<String> featIt = features.getFeaturesNames().iterator();
-		while(featIt.hasNext()){
+		while (featIt.hasNext()) {
 			String featName = featIt.next();
 			Tree<String> feat = output.add("feature");
 			feat.add("name").add(featName);
@@ -158,25 +151,25 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 	}
 
 	@Override
-	public void write(Document doc,Element parent) throws RemoteException{
+	public void write(Document doc, Element parent) throws RemoteException {
 		logger.debug("into write...");
 
-		logger.debug("state "+savingState.toString());
+		logger.debug("state " + savingState.toString());
 		Element state = doc.createElement("state");
 		state.appendChild(doc.createTextNode(savingState.toString()));
 		parent.appendChild(state);
 
-		logger.debug("path: "+path);
+		logger.debug("path: " + path);
 		Element pathE = doc.createElement("path");
 		pathE.appendChild(doc.createTextNode(path));
 		parent.appendChild(pathE);
 
 		Element properties = doc.createElement("properties");
 		Iterator<String> itStr = dataProperty.keySet().iterator();
-		while(itStr.hasNext()){
+		while (itStr.hasNext()) {
 			String cur = itStr.next();
-			logger.debug("property "+cur+","+dataProperty.get(cur));
-			Element property = doc.createElement("property"); 
+			logger.debug("property " + cur + "," + dataProperty.get(cur));
+			Element property = doc.createElement("property");
 
 			Element key = doc.createElement("key");
 			key.appendChild(doc.createTextNode(cur));
@@ -190,20 +183,21 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 
 		}
 		parent.appendChild(properties);
-		
+
 		Element featuresEl = doc.createElement("features");
 		itStr = features.getFeaturesNames().iterator();
-		while(itStr.hasNext()){
+		while (itStr.hasNext()) {
 			String cur = itStr.next();
-			logger.debug("feature "+cur+","+features.getFeatureType(cur));
-			Element feat = doc.createElement("feature"); 
+			logger.debug("feature " + cur + "," + features.getFeatureType(cur));
+			Element feat = doc.createElement("feature");
 
 			Element name = doc.createElement("name");
 			name.appendChild(doc.createTextNode(cur));
 			feat.appendChild(name);
 
 			Element type = doc.createElement("type");
-			type.appendChild(doc.createTextNode(features.getFeatureType(cur).name()));
+			type.appendChild(doc.createTextNode(features.getFeatureType(cur)
+					.name()));
 			feat.appendChild(type);
 
 			featuresEl.appendChild(feat);
@@ -212,51 +206,56 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 	}
 
 	@Override
-	public void read(Element parent) throws RemoteException{
+	public void read(Element parent) throws RemoteException {
 
-		String savStateStr = parent.getElementsByTagName("state")
-				.item(0).getChildNodes().item(0).getNodeValue();
-		logger.debug("Saving state: "+savStateStr);
+		String savStateStr = parent.getElementsByTagName("state").item(0)
+				.getChildNodes().item(0).getNodeValue();
+		logger.debug("Saving state: " + savStateStr);
 		savingState = SavingState.valueOf(savStateStr);
 
-		path = parent.getElementsByTagName("path")
-				.item(0).getChildNodes().item(0).getNodeValue();
-		logger.debug("Path: "+path);
-		if(path.equals("null")){
+		path = parent.getElementsByTagName("path").item(0).getChildNodes()
+				.item(0).getNodeValue();
+		logger.debug("Path: " + path);
+		if (path.equals("null")) {
 			path = null;
 		}
 
 		logger.debug("properties");
-		NodeList property = parent.getElementsByTagName("properties").item(0).getChildNodes();
-		for(int i = 0; i < property.getLength(); ++i){
-			String key = ((Element)property.item(i)).getElementsByTagName("key")
-					.item(0).getChildNodes().item(0).getNodeValue();
-			logger.debug("key: "+key);
+		NodeList property = parent.getElementsByTagName("properties").item(0)
+				.getChildNodes();
+		for (int i = 0; i < property.getLength(); ++i) {
+			String key = ((Element) property.item(i))
+					.getElementsByTagName("key").item(0).getChildNodes()
+					.item(0).getNodeValue();
+			logger.debug("key: " + key);
 			String value = null;
-			if (((Element)property.item(i)).getElementsByTagName("value")
-					.item(0).getChildNodes().item(0) != null){
-				value =((Element)property.item(i)).getElementsByTagName("value")
-						.item(0).getChildNodes().item(0).getNodeValue();
+			if (((Element) property.item(i)).getElementsByTagName("value")
+					.item(0).getChildNodes().item(0) != null) {
+				value = ((Element) property.item(i))
+						.getElementsByTagName("value").item(0).getChildNodes()
+						.item(0).getNodeValue();
 			}
-			logger.debug("value: "+value);
-			addProperty(key,value);
+			logger.debug("value: " + value);
+			addProperty(key, value);
 		}
-		
+
 		logger.debug("features");
 		features = new OrderedFeatureList();
-		NodeList featuresEl = parent.getElementsByTagName("features").item(0).getChildNodes();
-		for(int i = 0; i < featuresEl.getLength(); ++i){
-			String name = ((Element)featuresEl.item(i)).getElementsByTagName("name")
-					.item(0).getChildNodes().item(0).getNodeValue();
-			logger.debug("name: "+name);
-			String type = ((Element)featuresEl.item(i)).getElementsByTagName("type")
-						.item(0).getChildNodes().item(0).getNodeValue();
-			logger.debug("type: "+type);
+		NodeList featuresEl = parent.getElementsByTagName("features").item(0)
+				.getChildNodes();
+		for (int i = 0; i < featuresEl.getLength(); ++i) {
+			String name = ((Element) featuresEl.item(i))
+					.getElementsByTagName("name").item(0).getChildNodes()
+					.item(0).getNodeValue();
+			logger.debug("name: " + name);
+			String type = ((Element) featuresEl.item(i))
+					.getElementsByTagName("type").item(0).getChildNodes()
+					.item(0).getNodeValue();
+			logger.debug("type: " + type);
 			features.addFeature(name, FeatureType.valueOf(type));
 		}
 
 	}
-
 
 	/**
 	 * @return the features
@@ -266,7 +265,8 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 	}
 
 	/**
-	 * @param features the features to set
+	 * @param features
+	 *            the features to set
 	 */
 	public void setFeatures(FeatureList features) {
 		this.features = features;
@@ -280,7 +280,8 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 	}
 
 	/**
-	 * @param savingState the savingState to set
+	 * @param savingState
+	 *            the savingState to set
 	 */
 	public final void setSavingState(SavingState savingState) {
 		this.savingState = savingState;
@@ -292,32 +293,32 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 	}
 
 	@Override
-	public void addProperty(String key, String value){
+	public void addProperty(String key, String value) {
 		dataProperty.put(key, value);
 	}
 
 	@Override
-	public String getProperty(String key){
+	public String getProperty(String key) {
 		return dataProperty.get(key);
 	}
 
 	@Override
-	public void removeProperty(String key){
+	public void removeProperty(String key) {
 		dataProperty.remove(key);
 	}
 
 	@Override
-	public void removeAllProperties(){
+	public void removeAllProperties() {
 		Iterator<String> it = dataProperty.keySet().iterator();
-		while(it.hasNext()){
+		while (it.hasNext()) {
 			dataProperty.put(it.next(), "");
 		}
 	}
 
 	@Override
-	public String clean() throws RemoteException{
+	public String clean() throws RemoteException {
 		String err = null;
-		if(savingState != SavingState.RECORDED && isPathExists()){
+		if (savingState != SavingState.RECORDED && isPathExists()) {
 			err = remove();
 		}
 		return err;
@@ -332,8 +333,9 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 	}
 
 	/**
-	 * @param path the path to set
-	 * @throws RemoteException 
+	 * @param path
+	 *            the path to set
+	 * @throws RemoteException
 	 */
 	@Override
 	public void setPath(String path) throws RemoteException {
@@ -346,18 +348,14 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 		String colour_pref = null;
 		Properties prop = new Properties();
 		try {
-			prop.load(
-					new FileReader(
-							new File(WorkflowPrefManager.pathUserDFEOutputColour.get()))
-					);
+			prop.load(new FileReader(new File(
+					WorkflowPrefManager.pathUserDFEOutputColour.get())));
 			colour_pref = prop.getProperty(getTypeName());
-			if(colour_pref == null){
+			if (colour_pref == null) {
 				prop.put(getTypeName(), defaultCol);
-				prop.store(
-						new FileWriter(
-								new File(WorkflowPrefManager.
-										pathUserDFEOutputColour.get())), 
-										"Add "+getTypeName()+" to the file");
+				prop.store(new FileWriter(new File(
+						WorkflowPrefManager.pathUserDFEOutputColour.get())),
+						"Add " + getTypeName() + " to the file");
 			}
 			prop.clear();
 		} catch (FileNotFoundException e) {
@@ -365,18 +363,16 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 			prop.clear();
 			prop.put(getTypeName(), defaultCol);
 			try {
-				prop.store(
-						new FileWriter(
-								new File(WorkflowPrefManager.
-										pathUserDFEOutputColour.get())), 
-										"Initialise file with "+getTypeName());
+				prop.store(new FileWriter(new File(
+						WorkflowPrefManager.pathUserDFEOutputColour.get())),
+						"Initialise file with " + getTypeName());
 			} catch (IOException e1) {
 				logger.error("Fail to save colour preference");
 			}
-		}catch (Exception e) {
-			logger.error("Error when loading "+
-					WorkflowPrefManager.pathUserDFEOutputColour.get()+" "+
-					e.getMessage());
+		} catch (Exception e) {
+			logger.error("Error when loading "
+					+ WorkflowPrefManager.pathUserDFEOutputColour.get() + " "
+					+ e.getMessage());
 		}
 		return colour_pref != null ? colour_pref : defaultCol;
 	}
@@ -385,49 +381,47 @@ public abstract class DataOutput extends UnicastRemoteObject implements DFEOutpu
 	public void setColour(String colour) throws RemoteException {
 		Properties prop = new Properties();
 		try {
-			prop.load(
-					new FileReader(
-							new File(WorkflowPrefManager.pathUserDFEOutputColour.get()))
-					);
+			prop.load(new FileReader(new File(
+					WorkflowPrefManager.pathUserDFEOutputColour.get())));
 			prop.put(getTypeName(), colour);
-			prop.store(
-					new FileWriter(
-							new File(WorkflowPrefManager.
-									pathUserDFEOutputColour.get())), 
-									"Add "+getTypeName()+" to the file");
+			prop.store(new FileWriter(new File(
+					WorkflowPrefManager.pathUserDFEOutputColour.get())), "Add "
+					+ getTypeName() + " to the file");
 			prop.clear();
 		} catch (FileNotFoundException e) {
 			logger.debug("No file found initialize one");
 			prop.clear();
 			prop.put(getTypeName(), colour);
 			try {
-				prop.store(
-						new FileWriter(
-								new File(WorkflowPrefManager.
-										pathUserDFEOutputColour.get())), 
-										"Initialise file with "+getTypeName());
+				prop.store(new FileWriter(new File(
+						WorkflowPrefManager.pathUserDFEOutputColour.get())),
+						"Initialise file with " + getTypeName());
 			} catch (IOException e1) {
 				logger.error("Fail to save colour preference");
 			}
-		}catch (Exception e) {
-			logger.error("Error when loading "+
-					WorkflowPrefManager.pathUserDFEOutputColour.get()+" "+
-					e.getMessage());
+		} catch (Exception e) {
+			logger.error("Error when loading "
+					+ WorkflowPrefManager.pathUserDFEOutputColour.get() + " "
+					+ e.getMessage());
 		}
 	}
 
 	protected abstract String getDefaultColor();
 
-	public boolean compare(String path, FeatureList fl, Map<String,String> props){
+	public boolean compare(String path, FeatureList fl,
+			Map<String, String> props) {
 		logger.debug("Comparaison dataoutput:");
-		logger.debug(this.path+" "+path);
-		if(this.path == null){
-		return false;
+		logger.debug(this.path + " " + path);
+		if (this.path == null) {
+			return false;
 		}
 		try {
-		logger.debug(features.getFeaturesNames()+" "+fl.getFeaturesNames());
-		} catch (RemoteException e) {}
-		logger.debug(dataProperty+" "+props);
-		return this.path.equals(path) && features.equals(fl) && dataProperty.equals(props);
+			logger.debug(features.getFeaturesNames() + " "
+					+ fl.getFeaturesNames());
+		} catch (RemoteException e) {
 		}
+		logger.debug(dataProperty + " " + props);
+		return this.path.equals(path) && features.equals(fl)
+				&& dataProperty.equals(props);
+	}
 }

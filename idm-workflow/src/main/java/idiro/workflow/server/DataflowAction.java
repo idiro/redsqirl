@@ -340,8 +340,8 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			}
 		
 		} catch (DOMException dme) {
-			error = dme.getMessage();
-			logger.info("writeValuesXml error dme " + dme + " -- " + dme.getMessage());
+			error = LanguageManagerWF.getText("dataflowaction.writevaluesxml_domexception",
+					new Object[] { dme.getMessage() });
 		} catch (Exception e) {
 			error = LanguageManagerWF.getText("dataflowaction.writevaluesxml",
 					new Object[] { e.getMessage() });
