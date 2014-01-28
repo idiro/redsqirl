@@ -1,8 +1,8 @@
 package idm;
 
 import idiro.workflow.server.WorkflowPrefManager;
-import idiro.workflow.server.connect.interfaces.PckManager;
 import idiro.workflow.utils.PackageManager;
+import idm.useful.MessageUseful;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -40,6 +41,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	private boolean showMain;
 	private boolean userInstall = true;
 	private IdmPackage curPackage;
+	private String errorMsg;
 
 	private String[] unUserPackage,
 	unSysPackage;
@@ -159,7 +161,8 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		List<SelectItem> result = new ArrayList<SelectItem>();
 		while(it.hasNext()){
 			String pck = it.next();
-			result.add(new SelectItem(pck,pck));
+			String version = sysPckManager.getPackageProperty(true, pck, PackageManager.property_version);
+			result.add(new SelectItem(pck,pck+"-"+version));
 		}
 		return result;
 	}
@@ -170,7 +173,8 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		List<SelectItem> result = new ArrayList<SelectItem>();
 		while(it.hasNext()){
 			String pck = it.next();
-			result.add(new SelectItem(pck,pck));
+			String version = getPckMng().getPackageProperty(false, pck, PackageManager.property_version);
+			result.add(new SelectItem(pck,pck+"-"+version));
 		}
 		return result;
 	}
@@ -199,6 +203,9 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	}
 
 	public void installPackage() throws RemoteException{
+//		logger.info("install package");
+//			setError("error");
+//			return;
 		
 		if( userInstall){
 			logger.info("install us pck");
@@ -333,5 +340,22 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	 */
 	public void setUserInstall(boolean userInstall) {
 		this.userInstall = userInstall;
+	}
+	
+	public String getErrorMsg() {
+		return errorMsg;
+	}
+
+	public void setErrorMsg(String errorMsg) {
+		this.errorMsg = errorMsg;
+	}
+	
+	private void setError(String error){
+		MessageUseful.addErrorMessage(error);
+		HttpServletRequest request = (HttpServletRequest) FacesContext
+				.getCurrentInstance().getExternalContext().getRequest();
+		request.setAttribute("msnError", "msnError");
+
+		setErrorMsg(error);
 	}
 }
