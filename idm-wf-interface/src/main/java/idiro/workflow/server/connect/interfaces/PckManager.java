@@ -11,4 +11,6 @@ public interface PckManager extends Remote {
 	public boolean addPackage(boolean sys_package,String[] packStr) throws RemoteException;
 	
 	public List<String> getPackageNames(boolean root_pack) throws RemoteException;
+	
+	public String getPackageVersion(String packageName, boolean root_pack)  throws RemoteException;
 }

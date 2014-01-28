@@ -17,6 +17,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
@@ -45,7 +46,10 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 			image_dir = "images",
 			lib_dir = "lib",
 			action_file = "actions.txt",
-			list_files = "files.txt";
+			list_files = "files.txt",
+			properties_file = "package.properties",
+			property_version = "version",
+			property_name = "packageName";
 
 	public PackageManager() throws RemoteException{
 		super();
@@ -220,6 +224,10 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 								newPack.getAbsolutePath()+
 								"/"+action_file);
 						LocalFileSystem.copyfile(packs[i].getAbsolutePath()+
+								"/"+properties_file, 
+								newPack.getAbsolutePath()+
+								"/"+properties_file);
+						LocalFileSystem.copyfile(packs[i].getAbsolutePath()+
 								"/"+help_dir, 
 								getHelpDir(sys_package).getAbsolutePath());
 						LocalFileSystem.copyfile(packs[i].getAbsolutePath()+
@@ -319,10 +327,11 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 						children[i].getName().equals(image_dir) ||
 						children[i].getName().equals(lib_dir) )
 						&& children[i].isDirectory() ) ||
-						( children[i].getName().equals(action_file) 
+						( children[i].getName().equals(action_file) ||
+						 children[i].getName().equals(properties_file)
 								&& children[i].isFile() );
 			}
-			ok &= children.length == 4;
+			ok &= children.length == 5;
 			if(!ok){
 				logger.info("In "+pack.getAbsolutePath());
 				logger.info("A package is composed of a help directory,"+
@@ -353,6 +362,18 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 			logger.error("Package directory not found");
 		}
 		return packageNames;
+	}
+	
+	public String getPackageVersion(String packageName, boolean root_pack){
+		
+		File packDir = null;
+		if(root_pack){
+			packDir = new File(WorkflowPrefManager.pathSysPackagePref.get());
+		}else{
+			packDir = new File(WorkflowPrefManager.pathUserPackagePref.get());
+		}
+		
+		return getPackageProperties(packDir+"/"+packageName).get(property_version).toString();
 	}
 
 	public boolean checkNoPackageNameDuplicate(final File pack, 
@@ -561,5 +582,17 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 				new File(WorkflowPrefManager.sysPackageLibPath)
 		:
 			new File(WorkflowPrefManager.userPackageLibPath);
+	}
+	
+	private static Properties getPackageProperties(String pack_dir){
+		
+		Properties prop = new Properties();
+		try {
+			prop.load(new FileReader(new File(pack_dir+"/"+properties_file)));
+		} catch (Exception e) {
+			logger.error("Error when loading "+pack_dir+"/"+properties_file+" "+
+					e.getMessage());
+		}
+		return prop;
 	}
 }

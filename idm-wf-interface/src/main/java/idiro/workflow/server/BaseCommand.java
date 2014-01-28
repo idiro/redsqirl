@@ -2,6 +2,8 @@ package idiro.workflow.server;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.log4j.Level;
@@ -39,10 +41,9 @@ public class BaseCommand {
 				path.append(files[i] + ":");
 			}
 			String p = path.substring(0, path.length()-1);
-			String userPackagePath = getPackageClasspath(WorkflowPrefManager.userPackageLibPath);
-			String sysPackagePath = getPackageClasspath(WorkflowPrefManager.sysPackageLibPath);
+			String packagePath = getPackageClasspath(WorkflowPrefManager.userPackageLibPath, WorkflowPrefManager.sysPackageLibPath);
 
-			classpath = " -classpath " + p + userPackagePath + sysPackagePath;
+			classpath = " -classpath " + p + packagePath;
 		}catch(Exception e){
 			classpath = System.getProperty("java.class.path");
 		}
@@ -56,17 +57,37 @@ public class BaseCommand {
 		return command;
 	}
 
-	private static String getPackageClasspath(String path){
-		File f = new File(path);
+	private static String getPackageClasspath(String pathUser, String pathSys){
+		File fUser = new File(pathUser);
 		String classPath = "";
-		if (f.exists()){
-			for (File file : f.listFiles()){
+		List<String> filesUser = new ArrayList<String>();
+		if (fUser.exists() && isUserAllowInstall()){
+			for (File file : fUser.listFiles()){
 				if (file.isFile()){
-					classPath += ":"+path+"/"+file.getName();
+					classPath += ":"+pathUser+"/"+file.getName();
+					filesUser.add(file.getName());
 				}
 			}
 		}
+		
+		File fSys = new File(pathSys);
+		if (fSys.exists()){
+			for (File file : fSys.listFiles()){
+				if (file.isFile() && !filesUser.contains(file.getName())){
+					classPath += ":"+pathSys+"/"+file.getName();
+				}
+			}
+		}
+		
+		
 		return classPath;
+	}
+	
+	private static boolean isUserAllowInstall(){
+		return WorkflowPrefManager.
+				getSysProperty(
+						WorkflowPrefManager.sys_allow_user_install, "FALSE").
+						equalsIgnoreCase("true");
 	}
 
 	/** getRMIHost

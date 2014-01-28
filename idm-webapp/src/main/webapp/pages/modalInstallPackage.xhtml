@@ -78,11 +78,14 @@
                 License: #{packageMngBean.curPackage.license}<br />
                 Version: #{packageMngBean.curPackage.version}<br />
                 Price: #{packageMngBean.curPackage.price}<br />
-                <a4j:commandButton
-                    action="#{packageMngBean.installPackage}"
-                    value="#{messages.button_install}" oncomplete="">
-                    <a4j:actionparam name="downloadUrl" value="#{packageMngBean.curPackage.url}" />
-                </a4j:commandButton>
+                <a4j:region>
+	                <a4j:commandButton
+	                    action="#{packageMngBean.installPackage}"
+	                    value="#{messages.button_install}"
+	                    reRender="msnError">
+	                    <a4j:actionparam name="downloadUrl" value="#{packageMngBean.curPackage.url}" />
+	                </a4j:commandButton>
+	        	</a4j:region>
             </div>
         </h:panelGroup>
     </a4j:outputPanel>

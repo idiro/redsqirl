@@ -101,14 +101,14 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	 * @throws RemoteException
 	 */
 	public String getHelp() throws RemoteException {
-		String relativePath = WorkflowPrefManager.pathSysHelpPref.get() + "/"
+		String relativePath = WorkflowPrefManager.pathUserHelpPref.get() + "/"
 				+ getName().toLowerCase() + ".html";
 		File f = new File(
 				WorkflowPrefManager
-						.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
+				.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
 						+ relativePath);
-		if (!f.exists()) {
-			relativePath = WorkflowPrefManager.pathUserHelpPref.get() + "/"
+		if (!f.exists() || !isUserAllowInstall()) {
+			relativePath = WorkflowPrefManager.pathSysHelpPref.get() + "/"
 					+ getName().toLowerCase() + ".html";
 		}
 		return relativePath;
@@ -121,14 +121,14 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	 * @throws RemoteException
 	 */
 	public String getImage() throws RemoteException {
-		String relativePath = WorkflowPrefManager.pathSysImagePref.get() + "/"
+		String relativePath = WorkflowPrefManager.pathUserImagePref.get() + "/"
 				+ getName().toLowerCase() + ".gif";
 		File f = new File(
 				WorkflowPrefManager
-						.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
+				.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
 						+ relativePath);
-		if (!f.exists()) {
-			relativePath = WorkflowPrefManager.pathUserImagePref.get() + "/"
+		if (!f.exists() || !isUserAllowInstall()) {
+			relativePath = WorkflowPrefManager.pathSysImagePref.get() + "/"
 					+ getName().toLowerCase() + ".gif";
 		}
 		return relativePath;
@@ -919,6 +919,13 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		while (it.hasNext()) {
 			it.next().cleanThisAndAllElementAfter();
 		}
+	}
+	
+	private static boolean isUserAllowInstall(){
+		return WorkflowPrefManager.
+				getSysProperty(
+						WorkflowPrefManager.sys_allow_user_install, "FALSE").
+						equalsIgnoreCase("true");
 	}
 
 }
