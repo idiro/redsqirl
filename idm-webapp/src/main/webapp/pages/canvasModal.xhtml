@@ -329,7 +329,7 @@
 								<f:selectItems value="#{item.savingStateList}" />
 								<a4j:support event="onchange" reRender="dataOutputForm" />
 							</rich:comboBox>
-		
+		                    
 							<a4j:commandButton value="Select"
 								rendered="#{item.renderBrowserButton and item.hdfsBrowser}"
 								oncomplete="#{rich:component('modalOutputBrowserHdfs')}.show()">

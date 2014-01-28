@@ -524,7 +524,10 @@ public class CanvasBean extends BaseBean implements Serializable{
 		//Set path
 		path = FacesContext.getCurrentInstance().getExternalContext().
 				getRequestParameterMap().get("pathFile");
-
+		
+		if(!path.contains(".")){
+			path += ".rs";
+		}
 		//Update the object positions
 		updatePosition();
 		{
@@ -785,7 +788,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 		}else{
 			name = path;
 		}
-		return name.replace(".rs", "").replace(".xml", "");
+		return name.replace(".rs", "");
 	}
 
 	public void changeWorkflow() throws RemoteException{
