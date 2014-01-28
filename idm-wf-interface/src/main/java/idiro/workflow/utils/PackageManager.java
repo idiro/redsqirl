@@ -190,28 +190,31 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 			}
 			ok &= isPackageValid(packs[i]);
 		}
-
+		
 		if(ok){
 			logger.info("Install the packages one per one");
 			for(int i = 0; i < packs.length && ok;++i){
+				
+				String packageName = getPackageProperties(packs[i].getAbsolutePath()).getProperty(property_name);
+				
 				logger.debug(packs[i].getAbsolutePath()+"...");
-				if(checkNoPackageNameDuplicate(packs[i], sys_package) &&
+				if(checkNoPackageNameDuplicate(packageName, sys_package) &&
 						checkNoHelpFileDuplicate(packs[i],sys_package) &&
 						checkNoImageFileDuplicate(packs[i],sys_package) &&
 						checkNoActionDuplicate(packs[i]) &&
 						checkNoJarFileDuplicate(packs[i],sys_package)
 						){
-					logger.info("Installing "+packs[i].getName()+"...");
+					logger.info("Installing "+packageName+"...");
 					List<String> files = getFileNames(packs[i],"");
 					files.remove("/"+action_file);
 
 					File newPack = null;
 					if(sys_package){
 						newPack = new File(WorkflowPrefManager.pathSysPackagePref.get(),
-								packs[i].getName());
+								packageName);
 					}else{
 						newPack = new File(WorkflowPrefManager.pathUserPackagePref.get(),
-								packs[i].getName());
+								packageName);
 					}
 					logger.debug("install...");
 					newPack.mkdirs();
@@ -335,7 +338,16 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 			if(!ok){
 				logger.info("In "+pack.getAbsolutePath());
 				logger.info("A package is composed of a help directory,"+
-						" an image directory, a lib directory and an action file");
+						" an image directory, a lib directory, an action file" +
+						" and a properties file");
+			}
+			else{
+				Properties p = getPackageProperties(pack.getAbsolutePath());
+				if (p.get(property_name) == null || p.get(property_version) == null){
+					ok = false;
+					logger.info("File "+properties_file+" must contain '"+
+							property_name+"' and '"+property_version+"' properties");
+				}
 			}
 		}else{
 			ok = false;
@@ -376,7 +388,7 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 		return getPackageProperties(packDir+"/"+packageName).get(property_version).toString();
 	}
 
-	public boolean checkNoPackageNameDuplicate(final File pack, 
+	public boolean checkNoPackageNameDuplicate(final String pack_name, 
 			boolean root_pack){
 		logger.debug("check no package name duplicate...");
 		boolean ok = true;
@@ -392,17 +404,17 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 
 				@Override
 				public boolean accept(File arg0) {
-					return arg0.getName().equalsIgnoreCase(pack.getName());
+					return arg0.getName().equalsIgnoreCase(pack_name);
 				}
 			});
 
 			if(exists.length != 0){
 				ok = false;
-				logger.info("Package "+pack.getName()+" already exists");
+				logger.info("Package "+pack_name+" already exists");
 			}
 		}
 
-		return root_pack || !ok ? ok : checkNoPackageNameDuplicate(pack,true);
+		return root_pack || !ok ? ok : checkNoPackageNameDuplicate(pack_name,true);
 	}
 
 	public boolean checkNoHelpFileDuplicate(File pack, boolean sys_package){
