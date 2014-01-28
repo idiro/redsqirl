@@ -162,7 +162,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		while(it.hasNext()){
 			String pck = it.next();
 			String version = sysPckManager.getPackageProperty(true, pck, PackageManager.property_version);
-			result.add(new SelectItem(pck+version,pck+version));
+			result.add(new SelectItem(pck,pck+"-"+version));
 		}
 		return result;
 	}
@@ -174,7 +174,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		while(it.hasNext()){
 			String pck = it.next();
 			String version = getPckMng().getPackageProperty(false, pck, PackageManager.property_version);
-			result.add(new SelectItem(pck+version,pck+version));
+			result.add(new SelectItem(pck,pck+"-"+version));
 		}
 		return result;
 	}
@@ -203,21 +203,21 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	}
 
 	public void installPackage() throws RemoteException{
-		logger.info("install package");
-			setError("error");
-			return;
+//		logger.info("install package");
+//			setError("error");
+//			return;
 		
-//		if( userInstall){
-//			logger.info("install us pck");
-//			if(isUserAllowInstall()){
-//				installPackage(false);
-//			}
-//		}else{
-//			logger.info("install sys pck");
-//			if(isAdmin()){
-//				installPackage(true);
-//			}
-//		}
+		if( userInstall){
+			logger.info("install us pck");
+			if(isUserAllowInstall()){
+				installPackage(false);
+			}
+		}else{
+			logger.info("install sys pck");
+			if(isAdmin()){
+				installPackage(true);
+			}
+		}
 	}
 	private void installPackage(boolean sys) throws RemoteException{
 
