@@ -708,11 +708,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 			logger.warn("Fail creating backup directory");
 		}
 		if(getName() != null && !getName().isEmpty()){
-			path += "/"+getName()+"-"+dateFormat.format(date)+".xml";
+			path += "/"+getName()+"-"+dateFormat.format(date)+".rs";
 		}else{
-			path += "/idm-backup-"+dateFormat.format(date)+".xml";
+			path += "/idm-backup-"+dateFormat.format(date)+".rs";
 		}
+		boolean save_swp = isSaved();
 		String error = save(path);
+		saved = save_swp;
 
 		try{
 			if(error != null){
@@ -723,7 +725,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 			cleanUpBackup();
 		}catch(Exception e){
 			logger.warn(e.getMessage());
-			logger.warn("Fail cleaning up backup directory");
+			logger.warn("Failed cleaning up backup directory");
 		}
 
 	}
