@@ -161,7 +161,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		List<SelectItem> result = new ArrayList<SelectItem>();
 		while(it.hasNext()){
 			String pck = it.next();
-			String version = sysPckManager.getPackageVersion(pck, true);
+			String version = sysPckManager.getPackageProperty(true, pck, PackageManager.property_version);
 			result.add(new SelectItem(pck+version,pck+version));
 		}
 		return result;
@@ -173,7 +173,8 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		List<SelectItem> result = new ArrayList<SelectItem>();
 		while(it.hasNext()){
 			String pck = it.next();
-			result.add(new SelectItem(pck,pck));
+			String version = getPckMng().getPackageProperty(false, pck, PackageManager.property_version);
+			result.add(new SelectItem(pck+version,pck+version));
 		}
 		return result;
 	}

@@ -61,7 +61,9 @@ public class BaseCommand {
 		File fUser = new File(pathUser);
 		String classPath = "";
 		List<String> filesUser = new ArrayList<String>();
-		if (fUser.exists() && isUserAllowInstall()){
+		if (fUser.exists() && WorkflowPrefManager.getSysProperty(
+				WorkflowPrefManager.sys_allow_user_install, "FALSE").
+						equalsIgnoreCase("true")){
 			for (File file : fUser.listFiles()){
 				if (file.isFile()){
 					classPath += ":"+pathUser+"/"+file.getName();
@@ -81,13 +83,6 @@ public class BaseCommand {
 		
 		
 		return classPath;
-	}
-	
-	private static boolean isUserAllowInstall(){
-		return WorkflowPrefManager.
-				getSysProperty(
-						WorkflowPrefManager.sys_allow_user_install, "FALSE").
-						equalsIgnoreCase("true");
 	}
 
 	/** getRMIHost
