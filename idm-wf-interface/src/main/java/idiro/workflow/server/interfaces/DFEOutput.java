@@ -65,6 +65,7 @@ public interface DFEOutput extends Remote{
 	
 	/**
 	 * Generate automatically a valid path for the given user.
+	 * Set path of @see{generatePathStr}.
 	 * @param component
 	 * @param outputName
 	 * @throws RemoteException 
@@ -72,6 +73,33 @@ public interface DFEOutput extends Remote{
 	public void generatePath(String userName,
 				String component, 
 				String outputName) throws RemoteException;
+	
+	/**
+	 * Generate a path name.
+	 * @param userName
+	 * @param component
+	 * @param outputName
+	 * @return
+	 * @throws RemoteException
+	 */
+	public String generatePathStr(String userName,
+			String component, 
+			String outputName) throws RemoteException;
+	
+	/**
+	 * Change the path and move the existing data the
+	 * new path.
+	 * @param path
+	 * @throws RemoteException
+	 */
+	public void moveTo(String path) throws RemoteException;
+	
+	/**
+	 * Change the path and copy the existing data to the new path
+	 * @param path
+	 * @throws RemoteException
+	 */
+	public void copyTo(String path) throws RemoteException;
 	
 	/**
 	 * True if the current path is valid.

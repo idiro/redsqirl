@@ -54,7 +54,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 	@Override
 	public String check() throws RemoteException {
 		DFEOutput in = hs.getDFEInput().get(PigElement.key_input).get(0);
-		FeatureList fl = new OrderedFeatureList();
+		FeatureList fl = null;
 		String msg = super.check();
 
 		if(msg == null){
@@ -65,31 +65,8 @@ public class PigTableSelectInteraction extends TableInteraction {
 				msg = PigLanguageManager.getText("pig.select_features_interaction.checkempty");
 			}else{
 				logger.info("Feats "+in.getFeatures().getFeaturesNames());
-				Set<String> featGrouped = null;
-
-				// only show what is in grouped interaction
-				if (hs.getGroupingInt() != null) {
-					Iterator<String> inputFeatsIt= in.getFeatures().getFeaturesNames().iterator();
-					while (inputFeatsIt.hasNext()) {
-						String nameF = inputFeatsIt.next().toUpperCase();
-						String nameFwithAlias = getAlias().toUpperCase()+"."+nameF;
-						fl.addFeature(nameFwithAlias, in.getFeatures().getFeatureType(nameF));
-					}
-
-					featGrouped = new HashSet<String>();
-					logger.info("group interaction was not null");
-					Iterator<String> grInt = hs.getGroupingInt()
-							.getValues().iterator();
-					if (grInt.hasNext()) {
-						while (grInt.hasNext()) {
-							String feat = getAlias().toUpperCase() + "." +
-									grInt.next().toUpperCase();
-							featGrouped.add(feat);
-						}
-					}
-				}else{
-					fl = in.getFeatures();
-				}
+				Set<String> featGrouped = getFeatGrouped();
+				fl = getInputFeatureList();
 
 				Iterator<Map<String,String>> rows = lRow.iterator();
 				int rowNb = 0;
@@ -126,33 +103,9 @@ public class PigTableSelectInteraction extends TableInteraction {
 			throws RemoteException {
 		String error = null;
 		try {
-			DFEOutput in = hs.getDFEInput().get(PigElement.key_input).get(0);
-			Set<String> featGrouped = null;
-			FeatureList fl = new OrderedFeatureList();
+			Set<String> featGrouped = getFeatGrouped();
+			FeatureList fl = getInputFeatureList();
 
-			// only show what is in grouped interaction
-			if (hs.getGroupingInt() != null) {
-				Iterator<String> inputFeatsIt= in.getFeatures().getFeaturesNames().iterator();
-				while (inputFeatsIt.hasNext()) {
-					String nameF = inputFeatsIt.next().toUpperCase();
-					String nameFwithAlias = getAlias().toUpperCase()+"."+nameF;
-					fl.addFeature(nameFwithAlias, in.getFeatures().getFeatureType(nameF));
-				}
-
-				featGrouped = new HashSet<String>();
-				logger.info("group interaction was not null");
-				Iterator<String> grInt = hs.getGroupingInt()
-						.getValues().iterator();
-				if (grInt.hasNext()) {
-					while (grInt.hasNext()) {
-						String feat = getAlias().toUpperCase() + "." +
-								grInt.next().toUpperCase();
-						featGrouped.add(feat);
-					}
-				}
-			}else{
-				fl = in.getFeatures();
-			}
 			if (PigDictionary.getInstance()
 					.getReturnType(expression, fl, featGrouped) == null) {
 				error = PigLanguageManager.getText("pig.expressionnull");
@@ -162,6 +115,61 @@ public class PigTableSelectInteraction extends TableInteraction {
 			logger.error(error, e);
 		}
 		return error;
+	}
+
+	public FeatureList getInputFeatureList() throws RemoteException{
+		FeatureList fl = null;
+		DFEOutput in = hs.getDFEInput().get(PigElement.key_input).get(0);
+
+		// only show what is in grouped interaction
+		if (hs.getGroupingInt() != null) {
+			String alias = getAlias();
+			fl = new OrderedFeatureList();
+			Iterator<String> inputFeatsIt= in.getFeatures().getFeaturesNames().iterator();
+			while (inputFeatsIt.hasNext()) {
+				String nameF = inputFeatsIt.next().toUpperCase();
+				String nameFwithAlias = alias+"."+nameF;
+				fl.addFeature(nameFwithAlias, in.getFeatures().getFeatureType(nameF));
+			}
+		}else{
+			fl = in.getFeatures();
+		}
+		return fl;
+	}
+
+	public Set<String> getFeatGrouped() throws RemoteException{
+		Set<String> featGrouped = null;
+		// only show what is in grouped interaction
+		if (hs.getGroupingInt() != null) {
+			String alias = getAlias();
+			featGrouped = new HashSet<String>();
+			logger.info("group interaction is not null");
+			Iterator<String> grInt = hs.getGroupingInt()
+					.getValues().iterator();
+			while (grInt.hasNext()) {
+				String feat = alias + "." +
+						grInt.next().toUpperCase();
+				featGrouped.add(feat);
+			}
+		}
+		return featGrouped;
+	}
+	
+	public List<String> getFeatListGrouped() throws RemoteException{
+		List<String> featGrouped = null;
+		// only show what is in grouped interaction
+		if (hs.getGroupingInt() != null) {
+			featGrouped = new LinkedList<String>();
+			logger.info("group interaction is not null");
+			Iterator<String> grInt = hs.getGroupingInt()
+					.getValues().iterator();
+			while (grInt.hasNext()) {
+				String feat = getAlias() + "." +
+						grInt.next().toUpperCase();
+				featGrouped.add(feat);
+			}
+		}
+		return featGrouped;
 	}
 
 	public String addOperation(String feat, String operation) {
@@ -178,71 +186,72 @@ public class PigTableSelectInteraction extends TableInteraction {
 	public void update(DFEOutput in) throws RemoteException {
 		// get Alias
 		String alias = getAlias();
-
+		FeatureList fl = getInputFeatureList();
 		// Generate Editor
 		if (hs.getGroupingInt() != null) {
 			updateEditor(table_op_title, PigDictionary.generateEditor(PigDictionary.getInstance()
-					.createGroupSelectHelpMenu(), in));
+					.createGroupSelectHelpMenu(), fl));
 		} else {
 			updateEditor(table_op_title, PigDictionary.generateEditor(PigDictionary.getInstance()
-					.createDefaultSelectHelpMenu(), in));
+					.createDefaultSelectHelpMenu(), fl));
 		}
 
 
 		// Set the Generator
 		logger.debug("Set the generator...");
 		// Copy Generator operation
-		List<String> featList = in.getFeatures().getFeaturesNames();
 		logger.info("setting alias");
-		
+		List<String> featList = fl.getFeaturesNames();
 		logger.info("alias : "+alias);
 		if (hs.getGroupingInt() != null) {
 			logger.info("there is a grouping : "
 					+ hs.getGroupingInt().getValues().size());
+			logger.info("adding other generators");
+			List<String> groupBy = getFeatListGrouped();
+			List<String> operationsList = new LinkedList<String>();
+
+			featList.removeAll(groupBy);
+			operationsList.add(gen_operation_max);
+			addGeneratorRows(gen_operation_max, featList, fl,
+					operationsList, alias);
+			operationsList.clear();
+
+			operationsList.add(gen_operation_min);
+			addGeneratorRows(gen_operation_min, featList, fl,
+					operationsList, alias);
+			operationsList.clear();
+
+			operationsList.add(gen_operation_avg);
+			addGeneratorRows(gen_operation_avg, featList, fl,
+					operationsList, alias);
+			operationsList.clear();
+
+			operationsList.add(gen_operation_sum);
+			addGeneratorRows(gen_operation_sum, featList, fl,
+					operationsList, alias);
+			operationsList.clear();
+
+			operationsList.add(gen_operation_count);
+			addGeneratorRows(gen_operation_count, featList, fl,
+					operationsList, alias);
+			operationsList.clear();
+
+			operationsList.add(gen_operation_max);
+			operationsList.add(gen_operation_min);
+			operationsList.add(gen_operation_avg);
+			operationsList.add(gen_operation_sum);
+			operationsList.add(gen_operation_count);
+			addGeneratorRows(gen_operation_audit, featList, fl,
+					operationsList, alias);
+			operationsList.clear();
+
+
 			if (hs.getGroupingInt().getValues().size() > 0) {
-				logger.info("adding other generators");
-				List<String> groupBy = hs.getGroupingInt().getValues();
-				List<String> operationsList = new LinkedList<String>();
-
-				featList.removeAll(groupBy);
-				operationsList.add(gen_operation_max);
-				addGeneratorRows(gen_operation_max, featList, in.getFeatures(),
-						operationsList, alias);
-				operationsList.clear();
-
-				operationsList.add(gen_operation_min);
-				addGeneratorRows(gen_operation_min, featList, in.getFeatures(),
-						operationsList, alias);
-				operationsList.clear();
-
-				operationsList.add(gen_operation_avg);
-				addGeneratorRows(gen_operation_avg, featList, in.getFeatures(),
-						operationsList, alias);
-				operationsList.clear();
-
-				operationsList.add(gen_operation_sum);
-				addGeneratorRows(gen_operation_sum, featList, in.getFeatures(),
-						operationsList, alias);
-				operationsList.clear();
-
-				operationsList.add(gen_operation_count);
-				addGeneratorRows(gen_operation_count, featList, in.getFeatures(),
-						operationsList, alias);
-				operationsList.clear();
-
-				operationsList.add(gen_operation_max);
-				operationsList.add(gen_operation_min);
-				operationsList.add(gen_operation_avg);
-				operationsList.add(gen_operation_sum);
-				operationsList.add(gen_operation_count);
-				addGeneratorRows(gen_operation_audit, featList, in.getFeatures(),
-						operationsList, alias);
-				operationsList.clear();
 
 				operationsList.add(gen_operation_copy);
 				featList.clear();
 				featList.addAll(groupBy);
-				addGeneratorRows(gen_operation_copy, featList, in.getFeatures(),
+				addGeneratorRows(gen_operation_copy, featList, fl,
 						operationsList, alias);
 
 			}
@@ -250,7 +259,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 			List<String> operationsList = new LinkedList<String>();
 			featList = in.getFeatures().getFeaturesNames();
 			operationsList.add(gen_operation_copy);
-			addGeneratorRows(gen_operation_copy, featList, in.getFeatures(),
+			addGeneratorRows(gen_operation_copy, featList, fl,
 					operationsList, "");
 
 		}
@@ -286,21 +295,14 @@ public class PigTableSelectInteraction extends TableInteraction {
 				}
 
 				String optitleRow = "";
-				String featname;
-				if (alias.isEmpty()) {
-					optitleRow = addOperation(cur, operation);
-				} else {
-					optitleRow = addOperation(alias + "." + cur, operation);
-				}
-
+				optitleRow = addOperation(cur, operation);
 				row.put(table_op_title,optitleRow);
-				if (operation.isEmpty()) {
-					featname = cur;
-					row.put(table_feat_title,cur);
-				} else {
-					featname = cur + "_" + operation;
+				if(operation.isEmpty()){
+					row.put(table_feat_title, (cur.replace('.', '_')).toUpperCase());
+				}else{
+					row.put(table_feat_title, (cur.replace('.', '_') + "_" + operation).toUpperCase());
 				}
-				row.put(table_feat_title,featname);
+				
 				logger.info("trying to add type for " + cur);
 				if (operation.equalsIgnoreCase(gen_operation_avg)) {
 					row.put(table_type_title,"DOUBLE");

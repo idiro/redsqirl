@@ -123,10 +123,33 @@ public class HiveType extends DataOutput{
 	public void generatePath(String userName,
 			String component, 
 			String outputName) throws RemoteException {
-		setPath("/tmp_idm_"+userName+"_"+
+		setPath(generatePathStr(userName,component,outputName));
+	}
+	
+	@Override
+	public String generatePathStr(String userName,
+			String component, 
+			String outputName) throws RemoteException {
+		return "/tmp_idm_"+userName+"_"+
 				component+"_"+
 				outputName+"_"+
-				RandomString.getRandomName(8));
+				RandomString.getRandomName(8);
+	}
+	
+	@Override
+	public void moveTo(String newPath) throws RemoteException{
+		if(isPathExists()){
+			hInt.move(getPath(), newPath);
+		}
+		setPath(newPath);
+	}
+
+	@Override
+	public void copyTo(String newPath) throws RemoteException{
+		if(isPathExists()){
+			hInt.copy(getPath(), newPath);
+		}
+		setPath(newPath);
 	}
 
 	@Override

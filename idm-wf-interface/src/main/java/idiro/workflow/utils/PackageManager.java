@@ -17,6 +17,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
@@ -45,7 +46,11 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 			image_dir = "images",
 			lib_dir = "lib",
 			action_file = "actions.txt",
-			list_files = "files.txt";
+			list_files = "files.txt",
+			properties_file = "package.properties";
+			
+	public static String property_version = "version",
+			property_name = "packageName";
 
 	public PackageManager() throws RemoteException{
 		super();
@@ -186,28 +191,33 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 			}
 			ok &= isPackageValid(packs[i]);
 		}
-
+		
 		if(ok){
 			logger.info("Install the packages one per one");
 			for(int i = 0; i < packs.length && ok;++i){
+				
+				String packageName = getPackageProperties(packs[i].getAbsolutePath()).getProperty(property_name);
+				String packageVersion = getPackageProperties(packs[i].getAbsolutePath()).getProperty(property_version);
+				
 				logger.debug(packs[i].getAbsolutePath()+"...");
-				if(checkNoPackageNameDuplicate(packs[i], sys_package) &&
+				if(checkNoPackageNameDuplicate(packageName, sys_package, packageVersion, false) &&
 						checkNoHelpFileDuplicate(packs[i],sys_package) &&
 						checkNoImageFileDuplicate(packs[i],sys_package) &&
-						checkNoActionDuplicate(packs[i]) &&
+						checkNoActionDuplicate(packs[i], packageName, sys_package) &&
 						checkNoJarFileDuplicate(packs[i],sys_package)
 						){
-					logger.info("Installing "+packs[i].getName()+"...");
+					logger.info("Installing "+packageName+"...");
 					List<String> files = getFileNames(packs[i],"");
 					files.remove("/"+action_file);
+					files.remove("/"+properties_file);
 
 					File newPack = null;
 					if(sys_package){
 						newPack = new File(WorkflowPrefManager.pathSysPackagePref.get(),
-								packs[i].getName());
+								packageName);
 					}else{
 						newPack = new File(WorkflowPrefManager.pathUserPackagePref.get(),
-								packs[i].getName());
+								packageName);
 					}
 					logger.debug("install...");
 					newPack.mkdirs();
@@ -219,6 +229,10 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 								"/"+action_file, 
 								newPack.getAbsolutePath()+
 								"/"+action_file);
+						LocalFileSystem.copyfile(packs[i].getAbsolutePath()+
+								"/"+properties_file, 
+								newPack.getAbsolutePath()+
+								"/"+properties_file);
 						LocalFileSystem.copyfile(packs[i].getAbsolutePath()+
 								"/"+help_dir, 
 								getHelpDir(sys_package).getAbsolutePath());
@@ -276,11 +290,33 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 		}
 	}
 
-	public List<File> getAllPackages(){
+	private List<File> getAllPackages(boolean sys_package){
+		String pathSys = WorkflowPrefManager.pathSysPackagePref.get();
+		String pathUser = WorkflowPrefManager.pathUserPackagePref.get();
+		
 		List<File> ans = new LinkedList<File>();
-		File sysPack = new File(WorkflowPrefManager.pathSysPackagePref.get());
-		if(sysPack.exists()){
-			File[] sysFiles = sysPack.listFiles(
+		
+		File fUser = new File(pathUser);
+		
+		if (!sys_package && fUser.exists() && WorkflowPrefManager.getSysProperty(
+				WorkflowPrefManager.sys_allow_user_install, "FALSE").
+						equalsIgnoreCase("true")){
+			File[] userFiles = fUser.listFiles(
+					new FileFilter() {
+
+						@Override
+						public boolean accept(File pathname) {
+							return !pathname.getName().startsWith(".");
+						}
+					});
+			for(int i = 0; i < userFiles.length; ++i){
+				ans.add(userFiles[i]);
+			} 
+		}
+		
+		File fSys = new File(pathSys);
+		if (fSys.exists()){
+			File[] sysFiles = fSys.listFiles(
 					new FileFilter() {
 
 						@Override
@@ -292,20 +328,7 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 				ans.add(sysFiles[i]);
 			}
 		}
-		File userPack = new File(WorkflowPrefManager.pathUserPackagePref.get());
-		if(userPack.exists()){
-			File[] userFiles = userPack.listFiles(
-					new FileFilter() {
-
-						@Override
-						public boolean accept(File pathname) {
-							return !pathname.getName().startsWith(".");
-						}
-					});
-			for(int i = 0; i < userFiles.length; ++i){
-				ans.add(userFiles[i]);
-			}
-		}
+		
 		return ans;
 	}
 
@@ -319,14 +342,24 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 						children[i].getName().equals(image_dir) ||
 						children[i].getName().equals(lib_dir) )
 						&& children[i].isDirectory() ) ||
-						( children[i].getName().equals(action_file) 
+						( children[i].getName().equals(action_file) ||
+						 children[i].getName().equals(properties_file)
 								&& children[i].isFile() );
 			}
-			ok &= children.length == 4;
+			ok &= children.length == 5;
 			if(!ok){
 				logger.info("In "+pack.getAbsolutePath());
 				logger.info("A package is composed of a help directory,"+
-						" an image directory, a lib directory and an action file");
+						" an image directory, a lib directory, an action file" +
+						" and a properties file");
+			}
+			else{
+				Properties p = getPackageProperties(pack.getAbsolutePath());
+				if (p.get(property_name) == null || p.get(property_version) == null){
+					ok = false;
+					logger.info("File "+properties_file+" must contain '"+
+							property_name+"' and '"+property_version+"' properties");
+				}
 			}
 		}else{
 			ok = false;
@@ -354,9 +387,21 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 		}
 		return packageNames;
 	}
+	
+	public String getPackageProperty(boolean root_pack, String packageName, String property){
+		
+		File packDir = null;
+		if(root_pack){
+			packDir = new File(WorkflowPrefManager.pathSysPackagePref.get());
+		}else{
+			packDir = new File(WorkflowPrefManager.pathUserPackagePref.get());
+		}
+		
+		return getPackageProperties(packDir+"/"+packageName).get(property).toString();
+	}
 
-	public boolean checkNoPackageNameDuplicate(final File pack, 
-			boolean root_pack){
+	public boolean checkNoPackageNameDuplicate(final String pack_name, 
+			boolean root_pack, String pack_version, boolean checkVersion){
 		logger.debug("check no package name duplicate...");
 		boolean ok = true;
 		File packDir = null;
@@ -371,17 +416,25 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 
 				@Override
 				public boolean accept(File arg0) {
-					return arg0.getName().equalsIgnoreCase(pack.getName());
+					return arg0.getName().equalsIgnoreCase(pack_name);
 				}
 			});
 
 			if(exists.length != 0){
 				ok = false;
-				logger.info("Package "+pack.getName()+" already exists");
+				if (checkVersion && 
+						!getPackageProperty(root_pack, pack_name, property_version).
+						equals(pack_version)){
+					ok = true;
+				}
+				
+				if (!ok){
+					logger.info("Package "+pack_name+" already exists");
+				}
 			}
 		}
 
-		return root_pack || !ok ? ok : checkNoPackageNameDuplicate(pack,true);
+		return root_pack || !ok ? ok : checkNoPackageNameDuplicate(pack_name, true, pack_version, true);
 	}
 
 	public boolean checkNoHelpFileDuplicate(File pack, boolean sys_package){
@@ -436,7 +489,7 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 	}
 
 	public boolean checkNoActionDuplicate(
-			File pack){	
+			File pack, String pack_name, boolean sys_package){	
 		logger.debug("check no action duplicate...");
 		boolean ok = true;
 		List<String> actions = new LinkedList<String>();
@@ -459,9 +512,16 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 			ok = false;
 		}
 
-		Iterator<File> packageIt = getAllPackages().iterator();
+		Iterator<File> packageIt = getAllPackages(sys_package).iterator();
 		while(packageIt.hasNext() && ok){
-			ok = noAction(new File(packageIt.next(),action_file),actions);
+			File p = packageIt.next();
+			if (!p.getName().equals(pack_name)){
+				ok = noAction(new File(p,action_file),actions);
+			}
+		}
+		
+		if (!ok){
+			logger.info("Duplicated action");
 		}
 
 		return ok;
@@ -561,5 +621,17 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 				new File(WorkflowPrefManager.sysPackageLibPath)
 		:
 			new File(WorkflowPrefManager.userPackageLibPath);
+	}
+	
+	private static Properties getPackageProperties(String pack_dir){
+		
+		Properties prop = new Properties();
+		try {
+			prop.load(new FileReader(new File(pack_dir+"/"+properties_file)));
+		} catch (Exception e) {
+			logger.error("Error when loading "+pack_dir+"/"+properties_file+" "+
+					e.getMessage());
+		}
+		return prop;
 	}
 }

@@ -422,9 +422,9 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		HttpSession session = (HttpSession) fCtx.getExternalContext()
 				.getSession(false);
 
-		logger.info("before invalidade session");
+		logger.info("before invalidating session");
 		session.invalidate();
-		logger.info("after invalidade session");
+		logger.info("after invalidating session");
 	}
 
 	public String startProcess() {
