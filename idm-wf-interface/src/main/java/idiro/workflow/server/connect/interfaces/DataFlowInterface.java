@@ -14,6 +14,8 @@ public interface DataFlowInterface extends Remote{
 
 	public String addWorkflow(String name)throws RemoteException;
 	
+	public String renameWorkflow(String oldName, String newName)throws RemoteException;
+	
 	public void removeWorkflow(String name)throws RemoteException;
 	
 	public DataFlow getWorkflow(String name)throws RemoteException;

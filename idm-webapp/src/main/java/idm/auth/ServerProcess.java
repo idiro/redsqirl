@@ -263,13 +263,15 @@ public class ServerProcess {
 				DataFlowInterface dataFlowInterface = (DataFlowInterface) httpSession
 						.getAttribute("wfm");
 				try {
-					logger.debug("Clean and Close");
+					logger.info("Clean and close all the open worfklows");
 					dataFlowInterface.backupAll();
 					dataFlowInterface.autoCleanAll();
-				} catch (RemoteException e) {
+				} catch (RemoteException e){
+					logger.warn("Failed closing workflows");
 					e.printStackTrace();
 				}
 			} catch (Exception e) {
+				logger.error("Failed getting 'wfm'");
 				e.printStackTrace();
 				logger.error(e.getMessage());
 			}
@@ -291,8 +293,8 @@ public class ServerProcess {
 			list.remove(this);
 			logger.debug(5);
 			run = false;
-		} else {
-			logger.debug("Cannot kill thread");
+		}else if(session == null && run){
+			logger.warn("Cannot kill thread because session is null.");
 		}
 	}
 

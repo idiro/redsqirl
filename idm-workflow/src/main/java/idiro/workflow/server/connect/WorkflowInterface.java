@@ -55,6 +55,26 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 		}
 		return error;
 	}
+	
+	@Override
+	public String renameWorkflow(String oldName, String newName)
+			throws RemoteException {
+		String error = null;
+		if(!wf.containsKey(oldName)){
+			error = "Workflow "+oldName+" does not exists";
+		}else{
+			if(!oldName.equals(newName)){
+				if(wf.containsKey(newName)){
+					error = "Workflow "+newName+" already exists";
+				}else{
+					DataFlow cur = wf.get(oldName);
+					wf.remove(oldName);
+					wf.put(newName, cur);
+				}
+			}
+		}
+		return error;
+	}
 
 	public void removeWorkflow(String name){
 		wf.remove(name);

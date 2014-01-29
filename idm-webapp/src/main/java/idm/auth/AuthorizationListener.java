@@ -44,7 +44,7 @@ public class AuthorizationListener implements PhaseListener {
 		
 		//call init if the startInit is set to s then set it to n. This is needed as itit needs to be called at least once before 
 		// the canvas has loaded otherwise Dataflowinterface is wrong. This is the event that tomcat has crashed and the interface is still running the next time.
-		if(iscanvasPage){
+		if(iscanvasPage && session != null){
 			if(session.getAttribute("startInit") != null && session.getAttribute("startInit").equals("s")){
 				FacesContext context = FacesContext.getCurrentInstance();
 				String url = context.getCurrentInstance().getViewRoot().getViewId();

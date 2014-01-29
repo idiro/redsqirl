@@ -430,6 +430,33 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		return err;
 	}
 
+	public String regeneratePaths(boolean copy) throws RemoteException{
+		Iterator<DataFlowElement> it = element.iterator();
+		while(it.hasNext()){
+			DataFlowElement cur = it.next();
+			Iterator<String> lOutIt = cur.getDFEOutput().keySet().iterator();
+			while(lOutIt.hasNext()){
+				String curOutStr = lOutIt.next();
+				DFEOutput curOut = cur.getDFEOutput().get(curOutStr);
+				if(curOut != null){
+					SavingState curSav = curOut.getSavingState();
+					if(curSav.equals(SavingState.BUFFERED) || curSav.equals(SavingState.TEMPORARY)){
+						String newPath = curOut.generatePathStr(
+								System.getProperty("user.name"), 
+								cur.getComponentId(), 
+								curOutStr);
+						if(copy){
+							curOut.copyTo(newPath);
+						}else{
+							curOut.moveTo(newPath);
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * Null if it is not running, or the status if it runs
 	 * 
@@ -742,12 +769,14 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			logger.warn(e.getMessage());
 			logger.warn("Fail creating backup directory");
 		}
-		if (getName() != null && !getName().isEmpty()) {
-			path += "/" + getName() + "-" + dateFormat.format(date) + ".xml";
-		} else {
-			path += "/idm-backup-" + dateFormat.format(date) + ".xml";
+		if(getName() != null && !getName().isEmpty()){
+			path += "/"+getName()+"-"+dateFormat.format(date)+".rs";
+		}else{
+			path += "/idm-backup-"+dateFormat.format(date)+".rs";
 		}
+		boolean save_swp = isSaved();
 		String error = save(path);
+		saved = save_swp;
 
 		try {
 			if (error != null) {
@@ -758,7 +787,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			cleanUpBackup();
 		} catch (Exception e) {
 			logger.warn(e.getMessage());
-			logger.warn("Fail cleaning up backup directory");
+			logger.warn("Failed cleaning up backup directory");
 		}
 
 	}
