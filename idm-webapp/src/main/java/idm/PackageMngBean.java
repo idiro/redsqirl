@@ -203,24 +203,28 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	}
 
 	public void installPackage() throws RemoteException{
-//		logger.info("install package");
-//			setError("error");
-//			return;
-		
+		logger.info("install package---------------------------------------------------");
+			
+		String error = null;
 		if( userInstall){
 			logger.info("install us pck");
 			if(isUserAllowInstall()){
-				installPackage(false);
+				error = installPackage(false);
 			}
 		}else{
 			logger.info("install sys pck");
 			if(isAdmin()){
-				installPackage(true);
+				error = installPackage(true);
 			}
 		}
+		
+		if (error != null){
+			setError(error);
+		}
 	}
-	private void installPackage(boolean sys) throws RemoteException{
-
+	private String installPackage(boolean sys) throws RemoteException{
+		String error = null;
+		
 		String url = FacesContext.getCurrentInstance().getExternalContext().
 				getRequestParameterMap().get("downloadUrl");
 		String[] trustedURL = 
@@ -253,10 +257,10 @@ public class PackageMngBean extends BaseBean implements Serializable{
 					//Install Package
 					if(sys){
 						PackageManager sysPckManager = new PackageManager();
-						sysPckManager.addPackage(true, 
+						error = sysPckManager.addPackage(true, 
 								new String[]{pckFile.getAbsolutePath()});
 					}else{
-						getPckMng().addPackage(false, 
+						error = getPckMng().addPackage(false, 
 								new String[]{pckFile.getAbsolutePath()});
 					}
 				} catch (MalformedURLException e) {
@@ -270,6 +274,8 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 			}
 		}
+		
+		return error;
 	}
 
 	/**
@@ -354,7 +360,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		MessageUseful.addErrorMessage(error);
 		HttpServletRequest request = (HttpServletRequest) FacesContext
 				.getCurrentInstance().getExternalContext().getRequest();
-		request.setAttribute("msnError", "msnError");
+		request.setAttribute("msnError2", "msnError2");
 
 		setErrorMsg(error);
 	}

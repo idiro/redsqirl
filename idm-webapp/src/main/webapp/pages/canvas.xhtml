@@ -1387,15 +1387,13 @@
                     onclick="#{rich:component('modalPackage')}.hide()" />
             </f:facet>
     
-            <h:form>
-                <h:panelGroup>
-                    <a4j:include viewId="/pages/modalPackage.xhtml" ajaxRendered="true" />
-                </h:panelGroup>
-            </h:form>
+            <h:panelGroup>
+                <a4j:include viewId="/pages/modalPackage.xhtml" ajaxRendered="true" />
+            </h:panelGroup>
     
         </rich:modalPanel>
     </a4j:region>
-	
+    
 		<rich:modalPanel id="msnError" showWhenRendered="#{requestScope['msnError'] != null}">
 			<center>
 			
