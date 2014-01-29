@@ -5,7 +5,12 @@ import idiro.ProjectID;
 import idiro.workflow.server.HiveJdbcProcessesManager;
 import idiro.workflow.server.ProcessesManager;
 import idiro.workflow.server.WorkflowPrefManager;
+import idiro.workflow.server.action.HiveAggregTests;
+import idiro.workflow.server.action.HiveJoinTests;
 import idiro.workflow.server.action.HiveSelectTests;
+import idiro.workflow.server.action.HiveUnionTests;
+import idiro.workflow.server.action.TableSelectInteractionTests;
+import idiro.workflow.server.connect.HiveInterface;
 
 import java.io.File;
 import java.io.FileReader;
@@ -27,12 +32,12 @@ import org.junit.runners.Suite.SuiteClasses;
 	TableSelectInteractionTests.class,
 	JoinRelationInteractionTests.class,
 	TableJoinInteractionTests.class,
-	TableUnionInteractionTests.class,*/
-	HiveSelectTests.class
-/*	HiveUnionTests.class,
-	HiveJoinTests.class
+	TableUnionInteractionTests.class,
+	HiveSelectTests.class,
+	HiveUnionTests.class,
+	HiveJoinTests.class,*/
 	HiveAggregTests.class,
-	HiveDictionaryTest.class*/
+/*	HiveDictionaryTest.class*/
 	})
 public class SetupHiveEnvironmentTest {
 
@@ -64,6 +69,10 @@ public class SetupHiveEnvironmentTest {
 		logger.debug("Log4j initialised");
 		WorkflowPrefManager.pathUserPref.put(userPrefFile);
 		logger.debug("user preferences initialised");
+		logger.debug("user preferences initialised");
+		HiveInterface.setUrl(
+				WorkflowPrefManager.getUserProperty(
+						WorkflowPrefManager.user_hive+"_"+System.getProperty("user.name")));
 		
 		Properties prop = new Properties();
 		try {

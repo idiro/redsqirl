@@ -34,22 +34,24 @@ public class HiveAggregTests {
 
 		String idSource = w.addElement((new Source()).getName());
 		Source src = (Source) w.getElement(idSource);
+
 		src.getDFEOutput().put(Source.out_name, new HiveType());
+
 		Map<String, DFEOutput> outs = src.getDFEOutput();
 		Iterator<String> keys = outs.keySet().iterator();
 		logger.info(outs.keySet().size());
-		while(keys.hasNext()){
+		while (keys.hasNext()) {
 			logger.info(outs.get(keys.next()).getTypeName());
 		}
+		logger.info("creating input table");
 		// assertTrue("create " + new_path1,
 		// hInt.create(new_path1, getColumns()) == null);
 		logger.info("created source");
 		src.update(src.getInteraction(Source.key_datatype));
-		logger.info("got datatype interaction");
+
 		Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype)
 				.getTree();
 		dataTypeTree.getFirstChild("list").getFirstChild("output").add("Hive");
-		logger.info("set tree datatype");
 
 		src.update(src.getInteraction(Source.key_datasubtype));
 		Tree<String> datasubtypetree = src.getInteraction(
@@ -95,8 +97,8 @@ public class HiveAggregTests {
 	public DataflowAction createHiveWithSrc(Workflow w, DataflowAction src,
 			HiveInterface hInt) throws RemoteException, Exception {
 		String error = null;
-		String idHS = w.addElement((new HiveSelect()).getName());
-		logger.debug("Hive select: " + idHS);
+		String idHS = w.addElement((new HiveAggregator()).getName());
+		logger.debug("Hive Aggregator: " + idHS);
 
 		HiveAggregator hive = (HiveAggregator) w.getElement(idHS);
 
@@ -232,9 +234,9 @@ public class HiveAggregTests {
 		String error = null;
 		try {
 			Workflow w = new Workflow("workflow1_" + getClass().getName());
-			HiveInterface hInt = null;// = new HiveInterfaceTester();
-			// String new_path1 = "/" + TestUtils.getTableName(1);
-			String new_path1 = "/keith_test2";
+			HiveInterface hInt = new HiveInterface();
+			String new_path1 = "/" + TestUtils.getTableName(1);
+			// String new_path1 = "/keith_test2";
 			String new_path2 = "/" + TestUtils.getTableName(2);
 
 			// hInt.delete(new_path1);
@@ -246,12 +248,19 @@ public class HiveAggregTests {
 			logger.info("setting dfe params");
 
 			hive.getDFEOutput().get(HiveSelect.key_output)
-					.setSavingState(SavingState.RECORDED);
+					.setSavingState(SavingState.TEMPORARY);
 			hive.getDFEOutput().get(HiveSelect.key_output).setPath(new_path2);
 			// assertTrue("create " + new_path2,
 			// hInt.create(new_path2, getColumns()) == null);
 			logger.info("run...");
-			String jobId = w.run();
+			error = w.run();
+			assertTrue("Job submition failed: " + error, error == null);
+			String jobId = w.getOozieJobId();
+			if (jobId == null) {
+				assertTrue("jobId cannot be null", false);
+			}
+			logger.info(jobId);
+
 			OozieClient wc = OozieManager.getInstance().getOc();
 
 			// wait until the workflow job finishes printing the status every 10

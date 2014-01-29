@@ -9,6 +9,7 @@ import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.datatype.HiveTypeWithWhere;
+import idiro.workflow.server.datatype.MapRedTextType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
@@ -26,13 +27,14 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Common functionalities for a Hive action.
- * A Hive action support as input and output 
- * @see HiveTypeWithWhere. Hence any HiveElement
- * can be outputed in a table or in a partition.
+ * Common functionalities for a Hive action. A Hive action support as input and
+ * output
+ * 
+ * @see HiveTypeWithWhere. Hence any HiveElement can be outputed in a table or
+ *      in a partition.
  * 
  * @author etienne
- *
+ * 
  */
 public abstract class HiveElement extends DataflowAction {
 
@@ -44,12 +46,9 @@ public abstract class HiveElement extends DataflowAction {
 	/**
 	 * Names of different elements
 	 */
-	public static final String key_output = "out",
-			key_input = "in",
-			key_condition = "Condition",
-			key_partitions = "Partitions",
-			key_outputType = "Output_Type",
-			key_alias = "Alias";
+	public static final String key_output = "out", key_input = "in",
+			key_condition = "Condition", key_partitions = "Partitions",
+			key_outputType = "Output_Type", key_alias = "Alias";
 
 	/**
 	 * Common interactions
@@ -76,28 +75,32 @@ public abstract class HiveElement extends DataflowAction {
 
 	/**
 	 * Constructor
+	 * 
 	 * @param minNbOfPage
 	 * @param nbInMin
 	 * @param nbInMax
 	 * @throws RemoteException
 	 */
-	public HiveElement(int minNbOfPage, int nbInMin, int nbInMax) throws RemoteException {
+	public HiveElement(int minNbOfPage, int nbInMin, int nbInMax)
+			throws RemoteException {
 		super(new HiveAction());
-		init(nbInMin,nbInMax);
+		init(nbInMin, nbInMax);
 		this.minNbOfPage = minNbOfPage;
 
 	}
 
 	/**
 	 * Initiate the object
+	 * 
 	 * @param nbInMin
 	 * @param nbInMax
 	 * @throws RemoteException
 	 */
-	protected void init(int nbInMin, int nbInMax) throws RemoteException{
-		if(input == null){
+	protected void init(int nbInMin, int nbInMax) throws RemoteException {
+		if (input == null) {
 			Map<String, DFELinkProperty> in = new LinkedHashMap<String, DFELinkProperty>();
-			in.put(key_input, new DataProperty(HiveTypeWithWhere.class, nbInMin, nbInMax));
+			in.put(key_input, new DataProperty(HiveTypeWithWhere.class,
+					nbInMin, nbInMax));
 			input = in;
 		}
 
@@ -105,6 +108,7 @@ public abstract class HiveElement extends DataflowAction {
 
 	/**
 	 * Get the query to write into a script
+	 * 
 	 * @return
 	 * @throws RemoteException
 	 */
@@ -112,6 +116,7 @@ public abstract class HiveElement extends DataflowAction {
 
 	/**
 	 * Input features
+	 * 
 	 * @return
 	 * @throws RemoteException
 	 */
@@ -119,6 +124,7 @@ public abstract class HiveElement extends DataflowAction {
 
 	/**
 	 * New features
+	 * 
 	 * @return
 	 * @throws RemoteException
 	 */
@@ -126,93 +132,101 @@ public abstract class HiveElement extends DataflowAction {
 
 	@Override
 	public boolean writeOozieActionFiles(File[] files) throws RemoteException {
-		logger.debug("Write queries in file: "+files[0].getAbsolutePath());
+		logger.debug("Write queries in file: " + files[0].getAbsolutePath());
 		String toWrite = getQuery();
 		boolean ok = toWrite != null;
-		if(ok){
+		if (ok) {
 
-			logger.debug("Content of "+files[0].getName()+": "+toWrite);
+			logger.debug("Content of " + files[0].getName() + ": " + toWrite);
 			try {
 				FileWriter fw = new FileWriter(files[0]);
 				BufferedWriter bw = new BufferedWriter(fw);
-				bw.write(toWrite);	
+				bw.write(toWrite);
 				bw.close();
 
 			} catch (IOException e) {
 				ok = false;
-				logger.error("Fail to write into the file "+files[0].getAbsolutePath());
+				logger.error("Fail to write into the file "
+						+ files[0].getAbsolutePath());
 			}
 		}
 		return ok;
 	}
 
-
 	public String updateOut() throws RemoteException {
 		String error = checkIntegrationUserVariables();
 		HiveInterface hInt = new HiveInterface();
-		if(error == null){
+		if (error == null) {
 			FeatureList new_features = getNewFeatures();
-			if(new_features.getSize() > 0){
-//				partInt.addPartitions(new_features);
-
-				if(useTable()){
-					if(output == null){
-						output = new LinkedHashMap<String, DFEOutput>();
-						output.put(key_output, new HiveType());
-					}else{
-						if(output.get(key_output) instanceof HiveTypeWithWhere){
-							output.clear();
-							output.put(key_output, new HiveType());
-						}
-					}
-				}else{
-					if(output == null){
-						output = new LinkedHashMap<String, DFEOutput>();
-						output.put(key_output, new HiveTypeWithWhere());
-					}else{
-						if(output.get(key_output) instanceof HiveType){
-							output.clear();
-							output.put(key_output, new HiveTypeWithWhere());
-						}
-					}
-					String tableName = hInt.getTableAndPartitions(output.get(key_output).getPath())[0];
-//					output.get(key_output).addProperty(HiveTypeWithWhere.key_where,
-//							partInt.getPartitionsInWhere(tableName));
+			if (new_features.getSize() > 0) {
+				// partInt.addPartitions(new_features);
+				// if(useTable()){
+//				if (output == null) {
+//					output = new LinkedHashMap<String, DFEOutput>();
+//					output.put(key_output, new HiveType());
+//				} else {
+//					logger.info("doing stuff");
+//					if (output.get(key_output) instanceof ) {
+//						output.clear();
+//						output.put(key_output, new HiveType());
+//					}
+//				}
+				
+				if(output.get(key_output) == null){
+					output.put(key_output, new HiveType());
 				}
+				// }else{
+				// if(output == null){
+				// output = new LinkedHashMap<String, DFEOutput>();
+				// output.put(key_output, new HiveTypeWithWhere());
+				// }else{
+				// if(output.get(key_output) instanceof HiveType){
+				// output.clear();
+				// output.put(key_output, new HiveTypeWithWhere());
+				// }
+				// }
+				// String tableName =
+				// hInt.getTableAndPartitions(output.get(key_output).getPath())[0];
+				// //
+				// output.get(key_output).addProperty(HiveTypeWithWhere.key_where,
+				// // partInt.getPartitionsInWhere(tableName));
+				// }
 
 				output.get(key_output).setFeatures(new_features);
-//				output.get(key_output).addProperty(HiveType.key_partitions, partInt.getPartitions());
+				// output.get(key_output).addProperty(HiveType.key_partitions,
+				// partInt.getPartitions());
 			}
 		}
 		return error;
 	}
 
-
-	public void UpdateGroupInt(DFEInteraction interaction,DFEOutput in) throws RemoteException{
+	public void UpdateGroupInt(DFEInteraction interaction, DFEOutput in)
+			throws RemoteException {
 		Tree<String> list = null;
 		Tree<String> tree = interaction.getTree();
-		if(tree.getSubTreeList().isEmpty()){
+		if (tree.getSubTreeList().isEmpty()) {
 			list = tree.add("applist");
 			list.add("output");
-		}else{
-			list = tree.getFirstChild("applist"); 
+		} else {
+			list = tree.getFirstChild("applist");
 			list.remove("values");
 		}
 		Tree<String> values = list.add("values");
 		Iterator<String> it = in.getFeatures().getFeaturesNames().iterator();
-		while(it.hasNext()){
+		while (it.hasNext()) {
 			values.add("value").add(it.next());
 		}
 	}
-	
+
 	/**
 	 * Update the output type
-	 * @throws RemoteException 
+	 * 
+	 * @throws RemoteException
 	 */
-	public void updateType() throws RemoteException{
-		if(typeOutputInt != null){
+	public void updateType() throws RemoteException {
+		if (typeOutputInt != null) {
 			Tree<String> type = typeOutputInt.getTree();
-			if(type.getSubTreeList().isEmpty()){
+			if (type.getSubTreeList().isEmpty()) {
 				Tree<String> list = type.add("list");
 				list.add("output").add(messageTypeTable);
 
@@ -225,27 +239,25 @@ public abstract class HiveElement extends DataflowAction {
 
 	/**
 	 * Check the interaction of the output type
+	 * 
 	 * @return
 	 */
-	public boolean useTable(){
+	public boolean useTable() {
 		boolean ans = true;
-		if(typeOutputInt != null){
-			try{
+		if (typeOutputInt != null) {
+			try {
 				ans = typeOutputInt.getTree().getFirstChild("list")
 						.getFirstChild("output").getFirstChild().getHead()
 						.equalsIgnoreCase(messageTypeTable);
-			}catch(Exception e){
+			} catch (Exception e) {
 			}
 		}
 		return ans;
 	}
 
-
 	public Map<String, DFELinkProperty> getInput() throws RemoteException {
 		return input;
 	}
-
-
 
 	/**
 	 * @return the condInt
@@ -253,27 +265,27 @@ public abstract class HiveElement extends DataflowAction {
 	public final ConditionInteraction getCondInt() {
 		return condInt;
 	}
-	
+
 	/**
 	 * @return the partInt
-	 *
+	 * 
 	 */
 	public final PartitionInteraction getPartInt() {
 		return partInt;
 	}
 
-	public UserInteraction getGroupingInt() {
-		if(groupingInt!=null){
+	public GroupByInteraction getGroupingInt() {
+		if (groupingInt != null) {
 			return groupingInt;
-		}else{
+		} else {
 			return null;
 		}
 	}
 
 	public Set<String> getGroupByFeatures() throws RemoteException {
-		Set<String> features =new HashSet<String>();
-		UserInteraction group =getGroupingInt();
-		if(group !=null){
+		Set<String> features = new HashSet<String>();
+		GroupByInteraction group = getGroupingInt();
+		if (group != null) {
 			Tree<String> tree = group.getTree();
 			logger.info("group tree : "
 					+ ((TreeNonUnique<String>) tree).toString());
@@ -287,11 +299,10 @@ public abstract class HiveElement extends DataflowAction {
 					features.add(values.next().getFirstChild().getHead());
 				}
 			}
-		}else{
+		} else {
 			logger.info("group interaction is null");
 		}
-	
-		
+
 		return features;
 	}
 }

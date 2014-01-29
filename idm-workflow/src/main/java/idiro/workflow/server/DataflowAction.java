@@ -229,7 +229,9 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		while (it.hasNext() && error == null) {
 			++pageNb;
 			try {
-				error = it.next().checkPage();
+				DFEPage page = it.next();
+//				logger.info("page title : "+page.getTitle());
+				error = page.checkPage();
 			} catch (Exception e) {
 				error = e.getMessage();
 			}

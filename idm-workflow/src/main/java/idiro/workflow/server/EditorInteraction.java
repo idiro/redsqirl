@@ -32,7 +32,8 @@ public class EditorInteraction extends UserInteraction{
 	}
 
 	public void setValue(String value)  throws RemoteException{
-		Tree<String> output =  tree.getFirstChild("editor").getFirstChild("output");
+		logger.info("getting output of editor");
+		Tree<String> output =tree.getFirstChild("editor").getFirstChild("output");
 		output.removeAllChildren();
 		output.add(value);
 	}

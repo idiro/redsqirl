@@ -90,19 +90,26 @@ public class HiveSelect extends HiveElement {
 			logger.debug("In and out...");
 			// Input
 			String[] tableAndPartsIn = hInt.getTableAndPartitions(in.getPath());
+			logger.debug("table and parts ");
 			String tableIn = tableAndPartsIn[0];
+			logger.debug("table In");
 			// Output
 			DFEOutput out = output.values().iterator().next();
+			logger.debug("ouput");
 			String tableOut = hInt.getTableAndPartitions(out.getPath())[0];
+			logger.debug("table ouput : "+ tableOut);
 
-			String insert = "INSERT OVERWRITE TABLE " + tableOut
-					+ partInt.getQueryPiece();
+			String insert = "INSERT OVERWRITE TABLE " + tableOut;
+//					+ partInt.getQueryPiece();
+			logger.debug("insert : "+insert);
 			String from = " FROM " + tableIn + " ";
+			logger.debug("from : "+from);
 			String create = "CREATE TABLE IF NOT EXISTS " + tableOut;
-			String createPartition = partInt.getCreateQueryPiece();
-			if (createPartition.isEmpty()) {
-				createPartition = partInt.getPartitions();
-			}
+			logger.debug("create : "+create);
+//			String createPartition = partInt.getCreateQueryPiece();
+//			if (createPartition.isEmpty()) {
+//				createPartition = partInt.getPartitions();
+//			}
 			String where = condInt.getQueryPiece();
 
 			logger.debug("group by...");
@@ -112,7 +119,7 @@ public class HiveSelect extends HiveElement {
 			if (select.isEmpty()) {
 				logger.debug("Nothing to select");
 			} else {
-				query = create + "\n" + createSelect + "\n" + createPartition
+				query = create + "\n" + createSelect 
 						+ ";\n\n";
 
 				query += insert + "\n" + select + "\n" + from + "\n" +

@@ -15,8 +15,11 @@ import idiro.workflow.utils.HiveLanguageManager;
 import java.rmi.RemoteException;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -41,12 +44,18 @@ public class TableSelectInteraction extends TableInteraction {
 					.getText("hive.select_features_interaction.feat_column"),
 			table_type_title = HiveLanguageManager
 					.getText("hive.select_features_interaction.type_column");
+	
+	public static final String gen_operation_copy = "copy",
+			gen_operation_max = "MAX", gen_operation_min = "MIN",
+			gen_operation_avg = "AVG", gen_operation_sum = "SUM",
+			gen_operation_count = "COUNT", gen_operation_audit = "AUDIT";
 
 	public TableSelectInteraction(String id, String name, String legend,
 			int column, int placeInColumn, HiveElement hs)
 			throws RemoteException {
 		super(id, name, legend, column, placeInColumn);
 		this.hs = hs;
+		createColumns();
 	}
 
 	@Override
@@ -126,61 +135,147 @@ public class TableSelectInteraction extends TableInteraction {
 	}
 
 	public void update(DFEOutput in) throws RemoteException {
-
-		if (tree.getSubTreeList().isEmpty()) {
-			tree.add(getRootTable());
-		} else {
-			// Remove generator
-			tree.getFirstChild("table").remove("generator");
-			// Remove Editor of operation
-			tree.getFirstChild("table").getFirstChild("columns")
-					.findFirstChild(table_op_title).getParent()
-					.remove("editor");
-		}
-
+		String alias = "";
 		// Generate Editor
-		Tree<String> featEdit = null;
-		logger.info("trying to get group items");
-		Set<String> gbFeats = hs.getGroupByFeatures();
-		if (gbFeats.size() > 0) {
-			featEdit = HiveDictionary.generateEditor(HiveDictionary
-					.getInstance().createGroupSelectHelpMenu(), in);
+		if (hs.getGroupingInt() != null) {
+			updateEditor(table_op_title, HiveDictionary.generateEditor(
+					HiveDictionary.getInstance().createGroupSelectHelpMenu(),
+					in));
 		} else {
-			featEdit = HiveDictionary.generateEditor(HiveDictionary
-					.getInstance().createDefaultSelectHelpMenu(), in);
+			updateEditor(table_op_title, HiveDictionary.generateEditor(
+					HiveDictionary.getInstance().createDefaultSelectHelpMenu(),
+					in));
 		}
-		// Set the Editor of operation
-		logger.debug("Set the editor...");
-		Tree<String> operation = tree.getFirstChild("table")
-				.getFirstChild("columns").findFirstChild(table_op_title);
-		if (operation == null) {
-			logger.warn("Operation is null, it shouldn't happened");
-		} else {
-			logger.debug(operation.getHead());
-			logger.debug(operation.getParent().getHead());
-			logger.debug(operation.getParent().getParent().getHead());
-		}
-
-		operation.getParent().getParent().add(featEdit);
 
 		// Set the Generator
 		logger.debug("Set the generator...");
-		Tree<String> generator = tree.getFirstChild("table").add("generator");
 		// Copy Generator operation
-		Tree<String> operationCopy = generator.add("operation");
-		operationCopy.add("title").add("copy");
-		Iterator<String> featIt = null;
-		featIt = in.getFeatures().getFeaturesNames().iterator();
-		while (featIt.hasNext()) {
-			String cur = featIt.next();
-			logger.info("adding to table : " + cur);
-			Tree<String> row = operationCopy.add("row");
-			row.add(table_op_title).add(cur);
-			row.add(table_feat_title).add(cur);
-			row.add(table_type_title).add(
-					HiveDictionary.getHiveType(in.getFeatures().getFeatureType(
-							cur)));
+		List<String> featList = in.getFeatures().getFeaturesNames();
+		logger.info("setting alias");
+
+		if (hs.getGroupingInt() != null) {
+			logger.info("there is a grouping : "
+					+ hs.getGroupingInt().getValues().size());
+			if (hs.getGroupingInt().getValues().size() > 0) {
+				logger.info("adding other generators");
+				List<String> groupBy = hs.getGroupingInt().getValues();
+				List<String> operationsList = new LinkedList<String>();
+
+				featList.removeAll(groupBy);
+				operationsList.add(gen_operation_max);
+				addGeneratorRows(gen_operation_max, featList, in.getFeatures(),
+						operationsList, alias);
+				operationsList.clear();
+
+				operationsList.add(gen_operation_min);
+				addGeneratorRows(gen_operation_min, featList, in.getFeatures(),
+						operationsList, alias);
+				operationsList.clear();
+
+				operationsList.add(gen_operation_avg);
+				addGeneratorRows(gen_operation_avg, featList, in.getFeatures(),
+						operationsList, alias);
+				operationsList.clear();
+
+				operationsList.add(gen_operation_sum);
+				addGeneratorRows(gen_operation_sum, featList, in.getFeatures(),
+						operationsList, alias);
+				operationsList.clear();
+
+				operationsList.add(gen_operation_count);
+				addGeneratorRows(gen_operation_count, featList,
+						in.getFeatures(), operationsList, alias);
+				operationsList.clear();
+
+				operationsList.add(gen_operation_max);
+				operationsList.add(gen_operation_min);
+				operationsList.add(gen_operation_avg);
+				operationsList.add(gen_operation_sum);
+				operationsList.add(gen_operation_count);
+				addGeneratorRows(gen_operation_audit, featList,
+						in.getFeatures(), operationsList, alias);
+				operationsList.clear();
+
+				operationsList.add(gen_operation_copy);
+				featList.clear();
+				featList.addAll(groupBy);
+				addGeneratorRows(gen_operation_copy, featList,
+						in.getFeatures(), operationsList, alias);
+
+			}
+		} else {
+			List<String> operationsList = new LinkedList<String>();
+			featList = in.getFeatures().getFeaturesNames();
+			operationsList.add(gen_operation_copy);
+			addGeneratorRows(gen_operation_copy, featList, in.getFeatures(),
+					operationsList, "");
+
 		}
+	}
+
+	public String addOperation(String feat, String operation) {
+		String result = "";
+		if (!operation.isEmpty()) {
+			result = operation + "(" + feat + ")";
+		} else {
+			result = feat;
+		}
+		return result;
+	}
+
+	protected void addGeneratorRows(String title, List<String> feats,
+			FeatureList in, List<String> operationList, String alias)
+			throws RemoteException {
+		Iterator<String> featIt = feats.iterator();
+		Iterator<String> opIt = operationList.iterator();
+		logger.info("operations to add : " + operationList);
+		logger.info("feats to add : " + feats);
+		List<Map<String, String>> rows = new LinkedList<Map<String, String>>();
+		while (opIt.hasNext()) {
+			String operation = opIt.next();
+			if (operation.equalsIgnoreCase(gen_operation_copy)) {
+				operation = "";
+			}
+			while (featIt.hasNext()) {
+				String cur = featIt.next();
+				Map<String, String> row = new LinkedHashMap<String, String>();
+
+				if (in.getFeatureType(cur) == FeatureType.STRING) {
+					if (operation.equalsIgnoreCase(gen_operation_sum)
+							|| operation.equalsIgnoreCase(gen_operation_avg)
+							|| operation.equalsIgnoreCase(gen_operation_min)
+							|| operation.equalsIgnoreCase(gen_operation_max)) {
+						continue;
+					}
+				}
+
+				String optitleRow = "";
+				String featname;
+				optitleRow = addOperation(alias + "." + cur, operation);
+
+				row.put(table_op_title, optitleRow);
+				if (operation.isEmpty()) {
+					featname = cur;
+					row.put(table_feat_title, cur);
+				} else {
+					featname = cur + "_" + operation;
+				}
+				row.put(table_feat_title, featname);
+				logger.info("trying to add type for " + cur);
+				if (operation.equalsIgnoreCase(gen_operation_avg)) {
+					row.put(table_type_title, "DOUBLE");
+				} else if (operation.equalsIgnoreCase(gen_operation_count)) {
+					row.put(table_type_title, "INT");
+				} else {
+					row.put(table_type_title,
+							HiveDictionary.getHiveType(in.getFeatureType(cur)));
+				}
+				rows.add(row);
+			}
+			featIt = feats.iterator();
+		}
+		updateGenerator(title, rows);
+
 	}
 
 	protected Tree<String> getRootTable() throws RemoteException {
@@ -310,5 +405,34 @@ public class TableSelectInteraction extends TableInteraction {
 			logger.error(error, e);
 		}
 		return error;
+	}
+	
+	protected void createColumns() throws RemoteException {
+
+		addColumn(
+				table_op_title, 
+				null, 
+				null, 
+				null);
+
+		addColumn(
+				table_feat_title,
+				1,
+				"[a-zA-Z]([A-Za-z0-9_]{0,29})",
+				null,
+				null);
+
+		List<String> types = new LinkedList<String>();
+		types.add(FeatureType.BOOLEAN.name());
+		types.add(FeatureType.INT.name());
+		types.add(FeatureType.DOUBLE.name());
+		types.add(FeatureType.FLOAT.name());
+		types.add(FeatureType.STRING.name());
+
+		addColumn(
+				table_type_title,
+				null,
+				types,
+				null);
 	}
 }

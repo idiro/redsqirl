@@ -43,7 +43,7 @@ public class HiveJoin extends HiveElement{
 	public HiveJoin() throws RemoteException {
 		super(3,2,Integer.MAX_VALUE);
 		
-		page2 = addPage("Join Relationship",
+		page1 = addPage("Join Relationship",
 				"Join Relationship to use. The join will be applied from top to bottom. "+
 				"All the tables need to share one column in common.",
 				1);
@@ -55,9 +55,9 @@ public class HiveJoin extends HiveElement{
 				0,
 				this);
 		
-		page2.addInteraction(jrInt);
+		page1.addInteraction(jrInt);
 
-		page1 = addPage("Filters",
+		page2 = addPage("Filters",
 				"Add a condition and/or a partition filter. Note that these filters are applied after joining.",
 				1);
 
@@ -69,12 +69,6 @@ public class HiveJoin extends HiveElement{
 				0,
 				0); 
 
-
-		partInt = new PartitionInteraction(
-				key_partitions,
-				"",
-				0,
-				1);
 		
 		condInt = new ConditionInteraction(
 				0,
@@ -82,9 +76,8 @@ public class HiveJoin extends HiveElement{
 				this 
 				);
 
-		page1.addInteraction(joinTypeInt);
-		page1.addInteraction(partInt);
-		page1.addInteraction(condInt);
+		page2.addInteraction(joinTypeInt);
+		page2.addInteraction(condInt);
 
 		
 		
@@ -111,12 +104,10 @@ public class HiveJoin extends HiveElement{
 
 	public void update(DFEInteraction interaction) throws RemoteException {
 		
-		logger.info("Hive Join interaction ");
+		logger.info("Hive Join interaction "+interaction.getName());
 		
 		if(interaction.getName().equals(condInt.getName())){
 			condInt.update();
-		}else if(interaction.getName().equals(partInt.getName())){
-			partInt.update();
 		}else if(interaction.getName().equals(joinTypeInt.getName())){
 			updateJoinType();
 		}else if(interaction.getName().equals(jrInt.getName())){
@@ -153,10 +144,9 @@ public class HiveJoin extends HiveElement{
 			DFEOutput out = output.values().iterator().next();
 			String tableOut = hInt.getTableAndPartitions(out.getPath())[0];
 			
-			String insert = "INSERT OVERWRITE TABLE "+tableOut+partInt.getQueryPiece();
+			String insert = "INSERT OVERWRITE TABLE "+tableOut;
 			String from = " FROM "+jrInt.getQueryPiece()+" ";
 			String create = "CREATE TABLE IF NOT EXISTS "+tableOut;
-			String createPartition = partInt.getCreateQueryPiece();
 			String where = condInt.getQueryPiece();
 
 			String select = tJoinInt.getQueryPiece();
@@ -167,8 +157,7 @@ public class HiveJoin extends HiveElement{
 				logger.debug("Nothing to select");
 			}else{
 				query = create+"\n"+
-						createSelect+"\n"+
-						createPartition+";\n\n";
+						createSelect+";\n\n";
 				
 				query += insert+"\n"+
 						select+"\n"+

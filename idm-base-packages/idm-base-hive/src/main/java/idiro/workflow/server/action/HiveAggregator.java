@@ -41,7 +41,7 @@ public class HiveAggregator extends HiveElement {
 
 		page2 = addPage(
 				HiveLanguageManager.getText("hive.aggregator_page2.title"),
-				HiveLanguageManager.getText("hive.aggregator_page2.lehend"), 1);
+				HiveLanguageManager.getText("hive.aggregator_page2.legend"), 1);
 
 		tSelInt = new TableSelectInteraction(
 				key_features,

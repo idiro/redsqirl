@@ -7,6 +7,7 @@ import idiro.workflow.server.OozieManager;
 import idiro.workflow.server.Workflow;
 import idiro.workflow.server.action.utils.TestUtils;
 import idiro.workflow.server.connect.HiveInterface;
+import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.enumeration.SavingState;
 
 import java.rmi.RemoteException;
@@ -43,6 +44,10 @@ public class HiveUnionTests {
 		src.update(src.getInteraction(Source.key_datatype));
 		Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype).getTree();
 		dataTypeTree.getFirstChild("list").getFirstChild("output").add("Hive");
+		
+		src.update(src.getInteraction(Source.key_datasubtype));
+		Tree<String> dataSubTypeTree = src.getInteraction(Source.key_datasubtype).getTree();
+		dataSubTypeTree.getFirstChild("list").getFirstChild("output").add(new HiveType().getTypeName());
 
 		src.update(src.getInteraction(Source.key_dataset));
 		Tree<String> dataSetTree = src.getInteraction(Source.key_dataset).getTree();
@@ -92,6 +97,7 @@ public class HiveUnionTests {
 		assertTrue("hive select add input: "+error,error == null);
 		
 		updateHive(w,hive,TestUtils.getTablePath(1),TestUtils.getTablePath(2),hInt);
+		logger.info("update hive ok");
 		logger.debug("Features "+hive.getDFEOutput().get(HiveUnion.key_output).getFeatures());
 		
 		hive.getDFEOutput().get(HiveUnion.key_output).generatePath(
@@ -123,7 +129,7 @@ public class HiveUnionTests {
 			}
 		}
 		
-		hive.update(hive.getPartInt());
+		logger.debug("updated hive aliases");
 		TableUnionInteraction tsi = hive.gettUnionSelInt();
 		hive.update(tsi);
 		{
@@ -152,6 +158,7 @@ public class HiveUnionTests {
 
 		logger.debug("HS update out...");
 		String error = hive.updateOut();
+		logger.debug("HS update out finished");
 		assertTrue("hive union update: "+error,error == null);
 	}
 	
@@ -176,16 +183,15 @@ public class HiveUnionTests {
 			DataflowAction src2 = createSrc(w,hInt,new_path2);
 			DataflowAction hive = createHiveWithSrc(w,src1,src2,hInt);
 
-			hive.getDFEOutput().get(HiveUnion.key_output).setSavingState(SavingState.RECORDED);
+			hive.getDFEOutput().get(HiveUnion.key_output).setSavingState(SavingState.TEMPORARY);
 			hive.getDFEOutput().get(HiveUnion.key_output).setPath(new_path3);
-			/*assertTrue("create "+new_path3,
-					hInt.create(new_path3, getColumns()) == null
-					);*/
-			logger.debug("run...");
+//			assertTrue("create " + new_path3,
+//					hInt.create(new_path3, getColumns()) == null);
+			logger.info("run...");
 			error = w.run();
-			assertTrue("Launch join: "+error, error == null);
-			OozieClient wc = OozieManager.getInstance().getOc();
+			assertTrue("Job submition failed: "+error, error == null);
 			String jobId = w.getOozieJobId();
+			OozieClient wc = OozieManager.getInstance().getOc();
 			
 			// wait until the workflow job finishes printing the status every 10 seconds
 		    while(

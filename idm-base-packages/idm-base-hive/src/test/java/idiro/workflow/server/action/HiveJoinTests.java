@@ -1,12 +1,19 @@
 package idiro.workflow.server.action;
 
 import static org.junit.Assert.assertTrue;
+import idiro.hadoop.db.hive.HiveBasicStatement;
+import idiro.hadoop.utils.JdbcHdfsPrefsDetails;
 import idiro.utils.Tree;
+import idiro.utils.db.BasicStatement;
+import idiro.utils.db.JdbcConnection;
+import idiro.utils.db.JdbcDetails;
 import idiro.workflow.server.DataflowAction;
 import idiro.workflow.server.OozieManager;
 import idiro.workflow.server.Workflow;
+import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.action.utils.TestUtils;
 import idiro.workflow.server.connect.HiveInterface;
+import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.enumeration.SavingState;
 
 import java.rmi.RemoteException;
@@ -37,12 +44,17 @@ public class HiveJoinTests {
 		String idSource = w.addElement((new Source()).getName());
 		DataflowAction src = (DataflowAction) w.getElement(idSource);
 		
-		assertTrue("create "+new_path1,
-				hInt.create(new_path1, getColumns()) == null
-				);
+//		assertTrue("create "+new_path1,
+//				hInt.create(new_path1, getColumns()) == null
+//				);
+		
 		src.update(src.getInteraction(Source.key_datatype));
 		Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype).getTree();
 		dataTypeTree.getFirstChild("list").getFirstChild("output").add("Hive");
+		
+		src.update(src.getInteraction(Source.key_datasubtype));
+		Tree<String> dataSubTypeTree = src.getInteraction(Source.key_datasubtype).getTree();
+		dataSubTypeTree.getFirstChild("list").getFirstChild("output").add(new HiveType().getTypeName());
 
 		src.update(src.getInteraction(Source.key_dataset));
 		Tree<String> dataSetTree = src.getInteraction(Source.key_dataset).getTree();
@@ -122,9 +134,11 @@ public class HiveJoinTests {
 				alias2 = swp;
 			}
 		}
+		logger.info("updating join type");
 		hive.updateJoinType();
+		logger.info("updating condition int ");
 		hive.update(hive.getCondInt());
-		hive.update(hive.getPartInt());
+		logger.info("updating condition int ");
 		JoinRelationInteraction jri = hive.getJrInt();
 		hive.update(jri);
 		{
@@ -174,24 +188,41 @@ public class HiveJoinTests {
 			String new_path2 = TestUtils.getTablePath(2);
 			String new_path3 = TestUtils.getTablePath(3); 
 			
-			hInt.delete(new_path1);
-			hInt.delete(new_path2);
-			hInt.delete(new_path3);
+//			hInt.delete(new_path1);
+//			hInt.delete(new_path2);
+//			hInt.delete(new_path3);
+			
+			
 			
 			DataflowAction src1 = createSrc(w,hInt,new_path1);
 			DataflowAction src2 = createSrc(w,hInt,new_path2);
 			DataflowAction hive = createHiveWithSrc(w,src1,src2,hInt);
-
-			hive.getDFEOutput().get(HiveJoin.key_output).setSavingState(SavingState.RECORDED);
+			
+			JdbcDetails connectionDetails = new JdbcHdfsPrefsDetails(WorkflowPrefManager.getUserProperty(
+					WorkflowPrefManager.user_hive+"_"+System.getProperty("user.name")));
+			HiveBasicStatement bs = new HiveBasicStatement();
+			
+			JdbcConnection conn = new JdbcConnection(connectionDetails, bs);
+			String insert1="";
+			String insert2="";
+			conn.execute(insert1);
+			conn.execute(insert2);
+			hive.getDFEOutput().get(HiveJoin.key_output).setSavingState(SavingState.TEMPORARY);
 			hive.getDFEOutput().get(HiveJoin.key_output).setPath(new_path3);
 			/*assertTrue("create "+new_path3,
 					hInt.create(new_path3, getColumns()) == null
 					);*/
-			logger.debug("run...");
 			error = w.run();
-			assertTrue("Launch join: "+error, error == null);
-			OozieClient wc = OozieManager.getInstance().getOc();
+			assertTrue("Job submition failed: "+error, error == null);
 			String jobId = w.getOozieJobId();
+			if(jobId == null){
+				assertTrue("jobId cannot be null", false);
+			}
+			logger.info(jobId);
+			
+			
+			OozieClient wc = OozieManager.getInstance().getOc();
+			
 			// wait until the workflow job finishes printing the status every 10 seconds
 		    while(
 		    		wc.getJobInfo(jobId).getStatus() == 
@@ -203,6 +234,8 @@ public class HiveJoinTests {
 		    logger.info(wc.getJobInfo(jobId));
 		    error = wc.getJobInfo(jobId).toString();
 		    assertTrue(error, error.contains("SUCCEEDED"));
+		    String deleteMsg = hInt.delete(new_path3);
+		    assertTrue("error : "+deleteMsg,deleteMsg ==null);
 		}catch(Exception e){
 			logger.error(e.getMessage());
 			assertTrue(e.getMessage(),false);
