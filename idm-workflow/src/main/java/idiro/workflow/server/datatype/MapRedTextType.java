@@ -334,7 +334,7 @@ public class MapRedTextType extends DataOutput {
 		super.setFeatures(fl);
 	}
 
-	private void generateFeaturesMap() throws RemoteException {
+	private FeatureList generateFeaturesMap() throws RemoteException {
 
 		logger.info("generateFeaturesMap --");
 
@@ -370,34 +370,10 @@ public class MapRedTextType extends DataOutput {
 					}
 				}
 			}
-			if(features != null){
-				logger.debug(features.getFeaturesNames());
-				logger.debug(fl.getFeaturesNames());
-			}
-			if(features == null){
-				features = fl;
-			}else if(features.getSize() != fl.getSize()){
-				features = fl;
-			}else{
-				Iterator<String> flIt = fl.getFeaturesNames().iterator();
-				Iterator<String> featIt = features.getFeaturesNames().iterator();
-				boolean ok = true;
-				int i = 1;
-				while(flIt.hasNext() && ok){
-					String nf = flIt.next();
-					String of = featIt.next();
-					logger.debug("types feat "+i+": "+fl.getFeatureType(nf)+" , "+features.getFeatureType(of));
-					
-					ok &= canCast(fl.getFeatureType(nf),features.getFeatureType(of));
-					++i;
-				}
-				if(!ok){
-					features = fl;
-				}
-			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
+		return fl;
 
 	}
 
@@ -515,15 +491,42 @@ public class MapRedTextType extends DataOutput {
 
 				}
 
-				generateFeaturesMap();
+				FeatureList fl = generateFeaturesMap();
 
 				String error = null;
 				String header = getProperty(key_header);
 				if (header != null && !header.isEmpty()) {
 					logger.info("setFeaturesFromHeader --");
+					features = fl;
 					error = setFeaturesFromHeader();
 					if (error != null) {
 						throw new RemoteException(error);
+					}
+				}else{
+					if(features != null){
+						logger.debug(features.getFeaturesNames());
+						logger.debug(fl.getFeaturesNames());
+					}
+					if(features == null){
+						features = fl;
+					}else if(features.getSize() != fl.getSize()){
+						features = fl;
+					}else{
+						Iterator<String> flIt = fl.getFeaturesNames().iterator();
+						Iterator<String> featIt = features.getFeaturesNames().iterator();
+						boolean ok = true;
+						int i = 1;
+						while(flIt.hasNext() && ok){
+							String nf = flIt.next();
+							String of = featIt.next();
+							logger.debug("types feat "+i+": "+fl.getFeatureType(nf)+" , "+features.getFeatureType(of));
+							
+							ok &= canCast(fl.getFeatureType(nf),features.getFeatureType(of));
+							++i;
+						}
+						if(!ok){
+							features = fl;
+						}
 					}
 				}
 
@@ -554,7 +557,7 @@ public class MapRedTextType extends DataOutput {
 				logger.info("checkFeatures-featNameType " + features.getFeatureType(flName));
 				logger.info("checkFeatures-flNameType " + fl.getFeatureType(featName));
 
-				if (!fl.getFeatureType(featName).equals(features.getFeatureType(flName))) {
+				if (!canCast(features.getFeatureType(flName),fl.getFeatureType(featName))) {
 					error = LanguageManagerWF.getText("mapredtexttype.checkfeatures.incorrectnames", new Object[] { flName, featName });
 				}
 
