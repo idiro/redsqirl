@@ -74,6 +74,14 @@ public interface DataFlow extends Remote{
 	public String cleanProject() throws RemoteException;
 	
 	/**
+	 * Regenerate path and copy or move the existing data
+	 * @param copy true to copy, false to move
+	 * @return
+	 * @throws RemoteException
+	 */
+	public String regeneratePaths(boolean copy) throws RemoteException;
+	
+	/**
 	 * Save a workflow.
 	 * A workflow is a zip file containing two files:
 	 * - an xml representing the workflow

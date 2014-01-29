@@ -76,10 +76,32 @@ public class MapRedTextType extends DataOutput {
 	@Override
 	public void generatePath(String userName, String component,
 			String outputName) throws RemoteException {
-		setPath("/user/" + userName + "/tmp/idm_" + component + "_"
-				+ outputName + "_" + RandomString.getRandomName(8));
+		setPath(generatePathStr(userName,component,outputName));
+	}
+	
+	@Override
+	public String generatePathStr(String userName, String component,
+			String outputName) throws RemoteException {
+		return "/user/" + userName + "/tmp/idm_" + component + "_"
+				+ outputName + "_" + RandomString.getRandomName(8);
+	}
+	
+	@Override
+	public void moveTo(String newPath) throws RemoteException{
+		if(isPathExists()){
+			hdfsInt.move(getPath(), newPath);
+		}
+		setPath(newPath);
 	}
 
+	@Override
+	public void copyTo(String newPath) throws RemoteException{
+		if(isPathExists()){
+			hdfsInt.copy(getPath(), newPath);
+		}
+		setPath(newPath);
+	}
+	
 	@Override
 	public String isPathValid() throws RemoteException {
 		String error = null;

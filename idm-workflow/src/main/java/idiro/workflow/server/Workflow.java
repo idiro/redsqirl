@@ -415,6 +415,33 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 		return err;
 	}
 
+	public String regeneratePaths(boolean copy) throws RemoteException{
+		Iterator<DataFlowElement> it = element.iterator();
+		while(it.hasNext()){
+			DataFlowElement cur = it.next();
+			Iterator<String> lOutIt = cur.getDFEOutput().keySet().iterator();
+			while(lOutIt.hasNext()){
+				String curOutStr = lOutIt.next();
+				DFEOutput curOut = cur.getDFEOutput().get(curOutStr);
+				if(curOut != null){
+					SavingState curSav = curOut.getSavingState();
+					if(curSav.equals(SavingState.BUFFERED) || curSav.equals(SavingState.TEMPORARY)){
+						String newPath = curOut.generatePathStr(
+								System.getProperty("user.name"), 
+								cur.getComponentId(), 
+								curOutStr);
+						if(copy){
+							curOut.copyTo(newPath);
+						}else{
+							curOut.moveTo(newPath);
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * Null if it is not running, or the status if it runs
 	 * @return

@@ -753,6 +753,36 @@ public class CanvasBean extends BaseBean implements Serializable{
 		}
 
 	}
+	
+	public void regeneratePathsProjectCopy() throws RemoteException {
+		logger.info("regenerate paths project copy");
+		regeneratePathsProject(true);
+	}
+	
+	public void regeneratePathsProjectMove() throws RemoteException {
+		logger.info("regenerate paths project move");
+		regeneratePathsProject(false);
+	}
+	
+	/** 
+	 * 
+	 * Methods to regenerate paths of the current workflow
+	 * 
+	 * @return 
+	 * @author Igor.Souza
+	 * @throws RemoteException 
+	 */
+	public void regeneratePathsProject(boolean copy) throws RemoteException {
+
+		DataFlow wf = getworkFlowInterface().getWorkflow(getNameWorkflow());
+		String error = wf.regeneratePaths(copy);
+		if(error != null){
+			MessageUseful.addErrorMessage(error);
+			HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
+		}
+
+	}
 
 	public void openChangeIdModal() throws RemoteException{
 		logger.info("openChangeIdModal");
