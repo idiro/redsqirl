@@ -4,7 +4,31 @@
     xmlns:rich="http://richfaces.org/rich"
     xmlns:f="http://java.sun.com/jsf/core"
     xmlns:ui="http://java.sun.com/jsf/facelets">
-    <a4j:outputPanel id="form_all" ajaxRendered="true" >
+    
+    <rich:modalPanel id="msnError2">
+			<center>
+			
+				<table>
+					<tr>
+						<td>
+							<rich:messages id="msg2" globalOnly="false" layout="list" styleClass="message"
+								infoClass="messageok" errorClass="messageerro"
+								warnClass="messagealert" showDetail="true" showSummary="false" ajaxRendered="false" />
+						</td>
+					</tr>
+				</table>
+			
+				<br />
+				<br />
+				
+				<a4j:commandButton value="#{messages.button_ok}" onclick="#{rich:component('msnError2')}.hide(); return false;" reRender="msnError2, msg2" />
+				
+			</center>
+		</rich:modalPanel>
+		
+		
+
+	<h:form>
         <h:panelGroup id="install_pck_main"
             rendered="#{packageMngBean.showMain}" >
             #{packageMngBean.showMain}
@@ -81,10 +105,10 @@
 	            <a4j:commandButton
 	                action="#{packageMngBean.installPackage}"
 	                value="#{messages.button_install}"
-	                reRender="msnError">
+	                oncomplete="if(#{requestScope['msnError2'] != null}){ #{rich:component('msnError2')}.show() }">
 	                <a4j:actionparam name="downloadUrl" value="#{packageMngBean.curPackage.url}" />
 	            </a4j:commandButton>
             </div>
         </h:panelGroup>
-    </a4j:outputPanel>
+	</h:form>
 </ui:composition>
