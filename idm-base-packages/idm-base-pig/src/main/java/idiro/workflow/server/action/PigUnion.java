@@ -30,10 +30,12 @@ public class PigUnion extends PigElement {
 	 * 
 	 */
 	private static final long serialVersionUID = -2971963679008329394L;
-
-	private Page page1;
+	
+	public final String key_union_condition = "union_cond";
+	private Page page1,page2;
 
 	private PigTableUnionInteraction tUnionSelInt;
+	private PigUnionConditions tUnionCond;
 
 	public PigUnion() throws RemoteException {
 		super(2, Integer.MAX_VALUE,1);
@@ -49,8 +51,20 @@ public class PigUnion extends PigElement {
 				0, 0, this);
 
 		page1.addInteraction(tUnionSelInt);
-		page1.addInteraction(delimiterOutputInt);
-		page1.addInteraction(savetypeOutputInt);
+		
+		page2 = addPage(
+				PigLanguageManager.getText("pig.union_page2.title"),
+				PigLanguageManager.getText("pig.union_page2.legend"), 1);
+		
+		tUnionCond =  new  PigUnionConditions(
+				key_union_condition,
+				PigLanguageManager.getText("pig.union_cond_interaction.title"),
+				PigLanguageManager.getText("pig.union_cond_interaction.legend"),
+				0, 0, this);
+		
+		page2.addInteraction(tUnionCond);
+		page2.addInteraction(delimiterOutputInt);
+		page2.addInteraction(savetypeOutputInt);
 
 	}
 
@@ -78,6 +92,8 @@ public class PigUnion extends PigElement {
 			if (interId.equals(tUnionSelInt.getId())) {
 				logger.info("updating union seletion");
 				tUnionSelInt.update(in);
+			}else if(interId.equals(tUnionCond.getId())){
+				tUnionCond.update(in);
 			}
 		}
 
@@ -92,17 +108,31 @@ public class PigUnion extends PigElement {
 
 			String remove = getRemoveQueryPiece(out.getPath()) + "\n\n";
 
+			
 			Map<String, DFEOutput> x = getAliases();
+			Iterator<String> aliasIt = x.keySet().iterator();
+			String load = "";
+			while(aliasIt.hasNext()){
+				String aliasCur = aliasIt.next();
+				DFEOutput inCur = x.get(aliasCur);
+				String where = tUnionCond.getCondition(aliasCur);
+				if(where == null){
+					load += aliasCur + " = " + getLoadQueryPiece(inCur)+ ";\n\n";
+				}else{
+					String nameLoad = getNextName(); 
+					load += nameLoad + " = " + getLoadQueryPiece(inCur)+ ";\n";
+					load += aliasCur + " = FILTER "+nameLoad+" BY " + where+";\n\n";
+				}
+			}
 			Set<Entry<String, DFEOutput>> p = x.entrySet();
 			Iterator<Entry<String, DFEOutput>> it = p.iterator();
-			String load = "";
 			for (DFEOutput in : getDFEInput().get(key_input)) {
 				while (it.hasNext()) {
 					Entry<String, DFEOutput> next = it.next();
 					if (next.getValue().getPath()
 							.equalsIgnoreCase(in.getPath())) {
-						load += next.getKey() + " = " + getLoadQueryPiece(in)
-								+ ";\n";
+						
+						
 					}
 				}
 				it = p.iterator();
@@ -127,6 +157,21 @@ public class PigUnion extends PigElement {
 		}
 
 		return query;
+	}
+
+	public FeatureList getInFeatures(String alias) throws RemoteException {
+		FeatureList ans = null;
+		Map<String, DFEOutput> aliases = getAliases();
+		if(aliases.get(alias) != null){
+			ans = new OrderedFeatureList();
+			FeatureList mapTable = aliases.get(alias).getFeatures();
+			Iterator<String> itFeat = mapTable.getFeaturesNames().iterator();
+			while (itFeat.hasNext()) {
+				String cur = itFeat.next();
+				ans.addFeature(alias + "." + cur, mapTable.getFeatureType(cur));
+			}
+		}
+		return ans;
 	}
 
 	@Override
@@ -157,6 +202,13 @@ public class PigUnion extends PigElement {
 	 */
 	public final PigTableUnionInteraction gettUnionSelInt() {
 		return tUnionSelInt;
+	}
+
+	/**
+	 * @return the tUnionCond
+	 */
+	public final PigUnionConditions gettUnionCond() {
+		return tUnionCond;
 	}
 
 }
