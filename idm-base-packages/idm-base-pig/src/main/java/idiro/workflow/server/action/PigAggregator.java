@@ -31,17 +31,11 @@ public class PigAggregator extends PigElement {
 				PigLanguageManager.getText("pig.aggregator_page1.legend"), 
 				1);
 
-		tSelInt = new PigTableSelectInteraction(
-				key_featureTable,
-				PigLanguageManager.getText("pig.aggregator_features_interaction.title"),
-				PigLanguageManager.getText("pig.aggregator_features_interaction.legend"),
-				0, 0, this);
-
 		groupingInt = new PigGroupInteraction(
 				key_grouping,
 				PigLanguageManager.getText("pig.aggregator_group_interaction.title"),
 				PigLanguageManager.getText("pig.aggregator_group_interaction.legend"), 
-				0, 1);
+				0, 0);
 
 		page1.addInteraction(groupingInt);
 
@@ -49,6 +43,13 @@ public class PigAggregator extends PigElement {
 				PigLanguageManager.getText("pig.aggregator_page2.title"), 
 				PigLanguageManager.getText("pig.aggregator_page2.legend"), 
 				1);
+
+
+		tSelInt = new PigTableSelectInteraction(
+				key_featureTable,
+				PigLanguageManager.getText("pig.aggregator_features_interaction.title"),
+				PigLanguageManager.getText("pig.aggregator_features_interaction.legend"),
+				0, 0, this);
 
 		page2.addInteraction(tSelInt);
 
@@ -147,13 +148,18 @@ public class PigAggregator extends PigElement {
 		DFEOutput in = getDFEInput().get(key_input).get(0);
 		logger.info(in.getFeatures().getFeaturesNames());
 		String interId = interaction.getId();
+		logger.info("looking for "+interId);
 		if (in != null) {
+			logger.info("In not null");
 			if (interId.equals(tSelInt.getId())) {
+				logger.info("update features");
 				tSelInt.update(in);
 			} else if (interId.equals(key_grouping)) {
 				groupingInt.update(in);
 			}  else if (interId.equals(key_condition)) {
 				filterInt.update();
+			}else{
+				logger.info("unknown interaction "+interId);
 			}
 
 		}
