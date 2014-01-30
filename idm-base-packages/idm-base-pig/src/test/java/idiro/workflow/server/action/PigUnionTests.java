@@ -104,7 +104,7 @@ public class PigUnionTests {
 			rowId.add(PigTableUnionInteraction.table_op_title).add(relation_from_2+".VALUE");
 			rowId.add(PigTableUnionInteraction.table_type_title).add("INT");
 		}
-
+		pig.update(pig.gettUnionCond());
 		logger.debug("HS update out...");
 		String error = pig.updateOut();
 		assertTrue("pig union update: "+error,error == null);

@@ -183,6 +183,7 @@ public class TableInteraction extends UserInteraction {
 		}catch(Exception e){}
 
 		if(countConst > 0){
+			logger.debug("Check count constraint for "+columnName+": "+countConst);
 			List<String> colValues = getValuesFromColumn(columnName);
 			while(colValues.size() > 0 && error == null){
 				int curSize = colValues.size();
@@ -191,6 +192,7 @@ public class TableInteraction extends UserInteraction {
 				el.add(val);
 				colValues.removeAll(el);
 				int endSize = colValues.size();
+				logger.debug(val+": occurence "+ (curSize - endSize));
 				if( curSize - endSize != countConst){
 					error = LanguageManagerWF.getText("tableInteraction.countConst",new Object[]{val,countConst});
 				}
