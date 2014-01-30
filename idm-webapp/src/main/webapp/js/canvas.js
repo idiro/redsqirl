@@ -1020,15 +1020,13 @@ function addElements(canvasName, positions) {
 	
 }
 
-	function checkImg(src){
-	   var jqxhr = jQuery.get(src, function() {
-	     return true;
-	   }).fail(function() { 
-	    return false;
-	   });
-	}
-
-
+function checkImg(src){
+   var jqxhr = jQuery.get(src, function() {
+     return true;
+   }).fail(function() { 
+    return false;
+   });
+}
 
 function addElement(canvasName, elementType, elementImg, posx, posy, numSides, idElement) {
 	
@@ -1036,9 +1034,8 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
 
 	var img = new Image({
 		width : 16,
-		height : 16
+		height : 16,
 	});
-	// img.src = "./"+elementImg;
 	img.src = elementImg;
 
 	var result = createPolygon(img, 40, 50, numSides, canvasName);
@@ -1065,7 +1062,6 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
 		strokeWidth : 5
 	});
 	configureCircle(canvasName, circle1);
-	
 	
 	
 	var arc1 = new Kinetic.Shape({
@@ -1124,8 +1120,6 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
 	    strokeWidth: 4,
 	    draggable:false
 	});
-	
-	
 	
 
 	var srcImageText = new Kinetic.Text({
@@ -1187,7 +1181,6 @@ function ready(canvasName) {
 
 	// variable to control image of the object
 	var imgTab1 = new Image();
-	// imgTab1.src = '../image/icons/button-cut.png';
 
 	// control of the rectangle to select objects on the screen
 	canvasArray[canvasName].moving = false;
@@ -2030,6 +2023,18 @@ function updateArrowLabel(idOutput, idInput, label) {
 	
 	layer.draw();
 
+}
+
+function updateAllArrowColours(canvasName){
+	
+	var layer = canvasArray[canvasName].layer;
+	
+	jQuery.each(layer.getChildren(), function(index, value) {
+		if (value.isArrow == true) {
+			updateAllArrowColor(value.idOutput, value.idInput);
+		}
+	});
+	
 }
 
 function setSelected(selected){

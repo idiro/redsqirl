@@ -1008,18 +1008,14 @@ public class CanvasBean extends BaseBean implements Serializable{
 		return result;
 	}
 
-	public String[] getArrowType() throws Exception{
-		logger.info("getArrowType");
-		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-		String groupOutId = params.get("groupOutId");
-		String groupInId = params.get("groupInId");
-		String outputName = params.get("outputName");
+	public String[] getArrowType(String groupOutId, String groupInId, String outputName) throws Exception{
+
 		DataFlowElement df = getDf().getElement(getIdMap().get(getNameWorkflow()).get(groupOutId));
 
 		String color = null;
 		String typeName = null;
 		for (Entry<String, DFEOutput> e : df.getDFEOutput().entrySet()){
-			if (e.getKey().endsWith(outputName)){
+			if (e.getKey().equals(outputName)){
 				color = e.getValue().getColour();
 				typeName = e.getValue().getTypeName();
 				logger.info(e.getKey()+" - "+color);
@@ -1027,7 +1023,44 @@ public class CanvasBean extends BaseBean implements Serializable{
 			}
 		}
 
+		logger.info("getArrowType " + color + " " + typeName);
+
 		return new String[]{groupOutId, groupInId, color, typeName};
+	}
+
+	public String[] getArrowType() throws Exception{
+
+		logger.info("getArrowType");
+
+		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String groupOutId = params.get("groupOutId");
+		String groupInId = params.get("groupInId");
+		String outputName = params.get("outputName");
+
+		logger.info("getArrowType " + groupOutId + " " + groupInId + " " + outputName);
+
+		return getArrowType(groupOutId, groupInId, outputName);
+	}
+
+	public String[] getAllArrowType() throws Exception{
+
+		logger.info("getAllArrowType");
+
+		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String groupOutId = params.get("groupOutId");
+		String groupInId = params.get("groupInId");
+		String outputName = "";
+
+		DataFlowElement df = getDf().getElement(getIdMap().get(getNameWorkflow()).get(groupOutId));
+
+		for (String value : df.getOutputComponent().keySet()) {
+			outputName = value;
+			break;
+		}
+
+		logger.info("getAllArrowType " + groupOutId + " " + groupInId + " " + outputName);
+
+		return getArrowType(groupOutId, groupInId, outputName);
 	}
 
 	public String getIdElement(String idGroup){
@@ -1218,4 +1251,5 @@ public class CanvasBean extends BaseBean implements Serializable{
 	public void setLinkLabel(String nameLink) {
 		this.linkLabel = nameLink;
 	}
+
 }

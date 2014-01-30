@@ -72,13 +72,13 @@
 			<a4j:commandLink action="#{hiveBean.addFileBefore}"
 				oncomplete="#{rich:component('hiveaddModalPanel')}.show()"
 				rendered="#{hiveBean.canCreate != null}">
-				<h:graphicImage id="hivebtAdd" value="../image/icons/button-plus.gif" title="#{hiveBean.canCreate}"/>
+				<h:graphicImage id="hivebtAdd" value="../image/icons/button-plus.gif" title="#{hiveBean.canCreate}" styleClass="fileSystemIcon" />
 			</a4j:commandLink>
 
 			<a4j:commandLink action="#{hiveBean.deleteFile}" reRender="hivefs" 
 				onclick="if(!confirm('Are you sure you want to delete the selected files?')){return false;}"
 				rendered="#{hiveBean.canDelete != null}">
-				<h:graphicImage id="hivebtDelete" value="../image/icons/button-delete.png" title="#{hiveBean.canDelete}"/>
+				<h:graphicImage id="hivebtDelete" value="../image/icons/button-delete2.gif" title="#{hiveBean.canDelete}" styleClass="fileSystemIcon" />
 			</a4j:commandLink>
 
 			<h:commandLink value="Copy to..." onclick="openCopyHive();" 
@@ -88,11 +88,11 @@
 
 			<a4j:commandLink action="#{hiveBean.goPrevious}"
 				reRender="hivepath,hivefs">
-				<h:graphicImage id="hivebtUndo" value="../image/icons/button-undo.png" />
+				<h:graphicImage id="hivebtUndo" value="../image/icons/button-previous.gif" styleClass="fileSystemIcon" />
 			</a4j:commandLink>
 
 			<a4j:commandLink action="#{hiveBean.goNext}" reRender="hivepath,hivefs">
-				<h:graphicImage id="hivebtRedo" value="../image/icons/button-redo.png" />
+				<h:graphicImage id="hivebtRedo" value="../image/icons/button-next.gif" styleClass="fileSystemIcon" />
 			</a4j:commandLink>
 
 
@@ -120,7 +120,7 @@
 					</f:facet>
 					<a4j:commandLink action="#{hiveBean.editFileBefore}"
 						oncomplete="#{rich:component('hiveeditModalPanel')}.show()">
-						<h:graphicImage value="../image/icons/button-save-all.png" />
+						<h:graphicImage value="../image/icons/button-copy.gif" />
 						<f:param name="nameFileEdit" value="#{item.name}" />
 					</a4j:commandLink>
 				</rich:column>
@@ -163,7 +163,7 @@
 			<f:facet name="header">Copy File</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer"
+					style="cursor:pointer;width:16px;"
 					onclick="#{rich:component('hivecopyModalPanel')}.hide()" />
 			</f:facet>
 	
@@ -183,7 +183,7 @@
 			<f:facet name="header">Move File</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer"
+					style="cursor:pointer;width:16px;"
 					onclick="#{rich:component('hivemoveModalPanel')}.hide()" />
 			</f:facet>
 	
@@ -203,7 +203,7 @@
 			<f:facet name="header">Create File</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer"
+					style="cursor:pointer;width:16px;"
 					onclick="#{rich:component('hiveaddModalPanel')}.hide()" />
 			</f:facet>
 	
@@ -223,7 +223,7 @@
 			<f:facet name="header">Edit File</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer"
+					style="cursor:pointer;width:16px;"
 					onclick="#{rich:component('hiveeditModalPanel')}.hide()" />
 			</f:facet>
 	
@@ -243,7 +243,7 @@
 			<f:facet name="header">Preview File</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer"
+					style="cursor:pointer;width:16px;"
 					onclick="#{rich:component('hiveOpenFileModalPanel')}.hide()" />
 			</f:facet>
 	

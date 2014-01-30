@@ -45,6 +45,11 @@ public class OutputForm implements Serializable {
 			
 		
 	}
+	
+
+	public OutputForm() {
+		super();
+	}
 
 	public String getName() {
 		return name;
@@ -165,6 +170,14 @@ public class OutputForm implements Serializable {
 		dfeOutput.setSavingState(SavingState.valueOf(getSavingState()));
 
 		return dfeOutput.isPathValid();
+	}
+
+	public String getUser() {
+		return user;
+	}
+
+	public void setUser(String user) {
+		this.user = user;
 	}
 
 }

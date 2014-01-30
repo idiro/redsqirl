@@ -27,6 +27,8 @@
 		}
 		return p + "/"+ file;
 	}
+
+	
 //]]>
 </script>
 
@@ -37,59 +39,85 @@
 	<h:outputText value="#{messages.label_path}" />
 	<h:inputText id="pathOpenFile" label="Path" value="#{hdfsLoadBean.path}"
 		maxlength="255" style="width:395px;" />
-	<a4j:commandButton type="submit" id="changePathBt"
-		action="#{hdfsLoadBean.changePath}" value="#{messages.button_ok}" reRender="hdfsfsOpenFile" />
-	<br />
-
+		
+	<a4j:commandLink action="#{hdfsLoadBean.changePath}" reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
+		<img src="../image/icons/button-search.gif" />
+	</a4j:commandLink>
+		
 	<a4j:commandLink action="#{hdfsLoadBean.goPrevious}"
 		reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
-		<img id="btAdd" src="../image/icons/button-undo.png" />
+		<img id="btAdd" src="../image/icons/button-previous.gif" />
 	</a4j:commandLink>
 	<a4j:commandLink action="#{hdfsLoadBean.goNext}" reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
-		<img id="btAdd" src="../image/icons/button-redo.png" />
+		<img id="btAdd" src="../image/icons/button-next.gif" />
 	</a4j:commandLink>
-	<br/>
 	
-	<rich:dataTable id="hdfsfsOpenFile" value="#{hdfsLoadBean.listGrid}" var="item"
-		width="100%" style="border:none;"
-		onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-		onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
-
+	<br/><br/>
+	
+	
+	<rich:dataTable value="#{hdfsLoadBean.listHeaderGrid}" var="item"
+			width="100%" style="border:none;"
+			onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+			onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
+	
 		<f:facet name="header">
 			<h:outputText value="File System" />
 		</f:facet>
 
-		<rich:column style="border-bottom:0px;border-right:0px;" width="10px;">
+		<rich:column style="border-bottom:0px;border-right:0px;" headerClass="loadTableRadio" >
 			<f:facet name="header">
 				<h:outputText value="" />
 			</f:facet>
-			<h:selectOneRadio value="#{item.stringSelectedDestination}"
-				onclick="dataTableOpenSelectOneRadio(this, '#{item.name}');">
-				<f:selectItem itemValue="true" />
-			</h:selectOneRadio>
-
 		</rich:column>
-		<rich:column sortBy="#{item.name}"
-			style="border-bottom:0px;border-right:0px;">
+		
+		<rich:column style="border-bottom:0px;border-right:0px;" headerClass="loadTableName" >
 			<f:facet name="header">
 				<h:outputText value="Name" />
 			</f:facet>
-			<a4j:commandLink value="#{item.name}"
-				action="#{hdfsLoadBean.selectFile}" reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
-				<f:param name="nameFile" value="#{item.name}" />
-			</a4j:commandLink>
 		</rich:column>
 
-		<rich:columns value="#{hdfsLoadBean.keyAsListNameValue}" var="column"
+		<rich:columns value="#{hdfsLoadBean.keyAsListNameValue}" var="column" headerClass="loadTableMap"
 			index="ind" id="column#{ind}"
 			style="border-bottom:0px;border-right:0px;">
 			<f:facet name="header">
 				<h:outputText value="#{column}" />
 			</f:facet>
-			<h:outputText value="#{item.nameValue[column]}" id="value#{ind}" />
 		</rich:columns>
-
+	
 	</rich:dataTable>
+	
+	
+	<div style="width:590px;height:250px;overflow:auto;" >
+	
+		<rich:dataTable id="hdfsfsOpenFile" value="#{hdfsLoadBean.listGrid}" var="item"
+			width="100%" style="border:none;"
+			onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+			onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
+	
+			<rich:column style="border-bottom:0px;border-right:0px;" styleClass="loadTableRadio" >
+				<h:selectOneRadio value="#{item.stringSelectedDestination}"
+					onclick="dataTableOpenSelectOneRadio(this, '#{item.name}');">
+					<f:selectItem itemValue="true" />
+				</h:selectOneRadio>
+			</rich:column>
+			
+			<rich:column sortBy="#{item.name}" style="border-bottom:0px;border-right:0px;" styleClass="loadTableName" >
+				<a4j:commandLink value="#{item.name}"
+					action="#{hdfsLoadBean.selectFile}" reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
+					<f:param name="nameFile" value="#{item.name}" />
+				</a4j:commandLink>
+			</rich:column>
+	
+			<rich:columns value="#{hdfsLoadBean.keyAsListNameValue}" var="column" styleClass="loadTableMap"
+				index="ind" id="column#{ind}"
+				style="border-bottom:0px;border-right:0px;" >
+				<h:outputText value="#{item.nameValue[column]}" id="value#{ind}" />
+			</rich:columns>
+	
+		</rich:dataTable>
+
+	</div>
+
 
 	<br />
 
