@@ -57,13 +57,13 @@
 						<span class='ui-icon ui-icon-close' onclick="closeTab(this);closeServer('#{tab}');"></span> </li>
 				</ui:repeat>
 				
-				<a4j:commandButton value="+" action="#{sshBean.openNewSsh}" oncomplete="#{rich:component('modalNewSsh')}.show()" 
-					style="border: hidden;" rerender="modalNewSsh"/>
+				<a4j:commandButton image="../image/icons/button-new_canvas.gif" action="#{sshBean.openNewSsh}" oncomplete="#{rich:component('modalNewSsh')}.show()" 
+					style="border:hidden;width:16px;" rerender="modalNewSsh"/>
 			</ul>
 				
 			<span id="buttonstabRemote" class="spanButtons">
-				<button class="buttonsArrowsLeft">&#60;</button>
-				<button class="buttonsArrowsRight">&#62;</button>
+				<button class="buttonsArrowsLeft"><img src="../image/icons/button-left_arrow.gif" style="width:16px;" /></button>
+				<button class="buttonsArrowsRight"><img src="../image/icons/button-right_arrow.gif" style="width:16px;" /></button>
 			</span>
 					
 		</h:form>
@@ -86,7 +86,7 @@
 	
 			<f:facet name="header">Configuration</f:facet>
 			<f:facet name="controls">
-				<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer"
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:16px;"
 					onclick="#{rich:component('modalNewSsh')}.hide()" />
 			</f:facet>
 	

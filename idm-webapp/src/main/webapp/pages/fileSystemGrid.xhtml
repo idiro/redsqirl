@@ -59,7 +59,7 @@
 
 			<a4j:commandLink action="#{canvasBean.deleteFile}" reRender="sshfs"
 				onclick="if(!confirm('Are you sure you want to delete the selected files?')){return false;}">
-				<img id="btDelete" src="../image/icons/button-delete.png" />
+				<img id="btDelete" src="../image/icons/button-delete.gif" />
 			</a4j:commandLink>
 
 			<a href="#" onclick="openCopySsh();"><h:outputText
@@ -69,11 +69,11 @@
 
 			<a4j:commandLink action="#{canvasBean.goPrevious}"
 				reRender="path,sshfs">
-				<img id="btUndo" src="../image/icons/button-undo.png" />
+				<img id="btUndo" src="../image/icons/button-previous.gif" />
 			</a4j:commandLink>
 
 			<a4j:commandLink action="#{canvasBean.goNext}" reRender="path,sshfs">
-				<img id="btRedo" src="../image/icons/button-redo.png" />
+				<img id="btRedo" src="../image/icons/button-next.gif" />
 			</a4j:commandLink>
 
 
@@ -140,7 +140,7 @@
 		<f:facet name="header">copy</f:facet>
 		<f:facet name="controls">
 			<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-				style="cursor:pointer"
+				style="cursor:pointer;width:16px;"
 				onclick="#{rich:component('copyModalPanel')}.hide()" />
 		</f:facet>
 
@@ -158,7 +158,7 @@
 		<f:facet name="header">move</f:facet>
 		<f:facet name="controls">
 			<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-				style="cursor:pointer"
+				style="cursor:pointer;width:16px;"
 				onclick="#{rich:component('moveModalPanel')}.hide()" />
 		</f:facet>
 
@@ -176,7 +176,7 @@
 		<f:facet name="header">file</f:facet>
 		<f:facet name="controls">
 			<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-				style="cursor:pointer"
+				style="cursor:pointer;width:16px;"
 				onclick="#{rich:component('addModalPanel')}.hide()" />
 		</f:facet>
 
@@ -194,7 +194,7 @@
 		<f:facet name="header">file</f:facet>
 		<f:facet name="controls">
 			<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-				style="cursor:pointer"
+				style="cursor:pointer;width:16px;"
 				onclick="#{rich:component('editModalPanel')}.hide()" />
 		</f:facet>
 

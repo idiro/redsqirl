@@ -14,18 +14,18 @@
             <f:facet name="controls">
                 <h:graphicImage
                     value="../image/icons/buttonCloseWindow.gif"
-                    style="cursor:pointer"
+                    style="cursor:pointer;width:16px;"
                     onclick="#{rich:component('modalInstallPackage')}.hide()" />
             </f:facet>
-            <h:form>
                 <h:panelGroup>
                     <a4j:include
                         viewId="/pages/modalInstallPackage.xhtml"
                         ajaxRendered="true" />
                 </h:panelGroup>
-            </h:form>
         </rich:modalPanel>
     </a4j:region>
+    
+    <h:form>
     <a4j:region>
         <a4j:status
             onstart="jQuery('#body').block({ message: jQuery('#domMessageDivCanvas1') });"
@@ -108,4 +108,5 @@
             </h:panelGrid>
         </rich:panel>
     </h:panelGrid>
+    </h:form>
 </ui:composition>

@@ -372,6 +372,21 @@ public class TableInteraction extends UserInteraction {
 			}
 		}
 	}
+	
+	public void removeGenerators() throws RemoteException{
+		getTree().getFirstChild("table").remove("generator");
+	}
+	
+	public void removeGenerator(String name) throws RemoteException{
+		Tree<String> generator = getTree().getFirstChild("table").getFirstChild("generator");
+		if(generator == null){
+			generator = getTree().getFirstChild("table").add("generator");
+		}
+		Tree<String> genOp = findGenerator(name);
+		if(genOp != null){
+			genOp.getParent().getSubTreeList().remove(genOp);
+		}
+	}
 
 	public void updateGenerator(String name, List<Map<String,String>> rowVals) throws RemoteException{
 		Tree<String> generator = getTree().getFirstChild("table").getFirstChild("generator");

@@ -104,6 +104,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	private Map<String, String> nameBrowserLabel2 = new HashMap<String, String>();
 	private String confirm = "N";
 	private String openPopUp = "S";
+	private List<String> listOutput = new ArrayList<String>();
 
 	/**
 	 * Update the element when closing.
@@ -877,7 +878,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 					Map<String, List<Map<String, String>>> map = new HashMap<String, List<Map<String, String>>>();
 					List<SelectItem> listFields = new ArrayList<SelectItem>();
-
+					
 					if (dfeInteraction.getTree().getFirstChild("table")
 							.getFirstChild("generator") != null) {
 						List<Tree<String>> list = dfeInteraction.getTree()
@@ -1536,13 +1537,15 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 		logger.info("changePathBrowser");
 
-		String path = FacesContext.getCurrentInstance().getExternalContext()
-				.getRequestParameterMap().get("pathFile");
+		String path = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("pathFile");
+		
 		if (path == null) {
 			path = getPathBrowser();
 			logger.info("getPathBrowser" + path);
 		}
+		
 		logger.info("path: " + path);
+		
 		if (path != null) {
 
 			DynamicForm dynamicForm = getDynamicFormBrowser();
@@ -1748,22 +1751,31 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void changePathOutputBrowser() throws RemoteException {
 
 		logger.info("changePathOutputBrowser");
-		String path = FacesContext.getCurrentInstance().getExternalContext()
-				.getRequestParameterMap().get("pathFile");
+		
+		String path = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("pathFile");
 		logger.info("Output: " + getNameOutput() + " - path: " + path);
+		
+		setListOutput(new ArrayList<String>());
 		for (OutputForm f : getOutputFormList()) {
 			if (f.getName().equals(getNameOutput())) {
 				f.setPath(path);
-				logger.info("Output found: " + getNameOutput() + " - path: "
-						+ path);
+				getListOutput().add(path);
+				logger.info("Output found: " + getNameOutput() + " - path: " + path);
 			}
 		}
+		
 	}
 
 	public void confirmOutput() throws RemoteException {
 		logger.info("confirmOutput");
+		
 		String error = null;
+		int i = 0;
 		for (OutputForm f : getOutputFormList()) {
+			
+			f.setPath(getListOutput().get(i));
+			logger.info("confirmOutput path " + f.getPath());
+			
 			error = f.updateDFEOutput();
 			if (error != null) {
 				logger.error(error);
@@ -1773,6 +1785,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 				request.setAttribute("msnError", "msnError");
 			}
 			logger.info("output ok");
+			
+			i++;
 		}
 
 		if(error == null){
@@ -2302,6 +2316,14 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 	public void setOpenPopUp(String openPopUp) {
 		this.openPopUp = openPopUp;
+	}
+
+	public List<String> getListOutput() {
+		return listOutput;
+	}
+
+	public void setListOutput(List<String> listOutput) {
+		this.listOutput = listOutput;
 	}
 
 }

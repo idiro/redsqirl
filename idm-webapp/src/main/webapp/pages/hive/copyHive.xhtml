@@ -31,10 +31,10 @@ function dataTableSelectOneRadio(radio) {
 
 	<a4j:commandLink action="#{hiveBean.goPrevious}"
 		reRender="pathCopy,hivefsCopy">
-		<img id="btAdd" src="../image/icons/button-undo.png" />
+		<img id="btAdd" src="../image/icons/button-previous.gif" />
 	</a4j:commandLink>
 	<a4j:commandLink action="#{hiveBean.goNext}" reRender="pathCopy,hivefsCopy">
-		<img id="btAdd" src="../image/icons/button-redo.png" />
+		<img id="btAdd" src="../image/icons/button-next.gif" />
 	</a4j:commandLink>
 
 	<rich:dataTable id="hivefsCopy" value="#{hiveBean.listGrid}" var="item"
