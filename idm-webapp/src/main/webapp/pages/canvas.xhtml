@@ -1013,7 +1013,7 @@
 
 					<rich:menuItem submitMode="ajax"
 						value="#{messages.label_menu_runitems}"
-						onclick="runWorkflow(getIconPositions(),getSelectedIconsCommaDelimited())"
+						onclick="var sels=getSelectedIconsCommaDelimited();if(sels.length > 0){runWorkflow(getIconPositions(),sels)}"
 						reRender="formMenu,domMessageDivCanvas2">
 					</rich:menuItem>
                     
@@ -1029,6 +1029,8 @@
                         value="#{messages.label_menu_clean_project}"
                         action="#{canvasBean.cleanCanvasProject}" oncomplete="updateAllArcsStatus();" />
                         
+                    <rich:menuGroup value="#{messages.label_menu_generate}" >
+                    
                     <rich:menuItem submitMode="ajax"
                         value="#{messages.label_menu_regeneratecopy_project}"
                         action="#{canvasBean.regeneratePathsProjectCopy}" oncomplete="updateAllArcsStatus();" />
@@ -1036,6 +1038,8 @@
                     <rich:menuItem submitMode="ajax"
                         value="#{messages.label_menu_regeneratemove_project}"
                         action="#{canvasBean.regeneratePathsProjectMove}" oncomplete="updateAllArcsStatus();" />
+                
+                    </rich:menuGroup>
                     
                     <rich:menuSeparator />
                     

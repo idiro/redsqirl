@@ -227,8 +227,9 @@ public class PigTableUnionInteraction extends TableInteraction{
 		List<String> types = new LinkedList<String>();
 		types.add(FeatureType.BOOLEAN.name());
 		types.add(FeatureType.INT.name());
-		types.add(FeatureType.DOUBLE.name());
+		types.add(FeatureType.LONG.name());
 		types.add(FeatureType.FLOAT.name());
+		types.add(FeatureType.DOUBLE.name());
 		types.add(FeatureType.STRING.name());
 		
 		addColumn(

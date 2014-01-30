@@ -1,5 +1,6 @@
 package idiro.workflow.server;
 
+import idiro.Log;
 import idiro.check.FileChecker;
 import idiro.workflow.server.enumeration.SavingState;
 import idiro.workflow.server.interfaces.DFEInteraction;
@@ -375,15 +376,17 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 
 					update(interaction);
 				} catch (Exception e) {
-
-					logger.error("Error when updating an element");
-					logger.error(interaction.getName());
-
+					logger.error(e);
+					for(int i = 0; i < 6 && i < e.getStackTrace().length; ++i){
+					logger.error(e.getStackTrace()[i].toString());
+					}
+					logger.error("Error when updating the element "+interaction.getId());
 				}
 			}
 		} catch (Exception e) {
 			logger.error("The page number " + pageNb + " does not exist");
 		}
+		Log.flushAllLogs();
 	}
 
 	/**

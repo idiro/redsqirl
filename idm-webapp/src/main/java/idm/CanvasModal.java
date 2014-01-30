@@ -877,7 +877,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 					Map<String, List<Map<String, String>>> map = new HashMap<String, List<Map<String, String>>>();
 					List<SelectItem> listFields = new ArrayList<SelectItem>();
-
+					
 					if (dfeInteraction.getTree().getFirstChild("table")
 							.getFirstChild("generator") != null) {
 						List<Tree<String>> list = dfeInteraction.getTree()
