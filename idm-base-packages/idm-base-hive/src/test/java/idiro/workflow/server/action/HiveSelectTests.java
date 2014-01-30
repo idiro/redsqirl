@@ -138,7 +138,7 @@ public class HiveSelectTests {
 
 		logger.debug("update hive...");
 
-		ConditionInteraction ci = hive.getCondInt();
+		HiveFilterInteraction ci = hive.getFilterInt();
 		logger.info("got condition interaction");
 		hive.update(ci);
 		logger.info("updated condition interaction");
@@ -146,19 +146,19 @@ public class HiveSelectTests {
 		ci.setValue("VALUE < 10");
 		logger.info("updated condition ouput");
 		
-		TableSelectInteraction tsi = hive.gettSelInt();
+		HiveTableSelectInteraction tsi = hive.gettSelInt();
 		logger.info("got tsel interaction");
 		hive.update(tsi);
 		{
 			Tree<String> out = tsi.getTree().getFirstChild("table");
 			Tree<String> rowId = out.add("row");
-			rowId.add(TableSelectInteraction.table_feat_title).add("ID");
-			rowId.add(TableSelectInteraction.table_op_title).add("ID");
-			rowId.add(TableSelectInteraction.table_type_title).add("STRING");
+			rowId.add(HiveTableSelectInteraction.table_feat_title).add("id");
+			rowId.add(HiveTableSelectInteraction.table_op_title).add("id");
+			rowId.add(HiveTableSelectInteraction.table_type_title).add("STRING");
 			rowId = out.add("row");
-			rowId.add(TableSelectInteraction.table_feat_title).add("VALUE");
-			rowId.add(TableSelectInteraction.table_op_title).add("VALUE");
-			rowId.add(TableSelectInteraction.table_type_title).add("INT");
+			rowId.add(HiveTableSelectInteraction.table_feat_title).add("value");
+			rowId.add(HiveTableSelectInteraction.table_op_title).add("value");
+			rowId.add(HiveTableSelectInteraction.table_type_title).add("INT");
 		}
 		logger.info("added values to tsel interaction");
 
@@ -180,21 +180,21 @@ public class HiveSelectTests {
 				.getFirstChild("applist").getFirstChild("output");
 		gb.add("value").add("ID");
 
-		ConditionInteraction ci = hive.getCondInt();
+		HiveFilterInteraction ci = hive.getFilterInt();
 		hive.update(ci);
 
-		TableSelectInteraction tsi = hive.gettSelInt();
+		HiveTableSelectInteraction tsi = hive.gettSelInt();
 		hive.update(tsi);
 		{
 			Tree<String> out = tsi.getTree().getFirstChild("table");
 			Tree<String> rowId = out.add("row");
-			rowId.add(TableSelectInteraction.table_feat_title).add("ID");
-			rowId.add(TableSelectInteraction.table_op_title).add("ID");
-			rowId.add(TableSelectInteraction.table_type_title).add("STRING");
+			rowId.add(HiveTableSelectInteraction.table_feat_title).add("ID");
+			rowId.add(HiveTableSelectInteraction.table_op_title).add("ID");
+			rowId.add(HiveTableSelectInteraction.table_type_title).add("STRING");
 			rowId = out.add("row");
-			rowId.add(TableSelectInteraction.table_feat_title).add("SUM_VALUE");
-			rowId.add(TableSelectInteraction.table_op_title).add("SUM(VALUE)");
-			rowId.add(TableSelectInteraction.table_type_title).add("DOUBLE");
+			rowId.add(HiveTableSelectInteraction.table_feat_title).add("SUM_VALUE");
+			rowId.add(HiveTableSelectInteraction.table_op_title).add("SUM(VALUE)");
+			rowId.add(HiveTableSelectInteraction.table_type_title).add("DOUBLE");
 		}
 
 		logger.debug("HS update out...");
@@ -302,6 +302,6 @@ public class HiveSelectTests {
 	// @Test
 	public void HiveSelectinteractionstest() throws RemoteException {
 		HiveSelect select = new HiveSelect();
-		TableSelectInteraction tsel = select.gettSelInt();
+		HiveTableSelectInteraction tsel = select.gettSelInt();
 	}
 }

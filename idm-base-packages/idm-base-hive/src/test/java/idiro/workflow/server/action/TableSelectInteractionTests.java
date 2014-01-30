@@ -21,7 +21,7 @@ public class TableSelectInteractionTests {
 	
 	Map<String,String> getColumns(){
 		Map<String,String> ans = new HashMap<String,String>();
-		ans.put(HiveInterface.key_columns,"ID STRING, VALUE INT");
+		ans.put(HiveInterface.key_columns,"id STRING, value INT");
 		return ans;
 	}
 	
@@ -54,12 +54,12 @@ public class TableSelectInteractionTests {
 
 		Tree<String> feat1 = dataSetTree.getFirstChild("browse")
 				.getFirstChild("output").add("feature");
-		feat1.add("name").add("ID");
+		feat1.add("name").add("id");
 		feat1.add("type").add("STRING");
 
 		Tree<String> feat2 = dataSetTree.getFirstChild("browse")
 				.getFirstChild("output").add("feature");
-		feat2.add("name").add("VALUE");
+		feat2.add("name").add("value");
 		feat2.add("type").add("INT");
 		
 		String error = src.updateOut();
@@ -89,17 +89,17 @@ public class TableSelectInteractionTests {
 			String new_path2 = "/" + TestUtils.getTableName(2);
 			HiveInterface hInt = new HiveInterface();
 			Source src = getSource(w,hInt,new_path1);
-			HiveSelect hs = new HiveSelect();
+			HiveAggregator hs = new HiveAggregator();
 			src.setComponentId("1");
 			hs.setComponentId("2");
 			error = src.addOutputComponent(Source.out_name, hs);
 			assertTrue("source add output: "+error,error == null);
-			error = hs.addInputComponent(HiveSelect.key_input, src);
+			error = hs.addInputComponent(HiveAggregator.key_input, src);
 			assertTrue("hive select add input: "+error,error == null);
 			
-			logger.debug(hs.getDFEInput());
+			logger.debug(hs.getDFEInput().get(HiveAggregator.key_input).get(0).getTypeName());
 			
-			TableSelectInteraction tsi = hs.gettSelInt();
+			HiveTableSelectInteraction tsi = hs.gettSelInt();
 			logger.info("got Table Select Interaction");
 //			hs.update(hs.getGroupingInt());
 			hs.update(tsi);
@@ -108,13 +108,13 @@ public class TableSelectInteractionTests {
 				logger.debug("3");
 				Tree<String> rowId = out.add("row");
 				logger.debug("4");
-				rowId.add(TableSelectInteraction.table_feat_title).add("ID");
-				rowId.add(TableSelectInteraction.table_op_title).add("ID");
-				rowId.add(TableSelectInteraction.table_type_title).add("STRING");
+				rowId.add(HiveTableSelectInteraction.table_feat_title).add("id");
+				rowId.add(HiveTableSelectInteraction.table_op_title).add("id");
+				rowId.add(HiveTableSelectInteraction.table_type_title).add("STRING");
 				logger.debug("5");
 				error = tsi.check();
 				logger.debug("6");
-				assertTrue("check1",error == null);
+				assertTrue("check1 : "+error,error == null);
 				logger.debug("7");
 				out.remove("row");
 				logger.debug("8");

@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 import idiro.utils.Tree;
 import idiro.workflow.server.action.utils.TestUtils;
 import idiro.workflow.server.connect.HiveInterface;
+import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.interfaces.DataFlowElement;
 
 import java.rmi.RemoteException;
@@ -37,6 +38,10 @@ public class ConditionInteractionTests {
 		src.update(src.getInteraction(Source.key_datatype));
 		Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype).getTree();
 		dataTypeTree.getFirstChild("list").getFirstChild("output").add("Hive");
+		
+		src.update(src.getInteraction(Source.key_datasubtype));
+		Tree<String> dataSubTypeTree = src.getInteraction(Source.key_datasubtype).getTree();
+		dataSubTypeTree.getFirstChild("list").getFirstChild("output").add(new HiveType().getTypeName());
 
 		src.update(src.getInteraction(Source.key_dataset));
 		Tree<String> dataSetTree = src.getInteraction(Source.key_dataset).getTree();
@@ -72,18 +77,14 @@ public class ConditionInteractionTests {
 			error = hs.addInputComponent(HiveSelect.key_input, src);
 			assertTrue("hive select add input: "+error,error == null);
 			
-			ConditionInteraction ci = hs.getCondInt();
+			HiveFilterInteraction ci = hs.getFilterInt();
 			
 			logger.debug(hs.getDFEInput());
 			hs.update(ci);
-			Tree<String> cond = ci.getTree()
-					.getFirstChild("editor");
-			cond.getFirstChild("output").add("VAL < 10");
+			ci.setValue("VAL < 10");
 			error = ci.check();
-			assertTrue("check1: VAL does not exist",error != null);
-			
-			cond.remove("output");
-			cond.add("output").add("VALUE < 10");
+			assertTrue("check1: VAL does not exist : "+error,error != null);
+			ci.setValue("VALUE < 10");
 			error = ci.check();
 			assertTrue("check2: "+error,error == null);
 			

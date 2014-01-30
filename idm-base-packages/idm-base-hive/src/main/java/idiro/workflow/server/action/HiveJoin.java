@@ -3,24 +3,28 @@ package idiro.workflow.server.action;
 import idiro.utils.FeatureList;
 import idiro.utils.OrderedFeatureList;
 import idiro.utils.Tree;
+import idiro.workflow.server.ListInteraction;
 import idiro.workflow.server.Page;
 import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEOutput;
+import idiro.workflow.utils.HiveLanguageManager;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Action to join several tables.
  * 
  * @author etienne
- *
+ * 
  */
-public class HiveJoin extends HiveElement{
+public class HiveJoin extends HiveElement {
 
 	/**
 	 * 
@@ -28,74 +32,64 @@ public class HiveJoin extends HiveElement{
 	private static final long serialVersionUID = -3035179016090477413L;
 
 	public static final String key_featureTable = "Features",
-			key_joinType = "Join_Type",
-			key_joinRelation = "Join_Relationship";
+			key_joinType = "Join_Type", key_joinRelation = "Join_Relationship";
 
-	private Page page1,
-			page2,
-			page3;
-	
-	private TableJoinInteraction tJoinInt;
-	private JoinRelationInteraction jrInt;
-	private DFEInteraction joinTypeInt;
-	
-	
+	private Page page1, page2, page3;
+
+	private HiveTableJoinInteraction tJoinInt;
+	private HiveJoinRelationInteraction jrInt;
+	private ListInteraction joinTypeInt;
+
 	public HiveJoin() throws RemoteException {
-		super(3,2,Integer.MAX_VALUE);
-		
-		page1 = addPage("Join Relationship",
-				"Join Relationship to use. The join will be applied from top to bottom. "+
-				"All the tables need to share one column in common.",
-				1);
+		super(3, 2, Integer.MAX_VALUE);
 
-		jrInt = new JoinRelationInteraction(
-				key_joinRelation,
-				"Please specify the relationship, top to bottom is like left to right", 
-				0,
-				0,
-				this);
-		
-		page1.addInteraction(jrInt);
+		page1 = addPage(HiveLanguageManager.getText("hive.join_page1.title"),
+				HiveLanguageManager.getText("hive.join_page1.legend"), 1);
 
-		page2 = addPage("Filters",
-				"Add a condition and/or a partition filter. Note that these filters are applied after joining.",
-				1);
+		tJoinInt = new HiveTableJoinInteraction(key_featureTable,
+				HiveLanguageManager
+						.getText("hive.join_features_interaction.title"),
+				HiveLanguageManager
+						.getText("hive.join_features_interaction.legend"), 0,
+				0, this);
 
-		joinTypeInt = new UserInteraction(
-				key_joinType,"",
-				"Please specify a join type. The join order is given from top to bottom, "+
-				"left to right in the join relationship, next page.",
-				DisplayType.list,
-				0,
-				0); 
+		page1.addInteraction(tJoinInt);
 
-		
-		condInt = new ConditionInteraction(
-				0,
-				2, 
-				this 
-				);
+		page2 = addPage(HiveLanguageManager.getText("hive.join_page2.title"),
+				HiveLanguageManager.getText("hive.join_page2.legend"), 1);
+
+		jrInt = new HiveJoinRelationInteraction(key_joinRelation,
+				HiveLanguageManager
+						.getText("hive.join_relationship_interaction.title"),
+				HiveLanguageManager
+						.getText("hive.join_relationship_interaction.legend"),
+				0, 0, this);
+
+		joinTypeInt = new ListInteraction(key_joinType,
+				HiveLanguageManager
+						.getText("hive.join_jointype_interaction.title"),
+						HiveLanguageManager
+						.getText("hive.join_jointype_interaction.legend"), 0, 0);
+		List<String> valueJoinTypeInt = new LinkedList<String>();
+		valueJoinTypeInt.add("JOIN");
+		valueJoinTypeInt.add("LEFT OUTER JOIN");
+		valueJoinTypeInt.add("RIGHT OUTER JOIN");
+		valueJoinTypeInt.add("FULL OUTER JOIN");
+		joinTypeInt.setPossibleValues(valueJoinTypeInt);
+		joinTypeInt.setValue("JOIN");
 
 		page2.addInteraction(joinTypeInt);
-		page2.addInteraction(condInt);
+		page2.addInteraction(jrInt);
 
-		
-		
-		page3 = addPage("Join Operations",
-				"The columns generated are defined on this page. Each row of the table is a new column to generate. "+
-				"The feature name have to be unique and a correct type needs to be assign.",
+		page3 = addPage(
+				HiveLanguageManager.getText("hive.join_page3.title"), 
+				HiveLanguageManager.getText("hive.join_page3.title"),
 				1);
-		
-		
-		tJoinInt = new TableJoinInteraction(
-				key_featureTable,
-				"",
-				0,
-				0,
-				this);
-		
-		page3.addInteraction(tJoinInt);
-		
+
+		condInt = new HiveFilterInteraction(0, 2, this);
+
+		page3.addInteraction(condInt);
+
 	}
 
 	public String getName() throws RemoteException {
@@ -103,27 +97,24 @@ public class HiveJoin extends HiveElement{
 	}
 
 	public void update(DFEInteraction interaction) throws RemoteException {
-		
-		logger.info("Hive Join interaction "+interaction.getName());
-		
-		if(interaction.getName().equals(condInt.getName())){
+
+		logger.info("Hive Join interaction " + interaction.getName());
+
+		if (interaction.getName().equals(condInt.getName())) {
 			condInt.update();
-		}else if(interaction.getName().equals(joinTypeInt.getName())){
-			updateJoinType();
-		}else if(interaction.getName().equals(jrInt.getName())){
+		} else if (interaction.getName().equals(joinTypeInt.getName())) {
+//			updateJoinType();
+		} else if (interaction.getName().equals(jrInt.getName())) {
 			jrInt.update();
-		}else if(interaction.getName().equals(tJoinInt.getName())){
+		} else if (interaction.getName().equals(tJoinInt.getName())) {
 			tJoinInt.update();
-		}else if(typeOutputInt != null && interaction == typeOutputInt){
-			updateType();
 		}
 	}
-	
 
-	public void updateJoinType() throws RemoteException{
+	public void updateJoinType() throws RemoteException {
 
 		Tree<String> list = null;
-		if(joinTypeInt.getTree().getSubTreeList().isEmpty()){
+		if (joinTypeInt.getTree().getSubTreeList().isEmpty()) {
 			list = joinTypeInt.getTree().add("list");
 			list.add("output").add("JOIN");
 			Tree<String> values = list.add("values");
@@ -133,79 +124,73 @@ public class HiveJoin extends HiveElement{
 			values.add("value").add("FULL OUTER JOIN");
 		}
 	}
-	
+
 	@Override
-	public String getQuery() throws RemoteException{
+	public String getQuery() throws RemoteException {
 
 		HiveInterface hInt = new HiveInterface();
 		String query = null;
-		if(getDFEInput() != null){
-			//Output
+		if (getDFEInput() != null) {
+			// Output
 			DFEOutput out = output.values().iterator().next();
 			String tableOut = hInt.getTableAndPartitions(out.getPath())[0];
-			
-			String insert = "INSERT OVERWRITE TABLE "+tableOut;
-			String from = " FROM "+jrInt.getQueryPiece()+" ";
-			String create = "CREATE TABLE IF NOT EXISTS "+tableOut;
+
+			String insert = "INSERT OVERWRITE TABLE " + tableOut;
+			String from = " FROM " + jrInt.getQueryPiece() + " ";
+			String create = "CREATE TABLE IF NOT EXISTS " + tableOut;
 			String where = condInt.getQueryPiece();
 
 			String select = tJoinInt.getQueryPiece();
 			String createSelect = tJoinInt.getCreateQueryPiece();
-			
-			
-			if(select.isEmpty()){
+
+			if (select.isEmpty()) {
 				logger.debug("Nothing to select");
-			}else{
-				query = create+"\n"+
-						createSelect+";\n\n";
-				
-				query += insert+"\n"+
-						select+"\n"+
-						from+"\n"+
-						where+";";
+			} else {
+				query = create + "\n" + createSelect + ";\n\n";
+
+				query += insert + "\n" + select + "\n" + from + "\n" + where
+						+ ";";
 			}
 		}
 
 		return query;
 	}
 
+	public FeatureList getInFeatures() throws RemoteException {
+		FeatureList ans = new OrderedFeatureList();
+		Map<String, DFEOutput> aliases = getAliases();
 
-	public FeatureList getInFeatures() throws RemoteException{
-		FeatureList ans = 
-				new OrderedFeatureList();
-		Map<String,DFEOutput> aliases = getAliases();
-		
 		Iterator<String> it = aliases.keySet().iterator();
-		while(it.hasNext()){
+		while (it.hasNext()) {
 			String alias = it.next();
 			FeatureList mapTable = aliases.get(alias).getFeatures();
 			Iterator<String> itFeat = mapTable.getFeaturesNames().iterator();
-			while(itFeat.hasNext()){
+			while (itFeat.hasNext()) {
 				String cur = itFeat.next();
-				ans.addFeature(alias+"."+cur, mapTable.getFeatureType(cur));
+				ans.addFeature(alias + "." + cur, mapTable.getFeatureType(cur));
 			}
 		}
-		return ans; 
+		return ans;
 	}
-	
+
 	/**
 	 * @return the tJoinInt
 	 */
-	public final TableJoinInteraction gettJoinInt() {
+	public final HiveTableJoinInteraction gettJoinInt() {
 		return tJoinInt;
 	}
 
 	/**
 	 * @return the jrInt
 	 */
-	public final JoinRelationInteraction getJrInt() {
+	public final HiveJoinRelationInteraction getJrInt() {
 		return jrInt;
 	}
 
 	/**
 	 * @return the joinTypeInt
 	 */
-	public final DFEInteraction getJoinTypeInt() {
+	public final ListInteraction getJoinTypeInt() {
 		return joinTypeInt;
 	}
 
@@ -213,5 +198,5 @@ public class HiveJoin extends HiveElement{
 	public FeatureList getNewFeatures() throws RemoteException {
 		return tJoinInt.getNewFeatures();
 	}
-	
+
 }

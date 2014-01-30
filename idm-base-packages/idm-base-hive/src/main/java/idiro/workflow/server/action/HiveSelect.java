@@ -34,7 +34,8 @@ public class HiveSelect extends HiveElement {
 	private Page page1;
 	private Page page2;
 
-	private TableSelectInteraction tSelInt;
+	private HiveTableSelectInteraction tSelInt;
+	private HiveGroupByInteraction groupInt;
 
 	public HiveSelect() throws RemoteException {
 		super(2, 1, 1);
@@ -42,7 +43,7 @@ public class HiveSelect extends HiveElement {
 		page1 = addPage(HiveLanguageManager.getText("hive.select_page1.title"),
 				HiveLanguageManager.getText("hive.select_page1.legend"), 1);
 
-		tSelInt = new TableSelectInteraction(key_featureTable,
+		tSelInt = new HiveTableSelectInteraction(key_featureTable,
 				HiveLanguageManager
 						.getText("hive.select_features_interaction.title"),
 				HiveLanguageManager
@@ -54,7 +55,7 @@ public class HiveSelect extends HiveElement {
 		page2 = addPage(HiveLanguageManager.getText("hive.select_page2.title"),
 				HiveLanguageManager.getText("hive.select_page2.legend"), 1);
 
-		condInt = new ConditionInteraction(0, 0, this);
+		condInt = new HiveFilterInteraction(0, 0, this);
 
 		page2.addInteraction(condInt);
 
@@ -100,19 +101,13 @@ public class HiveSelect extends HiveElement {
 			logger.debug("table ouput : "+ tableOut);
 
 			String insert = "INSERT OVERWRITE TABLE " + tableOut;
-//					+ partInt.getQueryPiece();
 			logger.debug("insert : "+insert);
 			String from = " FROM " + tableIn + " ";
 			logger.debug("from : "+from);
 			String create = "CREATE TABLE IF NOT EXISTS " + tableOut;
 			logger.debug("create : "+create);
-//			String createPartition = partInt.getCreateQueryPiece();
-//			if (createPartition.isEmpty()) {
-//				createPartition = partInt.getPartitions();
-//			}
 			String where = condInt.getQueryPiece();
 
-			logger.debug("group by...");
 			String select = tSelInt.getQueryPiece(out);
 			String createSelect = tSelInt.getCreateQueryPiece(out);
 
@@ -133,16 +128,10 @@ public class HiveSelect extends HiveElement {
 	/**
 	 * @return the tSelInt
 	 */
-	public final TableSelectInteraction gettSelInt() {
+	public final HiveTableSelectInteraction gettSelInt() {
 		return tSelInt;
 	}
 
-	/**
-//	 * @return the groupingInt
-//	 */
-//	public final UserInteraction getGroupingInt() {
-//		return groupingInt;
-//	}
 
 	@Override
 	public FeatureList getInFeatures() throws RemoteException {
@@ -152,6 +141,10 @@ public class HiveSelect extends HiveElement {
 	@Override
 	public FeatureList getNewFeatures() throws RemoteException {
 		return tSelInt.getNewFeatures();
+	}
+
+	public HiveGroupByInteraction getGroupInt() {
+		return groupInt;
 	}
 
 }

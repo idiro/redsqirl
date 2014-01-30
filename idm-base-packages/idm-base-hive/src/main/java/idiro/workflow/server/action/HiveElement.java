@@ -47,16 +47,17 @@ public abstract class HiveElement extends DataflowAction {
 	 * Names of different elements
 	 */
 	public static final String key_output = "out", key_input = "in",
-			key_condition = "Condition", key_partitions = "Partitions",
-			key_outputType = "Output_Type", key_alias = "Alias";
+			key_condition = "Condition", key_grouping = "Grouping",
+			key_partitions = "Partitions", key_outputType = "Output_Type",
+			key_alias = "Alias";
 
 	/**
 	 * Common interactions
 	 */
-	protected ConditionInteraction condInt;
+	protected HiveFilterInteraction condInt;
 	protected PartitionInteraction partInt;
 	protected UserInteraction typeOutputInt;
-	protected GroupByInteraction groupingInt;
+	protected HiveGroupByInteraction groupingInt;
 
 	/**
 	 * entries
@@ -161,18 +162,18 @@ public abstract class HiveElement extends DataflowAction {
 			if (new_features.getSize() > 0) {
 				// partInt.addPartitions(new_features);
 				// if(useTable()){
-//				if (output == null) {
-//					output = new LinkedHashMap<String, DFEOutput>();
-//					output.put(key_output, new HiveType());
-//				} else {
-//					logger.info("doing stuff");
-//					if (output.get(key_output) instanceof ) {
-//						output.clear();
-//						output.put(key_output, new HiveType());
-//					}
-//				}
-				
-				if(output.get(key_output) == null){
+				// if (output == null) {
+				// output = new LinkedHashMap<String, DFEOutput>();
+				// output.put(key_output, new HiveType());
+				// } else {
+				// logger.info("doing stuff");
+				// if (output.get(key_output) instanceof ) {
+				// output.clear();
+				// output.put(key_output, new HiveType());
+				// }
+				// }
+
+				if (output.get(key_output) == null) {
 					output.put(key_output, new HiveType());
 				}
 				// }else{
@@ -262,7 +263,7 @@ public abstract class HiveElement extends DataflowAction {
 	/**
 	 * @return the condInt
 	 */
-	public final ConditionInteraction getCondInt() {
+	public final HiveFilterInteraction getFilterInt() {
 		return condInt;
 	}
 
@@ -274,17 +275,13 @@ public abstract class HiveElement extends DataflowAction {
 		return partInt;
 	}
 
-	public GroupByInteraction getGroupingInt() {
-		if (groupingInt != null) {
-			return groupingInt;
-		} else {
-			return null;
-		}
+	public HiveGroupByInteraction getGroupingInt() {
+		return groupingInt;
 	}
 
 	public Set<String> getGroupByFeatures() throws RemoteException {
 		Set<String> features = new HashSet<String>();
-		GroupByInteraction group = getGroupingInt();
+		HiveGroupByInteraction group = getGroupingInt();
 		if (group != null) {
 			Tree<String> tree = group.getTree();
 			logger.info("group tree : "

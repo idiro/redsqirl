@@ -312,23 +312,20 @@ public class HiveDictionary extends AbstractDictionary {
 
 	public String getReturnType(String expr, FeatureList features,
 			Set<String> featureAggreg) throws Exception {
-
+		logger.info("expression : "+expr);
+		logger.info("features List : "+features.getFeaturesNames().toString());
+//		logger.info("features aggreg : "+featureAggreg.toString());
 		if (expr == null || expr.trim().isEmpty()) {
 			throw new Exception("No expressions to test");
 		}
-
+		logger.info("features passed to dictionary : "+features.getFeaturesNames().toString());
 		// Test if all the featureAggreg have a type
-		Iterator<String> itFAgg = featureAggreg.iterator();
-		boolean ok = true;
-		String feature = "";
-		while (itFAgg.hasNext() && ok) {
-			feature = itFAgg.next();
-			ok = features.containsFeature(feature);
-		}
-
-		if (!ok) {
-			throw new Exception("Parameters invalid " + featureAggreg.toArray()
-					+ " needs to be in " + features.getFeaturesNames() +" "+feature);
+		if (featureAggreg != null
+				&& !features.getFeaturesNames().containsAll(featureAggreg)) {
+			logger.error("Aggregation features unknown");
+			throw new Exception("Aggregation features unknown("
+					+ featureAggreg.toString() + "): "
+					+ features.getFeaturesNames().toString());
 		}
 
 		expr = expr.trim().toUpperCase();

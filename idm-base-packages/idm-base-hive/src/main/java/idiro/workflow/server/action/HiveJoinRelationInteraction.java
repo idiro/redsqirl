@@ -4,11 +4,10 @@ import idiro.utils.FeatureList;
 import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.TableInteraction;
-import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.action.utils.HiveDictionary;
 import idiro.workflow.server.connect.HiveInterface;
-import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.interfaces.DFEOutput;
+import idiro.workflow.utils.HiveLanguageManager;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
@@ -26,7 +25,7 @@ import java.util.Set;
  * @author etienne
  * 
  */
-public class JoinRelationInteraction extends TableInteraction {
+public class HiveJoinRelationInteraction extends TableInteraction {
 
 	/**
 	 * 
@@ -35,12 +34,14 @@ public class JoinRelationInteraction extends TableInteraction {
 
 	private HiveJoin hj;
 
-	public static final String table_table_title = "Table",
-			table_feat_title = "Joining-condition";
+	public static final String table_table_title = HiveLanguageManager
+			.getText("hive.join_relationship_interaction.relation_column"),
+			table_feat_title = HiveLanguageManager
+					.getText("hive.join_relationship_interaction.op_column");
 
-	public JoinRelationInteraction(String name, String legend, int column,
-			int placeInColumn, HiveJoin hj) throws RemoteException {
-		super("", name, legend, column, placeInColumn);// FIXME
+	public HiveJoinRelationInteraction(String id, String name, String legend,
+			int column, int placeInColumn, HiveJoin hj) throws RemoteException {
+		super(id, name, legend, column, placeInColumn);
 		this.hj = hj;
 		tree.removeAllChildren();
 		tree.add(getRootTable());
@@ -48,51 +49,50 @@ public class JoinRelationInteraction extends TableInteraction {
 
 	@Override
 	public String check() throws RemoteException {
-		String msg = null;
-		List<Tree<String>> lRow;
-		Iterator<Tree<String>> rows;
-		try {
-			lRow = getTree().getFirstChild("table").getChildren("row");
-			rows = lRow.iterator();
-		} catch (Exception e) {
-			msg = "The table needs to have one and only one row for each entry";
-			logger.error(msg);
+		String msg = super.check();
+		if (msg != null) {
 			return msg;
 		}
-		Set<String> tables = hj.getAliases().keySet();
-		if (tables.size() != lRow.size()) {
-			msg = "The table needs to have one and only one row for each entry";
-		} else {
 
+		List<Map<String, String>> lRow = getValues();
+		Set<String> relations = hj.getAliases().keySet();
+		if (relations.size() != lRow.size()) {
+			msg = HiveLanguageManager
+					.getText("hive.join_relationship_interaction.checkrownb");
+		} else {
 			Set<String> featType = new LinkedHashSet<String>();
 			FeatureList inFeats = hj.getInFeatures();
+			logger.debug(inFeats.getFeaturesNames());
+			Iterator<Map<String, String>> rows = lRow.iterator();
 			int rowNb = 0;
-
 			while (rows.hasNext() && msg == null) {
 				++rowNb;
-				Tree<String> row = rows.next();
+				Map<String, String> row = rows.next();
 				try {
-					String table = row.getFirstChild(table_table_title)
-							.getFirstChild().getHead();
-					String rel = row.getFirstChild(table_feat_title)
-							.getFirstChild().getHead();
+					String relation = row.get(table_table_title);
+					String rel = row.get(table_feat_title);
 					String type = HiveDictionary.getInstance().getReturnType(
 							rel, inFeats);
 
 					if (type == null) {
-						msg = "row " + rowNb + ": SQL code not correct";
+						msg = HiveLanguageManager
+								.getText(
+										"hive.join_relationship_interaction.checkexpressionnull",
+										new Object[] { rowNb });
 					} else {
 						featType.add(type);
 					}
 
-					Iterator<String> itTable = tables.iterator();
-					while (itTable.hasNext() && msg == null) {
-						String curTab = itTable.next();
+					Iterator<String> itRelation = relations.iterator();
+					while (itRelation.hasNext() && msg == null) {
+						String curTab = itRelation.next();
 						if (rel.contains(curTab + ".")
-								&& !curTab.equalsIgnoreCase(table)) {
-							msg = "row "
-									+ rowNb
-									+ ": Cannot have an operation with several table here";
+								&& !curTab.equalsIgnoreCase(relation)) {
+							msg = HiveLanguageManager
+									.getText(
+											"hive.join_relationship_interaction.checktable2times",
+											new Object[] { rowNb, curTab,
+													relation });
 						}
 					}
 
@@ -102,7 +102,8 @@ public class JoinRelationInteraction extends TableInteraction {
 			}
 
 			if (msg == null && featType.size() != 1) {
-				msg = "The features need to be all of same type";
+				msg = HiveLanguageManager
+						.getText("hive.join_relationship_interaction.checksametype");
 			}
 		}
 
@@ -114,39 +115,28 @@ public class JoinRelationInteraction extends TableInteraction {
 		Set<String> tablesIn = hj.getAliases().keySet();
 
 		// Remove constraint on first column
-		updateColumnConstraint(
-				table_table_title, 
-				null, 
-				1, 
-				tablesIn);
-		
+		updateColumnConstraint(table_table_title, null, 1, tablesIn);
 
-		updateColumnConstraint(
-				table_feat_title, 
-				null, 
-				null,
-				null);
-		updateEditor(
-				table_feat_title,
-				HiveDictionary.generateEditor(HiveDictionary
-				.getInstance().createDefaultSelectHelpMenu(), hj
-				.getInFeatures()));
-		
-		if(getValues().isEmpty()){
-			List<Map<String,String>> lrows = new LinkedList<Map<String,String>>();
+		updateColumnConstraint(table_feat_title, null, null, null);
+		updateEditor(table_feat_title, HiveDictionary.generateEditor(
+				HiveDictionary.getInstance().createDefaultSelectHelpMenu(),
+				hj.getInFeatures()));
+
+		if (getValues().isEmpty()) {
+			List<Map<String, String>> lrows = new LinkedList<Map<String, String>>();
 			Iterator<String> tableIn = tablesIn.iterator();
 			while (tableIn.hasNext()) {
-				Map<String,String> curMap = new LinkedHashMap<String,String>();
-				curMap.put(table_table_title,tableIn.next());
-				curMap.put(table_feat_title,"");
+				Map<String, String> curMap = new LinkedHashMap<String, String>();
+				curMap.put(table_table_title, tableIn.next());
+				curMap.put(table_feat_title, "");
+				logger.info("row : "+curMap);
 				lrows.add(curMap);
 			}
 			setValues(lrows);
 		}
 	}
 
-	protected Tree<String> getRootTable()
-			throws RemoteException {
+	protected Tree<String> getRootTable() throws RemoteException {
 		// Table
 		Tree<String> input = new TreeNonUnique<String>("table");
 		Tree<String> columns = new TreeNonUnique<String>("columns");
@@ -158,7 +148,7 @@ public class JoinRelationInteraction extends TableInteraction {
 		table.add("title").add(table_table_title);
 
 		columns.add("column").add("title").add(table_feat_title);
-
+//		logger.info("input : "+input.toString());
 		return input;
 	}
 
@@ -206,10 +196,10 @@ public class JoinRelationInteraction extends TableInteraction {
 		try {
 			if (HiveDictionary.getInstance().getReturnType(expression,
 					hj.getInFeatures()) == null) {
-				error = "Expression does not have a return type";
+				error = HiveLanguageManager.getText("hive.expressionnull");
 			}
 		} catch (Exception e) {
-			error = "Error trying to get expression return type";
+			error = HiveLanguageManager.getText("hive.expressionexception");
 			logger.error(error, e);
 		}
 		return error;

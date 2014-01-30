@@ -9,6 +9,7 @@ import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
+import idiro.workflow.utils.HiveLanguageManager;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
@@ -31,32 +32,29 @@ public class HiveUnion extends HiveElement {
 
 	public static final String key_featureTable = "Features";
 
-	private Page page1, page2;
+	private Page page1;
 
-	private TableUnionInteraction tUnionSelInt;
+	private HiveTableUnionInteraction tUnionSelInt;
 
 	public HiveUnion() throws RemoteException {
 		super(2, 2, Integer.MAX_VALUE);
 
-		page1 = addPage(
-				"Operations",
-				"The column generated are defined on this page. Each row of the table is a new column to generate. "
-						+ "The feature name have to be unique and a correct type needs to be assign.",
-				1);
+		page1 = addPage(HiveLanguageManager.getText("hive.union_page1.title"),
+				HiveLanguageManager.getText("hive.union_page1.legend"), 1);
 
-		tUnionSelInt = new TableUnionInteraction(key_featureTable, "", 0, 0,
-				this);
+		tUnionSelInt = new HiveTableUnionInteraction(key_featureTable,
+				HiveLanguageManager
+						.getText("hive.union_features_interaction.title"),
+				HiveLanguageManager
+						.getText("hive.union_features_interaction.legend"), 0,
+				0, this);
 
 		page1.addInteraction(tUnionSelInt);
 
-		page2 = addPage(
-				"Filters",
-				"Add a condition filter. Note that these filters are applied after the union.",
-				1);
 
-		condInt = new ConditionInteraction(0, 0, this);
+		condInt = new HiveFilterInteraction(0, 0, this);
 
-		page2.addInteraction(condInt);
+		page1.addInteraction(condInt);
 
 	}
 
@@ -105,7 +103,7 @@ public class HiveUnion extends HiveElement {
 
 			String select = tUnionSelInt.getQueryPiece(out);
 			String createSelect = tUnionSelInt.getCreateQueryPiece(out);
-			
+
 			String condition = condInt.getQueryPiece();
 
 			if (select.isEmpty()) {
@@ -113,7 +111,7 @@ public class HiveUnion extends HiveElement {
 			} else {
 				query = create + "\n" + createSelect + ";\n\n";
 
-				query += insert + "\n" + select + "\n" +condition+";";
+				query += insert + "\n" + select + "\n" + condition + ";";
 			}
 		}
 
@@ -164,7 +162,7 @@ public class HiveUnion extends HiveElement {
 	/**
 	 * @return the tUnionSelInt
 	 */
-	public final TableUnionInteraction gettUnionSelInt() {
+	public final HiveTableUnionInteraction gettUnionSelInt() {
 		return tUnionSelInt;
 	}
 

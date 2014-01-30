@@ -89,4 +89,26 @@ public class OutputActionTest extends DataOutput{
 		return null;
 	}
 
+
+	@Override
+	public String generatePathStr(String userName, String component,
+			String outputName) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public void moveTo(String path) throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void copyTo(String path) throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

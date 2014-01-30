@@ -5,9 +5,7 @@ import idiro.utils.OrderedFeatureList;
 import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.TableInteraction;
-import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.action.utils.HiveDictionary;
-import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.utils.HiveLanguageManager;
@@ -16,7 +14,6 @@ import java.rmi.RemoteException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +26,7 @@ import java.util.Set;
  * @author etienne
  * 
  */
-public class TableSelectInteraction extends TableInteraction {
+public class HiveTableSelectInteraction extends TableInteraction {
 
 	/**
 	 * 
@@ -44,13 +41,13 @@ public class TableSelectInteraction extends TableInteraction {
 					.getText("hive.select_features_interaction.feat_column"),
 			table_type_title = HiveLanguageManager
 					.getText("hive.select_features_interaction.type_column");
-	
+
 	public static final String gen_operation_copy = "copy",
 			gen_operation_max = "MAX", gen_operation_min = "MIN",
 			gen_operation_avg = "AVG", gen_operation_sum = "SUM",
 			gen_operation_count = "COUNT", gen_operation_audit = "AUDIT";
 
-	public TableSelectInteraction(String id, String name, String legend,
+	public HiveTableSelectInteraction(String id, String name, String legend,
 			int column, int placeInColumn, HiveElement hs)
 			throws RemoteException {
 		super(id, name, legend, column, placeInColumn);
@@ -60,157 +57,135 @@ public class TableSelectInteraction extends TableInteraction {
 
 	@Override
 	public String check() throws RemoteException {
-		DFEOutput in = hs.getDFEInput().get(HiveSelect.key_input).get(0);
-		String msg = null;
-		List<Tree<String>> lRow;
-		Iterator<Tree<String>> rows;
-		try {
-			lRow = getTree().getFirstChild("table").getChildren("row");
-			rows = lRow.iterator();
-		} catch (Exception e) {
-			msg = "Null pointer exception in check";
-			logger.error(msg);
-			return msg;
-		}
+		DFEOutput in = hs.getDFEInput().get(HiveElement.key_input).get(0);
+		FeatureList fl = null;
+		String msg = super.check();
 
-		Set<String> featGrouped = new HashSet<String>();
-		if (hs.getGroupingInt() != null
-				&& hs.getGroupingInt().getTree().getFirstChild("applist")
-						.getChildren("output").size() > 0) {
-			Iterator<Tree<String>> it = hs.getGroupingInt().getTree()
-					.getFirstChild("applist").getFirstChild("output")
-					.getChildren("value").iterator();
-			while (it.hasNext()) {
-				featGrouped.add(it.next().getFirstChild().getHead());
-			}
-		}
-		if (lRow.isEmpty()) {
-			msg = "A table is composed of at least 1 column";
-		}
-		Set<String> featuresTitle = new LinkedHashSet<String>();
-		while (rows.hasNext() && msg == null) {
-			Tree<String> row = rows.next();
-			if (row.getChildren(table_type_title).size() != 1
-					|| row.getChildren(table_feat_title).size() != 1
-					|| row.getChildren(table_op_title).size() != 1) {
-				msg = "Tree not well formed";
-				logger.debug(table_type_title + " "
-						+ row.getChildren(table_type_title).size());
-				logger.debug(table_feat_title + " "
-						+ row.getChildren(table_feat_title).size());
-				logger.debug(table_op_title + " "
-						+ row.getChildren(table_op_title).size());
+		if(msg == null){
+			List<Map<String,String>> lRow = getValues();
 
-			} else {
-				try {
-					String type = row.getFirstChild(table_type_title)
-							.getFirstChild().getHead();
-					String operation = row.getFirstChild(table_op_title)
-							.getFirstChild().getHead();
-					logger.info(type + " , " + operation);
-					String returntype = HiveDictionary.getInstance()
-							.getReturnType(operation, in.getFeatures(),
-									featGrouped);
-					logger.info("return type : " + returntype + " , " + type);
-					if (!HiveDictionary.check(type, returntype)) {
-						msg = "Error the type returned does not correspond for feature "
-								+ row.getFirstChild(table_feat_title)
-										.getFirstChild().getHead();
+
+			if(lRow == null || lRow.isEmpty()){
+				msg = HiveLanguageManager.getText("hive.select_features_interaction.checkempty");
+			}else{
+				logger.info("Feats "+in.getFeatures().getFeaturesNames());
+				Set<String> featGrouped = getFeatGrouped();
+				fl = getInputFeatureList();
+
+				Iterator<Map<String,String>> rows = lRow.iterator();
+				int rowNb = 0;
+				while(rows.hasNext() && msg == null){
+					++rowNb;
+					Map<String,String> cur = rows.next();
+					String feattype = cur.get(table_type_title);
+					String feattitle = cur.get(table_feat_title);
+					String featoperation = cur.get(table_op_title);
+					logger.debug("checking : " + featoperation + " "
+							+ feattitle + " ");
+					try{
+						String typeRetuned = HiveDictionary.getInstance()
+								.getReturnType(featoperation, fl, featGrouped);
+						logger.info("type returned : " + typeRetuned);
+						if (!HiveDictionary.check(feattype, typeRetuned)) {
+							msg = HiveLanguageManager.getText("hive.select_features_interaction.checkreturntype",
+									new Object[]{rowNb,featoperation,typeRetuned,feattype});
+						}
+						logger.info("added : " + featoperation
+								+ " to features type list");
+					}catch(Exception e){
+						msg = HiveLanguageManager.getText("hive.expressionexception");
 					}
-					featuresTitle.add(row.getFirstChild(table_feat_title)
-							.getFirstChild().getHead().toUpperCase());
-				} catch (Exception e) {
-					msg = e.getMessage();
 				}
-			}
-		}
 
-		if (msg == null && lRow.size() != featuresTitle.size()) {
-			msg = lRow.size() - featuresTitle.size()
-					+ " features has the same name, total " + lRow.size();
-			logger.debug(featuresTitle);
+			}
 		}
 
 		return msg;
 	}
 
 	public void update(DFEOutput in) throws RemoteException {
+		// get Alias
 		String alias = "";
+		logger.info("got alias");
+		FeatureList fl = getInputFeatureList();
+		logger.info("got input featureList");
 		// Generate Editor
 		if (hs.getGroupingInt() != null) {
 			updateEditor(table_op_title, HiveDictionary.generateEditor(
 					HiveDictionary.getInstance().createGroupSelectHelpMenu(),
-					in));
+					fl));
 		} else {
 			updateEditor(table_op_title, HiveDictionary.generateEditor(
 					HiveDictionary.getInstance().createDefaultSelectHelpMenu(),
-					in));
+					fl));
 		}
 
 		// Set the Generator
 		logger.debug("Set the generator...");
 		// Copy Generator operation
-		List<String> featList = in.getFeatures().getFeaturesNames();
 		logger.info("setting alias");
-
+		List<String> featList = fl.getFeaturesNames();
+		logger.info("alias : " + alias);
 		if (hs.getGroupingInt() != null) {
 			logger.info("there is a grouping : "
 					+ hs.getGroupingInt().getValues().size());
+			logger.info("adding other generators");
+			List<String> groupBy = getFeatListGrouped();
+			List<String> operationsList = new LinkedList<String>();
+
+			featList.removeAll(groupBy);
+			operationsList.add(gen_operation_max);
+			addGeneratorRows(gen_operation_max, featList, fl, operationsList,
+					alias);
+			operationsList.clear();
+
+			operationsList.add(gen_operation_min);
+			addGeneratorRows(gen_operation_min, featList, fl, operationsList,
+					alias);
+			operationsList.clear();
+
+			operationsList.add(gen_operation_avg);
+			addGeneratorRows(gen_operation_avg, featList, fl, operationsList,
+					alias);
+			operationsList.clear();
+
+			operationsList.add(gen_operation_sum);
+			addGeneratorRows(gen_operation_sum, featList, fl, operationsList,
+					alias);
+			operationsList.clear();
+
+			operationsList.add(gen_operation_count);
+			addGeneratorRows(gen_operation_count, featList, fl, operationsList,
+					alias);
+			operationsList.clear();
+
+			operationsList.add(gen_operation_max);
+			operationsList.add(gen_operation_min);
+			operationsList.add(gen_operation_avg);
+			operationsList.add(gen_operation_sum);
+			operationsList.add(gen_operation_count);
+			addGeneratorRows(gen_operation_audit, featList, fl, operationsList,
+					alias);
+			operationsList.clear();
+
 			if (hs.getGroupingInt().getValues().size() > 0) {
-				logger.info("adding other generators");
-				List<String> groupBy = hs.getGroupingInt().getValues();
-				List<String> operationsList = new LinkedList<String>();
-
-				featList.removeAll(groupBy);
-				operationsList.add(gen_operation_max);
-				addGeneratorRows(gen_operation_max, featList, in.getFeatures(),
-						operationsList, alias);
-				operationsList.clear();
-
-				operationsList.add(gen_operation_min);
-				addGeneratorRows(gen_operation_min, featList, in.getFeatures(),
-						operationsList, alias);
-				operationsList.clear();
-
-				operationsList.add(gen_operation_avg);
-				addGeneratorRows(gen_operation_avg, featList, in.getFeatures(),
-						operationsList, alias);
-				operationsList.clear();
-
-				operationsList.add(gen_operation_sum);
-				addGeneratorRows(gen_operation_sum, featList, in.getFeatures(),
-						operationsList, alias);
-				operationsList.clear();
-
-				operationsList.add(gen_operation_count);
-				addGeneratorRows(gen_operation_count, featList,
-						in.getFeatures(), operationsList, alias);
-				operationsList.clear();
-
-				operationsList.add(gen_operation_max);
-				operationsList.add(gen_operation_min);
-				operationsList.add(gen_operation_avg);
-				operationsList.add(gen_operation_sum);
-				operationsList.add(gen_operation_count);
-				addGeneratorRows(gen_operation_audit, featList,
-						in.getFeatures(), operationsList, alias);
-				operationsList.clear();
 
 				operationsList.add(gen_operation_copy);
 				featList.clear();
 				featList.addAll(groupBy);
-				addGeneratorRows(gen_operation_copy, featList,
-						in.getFeatures(), operationsList, alias);
+				addGeneratorRows(gen_operation_copy, featList, fl,
+						operationsList, alias);
 
 			}
 		} else {
 			List<String> operationsList = new LinkedList<String>();
 			featList = in.getFeatures().getFeaturesNames();
 			operationsList.add(gen_operation_copy);
-			addGeneratorRows(gen_operation_copy, featList, in.getFeatures(),
-					operationsList, "");
+			addGeneratorRows(gen_operation_copy, featList, fl, operationsList,
+					"");
 
 		}
+
 	}
 
 	public String addOperation(String feat, String operation) {
@@ -406,20 +381,12 @@ public class TableSelectInteraction extends TableInteraction {
 		}
 		return error;
 	}
-	
+
 	protected void createColumns() throws RemoteException {
 
-		addColumn(
-				table_op_title, 
-				null, 
-				null, 
-				null);
+		addColumn(table_op_title, null, null, null);
 
-		addColumn(
-				table_feat_title,
-				1,
-				"[a-zA-Z]([A-Za-z0-9_]{0,29})",
-				null,
+		addColumn(table_feat_title, 1, "[a-zA-Z]([A-Za-z0-9_]{0,29})", null,
 				null);
 
 		List<String> types = new LinkedList<String>();
@@ -429,10 +396,64 @@ public class TableSelectInteraction extends TableInteraction {
 		types.add(FeatureType.FLOAT.name());
 		types.add(FeatureType.STRING.name());
 
-		addColumn(
-				table_type_title,
-				null,
-				types,
-				null);
+		addColumn(table_type_title, null, types, null);
+	}
+
+	public Set<String> getFeatGrouped() throws RemoteException {
+//		Set<String> featGrouped = null;
+//		// only show what is in grouped interaction
+//		if (hs.getGroupingInt() != null) {
+//			featGrouped = new HashSet<String>();
+//			logger.info("group interaction is not null");
+//			Iterator<String> grInt = hs.getGroupingInt()
+//					.getValues().iterator();
+//			while (grInt.hasNext()) {
+//				String feat =	grInt.next().toUpperCase();
+//				featGrouped.add(feat);
+//			}
+//		}
+		
+		return hs.getGroupByFeatures();
+	}
+	
+	public List<String> getFeatListGrouped() throws RemoteException{
+		List<String> featGrouped = null;
+		// only show what is in grouped interaction
+		if (hs.getGroupingInt() != null) {
+			featGrouped = new LinkedList<String>();
+			logger.info("group interaction is not null");
+			Iterator<String> grInt = hs.getGroupingInt()
+					.getValues().iterator();
+			while (grInt.hasNext()) {
+				String feat = grInt.next();
+				featGrouped.add(feat);
+			}
+		}
+		return featGrouped;
+	}
+
+	public FeatureList getInputFeatureList() throws RemoteException {
+		FeatureList fl = null;
+		logger.debug("feature list is null");
+		DFEOutput in = hs.getDFEInput().get(HiveElement.key_input).get(0);
+		logger.debug("got dfe input");
+
+		// only show what is in grouped interaction
+		if (hs.getGroupingInt() != null) {
+			fl = new OrderedFeatureList();
+			logger.debug("geting dfe input features");
+			Iterator<String> inputFeatsIt = in.getFeatures().getFeaturesNames()
+					.iterator();
+			while (inputFeatsIt.hasNext()) {
+				String nameF = inputFeatsIt.next();
+				String nameFwithAlias = nameF;
+				fl.addFeature(nameFwithAlias,
+						in.getFeatures().getFeatureType(nameF.toLowerCase()));
+			}
+		} else {
+			fl = in.getFeatures();
+		}
+		logger.debug("returned feat list ");
+		return fl;
 	}
 }

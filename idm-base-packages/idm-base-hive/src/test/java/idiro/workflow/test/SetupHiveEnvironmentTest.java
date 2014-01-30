@@ -5,11 +5,16 @@ import idiro.ProjectID;
 import idiro.workflow.server.HiveJdbcProcessesManager;
 import idiro.workflow.server.ProcessesManager;
 import idiro.workflow.server.WorkflowPrefManager;
+import idiro.workflow.server.action.ConditionInteractionTests;
 import idiro.workflow.server.action.HiveAggregTests;
 import idiro.workflow.server.action.HiveJoinTests;
 import idiro.workflow.server.action.HiveSelectTests;
 import idiro.workflow.server.action.HiveUnionTests;
+import idiro.workflow.server.action.JoinRelationInteractionTests;
+import idiro.workflow.server.action.TableJoinInteractionTests;
 import idiro.workflow.server.action.TableSelectInteractionTests;
+import idiro.workflow.server.action.TableUnionInteractionTests;
+import idiro.workflow.server.action.test.HiveDictionaryTests;
 import idiro.workflow.server.connect.HiveInterface;
 
 import java.io.File;
@@ -26,18 +31,18 @@ import org.junit.runners.Suite.SuiteClasses;
 
 
 @RunWith(Suite.class)
-@SuiteClasses({/*
+@SuiteClasses({
 	ConditionInteractionTests.class,
-	PartitionInteractionTests.class,
+//	PartitionInteractionTests.class,
 	TableSelectInteractionTests.class,
 	JoinRelationInteractionTests.class,
 	TableJoinInteractionTests.class,
 	TableUnionInteractionTests.class,
 	HiveSelectTests.class,
 	HiveUnionTests.class,
-	HiveJoinTests.class,*/
+	HiveJoinTests.class,
 	HiveAggregTests.class,
-/*	HiveDictionaryTest.class*/
+//	HiveDictionaryTests.class
 	})
 public class SetupHiveEnvironmentTest {
 

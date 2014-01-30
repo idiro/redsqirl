@@ -3,22 +3,17 @@ package idiro.workflow.server.action;
 import idiro.utils.FeatureList;
 import idiro.utils.OrderedFeatureList;
 import idiro.utils.Tree;
-import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.TableInteraction;
-import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.action.utils.HiveDictionary;
-import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.utils.HiveLanguageManager;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -29,7 +24,7 @@ import org.apache.log4j.Logger;
  * @author etienne
  * 
  */
-public class TableJoinInteraction extends TableInteraction {
+public class HiveTableJoinInteraction extends TableInteraction {
 
 	/**
 	 * 
@@ -44,9 +39,9 @@ public class TableJoinInteraction extends TableInteraction {
 			table_feat_title = HiveLanguageManager.getTextWithoutSpace("hive.join_features_interaction.feat_column"),
 			table_type_title = HiveLanguageManager.getTextWithoutSpace("hive.join_features_interaction.type_column");
 
-	public TableJoinInteraction(String name, String legend, int column,
+	public HiveTableJoinInteraction(String id,String name, String legend, int column,
 			int placeInColumn, HiveJoin hj) throws RemoteException {
-		super("", name, legend, column, placeInColumn);
+		super(id, name, legend, column, placeInColumn);
 		this.hj = hj;
 		getRootTable();
 	}
@@ -56,69 +51,40 @@ public class TableJoinInteraction extends TableInteraction {
 		FeatureList features = hj.getInFeatures();
 		int rowNb = 0;
 		String msg = null;
-		List<Tree<String>> lRow;
-		Iterator<Tree<String>> rows;
-		try {
-			lRow = getTree().getFirstChild("table").getChildren("row");
-			rows = lRow.iterator();
-		} catch (Exception e) {
-			msg = "Null pointer exception in check";
-			logger.error(msg);
-			return msg;
-		}
+		
+		List<Map<String,String>> lRow = getValues();
 
-		if (lRow.isEmpty()) {
-			msg = "A table is composed of at least 1 column";
+		if(lRow.isEmpty()){
+			msg = HiveLanguageManager.getText("hive.join_features_interaction.checkempty");
 		}
-
-		Set<String> featuresTitle = new LinkedHashSet<String>();
-		while (rows.hasNext() && msg == null) {
+		
+		logger.debug(features.getFeaturesNames());
+		Iterator<Map<String,String>> rows = lRow.iterator();
+		while(rows.hasNext() && msg == null){
 			++rowNb;
-			Tree<String> row = rows.next();
-			if (row.getChildren(table_type_title).size() != 1
-					|| row.getChildren(table_feat_title).size() != 1
-					|| row.getChildren(table_op_title).size() != 1) {
-				msg = "Tree not well formed";
-				logger.debug(table_type_title + " "
-						+ row.getChildren(table_type_title).size());
-				logger.debug(table_feat_title + " "
-						+ row.getChildren(table_feat_title).size());
-				logger.debug(table_op_title + " "
-						+ row.getChildren(table_op_title).size());
-
-			} else {
-				String type = row.getFirstChild(table_type_title)
-						.getFirstChild().getHead();
-				String op = row.getFirstChild(table_op_title).getFirstChild()
-						.getHead();
-				String feature = row.getFirstChild(table_feat_title)
-						.getFirstChild().getHead().toUpperCase();
-				if (!HiveDictionary.isVariableName(feature)) {
-					msg = "row " + rowNb + "': " + feature
-							+ "' is not a valid name";
-				} else {
-					try {
-						if (!HiveDictionary.check(type, HiveDictionary
-								.getInstance().getReturnType(op, features))) {
-							msg = "row "
-									+ rowNb
-									+ ": Error the type returned does not correspond for feature "
-									+ row.getFirstChild(table_feat_title)
-											.getFirstChild().getHead();
+			Map<String,String> row = rows.next();
+			
+				String type = row.get(table_type_title);
+				String op = row.get(table_op_title);
+				String feature = row.get(table_feat_title);
+				if(!HiveDictionary.isVariableName(feature)){
+					msg = HiveLanguageManager.getText("hive.join_features_interaction.featureinvalid",new Object[]{rowNb,feature});
+				}else{
+					try{
+						if( ! HiveDictionary.check(
+								type, 
+								HiveDictionary.getInstance().getReturnType(
+										op,
+										features
+										)
+								)){
+							msg = HiveLanguageManager.getText("hive.join_features_interaction.typeinvalid",new Object[]{rowNb,feature});
 						}
-						featuresTitle.add(feature);
-					} catch (Exception e) {
+					}catch(Exception e){
 						msg = e.getMessage();
 					}
 				}
 			}
-		}
-
-		if (msg == null && lRow.size() != featuresTitle.size()) {
-			msg = lRow.size() - featuresTitle.size()
-					+ " features has the same name, total " + lRow.size();
-			logger.debug(featuresTitle);
-		}
 
 		return msg;
 	}

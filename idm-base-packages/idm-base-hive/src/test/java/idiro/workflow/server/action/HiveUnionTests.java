@@ -130,30 +130,30 @@ public class HiveUnionTests {
 		}
 		
 		logger.debug("updated hive aliases");
-		TableUnionInteraction tsi = hive.gettUnionSelInt();
+		HiveTableUnionInteraction tsi = hive.gettUnionSelInt();
 		hive.update(tsi);
 		{
 			Tree<String> out = tsi.getTree().getFirstChild("table");
 			Tree<String> rowId = out.add("row");
-			rowId.add(TableUnionInteraction.table_table_title).add(alias1);
-			rowId.add(TableUnionInteraction.table_feat_title).add("ID");
-			rowId.add(TableUnionInteraction.table_op_title).add(alias1+".ID");
-			rowId.add(TableUnionInteraction.table_type_title).add("STRING");
+			rowId.add(HiveTableUnionInteraction.table_table_title).add(alias1);
+			rowId.add(HiveTableUnionInteraction.table_feat_title).add("ID");
+			rowId.add(HiveTableUnionInteraction.table_op_title).add(alias1+".ID");
+			rowId.add(HiveTableUnionInteraction.table_type_title).add("STRING");
 			rowId = out.add("row");
-			rowId.add(TableUnionInteraction.table_table_title).add(alias1);
-			rowId.add(TableUnionInteraction.table_feat_title).add("VALUE");
-			rowId.add(TableUnionInteraction.table_op_title).add(alias1+".VALUE");
-			rowId.add(TableUnionInteraction.table_type_title).add("INT");
+			rowId.add(HiveTableUnionInteraction.table_table_title).add(alias1);
+			rowId.add(HiveTableUnionInteraction.table_feat_title).add("VALUE");
+			rowId.add(HiveTableUnionInteraction.table_op_title).add(alias1+".VALUE");
+			rowId.add(HiveTableUnionInteraction.table_type_title).add("INT");
 			rowId = out.add("row");
-			rowId.add(TableUnionInteraction.table_table_title).add(alias2);
-			rowId.add(TableUnionInteraction.table_feat_title).add("ID");
-			rowId.add(TableUnionInteraction.table_op_title).add(alias2+".ID");
-			rowId.add(TableUnionInteraction.table_type_title).add("STRING");
+			rowId.add(HiveTableUnionInteraction.table_table_title).add(alias2);
+			rowId.add(HiveTableUnionInteraction.table_feat_title).add("ID");
+			rowId.add(HiveTableUnionInteraction.table_op_title).add(alias2+".ID");
+			rowId.add(HiveTableUnionInteraction.table_type_title).add("STRING");
 			rowId = out.add("row");
-			rowId.add(TableUnionInteraction.table_table_title).add(alias2);
-			rowId.add(TableUnionInteraction.table_feat_title).add("VALUE");
-			rowId.add(TableUnionInteraction.table_op_title).add(alias2+".VALUE");
-			rowId.add(TableUnionInteraction.table_type_title).add("INT");
+			rowId.add(HiveTableUnionInteraction.table_table_title).add(alias2);
+			rowId.add(HiveTableUnionInteraction.table_feat_title).add("VALUE");
+			rowId.add(HiveTableUnionInteraction.table_op_title).add(alias2+".VALUE");
+			rowId.add(HiveTableUnionInteraction.table_type_title).add("INT");
 		}
 
 		logger.debug("HS update out...");

@@ -396,6 +396,7 @@ public class PigDictionary extends AbstractDictionary {
 			logger.error("No expressions to test");
 			throw new Exception("No expressions to test");
 		}
+		logger.info("expression is ok");
 		if (nonAggregFeats != null
 				&& !features.getFeaturesNames().containsAll(nonAggregFeats)) {
 			logger.error("Aggregation features unknown");
@@ -403,6 +404,7 @@ public class PigDictionary extends AbstractDictionary {
 					+ nonAggregFeats.toString() + "): "
 					+ features.getFeaturesNames().toString());
 		}
+		logger.info("aggreg and feats ok");
 
 		expr = expr.trim().toUpperCase();
 		logger.debug("expression : " + expr);

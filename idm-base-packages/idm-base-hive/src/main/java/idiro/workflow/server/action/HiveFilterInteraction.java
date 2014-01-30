@@ -22,7 +22,7 @@ import java.util.Set;
  * @author etienne
  * 
  */
-public class ConditionInteraction extends EditorInteraction {
+public class HiveFilterInteraction extends EditorInteraction {
 
 	/**
 	 * 
@@ -31,7 +31,7 @@ public class ConditionInteraction extends EditorInteraction {
 
 	private HiveElement el;
 
-	public ConditionInteraction(int column,
+	public HiveFilterInteraction(int column,
 			int placeInColumn, HiveElement el)
 			throws RemoteException {
 		super(HiveElement.key_condition, HiveLanguageManager
@@ -72,6 +72,7 @@ public class ConditionInteraction extends EditorInteraction {
 			logger.error(msg);
 
 		}
+		logger.info("the msg : "+msg);
 		return msg;
 	}
 

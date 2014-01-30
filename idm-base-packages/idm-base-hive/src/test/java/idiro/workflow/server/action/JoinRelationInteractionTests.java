@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 import idiro.utils.Tree;
 import idiro.workflow.server.action.utils.TestUtils;
 import idiro.workflow.server.connect.HiveInterface;
+import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.interfaces.DataFlowElement;
 
 import java.rmi.RemoteException;
@@ -38,6 +39,10 @@ Logger logger = Logger.getLogger(getClass());
 		Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype).getTree();
 		dataTypeTree.getFirstChild("list").getFirstChild("output").add("Hive");
 
+		src.update(src.getInteraction(Source.key_datasubtype));
+		Tree<String> dataSubTypeTree = src.getInteraction(Source.key_datasubtype).getTree();
+		dataSubTypeTree.getFirstChild("list").getFirstChild("output").add(new HiveType().getTypeName());
+		
 		src.update(src.getInteraction(Source.key_dataset));
 		Tree<String> dataSetTree = src.getInteraction(Source.key_dataset).getTree();
 		dataSetTree.getFirstChild("browse").getFirstChild("output").add("path").add(path);
@@ -98,22 +103,23 @@ Logger logger = Logger.getLogger(getClass());
 			
 			
 			logger.debug(hs.getDFEInput());
-			JoinRelationInteraction jri = hs.getJrInt();
+			HiveJoinRelationInteraction jri = hs.getJrInt();
 			hs.update(jri);
 			{
 				error = jri.check();
-				assertTrue("Should at least have one entry",error != null);
+				assertTrue("Should at least have one entry "+error,error != null);
+				logger.info("1");
 			}
 			{
 				Tree<String> out = jri.getTree().getFirstChild("table");
 				logger.debug("3");
 				Tree<String> rowId = out.add("row");
 				logger.debug("4");
-				rowId.add(JoinRelationInteraction.table_feat_title).add(alias1+".ID");
-				rowId.add(JoinRelationInteraction.table_table_title).add(alias1);
+				rowId.add(HiveJoinRelationInteraction.table_feat_title).add(alias1+".ID");
+				rowId.add(HiveJoinRelationInteraction.table_table_title).add(alias1);
 				logger.debug("5");
 				error = jri.check();
-				assertTrue("check1",error != null);
+				assertTrue("check1 "+error,error != null);
 				out.remove("row");
 			}
 			{
@@ -121,14 +127,14 @@ Logger logger = Logger.getLogger(getClass());
 				logger.debug("3");
 				Tree<String> rowId = out.add("row");
 				logger.debug("4");
-				rowId.add(JoinRelationInteraction.table_feat_title).add(alias1+".ID");
-				rowId.add(JoinRelationInteraction.table_table_title).add(alias1);
+				rowId.add(HiveJoinRelationInteraction.table_feat_title).add(alias1+".ID");
+				rowId.add(HiveJoinRelationInteraction.table_table_title).add(alias1);
 				rowId = out.add("row");
-				rowId.add(JoinRelationInteraction.table_feat_title).add(alias2+".ID2");
-				rowId.add(JoinRelationInteraction.table_table_title).add(alias2);
+				rowId.add(HiveJoinRelationInteraction.table_feat_title).add(alias2+".ID2");
+				rowId.add(HiveJoinRelationInteraction.table_table_title).add(alias2);
 				logger.debug("5");
 				error = jri.check();
-				assertTrue("check1",error != null);
+				assertTrue("check1 "+error,error != null);
 				out.remove("row");
 			}
 			{
@@ -136,14 +142,14 @@ Logger logger = Logger.getLogger(getClass());
 				logger.debug("3");
 				Tree<String> rowId = out.add("row");
 				logger.debug("4");
-				rowId.add(JoinRelationInteraction.table_feat_title).add(alias1+".ID");
-				rowId.add(JoinRelationInteraction.table_table_title).add(alias1);
+				rowId.add(HiveJoinRelationInteraction.table_feat_title).add(alias1+".ID");
+				rowId.add(HiveJoinRelationInteraction.table_table_title).add(alias1);
 				rowId = out.add("row");
-				rowId.add(JoinRelationInteraction.table_feat_title).add(alias2+".ID");
-				rowId.add(JoinRelationInteraction.table_table_title).add("a3");
+				rowId.add(HiveJoinRelationInteraction.table_feat_title).add(alias2+".ID");
+				rowId.add(HiveJoinRelationInteraction.table_table_title).add("a3");
 				logger.debug("5");
 				error = jri.check();
-				assertTrue("check1",error != null);
+				assertTrue("check1 "+error,error != null);
 				out.remove("row");
 			}
 			{
@@ -151,14 +157,14 @@ Logger logger = Logger.getLogger(getClass());
 				logger.debug("3");
 				Tree<String> rowId = out.add("row");
 				logger.debug("4");
-				rowId.add(JoinRelationInteraction.table_feat_title).add(alias1+".ID");
-				rowId.add(JoinRelationInteraction.table_table_title).add(alias1);
+				rowId.add(HiveJoinRelationInteraction.table_feat_title).add(alias1+".ID");
+				rowId.add(HiveJoinRelationInteraction.table_table_title).add(alias1);
 				rowId = out.add("row");
-				rowId.add(JoinRelationInteraction.table_feat_title).add(alias2+".ID");
-				rowId.add(JoinRelationInteraction.table_table_title).add(alias2);
+				rowId.add(HiveJoinRelationInteraction.table_feat_title).add(alias2+".ID");
+				rowId.add(HiveJoinRelationInteraction.table_table_title).add(alias2);
 				logger.debug("5");
 				error = jri.check();
-				assertTrue("check1",error == null);
+				assertTrue("check1 "+error,error == null);
 				out.remove("row");
 			}
 			

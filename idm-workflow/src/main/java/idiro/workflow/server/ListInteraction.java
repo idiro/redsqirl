@@ -48,6 +48,7 @@ public class ListInteraction extends UserInteraction {
 	
 	public String getValue() throws RemoteException{
 		String ans = null;
+		logger.debug("getting value");
 		if(display == DisplayType.list){
 			try{
 				ans = getTree().getFirstChild("list").getFirstChild("output").getFirstChild().getHead();
