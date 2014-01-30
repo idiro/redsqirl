@@ -153,8 +153,10 @@ public class PigTableJoinInteraction extends TableInteraction{
 		List<String> typeValues = new LinkedList<String>();
 		typeValues.add(FeatureType.BOOLEAN.name());
 		typeValues.add(FeatureType.INT.name());
-		typeValues.add(FeatureType.DOUBLE.name());
+		typeValues.add(FeatureType.LONG.name());
 		typeValues.add(FeatureType.FLOAT.name());
+		typeValues.add(FeatureType.DOUBLE.name());
+		typeValues.add(FeatureType.STRING.name());
 		
 		addColumn(
 				table_type_title,

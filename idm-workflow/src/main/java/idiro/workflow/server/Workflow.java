@@ -1,5 +1,6 @@
 package idiro.workflow.server;
 
+import idiro.Log;
 import idiro.hadoop.NameNodeVar;
 import idiro.utils.RandomString;
 import idiro.workflow.server.enumeration.SavingState;
@@ -471,11 +472,12 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 	 */
 	public String save(final String filePath){
 		String error = null;
+		File file = null;
 		try{
 			String[] path = filePath.split("/");
 			String fileName = path[path.length-1];
 			String tempPath = WorkflowPrefManager.pathUserPref.get()+"/tmp/"+fileName+"_"+RandomString.getRandomName(4);
-			File file = new File(tempPath);
+			file = new File(tempPath);
 			logger.debug("Save xml: "+file.getAbsolutePath());
 			file.getParentFile().mkdirs();
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -630,10 +632,15 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 				logger.debug("write the file...");
 				// write the content into xml file
 				TransformerFactory transformerFactory = TransformerFactory.newInstance();
+				logger.debug(1);
 				Transformer transformer = transformerFactory.newTransformer();
+				logger.debug(2);
 				DOMSource source = new DOMSource(doc);
+				logger.debug(3);
 				StreamResult result = new StreamResult(file);
+				logger.debug(4);
 				transformer.transform(source, result);
+				logger.debug(5);
 
 				FileSystem fs = NameNodeVar.getFS();
 				fs.moveFromLocalFile(new Path(tempPath), new Path(filePath));
@@ -643,11 +650,17 @@ public class Workflow extends UnicastRemoteObject implements DataFlow{
 				logger.debug("file saved successfully");
 			}
 		} catch (Exception e) {
-			error = "Fail to save the xml file"+e;
-
+			error = "Fail to save the xml file: "+e;
 			logger.error(error);
-			logger.error(e.getMessage());
+			for(int i = 0; i < 6 && i < e.getStackTrace().length; ++i){
+			logger.error(e.getStackTrace()[i].toString());
+			}
+			try{
+				logger.info("Attempt to delete "+file.getAbsolutePath());
+				file.delete();
+			}catch(Exception e1){}
 		}
+		Log.flushAllLogs();
 
 		return error;
 	}

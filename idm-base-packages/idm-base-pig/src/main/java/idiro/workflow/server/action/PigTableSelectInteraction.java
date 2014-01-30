@@ -152,7 +152,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 					.getValues().iterator();
 			while (grInt.hasNext()) {
 				String feat = alias + "." +
-						grInt.next().toUpperCase();
+						grInt.next();
 				featGrouped.add(feat);
 			}
 		}
@@ -170,7 +170,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 					.getValues().iterator();
 			while (grInt.hasNext()) {
 				String feat = alias + "." +
-						grInt.next().toUpperCase();
+						grInt.next();
 				featGrouped.add(feat);
 			}
 		}
@@ -255,7 +255,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 			operationsList.clear();
 
 
-			if (hs.getGroupingInt().getValues().size() > 0) {
+			if (groupBy.size() > 0) {
 				logger.info("add copy");
 				operationsList.add(gen_operation_copy);
 				featList.clear();
@@ -308,9 +308,9 @@ public class PigTableSelectInteraction extends TableInteraction {
 				String optitleRow = addOperation(cur, operation);
 				row.put(table_op_title,optitleRow);
 				if(operation.isEmpty()){
-					row.put(table_feat_title, (cur.replace('.', '_')).toUpperCase());
+					row.put(table_feat_title, cur.replace('.', '_'));
 				}else{
-					row.put(table_feat_title, (cur.replace('.', '_') + "_" + operation).toUpperCase());
+					row.put(table_feat_title, cur.replace('.', '_') + "_" + operation);
 				}
 				
 				logger.info("trying to add type for " + cur);
@@ -347,8 +347,9 @@ public class PigTableSelectInteraction extends TableInteraction {
 		List<String> types = new LinkedList<String>();
 		types.add(FeatureType.BOOLEAN.name());
 		types.add(FeatureType.INT.name());
-		types.add(FeatureType.DOUBLE.name());
+		types.add(FeatureType.LONG.name());
 		types.add(FeatureType.FLOAT.name());
+		types.add(FeatureType.DOUBLE.name());
 		types.add(FeatureType.STRING.name());
 
 		addColumn(
