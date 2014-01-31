@@ -1,7 +1,6 @@
 package idiro.workflow.server.action;
 
 import static org.junit.Assert.assertTrue;
-import idiro.utils.Tree;
 import idiro.workflow.server.Workflow;
 import idiro.workflow.server.interfaces.DataFlowElement;
 import idiro.workflow.test.TestUtils;
@@ -33,17 +32,15 @@ public class PigFilterInteractionTests {
 			
 			logger.debug(hs.getDFEInput());
 			hs.update(ci);
-			Tree<String> cond = ci.getTree()
-					.getFirstChild("editor");
-			cond.getFirstChild("output").add("VAL < 10");
+			ci.setValue("VAL < 10");
+			
 			
 			logger.info(hs.getDFEInput().get(PigElement.key_input).get(0).getFeatures().getFeaturesNames().toString());
 			error = ci.check();
 			
 			assertTrue("check1: VAL does not exist",error != null);
 			
-			cond.remove("output");
-			cond.add("output").add("VALUE < 10");
+			ci.setValue("VALUE < 10");
 			error = ci.check();
 			assertTrue("check2: "+error,error == null);
 			

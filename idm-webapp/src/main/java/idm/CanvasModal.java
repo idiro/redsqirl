@@ -46,6 +46,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 */
 	private static final long serialVersionUID = 6582760940477306907L;
 	
+	public static final String sourceOutName = "";
 	
 	private static Logger logger = Logger.getLogger(CanvasModal.class);
 	private CanvasBean canvasBean;
@@ -359,7 +360,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 					for (ItemList itemList : dynamicF.getListGrid()) {
 						logger.info("Add property: "+itemList.getProperty()+": "+itemList.getValue());
 						myProperty.add(itemList.getProperty()).add(itemList.getValue());
-						//getDfe().getDFEOutput().get("source").addProperty(itemList.getProperty(), itemList.getValue());
+						//getDfe().getDFEOutput().get(sourceOutName).addProperty(itemList.getProperty(), itemList.getValue());
 					}
 
 					if (getHiveHdfs() != null && getHiveHdfs().equalsIgnoreCase("hive")) {
@@ -459,7 +460,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 			if (updateTable){
 				//Update table
-				updateDFEOUtputTable(getDfe().getDFEOutput().get("source"),getDynamicFormBrowser());
+				updateDFEOUtputTable(getDfe().getDFEOutput().get(sourceOutName),getDynamicFormBrowser());
 			}
 			// Update output only if it is the last page
 			// or an output already exist
@@ -1552,11 +1553,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 			logger.info("pathFile " + path);
 
-			getDfe().getDFEOutput().get("source").setPath(path);
-			getDfe().getDFEOutput().get("source").isPathExists();
+			getDfe().getDFEOutput().get(sourceOutName).setPath(path);
+			getDfe().getDFEOutput().get(sourceOutName).isPathExists();
 
 			List<ItemList> listObjGrid = new ArrayList<ItemList>();
-			Map<String, String> outputPropertiesMap = getDfe().getDFEOutput().get("source").getProperties();
+			Map<String, String> outputPropertiesMap = getDfe().getDFEOutput().get(sourceOutName).getProperties();
 			logger.info("outputPropertiesMap -> " + outputPropertiesMap);
 
 			for (String value : outputPropertiesMap.keySet()) {
@@ -1571,7 +1572,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 			dynamicForm.setListGrid(listObjGrid);
 			setListGrid(listObjGrid);
 
-			updateDFEOUtputTable(getDfe().getDFEOutput().get("source"),
+			updateDFEOUtputTable(getDfe().getDFEOutput().get(sourceOutName),
 					dynamicForm);
 			dynamicForm.setPathBrowser(path);
 		}
