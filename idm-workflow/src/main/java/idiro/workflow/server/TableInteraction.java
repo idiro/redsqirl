@@ -102,7 +102,7 @@ public class TableInteraction extends UserInteraction {
 			Iterator<Tree<String>> it = columns.getChildren("column").iterator();
 			while(it.hasNext() && found == null){
 				found = it.next();
-//				logger.debug(columnName+" ? "+found.getFirstChild("title").getFirstChild().getHead());
+				//logger.debug(columnName+"? "+found);
 				if(!found.getFirstChild("title").getFirstChild().getHead().equals(columnName)){
 					found = null;
 				}
@@ -183,8 +183,8 @@ public class TableInteraction extends UserInteraction {
 		}catch(Exception e){}
 
 		if(countConst > 0){
+			logger.debug("Check count constraint for "+columnName+": "+countConst);
 			List<String> colValues = getValuesFromColumn(columnName);
-			logger.info(colValues.toString());
 			while(colValues.size() > 0 && error == null){
 				int curSize = colValues.size();
 				List<String> el = new LinkedList<String>();
@@ -192,6 +192,7 @@ public class TableInteraction extends UserInteraction {
 				el.add(val);
 				colValues.removeAll(el);
 				int endSize = colValues.size();
+				logger.debug(val+": occurence "+ (curSize - endSize));
 				if( curSize - endSize != countConst){
 					error = LanguageManagerWF.getText("tableInteraction.countConst",new Object[]{val,countConst});
 				}
@@ -271,11 +272,9 @@ public class TableInteraction extends UserInteraction {
 			if(error == null){
 				logger.debug("check count...");
 				Iterator<String> it = getColumnNames().iterator();
-				logger.debug("columns iterator ...");
 				while(it.hasNext() && error == null){
 					error = checkCountConstraint(it.next());
 				}
-				logger.debug("check count finished");
 			}
 		}catch(Exception e){
 			logger.error(e);
@@ -292,8 +291,7 @@ public class TableInteraction extends UserInteraction {
 		Iterator<Tree<String>> rows = null;
 		try{
 			lRow = getTree()
-					.getFirstChild("table").getChildren("row");
-//			logger.info("tree : "+ getTree().toString());
+					.getFirstChild("table").getChildren("row"); 
 			rows = lRow.iterator();
 			while(rows.hasNext()){
 				Tree<String> row = rows.next();
@@ -302,7 +300,6 @@ public class TableInteraction extends UserInteraction {
 				while(lColRowIt.hasNext() && !end){
 					Tree<String> lColRow = lColRowIt.next();
 					String colName = lColRow.getHead();
-//					logger.info("colName "+colName+" , col name : "+ columnName);
 					String colValue = lColRow.getFirstChild().getHead();
 					if(colName.equals(columnName)){
 						values.add(colValue);

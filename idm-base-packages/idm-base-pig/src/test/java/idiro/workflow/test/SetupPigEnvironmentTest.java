@@ -11,6 +11,7 @@ import idiro.workflow.server.action.PigSelectTests;
 import idiro.workflow.server.action.PigTableJoinInteractionTests;
 import idiro.workflow.server.action.PigTableSelectInteractionTests;
 import idiro.workflow.server.action.PigTableUnionInteractionTests;
+import idiro.workflow.server.action.PigUnionConditionsTests;
 import idiro.workflow.server.action.PigUnionTests;
 import idiro.workflow.server.action.PigWorkflowMngtTests;
 import idiro.workflow.server.action.test.PigDictionaryTests;
@@ -30,17 +31,18 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-//	PigDictionaryTests.class,
-//	PigFilterInteractionTests.class,
-//	PigTableSelectInteractionTests.class,
+	PigDictionaryTests.class,
+	PigFilterInteractionTests.class,
+	PigTableSelectInteractionTests.class,
 	PigJoinRelationInteractionTests.class,
-//	PigTableJoinInteractionTests.class,
-//	PigTableUnionInteractionTests.class,
-//	PigSelectTests.class,
-//	PigAggregatorTests.class,
-//	PigUnionTests.class,
-//	PigJoinTests.class,
-//	PigWorkflowMngtTests.class
+	PigTableJoinInteractionTests.class,
+	PigTableUnionInteractionTests.class,
+	PigSelectTests.class,
+	PigAggregatorTests.class,
+	PigUnionTests.class,
+	PigJoinTests.class,
+	PigWorkflowMngtTests.class,
+	PigUnionConditionsTests.class
 	})
 public class SetupPigEnvironmentTest {
 
