@@ -308,9 +308,9 @@ public class PigTableSelectInteraction extends TableInteraction {
 				String optitleRow = addOperation(cur, operation);
 				row.put(table_op_title,optitleRow);
 				if(operation.isEmpty()){
-					row.put(table_feat_title, cur.replace('.', '_'));
+					row.put(table_feat_title, cur.replace(alias+".", ""));
 				}else{
-					row.put(table_feat_title, cur.replace('.', '_') + "_" + operation);
+					row.put(table_feat_title, cur.replace(alias+".", "") + "_" + operation);
 				}
 				
 				logger.info("trying to add type for " + cur);
