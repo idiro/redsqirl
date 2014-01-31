@@ -38,7 +38,7 @@ public class InputInteraction extends UserInteraction{
 		}
 		return ans;
 	}
-	
+
 	public String getRegex() throws RemoteException{
 		String ans = null;
 		try{
@@ -52,10 +52,15 @@ public class InputInteraction extends UserInteraction{
 	}
 
 	public void setValue(String value) throws RemoteException{
-		getTree().getFirstChild("input").getFirstChild("output").removeAllChildren();
-		getTree().getFirstChild("input").getFirstChild("output").add(value);
+		String regex = getRegex();
+		if(value == null && (regex == null || regex.isEmpty())){
+			getTree().getFirstChild("input").getFirstChild("output").removeAllChildren();
+		}else if( regex == null || regex.isEmpty() || (value != null && value.matches(regex))){
+			getTree().getFirstChild("input").getFirstChild("output").removeAllChildren();
+			getTree().getFirstChild("input").getFirstChild("output").add(value);
+		}
 	}
-	
+
 	public void setRegex(String regex) throws RemoteException{
 		getTree().getFirstChild("input").getFirstChild("regex").removeAllChildren();
 		getTree().getFirstChild("input").getFirstChild("regex").add(regex);
