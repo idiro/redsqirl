@@ -318,7 +318,7 @@
 					<a4j:repeat value="#{canvasModalBean.outputFormList}" var="item"
 						rowKeyVar="index">
 						<h:panelGrid columns="6">
-							<a4j:commandLink value="#{item.name}" 
+							<a4j:commandLink value="output #{item.name}" 
 							                 action="#{canvasModalBean.displayOutput}" 
 							                 reRender="dataDisplayReg,titleDisplay,displayTableDiv">
 	                            <a4j:actionparam name="outputName" value="#{item.name}" />
