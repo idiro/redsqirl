@@ -41,7 +41,7 @@ public abstract class PigElement extends DataflowAction {
 	private static final long serialVersionUID = -1651299366774317959L;
 
 	public static final String key_output = "",
-			key_input = "",
+			key_input = "in",
 			key_delimiter="delimiter",
 			key_condition = "condition",
 			key_outputType = "output_type",
