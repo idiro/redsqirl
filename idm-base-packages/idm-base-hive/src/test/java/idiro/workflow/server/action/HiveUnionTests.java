@@ -11,8 +11,10 @@ import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.enumeration.SavingState;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -155,7 +157,24 @@ public class HiveUnionTests {
 			rowId.add(HiveTableUnionInteraction.table_op_title).add(alias2+".VALUE");
 			rowId.add(HiveTableUnionInteraction.table_type_title).add("INT");
 		}
-
+		HiveUnionConditions huci = hive.gettUnionCond();
+		hive.update(huci);
+		
+		List<Map<String,String>> values = new ArrayList<Map<String,String>>();
+		
+		Map<String,String> alias1MapConditions = new HashMap<String,String>();
+		alias1MapConditions.put(HiveUnionConditions.table_relation_title,alias1);
+		alias1MapConditions.put(HiveUnionConditions.table_op_title, alias1+".VALUE > 1");
+		
+		Map<String,String> alias2MapConditions = new HashMap<String,String>();
+		alias2MapConditions.put(HiveUnionConditions.table_relation_title,alias2);
+		alias2MapConditions.put(HiveUnionConditions.table_op_title, alias2+".VALUE > 1");
+		values.add(alias1MapConditions);
+		values.add(alias2MapConditions);
+		
+		hive.gettUnionCond().setValues(values);
+		
+		
 		logger.debug("HS update out...");
 		String error = hive.updateOut();
 		logger.debug("HS update out finished");
@@ -204,6 +223,7 @@ public class HiveUnionTests {
 		    logger.info(wc.getJobInfo(jobId));
 		    error = wc.getJobInfo(jobId).toString();
 		    assertTrue(error, error.contains("SUCCEEDED"));
+		    hInt.delete(new_path3);
 		}catch(Exception e){
 			logger.error(e.getMessage());
 			assertTrue(e.getMessage(),false);

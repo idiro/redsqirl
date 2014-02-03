@@ -306,6 +306,9 @@ public class UserInfoBean extends BaseBean implements Serializable {
 							logger.info("workflow is running ");
 						}catch(Exception e ){
 							logger.info("workflow not running ");
+							if(tryNumb > 30){
+								return false;
+							}
 							try {
 								Thread.sleep(500);
 							} catch (InterruptedException ex) {

@@ -31,10 +31,12 @@ public class HiveUnion extends HiveElement {
 	private static final long serialVersionUID = -2971963679008329394L;
 
 	public static final String key_featureTable = "Features";
-
-	private Page page1;
+	public final String key_union_condition = "union_cond";
+	
+	private Page page1 , page2;
 
 	private HiveTableUnionInteraction tUnionSelInt;
+	private HiveUnionConditions tUnionCond;
 
 	public HiveUnion() throws RemoteException {
 		super(2, 2, Integer.MAX_VALUE);
@@ -55,6 +57,18 @@ public class HiveUnion extends HiveElement {
 		condInt = new HiveFilterInteraction(0, 0, this);
 
 		page1.addInteraction(condInt);
+		
+		page2 = addPage(
+				HiveLanguageManager.getText("pig.union_page2.title"),
+				HiveLanguageManager.getText("pig.union_page2.legend"), 1);
+		
+		tUnionCond =  new  HiveUnionConditions(
+				key_union_condition,
+				HiveLanguageManager.getText("pig.union_cond_interaction.title"),
+				HiveLanguageManager.getText("pig.union_cond_interaction.legend"),
+				0, 0, this);
+		
+		page2.addInteraction(tUnionCond);
 
 	}
 
@@ -74,17 +88,19 @@ public class HiveUnion extends HiveElement {
 	public void update(DFEInteraction interaction) throws RemoteException {
 
 		List<DFEOutput> in = getDFEInput().get(key_input);
-
+		String interId = interaction.getId();
 		logger.info("Hive Union interaction " + interaction.getName());
 
 		if (in != null && in.size() > 1) {
-			if (interaction.getName().equals(condInt.getName())) {
+			if (interId.equals(condInt.getId())) {
 				logger.info("uopdate condition interaction");
 				condInt.update();
 				// partInt.update();
-			} else if (interaction.getName().equals(tUnionSelInt.getName())) {
+			} else if (interId.equals(tUnionSelInt.getId())) {
 				logger.info("uopdate tunuion interaction");
 				tUnionSelInt.update(in);
+			}else if(interId.equals(tUnionCond.getId())){
+				tUnionCond.update(in);
 			}
 		}
 	}
@@ -101,7 +117,7 @@ public class HiveUnion extends HiveElement {
 			String insert = "INSERT OVERWRITE TABLE " + tableOut;
 			String create = "CREATE TABLE IF NOT EXISTS " + tableOut;
 
-			String select = tUnionSelInt.getQueryPiece(out);
+			String select = tUnionSelInt.getQueryPiece(out,tUnionCond.getCondition());
 			String createSelect = tUnionSelInt.getCreateQueryPiece(out);
 
 			String condition = condInt.getQueryPiece();
@@ -164,6 +180,13 @@ public class HiveUnion extends HiveElement {
 	 */
 	public final HiveTableUnionInteraction gettUnionSelInt() {
 		return tUnionSelInt;
+	}
+	
+	/**
+	 * @return the tUnionCond
+	 */
+	public final HiveUnionConditions gettUnionCond() {
+		return tUnionCond;
 	}
 
 }

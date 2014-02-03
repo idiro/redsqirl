@@ -242,7 +242,7 @@ public class HiveTableUnionInteraction extends TableInteraction {
 		return mapRelationRow;
 	}
 
-	public String getQueryPiece(DFEOutput out) throws RemoteException {
+	public String getQueryPiece(DFEOutput out,Map<String,String> conditions) throws RemoteException {
 		logger.debug("select...");
 		HiveInterface hi = new HiveInterface();
 		String select = "";
@@ -287,7 +287,13 @@ public class HiveTableUnionInteraction extends TableInteraction {
 			String where = hu.getFilterInt().getInputWhere(alias);
 			if (!where.isEmpty()) {
 				select += "\n      WHERE " + where + "\n";
-			}
+				if(conditions.get(alias)!=null){
+					select += " AND "+ conditions.get(alias);
+				}
+
+			}else if(conditions.get(alias)!=null){
+				select += " 		WHERE "+ conditions.get(alias) + "\n";
+			}		
 		}
 		while (it.hasNext()) {
 			select += "      UNION ALL\n";
@@ -298,7 +304,8 @@ public class HiveTableUnionInteraction extends TableInteraction {
 				Map<String, String> featTree = itTree.next();
 				String featName = featTree.get(table_feat_title);
 				String op = featTree.get(table_op_title);
-				select += "      SELECT " + op + " AS " + featName;
+				select += "      SELECT " + op + " AS " + featName ;
+				
 			}
 			while (itTree.hasNext()) {
 				Map<String, String> featTree = itTree.next();
@@ -312,6 +319,11 @@ public class HiveTableUnionInteraction extends TableInteraction {
 			String where = hu.getFilterInt().getInputWhere(alias);
 			if (!where.isEmpty()) {
 				select += "\n      WHERE " + where + "\n";
+				if(conditions.get(alias)!=null){
+					select += " AND "+ conditions.get(alias);
+				}
+			}else if(conditions.get(alias)!=null){
+				select += "		WHERE "+ conditions.get(alias)+" \n ";
 			}
 		}
 		select += ") union_table";

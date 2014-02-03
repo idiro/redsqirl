@@ -7,6 +7,7 @@ import idiro.workflow.server.HiveJdbcProcessesManager;
 import idiro.workflow.server.OozieManager;
 import idiro.workflow.server.ProcessesManager;
 import idiro.workflow.server.Workflow;
+import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.action.utils.TestUtils;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.datatype.HiveType;
@@ -247,6 +248,9 @@ public class HiveSelectTests {
 			hInt.delete(new_path1);
 			hInt.delete(new_path2);
 			assertTrue(error, error.contains("SUCCEEDED"));
+			
+			WorkflowPrefManager.resetSys();
+			WorkflowPrefManager.resetUser();
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			assertTrue("error : "+e.getMessage(), false);

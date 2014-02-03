@@ -9,6 +9,7 @@ import idiro.workflow.server.action.ConditionInteractionTests;
 import idiro.workflow.server.action.HiveAggregTests;
 import idiro.workflow.server.action.HiveJoinTests;
 import idiro.workflow.server.action.HiveSelectTests;
+import idiro.workflow.server.action.HiveUnionConditionInteractionTests;
 import idiro.workflow.server.action.HiveUnionTests;
 import idiro.workflow.server.action.JoinRelationInteractionTests;
 import idiro.workflow.server.action.TableJoinInteractionTests;
@@ -32,16 +33,17 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-	ConditionInteractionTests.class,
+//	ConditionInteractionTests.class,
 //	PartitionInteractionTests.class,
-	TableSelectInteractionTests.class,
-	JoinRelationInteractionTests.class,
-	TableJoinInteractionTests.class,
-	TableUnionInteractionTests.class,
+//	TableSelectInteractionTests.class,
+//	JoinRelationInteractionTests.class,
+//	TableJoinInteractionTests.class,
+//	TableUnionInteractionTests.class,
+//	HiveUnionConditionInteractionTests.class,
 	HiveSelectTests.class,
-	HiveUnionTests.class,
-	HiveJoinTests.class,
-	HiveAggregTests.class,
+//	HiveUnionTests.class,
+//	HiveJoinTests.class,
+//	HiveAggregTests.class,
 //	HiveDictionaryTests.class
 	})
 public class SetupHiveEnvironmentTest {
@@ -73,7 +75,6 @@ public class SetupHiveEnvironmentTest {
 		logger = Logger.getLogger(SetupHiveEnvironmentTest.class);
 		logger.debug("Log4j initialised");
 		WorkflowPrefManager.pathUserPref.put(userPrefFile);
-		logger.debug("user preferences initialised");
 		logger.debug("user preferences initialised");
 		HiveInterface.setUrl(
 				WorkflowPrefManager.getUserProperty(

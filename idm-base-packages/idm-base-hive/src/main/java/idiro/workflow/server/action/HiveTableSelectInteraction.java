@@ -226,7 +226,11 @@ public class HiveTableSelectInteraction extends TableInteraction {
 
 				String optitleRow = "";
 				String featname;
-				optitleRow = addOperation(alias + "." + cur, operation);
+				if(alias.isEmpty()){
+					optitleRow = addOperation(cur, operation);
+				}else{
+					optitleRow = addOperation(alias + "." + cur, operation);
+				}
 
 				row.put(table_op_title, optitleRow);
 				if (operation.isEmpty()) {
@@ -294,15 +298,13 @@ public class HiveTableSelectInteraction extends TableInteraction {
 
 	public FeatureList getNewFeatures() throws RemoteException {
 		FeatureList new_features = new OrderedFeatureList();
-		Iterator<Tree<String>> rowIt = getTree().getFirstChild("table")
-				.getChildren("row").iterator();
+		Iterator<Map<String,String>> rowIt = getValues().iterator();
 
 		while (rowIt.hasNext()) {
-			Tree<String> rowCur = rowIt.next();
-			String name = rowCur.getFirstChild(table_feat_title)
-					.getFirstChild().getHead();
-			String type = rowCur.getFirstChild(table_type_title)
-					.getFirstChild().getHead();
+			Map<String,String> rowCur = rowIt.next();
+			String name = rowCur.get(table_feat_title);
+			String type = rowCur.get(table_type_title);
+			
 			new_features.addFeature(name, HiveDictionary.getType(type));
 		}
 		return new_features;

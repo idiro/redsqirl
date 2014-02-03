@@ -46,7 +46,7 @@ public abstract class HiveElement extends DataflowAction {
 	/**
 	 * Names of different elements
 	 */
-	public static final String key_output = "out", key_input = "in",
+	public static final String key_output = "", key_input = "in",
 			key_condition = "Condition", key_grouping = "Grouping",
 			key_partitions = "Partitions", key_outputType = "Output_Type",
 			key_alias = "Alias";
@@ -156,47 +156,13 @@ public abstract class HiveElement extends DataflowAction {
 
 	public String updateOut() throws RemoteException {
 		String error = checkIntegrationUserVariables();
-		HiveInterface hInt = new HiveInterface();
 		if (error == null) {
 			FeatureList new_features = getNewFeatures();
-			if (new_features.getSize() > 0) {
-				// partInt.addPartitions(new_features);
-				// if(useTable()){
-				// if (output == null) {
-				// output = new LinkedHashMap<String, DFEOutput>();
-				// output.put(key_output, new HiveType());
-				// } else {
-				// logger.info("doing stuff");
-				// if (output.get(key_output) instanceof ) {
-				// output.clear();
-				// output.put(key_output, new HiveType());
-				// }
-				// }
 
-				if (output.get(key_output) == null) {
-					output.put(key_output, new HiveType());
-				}
-				// }else{
-				// if(output == null){
-				// output = new LinkedHashMap<String, DFEOutput>();
-				// output.put(key_output, new HiveTypeWithWhere());
-				// }else{
-				// if(output.get(key_output) instanceof HiveType){
-				// output.clear();
-				// output.put(key_output, new HiveTypeWithWhere());
-				// }
-				// }
-				// String tableName =
-				// hInt.getTableAndPartitions(output.get(key_output).getPath())[0];
-				// //
-				// output.get(key_output).addProperty(HiveTypeWithWhere.key_where,
-				// // partInt.getPartitionsInWhere(tableName));
-				// }
-
-				output.get(key_output).setFeatures(new_features);
-				// output.get(key_output).addProperty(HiveType.key_partitions,
-				// partInt.getPartitions());
+			if (output.get(key_output) == null) {
+				output.put(key_output, new HiveType());
 			}
+			output.get(key_output).setFeatures(new_features);
 		}
 		return error;
 	}
