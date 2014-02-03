@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
+import org.apache.tools.ant.taskdefs.Property;
 
 /**
  * Class to manage IDM package.
@@ -409,7 +410,14 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 			packDir = new File(WorkflowPrefManager.pathUserPackagePref.get());
 		}
 		
-		return getPackageProperties(packDir+"/"+packageName).get(property).toString();
+		Object p = getPackageProperties(packDir+"/"+packageName).get(property);
+		
+		if (p != null){
+			return p.toString();
+		}
+		else{
+			return null;
+		}
 	}
 
 	public String checkNoPackageNameDuplicate(final String pack_name, 
