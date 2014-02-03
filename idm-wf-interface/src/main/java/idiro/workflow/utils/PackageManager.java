@@ -648,7 +648,9 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 		
 		Properties prop = new Properties();
 		try {
-			prop.load(new FileReader(new File(pack_dir+"/"+properties_file)));
+			FileReader f = new FileReader(new File(pack_dir+"/"+properties_file));
+			prop.load(f);
+			f.close();
 		} catch (Exception e) {
 			logger.error("Error when loading "+pack_dir+"/"+properties_file+" "+
 					e.getMessage());
