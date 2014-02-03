@@ -219,6 +219,19 @@ public class PigTableSelectInteraction extends TableInteraction {
 			List<String> groupBy = getFeatListGrouped();
 			List<String> operationsList = new LinkedList<String>();
 
+
+			if (groupBy.size() > 0) {
+				logger.info("add copy");
+				operationsList.add(gen_operation_copy);
+				featList.clear();
+				featList.addAll(groupBy);
+				addGeneratorRows(gen_operation_copy, featList, fl,
+						operationsList, alias);
+				operationsList.clear();
+
+			}
+			
+			featList = fl.getFeaturesNames();
 			featList.removeAll(groupBy);
 			operationsList.add(gen_operation_max);
 			addGeneratorRows(gen_operation_max, featList, fl,
@@ -252,18 +265,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 			operationsList.add(gen_operation_count);
 			addGeneratorRows(gen_operation_audit, featList, fl,
 					operationsList, alias);
-			operationsList.clear();
 
-
-			if (groupBy.size() > 0) {
-				logger.info("add copy");
-				operationsList.add(gen_operation_copy);
-				featList.clear();
-				featList.addAll(groupBy);
-				addGeneratorRows(gen_operation_copy, featList, fl,
-						operationsList, alias);
-
-			}
 		} else {
 			List<String> operationsList = new LinkedList<String>();
 			featList = in.getFeatures().getFeaturesNames();
@@ -308,9 +310,9 @@ public class PigTableSelectInteraction extends TableInteraction {
 				String optitleRow = addOperation(cur, operation);
 				row.put(table_op_title,optitleRow);
 				if(operation.isEmpty()){
-					row.put(table_feat_title, cur.replace('.', '_'));
+					row.put(table_feat_title, cur.replace(alias+".", ""));
 				}else{
-					row.put(table_feat_title, cur.replace('.', '_') + "_" + operation);
+					row.put(table_feat_title, cur.replace(alias+".", "") + "_" + operation);
 				}
 				
 				logger.info("trying to add type for " + cur);

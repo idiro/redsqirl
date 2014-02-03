@@ -45,7 +45,6 @@ public class ServerMain {
 	public static void main(String[] arg) throws RemoteException{
 
 		try {
-
 			logger.info(WorkflowPrefManager.sysPackageLibPath);
 			logger.info(WorkflowPrefManager.userPackageLibPath);
 

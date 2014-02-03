@@ -594,10 +594,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 								String inId = wa.next().getComponentId();
 								logger.debug("add " + inputName + " " + inId);
 
-								Element nameEl = doc.createElement("name");
-								nameEl.appendChild(doc
-										.createTextNode(inputName));
-								input.appendChild(nameEl);
+								Attr attrNameEl = doc.createAttribute("name");
+								attrNameEl.setValue(inputName);
+								input.setAttributeNode(attrNameEl);
 
 								Element id = doc.createElement("id");
 								id.appendChild(doc.createTextNode(inId));
@@ -631,9 +630,10 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 							logger.debug(31);
 							String outId = wa.next().getComponentId();
 							logger.debug("add " + outputName + " " + outId);
-							Element nameEl = doc.createElement("name");
-							nameEl.appendChild(doc.createTextNode(outputName));
-							output.appendChild(nameEl);
+							
+							Attr attrNameEl = doc.createAttribute("name");
+							attrNameEl.setValue(outputName);
+							output.setAttributeNode(attrNameEl);
 
 							Element id = doc.createElement("id");
 							id.appendChild(doc.createTextNode(outId));
@@ -895,9 +895,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 							&& error == null; index++) {
 						logger.debug(compId + ": input index " + index);
 						Node inCur = inList.item(index);
-						String nameIn = ((Element) inCur)
-								.getElementsByTagName("name").item(0)
-								.getChildNodes().item(0).getNodeValue();
+						String nameIn = inCur.getAttributes()
+								.getNamedItem("name").getNodeValue();
 						String id = ((Element) inCur)
 								.getElementsByTagName("id").item(0)
 								.getChildNodes().item(0).getNodeValue();
@@ -924,7 +923,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						.getElementsByTagName("data");
 				for (int ind = 0; ind < dataList.getLength() && error == null; ++ind) {
 					Node dataCur = dataList.item(ind);
-
+					
 					String dataName = dataCur.getAttributes()
 							.getNamedItem("name").getNodeValue();
 					String typeName = dataCur.getAttributes()
@@ -958,10 +957,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						try {
 							logger.debug(compId + ": output index " + index);
 							Node outCur = outList.item(index);
-
-							String nameOut = ((Element) outCur)
-									.getElementsByTagName("name").item(0)
-									.getChildNodes().item(0).getNodeValue();
+							
+							String nameOut = outCur.getAttributes()
+									.getNamedItem("name").getNodeValue();
 							String id = ((Element) outCur)
 									.getElementsByTagName("id").item(0)
 									.getChildNodes().item(0).getNodeValue();

@@ -52,6 +52,7 @@
 				action="#{hiveBean.copyFileBefore}"
 				oncomplete="#{rich:component('hivecopyModalPanel')}.show()"
 				style="display:none;" />
+				
 			<a4j:commandLink id="hivelinkMoveModalPanel"
 				action="#{hiveBean.moveFileBefore}"
 				oncomplete="#{rich:component('hivemoveModalPanel')}.show()"
@@ -61,10 +62,11 @@
 
 			<h:outputText value="#{messages.label_path}" />
 			<br />
-			<h:inputText id="hivepath" label="Path" value="#{hiveBean.path}"
-				maxlength="255" style="width:395px;" />
-			<a4j:commandButton type="submit" id="hivechangePathBt"
-				action="#{hiveBean.changePath}" value="#{messages.button_ok}" reRender="hivefs" />
+			<h:inputText id="hivepath" label="Path" value="#{hiveBean.path}" maxlength="255" style="width:395px;" />
+			
+			<a4j:commandLink action="#{hiveBean.changePath}" reRender="hivefs" style="color:#FFFFFF" >
+				<img src="../image/icons/button-search.gif" />
+			</a4j:commandLink>
 
 			<br />
 			<br />
@@ -120,7 +122,7 @@
 					</f:facet>
 					<a4j:commandLink action="#{hiveBean.editFileBefore}"
 						oncomplete="#{rich:component('hiveeditModalPanel')}.show()">
-						<h:graphicImage value="../image/icons/button-copy.gif" />
+						<h:graphicImage value="../image/icons/button-property.gif" />
 						<f:param name="nameFileEdit" value="#{item.name}" />
 					</a4j:commandLink>
 				</rich:column>

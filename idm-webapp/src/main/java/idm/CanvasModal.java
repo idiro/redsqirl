@@ -46,6 +46,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 */
 	private static final long serialVersionUID = 6582760940477306907L;
 	
+	public static final String sourceOutName = "";
 	
 	private static Logger logger = Logger.getLogger(CanvasModal.class);
 	private CanvasBean canvasBean;
@@ -359,7 +360,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 					for (ItemList itemList : dynamicF.getListGrid()) {
 						logger.info("Add property: "+itemList.getProperty()+": "+itemList.getValue());
 						myProperty.add(itemList.getProperty()).add(itemList.getValue());
-						//getDfe().getDFEOutput().get("source").addProperty(itemList.getProperty(), itemList.getValue());
+						//getDfe().getDFEOutput().get(sourceOutName).addProperty(itemList.getProperty(), itemList.getValue());
 					}
 
 					if (getHiveHdfs() != null && getHiveHdfs().equalsIgnoreCase("hive")) {
@@ -459,7 +460,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 			if (updateTable){
 				//Update table
-				updateDFEOUtputTable(getDfe().getDFEOutput().get("source"),getDynamicFormBrowser());
+				updateDFEOUtputTable(getDfe().getDFEOutput().get(sourceOutName),getDynamicFormBrowser());
 			}
 			// Update output only if it is the last page
 			// or an output already exist
@@ -719,15 +720,15 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 					List<SelectItem> selectItems = new ArrayList<SelectItem>();
 					Tree<String> dfetree = dfeInteraction.getTree();
-					logger.info("got tree");
+					//logger.info("got tree");
 					Tree<String> lists = dfetree.getFirstChild("list");
-					logger.info("got tree -> list");
+					//logger.info("got tree -> list");
 					Tree<String> values = lists.getFirstChild("values");
-					logger.info("got tree -> list -> values");
+					//logger.info("got tree -> list -> values");
 					List<Tree<String>> list = values.getSubTreeList();
-					logger.info("got tree -> list -> values -> tree");
+					//logger.info("got tree -> list -> values -> tree");
 
-					logger.info("list value " + list);
+					//logger.info("list value " + list);
 
 					if (list != null) {
 						for (Tree<String> tree : list) {
@@ -1552,11 +1553,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 			logger.info("pathFile " + path);
 
-			getDfe().getDFEOutput().get("source").setPath(path);
-			getDfe().getDFEOutput().get("source").isPathExists();
+			getDfe().getDFEOutput().get(sourceOutName).setPath(path);
+			getDfe().getDFEOutput().get(sourceOutName).isPathExists();
 
 			List<ItemList> listObjGrid = new ArrayList<ItemList>();
-			Map<String, String> outputPropertiesMap = getDfe().getDFEOutput().get("source").getProperties();
+			Map<String, String> outputPropertiesMap = getDfe().getDFEOutput().get(sourceOutName).getProperties();
 			logger.info("outputPropertiesMap -> " + outputPropertiesMap);
 
 			for (String value : outputPropertiesMap.keySet()) {
@@ -1571,7 +1572,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 			dynamicForm.setListGrid(listObjGrid);
 			setListGrid(listObjGrid);
 
-			updateDFEOUtputTable(getDfe().getDFEOutput().get("source"),
+			updateDFEOUtputTable(getDfe().getDFEOutput().get(sourceOutName),
 					dynamicForm);
 			dynamicForm.setPathBrowser(path);
 		}
@@ -1755,7 +1756,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 		String path = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("pathFile");
 		logger.info("Output: " + getNameOutput() + " - path: " + path);
 		
-		setListOutput(new ArrayList<String>());
 		for (OutputForm f : getOutputFormList()) {
 			if (f.getName().equals(getNameOutput())) {
 				f.setPath(path);
@@ -1773,7 +1773,10 @@ public class CanvasModal extends BaseBean implements Serializable {
 		int i = 0;
 		for (OutputForm f : getOutputFormList()) {
 			
-			f.setPath(getListOutput().get(i));
+			if(getListOutput().size() == getOutputFormList().size()){
+				f.setPath(getListOutput().get(i));
+			}
+			
 			logger.info("confirmOutput path " + f.getPath());
 			
 			error = f.updateDFEOutput();

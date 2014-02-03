@@ -4,8 +4,13 @@ import idiro.Log;
 import idiro.ProjectID;
 import idiro.utils.OrderedFeatureListTests;
 import idiro.utils.TreeTests;
+import idiro.workflow.server.AppendListInteractionTests;
+import idiro.workflow.server.EditorInteractionTests;
+import idiro.workflow.server.InputInteractionTests;
+import idiro.workflow.server.ListInteractionTests;
 import idiro.workflow.server.OozieDagTests;
 import idiro.workflow.server.OozieManagerTests;
+import idiro.workflow.server.TableInteractionTests;
 import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.WorkflowProcessesManagerTests;
 import idiro.workflow.server.WorkflowTests;
@@ -19,7 +24,6 @@ import idiro.workflow.server.connect.interfaces.HiveInterfaceTests;
 import idiro.workflow.server.connect.interfaces.SSHInterfaceArrayTests;
 import idiro.workflow.server.connect.interfaces.SSHInterfaceTests;
 import idiro.workflow.server.datatype.HiveTypeTests;
-import idiro.workflow.utils.PackageManagerTests;
 
 import java.io.File;
 import java.io.FileReader;
@@ -34,23 +38,28 @@ import org.junit.runners.Suite.SuiteClasses;
 
 
 @RunWith(Suite.class)
-@SuiteClasses({//ActionTests.class
-	/*WorkflowTests.class,
-	CreateWorkflowTests.class,
-	HiveDictionaryTests.class,
-	HDFSInterfaceTests.class,*/
+@SuiteClasses({ActionTests.class,
+	WorkflowTests.class,
+	//CreateWorkflowTests.class,
+	HDFSInterfaceTests.class,
 	HiveInterfaceTests.class,
-	/*SSHInterfaceTests.class,
+	SSHInterfaceTests.class,
 	SSHInterfaceArrayTests.class,
 	HiveTypeTests.class, 
 	SourceTests.class,
 	WorkflowProcessesManagerTests.class,
 	OozieManagerTests.class,
-	PackageManagerTests.class,
+	//PackageManagerTests.class,
 	OozieDagTests.class,
 	OrderedFeatureListTests.class,
 	TreeTests.class,
-	ConvertTests.class,*/
+	ConvertTests.class,
+	InputInteractionTests.class,
+	AppendListInteractionTests.class,
+	ListInteractionTests.class,
+	EditorInteractionTests.class,
+	TableInteractionTests.class,
+	
 	})
 public class SetupEnvironmentTest {
 	
