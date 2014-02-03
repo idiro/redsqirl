@@ -72,6 +72,11 @@
   <managed-bean-scope>request</managed-bean-scope>
  </managed-bean>
  <managed-bean>
+  <managed-bean-name>outputBrowserHiveBean</managed-bean-name>
+  <managed-bean-class>idm.HiveBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
   <managed-bean-name>packageMngBean</managed-bean-name>
   <managed-bean-class>idm.PackageMngBean</managed-bean-class>
   <managed-bean-scope>request</managed-bean-scope>

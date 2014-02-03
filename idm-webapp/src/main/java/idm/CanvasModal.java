@@ -720,15 +720,15 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 					List<SelectItem> selectItems = new ArrayList<SelectItem>();
 					Tree<String> dfetree = dfeInteraction.getTree();
-					logger.info("got tree");
+					//logger.info("got tree");
 					Tree<String> lists = dfetree.getFirstChild("list");
-					logger.info("got tree -> list");
+					//logger.info("got tree -> list");
 					Tree<String> values = lists.getFirstChild("values");
-					logger.info("got tree -> list -> values");
+					//logger.info("got tree -> list -> values");
 					List<Tree<String>> list = values.getSubTreeList();
-					logger.info("got tree -> list -> values -> tree");
+					//logger.info("got tree -> list -> values -> tree");
 
-					logger.info("list value " + list);
+					//logger.info("list value " + list);
 
 					if (list != null) {
 						for (Tree<String> tree : list) {
@@ -1756,7 +1756,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 		String path = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("pathFile");
 		logger.info("Output: " + getNameOutput() + " - path: " + path);
 		
-		setListOutput(new ArrayList<String>());
 		for (OutputForm f : getOutputFormList()) {
 			if (f.getName().equals(getNameOutput())) {
 				f.setPath(path);
@@ -1774,7 +1773,10 @@ public class CanvasModal extends BaseBean implements Serializable {
 		int i = 0;
 		for (OutputForm f : getOutputFormList()) {
 			
-			f.setPath(getListOutput().get(i));
+			if(getListOutput().size() == getOutputFormList().size()){
+				f.setPath(getListOutput().get(i));
+			}
+			
 			logger.info("confirmOutput path " + f.getPath());
 			
 			error = f.updateDFEOutput();
