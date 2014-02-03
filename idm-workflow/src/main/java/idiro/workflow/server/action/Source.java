@@ -41,7 +41,7 @@ public class Source extends DataflowAction {
 
 	private static Map<String, DFELinkProperty> input = new LinkedHashMap<String, DFELinkProperty>();
 
-	public static final String out_name = "source";
+	public static final String out_name = "";
 
 	public static final String key_datatype = "data_type";
 	public static final String key_datasubtype = "data_subtype";

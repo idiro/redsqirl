@@ -38,6 +38,7 @@ public class FileSystemBean extends BaseBean implements Serializable{
 	private DataStore dataStore;
 	private List<String[]> selectedFiles;
 	private UserInfoBean userInfoBean;
+	private ArrayList<ItemList> listHeaderGrid = new ArrayList<ItemList>();
 
 
 	/** openCanvasScreen
@@ -583,6 +584,14 @@ public class FileSystemBean extends BaseBean implements Serializable{
 
 	public void setUserInfoBean(UserInfoBean userInfoBean) {
 		this.userInfoBean = userInfoBean;
+	}
+
+	public ArrayList<ItemList> getListHeaderGrid() {
+		return listHeaderGrid;
+	}
+
+	public void setListHeaderGrid(ArrayList<ItemList> listHeaderGrid) {
+		this.listHeaderGrid = listHeaderGrid;
 	}
 	
 }

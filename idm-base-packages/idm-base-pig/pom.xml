@@ -97,6 +97,7 @@
                             <resources>          
                                 <resource>
                                     <directory>${prod.resources}</directory>
+                                     <filtering>true</filtering>
                                 </resource>
                             </resources>              
                         </configuration>            

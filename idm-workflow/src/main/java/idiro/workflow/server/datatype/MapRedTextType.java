@@ -264,9 +264,6 @@ public class MapRedTextType extends DataOutput {
 			String newLabels[] = header.split(",");
 
 			logger.info("setFeaturesFromHeader features "+ features);
-			if (features != null && features.getSize() != newLabels.length) {
-				error = LanguageManagerWF.getText("mapredtexttype.setheaders.wronglabels");
-			}
 
 			if(header.trim().endsWith(",")){
 				error = LanguageManagerWF.getText("mapredtexttype.setheaders.wronglabels");
@@ -291,7 +288,12 @@ public class MapRedTextType extends DataOutput {
 							if(isVariableName(nameType[0])){
 
 								try {
-									newFL.addFeature(nameType[0], FeatureType.valueOf(nameType[1].toUpperCase()));
+									FeatureType ft = FeatureType.valueOf(nameType[1].toUpperCase());
+									if(ft == null){
+										error = LanguageManagerWF.getText("mapredtexttype.msg_error_type_new_header", new Object[] { nameType[1] });
+									}else{
+										newFL.addFeature(nameType[0], ft);
+									}
 								}
 								catch (Exception e) {
 									logger.error(e);
@@ -334,10 +336,6 @@ public class MapRedTextType extends DataOutput {
 			} catch (Exception e) {
 				logger.error(e);
 				error = LanguageManagerWF.getText("mapredtexttype.setheaders.typeunknown");
-			}
-
-			if (error == null && !newFL.getFeaturesNames().isEmpty()) {
-				error = checkFeatures(newFL);
 			}
 
 			if (error == null && !newFL.getFeaturesNames().isEmpty()) {
@@ -519,7 +517,6 @@ public class MapRedTextType extends DataOutput {
 				String header = getProperty(key_header);
 				if (header != null && !header.isEmpty()) {
 					logger.info("setFeaturesFromHeader --");
-					features = fl;
 					error = setFeaturesFromHeader();
 					if (error != null) {
 						throw new RemoteException(error);
@@ -528,26 +525,36 @@ public class MapRedTextType extends DataOutput {
 					if(features != null){
 						logger.debug(features.getFeaturesNames());
 						logger.debug(fl.getFeaturesNames());
-					}
-					if(features == null){
-						features = fl;
-					}else if(features.getSize() != fl.getSize()){
-						features = fl;
 					}else{
-						Iterator<String> flIt = fl.getFeaturesNames().iterator();
-						Iterator<String> featIt = features.getFeaturesNames().iterator();
-						boolean ok = true;
-						int i = 1;
-						while(flIt.hasNext() && ok){
-							String nf = flIt.next();
-							String of = featIt.next();
-							logger.debug("types feat "+i+": "+fl.getFeatureType(nf)+" , "+features.getFeatureType(of));
-							
-							ok &= canCast(fl.getFeatureType(nf),features.getFeatureType(of));
-							++i;
-						}
+						features = fl;
+					}
+				}
+				
+				if(features.getSize() != fl.getSize()){
+					if (header != null && !header.isEmpty()) {
+						error = LanguageManagerWF.getText("mapredtexttype.setheaders.wronglabels");
+					}
+					features = fl;
+				}else{
+					Iterator<String> flIt = fl.getFeaturesNames().iterator();
+					Iterator<String> featIt = features.getFeaturesNames().iterator();
+					boolean ok = true;
+					int i = 1;
+					while(flIt.hasNext() && ok){
+						String nf = flIt.next();
+						String of = featIt.next();
+						logger.info("types feat "+i+": "+fl.getFeatureType(nf)+" , "+features.getFeatureType(of));
+						ok &= canCast(fl.getFeatureType(nf),features.getFeatureType(of));
 						if(!ok){
-							features = fl;
+							error = LanguageManagerWF.getText("mapredtexttype.msg_error_cannot_cast",
+									new Object[]{fl.getFeatureType(nf),features.getFeatureType(of)});
+						}
+						++i;
+					}
+					if(!ok){
+						features = fl;
+						if(error != null){
+							throw new RemoteException(error);
 						}
 					}
 				}
@@ -555,41 +562,6 @@ public class MapRedTextType extends DataOutput {
 			}
 		}
 
-	}
-
-	public String checkFeatures(FeatureList fl) throws RemoteException {
-		String error = null;
-
-		logger.info("checkFeatures- ");
-
-		if (isPathExists() && features != null) {
-
-			//if (error == null) {
-
-			logger.info("features.getFeaturesNames- "+features.getFeaturesNames());
-			logger.info("fl.getFeaturesNames- "+fl.getFeaturesNames());
-
-			for (int i = 0; i < features.getFeaturesNames().size(); i++) {
-
-				String flName = features.getFeaturesNames().get(i);
-				String featName = fl.getFeaturesNames().get(i);
-
-				logger.info("checkFeatures-flName " + flName);
-				logger.info("checkFeatures-featName " + featName);
-				logger.info("checkFeatures-featNameType " + features.getFeatureType(flName));
-				logger.info("checkFeatures-flNameType " + fl.getFeatureType(featName));
-
-				if (!canCast(features.getFeatureType(flName),fl.getFeatureType(featName))) {
-					error = LanguageManagerWF.getText("mapredtexttype.checkfeatures.incorrectnames", new Object[] { flName, featName });
-				}
-
-			}
-
-		}
-
-		logger.info("checkFeatures-error " + error);
-
-		return error;
 	}
 	
 	@Override

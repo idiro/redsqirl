@@ -11,14 +11,6 @@
 <head>
 
 <script>
-
-	function openCopyHdfs(){
-  	  jQuery("[id$='hdfslinkCopyModalPanel']").click();
-    }
-
-    function openMoveHdfs(){
-  	  jQuery("[id$='hdfslinkMoveModalPanel']").click();
-    }
     
     function selectFileHdfs(isFile, nameFile){
     	if (isFile == "true"){
@@ -28,6 +20,7 @@
     		updateTableHdfs(nameFile);
     	}
     }
+    
 </script>
 
 </head>
@@ -50,15 +43,6 @@
 				<a4j:actionparam name="nameFile"/>
 			</a4j:jsFunction>
 
-			<a4j:commandLink id="hdfslinkCopyModalPanel"
-				action="#{hdfsBean.copyFileBefore}"
-				oncomplete="#{rich:component('hdfscopyModalPanel')}.show()"
-				style="display:none;" />
-			<a4j:commandLink id="hdfslinkMoveModalPanel"
-				action="#{hdfsBean.moveFileBefore}"
-				oncomplete="#{rich:component('hdfsmoveModalPanel')}.show()"
-				style="display:none;" />
-
 			<br />
 
 			<h:outputText value="#{messages.label_path}" />
@@ -73,24 +57,30 @@
 
 			<a4j:commandLink action="#{hdfsBean.addFileBefore}"
 				oncomplete="#{rich:component('hdfsaddModalPanel')}.show()">
-				<h:graphicImage id="hdfsbtAdd" value="../image/icons/button-plus.gif" />
+				<h:graphicImage id="hdfsbtAdd" value="../image/icons/button-plus.gif" styleClass="fileSystemIcon" />
 			</a4j:commandLink>
 
 			<a4j:commandLink action="#{hdfsBean.deleteFile}" reRender="hdfsfs"
 				onclick="if(!confirm('Are you sure you want to delete the selected files?')){return false;}">
-				<h:graphicImage id="hdfsbtDelete" value="../image/icons/button-delete.png" />
+				<h:graphicImage id="hdfsbtDelete" value="../image/icons/button-delete2.gif" styleClass="fileSystemIcon" />
 			</a4j:commandLink>
 
-			<h:commandLink value="Copy to..." onclick="openCopyHdfs();"/>
-			<h:commandLink value="Move to..." onclick="openMoveHdfs();"/>
+			<a4j:commandLink id="hdfslinkCopyModalPanel" action="#{hdfsBean.copyFileBefore}"
+				oncomplete="#{rich:component('hdfscopyModalPanel')}.show()"  >
+				<h:graphicImage value="../image/icons/button-copy.gif" styleClass="fileSystemIcon" />
+			</a4j:commandLink>
+				
+			<a4j:commandLink id="hdfslinkMoveModalPanel" action="#{hdfsBean.moveFileBefore}"
+				oncomplete="#{rich:component('hdfsmoveModalPanel')}.show()" >
+				<h:graphicImage value="../image/icons/button-move.gif" styleClass="fileSystemIcon" />
+			</a4j:commandLink>
 
-			<a4j:commandLink action="#{hdfsBean.goPrevious}"
-				reRender="hdfspath,hdfsfs">
-				<h:graphicImage id="hdfsbtUndo" value="../image/icons/button-undo.png" />
+			<a4j:commandLink action="#{hdfsBean.goPrevious}" reRender="hdfspath,hdfsfs">
+				<h:graphicImage id="hdfsbtUndo" value="../image/icons/button-previous.gif" styleClass="fileSystemIcon" />
 			</a4j:commandLink>
 
 			<a4j:commandLink action="#{hdfsBean.goNext}" reRender="hdfspath,hdfsfs">
-				<h:graphicImage id="hdfsbtRedo" value="../image/icons/button-redo.png" />
+				<h:graphicImage id="hdfsbtRedo" value="../image/icons/button-next.gif" styleClass="fileSystemIcon" />
 			</a4j:commandLink>
 
 
@@ -122,7 +112,7 @@
 						</f:facet>
 						<a4j:commandLink action="#{hdfsBean.editFileBefore}"
 							oncomplete="#{rich:component('hdfseditModalPanel')}.show()">
-							<h:graphicImage value="../image/icons/button-save-all.png" />
+							<h:graphicImage value="../image/icons/button-copy.gif" />
 							<f:param name="nameFileEdit" value="#{item.name}" />
 						</a4j:commandLink>
 					</rich:column>
@@ -165,7 +155,7 @@
 			<f:facet name="header">Copy File</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer"
+					style="cursor:pointer;width:16px;"
 					onclick="#{rich:component('hdfscopyModalPanel')}.hide()" />
 			</f:facet>
 	
@@ -185,7 +175,7 @@
 			<f:facet name="header">Move File</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer"
+					style="cursor:pointer;width:16px;"
 					onclick="#{rich:component('hdfsmoveModalPanel')}.hide()" />
 			</f:facet>
 	
@@ -205,7 +195,7 @@
 			<f:facet name="header">Create File</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer"
+					style="cursor:pointer;width:16px;"
 					onclick="#{rich:component('hdfsaddModalPanel')}.hide()" />
 			</f:facet>
 	
@@ -225,7 +215,7 @@
 			<f:facet name="header">Edit File</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer"
+					style="cursor:pointer;width:16px;"
 					onclick="#{rich:component('hdfseditModalPanel')}.hide()" />
 			</f:facet>
 	
@@ -245,7 +235,7 @@
 			<f:facet name="header">Preview File</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer"
+					style="cursor:pointer;width:16px;"
 					onclick="#{rich:component('hdfsOpenFileModalPanel')}.hide()" />
 			</f:facet>
 	

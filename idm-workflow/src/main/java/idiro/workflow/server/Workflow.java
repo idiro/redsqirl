@@ -1,5 +1,6 @@
 package idiro.workflow.server;
 
+import idiro.Log;
 import idiro.hadoop.NameNodeVar;
 import idiro.utils.RandomString;
 import idiro.workflow.server.enumeration.SavingState;
@@ -490,12 +491,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 */
 	public String save(final String filePath) {
 		String error = null;
-		try {
+		File file = null;
+		try{
 			String[] path = filePath.split("/");
 			String fileName = path[path.length-1];
 			String tempPath = WorkflowPrefManager.pathUserPref.get()+"/tmp/"+fileName+"_"+RandomString.getRandomName(4);
-			File file = new File(tempPath);
-			logger.debug("Save xml: " + file.getAbsolutePath());
+			file = new File(tempPath);
+			logger.debug("Save xml: "+file.getAbsolutePath());
 			file.getParentFile().mkdirs();
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory
 					.newInstance();
@@ -593,10 +595,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 								String inId = wa.next().getComponentId();
 								logger.debug("add " + inputName + " " + inId);
 
-								Element nameEl = doc.createElement("name");
-								nameEl.appendChild(doc
-										.createTextNode(inputName));
-								input.appendChild(nameEl);
+								Attr attrNameEl = doc.createAttribute("name");
+								attrNameEl.setValue(inputName);
+								input.setAttributeNode(attrNameEl);
 
 								Element id = doc.createElement("id");
 								id.appendChild(doc.createTextNode(inId));
@@ -630,9 +631,10 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 							logger.debug(31);
 							String outId = wa.next().getComponentId();
 							logger.debug("add " + outputName + " " + outId);
-							Element nameEl = doc.createElement("name");
-							nameEl.appendChild(doc.createTextNode(outputName));
-							output.appendChild(nameEl);
+							
+							Attr attrNameEl = doc.createAttribute("name");
+							attrNameEl.setValue(outputName);
+							output.setAttributeNode(attrNameEl);
 
 							Element id = doc.createElement("id");
 							id.appendChild(doc.createTextNode(outId));
@@ -661,7 +663,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				Transformer transformer = transformerFactory.newTransformer();
 				DOMSource source = new DOMSource(doc);
 				StreamResult result = new StreamResult(file);
+				logger.debug(4);
 				transformer.transform(source, result);
+				logger.debug(5);
 
 				FileSystem fs = NameNodeVar.getFS();
 				fs.moveFromLocalFile(new Path(tempPath), new Path(filePath));
@@ -673,10 +677,16 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		} catch (Exception e) {
 			error = LanguageManagerWF.getText("workflow.writeXml",
 					new Object[] { e.getMessage() });
-
 			logger.error(error);
-			logger.error(e.getMessage());
+			for(int i = 0; i < 6 && i < e.getStackTrace().length; ++i){
+			logger.error(e.getStackTrace()[i].toString());
+			}
+			try{
+				logger.info("Attempt to delete "+file.getAbsolutePath());
+				file.delete();
+			}catch(Exception e1){}
 		}
+		Log.flushAllLogs();
 
 		return error;
 	}
@@ -886,9 +896,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 							&& error == null; index++) {
 						logger.debug(compId + ": input index " + index);
 						Node inCur = inList.item(index);
-						String nameIn = ((Element) inCur)
-								.getElementsByTagName("name").item(0)
-								.getChildNodes().item(0).getNodeValue();
+						String nameIn = inCur.getAttributes()
+								.getNamedItem("name").getNodeValue();
 						String id = ((Element) inCur)
 								.getElementsByTagName("id").item(0)
 								.getChildNodes().item(0).getNodeValue();
@@ -915,7 +924,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						.getElementsByTagName("data");
 				for (int ind = 0; ind < dataList.getLength() && error == null; ++ind) {
 					Node dataCur = dataList.item(ind);
-
+					
 					String dataName = dataCur.getAttributes()
 							.getNamedItem("name").getNodeValue();
 					String typeName = dataCur.getAttributes()
@@ -949,10 +958,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						try {
 							logger.debug(compId + ": output index " + index);
 							Node outCur = outList.item(index);
-
-							String nameOut = ((Element) outCur)
-									.getElementsByTagName("name").item(0)
-									.getChildNodes().item(0).getNodeValue();
+							
+							String nameOut = outCur.getAttributes()
+									.getNamedItem("name").getNodeValue();
 							String id = ((Element) outCur)
 									.getElementsByTagName("id").item(0)
 									.getChildNodes().item(0).getNodeValue();

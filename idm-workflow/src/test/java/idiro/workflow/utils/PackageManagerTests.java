@@ -86,12 +86,11 @@ public class PackageManagerTests{
 			
 			assertFalse(
 					"Success to add "+packName,
-					pkm.addPackage(false, new String[]{pack.getAbsolutePath()}) != null);
-			
+					pkm.addPackage(false, new String[]{pack.getAbsolutePath()}) == null);	
 
 			assertFalse(
 					"Success to add "+packName3,
-					pkm.addPackage(false, new String[]{pack3.getAbsolutePath()}) != null);
+					pkm.addPackage(false, new String[]{pack3.getAbsolutePath()}) == null);
 			
 			assertTrue(
 					"Success to add "+packName2,
@@ -104,7 +103,7 @@ public class PackageManagerTests{
 			
 			assertFalse(
 					"Fail to remove "+packName,
-					pkm.removePackage(false, new String[]{packName}) != null);
+					pkm.removePackage(false, new String[]{packName}) == null);
 			
 			assertTrue(
 					"Fail to remove "+packName2,

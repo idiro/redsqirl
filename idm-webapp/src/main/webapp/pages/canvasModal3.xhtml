@@ -59,7 +59,7 @@
 					<f:facet name="header">
 						<a4j:commandLink action="#{canvasModalBean.tableInteractionDeleteLine}" reRender="tableInteraction"
 							onclick="if(!confirm('Are you sure you want to delete the selected line?')){return false;}">
-							<img id="tableInteractionBtDelete" src="../image/icons/button-delete.png" />
+							<img id="tableInteractionBtDelete" src="../image/icons/button-delete.gif" />
 						</a4j:commandLink>
 					</f:facet>
 					
@@ -93,7 +93,7 @@
 					<rich:modalPanel id="tableInteractionPanel" width="600" height="400" style="overflow:auto;" resizeable="false" >
 						<f:facet name="header">Configuration</f:facet>
 						<f:facet name="controls">
-							<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer"
+							<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:16px;"
 								onclick="#{rich:component('tableInteractionPanel')}.hide()" />
 						</f:facet>
 						<ui:include src="/pages/canvasModal2.xhtml" />

@@ -49,7 +49,7 @@ public class Convert extends DataflowAction {
 
 	private ConvertPropertiesInteraction cpi;
 
-	public static final String key_output = "out",
+	public static final String key_output = "",
 			key_input = "in",
 			key_formats = "format",
 			key_properties= "data_set_properties";
