@@ -198,7 +198,11 @@ import idiro.workflow.utils.LanguageManagerWF;
 						conn = new JdbcConnection(jdbcHdfspref, stm);
 						logger.info("got connection");
 						started = conn.showAllTables().next();
-						isInit = true;
+						if(!started){
+							conn.closeConnection();
+						}else{
+							isInit = true;
+						}
 					} catch (Exception e) {
 						logger.error("error checking connection : "
 								+ e.getMessage());
