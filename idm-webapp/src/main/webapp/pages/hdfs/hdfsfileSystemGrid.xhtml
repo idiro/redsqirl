@@ -47,10 +47,11 @@
 
 			<h:outputText value="#{messages.label_path}" />
 			<br />
-			<h:inputText id="hdfspath" label="Path" value="#{hdfsBean.path}"
-				maxlength="255" style="width:395px;" />
-			<a4j:commandButton type="submit" id="hdfschangePathBt"
-				action="#{hdfsBean.changePath}" value="#{messages.button_ok}" reRender="hdfsfs" />
+			<h:inputText id="hdfspath" label="Path" value="#{hdfsBean.path}" maxlength="255" style="width:395px;" />
+
+			<a4j:commandLink action="#{hdfsBean.changePath}" reRender="hdfsfs" style="color:#FFFFFF" >
+				<img src="../image/icons/button-search.gif" />
+			</a4j:commandLink>
 
 			<br />
 			<br />
@@ -112,7 +113,7 @@
 						</f:facet>
 						<a4j:commandLink action="#{hdfsBean.editFileBefore}"
 							oncomplete="#{rich:component('hdfseditModalPanel')}.show()">
-							<h:graphicImage value="../image/icons/button-copy.gif" />
+							<h:graphicImage value="../image/icons/button-property.gif" />
 							<f:param name="nameFileEdit" value="#{item.name}" />
 						</a4j:commandLink>
 					</rich:column>

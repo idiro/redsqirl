@@ -340,7 +340,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 						logger.error(e.getMessage());
 						setCurrentValue(getCurrentValue()+1);
 
-						if(cont > 40){
+						if(cont > 800){
 							throw e;
 						}
 					}

@@ -86,8 +86,7 @@ public class PackageManagerTests{
 			
 			assertFalse(
 					"Success to add "+packName,
-					pkm.addPackage(false, new String[]{pack.getAbsolutePath()}) == null);
-			
+					pkm.addPackage(false, new String[]{pack.getAbsolutePath()}) == null);	
 
 			assertFalse(
 					"Success to add "+packName3,

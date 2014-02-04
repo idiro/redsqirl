@@ -40,13 +40,16 @@
 	
 	<h:outputText value="#{messages.label_path}" />
 	<h:inputText id="pathOpenFile" label="Path" value="#{outputBrowserHdfsBean.path}" maxlength="255" style="width:395px;" />
-	<a4j:commandButton type="submit" id="changePathBt" action="#{outputBrowserHdfsBean.changePath}" value="#{messages.button_ok}" reRender="hdfsfsOpenFile" />
-	<br />
+	
+	<a4j:commandLink action="#{outputBrowserHdfsBean.changePath}" reRender="hdfsfsOpenFile">
+		<img src="../image/icons/button-search.gif" />
+	</a4j:commandLink>
 
 	<a4j:commandLink action="#{outputBrowserHdfsBean.goPrevious}"
 		reRender="pathOpenFile,hdfsfsOpenFile">
 		<img id="btAdd" src="../image/icons/button-previous.gif" />
 	</a4j:commandLink>
+	
 	<a4j:commandLink action="#{outputBrowserHdfsBean.goNext}"
 		reRender="pathOpenFile,hdfsfsOpenFile">
 		<img id="btAdd" src="../image/icons/button-next.gif" />

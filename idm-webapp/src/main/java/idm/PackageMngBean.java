@@ -184,14 +184,14 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		logger.info("rm sys packages");
 		if(isAdmin()){
 			PackageManager sysPckManager = new PackageManager();
-			sysPckManager.removePackage(true,unSysPackage);
+			logger.info(sysPckManager.removePackage(true,unSysPackage));
 		}
 	}
 
 	public void removeUserPackage() throws RemoteException{
 		logger.info("rm user packages");
 		if(isUserAllowInstall()){
-			getPckMng().removePackage(false,unUserPackage);
+			logger.info(getPckMng().removePackage(false,unUserPackage));
 		}
 	}
 	
