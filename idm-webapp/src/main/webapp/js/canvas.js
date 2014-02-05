@@ -2075,41 +2075,44 @@ function capitaliseFirstLetter(string){
 
 
 
-
-
-
 var isSaveAll = false;
-	var indexSaving;
+var indexSaving;
+var contSaving;
 	
-	function saveAll(){
-		isSaveAll = true;
-		indexSaving = 0;
-		selectedCanvas = nameTabs[0];
-		setWorkflow(nameTabs[0]);
-		if (isSaved(nameTabs[0])){
-			save(getPathFile(nameTabs[0]));
-		}
-		else{
-			Richfaces.showModalPanel('modalSaveWorkflow');
-		}
+function saveAll(){
+	isSaveAll = true;
+	indexSaving = 0;
+	contSaving = 0;
+	selectedCanvas = nameTabs[0];
+	setWorkflow(nameTabs[0]);
+	if (isSaved(nameTabs[0])){
+		save(getPathFile(nameTabs[0]));
+		indexSaving++;
 	}
+	else{
+		Richfaces.showModalPanel('modalSaveWorkflow');
+	}
+}
 	
-	function onHideModalSaveWorkflow(){
-	   	//<![CDATA[
+function onHideModalSaveWorkflow(saved){
+   	//<![CDATA[
+	if (!saved){
+		indexSaving++;
+	}
+   	contSaving++;
+   	if (isSaveAll == true && contSaving < numTabs){
+   		selectedCanvas = nameTabs[indexSaving];
+   		setWorkflow(nameTabs[indexSaving]);
+   		if (isSaved(nameTabs[indexSaving])){
+	   		save(getPathFile(nameTabs[indexSaving]));
 	   		indexSaving++;
-	   		if (isSaveAll == true && indexSaving < numTabs){
-	   			selectedCanvas = nameTabs[0];
-	   			setWorkflow(nameTabs[0]);
-	   			if (isSaved(nameTabs[0])){
-		   			save(getPathFile(nameTabs[0]));
-		   		}
-		   		else{
-		   			Richfaces.showModalPanel('modalSaveWorkflow');
-		   		}
-	   		}
-	   		else{
-	   			isSaveAll = false;
-	   		}
-	   	//]]>
 	   	}
-	   	
+	   	else{
+	   		Richfaces.showModalPanel('modalSaveWorkflow');
+	   	}
+   	}
+   	else{
+   		isSaveAll = false;
+   	}
+   	//]]>
+}
