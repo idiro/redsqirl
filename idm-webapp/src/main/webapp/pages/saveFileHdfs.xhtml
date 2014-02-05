@@ -89,7 +89,7 @@
 
 	<a4j:commandButton id="hdfsSaveFileBtn" value="#{messages.button_ok}"
 		onclick="#{rich:component('modalSaveWorkflow')}.hide();save(getPath('#{hdfsSaveBean.path}'));"
-		oncomplete="onHideModalSaveWorkflow();" reRender="errorTable" >
+		oncomplete="" reRender="errorTable" >
 	</a4j:commandButton>
 	
 	<a4j:commandButton value="#{messages.button_cancel}"

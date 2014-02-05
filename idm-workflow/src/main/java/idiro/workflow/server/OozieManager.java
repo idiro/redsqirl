@@ -215,7 +215,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 				--again;
 			}
 			try{
-				fs.close();
+//				fs.close();
 			}catch(Exception e2){
 				logger.error("Fail to close HDFS: "+e2);
 			}
@@ -267,7 +267,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 				--again;
 			}
 			try{
-				fs.close();
+//				fs.close();
 			}catch(Exception e2){
 				logger.error("Fail to close HDFS: "+e2);
 			}
@@ -362,7 +362,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 					--again;
 				}
 				try{
-					fs.close();
+//					fs.close();
 				}catch(Exception e2){
 					logger.error("Fail to close HDFS: "+e2);
 				}
