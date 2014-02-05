@@ -491,6 +491,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	public String save(final String filePath) {
 		String error = null;
 		File file = null;
+		
 		try{
 			String[] path = filePath.split("/");
 			String fileName = path[path.length-1];
@@ -668,7 +669,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 				FileSystem fs = NameNodeVar.getFS();
 				fs.moveFromLocalFile(new Path(tempPath), new Path(filePath));
-				fs.close();
+//				fs.close();
 
 				saved = true;
 				logger.debug("file saved successfully");
@@ -747,7 +748,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				fs.delete(pathDel, false);
 			}
 		}
-		fs.close();
+//		fs.close();
 	}
 
 	public void close() throws RemoteException {
@@ -773,7 +774,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		try {
 			FileSystem fs = NameNodeVar.getFS();
 			fs.mkdirs(new Path(path));
-			fs.close();
+//			fs.close();
 		} catch (Exception e) {
 			logger.warn(e.getMessage());
 			logger.warn("Fail creating backup directory");

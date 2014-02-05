@@ -34,7 +34,7 @@ function Canvas(name){
 	
 	
 	this.running = false;
-	this.isSaved = false;
+	this.saved = false;
 	this.pathFile = null;
 	
 	this.oldIdSelected = null;
@@ -1494,9 +1494,9 @@ function getAllIconPositions(){
 }
 
 function save(path) {
-	saveWorkflow(selectedCanvas, path, getIconPositions());
 	setSaved(selectedCanvas, true);
 	setPathFile(selectedCanvas, path);
+	saveWorkflow(selectedCanvas, path, getIconPositions());
 }
 
 function configureCircle(canvasName, circle1) {
@@ -2072,3 +2072,44 @@ function getPathFile(canvasName){
 function capitaliseFirstLetter(string){
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();;
 }
+
+
+
+
+
+
+var isSaveAll = false;
+	var indexSaving;
+	
+	function saveAll(){
+		isSaveAll = true;
+		indexSaving = 0;
+		selectedCanvas = nameTabs[0];
+		setWorkflow(nameTabs[0]);
+		if (isSaved(nameTabs[0])){
+			save(getPathFile(nameTabs[0]));
+		}
+		else{
+			Richfaces.showModalPanel('modalSaveWorkflow');
+		}
+	}
+	
+	function onHideModalSaveWorkflow(){
+	   	//<![CDATA[
+	   		indexSaving++;
+	   		if (isSaveAll == true && indexSaving < numTabs){
+	   			selectedCanvas = nameTabs[0];
+	   			setWorkflow(nameTabs[0]);
+	   			if (isSaved(nameTabs[0])){
+		   			save(getPathFile(nameTabs[0]));
+		   		}
+		   		else{
+		   			Richfaces.showModalPanel('modalSaveWorkflow');
+		   		}
+	   		}
+	   		else{
+	   			isSaveAll = false;
+	   		}
+	   	//]]>
+	   	}
+	   	

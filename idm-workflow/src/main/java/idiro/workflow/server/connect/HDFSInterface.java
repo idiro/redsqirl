@@ -150,7 +150,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 		if(fCh.isDirectory()){
 			pathDataDefault.put(path);
 		}
-		fCh.close();
+//		fCh.close();
 	}
 
 	@Override
@@ -169,7 +169,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 			}
 			ok = true;
 		}
-		fCh.close();
+//		fCh.close();
 		return ok;
 	}
 
@@ -208,7 +208,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 			try {
 				FileSystem fs = NameNodeVar.getFS();
 				boolean ok = fs.mkdirs(new Path(path));
-				fs.close();
+//				fs.close();
 				if(ok){
 					changeProperties(path, properties);
 				}else{
@@ -222,7 +222,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 		}else{
 			error = LanguageManagerWF.getText("HdfsInterface.pathexists",new Object[]{path});
 		}
-		fCh.close();
+//		fCh.close();
 		if(error != null){
 			logger.debug(error);
 		}
@@ -238,7 +238,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 			try {
 				FileSystem fs = NameNodeVar.getFS();
 				ok = fs.delete(new Path(path), true);
-				fs.close();
+//				fs.close();
 				if(!ok){
 					error = LanguageManagerWF.getText("HdfsInterface.deletefail",new Object[]{path});
 				}
@@ -251,7 +251,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 		}else{
 			error = LanguageManagerWF.getText("HdfsInterface.notdir",new Object[]{path});
 		}
-		fCh.close();
+//		fCh.close();
 		if(error != null){
 			logger.debug(error);
 		}
@@ -269,11 +269,11 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 			if(!hCh.exists()){
 				FileSystem fs = NameNodeVar.getFS();
 				fs.rename(oldP, newP);
-				fs.close();
+//				fs.close();
 			}else{
 				error = LanguageManagerWF.getText("HdfsInterface.ouputexists");
 			}
-			hCh.close();
+//			hCh.close();
 
 		} catch (IOException e) {
 			logger.error(e.getMessage());
@@ -299,8 +299,8 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 			}else{
 				error = LanguageManagerWF.getText("HdfsInterface.ouputexists");
 			}
-			hChN.close();
-			hChO.close();
+//			hChN.close();
+//			hChO.close();
 
 		} catch (IOException e) {
 			logger.error(e.getMessage());
@@ -339,12 +339,12 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 					++lineNb;
 				}
 			}
-			fs.close();
+//			fs.close();
 		} catch (IOException e) {
 			logger.error("Cannot select the file or directory: "+p);
 			logger.error(e.getMessage());
 		}
-		fCh.close();
+//		fCh.close();
 
 		return ans;
 	}
@@ -401,12 +401,12 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 					
 				}
 			}
-			fs.close();
+//			fs.close();
 		} catch (IOException e) {
 			logger.error("Cannot select the file or directory: "+p);
 			logger.error(e.getMessage());
 		}
-		fCh.close();
+//		fCh.close();
 
 		return ans;
 	}
@@ -478,7 +478,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 				}
 			}
 
-			fs.close();
+//			fs.close();
 		} catch (IOException e) {
 			logger.error("Error in filesystem");
 			logger.error(e);
@@ -510,12 +510,12 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 					ans.put(path, getProperties(path));
 				}
 			}
-			fs.close();
+//			fs.close();
 		} catch (IOException e) {
 			logger.error("Cannot open the directory: "+history.get(cur));
 			logger.error(e.getMessage());
 		}
-		fCh.close();
+//		fCh.close();
 
 		return ans;
 	}
@@ -612,7 +612,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 			}else{
 				error = LanguageManagerWF.getText("HdfsInterface.changeprop.ownererror", new Object[]{path.toString()});
 			}
-			fs.close();
+//			fs.close();
 		} catch (IOException e) {
 			logger.error("Cannot operate on the file or directory: "+path.toString());
 			logger.error(e.getMessage());
@@ -649,7 +649,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 			}else{
 				error = LanguageManagerWF.getText("HdfsInterface.changeprop.ownererror", new Object[]{path.toString()});
 			}
-			fs.close();
+//			fs.close();
 		} catch (IOException e) {
 			logger.error("Cannot operate on the file or directory: "+path.toString());
 			logger.error(e.getMessage());
@@ -707,7 +707,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 			}else{
 				error = LanguageManagerWF.getText("HdfsInterface.changeprop.ownererror", new Object[]{path.toString()});
 			}
-			fs.close();
+//			fs.close();
 		} catch (IOException e) {
 			logger.error("Cannot operate on the file or directory: "+path.toString());
 			logger.error(e.getMessage());
