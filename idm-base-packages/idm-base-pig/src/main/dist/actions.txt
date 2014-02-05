@@ -1,3 +1,4 @@
 pig_select
 pig_union
 pig_join
+pig_aggregator

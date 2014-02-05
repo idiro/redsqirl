@@ -133,12 +133,12 @@ public abstract class HiveElement extends DataflowAction {
 
 	@Override
 	public boolean writeOozieActionFiles(File[] files) throws RemoteException {
-		logger.debug("Write queries in file: " + files[0].getAbsolutePath());
+		logger.info("Write queries in file: " + files[0].getAbsolutePath());
 		String toWrite = getQuery();
 		boolean ok = toWrite != null;
 		if (ok) {
 
-			logger.debug("Content of " + files[0].getName() + ": " + toWrite);
+			logger.info("Content of " + files[0].getName() + ": " + toWrite);
 			try {
 				FileWriter fw = new FileWriter(files[0]);
 				BufferedWriter bw = new BufferedWriter(fw);

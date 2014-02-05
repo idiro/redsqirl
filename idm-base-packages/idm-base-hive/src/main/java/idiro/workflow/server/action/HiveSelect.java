@@ -88,24 +88,24 @@ public class HiveSelect extends HiveElement {
 		String query = null;
 		if (getDFEInput() != null) {
 			DFEOutput in = getDFEInput().get(key_input).get(0);
-			logger.debug("In and out...");
+			logger.info("In and out...");
 			// Input
 			String[] tableAndPartsIn = hInt.getTableAndPartitions(in.getPath());
-			logger.debug("table and parts ");
+			logger.info("table and parts ");
 			String tableIn = tableAndPartsIn[0];
-			logger.debug("table In");
+			logger.info("table In");
 			// Output
 			DFEOutput out = output.values().iterator().next();
-			logger.debug("ouput");
+			logger.info("ouput");
 			String tableOut = hInt.getTableAndPartitions(out.getPath())[0];
-			logger.debug("table ouput : "+ tableOut);
+			logger.info("table ouput : "+ tableOut);
 
 			String insert = "INSERT OVERWRITE TABLE " + tableOut;
-			logger.debug("insert : "+insert);
+			logger.info("insert : "+insert);
 			String from = " FROM " + tableIn + " ";
-			logger.debug("from : "+from);
+			logger.info("from : "+from);
 			String create = "CREATE TABLE IF NOT EXISTS " + tableOut;
-			logger.debug("create : "+create);
+			logger.info("create : "+create);
 			String where = condInt.getQueryPiece();
 
 			String select = tSelInt.getQueryPiece(out);
