@@ -132,7 +132,7 @@ public class MapRedTextType extends DataOutput {
 					}
 				}
 				try{
-					fs.close();
+//					fs.close();
 				}catch(Exception e){
 					logger.error("Fail to close FileSystem: "+e);
 				}
@@ -145,7 +145,7 @@ public class MapRedTextType extends DataOutput {
 			}
 
 		}
-		hCh.close();
+//		hCh.close();
 		return error;
 	}
 
@@ -175,7 +175,7 @@ public class MapRedTextType extends DataOutput {
 					--again;
 				}
 				try{
-					fs.close();
+//					fs.close();
 				}catch(Exception e){
 					logger.error(e);
 				}
@@ -234,7 +234,7 @@ public class MapRedTextType extends DataOutput {
 							(maxToRead / stat.length) + 1));
 				}
 				try{
-					fs.close();
+//					fs.close();
 				}catch(Exception e){
 					logger.error("Fail to close FileSystem: "+e);
 				}
