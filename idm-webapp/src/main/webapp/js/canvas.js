@@ -1032,10 +1032,7 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
 	
 	var polygonLayer = canvasArray[canvasName].polygonLayer;
 
-	var img = new Image({
-		width : 16,
-		height : 16,
-	});
+	var img = new Image();
 	img.src = elementImg;
 
 	var result = createPolygon(img, 40, 50, numSides, canvasName);
@@ -1286,10 +1283,7 @@ function mountObj(canvasName) {
 				
 				// variable to control image of
 				// the object
-				var imgTab = new Image({
-					width : 16,
-					height : 16
-				});
+				var imgTab = new Image();
 				imgTab.src = jQuery(this).attr("src");
 
 				var srcImageText = new Kinetic.Text({
@@ -1715,6 +1709,12 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
 		rotateDeg = 360/(2*numSides);
 	}
 	
+	var height = 44.5/imgTab.naturalHeight;
+	var width = 44.5/imgTab.naturalWidth;
+	
+	var offsetY = imgTab.height/2;
+	var offsetX = imgTab.width/2;
+	
 	var polygonTab = new Kinetic.RegularPolygon({
 		x : 40,
 		y : 50,
@@ -1723,11 +1723,12 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
 		stroke : 'black',
 		strokeWidth : 4,
 		fillPatternImage : imgTab,
-		fillPatternOffset : [ 7, 7 ],
-		fillPatternX : -18,
-		fillPatternY : 0,
+		fillPatternOffset : [ offsetX, offsetY ],
+//		fillPatternX : -18,
+//		fillPatternY : 0,
 		fillPatternRepeat : 'no-repeat',
 		fillPatternRotationDeg : -rotateDeg,
+		fillPatternScale : [height, width],
 		draggable : false
 	});
 	polygonTab.rotateDeg(rotateDeg);
