@@ -31,6 +31,7 @@ import com.jcraft.jsch.UserInfo;
  * 
  * @author Igor.Souza
  */
+
 public class UserInfoBean extends BaseBean implements Serializable {
 
 	private static Logger logger = Logger.getLogger(UserInfoBean.class);
@@ -306,10 +307,9 @@ public class UserInfoBean extends BaseBean implements Serializable {
 							logger.info("workflow is running ");
 						}catch(Exception e ){
 							logger.info("workflow not running ");
-							try {
-								Thread.sleep(500);
-							} catch (InterruptedException ex) {
-								Thread.currentThread().interrupt();
+							Thread.sleep(500);
+							if(tryNumb > 40){
+								throw e;
 							}
 						}
 					}
@@ -340,7 +340,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 						logger.error(e.getMessage());
 						setCurrentValue(getCurrentValue()+1);
 
-						if(cont > 800){
+						if(cont > 80){
 							throw e;
 						}
 					}
