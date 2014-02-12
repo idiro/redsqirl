@@ -89,35 +89,35 @@ public class ServerProcess {
 							.getInstance();
 					String old_pid = pm.getPid();
 
-					logger.debug("old workflow process : " + old_pid);
+					logger.info("old workflow process : " + old_pid);
 					if (!old_pid.isEmpty()) {
 						String getPid = "ps -eo pid | grep -w \"" + old_pid
 								+ "\"";
 						channel = session.openChannel("exec");
 						((ChannelExec) channel).setCommand(getPid);
 						channel.connect();
-						logger.debug("ran: \n" + getPid);
+						logger.info("ran: \n" + getPid);
 						BufferedReader br1 = new BufferedReader(
 								new InputStreamReader(channel.getInputStream()));
-						logger.debug("getting pid : ");
+						logger.info("getting pid : ");
 						String pid1 = br1.readLine();
 						channel.disconnect();
-						logger.debug("got pid : " + pid1);
+						logger.info("got pid : " + pid1);
 
 						if (pid1 != null
 								&& pid1.trim().equalsIgnoreCase(old_pid)) {
 							try {
-								logger.debug("get registry");
+								logger.info("get registry");
 								Registry registry = LocateRegistry
 										.getRegistry(2001);
-								logger.debug("get dfi");
+								logger.info("get dfi");
 								DataFlowInterface dfi = (DataFlowInterface) registry
 										.lookup(user + "@wfm");
-								logger.debug("back up ");
+								logger.info("back up ");
 								dfi.backupAll();
-								logger.debug("clean up");
+								logger.info("clean up");
 								dfi.autoCleanAll();
-								logger.debug("shutdown");
+								logger.info("shutdown");
 								dfi.shutdown();
 							} catch (Exception e) {
 								FacesContext facesContext = FacesContext.getCurrentInstance();
@@ -129,14 +129,14 @@ public class ServerProcess {
 							
 							pm.deleteFile();
 							pm = new WorkflowProcessesManager().getInstance();
-							logger.debug("killed old process");
+							logger.info("killed old process");
 						}
 
 					}
-					logger.debug("getting java");
+					logger.info("getting java");
 					String javahome = getJava();
 					String argJava = " -Xmx1500m ";
-					logger.debug("opening channel");
+					logger.info("opening channel");
 					if(channel.isConnected()){
 						channel.disconnect();
 					}
@@ -145,13 +145,13 @@ public class ServerProcess {
 							+ argJava + "\n" + command);
 					((ChannelExec) channel).setCommand(javahome + argJava
 							+ command);
-					logger.debug("connecting channel");
+					logger.info("connecting channel");
 					channel.connect();
 
-					logger.debug("getting channel buffer");
+					logger.info("getting channel buffer");
 					BufferedReader br = new BufferedReader(
 							new InputStreamReader(channel.getInputStream()));
-					logger.debug("reading buffer");
+					logger.info("reading buffer");
 					pid = br.readLine();
 					logger.info("dataIn: " + pid);
 					
@@ -166,7 +166,7 @@ public class ServerProcess {
 					StackTraceElement[] message = e.getStackTrace();
 
 					for (int i = 0; i < message.length; ++i) {
-						logger.debug(message[i].getMethodName() + " "
+						logger.info(message[i].getMethodName() + " "
 								+ message[i].getFileName() + " "
 								+ message[i].getLineNumber());
 					}
@@ -222,7 +222,7 @@ public class ServerProcess {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		logger.debug("command : " + command);
+		logger.info("command : " + command);
 		return command;
 	}
 
@@ -233,7 +233,7 @@ public class ServerProcess {
 		BufferedReader br = new BufferedReader(new InputStreamReader(
 				channel.getInputStream()));
 		String java = br.readLine();
-		logger.debug("java path : " + java);
+		logger.info("java path : " + java);
 		channel.disconnect();
 		return java;
 	}
@@ -256,9 +256,9 @@ public class ServerProcess {
 	 * @author Igor.Souza
 	 */
 	public void kill(HttpSession httpSession) {
-		logger.debug("kill attempt");
+		logger.info("kill attempt");
 		if (session != null && run) {
-			logger.debug(1);
+			logger.info(1);
 			try {
 				DataFlowInterface dataFlowInterface = (DataFlowInterface) httpSession
 						.getAttribute("wfm");
@@ -275,23 +275,23 @@ public class ServerProcess {
 				e.printStackTrace();
 				logger.error(e.getMessage());
 			}
-			logger.debug(2);
+			logger.info(2);
 			Channel channel;
 			try {
-				logger.debug(3);
+				logger.info(3);
 				channel = session.openChannel("exec");
-				logger.debug("kill -9 " + pid);
+				logger.info("kill -9 " + pid);
 				((ChannelExec) channel).setCommand("kill -9 " + pid);
 				channel.connect();
 				channel.disconnect();
 				session.disconnect();
-				logger.debug(3.5);
+				logger.info(3.5);
 			} catch (JSchException e) {
 				e.printStackTrace();
 			}
-			logger.debug(4);
+			logger.info(4);
 			list.remove(this);
-			logger.debug(5);
+			logger.info(5);
 			run = false;
 		}else if(session == null && run){
 			logger.warn("Cannot kill thread because session is null.");

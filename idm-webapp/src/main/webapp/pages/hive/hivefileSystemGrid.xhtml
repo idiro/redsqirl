@@ -74,7 +74,7 @@
 			<a4j:commandLink action="#{hiveBean.addFileBefore}"
 				oncomplete="#{rich:component('hiveaddModalPanel')}.show()"
 				rendered="#{hiveBean.canCreate != null}">
-				<h:graphicImage id="hivebtAdd" value="../image/icons/button-plus.gif" title="#{hiveBean.canCreate}" styleClass="fileSystemIcon" />
+				<h:graphicImage id="hivebtAdd" value="../image/icons/button-plus.gif" title="#{messages.label_menu_saveall}" styleClass="fileSystemIcon" />
 			</a4j:commandLink>
 
 			<a4j:commandLink action="#{hiveBean.deleteFile}" reRender="hivefs" 
