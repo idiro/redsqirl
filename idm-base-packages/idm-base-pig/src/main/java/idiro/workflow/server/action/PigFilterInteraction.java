@@ -91,10 +91,10 @@ public class PigFilterInteraction extends EditorInteraction {
 		if (getTree().getFirstChild("editor").getFirstChild("output")
 				.getSubTreeList().size() > 0) {
 			where = getTree().getFirstChild("editor").getFirstChild("output")
-					.getFirstChild().getHead().replaceAll("\\.", "::");
+					.getFirstChild().getHead().replaceAll(relationName+".", "::");
 		}
 
-		String whereIn = getInputWhere().replaceAll("\\.", "::");
+		String whereIn = getInputWhere().replaceAll(relationName+".", "::");
 		if (!where.isEmpty()) {
 			if (!whereIn.isEmpty()) {
 				where = "(" + where + ") AND (" + whereIn + ")";
