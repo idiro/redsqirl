@@ -45,9 +45,10 @@ public class ServerMain {
 	public static void main(String[] arg) throws RemoteException{
 
 		try {
+			WorkflowPrefManager.resetSys();
+			WorkflowPrefManager.resetUser();
 			logger.info(WorkflowPrefManager.sysPackageLibPath);
 			logger.info(WorkflowPrefManager.userPackageLibPath);
-
 			//Update classpath with packages
 			updateClassPath(WorkflowPrefManager.sysPackageLibPath);
 			updateClassPath(WorkflowPrefManager.userPackageLibPath);

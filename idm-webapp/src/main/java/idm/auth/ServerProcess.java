@@ -190,7 +190,6 @@ public class ServerProcess {
 			File file = new File(
 					WorkflowPrefManager.getSysProperty("workflow_lib_path"));
 			// Reading directory contents
-			logger.info(WorkflowPrefManager.getSysProperty("workflow_lib_path"));
 			File[] files = file.listFiles();
 
 			StringBuffer path = new StringBuffer();

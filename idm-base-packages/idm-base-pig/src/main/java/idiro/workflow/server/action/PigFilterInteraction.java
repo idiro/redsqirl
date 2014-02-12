@@ -90,6 +90,7 @@ public class PigFilterInteraction extends EditorInteraction {
 		String where = "";
 		if (getTree().getFirstChild("editor").getFirstChild("output")
 				.getSubTreeList().size() > 0) {
+			//not all "." are to access fields of a bag, it could be a number
 			where = getTree().getFirstChild("editor").getFirstChild("output")
 					.getFirstChild().getHead().replaceAll("\\.", "::");
 		}
