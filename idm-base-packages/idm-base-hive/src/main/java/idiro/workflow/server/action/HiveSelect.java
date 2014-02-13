@@ -34,7 +34,8 @@ public class HiveSelect extends HiveElement {
 	private Page page1;
 	private Page page2;
 
-	private TableSelectInteraction tSelInt;
+	private HiveTableSelectInteraction tSelInt;
+	private HiveGroupByInteraction groupInt;
 
 	public HiveSelect() throws RemoteException {
 		super(2, 1, 1);
@@ -42,7 +43,7 @@ public class HiveSelect extends HiveElement {
 		page1 = addPage(HiveLanguageManager.getText("hive.select_page1.title"),
 				HiveLanguageManager.getText("hive.select_page1.legend"), 1);
 
-		tSelInt = new TableSelectInteraction(key_featureTable,
+		tSelInt = new HiveTableSelectInteraction(key_featureTable,
 				HiveLanguageManager
 						.getText("hive.select_features_interaction.title"),
 				HiveLanguageManager
@@ -54,7 +55,7 @@ public class HiveSelect extends HiveElement {
 		page2 = addPage(HiveLanguageManager.getText("hive.select_page2.title"),
 				HiveLanguageManager.getText("hive.select_page2.legend"), 1);
 
-		condInt = new ConditionInteraction(0, 0, this);
+		condInt = new HiveFilterInteraction(0, 0, this);
 
 		page2.addInteraction(condInt);
 
@@ -87,32 +88,33 @@ public class HiveSelect extends HiveElement {
 		String query = null;
 		if (getDFEInput() != null) {
 			DFEOutput in = getDFEInput().get(key_input).get(0);
-			logger.debug("In and out...");
+			logger.info("In and out...");
 			// Input
 			String[] tableAndPartsIn = hInt.getTableAndPartitions(in.getPath());
+			logger.info("table and parts ");
 			String tableIn = tableAndPartsIn[0];
+			logger.info("table In");
 			// Output
 			DFEOutput out = output.values().iterator().next();
+			logger.info("ouput");
 			String tableOut = hInt.getTableAndPartitions(out.getPath())[0];
+			logger.info("table ouput : "+ tableOut);
 
-			String insert = "INSERT OVERWRITE TABLE " + tableOut
-					+ partInt.getQueryPiece();
+			String insert = "INSERT OVERWRITE TABLE " + tableOut;
+			logger.info("insert : "+insert);
 			String from = " FROM " + tableIn + " ";
+			logger.info("from : "+from);
 			String create = "CREATE TABLE IF NOT EXISTS " + tableOut;
-			String createPartition = partInt.getCreateQueryPiece();
-			if (createPartition.isEmpty()) {
-				createPartition = partInt.getPartitions();
-			}
+			logger.info("create : "+create);
 			String where = condInt.getQueryPiece();
 
-			logger.debug("group by...");
 			String select = tSelInt.getQueryPiece(out);
 			String createSelect = tSelInt.getCreateQueryPiece(out);
 
 			if (select.isEmpty()) {
 				logger.debug("Nothing to select");
 			} else {
-				query = create + "\n" + createSelect + "\n" + createPartition
+				query = create + "\n" + createSelect 
 						+ ";\n\n";
 
 				query += insert + "\n" + select + "\n" + from + "\n" +
@@ -126,16 +128,10 @@ public class HiveSelect extends HiveElement {
 	/**
 	 * @return the tSelInt
 	 */
-	public final TableSelectInteraction gettSelInt() {
+	public final HiveTableSelectInteraction gettSelInt() {
 		return tSelInt;
 	}
 
-	/**
-//	 * @return the groupingInt
-//	 */
-//	public final UserInteraction getGroupingInt() {
-//		return groupingInt;
-//	}
 
 	@Override
 	public FeatureList getInFeatures() throws RemoteException {
@@ -145,6 +141,10 @@ public class HiveSelect extends HiveElement {
 	@Override
 	public FeatureList getNewFeatures() throws RemoteException {
 		return tSelInt.getNewFeatures();
+	}
+
+	public HiveGroupByInteraction getGroupInt() {
+		return groupInt;
 	}
 
 }

@@ -2,8 +2,11 @@ package idiro.workflow.server.action;
 
 import static org.junit.Assert.assertTrue;
 import idiro.utils.Tree;
+import idiro.workflow.server.WorkflowPrefManager;
+import idiro.workflow.server.connect.HDFSInterface;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.datatype.HiveType;
+import idiro.workflow.server.datatype.MapRedTextType;
 import idiro.workflow.server.interfaces.DFEPage;
 import idiro.workflow.server.interfaces.DataFlow;
 import idiro.workflow.server.interfaces.DataFlowElement;
@@ -79,8 +82,8 @@ public class SourceTests {
 		return src;
 	}
 
-	@Test
-	public void basic(){
+//	@Test
+	public void basicHive(){
 		TestUtils.logTestTitle("SourceTests#basic");
 		try{
 			HiveInterface hInt = new HiveInterface();
@@ -89,8 +92,8 @@ public class SourceTests {
 			assertTrue("create "+new_path1,
 					hInt.create(new_path1, getColumns()) == null
 					);
-
-
+			
+			
 			Source src = new Source();
 			logger.debug("Tree: "+src.getInteraction(Source.key_datatype).getTree());
 			assertTrue("check1",
@@ -103,7 +106,7 @@ public class SourceTests {
 			dataTypeTree.getFirstChild("list").getFirstChild("output").add("Hive"); 
 			String error = src.getPageList().get(0).checkPage(); 
 			assertTrue("check page 1: "+error,
-					 error == null
+					error == null
 					);
 			
 			logger.debug("update datasubtype");
@@ -117,7 +120,7 @@ public class SourceTests {
 			assertTrue("check page 2: "+error,
 					error == null
 					);
-
+			
 			logger.debug("page 3");
 			DFEPage page3 = src.getPageList().get(2);
 			logger.debug("update data set");
@@ -130,28 +133,72 @@ public class SourceTests {
 			logger.debug("update data set");
 			Tree<String> dataSetTree = src.getInteraction(Source.key_dataset).getTree();
 			dataSetTree.getFirstChild("browse").getFirstChild("output").add("path").add(new_path1);
-
+			
 			Tree<String> feat1 = dataSetTree.getFirstChild("browse")
 					.getFirstChild("output").add("feature");
 			feat1.add("name").add("ID");
 			feat1.add("type").add("STRING");
-
+			
 			Tree<String> feat2 = dataSetTree.getFirstChild("browse")
 					.getFirstChild("output").add("feature");
 			feat2.add("name").add("VALUE");
 			feat2.add("type").add("INT");
-
+			
 			error = page3.checkPage(); 
 			assertTrue("check page 3: "+error,
-					 error == null
+					error == null
 					);
 			logger.debug("delete data set");
 			hInt.delete(new_path1);
 			error = page3.checkPage();
 			assertTrue("check page3 path delete.",
-					 error != null
+					error != null
 					);
+			
+		}catch(Exception e){
+			logger.error(e.getMessage());
+			assertTrue(e.toString(),false);
+		}
+	}
+	
+	@Test
+	public void basicHDFS(){
+		TestUtils.logTestTitle("SourceTests#basic");
+		try{
+			HDFSInterface hInt = new HDFSInterface();
+//			String new_path1 = TestUtils.getPath(12); 
+			String new_path1 = "/user/keith/tutorial"; 
+//			hInt.delete(new_path1);
+//			assertTrue("create "+new_path1,
+//					hInt.create(new_path1, getColumns()) == null
+//					);
 
+
+			Source src = new Source();
+			String error = "";
+			src.update(src.getInteraction(Source.key_datatype));
+			Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype).getTree();
+			dataTypeTree.getFirstChild("list").getFirstChild("output").add("HDFS");
+			
+			src.update(src.getInteraction(Source.key_datasubtype));
+			Tree<String> dataSubTypeTree = src.getInteraction(Source.key_datasubtype).getTree();
+			dataSubTypeTree.getFirstChild("list").getFirstChild("output").add(new MapRedTextType().getTypeName());
+
+			src.update(src.getInteraction(Source.key_dataset));
+			Tree<String> dataSetTree = src.getInteraction(Source.key_dataset).getTree();
+			dataSetTree.getFirstChild("browse").getFirstChild("output").add("path").add(new_path1);
+			dataSetTree.getFirstChild("browse").getFirstChild("output").add("property").add(MapRedTextType.key_delimiter).add(",");
+			
+			src.update(src.getInteraction(Source.key_dataset));
+			
+
+			
+			error = null;
+			error = src.updateOut();
+			assertTrue("error update out : "+ error , error ==null);
+			
+			WorkflowPrefManager.resetSys();
+			WorkflowPrefManager.resetUser();
 		}catch(Exception e){
 			logger.error(e.getMessage());
 			assertTrue(e.toString(),false);

@@ -334,7 +334,9 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore{
 				Text line = new Text();
 				int lineNb = 0;
 				while ( reader.readLine(line) != 0 && lineNb < maxToRead){
+					
 					ans.add(line.toString());
+					++lineNb;
 				}
 			}
 //			fs.close();

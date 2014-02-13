@@ -10,7 +10,12 @@ import idiro.workflow.server.interfaces.DataFlowElement;
 import idiro.workflow.test.TestUtils;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.apache.oozie.client.OozieClient;
@@ -91,7 +96,7 @@ public class PigUnionTests {
 			rowId = out.add("row");
 			rowId.add(PigTableUnionInteraction.table_relation_title).add(relation_from_1);
 			rowId.add(PigTableUnionInteraction.table_feat_title).add("VALUE");
-			rowId.add(PigTableUnionInteraction.table_op_title).add(relation_from_1+".VALUE + 1");
+			rowId.add(PigTableUnionInteraction.table_op_title).add(relation_from_1+".VALUE");
 			rowId.add(PigTableUnionInteraction.table_type_title).add("INT");
 			rowId = out.add("row");
 			rowId.add(PigTableUnionInteraction.table_relation_title).add(relation_from_2);
@@ -105,6 +110,19 @@ public class PigUnionTests {
 			rowId.add(PigTableUnionInteraction.table_type_title).add("INT");
 		}
 		pig.update(pig.gettUnionCond());
+		List<Map<String,String>> values = new ArrayList<Map<String,String>>();
+		
+		Map<String,String> alias1MapConditions = new HashMap<String,String>();
+		alias1MapConditions.put(PigUnionConditions.table_relation_title,relation_from_1);
+		alias1MapConditions.put(PigUnionConditions.table_op_title, relation_from_1+".VALUE > 1");
+		
+		Map<String,String> alias2MapConditions = new HashMap<String,String>();
+		alias2MapConditions.put(PigUnionConditions.table_relation_title,relation_from_2);
+		alias2MapConditions.put(PigUnionConditions.table_op_title, relation_from_2+".VALUE > 1");
+		values.add(alias1MapConditions);
+		values.add(alias2MapConditions);
+		
+		pig.gettUnionCond().setValues(values);
 		logger.debug("HS update out...");
 		String error = pig.updateOut();
 		assertTrue("pig union update: "+error,error == null);

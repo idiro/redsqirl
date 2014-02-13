@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 import idiro.utils.Tree;
 import idiro.workflow.server.action.utils.TestUtils;
 import idiro.workflow.server.connect.HiveInterface;
+import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.interfaces.DataFlowElement;
 
 import java.rmi.RemoteException;
@@ -37,6 +38,10 @@ public class TableJoinInteractionTests {
 		src.update(src.getInteraction(Source.key_datatype));
 		Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype).getTree();
 		dataTypeTree.getFirstChild("list").getFirstChild("output").add("Hive");
+		
+		src.update(src.getInteraction(Source.key_datasubtype));
+		Tree<String> dataSubTypeTree = src.getInteraction(Source.key_datasubtype).getTree();
+		dataSubTypeTree.getFirstChild("list").getFirstChild("output").add(new HiveType().getTypeName());
 
 		src.update(src.getInteraction(Source.key_dataset));
 		Tree<String> dataSetTree = src.getInteraction(Source.key_dataset).getTree();
@@ -96,12 +101,11 @@ public class TableJoinInteractionTests {
 			
 			logger.debug(hs.getDFEInput());
 			
-			hs.getCondInt().update();
-			hs.getPartInt().update();
+			hs.getFilterInt().update();
 			hs.getJrInt().update();
 			logger.debug("base update...");
 			//hs.getJoinTypeInt().update();
-			TableJoinInteraction tji = hs.gettJoinInt();
+			HiveTableJoinInteraction tji = hs.gettJoinInt();
 			hs.update(tji);
 			logger.debug("tabje join interaction updated...");
 			{
@@ -113,14 +117,14 @@ public class TableJoinInteractionTests {
 				logger.debug("3");
 				Tree<String> rowId = out.add("row");
 				logger.debug("4");
-				rowId.add(TableJoinInteraction.table_op_title).add(alias1+".ID");
-				rowId.add(TableJoinInteraction.table_feat_title).add("ID");
-				rowId.add(TableJoinInteraction.table_type_title).add("STRING");
+				rowId.add(HiveTableJoinInteraction.table_op_title).add(alias1+".ID");
+				rowId.add(HiveTableJoinInteraction.table_feat_title).add("ID");
+				rowId.add(HiveTableJoinInteraction.table_type_title).add("STRING");
 				logger.debug("5");
 				rowId = out.add("row");
-				rowId.add(TableJoinInteraction.table_op_title).add(alias2+".VAL");
-				rowId.add(TableJoinInteraction.table_feat_title).add("ID");
-				rowId.add(TableJoinInteraction.table_type_title).add("STRING");
+				rowId.add(HiveTableJoinInteraction.table_op_title).add(alias2+".VAL");
+				rowId.add(HiveTableJoinInteraction.table_feat_title).add("ID");
+				rowId.add(HiveTableJoinInteraction.table_type_title).add("STRING");
 				error = tji.check();
 				assertTrue("check "+error,error != null);
 				out.remove("row");
@@ -130,14 +134,14 @@ public class TableJoinInteractionTests {
 				logger.debug("3");
 				Tree<String> rowId = out.add("row");
 				logger.debug("4");
-				rowId.add(TableJoinInteraction.table_op_title).add(alias1+".ID");
-				rowId.add(TableJoinInteraction.table_feat_title).add("ID");
-				rowId.add(TableJoinInteraction.table_type_title).add("STRING");
+				rowId.add(HiveTableJoinInteraction.table_op_title).add(alias1+".ID");
+				rowId.add(HiveTableJoinInteraction.table_feat_title).add("ID");
+				rowId.add(HiveTableJoinInteraction.table_type_title).add("STRING");
 				logger.debug("5");
 				rowId = out.add("row");
-				rowId.add(TableJoinInteraction.table_op_title).add("a3.VALUE");
-				rowId.add(TableJoinInteraction.table_feat_title).add("ID");
-				rowId.add(TableJoinInteraction.table_type_title).add("STRING");
+				rowId.add(HiveTableJoinInteraction.table_op_title).add("a3.VALUE");
+				rowId.add(HiveTableJoinInteraction.table_feat_title).add("ID");
+				rowId.add(HiveTableJoinInteraction.table_type_title).add("STRING");
 				error = tji.check();
 				assertTrue("check "+error,error != null);
 				out.remove("row");
@@ -147,9 +151,9 @@ public class TableJoinInteractionTests {
 				logger.debug("3");
 				Tree<String> rowId = out.add("row");
 				logger.debug("4");
-				rowId.add(TableJoinInteraction.table_op_title).add(alias1+".ID");
-				rowId.add(TableJoinInteraction.table_feat_title).add("ID");
-				rowId.add(TableJoinInteraction.table_type_title).add("STRING");
+				rowId.add(HiveTableJoinInteraction.table_op_title).add(alias1+".ID");
+				rowId.add(HiveTableJoinInteraction.table_feat_title).add("ID");
+				rowId.add(HiveTableJoinInteraction.table_type_title).add("STRING");
 				error = tji.check();
 				assertTrue("check "+error,error == null);
 				out.remove("row");
@@ -159,14 +163,14 @@ public class TableJoinInteractionTests {
 				logger.debug("3");
 				Tree<String> rowId = out.add("row");
 				logger.debug("4");
-				rowId.add(TableJoinInteraction.table_op_title).add(alias1+".ID");
-				rowId.add(TableJoinInteraction.table_feat_title).add("ID");
-				rowId.add(TableJoinInteraction.table_type_title).add("STRING");
+				rowId.add(HiveTableJoinInteraction.table_op_title).add(alias1+".ID");
+				rowId.add(HiveTableJoinInteraction.table_feat_title).add("ID");
+				rowId.add(HiveTableJoinInteraction.table_type_title).add("STRING");
 				logger.debug("5");
 				rowId = out.add("row");
-				rowId.add(TableJoinInteraction.table_op_title).add(alias2+".VALUE");
-				rowId.add(TableJoinInteraction.table_feat_title).add("VALUE");
-				rowId.add(TableJoinInteraction.table_type_title).add("INT");
+				rowId.add(HiveTableJoinInteraction.table_op_title).add(alias2+".VALUE");
+				rowId.add(HiveTableJoinInteraction.table_feat_title).add("VALUE");
+				rowId.add(HiveTableJoinInteraction.table_type_title).add("INT");
 				error = tji.check();
 				assertTrue("check "+error,error == null);
 				out.remove("row");

@@ -7,11 +7,14 @@ import idiro.workflow.server.OozieManager;
 import idiro.workflow.server.Workflow;
 import idiro.workflow.server.action.utils.TestUtils;
 import idiro.workflow.server.connect.HiveInterface;
+import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.enumeration.SavingState;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -43,6 +46,10 @@ public class HiveUnionTests {
 		src.update(src.getInteraction(Source.key_datatype));
 		Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype).getTree();
 		dataTypeTree.getFirstChild("list").getFirstChild("output").add("Hive");
+		
+		src.update(src.getInteraction(Source.key_datasubtype));
+		Tree<String> dataSubTypeTree = src.getInteraction(Source.key_datasubtype).getTree();
+		dataSubTypeTree.getFirstChild("list").getFirstChild("output").add(new HiveType().getTypeName());
 
 		src.update(src.getInteraction(Source.key_dataset));
 		Tree<String> dataSetTree = src.getInteraction(Source.key_dataset).getTree();
@@ -92,6 +99,7 @@ public class HiveUnionTests {
 		assertTrue("hive select add input: "+error,error == null);
 		
 		updateHive(w,hive,TestUtils.getTablePath(1),TestUtils.getTablePath(2),hInt);
+		logger.info("update hive ok");
 		logger.debug("Features "+hive.getDFEOutput().get(HiveUnion.key_output).getFeatures());
 		
 		hive.getDFEOutput().get(HiveUnion.key_output).generatePath(
@@ -123,35 +131,53 @@ public class HiveUnionTests {
 			}
 		}
 		
-		hive.update(hive.getPartInt());
-		TableUnionInteraction tsi = hive.gettUnionSelInt();
+		logger.debug("updated hive aliases");
+		HiveTableUnionInteraction tsi = hive.gettUnionSelInt();
 		hive.update(tsi);
 		{
 			Tree<String> out = tsi.getTree().getFirstChild("table");
 			Tree<String> rowId = out.add("row");
-			rowId.add(TableUnionInteraction.table_table_title).add(alias1);
-			rowId.add(TableUnionInteraction.table_feat_title).add("ID");
-			rowId.add(TableUnionInteraction.table_op_title).add(alias1+".ID");
-			rowId.add(TableUnionInteraction.table_type_title).add("STRING");
+			rowId.add(HiveTableUnionInteraction.table_table_title).add(alias1);
+			rowId.add(HiveTableUnionInteraction.table_feat_title).add("ID");
+			rowId.add(HiveTableUnionInteraction.table_op_title).add(alias1+".ID");
+			rowId.add(HiveTableUnionInteraction.table_type_title).add("STRING");
 			rowId = out.add("row");
-			rowId.add(TableUnionInteraction.table_table_title).add(alias1);
-			rowId.add(TableUnionInteraction.table_feat_title).add("VALUE");
-			rowId.add(TableUnionInteraction.table_op_title).add(alias1+".VALUE");
-			rowId.add(TableUnionInteraction.table_type_title).add("INT");
+			rowId.add(HiveTableUnionInteraction.table_table_title).add(alias1);
+			rowId.add(HiveTableUnionInteraction.table_feat_title).add("VALUE");
+			rowId.add(HiveTableUnionInteraction.table_op_title).add(alias1+".VALUE");
+			rowId.add(HiveTableUnionInteraction.table_type_title).add("INT");
 			rowId = out.add("row");
-			rowId.add(TableUnionInteraction.table_table_title).add(alias2);
-			rowId.add(TableUnionInteraction.table_feat_title).add("ID");
-			rowId.add(TableUnionInteraction.table_op_title).add(alias2+".ID");
-			rowId.add(TableUnionInteraction.table_type_title).add("STRING");
+			rowId.add(HiveTableUnionInteraction.table_table_title).add(alias2);
+			rowId.add(HiveTableUnionInteraction.table_feat_title).add("ID");
+			rowId.add(HiveTableUnionInteraction.table_op_title).add(alias2+".ID");
+			rowId.add(HiveTableUnionInteraction.table_type_title).add("STRING");
 			rowId = out.add("row");
-			rowId.add(TableUnionInteraction.table_table_title).add(alias2);
-			rowId.add(TableUnionInteraction.table_feat_title).add("VALUE");
-			rowId.add(TableUnionInteraction.table_op_title).add(alias2+".VALUE");
-			rowId.add(TableUnionInteraction.table_type_title).add("INT");
+			rowId.add(HiveTableUnionInteraction.table_table_title).add(alias2);
+			rowId.add(HiveTableUnionInteraction.table_feat_title).add("VALUE");
+			rowId.add(HiveTableUnionInteraction.table_op_title).add(alias2+".VALUE");
+			rowId.add(HiveTableUnionInteraction.table_type_title).add("INT");
 		}
-
+		HiveUnionConditions huci = hive.gettUnionCond();
+		hive.update(huci);
+		
+		List<Map<String,String>> values = new ArrayList<Map<String,String>>();
+		
+		Map<String,String> alias1MapConditions = new HashMap<String,String>();
+		alias1MapConditions.put(HiveUnionConditions.table_relation_title,alias1);
+		alias1MapConditions.put(HiveUnionConditions.table_op_title, alias1+".VALUE > 1");
+		
+		Map<String,String> alias2MapConditions = new HashMap<String,String>();
+		alias2MapConditions.put(HiveUnionConditions.table_relation_title,alias2);
+		alias2MapConditions.put(HiveUnionConditions.table_op_title, alias2+".VALUE > 1");
+		values.add(alias1MapConditions);
+		values.add(alias2MapConditions);
+		
+		hive.gettUnionCond().setValues(values);
+		
+		
 		logger.debug("HS update out...");
 		String error = hive.updateOut();
+		logger.debug("HS update out finished");
 		assertTrue("hive union update: "+error,error == null);
 	}
 	
@@ -176,16 +202,15 @@ public class HiveUnionTests {
 			DataflowAction src2 = createSrc(w,hInt,new_path2);
 			DataflowAction hive = createHiveWithSrc(w,src1,src2,hInt);
 
-			hive.getDFEOutput().get(HiveUnion.key_output).setSavingState(SavingState.RECORDED);
+			hive.getDFEOutput().get(HiveUnion.key_output).setSavingState(SavingState.TEMPORARY);
 			hive.getDFEOutput().get(HiveUnion.key_output).setPath(new_path3);
-			/*assertTrue("create "+new_path3,
-					hInt.create(new_path3, getColumns()) == null
-					);*/
-			logger.debug("run...");
+//			assertTrue("create " + new_path3,
+//					hInt.create(new_path3, getColumns()) == null);
+			logger.info("run...");
 			error = w.run();
-			assertTrue("Launch join: "+error, error == null);
-			OozieClient wc = OozieManager.getInstance().getOc();
+			assertTrue("Job submition failed: "+error, error == null);
 			String jobId = w.getOozieJobId();
+			OozieClient wc = OozieManager.getInstance().getOc();
 			
 			// wait until the workflow job finishes printing the status every 10 seconds
 		    while(
@@ -198,6 +223,7 @@ public class HiveUnionTests {
 		    logger.info(wc.getJobInfo(jobId));
 		    error = wc.getJobInfo(jobId).toString();
 		    assertTrue(error, error.contains("SUCCEEDED"));
+		    hInt.delete(new_path3);
 		}catch(Exception e){
 			logger.error(e.getMessage());
 			assertTrue(e.getMessage(),false);

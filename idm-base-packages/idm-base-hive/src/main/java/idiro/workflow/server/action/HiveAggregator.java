@@ -21,7 +21,7 @@ public class HiveAggregator extends HiveElement {
 	private static final String key_features = "Features";
 	// private static final String key_group ="";
 
-	private TableSelectInteraction tSelInt;
+	private HiveTableSelectInteraction tSelInt;
 
 	public HiveAggregator() throws RemoteException {
 		super(3, 1, 1);
@@ -30,7 +30,7 @@ public class HiveAggregator extends HiveElement {
 				HiveLanguageManager.getText("hive.aggregator_page1.title"),
 				HiveLanguageManager.getText("hive.aggregator_page1.legend"), 1);
 
-		groupingInt = new GroupByInteraction(key_group,
+		groupingInt = new HiveGroupByInteraction(key_group,
 				HiveLanguageManager
 						.getText("hive.aggregator_group_interaction.title"),
 				HiveLanguageManager
@@ -41,9 +41,9 @@ public class HiveAggregator extends HiveElement {
 
 		page2 = addPage(
 				HiveLanguageManager.getText("hive.aggregator_page2.title"),
-				HiveLanguageManager.getText("hive.aggregator_page2.lehend"), 1);
+				HiveLanguageManager.getText("hive.aggregator_page2.legend"), 1);
 
-		tSelInt = new TableSelectInteraction(
+		tSelInt = new HiveTableSelectInteraction(
 				key_features,
 				HiveLanguageManager
 						.getText("hive.aggregator_features_interaction.title"),
@@ -55,7 +55,7 @@ public class HiveAggregator extends HiveElement {
 
 		page3 = addPage(key_condition, "Create a condition for the attributes",
 				1);
-		condInt = new ConditionInteraction( 0, 0, this);
+		condInt = new HiveFilterInteraction( 0, 0, this);
 		page3.addInteraction(condInt);
 	}
 
@@ -79,14 +79,9 @@ public class HiveAggregator extends HiveElement {
 			DFEOutput out = output.values().iterator().next();
 			String tableOut = hInt.getTableAndPartitions(out.getPath())[0];
 
-			String insert = "INSERT OVERWRITE TABLE " + tableOut
-					+ partInt.getQueryPiece();
+			String insert = "INSERT OVERWRITE TABLE " + tableOut;
 			String from = " FROM " + tableIn + " ";
 			String create = "CREATE TABLE IF NOT EXISTS " + tableOut;
-			String createPartition = partInt.getCreateQueryPiece();
-			if (createPartition.isEmpty()) {
-				createPartition = partInt.getPartitions();
-			}
 			String where = condInt.getQueryPiece();
 
 			logger.debug("group by...");
@@ -107,8 +102,7 @@ public class HiveAggregator extends HiveElement {
 			if (select.isEmpty()) {
 				logger.debug("Nothing to select");
 			} else {
-				query = create + "\n" + createSelect + "\n" + createPartition
-						+ ";\n\n";
+				query = create + "\n" + createSelect + ";\n\n";
 
 				query += insert + "\n" + select + "\n" + from + "\n" + where
 						+ groupby + ";";
@@ -139,10 +133,6 @@ public class HiveAggregator extends HiveElement {
 
 				UpdateGroupInt(groupingInt, in);
 			}
-			// else if(interaction.getName().equals(groupingInt.getName())){
-			// logger.info("Hive grouping interaction updating");
-			// updateGrouping(interaction.getTree(), in);
-			// }
 			else if (interaction.getName().equals(tSelInt.getName())) {
 				logger.info("Hive tableSelect interaction updating");
 				tSelInt.update(in);
@@ -150,11 +140,11 @@ public class HiveAggregator extends HiveElement {
 		}
 	}
 
-	public TableSelectInteraction gettSelInt() {
+	public HiveTableSelectInteraction gettSelInt() {
 		return tSelInt;
 	}
 
-	public void updateGrouping(Tree<String> treeGrouping, DFEOutput in)
+	/*public void updateGrouping(Tree<String> treeGrouping, DFEOutput in)
 			throws RemoteException {
 
 		Tree<String> list = null;
@@ -170,6 +160,6 @@ public class HiveAggregator extends HiveElement {
 		while (it.hasNext()) {
 			values.add("value").add(it.next());
 		}
-	}
+	}*/
 
 }

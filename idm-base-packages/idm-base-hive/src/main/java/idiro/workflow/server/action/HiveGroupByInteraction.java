@@ -10,9 +10,9 @@ import java.util.Set;
 import idiro.workflow.server.AppendListInteraction;
 import idiro.workflow.server.interfaces.DFEOutput;
 
-public class GroupByInteraction extends AppendListInteraction{
+public class HiveGroupByInteraction extends AppendListInteraction{
 
-	public GroupByInteraction(String id, String name, String legend,
+	public HiveGroupByInteraction(String id, String name, String legend,
 			int column, int placeInColumn) throws RemoteException {
 		super(id, name, legend, column, placeInColumn);
 	}

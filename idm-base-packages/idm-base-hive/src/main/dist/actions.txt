@@ -1,3 +1,4 @@
 hive_select
 hive_union
 hive_join
+hive_aggregator

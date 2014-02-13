@@ -13,7 +13,7 @@ public class PigTableSelectInteractionTests {
 
 	Logger logger = Logger.getLogger(getClass());
 	
-	/*
+	
 	@Test
 	public void select(){
 		TestUtils.logTestTitle(getClass().getName()+"#select");
@@ -53,7 +53,7 @@ public class PigTableSelectInteractionTests {
 			logger.error(e.getMessage());
 			assertTrue(e.getMessage(),false);
 		}
-	}*/
+	}
 	
 	@Test
 	public void agg(){
@@ -63,27 +63,29 @@ public class PigTableSelectInteractionTests {
 			Workflow w = new Workflow("workflow1_"+getClass().getName());
 			DataFlowElement src = PigTestUtils.createSourceEmpty_ID_VALUE(w, TestUtils.getPath(1));
 			
-			String idHs = w.addElement((new PigAggregator()).getName());
+			String idHs = w.addElement((new PigSelect()).getName());
 			PigAggregator hs = (PigAggregator)w.getElement(idHs);
 			
 			error = w.addLink(
 					Source.out_name, src.getComponentId(), 
 					PigAggregator.key_input, idHs);
 			assertTrue("pig select link: "+error,error == null);
+			logger.info("added link");
 			
 			hs.update(hs.getGroupingInt());
+			logger.info("updating pig select");
 			
 			PigTableSelectInteraction tsi = hs.gettSelInt();
 			logger.info("updating table select interaction");
 			hs.update(tsi);
-			//logger.info(tsi.getTree().toString());
+			logger.info(tsi.getTree().toString());
 			{
 				Tree<String> out = tsi.getTree().getFirstChild("table");
 				logger.debug("3");
 				Tree<String> rowId = out.add("row");
 				logger.debug("4");
 				rowId.add(PigTableSelectInteraction.table_feat_title).add("VALUE");
-				rowId.add(PigTableSelectInteraction.table_op_title).add("SUM("+tsi.getAlias()+".VALUE)");
+				rowId.add(PigTableSelectInteraction.table_op_title).add("VALUE");
 				rowId.add(PigTableSelectInteraction.table_type_title).add("INT");
 				logger.debug("5");
 				error = tsi.check();

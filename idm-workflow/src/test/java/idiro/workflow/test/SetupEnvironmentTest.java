@@ -38,27 +38,27 @@ import org.junit.runners.Suite.SuiteClasses;
 
 
 @RunWith(Suite.class)
-@SuiteClasses({ActionTests.class,
-	WorkflowTests.class,
+@SuiteClasses({//ActionTests.class,
+//	WorkflowTests.class,
 	//CreateWorkflowTests.class,
-	HDFSInterfaceTests.class,
-	HiveInterfaceTests.class,
-	SSHInterfaceTests.class,
-	SSHInterfaceArrayTests.class,
-	HiveTypeTests.class, 
+//	HDFSInterfaceTests.class,
+//	HiveInterfaceTests.class,
+//	SSHInterfaceTests.class,
+//	SSHInterfaceArrayTests.class,
+//	HiveTypeTests.class, 
 	SourceTests.class,
-	WorkflowProcessesManagerTests.class,
-	OozieManagerTests.class,
+//	WorkflowProcessesManagerTests.class,
+//	OozieManagerTests.class,
 	//PackageManagerTests.class,
-	OozieDagTests.class,
-	OrderedFeatureListTests.class,
-	TreeTests.class,
-	ConvertTests.class,
-	InputInteractionTests.class,
-	AppendListInteractionTests.class,
-	ListInteractionTests.class,
-	EditorInteractionTests.class,
-	TableInteractionTests.class,
+//	OozieDagTests.class,
+//	OrderedFeatureListTests.class,
+//	TreeTests.class,
+//	ConvertTests.class,
+//	InputInteractionTests.class,
+//	AppendListInteractionTests.class,
+//	ListInteractionTests.class,
+//	EditorInteractionTests.class,
+//	TableInteractionTests.class,
 	
 	})
 public class SetupEnvironmentTest {
@@ -145,5 +145,6 @@ public class SetupEnvironmentTest {
 		
 		WorkflowPrefManager.resetSys();
 		WorkflowPrefManager.resetUser();
+		logger.info(WorkflowPrefManager.pathSysHome.get());
 	}
 }

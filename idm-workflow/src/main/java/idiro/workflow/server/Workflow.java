@@ -394,7 +394,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 		if (error == null && toRun.isEmpty()) {
 			error = LanguageManagerWF.getText("workflow.torun_uptodate");
-			error = "Everything is up to date.";
 			logger.info("run toRun: " + error);
 		}
 
