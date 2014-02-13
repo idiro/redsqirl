@@ -1112,6 +1112,25 @@ public class PigDictionary extends AbstractDictionary {
 		}
 		return cleanUp;
 	}
+	
+	public static String getBracketContent(String expr) {
+		int count = 0;
+		int index = 0;
+		String cleanUp = "";
+		while (index < expr.length()) {
+			if (expr.charAt(index) == '(') {
+				++count;
+				
+			} else if (expr.charAt(index) == ')') {
+				--count;
+				
+			} else if (count > 0) {
+				cleanUp += expr.charAt(index);
+			}
+			++index;
+		}
+		return cleanUp;
+	}
 
 	public static String getRegexToFind(String expr) {
 		String regex = escapeString(expr);

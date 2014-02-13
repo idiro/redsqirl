@@ -104,13 +104,19 @@ public class PigAggregator extends PigElement {
 			if (filterLoader.isEmpty()) {
 				filterLoader = loader;
 			}
+			
+			String groupbyForEach = groupingInt.getForEachQueryPiece(filterLoader, tSelInt);
+			String groupbyTableName = getNextName();
+			if (!groupbyForEach.isEmpty()) {
+				groupbyForEach = groupbyTableName + " = " + groupbyForEach + ";\n\n";
+			}
 
-			String groupby = groupingInt.getQueryPiece(filterLoader);
+			String groupby = groupingInt.getQueryPiece(getCurrentName());
 			if (!groupby.isEmpty()) {
 				groupby = getNextName() + " = " + groupby + ";\n\n";
 			}
 
-			String select = tSelInt.getQueryPiece(out, getCurrentName());
+			String select = tSelInt.getQueryPiece(out, getCurrentName(), groupbyTableName);
 			if (!select.isEmpty()) {
 				select = getNextName() + " = " + select + ";\n\n";
 			}
@@ -123,6 +129,7 @@ public class PigAggregator extends PigElement {
 				query = remove;
 				query += load;
 				query += filter;
+				query += groupbyForEach;
 				query += groupby;
 				query += select;
 				query += store;

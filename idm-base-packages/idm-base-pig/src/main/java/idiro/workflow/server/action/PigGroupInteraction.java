@@ -1,6 +1,7 @@
 package idiro.workflow.server.action;
 
 import idiro.workflow.server.AppendListInteraction;
+import idiro.workflow.server.action.utils.PigDictionary;
 import idiro.workflow.server.interfaces.DFEOutput;
 
 import java.rmi.RemoteException;
@@ -8,7 +9,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
@@ -63,6 +66,43 @@ public class PigGroupInteraction extends AppendListInteraction{
 			
 		}
 		return groupby;
+	}
+	
+	public String getForEachQueryPiece(String relationName, PigTableSelectInteraction selectInteraction) throws RemoteException{
+		String select = "FOREACH " + relationName + " GENERATE ";
+		Iterator<Map<String,String>> selIt = selectInteraction.getValues().iterator();
+		Iterator<String> groupByIt = getValues().iterator();
+		List<String> groupByList = getValues();
+		
+		String groupBy = "";
+		if (groupByIt.hasNext()){
+			groupBy = groupByIt.next();
+			select += groupBy + " AS " + groupBy;
+		}
+		while (groupByIt.hasNext()) {
+			groupBy = groupByIt.next();
+			select += ", " + groupBy + " AS " + groupBy;
+		}
+
+		while (selIt.hasNext()) {
+			Map<String,String> cur = selIt.next();
+			String featName = cur.get(PigTableSelectInteraction.table_feat_title);
+			String opTitle = cur.get(PigTableSelectInteraction.table_op_title).replace(relationName+".", "");
+			
+			if (!groupByList.contains(featName)){
+			
+				if (PigDictionary.getInstance().isAggregatorMethod(opTitle)){
+					opTitle = PigDictionary.getBracketContent(opTitle);
+				}
+	
+				select += ",\n       " + opTitle + " AS "
+						+ featName;
+			}
+		}
+
+		logger.debug("for each looks like : " + select);
+		return select;
+
 	}
 	
 	public Set<String> getAggregationFeatures(DFEOutput in) throws RemoteException{

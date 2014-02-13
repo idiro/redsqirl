@@ -112,7 +112,7 @@ public class PigSelect extends PigElement {
 				filterLoader = loader;
 			}
 			
-			String select = tSelInt.getQueryPiece(out, filterLoader);
+			String select = tSelInt.getQueryPiece(out, filterLoader, null);
 			if (!select.isEmpty()) {
 				select = getNextName() + " = " + select + ";\n\n";
 			}
