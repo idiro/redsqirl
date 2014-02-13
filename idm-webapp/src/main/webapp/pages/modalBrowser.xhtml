@@ -44,10 +44,10 @@
 
 	<a4j:commandLink action="#{browserHiveBean.goPrevious}"
 		reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
-		<img id="btAdd" src="../image/icons/button-previous.gif" />
+		<h:graphicImage id="btPrev" value="../image/icons/button-previous.gif" title='#{messages.HiveInterface_previous_help}'/>
 	</a4j:commandLink>
 	<a4j:commandLink action="#{browserHiveBean.goNext}" reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
-		<img id="btAdd" src="../image/icons/button-next.gif" />
+		<h:graphicImage id="btNext" value="../image/icons/button-next.gif" title='#{messages.HiveInterface_next_help}'/>
 	</a4j:commandLink>
 	<br/>
 	

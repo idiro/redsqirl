@@ -128,7 +128,7 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 			logger.debug("Find "+packStr[i]);
 			packs[i] = getPackage(packStr[i],sys_package);
 			if(!packs[i].exists()){
-				error = LanguageManagerWF.getText("PackageManager.packageDoesNotExist", new String[]{packStr[i]});
+				error = PMLanguageManager.getText("PackageManager.packageDoesNotExist", new String[]{packStr[i]});
 				logger.info(error);
 			}
 		}
@@ -154,7 +154,7 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 						}
 
 						if(!ok){
-							error = LanguageManagerWF.getText("PackageManager.failToRemove", 
+							error = PMLanguageManager.getText("PackageManager.failToRemove", 
 									new String[]{filePack});
 							logger.warn(error);
 						}
@@ -162,7 +162,7 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 					logger.debug("Remove package "+packs[i].getAbsolutePath());
 					LocalFileSystem.delete(packs[i]);
 				}catch(IOException e){
-					error = LanguageManagerWF.getText("PackageManager.errorDeleting", 
+					error = PMLanguageManager.getText("PackageManager.errorDeleting", 
 							new String[]{packs[i].getAbsolutePath()});
 					logger.info(error);
 				}
@@ -362,20 +362,20 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 			}
 			ok &= children.length == 5;
 			if(!ok){
-				error = LanguageManagerWF.getText("PackageManager.wrongStructure");
+				error = PMLanguageManager.getText("PackageManager.wrongStructure");
 				logger.info("In "+pack.getAbsolutePath());
 				logger.info(error);
 			}
 			else{
 				Properties p = getPackageProperties(pack.getAbsolutePath());
 				if (p.get(property_name) == null || p.get(property_version) == null){
-					error = LanguageManagerWF.getText("PackageManager.missingProperties", 
+					error = PMLanguageManager.getText("PackageManager.missingProperties", 
 							new String[]{properties_file, property_name, property_version});
 					logger.info(error);
 				}
 			}
 		}else{
-			error = LanguageManagerWF.getText("PackageManager.notDirectory", new String[]{pack.toString()});
+			error = PMLanguageManager.getText("PackageManager.notDirectory", new String[]{pack.toString()});
 			logger.info("In "+pack.getAbsolutePath());
 			logger.info(error);
 		}
@@ -447,7 +447,7 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 					error = null;
 				}
 				else {
-					error = LanguageManagerWF.getText("PackageManager.packageExists", new String[]{pack_name});
+					error = PMLanguageManager.getText("PackageManager.packageExists", new String[]{pack_name});
 					logger.info(error);
 				}
 			}
@@ -497,7 +497,7 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 			while(destIt.hasNext() && error == null ){
 				String cur = destIt.next();
 				if(srcNames.contains(cur)){
-					error = LanguageManagerWF.getText("PackageManager.fileAlreadyExists", 
+					error = PMLanguageManager.getText("PackageManager.fileAlreadyExists", 
 							new String[]{packageName, cur, destDir.getAbsolutePath()});
 					logger.info(error);
 				}
@@ -526,7 +526,7 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 			}
 			br.close();
 		}catch(Exception e){
-			error = LanguageManagerWF.getText("PackageManager.failToReadFile", new String[]{action_file});
+			error = PMLanguageManager.getText("PackageManager.failToReadFile", new String[]{action_file});
 			logger.info(e.getMessage());
 			logger.info(error);
 		}
@@ -541,7 +541,7 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 		}
 		
 		if (!ok){
-			error = LanguageManagerWF.getText("PackageManager.duplicatedAction");
+			error = PMLanguageManager.getText("PackageManager.duplicatedAction");
 			logger.info(error);
 		}
 

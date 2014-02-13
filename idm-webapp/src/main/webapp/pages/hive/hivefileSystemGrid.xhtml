@@ -65,7 +65,7 @@
 			<h:inputText id="hivepath" label="Path" value="#{hiveBean.path}" maxlength="255" style="width:395px;" />
 			
 			<a4j:commandLink action="#{hiveBean.changePath}" reRender="hivefs" style="color:#FFFFFF" >
-				<img src="../image/icons/button-search.gif" />
+				<h:graphicImage value="../image/icons/button-search.gif" title="#{messages.filesystem_change_path}" />
 			</a4j:commandLink>
 
 			<br />
@@ -74,13 +74,13 @@
 			<a4j:commandLink action="#{hiveBean.addFileBefore}"
 				oncomplete="#{rich:component('hiveaddModalPanel')}.show()"
 				rendered="#{hiveBean.canCreate != null}">
-				<h:graphicImage id="hivebtAdd" value="../image/icons/button-plus.gif" title="#{messages.label_menu_saveall}" styleClass="fileSystemIcon" />
+				<h:graphicImage id="hivebtAdd" value="../image/icons/button-plus.gif" title="#{messages.HiveInterface_create_help}" styleClass="fileSystemIcon" />
 			</a4j:commandLink>
 
 			<a4j:commandLink action="#{hiveBean.deleteFile}" reRender="hivefs" 
 				onclick="if(!confirm('Are you sure you want to delete the selected files?')){return false;}"
 				rendered="#{hiveBean.canDelete != null}">
-				<h:graphicImage id="hivebtDelete" value="../image/icons/button-delete2.gif" title="#{hiveBean.canDelete}" styleClass="fileSystemIcon" />
+				<h:graphicImage id="hivebtDelete" value="../image/icons/button-delete2.gif" title="#{messages.HiveInterface_delete_help}" styleClass="fileSystemIcon" />
 			</a4j:commandLink>
 
 			<h:commandLink value="Copy to..." onclick="openCopyHive();" 
@@ -90,11 +90,11 @@
 
 			<a4j:commandLink action="#{hiveBean.goPrevious}"
 				reRender="hivepath,hivefs">
-				<h:graphicImage id="hivebtUndo" value="../image/icons/button-previous.gif" styleClass="fileSystemIcon" />
+				<h:graphicImage id="hivebtUndo" value="../image/icons/button-previous.gif" title="#{messages.HiveInterface_previous_help}" styleClass="fileSystemIcon" />
 			</a4j:commandLink>
 
 			<a4j:commandLink action="#{hiveBean.goNext}" reRender="hivepath,hivefs">
-				<h:graphicImage id="hivebtRedo" value="../image/icons/button-next.gif" styleClass="fileSystemIcon" />
+				<h:graphicImage id="hivebtRedo" value="../image/icons/button-next.gif" title="#{messages.HiveInterface_next_help}" styleClass="fileSystemIcon" />
 			</a4j:commandLink>
 
 
@@ -122,7 +122,7 @@
 					</f:facet>
 					<a4j:commandLink action="#{hiveBean.editFileBefore}"
 						oncomplete="#{rich:component('hiveeditModalPanel')}.show()">
-						<h:graphicImage value="../image/icons/button-property.gif" />
+						<h:graphicImage value="../image/icons/button-property.gif" title="#{messages.HiveInterface_properties_help}"/>
 						<f:param name="nameFileEdit" value="#{item.name}" />
 					</a4j:commandLink>
 				</rich:column>
