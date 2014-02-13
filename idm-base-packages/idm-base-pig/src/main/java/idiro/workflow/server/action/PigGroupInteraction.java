@@ -83,7 +83,8 @@ public class PigGroupInteraction extends AppendListInteraction{
 			groupBy = groupByIt.next();
 			select += ", " + groupBy + " AS " + groupBy;
 		}
-
+		
+		boolean firsElement = groupBy.isEmpty();
 		while (selIt.hasNext()) {
 			Map<String,String> cur = selIt.next();
 			String featName = cur.get(PigTableSelectInteraction.table_feat_title);
@@ -95,8 +96,13 @@ public class PigGroupInteraction extends AppendListInteraction{
 					opTitle = PigDictionary.getBracketContent(opTitle);
 				}
 	
-				select += ",\n       " + opTitle + " AS "
+				if (!firsElement){
+					select += ",/n";
+				}
+				
+				select += "       " + opTitle + " AS "
 						+ featName;
+				firsElement = false;
 			}
 		}
 
