@@ -97,7 +97,7 @@ public class PigGroupInteraction extends AppendListInteraction{
 				}
 	
 				if (!firsElement){
-					select += ",/n";
+					select += ",\n";
 				}
 				
 				select += "       " + opTitle + " AS "
