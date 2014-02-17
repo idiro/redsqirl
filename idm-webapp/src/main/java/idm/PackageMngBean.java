@@ -142,6 +142,12 @@ public class PackageMngBean extends BaseBean implements Serializable{
 				.getSession(false);
 		String user = (String) session.getAttribute("username");
 		logger.info("user: "+user);
+		logger.info(WorkflowPrefManager.
+		getSysProperty(
+				WorkflowPrefManager.sys_admin_user, ""));
+		logger.info(WorkflowPrefManager.
+				getSysProperty(
+						WorkflowPrefManager.sys_admin_user));
 		
 		String[] admins = WorkflowPrefManager.
 		getSysProperty(
