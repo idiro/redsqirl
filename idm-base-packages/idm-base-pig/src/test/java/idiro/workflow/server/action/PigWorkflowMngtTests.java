@@ -72,7 +72,7 @@ public class PigWorkflowMngtTests {
 			
 			//Aggregation
 			PigAggregator pigA = (PigAggregator) PigAggregatorTests.createPigWithSrc(
-					w,PigTestUtils.createSrc_ID_VALUE_RAW(w, hInt, new_path3),hInt,false);
+					w,PigTestUtils.createSrc_ID_VALUE_RAW(w, hInt, new_path3),hInt,false, false);
 			String elementA = pigA.getComponentId();
 
 			pigA.getDFEOutput().get(PigSelect.key_output).setSavingState(SavingState.RECORDED);

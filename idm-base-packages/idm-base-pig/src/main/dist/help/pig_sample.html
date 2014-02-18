@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Pig Select Help</title>
+<title>Pig Sample Help</title>
 <style>
 h1 {
 	text-align: center;
@@ -40,7 +40,7 @@ td {
 		<p>The Source can be only HDFS (TEXT MAP REDUCE DIRECTORY). It has
 			to be a delimiter separated value. An example is when | is the
 			delimiter then the format for a line would be (X|Y|Z)</p>
-			
+
 		<h2>Sample - Page 1</h2>
 		<p>This page lets operations be perfomed over the data .</p>
 		<h3>Sample</h3>
@@ -52,9 +52,15 @@ td {
 				href="http://pig.apache.org/">Pig</a> on the IDM platform to perform
 			Pig actions. There are two other actions available from this package
 			<a href="pig_join.html">Pig Join</a> , <a href="pig_union.html">Pig
-				Union</a> and <a href="pig_select.html">Pig
-				Select</a>
+				Union</a> and <a href="pig_select.html">Pig Select</a>
+		<p>On the last page of every pig action will have two interactions
+			that set the output format of the pig action. These interactions are
+			to set the delimiter of the file for a TEXT MAP REDUCE DIRECTORY and
+			the other is to set the output type of the file to be either TEXT MAP
+			REDUCE DIRECTORY or BINARY MAP-REDUCE DIRECTORY</p>
 		</p>
+
+
 		<p>Apache Pig is a platform for analyzing large data sets that
 			consists of a high-level language for expressing data analysis
 			programs, coupled with infrastructure for evaluating these programs.
@@ -66,6 +72,7 @@ td {
 			implementations already exist (e.g., the Hadoop subproject). Pig's
 			language layer currently consists of a textual language called Pig
 			Latin, which has the following key properties:
+		
 		<ul>
 			<li>Ease of programming. It is trivial to achieve parallel
 				execution of simple, "embarrassingly parallel" data analysis tasks.
