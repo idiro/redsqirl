@@ -133,7 +133,7 @@ public class Source extends DataflowAction {
 
 			@Override
 			public String check(DFEPage page) throws RemoteException {
-
+				logger.info("check page 3");
 				String error = null;
 				DataOutput out = null;
 
@@ -142,6 +142,7 @@ public class Source extends DataflowAction {
 				}catch(Exception e){
 					error = LanguageManagerWF.getText("source.outputchecknull");
 				}
+				logger.info("got type");
 				try {
 					logger.info("tree is : "+((TreeNonUnique<String>)getInteraction(key_dataset).getTree()).toString());
 
@@ -153,7 +154,12 @@ public class Source extends DataflowAction {
 									.getFirstChild("browse").
 									getFirstChild("output")
 									.getFirstChild("property").getSubTreeList().iterator();
-
+							
+							logger.info("property list size : "+getInteraction(key_dataset).getTree()
+									.getFirstChild("browse").
+									getFirstChild("output")
+									.getFirstChild("property").getSubTreeList().size());
+							
 							while(itProp.hasNext()){
 								Tree<String> prop = itProp.next();
 								String name = prop.getHead();
@@ -164,7 +170,7 @@ public class Source extends DataflowAction {
 								props.put(name, value);
 							}
 						}catch(Exception e){
-							logger.debug("No properties");
+							logger.info("No properties");
 						}
 					}
 
@@ -238,7 +244,6 @@ public class Source extends DataflowAction {
 
 							//Update the feature list only if it looks good
 							out.setFeatures(outF);
-
 							logger.info("Setpath : " + path);
 							out.setPath(path);
 
@@ -332,6 +337,7 @@ public class Source extends DataflowAction {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+				logger.info("class : "+ wa.getClass().getCanonicalName());
 				logger.info("wa type : "+ wa.getTypeName());
 				if (wa.getBrowser() != null && wa.getBrowser().toString().equalsIgnoreCase(type)) {
 					posValues.add(wa.getTypeName());
