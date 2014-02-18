@@ -55,7 +55,7 @@ function create_table_all_packages(restURL, jsonTable){
 					+ jsonTable[i].license + "</td><td>"
 					+ jsonTable[i].short_description + "</td></tr>";
 		} else {
-			table = table + '<tr class="order-table-odd-row><td>'
+			table = table + '<tr class="order-table-odd-row"><td>'
 					+ '<a href="#" onclick=\'getPackagePage("'+restURL+'","'+ jsonTable[i].name + '","")\'>'
 					+ jsonTable[i].name + "</td><td>" + jsonTable[i].license
 					+ "</td><td>" + jsonTable[i].short_description

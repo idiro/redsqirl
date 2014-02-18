@@ -11,70 +11,75 @@ import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.interfaces.DataStore;
 import idiro.workflow.utils.LanguageManagerWF;
 
-    import java.io.BufferedReader;
-    import java.io.InputStreamReader;
-    import java.rmi.RemoteException;
-    import java.rmi.server.UnicastRemoteObject;
-    import java.sql.ResultSet;
-    import java.sql.SQLException;
-    import java.util.ArrayList;
-    import java.util.HashMap;
-    import java.util.Iterator;
-    import java.util.LinkedHashMap;
-    import java.util.LinkedList;
-    import java.util.List;
-    import java.util.Map;
-    import java.util.Properties;
-    import java.util.prefs.Preferences;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.prefs.Preferences;
 
-    import org.apache.log4j.Logger;
+import org.apache.log4j.Logger;
 
-    /**
-     * Interface for browsing Hive.
-     * 
-     * @author etienne
-     * 
-     */
-    public class HiveInterface extends UnicastRemoteObject implements DataStore {
+/**
+ * Interface for browsing Hive.
+ * 
+ * @author etienne
+ * 
+ */
+public class HiveInterface extends UnicastRemoteObject implements DataStore {
 
-        /**
-         * 
-         */
-        private static final long serialVersionUID = 997686364776500272L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 997686364776500272L;
 
-        /**
-         * Preferences
-         */
-        private static Preferences prefs = Preferences
-                .userNodeForPackage(HiveInterface.class);
+	/**
+	 * Preferences
+	 */
+	private static Preferences prefs = Preferences
+			.userNodeForPackage(HiveInterface.class);
 
-        /**
-         * The logger.
-         */
-        protected Logger logger = Logger.getLogger(this.getClass());
+	/**
+	 * The logger.
+	 */
+	protected Logger logger = Logger.getLogger(this.getClass());
 
-        public static final String
-        // key for creating tables
-                key_partitions = "partitions",
-                key_columns = "columns",
-                key_comment = "comment",
-                key_store = "storing",
-                key_field_sep = "field_separator",
-                // properties key
-                key_describe = "describe",
-                key_describe_extended = "describe_extended";
+	public static final String
+	// key for creating tables
+	key_partitions = "partitions",
+	key_columns = "columns",
+	key_comment = "comment",
+	key_store = "storing",
+	key_field_sep = "field_separator",
+	// properties key
+	key_describe = "describe",
+	key_describe_extended = "describe_extended";
 
-        public static final int historyMax = 50;
+	public static final int historyMax = 50;
 
-        protected static Preference<String> pathDataDefault = new Preference<String>(
-                prefs, "Default path of hive", "/");
+	protected static Preference<String> pathDataDefault = new Preference<String>(
+			prefs, "Default path of hive", "/");
 
-        protected static JdbcConnection conn;
-        protected List<String> history = new LinkedList<String>();
-        protected int cur = 0;
-        private static boolean isInit = false;
+	protected static JdbcConnection conn;
+	protected List<String> history = new LinkedList<String>();
+	protected int cur = 0;
+	private static boolean isInit = false;
 
-        private static String url;
+	private static String url;
+	
+	//Refresh every 3 seconds
+	protected static final long refreshTimeOut = 3000;
+	protected static List<String> tables = null;
+	protected static long updateTables = 0;
 
 	public HiveInterface() throws RemoteException {
 		super();
@@ -90,7 +95,7 @@ import idiro.workflow.utils.LanguageManagerWF;
 		String error = null;
 		if(url == null){
 			url = WorkflowPrefManager
-				.getUserProperty(WorkflowPrefManager.user_hive);
+					.getUserProperty(WorkflowPrefManager.user_hive);
 		}
 		try {
 			logger.info("hive interface init : " + isInit);
@@ -111,7 +116,7 @@ import idiro.workflow.utils.LanguageManagerWF;
 						config.put("StrictHostKeyChecking", "no");
 
 						ProcessesManager hjdbc = new HiveJdbcProcessesManager()
-								.getInstance();
+						.getInstance();
 
 						String old_pid = hjdbc.getPid();
 
@@ -145,7 +150,7 @@ import idiro.workflow.utils.LanguageManagerWF;
 								String pid = br.readLine();
 								hjdbc.deleteFile();
 								hjdbc = new HiveJdbcProcessesManager()
-										.getInstance();
+								.getInstance();
 								logger.info("kill pid result: " + pid);
 							}
 
@@ -333,6 +338,7 @@ import idiro.workflow.utils.LanguageManagerWF;
 								"hiveinterface.statementfail",
 								new Object[] { statement });
 					}
+					updateTables = 0;
 				} catch (SQLException e) {
 					error = LanguageManagerWF.getText(
 							"hiveinterface.createtablefail",
@@ -356,6 +362,7 @@ import idiro.workflow.utils.LanguageManagerWF;
 								"hiveinterface.statementfail",
 								new Object[] { statement });
 					}
+					updateTables = 0;
 				} catch (SQLException e) {
 					error = LanguageManagerWF.getText(
 							"hiveinterface.createpartfail",
@@ -397,6 +404,7 @@ import idiro.workflow.utils.LanguageManagerWF;
 							+ " DROP PARTITION (" + partitionsList + ")");
 
 				}
+				updateTables = 0;
 			} catch (SQLException e) {
 				ok = false;
 				error = LanguageManagerWF.getText("hiveinterface.changetable",
@@ -489,14 +497,22 @@ import idiro.workflow.utils.LanguageManagerWF;
 	public Map<String, String> getProperties(String path)
 			throws RemoteException {
 		String table = getTableAndPartitions(path)[0];
-		Map<String, String> ans = new HashMap<String, String>();
+		Map<String, String> ans = null;
 		if (exists("/" + table)) {
+			ans = getPropertiesPathExist(path);
+		}
+		return ans;
+	}
+	
+	public Map<String, String> getPropertiesPathExist(String path)
+			throws RemoteException {
+		String table = getTableAndPartitions(path)[0];
+		Map<String, String> ans = new HashMap<String, String>();
 			ans.put(key_describe, getDescription(table));
 
 			if (!ans.isEmpty()) {
 				ans.put(key_describe_extended, getExtendedDescription(path));
 			}
-		}
 		return ans;
 	}
 
@@ -517,13 +533,13 @@ import idiro.workflow.utils.LanguageManagerWF;
 			if (tableAndPartitions[0].isEmpty()) {
 
 				logger.info("table and partitions 0 is empty");
-				List<String> tables = conn.listTables(null);
+				refreshListTables();
 				// Filter the list.
 				logger.info("connection has listed tables");
 				Iterator<String> it = tables.iterator();
 				while (it.hasNext()) {
 					String table = it.next();
-					Map<String, String> prop = getProperties("/" + table);
+					Map<String, String> prop = getPropertiesPathExist("/" + table);
 					logger.info("prop map : " + prop);
 					if (!prop.isEmpty()) {
 						logger.info("prop map not empty: " + prop);
@@ -538,7 +554,7 @@ import idiro.workflow.utils.LanguageManagerWF;
 				logger.info("table getting partitions");
 				while (itP.hasNext()) {
 					String partition = itP.next();
-					ans.put(partition, getProperties("/"
+					ans.put(partition, getPropertiesPathExist("/"
 							+ tableAndPartitions[0] + "/" + partition));
 					logger.info("putting partition and table in map");
 				}
@@ -584,8 +600,8 @@ import idiro.workflow.utils.LanguageManagerWF;
 				ok = true;
 			} else if (path.startsWith("/") && path.length() > 1) {
 				String[] tableAndPartitions = getTableAndPartitions(path);
-				ok = !conn.listTables(tableAndPartitions[0].toLowerCase())
-						.isEmpty();
+				refreshListTables();
+				ok = tables.contains(tableAndPartitions[0].toLowerCase());
 
 				if (ok && tableAndPartitions.length > 1) {
 					ok = false;
@@ -602,9 +618,9 @@ import idiro.workflow.utils.LanguageManagerWF;
 								ok &= splitPart[i].split("=")[0]
 										.equalsIgnoreCase(tableAndPartitions[i + 1]
 												.split("=")[0])
-										&& splitPart[i].split("=")[1]
-												.equals(tableAndPartitions[i + 1]
-														.split("=")[1]);
+												&& splitPart[i].split("=")[1]
+														.equals(tableAndPartitions[i + 1]
+																.split("=")[1]);
 							}
 						}
 					}
@@ -625,9 +641,8 @@ import idiro.workflow.utils.LanguageManagerWF;
 		try {
 			if (path.startsWith("/") && path.length() > 1) {
 				String[] tableAndPartitions = getTableAndPartitions(path);
-
-				boolean tableExists = !conn.listTables(tableAndPartitions[0])
-						.isEmpty();
+				refreshListTables();
+				boolean tableExists = tables.contains(tableAndPartitions[0]);
 				if (tableExists) {
 					String[] feats = getDescription(tableAndPartitions[0])
 							.split(";");
@@ -650,7 +665,7 @@ import idiro.workflow.utils.LanguageManagerWF;
 										new Object[] {
 												feats[i].split(",")[0],
 												features.getFeaturesNames()
-														.toString() });
+												.toString() });
 							}
 							ok &= found;
 						}
@@ -777,6 +792,7 @@ import idiro.workflow.utils.LanguageManagerWF;
 				if (!ok) {
 					error = LanguageManagerWF.getText("hiveinterface.movefail");
 				}
+				updateTables = 0;
 			} else {
 				error = LanguageManagerWF.getText("hiveinterface.movesamename");
 			}
@@ -799,6 +815,7 @@ import idiro.workflow.utils.LanguageManagerWF;
 				if (!ok) {
 					error = LanguageManagerWF.getText("hiveinterface.copyfail");
 				}
+				updateTables = 0;
 			} else {
 				error = LanguageManagerWF.getText("hiveinterface.copysamename");
 			}
@@ -807,6 +824,15 @@ import idiro.workflow.utils.LanguageManagerWF;
 			logger.error(error);
 		}
 		return error;
+	}
+
+
+	protected static void refreshListTables() throws SQLException{
+		long cur = System.currentTimeMillis();
+		if(tables == null || refreshTimeOut < cur - updateTables ){
+			tables = conn.listTables(null);
+			updateTables = cur;
+		}
 	}
 
 	@Override
