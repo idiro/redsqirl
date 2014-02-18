@@ -377,7 +377,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 		return new_features;
 	}
 
-	public String getQueryPiece(DFEOutput out, String tableName)
+	public String getQueryPiece(DFEOutput out, String tableName, String groupTableName)
 			throws RemoteException {
 		logger.debug("select...");
 		String select = "";
@@ -388,6 +388,11 @@ public class PigTableSelectInteraction extends TableInteraction {
 			Map<String,String> cur = selIt.next();
 			String featName = cur.get(table_feat_title);
 			String opTitle = cur.get(table_op_title);
+			
+			if (PigDictionary.getInstance().isAggregatorMethod(opTitle)){
+				opTitle = opTitle.replace(PigDictionary.getBracketContent(opTitle), groupTableName+"."+featName);
+			}
+			
 			select = "FOREACH " + tableName + " GENERATE "
 					+ opTitle + " AS " + featName;
 		}
@@ -397,6 +402,10 @@ public class PigTableSelectInteraction extends TableInteraction {
 			String featName = cur.get(table_feat_title);
 			String opTitle = cur.get(table_op_title);
 
+			if (PigDictionary.getInstance().isAggregatorMethod(opTitle)){
+				opTitle = opTitle.replace(PigDictionary.getBracketContent(opTitle), groupTableName+"."+featName);
+			}
+			
 			select += ",\n       " + opTitle + " AS "
 					+ featName;
 		}

@@ -23,6 +23,7 @@ import java.util.List;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -135,13 +136,25 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	public boolean isAdmin(){
 		boolean admin = false;
-//		logger.info("is admin");
-		String user = System.getProperty( "user.name" );
+		logger.info("is admin");
+		FacesContext fCtx = FacesContext.getCurrentInstance();
+		HttpSession session = (HttpSession) fCtx.getExternalContext()
+				.getSession(false);
+		String user = (String) session.getAttribute("username");
+		logger.info("user: "+user);
+		logger.info(WorkflowPrefManager.
+		getSysProperty(
+				WorkflowPrefManager.sys_admin_user, ""));
+		logger.info(WorkflowPrefManager.
+				getSysProperty(
+						WorkflowPrefManager.sys_admin_user));
+		
 		String[] admins = WorkflowPrefManager.
 		getSysProperty(
 				WorkflowPrefManager.sys_admin_user, "").split(":");
 		for(String cur: admins){
 			admin = admin || cur.equals(user);
+			logger.info("admin user: "+cur);
 		}
 		return admin;
 	}

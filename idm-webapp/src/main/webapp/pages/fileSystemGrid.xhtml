@@ -54,12 +54,12 @@
 
 			<a4j:commandLink action="#{canvasBean.addFileBefore}"
 				oncomplete="#{rich:component('addModalPanel')}.show()">
-				<img id="btAdd" src="../image/icons/button-plus.gif" />
+				<h:graphicImage id="btAdd" value="../image/icons/button-plus.gif" title='#{messages.HdfsInterface_create_help}' />
 			</a4j:commandLink>
 
 			<a4j:commandLink action="#{canvasBean.deleteFile}" reRender="sshfs"
-				onclick="if(!confirm('Are you sure you want to delete the selected files?')){return false;}">
-				<img id="btDelete" src="../image/icons/button-delete.gif" />
+				onclick="if(!confirm('#{messages.filesystem_delete_message}')){return false;}">
+				<h:graphicImage id="btDelete" value="../image/icons/button-delete.gif" title='#{messages.HdfsInterface_delete_help}'/>
 			</a4j:commandLink>
 
 			<a href="#" onclick="openCopySsh();"><h:outputText
@@ -69,11 +69,11 @@
 
 			<a4j:commandLink action="#{canvasBean.goPrevious}"
 				reRender="path,sshfs">
-				<img id="btUndo" src="../image/icons/button-previous.gif" />
+				<h:graphicImage id="btUndo" value="../image/icons/button-previous.gif" title='#{messages.HdfsInterface_previous_help}'/>
 			</a4j:commandLink>
 
 			<a4j:commandLink action="#{canvasBean.goNext}" reRender="path,sshfs">
-				<img id="btRedo" src="../image/icons/button-next.gif" />
+				<h:graphicImage id="btRedo" value="../image/icons/button-next.gif" title='#{messages.HdfsInterface_next_help}' />
 			</a4j:commandLink>
 
 

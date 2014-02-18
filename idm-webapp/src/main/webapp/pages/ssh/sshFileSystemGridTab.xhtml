@@ -24,11 +24,11 @@
 
 			<a4j:commandLink action="#{sshBean.goPrevious}"
 				reRender="sshpath,sshfs">
-				<h:graphicImage id="sshbtUndo" value="../image/icons/button-previous.gif" />
+				<h:graphicImage id="sshbtUndo" value="../image/icons/button-previous.gif" title='#{messages.canvas_previous}' />
 			</a4j:commandLink>
 
 			<a4j:commandLink action="#{sshBean.goNext}" reRender="sshpath,sshfs">
-				<h:graphicImage id="sshbtRedo" value="../image/icons/button-next.gif" />
+				<h:graphicImage id="sshbtRedo" value="../image/icons/button-next.gif" title='#{messages.canvas_next}' />
 			</a4j:commandLink>
 			
 

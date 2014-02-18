@@ -875,11 +875,13 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 
 	@Override
 	public String canMove() throws RemoteException {
+//		return LanguageManagerWF.getText("HiveInterface.move_help");
 		return null;
 	}
 
 	@Override
 	public String canCopy() throws RemoteException {
+//		return LanguageManagerWF.getText("HiveInterface.copy_help");
 		return null;
 	}
 

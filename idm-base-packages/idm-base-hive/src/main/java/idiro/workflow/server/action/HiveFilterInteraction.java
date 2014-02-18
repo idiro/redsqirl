@@ -11,6 +11,7 @@ import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.utils.HiveLanguageManager;
 
 import java.rmi.RemoteException;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -21,7 +22,7 @@ import java.util.Set;
  * @author etienne
  * 
  */
-public class ConditionInteraction extends EditorInteraction {
+public class HiveFilterInteraction extends EditorInteraction {
 
 	/**
 	 * 
@@ -30,7 +31,7 @@ public class ConditionInteraction extends EditorInteraction {
 
 	private HiveElement el;
 
-	public ConditionInteraction(int column,
+	public HiveFilterInteraction(int column,
 			int placeInColumn, HiveElement el)
 			throws RemoteException {
 		super(HiveElement.key_condition, HiveLanguageManager
@@ -46,18 +47,20 @@ public class ConditionInteraction extends EditorInteraction {
 		try {
 
 			String condition = getValue();
+			logger.info("condition : "+condition);
 			if (condition != null && !condition.isEmpty()) {
 				logger.debug("Condition: " + condition
 						+ " features list size : "
 						+ el.getInFeatures().getSize());
 				String type = null;
-				Set<String> aggregation = null;
+				Set<String> aggregation = new HashSet<String>();
 				if(el.groupingInt != null){
 					aggregation = el.groupingInt.getAggregationFeatures(el.getDFEInput().get(HiveElement.key_input).get(0));
 					logger.info("aggregation set size : "+ aggregation.size());
 				}
 				type = HiveDictionary.getInstance().getReturnType(
 						condition, el.getInFeatures(),aggregation);
+				logger.info("return type : "+type);
 				if (!type.equalsIgnoreCase("boolean")) {
 					msg = HiveLanguageManager.getText("hive.filter_interaction.checkerror",new String[]{type});
 					logger.info(msg);
@@ -69,6 +72,7 @@ public class ConditionInteraction extends EditorInteraction {
 			logger.error(msg);
 
 		}
+		logger.info("the msg : "+msg);
 		return msg;
 	}
 
@@ -78,9 +82,8 @@ public class ConditionInteraction extends EditorInteraction {
 			tree.remove("editor");
 
 			Tree<String> base = HiveDictionary.generateEditor(HiveDictionary.getInstance()
-					.createConditionHelpMenu(), el.getInFeatures());
+					.createConditionHelpMenu(), el.getInFeatures()).getTree();
 //			logger.debug(base);
-			logger.debug("value is : "+output);
 			tree.add(base.getFirstChild("editor"));
 			setValue(output);
 			logger.debug("set value");

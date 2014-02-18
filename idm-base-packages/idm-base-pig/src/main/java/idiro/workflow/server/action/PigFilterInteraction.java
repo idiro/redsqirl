@@ -90,11 +90,12 @@ public class PigFilterInteraction extends EditorInteraction {
 		String where = "";
 		if (getTree().getFirstChild("editor").getFirstChild("output")
 				.getSubTreeList().size() > 0) {
+			//not all "." are to access fields of a bag, it could be a number
 			where = getTree().getFirstChild("editor").getFirstChild("output")
-					.getFirstChild().getHead().replaceAll("\\.", "::");
+					.getFirstChild().getHead().replaceAll(relationName+".", "::");
 		}
 
-		String whereIn = getInputWhere().replaceAll("\\.", "::");
+		String whereIn = getInputWhere().replaceAll(relationName+".", "::");
 		if (!where.isEmpty()) {
 			if (!whereIn.isEmpty()) {
 				where = "(" + where + ") AND (" + whereIn + ")";

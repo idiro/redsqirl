@@ -4,6 +4,7 @@ import idiro.utils.FeatureList;
 import idiro.utils.OrderedFeatureList;
 import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
+import idiro.workflow.server.EditorInteraction;
 import idiro.workflow.server.action.AbstractDictionary;
 import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.interfaces.DFEOutput;
@@ -311,23 +312,20 @@ public class HiveDictionary extends AbstractDictionary {
 
 	public String getReturnType(String expr, FeatureList features,
 			Set<String> featureAggreg) throws Exception {
-
+		logger.info("expression : "+expr);
+		logger.info("features List : "+features.getFeaturesNames().toString());
+//		logger.info("features aggreg : "+featureAggreg.toString());
 		if (expr == null || expr.trim().isEmpty()) {
 			throw new Exception("No expressions to test");
 		}
-
+		logger.info("features passed to dictionary : "+features.getFeaturesNames().toString());
 		// Test if all the featureAggreg have a type
-		Iterator<String> itFAgg = featureAggreg.iterator();
-		boolean ok = true;
-		String feature = "";
-		while (itFAgg.hasNext() && ok) {
-			feature = itFAgg.next();
-			ok = features.containsFeature(feature);
-		}
-
-		if (!ok) {
-			throw new Exception("Parameters invalid " + featureAggreg.toArray()
-					+ " needs to be in " + features.getFeaturesNames() +" "+feature);
+		if (featureAggreg != null
+				&& !features.getFeaturesNames().containsAll(featureAggreg)) {
+			logger.error("Aggregation features unknown");
+			throw new Exception("Aggregation features unknown("
+					+ featureAggreg.toString() + "): "
+					+ features.getFeaturesNames().toString());
 		}
 
 		expr = expr.trim().toUpperCase();
@@ -473,14 +471,14 @@ public class HiveDictionary extends AbstractDictionary {
 		return ok;
 	}
 
-	public static Tree<String> generateEditor(Tree<String> help, DFEOutput in)
+	public static EditorInteraction generateEditor(Tree<String> help, DFEOutput in)
 			throws RemoteException {
 		List<DFEOutput> lOut = new LinkedList<DFEOutput>();
 		lOut.add(in);
 		return generateEditor(help, lOut);
 	}
 
-	public static Tree<String> generateEditor(Tree<String> help,
+	public static EditorInteraction generateEditor(Tree<String> help,
 			List<DFEOutput> in) throws RemoteException {
 		logger.debug("generate Editor...");
 		Tree<String> editor = new TreeNonUnique<String>("editor");
@@ -507,11 +505,17 @@ public class HiveDictionary extends AbstractDictionary {
 			}
 		}
 		editor.add(help);
-
-		return editor;
+		editor.add("output");
+		
+		EditorInteraction ei = new EditorInteraction("autogen","auto-gen", "", 0,0);
+		ei.getTree().removeAllChildren();
+		ei.getTree().add(editor);
+//		logger.info(ei.getTree());
+		logger.info("added editor");
+		return ei;
 	}
 
-	public static Tree<String> generateEditor(Tree<String> help,
+	public static EditorInteraction generateEditor(Tree<String> help,
 			FeatureList inFeat) throws RemoteException {
 		logger.debug("generate Editor...");
 		Tree<String> editor = new TreeNonUnique<String>("editor");
@@ -526,8 +530,11 @@ public class HiveDictionary extends AbstractDictionary {
 			keywords.add(word);
 		}
 		editor.add(help);
-
-		return editor;
+		editor.add("output");
+		EditorInteraction ei = new EditorInteraction("autogen","auto-gen", "", 0,0);
+		ei.getTree().removeAllChildren();
+		ei.getTree().add(editor);
+		return ei;
 	}
 
 	public Tree<String> createConditionHelpMenu() throws RemoteException {

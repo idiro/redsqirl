@@ -132,7 +132,7 @@ public class MapRedTextType extends DataOutput {
 					}
 				}
 				try{
-					fs.close();
+//					fs.close();
 				}catch(Exception e){
 					logger.error("Fail to close FileSystem: "+e);
 				}
@@ -145,7 +145,7 @@ public class MapRedTextType extends DataOutput {
 			}
 
 		}
-		hCh.close();
+//		hCh.close();
 		return error;
 	}
 
@@ -175,7 +175,7 @@ public class MapRedTextType extends DataOutput {
 					--again;
 				}
 				try{
-					fs.close();
+//					fs.close();
 				}catch(Exception e){
 					logger.error(e);
 				}
@@ -215,7 +215,6 @@ public class MapRedTextType extends DataOutput {
 	@Override
 	public List<String> select(int maxToRead) throws RemoteException {
 		List<String> ans = null;
-
 		if (isPathValid() == null && isPathExists()) {
 			try {
 				FileSystem fs = NameNodeVar.getFS();
@@ -234,7 +233,7 @@ public class MapRedTextType extends DataOutput {
 							(maxToRead / stat.length) + 1));
 				}
 				try{
-					fs.close();
+//					fs.close();
 				}catch(Exception e){
 					logger.error("Fail to close FileSystem: "+e);
 				}
@@ -361,6 +360,7 @@ public class MapRedTextType extends DataOutput {
 		FeatureList fl = new OrderedFeatureList();
 		try {
 			List<String> lines = this.select(10);
+			logger.info(lines);
 			if (lines != null) {
 				for (String line : lines) {
 					if (!line.trim().isEmpty()) {

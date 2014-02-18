@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
     http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    
+
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>idm-base-hive</artifactId>
 	<packaging>jar</packaging>
@@ -23,19 +22,20 @@
 		<version>0.1-SNAPSHOT</version>
 	</parent>
 
+
 	<distributionManagement>
-           <repository>
-               <id>internal</id>
-               <name>Internal Release Repository</name>
-               <url>scp://dev.local.net/var/www/html/apache-archiva-1.3.6/data/repositories/internal</url>
-           </repository>
-  
-           <snapshotRepository>
-               <id>snapshots</id>
-               <name>Internal Snapshot Repository</name>
-               <url>scp://dev.local.net/var/www/html/apache-archiva-1.3.6/data/repositories/snapshots</url>
-           </snapshotRepository>
-       </distributionManagement>
+		<repository>
+			<id>internal</id>
+			<name>Internal Release Repository</name>
+			<url>scp://dev.local.net/var/www/html/apache-archiva-1.3.6/data/repositories/internal</url>
+		</repository>
+
+		<snapshotRepository>
+			<id>snapshots</id>
+			<name>Internal Snapshot Repository</name>
+			<url>scp://dev.local.net/var/www/html/apache-archiva-1.3.6/data/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 	<organization>
 		<name>Idiro Technologies</name>
@@ -60,34 +60,35 @@
 	</reporting>
 
 	<build>
-	
+
+
 		<extensions>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ssh</artifactId>
-                <version>1.0</version>
-            </extension>
-        </extensions>
-		
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh</artifactId>
+				<version>1.0</version>
+			</extension>
+		</extensions>
+
 		<pluginManagement>
-            <plugins>
-                
-                
-                <plugin>
-		        	<groupId>org.apache.maven.plugins</groupId>
-			        <artifactId>maven-compiler-plugin</artifactId>
-		        	<version>3.1</version>
-			        <configuration>
-		        		  <source>1.6</source>
-				          <target>1.6</target>
-			        </configuration>
-		      </plugin>
-                
-            </plugins>
-        </pluginManagement>
-		
-		
-		
+			<plugins>
+
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.1</version>
+					<configuration>
+						<source>1.6</source>
+						<target>1.6</target>
+					</configuration>
+				</plugin>
+
+			</plugins>
+		</pluginManagement>
+
+
+
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -114,6 +115,7 @@
 							<resources>
 								<resource>
 									<directory>${prod.resources}</directory>
+									<filtering>true</filtering>
 								</resource>
 							</resources>
 						</configuration>
@@ -147,7 +149,7 @@
 	</build>
 
 	<dependencies>
-	
+
 		<dependency>
 			<groupId>idiro</groupId>
 			<artifactId>idm-wf-interface</artifactId>
@@ -160,20 +162,20 @@
 			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
-		
+
 		<!-- TEST -->
-		 <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.12</version>
-            <scope>compile</scope>
-        </dependency>
-        
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.12</version>
+			<scope>compile</scope>
+		</dependency>
+
 	</dependencies>
 
 </project>

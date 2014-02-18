@@ -34,7 +34,7 @@ function Canvas(name){
 	
 	
 	this.running = false;
-	this.isSaved = false;
+	this.saved = false;
 	this.pathFile = null;
 	
 	this.oldIdSelected = null;
@@ -1032,10 +1032,7 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
 	
 	var polygonLayer = canvasArray[canvasName].polygonLayer;
 
-	var img = new Image({
-		width : 16,
-		height : 16,
-	});
+	var img = new Image();
 	img.src = elementImg;
 
 	var result = createPolygon(img, 40, 50, numSides, canvasName);
@@ -1286,10 +1283,7 @@ function mountObj(canvasName) {
 				
 				// variable to control image of
 				// the object
-				var imgTab = new Image({
-					width : 16,
-					height : 16
-				});
+				var imgTab = new Image();
 				imgTab.src = jQuery(this).attr("src");
 
 				var srcImageText = new Kinetic.Text({
@@ -1494,9 +1488,9 @@ function getAllIconPositions(){
 }
 
 function save(path) {
-	saveWorkflow(selectedCanvas, path, getIconPositions());
 	setSaved(selectedCanvas, true);
 	setPathFile(selectedCanvas, path);
+	saveWorkflow(selectedCanvas, path, getIconPositions());
 }
 
 function configureCircle(canvasName, circle1) {
@@ -1715,6 +1709,12 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
 		rotateDeg = 360/(2*numSides);
 	}
 	
+	var height = 44.5/imgTab.naturalHeight;
+	var width = 44.5/imgTab.naturalWidth;
+	
+	var offsetY = imgTab.height/2;
+	var offsetX = imgTab.width/2;
+	
 	var polygonTab = new Kinetic.RegularPolygon({
 		x : 40,
 		y : 50,
@@ -1723,11 +1723,12 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
 		stroke : 'black',
 		strokeWidth : 4,
 		fillPatternImage : imgTab,
-		fillPatternOffset : [ 7, 7 ],
-		fillPatternX : -18,
-		fillPatternY : 0,
+		fillPatternOffset : [ offsetX, offsetY ],
+//		fillPatternX : -18,
+//		fillPatternY : 0,
 		fillPatternRepeat : 'no-repeat',
 		fillPatternRotationDeg : -rotateDeg,
+		fillPatternScale : [height, width],
 		draggable : false
 	});
 	polygonTab.rotateDeg(rotateDeg);
@@ -2071,4 +2072,48 @@ function getPathFile(canvasName){
 
 function capitaliseFirstLetter(string){
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();;
+}
+
+
+
+var isSaveAll = false;
+var indexSaving;
+var contSaving;
+	
+function saveAll(){
+	isSaveAll = true;
+	indexSaving = 0;
+	contSaving = 0;
+	selectedCanvas = nameTabs[0];
+	setWorkflow(nameTabs[0]);
+	if (isSaved(nameTabs[0])){
+		save(getPathFile(nameTabs[0]));
+		indexSaving++;
+	}
+	else{
+		Richfaces.showModalPanel('modalSaveWorkflow');
+	}
+}
+	
+function onHideModalSaveWorkflow(saved){
+   	//<![CDATA[
+	if (!saved){
+		indexSaving++;
+	}
+   	contSaving++;
+   	if (isSaveAll == true && contSaving < numTabs){
+   		selectedCanvas = nameTabs[indexSaving];
+   		setWorkflow(nameTabs[indexSaving]);
+   		if (isSaved(nameTabs[indexSaving])){
+	   		save(getPathFile(nameTabs[indexSaving]));
+	   		indexSaving++;
+	   	}
+	   	else{
+	   		Richfaces.showModalPanel('modalSaveWorkflow');
+	   	}
+   	}
+   	else{
+   		isSaveAll = false;
+   	}
+   	//]]>
 }

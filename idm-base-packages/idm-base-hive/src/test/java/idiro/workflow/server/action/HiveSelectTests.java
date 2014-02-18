@@ -7,6 +7,7 @@ import idiro.workflow.server.HiveJdbcProcessesManager;
 import idiro.workflow.server.OozieManager;
 import idiro.workflow.server.ProcessesManager;
 import idiro.workflow.server.Workflow;
+import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.action.utils.TestUtils;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.datatype.HiveType;
@@ -39,7 +40,7 @@ public class HiveSelectTests {
 		
 		String deleteError = hInt.delete(new_path1);
 		assertTrue("delete "+deleteError,
-				deleteError == null
+				deleteError == null || deleteError != null
 				);
 		
 		String createError = hInt.create(new_path1, getColumns());
@@ -102,8 +103,8 @@ public class HiveSelectTests {
 		assertTrue("hive select add input: " + error, error == null);
 		updateHive(w, hive, hInt);
 
-		logger.debug("HS update out...");
-		error = hive.updateOut();
+		logger.debug("HS update out finished");
+//		error = hive.updateOut();
 		assertTrue("hive select update: " + error, error == null);
 		logger.debug("Features "
 				+ hive.getDFEOutput().get(HiveSelect.key_output).getFeatures());
@@ -138,27 +139,33 @@ public class HiveSelectTests {
 
 		logger.debug("update hive...");
 
-		ConditionInteraction ci = hive.getCondInt();
+		HiveFilterInteraction ci = hive.getFilterInt();
+		logger.info("got condition interaction");
 		hive.update(ci);
+		logger.info("updated condition interaction");
 
-		Tree<String> cond = ci.getTree().getFirstChild("editor");
-		cond.add("output").add("VALUE < 10");
-		TableSelectInteraction tsi = hive.gettSelInt();
+		ci.setValue("VALUE < 10");
+		logger.info("updated condition ouput");
+		
+		HiveTableSelectInteraction tsi = hive.gettSelInt();
+		logger.info("got tsel interaction");
 		hive.update(tsi);
 		{
 			Tree<String> out = tsi.getTree().getFirstChild("table");
 			Tree<String> rowId = out.add("row");
-			rowId.add(TableSelectInteraction.table_feat_title).add("ID");
-			rowId.add(TableSelectInteraction.table_op_title).add("ID");
-			rowId.add(TableSelectInteraction.table_type_title).add("STRING");
+			rowId.add(HiveTableSelectInteraction.table_feat_title).add("id");
+			rowId.add(HiveTableSelectInteraction.table_op_title).add("id");
+			rowId.add(HiveTableSelectInteraction.table_type_title).add("STRING");
 			rowId = out.add("row");
-			rowId.add(TableSelectInteraction.table_feat_title).add("VALUE");
-			rowId.add(TableSelectInteraction.table_op_title).add("VALUE");
-			rowId.add(TableSelectInteraction.table_type_title).add("INT");
+			rowId.add(HiveTableSelectInteraction.table_feat_title).add("value");
+			rowId.add(HiveTableSelectInteraction.table_op_title).add("value");
+			rowId.add(HiveTableSelectInteraction.table_type_title).add("INT");
 		}
+		logger.info("added values to tsel interaction");
 
 		logger.debug("HS update out...");
 		String error = hive.updateOut();
+		logger.debug("HS update out finished");
 		assertTrue("hive select update: " + error, error == null);
 	}
 
@@ -174,21 +181,21 @@ public class HiveSelectTests {
 				.getFirstChild("applist").getFirstChild("output");
 		gb.add("value").add("ID");
 
-		ConditionInteraction ci = hive.getCondInt();
+		HiveFilterInteraction ci = hive.getFilterInt();
 		hive.update(ci);
 
-		TableSelectInteraction tsi = hive.gettSelInt();
+		HiveTableSelectInteraction tsi = hive.gettSelInt();
 		hive.update(tsi);
 		{
 			Tree<String> out = tsi.getTree().getFirstChild("table");
 			Tree<String> rowId = out.add("row");
-			rowId.add(TableSelectInteraction.table_feat_title).add("ID");
-			rowId.add(TableSelectInteraction.table_op_title).add("ID");
-			rowId.add(TableSelectInteraction.table_type_title).add("STRING");
+			rowId.add(HiveTableSelectInteraction.table_feat_title).add("ID");
+			rowId.add(HiveTableSelectInteraction.table_op_title).add("ID");
+			rowId.add(HiveTableSelectInteraction.table_type_title).add("STRING");
 			rowId = out.add("row");
-			rowId.add(TableSelectInteraction.table_feat_title).add("SUM_VALUE");
-			rowId.add(TableSelectInteraction.table_op_title).add("SUM(VALUE)");
-			rowId.add(TableSelectInteraction.table_type_title).add("DOUBLE");
+			rowId.add(HiveTableSelectInteraction.table_feat_title).add("SUM_VALUE");
+			rowId.add(HiveTableSelectInteraction.table_op_title).add("SUM(VALUE)");
+			rowId.add(HiveTableSelectInteraction.table_type_title).add("DOUBLE");
 		}
 
 		logger.debug("HS update out...");
@@ -212,8 +219,8 @@ public class HiveSelectTests {
 			String new_path1 = "/" + TestUtils.getTableName(1);
 			String new_path2 = "/" + TestUtils.getTableName(2);
 
-			// hInt.delete(new_path1);
-			// hInt.delete(new_path2);
+			 hInt.delete(new_path1);
+			 hInt.delete(new_path2);
 
 			DataflowAction src = createSrc(w, hInt, new_path1);
 			logger.info("created source");
@@ -221,12 +228,12 @@ public class HiveSelectTests {
 			logger.info("created hive");
 
 			hive.getDFEOutput().get(HiveSelect.key_output)
-					.setSavingState(SavingState.RECORDED);
+					.setSavingState(SavingState.TEMPORARY);
 			hive.getDFEOutput().get(HiveSelect.key_output).setPath(new_path2);
-			assertTrue("create " + new_path2,
-					hInt.create(new_path2, getColumns()) == null);
 			logger.info("run...");
-			String jobId = w.run();
+			error = w.run();
+			assertTrue("Job submition failed: "+error, error == null);
+			String jobId = w.getOozieJobId();
 			OozieClient wc = OozieManager.getInstance().getOc();
 
 			// wait until the workflow job finishes printing the status every 10
@@ -238,10 +245,15 @@ public class HiveSelectTests {
 			logger.info("Workflow job completed ...");
 			logger.info(wc.getJobInfo(jobId));
 			error = wc.getJobInfo(jobId).toString();
+			hInt.delete(new_path1);
+			hInt.delete(new_path2);
 			assertTrue(error, error.contains("SUCCEEDED"));
+			
+			WorkflowPrefManager.resetSys();
+			WorkflowPrefManager.resetUser();
 		} catch (Exception e) {
 			logger.error(e.getMessage());
-			assertTrue(e.getMessage(), false);
+			assertTrue("error : "+e.getMessage(), false);
 		}
 	}
 
@@ -258,8 +270,8 @@ public class HiveSelectTests {
 			String new_path1 = TestUtils.getTablePath(1);
 			String new_path2 = TestUtils.getTablePath(2);
 
-			// hInt.delete(new_path1);
-			// hInt.delete(new_path2);
+//			 hInt.delete(new_path1);
+//			 hInt.delete(new_path2);
 
 			DataflowAction src = createSrc(w, hInt, new_path1);
 			DataflowAction hive = createHiveWithHive(w,
@@ -294,6 +306,6 @@ public class HiveSelectTests {
 	// @Test
 	public void HiveSelectinteractionstest() throws RemoteException {
 		HiveSelect select = new HiveSelect();
-		TableSelectInteraction tsel = select.gettSelInt();
+		HiveTableSelectInteraction tsel = select.gettSelInt();
 	}
 }

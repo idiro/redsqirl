@@ -30,16 +30,16 @@
 		maxlength="255" style="width:395px;" />
 	
 	<a4j:commandLink action="#{hdfsSaveBean.changePath}" reRender="hdfsfsSaveFile,hdfsSaveFileBtn">
-		<img src="../image/icons/button-search.gif" />
+		<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' />
 	</a4j:commandLink>
 	
 	<a4j:commandLink action="#{hdfsSaveBean.goPrevious}"
 		reRender="pathSaveFile,hdfsfsSaveFile,hdfsSaveFileBtn">
-		<img id="btAdd" src="../image/icons/button-previous.gif" />
+		<h:graphicImage id="btPrev" value="../image/icons/button-previous.gif" title='#{messages.HdfsInterface_previous_help}'/>
 	</a4j:commandLink>
 	
 	<a4j:commandLink action="#{hdfsSaveBean.goNext}" reRender="pathSaveFile,hdfsfsSaveFile,hdfsSaveFileBtn">
-		<img id="btAdd" src="../image/icons/button-next.gif" />
+		<h:graphicImage id="btNext" value="../image/icons/button-next.gif" title='#{messages.HdfsInterface_next_help}' />
 	</a4j:commandLink>
 
 	<br/><br/>
@@ -89,12 +89,12 @@
 
 	<a4j:commandButton id="hdfsSaveFileBtn" value="#{messages.button_ok}"
 		onclick="#{rich:component('modalSaveWorkflow')}.hide();save(getPath('#{hdfsSaveBean.path}'));"
-		oncomplete="onHideModalSaveWorkflow();" reRender="errorTable" >
+		oncomplete="" reRender="errorTable" >
 	</a4j:commandButton>
 	
 	<a4j:commandButton value="#{messages.button_cancel}"
 		onclick="#{rich:component('modalSaveWorkflow')}.hide();"
-		oncomplete="onHideModalSaveWorkflow();">
+		oncomplete="onHideModalSaveWorkflow(false);">
 	</a4j:commandButton>
 	
 </ui:composition>

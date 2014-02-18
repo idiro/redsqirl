@@ -25,7 +25,7 @@ public class SSHInterfaceTests {
 	public void basic(){
 		TestUtils.logTestTitle("HDFSInterfaceTests#basic");
 		try{
-			SSHInterface hInt = new SSHInterface("localhost",22);
+			SSHInterface hInt = new SSHInterface("namenode",22);
 			
 			logger.debug("We are in: "+hInt.getPath());
 			
@@ -77,7 +77,7 @@ public class SSHInterfaceTests {
 			hInt.close();
 		}catch(Exception e){
 			logger.error(e.getMessage());
-			assertTrue(e.getMessage(),false);
+			assertTrue("error : "+e.getMessage(),false);
 		}
 	}
 	
@@ -86,26 +86,42 @@ public class SSHInterfaceTests {
 	public void check_save(){
 		TestUtils.logTestTitle("HDFSInterfaceTests#save");
 		try{
+			logger.info("1");
 			SSHInterface.resetKnownHost();
+			logger.info("2");
 			assertTrue("No host should be there",SSHInterface.getKnownHost().isEmpty());
-			assertTrue("Fail to add localhost",SSHInterface.addKnownHost("localhost", 22) == null);
-			assertTrue("Does not contains localhost",SSHInterface.getKnownHost().contains("localhost"));
-			assertTrue("localhost is normally already inserted",SSHInterface.addKnownHost("localhost", 22) != null);
+			logger.info("3");
+			assertTrue("Fail to add localhost",SSHInterface.addKnownHost("datanode2", 22) == null);
+			logger.info("4");
+			assertTrue("Does not contains localhost",SSHInterface.getKnownHost().contains("datanode2"));
+			logger.info("5");
+			assertTrue("localhost is normally already inserted",SSHInterface.addKnownHost("datanode2", 22) != null);
+			logger.info("6");
 			assertTrue("Fail to add namenode server",SSHInterface.addKnownHost("namenode", 22) == null);
-			assertTrue("List should still contain localhost",SSHInterface.getKnownHost().contains("localhost"));
+			logger.info("7");
+			assertTrue("List should still contain localhost",SSHInterface.getKnownHost().contains("datanode2"));
+			logger.info("8");
 			assertTrue("List should contain namenode", SSHInterface.getKnownHost().contains("namenode"));
+			logger.info("9");
 			assertTrue("Fail to remove namenode",SSHInterface.removeKnownHost("namenode") == null);
-			assertTrue("List should still contain localhost",SSHInterface.getKnownHost().contains("localhost"));
-			assertTrue("List should not contain namenode anymore", !SSHInterface.getKnownHost().contains("namenode"));
+			logger.info("10");
+			assertTrue("List should still contain localhost",SSHInterface.getKnownHost().contains("datanode2"));
+			logger.info("11");
+			assertTrue("List should not contain namenode anymore", !SSHInterface.getKnownHost().contains("localhost"));
+			logger.info("12");
 			
 			Map<String,DataStore> l = SSHInterface.getHosts();
+			logger.info("13");
 			assertTrue(l.size() == 1);
-			l.get("localhost").close();
-			assertTrue("Fail to remove localhost",SSHInterface.removeKnownHost("localhost") == null);
+			logger.info("14");
+			l.get("datanode2").close();
+			logger.info("15");
+			assertTrue("Fail to remove localhost",SSHInterface.removeKnownHost("datanode2") == null);
+			logger.info("16");
 			assertTrue("List should be empty",SSHInterface.getKnownHost().isEmpty());
 		}catch(Exception e){
 			logger.error(e.getMessage());
-			assertTrue(e.getMessage(),false);
+			assertTrue("error : "+e.getMessage(),false);
 		}
 		
 	}
