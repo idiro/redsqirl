@@ -670,7 +670,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				FileSystem fs = NameNodeVar.getFS();
 				fs.moveFromLocalFile(new Path(tempPath), new Path(filePath));
 				fs.close();
-
 				saved = true;
 				logger.debug("file saved successfully");
 			}
