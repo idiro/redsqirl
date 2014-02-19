@@ -5,6 +5,7 @@ import idiro.hadoop.checker.HdfsFileChecker;
 import idiro.tm.task.in.Preference;
 import idiro.utils.FeatureList;
 import idiro.workflow.server.connect.interfaces.DataStore;
+import idiro.workflow.server.datatype.MapRedBinaryType;
 import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.utils.LanguageManagerWF;
 
@@ -351,6 +352,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 				maxToRead *= feats.getSize();
 				int i = 0;
 				String toWrite = "";
+				logger.info("delim : "+delimiter);
 				while (reader.readLine(line) != 0 && lineNb < maxToRead) {
 					int val = BytesWritable.Comparator.readInt(line.getBytes(),
 							0);
@@ -379,7 +381,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 						ans.add(toWrite);
 						toWrite = "";
 					} else {
-						toWrite += delimiter;
+						toWrite += MapRedBinaryType.delim;
 					}
 					++i;
 					if(i >= feats.getSize()){

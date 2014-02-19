@@ -243,18 +243,17 @@ public class SourceTests {
 			logger.info("something");
 			Tree<String> dataSetTree = src.getInteraction(Source.key_dataset)
 					.getTree();
-			logger.info("something 1");
 			dataSetTree.getFirstChild("browse").getFirstChild("output")
 					.add("path").add(new_path1);
-			logger.info("something 2");
 			dataSetTree.getFirstChild("browse").getFirstChild("output")
-					.add("property").add(MapRedTextType.key_header)
-					.add("A INT , B INT , C INT");
-			logger.info("something 3");
-
+			.add("property").add(MapRedTextType.key_header)
+			.add("A INT , B INT , C INT");
+			
 			error = null;
 			error = src.updateOut();
 			assertTrue("error update out : " + error, error == null);
+			
+			
 			MapRedBinaryType out = (MapRedBinaryType) src.getDFEOutput().get(
 					src.out_name);
 			List<String> result = out.select(1);

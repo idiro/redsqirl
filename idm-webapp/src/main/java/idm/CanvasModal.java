@@ -1651,8 +1651,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 							}
 						}else{
 							String delimiter =  dfeOut.getProperty("delimiter");
-
-							if(delimiter.length() > 1){
+							if(delimiter == null || delimiter.isEmpty()){
+								delimiter = "\001";
+							}else if(delimiter.length() > 1){
 								delimiter = String.valueOf(Character.toChars(Integer.valueOf(dfeOut.getProperty("delimiter").substring(1))));
 							}
 

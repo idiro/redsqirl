@@ -26,9 +26,10 @@ public class MapRedBinaryType extends MapRedTextType {
 	 */
 	private static final long serialVersionUID = -6720621203419913600L;
 
+	public static final String delim = "\001";
+	
 	public MapRedBinaryType() throws RemoteException {
 		super();
-		dataProperty.put(key_delimiter, "#1");
 	}
 
 	public MapRedBinaryType(FeatureList features) throws RemoteException {
@@ -72,7 +73,7 @@ public class MapRedBinaryType extends MapRedTextType {
 						
 						ans.addAll(hdfsInt.selectSeq(stat[i].getPath()
 								.toString(),
-								getChar(getProperty(key_delimiter)),
+								delim,
 								maxToRead, getFeatures()));
 					}
 				} catch (IOException e) {

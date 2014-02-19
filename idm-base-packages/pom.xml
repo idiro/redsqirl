@@ -8,7 +8,8 @@
     <artifactId>idm-base-packages</artifactId>
     <version>0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
-
+	<url>http://ns.local.net/dev/idm</url>
+	
     <parent>
         <groupId>idiro</groupId>
         <artifactId>idm</artifactId>
@@ -16,10 +17,10 @@
     </parent>
 
     <modules>
-        <module>hive</module>
-        <!--
-        <module>pig</module>
-        <module>rhipe</module>-->
+        <module>idm-base-hive</module>
+        
+        <module>idm-base-pig</module>
+        <!-- <module>rhipe</module>-->
     </modules>
 
     <dependencies>

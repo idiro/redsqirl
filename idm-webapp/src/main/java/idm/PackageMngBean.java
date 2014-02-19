@@ -136,16 +136,16 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	public boolean isAdmin(){
 		boolean admin = false;
-		logger.info("is admin");
+		logger.debug("is admin");
 		FacesContext fCtx = FacesContext.getCurrentInstance();
 		HttpSession session = (HttpSession) fCtx.getExternalContext()
 				.getSession(false);
 		String user = (String) session.getAttribute("username");
-		logger.info("user: "+user);
-		logger.info(WorkflowPrefManager.
+		logger.debug("user: "+user);
+		logger.debug(WorkflowPrefManager.
 		getSysProperty(
 				WorkflowPrefManager.sys_admin_user, ""));
-		logger.info(WorkflowPrefManager.
+		logger.debug(WorkflowPrefManager.
 				getSysProperty(
 						WorkflowPrefManager.sys_admin_user));
 		
@@ -154,7 +154,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 				WorkflowPrefManager.sys_admin_user, "").split(":");
 		for(String cur: admins){
 			admin = admin || cur.equals(user);
-			logger.info("admin user: "+cur);
+			logger.debug("admin user: "+cur);
 		}
 		return admin;
 	}

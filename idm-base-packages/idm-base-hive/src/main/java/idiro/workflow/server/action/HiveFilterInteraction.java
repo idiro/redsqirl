@@ -94,7 +94,7 @@ public class HiveFilterInteraction extends EditorInteraction {
 	}
 
 	public String getQueryPiece() throws RemoteException {
-		logger.debug("where...");
+		logger.info("where...");
 		String where = "";
 		if (getTree().getFirstChild("editor").getFirstChild("output")
 				.getSubTreeList().size() > 0) {
