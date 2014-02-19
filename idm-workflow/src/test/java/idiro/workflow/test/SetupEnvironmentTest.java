@@ -23,6 +23,7 @@ import idiro.workflow.server.connect.interfaces.HDFSInterfaceTests;
 import idiro.workflow.server.connect.interfaces.HiveInterfaceTests;
 import idiro.workflow.server.connect.interfaces.SSHInterfaceArrayTests;
 import idiro.workflow.server.connect.interfaces.SSHInterfaceTests;
+import idiro.workflow.server.datatype.HDFSTypeTests;
 import idiro.workflow.server.datatype.HiveTypeTests;
 
 import java.io.File;
@@ -59,7 +60,7 @@ import org.junit.runners.Suite.SuiteClasses;
 //	ListInteractionTests.class,
 //	EditorInteractionTests.class,
 //	TableInteractionTests.class,
-	
+//	HDFSTypeTests.class,
 	})
 public class SetupEnvironmentTest {
 	
