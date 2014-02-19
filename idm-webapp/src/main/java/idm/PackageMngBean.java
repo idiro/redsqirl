@@ -216,7 +216,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	}
 
 	public void installPackage() throws RemoteException{
-		logger.info("install package---------------------------------------------------");
+		logger.info("install package");
 			
 		String error = null;
 		if( userInstall){

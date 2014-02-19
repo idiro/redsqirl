@@ -69,6 +69,7 @@ public class HiveUnion extends HiveElement {
 				0, 0, this);
 		
 		page2.addInteraction(tUnionCond);
+		page2.addInteraction(typeOutputInt);
 
 	}
 
@@ -121,7 +122,7 @@ public class HiveUnion extends HiveElement {
 			String createSelect = tUnionSelInt.getCreateQueryPiece(out);
 
 			String condition = condInt.getQueryPiece();
-
+			
 			if (select.isEmpty()) {
 				logger.debug("Nothing to select");
 			} else {

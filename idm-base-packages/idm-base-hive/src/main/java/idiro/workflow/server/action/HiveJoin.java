@@ -5,9 +5,7 @@ import idiro.utils.OrderedFeatureList;
 import idiro.utils.Tree;
 import idiro.workflow.server.ListInteraction;
 import idiro.workflow.server.Page;
-import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.connect.HiveInterface;
-import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.utils.HiveLanguageManager;
@@ -89,6 +87,7 @@ public class HiveJoin extends HiveElement {
 		condInt = new HiveFilterInteraction(0, 2, this);
 
 		page3.addInteraction(condInt);
+		page3.addInteraction(typeOutputInt);
 
 	}
 
@@ -142,7 +141,7 @@ public class HiveJoin extends HiveElement {
 
 			String select = tJoinInt.getQueryPiece();
 			String createSelect = tJoinInt.getCreateQueryPiece();
-
+			
 			if (select.isEmpty()) {
 				logger.debug("Nothing to select");
 			} else {

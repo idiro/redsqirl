@@ -408,46 +408,7 @@ public class MapRedTextType extends DataOutput {
 		return "#1";
 	}
 
-	private FeatureType getType(String expr) {
-
-		FeatureType type = null;
-		if (expr.equalsIgnoreCase("TRUE") || expr.equalsIgnoreCase("FALSE")) {
-			type = FeatureType.BOOLEAN;
-		} else {
-			try {
-				Integer.valueOf(expr);
-				type = FeatureType.INT;
-			} catch (Exception e) {
-			}
-			if (type == null) {
-				try {
-					Long.valueOf(expr);
-					type = FeatureType.LONG;
-				} catch (Exception e) {
-				}
-			}
-			if (type == null) {
-				try {
-					Float.valueOf(expr);
-					type = FeatureType.FLOAT;
-				} catch (Exception e) {
-				}
-			}
-			if (type == null) {
-				try {
-					Double.valueOf(expr);
-					type = FeatureType.DOUBLE;
-				} catch (Exception e) {
-				}
-			}
-			if (type == null) {
-				type = FeatureType.STRING;
-			}
-		}
-		logger.info("getType: " + expr + " - " + type);
-		return type;
-	}
-
+	
 	private boolean canCast(FeatureType from, FeatureType to) {
 		if (from.equals(to)) {
 			return true;
