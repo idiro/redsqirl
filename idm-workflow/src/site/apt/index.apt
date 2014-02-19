@@ -1,0 +1,10 @@
+            ------
+            Idiro Base
+            ------
+
+Introduction
+
+  The idiro-base project is a framework that provide functionalities useful for
+any idiro project such as : log4j initialisation, block implementation, sql
+statement interface and mysql implementation.
+

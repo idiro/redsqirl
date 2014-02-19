@@ -12,20 +12,20 @@ import java.rmi.RemoteException;
  * @author etienne
  *
  */
-public class HiveTypeWithWhere extends HiveType{
+public class HiveTypePartition extends HiveType{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 937674007867999596L;
 
-	public static final String key_where = "where";
+	public static final String usePartition ="partitoned" ;
 	
-	public HiveTypeWithWhere() throws RemoteException {
+	public HiveTypePartition() throws RemoteException {
 		super();
 	}
 	
-	public HiveTypeWithWhere(FeatureList features)
+	public HiveTypePartition(FeatureList features)
 			throws RemoteException {
 		super(features);
 	}

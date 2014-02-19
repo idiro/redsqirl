@@ -8,7 +8,7 @@ import idiro.workflow.server.ListInteraction;
 import idiro.workflow.server.Page;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.datatype.HiveType;
-import idiro.workflow.server.datatype.HiveTypeWithWhere;
+import idiro.workflow.server.datatype.HiveTypePartition;
 import idiro.workflow.server.datatype.MapRedTextType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFELinkProperty;
@@ -91,7 +91,7 @@ public class Convert extends DataflowAction {
 	protected static void init() throws RemoteException{
 		if(input == null){
 			List<Class<? extends DFEOutput>> l = new LinkedList<Class<? extends DFEOutput>>();
-			l.add(HiveTypeWithWhere.class);
+			l.add(HiveTypePartition.class);
 			l.add(MapRedTextType.class);
 			Map<String, DFELinkProperty> in = new LinkedHashMap<String, DFELinkProperty>();
 			in.put(key_input, new DataProperty(l, 1, 1));
@@ -245,7 +245,7 @@ public class Convert extends DataflowAction {
 		
 		String select = "INSERT OVERWRITE TABLE "+table_ext+"\n";
 		select += "select * from "+hi.getTableAndPartitions(in.getPath())[0];
-		String where = in.getProperty(HiveTypeWithWhere.key_where);
+		String where = in.getProperty(HiveTypePartition.key_partitions);
 		if(where != null && !where.isEmpty()){
 			select += " where "+where;
 		}

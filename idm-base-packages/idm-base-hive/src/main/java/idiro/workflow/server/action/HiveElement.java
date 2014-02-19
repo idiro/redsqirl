@@ -9,7 +9,7 @@ import idiro.workflow.server.ListInteraction;
 import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.datatype.HiveType;
-import idiro.workflow.server.datatype.HiveTypeWithWhere;
+import idiro.workflow.server.datatype.HiveTypePartition;
 import idiro.workflow.server.datatype.MapRedBinaryType;
 import idiro.workflow.server.datatype.MapRedTextType;
 import idiro.workflow.server.interfaces.DFEInteraction;
@@ -35,7 +35,7 @@ import java.util.Set;
  * Common functionalities for a Hive action. A Hive action support as input and
  * output
  * 
- * @see HiveTypeWithWhere. Hence any HiveElement can be outputed in a table or
+ * @see HiveTypePartition. Hence any HiveElement can be outputed in a table or
  *      in a partition.
  * 
  * @author etienne
@@ -118,7 +118,7 @@ public abstract class HiveElement extends DataflowAction {
 	protected void init(int nbInMin, int nbInMax) throws RemoteException {
 		if (input == null) {
 			Map<String, DFELinkProperty> in = new LinkedHashMap<String, DFELinkProperty>();
-			in.put(key_input, new DataProperty(HiveTypeWithWhere.class,
+			in.put(key_input, new DataProperty(HiveTypePartition.class,
 					nbInMin, nbInMax));
 			input = in;
 		}
@@ -179,7 +179,7 @@ public abstract class HiveElement extends DataflowAction {
 
 			HiveType type = null;
 			if (useTable()){
-				type = new HiveTypeWithWhere();
+				type = new HiveTypePartition();
 			}
 			else{
 				type = new HiveType();
