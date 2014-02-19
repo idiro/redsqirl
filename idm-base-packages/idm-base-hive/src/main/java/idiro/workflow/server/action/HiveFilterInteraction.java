@@ -5,7 +5,7 @@ import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.EditorInteraction;
 import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.action.utils.HiveDictionary;
-import idiro.workflow.server.datatype.HiveTypeWithWhere;
+import idiro.workflow.server.datatype.HiveTypePartition;
 import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.utils.HiveLanguageManager;
@@ -120,7 +120,7 @@ public class HiveFilterInteraction extends EditorInteraction {
 		Iterator<DFEOutput> it = out.iterator();
 		while (it.hasNext()) {
 			DFEOutput cur = it.next();
-			String where_loc = cur.getProperty(HiveTypeWithWhere.key_where);
+			String where_loc = cur.getProperty(HiveTypePartition.key_partitions);
 			if (where_loc != null) {
 				if (where.isEmpty()) {
 					where = where_loc;
@@ -136,7 +136,7 @@ public class HiveFilterInteraction extends EditorInteraction {
 		String where = "";
 		DFEOutput out = el.getAliases().get(alias);
 		if (out != null) {
-			where = out.getProperty(HiveTypeWithWhere.key_where);
+			where = out.getProperty(HiveTypePartition.key_partitions);
 			if (where == null) {
 				where = "";
 			}

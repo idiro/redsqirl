@@ -1,19 +1,16 @@
 package idiro.workflow.server.action;
 
 import idiro.utils.FeatureList;
-import idiro.utils.Tree;
 import idiro.workflow.server.Page;
-import idiro.workflow.server.UserInteraction;
+import idiro.workflow.server.action.utils.HiveDictionary;
 import idiro.workflow.server.connect.HiveInterface;
-import idiro.workflow.server.enumeration.DisplayType;
+import idiro.workflow.server.datatype.HiveType;
+import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.utils.HiveLanguageManager;
 
 import java.rmi.RemoteException;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 /**
  * Action to do a simple select statement in HiveQL.
@@ -58,6 +55,7 @@ public class HiveSelect extends HiveElement {
 		condInt = new HiveFilterInteraction(0, 0, this);
 
 		page2.addInteraction(condInt);
+		page2.addInteraction(typeOutputInt);
 
 	}
 
@@ -110,14 +108,48 @@ public class HiveSelect extends HiveElement {
 
 			String select = tSelInt.getQueryPiece(out);
 			String createSelect = tSelInt.getCreateQueryPiece(out);
-
+			
+			//partition code
+			String createPartition = "";
+			String insertPartition = "";
+			if (typeOutputInt.getValue().equals(messageTypePartition) ||
+					typeOutputInt.getValue().equals(messageTypeOnlyPartition)){
+			
+	//			String createPartition = "PARTITIONED BY (ID STRING)";
+	//			String insertPartition = "PARTITION(ID='my_id')";
+				
+				createPartition += "PARTITIONED BY (";
+				insertPartition += "PARTITION(";
+				
+				String[] partitions = hInt.getTableAndPartitions(out.getPath());
+				boolean firstElement = true;
+				for (int i = 1; i < partitions.length; ++i){
+					String name = partitions[i].split("=")[0];
+					String value = partitions[i].split("=")[1];
+					FeatureType type = HiveType.getType(value);
+					
+					createPartition += name + " " + HiveDictionary.getHiveType(type);
+					insertPartition += partitions[i];
+					
+					if (!firstElement){
+						createPartition += ", ";
+						insertPartition += ", ";
+					}
+					
+					firstElement = false;
+				}
+				createPartition += ")";
+				insertPartition += ")";
+			}
+			//end partition code
+			
 			if (select.isEmpty()) {
 				logger.debug("Nothing to select");
 			} else {
-				query = create + "\n" + createSelect 
+				query = create + "\n" + createSelect + createPartition
 						+ ";\n\n";
 
-				query += insert + "\n" + select + "\n" + from + "\n" +
+				query += insert + "\n" + insertPartition + select + "\n" + from + "\n" +
 						where + ";";
 			}
 		}

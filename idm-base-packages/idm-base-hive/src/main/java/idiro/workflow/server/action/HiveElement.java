@@ -5,15 +5,18 @@ import idiro.utils.Tree;
 import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.DataProperty;
 import idiro.workflow.server.DataflowAction;
+import idiro.workflow.server.ListInteraction;
 import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.datatype.HiveType;
-import idiro.workflow.server.datatype.HiveTypeWithWhere;
+import idiro.workflow.server.datatype.HiveTypePartition;
+import idiro.workflow.server.datatype.MapRedBinaryType;
 import idiro.workflow.server.datatype.MapRedTextType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.oozie.HiveAction;
+import idiro.workflow.utils.HiveLanguageManager;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -23,6 +26,8 @@ import java.rmi.RemoteException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,7 +35,7 @@ import java.util.Set;
  * Common functionalities for a Hive action. A Hive action support as input and
  * output
  * 
- * @see HiveTypeWithWhere. Hence any HiveElement can be outputed in a table or
+ * @see HiveTypePartition. Hence any HiveElement can be outputed in a table or
  *      in a partition.
  * 
  * @author etienne
@@ -56,7 +61,7 @@ public abstract class HiveElement extends DataflowAction {
 	 */
 	protected HiveFilterInteraction condInt;
 	protected PartitionInteraction partInt;
-	protected UserInteraction typeOutputInt;
+	protected ListInteraction typeOutputInt;
 	protected HiveGroupByInteraction groupingInt;
 
 	/**
@@ -71,8 +76,9 @@ public abstract class HiveElement extends DataflowAction {
 	/**
 	 * Messages to change the output type
 	 */
-	protected static String messageTypeTable = "Use the table",
-			messageTypePartition = "Use the partition only";
+	protected static String messageTypeTable = HiveLanguageManager.getText("hive.typeoutput_interaction.noPartition"),
+			messageTypePartition = HiveLanguageManager.getText("hive.typeoutput_interaction.partition"),
+			messageTypeOnlyPartition = HiveLanguageManager.getText("hive.typeoutput_interaction.onlyPartition");
 
 	/**
 	 * Constructor
@@ -87,6 +93,18 @@ public abstract class HiveElement extends DataflowAction {
 		super(new HiveAction());
 		init(nbInMin, nbInMax);
 		this.minNbOfPage = minNbOfPage;
+		
+		typeOutputInt = new ListInteraction(
+				key_outputType,
+				HiveLanguageManager.getText("hive.typeoutput_interaction.title"),
+				HiveLanguageManager.getText("hive.typeoutput_interaction.legend"), nbInMax+1, 0);
+		typeOutputInt.setDisplayRadioButton(true);
+		List<String> typeOutput = new LinkedList<String>();
+		typeOutput.add( messageTypeTable);
+		typeOutput.add( messageTypePartition);
+		typeOutput.add( messageTypeOnlyPartition);
+		typeOutputInt.setPossibleValues(typeOutput);
+		typeOutputInt.setValue(messageTypeTable);
 
 	}
 
@@ -100,7 +118,7 @@ public abstract class HiveElement extends DataflowAction {
 	protected void init(int nbInMin, int nbInMax) throws RemoteException {
 		if (input == null) {
 			Map<String, DFELinkProperty> in = new LinkedHashMap<String, DFELinkProperty>();
-			in.put(key_input, new DataProperty(HiveTypeWithWhere.class,
+			in.put(key_input, new DataProperty(HiveTypePartition.class,
 					nbInMin, nbInMax));
 			input = in;
 		}
@@ -159,8 +177,16 @@ public abstract class HiveElement extends DataflowAction {
 		if (error == null) {
 			FeatureList new_features = getNewFeatures();
 
-			if (output.get(key_output) == null) {
-				output.put(key_output, new HiveType());
+			HiveType type = null;
+			if (useTable()){
+				type = new HiveTypePartition();
+			}
+			else{
+				type = new HiveType();
+			}
+			
+			if (output.get(key_output) == null || !output.get(key_output).equals(type)) {
+				output.put(key_output, type);
 			}
 			output.get(key_output).setFeatures(new_features);
 		}
@@ -203,7 +229,7 @@ public abstract class HiveElement extends DataflowAction {
 			}
 		}
 	}
-
+	
 	/**
 	 * Check the interaction of the output type
 	 * 

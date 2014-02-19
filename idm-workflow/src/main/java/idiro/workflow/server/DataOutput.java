@@ -424,4 +424,43 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 		return this.path.equals(path) && features.equals(fl)
 				&& dataProperty.equals(props);
 	}
+	
+	public static FeatureType getType(String expr) {
+
+		FeatureType type = null;
+		if (expr.equalsIgnoreCase("TRUE") || expr.equalsIgnoreCase("FALSE")) {
+			type = FeatureType.BOOLEAN;
+		} else {
+			try {
+				Integer.valueOf(expr);
+				type = FeatureType.INT;
+			} catch (Exception e) {
+			}
+			if (type == null) {
+				try {
+					Long.valueOf(expr);
+					type = FeatureType.LONG;
+				} catch (Exception e) {
+				}
+			}
+			if (type == null) {
+				try {
+					Float.valueOf(expr);
+					type = FeatureType.FLOAT;
+				} catch (Exception e) {
+				}
+			}
+			if (type == null) {
+				try {
+					Double.valueOf(expr);
+					type = FeatureType.DOUBLE;
+				} catch (Exception e) {
+				}
+			}
+			if (type == null) {
+				type = FeatureType.STRING;
+			}
+		}
+		return type;
+	}
 }
