@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.Properties;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -104,6 +105,8 @@ public class SetupHiveEnvironmentTest {
 		} catch (Exception e) {
 			logger.error("error creating hive jdbc file : " + e.getMessage());
 		}
+		Logger.getRootLogger().setLevel(Level.INFO);
+		logger.setLevel(Level.INFO);
 	}
 	
 	@AfterClass

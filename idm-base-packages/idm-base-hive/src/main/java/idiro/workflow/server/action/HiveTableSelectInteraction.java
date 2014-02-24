@@ -61,39 +61,44 @@ public class HiveTableSelectInteraction extends TableInteraction {
 		FeatureList fl = null;
 		String msg = super.check();
 
-		if(msg == null){
-			List<Map<String,String>> lRow = getValues();
+		if (msg == null) {
+			List<Map<String, String>> lRow = getValues();
 
-
-			if(lRow == null || lRow.isEmpty()){
-				msg = HiveLanguageManager.getText("hive.select_features_interaction.checkempty");
-			}else{
-				logger.info("Feats "+in.getFeatures().getFeaturesNames());
+			if (lRow == null || lRow.isEmpty()) {
+				msg = HiveLanguageManager
+						.getText("hive.select_features_interaction.checkempty");
+			} else {
+				logger.info("Feats " + in.getFeatures().getFeaturesNames());
 				Set<String> featGrouped = getFeatGrouped();
 				fl = getInputFeatureList();
 
-				Iterator<Map<String,String>> rows = lRow.iterator();
+				Iterator<Map<String, String>> rows = lRow.iterator();
 				int rowNb = 0;
-				while(rows.hasNext() && msg == null){
+				while (rows.hasNext() && msg == null) {
 					++rowNb;
-					Map<String,String> cur = rows.next();
+					Map<String, String> cur = rows.next();
 					String feattype = cur.get(table_type_title);
 					String feattitle = cur.get(table_feat_title);
 					String featoperation = cur.get(table_op_title);
 					logger.debug("checking : " + featoperation + " "
 							+ feattitle + " ");
-					try{
+					try {
 						String typeRetuned = HiveDictionary.getInstance()
 								.getReturnType(featoperation, fl, featGrouped);
 						logger.info("type returned : " + typeRetuned);
 						if (!HiveDictionary.check(feattype, typeRetuned)) {
-							msg = HiveLanguageManager.getText("hive.select_features_interaction.checkreturntype",
-									new Object[]{rowNb,featoperation,typeRetuned,feattype});
+							msg = HiveLanguageManager
+									.getText(
+											"hive.select_features_interaction.checkreturntype",
+											new Object[] { rowNb,
+													featoperation, typeRetuned,
+													feattype });
 						}
 						logger.info("added : " + featoperation
 								+ " to features type list");
-					}catch(Exception e){
-						msg = HiveLanguageManager.getText("hive.expressionexception");
+					} catch (Exception e) {
+						msg = HiveLanguageManager
+								.getText("hive.expressionexception");
 					}
 				}
 
@@ -226,9 +231,9 @@ public class HiveTableSelectInteraction extends TableInteraction {
 
 				String optitleRow = "";
 				String featname;
-				if(alias.isEmpty()){
+				if (alias.isEmpty()) {
 					optitleRow = addOperation(cur, operation);
-				}else{
+				} else {
 					optitleRow = addOperation(alias + "." + cur, operation);
 				}
 
@@ -298,38 +303,34 @@ public class HiveTableSelectInteraction extends TableInteraction {
 
 	public FeatureList getNewFeatures() throws RemoteException {
 		FeatureList new_features = new OrderedFeatureList();
-		Iterator<Map<String,String>> rowIt = getValues().iterator();
+		Iterator<Map<String, String>> rowIt = getValues().iterator();
 
 		while (rowIt.hasNext()) {
-			Map<String,String> rowCur = rowIt.next();
+			Map<String, String> rowCur = rowIt.next();
 			String name = rowCur.get(table_feat_title);
 			String type = rowCur.get(table_type_title);
-			
+
 			new_features.addFeature(name, HiveDictionary.getType(type));
 		}
 		return new_features;
 	}
 
 	public String getQueryPiece(DFEOutput out) throws RemoteException {
-		logger.debug("select...");
+		logger.info("select...");
 		String select = "";
-		Iterator<Tree<String>> selIt = getTree().getFirstChild("table")
-				.getChildren("row").iterator();
+		// Iterator<Tree<String>> selIt = getTree().getFirstChild("table")
+		// .getChildren("row").iterator();
+		Iterator<Map<String, String>> selIt = getValues().iterator();
 		if (selIt.hasNext()) {
-			Tree<String> cur = selIt.next();
-			String featName = cur.getFirstChild(table_feat_title)
-					.getFirstChild().getHead();
-			select = "SELECT "
-					+ cur.getFirstChild(table_op_title).getFirstChild()
-							.getHead() + " AS " + featName;
+			Map<String, String> cur = selIt.next();
+			String featName = cur.get(table_feat_title);
+			select = "SELECT " + cur.get(table_op_title) + " AS " + featName;
 		}
 		while (selIt.hasNext()) {
-			Tree<String> cur = selIt.next();
-			String featName = cur.getFirstChild(table_feat_title)
-					.getFirstChild().getHead();
-			select += ",\n       "
-					+ cur.getFirstChild(table_op_title).getFirstChild()
-							.getHead() + " AS " + featName;
+			Map<String, String> cur = selIt.next();
+			String featName = cur.get(table_feat_title);
+			select += ",\n       " + cur.get(table_op_title) + " AS "
+					+ featName;
 		}
 
 		return select;
@@ -402,30 +403,29 @@ public class HiveTableSelectInteraction extends TableInteraction {
 	}
 
 	public Set<String> getFeatGrouped() throws RemoteException {
-//		Set<String> featGrouped = null;
-//		// only show what is in grouped interaction
-//		if (hs.getGroupingInt() != null) {
-//			featGrouped = new HashSet<String>();
-//			logger.info("group interaction is not null");
-//			Iterator<String> grInt = hs.getGroupingInt()
-//					.getValues().iterator();
-//			while (grInt.hasNext()) {
-//				String feat =	grInt.next().toUpperCase();
-//				featGrouped.add(feat);
-//			}
-//		}
-		
+		// Set<String> featGrouped = null;
+		// // only show what is in grouped interaction
+		// if (hs.getGroupingInt() != null) {
+		// featGrouped = new HashSet<String>();
+		// logger.info("group interaction is not null");
+		// Iterator<String> grInt = hs.getGroupingInt()
+		// .getValues().iterator();
+		// while (grInt.hasNext()) {
+		// String feat = grInt.next().toUpperCase();
+		// featGrouped.add(feat);
+		// }
+		// }
+
 		return hs.getGroupByFeatures();
 	}
-	
-	public List<String> getFeatListGrouped() throws RemoteException{
+
+	public List<String> getFeatListGrouped() throws RemoteException {
 		List<String> featGrouped = null;
 		// only show what is in grouped interaction
 		if (hs.getGroupingInt() != null) {
 			featGrouped = new LinkedList<String>();
 			logger.info("group interaction is not null");
-			Iterator<String> grInt = hs.getGroupingInt()
-					.getValues().iterator();
+			Iterator<String> grInt = hs.getGroupingInt().getValues().iterator();
 			while (grInt.hasNext()) {
 				String feat = grInt.next();
 				featGrouped.add(feat);

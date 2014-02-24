@@ -1,6 +1,7 @@
 package idiro.workflow.server.datatype;
 
 import idiro.utils.FeatureList;
+import idiro.workflow.utils.LanguageManagerWF;
 
 import java.rmi.RemoteException;
 
@@ -21,8 +22,21 @@ public class HiveTypePartition extends HiveType{
 
 	public static final String usePartition ="partitoned" ;
 	
+	
 	public HiveTypePartition() throws RemoteException {
 		super();
+		addProperty(usePartition, "true");
+	}
+	
+	@Override
+	public void addProperty(String key ,String value){
+		if(usePartition.equals(key)){
+			if(value != null && value.trim().equalsIgnoreCase("true")){
+				super.addProperty(key, "true");
+			}else{
+				super.addProperty(key, "false");
+			}
+		}
 	}
 	
 	public HiveTypePartition(FeatureList features)
@@ -39,5 +53,35 @@ public class HiveTypePartition extends HiveType{
 	@Override
 	protected String getDefaultColor(){
 		return "SkyBlue"; 
+	}
+	
+	public String getWhere(){
+		String[] where = hInt.getTableAndPartitions(getPath());
+		String ans= "";
+		if(where.length > 1){
+			ans = "( "+where[1];
+			for(int i = 2; i < where.length;++i){
+				ans = " AND "+where[i];
+			}
+			ans = ") ";
+		}
+		return ans;
+	}
+	
+	@Override
+	public String isPathValid() throws RemoteException {
+		String error=null;
+		if(getPath() == null){
+			error = LanguageManagerWF.getText("hivetype.ispathvalid.pathnull");
+		}
+		if (isPathExists()){
+			return hInt.isPathValid(getPath(), features, getProperty(usePartition));
+		}else{
+			String regex = "[a-zA-Z_]([A-Za-z0-9_]+)";
+			if (!hInt.getTableAndPartitions(getPath())[0].matches(regex)) {
+				error = LanguageManagerWF.getText("hivetype.ispathvalid.invalid");
+			}
+		}
+		return error;
 	}
 }

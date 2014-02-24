@@ -166,7 +166,7 @@ public class SourceTests {
 		}
 	}
 
-	// @Test
+	 @Test
 	public void basicHDFS() {
 		TestUtils.logTestTitle("SourceTests#basicHDFS");
 		try {
@@ -214,7 +214,7 @@ public class SourceTests {
 		}
 	}
 
-	@Test
+//	@Test
 	public void basicHDFSBinStore() {
 		TestUtils.logTestTitle("SourceTests#basicHDFSBinStore");
 		try {

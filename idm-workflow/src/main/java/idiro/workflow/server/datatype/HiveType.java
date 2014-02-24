@@ -37,7 +37,6 @@ public class HiveType extends DataOutput{
 	 */
 	private static final long serialVersionUID = -4797761333298548415L;
 	protected static HiveInterface hInt;
-	public static final String key_partitions = "key_partitions";
 	//	public static final String key_alias = "alias";
 	private boolean constant; 
 
@@ -46,7 +45,6 @@ public class HiveType extends DataOutput{
 		if(hInt == null){
 			hInt = new HiveInterface();
 		}
-		//		addProperty(key_alias,"");
 		setConstant(true);
 	}
 
@@ -108,8 +106,12 @@ public class HiveType extends DataOutput{
 		if(getPath() == null){
 			error = LanguageManagerWF.getText("hivetype.ispathvalid.pathnull");
 		}
+		if(hInt.getTableAndPartitions(getPath()).length > 1){
+			error = LanguageManagerWF.getText("hivetype.ispathvalid.partselected");
+			return error;
+		}
 		if (isPathExists()){
-			return hInt.isPathValid(getPath(), features,getProperty(key_partitions));
+			return hInt.isPathValid(getPath(), features, "");
 		}else{
 			String regex = "[a-zA-Z_]([A-Za-z0-9_]+)";
 			if (!hInt.getTableAndPartitions(getPath())[0].matches(regex)) {
@@ -196,6 +198,7 @@ public class HiveType extends DataOutput{
 				generateFeaturesMap(path);
 			}
 		}
+		logger.info("path : "+ getPath());
 	}
 
 	@Override

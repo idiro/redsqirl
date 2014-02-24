@@ -120,12 +120,15 @@ public class HiveFilterInteraction extends EditorInteraction {
 		Iterator<DFEOutput> it = out.iterator();
 		while (it.hasNext()) {
 			DFEOutput cur = it.next();
-			String where_loc = cur.getProperty(HiveTypePartition.key_partitions);
-			if (where_loc != null) {
-				if (where.isEmpty()) {
-					where = where_loc;
-				} else {
-					where = " AND " + where_loc;
+			String prop = cur.getProperty(HiveTypePartition.usePartition);
+			if(prop != null && prop.equals("true")){
+				String where_loc = ((HiveTypePartition) cur).getWhere();
+				if (where_loc != null && !where.isEmpty()) {
+					if (where.isEmpty()) {
+						where = where_loc;
+					} else {
+						where = " AND " + where_loc;
+					}
 				}
 			}
 		}
@@ -136,12 +139,18 @@ public class HiveFilterInteraction extends EditorInteraction {
 		String where = "";
 		DFEOutput out = el.getAliases().get(alias);
 		if (out != null) {
-			where = out.getProperty(HiveTypePartition.key_partitions);
-			if (where == null) {
-				where = "";
+			String prop = out.getProperty(HiveTypePartition.usePartition);
+			if(prop != null && prop.equals("true")){
+				String where_loc = ((HiveTypePartition) out).getWhere();
+				if (where_loc != null && !where.isEmpty()) {
+					if (where.isEmpty()) {
+						where = where_loc;
+					} else {
+						where = " AND " + where_loc;
+					}
+				}
 			}
 		}
-
 		return where;
 	}
 

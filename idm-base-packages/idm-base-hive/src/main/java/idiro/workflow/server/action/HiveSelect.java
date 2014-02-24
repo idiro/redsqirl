@@ -93,9 +93,13 @@ public class HiveSelect extends HiveElement {
 			String tableIn = tableAndPartsIn[0];
 			logger.info("table In");
 			// Output
-			DFEOutput out = output.values().iterator().next();
-			logger.info("ouput");
-			String tableOut = hInt.getTableAndPartitions(out.getPath())[0];
+			DFEOutput out = output.get(key_output);
+			logger.info("ouput "+output.size());
+			logger.info(out.getFeatures().getFeaturesNames().toString());
+			logger.info("path : "+out.getPath());
+			String[] tableOutArray = hInt.getTableAndPartitions(out.getPath());
+			logger.info("paths : "+tableOutArray);
+			String tableOut =tableOutArray[0];
 			logger.info("table ouput : "+ tableOut);
 
 			String insert = "INSERT OVERWRITE TABLE " + tableOut;
@@ -105,34 +109,39 @@ public class HiveSelect extends HiveElement {
 			String create = "CREATE TABLE IF NOT EXISTS " + tableOut;
 			logger.info("create : "+create);
 			String where = condInt.getQueryPiece();
+			logger.info("condition : "+where);
 
 			String select = tSelInt.getQueryPiece(out);
+			logger.info("select : "+select);
 			String createSelect = tSelInt.getCreateQueryPiece(out);
+			logger.info("create select : "+createSelect);
 			
 			//partition code
 			String createPartition = "";
 			String insertPartition = "";
-			if (typeOutputInt.getValue().equals(messageTypePartition) ||
-					typeOutputInt.getValue().equals(messageTypeOnlyPartition)){
+			logger.info("output value : "+typeOutputInt.getValue());
+			if ((typeOutputInt.getValue().equals(messageTypePartition) ||
+					typeOutputInt.getValue().equals(messageTypeOnlyPartition)) &&
+					hInt.getTableAndPartitions(out.getPath()).length > 1){
 			
 	//			String createPartition = "PARTITIONED BY (ID STRING)";
 	//			String insertPartition = "PARTITION(ID='my_id')";
 				
 				createPartition += "PARTITIONED BY (";
 				insertPartition += "PARTITION(";
-				
+				createPartition += hInt.getTypesPartitons(out.getPath());
 				String[] partitions = hInt.getTableAndPartitions(out.getPath());
 				boolean firstElement = true;
 				for (int i = 1; i < partitions.length; ++i){
-					String name = partitions[i].split("=")[0];
+//					String name = partitions[i].split("=")[0];
 					String value = partitions[i].split("=")[1];
-					FeatureType type = HiveType.getType(value);
+//					FeatureType type = HiveType.getType(value);
 					
-					createPartition += name + " " + HiveDictionary.getHiveType(type);
+//					createPartition += name + " " + HiveDictionary.getHiveType(type);
 					insertPartition += partitions[i];
 					
 					if (!firstElement){
-						createPartition += ", ";
+//						createPartition += ", ";
 						insertPartition += ", ";
 					}
 					

@@ -17,6 +17,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -55,14 +56,14 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 
 	public static final String
 	// key for creating tables
-	key_partitions = "partitions",
-	key_columns = "columns",
-	key_comment = "comment",
-	key_store = "storing",
-	key_field_sep = "field_separator",
-	// properties key
-	key_describe = "describe",
-	key_describe_extended = "describe_extended";
+			key_partitions = "partitions",
+			key_columns = "columns",
+			key_comment = "comment",
+			key_store = "storing",
+			key_field_sep = "field_separator",
+			// properties key
+			key_describe = "describe",
+			key_describe_extended = "describe_extended";
 
 	public static final int historyMax = 50;
 
@@ -75,8 +76,8 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 	private static boolean isInit = false;
 
 	private static String url;
-	
-	//Refresh every 3 seconds
+
+	// Refresh every 3 seconds
 	protected static final long refreshTimeOut = 3000;
 	protected static List<String> tables = null;
 	protected static long updateTables = 0;
@@ -84,7 +85,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 	public HiveInterface() throws RemoteException {
 		super();
 		history.add(pathDataDefault.get());
-		if(!isInit){
+		if (!isInit) {
 			open();
 		}
 		logger.debug("Exist hive interface constructor");
@@ -93,7 +94,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 	@Override
 	public String open() throws RemoteException {
 		String error = null;
-		if(url == null){
+		if (url == null) {
 			url = WorkflowPrefManager
 					.getUserProperty(WorkflowPrefManager.user_hive);
 		}
@@ -116,7 +117,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 						config.put("StrictHostKeyChecking", "no");
 
 						ProcessesManager hjdbc = new HiveJdbcProcessesManager()
-						.getInstance();
+								.getInstance();
 
 						String old_pid = hjdbc.getPid();
 
@@ -150,12 +151,12 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 								String pid = br.readLine();
 								hjdbc.deleteFile();
 								hjdbc = new HiveJdbcProcessesManager()
-								.getInstance();
+										.getInstance();
 								logger.info("kill pid result: " + pid);
 							}
 
 						}
-						logger.info("Launch ... test ");
+						logger.debug("Launch ... test ");
 
 						String command = "ssh " + nameStore
 								+ " <<< 'nohup hive --service hiveserver -p "
@@ -164,7 +165,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 						Process proc = Runtime.getRuntime().exec(
 								new String[] { "/bin/bash", "-c", command });
 
-						logger.info("Launch hive server : " + command);
+						logger.debug("Launch hive server : " + command);
 
 						BufferedReader br = new BufferedReader(
 								new InputStreamReader(proc.getInputStream()));
@@ -195,17 +196,17 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 				while (!started && attempts <= maxattempts) {
 
 					try {
-						logger.info("new jdbc");
+						logger.debug("new jdbc");
 						jdbcHdfspref = new JdbcHdfsPrefsDetails(url);
-						logger.info("got prefs");
+						logger.debug("got prefs");
 						stm = new HiveBasicStatement();
-						logger.info("got statement");
+						logger.debug("got statement");
 						conn = new JdbcConnection(jdbcHdfspref, stm);
-						logger.info("got connection");
+						logger.debug("got connection");
 						started = conn.showAllTables().next();
-						if(!started){
+						if (!started) {
 							conn.closeConnection();
-						}else{
+						} else {
 							isInit = true;
 						}
 					} catch (Exception e) {
@@ -219,7 +220,6 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 
 				}
 
-
 				logger.info("Pass ... new jdbc ");
 
 			}
@@ -230,10 +230,10 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 					new Object[] { url, e.getMessage() });
 			logger.error(error);
 		}
-		if(!isInit){
+		if (!isInit) {
 			error = LanguageManagerWF.getText("hiveinterface.connectfail");
 		}
-		logger.info("isinit : " + isInit);
+		logger.debug("isinit : " + isInit);
 		return error;
 	}
 
@@ -307,6 +307,54 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		}
 	}
 
+	public String getTypesPartitons(String path) {
+		String ans = "";
+		String[] tableAndPartition = getTableAndPartitions(path);
+		logger.debug(tableAndPartition.length + " size of tables and parts of "
+				+ path);
+		for (int i = 1; i < tableAndPartition.length; ++i) {
+			if (i > 1) {
+				ans += ", ";
+			}
+			logger.debug("table : " + tableAndPartition[i]);
+			String[] split = tableAndPartition[i].split("=");
+			for (int j = 0; j < split.length; ++j) {
+				logger.debug(j + " is : " + split[j]);
+			}
+			ans += tableAndPartition[i].split("=")[0];
+			logger.debug("ans " + ans);
+			String value = tableAndPartition[i].split("=")[1];
+			logger.debug("value " + value);
+			String type = getType(value);
+			ans += " " + type;
+		}
+		return ans;
+	}
+
+	public String getType(String type) {
+		String ans = null;
+		if (type.contains("'")) {
+			ans = "STRING";
+		}
+		if (ans == null) {
+			try {
+				Integer.valueOf(type);
+				ans = "INT";
+			} catch (Exception e) {
+			}
+		}
+
+		if (ans == null) {
+			try {
+				Float.valueOf(type);
+				ans = "FLOAT";
+			} catch (Exception e) {
+			}
+		}
+
+		return ans;
+	}
+
 	@Override
 	public String create(String path, Map<String, String> properties)
 			throws RemoteException {
@@ -315,6 +363,8 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 
 		if (!exists(path)) {
 			String[] tableAndPartition = getTableAndPartitions(path);
+			logger.debug("got " + tableAndPartition[0] + " wanted : " + path);
+
 			if (!exists("/" + tableAndPartition[0])) {
 				String statement = "CREATE TABLE " + tableAndPartition[0] + "("
 						+ properties.get(key_columns) + ") ";
@@ -322,8 +372,10 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 					statement += properties.get(key_comment);
 				}
 				if (properties.containsKey(key_partitions)) {
-					statement += "PARTITIONED BY("
-							+ properties.get(key_partitions) + ") ";
+
+					String partitions = properties.get(key_partitions);
+					logger.debug("partitioning by : " + partitions);
+					statement += "PARTITIONED BY(" + partitions + ") ";
 				}
 				if (properties.containsKey(key_field_sep)) {
 					statement += "ROW FORMAT DELIMITED FIELDS TERMINATED BY '1' ";
@@ -332,6 +384,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 					statement += "STORED AS " + properties.get(key_store);
 				}
 				try {
+					logger.debug(statement);
 					ok = conn.execute(statement);
 					if (!ok && error == null) {
 						error = LanguageManagerWF.getText(
@@ -356,6 +409,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 				}
 				statement += ")";
 				try {
+					logger.debug("execute : " + statement);
 					ok = conn.execute(statement);
 					if (!ok && error == null) {
 						error = LanguageManagerWF.getText(
@@ -378,7 +432,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		}
 
 		if (error != null) {
-			logger.debug(error);
+			logger.error(error);
 		}
 
 		return error;
@@ -476,7 +530,6 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 					ans.add(line);
 				}
 				rs.close();
-
 			} catch (SQLException e) {
 				logger.error("Fail to select the table " + tableAndPartition[0]);
 				logger.error(e.getMessage());
@@ -503,16 +556,20 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		}
 		return ans;
 	}
-	
+
 	public Map<String, String> getPropertiesPathExist(String path)
 			throws RemoteException {
 		String table = getTableAndPartitions(path)[0];
 		Map<String, String> ans = new HashMap<String, String>();
-			ans.put(key_describe, getDescription(table));
+		ans.put(key_describe, getDescription(table));
 
-			if (!ans.isEmpty()) {
+		if (!ans.isEmpty()) {
+			try {
 				ans.put(key_describe_extended, getExtendedDescription(path));
+			} catch (Exception e) {
+				logger.error("Failed extended description on " + path);
 			}
+		}
 		return ans;
 	}
 
@@ -524,45 +581,53 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 	@Override
 	public Map<String, Map<String, String>> getChildrenProperties()
 			throws RemoteException {
-		logger.info("###################################");
-		logger.info("is init : " + isInit);
+		logger.debug("path : " + history.get(cur));
 		String[] tableAndPartitions = getTableAndPartitions(history.get(cur));
-		logger.info("getting table and partitions");
+		logger.debug("getting table and partitions");
 		Map<String, Map<String, String>> ans = new LinkedHashMap<String, Map<String, String>>();
 		try {
 			if (tableAndPartitions[0].isEmpty()) {
 
-				logger.info("table and partitions 0 is empty");
 				refreshListTables();
 				// Filter the list.
-				logger.info("connection has listed tables");
 				Iterator<String> it = tables.iterator();
 				while (it.hasNext()) {
 					String table = it.next();
-					Map<String, String> prop = getPropertiesPathExist("/" + table);
-					logger.info("prop map : " + prop);
+					Map<String, String> prop = getPropertiesPathExist("/"
+							+ table);
 					if (!prop.isEmpty()) {
-						logger.info("prop map not empty: " + prop);
 						ans.put(table, prop);
-						logger.info("prop map added table ");
 					}
 				}
 			} else if (tableAndPartitions.length == 1) {
-				logger.info("table an partitions not empty");
-				Iterator<String> itP = getPartitions(tableAndPartitions[0])
-						.iterator();
-				logger.info("table getting partitions");
+				logger.debug("Getting properties for children if path has no partitions");
+				List<String> parts = new ArrayList<String>();
+				Iterator<String> itP = getPartitions(tableAndPartitions[0],
+						parts).iterator();
 				while (itP.hasNext()) {
 					String partition = itP.next();
 					ans.put(partition, getPropertiesPathExist("/"
 							+ tableAndPartitions[0] + "/" + partition));
-					logger.info("putting partition and table in map");
 				}
+				logger.debug("Finished getting properties for children if path has no partitions");
+			} else if (tableAndPartitions.length > 1) {
+				logger.debug("Getting properties for children if path has partitions");
+				List<String> parts = new ArrayList<String>();
+				for (int i = 1; i < tableAndPartitions.length; ++i) {
+					parts.add(tableAndPartitions[i]);
+				}
+				Iterator<String> itP = getPartitions(tableAndPartitions[0],
+						parts).iterator();
+				while (itP.hasNext()) {
+					String partition = itP.next();
+					ans.put(partition, getPropertiesPathExist("/"
+							+ tableAndPartitions[0] + "/" + partition));
+				}
+				logger.debug("Finished getting properties for children if path has partitions");
 			}
 		} catch (Exception e) {
 			logger.error("Unexpected exception: " + e.getMessage());
 		}
-		logger.info("###################################");
 		return ans;
 	}
 
@@ -602,34 +667,30 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 				String[] tableAndPartitions = getTableAndPartitions(path);
 				refreshListTables();
 				ok = tables.contains(tableAndPartitions[0].toLowerCase());
-
 				if (ok && tableAndPartitions.length > 1) {
-					ok = false;
-					Iterator<String> itP = getPartitions(tableAndPartitions[0])
-							.iterator();
-					while (itP.hasNext() && !ok) {
-						String partition = itP.next().replaceAll("=", "='")
-								.replaceAll("/", "'/")
-								+ "'";
-						String[] splitPart = partition.split("/");
-						if (splitPart.length == tableAndPartitions.length - 1) {
-							ok = true;
-							for (int i = 0; i < splitPart.length; ++i) {
-								ok &= splitPart[i].split("=")[0]
-										.equalsIgnoreCase(tableAndPartitions[i + 1]
-												.split("=")[0])
-												&& splitPart[i].split("=")[1]
-														.equals(tableAndPartitions[i + 1]
-																.split("=")[1]);
-							}
-						}
+					List<String> parts = new ArrayList<String>();
+					for (int i = 1; i < tableAndPartitions.length - 1; ++i) {
+						parts.add(tableAndPartitions[i]);
 					}
+					String part = tableAndPartitions[tableAndPartitions.length - 1].replace("'", "");
+					
+					List<String> partitions = getPartitions(tableAndPartitions[0], parts);
+					
+					logger.debug(partitions + " , "+part.substring(0, part.indexOf("=")).toLowerCase()
+									+ "="
+									+ part.substring(part.indexOf("=")+1));
+					
+					ok = partitions.contains(
+							part.substring(0, part.indexOf("=")).toLowerCase()
+									+ "="
+									+ part.substring(part.indexOf("=")+1));
+//											.toLowerCase());
 				}
 			}
 		} catch (SQLException e) {
-			logger.error("Fail to check the existence", e);
+			logger.error("Fail to check the existence ,"
+					+ e.getLocalizedMessage());
 		}
-
 		return ok;
 	}
 
@@ -665,21 +726,22 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 										new Object[] {
 												feats[i].split(",")[0],
 												features.getFeaturesNames()
-												.toString() });
+														.toString() });
 							}
 							ok &= found;
 						}
 					}
 				}
-
-				if (ok && tableAndPartitions.length > 1) {
-					for (int j = 1; j < tableAndPartitions.length && ok; ++j) {
-						ok = partitions.matches("(^|.*,)\\Q"
-								+ tableAndPartitions[j] + "\\E($|,.*)");
-						if (!ok) {
-							error = LanguageManagerWF.getText(
-									"hiveinterface.partnotfound",
-									new Object[] { tableAndPartitions[j] });
+				if (partitions != null && !partitions.isEmpty()) {
+					if (ok && tableAndPartitions.length > 1) {
+						for (int j = 1; j < tableAndPartitions.length && ok; ++j) {
+							ok = partitions.matches("(^|.*,)\\Q"
+									+ tableAndPartitions[j] + "\\E($|,.*)");
+							if (!ok) {
+								error = LanguageManagerWF.getText(
+										"hiveinterface.partnotfound",
+										new Object[] { tableAndPartitions[j] });
+							}
 						}
 					}
 				}
@@ -718,18 +780,68 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		return ans;
 	}
 
-	public List<String> getPartitions(String table) {
+	public List<String> getPartitions(String table, List<String> filter) {
 		List<String> ans = new LinkedList<String>();
 		try {
-			ResultSet rs = conn.executeQuery("SHOW PARTITIONS " + table);
+			// logger.info(table);
+			String tabletocheck = table;
+			if (table.contains("/")) {
+				tabletocheck = getTableAndPartitions(table)[0];
+			}
+			ResultSet rs = conn.executeQuery("SHOW PARTITIONS " + tabletocheck);
 			while (rs.next()) {
-				ans.add(rs.getString(1));
+				String rsPart = rs.getString(1).trim();
+				boolean insert = true;
+
+				Map<String, String> ids = new HashMap<String, String>();
+
+				if (rsPart.contains("/")) {
+					String[] split = rsPart.split("/");
+					for (String s : split) {
+						ids.put(s.substring(0, s.indexOf("=")).toLowerCase(),
+								s.substring(s.indexOf("=") + 1));
+					}
+				} else {
+					ids.put(rsPart.substring(0, rsPart.indexOf("="))
+							.toLowerCase(), rsPart.substring(rsPart
+							.indexOf("=") + 1));
+				}
+				Iterator<String> flit = filter.iterator();
+				while (flit.hasNext()) {
+					String fl = flit.next();
+					String flP = "";
+					String flv = "";
+					if (fl.contains("'")) {
+						fl = fl.replace("'", "");
+					}
+					if (fl.contains("=")) {
+						flP = fl.substring(0, fl.indexOf("=")).toLowerCase();
+						flv = fl.substring(fl.indexOf("=") + 1);
+					}
+					logger.debug("fl : " + flP + "=" + flv);
+					logger.debug("rs : " + flP + "=" + ids.get(flP));
+
+					insert &= ids.get(flP).equals(flv);
+				}
+
+				if (insert) {
+					if (rsPart.contains("/")) {
+						String[] rsParts = rsPart.split("/");
+						for (String part : rsParts) {
+							ans.add(part);
+						}
+					} else {
+						ans.add(rsPart);
+					}
+					ans.removeAll(filter);
+				}
 			}
 			rs.close();
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			ans = null;
 		}
+		logger.debug("ans : "+ans + " table :"+table + "  , "+filter.toString() );
 		return ans;
 	}
 
@@ -770,7 +882,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 				rs.close();
 			}
 		} catch (SQLException e) {
-			logger.error("Fail to check the existence");
+			logger.error("Fail to check the existence with extended description");
 			try {
 				rs.close();
 			} catch (SQLException e1) {
@@ -826,10 +938,9 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		return error;
 	}
 
-
-	protected static void refreshListTables() throws SQLException{
+	protected static void refreshListTables() throws SQLException {
 		long cur = System.currentTimeMillis();
-		if(tables == null || refreshTimeOut < cur - updateTables ){
+		if (tables == null || refreshTimeOut < cur - updateTables) {
 			tables = conn.listTables(null);
 			updateTables = cur;
 		}
@@ -875,13 +986,13 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 
 	@Override
 	public String canMove() throws RemoteException {
-//		return LanguageManagerWF.getText("HiveInterface.move_help");
+		// return LanguageManagerWF.getText("HiveInterface.move_help");
 		return null;
 	}
 
 	@Override
 	public String canCopy() throws RemoteException {
-//		return LanguageManagerWF.getText("HiveInterface.copy_help");
+		// return LanguageManagerWF.getText("HiveInterface.copy_help");
 		return null;
 	}
 
@@ -905,7 +1016,8 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 	}
 
 	/**
-	 * @param url the url to set
+	 * @param url
+	 *            the url to set
 	 */
 	public static void setUrl(String url) {
 		HiveInterface.url = url;

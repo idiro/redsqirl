@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -76,9 +77,12 @@ public abstract class HiveElement extends DataflowAction {
 	/**
 	 * Messages to change the output type
 	 */
-	protected static String messageTypeTable = HiveLanguageManager.getText("hive.typeoutput_interaction.noPartition"),
-			messageTypePartition = HiveLanguageManager.getText("hive.typeoutput_interaction.partition"),
-			messageTypeOnlyPartition = HiveLanguageManager.getText("hive.typeoutput_interaction.onlyPartition");
+	public static String messageTypeTable = HiveLanguageManager
+			.getText("hive.typeoutput_interaction.noPartition"),
+			messageTypePartition = HiveLanguageManager
+					.getText("hive.typeoutput_interaction.partition"),
+			messageTypeOnlyPartition = HiveLanguageManager
+					.getText("hive.typeoutput_interaction.onlyPartition");
 
 	/**
 	 * Constructor
@@ -93,16 +97,18 @@ public abstract class HiveElement extends DataflowAction {
 		super(new HiveAction());
 		init(nbInMin, nbInMax);
 		this.minNbOfPage = minNbOfPage;
-		
-		typeOutputInt = new ListInteraction(
-				key_outputType,
-				HiveLanguageManager.getText("hive.typeoutput_interaction.title"),
-				HiveLanguageManager.getText("hive.typeoutput_interaction.legend"), nbInMax+1, 0);
+
+		typeOutputInt = new ListInteraction(key_outputType,
+				HiveLanguageManager
+						.getText("hive.typeoutput_interaction.title"),
+				HiveLanguageManager
+						.getText("hive.typeoutput_interaction.legend"),
+				nbInMax + 1, 0);
 		typeOutputInt.setDisplayRadioButton(true);
 		List<String> typeOutput = new LinkedList<String>();
-		typeOutput.add( messageTypeTable);
-		typeOutput.add( messageTypePartition);
-		typeOutput.add( messageTypeOnlyPartition);
+		typeOutput.add(messageTypeTable);
+		typeOutput.add(messageTypePartition);
+		typeOutput.add(messageTypeOnlyPartition);
 		typeOutputInt.setPossibleValues(typeOutput);
 		typeOutputInt.setValue(messageTypeTable);
 
@@ -177,17 +183,29 @@ public abstract class HiveElement extends DataflowAction {
 		if (error == null) {
 			FeatureList new_features = getNewFeatures();
 
-			HiveType type = null;
-			if (useTable()){
-				type = new HiveTypePartition();
+			HiveType type = (HiveType) output.get(key_output);
+			if (!useTable()) {
+				if (type == null) {
+					type = new HiveTypePartition();
+				} else if (! (type instanceof HiveTypePartition)) {
+					type.clean();
+					type = new HiveTypePartition();
+				}
+				if (messageTypeOnlyPartition.equals(typeOutputInt.getValue())) {
+					type.addProperty(HiveTypePartition.usePartition, "true");
+				} else {
+					type.addProperty(HiveTypePartition.usePartition, "false");
+				}
+			} else {
+				if (type == null) {
+					type = new HiveType();
+				} else if ( type instanceof HiveTypePartition) {
+					type.clean();
+					type = new HiveType();
+				}
 			}
-			else{
-				type = new HiveType();
-			}
-			
-			if (output.get(key_output) == null || !output.get(key_output).equals(type)) {
-				output.put(key_output, type);
-			}
+			output.put(key_output, type);
+//			logger.info("path is : "+output.get(key_output).getPath());
 			output.get(key_output).setFeatures(new_features);
 		}
 		return error;
@@ -229,7 +247,7 @@ public abstract class HiveElement extends DataflowAction {
 			}
 		}
 	}
-	
+
 	/**
 	 * Check the interaction of the output type
 	 * 
@@ -239,9 +257,8 @@ public abstract class HiveElement extends DataflowAction {
 		boolean ans = true;
 		if (typeOutputInt != null) {
 			try {
-				ans = typeOutputInt.getTree().getFirstChild("list")
-						.getFirstChild("output").getFirstChild().getHead()
-						.equalsIgnoreCase(messageTypeTable);
+				ans = typeOutputInt.getValue().equalsIgnoreCase(
+						messageTypeTable);
 			} catch (Exception e) {
 			}
 		}

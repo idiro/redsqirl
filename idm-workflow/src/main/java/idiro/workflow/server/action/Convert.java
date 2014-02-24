@@ -245,7 +245,7 @@ public class Convert extends DataflowAction {
 		
 		String select = "INSERT OVERWRITE TABLE "+table_ext+"\n";
 		select += "select * from "+hi.getTableAndPartitions(in.getPath())[0];
-		String where = in.getProperty(HiveTypePartition.key_partitions);
+		String where = in.getProperty(HiveTypePartition.usePartition);
 		if(where != null && !where.isEmpty()){
 			select += " where "+where;
 		}

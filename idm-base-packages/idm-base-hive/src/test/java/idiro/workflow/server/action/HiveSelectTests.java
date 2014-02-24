@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 import idiro.utils.Tree;
 import idiro.workflow.server.DataflowAction;
 import idiro.workflow.server.HiveJdbcProcessesManager;
+import idiro.workflow.server.ListInteraction;
 import idiro.workflow.server.OozieManager;
 import idiro.workflow.server.ProcessesManager;
 import idiro.workflow.server.Workflow;
@@ -11,6 +12,7 @@ import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.action.utils.TestUtils;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.datatype.HiveType;
+import idiro.workflow.server.datatype.HiveTypePartition;
 import idiro.workflow.server.datatype.MapRedTextType;
 import idiro.workflow.server.enumeration.SavingState;
 
@@ -18,6 +20,7 @@ import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.hadoop.hive.ql.index.HiveIndex;
 import org.apache.log4j.Logger;
 import org.apache.oozie.client.OozieClient;
 import org.junit.Test;
@@ -26,39 +29,44 @@ public class HiveSelectTests {
 
 	Logger logger = Logger.getLogger(getClass());
 
-	Map<String, String> getColumns() {
+	Map<String, String> getColumns(boolean part) {
 		Map<String, String> ans = new HashMap<String, String>();
 		ans.put(HiveInterface.key_columns, "ID STRING, VALUE INT");
+		if (part) {
+			ans.put(HiveInterface.key_partitions, "TYPE INT");
+		}
 		return ans;
 	}
 
 	public DataflowAction createSrc(Workflow w, HiveInterface hInt,
-			String new_path1) throws RemoteException, Exception {
+			String new_path1 ,boolean partition) throws RemoteException, Exception {
 
 		String idSource = w.addElement((new Source()).getName());
-		Source src = (Source)w.getElement(idSource);
-		
+		Source src = (Source) w.getElement(idSource);
+
 		String deleteError = hInt.delete(new_path1);
-		assertTrue("delete "+deleteError,
-				deleteError == null || deleteError != null
-				);
-		
-		String createError = hInt.create(new_path1, getColumns());
-		assertTrue("create "+createError,
-				createError == null
-				);
-		
+		// assertTrue("delete " + deleteError, deleteError == null
+		// || deleteError != null);
+
+		String createError = hInt.create(new_path1, getColumns(false));
+		assertTrue("create " + createError, createError == null);
+
 		src.update(src.getInteraction(Source.key_datatype));
-		Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype).getTree();
+		Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype)
+				.getTree();
 		dataTypeTree.getFirstChild("list").getFirstChild("output").add("Hive");
-		
+
 		src.update(src.getInteraction(Source.key_datasubtype));
-		Tree<String> dataSubTypeTree = src.getInteraction(Source.key_datasubtype).getTree();
-		dataSubTypeTree.getFirstChild("list").getFirstChild("output").add(new HiveType().getTypeName());
+		Tree<String> dataSubTypeTree = src.getInteraction(
+				Source.key_datasubtype).getTree();
+		dataSubTypeTree.getFirstChild("list").getFirstChild("output")
+				.add(new HiveType().getTypeName());
 
 		src.update(src.getInteraction(Source.key_dataset));
-		Tree<String> dataSetTree = src.getInteraction(Source.key_dataset).getTree();
-		dataSetTree.getFirstChild("browse").getFirstChild("output").add("path").add(new_path1);
+		Tree<String> dataSetTree = src.getInteraction(Source.key_dataset)
+				.getTree();
+		dataSetTree.getFirstChild("browse").getFirstChild("output").add("path")
+				.add(new_path1);
 
 		Tree<String> feat1 = dataSetTree.getFirstChild("browse")
 				.getFirstChild("output").add("feature");
@@ -70,25 +78,99 @@ public class HiveSelectTests {
 		feat2.add("name").add("VALUE");
 		feat2.add("type").add("INT");
 		
+
+
 		String error = src.updateOut();
-		assertTrue("source update: "+error,error == null);
-		
-		assertTrue("number of features in source should be 2 instead of " + 
-				src.getDFEOutput().get(Source.out_name).getFeatures().getSize(),
-				src.getDFEOutput().get(Source.out_name).getFeatures().getSize() == 2);
-		
-		assertTrue("Feature list " + 
-				src.getDFEOutput().get(Source.out_name).getFeatures().getFeaturesNames(),
-				src.getDFEOutput().get(Source.out_name).getFeatures().getFeaturesNames().contains("id"));
-		assertTrue("Feature list " + 
-				src.getDFEOutput().get(Source.out_name).getFeatures().getFeaturesNames(),
-				src.getDFEOutput().get(Source.out_name).getFeatures().getFeaturesNames().contains("value"));
-		
+		assertTrue("source update: " + error, error == null);
+
+		assertTrue("number of features in source should be 2 instead of "
+				+ src.getDFEOutput().get(Source.out_name).getFeatures()
+						.getSize(), src.getDFEOutput().get(Source.out_name)
+				.getFeatures().getSize() == 2);
+
+		assertTrue("Feature list "
+				+ src.getDFEOutput().get(Source.out_name).getFeatures()
+						.getFeaturesNames(),
+				src.getDFEOutput().get(Source.out_name).getFeatures()
+						.getFeaturesNames().contains("id"));
+		assertTrue("Feature list "
+				+ src.getDFEOutput().get(Source.out_name).getFeatures()
+						.getFeaturesNames(),
+				src.getDFEOutput().get(Source.out_name).getFeatures()
+						.getFeaturesNames().contains("value"));
+
 		return src;
 	}
 
-	public DataflowAction createHiveWithSrc(Workflow w, DataflowAction src,
-			HiveInterface hInt) throws RemoteException, Exception {
+	public DataflowAction createSrcWithPart(Workflow w, HiveInterface hInt,
+			String new_path1) throws RemoteException, Exception {
+
+		String idSource = w.addElement((new Source()).getName());
+		Source src = (Source) w.getElement(idSource);
+
+		src.update(src.getInteraction(Source.key_datatype));
+		Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype)
+				.getTree();
+		dataTypeTree.getFirstChild("list").getFirstChild("output").add("Hive");
+
+		src.update(src.getInteraction(Source.key_datasubtype));
+		ListInteraction dataSubType = (ListInteraction) src
+				.getInteraction(Source.key_datasubtype);
+		dataSubType.setValue(new HiveTypePartition().getTypeName());
+		assertTrue(
+				"name of sub type "
+						+ ((ListInteraction) src
+								.getInteraction(Source.key_datasubtype))
+								.getValue(),
+				((ListInteraction) src.getInteraction(Source.key_datasubtype))
+						.getValue().equalsIgnoreCase(
+								new HiveTypePartition().getTypeName()));
+
+		src.update(src.getInteraction(Source.key_dataset));
+		Tree<String> dataSetTree = src.getInteraction(Source.key_dataset)
+				.getTree();
+		dataSetTree.getFirstChild("browse").getFirstChild("output").add("path")
+				.add(new_path1);
+
+		Tree<String> feat1 = dataSetTree.getFirstChild("browse")
+				.getFirstChild("output").add("feature");
+		feat1.add("name").add("ID");
+		feat1.add("type").add("STRING");
+
+		Tree<String> feat2 = dataSetTree.getFirstChild("browse")
+				.getFirstChild("output").add("feature");
+		feat2.add("name").add("VALUE");
+		feat2.add("type").add("INT");
+		Tree<String> feat3 = dataSetTree.getFirstChild("browse")
+				.getFirstChild("output").add("feature");
+		feat3.add("name").add("TYPE");
+		feat3.add("type").add("INT");
+
+		String error = src.updateOut();
+		assertTrue("source update: " + error, error == null);
+
+		assertTrue("number of features in source should be 3 instead of "
+				+ src.getDFEOutput().get(Source.out_name).getFeatures()
+						.getSize(), src.getDFEOutput().get(Source.out_name)
+				.getFeatures().getSize() == 3);
+
+		assertTrue("Feature list "
+				+ src.getDFEOutput().get(Source.out_name).getFeatures()
+						.getFeaturesNames(),
+				src.getDFEOutput().get(Source.out_name).getFeatures()
+						.getFeaturesNames().contains("id"));
+		assertTrue("Feature list "
+				+ src.getDFEOutput().get(Source.out_name).getFeatures()
+						.getFeaturesNames(),
+				src.getDFEOutput().get(Source.out_name).getFeatures()
+						.getFeaturesNames().contains("value"));
+
+		return src;
+	}
+
+	public HiveSelect createHiveWithSrc(Workflow w, DataflowAction src,
+			HiveInterface hInt, boolean parition , boolean ispartitioned) throws RemoteException,
+			Exception {
 		String error = null;
 		String idHS = w.addElement((new HiveSelect()).getName());
 		logger.debug("Hive select: " + idHS);
@@ -101,18 +183,23 @@ public class HiveSelectTests {
 		w.addLink(Source.out_name, src.getComponentId(), HiveSelect.key_input,
 				idHS);
 		assertTrue("hive select add input: " + error, error == null);
-		updateHive(w, hive, hInt);
 
 		logger.debug("HS update out finished");
-//		error = hive.updateOut();
+		if (parition) {
+			updateHiveWithPart(w, hive, hInt, ispartitioned);
+			hive.typeOutputInt.setValue(HiveSelect.messageTypeOnlyPartition);
+		}else{
+			updateHive(w, hive, hInt);
+		}
+		error = hive.updateOut();
 		assertTrue("hive select update: " + error, error == null);
 		logger.debug("Features "
 				+ hive.getDFEOutput().get(HiveSelect.key_output).getFeatures());
 
-		hive.getDFEOutput()
-				.get(HiveSelect.key_output)
-				.generatePath(System.getProperty("user.name"),
-						hive.getComponentId(), HiveSelect.key_output);
+		// hive.getDFEOutput()
+		// .get(HiveSelect.key_output)
+		// .generatePath(System.getProperty("user.name"),
+		// hive.getComponentId(), HiveSelect.key_output);
 
 		return hive;
 	}
@@ -136,15 +223,15 @@ public class HiveSelectTests {
 
 	public void updateHive(Workflow w, HiveSelect hive, HiveInterface hInt)
 			throws RemoteException, Exception {
-
+		
 		logger.debug("update hive...");
-
+		
 		HiveFilterInteraction ci = hive.getFilterInt();
 		logger.info("got condition interaction");
 		hive.update(ci);
 		logger.info("updated condition interaction");
-
-		ci.setValue("VALUE < 10");
+		
+		ci.setValue("value < 10");
 		logger.info("updated condition ouput");
 		
 		HiveTableSelectInteraction tsi = hive.gettSelInt();
@@ -155,7 +242,48 @@ public class HiveSelectTests {
 			Tree<String> rowId = out.add("row");
 			rowId.add(HiveTableSelectInteraction.table_feat_title).add("id");
 			rowId.add(HiveTableSelectInteraction.table_op_title).add("id");
-			rowId.add(HiveTableSelectInteraction.table_type_title).add("STRING");
+			rowId.add(HiveTableSelectInteraction.table_type_title)
+			.add("STRING");
+			rowId = out.add("row");
+			rowId.add(HiveTableSelectInteraction.table_feat_title).add("value");
+			rowId.add(HiveTableSelectInteraction.table_op_title).add("value");
+			rowId.add(HiveTableSelectInteraction.table_type_title).add("INT");
+		}
+		logger.info("added values to tsel interaction");
+		
+		logger.debug("HS update out...");
+		String error = hive.updateOut();
+		logger.debug("HS update out finished");
+		assertTrue("hive select update: " + error, error == null);
+	}
+	
+	public void updateHiveWithPart(Workflow w, HiveSelect hive, HiveInterface hInt ,boolean ispartitioned)
+			throws RemoteException, Exception {
+
+		logger.debug("update hive...");
+
+		HiveFilterInteraction ci = hive.getFilterInt();
+		logger.info("got condition interaction");
+		hive.update(ci);
+		logger.info("updated condition interaction");
+
+		if(ispartitioned){
+			ci.setValue("type < 10");
+		}else{
+			ci.setValue("value < 10");
+		}
+		logger.info("updated condition ouput");
+
+		HiveTableSelectInteraction tsi = hive.gettSelInt();
+		logger.info("got tsel interaction");
+		hive.update(tsi);
+		{
+			Tree<String> out = tsi.getTree().getFirstChild("table");
+			Tree<String> rowId = out.add("row");
+			rowId.add(HiveTableSelectInteraction.table_feat_title).add("id");
+			rowId.add(HiveTableSelectInteraction.table_op_title).add("id");
+			rowId.add(HiveTableSelectInteraction.table_type_title)
+					.add("STRING");
 			rowId = out.add("row");
 			rowId.add(HiveTableSelectInteraction.table_feat_title).add("value");
 			rowId.add(HiveTableSelectInteraction.table_op_title).add("value");
@@ -191,11 +319,15 @@ public class HiveSelectTests {
 			Tree<String> rowId = out.add("row");
 			rowId.add(HiveTableSelectInteraction.table_feat_title).add("ID");
 			rowId.add(HiveTableSelectInteraction.table_op_title).add("ID");
-			rowId.add(HiveTableSelectInteraction.table_type_title).add("STRING");
+			rowId.add(HiveTableSelectInteraction.table_type_title)
+					.add("STRING");
 			rowId = out.add("row");
-			rowId.add(HiveTableSelectInteraction.table_feat_title).add("SUM_VALUE");
-			rowId.add(HiveTableSelectInteraction.table_op_title).add("SUM(VALUE)");
-			rowId.add(HiveTableSelectInteraction.table_type_title).add("DOUBLE");
+			rowId.add(HiveTableSelectInteraction.table_feat_title).add(
+					"SUM_VALUE");
+			rowId.add(HiveTableSelectInteraction.table_op_title).add(
+					"SUM(VALUE)");
+			rowId.add(HiveTableSelectInteraction.table_type_title)
+					.add("DOUBLE");
 		}
 
 		logger.debug("HS update out...");
@@ -203,7 +335,7 @@ public class HiveSelectTests {
 		assertTrue("hive select update: " + error, error == null);
 	}
 
-	@Test
+	// @Test
 	public void basic() {
 
 		TestUtils.logTestTitle(getClass().getName() + "#basic");
@@ -219,41 +351,44 @@ public class HiveSelectTests {
 			String new_path1 = "/" + TestUtils.getTableName(1);
 			String new_path2 = "/" + TestUtils.getTableName(2);
 
-			 hInt.delete(new_path1);
-			 hInt.delete(new_path2);
+			hInt.delete(new_path1);
+			hInt.delete(new_path2);
 
-			DataflowAction src = createSrc(w, hInt, new_path1);
+			DataflowAction src = createSrc(w, hInt, new_path1, false);
 			logger.info("created source");
-			DataflowAction hive = createHiveWithSrc(w, src, hInt);
+			HiveSelect hive = createHiveWithSrc(w, src, hInt, false, false);
 			logger.info("created hive");
 
 			hive.getDFEOutput().get(HiveSelect.key_output)
 					.setSavingState(SavingState.TEMPORARY);
-			hive.getDFEOutput().get(HiveSelect.key_output).setPath(new_path2);
-			logger.info("run...");
-			error = w.run();
-			assertTrue("Job submition failed: "+error, error == null);
-			String jobId = w.getOozieJobId();
-			OozieClient wc = OozieManager.getInstance().getOc();
-
-			// wait until the workflow job finishes printing the status every 10
-			// seconds
-			while (wc.getJobInfo(jobId).getStatus() == org.apache.oozie.client.WorkflowJob.Status.RUNNING) {
-				System.out.println("Workflow job running ...");
-				Thread.sleep(10 * 1000);
-			}
-			logger.info("Workflow job completed ...");
-			logger.info(wc.getJobInfo(jobId));
-			error = wc.getJobInfo(jobId).toString();
-			hInt.delete(new_path1);
-			hInt.delete(new_path2);
-			assertTrue(error, error.contains("SUCCEEDED"));
-			
+			// hive.getDFEOutput().get(HiveSelect.key_output).setPath(new_path2);
+			logger.info(hive.getQuery());
+			// logger.info("run...");
+			// error = w.run();
+			// assertTrue("Job submition failed: "+error, error == null);
+			// String jobId = w.getOozieJobId();
+			// OozieClient wc = OozieManager.getInstance().getOc();
+			//
+			// // wait until the workflow job finishes printing the status every
+			// 10
+			// // seconds
+			// while (wc.getJobInfo(jobId).getStatus() ==
+			// org.apache.oozie.client.WorkflowJob.Status.RUNNING) {
+			// System.out.println("Workflow job running ...");
+			// Thread.sleep(10 * 1000);
+			// }
+			// logger.info("Workflow job completed ...");
+			// logger.info(wc.getJobInfo(jobId));
+			// error = wc.getJobInfo(jobId).toString();
+			// hInt.delete(new_path1);
+			// hInt.delete(new_path2);
+			// assertTrue(error, error.contains("SUCCEEDED"));
+			//
 			WorkflowPrefManager.resetSys();
 			WorkflowPrefManager.resetUser();
 		} catch (Exception e) {
 			logger.error(e.getMessage());
-			assertTrue("error : "+e.getMessage(), false);
+			assertTrue("error : " + e.getMessage(), false);
 		}
 	}
 
@@ -270,12 +405,12 @@ public class HiveSelectTests {
 			String new_path1 = TestUtils.getTablePath(1);
 			String new_path2 = TestUtils.getTablePath(2);
 
-//			 hInt.delete(new_path1);
-//			 hInt.delete(new_path2);
+			// hInt.delete(new_path1);
+			// hInt.delete(new_path2);
 
-			DataflowAction src = createSrc(w, hInt, new_path1);
+			DataflowAction src = createSrc(w, hInt, new_path1, false);
 			DataflowAction hive = createHiveWithHive(w,
-					createHiveWithSrc(w, src, hInt), hInt);
+					createHiveWithSrc(w, src, hInt, false, false), hInt);
 
 			hive.getDFEOutput().get(HiveSelect.key_output)
 					.setSavingState(SavingState.RECORDED);
@@ -303,9 +438,230 @@ public class HiveSelectTests {
 		}
 	}
 
-	// @Test
-	public void HiveSelectinteractionstest() throws RemoteException {
-		HiveSelect select = new HiveSelect();
-		HiveTableSelectInteraction tsel = select.gettSelInt();
+//	@Test
+	public void basicReadPartition() {
+
+		TestUtils.logTestTitle(getClass().getName() + "#basicPartition");
+		String error = null;
+		try {
+			Workflow w = new Workflow("workflow1_" + getClass().getName());
+
+			ProcessesManager hpm = new HiveJdbcProcessesManager().getInstance();
+
+			hpm.getPid();
+
+			HiveInterface hInt = new HiveInterface();
+			String new_path1 = "/" + TestUtils.getTableName(1);
+			String new_path2 = "/" + TestUtils.getTableName(2);
+			String error2 = hInt.delete(new_path1);
+			logger.info("delete 1");
+			logger.info(error2);
+
+			error2 = hInt.delete(new_path2);
+			logger.info(error2);
+			logger.info("delete 2");
+
+			error2 = hInt
+					.create(new_path1 + "/" + "TYPE='1'", getColumns(true));
+			logger.info("create 2");
+			assertTrue("create2 " + error2, error2 == null);
+
+			Source src = (Source) createSrcWithPart(w, hInt, new_path1);
+			logger.info("created source " + src.dataSubtype.getValue());
+			HiveSelect hive = createHiveWithSrc(w, src, hInt, true , false);
+			logger.info("created hive");
+
+			hive.getDFEOutput().get(HiveSelect.key_output)
+					.setSavingState(SavingState.TEMPORARY);
+			hive.getDFEOutput().get(HiveSelect.key_output).setPath(new_path2);
+
+			logger.info("path after setting "
+					+ hive.getDFEOutput().get(HiveSelect.key_output).getPath());
+
+			w.getElement(hive.getComponentId()).getDFEOutput()
+					.get(HiveSelect.key_output).setPath(new_path2);
+			// error2 = hInt.create(new_path2, getColumns(false));
+
+			assertTrue("create2 " + error2, error2 == null);
+			// logger.info(((HiveSelect)w.getElement(hive.getComponentId())).getQuery());
+			logger.info("run...");
+			error = w.run();
+			logger.info("path after setting "
+					+ hive.getDFEOutput().get(HiveSelect.key_output).getPath());
+
+			assertTrue("Job submition failed: " + error, error == null);
+			String jobId = w.getOozieJobId();
+			OozieClient wc = OozieManager.getInstance().getOc();
+
+			// wait until the workflow job finishes printing the status every
+
+			// 10 seconds
+			while (wc.getJobInfo(jobId).getStatus() == org.apache.oozie.client.WorkflowJob.Status.RUNNING) {
+				System.out.println("Workflow job running ...");
+				Thread.sleep(10 * 1000);
+			}
+			logger.info("Workflow job completed ...");
+			logger.info(wc.getJobInfo(jobId));
+			error = wc.getJobInfo(jobId).toString();
+			hInt.delete(new_path1);
+			hInt.delete(new_path2);
+			assertTrue(error, error.contains("SUCCEEDED"));
+
+			WorkflowPrefManager.resetSys();
+			WorkflowPrefManager.resetUser();
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			assertTrue("error : " + e.getMessage(), false);
+		}
 	}
+
+//	@Test
+	public void basicWritePartition() {
+		
+		TestUtils.logTestTitle(getClass().getName() + "#basicWritePartition");
+		String error = null;
+		try {
+			Workflow w = new Workflow("workflow1_" + getClass().getName());
+			
+			ProcessesManager hpm = new HiveJdbcProcessesManager().getInstance();
+			
+			hpm.getPid();
+			
+			HiveInterface hInt = new HiveInterface();
+			String new_path1 = "/" + TestUtils.getTableName(1);
+			String new_path2 = "/" + TestUtils.getTableName(2);
+			String error2 = hInt.delete(new_path1);
+			logger.info("delete 1");
+			logger.info(error2);
+			
+			error2 = hInt.delete(new_path2);
+			logger.info(error2);
+			logger.info("delete 2");
+			
+			error2 = hInt
+					.create(new_path1, getColumns(false));
+			logger.info("create 2");
+			assertTrue("create2 " + error2, error2 == null);
+			
+			Source src = (Source) createSrc(w, hInt, new_path1, false);
+			logger.info("created source " + src.dataSubtype.getValue());
+			HiveSelect hive = createHiveWithSrc(w, src, hInt, true , false);
+			logger.info("created hive");
+			logger.info("output : "+hive.typeOutputInt.getValue());
+			new_path2 += "/SIZE=9";
+			hive.getDFEOutput().get(HiveSelect.key_output)
+			.setSavingState(SavingState.RECORDED);
+			hive.getDFEOutput().get(HiveSelect.key_output).setPath(new_path2);
+			
+			logger.info("path after setting "
+					+ hive.getDFEOutput().get(HiveSelect.key_output).getPath());
+			
+			w.getElement(hive.getComponentId()).getDFEOutput()
+			.get(HiveSelect.key_output).setPath(new_path2);
+			// logger.info(((HiveSelect)w.getElement(hive.getComponentId())).getQuery());
+			
+			logger.info("run...");
+			error = w.run();
+			logger.info("path after setting "
+					+ hive.getDFEOutput().get(HiveSelect.key_output).getPath());
+			
+			assertTrue("Job submition failed: " + error, error == null);
+			String jobId = w.getOozieJobId();
+			OozieClient wc = OozieManager.getInstance().getOc();
+			
+			// wait until the workflow job finishes printing the status every
+			// 10 seconds
+			while (wc.getJobInfo(jobId).getStatus() == org.apache.oozie.client.WorkflowJob.Status.RUNNING) {
+				System.out.println("Workflow job running ...");
+				Thread.sleep(10 * 1000);
+			}
+			logger.info("Workflow job completed ...");
+			logger.info(wc.getJobInfo(jobId));
+			error = wc.getJobInfo(jobId).toString();
+			hInt.delete(new_path1);
+			hInt.delete(new_path2);
+			assertTrue(error, error.contains("SUCCEEDED"));
+			
+			WorkflowPrefManager.resetSys();
+			WorkflowPrefManager.resetUser();
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			assertTrue("error : " + e.getMessage(), false);
+		}
+	}
+	@Test
+	public void basicWritePartitionfromPartition() {
+
+		TestUtils.logTestTitle(getClass().getName() + "#basicWritePartition");
+		String error = null;
+		try {
+			Workflow w = new Workflow("workflow1_" + getClass().getName());
+
+			ProcessesManager hpm = new HiveJdbcProcessesManager().getInstance();
+
+			hpm.getPid();
+
+			HiveInterface hInt = new HiveInterface();
+			String new_path1 = "/" + TestUtils.getTableName(1);
+			String new_path2 = "/" + TestUtils.getTableName(2);
+			String error2 = hInt.delete(new_path1);
+			logger.info("delete 1");
+			logger.info(error2);
+
+			error2 = hInt.delete(new_path2);
+			logger.info(error2);
+			logger.info("delete 2");
+
+			error2 = hInt
+					.create(new_path1, getColumns(true));
+			logger.info("create 2");
+			assertTrue("create2 " + error2, error2 == null);
+
+			Source src = (Source) createSrcWithPart(w, hInt, new_path1);
+			logger.info("created source " + src.dataSubtype.getValue());
+			HiveSelect hive = createHiveWithSrc(w, src, hInt, true , true);
+			logger.info("created hive");
+			logger.info("output : "+hive.typeOutputInt.getValue());
+			new_path2 += "/SIZE=9";
+			hive.getDFEOutput().get(HiveSelect.key_output)
+					.setSavingState(SavingState.RECORDED);
+			hive.getDFEOutput().get(HiveSelect.key_output).setPath(new_path2);
+
+			logger.info("path after setting "
+					+ hive.getDFEOutput().get(HiveSelect.key_output).getPath());
+
+			w.getElement(hive.getComponentId()).getDFEOutput()
+					.get(HiveSelect.key_output).setPath(new_path2);
+			// logger.info(((HiveSelect)w.getElement(hive.getComponentId())).getQuery());
+
+			logger.info("run...");
+			error = w.run();
+			logger.info("path after setting "
+					+ hive.getDFEOutput().get(HiveSelect.key_output).getPath());
+
+			assertTrue("Job submition failed: " + error, error == null);
+			String jobId = w.getOozieJobId();
+			OozieClient wc = OozieManager.getInstance().getOc();
+
+			// wait until the workflow job finishes printing the status every
+			// 10 seconds
+			while (wc.getJobInfo(jobId).getStatus() == org.apache.oozie.client.WorkflowJob.Status.RUNNING) {
+				System.out.println("Workflow job running ...");
+				Thread.sleep(10 * 1000);
+			}
+			logger.info("Workflow job completed ...");
+			logger.info(wc.getJobInfo(jobId));
+			error = wc.getJobInfo(jobId).toString();
+			hInt.delete(new_path1);
+			hInt.delete(new_path2);
+			assertTrue(error, error.contains("SUCCEEDED"));
+
+			WorkflowPrefManager.resetSys();
+			WorkflowPrefManager.resetUser();
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			assertTrue("error : " + e.getMessage(), false);
+		}
+	}
+
 }
