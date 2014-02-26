@@ -35,9 +35,9 @@ public class HiveJoinRelationInteraction extends TableInteraction {
 	private HiveJoin hj;
 
 	public static final String table_table_title = HiveLanguageManager
-			.getText("hive.join_relationship_interaction.relation_column"),
+			.getTextWithoutSpace("hive.join_relationship_interaction.relation_column"),
 			table_feat_title = HiveLanguageManager
-					.getText("hive.join_relationship_interaction.op_column");
+					.getTextWithoutSpace("hive.join_relationship_interaction.op_column");
 
 	public HiveJoinRelationInteraction(String id, String name, String legend,
 			int column, int placeInColumn, HiveJoin hj) throws RemoteException {

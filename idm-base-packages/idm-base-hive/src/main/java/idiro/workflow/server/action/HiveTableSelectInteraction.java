@@ -36,11 +36,11 @@ public class HiveTableSelectInteraction extends TableInteraction {
 	private HiveElement hs;
 
 	public static final String table_op_title = HiveLanguageManager
-			.getText("hive.select_features_interaction.op_column"),
+			.getTextWithoutSpace("hive.select_features_interaction.op_column"),
 			table_feat_title = HiveLanguageManager
-					.getText("hive.select_features_interaction.feat_column"),
+					.getTextWithoutSpace("hive.select_features_interaction.feat_column"),
 			table_type_title = HiveLanguageManager
-					.getText("hive.select_features_interaction.type_column");
+					.getTextWithoutSpace("hive.select_features_interaction.type_column");
 
 	public static final String gen_operation_copy = "copy",
 			gen_operation_max = "MAX", gen_operation_min = "MIN",

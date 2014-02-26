@@ -36,7 +36,7 @@ public class TestUtils {
 		}else{
 			message += title;
 		}
-		logger.debug(message);
+		logger.info(message);
 	}
 	
 	static public String getTableName(int id){

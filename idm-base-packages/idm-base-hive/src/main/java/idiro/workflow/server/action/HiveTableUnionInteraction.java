@@ -37,11 +37,11 @@ public class HiveTableUnionInteraction extends TableInteraction {
 	public static final String table_table_title = HiveLanguageManager
 			.getText("hive.union_features_interaction.relation_column"),
 			table_op_title = HiveLanguageManager
-					.getText("hive.union_features_interaction.op_column"),
+					.getTextWithoutSpace("hive.union_features_interaction.op_column"),
 			table_feat_title = HiveLanguageManager
-					.getText("hive.union_features_interaction.feat_column"),
+					.getTextWithoutSpace("hive.union_features_interaction.feat_column"),
 			table_type_title = HiveLanguageManager
-					.getText("hive.union_features_interaction.type_column");
+					.getTextWithoutSpace("hive.union_features_interaction.type_column");
 
 	public HiveTableUnionInteraction(String id, String name, String legend,
 			int column, int placeInColumn, HiveUnion hu) throws RemoteException {

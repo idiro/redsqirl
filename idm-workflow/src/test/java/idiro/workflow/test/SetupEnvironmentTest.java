@@ -24,8 +24,10 @@ import idiro.workflow.server.connect.interfaces.HiveInterfaceTests;
 import idiro.workflow.server.connect.interfaces.SSHInterfaceArrayTests;
 import idiro.workflow.server.connect.interfaces.SSHInterfaceTests;
 import idiro.workflow.server.datatype.HDFSTypeTests;
+import idiro.workflow.server.datatype.HiveTypePartitionTests;
 import idiro.workflow.server.datatype.HiveTypeTests;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.Properties;
@@ -43,11 +45,12 @@ import org.junit.runners.Suite.SuiteClasses;
 //	WorkflowTests.class,
 	//CreateWorkflowTests.class,
 //	HDFSInterfaceTests.class,
-//	HiveInterfaceTests.class,
+	HiveInterfaceTests.class,
 //	SSHInterfaceTests.class,
 //	SSHInterfaceArrayTests.class,
 //	HiveTypeTests.class, 
-	SourceTests.class,
+//	HiveTypePartitionTests.class, 
+//	SourceTests.class,
 //	WorkflowProcessesManagerTests.class,
 //	OozieManagerTests.class,
 	//PackageManagerTests.class,
@@ -91,6 +94,15 @@ public class SetupEnvironmentTest {
 		
 		WorkflowPrefManager.getInstance();
 		logger = Logger.getLogger(SetupEnvironmentTest.class);
+		File logfile = new File(log4jFile);
+		
+		if(logfile.exists()){
+			BufferedReader reader = new BufferedReader(new FileReader(logfile));
+			String line ="";
+			while ((line = reader.readLine()) != null) {
+				logger.info(line);
+			}
+		}
 		logger.debug("Log4j initialised");
 		WorkflowPrefManager.pathUserPref.put(userPrefFile);
 		logger.debug("user preferences initialised");
@@ -133,16 +145,16 @@ public class SetupEnvironmentTest {
 			logger.error("something went wrong : " + e.getMessage());
 			
 		}
-		HiveInterface hiveInt = null;
-		try {
-			hiveInt = new HiveInterface();
-			for(int i = 0; i < 4; ++i){
-				hiveInt.delete(TestUtils.getTablePath(i));
-			}
-		}catch (Exception e) {
-			logger.error("something went wrong : " + e.getMessage());
-			
-		}
+//		HiveInterface hiveInt = null;
+//		try {
+//			hiveInt = new HiveInterface();
+//			for(int i = 0; i < 4; ++i){
+//				hiveInt.delete(TestUtils.getTablePath(i));
+//			}
+//		}catch (Exception e) {
+//			logger.error("something went wrong : " + e.getMessage());
+//			
+//		}
 		
 		WorkflowPrefManager.resetSys();
 		WorkflowPrefManager.resetUser();
