@@ -89,8 +89,9 @@
 			
 				<rich:dropSupport acceptedTypes="ssh" dropListener="#{hdfsBean.processDrop}" reRender="hdfsfs"/>
 				
-				<rich:dataTable id="hdfsfs" value="#{hdfsBean.listGrid}"
+				<rich:extendedDataTable id="hdfsfs" value="#{hdfsBean.listGrid}"
 					var="item" width="100%" style="border:none;"
+					height="500px"
 					onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 					enableContextMenu="false"
 					onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
@@ -119,7 +120,8 @@
 					</rich:column>
 					
 					<rich:column sortBy="#{item.name}"
-						style="border-bottom:0px;border-right:0px;">
+						style="border-bottom:0px;border-right:0px;"
+						filterBy="#{item.name}" filterEvent="onkeyup">
 						<f:facet name="header">
 							<h:outputText value="Name" />
 						</f:facet>
@@ -144,7 +146,7 @@
 						<h:outputText value="#{item.nameValue[column]}" id="hdfsvalue#{ind}" />
 					</rich:columns>
 	
-				</rich:dataTable>
+				</rich:extendedDataTable>
 			</rich:panel>
 		</h:form>
 	</div>

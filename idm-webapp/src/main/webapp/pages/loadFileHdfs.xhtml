@@ -32,30 +32,28 @@
 //]]>
 </script>
 
-	<a4j:jsFunction name="refreshHdfsOpenFileTable" action="#{hdfsLoadBean.changePath}" reRender="hdfsfsOpenFile"/>
+	<a4j:jsFunction name="refreshHdfsOpenFileTable" action="#{browserHdfsBean.changePath}" reRender="hdfsfsOpenFile"/>
 
-	<a4j:keepAlive beanName = "hdfsLoadBean"/>
-	
 	<h:outputText value="#{messages.label_path}" />
-	<h:inputText id="pathOpenFile" label="Path" value="#{hdfsLoadBean.path}"
+	<h:inputText id="pathOpenFile" label="Path" value="#{browserHdfsBean.path}"
 		maxlength="255" style="width:395px;" />
 		
-	<a4j:commandLink action="#{hdfsLoadBean.changePath}" reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
+	<a4j:commandLink action="#{browserHdfsBean.changePath}" reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
 		<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' />
 	</a4j:commandLink>
 		
-	<a4j:commandLink action="#{hdfsLoadBean.goPrevious}"
+	<a4j:commandLink action="#{browserHdfsBean.goPrevious}"
 		reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
 		<h:graphicImage id="btPrev" value="../image/icons/button-previous.gif" title='#{messages.HdfsInterface_previous_help}' />
 	</a4j:commandLink>
-	<a4j:commandLink action="#{hdfsLoadBean.goNext}" reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
+	<a4j:commandLink action="#{browserHdfsBean.goNext}" reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
 		<h:graphicImage id="btNext" value="../image/icons/button-next.gif" title='#{messages.HdfsInterface_next_help}' />
 	</a4j:commandLink>
 	
 	<br/><br/>
 	
 	
-	<rich:dataTable value="#{hdfsLoadBean.listHeaderGrid}" var="item"
+	<rich:dataTable value="#{browserHdfsBean.listHeaderGrid}" var="item"
 			width="100%" style="border:none;"
 			onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 			onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
@@ -76,7 +74,7 @@
 			</f:facet>
 		</rich:column>
 
-		<rich:columns value="#{hdfsLoadBean.keyAsListNameValue}" var="column" headerClass="loadTableMap"
+		<rich:columns value="#{browserHdfsBean.keyAsListNameValue}" var="column" headerClass="loadTableMap"
 			index="ind" id="column#{ind}"
 			style="border-bottom:0px;border-right:0px;">
 			<f:facet name="header">
@@ -89,7 +87,7 @@
 	
 	<div style="width:590px;height:250px;overflow:auto;" >
 	
-		<rich:dataTable id="hdfsfsOpenFile" value="#{hdfsLoadBean.listGrid}" var="item"
+		<rich:dataTable id="hdfsfsOpenFile" value="#{browserHdfsBean.listGrid}" var="item"
 			width="100%" style="border:none;"
 			onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 			onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
@@ -103,12 +101,12 @@
 			
 			<rich:column sortBy="#{item.name}" style="border-bottom:0px;border-right:0px;" styleClass="loadTableName" >
 				<a4j:commandLink value="#{item.name}"
-					action="#{hdfsLoadBean.selectFile}" reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
+					action="#{browserHdfsBean.selectFile}" reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
 					<f:param name="nameFile" value="#{item.name}" />
 				</a4j:commandLink>
 			</rich:column>
 	
-			<rich:columns value="#{hdfsLoadBean.keyAsListNameValue}" var="column" styleClass="loadTableMap"
+			<rich:columns value="#{browserHdfsBean.keyAsListNameValue}" var="column" styleClass="loadTableMap"
 				index="ind" id="column#{ind}"
 				style="border-bottom:0px;border-right:0px;" >
 				<h:outputText value="#{item.nameValue[column]}" id="value#{ind}" />
@@ -125,7 +123,7 @@
 		onclick="#{rich:component('modalLoadWorkflow')}.hide();" 
 		rerender="formMenu, errorTable"
 		oncomplete="loadWorkflow();">
-		<a4j:actionparam value="getPath('#{hdfsLoadBean.path}')" assignTo="#{canvasBean.path}" noEscape="true"/>
+		<a4j:actionparam value="getPath('#{browserHdfsBean.path}')" assignTo="#{canvasBean.path}" noEscape="true"/>
 	</a4j:commandButton>
 	
 	<a4j:commandButton value="#{messages.button_cancel}"
