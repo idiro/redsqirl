@@ -2091,7 +2091,7 @@ function saveAll(){
 		indexSaving++;
 	}
 	else{
-		Richfaces.showModalPanel('modalSaveWorkflow');
+		openModalSaveWorkflow();
 	}
 }
 	
@@ -2109,7 +2109,7 @@ function onHideModalSaveWorkflow(saved){
 	   		indexSaving++;
 	   	}
 	   	else{
-	   		Richfaces.showModalPanel('modalSaveWorkflow');
+	   		openModalSaveWorkflow();
 	   	}
    	}
    	else{
