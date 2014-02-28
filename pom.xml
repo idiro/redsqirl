@@ -6,6 +6,7 @@
 
     <groupId>idiro</groupId>
     <artifactId>idm</artifactId>
+    <name>Red Sqirl</name>
     <version>0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 

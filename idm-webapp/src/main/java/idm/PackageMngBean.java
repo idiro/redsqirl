@@ -57,8 +57,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 				getRequestParameterMap().get("packageName");
 		String version = FacesContext.getCurrentInstance().getExternalContext().
 				getRequestParameterMap().get("version");
-		String uri = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_pack_manager_url, 
-				"http://localhost:9090/idm-pck-manager/rest/allpackages");
+		String uri = WorkflowPrefManager.getPckManagerUri();
 
 		if(packageName != null && !packageName.isEmpty()){
 			showMain = false;
@@ -141,17 +140,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		HttpSession session = (HttpSession) fCtx.getExternalContext()
 				.getSession(false);
 		String user = (String) session.getAttribute("username");
-		logger.debug("user: "+user);
-		logger.debug(WorkflowPrefManager.
-		getSysProperty(
-				WorkflowPrefManager.sys_admin_user, ""));
-		logger.debug(WorkflowPrefManager.
-				getSysProperty(
-						WorkflowPrefManager.sys_admin_user));
-		
-		String[] admins = WorkflowPrefManager.
-		getSysProperty(
-				WorkflowPrefManager.sys_admin_user, "").split(":");
+		String[] admins = WorkflowPrefManager.getSysAdminUser();
 		for(String cur: admins){
 			admin = admin || cur.equals(user);
 			logger.debug("admin user: "+cur);
@@ -161,10 +150,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	public boolean isUserAllowInstall(){
 //		logger.info("is user");
-		return WorkflowPrefManager.
-				getSysProperty(
-						WorkflowPrefManager.sys_allow_user_install, "FALSE").
-						equalsIgnoreCase("true");
+		return WorkflowPrefManager.isUserPckInstallAllowed();
 	}
 
 	public List<SelectItem> getSystemPackages() throws RemoteException{
@@ -241,8 +227,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		String url = FacesContext.getCurrentInstance().getExternalContext().
 				getRequestParameterMap().get("downloadUrl");
 		String[] trustedURL = 
-				WorkflowPrefManager.getSysProperty(
-						WorkflowPrefManager.sys_pack_download_trust).split(";");
+				WorkflowPrefManager.getPackTrustedHost();
 		if(trustedURL.length > 0 && !url.contains("/../")){
 			boolean ok = false;
 			for(String curTrust : trustedURL){

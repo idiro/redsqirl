@@ -133,13 +133,6 @@ public class WorkflowPrefManager extends BlockManager{
 	pathUserCfgPref = new Preference<String>(userPrefs, 
 			"Path to retrieve general user configuration", 
 			pathUserPref.get() + "/idm_user.properties"),
-	
-	/**
-	 * Path to store the oozie jobs on hdfs
-	 */
-	hdfsPathOozieJobs = new Preference<String>(userPrefs,
-			"HDFS Path where the oozie jobs are stored",
-			"/user/"+System.getProperty("user.name") + "/.idm/jobs"),
 	/**
 	 * 
 	 */
@@ -174,7 +167,8 @@ public class WorkflowPrefManager extends BlockManager{
 			user_rsa_private= "private_rsa_key",
 			user_backup="backup_path",
 			user_nb_backup="number_backup",
-			user_nb_oozie_dir_tokeep="number_oozie_job_directory_tokeep";
+			user_nb_oozie_dir_tokeep="number_oozie_job_directory_tokeep",
+			user_hdfspath_oozie_job="hdfspath_oozie_job";
 
 	/**
 	 * Constructor.
@@ -221,7 +215,6 @@ public class WorkflowPrefManager extends BlockManager{
 		pathOozieJob.remove();
 		pathWorkflow.remove();
 		pathUserCfgPref.remove();
-		hdfsPathOozieJobs.remove();
 		pathUserDFEOutputColour.remove();		
 	}
 	
@@ -264,6 +257,97 @@ public class WorkflowPrefManager extends BlockManager{
 		return getUserProperties().getProperty(key,defaultValue);
 	}
 	
+	public static String getHDFSPathJobs(){
+		String path = getUserProperty(WorkflowPrefManager.user_hdfspath_oozie_job);
+		if(path == null || path.isEmpty()){
+			path = "/user/"+System.getProperty("user.name") + "/.idm/jobs";
+		}
+		return path;
+	}
+	
+	public static String getBackupPath(){
+		String path = getUserProperty(WorkflowPrefManager.user_backup);
+		if (path == null || path.isEmpty()) {
+			path = "/user/" + System.getProperty("user.name") + "/idm-backup";
+		}
+		return path;
+	}
+	
+	public static String getRsaPrivate(){
+		String path = getUserProperty(WorkflowPrefManager.user_rsa_private);
+		if (path == null || path.isEmpty()) {
+			path = System.getProperty("user.home") + "/.ssh/id_rsa";
+		}
+		return path;
+	}
+	
+	public static int getNbBackup(){
+		String numberBackup = getUserProperty(WorkflowPrefManager.user_nb_backup);
+		int nbBackup = 25;
+		if (numberBackup != null) {
+			try {
+				nbBackup = Integer.valueOf(numberBackup);
+				if (nbBackup < 0) {
+					nbBackup = 25;
+				}
+			} catch (Exception e) {
+			}
+		}
+		return nbBackup;
+	}
+	
+	public static int getNbOozieDirToKeep(){
+		String numberBackup = getUserProperty(WorkflowPrefManager.user_nb_backup);
+		int nbOozieDir = 25;
+		if (numberBackup != null) {
+			try {
+				nbOozieDir = Integer.valueOf(numberBackup);
+				if (nbOozieDir < 0) {
+					nbOozieDir = 25;
+				}else if(nbOozieDir == 0){
+					nbOozieDir = 1;
+				}
+			} catch (Exception e) {
+			}
+		}
+		return nbOozieDir;
+		
+	}
+	
+	public static String[] getPackTrustedHost(){
+		String[] trustedURL = new String[0];
+		String pack = getSysProperty(WorkflowPrefManager.sys_pack_download_trust);
+		if(pack != null && !pack.isEmpty()){
+			trustedURL = pack.split(";");
+		}
+		return trustedURL;
+	}
+	
+	public static String getPckManagerUri(){
+		String uri = getUserProperty(WorkflowPrefManager.sys_pack_manager_url);
+		if (uri == null || uri.isEmpty()) {
+			uri = "http://localhost:9090/idm-pck-manager/rest/allpackages";
+		}
+		return uri;
+	}
+	
+	public static String[] getSysAdminUser(){
+		String[] sysUsers = new String[0];
+		String pack = getSysProperty(WorkflowPrefManager.sys_admin_user);
+		if(pack != null && !pack.isEmpty()){
+			sysUsers = pack.split(":");
+		}
+		return sysUsers;
+	}
+	
+	public static boolean isUserPckInstallAllowed(){
+		return getSysProperty(
+						WorkflowPrefManager.sys_allow_user_install, "FALSE").
+						equalsIgnoreCase("true");
+	}
+	
+	
+	
 	
 	public static void main(String[] args){
 		for(int i = 0; i < args.length;++i){
@@ -298,8 +382,6 @@ public class WorkflowPrefManager extends BlockManager{
 					pathWorkflow.put(pref[1]);
 				}else if(pref[0].equalsIgnoreCase("pathUserCfgPref")){
 					pathUserCfgPref.put(pref[1]);
-				}else if(pref[0].equalsIgnoreCase("hdfsPathOozieJobs")){
-					hdfsPathOozieJobs.put(pref[1]);
 				}else if(pref[0].equalsIgnoreCase("pathUserDFEOutputColour")){
 					pathUserDFEOutputColour.put(pref[1]);
 				}

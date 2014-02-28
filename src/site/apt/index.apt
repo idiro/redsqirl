@@ -2,6 +2,42 @@
             IDM
             ------
 
-Introduction
+Red Sqirl
 
-  The IDM project is a software and a framework to run workflows.
+  Idiro Data Miner (IDM) is a web-based application front end, designed to compose
+data workflows for processing on a Hadoop-based back-end system. The purpose of
+the IDM GUI is to enable data analysts to compose workflows and run evaluations
+on large-scale datasets using the Hadoop-based back-end, specifically, by
+running Pig/HiveQL commands or other hadoop base technology through Oozie. For
+example, using a simple workflow, an analyst would drag and drop an import,
+filter and export component onto the GUI workspace, connect and configure them,
+and run this workflow to read, modify and write data within the HDFS/Hive
+tables.
+
+* Main Features
+
+  * Run a parallel Oozie Workflow
+
+  * Develop/Install customize workflow actions
+
+  * Save/Load your work
+
+  * HDFS and Hive browsing system
+
+  * Easy to set up and administrate
+
+  * Transparent tool
+
+
+* Getting Started
+
+  Red Sqirl can be installed easily on top of a Hadoop cluster
+
+  * {{{./download.html}Download}}
+
+  * {{{./gettingstarted.html}Getting started}}
+
+* Submitting a package to the community
+
+  If you have a package that you would like to share with the community nothing
+is more easy! 
