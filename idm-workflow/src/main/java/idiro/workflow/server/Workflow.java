@@ -693,22 +693,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 	public void cleanUpBackup() throws IOException {
 		String path = WorkflowPrefManager
-				.getUserProperty(WorkflowPrefManager.user_backup);
-		if (path == null || path.isEmpty()) {
-			path = "/user/" + System.getProperty("user.name") + "/idm-backup";
-		}
-		String numberBackup = WorkflowPrefManager
-				.getUserProperty(WorkflowPrefManager.user_nb_backup);
-		int nbBackup = 25;
-		if (numberBackup != null) {
-			try {
-				nbBackup = Integer.valueOf(numberBackup);
-				if (nbBackup < 0) {
-					nbBackup = 25;
-				}
-			} catch (Exception e) {
-			}
-		}
+				.getBackupPath();
+		int nbBackup = WorkflowPrefManager.getNbBackup();
 
 		FileSystem fs = NameNodeVar.getFS();
 		// FileStatus stat = fs.getFileStatus(new Path(path));

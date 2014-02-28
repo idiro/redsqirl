@@ -5,7 +5,6 @@ import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.interfaces.DataStore;
 import idiro.workflow.utils.LanguageManagerWF;
 
-import java.io.File;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Iterator;
@@ -43,8 +42,6 @@ public class SSHInterface extends UnicastRemoteObject implements DataStore {
 	 */
 	private static Preferences prefs = Preferences
 			.userNodeForPackage(SSHInterface.class);
-	protected static String defaultRSAKey = System.getProperty("user.home")
-			+ "/.ssh/id_rsa";
 	protected static Preference<String> known_host = new Preference<String>(
 			prefs, "known ssh host", "");
 
@@ -72,10 +69,7 @@ public class SSHInterface extends UnicastRemoteObject implements DataStore {
 		pathDataDefault = new Preference<String>(prefs,
 				"Default path of ssh for the host " + host, "");
 		String privateKey = WorkflowPrefManager
-				.getUserProperty(WorkflowPrefManager.user_rsa_private);
-		if (privateKey == null || privateKey.isEmpty()) {
-				privateKey = defaultRSAKey;
-		}
+				.getRsaPrivate();
 
 		if (paramProp.isEmpty()) {
 			paramProp.put(key_owner, new DSParamProperty("Owner of the file",
