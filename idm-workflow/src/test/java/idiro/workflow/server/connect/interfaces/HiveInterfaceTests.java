@@ -1,6 +1,7 @@
 package idiro.workflow.server.connect.interfaces;
 
 import static org.junit.Assert.assertTrue;
+import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.test.TestUtils;
 
@@ -172,6 +173,29 @@ public class HiveInterfaceTests {
 	}
 
 	@Test
+	public void selectPartitionTest() throws SQLException {
+		try {
+			HiveInterface hInt = new HiveInterface();
+			String path_1 = TestUtils.getTablePath(1);
+			String part_path = path_1 + "/COUNTRY='Ireland'/DT='20120204'";
+			logger.info("execute : " + hInt.getExecute());
+			hInt.delete(path_1);
+			String error = hInt.create(part_path, getPartitions());
+			assertTrue("create error " + error, error == null);
+			hInt.goTo(part_path);
+			 List<String> result = hInt.select("\001", 5);
+			 logger.info("result : "+result.toString());
+			 hInt.delete(path_1);
+			 WorkflowPrefManager.resetSys();
+			 WorkflowPrefManager.resetUser();
+
+		} catch (RemoteException e) {
+			e.printStackTrace();
+			logger.info("error in this test " + e.getMessage());
+		}
+	}
+
+	// @Test
 	public void interfaceConcurrency() throws RemoteException {
 		TestUtils.logTestTitle("interfaceConcurrency");
 
@@ -191,20 +215,20 @@ public class HiveInterfaceTests {
 			execute[i] = new Thread(new HiveThreadExecute("SHOW TABLES"));
 			executeQuery[i] = new Thread(new HiveThreadExecuteQuery(
 					"SHOW TABLES"));
-			 exists[i].start();
-			 execute[i].start();
-			 executeQuery[i].start();
+			exists[i].start();
+			execute[i].start();
+			executeQuery[i].start();
 
 		}
 
 		logger.info("Latch countdown");
-		
+
 		boolean end = false;
-		int count = 0 ;
-		int countMax = 1000 ;
-		while (!end&& count < countMax) {
-			if(count % 100 ==0){
-				logger.info("await thread : "+count);
+		int count = 0;
+		int countMax = 1000;
+		while (!end && count < countMax) {
+			if (count % 100 == 0) {
+				logger.info("await thread : " + count);
 			}
 			end = true;
 			for (int i = 0; i < size; ++i) {
@@ -218,19 +242,19 @@ public class HiveInterfaceTests {
 			}
 			++count;
 		}
-		if(!end){
+		if (!end) {
 			logger.info("wait too long");
 			for (int i = 0; i < size; ++i) {
 				exists[i].destroy();
 				execute[i].destroy();
 				executeQuery[i].destroy();
 			}
-			assertTrue("thread destroyed" , false);
+			assertTrue("thread destroyed", false);
 		}
-		
+
 		boolean ok = false;
-		int executeVal = HiveInterface.execute;
-		int doARefreshcount = HiveInterface.doARefreshcount;
+		int executeVal = HiveInterface.getExecute();
+		int doARefreshcount = HiveInterface.getDoARefreshcount();
 		if (executeVal == 0 && doARefreshcount == 0) {
 			ok = true;
 		}

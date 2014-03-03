@@ -76,9 +76,9 @@ public class ServerProcess {
 				setS(session);
 				Properties config = new Properties();
 				config.put("StrictHostKeyChecking", "no");
-				
+
 				session.setConfig(config);
-				
+
 				session.connect();
 
 				try {
@@ -120,13 +120,18 @@ public class ServerProcess {
 								logger.info("shutdown");
 								dfi.shutdown();
 							} catch (Exception e) {
-								FacesContext facesContext = FacesContext.getCurrentInstance();
-								String messageBundleName = facesContext.getApplication().getMessageBundle();
-								Locale locale = facesContext.getViewRoot().getLocale();
-								ResourceBundle bundle = ResourceBundle.getBundle(messageBundleName, locale);
-								logger.info(bundle.getString("old_workflow_deleted"));
+								FacesContext facesContext = FacesContext
+										.getCurrentInstance();
+								String messageBundleName = facesContext
+										.getApplication().getMessageBundle();
+								Locale locale = facesContext.getViewRoot()
+										.getLocale();
+								ResourceBundle bundle = ResourceBundle
+										.getBundle(messageBundleName, locale);
+								logger.info(bundle
+										.getString("old_workflow_deleted"));
 							}
-							
+
 							pm.deleteFile();
 							pm = new WorkflowProcessesManager().getInstance();
 							logger.info("killed old process");
@@ -137,7 +142,7 @@ public class ServerProcess {
 					String javahome = getJava();
 					String argJava = " -Xmx1500m ";
 					logger.info("opening channel");
-					if(channel.isConnected()){
+					if (channel.isConnected()) {
 						channel.disconnect();
 					}
 					channel = session.openChannel("exec");
@@ -154,9 +159,9 @@ public class ServerProcess {
 					logger.info("reading buffer");
 					pid = br.readLine();
 					logger.info("dataIn: " + pid);
-					
+
 					pm.storePid(pid);
-					
+
 					channel.getInputStream().close();
 					channel.disconnect();
 
@@ -209,6 +214,8 @@ public class ServerProcess {
 							.getLocation().getPath()
 							.replace("idm/auth/ServerProcess.class", "")
 					+ " idiro.workflow.server.BaseCommand " + port;
+			
+			logger.info("command in base command "+c);
 			((ChannelExec) channel).setCommand(c);
 			channel.connect();
 
@@ -240,11 +247,15 @@ public class ServerProcess {
 
 	private String getJava() throws IOException, JSchException {
 		Runtime rt = Runtime.getRuntime();
-		Process pr = rt.exec("which java");
+		Process pr = rt.exec(new String[]{ "/bin/bash", "-c", " which java"});
 		BufferedReader stdInput = new BufferedReader(new InputStreamReader(
 				pr.getInputStream()));
-
-		return stdInput.readLine();
+		String java = stdInput.readLine();
+		logger.info("java path : "+java);
+		if(java == null){
+			java ="java ";
+		}
+		return java;
 	}
 
 	/**
@@ -266,7 +277,7 @@ public class ServerProcess {
 					logger.info("Clean and close all the open worfklows");
 					dataFlowInterface.backupAll();
 					dataFlowInterface.autoCleanAll();
-				} catch (RemoteException e){
+				} catch (RemoteException e) {
 					logger.warn("Failed closing workflows");
 					e.printStackTrace();
 				}
@@ -293,7 +304,7 @@ public class ServerProcess {
 			list.remove(this);
 			logger.info(5);
 			run = false;
-		}else if(session == null && run){
+		} else if (session == null && run) {
 			logger.warn("Cannot kill thread because session is null.");
 		}
 	}

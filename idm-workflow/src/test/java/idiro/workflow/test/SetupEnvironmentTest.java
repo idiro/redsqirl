@@ -4,6 +4,7 @@ import idiro.Log;
 import idiro.ProjectID;
 import idiro.utils.OrderedFeatureListTests;
 import idiro.utils.TreeTests;
+import idiro.workflow.client.ExecuteCommandLineTests;
 import idiro.workflow.server.AppendListInteractionTests;
 import idiro.workflow.server.EditorInteractionTests;
 import idiro.workflow.server.InputInteractionTests;
@@ -45,7 +46,7 @@ import org.junit.runners.Suite.SuiteClasses;
 //	WorkflowTests.class,
 	//CreateWorkflowTests.class,
 //	HDFSInterfaceTests.class,
-	HiveInterfaceTests.class,
+//	HiveInterfaceTests.class,
 //	SSHInterfaceTests.class,
 //	SSHInterfaceArrayTests.class,
 //	HiveTypeTests.class, 
@@ -64,6 +65,7 @@ import org.junit.runners.Suite.SuiteClasses;
 //	EditorInteractionTests.class,
 //	TableInteractionTests.class,
 //	HDFSTypeTests.class,
+	ExecuteCommandLineTests.class,
 	})
 public class SetupEnvironmentTest {
 	
