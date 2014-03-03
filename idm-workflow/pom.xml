@@ -51,6 +51,23 @@
         <name>Idiro Technologies</name>
         <url>http://www.idiro.com</url>
     </organization>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.6</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9</version>
+                <configuration>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
+    
     <build>
     	<extensions>
             <extension>
@@ -138,21 +155,21 @@
 	                <version>2.6</version>
 	                <executions>
 	                    <execution>
-	                        <phase>compile</phase>
+	                        <!-- <phase>compile</phase>
 	                        <goals>
 	                            <goal>analyze-dep-mgt</goal>
-	                        </goals>
+	                        </goals> -->
 	                        <configuration>
 	                            <ignoreNonCompile>true</ignoreNonCompile>
 	                            <verbose>true</verbose>
 	                        </configuration>
 	                    </execution>
 	                    <execution>
+                            <!-- <phase>package</phase>
 	                        <id>copy-dependencies</id>
-	                        <phase>package</phase>
 	                        <goals>
 	                            <goal>copy-dependencies</goal>
-	                        </goals>
+	                        </goals> -->
 	                        <configuration>
 	                            <outputDirectory>${dist.lib}</outputDirectory>
 	                            <excludeArtifactIds>junit,ant,antlr,antlr-runtime</excludeArtifactIds>

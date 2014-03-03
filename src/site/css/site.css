@@ -1,0 +1,25 @@
+h1 {
+    color:red;
+}
+
+h2 {
+    color:red;
+}
+
+h3 {
+    color:red;
+}
+
+h4 {
+    color:red;
+}
+
+.dropdown-menu li a:hover,
+.dropdown-menu li a:hover,
+.dropdown-menu .active a,
+.dropdown-menu .active a,
+.dropdown-submenu:hover a,
+.dropdown-submenu:hover a{
+    background-image:none
+    background-color:green;
+}

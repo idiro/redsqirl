@@ -23,22 +23,20 @@
 //]]>
 </script>
 
-	<a4j:keepAlive beanName = "hdfsSaveBean"/>
-
 	<h:outputText value="#{messages.label_path}" />
-	<h:inputText id="pathSaveFile" label="Path" value="#{hdfsSaveBean.path}"
+	<h:inputText id="pathSaveFile" label="Path" value="#{browserHdfsBean.path}"
 		maxlength="255" style="width:395px;" />
 	
-	<a4j:commandLink action="#{hdfsSaveBean.changePath}" reRender="hdfsfsSaveFile,hdfsSaveFileBtn">
+	<a4j:commandLink action="#{browserHdfsBean.changePath}" reRender="hdfsfsSaveFile,hdfsSaveFileBtn">
 		<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' />
 	</a4j:commandLink>
 	
-	<a4j:commandLink action="#{hdfsSaveBean.goPrevious}"
+	<a4j:commandLink action="#{browserHdfsBean.goPrevious}"
 		reRender="pathSaveFile,hdfsfsSaveFile,hdfsSaveFileBtn">
 		<h:graphicImage id="btPrev" value="../image/icons/button-previous.gif" title='#{messages.HdfsInterface_previous_help}'/>
 	</a4j:commandLink>
 	
-	<a4j:commandLink action="#{hdfsSaveBean.goNext}" reRender="pathSaveFile,hdfsfsSaveFile,hdfsSaveFileBtn">
+	<a4j:commandLink action="#{browserHdfsBean.goNext}" reRender="pathSaveFile,hdfsfsSaveFile,hdfsSaveFileBtn">
 		<h:graphicImage id="btNext" value="../image/icons/button-next.gif" title='#{messages.HdfsInterface_next_help}' />
 	</a4j:commandLink>
 
@@ -52,7 +50,7 @@
 
 	<div style="width:590px;height:265px;overflow:auto;" >
 
-		<rich:dataTable id="hdfsfsSaveFile" value="#{hdfsSaveBean.listGrid}" var="item"
+		<rich:dataTable id="hdfsfsSaveFile" value="#{browserHdfsBean.listGrid}" var="item"
 			width="100%" style="border:none;"
 			onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 			onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
@@ -67,12 +65,12 @@
 					<h:outputText value="Name" />
 				</f:facet>
 				<a4j:commandLink value="#{item.name}"
-					action="#{hdfsSaveBean.selectFile}" reRender="pathSaveFile,hdfsfsSaveFile,hdfsSaveFileBtn">
+					action="#{browserHdfsBean.selectFile}" reRender="pathSaveFile,hdfsfsSaveFile,hdfsSaveFileBtn">
 					<f:param name="nameFile" value="#{item.name}" />
 				</a4j:commandLink>
 			</rich:column>
 	
-			<rich:columns value="#{hdfsSaveBean.keyAsListNameValue}" var="column"
+			<rich:columns value="#{browserHdfsBean.keyAsListNameValue}" var="column"
 				index="ind" id="column#{ind}"
 				style="border-bottom:0px;border-right:0px;">
 				<f:facet name="header">
@@ -88,7 +86,7 @@
 	<br/>
 
 	<a4j:commandButton id="hdfsSaveFileBtn" value="#{messages.button_ok}"
-		onclick="#{rich:component('modalSaveWorkflow')}.hide();save(getPath('#{hdfsSaveBean.path}'));"
+		onclick="#{rich:component('modalSaveWorkflow')}.hide();save(getPath('#{browserHdfsBean.path}'));"
 		oncomplete="" reRender="errorTable" >
 	</a4j:commandButton>
 	
