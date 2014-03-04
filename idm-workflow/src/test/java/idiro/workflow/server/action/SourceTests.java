@@ -119,7 +119,6 @@ public class SourceTests {
 			logger.debug("update datasubtype");
 			src.update(src.getInteraction(Source.key_datasubtype));
 			logger.debug("get page 2");
-			;
 			// ((ListInteraction)
 			// src.getInteraction(Source.key_datasubtype)).setValue(new
 			// HiveType().getTypeName());
@@ -171,12 +170,12 @@ public class SourceTests {
 		TestUtils.logTestTitle("SourceTests#basicHDFS");
 		try {
 			HDFSInterface hInt = new HDFSInterface();
-			// String new_path1 = TestUtils.getPath(12);
-			String new_path1 = "/user/keith/tutorial";
-			// hInt.delete(new_path1);
-			// assertTrue("create "+new_path1,
-			// hInt.create(new_path1, getColumns()) == null
-			// );
+			 String new_path1 = TestUtils.getPath(12);
+//			String new_path1 = "/user/keith/tutorial";
+			 hInt.delete(new_path1);
+			 assertTrue("create "+new_path1,
+			 hInt.create(new_path1, getColumns()) == null
+			 );
 
 			Source src = new Source();
 			String error = "";

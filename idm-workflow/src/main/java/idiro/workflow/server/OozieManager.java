@@ -169,25 +169,10 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 	}
 
 	public void cleanJobDirectory(final String nameWf) throws RemoteException{
-		Path hdfsWfPath = new Path(WorkflowPrefManager.hdfsPathOozieJobs.get());
+		Path hdfsWfPath = new Path(WorkflowPrefManager.getHDFSPathJobs());
 		FileSystem fs = null;
 		int again = 10;
-		int numberToKeep = 0;
-		{
-			String nbToKeepStr = WorkflowPrefManager.getUserProperty(WorkflowPrefManager.user_nb_oozie_dir_tokeep,"20");
-			try{
-				numberToKeep = Integer.valueOf(nbToKeepStr);
-			}catch(Exception e){
-				logger.warn("'"+nbToKeepStr+"' is not an integer");
-				numberToKeep = 20;
-			}
-		}
-		
-		if( numberToKeep < 1){
-			logger.warn(WorkflowPrefManager.user_nb_oozie_dir_tokeep+" set to 1");
-			logger.warn("We have to keep at least the current process");
-			numberToKeep = 1;
-		}
+		int numberToKeep = WorkflowPrefManager.getNbOozieDirToKeep();
 		while(again > 0){
 			try{
 				logger.debug("Attempt "+ (11-again) +" to get a name.");
@@ -233,7 +218,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 	protected String buildFileName(DataFlow df) throws RemoteException{
 		final String nameWf = df.getName();
 		String ans = null;
-		Path hdfsWfPath = new Path(WorkflowPrefManager.hdfsPathOozieJobs.get());
+		Path hdfsWfPath = new Path(WorkflowPrefManager.getHDFSPathJobs());
 		FileSystem fs = null;
 		int again = 10;
 		int number = 0;
@@ -298,7 +283,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 		final String nameWF = df.getName();
 		String fileName = buildFileName(df);
 		File parentDir = new File(WorkflowPrefManager.pathOozieJob.get()+"/"+fileName);
-		String hdfsWfPath = WorkflowPrefManager.hdfsPathOozieJobs.get()+"/"+fileName;
+		String hdfsWfPath = WorkflowPrefManager.getHDFSPathJobs()+"/"+fileName;
 		if(!parentDir.exists()){
 			parentDir.mkdirs();
 		}else{
@@ -569,4 +554,5 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 	public String getUrl() throws RemoteException{
 		return oc.getOozieUrl();
 	}
+	
 }

@@ -1,0 +1,87 @@
+            ------
+            IDM - Package Management
+            ------
+
+Introduction
+
+  Red Sqirl includes a complex package management that will provide the
+functionalities that the user is looking for when building a workflow. We spent
+a lot of effort for having a very flexible package management system.
+
+How does it work?
+
+  The different packages are jars, a customize class path is generated for every
+user allowing them to have a flexibility in the package they use. When user
+package option is enable, the user can install package for himself, in case of
+conflict it will be the user package that will be chosen.
+
+  What you need for having the package manager working is allowing the server to
+download package information and the packages itself from a repository. You can
+find a repository online or create your own.
+
+Package Management Setup
+
+  The package management in IDM is divided in two components.
+
+  * A REST server that contains descriptions of all the packages that are
+available to you.
+
+  * A list of servers that host the packages and make them available to you.
+
+  For setting up the package management you have to make sure that these servers
+are reachable from your web server. As an extra layer of security you have to
+specify manually what are the servers you want to use.
+
+* Installing Manually a package
+
+  You do not need the UI to install a package if you do not want to. In the bin
+folder, you will find four scripts for installing/removing packages on the
+user/system scope.
+
+** Installing a package
+
+  * Download manually the package and make it available
+
+  * Connect as your tomcat user or the user you want to install the package into
+
+  * run the script and parse the path of the package downloaded
+
+----------------------------------------
+$ cd /tmp
+$ wget http://www.example.com/my_package.zip
+
+$ su ${tomcat_user}
+$ ${idm-webapp_HOME}bin/add_package_system.sh /tmp/my_package.zip
+OR
+$ su ${my_user}
+$ ${idm-webapp_HOME}bin/add_package_user.sh /tmp/my_package.zip
+----------------------------------------
+
+**  Uninstalling a package
+
+  * Connect as your tomcat user or the user you want to uninstall the package from
+  
+  * Run uninstall script with the name of the package
+  
+----------------------------------------
+$ su ${tomcat_user}
+$ ${idm-webapp_HOME}/bin/remove_package_system.sh my_package
+OR
+$ su ${my_user}
+$ ${idm-webapp_HOME}/bin/remove_package_user.sh my_package
+----------------------------------------
+
+System Preferences
+
+  Below we list the system preferences related to the package management.
+
+*----------+--------------+----------------+
+| Properties | Description | Example  |
+*----------+--------------+----------------+
+| trusted_pack_hosts| ';' List of server URL that you allow the package to be downloaded from | http://localhost|
+*----------+--------------+----------------+
+| admin_user | ':' list of user that can admin sys package from the UI | user1:user2 |
+*----------+--------------+----------------+
+| pack_manager_url | The package manager URL (REST server) | http://localhost:9090 |
+*----------+--------------+----------------+
+

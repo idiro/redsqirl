@@ -1,0 +1,156 @@
+            ------
+            IDM - Getting started
+            ------
+
+Getting started
+
+  This document describe how to install and configure Red Sqirl.
+
+* Download
+
+  {{{./download.html}Download}} our latest stable release.
+
+* Prerequisite
+
+  * A Linux web server with tomcat 7 installed.
+ 
+  * A Apache Hadoop cluster fully set up.
+ 
+  * Apache Oozie install on top of the cluster
+ 
+  * An account on the server (or using LDAP) for every user
+ 
+  * A rsa key ssh connection setup for every user to connect into the gate of your cluster
+
+  []  
+
+  You will probably need algorithms or software to process the data. Red Sqirl
+comes with Hive, Pig and Hama process.
+
+  * Apache Hive installed
+
+  * Apache Pig installed
+
+  * Apache Hama installed
+
+* Architecture
+
+   Red Sqirl is composed of the main tomcat service. When you are logging in, it
+will create another service under the logged in user and make key components
+available on RMI. Every back-end actions is done through the user process to
+avoid permission conflicts.
+
+* Install
+
+  * Download
+
+  * Unzip the directory where you want to install it through the tomcat user
+
+  * Set up your conf/idm_sys.properties file
+
+  * Run the script bin/update.sh, it will ask for your tomcat webapps directory
+
+  * Each Red Sqirl user needs to execute the bin/setup_user.sh script.
+
+  []
+
+  Find below an example of a property file.
+
+----------------------------------------
+
+namenode=hdfs://namenode:9000
+jobtracker=namenode:9001
+queue=default
+oozie_url=http://namenode:11000/oozie
+oozie_xmlns=uri:oozie:workflow:0.2
+idiroengine_path=/usr/lib/idiro/idiro-engine/idiro-engine-0.1-SNAPSHOT
+hive_xml=/user/oozie/share/hive/hive-site.xml
+hive_default_xml=/user/oozie/share/hive/hive-default.xml
+allow_user_install=true
+tomcat_path=/home/etienne/git/idm/idm-webapp/src/main/webapp/WEB-INF/classes
+start_hive_range=10000
+end_hive_range=100100
+workflow_lib_path=/home/etienne/git/idm/idm-workflow/target/idm-workflow/lib/
+idiro_interface_path=/home/etienne/git/idm/idm-wf-interface/target/idm-wf-interface-0.1-SNAPSHOT.jar
+jdbc_hive_server=datanode1
+
+----------------------------------------
+
+* First user setup
+
+  Each user needs to execute the bin/setup_user.sh script.
+
+* Extras
+
+** Packages
+
+  You can now install extra functionalities on the system. Please refer to the
+{{{./packagemanagement.html}Package Management}} section.
+
+** System twicks
+
+  Below we list the system preferences available to you.
+
+*----------+--------------+----------------+
+| Properties | Description | Example  |
+*----------+--------------+----------------+
+| namenode | Apache hadoop namenode     | hdfs://namenode:9000    |
+*----------+--------------+----------------+
+| jobtracker | Apache hadoop job tracker | namenode:9001 |
+*----------+--------------+----------------+
+| queue | The queue to use in oozie | default |
+*----------+--------------+----------------+
+| oozie_url | Apache Oozie url | http://namenode:11000/oozie |
+*----------+--------------+----------------+
+| oozie_xmlns | Apache Oozie xmlns to use | uri:oozie:workflow:0.2 |
+*----------+--------------+----------------+
+| idiroengine_path | HDFS path of idiro engine (needed if you intend to use idiro engine | /ush/lib/idiro-engine |
+*----------+--------------+----------------+
+| hive_xml | Do we still need that? | |
+*----------+--------------+----------------+
+| hive_default_xml | Do we still need that? | |
+*----------+--------------+----------------+
+| allow_user_install | Allow users to install their own packages | true |
+*----------+--------------+----------------+
+| tomcat_path | Why do we need that? | |
+*----------+--------------+----------------+
+| start_hive_range | Optional, needed for generating a Hive server port for every user| 10000|
+*----------+--------------+----------------+
+| end_hive_range | Optional, end of automatic range allocation (excluded)| 10100|
+*----------+--------------+----------------+
+| workflow_lib_path | Do we still need that? | |
+*----------+--------------+----------------+
+| idiro_interface_path | Do we still need that? | |
+*----------+--------------+----------------+
+| jdbc_hive_server | The name of the Hive server to use | namenode |
+*----------+--------------+----------------+
+| trusted_pack_hosts| server URL that you allow the package to be downloaded from | http://localhost|
+*----------+--------------+----------------+
+| admin_user | ':' list of user that can admin sys package from the UI | user1:user2 |
+*----------+--------------+----------------+
+| pack_manager_url | The package manager URL (REST server) | http://localhost:9090 |
+*----------+--------------+----------------+
+|  | | |
+*----------+--------------+----------------+
+
+
+** User twicks
+
+  Below we list the user preferences available to you.  
+
+*----------+--------------+----------------+
+| Properties | Description | Example  |
+*----------+--------------+----------------+
+| user_hive | Hive Server URL | jdbc:hive://datanode3:10000/default |
+*----------+--------------+----------------+
+| user_rsa_key | Path where to find the user RSA key (default ~/.ssh/id_rsa) | /home/my_user/.ssh/id_rsa |
+*----------+--------------+----------------+
+| backup_path | HDFS path where workflow backup are made (default /user/\{user\}/idm_backup) | |
+*----------+--------------+----------------+
+| number_backup | Number of workflow backup file to keep (default 25) | 50 |
+*----------+--------------+----------------+
+| number_oozie_job_directory_tokeep | Number of oozie jobs to keep per workflows (default 20) | 50 |
+*----------+--------------+----------------+
+| hdfspath_oozie_job | HDFS path where the oozie workflow are writen /user/\{user\}/.idm/jobs | |
+*----------+--------------+----------------+
+
