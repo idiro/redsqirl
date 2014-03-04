@@ -148,21 +148,21 @@
 						
 						<div id="DivBrowserTable1" style="width:100%; height:70px;  border:1px solid black; overflow-x: hidden;">
 						
-							<rich:dataTable id="browserTable1" value="#{item.listGrid}"
-								var="item" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+							<rich:dataTable id="browserTable1" value="#{canvasModalBean.listGrid}"
+								var="item2" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 								enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
 								
 								<rich:column id="browserTable1Col1" rendered="#{canvasModalBean.listGrid != null and not empty canvasModalBean.listGrid}" >
 									<f:facet name="header">
 										<h:outputText value="#{messages.label_properties}" />
 									</f:facet>
-									<h:inputText value="#{item.property}" style="width:100%;" readonly="true" />
+									<h:inputText value="#{item2.property}" style="width:100%;" readonly="true" />
 								</rich:column>
 								<rich:column id="browserTable1Col2" rendered="#{canvasModalBean.listGrid != null and not empty canvasModalBean.listGrid}" >
 									<f:facet name="header">
 										<h:outputText value="#{messages.label_value}" />
 									</f:facet>
-									<h:inputText value="#{item.value}" style="width:100%;" />
+									<h:inputText value="#{item2.value}" style="width:100%;" />
 								</rich:column>
 				
 							</rich:dataTable>
@@ -173,7 +173,7 @@
 						
 						<div id="DivBrowserTable2" style="width:100%; height:120px;  border:1px solid black; overflow-x: hidden;">
 						
-							<rich:scrollableDataTable id="browserTable2" value="#{item.listFeature}" height="100%"
+							<rich:scrollableDataTable id="browserTable2" value="#{canvasModalBean.listFeature}" height="100%"
 								var="itemDiv2" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 								enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
 								
