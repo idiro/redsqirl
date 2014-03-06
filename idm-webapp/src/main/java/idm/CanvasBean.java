@@ -418,6 +418,10 @@ public class CanvasBean extends BaseBean implements Serializable{
 				setDf(df);
 				workflowMap.put(getNameWorkflow(), df);
 				getIdMap().put(getNameWorkflow(), new HashMap<String, String>());
+				
+				for (DataFlowElement e : df.getElement()){
+					getIdMap().get(getNameWorkflow()).put(e.getComponentId(), e.getComponentId());
+				}
 			}
 
 		} catch (Exception e) {
