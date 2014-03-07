@@ -989,16 +989,16 @@ function addElements(canvasName, positions) {
 	
 	for ( var i = 0; i < positionsArrays.length; i++) {
 		
-		if(checkImg(positionsArrays[i][2])){
+		if (positionsArrays[i][2].substring(0, 3) === '../'){
 			var group = addElement(canvasName, positionsArrays[i][1],
-					positionsArrays[i][2], positionsArrays[i][3],
+					"./"+positionsArrays[i][2], positionsArrays[i][3],
 					positionsArrays[i][4],
 					numSides,
 					positionsArrays[i][0]);
-		}else{
-			
+		}
+		else{
 			var group = addElement(canvasName, positionsArrays[i][1],
-					"./"+positionsArrays[i][2], positionsArrays[i][3],
+					location.protocol + '//' + location.host+positionsArrays[i][2], positionsArrays[i][3],
 					positionsArrays[i][4],
 					numSides,
 					positionsArrays[i][0]);
