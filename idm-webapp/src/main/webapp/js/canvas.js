@@ -53,6 +53,13 @@ var canvasArray;
 var allPositionIcons;
 var refreshProcManagerCount = 30;
 
+var imgHeight;
+var imgWidth;
+
+function findHHandWW() {
+  imgHeight = this.height;imgWidth = this.width;return true;
+}
+
 window.onload = function() {
 	var canvasName = "canvas-1";
 	
@@ -1034,6 +1041,7 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
 
 	var img = new Image();
 	img.src = elementImg;
+	img.onload = findHHandWW;
 
 	var result = createPolygon(img, 40, 50, numSides, canvasName);
 	var polygon = result[0];
@@ -1285,6 +1293,7 @@ function mountObj(canvasName) {
 				// the object
 				var imgTab = new Image();
 				imgTab.src = jQuery(this).attr("src");
+				imgTab.onload = findHHandWW;
 
 				var srcImageText = new Kinetic.Text({
 					text : jQuery(this).attr("src")
@@ -1708,12 +1717,12 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
 	if (numSides%2 == 0 ){
 		rotateDeg = 360/(2*numSides);
 	}
+
+	var height = 44.5/imgHeight;
+	var width = 44.5/imgWidth;
 	
-	var height = 44.5/imgTab.naturalHeight;
-	var width = 44.5/imgTab.naturalWidth;
-	
-	var offsetY = imgTab.height/2;
-	var offsetX = imgTab.width/2;
+	var offsetY = imgHeight/2;
+	var offsetX = imgWidth/2;
 	
 	var polygonTab = new Kinetic.RegularPolygon({
 		x : 40,
