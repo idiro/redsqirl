@@ -9,7 +9,10 @@
 		//<![CDATA[
 
 		var file;
-		function browserSelectOneRadio(radio, name) {
+		function browserSelectOneRadio(radio, name, path) {
+			console.log("radio " + radio);
+			console.log("name " + name);
+			console.log("path " + path);
 
 			var inputs = document.getElementsByTagName("input");
 			for ( var i = inputs.length - 1; i >= 0; i--) {
@@ -19,33 +22,50 @@
 			}
 
 			radio.checked = true;
-			file = name;
+			if (path.charAt(path.length - 1) == "/") {
+				file = path + name;
+			} else {
+				file = path + "/" + name;
+			}
 		}
 
 		function getPathHive(p) {
-			if (!file) {
-				console.log("path not file" + p);
-				return p;
-			}
-			if (p.search("/") != -1) {
-				var parts = p.split("/");
-				var newPath = "/";
-				for ( var i = 0; i < parts.length; i++) {
-					if (parts[i] != "/" && parts[i] != "") {
-						console.log("'" + parts[i] + "'");
-						newPath += parts[i] + "/";
-					}
+			console.log("path " + p);
+			console.log("file " + file);
+			if (file.search(p) == -1) {
+				var ans = "";
+				if (!file) {
+					return p;
 				}
-				console.log("new path " + newPath);
-				return newPath;
-			}
-			var lastCHar = p.charAt(p.length - 1);
-			if (lastCHar == "/") {
-				console.log("last char /" + p + " + " + file);
-				return p + file;
+				/* if (p.search("/") != -1) {
+					var parts = p.split("/");
+					var newPath = "/";
+					for ( var i = 0; i < parts.length; i++) {
+						if (parts[i] != "/" && parts[i] != "") {
+							console.log("'" + parts[i] + "'");
+							newPath += parts[i] + "/";
+						}
+					}
+					if(file !=null){
+						newPath+=file;
+					}
+					console.log("new path " + newPath);
+					return newPath;
+				} */
+				var lastCHar = p.charAt(p.length - 1);
+				if (lastCHar == "/") {
+					//console.log("last char /" + p + " + " + file);
+					ans = p + file;
+				} else {
+					//console.log("last char not / : " + p + " '/' " + file);
+					ans = p + "/" + file;
+				}
+
+				console.log("returning : " + ans);
+
+				return ans;
 			} else {
-				console.log("last char not /" + p + " '/' " + file);
-				return p + "/" + file;
+				return file;
 			}
 		}
 
@@ -93,7 +113,7 @@
 					<h:outputText value="" />
 				</f:facet>
 				<h:selectOneRadio value="#{item.stringSelectedDestination}"
-					onclick="dataTableOpenSelectOneRadio(this, '#{item.name}');">
+					onclick="browserSelectOneRadio(this, '#{item.name}','#{browserHiveBean.path}');">
 					<f:selectItem itemValue="true" />
 				</h:selectOneRadio>
 
@@ -126,7 +146,7 @@
 	<a4j:commandButton action="#{canvasModalBean.changePathBrowser}"
 		value="#{messages.button_ok}"
 		oncomplete="#{rich:component('modalPanelBrowserHiveId')}.hide();"
-		reRender="browserPanel, browserTable1, browserTable2, browserTable1Col1, browserTable1Col2">
+		reRender="browserPanel, browserTable1, browserTable2, browserTable1Col1, browserTable1Col2 , pathOpenFile">
 		<a4j:actionparam name="pathFile"
 			value="getPathHive('#{browserHiveBean.path}')" noEscape="true" />
 	</a4j:commandButton>
