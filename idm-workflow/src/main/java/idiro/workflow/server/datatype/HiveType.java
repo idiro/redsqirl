@@ -111,11 +111,17 @@ public class HiveType extends DataOutput{
 			return error;
 		}
 		if (isPathExists()){
-			return hInt.isPathValid(getPath(), features, "");
+			if(hInt.getTableAndPartitions(getPath()).length > 1){
+				return LanguageManagerWF.getText("hivetype.ispathvalid.noPartitions" , new Object[]{getPath()});
+			}
+			return hInt.isPathValid(getPath(), features, false);
 		}else{
 			String regex = "[a-zA-Z_]([A-Za-z0-9_]+)";
 			if (!hInt.getTableAndPartitions(getPath())[0].matches(regex)) {
 				error = LanguageManagerWF.getText("hivetype.ispathvalid.invalid");
+			}
+			if(hInt.getTableAndPartitions(getPath()).length > 1){
+				return LanguageManagerWF.getText("hivetype.ispathvalid.noPartitions" , new Object[]{getPath()});
 			}
 		}
 		return error;
