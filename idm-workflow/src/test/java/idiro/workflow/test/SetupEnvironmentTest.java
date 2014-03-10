@@ -4,7 +4,6 @@ import idiro.Log;
 import idiro.ProjectID;
 import idiro.utils.OrderedFeatureListTests;
 import idiro.utils.TreeTests;
-import idiro.workflow.client.ExecuteCommandLineTests;
 import idiro.workflow.server.AppendListInteractionTests;
 import idiro.workflow.server.EditorInteractionTests;
 import idiro.workflow.server.InputInteractionTests;
@@ -42,7 +41,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 
 @RunWith(Suite.class)
-@SuiteClasses({//ActionTests.class,
+@SuiteClasses({ActionTests.class,
 //	WorkflowTests.class,
 	//CreateWorkflowTests.class,
 //	HDFSInterfaceTests.class,
@@ -65,7 +64,6 @@ import org.junit.runners.Suite.SuiteClasses;
 //	EditorInteractionTests.class,
 //	TableInteractionTests.class,
 //	HDFSTypeTests.class,
-	ExecuteCommandLineTests.class,
 	})
 public class SetupEnvironmentTest {
 	

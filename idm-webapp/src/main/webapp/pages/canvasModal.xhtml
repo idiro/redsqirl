@@ -177,25 +177,11 @@
 								var="itemDiv2" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 								enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
 								
-								<rich:columns value="#{canvasModalBean.browserNameFeatureColumns}" var="column" index="ind" rendered="#{not empty canvasModalBean.listFeature and canvasModalBean.hiveHdfs == 'hive'}" 
+								<rich:columns value="#{canvasModalBean.browserNameFeatureColumns}" var="column" index="ind" rendered="#{not empty canvasModalBean.listFeature}" 
 									style="border-bottom:0px;border-right:0px;" sortable="false" >
 									
-									<f:facet name="header" rendered="#{canvasModalBean.hiveHdfs == 'hive'}">
+									<f:facet name="header">
 								    	<h:outputText value="#{column}" />
-									</f:facet>
-									
-									<h:outputText value="#{itemDiv2.nameValue[column]}" />
-									
-								</rich:columns>
-								
-								<rich:columns value="#{canvasModalBean.browserNameFeatureColumns}" var="column" index="ind" rendered="#{not empty canvasModalBean.listFeature and canvasModalBean.hiveHdfs == 'hdfs'}" 
-									style="border-bottom:0px;border-right:0px;" sortable="false" >
-									
-									<f:facet name="header" rendered="#{canvasModalBean.hiveHdfs == 'hdfs'}">
-										 <h:panelGrid columns="2" width="100%" >
-								            <h:inputText value="#{canvasModalBean.nameBrowserLabel1[column]}" style="width:50%" />
-								            <h:outputText value="#{canvasModalBean.nameBrowserLabel2[column]}" style="width:50%" />
-								        </h:panelGrid>
 									</f:facet>
 									
 									<h:outputText value="#{itemDiv2.nameValue[column]}" />

@@ -50,7 +50,7 @@
 			<h:inputText id="hdfspath" label="Path" value="#{hdfsBean.path}" maxlength="255" style="width:395px;" />
 
 			<a4j:commandLink action="#{hdfsBean.changePath}" reRender="hdfsfs" style="color:#FFFFFF" >
-				<h:graphicImage src="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' />
+				<h:graphicImage value="../image/icons/button-search.gif" title="#{messages.filesystem_change_path}" />
 			</a4j:commandLink>
 
 			<br />
@@ -89,16 +89,12 @@
 			
 				<rich:dropSupport acceptedTypes="ssh" dropListener="#{hdfsBean.processDrop}" reRender="hdfsfs"/>
 				
-				<rich:extendedDataTable id="hdfsfs" value="#{hdfsBean.listGrid}"
-					var="item" width="100%" style="border:none;"
-					height="500px"
-					onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-					enableContextMenu="false"
-					onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
-	
-					<f:facet name="header">
-						<h:outputText value="File System" />
-					</f:facet>
+				
+				<rich:dataTable id="hdfsfs" value="#{hdfsBean.listGrid}"
+				var="item" width="100%" style="border:none;"
+				onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+				enableContextMenu="false"
+				onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
 	
 					<rich:column style="border-bottom:0px;border-right:0px;"
 						width="30px;">
@@ -119,9 +115,7 @@
 						</a4j:commandLink>
 					</rich:column>
 					
-					<rich:column sortBy="#{item.name}"
-						style="border-bottom:0px;border-right:0px;"
-						filterBy="#{item.name}" filterEvent="onkeyup">
+					<rich:column sortBy="#{item.name}" style="border-bottom:0px;border-right:0px;" >
 						<f:facet name="header">
 							<h:outputText value="Name" />
 						</f:facet>
@@ -146,7 +140,8 @@
 						<h:outputText value="#{item.nameValue[column]}" id="hdfsvalue#{ind}" />
 					</rich:columns>
 	
-				</rich:extendedDataTable>
+				</rich:dataTable>>
+				
 			</rich:panel>
 		</h:form>
 	</div>

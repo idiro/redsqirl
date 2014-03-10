@@ -28,7 +28,6 @@ import java.util.Properties;
 import java.util.prefs.Preferences;
 
 import org.apache.log4j.Logger;
-import org.mockito.internal.stubbing.answers.ThrowsException;
 
 /**
  * Interface for browsing Hive.
