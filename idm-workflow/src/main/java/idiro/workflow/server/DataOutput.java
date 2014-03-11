@@ -410,17 +410,20 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 
 	public boolean compare(String path, FeatureList fl,
 			Map<String, String> props) {
-		logger.debug("Comparaison dataoutput:");
-		logger.debug(this.path + " " + path);
 		if (this.path == null) {
 			return false;
 		}
+		/*
+		logger.info("Comparaison dataoutput:");
+		logger.info(this.path + " " + path);
+
 		try {
-			logger.debug(features.getFeaturesNames() + " "
+			logger.info("\n"+features.getFeaturesNames() + " \n"
 					+ fl.getFeaturesNames());
 		} catch (RemoteException e) {
 		}
-		logger.debug(dataProperty + " " + props);
+		logger.info(dataProperty + " " + props);
+		*/
 		return this.path.equals(path) && features.equals(fl)
 				&& dataProperty.equals(props);
 	}

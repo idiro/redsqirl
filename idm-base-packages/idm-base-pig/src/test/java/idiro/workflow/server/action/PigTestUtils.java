@@ -156,7 +156,7 @@ public class PigTestUtils {
 		src.update(src.getInteraction(Source.key_dataset));
 		Tree<String> dataSetTree = src.getInteraction(Source.key_dataset).getTree();
 		dataSetTree.getFirstChild("browse").getFirstChild("output").add("path").add(path);
-
+		
 		Tree<String> feat1 = dataSetTree.getFirstChild("browse")
 				.getFirstChild("output").add("feature");
 		feat1.add("name").add("ID");
@@ -166,6 +166,8 @@ public class PigTestUtils {
 				.getFirstChild("output").add("feature");
 		feat2.add("name").add("VALUE");
 		feat2.add("type").add("INT");
+		
+		logger.info(dataSetTree.toString());
 		
 		String error = src.updateOut();
 		assertTrue("source update: "+error,error == null);
@@ -218,6 +220,8 @@ public class PigTestUtils {
 		feat2.add("type").add("INT");
 		
 		String error = src.updateOut();
+		
+		
 		assertTrue("source update: "+error,error == null);
 		
 		assertTrue("number of features in source should be 2 instead of " + 
