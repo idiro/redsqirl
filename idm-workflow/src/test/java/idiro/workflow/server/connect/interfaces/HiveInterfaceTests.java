@@ -1,14 +1,18 @@
 package idiro.workflow.server.connect.interfaces;
 
 import static org.junit.Assert.assertTrue;
+import idiro.utils.FeatureList;
+import idiro.utils.OrderedFeatureList;
 import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.HiveInterface;
+import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.test.TestUtils;
 
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -50,7 +54,7 @@ public class HiveInterfaceTests {
 		return ans;
 	}
 
-	// @Test
+	 @Test
 	public void basic() {
 		TestUtils.logTestTitle("HiveInterfaceTests#basic");
 		try {
@@ -94,7 +98,7 @@ public class HiveInterfaceTests {
 		}
 	}
 
-	// @Test
+	 @Test
 	public void partitionMgmt() {
 		TestUtils.logTestTitle("HiveInterfaceTests#partitionMgmt");
 		try {
@@ -153,6 +157,7 @@ public class HiveInterfaceTests {
 			assertTrue("delete " + new_path1 + " , " + error, error == null);
 			error = hInt.delete(new_path2);
 			assertTrue("delete " + new_path2 + " , " + error, error == null);
+			
 			error = hInt.delete(new_path3);
 			assertTrue("delete " + new_path3 + " , " + error, error == null);
 
@@ -162,7 +167,7 @@ public class HiveInterfaceTests {
 		}
 	}
 
-	// @Test
+	 @Test
 	public void getTypesFromPathTest() throws RemoteException {
 		TestUtils.logTestTitle("HiveInterfaceTests#getTypesFromPathTest");
 		HiveInterface hInt = new HiveInterface();
@@ -172,7 +177,7 @@ public class HiveInterfaceTests {
 		logger.info("result : " + hInt.getTypesPartitons(new_path1));
 	}
 
-	@Test
+	 @Test
 	public void selectPartitionTest() throws SQLException {
 		try {
 			HiveInterface hInt = new HiveInterface();
@@ -183,16 +188,115 @@ public class HiveInterfaceTests {
 			String error = hInt.create(part_path, getPartitions());
 			assertTrue("create error " + error, error == null);
 			hInt.goTo(part_path);
-			 List<String> result = hInt.select("\001", 5);
-			 logger.info("result : "+result.toString());
-			 hInt.delete(path_1);
-			 WorkflowPrefManager.resetSys();
-			 WorkflowPrefManager.resetUser();
+			List<String> result = hInt.select("\001", 5);
+			logger.info("result : " + result.toString());
+			hInt.delete(path_1);
+			WorkflowPrefManager.resetSys();
+			WorkflowPrefManager.resetUser();
 
 		} catch (RemoteException e) {
 			e.printStackTrace();
 			logger.info("error in this test " + e.getMessage());
 		}
+	}
+
+	 @Test
+	public void getDescriptionTest() throws RemoteException {
+		HiveInterface hInt = new HiveInterface();
+		String path1 = TestUtils.getTablePath(1);
+
+		logger.info(hInt.delete(path1));
+		logger.info(hInt.create(path1 + "/DT='20120102'", getPartition()));
+		logger.info(hInt.exists(path1));
+		hInt.goTo(path1);
+		logger.info(hInt.getPath());
+		assertTrue(hInt.getPath() != "/");
+		Map<String, Map<String, String>> map = hInt.getChildrenProperties();
+		Iterator<String> it = map.keySet().iterator();
+
+		while (it.hasNext()) {
+			String key = it.next();
+			Map<String, String> desc = map.get(key);
+			Iterator<String> it2 = desc.keySet().iterator();
+			while (it2.hasNext()) {
+				String key2 = it2.next();
+				logger.info(key2 + " , " + desc.get(key2));
+			}
+
+		}
+
+	}
+
+	 @Test
+	public void selectPathPartition() {
+		try {
+			HiveInterface hInt = new HiveInterface();
+			String path = "/keith_part/id=my_id";
+			hInt.goTo(path);
+			logger.info(hInt.getDescription("keith_part"));
+			hInt.select(path, "\001", 1);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+			StackTraceElement[] st = e.getStackTrace();
+			for (StackTraceElement el : st) {
+				 logger.error(el.getLineNumber() +
+				 " : "+el.getFileName()+" , "+el.getMethodName());
+			}
+			assertTrue("error : " + e.getMessage(), false);
+		} catch (Exception e) {
+			StackTraceElement[] st = e.getStackTrace();
+			for (StackTraceElement el : st) {
+				logger.error(el.getLineNumber() + " : " + el.getFileName()
+						+ " , " + el.getMethodName());
+			}
+			assertTrue("error : " + e.getMessage(), false);
+		}
+
+	}
+
+	@Test
+	public void isValidPathTest() {
+		try {
+			HiveInterface hInt = new HiveInterface();
+			String path = "/keith_part/id=my_id";
+			// String path = "/keith_part";
+			FeatureList fl = new OrderedFeatureList();
+			fl.addFeature("a", FeatureType.INT);
+			fl.addFeature("b", FeatureType.INT);
+			fl.addFeature("weight", FeatureType.INT);
+			fl.addFeature("id", FeatureType.STRING);
+			logger.info(hInt.isPathValid(path, fl, true));
+
+		} catch (RemoteException e) {
+			e.printStackTrace();
+			assertTrue("error : " + e.getMessage(), false);
+		}
+
+	}
+
+	@Test
+	public void deleteTest() {
+		try {
+			HiveInterface hInt = new HiveInterface();
+			String path = TestUtils.getTablePath(1);
+			String pathPart = path + "/DT='20100204'";
+			String error = "";
+			error = hInt.delete(path);
+			logger.info("error delete "+error);
+			error = hInt.create(pathPart, getPartition());
+			assertTrue("Error creating " + pathPart + " : " + error,
+					error == null || error.isEmpty());
+			
+			String replacedPath = pathPart.replace("\"", "");
+			
+			error = hInt.delete(replacedPath);
+			assertTrue("Error deleting " + pathPart + " : " + error,
+					error == null || error.isEmpty());
+
+		} catch (RemoteException e) {
+			assertTrue("Error : " + e.getMessage(), false);
+		}
+
 	}
 
 	// @Test

@@ -155,21 +155,21 @@
 	                <version>2.6</version>
 	                <executions>
 	                    <execution>
-	                        <!-- <phase>compile</phase>
+	                        <phase>compile</phase>
 	                        <goals>
 	                            <goal>analyze-dep-mgt</goal>
-	                        </goals> -->
+	                        </goals>
 	                        <configuration>
 	                            <ignoreNonCompile>true</ignoreNonCompile>
 	                            <verbose>true</verbose>
 	                        </configuration>
 	                    </execution>
 	                    <execution>
-                            <!-- <phase>package</phase>
+                            <phase>package</phase>
 	                        <id>copy-dependencies</id>
 	                        <goals>
 	                            <goal>copy-dependencies</goal>
-	                        </goals> -->
+	                        </goals>
 	                        <configuration>
 	                            <outputDirectory>${dist.lib}</outputDirectory>
 	                            <excludeArtifactIds>junit,ant,antlr,antlr-runtime</excludeArtifactIds>

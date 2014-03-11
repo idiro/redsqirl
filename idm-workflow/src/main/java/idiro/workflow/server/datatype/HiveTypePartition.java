@@ -70,16 +70,21 @@ public class HiveTypePartition extends HiveType{
 	
 	@Override
 	public String isPathValid() throws RemoteException {
-		String error=null;
+		logger.info("hive partition is path valid");
+		String error=super.isPathValid();
 		if(getPath() == null){
 			error = LanguageManagerWF.getText("hivetype.ispathvalid.pathnull");
 		}
-		if (isPathExists()){
-			return hInt.isPathValid(getPath(), features, getProperty(usePartition));
-		}else{
-			String regex = "[a-zA-Z_]([A-Za-z0-9_]+)";
-			if (!hInt.getTableAndPartitions(getPath())[0].matches(regex)) {
-				error = LanguageManagerWF.getText("hivetype.ispathvalid.invalid");
+		if(error == null){
+			if (isPathExists()) {
+				return hInt.isPathValid(getPath(), features,
+						true);
+			} else {
+				String regex = "[a-zA-Z_]([A-Za-z0-9_]+)";
+				if (!hInt.getTableAndPartitions(getPath())[0].matches(regex)) {
+					error = LanguageManagerWF
+							.getText("hivetype.ispathvalid.invalid");
+				}
 			}
 		}
 		return error;
