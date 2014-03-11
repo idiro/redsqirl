@@ -57,7 +57,9 @@ var imgHeight;
 var imgWidth;
 
 function findHHandWW() {
-  imgHeight = this.height;imgWidth = this.width;return true;
+	imgHeight = this.height;
+	imgWidth = this.width;
+	return true;
 }
 
 window.onload = function() {
@@ -1735,6 +1737,12 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
 	
 	var offsetY = imgHeight/2;
 	var offsetX = imgWidth/2;
+	
+	//FIXME - error on footer in the first time open
+	if(isNaN(offsetX) && isNaN(offsetY)){
+		offsetX = 25;
+		offsetY = 25;
+	}
 	
 	var polygonTab = new Kinetic.RegularPolygon({
 		x : 40,
