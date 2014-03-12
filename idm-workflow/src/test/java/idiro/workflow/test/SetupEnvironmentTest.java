@@ -4,7 +4,6 @@ import idiro.Log;
 import idiro.ProjectID;
 import idiro.utils.OrderedFeatureListTests;
 import idiro.utils.TreeTests;
-import idiro.workflow.client.ExecuteCommandLineTests;
 import idiro.workflow.server.AppendListInteractionTests;
 import idiro.workflow.server.EditorInteractionTests;
 import idiro.workflow.server.InputInteractionTests;
@@ -42,30 +41,29 @@ import org.junit.runners.Suite.SuiteClasses;
 
 
 @RunWith(Suite.class)
-@SuiteClasses({//ActionTests.class,
-//	WorkflowTests.class,
+@SuiteClasses({ActionTests.class,
+	WorkflowTests.class,
 	//CreateWorkflowTests.class,
-//	HDFSInterfaceTests.class,
-//	HiveInterfaceTests.class,
-//	SSHInterfaceTests.class,
-//	SSHInterfaceArrayTests.class,
-//	HiveTypeTests.class, 
-//	HiveTypePartitionTests.class, 
-//	SourceTests.class,
-//	WorkflowProcessesManagerTests.class,
-//	OozieManagerTests.class,
+	HDFSInterfaceTests.class,
+	HiveInterfaceTests.class,
+	SSHInterfaceTests.class,
+	SSHInterfaceArrayTests.class,
+	HiveTypeTests.class, 
+	HiveTypePartitionTests.class, 
+	SourceTests.class,
+	WorkflowProcessesManagerTests.class,
+	OozieManagerTests.class,
 	//PackageManagerTests.class,
-//	OozieDagTests.class,
-//	OrderedFeatureListTests.class,
-//	TreeTests.class,
-//	ConvertTests.class,
-//	InputInteractionTests.class,
-//	AppendListInteractionTests.class,
-//	ListInteractionTests.class,
-//	EditorInteractionTests.class,
-//	TableInteractionTests.class,
-//	HDFSTypeTests.class,
-	ExecuteCommandLineTests.class,
+	OozieDagTests.class,
+	OrderedFeatureListTests.class,
+	TreeTests.class,
+	ConvertTests.class,
+	InputInteractionTests.class,
+	AppendListInteractionTests.class,
+	ListInteractionTests.class,
+	EditorInteractionTests.class,
+	TableInteractionTests.class,
+	HDFSTypeTests.class,
 	})
 public class SetupEnvironmentTest {
 	

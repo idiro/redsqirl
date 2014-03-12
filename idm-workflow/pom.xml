@@ -165,6 +165,7 @@
 	                        </configuration>
 	                    </execution>
 	                    <execution>
+                            <id>copy-dependencies</id>
                             <!-- <phase>package</phase>
 	                        <id>copy-dependencies</id>
 	                        <goals>
