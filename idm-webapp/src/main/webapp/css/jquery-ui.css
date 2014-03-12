@@ -850,6 +850,7 @@ input.ui-button::-moz-focus-inner,button.ui-button::-moz-focus-inner {
 	float: left;
 	padding: 0.1em 0.5em;
 	text-decoration: none;
+	background-color: #b8b9bd;
 }
 
 .ui-tabs .ui-tabs-nav li.ui-tabs-active {
@@ -857,9 +858,12 @@ input.ui-button::-moz-focus-inner,button.ui-button::-moz-focus-inner {
 	padding-bottom: 1px;
 }
 
+/*active tab*/
 .ui-tabs .ui-tabs-nav li.ui-tabs-active a,.ui-tabs .ui-tabs-nav li.ui-state-disabled a,.ui-tabs .ui-tabs-nav li.ui-tabs-loading a
 	{
 	cursor: text;
+	background-color: #C62127;
+	color: #FFFFFF;
 }
 
 .ui-tabs .ui-tabs-nav li a,

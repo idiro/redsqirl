@@ -1,7 +1,7 @@
 html,body {
     font-family: Verdana, Geneva, sans-serif;
 	height: 100%;
-	width: 100%
+	width: 100%;
 }
 
 image {
@@ -37,8 +37,16 @@ input {
 
 .divMenu {
 	border: 0px solid;
+	border-radius:7px;
 	padding: 0px 0px 3px;
-	margin-left: 390px;
+	background-color: #87888c;
+	margin-top: 10px;
+}
+
+.divMenuImage{
+	margin-left: auto;
+    margin-right: auto;
+	width: 120px;
 }
 
 .divFooter {
@@ -461,4 +469,156 @@ table.secondtable td{
 }
 .loadTableMap{
 	width:50px;
+}
+
+/*top menu*/
+
+.rich-toolbar{  
+    border:none;
+    background-image: url(); 
+    background-color: transparent;
+}  
+
+.rich-ddmenu-label-select{
+    background-color:  #c62127;
+    border-color: #FFFFFF;
+    width:100px;
+    height:34px;
+    color:  #FFFFFF;
+    font-weight:normal;
+    font-size:14px;
+}
+
+.rich-ddmenu-label{
+	border:2px solid transparent;
+	border-radius:7px;
+	width:100px;
+    height:34px;
+    font-weight:normal;
+    font-size:14px;
+    text-align:center;
+}
+
+.rich-menu-list-border{
+	border:2px solid #FFFFFF;
+	border-radius:7px;
+	width:154px;
+	color:#dadbdd;
+	background-color:  #dadbdd;
+}
+
+.rich-menu-item{
+	text-align:left;
+}
+
+.rich-menu-item-hover{
+	background-color:  #c62127;
+	border: none;
+	color:  #FFFFFF;
+}
+
+
+.rich-menu-list-bg{
+	border:2px solid #FFFFFF;
+	border-radius:7px;
+	color:#dadbdd;
+	background-color:  #dadbdd;
+	border: none;
+	width:154px;
+	background-image: url(); 
+}
+
+
+
+
+.rich-menu-item-icon{
+	visibility:hidden;
+	color:  #3CBD3B;
+	background-color:  #3CBD3B;
+	width:144px;
+}
+
+.topMenu{
+	background-color:  #FFFFFF;
+}
+
+
+/*signout button*/
+.signoutButton{
+       background-image:url('../image/icons/button-red.png');
+       width:110px;
+       height:41px;
+       text-align:center;
+       color:  #FFFFFF;
+       vertical-align: middle;
+}
+
+/*changing textFields*/
+input[type=text]{
+	background-color: #dadbdd;
+	border-radius:7px;
+}
+
+/*gradient background on canvas*/
+#body{
+	background: linear-gradient(white,#7f7d7e);
+}
+
+/*transparent background on tabs*/
+#tabs1{
+	background-color: transparent;
+	border: none;
+}
+
+#tabsFooter{
+	background-color: transparent;
+	border: none;
+}
+
+#tabFlowchart{
+	background-color: transparent;
+	border: none;
+}
+
+#splitterH{
+	background-color: transparent;
+	border: none;
+}
+
+#splitterDiv{
+	background-color: transparent;
+	border: none;
+}
+
+
+
+/*tabs*/
+
+.ulCss { 
+    padding: 0px; 
+    background: none; 
+    border-width: 0px; 
+} 
+.ulCss .ui-tabs-nav { 
+    padding-left: 0px; 
+    background: transparent; 
+    border-width: 0px 0px 1px 0px; 
+    -moz-border-radius: 0px; 
+    -webkit-border-radius: 0px; 
+    border-radius: 0px; 
+} 
+.ulCss .ui-tabs-panel { 
+    background: #f5f3e5 url(http://code.jquery.com/ui/1.8.23/themes/south-street/images/ui-bg_highlight-hard_100_f5f3e5_1x100.png) repeat-x scroll 50% top; 
+    border-width: 0px 1px 1px 1px; 
+}
+
+
+.ui-tabs .ui-tabs-panel {
+	display: block;
+	border-width: 3;
+	border-radius:7px;
+	padding: 0em 0em;
+	background: none;
+	background-color: white;
+
 }
