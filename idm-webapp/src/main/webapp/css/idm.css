@@ -519,12 +519,11 @@ table.secondtable td{
 
 
 .rich-menu-list-bg{
-	border:2px solid #FFFFFF;
 	border-radius:7px;
 	color:#dadbdd;
 	background-color:  #dadbdd;
-	border: none;
 	width:154px;
+	border:none;
 	background-image: url(); 
 }
 
@@ -557,6 +556,7 @@ table.secondtable td{
 input[type=text]{
 	background-color: #dadbdd;
 	border-radius:7px;
+	border:none;
 }
 
 /*gradient background on canvas*/
@@ -590,6 +590,13 @@ input[type=text]{
 	border: none;
 }
 
+/*border around the canvas and tabs*/
+#mainPanelDiv{
+	border:2px solid #a2a3a5;
+	border-radius:7px;
+	padding:5px 5px 5px 5px;
+}
+
 
 
 /*tabs*/
@@ -614,11 +621,24 @@ input[type=text]{
 
 
 .ui-tabs .ui-tabs-panel {
-	display: block;
 	border-width: 3;
 	border-radius:7px;
-	padding: 0em 0em;
 	background: none;
 	background-color: white;
+	padding: 5px 5px 5px 5px;
+}
 
+/*vertical splitter*/
+div.splitter-bar.splitter-bar-vertical.ui-state-default {
+	background-color:transparent;
+	background-image: url();
+	border:none;
+}
+div.splitter-bar.splitter-bar-vertical.ui-state-hover {
+	border:2px dashed #a2a3a5;
+}
+div.splitter-bar.splitter-bar-vertical.ui-state-highlight {
+	background-color:transparent;
+	background-image: url();
+	border:2px dashed #a2a3a5;
 }
