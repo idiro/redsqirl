@@ -5,6 +5,8 @@
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets">
 
+<a4j:loadBundle basename="MessagesResources_en_IE" var="messages" />
+
 	<h:panelGrid id="selectLinkList">
 		<h:panelGrid rendered="#{!empty canvasBean.linkPossibilities}">
 			<h:selectOneRadio value="#{canvasBean.selectedLink}" layout="pageDirection" >
