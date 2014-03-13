@@ -642,3 +642,8 @@ div.splitter-bar.splitter-bar-vertical.ui-state-highlight {
 	background-image: url();
 	border:2px dashed #a2a3a5;
 }
+
+/*remove the white boxes in the background*/
+.ui-widget.ui-widget-content{
+	background-image: url();
+}
