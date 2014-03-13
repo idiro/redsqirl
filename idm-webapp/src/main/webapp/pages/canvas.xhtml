@@ -471,7 +471,7 @@
               
               var div = "<div id='"+tabName+"'>"+
 				"<div id='container-"+tabName+"' class='container-"+tabName+"'>"+
-				"<div class='rich-panel' onclick=\"jQuery('#panelLegend-"+tabName+"').toggle();return false;\"  style='position: fixed; z-index:101; width:190px'>"+
+				"<div class='rich-panel headerLegend' onclick=\"jQuery('#panelLegend-"+tabName+"').toggle();return false;\"  style='position: fixed; z-index:101; width:190px'>"+
 					"<div class='rich-panel-header'>Legend</div>"+
 				"</div>"+
 				"<div class='rich-panel' id='panelLegend-"+tabName+"'  style='position: fixed; z-index:100; display: none; width:190px; height:300px'>"+
@@ -1238,7 +1238,7 @@
 				<div id="tabFlowchart-1">
 
 					<div id="canvas-tabs">
-						<ul>
+						<ul class="ulCssCanvas">
 							<li class="locked"><a href="#canvas-1"
 								onclick="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('canvas-1');">canvas-1</a>
 								<span id="canvas-1-icon-close" class="ui-icon ui-icon-close"
@@ -1261,7 +1261,7 @@
 						<div id="canvas-1">
 
 							<div id="container-canvas-1" class="container-canvas-1">
-								<div class="rich-panel"
+								<div class="rich-panel headerLegend"
 									onclick="jQuery('#panelLegend-canvas-1').toggle();return false;"
 									style="position: fixed; z-index: 101; width: 190px">
 									<div class="rich-panel-header">Legend</div>
@@ -1279,7 +1279,7 @@
 						</div>
 						<h:panelGroup id="tabsFooterForm">
 							<div id="tabsFooter">
-								<ul>
+								<ul class="ulCssCanvas">
 
 									<ui:repeat value="#{configureTabsBean.tabs}" var="tab"
 										varStatus="status">

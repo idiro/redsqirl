@@ -214,6 +214,12 @@ input {
 	margin-right: 30px;
 }
 
+#tabs2 {
+	position: relative;
+	float: left;
+	margin-right: 30px;
+}
+
 .allTabs {
 	display: none;
 	position: absolute;
@@ -527,9 +533,6 @@ table.secondtable td{
 	background-image: url(); 
 }
 
-
-
-
 .rich-menu-item-icon{
 	visibility:hidden;
 	color:  #3CBD3B;
@@ -537,6 +540,7 @@ table.secondtable td{
 	width:144px;
 }
 
+/*gray menu bar*/
 .topMenu{
 	background-color:  #FFFFFF;
 }
@@ -552,7 +556,7 @@ table.secondtable td{
        vertical-align: middle;
 }
 
-/*changing textFields*/
+/*textFields*/
 input[type=text]{
 	background-color: #dadbdd;
 	border-radius:7px;
@@ -566,6 +570,12 @@ input[type=text]{
 
 /*transparent background on tabs*/
 #tabs1{
+	background-color: transparent;
+	border: none;
+}
+
+/*transparent background on tabs*/
+#tabs2{
 	background-color: transparent;
 	border: none;
 }
@@ -590,6 +600,7 @@ input[type=text]{
 	border: none;
 }
 
+
 /*border around the canvas and tabs*/
 #mainPanelDiv{
 	border:2px solid #a2a3a5;
@@ -597,47 +608,48 @@ input[type=text]{
 	padding:5px 5px 5px 5px;
 }
 
-
-
 /*tabs*/
 
 .ulCss { 
     padding: 0px; 
     background: none; 
     border-width: 0px; 
-} 
+}
+
+.ulCssCanvas{ 
+    padding: 0px; 
+   	background: #b8b9bd; 
+    border-width: 0px; 
+    border-radius: 7px; 
+}
+
 .ulCss .ui-tabs-nav { 
     padding-left: 0px; 
     background: transparent; 
-    border-width: 0px 0px 1px 0px; 
+    border-width: 0px 0px 0px 0px; 
     -moz-border-radius: 0px; 
     -webkit-border-radius: 0px; 
     border-radius: 0px; 
 } 
-.ulCss .ui-tabs-panel { 
-    background: #f5f3e5 url(http://code.jquery.com/ui/1.8.23/themes/south-street/images/ui-bg_highlight-hard_100_f5f3e5_1x100.png) repeat-x scroll 50% top; 
-    border-width: 0px 1px 1px 1px; 
-}
-
 
 .ui-tabs .ui-tabs-panel {
-	border-width: 3;
+	border: 1px solid #87888c;
 	border-radius:7px;
 	background: none;
 	background-color: white;
 	padding: 5px 5px 5px 5px;
 }
 
-/*vertical splitter*/
-div.splitter-bar.splitter-bar-vertical.ui-state-default {
+/*vertical and horizontal splitter*/
+div.splitter-bar.ui-state-default {
 	background-color:transparent;
 	background-image: url();
 	border:none;
 }
-div.splitter-bar.splitter-bar-vertical.ui-state-hover {
+div.splitter-bar.ui-state-hover {
 	border:2px dashed #a2a3a5;
 }
-div.splitter-bar.splitter-bar-vertical.ui-state-highlight {
+div.splitter-bar.ui-state-highlight {
 	background-color:transparent;
 	background-image: url();
 	border:2px dashed #a2a3a5;
@@ -647,3 +659,38 @@ div.splitter-bar.splitter-bar-vertical.ui-state-highlight {
 .ui-widget.ui-widget-content{
 	background-image: url();
 }
+
+/*legend panel*/
+.rich-panel-header{
+	border:none;
+	background-color:#dadbdd;
+	background-image: url();
+	border-radius: 7px;
+}
+
+.rich-panel.headerLegend{
+	border:none;
+	background-color:transparent;
+}
+
+/*white selected tab on canvas*/
+#canvas-tabs.ui-tabs .ui-tabs-nav li.ui-tabs-active a,#canvas-tabs.ui-tabs .ui-tabs-nav li.ui-state-disabled a,#canvas-tabs.ui-tabs .ui-tabs-nav li.ui-tabs-loading a
+	{
+	cursor: pointer;
+	background-color: #FFFFFF;
+	color: #000000;
+}
+
+#tabsFooter.ui-tabs .ui-tabs-nav li.ui-tabs-active a,#tabsFooter.ui-tabs .ui-tabs-nav li.ui-state-disabled a,#tabsFooter.ui-tabs .ui-tabs-nav li.ui-tabs-loading a
+	{
+	cursor: pointer;
+	background-color: #C62127;
+	color: #FFFFFF;
+}
+
+/*red button to change tab*/
+#changeTabTabs1,#changeTabTabs2,#changeTabCanvas{
+	color:#C62127;
+	background-color:transparent;
+}
+
