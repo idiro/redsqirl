@@ -637,7 +637,7 @@ input[type=text]{
 	border-radius:7px;
 	background: none;
 	background-color: white;
-	padding: 5px 5px 5px 5px;
+	padding: 0px 0px 0px 0px;
 }
 
 /*vertical and horizontal splitter*/
