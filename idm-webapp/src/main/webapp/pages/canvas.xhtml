@@ -1042,8 +1042,9 @@
 			<a4j:region>
 			
 				<h:panelGrid columns="2" width="100%">
-					<h:graphicImage width="80px" weight="80px" url="../image/icons/logo.png"/>
-								
+					<h:graphicImage id="logoImg" width="100px" weight="100px" url="../image/icons/logo.png"/>
+					
+					<h:panelGrid columns="1">
 					<rich:toolBar>
 		
 						<rich:dropDownMenu>
@@ -1185,6 +1186,22 @@
 						</rich:toolBarGroup>
 		
 					</rich:toolBar>
+					<div id="shortMenu" class="divMenu">
+	
+						<div class="divMenuImage">
+							<img src="../image/icons/button-open.gif" alt="open" class="shortMenuIcon" onclick="openModalLoadWorkflow()"/>
+							<img src="../image/icons/button-save.gif" alt="save" class="shortMenuIcon" onclick="openModalSaveWorkflow()"/>
+							<img src="../image/icons/button-save_as.gif" alt="saveas" class="shortMenuIcon" />
+							<img src="../image/icons/button-save_all.gif" alt="saveall" class="shortMenuIcon" />
+						</div>
+						<!--
+							<a onclick="jQuery('#addtabCanvas').click();"><img src="../image/icons/button-new.gif" alt="new" class="shortMenuIcon" /></a> 
+							<a onclick="undoHistory();"><img src="../image/icons/button-undo.gif" alt="undo" class="shortMenuIcon" /></a>
+							<a onclick="redoHistory();"><img src="../image/icons/button-redo.gif" alt="redo" class="shortMenuIcon" /></a>
+							<a onclick="deleteSelected();"><img id="buttonDelete" src="../image/icons/button-delete.gif" alt="open" class="shortMenuIcon" /></a>
+						-->
+					</div>
+					</h:panelGrid>
 				</h:panelGrid>
 
 			</a4j:region>
@@ -1200,28 +1217,9 @@
 		
 		<rich:spacer width="1" height="15" />
 		
-		<div id="shortMenu" class="divMenu">
-	
-			<div class="divMenuImage">
-				<img src="../image/icons/button-open.gif" alt="open" class="shortMenuIcon" onclick="openModalLoadWorkflow()">
-					<a4j:support event="onclick" rerender="hdfsfsOpenFile"/>
-				</img>
-				<img src="../image/icons/button-save.gif" alt="save" class="shortMenuIcon" onclick="openModalSaveWorkflow()"/>
-				<img src="../image/icons/button-save_as.gif" alt="saveas" class="shortMenuIcon" />
-				<img src="../image/icons/button-save_all.gif" alt="saveall" class="shortMenuIcon" />
-			</div>
-			<!--
-				<a onclick="jQuery('#addtabCanvas').click();"><img src="../image/icons/button-new.gif" alt="new" class="shortMenuIcon" /></a> 
-				<a onclick="undoHistory();"><img src="../image/icons/button-undo.gif" alt="undo" class="shortMenuIcon" /></a>
-				<a onclick="redoHistory();"><img src="../image/icons/button-redo.gif" alt="redo" class="shortMenuIcon" /></a>
-				<a onclick="deleteSelected();"><img id="buttonDelete" src="../image/icons/button-delete.gif" alt="open" class="shortMenuIcon" /></a>
-			-->
-		</div>
+		
 	</div>
 
-	
-	<br />
-	
 	<div id="mainPanelDiv">
 
 	<div class="splitterV" id="splitterDiv">

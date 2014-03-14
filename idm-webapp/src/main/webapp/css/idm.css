@@ -41,6 +41,17 @@ input {
 	padding: 0px 0px 3px;
 	background-color: #87888c;
 	margin-top: 10px;
+	margin-left: 10px;
+}
+
+#menuPanelGroup {
+	border: 0px solid;
+	border-radius:7px;
+	padding: 0px 0px 3px;
+	background-color: #87888c;
+	margin-top: 10px;
+	background:url();
+	
 }
 
 .divMenuImage{
@@ -488,21 +499,23 @@ table.secondtable td{
 .rich-ddmenu-label-select{
     background-color:  #c62127;
     border-color: #FFFFFF;
-    width:100px;
-    height:34px;
+    width:80px;
+    height:20px;
     color:  #FFFFFF;
     font-weight:normal;
-    font-size:14px;
+    font-size:13px;
+    padding: 0px 0px 0px 0px;
 }
 
 .rich-ddmenu-label{
 	border:2px solid transparent;
 	border-radius:7px;
-	width:100px;
-    height:34px;
+	width:80px;
+    height:20px;
     font-weight:normal;
-    font-size:14px;
+    font-size:13px;
     text-align:center;
+    padding: 0px 0px 0px 0px;
 }
 
 .rich-menu-list-border{
@@ -515,14 +528,15 @@ table.secondtable td{
 
 .rich-menu-item{
 	text-align:left;
+	padding: 0px 0px 0px 0px;
 }
 
 .rich-menu-item-hover{
 	background-color:  #c62127;
 	border: none;
 	color:  #FFFFFF;
+	padding: 0px 0px 0px 0px;
 }
-
 
 .rich-menu-list-bg{
 	border-radius:7px;
@@ -540,6 +554,18 @@ table.secondtable td{
 	width:144px;
 }
 
+.rich-menu-group{
+	text-align:left;
+	padding: 0px 0px 0px 0px;
+}
+
+.rich-menu-group-hover{
+	background-color:  #c62127;
+	border: none;
+	color:  #FFFFFF;
+	padding: 0px 0px 0px 0px;
+}
+
 /*gray menu bar*/
 .topMenu{
 	background-color:  #FFFFFF;
@@ -549,11 +575,12 @@ table.secondtable td{
 /*signout button*/
 .signoutButton{
        background-image:url('../image/icons/button-red.png');
-       width:110px;
-       height:41px;
+       width:80px;
+       height:20px;
        text-align:center;
        color:  #FFFFFF;
        vertical-align: middle;
+       padding: 0px 0px 0px 0px;
 }
 
 /*textFields*/
