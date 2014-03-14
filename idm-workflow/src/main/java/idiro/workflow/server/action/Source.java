@@ -189,6 +189,8 @@ public class Source extends DataflowAction {
 					FeatureList outF = new OrderedFeatureList();
 					if (error == null) {
 						try {
+							logger.info("tree is "+getInteraction(
+									key_dataset).getTree());
 							List<Tree<String>> features = getInteraction(
 									key_dataset).getTree()
 									.getFirstChild("browse")
@@ -216,6 +218,7 @@ public class Source extends DataflowAction {
 									} catch (Exception e) {
 										error = "The type " + type
 												+ " does not exist";
+										logger.info(error);
 									}
 
 								}
@@ -248,7 +251,13 @@ public class Source extends DataflowAction {
 					}
 
 					if (error == null) {
-						if (!out.compare(path, outF, props)) {
+						boolean ok = false;
+						try{
+							ok = out.compare(path, outF, props);
+						}catch(Exception e){
+							ok = false;
+						}
+						if (!ok) {
 							logger.info("The output need to be changed in source "
 									+ componentId);
 							try {
@@ -266,8 +275,10 @@ public class Source extends DataflowAction {
 
 							// Update the feature list only if it looks good
 							out.setFeatures(outF);
+							logger.info(out.getFeatures().getFeaturesNames());
 							logger.info("Setpath : " + path);
 							out.setPath(path);
+							logger.info(out.getFeatures().getFeaturesNames());
 
 						}
 						getInteraction(key_dataset).getTree()
@@ -374,12 +385,8 @@ public class Source extends DataflowAction {
 					if ((wa.getTypeName().equalsIgnoreCase(
 							(new HiveType()).getTypeName())
 							|| wa.getTypeName().equalsIgnoreCase(
-									(new MapRedTextType()).getTypeName())
-							|| wa.getTypeName().equalsIgnoreCase(
-									(new MapRedBinaryType()).getTypeName()) || wa
-							.getTypeName().equalsIgnoreCase(
-									(new HiveTypePartition()).getTypeName()))
-							&& dataSubtype.getValue() == null) {
+									(new MapRedTextType()).getTypeName()))
+							&& dataSubtype.getValue() == null){
 						setValue = wa.getTypeName();
 					}
 				}
@@ -410,16 +417,14 @@ public class Source extends DataflowAction {
 		} else {
 			Tree<String> oldType = treeDataset.getFirstChild("browse")
 					.getFirstChild("type").getFirstChild();
-			Tree<String> oldSubType = treeDataset.getFirstChild("browse")
-					.getFirstChild("subtype").getFirstChild();
 
-			if (!newType.equals(oldType.getHead()) || !newSubtype.equals(oldSubType.getHead())) {
+			if (oldType != null && !oldType.getHead().equals(newType)) {
 				treeDataset.getFirstChild("browse").remove("type");
-				treeDataset.getFirstChild("browse").remove("subtype");
 				treeDataset.getFirstChild("browse").remove("output");
 				treeDataset.getFirstChild("browse").add("output");
 				treeDataset.getFirstChild("browse").add("type").add(newType);
-				treeDataset.getFirstChild("browse").add("subtype").add(newSubtype);
+				treeDataset.getFirstChild("browse").add("subtype")
+						.add(newSubtype);
 			}
 		}
 	}
