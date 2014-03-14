@@ -54,7 +54,7 @@ public interface DataStore extends Remote {
 		/**
 		 * Property that appears only for creating
 		 * 
-		 * @return <code>true</code>
+		 * @return <code>true</code> if property is only for creating else <code>false</code>
 		 * @throws RemoteException
 		 */
 		boolean createOnly() throws RemoteException;
@@ -62,7 +62,7 @@ public interface DataStore extends Remote {
 		/**
 		 * Type associated to the property
 		 * 
-		 * @return
+		 * @return {@link idiro.workflow.server.enumeration.FeatureType} of property
 		 * @throws RemoteException
 		 */
 		FeatureType type() throws RemoteException;
@@ -87,7 +87,7 @@ public interface DataStore extends Remote {
 	/**
 	 * Current Path
 	 * 
-	 * @return
+	 * @return path that is stored currently
 	 * @throws RemoteException
 	 */
 	String getPath() throws RemoteException;
@@ -95,7 +95,7 @@ public interface DataStore extends Remote {
 	/**
 	 * Default Path where to start from next time
 	 * 
-	 * @return
+	 * @return path default
 	 * @throws RemoteException
 	 */
 	void setDefaultPath(String path) throws RemoteException;
@@ -104,7 +104,7 @@ public interface DataStore extends Remote {
 	 * Go to the given path if exists
 	 * 
 	 * @param path
-	 * @return true if successful
+	 * @return <code>true</code> if successful else <code>false</code>
 	 * @throws RemoteException
 	 */
 	boolean goTo(String path) throws RemoteException;
@@ -112,7 +112,7 @@ public interface DataStore extends Remote {
 	/**
 	 * True if there is at least one previous path
 	 * 
-	 * @return
+	 * @return <code>true</code> if there is a previous path else <code>false</code>
 	 * @throws RemoteException
 	 */
 	boolean havePrevious() throws RemoteException;
@@ -127,7 +127,7 @@ public interface DataStore extends Remote {
 	/**
 	 * True if there is at least one next path
 	 * 
-	 * @return
+	 * @return @return <code>true</code> if there is a next path else <code>false</code>
 	 * @throws RemoteException
 	 */
 	boolean haveNext() throws RemoteException;
@@ -143,7 +143,7 @@ public interface DataStore extends Remote {
 	 * Get the properties. Get the properties associated with the children of
 	 * the current path.
 	 * 
-	 * @return
+	 * @return {@link java.util.Map<String, ParamProperty>} of paramater properties
 	 * @throws RemoteException
 	 */
 	Map<String, ParamProperty> getParamProperties() throws RemoteException;
@@ -214,21 +214,23 @@ public interface DataStore extends Remote {
 	String delete(String path) throws RemoteException;
 
 	/**
-	 * Select in the given path the n first elements.
+	 * Select from the given path the n first elements with a delimiter.
 	 * 
 	 * @param path
+	 * @param delimiter
 	 * @param maxToRead
-	 * @return
+	 * @return {@link java.util.List<String>} of text from the dataset
 	 * @throws RemoteException
 	 */
 	List<String> select(String path, String delimiter, int maxToRead)
 			throws RemoteException;
 
 	/**
-	 * Select in the path the n first elements.
+	 * Select from the current path the n first elements with a delimiter.
 	 * 
+	 * @param delimiter
 	 * @param maxToRead
-	 * @return
+	 * @return {@link java.util.List<String>} of text from the dataset
 	 * @throws RemoteException
 	 */
 	List<String> select(String delimiter, int maxToRead) throws RemoteException;
@@ -238,7 +240,7 @@ public interface DataStore extends Remote {
 	 * 
 	 * @param path
 	 *            the path in which the properties are extracted
-	 * @return
+	 * @return {@link java.util.Map<String, String>} of properties
 	 * @throws RemoteException
 	 */
 	Map<String, String> getProperties(String path) throws RemoteException;
@@ -246,7 +248,7 @@ public interface DataStore extends Remote {
 	/**
 	 * Get the properties of the current element.
 	 * 
-	 * @return
+	 * @return {@link java.util.Map<String, String>} of properties
 	 * @throws RemoteException
 	 */
 	Map<String, String> getProperties() throws RemoteException;
@@ -254,7 +256,7 @@ public interface DataStore extends Remote {
 	/**
 	 * Get the children properties of the current element.
 	 * 
-	 * @return
+	 * @return {@link java.util.Map<String, Map<String, String>>} of properties 
 	 * @throws RemoteException
 	 */
 	Map<String, Map<String, String>> getChildrenProperties()
@@ -292,7 +294,8 @@ public interface DataStore extends Remote {
 	 * 
 	 * @param path
 	 * @param newProperties
-	 * @return
+	 * @return newValue
+	 *            the new value
 	 * @throws RemoteException
 	 */
 	String changeProperties(String path, Map<String, String> newProperties)
@@ -302,7 +305,8 @@ public interface DataStore extends Remote {
 	 * Change the given properties of the current element
 	 * 
 	 * @param newProperties
-	 * @return
+	 * @return newValue
+	 *            the new value
 	 * @throws RemoteException
 	 */
 	String changeProperties(Map<String, String> newProperties)
