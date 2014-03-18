@@ -12,7 +12,8 @@ public class IdmPackage implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private String name,
+	private String id,
+				   name,
 				   version,
 				   license,
 				   short_description,
@@ -27,7 +28,18 @@ public class IdmPackage implements Serializable{
 		SimpleDateFormat dt = new SimpleDateFormat("yyyy-mm-dd");
 		return package_date == null? null : dt.format(package_date);
 	}
-	
+	/**
+	 * @return the id
+	 */
+	public final String getId() {
+		return id;
+	}
+	/**
+	 * @param id the id to set
+	 */
+	public final void setId(String id) {
+		this.id = id;
+	}
 	/**
 	 * @return the name
 	 */

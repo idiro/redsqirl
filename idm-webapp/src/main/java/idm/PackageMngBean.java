@@ -39,7 +39,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	private static Logger logger = Logger.getLogger(PackageMngBean.class);
 
-	private boolean showMain;
+	private boolean showMain = true;
 	private boolean userInstall = true;
 	private IdmPackage curPackage;
 	private String errorMsg;
@@ -53,15 +53,17 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	public List<IdmPackage> getExtPackages() throws IOException{
 		List<IdmPackage> lAns = new LinkedList<IdmPackage>();
 		SimpleDateFormat dt = new SimpleDateFormat("yyyy-mm-dd");
-		String packageName = FacesContext.getCurrentInstance().getExternalContext().
-				getRequestParameterMap().get("packageName");
+		String packageId = FacesContext.getCurrentInstance().getExternalContext().
+				getRequestParameterMap().get("packageId");
 		String version = FacesContext.getCurrentInstance().getExternalContext().
 				getRequestParameterMap().get("version");
-		String uri = WorkflowPrefManager.getPckManagerUri();
 
-		if(packageName != null && !packageName.isEmpty()){
+		String pckServer = getRepoServer();
+		String uri = pckServer+"rest/allpackages";
+
+		if(packageId != null && !packageId.isEmpty()){
 			showMain = false;
-			uri += "?name="+packageName;
+			uri += "?id="+packageId;
 			if(version != null && !version.isEmpty()){
 				uri += "&version="+version;
 			}
@@ -72,60 +74,63 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 		URL url = new URL(uri);
 		try{
-		HttpURLConnection connection =
-				(HttpURLConnection) url.openConnection();
-		connection.setRequestMethod("GET");
-		connection.setRequestProperty("Accept", "application/json");
-		byte[] b = new byte[10000];
-		int byteRead = connection.getInputStream().read(b);
-		logger.info("Read "+byteRead+": "+new String(b));
-		connection.disconnect();
-		String ansServer = new String(b);
-		logger.info("ans server: "+ansServer);
-		try{
-			JSONArray pckArray = new JSONArray(ansServer);
-			for(int i = 0; i < pckArray.length();++i){
-				JSONObject pckObj = pckArray.getJSONObject(i);
-				logger.info("element: "+pckObj);
-				IdmPackage pck = new IdmPackage();
-				pck.setName(pckObj.getString("name"));
-				pck.setLicense(pckObj.getString("license"));
-				pck.setShort_description(pckObj.getString("short_description"));
-				if(i == 0){
-					curPackage = pck;
-				}else if(version != null && version == pck.getVersion()){
-					curPackage = pck;
+			HttpURLConnection connection =
+					(HttpURLConnection) url.openConnection();
+			connection.setRequestMethod("GET");
+			connection.setRequestProperty("Accept", "application/json");
+			byte[] b = new byte[10000];
+			int byteRead = connection.getInputStream().read(b);
+			logger.info("Read "+byteRead+": "+new String(b));
+			connection.disconnect();
+			String ansServer = new String(b);
+			logger.info("ans server: "+ansServer);
+			try{
+				JSONArray pckArray = new JSONArray(ansServer);
+				for(int i = 0; i < pckArray.length();++i){
+					JSONObject pckObj = pckArray.getJSONObject(i);
+					logger.info("element: "+pckObj);
+					IdmPackage pck = new IdmPackage();
+					pck.setId(pckObj.getString("id"));
+					pck.setName(pckObj.getString("name"));
+					pck.setLicense(pckObj.getString("license"));
+					pck.setShort_description(pckObj.getString("short_description"));
+					if(i == 0){
+						curPackage = pck;
+					}else if(version != null && version == pck.getVersion()){
+						curPackage = pck;
+					}
+					try{
+						pck.setDescription(pckServer+pckObj.getString("description"));
+						pck.setVersion(pckObj.getString("version"));
+						pck.setPackage_date(dt.parse(pckObj.getString("package_date").substring(0,10)));
+						pck.setUrl(pckObj.getString("url"));
+					}catch(Exception e){
+					}
+
+					logger.info("Add package "+pck.getId());
+					logger.info("name: "+pck.getName());
+					logger.info("license: "+pck.getLicense());
+					logger.info("Short desc: "+pck.getShort_description());
+					logger.info("description: "+pck.getDescription());
+					logger.info("version: "+pck.getVersion());
+					logger.info("date: "+pck.getDateStr());
+					logger.info("url: "+pck.getUrl());
+					lAns.add(pck);
 				}
-				try{
-					pck.setDescription(pckObj.getString("description"));
-					pck.setVersion(pckObj.getString("version"));
-					pck.setPackage_date(dt.parse(pckObj.getString("package_date").substring(0,10)));
-					pck.setUrl(pckObj.getString("url"));
-				}catch(Exception e){
-				}
-				
-				logger.info("Add package "+pck.getName());
-				logger.info("license: "+pck.getLicense());
-				logger.info("Short desc: "+pck.getShort_description());
-				logger.info("description: "+pck.getDescription());
-				logger.info("version: "+pck.getVersion());
-				logger.info("date: "+pck.getDateStr());
-				logger.info("url: "+pck.getUrl());
-				lAns.add(pck);
+			} catch (JSONException e){
+				logger.info("Error updating positions");
+				e.printStackTrace();
 			}
-		} catch (JSONException e){
-			logger.info("Error updating positions");
-			e.printStackTrace();
-		}
-		
-		logger.info("Add package "+curPackage.getName());
-		logger.info("license: "+curPackage.getLicense());
-		logger.info("Short desc: "+curPackage.getShort_description());
-		logger.info("description: "+curPackage.getDescription());
-		logger.info("version: "+curPackage.getVersion());
-		logger.info("date: "+curPackage.getDateStr());
-		logger.info("url: "+curPackage.getUrl());
-		logger.info("show main: "+showMain);
+
+			logger.info("Add package "+curPackage.getId());
+			logger.info("name: "+curPackage.getName());
+			logger.info("license: "+curPackage.getLicense());
+			logger.info("Short desc: "+curPackage.getShort_description());
+			logger.info("description: "+curPackage.getDescription());
+			logger.info("version: "+curPackage.getVersion());
+			logger.info("date: "+curPackage.getDateStr());
+			logger.info("url: "+curPackage.getUrl());
+			logger.info("show main: "+showMain);
 		}catch(Exception e){
 			logger.error("Connection refused to package manager");
 		}
@@ -149,7 +154,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	}
 
 	public boolean isUserAllowInstall(){
-//		logger.info("is user");
+		//		logger.info("is user");
 		return WorkflowPrefManager.isUserPckInstallAllowed();
 	}
 
@@ -193,7 +198,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 			logger.info(getPckMng().removePackage(false,unUserPackage));
 		}
 	}
-	
+
 	public void setPackageScope(){
 		String userEnv = FacesContext.getCurrentInstance().getExternalContext().
 				getRequestParameterMap().get("user");
@@ -203,7 +208,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	public void installPackage() throws RemoteException{
 		logger.info("install package");
-			
+
 		String error = null;
 		if( userInstall){
 			logger.info("install us pck");
@@ -216,14 +221,14 @@ public class PackageMngBean extends BaseBean implements Serializable{
 				error = installPackage(true);
 			}
 		}
-		
+
 		if (error != null){
 			setError(error);
 		}
 	}
 	private String installPackage(boolean sys) throws RemoteException{
 		String error = null;
-		
+
 		String url = FacesContext.getCurrentInstance().getExternalContext().
 				getRequestParameterMap().get("downloadUrl");
 		String[] trustedURL = 
@@ -238,7 +243,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 			//Package Name
 			String pckName = url.split("/")[url.split("/").length-1];
 			File pckFile = new File("/tmp/"+pckName);
-			if(getSystemPackages().contains(pckName)){
+			if(sys && getSystemPackages().contains(pckName)){
 				ok = false;
 			}
 			if(!sys && getUserPackages().contains(pckName)){
@@ -272,8 +277,17 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 			}
 		}
-		
+
 		return error;
+	}
+
+	public String getRepoServer(){
+		String pckServer = WorkflowPrefManager.getPckManagerUri();
+		if(!pckServer.endsWith("/")){
+			pckServer+="/";
+		}
+		logger.info("repo: "+pckServer);
+		return pckServer;
 	}
 
 	/**
@@ -345,7 +359,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	public void setUserInstall(boolean userInstall) {
 		this.userInstall = userInstall;
 	}
-	
+
 	public String getErrorMsg() {
 		return errorMsg;
 	}
@@ -353,7 +367,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	public void setErrorMsg(String errorMsg) {
 		this.errorMsg = errorMsg;
 	}
-	
+
 	private void setError(String error){
 		MessageUseful.addErrorMessage(error);
 		HttpServletRequest request = (HttpServletRequest) FacesContext

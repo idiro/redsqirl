@@ -326,7 +326,7 @@ public class WorkflowPrefManager extends BlockManager{
 	public static String getPckManagerUri(){
 		String uri = getUserProperty(WorkflowPrefManager.sys_pack_manager_url);
 		if (uri == null || uri.isEmpty()) {
-			uri = "http://localhost:9090/idm-pck-manager/rest/allpackages";
+			uri = "http://localhost:9090/idm-repo";
 		}
 		return uri;
 	}
