@@ -13,7 +13,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class IdmPackage {
 
 	@XmlElement 
-	private String name,
+	private String id,
+				    name,
 				   version,
 				   license,
 				   short_description,
@@ -24,6 +25,19 @@ public class IdmPackage {
 	
 	@XmlElement 
 	private Date package_date;
+	
+	/**
+	 * @return the id
+	 */
+	public final String getId() {
+		return id;
+	}
+	/**
+	 * @param id the id to set
+	 */
+	public final void setId(String id) {
+		this.id = id;
+	}
 	
 	/**
 	 * @return the name

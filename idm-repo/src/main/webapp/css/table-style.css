@@ -1,6 +1,7 @@
 
 .order-table{   
 	border-collapse:collapse;
+	margin-top:20px;
 }
 
 .order-table-header{
@@ -36,7 +37,7 @@ h1{
 	text-align:center;
 }
 
-#all{
+#intro,#package{
 	max-width:1000px;
 	margin:0 auto;
 }

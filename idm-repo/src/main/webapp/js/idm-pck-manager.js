@@ -7,14 +7,17 @@ function getIntroPage(restURL){
 		//alert(1);
 		if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
 			//alert(2);
-			document.getElementById("all").innerHTML 
+			document.getElementById("package_list").innerHTML 
 				= create_table_all_packages(restURL, JSON.parse(xmlhttp.responseText));
+		    $(document).ready(function() {
+                $('#repo').load('./repo.html');
+            });
+			displaySwap("intro","package");
 		}
 	};
 	xmlhttp.open("GET", restURL, true);
 	xmlhttp.send();
 }
-
 
 function getPackagePage(restURL, package, version){
 	//alert("get package "+package);
@@ -32,19 +35,27 @@ function getPackagePage(restURL, package, version){
 					curpack = packages[i];
 				};
 			}
-			document.getElementById("all").innerHTML
+			document.getElementById("package").innerHTML
 			= create_package_page(restURL, curpack, packages);
+			//alert(curpack.description);
+            $(document).ready(function() {
+                $('#help_package').load(curpack.description);
+            });
+			displaySwap("package","intro");
 		};
 	};
 	xmlhttp.open("GET", restURL+'?name='+package+'&version='+version, true);
 	xmlhttp.send();
 }
 
+function displaySwap(toDisplay,toHide){
+    document.getElementById(toDisplay).style.display = 'block';
+    document.getElementById(toHide).style.display = 'none';
+}
+
+
 function create_table_all_packages(restURL, jsonTable){
-	var intro = '<h1>IDM Package Manager</h1>';
-	intro += '<p>Welcome to IDM Package manager. The website aims to '+
-        	'gather all the official package available on the IDM '+
-        	'platform. </p>';
+	
 	//alert(intro);
 	var table = '<table class="order-table"><thead class="order-table-header"><tr><th>Package Name</th><th>License</th><th>Description</th></tr></thead><tbody>';
 	for ( var i = 0; i < jsonTable.length; i++) {
@@ -64,16 +75,17 @@ function create_table_all_packages(restURL, jsonTable){
 	}
 	table = table + "</tbody></table>";
 	//alert(table);
-	return intro + table;
+	return table;
 }
 
 function  create_package_page(restURL, jsonPackage, jsonVersions){
 
-	var page = '<div id="header">'+'<a href="#" onclick=\'getIntroPage("'+restURL+'")\'>back</a>'+
-			   '<h1>Package '+jsonPackage.name+'</h1></div>';
-	page += '<div id="left"><p>'+jsonPackage.short_description+'</p>';
-	page += '<h2>Description</h2>'+jsonPackage.description;
-	
+	var page = '<div id="header">'+'<a href="#" onclick=\'getIntroPage("'+restURL+'")\'>back</a></div>';
+	//		   +'<h1>Package '+jsonPackage.name+'</h1></div>';
+	page += '<div id="left"><div id="help_package"></div>';
+	//page += '<h2>Description</h2>'+jsonPackage.description;
+
+    
 	page += '<table class="order-table"><thead class="order-table-header"><tr><th>Version</th></tr></thead><tbody>';
 	for ( var i = 0; i < jsonVersions.length; i++) {
 		if (i % 2 == 0) {

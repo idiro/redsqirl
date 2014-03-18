@@ -30,6 +30,8 @@ public class IdmPackagesBean {
 	
 	private static Logger logger = Logger.getLogger(IdmPackagesBean.class);
 	
+	private String download_url;
+	
 	//if resource inject is not support, you still can get it manually.
 	public IdmPackagesBean(){
 		System.out.println("Call constructor");
@@ -38,6 +40,14 @@ public class IdmPackagesBean {
 			Context ctx = new InitialContext();
 			ds = (DataSource)ctx.lookup("java:comp/env/jdbc/idm_pck_mng");
 			//ds = (DataSource) context.getAttribute("java:comp/env/jdbc/idm_pck_mng");
+			Connection con = ds.getConnection();
+			PreparedStatement ps = con.prepareStatement("SELECT * FROM idm_hosts LIMIT 1");
+			
+			//get customer data from database
+			ResultSet result =  ps.executeQuery();
+			while(result.next()){
+				download_url = result.getString("name");
+			}
 		} catch (Exception e) {
 			System.out.println("C2");
 			e.printStackTrace();
@@ -48,12 +58,12 @@ public class IdmPackagesBean {
 	//connect to DB and get customer list
 	@GET
     @Produces(MediaType.APPLICATION_JSON)
-	public List<IdmPackage> getPackageList(@QueryParam("name") String packageName,
+	public List<IdmPackage> getPackageList(@QueryParam("id") String packageId,
 			@QueryParam("version") String version) throws SQLException, ClassNotFoundException{
 		System.out.println("getPackageList");
 		
-		if(packageName != null && ! packageName.matches("[0-9a-zA-Z_\\-]+")){
-			packageName = null;
+		if(packageId != null && ! packageId.matches("[0-9a-zA-Z_\\-]+")){
+			packageId = null;
 		}
 		
 		if(version != null && ! version.matches("[0-9a-zA-Z_\\-.]+")){
@@ -69,7 +79,7 @@ public class IdmPackagesBean {
 		if(con==null)
 			throw new SQLException("Can't get database connection");
 		
-		PreparedStatement ps = con.prepareStatement(query(packageName,version));
+		PreparedStatement ps = con.prepareStatement(query(packageId,version));
 		
 		//get customer data from database
 		ResultSet result =  ps.executeQuery();
@@ -78,16 +88,16 @@ public class IdmPackagesBean {
 		
 		while(result.next()){
 			IdmPackage pck = new IdmPackage();
+			pck.setId(result.getString("id"));
 			pck.setName(result.getString("name"));
-			
 			pck.setLicense(result.getString("license"));
 			pck.setShort_description(result.getString("short_description"));
-			if(packageName != null){
+			if(packageId != null){
 				pck.setVersion(result.getString("version"));
 				pck.setPrice(result.getString("price"));
-				pck.setDescription(result.getString("description"));
+				pck.setDescription("pages/"+result.getString("html_file"));
 				pck.setPackage_date(result.getDate("package_date"));
-				pck.setUrl(result.getString("url"));
+				pck.setUrl(download_url+result.getString("zip_file"));
 			}
 			
 			list.add(pck);
@@ -97,14 +107,14 @@ public class IdmPackagesBean {
 	}
 	
 	
-	private String query(String packageName, String version){
+	private String query(String packageId, String version){
 		String ans = null;
-		if(packageName == null){
-			ans = "select distinct name, license, short_description from idm_packages order by name";
+		if(packageId == null){
+			ans = "select distinct id, name, license, short_description from idm_packages order by id";
 		}else if(version == null){
-			ans = "select * from idm_packages where name = '"+packageName+"'  order by package_date DESC";
+			ans = "select * from idm_packages where id = '"+packageId+"'  order by package_date DESC";
 		}else{
-			ans = "select * from idm_packages where name = '"+packageName+"' AND version = '"+version+"' order by package_date DESC";
+			ans = "select * from idm_packages where id = '"+packageId+"' AND version = '"+version+"' order by package_date DESC";
 		}
 		return ans;
 	}
