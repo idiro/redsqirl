@@ -18,6 +18,7 @@ input {
 	padding-right: 1px;
 	border: solid 0px;
 	width: 25px;
+	vertical-align:middle;
 }
 
 .fileSystemIcon {
@@ -42,6 +43,10 @@ input {
 	background-color: #87888c;
 	margin-top: 10px;
 	margin-left: 10px;
+	
+	padding-top: 0px;
+	padding-bottom: 0px;
+	padding-left: 2px;
 }
 
 #menuPanelGroup {
@@ -58,6 +63,8 @@ input {
 	margin-left: auto;
     margin-right: auto;
 	width: 120px;
+	padding-bottom: 2px;
+	padding-top: 2px;
 }
 
 .divFooter {
@@ -701,11 +708,32 @@ div.splitter-bar.ui-state-highlight {
 }
 
 /*white selected tab on canvas*/
+
+#canvas-tabs.ui-tabs .ui-tabs-nav li.ui-tabs-active {
+	background-color:#FFFFFF;
+	border-radius:0px;
+}
+
 #canvas-tabs.ui-tabs .ui-tabs-nav li.ui-tabs-active a,#canvas-tabs.ui-tabs .ui-tabs-nav li.ui-state-disabled a,#canvas-tabs.ui-tabs .ui-tabs-nav li.ui-tabs-loading a
 	{
 	cursor: pointer;
 	background-color: #FFFFFF;
 	color: #000000;
+	
+	border-radius:0px;
+	height:15px;
+	line-height: 15px; 
+  	vertical-align: middle;
+}
+
+#canvas-tabs.ui-tabs .ui-tabs-nav li a {
+	border-radius:0px;
+	height:15px;
+	line-height: 15px; 
+}
+
+#tabsFooter.ui-tabs .ui-tabs-nav li.ui-tabs-active {
+	background-color:transparent;
 }
 
 #tabsFooter.ui-tabs .ui-tabs-nav li.ui-tabs-active a,#tabsFooter.ui-tabs .ui-tabs-nav li.ui-state-disabled a,#tabsFooter.ui-tabs .ui-tabs-nav li.ui-tabs-loading a
@@ -713,11 +741,27 @@ div.splitter-bar.ui-state-highlight {
 	cursor: pointer;
 	background-color: #C62127;
 	color: #FFFFFF;
+	
+	border-radius:7px;
+	height:25px;
+	line-height: 25px; 
+}
+
+#tabsFooter.ui-tabs .ui-tabs-nav li a {
+	border-radius:7px;
+	height:25px;
+	line-height: 25px; 
 }
 
 /*red button to change tab*/
 #changeTabTabs1,#changeTabTabs2,#changeTabCanvas{
 	color:#C62127;
 	background-color:transparent;
+}
+
+
+.refreshButton{
+	padding-bottom:1px;
+	vertical-align: middle;
 }
 

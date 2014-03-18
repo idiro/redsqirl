@@ -48,8 +48,8 @@
 			<h:outputText value="#{messages.label_path}" />
 			<h:inputText id="hdfspath" label="Path" value="#{hdfsBean.path}" maxlength="255" style="width:395px;" />
 
-			<a4j:commandLink action="#{hdfsBean.changePath}" reRender="hdfsfs" style="color:#FFFFFF" >
-				<h:graphicImage src="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' />
+			<a4j:commandLink action="#{hdfsBean.changePath}" reRender="hdfsfs" style="color:#FFFFFF">
+				<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' styleClass="refreshButton"/>
 			</a4j:commandLink>
 
 			<br />
