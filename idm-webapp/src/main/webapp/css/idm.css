@@ -1,7 +1,7 @@
 html,body {
     font-family: Verdana, Geneva, sans-serif;
 	height: 100%;
-	width: 100%
+	width: 100%;
 }
 
 image {
@@ -18,6 +18,7 @@ input {
 	padding-right: 1px;
 	border: solid 0px;
 	width: 25px;
+	vertical-align:middle;
 }
 
 .fileSystemIcon {
@@ -37,8 +38,29 @@ input {
 
 .divMenu {
 	border: 0px solid;
+	border-radius:7px;
+	padding: 0px 0px 0px 0px;
+	background-color: #87888c;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+#menuPanelGroup {
+	border: 0px solid;
+	border-radius:7px;
 	padding: 0px 0px 3px;
-	margin-left: 390px;
+	background-color: #87888c;
+	margin-top: 10px;
+	background:url();
+	
+}
+
+.divMenuImage{
+	margin-left: auto;
+    margin-right: auto;
+	width: 120px;
+	padding-bottom: 2px;
+	padding-top: 2px;
 }
 
 .divFooter {
@@ -82,7 +104,7 @@ input {
 }
 
 .splitterV {
-	width: 1700px;
+	width: 100%;
 }
 
 .splitterV div {
@@ -170,7 +192,6 @@ input {
 
 .ui-tabs .ui-tabs-nav {
 	position: relative;
-	width: 10000px;
 }
 
 .spanButtons {
@@ -201,6 +222,12 @@ input {
 }
 
 #tabs1 {
+	position: relative;
+	float: left;
+	margin-right: 30px;
+}
+
+#tabs2 {
 	position: relative;
 	float: left;
 	margin-right: 30px;
@@ -468,3 +495,285 @@ table.secondtable td{
 .loadTableMap{
 	width:50px;
 }
+
+/*top menu*/
+
+.rich-toolbar{  
+    border:none;
+    background-image: url(); 
+    background-color: transparent;
+}  
+
+.rich-ddmenu-label-select{
+    background-color:  #c62127;
+    border-color: #FFFFFF;
+    width:80px;
+    height:20px;
+    color:  #FFFFFF;
+    font-weight:normal;
+    font-size:13px;
+    padding: 0px 0px 0px 0px;
+}
+
+.rich-ddmenu-label{
+	border:2px solid transparent;
+	border-radius:7px;
+	width:80px;
+    height:20px;
+    font-weight:normal;
+    font-size:13px;
+    text-align:center;
+    padding: 0px 0px 0px 0px;
+}
+
+.rich-menu-list-border{
+	border:2px solid #FFFFFF;
+	border-radius:7px;
+	width:154px;
+	color:#dadbdd;
+	background-color:  #dadbdd;
+}
+
+.rich-menu-item{
+	text-align:left;
+	padding: 0px 0px 0px 0px;
+}
+
+.rich-menu-item-hover{
+	background-color:  #c62127;
+	border: none;
+	color:  #FFFFFF;
+	padding: 0px 0px 0px 0px;
+}
+
+.rich-menu-list-bg{
+	border-radius:7px;
+	color:#dadbdd;
+	background-color:  #dadbdd;
+	width:154px;
+	border:none;
+	background-image: url(); 
+}
+
+.rich-menu-item-icon{
+	visibility:hidden;
+	color:  #3CBD3B;
+	background-color:  #3CBD3B;
+	width:144px;
+}
+
+.rich-menu-group{
+	text-align:left;
+	padding: 0px 0px 0px 0px;
+}
+
+.rich-menu-group-hover{
+	background-color:  #c62127;
+	border: none;
+	color:  #FFFFFF;
+	padding: 0px 0px 0px 0px;
+}
+
+/*gray menu bar*/
+.topMenu{
+	background-color:  #FFFFFF;
+}
+
+
+/*signout button*/
+.signoutButton{
+       background-image:url('../image/icons/button-red.png');
+       width:80px;
+       height:20px;
+       text-align:center;
+       color:  #FFFFFF;
+       vertical-align: middle;
+       padding: 0px 0px 0px 0px;
+}
+
+/*textFields*/
+input[type=text]{
+	background-color: #dadbdd;
+	border-radius:7px;
+	border:none;
+}
+
+/*gradient background on canvas*/
+#body{
+	background: linear-gradient(white,#dadbdd, #dadbdd);
+}
+
+/*transparent background on tabs*/
+#tabs1{
+	background-color: transparent;
+	border: none;
+}
+
+/*transparent background on tabs*/
+#tabs2{
+	background-color: transparent;
+	border: none;
+}
+
+#tabsFooter{
+	background-color: transparent;
+	border: none;
+}
+
+#tabFlowchart{
+	background-color: transparent;
+	border: none;
+}
+
+#splitterH{
+	background-color: transparent;
+	border: none;
+}
+
+#splitterDiv{
+	background-color: transparent;
+	border: none;
+}
+
+
+/*border around the canvas and tabs*/
+#mainPanelDiv{
+	border:2px solid #a2a3a5;
+	border-radius:7px;
+	padding:5px 5px 5px 5px;
+}
+
+/*tabs*/
+
+.ulCss { 
+    padding: 0px; 
+    background: none; 
+    border-width: 0px; 
+}
+
+.ulCssCanvas{ 
+    padding: 0px; 
+   	background: #b8b9bd; 
+    border-width: 0px; 
+    border-radius: 7px; 
+}
+
+.ulCss .ui-tabs-nav { 
+    padding-left: 0px; 
+    background: transparent; 
+    border-width: 0px 0px 0px 0px; 
+    -moz-border-radius: 0px; 
+    -webkit-border-radius: 0px; 
+    border-radius: 0px; 
+} 
+
+.ui-tabs .ui-tabs-panel {
+	border: 1px solid #87888c;
+	border-radius:7px;
+	background: none;
+	background-color: white;
+	padding: 0px 0px 0px 0px;
+}
+
+/*vertical and horizontal splitter*/
+div.splitter-bar.ui-state-default {
+	background-color:transparent;
+	background-image: url();
+	border:none;
+}
+div.splitter-bar.ui-state-hover {
+	border:2px dashed #a2a3a5;
+}
+div.splitter-bar.ui-state-highlight {
+	background-color:transparent;
+	background-image: url();
+	border:2px dashed #a2a3a5;
+}
+
+/*remove the white boxes in the background*/
+.ui-widget.ui-widget-content{
+	background-image: url();
+}
+
+/*legend panel*/
+.rich-panel-header{
+	border:none;
+	background-color:#dadbdd;
+	background-image: url();
+	border-radius: 7px;
+}
+
+.rich-panel.headerLegend{
+	border:none;
+	background-color:transparent;
+}
+
+/*white selected tab on canvas*/
+
+#canvas-tabs.ui-tabs .ui-tabs-nav li.ui-tabs-active {
+	background-color:#FFFFFF;
+	border-radius:0px;
+}
+
+#canvas-tabs.ui-tabs .ui-tabs-nav li.ui-tabs-active a,#canvas-tabs.ui-tabs .ui-tabs-nav li.ui-state-disabled a,#canvas-tabs.ui-tabs .ui-tabs-nav li.ui-tabs-loading a
+	{
+	cursor: pointer;
+	background-color: #FFFFFF;
+	color: #000000;
+	
+	border-radius:0px;
+	height:15px;
+	line-height: 15px; 
+  	vertical-align: middle;
+}
+
+#canvas-tabs.ui-tabs .ui-tabs-nav li a {
+	border-radius:0px;
+	height:15px;
+	line-height: 15px; 
+}
+
+#tabsFooter.ui-tabs .ui-tabs-nav li.ui-tabs-active {
+	background-color:transparent;
+}
+
+#tabsFooter.ui-tabs .ui-tabs-nav li.ui-tabs-active a,#tabsFooter.ui-tabs .ui-tabs-nav li.ui-state-disabled a,#tabsFooter.ui-tabs .ui-tabs-nav li.ui-tabs-loading a
+	{
+	cursor: pointer;
+	background-color: #C62127;
+	color: #FFFFFF;
+	
+	border-radius:7px;
+	height:25px;
+	line-height: 25px; 
+}
+
+#tabsFooter.ui-tabs .ui-tabs-nav li a {
+	border-radius:7px;
+	height:25px;
+	line-height: 25px; 
+}
+
+/*red button to change tab*/
+#changeTabTabs1,#changeTabTabs2,#changeTabCanvas{
+	color:#C62127;
+	background-color:transparent;
+}
+
+
+.refreshButton{
+	padding-bottom:1px;
+	vertical-align: middle;
+}
+
+.configureFooterButton{
+	padding-top:6px;
+	vertical-align: middle;
+}
+
+
+/*remove border of canvas*/
+.container-canvas.ui-tabs-panel.ui-widget-content.ui-corner-bottom {
+	border: none;
+}
+

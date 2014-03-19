@@ -20,13 +20,20 @@
 
 <body>
 	<a4j:keepAlive beanName = "processManagerBean"/>
+	
+	<br />
+	
 	<div id="processManager" 
 		style="min-width: 400px; overflow: hidden; min-height: 400px;">
 		<h:form>
-			<a href="#{processManagerBean.oozieUrl}" target="_blank"><h:graphicImage  value="../image/icons/button-oozie_web_console.gif" title='#{messages.oozie_gotowebconsole}' alt="Oozie" class="fileSystemIcon"/></a>
+			<div class="divMenu">
+				<a href="#{processManagerBean.oozieUrl}" target="_blank"><h:graphicImage  value="../image/icons/button-oozie_web_console.gif" title='#{messages.oozie_gotowebconsole}' alt="Oozie" class="fileSystemIcon"/></a>
+				
+				<a4j:commandButton id="RefreshProcessManager" action="#{processManagerBean.updateProcessesGrid}" 
+				reRender="processManagerTable" image="../image/icons/button-refresh.gif" title='#{messages.oozie_refresh}' styleClass="fileSystemIcon" />
+			</div>
 			
-			<a4j:commandButton id="RefreshProcessManager" action="#{processManagerBean.updateProcessesGrid}" 
-			reRender="processManagerTable" image="../image/icons/button-refresh.gif" title='#{messages.oozie_refresh}' styleClass="fileSystemIcon" />
+			<br />
 			
 			<rich:dataTable id="processManagerTable" value="#{processManagerBean.processesGrid}"
 				var="item" width="100%" style="border-bottom:0px;border-right:0px;"

@@ -396,7 +396,7 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 				packageNames.add(cur.getName());
 			}
 		}catch(Exception e){
-			logger.error("Package directory not found");
+			logger.error("Package directory not found:"+packDir.getPath());
 		}
 		return packageNames;
 	}

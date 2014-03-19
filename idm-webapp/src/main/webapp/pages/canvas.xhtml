@@ -468,11 +468,11 @@
               var ul = jQuery("#canvas-tabs").tabs().find( "ul:first" );
              
               jQuery( "<li class='locked'><a href='#"+ tabName +"' onclick=\"jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('"+tabName+"');\">"+ 
-            		  tabName +"</a> <span id='"+tabName+"-icon-close' class='ui-icon ui-icon-close' onclick=\"closeWorkflowTab(this, '"+tabName+"')\"></span> </li>" ).appendTo( ul );
+            		  tabName +"</a> <span id='"+tabName+"-icon-close' class='ui-icon ui-icon-close' role='presentation' onclick=\"closeWorkflowTab(this, '"+tabName+"')\"></span> </li>" ).appendTo( ul );
               
-              var div = "<div id='"+tabName+"'>"+
+              var div = "<div id='"+tabName+"' class='container-canvas'>"+
 				"<div id='container-"+tabName+"' class='container-"+tabName+"'>"+
-				"<div class='rich-panel' onclick=\"jQuery('#panelLegend-"+tabName+"').toggle();return false;\"  style='position: fixed; z-index:101; width:190px'>"+
+				"<div class='rich-panel headerLegend' onclick=\"jQuery('#panelLegend-"+tabName+"').toggle();return false;\"  style='position: fixed; z-index:101; width:190px'>"+
 					"<div class='rich-panel-header'>Legend</div>"+
 				"</div>"+
 				"<div class='rich-panel' id='panelLegend-"+tabName+"'  style='position: fixed; z-index:100; display: none; width:190px; height:300px'>"+
@@ -1041,150 +1041,169 @@
 			</a4j:region>
 
 			<a4j:region>
-
-				<rich:toolBar>
-
-					<rich:dropDownMenu>
-
-						<f:facet name="label">
-							<h:panelGroup>
-								<h:outputText value="#{messages.label_menu_file}" />
-							</h:panelGroup>
-						</f:facet>
-
-						<rich:menuItem submitMode="none"
-							value="#{messages.label_menu_new}"
-							onclick="jQuery('#addtabCanvas').click();" />
-						<rich:menuItem submitMode="ajax"
-							value="#{messages.label_menu_open}"
-							onclick="openModalLoadWorkflow()"
-							rerender="hdfsfsOpenFile" />
-						<rich:menuSeparator />
-						<rich:menuItem submitMode="ajax"
-							value="#{messages.label_menu_save}" onclick="menuSave();" />
-						<rich:menuItem submitMode="ajax"
-							value="#{messages.label_menu_saveas}"
-							onclick="openModalSaveWorkflow()" />
-						<rich:menuItem submitMode="ajax"
-							value="#{messages.label_menu_saveall}" onclick="saveAll();" />
-						<rich:menuSeparator />
-						<rich:menuItem submitMode="none"
-							value="#{messages.label_menu_close}" onclick="menuCloseTab();" />
-						<rich:menuItem submitMode="ajax"
-							value="#{messages.label_menu_closeall}" onclick="closeAll();"
-							action="#{canvasBean.doNew}" />
-
-					</rich:dropDownMenu>
-
-					<rich:dropDownMenu>
-
-						<f:facet name="label">
-							<h:panelGrid cellpadding="0" cellspacing="0" columns="2"
-								style="vertical-align:middle">
-								<h:outputText value="#{messages.label_menu_edit}" />
-							</h:panelGrid>
-						</f:facet>
-						<!--
-					<rich:menuItem submitMode="ajax"
-						value="#{messages.label_menu_undo}" action="#{canvasBean.doNew}" />
-					<rich:menuItem submitMode="ajax"
-						value="#{messages.label_menu_redo}" action="#{canvasBean.doOpen}" />
-						-->
-						<rich:menuItem submitMode="none"
-							value="#{messages.label_menu_selectall}" onclick="selectAll();" />
-						<rich:menuItem submitMode="none"
-							value="#{messages.label_menu_deselectall}"
-							onclick="deselectAll();" />
-						<rich:menuSeparator />
-						<rich:menuItem submitMode="none"
-							value="#{messages.label_menu_delete}" onclick="deleteSelected();" />
-
-
-
-					</rich:dropDownMenu>
-
-					<rich:dropDownMenu>
-
-						<f:facet name="label">
-							<h:panelGrid cellpadding="0" cellspacing="0" columns="2"
-								style="vertical-align:middle">
-								<h:outputText value="#{messages.label_menu_project}" />
-							</h:panelGrid>
-						</f:facet>
-
-
-						<rich:menuItem submitMode="none">
-							<h:outputLink value="#{canvasBean.workflowUrl}" target="_blank">#{messages.label_menu_see_oozie_job}</h:outputLink>
-						</rich:menuItem>
-
-						<rich:menuSeparator />
-
-						<rich:menuItem submitMode="ajax"
-							value="#{messages.label_menu_runitems}"
-							onclick="var sels=getSelectedIconsCommaDelimited();if(sels.length > 0){runWorkflow(getIconPositions(),sels)}"
-							reRender="formMenu,domMessageDivCanvas2">
-						</rich:menuItem>
-
-						<rich:menuItem submitMode="ajax"
-							value="#{messages.label_menu_runproject}"
-							onclick="runWorkflow(getIconPositions())"
-							reRender="formMenu,domMessageDivCanvas2">
-						</rich:menuItem>
-
-						<rich:menuSeparator />
-
-						<rich:menuItem submitMode="ajax"
-							value="#{messages.label_menu_clean_project}"
-							action="#{canvasBean.cleanCanvasProject}"
-							oncomplete="updateAllArcsStatus();" />
-
-						<rich:menuGroup value="#{messages.label_menu_generate}">
-
-							<rich:menuItem submitMode="ajax"
-								value="#{messages.label_menu_regeneratecopy_project}"
-								action="#{canvasBean.regeneratePathsProjectCopy}"
-								oncomplete="updateAllArcsStatus();" />
-
-							<rich:menuItem submitMode="ajax"
-								value="#{messages.label_menu_regeneratemove_project}"
-								action="#{canvasBean.regeneratePathsProjectMove}"
-								oncomplete="updateAllArcsStatus();" />
-
-						</rich:menuGroup>
-
-						<rich:menuSeparator />
-
-						<rich:menuItem submitMode="ajax"
-							value="#{messages.label_menu_package}"
-							onclick="openPackageModal();">
-						</rich:menuItem>
-
-					</rich:dropDownMenu>
-
-
-					<rich:toolBarGroup location="right">
-						<rich:dropDownMenu value="#{messages.label_menu_signout}"
-							direction="bottom-left" jointPoint="br" styleClass="search">
-
+			
+				<h:panelGrid columns="2" width="100%">
+					<h:graphicImage id="logoImg" width="100px" weight="100px" url="../image/icons/logo.png"/>
+					
+					<h:panelGrid columns="1">
+					<rich:toolBar>
+		
+						<rich:dropDownMenu>
+		
 							<f:facet name="label">
-								<h:panelGrid cellpadding="0" cellspacing="0" columns="2"
-									style="vertical-align:middle">
-									<h:outputText value="#{messages.label_menu_signout}" />
-								</h:panelGrid>
+								<h:panelGroup>
+									<h:outputText value="#{messages.label_menu_file}" />
+								</h:panelGroup>
 							</f:facet>
-
+		
+							<rich:menuItem submitMode="none"
+								value="#{messages.label_menu_new}"
+								onclick="jQuery('#addtabCanvas').click();" />
 							<rich:menuItem submitMode="ajax"
-								value="#{messages.label_menu_signout}"
-								onclick="saveAllPositions(getAllIconPositions());jQuery.blockUI({ message: jQuery('#domMessageDivCanvas1') });signOut();" />
-
+								value="#{messages.label_menu_open}"
+								onclick="openModalLoadWorkflow()"
+								rerender="hdfsfsOpenFile" />
+							<rich:menuSeparator />
 							<rich:menuItem submitMode="ajax"
-								value="#{messages.label_menu_restart}"
-								onclick="jQuery.blockUI({ message: jQuery('#domMessageDivCanvas1') });signOutReLogin();" />
-
+								value="#{messages.label_menu_save}" onclick="menuSave();" />
+							<rich:menuItem submitMode="ajax"
+								value="#{messages.label_menu_saveas}"
+								onclick="openModalSaveWorkflow()" />
+							<rich:menuItem submitMode="ajax"
+								value="#{messages.label_menu_saveall}" onclick="saveAll();" />
+							<rich:menuSeparator />
+							<rich:menuItem submitMode="none"
+								value="#{messages.label_menu_close}" onclick="menuCloseTab();" />
+							<rich:menuItem submitMode="ajax"
+								value="#{messages.label_menu_closeall}" onclick="closeAll();"
+								action="#{canvasBean.doNew}" />
+	
 						</rich:dropDownMenu>
-					</rich:toolBarGroup>
-
-				</rich:toolBar>
+		
+						<rich:dropDownMenu>
+	
+							<f:facet name="label">
+								<h:panelGroup>
+									<h:outputText value="#{messages.label_menu_edit}" />
+								</h:panelGroup>
+							</f:facet>
+							<!--
+						<rich:menuItem submitMode="ajax"
+							value="#{messages.label_menu_undo}" action="#{canvasBean.doNew}" />
+						<rich:menuItem submitMode="ajax"
+							value="#{messages.label_menu_redo}" action="#{canvasBean.doOpen}" />
+							-->
+							<rich:menuItem submitMode="none"
+								value="#{messages.label_menu_selectall}" onclick="selectAll();" />
+							<rich:menuItem submitMode="none"
+								value="#{messages.label_menu_deselectall}"
+								onclick="deselectAll();" />
+							<rich:menuSeparator />
+							<rich:menuItem submitMode="none"
+								value="#{messages.label_menu_delete}" onclick="deleteSelected();" />
+	
+	
+		
+						</rich:dropDownMenu>
+		
+						<rich:dropDownMenu>
+		
+							<f:facet name="label">
+								<h:panelGroup>
+									<h:outputText value="#{messages.label_menu_project}" />
+								</h:panelGroup>
+							</f:facet>
+	
+	
+							<rich:menuItem submitMode="none">
+								<h:outputLink value="#{canvasBean.workflowUrl}" target="_blank">#{messages.label_menu_see_oozie_job}</h:outputLink>
+							</rich:menuItem>
+	
+							<rich:menuSeparator />
+		
+							<rich:menuItem submitMode="ajax"
+								value="#{messages.label_menu_runitems}"
+								onclick="var sels=getSelectedIconsCommaDelimited();if(sels.length > 0){runWorkflow(getIconPositions(),sels)}"
+								reRender="formMenu,domMessageDivCanvas2">
+							</rich:menuItem>
+	
+							<rich:menuItem submitMode="ajax"
+								value="#{messages.label_menu_runproject}"
+								onclick="runWorkflow(getIconPositions())"
+								reRender="formMenu,domMessageDivCanvas2">
+							</rich:menuItem>
+	
+							<rich:menuSeparator />
+	
+							<rich:menuItem submitMode="ajax"
+								value="#{messages.label_menu_clean_project}"
+								action="#{canvasBean.cleanCanvasProject}"
+								oncomplete="updateAllArcsStatus();" />
+	
+							<rich:menuGroup value="#{messages.label_menu_generate}">
+	
+								<rich:menuItem submitMode="ajax"
+									value="#{messages.label_menu_regeneratecopy_project}"
+									action="#{canvasBean.regeneratePathsProjectCopy}"
+									oncomplete="updateAllArcsStatus();" />
+	
+								<rich:menuItem submitMode="ajax"
+									value="#{messages.label_menu_regeneratemove_project}"
+									action="#{canvasBean.regeneratePathsProjectMove}"
+									oncomplete="updateAllArcsStatus();" />
+	
+							</rich:menuGroup>
+		
+							<rich:menuSeparator />
+		
+							<rich:menuItem submitMode="ajax"
+								value="#{messages.label_menu_package}"
+								onclick="openPackageModal();">
+							</rich:menuItem>
+		
+						</rich:dropDownMenu>
+		
+		
+						<rich:toolBarGroup location="right">
+							<rich:dropDownMenu value="#{messages.label_menu_signout}"
+								direction="bottom-left" jointPoint="br">
+		
+								<f:facet name="label">
+									<h:panelGrid cellpadding="0" cellspacing="0" columns="2"
+										styleClass="signoutButton">
+										<h:outputText value="#{messages.label_menu_signout}" />
+									</h:panelGrid>
+								</f:facet>
+		
+								<rich:menuItem submitMode="ajax"
+									value="#{messages.label_menu_signout}"
+									onclick="saveAllPositions(getAllIconPositions());jQuery.blockUI({ message: jQuery('#domMessageDivCanvas1') });signOut();" />
+	
+								<rich:menuItem submitMode="ajax"
+									value="#{messages.label_menu_restart}"
+									onclick="jQuery.blockUI({ message: jQuery('#domMessageDivCanvas1') });signOutReLogin();" />
+		
+							</rich:dropDownMenu>
+						</rich:toolBarGroup>
+		
+					</rich:toolBar>
+					<div id="shortMenu" class="divMenu">
+	
+						<div class="divMenuImage">
+							<img src="../image/icons/button-open.gif" alt="open" class="shortMenuIcon" onclick="openModalLoadWorkflow()"/>
+							<img src="../image/icons/button-save.gif" alt="save" class="shortMenuIcon" onclick="openModalSaveWorkflow()"/>
+							<img src="../image/icons/button-save_as.gif" alt="saveas" class="shortMenuIcon" />
+							<img src="../image/icons/button-save_all.gif" alt="saveall" class="shortMenuIcon" />
+						</div>
+						<!--
+							<a onclick="jQuery('#addtabCanvas').click();"><img src="../image/icons/button-new.gif" alt="new" class="shortMenuIcon" /></a> 
+							<a onclick="undoHistory();"><img src="../image/icons/button-undo.gif" alt="undo" class="shortMenuIcon" /></a>
+							<a onclick="redoHistory();"><img src="../image/icons/button-redo.gif" alt="redo" class="shortMenuIcon" /></a>
+							<a onclick="deleteSelected();"><img id="buttonDelete" src="../image/icons/button-delete.gif" alt="open" class="shortMenuIcon" /></a>
+						-->
+					</div>
+					</h:panelGrid>
+				</h:panelGrid>
 
 			</a4j:region>
 
@@ -1196,29 +1215,9 @@
 
 
 		</h:form>
-
-		<rich:spacer width="1" height="15" />
-
 	</div>
 
-	<div id="shortMenu" class="divMenu">
-
-
-			<img src="../image/icons/button-open.gif" alt="open" class="shortMenuIcon" onclick="openModalLoadWorkflow()">
-				<a4j:support event="onclick" rerender="hdfsfsOpenFile"/>
-			</img>
-			<img src="../image/icons/button-save.gif" alt="save" class="shortMenuIcon" onclick="openModalSaveWorkflow()"/>
-			<img src="../image/icons/button-save_as.gif" alt="saveas" class="shortMenuIcon" />
-			<img src="../image/icons/button-save_all.gif" alt="saveall" class="shortMenuIcon" />
-		<!--
-			<a onclick="jQuery('#addtabCanvas').click();"><img src="../image/icons/button-new.gif" alt="new" class="shortMenuIcon" /></a> 
-			<a onclick="undoHistory();"><img src="../image/icons/button-undo.gif" alt="undo" class="shortMenuIcon" /></a>
-			<a onclick="redoHistory();"><img src="../image/icons/button-redo.gif" alt="redo" class="shortMenuIcon" /></a>
-            <a onclick="deleteSelected();"><img id="buttonDelete" src="../image/icons/button-delete.gif" alt="open" class="shortMenuIcon" /></a>
-            -->
-
-
-	</div>
+	<div id="mainPanelDiv">
 
 	<div class="splitterV" id="splitterDiv">
 		<div>
@@ -1234,10 +1233,10 @@
 				<div id="tabFlowchart-1">
 
 					<div id="canvas-tabs">
-						<ul>
+						<ul class="ulCssCanvas">
 							<li class="locked"><a href="#canvas-1"
 								onclick="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('canvas-1');">canvas-1</a>
-								<span id="canvas-1-icon-close" class="ui-icon ui-icon-close"
+								<span id="canvas-1-icon-close" class="ui-icon ui-icon-close" role="presentation"
 								onclick="closeWorkflowTab(this,'canvas-1')"></span></li>
 							<img src="../image/icons/button-new_canvas.gif" alt="add"
 								style="width: 16px; padding-top: 2px;" id="addtabCanvas" />
@@ -1254,10 +1253,10 @@
 							</button>
 						</span>
 
-						<div id="canvas-1">
+						<div id="canvas-1" class="container-canvas">
 
 							<div id="container-canvas-1" class="container-canvas-1">
-								<div class="rich-panel"
+								<div class="rich-panel headerLegend"
 									onclick="jQuery('#panelLegend-canvas-1').toggle();return false;"
 									style="position: fixed; z-index: 101; width: 190px">
 									<div class="rich-panel-header">Legend</div>
@@ -1275,7 +1274,7 @@
 						</div>
 						<h:panelGroup id="tabsFooterForm">
 							<div id="tabsFooter">
-								<ul>
+								<ul class="ulCssCanvas">
 
 									<ui:repeat value="#{configureTabsBean.tabs}" var="tab"
 										varStatus="status">
@@ -1284,7 +1283,7 @@
 									<a4j:region>
 										<a4j:commandButton image="../image/icons/button-property.gif"
 											onclick="#{rich:component('modalConfigureFooterTabs')}.show()"
-											style="border: hidden;width:16px;" />
+											style="border: hidden;width:16px;" styleClass="configureFooterButton"/>
 									</a4j:region>
 								</ul>
 
@@ -1490,6 +1489,7 @@
 			</div>
 
 		</div>
+	</div>
 	</div>
 
 	<a4j:region>

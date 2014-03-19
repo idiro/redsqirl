@@ -15,25 +15,25 @@
 		<a4j:form>
 		
 			<h:outputText value="#{messages.label_path}" />
-			<br />
 			<h:inputText id="sshpath" label="Path" value="#{sshBean.path}"
 				maxlength="255" style="width:395px;" />
 			<a4j:commandButton type="submit" id="sshchangePathBt"
 				action="#{sshBean.changePath}" value="#{messages.button_ok}" reRender="sshfs" />
 
 			<br />
-			<br />
 
-			<a4j:commandLink action="#{sshBean.goPrevious}"
-				reRender="sshpath,sshfs">
-				<h:graphicImage id="sshbtUndo" value="../image/icons/button-previous.gif" title='#{messages.canvas_previous}' />
-			</a4j:commandLink>
-
-			<a4j:commandLink action="#{sshBean.goNext}" reRender="sshpath,sshfs">
-				<h:graphicImage id="sshbtRedo" value="../image/icons/button-next.gif" title='#{messages.canvas_next}' />
-			</a4j:commandLink>
+			<div class="divMenu">
+				<a4j:commandLink action="#{sshBean.goPrevious}"
+					reRender="sshpath,sshfs">
+					<h:graphicImage id="sshbtUndo" value="../image/icons/button-previous.gif" title='#{messages.canvas_previous}' />
+				</a4j:commandLink>
+	
+				<a4j:commandLink action="#{sshBean.goNext}" reRender="sshpath,sshfs">
+					<h:graphicImage id="sshbtRedo" value="../image/icons/button-next.gif" title='#{messages.canvas_next}' />
+				</a4j:commandLink>
+			</div>
 			
-
+			<br />
 
 			<rich:panel>
 			

@@ -41,7 +41,7 @@ import org.junit.runners.Suite.SuiteClasses;
 //	TableJoinInteractionTests.class,
 //	TableUnionInteractionTests.class,
 //	HiveUnionConditionInteractionTests.class,
-	HiveSelectTests.class,
+	HiveSelectTests.class
 //	HiveUnionTests.class,
 //	HiveJoinTests.class,
 //	HiveAggregTests.class,

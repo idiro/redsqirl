@@ -63,42 +63,43 @@
 			<br />
 
 			<h:outputText value="#{messages.label_path}" />
-			<br />
 			<h:inputText id="hivepath" label="Path" value="#{hiveBean.path}" maxlength="255" style="width:395px;" />
 			
 			<a4j:commandLink action="#{hiveBean.changePath}" reRender="hivefs" style="color:#FFFFFF" >
-				<h:graphicImage value="../image/icons/button-search.gif" title="#{messages.filesystem_change_path}" />
+				<h:graphicImage value="../image/icons/button-search.gif" title="#{messages.filesystem_change_path}" styleClass="refreshButton"/>
 			</a4j:commandLink>
 
 			<br />
+			
+			<div class="divMenu">
+				<a4j:commandLink action="#{hiveBean.addFileBefore}"
+					oncomplete="#{rich:component('hiveaddModalPanel')}.show()"
+					rendered="#{hiveBean.canCreate != null}">
+					<h:graphicImage id="hivebtAdd" value="../image/icons/button-plus.gif" title="#{messages.HiveInterface_create_help}" styleClass="fileSystemIcon" />
+				</a4j:commandLink>
+	
+				<a4j:commandLink action="#{hiveBean.deleteFile}" reRender="hivefs" 
+					onclick="if(!confirm('Are you sure you want to delete the selected files?')){return false;}"
+					rendered="#{hiveBean.canDelete != null}">
+					<h:graphicImage id="hivebtDelete" value="../image/icons/button-delete2.gif" title="#{messages.HiveInterface_delete_help}" styleClass="fileSystemIcon" />
+				</a4j:commandLink>
+	
+				<h:commandLink value="Copy to..." onclick="openCopyHive();" 
+					rendered="#{hiveBean.canCopy != null}" title="#{hiveBean.canCopy}"/>
+				<h:commandLink value="Move to..." onclick="openMoveHive();"
+					rendered="#{hiveBean.canMove != null}" title="#{hiveBean.canMove}"/>
+	
+				<a4j:commandLink action="#{hiveBean.goPrevious}"
+					reRender="hivepath,hivefs">
+					<h:graphicImage id="hivebtUndo" value="../image/icons/button-previous.gif" title="#{messages.HiveInterface_previous_help}" styleClass="fileSystemIcon" />
+				</a4j:commandLink>
+	
+				<a4j:commandLink action="#{hiveBean.goNext}" reRender="hivepath,hivefs">
+					<h:graphicImage id="hivebtRedo" value="../image/icons/button-next.gif" title="#{messages.HiveInterface_next_help}" styleClass="fileSystemIcon" />
+				</a4j:commandLink>
+			</div>
+
 			<br />
-
-			<a4j:commandLink action="#{hiveBean.addFileBefore}"
-				oncomplete="#{rich:component('hiveaddModalPanel')}.show()"
-				rendered="#{hiveBean.canCreate != null}">
-				<h:graphicImage id="hivebtAdd" value="../image/icons/button-plus.gif" title="#{messages.HiveInterface_create_help}" styleClass="fileSystemIcon" />
-			</a4j:commandLink>
-
-			<a4j:commandLink action="#{hiveBean.deleteFile}" reRender="hivefs" 
-				onclick="if(!confirm('Are you sure you want to delete the selected files?')){return false;}"
-				rendered="#{hiveBean.canDelete != null}">
-				<h:graphicImage id="hivebtDelete" value="../image/icons/button-delete2.gif" title="#{messages.HiveInterface_delete_help}" styleClass="fileSystemIcon" />
-			</a4j:commandLink>
-
-			<h:commandLink value="Copy to..." onclick="openCopyHive();" 
-				rendered="#{hiveBean.canCopy != null}" title="#{hiveBean.canCopy}"/>
-			<h:commandLink value="Move to..." onclick="openMoveHive();"
-				rendered="#{hiveBean.canMove != null}" title="#{hiveBean.canMove}"/>
-
-			<a4j:commandLink action="#{hiveBean.goPrevious}"
-				reRender="hivepath,hivefs">
-				<h:graphicImage id="hivebtUndo" value="../image/icons/button-previous.gif" title="#{messages.HiveInterface_previous_help}" styleClass="fileSystemIcon" />
-			</a4j:commandLink>
-
-			<a4j:commandLink action="#{hiveBean.goNext}" reRender="hivepath,hivefs">
-				<h:graphicImage id="hivebtRedo" value="../image/icons/button-next.gif" title="#{messages.HiveInterface_next_help}" styleClass="fileSystemIcon" />
-			</a4j:commandLink>
-
 
 			<rich:dataTable id="hivefs" value="#{hiveBean.listGrid}"
 				var="item" width="100%" style="border:none;"

@@ -48,44 +48,45 @@
 			<br />
 
 			<h:outputText value="#{messages.label_path}" />
-			<br />
 			<h:inputText id="hdfspath" label="Path" value="#{hdfsBean.path}" maxlength="255" style="width:395px;" />
 
-			<a4j:commandLink action="#{hdfsBean.changePath}" reRender="hdfsfs" style="color:#FFFFFF" >
-				<h:graphicImage value="../image/icons/button-search.gif" title="#{messages.filesystem_change_path}" />
+			<a4j:commandLink action="#{hdfsBean.changePath}" reRender="hdfsfs" style="color:#FFFFFF">
+				<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' styleClass="refreshButton"/>
 			</a4j:commandLink>
 
 			<br />
+
+			<div class="divMenu">
+				<a4j:commandLink action="#{hdfsBean.addFileBefore}"
+					oncomplete="#{rich:component('hdfsaddModalPanel')}.show()">
+					<h:graphicImage id="hdfsbtAdd" value="../image/icons/button-plus.gif" title='#{messages.HdfsInterface_create_help}' styleClass="fileSystemIcon" />
+				</a4j:commandLink>
+	
+				<a4j:commandLink action="#{hdfsBean.deleteFile}" reRender="hdfsfs"
+					onclick="if(!confirm('Are you sure you want to delete the selected files?')){return false;}">
+					<h:graphicImage id="hdfsbtDelete" value="../image/icons/button-delete2.gif" title='#{messages.HdfsInterface_delete_help}' styleClass="fileSystemIcon" />
+				</a4j:commandLink>
+	
+				<a4j:commandLink id="hdfslinkCopyModalPanel" action="#{hdfsBean.copyFileBefore}"
+					oncomplete="#{rich:component('hdfscopyModalPanel')}.show()"  >
+					<h:graphicImage value="../image/icons/button-copy.gif" title='#{messages.HdfsInterface_copy_help}' styleClass="fileSystemIcon" />
+				</a4j:commandLink>
+					
+				<a4j:commandLink id="hdfslinkMoveModalPanel" action="#{hdfsBean.moveFileBefore}"
+					oncomplete="#{rich:component('hdfsmoveModalPanel')}.show()" >
+					<h:graphicImage value="../image/icons/button-move.gif" title='#{messages.HdfsInterface_move_help}' styleClass="fileSystemIcon" />
+				</a4j:commandLink>
+	
+				<a4j:commandLink action="#{hdfsBean.goPrevious}" reRender="hdfspath,hdfsfs">
+					<h:graphicImage id="hdfsbtUndo" value="../image/icons/button-previous.gif" title='#{messages.HdfsInterface_previous_help}' styleClass="fileSystemIcon" />
+				</a4j:commandLink>
+	
+				<a4j:commandLink action="#{hdfsBean.goNext}" reRender="hdfspath,hdfsfs">
+					<h:graphicImage id="hdfsbtRedo" value="../image/icons/button-next.gif" title='#{messages.HdfsInterface_next_help}' styleClass="fileSystemIcon" />
+				</a4j:commandLink>
+			</div>
+
 			<br />
-
-			<a4j:commandLink action="#{hdfsBean.addFileBefore}"
-				oncomplete="#{rich:component('hdfsaddModalPanel')}.show()">
-				<h:graphicImage id="hdfsbtAdd" value="../image/icons/button-plus.gif" title='#{messages.HdfsInterface_create_help}' styleClass="fileSystemIcon" />
-			</a4j:commandLink>
-
-			<a4j:commandLink action="#{hdfsBean.deleteFile}" reRender="hdfsfs"
-				onclick="if(!confirm('Are you sure you want to delete the selected files?')){return false;}">
-				<h:graphicImage id="hdfsbtDelete" value="../image/icons/button-delete2.gif" title='#{messages.HdfsInterface_delete_help}' styleClass="fileSystemIcon" />
-			</a4j:commandLink>
-
-			<a4j:commandLink id="hdfslinkCopyModalPanel" action="#{hdfsBean.copyFileBefore}"
-				oncomplete="#{rich:component('hdfscopyModalPanel')}.show()"  >
-				<h:graphicImage value="../image/icons/button-copy.gif" title='#{messages.HdfsInterface_copy_help}' styleClass="fileSystemIcon" />
-			</a4j:commandLink>
-				
-			<a4j:commandLink id="hdfslinkMoveModalPanel" action="#{hdfsBean.moveFileBefore}"
-				oncomplete="#{rich:component('hdfsmoveModalPanel')}.show()" >
-				<h:graphicImage value="../image/icons/button-move.gif" title='#{messages.HdfsInterface_move_help}' styleClass="fileSystemIcon" />
-			</a4j:commandLink>
-
-			<a4j:commandLink action="#{hdfsBean.goPrevious}" reRender="hdfspath,hdfsfs">
-				<h:graphicImage id="hdfsbtUndo" value="../image/icons/button-previous.gif" title='#{messages.HdfsInterface_previous_help}' styleClass="fileSystemIcon" />
-			</a4j:commandLink>
-
-			<a4j:commandLink action="#{hdfsBean.goNext}" reRender="hdfspath,hdfsfs">
-				<h:graphicImage id="hdfsbtRedo" value="../image/icons/button-next.gif" title='#{messages.HdfsInterface_next_help}' styleClass="fileSystemIcon" />
-			</a4j:commandLink>
-
 
 			<rich:panel>
 			
