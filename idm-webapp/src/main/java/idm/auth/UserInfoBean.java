@@ -366,33 +366,36 @@ public class UserInfoBean extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 */
 	public String validateSecondLogin() {
+		
+		logger.info("validateSecondLogin");
 
 		FacesContext fCtx = FacesContext.getCurrentInstance();
-		ServletContext sc = (ServletContext) fCtx.getExternalContext()
-				.getContext();
-		HttpSession session = (HttpSession) fCtx.getExternalContext()
-				.getSession(false);
-		Map<String, HttpSession> sessionLoginMap = (Map<String, HttpSession>) sc
-				.getAttribute("sessionLoginMap");
+		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
+		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
+		Map<String, HttpSession> sessionLoginMap = (Map<String, HttpSession>) sc.getAttribute("sessionLoginMap");
 
 		HttpSession sessionLogin = sessionLoginMap.get(userName);
 		if (sessionLogin != null) {
+			
+			logger.info("validateSecondLogin sessionLogin");
 
 			if (sessionLogin.getId().equals(session.getId())) {
 				setTwoLoginChek(null);
 				setMsnLoginTwice("twice");
 
-				logger.info("Already Authenticated");
+				logger.info("Already Authenticated twice");
 				return "failure";
 			}
 
 			setTwoLoginChek("two");
-			logger.info("Already Authenticated");
+			logger.info("Already Authenticated two");
 			return "failure";
 		}
 
 		setCurrentValue(getCurrentValue() + 5);
 
+		logger.info("validateSecondLogin end");
+		
 		setTwoLoginChek(null);
 		String aux = login();
 
@@ -430,9 +433,13 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 	public String startProcess() {
 
+		logger.info("startProcess");
+		
 		setEnabled(true);
 		setCurrentValue(Long.valueOf(10));
 
+		logger.info("startProcess end");
+		
 		return null;
 	}
 

@@ -158,8 +158,8 @@
   <view-handler>org.ajax4jsf.application.AjaxViewHandler</view-handler>
   <message-bundle>MessagesResources</message-bundle>
   <locale-config>
-   <default-locale>em_US</default-locale>
-   <supported-locale>em_US</supported-locale>
+   <default-locale>en_IE</default-locale>
+   <supported-locale>en_IE</supported-locale>
   </locale-config>
  </application>
  <lifecycle>

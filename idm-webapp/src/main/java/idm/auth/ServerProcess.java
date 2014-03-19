@@ -228,6 +228,7 @@ public class ServerProcess {
 			}
 			channel.disconnect();
 		} catch (Exception e) {
+			logger.error("there was an error getting base command");
 			e.printStackTrace();
 		}
 		logger.info("command : " + command);
