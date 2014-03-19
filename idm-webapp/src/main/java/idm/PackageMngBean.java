@@ -50,30 +50,30 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	public PackageMngBean() throws RemoteException{
 	}
 
-	public List<IdmPackage> getExtPackages() throws IOException{
+	public List<IdmPackage> getExtPackages() {
 		List<IdmPackage> lAns = new LinkedList<IdmPackage>();
-		SimpleDateFormat dt = new SimpleDateFormat("yyyy-mm-dd");
-		String packageId = FacesContext.getCurrentInstance().getExternalContext().
-				getRequestParameterMap().get("packageId");
-		String version = FacesContext.getCurrentInstance().getExternalContext().
-				getRequestParameterMap().get("version");
-
-		String pckServer = getRepoServer();
-		String uri = pckServer+"rest/allpackages";
-
-		if(packageId != null && !packageId.isEmpty()){
-			showMain = false;
-			uri += "?id="+packageId;
-			if(version != null && !version.isEmpty()){
-				uri += "&version="+version;
-			}
-		}else{
-			showMain = true;
-		}
-		logger.info("url: "+uri);
-
-		URL url = new URL(uri);
 		try{
+			SimpleDateFormat dt = new SimpleDateFormat("yyyy-mm-dd");
+			String packageId = FacesContext.getCurrentInstance().getExternalContext().
+					getRequestParameterMap().get("packageId");
+			String version = FacesContext.getCurrentInstance().getExternalContext().
+					getRequestParameterMap().get("version");
+
+			String pckServer = getRepoServer();
+			String uri = pckServer+"rest/allpackages";
+
+			if(packageId != null && !packageId.isEmpty()){
+				showMain = false;
+				uri += "?id="+packageId;
+				if(version != null && !version.isEmpty()){
+					uri += "&version="+version;
+				}
+			}else{
+				showMain = true;
+			}
+			logger.info("url: "+uri);
+
+			URL url = new URL(uri);
 			HttpURLConnection connection =
 					(HttpURLConnection) url.openConnection();
 			connection.setRequestMethod("GET");
@@ -140,15 +140,19 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	public boolean isAdmin(){
 		boolean admin = false;
-		logger.debug("is admin");
-		FacesContext fCtx = FacesContext.getCurrentInstance();
-		HttpSession session = (HttpSession) fCtx.getExternalContext()
-				.getSession(false);
-		String user = (String) session.getAttribute("username");
-		String[] admins = WorkflowPrefManager.getSysAdminUser();
-		for(String cur: admins){
-			admin = admin || cur.equals(user);
-			logger.debug("admin user: "+cur);
+		try{
+			logger.debug("is admin");
+			FacesContext fCtx = FacesContext.getCurrentInstance();
+			HttpSession session = (HttpSession) fCtx.getExternalContext()
+					.getSession(false);
+			String user = (String) session.getAttribute("username");
+			String[] admins = WorkflowPrefManager.getSysAdminUser();
+			for(String cur: admins){
+				admin = admin || cur.equals(user);
+				logger.debug("admin user: "+cur);
+			}
+		}catch(Exception e){
+			logger.warn("Exception in isAdmin: "+e.getMessage());
 		}
 		return admin;
 	}
@@ -279,6 +283,26 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		}
 
 		return error;
+	}
+
+	public String getRepoWelcomePage(){
+		String repoPage = getRepoServer()+"repo.html";
+		URL u;
+		try {
+			u = new URL (repoPage);
+
+			HttpURLConnection huc =  ( HttpURLConnection )  u.openConnection (); 
+			huc.setRequestMethod("HEAD");
+			if (huc.getResponseCode() != HttpURLConnection.HTTP_OK){
+				repoPage = "/pages/unavailableRepo.html";
+			}
+		} catch (Exception e) {
+			logger.info("Error when try to get repo welcome page");
+			logger.info(e.getMessage());
+			repoPage = "/pages/unavailableRepo.html";
+		}
+		logger.trace("repo page: "+repoPage);
+		return repoPage;
 	}
 
 	public String getRepoServer(){

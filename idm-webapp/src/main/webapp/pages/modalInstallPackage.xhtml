@@ -6,7 +6,7 @@
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:ui="http://java.sun.com/jsf/facelets">
     
-    <a4j:loadBundle basename="MessagesResources_em_US" var="messages" />
+    <!-- <a4j:loadBundle basename="MessagesResources_em_US" var="messages" /> -->
     
     <rich:modalPanel id="msnError2">
 			<center>
@@ -34,14 +34,15 @@
 	    
         <h:panelGroup id="install_pck_main"
             rendered="#{packageMngBean.showMain}" >
-            <h1>IDM Package Manager</h1>
-            <p>Welcome to IDM Package manager. The website aims to
-                gather all the official package available on the IDM
-                platform.</p>
+            
+            <div id="welcomePageRepo">
+                <ui:include src="#{packageMngBean.repoWelcomePage}" />
+            </div>
             <h:dataTable value="#{packageMngBean.extPackages}" var="c"
                 styleClass="order-table"
                 headerClass="order-table-header"
-                rowClasses="order-table-odd-row,order-table-even-row">
+                rowClasses="order-table-odd-row,order-table-even-row"
+                rendered="#{not empty packageMngBean.extPackages}">
                 <h:column>
                     <f:facet name="header">
                     Name
@@ -77,7 +78,6 @@
                     action="#{packageMngBean.getExtPackages}"
                     reRender="form_all,install_pck_main" />
                     
-                <!-- <h1>Package #{packageMngBean.curPackage.name}</h1> -->
             </div>
             
             <div id="left">
