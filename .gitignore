@@ -10,3 +10,4 @@ idm-webapp/src/test/
 idm-webapp/src/main/webapp/WEB-INF/lib/
 idm-webapp/src/main/webapp/WEB-INF/.faces-config.xml.jsfdia
 target/
+idm-repo/src/main/webapp/pages/
