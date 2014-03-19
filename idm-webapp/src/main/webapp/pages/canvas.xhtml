@@ -469,7 +469,7 @@
               jQuery( "<li class='locked'><a href='#"+ tabName +"' onclick=\"jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('"+tabName+"');\">"+ 
             		  tabName +"</a> <span id='"+tabName+"-icon-close' class='ui-icon ui-icon-close' role='presentation' onclick=\"closeWorkflowTab(this, '"+tabName+"')\"></span> </li>" ).appendTo( ul );
               
-              var div = "<div id='"+tabName+"'>"+
+              var div = "<div id='"+tabName+"' class='container-canvas'>"+
 				"<div id='container-"+tabName+"' class='container-"+tabName+"'>"+
 				"<div class='rich-panel headerLegend' onclick=\"jQuery('#panelLegend-"+tabName+"').toggle();return false;\"  style='position: fixed; z-index:101; width:190px'>"+
 					"<div class='rich-panel-header'>Legend</div>"+
@@ -1214,10 +1214,6 @@
 
 
 		</h:form>
-		
-		<rich:spacer width="1" height="15" />
-		
-		
 	</div>
 
 	<div id="mainPanelDiv">
@@ -1256,7 +1252,7 @@
 							</button>
 						</span>
 
-						<div id="canvas-1">
+						<div id="canvas-1" class="container-canvas">
 
 							<div id="container-canvas-1" class="container-canvas-1">
 								<div class="rich-panel headerLegend"
@@ -1286,7 +1282,7 @@
 									<a4j:region>
 										<a4j:commandButton image="../image/icons/button-property.gif"
 											onclick="#{rich:component('modalConfigureFooterTabs')}.show()"
-											style="border: hidden;width:16px;" />
+											style="border: hidden;width:16px;" styleClass="configureFooterButton"/>
 									</a4j:region>
 								</ul>
 

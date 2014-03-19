@@ -39,14 +39,10 @@ input {
 .divMenu {
 	border: 0px solid;
 	border-radius:7px;
-	padding: 0px 0px 3px;
+	padding: 0px 0px 0px 0px;
 	background-color: #87888c;
-	margin-top: 10px;
 	margin-left: 10px;
-	
-	padding-top: 0px;
-	padding-bottom: 0px;
-	padding-left: 2px;
+	margin-right: 10px;
 }
 
 #menuPanelGroup {
@@ -108,7 +104,7 @@ input {
 }
 
 .splitterV {
-	width: 1700px;
+	width: 100%;
 }
 
 .splitterV div {
@@ -196,7 +192,6 @@ input {
 
 .ui-tabs .ui-tabs-nav {
 	position: relative;
-	width: 10000px;
 }
 
 .spanButtons {
@@ -599,7 +594,7 @@ input[type=text]{
 
 /*gradient background on canvas*/
 #body{
-	background: linear-gradient(white,#7f7d7e);
+	background: linear-gradient(white,#dadbdd, #dadbdd);
 }
 
 /*transparent background on tabs*/
@@ -763,5 +758,16 @@ div.splitter-bar.ui-state-highlight {
 .refreshButton{
 	padding-bottom:1px;
 	vertical-align: middle;
+}
+
+.configureFooterButton{
+	padding-top:6px;
+	vertical-align: middle;
+}
+
+
+/*remove border of canvas*/
+.container-canvas.ui-tabs-panel.ui-widget-content.ui-corner-bottom {
+	border: none;
 }
 
