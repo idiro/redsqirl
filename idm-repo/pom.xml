@@ -15,35 +15,11 @@
 
     <properties>
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	<oozie.version>3.1.3</oozie.version>
-	<prod.resources>src/main/dist</prod.resources>
-	<dist>${project.build.directory}/${project.artifactId}/</dist>
-	<dist.war>${project.build.directory}/${project.artifactId}/war</dist.war>
-	<dist.lib>${project.build.directory}/${project.artifactId}/lib</dist.lib>
-	<dist.bin>${project.build.directory}/${project.artifactId}/bin</dist.bin>
-	<dist.conf>${project.build.directory}/${project.artifactId}/conf</dist.conf>
 	<main.resources.script>${basedir}/src/main/resources/scripts</main.resources.script>
 	<main.resources.conf>${basedir}/src/main/resources/conf</main.resources.conf>
         <jersey.version>2.4.1</jersey.version>
 	<maven.tomcat.port>9090</maven.tomcat.port>
-	<idm-workflow.lib>/home/marcos/Development/idm/idm-workflow/target/idm-workflow/lib</idm-workflow.lib>
     </properties>
-
-    <!--
-    <distributionManagement>
-	<repository>
-	    <id>internal</id>
-	    <name>Internal Release Repository</name>
-	    <url>scp://dev.local.net/var/www/html/apache-archiva-1.3.6/data/repositories/internal</url>
-	</repository>
-
-	<snapshotRepository>
-	    <id>snapshots</id>
-	    <name>Internal Snapshot Repository</name>
-	    <url>scp://dev.local.net/var/www/html/apache-archiva-1.3.6/data/repositories/snapshots</url>
-	</snapshotRepository>
-    </distributionManagement>   -->
-
     <repositories>
 
 	<!-- JBoss Repository -->
@@ -102,83 +78,8 @@
 		<groupId>org.apache.maven.plugins</groupId>
 		<artifactId>maven-war-plugin</artifactId>
 		<configuration>
-		    <outputDirectory>${dist.war}</outputDirectory>
+		    <warName>${project.artifactId}</warName>
 		</configuration>
-	    </plugin>
-
-	    <!-- Copy dependencies -->
-	    <plugin>
-		<artifactId>maven-resources-plugin</artifactId>
-		<version>2.6</version>
-		<executions>
-		    <execution>
-			<id>copy-workflow</id>
-			<phase>package</phase>
-			<goals>
-			    <goal>copy-resources</goal>
-			</goals>
-			<configuration>
-			    <outputDirectory>${dist.lib}</outputDirectory>
-			    <resources>          
-				<resource>
-				    <directory>${idm-workflow.lib}</directory>
-				</resource>
-			    </resources>              
-			</configuration>            
-		    </execution>
-		    <execution>
-			<id>copy-resources-bin</id>
-			<!-- here the phase you need -->
-			<phase>package</phase>
-			<goals>
-			    <goal>copy-resources</goal>
-			</goals>
-			<configuration>
-			    <outputDirectory>${dist.bin}</outputDirectory>
-			    <resources>          
-				<resource>
-				    <directory>${main.resources.script}</directory>
-				</resource>
-			    </resources>              
-			</configuration>            
-		    </execution>
-		    <execution>
-			<id>copy-resources-conf</id>
-			<!-- here the phase you need -->
-			<phase>package</phase>
-			<goals>
-			    <goal>copy-resources</goal>
-			</goals>
-			<configuration>
-			    <outputDirectory>${dist.conf}</outputDirectory>
-			    <resources>          
-				<resource>
-				    <directory>${main.resources.conf}</directory>
-				</resource>
-			    </resources>              
-			</configuration>            
-		    </execution>
-		</executions>
-	    </plugin>
-	    <plugin>
-		<groupId>org.apache.maven.plugins</groupId>
-		<artifactId>maven-assembly-plugin</artifactId>
-		<version>2.4</version>
-		<executions>
-		    <execution>
-			<id>zip</id> <!-- this is used for inheritance merges -->
-			<phase>package</phase> <!-- bind to the packaging phase -->
-			<goals>
-			    <goal>single</goal>
-			</goals>
-			<configuration>
-			    <outputDirectory>${project.build.directory}</outputDirectory>
-			    <descriptors>
-				<descriptor>src/main/assembly/zip.xml</descriptor>
-			    </descriptors>
-			</configuration>
-		    </execution>
-		</executions>
 	    </plugin>
 	</plugins>
     </build>
@@ -205,51 +106,6 @@
 	    <artifactId>el-ri</artifactId>
 	    <version>1.0</version>
 	    <scope>compile</scope>
-	</dependency>
-
-	<dependency>
-	    <groupId>com.sun.facelets</groupId>
-	    <artifactId>jsf-facelets</artifactId>
-	    <version>1.1.13</version>
-	    <scope>compile</scope>
-	</dependency>
-	<dependency>
-	    <groupId>javax.faces</groupId>
-	    <artifactId>jsf-api</artifactId>
-	    <version>1.2_04</version>
-	    <scope>compile</scope>
-	</dependency>
-	<dependency>
-	    <groupId>javax.servlet.jsp</groupId>
-	    <artifactId>jsp-api</artifactId>
-	    <version>2.1</version>
-	    <scope>provided</scope>
-	</dependency>
-	<dependency>
-	    <groupId>javax.faces</groupId>
-	    <artifactId>jsf-impl</artifactId>
-	    <version>1.2-b19</version>
-	    <scope>compile</scope>
-	</dependency>
-	<dependency>
-	    <groupId>jstl</groupId>
-	    <artifactId>jstl</artifactId>
-	    <version>1.2</version>
-	</dependency>
-	<dependency>
-	    <groupId>org.richfaces.ui</groupId>
-	    <artifactId>richfaces-ui</artifactId>
-	    <version>3.3.3.Final</version>
-	</dependency>
-	<dependency>
-	    <groupId>org.richfaces.framework</groupId>
-	    <artifactId>richfaces-impl</artifactId>
-	    <version>3.3.3.Final</version>
-	</dependency>
-	<dependency>
-	    <groupId>ch.ethz.ganymed</groupId>
-	    <artifactId>ganymed-ssh2</artifactId>
-	    <version>build210</version>
 	</dependency>
 	<dependency>
 	    <groupId>org.json</groupId>

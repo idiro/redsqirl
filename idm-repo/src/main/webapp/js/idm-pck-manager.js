@@ -44,7 +44,7 @@ function getPackagePage(restURL, package, version){
 			displaySwap("package","intro");
 		};
 	};
-	xmlhttp.open("GET", restURL+'?name='+package+'&version='+version, true);
+	xmlhttp.open("GET", restURL+'?id='+package+'&version='+version, true);
 	xmlhttp.send();
 }
 
@@ -61,13 +61,13 @@ function create_table_all_packages(restURL, jsonTable){
 	for ( var i = 0; i < jsonTable.length; i++) {
 		if (i % 2 == 0) {
 			table = table + '<tr class="order-table-even-row"><td>'
-					+ '<a href="#" onclick=\'getPackagePage("'+restURL+'","'+ jsonTable[i].name + '","")\'>'
+					+ '<a href="#" onclick=\'getPackagePage("'+restURL+'","'+ jsonTable[i].id + '","")\'>'
 					+ jsonTable[i].name + "</a>" + "</td><td>"
 					+ jsonTable[i].license + "</td><td>"
 					+ jsonTable[i].short_description + "</td></tr>";
 		} else {
 			table = table + '<tr class="order-table-odd-row"><td>'
-					+ '<a href="#" onclick=\'getPackagePage("'+restURL+'","'+ jsonTable[i].name + '","")\'>'
+					+ '<a href="#" onclick=\'getPackagePage("'+restURL+'","'+ jsonTable[i].id + '","")\'>'
 					+ jsonTable[i].name + "</td><td>" + jsonTable[i].license
 					+ "</td><td>" + jsonTable[i].short_description
 					+ "</td></tr>";
@@ -76,6 +76,10 @@ function create_table_all_packages(restURL, jsonTable){
 	table = table + "</tbody></table>";
 	//alert(table);
 	return table;
+}
+
+function downloadPage(url){
+    location.href = url;
 }
 
 function  create_package_page(restURL, jsonPackage, jsonVersions){
@@ -90,11 +94,11 @@ function  create_package_page(restURL, jsonPackage, jsonVersions){
 	for ( var i = 0; i < jsonVersions.length; i++) {
 		if (i % 2 == 0) {
 			page += '<tr class="order-table-even-row"><td>'
-					+ '<a href="#" onclick=\'getPackagePage("'+restURL+'","'+ jsonPackage.name + '","'+jsonVersions[i].version +'")\'>'
+					+ '<a href="#" onclick=\'getPackagePage("'+restURL+'","'+ jsonPackage.id + '","'+jsonVersions[i].version +'")\'>'
 					+ jsonVersions[i].version + "</a>" + "</td></tr>";
 		} else {
 			page += '<tr class="order-table-odd-row><td>'
-					+ '<a href="#" onclick=\'getPackagePage("'+restURL+'","'+ jsonPackage.name + '","'+jsonVersions[i].version +'")\'>'
+					+ '<a href="#" onclick=\'getPackagePage("'+restURL+'","'+ jsonPackage.id + '","'+jsonVersions[i].version +'")\'>'
 					+ jsonVersions[i].version + "</a>" + "</td></tr>";
 		};
 	}
@@ -111,7 +115,7 @@ function  create_package_page(restURL, jsonPackage, jsonVersions){
 	page +='License: '+jsonPackage.license+'<br />';
 	page +='Version: '+jsonPackage.version+'<br />';
 	page +='Price: '+jsonPackage.price+' <br />';
-	page +='<button type="button" onclick="downloadPage("'+jsonPackage.url+'");">Download</button>';
+	page +='<button id="button-download" type="button" onclick=\'downloadPage("'+jsonPackage.url+'");\'>Download</button>';
 	page +="</div>";
 	return page;
 }
