@@ -731,7 +731,7 @@
 
 				<a4j:jsFunction name="setWorkflow"
 					action="#{canvasBean.changeWorkflow}"
-					oncomplete="setSelected('#{canvasBean.nameWorkflow}');verifyIfIsRunning(getSelected());resizing();"
+					oncomplete="setSelected('#{canvasBean.nameWorkflow}');verifyIfIsRunning(getSelected());"
 					reRender="formMenu,domMessageDivCanvas2">
 					<a4j:actionparam name="selectedCanvas"
 						assignTo="#{canvasBean.nameWorkflow}" />
