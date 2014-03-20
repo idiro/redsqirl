@@ -553,6 +553,7 @@ table.secondtable td{
 .rich-menu-item{
 	text-align:left;
 	padding: 0px 0px 0px 0px;
+	font-size:13px;
 }
 
 .rich-menu-item-hover{
@@ -581,6 +582,7 @@ table.secondtable td{
 .rich-menu-group{
 	text-align:left;
 	padding: 0px 0px 0px 0px;
+	font-size:13px;
 }
 
 .rich-menu-group-hover{
