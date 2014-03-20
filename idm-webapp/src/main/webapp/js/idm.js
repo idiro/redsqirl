@@ -69,8 +69,6 @@ function onPageReady(){
 	  jQuery("#canvas").css("height", jQuery("#canvas-tabs").height()-160+'px');
 	  jQuery("#canvas").css("width", jQuery("#canvas-tabs").width()+'px');
 	  
-	  jQuery("#shortMenu").css("width", jQuery(window).width() - 100 - 50 +'px'); 
-	  
 	  resizeTabs();
 	  
 	  jQuery("#buttonsCanvas1").hide();
@@ -124,8 +122,6 @@ function resizing(){
 	  jQuery("#canvas-tabs").css("height", jQuery(window).height()-215+'px');
 	  jQuery("#canvas").css("height", jQuery("#canvas-tabs").height()-160+'px');
 	  jQuery("#canvas").css("width", jQuery("#canvas-tabs").width()+'px');
-	  
-	  jQuery("#shortMenu").css("width", jQuery(window).width() - 100 - 50 +'px');
 	  
 	  resizeCanvas();
 

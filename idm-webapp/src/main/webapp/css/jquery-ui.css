@@ -854,8 +854,9 @@ input.ui-button::-moz-focus-inner,button.ui-button::-moz-focus-inner {
 	float: left;
 	padding: 0.1em 0.5em;
 	text-decoration: none;
-	background-color: #b8b9bd;
+	background-color: #87888c;
 	border-radius:7px;
+	font-weight:bold;
 	
 	height:25px;
 	line-height: 25px; 
