@@ -59,36 +59,58 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 
 	public static final String
 	// key for creating tables
+			/** Partition key */
 			key_partitions = "partitions",
+			/** columns key */
 			key_columns = "columns",
+			/** comment key */
 			key_comment = "comment",
+			/** store key */
 			key_store = "storing",
+			/** field seperator key */
 			key_field_sep = "field_separator",
 			// properties key
+			/** description key */
 			key_describe = "describe",
+			/** extended description key */
 			key_describe_extended = "describe_extended";
-
+	/** Max History Size */
 	public static final int historyMax = 50;
-
+	/**
+	 * Default data path
+	 */
 	protected static Preference<String> pathDataDefault = new Preference<String>(
 			prefs, "Default path of hive", "/");
-
+	/** Connection for hive */
 	protected static JdbcConnection conn;
+	/** History of paths/tables */
 	protected List<String> history = new LinkedList<String>();
+	/** Current position in histoy */
 	protected int cur = 0;
+	/** HiveInterface IsInit */
 	private static boolean isInit = false;
-
+	/** Jdbc URL */
 	private static String url;
 
 	// Refresh every 3 seconds
+	/** Refresh count */
 	protected static final long refreshTimeOut = 3000;
+	/** Tables List */
 	protected static List<String> tables = null;
+	/***/
 	protected static long updateTables = 0;
+	/** Refresh count handler */
 	private static int doARefreshcount = 0;
+	/** Execute count handler */
 	private static int execute = 0;
+	/** Queue for commands to launch */
 	private static Queue<Integer> queue = new ConcurrentLinkedQueue<Integer>();
+	/** Map of commands and their execution number */
 	private static Map<String, String> queueMap = new HashMap<String, String>();
 
+	/**
+	 * Constructor
+	 * */
 	public HiveInterface() throws RemoteException {
 		super();
 		history.add(pathDataDefault.get());
@@ -99,6 +121,12 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		logger.debug("Exist hive interface constructor");
 	}
 
+	/**
+	 * Open connection to Hive through Hive Service using a JDBC
+	 * 
+	 * @return Error Message
+	 * @throws RemoteException
+	 * */
 	@Override
 	public String open() throws RemoteException {
 		String error = null;
@@ -249,6 +277,13 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		return error;
 	}
 
+	/**
+	 * Close the connection to JDBC
+	 * 
+	 * @return Error Message
+	 * @throws RemoteException
+	 * */
+
 	@Override
 	public String close() throws RemoteException {
 		// Command to get the process to kill:
@@ -265,6 +300,9 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		return close;
 	}
 
+	/**
+	 * Reset Connection , queue and queue map
+	 */
 	public static void reset() {
 		Logger logger = Logger.getLogger(HiveInterface.class);
 		isInit = false;
@@ -277,6 +315,9 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		queueMap.clear();
 	}
 
+	/**
+	 * Get Current path from history
+	 */
 	@Override
 	public String getPath() throws RemoteException {
 		return history.get(cur);
@@ -289,6 +330,13 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		}
 	}
 
+	/**
+	 * Go to a path in history or add it to history
+	 * 
+	 * @param path
+	 * @return <code>true</code> if current path was updated to passed path else
+	 *         <code>false</code>
+	 */
 	@Override
 	public boolean goTo(String path) throws RemoteException {
 		boolean ok = false;
@@ -307,11 +355,23 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		return ok;
 	}
 
+	/**
+	 * Check if history has previous path
+	 * 
+	 * @return <code>true</code> if history has previous path else
+	 *         <code>false</code>
+	 * @throws RemoteException
+	 */
 	@Override
 	public boolean havePrevious() throws RemoteException {
 		return cur > 0;
 	}
 
+	/**
+	 * Go to the previous path
+	 * 
+	 * @throws RemoteException
+	 */
 	@Override
 	public void goPrevious() throws RemoteException {
 		if (havePrevious()) {
@@ -319,11 +379,23 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		}
 	}
 
+	/**
+	 * Check if history have a next path
+	 * 
+	 * @return <code>true</code> if history has next path else
+	 *         <code>false</code>
+	 * @throws RemoteException
+	 */
 	@Override
 	public boolean haveNext() throws RemoteException {
 		return cur < history.size() - 1;
 	}
 
+	/**
+	 * Go to the next Path in History
+	 * 
+	 * @throws RemoteException
+	 */
 	@Override
 	public void goNext() throws RemoteException {
 		if (haveNext()) {
@@ -331,6 +403,12 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		}
 	}
 
+	/**
+	 * Get the types used in the partition from the path
+	 * 
+	 * @param path
+	 * @return types to be used for each partition
+	 */
 	public String getTypesPartitons(String path) {
 		String ans = "";
 		String[] tableAndPartition = getTableAndPartitions(path);
@@ -353,14 +431,20 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		return ans;
 	}
 
-	public String getType(String type) {
+	/**
+	 * Get the type from an expression
+	 * 
+	 * @param expression
+	 * @return type
+	 */
+	public String getType(String expression) {
 		String ans = null;
-		if (type.contains("'") || type.contains("\"")) {
+		if (expression.contains("'") || expression.contains("\"")) {
 			ans = "STRING";
 		}
 		if (ans == null) {
 			try {
-				Integer.valueOf(type);
+				Integer.valueOf(expression);
 				ans = "INT";
 			} catch (Exception e) {
 			}
@@ -368,7 +452,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 
 		if (ans == null) {
 			try {
-				Float.valueOf(type);
+				Float.valueOf(expression);
 				ans = "FLOAT";
 			} catch (Exception e) {
 			}
@@ -377,6 +461,13 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		return ans;
 	}
 
+	/**
+	 * Change the condition to be the same variable type as "type"
+	 * 
+	 * @param condition
+	 * @param type
+	 * @return changed Type
+	 */
 	public String changeType(String condition, String type) {
 		String ans = "";
 		if (condition != null && !(condition.isEmpty())) {
@@ -413,10 +504,16 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 				}
 			}
 		}
-		logger.info("ans : "+ans);
+		logger.info("ans : " + ans);
 		return ans;
 	}
 
+	/**
+	 * Get a map of properties from a path
+	 * 
+	 * @param path
+	 * @return Map of properties
+	 */
 	public Map<String, String> getMapofProperties(String path) {
 		Map<String, String> tableProps = new HashMap<String, String>();
 
@@ -439,6 +536,14 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		return tableProps;
 	}
 
+	/**
+	 * Create a new path with properties
+	 * 
+	 * @param path
+	 * @param properties
+	 * @return Error Messaged
+	 * @throws RemoteException
+	 */
 	@Override
 	public String create(String path, Map<String, String> properties)
 			throws RemoteException {
@@ -522,6 +627,13 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		return error;
 	}
 
+	/**
+	 * Delete a path
+	 * 
+	 * @param path
+	 * @return Error Message
+	 * @throws RemoteException
+	 */
 	@Override
 	public String delete(String path) throws RemoteException {
 		String error = null;
@@ -533,7 +645,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 				if (tableAndPartition.length == 1) {
 					ok = deleteTable(tableAndPartition[0]);
 				} else if (tableAndPartition.length > 1) {
-					Map<String, String> partsAndTypeFormatted = getFormattedType(tableAndPartition);
+					Map<String, String> partsAndTypeFormatted = getFormattedType(path);
 
 					// partsAndType
 
@@ -585,6 +697,12 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		return error;
 	}
 
+	/**
+	 * Create a delete statement with a path
+	 * 
+	 * @param path
+	 * @return statement
+	 */
 	public String deleteStatement(String path) {
 		String ans = null;
 		String[] tableAndPartition = getTableAndPartitions(path);
@@ -601,6 +719,16 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		return ans;
 	}
 
+	/**
+	 * Select data from a path with query
+	 * 
+	 * @param path
+	 * @param delimOut
+	 * @param maxToRead
+	 * @return result from select statement
+	 * @throws RemoteException
+	 * 
+	 */
 	@Override
 	public List<String> select(String path, String delimOut, int maxToRead)
 			throws RemoteException {
@@ -610,7 +738,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 			String[] tableAndPartition = getTableAndPartitions(path);
 			String selector = "*";
 			Map<String, String> partsAndCond = new HashMap<String, String>();
-			partsAndCond = getFormattedType(tableAndPartition);
+			partsAndCond = getFormattedType(path);
 			if (tableAndPartition.length > 1) {
 				String desc = getDescription(tableAndPartition[0]);
 				List<String> partList = new ArrayList<String>();
@@ -645,8 +773,8 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 
 				String head = tableAndPartition[1].substring(0,
 						tableAndPartition[1].indexOf("="));
-				
-				if(partsAndCond.containsKey(head.toLowerCase())){
+
+				if (partsAndCond.containsKey(head.toLowerCase())) {
 					String partitionsList = " WHERE " + head + "="
 							+ partsAndCond.get(head.toLowerCase());
 					for (int i = 2; i < tableAndPartition.length; ++i) {
@@ -683,12 +811,27 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		return ans;
 	}
 
+	/**
+	 * Select date from current path
+	 * 
+	 * @param delimiter
+	 * @param maxToRead
+	 * @return result from select statement
+	 * @throws RemoteException
+	 */
 	@Override
 	public List<String> select(String delimiter, int maxToRead)
 			throws RemoteException {
 		return select(history.get(cur), delimiter, maxToRead);
 	}
 
+	/**
+	 * Get Properties of a path if it exists
+	 * 
+	 * @param path
+	 * @return Map of Properties
+	 * @throws RemoteException
+	 */
 	@Override
 	public Map<String, String> getProperties(String path)
 			throws RemoteException {
@@ -700,6 +843,13 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		return ans;
 	}
 
+	/**
+	 * Get Properties (description , extended description)from a path
+	 * 
+	 * @param path
+	 * @return Map of properties
+	 * @throws RemoteException
+	 */
 	public Map<String, String> getPropertiesPathExist(String path)
 			throws RemoteException {
 		String table = getTableAndPartitions(path)[0];
@@ -716,11 +866,24 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		return ans;
 	}
 
+	/**
+	 * Get Properties of current path
+	 * 
+	 * @return Map of Properties
+	 * @throws RemoteException
+	 */
 	@Override
 	public Map<String, String> getProperties() throws RemoteException {
 		return getProperties(history.get(cur));
 	}
 
+	/**
+	 * Get properties of table with or without partitions include description
+	 * and extended description of tables and partition if they exist
+	 * 
+	 * @return Map of Properties
+	 * @throws RemoteException
+	 */
 	@Override
 	public Map<String, Map<String, String>> getChildrenProperties()
 			throws RemoteException {
@@ -774,30 +937,68 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		return ans;
 	}
 
+	/**
+	 * Change the property of the current path
+	 * 
+	 * @param key
+	 * @param newValue
+	 * @return Error Message
+	 * @throws RemoteException
+	 */
 	@Override
 	public String changeProperty(String key, String newValue)
 			throws RemoteException {
 		return changeProperty(history.get(cur), key, newValue);
 	}
 
+	/**
+	 * Change the property of a path
+	 * 
+	 * @param path
+	 * @param key
+	 * @param newValue
+	 * @return Error Message
+	 * @throws RemoteException
+	 */
 	@Override
 	public String changeProperty(String path, String key, String newValue)
 			throws RemoteException {
 		return "Cannot change any property";
 	}
 
+	/**
+	 * Change the properties of a path
+	 * 
+	 * @param path
+	 * @param newProperties
+	 * @return Error Message
+	 * @throws RemoteException
+	 */
 	@Override
 	public String changeProperties(String path,
 			Map<String, String> newProperties) throws RemoteException {
 		return "Cannot change any property";
 	}
 
+	/**
+	 * Change the properties of the current path
+	 * 
+	 * @param newProperties
+	 * @return Error Message
+	 * @throws RemoteException
+	 */
 	@Override
 	public String changeProperties(Map<String, String> newProperties)
 			throws RemoteException {
 		return changeProperties(history.get(cur), newProperties);
 	}
 
+	/**
+	 * Check if a path exists
+	 * 
+	 * @param path
+	 * @return <code>true</code> if the path exists else <code>false</code>
+	 */
 	public boolean exists(String path) {
 
 		logger.info("table : " + path);
@@ -861,6 +1062,15 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		return ok;
 	}
 
+	/**
+	 * Check if a path is a valid path
+	 * 
+	 * @param path
+	 * @param features
+	 * @param partitions
+	 * @return Error Message
+	 * @throws RemoteException
+	 */
 	public String isPathValid(String path, FeatureList features,
 			boolean partitions) throws RemoteException {
 		String error = null;
@@ -943,6 +1153,12 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		return error;
 	}
 
+	/**
+	 * Split a path into table and partitions
+	 * 
+	 * @param path
+	 * @return table and partitions array
+	 */
 	public String[] getTableAndPartitions(String path) {
 		if (path.contains("/")) {
 			return path.substring(1).split("/");
@@ -952,6 +1168,12 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		}
 	}
 
+	/**
+	 * Get a description of a table
+	 * 
+	 * @param table
+	 * @return description
+	 */
 	public String getDescription(String table) {
 		String ans = null;
 		try {
@@ -1010,6 +1232,14 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		return ans;
 	}
 
+	/**
+	 * Get a List of partition from a table that are filtered from a list
+	 * (returns all table partitions if filter is empty)
+	 * 
+	 * @param table
+	 * @param filter
+	 * @return List of partitions
+	 */
 	public List<String> getPartitions(String table, List<String> filter) {
 		List<String> ans = new LinkedList<String>();
 		try {
@@ -1089,6 +1319,13 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		return ans;
 	}
 
+	/**
+	 * Get an extended description of a table and partitions if they are in the
+	 * path
+	 * 
+	 * @param path
+	 * @return Extended Description
+	 */
 	public String getExtendedDescription(String path) {
 		String table = null;
 		String partition = null;
@@ -1139,7 +1376,14 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		return ans;
 	}
 
-	public Map<String, String> getFormattedType(String[] tableAndPartition) {
+	/**
+	 * Format the path's partitions for correct types
+	 * 
+	 * @param path
+	 * @return Map of formated feature values
+	 */
+	public Map<String, String> getFormattedType(String path) {
+		String[] tableAndPartition = getTableAndPartitions(path);
 		Map<String, String> ans = new HashMap<String, String>();
 
 		String desc = getDescription(tableAndPartition[0]);
@@ -1172,6 +1416,13 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		return ans;
 	}
 
+	/**
+	 * Rename a path
+	 * 
+	 * @param old_path
+	 * @param new_path
+	 * @throws RemoteException
+	 */
 	@Override
 	public String move(String old_path, String new_path) throws RemoteException {
 		String error = null;
@@ -1195,6 +1446,13 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		return error;
 	}
 
+	/**
+	 * Make a copy of a path
+	 * 
+	 * @param in_path
+	 * @param out_path
+	 * @throws RemoteException
+	 */
 	@Override
 	public String copy(String in_path, String out_path) throws RemoteException {
 		String error = null;
@@ -1219,6 +1477,11 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		return error;
 	}
 
+	/**
+	 * Refresh the table list that stored in this instance
+	 * 
+	 * @throws SQLException
+	 */
 	protected static void refreshListTables() throws SQLException {
 		Logger logger = Logger.getLogger(HiveInterface.class);
 		long cur = System.currentTimeMillis();
@@ -1295,10 +1558,23 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		}
 	}
 
+	/**
+	 * Get the tables list
+	 * 
+	 * @return tables
+	 */
 	public static List<String> getTables() {
 		return tables;
 	}
 
+	/**
+	 * Delete a Table
+	 * 
+	 * @param path
+	 * @return <code>true</code> if table was deleted successfully else
+	 *         <code>false</code>
+	 * @throws SQLException
+	 */
 	public static boolean deleteTable(String path) throws SQLException {
 		Logger logger = Logger.getLogger(HiveInterface.class);
 		boolean result = false;
@@ -1330,7 +1606,13 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		}
 		return result;
 	}
-
+	/**
+	 * Execute a query
+	 * @param query
+	 * @return <code>true</code> if query ran successfully else
+	 *         <code>false</code>
+	 * @throws SQLException
+	 */
 	public static boolean execute(String query) throws SQLException {
 		Logger logger = Logger.getLogger(HiveInterface.class);
 		boolean result = false;
@@ -1360,7 +1642,12 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		}
 		return result;
 	}
-
+	/**
+	 * Execute a query
+	 * @param query
+	 * @return ResultSet fom query
+	 * @throws SQLException
+	 */
 	public static ResultSet executeQuery(String query) throws SQLException {
 		ResultSet result = null;
 		String val = String.valueOf(execute);
@@ -1396,7 +1683,10 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 
 		return result;
 	}
-
+	/**
+	 * Get parameter properties for HiveInterface
+	 * @return Map of Properties for HiveInterface
+	 */
 	@Override
 	public Map<String, ParamProperty> getParamProperties()
 			throws RemoteException {
@@ -1460,6 +1750,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 	}
 
 	/**
+	 * Get the URL for creating Hive JDBC
 	 * @return the url
 	 */
 	public static String getUrl() {
@@ -1467,17 +1758,24 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 	}
 
 	/**
+	 * Set the Hive JDBC URL
 	 * @param url
 	 *            the url to set
 	 */
 	public static void setUrl(String url) {
 		HiveInterface.url = url;
 	}
-
+	/**
+	 * Get the current count of doARefreshCount
+	 * @return doARefreshCount
+	 */
 	public static int getDoARefreshcount() {
 		return doARefreshcount;
 	}
-
+	/**
+	 * Get the count of execute query 
+	 * @return execute
+	 */
 	public static int getExecute() {
 		return execute;
 	}

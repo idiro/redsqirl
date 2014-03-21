@@ -10,27 +10,51 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-
+/**
+ * 
+ * Generic tree representation that is used to store options and configurations
+ *
+ * @param <T>
+ */
 public class TreeNonUnique<T> extends UnicastRemoteObject implements Tree<T>{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 7567996074131392134L;
-
+	
+	/**
+	 * Logger for class
+	 */
 	private static Logger logger = Logger.getLogger(TreeNonUnique.class);
 
+	/**
+	 * Head of the tree
+	 */
 	private T head;
+	/**
+	 * Parent tree
+	 */
 	private TreeNonUnique<T> parent = null;
+	/**
+	 * List of SubTree List
+	 */
 	private LinkedList<Tree<T>> subTreeList = 
 			new LinkedList<Tree<T>>();
 
-
+	/**
+	 * Constructor
+	 * @param head
+	 * @throws RemoteException
+	 */
 	public TreeNonUnique(T head) throws RemoteException{
 		super();
 		this.head = head;
 	}
 
+	/**
+	 * Constructor with parent
+	 * @param head
+	 * @param parent
+	 * @throws RemoteException
+	 */
 	public TreeNonUnique(T head,TreeNonUnique<T> parent) throws RemoteException{
 		super();
 		this.head = head;
@@ -38,6 +62,11 @@ public class TreeNonUnique<T> extends UnicastRemoteObject implements Tree<T>{
 	}
 
 	@Override
+	/**
+	 * Creates a String representation of the tree
+	 * @return tree String representation of the tree
+	 * 
+	 */
 	public String toString(){
 		String ans = "";
 		if(head != null){
@@ -51,7 +80,12 @@ public class TreeNonUnique<T> extends UnicastRemoteObject implements Tree<T>{
 		return ans;
 
 	}
-
+	
+	/**
+	 * Write the tree to a file
+	 * @param fw FileWriter to write to file
+	 * @throws IOException
+	 */
 	public void write(FileWriter fw) throws IOException{
 		String root = head.toString();
 		Tree<T> ancestor = parent;
@@ -84,7 +118,9 @@ public class TreeNonUnique<T> extends UnicastRemoteObject implements Tree<T>{
 		}
 
 	}
-
+	/**
+	 * @param 
+	 */
 	public boolean comparePath(T[] path){
 		boolean ok = true;
 		int i = path.length -1;

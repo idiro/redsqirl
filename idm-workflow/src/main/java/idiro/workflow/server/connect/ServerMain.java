@@ -39,7 +39,7 @@ import org.apache.log4j.Logger;
 public class ServerMain {
 
 	private static Logger logger = Logger.getLogger(ServerMain.class);
-
+	/**Rmi Registry*/
 	private static Registry registry;
 
 	public static void main(String[] arg) throws RemoteException{
@@ -137,7 +137,11 @@ public class ServerMain {
 			}
 		}
 	}
-
+	/**
+	 * Update the classpath for java
+	 * @param path
+	 * @throws MalformedURLException
+	 */
 	public static void updateClassPath(String path) throws MalformedURLException{
 
 		URL url = new URL("file:"+path);
@@ -146,7 +150,9 @@ public class ServerMain {
 		Thread.currentThread().setContextClassLoader(urlCL);
 
 	}
-	
+	/**
+	 * Remove all processes in the registry
+	 */
 	public static void shutdown() {
 		String[] threads;
 		try {

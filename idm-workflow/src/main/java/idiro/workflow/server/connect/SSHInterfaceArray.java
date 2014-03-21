@@ -18,16 +18,25 @@ public class SSHInterfaceArray extends UnicastRemoteObject implements DataStoreA
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
+	/**Map of Fields that are needed*/
 	protected static Map<String,String> initFieldsInit;
+	/**Map of Fields to remove*/
 	protected static Map<String,String> fieldsToRemove;
-	
+	/**
+	 * Host name Key
+	 */
 	public static final String hostName = "host name",
+			/**Port Key*/
 			port = "port";
 	
-	
+	/**
+	 * Map of available DataStores
+	 */
 	protected Map<String,DataStore> stores = new LinkedHashMap<String,DataStore>();
-	
+	/**
+	 * Constructor
+	 * @throws RemoteException
+	 */
 	public SSHInterfaceArray() throws RemoteException {
 		super();
 		if(initFieldsInit == null){
@@ -42,20 +51,34 @@ public class SSHInterfaceArray extends UnicastRemoteObject implements DataStoreA
 	}
 
 
-
+	/**
+	 * Get a map of Fields that are needed
+	 * @return Map of Field
+	 * @throws RemoteException
+	 */
 	@Override
 	public Map<String,String> getFieldsInitNeeded() throws RemoteException {
 		return initFieldsInit;
 	}
 
 
-
+	/**
+	 * Get a map of fields to remove
+	 * @return Map of Fields
+	 * @throws RemoteException
+	 */
 	@Override
 	public Map<String,String> getFieldsToRemove() throws RemoteException {
 		return fieldsToRemove;
 	}
 
-
+	/**
+	 * Add a DataStore to to the list of DataStores
+	 * @param field containing hostname and port
+	 * @return hostname
+	 * @throws RemoteException 
+	 * @throws Exception
+	 */
 	@Override
 	public String addStore(Map<String, String> fields)
 			throws RemoteException, Exception {
@@ -83,7 +106,12 @@ public class SSHInterfaceArray extends UnicastRemoteObject implements DataStoreA
 		return host;
 	}
 
-
+	/**
+	 * Remove a DataStore from the list of active Stores
+	 * @param name
+	 * @return Error Message
+	 * @throws Remote Exception
+	 */
 	@Override
 	public String removeStore(String name) throws RemoteException {
 		String error = null;
@@ -97,7 +125,11 @@ public class SSHInterfaceArray extends UnicastRemoteObject implements DataStoreA
 		
 		return error; 
 	}
-
+	/**
+	 * Get the details of the Know Hosts
+	 * @return List of Details for Known Stores
+	 * @throws RemoteException
+	 */
 	@Override
 	public List<Map<String, String>> getKnownStoreDetails()
 			throws RemoteException {
@@ -113,7 +145,11 @@ public class SSHInterfaceArray extends UnicastRemoteObject implements DataStoreA
 	}
 
 
-
+	/**
+	 * Initialize the Stores with KnownHosts
+	 * @return Error Message
+	 * @throws RemoteException
+	 */
 	@Override
 	public String initKnownStores() throws RemoteException {
 		String error = null;
@@ -127,14 +163,25 @@ public class SSHInterfaceArray extends UnicastRemoteObject implements DataStoreA
 	}
 
 
-
+	/**
+	 * Get the Stores available 
+	 * @return Map of DataStores
+	 * @throws Exception
+	 * @throws {@link RemoteException}
+	 */
 	@Override
 	public Map<String,DataStore> getStores() throws Exception, RemoteException {
 		return stores;
 	}
 
 
-
+	/**
+	 * Add a host to the Known Hosts List
+	 * @param fields
+	 * @return Error Message
+	 * @throws RemoteException
+	 *
+	 */
 	@Override
 	public String addKnownStore(Map<String, String> fields)
 			throws RemoteException {

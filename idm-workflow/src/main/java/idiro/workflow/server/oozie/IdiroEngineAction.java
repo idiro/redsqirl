@@ -28,13 +28,24 @@ public class IdiroEngineAction extends OozieActionAbs {
 	 * 
 	 */
 	private static final long serialVersionUID = -2656343380409195545L;
-
+	/**
+	 * Set of paths to remove
+	 */
 	private Set<String> pathToRemove = new HashSet<String>();
-
+	/**
+	 * Constructor
+	 * @throws RemoteException
+	 */
 	public IdiroEngineAction() throws RemoteException {
 		super();
 	}
-
+	/**
+	 * Create an element for Idiro Engine Action in the Oozie action file
+	 * @param oozieXmlDoc
+	 * @param action
+	 * @param fileNames
+	 * @throws RemoteException
+	 */
 	@Override
 	public void createOozieElement(Document oozieXmlDoc, Element action,
 			String[] fileNames) throws RemoteException {
@@ -133,25 +144,40 @@ public class IdiroEngineAction extends OozieActionAbs {
 		}
 
 	}
-
+	/**
+	 * Get the file extensions for Idiro Engine action
+	 * @return extensions
+	 */
 	@Override
 	public String[] getFileExtensions() {
 		return new String[] { ".xml" };
 	}
-
+	/**
+	 * Get a set of paths to remove
+	 * @return Set of paths
+	 */
 	public Set<String> getPathToRemove() {
 		return pathToRemove;
 	}
-
+	/**
+	 * Set the list of paths to remove 
+	 * @param pathToRemove
+	 */
 	public void setPathToRemove(Set<String> pathToRemove) {
 		this.pathToRemove = pathToRemove;
 	}
-
+	/**
+	 * Add a path to remove 
+	 * @param e
+	 * @return <code>true</code> if path remove was successful 
+	 */
 	public boolean addRemovePath(String e) {
 
 		return pathToRemove.add(e);
 	}
-
+	/**
+	 * Clear the path to remove
+	 */
 	public void clearPathToRemove() {
 		pathToRemove.clear();
 	}

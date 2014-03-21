@@ -23,12 +23,24 @@ public class ConvertPropertiesInteraction extends TableInteraction{
 	 * 
 	 */
 	private static final long serialVersionUID = 7384667815452362352L;
-
+	/**
+	 * Convert Action
+	 */
 	private Convert cv;
-
+								/**Properties title Key*/
 	public static final String table_property_title = "Property",
+			/**Title Value Key*/
 			table_value_title = "Value";
-
+	/**
+	 * Constructor
+	 * @param id
+	 * @param name
+	 * @param legend
+	 * @param column
+	 * @param placeInColumn
+	 * @param cv
+	 * @throws RemoteException
+	 */
 	public ConvertPropertiesInteraction(String id, String name, String legend,
 			int column, int placeInColumn, Convert cv)
 					throws RemoteException {
@@ -46,7 +58,10 @@ public class ConvertPropertiesInteraction extends TableInteraction{
 				null);
 	}
 
-
+	/**
+	 * Update the Interaction
+	 * @throws RemoteException
+	 */
 	public void update() throws RemoteException{
 		logger.debug("generate columns of convert properties table");
 		
@@ -61,7 +76,11 @@ public class ConvertPropertiesInteraction extends TableInteraction{
 				1, 
 				props);
 	}
-
+	/**
+	 * Get the properties of the Interaction to hold
+	 * @return Map of properties
+	 * @throws RemoteException
+	 */
 	public Map<String,String> getProperties() throws RemoteException{
 		Map<String,String> prop = new LinkedHashMap<String,String>();
 		

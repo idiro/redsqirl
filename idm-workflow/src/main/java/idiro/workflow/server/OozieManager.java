@@ -42,10 +42,11 @@ import org.codehaus.jettison.json.JSONObject;
 
 /**
  * Oozie Interface with IDM.
+ * 
  * @author etienne
- *
+ * 
  */
-public class OozieManager extends UnicastRemoteObject implements JobManager{
+public class OozieManager extends UnicastRemoteObject implements JobManager {
 
 	/**
 	 * 
@@ -57,51 +58,54 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 	 */
 	private static Logger logger = Logger.getLogger(OozieManager.class);
 
-
+	/**
+	 * Instance of Oozie Manager
+	 */
 	private static OozieManager instance = null;
-
+	/** Oozie Client */
 	private OozieClient oc = null;
+	/** XMLNS scheme */
 	public final String xmlns;
-
-
+	/** Namenode */
 	public static final String prop_namenode = "namenode",
-			prop_jobtracker = "jobtracker",
-			prop_queue = "queue",
-			prop_user = "user.name",
-			prop_libpath = "oozie.libpath";
-
+	/** JobTracker link */
+	prop_jobtracker = "jobtracker",
+	/** Queue for namenode */
+	prop_queue = "queue",
+	/** User Name */
+	prop_user = "user.name",
+	/** Library Path for Oozie */
+	prop_libpath = "oozie.libpath";
 
 	public static final String oozie_mode_default = "default";
 
 	/**
 	 * Constructor.
-	 * @throws IOException 
-	 * @throws FileNotFoundException 
+	 * 
+	 * @throws IOException
+	 * @throws FileNotFoundException
 	 * 
 	 */
 	private OozieManager() throws FileNotFoundException, IOException {
 		super();
 		Properties prop = WorkflowPrefManager.getSysProperties();
-		oc = new OozieClient(prop.getProperty(
-				WorkflowPrefManager.sys_oozie
-				));
-		xmlns = prop.getProperty(
-				WorkflowPrefManager.sys_oozie_xmlns
-				);
+		oc = new OozieClient(prop.getProperty(WorkflowPrefManager.sys_oozie));
+		xmlns = prop.getProperty(WorkflowPrefManager.sys_oozie_xmlns);
 
 	}
 
 	/**
+	 * Get an Instance of OozieManager
 	 * 
 	 * @return Returns the single allowed instance of ProcessRunner
 	 */
 	public static OozieManager getInstance() {
-		if(instance == null){
-			try{
+		if (instance == null) {
+			try {
 				instance = new OozieManager();
-			}catch(FileNotFoundException e){
+			} catch (FileNotFoundException e) {
 				logger.error("No configuration file found to initialise oozie");
-			}catch(IOException e){
+			} catch (IOException e) {
 				logger.error("IOException when attempting to read oozie properties");
 			}
 		}
@@ -109,7 +113,9 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 	}
 
 	/**
-	 * @return
+	 * Create Configuration for Oozie Client
+	 * 
+	 * @return Protperties for Oozie Client
 	 * @see org.apache.oozie.client.OozieClient#createConfiguration()
 	 */
 	public Properties createConfiguration() {
@@ -117,6 +123,8 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 	}
 
 	/**
+	 * Kill a job that is in not Terminated in Oozie
+	 * 
 	 * @param jobId
 	 * @throws OozieClientException
 	 * @see org.apache.oozie.client.OozieClient#kill(java.lang.String)
@@ -126,6 +134,8 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 	}
 
 	/**
+	 * Resume a suspended job that is in Oozie
+	 * 
 	 * @param jobId
 	 * @throws OozieClientException
 	 * @see org.apache.oozie.client.OozieClient#resume(java.lang.String)
@@ -135,8 +145,11 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 	}
 
 	/**
+	 * Run a Job
+	 * 
 	 * @param conf
-	 * @return
+	 *            properties for the job
+	 * @return ID of the job that is running
 	 * @throws OozieClientException
 	 * @see org.apache.oozie.client.OozieClient#run(java.util.Properties)
 	 */
@@ -145,8 +158,11 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 	}
 
 	/**
+	 * Submit a job to Oozie
+	 * 
 	 * @param conf
-	 * @return
+	 *            properties of the Job to be submitted
+	 * @return Id of the Job
 	 * @throws OozieClientException
 	 * @see org.apache.oozie.client.OozieClient#submit(java.util.Properties)
 	 */
@@ -155,7 +171,10 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 	}
 
 	/**
+	 * Suspend a Job that is Running in Oozie
+	 * 
 	 * @param jobId
+	 *            of job to suspend
 	 * @throws OozieClientException
 	 * @see org.apache.oozie.client.OozieClient#suspend(java.lang.String)
 	 */
@@ -163,48 +182,56 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 		oc.suspend(jobId);
 	}
 
-
-	public String run(DataFlow df) throws Exception{
-		return run(df,df.getElement());
+	public String run(DataFlow df) throws Exception {
+		return run(df, df.getElement());
 	}
 
-	public void cleanJobDirectory(final String nameWf) throws RemoteException{
+	/**
+	 * Clean the directory where the Job details are stored
+	 * 
+	 * @param nameWf
+	 * @throws RemoteException
+	 */
+	public void cleanJobDirectory(final String nameWf) throws RemoteException {
 		Path hdfsWfPath = new Path(WorkflowPrefManager.getHDFSPathJobs());
 		FileSystem fs = null;
 		int again = 10;
 		int numberToKeep = WorkflowPrefManager.getNbOozieDirToKeep();
-		while(again > 0){
-			try{
-				logger.debug("Attempt "+ (11-again) +" to get a name.");
+		while (again > 0) {
+			try {
+				logger.debug("Attempt " + (11 - again) + " to get a name.");
 				fs = NameNodeVar.getFS();
-				FileStatus[] children = fs.listStatus(hdfsWfPath, new PathFilter(){
+				FileStatus[] children = fs.listStatus(hdfsWfPath,
+						new PathFilter() {
 
-					@Override
-					public boolean accept(Path arg0) {
-						return arg0.getName().startsWith(nameWf+"_");
-					}
-				});
-				Arrays.sort(children,0,children.length,new Comparator<FileStatus>() {
+							@Override
+							public boolean accept(Path arg0) {
+								return arg0.getName().startsWith(nameWf + "_");
+							}
+						});
+				Arrays.sort(children, 0, children.length,
+						new Comparator<FileStatus>() {
 
-					@Override
-					public int compare(FileStatus arg0, FileStatus arg1) {
-						return (int) ((arg0.getModificationTime() - arg1.getModificationTime())/10000);
-					}
-				});
-				for(int i = 0; i < children.length - numberToKeep;++i){
-					fs.delete(children[i].getPath(),true);
+							@Override
+							public int compare(FileStatus arg0, FileStatus arg1) {
+								return (int) ((arg0.getModificationTime() - arg1
+										.getModificationTime()) / 10000);
+							}
+						});
+				for (int i = 0; i < children.length - numberToKeep; ++i) {
+					fs.delete(children[i].getPath(), true);
 				}
 				again = -1;
-			}catch(Exception e1){
+			} catch (Exception e1) {
 				logger.error(e1);
 				--again;
 			}
-			try{
-//				fs.close();
-			}catch(Exception e2){
-				logger.error("Fail to close HDFS: "+e2);
+			try {
+				// fs.close();
+			} catch (Exception e2) {
+				logger.error("Fail to close HDFS: " + e2);
 			}
-			if(again > 0){
+			if (again > 0) {
 				try {
 					Thread.sleep(10);
 				} catch (InterruptedException e1) {
@@ -214,49 +241,58 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 		}
 	}
 
-
-	protected String buildFileName(DataFlow df) throws RemoteException{
+	/**
+	 * Get a name for a directory to store all the jobs files and configuration
+	 * 
+	 * @param df
+	 * @return
+	 * @throws RemoteException
+	 */
+	protected String buildFileName(DataFlow df) throws RemoteException {
 		final String nameWf = df.getName();
 		String ans = null;
 		Path hdfsWfPath = new Path(WorkflowPrefManager.getHDFSPathJobs());
 		FileSystem fs = null;
 		int again = 10;
 		int number = 0;
-		while(again > 0){
-			try{
-				logger.debug("Attempt "+ (11-again) +" to get a name.");
+		while (again > 0) {
+			try {
+				logger.debug("Attempt " + (11 - again) + " to get a name.");
 				fs = NameNodeVar.getFS();
-				FileStatus[] children = fs.listStatus(hdfsWfPath, new PathFilter(){
+				FileStatus[] children = fs.listStatus(hdfsWfPath,
+						new PathFilter() {
 
-					@Override
-					public boolean accept(Path arg0) {
-						if(arg0.getName().startsWith(nameWf)){
-							try{
-								@SuppressWarnings("unused")
-								int i = Integer.valueOf(arg0.getName().substring(nameWf.length()+1));
-								return true;
-							}catch(Exception e){}
-						}
-						return false;
-					}
-				});
-				for(FileStatus child: children){
-					number = Math.max(number, 
-							Integer.valueOf(
-									child.getPath().getName().substring(nameWf.length()+1))
-							);
+							@Override
+							public boolean accept(Path arg0) {
+								if (arg0.getName().startsWith(nameWf)) {
+									try {
+										@SuppressWarnings("unused")
+										int i = Integer.valueOf(arg0.getName()
+												.substring(nameWf.length() + 1));
+										return true;
+									} catch (Exception e) {
+									}
+								}
+								return false;
+							}
+						});
+				for (FileStatus child : children) {
+					number = Math.max(
+							number,
+							Integer.valueOf(child.getPath().getName()
+									.substring(nameWf.length() + 1)));
 				}
 				again = -1;
-			}catch(Exception e1){
+			} catch (Exception e1) {
 				logger.error(e1);
 				--again;
 			}
-			try{
-//				fs.close();
-			}catch(Exception e2){
-				logger.error("Fail to close HDFS: "+e2);
+			try {
+				// fs.close();
+			} catch (Exception e2) {
+				logger.error("Fail to close HDFS: " + e2);
 			}
-			if(again > 0){
+			if (again > 0) {
 				try {
 					Thread.sleep(10);
 				} catch (InterruptedException e1) {
@@ -265,16 +301,26 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 			}
 		}
 
-		if(again == -1){
-			ans = nameWf+"_"+(number+1);
-		}else{
-			ans = nameWf+"_"+ RandomString.getRandomName(6);
+		if (again == -1) {
+			ans = nameWf + "_" + (number + 1);
+		} else {
+			ans = nameWf + "_" + RandomString.getRandomName(6);
 		}
 
 		return ans;
 	}
 
-	public String run(DataFlow df, List<DataFlowElement> list) throws Exception{
+	/**
+	 * Run a job with A list of actions and a DataFlow
+	 * 
+	 * @param df
+	 *            DataFlow to be run with
+	 * @param list
+	 *            of actions to run
+	 * @return ID of the Job
+	 * @throws Exception
+	 */
+	public String run(DataFlow df, List<DataFlowElement> list) throws Exception {
 
 		logger.info("run");
 
@@ -282,11 +328,13 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 		String error = null;
 		final String nameWF = df.getName();
 		String fileName = buildFileName(df);
-		File parentDir = new File(WorkflowPrefManager.pathOozieJob.get()+"/"+fileName);
-		String hdfsWfPath = WorkflowPrefManager.getHDFSPathJobs()+"/"+fileName;
-		if(!parentDir.exists()){
+		File parentDir = new File(WorkflowPrefManager.pathOozieJob.get() + "/"
+				+ fileName);
+		String hdfsWfPath = WorkflowPrefManager.getHDFSPathJobs() + "/"
+				+ fileName;
+		if (!parentDir.exists()) {
 			parentDir.mkdirs();
-		}else{
+		} else {
 			try {
 				LocalFileSystem.delete(parentDir);
 				parentDir.mkdir();
@@ -296,8 +344,8 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 
 		}
 
-		if(error == null){
-			//Creating xml
+		if (error == null) {
+			// Creating xml
 
 			OozieXmlCreator xmlCreator = null;
 			xmlCreator = new OozieXmlForkJoinPaired();
@@ -308,50 +356,51 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 
 			error = xmlCreator.createXml(df, list, parentDir);
 
-			if(error == null){
-				try{
-					writeWorkflowProp(new File(parentDir,"job.properties"),
+			if (error == null) {
+				try {
+					writeWorkflowProp(new File(parentDir, "job.properties"),
 							hdfsWfPath);
-				}catch(Exception e){
-					error = LanguageManagerWF.getText("ooziemanager.createproperties",new Object[]{e.getMessage()});
+				} catch (Exception e) {
+					error = LanguageManagerWF.getText(
+							"ooziemanager.createproperties",
+							new Object[] { e.getMessage() });
 				}
 			}
 
 		}
 
-		if(error == null){
-			logger.debug("copy from "+
-					parentDir.getAbsolutePath()+" to "+hdfsWfPath);
+		if (error == null) {
+			logger.debug("copy from " + parentDir.getAbsolutePath() + " to "
+					+ hdfsWfPath);
 			int again = 10;
 			FileSystem fs = null;
 			Exception e = null;
-			while(again > 0){
-				try{
-					logger.debug("Attempt "+ (11-again) +" to copy.");
+			while (again > 0) {
+				try {
+					logger.debug("Attempt " + (11 - again) + " to copy.");
 					fs = NameNodeVar.getFS();
 					Path wCur = new Path(hdfsWfPath);
-					if(fs.exists(wCur)){
-						error = LanguageManagerWF.getText("ooziemanager.filenotexist", new String[]{hdfsWfPath});
+					if (fs.exists(wCur)) {
+						error = LanguageManagerWF.getText(
+								"ooziemanager.filenotexist",
+								new String[] { hdfsWfPath });
 						logger.error(error);
-					}else{
-						fs.copyFromLocalFile(
-								false,
-								true,
-								new Path(parentDir.getAbsolutePath()), 
-								wCur);
+					} else {
+						fs.copyFromLocalFile(false, true,
+								new Path(parentDir.getAbsolutePath()), wCur);
 					}
 					again = -1;
-				}catch(Exception e1){
+				} catch (Exception e1) {
 					e = e1;
 					logger.error(e1);
 					--again;
 				}
-				try{
-//					fs.close();
-				}catch(Exception e2){
-					logger.error("Fail to close HDFS: "+e2);
+				try {
+					// fs.close();
+				} catch (Exception e2) {
+					logger.error("Fail to close HDFS: " + e2);
 				}
-				if(again > 0){
+				if (again > 0) {
 					try {
 						Thread.sleep(10);
 					} catch (InterruptedException e1) {
@@ -360,79 +409,97 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 				}
 			}
 
-			if(again == 0){
-				error = LanguageManagerWF.getText("ooziemanager.copydependencies",new Object[]{e.getMessage()});
+			if (again == 0) {
+				error = LanguageManagerWF.getText(
+						"ooziemanager.copydependencies",
+						new Object[] { e.getMessage() });
 			}
 
-			try{
+			try {
 				LocalFileSystem.delete(parentDir);
-			}catch(Exception e1){
-				logger.error("Fail to remove local directory: "+e1);
+			} catch (Exception e1) {
+				logger.error("Fail to remove local directory: " + e1);
 			}
 		}
 
-
-		if(error == null){
-			// create a workflow job configuration and set the workflow application path
-			String wfPath = WorkflowPrefManager.getSysProperty(
-					WorkflowPrefManager.sys_namenode)+
-					hdfsWfPath;
-			logger.debug("Workflow path: "+wfPath);
+		if (error == null) {
+			// create a workflow job configuration and set the workflow
+			// application path
+			String wfPath = WorkflowPrefManager
+					.getSysProperty(WorkflowPrefManager.sys_namenode)
+					+ hdfsWfPath;
+			logger.debug("Workflow path: " + wfPath);
 			Properties conf = addProperties(oc.createConfiguration(),
 					defaultMap(hdfsWfPath));
-
 
 			try {
 				jobId = oc.run(conf);
 				logger.debug("Workflow job submitted succesfully");
 			} catch (OozieClientException e) {
-				error = LanguageManagerWF.getText("ooziemanager.launchjob",new Object[]{e.getMessage()});
+				error = LanguageManagerWF.getText("ooziemanager.launchjob",
+						new Object[] { e.getMessage() });
 			}
 
 		}
 
-		if(error != null){
+		if (error != null) {
 			logger.debug(error);
 			throw new Exception(error);
 		}
-		
-		/* Logically this could be in a separate Thread.
-		 * However we had issues with Hadoop FileSystem
-		 * object, so let's be careful.
+
+		/*
+		 * Logically this could be in a separate Thread. However we had issues
+		 * with Hadoop FileSystem object, so let's be careful.
 		 */
-		/*(new Thread(){
-			@Override
-			public void run(){*/
+		/*
+		 * (new Thread(){
+		 * 
+		 * @Override public void run(){
+		 */
 		try {
 			cleanJobDirectory(nameWF);
 		} catch (RemoteException e) {
-			logger.warn("Fail clean oozie directory for job "+nameWF);
+			logger.warn("Fail clean oozie directory for job " + nameWF);
 		}
-		/*}
-
-		}).start();*/
+		/*
+		 * }
+		 * 
+		 * }).start();
+		 */
 
 		return jobId;
 	}
 
-	public String getConsoleUrl(DataFlow df) throws RemoteException, Exception{
+	/**
+	 * Get the Console URL for Oozie
+	 * 
+	 * @return URL of the workflow
+	 * @param df
+	 *            to get URL of specific DataFlow
+	 * @throws RemoteException
+	 * @throws Exception
+	 * 
+	 */
+
+	public String getConsoleUrl(DataFlow df) throws RemoteException, Exception {
 		String console = null;
 		String jobId = df.getOozieJobId();
 
-		if(jobId != null){
+		if (jobId != null) {
 			console = oc.getJobInfo(jobId).getConsoleUrl();
 		}
 		return console;
 	}
 
-	public String getElementStatus(DataFlow df, DataFlowElement dfe) throws RemoteException, Exception{
+	public String getElementStatus(DataFlow df, DataFlowElement dfe)
+			throws RemoteException, Exception {
 		String status = null;
 		String jobId = df.getOozieJobId();
 
-		if (jobId != null){
-			for (WorkflowAction wfa : oc.getJobInfo(jobId).getActions()){
-				String actionName = "act_"+dfe.getComponentId();
-				if (actionName.equals(wfa.getName())){
+		if (jobId != null) {
+			for (WorkflowAction wfa : oc.getJobInfo(jobId).getActions()) {
+				String actionName = "act_" + dfe.getComponentId();
+				if (actionName.equals(wfa.getName())) {
 					status = wfa.getStatus().toString();
 				}
 			}
@@ -440,15 +507,17 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 		return status;
 	}
 
-	public String getConsoleElementUrl(DataFlow df,DataFlowElement e) throws RemoteException, Exception{
+	public String getConsoleElementUrl(DataFlow df, DataFlowElement e)
+			throws RemoteException, Exception {
 		String found = null;
 		String jobId = df.getOozieJobId();
-		if(jobId != null){
-			Iterator<WorkflowAction> it = oc.getJobInfo(jobId).getActions().iterator();
-			OozieXmlCreator xmlC = new OozieXmlForkJoinPaired(); 
-			while(it.hasNext() && found == null){
+		if (jobId != null) {
+			Iterator<WorkflowAction> it = oc.getJobInfo(jobId).getActions()
+					.iterator();
+			OozieXmlCreator xmlC = new OozieXmlForkJoinPaired();
+			while (it.hasNext() && found == null) {
 				WorkflowAction cur = it.next();
-				if(xmlC.getNameAction(e).equals(cur.getName())){
+				if (xmlC.getNameAction(e).equals(cur.getName())) {
 					found = cur.getConsoleUrl();
 				}
 			}
@@ -457,51 +526,72 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 	}
 
 	/**
+	 * Get the OozieClietn
+	 * 
 	 * @return the oc
 	 */
 	public final OozieClient getOc() {
 		return oc;
 	}
 
+	/**
+	 * Get Default properties
+	 * 
+	 * @param hdfsWfPath
+	 * @return Map with properties for Job
+	 */
 
-	protected Map<String,String> defaultMap(String hdfsWfPath){
-		Map<String,String> properties = new HashMap<String,String>(5);
+	protected Map<String, String> defaultMap(String hdfsWfPath) {
+		Map<String, String> properties = new HashMap<String, String>(5);
 		Properties propSys = WorkflowPrefManager.getSysProperties();
-		properties.put(prop_jobtracker, 
+		properties.put(prop_jobtracker,
 				propSys.getProperty(WorkflowPrefManager.sys_jobtracker));
-		properties.put(prop_namenode, 
+		properties.put(prop_namenode,
 				propSys.getProperty(WorkflowPrefManager.sys_namenode));
-		properties.put(prop_queue, 
+		properties.put(prop_queue,
 				propSys.getProperty(WorkflowPrefManager.sys_oozie_queue));
-		//		properties.put(prop_libpath, 
-		//				propSys.getProperty(WorkflowPrefManager.sys_idiroEngine_path));
+		// properties.put(prop_libpath,
+		// propSys.getProperty(WorkflowPrefManager.sys_idiroEngine_path));
 		properties.put(OozieClient.APP_PATH,
-				propSys.getProperty(WorkflowPrefManager.sys_namenode)+
-				hdfsWfPath);
-		properties.put("oozie.use.system.libpath","true");
+				propSys.getProperty(WorkflowPrefManager.sys_namenode)
+						+ hdfsWfPath);
+		properties.put("oozie.use.system.libpath", "true");
 
 		return properties;
 	}
 
-	protected void writeWorkflowProp(
-			File workflowPropWriter,
-			String hdfsWfPath) throws Exception{
-		Map<String,String> properties = defaultMap(hdfsWfPath);
+	/**
+	 * Write properties for the workflow
+	 * 
+	 * @param workflowPropWriter
+	 * @param hdfsWfPath
+	 * @throws Exception
+	 */
+	protected void writeWorkflowProp(File workflowPropWriter, String hdfsWfPath)
+			throws Exception {
+		Map<String, String> properties = defaultMap(hdfsWfPath);
 
-		BufferedWriter bf = new BufferedWriter( 
-				new FileWriter(workflowPropWriter));
-		bf.write("-Duser.name="+System.getProperty("user.name")+"\n");
+		BufferedWriter bf = new BufferedWriter(new FileWriter(
+				workflowPropWriter));
+		bf.write("-Duser.name=" + System.getProperty("user.name") + "\n");
 		Iterator<String> itKey = properties.keySet().iterator();
-		while(itKey.hasNext()){
+		while (itKey.hasNext()) {
 			String key = itKey.next();
-			bf.write(key+"="+properties.get(key)+"\n");
+			bf.write(key + "=" + properties.get(key) + "\n");
 		}
 		bf.close();
 	}
 
-	protected Properties addProperties(Properties prop,Map<String,String> map){
+	/**
+	 * Add a property to the configuration
+	 * 
+	 * @param prop
+	 * @param map
+	 * @return Updated Properties
+	 */
+	protected Properties addProperties(Properties prop, Map<String, String> map) {
 		Iterator<String> itKey = map.keySet().iterator();
-		while(itKey.hasNext()){
+		while (itKey.hasNext()) {
 			String key = itKey.next();
 			prop.setProperty(key, map.get(key));
 		}
@@ -509,16 +599,18 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 	}
 
 	/**
+	 * Get a List of Jobs that are in the Oozie Console
 	 * 
-	 * @return Returns an array containing the jobs
+	 * @return List of Jobs and status that are in the Console
 	 */
 	public List<String[]> getJobs() {
 		List<String[]> listGrid = new ArrayList<String[]>();
-		String str = oc.getOozieUrl()+"v1/jobs";
+		String str = oc.getOozieUrl() + "v1/jobs";
 		try {
 			URL url = new URL(str);
 			URLConnection urlc = url.openConnection();
-			BufferedReader bfr = new BufferedReader(new InputStreamReader(urlc.getInputStream()));
+			BufferedReader bfr = new BufferedReader(new InputStreamReader(
+					urlc.getInputStream()));
 
 			String line;
 			final StringBuilder builder = new StringBuilder(2048);
@@ -534,10 +626,10 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 				final JSONObject jo = (JSONObject) jsa.get(i);
 				String[] result = new String[5];
 				result[0] = jo.getString("id");
-				result[1] = jo.getString("user"); 
-				result[2] = jo.getString("appName"); 
-				result[3] = jo.getString("status"); 
-				result[4] = jo.getString("createdTime"); 
+				result[1] = jo.getString("user");
+				result[2] = jo.getString("appName");
+				result[3] = jo.getString("status");
+				result[4] = jo.getString("createdTime");
 				listGrid.add(result);
 			}
 
@@ -551,8 +643,8 @@ public class OozieManager extends UnicastRemoteObject implements JobManager{
 	 * 
 	 * @return Returns a String with the Oozie URL
 	 */
-	public String getUrl() throws RemoteException{
+	public String getUrl() throws RemoteException {
 		return oc.getOozieUrl();
 	}
-	
+
 }

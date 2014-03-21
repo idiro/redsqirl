@@ -25,20 +25,35 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	 * 
 	 */
 	private static final long serialVersionUID = 5892963334534803842L;
+	/**
+	 * Instance of WorkflowInterface
+	 */
 	private static WorkflowInterface instance;
+	/**
+	 * Is Interface Initialized
+	 */
 	private static boolean init = false;
 	/**
 	 * The logger.
 	 */
 	private static Logger logger = Logger.getLogger(WorkflowInterface.class);
-
+	/**
+	 * Map of workflows
+	 */
 	private Map<String,DataFlow> wf = new LinkedHashMap<String,DataFlow>();
-
+	/**
+	 * Constructor
+	 * @throws RemoteException
+	 */
 	private WorkflowInterface() throws RemoteException{
 		super();
 	}
 
-
+	/**
+	 * Add a Workflow to the list
+	 * @param name
+	 * @return Error Message
+	 */
 	public String addWorkflow(String name){
 		String error = null;
 		if(!wf.containsKey(name)){
@@ -55,7 +70,13 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 		}
 		return error;
 	}
-	
+	/**
+	 * Rename a workflow
+	 * @param oldName
+	 * @param newName
+	 * @return Error Message
+	 * @throws RemoteException
+	 */
 	@Override
 	public String renameWorkflow(String oldName, String newName)
 			throws RemoteException {
@@ -75,18 +96,28 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 		}
 		return error;
 	}
-
+	/**
+	 * Remove a Workflow
+	 * @param name
+	 * 
+	 */
 	public void removeWorkflow(String name){
 		wf.remove(name);
 	}
-
+	
+	/**
+	 * Get a Workflow by Name
+	 * @param name
+	 * @return Workflow
+	 */
 	public DataFlow getWorkflow(String name){
 		return wf.get(name);
 	}
 
 
 	/**
-	 * @return the instance
+	 * Get an Instance of the interface
+	 * @return instance
 	 */
 	public static WorkflowInterface getInstance() {
 		if(!init){
@@ -101,7 +132,9 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 		}
 		return instance;
 	}
-
+	/**
+	 * Backup all workflows that are open
+	 */
 	public void backupAll() {
 		Iterator<String> itWorkflow = wf.keySet().iterator();
 		while(itWorkflow.hasNext()){
@@ -115,7 +148,10 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 			}
 		}
 	}
-
+	/**
+	 * Close all workflows
+	 * @throws RemoteExeption
+	 */
 	public void autoCleanAll() throws RemoteException{
 		Iterator<String> itWorkflow = wf.keySet().iterator();
 		while(itWorkflow.hasNext()){
@@ -123,7 +159,9 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 			wf.get(workflowNameCur).close();
 		}
 	}
-
+	/**
+	 * Shutdown the server
+	 */
 	public void shutdown() throws RemoteException{
 		ServerMain.shutdown();
 	}

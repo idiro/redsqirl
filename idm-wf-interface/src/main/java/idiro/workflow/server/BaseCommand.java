@@ -10,27 +10,25 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 /**
- * 
- * 
- *
+ * Class that generates a command that has the base classes necessary for
+ * running the server
  */
 public class BaseCommand {
 	/**
 	 * Logger for BaseCommand to use for logging information
 	 */
 	private static Logger logger = Logger.getLogger(BaseCommand.class);
-	
-	
-	public static void main(String[] args) {
-		Logger.getRootLogger().setLevel(Level.OFF);
-		System.out.println(getBaseCommand(Integer.valueOf(args[0])));
-	}
+
+//	public static void main(String[] args) {
+//		Logger.getRootLogger().setLevel(Level.OFF);
+//		System.out.println(getBaseCommand(Integer.valueOf(args[0])));
+//	}
 
 	/**
 	 * 
-	 * Generate a base command that contains compiles a classpath containing every
-	 * class that is used in IDM
-	 * 
+	 * Generate a base command that compiles a classpath containing every class
+	 * necessary in IDM
+	 * @param port
 	 * @return String Base command to launch
 	 * 
 	 */

@@ -21,15 +21,27 @@ public abstract class OozieActionAbs  extends UnicastRemoteObject implements Ooz
 	 */
 	private static final long serialVersionUID = -4050182914018968247L;
 
-	
+	/**
+	 * Default Conception
+	 * @throws RemoteException
+	 */
 	protected OozieActionAbs() throws RemoteException {
 		super();
 	}
-
+	/**
+	 * Set Default parameter with job_Xml null
+	 * @param oozieXmlDoc
+	 * @param subAction
+	 */
 	public void defaultParam(Document oozieXmlDoc, Element subAction){
 		defaultParam(oozieXmlDoc, subAction,null);
 	}
-	
+	/**
+	 * Set the defaultParam for a document with job_xml
+	 * @param oozieXmlDoc
+	 * @param subAction
+	 * @param job_xml
+	 */
 	public void defaultParam(Document oozieXmlDoc, Element subAction,String job_xml){
 		Element jobtracker = oozieXmlDoc.createElement("job-tracker");
 		jobtracker.appendChild(oozieXmlDoc.createTextNode(
@@ -68,7 +80,11 @@ public abstract class OozieActionAbs  extends UnicastRemoteObject implements Ooz
 //		configuration.appendChild(property);
 		subAction.appendChild(configuration);
 	}
-	
+	/**
+	 * Get the varName surrounded byu "${}"
+	 * @param varName
+	 * @return altered varName
+	 */
 	public String getVar(String varName){
 		return "${"+varName+"}";
 	}

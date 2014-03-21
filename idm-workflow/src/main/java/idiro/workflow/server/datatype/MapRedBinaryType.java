@@ -19,32 +19,67 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.PathFilter;
 import org.apache.pig.parser.AliasMasker.output_clause_return;
 
+/**
+ * Class to read files that are stored in MapReduce Directories and are stored
+ * as Binary format
+ * 
+ * @author keith
+ * 
+ */
 public class MapRedBinaryType extends MapRedTextType {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -6720621203419913600L;
-
+	/**
+	 * Delimier
+	 */
 	public static final String delim = "\001";
-	
+
+	/**
+	 * Default Constructor
+	 * 
+	 * @throws RemoteException
+	 */
 	public MapRedBinaryType() throws RemoteException {
 		super();
 	}
 
+	/**
+	 * Constructor with FeatureList
+	 * 
+	 * @param features
+	 * @throws RemoteException
+	 */
 	public MapRedBinaryType(FeatureList features) throws RemoteException {
 		super(features);
 	}
 
+	/**
+	 * Get the Type name
+	 */
 	@Override
 	public String getTypeName() throws RemoteException {
 		return "BINARY MAP-REDUCE DIRECTORY";
 	}
 
+	/**
+	 * Get the Colour of the type
+	 * 
+	 * @return colour
+	 * 
+	 */
 	protected String getDefaultColor() {
 		return "Coral";
 	}
 
+	/**
+	 * Select data from the current path
+	 * 
+	 * @param maxToRead
+	 * @throws RemoteException
+	 */
 	@Override
 	public List<String> select(int maxToRead) throws RemoteException {
 		List<String> ans = null;
@@ -64,17 +99,15 @@ public class MapRedBinaryType extends MapRedTextType {
 					ans = new ArrayList<String>(maxToRead);
 
 					logger.info("stat length : " + stat.length);
-					if(maxToRead / stat.length  < 1){
-						maxToRead = (int) Math.ceil((maxToRead/stat.length));
+					if (maxToRead / stat.length < 1) {
+						maxToRead = (int) Math.ceil((maxToRead / stat.length));
 					}
 					for (int i = 0; i < stat.length; ++i) {
 						logger.info("header : "
 								+ getChar(getProperty(key_header)));
-						
+
 						ans.addAll(hdfsInt.selectSeq(stat[i].getPath()
-								.toString(),
-								delim,
-								maxToRead, getFeatures()));
+								.toString(), delim, maxToRead, getFeatures()));
 					}
 				} catch (IOException e) {
 					String error = "Unexpected error: " + e.getMessage();
@@ -85,11 +118,18 @@ public class MapRedBinaryType extends MapRedTextType {
 		}
 		return ans;
 	}
-	
+
+	/**
+	 * Set the path for the Binary Type
+	 * 
+	 * @param path
+	 * @throws RemoteException
+	 */
 	@Override
 	public void setPath(String path) throws RemoteException {
-		logger.info("setting bin type path : "+this.getClass().getCanonicalName()+" , "+path);
-		
+		logger.info("setting bin type path : "
+				+ this.getClass().getCanonicalName() + " , " + path);
+
 		String oldPath = getPath();
 		features = new OrderedFeatureList();
 		if (path == null) {
@@ -97,7 +137,7 @@ public class MapRedBinaryType extends MapRedTextType {
 			setFeatures(null);
 			return;
 		}
-		
+
 		if (!path.equalsIgnoreCase(oldPath)) {
 
 			super.setPath(path);
@@ -106,11 +146,11 @@ public class MapRedBinaryType extends MapRedTextType {
 			if (isPathExists()) {
 				List<String> list = select(1);
 
-//				FeatureList fl = generateFeaturesMap();
+				// FeatureList fl = generateFeaturesMap();
 
 				String error = null;
 				String header = getProperty(key_header);
-				logger.info("header :  "+header);
+				logger.info("header :  " + header);
 				if (header != null && !header.isEmpty()) {
 					logger.info("setFeaturesFromHeader --");
 					error = setFeaturesFromHeader();
@@ -120,15 +160,16 @@ public class MapRedBinaryType extends MapRedTextType {
 				} else {
 					if (features != null) {
 						logger.debug(features.getFeaturesNames());
-//						logger.debug(fl.getFeaturesNames());
+						// logger.debug(fl.getFeaturesNames());
 					} else {
-//						features = fl;
+						// features = fl;
 					}
 				}
 
 				if (features.getSize() != features.getSize()) {
-					
-					Iterator<String> flIt = features.getFeaturesNames().iterator();
+
+					Iterator<String> flIt = features.getFeaturesNames()
+							.iterator();
 					Iterator<String> featIt = features.getFeaturesNames()
 							.iterator();
 					boolean ok = true;
@@ -139,8 +180,8 @@ public class MapRedBinaryType extends MapRedTextType {
 						logger.info("types feat " + i + ": "
 								+ features.getFeatureType(nf) + " , "
 								+ features.getFeatureType(of));
-//						ok &= canCast(features.getFeatureType(nf),
-//								features.getFeatureType(of));
+						// ok &= canCast(features.getFeatureType(nf),
+						// features.getFeatureType(of));
 						if (!ok) {
 							error = LanguageManagerWF.getText(
 									"mapredtexttype.msg_error_cannot_cast",
@@ -150,7 +191,7 @@ public class MapRedBinaryType extends MapRedTextType {
 						++i;
 					}
 					if (!ok) {
-//						features = fl;
+						// features = fl;
 						if (error != null) {
 							throw new RemoteException(error);
 						}
@@ -162,6 +203,12 @@ public class MapRedBinaryType extends MapRedTextType {
 
 	}
 
+	/**
+	 * Set the feature names from the header
+	 * 
+	 * @return Error Message
+	 * @throws RemoteException
+	 */
 	private String setFeaturesFromHeader() throws RemoteException {
 
 		logger.info("setFeaturesFromHeader()");
@@ -173,7 +220,8 @@ public class MapRedBinaryType extends MapRedTextType {
 
 			String newLabels[] = header.split(",");
 
-			logger.info("setFeaturesFromHeader features " + features.getFeaturesNames());
+			logger.info("setFeaturesFromHeader features "
+					+ features.getFeaturesNames());
 
 			if (header.trim().endsWith(",")) {
 				error = LanguageManagerWF
@@ -183,7 +231,6 @@ public class MapRedBinaryType extends MapRedTextType {
 			FeatureList newFL = new OrderedFeatureList();
 
 			try {
-
 
 				for (int j = 0; j < newLabels.length && error == null; j++) {
 					String label = newLabels[j].trim();

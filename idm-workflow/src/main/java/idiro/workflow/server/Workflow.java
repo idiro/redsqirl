@@ -90,15 +90,28 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 * The current Action in the workflow
 	 */
 	protected LinkedList<DataFlowElement> element = new LinkedList<DataFlowElement>();
-
-	protected String name, oozieJobId;
+	/** Name of the workflow */
+	protected String name,
+	/** OozieJobId */
+	oozieJobId;
 
 	protected boolean saved = false;
 
+	/**
+	 * Default Constructor
+	 * 
+	 * @throws RemoteException
+	 */
 	public Workflow() throws RemoteException {
 		super();
 	}
 
+	/**
+	 * Constructor
+	 * 
+	 * @param name
+	 * @throws RemoteException
+	 */
 	public Workflow(String name) throws RemoteException {
 		super();
 		this.name = name;
@@ -277,6 +290,12 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		return run(getIds(element));
 	}
 
+	/**
+	 * Run the workflow with all it's elements
+	 * 
+	 * @return error message
+	 * @throws RemoteException
+	 */
 	public String run(List<String> dataFlowElement) throws RemoteException {
 
 		// Close all file systems
@@ -412,6 +431,12 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		return error;
 	}
 
+	/**
+	 * Clean the Projects outputs
+	 * 
+	 * @return Error messge
+	 * @throws RemoteException
+	 */
 	public String cleanProject() throws RemoteException {
 		String err = "";
 		Iterator<DataFlowElement> it = element.iterator();
@@ -430,24 +455,30 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		return err;
 	}
 
-	public String regeneratePaths(boolean copy) throws RemoteException{
+	/**
+	 * Regenerate paths for workflow, if copy is true then copy else move path
+	 * 
+	 * @param copy
+	 * @throws RemoteException
+	 */
+	public String regeneratePaths(boolean copy) throws RemoteException {
 		Iterator<DataFlowElement> it = element.iterator();
-		while(it.hasNext()){
+		while (it.hasNext()) {
 			DataFlowElement cur = it.next();
 			Iterator<String> lOutIt = cur.getDFEOutput().keySet().iterator();
-			while(lOutIt.hasNext()){
+			while (lOutIt.hasNext()) {
 				String curOutStr = lOutIt.next();
 				DFEOutput curOut = cur.getDFEOutput().get(curOutStr);
-				if(curOut != null){
+				if (curOut != null) {
 					SavingState curSav = curOut.getSavingState();
-					if(curSav.equals(SavingState.BUFFERED) || curSav.equals(SavingState.TEMPORARY)){
+					if (curSav.equals(SavingState.BUFFERED)
+							|| curSav.equals(SavingState.TEMPORARY)) {
 						String newPath = curOut.generatePathStr(
-								System.getProperty("user.name"), 
-								cur.getComponentId(), 
-								curOutStr);
-						if(copy){
+								System.getProperty("user.name"),
+								cur.getComponentId(), curOutStr);
+						if (copy) {
 							curOut.copyTo(newPath);
-						}else{
+						} else {
 							curOut.moveTo(newPath);
 						}
 					}
@@ -491,13 +522,14 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	public String save(final String filePath) {
 		String error = null;
 		File file = null;
-		
-		try{
+
+		try {
 			String[] path = filePath.split("/");
-			String fileName = path[path.length-1];
-			String tempPath = WorkflowPrefManager.pathUserPref.get()+"/tmp/"+fileName+"_"+RandomString.getRandomName(4);
+			String fileName = path[path.length - 1];
+			String tempPath = WorkflowPrefManager.pathUserPref.get() + "/tmp/"
+					+ fileName + "_" + RandomString.getRandomName(4);
 			file = new File(tempPath);
-			logger.debug("Save xml: "+file.getAbsolutePath());
+			logger.debug("Save xml: " + file.getAbsolutePath());
 			file.getParentFile().mkdirs();
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory
 					.newInstance();
@@ -631,7 +663,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 							logger.debug(31);
 							String outId = wa.next().getComponentId();
 							logger.debug("add " + outputName + " " + outId);
-							
+
 							Attr attrNameEl = doc.createAttribute("name");
 							attrNameEl.setValue(outputName);
 							output.setAttributeNode(attrNameEl);
@@ -669,7 +701,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 				FileSystem fs = NameNodeVar.getFS();
 				fs.moveFromLocalFile(new Path(tempPath), new Path(filePath));
-//				fs.close();
+				// fs.close();
 
 				saved = true;
 				logger.debug("file saved successfully");
@@ -678,22 +710,27 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			error = LanguageManagerWF.getText("workflow.writeXml",
 					new Object[] { e.getMessage() });
 			logger.error(error);
-			for(int i = 0; i < 6 && i < e.getStackTrace().length; ++i){
-			logger.error(e.getStackTrace()[i].toString());
+			for (int i = 0; i < 6 && i < e.getStackTrace().length; ++i) {
+				logger.error(e.getStackTrace()[i].toString());
 			}
-			try{
-				logger.info("Attempt to delete "+file.getAbsolutePath());
+			try {
+				logger.info("Attempt to delete " + file.getAbsolutePath());
 				file.delete();
-			}catch(Exception e1){}
+			} catch (Exception e1) {
+			}
 		}
 		Log.flushAllLogs();
 
 		return error;
 	}
 
+	/**
+	 * Clean the backup directory
+	 * 
+	 * @throws IOException
+	 */
 	public void cleanUpBackup() throws IOException {
-		String path = WorkflowPrefManager
-				.getBackupPath();
+		String path = WorkflowPrefManager.getBackupPath();
 		int nbBackup = WorkflowPrefManager.getNbBackup();
 
 		FileSystem fs = NameNodeVar.getFS();
@@ -734,9 +771,12 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				fs.delete(pathDel, false);
 			}
 		}
-//		fs.close();
+		// fs.close();
 	}
 
+	/**
+	 * Close the workflow and clean temporary data
+	 */
 	public void close() throws RemoteException {
 		logger.info("auto clean " + getName());
 		try {
@@ -749,6 +789,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 	}
 
+	/**
+	 * Backup the workflow
+	 * 
+	 * @throws RemoteException
+	 */
 	public void backup() throws RemoteException {
 		String path = WorkflowPrefManager
 				.getUserProperty(WorkflowPrefManager.user_backup);
@@ -760,15 +805,15 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		try {
 			FileSystem fs = NameNodeVar.getFS();
 			fs.mkdirs(new Path(path));
-//			fs.close();
+			// fs.close();
 		} catch (Exception e) {
 			logger.warn(e.getMessage());
 			logger.warn("Fail creating backup directory");
 		}
-		if(getName() != null && !getName().isEmpty()){
-			path += "/"+getName()+"-"+dateFormat.format(date)+".rs";
-		}else{
-			path += "/idm-backup-"+dateFormat.format(date)+".rs";
+		if (getName() != null && !getName().isEmpty()) {
+			path += "/" + getName() + "-" + dateFormat.format(date) + ".rs";
+		} else {
+			path += "/idm-backup-" + dateFormat.format(date) + ".rs";
 		}
 		boolean save_swp = isSaved();
 		String error = save(path);
@@ -788,6 +833,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 	}
 
+	/**
+	 * Check if the workflow has been saved
+	 * 
+	 * @return <code>true</code> if it has been saved else <code>false</code>
+	 */
 	public boolean isSaved() {
 		return saved;
 	}
@@ -807,13 +857,14 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			String[] path = filePath.split("/");
 			String fileName = path[path.length - 1];
 			String userName = System.getProperty("user.name");
-			String tempPath = WorkflowPrefManager.pathUserPref.get()+"/tmp/"+
-					fileName+"_"+RandomString.getRandomName(4);
+			String tempPath = WorkflowPrefManager.pathUserPref.get() + "/tmp/"
+					+ fileName + "_" + RandomString.getRandomName(4);
 			FileSystem fs = NameNodeVar.getFS();
 			fs.copyToLocalFile(new Path(filePath), new Path(tempPath));
 
 			File xmlFile = new File(tempPath);
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory
+					.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(xmlFile);
 			doc.getDocumentElement().normalize();
@@ -910,7 +961,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						.getElementsByTagName("data");
 				for (int ind = 0; ind < dataList.getLength() && error == null; ++ind) {
 					Node dataCur = dataList.item(ind);
-					
+
 					String dataName = dataCur.getAttributes()
 							.getNamedItem("name").getNodeValue();
 					String typeName = dataCur.getAttributes()
@@ -944,7 +995,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						try {
 							logger.debug(compId + ": output index " + index);
 							Node outCur = outList.item(index);
-							
+
 							String nameOut = outCur.getAttributes()
 									.getNamedItem("name").getNodeValue();
 							String id = ((Element) outCur)
@@ -1042,6 +1093,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		return error;
 	}
 
+	/**
+	 * Change the id of an element
+	 * 
+	 * @param oldId
+	 * @param newId
+	 * @throws RemoteException
+	 */
 	public String changeElementId(String oldId, String newId)
 			throws RemoteException {
 		String err = null;
@@ -1110,6 +1168,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		return addElement(waName, newId);
 	}
 
+	/**
+	 * Remove an element from the Workflow
+	 * 
+	 * @param componentId
+	 * @return Error Message
+	 * @throws RemoteException
+	 */
 	public String removeElement(String componentId) throws RemoteException,
 			Exception {
 		logger.debug("remove element: " + componentId);
@@ -1341,9 +1406,12 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			error = LanguageManagerWF
 					.getText("workflow.addLink_elementnoexist");
 		} else if (in.getInput().get(inName) == null) {
-			error = LanguageManagerWF.getText("workflow.addLink_inputNotexist",new Object[]{inName});
+			error = LanguageManagerWF.getText("workflow.addLink_inputNotexist",
+					new Object[] { inName });
 		} else if (out.getDFEOutput().get(outName) == null) {
-			error = LanguageManagerWF.getText("workflow.addLink_outputNotexist",new Object[]{outName});
+			error = LanguageManagerWF
+					.getText("workflow.addLink_outputNotexist",
+							new Object[] { outName });
 		} else {
 			if (force) {
 				out.addOutputComponent(outName, in);
@@ -1351,7 +1419,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			} else {
 				if (!in.getInput().get(inName)
 						.check(out.getDFEOutput().get(outName))) {
-					error = LanguageManagerWF.getText("workflow.addLink_linkincompatible");
+					error = LanguageManagerWF
+							.getText("workflow.addLink_linkincompatible");
 				} else {
 					out.addOutputComponent(outName, in);
 					error = in.addInputComponent(inName, out);
@@ -1371,6 +1440,19 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		return error;
 	}
 
+	/**
+	 * Check if the input and output are not equal , they exist and the names
+	 * are correct on the workflow
+	 * 
+	 * @param outName
+	 * @param componentIdOut
+	 * @param inName
+	 * @param componentIdIn
+	 * @return <code>true</code> if there was no problems else
+	 *         <code>false</code>
+	 * 
+	 * @throws RemoteException
+	 */
 	public boolean check(String outName, String componentIdOut, String inName,
 			String componentIdIn) throws RemoteException {
 
@@ -1378,14 +1460,18 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		DataFlowElement out = getElement(componentIdOut);
 		DataFlowElement in = getElement(componentIdIn);
 		if (out == null || in == null) {
-			error=LanguageManagerWF.getText("workflow.check_elementnotexists");
+			error = LanguageManagerWF
+					.getText("workflow.check_elementnotexists");
 		} else if (in.getInput().get(inName) == null) {
-			error=LanguageManagerWF.getText("workflow.check_inputNotexits",new Object[]{inName});
+			error = LanguageManagerWF.getText("workflow.check_inputNotexits",
+					new Object[] { inName });
 		} else if (out.getDFEOutput().get(outName) == null) {
-			error=LanguageManagerWF.getText("workflow.check_outputNotexits",new Object[]{outName});
+			error = LanguageManagerWF.getText("workflow.check_outputNotexits",
+					new Object[] { outName });
 		} else if (!in.getInput().get(inName)
 				.check(out.getDFEOutput().get(outName))) {
-			error=LanguageManagerWF.getText("workflow.check_linksIncompatible");
+			error = LanguageManagerWF
+					.getText("workflow.check_linksIncompatible");
 		}
 		if (error != null) {
 			return false;
@@ -1469,6 +1555,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	}
 
 	/**
+	 * Get the List of elements
+	 * 
 	 * @return the workingWA
 	 */
 	public List<DataFlowElement> getElement() {
@@ -1476,6 +1564,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	}
 
 	/**
+	 * Get the last element of the elements on the workflow
+	 * 
 	 * @return the last element of workingWA.
 	 */
 	public DataFlowElement getLastElement() {
@@ -1483,6 +1573,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	}
 
 	/**
+	 * Get the footer menu where all the blank actions are contained for the
+	 * workflow
+	 * 
 	 * @return the menuWA
 	 */
 	public Map<String, List<String[]>> getMenuWA() {
@@ -1490,14 +1583,23 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	}
 
 	/**
+	 * Set the footer action, where all the actions are contained
+	 * 
 	 * @param menuWA
 	 *            the menuWA to set
+	 * @throws RemoteException
 	 */
 	public void setMenuWA(Map<String, List<String[]>> menuWA)
 			throws RemoteException {
 		this.menuWA = menuWA;
 	}
 
+	/**
+	 * Get the component its for all elements on the workflow
+	 * 
+	 * @return List of component Ids
+	 * @return {@link RemoteException}
+	 */
 	public List<String> getComponentIds() throws RemoteException {
 		List<String> ans = new LinkedList<String>();
 		Iterator<DataFlowElement> it = element.iterator();
@@ -1507,25 +1609,57 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		return ans;
 	}
 
+	/**
+	 * Get the name of the workflow
+	 * 
+	 * @return name
+	 * @throws RemoteException
+	 */
 	@Override
 	public String getName() throws RemoteException {
 		return name;
 	}
 
+	/**
+	 * Set the name of the workflow
+	 * 
+	 * @param name
+	 * @throws RemoteException
+	 * 
+	 */
 	@Override
 	public void setName(String name) throws RemoteException {
 		this.name = name;
 	}
 
+	/**
+	 * Get the OozieJobId
+	 * 
+	 * @return JobId Name
+	 * @throws RemoteException
+	 */
 	@Override
 	public String getOozieJobId() throws RemoteException {
 		return oozieJobId;
 	}
 
+	/**
+	 * Set the OozieJobId for this workflow
+	 * 
+	 * @param oozieJobId
+	 */
 	public void setOozieJobId(String oozieJobId) {
 		this.oozieJobId = oozieJobId;
 	}
 
+	/**
+	 * Get Ids id elements
+	 * 
+	 * @param els
+	 *            list of elements
+	 * @return list of ids for the passed elements
+	 * @throws RemoteException
+	 */
 	protected List<String> getIds(List<DataFlowElement> els)
 			throws RemoteException {
 		List<String> ans = new ArrayList<String>(els.size());
@@ -1536,6 +1670,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		return ans;
 	}
 
+	/**
+	 * Get the elements from the ids
+	 * 
+	 * @param ids
+	 * @return list of elements from ids
+	 * @throws RemoteException
+	 */
 	protected List<DataFlowElement> getEls(List<String> ids)
 			throws RemoteException {
 		if (ids == null) {
@@ -1551,6 +1692,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 	}
 
+	/**
+	 * Get all elements needed for this element
+	 * 
+	 * @param el
+	 * @return List if elements
+	 * @throws RemoteException
+	 */
 	protected LinkedList<DataFlowElement> getItAndAllElementsNeeded(
 			DataFlowElement el) throws RemoteException {
 		LinkedList<DataFlowElement> ans = new LinkedList<DataFlowElement>();
@@ -1569,6 +1717,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		return ans;
 	}
 
+	/**
+	 * Get a list of DataFlowElements from two list and remove duplicates
+	 * 
+	 * @param l1
+	 * @param l2
+	 * @return List of DataFlowElements without duplicates
+	 */
 	protected LinkedList<DataFlowElement> getAllWithoutDuplicate(
 			List<DataFlowElement> l1, List<DataFlowElement> l2) {
 		LinkedList<DataFlowElement> ans = new LinkedList<DataFlowElement>();

@@ -1,23 +1,28 @@
 package idiro.workflow.server.enumeration;
 
+/**
+ * Enumerations that depict how the trree should look for
+ * 
+ * @author keith
+ * 
+ */
 public enum DisplayType {
 
 	// Format in: input>[regex>re]/[output>choice]
 	/**
-	 * Format in: input>[regex>re]/[output>choice]
+	 *input>[regex>re]/[output>choice]
 	 */
 	input,
 
 	// Format in: list>[values>[value>choice]]/[display>type]/[output>choicei]
 	/**
-	 * Format in: list>[values>[value>choice]]/[display>type]/[output>choicei]
+	 *list>[values>[value>choice]]/[display>type]/[output>choicei]
 	 */
 	list,
 
 	// Format in:
 	// applist>[values>[value>choice]]/[display>type]/[output>[value>choicei]]
 	/**
-	 * Format in:
 	 * applist>[values>[value>choice]]/[display>type]/[output>[value>choicei]]
 	 */
 	appendList,
@@ -26,8 +31,8 @@ public enum DisplayType {
 	// Format in: browse>[type>DataType.getName()]/[subtype>namei]
 	// [output>[path>mypath]/[feature>[name>value]/[type>value]]/[property>namei>valuei]]
 	/**
-	 * Format in: browse>[type>DataType.getName()]/[subtype>namei]
-	 * [output>[path>mypath]/[feature>[name>value]/[type>value]]/[property>namei>valuei]]
+	 * browse>[type>DataType.getName()]/[subtype>namei]
+	 * </br>[output>[path>mypath]/[feature>[name>value]/[type>value]]/[property>namei>valuei]]
 	 */
 	browser,
 
@@ -36,9 +41,8 @@ public enum DisplayType {
 	// [help>submenu>[name>value]/[suggestion>[word>value]/[input>value]/[return>value]]]/
 	// [output>text]
 	/**
-	 * Format in: editor>[keywords>features>feature>[name>value]]/[type>value]]/
-	 * [help>submenu>[name>value]/[suggestion>[word>value]/[input>value]/[return>value]]]/
-	 * [output>text]
+	 *editor>[keywords>features>feature>[name>value]]/[type>value]]/
+	 * </br>[help>submenu>[name>value]/[suggestion>[word>value]/[input>value]/[return>value]]]/ [output>text]
 	 */
 	helpTextEditor,
 
@@ -52,14 +56,13 @@ public enum DisplayType {
 	// [generator>operation>[title>value]/
 	// [row>col_title>value]]
 	/**
-	 * Format in: table>[columns>column>[title>value]/
-	 * 	 [constraint>[count>i(optional)]/
-	 * 	 [values>[value>choice(optional)]]/
-	 * 	 [regex>reg(optional)]]/
-	 * 	 [editor (see helpTextEditor)]/
-	 * 	 [row>[col_title>value]]
-	 * 	 [generator>operation>[title>value]/
-	 * 	 [row>col_title>value]]
+	 *
+	 * </br>table>[columns>column>[title>value]/
+	 * [constraint>[count>i(optional)]/
+	 * </br>[values>[value>choice(optional)]]/
+	 * [regex>reg(optional)]]/ [editor (see helpTextEditor)]/
+	 * [row>[col_title>value]] [generator>operation>[title>value]/
+	 * [row>col_title>value]]
 	 */
 	table,
 

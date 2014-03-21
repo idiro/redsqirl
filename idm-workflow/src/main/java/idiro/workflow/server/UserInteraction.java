@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.mockito.internal.stubbing.answers.ThrowsException;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -70,7 +71,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	 */
 	protected Tree<String> tree;
 
-
+	/**Interaction Checker*/
 	protected DFEInteractionChecker checker = null;
 
 	/**
@@ -106,6 +107,13 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	}
 
 
+	/**
+	 * Write the properties of this action into a file
+	 * @param doc
+	 * @param n
+	 * @throws DOMException
+	 * @throws RemoteException
+	 */
 	@Override
 	public void writeXml(Document doc, Node n) throws DOMException, RemoteException {
 		Node child = writeXml(doc,getTree());
@@ -113,7 +121,14 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 			n.appendChild(child);
 		}
 	}
-
+	/**
+	 * Write the properties of this action into a file
+	 * @param doc
+	 * @param t
+	 * @return
+	 * @throws RemoteException
+	 * @throws DOMException
+	 */
 	protected Node writeXml(Document doc, Tree<String> t) throws RemoteException, DOMException {
 		Node elHead = null;
 
@@ -136,7 +151,10 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 		return elHead;
 	}
 
-
+	/**
+	 * Read the properties of a stored action
+	 * @throws Exception
+	 */
 	public void readXml(Node n) throws Exception{
 		try{
 			this.tree = new TreeNonUnique<String>(getId());
@@ -160,7 +178,13 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 		}
 
 	}
-
+	/**
+	 * Read the properties of a stored action
+	 * @param n
+	 * @param curTree
+	 * @throws RemoteException
+	 * @throws DOMException
+	 */
 	protected void readXml(Node n,Tree<String> curTree) throws RemoteException, DOMException{
 		NodeList nl = n.getChildNodes();
 		for(int i = 0; i < nl.getLength();++i){
@@ -175,6 +199,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 
 
 	/**
+	 * Get the display type
 	 * @return the display
 	 */
 	public DisplayType getDisplay() {
@@ -183,6 +208,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 
 
 	/**
+	 * Get the column the interaction is stored in
 	 * @return the column
 	 */
 	public int getColumn() {
@@ -191,6 +217,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 
 
 	/**
+	 * Get the interactions place in the column
 	 * @return the placeInColumn
 	 */
 	public int getPlaceInColumn() {
@@ -198,7 +225,8 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	}
 
 	/**
-	 * @return the inputToDisplay
+	 * Get the configuration and data the interaction holds
+	 * @return Tree configuration
 	 */
 	public final Tree<String> getTree() {
 		return tree;
@@ -206,6 +234,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 
 
 	/**
+	 * Set the interaction tree
 	 * @param inputToDisplay the inputToDisplay to set
 	 */
 	public final void setTree(Tree<String> tree) {
@@ -213,15 +242,17 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	}
 
 	/**
+	 * Get the name of the ineraction
 	 * @return the name
 	 */
 	public final String getName() {
 		return name;
 	}
 
-
-
-
+	/**
+	 * Get the possible values for the interaction
+	 * @return list of possible values
+	 */
 	protected List<String> getPossibleValuesFromList(){
 		List<String> possibleValues = null;
 		if(display == DisplayType.list || display == DisplayType.appendList){
@@ -247,7 +278,10 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 		}
 		return possibleValues;
 	}
-
+	/**
+	 * Check the input tree
+	 * @return error message
+	 */
 	protected String checkInput(){
 		String error = null;
 		if(display != DisplayType.input){
@@ -281,7 +315,10 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 		}
 		return error;
 	}
-
+	/**
+	 * Check the interaction for if it is a List display
+	 * @return error message
+	 */
 	protected String checkList(){
 		String error = null;
 		if(display != DisplayType.list){
@@ -304,7 +341,10 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 		}
 		return error;
 	}
-
+	/**
+	 * Check the interaction if it is an appendList display
+	 * @return Error Messsage
+	 */
 	protected String checkAppendList(){
 		String error = null;
 		if(display != DisplayType.appendList){
@@ -332,7 +372,11 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 		return error;
 	}
 
-
+	/**
+	 * Check the Interaction
+	 * @return error message
+	 * @throws RemoteException
+	 */
 	@Override
 	public String check() throws RemoteException {
 		String error = null;
@@ -363,6 +407,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 
 
 	/**
+	 * Get the checker for the interaction
 	 * @return the checker
 	 */
 	public final DFEInteractionChecker getChecker() {
@@ -371,27 +416,41 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 
 
 	/**
+	 * Set the checker for the Interaction
 	 * @param checker the checker to set
 	 */
 	public final void setChecker(DFEInteractionChecker checker) {
 		this.checker = checker;
 	}
 
-
+	/**
+	 * Get the Legend
+	 * @return Legend
+	 */
 	public String getLegend() {
 		return legend;
 	}
 
-
+	/**
+	 * Set the legend of the interaction
+	 * @param legend
+	 */
 	public void setLegend(String legend) {
 		this.legend = legend;
 	}
-
+	/**
+	 * Check the excpression
+	 * @return null
+	 */
 	public String checkExpression(String expression, String modifier) throws RemoteException{
 		return null;
 	}
 
-
+	/**
+	 * Get the ID of the Interaction
+	 * @return ID
+	 * @throws RemoteException
+	 */
 	@Override
 	public String getId() throws RemoteException {
 		return getTree().getHead();

@@ -81,17 +81,25 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 
 	protected Logger logger = Logger.getLogger(getClass());
 
+	/**
+	 * Constructor that takes a type of
+	 * {@link diro.workflow.server.interfaces.OozieAction} as an argument
+	 * 
+	 * @param oozieAction
+	 * @throws RemoteException
+	 */
 	public DataflowAction(OozieAction oozieAction) throws RemoteException {
 		super();
 		position = new Point(0, 0);
 		this.oozieAction = oozieAction;
 	}
-
 	/**
 	 * Write into local files what needs to be parse within the oozie action
-	 * 
 	 * @param files
+	 * @return <code>true</code> if the actions where written else <code>false</code>
+	 * @throws RemoteException
 	 */
+
 	public abstract boolean writeOozieActionFiles(File[] files)
 			throws RemoteException;
 
@@ -106,7 +114,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 				+ getName().toLowerCase() + ".html";
 		File f = new File(
 				WorkflowPrefManager
-				.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
+						.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
 						+ relativePath);
 		if (!f.exists() || !isUserAllowInstall()) {
 			relativePath = WorkflowPrefManager.pathSysHelpPref.get() + "/"
@@ -126,7 +134,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 				+ getName().toLowerCase() + ".gif";
 		File f = new File(
 				WorkflowPrefManager
-				.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
+						.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
 						+ relativePath);
 		if (!f.exists() || !isUserAllowInstall()) {
 			relativePath = WorkflowPrefManager.pathSysImagePref.get() + "/"
@@ -134,7 +142,12 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		}
 		return relativePath;
 	}
-
+	
+	/**
+	 * Check the inputs for errors
+	 * @return Error Message
+	 * @throws RemoteException
+	 */
 	public String checkIn() throws RemoteException {
 		String ans = "";
 		Map<String, DFELinkProperty> entry = null;
@@ -231,7 +244,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			++pageNb;
 			try {
 				DFEPage page = it.next();
-//				logger.info("page title : "+page.getTitle());
+				// logger.info("page title : "+page.getTitle());
 				error = page.checkPage();
 			} catch (Exception e) {
 				error = e.getMessage();
@@ -301,7 +314,11 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 
 		return error;
 	}
-
+	/**
+	 * Read the values for a Node stored in the XML 
+	 * @param n Node to read XML for
+	 * @return Error Message
+	 */
 	public String readValuesXml(Node n) {
 		String error = null;
 
@@ -367,6 +384,11 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		return error;
 	}
 
+	/**
+	 * Update a page that the action contains
+	 * @param pageNb page number to update
+	 * @throws RemoteException
+	 */
 	public void update(int pageNb) throws RemoteException {
 		try {
 			DFEPage page = getPageList().get(pageNb);
@@ -379,10 +401,11 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 					update(interaction);
 				} catch (Exception e) {
 					logger.error(e);
-					for(int i = 0; i < 6 && i < e.getStackTrace().length; ++i){
-					logger.error(e.getStackTrace()[i].toString());
+					for (int i = 0; i < 6 && i < e.getStackTrace().length; ++i) {
+						logger.error(e.getStackTrace()[i].toString());
 					}
-					logger.error("Error when updating the element "+interaction.getId());
+					logger.error("Error when updating the element "
+							+ interaction.getId());
 				}
 			}
 		} catch (Exception e) {
@@ -394,11 +417,18 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	/**
 	 * Update the UserInteraction values @see
 	 * {@link UserInteraction#inputFromAction}
+	 * @param interaction to update
+	 * @throws RemoteException
 	 */
 	public abstract void update(DFEInteraction interaction)
 			throws RemoteException;
 
 	@Override
+	/**
+	 * Get a map of all the DFEOutputs for the action
+	 * @return Map of the DFEOutput for the 
+	 * @throw RemoteException
+	 */
 	public final Map<String, DFEOutput> getDFEOutput() throws RemoteException {
 		return output;
 	}
@@ -437,12 +467,12 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			while (it2.hasNext()) {
 				DataFlowElement cur = it2.next();
 				String out_id = findNameOf(cur.getOutputComponent(), this);
-				if(out_id.isEmpty()){
+				if (out_id.isEmpty()) {
 					ans.put(cur.getComponentId(), cur.getDFEOutput()
 							.get(out_id));
-				}else{
-					ans.put(cur.getComponentId() + "_" + out_id, cur.getDFEOutput()
-						.get(out_id));
+				} else {
+					ans.put(cur.getComponentId() + "_" + out_id, cur
+							.getDFEOutput().get(out_id));
 				}
 			}
 		}
@@ -462,12 +492,12 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			while (it2.hasNext()) {
 				DataFlowElement cur = it2.next();
 				String out_id = findNameOf(cur.getOutputComponent(), this);
-				if(out_id.isEmpty()){
-					ansCur.put(cur.getComponentId(), cur
-							.getDFEOutput().get(out_id));
-				}else{
+				if (out_id.isEmpty()) {
+					ansCur.put(cur.getComponentId(),
+							cur.getDFEOutput().get(out_id));
+				} else {
 					ansCur.put(cur.getComponentId() + "_" + out_id, cur
-						.getDFEOutput().get(out_id));
+							.getDFEOutput().get(out_id));
 				}
 			}
 		}
@@ -943,12 +973,11 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			it.next().cleanThisAndAllElementAfter();
 		}
 	}
-	
-	private static boolean isUserAllowInstall(){
-		return WorkflowPrefManager.
-				getSysProperty(
-						WorkflowPrefManager.sys_allow_user_install, "FALSE").
-						equalsIgnoreCase("true");
+
+	private static boolean isUserAllowInstall() {
+		return WorkflowPrefManager.getSysProperty(
+				WorkflowPrefManager.sys_allow_user_install, "FALSE")
+				.equalsIgnoreCase("true");
 	}
 
 }
