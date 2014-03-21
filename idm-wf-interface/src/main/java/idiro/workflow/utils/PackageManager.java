@@ -40,20 +40,33 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 	private static final long serialVersionUID = -5328659434051680675L;
 
 	static Logger logger = Logger.getLogger(PackageManager.class);
-
-	static String help_dir = "help", image_dir = "images", lib_dir = "lib",
-			action_file = "actions.txt", list_files = "files.txt",
+					/**Help Files directory  name*/
+	static String help_dir = "help",
+			/**Image Directory name*/
+			image_dir = "images",
+			/**Lib directory name*/
+			lib_dir = "lib",
+			/**Action list file nmae*/
+			action_file = "actions.txt",
+			/**List of files name of file*/
+			list_files = "files.txt",
+			/**
+			 * Properies file name
+			 */
 			properties_file = "package.properties";
 
 	public static String property_version = "version",
 			property_name = "packageName";
-
+	/**
+	 * Constructor
+	 * @throws RemoteException
+	 */
 	public PackageManager() throws RemoteException {
 		super();
 	}
 
 	/**
-	 * Can call the package manager directly.
+	 * Can call the package manager directly
 	 * 
 	 * @param arg
 	 * @throws RemoteException
@@ -177,11 +190,11 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 	}
 
 	/**
-	 * Add a package
+	 * Add a package for users
 	 * 
 	 * @param sys_package
 	 * @param packStr
-	 * @return
+	 * @return Error Message
 	 */
 	public String addPackage(boolean sys_package, String[] packStr) {
 		// boolean ok = true;
@@ -291,7 +304,10 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 
 		return error;
 	}
-
+	/**
+	 * Initialize the folders for the packages
+	 * @param sys_package
+	 */
 	public void init(boolean sys_package) {
 		File dir = null;
 		if (sys_package) {
@@ -315,7 +331,11 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 			dir.mkdirs();
 		}
 	}
-
+	/**
+	 * Get a list of all packages that are installed 
+	 * @param sys_package
+	 * @return List of installed packages
+	 */
 	private List<File> getAllPackages(boolean sys_package) {
 		String pathSys = WorkflowPrefManager.pathSysPackagePref.get();
 		String pathUser = WorkflowPrefManager.pathUserPackagePref.get();
@@ -357,7 +377,11 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 
 		return ans;
 	}
-
+	/**
+	 * Check if the package is a valid package
+	 * @param pack
+	 * @return Error Message
+	 */
 	public String isPackageValid(File pack) {
 
 		String error = null;
@@ -400,7 +424,11 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 
 		return error;
 	}
-
+	/**
+	 * Get a  List of packages that are installed
+	 * @param root_pack
+	 * @return List of Packages
+	 */
 	public List<String> getPackageNames(boolean root_pack) {
 		List<String> packageNames = new LinkedList<String>();
 		File packDir = null;
@@ -418,7 +446,13 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 		}
 		return packageNames;
 	}
-
+	/**
+	 * Get a property from the package
+	 * @param root_pack
+	 * @param packageName
+	 * @param property
+	 * @return Error Message
+	 */
 	public String getPackageProperty(boolean root_pack, String packageName,
 			String property) {
 
@@ -438,7 +472,14 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 			return null;
 		}
 	}
-
+	/**
+	 * Check that there is no duplicate for the package
+	 * @param pack_name
+	 * @param root_pack
+	 * @param pack_version
+	 * @param checkVersion
+	 * @return Error Message
+	 */
 	public String checkNoPackageNameDuplicate(final String pack_name,
 			boolean root_pack, String pack_version, boolean checkVersion) {
 		logger.debug("check no package name duplicate...");
@@ -477,7 +518,12 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 				: checkNoPackageNameDuplicate(pack_name, true, pack_version,
 						true);
 	}
-
+	/**
+	 * Check that there is no Help file duplicate
+	 * @param pack
+	 * @param sys_package
+	 * @return Error Message
+	 */
 	public String checkNoHelpFileDuplicate(File pack, boolean sys_package) {
 		logger.debug("check no help file duplicate...");
 		File helpDir = getHelpDir(sys_package);
@@ -485,7 +531,12 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 
 		return checkNoFileNameDuplicate(pack.getName(), packHelp, helpDir);
 	}
-
+	/**
+	 * Check that there is no Jar File Duplicate
+	 * @param pack
+	 * @param sys_package
+	 * @return Error Message
+	 */
 	public String checkNoJarFileDuplicate(File pack, boolean sys_package) {
 		logger.debug("check no jar file duplicate...");
 		File libDir = getLibDir(sys_package);
@@ -493,7 +544,12 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 
 		return checkNoFileNameDuplicate(pack.getName(), packHelp, libDir);
 	}
-
+	/**
+	 * Check if there is no image duplicate
+	 * @param pack
+	 * @param sys_package
+	 * @return error message
+	 */
 	public String checkNoImageFileDuplicate(File pack, boolean sys_package) {
 		logger.debug("check no image file duplicate...");
 		File imageDir = getImageDir(sys_package);
@@ -501,7 +557,13 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 
 		return checkNoFileNameDuplicate(pack.getName(), packImage, imageDir);
 	}
-
+	/**
+	 * Check if there is no file duplicate
+	 * @param packageName
+	 * @param srcDir
+	 * @param destDir
+	 * @return Error Message
+	 */
 	public String checkNoFileNameDuplicate(String packageName, File srcDir,
 			File destDir) {
 		logger.debug("check no file name duplicate in...");
@@ -524,11 +586,11 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 		return error;
 	}
 	/**
-	 * Check if the f
+	 * Check if there are duplicate action files
 	 * @param pack
 	 * @param pack_name
 	 * @param sys_package
-	 * @return
+	 * @return Error Message
 	 */
 	public String checkNoActionDuplicate(File pack, String pack_name,
 			boolean sys_package) {
