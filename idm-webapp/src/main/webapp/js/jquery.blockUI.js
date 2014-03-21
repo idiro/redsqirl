@@ -1,7 +1,7 @@
 /*!
  * jQuery blockUI plugin
- * Version 2.59.0-2013.04.05
- * @requires jQuery v1.7 or later
+ * Version 2.66.0-2013.10.09
+ * Requires jQuery v1.7 or later
  *
  * Examples at: http://malsup.com/jquery/block/
  * Copyright (c) 2007-2013 M. Alsup
@@ -17,53 +17,79 @@
 "use strict";
 
 	function setup($) {
-		jQuery.fn._fadeIn = jQuery.fn.fadeIn;
+		$.fn._fadeIn = $.fn.fadeIn;
 
-		var noOp = jQuery.noop || function() {};
+		var noOp = $.noop || function() {};
 
 		// this bit is to ensure we don't call setExpression when we shouldn't (with extra muscle to handle
-		// retarded userAgent strings on Vista)
+		// confusing userAgent strings on Vista)
 		var msie = /MSIE/.test(navigator.userAgent);
 		var ie6  = /MSIE 6.0/.test(navigator.userAgent) && ! /MSIE 8.0/.test(navigator.userAgent);
 		var mode = document.documentMode || 0;
-		var setExpr = jQuery.isFunction( document.createElement('div').style.setExpression );
+		var setExpr = $.isFunction( document.createElement('div').style.setExpression );
 
 		// global $ methods for blocking/unblocking the entire page
-		jQuery.blockUI   = function(opts) { install(window, opts); };
-		jQuery.unblockUI = function(opts) { remove(window, opts); };
+		$.blockUI   = function(opts) { install(window, opts); };
+		$.unblockUI = function(opts) { remove(window, opts); };
 
 		// convenience method for quick growl-like notifications  (http://www.google.com/search?q=growl)
-		jQuery.growlUI = function(title, message, timeout, onClose) {
-			var $m = jQuery('<div class="growlUI"></div>');
+		$.growlUI = function(title, message, timeout, onClose) {
+			var $m = $('<div class="growlUI"></div>');
 			if (title) $m.append('<h1>'+title+'</h1>');
 			if (message) $m.append('<h2>'+message+'</h2>');
 			if (timeout === undefined) timeout = 3000;
-			jQuery.blockUI({
-				message: $m, fadeIn: 700, fadeOut: 1000, centerY: false,
-				timeout: timeout, showOverlay: false,
-				onUnblock: onClose,
-				css: jQuery.blockUI.defaults.growlCSS
+
+			// Added by konapun: Set timeout to 30 seconds if this growl is moused over, like normal toast notifications
+			var callBlock = function(opts) {
+				opts = opts || {};
+
+				$.blockUI({
+					message: $m,
+					fadeIn : typeof opts.fadeIn  !== 'undefined' ? opts.fadeIn  : 700,
+					fadeOut: typeof opts.fadeOut !== 'undefined' ? opts.fadeOut : 1000,
+					timeout: typeof opts.timeout !== 'undefined' ? opts.timeout : timeout,
+					centerY: false,
+					showOverlay: false,
+					onUnblock: onClose,
+					css: $.blockUI.defaults.growlCSS
+				});
+			};
+
+			callBlock();
+			var nonmousedOpacity = $m.css('opacity');
+			$m.mouseover(function() {
+				callBlock({
+					fadeIn: 0,
+					timeout: 30000
+				});
+
+				var displayBlock = $('.blockMsg');
+				displayBlock.stop(); // cancel fadeout if it has started
+				displayBlock.fadeTo(300, 1); // make it easier to read the message by removing transparency
+			}).mouseout(function() {
+				$('.blockMsg').fadeOut(1000);
 			});
+			// End konapun additions
 		};
 
 		// plugin method for blocking element content
-		jQuery.fn.block = function(opts) {
+		$.fn.block = function(opts) {
 			if ( this[0] === window ) {
-				jQuery.blockUI( opts );
+				$.blockUI( opts );
 				return this;
 			}
-			var fullOpts = jQuery.extend({}, jQuery.blockUI.defaults, opts || {});
+			var fullOpts = $.extend({}, $.blockUI.defaults, opts || {});
 			this.each(function() {
-				var $el = jQuery(this);
+				var $el = $(this);
 				if (fullOpts.ignoreIfBlocked && $el.data('blockUI.isBlocked'))
 					return;
 				$el.unblock({ fadeOut: 0 });
 			});
 
 			return this.each(function() {
-				if (jQuery.css(this,'position') == 'static') {
+				if ($.css(this,'position') == 'static') {
 					this.style.position = 'relative';
-					jQuery(this).data('blockUI.static', true);
+					$(this).data('blockUI.static', true);
 				}
 				this.style.zoom = 1; // force 'hasLayout' in ie
 				install(this, opts);
@@ -71,9 +97,9 @@
 		};
 
 		// plugin method for unblocking element content
-		jQuery.fn.unblock = function(opts) {
+		$.fn.unblock = function(opts) {
 			if ( this[0] === window ) {
-				jQuery.unblockUI( opts );
+				$.unblockUI( opts );
 				return this;
 			}
 			return this.each(function() {
@@ -81,10 +107,10 @@
 			});
 		};
 
-		jQuery.blockUI.version = 2.59; // 2nd generation blocking at no extra cost!
+		$.blockUI.version = 2.66; // 2nd generation blocking at no extra cost!
 
 		// override these in your code to change the default behavior and style
-		jQuery.blockUI.defaults = {
+		$.blockUI.defaults = {
 			// message displayed when blocking (use null for no message)
 			message:  '<h1>Please wait...</h1>',
 
@@ -186,6 +212,9 @@
 			// page blocking
 			focusInput: true,
 
+            // elements that can receive focus
+            focusableElements: ':input:enabled:visible',
+
 			// suppresses the use of overlay styles on FF/Linux (due to performance issues with opacity)
 			// no longer needed in 2012
 			// applyPlatformOpacityRules: true,
@@ -222,17 +251,17 @@
 			var css, themedCSS;
 			var full = (el == window);
 			var msg = (opts && opts.message !== undefined ? opts.message : undefined);
-			opts = jQuery.extend({}, jQuery.blockUI.defaults, opts || {});
+			opts = $.extend({}, $.blockUI.defaults, opts || {});
 
-			if (opts.ignoreIfBlocked && jQuery(el).data('blockUI.isBlocked'))
+			if (opts.ignoreIfBlocked && $(el).data('blockUI.isBlocked'))
 				return;
 
-			opts.overlayCSS = jQuery.extend({}, jQuery.blockUI.defaults.overlayCSS, opts.overlayCSS || {});
-			css = jQuery.extend({}, jQuery.blockUI.defaults.css, opts.css || {});
+			opts.overlayCSS = $.extend({}, $.blockUI.defaults.overlayCSS, opts.overlayCSS || {});
+			css = $.extend({}, $.blockUI.defaults.css, opts.css || {});
 			if (opts.onOverlayClick)
 				opts.overlayCSS.cursor = 'pointer';
 
-			themedCSS = jQuery.extend({}, jQuery.blockUI.defaults.themedCSS, opts.themedCSS || {});
+			themedCSS = $.extend({}, $.blockUI.defaults.themedCSS, opts.themedCSS || {});
 			msg = msg === undefined ? opts.message : msg;
 
 			// remove the current block (if there is one)
@@ -245,7 +274,7 @@
 			if (msg && typeof msg != 'string' && (msg.parentNode || msg.jquery)) {
 				var node = msg.jquery ? msg[0] : msg;
 				var data = {};
-				jQuery(el).data('blockUI.history', data);
+				$(el).data('blockUI.history', data);
 				data.el = node;
 				data.parent = node.parentNode;
 				data.display = node.style.display;
@@ -254,7 +283,7 @@
 					data.parent.removeChild(node);
 			}
 
-			jQuery(el).data('blockUI.onUnblock', opts.onUnblock);
+			$(el).data('blockUI.onUnblock', opts.onUnblock);
 			var z = opts.baseZ;
 
 			// blockUI uses 3 layers for blocking, for simplicity they are all used on every platform;
@@ -263,14 +292,14 @@
 			// layer3 is the message content that is displayed while blocking
 			var lyr1, lyr2, lyr3, s;
 			if (msie || opts.forceIframe)
-				lyr1 = jQuery('<iframe class="blockUI" style="z-index:'+ (z++) +';display:none;border:none;margin:0;padding:0;position:absolute;width:100%;height:100%;top:0;left:0" src="'+opts.iframeSrc+'"></iframe>');
+				lyr1 = $('<iframe class="blockUI" style="z-index:'+ (z++) +';display:none;border:none;margin:0;padding:0;position:absolute;width:100%;height:100%;top:0;left:0" src="'+opts.iframeSrc+'"></iframe>');
 			else
-				lyr1 = jQuery('<div class="blockUI" style="display:none"></div>');
+				lyr1 = $('<div class="blockUI" style="display:none"></div>');
 
 			if (opts.theme)
-				lyr2 = jQuery('<div class="blockUI blockOverlay ui-widget-overlay" style="z-index:'+ (z++) +';display:none"></div>');
+				lyr2 = $('<div class="blockUI blockOverlay ui-widget-overlay" style="z-index:'+ (z++) +';display:none"></div>');
 			else
-				lyr2 = jQuery('<div class="blockUI blockOverlay" style="z-index:'+ (z++) +';display:none;border:none;margin:0;padding:0;width:100%;height:100%;top:0;left:0"></div>');
+				lyr2 = $('<div class="blockUI blockOverlay" style="z-index:'+ (z++) +';display:none;border:none;margin:0;padding:0;width:100%;height:100%;top:0;left:0"></div>');
 
 			if (opts.theme && full) {
 				s = '<div class="blockUI ' + opts.blockMsgClass + ' blockPage ui-dialog ui-widget ui-corner-all" style="z-index:'+(z+10)+';display:none;position:fixed">';
@@ -284,7 +313,7 @@
 				s = '<div class="blockUI ' + opts.blockMsgClass + ' blockElement ui-dialog ui-widget ui-corner-all" style="z-index:'+(z+10)+';display:none;position:absolute">';
 				if ( opts.title ) {
 					s += '<div class="ui-widget-header ui-dialog-titlebar ui-corner-all blockTitle">'+(opts.title || '&nbsp;')+'</div>';
-				}  
+				}
 				s += '<div class="ui-widget-content ui-dialog-content"></div>';
 				s += '</div>';
 			}
@@ -294,7 +323,7 @@
 			else {
 				s = '<div class="blockUI ' + opts.blockMsgClass + ' blockElement" style="z-index:'+(z+10)+';display:none;position:absolute"></div>';
 			}
-			lyr3 = jQuery(s);
+			lyr3 = $(s);
 
 			// if we have a message, style it
 			if (msg) {
@@ -316,12 +345,12 @@
 				lyr1.css('opacity',0.0);
 
 			//$([lyr1[0],lyr2[0],lyr3[0]]).appendTo(full ? 'body' : el);
-			var layers = [lyr1,lyr2,lyr3], $par = full ? jQuery('body') : jQuery(el);
-			jQuery.each(layers, function() {
+			var layers = [lyr1,lyr2,lyr3], $par = full ? $('body') : $(el);
+			$.each(layers, function() {
 				this.appendTo($par);
 			});
 
-			if (opts.theme && opts.draggable && jQuery.fn.draggable) {
+			if (opts.theme && opts.draggable && $.fn.draggable) {
 				lyr3.draggable({
 					handle: '.ui-dialog-titlebar',
 					cancel: 'li'
@@ -329,21 +358,21 @@
 			}
 
 			// ie7 must use absolute positioning in quirks mode and to account for activex issues (when scrolling)
-			var expr = setExpr && (!jQuery.support.boxModel || jQuery('object,embed', full ? null : el).length > 0);
+			var expr = setExpr && (!$.support.boxModel || $('object,embed', full ? null : el).length > 0);
 			if (ie6 || expr) {
 				// give body 100% height
-				if (full && opts.allowBodyStretch && jQuery.support.boxModel)
-					jQuery('html,body').css('height','100%');
+				if (full && opts.allowBodyStretch && $.support.boxModel)
+					$('html,body').css('height','100%');
 
 				// fix ie6 issue when blocked element has a border width
-				if ((ie6 || !jQuery.support.boxModel) && !full) {
+				if ((ie6 || !$.support.boxModel) && !full) {
 					var t = sz(el,'borderTopWidth'), l = sz(el,'borderLeftWidth');
 					var fixT = t ? '(0 - '+t+')' : 0;
 					var fixL = l ? '(0 - '+l+')' : 0;
 				}
 
 				// simulate fixed position
-				jQuery.each(layers, function(i,o) {
+				$.each(layers, function(i,o) {
 					var s = o[0].style;
 					s.position = 'absolute';
 					if (i < 2) {
@@ -377,7 +406,7 @@
 				else
 					lyr3.append(msg);
 				if (msg.jquery || msg.nodeType)
-					jQuery(msg).show();
+					$(msg).show();
 			}
 
 			if ((msie || opts.forceIframe) && opts.showOverlay)
@@ -405,7 +434,7 @@
 
 			if (full) {
 				pageBlock = lyr3[0];
-				pageBlockEls = jQuery(':input:enabled:visible',pageBlock);
+				pageBlockEls = $(opts.focusableElements,pageBlock);
 				if (opts.focusInput)
 					setTimeout(focus, 20);
 			}
@@ -416,11 +445,11 @@
 				// auto-unblock
 				var to = setTimeout(function() {
 					if (full)
-						jQuery.unblockUI(opts);
+						$.unblockUI(opts);
 					else
-						jQuery(el).unblock(opts);
+						$(el).unblock(opts);
 				}, opts.timeout);
-				jQuery(el).data('blockUI.timeout', to);
+				$(el).data('blockUI.timeout', to);
 			}
 		}
 
@@ -428,14 +457,14 @@
 		function remove(el, opts) {
 			var count;
 			var full = (el == window);
-			var $el = jQuery(el);
+			var $el = $(el);
 			var data = $el.data('blockUI.history');
 			var to = $el.data('blockUI.timeout');
 			if (to) {
 				clearTimeout(to);
 				$el.removeData('blockUI.timeout');
 			}
-			opts = jQuery.extend({}, jQuery.blockUI.defaults, opts || {});
+			opts = $.extend({}, $.blockUI.defaults, opts || {});
 			bind(0, el, opts); // unbind events
 
 			if (opts.onUnblock === null) {
@@ -445,7 +474,7 @@
 
 			var els;
 			if (full) // crazy selector to handle odd field errors in ie6/7
-				els = jQuery('body').children().filter('.blockUI').add('body > .blockUI');
+				els = $('body').children().filter('.blockUI').add('body > .blockUI');
 			else
 				els = $el.find('>.blockUI');
 
@@ -462,7 +491,7 @@
 
 			if (opts.fadeOut) {
 				count = els.length;
-				els.fadeOut(opts.fadeOut, function() { 
+				els.stop().fadeOut(opts.fadeOut, function() {
 					if ( --count === 0)
 						reset(els,data,opts,el);
 				});
@@ -473,7 +502,10 @@
 
 		// move blocking element back into the DOM where it started
 		function reset(els,data,opts,el) {
-			var $el = jQuery(el);
+			var $el = $(el);
+			if ( $el.data('blockUI.isBlocked') )
+				return;
+
 			els.each(function(i,o) {
 				// remove via DOM calls so we don't lose event handlers
 				if (this.parentNode)
@@ -496,14 +528,14 @@
 				opts.onUnblock(el,opts);
 
 			// fix issue in Safari 6 where block artifacts remain until reflow
-			var body = jQuery(document.body), w = body.width(), cssW = body[0].style.width;
+			var body = $(document.body), w = body.width(), cssW = body[0].style.width;
 			body.width(w-1).width(w);
 			body[0].style.width = cssW;
 		}
 
 		// bind/unbind the handler
 		function bind(b, el, opts) {
-			var full = el == window, $el = jQuery(el);
+			var full = el == window, $el = $(el);
 
 			// don't bother unbinding if there is nothing to unbind
 			if (!b && (full && !pageBlock || !full && !$el.data('blockUI.isBlocked')))
@@ -518,9 +550,9 @@
 			// bind anchors and inputs for mouse and key events
 			var events = 'mousedown mouseup keydown keypress keyup touchstart touchend touchmove';
 			if (b)
-				jQuery(document).bind(events, opts, handler);
+				$(document).bind(events, opts, handler);
 			else
-				jQuery(document).unbind(events, handler);
+				$(document).unbind(events, handler);
 
 		// former impl...
 		//		var $e = $('a,:input');
@@ -530,7 +562,7 @@
 		// event handler to suppress keyboard/mouse events when blocking
 		function handler(e) {
 			// allow tab navigation (conditionally)
-			if (e.keyCode && e.keyCode == 9) {
+			if (e.type === 'keydown' && e.keyCode && e.keyCode == 9) {
 				if (pageBlock && e.data.constrainTabKey) {
 					var els = pageBlockEls;
 					var fwd = !e.shiftKey && e.target === els[els.length-1];
@@ -542,9 +574,9 @@
 				}
 			}
 			var opts = e.data;
-			var target = jQuery(e.target);
+			var target = $(e.target);
 			if (target.hasClass('blockOverlay') && opts.onOverlayClick)
-				opts.onOverlayClick();
+				opts.onOverlayClick(e);
 
 			// allow events within the message content
 			if (target.parents('div.' + opts.blockMsgClass).length > 0)
@@ -571,7 +603,7 @@
 		}
 
 		function sz(el, p) {
-			return parseInt(jQuery.css(el,p),10)||0;
+			return parseInt($.css(el,p),10)||0;
 		}
 
 	}

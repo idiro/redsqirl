@@ -832,7 +832,7 @@ input.ui-button::-moz-focus-inner,button.ui-button::-moz-focus-inner {
 
 .ui-tabs .ui-tabs-nav {
 	margin: 0;
-	padding: 0.1em 0.1em 0;
+	padding: 0.1em 0.1em 0.1em 01.em;
 }
 
 .ui-tabs .ui-tabs-nav li {
@@ -841,15 +841,27 @@ input.ui-button::-moz-focus-inner,button.ui-button::-moz-focus-inner {
 	position: relative;
 	top: 0;
 	margin: 1px .2em 0 0;
-	border-bottom: 0;
+	border: 0px 0px 0px 0px;
 	padding: 0;
 	white-space: nowrap;
+	
+	background-color: transparent;
+	background-image: url();
+	border:none;
 }
 
 .ui-tabs .ui-tabs-nav li a {
 	float: left;
 	padding: 0.1em 0.5em;
 	text-decoration: none;
+	background-color: #87888c;
+	border-radius:7px;
+	font-weight:bold;
+	
+	height:25px;
+	line-height: 25px; 
+  	vertical-align: middle;
+  	color: #FFFFFF;
 }
 
 .ui-tabs .ui-tabs-nav li.ui-tabs-active {
@@ -857,9 +869,12 @@ input.ui-button::-moz-focus-inner,button.ui-button::-moz-focus-inner {
 	padding-bottom: 1px;
 }
 
+/*active tab*/
 .ui-tabs .ui-tabs-nav li.ui-tabs-active a,.ui-tabs .ui-tabs-nav li.ui-state-disabled a,.ui-tabs .ui-tabs-nav li.ui-tabs-loading a
 	{
-	cursor: text;
+	cursor: pointer;
+	background-color: #C62127;
+	color: #FFFFFF;
 }
 
 .ui-tabs .ui-tabs-nav li a,

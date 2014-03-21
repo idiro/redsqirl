@@ -113,23 +113,36 @@ function configureCanvas(canvasName){
 
 	// set width of the canvas
 	jQuery("#"+canvasContainer).css("width", jQuery(canvasName).width() + 'px');
-
+	
 	// white background
 	var background = new Kinetic.Rect({
 		x : 0,
 		y : 0,
+		//fill : "white",
 		width : stage.getWidth(),
-		height : stage.getHeight(),
-		fill : "white"
+		height : stage.getHeight()
 	});
+	
+	// puts a different colour on the canvas before it is opened
+	jQuery("#"+canvasContainer).css("background-color", "#FFFAFA");
+	jQuery(".kineticjs-content").css("background-color", "white");
+	jQuery(".kineticjs-content").css("background-image", "url('../image/canvas_squirl.png')");
+	jQuery(".kineticjs-content").css("background-size", "920px");
+	//jQuery(".kineticjs-content").css("background-repeat", "no-repeat");
+	
+	//remove image from footer
+	jQuery("#tabsFooter ul:first li").each(function(index) {
+		var nameDiv = jQuery(this).attr("aria-controls");
+		if (nameDiv != undefined) {
+			jQuery("#" +  nameDiv).find(".kineticjs-content").css("background-image", "none");
+		}
+	});
+	
 	canvasArray[canvasName].background = background;
 
 	// add the background on layer
 	layer.add(background);
-
-	// puts a different color on the canvas before it is opened
-	jQuery("#"+canvasContainer).css("background-color", "#FFFAFA");
-	jQuery(".kineticjs-content").css("background-color", "white");
+	
 
 	// dotted rectangle to select objects
 	canvasArray[canvasName].rectSelect = new Kinetic.Rect({
@@ -1277,6 +1290,9 @@ function mountObj(canvasName) {
 
 		var posInitX = 40;
 		var poxInitY = 50;
+		
+		var posInitTextX = 16;
+		var posInitTextY = 80;
 
 		var nameDiv = jQuery(this).attr("aria-controls");
 
@@ -1290,6 +1306,8 @@ function mountObj(canvasName) {
 				width : jQuery("#canvas-tabs").width()-10,
 				height : 100
 			});
+			
+			jQuery("#" +  nameDiv).find(".kineticjs-content").css("background-image", "none");
 
 			// layer to footer tab1
 			var layerTab = new Kinetic.Layer();
@@ -1308,16 +1326,32 @@ function mountObj(canvasName) {
 				var imgTab = new Image();
 				imgTab.src = jQuery(this).attr("src");
 				imgTab.onload = findHHandWW;
-
+				
 				var srcImageText = new Kinetic.Text({
 					text : jQuery(this).attr("src")
 				});
 				srcImageText.setStroke(null);
+				
+				//label on footer
+				var labelText = jQuery(this).next().text();
+				var labelTextSize8 = labelText;
+				if(labelText.length > 8){
+					labelTextSize8 = labelText.substring(0,7).concat(".");
+				}
+				labelTextSize8 = labelTextSize8.replace("_"," ");
+				labelTextSize8 = ucFirstAllWords(labelTextSize8);
 
 				var typeText = new Kinetic.Text({
-					text : jQuery(this).next().text()
+					x:posInitTextX,
+					y:posInitTextY,
+					fontSize: 12,
+					fill: 'black',
+					text : labelTextSize8
 				});
-				typeText.setStroke(null);
+				
+				typeText.setPosition(posInitTextX,posInitTextY);
+				
+				//typeText.setStroke(null);
 
 				// ------------------ START
 				// GROUP
@@ -1347,7 +1381,8 @@ function mountObj(canvasName) {
 				polygonTabFake.posInitX = posInitX;
 				polygonTabFake.posInitY = poxInitY;
 
-				posInitX = posInitX + 60;
+				posInitX = posInitX + 70;
+				posInitTextX = posInitTextX + 70;
 
 				polygonTabFake.on('dragstart',function() {
 					jQuery('#body').css('cursor','url('+ polygonTabImage+ ') 30 30,default');
@@ -1396,6 +1431,7 @@ function mountObj(canvasName) {
 
 				layerTab.add(polygonTab);
 				layerTab.add(polygonTabFake.clone());
+				layerTab.add(typeText);
 
 				// jQuery( "#"+nameDiv ).find("img").remove();
 
@@ -2103,8 +2139,6 @@ function capitaliseFirstLetter(string){
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();;
 }
 
-
-
 var isSaveAll = false;
 var indexSaving;
 var contSaving;
@@ -2145,4 +2179,18 @@ function onHideModalSaveWorkflow(saved){
    		isSaveAll = false;
    	}
    	//]]>
+}
+
+/**
+ * 
+ * Method to put all inicial letters Upper Case
+ * 
+ */
+function ucFirstAllWords( str ){
+    var pieces = str.split(" ");
+    for ( var i = 0; i < pieces.length; i++ ){
+        var j = pieces[i].charAt(0).toUpperCase();
+        pieces[i] = j + pieces[i].substr(1);
+    }
+    return pieces.join(" ");
 }

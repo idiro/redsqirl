@@ -8,7 +8,7 @@
 	xmlns:rich="http://richfaces.org/rich"
 	xmlns:a4j="http://richfaces.org/a4j">
 
-<a4j:loadBundle basename="MessagesResources_en_IE" var="messages" />
+<a4j:loadBundle basename="MessagesResources" var="messages" />
 
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
@@ -24,54 +24,56 @@
 
 <body>
 
-	<script type="text/javascript">
+<script type="text/javascript">
 
-jQuery.noConflict();
-
-jQuery(document).ready(function() {
-	 //<![CDATA[
-
-    var remember = jQuery.cookie('remember');
-    
-
-    if (remember == 'true'){
-        
-        var username = jQuery.cookie('username');
-        var password = jQuery.cookie('password');
-        // autofill the fields
-        jQuery('#userLoginForm\\:username').val(username);
-        jQuery('#userLoginForm\\:password').val(password);
-        jQuery('#userLoginForm\\:loginCheck').attr('checked',true);
-
-    }
-
-
-  //]]> 
-});
-
-function cookiePassword(){
-    	    	
-    	   if (jQuery("#userLoginForm\\:loginCheck").prop("checked")) {
-    	        var username = jQuery("#userLoginForm\\:username").val();
-    	        var password = jQuery("#userLoginForm\\:password").val();
-    	        
-    	        // set cookies to expire in 14 days
-    	        jQuery.cookie('username', username, { expires: 14 });
-    	        jQuery.cookie('password', password, { expires: 14 });
-    	        jQuery.cookie('remember', true, { expires: 14 });
-    	    }
-    	    else
-    	    {
-    	        // reset cookies
-    	        jQuery.cookie('username', null);
-    	        jQuery.cookie('password', null);
-    	        jQuery.cookie('remember', null);
-    	    }
+	jQuery.noConflict();
 	
-}
+	jQuery(document).ready(function() {
+		 //<![CDATA[
+	
+	    var remember = jQuery.cookie('remember');
+	    
+	
+	    if (remember == 'true'){
+	        
+	        var username = jQuery.cookie('username');
+	        var password = jQuery.cookie('password');
+	        // autofill the fields
+	        jQuery('#userLoginForm\\:username').val(username);
+	        jQuery('#userLoginForm\\:password').val(password);
+	        jQuery('#userLoginForm\\:loginCheck').attr('checked',true);
+	
+	    }
+	
+	
+	  //]]> 
+	});
+	
+	function cookiePassword(){
+	    	    	
+	   	   if (jQuery("#userLoginForm\\:loginCheck").prop("checked")) {
+	   	        var username = jQuery("#userLoginForm\\:username").val();
+	   	        var password = jQuery("#userLoginForm\\:password").val();
+	   	        
+	   	        // set cookies to expire in 14 days
+	   	        jQuery.cookie('username', username, { expires: 14 });
+	   	        jQuery.cookie('password', password, { expires: 14 });
+	   	        jQuery.cookie('remember', true, { expires: 14 });
+	   	    }
+	   	    else
+	   	    {
+	   	        // reset cookies
+	   	        jQuery.cookie('username', null);
+	   	        jQuery.cookie('password', null);
+	   	        jQuery.cookie('remember', null);
+	   	    }
+		
+	}
 
 </script>
 
+	<img src="./image/login_page_background.png" style="width:50%;position:absolute;z-index:-1;height:100%;" onError="this.onerror=null;this.src='../image/login_page_background.png';" />
+	<img src="./image/login_squirl_background.png" style="width:90%;position:absolute;z-index:0;height:90%;left:6%;min-width:600px;" onError="this.onerror=null;this.src='../image/login_squirl_background.png';" />
 
 	<div id="domMessageInitial" style="display: none;">
 		
@@ -91,132 +93,130 @@ function cookiePassword(){
 		</h:form>
 	</div>
 
-
-	<div class="divLogin">
-		<center>
-			<h2>
-				<h:outputText value="#{messages.label_sistem}" />
-			</h2>
-		</center>
-		<f:view>
-
-			<h:panelGrid width="320px">
-				<rich:panel>
-					<f:facet name="header">
-						<h:outputText value="#{messages.label_login}" />
-					</f:facet>
-
-					<h:form id="userLoginForm">
-
-						<h:outputText value="#{messages.label_username}"
-							style="padding-left:60px;" />
-						<br />
-						<h:inputText id="username" label="Username"
-							value="#{userInfoBean.userName}" required="true"
-							style="margin-left:58px;" />
-						<h:outputText value="" />
-						<br />
-						<h:message for="username" style="padding-left:60px;" />
-						<br />
-						<br />
-						<h:outputText value="#{messages.label_password}"
-							style="padding-left:60px;" />
-						<br />
-						<h:inputSecret id="password" label="Password"
-							value="#{userInfoBean.password}" required="true"
-							style="margin-left:58px;" />
-						<h:outputText value="" />
-						<br />
-						<h:message for="password" style="padding-left:60px;" />
-						<br />
-						<br />
-						<h:outputText value="#{messages.error_login}"
-							rendered="#{userInfoBean.msnError != null}"
-							style="padding-left:100px;" />
-						<br />
-						<h:outputText value="#{messages.label_rememberpassword}"
-							style="padding-left:80px;" />
-						<h:selectBooleanCheckbox value="#{userInfoBean.loginChek}"
-							id="loginCheck" />
-						<br />
+	
+	<table style="position:relative;left:6%;top:3%; height:87%;" >
+		<tr>
+			<td>
+				<img src="./image/logo_redsqirl.gif" style="width:180px;padding-left:10%;padding-top:6%;" onError="this.onerror=null;this.src='../image/logo_redsqirl.gif';" />
+			</td>
+			<td>
+				<h:outputText value="#{messages.label_access}" style="font-size:50px;position:relative;left:50px;color:#818286;top:20px;" />
+				<br />
+				<h:outputText value="#{messages.label_log}" style="font-size:20px;position:relative;left:50px;color:#818286;top:26px;" />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				&nbsp;
+			</td>
+			<td>
+				
+				<f:view>
+		
+				<h:form id="userLoginForm">
+				
+					<center>
+						<h:panelGrid width="500px">
+							<rich:panel style="background-image:url(./image/login_div_background.gif),url(../image/login_div_background.gif);background-size:494px 243px;border:none;height:242px;">
+								
+								<img src="./image/icons/username_icon.gif" style="width:50px;padding-left:80px;position:relative;top:20px;" onError="this.onerror=null;this.src='../image/icons/username_icon.gif';" />
+								<h:inputText id="username" label="Username" value="#{userInfoBean.userName}" required="true" size="35" />
+								<h:outputText value="" />
+								<br />
+								<h:message for="username" style="padding-left:60px;" />
+								<br />
+								<br />
+									
+								<img src="./image/icons/password_icon.gif" style="width:50px;padding-left:80px;position:relative;top:23px;" onError="this.onerror=null;this.src='../image/icons/password_icon.gif';" />
+								<h:inputSecret id="password" label="Password" value="#{userInfoBean.password}" required="true" size="35" />
+								<h:outputText value="" />
+								<br />
+								<h:message for="password" style="padding-left:60px;" />
+								<br />
+								<br />
+								<h:outputText value="#{messages.error_login}" rendered="#{userInfoBean.msnError != null}" style="padding-left:200px;color:white;" />
+								<br />
+								<h:selectBooleanCheckbox value="#{userInfoBean.loginChek}" id="loginCheck" style="margin-left:160px;" />
+								<h:outputText value="#{messages.label_rememberpassword}" style="color:#FFFFFF" />
+								<br />
+			
+								<h:inputText id="twoLoginChek" value="#{userInfoBean.twoLoginChek}" style="display:none;" />
+			
+								<a4j:jsFunction name="reLogin" action="#{userInfoBean.login}" oncomplete="#{rich:component('mensagem')}.hide();" />
+			
+								<rich:modalPanel id="mensagem" showWhenRendered="#{userInfoBean.twoLoginChek != null}">
+									<center>
+										<h:outputText value="#{messages.label_twoLoginChek}" />
+										<br />
+										<br />
+										<a4j:commandButton value="#{messages.button_cancel}" onclick="#{rich:component('mensagem')}.hide(); return false;" />
+										<a4j:commandButton value="#{messages.button_ok}" onclick="reLogin(); return false;" />
+									</center>
+								</rich:modalPanel>
+			
+								<rich:modalPanel id="mensagemLoginTwice" showWhenRendered="#{userInfoBean.msnLoginTwice != null}">
+									<center>
+										<h:outputText value="#{messages.label_mensagemLoginTwice}" />
+										<br />
+										<br />
+										<a4j:commandButton value="#{messages.button_ok}"
+											onclick="#{rich:component('mensagemLoginTwice')}.hide(); return false;" />
+										</center>
+								</rich:modalPanel>
+			
+								<rich:modalPanel id="msnLoginError" showWhenRendered="#{requestScope['msnLoginError'] != null}">
+									<center>
+										<h:outputText value="#{messages.label_msnLoginError}" />
+										<br />
+										<br />
+										<a4j:commandButton value="#{messages.button_ok}"
+											onclick="#{rich:component('msnLoginError')}.hide(); return false;" />
+									</center>
+								</rich:modalPanel>
+							
+								<rich:spacer height="5" />
+								
+								<center>
+									<table>
+										<tr>
+											<td>
+												<rich:messages id="msg" globalOnly="false" layout="list" styleClass="message"
+													infoClass="messageok" errorClass="messageerrologin"
+													warnClass="messagealert" showDetail="true" showSummary="false" ajaxRendered="false" />
+											</td>
+										</tr>
+									</table>
+								</center>
+			
+			
+							</rich:panel>
+						</h:panelGrid>
+						
 						<br />
 						
-						<a4j:commandButton value="#{messages.label_login}"
-							action="#{userInfoBean.startProcess}"
-							reRender="progressPanel"
+						<a4j:commandButton action="#{userInfoBean.startProcess}" reRender="progressPanel" 
+							style="border:none;position:relative;height:40px;right:136px;top:-15px;width:107px;background:transparent;cursor:pointer;"
 							styleClass="buttonLogin" onclick="cookiePassword(); jQuery.blockUI({ message: jQuery('#domMessageInitial') }); "
-								oncomplete="validateSecondLogin();" />
-								
-						<a4j:jsFunction name="validateSecondLogin" action="#{userInfoBean.validateSecondLogin}"  />
-
-
-						<h:inputText id="twoLoginChek"
-							value="#{userInfoBean.twoLoginChek}" style="display:none;" />
-
-
-						<a4j:jsFunction name="reLogin" action="#{userInfoBean.login}"
-							oncomplete="#{rich:component('mensagem')}.hide();" />
-
-						<rich:modalPanel id="mensagem"
-							showWhenRendered="#{userInfoBean.twoLoginChek != null}">
-							<center>
-								<h:outputText value="#{messages.label_twoLoginChek}" />
-								<br />
-								<br />
-								<a4j:commandButton value="#{messages.button_cancel}"
-									onclick="#{rich:component('mensagem')}.hide(); return false;" />
-								<a4j:commandButton value="#{messages.button_ok}"
-									onclick="reLogin(); return false;" />
-							</center>
-						</rich:modalPanel>
-
-						<rich:modalPanel id="mensagemLoginTwice"
-							showWhenRendered="#{userInfoBean.msnLoginTwice != null}">
-							<center>
-								<h:outputText value="#{messages.label_mensagemLoginTwice}" />
-								<br />
-								<br />
-								<a4j:commandButton value="#{messages.button_ok}"
-									onclick="#{rich:component('mensagemLoginTwice')}.hide(); return false;" />
-							</center>
-						</rich:modalPanel>
-
-						<rich:modalPanel id="msnLoginError"
-							showWhenRendered="#{requestScope['msnLoginError'] != null}">
-							<center>
-								<h:outputText value="#{messages.label_msnLoginError}" />
-								<br />
-								<br />
-								<a4j:commandButton value="#{messages.button_ok}"
-									onclick="#{rich:component('msnLoginError')}.hide(); return false;" />
-							</center>
-						</rich:modalPanel>
-
-
-					</h:form>
-
-				
-					<rich:spacer height="5" />
-					
-					<center>
-						<table>
-							<tr>
-								<td>
-									<rich:messages id="msg" globalOnly="false" layout="list" styleClass="message"
-										infoClass="messageok" errorClass="messageerro"
-										warnClass="messagealert" showDetail="true" showSummary="false" ajaxRendered="false" />
-								</td>
-							</tr>
-						</table>
+							oncomplete="validateSecondLogin();" >
+								<img src="./image/button_login.gif" style="height:40px;border:none;position:relative;left:110px;" onError="this.onerror=null;this.src='../image/button_login.gif';" />
+								<h:outputText value="#{messages.label_login}" style="height:40px;border:none;position:relative;left:33px;top:-13px;color:white;" />
+						</a4j:commandButton>
+						<a4j:jsFunction name="validateSecondLogin" action="#{userInfoBean.validateSecondLogin}" />
+						
 					</center>
+					<br />
+		
+				</h:form>
+		
+				</f:view>
+				
+			</td>
+		</tr>
+		
+	</table>
+	
+	<div style="height:100px;width:100%;background:#C0D72F;position:relative;bottom:-17px;" />
 
-
-				</rich:panel>
-			</h:panelGrid>
-			<br />
-
-		</f:view>
-
-	</div>
+	
 </body>
 </html>

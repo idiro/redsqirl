@@ -8,6 +8,8 @@
 	xmlns:rich="http://richfaces.org/rich"
 	xmlns:a4j="http://richfaces.org/a4j">
 
+<a4j:loadBundle basename="MessagesResources" var="messages" />
+
 <head>
 
 <script>
@@ -32,7 +34,7 @@
 
 
 	<a4j:keepAlive beanName = "sshBean"/>
-	<h:panelGroup id="tabRemote" layout="block">
+	<div id="tabRemote" layout="block">
 		
 		<h:form>
 			<a4j:jsFunction name="setSelectedRemoteTab" action="#{sshBean.changeTab}" reRender="sshfs,sshpath" >
@@ -51,7 +53,7 @@
 				<a4j:actionparam name="nameTab"/>
 			</a4j:jsFunction>
 		
-			<ul>
+			<ul class="ulCssCanvas">
 				<ui:repeat value="#{sshBean.tabs}" var="tab">
 					<li><a href="##{tab}" onclick="setSelectedRemoteTab('#{tab}')">#{tab}</a> 
 						<span class='ui-icon ui-icon-close' onclick="closeTab(this);closeServer('#{tab}');"></span> </li>
@@ -79,7 +81,7 @@
 			</div>
 		</a4j:repeat>
 	
-	</h:panelGroup>
+	</div>
 	
 	<a4j:region>
 		<rich:modalPanel id="modalNewSsh" width="600" height="400" style="overflow:auto;" resizeable="false">

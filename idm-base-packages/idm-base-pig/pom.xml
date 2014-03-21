@@ -4,17 +4,19 @@
     http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>idiro</groupId>
     <artifactId>idm-base-pig</artifactId>
     <packaging>jar</packaging>
-    <version>0.1-SNAPSHOT</version>
     <name>IDM Worflow Pig Base Package</name>
     <description>Provide basic pig actions</description>
     
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <dist>${project.build.directory}/${project.artifactId}/</dist>
-        <prod.resources>src/main/dist</prod.resources>
+        <main.pck>${project.build.directory}/${project.artifactId}-${project.version}/</main.pck>
+        <target.pck>src/main/pck</target.pck>
+        <maven.build.timestamp.format>yyyy-MM-dd</maven.build.timestamp.format>
+        <timestamp>${maven.build.timestamp}</timestamp>
+        <pck-repo>${basedir}/src/main/pck-repo</pck-repo>
+        <target.pck-repo>${basedir}/target/pck-repo-${project.artifactId}-${project.version}</target.pck-repo>
     </properties>
     
     <parent>
@@ -81,15 +83,92 @@
 		    <target>1.6</target>
 		</configuration>
 	    </plugin>
-
 	    <plugin>
 		<groupId>org.apache.maven.plugins</groupId>
 		<artifactId>maven-jar-plugin</artifactId>
 		<version>2.3.1</version>
 		<configuration>
-		    <outputDirectory>${dist}/lib/</outputDirectory>
+		    <outputDirectory>${main.pck}/lib/</outputDirectory>
 		</configuration>
 	    </plugin>
+
+	    <plugin>
+		<groupId>com.google.code.maven-replacer-plugin</groupId>
+		<artifactId>replacer</artifactId>
+		<version>1.5.2</version>
+		<executions>
+		    <execution>
+			<id>create-pck-repo-sql</id>
+			<phase>package</phase>
+			<goals>
+			    <goal>replace</goal>
+			</goals>                   
+			<configuration>
+			    <file>${pck-repo}/record_repo.sql</file>
+			    <outputFile>${target.pck-repo}/record_repo.sql</outputFile>         
+			    <replacements>
+				<replacement>
+				    <token>#{ARTIFACTID}</token>
+				    <value>${project.artifactId}</value>
+				</replacement>
+				<replacement>
+				    <token>#{NAME}</token>
+				    <value>${project.name}</value>
+				</replacement>
+				<replacement>
+				    <token>#{DESCRIPTION}</token>
+				    <value>${project.description}</value>
+				</replacement>         
+				<replacement>
+				    <token>#{VERSION}</token>
+				    <value>${project.version}</value>
+				</replacement>     
+				<replacement>
+				    <token>#{TIMESTAMP}</token>
+				    <value>${timestamp}</value>
+				</replacement>         
+			    </replacements>
+			    <regex>false</regex>
+			</configuration>
+		    </execution>
+		    <execution>
+			<id>create-pck-repo-html</id>
+			<phase>package</phase>
+			<goals>
+			    <goal>replace</goal>
+			</goals>                   
+			<configuration>
+			    <file>${pck-repo}/idm-base-pig.html</file>
+			    <outputFile>${target.pck-repo}/${project.artifactId}-${project.version}.html</outputFile>         
+			    <replacements>
+				<replacement>
+				    <token>#{ARTIFACTID}</token>
+				    <value>${project.artifactId}</value>
+				</replacement>
+				<replacement>
+				    <token>#{NAME}</token>
+				    <value>${project.name}</value>
+				</replacement>
+				<replacement>
+				    <token>#{DESCRIPTION}</token>
+				    <value>${project.description}</value>
+				</replacement>         
+				<replacement>
+				    <token>#{VERSION}</token>
+				    <value>${project.version}</value>
+				</replacement>     
+				<replacement>
+				    <token>#{TIMESTAMP}</token>
+				    <value>${timestamp}</value>
+				</replacement>         
+			    </replacements>
+			    <regex>false</regex>
+			</configuration>
+		    </execution>
+		</executions>
+	    </plugin>
+
+
 	    <!-- Copy dependencies -->
 	    <plugin>
 		<artifactId>maven-resources-plugin</artifactId>
@@ -97,16 +176,15 @@
 		<executions>
 		    <execution>
 			<id>copy-resources</id>
-			<!-- here the phase you need -->
 			<phase>package</phase>
 			<goals>
 			    <goal>copy-resources</goal>
 			</goals>
 			<configuration>
-			    <outputDirectory>${dist}</outputDirectory>
+			    <outputDirectory>${main.pck}</outputDirectory>
 			    <resources>          
 				<resource>
-				    <directory>${prod.resources}</directory>
+				    <directory>${target.pck}</directory>
 				    <filtering>true</filtering>
 				</resource>
 			    </resources>              
@@ -121,17 +199,32 @@
 		<version>2.4</version>
 		<executions>
 		    <execution>
-			<id>zip</id> <!-- this is used for inheritance merges -->
+			<id>zip_pck</id> <!-- this is used for inheritance merges -->
 			<phase>package</phase> <!-- bind to the packaging phase -->
 			<goals>
 			    <goal>single</goal>
 			</goals>
 			<configuration>
-			    <finalName>${project.artifactId}</finalName>
+			    <finalName>${project.artifactId}-${project.version}</finalName>
+			    <appendAssemblyId>false</appendAssemblyId>
+			    <outputDirectory>${target.pck-repo}</outputDirectory>
+			    <descriptors>
+				<descriptor>src/main/assembly/zip_pck.xml</descriptor>
+			    </descriptors>
+			</configuration>
+		    </execution>
+		    <execution>
+			<id>zip_repo</id> <!-- this is used for inheritance merges -->
+			<phase>package</phase> <!-- bind to the packaging phase -->
+			<goals>
+			    <goal>single</goal>
+			</goals>
+			<configuration>
+			    <finalName>pck-repo-${project.artifactId}-${project.version}</finalName>
 			    <appendAssemblyId>false</appendAssemblyId>
 			    <outputDirectory>${project.build.directory}</outputDirectory>
 			    <descriptors>
-				<descriptor>src/main/assembly/zip.xml</descriptor>
+				<descriptor>src/main/assembly/zip_repo.xml</descriptor>
 			    </descriptors>
 			</configuration>
 		    </execution>

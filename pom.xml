@@ -15,6 +15,7 @@
 	<module>idm-workflow</module>
 	<module>idm-webapp</module>
 	<module>idm-base-packages</module>
+	<module>idm-repo</module>
     </modules>
 
     <organization>
