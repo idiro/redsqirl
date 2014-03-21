@@ -1044,7 +1044,7 @@
 			<a4j:region>
 			
 				<h:panelGrid columns="2" width="100%">
-					<h:graphicImage id="logoImg" width="100px" weight="100px" url="../image/icons/logo.png"/>
+					<h:graphicImage id="logoImg" width="100px" url="../image/icons/logo.png"/>
 					
 					<h:panelGrid columns="1" width="100%">
 					<rich:toolBar>
@@ -1117,7 +1117,7 @@
 	
 	
 							<rich:menuItem submitMode="none">
-								<h:outputLink value="#{canvasBean.workflowUrl}" target="_blank">#{messages.label_menu_see_oozie_job}</h:outputLink>
+								<h:outputLink value="#{canvasBean.workflowUrl}" style="font-size:13px;" target="_blank">#{messages.label_menu_see_oozie_job}</h:outputLink>
 							</rich:menuItem>
 	
 							<rich:menuSeparator />
@@ -1220,6 +1220,7 @@
 
 	<div id="mainPanelDiv">
 
+
 	<div class="splitterV" id="splitterDiv">
 		<div>
 
@@ -1241,6 +1242,7 @@
 								onclick="closeWorkflowTab(this,'canvas-1')"></span></li>
 							<img src="../image/icons/button-new_canvas.gif" alt="add"
 								style="width: 16px; padding-top: 2px;" id="addtabCanvas" />
+
 						</ul>
 
 						<span id="buttonsCanvas1" class="spanButtons">
@@ -1350,12 +1352,10 @@
 
 				<span id="buttonsTabs1" class="spanButtons">
 					<button class="buttonsArrowsLeft">
-						<img src="../image/icons/button-left_arrow.gif"
-							style="width: 16px;" />
+						<h:graphicImage  width="22px" value="../image/icons/button-left_arrow.gif"/>
 					</button>
 					<button class="buttonsArrowsRight">
-						<img src="../image/icons/button-right_arrow.gif"
-							style="width: 16px;" />
+						<h:graphicImage  width="22px" value="../image/icons/button-right_arrow.gif"/>
 					</button>
 				</span>
 
@@ -1442,12 +1442,10 @@
 
 				<span id="buttonsTabs2" class="spanButtons">
 					<button class="buttonsArrowsLeft">
-						<img src="../image/icons/button-left_arrow.gif"
-							style="width: 16px;" />
+						<h:graphicImage  width="22px" value="../image/icons/button-left_arrow.gif"/>
 					</button>
 					<button class="buttonsArrowsRight">
-						<img src="../image/icons/button-right_arrow.gif"
-							style="width: 16px;" />
+						<h:graphicImage  width="22px" value="../image/icons/button-right_arrow.gif"/>
 					</button>
 				</span>
 

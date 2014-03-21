@@ -1290,6 +1290,9 @@ function mountObj(canvasName) {
 
 		var posInitX = 40;
 		var poxInitY = 50;
+		
+		var posInitTextX = 16;
+		var posInitTextY = 80;
 
 		var nameDiv = jQuery(this).attr("aria-controls");
 
@@ -1323,16 +1326,32 @@ function mountObj(canvasName) {
 				var imgTab = new Image();
 				imgTab.src = jQuery(this).attr("src");
 				imgTab.onload = findHHandWW;
-
+				
 				var srcImageText = new Kinetic.Text({
 					text : jQuery(this).attr("src")
 				});
 				srcImageText.setStroke(null);
+				
+				//label on footer
+				var labelText = jQuery(this).next().text();
+				var labelTextSize8 = labelText;
+				if(labelText.length > 8){
+					labelTextSize8 = labelText.substring(0,7).concat(".");
+				}
+				labelTextSize8 = labelTextSize8.replace("_"," ");
+				labelTextSize8 = ucFirstAllWords(labelTextSize8);
 
 				var typeText = new Kinetic.Text({
-					text : jQuery(this).next().text()
+					x:posInitTextX,
+					y:posInitTextY,
+					fontSize: 12,
+					fill: 'black',
+					text : labelTextSize8
 				});
-				typeText.setStroke(null);
+				
+				typeText.setPosition(posInitTextX,posInitTextY);
+				
+				//typeText.setStroke(null);
 
 				// ------------------ START
 				// GROUP
@@ -1362,7 +1381,8 @@ function mountObj(canvasName) {
 				polygonTabFake.posInitX = posInitX;
 				polygonTabFake.posInitY = poxInitY;
 
-				posInitX = posInitX + 60;
+				posInitX = posInitX + 70;
+				posInitTextX = posInitTextX + 70;
 
 				polygonTabFake.on('dragstart',function() {
 					jQuery('#body').css('cursor','url('+ polygonTabImage+ ') 30 30,default');
@@ -1411,6 +1431,7 @@ function mountObj(canvasName) {
 
 				layerTab.add(polygonTab);
 				layerTab.add(polygonTabFake.clone());
+				layerTab.add(typeText);
 
 				// jQuery( "#"+nameDiv ).find("img").remove();
 
@@ -2118,8 +2139,6 @@ function capitaliseFirstLetter(string){
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();;
 }
 
-
-
 var isSaveAll = false;
 var indexSaving;
 var contSaving;
@@ -2160,4 +2179,18 @@ function onHideModalSaveWorkflow(saved){
    		isSaveAll = false;
    	}
    	//]]>
+}
+
+/**
+ * 
+ * Method to put all inicial letters Upper Case
+ * 
+ */
+function ucFirstAllWords( str ){
+    var pieces = str.split(" ");
+    for ( var i = 0; i < pieces.length; i++ ){
+        var j = pieces[i].charAt(0).toUpperCase();
+        pieces[i] = j + pieces[i].substr(1);
+    }
+    return pieces.join(" ");
 }

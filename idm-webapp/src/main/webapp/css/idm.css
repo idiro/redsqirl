@@ -191,34 +191,51 @@ input {
 
 .ui-tabs .ui-tabs-nav {
 	position: relative;
+	width: 10000px;
 }
 
 .spanButtons {
-	margin-top: -20px;
+	margin-top: -19px;
 	left: 800px;
 	position: absolute;
 	z-index: 10000;
-	background:
-		url("http://code.jquery.com/ui/1.10.0/themes/base/images/ui-bg_highlight-soft_75_cccccc_1x100.png")
-		repeat-x scroll 50% 50% #CCCCCC;
-	border: 1px solid #AAAAAA;
+	background: url();
+	background-color:transparent;
+	border: none;
 	color: #222222;
 	font-weight: bold;
 	height: 18px;
-	width: 36px;
+	width: 50px;
 }
 
-.buttonsArrowsLeft {
-	border: medium hidden;
-	height: 18px;
-	width: 15px;
-}
-
+.buttonsArrowsLeft,
 .buttonsArrowsRight {
-	border: medium hidden;
+	padding: 0px 0px 0px 0px;
+	border: none;
 	height: 18px;
 	width: 15px;
+	background-color:transparent;
 }
+
+#buttonsTabs1.spanButtons,
+#buttonsTabs2.spanButtons {
+	margin-top: -24px;
+	margin-left: -20px;
+	height: 22px;
+	width: 100px;
+}
+
+#buttonsTabs1 .buttonsArrowsLeft,
+#buttonsTabs2 .buttonsArrowsLeft,
+#buttonsTabs1 .buttonsArrowsRight,
+#buttonsTabs2 .buttonsArrowsRight{
+	height: 22px;
+	width: 22px;
+}
+
+
+
+
 
 #tabs1 {
 	position: relative;
@@ -536,6 +553,7 @@ table.secondtable td{
 .rich-menu-item{
 	text-align:left;
 	padding: 0px 0px 0px 0px;
+	font-size:13px;
 }
 
 .rich-menu-item-hover{
@@ -564,6 +582,7 @@ table.secondtable td{
 .rich-menu-group{
 	text-align:left;
 	padding: 0px 0px 0px 0px;
+	font-size:13px;
 }
 
 .rich-menu-group-hover{
