@@ -120,7 +120,7 @@
 							<rich:panel style="background-image:url(./image/login_div_background.gif),url(../image/login_div_background.gif);background-size:494px 243px;border:none;height:242px;">
 								
 								<img src="./image/icons/username_icon.gif" style="width:50px;padding-left:80px;position:relative;top:20px;" onError="this.onerror=null;this.src='../image/icons/username_icon.gif';" title="#{messages.label_username}" />
-								<h:inputText id="username" label="Username" value="#{userInfoBean.userName}" required="true" size="35" />
+								<h:inputText id="username" label="Username" style="background-color:white;border-style: none;border-radius:0px;" value="#{userInfoBean.userName}" required="true" size="35" />
 								<h:outputText value="" />
 								<br />
 								<h:message for="username" style="padding-left:60px;" />
@@ -128,7 +128,7 @@
 								<br />
 									
 								<img src="./image/icons/password_icon.gif" style="width:50px;padding-left:80px;position:relative;top:23px;" onError="this.onerror=null;this.src='../image/icons/password_icon.gif';" title="#{messages.label_password}" />
-								<h:inputSecret id="password" label="Password" value="#{userInfoBean.password}" required="true" size="35" />
+								<h:inputSecret id="password" label="Password" style="background-color:white;border-style: none;border-radius:0px;" value="#{userInfoBean.password}" required="true" size="35" />
 								<h:outputText value="" />
 								<br />
 								<h:message for="password" style="padding-left:60px;" />

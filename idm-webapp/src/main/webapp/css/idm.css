@@ -255,17 +255,21 @@ input {
 	background: #e6e6e6;
 	/* right: 13px; */
 	border: 1px solid lightgrey;
+	border-radius: 7px;
+	z-index:500;
 }
 
 .allTabs a {
 	display: block;
 	padding: 10px;
-	font-size: 14px;
+	font-size: 13px;
+    font-weight: bold;
 	text-decoration: none;
 }
 
 .allTabs a:hover {
-	background: #ffffff;
+	background: #C62127;
+	color: white;
 }
 
 .allTabs .highlight {
@@ -601,12 +605,13 @@ table.secondtable td{
 /*signout button*/
 .signoutButton{
        background-image:url('../image/icons/button-red.png');
-       width:80px;
-       height:20px;
+       background-size: 100% 100%;
+       width:96px;
+       height:24px;
        text-align:center;
        color:  #FFFFFF;
        vertical-align: middle;
-       padding: 0px 0px 0px 0px;
+       padding: 2px 10px 6px 10px;
 }
 
 /*textFields*/
