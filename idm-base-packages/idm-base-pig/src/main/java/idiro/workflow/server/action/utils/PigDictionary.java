@@ -29,34 +29,53 @@ import org.apache.log4j.Logger;
 public class PigDictionary extends AbstractDictionary {
 
 	private static Logger logger = Logger.getLogger(PigDictionary.class);
-
+	/**
+	 * Key for logical operators
+	 */
 	private static final String logicalOperators = "logicalOperators";
+	/**Key for relational operators*/
 	private static final String relationalOperators = "relationalOperators";
+	/**Key for a cast operator*/
 	private static final String castOperator = "castOperator";
+	/**Key for arithmetic operation*/
 	private static final String arithmeticOperators = "arithmeticOperators";
+	/**Key for utils methods*/
 	private static final String utilsMethods = "utilsMethods";
+	/**Key for math methods*/
 	private static final String mathMethods = "mathMethods";
+	/**Key for string Methods*/
 	private static final String stringMethods = "stringMethods";
+	/**Key for aggregation methods*/
 	private static final String agregationMethods = "agregationMethods";
-
+	/**Instance*/
 	private static PigDictionary instance;
-
+	/**
+	 * Get an instance of the dictionary
+	 * @return instance
+	 */
 	public static PigDictionary getInstance() {
 		if (instance == null) {
 			instance = new PigDictionary();
 		}
 		return instance;
 	}
-
+	/**
+	 * Constructor
+	 */
 	private PigDictionary() {
 		super();
 	}
-
+	/**
+	 * Get the file name of the where the functions are stored
+	 * @return file name
+	 */
 	@Override
 	protected String getNameFile() {
 		return "functionsPig.txt";
 	}
-
+	/**
+	 * Load the default funtions into a map
+	 */
 	protected void loadDefaultFunctions() {
 
 		functionsMap = new HashMap<String, String[][]>();
@@ -359,7 +378,7 @@ public class PigDictionary extends AbstractDictionary {
 		return ans;
 	}
 	/**
-	 * Return the 
+	 * Return the Type that is accepted by pig
 	 * @param feat a feature type that will be checked
 	 * @return Pig Type of the feature type given 
 	 */
@@ -541,7 +560,14 @@ public class PigDictionary extends AbstractDictionary {
 		return type;
 
 	}
-
+	/**
+	 * Run a cast operation on an expression
+	 * @param expr
+	 * @param features
+	 * @param featureAggreg
+	 * @return type
+	 * @throws Exception
+	 */
 	private String runCastOperation(String expr, FeatureList features,
 			Set<String> featureAggreg) throws Exception {
 		logger.debug("casting");
@@ -580,12 +606,23 @@ public class PigDictionary extends AbstractDictionary {
 
 		return type;
 	}
-
+	/**
+	 * Get the return type using an empty list for aggregation
+	 * @param expr
+	 * @param features
+	 * @return type
+	 * @throws Exception
+	 */
 	public String getReturnType(String expr, FeatureList features)
 			throws Exception {
 		return getReturnType(expr, features, null);
 	}
-
+	/**
+	 * check if a type given is the same type as the type expected
+	 * @param typeToBe
+	 * @param typeGiven
+	 * @return <code>true</code> if types are equal else <code>false</code>
+	 */
 	public static boolean check(String typeToBe, String typeGiven) {
 		boolean ok = false;
 		logger.debug("type to be : " + typeToBe + " given " + typeGiven);
@@ -624,14 +661,26 @@ public class PigDictionary extends AbstractDictionary {
 		}
 		return ok;
 	}
-
+	/**
+	 * Generate an editor interaction for single input
+	 * @param help
+	 * @param in
+	 * @return EditorInteraction
+	 * @throws RemoteException
+	 */
 	public static EditorInteraction generateEditor(Tree<String> help, DFEOutput in)
 			throws RemoteException {
 		List<DFEOutput> lOut = new LinkedList<DFEOutput>();
 		lOut.add(in);
 		return generateEditor(help, lOut);
 	}
-
+	/**
+	 * Generate an editor interaction with a list
+	 * @param help
+	 * @param in
+	 * @return EditorInteraction
+	 * @throws RemoteException
+	 */
 	public static EditorInteraction generateEditor(Tree<String> help,
 			List<DFEOutput> in) throws RemoteException {
 		logger.debug("generate Editor...");
@@ -666,7 +715,13 @@ public class PigDictionary extends AbstractDictionary {
 		ei.getTree().add(editor);
 		return ei;
 	}
-
+	/**
+	 * Generate an EditorInteraction with FeatureList
+	 * @param help
+	 * @param inFeat
+	 * @return EditorInteraction
+	 * @throws RemoteException
+	 */
 	public static EditorInteraction generateEditor(Tree<String> help,
 			FeatureList inFeat) throws RemoteException {
 		logger.debug("generate Editor...");
@@ -688,7 +743,11 @@ public class PigDictionary extends AbstractDictionary {
 		ei.getTree().add(editor);
 		return ei;
 	}
-
+	/**
+	 * Create a conditional help menu
+	 * @return
+	 * @throws RemoteException
+	 */
 	public Tree<String> createConditionHelpMenu() throws RemoteException {
 		Tree<String> help = new TreeNonUnique<String>("help");
 		help.add(createMenu(new TreeNonUnique<String>("operation_logic"),
