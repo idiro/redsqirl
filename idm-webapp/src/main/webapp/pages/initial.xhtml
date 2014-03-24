@@ -78,13 +78,14 @@
 	<div id="domMessageInitial" style="display: none;">
 		
 		<h:form>
+		    <!-- label="#{userInfoBean.currentValue} %" interval="500" minValue="-1" maxValue="100"-->
 	        <a4j:outputPanel id="progressPanel">
-	            <rich:progressBar value="#{userInfoBean.currentValue}"
-	                interval="500" label="#{userInfoBean.currentValue} %"
-	                enabled="#{userInfoBean.enabled}" minValue="-1" maxValue="100"
+	            <rich:progressBar 
+                    value="#{userInfoBean.currentValue}"
+	                enabled="#{userInfoBean.enabled}"
 	                reRenderAfterComplete="progressPanel">
-	                
-	            </rich:progressBar>
+	                  <h:outputText value="{value} %" />
+                </rich:progressBar>
 	        </a4j:outputPanel>
 	    </h:form>
 		

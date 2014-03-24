@@ -382,6 +382,21 @@ canvas {
 	width: 100%;
 }
 
+.rich-progress-bar-completed {
+    background-color:green;
+    background-image:url(/image/progress_bar.gif);
+    color:white;
+    height:30px;
+    line-height:30px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.rich-progress-bar-remained {
+    height:30px;
+    color:white;
+}
+
 .help {
 	position: absolute;
 	background-color: #eeeeee;
