@@ -34,7 +34,7 @@
 
 
 	<a4j:keepAlive beanName = "sshBean"/>
-	<div id="tabRemote" layout="block">
+	<h:panelGroup id="tabRemote" layout="block">
 		
 		<h:form>
 			<a4j:jsFunction name="setSelectedRemoteTab" action="#{sshBean.changeTab}" reRender="sshfs,sshpath" >
@@ -81,7 +81,7 @@
 			</div>
 		</a4j:repeat>
 	
-	</div>
+	</h:panelGroup>
 	
 	<a4j:region>
 		<rich:modalPanel id="modalNewSsh" width="600" height="400" style="overflow:auto;" resizeable="false">

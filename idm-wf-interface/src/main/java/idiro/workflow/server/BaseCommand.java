@@ -19,10 +19,10 @@ public class BaseCommand {
 	 */
 	private static Logger logger = Logger.getLogger(BaseCommand.class);
 
-//	public static void main(String[] args) {
-//		Logger.getRootLogger().setLevel(Level.OFF);
-//		System.out.println(getBaseCommand(Integer.valueOf(args[0])));
-//	}
+	public static void main(String[] args) {
+		Logger.getRootLogger().setLevel(Level.OFF);
+		System.out.println(getBaseCommand(Integer.valueOf(args[0])));
+	}
 
 	/**
 	 * 

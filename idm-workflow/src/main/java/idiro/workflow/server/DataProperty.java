@@ -2,7 +2,6 @@ package idiro.workflow.server;
 
 import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
-import idiro.workflow.server.interfaces.DataFlowElement;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
