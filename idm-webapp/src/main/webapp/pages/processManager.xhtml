@@ -24,8 +24,8 @@
 	<br />
 	
 	<div id="processManager" 
-		style="min-width: 400px; overflow: hidden; min-height: 400px;">
-		<h:form>
+		style="min-width: 400px; overflow: hidden; min-height: 140px;">
+		<h:form style="border:none">
 			<div class="divMenu">
 				<a href="#{processManagerBean.oozieUrl}" target="_blank"><h:graphicImage  value="../image/icons/button-oozie_web_console.gif" title='#{messages.oozie_gotowebconsole}' alt="Oozie" class="fileSystemIcon"/></a>
 				
@@ -35,11 +35,12 @@
 			
 			<br />
 			
-			<rich:dataTable id="processManagerTable" value="#{processManagerBean.processesGrid}"
-				var="item" width="100%" style="border-bottom:0px;border-right:0px;"
+			<rich:extendedDataTable id="processManagerTable" value="#{processManagerBean.processesGrid}"
+				var="item" width="100%" height="500px"
 				onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 				enableContextMenu="false" selectionMode="none"
-				onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
+				onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'"
+				rowClasses="even-row, odd-row">
 
 				<rich:column style="border-bottom:0px;border-right:0px;"
 					width="80px;">
@@ -50,7 +51,7 @@
 				</rich:column>
 				
 				<rich:column style="border-bottom:0px;border-right:0px;"
-					width="500px;">
+					width="300px;">
 					<f:facet name="header">
 						<h:outputText value="#{messages.label_process_name}" />
 					</f:facet>
@@ -66,7 +67,7 @@
 				</rich:column>
 				
 				<rich:column style="border-bottom:0px;border-right:0px;"
-					width="400px;">
+					width="200px;">
 					<f:facet name="header">
 						<h:outputText value="#{messages.label_start_date}" />
 					</f:facet>
@@ -96,7 +97,7 @@
 						<f:param name="id" value="#{item[0]}" />
 					</a4j:commandLink>
 				</rich:column>
-			</rich:dataTable>
+			</rich:extendedDataTable>
 		</h:form>
 	</div>
 </body>
