@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
-import org.apache.tools.ant.taskdefs.Property;
 
 /**
  * Class to manage IDM package. An IDM package is composed of 3 folders 'help',
