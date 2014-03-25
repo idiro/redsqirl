@@ -310,11 +310,16 @@ public class CanvasBean extends BaseBean implements Serializable{
 	}
 
 	public void updateLinkPossibilities() {
+		
+		logger.info("updateLinkPossibilities");
 
 		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String idElementA = getIdMap().get(getNameWorkflow()).get(params.get("paramOutId"));
 		String idElementB = getIdMap().get(getNameWorkflow()).get(params.get("paramInId"));
 
+		logger.info("idElementA " + idElementA);
+		logger.info("idElementB " + idElementB);
+		
 		try {
 			linkPossibilities = new ArrayList<SelectItem>();
 			nbLinkPossibilities = 0;
@@ -323,10 +328,13 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 			DataFlowElement dfeObjA = df.getElement(idElementA);
 			DataFlowElement dfeObjB = df.getElement(idElementB);
-
-
+			
 			for (Map.Entry<String, DFELinkProperty> entryInput : dfeObjB.getInput().entrySet()){
 				for (Map.Entry<String, DFEOutput> entryOutput : dfeObjA.getDFEOutput().entrySet()){
+					
+					logger.info("entryInput " + entryInput);
+					logger.info("entryOutput " + entryOutput);
+					
 					if (df.check(entryOutput.getKey(), dfeObjA.getComponentId(), entryInput.getKey(), dfeObjB.getComponentId())){
 						linkPossibilities.add(new SelectItem(entryOutput.getKey()+" -> "+entryInput.getKey()));
 					}

@@ -1853,11 +1853,12 @@ function polygonOnClick(obj,e, canvasName){
 				var input = obj.getParent().getChildren()[4].getText();
 				var arrowClone = addLink(canvasName, output, input);
 				
+				//alert(arrow.output.getId() + "  " + obj.getParent().getId());
 				addLinkModalBt(arrow.output.getId(), obj.getParent().getId(), arrowClone.getName());
 				
 			}
 
-		} 
+		}
 		/*else {
 			var polygonLayer = canvasArray[canvasName].polygonLayer;
 			var layer = canvasArray[canvasName].layer;
