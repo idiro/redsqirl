@@ -22,10 +22,22 @@
 	    var front = (txtarea.val().trim()).substring(0,strPos);
 	    var back = (txtarea.val().trim()).substring(strPos,txtarea.val().length);
 	    txtarea.val(front + text.trim() + back);
-	    strPos = strPos + text.length;
-	    txtarea.selectionStart = strPos;
-	    txtarea.selectionEnd = strPos;
-	    txtarea.focus();
+
+
+	    var regex = '\\(';
+	    var pos = text.search(regex);
+	    if(pos != -1){
+		    strPos = strPos + pos+1;
+		}else{
+			strPos = strPos + text.length;
+		}
+	    
+	    //txtarea.selectionStart = strPos;
+	    //txtarea.selectionEnd = strPos;
+	    //txtarea.focus();
+
+	    txtarea.selectRange(strPos,strPos);
+	    
 	    txtarea.scrollTop = scrollPos;
 	}
 
@@ -44,6 +56,24 @@
 	        }
 	        return pos;
 	    }
+	})(jQuery);
+
+	(function (jQuery, undefined){
+	jQuery.fn.selectRange = function(start, end) {
+	    if(!end) end = start; 
+	    return this.each(function() {
+	        if (this.setSelectionRange) {
+	            this.focus();
+	            this.setSelectionRange(start, end);
+	        } else if (this.createTextRange) {
+	            var range = this.createTextRange();
+	            range.collapse(true);
+	            range.moveEnd('character', end);
+	            range.moveStart('character', start);
+	            range.select();
+	        }
+	    });
+	}
 	})(jQuery);
 	
 </script>
