@@ -87,12 +87,12 @@
 	
 	<br/>
 
-	<a4j:commandButton id="hdfsSaveFileBtn" value="#{messages.button_ok}"
+	<a4j:commandButton id="hdfsSaveFileBtn" value="#{messages.button_ok}" styleClass="greenButton"
 		onclick="#{rich:component('modalSaveWorkflow')}.hide();save(getPath('#{browserHdfsBean.path}'));"
 		oncomplete="" reRender="errorTable" >
 	</a4j:commandButton>
 	
-	<a4j:commandButton value="#{messages.button_cancel}"
+	<a4j:commandButton value="#{messages.button_cancel}" styleClass="greenButton"
 		onclick="#{rich:component('modalSaveWorkflow')}.hide();"
 		oncomplete="onHideModalSaveWorkflow(false);">
 	</a4j:commandButton>

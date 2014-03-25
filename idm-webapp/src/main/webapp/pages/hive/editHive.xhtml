@@ -28,9 +28,9 @@
 	</a4j:repeat>
 
 	<h:panelGrid columns="2">
-		<a4j:commandButton action="#{hiveBean.editFileAfter}" value="#{messages.button_ok}"
+		<a4j:commandButton  styleClass="greenButton" action="#{hiveBean.editFileAfter}" value="#{messages.button_ok}"
 			onclick="#{rich:component('hiveeditModalPanel')}.hide()" />
-		<a4j:commandButton value="#{messages.button_cancel}" onclick="#{rich:component('hiveeditModalPanel')}.hide();" />
+		<a4j:commandButton  styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('hiveeditModalPanel')}.hide();" />
 	</h:panelGrid>
 
 </h:panelGrid>

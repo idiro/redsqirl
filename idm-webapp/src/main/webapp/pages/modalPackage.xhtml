@@ -16,7 +16,7 @@
             <f:facet name="controls">
                 <h:graphicImage
                     value="../image/icons/buttonCloseWindow.gif"
-                    style="cursor:pointer;width:16px;"
+                    style="cursor:pointer;width:22px;"
                     onclick="#{rich:component('modalInstallPackage')}.hide()" />
             </f:facet>
                 <h:panelGroup>
@@ -64,11 +64,13 @@
                 rendered="#{packageMngBean.admin}">
                 <rich:panel id="pck_sys_install">
                     <a4j:commandButton
+                        styleClass="greenButton"
                         value="#{messages.button_sys_install}"
                         onclick="openInstallPackageModal('false');" />
                 </rich:panel>
                 <rich:panel id="pck_sys_uninstall">
                     <a4j:commandButton
+                        styleClass="greenButton"
                         value="#{messages.button_sys_uninstall}"
                         action="#{packageMngBean.removeSystemPackage}"
                         oncomplete="" />
@@ -98,11 +100,13 @@
                 rendered="#{packageMngBean.userAllowInstall}">
                 <rich:panel id="pck_user_install">
                     <a4j:commandButton
+                        styleClass="greenButton"
                         value="#{messages.button_user_install}"
                         onclick="openInstallPackageModal('true');" />
                 </rich:panel>
                 <rich:panel id="pck_user_uninstall">
                     <a4j:commandButton
+                        styleClass="greenButton"
                         value="#{messages.button_user_uninstall}"
                         action="#{packageMngBean.removeUserPackage}"
                         oncomplete="" />

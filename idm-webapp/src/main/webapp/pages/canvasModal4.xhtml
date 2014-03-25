@@ -30,7 +30,7 @@
 				
 				<span>&nbsp;&nbsp;</span>
 				
-			<a4j:commandButton type="submit" id="browserChangePathBt"
+			<a4j:commandButton  styleClass="greenButton" type="submit" id="browserChangePathBt"
 				action="#{canvasModalBean.changePathBrowser}" value="#{messages.button_ok}" reRender="browserTable2" />
 
 			<br/><br/>
@@ -78,7 +78,7 @@
 			</div>
 	<br/>
 	
-	<a4j:commandButton action="#{canvasModalBean.confirmBrowser}" value="#{messages.button_ok}" onclick="#{rich:component('canvasModalPanel')}.hide();" />
+	<a4j:commandButton  styleClass="greenButton" action="#{canvasModalBean.confirmBrowser}" value="#{messages.button_ok}" onclick="#{rich:component('canvasModalPanel')}.hide();" />
 	<span>&nbsp;&nbsp;</span>
 	
 

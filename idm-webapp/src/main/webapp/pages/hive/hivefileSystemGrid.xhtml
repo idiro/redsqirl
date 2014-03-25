@@ -63,7 +63,7 @@
 			<br />
 
 			<h:outputText value="#{messages.label_path}" />
-			<h:inputText id="hivepath" label="Path" value="#{hiveBean.path}" maxlength="255" style="width:395px; margin-left:5px;" />
+			<h:inputText id="hivepath" label="Path" styleClass="mainPageTextField" value="#{hiveBean.path}" maxlength="255" style="width:395px; margin-left:5px;" />
 			
 			<a4j:commandLink action="#{hiveBean.changePath}" reRender="hivefs" style="color:#FFFFFF" >
 				<h:graphicImage value="../image/icons/button-search.gif" title="#{messages.filesystem_change_path}" styleClass="refreshButton"/>
@@ -164,14 +164,14 @@
 			<f:facet name="header">Copy File</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer;width:16px;"
+					style="cursor:pointer;width:22px;"
 					onclick="#{rich:component('hivecopyModalPanel')}.hide()" />
 			</f:facet>
 	
 			<h:form id="hiveform2">
-				<h:panelGrid>
+				<h:panelGroup>
 					<a4j:include viewId="/pages/hive/copyHive.xhtml" ajaxRendered="true" />
-				</h:panelGrid>
+				</h:panelGroup>
 			</h:form>
 	
 		</rich:modalPanel>
@@ -184,14 +184,14 @@
 			<f:facet name="header">Move File</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer;width:16px;"
+					style="cursor:pointer;width:22px;"
 					onclick="#{rich:component('hivemoveModalPanel')}.hide()" />
 			</f:facet>
 	
 			<h:form id="hiveform3">
-				<h:panelGrid>
+				<h:panelGroup>
 					<a4j:include viewId="/pages/hive/moveHive.xhtml" ajaxRendered="true" />
-				</h:panelGrid>
+				</h:panelGroup>
 			</h:form>
 	
 		</rich:modalPanel>
@@ -204,7 +204,7 @@
 			<f:facet name="header">Create File</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer;width:16px;"
+					style="cursor:pointer;width:22px;"
 					onclick="#{rich:component('hiveaddModalPanel')}.hide()" />
 			</f:facet>
 	
@@ -224,7 +224,7 @@
 			<f:facet name="header">Edit File</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer;width:16px;"
+					style="cursor:pointer;width:22px;"
 					onclick="#{rich:component('hiveeditModalPanel')}.hide()" />
 			</f:facet>
 	
@@ -244,7 +244,7 @@
 			<f:facet name="header">Preview File</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer;width:16px;"
+					style="cursor:pointer;width:22px;"
 					onclick="#{rich:component('hiveOpenFileModalPanel')}.hide()" />
 			</f:facet>
 	

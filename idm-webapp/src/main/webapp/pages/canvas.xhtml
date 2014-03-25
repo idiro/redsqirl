@@ -1288,7 +1288,7 @@
 									<a4j:region>
 										<a4j:commandButton image="../image/icons/button-property.gif"
 											onclick="#{rich:component('modalConfigureFooterTabs')}.show()"
-											style="border: hidden;width:16px;" styleClass="configureFooterButton"/>
+											style="border: hidden;width:22px;vertical-align:middle;" styleClass="configureFooterButton"/>
 									</a4j:region>
 								</ul>
 
@@ -1500,7 +1500,7 @@
 			</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer;width:16px;"
+					style="cursor:pointer;width:22px;"
 					onclick="#{rich:component('canvasModalPanel')}.hide()" />
 			</f:facet>
 
@@ -1518,7 +1518,7 @@
 			<f:facet name="header">Configuration</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer;width:16px;"
+					style="cursor:pointer;width:22px;"
 					onclick="#{rich:component('modalConfigureFooterTabs')}.hide()" />
 			</f:facet>
 
@@ -1539,7 +1539,7 @@
 			<f:facet name="header">Save</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer;width:16px;"
+					style="cursor:pointer;width:22px;"
 					onclick="#{rich:component('modalSaveWorkflow')}.hide()" />
 			</f:facet>
 
@@ -1561,7 +1561,7 @@
 			<f:facet name="header">Load</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer;width:16px;"
+					style="cursor:pointer;width:22px;"
 					onclick="#{rich:component('modalLoadWorkflow')}.hide()" />
 			</f:facet>
 
@@ -1582,7 +1582,7 @@
 			<f:facet name="header">Create Link</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer;width:16px;"
+					style="cursor:pointer;width:22px;"
 					onclick="#{rich:component('modalSelectLink')}.hide()" />
 			</f:facet>
 
@@ -1596,15 +1596,15 @@
 	</a4j:region>
 
 	<a4j:region renderRegionOnly="true">
-		<rich:modalPanel id="modalChangeId" width="300" height="200"
-			style="overflow:auto;" resizeable="false" zindex="2000">
+		<rich:modalPanel id="modalChangeId" width="250" height="140"
+			style="overflow:auto;" resizeable="true" zindex="2000">
 
-			<f:facet name="header">Change Element Id</f:facet>
-			<f:facet name="controls">
+			<f:facet name="header" >Change Element Id</f:facet>
+			<!-- <f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer;width:16px;"
+					style="cursor:pointer;width:22px;"
 					onclick="#{rich:component('modalChangeId')}.hide()" />
-			</f:facet>
+			</f:facet> -->
 
 			<h:form>
 				<h:panelGroup>
@@ -1622,7 +1622,7 @@
 			<f:facet name="header">Packages</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer;width:16px;"
+					style="cursor:pointer;width:22px;"
 					onclick="#{rich:component('modalPackage')}.hide()" />
 			</f:facet>
 
@@ -1648,7 +1648,7 @@
 
 			<br /> <br />
 
-			<a4j:commandButton value="#{messages.button_ok}"
+			<a4j:commandButton  styleClass="greenButton" value="#{messages.button_ok}"
 				onclick="#{rich:component('msnError')}.hide(); return false;"
 				reRender="msnError, msg, errorTable" />
 

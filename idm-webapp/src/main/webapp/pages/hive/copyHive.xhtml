@@ -25,13 +25,13 @@ function dataTableSelectOneRadio(radio) {
 	<h:outputText value="#{messages.label_path}" />
 	<h:inputText id="pathCopy" label="Path" value="#{hiveBean.path}"
 		maxlength="255" style="width:395px;" />
-	<a4j:commandButton type="submit" id="changePathBt"
-		action="#{hiveBean.changePath}" value="#{messages.button_ok}" reRender="hivefsCopy" />
-
-	<br />
-
-
-	<a4j:commandLink action="#{hiveBean.goPrevious}"
+	<a4j:commandLink type="submit" id="changePathBt"
+		action="#{hiveBean.changePath}" reRender="hivefsCopy" >
+		<h:graphicImage id="btSearch" value="../image/icons/button-search.gif"
+            title='#{messages.button_ok}' />
+	</a4j:commandLink>
+    
+    <a4j:commandLink action="#{hiveBean.goPrevious}"
 		reRender="pathCopy,hivefsCopy">
 		<h:graphicImage id="btPrev" value="../image/icons/button-previous.gif" title='#{messages.HiveInterface_previous_help}' />
 	</a4j:commandLink>
@@ -85,9 +85,9 @@ function dataTableSelectOneRadio(radio) {
 	<br />
 
 	<h:panelGrid columns="2">
-		<a4j:commandButton action="#{hiveBean.copyFileAfter}" value="#{messages.button_ok}"
+		<a4j:commandButton  styleClass="greenButton" action="#{hiveBean.copyFileAfter}" value="#{messages.button_ok}"
 			reRender="hivefs" onclick="#{rich:component('hivecopyModalPanel')}.hide()" />
-		<a4j:commandButton value="#{messages.button_cancel}" type="button" 
+		<a4j:commandButton  styleClass="greenButton" value="#{messages.button_cancel}" type="button" 
 			onclick="#{rich:component('hivecopyModalPanel')}.hide();" />
 	</h:panelGrid>
 

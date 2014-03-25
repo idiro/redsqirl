@@ -102,11 +102,11 @@
 
 	</div>
 
-	<a4j:commandButton action="#{canvasModalBean.changePathOutputBrowser}" value="#{messages.button_ok}"
+	<a4j:commandButton styleClass="greenButton" action="#{canvasModalBean.changePathOutputBrowser}" value="#{messages.button_ok}"
 		onclick="#{rich:component('modalOutputBrowserHdfs')}.hide();" reRender="dataOutputForm">
 		<a4j:actionparam name="pathFile" value="getPathOutPutHive('#{browserHiveBean.path}')" noEscape="true" />
 	</a4j:commandButton>
 
-	<a4j:commandButton value="#{messages.button_cancel}" onclick="#{rich:component('modalOutputBrowserHdfs')}.hide();" />
+	<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('modalOutputBrowserHdfs')}.hide();" />
 
 </ui:composition>

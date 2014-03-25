@@ -1342,12 +1342,16 @@ function mountObj(canvasName) {
 				labelTextSize8 = ucFirstAllWords(labelTextSize8);
 
 				var typeText = new Kinetic.Text({
-					x:posInitTextX,
-					y:posInitTextY,
-					fontSize: 12,
-					fill: 'black',
-					text : labelTextSize8
+					text : jQuery(this).next().text()
 				});
+				
+				var typeLabel = new Kinetic.Text({
+                    x:posInitTextX,
+                    y:posInitTextY,
+                    fontSize: 12,
+                    fill: 'black',
+                    text : labelTextSize8
+                });
 				
 				typeText.setPosition(posInitTextX,posInitTextY);
 				
@@ -1431,7 +1435,7 @@ function mountObj(canvasName) {
 
 				layerTab.add(polygonTab);
 				layerTab.add(polygonTabFake.clone());
-				layerTab.add(typeText);
+				layerTab.add(typeLabel);
 
 				// jQuery( "#"+nameDiv ).find("img").remove();
 
