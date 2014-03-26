@@ -1342,12 +1342,16 @@ function mountObj(canvasName) {
 				labelTextSize8 = ucFirstAllWords(labelTextSize8);
 
 				var typeText = new Kinetic.Text({
-					x:posInitTextX,
-					y:posInitTextY,
-					fontSize: 12,
-					fill: 'black',
-					text : labelTextSize8
+					text : jQuery(this).next().text()
 				});
+				
+				var typeLabel = new Kinetic.Text({
+                    x:posInitTextX,
+                    y:posInitTextY,
+                    fontSize: 12,
+                    fill: 'black',
+                    text : labelTextSize8
+                });
 				
 				typeText.setPosition(posInitTextX,posInitTextY);
 				
@@ -1431,7 +1435,7 @@ function mountObj(canvasName) {
 
 				layerTab.add(polygonTab);
 				layerTab.add(polygonTabFake.clone());
-				layerTab.add(typeText);
+				layerTab.add(typeLabel);
 
 				// jQuery( "#"+nameDiv ).find("img").remove();
 
@@ -1849,11 +1853,12 @@ function polygonOnClick(obj,e, canvasName){
 				var input = obj.getParent().getChildren()[4].getText();
 				var arrowClone = addLink(canvasName, output, input);
 				
+				//alert(arrow.output.getId() + "  " + obj.getParent().getId());
 				addLinkModalBt(arrow.output.getId(), obj.getParent().getId(), arrowClone.getName());
 				
 			}
 
-		} 
+		}
 		/*else {
 			var polygonLayer = canvasArray[canvasName].polygonLayer;
 			var layer = canvasArray[canvasName].layer;

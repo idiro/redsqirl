@@ -80,11 +80,13 @@
 	<h:outputText value="#{messages.label_path}" />
 	<h:inputText id="pathOpenFile" label="Path"
 		value="#{browserHiveBean.path}" maxlength="255" style="width:395px;" />
-	<a4j:commandButton type="submit" id="changePathBt"
-		action="#{browserHiveBean.changePath}" value="#{messages.button_ok}"
-		reRender="hdfsfsOpenFile" />
-	<br />
-
+	<a4j:commandLink
+	    type="submit" id="changePathBt"
+		action="#{browserHiveBean.changePath}"
+		reRender="hdfsfsOpenFile" >
+        <h:graphicImage id="btSearch" value="../image/icons/button-search.gif"
+            title='#{messages.button_ok}' />
+    </a4j:commandLink>
 	<a4j:commandLink action="#{browserHiveBean.goPrevious}"
 		reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
 		<h:graphicImage id="btPrev" value="../image/icons/button-previous.gif"
@@ -97,7 +99,7 @@
 	</a4j:commandLink>
 	<br />
 
-	<div style="width: 100%; overflow: auto; height: 305px;">
+	<div style="width: 100%; overflow: auto; height: 305px;margin-top:5px;margin-bottom:10px;">
 
 		<rich:dataTable id="hdfsfsOpenFile"
 			value="#{browserHiveBean.listGrid}" var="item" width="100%"
@@ -145,7 +147,7 @@
 
 	</div>
 
-	<a4j:commandButton action="#{canvasModalBean.changePathBrowser}"
+	<a4j:commandButton styleClass="greenButton" action="#{canvasModalBean.changePathBrowser}"
 		value="#{messages.button_ok}"
 		oncomplete="#{rich:component('modalPanelBrowserHiveId')}.hide();"
 		reRender="browserPanel, browserTable1, browserTable2, browserTable1Col1, browserTable1Col2 , pathOpenFile">
@@ -153,7 +155,7 @@
 			value="getPathHive('#{browserHiveBean.path}')" noEscape="true" />
 	</a4j:commandButton>
 
-	<a4j:commandButton value="#{messages.button_cancel}"
+	<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}"
 		oncomplete="#{rich:component('modalPanelBrowserHiveId')}.hide();" />
 
 </ui:composition>

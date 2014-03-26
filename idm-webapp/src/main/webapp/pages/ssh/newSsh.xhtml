@@ -18,10 +18,10 @@
 		
 		<h:panelGrid columns="2">		
 	
-			<a4j:commandButton action="#{sshBean.confirmNewSsh}" onclick="#{rich:component('modalNewSsh')}.hide();" oncomplete="configureTabsRemote();" 
+			<a4j:commandButton  styleClass="greenButton" action="#{sshBean.confirmNewSsh}" onclick="#{rich:component('modalNewSsh')}.hide();" oncomplete="configureTabsRemote();" 
 				value="#{messages.button_ok}" reRender="tabRemote,msnError"/>
 				
-			<a4j:commandButton value="#{messages.button_cancel}" type="button" 
+			<a4j:commandButton  styleClass="greenButton" value="#{messages.button_cancel}" type="button" 
 				onclick="#{rich:component('modalNewSsh')}.hide();" />
 	
 		</h:panelGrid>

@@ -13,11 +13,10 @@
 		<rich:dragIndicator id="indicator" />
 		
 		<a4j:form>
-		
 			<h:outputText value="#{messages.label_path}" />
-			<h:inputText id="sshpath" label="Path" value="#{sshBean.path}"
+			<h:inputText id="sshpath" styleClass="mainPageTextField"  label="Path" value="#{sshBean.path}"
 				maxlength="255" style="width:395px; margin-left:5px;" />
-			<a4j:commandButton type="submit" id="sshchangePathBt"
+			<a4j:commandButton  styleClass="greenButton" type="submit" id="sshchangePathBt"
 				action="#{sshBean.changePath}" value="#{messages.button_ok}" reRender="sshfs" />
 
 			<br />

@@ -185,8 +185,15 @@ input {
 }
 
 .buttonLogin {
-	margin-left: 95px;
+    background:url(../image/button_login.gif) !important;
+    background-size: 100% 100% !important;
+    background-color:none;
 	padding: 5px 25px;
+	border:none;
+	cursor:pointer;
+	color:white;
+    font-weight: bold;
+    font-size: 16px;
 }
 
 .ui-tabs .ui-tabs-nav {
@@ -630,11 +637,19 @@ table.secondtable td{
 }
 
 /*textFields*/
-input[type=text]{
+.mainPageTextField{
 	background-color: #dadbdd;
 	border-radius:7px;
 	border:none;
 	padding-left:5px;
+}
+
+.interModal{
+/*  background-color: white !important;
+    border-radius:0px !important;
+    border-width:1px !important;
+    border-style: solid !important;
+    */
 }
 
 /*gradient background on canvas*/
@@ -824,3 +839,86 @@ div.splitter-bar.ui-state-highlight {
 	border: none;
 }
 
+
+/* popup Window */
+.rich-mpnl-content{
+    border-radius:10px;
+}
+
+.rich-mpnl-header{
+    vertical-align: middle;
+    font-size: 14px;
+    border-radius:10px;
+    background-color:#C62127;
+    color:white;
+    background-image:none;
+    height:20px;
+    padding-left: 10px;
+}
+
+.rich-mpnl-body{
+    background: linear-gradient(white,#dadbdd, #dadbdd);
+}
+
+.rich-mpnl-controls{
+    margin-right: 7px;
+}
+
+.greenButton{
+    height:30px;
+    border-radius:7px;
+    background-color:#006400 !important;
+    color:white !important;
+    font-weight: bold;
+}
+
+.rich-tabpanel{
+    border:none;
+    border-collapse:collapse !important;
+}
+.rich-tabpanel img[src="/idm-webapp/a4j/g/3_3_3.Finalimages/spacer.gif.xhtml"] {
+    display: none;
+}
+
+.dr-tbpnl-tbbrdr{
+    background-image:none;
+}
+
+.rich-tabhdr-side-cell{
+    border:none ;
+}
+.rich-tabhdr-cell-active{
+    border:none ;
+}
+
+.rich-tabpanel-content{
+    border:none ;
+    border-radius:10px;
+}
+
+.rich-tab-bottom-line{
+    border:none ;
+}
+.rich-tabhdr-side-cell{
+    border:none ;
+}
+.rich-tabhdr-side-borde{
+    border:none ;
+}
+.rich-tab-inactive{
+    background-color:#b8b9bd;
+    color:white;
+    background-image:none;
+    height:12px;
+    border-radius:7px;
+    font-weight: bold;
+}
+
+.rich-tab-active{
+    background-color:#006400;
+    color:white;
+    background-image:none;
+    height:12px;
+    border-radius:7px;
+    font-weight: bold;
+}

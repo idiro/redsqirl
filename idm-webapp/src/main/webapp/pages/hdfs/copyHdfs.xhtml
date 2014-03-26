@@ -1,11 +1,9 @@
-<h:panelGrid xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:a4j="http://richfaces.org/a4j"
 	xmlns:rich="http://richfaces.org/rich"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets">
-
-<a4j:loadBundle basename="MessagesResources" var="messages" />
 
 	<script>
 //<![CDATA[
@@ -22,24 +20,23 @@ function dataTableSelectOneRadio(radio) {
 //]]>
 </script>
 
-	<h:panelGrid columns="3">
-		<h:outputText value="#{messages.label_path}" />
-		<h:inputText id="pathCopy" label="Path" value="#{hdfsBean.path}"
-			maxlength="255" style="width:395px;" />
-		<a4j:commandButton type="submit" id="changePathBt"
-			action="#{hdfsBean.changePath}" value="#{messages.button_ok}" reRender="hdfsfsCopy" />
-	</h:panelGrid>
-
-	<h:panelGrid columns="2">
-		<a4j:commandLink action="#{hdfsBean.goPrevious}"
-			reRender="pathCopy,hdfsfsCopy">
-			<img id="btAdd" src="../image/icons/button-previous.gif" />
-		</a4j:commandLink>
-		<a4j:commandLink action="#{hdfsBean.goNext}" reRender="pathCopy,hdfsfsCopy">
-			<img id="btAdd" src="../image/icons/button-next.gif" />
-		</a4j:commandLink>
-	</h:panelGrid>
-
+	<h:outputText value="#{messages.label_path}" />
+	<h:inputText id="pathCopy" label="Path" value="#{hdfsBean.path}"
+		maxlength="255" style="width:395px;" />
+	<a4j:commandLink type="submit" id="changePathBt"
+		action="#{hdfsBean.changePath}" reRender="hdfsfsCopy" >
+		<h:graphicImage id="btSearch" value="../image/icons/button-search.gif"
+            title='#{messages.button_ok}' />
+    </a4j:commandLink>
+	<a4j:commandLink action="#{hdfsBean.goPrevious}"
+		reRender="pathCopy,hdfsfsCopy">
+		<img id="btAdd" src="../image/icons/button-previous.gif" />
+	</a4j:commandLink>
+	<a4j:commandLink action="#{hdfsBean.goNext}" reRender="pathCopy,hdfsfsCopy">
+		<img id="btAdd" src="../image/icons/button-next.gif" />
+	</a4j:commandLink>
+    
+    <div style="width:100%;overflow:auto;height:305px;margin-top:5px;margin-bottom:10px;">
 	<rich:dataTable id="hdfsfsCopy" value="#{hdfsBean.listGrid}" var="item"
 		width="100%" style="border:none;"
 		onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
@@ -82,14 +79,13 @@ function dataTableSelectOneRadio(radio) {
 		</rich:columns>
 
 	</rich:dataTable>
-
-	<br />
+    </div>
 
 	<h:panelGrid columns="2">
-		<a4j:commandButton action="#{hdfsBean.copyFileAfter}" value="#{messages.button_ok}"
+		<a4j:commandButton  styleClass="greenButton" action="#{hdfsBean.copyFileAfter}" value="#{messages.button_ok}"
 			reRender="hdfsfs" onclick="#{rich:component('hdfscopyModalPanel')}.hide()" />
-		<a4j:commandButton value="#{messages.button_cancel}" type="button" 
+		<a4j:commandButton  styleClass="greenButton" value="#{messages.button_cancel}" type="button" 
 			onclick="#{rich:component('hdfscopyModalPanel')}.hide();" />
 	</h:panelGrid>
 
-</h:panelGrid>
+</ui:composition>

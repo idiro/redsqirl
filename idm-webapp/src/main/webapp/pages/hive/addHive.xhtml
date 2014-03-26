@@ -22,9 +22,9 @@
 
 
 	<h:panelGrid columns="2">
-		<a4j:commandButton action="#{hiveBean.addFileAfter}" value="#{messages.button_ok}" 
+		<a4j:commandButton  styleClass="greenButton" action="#{hiveBean.addFileAfter}" value="#{messages.button_ok}" 
 			oncomplete="#{rich:component('hiveaddModalPanel')}.hide();"/>
-		<a4j:commandButton value="#{messages.button_cancel}" type="button" 
+		<a4j:commandButton  styleClass="greenButton" value="#{messages.button_cancel}" type="button" 
 				onclick="#{rich:component('hiveaddModalPanel')}.hide();" />
 	</h:panelGrid>
 

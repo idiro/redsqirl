@@ -60,8 +60,8 @@
 
 	</h:panelGrid>
 	<h:panelGrid columns="2">
-		<a4j:commandButton value="#{messages.button_ok}" action="#{configureTabsBean.saveTabs}" oncomplete="#{rich:component('modalConfigureFooterTabs')}.hide();reRenderFooter()"/>
-		<a4j:commandButton value="#{messages.button_cancel}" action="#{configureTabsBean.cancelChanges}" onclick="#{rich:component('modalConfigureFooterTabs')}.hide()" reRender="tabsMenu, actionsPanel"/>
+		<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" action="#{configureTabsBean.saveTabs}" oncomplete="#{rich:component('modalConfigureFooterTabs')}.hide();reRenderFooter()"/>
+		<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" action="#{configureTabsBean.cancelChanges}" onclick="#{rich:component('modalConfigureFooterTabs')}.hide()" reRender="tabsMenu, actionsPanel"/>
 	</h:panelGrid>
 	
 	<rich:modalPanel header="Rename tab" id="editPane" domElementAttachment="parent" width="400" height="70">
@@ -70,11 +70,11 @@
                 <h:inputText id="renameTabValue" value="#{configureTabsBean.selected}"/>
                 <rich:message id="vinMsg" for="vin" />
             </h:panelGrid>
-            <a4j:commandButton value="#{messages.button_ok}" action="#{configureTabsBean.changeTabName}"
+            <a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" action="#{configureTabsBean.changeTabName}"
                 oncomplete="#{rich:component('editPane')}.hide();" reRender="tabsMenu">
                 <a4j:actionparam name="oldName" noEscape="true" value="getOldTabName()"/>
             </a4j:commandButton>
-            <a4j:commandButton value="#{messages.button_cancel}" onclick="#{rich:component('editPane')}.hide();" />
+            <a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('editPane')}.hide();" />
  	</rich:modalPanel>
  	
 </h:panelGrid>

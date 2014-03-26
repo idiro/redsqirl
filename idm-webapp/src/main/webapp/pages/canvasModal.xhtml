@@ -75,16 +75,16 @@
 	</a4j:region>
 	
             
-	<div style="width:100%; overflow: auto; height: 510px;" >
+	<div style="width:100%; overflow: auto; height: 550px;" >
 	            
-		<rich:tabPanel id="canvasModalTabPanel" switchType="ajax" selectedTab="#{canvasModalBean.selectedTab}" >
+		<rich:tabPanel id="canvasModalTabPanel"  style="border:none;" switchType="ajax" selectedTab="#{canvasModalBean.selectedTab}" >
 		
 				<a4j:status	onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModal') });"
 					onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
 					onstop="jQuery.unblockUI();" />
 		
-	    <rich:tab id="tab1" label="#{messages.label_dynamic_configuration}" >
-		<rich:panel id="panelDynamicForm" style="border:none;" >
+	    <rich:tab id="tab1" label="#{messages.label_dynamic_configuration}" style="border:none;border-collapse:collapse;" >
+		<rich:panel id="panelDynamicForm" style="border:none;min-height: 465px;" >
 			
 			<img src="#{canvasModalBean.pathImage}" style="margin-top:-25px;margin-left:-15px;"/>
 			<h1><h:outputText value="#{canvasModalBean.tabTitle}"/></h1>
@@ -101,7 +101,7 @@
 				<!-- input -->
 				
 				<a4j:region>
-					<h:inputText value="#{item.inputValue}" maxlength="255" style="width:395px;" rendered="#{item.displayType == 'input'}" />
+					<h:inputText  value="#{item.inputValue}" maxlength="255" style="width:395px;" styleClass="interModal" rendered="#{item.displayType == 'input'}" />
 				</a4j:region>
 				
 				<!-- list -->
@@ -136,11 +136,11 @@
 						<h:outputText value="#{messages.label_path}" />
 						<br/>
 						<h:inputText id="browserPath" label="Path" value="#{item.pathBrowser}" maxlength="255" 
-							style="width:395px;" onclick="openBrowserChangePath();" />
+							style="width:395px;" styleClass="interModal" onclick="openBrowserChangePath();" />
 						
 						<h:inputHidden value="#{canvasModalBean.hiveHdfs}" id="hiveHdfs" />
 						
-						<a4j:commandButton type="submit" id="browserChangePathBt" action="#{canvasModalBean.changePathBrowserBefore}" 
+						<a4j:commandButton  styleClass="greenButton" type="submit" id="browserChangePathBt" action="#{canvasModalBean.changePathBrowserBefore}" 
 							reRender="browserTable1,browserTable2,hiveHdfs" oncomplete="if(#{canvasModalBean.hiveHdfs == 'hive'}){ openModalPanelBrowserHiveId() }else{ openModalPanelBrowserHdfsId() }" style="display:none;" >
 							<f:param name="numberDynamic" value="#{index}" />
 						</a4j:commandButton>
@@ -157,13 +157,13 @@
 									<f:facet name="header">
 										<h:outputText value="#{messages.label_properties}" />
 									</f:facet>
-									<h:inputText value="#{item2.property}" style="width:100%;" readonly="true" />
+									<h:inputText styleClass="interModal" value="#{item2.property}" style="border:none !important;width:95%;" readonly="true" />
 								</rich:column>
 								<rich:column id="browserTable1Col2" rendered="#{canvasModalBean.listGrid != null and not empty canvasModalBean.listGrid}" >
 									<f:facet name="header">
 										<h:outputText value="#{messages.label_value}" />
 									</f:facet>
-									<h:inputText value="#{item2.value}" style="width:100%;" />
+									<h:inputText styleClass="interModal" value="#{item2.value}" style="border:none !important;width:95%;" />
 								</rich:column>
 				
 							</rich:dataTable>
@@ -225,10 +225,11 @@
 								value="#{canvasModalBean.selectedGenerator}" width="200"
 								enableManualInput="false" id="generation" listWidth="150"
 								listHeight="200">
-								<f:selectItems value="#{canvasModalBean.listItens}" />
+								<f:selectItems styleClass="interModal" value="#{canvasModalBean.listItens}" />
 							</rich:comboBox>
 	
 							<a4j:commandButton type="submit"
+								styleClass="greenButton"	
 								id="tableInteractionGenerationLines"
 								action="#{canvasModalBean.tableInteractionGenerationLines}"
 								value="#{messages.button_ok}" reRender="tableInteraction">
@@ -275,7 +276,7 @@
 										<h:outputText value="#{column}" />
 									</f:facet>
 		
-									<h:inputText value="#{item.nameValue[column]}"
+									<h:inputText  styleClass="interModal" value="#{item.nameValue[column]}"
 										rendered="#{canvasModalBean.columnsMap[column] == 'textField' }"
 										style="width:125px;" />
 		
@@ -287,7 +288,7 @@
 										<f:selectItems value="#{canvasModalBean.listConstraint[column]}" />
 									</rich:comboBox>
 		
-									<h:inputText value="#{item.nameValue[column]}"
+									<h:inputText  styleClass="interModal" value="#{item.nameValue[column]}"
 										rendered="#{canvasModalBean.columnsMap[column] == 'editor' }"
 										style="width:125px;" >
 										<a4j:support event="onclick" action="#{canvasModalBean.openHelpTextEditorModal}" 
@@ -326,15 +327,15 @@
 		
 			<rich:panel id="panelBtCanvasModal" style="border:none; float:right;" >
 			
-				<a4j:commandButton action="#{canvasModalBean.close}" value="#{messages.button_cancel}" onclick="#{rich:component('canvasModalPanel')}.hide();updateOutputStatus('#{canvasModalBean.groupID}')" reRender="panelBtCanvasModal, msnError, errorTable" />
+				<a4j:commandButton action="#{canvasModalBean.close}" styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('canvasModalPanel')}.hide();updateOutputStatus('#{canvasModalBean.groupID}')" reRender="panelBtCanvasModal, msnError, errorTable" />
 				
-				<a4j:commandButton action="#{canvasModalBean.previousPage}" value="#{messages.button_previous}" rendered="#{canvasModalBean.firstPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, msnError, errorTable" />
+				<a4j:commandButton action="#{canvasModalBean.previousPage}" styleClass="greenButton" value="#{messages.button_previous}" rendered="#{canvasModalBean.firstPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, msnError, errorTable" />
 				
-				<a4j:commandButton action="#{canvasModalBean.applyPage}" value="#{messages.button_apply}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, msnError, errorTable, canvasModalTabPanel, browserTable1, browserTable2, browserTable1Col1, browserTable1Col2" />
+				<a4j:commandButton action="#{canvasModalBean.applyPage}" styleClass="greenButton" value="#{messages.button_apply}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, msnError, errorTable, canvasModalTabPanel, browserTable1, browserTable2, browserTable1Col1, browserTable1Col2" />
 	
-				<a4j:commandButton action="#{canvasModalBean.nextPage}" value="#{messages.button_next}" rendered="#{canvasModalBean.lastPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, browserTable2, msnError, errorTable" />
+				<a4j:commandButton action="#{canvasModalBean.nextPage}" styleClass="greenButton" value="#{messages.button_next}" rendered="#{canvasModalBean.lastPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, browserTable2, msnError, errorTable" />
 				
-				<a4j:commandButton oncomplete="endDynamicForm();" value="#{messages.button_ok}" rendered="#{canvasModalBean.lastPage == 'Y'}"/>
+				<a4j:commandButton oncomplete="endDynamicForm();" styleClass="greenButton" value="#{messages.button_ok}" rendered="#{canvasModalBean.lastPage == 'Y'}"/>
 			
 			</rich:panel>
 		
@@ -358,14 +359,14 @@
 								<a4j:support event="onchange" reRender="dataOutputForm" />
 							</rich:comboBox>
 		                    
-							<a4j:commandButton value="Select"
+							<a4j:commandButton value="Select" styleClass="greenButton"
 								rendered="#{item.renderBrowserButton and item.hdfsBrowser}"
 								oncomplete="openModalOutputBrowserHdfs()">
 								<a4j:actionparam name="nameOutput" value="#{item.name}"
 									assignTo="#{canvasModalBean.nameOutput}" />
 							</a4j:commandButton>
 							
-							<a4j:commandButton value="Select"
+							<a4j:commandButton value="Select"  styleClass="greenButton"
 								rendered="#{item.renderBrowserButton and item.hiveBrowser}"
 								action="#{hiveBean.openCanvasScreen}"
 								oncomplete="openModalOutputBrowserHive();resetSelectedFile();">
@@ -375,9 +376,9 @@
 							
 							<h:outputText value="#{item.path}"/>
 							
-							<h:inputText value="#{item.file}" maxlength="40" style="width:100px;" rendered="#{item.renderBrowserButton}"/>
+							<h:inputText  styleClass="interModal" value="#{item.file}" maxlength="40" style="width:100px;" rendered="#{item.renderBrowserButton}"/>
 								
-							<a4j:commandButton value="#{messages.button_remove}" action="#{canvasModalBean.removeCleanOutput}" >
+							<a4j:commandButton value="#{messages.button_remove}" action="#{canvasModalBean.removeCleanOutput}"  styleClass="greenButton" >
 								<a4j:actionparam name="nameOutputClean" value="#{item.name}" assignTo="#{canvasModalBean.nameOutput}" />
 							</a4j:commandButton>
 								
@@ -385,8 +386,8 @@
 					</a4j:repeat>
 					
 					<h:panelGrid columns="2">
-						<a4j:commandButton value="#{messages.button_apply}" action="#{canvasModalBean.confirmOutput}" />
-						<a4j:commandButton value="#{messages.button_ok}" action="#{canvasModalBean.confirmOutput}" oncomplete="#{rich:component('canvasModalPanel')}.hide();updateOutputStatus('#{canvasModalBean.groupID}')"/>
+						<a4j:commandButton value="#{messages.button_apply}"  styleClass="greenButton" action="#{canvasModalBean.confirmOutput}" />
+						<a4j:commandButton value="#{messages.button_ok}"  styleClass="greenButton" action="#{canvasModalBean.confirmOutput}" oncomplete="#{rich:component('canvasModalPanel')}.hide();updateOutputStatus('#{canvasModalBean.groupID}')"/>
 					</h:panelGrid>
 	
 				</h:panelGrid>
@@ -437,11 +438,11 @@
 				
 				
 	
-			<rich:modalPanel id="modalPanelBrowserHiveId" width="600" height="400" style="overflow:hidden;" resizeable="false">
+			<rich:modalPanel id="modalPanelBrowserHiveId" width="600" height="450" style="overflow:hidden;" resizeable="true">
 	
 				<f:facet name="header">Browser</f:facet>
 				<f:facet name="controls">
-					<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:16px;"
+					<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:22px;"
 						onclick="#{rich:component('modalPanelBrowserHiveId')}.hide()" />
 				</f:facet>
 		
@@ -453,11 +454,11 @@
 		
 			</rich:modalPanel>
 			
-			<rich:modalPanel id="modalPanelBrowserHdfsId" width="600" height="400" style="overflow:hidden;" resizeable="false">
+			<rich:modalPanel id="modalPanelBrowserHdfsId" width="600" height="450" style="overflow:hidden;" resizeable="true">
 	
 				<f:facet name="header">Browser</f:facet>
 				<f:facet name="controls">
-					<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:16px;"
+					<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:22px;"
 						onclick="#{rich:component('modalPanelBrowserHdfsId')}.hide()" />
 				</f:facet>
 		
@@ -473,7 +474,7 @@
 	
 				<f:facet name="header">Browser</f:facet>
 				<f:facet name="controls">
-					<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:16px;"
+					<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:22px;"
 						onclick="#{rich:component('modalOutputBrowserHdfs')}.hide()" />
 				</f:facet>
 		
@@ -489,7 +490,7 @@
 	
 				<f:facet name="header">Browser</f:facet>
 				<f:facet name="controls">
-					<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:16px;"
+					<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:22px;"
 						onclick="#{rich:component('modalOutputBrowserHive')}.hide()" />
 				</f:facet>
 		
@@ -501,17 +502,17 @@
 		
 			</rich:modalPanel>
 
-			<rich:modalPanel id="textEditorPanel" width="600" height="400" style="overflow:auto;" resizeable="false">
+			<rich:modalPanel id="textEditorPanel" width="600" height="400" style="overflow:hidden;" resizeable="true">
 					
-					<f:facet name="header">Configuration</f:facet>
+					<f:facet name="header">Editor</f:facet>
 					<f:facet name="controls">
 						<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-							style="cursor:pointer;width:16px;"
+							style="cursor:pointer;width:22px;"
 							onclick="#{rich:component('textEditorPanel')}.hide()" />
 					</f:facet>
-					
-					<ui:include src="/pages/canvasModal2.xhtml" />
-					
+					<div style="padding-bottom:20px;padding-top:5px;overflow:auto;">
+					   <ui:include src="/pages/canvasModal2.xhtml" />
+					</div>
 			</rich:modalPanel>
 	
 </ui:composition>
