@@ -75,6 +75,8 @@
 
 
 	<h:form>
+	
+	<div id="blabla" style="width:100%; overflow: auto; height: 360px;" >
 
 		<h:inputTextarea maxlength="100" cols="70" rows="10" value="#{canvasModalBean.commandEdit}"
 			style="resize:none;border:1px solid;" id="commandText" />
@@ -204,6 +206,8 @@
 		<h:commandButton styleClass="greenButton" value="#{messages.button_cancel}" type="button" onclick="#{rich:component('textEditorPanel')}.hide();"/>
 			
 		<a4j:commandButton  styleClass="greenButton" action="#{canvasModalBean.checkTextEditor}" value="#{messages.button_check}" reRender="command,tableInteraction, msnError, errorTable" />
+
+	</div>
 
 	</h:form>
 	
