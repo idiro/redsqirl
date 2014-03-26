@@ -39,23 +39,42 @@ public abstract class PigElement extends DataflowAction {
 	 * 
 	 */
 	private static final long serialVersionUID = -1651299366774317959L;
-
+								/**
+								 * Output Key
+								 */
 	public static final String key_output = "",
+			/**Input Key*/
 			key_input = "in",
+			/**Delimiter Key*/
 			key_delimiter="delimiter",
+			/**Condition Key*/
 			key_condition = "condition",
+			/**Output Type Key*/
 			key_outputType = "output_type",
+			/**Default Delimiter*/
 			default_delimiter = "\001",
+			/**Feature Key for table*/
 			key_featureTable = "features";
-
+	
+	/**Input Interaction for delimiter*/
 	protected InputInteraction delimiterOutputInt;
+	/**List Interaction for save output type*/
 	protected ListInteraction savetypeOutputInt;
+	/**Group Interaction*/
 	public PigGroupInteraction groupingInt;
-
+	/**Map of inputs*/
 	protected Map<String, DFELinkProperty> input;
-
+	/**
+	 * Count of named bags
+	 */
 	private int nameCont;
-
+	/**
+	 * Constructor
+	 * @param nbInMin
+	 * @param nbInMax
+	 * @param placeDelimiterInPage
+	 * @throws RemoteException
+	 */
 	public PigElement( int nbInMin, int nbInMax,int placeDelimiterInPage) throws RemoteException {
 		super(new PigAction());
 		init(nbInMin,nbInMax);
@@ -80,7 +99,12 @@ public abstract class PigElement extends DataflowAction {
 		savetypeOutputInt.setPossibleValues(saveTypePos);
 		savetypeOutputInt.setValue(new MapRedTextType().getTypeName());
 	}
-
+	/**
+	 * Initialise the element
+	 * @param nbInMin
+	 * @param nbInMax
+	 * @throws RemoteException
+	 */
 	protected void init(int nbInMin, int nbInMax) throws RemoteException{
 		if(input == null){
 			Map<String, DFELinkProperty> in = new LinkedHashMap<String, DFELinkProperty>();
@@ -88,13 +112,29 @@ public abstract class PigElement extends DataflowAction {
 			input = in;
 		}
 	}
-
+	/**
+	 * Get the Query for the action
+	 * @return query
+	 * @throws RemoteException
+	 */
 	public abstract String getQuery() throws RemoteException;
-
+	/**
+	 * Get the Input Features
+	 * @return input FeatureList
+	 * @throws RemoteException
+	 */
 	public abstract FeatureList getInFeatures() throws RemoteException;
-
+	/**
+	 * Get the new Features
+	 * @return new FeatureList
+	 * @throws RemoteException
+	 */
 	public abstract FeatureList getNewFeatures() throws RemoteException;
-
+	/**
+	 * Get the Input Relations
+	 * @return Set of Input relations
+	 * @throws RemoteException
+	 */
 	public Set<String> getInRelations() throws RemoteException{
 		Set<String> ans = new LinkedHashSet<String>();
 		HDFSInterface hInt = new HDFSInterface();
@@ -105,7 +145,12 @@ public abstract class PigElement extends DataflowAction {
 		}
 		return ans; 
 	}
-
+	/**
+	 * Write the Oozie Action Files
+	 * @param files
+	 * @return <code>true</code> if write the oozie files was ok else <code>false</code>
+	 * @throws RemoteException
+	 */
 	@Override
 	public boolean writeOozieActionFiles(File[] files) throws RemoteException {
 		logger.info("Write queries in file: "+files[0].getAbsolutePath());
@@ -142,7 +187,12 @@ public abstract class PigElement extends DataflowAction {
 		}
 		return ok;
 	}
-
+	/**
+	 * Get the properties of the input
+	 * @param out
+	 * @return properties String
+	 * @throws RemoteException
+	 */
 	public String getProperties(DFEOutput out) throws RemoteException{
 		String properties = "";
 
@@ -156,7 +206,9 @@ public abstract class PigElement extends DataflowAction {
 
 		return properties;
 	}
-
+	/**
+	 * Update the output of the action
+	 */
 	public String updateOut() throws RemoteException {
 		String error = checkIntegrationUserVariables();
 		if(error == null){
@@ -170,16 +222,30 @@ public abstract class PigElement extends DataflowAction {
 		return error;
 	}
 
-
+	/**
+	 * Get the input map
+	 * @return Map of input
+	 * @throws RemoteException
+	 */
 	public Map<String, DFELinkProperty> getInput() throws RemoteException {
 		return input;
 	}
-
+	/**
+	 * Get the remove query piece of the query
+	 * @param out
+	 * @return query
+	 * @throws RemoteException
+	 */
 	public String getRemoveQueryPiece(String out) throws RemoteException{
 		logger.debug("create remove...");
 		return "rmf "+out;
 	}
-
+	/**
+	 * Get the load query piece for the query
+	 * @param out
+	 * @return query
+	 * @throws RemoteException
+	 */
 	public String getLoadQueryPiece(DFEOutput out) throws RemoteException{
 		logger.debug("create load...");
 
@@ -215,7 +281,12 @@ public abstract class PigElement extends DataflowAction {
 		return "STORE "+relationName+" INTO '" + out.getPath() + "' USING "+function+";";
 	}
 
-
+	/**
+	 * Get the store part of the query
+	 * @param delimiter
+	 * @return query
+	 * @throws RemoteException
+	 */
 	public String getStoreFunction(String delimiter) throws RemoteException{
 		String type = "";
 		String function = "";
@@ -239,6 +310,13 @@ public abstract class PigElement extends DataflowAction {
 		return null;
 
 	}
+	/**
+	 * Get the function to load or store the data
+	 * @param out
+	 * @param delimiter
+	 * @return function
+	 * @throws RemoteException
+	 */
 	private String getLoadStoreFuncion(DFEOutput out, String delimiter) throws RemoteException{
 		String function = null;
 		if (out.getTypeName().equals("TEXT MAP-REDUCE DIRECTORY")){
@@ -249,16 +327,25 @@ public abstract class PigElement extends DataflowAction {
 		}
 		return function;
 	}
-
+	/**
+	 * Get the Current Name of the bag
+	 * @return current Name
+	 */
 	protected String getCurrentName(){
 		return "A"+nameCont;
 	}
-
+	/**
+	 * Get the Next Name in the bag
+	 * @return next Name
+	 */
 	protected String getNextName(){
 		nameCont++;
 		return "A"+nameCont;
 	}
-
+	/**
+	 * Get the grouping interaction
+	 * @return groupingInt
+	 */
 	public PigGroupInteraction getGroupingInt() {
 		return groupingInt;
 	}

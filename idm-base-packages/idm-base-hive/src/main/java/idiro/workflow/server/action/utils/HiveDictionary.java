@@ -28,17 +28,27 @@ import org.apache.log4j.Logger;
  * 
  */
 public class HiveDictionary extends AbstractDictionary {
-
+	/** Logegr */
 	private static Logger logger = Logger.getLogger(HiveDictionary.class);
-
+	/** Logical operators key */
 	private static final String logicalOperators = "logicalOperators";
+	/** relational operators key */
 	private static final String relationalOperators = "relationalOperators";
+	/** arithmetic operators key */
 	private static final String arithmeticOperators = "arithmeticOperators";
+	/** utilities methods key */
 	private static final String utilsMethods = "utilsMethods";
+	/** double methods key */
 	private static final String doubleMethods = "doubleMethods";
+	/** string methods key */
 	private static final String stringMethods = "stringMethods";
+	/** string methods key */
 	private static final String agregationMethods = "agregationMethods";
-
+	/**
+	 * Get an instance of the dictionary
+	 * 
+	 * @return HiveDictionary
+	 */
 	private static HiveDictionary instance;
 
 	public static HiveDictionary getInstance() {
@@ -48,20 +58,34 @@ public class HiveDictionary extends AbstractDictionary {
 		return instance;
 	}
 
+	/**
+	 * Constructor
+	 */
+
 	private HiveDictionary() {
 		super();
 	}
+
+	/**
+	 * Get the file name that stores the functions
+	 * 
+	 * @return name
+	 */
 
 	@Override
 	protected String getNameFile() {
 		return "functionsHive.txt";
 	}
 
+	/**
+	 * Load the default functions into the Functions map
+	 */
+
 	@Override
 	protected void loadDefaultFunctions() {
 
 		logger.info("loadDefaultFunctions");
-		
+
 		functionsMap = new HashMap<String, String[][]>();
 
 		functionsMap
@@ -290,35 +314,52 @@ public class HiveDictionary extends AbstractDictionary {
 		return ans;
 	}
 
+	/**
+	 * Get the Hive type from a FeatureType
+	 * 
+	 * @param feat
+	 * @return type
+	 */
+
 	public static String getHiveType(FeatureType feat) {
 		String featureType = feat.name();
 		switch (feat) {
-			case BOOLEAN:
-				break;
-			case INT:
-				break;
-			case FLOAT:
-				break;
-			case LONG:
-				featureType = "BIGINT";
-				break;
-			case DOUBLE:
-				break;
-			case STRING:
-				break;
+		case BOOLEAN:
+			break;
+		case INT:
+			break;
+		case FLOAT:
+			break;
+		case LONG:
+			featureType = "BIGINT";
+			break;
+		case DOUBLE:
+			break;
+		case STRING:
+			break;
 		}
 		return featureType;
 	}
 
+	/**
+	 * Get the return type of an expression
+	 * 
+	 * @param expr
+	 * @param features
+	 * @param featureAggreg
+	 * @return returned type
+	 * @throws Exception
+	 */
 	public String getReturnType(String expr, FeatureList features,
 			Set<String> featureAggreg) throws Exception {
-		logger.info("expression : "+expr);
-		logger.info("features List : "+features.getFeaturesNames().toString());
-//		logger.info("features aggreg : "+featureAggreg.toString());
+		logger.info("expression : " + expr);
+		logger.info("features List : " + features.getFeaturesNames().toString());
+		// logger.info("features aggreg : "+featureAggreg.toString());
 		if (expr == null || expr.trim().isEmpty()) {
 			throw new Exception("No expressions to test");
 		}
-		logger.info("features passed to dictionary : "+features.getFeaturesNames().toString());
+		logger.info("features passed to dictionary : "
+				+ features.getFeaturesNames().toString());
 		// Test if all the featureAggreg have a type
 		if (featureAggreg != null
 				&& !features.getFeaturesNames().containsAll(featureAggreg)) {
@@ -416,18 +457,37 @@ public class HiveDictionary extends AbstractDictionary {
 
 	}
 
+	/**
+	 * Get a return type of an expression with an empty set of aggregation
+	 * features
+	 * 
+	 * @param expr
+	 * @param features
+	 * @return returned type
+	 * @throws Exception
+	 */
 	public String getReturnType(String expr, FeatureList features)
 			throws Exception {
 		return getReturnType(expr, features, new HashSet<String>());
 	}
+
+	/**
+	 * Check that the type given is the same or acceptable of a type that is
+	 * expected
+	 * 
+	 * @param typeToBe
+	 * @param typeGiven
+	 * @return <code>true</code> if the type given is acceptable else
+	 *         <code>false</code>
+	 */
 
 	public static boolean check(String typeToBe, String typeGiven) {
 		boolean ok = false;
 		if (typeGiven == null || typeToBe == null) {
 			return false;
 		}
-		logger.info(typeToBe+" , "+typeGiven);
-	
+		logger.info(typeToBe + " , " + typeGiven);
+
 		typeGiven = typeGiven.trim();
 		typeToBe = typeToBe.trim();
 
@@ -442,7 +502,8 @@ public class HiveDictionary extends AbstractDictionary {
 		} else if (typeToBe.equalsIgnoreCase("INT")) {
 			if (typeGiven.equals("TINYINT")) {
 				ok = true;
-			} else if (typeGiven.equalsIgnoreCase("NUMBER")||typeGiven.equalsIgnoreCase("DOUBLE")) {
+			} else if (typeGiven.equalsIgnoreCase("NUMBER")
+					|| typeGiven.equalsIgnoreCase("DOUBLE")) {
 				ok = true;
 				typeToBe = typeGiven;
 			}
@@ -471,12 +532,29 @@ public class HiveDictionary extends AbstractDictionary {
 		return ok;
 	}
 
-	public static EditorInteraction generateEditor(Tree<String> help, DFEOutput in)
-			throws RemoteException {
+	/**
+	 * Generate an editor for one input
+	 * 
+	 * @param help
+	 * @param in
+	 * @return EditorInteraction
+	 * @throws RemoteException
+	 */
+	public static EditorInteraction generateEditor(Tree<String> help,
+			DFEOutput in) throws RemoteException {
 		List<DFEOutput> lOut = new LinkedList<DFEOutput>();
 		lOut.add(in);
 		return generateEditor(help, lOut);
 	}
+
+	/**
+	 * Generate an editor for a list of inputs
+	 * 
+	 * @param help
+	 * @param in
+	 * @return EditorInteraction
+	 * @throws RemoteException
+	 */
 
 	public static EditorInteraction generateEditor(Tree<String> help,
 			List<DFEOutput> in) throws RemoteException {
@@ -506,15 +584,24 @@ public class HiveDictionary extends AbstractDictionary {
 		}
 		editor.add(help);
 		editor.add("output");
-		
-		EditorInteraction ei = new EditorInteraction("autogen","auto-gen", "", 0,0);
+
+		EditorInteraction ei = new EditorInteraction("autogen", "auto-gen", "",
+				0, 0);
 		ei.getTree().removeAllChildren();
 		ei.getTree().add(editor);
-//		logger.info(ei.getTree());
+		// logger.info(ei.getTree());
 		logger.info("added editor");
 		return ei;
 	}
 
+	/**
+	 * Generate an EditorInteraction from a FeatureList
+	 * 
+	 * @param help
+	 * @param inFeat
+	 * @return EditorInteraction
+	 * @throws RemoteException
+	 */
 	public static EditorInteraction generateEditor(Tree<String> help,
 			FeatureList inFeat) throws RemoteException {
 		logger.debug("generate Editor...");
@@ -531,12 +618,19 @@ public class HiveDictionary extends AbstractDictionary {
 		}
 		editor.add(help);
 		editor.add("output");
-		EditorInteraction ei = new EditorInteraction("autogen","auto-gen", "", 0,0);
+		EditorInteraction ei = new EditorInteraction("autogen", "auto-gen", "",
+				0, 0);
 		ei.getTree().removeAllChildren();
 		ei.getTree().add(editor);
 		return ei;
 	}
 
+	/**
+	 * Create a Menu for Conditional Operations
+	 * 
+	 * @return Tree for conditional menu
+	 * @throws RemoteException
+	 */
 	public Tree<String> createConditionHelpMenu() throws RemoteException {
 		Tree<String> help = new TreeNonUnique<String>("help");
 		help.add(createMenu(new TreeNonUnique<String>("operation_relation"),
@@ -555,6 +649,12 @@ public class HiveDictionary extends AbstractDictionary {
 		return help;
 	}
 
+	/**
+	 * Create a Menu for default select Operations
+	 * 
+	 * @return Tree for select menu
+	 * @throws RemoteException
+	 */
 	public Tree<String> createDefaultSelectHelpMenu() throws RemoteException {
 		Tree<String> help = new TreeNonUnique<String>("help");
 		help.add(createMenu(new TreeNonUnique<String>("operation_arithmetic"),
@@ -572,6 +672,13 @@ public class HiveDictionary extends AbstractDictionary {
 		logger.debug("create Select Help Menu");
 		return help;
 	}
+
+	/**
+	 * Create a Menu for group select Operations
+	 * 
+	 * @return Tree for grouped select menu
+	 * @throws RemoteException
+	 */
 
 	public Tree<String> createGroupSelectHelpMenu() throws RemoteException {
 		Tree<String> help = new TreeNonUnique<String>("help");
@@ -593,6 +700,13 @@ public class HiveDictionary extends AbstractDictionary {
 		return help;
 	}
 
+	/**
+	 * Create an empty menu
+	 * @param root
+	 * @param list
+	 * @return newly generated menu
+	 * @throws RemoteException
+	 */
 	protected static Tree<String> createMenu(Tree<String> root, String[][] list)
 			throws RemoteException {
 
@@ -606,6 +720,13 @@ public class HiveDictionary extends AbstractDictionary {
 		return root;
 	}
 
+	/**
+	 * Check if an expression is a logical operator
+	 * 
+	 * @param expr
+	 * @return <code>true</code> if the expression is a logical operator else
+	 *         <code>false</code>
+	 */
 	private static boolean isLogicalOperation(String expr) {
 		if (expr.trim().isEmpty()) {
 			return false;
@@ -619,6 +740,17 @@ public class HiveDictionary extends AbstractDictionary {
 		return cleanUp.startsWith("NOT ") || cleanUp.contains(" OR ")
 				|| cleanUp.contains(" AND ");
 	}
+
+	/**
+	 * Run an expression as a logical operation
+	 * 
+	 * @param expr
+	 * @param features
+	 * @param aggregFeat
+	 * @return <code>true</code> if the expression ran successfully as a logical
+	 *         operator else <code>false</code>
+	 * @throws Exception
+	 */
 
 	private boolean runLogicalOperation(String expr, FeatureList features,
 			Set<String> aggregFeat) throws Exception {
@@ -658,9 +790,28 @@ public class HiveDictionary extends AbstractDictionary {
 		return ok;
 	}
 
+	/**
+	 * Check if an expression is a relational operation
+	 * 
+	 * @param expr
+	 * @return <code>true</code> if the expression is a relational operation
+	 *         else <code>false</code>
+	 */
+
 	private boolean isRelationalOperation(String expr) {
 		return isInList(functionsMap.get(relationalOperators), expr);
 	}
+
+	/**
+	 * Run an expression as a relational operation
+	 * 
+	 * @param expr
+	 * @param features
+	 * @param aggregFeat
+	 * @return <code>true</code> if the expression ran as relational operation
+	 *         else <code>false</code>
+	 * @throws Exception
+	 */
 
 	private boolean runRelationalOperation(String expr, FeatureList features,
 			Set<String> aggregFeat) throws Exception {
@@ -668,15 +819,42 @@ public class HiveDictionary extends AbstractDictionary {
 				features, aggregFeat);
 	}
 
+	/**
+	 * Check if a an expression is a arithmetic operation
+	 * 
+	 * @param expr
+	 * @return <code>true</code> if the expression is a arithmetic operation
+	 *         else <code>false</code>
+	 */
+
 	private boolean isArithmeticOperation(String expr) {
 		return isInList(functionsMap.get(arithmeticOperators), expr);
 	}
+
+	/**
+	 * Run an expression as an arithmetic operation
+	 * 
+	 * @param expr
+	 * @param features
+	 * @param agregation
+	 * @return <code>true</code> if the expression runs successfully else
+	 *         <code>false</code>
+	 */
 
 	private boolean runArithmeticOperation(String expr, FeatureList features,
 			Set<String> aggregFeat) throws Exception {
 		return runOperation(functionsMap.get(arithmeticOperators), expr,
 				features, aggregFeat);
 	}
+
+	/**
+	 * Check if a an expression is a method
+	 * 
+	 * @param expr
+	 * @param agregation
+	 * @return <code>true</code> if the expression is a method else
+	 *         <code>false</code>
+	 */
 
 	private boolean isMethod(String expr, boolean agregation) {
 		return agregation ? isInList(functionsMap.get(agregationMethods), expr)
@@ -685,6 +863,16 @@ public class HiveDictionary extends AbstractDictionary {
 						|| isInList(functionsMap.get(stringMethods), expr);
 
 	}
+
+	/**
+	 * Run a method
+	 * 
+	 * @param expr
+	 * @param features
+	 * @param aggregFeat
+	 * @return Error Message
+	 * @throws Exception
+	 */
 
 	private String runMethod(String expr, FeatureList features,
 			Set<String> aggregFeat) throws Exception {
@@ -746,6 +934,18 @@ public class HiveDictionary extends AbstractDictionary {
 		return type;
 	}
 
+	/**
+	 * Run an operation
+	 * 
+	 * @param list
+	 * @param expr
+	 * @param features
+	 * @param aggregFeat
+	 * @return <code>true</code> if the operation ran successfully else
+	 *         <code>false</code>
+	 * @throws Exception
+	 */
+
 	private boolean runOperation(String[][] list, String expr,
 			FeatureList features, Set<String> aggregFeat) throws Exception {
 		boolean ok = false;
@@ -774,6 +974,14 @@ public class HiveDictionary extends AbstractDictionary {
 		return ok;
 	}
 
+	/**
+	 * Check if expression is in a list
+	 * 
+	 * @param list
+	 * @param expr
+	 * @return <code>true</code> if the expression is in list else
+	 *         <code>false</code>
+	 */
 	private static boolean isInList(String[][] list, String expr) {
 		String cleanUp = removeBracketContent(expr);
 		boolean found = false;
@@ -788,6 +996,17 @@ public class HiveDictionary extends AbstractDictionary {
 
 		return found;
 	}
+
+	/**
+	 * Check if a arguments and features are accepted my a method
+	 * 
+	 * @param method
+	 * @param args
+	 * @param features
+	 * @return <code>true</code> if the arguments are acceptable else
+	 *         <code>false</code>
+	 * @throws Exception
+	 */
 
 	private boolean check(String[] method, String[] args, FeatureList features)
 			throws Exception {
@@ -834,6 +1053,14 @@ public class HiveDictionary extends AbstractDictionary {
 		return ok;
 	}
 
+	/**
+	 * Find a List of methods that contain a method
+	 * 
+	 * @param list
+	 * @param method
+	 * @return List of Methods
+	 */
+
 	private static String[] find(String[][] list, String method) {
 
 		int i = 0;
@@ -861,6 +1088,14 @@ public class HiveDictionary extends AbstractDictionary {
 		return ans;
 	}
 
+	/**
+	 * Get a list of methods that contains the method
+	 * 
+	 * @param list
+	 * @param method
+	 * @return List of Methods
+	 */
+
 	private static List<String[]> findAll(String[][] list, String method) {
 
 		int i = 0;
@@ -881,6 +1116,13 @@ public class HiveDictionary extends AbstractDictionary {
 		return ans;
 	}
 
+	/**
+	 * Get all methods
+	 * 
+	 * @param expr
+	 * @param aggregMethod
+	 * @return List of methods
+	 */
 	private List<String[]> findAllMethod(String expr, boolean aggregMethod) {
 		List<String[]> ans = null;
 		if (aggregMethod) {
@@ -892,6 +1134,14 @@ public class HiveDictionary extends AbstractDictionary {
 		}
 		return ans;
 	}
+
+	/**
+	 * Get the number of times a string mathches a regex
+	 * 
+	 * @param str
+	 * @param match
+	 * @return count
+	 */
 
 	private static int countMatches(String str, String match) {
 		int count = 0;
@@ -907,9 +1157,23 @@ public class HiveDictionary extends AbstractDictionary {
 		return count;
 	}
 
+	/**
+	 * Get the expression with escape characters
+	 * 
+	 * @param expr
+	 * @return
+	 */
+
 	public static String escapeString(String expr) {
 		return "\\Q" + expr + "\\E";
 	}
+
+	/**
+	 * Remove the content from brackets
+	 * 
+	 * @param expr
+	 * @return cleanUp
+	 */
 
 	public static String removeBracketContent(String expr) {
 		int count = 0;
@@ -934,6 +1198,13 @@ public class HiveDictionary extends AbstractDictionary {
 		return cleanUp;
 	}
 
+	/**
+	 * Get the regex to find the expression
+	 * 
+	 * @param expr
+	 * @return regex
+	 */
+
 	public static String getRegexToFind(String expr) {
 		String regex = escapeString(expr);
 		if (!expr.matches("\\W.*")) {
@@ -948,6 +1219,13 @@ public class HiveDictionary extends AbstractDictionary {
 		}
 		return regex;
 	}
+
+	/**
+	 * Check if name is a suitable variable name
+	 * 
+	 * @param name
+	 * @return <code>true</code> if the name is suitable else <code>false</code>
+	 */
 
 	public static boolean isVariableName(String name) {
 		String regex = "[a-zA-Z]+[a-zA-Z0-9_]*";

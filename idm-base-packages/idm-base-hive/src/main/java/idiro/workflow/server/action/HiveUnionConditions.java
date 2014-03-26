@@ -11,15 +11,33 @@ import idiro.workflow.server.action.utils.HiveDictionary;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.utils.HiveLanguageManager;
 
+/**
+ * Interaction that allows for conditions to be set for a union
+ * 
+ * @author keith
+ * 
+ */
 public class HiveUnionConditions extends TableInteraction {
-
+	/**
+	 * Union where the interaction is held
+	 */
 	private HiveUnion hu;
-
+	/** Relation title key */
 	public static final String table_relation_title = HiveLanguageManager
 			.getTextWithoutSpace("hive.union_cond_interaction.relation_column"),
+			/** Operation title key */
 			table_op_title = HiveLanguageManager
 					.getTextWithoutSpace("hive.union_cond_interaction.op_column");
-
+	/**
+	 * Constructor
+	 * @param id
+	 * @param name
+	 * @param legend
+	 * @param column
+	 * @param placeInColumn
+	 * @param hu
+	 * @throws RemoteException
+	 */
 	public HiveUnionConditions(String id, String name, String legend,
 			int column, int placeInColumn, HiveUnion hu) throws RemoteException {
 		super(id, name, legend, column, placeInColumn);
@@ -27,7 +45,11 @@ public class HiveUnionConditions extends TableInteraction {
 		buildRootTable();
 
 	}
-
+	/**
+	 * Check that the interaction contains no errors
+	 * @return Error Message
+	 * @throws RemoteException
+	 */
 	@Override
 	public String check() throws RemoteException {
 		String msg = super.check();
@@ -59,7 +81,11 @@ public class HiveUnionConditions extends TableInteraction {
 
 		return msg;
 	}
-
+	/**
+	 * Get the Conditions that exist 
+	 * @return Map of Conditions
+	 * @throws RemoteException
+	 */
 	public Map<String, String> getCondition() throws RemoteException {
 		Iterator<Map<String, String>> rows = getValues().iterator();
 		Map<String, String> ans = new HashMap<String, String>();
@@ -70,14 +96,18 @@ public class HiveUnionConditions extends TableInteraction {
 			String curKey = cur.get(HiveUnionConditions.table_relation_title);
 			String curVal = cur.get(HiveUnionConditions.table_op_title);
 
-//			logger.info("curKey : " + curKey);
-//			logger.info("curVal : " + curVal);
+			// logger.info("curKey : " + curKey);
+			// logger.info("curVal : " + curVal);
 			ans.put(curKey, curVal);
 
 		}
 		return ans;
 	}
-
+	/**
+	 * Update the interaction with a list of inputs
+	 * @param in
+	 * @throws RemoteException
+	 */
 	public void update(List<DFEOutput> in) throws RemoteException {
 
 		updateColumnConstraint(table_relation_title, null, 1, hu.getAliases()
@@ -88,7 +118,10 @@ public class HiveUnionConditions extends TableInteraction {
 				hu.getInFeatures()));
 
 	}
-
+	/**
+	 * Generate the Root table for the interaction
+	 * @throws RemoteException
+	 */
 	private void buildRootTable() throws RemoteException {
 		addColumn(table_relation_title, null, null, null);
 

@@ -32,21 +32,46 @@ public class HiveTableSelectInteraction extends TableInteraction {
 	 * 
 	 */
 	private static final long serialVersionUID = 8521366798554741811L;
-
+	/**
+	 * Action that holds the interaction
+	 */
 	private HiveElement hs;
-
+	/** Operation title Key */
 	public static final String table_op_title = HiveLanguageManager
 			.getTextWithoutSpace("hive.select_features_interaction.op_column"),
+			/** feature title key */
 			table_feat_title = HiveLanguageManager
 					.getTextWithoutSpace("hive.select_features_interaction.feat_column"),
+			/** type title key */
 			table_type_title = HiveLanguageManager
 					.getTextWithoutSpace("hive.select_features_interaction.type_column");
 
+	/** copy generation */
 	public static final String gen_operation_copy = "copy",
-			gen_operation_max = "MAX", gen_operation_min = "MIN",
-			gen_operation_avg = "AVG", gen_operation_sum = "SUM",
-			gen_operation_count = "COUNT", gen_operation_audit = "AUDIT";
+	/** max generation */
+	gen_operation_max = "MAX",
+	/** max generation */
+	gen_operation_min = "MIN",
+	/** avg generation */
+	gen_operation_avg = "AVG",
+	/** sum generation */
+	gen_operation_sum = "SUM",
+	/** count generation */
+	gen_operation_count = "COUNT",
+	/** audit generation */
+	gen_operation_audit = "AUDIT";
 
+	/**
+	 * Constructor
+	 * 
+	 * @param id
+	 * @param name
+	 * @param legend
+	 * @param column
+	 * @param placeInColumn
+	 * @param hs
+	 * @throws RemoteException
+	 */
 	public HiveTableSelectInteraction(String id, String name, String legend,
 			int column, int placeInColumn, HiveElement hs)
 			throws RemoteException {
@@ -55,6 +80,12 @@ public class HiveTableSelectInteraction extends TableInteraction {
 		createColumns();
 	}
 
+	/**
+	 * Check the interaction for errors
+	 * 
+	 * @return Error Message
+	 * @throws RemoteException
+	 */
 	@Override
 	public String check() throws RemoteException {
 		DFEOutput in = hs.getDFEInput().get(HiveElement.key_input).get(0);
@@ -108,6 +139,12 @@ public class HiveTableSelectInteraction extends TableInteraction {
 		return msg;
 	}
 
+	/**
+	 * Update the interaction with an input
+	 * 
+	 * @param in
+	 * @throws RemoteException
+	 */
 	public void update(DFEOutput in) throws RemoteException {
 		// get Alias
 		String alias = "";
@@ -193,6 +230,13 @@ public class HiveTableSelectInteraction extends TableInteraction {
 
 	}
 
+	/**
+	 * Create an operation string with a feature
+	 * 
+	 * @param feat
+	 * @param operation
+	 * @return generated operation
+	 */
 	public String addOperation(String feat, String operation) {
 		String result = "";
 		if (!operation.isEmpty()) {
@@ -203,6 +247,16 @@ public class HiveTableSelectInteraction extends TableInteraction {
 		return result;
 	}
 
+	/**
+	 * Add rows to generator types that will be used in the generator action
+	 * 
+	 * @param title
+	 * @param feats
+	 * @param in
+	 * @param operationList
+	 * @param alias
+	 * @throws RemoteException
+	 */
 	protected void addGeneratorRows(String title, List<String> feats,
 			FeatureList in, List<String> operationList, String alias)
 			throws RemoteException {
@@ -262,6 +316,12 @@ public class HiveTableSelectInteraction extends TableInteraction {
 
 	}
 
+	/**
+	 * Get a generated root table for the interaction
+	 * 
+	 * @return Tree of the root table
+	 * @throws RemoteException
+	 */
 	protected Tree<String> getRootTable() throws RemoteException {
 		// Table
 		Tree<String> input = new TreeNonUnique<String>("table");
@@ -301,6 +361,12 @@ public class HiveTableSelectInteraction extends TableInteraction {
 		return input;
 	}
 
+	/**
+	 * Get the features generated from the interaction
+	 * 
+	 * @return new FeaturList
+	 * @throws RemoteException
+	 */
 	public FeatureList getNewFeatures() throws RemoteException {
 		FeatureList new_features = new OrderedFeatureList();
 		Iterator<Map<String, String>> rowIt = getValues().iterator();
@@ -315,6 +381,13 @@ public class HiveTableSelectInteraction extends TableInteraction {
 		return new_features;
 	}
 
+	/**
+	 * Get the query piece that selects the features
+	 * 
+	 * @param out
+	 * @return query piece
+	 * @throws RemoteException
+	 */
 	public String getQueryPiece(DFEOutput out) throws RemoteException {
 		logger.info("select...");
 		String select = "";
@@ -336,6 +409,14 @@ public class HiveTableSelectInteraction extends TableInteraction {
 		return select;
 	}
 
+	/**
+	 * Get the create query piece that gets the features to be used in the
+	 * create statement
+	 * 
+	 * @param out
+	 * @return query piece
+	 * @throws RemoteException
+	 */
 	public String getCreateQueryPiece(DFEOutput out) throws RemoteException {
 		logger.debug("create features...");
 		String createSelect = "";
@@ -366,6 +447,15 @@ public class HiveTableSelectInteraction extends TableInteraction {
 		return createSelect;
 	}
 
+	/**
+	 * Check an expression for errors using
+	 * {@link idiro.workflow.server.action.utils.HiveDictionary}
+	 * 
+	 * @param expression
+	 * @param modifier
+	 * @return Error Message
+	 * @throws RemoteException
+	 */
 	public String checkExpression(String expression, String modifier)
 			throws RemoteException {
 		String error = null;
@@ -376,10 +466,10 @@ public class HiveTableSelectInteraction extends TableInteraction {
 					+ hs.getGroupByFeatures().toArray().toString());
 			if (HiveDictionary.getInstance().getReturnType(expression,
 					hs.getInFeatures(), hs.getGroupByFeatures()) == null) {
-				error = "Expression does not have a return type";
+				error = HiveLanguageManager.getText("hive.expressionnull");
 			}
 		} catch (Exception e) {
-			error = "Error trying to get expression return type";
+			error = HiveLanguageManager.getText("hive.expressionexception");
 			logger.error(error, e);
 		}
 		return error;

@@ -21,31 +21,36 @@ public class PigSelect extends PigElement {
 	 * 
 	 */
 	private static final long serialVersionUID = 8969124219285130345L;
-
-	private Page page1;
-	private Page page2;
-
+	/** Pages for the interaction */
+	private Page page1, page2;
+	/**Table select interaction for*/
 	private PigTableSelectInteraction tSelInt;
+	/**Group interaction*/
 	private PigGroupInteraction groupingInt;
+	/**
+	 * Filter Interaction
+	 */
 	private PigFilterInteraction filterInt;
-
+	/**
+	 * Constructor
+	 * @throws RemoteException
+	 */
 	public PigSelect() throws RemoteException {
-		super(1,1,1);
+		super(1, 1, 1);
 
-		page1 = addPage(
-				PigLanguageManager.getText("pig.select_page1.title"),
+		page1 = addPage(PigLanguageManager.getText("pig.select_page1.title"),
 				PigLanguageManager.getText("pig.select_page1.legend"), 3);
-		
-		tSelInt = new PigTableSelectInteraction(
-				key_featureTable,
-				PigLanguageManager.getText("pig.select_features_interaction.title"),
-				PigLanguageManager.getText("pig.select_features_interaction.legend"),
-				0, 0, this);
+
+		tSelInt = new PigTableSelectInteraction(key_featureTable,
+				PigLanguageManager
+						.getText("pig.select_features_interaction.title"),
+				PigLanguageManager
+						.getText("pig.select_features_interaction.legend"), 0,
+				0, this);
 
 		page1.addInteraction(tSelInt);
 
-		page2 = addPage(
-				PigLanguageManager.getText("pig.select_page2.title"), 
+		page2 = addPage(PigLanguageManager.getText("pig.select_page2.title"),
 				PigLanguageManager.getText("pig.select_page2.legend"), 1);
 
 		filterInt = new PigFilterInteraction(0, 0, this);
@@ -55,16 +60,22 @@ public class PigSelect extends PigElement {
 		page2.addInteraction(savetypeOutputInt);
 
 	}
-
-	// @Override
+	/**
+	 * Get the name
+	 * @return name
+	 * @throws RemoteException 
+	 */
 	public String getName() throws RemoteException {
 		return "pig_select";
 	}
-
-	// @Override
+	/**
+	 * Update the interactions
+	 * @param interaction
+	 * @throws RemoteException
+	 */
 	public void update(DFEInteraction interaction) throws RemoteException {
 		DFEOutput in = getDFEInput().get(key_input).get(0);
-		String interId = interaction.getId(); 
+		String interId = interaction.getId();
 		if (in != null) {
 			if (interId.equals(key_condition)) {
 				filterInt.update();
@@ -73,7 +84,11 @@ public class PigSelect extends PigElement {
 			}
 		}
 	}
-
+	/**
+	 * Generate the query the for a pig select
+	 * @return query
+	 * @throws RemoteException
+	 */
 	public String getQuery() throws RemoteException {
 
 		String query = null;
@@ -82,9 +97,9 @@ public class PigSelect extends PigElement {
 			logger.debug("In and out...");
 			// Output
 			DFEOutput out = output.values().iterator().next();
-			
+
 			String filter = filterInt.getQueryPiece(getCurrentName());
-			
+
 			String loader = "";
 			String filterLoader = "";
 			Iterator<String> aliases = getAliases().keySet().iterator();
@@ -105,20 +120,16 @@ public class PigSelect extends PigElement {
 
 			String remove = getRemoveQueryPiece(out.getPath()) + "\n\n";
 
-			String load = loader + " = " + getLoadQueryPiece(in)
-					+ ";\n\n";
-			
+			String load = loader + " = " + getLoadQueryPiece(in) + ";\n\n";
+
 			if (filterLoader.isEmpty()) {
 				filterLoader = loader;
 			}
-			
+
 			String select = tSelInt.getQueryPiece(out, filterLoader, null);
 			if (!select.isEmpty()) {
 				select = getNextName() + " = " + select + ";\n\n";
 			}
-
-			
-
 
 			String store = getStoreQueryPiece(out, getCurrentName());
 
@@ -137,31 +148,43 @@ public class PigSelect extends PigElement {
 	}
 
 	/**
-	 * @return the tSelInt
+	 * Get the Table Select Interaction
+	 * @return tSelInt
 	 */
 	public PigTableSelectInteraction gettSelInt() {
 		return tSelInt;
 	}
 
 	/**
-	 * @return the condInt
+	 * Get the condidtion interaction
+	 * @return condInt
 	 */
 	public PigFilterInteraction getCondInt() {
 		return filterInt;
 	}
 
 	/**
-	 * @return the groupingInt
+	 * Get the grouping interaction
+	 * @return groupingInt
 	 */
 	public PigGroupInteraction getGroupingInt() {
 		return groupingInt;
 	}
-
+	/**
+	 * Get the input features
+	 * @return input FeatureList
+	 * @throws RemoteException
+	 */
 	@Override
 	public FeatureList getInFeatures() throws RemoteException {
 		return getDFEInput().get(key_input).get(0).getFeatures();
 	}
-
+	/**
+	 * Get the new features
+	 * @return new FeatureList
+	 * @throws RemoteExcsption
+	 * 
+	 */
 	@Override
 	public FeatureList getNewFeatures() throws RemoteException {
 		return tSelInt.getNewFeatures();

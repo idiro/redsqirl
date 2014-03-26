@@ -28,16 +28,24 @@ public class PigJoin extends PigElement {
 	 * 
 	 */
 	private static final long serialVersionUID = -3035179016090477413L;
-
-	public static final String key_joinType = "join_type", key_joinRelation = "join_relationship";
-
+								/**Join type key*/			
+	public static final String key_joinType = "join_type",
+			/**Join relationship key*/
+			key_joinRelation = "join_relationship";
+	/**Pages*/
 	private Page page1, page2, page3;
-
+				/**Table Join Interaction*/
 	private PigTableJoinInteraction tJoinInt;
+	/**Join Relationship interaction*/
 	private PigJoinRelationInteraction jrInt;
+	/**Filter Interaction*/
 	private PigFilterInteraction filterInt;
+	/**Join Type Interaction*/
 	private ListInteraction joinTypeInt;
-
+	/**
+	 * Constructor
+	 * @throws RemoteException
+	 */
 	public PigJoin() throws RemoteException {
 		super(2, Integer.MAX_VALUE,1);
 
@@ -91,13 +99,20 @@ public class PigJoin extends PigElement {
 		page3.addInteraction(savetypeOutputInt);
 
 	}
-
+	/**
+	 * Get the name of the action
+	 * @return name
+	 * @throws RemoteException
+	 */
 	// @Override
 	public String getName() throws RemoteException {
 		return "pig_join";
 	}
-
-	// @Override
+	/**
+	 * Update the interactions
+	 * @param interaction
+	 * @throws RemoteException
+	 */
 	public void update(DFEInteraction interaction) throws RemoteException {
 		String interId = interaction.getId(); 
 		if (interId.equals(key_condition)) {
@@ -108,7 +123,11 @@ public class PigJoin extends PigElement {
 			tJoinInt.update();
 		}
 	}
-
+	/**
+	 * Get the query needed for the join
+	 * @return query
+	 * @throws RemoteException
+	 */
 	@Override
 	public String getQuery() throws RemoteException {
 
@@ -169,7 +188,11 @@ public class PigJoin extends PigElement {
 		logger.info(query);
 		return query;
 	}
-
+	/**
+	 * Get the Input Features
+	 * @return input FeatureList
+	 * @throws RemoteException
+	 */
 	public FeatureList getInFeatures() throws RemoteException {
 
 		FeatureList ans = new OrderedFeatureList();
@@ -189,33 +212,41 @@ public class PigJoin extends PigElement {
 	}
 
 	/**
-	 * @return the tJoinInt
+	 * Get the Join Interaction
+	 * @return tJoinInt
 	 */
 	public final PigTableJoinInteraction gettJoinInt() {
 		return tJoinInt;
 	}
 
 	/**
-	 * @return the jrInt
+	 * Get the Join Relation Interaction
+	 * @return jrInt
 	 */
 	public final PigJoinRelationInteraction getJrInt() {
 		return jrInt;
 	}
 
 	/**
-	 * @return the condInt
+	 * Get the condition Interaction
+	 * @return condInt
 	 */
 	public final PigFilterInteraction getCondInt() {
 		return filterInt;
 	}
 
 	/**
-	 * @return the joinTypeInt
+	 * Get the Join type Interaction
+	 * @return joinTypeInt
 	 */
 	public final DFEInteraction getJoinTypeInt() {
 		return joinTypeInt;
 	}
-
+	/**
+	 * Get the new Features
+	 * @return new FeatureList
+	 * @throws RemoteException
+	 */
 	@Override
 	public FeatureList getNewFeatures() throws RemoteException {
 		return tJoinInt.getNewFeatures();

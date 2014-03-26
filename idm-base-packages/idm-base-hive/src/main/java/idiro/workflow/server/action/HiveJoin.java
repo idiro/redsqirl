@@ -28,16 +28,34 @@ public class HiveJoin extends HiveElement {
 	 * 
 	 */
 	private static final long serialVersionUID = -3035179016090477413L;
-
+	/** Features key */
 	public static final String key_featureTable = "Features",
-			key_joinType = "Join_Type", key_joinRelation = "Join_Relationship";
-
+	/** Join Type Key */
+	key_joinType = "Join_Type",
+	/** Join Relation Key */
+	key_joinRelation = "Join_Relationship";
+	/**
+	 * Pages
+	 */
 	private Page page1, page2, page3;
-
+	/**
+	 * Table Join Interaction
+	 */
 	private HiveTableJoinInteraction tJoinInt;
+	/**
+	 * Join Relation Interaction
+	 */
 	private HiveJoinRelationInteraction jrInt;
+	/**
+	 * Joint Type Interaction
+	 */
 	private ListInteraction joinTypeInt;
 
+	/**
+	 * Constructor
+	 * 
+	 * @throws RemoteException
+	 */
 	public HiveJoin() throws RemoteException {
 		super(3, 2, Integer.MAX_VALUE);
 
@@ -66,7 +84,7 @@ public class HiveJoin extends HiveElement {
 		joinTypeInt = new ListInteraction(key_joinType,
 				HiveLanguageManager
 						.getText("hive.join_jointype_interaction.title"),
-						HiveLanguageManager
+				HiveLanguageManager
 						.getText("hive.join_jointype_interaction.legend"), 0, 0);
 		List<String> valueJoinTypeInt = new LinkedList<String>();
 		valueJoinTypeInt.add("JOIN");
@@ -79,10 +97,8 @@ public class HiveJoin extends HiveElement {
 		page2.addInteraction(joinTypeInt);
 		page2.addInteraction(jrInt);
 
-		page3 = addPage(
-				HiveLanguageManager.getText("hive.join_page3.title"), 
-				HiveLanguageManager.getText("hive.join_page3.title"),
-				1);
+		page3 = addPage(HiveLanguageManager.getText("hive.join_page3.title"),
+				HiveLanguageManager.getText("hive.join_page3.title"), 1);
 
 		condInt = new HiveFilterInteraction(0, 2, this);
 
@@ -91,10 +107,22 @@ public class HiveJoin extends HiveElement {
 
 	}
 
+	/**
+	 * Get the name of the action
+	 * 
+	 * @return name
+	 * @throws RemoteException
+	 */
 	public String getName() throws RemoteException {
 		return "hive_join";
 	}
 
+	/**
+	 * Update the interactions that are in the action
+	 * 
+	 * @param interaction
+	 * @throws RemoteException
+	 */
 	public void update(DFEInteraction interaction) throws RemoteException {
 
 		logger.info("Hive Join interaction " + interaction.getName());
@@ -102,7 +130,7 @@ public class HiveJoin extends HiveElement {
 		if (interaction.getName().equals(condInt.getName())) {
 			condInt.update();
 		} else if (interaction.getName().equals(joinTypeInt.getName())) {
-//			updateJoinType();
+			// updateJoinType();
 		} else if (interaction.getName().equals(jrInt.getName())) {
 			jrInt.update();
 		} else if (interaction.getName().equals(tJoinInt.getName())) {
@@ -110,6 +138,11 @@ public class HiveJoin extends HiveElement {
 		}
 	}
 
+	/**
+	 * Update the Join type interaction
+	 * 
+	 * @throws RemoteException
+	 */
 	public void updateJoinType() throws RemoteException {
 
 		Tree<String> list = null;
@@ -124,6 +157,12 @@ public class HiveJoin extends HiveElement {
 		}
 	}
 
+	/**
+	 * Get the query that is generated from the action
+	 * 
+	 * @return query
+	 * @throws RemoteException
+	 */
 	@Override
 	public String getQuery() throws RemoteException {
 
@@ -141,7 +180,7 @@ public class HiveJoin extends HiveElement {
 
 			String select = tJoinInt.getQueryPiece();
 			String createSelect = tJoinInt.getCreateQueryPiece();
-			
+
 			if (select.isEmpty()) {
 				logger.debug("Nothing to select");
 			} else {
@@ -155,6 +194,12 @@ public class HiveJoin extends HiveElement {
 		return query;
 	}
 
+	/**
+	 * Get the features from the input
+	 * 
+	 * @return input FeatureList
+	 * @throws RemoteException
+	 */
 	public FeatureList getInFeatures() throws RemoteException {
 		FeatureList ans = new OrderedFeatureList();
 		Map<String, DFEOutput> aliases = getAliases();
@@ -173,26 +218,38 @@ public class HiveJoin extends HiveElement {
 	}
 
 	/**
-	 * @return the tJoinInt
+	 * Get the Table Join interaction
+	 * 
+	 * @return tJoinInt
 	 */
 	public final HiveTableJoinInteraction gettJoinInt() {
 		return tJoinInt;
 	}
 
 	/**
-	 * @return the jrInt
+	 * Get the Join Relation interaction
+	 * 
+	 * @return jrInt
 	 */
 	public final HiveJoinRelationInteraction getJrInt() {
 		return jrInt;
 	}
 
 	/**
-	 * @return the joinTypeInt
+	 * Get the Join Type interaction
+	 * 
+	 * @return joinTypeInt
 	 */
 	public final ListInteraction getJoinTypeInt() {
 		return joinTypeInt;
 	}
 
+	/**
+	 * Get the new features from the join interaction
+	 * 
+	 * @return new FeatureList
+	 * @throws RemoteExceptions
+	 */
 	@Override
 	public FeatureList getNewFeatures() throws RemoteException {
 		return tJoinInt.getNewFeatures();

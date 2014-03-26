@@ -11,6 +11,7 @@ import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.utils.HiveLanguageManager;
 
 import java.rmi.RemoteException;
+import java.rmi.server.RemoteRef;
 
 /**
  * Action to do a simple select statement in HiveQL.
@@ -24,16 +25,25 @@ public class HiveSelect extends HiveElement {
 	 * 
 	 */
 	private static final long serialVersionUID = 8969124219285130345L;
-
+	/**Grouping Key*/
 	public static final String key_grouping = "Grouping",
+			/**Features Key*/
 			key_featureTable = "Features";
-
-	private Page page1;
-	private Page page2;
+	/**
+	 * Pages
+	 */
+	private Page page1 , page2;
+	/**
+	 * Table Select Interaction
+	 */
 
 	private HiveTableSelectInteraction tSelInt;
+	/**Group by Interaction*/
 	private HiveGroupByInteraction groupInt;
-
+	/**
+	 * Constructor
+	 * @throws RemoteException
+	 */
 	public HiveSelect() throws RemoteException {
 		super(2, 1, 1);
 
@@ -58,11 +68,19 @@ public class HiveSelect extends HiveElement {
 		page2.addInteraction(typeOutputInt);
 
 	}
-
+	/**
+	 * Get the name
+	 * @return name
+	 * @throws RemoteException
+	 */
 	public String getName() throws RemoteException {
 		return "hive_select";
 	}
-
+	/**
+	 * Update the Interactions that are in the action
+	 * @param interaction
+	 * @throws RemoteException
+	 */
 	public void update(DFEInteraction interaction) throws RemoteException {
 
 		logger.info("Hive Select interaction : " + interaction.getName());
@@ -79,7 +97,11 @@ public class HiveSelect extends HiveElement {
 			}
 		}
 	}
-
+	/**
+	 * Get the Query for the select statement
+	 * @return query
+	 * @throws RemoteException
+	 */
 	public String getQuery() throws RemoteException {
 
 		HiveInterface hInt = new HiveInterface();
@@ -167,23 +189,35 @@ public class HiveSelect extends HiveElement {
 	}
 
 	/**
-	 * @return the tSelInt
+	 * Get the Table Select Interaction
+	 * @return tSelInt
 	 */
 	public final HiveTableSelectInteraction gettSelInt() {
 		return tSelInt;
 	}
 
-
+	/**
+	 * Get the Features from the input
+	 * @return input FeatureList
+	 * @throws RemoteException
+	 */
 	@Override
 	public FeatureList getInFeatures() throws RemoteException {
 		return getDFEInput().get(key_input).get(0).getFeatures();
 	}
-
+	/**
+	 * Get the new features that are generated from the action
+	 * @return new FeatureList
+	 * @throws RemoteException
+	 */
 	@Override
 	public FeatureList getNewFeatures() throws RemoteException {
 		return tSelInt.getNewFeatures();
 	}
-
+	/**
+	 * Get the GroupBy Interaction
+	 * @return groupInt
+	 */
 	public HiveGroupByInteraction getGroupInt() {
 		return groupInt;
 	}

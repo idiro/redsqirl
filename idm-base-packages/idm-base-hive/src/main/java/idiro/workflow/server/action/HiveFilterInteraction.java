@@ -28,9 +28,17 @@ public class HiveFilterInteraction extends EditorInteraction {
 	 * 
 	 */
 	private static final long serialVersionUID = 6688812502383438930L;
-
+	/**
+	 * Element where the interaction is contained
+	 */
 	private HiveElement el;
-
+	/**
+	 * Comstructor
+	 * @param column
+	 * @param placeInColumn
+	 * @param el
+	 * @throws RemoteException
+	 */
 	public HiveFilterInteraction(int column,
 			int placeInColumn, HiveElement el)
 			throws RemoteException {
@@ -40,7 +48,10 @@ public class HiveFilterInteraction extends EditorInteraction {
 				placeInColumn);
 		this.el = el;
 	}
-
+	/**
+	 * Check the interaction for errors
+	 * @return Error Message
+	 */
 	@Override
 	public String check() {
 		String msg = null;
@@ -75,7 +86,10 @@ public class HiveFilterInteraction extends EditorInteraction {
 		logger.info("the msg : "+msg);
 		return msg;
 	}
-
+	/**
+	 * Update the Interaction 
+	 * @throws RemoteException
+	 */
 	public void update() throws RemoteException {
 		try {
 			String output = getValue();
@@ -92,7 +106,11 @@ public class HiveFilterInteraction extends EditorInteraction {
 			logger.info("error : "+ ec.getMessage());
 		}
 	}
-
+	/**
+	 * Get the query piece for the condition
+	 * @return query piece 
+	 * @throws RemoteException
+	 */
 	public String getQueryPiece() throws RemoteException {
 		logger.info("where...");
 		String where = "";
@@ -113,6 +131,11 @@ public class HiveFilterInteraction extends EditorInteraction {
 		}
 		return where;
 	}
+	/**
+	 * Create the where statement for when there is a partition
+	 * @return where
+	 * @throws RemoteException
+	 */
 
 	public String getInputWhere() throws RemoteException {
 		String where = "";
@@ -134,7 +157,12 @@ public class HiveFilterInteraction extends EditorInteraction {
 		}
 		return where;
 	}
-
+	/**
+	 * Create the where statement for when there is a partition using an alias
+	 * @param alias
+	 * @return where
+	 * @throws RemoteException
+	 */
 	public String getInputWhere(String alias) throws RemoteException {
 		String where = "";
 		DFEOutput out = el.getAliases().get(alias);

@@ -9,20 +9,36 @@ import idiro.workflow.utils.PigLanguageManager;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 
+import org.apache.hadoop.hive.ql.udf.generic.GenericUDAFEvaluator.AggregationBuffer;
+/**
+ * Action that allows for aggregative methods like MAX, AVG and SUM
+ * @author keith
+ *
+ */
 public class PigAggregator extends PigElement {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 4640611831909705304L;
-
+	/**
+	 * Pages for action
+	 */
 	private Page page1, page2, page3;
-
+	/**
+	 * Table Select Interactiom
+	 */
 	private PigTableSelectInteraction tSelInt;
+	/**
+	 * Filter Interaction
+	 */
 	private PigFilterInteraction filterInt;
-	
+	/**Key for grouping*/
 	public static final String key_grouping = "grouping";
-
+	/**
+	 * Constructor
+	 * @throws RemoteException
+	 */
 	public PigAggregator() throws RemoteException {
 		super(1, 1,1);
 		
@@ -64,11 +80,19 @@ public class PigAggregator extends PigElement {
 		page3.addInteraction(delimiterOutputInt);
 		page3.addInteraction(savetypeOutputInt);
 	}
-
+	/**
+	 * Get the name of the action
+	 * @return name
+	 * @throws RemoteException
+	 */
 	public String getName() throws RemoteException {
 		return "pig_aggregator";
 	}
-
+	/**
+	 * Get the query for the Aggregation
+	 * @return query
+	 * @throws RemoteException
+	 */
 	@Override
 	public String getQuery() throws RemoteException {
 		String query = null;
@@ -137,17 +161,31 @@ public class PigAggregator extends PigElement {
 		}
 		return query;
 	}
-
+	
+	/**
+	 * Get the input Features
+	 * @return input FeatureList
+	 * @throws RemoteException
+	 */
 	@Override
 	public FeatureList getInFeatures() throws RemoteException {
 		return getDFEInput().get(key_input).get(0).getFeatures();
 	}
-
+	/**
+	 * Get the new Features from the action
+	 * @return new FeatureList
+	 * @throws RemoteException
+	 */
 	@Override
 	public FeatureList getNewFeatures() throws RemoteException {
 		return tSelInt.getNewFeatures();
 	}
-
+	
+	/**
+	 * Update the interaction in the action
+	 * @param interaction
+	 * @throws RemoteException
+	 */
 	@Override
 	public void update(DFEInteraction interaction) throws RemoteException {
 		
@@ -171,11 +209,17 @@ public class PigAggregator extends PigElement {
 
 		}
 	}
-
+	/**
+	 * Get the table select interaction
+	 * @return tSelInt
+	 */
 	public PigTableSelectInteraction gettSelInt() {
 		return tSelInt;
 	}
-
+	/**
+	 * Get the filter Interaction
+	 * @return filterInt
+	 */
 	public PigFilterInteraction getFilterInt() {
 		return filterInt;
 	}

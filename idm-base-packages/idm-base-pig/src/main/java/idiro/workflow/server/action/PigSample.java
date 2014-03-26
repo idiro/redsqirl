@@ -7,20 +7,33 @@ import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.utils.PigLanguageManager;
 
 import java.rmi.RemoteException;
-
+/**
+ * Action to create a sample of a data set
+ * @author keith
+ *
+ */
 public class PigSample extends PigElement {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 600343170359664918L;
-
+	/**
+	 * Key Sample
+	 */
 	public static String key_sample = "sample";
-
+	/**
+	 * Sample Interaction
+	 */
 	public PigSampleInteraction pigsample;
-
+	/**
+	 * Page for action
+	 */
 	private Page page1;
-
+	/**
+	 * Constructor
+	 * @throws RemoteException
+	 */
 	public PigSample() throws RemoteException {
 		super(1, 1, 1);
 
@@ -40,11 +53,19 @@ public class PigSample extends PigElement {
 		logger.info("added interactions");
 		logger.info("constructor ok");
 	}
-
+	/**
+	 * Get the name of the action
+	 * @return name
+	 * @throws RemoteException
+	 */
 	public String getName() throws RemoteException {
 		return "pig_sample";
 	}
-
+	/**
+	 * Get the query for the sample action
+	 * @return query
+	 * @throws RemoteException
+	 */
 	@Override
 	public String getQuery() throws RemoteException {
 		String query = null;
@@ -69,17 +90,29 @@ public class PigSample extends PigElement {
 		}
 		return query;
 	}
-
+	/**
+	 * Get the Input Features
+	 * @return input FeatureList
+	 * @throws RemoteException
+	 */
 	@Override
 	public FeatureList getInFeatures() throws RemoteException {
 		return getDFEInput().get(key_input).get(0).getFeatures();
 	}
-
+	/**
+	 * Get the new Features from the action
+	 * @return new FeatureList
+	 * @throws RemoteException
+	 */
 	@Override
 	public FeatureList getNewFeatures() throws RemoteException {
 		return getInFeatures();
 	}
-
+	/**
+	 * Update the interaction 
+	 * @param interaction
+	 * @throws RemoteException
+	 */
 	@Override
 	public void update(DFEInteraction interaction) throws RemoteException {
 		DFEOutput in = getDFEInput().get(key_input).get(0);
