@@ -1,18 +1,12 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:rich="http://richfaces.org/rich"
 	xmlns:a4j="http://richfaces.org/a4j">
 
-<a4j:loadBundle basename="MessagesResources" var="messages" />
-
-<head>
-
 <script>
+//<![CDATA[
 
 	function completeCommand(text){
 	    var txtarea = jQuery("[id$='commandText']");
@@ -76,11 +70,9 @@
 	}
 	})(jQuery);
 	
+//]]>
 </script>
 
-</head>
-
-<body>
 
 	<h:form>
 
@@ -209,15 +201,10 @@
 			oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('textEditorPanel')}.hide() };"
 			reRender="command,tableInteraction, msnError, errorTable" />
 			
-		<span>&nbsp;&nbsp;</span>
-		
 		<h:commandButton styleClass="greenButton" value="#{messages.button_cancel}" type="button" onclick="#{rich:component('textEditorPanel')}.hide();"/>
 			
-		<span>&nbsp;&nbsp;</span>
-		
 		<a4j:commandButton  styleClass="greenButton" action="#{canvasModalBean.checkTextEditor}" value="#{messages.button_check}" reRender="command,tableInteraction, msnError, errorTable" />
 
 	</h:form>
 	
-</body>
-</html>
+</ui:composition>

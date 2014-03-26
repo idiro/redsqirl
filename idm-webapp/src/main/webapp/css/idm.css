@@ -890,9 +890,12 @@ div.splitter-bar.ui-state-highlight {
 .rich-tabhdr-cell-active{
     border:none ;
 }
+
 .rich-tabpanel-content{
     border:none ;
+    border-radius:10px;
 }
+
 .rich-tab-bottom-line{
     border:none ;
 }

@@ -502,17 +502,17 @@
 		
 			</rich:modalPanel>
 
-			<rich:modalPanel id="textEditorPanel" width="600" height="400" style="overflow:auto;" resizeable="false">
+			<rich:modalPanel id="textEditorPanel" width="600" height="400" style="overflow:hidden;" resizeable="true">
 					
-					<f:facet name="header">Configuration</f:facet>
+					<f:facet name="header">Editor</f:facet>
 					<f:facet name="controls">
 						<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
 							style="cursor:pointer;width:22px;"
 							onclick="#{rich:component('textEditorPanel')}.hide()" />
 					</f:facet>
-					
-					<ui:include src="/pages/canvasModal2.xhtml" />
-					
+					<div style="padding-bottom:20px;padding-top:5px;overflow:auto;">
+					   <ui:include src="/pages/canvasModal2.xhtml" />
+					</div>
 			</rich:modalPanel>
 	
 </ui:composition>
