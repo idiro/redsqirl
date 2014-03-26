@@ -1011,6 +1011,8 @@ function addElements(canvasName, positions) {
 	
 	for ( var i = 0; i < positionsArrays.length; i++) {
 		
+		//alert(positionsArrays[i][2]);
+		
 		if(checkImg(positionsArrays[i][2])){
 			var group = addElement(canvasName, positionsArrays[i][1],
 					positionsArrays[i][2], positionsArrays[i][3],
@@ -1063,6 +1065,8 @@ function checkImg(src){
 }
 
 function addElement(canvasName, elementType, elementImg, posx, posy, numSides, idElement) {
+	
+	//alert(elementImg);
 	
 	var polygonLayer = canvasArray[canvasName].polygonLayer;
 
@@ -1324,6 +1328,9 @@ function mountObj(canvasName) {
 				// variable to control image of
 				// the object
 				var imgTab = new Image();
+				
+				//alert(jQuery(this).attr("src"));
+				
 				imgTab.src = jQuery(this).attr("src");
 				imgTab.onload = findHHandWW;
 				
@@ -1344,6 +1351,7 @@ function mountObj(canvasName) {
 				var typeText = new Kinetic.Text({
 					text : jQuery(this).next().text()
 				});
+				typeText.setStroke(null);
 				
 				var typeLabel = new Kinetic.Text({
                     x:posInitTextX,
@@ -1352,14 +1360,9 @@ function mountObj(canvasName) {
                     fill: 'black',
                     text : labelTextSize8
                 });
-				
-				typeText.setPosition(posInitTextX,posInitTextY);
-				
-				//typeText.setStroke(null);
+				typeLabel.setPosition(posInitTextX,posInitTextY);
 
-				// ------------------ START
 				// GROUP
-
 				var result = createPolygon(
 					imgTab, posInitX,
 					poxInitY,
@@ -1809,7 +1812,9 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
 			width : 75,
 			height : 75
 		});
-	}catch(exception){}
+	}catch(exception){
+		//alert(exception);
+	}
 
 	polygonTab.setAbsolutePosition(posInitX, poxInitY);
 	polygonTab.selected = false;
