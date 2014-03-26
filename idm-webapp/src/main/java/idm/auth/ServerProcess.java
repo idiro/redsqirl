@@ -84,9 +84,9 @@ public class ServerProcess {
 				try {
 
 					final String command = getBaseCommand(user, password, port)
-							+ " & echo $!";
+							+ " 1>/dev/null & echo $!";
 					ProcessesManager pm = new WorkflowProcessesManager()
-							.getInstance();
+					.getInstance();
 					String old_pid = pm.getPid();
 
 					logger.info("old workflow process : " + old_pid);
@@ -131,7 +131,7 @@ public class ServerProcess {
 								logger.info(bundle
 										.getString("old_workflow_deleted"));
 							}
-
+							kill(pid1);
 							pm.deleteFile();
 							pm = new WorkflowProcessesManager().getInstance();
 							logger.info("killed old process");
@@ -212,10 +212,10 @@ public class ServerProcess {
 					+ p
 					+ ":"
 					+ ServerProcess.class.getProtectionDomain().getCodeSource()
-							.getLocation().getPath()
-							.replace("idm/auth/ServerProcess.class", "")
+					.getLocation().getPath()
+					.replace("idm/auth/ServerProcess.class", "")
 					+ " idiro.workflow.server.BaseCommand " + port;
-			
+
 			logger.info("command in base command "+c);
 			((ChannelExec) channel).setCommand(c);
 			channel.connect();
@@ -288,26 +288,28 @@ public class ServerProcess {
 				e.printStackTrace();
 				logger.error(e.getMessage());
 			}
-			logger.info(2);
-			Channel channel;
-			try {
-				logger.info(3);
-				channel = session.openChannel("exec");
-				logger.info("kill -9 " + pid);
-				((ChannelExec) channel).setCommand("kill -9 " + pid);
-				channel.connect();
-				channel.disconnect();
-				session.disconnect();
-				logger.info(3.5);
-			} catch (JSchException e) {
-				e.printStackTrace();
-			}
-			logger.info(4);
+			kill(pid);
 			list.remove(this);
-			logger.info(5);
 			run = false;
 		} else if (session == null && run) {
 			logger.warn("Cannot kill thread because session is null.");
+		}
+	}
+
+	protected void kill(String lpid){
+		logger.info("kill attempt");
+		Channel channel;
+		try {
+			logger.info(3);
+			channel = session.openChannel("exec");
+			logger.info("kill -9 " + lpid);
+			((ChannelExec) channel).setCommand("kill -9 " + lpid);
+			channel.connect();
+			channel.disconnect();
+			session.disconnect();
+			logger.info("process "+lpid+" successfully killed");
+		} catch (JSchException e) {
+			e.printStackTrace();
 		}
 	}
 
