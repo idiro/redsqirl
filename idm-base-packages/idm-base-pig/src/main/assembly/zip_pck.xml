@@ -8,7 +8,7 @@
   </formats>
   <fileSets>
     <fileSet>
-      <directory>${target.pck}</directory>
+      <directory>${main.pck}</directory>
       <outputDirectory>${project.artifactId}-${project.version}</outputDirectory>
     </fileSet>
   </fileSets>

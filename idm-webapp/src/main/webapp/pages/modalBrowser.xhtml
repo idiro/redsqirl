@@ -40,7 +40,7 @@
 	<h:outputText value="#{messages.label_path}" />
 	<h:inputText id="pathOpenFile" label="Path" value="#{browserHiveBean.path}"
 		maxlength="255" style="width:395px;" />
-	<a4j:commandButton type="submit" id="changePathBt"
+	<a4j:commandButton styleClass="greenButton" type="submit" id="changePathBt"
 		action="#{browserHiveBean.changePath}" value="#{messages.button_ok}" reRender="hdfsfsOpenFile" />
 	<br />
 
@@ -96,10 +96,10 @@
 
 	<br />
 	
-	<a4j:commandButton action="#{canvasModalBean.changePathBrowser}" value="#{messages.button_ok}" oncomplete="#{rich:component('modalPanelBrowserId')}.hide();" reRender="browserPanel, browserTable1, browserTable2, browserTable1Col1, browserTable1Col2" >
+	<a4j:commandButton styleClass="greenButton" action="#{canvasModalBean.changePathBrowser}" value="#{messages.button_ok}" oncomplete="#{rich:component('modalPanelBrowserId')}.hide();" reRender="browserPanel, browserTable1, browserTable2, browserTable1Col1, browserTable1Col2" >
 		<a4j:actionparam name="pathFile" value="getPath('#{browserHiveBean.path}')" noEscape="true"/>
 	</a4j:commandButton>
 	
-	<a4j:commandButton value="#{messages.button_cancel}" oncomplete="#{rich:component('modalPanelBrowserId')}.hide();" />
+	<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" oncomplete="#{rich:component('modalPanelBrowserId')}.hide();" />
 	
 </ui:composition>

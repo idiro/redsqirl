@@ -19,15 +19,25 @@ public class HiveTypePartition extends HiveType{
 	 * 
 	 */
 	private static final long serialVersionUID = 937674007867999596L;
-
+	/**
+	 * Partition Key
+	 */
 	public static final String usePartition ="partitoned" ;
 	
-	
+	/**
+	 * Default Constructor
+	 * @throws RemoteException
+	 */
 	public HiveTypePartition() throws RemoteException {
 		super();
 		addProperty(usePartition, "true");
 	}
-	
+	/**
+	 * Add a property 
+	 * @param key
+	 * @param value
+	 * 
+	 */
 	@Override
 	public void addProperty(String key ,String value){
 		if(usePartition.equals(key)){
@@ -38,23 +48,37 @@ public class HiveTypePartition extends HiveType{
 			}
 		}
 	}
-	
+	/**
+	 * Constructor with FeatureList
+	 * @param features
+	 * @throws RemoteException
+	 */
 	public HiveTypePartition(FeatureList features)
 			throws RemoteException {
 		super(features);
 	}
 	
-
+	/**
+	 * Get the type name
+	 * @return type name
+	 * @throws RemoteException
+	 */
 	@Override
 	public String getTypeName() throws RemoteException {
 		return "Hive Partition";
 	}
-	
+	/**
+	 * Get the Colour for the type
+	 * @return Colour
+	 */
 	@Override
 	protected String getDefaultColor(){
 		return "SkyBlue"; 
 	}
-	
+	/**
+	 * Get the where part of the statement for partitions
+	 * @return where statement
+	 */
 	public String getWhere(){
 		String[] where = hInt.getTableAndPartitions(getPath());
 		String ans= "";
@@ -67,7 +91,11 @@ public class HiveTypePartition extends HiveType{
 		}
 		return ans;
 	}
-	
+	/**
+	 * Check if the path is valid (may contain partition)
+	 * @return Error Message
+	 * @throws RemoteException
+	 */
 	@Override
 	public String isPathValid() throws RemoteException {
 		logger.info("hive partition is path valid");

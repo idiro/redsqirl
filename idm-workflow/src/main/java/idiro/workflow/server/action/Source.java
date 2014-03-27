@@ -40,18 +40,38 @@ import java.util.Map;
 public class Source extends DataflowAction {
 
 	private static final long serialVersionUID = 7519928238030041208L;
-
+	/**
+	 * Map of inputs
+	 */
 	private static Map<String, DFELinkProperty> input = new LinkedHashMap<String, DFELinkProperty>();
-
+	/**
+	 * Output name
+	 */
 	public static final String out_name = "";
-
+	/**
+	 * datatype key
+	 */
 	public static final String key_datatype = "data_type";
+	/**
+	 * datasubtype key
+	 */
 	public static final String key_datasubtype = "data_subtype";
+	/**
+	 * dataset key
+	 */
 	public static final String key_dataset = "data_set";
-
+	/**
+	 * Interaction for the DataType
+	 */
 	protected ListInteraction dataType;
+	/**
+	 * Interaction for the DataSubType
+	 */
 	protected ListInteraction dataSubtype;
-
+	/**
+	 * Constructor containing the pages, page checks and interaction Initialization
+	 * @throws RemoteException
+	 */
 	public Source() throws RemoteException {
 		super(null);
 
@@ -189,6 +209,8 @@ public class Source extends DataflowAction {
 					FeatureList outF = new OrderedFeatureList();
 					if (error == null) {
 						try {
+							logger.info("tree is "+getInteraction(
+									key_dataset).getTree());
 							List<Tree<String>> features = getInteraction(
 									key_dataset).getTree()
 									.getFirstChild("browse")
@@ -216,6 +238,7 @@ public class Source extends DataflowAction {
 									} catch (Exception e) {
 										error = "The type " + type
 												+ " does not exist";
+										logger.info(error);
 									}
 
 								}
@@ -248,7 +271,13 @@ public class Source extends DataflowAction {
 					}
 
 					if (error == null) {
-						if (!out.compare(path, outF, props)) {
+						boolean ok = false;
+						try{
+							ok = out.compare(path, outF, props);
+						}catch(Exception e){
+							ok = false;
+						}
+						if (!ok) {
 							logger.info("The output need to be changed in source "
 									+ componentId);
 							try {
@@ -266,8 +295,10 @@ public class Source extends DataflowAction {
 
 							// Update the feature list only if it looks good
 							out.setFeatures(outF);
+							logger.info(out.getFeatures().getFeaturesNames());
 							logger.info("Setpath : " + path);
 							out.setPath(path);
+							logger.info(out.getFeatures().getFeaturesNames());
 
 						}
 						getInteraction(key_dataset).getTree()
@@ -307,28 +338,50 @@ public class Source extends DataflowAction {
 
 		});
 	}
-
+	/**
+	 * Get the name of the Action 
+	 * @return name
+	 * @throws RemoteException
+	 */
 	@Override
 	public String getName() throws RemoteException {
 		return "Source";
 	}
-
+	/**
+	 * Get the Map of Inputs
+	 * @return Map of Inputs
+	 * @throws RemoteException
+	 * 
+	 */
 	@Override
 	public Map<String, DFELinkProperty> getInput() throws RemoteException {
 		return input;
 	}
 
 	// Override default static methods
+	/**
+	 * Get the path for the help file
+	 * @return path
+	 * @throws RemoteException
+	 */
 	@Override
 	public String getHelp() throws RemoteException {
 		return "../help/" + getName().toLowerCase() + ".html";
 	}
-
+	/**
+	 * Get the path of the Image file
+	 * @return path
+	 * @throws RemoteException
+	 */
 	@Override
 	public String getImage() throws RemoteException {
 		return "../image/" + getName().toLowerCase() + ".gif";
 	}
-
+	/**
+	 * Update the Interaction provided
+	 * @param interaction
+	 * @throws RemoteException
+	 */
 	@Override
 	public void update(DFEInteraction interaction) throws RemoteException {
 
@@ -347,7 +400,11 @@ public class Source extends DataflowAction {
 	public void updateDataType(Tree<String> treeDatatype)
 			throws RemoteException {
 	}
-
+	/**
+	 * Update the DataSubType Interaction
+	 * @param treeDatasubtype
+	 * @throws RemoteException
+	 */
 	public void updateDataSubType(Tree<String> treeDatasubtype)
 			throws RemoteException {
 		logger.info("updating data subtype");
@@ -374,12 +431,8 @@ public class Source extends DataflowAction {
 					if ((wa.getTypeName().equalsIgnoreCase(
 							(new HiveType()).getTypeName())
 							|| wa.getTypeName().equalsIgnoreCase(
-									(new MapRedTextType()).getTypeName())
-							|| wa.getTypeName().equalsIgnoreCase(
-									(new MapRedBinaryType()).getTypeName()) || wa
-							.getTypeName().equalsIgnoreCase(
-									(new HiveTypePartition()).getTypeName()))
-							&& dataSubtype.getValue() == null) {
+									(new MapRedTextType()).getTypeName()))
+							&& dataSubtype.getValue() == null){
 						setValue = wa.getTypeName();
 					}
 				}
@@ -395,7 +448,11 @@ public class Source extends DataflowAction {
 			logger.error("No type specified");
 		}
 	}
-
+	/**
+	 * Update the DataSet Interaction
+	 * @param treeDataset
+	 * @throws RemoteException
+	 */
 	public void updateDataSet(Tree<String> treeDataset) throws RemoteException {
 
 		String newType = dataType.getValue();
@@ -410,26 +467,30 @@ public class Source extends DataflowAction {
 		} else {
 			Tree<String> oldType = treeDataset.getFirstChild("browse")
 					.getFirstChild("type").getFirstChild();
-			Tree<String> oldSubType = treeDataset.getFirstChild("browse")
-					.getFirstChild("subtype").getFirstChild();
 
-			if (!newType.equals(oldType.getHead()) || !newSubtype.equals(oldSubType.getHead())) {
+			if (oldType != null && !oldType.getHead().equals(newType)) {
 				treeDataset.getFirstChild("browse").remove("type");
-				treeDataset.getFirstChild("browse").remove("subtype");
 				treeDataset.getFirstChild("browse").remove("output");
 				treeDataset.getFirstChild("browse").add("output");
 				treeDataset.getFirstChild("browse").add("type").add(newType);
-				treeDataset.getFirstChild("browse").add("subtype").add(newSubtype);
+				treeDataset.getFirstChild("browse").add("subtype")
+						.add(newSubtype);
 			}
 		}
 	}
-
+	/**
+	 * Update the output
+	 * @return Error Message
+	 * @throws RemoteException
+	 */
 	@Override
 	public String updateOut() throws RemoteException {
 		String error = checkIntegrationUserVariables();
 		return error;
 	}
-
+	/**
+	 * Not Supported
+	 */
 	@Override
 	public boolean writeOozieActionFiles(File[] files) throws RemoteException {
 		return false;

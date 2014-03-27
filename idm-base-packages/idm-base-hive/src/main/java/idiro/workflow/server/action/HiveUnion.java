@@ -29,15 +29,28 @@ public class HiveUnion extends HiveElement {
 	 * 
 	 */
 	private static final long serialVersionUID = -2971963679008329394L;
-
+	/** Feature Key */
 	public static final String key_featureTable = "Features";
+	/** Union Condidtion Key */
 	public final String key_union_condition = "union_cond";
-	
-	private Page page1 , page2;
-
+	/**
+	 * Pages
+	 */
+	private Page page1, page2;
+	/**
+	 * Union Table Select Interaction
+	 */
 	private HiveTableUnionInteraction tUnionSelInt;
+	/**
+	 * Union Condition Interaction
+	 */
 	private HiveUnionConditions tUnionCond;
 
+	/**
+	 * Constructor
+	 * 
+	 * @throws RemoteException
+	 */
 	public HiveUnion() throws RemoteException {
 		super(2, 2, Integer.MAX_VALUE);
 
@@ -53,26 +66,30 @@ public class HiveUnion extends HiveElement {
 
 		page1.addInteraction(tUnionSelInt);
 
-
 		condInt = new HiveFilterInteraction(0, 0, this);
 
 		page1.addInteraction(condInt);
-		
-		page2 = addPage(
-				HiveLanguageManager.getText("pig.union_page2.title"),
+
+		page2 = addPage(HiveLanguageManager.getText("pig.union_page2.title"),
 				HiveLanguageManager.getText("pig.union_page2.legend"), 1);
-		
-		tUnionCond =  new  HiveUnionConditions(
+
+		tUnionCond = new HiveUnionConditions(
 				key_union_condition,
 				HiveLanguageManager.getText("pig.union_cond_interaction.title"),
-				HiveLanguageManager.getText("pig.union_cond_interaction.legend"),
-				0, 0, this);
-		
+				HiveLanguageManager
+						.getText("pig.union_cond_interaction.legend"), 0, 0,
+				this);
+
 		page2.addInteraction(tUnionCond);
 		page2.addInteraction(typeOutputInt);
 
 	}
 
+	/**
+	 * Initialise the input map
+	 * 
+	 * @throws RemoteException
+	 */
 	public void init() throws RemoteException {
 		if (input == null) {
 			Map<String, DFELinkProperty> in = new LinkedHashMap<String, DFELinkProperty>();
@@ -82,10 +99,17 @@ public class HiveUnion extends HiveElement {
 		}
 	}
 
+	/**
+	 * Get the name of the action
+	 */
 	public String getName() throws RemoteException {
 		return "hive_union";
 	}
-
+	/**
+	 * Update the interaction that are in the action 
+	 * @param interaction
+	 * @throws RemoteException
+	 */
 	public void update(DFEInteraction interaction) throws RemoteException {
 
 		List<DFEOutput> in = getDFEInput().get(key_input);
@@ -100,12 +124,16 @@ public class HiveUnion extends HiveElement {
 			} else if (interId.equals(tUnionSelInt.getId())) {
 				logger.info("uopdate tunuion interaction");
 				tUnionSelInt.update(in);
-			}else if(interId.equals(tUnionCond.getId())){
+			} else if (interId.equals(tUnionCond.getId())) {
 				tUnionCond.update(in);
 			}
 		}
 	}
-
+	/**
+	 * Get the query to run the union action
+	 * @return query
+	 * @throws RemoteException
+	 */
 	public String getQuery() throws RemoteException {
 
 		HiveInterface hInt = new HiveInterface();
@@ -118,11 +146,12 @@ public class HiveUnion extends HiveElement {
 			String insert = "INSERT OVERWRITE TABLE " + tableOut;
 			String create = "CREATE TABLE IF NOT EXISTS " + tableOut;
 
-			String select = tUnionSelInt.getQueryPiece(out,tUnionCond.getCondition());
+			String select = tUnionSelInt.getQueryPiece(out,
+					tUnionCond.getCondition());
 			String createSelect = tUnionSelInt.getCreateQueryPiece(out);
 
 			String condition = condInt.getQueryPiece();
-			
+
 			if (select.isEmpty()) {
 				logger.debug("Nothing to select");
 			} else {
@@ -134,7 +163,11 @@ public class HiveUnion extends HiveElement {
 
 		return query;
 	}
-
+	/**
+	 * Get the features that are in the input
+	 * @return input FeatureList
+	 * @throws RemoteException
+	 */
 	public FeatureList getInFeatures() throws RemoteException {
 		FeatureList ans = new OrderedFeatureList();
 		Map<String, DFEOutput> aliases = getAliases();
@@ -170,21 +203,27 @@ public class HiveUnion extends HiveElement {
 		}
 		return ans;
 	}
-
+	/**
+	 * Get the feature list that are generated from this action
+	 * @return new FeatureList
+	 * @throws RemoteException
+	 */
 	@Override
 	public FeatureList getNewFeatures() throws RemoteException {
 		return tUnionSelInt.getNewFeatures();
 	}
 
 	/**
-	 * @return the tUnionSelInt
+	 * Get the Union Select Interaction
+	 * @return tUnionSelInt
 	 */
 	public final HiveTableUnionInteraction gettUnionSelInt() {
 		return tUnionSelInt;
 	}
-	
+
 	/**
-	 * @return the tUnionCond
+	 * Get the Union Condition Interaction
+	 * @return tUnionCond
 	 */
 	public final HiveUnionConditions gettUnionCond() {
 		return tUnionCond;

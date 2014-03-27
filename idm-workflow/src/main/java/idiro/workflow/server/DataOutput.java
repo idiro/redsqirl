@@ -76,16 +76,32 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 	protected Map<String, String> dataProperty = new LinkedHashMap<String, String>();
 
 	// public static final String hbase_new_feature = "hbase_new_feature";
+	/**
+	 * Default Constructor
+	 * 
+	 * @throws RemoteException
+	 */
 
 	public DataOutput() throws RemoteException {
 		super();
 	}
 
+	/**
+	 * Constructor with feature list
+	 * 
+	 * @param features
+	 * @throws RemoteException
+	 */
 	public DataOutput(FeatureList features) throws RemoteException {
 		super();
 		this.features = features;
 	}
 
+	/**
+	 * Get a List of output classes for data to be held in
+	 * 
+	 * @return List output classes
+	 */
 	public static List<String> getAllClassDataOutput() {
 		if (dataOutputClassName == null) {
 			dataOutputClassName = WorkflowPrefManager.getInstance()
@@ -95,6 +111,12 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 		return dataOutputClassName;
 	}
 
+	/**
+	 * Get a data output with a classname
+	 * 
+	 * @param typeName
+	 * @return DataOutput
+	 */
 	public static DataOutput getOutput(String typeName) {
 
 		// Find the class and create an instance
@@ -123,7 +145,7 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 	/**
 	 * Write the browser tree corresponding to this data output
 	 * 
-	 * @return
+	 * @return {@link idiro.utils.Tree<String>} for the data output
 	 * @throws RemoteException
 	 */
 	public Tree<String> getTree() throws RemoteException {
@@ -150,6 +172,13 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 		return root;
 	}
 
+	/**
+	 * Write the properties of the output to an XML
+	 * 
+	 * @param doc
+	 * @param parent
+	 * @throws RemoteException
+	 */
 	@Override
 	public void write(Document doc, Element parent) throws RemoteException {
 		logger.debug("into write...");
@@ -206,6 +235,11 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 	}
 
 	@Override
+	/**
+	 * Read an element of an xml
+	 * @param parent the point to read from in XML
+	 * @throws RemoteException
+	 */
 	public void read(Element parent) throws RemoteException {
 
 		String savStateStr = parent.getElementsByTagName("state").item(0)
@@ -258,13 +292,17 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 	}
 
 	/**
-	 * @return the features
+	 * Get the Features List
+	 * 
+	 * @return features
 	 */
 	public final FeatureList getFeatures() {
 		return features;
 	}
 
 	/**
+	 * Set the Features
+	 * 
 	 * @param features
 	 *            the features to set
 	 */
@@ -273,13 +311,19 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 	}
 
 	/**
-	 * @return the savingState
+	 * Get the SavingState @see
+	 * {@link idiro.workflow.server.enumeration.SavingState}
+	 * 
+	 * @return savingState
 	 */
 	public final SavingState getSavingState() {
 		return savingState;
 	}
 
 	/**
+	 * Set the SavingState @see
+	 * {@link idiro.workflow.server.enumeration.SavingState}
+	 * 
 	 * @param savingState
 	 *            the savingState to set
 	 */
@@ -288,16 +332,32 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 	}
 
 	@Override
+	/**
+	 * Get the dataProperties
+	 * @return Map<String,String> of properties for the data output
+	 * @throws RemoteException
+	 */
 	public Map<String, String> getProperties() throws RemoteException {
 		return dataProperty;
 	}
 
 	@Override
+	/**
+	 * Add a property
+	 * @param key of the data property
+	 * @param value of the data property
+	 * 
+	 */
 	public void addProperty(String key, String value) {
 		dataProperty.put(key, value);
 	}
 
 	@Override
+	/**
+	 * Get a Property from the properties map
+	 * @param key the property to get
+	 * @return value of the propery
+	 */
 	public String getProperty(String key) {
 		return dataProperty.get(key);
 	}
@@ -308,6 +368,9 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 	}
 
 	@Override
+	/**
+	 * Set all properties in the map to be empty
+	 */
 	public void removeAllProperties() {
 		Iterator<String> it = dataProperty.keySet().iterator();
 		while (it.hasNext()) {
@@ -316,6 +379,10 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 	}
 
 	@Override
+	/**
+	 * Clean the object of output if the path exists and is not RECORDED SaveState
+	 * @throws RemoteException
+	 */
 	public String clean() throws RemoteException {
 		String err = null;
 		if (savingState != SavingState.RECORDED && isPathExists()) {
@@ -325,6 +392,7 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 	}
 
 	/**
+	 * Get the current Path
 	 * @return the path
 	 */
 	@Override
@@ -333,6 +401,7 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 	}
 
 	/**
+	 * Set the current Path
 	 * @param path
 	 *            the path to set
 	 * @throws RemoteException
@@ -343,6 +412,11 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 	}
 
 	@Override
+	/**
+	 * Get the colour of the data type
+	 * @return colour
+	 * @throws RemoteException 
+	 */
 	public String getColour() throws RemoteException {
 		String defaultCol = getDefaultColor();
 		String colour_pref = null;
@@ -378,6 +452,11 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 	}
 
 	@Override
+	/**
+	 * Set the colour of the DataOutput
+	 * @param Colour of the output
+	 * @throws RemoteException
+	 */
 	public void setColour(String colour) throws RemoteException {
 		Properties prop = new Properties();
 		try {
@@ -405,26 +484,37 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 					+ e.getMessage());
 		}
 	}
-
+	/**
+	 * Get the default colour of the object
+	 * @return colour
+	 */
 	protected abstract String getDefaultColor();
-
+	
+	/**
+	 * Compare a path , features list  and properties to the current ones
+	 * @param path to compare to current
+	 * @param fl features list to compare to current
+	 * @param props to compare to current
+	 * @return <code>true</code> if equal else <code>false</code>
+	 */
 	public boolean compare(String path, FeatureList fl,
 			Map<String, String> props) {
-		logger.debug("Comparaison dataoutput:");
-		logger.debug(this.path + " " + path);
 		if (this.path == null) {
 			return false;
 		}
-		try {
-			logger.debug(features.getFeaturesNames() + " "
-					+ fl.getFeaturesNames());
-		} catch (RemoteException e) {
-		}
-		logger.debug(dataProperty + " " + props);
+		/*
+		 * + fl.getFeaturesNames()); } catch (RemoteException e) { }
+		 * logger.debug(dataProperty + " " + props); logger.info(dataProperty +
+		 * " " + props);
+		 */
 		return this.path.equals(path) && features.equals(fl)
 				&& dataProperty.equals(props);
 	}
-	
+	/**
+	 * Get the FeatureType of 
+	 * @param expr to get FeatureType of 
+	 * @return {@link idiro.workflow.server.enumeration.FeatureType}
+	 */
 	public static FeatureType getType(String expr) {
 
 		FeatureType type = null;

@@ -6,10 +6,16 @@ package idiro.workflow.server.enumeration;
  *
  */
 public enum FeatureType {
+	/**Boolean Type*/
 	BOOLEAN,
+	/**Integer Type*/
 	INT,
+	/**Long Type*/
 	LONG,
+	/**Float Type*/
 	FLOAT,
+	/**Double Type*/
 	DOUBLE,
+	/**String Type*/
 	STRING
 }

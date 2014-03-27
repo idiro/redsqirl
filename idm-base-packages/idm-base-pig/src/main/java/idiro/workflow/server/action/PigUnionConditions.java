@@ -9,19 +9,35 @@ import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
+/**
+ * Class interaction for settin unuion conditions
+ * @author keith
+ *
+ */
 public class PigUnionConditions  extends TableInteraction{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 5525727504738143363L;
-
+	/**
+	 * Pig Union Interaction to which the interaction belogs to
+	 */
 	private PigUnion hu;
-
+							/**table reliation title*/
 	public static final String table_relation_title = PigLanguageManager.getTextWithoutSpace("pig.union_cond_interaction.relation_column"), 
+			/**table operation title*/
 			table_op_title = PigLanguageManager.getTextWithoutSpace("pig.union_cond_interaction.op_column");
-
+	/**
+	 * Constructor
+	 * @param id
+	 * @param name
+	 * @param legend
+	 * @param column
+	 * @param placeInColumn
+	 * @param hu
+	 * @throws RemoteException
+	 */
 	public PigUnionConditions(String id, String name, String legend,
 			int column, int placeInColumn, PigUnion hu) throws RemoteException {
 		super(id, name, legend, column, placeInColumn);
@@ -29,7 +45,11 @@ public class PigUnionConditions  extends TableInteraction{
 		buildRootTable();
 	}
 
-
+	/**
+	 * Check the interaction
+	 * @return Error Message
+	 * @throws RemoteException
+	 */
 	@Override
 	public String check() throws RemoteException{
 		String msg = super.check();
@@ -60,7 +80,12 @@ public class PigUnionConditions  extends TableInteraction{
 
 		return msg;
 	}
-	
+	/**
+	 * Get the condition using the alias and remove it from the result string
+	 * @param alias
+	 * @return result
+	 * @throws RemoteException
+	 */
 	public String getCondition(String alias) throws RemoteException{
 		String ans = null;
 		Iterator<Map<String,String>> rows = getValues().iterator();
@@ -74,7 +99,11 @@ public class PigUnionConditions  extends TableInteraction{
 		return ans;
 	}
 
-
+	/**
+	 * Update the interaction with values from inputs
+	 * @param in
+	 * @throws RemoteException
+	 */
 	public void update(List<DFEOutput> in) throws RemoteException{
 
 		updateColumnConstraint(
@@ -88,7 +117,13 @@ public class PigUnionConditions  extends TableInteraction{
 
 
 	}
-
+	/**
+	 * Check the expression for errors
+	 * @param expression
+	 * @param modifier
+	 * @return Error Message
+	 * @throws RemoteException
+	 */
 	public String checkExpression(String expression, String modifier)
 			throws RemoteException {
 		String error = null;
@@ -106,7 +141,10 @@ public class PigUnionConditions  extends TableInteraction{
 		return error;
 	}
 
-
+	/**
+	 * Build the root table for the interactionview
+	 * @throws RemoteException
+	 */
 	private void buildRootTable() throws RemoteException{
 		addColumn(
 				table_relation_title, 

@@ -7,7 +7,13 @@ package idiro.workflow.server.enumeration;
  *
  */
 public enum DataBrowser {
+	/**
+	 * Hive Enum
+	 */
 	HIVE,
+	/**
+	 * HDFS Enum
+	 */
 	HDFS,
 	//HBASE
 }

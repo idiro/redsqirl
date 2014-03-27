@@ -29,18 +29,32 @@ import org.apache.log4j.Logger;
 public class PigDictionary extends AbstractDictionary {
 
 	private static Logger logger = Logger.getLogger(PigDictionary.class);
-
+	/**
+	 * Key for logical operators
+	 */
 	private static final String logicalOperators = "logicalOperators";
+	/** Key for relational operators */
 	private static final String relationalOperators = "relationalOperators";
+	/** Key for a cast operator */
 	private static final String castOperator = "castOperator";
+	/** Key for arithmetic operation */
 	private static final String arithmeticOperators = "arithmeticOperators";
+	/** Key for utils methods */
 	private static final String utilsMethods = "utilsMethods";
+	/** Key for math methods */
 	private static final String mathMethods = "mathMethods";
+	/** Key for string Methods */
 	private static final String stringMethods = "stringMethods";
+	/** Key for aggregation methods */
 	private static final String agregationMethods = "agregationMethods";
-
+	/** Instance */
 	private static PigDictionary instance;
 
+	/**
+	 * Get an instance of the dictionary
+	 * 
+	 * @return instance
+	 */
 	public static PigDictionary getInstance() {
 		if (instance == null) {
 			instance = new PigDictionary();
@@ -48,15 +62,26 @@ public class PigDictionary extends AbstractDictionary {
 		return instance;
 	}
 
+	/**
+	 * Constructor
+	 */
 	private PigDictionary() {
 		super();
 	}
 
+	/**
+	 * Get the file name of the where the functions are stored
+	 * 
+	 * @return file name
+	 */
 	@Override
 	protected String getNameFile() {
 		return "functionsPig.txt";
 	}
 
+	/**
+	 * Load the default funtions into a map
+	 */
 	protected void loadDefaultFunctions() {
 
 		functionsMap = new HashMap<String, String[][]>();
@@ -341,27 +366,33 @@ public class PigDictionary extends AbstractDictionary {
 										"NUMBER",
 										"@function:MAX( ELEMENT )@short:Use the MAX function to compute the maximum of a set of numeric values in a single-column bag@param: ELEMENT item to get the maximum@description:Computes the maximum of the numeric values in a single-column bag. MAX requires a preceding GROUP ALL statement for global sums and a GROUP BY statement for group sums@example: MAX(A.id) returns the maximum value of A.id" } });
 	}
+
 	/**
 	 * Get the Pig type of the variable passed
-	 * @param String of the variable type
+	 * 
+	 * @param String
+	 *            of the variable type
 	 * @return FeatureType of Pig variable
-	*/
+	 */
 	public static FeatureType getType(String pigType) {
 		FeatureType ans = null;
-		logger.debug("Type of: "+pigType);
+		logger.debug("Type of: " + pigType);
 		if (pigType.equalsIgnoreCase("CHARARRAY")) {
 			ans = FeatureType.STRING;
 		} else if (pigType.equalsIgnoreCase("NUMBER")) {
 			ans = FeatureType.DOUBLE;
-		} else{
+		} else {
 			ans = FeatureType.valueOf(pigType);
 		}
 		return ans;
 	}
+
 	/**
-	 * Return the 
-	 * @param feat a feature type that will be checked
-	 * @return Pig Type of the feature type given 
+	 * Return the Type that is accepted by pig
+	 * 
+	 * @param feat
+	 *            a feature type that will be checked
+	 * @return Pig Type of the feature type given
 	 */
 	public static String getPigType(FeatureType feat) {
 		String featureType = feat.name();
@@ -381,12 +412,16 @@ public class PigDictionary extends AbstractDictionary {
 		}
 		return featureType;
 	}
-	
+
 	/**
 	 * Get the return type of a pig based expression
-	 * @param expr operation to check return type
-	 * @param features list of features to check
-	 * @param nonAggregFeats set of non aggregated features
+	 * 
+	 * @param expr
+	 *            operation to check return type
+	 * @param features
+	 *            list of features to check
+	 * @param nonAggregFeats
+	 *            set of non aggregated features
 	 * @return type of the expression
 	 * @throws Exception
 	 */
@@ -515,11 +550,11 @@ public class PigDictionary extends AbstractDictionary {
 				type = runMethod(expr, fl, true);
 			} else if (isNonAggMethod(expr)) {
 				logger.debug(expr + ", is a method");
-				
+
 				if (nonAggregFeats != null && nonAggregFeats.isEmpty()) {
 					throw new Exception("Cannot use non aggregation method");
 				}
-				
+
 				FeatureList fl = features;
 				if (nonAggregFeats != null) {
 					fl = new OrderedFeatureList();
@@ -542,6 +577,15 @@ public class PigDictionary extends AbstractDictionary {
 
 	}
 
+	/**
+	 * Run a cast operation on an expression
+	 * 
+	 * @param expr
+	 * @param features
+	 * @param featureAggreg
+	 * @return type
+	 * @throws Exception
+	 */
 	private String runCastOperation(String expr, FeatureList features,
 			Set<String> featureAggreg) throws Exception {
 		logger.debug("casting");
@@ -581,11 +625,26 @@ public class PigDictionary extends AbstractDictionary {
 		return type;
 	}
 
+	/**
+	 * Get the return type using an empty list for aggregation
+	 * 
+	 * @param expr
+	 * @param features
+	 * @return type
+	 * @throws Exception
+	 */
 	public String getReturnType(String expr, FeatureList features)
 			throws Exception {
 		return getReturnType(expr, features, null);
 	}
 
+	/**
+	 * Check if a type given is the same type as the type expected
+	 * 
+	 * @param typeToBe
+	 * @param typeGiven
+	 * @return <code>true</code> if types are equal else <code>false</code>
+	 */
 	public static boolean check(String typeToBe, String typeGiven) {
 		boolean ok = false;
 		logger.debug("type to be : " + typeToBe + " given " + typeGiven);
@@ -625,13 +684,29 @@ public class PigDictionary extends AbstractDictionary {
 		return ok;
 	}
 
-	public static EditorInteraction generateEditor(Tree<String> help, DFEOutput in)
-			throws RemoteException {
+	/**
+	 * Generate an editor interaction for single input
+	 * 
+	 * @param help
+	 * @param in
+	 * @return EditorInteraction
+	 * @throws RemoteException
+	 */
+	public static EditorInteraction generateEditor(Tree<String> help,
+			DFEOutput in) throws RemoteException {
 		List<DFEOutput> lOut = new LinkedList<DFEOutput>();
 		lOut.add(in);
 		return generateEditor(help, lOut);
 	}
 
+	/**
+	 * Generate an editor interaction with a list
+	 * 
+	 * @param help
+	 * @param in
+	 * @return EditorInteraction
+	 * @throws RemoteException
+	 */
 	public static EditorInteraction generateEditor(Tree<String> help,
 			List<DFEOutput> in) throws RemoteException {
 		logger.debug("generate Editor...");
@@ -660,13 +735,22 @@ public class PigDictionary extends AbstractDictionary {
 		}
 		editor.add(help);
 		editor.add("output");
-		
-		EditorInteraction ei = new EditorInteraction("autogen","auto-gen", "", 0,0);
+
+		EditorInteraction ei = new EditorInteraction("autogen", "auto-gen", "",
+				0, 0);
 		ei.getTree().removeAllChildren();
 		ei.getTree().add(editor);
 		return ei;
 	}
 
+	/**
+	 * Generate an EditorInteraction with FeatureList
+	 * 
+	 * @param help
+	 * @param inFeat
+	 * @return EditorInteraction
+	 * @throws RemoteException
+	 */
 	public static EditorInteraction generateEditor(Tree<String> help,
 			FeatureList inFeat) throws RemoteException {
 		logger.debug("generate Editor...");
@@ -683,12 +767,19 @@ public class PigDictionary extends AbstractDictionary {
 		}
 		editor.add(help);
 		editor.add("output");
-		EditorInteraction ei = new EditorInteraction("autogen","auto-gen", "", 0,0);
+		EditorInteraction ei = new EditorInteraction("autogen", "auto-gen", "",
+				0, 0);
 		ei.getTree().removeAllChildren();
 		ei.getTree().add(editor);
 		return ei;
 	}
 
+	/**
+	 * Create a conditional help menu
+	 * 
+	 * @return Tree for Conditional Help Menu
+	 * @throws RemoteException
+	 */
 	public Tree<String> createConditionHelpMenu() throws RemoteException {
 		Tree<String> help = new TreeNonUnique<String>("help");
 		help.add(createMenu(new TreeNonUnique<String>("operation_logic"),
@@ -707,6 +798,12 @@ public class PigDictionary extends AbstractDictionary {
 		return help;
 	}
 
+	/**
+	 * Create the default Select Help Menu
+	 * 
+	 * @return Tree for Default Select Help Menu
+	 * @throws RemoteException
+	 */
 	public Tree<String> createDefaultSelectHelpMenu() throws RemoteException {
 		Tree<String> help = new TreeNonUnique<String>("help");
 		help.add(createMenu(new TreeNonUnique<String>("operation_arithmetic"),
@@ -724,7 +821,11 @@ public class PigDictionary extends AbstractDictionary {
 		logger.debug("create Select Help Menu");
 		return help;
 	}
-
+	/**
+	 * Create a select help menu for a grouped action
+	 * @return Grouped by tree
+	 * @throws RemoteException
+	 */
 	public Tree<String> createGroupSelectHelpMenu() throws RemoteException {
 		Tree<String> help = new TreeNonUnique<String>("help");
 		help.add(createMenu(new TreeNonUnique<String>("operation_arithmetic"),
@@ -744,6 +845,13 @@ public class PigDictionary extends AbstractDictionary {
 		logger.debug("create Group Select Help Menu");
 		return help;
 	}
+	/**
+	 *  Create Menu with help from list
+	 * @param root
+	 * @param list
+	 * @return menu Tree
+	 * @throws RemoteException
+	 */
 
 	protected static Tree<String> createMenu(Tree<String> root, String[][] list)
 			throws RemoteException {
@@ -757,7 +865,11 @@ public class PigDictionary extends AbstractDictionary {
 		}
 		return root;
 	}
-
+	/**
+	 * Check if expression is a logical operation
+	 * @param expr
+	 * @return <code>true</code> if expression is a logical operation else <code>false</code> 
+	 */
 	private static boolean isLogicalOperation(String expr) {
 		if (expr.trim().isEmpty()) {
 			return false;
@@ -771,7 +883,14 @@ public class PigDictionary extends AbstractDictionary {
 		return cleanUp.startsWith("NOT ") || cleanUp.contains(" OR ")
 				|| cleanUp.contains(" AND ");
 	}
-
+	/**
+	 * Run a Logical operation and check if the operation ran ok 
+	 * @param expr
+	 * @param features
+	 * @param aggregFeat
+	 * @return <code>true</code> if operation ran ok else <code>false</code>
+	 * @throws Exception
+	 */
 	private boolean runLogicalOperation(String expr, FeatureList features,
 			Set<String> aggregFeat) throws Exception {
 
@@ -811,34 +930,88 @@ public class PigDictionary extends AbstractDictionary {
 		return ok;
 	}
 
+	/**
+	 * Check if expression is a relational operation
+	 * 
+	 * @param expr
+	 * @return <code>true</code> if the expression is a relataional operation
+	 *         <code>false</code>
+	 */
 	private boolean isRelationalOperation(String expr) {
 		return isInList(functionsMap.get(relationalOperators), expr);
 	}
 
+	/**
+	 * Run a relational operation and check if the result is ok
+	 * 
+	 * @param expr
+	 * @param features
+	 * @param aggregFeat
+	 * @return <code>true</code> if relational operation is ok else
+	 *         <code>false</code>
+	 * @throws Exception
+	 */
 	private boolean runRelationalOperation(String expr, FeatureList features,
 			Set<String> aggregFeat) throws Exception {
 		return runOperation(functionsMap.get(relationalOperators), expr,
 				features, aggregFeat);
 	}
 
+	/**
+	 * Check if expression is an arithmetic operation
+	 * 
+	 * @param expr
+	 * @return <code>true</code> expression is aritmethic else
+	 *         <code>false</code>
+	 */
 	private boolean isArithmeticOperation(String expr) {
 		return isInList(functionsMap.get(arithmeticOperators), expr);
 	}
 
+	/**
+	 * Check if an expression is a cast operation
+	 * 
+	 * @param expr
+	 * @return <code>true</code> id operation is a cast operation else
+	 *         <code>false</code>
+	 */
 	private boolean isCastOperation(String expr) {
 		return isInList(functionsMap.get(castOperator), expr);
 	}
 
+	/**
+	 * Run arithmetic operation and check if result is ok
+	 * 
+	 * @param expr
+	 * @param features
+	 * @param aggregFeat
+	 * @return <code>true</code> if operation ran ok else <code>false</code>
+	 * @throws Exception
+	 */
 	private boolean runArithmeticOperation(String expr, FeatureList features,
 			Set<String> aggregFeat) throws Exception {
 		return runOperation(functionsMap.get(arithmeticOperators), expr,
 				features, aggregFeat);
 	}
 
+	/**
+	 * Check if an expression is an aggregative method
+	 * 
+	 * @param expr
+	 * @return <code>true</code> if expression is aggregative else
+	 *         <code>false</code>
+	 */
 	public boolean isAggregatorMethod(String expr) {
 		return isInList(functionsMap.get(agregationMethods), expr);
 	}
 
+	/**
+	 * Check if a expression is a non aggregation method
+	 * 
+	 * @param expr
+	 * @return <code>true</code> if it is non aggregative method else
+	 *         <code>false</code>
+	 */
 	private boolean isNonAggMethod(String expr) {
 		if (isInList(functionsMap.get(utilsMethods), expr)) {
 			return true;
@@ -851,6 +1024,15 @@ public class PigDictionary extends AbstractDictionary {
 
 	}
 
+	/**
+	 * Run a method to check if it runs ok
+	 * 
+	 * @param expr
+	 * @param features
+	 * @param aggregFeat
+	 * @return <cod>true</code> if method runs ok else <cod>false</code>
+	 * @throws Exception
+	 */
 	private String runMethod(String expr, FeatureList features,
 			boolean isAggregMethod) throws Exception {
 		String type = null;
@@ -919,6 +1101,16 @@ public class PigDictionary extends AbstractDictionary {
 		return type;
 	}
 
+	/**
+	 * Run an operation to check if it runs ok
+	 * 
+	 * @param list
+	 * @param expr
+	 * @param features
+	 * @param aggregFeat
+	 * @return <cod>true</code> if operation runs ok else <cod>false</code>
+	 * @throws Exception
+	 */
 	private boolean runOperation(String[][] list, String expr,
 			FeatureList features, Set<String> aggregFeat) throws Exception {
 		boolean ok = false;
@@ -926,12 +1118,12 @@ public class PigDictionary extends AbstractDictionary {
 		if (method != null) {
 			logger.debug("In " + expr + ", method found: " + method[0]);
 			String[] splitStr = expr.split(escapeString(method[0]));
-			if (aggregFeat == null){
+			if (aggregFeat == null) {
 				ok = check(method, splitStr, features);
-			} else if(aggregFeat.isEmpty()){
-				//No addition in a total aggregation
+			} else if (aggregFeat.isEmpty()) {
+				// No addition in a total aggregation
 				ok = false;
-			}else{
+			} else {
 				FeatureList AF = new OrderedFeatureList();
 				Iterator<String> itA = aggregFeat.iterator();
 				while (itA.hasNext()) {
@@ -950,6 +1142,13 @@ public class PigDictionary extends AbstractDictionary {
 		return ok;
 	}
 
+	/**
+	 * Check if an expression is in a list
+	 * 
+	 * @param list
+	 * @param expr
+	 * @return <cod>true</code> if expression in list else <cod>false</code>
+	 */
 	private static boolean isInList(String[][] list, String expr) {
 		String cleanUp = removeBracketContent(expr);
 		boolean found = false;
@@ -964,6 +1163,17 @@ public class PigDictionary extends AbstractDictionary {
 
 		return found;
 	}
+
+	/**
+	 * Check if the arguments passed to a method are the same in the feature
+	 * list and are acceptable by the method
+	 * 
+	 * @param method
+	 * @param args
+	 * @param features
+	 * @return <cod>true</code> if arguments match else <cod>false</code>
+	 * @throws Exception
+	 */
 
 	private boolean check(String[] method, String[] args, FeatureList features)
 			throws Exception {
@@ -992,9 +1202,9 @@ public class PigDictionary extends AbstractDictionary {
 			ok = true;
 			for (int i = 0; i < argsTypeExpected.length; ++i) {
 				logger.debug("only one arg : " + argsTypeExpected.length);
-				logger.debug("features "+features.getFeaturesNames());
-				logger.debug("arg "+args[i]);
-				logger.info("return type : "+ getReturnType(args[i], features));
+				logger.debug("features " + features.getFeaturesNames());
+				logger.debug("arg " + args[i]);
+				logger.info("return type : " + getReturnType(args[i], features));
 				ok &= check(argsTypeExpected[i],
 						getReturnType(args[i], features));
 			}
@@ -1015,12 +1225,19 @@ public class PigDictionary extends AbstractDictionary {
 		return ok;
 	}
 
-	private static String[] find(String[][] list, String method) {
+	/**
+	 * Find the expression in a list of methods
+	 * 
+	 * @param list
+	 * @param expression
+	 * @return method
+	 */
+	private static String[] find(String[][] list, String expression) {
 
 		int i = 0;
 		boolean found = false;
 		String[] ans = null;
-		String search = removeBracketContent(method.trim());
+		String search = removeBracketContent(expression.trim());
 		while (!found && list.length > i) {
 			String regex = getRegexToFind(removeBracketContent(list[i][0]
 					.trim()));
@@ -1033,15 +1250,22 @@ public class PigDictionary extends AbstractDictionary {
 			++i;
 		}
 		if (ans != null) {
-			logger.debug("expr " + method + ", to search: " + search
+			logger.debug("expr " + expression + ", to search: " + search
 					+ ", found: " + ans[0]);
 		} else {
-			logger.debug("expr " + method + ", to search: " + search
+			logger.debug("expr " + expression + ", to search: " + search
 					+ ", found: null");
 		}
 		return ans;
 	}
 
+	/**
+	 * Find all methods for an Expression
+	 * 
+	 * @param list
+	 * @param method
+	 * @return List of Methods
+	 */
 	private static List<String[]> findAll(String[][] list, String method) {
 
 		int i = 0;
@@ -1061,6 +1285,13 @@ public class PigDictionary extends AbstractDictionary {
 		return ans;
 	}
 
+	/**
+	 * Find all methods for an expression checking for aggregation methods
+	 * 
+	 * @param expr
+	 * @param aggregMethod
+	 * @return List of methods
+	 */
 	private List<String[]> findAllMethod(String expr, boolean aggregMethod) {
 		List<String[]> ans = null;
 		if (aggregMethod) {
@@ -1074,6 +1305,13 @@ public class PigDictionary extends AbstractDictionary {
 		return ans;
 	}
 
+	/**
+	 * Count how many time an expression matches another on
+	 * 
+	 * @param str
+	 * @param match
+	 * @return match Count
+	 */
 	private static int countMatches(String str, String match) {
 		int count = 0;
 		while (!str.isEmpty()) {
@@ -1088,10 +1326,22 @@ public class PigDictionary extends AbstractDictionary {
 		return count;
 	}
 
+	/**
+	 * Get the expression with escape characters
+	 * 
+	 * @param expr
+	 * @return escapedString
+	 */
 	public static String escapeString(String expr) {
 		return "\\Q" + expr + "\\E";
 	}
 
+	/**
+	 * Remove the content that is in the expression
+	 * 
+	 * @param expr
+	 * @return content
+	 */
 	public static String removeBracketContent(String expr) {
 		int count = 0;
 		int index = 0;
@@ -1114,7 +1364,13 @@ public class PigDictionary extends AbstractDictionary {
 		}
 		return cleanUp;
 	}
-	
+
+	/**
+	 * Get the content of the expression that contains brackets
+	 * 
+	 * @param expr
+	 * @return content
+	 */
 	public static String getBracketContent(String expr) {
 		int count = 0;
 		int index = 0;
@@ -1122,10 +1378,10 @@ public class PigDictionary extends AbstractDictionary {
 		while (index < expr.length()) {
 			if (expr.charAt(index) == '(') {
 				++count;
-				
+
 			} else if (expr.charAt(index) == ')') {
 				--count;
-				
+
 			} else if (count > 0) {
 				cleanUp += expr.charAt(index);
 			}
@@ -1134,6 +1390,12 @@ public class PigDictionary extends AbstractDictionary {
 		return cleanUp;
 	}
 
+	/**
+	 * Get the regex that can be used to find the expression
+	 * 
+	 * @param expr
+	 * @return regex
+	 */
 	public static String getRegexToFind(String expr) {
 		String regex = escapeString(expr);
 		if (!expr.matches("\\W.*")) {
@@ -1149,6 +1411,13 @@ public class PigDictionary extends AbstractDictionary {
 		return regex;
 	}
 
+	/**
+	 * Check the name is a varialble name
+	 * 
+	 * @param name
+	 * @return <code>true</code> if the name is the structure for a variable
+	 *         </code>
+	 */
 	public static boolean isVariableName(String name) {
 		String regex = "[a-zA-Z]+[a-zA-Z0-9_]*";
 		return name.matches(regex);

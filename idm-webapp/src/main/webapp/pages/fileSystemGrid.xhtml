@@ -48,7 +48,7 @@
 			<br />
 			<h:inputText id="path" label="Path" value="#{canvasBean.path}"
 				maxlength="255" style="width:395px;" />
-			<a4j:commandButton type="submit" id="changePathBt"
+			<a4j:commandButton  styleClass="greenButton" type="submit" id="changePathBt"
 				action="#{canvasBean.changePath}" value="#{messages.button_ok}" reRender="sshfs" />
 
 			<br />
@@ -142,7 +142,7 @@
 		<f:facet name="header">copy</f:facet>
 		<f:facet name="controls">
 			<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-				style="cursor:pointer;width:16px;"
+				style="cursor:pointer;width:22px;"
 				onclick="#{rich:component('copyModalPanel')}.hide()" />
 		</f:facet>
 
@@ -160,7 +160,7 @@
 		<f:facet name="header">move</f:facet>
 		<f:facet name="controls">
 			<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-				style="cursor:pointer;width:16px;"
+				style="cursor:pointer;width:22px;"
 				onclick="#{rich:component('moveModalPanel')}.hide()" />
 		</f:facet>
 
@@ -178,7 +178,7 @@
 		<f:facet name="header">file</f:facet>
 		<f:facet name="controls">
 			<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-				style="cursor:pointer;width:16px;"
+				style="cursor:pointer;width:22px;"
 				onclick="#{rich:component('addModalPanel')}.hide()" />
 		</f:facet>
 
@@ -196,7 +196,7 @@
 		<f:facet name="header">file</f:facet>
 		<f:facet name="controls">
 			<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-				style="cursor:pointer;width:16px;"
+				style="cursor:pointer;width:22px;"
 				onclick="#{rich:component('editModalPanel')}.hide()" />
 		</f:facet>
 

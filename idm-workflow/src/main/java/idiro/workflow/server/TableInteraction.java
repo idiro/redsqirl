@@ -23,21 +23,38 @@ public class TableInteraction extends UserInteraction {
 
 
 
-
+	/**
+	 * Map of editors 
+	 */
 	private Map<String,EditorInteraction> editors = new LinkedHashMap<String,EditorInteraction>();
-
+	/**
+	 * Constructor
+	 * @param id 
+	 * @param name
+	 * @param legend
+	 * @param column
+	 * @param placeInColumn
+	 * @throws RemoteException
+	 */
 	public TableInteraction(String id, String name, String legend,
 			int column, int placeInColumn) throws RemoteException {
 		super(id, name, legend, DisplayType.table, column, placeInColumn);
 		init();
 	}
-
+	/**
+	 * Initialize the interaction
+	 * @throws RemoteException
+	 */
 	protected void init() throws RemoteException{
 		if(tree.isEmpty()){
 			tree.add("table").add("columns");
 		}
 	}
-
+	/**
+	 * Remove the space in the column name
+	 * @param columnName
+	 * @return column name without space
+	 */
 	protected String removeSpaceColumnName( String columnName){
 		if(columnName.contains(" ")){
 			logger.warn("Column name with space is not supported");
@@ -45,7 +62,11 @@ public class TableInteraction extends UserInteraction {
 		}
 		return columnName;
 	}
-
+	/**
+	 * Get a list of column names in the table
+	 * @return List of names of columns
+	 * @throws RemoteException
+	 */
 	public List<String> getColumnNames() throws RemoteException{
 		List<String> colNames = new LinkedList<String>();
 		Tree<String> columns = tree.getFirstChild("table").getFirstChild("columns");
@@ -58,18 +79,33 @@ public class TableInteraction extends UserInteraction {
 		}
 		return colNames;
 	}
-
+	/**
+	 * Remove all columns
+	 * @throws RemoteException
+	 */
 	public void removeColumns() throws RemoteException{
 		tree.getFirstChild("table").remove("columns");
 	}
-
+	/**
+	 * Remove a column by name
+	 * @param columnName
+	 * @throws RemoteException
+	 */
 	public void removeColumn(String columnName) throws RemoteException{
 		Tree<String> col = findColumn(columnName);
 		if(col != null){
 			tree.getFirstChild("table").getSubTreeList().remove(col);
 		}
 	}
-
+	/**
+	 * Add a column with properties (with regex)
+	 * @param columnName
+	 * @param constraintCount
+	 * @param regex
+	 * @param constraintValue
+	 * @param editor
+	 * @throws RemoteException
+	 */
 	public void addColumn(String columnName, 
 			Integer constraintCount,
 			String regex,
@@ -82,7 +118,14 @@ public class TableInteraction extends UserInteraction {
 		updateColumnConstraint(columnName,regex, constraintCount, constraintValue);
 		updateEditor(columnName,editor);
 	}
-
+	/**
+	 * Add a new column
+	 * @param columnName
+	 * @param constraintCount
+	 * @param constraintValue
+	 * @param editor
+	 * @throws RemoteException
+	 */
 	public void addColumn(String columnName, 
 			Integer constraintCount,
 			Collection<String> constraintValue,
@@ -93,7 +136,12 @@ public class TableInteraction extends UserInteraction {
 				constraintValue,
 				editor);
 	}
-
+	/**
+	 * Return a column
+	 * @param columnName
+	 * @return Tree of column
+	 * @throws RemoteException
+	 */
 	protected Tree<String> findColumn(String columnName) throws RemoteException{
 		columnName = removeSpaceColumnName(columnName);
 		Tree<String> columns = tree.getFirstChild("table").getFirstChild("columns");
@@ -113,7 +161,12 @@ public class TableInteraction extends UserInteraction {
 		}
 		return found;
 	}
-
+	/**
+	 * Return a generator 
+	 * @param genName
+	 * @return Tree of the generator
+	 * @throws RemoteException
+	 */
 	protected Tree<String> findGenerator(String genName) throws RemoteException{
 		Tree<String> gen = tree.getFirstChild("table").getFirstChild("generator");
 		Tree<String> found = null;
@@ -135,7 +188,14 @@ public class TableInteraction extends UserInteraction {
 		}
 		return found;
 	}
-
+	/**
+	 * Update Column Constraint with new constraint
+	 * @param columnName
+	 * @param regex
+	 * @param constraintCount
+	 * @param constraintValue
+	 * @throws RemoteException
+	 */
 	public void updateColumnConstraint(String columnName,
 			String regex,
 			Integer constraintCount,
@@ -172,7 +232,12 @@ public class TableInteraction extends UserInteraction {
 			}
 		}
 	}
-
+	/**
+	 * Check if the column exceeds the column constraint 
+	 * @param columnName
+	 * @return error message
+	 * @throws RemoteException
+	 */
 	protected String checkCountConstraint(String columnName) throws RemoteException{
 		String error = null;
 		int countConst = 0;
@@ -200,7 +265,13 @@ public class TableInteraction extends UserInteraction {
 		}
 		return error;
 	}
-
+	/**
+	 * Check if a value is contained in a column
+	 * @param columnName
+	 * @param value
+	 * @return error message
+	 * @throws RemoteException
+	 */
 	protected String checkValue(String columnName, String value) throws RemoteException{
 		String error = null;
 		List<Tree<String>> values = null;
@@ -239,7 +310,12 @@ public class TableInteraction extends UserInteraction {
 
 		return error;
 	}
-
+	/**
+	 * Update the editor with a new editor
+	 * @param columnName
+	 * @param editor
+	 * @throws RemoteException
+	 */
 	public void updateEditor(String columnName,
 			EditorInteraction editor) throws RemoteException{
 		columnName = removeSpaceColumnName(columnName);
@@ -253,6 +329,11 @@ public class TableInteraction extends UserInteraction {
 
 
 	@Override
+	/**
+	 * Check the Table for errors
+	 * @return error message
+	 * @throws RemoteException
+	 */
 	public String check() throws RemoteException{
 		String error = null;
 		try{
@@ -283,7 +364,12 @@ public class TableInteraction extends UserInteraction {
 
 		return error;
 	}
-
+	/**
+	 * Get the list of values that a column contains
+	 * @param columnName
+	 * @return list of values in the column
+	 * @throws RemoteException
+	 */
 	protected List<String> getValuesFromColumn(String columnName) throws RemoteException{
 		List<String> values = null;
 		values = new LinkedList<String>();
@@ -313,7 +399,11 @@ public class TableInteraction extends UserInteraction {
 		}
 		return values;
 	}
-
+	/**
+	 * Get the list of current values
+	 * @return list values
+	 * @throws RemoteException
+	 */
 	public List<Map<String,String>> getValues() throws RemoteException{
 		List<Map<String,String>> values = null;
 		values = new LinkedList<Map<String,String>>();
@@ -343,7 +433,11 @@ public class TableInteraction extends UserInteraction {
 		}
 		return values;
 	}
-
+	/**
+	 * Set values in the to the interaction
+	 * @param values list of values
+	 * @throws RemoteException
+	 */
 	public void setValues(List<Map<String,String>> values) throws RemoteException{
 		getTree().getFirstChild("table").remove("row");
 		if(values != null){
@@ -353,11 +447,20 @@ public class TableInteraction extends UserInteraction {
 			}
 		}
 	}
-
+	/**
+	 * Add a row giving values
+	 * @param rowVals
+	 * @throws RemoteException
+	 */
 	public void addRow(Map<String,String> rowVals) throws RemoteException{
 		addRow(getTree().getFirstChild("table"),rowVals);
 	}
-	
+	/**
+	 * Add a row with values giving the parent tree
+	 * @param parent
+	 * @param rowVals
+	 * @throws RemoteException
+	 */
 	private void addRow(Tree<String> parent, Map<String,String> rowVals) throws RemoteException{
 		if(rowVals != null && !rowVals.isEmpty()){
 			Tree<String> newRow = parent.add("row");
@@ -369,11 +472,18 @@ public class TableInteraction extends UserInteraction {
 			}
 		}
 	}
-	
+	/**
+	 * Remove all generators
+	 * @throws RemoteException
+	 */
 	public void removeGenerators() throws RemoteException{
 		getTree().getFirstChild("table").remove("generator");
 	}
-	
+	/**
+	 * Remove a generator by name
+	 * @param name
+	 * @throws RemoteException
+	 */
 	public void removeGenerator(String name) throws RemoteException{
 		Tree<String> generator = getTree().getFirstChild("table").getFirstChild("generator");
 		if(generator == null){
@@ -384,7 +494,12 @@ public class TableInteraction extends UserInteraction {
 			genOp.getParent().getSubTreeList().remove(genOp);
 		}
 	}
-
+	/**
+	 * Update the generator with name and row values
+	 * @param name
+	 * @param rowVals
+	 * @throws RemoteException
+	 */
 	public void updateGenerator(String name, List<Map<String,String>> rowVals) throws RemoteException{
 		Tree<String> generator = getTree().getFirstChild("table").getFirstChild("generator");
 		if(generator == null){

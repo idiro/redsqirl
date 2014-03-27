@@ -31,14 +31,28 @@ public class HiveJoinRelationInteraction extends TableInteraction {
 	 * 
 	 */
 	private static final long serialVersionUID = 7384667815452362352L;
-
+	/**
+	 * Join action that the interaction belongs to
+	 */
 	private HiveJoin hj;
-
+	/** Table title */
 	public static final String table_table_title = HiveLanguageManager
 			.getTextWithoutSpace("hive.join_relationship_interaction.relation_column"),
+			/** Feature title */
 			table_feat_title = HiveLanguageManager
 					.getTextWithoutSpace("hive.join_relationship_interaction.op_column");
 
+	/**
+	 * Constructor
+	 * 
+	 * @param id
+	 * @param name
+	 * @param legend
+	 * @param column
+	 * @param placeInColumn
+	 * @param hj
+	 * @throws RemoteException
+	 */
 	public HiveJoinRelationInteraction(String id, String name, String legend,
 			int column, int placeInColumn, HiveJoin hj) throws RemoteException {
 		super(id, name, legend, column, placeInColumn);
@@ -47,6 +61,12 @@ public class HiveJoinRelationInteraction extends TableInteraction {
 		tree.add(getRootTable());
 	}
 
+	/**
+	 * Check the interaction for errors
+	 * 
+	 * @return Error Message
+	 * @throws RemoteException
+	 */
 	@Override
 	public String check() throws RemoteException {
 		String msg = super.check();
@@ -110,6 +130,11 @@ public class HiveJoinRelationInteraction extends TableInteraction {
 		return msg;
 	}
 
+	/**
+	 * Update the interaction
+	 * 
+	 * @throws RemoteException
+	 */
 	public void update() throws RemoteException {
 
 		Set<String> tablesIn = hj.getAliases().keySet();
@@ -129,13 +154,19 @@ public class HiveJoinRelationInteraction extends TableInteraction {
 				Map<String, String> curMap = new LinkedHashMap<String, String>();
 				curMap.put(table_table_title, tableIn.next());
 				curMap.put(table_feat_title, "");
-				logger.info("row : "+curMap);
+				logger.info("row : " + curMap);
 				lrows.add(curMap);
 			}
 			setValues(lrows);
 		}
 	}
 
+	/**
+	 * Get the root table of the interaction
+	 * 
+	 * @return Tree of root table
+	 * @throws RemoteException
+	 */
 	protected Tree<String> getRootTable() throws RemoteException {
 		// Table
 		Tree<String> input = new TreeNonUnique<String>("table");
@@ -148,10 +179,14 @@ public class HiveJoinRelationInteraction extends TableInteraction {
 		table.add("title").add(table_table_title);
 
 		columns.add("column").add("title").add(table_feat_title);
-//		logger.info("input : "+input.toString());
+		// logger.info("input : "+input.toString());
 		return input;
 	}
-
+	/**
+	 * Get the Query Piece for the join relationship
+	 * @return query piece
+	 * @throws RemoteException
+	 */
 	public String getQueryPiece() throws RemoteException {
 		logger.debug("join...");
 
@@ -190,6 +225,12 @@ public class HiveJoinRelationInteraction extends TableInteraction {
 		return join;
 	}
 
+	/**
+	 * Check an expression for errors using
+	 * {@link idiro.workflow.server.action.utils.HiveDictionary}
+	 * @return Error Message
+	 * @throws RemoteException
+	 */
 	public String checkExpression(String expression, String modifier)
 			throws RemoteException {
 		String error = null;

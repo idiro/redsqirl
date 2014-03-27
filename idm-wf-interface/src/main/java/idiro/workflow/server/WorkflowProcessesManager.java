@@ -6,11 +6,17 @@ import java.io.IOException;
 public class WorkflowProcessesManager extends ProcessesManager {
 
 	
-	
+	/**
+	 * Constructor
+	 */
 	public WorkflowProcessesManager() {
 
 	}
-
+	/**
+	 * Get the latest instance of Process Manager for Workflow
+	 * @return {@link idiro.workflow.server.ProcessesManager} current instance for workflow
+	 * @throws IOException
+	 */
 	public ProcessesManager getInstance() throws IOException {
 
 		fname = new String(WorkflowPrefManager.pathUserPref.get() + "/tmp/"

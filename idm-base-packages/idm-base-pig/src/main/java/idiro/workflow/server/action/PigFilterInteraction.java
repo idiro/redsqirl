@@ -23,9 +23,17 @@ public class PigFilterInteraction extends EditorInteraction {
 	 * 
 	 */
 	private static final long serialVersionUID = 6688812502383438930L;
-
+	/**
+	 * Action that the query belongs to
+	 */
 	private PigElement el;
-
+	/**
+	 * Constructor
+	 * @param column
+	 * @param placeInColumn
+	 * @param el
+	 * @throws RemoteException
+	 */
 	public PigFilterInteraction(int column,
 			int placeInColumn, PigElement el)
 					throws RemoteException {
@@ -36,7 +44,9 @@ public class PigFilterInteraction extends EditorInteraction {
 				placeInColumn);
 		this.el = el;
 	}
-
+	/**
+	 * Check the interaction has no errors
+	 */
 	@Override
 	public String check() {
 		String msg = null;
@@ -68,7 +78,10 @@ public class PigFilterInteraction extends EditorInteraction {
 		}
 		return msg;
 	}
-
+	/**
+	 * Update the interaction
+	 * @throws RemoteException
+	 */
 	public void update() throws RemoteException {
 
 		try {
@@ -84,7 +97,12 @@ public class PigFilterInteraction extends EditorInteraction {
 			logger.info("There was an error updating " + getName());
 		}
 	}
-
+	/**
+	 * Get the query piece for a filter
+	 * @param relationName
+	 * @return query
+	 * @throws RemoteException
+	 */
 	public String getQueryPiece(String relationName) throws RemoteException {
 		logger.debug("for each...");
 		String where = "";
@@ -106,6 +124,12 @@ public class PigFilterInteraction extends EditorInteraction {
 		}
 		return where;
 	}
+	/**
+	 * Get the query piece for filters when grouped by
+	 * @param relationName
+	 * @return query
+	 * @throws RemoteException
+	 */
 	public String getQueryPieceGroup(String relationName) throws RemoteException {
 		logger.debug("for each...");
 		String where = "";
@@ -124,7 +148,11 @@ public class PigFilterInteraction extends EditorInteraction {
 		} 
 		return where;
 	}
-
+	/**
+	 * Get the query piece that specifies condition for where
+	 * @return query
+	 * @throws RemoteException
+	 */
 	public String getInputWhere() throws RemoteException {
 		String where = "";
 		List<DFEOutput> out = el.getDFEInput().get(PigElement.key_input);

@@ -18,7 +18,12 @@ public class PageCheckerDefault
 implements PageChecker{
 
 	protected static Logger logger = Logger.getLogger(PageCheckerDefault.class);
-	
+	/**
+	 * Check a page
+	 * @param page to check
+	 * @return Error Message
+	 * @throws RemoteException
+	 */
 	@Override
 	public String check(DFEPage page) throws RemoteException {
 		logger.debug("Check page "+page.getTitle());

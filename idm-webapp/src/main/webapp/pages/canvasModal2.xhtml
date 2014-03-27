@@ -1,18 +1,12 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:rich="http://richfaces.org/rich"
 	xmlns:a4j="http://richfaces.org/a4j">
 
-<a4j:loadBundle basename="MessagesResources" var="messages" />
-
-<head>
-
 <script>
+//<![CDATA[
 
 	function completeCommand(text){
 	    var txtarea = jQuery("[id$='commandText']");
@@ -22,10 +16,22 @@
 	    var front = (txtarea.val().trim()).substring(0,strPos);
 	    var back = (txtarea.val().trim()).substring(strPos,txtarea.val().length);
 	    txtarea.val(front + text.trim() + back);
-	    strPos = strPos + text.length;
-	    txtarea.selectionStart = strPos;
-	    txtarea.selectionEnd = strPos;
-	    txtarea.focus();
+
+
+	    var regex = '\\(';
+	    var pos = text.search(regex);
+	    if(pos != -1){
+		    strPos = strPos + pos+1;
+		}else{
+			strPos = strPos + text.length;
+		}
+	    
+	    //txtarea.selectionStart = strPos;
+	    //txtarea.selectionEnd = strPos;
+	    //txtarea.focus();
+
+	    txtarea.selectRange(strPos,strPos);
+	    
 	    txtarea.scrollTop = scrollPos;
 	}
 
@@ -45,14 +51,32 @@
 	        return pos;
 	    }
 	})(jQuery);
+
+	(function (jQuery, undefined){
+	jQuery.fn.selectRange = function(start, end) {
+	    if(!end) end = start; 
+	    return this.each(function() {
+	        if (this.setSelectionRange) {
+	            this.focus();
+	            this.setSelectionRange(start, end);
+	        } else if (this.createTextRange) {
+	            var range = this.createTextRange();
+	            range.collapse(true);
+	            range.moveEnd('character', end);
+	            range.moveStart('character', start);
+	            range.select();
+	        }
+	    });
+	}
+	})(jQuery);
 	
+//]]>
 </script>
 
-</head>
-
-<body>
 
 	<h:form>
+	
+	<div id="canvasModalBeanTextEditor" style="width:100%; overflow: auto; height: 375px;" >
 
 		<h:inputTextarea maxlength="100" cols="70" rows="10" value="#{canvasModalBean.commandEdit}"
 			style="resize:none;border:1px solid;" id="commandText" />
@@ -174,19 +198,17 @@
 		<br />
 
 		<a4j:commandButton action="#{canvasModalBean.confirm}"
+		    styleClass="greenButton"
 			value="#{messages.button_ok}"
 			oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('textEditorPanel')}.hide() };"
 			reRender="command,tableInteraction, msnError, errorTable" />
 			
-		<span>&nbsp;&nbsp;</span>
-		
-		<h:commandButton value="#{messages.button_cancel}" type="button" onclick="#{rich:component('textEditorPanel')}.hide();"/>
+		<h:commandButton styleClass="greenButton" value="#{messages.button_cancel}" type="button" onclick="#{rich:component('textEditorPanel')}.hide();"/>
 			
-		<span>&nbsp;&nbsp;</span>
-		
-		<a4j:commandButton action="#{canvasModalBean.checkTextEditor}" value="#{messages.button_check}" reRender="command,tableInteraction, msnError, errorTable" />
+		<a4j:commandButton  styleClass="greenButton" action="#{canvasModalBean.checkTextEditor}" value="#{messages.button_check}" reRender="command,tableInteraction, msnError, errorTable" />
+
+	</div>
 
 	</h:form>
 	
-</body>
-</html>
+</ui:composition>

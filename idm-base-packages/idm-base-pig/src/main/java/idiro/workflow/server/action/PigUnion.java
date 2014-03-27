@@ -19,7 +19,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 /**
- * Action to do a union statement in Pig Latin.
+ * Create a union from inputs and generate pig script for the union
  * 
  * @author marcos
  * 
@@ -30,13 +30,27 @@ public class PigUnion extends PigElement {
 	 * 
 	 */
 	private static final long serialVersionUID = -2971963679008329394L;
-	
+	/**
+	 * key for union command
+	 */
 	public final String key_union_condition = "union_cond";
+	/**
+	 * Pages for the interaction
+	 */
 	private Page page1,page2;
+	/**
+	 * Table union interaction
+	 */
 
 	private PigTableUnionInteraction tUnionSelInt;
+	/**
+	 * Tabel union condition
+	 */
 	private PigUnionConditions tUnionCond;
-
+	/**
+	 * Constructor
+	 * @throws RemoteException
+	 */
 	public PigUnion() throws RemoteException {
 		super(2, Integer.MAX_VALUE,1);
 
@@ -67,7 +81,10 @@ public class PigUnion extends PigElement {
 		page2.addInteraction(savetypeOutputInt);
 
 	}
-
+	/**
+	 * Initialize the action properties
+	 * @throws RemoteException
+	 */
 	public void init() throws RemoteException {
 		if (input == null) {
 			Map<String, DFELinkProperty> in = new LinkedHashMap<String, DFELinkProperty>();
@@ -77,11 +94,21 @@ public class PigUnion extends PigElement {
 		}
 	}
 
+	/**
+	 * Get the name of the action
+	 * @return name
+	 * @throws RemoteException
+	 */
 	// @Override
 	public String getName() throws RemoteException {
 		return "pig_union";
 	}
 
+	/**
+	 * Update the interaction
+	 * @param interaction
+	 * @throws RemoteException
+	 */
 	// @Override
 	public void update(DFEInteraction interaction) throws RemoteException {
 		List<DFEOutput> in = getDFEInput().get(key_input);
@@ -98,7 +125,11 @@ public class PigUnion extends PigElement {
 		}
 
 	}
-
+	/**
+	 * Get the Query for the Union
+	 * @return query
+	 * @throws RemoteException
+	 */
 	public String getQuery() throws RemoteException {
 
 		String query = null;
@@ -158,7 +189,12 @@ public class PigUnion extends PigElement {
 
 		return query;
 	}
-
+	/**
+	 * Get the input features with the alias
+	 * @param alias
+	 * @return FeatureList
+	 * @throws RemoteException
+	 */
 	public FeatureList getInFeatures(String alias) throws RemoteException {
 		FeatureList ans = null;
 		Map<String, DFEOutput> aliases = getAliases();
@@ -173,7 +209,11 @@ public class PigUnion extends PigElement {
 		}
 		return ans;
 	}
-
+	/**
+	 * Get the Input Features
+	 * @return FeatureList
+	 * @throws RemoteExceptions
+	 */
 	@Override
 	public FeatureList getInFeatures() throws RemoteException {
 		FeatureList ans = new OrderedFeatureList();
@@ -191,21 +231,25 @@ public class PigUnion extends PigElement {
 		}
 		return ans;
 	}
-
+	/**
+	 * Get the new features from the Union Interaction
+	 */
 	@Override
 	public FeatureList getNewFeatures() throws RemoteException {
 		return tUnionSelInt.getNewFeatures();
 	}
 
 	/**
-	 * @return the tUnionSelInt
+	 * Get the table Union Interaction
+	 * @return tUnionSelInt
 	 */
 	public final PigTableUnionInteraction gettUnionSelInt() {
 		return tUnionSelInt;
 	}
 
 	/**
-	 * @return the tUnionCond
+	 * Get the Pig Union Condition Interaction
+	 * @return  tUnionCond
 	 */
 	public final PigUnionConditions gettUnionCond() {
 		return tUnionCond;

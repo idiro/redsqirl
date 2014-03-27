@@ -9,14 +9,30 @@ import java.util.Set;
 
 import idiro.workflow.server.AppendListInteraction;
 import idiro.workflow.server.interfaces.DFEOutput;
-
+/**
+ * Group by interaction for Hive
+ * @author keith
+ *
+ */
 public class HiveGroupByInteraction extends AppendListInteraction{
-
+	/**
+	 * Constructor
+	 * @param id
+	 * @param name
+	 * @param legend
+	 * @param column
+	 * @param placeInColumn
+	 * @throws RemoteException
+	 */
 	public HiveGroupByInteraction(String id, String name, String legend,
 			int column, int placeInColumn) throws RemoteException {
 		super(id, name, legend, column, placeInColumn);
 	}
-	
+	/**
+	 * Update the interaction with the input
+	 * @param in
+	 * @throws RemoteException
+	 */
 	public void update(DFEOutput in) throws RemoteException{
 		List<String> posValues = new LinkedList<String>();
 		
@@ -26,7 +42,12 @@ public class HiveGroupByInteraction extends AppendListInteraction{
 		}
 		setPossibleValues(posValues);
 	}
-	
+	/**
+	 * Get the query piece for the group by 
+	 * @param relationName
+	 * @return query piece
+	 * @throws RemoteException
+	 */
 	public String getQueryPiece(String relationName) throws RemoteException{
 		logger.debug("group...");
 		String groupby = "";
@@ -49,7 +70,12 @@ public class HiveGroupByInteraction extends AppendListInteraction{
 		}
 		return groupby;
 	}
-	
+	/**
+	 * Get the features that can be used in aggregative functions
+	 * @param in
+	 * @return Set of Features
+	 * @throws RemoteException
+	 */
 	public Set<String> getAggregationFeatures(DFEOutput in) throws RemoteException{
 		Set<String> aggregationFeatures = new HashSet<String>();
 		

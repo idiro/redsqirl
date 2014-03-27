@@ -24,9 +24,9 @@
 
 
 	<h:panelGrid columns="2">
-		<a4j:commandButton action="#{hdfsBean.editFileAfter}" value="#{messages.button_ok}"
+		<a4j:commandButton  styleClass="greenButton" action="#{hdfsBean.editFileAfter}" value="#{messages.button_ok}"
 			reRender="hdfsfs" onclick="#{rich:component('hdfseditModalPanel')}.hide()" />
-		<a4j:commandButton value="#{messages.button_cancel}" type="button" 
+		<a4j:commandButton  styleClass="greenButton" value="#{messages.button_cancel}" type="button" 
 			onclick="#{rich:component('hdfseditModalPanel')}.hide();" />
 	</h:panelGrid>
 

@@ -30,7 +30,7 @@ public interface OozieAction extends Remote{
 	/**
 	 * Get the extensions of the different files,
 	 * every extension have to be different.
-	 * @return
+	 * @return Extensions of files
 	 * @throws RemoteException
 	 */
 	String[] getFileExtensions() throws RemoteException;

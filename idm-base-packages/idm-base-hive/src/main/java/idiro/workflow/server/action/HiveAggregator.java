@@ -10,19 +10,36 @@ import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.utils.HiveLanguageManager;
 
+import java.awt.Desktop.Action;
 import java.rmi.RemoteException;
 import java.util.Iterator;
-
+/**
+ * Action to allow for aggregation methods/operations on data in hive
+ * @author keith
+ *
+ */
 public class HiveAggregator extends HiveElement {
-
+	/**
+	 * Pages
+	 */
 	private Page page1, page2, page3;
+	/**
+	 * Group by Key
+	 */
 	private static final String key_group = "Group By";
-
+	/**
+	 * features key
+	 */
 	private static final String key_features = "Features";
 	// private static final String key_group ="";
-
+	/**
+	 * Table Select interaction
+	 */
 	private HiveTableSelectInteraction tSelInt;
-
+	/**
+	 * Constructor
+	 * @throws RemoteException
+	 */
 	public HiveAggregator() throws RemoteException {
 		super(3, 1, 1);
 
@@ -58,13 +75,21 @@ public class HiveAggregator extends HiveElement {
 		condInt = new HiveFilterInteraction( 0, 0, this);
 		page3.addInteraction(condInt);
 	}
-
+	/**
+	 * Get the name of the action 
+	 * @return name
+	 * @throws RemoteException
+	 */
 	@Override
 	public String getName() throws RemoteException {
 
 		return "hive_aggregator";
 	}
-
+	/**
+	 * Get the query for the action
+	 * @return query
+	 * @throws RemoteException
+	 */
 	@Override
 	public String getQuery() throws RemoteException {
 		HiveInterface hInt = new HiveInterface();
@@ -111,17 +136,29 @@ public class HiveAggregator extends HiveElement {
 
 		return query;
 	}
-
+	/**
+	 * Get the input FeatureList
+	 * @return input FeatureList
+	 * @throws RemoteException
+	 */
 	@Override
 	public FeatureList getInFeatures() throws RemoteException {
 		return getDFEInput().get(key_input).get(0).getFeatures();
 	}
-
+	/**
+	 * Get the new features from the action
+	 * @return new FeatureList
+	 * @throws RemoteException
+	 */
 	@Override
 	public FeatureList getNewFeatures() throws RemoteException {
 		return getDFEInput().get(key_input).get(0).getFeatures();
 	}
-
+	/**
+	 * Update the interaction in the action
+	 * @param interaction
+	 * @throws RemoteException
+	 */
 	@Override
 	public void update(DFEInteraction interaction) throws RemoteException {
 		DFEOutput in = getDFEInput().get(key_input).get(0);
@@ -139,7 +176,10 @@ public class HiveAggregator extends HiveElement {
 			}
 		}
 	}
-
+	/**
+	 * Get the table select interaction
+	 * @return tSelInt
+	 */
 	public HiveTableSelectInteraction gettSelInt() {
 		return tSelInt;
 	}

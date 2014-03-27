@@ -61,7 +61,6 @@ public abstract class HiveElement extends DataflowAction {
 	 * Common interactions
 	 */
 	protected HiveFilterInteraction condInt;
-	protected PartitionInteraction partInt;
 	protected ListInteraction typeOutputInt;
 	protected HiveGroupByInteraction groupingInt;
 
@@ -154,7 +153,11 @@ public abstract class HiveElement extends DataflowAction {
 	 * @throws RemoteException
 	 */
 	public abstract FeatureList getNewFeatures() throws RemoteException;
-
+	/**
+	 * Write the Oozie Action Files 
+	 * @param files
+	 * @throws RemoteException
+	 */
 	@Override
 	public boolean writeOozieActionFiles(File[] files) throws RemoteException {
 		logger.info("Write queries in file: " + files[0].getAbsolutePath());
@@ -177,7 +180,10 @@ public abstract class HiveElement extends DataflowAction {
 		}
 		return ok;
 	}
-
+	/**
+	 * Update the output of the action
+	 * @throws RemoteException
+	 */
 	public String updateOut() throws RemoteException {
 		String error = checkIntegrationUserVariables();
 		if (error == null) {
@@ -210,6 +216,12 @@ public abstract class HiveElement extends DataflowAction {
 		}
 		return error;
 	}
+	/**
+	 * Update the Group By Interaction
+	 * @param interaction
+	 * @param in
+	 * @throws RemoteException
+	 */
 
 	public void UpdateGroupInt(DFEInteraction interaction, DFEOutput in)
 			throws RemoteException {
@@ -264,30 +276,35 @@ public abstract class HiveElement extends DataflowAction {
 		}
 		return ans;
 	}
-
+	/**
+	 * Get the map of inputs
+	 * @return input
+	 * @throws RemoteException
+	 */
 	public Map<String, DFELinkProperty> getInput() throws RemoteException {
 		return input;
 	}
 
 	/**
-	 * @return the condInt
+	 * Get the Filter Interaction
+	 * @return condInt
 	 */
 	public final HiveFilterInteraction getFilterInt() {
 		return condInt;
 	}
 
 	/**
-	 * @return the partInt
-	 * 
+	 * Get the Group By Interaction
+	 * @return groupingInt
 	 */
-	public final PartitionInteraction getPartInt() {
-		return partInt;
-	}
-
 	public HiveGroupByInteraction getGroupingInt() {
 		return groupingInt;
 	}
-
+	/**
+	 * Get the Group By Features
+	 * @return Set of group by features
+	 * @throws RemoteException
+	 */
 	public Set<String> getGroupByFeatures() throws RemoteException {
 		Set<String> features = new HashSet<String>();
 		HiveGroupByInteraction group = getGroupingInt();

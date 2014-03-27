@@ -75,24 +75,26 @@
 	<img src="./image/login_page_background.png" style="width:50%;position:absolute;z-index:-1;height:100%;" onError="this.onerror=null;this.src='../image/login_page_background.png';" />
 	<img src="./image/login_squirl_background.png" style="width:90%;position:absolute;z-index:0;height:90%;left:6%;min-width:600px;" onError="this.onerror=null;this.src='../image/login_squirl_background.png';" />
 
-	<div id="domMessageInitial" style="display: none;">
+	<div id="domMessageInitial" style="display: none;padding-right:0px;">
 		
 		<h:form>
 	        <a4j:outputPanel id="progressPanel">
-	            <rich:progressBar value="#{userInfoBean.currentValue}"
-	                interval="500" label="#{userInfoBean.currentValue} %"
-	                enabled="#{userInfoBean.enabled}" minValue="-1" maxValue="100"
+	            <rich:progressBar 
+                    value="#{userInfoBean.currentValue}"
+	                enabled="#{userInfoBean.enabled}"
 	                reRenderAfterComplete="progressPanel">
-	                
-	            </rich:progressBar>
+	                  <h:outputText value="{value} %" />
+                </rich:progressBar>
 	        </a4j:outputPanel>
-	    </h:form>
-		
-		<h:form>
-			<a4j:commandButton value="#{messages.button_cancel}" action="#{userInfoBean.signOut}" onclick="window.stop();jQuery.unblockUI();window.location.reload();" />
+	        
+		<!-- style="margin-left:78%;" -->
+			<a4j:commandButton value="#{messages.button_cancel}"
+			                   action="#{userInfoBean.signOut}"
+			                   style="float:right;margin-right:5px;"
+			                   styleClass="buttonLogin"
+			                   onclick="window.stop();jQuery.unblockUI();window.location.reload();" />
 		</h:form>
 	</div>
-
 	
 	<table style="position:relative;left:6%;top:3%; height:87%;" >
 		<tr>
@@ -119,16 +121,16 @@
 						<h:panelGrid width="500px">
 							<rich:panel style="background-image:url(./image/login_div_background.gif),url(../image/login_div_background.gif);background-size:494px 243px;border:none;height:242px;">
 								
-								<img src="./image/icons/username_icon.gif" style="width:50px;padding-left:80px;position:relative;top:20px;" onError="this.onerror=null;this.src='../image/icons/username_icon.gif';" />
-								<h:inputText id="username" label="Username" value="#{userInfoBean.userName}" required="true" size="35" />
+								<img src="./image/icons/username_icon.gif" style="width:50px;padding-left:80px;position:relative;top:20px;" onError="this.onerror=null;this.src='../image/icons/username_icon.gif';" title="#{messages.label_username}" />
+								<h:inputText id="username" label="Username" style="background-color:white;border-style: none;border-radius:0px;" value="#{userInfoBean.userName}" required="true" size="35" />
 								<h:outputText value="" />
 								<br />
 								<h:message for="username" style="padding-left:60px;" />
 								<br />
 								<br />
 									
-								<img src="./image/icons/password_icon.gif" style="width:50px;padding-left:80px;position:relative;top:23px;" onError="this.onerror=null;this.src='../image/icons/password_icon.gif';" />
-								<h:inputSecret id="password" label="Password" value="#{userInfoBean.password}" required="true" size="35" />
+								<img src="./image/icons/password_icon.gif" style="width:50px;padding-left:80px;position:relative;top:23px;" onError="this.onerror=null;this.src='../image/icons/password_icon.gif';" title="#{messages.label_password}" />
+								<h:inputSecret id="password" label="Password" style="background-color:white;border-style: none;border-radius:0px;" value="#{userInfoBean.password}" required="true" size="35" />
 								<h:outputText value="" />
 								<br />
 								<h:message for="password" style="padding-left:60px;" />
@@ -149,8 +151,8 @@
 										<h:outputText value="#{messages.label_twoLoginChek}" />
 										<br />
 										<br />
-										<a4j:commandButton value="#{messages.button_cancel}" onclick="#{rich:component('mensagem')}.hide(); return false;" />
-										<a4j:commandButton value="#{messages.button_ok}" onclick="reLogin(); return false;" />
+										<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('mensagem')}.hide(); return false;" />
+										<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" onclick="reLogin(); return false;" />
 									</center>
 								</rich:modalPanel>
 			
@@ -159,7 +161,7 @@
 										<h:outputText value="#{messages.label_mensagemLoginTwice}" />
 										<br />
 										<br />
-										<a4j:commandButton value="#{messages.button_ok}"
+										<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}"
 											onclick="#{rich:component('mensagemLoginTwice')}.hide(); return false;" />
 										</center>
 								</rich:modalPanel>
@@ -169,7 +171,7 @@
 										<h:outputText value="#{messages.label_msnLoginError}" />
 										<br />
 										<br />
-										<a4j:commandButton value="#{messages.button_ok}"
+										<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}"
 											onclick="#{rich:component('msnLoginError')}.hide(); return false;" />
 									</center>
 								</rich:modalPanel>
@@ -194,13 +196,14 @@
 						
 						<br />
 						
-						<a4j:commandButton action="#{userInfoBean.startProcess}" reRender="progressPanel" 
-							style="border:none;position:relative;height:40px;right:136px;top:-15px;width:107px;background:transparent;cursor:pointer;"
-							styleClass="buttonLogin" onclick="cookiePassword(); jQuery.blockUI({ message: jQuery('#domMessageInitial') }); "
-							oncomplete="validateSecondLogin();" >
-								<img src="./image/button_login.gif" style="height:40px;border:none;position:relative;left:110px;" onError="this.onerror=null;this.src='../image/button_login.gif';" />
-								<h:outputText value="#{messages.label_login}" style="height:40px;border:none;position:relative;left:33px;top:-13px;color:white;" />
-						</a4j:commandButton>
+						<a4j:commandButton 
+						    action="#{userInfoBean.startProcess}" 
+						    reRender="progressPanel" 
+							styleClass="buttonLogin" 
+							style="position:relative;vertical-align: middle;height:40px;top:-15px;width:107px;"
+							onclick="cookiePassword(); jQuery.blockUI({ message: jQuery('#domMessageInitial') }); "
+							oncomplete="validateSecondLogin();"
+							value="#{messages.label_login}" />
 						<a4j:jsFunction name="validateSecondLogin" action="#{userInfoBean.validateSecondLogin}" />
 						
 					</center>

@@ -21,11 +21,20 @@ public class HiveAction extends OozieActionAbs{
 	 * 
 	 */
 	private static final long serialVersionUID = 5119314850496590566L;
-	
+	/**
+	 * Constructor
+	 * @throws RemoteException
+	 */
 	public HiveAction() throws RemoteException {
 		super();
 	}
-
+	/**
+	 * Create Oozie element for Hive actions
+	 * @param oozieXmlDoc
+	 * @param action
+	 * @param fileNames
+	 * @throws RemoteException
+	 */
 	@Override
 	public void createOozieElement(Document oozieXmlDoc, Element action,
 			String[] fileNames) throws RemoteException {
@@ -62,7 +71,10 @@ public class HiveAction extends OozieActionAbs{
 		action.appendChild(hive);
 
 	}
-
+	/**
+	 * Get the file name extensions for Hive actions 
+	 * @return extension
+	 */
 	@Override
 	public String[] getFileExtensions() {
 		return new String[]{".sql"};

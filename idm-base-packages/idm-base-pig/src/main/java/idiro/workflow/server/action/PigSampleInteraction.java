@@ -4,19 +4,35 @@ import java.rmi.RemoteException;
 
 import idiro.workflow.server.InputInteraction;
 import idiro.workflow.utils.PigLanguageManager;
-
+/**
+ * Interaction to set the sample size of the dataset 
+ * @author keith
+ *
+ */
 public class PigSampleInteraction extends InputInteraction{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 4482001628403863894L;
-
+	/**
+	 * Constructor
+	 * @param id
+	 * @param name
+	 * @param legend
+	 * @param column
+	 * @param placeInColumn
+	 * @throws RemoteException
+	 */
 	public PigSampleInteraction(String id, String name, String legend,
 			int column, int placeInColumn) throws RemoteException {
 		super(id, name, legend, column, placeInColumn);
 	}
-	
+	/**
+	 * Check the interaction for errors
+	 * @return Error Message
+	 * 
+	 */
 	@Override
 	public String check(){
 		String error = null;
@@ -31,12 +47,20 @@ public class PigSampleInteraction extends InputInteraction{
 		}
 		return error;
 	}
-	
+	/**
+	 * Update the interaction 
+	 * @throws RemoteException
+	 */
 	public void update() throws RemoteException{
 		setRegex("[\\-\\+]?[0-9]*(\\.[0-9]+)?");
 		setValue("0.7");
 	}
-	
+	/**
+	 * Get the query piece for the interaction
+	 * @param relation
+	 * @return query
+	 * @throws RemoteException
+	 */
 	public String getQueryPiece(String relation) throws RemoteException{
 		String query="";
 		if(check()==null){

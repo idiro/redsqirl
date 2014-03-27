@@ -12,44 +12,19 @@
 <a4j:loadBundle basename="MessagesResources" var="messages" />
 
 <head>
-<link rel="stylesheet" type="text/css"
-	href='#{facesContext.externalContext.requestContextPath}/css/jquery-ui.css' />
-<link rel="stylesheet" type="text/css"
-	href='#{facesContext.externalContext.requestContextPath}/css/idm.css' />
+<link rel="stylesheet" type="text/css" href="#{facesContext.externalContext.requestContextPath}/css/jquery-ui.css" />
+<link rel="stylesheet" type="text/css" href="#{facesContext.externalContext.requestContextPath}/css/idm.css" />
 
-<script
-	src='#{facesContext.externalContext.requestContextPath}/js/jquery-1.9.1.js'
-	type="text/javascript"></script>
-<script
-	src="#{facesContext.externalContext.requestContextPath}/js/jquery-ui-1.10.0.custom.js"></script>
-<script
-	src='#{facesContext.externalContext.requestContextPath}/js/kinetic-v4.3.3.js'
-	type="text/javascript"></script>
-<script
-	src='#{facesContext.externalContext.requestContextPath}/js/jquery.cookie.js'
-	type="text/javascript"></script>
-
-<script
-	src='#{facesContext.externalContext.requestContextPath}/js/canvas.js'
-	type="text/javascript"></script>
-<script
-	src='#{facesContext.externalContext.requestContextPath}/js/idm.js'
-	type="text/javascript"></script>
-<script
-	src='#{facesContext.externalContext.requestContextPath}/js/splitter.js'
-	type="text/javascript"></script>
-<script
-	src='#{facesContext.externalContext.requestContextPath}/js/scrollabletab.js'
-	type="text/javascript"></script>
-<script
-	src='#{facesContext.externalContext.requestContextPath}/js/plusTabs.js'
-	type="text/javascript"></script>
-<script
-	src='#{facesContext.externalContext.requestContextPath}/js/jquery.blockUI.js'
-	type="text/javascript"></script>
-<script
-	src='#{facesContext.externalContext.requestContextPath}/js/jquery.freezeheader.js'
-	type="text/javascript"></script>
+<script	src="#{facesContext.externalContext.requestContextPath}/js/jquery-1.9.1.js"	type="text/javascript" />
+<script	src="#{facesContext.externalContext.requestContextPath}/js/jquery-ui-1.10.0.custom.js" />
+<script	src="#{facesContext.externalContext.requestContextPath}/js/kinetic-v4.3.3.js" type="text/javascript" />
+<script	src="#{facesContext.externalContext.requestContextPath}/js/jquery.cookie.js" type="text/javascript" />
+<script	src="#{facesContext.externalContext.requestContextPath}/js/canvas.js" type="text/javascript" />
+<script	src="#{facesContext.externalContext.requestContextPath}/js/idm.js" type="text/javascript" />
+<script	src="#{facesContext.externalContext.requestContextPath}/js/splitter.js"	type="text/javascript" />
+<script	src="#{facesContext.externalContext.requestContextPath}/js/scrollabletab.js" type="text/javascript" />
+<script	src="#{facesContext.externalContext.requestContextPath}/js/plusTabs.js"	type="text/javascript" />
+<script	src="#{facesContext.externalContext.requestContextPath}/js/jquery.blockUI.js" type="text/javascript" />
 
 <title><h:outputText value="#{messages.label_sistem}" /></title>
 
@@ -89,7 +64,7 @@
   	                    tab = ui.item[0],
   	                    tab$ = jQuery(ui.item[0]),
   	                    panelId = tab$.attr( "aria-controls" );
-
+            
   	            		insertBefore = document.elementFromPoint(event.pageX,event.pageY);
 
 	  	                tab$ = jQuery(tab$.removeAttr(jQuery.makeArray(tab.attributes).map(function(item){ return item.name;}).join(' ')).remove());
@@ -131,11 +106,10 @@
 
 	
 	  	              	jQuery("#canvas-tabs").tabs().tabs('refresh');
-	  	              	jQuery("#tabRemote").tabs().tabs('refresh');
-	  	              	
+	  	              	//jQuery("#tabRemote").tabs().tabs('refresh');
+	  	              	//configureTabsRemote();
 	  	              	
 	  	              	jQuery("#"+jQuery(this).parent().attr("id")).tabs("option", "active", jQuery(ui.item[0]).index());
-
 	  	              	canvasResizeSplitter();
 
   	            }
@@ -599,7 +573,6 @@
 	   	}
 	   	
 	   	function configureTabsRemote(){
-	   	
 		    var tabsRemote = jQuery("#tabRemote").tabs().scrollabletab();
 		  	tabsRemote.find(".ui-tabs-nav").sortable({
 		  	  axis: "x",
@@ -1042,11 +1015,14 @@
 			</a4j:region>
 
 			<a4j:region>
-			
-				<h:panelGrid columns="2" width="100%">
+                <!-- <h:panelGrid columns="2" width="100%"> -->
+			    <table style="width:100%;display:block;">
+			        <tr style="width:100%;right:0px;position:relative;">
+			        <td style="max-width=105px;padding=0px;margin=0px;" >
 					<h:graphicImage id="logoImg" width="100px" url="../image/icons/logo.png"/>
-					
-					<h:panelGrid columns="1" width="100%">
+					</td>
+					<td style="width:100%;">
+					<h:panelGrid columns="1" width="100%" style="right:5px;position:relative;">
 					<rich:toolBar>
 		
 						<rich:dropDownMenu>
@@ -1065,13 +1041,9 @@
 								onclick="openModalLoadWorkflow()"
 								rerender="hdfsfsOpenFile" />
 							<rich:menuSeparator />
-							<rich:menuItem submitMode="ajax"
-								value="#{messages.label_menu_save}" onclick="menuSave();" />
-							<rich:menuItem submitMode="ajax"
-								value="#{messages.label_menu_saveas}"
-								onclick="openModalSaveWorkflow()" />
-							<rich:menuItem submitMode="ajax"
-								value="#{messages.label_menu_saveall}" onclick="saveAll();" />
+							<rich:menuItem submitMode="ajax" value="#{messages.label_menu_save}" onclick="menuSave();" />
+							<rich:menuItem submitMode="ajax" value="#{messages.label_menu_saveas}" onclick="openModalSaveWorkflow()" />
+							<rich:menuItem submitMode="ajax" value="#{messages.label_menu_saveall}" onclick="saveAll();" />
 							<rich:menuSeparator />
 							<rich:menuItem submitMode="none"
 								value="#{messages.label_menu_close}" onclick="menuCloseTab();" />
@@ -1166,14 +1138,12 @@
 		
 		
 						<rich:toolBarGroup location="right">
-							<rich:dropDownMenu value="#{messages.label_menu_signout}"
-								direction="bottom-left" jointPoint="br">
+							<rich:dropDownMenu value="#{messages.label_menu_signout}">
 		
 								<f:facet name="label">
-									<h:panelGrid cellpadding="0" cellspacing="0" columns="2"
-										styleClass="signoutButton">
-										<h:outputText value="#{messages.label_menu_signout}" />
-									</h:panelGrid>
+									<h:panelGroup styleClass="signoutButton">
+                                        <h:outputText value="#{messages.label_menu_signout}" />
+                                    </h:panelGroup>
 								</f:facet>
 		
 								<rich:menuItem submitMode="ajax"
@@ -1189,22 +1159,26 @@
 		
 					</rich:toolBar>
 					<div id="shortMenu" class="divMenu">
-	
 						<div class="divMenuImage">
-							<img src="../image/icons/button-open.gif" alt="open" class="shortMenuIcon" onclick="openModalLoadWorkflow()"/>
-							<img src="../image/icons/button-save.gif" alt="save" class="shortMenuIcon" onclick="openModalSaveWorkflow()"/>
-							<img src="../image/icons/button-save_as.gif" alt="saveas" class="shortMenuIcon" />
-							<img src="../image/icons/button-save_all.gif" alt="saveall" class="shortMenuIcon" />
+							<span style="cursor:pointer;">
+								<img src="../image/icons/button-open.gif" alt="open" class="shortMenuIcon" onclick="openModalLoadWorkflow()" title="#{messages.label_menu_open}" />
+							</span>
+							<span style="cursor:pointer;">
+								<img src="../image/icons/button-save.gif" alt="save" class="shortMenuIcon" onclick="openModalSaveWorkflow()" title="#{messages.label_menu_save}" />
+							</span>
+							<span style="cursor:pointer;">
+								<img src="../image/icons/button-save_as.gif" alt="saveas" class="shortMenuIcon" onclick="openModalSaveWorkflow();" title="#{messages.label_menu_saveas}" />
+							</span>
+							<span style="cursor:pointer;">
+								<img src="../image/icons/button-save_all.gif" alt="saveall" class="shortMenuIcon" onclick="saveAll();" title="#{messages.label_menu_saveall}" />
+							</span>
 						</div>
-						<!--
-							<a onclick="jQuery('#addtabCanvas').click();"><img src="../image/icons/button-new.gif" alt="new" class="shortMenuIcon" /></a> 
-							<a onclick="undoHistory();"><img src="../image/icons/button-undo.gif" alt="undo" class="shortMenuIcon" /></a>
-							<a onclick="redoHistory();"><img src="../image/icons/button-redo.gif" alt="redo" class="shortMenuIcon" /></a>
-							<a onclick="deleteSelected();"><img id="buttonDelete" src="../image/icons/button-delete.gif" alt="open" class="shortMenuIcon" /></a>
-						-->
 					</div>
 					</h:panelGrid>
-				</h:panelGrid>
+                    </td>
+                    </tr>
+                </table>
+				<!-- </h:panelGrid> -->
 
 			</a4j:region>
 
@@ -1229,6 +1203,9 @@
 
 					<li class="locked"><a href="#tabFlowchart-1"
 						id="idtabFlowchart-1"> Flowchart </a></li>
+                    <li class="locked"><a href="#tabs-8" id="idtabs-8"> <h:outputText
+                                value="#{messages.label_tab_remotefilesystem}" />
+                    </a></li>
 					<button id="changeTabCanvas" style="border: hidden;">&#9660;</button>
 
 				</ul>
@@ -1286,7 +1263,7 @@
 									<a4j:region>
 										<a4j:commandButton image="../image/icons/button-property.gif"
 											onclick="#{rich:component('modalConfigureFooterTabs')}.show()"
-											style="border: hidden;width:16px;" styleClass="configureFooterButton"/>
+											style="border: hidden;width:22px;vertical-align:middle;" styleClass="configureFooterButton"/>
 									</a4j:region>
 								</ul>
 
@@ -1320,6 +1297,25 @@
 					</div>
 
 				</div>
+				                
+                <div id="tabs-8">
+                    <a4j:region>
+
+                        <a4j:status
+                            onstart="jQuery('#tabs-8').block({ message: jQuery('#domMessageDiv8') });"
+                            onerror="jQuery('#tabs-8').unblock();"
+                            onsuccess="jQuery('#tabs-8').unblock();"
+                            onstop="jQuery('#tabs-8').unblock();" />
+
+                        <div id="domMessageDiv8" style="display: none;">
+                            <img src="../image/icons/waiting.gif" />
+                        </div>
+
+                        <h:panelGroup>
+                            <ui:include src="/pages/ssh/sshfileSystemGrid.xhtml" />
+                        </h:panelGroup>
+                    </a4j:region>
+                </div>
 			</div>
 
 
@@ -1337,12 +1333,6 @@
 					</a></li>
 					<li><a href="#tabs-3"> <h:outputText
 								value="#{messages.label_tab_error}" />
-					</a></li>
-					<li><a href="#tabs-4"> <h:outputText
-								value="#{messages.label_tab_hiveview}" />
-					</a></li>
-					<li><a href="#tabs-5"> <h:outputText
-								value="#{messages.label_tab_hbaseview}" />
 					</a></li>
 
 					<button id="changeTabTabs1" style="border: hidden;">
@@ -1402,27 +1392,6 @@
 					</h:panelGroup>
 
 				</div>
-				<div id="tabs-4">
-					<a4j:region>
-
-						<a4j:status
-							onstart="jQuery('#tabs-4').block({ message: jQuery('#domMessageDiv4') });"
-							onerror="jQuery('#tabs-4').unblock();"
-							onsuccess="jQuery('#tabs-4').unblock();"
-							onstop="jQuery('#tabs-4').unblock();" />
-
-						<div id="domMessageDiv4" style="display: none;">
-							<img src="../image/icons/waiting.gif" />
-						</div>
-
-						<h:panelGroup>
-							<ui:include src="/pages/hive/hivefileSystemGrid.xhtml" />
-						</h:panelGroup>
-					</a4j:region>
-				</div>
-				<div id="tabs-5">
-					<p>not ready yet</p>
-				</div>
 			</div>
 
 
@@ -1431,9 +1400,12 @@
 					<li><a href="#tabs-7"> <h:outputText
 								value="#{messages.label_tab_hadoopfilesystem}" />
 					</a></li>
-					<li><a href="#tabs-8" id="idtabs-8"> <h:outputText
-								value="#{messages.label_tab_remotefilesystem}" />
-					</a></li>
+                    <li><a href="#tabs-4"> <h:outputText
+                                value="#{messages.label_tab_hiveview}" />
+                    </a></li>
+                    <li><a href="#tabs-5"> <h:outputText
+                                value="#{messages.label_tab_hbaseview}" />
+                    </a></li>
 
 					<button id="changeTabTabs2" style="border: hidden;">
 						&#9660;</button>
@@ -1467,24 +1439,27 @@
 						</h:panelGroup>
 					</a4j:region>
 				</div>
-				<div id="tabs-8">
-					<a4j:region>
+                <div id="tabs-4">
+                    <a4j:region>
 
-						<a4j:status
-							onstart="jQuery('#tabs-8').block({ message: jQuery('#domMessageDiv8') });"
-							onerror="jQuery('#tabs-8').unblock();"
-							onsuccess="jQuery('#tabs-8').unblock();"
-							onstop="jQuery('#tabs-8').unblock();" />
+                        <a4j:status
+                            onstart="jQuery('#tabs-4').block({ message: jQuery('#domMessageDiv4') });"
+                            onerror="jQuery('#tabs-4').unblock();"
+                            onsuccess="jQuery('#tabs-4').unblock();"
+                            onstop="jQuery('#tabs-4').unblock();" />
 
-						<div id="domMessageDiv8" style="display: none;">
-							<img src="../image/icons/waiting.gif" />
-						</div>
+                        <div id="domMessageDiv4" style="display: none;">
+                            <img src="../image/icons/waiting.gif" />
+                        </div>
 
-						<h:panelGroup>
-							<ui:include src="/pages/ssh/sshfileSystemGrid.xhtml" />
-						</h:panelGroup>
-					</a4j:region>
-				</div>
+                        <h:panelGroup>
+                            <ui:include src="/pages/hive/hivefileSystemGrid.xhtml" />
+                        </h:panelGroup>
+                    </a4j:region>
+                </div>
+                <div id="tabs-5">
+                    <p>not ready yet</p>
+                </div>
 			</div>
 
 		</div>
@@ -1500,7 +1475,7 @@
 			</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer;width:16px;"
+					style="cursor:pointer;width:22px;"
 					onclick="#{rich:component('canvasModalPanel')}.hide()" />
 			</f:facet>
 
@@ -1518,7 +1493,7 @@
 			<f:facet name="header">Configuration</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer;width:16px;"
+					style="cursor:pointer;width:22px;"
 					onclick="#{rich:component('modalConfigureFooterTabs')}.hide()" />
 			</f:facet>
 
@@ -1533,13 +1508,13 @@
 	</a4j:region>
 
 	<a4j:region renderRegionOnly="true">
-		<rich:modalPanel id="modalSaveWorkflow" width="600" height="400"
+		<rich:modalPanel id="modalSaveWorkflow" width="600" height="430"
 			style="overflow:hide;" resizeable="false">
 
 			<f:facet name="header">Save</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer;width:16px;"
+					style="cursor:pointer;width:22px;"
 					onclick="#{rich:component('modalSaveWorkflow')}.hide()" />
 			</f:facet>
 
@@ -1554,14 +1529,14 @@
 	</a4j:region>
 
 	<a4j:region renderRegionOnly="true">
-		<rich:modalPanel id="modalLoadWorkflow" width="600" height="400"
+		<rich:modalPanel id="modalLoadWorkflow" width="600" height="430"
 			style="overflow:hide;" resizeable="false"
 			onbeforeshow="refreshHdfsOpenFileTable()">
 
 			<f:facet name="header">Load</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer;width:16px;"
+					style="cursor:pointer;width:22px;"
 					onclick="#{rich:component('modalLoadWorkflow')}.hide()" />
 			</f:facet>
 
@@ -1582,7 +1557,7 @@
 			<f:facet name="header">Create Link</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer;width:16px;"
+					style="cursor:pointer;width:22px;"
 					onclick="#{rich:component('modalSelectLink')}.hide()" />
 			</f:facet>
 
@@ -1596,15 +1571,15 @@
 	</a4j:region>
 
 	<a4j:region renderRegionOnly="true">
-		<rich:modalPanel id="modalChangeId" width="300" height="200"
-			style="overflow:auto;" resizeable="false" zindex="2000">
+		<rich:modalPanel id="modalChangeId" width="250" height="140"
+			style="overflow:auto;" resizeable="true" zindex="2000">
 
-			<f:facet name="header">Change Element Id</f:facet>
-			<f:facet name="controls">
+			<f:facet name="header" >Change Element Id</f:facet>
+			<!-- <f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer;width:16px;"
+					style="cursor:pointer;width:22px;"
 					onclick="#{rich:component('modalChangeId')}.hide()" />
-			</f:facet>
+			</f:facet> -->
 
 			<h:form>
 				<h:panelGroup>
@@ -1622,7 +1597,7 @@
 			<f:facet name="header">Packages</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer;width:16px;"
+					style="cursor:pointer;width:22px;"
 					onclick="#{rich:component('modalPackage')}.hide()" />
 			</f:facet>
 
@@ -1648,7 +1623,7 @@
 
 			<br /> <br />
 
-			<a4j:commandButton value="#{messages.button_ok}"
+			<a4j:commandButton  styleClass="greenButton" value="#{messages.button_ok}"
 				onclick="#{rich:component('msnError')}.hide(); return false;"
 				reRender="msnError, msg, errorTable" />
 

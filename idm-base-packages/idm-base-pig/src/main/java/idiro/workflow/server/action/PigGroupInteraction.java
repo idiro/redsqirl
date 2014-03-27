@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
 
 
 /**
- * 
+ * Interaction that manages grouping of features
  * @author marcos
  *
  */
@@ -27,14 +27,26 @@ public class PigGroupInteraction extends AppendListInteraction{
 	 * 
 	 */
 	private static final long serialVersionUID = 539841111561345129L;
-
+	/**Logger*/
 	protected static Logger logger = Logger.getLogger(PigGroupInteraction.class);
-
+	/**
+	 * Constructor
+	 * @param id
+	 * @param name
+	 * @param legend
+	 * @param column
+	 * @param placeInColumn
+	 * @throws RemoteException
+	 */
 	public PigGroupInteraction(String id, String name, String legend,
 			int column, int placeInColumn) throws RemoteException {
 		super(id, name, legend, column, placeInColumn);
 	}
-	
+	/**
+	 * Update the interaction with the input
+	 * @param in
+	 * @throws RemoteException
+	 */
 	public void update(DFEOutput in) throws RemoteException{
 		List<String> posValues = new LinkedList<String>();
 		
@@ -44,7 +56,12 @@ public class PigGroupInteraction extends AppendListInteraction{
 		}
 		setPossibleValues(posValues);
 	}
-	
+	/**
+	 * Get the query piece that defines the group by
+	 * @param relationName
+	 * @return query
+	 * @throws RemoteException
+	 */
 	public String getQueryPiece(String relationName) throws RemoteException{
 		logger.debug("group...");
 		String groupby = "";
@@ -67,7 +84,13 @@ public class PigGroupInteraction extends AppendListInteraction{
 		}
 		return groupby;
 	}
-	
+	/**
+	 * Receive the query that generates the features
+	 * @param relationName
+	 * @param selectInteraction
+	 * @return query
+	 * @throws RemoteException
+	 */
 	public String getForEachQueryPiece(String relationName, PigTableSelectInteraction selectInteraction) throws RemoteException{
 		String select = "FOREACH " + relationName + " GENERATE ";
 		Iterator<Map<String,String>> selIt = selectInteraction.getValues().iterator();
@@ -110,7 +133,12 @@ public class PigGroupInteraction extends AppendListInteraction{
 		return select;
 
 	}
-	
+	/**
+	 * Get the aggregated features
+	 * @param in
+	 * @return Set of aggregated features
+	 * @throws RemoteException
+	 */
 	public Set<String> getAggregationFeatures(DFEOutput in) throws RemoteException{
 		Set<String> aggregationFeatures = new HashSet<String>();
 		

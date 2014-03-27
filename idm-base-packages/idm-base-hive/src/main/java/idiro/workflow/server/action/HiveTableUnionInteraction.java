@@ -31,25 +31,43 @@ public class HiveTableUnionInteraction extends TableInteraction {
 	 * 
 	 */
 	private static final long serialVersionUID = -4973968329944889374L;
-
+	/**
+	 * Action that contains the interaction
+	 */
 	private HiveUnion hu;
-
+	/** Relation title key */
 	public static final String table_table_title = HiveLanguageManager
 			.getText("hive.union_features_interaction.relation_column"),
+			/** operations title key */
 			table_op_title = HiveLanguageManager
 					.getTextWithoutSpace("hive.union_features_interaction.op_column"),
+			/** feature title key */
 			table_feat_title = HiveLanguageManager
 					.getTextWithoutSpace("hive.union_features_interaction.feat_column"),
+			/** type title key */
 			table_type_title = HiveLanguageManager
 					.getTextWithoutSpace("hive.union_features_interaction.type_column");
-
+	/**
+	 * Constructor
+	 * @param id
+	 * @param name
+	 * @param legend
+	 * @param column
+	 * @param placeInColumn
+	 * @param hu
+	 * @throws RemoteException
+	 */
 	public HiveTableUnionInteraction(String id, String name, String legend,
 			int column, int placeInColumn, HiveUnion hu) throws RemoteException {
 		super(id, name, legend, column, placeInColumn);
 		this.hu = hu;
 		getRootTable();
 	}
-
+	/**
+	 * Check the interaction for errors
+	 * @return Error Message
+	 * @throws RemoteException
+	 */
 	@Override
 	public String check() throws RemoteException {
 		String msg = null;
@@ -136,7 +154,11 @@ public class HiveTableUnionInteraction extends TableInteraction {
 
 		return msg;
 	}
-
+	/**
+	 * Update the interaction with a list of inuts
+	 * @param in
+	 * @throws RemoteException
+	 */
 	public void update(List<DFEOutput> in) throws RemoteException {
 		updateColumnConstraint(table_table_title, null, null, hu.getAliases()
 				.keySet());
@@ -183,7 +205,10 @@ public class HiveTableUnionInteraction extends TableInteraction {
 		updateGenerator("copy", copyRows);
 
 	}
-
+	/**
+	 * Generate the root table for the interaction
+	 * @throws RemoteException
+	 */
 	protected void getRootTable() throws RemoteException {
 		// table
 		addColumn(table_table_title, null, null, null);
@@ -203,7 +228,11 @@ public class HiveTableUnionInteraction extends TableInteraction {
 		addColumn(table_type_title, null, types, null);
 
 	}
-
+	/**
+	 * Get the new features that the interaction generates
+	 * @return new FeatureList
+	 * @throws RemoteException
+	 */
 	public FeatureList getNewFeatures() throws RemoteException {
 		FeatureList new_features = new OrderedFeatureList();
 
@@ -219,7 +248,11 @@ public class HiveTableUnionInteraction extends TableInteraction {
 		}
 		return new_features;
 	}
-
+	/**
+	 * Get a map of sub queries for each feature
+	 * @return Map of sub queries
+	 * @throws RemoteException
+	 */
 	public Map<String, List<Map<String, String>>> getSubQuery()
 			throws RemoteException {
 		Map<String, List<Map<String, String>>> mapRelationRow = new LinkedHashMap<String, List<Map<String, String>>>();
@@ -241,8 +274,15 @@ public class HiveTableUnionInteraction extends TableInteraction {
 
 		return mapRelationRow;
 	}
-
-	public String getQueryPiece(DFEOutput out,Map<String,String> conditions) throws RemoteException {
+	/**
+	 * Get the query piece for the union
+	 * @param out
+	 * @param conditions
+	 * @return query piece
+	 * @throws RemoteException
+	 */
+	public String getQueryPiece(DFEOutput out, Map<String, String> conditions)
+			throws RemoteException {
 		logger.debug("select...");
 		HiveInterface hi = new HiveInterface();
 		String select = "";
@@ -265,7 +305,8 @@ public class HiveTableUnionInteraction extends TableInteraction {
 		if (it.hasNext()) {
 			String alias = it.next();
 			logger.debug(alias + "...");
-			Iterator<Map<String, String>> itTree = subQuery.get(alias).iterator();
+			Iterator<Map<String, String>> itTree = subQuery.get(alias)
+					.iterator();
 			logger.debug("subselect...");
 			if (itTree.hasNext()) {
 				Map<String, String> featTree = itTree.next();
@@ -287,25 +328,26 @@ public class HiveTableUnionInteraction extends TableInteraction {
 			String where = hu.getFilterInt().getInputWhere(alias);
 			if (!where.isEmpty()) {
 				select += "\n      WHERE " + where + "\n";
-				if(conditions.get(alias)!=null){
-					select += " AND "+ conditions.get(alias);
+				if (conditions.get(alias) != null) {
+					select += " AND " + conditions.get(alias);
 				}
 
-			}else if(conditions.get(alias)!=null){
-				select += " 		WHERE "+ conditions.get(alias) + "\n";
-			}		
+			} else if (conditions.get(alias) != null) {
+				select += " 		WHERE " + conditions.get(alias) + "\n";
+			}
 		}
 		while (it.hasNext()) {
 			select += "      UNION ALL\n";
 			String alias = it.next();
 			logger.debug(alias + "...");
-			Iterator<Map<String, String>> itTree = subQuery.get(alias).iterator();
+			Iterator<Map<String, String>> itTree = subQuery.get(alias)
+					.iterator();
 			if (itTree.hasNext()) {
 				Map<String, String> featTree = itTree.next();
 				String featName = featTree.get(table_feat_title);
 				String op = featTree.get(table_op_title);
-				select += "      SELECT " + op + " AS " + featName ;
-				
+				select += "      SELECT " + op + " AS " + featName;
+
 			}
 			while (itTree.hasNext()) {
 				Map<String, String> featTree = itTree.next();
@@ -319,17 +361,22 @@ public class HiveTableUnionInteraction extends TableInteraction {
 			String where = hu.getFilterInt().getInputWhere(alias);
 			if (!where.isEmpty()) {
 				select += "\n      WHERE " + where + "\n";
-				if(conditions.get(alias)!=null){
-					select += " AND "+ conditions.get(alias);
+				if (conditions.get(alias) != null) {
+					select += " AND " + conditions.get(alias);
 				}
-			}else if(conditions.get(alias)!=null){
-				select += "		WHERE "+ conditions.get(alias)+" \n ";
+			} else if (conditions.get(alias) != null) {
+				select += "		WHERE " + conditions.get(alias) + " \n ";
 			}
 		}
 		select += ") union_table";
 		return select;
 	}
-
+	/**
+	 * Get the create feature list for creating the output table
+	 * @param out
+	 * @return query piece
+	 * @throws RemoteException
+	 */
 	public String getCreateQueryPiece(DFEOutput out) throws RemoteException {
 		logger.debug("create features...");
 		String createSelect = "";
@@ -351,7 +398,13 @@ public class HiveTableUnionInteraction extends TableInteraction {
 
 		return createSelect;
 	}
-
+	/**
+	 * Check an expression for errors
+	 * @param expression
+	 * @param modifier
+	 * @return Error Message
+	 * @throws RemoteException
+	 */
 	public String checkExpression(String expression, String modifier)
 			throws RemoteException {
 		String error = null;

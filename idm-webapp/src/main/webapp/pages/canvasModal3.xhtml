@@ -37,7 +37,7 @@
 			</td>
 			<td>
 				
-				<a4j:commandButton type="submit" id="tableInteractionGenerationLines" 
+				<a4j:commandButton  styleClass="greenButton" type="submit" id="tableInteractionGenerationLines" 
 					action="#{canvasModalBean.tableInteractionGenerationLines}" value="#{messages.button_ok}" reRender="tableInteraction" />
 			
 			</td>
@@ -93,16 +93,16 @@
 					<rich:modalPanel id="tableInteractionPanel" width="600" height="400" style="overflow:auto;" resizeable="false" >
 						<f:facet name="header">Configuration</f:facet>
 						<f:facet name="controls">
-							<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:16px;"
+							<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:22px;"
 								onclick="#{rich:component('tableInteractionPanel')}.hide()" />
 						</f:facet>
 						<ui:include src="/pages/canvasModal2.xhtml" />
 					</rich:modalPanel>
 	
 
-	<a4j:commandButton action="#{canvasModalBean.confirmTableInteraction}" value="#{messages.button_ok}" onclick="#{rich:component('canvasModalPanel')}.hide();" />
+	<a4j:commandButton  styleClass="greenButton" action="#{canvasModalBean.confirmTableInteraction}" value="#{messages.button_ok}" onclick="#{rich:component('canvasModalPanel')}.hide();" />
 	<span>&nbsp;&nbsp;</span>
-	<a4j:commandButton action="#{canvasModalBean.cancel}" value="#{messages.button_cancel}" onclick="#{rich:component('canvasModalPanel')}.hide();" />
+	<a4j:commandButton  styleClass="greenButton" action="#{canvasModalBean.cancel}" value="#{messages.button_cancel}" onclick="#{rich:component('canvasModalPanel')}.hide();" />
 	<span>&nbsp;&nbsp;</span>
 	<a4j:commandLink action="#{canvasModalBean.tableInteractionAddNewLine}" reRender="tableInteraction" >
 		<img id="tableInteractionBtAdd" src="../image/icons/button-plus.gif" />

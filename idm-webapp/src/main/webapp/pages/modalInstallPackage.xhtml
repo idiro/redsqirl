@@ -8,6 +8,8 @@
 
 <a4j:loadBundle basename="MessagesResources" var="messages" />
     
+    <a4j:loadBundle basename="MessagesResources_en_IE" var="messages" />
+    
     <rich:modalPanel id="msnError2">
 			<center>
 			
@@ -24,7 +26,7 @@
 				<br />
 				<br />
 				
-				<a4j:commandButton value="#{messages.button_ok}" onclick="#{rich:component('msnError2')}.hide(); return false;" reRender="msnError2, msg2" />
+				<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" onclick="#{rich:component('msnError2')}.hide(); return false;" reRender="msnError2, msg2" />
 				
 			</center>
 		</rich:modalPanel>
@@ -110,6 +112,7 @@
                 Version: #{packageMngBean.curPackage.version}<br />
                 Price: #{packageMngBean.curPackage.price}<br />
 	            <a4j:commandButton
+	                styleClass="greenButton"
 	                action="#{packageMngBean.installPackage}"
 	                value="#{messages.button_install}"
 	                oncomplete="if(#{requestScope['msnError2'] != null}){ #{rich:component('msnError2')}.show() }">
