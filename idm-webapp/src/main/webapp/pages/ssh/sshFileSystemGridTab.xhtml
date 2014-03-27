@@ -8,7 +8,7 @@
 <a4j:loadBundle basename="MessagesResources" var="messages" />
 
 	<div id="sshFileSystem"
-		style="min-width: 400px; overflow: hidden; min-height: 400px;">
+		style="min-width: 400px; overflow: hidden; min-height: 190px;">
 		
 		<rich:dragIndicator id="indicator" />
 		
@@ -35,7 +35,7 @@
 			
 			<br />
 
-			<rich:panel>
+			<rich:panel style="border:none">
 			
 				<rich:dropSupport  acceptedTypes="hdfs" dropListener="#{sshBean.processDrop}" reRender="sshfs"/>
 				
@@ -43,13 +43,10 @@
 					var="item" width="100%" style="border:none;"
 					onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 					enableContextMenu="false"
-					onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
-					
-					<f:facet name="header">
-						<h:outputText value="File System" />
-					</f:facet>
+					onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+					rowClasses="even-row, odd-row">
 	
-					<rich:column sortBy="#{item.name}"
+					<rich:column sortBy="#{item.name}" filterBy="#{item.name}"
 						style="border-bottom:0px;border-right:0px;">
 						<f:facet name="header">
 							<h:outputText value="Name"/>

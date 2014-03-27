@@ -48,12 +48,19 @@ function resizeCanvasOnPageReady(){
 
 function resizeTables(){
 	
+	jQuery("#processManager .extdt-content").style("height", jQuery("#tabs-2").height()-130+"px", "important");
 	
+	jQuery("#errorTable .extdt-content").style("height", jQuery("#tabs-3").height()-60+"px", "important");
 	
-//	jQuery(".extdt-content").style("height", "300px", "important");
+	jQuery("#hiveFileSystem .extdt-content").style("height", jQuery("#tabs-4").height()-160+"px", "important");
+	
 	jQuery("#hdfsFileSystem .extdt-content").style("height", jQuery("#tabs-7").height()-160+"px", "important");
 	
-	jQuery("#processManager .extdt-content").style("height", jQuery("#tabs-2").height()-120+"px", "important");
+	jQuery("#tabRemote .extdt-content").style("height", jQuery("#tabs-8").height()-160+"px", "important");
+	
+	
+	
+	
 }
 
 function onPageReady(){
@@ -309,7 +316,16 @@ function resizeCanvasChangeTab(){
 	}
 }
 
-
+/*function to select all checkbox in a table*/
+function selectAll(checkbox, checkboxId) {
+    var elements = checkbox.form.elements;
+    for (var i = 0; i < elements.length; i++) {
+        var element = elements[i];
+        if (checkboxId.test(element.id)) {
+            element.checked = checkbox.checked;
+        }
+    }
+}
 
 
 

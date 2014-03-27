@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.richfaces.model.Ordering;
+
 
 /** ItemList
  * 
@@ -24,6 +26,8 @@ public class ItemList implements Serializable{
 	
 	private Map<String, String> typeTableInteraction = new HashMap<String, String>();
 	private Map<String, String> nameValue = new HashMap<String, String>();
+//	private Map<String, Ordering> sortingOrder = new HashMap<String, Ordering>();
+//	private Map<String, Object> filterValue = new HashMap<String, Object>();
 	private Map<String, String> nameValueEdit = new HashMap<String, String>();
 	private Map<String, Boolean> nameIsConst = new HashMap<String, Boolean>();
 	private Map<String, Boolean> valueHasLineBreak = new HashMap<String, Boolean>();
@@ -94,6 +98,22 @@ public class ItemList implements Serializable{
 	public void setNameValue(Map<String, String> nameValue) {
 		this.nameValue = nameValue;
 	}
+	
+//	public Map<String, Ordering> getSortingOrder() {
+//		return sortingOrder;
+//	}
+//
+//	public void setSortingOrder(Map<String, Ordering> sortingOrder) {
+//		this.sortingOrder = sortingOrder;
+//	}
+//	
+//	public Map<String, Object> getFilterValue() {
+//		return filterValue;
+//	}
+//
+//	public void setFilterValue(Map<String, Object> filterValue) {
+//		this.filterValue = filterValue;
+//	}
 
 	public Map<String, String> getNameValueEdit() {
 		return nameValueEdit;

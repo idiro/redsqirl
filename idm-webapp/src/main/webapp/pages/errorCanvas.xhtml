@@ -23,16 +23,17 @@
 					
 		<rich:extendedDataTable id="errorTable" value="#{sessionScope['listError']}" var="item" 
 			width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'" 
-			enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
+			enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'" 
+			rowClasses="even-row, odd-row">
 			
-			<rich:column>
+			<rich:column sortBy="#{item.name}" filterBy="#{item.name}">
 				<f:facet name="header">
 					<h:outputText value="#{messages.label_date}" />
 				</f:facet>
 				<h:outputText value="#{item.name}" style="width:100%;" readonly="true" />
 			</rich:column>
 			
-			<rich:column>
+			<rich:column sortBy="#{item.value}" filterBy="#{item.value}">
 				<f:facet name="header">
 					<h:outputText value="#{messages.label_messages}" />
 				</f:facet>
