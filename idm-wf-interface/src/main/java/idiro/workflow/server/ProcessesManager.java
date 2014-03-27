@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -63,6 +64,8 @@ public class ProcessesManager {
 			if ((line = reader.readLine()) != null) {
 				pid = line;
 			}
+		}else{
+			pid = "";
 		}
 	}
 	/**
@@ -73,6 +76,11 @@ public class ProcessesManager {
 		if (file.exists()) {
 			file.delete();
 		}
+		pid = "";
+	}
+	
+	public String getPath(){
+		return file.getAbsolutePath();
 	}
 
 }

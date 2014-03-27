@@ -310,7 +310,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 	}
 
 	public void updateLinkPossibilities() {
-		
+
 		logger.info("updateLinkPossibilities");
 
 		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
@@ -319,7 +319,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 		logger.info("idElementA " + idElementA);
 		logger.info("idElementB " + idElementB);
-		
+
 		try {
 			linkPossibilities = new ArrayList<SelectItem>();
 			nbLinkPossibilities = 0;
@@ -328,13 +328,13 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 			DataFlowElement dfeObjA = df.getElement(idElementA);
 			DataFlowElement dfeObjB = df.getElement(idElementB);
-			
+
 			for (Map.Entry<String, DFELinkProperty> entryInput : dfeObjB.getInput().entrySet()){
 				for (Map.Entry<String, DFEOutput> entryOutput : dfeObjA.getDFEOutput().entrySet()){
-					
+
 					logger.info("entryInput " + entryInput);
 					logger.info("entryOutput " + entryOutput);
-					
+
 					if (df.check(entryOutput.getKey(), dfeObjA.getComponentId(), entryInput.getKey(), dfeObjB.getComponentId())){
 						linkPossibilities.add(new SelectItem(entryOutput.getKey()+" -> "+entryInput.getKey()));
 					}
@@ -426,7 +426,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 				setDf(df);
 				workflowMap.put(getNameWorkflow(), df);
 				getIdMap().put(getNameWorkflow(), new HashMap<String, String>());
-				
+
 				for (DataFlowElement e : df.getElement()){
 					getIdMap().get(getNameWorkflow()).put(e.getComponentId(), e.getComponentId());
 				}
@@ -536,7 +536,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 		//Set path
 		path = FacesContext.getCurrentInstance().getExternalContext().
 				getRequestParameterMap().get("pathFile");
-		
+
 		if(!path.contains(".")){
 			path += ".rs";
 		}
@@ -765,17 +765,17 @@ public class CanvasBean extends BaseBean implements Serializable{
 		}
 
 	}
-	
+
 	public void regeneratePathsProjectCopy() throws RemoteException {
 		logger.info("regenerate paths project copy");
 		regeneratePathsProject(true);
 	}
-	
+
 	public void regeneratePathsProjectMove() throws RemoteException {
 		logger.info("regenerate paths project move");
 		regeneratePathsProject(false);
 	}
-	
+
 	/** 
 	 * 
 	 * Methods to regenerate paths of the current workflow
@@ -1062,12 +1062,16 @@ public class CanvasBean extends BaseBean implements Serializable{
 		String groupOutId = params.get("groupOutId");
 		String groupInId = params.get("groupInId");
 		String outputName = "";
-
-		DataFlowElement df = getDf().getElement(getIdMap().get(getNameWorkflow()).get(groupOutId));
-
-		for (String value : df.getOutputComponent().keySet()) {
-			outputName = value;
-			break;
+		try{
+			DataFlowElement df = getDf().getElement(getIdMap().get(getNameWorkflow()).get(groupOutId));
+			for (String value : df.getOutputComponent().keySet()) {
+				outputName = value;
+				break;
+			}
+		}catch(Exception e){
+			MessageUseful.addErrorMessage("Error when updating link colors: NULL POINTER"); //FIXME
+			HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
 		}
 
 		logger.info("getAllArrowType " + groupOutId + " " + groupInId + " " + outputName);
@@ -1099,7 +1103,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 		logger.info("set Name workflow");
 		logger.info("old name: "+this.nameWorkflow);
 		logger.info("new name: "+nameWorkflow);
-		*/
+		 */
 		this.nameWorkflow = nameWorkflow;
 	}
 

@@ -47,7 +47,6 @@ public class ServerProcess {
 	public final int port;
 	private boolean run;
 	private Channel channel;
-	private String pid;
 	private Session session;
 	private Session s;
 
@@ -83,10 +82,10 @@ public class ServerProcess {
 
 				try {
 
+
+					ProcessesManager pm = new WorkflowProcessesManager();
 					final String command = getBaseCommand(user, password, port)
-							+ " 1>/dev/null & echo $!";
-					ProcessesManager pm = new WorkflowProcessesManager()
-					.getInstance();
+							+ " 1>/dev/null & echo $! 1> "+pm.getPath();
 					String old_pid = pm.getPid();
 
 					logger.info("old workflow process : " + old_pid);
@@ -133,7 +132,6 @@ public class ServerProcess {
 							}
 							kill(pid1);
 							pm.deleteFile();
-							pm = new WorkflowProcessesManager().getInstance();
 							logger.info("killed old process");
 						}
 
@@ -152,15 +150,6 @@ public class ServerProcess {
 							+ command);
 					logger.info("connecting channel");
 					channel.connect();
-
-					logger.info("getting channel buffer");
-					BufferedReader br = new BufferedReader(
-							new InputStreamReader(channel.getInputStream()));
-					logger.info("reading buffer");
-					pid = br.readLine();
-					logger.info("dataIn: " + pid);
-
-					pm.storePid(pid);
 
 					channel.getInputStream().close();
 					channel.disconnect();
@@ -288,7 +277,9 @@ public class ServerProcess {
 				e.printStackTrace();
 				logger.error(e.getMessage());
 			}
-			kill(pid);
+			try{
+				kill(new WorkflowProcessesManager().getPid());
+			}catch(Exception e){}
 			list.remove(this);
 			run = false;
 		} else if (session == null && run) {
