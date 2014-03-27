@@ -31,7 +31,7 @@
 
 	<a4j:keepAlive beanName = "hdfsBean"/>
 	<div id="hdfsFileSystem"
-		style="min-width: 400px; overflow: hidden; min-height: 400px;">
+		style="min-width: 400px; overflow: hidden; min-height: 200px;">
 		
 		<rich:dragIndicator id="indicator" />
 		
@@ -88,26 +88,27 @@
 
 			<br />
 
-			<rich:panel>
+			<rich:panel style="border:none">
 			
 				<rich:dropSupport acceptedTypes="ssh" dropListener="#{hdfsBean.processDrop}" reRender="hdfsfs"/>
 				
 				
-				<rich:dataTable id="hdfsfs" value="#{hdfsBean.listGrid}"
-				var="item" width="100%" style="border:none;"
+				<rich:extendedDataTable id="hdfsfs" value="#{hdfsBean.listGrid}"
+				var="item" rowKeyVar="indexTable" width="100%" height="500px" style="border:none;" 
 				onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 				enableContextMenu="false"
-				onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
+				onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+				rowClasses="even-row, odd-row">
 	
 					<rich:column style="border-bottom:0px;border-right:0px;"
-						width="30px;">
+						width="50px;">
 						<f:facet name="header">
-							<h:outputText value="" />
+							
 						</f:facet>
 						<h:selectBooleanCheckbox id="hdfsselect" value="#{item.selected}" />
 					</rich:column>
 					<rich:column style="border-bottom:0px;border-right:0px;"
-						width="30px;">
+						width="50px;">
 						<f:facet name="header">
 							<h:outputText value="" />
 						</f:facet>
@@ -118,7 +119,7 @@
 						</a4j:commandLink>
 					</rich:column>
 					
-					<rich:column sortBy="#{item.name}" style="border-bottom:0px;border-right:0px;" >
+					<rich:column sortBy="#{item.name}" filterBy="#{item.name}" style="border-bottom:0px;border-right:0px;" >
 						<f:facet name="header">
 							<h:outputText value="Name" />
 						</f:facet>
@@ -134,7 +135,7 @@
 	     				</a4j:commandLink>
 					</rich:column>
 					
-					<rich:columns value="#{hdfsBean.keyAsListNameValue}" var="column"
+					<rich:columns value="#{hdfsBean.keyAsListNameValue}" var="column" 
 						index="ind" id="hdfscolumn#{ind}"
 						style="border-bottom:0px;border-right:0px;">
 						<f:facet name="header">
@@ -142,9 +143,7 @@
 						</f:facet>
 						<h:outputText value="#{item.nameValue[column]}" id="hdfsvalue#{ind}" />
 					</rich:columns>
-	
-				</rich:dataTable>
-				
+				</rich:extendedDataTable>
 			</rich:panel>
 		</h:form>
 	</div>

@@ -19,6 +19,7 @@ import javax.annotation.PreDestroy;
 import javax.faces.context.FacesContext;
 
 import org.apache.log4j.Logger;
+import org.richfaces.model.Ordering;
 
 public class FileSystemBean extends BaseBean implements Serializable{
 
@@ -91,6 +92,8 @@ public class FileSystemBean extends BaseBean implements Serializable{
 
 			ItemList itemList = new ItemList(name);
 			Map<String, String> nv = new HashMap<String, String>();
+//			Map<String, Ordering> so = new HashMap<String, Ordering>();
+//			Map<String, Object> fv = new HashMap<String, Object>();
 			Map<String, String> nve = new HashMap<String, String>();
 			Map<String, Boolean> nc = new HashMap<String, Boolean>();
 			Map<String, Boolean> vlb = new HashMap<String, Boolean>();
@@ -100,6 +103,7 @@ public class FileSystemBean extends BaseBean implements Serializable{
 				if(!paramProperties.get(properties).editOnly() &&
 					!paramProperties.get(properties).createOnly()){
 					nv.put(properties, getFormatedString(properties, mapSSH.get(path).get(properties)));
+					
 				}
 				
 				if (paramProperties.get(properties).editOnly()){
@@ -108,11 +112,14 @@ public class FileSystemBean extends BaseBean implements Serializable{
 				
 				nc.put(properties, paramProperties.get(properties).isConst());
 				vlb.put(properties, mapSSH.get(path).get(properties) != null && mapSSH.get(path).get(properties).contains("/n"));
-
+//				so.put(properties, Ordering.UNSORTED);
+//				fv.put(properties, "");
 			}
 
 			
 			itemList.setNameValue(nv);
+//			itemList.setSortingOrder(so);
+//			itemList.setFilterValue(fv);
 			itemList.setNameValueEdit(nve);
 			itemList.setNameIsConst(nc);
 			itemList.setValueHasLineBreak(vlb);
@@ -593,5 +600,4 @@ public class FileSystemBean extends BaseBean implements Serializable{
 	public void setListHeaderGrid(ArrayList<ItemList> listHeaderGrid) {
 		this.listHeaderGrid = listHeaderGrid;
 	}
-	
 }

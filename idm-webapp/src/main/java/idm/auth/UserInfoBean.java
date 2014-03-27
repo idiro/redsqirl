@@ -262,18 +262,18 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
 		
 		try{
-			for (String bean : beans){
-				if(session.getAttribute(bean)!=null){
-					session.removeAttribute(bean);
-				}
-			}
-			
-			if(session.getAttribute("serverThread")!=null){
-				session.removeAttribute("serverThread");
-			}
-			if(sc.getAttribute("registry")!=null){
-				sc.removeAttribute("registry");
-			}
+//			for (String bean : beans){
+//				if(session.getAttribute(bean)!=null){
+//					session.removeAttribute(bean);
+//				}
+//			}
+//			
+//			if(session.getAttribute("serverThread")!=null){
+//				session.removeAttribute("serverThread");
+//			}
+//			if(sc.getAttribute("registry")!=null){
+//				sc.removeAttribute("registry");
+//			}
 			
 			th = new ServerProcess(port);
 			Session s = th.run(user,password);
@@ -309,7 +309,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 							logger.info("workflow not running ");
 
 							Thread.sleep(500);
-							if(tryNumb > 40){
+							if(tryNumb > 4000){
 								throw e;
 							}
 						}
@@ -341,7 +341,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 						logger.error(e.getMessage());
 						setCurrentValue(getCurrentValue()+1);
 
-						if(cont > 80){
+						if(cont > 8000){
 							throw e;
 						}
 					}
