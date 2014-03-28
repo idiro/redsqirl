@@ -55,14 +55,11 @@
 	<br/><br/>
 	
 	
-	<rich:dataTable value="#{browserHdfsBean.listHeaderGrid}" var="item"
+	<rich:extendedDataTable value="#{browserHdfsBean.listHeaderGrid}" var="item"
 			width="100%" style="border:none;"
 			onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-			onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
-	
-		<f:facet name="header">
-			<h:outputText value="File System" />
-		</f:facet>
+			onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+			rowClasses="even-row, odd-row">
 
 		<rich:column style="border-bottom:0px;border-right:0px;" headerClass="loadTableRadio" >
 			<f:facet name="header">
@@ -84,15 +81,17 @@
 			</f:facet>
 		</rich:columns>
 	
-	</rich:dataTable>
+	</rich:extendedDataTable>
 	
 	
 	<div style="width:590px;height:250px;overflow:auto;" >
 	
-		<rich:dataTable id="hdfsfsOpenFile" value="#{browserHdfsBean.listGrid}" var="item"
+		<rich:extendedDataTable id="hdfsfsOpenFile" value="#{browserHdfsBean.listGrid}" var="item"
 			width="100%" style="border:none;"
 			onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-			onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
+			enableContextMenu="false" selectionMode="none"
+			onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+			rowClasses="even-row, odd-row">
 	
 			<rich:column style="border-bottom:0px;border-right:0px;" styleClass="loadTableRadio" >
 				<h:selectOneRadio value="#{item.stringSelectedDestination}"
@@ -114,7 +113,7 @@
 				<h:outputText value="#{item.nameValue[column]}" id="value#{ind}" />
 			</rich:columns>
 	
-		</rich:dataTable>
+		</rich:extendedDataTable>
 
 	</div>
 
@@ -131,5 +130,4 @@
 	<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}"
 		onclick="#{rich:component('modalLoadWorkflow')}.hide();">
 	</a4j:commandButton>
-
 </ui:composition>

@@ -34,15 +34,17 @@
 			</div>
 			
 			<br />
-			
-			<rich:extendedDataTable id="processManagerTable" value="#{processManagerBean.processesGrid}"
-				var="item" width="100%" height="500px"
-				onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-				enableContextMenu="false" selectionMode="none"
-				onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
-				rowClasses="even-row, odd-row">
 
-				<rich:column style="border-bottom:0px;border-right:0px;" sortBy="#{item[1]}" filterBy="#{item[1]}"
+			<rich:extendedDataTable id="processManagerTable" value="#{processManagerBean.processesGrid}"
+				var="item" rowKeyVar="indexTable" width="100%" height="500px" style="border:none;" 
+				onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+				enableContextMenu="false" 
+				onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+				rowClasses="even-row, odd-row"
+				tableState="#{processManagerBean.tableState}">
+
+				<rich:column style="border-bottom:0px;border-right:0px;" sortBy="#{item[1]}" filterBy="#{item[1]}"  filterEvent="onchange"
+				filterValue="#{processManagerBean.filterValue}"
 					width="80px;">
 					<f:facet name="header">
 						<h:outputText value="#{messages.label_user}" />
@@ -50,7 +52,7 @@
 					<h:outputText value="#{item[1]}" />
 				</rich:column>
 				
-				<rich:column style="border-bottom:0px;border-right:0px;" sortBy="#{item[2]}" filterBy="#{item[2]}"
+				<rich:column style="border-bottom:0px;border-right:0px;" 
 					width="300px;">
 					<f:facet name="header">
 						<h:outputText value="#{messages.label_process_name}" />
@@ -58,7 +60,7 @@
 					<h:outputText value="#{item[2]}" />
 				</rich:column>
 				
-				<rich:column style="border-bottom:0px;border-right:0px;" sortBy="#{item[3]}" filterBy="#{item[3]}"
+				<rich:column style="border-bottom:0px;border-right:0px;"
 					width="100px;">
 					<f:facet name="header">
 						<h:outputText value="#{messages.label_status}" />
@@ -66,7 +68,7 @@
 					<h:outputText value="#{item[3]}" />
 				</rich:column>
 				
-				<rich:column style="border-bottom:0px;border-right:0px;" sortBy="#{item[4]}" filterBy="#{item[4]}"
+				<rich:column style="border-bottom:0px;border-right:0px;"
 					width="200px;">
 					<f:facet name="header">
 						<h:outputText value="#{messages.label_start_date}" />
@@ -98,6 +100,7 @@
 					</a4j:commandLink>
 				</rich:column>
 			</rich:extendedDataTable>
+			</rich:panel>
 		</h:form>
 	</div>
 </body>
