@@ -43,7 +43,8 @@
 					onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 					enableContextMenu="false"
 					onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
-					rowClasses="even-row, odd-row">
+					rowClasses="even-row, odd-row"
+					tableState="#{sshBean.tableState}">
 	
 					<rich:column sortBy="#{item.name}" filterBy="#{item.name}"
 						style="border-bottom:0px;border-right:0px;">

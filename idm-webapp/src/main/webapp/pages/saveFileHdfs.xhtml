@@ -50,18 +50,16 @@
 
 	<br/><br/>
 
-	<div style="width:590px;height:265px;overflow:auto;" >
+	<div style="width:590px;height:265px;overflow: hidden;" >
 
-		<rich:dataTable id="hdfsfsSaveFile" value="#{browserHdfsBean.listGrid}" var="item"
-			width="100%" style="border:none;"
+		<rich:extendedDataTable id="hdfsfsSaveFile" value="#{browserHdfsBean.listGrid}" var="item"
+			width="50px" height="10px"
 			onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-			onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
+			enableContextMenu="false" selectionMode="none"
+			onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+			rowClasses="even-row, odd-row">
 	
-			<f:facet name="header">
-				<h:outputText value="File System" />
-			</f:facet>
-	
-			<rich:column sortBy="#{item.name}"
+			<rich:column sortBy="#{item.name}" filterBy="#{item.name}"
 				style="border-bottom:0px;border-right:0px;">
 				<f:facet name="header">
 					<h:outputText value="Name" />
@@ -81,7 +79,7 @@
 				<h:outputText value="#{item.nameValue[column]}" id="value#{ind}" />
 			</rich:columns>
 	
-		</rich:dataTable>
+		</rich:extendedDataTable>
 	
 	</div>
 	
