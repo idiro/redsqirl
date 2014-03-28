@@ -16,7 +16,7 @@ public class WorkflowProcessesManagerTests {
 	@Test
 	public void WorkflowProcessesManagerTestBasic() throws IOException {
 		logger.info("creating instance");
-		ProcessesManager wmanager = new WorkflowProcessesManager().getInstance();
+		ProcessesManager wmanager = new WorkflowProcessesManager();
 		wmanager.loadPid();
 		logger.info(wmanager.getPid());
 		wmanager.storePid("1323");

@@ -1805,7 +1805,6 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
 	});
 	polygonTab.rotateDeg(rotateDeg);
 	
-
 	var polygonTabImage;
 	try{
 		polygonTabImage = polygonTab.toDataURL({

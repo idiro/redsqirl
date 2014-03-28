@@ -7,7 +7,7 @@
 
 <a4j:loadBundle basename="MessagesResources" var="messages" />
 
-	<script>
+<script>
 //<![CDATA[
 	var file;
 	function dataTableOpenSelectOneRadio(radio, name) {
@@ -33,6 +33,10 @@
 	
 //]]>
 </script>
+
+	<a4j:status	onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModal') });"
+		onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
+		onstop="jQuery.unblockUI();" />
 
 	<a4j:jsFunction name="refreshHdfsOpenFileTable" action="#{browserHdfsBean.changePath}" reRender="hdfsfsOpenFile"/>
 
