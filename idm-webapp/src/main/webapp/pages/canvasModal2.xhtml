@@ -99,9 +99,11 @@
 						
 						<br />
 						
-						<rich:dataTable id="listFunctions" value="#{canvasModalBean.listFunctions}" var="item"
+						<rich:extendedDataTable id="listFunctions" value="#{canvasModalBean.listFunctions}" var="item"
 							style="border:1px solid;" width="100%" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-							enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
+							enableContextMenu="false" selectionMode="none"
+							onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+							rowClasses="even-row, odd-row">
 	
 							<rich:column style="border-bottom:0px;border-right:0px;">
 								<f:facet name="header">
@@ -128,7 +130,7 @@
 								<h:outputText value="#{item[2]}" />
 							</rich:column>
 	
-						</rich:dataTable>
+						</rich:extendedDataTable>
 					</td>
 	
 					<td width="10%">
@@ -143,9 +145,11 @@
 						
 						<br />
 						
-						<rich:dataTable id="listOperation" value="#{canvasModalBean.listOperation}" var="item"
+						<rich:extendedDataTable id="listOperation" value="#{canvasModalBean.listOperation}" var="item"
 						style="border:1px solid;" width="100%" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-						enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
+						enableContextMenu="false" selectionMode="none"
+						onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+						rowClasses="even-row, odd-row">
 
 							<rich:column style="border-bottom:0px;border-right:0px;">
 								<f:facet name="header">
@@ -158,7 +162,7 @@
 								</a4j:commandLink>
 							</rich:column>
 	
-						</rich:dataTable>
+						</rich:extendedDataTable>
 					</td>
 	
 					<td width="45%">
@@ -167,9 +171,11 @@
 					<br />
 					<br />
 						
-						<rich:dataTable id="listFields"	value="#{canvasModalBean.listFields}" var="item"
+						<rich:extendedDataTable id="listFields"	value="#{canvasModalBean.listFields}" var="item"
 							style="border:1px solid;" width="100%" onRowClick="completeFilds" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-							enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
+							enableContextMenu="false" selectionMode="none"
+							onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+							rowClasses="even-row, odd-row">
 	
 							<rich:column style="border-bottom:0px;border-right:0px;">
 								<f:facet name="header">
@@ -189,7 +195,7 @@
 								<h:outputText value="#{item.value}" />
 							</rich:column>
 	
-						</rich:dataTable>
+						</rich:extendedDataTable>
 						
 					</td>
 				</tr>

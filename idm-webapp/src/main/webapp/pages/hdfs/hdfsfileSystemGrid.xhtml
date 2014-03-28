@@ -98,12 +98,13 @@
 				onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 				enableContextMenu="false"
 				onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
-				rowClasses="even-row, odd-row">
+				rowClasses="even-row, odd-row"
+				tableState="#{hdfsBean.tableState}">
 	
 					<rich:column style="border-bottom:0px;border-right:0px;"
 						width="50px;">
 						<f:facet name="header">
-							
+							<h:selectBooleanCheckbox onclick="selectAll(this, /hdfsselect$/);"/>
 						</f:facet>
 						<h:selectBooleanCheckbox id="hdfsselect" value="#{item.selected}" />
 					</rich:column>
@@ -119,7 +120,7 @@
 						</a4j:commandLink>
 					</rich:column>
 					
-					<rich:column sortBy="#{item.name}" filterBy="#{item.name}" style="border-bottom:0px;border-right:0px;" >
+					<rich:column sortBy="#{item.name}" filterBy="#{item.name}" style="border-bottom:0px;border-right:0px;"  filterEvent="onchange">
 						<f:facet name="header">
 							<h:outputText value="Name" />
 						</f:facet>

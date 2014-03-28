@@ -58,8 +58,7 @@ function resizeTables(){
 	
 	jQuery("#tabRemote .extdt-content").style("height", jQuery("#tabs-8").height()-160+"px", "important");
 	
-	
-	
+	jQuery("#hdfsfsSaveFile .extdt-content").style("height", "20px", "important");
 	
 }
 
@@ -87,6 +86,7 @@ function onPageReady(){
 	  jQuery("#canvas").css("width", jQuery("#canvas-tabs").width()+'px');
 	  
 	  resizeTabs();
+	  resizeTables();
 	  
 	  jQuery("#buttonsCanvas1").hide();
 	  jQuery("#buttonsTabs1").hide();

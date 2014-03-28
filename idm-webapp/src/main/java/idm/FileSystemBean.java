@@ -92,8 +92,8 @@ public class FileSystemBean extends BaseBean implements Serializable{
 
 			ItemList itemList = new ItemList(name);
 			Map<String, String> nv = new HashMap<String, String>();
-//			Map<String, Ordering> so = new HashMap<String, Ordering>();
-//			Map<String, Object> fv = new HashMap<String, Object>();
+			Map<String, Ordering> so = new HashMap<String, Ordering>();
+			Map<String, Object> fv = new HashMap<String, Object>();
 			Map<String, String> nve = new HashMap<String, String>();
 			Map<String, Boolean> nc = new HashMap<String, Boolean>();
 			Map<String, Boolean> vlb = new HashMap<String, Boolean>();
@@ -112,14 +112,14 @@ public class FileSystemBean extends BaseBean implements Serializable{
 				
 				nc.put(properties, paramProperties.get(properties).isConst());
 				vlb.put(properties, mapSSH.get(path).get(properties) != null && mapSSH.get(path).get(properties).contains("/n"));
-//				so.put(properties, Ordering.UNSORTED);
-//				fv.put(properties, "");
+				so.put(properties, Ordering.UNSORTED);
+				fv.put(properties, "");
 			}
 
 			
 			itemList.setNameValue(nv);
-//			itemList.setSortingOrder(so);
-//			itemList.setFilterValue(fv);
+			itemList.setSortingOrder(so);
+			itemList.setFilterValue(fv);
 			itemList.setNameValueEdit(nve);
 			itemList.setNameIsConst(nc);
 			itemList.setValueHasLineBreak(vlb);

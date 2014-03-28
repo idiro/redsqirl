@@ -353,13 +353,14 @@
 	    		setTimeout(function(){autoSaveAll()},10*60*1000);
             }
 	    	
-	        function refreshProcManager(){
-	        	if(refreshProcManagerCount > 0){
-	        	 jQuery("[id$='RefreshProcessManager']").click();
-	        	 --refreshProcManagerCount;
-	        	}
-	    		setTimeout(function(){refreshProcManager()},20*1000);
-	    	}
+	    	function refreshProcManager(){
+		        	if(refreshProcManagerCount > 0){
+		        	 jQuery("[id$='RefreshProcessManager']").click();
+		        	 --refreshProcManagerCount;
+		        	}
+		    		setTimeout(function(){refreshProcManager()},20*1000);
+		    	}
+	      
 	    			
 	    	function configureFooter(){
 	    		 var tabsFooter = jQuery("#tabsFooter").tabs().scrollabletab();

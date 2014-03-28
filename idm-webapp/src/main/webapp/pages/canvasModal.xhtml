@@ -149,9 +149,11 @@
 						
 						<div id="DivBrowserTable1" style="width:100%; height:70px;  border:1px solid black; overflow-x: hidden;">
 						
-							<rich:dataTable id="browserTable1" value="#{canvasModalBean.listGrid}"
+							<rich:extendedDataTable id="browserTable1" value="#{canvasModalBean.listGrid}"
 								var="item2" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-								enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
+								enableContextMenu="false" selectionMode="none"
+								onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+								rowClasses="even-row, odd-row" >
 								
 								<rich:column id="browserTable1Col1" rendered="#{canvasModalBean.listGrid != null and not empty canvasModalBean.listGrid}" >
 									<f:facet name="header">
@@ -166,7 +168,7 @@
 									<h:inputText styleClass="interModal" value="#{item2.value}" style="border:none !important;width:95%;" />
 								</rich:column>
 				
-							</rich:dataTable>
+							</rich:extendedDataTable>
 						
 						</div>
 						
@@ -243,13 +245,14 @@
 						<div id="DivTableInteraction"
 							style="width: 580px; height: 220px; border: 1px solid black; overflow-x: hidden;">
 		
-							<rich:dataTable id="tableInteraction"
+							<rich:extendedDataTable id="tableInteraction"
 								value="#{canvasModalBean.listGrid}" var="item" width="100%"
 								style="border:none;"
 								rowKeyVar="row"
 								onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-								enableContextMenu="false"
-								onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
+								enableContextMenu="false" selectionMode="none"
+								onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+								rowClasses="even-row, odd-row">
 		
 								<rich:column style="border-bottom:0px;border-right:0px;"
 									width="10px;">
@@ -302,7 +305,7 @@
 		
 								</rich:columns>
 		
-							</rich:dataTable>
+							</rich:extendedDataTable>
 		
 						</div>
 						

@@ -54,6 +54,8 @@ public class CanvasBean extends BaseBean implements Serializable{
 	private String path;
 
 	private Map<String, DataFlow> workflowMap;
+	
+	private String errorTableState = new String();
 
 
 	public void doNew(){
@@ -1264,4 +1266,11 @@ public class CanvasBean extends BaseBean implements Serializable{
 		this.linkLabel = nameLink;
 	}
 
+	public String getErrorTableState() {
+		return errorTableState;
+	}
+
+	public void setErrorTableState(String errorTableState) {
+		this.errorTableState = errorTableState;
+	}
 }

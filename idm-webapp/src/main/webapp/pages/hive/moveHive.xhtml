@@ -38,10 +38,12 @@ function dataTableSelectOneRadio(radio) {
 		<h:graphicImage  id="btNext" value="../image/icons/button-next.gif" title='#{messages.HiveInterface_next_help}' />
 	</a4j:commandLink>
 
-	<rich:dataTable id="hivefsMove" value="#{hiveBean.listGrid}" var="item"
+	<rich:extendedDataTable id="hivefsMove" value="#{hiveBean.listGrid}" var="item"
 		width="100%" style="border:none;"
 		onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-		onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
+		enableContextMenu="false" selectionMode="none"
+		onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+		rowClasses="even-row, odd-row">
 
 		<f:facet name="header">
 			<h:outputText value="File System" />
@@ -79,7 +81,7 @@ function dataTableSelectOneRadio(radio) {
 			<h:outputText value="#{item.nameValue[column]}" id="value#{ind}" />
 		</rich:columns>
 
-	</rich:dataTable>
+	</rich:extendedDataTable>
 
 	<br />
 

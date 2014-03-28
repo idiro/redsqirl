@@ -106,12 +106,13 @@
 				onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 				enableContextMenu="false"
 				onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
-				rowClasses="even-row, odd-row">
+				rowClasses="even-row, odd-row"
+				tableState="#{hiveBean.tableState}">
 
 				<rich:column style="border-bottom:0px;border-right:0px;"
 					width="50px;">
 					<f:facet name="header">
-						
+						<h:selectBooleanCheckbox onclick="selectAll(this, /hiveselect$/);"/>
 					</f:facet>
 					<h:selectBooleanCheckbox id="hiveselect" value="#{item.selected}" />
 				</rich:column>
