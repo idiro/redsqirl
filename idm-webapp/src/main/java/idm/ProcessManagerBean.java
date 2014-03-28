@@ -19,7 +19,7 @@ public class ProcessManagerBean extends BaseBean implements Serializable{
 	
 	private Ordering[] sortingOrder = new Ordering[5];
 //	private Object[] filterValue;
-	private Object filterValue = "test";
+	private Object filterValue = "";
 	
 	private String tableState = new String();
 	
