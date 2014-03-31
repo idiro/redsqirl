@@ -19,6 +19,7 @@ import javax.annotation.PreDestroy;
 import javax.faces.context.FacesContext;
 
 import org.apache.log4j.Logger;
+import org.richfaces.model.Ordering;
 
 public class FileSystemBean extends BaseBean implements Serializable{
 
