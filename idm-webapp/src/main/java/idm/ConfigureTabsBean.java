@@ -15,19 +15,23 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 public class ConfigureTabsBean extends BaseBean implements Serializable{
-	
+
 	private DataFlow wf;
 	protected Map<String,List<String[]>> menuWA;
 	private String tabName;
 	private String selected;
 
-	@PostConstruct
-	public void openCanvasScreen() throws RemoteException {
-		if (getworkFlowInterface().getWorkflow("canvas0") == null){
-			getworkFlowInterface().addWorkflow("canvas0");
+	//@PostConstruct
+	public void openCanvasScreen() {
+		try {
+			if (getworkFlowInterface().getWorkflow("canvas0") == null){
+				getworkFlowInterface().addWorkflow("canvas0");
+				wf = getworkFlowInterface().getWorkflow("canvas0");
+				wf.loadMenu();
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
 		}
-		wf = getworkFlowInterface().getWorkflow("canvas0");
-		wf.loadMenu();
 	}
 
 	public List<String> getTabs(){

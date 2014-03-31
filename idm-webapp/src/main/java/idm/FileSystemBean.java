@@ -49,7 +49,6 @@ public class FileSystemBean extends BaseBean implements Serializable{
 	 * @return
 	 * @author Igor.Souza
 	 */
-	@PostConstruct
 	public void openCanvasScreen() {
 
 	}
@@ -61,7 +60,6 @@ public class FileSystemBean extends BaseBean implements Serializable{
 	 * @return
 	 * @author Igor.Souza
 	 */
-	@PreDestroy
 	public void closeCanvasScreen() {
 
 	}

@@ -81,7 +81,7 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 	}
 
-	@PostConstruct
+	//@PostConstruct
 	public void init(){
 		logger.info("openCanvas");
 
