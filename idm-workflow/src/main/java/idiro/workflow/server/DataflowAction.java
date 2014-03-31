@@ -110,17 +110,23 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	 * @throws RemoteException
 	 */
 	public String getHelp() throws RemoteException {
+		String fname = getName().toLowerCase() + ".html";
 		String relativePath = WorkflowPrefManager.pathUserHelpPref.get() + "/"
-				+ getName().toLowerCase() + ".html";
+				+ fname;
 		File f = new File(
 				WorkflowPrefManager
-						.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
+						.getSysProperty(WorkflowPrefManager.sys_install_package,WorkflowPrefManager
+								.getSysProperty(WorkflowPrefManager.sys_tomcat_path))
 						+ relativePath);
 		if (!f.exists() || !isUserAllowInstall()) {
 			relativePath = WorkflowPrefManager.pathSysHelpPref.get() + "/"
-					+ getName().toLowerCase() + ".html";
+					+ fname;
+			f = new File(
+					WorkflowPrefManager
+							.getSysProperty(WorkflowPrefManager.sys_install_package)
+							+ relativePath);
 		}
-		return relativePath;
+		return f.getAbsolutePath();
 	}
 
 	/**
@@ -130,17 +136,23 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	 * @throws RemoteException
 	 */
 	public String getImage() throws RemoteException {
+		String fname = getName().toLowerCase() + ".gif";
 		String relativePath = WorkflowPrefManager.pathUserImagePref.get() + "/"
-				+ getName().toLowerCase() + ".gif";
+				+ fname;
 		File f = new File(
 				WorkflowPrefManager
-						.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
+						.getSysProperty(WorkflowPrefManager.sys_install_package,WorkflowPrefManager
+								.getSysProperty(WorkflowPrefManager.sys_tomcat_path))
 						+ relativePath);
 		if (!f.exists() || !isUserAllowInstall()) {
-			relativePath = WorkflowPrefManager.pathSysImagePref.get() + "/"
-					+ getName().toLowerCase() + ".gif";
+			relativePath = WorkflowPrefManager.pathSysHelpPref.get() + "/"
+					+ fname;
+			f = new File(
+					WorkflowPrefManager
+							.getSysProperty(WorkflowPrefManager.sys_install_package)
+							+ relativePath);
 		}
-		return relativePath;
+		return f.getAbsolutePath();
 	}
 	
 	/**
@@ -457,7 +469,11 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 
 		return ans;
 	}
-
+	/**
+	 * Get all Aliases
+	 * @return Get aliases from the 
+	 * @throws RemoteException
+	 */
 	public Map<String, DFEOutput> getAliases() throws RemoteException {
 		Map<String, DFEOutput> ans = new LinkedHashMap<String, DFEOutput>();
 		Map<String, List<DataFlowElement>> in = getInputComponent();
@@ -478,7 +494,11 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		}
 		return ans;
 	}
-
+	/**
+	 * Get Map of Aliases per input of 
+	 * @return Map of Aliases and input components
+	 * @throws RemoteException
+	 */
 	public Map<String, Map<String, DFEOutput>> getAliasesPerInput()
 			throws RemoteException {
 		Map<String, Map<String, DFEOutput>> ans = new LinkedHashMap<String, Map<String, DFEOutput>>();
