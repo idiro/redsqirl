@@ -19,7 +19,6 @@ import javax.annotation.PreDestroy;
 import javax.faces.context.FacesContext;
 
 import org.apache.log4j.Logger;
-import org.richfaces.model.Ordering;
 
 public class FileSystemBean extends BaseBean implements Serializable{
 
@@ -296,8 +295,13 @@ public class FileSystemBean extends BaseBean implements Serializable{
 		}
 
 		for (String[] s : selectedFiles) {
-			logger.info("copy "+s[0] + "/" + s[1] + " to " + getDataStore().getPath() + "/" + itemSelect.getName());
-			getDataStore().copy(s[0] + "/" + s[1], getDataStore().getPath() + "/" + itemSelect.getName()+ "/" + s[1]);
+			if(itemSelect != null){
+				logger.info("move "+s[0] + "/" + s[1] + " to " + getDataStore().getPath() + "/" + itemSelect.getName());
+				getDataStore().move(s[0] + "/" + s[1], getDataStore().getPath() + "/" + itemSelect.getName()+ "/" + s[1]);
+			}else{
+				logger.info("move "+s[0] + "/" + s[1] + " to " + getDataStore().getPath());
+				getDataStore().move(s[0] + "/" + s[1], getDataStore().getPath() + "/" + s[1]);
+			}
 		}
 		
 		mountTable(getDataStore());
@@ -421,8 +425,13 @@ public class FileSystemBean extends BaseBean implements Serializable{
 		}
 
 		for (String[] s : selectedFiles) {
-			logger.info("move "+s[0] + "/" + s[1] + " to " + getDataStore().getPath() + "/" + itemSelect.getName());
-			getDataStore().move(s[0] + "/" + s[1], getDataStore().getPath() + "/" + itemSelect.getName()+ "/" + s[1]);
+			if(itemSelect != null){
+				logger.info("move "+s[0] + "/" + s[1] + " to " + getDataStore().getPath() + "/" + itemSelect.getName());
+				getDataStore().move(s[0] + "/" + s[1], getDataStore().getPath() + "/" + itemSelect.getName()+ "/" + s[1]);
+			}else{
+				logger.info("move "+s[0] + "/" + s[1] + " to " + getDataStore().getPath());
+				getDataStore().move(s[0] + "/" + s[1], getDataStore().getPath() + "/" + s[1]);
+			}
 		}
 		mountTable(getDataStore());
 	}
