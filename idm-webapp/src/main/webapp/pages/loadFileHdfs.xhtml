@@ -65,7 +65,7 @@
 			onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
 			rowClasses="even-row, odd-row">
 
-		<rich:column style="border-bottom:0px;border-right:0px;" headerClass="loadTableRadio" >
+		<rich:column style="border-bottom:0px;border-right:0px;" width="32px;" headerClass="loadTableRadio" >
 			<f:facet name="header">
 				<h:outputText value="" />
 			</f:facet>
@@ -97,7 +97,7 @@
 			onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
 			rowClasses="even-row, odd-row">
 	
-			<rich:column style="border-bottom:0px;border-right:0px;" styleClass="loadTableRadio" >
+			<rich:column style="border-bottom:0px;border-right:0px;" styleClass="loadTableRadio" width="32px;">
 				<h:selectOneRadio value="#{item.stringSelectedDestination}"
 					onclick="dataTableOpenSelectOneRadio(this, '#{item.name}');">
 					<f:selectItem itemValue="true" />

@@ -138,6 +138,7 @@
 					
 					<rich:columns value="#{hdfsBean.keyAsListNameValue}" var="column" 
 						index="ind" id="hdfscolumn#{ind}"
+						sortBy="#{item.nameValue[column]}" filterBy="#{item.nameValue[column]}"
 						style="border-bottom:0px;border-right:0px;">
 						<f:facet name="header">
 							<h:outputText value="#{column}" />

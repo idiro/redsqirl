@@ -1062,3 +1062,13 @@ border-radius: 10px;
     font-weight: bold;
 }
 
+.panelGroupHeader{
+	border:0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	
+	padding: 0px 0px 0px 0px;
+}
+
+.tableInteractionInput{
+	width:95% !important;
+}

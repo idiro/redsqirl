@@ -255,8 +255,9 @@
 								rowClasses="even-row, odd-row">
 		
 								<rich:column style="border-bottom:0px;border-right:0px;"
-									width="10px;">
+									width="40px;">
 									<f:facet name="header">
+										<h:panelGrid columns="1" styleClass="">
 										<a4j:commandLink
 											action="#{canvasModalBean.tableInteractionDeleteLine}"
 											reRender="tableInteraction"
@@ -264,9 +265,11 @@
 											<img id="tableInteractionBtDelete"
 												src="../image/icons/button-delete2.gif" />
 										</a4j:commandLink>
+										<h:selectBooleanCheckbox onclick="selectAll(this, /tableInteractionSelect$/);"/>
+										</h:panelGrid>
 									</f:facet>
 		
-									<h:selectBooleanCheckbox value="#{item.selected}">
+									<h:selectBooleanCheckbox id="tableInteractionSelect" value="#{item.selected}">
 										<f:selectItem itemValue="true" />
 									</h:selectBooleanCheckbox>
 		
@@ -279,21 +282,22 @@
 										<h:outputText value="#{column}" />
 									</f:facet>
 		
-									<h:inputText  styleClass="interModal" value="#{item.nameValue[column]}"
+									<h:inputText value="#{item.nameValue[column]}"
 										rendered="#{canvasModalBean.columnsMap[column] == 'textField' }"
-										style="width:125px;" />
+										styleClass="tableInteractionInput"/>
 		
 									<rich:comboBox value="#{item.nameValue[column]}"
 										selectFirstOnUpdate="false" defaultLabel="Enter some value"
 										width="125" enableManualInput="false" listWidth="150"
 										listHeight="150"
-										rendered="#{canvasModalBean.columnsMap[column] == 'comboBox' }">
+										rendered="#{canvasModalBean.columnsMap[column] == 'comboBox' }"
+										styleClass="tableInteractionInput">
 										<f:selectItems value="#{canvasModalBean.listConstraint[column]}" />
 									</rich:comboBox>
 		
-									<h:inputText  styleClass="interModal" value="#{item.nameValue[column]}"
+									<h:inputText value="#{item.nameValue[column]}"
 										rendered="#{canvasModalBean.columnsMap[column] == 'editor' }"
-										style="width:125px;" >
+										styleClass="tableInteractionInput">
 										<a4j:support event="onclick" action="#{canvasModalBean.openHelpTextEditorModal}" 
 											oncomplete="#{rich:component('textEditorPanel')}.show()" 
 											reRender="commandText,listFields,listFunctions,listCategories,listOperation,listCategoriesOperation,command,tableInteraction">
