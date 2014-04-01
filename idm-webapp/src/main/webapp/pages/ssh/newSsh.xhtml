@@ -8,17 +8,17 @@
 <a4j:loadBundle basename="MessagesResources" var="messages" />
 		
 		<h:outputText value="Host" />
-		<h:inputText value="#{sshBean.host}" />
+		<h:inputText value="#{sshBean.host}" onkeypress="return enableEnterKey(event, 'newSshBtn');"/>
 				
 		<h:outputText value="Port" />
-		<h:inputText value="#{sshBean.port}" />
+		<h:inputText value="#{sshBean.port}" onkeypress="return enableEnterKey(event, 'newSshBtn');"/>
 	
 		<h:outputText value="Save" />
 		<h:selectBooleanCheckbox id="selectedSaveSsh" value="#{sshBean.selectedSaveSsh}" />
 		
 		<h:panelGrid columns="2">		
 	
-			<a4j:commandButton  styleClass="greenButton" action="#{sshBean.confirmNewSsh}" onclick="#{rich:component('modalNewSsh')}.hide();" oncomplete="configureTabsRemote();" 
+			<a4j:commandButton id="newSshBtn" styleClass="greenButton" action="#{sshBean.confirmNewSsh}" onclick="#{rich:component('modalNewSsh')}.hide();" oncomplete="configureTabsRemote();" 
 				value="#{messages.button_ok}" reRender="tabRemote,msnError"/>
 				
 			<a4j:commandButton  styleClass="greenButton" value="#{messages.button_cancel}" type="button" 

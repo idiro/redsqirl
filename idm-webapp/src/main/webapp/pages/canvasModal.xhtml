@@ -101,7 +101,8 @@
 				<!-- input -->
 				
 				<a4j:region>
-					<h:inputText  value="#{item.inputValue}" maxlength="255" style="width:395px;" styleClass="interModal" rendered="#{item.displayType == 'input'}" />
+					<h:inputText  value="#{item.inputValue}" maxlength="255" style="width:395px;" styleClass="interModal" rendered="#{item.displayType == 'input'}" 
+						onkeypress="return disableEnterKey(event);"/>
 				</a4j:region>
 				
 				<!-- list -->
@@ -284,7 +285,8 @@
 		
 									<h:inputText value="#{item.nameValue[column]}"
 										rendered="#{canvasModalBean.columnsMap[column] == 'textField' }"
-										styleClass="tableInteractionInput"/>
+										styleClass="tableInteractionInput"
+										onkeypress="return disableEnterKey(event);"/>
 		
 									<rich:comboBox value="#{item.nameValue[column]}"
 										selectFirstOnUpdate="false" defaultLabel="Enter some value"

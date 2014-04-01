@@ -42,9 +42,9 @@
 
 	<h:outputText value="#{messages.label_path}" />
 	<h:inputText id="pathOpenFile" label="Path" value="#{browserHdfsBean.path}"
-		maxlength="255" style="width:395px;" />
+		maxlength="255" style="width:395px;" onkeypress="return enableEnterKey(event, 'changePathLoadHdfsBtn');"/>
 		
-	<a4j:commandLink action="#{browserHdfsBean.changePath}" reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
+	<a4j:commandLink id="changePathLoadHdfsBtn" action="#{browserHdfsBean.changePath}" reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
 		<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' />
 	</a4j:commandLink>
 		

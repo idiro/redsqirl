@@ -15,8 +15,9 @@
 		<a4j:form>
 			<h:outputText value="#{messages.label_path}" />
 			<h:inputText id="sshpath" styleClass="mainPageTextField"  label="Path" value="#{sshBean.path}"
-				maxlength="255" style="width:395px; margin-left:5px;" />
-			<a4j:commandButton  styleClass="greenButton" type="submit" id="sshchangePathBt"
+				maxlength="255" style="width:395px; margin-left:5px;" 
+				onkeypress="return enableEnterKey(event, 'sshchangePathBt');"/>
+			<a4j:commandButton  styleClass="greenButton" id="sshchangePathBt"
 				action="#{sshBean.changePath}" value="#{messages.button_ok}" reRender="sshfs" />
 
 			<br />

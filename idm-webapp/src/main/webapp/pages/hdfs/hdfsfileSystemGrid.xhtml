@@ -48,9 +48,10 @@
 			<br />
 
 			<h:outputText value="#{messages.label_path}" />
-			<h:inputText id="hdfspath" label="Path" styleClass="mainPageTextField" value="#{hdfsBean.path}" maxlength="255" style="width:395px; margin-left:5px;" />
+			<h:inputText id="hdfspath" label="Path" styleClass="mainPageTextField" value="#{hdfsBean.path}" maxlength="255" style="width:395px; margin-left:5px;" 
+				onkeypress="return enableEnterKey(event, 'hdfsfsPathBtn');"/>
 
-			<a4j:commandLink action="#{hdfsBean.changePath}" reRender="hdfsfs" style="color:#FFFFFF">
+			<a4j:commandLink id="hdfsfsPathBtn" action="#{hdfsBean.changePath}" reRender="hdfsfs" style="color:#FFFFFF">
 				<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' styleClass="refreshButton"/>
 			</a4j:commandLink>
 

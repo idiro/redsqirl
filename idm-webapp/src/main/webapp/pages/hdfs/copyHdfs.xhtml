@@ -22,8 +22,9 @@ function dataTableSelectOneRadio(radio) {
 
 	<h:outputText value="#{messages.label_path}" />
 	<h:inputText id="pathCopy" label="Path" value="#{hdfsBean.path}"
-		maxlength="255" style="width:395px;" />
-	<a4j:commandLink type="submit" id="changePathBt"
+		maxlength="255" style="width:395px;" 
+		onkeypress="return enableEnterKey(event, 'changePathHdfsfsCopyBt');"/>
+	<a4j:commandLink type="submit" id="changePathHdfsfsCopyBt"
 		action="#{hdfsBean.changePath}" reRender="hdfsfsCopy" >
 		<h:graphicImage id="btSearch" value="../image/icons/button-search.gif"
             title='#{messages.button_ok}' />
@@ -48,7 +49,7 @@ function dataTableSelectOneRadio(radio) {
 			<h:outputText value="File System" />
 		</f:facet>
 
-		<rich:column style="border-bottom:0px;border-right:0px;" width="10px;">
+		<rich:column style="border-bottom:0px;border-right:0px;" width="32px;">
 			<f:facet name="header">
 				<h:outputText value="" />
 			</f:facet>
