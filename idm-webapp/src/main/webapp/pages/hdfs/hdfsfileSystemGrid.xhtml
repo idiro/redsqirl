@@ -23,6 +23,19 @@
     	}
     }
     
+    function validateSrc(){
+        var ok = false;
+        jQuery("[id$='hdfsselect']").each(function (index,value){
+            if(value.checked){
+                ok = true;
+            }
+        });
+        if(!ok){
+            alert("A data-set has to be selected in order to move or copy it.");
+        }
+        return ok;
+    }
+    
 </script>
 
 </head>
@@ -68,11 +81,13 @@
 				</a4j:commandLink>
 	
 				<a4j:commandLink id="hdfslinkCopyModalPanel" action="#{hdfsBean.copyFileBefore}"
+                    onclick="return validateSrc();"
 					oncomplete="#{rich:component('hdfscopyModalPanel')}.show()"  >
 					<h:graphicImage value="../image/icons/button-copy.gif" title='#{messages.HdfsInterface_copy_help}' styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 					
 				<a4j:commandLink id="hdfslinkMoveModalPanel" action="#{hdfsBean.moveFileBefore}"
+				    onclick="return validateSrc();"
 					oncomplete="#{rich:component('hdfsmoveModalPanel')}.show()" >
 					<h:graphicImage value="../image/icons/button-move.gif" title='#{messages.HdfsInterface_move_help}' styleClass="fileSystemIcon" />
 				</a4j:commandLink>
