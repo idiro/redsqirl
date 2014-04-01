@@ -83,7 +83,7 @@ public class HdfsBean extends FileSystemBean {
 		catch(Exception e){
 			logger.info("", e);
 		}
-	} 
+	}
 
 	public String getTableState() {
 		return tableState;

@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.faces.context.FacesContext;
 
 import org.apache.log4j.Logger;
@@ -381,14 +379,18 @@ public class FileSystemBean extends BaseBean implements Serializable{
 	 * @author Igor.Souza
 	 */
 	public void editFileAfter() throws RemoteException{
-
-		for (Iterator<String> iterator = nameValue.keySet().iterator(); iterator.hasNext();) {
-			String key = iterator.next();
-			getDataStore().changeProperty(getDataStore().getPath() + "/" + getName(), key, nameValue.get(key) );
+		logger.info("Change properties: "+getItem().getNameValue().toString());
+		try{
+			getDataStore().changeProperties(getItem().getNameValue());
+		}catch(Exception e){
+			logger.error(e.getMessage());
+			MessageUseful.addErrorMessage(
+					"Fail to update properties of "+
+							getDataStore().getPath() + "/" + getNewName()+
+							" to "+getItem().getNameValue());
+			
 		}
-
-		getDataStore().changeProperties(getItem().getNameValue());
-
+		logger.info("Rename "+getDataStore().getPath() + "/" + getName()+" to "+getDataStore().getPath() + "/" + getNewName());
 		getDataStore().move(getDataStore().getPath() + "/" + getName(), getDataStore().getPath() + "/" + getNewName());
 
 	}
