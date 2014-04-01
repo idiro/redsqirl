@@ -24,16 +24,12 @@
     }
     
     function validateSrc(){
-        var ok = false;
-        jQuery("[id$='hdfsselect']").each(function (index,value){
-            if(value.checked){
-                ok = true;
-            }
-        });
-        if(!ok){
+    
+         if(!jQuery('#fileSysGridForm input[type="checkbox"]').is(':checked')){
             alert("A data-set has to be selected in order to move or copy it.");
-        }
-        return ok;
+            return false;
+         }
+         return true;
     }
     
 </script>
@@ -48,7 +44,7 @@
 		
 		<rich:dragIndicator id="indicator" />
 		
-		<h:form>
+		<h:form id="fileSysGridForm">
 			
 			<a4j:jsFunction name="openFileHdfs" action="#{hdfsBean.openFile}" oncomplete="#{rich:component('hdfsOpenFileModalPanel')}.show();" >
 				<a4j:actionparam name="nameFile"/>
@@ -81,13 +77,13 @@
 				</a4j:commandLink>
 	
 				<a4j:commandLink id="hdfslinkCopyModalPanel" action="#{hdfsBean.copyFileBefore}"
-                    onclick="return validateSrc();"
+                    onclick="if(! validateSrc()){return false;}"
 					oncomplete="#{rich:component('hdfscopyModalPanel')}.show()"  >
 					<h:graphicImage value="../image/icons/button-copy.gif" title='#{messages.HdfsInterface_copy_help}' styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 					
 				<a4j:commandLink id="hdfslinkMoveModalPanel" action="#{hdfsBean.moveFileBefore}"
-				    onclick="return validateSrc();"
+				    onclick="if(! validateSrc()){return false;}"
 					oncomplete="#{rich:component('hdfsmoveModalPanel')}.show()" >
 					<h:graphicImage value="../image/icons/button-move.gif" title='#{messages.HdfsInterface_move_help}' styleClass="fileSystemIcon" />
 				</a4j:commandLink>
