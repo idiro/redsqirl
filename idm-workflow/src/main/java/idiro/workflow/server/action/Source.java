@@ -378,6 +378,8 @@ public class Source extends DataflowAction {
 		String absolutePath = "";
 		String helpFile = "/help/" + getName().toLowerCase() + ".html";
 		String path = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path);
+		logger.info(helpFile);
+		logger.info(path);
 		List<String> files = listFilesRecursively(path);
 		for (String file : files) {
 			if (file.contains(helpFile)) {

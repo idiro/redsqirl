@@ -1030,7 +1030,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 
 	public List<String> listFilesRecursively(String path) {
 		List<String> files = new ArrayList();
-//		logger.info(path);
+		logger.info(path);
 		if (path != null || !path.isEmpty()) {
 			File root = new File(path);
 			File[] list = root.listFiles();

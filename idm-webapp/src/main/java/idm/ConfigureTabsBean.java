@@ -32,18 +32,22 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 
 
 	//@PostConstruct
-	public void openCanvasScreen() throws RemoteException {
-		if (getworkFlowInterface().getWorkflow("canvas0") == null) {
-			getworkFlowInterface().addWorkflow("canvas0");
+	public void openCanvasScreen()  {
+		try {
+			if (getworkFlowInterface().getWorkflow("canvas0") == null) {
+				getworkFlowInterface().addWorkflow("canvas0");
+				wf = getworkFlowInterface().getWorkflow("canvas0");
+				wf.loadMenu();
+			}
+		} catch (RemoteException e1) {
+			e1.printStackTrace();
 		}
-		wf = getworkFlowInterface().getWorkflow("canvas0");
 		// TODO
 
 		String currentPage = ((HttpServletRequest) FacesContext
 				.getCurrentInstance().getExternalContext().getRequest())
 				.getRequestURI();
 
-		wf.loadMenu();
 //		logger.info(currentPage);
 		if (currentPage != null || !currentPage.isEmpty()) {
 			List<Integer> pos = new ArrayList();
@@ -72,13 +76,14 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 			} catch (Exception e) {
 //				logger.info("E");
 			}
-			Iterator<String> it = menuWA.keySet().iterator();
-			while (it.hasNext()) {
-				List<String[]> tab = menuWA.get(it.next());
-				for (String[] s : tab) {
+			
+//			Iterator<String> it = menuWA.keySet().iterator();
+//			while (it.hasNext()) {
+//				List<String[]> tab = menuWA.get(it.next());
+//				for (String[] s : tab) {
 //					logger.info(s[0] + " , " + s[1] + " , " + s[2]);
-				}
-			}
+//				}
+//			}
 		}
 	}
 
