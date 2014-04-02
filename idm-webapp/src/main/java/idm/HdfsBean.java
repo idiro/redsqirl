@@ -19,6 +19,8 @@ import org.richfaces.event.DropEvent;
 public class HdfsBean extends FileSystemBean {
 
 	private static Logger logger = Logger.getLogger(HdfsBean.class);
+	
+	private String tableState = new String();
 
 
 	/** openCanvasScreen
@@ -81,6 +83,13 @@ public class HdfsBean extends FileSystemBean {
 		catch(Exception e){
 			logger.info("", e);
 		}
-	} 
+	}
 
+	public String getTableState() {
+		return tableState;
+	}
+
+	public void setTableState(String tableState) {
+		this.tableState = tableState;
+	}
 }

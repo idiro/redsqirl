@@ -23,6 +23,15 @@
     	}
     }
     
+    function validateSrc(){
+    
+         if(!jQuery('#fileSysGridForm input[type="checkbox"]').is(':checked')){
+            alert("A data-set has to be selected in order to move or copy it.");
+            return false;
+         }
+         return true;
+    }
+    
 </script>
 
 </head>
@@ -31,11 +40,11 @@
 
 	<a4j:keepAlive beanName = "hdfsBean"/>
 	<div id="hdfsFileSystem"
-		style="min-width: 400px; overflow: hidden; min-height: 400px;">
+		style="min-width: 400px; overflow: hidden; min-height: 200px;">
 		
 		<rich:dragIndicator id="indicator" />
 		
-		<h:form>
+		<h:form id="fileSysGridForm">
 			
 			<a4j:jsFunction name="openFileHdfs" action="#{hdfsBean.openFile}" oncomplete="#{rich:component('hdfsOpenFileModalPanel')}.show();" >
 				<a4j:actionparam name="nameFile"/>
@@ -48,9 +57,10 @@
 			<br />
 
 			<h:outputText value="#{messages.label_path}" />
-			<h:inputText id="hdfspath" label="Path" styleClass="mainPageTextField" value="#{hdfsBean.path}" maxlength="255" style="width:395px; margin-left:5px;" />
+			<h:inputText id="hdfspath" label="Path" styleClass="mainPageTextField" value="#{hdfsBean.path}" maxlength="255" style="width:395px; margin-left:5px;" 
+				onkeypress="return enableEnterKey(event, 'hdfsfsPathBtn');"/>
 
-			<a4j:commandLink action="#{hdfsBean.changePath}" reRender="hdfsfs" style="color:#FFFFFF">
+			<a4j:commandLink id="hdfsfsPathBtn" action="#{hdfsBean.changePath}" reRender="hdfsfs" style="color:#FFFFFF">
 				<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' styleClass="refreshButton"/>
 			</a4j:commandLink>
 
@@ -68,11 +78,13 @@
 				</a4j:commandLink>
 	
 				<a4j:commandLink id="hdfslinkCopyModalPanel" action="#{hdfsBean.copyFileBefore}"
+                    onclick="if(! validateSrc()){return false;}"
 					oncomplete="#{rich:component('hdfscopyModalPanel')}.show()"  >
 					<h:graphicImage value="../image/icons/button-copy.gif" title='#{messages.HdfsInterface_copy_help}' styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 					
 				<a4j:commandLink id="hdfslinkMoveModalPanel" action="#{hdfsBean.moveFileBefore}"
+				    onclick="if(! validateSrc()){return false;}"
 					oncomplete="#{rich:component('hdfsmoveModalPanel')}.show()" >
 					<h:graphicImage value="../image/icons/button-move.gif" title='#{messages.HdfsInterface_move_help}' styleClass="fileSystemIcon" />
 				</a4j:commandLink>
@@ -88,26 +100,28 @@
 
 			<br />
 
-			<rich:panel>
+			<rich:panel style="border:none">
 			
 				<rich:dropSupport acceptedTypes="ssh" dropListener="#{hdfsBean.processDrop}" reRender="hdfsfs"/>
 				
 				
-				<rich:dataTable id="hdfsfs" value="#{hdfsBean.listGrid}"
-				var="item" width="100%" style="border:none;"
+				<rich:extendedDataTable id="hdfsfs" value="#{hdfsBean.listGrid}"
+				var="item" rowKeyVar="indexTable" width="100%" height="500px" style="border:none;" 
 				onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 				enableContextMenu="false"
-				onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
+				onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+				rowClasses="even-row, odd-row"
+				tableState="#{hdfsBean.tableState}">
 	
 					<rich:column style="border-bottom:0px;border-right:0px;"
-						width="30px;">
+						width="50px;">
 						<f:facet name="header">
-							<h:outputText value="" />
+							<h:selectBooleanCheckbox onclick="selectAll(this, /hdfsselect$/);"/>
 						</f:facet>
 						<h:selectBooleanCheckbox id="hdfsselect" value="#{item.selected}" />
 					</rich:column>
 					<rich:column style="border-bottom:0px;border-right:0px;"
-						width="30px;">
+						width="50px;">
 						<f:facet name="header">
 							<h:outputText value="" />
 						</f:facet>
@@ -118,7 +132,7 @@
 						</a4j:commandLink>
 					</rich:column>
 					
-					<rich:column sortBy="#{item.name}" style="border-bottom:0px;border-right:0px;" >
+					<rich:column sortBy="#{item.name}" filterBy="#{item.name}" style="border-bottom:0px;border-right:0px;"  filterEvent="onchange">
 						<f:facet name="header">
 							<h:outputText value="Name" />
 						</f:facet>
@@ -134,17 +148,16 @@
 	     				</a4j:commandLink>
 					</rich:column>
 					
-					<rich:columns value="#{hdfsBean.keyAsListNameValue}" var="column"
+					<rich:columns value="#{hdfsBean.keyAsListNameValue}" var="column" 
 						index="ind" id="hdfscolumn#{ind}"
+						sortBy="#{item.nameValue[column]}" filterBy="#{item.nameValue[column]}"
 						style="border-bottom:0px;border-right:0px;">
 						<f:facet name="header">
 							<h:outputText value="#{column}" />
 						</f:facet>
 						<h:outputText value="#{item.nameValue[column]}" id="hdfsvalue#{ind}" />
 					</rich:columns>
-	
-				</rich:dataTable>>
-				
+				</rich:extendedDataTable>
 			</rich:panel>
 		</h:form>
 	</div>

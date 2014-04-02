@@ -24,24 +24,31 @@
 	<br />
 	
 	<div id="processManager" 
-		style="min-width: 400px; overflow: hidden; min-height: 400px;">
-		<h:form>
+		style="min-width: 400px; overflow: hidden; min-height: 140px;">
+		<a4j:form>
 			<div class="divMenu">
 				<a href="#{processManagerBean.oozieUrl}" target="_blank"><h:graphicImage  value="../image/icons/button-oozie_web_console.gif" title='#{messages.oozie_gotowebconsole}' alt="Oozie" class="fileSystemIcon"/></a>
 				
 				<a4j:commandButton id="RefreshProcessManager" action="#{processManagerBean.updateProcessesGrid}" 
 				reRender="processManagerTable" image="../image/icons/button-refresh.gif" title='#{messages.oozie_refresh}' styleClass="fileSystemIcon" />
 			</div>
-			
+		</a4j:form>
+		<a4j:form>
+				
 			<br />
 			
-			<rich:dataTable id="processManagerTable" value="#{processManagerBean.processesGrid}"
-				var="item" width="100%" style="border-bottom:0px;border-right:0px;"
+			<a4j:support event="onchange" rerender="processManagerTable"></a4j:support>
+			
+			<rich:extendedDataTable id="processManagerTable" value="#{processManagerBean.processesGrid}"
+				var="item" rowKeyVar="indexTable" width="100%" height="500px" style="border:none;" 
 				onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-				enableContextMenu="false" selectionMode="none"
-				onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
+				enableContextMenu="false" 
+				onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+				rowClasses="even-row, odd-row"
+				tableState="#{processManagerBean.tableState}">
 
-				<rich:column style="border-bottom:0px;border-right:0px;"
+				<rich:column style="border-bottom:0px;border-right:0px;" sortBy="#{item[1]}" filterBy="#{item[1]}"  filterEvent="onchange"
+				filterValue="#{processManagerBean.filterValue}"
 					width="80px;">
 					<f:facet name="header">
 						<h:outputText value="#{messages.label_user}" />
@@ -49,15 +56,15 @@
 					<h:outputText value="#{item[1]}" />
 				</rich:column>
 				
-				<rich:column style="border-bottom:0px;border-right:0px;"
-					width="500px;">
+				<rich:column style="border-bottom:0px;border-right:0px;" sortBy="#{item[1]}" filterBy="#{item[2]}"  filterEvent="onchange"
+					width="300px;">
 					<f:facet name="header">
 						<h:outputText value="#{messages.label_process_name}" />
 					</f:facet>
 					<h:outputText value="#{item[2]}" />
 				</rich:column>
 				
-				<rich:column style="border-bottom:0px;border-right:0px;"
+				<rich:column style="border-bottom:0px;border-right:0px;" sortBy="#{item[3]}" filterBy="#{item[3]}"  filterEvent="onchange"
 					width="100px;">
 					<f:facet name="header">
 						<h:outputText value="#{messages.label_status}" />
@@ -65,8 +72,8 @@
 					<h:outputText value="#{item[3]}" />
 				</rich:column>
 				
-				<rich:column style="border-bottom:0px;border-right:0px;"
-					width="400px;">
+				<rich:column style="border-bottom:0px;border-right:0px;" sortBy="#{item[4]}" filterBy="#{item[4]}"  filterEvent="onchange"
+					width="200px;">
 					<f:facet name="header">
 						<h:outputText value="#{messages.label_start_date}" />
 					</f:facet>
@@ -96,8 +103,8 @@
 						<f:param name="id" value="#{item[0]}" />
 					</a4j:commandLink>
 				</rich:column>
-			</rich:dataTable>
-		</h:form>
+			</rich:extendedDataTable>
+		</a4j:form>
 	</div>
 </body>
 </html>

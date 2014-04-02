@@ -8,6 +8,7 @@ import java.util.List;
 import javax.faces.context.FacesContext;
 
 import org.apache.log4j.Logger;
+import org.richfaces.model.Ordering;
 
 public class ProcessManagerBean extends BaseBean implements Serializable{
 	
@@ -16,11 +17,24 @@ public class ProcessManagerBean extends BaseBean implements Serializable{
 	private List<String[]> processesGrid;
 	private String oozieUrl = "";
 	
+	private Ordering[] sortingOrder = new Ordering[5];
+//	private Object[] filterValue;
+	private Object filterValue = "";
+	
+	private String tableState = new String();
+	
 	public List<String[]> getProcessesGrid() throws Exception{
+//		if (filterValue == null){
+//			filterValue = new Object[5];
+//			for (int i = 0; i < 5; ++i){
+//				filterValue[i] = new String();
+//			}
+//		}
+		
 		logger.info("getProcessesGrid");
 		if (processesGrid == null){
 			if (getOozie() != null){
-				processesGrid = getOozie().getJobs();
+				processesGrid = getOozie().getJobs();		
 				logger.info("getProcessesGrid-loading");
 			}
 			else{
@@ -63,5 +77,30 @@ public class ProcessManagerBean extends BaseBean implements Serializable{
 		String id = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("id");
 		getOozie().resume(id);
 	}
+
+	public Ordering[] getSortingOrder() {
+		return sortingOrder;
+	}
+
+	public void setSortingOrder(Ordering[] sortingOrder) {
+		this.sortingOrder = sortingOrder;
+	}
+
+	public Object getFilterValue() {
+		return filterValue;
+	}
+
+	public void setFilterValue(Object filterValue) {
+		this.filterValue = filterValue;
+	}
+
+	public String getTableState() {
+		return tableState;
+	}
+
+	public void setTableState(String tableState) {
+		this.tableState = tableState;
+	}
+	
 	
 }

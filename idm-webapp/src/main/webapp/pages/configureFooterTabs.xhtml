@@ -27,6 +27,10 @@
 
 	<a4j:keepAlive beanName = "configureTabsBean"/>
 	
+	<a4j:status	onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModal') });"
+		onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
+		onstop="jQuery.unblockUI();" />
+	
 	<h:panelGrid columns="2">
 		<rich:panel header="Tabs" style="overflow:auto;width:270px;height:300px;">
 			<h:panelGroup id="tabsMenu">
@@ -45,8 +49,9 @@
 			<a4j:form ajaxRendered="false">
 				<h:outputText value="New tab:" />
 				<h:inputText label="Tab" value="#{configureTabsBean.tabName}"
-					maxlength="255" style="width:100px;" />
-				<a4j:commandButton action="#{configureTabsBean.createTab}" type="reset" value="+" reRender="tabsMenu">
+					maxlength="255" style="width:100px;" 
+					onkeypress="return enableEnterKey(event, 'configureTabsAddBtn');"/>
+				<a4j:commandButton id="configureTabsAddBtn" action="#{configureTabsBean.createTab}" type="reset" value="+" reRender="tabsMenu">
 				</a4j:commandButton>
 			</a4j:form>
 		</rich:panel>
@@ -67,10 +72,11 @@
 	<rich:modalPanel header="Rename tab" id="editPane" domElementAttachment="parent" width="400" height="70">
             <h:panelGrid columns="3">
                 <h:outputText value="NAME" />
-                <h:inputText id="renameTabValue" value="#{configureTabsBean.selected}"/>
+                <h:inputText id="renameTabValue" value="#{configureTabsBean.selected}"
+                	onkeypress="return enableEnterKey(event, 'configureTabsEditBtn');"/>
                 <rich:message id="vinMsg" for="vin" />
             </h:panelGrid>
-            <a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" action="#{configureTabsBean.changeTabName}"
+            <a4j:commandButton id="configureTabsEditBtn" styleClass="greenButton" value="#{messages.button_ok}" action="#{configureTabsBean.changeTabName}"
                 oncomplete="#{rich:component('editPane')}.hide();" reRender="tabsMenu">
                 <a4j:actionparam name="oldName" noEscape="true" value="getOldTabName()"/>
             </a4j:commandButton>

@@ -46,6 +46,22 @@ function resizeCanvasOnPageReady(){
 	
 }
 
+function resizeTables(){
+	
+	jQuery("#processManager .extdt-content").style("height", jQuery("#tabs-2").height()-130+"px", "important");
+	
+	jQuery("#errorTable .extdt-content").style("height", jQuery("#tabs-3").height()-60+"px", "important");
+	
+	jQuery("#hiveFileSystem .extdt-content").style("height", jQuery("#tabs-4").height()-160+"px", "important");
+	
+	jQuery("#hdfsFileSystem .extdt-content").style("height", jQuery("#tabs-7").height()-160+"px", "important");
+	
+	jQuery("#tabRemote .extdt-content").style("height", jQuery("#tabs-8").height()-160+"px", "important");
+	
+	jQuery("#hdfsfsSaveFile .extdt-content").style("height", "20px", "important");
+	
+}
+
 function onPageReady(){
 
 	  jQuery("#body").css('width', jQuery(window).width()-20+'px');
@@ -70,6 +86,7 @@ function onPageReady(){
 	  jQuery("#canvas").css("width", jQuery("#canvas-tabs").width()+'px');
 	  
 	  resizeTabs();
+	  resizeTables();
 	  
 	  jQuery("#buttonsCanvas1").hide();
 	  jQuery("#buttonsTabs1").hide();
@@ -90,7 +107,8 @@ function onPageReady(){
 	  configureFooterCss();
 
 	  validateArrowsAll();
-    
+	  
+	  
 }
 
 function configureFooterCss(){
@@ -130,6 +148,7 @@ function resizing(){
 	  configureLeft();
 	  
 	  validateArrowsAll();
+	  
 
 }
 
@@ -252,6 +271,8 @@ function resizeTabs(){
 		jQuery("#tabs-8").css("height", jQuery(".splitter-pane").height()-25+'px');
 	}
 	
+	resizeTables();
+	
 }
 
 function showImg(url){
@@ -294,3 +315,80 @@ function resizeCanvasChangeTab(){
 		jQuery("#container-"+nameTabs[i]).css("height", jQuery("#canvas-tabs").height()-jQuery("#tabsFooter").height()-30+'px');
 	}
 }
+
+/*function to select all checkbox in a table*/
+function selectAll(checkbox, checkboxId) {
+    var elements = checkbox.form.elements;
+    for (var i = 0; i < elements.length; i++) {
+        var element = elements[i];
+        if (checkboxId.test(element.id)) {
+            element.checked = checkbox.checked;
+        }
+    }
+}
+
+
+
+(function($) {    
+	  if ($.fn.style) {
+	    return;
+	  }
+
+	  // Escape regex chars with \
+	  var escape = function(text) {
+	    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+	  };
+
+	  // For those who need them (< IE 9), add support for CSS functions
+	  var isStyleFuncSupported = !!CSSStyleDeclaration.prototype.getPropertyValue;
+	  if (!isStyleFuncSupported) {
+	    CSSStyleDeclaration.prototype.getPropertyValue = function(a) {
+	      return this.getAttribute(a);
+	    };
+	    CSSStyleDeclaration.prototype.setProperty = function(styleName, value, priority) {
+	      this.setAttribute(styleName, value);
+	      var priority = typeof priority != 'undefined' ? priority : '';
+	      if (priority != '') {
+	        // Add priority manually
+	        var rule = new RegExp(escape(styleName) + '\\s*:\\s*' + escape(value) +
+	            '(\\s*;)?', 'gmi');
+	        this.cssText =
+	            this.cssText.replace(rule, styleName + ': ' + value + ' !' + priority + ';');
+	      }
+	    };
+	    CSSStyleDeclaration.prototype.removeProperty = function(a) {
+	      return this.removeAttribute(a);
+	    };
+	    CSSStyleDeclaration.prototype.getPropertyPriority = function(styleName) {
+	      var rule = new RegExp(escape(styleName) + '\\s*:\\s*[^\\s]*\\s*!important(\\s*;)?',
+	          'gmi');
+	      return rule.test(this.cssText) ? 'important' : '';
+	    }
+	  }
+
+	  // The style function
+	  $.fn.style = function(styleName, value, priority) {
+	    // DOM node
+	    var node = this.get(0);
+	    // Ensure we have a DOM node
+	    if (typeof node == 'undefined') {
+	      return;
+	    }
+	    // CSSStyleDeclaration
+	    var style = this.get(0).style;
+	    // Getter/Setter
+	    if (typeof styleName != 'undefined') {
+	      if (typeof value != 'undefined') {
+	        // Set style property
+	        priority = typeof priority != 'undefined' ? priority : '';
+	        style.setProperty(styleName, value, priority);
+	      } else {
+	        // Get style property
+	        return style.getPropertyValue(styleName);
+	      }
+	    } else {
+	      // Get CSSStyleDeclaration
+	      return style;
+	    }
+	  };
+	})(jQuery);

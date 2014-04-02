@@ -39,7 +39,7 @@
 
 	<a4j:keepAlive beanName = "hiveBean"/>
 	<div id="hiveFileSystem"
-		style="min-width: 400px; overflow: hidden; min-height: 400px;">
+		style="min-width: 400px; overflow: hidden; min-height: 200px;">
 		<h:form>
 		
 			<a4j:jsFunction name="openFileHive" action="#{hiveBean.openFile}" oncomplete="#{rich:component('hiveOpenFileModalPanel')}.show();" >
@@ -63,9 +63,10 @@
 			<br />
 
 			<h:outputText value="#{messages.label_path}" />
-			<h:inputText id="hivepath" label="Path" styleClass="mainPageTextField" value="#{hiveBean.path}" maxlength="255" style="width:395px; margin-left:5px;" />
+			<h:inputText id="hivepath" label="Path" styleClass="mainPageTextField" value="#{hiveBean.path}" maxlength="255" style="width:395px; margin-left:5px;" 
+				onkeypress="return enableEnterKey(event, 'hivefsPathBtn');"/>
 			
-			<a4j:commandLink action="#{hiveBean.changePath}" reRender="hivefs" style="color:#FFFFFF" >
+			<a4j:commandLink id="hivefsPathBtn" action="#{hiveBean.changePath}" reRender="hivefs" style="color:#FFFFFF" >
 				<h:graphicImage value="../image/icons/button-search.gif" title="#{messages.filesystem_change_path}" styleClass="refreshButton"/>
 			</a4j:commandLink>
 
@@ -101,21 +102,23 @@
 
 			<br />
 
-			<rich:dataTable id="hivefs" value="#{hiveBean.listGrid}"
+			<rich:extendedDataTable id="hivefs" value="#{hiveBean.listGrid}"
 				var="item" width="100%" style="border:none;"
 				onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 				enableContextMenu="false"
-				onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
+				onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+				rowClasses="even-row, odd-row"
+				tableState="#{hiveBean.tableState}">
 
 				<rich:column style="border-bottom:0px;border-right:0px;"
-					width="30px;">
+					width="50px;">
 					<f:facet name="header">
-						<h:outputText value="" />
+						<h:selectBooleanCheckbox onclick="selectAll(this, /hiveselect$/);"/>
 					</f:facet>
 					<h:selectBooleanCheckbox id="hiveselect" value="#{item.selected}" />
 				</rich:column>
 				<rich:column style="border-bottom:0px;border-right:0px;"
-					width="30px;">
+					width="50px;">
 					<f:facet name="header">
 						<h:outputText value="" />
 					</f:facet>
@@ -126,7 +129,7 @@
 					</a4j:commandLink>
 				</rich:column>
 				
-				<rich:column sortBy="#{item.name}"
+				<rich:column sortBy="#{item.name}" filterBy="#{item.name}" 
 					style="border-bottom:0px;border-right:0px;">
 					<f:facet name="header">
 						<h:outputText value="Name" />
@@ -153,7 +156,7 @@
 					<h:outputText value="#{item.nameValue[column]}" id="hivevalue#{ind}" />
 				</rich:columns>
 
-			</rich:dataTable>
+			</rich:extendedDataTable>
 		</h:form>
 	</div>
 	

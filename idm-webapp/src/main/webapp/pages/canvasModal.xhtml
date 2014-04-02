@@ -101,7 +101,8 @@
 				<!-- input -->
 				
 				<a4j:region>
-					<h:inputText  value="#{item.inputValue}" maxlength="255" style="width:395px;" styleClass="interModal" rendered="#{item.displayType == 'input'}" />
+					<h:inputText  value="#{item.inputValue}" maxlength="255" style="width:395px;" styleClass="interModal" rendered="#{item.displayType == 'input'}" 
+						onkeypress="return disableEnterKey(event);"/>
 				</a4j:region>
 				
 				<!-- list -->
@@ -149,9 +150,11 @@
 						
 						<div id="DivBrowserTable1" style="width:100%; height:70px;  border:1px solid black; overflow-x: hidden;">
 						
-							<rich:dataTable id="browserTable1" value="#{canvasModalBean.listGrid}"
+							<rich:extendedDataTable id="browserTable1" value="#{canvasModalBean.listGrid}"
 								var="item2" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-								enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
+								enableContextMenu="false" selectionMode="none"
+								onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+								rowClasses="even-row, odd-row" >
 								
 								<rich:column id="browserTable1Col1" rendered="#{canvasModalBean.listGrid != null and not empty canvasModalBean.listGrid}" >
 									<f:facet name="header">
@@ -166,7 +169,7 @@
 									<h:inputText styleClass="interModal" value="#{item2.value}" style="border:none !important;width:95%;" />
 								</rich:column>
 				
-							</rich:dataTable>
+							</rich:extendedDataTable>
 						
 						</div>
 						
@@ -243,17 +246,19 @@
 						<div id="DivTableInteraction"
 							style="width: 580px; height: 220px; border: 1px solid black; overflow-x: hidden;">
 		
-							<rich:dataTable id="tableInteraction"
+							<rich:extendedDataTable id="tableInteraction"
 								value="#{canvasModalBean.listGrid}" var="item" width="100%"
 								style="border:none;"
 								rowKeyVar="row"
 								onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-								enableContextMenu="false"
-								onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
+								enableContextMenu="false" selectionMode="none"
+								onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+								rowClasses="even-row, odd-row">
 		
 								<rich:column style="border-bottom:0px;border-right:0px;"
-									width="10px;">
+									width="40px;">
 									<f:facet name="header">
+										<h:panelGrid columns="1" styleClass="">
 										<a4j:commandLink
 											action="#{canvasModalBean.tableInteractionDeleteLine}"
 											reRender="tableInteraction"
@@ -261,9 +266,11 @@
 											<img id="tableInteractionBtDelete"
 												src="../image/icons/button-delete2.gif" />
 										</a4j:commandLink>
+										<h:selectBooleanCheckbox onclick="selectAll(this, /tableInteractionSelect$/);"/>
+										</h:panelGrid>
 									</f:facet>
 		
-									<h:selectBooleanCheckbox value="#{item.selected}">
+									<h:selectBooleanCheckbox id="tableInteractionSelect" value="#{item.selected}">
 										<f:selectItem itemValue="true" />
 									</h:selectBooleanCheckbox>
 		
@@ -276,21 +283,23 @@
 										<h:outputText value="#{column}" />
 									</f:facet>
 		
-									<h:inputText  styleClass="interModal" value="#{item.nameValue[column]}"
+									<h:inputText value="#{item.nameValue[column]}"
 										rendered="#{canvasModalBean.columnsMap[column] == 'textField' }"
-										style="width:125px;" />
+										styleClass="tableInteractionInput"
+										onkeypress="return disableEnterKey(event);"/>
 		
 									<rich:comboBox value="#{item.nameValue[column]}"
 										selectFirstOnUpdate="false" defaultLabel="Enter some value"
 										width="125" enableManualInput="false" listWidth="150"
 										listHeight="150"
-										rendered="#{canvasModalBean.columnsMap[column] == 'comboBox' }">
+										rendered="#{canvasModalBean.columnsMap[column] == 'comboBox' }"
+										styleClass="tableInteractionInput">
 										<f:selectItems value="#{canvasModalBean.listConstraint[column]}" />
 									</rich:comboBox>
 		
-									<h:inputText  styleClass="interModal" value="#{item.nameValue[column]}"
+									<h:inputText value="#{item.nameValue[column]}"
 										rendered="#{canvasModalBean.columnsMap[column] == 'editor' }"
-										style="width:125px;" >
+										styleClass="tableInteractionInput">
 										<a4j:support event="onclick" action="#{canvasModalBean.openHelpTextEditorModal}" 
 											oncomplete="#{rich:component('textEditorPanel')}.show()" 
 											reRender="commandText,listFields,listFunctions,listCategories,listOperation,listCategoriesOperation,command,tableInteraction">
@@ -302,7 +311,7 @@
 		
 								</rich:columns>
 		
-							</rich:dataTable>
+							</rich:extendedDataTable>
 		
 						</div>
 						
@@ -502,7 +511,7 @@
 		
 			</rich:modalPanel>
 
-			<rich:modalPanel id="textEditorPanel" width="600" height="400" style="overflow:hidden;" resizeable="true">
+			<rich:modalPanel id="textEditorPanel" width="600" height="420" style="overflow:hidden;" >
 					
 					<f:facet name="header">Editor</f:facet>
 					<f:facet name="controls">
@@ -510,9 +519,11 @@
 							style="cursor:pointer;width:22px;"
 							onclick="#{rich:component('textEditorPanel')}.hide()" />
 					</f:facet>
-					<div style="padding-bottom:20px;padding-top:5px;overflow:auto;">
-					   <ui:include src="/pages/canvasModal2.xhtml" />
-					</div>
+					
+					<h:panelGroup>
+						<ui:include src="/pages/canvasModal2.xhtml" />
+					</h:panelGroup>
+					
 			</rich:modalPanel>
 	
 </ui:composition>

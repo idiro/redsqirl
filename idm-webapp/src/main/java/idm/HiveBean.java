@@ -16,6 +16,8 @@ import org.apache.log4j.Logger;
 public class HiveBean extends FileSystemBean {
 
 	private static Logger logger = Logger.getLogger(HiveBean.class);
+	
+	private String tableState = new String();
 
 	/** openCanvasScreen
 	 * 
@@ -68,4 +70,11 @@ public class HiveBean extends FileSystemBean {
 		return value;
 	}
 	
+	public String getTableState() {
+		return tableState;
+	}
+
+	public void setTableState(String tableState) {
+		this.tableState = tableState;
+	}
 }

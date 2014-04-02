@@ -46,6 +46,8 @@ public class SshBean extends FileSystemBean implements Serializable{
 	private String port;
 	
 	private String selectedTab;
+	
+	private String tableState = new String();
 
 	/** openCanvasScreen
 	 * 
@@ -287,5 +289,13 @@ public class SshBean extends FileSystemBean implements Serializable{
 
 	public void setSelectedTab(String selectedTab) {
 		this.selectedTab = selectedTab;
+	}
+	
+	public String getTableState() {
+		return tableState;
+	}
+
+	public void setTableState(String tableState) {
+		this.tableState = tableState;
 	}
 }

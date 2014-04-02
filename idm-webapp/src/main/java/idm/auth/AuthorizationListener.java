@@ -1,6 +1,7 @@
 package idm.auth;
 
 import idm.CanvasBean;
+import idm.ConfigureTabsBean;
 
 import javax.faces.application.NavigationHandler;
 import javax.faces.context.FacesContext;
@@ -47,13 +48,18 @@ public class AuthorizationListener implements PhaseListener {
 		// the canvas has loaded otherwise Dataflowinterface is wrong. This is the event that tomcat has crashed and the interface is still running the next time.
 		if(iscanvasPage && session != null){
 			if(session.getAttribute("startInit") != null && session.getAttribute("startInit").equals("s")){
+				
 				FacesContext context = FacesContext.getCurrentInstance();
+				
 				String url = context.getCurrentInstance().getViewRoot().getViewId();
 				logger.info("url : " + url);
-				CanvasBean cb = (CanvasBean) context.getApplication()
-						.evaluateExpressionGet(context, "#{canvasBean}",
-								CanvasBean.class);
+				
+				CanvasBean cb = (CanvasBean) context.getApplication().evaluateExpressionGet(context, "#{canvasBean}", CanvasBean.class);
 				cb.init();
+				
+				ConfigureTabsBean configureTabsBean = (ConfigureTabsBean) context.getApplication().evaluateExpressionGet(context, "#{configureTabsBean}", ConfigureTabsBean.class);
+				configureTabsBean.openCanvasScreen();
+				
 				session.setAttribute("startInit","n");
 			}
 		}

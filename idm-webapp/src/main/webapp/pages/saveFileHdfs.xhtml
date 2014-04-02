@@ -7,8 +7,9 @@
 
 <a4j:loadBundle basename="MessagesResources" var="messages" />
 
-	<script>
+<script>
 //<![CDATA[
+           
 	var file;
 	
 	function getPath(p){
@@ -25,11 +26,15 @@
 //]]>
 </script>
 
+	<a4j:status	onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModal') });"
+		onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
+		onstop="jQuery.unblockUI();" />
+
 	<h:outputText value="#{messages.label_path}" />
 	<h:inputText id="pathSaveFile" label="Path" value="#{browserHdfsBean.path}"
-		maxlength="255" style="width:395px;" />
+		maxlength="255" style="width:395px;" onkeypress="return enableEnterKey(event, 'changePathSaveHdfsBtn');"/>
 	
-	<a4j:commandLink action="#{browserHdfsBean.changePath}" reRender="hdfsfsSaveFile,hdfsSaveFileBtn">
+	<a4j:commandLink id="changePathSaveHdfsBtn" action="#{browserHdfsBean.changePath}" reRender="hdfsfsSaveFile,hdfsSaveFileBtn">
 		<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' />
 	</a4j:commandLink>
 	
@@ -46,22 +51,20 @@
 
 	<h:outputText value="#{messages.label_file_name}" />
 	<h:inputText id="nameSaveFile" label="Name" onchange="changeFile(this.value)"
-		maxlength="255" style="width:395px;" />
+		maxlength="255" style="width:395px;" onkeypress="return enableEnterKey(event, 'hdfsSaveFileBtn');"/>
 
 	<br/><br/>
 
-	<div style="width:590px;height:265px;overflow:auto;" >
+	<div style="width:590px;height:265px;overflow: hidden;" >
 
-		<rich:dataTable id="hdfsfsSaveFile" value="#{browserHdfsBean.listGrid}" var="item"
-			width="100%" style="border:none;"
+		<rich:extendedDataTable id="hdfsfsSaveFile" value="#{browserHdfsBean.listGrid}" var="item"
+			width="50px" height="10px"
 			onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-			onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
+			enableContextMenu="false" selectionMode="none"
+			onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+			rowClasses="even-row, odd-row">
 	
-			<f:facet name="header">
-				<h:outputText value="File System" />
-			</f:facet>
-	
-			<rich:column sortBy="#{item.name}"
+			<rich:column sortBy="#{item.name}" filterBy="#{item.name}"
 				style="border-bottom:0px;border-right:0px;">
 				<f:facet name="header">
 					<h:outputText value="Name" />
@@ -81,7 +84,7 @@
 				<h:outputText value="#{item.nameValue[column]}" id="value#{ind}" />
 			</rich:columns>
 	
-		</rich:dataTable>
+		</rich:extendedDataTable>
 	
 	</div>
 	
