@@ -256,6 +256,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		beans.add("oozie");
 		beans.add("hdfs");
 		beans.add("pckmng");
+		beans.add("hdfsbrowser");
 
 		FacesContext fCtx = FacesContext.getCurrentInstance();
 		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();

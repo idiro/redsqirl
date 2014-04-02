@@ -96,6 +96,10 @@
 				<a4j:commandLink action="#{hdfsBean.goNext}" reRender="hdfspath,hdfsfs">
 					<h:graphicImage id="hdfsbtRedo" value="../image/icons/button-next.gif" title='#{messages.HdfsInterface_next_help}' styleClass="fileSystemIcon" />
 				</a4j:commandLink>
+				
+				<a4j:commandLink action="#{hdfsBean.goUp}" reRender="hdfspath,hdfsfs">
+					<h:graphicImage id="hdfgoup" value="../image/icons/button_up.jpg" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
+				</a4j:commandLink>
 			</div>
 
 			<br />
