@@ -55,8 +55,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private String path;
 
 	private Map<String, DataFlow> workflowMap;
-	
-	private String errorTableState = new String();
 
 	public void doNew() {
 
@@ -84,6 +82,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	//@PostConstruct
 	public void init(){
+
 
 		logger.info("openCanvas");
 
@@ -409,11 +408,13 @@ public class CanvasBean extends BaseBean implements Serializable {
 				for (Map.Entry<String, DFEOutput> entryOutput : dfeObjA.getDFEOutput().entrySet()){
 
 
+
 					logger.info("entryInput " + entryInput);
 					logger.info("entryOutput " + entryOutput);
 
 					if (df.check(entryOutput.getKey(), dfeObjA.getComponentId(), entryInput.getKey(), dfeObjB.getComponentId())){
 						linkPossibilities.add(new SelectItem(entryOutput.getKey()+" -> "+entryInput.getKey()));
+
 
 					}
 				}
@@ -514,6 +515,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 				for (DataFlowElement e : df.getElement()){
 					getIdMap().get(getNameWorkflow()).put(e.getComponentId(), e.getComponentId());
+
 
 				}
 			}
@@ -625,6 +627,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				getRequestParameterMap().get("pathFile");
 
 		if(!path.contains(".")){
+
 
 			path += ".rs";
 		}
@@ -875,7 +878,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		regeneratePathsProject(false);
 	}
 
-	/** 
+	/**
 	 * 
 	 * Methods to regenerate paths of the current workflow
 	 * 
@@ -1193,6 +1196,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
 
+
 		}
 
 		logger.info("getAllArrowType " + groupOutId + " " + groupInId + " "
@@ -1223,6 +1227,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 		/*
 <<<<<<< HEAD
+<<<<<<< HEAD
 		logger.info("set Name workflow");
 		logger.info("old name: "+this.nameWorkflow);
 		logger.info("new name: "+nameWorkflow);
@@ -1231,6 +1236,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 		 * logger.info("old name: "+this.nameWorkflow);
 		 * logger.info("new name: "+nameWorkflow);
 >>>>>>> keith
+=======
+		 * logger.info("set Name workflow");
+		 * logger.info("old name: "+this.nameWorkflow);
+		 * logger.info("new name: "+nameWorkflow);
+>>>>>>> 033d2126343d4b02eddd82e575525ccb2c7e80c2
 		 */
 		this.nameWorkflow = nameWorkflow;
 	}
@@ -1404,11 +1414,4 @@ public class CanvasBean extends BaseBean implements Serializable {
 		this.linkLabel = nameLink;
 	}
 
-	public String getErrorTableState() {
-		return errorTableState;
-	}
-
-	public void setErrorTableState(String errorTableState) {
-		this.errorTableState = errorTableState;
-	}
 }

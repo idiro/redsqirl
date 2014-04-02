@@ -41,6 +41,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 			}
 		} catch (RemoteException e1) {
 			e1.printStackTrace();
+
 		}
 		// TODO
 
