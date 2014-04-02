@@ -1013,33 +1013,11 @@ function addElements(canvasName, positions) {
 		
 		//alert(positionsArrays[i][2]);
 		
-		if(checkImg(positionsArrays[i][2])){
 			var group = addElement(canvasName, positionsArrays[i][1],
 					positionsArrays[i][2], positionsArrays[i][3],
 					positionsArrays[i][4],
 					numSides,
 					positionsArrays[i][0]);
-		}else if(checkImg("./"+positionsArrays[i][2])){
-			
-			var group = addElement(canvasName, positionsArrays[i][1],
-					"./"+positionsArrays[i][2], positionsArrays[i][3],
-					positionsArrays[i][4],
-					numSides,
-					positionsArrays[i][0]);
-			
-		}else if (positionsArrays[i][2].substring(0, 3) === '../'){
-			var group = addElement(canvasName, positionsArrays[i][1],
-					"./"+positionsArrays[i][2], positionsArrays[i][3],
-					positionsArrays[i][4],
-					numSides,
-					positionsArrays[i][0]);
-		}else{
-			var group = addElement(canvasName, positionsArrays[i][1],
-					location.protocol + '//' + location.host+positionsArrays[i][2], positionsArrays[i][3],
-					positionsArrays[i][4],
-					numSides,
-					positionsArrays[i][0]);
-		}
 		
 		updateIdObj(positionsArrays[i][0], positionsArrays[i][0]);
 		updateTypeObj(canvasName, positionsArrays[i][0], positionsArrays[i][0]);

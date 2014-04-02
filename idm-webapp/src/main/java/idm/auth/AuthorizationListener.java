@@ -40,6 +40,7 @@ public class AuthorizationListener implements PhaseListener {
 		boolean isLoginPage = (currentPage.lastIndexOf("initial.xhtml") > -1) || (currentPage.lastIndexOf("restart.xhtml") > -1) || (currentPage.lastIndexOf("restart2.xhtml") > -1);
 		boolean iscanvasPage = (currentPage.lastIndexOf("canvas.xhtml") > -1);
 		
+		
 		//logger.info("currentPage " + currentPage);
 		
 		

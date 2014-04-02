@@ -41,8 +41,8 @@ import org.junit.runners.Suite.SuiteClasses;
 
 
 @RunWith(Suite.class)
-@SuiteClasses({ActionTests.class,
-	WorkflowTests.class,
+@SuiteClasses({//ActionTests.class,
+//	WorkflowTests.class,
 	//CreateWorkflowTests.class,
 	//	HDFSInterfaceTests.class,
 	//	HiveInterfaceTests.class,
@@ -50,7 +50,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	//	SSHInterfaceArrayTests.class,
 	//	HiveTypeTests.class, 
 	//	HiveTypePartitionTests.class, 
-	//	SourceTests.class,
+		SourceTests.class,
 	//	WorkflowProcessesManagerTests.class,
 	//	OozieManagerTests.class,
 	//PackageManagerTests.class,

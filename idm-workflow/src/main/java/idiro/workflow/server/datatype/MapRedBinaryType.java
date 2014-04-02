@@ -110,9 +110,14 @@ public class MapRedBinaryType extends MapRedTextType {
 								.toString(), delim, maxToRead, getFeatures()));
 					}
 				} catch (IOException e) {
-					String error = "Unexpected error: " + e.getMessage();
+					String error = "Unexpected IOException error: " + e.getMessage();
 					logger.error(error);
 					ans = null;
+				}catch (Exception e1){
+					String error = "Unexpected Exception error: " + e1.getMessage();
+					logger.error(error);
+					ans = null;
+					
 				}
 			}
 		}
