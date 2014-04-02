@@ -10,38 +10,42 @@
 
 <a4j:loadBundle basename="MessagesResources" var="messages" />
 
-<head>
-<script>
 
-	jQuery(document).on("click" , "#stopLink" ,function(e) {
-	    jQuery("#helpIndex").hide();
-        jQuery("#helpPanel").empty();
-	    jQuery("#helpPanel").load(jQuery(this).attr("href")+ " #body");
-	    jQuery("#btIndex").show();
+<head>
+<script
+	src='#{facesContext.externalContext.requestContextPath}/js/canvas.js'
+	type="text/javascript"></script>
+
+<script>
+	jQuery(document).on("click", "#stopLink", function(e) {
+		jQuery("#helpIndex").hide();
+		jQuery("#helpPanel").empty();
+		jQuery("#helpPanel").load(jQuery(this).attr("href") + " #body");
+		jQuery("#btIndex").show();
 	});
 
 	jQuery(document).on("click", "#btIndex", function(e) {
-	    jQuery("#helpIndex").show();
-	    jQuery("#helpPanel").empty();
-	    jQuery("#btIndex").hide();
+		jQuery("#helpIndex").show();
+		jQuery("#helpPanel").empty();
+		jQuery("#btIndex").hide();
 	});
-	
 </script>
 </head>
 
 
 <body>
-	<button id="btIndex" style="display:none;" onclick="hideHelp()">#{messages.label_index}</button>
+	<button id="btIndex" style="display: none;" onclick="hideHelp()">#{messages.label_index}</button>
 	<div id="helpIndex">
-	<h1>IDM Help</h1>
-	<p>
-		IDM is a platform that builds data related workflows that runs on
-		hadoop. For more help on IDM click 
-		<a id="stopLink" onclick="return false;" href="../help/main.html">here</a>
-	</p>
-	<h2>Available Actions</h2>
+		<h1>IDM Help</h1>
+		<p>
+			IDM is a platform that builds data related workflows that runs on
+			hadoop. For more help on IDM click <a id="stopLink"
+				onclick="return false;" href="../help/main.html">here</a>
+		</p>
+		<h2>Available Actions</h2>
 		<ol>
-			<ui:repeat value="#{canvasBean.helpItens}" var="item">
+			<ui:repeat value="#{canvasBean.helpItens}"
+				var="item">
 				<li><a id="stopLink" href="#{item[1]}" onclick="return false;">#{item[0]}</a></li>
 			</ui:repeat>
 		</ol>

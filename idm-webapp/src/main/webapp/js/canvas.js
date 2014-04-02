@@ -1034,6 +1034,7 @@ function addElements(canvasName, positions) {
 	for ( var i = 0; i < positionsArrays.length; i++) {
 
 		// if(checkImg(positionsArrays[i][2])){
+		console.log("test3 : " + positionsArrays[i][2]);
 		var group = addElement(canvasName, positionsArrays[i][1],
 				positionsArrays[i][2], positionsArrays[i][3],
 				positionsArrays[i][4], numSides, positionsArrays[i][0]);
@@ -1646,6 +1647,22 @@ function getAllIconPositions() {
 		canvasPos[index] = positions;
 	});
 	return JSON.stringify(canvasPos);
+}
+
+function getCurrentRelativePath() {
+	var cur = window.location.origin;
+	var rel = window.location.href;
+
+	console.log(cur);
+	console.log(rel);
+	console.log(rel.length);
+	console.log(rel.lastIndexOf("/"));
+	rel = rel.substr(cur.length)
+	console.log(rel.substr(cur.length));
+	rel = rel.substr(0,rel.lastIndexOf("/")+1)
+	console.log(rel);
+	
+	return rel;
 }
 
 function save(path) {

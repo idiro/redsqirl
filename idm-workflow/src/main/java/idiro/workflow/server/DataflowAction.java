@@ -15,6 +15,7 @@ import java.awt.Point;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -93,10 +94,13 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		position = new Point(0, 0);
 		this.oozieAction = oozieAction;
 	}
+
 	/**
 	 * Write into local files what needs to be parse within the oozie action
+	 * 
 	 * @param files
-	 * @return <code>true</code> if the actions where written else <code>false</code>
+	 * @return <code>true</code> if the actions where written else
+	 *         <code>false</code>
 	 * @throws RemoteException
 	 */
 
@@ -113,11 +117,10 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		String fname = getName().toLowerCase() + ".html";
 		String relativePath = WorkflowPrefManager.pathUserHelpPref.get() + "/"
 				+ fname;
-		File f = new File(
-				WorkflowPrefManager
-						.getSysProperty(WorkflowPrefManager.sys_install_package,WorkflowPrefManager
-								.getSysProperty(WorkflowPrefManager.sys_tomcat_path))
-						+ relativePath);
+		File f = new File(WorkflowPrefManager.getSysProperty(
+				WorkflowPrefManager.sys_install_package, WorkflowPrefManager
+						.getSysProperty(WorkflowPrefManager.sys_tomcat_path))
+				+ relativePath);
 		if (!f.exists() || !isUserAllowInstall()) {
 			relativePath = WorkflowPrefManager.pathSysHelpPref.get() + "/"
 					+ fname;
@@ -126,7 +129,14 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 							.getSysProperty(WorkflowPrefManager.sys_install_package)
 							+ relativePath);
 		}
-		return f.getAbsolutePath();
+		String absolutePath = f.getAbsoluteFile().getAbsolutePath();
+		String ans = "";
+		logger.info("help absolutePath : "+absolutePath);
+		logger.info("help relPath : "+relativePath);
+		if(absolutePath.contains(relativePath)){
+			ans = absolutePath.substring(relativePath.length());
+		}
+		return absolutePath;
 	}
 
 	/**
@@ -139,11 +149,10 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		String fname = getName().toLowerCase() + ".gif";
 		String relativePath = WorkflowPrefManager.pathUserImagePref.get() + "/"
 				+ fname;
-		File f = new File(
-				WorkflowPrefManager
-						.getSysProperty(WorkflowPrefManager.sys_install_package,WorkflowPrefManager
-								.getSysProperty(WorkflowPrefManager.sys_tomcat_path))
-						+ relativePath);
+		File f = new File(WorkflowPrefManager.getSysProperty(
+				WorkflowPrefManager.sys_install_package, WorkflowPrefManager
+						.getSysProperty(WorkflowPrefManager.sys_tomcat_path))
+				+ relativePath);
 		if (!f.exists() || !isUserAllowInstall()) {
 			relativePath = WorkflowPrefManager.pathSysHelpPref.get() + "/"
 					+ fname;
@@ -152,11 +161,19 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 							.getSysProperty(WorkflowPrefManager.sys_install_package)
 							+ relativePath);
 		}
-		return f.getAbsolutePath();
+		String absolutePath = f.getAbsoluteFile().getAbsolutePath();
+		String ans = "";
+		logger.info("image absolutePath : "+absolutePath);
+		logger.info("image relPath : "+relativePath);
+		if(absolutePath.contains(relativePath)){
+			ans = absolutePath.substring(relativePath.length());
+		}
+		return absolutePath;
 	}
-	
+
 	/**
 	 * Check the inputs for errors
+	 * 
 	 * @return Error Message
 	 * @throws RemoteException
 	 */
@@ -326,9 +343,12 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 
 		return error;
 	}
+
 	/**
-	 * Read the values for a Node stored in the XML 
-	 * @param n Node to read XML for
+	 * Read the values for a Node stored in the XML
+	 * 
+	 * @param n
+	 *            Node to read XML for
 	 * @return Error Message
 	 */
 	public String readValuesXml(Node n) {
@@ -398,7 +418,9 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 
 	/**
 	 * Update a page that the action contains
-	 * @param pageNb page number to update
+	 * 
+	 * @param pageNb
+	 *            page number to update
 	 * @throws RemoteException
 	 */
 	public void update(int pageNb) throws RemoteException {
@@ -429,7 +451,9 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	/**
 	 * Update the UserInteraction values @see
 	 * {@link UserInteraction#inputFromAction}
-	 * @param interaction to update
+	 * 
+	 * @param interaction
+	 *            to update
 	 * @throws RemoteException
 	 */
 	public abstract void update(DFEInteraction interaction)
@@ -469,9 +493,11 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 
 		return ans;
 	}
+
 	/**
 	 * Get all Aliases
-	 * @return Get aliases from the 
+	 * 
+	 * @return Get aliases from the
 	 * @throws RemoteException
 	 */
 	public Map<String, DFEOutput> getAliases() throws RemoteException {
@@ -494,8 +520,10 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		}
 		return ans;
 	}
+
 	/**
-	 * Get Map of Aliases per input of 
+	 * Get Map of Aliases per input of
+	 * 
 	 * @return Map of Aliases and input components
 	 * @throws RemoteException
 	 */
@@ -998,6 +1026,28 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		return WorkflowPrefManager.getSysProperty(
 				WorkflowPrefManager.sys_allow_user_install, "FALSE")
 				.equalsIgnoreCase("true");
+	}
+
+	public List<String> listFilesRecursively(String path) {
+		List<String> files = new ArrayList();
+//		logger.info(path);
+		if (path != null || !path.isEmpty()) {
+			File root = new File(path);
+			File[] list = root.listFiles();
+
+			if (list == null)
+				return files;
+
+			for (File f : list) {
+				if (f.isDirectory()) {
+					files.addAll(listFilesRecursively(f.getAbsolutePath()));
+				} else {
+					files.add(f.getAbsolutePath().toString());
+				}
+			}
+		}
+		return files;
+
 	}
 
 }

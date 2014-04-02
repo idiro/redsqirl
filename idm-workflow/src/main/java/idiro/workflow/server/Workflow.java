@@ -15,6 +15,7 @@ import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Paths;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.text.DateFormat;
@@ -116,6 +117,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		super();
 		this.name = name;
 	}
+	
 
 	/**
 	 * Load the icon menu.
@@ -128,6 +130,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 * 
 	 */
 	public String loadMenu() {
+
 		String error = "";
 		File menuDir = new File(WorkflowPrefManager.pathIconMenu.get());
 		File[] children = menuDir.listFiles(new FileFilter() {
@@ -190,6 +193,34 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 
 		return error;
+	}
+	
+	public Map<String,List<String[]>> loadMenu(File curPath) {
+		if(menuWA == null || menuWA.isEmpty()){
+			loadMenu();
+		}
+		logger.info("Load menu "+curPath.getPath());
+		Map<String,List<String[]>> ans = new LinkedHashMap<String,List<String[]>>();
+		Iterator<String> menuWAit = menuWA.keySet().iterator();
+		while(menuWAit.hasNext()){
+			String key = menuWAit.next();
+			Iterator<String[]> actionListit = menuWA.get(key).iterator();
+			List<String[]> newActionList = new ArrayList<String[]>();
+			while(actionListit.hasNext()){
+				String[] parameters = actionListit.next();
+				try{
+					parameters[1] = curPath.toPath().relativize(Paths.get(parameters[1])).toString();
+					parameters[2] = curPath.toPath().relativize(Paths.get(parameters[2])).toString();
+					newActionList.add(parameters);
+				}catch (Exception e){
+					logger.error("Error Getting relative paths for Help and Image");
+				}
+				
+			}
+			ans.put(key, newActionList);
+		}
+		
+		return ans;
 	}
 
 	/**

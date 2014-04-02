@@ -165,17 +165,16 @@ public class SourceTests {
 		}
 	}
 
-	 @Test
+	// @Test
 	public void basicHDFS() {
 		TestUtils.logTestTitle("SourceTests#basicHDFS");
 		try {
 			HDFSInterface hInt = new HDFSInterface();
-			 String new_path1 = TestUtils.getPath(12);
-//			String new_path1 = "/user/keith/tutorial";
-			 hInt.delete(new_path1);
-			 assertTrue("create "+new_path1,
-			 hInt.create(new_path1, getColumns()) == null
-			 );
+			String new_path1 = TestUtils.getPath(12);
+			// String new_path1 = "/user/keith/tutorial";
+			hInt.delete(new_path1);
+			assertTrue("create " + new_path1,
+					hInt.create(new_path1, getColumns()) == null);
 
 			Source src = new Source();
 			String error = "";
@@ -213,7 +212,7 @@ public class SourceTests {
 		}
 	}
 
-//	@Test
+	// @Test
 	public void basicHDFSBinStore() {
 		TestUtils.logTestTitle("SourceTests#basicHDFSBinStore");
 		try {
@@ -245,37 +244,36 @@ public class SourceTests {
 			dataSetTree.getFirstChild("browse").getFirstChild("output")
 					.add("path").add(new_path1);
 			dataSetTree.getFirstChild("browse").getFirstChild("output")
-			.add("property").add(MapRedTextType.key_header)
-			.add("A INT , B INT , C INT");
-			
+					.add("property").add(MapRedTextType.key_header)
+					.add("A INT , B INT , C INT");
+
 			error = null;
 			error = src.updateOut();
 			assertTrue("error update out : " + error, error == null);
-			
-			
+
 			MapRedBinaryType out = (MapRedBinaryType) src.getDFEOutput().get(
 					src.out_name);
 			List<String> result = out.select(1);
-			logger.info("select result : "+result.get(0));
+			logger.info("select result : " + result.get(0));
 			String[] split = result.get(0).split("\001");
 			result = new ArrayList<String>();
-			logger.info("split size "+split.length);
-			for(String el : split){
+			logger.info("split size " + split.length);
+			for (String el : split) {
 				result.add(el);
 			}
 			assertTrue("Not equal " + result.size() + " , "
 					+ out.getFeatures().getSize(),
 					out.getFeatures().getSize() == result.size());
-			
+
 			result = out.select(50);
-			
-			logger.info("select result : "+result);
-//			split = result.get(0).split("\001");
-//			result = new ArrayList<String>();
-//			logger.info("split size "+split.length);
-//			for(String el : split){
-//				result.add(el);
-//			}
+
+			logger.info("select result : " + result);
+			// split = result.get(0).split("\001");
+			// result = new ArrayList<String>();
+			// logger.info("split size "+split.length);
+			// for(String el : split){
+			// result.add(el);
+			// }
 			assertTrue("Not equal " + result.size() + " , "
 					+ out.getFeatures().getSize(),
 					(out.getFeatures().getSize()) != result.size());
@@ -285,6 +283,22 @@ public class SourceTests {
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			assertTrue(e.toString(), false);
+		}
+	}
+
+	@Test
+	public void getHelpTest() throws RemoteException {
+		try {
+			Source src = new Source();
+			logger.info(src.getHelp());
+			logger.info(src.getImage());
+		} catch (Exception e) {
+			StackTraceElement[] messages = e.getStackTrace();
+			for (StackTraceElement el : messages) {
+				logger.info(el.getClassName() + " , " + el.getLineNumber()
+						+ " , " + el.getMethodName());
+			}
+			assertTrue(e.getMessage(), false);
 		}
 	}
 
