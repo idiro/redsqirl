@@ -106,11 +106,11 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 			paramProp.put(key_permission, new DSParamProperty(
 					"Permission associated to the file", false, false, false));
 			paramProp.put(key_size, new DSParamProperty("Size of the file",
-					true, false, false));
-			/*
+					true, true, false));
+			
 			paramProp.put(key_recursive, new DSParamProperty(
-					"Apply change reccursively", false, false, false,
-					FeatureType.BOOLEAN));*/
+					"Apply change reccursively", false, true, false,
+					FeatureType.BOOLEAN));
 		}
 		open();
 	}
