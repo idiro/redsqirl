@@ -57,6 +57,10 @@
 	<a4j:commandLink action="#{browserHdfsBean.goNext}" reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
 		<h:graphicImage id="btNext" value="../image/icons/button-next.gif" title='#{messages.HdfsInterface_next_help}'/>
 	</a4j:commandLink>
+	
+	<a4j:commandLink action="#{browserHdfsBean.goUp}" reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
+		<h:graphicImage id="browserHdfsGoup" value="../image/icons/button_up.jpg" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
+	</a4j:commandLink>
 	<br/>
 	
 	<div style="width:100%; overflow: auto; height: 305px;margin-top:5px;margin-bottom:10px;" >
@@ -106,7 +110,12 @@
 
 	</div>
 	
-	<a4j:commandButton styleClass="greenButton" id="hdfsOpenFileBtn" action="#{canvasModalBean.changePathBrowser}" value="#{messages.button_ok}" oncomplete="#{rich:component('modalPanelBrowserHdfsId')}.hide();" reRender="browserPanel, browserTable1, browserTable2, browserTable1Col1, browserTable1Col2" >
+	<a4j:commandButton styleClass="greenButton" 
+	                   id="hdfsOpenFileBtn" 
+	                   action="#{canvasModalBean.changePathBrowser}" 
+	                   value="#{messages.button_ok}" 
+	                   oncomplete="if(#{requestScope['msnError'] == null} )#{rich:component('modalPanelBrowserHdfsId')}.hide();" 
+	                   reRender="browserPanel, browserTable1, browserTable2, browserTable1Col1, browserTable1Col2, msnError" >
 		<a4j:actionparam name="pathFile" value="getPathHdfs('#{browserHdfsBean.path}')" noEscape="true"/>
 	</a4j:commandButton>
 	

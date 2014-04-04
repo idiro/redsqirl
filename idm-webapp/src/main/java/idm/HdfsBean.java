@@ -1,5 +1,7 @@
 package idm;
 
+import idiro.workflow.server.connect.interfaces.DataStore;
+
 import java.rmi.RemoteException;
 import java.util.HashMap;
 
@@ -35,7 +37,7 @@ public class HdfsBean extends FileSystemBean {
 		logger.info("HdfsOpenCanvasScreen");
 		try {
 
-			setDataStore(getHDFS());
+			setDataStore(getRmiHDFS());
 
 			if(getListGrid().isEmpty()){
 
@@ -77,12 +79,16 @@ public class HdfsBean extends FileSystemBean {
 		logger.info("copy from "+path+"/"+file+" to "+server+":"+getPath()+"/"+file);
 		
 		try{
-			getHDFS().copyFromRemote(path+"/"+file, getPath()+"/"+file, server);
+			getRmiHDFS().copyFromRemote(path+"/"+file, getPath()+"/"+file, server);
 			mountTable(getDataStore());
 		}
 		catch(Exception e){
 			logger.info("", e);
 		}
+	}
+	
+	public DataStore getRmiHDFS() throws RemoteException{
+		return getHDFS();
 	}
 
 	public String getTableState() {

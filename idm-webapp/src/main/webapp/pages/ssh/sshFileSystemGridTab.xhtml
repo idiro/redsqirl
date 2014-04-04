@@ -31,6 +31,10 @@
 				<a4j:commandLink action="#{sshBean.goNext}" reRender="sshpath,sshfs">
 					<h:graphicImage id="sshbtRedo" value="../image/icons/button-next.gif" title='#{messages.canvas_next}' />
 				</a4j:commandLink>
+				
+				<a4j:commandLink action="#{sshBean.goUp}" reRender="sshpath,sshfs">
+					<h:graphicImage id="sshbtGoUp" value="../image/icons/button_up.jpg" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
+				</a4j:commandLink>
 			</div>
 			
 			<br />

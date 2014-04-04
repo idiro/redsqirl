@@ -23,6 +23,30 @@
 		file = f;
 	}
 	
+	function verifyIfFileExists(path){
+		
+		var fileExist = false;
+		
+		var table = jQuery('#divSaveFileHdfs table.extdt-table-layout');
+		var tbody = table.find("tbody");
+		var rows = tbody.find("tr");
+
+        rows.each(function(key, value){
+        	var file2 = jQuery(this).find("td a").html();
+        	if ((file == file2) || (file+'.rs' == file2)){
+        		fileExist = true;
+        	}
+        });
+		
+		if (fileExist){
+			Richfaces.showModalPanel('modalConfirmOverwrite');
+		}
+		else{
+			Richfaces.hideModalPanel('modalSaveWorkflow');
+			save(path);
+		}
+	}
+	
 //]]>
 </script>
 
@@ -46,6 +70,10 @@
 	<a4j:commandLink action="#{browserHdfsBean.goNext}" reRender="pathSaveFile,hdfsfsSaveFile,hdfsSaveFileBtn">
 		<h:graphicImage id="btNext" value="../image/icons/button-next.gif" title='#{messages.HdfsInterface_next_help}' />
 	</a4j:commandLink>
+	
+	<a4j:commandLink action="#{browserHdfsBean.goUp}" reRender="pathSaveFile,hdfsfsSaveFile,hdfsSaveFileBtn">
+		<h:graphicImage id="browserHdfsBeanGoUp" value="../image/icons/button_up.jpg" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
+	</a4j:commandLink>
 
 	<br/><br/>
 
@@ -55,7 +83,7 @@
 
 	<br/><br/>
 
-	<div style="width:590px;height:265px;overflow: hidden;" >
+	<div id="divSaveFileHdfs" style="width:590px;height:265px;overflow: hidden;" >
 
 		<rich:extendedDataTable id="hdfsfsSaveFile" value="#{browserHdfsBean.listGrid}" var="item"
 			width="50px" height="10px"
@@ -69,7 +97,7 @@
 				<f:facet name="header">
 					<h:outputText value="Name" />
 				</f:facet>
-				<a4j:commandLink value="#{item.name}"
+				<a4j:commandLink id="saveFileNameId" value="#{item.name}"
 					action="#{browserHdfsBean.selectFile}" reRender="pathSaveFile,hdfsfsSaveFile,hdfsSaveFileBtn">
 					<f:param name="nameFile" value="#{item.name}" />
 				</a4j:commandLink>
@@ -91,7 +119,7 @@
 	<br/>
 
 	<a4j:commandButton id="hdfsSaveFileBtn" value="#{messages.button_ok}" styleClass="greenButton"
-		onclick="#{rich:component('modalSaveWorkflow')}.hide();save(getPath('#{browserHdfsBean.path}'));"
+		onclick="verifyIfFileExists(getPath('#{browserHdfsBean.path}'));"
 		oncomplete="" reRender="errorTable" >
 	</a4j:commandButton>
 	
@@ -99,5 +127,31 @@
 		onclick="#{rich:component('modalSaveWorkflow')}.hide();"
 		oncomplete="onHideModalSaveWorkflow(false);">
 	</a4j:commandButton>
+	
+	<rich:modalPanel id="modalConfirmOverwrite" width="300" height="90"
+			style="overflow:auto;" resizeable="false">
+
+			<f:facet name="header">Overwrite file?</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+					style="cursor:pointer;width:22px;"
+					onclick="#{rich:component('modalConfirmOverwrite')}.hide()" />
+			</f:facet>
+
+			<h:panelGroup>
+			
+				<h:outputText value="#{messages.file_already_exists}" />
+				<br />
+				<a4j:commandButton value="#{messages.button_ok}" styleClass="greenButton"
+					onclick="#{rich:component('modalConfirmOverwrite')}.hide();#{rich:component('modalSaveWorkflow')}.hide();save(getPath('#{browserHdfsBean.path}'));"
+					oncomplete="" reRender="errorTable" >
+				</a4j:commandButton>
+				
+				<a4j:commandButton value="#{messages.button_cancel}" styleClass="greenButton"
+					onclick="#{rich:component('modalConfirmOverwrite')}.hide();">
+				</a4j:commandButton>
+			</h:panelGroup>
+
+		</rich:modalPanel>
 	
 </ui:composition>

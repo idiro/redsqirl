@@ -2,6 +2,7 @@ package idiro.workflow.server;
 
 import idiro.Log;
 import idiro.hadoop.NameNodeVar;
+import idiro.utils.LocalFileSystem;
 import idiro.utils.RandomString;
 import idiro.workflow.server.enumeration.SavingState;
 import idiro.workflow.server.interfaces.DFEOutput;
@@ -15,7 +16,6 @@ import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.Paths;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.text.DateFormat;
@@ -209,10 +209,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			while(actionListit.hasNext()){
 				String[] parameters = actionListit.next();
 				try{
-					parameters[1] = curPath.toPath().relativize(Paths.get(parameters[1])).toString();
-					parameters[2] = curPath.toPath().relativize(Paths.get(parameters[2])).toString();
+					logger.info("loadMenu "+ curPath +" "+ parameters[1]);
+					logger.info("loadMenu "+ curPath +" "+ parameters[2]);
+					parameters[1] = LocalFileSystem.relativize(curPath,parameters[1]);
+					parameters[2] = LocalFileSystem.relativize(curPath,parameters[2]);
 					newActionList.add(parameters);
 				}catch (Exception e){
+					logger.error(e.getMessage());
 					logger.error("Error Getting relative paths for Help and Image");
 				}
 				

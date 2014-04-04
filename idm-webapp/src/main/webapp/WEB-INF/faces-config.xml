@@ -53,7 +53,7 @@
  </managed-bean>
  <managed-bean>
   <managed-bean-name>browserHdfsBean</managed-bean-name>
-  <managed-bean-class>idm.HdfsBean</managed-bean-class>
+  <managed-bean-class>idm.HdfsBrowserBean</managed-bean-class>
   <managed-bean-scope>request</managed-bean-scope>
  </managed-bean>
 <managed-bean>
