@@ -1672,7 +1672,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 			logger.info("pathFile " + path);
 
 			getDfe().getDFEOutput().get(sourceOutName).setPath(path);
-			getDfe().getDFEOutput().get(sourceOutName).isPathExists();
+			//getDfe().getDFEOutput().get(sourceOutName).isPathExists();
 
 			List<ItemList> listObjGrid = new ArrayList<ItemList>();
 			Map<String, String> outputPropertiesMap = getDfe().getDFEOutput()
@@ -1694,6 +1694,12 @@ public class CanvasModal extends BaseBean implements Serializable {
 			updateDFEOUtputTable(getDfe().getDFEOutput().get(sourceOutName),
 					dynamicForm);
 			dynamicForm.setPathBrowser(path);
+			String msg = getDfe().getDFEOutput().get(sourceOutName).isPathValid();
+			if(msg != null){
+				MessageUseful.addErrorMessage(msg);
+				HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
+				request.setAttribute("msnError", "msnError");
+			}
 		}
 
 	}

@@ -156,8 +156,8 @@
 
 	<a4j:commandButton styleClass="greenButton" action="#{canvasModalBean.changePathBrowser}"
 		value="#{messages.button_ok}"
-		oncomplete="#{rich:component('modalPanelBrowserHiveId')}.hide();"
-		reRender="browserPanel, browserTable1, browserTable2, browserTable1Col1, browserTable1Col2 , pathOpenFile">
+		oncomplete="if(#{requestScope['msnError'] == null} )#{rich:component('modalPanelBrowserHiveId')}.hide();"
+		reRender="browserPanel, browserTable1, browserTable2, browserTable1Col1, browserTable1Col2 , pathOpenFile, msnError">
 		<a4j:actionparam name="pathFile"
 			value="getPathHive('#{browserHiveBean.path}')" noEscape="true" />
 	</a4j:commandButton>
