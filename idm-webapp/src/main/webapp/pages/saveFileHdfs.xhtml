@@ -35,7 +35,6 @@
         	var file2 = jQuery(this).find("td a").html();
         	if ((file == file2) || (file+'.rs' == file2)){
         		fileExist = true;
-        		alert('exist');
         	}
         });
 		
@@ -139,6 +138,9 @@
 			</f:facet>
 
 			<h:panelGroup>
+			
+				<h:outputText value="#{messages.file_already_exists}" />
+				<br />
 				<a4j:commandButton value="#{messages.button_ok}" styleClass="greenButton"
 					onclick="#{rich:component('modalConfirmOverwrite')}.hide();#{rich:component('modalSaveWorkflow')}.hide();save(getPath('#{browserHdfsBean.path}'));"
 					oncomplete="" reRender="errorTable" >
