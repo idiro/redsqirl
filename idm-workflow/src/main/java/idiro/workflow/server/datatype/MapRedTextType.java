@@ -172,7 +172,7 @@ public class MapRedTextType extends DataOutput {
 			FileSystem fs;
 			try {
 				fs = NameNodeVar.getFS();
-				hCh.setPath(new Path(getPath()).getParent());
+				hCh.setPath(new Path(getPath()));
 				if (!hCh.isDirectory()) {
 					error = LanguageManagerWF.getText("mapredtexttype.nodir");
 				}

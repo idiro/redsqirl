@@ -10,8 +10,6 @@ import idiro.workflow.server.ListInteraction;
 import idiro.workflow.server.Page;
 import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.datatype.HiveType;
-import idiro.workflow.server.datatype.HiveTypePartition;
-import idiro.workflow.server.datatype.MapRedBinaryType;
 import idiro.workflow.server.datatype.MapRedTextType;
 import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.enumeration.FeatureType;
@@ -299,7 +297,6 @@ public class Source extends DataflowAction {
 							logger.info("Setpath : " + path);
 							out.setPath(path);
 							logger.info(out.getFeatures().getFeaturesNames());
-
 						}
 						getInteraction(key_dataset).getTree()
 								.removeAllChildren();
@@ -317,6 +314,12 @@ public class Source extends DataflowAction {
 								error = LanguageManagerWF.getText(
 										"source.pathinvalid",
 										new Object[] { out.isPathValid() });
+								try {
+									out.setPath(null);
+									out.setFeatures(null);
+									out.removeAllProperties();
+								} catch (Exception e) {
+								}
 							}
 						} catch (Exception e) {
 							error = LanguageManagerWF.getText(

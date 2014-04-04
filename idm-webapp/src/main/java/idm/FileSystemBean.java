@@ -78,58 +78,60 @@ public class FileSystemBean extends BaseBean implements Serializable{
 
 		FacesContext context = FacesContext.getCurrentInstance();
 		userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
-		
+
 		Map<String, Map<String, String>> mapSSH = hInt.getChildrenProperties();
 		Map<String, ParamProperty> paramProperties = hInt.getParamProperties();
-		for (String path : mapSSH.keySet()) {
+		if(mapSSH != null){
+			for (String path : mapSSH.keySet()) {
 
-			String[] aux = path.split("/");
-			String name = aux[aux.length-1];
+				String[] aux = path.split("/");
+				String name = aux[aux.length-1];
 
-			ItemList itemList = new ItemList(name);
-			Map<String, String> nv = new HashMap<String, String>();
-			Map<String, Ordering> so = new HashMap<String, Ordering>();
-			Map<String, Object> fv = new HashMap<String, Object>();
-			Map<String, String> nve = new HashMap<String, String>();
-			Map<String, Boolean> nc = new HashMap<String, Boolean>();
-			Map<String, Boolean> vlb = new HashMap<String, Boolean>();
+				ItemList itemList = new ItemList(name);
+				Map<String, String> nv = new HashMap<String, String>();
+				Map<String, Ordering> so = new HashMap<String, Ordering>();
+				Map<String, Object> fv = new HashMap<String, Object>();
+				Map<String, String> nve = new HashMap<String, String>();
+				Map<String, Boolean> nc = new HashMap<String, Boolean>();
+				Map<String, Boolean> vlb = new HashMap<String, Boolean>();
 
-			for (String properties : paramProperties.keySet()) {
+				for (String properties : paramProperties.keySet()) {
 
-				if(!paramProperties.get(properties).editOnly() &&
-					!paramProperties.get(properties).createOnly()){
-					nv.put(properties, getFormatedString(properties, mapSSH.get(path).get(properties)));
-					
+					if(!paramProperties.get(properties).editOnly() &&
+							!paramProperties.get(properties).createOnly()){
+						nv.put(properties, getFormatedString(properties, mapSSH.get(path).get(properties)));
+
+					}
+
+					if (paramProperties.get(properties).editOnly()){
+						nve.put(properties, getFormatedString(properties, mapSSH.get(path).get(properties)));
+					}
+
+					nc.put(properties, paramProperties.get(properties).isConst());
+					vlb.put(properties, mapSSH.get(path).get(properties) != null && mapSSH.get(path).get(properties).contains("/n"));
+					so.put(properties, Ordering.UNSORTED);
+					fv.put(properties, "");
 				}
-				
-				if (paramProperties.get(properties).editOnly()){
-					nve.put(properties, getFormatedString(properties, mapSSH.get(path).get(properties)));
-				}
-				
-				nc.put(properties, paramProperties.get(properties).isConst());
-				vlb.put(properties, mapSSH.get(path).get(properties) != null && mapSSH.get(path).get(properties).contains("/n"));
-				so.put(properties, Ordering.UNSORTED);
-				fv.put(properties, "");
+
+
+				itemList.setNameValue(nv);
+				itemList.setSortingOrder(so);
+				itemList.setFilterValue(fv);
+				itemList.setNameValueEdit(nve);
+				itemList.setNameIsConst(nc);
+				itemList.setValueHasLineBreak(vlb);
+
+				setNameValue(nv);
+				itemList.setSelected(false);
+				getListGrid().add(itemList);
+
 			}
-
-			
-			itemList.setNameValue(nv);
-			itemList.setSortingOrder(so);
-			itemList.setFilterValue(fv);
-			itemList.setNameValueEdit(nve);
-			itemList.setNameIsConst(nc);
-			itemList.setValueHasLineBreak(vlb);
-			
-			setNameValue(nv);
-			itemList.setSelected(false);
-			getListGrid().add(itemList);
-
 		}
-		
+
 		if(userInfoBean.getCurrentValue() < 96){
 			userInfoBean.setCurrentValue(userInfoBean.getCurrentValue()+5);
 		}
-		
+
 		for (String properties : paramProperties.keySet()) {
 			nameHelp.put(properties, paramProperties.get(properties).getHelp());
 			if (paramProperties.get(properties).createOnly()){
@@ -138,7 +140,7 @@ public class FileSystemBean extends BaseBean implements Serializable{
 		}
 		logger.info("Finished mounting table");
 	}
-	
+
 	public String getFormatedString(String property, String value){
 		return value;
 	}
@@ -169,7 +171,7 @@ public class FileSystemBean extends BaseBean implements Serializable{
 			if(item.isSelected()){
 
 				String directory = generatePath(getDataStore().getPath(), item.getName());
-				
+
 				logger.info("Delete -"+directory);
 
 				getDataStore().delete(directory);
@@ -213,7 +215,7 @@ public class FileSystemBean extends BaseBean implements Serializable{
 			String name = params.get("nameFile");
 
 			String path = generatePath(getPath(), name);
-			
+
 			if(getDataStore().goTo(path)){
 				setPath(path);
 				mountTable(getDataStore());
@@ -227,7 +229,7 @@ public class FileSystemBean extends BaseBean implements Serializable{
 		}
 
 	}
-	
+
 	/** open
 	 * 
 	 * Method to preview the contents of a file
@@ -246,7 +248,7 @@ public class FileSystemBean extends BaseBean implements Serializable{
 		}
 		getDataStore().goPrevious();
 	}
-	
+
 	/** verifyIfIsFile
 	 * 
 	 * Method to verify if the selected path is a file or a directory
@@ -257,10 +259,10 @@ public class FileSystemBean extends BaseBean implements Serializable{
 	public void verifyIfIsFile() throws RemoteException{
 		String name = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("nameFile");
 		getDataStore().goTo(generatePath(getDataStore().getPath(), name));
-		file = getDataStore().getChildrenProperties().isEmpty();
+		file = getDataStore().getChildrenProperties() == null;
 		getDataStore().goPrevious();
 	}
-	
+
 	/** copyFileBefore
 	 * 
 	 * Method to execute before opening the screen to copy a file
@@ -300,7 +302,7 @@ public class FileSystemBean extends BaseBean implements Serializable{
 				getDataStore().move(s[0] + "/" + s[1], getDataStore().getPath() + "/" + s[1]);
 			}
 		}
-		
+
 		mountTable(getDataStore());
 	}
 
@@ -323,7 +325,7 @@ public class FileSystemBean extends BaseBean implements Serializable{
 	 */
 	public void addFileAfter() throws RemoteException{
 		String newDirectory = generatePath(getDataStore().getPath(), getNewName());
-		
+
 		Map<String, String> properties = new HashMap<String, String>();
 		for (Entry<String, String> e : nameValue.entrySet()){
 			if (e.getValue() != null && !e.getValue().isEmpty()){
@@ -388,7 +390,7 @@ public class FileSystemBean extends BaseBean implements Serializable{
 					"Fail to update properties of "+
 							getDataStore().getPath() + "/" + getNewName()+
 							" to "+getItem().getNameValue());
-			
+
 		}
 		logger.info("Rename "+getDataStore().getPath() + "/" + getName()+" to "+getDataStore().getPath() + "/" + getNewName());
 		getDataStore().move(getDataStore().getPath() + "/" + getName(), getDataStore().getPath() + "/" + getNewName());
@@ -414,7 +416,7 @@ public class FileSystemBean extends BaseBean implements Serializable{
 	 * @author Igor.Souza
 	 */
 	public void moveFileAfter() throws RemoteException{
-		
+
 		ItemList itemSelect = null;
 		for (Iterator<ItemList> i = getListGrid().iterator(); i.hasNext();) {
 			ItemList item = (ItemList) i.next();
@@ -464,7 +466,7 @@ public class FileSystemBean extends BaseBean implements Serializable{
 		mountTable(getDataStore());
 
 	}
-	
+
 	private void mountSelectedFilesList() throws RemoteException{
 		selectedFiles = new ArrayList<String[]>();
 		for (ItemList i : getListGrid()) {
@@ -473,19 +475,19 @@ public class FileSystemBean extends BaseBean implements Serializable{
 			}
 		}
 	}
-	
+
 	public String getCanCopy() throws RemoteException{
 		return getDataStore().canCopy();
 	}
-	
+
 	public String getCanMove() throws RemoteException{
 		return getDataStore().canMove();
 	}
-	
+
 	public String getCanDelete() throws RemoteException{
 		return getDataStore().canDelete();
 	}
-	
+
 	public String getCanCreate() throws RemoteException{
 		return getDataStore().canCreate();
 	}
@@ -537,7 +539,7 @@ public class FileSystemBean extends BaseBean implements Serializable{
 	public void setNameValue(Map<String, String> nameValue) {
 		this.nameValue = nameValue;
 	}
-	
+
 	public Map<String, String> getNameHelp() {
 		return nameHelp;
 	}
@@ -561,7 +563,7 @@ public class FileSystemBean extends BaseBean implements Serializable{
 	public void setDataStore(DataStore dataStore) {
 		this.dataStore = dataStore;
 	}
-	
+
 	public List<String> getNameCreateFields() {
 		return nameCreateFields;
 	}
@@ -569,23 +571,23 @@ public class FileSystemBean extends BaseBean implements Serializable{
 	public void setNameCreateFields(List<String> nameCreateFields) {
 		this.nameCreateFields = nameCreateFields;
 	}
-	
+
 	public String getFileContent(){
 		return fileContent;
 	}
-	
+
 	public void setFileContent(String content){
 		fileContent = content;
 	}
-	
+
 	public boolean isFile(){
 		return file;
 	}
-	
+
 	public void setFile(boolean file){
 		this.file = file;
 	}
-	
+
 	private String generatePath(String path, String name){
 		String resultPath = path;
 		if (!resultPath.endsWith("/")){
