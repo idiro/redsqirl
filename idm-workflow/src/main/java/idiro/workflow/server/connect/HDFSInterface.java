@@ -17,7 +17,6 @@ import java.rmi.server.UnicastRemoteObject;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -69,8 +68,8 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 			key_owner = "owner",
 			/**Group Key*/
 			key_group = "group",
-			/**Directory Key*/
-			key_directory = "directory",
+			/**Type Key*/
+			key_type = "type",
 			/**Size Key*/
 			key_size = "size",
 			/**Recursive Key*/
@@ -98,6 +97,8 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 						+ System.getProperty("user.name"));
 		history.add(new Path(pathDataDefault.get()));
 		if (paramProp.isEmpty()) {
+			paramProp.put(key_type, new DSParamProperty("Type of the file: \"directory\" or \"file\"",
+					true, false, false));
 			paramProp.put(key_owner, new DSParamProperty("Owner of the file",
 					false, false, false));
 			paramProp.put(key_group, new DSParamProperty("Group of the file",
@@ -106,9 +107,10 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 					"Permission associated to the file", false, false, false));
 			paramProp.put(key_size, new DSParamProperty("Size of the file",
 					true, false, false));
+			/*
 			paramProp.put(key_recursive, new DSParamProperty(
-					"Apply change reccursively", false, true, false,
-					FeatureType.BOOLEAN));
+					"Apply change reccursively", false, false, false,
+					FeatureType.BOOLEAN));*/
 		}
 		open();
 	}
@@ -117,11 +119,12 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 	public String open() throws RemoteException {
 		return null;
 	}
-	
+
 	@Override
 	public String close() throws RemoteException {
 		return null;
 	}
+
 	/**
 	 * Get the current path
 	 * @return path current path
@@ -222,25 +225,39 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 		String error = null;
 		HdfsFileChecker fCh = new HdfsFileChecker(path);
 		if (fCh.isInitialized()
-				&& !fCh.exists()
-				&& (properties.get(key_directory) == null || properties.get(
-						key_directory).equalsIgnoreCase("true"))) {
-			try {
-				FileSystem fs = NameNodeVar.getFS();
-				boolean ok = fs.mkdirs(new Path(path));
-				// fs.close();
-				if (ok) {
-					changeProperties(path, properties);
-				} else {
-					error = LanguageManagerWF.getText(
-							"HdfsInterface.createdirfail",
+				&& !fCh.exists()){
+			if(properties.get(
+					key_type) == null || properties.get(
+					key_type).equalsIgnoreCase("directory") ||
+					properties.get(
+							key_type).equalsIgnoreCase("file") ) {
+				try {
+					FileSystem fs = NameNodeVar.getFS();
+					boolean ok;
+					if(properties.get(
+							key_type) == null ||properties.get(
+							key_type).equalsIgnoreCase("directory")){
+						ok = fs.mkdirs(new Path(path));
+					}else{
+						ok = fs.createNewFile(new Path(path));
+					}
+					// fs.close();
+					if (ok) {
+						changeProperties(path, properties);
+					} else {
+						error = LanguageManagerWF.getText(
+								"HdfsInterface.createdirfail",
+								new Object[] { path });
+					}
+				} catch (IOException e) {
+					error = LanguageManagerWF.getText("HdfsInterface.cannotcreate",
 							new Object[] { path });
+					logger.error(error);
+					logger.error(e.getMessage());
 				}
-			} catch (IOException e) {
-				error = LanguageManagerWF.getText("HdfsInterface.cannotcreate",
-						new Object[] { path });
-				logger.error(error);
-				logger.error(e.getMessage());
+			}else{
+				error = LanguageManagerWF.getText("HdfsInterface.typenotexists",
+						new Object[] { properties.get(key_type) });
 			}
 		} else {
 			error = LanguageManagerWF.getText("HdfsInterface.pathexists",
@@ -514,17 +531,10 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 				logger.info("File status not available for " + path);
 				return null;
 			} else {
-				logger.info(2);
-				prop.put(key_owner, stat.getOwner());
-				logger.info(3);
-				prop.put(key_group, stat.getGroup());
-				logger.info(4);
-				prop.put(key_permission, stat.getPermission().toString());
-				logger.info(5);
 				if (stat.isDir()) {
-					prop.put(key_directory, "true");
+					prop.put(key_type, "directory");
 				} else {
-					prop.put(key_directory, "false");
+					prop.put(key_type, "file");
 					double res = stat.getBlockSize();
 					boolean end = res < 1024;
 					int pow = 0;
@@ -557,6 +567,9 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 					prop.put(key_size, size);
 				}
 			}
+			prop.put(key_owner, stat.getOwner());
+			prop.put(key_group, stat.getGroup());
+			prop.put(key_permission, stat.getPermission().toString());
 
 			// fs.close();
 		} catch (IOException e) {
@@ -597,6 +610,8 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 					String path = fsA[i].getPath().toString();
 					ans.put(path, getProperties(path));
 				}
+			}else{
+				ans = null;
 			}
 			// fs.close();
 		} catch (IOException e) {
@@ -607,7 +622,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 
 		return ans;
 	}
-	
+
 	/**
 	 * Change a Property
 	 * @param key

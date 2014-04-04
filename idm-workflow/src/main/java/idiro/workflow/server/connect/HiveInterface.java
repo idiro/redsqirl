@@ -29,8 +29,6 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.prefs.Preferences;
 
-import javax.swing.text.TabExpander;
-
 import org.apache.log4j.Logger;
 
 /**
@@ -930,6 +928,10 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 							+ tableAndPartitions[0] + "/" + partition));
 				}
 				logger.debug("Finished getting properties for children if path has partitions");
+			}
+
+			if(ans.isEmpty()){
+				ans = null;
 			}
 		} catch (Exception e) {
 			logger.error("Unexpected exception: " + e.getMessage());
