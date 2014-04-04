@@ -537,7 +537,7 @@ public class FileSystemBean extends BaseBean implements Serializable{
 			}
 		}
 	}
-	
+
 	public String getCanCopy() throws RemoteException{
 		return getDataStore().canCopy();
 	}
