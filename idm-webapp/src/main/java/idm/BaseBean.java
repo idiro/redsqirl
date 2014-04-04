@@ -152,6 +152,21 @@ public class BaseBean {
 
 		return (DataStore) session.getAttribute("hdfs");
 	}
+	
+	/** getHDFSBrowser
+	 * 
+	 * Methods to retrieve the object DataStore HDFS from context
+	 * 
+	 * @return DataStore
+	 * @author Igor.Souza
+	 */
+	public DataStore getHDFSBrowser() throws RemoteException{
+
+		FacesContext fCtx = FacesContext.getCurrentInstance();
+		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
+
+		return (DataStore) session.getAttribute("hdfsbrowser");
+	}
 
 	/** getOozie
 	 * 

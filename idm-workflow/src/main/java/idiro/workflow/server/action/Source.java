@@ -9,6 +9,7 @@ import idiro.workflow.server.DataflowAction;
 import idiro.workflow.server.ListInteraction;
 import idiro.workflow.server.Page;
 import idiro.workflow.server.UserInteraction;
+import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.datatype.HiveTypePartition;
 import idiro.workflow.server.datatype.MapRedBinaryType;
@@ -68,8 +69,11 @@ public class Source extends DataflowAction {
 	 * Interaction for the DataSubType
 	 */
 	protected ListInteraction dataSubtype;
+
 	/**
-	 * Constructor containing the pages, page checks and interaction Initialization
+	 * Constructor containing the pages, page checks and interaction
+	 * Initialization
+	 * 
 	 * @throws RemoteException
 	 */
 	public Source() throws RemoteException {
@@ -209,8 +213,8 @@ public class Source extends DataflowAction {
 					FeatureList outF = new OrderedFeatureList();
 					if (error == null) {
 						try {
-							logger.info("tree is "+getInteraction(
-									key_dataset).getTree());
+							logger.info("tree is "
+									+ getInteraction(key_dataset).getTree());
 							List<Tree<String>> features = getInteraction(
 									key_dataset).getTree()
 									.getFirstChild("browse")
@@ -272,9 +276,9 @@ public class Source extends DataflowAction {
 
 					if (error == null) {
 						boolean ok = false;
-						try{
+						try {
 							ok = out.compare(path, outF, props);
-						}catch(Exception e){
+						} catch (Exception e) {
 							ok = false;
 						}
 						if (!ok) {
@@ -338,8 +342,10 @@ public class Source extends DataflowAction {
 
 		});
 	}
+
 	/**
-	 * Get the name of the Action 
+	 * Get the name of the Action
+	 * 
 	 * @return name
 	 * @throws RemoteException
 	 */
@@ -347,8 +353,10 @@ public class Source extends DataflowAction {
 	public String getName() throws RemoteException {
 		return "Source";
 	}
+
 	/**
 	 * Get the Map of Inputs
+	 * 
 	 * @return Map of Inputs
 	 * @throws RemoteException
 	 * 
@@ -361,24 +369,68 @@ public class Source extends DataflowAction {
 	// Override default static methods
 	/**
 	 * Get the path for the help file
+	 * 
 	 * @return path
 	 * @throws RemoteException
 	 */
 	@Override
 	public String getHelp() throws RemoteException {
-		return "../help/" + getName().toLowerCase() + ".html";
+		String absolutePath = "";
+		String helpFile = "/help/" + getName().toLowerCase() + ".html";
+		String path = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path);
+		logger.info(helpFile);
+		logger.info(path);
+		List<String> files = listFilesRecursively(path);
+		for (String file : files) {
+			if (file.contains(helpFile)) {
+				absolutePath = file;
+				break;
+			}
+		}
+		String ans = "";
+		if (absolutePath.contains(path)) {
+			ans = absolutePath.substring(path.length());
+		}
+		logger.info("Source help absPath : " + absolutePath);
+		logger.info("Source help Path : " + path);
+		logger.info("Source help ans : " + ans);
+		// absolutePath
+		return absolutePath;
 	}
+
 	/**
 	 * Get the path of the Image file
+	 * 
 	 * @return path
 	 * @throws RemoteException
 	 */
 	@Override
 	public String getImage() throws RemoteException {
-		return "../image/" + getName().toLowerCase() + ".gif";
+		String absolutePath = "";
+		String imageFile = "/image/" + getName().toLowerCase() + ".gif";
+		String path = WorkflowPrefManager
+						.getSysProperty(WorkflowPrefManager.sys_tomcat_path);
+		List<String> files = listFilesRecursively(path);
+		for (String file : files) {
+			if (file.contains(imageFile)) {
+				absolutePath = file;
+				break;
+			}
+		}
+		String ans = "";
+		if (absolutePath.contains(path)) {
+			ans = absolutePath.substring(path.length());
+		}
+		logger.info("Source image abs Path : " + absolutePath);
+		logger.info("Source image Path : " + path);
+		logger.info("Source image ans : " + ans);
+
+		return absolutePath;
 	}
+
 	/**
 	 * Update the Interaction provided
+	 * 
 	 * @param interaction
 	 * @throws RemoteException
 	 */
@@ -400,8 +452,10 @@ public class Source extends DataflowAction {
 	public void updateDataType(Tree<String> treeDatatype)
 			throws RemoteException {
 	}
+
 	/**
 	 * Update the DataSubType Interaction
+	 * 
 	 * @param treeDatasubtype
 	 * @throws RemoteException
 	 */
@@ -429,10 +483,10 @@ public class Source extends DataflowAction {
 						&& wa.getBrowser().toString().equalsIgnoreCase(type)) {
 					posValues.add(wa.getTypeName());
 					if ((wa.getTypeName().equalsIgnoreCase(
-							(new HiveType()).getTypeName())
-							|| wa.getTypeName().equalsIgnoreCase(
+							(new HiveType()).getTypeName()) || wa.getTypeName()
+							.equalsIgnoreCase(
 									(new MapRedTextType()).getTypeName()))
-							&& dataSubtype.getValue() == null){
+							&& dataSubtype.getValue() == null) {
 						setValue = wa.getTypeName();
 					}
 				}
@@ -448,8 +502,10 @@ public class Source extends DataflowAction {
 			logger.error("No type specified");
 		}
 	}
+
 	/**
 	 * Update the DataSet Interaction
+	 * 
 	 * @param treeDataset
 	 * @throws RemoteException
 	 */
@@ -478,8 +534,10 @@ public class Source extends DataflowAction {
 			}
 		}
 	}
+
 	/**
 	 * Update the output
+	 * 
 	 * @return Error Message
 	 * @throws RemoteException
 	 */
@@ -488,6 +546,7 @@ public class Source extends DataflowAction {
 		String error = checkIntegrationUserVariables();
 		return error;
 	}
+
 	/**
 	 * Not Supported
 	 */

@@ -57,6 +57,10 @@
 	<a4j:commandLink action="#{browserHdfsBean.goNext}" reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
 		<h:graphicImage id="btNext" value="../image/icons/button-next.gif" title='#{messages.HdfsInterface_next_help}'/>
 	</a4j:commandLink>
+	
+	<a4j:commandLink action="#{browserHdfsBean.goUp}" reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
+		<h:graphicImage id="browserHdfsGoup" value="../image/icons/button_up.jpg" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
+	</a4j:commandLink>
 	<br/>
 	
 	<div style="width:100%; overflow: auto; height: 305px;margin-top:5px;margin-bottom:10px;" >

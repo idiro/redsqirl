@@ -131,8 +131,8 @@ public class WorkflowPrefManager extends BlockManager {
 					"Path to retrieve general user configuration",
 					pathUserPref.get() + "/idm_user.properties"),
 			/**
-	 * 
-	 */
+			 * Colour
+			 */
 			pathUserDFEOutputColour = new Preference<String>(userPrefs,
 					"Path to retrieve output colours configuration",
 					pathUserPref.get() + "/output_colours.properties");
@@ -170,6 +170,8 @@ public class WorkflowPrefManager extends BlockManager {
 			sys_allow_user_install = "allow_user_install",
 			/** Path for tomcat */
 			sys_tomcat_path = "tomcat_path",
+			/** Path for installed packages */
+			sys_install_package = "package_dir",
 			/** URL for Package Manager */
 			sys_pack_manager_url = "pack_manager_url",
 			/**Trusted host to packages*/

@@ -98,6 +98,10 @@
 				<a4j:commandLink action="#{hiveBean.goNext}" reRender="hivepath,hivefs">
 					<h:graphicImage id="hivebtRedo" value="../image/icons/button-next.gif" title="#{messages.HiveInterface_next_help}" styleClass="fileSystemIcon" />
 				</a4j:commandLink>
+				
+				<a4j:commandLink action="#{hiveBean.goUp}" reRender="hivepath,hivefs">
+					<h:graphicImage id="hivegoup" value="../image/icons/button_up.jpg" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
+				</a4j:commandLink>
 			</div>
 
 			<br />

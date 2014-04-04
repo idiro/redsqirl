@@ -1,6 +1,6 @@
 package idm;
 
-
+import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idiro.workflow.server.enumeration.SavingState;
 import idiro.workflow.server.interfaces.DFELinkProperty;
@@ -11,6 +11,7 @@ import idiro.workflow.server.interfaces.JobManager;
 import idm.auth.UserInfoBean;
 import idm.useful.MessageUseful;
 
+import java.io.File;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class CanvasBean extends BaseBean implements Serializable{
+public class CanvasBean extends BaseBean implements Serializable {
 
 	private static Logger logger = Logger.getLogger(CanvasBean.class);
 
@@ -54,27 +55,25 @@ public class CanvasBean extends BaseBean implements Serializable{
 	private String path;
 
 	private Map<String, DataFlow> workflowMap;
-	
-	private String errorTableState = new String();
 
-
-	public void doNew(){
+	public void doNew() {
 
 		logger.info("doNew");
 
 	}
 
-	public void doOpen(){
+	public void doOpen() {
 
 		logger.info("doOpen");
 
 	}
 
-	/** openCanvas
+	/**
+	 * openCanvas
 	 * 
 	 * Methods to mount the first canvas
 	 * 
-	 * @return 
+	 * @return
 	 * @author Igor.Souza
 	 */
 	public CanvasBean() {
@@ -83,10 +82,14 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 	//@PostConstruct
 	public void init(){
+
+
 		logger.info("openCanvas");
 
 		FacesContext context = FacesContext.getCurrentInstance();
-		userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
+		userInfoBean = (UserInfoBean) context.getApplication()
+				.evaluateExpressionGet(context, "#{userInfoBean}",
+						UserInfoBean.class);
 
 		userInfoBean.setCurrentValue(Long.valueOf(78));
 
@@ -100,16 +103,17 @@ public class CanvasBean extends BaseBean implements Serializable{
 		try {
 
 			dfi = getworkFlowInterface();
-			if(dfi.getWorkflow(getNameWorkflow()) == null){
+			if (dfi.getWorkflow(getNameWorkflow()) == null) {
 				dfi.addWorkflow(getNameWorkflow());
-			}else{
+			} else {
 				dfi.removeWorkflow(getNameWorkflow());
 				dfi.addWorkflow(getNameWorkflow());
 			}
-			logger.info("add new Workflow "+getNameWorkflow());
+			logger.info("add new Workflow " + getNameWorkflow());
 
-			if(userInfoBean.getCurrentValue() < 98){
-				userInfoBean.setCurrentValue(userInfoBean.getCurrentValue()+3);
+			if (userInfoBean.getCurrentValue() < 98) {
+				userInfoBean
+				.setCurrentValue(userInfoBean.getCurrentValue() + 3);
 			}
 
 			setDf(dfi.getWorkflow(getNameWorkflow()));
@@ -127,36 +131,86 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 	}
 
-	public List<String[]> getHelpItens() throws Exception{
-		if(getworkFlowInterface().getWorkflow("canvas-1") == null){
+	public List<String[]> getHelpItens() throws Exception {
+		if (getworkFlowInterface().getWorkflow("canvas-1") == null) {
 			getworkFlowInterface().addWorkflow("canvas-1");
 		}
 
+		String relPath = ((HttpServletRequest) FacesContext
+				.getCurrentInstance().getExternalContext().getRequest())
+				.getRequestURI();
+
+		logger.info(relPath);
+		File f = null;
+		Map<String, List<String[]>> newList = null;
+		logger.info(relPath);
 		DataFlow wf = getworkFlowInterface().getWorkflow("canvas-1");
-		wf.loadMenu();
+
+		List<Integer> pos = new ArrayList<Integer>();
+		for (int i = 0; i < relPath.length(); i++) {
+
+			if (relPath.charAt(i) == '/') {
+				pos.add(i);
+			}
+		}
+		relPath = relPath.substring(0, pos.get(pos.size() - 1));
+		logger.info(relPath);
+		try {
+			f = new File(
+					WorkflowPrefManager
+					.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
+					+ relPath);
+			if (!f.exists()) {
+				logger.info(relPath.substring(pos.get(1)));
+				f = new File(
+						WorkflowPrefManager
+						.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
+						+ relPath.substring(pos.get(1)));
+			}
+			newList = wf.loadMenu(f);
+			logger.info(f.getAbsolutePath());
+		} catch (Exception e) {
+			logger.info("E");
+		}
+		Iterator<String> it = newList.keySet().iterator();
+		while (it.hasNext()) {
+			List<String[]> tab = newList.get(it.next());
+			for (String[] s : tab) {
+				logger.info(s[0] + " , " + s[1] + " , " + s[2]);
+			}
+		}
+
+		Iterator<String> keysIt = newList.keySet().iterator();
 
 		List<String[]> helpList = new ArrayList<String[]>();
-		for (String[] e : wf.getAllWA()){
-			String name = WordUtils.capitalizeFully(e[0].replace("_", " "));
-			helpList.add(new String[]{name, e[2]});
+
+		while (keysIt.hasNext()) {
+			String key = keysIt.next();
+			List<String[]> menuItem = newList.get(key);
+			for (String[] e : menuItem) {
+				String name = WordUtils.capitalizeFully(e[0].replace("_", " "));
+				helpList.add(new String[] { name, e[2] });
+			}
 		}
 		return helpList;
 	}
 
-	/** addElement
+	/**
+	 * addElement
 	 * 
 	 * Method for add Element on canvas. set the new idElement on the element
 	 * 
-	 * @return 
+	 * @return
 	 * @author Igor.Souza
 	 */
 	public void addElement() {
 
 		logger.info("addElement");
-		logger.info("numWorkflows: "+getWorkflowMap().size());
-		logger.info("numIdMap: "+getIdMap().size());
+		logger.info("numWorkflows: " + getWorkflowMap().size());
+		logger.info("numIdMap: " + getIdMap().size());
 
-		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		Map<String, String> params = FacesContext.getCurrentInstance()
+				.getExternalContext().getRequestParameterMap();
 
 		String nameElement = params.get("paramNameElement");
 		String paramGroupID = params.get("paramGroupID");
@@ -167,13 +221,16 @@ public class CanvasBean extends BaseBean implements Serializable{
 		try {
 			DataFlow df = getDf();
 
-			if(nameElement != null && paramGroupID != null){
+			if (nameElement != null && paramGroupID != null) {
 				String idElement = df.addElement(nameElement);
-				if(idElement != null){
-					getIdMap().get(getNameWorkflow()).put(paramGroupID, idElement);
-				}else{
-					MessageUseful.addErrorMessage("NULL POINTER"); //FIXME
-					HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
+				if (idElement != null) {
+					getIdMap().get(getNameWorkflow()).put(paramGroupID,
+							idElement);
+				} else {
+					MessageUseful.addErrorMessage("NULL POINTER"); // FIXME
+					HttpServletRequest request = (HttpServletRequest) FacesContext
+							.getCurrentInstance().getExternalContext()
+							.getRequest();
 					request.setAttribute("msnError", "msnError");
 				}
 			}
@@ -187,23 +244,26 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 	}
 
-	/** removeElement
+	/**
+	 * removeElement
 	 * 
 	 * Method to remove Element on canvas.
 	 * 
-	 * @return 
+	 * @return
 	 * @author Marcos.Freitas
 	 */
 	public void removeElement() {
 
-		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		Map<String, String> params = FacesContext.getCurrentInstance()
+				.getExternalContext().getRequestParameterMap();
 
 		String paramGroupID = params.get("paramGroupID");
 
 		try {
 
 			DataFlow df = getDf();
-			df.removeElement(getIdMap().get(getNameWorkflow()).get(paramGroupID));
+			df.removeElement(getIdMap().get(getNameWorkflow())
+					.get(paramGroupID));
 			getIdMap().remove(paramGroupID);
 
 		} catch (Exception e) {
@@ -212,43 +272,49 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 	}
 
-	/** updatePosition
+	/**
+	 * updatePosition
 	 * 
 	 * Method for update the position of an Element
 	 * 
-	 * @return 
+	 * @return
 	 * @author Igor.Souza
 	 */
 	public void updatePosition(String paramGroupID, String posX, String posY) {
-		updatePosition(getNameWorkflow(), paramGroupID,posX,posY);
+		updatePosition(getNameWorkflow(), paramGroupID, posX, posY);
 	}
+
 	/**
 	 * Update Position
+	 * 
 	 * @param workflowName
 	 * @param paramGroupID
 	 * @param posX
 	 * @param posY
 	 */
-	public void updatePosition(String workflowName, String paramGroupID, String posX, String posY) {
+	public void updatePosition(String workflowName, String paramGroupID,
+			String posX, String posY) {
 
 		logger.info("updatePosition");
-		logger.info("canvas Name: "+getIdMap().keySet());
+		logger.info("canvas Name: " + getIdMap().keySet());
 
 		logger.info("getIdMap1 :" + getIdMap());
 		logger.info("getIdMap2 :" + getIdMap().get(workflowName));
 		logger.info("getIdMap3 :" + paramGroupID);
-		if(getIdMap().get(workflowName) != null){
-			logger.info("getIdMap4 :" + getIdMap().get(workflowName).get(paramGroupID));
-			if(getIdMap().get(workflowName).get(paramGroupID) != null){
+		if (getIdMap().get(workflowName) != null) {
+			logger.info("getIdMap4 :"
+					+ getIdMap().get(workflowName).get(paramGroupID));
+			if (getIdMap().get(workflowName).get(paramGroupID) != null) {
 				try {
 					DataFlow df = getDf();
-					df.getElement(getIdMap().get(workflowName).get(paramGroupID)).setPosition(
-							Double.valueOf(posX).intValue(), 
-							Double.valueOf(posY).intValue());
-					logger.info(workflowName + " - "+
-							getIdMap().get(workflowName).get(paramGroupID) + " - " + 
-							Double.valueOf(posX).intValue() + " - "+
-							Double.valueOf(posY).intValue());
+					df.getElement(
+							getIdMap().get(workflowName).get(paramGroupID))
+							.setPosition(Double.valueOf(posX).intValue(),
+									Double.valueOf(posY).intValue());
+					logger.info(workflowName + " - "
+							+ getIdMap().get(workflowName).get(paramGroupID)
+							+ " - " + Double.valueOf(posX).intValue() + " - "
+							+ Double.valueOf(posY).intValue());
 
 				} catch (RemoteException e) {
 					e.printStackTrace();
@@ -259,17 +325,20 @@ public class CanvasBean extends BaseBean implements Serializable{
 		}
 	}
 
-	/** addLink
+	/**
+	 * addLink
 	 * 
 	 * Method for add Link for two elements
 	 * 
-	 * @return 
+	 * @return
 	 * @author Igor.Souza
 	 */
 	public void addLink() {
 		logger.info("addLink");
-		String idElementA = getIdMap().get(getNameWorkflow()).get(getParamOutId());
-		String idElementB = getIdMap().get(getNameWorkflow()).get(getParamInId());
+		String idElementA = getIdMap().get(getNameWorkflow()).get(
+				getParamOutId());
+		String idElementB = getIdMap().get(getNameWorkflow()).get(
+				getParamInId());
 
 		String nameElementA = getSelectedLink().split(" -> ")[0];
 		String nameElementB = getSelectedLink().split(" -> ")[1];
@@ -281,23 +350,24 @@ public class CanvasBean extends BaseBean implements Serializable{
 			DataFlowElement dfeObjA = df.getElement(idElementA);
 			DataFlowElement dfeObjB = df.getElement(idElementB);
 
-			df.addLink(nameElementA, dfeObjA.getComponentId(), nameElementB, dfeObjB.getComponentId());
+			df.addLink(nameElementA, dfeObjA.getComponentId(), nameElementB,
+					dfeObjB.getComponentId());
 
-			setResult(new String[]{getParamNameLink(), nameElementA, nameElementB});
+			setResult(new String[] { getParamNameLink(), nameElementA,
+					nameElementB });
 
 			setNameOutput(nameElementA);
 
-
-			//generate the label to put in the arrow
+			// generate the label to put in the arrow
 			String label = "";
 
-			if (dfeObjA.getDFEOutput().entrySet().size() > 1 ||
-					dfeObjB.getInput().entrySet().size() > 1){
-				if (dfeObjA.getDFEOutput().entrySet().size() > 1){
+			if (dfeObjA.getDFEOutput().entrySet().size() > 1
+					|| dfeObjB.getInput().entrySet().size() > 1) {
+				if (dfeObjA.getDFEOutput().entrySet().size() > 1) {
 					label += nameElementA;
 				}
 				label += " -> ";
-				if (dfeObjB.getInput().entrySet().size() > 1){
+				if (dfeObjB.getInput().entrySet().size() > 1) {
 					label += nameElementB;
 				}
 			}
@@ -315,9 +385,12 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 		logger.info("updateLinkPossibilities");
 
-		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-		String idElementA = getIdMap().get(getNameWorkflow()).get(params.get("paramOutId"));
-		String idElementB = getIdMap().get(getNameWorkflow()).get(params.get("paramInId"));
+		Map<String, String> params = FacesContext.getCurrentInstance()
+				.getExternalContext().getRequestParameterMap();
+		String idElementA = getIdMap().get(getNameWorkflow()).get(
+				params.get("paramOutId"));
+		String idElementB = getIdMap().get(getNameWorkflow()).get(
+				params.get("paramInId"));
 
 		logger.info("idElementA " + idElementA);
 		logger.info("idElementB " + idElementB);
@@ -334,16 +407,20 @@ public class CanvasBean extends BaseBean implements Serializable{
 			for (Map.Entry<String, DFELinkProperty> entryInput : dfeObjB.getInput().entrySet()){
 				for (Map.Entry<String, DFEOutput> entryOutput : dfeObjA.getDFEOutput().entrySet()){
 
+
+
 					logger.info("entryInput " + entryInput);
 					logger.info("entryOutput " + entryOutput);
 
 					if (df.check(entryOutput.getKey(), dfeObjA.getComponentId(), entryInput.getKey(), dfeObjB.getComponentId())){
 						linkPossibilities.add(new SelectItem(entryOutput.getKey()+" -> "+entryInput.getKey()));
+
+
 					}
 				}
 			}
 
-			if (!linkPossibilities.isEmpty()){
+			if (!linkPossibilities.isEmpty()) {
 				setSelectedLink(linkPossibilities.get(0).getValue().toString());
 				nbLinkPossibilities = linkPossibilities.size();
 			}
@@ -356,7 +433,8 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 	}
 
-	/** removeLink
+	/**
+	 * removeLink
 	 * 
 	 * Method for remove Link for two elements
 	 * 
@@ -367,13 +445,17 @@ public class CanvasBean extends BaseBean implements Serializable{
 		logger.info("Remove link");
 
 		try {
-			Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-			String idElementA = getIdMap().get(getNameWorkflow()).get(params.get("paramOutId"));
-			String idElementB = getIdMap().get(getNameWorkflow()).get(params.get("paramInId"));
+			Map<String, String> params = FacesContext.getCurrentInstance()
+					.getExternalContext().getRequestParameterMap();
+			String idElementA = getIdMap().get(getNameWorkflow()).get(
+					params.get("paramOutId"));
+			String idElementB = getIdMap().get(getNameWorkflow()).get(
+					params.get("paramInId"));
 			String nameElementA = params.get("paramOutName");
 			String nameElementB = params.get("paramInName");
 
-			getDf().removeLink(nameElementA, idElementA, nameElementB, idElementB);
+			getDf().removeLink(nameElementA, idElementA, nameElementB,
+					idElementB);
 
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -383,7 +465,8 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 	}
 
-	/** load
+	/**
+	 * load
 	 * 
 	 * Method to load a workflow
 	 * 
@@ -394,23 +477,23 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 		String path = getPath();
 
-		logger.info("load "+path);
+		logger.info("load " + path);
 
 		DataFlowInterface dfi;
 		try {
 			dfi = getworkFlowInterface();
 
-
-			String newWfName = generateWorkflowName(path); 
+			String newWfName = generateWorkflowName(path);
 			String error = dfi.addWorkflow(newWfName);
 
-			if(error != null){
+			if (error != null) {
 				MessageUseful.addErrorMessage(error);
-				HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
+				HttpServletRequest request = (HttpServletRequest) FacesContext
+						.getCurrentInstance().getExternalContext().getRequest();
 				request.setAttribute("msnError", "msnError");
 				return;
 			}
-			if (!getWorkflowMap().containsKey(newWfName)){
+			if (!getWorkflowMap().containsKey(newWfName)) {
 				logger.error("A key is not available on the back-end but on the front-end!");
 			}
 
@@ -418,12 +501,13 @@ public class CanvasBean extends BaseBean implements Serializable{
 			error = df.read(path);
 			logger.info("load error " + error);
 
-			if(error != null){
+			if (error != null) {
 				dfi.removeWorkflow(newWfName);
 				MessageUseful.addErrorMessage(error);
-				HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
+				HttpServletRequest request = (HttpServletRequest) FacesContext
+						.getCurrentInstance().getExternalContext().getRequest();
 				request.setAttribute("msnError", "msnError");
-			}else{
+			} else {
 				setNameWorkflow(newWfName);
 				setDf(df);
 				workflowMap.put(getNameWorkflow(), df);
@@ -431,6 +515,8 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 				for (DataFlowElement e : df.getElement()){
 					getIdMap().get(getNameWorkflow()).put(e.getComponentId(), e.getComponentId());
+
+
 				}
 			}
 
@@ -443,27 +529,28 @@ public class CanvasBean extends BaseBean implements Serializable{
 	/**
 	 * Push the object position on the backend
 	 */
-	protected void updatePosition(){
+	protected void updatePosition() {
 
 		logger.info("updatePosition");
 
-		String positions = FacesContext.getCurrentInstance().getExternalContext().
-				getRequestParameterMap().get("positions");
-		try{
+		String positions = FacesContext.getCurrentInstance()
+				.getExternalContext().getRequestParameterMap().get("positions");
+		try {
 			JSONObject positionsArray = new JSONObject(positions);
 			Iterator it = positionsArray.keys();
-			while (it.hasNext()){
+			while (it.hasNext()) {
 				String groupId = (String) it.next();
 				Object objc = positionsArray.get(groupId);
 
 				JSONArray elementArray = new JSONArray(objc.toString());
 
-				if(!groupId.equalsIgnoreCase("legend")){
-					updatePosition(groupId, elementArray.get(0).toString(), elementArray.get(1).toString());
+				if (!groupId.equalsIgnoreCase("legend")) {
+					updatePosition(groupId, elementArray.get(0).toString(),
+							elementArray.get(1).toString());
 				}
 
 			}
-		} catch (JSONException e){
+		} catch (JSONException e) {
 			logger.info("Error updating positions");
 			e.printStackTrace();
 		}
@@ -472,39 +559,37 @@ public class CanvasBean extends BaseBean implements Serializable{
 	/**
 	 * Push the object position on the backend for all workflows
 	 */
-	public void updateAllPosition(){
-		String allPositions = FacesContext.getCurrentInstance().getExternalContext().
-				getRequestParameterMap().get("allpositions");
+	public void updateAllPosition() {
+		String allPositions = FacesContext.getCurrentInstance()
+				.getExternalContext().getRequestParameterMap()
+				.get("allpositions");
 		logger.info(allPositions);
 		logger.info(workflowMap.keySet());
-		try{
+		try {
 			JSONObject allPositionsArray = new JSONObject(allPositions);
 			Iterator itWorkflow = allPositionsArray.keys();
-			while (itWorkflow.hasNext()){
-				String workflowId = (String)itWorkflow.next();
-				JSONObject positionsArray = new JSONObject(allPositionsArray.get(workflowId).toString());
+			while (itWorkflow.hasNext()) {
+				String workflowId = (String) itWorkflow.next();
+				JSONObject positionsArray = new JSONObject(allPositionsArray
+						.get(workflowId).toString());
 				Iterator it = positionsArray.keys();
-				while (it.hasNext()){
+				while (it.hasNext()) {
 					String groupId = (String) it.next();
 					Object objc = positionsArray.get(groupId);
 
 					JSONArray elementArray = new JSONArray(objc.toString());
-					logger.info(
-							"Update :"+workflowId+" "+
-									groupId+" "+
-									elementArray.get(0).toString()+" "+
-									elementArray.get(1).toString());
+					logger.info("Update :" + workflowId + " " + groupId + " "
+							+ elementArray.get(0).toString() + " "
+							+ elementArray.get(1).toString());
 
-					if(!groupId.equalsIgnoreCase("legend")){
-						updatePosition(workflowId,
-								groupId, 
-								elementArray.get(0).toString(), 
-								elementArray.get(1).toString());
+					if (!groupId.equalsIgnoreCase("legend")) {
+						updatePosition(workflowId, groupId, elementArray.get(0)
+								.toString(), elementArray.get(1).toString());
 					}
 
 				}
 			}
-		} catch (JSONException e){
+		} catch (JSONException e) {
 			logger.info("Error updating positions");
 			e.printStackTrace();
 		}
@@ -518,17 +603,19 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 		} catch (RemoteException e) {
 			logger.info("Error backing up all workflows");
-			e.printStackTrace();;
+			e.printStackTrace();
+			;
 		}
 	}
 
-	/** save
+	/**
+	 * save
 	 * 
 	 * Method to save the workflow
 	 * 
 	 * @return
 	 * @author Igor.Souza
-	 * @throws JSONException 
+	 * @throws JSONException
 	 */
 	@SuppressWarnings("rawtypes")
 	public void save() {
@@ -540,30 +627,33 @@ public class CanvasBean extends BaseBean implements Serializable{
 				getRequestParameterMap().get("pathFile");
 
 		if(!path.contains(".")){
+
+
 			path += ".rs";
 		}
-		//Update the object positions
+		// Update the object positions
 		updatePosition();
 		{
 			String nameWorkflowSwp = generateWorkflowName(path);
 			try {
-				msg = getworkFlowInterface().renameWorkflow(nameWorkflow, nameWorkflowSwp);
+				msg = getworkFlowInterface().renameWorkflow(nameWorkflow,
+						nameWorkflowSwp);
 			} catch (RemoteException e) {
 				msg = "Error when renaming workflow";
-				logger.error("Error when renaming workflow: "+e);
+				logger.error("Error when renaming workflow: " + e);
 			}
-			if(msg == null && !nameWorkflowSwp.equals(nameWorkflow)){
+			if (msg == null && !nameWorkflowSwp.equals(nameWorkflow)) {
 				workflowMap.put(nameWorkflowSwp, workflowMap.get(nameWorkflow));
 				workflowMap.remove(nameWorkflow);
-				//idMap.put(nameWorkflowSwp, idMap.get(nameWorkflow));
-				idMap.put(nameWorkflowSwp, new HashMap<String,String>());
+				// idMap.put(nameWorkflowSwp, idMap.get(nameWorkflow));
+				idMap.put(nameWorkflowSwp, new HashMap<String, String>());
 				idMap.remove(nameWorkflow);
 				nameWorkflow = nameWorkflowSwp;
 			}
 		}
-		if(msg == null){
+		if (msg == null) {
 			try {
-				logger.info("save workflow "+nameWorkflow+" in "+path);
+				logger.info("save workflow " + nameWorkflow + " in " + path);
 				DataFlow df = getWorkflowMap().get(nameWorkflow);
 				setDf(df);
 				msg = df.save(path);
@@ -573,56 +663,59 @@ public class CanvasBean extends BaseBean implements Serializable{
 				e.printStackTrace();
 			}
 		}
-		if(msg != null ){
+		if (msg != null) {
 			MessageUseful.addErrorMessage(msg);
-			HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			HttpServletRequest request = (HttpServletRequest) FacesContext
+					.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
 		}
 	}
 
-	/** closeWorkflow
+	/**
+	 * closeWorkflow
 	 * 
 	 * Method to close a workflow
 	 * 
 	 * @return
 	 * @author Igor.Souza
-	 * @throws RemoteException 
+	 * @throws RemoteException
 	 */
 	public void closeWorkflow() {
-		String workflow = FacesContext.getCurrentInstance().getExternalContext().
-				getRequestParameterMap().get("workflow");
+		String workflow = FacesContext.getCurrentInstance()
+				.getExternalContext().getRequestParameterMap().get("workflow");
 		closeWorkflow(workflow);
 	}
 
-	protected void closeWorkflow(String workflowName){
+	protected void closeWorkflow(String workflowName) {
 		logger.info("closeWorkflow:" + workflowName);
 
 		try {
 			DataFlow dfCur = workflowMap.get(workflowName);
-			if(dfCur != null){
+			if (dfCur != null) {
 				dfCur.close();
 				getworkFlowInterface().removeWorkflow(workflowName);
 				workflowMap.remove(workflowName);
 				idMap.remove(workflowName);
-				if(getDf() != null){
-					if(dfCur.getName() != null && dfCur.getName().equals(getDf().getName())){
+				if (getDf() != null) {
+					if (dfCur.getName() != null
+							&& dfCur.getName().equals(getDf().getName())) {
 						setDf(null);
 					}
 				}
 			}
 
 		} catch (RemoteException e) {
-			logger.error("Fail closing "+workflowName);
+			logger.error("Fail closing " + workflowName);
 			e.printStackTrace();
 		}
 	}
 
-	public void runWorkflow() throws Exception{
+	public void runWorkflow() throws Exception {
 		logger.info("runWorkflow");
 
 		getDf().setName(getNameWorkflow());
 
-		//Back up the project
+		// Back up the project
 		try {
 			updatePosition();
 			df.backup();
@@ -630,60 +723,63 @@ public class CanvasBean extends BaseBean implements Serializable{
 			e.printStackTrace();
 		}
 
-		String select = FacesContext.getCurrentInstance().getExternalContext().
-				getRequestParameterMap().get("select");
-		logger.info("Select: "+select);
+		String select = FacesContext.getCurrentInstance().getExternalContext()
+				.getRequestParameterMap().get("select");
+		logger.info("Select: " + select);
 
 		String error = null;
-		if(select == null || select.isEmpty() || select.equals("undefined")){
+		if (select == null || select.isEmpty() || select.equals("undefined")) {
 			logger.info("Run a complete workflow");
 			error = getDf().run();
 			logger.info("Run error:" + error);
-		}else{
+		} else {
 			List<String> elements = new LinkedList<String>();
 			String[] groupIds = select.split(",");
-			for(String groupId : groupIds){
+			for (String groupId : groupIds) {
 				elements.add(idMap.get(getNameWorkflow()).get(groupId));
 			}
-			logger.info("Run workflow for: "+elements);
-			if(elements.contains(null)){
+			logger.info("Run workflow for: " + elements);
+			if (elements.contains(null)) {
 				error = "Dev - Error front-end, list contains null values.";
-			}else{
+			} else {
 				error = getDf().run(elements);
 				logger.info("Run elements error:" + error);
 			}
 		}
-		if(error != null){
+		if (error != null) {
 			logger.error(error);
 			MessageUseful.addErrorMessage(error);
-			HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			HttpServletRequest request = (HttpServletRequest) FacesContext
+					.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
 		}
 
 		FacesContext context = FacesContext.getCurrentInstance();
-		userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
+		userInfoBean = (UserInfoBean) context.getApplication()
+				.evaluateExpressionGet(context, "#{userInfoBean}",
+						UserInfoBean.class);
 
-		if(userInfoBean.getCurrentValue() < 98){
-			userInfoBean.setCurrentValue(userInfoBean.getCurrentValue()+3);
+		if (userInfoBean.getCurrentValue() < 98) {
+			userInfoBean.setCurrentValue(userInfoBean.getCurrentValue() + 3);
 		}
 	}
 
-	public void blockRunningWorkflow() throws Exception{
-		if(getDf() != null){
-			while(getDf().isrunning()){
+	public void blockRunningWorkflow() throws Exception {
+		if (getDf() != null) {
+			while (getDf().isrunning()) {
 				Thread.sleep(500);
 			}
 		}
 	}
 
-	public String getWorkflowUrl(){
+	public String getWorkflowUrl() {
 
 		logger.info("getWorkflowUrl");
 		String url = null;
 		try {
-			DataFlow df= getDf();
+			DataFlow df = getDf();
 			if (df != null) {
-				if(df.getOozieJobId() != null){
+				if (df.getOozieJobId() != null) {
 					try {
 						JobManager jm = getOozie();
 						jm.getUrl();
@@ -691,45 +787,48 @@ public class CanvasBean extends BaseBean implements Serializable{
 					} catch (Exception e) {
 						logger.error("error " + e.getMessage());
 					}
-				}else{
+				} else {
 					url = null;
 				}
 			}
 		} catch (Exception e) {
-			logger.error("error get df: " +  e.getMessage());
+			logger.error("error get df: " + e.getMessage());
 		}
 
-		if(url == null ){
+		if (url == null) {
 			try {
 				url = getOozie().getUrl();
 			} catch (RemoteException e) {
-				logger.error("error getting Oozie url : "+e.getMessage());
+				logger.error("error getting Oozie url : " + e.getMessage());
 			}
 		}
 
 		FacesContext context = FacesContext.getCurrentInstance();
-		userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
+		userInfoBean = (UserInfoBean) context.getApplication()
+				.evaluateExpressionGet(context, "#{userInfoBean}",
+						UserInfoBean.class);
 
 		userInfoBean.setCurrentValue(Long.valueOf(100));
 
 		return url;
 	}
 
-	public void updateIdObj(){
-		String groupId = FacesContext.getCurrentInstance().getExternalContext().
-				getRequestParameterMap().get("idGroup");
+	public void updateIdObj() {
+		String groupId = FacesContext.getCurrentInstance().getExternalContext()
+				.getRequestParameterMap().get("idGroup");
 
-		String id = FacesContext.getCurrentInstance().getExternalContext().
-				getRequestParameterMap().get("id");
+		String id = FacesContext.getCurrentInstance().getExternalContext()
+				.getRequestParameterMap().get("id");
 		getIdMap().get(getNameWorkflow()).put(groupId, id);
 
 	}
 
-	public void reinitialize() throws RemoteException{
+	public void reinitialize() throws RemoteException {
 		logger.info("invalidate session");
 
-		for (java.util.Map.Entry<String, DataFlow> e : getWorkflowMap().entrySet()){
-			if(getworkFlowInterface().getWorkflow(e.getKey()) != null){
+		for (java.util.Map.Entry<String, DataFlow> e : getWorkflowMap()
+				.entrySet()) {
+			if (getworkFlowInterface().getWorkflow(e.getKey()) != null) {
 				logger.info("removing workflow");
 				getworkFlowInterface().removeWorkflow(e.getKey());
 
@@ -747,22 +846,23 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 	}
 
-
-	/** openCanvas
+	/**
+	 * openCanvas
 	 * 
 	 * Methods to clean the outputs from all canvas
 	 * 
-	 * @return 
+	 * @return
 	 * @author Igor.Souza
-	 * @throws RemoteException 
+	 * @throws RemoteException
 	 */
 	public void cleanCanvasProject() throws RemoteException {
 
 		DataFlow wf = getworkFlowInterface().getWorkflow(getNameWorkflow());
 		String error = wf.cleanProject();
-		if(error != null){
+		if (error != null) {
 			MessageUseful.addErrorMessage(error);
-			HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			HttpServletRequest request = (HttpServletRequest) FacesContext
+					.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
 		}
 
@@ -778,80 +878,82 @@ public class CanvasBean extends BaseBean implements Serializable{
 		regeneratePathsProject(false);
 	}
 
-	/** 
+	/**
 	 * 
 	 * Methods to regenerate paths of the current workflow
 	 * 
-	 * @return 
+	 * @return
 	 * @author Igor.Souza
-	 * @throws RemoteException 
+	 * @throws RemoteException
 	 */
 	public void regeneratePathsProject(boolean copy) throws RemoteException {
 
 		DataFlow wf = getworkFlowInterface().getWorkflow(getNameWorkflow());
 		String error = wf.regeneratePaths(copy);
-		if(error != null){
+		if (error != null) {
 			MessageUseful.addErrorMessage(error);
-			HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			HttpServletRequest request = (HttpServletRequest) FacesContext
+					.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
 		}
 
 	}
 
-	public void openChangeIdModal() throws RemoteException{
+	public void openChangeIdModal() throws RemoteException {
 		logger.info("openChangeIdModal");
 		setIdElement(getIdMap().get(getNameWorkflow()).get(getIdGroup()));
 	}
 
-	public void changeIdElement() throws RemoteException{
+	public void changeIdElement() throws RemoteException {
 		logger.info("id new -> " + getIdElement());
 		String oldId = getIdMap().get(getNameWorkflow()).get(getIdGroup());
 		getIdMap().get(getNameWorkflow()).put(getIdGroup(), getIdElement());
 		getDf().changeElementId(oldId, getIdElement());
 	}
 
-	/** initial
+	/**
+	 * initial
 	 * 
 	 * Methods to drive to the main screen
 	 * 
-	 * @return 
+	 * @return
 	 * @author Igor.Souza
 	 */
-	public String initial(){
+	public String initial() {
 
 		logger.info("initial");
 
 		return "initial";
 	}
 
-	private String generateWorkflowName(String path){
+	private String generateWorkflowName(String path) {
 		String name;
 		int index = path.lastIndexOf("/");
-		if (index + 1 < path.length()){
-			name = path.substring(index+1);
-		}else{
+		if (index + 1 < path.length()) {
+			name = path.substring(index + 1);
+		} else {
 			name = path;
 		}
 		return name.replace(".rs", "");
 	}
 
-	public void changeWorkflow() throws RemoteException{
+	public void changeWorkflow() throws RemoteException {
 
 		logger.info(getNameWorkflow());
 		setDf(getWorkflowMap().get(getNameWorkflow()));
 	}
 
-
 	public void addWorkflow() throws RemoteException {
 
-		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		Map<String, String> params = FacesContext.getCurrentInstance()
+				.getExternalContext().getRequestParameterMap();
 		String name = params.get("name");
 
-		logger.info("addWorkflow: "+name);
+		logger.info("addWorkflow: " + name);
 
 		DataFlowInterface dfi = getworkFlowInterface();
 
-		if (!getWorkflowMap().containsKey(name)){
+		if (!getWorkflowMap().containsKey(name)) {
 			dfi.addWorkflow(name);
 			workflowMap.put(name, dfi.getWorkflow(name));
 			getIdMap().put(name, new HashMap<String, String>());
@@ -859,16 +961,16 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 	}
 
-	public void closeAll(){
+	public void closeAll() {
 		logger.info("closeAll");
 		Iterator<String> workflowIt = workflowMap.keySet().iterator();
-		while(workflowIt.hasNext()){
+		while (workflowIt.hasNext()) {
 			closeWorkflow(workflowIt.next());
 		}
 		setDf(null);
 	}
 
-	public String[][] getAllOutputStatus() throws Exception{
+	public String[][] getAllOutputStatus() throws Exception {
 
 		logger.info("getAllOutputStatus");
 
@@ -877,44 +979,50 @@ public class CanvasBean extends BaseBean implements Serializable{
 		String[][] result = new String[getIdMap().get(getNameWorkflow()).size()][];
 
 		int i = 0;
-		for (Entry<String, String> el : getIdMap().get(getNameWorkflow()).entrySet()){			
+		for (Entry<String, String> el : getIdMap().get(getNameWorkflow())
+				.entrySet()) {
 			DataFlowElement df = getDf().getElement(el.getValue());
-			result[i++] = getOutputStatus(df,el.getKey());
+			result[i++] = getOutputStatus(df, el.getKey());
 
 		}
 
 		return result;
 	}
 
-	private String[] getOutputStatus( DataFlowElement dfe, String groupId) throws RemoteException{
+	private String[] getOutputStatus(DataFlowElement dfe, String groupId)
+			throws RemoteException {
 		String state = null;
 		String pathExistsStr = null;
 
-		if (dfe != null && dfe.getDFEOutput() != null){
+		if (dfe != null && dfe.getDFEOutput() != null) {
 			boolean pathExists = false;
-			for (Entry<String, DFEOutput> e : dfe.getDFEOutput().entrySet()){
+			for (Entry<String, DFEOutput> e : dfe.getDFEOutput().entrySet()) {
 
 				String stateCur = e.getValue().getSavingState().toString();
 
-				logger.info("path: "+e.getValue().getPath());
+				logger.info("path: " + e.getValue().getPath());
 
 				pathExists |= e.getValue().isPathExists();
-				if(stateCur != null){
-					if(state == null){
+				if (stateCur != null) {
+					if (state == null) {
 						state = stateCur;
-					}else if(state.equalsIgnoreCase(SavingState.BUFFERED.toString()) &&
-							stateCur.equalsIgnoreCase(SavingState.RECORDED.toString())){
+					} else if (state.equalsIgnoreCase(SavingState.BUFFERED
+							.toString())
+							&& stateCur.equalsIgnoreCase(SavingState.RECORDED
+									.toString())) {
 						state = stateCur;
-					}else if(state.equalsIgnoreCase(SavingState.TEMPORARY.toString()) &&
-							(stateCur.equalsIgnoreCase(SavingState.RECORDED.toString()) ||
-									stateCur.equalsIgnoreCase(SavingState.BUFFERED.toString())
-									)){
+					} else if (state.equalsIgnoreCase(SavingState.TEMPORARY
+							.toString())
+							&& (stateCur.equalsIgnoreCase(SavingState.RECORDED
+									.toString()) || stateCur
+									.equalsIgnoreCase(SavingState.BUFFERED
+											.toString()))) {
 						state = stateCur;
 					}
 				}
 
 			}
-			if(!dfe.getDFEOutput().isEmpty()){
+			if (!dfe.getDFEOutput().isEmpty()) {
 				pathExistsStr = String.valueOf(pathExists);
 			}
 
@@ -922,38 +1030,43 @@ public class CanvasBean extends BaseBean implements Serializable{
 			logger.info("state " + state);
 			logger.info("pathExists " + String.valueOf(pathExistsStr));
 		}
-		logger.info("output status result " + groupId+" - "+state+" - "+pathExistsStr);
-		return new String[]{groupId, state, pathExistsStr};
+		logger.info("output status result " + groupId + " - " + state + " - "
+				+ pathExistsStr);
+		return new String[] { groupId, state, pathExistsStr };
 	}
 
 	/**
-	 * Recursive function to get the 
-	 * output status of all the elements after the one specified
-	 * @param dfe The data flow element
-	 * @param status the list to append the result 
-	 * @throws RemoteException 
+	 * Recursive function to get the output status of all the elements after the
+	 * one specified
+	 * 
+	 * @param dfe
+	 *            The data flow element
+	 * @param status
+	 *            the list to append the result
+	 * @throws RemoteException
 	 */
-	private void getOutputStatus( DataFlowElement dfe,List<String[]> status) throws RemoteException{
+	private void getOutputStatus(DataFlowElement dfe, List<String[]> status)
+			throws RemoteException {
 
-		if (dfe != null && dfe.getDFEOutput() != null){
+		if (dfe != null && dfe.getDFEOutput() != null) {
 			String compId = dfe.getComponentId();
-			if(compId == null){
+			if (compId == null) {
 				logger.info("Error component id cannot be null");
-			}else{
+			} else {
 				String groupId = null;
-				Map<String,String> mapIdW = getIdMap().get(getNameWorkflow());
-				for (Entry<String, String> e : mapIdW.entrySet()){
-					if(compId.equals(e.getValue())){
+				Map<String, String> mapIdW = getIdMap().get(getNameWorkflow());
+				for (Entry<String, String> e : mapIdW.entrySet()) {
+					if (compId.equals(e.getValue())) {
 						groupId = e.getKey();
 					}
 				}
-				if(groupId == null){
-					logger.info("Error getting status: "+compId);
-				}else{
+				if (groupId == null) {
+					logger.info("Error getting status: " + compId);
+				} else {
 					status.add(getOutputStatus(dfe, groupId));
 
-					for(DataFlowElement cur:dfe.getAllOutputComponent()){
-						getOutputStatus(cur,status);
+					for (DataFlowElement cur : dfe.getAllOutputComponent()) {
+						getOutputStatus(cur, status);
 					}
 				}
 			}
@@ -961,106 +1074,114 @@ public class CanvasBean extends BaseBean implements Serializable{
 
 	}
 
-	public String[][] getOutputStatus() throws Exception{
+	public String[][] getOutputStatus() throws Exception {
 
 		logger.info("getOutputStatus");
 
-		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		Map<String, String> params = FacesContext.getCurrentInstance()
+				.getExternalContext().getRequestParameterMap();
 		String groupId = params.get("groupId");
 
 		DataFlowElement df = getDf().getElement(getIdElement(groupId));
 
 		List<String[]> status = new LinkedList<String[]>();
-		getOutputStatus(df,status);
+		getOutputStatus(df, status);
 		String[][] ans = new String[status.size()][];
 		int i = 0;
-		for(String[] elStat : status){
+		for (String[] elStat : status) {
 			ans[i++] = elStat;
 		}
 
 		return ans;
 	}
 
-	public String[][] getRunningStatus() throws Exception{
+	public String[][] getRunningStatus() throws Exception {
 
 		logger.info("getRunningStatus");
 
 		String[][] result = new String[getIdMap().get(getNameWorkflow()).size()][];
 
 		int i = 0;
-		for (Entry<String, String> e : getIdMap().get(getNameWorkflow()).entrySet()){
+		for (Entry<String, String> e : getIdMap().get(getNameWorkflow())
+				.entrySet()) {
 
 			DataFlowElement cur = getDf().getElement(e.getValue());
-			if(cur == null){
-				String msg = "Element "+e.getValue()+" does not exist.";
+			if (cur == null) {
+				String msg = "Element " + e.getValue() + " does not exist.";
 				logger.warn(msg);
 				MessageUseful.addErrorMessage(msg);
-			}else{
+			} else {
 				String status = getOozie().getElementStatus(getDf(), cur);
 
-				logger.info(e.getKey()+" - "+status);
+				logger.info(e.getKey() + " - " + status);
 
 				String pathExistsStr = null;
-				if (cur  != null){
+				if (cur != null) {
 					boolean pathExists = false;
-					for (Entry<String, DFEOutput> e2 : cur.getDFEOutput().entrySet()){
+					for (Entry<String, DFEOutput> e2 : cur.getDFEOutput()
+							.entrySet()) {
 
-						logger.info("path: "+e2.getValue().getPath());
+						logger.info("path: " + e2.getValue().getPath());
 
 						pathExists |= e2.getValue().isPathExists();
 
 					}
-					if(!cur.getDFEOutput().isEmpty()){
+					if (!cur.getDFEOutput().isEmpty()) {
 						pathExistsStr = String.valueOf(pathExists);
 					}
 				}
 
-				result[i++] = new String[]{e.getKey(), status, pathExistsStr};
+				result[i++] = new String[] { e.getKey(), status, pathExistsStr };
 			}
 		}
 
 		return result;
 	}
 
-	public String[] getArrowType(String groupOutId, String groupInId, String outputName) throws Exception{
+	public String[] getArrowType(String groupOutId, String groupInId,
+			String outputName) throws Exception {
 
-		DataFlowElement df = getDf().getElement(getIdMap().get(getNameWorkflow()).get(groupOutId));
+		DataFlowElement df = getDf().getElement(
+				getIdMap().get(getNameWorkflow()).get(groupOutId));
 
 		String color = null;
 		String typeName = null;
-		for (Entry<String, DFEOutput> e : df.getDFEOutput().entrySet()){
-			if (e.getKey().equals(outputName)){
+		for (Entry<String, DFEOutput> e : df.getDFEOutput().entrySet()) {
+			if (e.getKey().equals(outputName)) {
 				color = e.getValue().getColour();
 				typeName = e.getValue().getTypeName();
-				logger.info(e.getKey()+" - "+color);
+				logger.info(e.getKey() + " - " + color);
 				break;
 			}
 		}
 
 		logger.info("getArrowType " + color + " " + typeName);
 
-		return new String[]{groupOutId, groupInId, color, typeName};
+		return new String[] { groupOutId, groupInId, color, typeName };
 	}
 
-	public String[] getArrowType() throws Exception{
+	public String[] getArrowType() throws Exception {
 
 		logger.info("getArrowType");
 
-		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		Map<String, String> params = FacesContext.getCurrentInstance()
+				.getExternalContext().getRequestParameterMap();
 		String groupOutId = params.get("groupOutId");
 		String groupInId = params.get("groupInId");
 		String outputName = params.get("outputName");
 
-		logger.info("getArrowType " + groupOutId + " " + groupInId + " " + outputName);
+		logger.info("getArrowType " + groupOutId + " " + groupInId + " "
+				+ outputName);
 
 		return getArrowType(groupOutId, groupInId, outputName);
 	}
 
-	public String[] getAllArrowType() throws Exception{
+	public String[] getAllArrowType() throws Exception {
 
 		logger.info("getAllArrowType");
 
-		Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		Map<String, String> params = FacesContext.getCurrentInstance()
+				.getExternalContext().getRequestParameterMap();
 		String groupOutId = params.get("groupOutId");
 		String groupInId = params.get("groupInId");
 		String outputName = "";
@@ -1074,14 +1195,17 @@ public class CanvasBean extends BaseBean implements Serializable{
 			MessageUseful.addErrorMessage("Error when updating link colors: NULL POINTER"); //FIXME
 			HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
+
+
 		}
 
-		logger.info("getAllArrowType " + groupOutId + " " + groupInId + " " + outputName);
+		logger.info("getAllArrowType " + groupOutId + " " + groupInId + " "
+				+ outputName);
 
 		return getArrowType(groupOutId, groupInId, outputName);
 	}
 
-	public String getIdElement(String idGroup){
+	public String getIdElement(String idGroup) {
 		return getIdMap().get(getNameWorkflow()).get(idGroup);
 	}
 
@@ -1098,13 +1222,25 @@ public class CanvasBean extends BaseBean implements Serializable{
 	}
 
 	public void setNameWorkflow(String nameWorkflow) {
-		if(nameWorkflow != null && nameWorkflow.equals("undefined")){
+		if (nameWorkflow != null && nameWorkflow.equals("undefined")) {
 			return;
 		}
 		/*
+<<<<<<< HEAD
+<<<<<<< HEAD
 		logger.info("set Name workflow");
 		logger.info("old name: "+this.nameWorkflow);
 		logger.info("new name: "+nameWorkflow);
+=======
+		 * logger.info("set Name workflow");
+		 * logger.info("old name: "+this.nameWorkflow);
+		 * logger.info("new name: "+nameWorkflow);
+>>>>>>> keith
+=======
+		 * logger.info("set Name workflow");
+		 * logger.info("old name: "+this.nameWorkflow);
+		 * logger.info("new name: "+nameWorkflow);
+>>>>>>> 033d2126343d4b02eddd82e575525ccb2c7e80c2
 		 */
 		this.nameWorkflow = nameWorkflow;
 	}
@@ -1197,39 +1333,46 @@ public class CanvasBean extends BaseBean implements Serializable{
 		this.path = path;
 	}
 
-	public String[] getPositions() throws Exception{
+	public String[] getPositions() throws Exception {
 
 		logger.info("getPositions");
 
 		JSONArray jsonElements = new JSONArray();
-		for (DataFlowElement e : getDf().getElement()){
+		for (DataFlowElement e : getDf().getElement()) {
 
-			/*//FIXME add ./ on image path just for local environment (canvas.js addElements)
-			if(e.getImage().startsWith("/packages")){
-				jsonElements.put(new Object[]{e.getComponentId(), e.getName(), "./"+e.getImage(), e.getX(), e.getY()});
-			}else{
-				jsonElements.put(new Object[]{e.getComponentId(), e.getName(), e.getImage(), e.getX(), e.getY()});
-			}*/
+			/*
+			 * //FIXME add ./ on image path just for local environment
+			 * (canvas.js addElements) if(e.getImage().startsWith("/packages")){
+			 * jsonElements.put(new Object[]{e.getComponentId(), e.getName(),
+			 * "./"+e.getImage(), e.getX(), e.getY()}); }else{
+			 * jsonElements.put(new Object[]{e.getComponentId(), e.getName(),
+			 * e.getImage(), e.getX(), e.getY()}); }
+			 */
 
-			jsonElements.put(new Object[]{e.getComponentId(), e.getName(), e.getImage(), e.getX(), e.getY()});
+			jsonElements.put(new Object[] { e.getComponentId(), e.getName(),
+					e.getImage(), e.getX(), e.getY() });
 
 		}
 
 		JSONArray jsonLinks = new JSONArray();
-		for (DataFlowElement e : getDf().getElement()){
-			for (Map.Entry<String, List<DataFlowElement>> entry : e.getInputComponent().entrySet()){
-				for (DataFlowElement dfe : entry.getValue()){
-					jsonLinks.put(new Object[]{dfe.getComponentId(), e.getComponentId()});
+		for (DataFlowElement e : getDf().getElement()) {
+			for (Map.Entry<String, List<DataFlowElement>> entry : e
+					.getInputComponent().entrySet()) {
+				for (DataFlowElement dfe : entry.getValue()) {
+					jsonLinks.put(new Object[] { dfe.getComponentId(),
+							e.getComponentId() });
 				}
 			}
 		}
 
 		logger.info("getPositions getNameWorkflow " + getNameWorkflow());
 		logger.info("getPositions getPath " + getPath());
-		logger.info("getPositions jsonElements.toString " + jsonElements.toString());
+		logger.info("getPositions jsonElements.toString "
+				+ jsonElements.toString());
 		logger.info("getPositions jsonLinks.toString " + jsonLinks.toString());
 
-		return new String[]{getNameWorkflow(), getPath(), jsonElements.toString(), jsonLinks.toString()};
+		return new String[] { getNameWorkflow(), getPath(),
+				jsonElements.toString(), jsonLinks.toString() };
 	}
 
 	public UserInfoBean getUserInfoBean() {
@@ -1248,7 +1391,8 @@ public class CanvasBean extends BaseBean implements Serializable{
 	}
 
 	/**
-	 * @param nbLinkPossibilities the nbLinkPossibilities to set
+	 * @param nbLinkPossibilities
+	 *            the nbLinkPossibilities to set
 	 */
 	public void setNbLinkPossibilities(int nbLinkPossibilities) {
 		this.nbLinkPossibilities = nbLinkPossibilities;
@@ -1270,11 +1414,4 @@ public class CanvasBean extends BaseBean implements Serializable{
 		this.linkLabel = nameLink;
 	}
 
-	public String getErrorTableState() {
-		return errorTableState;
-	}
-
-	public void setErrorTableState(String errorTableState) {
-		this.errorTableState = errorTableState;
-	}
 }

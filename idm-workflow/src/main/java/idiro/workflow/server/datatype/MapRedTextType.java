@@ -189,6 +189,13 @@ public class MapRedTextType extends DataOutput {
 						error = LanguageManagerWF.getText(
 								"mapredtexttype.notmrdir",
 								new Object[] { getPath() });
+					} else {
+						try {
+							hdfsInt.select(stat[i].getPath().toString(),"", 1);
+						} catch (Exception e) {
+							error = LanguageManagerWF
+									.getText("mapredtexttype.notmrdir");
+						}
 					}
 				}
 				try {
@@ -328,14 +335,17 @@ public class MapRedTextType extends DataOutput {
 	 * 
 	 * @param name
 	 * @return <code>true</code> if name matches structure of a variable name
-	 *         (contains characters with numbers) and has a maximum else <code>false</code>
+	 *         (contains characters with numbers) and has a maximum else
+	 *         <code>false</code>
 	 */
 	public boolean isVariableName(String name) {
 		String regex = "[a-zA-Z]([a-zA-Z0-9_]{0,29})";
 		return name.matches(regex);
 	}
+
 	/**
 	 * Set the features list of the data set from the header
+	 * 
 	 * @return Error Message
 	 * @throws RemoteException
 	 */
@@ -452,8 +462,10 @@ public class MapRedTextType extends DataOutput {
 
 		return error;
 	}
+
 	/**
 	 * Set the FeatureList for the data set
+	 * 
 	 * @param fl
 	 * 
 	 */
@@ -462,8 +474,10 @@ public class MapRedTextType extends DataOutput {
 		logger.info("setFeatures :");
 		super.setFeatures(fl);
 	}
+
 	/**
 	 * Generate a features list from the data in the current path
+	 * 
 	 * @return FeatureList
 	 * @throws RemoteException
 	 */
@@ -513,8 +527,10 @@ public class MapRedTextType extends DataOutput {
 		return fl;
 
 	}
+
 	/**
 	 * Get a Default delimiter from text
+	 * 
 	 * @param text
 	 * @return delimiter
 	 */
@@ -528,8 +544,10 @@ public class MapRedTextType extends DataOutput {
 		}
 		return "#1";
 	}
+
 	/**
 	 * Check if a feature can be converted from one type to another
+	 * 
 	 * @param from
 	 * @param to
 	 * @return <code>true</code> the cast is possible else <code>false</code>
@@ -556,8 +574,10 @@ public class MapRedTextType extends DataOutput {
 		}
 		return false;
 	}
+
 	/**
 	 * Add a property to the dataset
+	 * 
 	 * @param key
 	 * @param value
 	 */
@@ -569,8 +589,10 @@ public class MapRedTextType extends DataOutput {
 		}
 		super.addProperty(key, value);
 	}
+
 	/**
-	 * Set the path 
+	 * Set the path
+	 * 
 	 * @param path
 	 * @throws RemoteException
 	 */
@@ -664,12 +686,14 @@ public class MapRedTextType extends DataOutput {
 		}
 
 	}
+
 	/**
 	 * Compare the current path , FeatureList , properties to others
+	 * 
 	 * @param path
 	 * @param fl
 	 * @param props
-	 * @return <code>true</code> if items are equal else <code>false</code> 
+	 * @return <code>true</code> if items are equal else <code>false</code>
 	 */
 	@Override
 	public boolean compare(String path, FeatureList fl,
@@ -712,8 +736,10 @@ public class MapRedTextType extends DataOutput {
 		return !(this.getPath() == null || features == null) && compProps
 				&& (this.getPath().equals(path) && features.equals(fl));
 	}
+
 	/**
-	 * Generate a column name 
+	 * Generate a column name
+	 * 
 	 * @param columnIndex
 	 * @return name
 	 */

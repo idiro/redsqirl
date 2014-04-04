@@ -78,6 +78,7 @@ public class ServerMain {
 				String nameSshArray = System.getProperty("user.name")+"@ssharray";
 				String nameOozie = System.getProperty("user.name")+"@oozie";
 				String nameHDFS = System.getProperty("user.name")+"@hdfs";
+				String nameHDFSBrowser = System.getProperty("user.name")+"@hdfsbrowser";
 				String namePckMng = System.getProperty("user.name")+"@pckmng";
 
 				registry = LocateRegistry.getRegistry(
@@ -121,6 +122,13 @@ public class ServerMain {
 						);
 
 				logger.info("nameHDFS: "+nameHDFS);
+				
+				registry.rebind(
+						nameHDFSBrowser,
+						(DataStore) new HDFSInterface()
+						);
+
+				logger.info("nameHDFSBrowser: "+nameHDFSBrowser);
 
 				registry.rebind(
 						namePckMng,

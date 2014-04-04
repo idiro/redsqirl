@@ -6,6 +6,7 @@ import idiro.workflow.server.DataProperty;
 import idiro.workflow.server.DataflowAction;
 import idiro.workflow.server.ListInteraction;
 import idiro.workflow.server.Page;
+import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.datatype.HiveTypePartition;
@@ -378,7 +379,25 @@ public class Convert extends DataflowAction {
 	 */
 	@Override
 	public String getHelp() throws RemoteException {
-		return "../help/" + getName().toLowerCase() + ".html";
+		String absolutePath = "";
+		String helpFile = "/help/" + getName().toLowerCase() + ".html";
+		String path = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path);
+		List<String> files = listFilesRecursively(path);
+		for (String file : files) {
+			if (file.contains(helpFile)) {
+				absolutePath = file;
+				break;
+			}
+		}
+		String ans = "";
+		if (absolutePath.contains(path)) {
+			ans = absolutePath.substring(path.length());
+		}
+		logger.debug("Source help absPath : " + absolutePath);
+		logger.debug("Source help Path : " + path);
+		logger.debug("Source help ans : " + ans);
+		// absolutePath
+		return absolutePath;
 	}
 
 	/**
@@ -389,7 +408,26 @@ public class Convert extends DataflowAction {
 	 */
 	@Override
 	public String getImage() throws RemoteException {
-		return "../image/" + getName().toLowerCase() + ".gif";
+		String absolutePath = "";
+		String imageFile = "/image/" + getName().toLowerCase() + ".gif";
+		String path = WorkflowPrefManager
+						.getSysProperty(WorkflowPrefManager.sys_tomcat_path);
+		List<String> files = listFilesRecursively(path);
+		for (String file : files) {
+			if (file.contains(imageFile)) {
+				absolutePath = file;
+				break;
+			}
+		}
+		String ans = "";
+		if (absolutePath.contains(path)) {
+			ans = absolutePath.substring(path.length());
+		}
+		logger.debug("Source image abs Path : " + absolutePath);
+		logger.debug("Source image Path : " + path);
+		logger.debug("Source image ans : " + ans);
+
+		return absolutePath;
 	}
 
 	/**

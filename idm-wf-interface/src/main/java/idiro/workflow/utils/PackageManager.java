@@ -39,25 +39,27 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 	private static final long serialVersionUID = -5328659434051680675L;
 
 	static Logger logger = Logger.getLogger(PackageManager.class);
-					/**Help Files directory  name*/
+	/** Help Files directory name */
 	static String help_dir = "help",
-			/**Image Directory name*/
-			image_dir = "images",
-			/**Lib directory name*/
-			lib_dir = "lib",
-			/**Action list file nmae*/
-			action_file = "actions.txt",
-			/**List of files name of file*/
-			list_files = "files.txt",
-			/**
-			 * Properies file name
-			 */
-			properties_file = "package.properties";
+	/** Image Directory name */
+	image_dir = "images",
+	/** Lib directory name */
+	lib_dir = "lib",
+	/** Action list file nmae */
+	action_file = "actions.txt",
+	/** List of files name of file */
+	list_files = "files.txt",
+	/**
+	 * Properies file name
+	 */
+	properties_file = "package.properties";
 
 	public static String property_version = "version",
 			property_name = "packageName";
+
 	/**
 	 * Constructor
+	 * 
 	 * @throws RemoteException
 	 */
 	public PackageManager() throws RemoteException {
@@ -303,8 +305,10 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 
 		return error;
 	}
+
 	/**
 	 * Initialize the folders for the packages
+	 * 
 	 * @param sys_package
 	 */
 	public void init(boolean sys_package) {
@@ -330,8 +334,10 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 			dir.mkdirs();
 		}
 	}
+
 	/**
-	 * Get a list of all packages that are installed 
+	 * Get a list of all packages that are installed
+	 * 
 	 * @param sys_package
 	 * @return List of installed packages
 	 */
@@ -376,8 +382,10 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 
 		return ans;
 	}
+
 	/**
 	 * Check if the package is a valid package
+	 * 
 	 * @param pack
 	 * @return Error Message
 	 */
@@ -423,8 +431,10 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 
 		return error;
 	}
+
 	/**
-	 * Get a  List of packages that are installed
+	 * Get a List of packages that are installed
+	 * 
 	 * @param root_pack
 	 * @return List of Packages
 	 */
@@ -445,8 +455,10 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 		}
 		return packageNames;
 	}
+
 	/**
 	 * Get a property from the package
+	 * 
 	 * @param root_pack
 	 * @param packageName
 	 * @param property
@@ -471,8 +483,10 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 			return null;
 		}
 	}
+
 	/**
 	 * Check that there is no duplicate for the package
+	 * 
 	 * @param pack_name
 	 * @param root_pack
 	 * @param pack_version
@@ -517,8 +531,10 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 				: checkNoPackageNameDuplicate(pack_name, true, pack_version,
 						true);
 	}
+
 	/**
 	 * Check that there is no Help file duplicate
+	 * 
 	 * @param pack
 	 * @param sys_package
 	 * @return Error Message
@@ -530,8 +546,10 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 
 		return checkNoFileNameDuplicate(pack.getName(), packHelp, helpDir);
 	}
+
 	/**
 	 * Check that there is no Jar File Duplicate
+	 * 
 	 * @param pack
 	 * @param sys_package
 	 * @return Error Message
@@ -543,8 +561,10 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 
 		return checkNoFileNameDuplicate(pack.getName(), packHelp, libDir);
 	}
+
 	/**
 	 * Check if there is no image duplicate
+	 * 
 	 * @param pack
 	 * @param sys_package
 	 * @return error message
@@ -556,8 +576,10 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 
 		return checkNoFileNameDuplicate(pack.getName(), packImage, imageDir);
 	}
+
 	/**
 	 * Check if there is no file duplicate
+	 * 
 	 * @param packageName
 	 * @param srcDir
 	 * @param destDir
@@ -584,8 +606,10 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 
 		return error;
 	}
+
 	/**
 	 * Check if there are duplicate action files
+	 * 
 	 * @param pack
 	 * @param pack_name
 	 * @param sys_package
@@ -749,14 +773,13 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 	 * @return directory
 	 */
 	public File getHelpDir(boolean sys_package) {
-		return sys_package ? new File(
-				WorkflowPrefManager
-						.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
-						+ WorkflowPrefManager.pathSysHelpPref.get())
-				: new File(
-						WorkflowPrefManager
-								.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
-								+ WorkflowPrefManager.pathUserHelpPref.get());
+		String tomcatpath = WorkflowPrefManager
+				.getSysProperty(WorkflowPrefManager.sys_tomcat_path);
+		String installPackage = WorkflowPrefManager.getSysProperty(
+				WorkflowPrefManager.sys_install_package, tomcatpath);
+		return sys_package ? new File(installPackage
+				+ WorkflowPrefManager.pathSysHelpPref.get()) : new File(
+				installPackage + WorkflowPrefManager.pathUserHelpPref.get());
 	}
 
 	/**
@@ -766,14 +789,13 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 	 * @return directory
 	 */
 	public File getImageDir(boolean sys_package) {
-		return sys_package ? new File(
-				WorkflowPrefManager
-						.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
-						+ WorkflowPrefManager.pathSysImagePref.get())
-				: new File(
-						WorkflowPrefManager
-								.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
-								+ WorkflowPrefManager.pathUserImagePref.get());
+		String tomcatpath = WorkflowPrefManager
+				.getSysProperty(WorkflowPrefManager.sys_tomcat_path);
+		String installPackage = WorkflowPrefManager.getSysProperty(
+				WorkflowPrefManager.sys_install_package, tomcatpath);
+		return sys_package ? new File(installPackage
+				+ WorkflowPrefManager.pathSysImagePref.get()) : new File(
+				installPackage + WorkflowPrefManager.pathUserImagePref.get());
 	}
 
 	/**

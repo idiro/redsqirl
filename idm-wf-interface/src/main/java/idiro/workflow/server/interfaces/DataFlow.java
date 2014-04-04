@@ -1,6 +1,7 @@
 package idiro.workflow.server.interfaces;
 import idiro.workflow.server.WorkflowPrefManager;
 
+import java.io.File;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
@@ -25,6 +26,8 @@ public interface DataFlow extends Remote {
 	 * 
 	 */
 	public String loadMenu() throws RemoteException;
+
+	public Map<String,List<String[]>> loadMenu(File curPath) throws RemoteException;
 
 	/**
 	 * Save the icon menu.

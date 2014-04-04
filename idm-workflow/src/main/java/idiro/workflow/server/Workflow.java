@@ -2,6 +2,7 @@ package idiro.workflow.server;
 
 import idiro.Log;
 import idiro.hadoop.NameNodeVar;
+import idiro.utils.LocalFileSystem;
 import idiro.utils.RandomString;
 import idiro.workflow.server.enumeration.SavingState;
 import idiro.workflow.server.interfaces.DFEOutput;
@@ -116,6 +117,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		super();
 		this.name = name;
 	}
+	
 
 	/**
 	 * Load the icon menu.
@@ -128,6 +130,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 * 
 	 */
 	public String loadMenu() {
+
 		String error = "";
 		File menuDir = new File(WorkflowPrefManager.pathIconMenu.get());
 		File[] children = menuDir.listFiles(new FileFilter() {
@@ -190,6 +193,37 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 
 		return error;
+	}
+	
+	public Map<String,List<String[]>> loadMenu(File curPath) {
+		if(menuWA == null || menuWA.isEmpty()){
+			loadMenu();
+		}
+		logger.info("Load menu "+curPath.getPath());
+		Map<String,List<String[]>> ans = new LinkedHashMap<String,List<String[]>>();
+		Iterator<String> menuWAit = menuWA.keySet().iterator();
+		while(menuWAit.hasNext()){
+			String key = menuWAit.next();
+			Iterator<String[]> actionListit = menuWA.get(key).iterator();
+			List<String[]> newActionList = new ArrayList<String[]>();
+			while(actionListit.hasNext()){
+				String[] parameters = actionListit.next();
+				try{
+					logger.info("loadMenu "+ curPath +" "+ parameters[1]);
+					logger.info("loadMenu "+ curPath +" "+ parameters[2]);
+					parameters[1] = LocalFileSystem.relativize(curPath,parameters[1]);
+					parameters[2] = LocalFileSystem.relativize(curPath,parameters[2]);
+					newActionList.add(parameters);
+				}catch (Exception e){
+					logger.error(e.getMessage());
+					logger.error("Error Getting relative paths for Help and Image");
+				}
+				
+			}
+			ans.put(key, newActionList);
+		}
+		
+		return ans;
 	}
 
 	/**

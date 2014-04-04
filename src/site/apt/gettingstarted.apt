@@ -87,7 +87,7 @@ jdbc_hive_server=datanode1
   You can now install extra functionalities on the system. Please refer to the
 {{{./packagemanagement.html}Package Management}} section.
 
-** System twicks
+** System properties
 
   Below we list the system preferences available to you.
 
@@ -134,7 +134,7 @@ jdbc_hive_server=datanode1
 *----------+--------------+----------------+
 
 
-** User twicks
+** User properties
 
   Below we list the user preferences available to you.  
 
