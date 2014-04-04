@@ -477,7 +477,6 @@ public class FileSystemBean extends BaseBean implements Serializable{
 		}
 	}
 
-<<<<<<< HEAD
 	/** goUp
 	 * 
 	 * Method to navigate the file system.
@@ -539,8 +538,6 @@ public class FileSystemBean extends BaseBean implements Serializable{
 		}
 	}
 
-=======
->>>>>>> etienne
 	public String getCanCopy() throws RemoteException{
 		return getDataStore().canCopy();
 	}
