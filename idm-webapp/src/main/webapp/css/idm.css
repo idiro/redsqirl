@@ -412,6 +412,11 @@ canvas {
 	z-index: 9002;
 	font-family:verdana;
 }
+/* Use in help files*/
+div#body{
+    background-color: white;
+    background:none;
+}
 
 .tooltip {
 	left:30%;
@@ -419,6 +424,11 @@ canvas {
 	position: absolute;
 	z-index: 9001;
 	width: 50%;	
+}
+
+/* Canvas Modal */
+.noMaskClass .rich-mpnl-mask-div{
+  display:none;
 }
 
 

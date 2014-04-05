@@ -1,6 +1,5 @@
 <html>
 <head>
-<link rel="stylesheet" type="text/css" href="../css/idm.css">
 <title>IDM Help</title>
 </head>
 <body>
@@ -13,7 +12,7 @@
     <div id="helpPage">
 	<h1>IDM</h1>
 	<h2>
-		<a id="stopLink" onclick="return false;" href="../help/technologies.html">Technologies</a>
+		<a class="stopLink" id="helpmain_tech" onclick="return false;" href="../help/technologies.html">Technologies</a>
 	</h2>
 	<p>IDM is an Analysis Platform that runs in parallel with the
 		Hadoop platform and other Hadoop Technologies. The main technologies
@@ -28,7 +27,7 @@
 		run with different parameters. The output of theses jobs will be saved
 		to appropriate storage facility (Hive or HDFS)
 	<h2>
-		<a id="stopLink" onclick="return false;" href="../help/menu.html">Menu</a>
+		<a class="stopLink" id="helpmain_menu" onclick="return false;" href="../help/menu.html">Menu</a>
 	</h2>
 	<p>The Menu contains basic operations for manipulating workflow and
 		projects. Options like new , save and run project can be found here.
@@ -36,7 +35,7 @@
 
 
 	<h2>
-		<a id="stopLink" onclick="return false;" href="../help/canvas.html">Canvas</a>
+		<a class="stopLink" id="helpmain_canvas" onclick="return false;" href="../help/canvas.html">Canvas</a>
 	</h2>
 
 	<p>
@@ -52,19 +51,37 @@
 		shows the stages of the workflow so that it will help the user can
 		create a workflow with the right steps involved at the right stage.
 	<h2>
-		<a id="stopLink" onclick="return false;" href="../help/actionsfooter.html">Actions Footer</a>
+		<a class="stopLink" id="helpmain_actfooter" onclick="return false;" href="../help/actionsfooter.html">Actions Footer</a>
 	</h2>
 	<p>Actions footer is a container for tabs that hold actions that
 		can be added to the workflow. Tabs can be created and be organized to
 		hold certain actions.
-	<h2>
-		<a id="stopLink" onclick="return false;" href="../help/informaton.html">Information Panel</a>
-	</h2>
+	<h2>Other panels</h2>
 	<p>This is where information can be view and different aspects of
 		the IDM such as Oozie processes, Hadoop File System View and other
-		informative views.</p>
+		informative views.
+		<ul>
+		    <li>
+			<a class="stopLink" id="helpmain_ssh" onclick="return false;" href="../help/ssh_view.html">Remote File System</a>
+		    </li>
+		    <li>
+			<a class="stopLink" id="helpmain_help" onclick="return false;" href="../help/help_view.html">Help</a>
+		    </li>
+		    <li>
+			<a class="stopLink" id="helpmain_procman" onclick="return false;" href="../help/process_manager.html">Process manager</a>
+		    </li>
+		    <li>
+			<a class="stopLink" id="helpmain_error" onclick="return false;" href="../help/error_view.html">Error</a>
+		    </li>
+		    <li>
+			<a class="stopLink" id="helpmain_hive" onclick="return false;" href="../help/hive_view.html">Hive</a>
+		    </li>
+		    <li>
+			<a class="stopLink" id="helpmain_hdfs" onclick="return false;" href="../help/hdfs_view.html">Hadoop File System</a>
+		    </li>
+		</ul>
+	</p>
 
-	<h2><a id="stopLink" onclick="return false;" href="../help/buildingworkflow.html">How to build a workflow</a></h2>
     </div>
     </div>
 </body>

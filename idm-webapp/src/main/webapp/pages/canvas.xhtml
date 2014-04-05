@@ -1025,7 +1025,10 @@
 			    <table style="width:100%;display:block;">
 			        <tr style="width:100%;right:0px;position:relative;">
 			        <td style="max-width=105px;padding=0px;margin=0px;" >
+				    <a class="stopLink" id="help_main"
+					onclick="return false;" href="../help/main.html">
 					<h:graphicImage id="logoImg" width="100px" url="../image/icons/logo.png"/>
+				    </a>
 					</td>
 					<td style="width:100%;">
 					<h:panelGrid columns="1" width="100%" style="right:5px;position:relative;">
@@ -1208,8 +1211,8 @@
 				<ul class="ulCss">
 
 					<li class="locked"><a href="#tabFlowchart-1"
-						id="idtabFlowchart-1"> Flowchart </a></li>
-                    <li class="locked"><a href="#tabs-8" id="idtabs-8"> <h:outputText
+						id="idtabFlowchart-1" onclick="jQuery('#helpmain_canvas').click();return false;"> Flowchart </a></li>
+                    <li class="locked"><a href="#tabs-8" id="idtabs-8" onclick="jQuery('#helpmain_ssh').click();return false;"> <h:outputText
                                 value="#{messages.label_tab_remotefilesystem}" />
                     </a></li>
 					<button id="changeTabCanvas" style="border: hidden;">&#9660;</button>
@@ -1268,7 +1271,7 @@
 									</ui:repeat>
 									<a4j:region>
 										<a4j:commandButton image="../image/icons/button-property.gif"
-											onclick="#{rich:component('modalConfigureFooterTabs')}.show()"
+											onclick="#{rich:component('modalConfigureFooterTabs')}.show();document.getElementById('helpmain_actfooter').click();"
 											style="border: hidden;width:22px;vertical-align:middle;" styleClass="configureFooterButton"/>
 									</a4j:region>
 								</ul>
@@ -1331,13 +1334,13 @@
 			<div id="tabs1">
 				<ul class="ulCss">
 
-					<li><a href="#tabs-1"> <h:outputText
+					<li><a href="#tabs-1" onclick="jQuery('#helpmain_help').click();return false;" > <h:outputText
 								value="#{messages.label_tab_help}" />
 					</a></li>
-					<li><a href="#tabs-2"> <h:outputText
+					<li><a href="#tabs-2" onclick="jQuery('#helpmain_procman').click();return false;"> <h:outputText
 								value="#{messages.label_tab_processmanager}" />
 					</a></li>
-					<li><a href="#tabs-3"> <h:outputText
+					<li><a href="#tabs-3" onclick="jQuery('#helpmain_error').click();return false;"> <h:outputText
 								value="#{messages.label_tab_error}" />
 					</a></li>
 
@@ -1403,10 +1406,10 @@
 
 			<div id="tabs2">
 				<ul class="ulCss">
-					<li><a href="#tabs-7"> <h:outputText
+					<li><a href="#tabs-7" onclick="jQuery('#helpmain_hdfs').click();return false;"> <h:outputText
 								value="#{messages.label_tab_hadoopfilesystem}" />
 					</a></li>
-                    <li><a href="#tabs-4"> <h:outputText
+                    <li><a href="#tabs-4" onclick="jQuery('#helpmain_hive').click();return false;"> <h:outputText
                                 value="#{messages.label_tab_hiveview}" />
                     </a></li>
                     <li><a href="#tabs-5"> <h:outputText
@@ -1474,7 +1477,7 @@
 
 	<a4j:region>
 		<rich:modalPanel id="canvasModalPanel" width="800" height="600"
-			style="overflow:auto;" resizeable="false">
+			style="overflow:auto;" resizeable="false" styleClass="noMaskClass">
 
 			<f:facet name="header">
 				<h:outputText value="#{canvasModalBean.pageTitle}" id="pageTitle" />
@@ -1494,7 +1497,7 @@
 
 	<a4j:region renderRegionOnly="true">
 		<rich:modalPanel id="modalConfigureFooterTabs" width="600"
-			height="400" style="overflow:auto;" resizeable="false">
+			height="400" style="overflow:auto;" resizeable="false" styleClass="noMaskClass">
 
 			<f:facet name="header">Configuration</f:facet>
 			<f:facet name="controls">
