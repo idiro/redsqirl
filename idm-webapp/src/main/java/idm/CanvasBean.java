@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
@@ -191,7 +190,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			List<String[]> menuItem = newList.get(key);
 			for (String[] e : menuItem) {
 				String name = WordUtils.capitalizeFully(e[0].replace("_", " "));
-				helpList.add(new String[] { name, e[2] });
+				helpList.add(new String[] { name, e[2],e[0] });
 			}
 		}
 		return helpList;

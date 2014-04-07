@@ -115,10 +115,36 @@
 	                styleClass="greenButton"
 	                action="#{packageMngBean.installPackage}"
 	                value="#{messages.button_install}"
-	                oncomplete="if(#{requestScope['msnError2'] != null}){ #{rich:component('msnError2')}.show() }">
+	                oncomplete="if(#{requestScope['msnError2'] != null}){ #{rich:component('msnError2')}.show() }else{{ #{rich:component('modalInstallSuccess')}.show()}">
 	                <a4j:actionparam name="downloadUrl" value="#{packageMngBean.curPackage.url}" />
 	            </a4j:commandButton>
             </div>
         </h:panelGroup>
 	</h:form>
+	
+	<rich:modalPanel id="modalInstallSuccess" width="300" height="90"
+			style="overflow:auto;" resizeable="false">
+
+			<f:facet name="header">Package Installed</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+					style="cursor:pointer;width:22px;"
+					onclick="#{rich:component('modalInstallSuccess')}.hide()" />
+			</f:facet>
+
+			<h:panelGroup>
+			
+				<h:outputText value="#{messages.package_installed}" />
+				<br />
+				<a4j:commandButton value="#{messages.button_ok}" styleClass="greenButton"
+					onclick="#{rich:component('modalInstallSuccess')}.hide();;"
+					oncomplete="" reRender="errorTable" >
+				</a4j:commandButton>
+				
+				<a4j:commandButton value="#{messages.button_restart}" styleClass="greenButton"
+					onclick="#{rich:component('modalInstallSuccess')}.hide();">
+				</a4j:commandButton>
+			</h:panelGroup>
+
+		</rich:modalPanel>
 </ui:composition>

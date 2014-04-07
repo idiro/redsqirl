@@ -25,3 +25,27 @@ INSERT INTO idm_pck_mng.idm_hosts (
  VALUES(
     'http://localhost:8080/idm-pck-manager/'
     );
+    
+    
+    INSERT INTO idm_pck_mng.idm_packages (id,
+  name,
+  version,
+  license,
+  price,
+  short_description,
+  html_file,
+  release_notes,
+  package_date,
+  zip_file)
+ VALUES(
+ 1,
+    'hive',
+    '0.1',
+    'free',
+    'free',
+    'description',
+    '',
+    '',
+    '02/02/0214',
+    'http://localhost:8080/idm-pck-manager/hive.zip'
+    );

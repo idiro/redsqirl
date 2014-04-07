@@ -1,7 +1,7 @@
 html,body {
     font-family: Verdana, Geneva, sans-serif;
-	height: 100%;
-	width: 100%;
+    height: 99.5% !important;
+    width: 99.5% !important;
 }
 
 image {
@@ -412,6 +412,11 @@ canvas {
 	z-index: 9002;
 	font-family:verdana;
 }
+/* Use in help files*/
+div#body{
+    background-color: white;
+    background:none;
+}
 
 .tooltip {
 	left:30%;
@@ -419,6 +424,11 @@ canvas {
 	position: absolute;
 	z-index: 9001;
 	width: 50%;	
+}
+
+/* Canvas Modal */
+.noMaskClass .rich-mpnl-mask-div{
+  display:none;
 }
 
 
@@ -654,7 +664,7 @@ table.secondtable td{
 
 /*gradient background on canvas*/
 #body{
-	background: linear-gradient(white,#dadbdd, #dadbdd);
+    background: linear-gradient(white,#dadbdd, #dadbdd);
 }
 
 /*transparent background on tabs*/

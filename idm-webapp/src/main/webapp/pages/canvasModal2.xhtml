@@ -13,17 +13,26 @@
 	    var scrollPos = txtarea.scrollTop;
 	    var strPos = 0;
 	    strPos = txtarea.getCursorPosition();
+	    var spaceAdd = 0;
 	    var front = (txtarea.val().trim()).substring(0,strPos);
+	    if(front.length > 0 && front.charAt(front.length -1) != " "){
+	       front += " ";
+	       spaceAdd += 1;
+	    }
 	    var back = (txtarea.val().trim()).substring(strPos,txtarea.val().length);
+        if(back.length > 0 && back.charAt(back.length -1) != " "){
+           back = " "+back;
+           spaceAdd += 1;
+        }
 	    txtarea.val(front + text.trim() + back);
 
 
 	    var regex = '\\(';
 	    var pos = text.search(regex);
 	    if(pos != -1){
-		    strPos = strPos + pos+1;
+		    strPos = strPos + pos+1+spaceAdd;
 		}else{
-			strPos = strPos + text.length;
+			strPos = strPos + text.length+spaceAdd;
 		}
 	    
 	    //txtarea.selectionStart = strPos;
