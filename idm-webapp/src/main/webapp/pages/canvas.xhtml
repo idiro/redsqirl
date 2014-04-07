@@ -166,26 +166,27 @@
 		  jQuery(document).ready(function(){
 
 	    	  jQuery(".splitterV").splitter({
-	    			type: "v",
+	    		type: "v",
 				outline: true,
-	    			sizeLeft: jQuery(window).width()*2/3, 
-	    			//minLeft: 200,
-	    			//minRight: 200,
+	    		sizeLeft: jQuery(window).width()*2/3, 
+	    		//minLeft: 200,
+	    		//minRight: 200,
 				resizeToWidth: true,
 				dock: "right",
 				dockSpeed: 200,
-				cookie: "splitterV"
+				cookie: "splitterV",
+				dockKey: 'Z'
 	    		});
 
 	    	  jQuery("#splitterH").splitter({
-	    			type: "h", 
+	    		type: "h", 
 				outline: true,
-	    			//minTop: 100,
-	    			//minBottom: 100,
+	    		//minTop: 100,
+	    		//minBottom: 100,
 				resizeToWidth: true,
 				dock: "top",
 				dockSpeed: 200,
-	    			cookie: "splitterH"
+	    		cookie: "splitterH"
 	    		});
 
 		      jQuery(".splitter-bar-vertical").contextMenu(menuSplitterV);

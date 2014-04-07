@@ -689,7 +689,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 		elementToUpdate = false;
 
 		// set the first tab for obj
-		setSelectedTab(getMessageResources("label_dynamic_configuration"));
+		setSelectedTab("confTabCM");
 
 		logger.info("open group id " + getGroupID());
 		logger.info("size of map "
