@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -21,32 +24,48 @@ import org.apache.log4j.Logger;
 public class ConfigureTabsBean extends BaseBean implements Serializable {
 
 
-	private DataFlow wf;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4626482566525824607L;
+	
+	
 	protected Map<String, List<String[]>> menuWA;
 	private String tabName;
 	private String selected;
-	
-	private Logger logger = Logger.getLogger(ConfigureTabsBean.class);
 
+	private static Logger logger = Logger.getLogger(ConfigureTabsBean.class);
+	private static Map<String,String> allWANameWithClassName = null;
 
 	//@PostConstruct
 	public void openCanvasScreen()  {
 		try {
 			if (getworkFlowInterface().getWorkflow("canvas0") == null) {
 				getworkFlowInterface().addWorkflow("canvas0");
-				wf = getworkFlowInterface().getWorkflow("canvas0");
+				DataFlow wf = getworkFlowInterface().getWorkflow("canvas0");
 				wf.loadMenu();
+				menuWA = wf.loadMenu(getCurrentPage());
+				if(allWANameWithClassName == null){
+					allWANameWithClassName = wf.getAllWANameWithClassName();
+				}
+				getworkFlowInterface().removeWorkflow("canvas0");
 			}
 		} catch (RemoteException e1) {
 			e1.printStackTrace();
 
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
+	}
+
+	public File getCurrentPage(){
 		String currentPage = ((HttpServletRequest) FacesContext
 				.getCurrentInstance().getExternalContext().getRequest())
 				.getRequestURI();
-
-		if (currentPage != null || !currentPage.isEmpty()) {
+		File f = null;
+		//		logger.info(currentPage);
+		if (currentPage != null && !currentPage.isEmpty()) {
 			List<Integer> pos = new ArrayList<Integer>();
 			for (int i = 0; i < currentPage.length(); i++) {
 
@@ -56,7 +75,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 			}
 			currentPage = currentPage.substring(0, pos.get(pos.size() - 1));
 			try {
-				File f = new File(
+				f = new File(
 						WorkflowPrefManager
 						.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
 						+ currentPage);
@@ -66,12 +85,14 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 							.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
 							+ currentPage.substring(pos.get(1)));
 				}
-				menuWA = wf.loadMenu(f);
+				logger.info(f.getAbsolutePath());
 			} catch (Exception e) {
-				
+				//				logger.info("E");
 			}
-
+			
 		}
+
+		return f;
 	}
 
 	public List<String> getTabs() {
@@ -80,7 +101,10 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 
 	public List<SelectItem> getMenuActions() throws RemoteException, Exception {
 		List<SelectItem> result = new ArrayList<SelectItem>();
-		for (Entry<String, String> e : wf.getAllWANameWithClassName()
+		if (allWANameWithClassName == null) {
+			openCanvasScreen();
+		}
+		for (Entry<String, String> e : allWANameWithClassName
 				.entrySet()) {
 			result.add(new SelectItem(e.getKey(), e.getKey()));
 		}
@@ -89,11 +113,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 
 	public Map<String, List<String[]>> getMenuWA() {
 		if (menuWA == null) {
-			try {
-				menuWA = wf.getMenuWA();
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+			openCanvasScreen();
 		}
 		return menuWA;
 	}
@@ -151,13 +171,32 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	}
 
 	public void saveTabs() throws RemoteException {
-		wf.setMenuWA(getMenuWA());
-		selected = null;
-		setTabName("");
-		wf.saveMenu();
-		// TODO
-		// wf.loadMenu();
-		menuWA = wf.getMenuWA();
+		try {
+			if (getworkFlowInterface().getWorkflow("canvas0") == null) {
+				getworkFlowInterface().addWorkflow("canvas0");
+				DataFlow wf = getworkFlowInterface().getWorkflow("canvas0");
+				Map<String,List<String>> mapMenu = new LinkedHashMap<String,List<String>>();
+				for(Entry<String, List<String[]>> cur: getMenuWA().entrySet()){
+					List<String> l = new LinkedList<String>();
+					Iterator<String[]> it = cur.getValue().iterator();
+					while(it.hasNext()){
+						l.add(it.next()[0]);
+					}
+					mapMenu.put(cur.getKey(),l);
+				}
+				wf.loadMenu(mapMenu);
+				selected = null;
+				setTabName("");
+				wf.saveMenu();
+				menuWA = wf.loadMenu(getCurrentPage());
+				getworkFlowInterface().removeWorkflow("canvas0");
+			}
+		} catch (RemoteException e1) {
+			e1.printStackTrace();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void setSelected() {

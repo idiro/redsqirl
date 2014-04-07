@@ -27,6 +27,17 @@ public interface DataFlow extends Remote {
 	 */
 	public String loadMenu() throws RemoteException;
 
+	/**
+	 * Load the icon menu.
+	 * 
+	 * Load the icon menu from a map of action list.
+	 * 
+	 * @param newMenu The new actions per menu
+	 * @return null if ok, or all the error found
+	 * 
+	 */
+	public String loadMenu(Map<String,List<String>> newMenu) throws RemoteException;
+	
 	public Map<String,List<String[]>> loadMenu(File curPath) throws RemoteException;
 
 	/**
@@ -307,14 +318,6 @@ public interface DataFlow extends Remote {
 	 */
 	public Map<String, List<String[]>> getMenuWA() throws RemoteException;
 
-	/**
-	 * Set the menu Workflow Action
-	 * 
-	 * @param menuWA
-	 *            the menuWA to set
-	 */
-	public void setMenuWA(Map<String, List<String[]>> menuWA)
-			throws RemoteException;
 
 	/**
 	 * Get the list of compnent Ids that are an the Workflow
