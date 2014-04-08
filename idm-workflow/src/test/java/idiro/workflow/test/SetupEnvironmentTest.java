@@ -44,13 +44,13 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({//ActionTests.class,
 //	WorkflowTests.class,
 	//CreateWorkflowTests.class,
-	//	HDFSInterfaceTests.class,
+		HDFSInterfaceTests.class,
 	//	HiveInterfaceTests.class,
 	//	SSHInterfaceTests.class,
 	//	SSHInterfaceArrayTests.class,
 	//	HiveTypeTests.class, 
 	//	HiveTypePartitionTests.class, 
-		SourceTests.class,
+//		SourceTests.class,
 	//	WorkflowProcessesManagerTests.class,
 	//	OozieManagerTests.class,
 	//PackageManagerTests.class,
@@ -145,16 +145,16 @@ public class SetupEnvironmentTest {
 			logger.error("something went wrong : " + e.getMessage());
 
 		}
-		HiveInterface hiveInt = null;
-		try {
-			hiveInt = new HiveInterface();
-			for(int i = 0; i < 4; ++i){
-				hiveInt.delete(TestUtils.getTablePath(i));
-			}
-		}catch (Exception e) {
-			logger.error("something went wrong : " + e.getMessage());
-
-		}
+//		HiveInterface hiveInt = null;
+//		try {
+//			hiveInt = new HiveInterface();
+//			for(int i = 0; i < 4; ++i){
+//				hiveInt.delete(TestUtils.getTablePath(i));
+//			}
+//		}catch (Exception e) {
+//			logger.error("something went wrong : " + e.getMessage());
+//
+//		}
 
 		WorkflowPrefManager.resetSys();
 		WorkflowPrefManager.resetUser();

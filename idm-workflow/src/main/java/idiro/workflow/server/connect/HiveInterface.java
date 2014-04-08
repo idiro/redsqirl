@@ -29,8 +29,6 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.prefs.Preferences;
 
-import javax.swing.text.TabExpander;
-
 import org.apache.log4j.Logger;
 
 /**
@@ -931,6 +929,10 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 				}
 				logger.debug("Finished getting properties for children if path has partitions");
 			}
+
+			if(ans.isEmpty()){
+				ans = null;
+			}
 		} catch (Exception e) {
 			logger.error("Unexpected exception: " + e.getMessage());
 		}
@@ -1228,7 +1230,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		} catch (SQLException e) {
 			logger.error("Fail to check the existence " + table);
 		}
-		logger.info("desc : " + ans);
+		logger.debug("desc : " + ans);
 		return ans;
 	}
 
@@ -1662,7 +1664,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 			}
 		}
 		try {
-			logger.info("exequte query : " + query);
+			logger.debug("exequte query : " + query);
 			result = conn.executeQuery(query);
 			queue.poll();
 		} catch (SQLException e) {

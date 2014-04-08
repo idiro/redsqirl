@@ -110,7 +110,12 @@
 
 	</div>
 	
-	<a4j:commandButton styleClass="greenButton" id="hdfsOpenFileBtn" action="#{canvasModalBean.changePathBrowser}" value="#{messages.button_ok}" oncomplete="#{rich:component('modalPanelBrowserHdfsId')}.hide();" reRender="browserPanel, browserTable1, browserTable2, browserTable1Col1, browserTable1Col2" >
+	<a4j:commandButton styleClass="greenButton" 
+	                   id="hdfsOpenFileBtn" 
+	                   action="#{canvasModalBean.changePathBrowser}" 
+	                   value="#{messages.button_ok}" 
+	                   oncomplete="if(#{requestScope['msnError'] == null} )#{rich:component('modalPanelBrowserHdfsId')}.hide();" 
+	                   reRender="browserPanel, browserTable1, browserTable2, browserTable1Col1, browserTable1Col2, msnError" >
 		<a4j:actionparam name="pathFile" value="getPathHdfs('#{browserHdfsBean.path}')" noEscape="true"/>
 	</a4j:commandButton>
 	

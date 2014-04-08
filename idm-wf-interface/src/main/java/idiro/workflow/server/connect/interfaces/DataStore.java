@@ -256,7 +256,7 @@ public interface DataStore extends Remote {
 	/**
 	 * Get the children properties of the current element.
 	 * 
-	 * @return {@link java.util.Map<String, Map<String, String>>} of properties 
+	 * @return {@link java.util.Map<String, Map<String, String>>} of properties, or null if the object cannot have children.
 	 * @throws RemoteException
 	 */
 	Map<String, Map<String, String>> getChildrenProperties()

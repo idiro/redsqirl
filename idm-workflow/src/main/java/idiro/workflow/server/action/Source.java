@@ -11,8 +11,6 @@ import idiro.workflow.server.Page;
 import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.datatype.HiveType;
-import idiro.workflow.server.datatype.HiveTypePartition;
-import idiro.workflow.server.datatype.MapRedBinaryType;
 import idiro.workflow.server.datatype.MapRedTextType;
 import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.enumeration.FeatureType;
@@ -303,7 +301,6 @@ public class Source extends DataflowAction {
 							logger.info("Setpath : " + path);
 							out.setPath(path);
 							logger.info(out.getFeatures().getFeaturesNames());
-
 						}
 						getInteraction(key_dataset).getTree()
 								.removeAllChildren();
@@ -321,6 +318,12 @@ public class Source extends DataflowAction {
 								error = LanguageManagerWF.getText(
 										"source.pathinvalid",
 										new Object[] { out.isPathValid() });
+								try {
+									out.setPath(null);
+									out.setFeatures(null);
+									out.removeAllProperties();
+								} catch (Exception e) {
+								}
 							}
 						} catch (Exception e) {
 							error = LanguageManagerWF.getText(
@@ -378,8 +381,8 @@ public class Source extends DataflowAction {
 		String absolutePath = "";
 		String helpFile = "/help/" + getName().toLowerCase() + ".html";
 		String path = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path);
-		logger.info(helpFile);
-		logger.info(path);
+		logger.debug(helpFile);
+		logger.debug(path);
 		List<String> files = listFilesRecursively(path);
 		for (String file : files) {
 			if (file.contains(helpFile)) {
@@ -391,9 +394,9 @@ public class Source extends DataflowAction {
 		if (absolutePath.contains(path)) {
 			ans = absolutePath.substring(path.length());
 		}
-		logger.info("Source help absPath : " + absolutePath);
-		logger.info("Source help Path : " + path);
-		logger.info("Source help ans : " + ans);
+		logger.debug("Source help absPath : " + absolutePath);
+		logger.debug("Source help Path : " + path);
+		logger.debug("Source help ans : " + ans);
 		// absolutePath
 		return absolutePath;
 	}
@@ -421,9 +424,9 @@ public class Source extends DataflowAction {
 		if (absolutePath.contains(path)) {
 			ans = absolutePath.substring(path.length());
 		}
-		logger.info("Source image abs Path : " + absolutePath);
-		logger.info("Source image Path : " + path);
-		logger.info("Source image ans : " + ans);
+		logger.debug("Source image abs Path : " + absolutePath);
+		logger.debug("Source image Path : " + path);
+		logger.debug("Source image ans : " + ans);
 
 		return absolutePath;
 	}

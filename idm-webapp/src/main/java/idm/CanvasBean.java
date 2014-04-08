@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
@@ -56,6 +55,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	private Map<String, DataFlow> workflowMap;
 
+	private String errorTableState = new String();
+	
 	public void doNew() {
 
 		logger.info("doNew");
@@ -189,7 +190,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			List<String[]> menuItem = newList.get(key);
 			for (String[] e : menuItem) {
 				String name = WordUtils.capitalizeFully(e[0].replace("_", " "));
-				helpList.add(new String[] { name, e[2] });
+				helpList.add(new String[] { name, e[2],e[0] });
 			}
 		}
 		return helpList;
@@ -1225,23 +1226,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 		if (nameWorkflow != null && nameWorkflow.equals("undefined")) {
 			return;
 		}
-		/*
-<<<<<<< HEAD
-<<<<<<< HEAD
-		logger.info("set Name workflow");
-		logger.info("old name: "+this.nameWorkflow);
-		logger.info("new name: "+nameWorkflow);
-=======
-		 * logger.info("set Name workflow");
-		 * logger.info("old name: "+this.nameWorkflow);
-		 * logger.info("new name: "+nameWorkflow);
->>>>>>> keith
-=======
-		 * logger.info("set Name workflow");
-		 * logger.info("old name: "+this.nameWorkflow);
-		 * logger.info("new name: "+nameWorkflow);
->>>>>>> 033d2126343d4b02eddd82e575525ccb2c7e80c2
-		 */
 		this.nameWorkflow = nameWorkflow;
 	}
 
@@ -1339,16 +1323,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		JSONArray jsonElements = new JSONArray();
 		for (DataFlowElement e : getDf().getElement()) {
-
-			/*
-			 * //FIXME add ./ on image path just for local environment
-			 * (canvas.js addElements) if(e.getImage().startsWith("/packages")){
-			 * jsonElements.put(new Object[]{e.getComponentId(), e.getName(),
-			 * "./"+e.getImage(), e.getX(), e.getY()}); }else{
-			 * jsonElements.put(new Object[]{e.getComponentId(), e.getName(),
-			 * e.getImage(), e.getX(), e.getY()}); }
-			 */
-
+			
 			jsonElements.put(new Object[] { e.getComponentId(), e.getName(),
 					e.getImage(), e.getX(), e.getY() });
 
@@ -1412,6 +1387,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void setLinkLabel(String nameLink) {
 		this.linkLabel = nameLink;
+	}
+	
+	public String getErrorTableState() {
+		return errorTableState;
+	}
+
+	public void setErrorTableState(String errorTableState) {
+		this.errorTableState = errorTableState;
 	}
 
 }

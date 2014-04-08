@@ -17,39 +17,126 @@
 	type="text/javascript"></script>
 
 <script>
-	jQuery(document).on("click", "#stopLink", function(e) {
-		jQuery("#helpIndex").hide();
-		jQuery("#helpPanel").empty();
-		jQuery("#helpPanel").load(jQuery(this).attr("href") + " #body");
-		jQuery("#btIndex").show();
+
+    var historyHelp = new Array("btIndex");
+    var historyHelpIndex = 0;
+
+	jQuery(document).on("click", ".stopLink", function(e){
+	    if(! jQuery('#notMoveHelp').is(':checked')){
+		var id = jQuery(this).attr('id');
+		if( historyHelp[historyHelpIndex] != id ){
+		    jQuery("#helpIndex").hide();
+		    jQuery("#helpPanel").empty();
+		    jQuery("#helpPanel").load( jQuery(this).attr("href") + " #body");
+		    jQuery("#btIndex").show();
+		    //<![CDATA[
+		    while( historyHelpIndex + 1 < historyHelp.length ){
+			historyHelp.pop();
+		    }
+		    if(historyHelp.length > 100){
+			historyHelp.shift();
+		    }
+		    //]]>
+		    historyHelpIndex = historyHelp.length;
+		    historyHelp[historyHelpIndex] = id;
+		}
+	    }
 	});
 
 	jQuery(document).on("click", "#btIndex", function(e) {
-		jQuery("#helpIndex").show();
-		jQuery("#helpPanel").empty();
-		jQuery("#btIndex").hide();
+	    if(! jQuery('#notMoveHelp').is(':checked')){
+		var id = jQuery(this).attr('id');
+		if(historyHelp[historyHelpIndex] != id){
+		    jQuery("#helpIndex").show();
+		    jQuery("#helpPanel").empty();
+		    jQuery("#btIndex").hide();
+		    //<![CDATA[
+		    while(historyHelpIndex + 1 < historyHelp.length){
+			historyHelp.pop();
+		    }
+		    if(historyHelp.length > 100){
+			historyHelp.shift();
+		    }
+		    //]]>
+		    historyHelpIndex = historyHelp.length;
+		    historyHelp[historyHelpIndex] = id;
+		}
+	    }
 	});
-</script>
+
+	jQuery(document).on("click", "#prevHelp", function(e) {
+	    //<![CDATA[
+	    if(historyHelpIndex > 0){
+		var id = historyHelp[--historyHelpIndex];
+		if(id == "btIndex"){
+		    jQuery("#helpIndex").show();
+		    jQuery("#helpPanel").empty();
+		    jQuery("#btIndex").hide();
+		    }else{
+		    jQuery("#helpIndex").hide();
+		    jQuery("#helpPanel").empty();
+		    jQuery("#helpPanel").load(jQuery("#"+id).attr("href") + " #body");
+		    jQuery("#btIndex").show();
+		}
+	    }
+	    //]]>
+	});
+
+	jQuery(document).on("click", "#nextHelp", function(e) {
+	    //<![CDATA[
+	    if(historyHelpIndex  < historyHelp.length - 1){
+		var id = historyHelp[++historyHelpIndex];
+		if(id == "btIndex"){
+		    jQuery("#helpIndex").show();
+		    jQuery("#helpPanel").empty();
+		    jQuery("#btIndex").hide();
+		    }else{
+		    jQuery("#helpIndex").hide();
+		    jQuery("#helpPanel").empty();
+		    jQuery("#helpPanel").load(jQuery("#"+id).attr("href") + " #body");
+		    jQuery("#btIndex").show();
+		}
+	    }
+	    //]]>
+	});
+
+    </script>
 </head>
 
 
 <body>
-	<button id="btIndex" style="display: none;" onclick="hideHelp()">#{messages.label_index}</button>
-	<div id="helpIndex">
-		<h1>IDM Help</h1>
-		<p>
-			IDM is a platform that builds data related workflows that runs on
-			hadoop. For more help on IDM click <a id="stopLink"
-				onclick="return false;" href="../help/main.html">here</a>
-		</p>
-		<h2>Available Actions</h2>
-		<ol>
-			<ui:repeat value="#{canvasBean.helpItens}"
-				var="item">
-				<li><a id="stopLink" href="#{item[1]}" onclick="return false;">#{item[0]}</a></li>
-			</ui:repeat>
-		</ol>
-	</div>
-	<div id="helpPanel"></div>
+    <button id="prevHelp">#{messages.label_help_previous}</button>
+    <button id="nextHelp" >#{messages.label_help_next}</button>
+    <input id="notMoveHelp" type="checkbox"/>Don't follow the links
+    <button id="btIndex" style="display: none;">#{messages.label_index}</button>
+    <div id="helpIndex">
+	<h1>IDM Help</h1>
+	<p>
+	IDM is a platform that builds data related workflows that runs on
+	hadoop. For more help on IDM click <a class="stopLink" id="help_main"
+	    onclick="return false;" href="../help/main.html">here</a>
+	</p>
+
+	<a class="stopLink" id="helpmain_tech" style="display: none;" onclick="return false;" href="../help/technologies.html">Technologies</a>
+	<a class="stopLink" id="helpmain_menu" style="display: none;" onclick="return false;" href="../help/menu.html">Menu</a>
+	<a class="stopLink" id="helpmain_canvas" style="display: none;" onclick="return false;" href="../help/canvas.html">Canvas</a>
+	<a class="stopLink" id="helpmain_actfooter" style="display: none;" onclick="return false;" href="../help/actionsfooter.html">Actions Footer</a>
+	<a class="stopLink" id="helpmain_buildwork" style="display: none;" onclick="return false;" href="../help/buildingworkflow.html">How to build a workflow</a>
+	<a class="stopLink" id="helpmain_ssh" style="display: none;" onclick="return false;" href="../help/ssh_view.html">Remote File System</a>
+	<a class="stopLink" id="helpmain_help" style="display: none;" onclick="return false;" href="../help/help_view.html">Help</a>
+	<a class="stopLink" id="helpmain_procman" style="display: none;" onclick="return false;" href="../help/process_manager.html">Process manager</a>
+	<a class="stopLink" id="helpmain_error" style="display: none;" onclick="return false;" href="../help/error_view.html">Error</a>
+	<a class="stopLink" id="helpmain_hive" style="display: none;" onclick="return false;" href="../help/hive_view.html">Hive</a>
+	<a class="stopLink" id="helpmain_hdfs" style="display: none;" onclick="return false;" href="../help/hdfs_view.html">Hadoop File System</a>
+
+	<h2>Available Actions</h2>
+	<ol>
+	    <ui:repeat value="#{canvasBean.helpItens}"
+	    var="item">
+	    <li><a class="stopLink" id="help_#{item[2]}" href="#{item[1]}" onclick="return false;">#{item[0]}</a></li>
+	    </ui:repeat>
+	</ol>
+    </div>
+    <div id="helpPanel"></div>
 </body>
 </html>

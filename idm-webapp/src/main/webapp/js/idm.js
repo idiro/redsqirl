@@ -291,12 +291,6 @@ function showImg(url){
 	jQuery("#btIndex").show();
 }
 
-function hideHelp(){
-	jQuery("#helpIndex").show();
-	jQuery("#btIndex").hide();
-	jQuery("#helpPanel").empty();
-}
-
 function addtooltip(text, event){
     jQuery('div.help').remove();
     jQuery('div.tooltip').remove();

@@ -1317,6 +1317,7 @@ function mountObj(canvasName) {
 				});
 				srcImageText.setStroke(null);
 				
+				
 				//label on footer
 				var labelText = jQuery(this).next().text();
 				var labelTextSize8 = labelText;
@@ -1370,8 +1371,13 @@ function mountObj(canvasName) {
 				posInitTextX = posInitTextX + 70;
 
 				polygonTabFake.on('dragstart',function() {
+                    jQuery("#help_"+typeText.getText()).click();
 					jQuery('#body').css('cursor','url('+ polygonTabImage+ ') 30 30,default');
 				});
+				
+				polygonTabFake.on('click',function() {
+                    jQuery("#help_"+typeText.getText()).click();
+                });
 
 				polygonTabFake.on('dragend',function() {
 					
@@ -1683,6 +1689,10 @@ function createGroup(canvasName, circle0, circle1, polygon, srcImageText, typeTe
 			return rulesDragAndDropObj(canvasName, pos, 80, 80);
 		}
 	});
+	
+	group1.on('click',function() {
+         jQuery("#help_"+typeText.getText()).click();
+    });
 
 	var circ0 = circle0.clone();
 	var circ = circle1.clone();
