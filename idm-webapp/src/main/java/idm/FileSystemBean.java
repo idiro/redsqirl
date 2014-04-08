@@ -110,14 +110,14 @@ public class FileSystemBean extends BaseBean implements Serializable{
 
 				    nc.put(properties, paramProperties.get(properties).isConst());
 				    vlb.put(properties, mapSSH.get(path).get(properties) != null && mapSSH.get(path).get(properties).contains("/n"));
-				    so.put(properties, Ordering.UNSORTED);
-				    fv.put(properties, "");
+//				    so.put(properties, Ordering.UNSORTED);
+//				    fv.put(properties, "");
 				}
 
 
 				itemList.setNameValue(nv);
-				itemList.setSortingOrder(so);
-				itemList.setFilterValue(fv);
+//				itemList.setSortingOrder(so);
+//				itemList.setFilterValue(fv);
 				itemList.setNameValueEdit(nve);
 				itemList.setNameIsConst(nc);
 				itemList.setValueHasLineBreak(vlb);
@@ -382,15 +382,17 @@ public class FileSystemBean extends BaseBean implements Serializable{
 	 * @author Igor.Souza
 	 */
 	public void editFileAfter() throws RemoteException{
-		logger.info("Change properties: "+getItem().getNameValue().toString());
+		logger.info("Change properties: "+getItem().getNameValueEdit().toString());
+		logger.info("Keys : "+getItem().getNameValueEdit().keySet().toString());
 		try{
-			getDataStore().changeProperties(getItem().getNameValue());
+			String error = getDataStore().changeProperties(getDataStore().getPath() + "/" + getName()  , getItem().getNameValueEdit());
+			logger.info("change properties error : "+error);
 		}catch(Exception e){
-			logger.error(e.getMessage());
+			logger.error("Error change properties : "+e.getMessage());
 			MessageUseful.addErrorMessage(
 					"Fail to update properties of "+
 							getDataStore().getPath() + "/" + getNewName()+
-							" to "+getItem().getNameValue());
+							" to "+getItem().getNameValueEdit());
 
 		}
 		logger.info("Rename "+getDataStore().getPath() + "/" + getName()+" to "+getDataStore().getPath() + "/" + getNewName());

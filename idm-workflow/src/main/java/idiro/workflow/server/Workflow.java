@@ -209,8 +209,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			while(actionListit.hasNext()){
 				String[] parameters = actionListit.next();
 				try{
-					logger.info("loadMenu "+ curPath +" "+ parameters[1]);
-					logger.info("loadMenu "+ curPath +" "+ parameters[2]);
+					logger.debug("loadMenu "+ curPath +" "+ parameters[1]);
+					logger.debug("loadMenu "+ curPath +" "+ parameters[2]);
 					parameters[1] = LocalFileSystem.relativize(curPath,parameters[1]);
 					parameters[2] = LocalFileSystem.relativize(curPath,parameters[2]);
 					newActionList.add(parameters);

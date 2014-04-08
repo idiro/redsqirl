@@ -1230,7 +1230,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		} catch (SQLException e) {
 			logger.error("Fail to check the existence " + table);
 		}
-		logger.info("desc : " + ans);
+		logger.debug("desc : " + ans);
 		return ans;
 	}
 
@@ -1664,7 +1664,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 			}
 		}
 		try {
-			logger.info("exequte query : " + query);
+			logger.debug("exequte query : " + query);
 			result = conn.executeQuery(query);
 			queue.poll();
 		} catch (SQLException e) {

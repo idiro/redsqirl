@@ -131,8 +131,8 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		}
 		String absolutePath = f.getAbsoluteFile().getAbsolutePath();
 		String ans = "";
-		logger.info("help absolutePath : "+absolutePath);
-		logger.info("help relPath : "+relativePath);
+		logger.debug("help absolutePath : "+absolutePath);
+		logger.debug("help relPath : "+relativePath);
 		if(absolutePath.contains(relativePath)){
 			ans = absolutePath.substring(relativePath.length());
 		}
@@ -163,8 +163,8 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		}
 		String absolutePath = f.getAbsoluteFile().getAbsolutePath();
 		String ans = "";
-		logger.info("image absolutePath : "+absolutePath);
-		logger.info("image relPath : "+relativePath);
+		logger.debug("image absolutePath : "+absolutePath);
+		logger.debug("image relPath : "+relativePath);
 		if(absolutePath.contains(relativePath)){
 			ans = absolutePath.substring(relativePath.length());
 		}
@@ -1030,7 +1030,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 
 	public List<String> listFilesRecursively(String path) {
 		List<String> files = new ArrayList();
-		logger.info(path);
+		logger.debug(path);
 		if (path != null || !path.isEmpty()) {
 			File root = new File(path);
 			File[] list = root.listFiles();

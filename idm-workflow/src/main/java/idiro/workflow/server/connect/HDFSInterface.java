@@ -104,9 +104,9 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 			paramProp.put(key_group, new DSParamProperty("Group of the file",
 					false, false, false));
 			paramProp.put(key_permission, new DSParamProperty(
-					"Permission associated to the file", false, false, false));
+					"Permission associated to the file", false, true, false));
 			paramProp.put(key_size, new DSParamProperty("Size of the file",
-					true, true, false));
+					true, false, false));
 			
 			paramProp.put(key_recursive, new DSParamProperty(
 					"Apply change reccursively", false, true, false,
@@ -517,16 +517,16 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 	public Map<String, String> getProperties(String path)
 			throws RemoteException {
 
-		logger.info("getProperties");
+		logger.debug("getProperties");
 
 		Map<String, String> prop = new LinkedHashMap<String, String>();
 		try {
-			logger.info(0);
-			logger.info("sys_namenode PathHDFS: " + NameNodeVar.get());
+			logger.debug(0);
+			logger.debug("sys_namenode PathHDFS: " + NameNodeVar.get());
 			FileSystem fs = NameNodeVar.getFS();
-			logger.info(1);
+			logger.debug(1);
 			FileStatus stat = fs.getFileStatus(new Path(path));
-			logger.info(1.5);
+			logger.debug(1.5);
 			if (stat == null) {
 				logger.info("File status not available for " + path);
 				return null;
@@ -646,6 +646,9 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 			throws RemoteException {
 		Path p = new Path(path);
 		String error = null;
+		logger.info(path);
+		logger.info(key);
+		logger.info(newValue);
 		if (key.equals(key_permission)) {
 			error = changePermission(p, newValue, false);
 		} else if (key.equals(key_owner)) {
@@ -675,10 +678,11 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 		Path p = new Path(path);
 		boolean recursive = false;
 		if (prop.containsKey(key_recursive)) {
-			recursive = prop.get(key_recursive).equalsIgnoreCase("true");
+			recursive = prop.get(key_recursive).equalsIgnoreCase("false");
 			prop.remove(key_recursive);
 		}
 		if (prop.containsKey(key_permission)) {
+			logger.info("path change props : "+path);
 			error = changePermission(p, prop.get(key_permission), recursive);
 			prop.remove(key_permission);
 		}
@@ -824,6 +828,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 					}
 				}
 				if (error == null) {
+					logger.info("1 ----- path "+path.getName() + " new perms "+permission);
 					fs.setPermission(path, new FsPermission(permission));
 				}
 			} else {
@@ -855,10 +860,15 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 			boolean recursive) {
 		String error = null;
 		try {
+			logger.info("1 "+path.getName());
 			FileSystem fs = NameNodeVar.getFS();
+			logger.info("2");
 			FileStatus stat = fs.getFileStatus(path);
+			logger.info("3");
 			if (stat.getOwner().equals(System.getProperty("user.name"))) {
+				logger.info("4");
 				if (recursive) {
+					logger.info("5");
 					FileStatus[] child = fs.listStatus(path);
 					for (int i = 0; i < child.length && error == null; ++i) {
 						error = changePermission(fs, child[i].getPath(),
@@ -866,7 +876,9 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 					}
 				}
 				if (error == null) {
+					logger.info("2 ---- path "+path.getName() + " new perms "+permission);
 					fs.setPermission(path, new FsPermission(permission));
+					logger.info(getProperties(path.getName()));
 				}
 			} else {
 				error = LanguageManagerWF.getText(
@@ -883,7 +895,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 					new Object[] { path });
 		}
 		if (error != null) {
-			logger.debug(error);
+			logger.info(error);
 		}
 		return error;
 	}

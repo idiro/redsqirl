@@ -11,12 +11,13 @@
 	<h:inputHidden value="#{hdfsBean.name}" />
 	<h:inputText label="Name" value="#{hdfsBean.newName}" />
 	<br />
-
-	<a4j:repeat value="#{hdfsBean.item.keyAsListNameValueEdit}"
+	<h:outputText value="#{hdfsBean.item.nameValueEdit}" />
+	
+	<a4j:repeat value="#{hdfsBean.item.objsEdit}"
 		var="column" rowKeyVar="index">
-		<h:outputText value="#{hdfsBean.item.keyAsListNameValueEdit[index]}" />
+		<h:outputText value="#{column.value}" />
 		<br />
-		<h:inputText value="#{hdfsBean.item.nameValue[column]}"
+		<h:inputText value="#{column.label}"
 			disabled="#{hdfsBean.item.nameIsConst[column]}" />
 		<br />
 		<br />

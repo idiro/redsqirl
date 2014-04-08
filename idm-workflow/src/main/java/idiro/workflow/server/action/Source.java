@@ -381,8 +381,8 @@ public class Source extends DataflowAction {
 		String absolutePath = "";
 		String helpFile = "/help/" + getName().toLowerCase() + ".html";
 		String path = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path);
-		logger.info(helpFile);
-		logger.info(path);
+		logger.debug(helpFile);
+		logger.debug(path);
 		List<String> files = listFilesRecursively(path);
 		for (String file : files) {
 			if (file.contains(helpFile)) {
@@ -394,9 +394,9 @@ public class Source extends DataflowAction {
 		if (absolutePath.contains(path)) {
 			ans = absolutePath.substring(path.length());
 		}
-		logger.info("Source help absPath : " + absolutePath);
-		logger.info("Source help Path : " + path);
-		logger.info("Source help ans : " + ans);
+		logger.debug("Source help absPath : " + absolutePath);
+		logger.debug("Source help Path : " + path);
+		logger.debug("Source help ans : " + ans);
 		// absolutePath
 		return absolutePath;
 	}
@@ -424,9 +424,9 @@ public class Source extends DataflowAction {
 		if (absolutePath.contains(path)) {
 			ans = absolutePath.substring(path.length());
 		}
-		logger.info("Source image abs Path : " + absolutePath);
-		logger.info("Source image Path : " + path);
-		logger.info("Source image ans : " + ans);
+		logger.debug("Source image abs Path : " + absolutePath);
+		logger.debug("Source image Path : " + path);
+		logger.debug("Source image ans : " + ans);
 
 		return absolutePath;
 	}
