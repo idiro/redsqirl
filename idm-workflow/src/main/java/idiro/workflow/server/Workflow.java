@@ -117,7 +117,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		super();
 		this.name = name;
 	}
-	
+
 
 	/**
 	 * Load the icon menu.
@@ -194,10 +194,66 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 		return error;
 	}
-	
+
+	public String loadMenu(Map<String,List<String>> newMenu) {
+
+		String error = "";
+		menuWA = new LinkedHashMap<String, List<String[]>>();
+
+		Map<String, String> nameWithClass;
+		try {
+			nameWithClass = getAllWANameWithClassName();
+			for (Entry<String,List<String>> cur : newMenu.entrySet()) {
+				LinkedList<String[]> new_list = new LinkedList<String[]>();
+				Iterator<String> it = cur.getValue().iterator();
+				while (it.hasNext()) {
+					String action = it.next();
+					try {
+						if (action  != null && !action.isEmpty()) {
+							if (nameWithClass.get(action) != null) {
+								DataFlowElement dfe = (DataFlowElement) Class
+										.forName(nameWithClass.get(action))
+										.newInstance();
+
+								String[] parameters = new String[3];
+								parameters[0] = action;
+								parameters[1] = dfe.getImage();
+								parameters[2] = dfe.getHelp();
+								new_list.add(parameters);
+							} else {
+								logger.warn("unknown workflow action '"
+										+ action+ "'");
+							}
+						}
+					} catch (Exception e) {
+						error = LanguageManagerWF.getText(
+								"workflow.loadclassfail",
+								new Object[] { action });
+					}
+				}
+				menuWA.put(cur.getKey(), new_list);
+			}
+
+		} catch (Exception e) {
+			error += "\n"
+					+ LanguageManagerWF.getText("workflow.loadclassexception");
+		}
+
+		if (error.isEmpty()) {
+			error = null;
+		} else {
+			logger.error(error);
+		}
+
+		return error;
+	}
+
 	public Map<String,List<String[]>> loadMenu(File curPath) {
 		if(menuWA == null || menuWA.isEmpty()){
 			loadMenu();
+		}
+		if(curPath == null){
+			return menuWA;
 		}
 		logger.info("Load menu "+curPath.getPath());
 		Map<String,List<String[]>> ans = new LinkedHashMap<String,List<String[]>>();
@@ -218,11 +274,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					logger.error(e.getMessage());
 					logger.error("Error Getting relative paths for Help and Image");
 				}
-				
+
 			}
 			ans.put(key, newActionList);
 		}
-		
+
 		return ans;
 	}
 
@@ -782,7 +838,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			for (FileStatus stat : fsA) {
 				if (pathToRemove.size() < numberToRemove) {
 					pathToRemove
-							.put(stat.getPath(), stat.getModificationTime());
+					.put(stat.getPath(), stat.getModificationTime());
 				} else {
 					Iterator<Path> it = pathToRemove.keySet().iterator();
 					Path pathCur = it.next();
@@ -942,7 +998,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				getElement(id).setPosition(x, y);
 				error = getElement(id).readValuesXml(
 						((Element) compCur)
-								.getElementsByTagName("interactions").item(0));
+						.getElementsByTagName("interactions").item(0));
 			}
 
 			// Link and data
@@ -1210,7 +1266,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 * @throws RemoteException
 	 */
 	public String removeElement(String componentId) throws RemoteException,
-			Exception {
+	Exception {
 		logger.debug("remove element: " + componentId);
 		String error = null;
 		DataFlowElement dfe = getElement(componentId);
@@ -1387,7 +1443,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 */
 	public String removeLink(String outName, String componentIdOut,
 			String inName, String componentIdIn, boolean force)
-			throws RemoteException {
+					throws RemoteException {
 		String error = null;
 		DataFlowElement out = getElement(componentIdOut);
 		DataFlowElement in = getElement(componentIdIn);

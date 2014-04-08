@@ -43,14 +43,16 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	private boolean userInstall = true;
 	private IdmPackage curPackage;
 	private String errorMsg;
-
-	private String[] unUserPackage,
-	unSysPackage;
+	private List<IdmPackage> extPackages;
+	private String[] unUserPackage,	unSysPackage;
+	private String repoWelcomePage;
 
 	public PackageMngBean() throws RemoteException{
+		retrievesRepoWelcomePage();
 	}
 
-	public List<IdmPackage> getExtPackages() {
+	public void retrievesExtPackages() {
+		
 		List<IdmPackage> lAns = new LinkedList<IdmPackage>();
 		try{
 			SimpleDateFormat dt = new SimpleDateFormat("yyyy-mm-dd");
@@ -134,7 +136,8 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		}catch(Exception e){
 			logger.error("Connection refused to package manager");
 		}
-		return lAns;
+		
+		setExtPackages(lAns);
 	}
 
 
@@ -158,7 +161,6 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	}
 
 	public boolean isUserAllowInstall(){
-		//		logger.info("is user");
 		return WorkflowPrefManager.isUserPckInstallAllowed();
 	}
 
@@ -285,7 +287,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		return error;
 	}
 
-	public String getRepoWelcomePage(){
+	public void retrievesRepoWelcomePage(){
 		String repoPage = getRepoServer()+"repo.html";
 		URL u;
 		try {
@@ -302,7 +304,8 @@ public class PackageMngBean extends BaseBean implements Serializable{
 			repoPage = "/pages/unavailableRepo.html";
 		}
 		logger.trace("repo page: "+repoPage);
-		return repoPage;
+		
+		setRepoWelcomePage(repoPage);
 	}
 
 	public String getRepoServer(){
@@ -312,6 +315,15 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		}
 		logger.info("repo: "+pckServer);
 		return pckServer;
+	}
+
+	private void setError(String error){
+		MessageUseful.addErrorMessage(error);
+		HttpServletRequest request = (HttpServletRequest) FacesContext
+				.getCurrentInstance().getExternalContext().getRequest();
+		request.setAttribute("msnError2", "msnError2");
+
+		setErrorMsg(error);
 	}
 
 	/**
@@ -392,12 +404,20 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		this.errorMsg = errorMsg;
 	}
 
-	private void setError(String error){
-		MessageUseful.addErrorMessage(error);
-		HttpServletRequest request = (HttpServletRequest) FacesContext
-				.getCurrentInstance().getExternalContext().getRequest();
-		request.setAttribute("msnError2", "msnError2");
-
-		setErrorMsg(error);
+	public void setExtPackages(List<IdmPackage> extPackages) {
+		this.extPackages = extPackages;
 	}
+
+	public List<IdmPackage> getExtPackages() {
+		return extPackages;
+	}
+
+	public String getRepoWelcomePage() {
+		return repoWelcomePage;
+	}
+
+	public void setRepoWelcomePage(String repoWelcomePage) {
+		this.repoWelcomePage = repoWelcomePage;
+	}
+
 }
