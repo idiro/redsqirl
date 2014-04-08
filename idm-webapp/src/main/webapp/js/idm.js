@@ -6,11 +6,11 @@ function canvasResizeSplitter(){
 	jQuery("#canvas").css("width", jQuery("#canvas-tabs").width()+'px');
 	jQuery("#tabsFooter").css("width", jQuery("#canvas-tabs").width()-10+'px');
 
-	resizeCanvas();
-	
 	jQuery(".splitter-bar-horizontal").css("width", jQuery(window).width()-jQuery(".splitter-pane").width()-28 +'px');
 	jQuery("#tabs1").css("width", jQuery("#splitterH").width()-20 +'px');
 	jQuery("#tabs2").css("width", jQuery("#splitterH").width()-20 +'px');
+	
+	resizeCanvas();
 	
 	resizeTabs();
 	
@@ -56,7 +56,7 @@ function resizeTables(){
 	
 	jQuery("#hdfsFileSystem .extdt-content").style("height", jQuery("#tabs-7").height()-160+"px", "important");
 	
-	jQuery("#tabRemote .extdt-content").style("height", jQuery("#tabs-8").height()-160+"px", "important");
+	jQuery("#tabRemote .extdt-content").style("height", jQuery("#tabs-8").height()-185+"px", "important");
 	
 	jQuery("#hdfsfsSaveFile .extdt-content").style("height", "20px", "important");
 	
@@ -123,6 +123,8 @@ function configureFooterCss(){
 }
 
 function resizing(){
+	
+	  isResizing = true;
 
 	  jQuery("#body").css('width', jQuery(window).width()-20+'px');
 	  jQuery("#body").css('height', jQuery(window).height()-20+'px');
@@ -140,6 +142,9 @@ function resizing(){
 	  jQuery("#canvas-tabs").css("height", jQuery(window).height()-215+'px');
 	  jQuery("#canvas").css("height", jQuery("#canvas-tabs").height()-160+'px');
 	  jQuery("#canvas").css("width", jQuery("#canvas-tabs").width()+'px');
+	  jQuery("#tabsFooter").css("width", jQuery("#canvas-tabs").width()-10+'px');
+	  
+	  isResizing = false;
 	  
 	  resizeCanvas();
 
@@ -148,8 +153,6 @@ function resizing(){
 	  configureLeft();
 	  
 	  validateArrowsAll();
-	  
-
 }
 
 function configureLeft(){

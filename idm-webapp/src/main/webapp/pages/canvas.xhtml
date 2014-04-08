@@ -32,6 +32,8 @@
 <script type="text/javascript">
 		           
 		 var contTabCanvas = 1;
+		 
+		 var isResizing = false;
 		           
 	    jQuery.noConflict();
 
@@ -174,27 +176,22 @@
 
 	    	  onPageReady();
 
-				var i = 0;
+				
+				
+				//var idTimeout;
 	    	  
+				var resizeTimer;
+				
 		    	jQuery(window).resize(function() {
-		    	    clearTimeout(this.id);
-		    	    this.id = setTimeout(doneResizing, 100);
+		    		if (!isResizing){
+			    	    clearTimeout(resizeTimer);
+			    	    resizeTimer = setTimeout(doneResizing, 100);
+		    		}
 		    	});
 	
 	    		function doneResizing(){
-		    		
-					if(i == 0){
-						clearTimeout(this.id);
 	    				resizing();
-			    	    this.id = setTimeout(changeValue, 100);
-	    				i++;
-					}
-					
 	    		}
-
-	    		function changeValue(){
-		    		i = 0;
-		    	}
 
 	    		jQuery( "#tabs1" ).plusTabs({
 		  	        className: "plusTabs",
@@ -598,7 +595,7 @@
 	  	 	 });
 		  	
 		  	jQuery("#tabRemote").tabs().tabs('refresh');
-		  	
+		  	resizeTables();
 	   	}
 
 	</script>

@@ -179,10 +179,12 @@
 						
 							<rich:scrollableDataTable id="browserTable2" value="#{canvasModalBean.listFeature}" height="100%"
 								var="itemDiv2" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-								enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
+								enableContextMenu="false"
+ 								onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+								rowClasses="even-row, odd-row" >
 								
 								<rich:columns value="#{canvasModalBean.browserNameFeatureColumns}" var="column" index="ind" rendered="#{not empty canvasModalBean.listFeature}" 
-									style="border-bottom:0px;border-right:0px;" sortable="false" >
+									sortable="false" >
 									
 									<f:facet name="header">
 								    	<h:outputText value="#{column}" />
@@ -414,12 +416,13 @@
 	                    
 	                        <rich:scrollableDataTable id="browserTable2" value="#{canvasModalBean.dynamicFormDataOutput.listFeature}" 
 	                            var="itemDiv2" width="100%" height="100%" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-	                            enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'"
+	                            enableContextMenu="false"
+	                            style="border:none;"
 	                            rendered="#{canvasModalBean.dynamicFormDataOutput != null}"
-	                            style="border:1px solid black" >
+	                            onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+								rowClasses="even-row, odd-row">
 	                            
-	                            <rich:columns value="#{canvasModalBean.browserNameFeatureColumns}" var="column" index="ind" rendered="#{not empty canvasModalBean.listFeature}" 
-	                                style="border-bottom:0px;border-right:0px;" >
+	                            <rich:columns value="#{canvasModalBean.browserNameFeatureColumns}" var="column" index="ind" rendered="#{not empty canvasModalBean.listFeature}" >
 	                                
 	                                <f:facet name="header">
 	                                        <h:outputText value="#{column}" />
