@@ -2,32 +2,6 @@
 <html>
 <head>
 <title>Pig Join Help</title>
-<style>
-h1 {
-	text-align: center;
-}
-
-body {
-	font-family: Verdana, Geneva, sans-serif;
-	padding-left: 2%;
-}
-
-p {
-	padding-left: 3%;
-	width: 50%;
-}
-
-li {
-	padding-left: 3%;
-	padding-top: 1%;
-	width: 50%;
-	list-style: none;
-}
-
-td {
-	padding: 1% 7% 1% 0.5%;
-}
-</style>
 </head>
 <body>
 	<div id="body">
@@ -38,6 +12,17 @@ td {
 			relations and the relations are joined one after the other in the
 			order specified. The type of join supported are JOIN, LEFT OUTER
 			JOIN,RIGHT OUTER JOIN and FULL OUTER JOIN.</p>
+		<h3>Quick Guide</h3>
+		<p>
+		<ul>
+			<li>Input - at least two of either Text or Binary Map Reduce
+				Directory</li>
+			<li>Features - Select the features from the inputs</li>
+			<li>Join Type - Select the Join type to be used in the join</li>
+			<li>Join Relationship - Select the relationship between the
+				inputs</li>
+			<li>Output - Single Text or Binary Map Reduce Directory</li>
+		</ul>
 		<h2>Source</h2>
 		<p>The Source can be only HDFS (TEXT MAP REDUCE DIRECTORY). It has
 			to be a delimiter separated value. An example is when | is the
@@ -75,33 +60,33 @@ td {
 			to set the delimiter of the file for a TEXT MAP REDUCE DIRECTORY and
 			the other is to set the output type of the file to be either TEXT MAP
 			REDUCE DIRECTORY or BINARY MAP-REDUCE DIRECTORY</p>
-	</p>
-		
-	<p>Apache Pig is a platform for analyzing large data sets that
-		consists of a high-level language for expressing data analysis
-		programs, coupled with infrastructure for evaluating these programs.
-		The salient property of Pig programs is that their structure is
-		amenable to substantial parallelization, which in turns enables them
-		to handle very large data sets. At the present time, Pig's
-		infrastructure layer consists of a compiler that produces sequences of
-		Map-Reduce programs, for which large-scale parallel implementations
-		already exist (e.g., the Hadoop subproject). Pig's language layer
-		currently consists of a textual language called Pig Latin, which has
-		the following key properties:
-	
+		</p>
+
+		<p>Apache Pig is a platform for analyzing large data sets that
+			consists of a high-level language for expressing data analysis
+			programs, coupled with infrastructure for evaluating these programs.
+			The salient property of Pig programs is that their structure is
+			amenable to substantial parallelization, which in turns enables them
+			to handle very large data sets. At the present time, Pig's
+			infrastructure layer consists of a compiler that produces sequences
+			of Map-Reduce programs, for which large-scale parallel
+			implementations already exist (e.g., the Hadoop subproject). Pig's
+			language layer currently consists of a textual language called Pig
+			Latin, which has the following key properties:
 		<ul>
-		<li>Ease of programming. It is trivial to achieve parallel
-			execution of simple, "embarrassingly parallel" data analysis tasks.
-			Complex tasks comprised of multiple interrelated data transformations
-			are explicitly encoded as data flow sequences, making them easy to
-			write, understand, and maintain.</li>
-		<li>Optimization opportunities. The way in which tasks are
-			encoded permits the system to optimize their execution automatically,
-			allowing the user to focus on semantics rather than efficiency.</li>
-		<li>Extensibility. Users can create their own functions to do
-			special-purpose processing.</li>
-	</ul>
-	</p>
+			<li>Ease of programming. It is trivial to achieve parallel
+				execution of simple, "embarrassingly parallel" data analysis tasks.
+				Complex tasks comprised of multiple interrelated data
+				transformations are explicitly encoded as data flow sequences,
+				making them easy to write, understand, and maintain.</li>
+			<li>Optimization opportunities. The way in which tasks are
+				encoded permits the system to optimize their execution
+				automatically, allowing the user to focus on semantics rather than
+				efficiency.</li>
+			<li>Extensibility. Users can create their own functions to do
+				special-purpose processing.</li>
+		</ul>
+		</p>
 	</div>
 </body>
 </html>

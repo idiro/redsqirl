@@ -2,32 +2,7 @@
 <html>
 <head>
 <title>Pig Union Help</title>
-<style>
-h1 {
-	text-align: center;
-}
 
-body {
-	font-family: Verdana, Geneva, sans-serif;
-	padding-left: 2%;
-}
-
-p {
-	padding-left: 3%;
-	width: 50%;
-}
-
-li {
-	padding-left: 3%;
-	padding-top: 1%;
-	width: 50%;
-	list-style: none;
-}
-
-td {
-	padding: 1% 7% 1% 0.5%;
-}
-</style>
 </head>
 <body>
 	<div id="body">
@@ -35,6 +10,17 @@ td {
 		<h2>Description</h2>
 		<p>Perform a Pig Union action on a number of input datasets. This
 			will output one data set.</p>
+		<h3>Quick Guide</h3>
+		<p>
+		<ul>
+			<li>Input - at least two of either Text or Binary Map Reduce
+				Directory</li>
+			<li>Features - Select the features from the inputs</li>
+			<li>Join Type - Select the Join type to be used in the join</li>
+			<li>Join Relationship - Select the relationship between the
+				inputs</li>
+			<li>Output - Single Text or Binary Map Reduce Directory</li>
+		</ul>
 		<h2>Source</h2>
 		<p>The Source can be only HDFS (TEXT MAP REDUCE DIRECTORY). It has
 			to be a delimiter separated value. An example is when | is the
