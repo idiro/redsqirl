@@ -33,7 +33,6 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	protected Map<String, List<String[]>> menuWA;
 	private String tabName;
 	private String selected;
-
 	private static Logger logger = Logger.getLogger(ConfigureTabsBean.class);
 	private static Map<String,String> allWANameWithClassName = null;
 

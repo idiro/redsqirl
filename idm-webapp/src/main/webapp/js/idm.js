@@ -108,7 +108,6 @@ function onPageReady(){
 
 	  validateArrowsAll();
 	  
-	  
 }
 
 function configureFooterCss(){
@@ -153,6 +152,7 @@ function resizing(){
 	  configureLeft();
 	  
 	  validateArrowsAll();
+
 }
 
 function configureLeft(){
@@ -326,8 +326,8 @@ function selectAll(checkbox, checkboxId) {
 
 
 
-(function($) {    
-	  if ($.fn.style) {
+(function(jQuery) {
+	  if (jQuery.fn.style) {
 	    return;
 	  }
 
@@ -364,7 +364,7 @@ function selectAll(checkbox, checkboxId) {
 	  }
 
 	  // The style function
-	  $.fn.style = function(styleName, value, priority) {
+	  jQuery.fn.style = function(styleName, value, priority) {
 	    // DOM node
 	    var node = this.get(0);
 	    // Ensure we have a DOM node

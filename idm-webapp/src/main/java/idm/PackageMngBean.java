@@ -140,7 +140,6 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		setExtPackages(lAns);
 	}
 
-
 	public boolean isAdmin(){
 		boolean admin = false;
 		try{
@@ -188,7 +187,6 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		}
 		return result;
 	}
-
 
 	public void removeSystemPackage() throws RemoteException{
 		logger.info("rm sys packages");

@@ -51,7 +51,6 @@ var selectedCanvas = "canvas-1";
 
 var canvasArray;
 var allPositionIcons;
-var refreshProcManagerCount = 30;
 
 var imgHeight;
 var imgWidth;

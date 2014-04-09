@@ -18,27 +18,25 @@ public class ProcessManagerBean extends BaseBean implements Serializable{
 	private String oozieUrl = "";
 	
 	private Ordering[] sortingOrder = new Ordering[5];
-//	private Object[] filterValue;
 	private Object filterValue = "";
 	
 	private String tableState = new String();
 	
-	public List<String[]> getProcessesGrid() throws Exception{
-//		if (filterValue == null){
-//			filterValue = new Object[5];
-//			for (int i = 0; i < 5; ++i){
-//				filterValue[i] = new String();
-//			}
-//		}
-		
+	public List<String[]> retrievesProcessesGrid() {
 		logger.info("getProcessesGrid");
 		if (processesGrid == null){
-			if (getOozie() != null){
-				processesGrid = getOozie().getJobs();		
-				logger.info("getProcessesGrid-loading");
-			}
-			else{
-				processesGrid = new ArrayList<String[]>();
+			try {
+				if (getOozie() != null){
+					processesGrid = getOozie().getJobs();
+					logger.info("getProcessesGrid-loading");
+				}
+				else{
+					processesGrid = new ArrayList<String[]>();
+				}
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 		return processesGrid;
@@ -48,6 +46,10 @@ public class ProcessManagerBean extends BaseBean implements Serializable{
 		this.processesGrid = processesGrid;
 	}
 	
+	public List<String[]> getProcessesGrid() {
+		return processesGrid;
+	}
+
 	public void updateProcessesGrid() throws RemoteException, Exception{
 		logger.info("updateProcessesGrid");
 		if (getOozie() != null){
@@ -101,6 +103,5 @@ public class ProcessManagerBean extends BaseBean implements Serializable{
 	public void setTableState(String tableState) {
 		this.tableState = tableState;
 	}
-	
 	
 }
