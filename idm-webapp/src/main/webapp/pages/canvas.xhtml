@@ -196,7 +196,10 @@
 
 
 	    	  onPageReady();
-
+               document.getElementById("canvas-tabs").addEventListener('contextmenu', function (event) {
+                    event.preventDefault();
+                });
+    
 				var i = 0;
 	    	  
 		    	jQuery(window).resize(function() {
@@ -1314,8 +1317,7 @@
 										<p>
 											<ui:repeat value="#{tab.value}" var="action">
 												<span id="spanImagensObj" style="display: none"> <img
-													src="#{action[1]}" class="footerIcon"
-													onError="this.onerror=null;this.src='./#{action[1]}';" />
+													src="#{action[1]}" class="footerIcon" />
 													<span>#{action[0]}</span>
 												</span>
 											</ui:repeat>

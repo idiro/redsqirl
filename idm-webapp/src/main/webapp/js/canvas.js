@@ -56,6 +56,7 @@ var refreshProcManagerCount = 30;
 var imgHeight;
 var imgWidth;
 
+
 function findHHandWW() {
 	imgHeight = this.height;
 	imgWidth = this.width;
@@ -1667,14 +1668,30 @@ function configureGroupListeners(canvasName, group) {
 	});
 	
 	group.on('click', function(e) {
-		
+		//alert('1');
 		deselectOnClick(canvasName, group.getChildren()[2], e);
 		
 		group.getChildren()[2].on('click', function(e) {
 			polygonOnClick(this, e, canvasName);
 		});
+	    if(e.button == 2){
+	          /* Attempt to display a context menu here!!!
+		      var x;
+              var y;
+              if (e.pageX || e.pageY) { 
+                 x = e.pageX;
+                 y = e.pageY;
+              }else { 
+                 x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
+                 y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
+              }
+              jQuery("#contextMenuCanvasElement").style.left = x;
+              jQuery("#contextMenuCanvasElement").style.top = y;
+              jQuery("#contextMenuCanvasElement").style.display = 'block';
+              */
+	    }
 	});
-	
+
 }
 
 function createGroup(canvasName, circle0, circle1, polygon, srcImageText, typeText, groupId, arc1,arc2,arc3) {
