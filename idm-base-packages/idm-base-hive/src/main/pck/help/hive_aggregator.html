@@ -1,0 +1,79 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Hive Aggregator Help</title>
+<style>
+h1 {
+	text-align: center;
+}
+
+body {
+	font-family: Verdana, Geneva, sans-serif;
+	padding-left: 2%;
+}
+
+p {
+	padding-left: 3%;
+	width: 50%;
+}
+
+td {
+	padding: 1% 7% 1% 0.5%;
+}
+</style>
+</head>
+<body>
+	<div id="body">
+		<h1>Hive Aggregator</h1>
+		<h3>Quick Guide</h3>
+		<p>
+		<ul>
+			<li>Group By - Group the dataset by a selection of features</li>
+			<li>Features - Select the features to be used or calculated</li>
+			<li>Filter - Filter the selected data by a condition</li>
+		</ul>
+
+		<h2>Decription</h2>
+		<p>Hive Aggregator is an action that is allows data to be
+			aggregated .</p>
+
+		<h2>Source</h2>
+		<p>The source type for Hive Aggregator has to be Hive and the sub
+			types Hive Table or Hive Partition. Only one input is needed for Hive
+			Aggregator</p>
+
+		<h2>Group By - Page 1</h2>
+		<p>The Group By Interaction allows for features to be selected
+			that the query will be grouped by.</p>
+
+		<h3>Group By</h3>
+		<p>In Group By the group by condition can be set to group the data
+			set by an attribute</p>
+		<h2>Feature Operations</h2>
+		<p>Feature operations allows data to be copied to the output table
+			and also do some transformation of the data. It allows casting of one
+			data type to another type or other operations to the attribute.</p>
+		<p>There is a generator action that will generate the action
+			depending on the generation type. If the generator action is select
+			on MAX it will generate all the features available in the MAX
+			function</p>
+
+		<h2>IDM Hive</h2>
+		<p>
+			IDM Hive is the interface for IDM to interact with Hive on the hadoop
+			cluster. There are two other actions that are apart of IDM Hive
+			package <a href="hive_select.html" target="_self">Hive Select</a> , <a href="hive_join.html" target="_self">Hive Join</a> and <a
+				href="hive_union.html" target="_self">Hive Union.</a>
+		</p>
+		<p>
+			<a href="http://hive.apache.org/" target="_blank">Hive</a> is a
+			hadoop implementation of a relational database that is used for data
+			warehousing for large data sets. Each query written in it's own
+			language called HiveQl that acts like a normal SQL query but runs as
+			a Map/Reduce job. Indexing is made easier and makes querying large
+			datasets quicker and more efficient
+		</p>
+	</div>
+</body>
+</html>
