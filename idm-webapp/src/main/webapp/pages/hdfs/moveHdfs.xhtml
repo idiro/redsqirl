@@ -88,7 +88,7 @@ function dataTableSelectOneRadio(radio) {
     
 	<h:panelGrid columns="2">
 		<a4j:commandButton  styleClass="greenButton" action="#{hdfsBean.moveFileAfter}" value="#{messages.button_ok}"
-			reRender="hdfsfs" onclick="#{rich:component('hdfsmoveModalPanel')}.hide()" />
+			reRender="hdfsfs" onclick="#{rich:component('hdfsmoveModalPanel')}.hide()" oncomplete="resizeTables();"/>
 		<a4j:commandButton  styleClass="greenButton" value="#{messages.button_cancel}" type="button" 
 			onclick="#{rich:component('hdfsmoveModalPanel')}.hide();" />
 	</h:panelGrid>

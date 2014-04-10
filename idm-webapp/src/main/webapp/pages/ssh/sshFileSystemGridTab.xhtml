@@ -17,7 +17,7 @@
 			<h:inputText id="sshpath" styleClass="mainPageTextField"  label="Path" value="#{sshBean.path}"
 				maxlength="255" style="width:395px; margin-left:5px;" 
 				onkeypress="return enableEnterKey(event, 'sshchangePathBt');"/>
-			<a4j:commandButton  styleClass="greenButton" id="sshchangePathBt"
+			<a4j:commandButton  styleClass="greenButton" id="sshchangePathBt" oncomplete="resizeTables();" 
 				action="#{sshBean.changePath}" value="#{messages.button_ok}" reRender="sshfs" />
 
 			<br />
@@ -28,11 +28,11 @@
 					<h:graphicImage id="sshbtUndo" value="../image/icons/button-previous.gif" title='#{messages.canvas_previous}' />
 				</a4j:commandLink>
 	
-				<a4j:commandLink action="#{sshBean.goNext}" reRender="sshpath,sshfs">
+				<a4j:commandLink action="#{sshBean.goNext}" reRender="sshpath,sshfs" oncomplete="resizeTables();" >
 					<h:graphicImage id="sshbtRedo" value="../image/icons/button-next.gif" title='#{messages.canvas_next}' />
 				</a4j:commandLink>
 				
-				<a4j:commandLink action="#{sshBean.goUp}" reRender="sshpath,sshfs">
+				<a4j:commandLink action="#{sshBean.goUp}" reRender="sshpath,sshfs" oncomplete="resizeTables();" >
 					<h:graphicImage id="sshbtGoUp" value="../image/icons/button_up.jpg" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 			</div>
@@ -41,7 +41,7 @@
 
 			<rich:panel style="border:none">
 			
-				<rich:dropSupport  acceptedTypes="hdfs" dropListener="#{sshBean.processDrop}" reRender="sshfs"/>
+				<rich:dropSupport  acceptedTypes="hdfs" dropListener="#{sshBean.processDrop}" reRender="sshfs" oncomplete="resizeTables();"/>
 				
 				<rich:extendedDataTable id="sshfs" value="#{sshBean.listGrid}"
 					var="item" width="100%" style="border:none;"

@@ -60,7 +60,7 @@
 			<h:inputText id="hdfspath" label="Path" styleClass="mainPageTextField" value="#{hdfsBean.path}" maxlength="255" style="width:395px; margin-left:5px;" 
 				onkeypress="return enableEnterKey(event, 'hdfsfsPathBtn');"/>
 
-			<a4j:commandLink id="hdfsfsPathBtn" action="#{hdfsBean.changePath}" reRender="hdfsfs" style="color:#FFFFFF">
+			<a4j:commandLink id="hdfsfsPathBtn" action="#{hdfsBean.changePath}" reRender="hdfsfs" oncomplete="resizeTables();" style="color:#FFFFFF">
 				<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' styleClass="refreshButton"/>
 			</a4j:commandLink>
 
@@ -72,7 +72,7 @@
 					<h:graphicImage id="hdfsbtAdd" value="../image/icons/button-plus.gif" title='#{messages.HdfsInterface_create_help}' styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 	
-				<a4j:commandLink action="#{hdfsBean.deleteFile}" reRender="hdfsfs"
+				<a4j:commandLink action="#{hdfsBean.deleteFile}" reRender="hdfsfs" oncomplete="resizeTables();" 
 					onclick="if(!confirm('Are you sure you want to delete the selected files?')){return false;}">
 					<h:graphicImage id="hdfsbtDelete" value="../image/icons/button-delete2.gif" title='#{messages.HdfsInterface_delete_help}' styleClass="fileSystemIcon" />
 				</a4j:commandLink>
@@ -89,15 +89,15 @@
 					<h:graphicImage value="../image/icons/button-move.gif" title='#{messages.HdfsInterface_move_help}' styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 	
-				<a4j:commandLink action="#{hdfsBean.goPrevious}" reRender="hdfspath,hdfsfs">
+				<a4j:commandLink action="#{hdfsBean.goPrevious}" reRender="hdfspath,hdfsfs" oncomplete="resizeTables();" >
 					<h:graphicImage id="hdfsbtUndo" value="../image/icons/button-previous.gif" title='#{messages.HdfsInterface_previous_help}' styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 	
-				<a4j:commandLink action="#{hdfsBean.goNext}" reRender="hdfspath,hdfsfs">
+				<a4j:commandLink action="#{hdfsBean.goNext}" reRender="hdfspath,hdfsfs" oncomplete="resizeTables();" >
 					<h:graphicImage id="hdfsbtRedo" value="../image/icons/button-next.gif" title='#{messages.HdfsInterface_next_help}' styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 				
-				<a4j:commandLink action="#{hdfsBean.goUp}" reRender="hdfspath,hdfsfs">
+				<a4j:commandLink action="#{hdfsBean.goUp}" reRender="hdfspath,hdfsfs" oncomplete="resizeTables();" >
 					<h:graphicImage id="hdfgoup" value="../image/icons/button_up.jpg" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 			</div>
@@ -106,7 +106,7 @@
 
 			<rich:panel style="border:none">
 			
-				<rich:dropSupport acceptedTypes="ssh" dropListener="#{hdfsBean.processDrop}" reRender="hdfsfs"/>
+				<rich:dropSupport acceptedTypes="ssh" dropListener="#{hdfsBean.processDrop}" reRender="hdfsfs" oncomplete="resizeTables();"/>
 				
 				
 				<rich:extendedDataTable id="hdfsfs" value="#{hdfsBean.listGrid}"
