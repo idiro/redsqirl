@@ -1944,19 +1944,21 @@ function updateLabelObj(groupId, newGroupId) {
 	var group = getElement(polygonLayer, groupId);
 	var px = group.getChildren()[2].getX() - (newGroupId.length*2);
 	var py = group.getChildren()[2].getY() + 30;
-    var idLabel = groupId+"_label";
-    var end = false;
     
-    /*
+    var oldIdLabel = groupId+"_label";
+    var newIdLabel = groupId+"_label";
+    var end = false;
+    //alert("Label to remove: "+oldIdLabel);
     for ( var i = 0; i < group.getChildren().length && !end; i++) {
-        if (group.getChildren()[i].getChildren()[4].getText() == idLabel) {
+        //alert(group.getChildren()[i].getId());
+        if (group.getChildren()[i].getId() == oldIdLabel) {
             group.getChildren()[i].remove();
             end = true;
         }
-    }*/
+    }
     
 	var textLabelObj = new Kinetic.Text({
-	    //id : idLabel,
+	    id : newIdLabel,
 		text : newGroupId,
 		fontSize : 10,
 		fill : 'black',
