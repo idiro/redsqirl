@@ -1,5 +1,6 @@
-package idm;
+    package idm;
 
+import idiro.utils.LocalFileSystem;
 import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idiro.workflow.server.enumeration.SavingState;
@@ -56,6 +57,12 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private Map<String, DataFlow> workflowMap;
 
 	private String errorTableState = new String();
+	
+
+	/**
+	 * Don't open the modal window after changing the ID.
+	 */
+	private boolean changeElementOnly = false;
 	
 	public void doNew() {
 
@@ -1325,7 +1332,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		for (DataFlowElement e : getDf().getElement()) {
 			
 			jsonElements.put(new Object[] { e.getComponentId(), e.getName(),
-					e.getImage(), e.getX(), e.getY() });
+					LocalFileSystem.relativize(getCurrentPage(),e.getImage()), e.getX(), e.getY() });
 
 		}
 
@@ -1395,6 +1402,20 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void setErrorTableState(String errorTableState) {
 		this.errorTableState = errorTableState;
+	}
+
+	/**
+	 * @return the changeElementOnly
+	 */
+	public boolean isChangeElementOnly() {
+		return changeElementOnly;
+	}
+
+	/**
+	 * @param changeElementOnly the changeElementOnly to set
+	 */
+	public void setChangeElementOnly(boolean changeElementOnly) {
+		this.changeElementOnly = changeElementOnly;
 	}
 
 }

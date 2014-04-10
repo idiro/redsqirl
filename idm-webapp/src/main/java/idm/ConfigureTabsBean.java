@@ -1,9 +1,7 @@
 package idm;
 
-import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.interfaces.DataFlow;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.rmi.RemoteException;
@@ -17,7 +15,6 @@ import java.util.Map.Entry;
 
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 
@@ -33,7 +30,6 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	protected Map<String, List<String[]>> menuWA;
 	private String tabName;
 	private String selected;
-
 	private static Logger logger = Logger.getLogger(ConfigureTabsBean.class);
 	private static Map<String,String> allWANameWithClassName = null;
 
@@ -57,42 +53,6 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 			e.printStackTrace();
 		}
 
-	}
-
-	public File getCurrentPage(){
-		String currentPage = ((HttpServletRequest) FacesContext
-				.getCurrentInstance().getExternalContext().getRequest())
-				.getRequestURI();
-		File f = null;
-		//		logger.info(currentPage);
-		if (currentPage != null && !currentPage.isEmpty()) {
-			List<Integer> pos = new ArrayList<Integer>();
-			for (int i = 0; i < currentPage.length(); i++) {
-
-				if (currentPage.charAt(i) == '/') {
-					pos.add(i);
-				}
-			}
-			currentPage = currentPage.substring(0, pos.get(pos.size() - 1));
-			try {
-				f = new File(
-						WorkflowPrefManager
-						.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
-						+ currentPage);
-				if (!f.exists()) {
-					f = new File(
-							WorkflowPrefManager
-							.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
-							+ currentPage.substring(pos.get(1)));
-				}
-				logger.info(f.getAbsolutePath());
-			} catch (Exception e) {
-				//				logger.info("E");
-			}
-			
-		}
-
-		return f;
 	}
 
 	public List<String> getTabs() {

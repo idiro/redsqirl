@@ -14,7 +14,6 @@
 <head>
 <link rel="icon" type="image/gif" href="../image/logo_redsqirl_favicon.gif" />
 <link rel="stylesheet" type="text/css" href="#{facesContext.externalContext.requestContextPath}/css/jquery-ui.css" />
-<link rel="stylesheet" type="text/css" href="#{facesContext.externalContext.requestContextPath}/css/jquery.contextmenu.css" />
 <link rel="stylesheet" type="text/css" href="#{facesContext.externalContext.requestContextPath}/css/idm.css" />
 
 <script	src="#{facesContext.externalContext.requestContextPath}/js/jquery-1.9.1.js"	type="text/javascript" />
@@ -41,6 +40,7 @@
 	    jQuery.noConflict();
 
 		  jQuery(function() {
+			  
 			  nameTabs[0] = "canvas-1";
 
 	    	  configureTabsRemote();
@@ -134,11 +134,6 @@
   	    	
   	    	var contTabRemote = 1;
   	        
-  	    	/* jQuery('#addTabRemote').click( function(){
-
-  	  	    	jQuery("[id$='linkModalNewSsh']").click();
-
-  	  	  	}); */
 
 	    	  jQuery('#addtabCanvas').click( function(){
 	              //<![CDATA[
@@ -166,43 +161,45 @@
 		  var menuSplitterH = [
 		  {'Collapse/Restore bottom panel': function(menuItem,menu){jQuery("#splitterH").trigger('toggleDock');}}
 		  ];
+		  
+          
 		  jQuery(document).ready(function(){
 
 	    	  jQuery(".splitterV").splitter({
-	    		type: "v",
-				outline: true,
-	    		sizeLeft: jQuery(window).width()*2/3, 
-	    		//minLeft: 200,
-	    		//minRight: 200,
-				resizeToWidth: true,
-				dock: "right",
-				dockSpeed: 200,
-				cookie: "splitterV",
-				dockKey: 'Z'
-	    		});
-
+	        	  type: "v",
+	        	  outline: true,
+	        	  sizeLeft: jQuery(window).width()*2/3,
+	        	  //minLeft: 200,
+	        	  //minRight: 200,
+	        	  resizeToWidth: true,
+	        	  dock: "right",
+	        	  dockSpeed: 200,
+	        	  cookie: "splitterV"
+	          });
+	
 	    	  jQuery("#splitterH").splitter({
-	    		type: "h", 
-				outline: true,
-	    		//minTop: 100,
-	    		//minBottom: 100,
-				resizeToWidth: true,
-				dock: "top",
-				dockSpeed: 200,
-	    		cookie: "splitterH"
-	    		});
-
+	        	  type: "h",
+	        	  outline: true,
+	        	  //minTop: 100,
+	        	  //minBottom: 100,
+	        	  resizeToWidth: true,
+	        	  dock: "top",
+	        	  dockSpeed: 200,
+	        	  cookie: "splitterH"
+	          });
+	
 		      jQuery(".splitter-bar-vertical").contextMenu(menuSplitterV);
-
+	
 		      jQuery(".splitter-bar-horizontal").contextMenu(menuSplitterH);
 		  });
 
 
 	    	  onPageReady();
-
-				
-				
-				//var idTimeout;
+               document.getElementById("canvas-tabs").addEventListener('contextmenu', function (event) {
+                    event.preventDefault();
+                });
+    
+				var i = 0;
 	    	  
 				var resizeTimer;
 				
@@ -352,7 +349,6 @@
 	    			 invalidateSession();
 	    		 }
 	    		 
-	    		 //setTimeout(function(){refreshProcManager()}, 20*1000);
 	    		 setTimeout(function(){autoSaveAll()}, 10*1000);
 	    		 
 	    	});	//---------- END jQuery(function
@@ -368,21 +364,11 @@
 	                }else if(currentSelect !== allPositionIcons){
 	                	allPositionIcons = currentSelect;
                         saveAllPositions(currentSelect);
-                        refreshProcManagerCount = 30;
 	                }
                 }catch(err){
                 }
 	    		setTimeout(function(){autoSaveAll()},10*60*1000);
             }
-	    	
-	    	function refreshProcManager(){
-		        	if(refreshProcManagerCount > 0){
-		        	 jQuery("[id$='RefreshProcessManager']").click();
-		        	 --refreshProcManagerCount;
-		        	}
-		    		setTimeout(function(){refreshProcManager()},20*1000);
-		    	}
-	      
 	    			
 	    	function configureFooter(){
 	    		 var tabsFooter = jQuery("#tabsFooter").tabs().scrollabletab();
@@ -597,9 +583,6 @@
 	   		}
 	   	}
 	   	
-	   	
-	   	
-	   	
 	   	function menuSave(){
 			if (isSaved(getSelected())){
 				save(getPathFile(getSelected()));
@@ -682,7 +665,6 @@
 	   	
 
 	</script>
-
 
 </head>
 <body id="body">
@@ -948,6 +930,7 @@
 						assignTo="#{canvasModalBean.pathImage}" />
 					<a4j:actionparam name="paramNameWorkflow"
 						assignTo="#{canvasModalBean.nameWorkflow}" />
+					<a4j:actionparam name="paramSelectedTab" />
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -960,11 +943,13 @@
 
 				<a4j:jsFunction name="openChangeIdModal"
 					action="#{canvasBean.openChangeIdModal}"
-					oncomplete="#{rich:component('modalChangeId')}.show();">
+					oncomplete="if(#{not canvasBean.changeElementOnly} || confirm('#{messages.confirm_changeid}')){#{rich:component('modalChangeId')}.show();}">
 					<a4j:actionparam name="paramNameElement"
 						assignTo="#{canvasBean.idGroup}" />
 					<a4j:actionparam name="paramPathImage"
 						assignTo="#{canvasModalBean.pathImage}" />
+                    <a4j:actionparam name="paramNameChangeIdOnly"
+                        assignTo="#{canvasBean.changeElementOnly}" />
 					<a4j:actionparam name="paramNameWorkflow"
 						value="#{canvasBean.nameWorkflow}"
 						assignTo="#{canvasModalBean.nameElement}" />
@@ -985,7 +970,7 @@
 
 			<a4j:region>
 				<a4j:jsFunction name="closeChangeIdModal"
-					oncomplete="updateLabelObj('#{canvasBean.idGroup}','#{canvasBean.idElement}');openModal('#{canvasBean.idGroup}','#{canvasModalBean.pathImage}','#{canvasBean.nameWorkflow}');">
+					oncomplete="updateLabelObj('#{canvasBean.idGroup}','#{canvasBean.idElement}');if(#{not canvasBean.changeElementOnly}){ openModal('#{canvasBean.idGroup}','#{canvasModalBean.pathImage}','#{canvasBean.nameWorkflow}');}">
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -1400,8 +1385,7 @@
 										<p>
 											<ui:repeat value="#{tab.value}" var="action">
 												<span id="spanImagensObj" style="display: none"> <img
-													src="#{action[1]}" class="footerIcon"
-													onError="this.onerror=null;this.src='./#{action[1]}';" />
+													src="#{action[1]}" class="footerIcon" />
 													<span>#{action[0]}</span>
 												</span>
 											</ui:repeat>

@@ -341,8 +341,8 @@ public class UserInfoBean extends BaseBean implements Serializable {
 						Thread.sleep(500);
 						logger.error(e.getMessage());
 						setCurrentValue(getCurrentValue()+1);
-
-						if(cont > 8000){
+						//Time out after 3 minutes
+						if(cont > 3*60*2){
 							throw e;
 						}
 					}
