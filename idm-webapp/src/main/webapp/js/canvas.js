@@ -58,11 +58,13 @@ var imgWidth;
 var rightClickGroup;
 
 var contextMenuCanvas = [
-// {'Start link': function(menuItem,menu){polygonOnClick(rightClickGroup, "", canvasName);}},
+ {'Link': function(menuItem,menu){createLink(rightClickGroup.getChildren()[0]);}},
  {'Rename object...': function(menuItem,menu){openChangeIdModalJS(rightClickGroup);}},
  {'Configure...': function(menuItem,menu){openCanvasModalJS(rightClickGroup);}},
  {'Data output...': function(menuItem,menu){openCanvasModalJS(rightClickGroup,"outputTab");}},
+ {'Oozie action': function(menuItem,menu){openWorkflowElementUrl(rightClickGroup.getId());}},
 ];
+
 var cmenuCanvas = jQuery.contextMenu.create(contextMenuCanvas);
 
 function findHHandWW() {
@@ -1565,47 +1567,53 @@ function configureCircle(canvasName, circle1) {
 	canvasArray[canvasName].down = false;
 
 	circle1.on("click",	function(e) {
-
-		var arrow = canvasArray[canvasName].arrow;
-
-		if (canvasArray[canvasName].down) {
-			canvasArray[canvasName].down = false;
-			
-			deleteArrowOutsideStandard(canvasName);
-			
-			var output = arrow.output.getChildren()[4].getText();
-			var input = this.getParent().getChildren()[4].getText();
-			var arrowClone = addLink(canvasName, output, input);
-			
-			addLinkModalBt(arrow.output.getId(), this.getParent().getId(), arrowClone.getName());
-
-		} else {
-			var polygonLayer = canvasArray[canvasName].polygonLayer;
-			var layer = canvasArray[canvasName].layer;
-			
-			canvasArray[canvasName].down = true;
-
-			var polygonGroup = getElement(polygonLayer, this.getParent().getId());
-			arrow.setPoints([ polygonGroup.getX() + 40,
-					polygonGroup.getY() + 50,
-					polygonGroup.getX() + 40 + 1,
-					polygonGroup.getY() + 50 + 1 ]);
-
-			var idOutput = this.getName();
-			arrow.setName("arrow" + idOutput);
-
-			arrow.output = this.getParent();
-
-			var cloneArrow = arrow.clone();
-			cloneArrow.isArrow = true;
-			layer.add(cloneArrow);
-
-			layer.draw();
-		}
-
+	    if(e.button != 2){
+            createLink(this);
+        }
 	});
 
 	return circle1;
+}
+
+
+function createLink(circleGp){
+        
+        var arrow = canvasArray[selectedCanvas].arrow;
+
+        if (canvasArray[selectedCanvas].down) {
+            canvasArray[selectedCanvas].down = false;
+            
+            deleteArrowOutsideStandard(selectedCanvas);
+            
+            var output = arrow.output.getChildren()[4].getText();
+            var input = circleGp.getParent().getChildren()[4].getText();
+            var arrowClone = addLink(selectedCanvas, output, input);
+            
+            addLinkModalBt(arrow.output.getId(), circleGp.getParent().getId(), arrowClone.getName());
+
+        } else {
+            var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+            var layer = canvasArray[selectedCanvas].layer;
+            
+            canvasArray[selectedCanvas].down = true;
+
+            var polygonGroup = getElement(polygonLayer, circleGp.getParent().getId());
+            arrow.setPoints([ polygonGroup.getX() + 40,
+                    polygonGroup.getY() + 50,
+                    polygonGroup.getX() + 40 + 1,
+                    polygonGroup.getY() + 50 + 1 ]);
+
+            var idOutput = circleGp.getName();
+            arrow.setName("arrow" + idOutput);
+
+            arrow.output = circleGp.getParent();
+
+            var cloneArrow = arrow.clone();
+            cloneArrow.isArrow = true;
+            layer.add(cloneArrow);
+
+            layer.draw();
+        }
 }
 
 function configureStage(canvasName) {

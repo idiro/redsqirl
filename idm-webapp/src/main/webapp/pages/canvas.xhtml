@@ -155,11 +155,11 @@
 	          });
 
 		  var menuSplitterV = [
-		  {'Collapse/Restore right panels': function(menuItem,menu){jQuery(".splitterV").trigger('toggleDock');}}
+		  {'Collapse/Restore right panels': function(menuItem,menu){jQuery(".splitterV").trigger('toggleDock');canvasResizeSplitter();alert(1);}}
 		  ];
 
 		  var menuSplitterH = [
-		  {'Collapse/Restore bottom panel': function(menuItem,menu){jQuery("#splitterH").trigger('toggleDock');}}
+		  {'Collapse/Restore bottom panel': function(menuItem,menu){jQuery("#splitterH").trigger('toggleDock');alert(1);canvasResizeSplitter();}}
 		  ];
 		  
          
@@ -740,6 +740,21 @@
 					<a4j:actionparam name="groupId" />
 				</a4j:jsFunction>
 			</a4j:region>
+
+           <a4j:region>
+                <a4j:status
+                    onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+                    onerror="jQuery('#canvas-tabs').unblock();"
+                    onsuccess="jQuery('#canvas-tabs').unblock();"
+                    onstop="jQuery('#canvas-tabs').unblock();" />
+
+                <a4j:jsFunction name="openWorkflowElementUrl"
+                    action="#{canvasBean.calcWorkflowElementUrl}"
+                    data="#{canvasBean.workflowElementUrl}"
+                    oncomplete="window.open(data,'_blank')" reRender="errorTable">
+                    <a4j:actionparam name="groupId" />
+                </a4j:jsFunction>
+            </a4j:region>
 
 			<a4j:region>
 				<a4j:status
