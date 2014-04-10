@@ -1,5 +1,6 @@
     package idm;
 
+import idiro.utils.LocalFileSystem;
 import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idiro.workflow.server.enumeration.SavingState;
@@ -1331,7 +1332,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		for (DataFlowElement e : getDf().getElement()) {
 			
 			jsonElements.put(new Object[] { e.getComponentId(), e.getName(),
-					e.getImage(), e.getX(), e.getY() });
+					LocalFileSystem.relativize(getCurrentPage(),e.getImage()), e.getX(), e.getY() });
 
 		}
 
