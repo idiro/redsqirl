@@ -56,6 +56,15 @@ var refreshProcManagerCount = 30;
 var imgHeight;
 var imgWidth;
 
+var rightClickGroup;
+
+var contextMenuCanvas = [
+// {'Start link': function(menuItem,menu){polygonOnClick(rightClickGroup, "", canvasName);}},
+ {'Rename object...': function(menuItem,menu){openChangeIdModalJS(rightClickGroup);}},
+ {'Configure...': function(menuItem,menu){openCanvasModalJS(rightClickGroup);}},
+ {'Data output...': function(menuItem,menu){openCanvasModalJS(rightClickGroup,"outputTab");}},
+];
+var cmenuCanvas = jQuery.contextMenu.create(contextMenuCanvas);
 
 function findHHandWW() {
 	imgHeight = this.height;
@@ -1668,28 +1677,18 @@ function configureGroupListeners(canvasName, group) {
 	});
 	
 	group.on('click', function(e) {
-		//alert('1');
-		deselectOnClick(canvasName, group.getChildren()[2], e);
+	    if(e.button != 2){
+		  deselectOnClick(canvasName, group.getChildren()[2], e);
 		
-		group.getChildren()[2].on('click', function(e) {
+		  group.getChildren()[2].on('click', function(e) {
 			polygonOnClick(this, e, canvasName);
-		});
-	    if(e.button == 2){
-	          /* Attempt to display a context menu here!!!
-		      var x;
-              var y;
-              if (e.pageX || e.pageY) { 
-                 x = e.pageX;
-                 y = e.pageY;
-              }else { 
-                 x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft; 
-                 y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
-              }
-              jQuery("#contextMenuCanvasElement").style.left = x;
-              jQuery("#contextMenuCanvasElement").style.top = y;
-              jQuery("#contextMenuCanvasElement").style.display = 'block';
-              */
-	    }
+		
+		  }); 
+        }else{
+              rightClickGroup = this;
+              cmenuCanvas.show(this,e);
+              return false;
+        }
 	});
 
 }
@@ -1710,6 +1709,8 @@ function createGroup(canvasName, circle0, circle1, polygon, srcImageText, typeTe
 	group1.on('click',function() {
          jQuery("#help_"+typeText.getText()).click();
     });
+    
+    jQuery("#"+groupId).contextMenu(contextMenuCanvas);
 
 	var circ0 = circle0.clone();
 	var circ = circle1.clone();
@@ -1747,31 +1748,54 @@ function configureGroup(canvasName, group, mousePosX, mousePosY, polygon) {
 	configureGroupListeners(canvasName, group);
 
 	group.on('dblclick', function(e) {
-
-		this.getChildren()[2].setStroke('black');
-		this.getChildren()[2].selected = false;
-		canvasArray[selectedCanvas].down = false;
-
-		canvasArray[selectedCanvas].polygonLayer.draw();
-		
-		var objImg = this.getChildren()[2].clone();
-		var imagePath = objImg.toDataURL({
-			width : 80,
-			height : 80
-		});
-
-		if (!this.hasChangedId) {
-			openChangeIdModal(this.getId(), imagePath);
-			this.hasChangedId = true;
-
-		} else {
-			openModal(this.getId(), imagePath, canvasName);
-		}
-
+        openCanvasModalJS(this);
 	});
 
 	makeHistory(canvasName);
 }
+
+
+function openCanvasModalJS(group, selectedTab){
+
+    group.getChildren()[2].setStroke('black');
+    group.getChildren()[2].selected = false;
+    canvasArray[selectedCanvas].down = false;
+
+    canvasArray[selectedCanvas].polygonLayer.draw();
+    
+    var objImg = group.getChildren()[2].clone();
+    var imagePath = objImg.toDataURL({
+        width : 80,
+        height : 80
+    });
+
+    if (!group.hasChangedId) {
+        openChangeIdModal(group.getId(), imagePath,false);
+        group.hasChangedId = true;
+    } else {
+        openModal(group.getId(), imagePath, selectedCanvas, selectedTab);
+    }
+}
+
+function openChangeIdModalJS(group){
+
+    group.getChildren()[2].setStroke('black');
+    group.getChildren()[2].selected = false;
+    canvasArray[selectedCanvas].down = false;
+
+    canvasArray[selectedCanvas].polygonLayer.draw();
+    
+    var objImg = group.getChildren()[2].clone();
+    var imagePath = objImg.toDataURL({
+        width : 80,
+        height : 80
+    });
+
+    if (group.hasChangedId){
+        openChangeIdModal(group.getId(), imagePath,true);
+    }
+}
+
 
 function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
 	
@@ -1919,11 +1943,21 @@ function updateLabelObj(groupId, newGroupId) {
 	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
 	
 	var group = getElement(polygonLayer, groupId);
-	
 	var px = group.getChildren()[2].getX() - (newGroupId.length*2);
 	var py = group.getChildren()[2].getY() + 30;
-
+    var idLabel = groupId+"_label";
+    var end = false;
+    
+    /*
+    for ( var i = 0; i < group.getChildren().length && !end; i++) {
+        if (group.getChildren()[i].getChildren()[4].getText() == idLabel) {
+            group.getChildren()[i].remove();
+            end = true;
+        }
+    }*/
+    
 	var textLabelObj = new Kinetic.Text({
+	    //id : idLabel,
 		text : newGroupId,
 		fontSize : 10,
 		fill : 'black',

@@ -684,12 +684,19 @@ public class CanvasModal extends BaseBean implements Serializable {
 		HttpServletRequest request = (HttpServletRequest) FacesContext
 				.getCurrentInstance().getExternalContext().getRequest();
 		request.removeAttribute("msnError");
+		
+		String selTab = FacesContext.getCurrentInstance().getExternalContext()
+				.getRequestParameterMap().get("paramSelectedTab");
+		if(selTab == null || selTab.isEmpty()||selTab.equalsIgnoreCase("undefined")){
+			selTab = "confTabCM";
+		}
+		logger.info("selected tab: "+selTab);
 
 		// Don't update the element if you it close immediately
 		elementToUpdate = false;
 
 		// set the first tab for obj
-		setSelectedTab("confTabCM");
+		setSelectedTab(selTab);
 
 		logger.info("open group id " + getGroupID());
 		logger.info("size of map "
@@ -1959,7 +1966,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	}
 
 	public void openHelpTextEditorModal() {
-		logger.info("openHelpTextEditorModal");
+		
 		String command = FacesContext.getCurrentInstance().getExternalContext()
 				.getRequestParameterMap().get("command");
 
@@ -1969,8 +1976,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 		String column = FacesContext.getCurrentInstance().getExternalContext()
 				.getRequestParameterMap().get("column");
 
+		logger.info("openHelpTextEditorModal ["+command+","+rowKey+","+column+"]");
 		if (rowKey != null) {
-			setRowEdit(Integer.valueOf(rowKey));
+			try{
+				setRowEdit(Integer.valueOf(rowKey));
+			}catch(Exception e){}
 		}
 		setColumnEdit(column);
 
