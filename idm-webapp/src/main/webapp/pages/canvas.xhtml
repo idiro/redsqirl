@@ -154,14 +154,17 @@
 	              //]]>
 	          });
 
-			  var menuSplitterV = [
-			  {'Collapse/Restore right panels': function(menuItem,menu){jQuery(".splitterV").trigger('toggleDock');}}
-			  ];
-	
-			  var menuSplitterH = [
-			  {'Collapse/Restore bottom panel': function(menuItem,menu){jQuery("#splitterH").trigger('toggleDock');}}
-			  ];
-	
+		  var menuSplitterV = [
+		  {'Collapse/Restore right panels': function(menuItem,menu){jQuery(".splitterV").trigger('toggleDock');}}
+		  ];
+
+		  var menuSplitterH = [
+		  {'Collapse/Restore bottom panel': function(menuItem,menu){jQuery("#splitterH").trigger('toggleDock');}}
+		  ];
+		  
+          
+		  jQuery(document).ready(function(){
+
 	    	  jQuery(".splitterV").splitter({
 	        	  type: "v",
 	        	  outline: true,
@@ -188,12 +191,15 @@
 		      jQuery(".splitter-bar-vertical").contextMenu(menuSplitterV);
 	
 		      jQuery(".splitter-bar-horizontal").contextMenu(menuSplitterH);
-	
-		      onPageReady();
+		  });
 
-				
-				
-				//var idTimeout;
+
+	    	  onPageReady();
+               document.getElementById("canvas-tabs").addEventListener('contextmenu', function (event) {
+                    event.preventDefault();
+                });
+    
+				var i = 0;
 	    	  
 				var resizeTimer;
 				
@@ -865,6 +871,7 @@
 						assignTo="#{canvasModalBean.pathImage}" />
 					<a4j:actionparam name="paramNameWorkflow"
 						assignTo="#{canvasModalBean.nameWorkflow}" />
+					<a4j:actionparam name="paramSelectedTab" />
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -877,11 +884,13 @@
 
 				<a4j:jsFunction name="openChangeIdModal"
 					action="#{canvasBean.openChangeIdModal}"
-					oncomplete="#{rich:component('modalChangeId')}.show();">
+					oncomplete="if(#{not canvasBean.changeElementOnly} || confirm('#{messages.confirm_changeid}')){#{rich:component('modalChangeId')}.show();}">
 					<a4j:actionparam name="paramNameElement"
 						assignTo="#{canvasBean.idGroup}" />
 					<a4j:actionparam name="paramPathImage"
 						assignTo="#{canvasModalBean.pathImage}" />
+                    <a4j:actionparam name="paramNameChangeIdOnly"
+                        assignTo="#{canvasBean.changeElementOnly}" />
 					<a4j:actionparam name="paramNameWorkflow"
 						value="#{canvasBean.nameWorkflow}"
 						assignTo="#{canvasModalBean.nameElement}" />
@@ -902,7 +911,7 @@
 
 			<a4j:region>
 				<a4j:jsFunction name="closeChangeIdModal"
-					oncomplete="updateLabelObj('#{canvasBean.idGroup}','#{canvasBean.idElement}');openModal('#{canvasBean.idGroup}','#{canvasModalBean.pathImage}','#{canvasBean.nameWorkflow}');">
+					oncomplete="updateLabelObj('#{canvasBean.idGroup}','#{canvasBean.idElement}');if(#{not canvasBean.changeElementOnly}){ openModal('#{canvasBean.idGroup}','#{canvasModalBean.pathImage}','#{canvasBean.nameWorkflow}');}">
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -1288,8 +1297,7 @@
 										<p>
 											<ui:repeat value="#{tab.value}" var="action">
 												<span id="spanImagensObj" style="display: none"> <img
-													src="#{action[1]}" class="footerIcon"
-													onError="this.onerror=null;this.src='./#{action[1]}';" />
+													src="#{action[1]}" class="footerIcon" />
 													<span>#{action[0]}</span>
 												</span>
 											</ui:repeat>
