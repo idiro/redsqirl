@@ -2,32 +2,7 @@
 <html>
 <head>
 <title>Pig Union Help</title>
-<style>
-h1 {
-	text-align: center;
-}
 
-body {
-	font-family: Verdana, Geneva, sans-serif;
-	padding-left: 2%;
-}
-
-p {
-	padding-left: 3%;
-	width: 50%;
-}
-
-li {
-	padding-left: 3%;
-	padding-top: 1%;
-	width: 50%;
-	list-style: none;
-}
-
-td {
-	padding: 1% 7% 1% 0.5%;
-}
-</style>
 </head>
 <body>
 	<div id="body">
@@ -35,6 +10,17 @@ td {
 		<h2>Description</h2>
 		<p>Perform a Pig Union action on a number of input datasets. This
 			will output one data set.</p>
+		<h3>Quick Guide</h3>
+		<p>
+		<ul>
+			<li>Input - at least two of either Text or Binary Map Reduce
+				Directory</li>
+			<li>Features - Select the features from the inputs</li>
+			<li>Join Type - Select the Join type to be used in the join</li>
+			<li>Join Relationship - Select the relationship between the
+				inputs</li>
+			<li>Output - Single Text or Binary Map Reduce Directory</li>
+		</ul>
 		<h2>Source</h2>
 		<p>The Source can be only HDFS (TEXT MAP REDUCE DIRECTORY). It has
 			to be a delimiter separated value. An example is when | is the
@@ -52,10 +38,15 @@ td {
 		<h2>IDM Pig</h2>
 		<p>
 			Idm Pig is a package that contains actions that interface with <a
-				href="http://pig.apache.org/">Pig</a> on the IDM platform to perform
+				target="_blank" href="http://pig.apache.org/">Pig</a> on the IDM platform to perform
 			Pig actions. There are two other actions available from this package
-			<a href="pig_select.html">Pig Select</a> and <a href="pig_join.html">Pig
-				Join</a>
+			<a class="stopLink" id="help_pig_select"
+				onclick="return false;" href="pig_select.html">Pig Select</a> , <a
+				class="stopLink" id="help_pig_join" onclick="return false;"
+				href="pig_join.html">Pig Join</a>, <a class="stopLink"
+				id="help_pig_aggregator" onclick="return false;" href="pig_aggregator.html">Pig
+				Aggregator</a> and <a class="stopLink" id="help_pig_sample"
+				onclick="return false;" href="pig_sample.html">Pig Sample</a>
 		<p>On the last page of every pig action will have two interactions
 			that set the output format of the pig action. These interactions are
 			to set the delimiter of the file for a TEXT MAP REDUCE DIRECTORY and
