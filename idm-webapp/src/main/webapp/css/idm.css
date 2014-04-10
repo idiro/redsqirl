@@ -603,7 +603,7 @@ table.secondtable td{
 	border-radius:7px;
 	color:#dadbdd;
 	background-color:  #dadbdd;
-	width:154px;
+	width:200px;
 	border:none;
 	background-image: url(); 
 }
@@ -626,6 +626,12 @@ table.secondtable td{
 	border: none;
 	color:  #FFFFFF;
 	padding: 0px 0px 0px 0px;
+}
+
+.menuItemHotKey{
+	position:absolute;
+	right:5px;
+	color:grey;
 }
 
 /*gray menu bar*/
