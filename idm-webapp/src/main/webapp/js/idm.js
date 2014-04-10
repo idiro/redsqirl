@@ -320,7 +320,7 @@ function resizeCanvasChangeTab(){
 }
 
 /*function to select all checkbox in a table*/
-function selectAllCheckbox(checkbox, checkboxId) {
+function selectAll(checkbox, checkboxId) {
     var elements = checkbox.form.elements;
     for (var i = 0; i < elements.length; i++) {
         var element = elements[i];
