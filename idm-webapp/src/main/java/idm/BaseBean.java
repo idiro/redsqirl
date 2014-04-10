@@ -1,5 +1,6 @@
 package idm;
 
+import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idiro.workflow.server.connect.interfaces.DataStore;
 import idiro.workflow.server.connect.interfaces.DataStoreArray;
@@ -8,6 +9,7 @@ import idiro.workflow.server.interfaces.JobManager;
 import idm.useful.IdmEntry;
 import idm.useful.MessageUseful;
 
+import java.io.File;
 import java.rmi.RemoteException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -18,7 +20,10 @@ import java.util.Map.Entry;
 import java.util.ResourceBundle;
 
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.Logger;
 
 
 /** BaseBean
@@ -30,6 +35,7 @@ import javax.servlet.http.HttpSession;
 public class BaseBean {
 
 
+	private static Logger bb_logger = Logger.getLogger(BaseBean.class);
 	
 	/** getBundleMessage
 	 * 
@@ -196,5 +202,42 @@ public class BaseBean {
 		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
 
 		return (PckManager) session.getAttribute("pckmng");
+	}
+	
+
+	public File getCurrentPage(){
+		String currentPage = ((HttpServletRequest) FacesContext
+				.getCurrentInstance().getExternalContext().getRequest())
+				.getRequestURI();
+		File f = null;
+		//		logger.info(currentPage);
+		if (currentPage != null && !currentPage.isEmpty()) {
+			List<Integer> pos = new ArrayList<Integer>();
+			for (int i = 0; i < currentPage.length(); i++) {
+
+				if (currentPage.charAt(i) == '/') {
+					pos.add(i);
+				}
+			}
+			currentPage = currentPage.substring(0, pos.get(pos.size() - 1));
+			try {
+				f = new File(
+						WorkflowPrefManager
+						.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
+						+ currentPage);
+				if (!f.exists()) {
+					f = new File(
+							WorkflowPrefManager
+							.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
+							+ currentPage.substring(pos.get(1)));
+				}
+				bb_logger.info(f.getAbsolutePath());
+			} catch (Exception e) {
+				//				logger.info("E");
+			}
+			
+		}
+
+		return f;
 	}
 }
