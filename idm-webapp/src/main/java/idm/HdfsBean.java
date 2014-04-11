@@ -23,6 +23,7 @@ public class HdfsBean extends FileSystemBean {
 	private static Logger logger = Logger.getLogger(HdfsBean.class);
 	
 	private String tableState = new String();
+	public boolean recursive = false;
 
 
 	/** openCanvasScreen
@@ -98,4 +99,5 @@ public class HdfsBean extends FileSystemBean {
 	public void setTableState(String tableState) {
 		this.tableState = tableState;
 	}
+
 }

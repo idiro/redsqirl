@@ -64,30 +64,32 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 	protected Logger logger = Logger.getLogger(this.getClass());
 
 	public static final String key_permission = "permission",
-			/**Owner key*/
-			key_owner = "owner",
-			/**Group Key*/
-			key_group = "group",
-			/**Type Key*/
-			key_type = "type",
-			/**Size Key*/
-			key_size = "size",
-			/**Recursive Key*/
-			key_recursive = "recursive";
-	/**max allowed history*/
+	/** Owner key */
+	key_owner = "owner",
+	/** Group Key */
+	key_group = "group",
+	/** Type Key */
+	key_type = "type",
+	/** Size Key */
+	key_size = "size",
+	/** Recursive Key */
+	key_recursive = "recursive";
+	/** max allowed history */
 	public static final int historyMax = 50;
-	/**Default path preference*/
+	/** Default path preference */
 	protected Preference<String> pathDataDefault;
 	/**
 	 * List of paths previously used/visited
 	 */
 	protected List<Path> history = new LinkedList<Path>();
-	/**Current position in history list*/
+	/** Current position in history list */
 	protected int cur = 0;
 
 	protected static Map<String, DataStore.ParamProperty> paramProp = new LinkedHashMap<String, DataStore.ParamProperty>();
+
 	/**
 	 * Constructor
+	 * 
 	 * @throws RemoteException
 	 */
 	public HDFSInterface() throws RemoteException {
@@ -97,17 +99,18 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 						+ System.getProperty("user.name"));
 		history.add(new Path(pathDataDefault.get()));
 		if (paramProp.isEmpty()) {
-			paramProp.put(key_type, new DSParamProperty("Type of the file: \"directory\" or \"file\"",
-					true, false, false));
+			paramProp.put(key_type, new DSParamProperty(
+					"Type of the file: \"directory\" or \"file\"", true, false,
+					false));
 			paramProp.put(key_owner, new DSParamProperty("Owner of the file",
-					false, false, false));
+					true, false, false));
 			paramProp.put(key_group, new DSParamProperty("Group of the file",
-					false, false, false));
+					true, false, false));
 			paramProp.put(key_permission, new DSParamProperty(
-					"Permission associated to the file", false, true, false));
+					"Permission associated to the file", false, false, false));
 			paramProp.put(key_size, new DSParamProperty("Size of the file",
 					true, false, false));
-			
+
 			paramProp.put(key_recursive, new DSParamProperty(
 					"Apply change reccursively", false, true, false,
 					FeatureType.BOOLEAN));
@@ -127,6 +130,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 
 	/**
 	 * Get the current path
+	 * 
 	 * @return path current path
 	 * @throws RemoteException
 	 */
@@ -135,9 +139,12 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 		logger.debug("Get path");
 		return history.get(cur).toString();
 	}
+
 	/**
 	 * Set the default path for the interface
-	 * @param path to set
+	 * 
+	 * @param path
+	 *            to set
 	 * @throws RemoteException
 	 */
 	@Override
@@ -148,10 +155,13 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 		}
 		// fCh.close();
 	}
+
 	/**
 	 * Go to a path if it exists
+	 * 
 	 * @param path
-	 * @return <code>true</code> if current path was changed else <code>false</code>
+	 * @return <code>true</code> if current path was changed else
+	 *         <code>false</code>
 	 * @throws RemoteException
 	 */
 	@Override
@@ -173,17 +183,22 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 		// fCh.close();
 		return ok;
 	}
+
 	/**
 	 * Does the history have a previous path
-	 * @return <code>true</code> there is a previous path else <code>false</code>
+	 * 
+	 * @return <code>true</code> there is a previous path else
+	 *         <code>false</code>
 	 * @throws RemoteException
 	 */
 	@Override
 	public boolean havePrevious() throws RemoteException {
 		return cur > 0;
 	}
+
 	/**
 	 * Go to the previous path in history
+	 * 
 	 * @throws RemoteException
 	 */
 	@Override
@@ -195,16 +210,19 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 
 	/**
 	 * Does the history have next path
-	 *  @return <code>true</code> there is a next path else <code>false</code>
-	 *  @throws RemoteException
+	 * 
+	 * @return <code>true</code> there is a next path else <code>false</code>
+	 * @throws RemoteException
 	 * 
 	 */
 	@Override
 	public boolean haveNext() throws RemoteException {
 		return cur < history.size() - 1;
 	}
+
 	/**
 	 * Go to the next position of users history
+	 * 
 	 * @throws RemoteException
 	 */
 	@Override
@@ -213,8 +231,10 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 			++cur;
 		}
 	}
+
 	/**
 	 * Create a path on HDFS with properties
+	 * 
 	 * @param path
 	 * @param properties
 	 * @throws RemoteException
@@ -224,21 +244,18 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 			throws RemoteException {
 		String error = null;
 		HdfsFileChecker fCh = new HdfsFileChecker(path);
-		if (fCh.isInitialized()
-				&& !fCh.exists()){
-			if(properties.get(
-					key_type) == null || properties.get(
-					key_type).equalsIgnoreCase("directory") ||
-					properties.get(
-							key_type).equalsIgnoreCase("file") ) {
+		if (fCh.isInitialized() && !fCh.exists()) {
+			if (properties.get(key_type) == null
+					|| properties.get(key_type).equalsIgnoreCase("directory")
+					|| properties.get(key_type).equalsIgnoreCase("file")) {
 				try {
 					FileSystem fs = NameNodeVar.getFS();
 					boolean ok;
-					if(properties.get(
-							key_type) == null ||properties.get(
-							key_type).equalsIgnoreCase("directory")){
+					if (properties.get(key_type) == null
+							|| properties.get(key_type).equalsIgnoreCase(
+									"directory")) {
 						ok = fs.mkdirs(new Path(path));
-					}else{
+					} else {
 						ok = fs.createNewFile(new Path(path));
 					}
 					// fs.close();
@@ -250,13 +267,15 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 								new Object[] { path });
 					}
 				} catch (IOException e) {
-					error = LanguageManagerWF.getText("HdfsInterface.cannotcreate",
-							new Object[] { path });
+					error = LanguageManagerWF
+							.getText("HdfsInterface.cannotcreate",
+									new Object[] { path });
 					logger.error(error);
 					logger.error(e.getMessage());
 				}
-			}else{
-				error = LanguageManagerWF.getText("HdfsInterface.typenotexists",
+			} else {
+				error = LanguageManagerWF.getText(
+						"HdfsInterface.typenotexists",
 						new Object[] { properties.get(key_type) });
 			}
 		} else {
@@ -269,8 +288,10 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 		}
 		return error;
 	}
+
 	/**
 	 * Delete Path from HDFS
+	 * 
 	 * @param path
 	 * @return Error Message
 	 * @throws RemoteException
@@ -306,8 +327,10 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 		}
 		return error;
 	}
+
 	/**
 	 * Move a path to another location
+	 * 
 	 * @param old_path
 	 * @param new_path
 	 * @return Error Message
@@ -338,8 +361,10 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 		}
 		return error;
 	}
+
 	/**
 	 * Create a copy of a path
+	 * 
 	 * @param in_path
 	 * @param out_path
 	 * @return Error Message
@@ -371,8 +396,10 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 		}
 		return error;
 	}
+
 	/**
 	 * Read rows from the path provide
+	 * 
 	 * @param path
 	 * @param delimiter
 	 * @param maxToRead
@@ -414,8 +441,10 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 
 		return ans;
 	}
+
 	/**
-	 * Read a Sequence File 
+	 * Read a Sequence File
+	 * 
 	 * @param path
 	 * @param delimiter
 	 * @param maxToRead
@@ -448,7 +477,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 				maxToRead *= feats.getSize();
 				int i = 0;
 				String toWrite = "";
-				logger.info("delim : "+delimiter);
+				logger.info("delim : " + delimiter);
 				while (reader.readLine(line) != 0 && lineNb < maxToRead) {
 					int val = BytesWritable.Comparator.readInt(line.getBytes(),
 							0);
@@ -480,7 +509,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 						toWrite += MapRedBinaryType.delim;
 					}
 					++i;
-					if(i >= feats.getSize()){
+					if (i >= feats.getSize()) {
 						i = 0;
 					}
 
@@ -495,8 +524,10 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 
 		return ans;
 	}
+
 	/**
 	 * Read a number of lines of a file
+	 * 
 	 * @param delimiter
 	 * @param maxToRead
 	 * @return List of read rows from the current path
@@ -507,8 +538,10 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 			throws RemoteException {
 		return select(getPath(), delimiter, maxToRead);
 	}
+
 	/**
 	 * Get the properties of a path
+	 * 
 	 * @param path
 	 * @return Map of properties
 	 * @throws RemoteException
@@ -582,8 +615,10 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 		logger.debug("Properties of " + path + ": " + prop.toString());
 		return prop;
 	}
+
 	/**
 	 * Get the properties of the current path
+	 * 
 	 * @return Map of properties
 	 * @throws RemoteException
 	 */
@@ -591,10 +626,12 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 	public Map<String, String> getProperties() throws RemoteException {
 		return getProperties(getPath());
 	}
+
 	/**
 	 * Get Children Properties of a sub directories
+	 * 
 	 * @return Map of child properties
-	 * @throws RemoteException 
+	 * @throws RemoteException
 	 */
 	@Override
 	public Map<String, Map<String, String>> getChildrenProperties()
@@ -610,7 +647,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 					String path = fsA[i].getPath().toString();
 					ans.put(path, getProperties(path));
 				}
-			}else{
+			} else {
 				ans = null;
 			}
 			// fs.close();
@@ -625,6 +662,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 
 	/**
 	 * Change a Property
+	 * 
 	 * @param key
 	 * @param newValue
 	 * @throws RemoteException
@@ -634,8 +672,10 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 			throws RemoteException {
 		return changeProperty(getPath(), key, newValue);
 	}
+
 	/**
 	 * Change a property
+	 * 
 	 * @param path
 	 * @param key
 	 * @param newValue
@@ -663,8 +703,10 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 		}
 		return error;
 	}
+
 	/**
 	 * Change the properties of a path
+	 * 
 	 * @param path
 	 * @param newProperties
 	 * @return Error Message
@@ -678,11 +720,10 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 		Path p = new Path(path);
 		boolean recursive = false;
 		if (prop.containsKey(key_recursive)) {
-			recursive = prop.get(key_recursive).equalsIgnoreCase("false");
+			recursive = prop.get(key_recursive).equalsIgnoreCase("true");
 			prop.remove(key_recursive);
 		}
 		if (prop.containsKey(key_permission)) {
-			logger.info("path change props : "+path);
 			error = changePermission(p, prop.get(key_permission), recursive);
 			prop.remove(key_permission);
 		}
@@ -714,8 +755,10 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 			throws RemoteException {
 		return changeProperties(getPath(), newProperties);
 	}
+
 	/**
 	 * Change Ownership of a Path
+	 * 
 	 * @param path
 	 * @param owner
 	 * @param group
@@ -760,8 +803,10 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 		}
 		return error;
 	}
+
 	/**
 	 * Change Ownership of a Path
+	 * 
 	 * @param fs
 	 * @param path
 	 * @param owner
@@ -806,8 +851,10 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 		}
 		return error;
 	}
+
 	/**
 	 * Change the permissions of a path
+	 * 
 	 * @param fs
 	 * @param path
 	 * @param permission
@@ -828,7 +875,8 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 					}
 				}
 				if (error == null) {
-					logger.info("1 ----- path "+path.getName() + " new perms "+permission);
+					logger.info("1 ----- path " + path.getName()
+							+ " new perms " + permission);
 					fs.setPermission(path, new FsPermission(permission));
 				}
 			} else {
@@ -849,8 +897,10 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 		}
 		return error;
 	}
+
 	/**
 	 * Change the permission of a path
+	 * 
 	 * @param path
 	 * @param permission
 	 * @param recursive
@@ -860,23 +910,20 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 			boolean recursive) {
 		String error = null;
 		try {
-			logger.info("1 "+path.getName());
+			logger.info("1 " + path.getName());
 			FileSystem fs = NameNodeVar.getFS();
-			logger.info("2");
 			FileStatus stat = fs.getFileStatus(path);
-			logger.info("3");
 			if (stat.getOwner().equals(System.getProperty("user.name"))) {
-				logger.info("4");
+				FileStatus[] child = fs.listStatus(path);
 				if (recursive) {
-					logger.info("5");
-					FileStatus[] child = fs.listStatus(path);
-					for (int i = 0; i < child.length && error == null; ++i) {
-						error = changePermission(fs, child[i].getPath(),
-								permission, recursive);
-					}
+					logger.info("children : " + child.length);
+						for (int i = 0; i < child.length && error == null; ++i) {
+							error = changePermission(fs, child[i].getPath(),
+									permission, recursive);
+						}
 				}
 				if (error == null) {
-					logger.info("2 ---- path "+path.getName() + " new perms "+permission);
+					logger.info("set permissions  : " + path.toString());
 					fs.setPermission(path, new FsPermission(permission));
 					logger.info(getProperties(path.getName()));
 				}
@@ -899,8 +946,10 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 		}
 		return error;
 	}
+
 	/**
 	 * Get the Parameter Properties
+	 * 
 	 * @return Map of Parameter Properties
 	 * @throws RemoteException
 	 */
@@ -910,7 +959,8 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 
 		return paramProp;
 	}
-	//TODO
+
+	// TODO
 	/**
 	 * 
 	 * @param path
@@ -920,6 +970,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 		String[] relation = path.substring(1).split("/");
 		return relation[relation.length - 1];
 	}
+
 	/**
 	 * 
 	 */
@@ -937,15 +988,18 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 	public String canMove() throws RemoteException {
 		return LanguageManagerWF.getText("HdfsInterface.move_help");
 	}
+
 	/**
-	 * Check if 
+	 * Check if
 	 */
 	@Override
 	public String canCopy() throws RemoteException {
 		return LanguageManagerWF.getText("HdfsInterface.copy_help");
 	}
+
 	/**
 	 * Copy file from remote file system to HDFS
+	 * 
 	 * @param rfile
 	 * @param lfile
 	 * @param remoteServer
@@ -1067,12 +1121,14 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 		}
 		return error;
 	}
+
 	/**
 	 * Copy file from hdfs to new file on remote server
+	 * 
 	 * @param lfile
 	 * @param rfile
 	 * @param remoteServer
-	 * @return Error Message 
+	 * @return Error Message
 	 */
 	@Override
 	public String copyToRemote(String lfile, String rfile, String remoteServer) {
@@ -1176,8 +1232,10 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 		}
 		return error;
 	}
+
 	/**
-	 * Check if end of stream 
+	 * Check if end of stream
+	 * 
 	 * @param in
 	 * @return b
 	 * @throws IOException

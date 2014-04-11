@@ -280,7 +280,7 @@ Create a package
 
 	In the previous step we created a project that contains all the dependencies and an abstract class that will be the base class for the package.
 	
-	For the purposes of this tutorial we will create the package so that it runs over Pig.
+	For this tutorial we will create the package so that it runs over Pig.
 	To configure the package to run Pig processes  the 'DemoAction' the constructor must be 
 	canged so that it calls the superclass construnctor with a 'new PigAction()'
 
@@ -289,14 +289,38 @@ public DemoAction() throws RemoteException {
 		super(new PigAction());
 	}
 +-----------+
+
+	Once the constructor has been implemented it is then important to add the essentials for every pig action that is created using the abstract class.
+	In Pig each line that performs an action is assigned to a 'Bag'. In this class we will create an integer that increments everytime a new bag is created.
 	
++-----------+
+private int bagNum = 0;
++-----------+
+	
+	In every action of Pig it is necessary to set the output type and the delimiter. Pig accepts two types of output which is either text or binary.
+	This means we need two interactions just for the output.
+
++-----------+
+protected InputInteraction delimiterOutputInt;
+protected ListInteraction savetypeOutputInt;	
++-----------+
+
+ 
+	
+---------------------- for implementing the actual action 
 	This sets the type of action that Oozie will generate. 
 	From there the rest of the methods should be implemented that are inherited from the parent class 'DataFlowAction'
-
+	
+	This method simply returns the name of the method
 +-----------+
 public String getName() throws RemoteException {
 		
 		return "sample";
 	}
++-----------+
+	
+	
+
++-----------+
 +-----------+
 
