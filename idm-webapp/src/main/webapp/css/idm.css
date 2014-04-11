@@ -102,11 +102,11 @@ input {
 	cursor: pointer;
 }
 
-.splitterV {
+.splitVCanvas {
 	width: 100%;
 }
 
-.splitterV div {
+.splitVCanvas div {
 	overflow: auto;
 }
 
@@ -695,7 +695,7 @@ table.secondtable td{
 	border: none;
 }
 
-#splitterH{
+#splitHCanvas{
 	background-color: transparent;
 	border: none;
 }

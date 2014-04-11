@@ -58,11 +58,11 @@ var imgWidth;
 var rightClickGroup;
 
 var contextMenuCanvas = [
- {'Link': function(menuItem,menu){createLink(rightClickGroup.getChildren()[0]);}},
- {'Rename object...': function(menuItem,menu){openChangeIdModalJS(rightClickGroup);}},
+ {'Create Link': function(menuItem,menu){createLink(rightClickGroup.getChildren()[0]);}},
+ {'Rename Object...': function(menuItem,menu){openChangeIdModalJS(rightClickGroup);}},
  {'Configure...': function(menuItem,menu){openCanvasModalJS(rightClickGroup);}},
- {'Data output...': function(menuItem,menu){openCanvasModalJS(rightClickGroup,"outputTab");}},
- {'Oozie action': function(menuItem,menu){openWorkflowElementUrl(rightClickGroup.getId());}},
+ {'Data Output...': function(menuItem,menu){openCanvasModalJS(rightClickGroup,"outputTab");}},
+ {'Oozie Action Logs': function(menuItem,menu){openWorkflowElementUrl(rightClickGroup.getId());}},
 ];
 
 var cmenuCanvas = jQuery.contextMenu.create(contextMenuCanvas);

@@ -154,17 +154,18 @@
 	              //]]>
 	          });
 
-		  var menuSplitterV = [
-		  {'Collapse/Restore right panels': function(menuItem,menu){jQuery(".splitterV").trigger('toggleDock');canvasResizeSplitter();alert(1);}}
+		  var menusplitVCanvas = [
+		  {'Collapse/Restore right panels': function(menuItem,menu){jQuery("#splitVCanvas").trigger('toggleDock');}}
 		  ];
-
-		  var menuSplitterH = [
-		  {'Collapse/Restore bottom panel': function(menuItem,menu){jQuery("#splitterH").trigger('toggleDock');alert(1);canvasResizeSplitter();}}
-		  ];
+          
+          /*
+		  var menusplitHCanvas = [
+		  {'Collapse/Restore bottom panel': function(menuItem,menu){jQuery("#splitHCanvas").trigger('toggleDock');}}
+		  ];*/
 		  
          
 
-	    	  jQuery(".splitterV").splitter({
+	    	  jQuery("#splitVCanvas").splitter({
 	        	  type: "v",
 	        	  outline: true,
 	        	  sizeLeft: jQuery(window).width()*2/3,
@@ -173,10 +174,10 @@
 	        	  resizeToWidth: true,
 	        	  dock: "right",
 	        	  dockSpeed: 200,
-	        	  cookie: "splitterV"
+	        	  cookie: "splitVCanvas"
 	          });
 	
-	    	  jQuery("#splitterH").splitter({
+	    	  jQuery("#splitHCanvas").splitter({
 	        	  type: "h",
 	        	  outline: true,
 	        	  //minTop: 100,
@@ -184,12 +185,12 @@
 	        	  resizeToWidth: true,
 	        	  dock: "top",
 	        	  dockSpeed: 200,
-	        	  cookie: "splitterH"
+	        	  cookie: "splitHCanvas"
 	          });
 	
-		      jQuery(".splitter-bar-vertical").contextMenu(menuSplitterV);
+		      jQuery(".splitter-bar-vertical").contextMenu(menusplitVCanvas);
 	
-		      jQuery(".splitter-bar-horizontal").contextMenu(menuSplitterH);
+		      //jQuery(".splitter-bar-horizontal").contextMenu(menusplitHCanvas);
 
 	    	  onPageReady();
                document.getElementById("canvas-tabs").addEventListener('contextmenu', function (event) {
@@ -1310,7 +1311,7 @@
 	<div id="mainPanelDiv">
 
 
-	<div class="splitterV" id="splitterDiv">
+	<div id="splitVCanvas">
 
 			<div id="tabFlowchart">
 				<ul class="ulCss">
@@ -1433,7 +1434,7 @@
 
 
 
-		<div id="splitterH">
+		<div id="splitHCanvas">
 			<div id="tabs1">
 				<ul class="ulCss">
 
@@ -1461,7 +1462,7 @@
 					</button>
 				</span>
 
-				<div id="tabs-1">
+				<div id="tabs-1" style="overflow:auto;">
 					<a4j:region>
 
 						<a4j:status
@@ -1474,7 +1475,7 @@
 							<img src="../image/icons/waiting.gif" />
 						</div>
 
-						<h:panelGroup>
+						<h:panelGroup >
 							<ui:include src="/pages/help.xhtml" />
 						</h:panelGroup>
 					</a4j:region>
