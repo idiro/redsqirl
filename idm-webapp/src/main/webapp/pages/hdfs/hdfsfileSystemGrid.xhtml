@@ -153,6 +153,7 @@
 						</f:facet>
 						<h:selectBooleanCheckbox id="hdfsselect" value="#{item.selected}" />
 					</rich:column>
+					
 					<rich:column style="border-bottom:0px;border-right:0px;"
 						width="50px;">
 						<f:facet name="header">
@@ -160,8 +161,10 @@
 						</f:facet>
 						<a4j:commandLink action="#{hdfsBean.editFileBefore}"
 							oncomplete="#{rich:component('hdfseditModalPanel')}.show()">
-							<h:graphicImage value="../image/icons/button-property.gif"
-								title='#{messages.HdfsInterface_properties_help}' />
+							<h:graphicImage value="../image/icons/button-property.gif" title='#{messages.HdfsInterface_properties_help}' 
+							rendered="#{item.file == 'N'}" styleClass="fileSystemIcon" />
+							<h:graphicImage value="../image/icons/button-file-icon.png" title='#{messages.HdfsInterface_properties_help}' 
+							rendered="#{item.file == 'S'}" styleClass="fileSystemIcon" />
 							<f:param name="nameFileEdit" value="#{item.name}" />
 						</a4j:commandLink>
 					</rich:column>

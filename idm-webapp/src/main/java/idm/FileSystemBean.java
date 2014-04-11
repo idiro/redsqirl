@@ -71,11 +71,11 @@ public class FileSystemBean extends BaseBean implements Serializable{
 	 * @author Igor.Souza
 	 */
 	public void mountTable(DataStore hInt) throws RemoteException {
-		logger.debug("Started mounting table");
+		logger.info("Started mounting table");
 		setListGrid(new ArrayList<ItemList>());
-		logger.debug("set the list");
+		logger.info("set the list");
 		setPath(hInt.getPath());
-		logger.debug("getting path");
+		logger.info("getting path");
 
 		FacesContext context = FacesContext.getCurrentInstance();
 		userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
@@ -89,6 +89,7 @@ public class FileSystemBean extends BaseBean implements Serializable{
 				String name = aux[aux.length-1];
 
 				ItemList itemList = new ItemList(name);
+				
 				Map<String, String> nv = new HashMap<String, String>();
 				Map<String, Ordering> so = new HashMap<String, Ordering>();
 				Map<String, Object> fv = new HashMap<String, Object>();
@@ -112,8 +113,15 @@ public class FileSystemBean extends BaseBean implements Serializable{
 				    vlb.put(properties, mapSSH.get(path).get(properties) != null && mapSSH.get(path).get(properties).contains("/n"));
 //				    so.put(properties, Ordering.UNSORTED);
 //				    fv.put(properties, "");
+				    
 				}
 
+				//verify if the path is a file or not and set 'file' to show the correct icon
+			    if(nv.get("type") != null && nv.get("type").equalsIgnoreCase("file")){
+			    	itemList.setFile("S");
+			    }else{
+			    	itemList.setFile("N");
+			    }
 
 				itemList.setNameValue(nv);
 //				itemList.setSortingOrder(so);
@@ -259,6 +267,10 @@ public class FileSystemBean extends BaseBean implements Serializable{
 	 */
 	public void verifyIfIsFile() throws RemoteException{
 		String name = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("nameFile");
+		verifyIfIsFile(name);
+	}
+	
+	public void verifyIfIsFile(String name) throws RemoteException{
 		getDataStore().goTo(generatePath(getDataStore().getPath(), name));
 		file = getDataStore().getChildrenProperties() == null;
 		getDataStore().goPrevious();

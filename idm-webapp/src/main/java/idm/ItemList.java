@@ -30,6 +30,7 @@ public class ItemList implements Serializable{
 	private String value;
 	private List<SelectItem> objs = new LinkedList<SelectItem>();
 	private List<SelectItem> objsedit = new LinkedList<SelectItem>();
+	private String file = "N";
 	
 	/*
 	private Map<String, String> typeTableInteraction = new HashMap<String, String>();
@@ -39,6 +40,7 @@ public class ItemList implements Serializable{
 	private Map<String, String> nameValueEdit = new HashMap<String, String>();
 	private Map<String, String> nameValueGrid = new HashMap<String, String>();
 	*/
+	
 	private Map<String, Boolean> nameIsConst = new HashMap<String, Boolean>();
 	private Map<String, Boolean> valueHasLineBreak = new HashMap<String, Boolean>();
 	
@@ -199,6 +201,14 @@ public class ItemList implements Serializable{
 
 	public void setValue(String value) {
 		this.value = value;
+	}
+
+	public String getFile() {
+		return file;
+	}
+
+	public void setFile(String file) {
+		this.file = file;
 	}
 	
 }
