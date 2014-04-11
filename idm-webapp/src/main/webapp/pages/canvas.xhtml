@@ -105,7 +105,7 @@
 
 	  	              	allTabsDestination.find("a[href$=" + jQuery(ui.item[0]).attr("aria-controls") + "]").clone().click(function (event) {
 			    		  event.preventDefault();
-			    		  $plusTabs.find('.allTabs').slideUp('fast');
+			    		  plusTabs.find('.allTabs').slideUp('fast');
 			    		}).appendTo(allTabsSource);
 	  	              	
 	  	            	allTabsDestination.find("a[href$=" + jQuery(ui.item[0]).attr("aria-controls") + "]").remove();

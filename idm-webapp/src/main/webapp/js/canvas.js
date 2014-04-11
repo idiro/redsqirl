@@ -141,13 +141,6 @@ function configureCanvas(canvasName){
 	jQuery(".kineticjs-content").css("background-size", "920px");
 	//jQuery(".kineticjs-content").css("background-repeat", "no-repeat");
 	
-	//remove image from footer
-	jQuery("#tabsFooter ul:first li").each(function(index) {
-		var nameDiv = jQuery(this).attr("aria-controls");
-		if (nameDiv != undefined) {
-			jQuery("#" +  nameDiv).find(".kineticjs-content").css("background-image", "none");
-		}
-	});
 	
 	canvasArray[canvasName].background = background;
 

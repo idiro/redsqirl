@@ -23,8 +23,8 @@ function canvasResizeSplitter(){
 
 function resizeCanvas(){
 	
-	jQuery("#tabsFooter canvas").parent().remove();
-	mountObj();
+	//jQuery("#tabsFooter canvas").parent().remove();
+	//mountObj();
 	
 	for (var i in nameTabs){
 		//alert(nameTabs[i]);
