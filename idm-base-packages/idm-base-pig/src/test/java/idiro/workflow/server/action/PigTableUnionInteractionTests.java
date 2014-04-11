@@ -33,12 +33,12 @@ public class PigTableUnionInteractionTests {
 			
 
 			error = w.addLink(
-					Source.out_name, src1.getComponentId(), 
+					PigBinarySource.out_name, src1.getComponentId(), 
 					PigElement.key_input, idHs);
 			assertTrue("pig select link 1: "+error,error == null);
 			
 			error = w.addLink(
-					Source.out_name, src2.getComponentId(), 
+					PigBinarySource.out_name, src2.getComponentId(), 
 					PigElement.key_input, idHs);
 			assertTrue("pig select link 2: "+error,error == null);
 			

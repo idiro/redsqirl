@@ -24,7 +24,7 @@ public class PigFilterInteractionTests {
 			PigSelect hs = (PigSelect)w.getElement(idHs);
 			
 			error = w.addLink(
-					Source.out_name, src.getComponentId(), 
+					PigBinarySource.out_name, src.getComponentId(), 
 					PigSelect.key_input, idHs);
 			assertTrue("pig select link: "+error,error == null);
 			

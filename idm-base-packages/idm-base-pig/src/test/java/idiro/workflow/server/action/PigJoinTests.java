@@ -32,19 +32,19 @@ public class PigJoinTests {
 		
 		PigJoin pig = (PigJoin) w.getElement(idHS);
 		
-		logger.debug(Source.out_name+" "+src1.getComponentId());
+		logger.debug(PigBinarySource.out_name+" "+src1.getComponentId());
 		logger.debug(PigJoin.key_input+" "+idHS);
 		
 		w.addLink(
-				Source.out_name, src1.getComponentId(), 
+				PigBinarySource.out_name, src1.getComponentId(), 
 				PigJoin.key_input, idHS);
 		assertTrue("pig select add input: "+error,error == null);
 		
-		logger.debug(Source.out_name+" "+src2.getComponentId());
+		logger.debug(PigBinarySource.out_name+" "+src2.getComponentId());
 		logger.debug(PigJoin.key_input+" "+idHS);
 		
 		w.addLink(
-				Source.out_name, src2.getComponentId(), 
+				PigBinarySource.out_name, src2.getComponentId(), 
 				PigJoin.key_input, idHS);
 		assertTrue("pig select add input: "+error,error == null);
 		

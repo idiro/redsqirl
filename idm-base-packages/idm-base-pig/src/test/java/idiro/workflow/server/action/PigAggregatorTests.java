@@ -29,10 +29,10 @@ public class PigAggregatorTests {
 		logger.info("Pig agge: " + idHS);
 
 		PigAggregator pig = (PigAggregator) w.getElement(idHS);
-		logger.info(Source.out_name + " " + src.getComponentId());
+		logger.info(PigBinarySource.out_name + " " + src.getComponentId());
 		logger.debug(PigAggregator.key_input + " " + idHS);
 
-		w.addLink(Source.out_name, src.getComponentId(),
+		w.addLink(PigBinarySource.out_name, src.getComponentId(),
 				PigAggregator.key_input, idHS);
 
 		assertTrue("pig aggreg add input: " + error, error == null);

@@ -80,22 +80,22 @@ public class PigTestUtils {
 		hInt.delete(new_path1);
 		PigTestUtils.create3INT_file(new Path(new_path1));
 		
-		String idSource = w.addElement((new Source()).getName());
-		Source src = (Source) w.getElement(idSource);
+		String idSource = w.addElement((new PigBinarySource()).getName());
+		PigBinarySource src = (PigBinarySource) w.getElement(idSource);
 
-		src.update(src.getInteraction(Source.key_datatype));
-		Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype)
+		src.update(src.getInteraction(PigBinarySource.key_datatype));
+		Tree<String> dataTypeTree = src.getInteraction(PigBinarySource.key_datatype)
 				.getTree();
 		dataTypeTree.getFirstChild("list").getFirstChild("output").add("HDFS");
 
-		src.update(src.getInteraction(Source.key_datasubtype));
+		src.update(src.getInteraction(PigBinarySource.key_datasubtype));
 		Tree<String> dataSubtypeTree = src.getInteraction(
-				Source.key_datasubtype).getTree();
+				PigBinarySource.key_datasubtype).getTree();
 		dataSubtypeTree.getFirstChild("list").getFirstChild("output")
 				.add(new MapRedTextType().getTypeName());
 
-		src.update(src.getInteraction(Source.key_dataset));
-		Tree<String> dataSetTree = src.getInteraction(Source.key_dataset)
+		src.update(src.getInteraction(PigBinarySource.key_dataset));
+		Tree<String> dataSetTree = src.getInteraction(PigBinarySource.key_dataset)
 				.getTree();
 		dataSetTree.getFirstChild("browse").getFirstChild("output").add("path")
 				.add(new_path1);
@@ -121,16 +121,16 @@ public class PigTestUtils {
 		assertTrue("source update: " + error, error == null);
 		
 		assertTrue("number of features in source should be 3 instead of " + 
-				src.getDFEOutput().get(Source.out_name).getFeatures().getSize(),
-				src.getDFEOutput().get(Source.out_name).getFeatures().getSize() == 3);
+				src.getDFEOutput().get(PigBinarySource.out_name).getFeatures().getSize(),
+				src.getDFEOutput().get(PigBinarySource.out_name).getFeatures().getSize() == 3);
 		
 		List<String> feats = new LinkedList<String>();
 		feats.add("ID");
 		feats.add("VALUE");
 		feats.add("RAW");
 		assertTrue("Feature list " + 
-				src.getDFEOutput().get(Source.out_name).getFeatures().getFeaturesNames(),
-				src.getDFEOutput().get(Source.out_name).getFeatures().getFeaturesNames().containsAll(feats));
+				src.getDFEOutput().get(PigBinarySource.out_name).getFeatures().getFeaturesNames(),
+				src.getDFEOutput().get(PigBinarySource.out_name).getFeatures().getFeaturesNames().containsAll(feats));
 		
 		return src;
 	}
@@ -142,19 +142,19 @@ public class PigTestUtils {
 		assertTrue("create "+path,
 				hInt.create(path, getEmptyProperties()) == null
 				);
-		String idSource = w.addElement((new Source()).getName());
-		Source src = (Source)w.getElement(idSource);
+		String idSource = w.addElement((new PigBinarySource()).getName());
+		PigBinarySource src = (PigBinarySource)w.getElement(idSource);
 
-		src.update(src.getInteraction(Source.key_datatype));
-		Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype).getTree();
+		src.update(src.getInteraction(PigBinarySource.key_datatype));
+		Tree<String> dataTypeTree = src.getInteraction(PigBinarySource.key_datatype).getTree();
 		dataTypeTree.getFirstChild("list").getFirstChild("output").add("HDFS");
 		
-		src.update(src.getInteraction(Source.key_datasubtype));
-		Tree<String> dataSubTypeTree = src.getInteraction(Source.key_datasubtype).getTree();
+		src.update(src.getInteraction(PigBinarySource.key_datasubtype));
+		Tree<String> dataSubTypeTree = src.getInteraction(PigBinarySource.key_datasubtype).getTree();
 		dataSubTypeTree.getFirstChild("list").getFirstChild("output").add(new MapRedTextType().getTypeName());
 
-		src.update(src.getInteraction(Source.key_dataset));
-		Tree<String> dataSetTree = src.getInteraction(Source.key_dataset).getTree();
+		src.update(src.getInteraction(PigBinarySource.key_dataset));
+		Tree<String> dataSetTree = src.getInteraction(PigBinarySource.key_dataset).getTree();
 		dataSetTree.getFirstChild("browse").getFirstChild("output").add("path").add(path);
 		
 		Tree<String> feat1 = dataSetTree.getFirstChild("browse")
@@ -176,11 +176,11 @@ public class PigTestUtils {
 		FeatureList fl = new OrderedFeatureList();
 		fl.addFeature("ID", FeatureType.STRING);
 		fl.addFeature("VALUE", FeatureType.INT);
-		src.getDFEOutput().get(Source.out_name).setFeatures(fl);
+		src.getDFEOutput().get(PigBinarySource.out_name).setFeatures(fl);
 		
 		assertTrue("number of features in source should be 2 instead of " + 
-				src.getDFEOutput().get(Source.out_name).getFeatures().getSize(),
-				src.getDFEOutput().get(Source.out_name).getFeatures().getSize() == 2);
+				src.getDFEOutput().get(PigBinarySource.out_name).getFeatures().getSize(),
+				src.getDFEOutput().get(PigBinarySource.out_name).getFeatures().getSize() == 2);
 		
 		return src;
 	}
@@ -190,22 +190,22 @@ public class PigTestUtils {
 			HDFSInterface hInt, 
 			String new_path1 ) throws RemoteException, Exception{
 		
-		String idSource = w.addElement((new Source()).getName());
-		Source src = (Source)w.getElement(idSource);
+		String idSource = w.addElement((new PigBinarySource()).getName());
+		PigBinarySource src = (PigBinarySource)w.getElement(idSource);
 		
 		hInt.delete(new_path1);
 		createStringInt_file(new Path(new_path1));
 		
-		src.update(src.getInteraction(Source.key_datatype));
-		Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype).getTree();
+		src.update(src.getInteraction(PigBinarySource.key_datatype));
+		Tree<String> dataTypeTree = src.getInteraction(PigBinarySource.key_datatype).getTree();
 		dataTypeTree.getFirstChild("list").getFirstChild("output").add("HDFS");
 		
-		src.update(src.getInteraction(Source.key_datasubtype));
-		Tree<String> dataSubTypeTree = src.getInteraction(Source.key_datasubtype).getTree();
+		src.update(src.getInteraction(PigBinarySource.key_datasubtype));
+		Tree<String> dataSubTypeTree = src.getInteraction(PigBinarySource.key_datasubtype).getTree();
 		dataSubTypeTree.getFirstChild("list").getFirstChild("output").add(new MapRedTextType().getTypeName());
 
-		src.update(src.getInteraction(Source.key_dataset));
-		Tree<String> dataSetTree = src.getInteraction(Source.key_dataset).getTree();
+		src.update(src.getInteraction(PigBinarySource.key_dataset));
+		Tree<String> dataSetTree = src.getInteraction(PigBinarySource.key_dataset).getTree();
 		dataSetTree.getFirstChild("browse").getFirstChild("output").add("path").add(new_path1);
 		dataSetTree.getFirstChild("browse").getFirstChild("output").add("property").add(MapRedTextType.key_delimiter).add(",");
 
@@ -225,15 +225,15 @@ public class PigTestUtils {
 		assertTrue("source update: "+error,error == null);
 		
 		assertTrue("number of features in source should be 2 instead of " + 
-				src.getDFEOutput().get(Source.out_name).getFeatures().getSize(),
-				src.getDFEOutput().get(Source.out_name).getFeatures().getSize() == 2);
+				src.getDFEOutput().get(PigBinarySource.out_name).getFeatures().getSize(),
+				src.getDFEOutput().get(PigBinarySource.out_name).getFeatures().getSize() == 2);
 		
 		assertTrue("Feature list " + 
-				src.getDFEOutput().get(Source.out_name).getFeatures().getFeaturesNames(),
-				src.getDFEOutput().get(Source.out_name).getFeatures().getFeaturesNames().contains("ID"));
+				src.getDFEOutput().get(PigBinarySource.out_name).getFeatures().getFeaturesNames(),
+				src.getDFEOutput().get(PigBinarySource.out_name).getFeatures().getFeaturesNames().contains("ID"));
 		assertTrue("Feature list " + 
-				src.getDFEOutput().get(Source.out_name).getFeatures().getFeaturesNames(),
-				src.getDFEOutput().get(Source.out_name).getFeatures().getFeaturesNames().contains("VALUE"));
+				src.getDFEOutput().get(PigBinarySource.out_name).getFeatures().getFeaturesNames(),
+				src.getDFEOutput().get(PigBinarySource.out_name).getFeatures().getFeaturesNames().contains("VALUE"));
 		
 		return src;
 	}
