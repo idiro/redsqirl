@@ -32,18 +32,27 @@ public class ItemList implements Serializable {
 	private List<SelectItem> objs = new LinkedList<SelectItem>();
 	private List<SelectItem> objsedit = new LinkedList<SelectItem>();
 
+	private String file = "N";
+	
 	/*
-	 * private Map<String, String> typeTableInteraction = new HashMap<String,
-	 * String>(); private Map<String, String> nameValue = new HashMap<String,
-	 * String>(); private Map<String, Ordering> sortingOrder = new
-	 * HashMap<String, Ordering>(); private Map<String, Object> filterValue =
-	 * new HashMap<String, Object>(); private Map<String, String> nameValueEdit
-	 * = new HashMap<String, String>(); private Map<String, String>
-	 * nameValueGrid = new HashMap<String, String>();
-	 */
+	 
+	private Map<String, String> typeTableInteraction = new HashMap<String, String>();
+	private Map<String, String> nameValue = new HashMap<String, String>();
+	private Map<String, Ordering> sortingOrder = new HashMap<String, Ordering>();
+	private Map<String, Object> filterValue = new HashMap<String, Object>();
+	private Map<String, String> nameValueEdit = new HashMap<String, String>();
+	private Map<String, String> nameValueGrid = new HashMap<String, String>();
+	*/
+	
 	private Map<String, Boolean> nameIsConst = new HashMap<String, Boolean>();
-	private Map<String, Boolean> nameIsBool = new HashMap<String, Boolean>();
 	private Map<String, Boolean> valueHasLineBreak = new HashMap<String, Boolean>();
+	
+	/*
+	 *
+	 * @author Igor.Souza
+>>>>>>> refs/heads/master
+	 */
+	private Map<String, Boolean> nameIsBool = new HashMap<String, Boolean>();
 	private static Logger logger = Logger.getLogger(ItemList.class);
 
 	public ItemList() {
@@ -215,6 +224,7 @@ public class ItemList implements Serializable {
 		this.value = value;
 	}
 
+<<<<<<< HEAD
 	public Map<String, Boolean> getNameIsBool() {
 		return nameIsBool;
 	}
@@ -223,4 +233,14 @@ public class ItemList implements Serializable {
 		this.nameIsBool = nameIsBool;
 	}
 
+=======
+	public String getFile() {
+		return file;
+	}
+
+	public void setFile(String file) {
+		this.file = file;
+	}
+	
+>>>>>>> refs/heads/master
 }

@@ -58,11 +58,13 @@ var imgWidth;
 var rightClickGroup;
 
 var contextMenuCanvas = [
-// {'Start link': function(menuItem,menu){polygonOnClick(rightClickGroup, "", canvasName);}},
- {'Rename object...': function(menuItem,menu){openChangeIdModalJS(rightClickGroup);}},
+ {'Create Link': function(menuItem,menu){createLink(rightClickGroup.getChildren()[0]);}},
+ {'Rename Object...': function(menuItem,menu){openChangeIdModalJS(rightClickGroup);}},
  {'Configure...': function(menuItem,menu){openCanvasModalJS(rightClickGroup);}},
- {'Data output...': function(menuItem,menu){openCanvasModalJS(rightClickGroup,"outputTab");}},
+ {'Data Output...': function(menuItem,menu){openCanvasModalJS(rightClickGroup,"outputTab");}},
+ {'Oozie Action Logs': function(menuItem,menu){openWorkflowElementUrl(rightClickGroup.getId());}},
 ];
+
 var cmenuCanvas = jQuery.contextMenu.create(contextMenuCanvas);
 
 function findHHandWW() {
@@ -139,13 +141,6 @@ function configureCanvas(canvasName){
 	jQuery(".kineticjs-content").css("background-size", "920px");
 	//jQuery(".kineticjs-content").css("background-repeat", "no-repeat");
 	
-	//remove image from footer
-	jQuery("#tabsFooter ul:first li").each(function(index) {
-		var nameDiv = jQuery(this).attr("aria-controls");
-		if (nameDiv != undefined) {
-			jQuery("#" +  nameDiv).find(".kineticjs-content").css("background-image", "none");
-		}
-	});
 	
 	canvasArray[canvasName].background = background;
 
@@ -1565,47 +1560,53 @@ function configureCircle(canvasName, circle1) {
 	canvasArray[canvasName].down = false;
 
 	circle1.on("click",	function(e) {
-
-		var arrow = canvasArray[canvasName].arrow;
-
-		if (canvasArray[canvasName].down) {
-			canvasArray[canvasName].down = false;
-			
-			deleteArrowOutsideStandard(canvasName);
-			
-			var output = arrow.output.getChildren()[4].getText();
-			var input = this.getParent().getChildren()[4].getText();
-			var arrowClone = addLink(canvasName, output, input);
-			
-			addLinkModalBt(arrow.output.getId(), this.getParent().getId(), arrowClone.getName());
-
-		} else {
-			var polygonLayer = canvasArray[canvasName].polygonLayer;
-			var layer = canvasArray[canvasName].layer;
-			
-			canvasArray[canvasName].down = true;
-
-			var polygonGroup = getElement(polygonLayer, this.getParent().getId());
-			arrow.setPoints([ polygonGroup.getX() + 40,
-					polygonGroup.getY() + 50,
-					polygonGroup.getX() + 40 + 1,
-					polygonGroup.getY() + 50 + 1 ]);
-
-			var idOutput = this.getName();
-			arrow.setName("arrow" + idOutput);
-
-			arrow.output = this.getParent();
-
-			var cloneArrow = arrow.clone();
-			cloneArrow.isArrow = true;
-			layer.add(cloneArrow);
-
-			layer.draw();
-		}
-
+	    if(e.button != 2){
+            createLink(this);
+        }
 	});
 
 	return circle1;
+}
+
+
+function createLink(circleGp){
+        
+        var arrow = canvasArray[selectedCanvas].arrow;
+
+        if (canvasArray[selectedCanvas].down) {
+            canvasArray[selectedCanvas].down = false;
+            
+            deleteArrowOutsideStandard(selectedCanvas);
+            
+            var output = arrow.output.getChildren()[4].getText();
+            var input = circleGp.getParent().getChildren()[4].getText();
+            var arrowClone = addLink(selectedCanvas, output, input);
+            
+            addLinkModalBt(arrow.output.getId(), circleGp.getParent().getId(), arrowClone.getName());
+
+        } else {
+            var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+            var layer = canvasArray[selectedCanvas].layer;
+            
+            canvasArray[selectedCanvas].down = true;
+
+            var polygonGroup = getElement(polygonLayer, circleGp.getParent().getId());
+            arrow.setPoints([ polygonGroup.getX() + 40,
+                    polygonGroup.getY() + 50,
+                    polygonGroup.getX() + 40 + 1,
+                    polygonGroup.getY() + 50 + 1 ]);
+
+            var idOutput = circleGp.getName();
+            arrow.setName("arrow" + idOutput);
+
+            arrow.output = circleGp.getParent();
+
+            var cloneArrow = arrow.clone();
+            cloneArrow.isArrow = true;
+            layer.add(cloneArrow);
+
+            layer.draw();
+        }
 }
 
 function configureStage(canvasName) {
@@ -1944,19 +1945,21 @@ function updateLabelObj(groupId, newGroupId) {
 	var group = getElement(polygonLayer, groupId);
 	var px = group.getChildren()[2].getX() - (newGroupId.length*2);
 	var py = group.getChildren()[2].getY() + 30;
-    var idLabel = groupId+"_label";
-    var end = false;
     
-    /*
+    var oldIdLabel = groupId+"_label";
+    var newIdLabel = groupId+"_label";
+    var end = false;
+    //alert("Label to remove: "+oldIdLabel);
     for ( var i = 0; i < group.getChildren().length && !end; i++) {
-        if (group.getChildren()[i].getChildren()[4].getText() == idLabel) {
+        //alert(group.getChildren()[i].getId());
+        if (group.getChildren()[i].getId() == oldIdLabel) {
             group.getChildren()[i].remove();
             end = true;
         }
-    }*/
+    }
     
 	var textLabelObj = new Kinetic.Text({
-	    //id : idLabel,
+	    id : newIdLabel,
 		text : newGroupId,
 		fontSize : 10,
 		fill : 'black',

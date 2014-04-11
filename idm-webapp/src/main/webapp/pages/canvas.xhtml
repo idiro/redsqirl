@@ -14,7 +14,6 @@
 <head>
 <link rel="icon" type="image/gif" href="../image/logo_redsqirl_favicon.gif" />
 <link rel="stylesheet" type="text/css" href="#{facesContext.externalContext.requestContextPath}/css/jquery-ui.css" />
-<link rel="stylesheet" type="text/css" href="#{facesContext.externalContext.requestContextPath}/css/jquery.contextmenu.css" />
 <link rel="stylesheet" type="text/css" href="#{facesContext.externalContext.requestContextPath}/css/idm.css" />
 
 <script	src="#{facesContext.externalContext.requestContextPath}/js/jquery-1.9.1.js"	type="text/javascript" />
@@ -28,6 +27,7 @@
 <script	src="#{facesContext.externalContext.requestContextPath}/js/scrollabletab.js" type="text/javascript" />
 <script	src="#{facesContext.externalContext.requestContextPath}/js/plusTabs.js"	type="text/javascript" />
 <script	src="#{facesContext.externalContext.requestContextPath}/js/jquery.blockUI.js" type="text/javascript" />
+<script	src="#{facesContext.externalContext.requestContextPath}/js/jquery.hotkeys.js" type="text/javascript" />
 
 <title><h:outputText value="#{messages.label_sistem}" /></title>
 
@@ -105,7 +105,7 @@
 
 	  	              	allTabsDestination.find("a[href$=" + jQuery(ui.item[0]).attr("aria-controls") + "]").clone().click(function (event) {
 			    		  event.preventDefault();
-			    		  $plusTabs.find('.allTabs').slideUp('fast');
+			    		  plusTabs.find('.allTabs').slideUp('fast');
 			    		}).appendTo(allTabsSource);
 	  	              	
 	  	            	allTabsDestination.find("a[href$=" + jQuery(ui.item[0]).attr("aria-controls") + "]").remove();
@@ -154,18 +154,18 @@
 	              //]]>
 	          });
 
-		  var menuSplitterV = [
-		  {'Collapse/Restore right panels': function(menuItem,menu){jQuery(".splitterV").trigger('toggleDock');}}
+		  var menusplitVCanvas = [
+		  {'Collapse/Restore right panels': function(menuItem,menu){jQuery("#splitVCanvas").trigger('toggleDock');}}
 		  ];
-
-		  var menuSplitterH = [
-		  {'Collapse/Restore bottom panel': function(menuItem,menu){jQuery("#splitterH").trigger('toggleDock');}}
-		  ];
-		  
           
-		  jQuery(document).ready(function(){
+          /*
+		  var menusplitHCanvas = [
+		  {'Collapse/Restore bottom panel': function(menuItem,menu){jQuery("#splitHCanvas").trigger('toggleDock');}}
+		  ];*/
+		  
+         
 
-	    	  jQuery(".splitterV").splitter({
+	    	  jQuery("#splitVCanvas").splitter({
 	        	  type: "v",
 	        	  outline: true,
 	        	  sizeLeft: jQuery(window).width()*2/3,
@@ -174,10 +174,10 @@
 	        	  resizeToWidth: true,
 	        	  dock: "right",
 	        	  dockSpeed: 200,
-	        	  cookie: "splitterV"
+	        	  cookie: "splitVCanvas"
 	          });
 	
-	    	  jQuery("#splitterH").splitter({
+	    	  jQuery("#splitHCanvas").splitter({
 	        	  type: "h",
 	        	  outline: true,
 	        	  //minTop: 100,
@@ -185,14 +185,12 @@
 	        	  resizeToWidth: true,
 	        	  dock: "top",
 	        	  dockSpeed: 200,
-	        	  cookie: "splitterH"
+	        	  cookie: "splitHCanvas"
 	          });
 	
-		      jQuery(".splitter-bar-vertical").contextMenu(menuSplitterV);
+		      jQuery(".splitter-bar-vertical").contextMenu(menusplitVCanvas);
 	
-		      jQuery(".splitter-bar-horizontal").contextMenu(menuSplitterH);
-		  });
-
+		      //jQuery(".splitter-bar-horizontal").contextMenu(menusplitHCanvas);
 
 	    	  onPageReady();
                document.getElementById("canvas-tabs").addEventListener('contextmenu', function (event) {
@@ -552,7 +550,7 @@
 				}
 			}
 		});
-
+	   		
 	   	function disableEnterKey(e){
 	        var key;
 	        if(window.event)
@@ -604,6 +602,65 @@
 		  	jQuery("#tabRemote").tabs().tabs('refresh');
 		  	resizeTables();
 	   	}
+	   	
+	   	/*keyboard shortcuts*/
+	   	
+	   	shortcut.add("Ctrl+n",function() {
+	   		jQuery("[id$='newMenuItem']").click();
+	   	});
+	   	
+	   	shortcut.add("Ctrl+o",function() {
+	   		jQuery("[id$='openMenuItem']").click();
+	   	});
+	   	
+	   	shortcut.add("Ctrl+s",function() {
+	   		jQuery("[id$='saveMenuItem']").click();
+	   	});
+	   	
+		shortcut.add("Ctrl+Alt+x",function() {
+			jQuery("[id$='saveAsMenuItem']").click();
+	   	});
+		
+		shortcut.add("Ctrl+Shift+s",function() {
+			jQuery("[id$='saveAllMenuItem']").click();
+	   	});
+		
+		shortcut.add("Ctrl+w",function() {
+			jQuery("[id$='closeMenuItem']").click();
+	   	});
+		
+		shortcut.add("Ctrl+Shift+w",function() {
+			jQuery("[id$='closeAllMenuItem']").click();
+	   	});
+		
+		shortcut.add("Ctrl+a",function() {
+			jQuery("[id$='selectAllMenuItem']").click();
+	   	});
+		
+		shortcut.add("Ctrl+Shift+a",function() {
+			jQuery("[id$='deselectAllMenuItem']").click();
+	   	});
+	   	
+		shortcut.add("Ctrl+j",function() {
+			jQuery("[id$='oozieMenuItem']").click();
+	   	});
+		
+		shortcut.add("Ctrl+l",function() {
+			jQuery("[id$='cleanMenuItem']").click();
+	   	});
+	   	
+		shortcut.add("Ctrl+r",function() {
+			jQuery("[id$='runMenuItem']").click();
+	   	});
+		
+		shortcut.add("Ctrl+Alt+r",function() {
+			jQuery("[id$='runSelectedMenuItem']").click();
+	   	});
+		
+		shortcut.add("Ctrl+i",function() {
+			jQuery("[id$='installationMenuItem']").click();
+	   	});
+	   	
 
 	</script>
 
@@ -684,6 +741,21 @@
 					<a4j:actionparam name="groupId" />
 				</a4j:jsFunction>
 			</a4j:region>
+
+           <a4j:region>
+                <a4j:status
+                    onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+                    onerror="jQuery('#canvas-tabs').unblock();"
+                    onsuccess="jQuery('#canvas-tabs').unblock();"
+                    onstop="jQuery('#canvas-tabs').unblock();" />
+
+                <a4j:jsFunction name="openWorkflowElementUrl"
+                    action="#{canvasBean.calcWorkflowElementUrl}"
+                    data="#{canvasBean.workflowElementUrl}"
+                    oncomplete="window.open(data,'_blank')" reRender="errorTable">
+                    <a4j:actionparam name="groupId" />
+                </a4j:jsFunction>
+            </a4j:region>
 
 			<a4j:region>
 				<a4j:status
@@ -884,7 +956,7 @@
 
 				<a4j:jsFunction name="openChangeIdModal"
 					action="#{canvasBean.openChangeIdModal}"
-					oncomplete="if(#{not canvasBean.changeElementOnly} || confirm('#{messages.confirm_changeid}')){#{rich:component('modalChangeId')}.show();}">
+					oncomplete="if(#{not canvasBean.changeElementOnly} || confirm('Changing an action identification may cause errors and force you to reconfigure this object and its dependent nodes. Do you want to continue?')){#{rich:component('modalChangeId')}.show();}">
 					<a4j:actionparam name="paramNameElement"
 						assignTo="#{canvasBean.idGroup}" />
 					<a4j:actionparam name="paramPathImage"
@@ -1048,23 +1120,40 @@
 								</h:panelGroup>
 							</f:facet>
 		
-							<rich:menuItem submitMode="none"
+							<rich:menuItem id="newMenuItem" submitMode="none"
 								value="#{messages.label_menu_new}"
-								onclick="jQuery('#addtabCanvas').click();" />
-							<rich:menuItem submitMode="ajax"
+								onclick="jQuery('#addtabCanvas').click();" >
+								<h:outputText value="Ctrl+N" class="menuItemHotKey"/>
+							</rich:menuItem>
+							<rich:menuItem id="openMenuItem" submitMode="ajax"
 								value="#{messages.label_menu_open}"
 								onclick="openModalLoadWorkflow()"
-								rerender="hdfsfsOpenFile" />
+								rerender="hdfsfsOpenFile">
+								<h:outputText value="Ctrl+O" class="menuItemHotKey"/>
+							</rich:menuItem>
 							<rich:menuSeparator />
-							<rich:menuItem submitMode="ajax" value="#{messages.label_menu_save}" onclick="menuSave();" />
-							<rich:menuItem submitMode="ajax" value="#{messages.label_menu_saveas}" onclick="openModalSaveWorkflow()" />
-							<rich:menuItem submitMode="ajax" value="#{messages.label_menu_saveall}" onclick="saveAll();" />
+							<rich:menuItem id="saveMenuItem" submitMode="ajax" value="#{messages.label_menu_save}" 
+								onclick="menuSave();" >
+								<h:outputText value="Ctrl+S" class="menuItemHotKey"/>
+							</rich:menuItem>
+							<rich:menuItem id="saveAsMenuItem" submitMode="ajax" value="#{messages.label_menu_saveas}" 
+								onclick="openModalSaveWorkflow()" >
+								<h:outputText value="Ctrl+Alt+X" class="menuItemHotKey"/>
+							</rich:menuItem>
+							<rich:menuItem id="saveAllMenuItem" submitMode="ajax" value="#{messages.label_menu_saveall}" 
+								onclick="saveAll();" >
+								<h:outputText value="Ctrl+Shift+S" class="menuItemHotKey"/>
+							</rich:menuItem>
 							<rich:menuSeparator />
-							<rich:menuItem submitMode="none"
-								value="#{messages.label_menu_close}" onclick="menuCloseTab();" />
-							<rich:menuItem submitMode="ajax"
+							<rich:menuItem id="closeMenuItem" submitMode="none"
+								value="#{messages.label_menu_close}" onclick="menuCloseTab();" >
+								<h:outputText value="Ctrl+W" class="menuItemHotKey"/>
+							</rich:menuItem>
+							<rich:menuItem id="closeAllMenuItem" submitMode="ajax"
 								value="#{messages.label_menu_closeall}" onclick="closeAll();"
-								action="#{canvasBean.doNew}" />
+								action="#{canvasBean.doNew}" >
+								<h:outputText value="Ctrl+Shift+W" class="menuItemHotKey"/>
+							</rich:menuItem>
 	
 						</rich:dropDownMenu>
 		
@@ -1081,14 +1170,20 @@
 						<rich:menuItem submitMode="ajax"
 							value="#{messages.label_menu_redo}" action="#{canvasBean.doOpen}" />
 							-->
-							<rich:menuItem submitMode="none"
-								value="#{messages.label_menu_selectall}" onclick="selectAll();" />
-							<rich:menuItem submitMode="none"
+							<rich:menuItem id="selectAllMenuItem" submitMode="none"
+								value="#{messages.label_menu_selectall}" onclick="selectAll(getSelected());" >
+								<h:outputText value="Ctrl+A" class="menuItemHotKey"/>
+							</rich:menuItem>
+							<rich:menuItem id="deselectAllMenuItem" submitMode="none"
 								value="#{messages.label_menu_deselectall}"
-								onclick="deselectAll();" />
+								onclick="deselectAll(getSelected());" >
+								<h:outputText value="Ctrl+Shift+A" class="menuItemHotKey"/>
+							</rich:menuItem>
 							<rich:menuSeparator />
 							<rich:menuItem submitMode="none"
-								value="#{messages.label_menu_delete}" onclick="deleteSelected();" />
+								value="#{messages.label_menu_delete}" onclick="deleteSelected();" >
+								<h:outputText value="Del" class="menuItemHotKey"/>
+							</rich:menuItem>
 	
 	
 		
@@ -1103,30 +1198,35 @@
 							</f:facet>
 	
 	
-							<rich:menuItem submitMode="none">
+							<rich:menuItem id="oozieMenuItem" submitMode="none">
 								<h:outputLink value="#{canvasBean.workflowUrl}" style="font-size:13px;" target="_blank">#{messages.label_menu_see_oozie_job}</h:outputLink>
+								<h:outputText value="Ctrl+J" class="menuItemHotKey"/>
 							</rich:menuItem>
 	
 							<rich:menuSeparator />
 		
-							<rich:menuItem submitMode="ajax"
+							<rich:menuItem id="runMenuItem" submitMode="ajax"
 								value="#{messages.label_menu_runitems}"
 								onclick="var sels=getSelectedIconsCommaDelimited();if(sels.length > 0){runWorkflow(getIconPositions(),sels)}"
 								reRender="formMenu,domMessageDivCanvas2">
+								<h:outputText value="Ctrl+Alt+R" class="menuItemHotKey"/>
 							</rich:menuItem>
 	
-							<rich:menuItem submitMode="ajax"
+							<rich:menuItem id="runSelectedMenuItem" submitMode="ajax"
 								value="#{messages.label_menu_runproject}"
 								onclick="runWorkflow(getIconPositions())"
 								reRender="formMenu,domMessageDivCanvas2">
+								<h:outputText value="Ctrl+R" class="menuItemHotKey"/>
 							</rich:menuItem>
 	
 							<rich:menuSeparator />
 	
-							<rich:menuItem submitMode="ajax"
+							<rich:menuItem id="cleanMenuItem" submitMode="ajax"
 								value="#{messages.label_menu_clean_project}"
 								action="#{canvasBean.cleanCanvasProject}"
-								oncomplete="updateAllArcsStatus();" />
+								oncomplete="updateAllArcsStatus();" >
+								<h:outputText value="Ctrl+L" class="menuItemHotKey"/>
+							</rich:menuItem>
 	
 							<rich:menuGroup value="#{messages.label_menu_generate}">
 	
@@ -1144,9 +1244,10 @@
 		
 							<rich:menuSeparator />
 		
-							<rich:menuItem submitMode="ajax"
+							<rich:menuItem id="installationMenuItem" submitMode="ajax"
 								value="#{messages.label_menu_package}"
 								onclick="openPackageModal();">
+								<h:outputText value="Ctrl+I" class="menuItemHotKey"/>
 							</rich:menuItem>
 		
 						</rich:dropDownMenu>
@@ -1210,7 +1311,7 @@
 	<div id="mainPanelDiv">
 
 
-	<div class="splitterV" id="splitterDiv">
+	<div id="splitVCanvas">
 
 			<div id="tabFlowchart">
 				<ul class="ulCss">
@@ -1333,7 +1434,7 @@
 
 
 
-		<div id="splitterH">
+		<div id="splitHCanvas">
 			<div id="tabs1">
 				<ul class="ulCss">
 
@@ -1361,7 +1462,7 @@
 					</button>
 				</span>
 
-				<div id="tabs-1">
+				<div id="tabs-1" style="overflow:auto;">
 					<a4j:region>
 
 						<a4j:status
@@ -1374,7 +1475,7 @@
 							<img src="../image/icons/waiting.gif" />
 						</div>
 
-						<h:panelGroup>
+						<h:panelGroup >
 							<ui:include src="/pages/help.xhtml" />
 						</h:panelGroup>
 					</a4j:region>
@@ -1642,6 +1743,6 @@
 
 		</center>
 	</rich:modalPanel>
-
+	
 </body>
 </html>

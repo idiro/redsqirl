@@ -25,6 +25,8 @@
 	    if(! jQuery('#notMoveHelp').is(':checked')){
 		var id = jQuery(this).attr('id');
 		if( historyHelp[historyHelpIndex] != id ){
+            jQuery("#nextHelp").attr("disabled", true);
+            jQuery("#prevHelp").attr("disabled", false);
 		    jQuery("#helpIndex").hide();
 		    jQuery("#helpPanel").empty();
 		    jQuery("#helpPanel").load( jQuery(this).attr("href") + " #body");
@@ -47,6 +49,8 @@
 	    if(! jQuery('#notMoveHelp').is(':checked')){
 		var id = jQuery(this).attr('id');
 		if(historyHelp[historyHelpIndex] != id){
+            jQuery("#nextHelp").attr("disabled", true);
+            jQuery("#prevHelp").attr("disabled", false);
 		    jQuery("#helpIndex").show();
 		    jQuery("#helpPanel").empty();
 		    jQuery("#btIndex").hide();
@@ -68,6 +72,10 @@
 	    //<![CDATA[
 	    if(historyHelpIndex > 0){
 		var id = historyHelp[--historyHelpIndex];
+		if(historyHelpIndex == 0){
+            jQuery("#prevHelp").attr("disabled", true);
+        }
+        jQuery("#nextHelp").attr("disabled", false);
 		if(id == "btIndex"){
 		    jQuery("#helpIndex").show();
 		    jQuery("#helpPanel").empty();
@@ -86,6 +94,10 @@
 	    //<![CDATA[
 	    if(historyHelpIndex  < historyHelp.length - 1){
 		var id = historyHelp[++historyHelpIndex];
+        if(historyHelpIndex == historyHelp.length - 1){
+            jQuery("#nextHelp").attr("disabled", true);
+        }
+        jQuery("#prevHelp").attr("disabled", false);
 		if(id == "btIndex"){
 		    jQuery("#helpIndex").show();
 		    jQuery("#helpPanel").empty();
@@ -99,16 +111,18 @@
 	    }
 	    //]]>
 	});
-
+	
     </script>
 </head>
 
 
 <body>
-    <button id="prevHelp">#{messages.label_help_previous}</button>
-    <button id="nextHelp" >#{messages.label_help_next}</button>
-    <input id="notMoveHelp" type="checkbox"/>Don't follow the links
-    <button id="btIndex" style="display: none;">#{messages.label_index}</button>
+    <div id="helpButtons">
+        <button id="prevHelp" disabled="true">#{messages.label_help_previous}</button>
+        <button id="nextHelp" disabled="true">#{messages.label_help_next}</button>
+        <input id="notMoveHelp" type="checkbox"/>Don't follow the links
+        <button id="btIndex" style="display: none;">#{messages.label_index}</button>
+    </div>
     <div id="helpIndex">
 	<h1>IDM Help</h1>
 	<p>

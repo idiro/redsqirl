@@ -61,6 +61,17 @@ function dataTableSelectOneRadio(radio) {
 			</h:selectOneRadio>
 
 		</rich:column>
+		
+		<rich:column style="border-bottom:0px;border-right:0px;" width="50px;">
+			<f:facet name="header">
+				<h:outputText value="" />
+			</f:facet>
+				<h:graphicImage value="../image/icons/button-property.gif" title='#{messages.HdfsInterface_properties_help}' 
+				rendered="#{item.file == 'N'}" styleClass="fileSystemIcon" />
+				<h:graphicImage value="../image/icons/button-file-icon.png" title='#{messages.HdfsInterface_properties_help}' 
+				rendered="#{item.file == 'S'}" styleClass="fileSystemIcon" />
+		</rich:column>
+		
 		<rich:column sortBy="#{item.name}"
 			style="border-bottom:0px;border-right:0px;">
 			<f:facet name="header">

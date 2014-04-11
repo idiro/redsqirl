@@ -1,5 +1,6 @@
-    package idm;
+package idm;
 
+import idiro.utils.LocalFileSystem;
 import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idiro.workflow.server.enumeration.SavingState;
@@ -52,17 +53,18 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private Map<String, Map<String, String>> idMap;
 	private UserInfoBean userInfoBean;
 	private String path;
+	private String workflowElementUrl;
 
 	private Map<String, DataFlow> workflowMap;
 
 	private String errorTableState = new String();
-	
+
 
 	/**
 	 * Don't open the modal window after changing the ID.
 	 */
 	private boolean changeElementOnly = false;
-	
+
 	public void doNew() {
 
 		logger.info("doNew");
@@ -820,6 +822,36 @@ public class CanvasBean extends BaseBean implements Serializable {
 		return url;
 	}
 
+	public void calcWorkflowElementUrl(){
+		String id = FacesContext.getCurrentInstance().getExternalContext().
+				getRequestParameterMap().get("groupId");
+		logger.info("element gp url: "+id);
+		String url = null;
+		try {
+			DataFlow df = getDf();
+			if (df != null && id != null && df.getOozieJobId() != null) {
+				try {
+					JobManager jm = getOozie();
+					logger.info("element url: "+df.getElement(getIdMap().get(getNameWorkflow()).get(id)));
+					url = jm.getConsoleElementUrl(df, df.getElement(getIdMap().get(getNameWorkflow()).get(id)));
+				} catch (Exception e) {
+					logger.error("error " + e.getMessage());
+				}
+			}
+		} catch (Exception e) {
+			logger.error("error get df: " + e.getMessage());
+		}
+
+		if (url == null) {
+			try {
+				url = getOozie().getUrl();
+			} catch (RemoteException e) {
+				logger.error("error getting Oozie url : " + e.getMessage());
+			}
+		}
+		setWorkflowElementUrl(url);
+	}
+
 	public void updateIdObj() {
 		String groupId = FacesContext.getCurrentInstance().getExternalContext()
 				.getRequestParameterMap().get("idGroup");
@@ -1329,9 +1361,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		JSONArray jsonElements = new JSONArray();
 		for (DataFlowElement e : getDf().getElement()) {
-			
+
 			jsonElements.put(new Object[] { e.getComponentId(), e.getName(),
-					e.getImage(), e.getX(), e.getY() });
+					LocalFileSystem.relativize(getCurrentPage(),e.getImage()), e.getX(), e.getY() });
 
 		}
 
@@ -1394,7 +1426,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	public void setLinkLabel(String nameLink) {
 		this.linkLabel = nameLink;
 	}
-	
+
 	public String getErrorTableState() {
 		return errorTableState;
 	}
@@ -1415,6 +1447,20 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 */
 	public void setChangeElementOnly(boolean changeElementOnly) {
 		this.changeElementOnly = changeElementOnly;
+	}
+
+	/**
+	 * @return the workflowElementUrl
+	 */
+	public String getWorkflowElementUrl() {
+		return workflowElementUrl;
+	}
+
+	/**
+	 * @param workflowElementUrl the workflowElementUrl to set
+	 */
+	public void setWorkflowElementUrl(String workflowElementUrl) {
+		this.workflowElementUrl = workflowElementUrl;
 	}
 
 }

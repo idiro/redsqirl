@@ -102,11 +102,11 @@ input {
 	cursor: pointer;
 }
 
-.splitterV {
+.splitVCanvas {
 	width: 100%;
 }
 
-.splitterV div {
+.splitVCanvas div {
 	overflow: auto;
 }
 
@@ -603,7 +603,7 @@ table.secondtable td{
 	border-radius:7px;
 	color:#dadbdd;
 	background-color:  #dadbdd;
-	width:154px;
+	width:200px;
 	border:none;
 	background-image: url(); 
 }
@@ -626,6 +626,12 @@ table.secondtable td{
 	border: none;
 	color:  #FFFFFF;
 	padding: 0px 0px 0px 0px;
+}
+
+.menuItemHotKey{
+	position:absolute;
+	right:5px;
+	color:grey;
 }
 
 /*gray menu bar*/
@@ -689,7 +695,7 @@ table.secondtable td{
 	border: none;
 }
 
-#splitterH{
+#splitHCanvas{
 	background-color: transparent;
 	border: none;
 }
@@ -1061,4 +1067,43 @@ height: 100% !important;
 
 .tableInteractionInput{
 	width:95% !important;
+}
+
+
+/* Context menu */
+/* =============================== */
+.context-menu-theme-default {
+    border:2px outset lightgrey;
+    background-color:#e6e6e6;
+    border-radius:5px;
+}
+.context-menu-theme-default .context-menu-item {
+    text-align:left;
+    cursor:pointer;
+    padding:4px 28px 4px 16px;
+    color:black;
+    font-family:Verdana;
+    font-size:11px;
+    font-weight: bold;
+    border-radius:5px;
+}
+.context-menu-theme-default .context-menu-separator {
+    margin:4px 2px;
+    font-size:0px;
+    border-top:1px solid #808080;
+    border-bottom:1px solid white;
+}
+.context-menu-theme-default .context-menu-item-disabled {
+    color:#808080;
+}
+.context-menu-theme-default .context-menu-item .context-menu-item-inner {
+    background:none no-repeat fixed 999px 999px; /* Make sure icons don't appear */
+}
+.context-menu-theme-default .context-menu-item-hover {
+    background-color:#C62127;
+    color:white;
+}
+.context-menu-theme-default .context-menu-item-disabled-hover {
+    background-color: #C62127;
+    color: white;
 }

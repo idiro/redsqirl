@@ -74,8 +74,11 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 */
 	public void mountTable(DataStore hInt) throws RemoteException {
+		logger.info("Started mounting table");
 		setListGrid(new ArrayList<ItemList>());
+		logger.info("set the list");
 		setPath(hInt.getPath());
+		logger.info("getting path");
 
 		FacesContext context = FacesContext.getCurrentInstance();
 		userInfoBean = (UserInfoBean) context.getApplication()
@@ -91,9 +94,10 @@ public class FileSystemBean extends BaseBean implements Serializable {
 				String name = aux[aux.length - 1];
 
 				ItemList itemList = new ItemList(name);
+
 				Map<String, String> nv = new HashMap<String, String>();
-//				Map<String, Ordering> so = new HashMap<String, Ordering>();
-//				Map<String, Object> fv = new HashMap<String, Object>();
+				// Map<String, Ordering> so = new HashMap<String, Ordering>();
+				// Map<String, Object> fv = new HashMap<String, Object>();
 				Map<String, String> nve = new HashMap<String, String>();
 				Map<String, Boolean> nc = new HashMap<String, Boolean>();
 				Map<String, Boolean> vlb = new HashMap<String, Boolean>();
@@ -114,9 +118,9 @@ public class FileSystemBean extends BaseBean implements Serializable {
 								getFormatedString(properties, mapSSH.get(path)
 										.get(properties)));
 					}
-					if(paramProperties.get(properties).type()==FeatureType.BOOLEAN){
+					if (paramProperties.get(properties).type() == FeatureType.BOOLEAN) {
 						nameValueisBool.put(properties, true);
-					}else{
+					} else {
 						nameValueisBool.put(properties, false);
 					}
 					nve.put(properties,
@@ -131,6 +135,15 @@ public class FileSystemBean extends BaseBean implements Serializable {
 											.contains("/n"));
 					// so.put(properties, Ordering.UNSORTED);
 					// fv.put(properties, "");
+				}
+
+				// verify if the path is a file or not and set 'file' to show
+				// the correct icon
+				if (nv.get("type") != null
+						&& nv.get("type").equalsIgnoreCase("file")) {
+					itemList.setFile("S");
+				} else {
+					itemList.setFile("N");
 				}
 
 				itemList.setNameValue(nv);
@@ -162,7 +175,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	}
 
 	public String getFormatedString(String property, String value) {
-		if(value == null){
+		if (value == null) {
 			value = "";
 		}
 		return value;
@@ -289,9 +302,14 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	 * @return
 	 * @author Igor.Souza
 	 */
+
 	public void verifyIfIsFile() throws RemoteException {
 		String name = FacesContext.getCurrentInstance().getExternalContext()
 				.getRequestParameterMap().get("nameFile");
+		verifyIfIsFile(name);
+	}
+
+	public void verifyIfIsFile(String name) throws RemoteException {
 		getDataStore().goTo(generatePath(getDataStore().getPath(), name));
 		file = getDataStore().getChildrenProperties() == null;
 		getDataStore().goPrevious();
