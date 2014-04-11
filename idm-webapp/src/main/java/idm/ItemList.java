@@ -224,7 +224,6 @@ public class ItemList implements Serializable {
 		this.value = value;
 	}
 
-<<<<<<< HEAD
 	public Map<String, Boolean> getNameIsBool() {
 		return nameIsBool;
 	}
@@ -233,7 +232,6 @@ public class ItemList implements Serializable {
 		this.nameIsBool = nameIsBool;
 	}
 
-=======
 	public String getFile() {
 		return file;
 	}
@@ -242,5 +240,4 @@ public class ItemList implements Serializable {
 		this.file = file;
 	}
 	
->>>>>>> refs/heads/master
 }

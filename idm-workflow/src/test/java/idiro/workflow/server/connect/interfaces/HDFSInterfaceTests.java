@@ -64,11 +64,11 @@ public class HDFSInterfaceTests {
 		try {
 			HDFSInterface hInt = new HDFSInterface();
 			logger.info("interface made");
-//			String new_path1 = hInt.getPath() + TestUtils.getTablePath(1);
-			 String new_path1 = "/user/keith/t2.rs";
-//			assertTrue(
-//					"create " + new_path1,
-//					hInt.create(new_path1, new HashMap<String, String>()) == null);
+			String new_path1 = hInt.getPath() + TestUtils.getTablePath(1);
+//			 String new_path1 = "/user/keith/t2.rs";
+			assertTrue(
+					"create " + new_path1,
+					hInt.create(new_path1, new HashMap<String, String>()) == null);
 
 			Map<String, String> chmod = new HashMap<String, String>();
 			chmod.put(HDFSInterface.key_permission, "770");
@@ -85,11 +85,11 @@ public class HDFSInterfaceTests {
 			chgp.put(HDFSInterface.key_group, "hadoop");
 			chgp.put(HDFSInterface.key_recursive, "true");
 			// chgp.put(HDFSInterface.key_owner, "hadoop");
-//			assertTrue("chown " + new_path1,
-//					hInt.changeProperties(new_path1, chgp) == null);
+			assertTrue("chown " + new_path1,
+					hInt.changeProperties(new_path1, chgp) == null);
 
 			logger.info(hInt.getProperties(new_path1));
-//			assertTrue("delete " + new_path1, hInt.delete(new_path1) == null);
+			assertTrue("delete " + new_path1, hInt.delete(new_path1) == null);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			StackTraceElement[] errs = e.getStackTrace();
