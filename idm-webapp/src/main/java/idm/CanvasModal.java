@@ -1106,8 +1106,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 							ItemList item = new ItemList();
 
 							for (Tree<String> row : rows.getSubTreeList()) {
-								item.getNameValue().put(row.getHead(),
-										row.getFirstChild().getHead());
+								item.getObjs().add(new SelectItem(row.getHead(),
+										row.getFirstChild().getHead()));
 								logger.info(row.getHead() + " -> "
 										+ row.getFirstChild().getHead());
 							}
@@ -1366,8 +1366,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 		if (success) {
 			if (getColumnEdit() != null) {
-				getListGrid().get(getRowEdit()).getNameValue()
-						.put(getColumnEdit(), getCommandEdit());
+				getListGrid().get(getRowEdit()).getObjs().add(new SelectItem(getColumnEdit(), getCommandEdit()));
 			} else {
 				setCommand(getCommandEdit());
 			}
