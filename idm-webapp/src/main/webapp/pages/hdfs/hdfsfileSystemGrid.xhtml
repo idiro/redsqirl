@@ -65,7 +65,7 @@
 				onkeypress="return enableEnterKey(event, 'hdfsfsPathBtn');" />
 
 			<a4j:commandLink id="hdfsfsPathBtn" action="#{hdfsBean.changePath}"
-				reRender="hdfsfs" style="color:#FFFFFF">
+				reRender="hdfsfs" style="color:#FFFFFF" oncomplete="resizeTables();">
 				<h:graphicImage value="../image/icons/button-search.gif"
 					title='#{messages.filesystem_change_path}'
 					styleClass="refreshButton" />
@@ -82,7 +82,7 @@
 						styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 
-				<a4j:commandLink action="#{hdfsBean.deleteFile}" reRender="hdfsfs"
+				<a4j:commandLink action="#{hdfsBean.deleteFile}" reRender="hdfsfs" oncomplete="resizeTables();" 
 					onclick="if(!confirm('Are you sure you want to delete the selected files?')){return false;}">
 					<h:graphicImage id="hdfsbtDelete"
 						value="../image/icons/button-delete2.gif"
@@ -109,6 +109,7 @@
 				</a4j:commandLink>
 
 				<a4j:commandLink action="#{hdfsBean.goPrevious}"
+					oncomplete="resizeTables();"
 					reRender="hdfspath,hdfsfs">
 					<h:graphicImage id="hdfsbtUndo"
 						value="../image/icons/button-previous.gif"
@@ -117,6 +118,7 @@
 				</a4j:commandLink>
 
 				<a4j:commandLink action="#{hdfsBean.goNext}"
+					oncomplete="resizeTables();"
 					reRender="hdfspath,hdfsfs">
 					<h:graphicImage id="hdfsbtRedo"
 						value="../image/icons/button-next.gif"
@@ -124,7 +126,7 @@
 						styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 				
-				<a4j:commandLink action="#{hdfsBean.goUp}" reRender="hdfspath,hdfsfs">
+				<a4j:commandLink action="#{hdfsBean.goUp}" reRender="hdfspath,hdfsfs" oncomplete="resizeTables();" >
 					<h:graphicImage id="hdfgoup" value="../image/icons/button_up.jpg" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 			</div>
@@ -132,11 +134,8 @@
 			<br />
 
 			<rich:panel style="border:none">
-
 				<rich:dropSupport acceptedTypes="ssh"
-					dropListener="#{hdfsBean.processDrop}" reRender="hdfsfs" />
-
-
+					dropListener="#{hdfsBean.processDrop}" reRender="hdfsfs" oncomplete="resizeTables();"/>
 				<rich:extendedDataTable id="hdfsfs" value="#{hdfsBean.listGrid}"
 					var="item" rowKeyVar="indexTable" width="100%" height="500px"
 					style="border:none;"

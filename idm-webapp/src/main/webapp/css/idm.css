@@ -581,7 +581,7 @@ table.secondtable td{
 .rich-menu-list-border{
 	border:2px solid #FFFFFF;
 	border-radius:7px;
-	width:154px;
+	width:210px;
 	color:#dadbdd;
 	background-color:  #dadbdd;
 }
@@ -603,7 +603,7 @@ table.secondtable td{
 	border-radius:7px;
 	color:#dadbdd;
 	background-color:  #dadbdd;
-	width:200px;
+	width:210px;
 	border:none;
 	background-image: url(); 
 }
@@ -853,6 +853,7 @@ div.splitter-bar.ui-state-highlight {
 /*remove border of canvas*/
 .container-canvas.ui-tabs-panel.ui-widget-content.ui-corner-bottom {
 	border: none;
+	overflow: auto;
 }
 
 

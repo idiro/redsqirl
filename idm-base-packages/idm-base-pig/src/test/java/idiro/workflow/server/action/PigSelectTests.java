@@ -30,11 +30,11 @@ public class PigSelectTests {
 		
 		PigSelect pig = (PigSelect) w.getElement(idHS);
 		
-		logger.info(Source.out_name+" "+src.getComponentId());
+		logger.info(PigBinarySource.out_name+" "+src.getComponentId());
 		logger.debug(PigSelect.key_input+" "+idHS);
 		
 		error = w.addLink(
-				Source.out_name, src.getComponentId(), 
+				PigBinarySource.out_name, src.getComponentId(), 
 				PigSelect.key_input, idHS);
 		assertTrue("pig select add link: "+error,error == null);
 		

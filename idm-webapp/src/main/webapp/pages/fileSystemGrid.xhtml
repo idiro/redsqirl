@@ -49,7 +49,7 @@
 			<h:inputText id="path" label="Path" value="#{canvasBean.path}"
 				maxlength="255" style="width:395px;" />
 			<a4j:commandButton  styleClass="greenButton" type="submit" id="changePathBt"
-				action="#{canvasBean.changePath}" value="#{messages.button_ok}" reRender="sshfs" />
+				action="#{canvasBean.changePath}" value="#{messages.button_ok}" reRender="sshfs" oncomplete="resizeTables();"/>
 
 			<br />
 			<br />
@@ -59,7 +59,7 @@
 				<h:graphicImage id="btAdd" value="../image/icons/button-plus.gif" title='#{messages.HdfsInterface_create_help}' />
 			</a4j:commandLink>
 
-			<a4j:commandLink action="#{canvasBean.deleteFile}" reRender="sshfs"
+			<a4j:commandLink action="#{canvasBean.deleteFile}" reRender="sshfs" oncomplete="resizeTables();"
 				onclick="if(!confirm('#{messages.filesystem_delete_message}')){return false;}">
 				<h:graphicImage id="btDelete" value="../image/icons/button-delete.gif" title='#{messages.HdfsInterface_delete_help}'/>
 			</a4j:commandLink>
@@ -130,7 +130,7 @@
 
 			</rich:extendedDataTable>
 
-			<a4j:jsFunction name="reRenderSshfs" reRender="sshfs"
+			<a4j:jsFunction name="reRenderSshfs" reRender="sshfs" oncomplete="resizeTables();"
 				ajaxSingle="true" requestDelay="3000" />
 
 		</h:form>
