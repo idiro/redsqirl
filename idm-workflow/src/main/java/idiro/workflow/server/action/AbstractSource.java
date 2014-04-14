@@ -11,8 +11,6 @@ import idiro.workflow.server.Page;
 import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.datatype.HiveType;
-import idiro.workflow.server.datatype.HiveTypePartition;
-import idiro.workflow.server.datatype.MapRedBinaryType;
 import idiro.workflow.server.datatype.MapRedTextType;
 import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.enumeration.FeatureType;
@@ -417,35 +415,6 @@ public class AbstractSource extends DataflowAction {
 		return absolutePath;
 	}
 
-	/**
-	 * Get the path of the Image file
-	 * 
-	 * @return path
-	 * @throws RemoteException
-	 */
-	@Override
-	public String getImage() throws RemoteException {
-		String absolutePath = "";
-		String imageFile = "/image/" + getName().toLowerCase() + ".gif";
-		String path = WorkflowPrefManager
-						.getSysProperty(WorkflowPrefManager.sys_tomcat_path);
-		List<String> files = listFilesRecursively(path);
-		for (String file : files) {
-			if (file.contains(imageFile)) {
-				absolutePath = file;
-				break;
-			}
-		}
-		String ans = "";
-		if (absolutePath.contains(path)) {
-			ans = absolutePath.substring(path.length());
-		}
-		logger.info("Source image abs Path : " + absolutePath);
-		logger.info("Source image Path : " + path);
-		logger.info("Source image ans : " + ans);
-
-		return absolutePath;
-	}
 
 	/**
 	 * Update the Interaction provided

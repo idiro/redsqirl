@@ -1022,7 +1022,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		}
 	}
 
-	private static boolean isUserAllowInstall() {
+	protected static boolean isUserAllowInstall() {
 		return WorkflowPrefManager.getSysProperty(
 				WorkflowPrefManager.sys_allow_user_install, "FALSE")
 				.equalsIgnoreCase("true");

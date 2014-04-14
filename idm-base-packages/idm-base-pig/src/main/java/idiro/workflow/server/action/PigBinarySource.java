@@ -1,7 +1,9 @@
 package idiro.workflow.server.action;
 
+import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.datatype.MapRedBinaryType;
 
+import java.io.File;
 import java.rmi.RemoteException;
 import java.util.LinkedList;
 import java.util.List;
