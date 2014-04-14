@@ -9,7 +9,6 @@ import idiro.workflow.utils.PigLanguageManager;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 
-import org.apache.hadoop.hive.ql.udf.generic.GenericUDAFEvaluator.AggregationBuffer;
 /**
  * Action that allows for aggregative methods like MAX, AVG and SUM
  * @author keith
