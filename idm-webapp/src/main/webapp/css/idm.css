@@ -853,6 +853,7 @@ div.splitter-bar.ui-state-highlight {
 /*remove border of canvas*/
 .container-canvas.ui-tabs-panel.ui-widget-content.ui-corner-bottom {
 	border: none;
+	overflow: auto;
 }
 
 
