@@ -9,7 +9,6 @@ import idiro.workflow.server.DataflowAction;
 import idiro.workflow.server.ListInteraction;
 import idiro.workflow.server.Page;
 import idiro.workflow.server.UserInteraction;
-import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.datatype.MapRedTextType;
 import idiro.workflow.server.enumeration.DisplayType;
@@ -36,7 +35,7 @@ import java.util.Map;
  * @author etienne
  * 
  */
-public class AbstractSource extends DataflowAction {
+public abstract class AbstractSource extends DataflowAction {
 
 	private static final long serialVersionUID = 7519928238030041208L;
 	/**
@@ -361,17 +360,6 @@ public class AbstractSource extends DataflowAction {
 	}
 
 	/**
-	 * Get the name of the Action
-	 * 
-	 * @return name
-	 * @throws RemoteException
-	 */
-	@Override
-	public String getName() throws RemoteException {
-		return "Source";
-	}
-
-	/**
 	 * Get the Map of Inputs
 	 * 
 	 * @return Map of Inputs
@@ -381,38 +369,6 @@ public class AbstractSource extends DataflowAction {
 	@Override
 	public Map<String, DFELinkProperty> getInput() throws RemoteException {
 		return input;
-	}
-
-	// Override default static methods
-	/**
-	 * Get the path for the help file
-	 * 
-	 * @return path
-	 * @throws RemoteException
-	 */
-	@Override
-	public String getHelp() throws RemoteException {
-		String absolutePath = "";
-		String helpFile = "/help/" + getName().toLowerCase() + ".html";
-		String path = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path);
-		logger.info(helpFile);
-		logger.info(path);
-		List<String> files = listFilesRecursively(path);
-		for (String file : files) {
-			if (file.contains(helpFile)) {
-				absolutePath = file;
-				break;
-			}
-		}
-		String ans = "";
-		if (absolutePath.contains(path)) {
-			ans = absolutePath.substring(path.length());
-		}
-		logger.info("Source help absPath : " + absolutePath);
-		logger.info("Source help Path : " + path);
-		logger.info("Source help ans : " + ans);
-		// absolutePath
-		return absolutePath;
 	}
 
 
