@@ -112,7 +112,6 @@ public class FileSystemBean extends BaseBean implements Serializable {
 										.get(properties)));
 
 					}
-
 					if (!paramProperties.get(properties).editOnly()) {
 						nv.put(properties,
 								getFormatedString(properties, mapSSH.get(path)

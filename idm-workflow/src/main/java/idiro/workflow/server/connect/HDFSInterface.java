@@ -720,7 +720,11 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 		Path p = new Path(path);
 		boolean recursive = false;
 		if (prop.containsKey(key_recursive)) {
-			recursive = prop.get(key_recursive).equalsIgnoreCase("true");
+			if(prop.get(key_recursive)!=null){
+				recursive = prop.get(key_recursive).equalsIgnoreCase("true");
+			}else{
+				recursive = false;
+			}
 			prop.remove(key_recursive);
 		}
 		if (prop.containsKey(key_permission)) {
@@ -917,13 +921,14 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 				FileStatus[] child = fs.listStatus(path);
 				if (recursive) {
 					logger.info("children : " + child.length);
-						for (int i = 0; i < child.length && error == null; ++i) {
-							error = changePermission(fs, child[i].getPath(),
-									permission, recursive);
-						}
+					for (int i = 0; i < child.length && error == null; ++i) {
+						error = changePermission(fs, child[i].getPath(),
+								permission, recursive);
+					}
 				}
 				if (error == null) {
-					logger.info("set permissions  : " + path.toString());
+					logger.info("set permissions  : " + path.toString() + " , "
+							+ new FsPermission(permission).toString());
 					fs.setPermission(path, new FsPermission(permission));
 					logger.info(getProperties(path.getName()));
 				}

@@ -20,11 +20,11 @@
 		<h:outputText value="#{column}" />
 		<br />
 
-		<h:inputText value="#{hdfsBean.item.nameValue[column]}"
+		<h:inputText value="#{hdfsBean.item.nameValueEdit[column]}"
 			disabled="#{hdfsBean.item.nameIsConst[column]}"
 			rendered='#{not hdfsBean.item.nameIsBool[column]}' />
 		<h:selectOneRadio rendered='#{hdfsBean.item.nameIsBool[column]}'
-			value="#{hdfsBean.item.nameValue[column]}">
+			value="#{hdfsBean.item.nameValueEdit[column]}">
 			<f:selectItem itemValue="true" itemLabel="Yes" />
 			<f:selectItem itemValue="false" itemLabel="No" />
 		</h:selectOneRadio>
