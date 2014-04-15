@@ -323,6 +323,7 @@ public Map<String, DFELinkProperty> getInput() throws RemoteException {
 	of the action. Here is a list of key string that might be useful
 	
 +-----------+
+public static final String
 key_output = "",
 key_input = "in",
 key_delimiter="delimiter",
@@ -555,19 +556,47 @@ public DemoAction() throws RemoteException {
 	Now that we have the abstract class that is implemented with the essentials we can now look at implementing our first action.
 	That action that we are going to implement is sample. Pig has an action that allows for sampling the data and all that is needed
 	is the size at which you sample.
-
 	
----------------------- for implementing the actual action 
-	This sets the type of action that Oozie will generate. 
-	From there the rest of the methods should be implemented that are inherited from the parent class 'DataFlowAction'
+	Let's identify the methods that we need to implement.
 	
 	This method simply returns the name of the method
+	
 +-----------+
-public String getName() throws RemoteException {
+	public String getName() throws RemoteException {
 		
 		return "sample";
 	}
 +-----------+
+
+	This methods simple returns the features that are available from the input.
+
++-----------+
+	@Override
+	public FeatureList getInFeatures() throws RemoteException {
+		return getDFEInput().get(DemoAction.key_input).get(0).getFeatures();
+	}
++-----------+
+
+	This method returns the new features generated from the action , as the action we are implementing is only to sample there should be no new features.
+	Here we simply return the input features.
 	
-----------------------
++-----------+
+	@Override
+	public FeatureList getNewFeatures() throws RemoteException {
+		return getInFeatures();
+	}
++-----------+
+
+	Once these methods are implemented , let's implement the only interaction that we need which will inherit from 'InputInteraction'.
+	We still have two methods to implement and the constructor to finish but it is necessary to implement the interaction first.
+	
+	So create a new package for interactions and add a new class called 'SampleInteraction'.
+	Once 'SampleInteraction' has been created we should have a constuctor that looks like the code below.
+	
++-----------+
+
++-----------+
+
+	
+	
 
