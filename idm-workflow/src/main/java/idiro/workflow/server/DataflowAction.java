@@ -154,7 +154,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 						.getSysProperty(WorkflowPrefManager.sys_tomcat_path))
 				+ relativePath);
 		if (!f.exists() || !isUserAllowInstall()) {
-			relativePath = WorkflowPrefManager.pathSysHelpPref.get() + "/"
+			relativePath = WorkflowPrefManager.pathSysImagePref.get() + "/"
 					+ fname;
 			f = new File(
 					WorkflowPrefManager
