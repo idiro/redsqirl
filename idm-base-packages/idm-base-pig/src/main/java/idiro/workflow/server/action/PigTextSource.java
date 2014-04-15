@@ -46,7 +46,6 @@ public class PigTextSource extends AbstractSource {
 	 * @return name
 	 * @throws RemoteException
 	 */
-	@Override
 	public String getName() throws RemoteException {
 		return "pig_text_source";
 	}
