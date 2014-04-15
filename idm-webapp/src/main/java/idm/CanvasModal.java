@@ -1680,8 +1680,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 			//getDfe().getDFEOutput().get(sourceOutName).isPathExists();
 
 			List<ItemList> listObjGrid = new ArrayList<ItemList>();
-			Map<String, String> outputPropertiesMap = getDfe().getDFEOutput()
-					.get(sourceOutName).getProperties();
+			Map<String, String> outputPropertiesMap = getDfe().getDFEOutput().get(sourceOutName).getProperties();
+			
 			logger.info("outputPropertiesMap -> " + outputPropertiesMap);
 
 			for (String value : outputPropertiesMap.keySet()) {
@@ -1742,24 +1742,14 @@ public class CanvasModal extends BaseBean implements Serializable {
 			setBrowserNameFeatureColumns(new ArrayList<String>());
 			for (String outputFeature : outputFeatureList) {
 
-				logger.info("outputFeatureNames " + outputFeature);
-
-				FeatureType featureType = dfeOut.getFeatures().getFeatureType(
-						outputFeature);
-
-				logger.info("featureType " + featureType);
+				//logger.info("outputFeatureNames " + outputFeature);
+				FeatureType featureType = dfeOut.getFeatures().getFeatureType(outputFeature);
+				//logger.info("featureType " + featureType);
 
 				labels.add(outputFeature + " " + featureType.toString());
-
-				getBrowserNameFeatureColumns().add(
-						outputFeature + " " + featureType.toString());
-
-				nameBrowserLabel1.put(
-						outputFeature + " " + featureType.toString(),
-						outputFeature);
-				nameBrowserLabel2.put(
-						outputFeature + " " + featureType.toString(),
-						featureType.toString());
+				getBrowserNameFeatureColumns().add(outputFeature + " " + featureType.toString());
+				nameBrowserLabel1.put(outputFeature + " " + featureType.toString(),outputFeature);
+				nameBrowserLabel2.put(outputFeature + " " + featureType.toString(),featureType.toString());
 
 			}
 
@@ -1776,27 +1766,19 @@ public class CanvasModal extends BaseBean implements Serializable {
 					Map<String, String> nameValueFeatureItem = new HashMap<String, String>();
 					if (output != null) {
 
-						logger.info("Hive or Hdfs " + getHiveHdfs());
+						//logger.info("Hive or Hdfs " + getHiveHdfs());
 
-						if (getHiveHdfs() != null
-								&& getHiveHdfs().equalsIgnoreCase("hive")) {
+						if (getHiveHdfs() != null && getHiveHdfs().equalsIgnoreCase("hive")) {
 
 							String rows[] = output.split("'\001'");
 							for (int i = 0; i < rows.length; i++) {
-								logger.info("map to show " + labels.get(i)
-										+ " " + rows[i]);
+								//logger.info("map to show " + labels.get(i) + " " + rows[i]);
 								nameValueFeature.put(labels.get(i), rows[i]);
 								nameValueFeatureItem
 										.put(labels.get(i), rows[i]);
 							}
 						} else {
-							// String delimiter =
-							// dfeOut.getProperty("delimiter");
-							// if(delimiter == null || delimiter.isEmpty()){
-							// delimiter = "\001";
-							// }else if(delimiter.length() > 1){
-							//
-							// }
+							
 							String delimiter = null;
 							try {
 								delimiter = String.valueOf(Character
@@ -1806,16 +1788,14 @@ public class CanvasModal extends BaseBean implements Serializable {
 							} catch (Exception e) {
 								delimiter = dfeOut.getProperty("delimiter");
 							}
-							logger.info("delimiter " + delimiter);
+							//logger.info("delimiter " + delimiter);
 
 							String rows[] = output.split(Pattern
 									.quote(delimiter));
 							for (int i = 0; i < rows.length; i++) {
-								logger.info("map to show " + labels.get(i)
-										+ " " + rows[i]);
+								//logger.info("map to show " + labels.get(i)	+ " " + rows[i]);
 								nameValueFeature.put(labels.get(i), rows[i]);
-								nameValueFeatureItem
-										.put(labels.get(i), rows[i]);
+								nameValueFeatureItem.put(labels.get(i), rows[i]);
 							}
 
 						}
@@ -1825,14 +1805,12 @@ public class CanvasModal extends BaseBean implements Serializable {
 					ItemList item = new ItemList();
 					item.setSelected(false);
 					item.setNameValue(nameValueFeatureItem);
-					logger.info("new item ");
+					//logger.info("new item ");
 					listObj.add(item);
 
-					logger.info("new nameValueFeature " + nameValueFeature);
-					logger.info("new nameValueFeatureItem "
-							+ nameValueFeatureItem);
-					logger.info("getKeyAsListNameValueFeature "
-							+ getKeyAsListNameValueFeature());
+					//logger.info("new nameValueFeature " + nameValueFeature);
+					//logger.info("new nameValueFeatureItem "	+ nameValueFeatureItem);
+					//logger.info("getKeyAsListNameValueFeature "	+ getKeyAsListNameValueFeature());
 
 				}
 

@@ -54,28 +54,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private UserInfoBean userInfoBean;
 	private String path;
 	private String workflowElementUrl;
-
+	private String workflowUrl;
 	private Map<String, DataFlow> workflowMap;
-
 	private String errorTableState = new String();
-
 
 	/**
 	 * Don't open the modal window after changing the ID.
 	 */
 	private boolean changeElementOnly = false;
-
-	public void doNew() {
-
-		logger.info("doNew");
-
-	}
-
-	public void doOpen() {
-
-		logger.info("doOpen");
-
-	}
 
 	/**
 	 * openCanvas
@@ -91,7 +77,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	//@PostConstruct
 	public void init(){
-
 
 		logger.info("openCanvas");
 
@@ -130,6 +115,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 			workflowMap.put(getNameWorkflow(), getDf());
 
+			calcWorkflowUrl();
+			
 		} catch (RemoteException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -768,9 +755,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 				.evaluateExpressionGet(context, "#{userInfoBean}",
 						UserInfoBean.class);
 
-		if (userInfoBean.getCurrentValue() < 98) {
+		/*if (userInfoBean.getCurrentValue() < 98) {
 			userInfoBean.setCurrentValue(userInfoBean.getCurrentValue() + 3);
-		}
+		}*/
+		
 	}
 
 	public void blockRunningWorkflow() throws Exception {
@@ -781,7 +769,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 	}
 
-	public String getWorkflowUrl() {
+	public void calcWorkflowUrl() {
 
 		logger.info("getWorkflowUrl");
 		String url = null;
@@ -812,14 +800,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 		}
 
-		FacesContext context = FacesContext.getCurrentInstance();
+		/*FacesContext context = FacesContext.getCurrentInstance();
 		userInfoBean = (UserInfoBean) context.getApplication()
 				.evaluateExpressionGet(context, "#{userInfoBean}",
 						UserInfoBean.class);
 
-		userInfoBean.setCurrentValue(Long.valueOf(100));
+		userInfoBean.setCurrentValue(Long.valueOf(100));*/
 
-		return url;
+		setWorkflowUrl(url);
 	}
 
 	public void calcWorkflowElementUrl(){
@@ -1461,6 +1449,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 */
 	public void setWorkflowElementUrl(String workflowElementUrl) {
 		this.workflowElementUrl = workflowElementUrl;
+	}
+
+	public String getWorkflowUrl() {
+		return workflowUrl;
+	}
+
+	public void setWorkflowUrl(String workflowUrl) {
+		this.workflowUrl = workflowUrl;
 	}
 
 }

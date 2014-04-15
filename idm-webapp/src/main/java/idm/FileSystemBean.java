@@ -53,8 +53,8 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 	}
 
-	/**
-	 * openCanvasScreen
+
+	/** closeCanvasScreen
 	 * 
 	 * Method that is executed when the screen
 	 * 
@@ -763,4 +763,5 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	public void setListHeaderGrid(ArrayList<ItemList> listHeaderGrid) {
 		this.listHeaderGrid = listHeaderGrid;
 	}
+	
 }
