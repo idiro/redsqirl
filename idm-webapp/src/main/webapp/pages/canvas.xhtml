@@ -1150,8 +1150,7 @@
 								<h:outputText value="Ctrl+W" class="menuItemHotKey"/>
 							</rich:menuItem>
 							<rich:menuItem id="closeAllMenuItem" submitMode="ajax"
-								value="#{messages.label_menu_closeall}" onclick="closeAll();"
-								action="#{canvasBean.doNew}" >
+								value="#{messages.label_menu_closeall}" onclick="closeAll();" >
 								<h:outputText value="Ctrl+Shift+W" class="menuItemHotKey"/>
 							</rich:menuItem>
 	
@@ -1164,12 +1163,6 @@
 									<h:outputText value="#{messages.label_menu_edit}" />
 								</h:panelGroup>
 							</f:facet>
-							<!--
-						<rich:menuItem submitMode="ajax"
-							value="#{messages.label_menu_undo}" action="#{canvasBean.doNew}" />
-						<rich:menuItem submitMode="ajax"
-							value="#{messages.label_menu_redo}" action="#{canvasBean.doOpen}" />
-							-->
 							<rich:menuItem id="selectAllMenuItem" submitMode="none"
 								value="#{messages.label_menu_selectall}" onclick="selectAll(getSelected());" >
 								<h:outputText value="Ctrl+A" class="menuItemHotKey"/>

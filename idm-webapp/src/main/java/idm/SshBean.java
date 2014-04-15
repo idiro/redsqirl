@@ -263,7 +263,7 @@ public class SshBean extends FileSystemBean implements Serializable{
 	}
 	
 	public List<String> getTabs(){
-		logger.info("getTabs:"+tabs.size());
+		//logger.info("getTabs:"+tabs.size());
 		return tabs;
 	}
 
