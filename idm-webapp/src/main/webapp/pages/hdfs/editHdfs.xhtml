@@ -12,11 +12,11 @@
 	<h:inputText label="Name" value="#{hdfsBean.newName}" />
 	<br />
 	
-	<a4j:repeat value="#{hdfsBean.item.objsEdit}"
+	<a4j:repeat value="#{hdfsBean.item.keyAsListNameValueEdit}"
 		var="column" rowKeyVar="index">
-		<h:outputText value="#{column.value}" />
+		<h:outputText value="#{hdfsBean.item.keyAsListNameValueEdit[index]}" />
 		<br />
-		<h:inputText value="#{column.label}"
+		<h:inputText value="#{hdfsBean.item.nameValue[column]}"
 			disabled="#{hdfsBean.item.nameIsConst[column]}" />
 		<br />
 		<br />
@@ -25,7 +25,7 @@
 
 	<h:panelGrid columns="2">
 		<a4j:commandButton  styleClass="greenButton" action="#{hdfsBean.editFileAfter}" value="#{messages.button_ok}"
-			reRender="hdfsfs" onclick="#{rich:component('hdfseditModalPanel')}.hide()" oncomplete="resizeTables();"/>
+			reRender="hdfsfs" onclick="#{rich:component('hdfseditModalPanel')}.hide()" />
 		<a4j:commandButton  styleClass="greenButton" value="#{messages.button_cancel}" type="button" 
 			onclick="#{rich:component('hdfseditModalPanel')}.hide();" />
 	</h:panelGrid>
