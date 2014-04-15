@@ -40,6 +40,42 @@ public class Source extends AbstractSource {
 		return "Source";
 	}
 
+	// Override default static methods
+	/**
+	 * Get path to help
+	 * 
+	 * @return path
+	 * @throws RemoteException
+	 */
+	@Override
+	public String getHelp() throws RemoteException {
+		String absolutePath = "";
+		String helpFile = "/help/" + getName().toLowerCase() + ".html";
+		String path = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path);
+		List<String> files = listFilesRecursively(path);
+		for (String file : files) {
+			if (file.contains(helpFile)) {
+				absolutePath = file;
+				break;
+			}
+		}
+		String ans = "";
+		if (absolutePath.contains(path)) {
+			ans = absolutePath.substring(path.length());
+		}
+		logger.debug("Source help absPath : " + absolutePath);
+		logger.debug("Source help Path : " + path);
+		logger.debug("Source help ans : " + ans);
+		// absolutePath
+		return absolutePath;
+	}
+
+	/**
+	 * Get the path to the Image
+	 * 
+	 * @return path
+	 * @throws RemoteException
+	 */
 	@Override
 	public String getImage() throws RemoteException {
 		String absolutePath = "";
