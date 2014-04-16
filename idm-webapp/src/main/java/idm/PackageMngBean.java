@@ -311,6 +311,9 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	}
 
 	public String getRepoServer(){
+		
+		logger.info("getRepoServer");
+		
 		String pckServer = WorkflowPrefManager.getPckManagerUri();
 		if(!pckServer.endsWith("/")){
 			pckServer+="/";

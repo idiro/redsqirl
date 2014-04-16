@@ -128,6 +128,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 	}
 
 	public List<String[]> getHelpItens() throws Exception {
+		
+		logger.info("getHelpItens");
+		
 		if (getworkFlowInterface().getWorkflow("canvas-1") == null) {
 			getworkFlowInterface().addWorkflow("canvas-1");
 		}
@@ -1018,6 +1021,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	private String[] getOutputStatus(DataFlowElement dfe, String groupId)
 			throws RemoteException {
+		
+		logger.info("getOutputStatus");
+		
 		String state = null;
 		String pathExistsStr = null;
 
@@ -1074,6 +1080,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 */
 	private void getOutputStatus(DataFlowElement dfe, List<String[]> status)
 			throws RemoteException {
+		
+		logger.info("getOutputStatus");
 
 		if (dfe != null && dfe.getDFEOutput() != null) {
 			String compId = dfe.getComponentId();
@@ -1167,6 +1175,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public String[] getArrowType(String groupOutId, String groupInId,
 			String outputName) throws Exception {
+		
+		logger.info("getArrowType");
 
 		DataFlowElement df = getDf().getElement(
 				getIdMap().get(getNameWorkflow()).get(groupOutId));

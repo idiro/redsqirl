@@ -19,7 +19,6 @@ import java.util.Map.Entry;
 import javax.faces.context.FacesContext;
 
 import org.apache.log4j.Logger;
-import org.richfaces.model.Ordering;
 
 public class FileSystemBean extends BaseBean implements Serializable {
 
@@ -130,8 +129,8 @@ public class FileSystemBean extends BaseBean implements Serializable {
 							.isConst());
 					vlb.put(properties,
 							mapSSH.get(path).get(properties) != null
-									&& mapSSH.get(path).get(properties)
-											.contains("/n"));
+							&& mapSSH.get(path).get(properties)
+							.contains("/n"));
 					// so.put(properties, Ordering.UNSORTED);
 					// fv.put(properties, "");
 				}
@@ -272,6 +271,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 	}
 
+
 	/**
 	 * open
 	 * 
@@ -353,7 +353,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 				getDataStore().move(
 						s[0] + "/" + s[1],
 						getDataStore().getPath() + "/" + itemSelect.getName()
-								+ "/" + s[1]);
+						+ "/" + s[1]);
 			} else {
 				logger.info("move " + s[0] + "/" + s[1] + " to "
 						+ getDataStore().getPath());
@@ -428,6 +428,8 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 */
 	public ItemList getItemByName(String name) throws RemoteException {
+
+		logger.info("getItemByName");
 
 		for (ItemList it : getListGrid()) {
 			if (it.getName().equals(name)) {
@@ -509,7 +511,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 				getDataStore().move(
 						s[0] + "/" + s[1],
 						getDataStore().getPath() + "/" + itemSelect.getName()
-								+ "/" + s[1]);
+						+ "/" + s[1]);
 			} else {
 				logger.info("move " + s[0] + "/" + s[1] + " to "
 						+ getDataStore().getPath());
@@ -763,5 +765,5 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	public void setListHeaderGrid(ArrayList<ItemList> listHeaderGrid) {
 		this.listHeaderGrid = listHeaderGrid;
 	}
-	
+
 }

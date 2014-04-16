@@ -42,10 +42,8 @@ public class OutputForm implements Serializable {
 			dfeOutput.setSavingState(SavingState.TEMPORARY);
 		}
 		setSavingState(dfeOutput.getSavingState().toString());
-			
 		
 	}
-	
 
 	public OutputForm() {
 		super();

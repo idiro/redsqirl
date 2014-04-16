@@ -791,12 +791,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 				DynamicForm dynamicF = new DynamicForm();
 
-				/*
-				 * logger.info("type " + dfeInteraction.getName() + " " +
-				 * dfeInteraction.getDisplay() + " " +
-				 * printTree(dfeInteraction.getTree()));
-				 */
-
 				setTabTitle(getPage().getTitle());
 				setTabLegend(getPage().getLegend());
 
@@ -890,12 +884,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 										.getFirstChild().getHead()));
 							}
 							dynamicF.setAppendListOptions(selectItems);
-
-							/*
-							 * if (selectItems.size() > 10) {
-							 * dynamicF.setComboBox("Y"); } else {
-							 * dynamicF.setComboBox("N"); }
-							 */
+							
 						}
 					}
 
@@ -1334,18 +1323,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 		applyPage();
 
 	}
-
-	/**
-	 * openTableInteraction
-	 * 
-	 * Methods to mount screen Table Interaction
-	 * 
-	 * @return
-	 * @author Igor.Souza
-	 */
-	public void openTableInteraction() {
-
-	}
+	
 
 	/**
 	 * confirm
