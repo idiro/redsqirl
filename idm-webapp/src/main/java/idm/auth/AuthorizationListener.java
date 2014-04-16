@@ -2,6 +2,7 @@ package idm.auth;
 
 import idm.CanvasBean;
 import idm.ConfigureTabsBean;
+import idm.HelpBean;
 import idm.ProcessManagerBean;
 
 import javax.faces.application.NavigationHandler;
@@ -63,6 +64,9 @@ public class AuthorizationListener implements PhaseListener {
 				
 				ProcessManagerBean processManagerBean = (ProcessManagerBean) context.getApplication().evaluateExpressionGet(context, "#{processManagerBean}", ProcessManagerBean.class);
 				processManagerBean.retrievesProcessesGrid();
+				
+				HelpBean helpBean = (HelpBean) context.getApplication().evaluateExpressionGet(context, "#{helpBean}", HelpBean.class);
+				helpBean.calcHelpItens();
 				
 				session.setAttribute("startInit","n");
 			}

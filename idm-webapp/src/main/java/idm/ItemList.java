@@ -37,11 +37,6 @@ public class ItemList implements Serializable {
 	private Map<String, Boolean> valueHasLineBreak = new LinkedHashMap<String, Boolean>();
 	private Map<String, String> nameValueGrid = new LinkedHashMap<String, String>();
 	
-	/*
-	 *
-	 * @author Igor.Souza
->>>>>>> refs/heads/master
-	 */
 	private Map<String, Boolean> nameIsBool = new HashMap<String, Boolean>();
 	private static Logger logger = Logger.getLogger(ItemList.class);
 

@@ -66,6 +66,11 @@
   <managed-bean-class>idm.useful.Error</managed-bean-class>
   <managed-bean-scope>request</managed-bean-scope>
  </managed-bean>
+ <managed-bean>
+  <managed-bean-name>helpBean</managed-bean-name>
+  <managed-bean-class>idm.HelpBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
  
  <!-- **************************** NAVIGATION ******************************************************************* -->
  
