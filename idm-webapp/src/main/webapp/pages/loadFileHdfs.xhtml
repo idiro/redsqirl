@@ -133,8 +133,8 @@
 
 	<a4j:commandButton id="hdfsOpenFileBtn" styleClass="greenButton" action="#{canvasBean.load}" value="#{messages.button_ok}"
 		onclick="#{rich:component('modalLoadWorkflow')}.hide();" 
-		rerender="formMenu, errorTable"
-		oncomplete="loadWorkflow();">
+		reRender="formMenu, errorTable"
+		oncomplete="preLoadWorkflow()">
 		<a4j:actionparam value="getPath('#{browserHdfsBean.path}')" assignTo="#{canvasBean.path}" noEscape="true"/>
 	</a4j:commandButton>
 	

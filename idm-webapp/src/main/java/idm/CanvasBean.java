@@ -821,6 +821,24 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		return url;
 	}
+	
+	public boolean isRunning() throws RemoteException{
+		
+		DataFlow df = getDf();
+		boolean running = false;
+		if (df != null) {
+			running = df.isrunning();
+		}
+		return running;
+	}
+	
+	
+	public void stopRunningWorkflow() throws RemoteException, Exception{
+		DataFlow df = getDf();
+		if (df != null && df.getOozieJobId() != null) {
+			getOozie().kill(df.getOozieJobId());
+		}
+	}
 
 	public void calcWorkflowElementUrl(){
 		String id = FacesContext.getCurrentInstance().getExternalContext().

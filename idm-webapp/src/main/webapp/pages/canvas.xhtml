@@ -786,7 +786,7 @@
 				<a4j:jsFunction name="setWorkflow"
 					action="#{canvasBean.changeWorkflow}"
 					oncomplete="setSelected('#{canvasBean.nameWorkflow}');verifyIfIsRunning(getSelected());"
-					reRender="formMenu,domMessageDivCanvas2">
+					reRender="formMenu,domMessageDivCanvas2,killProcessBtn">
 					<a4j:actionparam name="selectedCanvas"
 						assignTo="#{canvasBean.nameWorkflow}" />
 				</a4j:jsFunction>
@@ -998,8 +998,15 @@
 				<a4j:jsFunction name="loadWorkflow"
 					action="#{canvasBean.blockRunningWorkflow}"
 					data="#{canvasBean.positions}"
-					oncomplete="addElementJs(data[0],data[1],data[2],data[3]);"
+					oncomplete="alert('load2');addElementJs(data[0],data[1],data[2],data[3]);"
 					reRender="tabFlowchart,errorTable" />
+			</a4j:region>
+			
+			<a4j:region>
+			
+				<a4j:jsFunction name="preLoadWorkflow"
+					reRender="killProcessBtn"
+					oncomplete="loadWorkflow()" />
 			</a4j:region>
 
 			<a4j:region>
@@ -1052,6 +1059,9 @@
 					<h:panelGroup id="right_area" layout="block">
 						<h:outputLink id="workflowUrl" value="#{canvasBean.workflowUrl}"
 							target="_blank" rendered="#{canvasBean.workflowUrl != null}">Oozie Console</h:outputLink>
+						<br />
+						<a4j:commandButton id="killProcessBtn" value="Kill Process" action="#{canvasBean.stopRunningWorkflow}"
+							rendered="#{canvasBean.running}"/>
 					</h:panelGroup>
 				</div>
 
@@ -1077,7 +1087,7 @@
 				<a4j:jsFunction name="runWorkflow"
 					action="#{canvasBean.runWorkflow}"
 					oncomplete="setRunning(getSelected(), true);updateWorkflowUrl();"
-					reRender="formMenu,domMessageDivCanvas2">
+					reRender="formMenu,domMessageDivCanvas2,killProcessBtn">
 					<a4j:actionparam name="positions" />
 					<a4j:actionparam name="select" />
 				</a4j:jsFunction>
@@ -1207,14 +1217,14 @@
 							<rich:menuItem id="runMenuItem" submitMode="ajax"
 								value="#{messages.label_menu_runitems}"
 								onclick="var sels=getSelectedIconsCommaDelimited();if(sels.length > 0){runWorkflow(getIconPositions(),sels)}"
-								reRender="formMenu,domMessageDivCanvas2">
+								reRender="formMenu,domMessageDivCanvas2,killProcessBtn">
 								<h:outputText value="Ctrl+Alt+R" class="menuItemHotKey"/>
 							</rich:menuItem>
 	
 							<rich:menuItem id="runSelectedMenuItem" submitMode="ajax"
 								value="#{messages.label_menu_runproject}"
 								onclick="runWorkflow(getIconPositions())"
-								reRender="formMenu,domMessageDivCanvas2">
+								reRender="formMenu,domMessageDivCanvas2,killProcessBtn">
 								<h:outputText value="Ctrl+R" class="menuItemHotKey"/>
 							</rich:menuItem>
 	
