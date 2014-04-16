@@ -314,7 +314,7 @@ function resizeCanvasChangeTab(){
 }
 
 /*function to select all checkbox in a table*/
-function selectAll(checkbox, checkboxId) {
+function selectAllCheckbox(checkbox, checkboxId) {
     var elements = checkbox.form.elements;
     for (var i = 0; i < elements.length; i++) {
         var element = elements[i];
