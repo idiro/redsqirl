@@ -9,6 +9,7 @@ import idiro.workflow.server.DataflowAction;
 import idiro.workflow.server.ListInteraction;
 import idiro.workflow.server.Page;
 import idiro.workflow.server.UserInteraction;
+import idiro.workflow.server.connect.WorkflowInterface;
 import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.datatype.MapRedTextType;
 import idiro.workflow.server.enumeration.DisplayType;
@@ -96,8 +97,7 @@ public abstract class AbstractSource extends DataflowAction {
 
 		dataType.setDisplayRadioButton(true);
 		List<String> posValues = new LinkedList<String>();
-		posValues.add("Hive");
-		posValues.add("HDFS");
+		posValues.addAll(WorkflowInterface.getInstance().getDatastores().keySet());
 		dataType.setPossibleValues(posValues);
 	}
 	

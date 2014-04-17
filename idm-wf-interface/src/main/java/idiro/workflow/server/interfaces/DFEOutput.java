@@ -1,7 +1,6 @@
 package idiro.workflow.server.interfaces;
 
 import idiro.utils.FeatureList;
-import idiro.workflow.server.enumeration.DataBrowser;
 import idiro.workflow.server.enumeration.SavingState;
 
 import java.io.File;
@@ -30,12 +29,11 @@ public interface DFEOutput extends Remote {
 	public String getTypeName() throws RemoteException;
 
 	/**
-	 * Get the browser type for the Type of object
+	 * Get the browser name (DataStore class) used for the Type of object.
 	 * 
-	 * @return {@link idiro.workflow.server.enumeration.DataBrowser}
 	 * @throws RemoteException
 	 */
-	public DataBrowser getBrowser() throws RemoteException;
+	public String getBrowser() throws RemoteException;
 
 	/**
 	 * Get the colour of the type

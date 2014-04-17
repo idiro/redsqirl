@@ -9,23 +9,15 @@ import idiro.workflow.server.EditorInteractionTests;
 import idiro.workflow.server.InputInteractionTests;
 import idiro.workflow.server.ListInteractionTests;
 import idiro.workflow.server.OozieDagTests;
-import idiro.workflow.server.OozieManagerTests;
 import idiro.workflow.server.TableInteractionTests;
 import idiro.workflow.server.WorkflowPrefManager;
-import idiro.workflow.server.WorkflowProcessesManagerTests;
 import idiro.workflow.server.WorkflowTests;
-import idiro.workflow.server.action.ActionTests;
 import idiro.workflow.server.action.ConvertTests;
 import idiro.workflow.server.action.SourceTests;
 import idiro.workflow.server.connect.HDFSInterface;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.connect.interfaces.HDFSInterfaceTests;
-import idiro.workflow.server.connect.interfaces.HiveInterfaceTests;
-import idiro.workflow.server.connect.interfaces.SSHInterfaceArrayTests;
-import idiro.workflow.server.connect.interfaces.SSHInterfaceTests;
 import idiro.workflow.server.datatype.HDFSTypeTests;
-import idiro.workflow.server.datatype.HiveTypePartitionTests;
-import idiro.workflow.server.datatype.HiveTypeTests;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -42,7 +34,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({//ActionTests.class,
-//	WorkflowTests.class,
+	WorkflowTests.class,
 	//CreateWorkflowTests.class,
 		HDFSInterfaceTests.class,
 	//	HiveInterfaceTests.class,
@@ -50,20 +42,20 @@ import org.junit.runners.Suite.SuiteClasses;
 	//	SSHInterfaceArrayTests.class,
 	//	HiveTypeTests.class, 
 	//	HiveTypePartitionTests.class, 
-//		SourceTests.class,
+		SourceTests.class,
 	//	WorkflowProcessesManagerTests.class,
 	//	OozieManagerTests.class,
 	//PackageManagerTests.class,
-//	OozieDagTests.class,
-//	OrderedFeatureListTests.class,
-//	TreeTests.class,
-//	ConvertTests.class,
-//	InputInteractionTests.class,
-//	AppendListInteractionTests.class,
-//	ListInteractionTests.class,
-//	EditorInteractionTests.class,
-//	TableInteractionTests.class,
-//	HDFSTypeTests.class,
+	OozieDagTests.class,
+	OrderedFeatureListTests.class,
+	TreeTests.class,
+	ConvertTests.class,
+	InputInteractionTests.class,
+	AppendListInteractionTests.class,
+	ListInteractionTests.class,
+	EditorInteractionTests.class,
+	TableInteractionTests.class,
+	HDFSTypeTests.class,
 })
 public class SetupEnvironmentTest {
 

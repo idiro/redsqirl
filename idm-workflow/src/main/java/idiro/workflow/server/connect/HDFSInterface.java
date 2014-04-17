@@ -1272,4 +1272,9 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 		}
 		return b;
 	}
+
+	@Override
+	public String getBrowserName() throws RemoteException {
+		return "Hadoop Distributed File System";
+	}
 }

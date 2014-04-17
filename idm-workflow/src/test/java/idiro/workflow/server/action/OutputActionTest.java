@@ -1,7 +1,6 @@
 package idiro.workflow.server.action;
 
 import idiro.workflow.server.DataOutput;
-import idiro.workflow.server.enumeration.DataBrowser;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -77,8 +76,7 @@ public class OutputActionTest extends DataOutput{
 
 
 	@Override
-	public DataBrowser getBrowser() throws RemoteException {
-		// TODO Auto-generated method stub
+	public String getBrowser() throws RemoteException {
 		return null;
 	}
 

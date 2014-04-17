@@ -158,8 +158,8 @@
 						<f:facet name="header">
 							<h:outputText value="" />
 						</f:facet>
-						<a4j:commandLink action="#{hdfsBean.editFileBefore}"
-							oncomplete="#{rich:component('hdfseditModalPanel')}.show()">
+						<!-- oncomplete="#{rich:component('hdfseditModalPanel')}.show()" -->
+						<a4j:commandLink action="#{hdfsBean.editFileBefore}">
 							<h:graphicImage value="../image/icons/button-property.gif" title='#{messages.HdfsInterface_properties_help}' 
 							rendered="#{item.file == 'N'}" styleClass="fileSystemIcon" />
 							<h:graphicImage value="../image/icons/button-file-icon.png" title='#{messages.HdfsInterface_properties_help}' 

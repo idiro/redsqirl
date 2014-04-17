@@ -5,7 +5,6 @@ import idiro.utils.OrderedFeatureList;
 import idiro.utils.RandomString;
 import idiro.workflow.server.DataOutput;
 import idiro.workflow.server.connect.HiveInterface;
-import idiro.workflow.server.enumeration.DataBrowser;
 import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.oozie.HiveAction;
 import idiro.workflow.utils.LanguageManagerWF;
@@ -14,6 +13,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.List;
@@ -84,8 +84,8 @@ public class HiveType extends DataOutput{
 }
 	 */
 	@Override
-	public DataBrowser getBrowser() throws RemoteException {
-		return DataBrowser.HIVE;
+	public String getBrowser() throws RemoteException {
+		return hInt.getBrowserName();
 	}
 	/**
 	 * Delete the path

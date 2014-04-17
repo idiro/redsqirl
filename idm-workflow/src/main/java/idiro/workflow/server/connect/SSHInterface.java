@@ -639,4 +639,9 @@ public class SSHInterface extends UnicastRemoteObject implements DataStore {
 			String remoteServer) {
 		throw new UnsupportedOperationException("Unsupported Operation");
 	}
+
+	@Override
+	public String getBrowserName() throws RemoteException {
+		return "Remote server through SSH protocol";
+	}
 }

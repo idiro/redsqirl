@@ -67,6 +67,13 @@ public interface DataStore extends Remote {
 		 */
 		FeatureType type() throws RemoteException;
 	}
+	
+	/**
+	 * Name of the browser, it has to be unique for each class.
+	 * @return
+	 * @throws RemoteException
+	 */
+	public String getBrowserName() throws RemoteException;
 
 	/**
 	 * Open the connection to the datastore

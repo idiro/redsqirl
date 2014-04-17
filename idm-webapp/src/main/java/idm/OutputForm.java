@@ -1,6 +1,5 @@
 package idm;
 
-import idiro.workflow.server.enumeration.DataBrowser;
 import idiro.workflow.server.enumeration.SavingState;
 import idiro.workflow.server.interfaces.DFEOutput;
 
@@ -98,11 +97,11 @@ public class OutputForm implements Serializable {
 	}
 
 	public boolean isHiveBrowser() throws RemoteException{
-		return dfeOutput.getBrowser().equals(DataBrowser.HIVE);
+		return dfeOutput.getBrowser().equals("HIVE");
 	}
 
 	public boolean isHdfsBrowser() throws RemoteException{
-		return dfeOutput.getBrowser().equals(DataBrowser.HDFS);
+		return dfeOutput.getBrowser().equals("HDFS");
 	}
 
 	public String getSavingState() {
