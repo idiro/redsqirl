@@ -627,6 +627,17 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			}
 		}
 	}
+	
+	private String generatePath(String path, String name) {
+		String resultPath = path;
+		if (!resultPath.endsWith("/")) {
+			resultPath += "/";
+		}
+		resultPath += name;
+		return resultPath;
+	}
+	
+	
 
 	public String getCanCopy() throws RemoteException {
 		return getDataStore().canCopy();
@@ -739,15 +750,6 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 	public void setFile(boolean file) {
 		this.file = file;
-	}
-
-	private String generatePath(String path, String name) {
-		String resultPath = path;
-		if (!resultPath.endsWith("/")) {
-			resultPath += "/";
-		}
-		resultPath += name;
-		return resultPath;
 	}
 
 	public UserInfoBean getUserInfoBean() {
