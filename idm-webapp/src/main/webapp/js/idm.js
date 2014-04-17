@@ -267,11 +267,11 @@ function resizeTabs(){
 	}
 	
 	if(jQuery("#tabs-8").parent("div").attr('id') == jQuery("#tabs1").attr('id')){
-		jQuery("#tabs-8").css("height", jQuery("#tabs1").height()-25+'px');
+		jQuery("#tabs-8").css("height", jQuery("#tabs1").height()-45+'px');
 	}else if(jQuery("#tabs-8").parent("div").attr('id') == jQuery("#tabs2").attr('id')){
-		jQuery("#tabs-8").css("height", jQuery("#tabs2").height()-25+'px');
+		jQuery("#tabs-8").css("height", jQuery("#tabs2").height()-45+'px');
 	} else{
-		jQuery("#tabs-8").css("height", jQuery(".splitter-pane").height()-25+'px');
+		jQuery("#tabs-8").css("height", jQuery(".splitter-pane").height()-45+'px');
 	}
 	
 	resizeTables();
