@@ -2,12 +2,10 @@ package idiro.workflow.server.action;
 
 import static org.junit.Assert.assertTrue;
 import idiro.utils.Tree;
-import idiro.workflow.server.ListInteraction;
 import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.HDFSInterface;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.datatype.HiveType;
-import idiro.workflow.server.datatype.MapRedBinaryType;
 import idiro.workflow.server.datatype.MapRedTextType;
 import idiro.workflow.server.interfaces.DFEPage;
 import idiro.workflow.server.interfaces.DataFlow;
@@ -15,9 +13,7 @@ import idiro.workflow.server.interfaces.DataFlowElement;
 import idiro.workflow.test.TestUtils;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -46,7 +42,7 @@ public class SourceTests {
 		src.update(src.getInteraction(Source.key_datatype));
 		Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype)
 				.getTree();
-		dataTypeTree.getFirstChild("list").getFirstChild("output").add("Hive");
+		dataTypeTree.getFirstChild("list").getFirstChild("output").add(hInt.getBrowserName());
 
 		src.update(src.getInteraction(Source.key_datasubtype));
 		Tree<String> dataSubTypeTree = src.getInteraction(
@@ -92,7 +88,7 @@ public class SourceTests {
 		return src;
 	}
 
-	// @Test
+	@Test
 	public void basicHive() {
 		TestUtils.logTestTitle("SourceTests#basicHive");
 		try {
@@ -112,7 +108,7 @@ public class SourceTests {
 			Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype)
 					.getTree();
 			dataTypeTree.getFirstChild("list").getFirstChild("output")
-					.add("Hive");
+					.add(hInt.getBrowserName());
 			String error = src.getPageList().get(0).checkPage();
 			assertTrue("check page 1: " + error, error == null);
 
@@ -165,13 +161,12 @@ public class SourceTests {
 		}
 	}
 
-	// @Test
+	@Test
 	public void basicHDFS() {
 		TestUtils.logTestTitle("SourceTests#basicHDFS");
 		try {
 			HDFSInterface hInt = new HDFSInterface();
 			String new_path1 = TestUtils.getPath(12);
-			// String new_path1 = "/user/keith/tutorial";
 			hInt.delete(new_path1);
 			assertTrue("create " + new_path1,
 					hInt.create(new_path1, getColumns()) == null);
@@ -182,7 +177,7 @@ public class SourceTests {
 			Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype)
 					.getTree();
 			dataTypeTree.getFirstChild("list").getFirstChild("output")
-					.add("HDFS");
+					.add(hInt.getBrowserName());
 
 			src.update(src.getInteraction(Source.key_datasubtype));
 			Tree<String> dataSubTypeTree = src.getInteraction(
@@ -211,14 +206,14 @@ public class SourceTests {
 			assertTrue(e.toString(), false);
 		}
 	}
-
-	// @Test
+	
+	/* Method cannot run because the bin file is not available...
+	@Test
 	public void basicHDFSBinStore() {
 		TestUtils.logTestTitle("SourceTests#basicHDFSBinStore");
 		try {
 			HDFSInterface hInt = new HDFSInterface();
-			// String new_path1 = TestUtils.getPath(12);
-			String new_path1 = "/user/keith/tmp/keith/binfile";
+			String new_path1 = TestUtils.getPath(12);
 			// hInt.delete(new_path1);
 			// assertTrue("create "+new_path1,
 			// hInt.create(new_path1, getColumns()) == null
@@ -230,7 +225,7 @@ public class SourceTests {
 			Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype)
 					.getTree();
 			dataTypeTree.getFirstChild("list").getFirstChild("output")
-					.add("HDFS");
+					.add(hInt.getBrowserName());
 
 			src.update(src.getInteraction(Source.key_datasubtype));
 			ListInteraction dataSubTypeTree = (ListInteraction) src
@@ -285,6 +280,7 @@ public class SourceTests {
 			assertTrue(e.toString(), false);
 		}
 	}
+	*/
 
 	@Test
 	public void getHelpTest() throws RemoteException {

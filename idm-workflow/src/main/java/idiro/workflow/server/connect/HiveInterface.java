@@ -1781,4 +1781,9 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 	public static int getExecute() {
 		return execute;
 	}
+
+	@Override
+	public String getBrowserName() throws RemoteException {
+		return "Apache Hive Metastore";
+	}
 }

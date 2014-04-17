@@ -1,15 +1,20 @@
 package idiro.workflow.server.connect;
 
+import idiro.workflow.server.DataOutput;
 import idiro.workflow.server.Workflow;
+import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
+import idiro.workflow.server.connect.interfaces.DataStore;
 import idiro.workflow.server.interfaces.DataFlow;
 import idiro.workflow.utils.LanguageManagerWF;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -41,12 +46,62 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	 * Map of workflows
 	 */
 	private Map<String,DataFlow> wf = new LinkedHashMap<String,DataFlow>();
+	
+	/**
+	 * Map of datastores
+	 */
+	private Map<String,DataStore> datastores;
+	
 	/**
 	 * Constructor
 	 * @throws RemoteException
 	 */
 	private WorkflowInterface() throws RemoteException{
 		super();
+		datastores = WorkflowInterface.getAllClassDataStore();
+	}
+	
+	
+	/**
+	 * Get a List of output classes for data to be held in
+	 * 
+	 * @return List output classes
+	 */
+	private static Map<String,DataStore> getAllClassDataStore() {
+		
+		//Get the browser name used in DataOutput
+		logger.info("Get the output class...");
+		Set<String> browsersFromDataOut = new HashSet<String>();
+		Iterator<String> dataoutputClassName = DataOutput.getAllClassDataOutput().iterator();
+		while(dataoutputClassName.hasNext()){
+			String className = dataoutputClassName.next();
+			try {
+				DataOutput outNew = (DataOutput) Class.forName(className).newInstance();
+				logger.info(outNew.getTypeName());
+				browsersFromDataOut.add(outNew.getBrowser());
+			} catch (Exception e) {
+			}
+		}
+		
+		//Return a map containing only the one used in DataOutput
+		Map<String,DataStore> ans = new LinkedHashMap<String,DataStore>();
+		Iterator<String> datastoreClassName = WorkflowPrefManager.getInstance()
+				.getNonAbstractClassesFromSuperClass(
+						DataStore.class.getCanonicalName()).iterator();
+		logger.info("Get the store class...");
+		while (datastoreClassName.hasNext()) {
+			String className = datastoreClassName.next();
+			try {
+				DataStore outNew = (DataStore) Class.forName(className).newInstance();
+				logger.info(outNew.getBrowserName());
+				if(browsersFromDataOut.contains(outNew.getBrowserName())){
+					ans.put(outNew.getBrowserName(),outNew);
+				}
+			} catch (Exception e) {
+			}
+
+		}
+		return ans;
 	}
 
 	/**
@@ -165,5 +220,11 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	public void shutdown() throws RemoteException{
 		ServerMain.shutdown();
 	}
-	
+
+	/**
+	 * @return the datastores
+	 */
+	public Map<String,DataStore> getDatastores() {
+		return datastores;
+	}
 }

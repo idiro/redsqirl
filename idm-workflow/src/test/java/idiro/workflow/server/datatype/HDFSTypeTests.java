@@ -1,15 +1,12 @@
 package idiro.workflow.server.datatype;
 
-import java.rmi.RemoteException;
-import java.util.List;
-
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 public class HDFSTypeTests {
 
 	private Logger logger = Logger.getLogger(getClass());
-
+	
+	/* Method cannot run because the bin file is not available...
 	@Test
 	public void MapRedBinTypeTest() throws RemoteException {
 		try {
@@ -21,5 +18,6 @@ public class HDFSTypeTests {
 			logger.error(e.getMessage());
 		}
 	}
+	*/
 
 }

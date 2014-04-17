@@ -8,7 +8,6 @@ import idiro.utils.RandomString;
 import idiro.workflow.server.DataOutput;
 import idiro.workflow.server.OozieManager;
 import idiro.workflow.server.connect.HDFSInterface;
-import idiro.workflow.server.enumeration.DataBrowser;
 import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.utils.LanguageManagerWF;
 
@@ -93,8 +92,8 @@ public class MapRedTextType extends DataOutput {
 	 * @throws RemoteException
 	 */
 	@Override
-	public DataBrowser getBrowser() throws RemoteException {
-		return DataBrowser.HDFS;
+	public String getBrowser() throws RemoteException {
+		return hdfsInt.getBrowserName();
 	}
 
 	/**

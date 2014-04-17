@@ -3,7 +3,6 @@ package idiro.workflow.server.datatype;
 import idiro.hadoop.NameNodeVar;
 import idiro.utils.FeatureList;
 import idiro.utils.OrderedFeatureList;
-import idiro.workflow.server.enumeration.DataBrowser;
 import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.utils.LanguageManagerWF;
 
@@ -17,7 +16,6 @@ import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.PathFilter;
-import org.apache.pig.parser.AliasMasker.output_clause_return;
 
 /**
  * Class to read files that are stored in MapReduce Directories and are stored
