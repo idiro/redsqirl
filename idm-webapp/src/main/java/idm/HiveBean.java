@@ -77,4 +77,5 @@ public class HiveBean extends FileSystemBean {
 	public void setTableState(String tableState) {
 		this.tableState = tableState;
 	}
+	
 }

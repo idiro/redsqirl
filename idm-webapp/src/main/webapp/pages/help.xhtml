@@ -10,12 +10,8 @@
 
 <a4j:loadBundle basename="MessagesResources" var="messages" />
 
-
 <head>
-<script
-	src='#{facesContext.externalContext.requestContextPath}/js/canvas.js'
-	type="text/javascript"></script>
-
+<script	src='#{facesContext.externalContext.requestContextPath}/js/canvas.js' type="text/javascript" />
 <script>
 
     var historyHelp = new Array("btIndex");
@@ -114,9 +110,8 @@
 	
     </script>
 </head>
-
-
 <body>
+
     <div id="helpButtons">
         <button id="prevHelp" disabled="true">#{messages.label_help_previous}</button>
         <button id="nextHelp" disabled="true">#{messages.label_help_next}</button>
@@ -145,12 +140,13 @@
 
 	<h2>Available Actions</h2>
 	<ol>
-	    <ui:repeat value="#{canvasBean.helpItens}"
+	    <ui:repeat value="#{helpBean.helpItens}"
 	    var="item">
 	    <li><a class="stopLink" id="help_#{item[2]}" href="#{item[1]}" onclick="return false;">#{item[0]}</a></li>
 	    </ui:repeat>
 	</ol>
     </div>
     <div id="helpPanel"></div>
+    
 </body>
 </html>

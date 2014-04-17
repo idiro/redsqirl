@@ -46,9 +46,13 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	private List<IdmPackage> extPackages;
 	private String[] unUserPackage,	unSysPackage;
 	private String repoWelcomePage;
+	private List<SelectItem> systemPackages;
+	private List<SelectItem> userPackages;
 
 	public PackageMngBean() throws RemoteException{
 		retrievesRepoWelcomePage();
+		calcSystemPackages();
+		calcUserPackages();
 	}
 
 	public void retrievesExtPackages() {
@@ -163,7 +167,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		return WorkflowPrefManager.isUserPckInstallAllowed();
 	}
 
-	public List<SelectItem> getSystemPackages() throws RemoteException{
+	public void calcSystemPackages() throws RemoteException{
 		logger.info("sys package");
 		PackageManager sysPckManager = new PackageManager();
 		Iterator<String> it = sysPckManager.getPackageNames(true).iterator();
@@ -173,10 +177,10 @@ public class PackageMngBean extends BaseBean implements Serializable{
 			String version = sysPckManager.getPackageProperty(true, pck, PackageManager.property_version);
 			result.add(new SelectItem(pck,pck+"-"+version));
 		}
-		return result;
+		setSystemPackages(result);
 	}
 
-	public List<SelectItem> getUserPackages() throws RemoteException{
+	public void calcUserPackages() throws RemoteException{
 		logger.info("user packages");
 		Iterator<String> it = getPckMng().getPackageNames(false).iterator();
 		List<SelectItem> result = new ArrayList<SelectItem>();
@@ -185,7 +189,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 			String version = getPckMng().getPackageProperty(false, pck, PackageManager.property_version);
 			result.add(new SelectItem(pck,pck+"-"+version));
 		}
-		return result;
+		setUserPackages(result);
 	}
 
 	public void removeSystemPackage() throws RemoteException{
@@ -307,6 +311,9 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	}
 
 	public String getRepoServer(){
+		
+		logger.info("getRepoServer");
+		
 		String pckServer = WorkflowPrefManager.getPckManagerUri();
 		if(!pckServer.endsWith("/")){
 			pckServer+="/";
@@ -416,6 +423,22 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	public void setRepoWelcomePage(String repoWelcomePage) {
 		this.repoWelcomePage = repoWelcomePage;
+	}
+
+	public List<SelectItem> getSystemPackages() {
+		return systemPackages;
+	}
+
+	public List<SelectItem> getUserPackages() {
+		return userPackages;
+	}
+
+	public void setSystemPackages(List<SelectItem> systemPackages) {
+		this.systemPackages = systemPackages;
+	}
+
+	public void setUserPackages(List<SelectItem> userPackages) {
+		this.userPackages = userPackages;
 	}
 
 }

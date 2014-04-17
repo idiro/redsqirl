@@ -54,33 +54,16 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private UserInfoBean userInfoBean;
 	private String path;
 	private String workflowElementUrl;
-
+	private String workflowUrl;
 	private Map<String, DataFlow> workflowMap;
-
 	private String errorTableState = new String();
-
 
 	/**
 	 * Don't open the modal window after changing the ID.
 	 */
 	private boolean changeElementOnly = false;
 
-	public void doNew() {
-
-		logger.info("doNew");
-
-	}
-
-	public void doOpen() {
-
-		logger.info("doOpen");
-
-	}
-
 	/**
-	 * openCanvas
-	 * 
-	 * Methods to mount the first canvas
 	 * 
 	 * @return
 	 * @author Igor.Souza
@@ -91,7 +74,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	//@PostConstruct
 	public void init(){
-
 
 		logger.info("openCanvas");
 
@@ -130,6 +112,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 			workflowMap.put(getNameWorkflow(), getDf());
 
+			calcWorkflowUrl();
+
 		} catch (RemoteException e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -138,70 +122,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 			logger.error(e.getMessage());
 		}
 
-	}
-
-	public List<String[]> getHelpItens() throws Exception {
-		if (getworkFlowInterface().getWorkflow("canvas-1") == null) {
-			getworkFlowInterface().addWorkflow("canvas-1");
-		}
-
-		String relPath = ((HttpServletRequest) FacesContext
-				.getCurrentInstance().getExternalContext().getRequest())
-				.getRequestURI();
-
-		logger.info(relPath);
-		File f = null;
-		Map<String, List<String[]>> newList = null;
-		logger.info(relPath);
-		DataFlow wf = getworkFlowInterface().getWorkflow("canvas-1");
-
-		List<Integer> pos = new ArrayList<Integer>();
-		for (int i = 0; i < relPath.length(); i++) {
-
-			if (relPath.charAt(i) == '/') {
-				pos.add(i);
-			}
-		}
-		relPath = relPath.substring(0, pos.get(pos.size() - 1));
-		logger.info(relPath);
-		try {
-			f = new File(
-					WorkflowPrefManager
-					.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
-					+ relPath);
-			if (!f.exists()) {
-				logger.info(relPath.substring(pos.get(1)));
-				f = new File(
-						WorkflowPrefManager
-						.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
-						+ relPath.substring(pos.get(1)));
-			}
-			newList = wf.loadMenu(f);
-			logger.info(f.getAbsolutePath());
-		} catch (Exception e) {
-			logger.info("E");
-		}
-		Iterator<String> it = newList.keySet().iterator();
-		while (it.hasNext()) {
-			List<String[]> tab = newList.get(it.next());
-			for (String[] s : tab) {
-				logger.info(s[0] + " , " + s[1] + " , " + s[2]);
-			}
-		}
-
-		Iterator<String> keysIt = newList.keySet().iterator();
-
-		List<String[]> helpList = new ArrayList<String[]>();
-
-		while (keysIt.hasNext()) {
-			String key = keysIt.next();
-			List<String[]> menuItem = newList.get(key);
-			for (String[] e : menuItem) {
-				String name = WordUtils.capitalizeFully(e[0].replace("_", " "));
-				helpList.add(new String[] { name, e[2],e[0] });
-			}
-		}
-		return helpList;
 	}
 
 	/**
@@ -768,9 +688,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 				.evaluateExpressionGet(context, "#{userInfoBean}",
 						UserInfoBean.class);
 
-		if (userInfoBean.getCurrentValue() < 98) {
+		/*if (userInfoBean.getCurrentValue() < 98) {
 			userInfoBean.setCurrentValue(userInfoBean.getCurrentValue() + 3);
-		}
+		}*/
+
 	}
 
 	public void blockRunningWorkflow() throws Exception {
@@ -781,7 +702,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 	}
 
-	public String getWorkflowUrl() {
+	public void calcWorkflowUrl() {
 
 		logger.info("getWorkflowUrl");
 		String url = null;
@@ -812,14 +733,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 		}
 
-		FacesContext context = FacesContext.getCurrentInstance();
+		/*FacesContext context = FacesContext.getCurrentInstance();
 		userInfoBean = (UserInfoBean) context.getApplication()
 				.evaluateExpressionGet(context, "#{userInfoBean}",
 						UserInfoBean.class);
 
-		userInfoBean.setCurrentValue(Long.valueOf(100));
+		userInfoBean.setCurrentValue(Long.valueOf(100));*/
 
-		return url;
+		setWorkflowUrl(url);
 	}
 	
 	public boolean isRunning() throws RemoteException{
@@ -1048,6 +969,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	private String[] getOutputStatus(DataFlowElement dfe, String groupId)
 			throws RemoteException {
+
+		logger.info("getOutputStatus");
+
 		String state = null;
 		String pathExistsStr = null;
 
@@ -1104,6 +1028,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 */
 	private void getOutputStatus(DataFlowElement dfe, List<String[]> status)
 			throws RemoteException {
+
+		logger.info("getOutputStatus");
 
 		if (dfe != null && dfe.getDFEOutput() != null) {
 			String compId = dfe.getComponentId();
@@ -1198,6 +1124,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 	public String[] getArrowType(String groupOutId, String groupInId,
 			String outputName) throws Exception {
 
+		logger.info("getArrowType");
+
 		DataFlowElement df = getDf().getElement(
 				getIdMap().get(getNameWorkflow()).get(groupOutId));
 
@@ -1262,6 +1190,41 @@ public class CanvasBean extends BaseBean implements Serializable {
 		return getArrowType(groupOutId, groupInId, outputName);
 	}
 
+	public String[] getPositions() throws Exception {
+
+		logger.info("getPositions");
+
+		JSONArray jsonElements = new JSONArray();
+		for (DataFlowElement e : getDf().getElement()) {
+
+			jsonElements.put(new Object[] { e.getComponentId(), e.getName(),
+					LocalFileSystem.relativize(getCurrentPage(),e.getImage()), e.getX(), e.getY() });
+
+		}
+
+		JSONArray jsonLinks = new JSONArray();
+		for (DataFlowElement e : getDf().getElement()) {
+			for (Map.Entry<String, List<DataFlowElement>> entry : e
+					.getInputComponent().entrySet()) {
+				for (DataFlowElement dfe : entry.getValue()) {
+					jsonLinks.put(new Object[] { dfe.getComponentId(),
+							e.getComponentId() });
+				}
+			}
+		}
+
+		logger.info("getPositions getNameWorkflow " + getNameWorkflow());
+		logger.info("getPositions getPath " + getPath());
+		logger.info("getPositions jsonElements.toString "
+				+ jsonElements.toString());
+		logger.info("getPositions jsonLinks.toString " + jsonLinks.toString());
+
+		return new String[] { getNameWorkflow(), getPath(),
+				jsonElements.toString(), jsonLinks.toString() };
+	}
+
+	
+	
 	public String getIdElement(String idGroup) {
 		return getIdMap().get(getNameWorkflow()).get(idGroup);
 	}
@@ -1373,39 +1336,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 		this.path = path;
 	}
 
-	public String[] getPositions() throws Exception {
-
-		logger.info("getPositions");
-
-		JSONArray jsonElements = new JSONArray();
-		for (DataFlowElement e : getDf().getElement()) {
-
-			jsonElements.put(new Object[] { e.getComponentId(), e.getName(),
-					LocalFileSystem.relativize(getCurrentPage(),e.getImage()), e.getX(), e.getY() });
-
-		}
-
-		JSONArray jsonLinks = new JSONArray();
-		for (DataFlowElement e : getDf().getElement()) {
-			for (Map.Entry<String, List<DataFlowElement>> entry : e
-					.getInputComponent().entrySet()) {
-				for (DataFlowElement dfe : entry.getValue()) {
-					jsonLinks.put(new Object[] { dfe.getComponentId(),
-							e.getComponentId() });
-				}
-			}
-		}
-
-		logger.info("getPositions getNameWorkflow " + getNameWorkflow());
-		logger.info("getPositions getPath " + getPath());
-		logger.info("getPositions jsonElements.toString "
-				+ jsonElements.toString());
-		logger.info("getPositions jsonLinks.toString " + jsonLinks.toString());
-
-		return new String[] { getNameWorkflow(), getPath(),
-				jsonElements.toString(), jsonLinks.toString() };
-	}
-
 	public UserInfoBean getUserInfoBean() {
 		return userInfoBean;
 	}
@@ -1479,6 +1409,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 */
 	public void setWorkflowElementUrl(String workflowElementUrl) {
 		this.workflowElementUrl = workflowElementUrl;
+	}
+
+	public String getWorkflowUrl() {
+		return workflowUrl;
+	}
+
+	public void setWorkflowUrl(String workflowUrl) {
+		this.workflowUrl = workflowUrl;
 	}
 
 }

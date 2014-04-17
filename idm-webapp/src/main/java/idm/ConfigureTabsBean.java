@@ -30,8 +30,8 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	protected Map<String, List<String[]>> menuWA;
 	private String tabName;
 	private String selected;
-	private static Logger logger = Logger.getLogger(ConfigureTabsBean.class);
 	private static Map<String,String> allWANameWithClassName = null;
+	private static Logger logger = Logger.getLogger(ConfigureTabsBean.class);
 
 	//@PostConstruct
 	public void openCanvasScreen()  {
@@ -60,6 +60,9 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	}
 
 	public List<SelectItem> getMenuActions() throws RemoteException, Exception {
+		
+		logger.info("getMenuActions");
+		
 		List<SelectItem> result = new ArrayList<SelectItem>();
 		if (allWANameWithClassName == null) {
 			openCanvasScreen();
@@ -72,6 +75,9 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	}
 
 	public Map<String, List<String[]>> getMenuWA() {
+		
+		logger.info("getMenuWA");
+		
 		if (menuWA == null) {
 			openCanvasScreen();
 		}
@@ -89,6 +95,9 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	}
 
 	public String[] getItems() {
+		
+		logger.info("getItems");
+		
 		String selectedTab = FacesContext.getCurrentInstance()
 				.getExternalContext().getRequestParameterMap().get("selected");
 		String[] items = new String[] {};
@@ -187,4 +196,5 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 		}
 		return list;
 	}
+	
 }

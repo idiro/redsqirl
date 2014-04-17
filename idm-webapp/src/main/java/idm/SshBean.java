@@ -85,23 +85,11 @@ public class SshBean extends FileSystemBean implements Serializable{
 			for (Entry<String, String> entry : getFieldsInitNeededNewSsh()) {
 				entry.setValue("");
 			}
-			
-			
 
 		}catch(Exception e){
 			logger.error(e);
 			getBundleMessage("error.mount.table");
 		}
-
-//		try {
-//
-//			if(getFieldsInitNeededNewSsh().isEmpty()){
-//				openNewSsh();
-//			}
-//
-//		} catch (Exception e) {
-//			logger.error(e);
-//		}
 
 	}
 
@@ -263,7 +251,7 @@ public class SshBean extends FileSystemBean implements Serializable{
 	}
 	
 	public List<String> getTabs(){
-		logger.info("getTabs:"+tabs.size());
+		//logger.info("getTabs:"+tabs.size());
 		return tabs;
 	}
 
@@ -298,4 +286,5 @@ public class SshBean extends FileSystemBean implements Serializable{
 	public void setTableState(String tableState) {
 		this.tableState = tableState;
 	}
+	
 }
