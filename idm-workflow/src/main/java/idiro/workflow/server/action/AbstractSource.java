@@ -30,7 +30,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Action that read a source file. For now, only Hive type is supported.
+ * Abstract action that read a source file. For now, Hive and HDFS types are supported.
+ * This class has methods to create pages to select the Type (Hive or HDFS), Subtype and
+ * the path to the file.
  * 
  * @author etienne
  * 
@@ -68,8 +70,7 @@ public abstract class AbstractSource extends DataflowAction {
 	protected ListInteraction dataSubtype;
 
 	/**
-	 * Constructor containing the pages, page checks and interaction
-	 * Initialization
+	 * Constructor to initalize the DataFlowAction.
 	 * 
 	 * @throws RemoteException
 	 */
@@ -78,6 +79,12 @@ public abstract class AbstractSource extends DataflowAction {
 		
 	}
 	
+	/**
+	 * Add a page with a list interaction to select the Data Type.
+	 * 
+	 * @throws RemoteException
+	 * 
+	 */
 	protected void addTypePage() throws RemoteException{
 		Page page1 = addPage(LanguageManagerWF.getText("source.page1.title"),
 				LanguageManagerWF.getText("source.page1.legend"), 1);
@@ -87,6 +94,13 @@ public abstract class AbstractSource extends DataflowAction {
 		page1.addInteraction(dataType);
 	}
 	
+	/**
+	 * Create the Data Type interaction and populate it with the Hive and HDFS 
+	 * options.
+	 * 
+	 * @throws RemoteException
+	 * 
+	 */
 	protected void initializeDataTypeInteraction() throws RemoteException{
 		dataType = new ListInteraction(
 				key_datatype,
@@ -101,6 +115,12 @@ public abstract class AbstractSource extends DataflowAction {
 		dataType.setPossibleValues(posValues);
 	}
 	
+	/**
+	 * Add a page with a list interaction to select the Data Sub Type
+	 * 
+	 * @throws RemoteException
+	 * 
+	 */
 	protected void addSubTypePage() throws RemoteException{
 		Page page2 = addPage(LanguageManagerWF.getText("source.page2.title"),
 				LanguageManagerWF.getText("source.page2.legend"), 1);
@@ -119,6 +139,13 @@ public abstract class AbstractSource extends DataflowAction {
 		});
 	}
 	
+	
+	/**
+	 * Create the Data Sub Type interaction.
+	 * 
+	 * @throws RemoteException
+	 * 
+	 */
 	protected void initializeDataSubtypeInteraction() throws RemoteException{
 		dataSubtype = new ListInteraction(key_datasubtype,
 				LanguageManagerWF
@@ -129,6 +156,13 @@ public abstract class AbstractSource extends DataflowAction {
 		dataSubtype.setDisplayRadioButton(true);
 	}
 	
+	
+	/**
+	 * Check the Sub Type selected.
+	 * 
+	 * @throws RemoteException
+	 * @return Error Message
+	 */
 	protected String checkSubType() throws RemoteException{
 		String error = dataSubtype.check();
 		if (error == null) {
@@ -162,6 +196,13 @@ public abstract class AbstractSource extends DataflowAction {
 		return error;
 	}
 	
+	
+	/**
+	 * Add a page with a browser interaction to select the path to the file.
+	 * 
+	 * @throws RemoteException
+	 * 
+	 */
 	protected void addSourcePage() throws RemoteException{
 		Page page3 = addPage(LanguageManagerWF.getText("source.page3.title"),
 				LanguageManagerWF.getText("source.page3.legend"), 1);
