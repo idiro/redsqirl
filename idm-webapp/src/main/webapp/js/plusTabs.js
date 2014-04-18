@@ -98,7 +98,7 @@
 									    		  validateArrows(jQuery("#tabs2"),jQuery("#buttonsTabs2"));
 									    		  validateArrows(jQuery("#tabRemote"),jQuery("#buttonstabRemote"));
 									    		  validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
-									    		  
+									    		  resizing();
 									    		  }).appendTo(allTabsNavTab1);
 								    		  
 							  				jQuery("#tabFlowchart ul:first li:not(.locked) a").clone().click(function (event) {
@@ -151,7 +151,7 @@
 									    		  validateArrows(jQuery("#tabs2"),jQuery("#buttonsTabs2"));
 									    		  validateArrows(jQuery("#tabRemote"),jQuery("#buttonstabRemote"));
 									    		  validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
-									    		  
+									    		  resizing();
 									    		  }).appendTo(allTabsNavTab1);
 		
 								  			
@@ -211,7 +211,7 @@
 									    		  validateArrows(jQuery("#tabs2"),jQuery("#buttonsTabs2"));
 									    		  validateArrows(jQuery("#tabRemote"),jQuery("#buttonstabRemote"));
 									    		  validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
-									    		  
+									    		  resizing();
 									    		  }).appendTo(allTabsNavTab2);
 		
 							  				jQuery("#tabFlowchart ul:first li:not(.locked) a").clone().click(function (event) {
@@ -264,7 +264,7 @@
 									    		  validateArrows(jQuery("#tabs2"),jQuery("#buttonsTabs2"));
 									    		  validateArrows(jQuery("#tabRemote"),jQuery("#buttonstabRemote"));
 									    		  validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
-									    		  
+									    		  resizing();
 									    		  }).appendTo(allTabsNavTab2);
 								  			
 								  		}
@@ -323,7 +323,7 @@
 									    		  validateArrows(jQuery("#tabs2"),jQuery("#buttonsTabs2"));
 									    		  validateArrows(jQuery("#tabRemote"),jQuery("#buttonstabRemote"));
 									    		  validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
-									    		  
+									    		  resizing();
 									    		  }).appendTo(allTabsNavCanvas);
 		
 							  				jQuery("#tabs2 ul:first a").clone().click(function (event) {
@@ -376,14 +376,13 @@
 									    		  validateArrows(jQuery("#tabs2"),jQuery("#buttonsTabs2"));
 									    		  validateArrows(jQuery("#tabRemote"),jQuery("#buttonstabRemote"));
 									    		  validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
-									    		  
+									    		  resizing();
 									    		  }).appendTo(allTabsNavCanvas);
 								  			
 								  		}
 		
 
 					    		  }
-					    		  
 				    		  showActiveTab();
 
 

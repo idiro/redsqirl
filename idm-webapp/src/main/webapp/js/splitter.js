@@ -142,8 +142,8 @@ jQuery.fn.splitter = function(args){
 			if ( splitter._DF <= 0 || splitter._DA <= 0 ) return;
 			
 			// if nothing changed, no need to resize 
-			if (splitter._oldW == splitter.width() && splitter._oldH == splitter.height()) 
-				return; // nothing changed
+			//if (splitter._oldW == splitter.width() && splitter._oldH == splitter.height()) 
+			//	return; // nothing changed
 			splitter._oldW = splitter.width();
 			splitter._oldH = splitter.height();
 

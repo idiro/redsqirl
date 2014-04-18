@@ -117,7 +117,6 @@
 	  	              	
 	  	              	jQuery("#"+jQuery(this).parent().attr("id")).tabs("option", "active", jQuery(ui.item[0]).index());
 	  	              	canvasResizeSplitter();
-
   	            }
 
   	        });
@@ -126,6 +125,7 @@
   	    		jQuery("#buttonstabRemote").hide();
 	  	    	jQuery("#buttonstabRemote").css("left", jQuery("#tabRemote").width()-30+'px');
    				validateArrows(jQuery("#tabRemote"),jQuery("#buttonstabRemote"));
+   				
 	        });
 
   	    	jQuery("#idtabFlowchart-1").click(function () {
@@ -181,9 +181,9 @@
 	    	  jQuery("#splitHCanvas").splitter({
 	        	  type: "h",
 	        	  outline: true,
+	        	  sizeTop: true,
 	        	  //minTop: 100,
 	        	  //minBottom: 100,
-	        	  resizeToWidth: true,
 	        	  dock: "top",
 	        	  dockSpeed: 200,
 	        	  cookie: "splitHCanvas"

@@ -63,17 +63,20 @@ function resizeTables(){
 }
 
 function onPageReady(){
+	
+	  var leftSize = jQuery(window).width()*2/3;
+	  var topSize = jQuery(".splitter-bar-horizontal").css("top").replace(/[^-\d\.]/g, '');
 
 	  jQuery("#body").css('width', jQuery(window).width()-20+'px');
 	  jQuery("#body").css('height', jQuery(window).height()-20+'px');
-	  jQuery("#splitVCanvas").css("height", jQuery(window).height()-100+'px').trigger("resize");
+	  jQuery(".splitter-pane").css("height", jQuery(window).height()-160+'px');
+	  jQuery("#splitHCanvas").css("height", jQuery(window).height()-180+'px');
+	  jQuery(".splitter-bar-horizontal").css("width", jQuery(window).width()-jQuery(".splitter-pane").width()-38 +'px').trigger("resize", [topSize]);
+	  jQuery("#splitVCanvas").css("height", jQuery(window).height()-100+'px').trigger("resize", [leftSize]);
 	  jQuery("#menu").css('width', jQuery(window).width()-20+'px');
 	  jQuery("#splitVCanvas").css('width', jQuery(window).width()-40+'px');
 	  jQuery("#splitVCanvas").css('height', jQuery(window).height()-160+'px');
-	  jQuery(".splitter-pane").css("height", jQuery(window).height()-160+'px');
-	  jQuery("#splitHCanvas").css("height", jQuery(window).height()-180+'px');
 	  jQuery("#tabFlowchart").css("height", jQuery(window).height()-180+'px');
-	  jQuery(".splitter-bar-horizontal").css("width", jQuery(window).width()-jQuery(".splitter-pane").width()-38 +'px').trigger("resize");
 	  jQuery("#tabs1").css("width", jQuery("#splitHCanvas").width()-20 +'px');
 	  jQuery("#tabs2").css("width", jQuery("#splitHCanvas").width()-20 +'px');
 	  jQuery("#tabs1").children('ul').first().css("left", 0+'px');
@@ -124,17 +127,20 @@ function configureFooterCss(){
 function resizing(){
 	
 	  isResizing = true;
+	  var leftSize = jQuery(window).width() - 46 - jQuery("#splitHCanvas").width();
+	  var topSize = jQuery(".splitter-bar-horizontal").css("top").replace(/[^-\d\.]/g, '');
 
 	  jQuery("#body").css('width', jQuery(window).width()-20+'px');
 	  jQuery("#body").css('height', jQuery(window).height()-20+'px');
-	  jQuery("#splitVCanvas").css("height", jQuery(window).height()-150+'px').trigger("resize");
+	  jQuery("#splitVCanvas").css("height", jQuery(window).height()-150+'px').trigger("resize", [leftSize]);
 	  jQuery("#menu").css('width', jQuery(window).width()-20+'px');
 	  jQuery("#splitVCanvas").css('width', jQuery(window).width()-40+'px');
 	  jQuery("#splitVCanvas").css('height', jQuery(window).height()-160+'px');
 	  jQuery(".splitter-pane").css("height", jQuery(window).height()-160+'px');
 	  jQuery("#splitHCanvas").css("height", jQuery(window).height()-180+'px');
 	  jQuery("#tabFlowchart").css("height", jQuery(window).height()-180+'px');
-	  jQuery(".splitter-bar-horizontal").css("width", jQuery(window).width()-jQuery(".splitter-pane").width()-28 +'px').trigger("resize");
+	  jQuery(".splitter-bar-horizontal").css("width", jQuery(window).width()-jQuery(".splitter-pane").width()-46 +'px').trigger("resize", [topSize]);
+	  jQuery("#splitVCanvas").css("height", jQuery(window).height()-150+'px').trigger("resize", [leftSize]);
 	  jQuery("#tabs1").css("width", jQuery("#splitHCanvas").width()-20 +'px');
 	  jQuery("#tabs2").css("width", jQuery("#splitHCanvas").width()-20 +'px');
 	  jQuery("#tabFlowchart-1").css("height", jQuery(window).height()-205+'px');
@@ -146,9 +152,9 @@ function resizing(){
 	  isResizing = false;
 	  
 	  resizeCanvas();
-
-	  resizeTabs();
 	  
+	  resizeTabs();
+
 	  configureLeft();
 	  
 	  validateArrowsAll();
@@ -215,7 +221,7 @@ function resizeTabs(){
 	}else if(jQuery("#tabs-1").parent("div").attr('id') == jQuery("#tabs2").attr('id')){
 		jQuery("#tabs-1").css("height", jQuery("#tabs2").height()-25+'px');
 	} else{
-		jQuery("#tabs-1").css("height", jQuery(".splitter-pane").height()-25+'px');
+		jQuery("#tabs-1").css("height", jQuery(".splitter-pane").height()-45+'px');
 	}
 	
 	if(jQuery("#tabs-2").parent("div").attr('id') == jQuery("#tabs1").attr('id')){
@@ -223,7 +229,7 @@ function resizeTabs(){
 	}else if(jQuery("#tabs-1").parent("div").attr('id') == jQuery("#tabs2").attr('id')){
 		jQuery("#tabs-2").css("height", jQuery("#tabs2").height()-25+'px');
 	} else{
-		jQuery("#tabs-2").css("height", jQuery(".splitter-pane").height()-25+'px');
+		jQuery("#tabs-2").css("height", jQuery(".splitter-pane").height()-45+'px');
 	}
 	
 	if(jQuery("#tabs-3").parent("div").attr('id') == jQuery("#tabs1").attr('id')){
@@ -231,7 +237,7 @@ function resizeTabs(){
 	}else if(jQuery("#tabs-3").parent("div").attr('id') == jQuery("#tabs2").attr('id')){
 		jQuery("#tabs-3").css("height", jQuery("#tabs2").height()-25+'px');
 	} else{
-		jQuery("#tabs-3").css("height", jQuery(".splitter-pane").height()-25+'px');
+		jQuery("#tabs-3").css("height", jQuery(".splitter-pane").height()-45+'px');
 	}
 	
 	if(jQuery("#tabs-4").parent("div").attr('id') == jQuery("#tabs1").attr('id')){
@@ -239,7 +245,7 @@ function resizeTabs(){
 	}else if(jQuery("#tabs-4").parent("div").attr('id') == jQuery("#tabs2").attr('id')){
 		jQuery("#tabs-4").css("height", jQuery("#tabs2").height()-25+'px');
 	} else{
-		jQuery("#tabs-4").css("height", jQuery(".splitter-pane").height()-25+'px');
+		jQuery("#tabs-4").css("height", jQuery(".splitter-pane").height()-45+'px');
 	}
 	
 	if(jQuery("#tabs-5").parent("div").attr('id') == jQuery("#tabs1").attr('id')){
@@ -247,7 +253,7 @@ function resizeTabs(){
 	}else if(jQuery("#tabs-5").parent("div").attr('id') == jQuery("#tabs2").attr('id')){
 		jQuery("#tabs-5").css("height", jQuery("#tabs2").height()-25+'px');
 	} else{
-		jQuery("#tabs-5").css("height", jQuery(".splitter-pane").height()-25+'px');
+		jQuery("#tabs-5").css("height", jQuery(".splitter-pane").height()-45+'px');
 	}
 	
 	if(jQuery("#tabs-6").parent("div").attr('id') == jQuery("#tabs1").attr('id')){
@@ -255,7 +261,7 @@ function resizeTabs(){
 	}else if(jQuery("#tabs-6").parent("div").attr('id') == jQuery("#tabs2").attr('id')){
 		jQuery("#tabs-6").css("height", jQuery("#tabs2").height()-25+'px');
 	} else{
-		jQuery("#tabs-6").css("height", jQuery(".splitter-pane").height()-25+'px');
+		jQuery("#tabs-6").css("height", jQuery(".splitter-pane").height()-45+'px');
 	}
 	
 	if(jQuery("#tabs-7").parent("div").attr('id') == jQuery("#tabs1").attr('id')){
@@ -263,13 +269,13 @@ function resizeTabs(){
 	}else if(jQuery("#tabs-7").parent("div").attr('id') == jQuery("#tabs2").attr('id')){
 		jQuery("#tabs-7").css("height", jQuery("#tabs2").height()-25+'px');
 	} else{
-		jQuery("#tabs-7").css("height", jQuery(".splitter-pane").height()-25+'px');
+		jQuery("#tabs-7").css("height", jQuery(".splitter-pane").height()-45+'px');
 	}
 	
 	if(jQuery("#tabs-8").parent("div").attr('id') == jQuery("#tabs1").attr('id')){
-		jQuery("#tabs-8").css("height", jQuery("#tabs1").height()-45+'px');
+		jQuery("#tabs-8").css("height", jQuery("#tabs1").height()-25+'px');
 	}else if(jQuery("#tabs-8").parent("div").attr('id') == jQuery("#tabs2").attr('id')){
-		jQuery("#tabs-8").css("height", jQuery("#tabs2").height()-45+'px');
+		jQuery("#tabs-8").css("height", jQuery("#tabs2").height()-25+'px');
 	} else{
 		jQuery("#tabs-8").css("height", jQuery(".splitter-pane").height()-45+'px');
 	}
