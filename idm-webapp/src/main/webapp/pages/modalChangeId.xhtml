@@ -8,11 +8,11 @@
 <a4j:loadBundle basename="MessagesResources" var="messages" />
 
 		<h:outputText value="Name" />
-		<h:inputText label="Name" value="#{canvasBean.idElement}" size="16" style="padding-left: 3px;" styleClass="interModal" maxlength="15" id="newIdElement" 
+		<h:inputText label="Name" value="#{canvasModalBean.elementId}" size="16" style="padding-left: 3px;" styleClass="interModal" maxlength="15" id="newIdElement" 
 			onkeypress="return enableEnterKey(event, 'changeIdElementBt');" />
 	
 		<h:panelGrid columns="1">
-			<a4j:commandButton action="#{canvasBean.changeIdElement}" id="changeIdElementBt" styleClass="greenButton"
+			<a4j:commandButton action="#{canvasModalBean.changeIdElement}" id="changeIdElementBt" styleClass="greenButton"
 				onclick="#{rich:component('modalChangeId')}.hide();" oncomplete="closeChangeIdModal()" value="#{messages.button_ok}"/>
 		</h:panelGrid>
 

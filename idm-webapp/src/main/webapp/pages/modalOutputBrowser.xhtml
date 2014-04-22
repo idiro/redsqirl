@@ -1,0 +1,130 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<a4j:loadBundle basename="MessagesResources" var="messages" />
+
+	<script>
+//<![CDATA[
+           
+	var outputBroswerfile;
+	function outPutBrowserSelectOneRadio(radio, name) {
+
+		var inputs = document.getElementsByTagName("input");
+		for(var i = inputs.length-1;i>=0;i--){
+		    if(inputs[i].getAttribute("type")==="radio"){
+		        inputs[i].checked=false;
+		    }
+		}
+		   
+	    radio.checked = true;
+	    outputBroswerfile = name;
+	}
+	
+	function getPathOutPut(p){
+		if (!outputBroswerfile){
+			return p;
+		}
+		var lastCHar = p.charAt(p.length-1);
+		if(lastCHar == "/"){
+			return p + outputBroswerfile;
+		}else{
+			return p + "/"+ outputBroswerfile;
+		}
+	}
+	
+//]]>
+</script>
+
+    <a4j:region>
+        <a4j:jsFunction name="modalOutputApplyPage" 
+                        action="#{canvasModalBean.applyPage}" 
+                        styleClass="greenButton" 
+                        value="#{messages.button_apply}" 
+                        reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, msnError, errorTable, canvasModalTabPanel, browserTableProp, browserTableData, browserPropLabel, browserPropValue" />
+    </a4j:region>
+
+	<h:outputText value="#{messages.label_path}" />
+	<h:inputText id="pathOpenFile" label="Path" value="#{canvasModalBean.outputTab.fileSystem.path}" maxlength="255" style="width:395px;" />
+	
+	<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.changePath}" reRender="hdfsfsOpenFile">
+		<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' />
+	</a4j:commandLink>
+	
+	<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goPrevious}"
+		reRender="pathOpenFile,hdfsfsOpenFile">
+		<h:graphicImage id="btPrev" value="../image/icons/button-previous.gif" title='#{messages.Interface_previous_help}' />
+	</a4j:commandLink>
+	
+	<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goNext}"
+		reRender="pathOpenFile,hdfsfsOpenFile">
+		<h:graphicImage id="btNext" value="../image/icons/button-next.gif" title='#{messages.Interface_next_help}' />
+	</a4j:commandLink>
+	
+	<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goUp}" reRender="pathOpenFile,hdfsfsOpenFile">
+		<h:graphicImage id="browserBeanGoUp" value="../image/icons/button_up.jpg" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
+	</a4j:commandLink>
+	<br />
+	
+	<div style="width:100%; overflow: auto; height: 305px;" >
+
+		<rich:extendedDataTable id="hdfsfsOpenFile" value="#{canvasModalBean.outputTab.fileSystem.listGrid}"
+			var="item" width="100%" style="border:none;"
+			onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+			enableContextMenu="false" selectionMode="none"
+			onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+			rowClasses="even-row, odd-row">
+	
+			<f:facet name="header">
+				<h:outputText value="File System" />
+			</f:facet>
+	
+			<rich:column style="border-bottom:0px;border-right:0px;" width="10px;">
+				<f:facet name="header">
+					<h:outputText value="" />
+				</f:facet>
+				<h:selectOneRadio value="#{item.stringSelectedDestination}"
+					onclick="outPutBrowserSelectOneRadio(this, '#{item.name}');">
+					<f:selectItem itemValue="true" />
+				</h:selectOneRadio>
+			</rich:column>
+	
+			<rich:column sortBy="#{item.name}"
+				style="border-bottom:0px;border-right:0px;">
+				<f:facet name="header">
+					<h:outputText value="Name" />
+				</f:facet>
+				<a4j:commandLink value="#{item.name}" action="#{canvasModalBean.outputTab.fileSystem.selectFile}"
+					reRender="pathOpenFile,hdfsfsOpenFile">
+					<f:param name="nameFile" value="#{item.name}" />
+				</a4j:commandLink>
+			</rich:column>
+	
+			<rich:columns value="#{canvasModalBean.outputTab.fileSystem.keyAsListNameValue == null? canvasBean.emptyList : canvasModalBean.outputTab.fileSystem.keyAsListNameValue}" var="column"
+				index="ind" id="column#{ind}"
+				style="border-bottom:0px;border-right:0px;">
+				<f:facet name="header">
+					<h:outputText value="#{column}" />
+				</f:facet>
+				<h:outputText value="#{item.nameValue[column]}" id="value#{ind}" />
+			</rich:columns>
+	
+		</rich:extendedDataTable>
+
+	</div>
+
+	<a4j:commandButton styleClass="greenButton" 
+	    action="#{canvasModalBean.outputTab.changePathOutputBrowser}" 
+	    value="#{messages.button_ok}"
+		onclick="#{rich:component('modalOutputBrowser')}.hide();" 
+		reRender="dataOutputForm"
+		oncomplete="if(#{canvasModalBean.sourceNode})modalOutputApplyPage();" >
+		<a4j:actionparam name="pathFile" value="getPathOutPut('#{canvasModalBean.outputTab.fileSystem.path}')" noEscape="true" />
+	</a4j:commandButton>
+
+	<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('modalOutputBrowser')}.hide();" />
+
+</ui:composition>

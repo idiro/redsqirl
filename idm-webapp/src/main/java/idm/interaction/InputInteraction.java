@@ -4,12 +4,29 @@ import idiro.workflow.server.interfaces.DFEInteraction;
 
 import java.rmi.RemoteException;
 
+/**
+ * 
+ * @author etienne
+ *
+ */
 public class InputInteraction extends CanvasModalInteraction {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8667811028700533217L;
 
+	/**
+	 * The value in the input interaction 
+	 */
 	private String inputValue;
+	
+	/**
+	 * The regex value
+	 */
 	private String inputRegex;
 	
-	public InputInteraction(DFEInteraction dfeInter) {
+	public InputInteraction(DFEInteraction dfeInter) throws RemoteException {
 		super(dfeInter);
 	}
 

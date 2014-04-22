@@ -3,19 +3,41 @@ package idm.interaction;
 import idiro.utils.Tree;
 import idiro.workflow.server.interfaces.DFEInteraction;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.faces.model.SelectItem;
 
-public class ListInteraction extends CanvasModalInteraction {
-
-	private String comboBox;
-	private List<SelectItem> listOptions;
-	private String selectedListOptions;
+/**
+ * 
+ * @author etienne
+ *
+ */
+public class ListInteraction extends CanvasModalInteraction implements Serializable{
 	
-	public ListInteraction(DFEInteraction dfeInter) {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4296790821079880612L;
+
+	/**
+	 * "Y" display as comboBox "N" display as radio button list
+	 */
+	private String comboBox;
+	
+	/**
+	 * List of options
+	 */
+	private List<SelectItem> listOptions;
+	
+	/**
+	 * The selected option
+	 */
+	private String selectedListOption;
+	
+	public ListInteraction(DFEInteraction dfeInter) throws RemoteException {
 		super(dfeInter);
 	}
 
@@ -35,15 +57,15 @@ public class ListInteraction extends CanvasModalInteraction {
 								.getHead(), tree.getFirstChild()
 								.getHead()));
 			}
-			selectedListOptions = listOptions.get(0).getLabel();
+			selectedListOption = listOptions.get(0).getLabel();
 		}
 
 		if (inter.getTree().getFirstChild("list")
 				.getFirstChild("output").getFirstChild() != null) {
-			selectedListOptions = inter.getTree()
+			selectedListOption = inter.getTree()
 					.getFirstChild("list").getFirstChild("output")
 					.getFirstChild().getHead(); 
-			logger.info("value default -> " + selectedListOptions);
+			logger.info("value default -> " + selectedListOption);
 		}
 
 		// check display type
@@ -70,14 +92,14 @@ public class ListInteraction extends CanvasModalInteraction {
 		.getFirstChild("output").removeAllChildren();
 		inter.getTree().getFirstChild("list")
 		.getFirstChild("output")
-		.add(selectedListOptions);
+		.add(selectedListOption);
 	}
 
 	@Override
 	public void setUnchanged() {
-		logger.info("value list -> "+ selectedListOptions);
+		logger.info("value list -> "+ selectedListOption);
 		try {
-			unchanged = selectedListOptions
+			unchanged = selectedListOption
 					.equals(inter.getTree().getFirstChild("list")
 							.getFirstChild("output").getFirstChild()
 							.getHead());
@@ -115,17 +137,17 @@ public class ListInteraction extends CanvasModalInteraction {
 	}
 
 	/**
-	 * @return the selectedListOptions
+	 * @return the selectedListOption
 	 */
-	public final String getSelectedListOptions() {
-		return selectedListOptions;
+	public final String getSelectedListOption() {
+		return selectedListOption;
 	}
 
 	/**
-	 * @param selectedListOptions the selectedListOptions to set
+	 * @param selectedListOption the selectedListOption to set
 	 */
-	public final void setSelectedListOptions(String selectedListOptions) {
-		this.selectedListOptions = selectedListOptions;
+	public final void setSelectedListOption(String selectedListOption) {
+		this.selectedListOption = selectedListOption;
 	}
 
 }

@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -295,8 +297,27 @@ public class MapRedTextType extends DataOutput {
 	 * @return List of rows returned
 	 * @throws RemoteException
 	 */
-	@Override
-	public List<String> select(int maxToRead) throws RemoteException {
+	public List<Map<String,String>> select(int maxToRead) throws RemoteException {
+		List<Map<String,String>> ans = new LinkedList<Map<String,String>>();
+		Iterator<String> it = selectLine(maxToRead).iterator();
+		while(it.hasNext()){
+			String[] line = it.next().split(Pattern.quote(getChar(getProperty(key_delimiter))));
+			List<String> featureNames = getFeatures().getFeaturesNames(); 
+			if(featureNames.size() == line.length){
+				Map<String,String> cur = new LinkedHashMap<String,String>();
+				for(int i = 0; i < line.length; ++i){
+					cur.put(featureNames.get(i),line[i]);
+				}
+				ans.add(cur);
+			}else{
+				ans = null;
+				break;
+			}
+		}
+		return ans;
+	}
+	
+	public List<String> selectLine(int maxToRead) throws RemoteException {
 		List<String> ans = null;
 		if (isPathValid() == null && isPathExists()) {
 			try {
@@ -486,7 +507,7 @@ public class MapRedTextType extends DataOutput {
 
 		FeatureList fl = new OrderedFeatureList();
 		try {
-			List<String> lines = this.select(10);
+			List<String> lines = this.selectLine(10);
 			logger.info(lines);
 			if (lines != null) {
 				for (String line : lines) {
@@ -611,7 +632,7 @@ public class MapRedTextType extends DataOutput {
 
 			logger.info("setPath() " + path);
 			if (isPathExists()) {
-				List<String> list = select(1);
+				List<String> list = selectLine(1);
 
 				if (list != null && !list.isEmpty()) {
 					String text = list.get(0);
