@@ -10,13 +10,34 @@ import java.util.List;
 
 import javax.faces.model.SelectItem;
 
+/**
+ * Make AppendList object available to client.
+ * @author etienne
+ *
+ */
 public class AppendListInteraction extends CanvasModalInteraction {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5239443046171155803L;
+
+	/**
+	 * "Y" display as comboBox "N" display as check box list
+	 */
 	private String comboBox;
+	
+	/**
+	 * List of options
+	 */
 	private List<SelectItem> appendListOptions;
+	
+	/**
+	 * List of the selected options
+	 */
 	private List<String> selectedAppendListOptions;
 
-	public AppendListInteraction(DFEInteraction dfeInter) {
+	public AppendListInteraction(DFEInteraction dfeInter) throws RemoteException {
 		super(dfeInter);
 	}
 

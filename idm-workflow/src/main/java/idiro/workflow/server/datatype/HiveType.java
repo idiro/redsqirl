@@ -16,7 +16,10 @@ import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -128,8 +131,24 @@ public class HiveType extends DataOutput{
 	 * @return data
 	 */
 	@Override
-	public List<String> select(int maxToRead) throws RemoteException {
-		return hInt.select(getPath(), "'\001'" ,maxToRead);
+	public List<Map<String,String>> select(int maxToRead) throws RemoteException {
+		List<Map<String,String>> ans = new LinkedList<Map<String,String>>();
+		Iterator<String> it = hInt.select(getPath(), "'\001'" ,maxToRead).iterator();
+		while(it.hasNext()){
+			String[] line = it.next().split("\001");
+			List<String> featureNames = getFeatures().getFeaturesNames(); 
+			if(featureNames.size() == line.length){
+				Map<String,String> cur = new LinkedHashMap<String,String>();
+				for(int i = 0; i < line.length; ++i){
+					cur.put(getFeatures().getFeaturesNames().get(i),line[i]);
+				}
+				ans.add(cur);
+			}else{
+				ans = null;
+				break;
+			}
+		}
+		return ans;
 	}
 	/**
 	 * Check if the path is valid

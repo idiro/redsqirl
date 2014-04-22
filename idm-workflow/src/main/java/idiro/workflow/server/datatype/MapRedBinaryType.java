@@ -10,7 +10,10 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -79,7 +82,28 @@ public class MapRedBinaryType extends MapRedTextType {
 	 * @throws RemoteException
 	 */
 	@Override
-	public List<String> select(int maxToRead) throws RemoteException {
+	public List<Map<String,String>> select(int maxToRead) throws RemoteException {
+		List<Map<String,String>> ans = new LinkedList<Map<String,String>>();
+		Iterator<String> it = selectLine(maxToRead).iterator();
+		while(it.hasNext()){
+			String[] line = it.next().split(delim);
+			List<String> featureNames = getFeatures().getFeaturesNames(); 
+			if(featureNames.size() == line.length){
+				Map<String,String> cur = new LinkedHashMap<String,String>();
+				for(int i = 0; i < line.length; ++i){
+					cur.put(getFeatures().getFeaturesNames().get(i),line[i]);
+				}
+				ans.add(cur);
+			}else{
+				ans = null;
+				break;
+			}
+		}
+		return ans;
+	}
+	
+	@Override
+	public List<String> selectLine(int maxToRead) throws RemoteException {
 		List<String> ans = null;
 
 		if (getFeatures() != null) {
@@ -147,7 +171,7 @@ public class MapRedBinaryType extends MapRedTextType {
 
 			logger.info("setPath() " + path);
 			if (isPathExists()) {
-				List<String> list = select(1);
+				List<String> list = selectLine(1);
 
 				// FeatureList fl = generateFeaturesMap();
 

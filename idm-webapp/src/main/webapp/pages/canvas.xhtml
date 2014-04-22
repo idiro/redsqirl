@@ -678,10 +678,6 @@
 
 	<div id="menu">
 		<h:form id="formMenu">
-			<h:inputHidden value="#{canvasModalBean.nameElement}"
-				id="nameElement" />
-			<h:inputHidden value="#{canvasModalBean.groupID}" id="groupID" />
-			<h:inputHidden value="#{canvasModalBean.listPageSize}" />
 			
 			<a4j:region>
 				<a4j:jsFunction name="openModalSaveWorkflow" action="#{browserHdfsBean.createNewFolder}" 
@@ -937,12 +933,8 @@
 					action="#{canvasModalBean.openCanvasModal}"
 					oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('canvasModalPanel')}.show() }"
 					reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError, errorTable, canvasModalTabPanel">
-					<a4j:actionparam name="paramGroupID"
-						assignTo="#{canvasModalBean.groupID}" />
-					<a4j:actionparam name="paramPathImage"
-						assignTo="#{canvasModalBean.pathImage}" />
-					<a4j:actionparam name="paramNameWorkflow"
-						assignTo="#{canvasModalBean.nameWorkflow}" />
+					<a4j:actionparam name="paramGroupId" />
+					<a4j:actionparam name="paramPathImage" />
 					<a4j:actionparam name="paramSelectedTab" />
 				</a4j:jsFunction>
 			</a4j:region>
@@ -955,17 +947,12 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
 				<a4j:jsFunction name="openChangeIdModal"
-					action="#{canvasBean.openChangeIdModal}"
-					oncomplete="if(#{not canvasBean.changeElementOnly} || confirm('Changing an action identification may cause errors and force you to reconfigure this object and its dependent nodes. Do you want to continue?')){#{rich:component('modalChangeId')}.show();}">
-					<a4j:actionparam name="paramNameElement"
-						assignTo="#{canvasBean.idGroup}" />
-					<a4j:actionparam name="paramPathImage"
-						assignTo="#{canvasModalBean.pathImage}" />
-                    <a4j:actionparam name="paramNameChangeIdOnly"
-                        assignTo="#{canvasBean.changeElementOnly}" />
-					<a4j:actionparam name="paramNameWorkflow"
-						value="#{canvasBean.nameWorkflow}"
-						assignTo="#{canvasModalBean.nameElement}" />
+					action="#{canvasModalBean.openCanvasModal}"
+					oncomplete="if(#{canvasModalBean.loadMainWindow} || confirm('Changing an action identification may cause errors and force you to reconfigure this object and its dependent nodes. Do you want to continue?')){#{rich:component('modalChangeId')}.show();}">
+					<a4j:actionparam name="paramGroupId" />
+					<a4j:actionparam name="paramPathImage" />
+                    <a4j:actionparam name="paramNameLoadMainWindow"
+                        assignTo="#{canvasModalBean.loadMainWindow}" />
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -983,7 +970,7 @@
 
 			<a4j:region>
 				<a4j:jsFunction name="closeChangeIdModal"
-					oncomplete="updateLabelObj('#{canvasBean.idGroup}','#{canvasBean.idElement}');if(#{not canvasBean.changeElementOnly}){ openModal('#{canvasBean.idGroup}','#{canvasModalBean.pathImage}','#{canvasBean.nameWorkflow}');}">
+					oncomplete="updateLabelObj('#{canvasModalBean.idGroup}','#{canvasModalBean.componentId}');if(#{canvasModalBean.loadMainWindow}){ openModal('#{canvasModalBean.idGroup}','#{canvasModalBean.pathImage}','#{canvasBean.nameWorkflow}');}">
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -1586,7 +1573,7 @@
 			style="overflow:auto;" resizeable="false" styleClass="noMaskClass">
 
 			<f:facet name="header">
-				<h:outputText value="#{canvasModalBean.pageTitle}" id="pageTitle" />
+				<h:outputText value="#{canvasModalBean.canvasTitle}" id="pageTitle" />
 			</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
