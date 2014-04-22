@@ -1,9 +1,7 @@
 
 function canvasResizeSplitter(){
 	//<![CDATA[
-	jQuery("#canvas-tabs").css("width", jQuery("#tabFlowchart").width()-10);
-	jQuery("#tabRemote").css("width", jQuery("#tabFlowchart").width()-10);
-	jQuery("#tabsFooter").css("height", "148px");
+
 	  
 	jQuery("#canvas").css("height", jQuery("#canvas-tabs").height()-160+'px');
 	jQuery("#canvas").css("width", jQuery("#canvas-tabs").width()+'px');
@@ -195,7 +193,7 @@ function validateArrows(tabPrincipal, spanButtons){
 		tabsRealWidth += jQuery(element).css('margin-right').replace('px', '') / 1;
     });
 
-	if(tabsRealWidth - tabPrincipal.width() > -35){
+	if(tabsRealWidth - tabPrincipal.width() > -35 && tabPrincipal.width() != 0){
 		
 		spanButtons.show();
 		
