@@ -1,7 +1,10 @@
 
 function canvasResizeSplitter(){
 	//<![CDATA[
-	
+	jQuery("#canvas-tabs").css("width", jQuery("#tabFlowchart").width()-10);
+	jQuery("#tabRemote").css("width", jQuery("#tabFlowchart").width()-10);
+	jQuery("#tabsFooter").css("height", "148px");
+	  
 	jQuery("#canvas").css("height", jQuery("#canvas-tabs").height()-160+'px');
 	jQuery("#canvas").css("width", jQuery("#canvas-tabs").width()+'px');
 	jQuery("#tabsFooter").css("width", jQuery("#canvas-tabs").width()-10+'px');
@@ -10,6 +13,7 @@ function canvasResizeSplitter(){
 	jQuery("#tabs1").css("width", jQuery("#splitHCanvas").width()-20 +'px');
 	jQuery("#tabs2").css("width", jQuery("#splitHCanvas").width()-20 +'px');
 	
+	 
 	resizeCanvas();
 	
 	resizeTabs();
