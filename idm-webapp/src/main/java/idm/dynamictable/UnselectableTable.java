@@ -2,6 +2,8 @@ package idm.dynamictable;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -12,10 +14,10 @@ public class UnselectableTable implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = -7850738860592864276L;
-	
+
 	private List<String> titles;
-	private List<Map<String,String>> rows;
-	
+	private List<String[]> rows;
+
 
 	/**
 	 * @param titles
@@ -24,19 +26,58 @@ public class UnselectableTable implements Serializable{
 	public UnselectableTable(LinkedList<String> titles) {
 		super();
 		this.titles = titles;
-		this.rows = new LinkedList<Map<String,String>>();
+		this.rows = new LinkedList<String[]>();
 	}
-	
+
 	/**
 	 * @param titles
 	 * @param rows
 	 */
-	public UnselectableTable(LinkedList<String> titles, LinkedList<Map<String, String>> rows) {
+	public UnselectableTable(LinkedList<String> titles, LinkedList<String[]> rows) {
 		super();
 		this.titles = titles;
 		this.rows = rows;
 	}
-	
+
+
+	public String getValueRow(int rowNb, int columnNb){
+		return rows.get(rowNb)[columnNb];
+	}
+
+	public String getValueRow(int rowNb, String column){
+		return rows.get(rowNb)[titles.indexOf(column)];
+	}
+
+	public void setValueRow(int rowNb, int columnNb, String value){
+		rows.get(rowNb)[columnNb] = value;
+	}
+
+	public void setValueRow(int rowNb, String column, String value){
+		rows.get(rowNb)[titles.indexOf(column)] = value;
+	}
+
+	public boolean add(Map<String,String> row){
+		String[] toAdd = new String[titles.size()];
+		Iterator<String> it = titles.iterator();
+		int i = 0;
+		while(it.hasNext()){
+			toAdd[i] = row.get(it.next());
+		}
+		return rows.add(toAdd);
+	}
+
+	public Map<String,String> getRow(int index){
+		Map<String,String> ans = null;
+		String[] row = rows.get(index);
+		if(row != null){
+			ans = new LinkedHashMap<String,String>();
+			for(int i = 0; i < titles.size();++i){
+				ans.put(titles.get(i), row[i]);
+			}
+		}
+		return ans;
+	}
+
 	/**
 	 * @return the titles
 	 */
@@ -49,17 +90,17 @@ public class UnselectableTable implements Serializable{
 	public void setTitles(List<String> titles) {
 		this.titles = titles;
 	}
-	
+
 	/**
 	 * @return the rows
 	 */
-	public List<Map<String,String>> getRows() {
+	public List<String[]> getRows() {
 		return rows;
 	}
 	/**
 	 * @param rows the rows to set
 	 */
-	public void setRows(List<Map<String,String>> rows) {
+	public void setRows(List<String[]> rows) {
 		this.rows = rows;
 	}
 
@@ -68,7 +109,7 @@ public class UnselectableTable implements Serializable{
 	 * @return
 	 * @see java.util.List#add(java.lang.Object)
 	 */
-	public boolean add(Map<String, String> e) {
+	public boolean add(String[] e) {
 		return rows.add(e);
 	}
 
@@ -77,9 +118,27 @@ public class UnselectableTable implements Serializable{
 	 * @return
 	 * @see java.util.List#addAll(java.util.Collection)
 	 */
-	public boolean addAll(Collection<? extends Map<String, String>> c) {
+	public boolean addAll(Collection<? extends String[]> c) {
 		return rows.addAll(c);
 	}
-	
-	
+
+	/**
+	 * @param o
+	 * @return
+	 * @see java.util.List#indexOf(java.lang.Object)
+	 */
+	public int indexOf(Object o) {
+		return titles.indexOf(o);
+	}
+
+	/**
+	 * @param index
+	 * @return
+	 * @see java.util.List#remove(int)
+	 */
+	public String[] remove(int index) {
+		return rows.remove(index);
+	}
+
+
 }

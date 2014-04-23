@@ -1,7 +1,6 @@
 package idm.dynamictable;
 
 import java.io.Serializable;
-import java.util.Map;
 
 public class SelectableRow implements Serializable{
 
@@ -9,14 +8,14 @@ public class SelectableRow implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 8193933708078904094L;
-	Map<String,String> row;
+	String[] row;
 	boolean selected;
 	
 	/**
 	 * @param selected
 	 * @param row
 	 */
-	public SelectableRow(Map<String, String> row,boolean selected) {
+	public SelectableRow(String[] row,boolean selected) {
 		super();
 		this.row = row;
 		this.selected = selected;
@@ -26,7 +25,7 @@ public class SelectableRow implements Serializable{
 	 * @param selected
 	 * @param row
 	 */
-	public SelectableRow(Map<String, String> row) {
+	public SelectableRow(String[] row) {
 		super();
 		this.row = row;
 		this.selected = false;
@@ -49,14 +48,14 @@ public class SelectableRow implements Serializable{
 	/**
 	 * @return the row
 	 */
-	public final Map<String, String> getRow() {
+	public final String[] getRow() {
 		return row;
 	}
 
 	/**
 	 * @param row the row to set
 	 */
-	public final void setRow(Map<String, String> row) {
+	public final void setRow(String[] row) {
 		this.row = row;
 	}
 }

@@ -10,7 +10,6 @@ import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.faces.model.SelectItem;
 
@@ -255,22 +254,6 @@ public class BrowserInteraction extends CanvasModalInteraction {
 
 	/**
 	 * @return
-	 * @see idm.CanvasModalOutputTab#getGridTitle()
-	 */
-	public final List<String> getGridTitle() {
-		return modalOutput.getGridTitle();
-	}
-
-	/**
-	 * @return
-	 * @see idm.CanvasModalOutputTab#getOutputGrid()
-	 */
-	public final List<Map<String, String>> getOutputGrid() {
-		return modalOutput.getOutputGrid();
-	}
-
-	/**
-	 * @return
 	 * @see idm.CanvasModalOutputTab#getPath()
 	 */
 	public String getPath() {
@@ -283,6 +266,22 @@ public class BrowserInteraction extends CanvasModalInteraction {
 	 */
 	public void setPath(String path) {
 		modalOutput.setPath(path);
+	}
+
+	/**
+	 * @return
+	 * @see idm.CanvasModalOutputTab#getTitles()
+	 */
+	public List<String> getGridTitles() {
+		return modalOutput != null ? modalOutput.getTitles():null;
+	}
+
+	/**
+	 * @return
+	 * @see idm.CanvasModalOutputTab#getRows()
+	 */
+	public List<String[]> getGridRows() {
+		return modalOutput != null ? modalOutput.getRows():null;
 	}
 
 }

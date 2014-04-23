@@ -3,6 +3,7 @@ package idm.interaction;
 import idiro.utils.Tree;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idm.dynamictable.SelectableRow;
+import idm.dynamictable.SelectableTable;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -29,14 +30,9 @@ public class TableInteraction extends CanvasModalInteraction{
 	 */
 	private static final long serialVersionUID = 1876499872304228674L;
 	/**
-	 * The list of columns
-	 */
-	private List<String> tableColumns;
-	/**
 	 * The list of rows of the grid.
 	 */
-	private List<SelectableRow> tableGrid;
-
+	private SelectableTable tableGrid;
 	
 
 	/**
@@ -118,7 +114,7 @@ public class TableInteraction extends CanvasModalInteraction{
 		}
 		
 		tableEditors = new LinkedHashMap<String, EditorFromTree>();
-		tableColumns = new LinkedList<String>();
+		LinkedList<String> tableColumns = new LinkedList<String>();
 		columnType = new LinkedHashMap<String, String>();
 		List<Tree<String>> list2 = inter.getTree()
 				.getFirstChild("table").getFirstChild("columns")
@@ -163,22 +159,19 @@ public class TableInteraction extends CanvasModalInteraction{
 						.getFirstChild().getHead());
 			}
 		}
-
-		tableGrid = new LinkedList<SelectableRow>();
+		tableGrid = new SelectableTable(tableColumns);
 		if (inter.getTree().getFirstChild("table")
 				.getChildren("row") != null) {
 			List<Tree<String>> list = inter.getTree()
 					.getFirstChild("table").getChildren("row");
 			for (Tree<String> rows : list) {
-
 				Map<String,String> cur = new LinkedHashMap<String,String>();
-
 				for (Tree<String> row : rows.getSubTreeList()) {
-					cur.put(row.getHead(), row.getFirstChild().getHead());
+					cur.put(row.getHead(),row.getFirstChild().getHead());
 					logger.info(row.getHead() + " -> "
 							+ row.getFirstChild().getHead());
 				}
-				tableGrid.add(new SelectableRow(cur));
+				tableGrid.add(cur);
 			}
 		}
 	}
@@ -210,17 +203,19 @@ public class TableInteraction extends CanvasModalInteraction{
 	public void writeInteraction() throws RemoteException {
 		inter.getTree().getFirstChild("table").remove("row");
 
-		for (SelectableRow rowV : tableGrid) {
-			Map<String,String> cur = rowV.getRow();
+		for (SelectableRow rowV : tableGrid.getRows()) {
+			String[] cur = rowV.getRow();
 			Tree<String> row = inter.getTree()
 					.getFirstChild("table").add("row");
 			logger.info("Table row");
-			Iterator<String> it = cur.keySet().iterator();
+			Iterator<String> it = tableGrid.getTitles().iterator();
+			int i = 0;
 			while(it.hasNext()) {
 				String column = it.next();
-				String value = cur.get(column);
+				String value = cur[i];
 				row.add(column).add(value);
 				logger.info(column + " -> " + value);
+				++i;
 			}
 		}	
 	}
@@ -233,15 +228,17 @@ public class TableInteraction extends CanvasModalInteraction{
 			Iterator<Tree<String>> oldColumns = inter.getTree()
 					.getFirstChild("table").getChildren("row")
 					.iterator();
-			for (SelectableRow rowV : tableGrid) {
-				Map<String,String> cur = rowV.getRow();
+			for (SelectableRow rowV : tableGrid.getRows()) {
+				String[] cur = rowV.getRow();
 				Tree<String> row = oldColumns.next();
-				Iterator<String> it = cur.keySet().iterator();
+				Iterator<String> it = tableGrid.getTitles().iterator();
+				int i = 0;
 				while(it.hasNext()) {
 					String column = it.next();
-					String value = cur.get(column);
+					String value = cur[i];
 					unchanged &= row.getFirstChild(column)
 							.getFirstChild().getHead().equals(value);
+					++i;
 				}
 			}
 		} catch (Exception e) {
@@ -261,13 +258,7 @@ public class TableInteraction extends CanvasModalInteraction{
 	 */
 	public void addNewLine() {
 		logger.info("tableInteractionAddNewLine");
-
-		Map<String, String> value = new LinkedHashMap<String, String>();
-		logger.info("num columns: " + columnType.keySet().size());
-		for (String column : columnType.keySet()) {
-			value.put(column, null);
-		}
-		tableGrid.add(new SelectableRow(value));
+		tableGrid.add(new SelectableRow(new String[tableGrid.getTitles().size()]));
 	}
 
 	/**
@@ -284,10 +275,9 @@ public class TableInteraction extends CanvasModalInteraction{
 		if(tableGeneratorMenu.contains(selectedGenerator)){
 			for (Map<String, String> l : tableGeneratorRowToInsert.get(
 					selectedGenerator)) {
-				
-				Map<String, String> value = new LinkedHashMap<String, String>();
+				String[] value = new String[l.size()];
 				for (String column : l.keySet()) {
-					value.put(column, l.get(column));
+					value[tableGrid.indexOf(column)] = l.get(column);
 				}
 				tableGrid.add(new SelectableRow(value));
 			}
@@ -350,8 +340,15 @@ public class TableInteraction extends CanvasModalInteraction{
 	/**
 	 * @return the tableGrid
 	 */
-	public final List<SelectableRow> getTableGrid() {
-		return tableGrid;
+	public final List<SelectableRow> getTableGridRows() {
+		return tableGrid.getRows();
+	}
+
+	/**
+	 * @return the tableColumns
+	 */
+	public List<String> getTableGridColumns() {
+		return tableGrid.getTitles();
 	}
 
 	/**
@@ -383,17 +380,17 @@ public class TableInteraction extends CanvasModalInteraction{
 	}
 
 	/**
-	 * @return the tableColumns
-	 */
-	public List<String> getTableColumns() {
-		return tableColumns;
-	}
-
-	/**
 	 * @return the columnType
 	 */
 	public final Map<String, String> getColumnType() {
 		return columnType;
+	}
+
+	/**
+	 * @return the tableGrid
+	 */
+	public final SelectableTable getTableGrid() {
+		return tableGrid;
 	}
 
 }

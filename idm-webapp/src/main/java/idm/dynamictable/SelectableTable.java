@@ -2,8 +2,11 @@ package idm.dynamictable;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class SelectableTable implements Serializable{
 	
@@ -36,6 +39,48 @@ public class SelectableTable implements Serializable{
 		this.rows = rows;
 	}
 	
+
+	public String getValueRow(int rowNb, int columnNb){
+		return rows.get(rowNb).getRow()[columnNb];
+	}
+	
+	public String getValueRow(int rowNb, String column){
+		return rows.get(rowNb).getRow()[titles.indexOf(column)];
+	}
+	
+	public void setValueRow(int rowNb, int columnNb, String value){
+		rows.get(rowNb).getRow()[columnNb] = value;
+	}
+	
+	public void setValueRow(int rowNb, String column, String value){
+		rows.get(rowNb).getRow()[titles.indexOf(column)] = value;
+	}
+
+	public boolean add(Map<String,String> row){
+		String[] toAdd = new String[titles.size()];
+		Iterator<String> it = titles.iterator();
+		int i = 0;
+		while(it.hasNext()){
+			toAdd[i] = row.get(it.next());
+		}
+		return add(new SelectableRow(toAdd));
+	}
+	
+	public Map<String,String> getRow(int index){
+		Map<String,String> ans = null;
+		String[] row = rows.get(index).getRow();
+		if(row != null){
+			ans = new LinkedHashMap<String,String>();
+			for(int i = 0; i < titles.size();++i){
+				ans.put(titles.get(i), row[i]);
+			}
+		}
+		return ans;
+	}
+	
+	public boolean add(String[] e) {
+		return rows.add(new SelectableRow(e));
+	}
 	
 	/**
 	 * @return the titles
@@ -81,6 +126,26 @@ public class SelectableTable implements Serializable{
 	 */
 	public boolean addAll(Collection<? extends SelectableRow> c) {
 		return rows.addAll(c);
+	}
+
+
+	/**
+	 * @param o
+	 * @return
+	 * @see java.util.List#indexOf(java.lang.Object)
+	 */
+	public int indexOf(Object o) {
+		return titles.indexOf(o);
+	}
+
+
+	/**
+	 * @param index
+	 * @return
+	 * @see java.util.List#remove(int)
+	 */
+	public SelectableRow remove(int index) {
+		return rows.remove(index);
 	}
 
 }

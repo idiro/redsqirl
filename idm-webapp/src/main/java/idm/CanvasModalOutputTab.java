@@ -6,6 +6,7 @@ import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.enumeration.SavingState;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.interfaces.DataFlowElement;
+import idm.dynamictable.UnselectableTable;
 import idm.useful.MessageUseful;
 
 import java.io.Serializable;
@@ -71,16 +72,8 @@ public class CanvasModalOutputTab implements Serializable{
 	 * Type of the browser of the current output
 	 */
 	private String typeBrowser;
-
-	/**
-	 * The column names of the current output 
-	 */
-	private List<String> gridTitle;
-	/**
-	 * The first lines of the current output 
-	 * (Empty if the output data set does not exist)
-	 */
-	private List<Map<String,String>> outputGrid;
+	
+	private UnselectableTable grid;
 
 	/**
 	 * List of the FileSystem available for configuring an output.
@@ -269,8 +262,7 @@ public class CanvasModalOutputTab implements Serializable{
 			if(dfeOut == null){
 				logger.info("no output named: "+nameOutput);
 			}else{
-				gridTitle = new LinkedList<String>();
-				outputGrid = new LinkedList<Map<String,String>>();
+				LinkedList<String> gridTitle = new LinkedList<String>();
 
 				if (dfeOut != null && 
 						dfeOut.getFeatures() != null) {
@@ -290,25 +282,23 @@ public class CanvasModalOutputTab implements Serializable{
 					}catch(Exception e){
 						logger.info("Error when getting the features: "+e.getMessage());
 					}
+					grid = new UnselectableTable(gridTitle);
 					try{
 						List<Map<String,String>> outputLines = dfeOut.select(10);
 						logger.info("line: "+outputLines);
-						if (outputLines != null) {
-							logger.info("outputLines " + outputLines);
-						}
 
 						if (outputLines != null) {
+							
 							for (Map<String,String> line: outputLines) {
 								int i = 0;
-								Map<String,String> outputGridCur = new LinkedHashMap<String,String>();
+								String[] rowCur = new String[gridTitle.size()];
 								for(String feat: line.keySet()){
-									outputGridCur.put(gridTitle.get(i),line.get(feat));
+									rowCur[i] = line.get(feat);
 									++i;
 								}
-								outputGrid.add(outputGridCur);
+								grid.add(rowCur);
 							}
 						}
-						logger.info("grid: "+outputGrid);
 					}catch(Exception e){
 						logger.info("Error when getting data: "+e.getMessage());
 					}
@@ -402,20 +392,6 @@ public class CanvasModalOutputTab implements Serializable{
 	}
 
 	/**
-	 * @return the gridTitle
-	 */
-	public final List<String> getGridTitle() {
-		return gridTitle;
-	}
-
-	/**
-	 * @return the outputGrid
-	 */
-	public final List<Map<String, String>> getOutputGrid() {
-		return outputGrid;
-	}
-
-	/**
 	 * @return the path
 	 */
 	public String getPath() {
@@ -427,5 +403,30 @@ public class CanvasModalOutputTab implements Serializable{
 	 */
 	public void setPath(String path) {
 		this.path = path;
+	}
+
+	/**
+	 * @return the grid
+	 */
+	public UnselectableTable getGrid() {
+		return grid;
+	}
+
+	/**
+	 * @return
+	 * @see idm.dynamictable.UnselectableTable#getTitles()
+	 */
+	public List<String> getTitles() {
+		logger.info(grid == null?null:grid.getTitles());
+		return grid == null?null:grid.getTitles();
+	}
+
+	/**
+	 * @return
+	 * @see idm.dynamictable.UnselectableTable#getRows()
+	 */
+	public List<String[]> getRows() {
+		logger.info(grid == null?null:grid.getRows());
+		return grid == null?null:grid.getRows();
 	}
 }

@@ -90,7 +90,7 @@ public class SelectedEditor extends BaseBean implements Serializable{
 		this.columnEdit = columnEdit;
 		this.rowEdit = rowEdit;
 		this.edit = tableInter.getTableEditors().get(columnEdit);
-		this.value = tableInter.getTableGrid().get(rowEdit).getRow().get(columnEdit);
+		this.value = tableInter.getTableGrid().getValueRow(rowEdit,columnEdit);
 		init();
 	}
 
@@ -128,7 +128,7 @@ public class SelectedEditor extends BaseBean implements Serializable{
 
 		if (success) {
 			if (tableInter != null) {
-				tableInter.getTableGrid().get(rowEdit).getRow().put(columnEdit, getValue());
+				tableInter.getTableGrid().setValueRow(rowEdit,columnEdit,getValue());
 			} else {
 				editInter.setTextEditorValue(getValue());
 			}
