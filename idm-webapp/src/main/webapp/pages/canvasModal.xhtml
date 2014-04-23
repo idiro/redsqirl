@@ -146,7 +146,7 @@
                                         <h:outputText value="#{column}" />
                                     </f:facet>
                                     
-                                    <h:outputText value="#{rowData[0]}" />
+                                    <h:outputText value="#{rowData[ind]}" />
                                     
                                 </rich:columns>
                 
@@ -202,7 +202,7 @@
                         <div id="DivTableInteraction"
                             style="width: 580px; height: 220px; border: 1px solid black; overflow-x: hidden;">
                             
-                            <rich:dataTable id="tableInteraction" value="#{item.table.tableGrid}"
+                            <rich:dataTable id="tableInteraction" value="#{item.table.tableGridRows}"
                                 var="rowItem" rowKeyVar="rowNb" width="100%" style="border:none;" 
                                 onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
                                 enableContextMenu="false" 
@@ -229,19 +229,19 @@
         
                                 </rich:column>
                                 
-                                <rich:columns value="#{item.table.tableColumns == null? canvasBean.emptyList : item.table.tableColumns}"
+                                <rich:columns value="#{item.table.tableGridColumns == null? canvasBean.emptyList : item.table.tableGridColumns}"
                                     var="column" index="ind"
                                     style="border-bottom:0px;border-right:0px;">
                                     <f:facet name="header">
                                         <h:outputText value="#{column}" />
                                     </f:facet>
         
-                                    <h:inputText value="#{rowItem.row[column]}"
+                                    <h:inputText value="#{rowItem.row[ind]}"
                                         rendered="#{item.table.columnType[column] == 'textField' }"
                                         styleClass="tableInteractionInput"
                                         onkeypress="return disableEnterKey(event);"/>
         
-                                    <rich:comboBox value="#{rowItem.row[column]}"
+                                    <rich:comboBox value="#{rowItem.row[ind]}"
                                         selectFirstOnUpdate="false" defaultLabel="Enter some value"
                                         width="125" enableManualInput="false" listWidth="150"
                                         listHeight="150"
@@ -250,7 +250,7 @@
                                         <f:selectItems value="#{item.table.listConstraint[column]}" />
                                     </rich:comboBox>
         
-                                    <h:inputText value="#{rowItem.row[column]}"
+                                    <h:inputText value="#{rowItem.row[ind]}"
                                         rendered="#{item.columnType[column] == 'editor' }"
                                         styleClass="tableInteractionInput">
                                         <a4j:support event="onclick" action="#{canvasModalBean.openHelpTextEditorModal}" 
