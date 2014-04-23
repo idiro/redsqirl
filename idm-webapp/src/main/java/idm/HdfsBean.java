@@ -6,7 +6,6 @@ import java.rmi.RemoteException;
 import java.util.HashMap;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.faces.context.FacesContext;
 
 import org.apache.log4j.Logger;
@@ -41,7 +40,6 @@ public class HdfsBean extends FileSystemBean {
 			setDataStore(getRmiHDFS());
 
 			if(getListGrid().isEmpty()){
-
 				mountTable(getDataStore());
 			}
 
@@ -49,18 +47,6 @@ public class HdfsBean extends FileSystemBean {
 			logger.error(e);
 			getBundleMessage("error.mount.table");
 		}
-
-	}
-
-	/** openCanvasScreen
-	 * 
-	 * Method that is executed when the screen
-	 * 
-	 * @return
-	 * @author Igor.Souza
-	 */
-	@PreDestroy
-	public void closeCanvasScreen() {
 
 	}
 	

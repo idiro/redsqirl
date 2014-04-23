@@ -5,21 +5,21 @@
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets">
 
-<a4j:loadBundle basename="MessagesResources" var="messages" />
+	<a4j:loadBundle basename="MessagesResources" var="messages" />
 
-	<h:outputText value="Name" />
+	<h:outputText value="#{messages.label_name}" />
 	<h:inputHidden value="#{hiveBean.name}" />
-	<h:inputText label="Name" value="#{hiveBean.newName}" />
+	<h:inputText value="#{hiveBean.newName}" />
 	<br />
 
-	<a4j:repeat value="#{hiveBean.item.keyAsListNameValueEdit}"
-		var="column" rowKeyVar="index">
+	<a4j:repeat value="#{hiveBean.item.keyAsListNameValueEdit}" var="column" rowKeyVar="index">
+	
 		<h:outputText value="#{hiveBean.item.keyAsListNameValueEdit[index]}" />
 		<br />
-		<h:inputText value="#{hiveBean.item.nameValue[column]}" title="#{hiveBean.nameHelp[column]}"
+		<h:inputText value="#{hiveBean.item.nameValueEdit[column]}" title="#{hiveBean.nameHelp[column]}"
 			disabled="#{hiveBean.item.nameIsConst[column]}" rendered="#{not hiveBean.item.valueHasLineBreak[column]}"
 		/>
-		<h:inputTextarea value="#{hiveBean.item.nameValue[column]}" title="#{hiveBean.nameHelp[column]}"
+		<h:inputTextarea value="#{hiveBean.item.nameValueEdit[column]}" title="#{hiveBean.nameHelp[column]}"
 			disabled="#{hiveBean.item.nameIsConst[column]}" cols="30" rows="10" style="overflow:auto;resize:vertical"
 			rendered="#{hiveBean.item.valueHasLineBreak[column]}"
 		/>

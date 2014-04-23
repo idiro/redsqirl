@@ -1,9 +1,6 @@
 package idm;
 
-import idiro.workflow.server.connect.interfaces.DataStore;
-
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 
 import org.apache.log4j.Logger;
 
@@ -34,14 +31,13 @@ public class HiveBean extends FileSystemBean {
 			setDataStore(getHiveInterface());
 
 			if(getListGrid().isEmpty()){
-				DataStore ds = getDataStore();
-				mountTable(ds);
+				mountTable(getDataStore());
 			}
-			else{
-				for (ItemList item : getListGrid()){
+			/*else{
+				for (EditFileSystem item : getListGrid()){
 					item.setSelected(false);
 				}
-			}
+			}*/
 
 		}catch(Exception e){
 			logger.error(e);
@@ -49,20 +45,7 @@ public class HiveBean extends FileSystemBean {
 		}
 
 	}
-
-	/** openCanvasScreen
-	 * 
-	 * Method that is executed when the screen
-	 * 
-	 * @return
-	 * @author Igor.Souza
-	 */
-	@PreDestroy
-	public void closeCanvasScreen() {
-
-	}
 	
-	@Override
 	public String getFormatedString(String property, String value){
 		if (property.equals("describe")){
 			return value.replace(",", " ").replace(";", ", ");

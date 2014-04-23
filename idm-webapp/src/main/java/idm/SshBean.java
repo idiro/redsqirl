@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
 import org.richfaces.event.DropEvent;
 
-/** HiveBean
+/** SshBean
  * 
  * Class to screen control of the File System SSH
  * 
@@ -28,25 +28,15 @@ import org.richfaces.event.DropEvent;
 public class SshBean extends FileSystemBean implements Serializable{
 
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	private static Logger logger = Logger.getLogger(SshBean.class);
 
 	private List<Entry<String, String>> fieldsInitNeededNewSsh = new ArrayList<Entry<String, String>>();
 	private List<Entry<String, String>> fieldsInitNeededTitleKey = new ArrayList<Entry<String, String>>();
-	
 	private List<String> tabs;
-
 	private boolean selectedSaveSsh;
-	
 	private String host;
 	private String port;
-	
 	private String selectedTab;
-	
 	private String tableState = new String();
 
 	/** openCanvasScreen
@@ -60,7 +50,10 @@ public class SshBean extends FileSystemBean implements Serializable{
 	@PostConstruct
 	public void openCanvasScreen() {
 		
+		logger.info("SshOpenCanvasScreen");
+		
 		try {
+			
 			logger.info(getDataStoreArray().initKnownStores());
 			
 			tabs = new ArrayList<String>();
@@ -208,7 +201,7 @@ public class SshBean extends FileSystemBean implements Serializable{
 		}
 	}
 	
-	public void processDrop(DropEvent dropEvent) throws RemoteException { 
+	public void processDrop(DropEvent dropEvent) throws RemoteException {
 		logger.info("processDrop");
 		
 		FacesContext context = FacesContext.getCurrentInstance();
@@ -224,7 +217,7 @@ public class SshBean extends FileSystemBean implements Serializable{
 		catch(Exception e){
 			logger.info("", e);
 		}
-	} 
+	}
 	
 	public List<Entry<String, String>> getFieldsInitNeededNewSsh() {
 		return fieldsInitNeededNewSsh;

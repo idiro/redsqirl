@@ -7,8 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-
-import org.apache.log4j.Logger;
 import org.richfaces.model.Ordering;
 
 /**
@@ -23,11 +21,11 @@ public class ItemList implements Serializable {
 	private String name;
 	private boolean selected;
 	private String stringSelectedDestination;
-	private String idSelected;
+	//private String idSelected;
 	private String property;
 	private String value;
 	private String file = "N";
-	
+
 	private Map<String, String> typeTableInteraction = new LinkedHashMap<String, String>();
 	private Map<String, String> nameValue = new LinkedHashMap<String, String>();
 	private Map<String, Ordering> sortingOrder = new LinkedHashMap<String, Ordering>();
@@ -36,9 +34,10 @@ public class ItemList implements Serializable {
 	private Map<String, Boolean> nameIsConst = new LinkedHashMap<String, Boolean>();
 	private Map<String, Boolean> valueHasLineBreak = new LinkedHashMap<String, Boolean>();
 	private Map<String, String> nameValueGrid = new LinkedHashMap<String, String>();
-	
+
 	private Map<String, Boolean> nameIsBool = new HashMap<String, Boolean>();
-	private static Logger logger = Logger.getLogger(ItemList.class);
+
+	//private static Logger logger = Logger.getLogger(ItemList.class);
 
 	public ItemList() {
 		super();
@@ -57,7 +56,7 @@ public class ItemList implements Serializable {
 	public List<String> getKeyAsListNameValue(){
 		return new ArrayList<String>(nameValue.keySet());
 	}
-	
+
 	public List<String> getKeyAsListNameValueEdit(){
 		return new ArrayList<String>(nameValueEdit.keySet());
 	}
@@ -99,10 +98,9 @@ public class ItemList implements Serializable {
 	}
 
 	public void setNameValue(Map<String, String> nameValueEdit) {
-	
 		this.nameValue = nameValue;
 	}
-	
+
 	public Map<String, Ordering> getSortingOrder() {
 		return sortingOrder;
 	}
@@ -110,7 +108,7 @@ public class ItemList implements Serializable {
 	public void setSortingOrder(Map<String, Ordering> sortingOrder) {
 		this.sortingOrder = sortingOrder;
 	}
-	
+
 	public Map<String, Object> getFilterValue() {
 		return filterValue;
 	}
@@ -135,13 +133,13 @@ public class ItemList implements Serializable {
 		this.nameIsConst = nameIsConst;
 	}
 
-	public String getIdSelected() {
+	/*public String getIdSelected() {
 		return idSelected;
 	}
 
 	public void setIdSelected(String idSelected) {
 		this.idSelected = idSelected;
-	}
+	}*/
 
 	public Map<String, String> getTypeTableInteraction() {
 		return null;// typeTableInteraction;
@@ -150,7 +148,7 @@ public class ItemList implements Serializable {
 	public void setTypeTableInteraction(Map<String, String> typeTableInteraction) {
 		this.typeTableInteraction = typeTableInteraction;
 	}
-	
+
 	public Map<String, Boolean> getValueHasLineBreak() {
 		return valueHasLineBreak;
 	}
@@ -198,5 +196,5 @@ public class ItemList implements Serializable {
 	public void setFile(String file) {
 		this.file = file;
 	}
-	
+
 }
