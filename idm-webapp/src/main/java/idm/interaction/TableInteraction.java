@@ -7,7 +7,6 @@ import idm.dynamictable.SelectableTable;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -84,27 +83,25 @@ public class TableInteraction extends CanvasModalInteraction{
 					.getFirstChild("generator").getSubTreeList();
 			if (list != null) {
 				for (Tree<String> tree : list) {
-					logger.info("list value "
-							+ tree.getFirstChild().getHead());
-					tableGeneratorMenu.add(new SelectItem(tree
+					String menuName = tree
 							.getFirstChild("title").getFirstChild()
-							.getHead(), tree.getFirstChild("title")
-							.getFirstChild().getHead()));
+							.getHead();
+					logger.info("list value "
+							+ menuName);
+					tableGeneratorMenu.add(new SelectItem(menuName,menuName));
 
-					tableGeneratorRowToInsert.put(tree.getFirstChild("title")
-							.getFirstChild().getHead(),
+					tableGeneratorRowToInsert.put(menuName,
 							new LinkedList<Map<String, String>>());
 
 					for (Tree<String> treeRows : tree
 							.getChildren("row")) {
-						Map<String, String> t = new HashMap<String, String>();
+						Map<String, String> t = new LinkedHashMap<String, String>();
 						for (Tree<String> treeFeat : treeRows
 								.getSubTreeList()) {
 							t.put(treeFeat.getHead(), treeFeat
 									.getFirstChild().getHead());
 						}
-						tableGeneratorRowToInsert.get(tree.getFirstChild("title")
-								.getFirstChild().getHead()).add(t);
+						tableGeneratorRowToInsert.get(menuName).add(t);
 					}
 				}
 				if(!tableGeneratorMenu.isEmpty()){
@@ -270,9 +267,10 @@ public class TableInteraction extends CanvasModalInteraction{
 	 * @author Igor.Souza
 	 */
 	public void generateLines() {
-		logger.info("tableInteractionGenerationLines");
-		
-		if(tableGeneratorMenu.contains(selectedGenerator)){
+		logger.info("tableInteractionGenerationLines: "+selectedGenerator);
+		if(tableGeneratorRowToInsert.containsKey(selectedGenerator)){
+			logger.info("Number of row to add: "+tableGeneratorRowToInsert.get(
+					selectedGenerator).size());
 			for (Map<String, String> l : tableGeneratorRowToInsert.get(
 					selectedGenerator)) {
 				String[] value = new String[l.size()];
@@ -281,6 +279,9 @@ public class TableInteraction extends CanvasModalInteraction{
 				}
 				tableGrid.add(new SelectableRow(value));
 			}
+		}else{
+			logger.info(tableGeneratorMenu.toString());
+			logger.info(tableGeneratorRowToInsert.toString());
 		}
 	}
 
