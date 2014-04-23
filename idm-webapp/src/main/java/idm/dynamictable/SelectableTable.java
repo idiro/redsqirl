@@ -9,15 +9,15 @@ import java.util.List;
 import java.util.Map;
 
 public class SelectableTable implements Serializable{
-	
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -4898672980347548506L;
-	
+
 	private List<String> titles;
 	private List<SelectableRow> rows;
-	
+
 	/**
 	 * @param titles
 	 * @param rows
@@ -27,8 +27,8 @@ public class SelectableTable implements Serializable{
 		this.titles = titles;
 		this.rows = new LinkedList<SelectableRow>();
 	}
-	
-	
+
+
 	/**
 	 * @param titles
 	 * @param rows
@@ -38,20 +38,20 @@ public class SelectableTable implements Serializable{
 		this.titles = titles;
 		this.rows = rows;
 	}
-	
+
 
 	public String getValueRow(int rowNb, int columnNb){
 		return rows.get(rowNb).getRow()[columnNb];
 	}
-	
+
 	public String getValueRow(int rowNb, String column){
 		return rows.get(rowNb).getRow()[titles.indexOf(column)];
 	}
-	
+
 	public void setValueRow(int rowNb, int columnNb, String value){
 		rows.get(rowNb).getRow()[columnNb] = value;
 	}
-	
+
 	public void setValueRow(int rowNb, String column, String value){
 		rows.get(rowNb).getRow()[titles.indexOf(column)] = value;
 	}
@@ -65,7 +65,7 @@ public class SelectableTable implements Serializable{
 		}
 		return add(new SelectableRow(toAdd));
 	}
-	
+
 	public Map<String,String> getRow(int index){
 		Map<String,String> ans = null;
 		String[] row = rows.get(index).getRow();
@@ -77,10 +77,40 @@ public class SelectableTable implements Serializable{
 		}
 		return ans;
 	}
-	
+
 	public boolean add(String[] e) {
 		return rows.add(new SelectableRow(e));
 	}
+
+	/**
+	 * Return the index of the first selected row
+	 * @return
+	 */
+	public int getSelected(){
+		for (int i = 0; i < getRows().size(); i++) {
+			SelectableRow selectableRow = getRows().get(i); 
+			if(selectableRow.isSelected()){
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	/**
+	 * Return the index of the all the selected rows
+	 * @return
+	 */
+	public List<Integer> getAllSelected(){
+		List<Integer> list = new LinkedList<Integer>();
+		for (int i = 0; i < getRows().size(); i++) {
+			SelectableRow selectableRow = getRows().get(i); 
+			if(selectableRow.isSelected()){
+				list.add(i);
+			}
+		}
+		return list;
+	}
+
 	
 	/**
 	 * @return the titles
@@ -100,7 +130,7 @@ public class SelectableTable implements Serializable{
 	public List<SelectableRow> getRows() {
 		return rows;
 	}
-	
+
 	/**
 	 * @param rows the rows to set
 	 */

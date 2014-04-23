@@ -4,6 +4,7 @@ import idiro.workflow.server.connect.interfaces.DataStore;
 import idiro.workflow.server.connect.interfaces.DataStore.ParamProperty;
 import idiro.workflow.server.enumeration.FeatureType;
 import idm.auth.UserInfoBean;
+import idm.dynamictable.SelectableTable;
 import idm.useful.MessageUseful;
 
 import java.io.Serializable;
@@ -23,6 +24,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 	private static Logger logger = Logger.getLogger(FileSystemBean.class);
 
+	
 	private Map<String, String> nameHelp = new LinkedHashMap<String, String>();
 	private List<String> nameCreateFields = new ArrayList<String>();
 	private String fileContent;
@@ -36,12 +38,24 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	private EditFileSystem item;
 	private ArrayList<EditFileSystem> listGrid = new ArrayList<EditFileSystem>();
 	
-	private UserInfoBean userInfoBean;
 	
 	/*
 	private List<Entry<String, String>> fieldsInitNeededTitleKey;
 	private ArrayList<ItemList> listHeaderGrid = new ArrayList<ItemList>();
 	*/
+
+	
+	private UserInfoBean userInfoBean;
+	
+	/**
+	* The list of rows of the grid file system
+	*/
+	private SelectableTable tableGrid;
+	private List<Map<String,String>> allProps;
+	private List<String> editProps;
+	private List<String> createProps;
+	
+	
 
 	/**
 	 * openCanvasScreen
@@ -54,7 +68,6 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	public void openCanvasScreen() {
 
 	}
-
 
 	/** closeCanvasScreen
 	 * 
@@ -213,8 +226,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 			if (item.isSelected()) {
 
-				String directory = generatePath(getDataStore().getPath(),
-						item.getName());
+				String directory = generatePath(getDataStore().getPath(),item.getName());
 
 				logger.info("Delete -" + directory);
 
@@ -754,13 +766,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		this.file = file;
 	}
 
-	public UserInfoBean getUserInfoBean() {
-		return userInfoBean;
-	}
-
-	public void setUserInfoBean(UserInfoBean userInfoBean) {
-		this.userInfoBean = userInfoBean;
-	}
+	
 
 	/*
 	public ArrayList<ItemList> getListHeaderGrid() {
@@ -780,5 +786,54 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		this.fieldsInitNeededTitleKey = fieldsInitNeededTitleKey;
 	}
 	*/
+	
+	
+	public UserInfoBean getUserInfoBean() {
+		return userInfoBean;
+	}
+
+	public void setUserInfoBean(UserInfoBean userInfoBean) {
+		this.userInfoBean = userInfoBean;
+	}
+
+
+	public SelectableTable getTableGrid() {
+		return tableGrid;
+	}
+
+
+	public List<Map<String, String>> getAllProps() {
+		return allProps;
+	}
+
+
+	public List<String> getEditProps() {
+		return editProps;
+	}
+
+
+	public List<String> getCreateProps() {
+		return createProps;
+	}
+
+
+	public void setTableGrid(SelectableTable tableGrid) {
+		this.tableGrid = tableGrid;
+	}
+
+
+	public void setAllProps(List<Map<String, String>> allProps) {
+		this.allProps = allProps;
+	}
+
+
+	public void setEditProps(List<String> editProps) {
+		this.editProps = editProps;
+	}
+
+
+	public void setCreateProps(List<String> createProps) {
+		this.createProps = createProps;
+	}
 
 }
