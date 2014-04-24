@@ -20,6 +20,7 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.ajax4jsf.model.KeepAlive;
+import org.apache.commons.lang.WordUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -133,6 +134,14 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * List of the current interaction displayed
 	 */
 	private List<CanvasModalInteraction> inters = null;
+	
+	/**
+	 * List of the table column titles
+	 * To repeat this element is necessary because of JSF limitations.
+	 * Due to this limitation only one table interaction can be used per
+	 * page.
+	 */
+	private List<String> tablesColumnTitle = null;
 
 	/**
 	 * The output tab object
@@ -228,7 +237,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 						setListPosition(0);
 
 						// retrieves the correct page
-						setCanvasTitle(dfe.getName().replace("_", " "));
+						setCanvasTitle(WordUtils.capitalizeFully(dfe.getName().replace("_", " ")));
 
 						mountInteractionForm();
 
@@ -248,6 +257,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 					outputTab = new CanvasModalOutputTab(dfe);
 					Iterator<DFEInteraction> iterIt = dfe.getInteractions()
 							.iterator();
+					sourceNode = false;
 					while (iterIt.hasNext() && !sourceNode) {
 						sourceNode = iterIt.next().getDisplay()
 								.equals(DisplayType.browser);
@@ -429,7 +439,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 			inters = new LinkedList<CanvasModalInteraction>();
 			for (DFEInteraction dfeInteraction : getPage().getInteractions()) {
-				inters.add(CanvasModalInteraction.getNew(dfeInteraction,dfe,outputTab));
+				CanvasModalInteraction cmi = CanvasModalInteraction.getNew(dfeInteraction,dfe,outputTab); 
+				inters.add(cmi);
+				if(cmi.getTable() != null){
+					tablesColumnTitle = cmi.getTable().getTableGridColumns();
+				}
 			}
 
 		} catch (Exception e) {
@@ -524,6 +538,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 		CanvasModalInteraction cmInt = inters.get(indexOf);
 		if (cmInt instanceof TableInteraction) {
+			logger.info("Table interaction");
 			Integer rowKey = Integer.valueOf(FacesContext.getCurrentInstance()
 					.getExternalContext().getRequestParameterMap()
 					.get("rowKey"));
@@ -536,6 +551,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 			selEditor = new SelectedEditor((TableInteraction) cmInt, column,
 					rowKey);
 		} else if (cmInt instanceof EditorInteraction) {
+			logger.info("Editor interaction");
 			selEditor = new SelectedEditor((EditorInteraction) cmInt);
 		} else {
 			MessageUseful
@@ -782,6 +798,13 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 */
 	public void setElementId(String elementId) {
 		this.elementId = elementId;
+	}
+
+	/**
+	 * @return the tablesColumnTitle
+	 */
+	public final List<String> getTablesColumnTitle() {
+		return tablesColumnTitle;
 	}
 
 }

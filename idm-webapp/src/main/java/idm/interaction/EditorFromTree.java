@@ -4,6 +4,7 @@ import idiro.utils.Tree;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -85,18 +86,20 @@ public class EditorFromTree implements Serializable{
 		textEditorFields = new LinkedHashMap<String, String>();
 		try {
 			list = tree.getFirstChild("editor")
-					.getFirstChild("keywords").getFirstChild("features")
-					.getSubTreeList();
+					.getFirstChild("keywords").getSubTreeList();
 		} catch (Exception e) {
 			list = null;
 		}
 		if (list != null && !list.isEmpty()) {
-			// logger.info("list not null: "+list.toString());
+			
 			for (Tree<String> tree : list) {
 				textEditorFields.put(tree.getFirstChild("name").getFirstChild()
-						.getHead(), tree.getFirstChild("type").getFirstChild()
+						.getHead(), tree.getFirstChild("info").getFirstChild()
 						.getHead());
 			}
+			logger.info("features: "+textEditorFields.toString());
+		}else{
+			logger.info("no features...");
 		}
 
 		// Get the functions and operations
@@ -111,6 +114,7 @@ public class EditorFromTree implements Serializable{
 			list = null;
 		}
 		if (list != null && !list.isEmpty()) {
+			openPopup = "Y";
 			// logger.info("list not null: " + list.toString());
 			for (Tree<String> tree : list) {
 				logger.info("list value " + tree.getHead());
@@ -183,6 +187,10 @@ public class EditorFromTree implements Serializable{
 	 */
 	public final Map<String, String> getTextEditorFields() {
 		return textEditorFields;
+	}
+	
+	public final List<Map.Entry<String,String>> getTextEditorFieldsEntry(){
+		return new ArrayList<Map.Entry<String,String>>(textEditorFields.entrySet());
 	}
 
 	/**

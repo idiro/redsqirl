@@ -22,6 +22,8 @@ public class EditorInteraction extends CanvasModalInteraction {
 	
 	public EditorInteraction(DFEInteraction dfeInter) throws RemoteException {
 		super(dfeInter);
+		logger.info("tree: "+printTree(dfeInter.getTree().getFirstChild("editor")
+				.getFirstChild("keywords")));
 	}
 
 	@Override

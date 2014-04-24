@@ -84,16 +84,16 @@ public class EditorInteraction extends UserInteraction{
 	 */
 	public void addFeatures(FeatureList fl) throws RemoteException{
 		Iterator<String> it = fl.getFeaturesNames().iterator();
-		Tree<String> feats = tree.getFirstChild("editor").getFirstChild("keywords").getFirstChild("features");
+		Tree<String> feats = tree.getFirstChild("editor").getFirstChild("keywords");
 		if(feats == null){
-			feats = tree.getFirstChild("editor").getFirstChild("keywords").add("features");
+			feats = tree.getFirstChild("editor").add("keywords");
 		}
 		while(it.hasNext()){
 			String name = it.next();
 			String type = fl.getFeatureType(name).name();
-			Tree<String> feature = feats.add("feature");
+			Tree<String> feature = feats.add("word");
 			feature.add("name").add(name);
-			feature.add("type").add(type);
+			feature.add("info").add(type);
 		}
 	}
 	
@@ -104,16 +104,16 @@ public class EditorInteraction extends UserInteraction{
 	 */
 	public void addFeatures(Map<String,String> fl) throws RemoteException{
 		Iterator<String> it = fl.keySet().iterator();
-		Tree<String> feats = tree.getFirstChild("editor").getFirstChild("keywords").getFirstChild("features");
+		Tree<String> feats = tree.getFirstChild("editor").getFirstChild("keywords");
 		if(feats == null){
-			feats = tree.getFirstChild("editor").getFirstChild("keywords").add("features");
+			feats = tree.getFirstChild("editor").add("keywords");
 		}
 		while(it.hasNext()){
 			String name = it.next();
 			String type = fl.get(name);
-			Tree<String> feature = feats.add("feature");
+			Tree<String> feature = feats.add("word");
 			feature.add("name").add(name);
-			feature.add("type").add(type);
+			feature.add("info").add(type);
 		}
 		
 	}
@@ -122,7 +122,7 @@ public class EditorInteraction extends UserInteraction{
 	 * @throws RemoteException
 	 */
 	public void removeFeatures() throws RemoteException{
-		tree.getFirstChild("editor").getFirstChild("keywords").remove("features");
+		tree.getFirstChild("editor").getFirstChild("keywords").removeAllChildren();
 	}
 	/**
 	 * Add a help Menu to the interaction

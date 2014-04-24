@@ -108,7 +108,7 @@
 						<br />
 						
 						<rich:extendedDataTable id="listFunctions" 
-						    value="#{canvasModalBean.selEditor.edit.textEditorFunctionMenu[canvasModalBean.selEditor.selectedFunction]}" 
+						    value="#{canvasModalBean.selEditor.edit.textEditorFunctions[canvasModalBean.selEditor.selectedFunction]}" 
 						    var="item"
 							style="border:1px solid;" width="100%" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 							enableContextMenu="false" selectionMode="none"
@@ -155,7 +155,7 @@
 						<br />
 						
 						<rich:extendedDataTable id="listOperation" 
-						value="#{canvasModalBean.selEditor.edit.textEditorOperationMenu[canvasModalBean.selEditor.selectedOperation]}" 
+						value="#{canvasModalBean.selEditor.edit.textEditorOperations[canvasModalBean.selEditor.selectedOperation]}" 
 						var="item"
 						style="border:1px solid;" width="100%" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 						enableContextMenu="false" selectionMode="none"
@@ -182,7 +182,7 @@
 					<br />
 					<br />
 						
-						<rich:extendedDataTable id="listFields"	value="#{canvasModalBean.selEditor.edit.textEditorFields}" var="item"
+						<rich:extendedDataTable id="listFields"	value="#{canvasModalBean.selEditor.edit.textEditorFieldsEntry}" var="item"
 							style="border:1px solid;" width="100%" onRowClick="completeFilds" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 							enableContextMenu="false" selectionMode="none"
 							onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
