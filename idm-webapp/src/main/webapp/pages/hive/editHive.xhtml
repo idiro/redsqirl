@@ -12,16 +12,20 @@
 	<h:inputText value="#{hiveBean.newName}" />
 	<br />
 
-	<a4j:repeat value="#{hiveBean.item.keyAsListNameValueEdit}" var="column" rowKeyVar="index">
+	<a4j:repeat value="#{hiveBean.editProps}" var="title" >
 	
-		<h:outputText value="#{hiveBean.item.keyAsListNameValueEdit[index]}" />
+		<h:outputText value="#{title}" />
 		<br />
-		<h:inputText value="#{hiveBean.item.nameValueEdit[column]}" title="#{hiveBean.nameHelp[column]}"
-			disabled="#{hiveBean.item.nameIsConst[column]}" rendered="#{not hiveBean.item.valueHasLineBreak[column]}"
+		<h:inputText value="#{hiveBean.allProps[title]}" 
+			title="#{hiveBean.nameHelp[column]}"
+			disabled="#{hiveBean.propsParam[title].const}" 
+			rendered="#{hiveBean.propsParam[title].type != 'BOOLEAN'}"
 		/>
-		<h:inputTextarea value="#{hiveBean.item.nameValueEdit[column]}" title="#{hiveBean.nameHelp[column]}"
-			disabled="#{hiveBean.item.nameIsConst[column]}" cols="30" rows="10" style="overflow:auto;resize:vertical"
-			rendered="#{hiveBean.item.valueHasLineBreak[column]}"
+		<h:inputTextarea value="#{hiveBean.allProps[title]}" 
+			title="#{hiveBean.nameHelp[column]}"
+			disabled="#{hiveBean.propsParam[title].const}"
+			rendered="#{hiveBean.propsParam[title].type == 'BOOLEAN'}"
+			cols="30" rows="10" style="overflow:auto;resize:vertical"
 		/>
 		<br />
 		<br />

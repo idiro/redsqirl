@@ -7,8 +7,7 @@
 
 <a4j:loadBundle basename="MessagesResources" var="messages" />
 
-	<div id="sshFileSystem"
-		style="min-width: 400px; overflow: hidden; min-height: 190px;">
+	<div id="sshFileSystem" style="min-width: 400px; overflow: hidden; min-height: 190px;">
 		
 		<rich:dragIndicator id="indicator" />
 		
@@ -43,40 +42,37 @@
 			
 				<rich:dropSupport  acceptedTypes="hdfs" dropListener="#{sshBean.processDrop}" reRender="sshfs" oncomplete="resizeTables();"/>
 				
-				<rich:extendedDataTable id="sshfs" value="#{sshBean.listGrid}"
-					var="item" width="100%" style="border:none;"
+				<rich:extendedDataTable id="sshfs" value="#{sshBean.tableGrid.rows}"
+					var="item" rowKeyVar="indexTable" width="100%" style="border:none;"
 					onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-					enableContextMenu="false"
-					onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
-					rowClasses="even-row, odd-row"
-					tableState="#{sshBean.tableState}">
+					enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+					rowClasses="even-row, odd-row" tableState="#{sshBean.tableState}" >
 	
-					<rich:column sortBy="#{item.name}" filterBy="#{item.name}"
+					<rich:column sortBy="#{item.row[0]}" filterBy="#{item.row[0]}"
 						style="border-bottom:0px;border-right:0px;">
 						<f:facet name="header">
-							<h:outputText value="Name"/>
+							<h:outputText value="#{messages.label_name}"/>
 								
 						</f:facet>
-						<a4j:commandLink value="#{item.name}" action="#{sshBean.verifyIfIsFile}"
-	     					oncomplete="selectFileSsh('#{sshBean.file}', '#{item.name}')">
-	     						<f:param name="nameFile" value="#{item.name}" />
+						<a4j:commandLink value="#{item.row[0]}" action="#{sshBean.verifyIfIsFile}"
+	     					oncomplete="selectFileSsh('#{sshBean.file}', '#{item.row[0]}')">
+	     						<f:param name="nameFile" value="#{item.row[0]}" />
 	     						<rich:dragSupport dragIndicator=":indicator"
-                               	 	dragValue="#{item.name}" dragType="ssh">
-	                                <rich:dndParam name="label" value="#{item.name}" />
-	                                <a4j:actionparam name="file" value="#{item.name}" />
+                               	 	dragValue="#{item.row[0]}" dragType="ssh">
+	                                <rich:dndParam name="label" value="#{item.row[0]}" />
+	                                <a4j:actionparam name="file" value="#{item.row[0]}" />
 	                                <a4j:actionparam name="path" value="#{sshBean.path}" />
 	                                <a4j:actionparam name="server" value="#{tab}" />
                             	</rich:dragSupport>
 	     				</a4j:commandLink>
 					</rich:column>
 					
-					<rich:columns value="#{sshBean.keyAsListNameValue}" var="column"
-						index="ind" id="sshcolumn#{ind}"
+					<rich:columns value="#{sshBean.tableGrid.titles == null? canvasBean.emptyList : sshBean.tableGrid.titles}" var="column" index="ind" begin="1"
 						style="border-bottom:0px;border-right:0px;">
 						<f:facet name="header">
 							<h:outputText value="#{column}" />
 						</f:facet>
-						<h:outputText value="#{item.nameValue[column]}" id="sshvalue#{ind}" />
+						<h:outputText value="#{item.row[ind]}" />
 					</rich:columns>
 	
 				</rich:extendedDataTable>

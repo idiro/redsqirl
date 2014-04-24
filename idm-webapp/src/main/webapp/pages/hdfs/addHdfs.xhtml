@@ -7,17 +7,15 @@
 
 <a4j:loadBundle basename="MessagesResources" var="messages" />
 
-	<h:outputText value="Name" />
+	<h:outputText value="#{messages.label_name}" />
 	<h:inputHidden value="#{hdfsBean.name}" />
-	<h:inputText label="Name" value="#{hdfsBean.newName}" onkeypress="return enableEnterKey(event, 'addHdfsBtn');"/>
+	<h:inputText value="#{hdfsBean.newName}" onkeypress="return enableEnterKey(event, 'addHdfsBtn');"/>
 	<br />
 
-	<a4j:repeat value="#{hdfsBean.item.keyAsListNameValueEdit}"
-		var="column" rowKeyVar="index">
-		<h:outputText value="#{hdfsBean.item.keyAsListNameValueEdit[index]}" />
+	<a4j:repeat value="#{hdfsBean.createProps}" var="title" >
+		<h:outputText value="#{title}" />
 		<br />
-		<h:inputText value="#{hdfsBean.item.nameValue[column]}"
-			disabled="#{hdfsBean.item.nameIsConst[column]}" />
+		<h:inputText value="#{hdfsBean.allProps[title]}" disabled="#{hdfsBean.propsParam[title].const}" />
 		<br />
 		<br />
 	</a4j:repeat>

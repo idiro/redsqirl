@@ -136,7 +136,7 @@
 				<rich:dropSupport acceptedTypes="ssh"
 					dropListener="#{hdfsBean.processDrop}" reRender="hdfsfs" oncomplete="resizeTables();"/>
 				
-				<rich:extendedDataTable id="hdfsfs" value="#{hdfsBean.listGrid}"
+				<rich:extendedDataTable id="hdfsfs" value="#{hdfsBean.tableGrid.rows}"
 					var="item" rowKeyVar="indexTable" width="100%" height="500px"
 					style="border:none;"
 					onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
@@ -158,40 +158,37 @@
 						</f:facet>
 						<a4j:commandLink action="#{hdfsBean.editFileBefore}" oncomplete="#{rich:component('hdfseditModalPanel')}.show()">
 							<h:graphicImage value="../image/icons/button-property.gif" title='#{messages.HdfsInterface_properties_help}' 
-							rendered="#{item.file == 'N'}" styleClass="fileSystemIcon" />
+							rendered="#{hdfsBean.allProps[indexTable][type] == 'directory'}" styleClass="fileSystemIcon" />
 							<h:graphicImage value="../image/icons/button-file-icon.png" title='#{messages.HdfsInterface_properties_help}' 
-							rendered="#{item.file == 'S'}" styleClass="fileSystemIcon" />
-							<f:param name="nameFileEdit" value="#{item.name}" />
+							rendered="#{hdfsBean.allProps[indexTable][type] == 'file'}" styleClass="fileSystemIcon" />
+							<f:param name="nameFileEdit" value="#{item.row[0]}" />
 						</a4j:commandLink>
 					</rich:column>
 
-					<rich:column sortBy="#{item.name}" filterBy="#{item.name}"
+					<rich:column sortBy="#{item.row[0]}" filterBy="#{item.row[0]}"
 						style="border-bottom:0px;border-right:0px;" filterEvent="onchange">
 						<f:facet name="header">
-							<h:outputText value="Name" />
+							<h:outputText value="#{messages.label_name}" />
 						</f:facet>
-						<a4j:commandLink value="#{item.name}"
+						<a4j:commandLink value="#{item.row[0]}"
 							action="#{hdfsBean.verifyIfIsFile}"
-							oncomplete="selectFileHdfs('#{hdfsBean.file}', '#{item.name}')">
-							<f:param name="nameFile" value="#{item.name}" />
+							oncomplete="selectFileHdfs('#{hdfsBean.file}', '#{item.row[0]}')">
+							<f:param name="nameFile" value="#{item.row[0]}" />
 							<rich:dragSupport dragIndicator=":indicator"
-								dragValue="#{item.name}" dragType="hdfs">
-								<rich:dndParam name="label" value="#{item.name}" />
-								<a4j:actionparam name="file" value="#{item.name}" />
+								dragValue="#{item.row[0]}" dragType="hdfs">
+								<rich:dndParam name="label" value="#{item.row[0]}" />
+								<a4j:actionparam name="file" value="#{item.row[0]}" />
 								<a4j:actionparam name="path" value="#{hdfsBean.path}" />
 							</rich:dragSupport>
 						</a4j:commandLink>
 					</rich:column>
 
-					<rich:columns value="#{hdfsBean.keyAsListNameValue}" var="column"
-						index="ind" id="hdfscolumn#{ind}"
-						sortBy="#{item.nameValue[column]}"
-						filterBy="#{item.nameValue[column]}"
-						style="border-bottom:0px;border-right:0px;">
+					<rich:columns value="#{hdfsBean.tableGrid.titles == null? canvasBean.emptyList : hdfsBean.tableGrid.titles}" var="column" index="ind" begin="1" 
+						sortBy="#{item.row[ind]}" filterBy="#{item.row[ind]}" style="border-bottom:0px;border-right:0px;">
 						<f:facet name="header">
 							<h:outputText value="#{column}" />
 						</f:facet>
-						<h:outputText value="#{item.nameValue[column]}" id="hdfsvalue#{ind}" />
+						<h:outputText value="#{item.row[ind]}" />
 					</rich:columns>
 				</rich:extendedDataTable>
 				

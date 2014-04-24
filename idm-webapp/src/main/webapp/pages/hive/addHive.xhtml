@@ -7,17 +7,15 @@
 
 <a4j:loadBundle basename="MessagesResources" var="messages" />
 
-	<h:outputText value="Name" />
-	<h:inputText label="Name" value="#{hiveBean.newName}" 
-		onkeypress="return enableEnterKey(event, 'addHiveBtn');"/>
+	<h:outputText value="#{messages.label_name}" />
+	<h:inputHidden value="#{hiveBean.name}" />
+	<h:inputText value="#{hiveBean.newName}" onkeypress="return enableEnterKey(event, 'addHiveBtn');"/>
 	<br />
 
-	<a4j:repeat value="#{hiveBean.nameCreateFields}"
-		var="column" rowKeyVar="index">
-		<h:outputText value="#{column}" />
+	<a4j:repeat value="#{hiveBean.createProps}" var="title" >
+		<h:outputText value="#{title}" />
 		<br />
-		<h:inputText value="#{hiveBean.nameValue[column]}" title="#{hiveBean.nameHelp[column]}"
-			onkeypress="return enableEnterKey(event, 'addHiveBtn');"/>
+		<h:inputText value="#{hiveBean.allProps[title]}" title="#{hiveBean.propsParam[title].help}" onkeypress="return enableEnterKey(event, 'addHiveBtn');"/>
 		<br />
 		<br />
 	</a4j:repeat>

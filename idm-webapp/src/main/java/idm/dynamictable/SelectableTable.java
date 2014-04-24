@@ -22,16 +22,19 @@ public class SelectableTable implements Serializable{
 	private List<String> titles;
 	private List<SelectableRow> rows;
 
+	public SelectableTable() {
+		this.titles = new LinkedList<String>();
+		this.rows = new LinkedList<SelectableRow>();
+	}
+	
 	/**
 	 * @param titles
-	 * @param rows
 	 */
 	public SelectableTable(LinkedList<String> titles) {
 		super();
 		this.titles = titles;
 		this.rows = new LinkedList<SelectableRow>();
 	}
-
 
 	/**
 	 * @param titles
@@ -42,7 +45,6 @@ public class SelectableTable implements Serializable{
 		this.titles = titles;
 		this.rows = rows;
 	}
-
 
 	public String getValueRow(int rowNb, int columnNb){
 		return rows.get(rowNb).getRow()[columnNb];

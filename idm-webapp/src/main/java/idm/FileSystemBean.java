@@ -2,7 +2,6 @@ package idm;
 
 import idiro.workflow.server.connect.interfaces.DataStore;
 import idiro.workflow.server.connect.interfaces.DataStore.ParamProperty;
-import idiro.workflow.server.enumeration.FeatureType;
 import idm.auth.UserInfoBean;
 import idm.dynamictable.SelectableRow;
 import idm.dynamictable.SelectableTable;
@@ -16,7 +15,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.faces.context.FacesContext;
 
@@ -26,35 +24,39 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 	private static Logger logger = Logger.getLogger(FileSystemBean.class);
 
-	
+
 	/*private Map<String, String> nameHelp = new LinkedHashMap<String, String>();
 	private List<String> nameCreateFields = new ArrayList<String>();
-	private String fileContent;
 	private Map<String, String> nameValue = new LinkedHashMap<String, String>();
 	private String path;
 	private EditFileSystem item;
 	private ArrayList<EditFileSystem> listGrid = new ArrayList<EditFileSystem>();*/
-	
+
 	/*
 	private List<Entry<String, String>> fieldsInitNeededTitleKey;
 	private ArrayList<ItemList> listHeaderGrid = new ArrayList<ItemList>();
-	*/
+	 */
 
 	private UserInfoBean userInfoBean;
 	private DataStore dataStore;	
 	private boolean file;
 	private String name;
 	private String newName;
+	private String path;
 	private List<String[]> selectedFiles;
-	
+	private String fileContent;
+
 	/**
-	* The list of rows of the grid file system
-	*/
-	private SelectableTable tableGrid;
+	 * The list of rows of the grid file system
+	 */
+	private SelectableTable tableGrid = new SelectableTable(); 
 	private List<Map<String,String>> allProps;
 	private List<String> editProps;
 	private List<String> createProps;
-	private String path;
+	private Map<String, ParamProperty> propsParam; 
+	
+
+
 	
 
 	/**
@@ -93,48 +95,44 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		setPath(hInt.getPath());
 
 		Map<String, Map<String, String>> mapSSH = hInt.getChildrenProperties();
-		Map<String, ParamProperty> paramProperties = hInt.getParamProperties();
+		setPropsParam(hInt.getParamProperties());
 		
 		if (mapSSH != null) {
 			//Set list features
 			LinkedList<String> titles = new LinkedList<String>();
-			List<String> editProps = new LinkedList<String>();
-			List<String> createProps = new LinkedList<String>();
-			
-			titles.addFirst("name");
-			
-			for (String properties : paramProperties.keySet()) {
+			LinkedList<String> editProps = new LinkedList<String>();
+			LinkedList<String> createProps = new LinkedList<String>();
 
-				if (!paramProperties.get(properties).editOnly() && !paramProperties.get(properties).createOnly()) {
+			titles.addFirst("name");
+
+			for (String properties : propsParam.keySet()) {
+				
+				if (!propsParam.get(properties).editOnly() && !propsParam.get(properties).createOnly()) {
 					titles.add(properties);
 				}
-				
-				if (paramProperties.get(properties).editOnly()) {
+
+				if (propsParam.get(properties).editOnly()) {
 					editProps.add(properties);
-				}else if (paramProperties.get(properties).createOnly()) {
+				}else if (propsParam.get(properties).createOnly()) {
 					createProps.add(properties);
 				}
-				
-				/*nameHelp.put(properties, paramProperties.get(properties).getHelp());
-				if (paramProperties.get(properties).createOnly()) {
-					nameCreateFields.add(properties);
-				}*/
-				
+
 			}
-			
+
+			setTableGrid(new SelectableTable(titles));
 			setEditProps(editProps);
 			setCreateProps(createProps);
-			setTableGrid(new SelectableTable(titles));
+			setAllProps(new LinkedList<Map<String,String>>());
 			
 			//Fill rows
 			for (String path : mapSSH.keySet()) {
 
 				String[] aux = path.split("/");
 				String name = aux[aux.length - 1];
-				
+
 				Map<String, String> allProperties = new LinkedHashMap<String, String>();
 				allProperties.put("name", name);
-				allProperties.putAll(mapSSH.get(path));			
+				allProperties.putAll(mapSSH.get(path));
 				getTableGrid().add(allProperties);
 				getAllProps().add(allProperties);
 
@@ -145,14 +143,14 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		userInfoBean = (UserInfoBean) context.getApplication()
 				.evaluateExpressionGet(context, "#{userInfoBean}",
 						UserInfoBean.class);
-		
+
 		if (userInfoBean.getCurrentValue() < 96) {
 			userInfoBean.setCurrentValue(userInfoBean.getCurrentValue() + 5);
 		}
-		
+
 		logger.info("Finished mounting table");
 	}
-	
+
 	/**
 	 * deleteFile
 	 * 
@@ -246,7 +244,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		String path = generatePath(getPath(), name);
 		getDataStore().goTo(path);
 		List<String> contents = getDataStore().select(" | ", 10);
-		String fileContent = "";
+		fileContent = "";
 		for (String s : contents) {
 			fileContent += s + "<br/>";
 		}
@@ -349,7 +347,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		getDataStore().create(newDirectory, properties);
 		mountTable(getDataStore());
 	}
-	
+
 	/**
 	 * getItemByName
 	 * 
@@ -389,7 +387,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		setNewName(name);
 
 		//setItem(getItemByName(name));
-		
+
 		logger.info("editFileBefore NV " + getItemByName(name).getNameValue());
 		logger.info("editFileBefore NVE " + getItemByName(name).getNameValueEdit());
 
@@ -404,10 +402,10 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 */
 	public void editFileAfter() throws RemoteException {
-		
+
 		//logger.info("Change properties: " + getItem().getNameValueEdit().toString());
 		//logger.info("Keys : " + getItem().getNameValueEdit().keySet().toString());
-		
+
 		try {
 			String error = getDataStore().changeProperties(getDataStore().getPath() + "/" + getName(), getTableGrid().getRow(0));
 			logger.info("change properties error : " + error);
@@ -568,7 +566,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			}
 		}
 	}
-	
+
 	private String generatePath(String path, String name) {
 		String resultPath = path;
 		if (!resultPath.endsWith("/")) {
@@ -577,8 +575,8 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		resultPath += name;
 		return resultPath;
 	}
-	
-	
+
+
 
 	public String getCanCopy() throws RemoteException {
 		return getDataStore().canCopy();
@@ -638,18 +636,9 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		this.nameCreateFields = nameCreateFields;
 	}
 
-	public String getFileContent() {
-		return fileContent;
-	}
-
-	public void setFileContent(String content) {
-		fileContent = content;
-	}
+	 */
 
 
-	*/
-
-	
 
 	/*
 	public ArrayList<ItemList> getListHeaderGrid() {
@@ -659,7 +648,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	public void setListHeaderGrid(ArrayList<ItemList> listHeaderGrid) {
 		this.listHeaderGrid = listHeaderGrid;
 	}
-	
+
 	public List<Entry<String, String>> getFieldsInitNeededTitleKey() {
 		return fieldsInitNeededTitleKey;
 	}
@@ -668,9 +657,9 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			List<Entry<String, String>> fieldsInitNeededTitleKey) {
 		this.fieldsInitNeededTitleKey = fieldsInitNeededTitleKey;
 	}
-	*/
-	
-	
+	 */
+
+
 	public UserInfoBean getUserInfoBean() {
 		return userInfoBean;
 	}
@@ -718,7 +707,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	public void setCreateProps(List<String> createProps) {
 		this.createProps = createProps;
 	}
-	
+
 	public DataStore getDataStore() {
 		return dataStore;
 	}
@@ -726,7 +715,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	public void setDataStore(DataStore dataStore) {
 		this.dataStore = dataStore;
 	}
-	
+
 	public String getPath() {
 		return path;
 	}
@@ -765,6 +754,22 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 	public void setSelectedFiles(List<String[]> selectedFiles) {
 		this.selectedFiles = selectedFiles;
+	}
+
+	public Map<String, ParamProperty> getPropsParam() {
+		return propsParam;
+	}
+
+	public void setPropsParam(Map<String, ParamProperty> propsParam) {
+		this.propsParam = propsParam;
+	}
+	
+	public String getFileContent() {
+		return fileContent;
+	}
+
+	public void setFileContent(String content) {
+		fileContent = content;
 	}
 
 }

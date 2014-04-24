@@ -71,12 +71,10 @@
 	
 	<div style="width:100%; overflow: auto; height: 305px;" >
 
-		<rich:extendedDataTable id="hdfsfsOpenFile" value="#{canvasModalBean.outputTab.fileSystem.listGrid}"
-			var="item" width="100%" style="border:none;"
-			onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-			enableContextMenu="false" selectionMode="none"
-			onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
-			rowClasses="even-row, odd-row">
+		<rich:extendedDataTable id="hdfsfsOpenFile" value="#{canvasModalBean.outputTab.fileSystem.tableGrid.rows}"
+			var="item" rowKeyVar="indexTable" width="100%" style="border:none;"
+			onRowMouseOver="this.style.backgroundColor='#F1F1F1'" enableContextMenu="false" selectionMode="none"
+			onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'" rowClasses="even-row, odd-row">
 	
 			<f:facet name="header">
 				<h:outputText value="File System" />
@@ -86,30 +84,28 @@
 				<f:facet name="header">
 					<h:outputText value="" />
 				</f:facet>
-				<h:selectOneRadio value="#{item.stringSelectedDestination}"
-					onclick="outPutBrowserSelectOneRadio(this, '#{item.name}');">
+				<h:selectOneRadio value="#{item.selected}" onclick="outPutBrowserSelectOneRadio(this, '#{item.row[0]}');">
 					<f:selectItem itemValue="true" />
 				</h:selectOneRadio>
 			</rich:column>
 	
-			<rich:column sortBy="#{item.name}"
+			<rich:column sortBy="#{item.row[0]}"
 				style="border-bottom:0px;border-right:0px;">
 				<f:facet name="header">
-					<h:outputText value="Name" />
+					<h:outputText value="#{messages.label_name}" />
 				</f:facet>
-				<a4j:commandLink value="#{item.name}" action="#{canvasModalBean.outputTab.fileSystem.selectFile}"
+				<a4j:commandLink value="#{item.row[0]}" action="#{canvasModalBean.outputTab.fileSystem.selectFile}"
 					reRender="pathOpenFile,hdfsfsOpenFile">
-					<f:param name="nameFile" value="#{item.name}" />
+					<f:param name="nameFile" value="#{item.row[0]}" />
 				</a4j:commandLink>
 			</rich:column>
 	
-			<rich:columns value="#{canvasModalBean.outputTab.fileSystem.keyAsListNameValue == null? canvasBean.emptyList : canvasModalBean.outputTab.fileSystem.keyAsListNameValue}" var="column"
-				index="ind" id="column#{ind}"
-				style="border-bottom:0px;border-right:0px;">
+			<rich:columns value="#{canvasModalBean.outputTab.fileSystem.tableGrid.titles == null? canvasBean.emptyList : canvasModalBean.outputTab.fileSystem.tableGrid.titles}" 
+				var="column" index="ind" style="border-bottom:0px;border-right:0px;">
 				<f:facet name="header">
 					<h:outputText value="#{column}" />
 				</f:facet>
-				<h:outputText value="#{item.nameValue[column]}" id="value#{ind}" />
+				<h:outputText value="#{item.row[ind]}" />
 			</rich:columns>
 	
 		</rich:extendedDataTable>

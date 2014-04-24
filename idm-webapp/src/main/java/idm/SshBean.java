@@ -65,7 +65,9 @@ public class SshBean extends FileSystemBean implements Serializable{
 				setSelectedTab(tabs.get(0));
 				setDataStore(getDataStoreArray().getStores().get(selectedTab));
 				
-				if(getTableGrid().getRows().isEmpty()){
+				if(getTableGrid() != null && 
+						getTableGrid().getRows() != null &&
+						getTableGrid().getRows().isEmpty()){
 					mountTable(getDataStore());
 				}
 			}

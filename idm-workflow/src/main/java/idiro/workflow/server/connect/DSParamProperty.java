@@ -116,14 +116,19 @@ public class DSParamProperty extends UnicastRemoteObject implements
 	public boolean createOnly() throws RemoteException {
 		return createOnly;
 	}
+	
 	/**
 	 * Get the property type
 	 * @return FeatureType
 	 * @throws RemoteException
 	 */
 	@Override
-	public FeatureType type() throws RemoteException {
+	public FeatureType getType() {
 		return type;
+	}
+
+	public void setType(FeatureType type) {
+		this.type = type;
 	}
 
 }
