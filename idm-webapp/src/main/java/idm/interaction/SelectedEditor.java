@@ -56,7 +56,7 @@ public class SelectedEditor extends BaseBean implements Serializable{
 	private EditorInteraction editInter;
 	
 	/**
-	 * "S" if the validation is a success or "F" if it is a failure.
+	 * "Y" if the validation is a success or "N" if it is a failure.
 	 */
 	private String confirm;
 	
@@ -86,6 +86,7 @@ public class SelectedEditor extends BaseBean implements Serializable{
 	public SelectedEditor(TableInteraction tableInter,
 			String columnEdit, int rowEdit) {
 		super();
+		logger.info("build selected editor in table inter...");
 		this.tableInter = tableInter;
 		this.columnEdit = columnEdit;
 		this.rowEdit = rowEdit;
@@ -103,6 +104,7 @@ public class SelectedEditor extends BaseBean implements Serializable{
 	 */
 	public SelectedEditor(EditorInteraction editInter) {
 		super();
+		logger.info("build selected editor inter...");
 		this.editInter = editInter;
 		this.edit = editInter.getEdit();
 		this.value = edit.getTextEditorValue();
@@ -110,6 +112,7 @@ public class SelectedEditor extends BaseBean implements Serializable{
 	}
 	
 	private void init(){
+		logger.info("init...");
 		if(!edit.getTextEditorFunctionMenu().isEmpty()){
 			selectedFunction = edit.getTextEditorFunctionMenu().get(0);
 		}
@@ -123,7 +126,7 @@ public class SelectedEditor extends BaseBean implements Serializable{
 	 */
 	public void confirmValueAndCopy() throws RemoteException {
 		logger.info("confirmValueAndCopy");
-		setConfirm("S");
+		setConfirm("Y");
 		boolean success = checkTextEditor();
 
 		if (success) {
@@ -181,7 +184,7 @@ public class SelectedEditor extends BaseBean implements Serializable{
 			request.setAttribute("msnError", "msnError");
 		} else {
 			if (getConfirm() != null
-					&& !getConfirm().equalsIgnoreCase("S")) {
+					&& !getConfirm().equalsIgnoreCase("Y")) {
 				MessageUseful
 				.addInfoMessage(getMessageResources("success_message"));
 				HttpServletRequest request = (HttpServletRequest) FacesContext

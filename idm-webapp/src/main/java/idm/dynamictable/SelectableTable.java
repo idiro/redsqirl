@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 public class SelectableTable implements Serializable{
 
 	/**
@@ -15,6 +17,8 @@ public class SelectableTable implements Serializable{
 	 */
 	private static final long serialVersionUID = -4898672980347548506L;
 
+	static protected Logger logger = Logger.getLogger(SelectableTable.class);
+	
 	private List<String> titles;
 	private List<SelectableRow> rows;
 
@@ -97,7 +101,7 @@ public class SelectableTable implements Serializable{
 	}
 
 	/**
-	 * Return the index of the all the selected rows
+	 * Return the index of the all the selected rows, sorted by index
 	 * @return
 	 */
 	public List<Integer> getAllSelected(){
@@ -108,7 +112,16 @@ public class SelectableTable implements Serializable{
 				list.add(i);
 			}
 		}
+		logger.info("selected: "+list.toString());
 		return list;
+	}
+	
+	public void removeAllSelected(){
+		List<Integer> l = getAllSelected();
+		for(int i = l.size() -1; i >= 0;--i){
+			logger.info(l.get(i));
+			rows.remove((int) l.get(i));
+		}
 	}
 
 	

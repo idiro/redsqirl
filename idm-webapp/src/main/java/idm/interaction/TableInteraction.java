@@ -13,7 +13,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 /**
@@ -156,6 +155,7 @@ public class TableInteraction extends CanvasModalInteraction{
 						.getFirstChild().getHead());
 			}
 		}
+		logger.info("Grid column titles: "+tableColumns);
 		tableGrid = new SelectableTable(tableColumns);
 		if (inter.getTree().getFirstChild("table")
 				.getChildren("row") != null) {
@@ -294,18 +294,8 @@ public class TableInteraction extends CanvasModalInteraction{
 	 * @author Igor.Souza
 	 */
 	public void deleteLine() {
-
 		logger.info("tableInteractionDeleteLine");
-		Map<String, String> params = FacesContext.getCurrentInstance()
-				.getExternalContext().getRequestParameterMap();
-
-		String[] lines = params.get("lineToDelete").split(",");
-		for(int i = lines.length-1; i >= 0;--i){
-			try{
-				tableGrid.remove(Integer.getInteger(lines[i]));
-			}catch(Exception e){}
-		}
-
+		tableGrid.removeAllSelected();
 	}
 	
 

@@ -59,7 +59,7 @@ public class CanvasModalOutputTab implements Serializable{
 	private String showOutputForm;
 
 	/**
-	 * The new path kept when there is not outputFrom (showOutputForm = 'N')
+	 * The new path kept when there is no outputFrom (showOutputForm = 'N') used in browser interaction.
 	 */
 	private String path;
 
@@ -98,7 +98,8 @@ public class CanvasModalOutputTab implements Serializable{
 			while(storeName.hasNext()){
 				String name = storeName.next();
 				FileSystemBean newFS = new FileSystemBean();
-				newFS.mountTable(outDatastores.get(name));
+				newFS.setDataStore(outDatastores.get(name));
+				newFS.mountTable(newFS.getDataStore());
 				datastores.put(name, newFS);
 			}
 		}

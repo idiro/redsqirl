@@ -53,58 +53,58 @@
             <br/>
             <p><h:outputText value="#{canvasModalBean.pageLegend}"/></p>
         
-            <a4j:repeat value="#{canvasModalBean.inters}" var="item" rowKeyVar="index" id="dynamicFormInteraction" >
+            <a4j:repeat value="#{canvasModalBean.inters}" var="interCur" rowKeyVar="interCurIdx" id="dynamicFormInteraction" >
                 
-                <h2><h:outputText value="#{item.name}"/></h2>
+                <h2><h:outputText value="#{interCur.name}"/></h2>
                 
-                <p><h:outputText value="#{item.legend}"/></p>
+                <p><h:outputText value="#{interCur.legend}"/></p>
                 
                         <!-- input -->
                           <a4j:region>
-                            <h:inputText  value="#{item.input.inputValue}" maxlength="255" style="width:395px;" styleClass="interModal" rendered="#{item.displayType == 'input'}"
+                            <h:inputText  value="#{interCur.input.inputValue}" maxlength="255" style="width:395px;" styleClass="interModal" rendered="#{interCur.displayType == 'input'}"
                                 onkeypress="return disableEnterKey(event);"/>
                           </a4j:region>     
                 
                 <!-- list -->
-                <a4j:region rendered="#{item.displayType == 'list'}">
-                    <rich:comboBox value="#{item.list.selectedListOption}" selectFirstOnUpdate="false" width="200" 
-                        listWidth="150" listHeight="200" enableManualInput="false" rendered="#{item.list.comboBox == 'Y'}" >
-                        <f:selectItems value="#{item.list.listOptions}" />
+                <a4j:region rendered="#{interCur.displayType == 'list'}">
+                    <rich:comboBox value="#{interCur.list.selectedListOption}" selectFirstOnUpdate="false" width="200" 
+                        listWidth="150" listHeight="200" enableManualInput="false" rendered="#{interCur.list.comboBox == 'Y'}" >
+                        <f:selectItems value="#{interCur.list.listOptions}" />
                     </rich:comboBox>
                     
-                    <h:selectOneRadio value="#{item.list.selectedListOption}" rendered="#{item.list.comboBox == 'N'}" layout="pageDirection" >
-                        <f:selectItems value="#{item.list.listOptions}" />
+                    <h:selectOneRadio value="#{interCur.list.selectedListOption}" rendered="#{interCur.list.comboBox == 'N'}" layout="pageDirection" >
+                        <f:selectItems value="#{interCur.list.listOptions}" />
                     </h:selectOneRadio>
                 </a4j:region>
                 <!-- appendList -->
-                <a4j:region rendered="#{item.displayType == 'appendList'}">
-                    <h:selectManyListbox value="#{item.appendList.selectedAppendListOptions}" rendered="#{item.appendList.comboBox == 'Y'}" >
-                        <f:selectItems value="#{item.appendList.appendListOptions}" />
+                <a4j:region rendered="#{interCur.displayType == 'appendList'}">
+                    <h:selectManyListbox value="#{interCur.appendList.selectedAppendListOptions}" rendered="#{interCur.appendList.comboBox == 'Y'}" >
+                        <f:selectItems value="#{interCur.appendList.appendListOptions}" />
                     </h:selectManyListbox>
                     
-                    <h:selectManyCheckbox value="#{item.appendList.selectedAppendListOptions}" rendered="#{item.appendList.comboBox == 'N'}" layout="pageDirection" >
-                        <f:selectItems value="#{item.appendList.appendListOptions}" />
+                    <h:selectManyCheckbox value="#{interCur.appendList.selectedAppendListOptions}" rendered="#{interCur.appendList.comboBox == 'N'}" layout="pageDirection" >
+                        <f:selectItems value="#{interCur.appendList.appendListOptions}" />
                     </h:selectManyCheckbox>
                 </a4j:region>
                 <!-- browser -->
-                <a4j:region rendered="#{item.displayType == 'browser'}">
+                <a4j:region rendered="#{interCur.displayType == 'browser'}">
                     <rich:panel style="border:none;" id="browserPanel" >
                     
                         <h:outputText value="#{messages.label_path}" />
                         <br/>
-                        <h:inputText id="browserPath" label="Path" value="#{item.browser.path}" maxlength="255" 
+                        <h:inputText id="browserPath" label="Path" value="#{interCur.browser.path}" maxlength="255" 
                             style="width:395px;" styleClass="interModal" onclick="openBrowserChangePath();" />
                         
                         <a4j:commandButton  styleClass="greenButton" type="submit" id="browserChangePathBt" 
                             reRender="browserTableProp,browserTableData" oncomplete="openModalOutputBrowser()" style="display:none;" >
-                            <f:param name="numberDynamic" value="#{index}" />
+                            <f:param name="numberDynamic" value="#{interCurIdx}" />
                         </a4j:commandButton>
             
                         <br/><br/>
                         
                         <div id="browserProperties" style="width:100%; height:70px;  border:1px solid black; overflow-x: hidden;">
                         
-                            <rich:extendedDataTable id="browserTableProp" value="#{item.browser.listProperties}"
+                            <rich:extendedDataTable id="browserTableProp" value="#{interCur.browser.listProperties}"
                                 var="property" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
                                 enableContextMenu="false" selectionMode="none"
                                 onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
@@ -131,7 +131,7 @@
                         
                         <div id="divBrowserData" style="width:100%; height:120px;  border:1px solid black; overflow-x: hidden;">
                         
-                            <rich:scrollableDataTable id="browserTableData" value="#{item.browser.gridRows}" height="100%"
+                            <rich:scrollableDataTable id="browserTableData" value="#{interCur.browser.gridRows}" height="100%"
                                 var="rowData" index="rowDataIndex" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
                                 enableContextMenu="false"
                                 onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
@@ -158,14 +158,14 @@
                 </a4j:region>
                 
                 <!-- helpTextEditor -->
-                <a4j:region rendered="#{item.displayType == 'helpTextEditor'}">
+                <a4j:region rendered="#{interCur.displayType == 'helpTextEditor'}">
                     <rich:panel style="border:none;" id="helpTextEditorPanel" >
                         <h:outputText value="#{messages.label_formula}" />
                         <br/>
-                        <h:inputTextarea maxlength="100" cols="70" rows="10" value="#{item.editor.textEditorValue}" style="resize:none;border:1px solid;" id="command">
+                        <h:inputTextarea maxlength="100" cols="70" rows="10" value="#{interCur.editor.textEditorValue}" style="resize:none;border:1px solid;" id="command">
                             <a4j:support event="onclick" action="#{canvasModalBean.openHelpTextEditorModal}" oncomplete="#{rich:component('textEditorPanel')}.show()" 
-                                reRender="commandText,listFields,listFunctions,listCategories,listOperation,listCategoriesOperation" rendered="#{item.editor.openPopUp == 'S'}" >
-                                <a4j:actionparam name="idInteraction" value="#{item.id}"/>
+                                reRender="commandText,listFields,listFunctions,listCategories,listOperation,listCategoriesOperation" rendered="#{interCur.editor.openPopup == 'Y'}" >
+                                <a4j:actionparam name="idInteraction" value="#{interCur.id}"/>
                             </a4j:support>
                         </h:inputTextarea>
                         <br/>
@@ -174,23 +174,23 @@
                 </a4j:region>
                 
                 <!-- table -->
-                <a4j:region rendered="#{item.displayType == 'table'}">
+                <a4j:region rendered="#{interCur.displayType == 'table'}">
                     <rich:panel style="border:none;" id="tablePanel">
                         
         
-                        <h:panelGrid id="table" columns="3" rendered="#{!empty item.table.tableGeneratorMenu}">
+                        <h:panelGrid id="table" columns="3" rendered="#{!empty interCur.table.tableGeneratorMenu}">
                         <h:outputText value="#{messages.label_generation}" />
                             <rich:comboBox
-                                value="#{item.table.selectedGenerator}" width="200"
+                                value="#{interCur.table.selectedGenerator}" width="200"
                                 enableManualInput="false" id="generation" listWidth="150"
                                 listHeight="200">
-                                <f:selectItems styleClass="interModal" value="#{item.table.tableGeneratorMenu}" />
+                                <f:selectItems styleClass="interModal" value="#{interCur.table.tableGeneratorMenu}" />
                             </rich:comboBox>
     
                             <a4j:commandButton type="submit"
                                 styleClass="greenButton"    
                                 id="tableInteractionGenerationLines"
-                                action="#{item.table.generateLines}"
+                                action="#{interCur.table.generateLines}"
                                 value="#{messages.button_ok}" reRender="tableInteraction">
                             </a4j:commandButton>
                             
@@ -202,7 +202,7 @@
                         <div id="DivTableInteraction"
                             style="width: 580px; height: 220px; border: 1px solid black; overflow-x: hidden;">
                             
-                            <rich:dataTable id="tableInteraction" value="#{item.table.tableGridRows}"
+                            <rich:dataTable id="tableInteraction" value="#{interCur.table.tableGridRows}"
                                 var="rowItem" rowKeyVar="rowNb" width="100%" style="border:none;" 
                                 onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
                                 enableContextMenu="false" 
@@ -213,7 +213,7 @@
                                     <f:facet name="header">
                                         <h:panelGrid columns="1" styleClass="">
                                         <a4j:commandLink
-                                            action="#{item.table.deleteLine}"
+                                            action="#{interCur.table.deleteLine}"
                                             reRender="tableInteraction"
                                             onclick="if(!confirm('Are you sure you want to delete the selected line?')){return false;}">
                                             <img id="tableInteractionBtDelete"
@@ -229,7 +229,7 @@
         
                                 </rich:column>
                                 
-                                <rich:columns value="#{item.table.tableGridColumns == null? canvasBean.emptyList : item.table.tableGridColumns}"
+                                <rich:columns value="#{canvasModalBean.tablesColumnTitle == null? canvasBean.emptyList : canvasModalBean.tablesColumnTitle}"
                                     var="column" index="ind"
                                     style="border-bottom:0px;border-right:0px;">
                                     <f:facet name="header">
@@ -237,7 +237,7 @@
                                     </f:facet>
         
                                     <h:inputText value="#{rowItem.row[ind]}"
-                                        rendered="#{item.table.columnType[column] == 'textField' }"
+                                        rendered="#{interCur.table.columnType[column] == 'textField' }"
                                         styleClass="tableInteractionInput"
                                         onkeypress="return disableEnterKey(event);"/>
         
@@ -245,18 +245,18 @@
                                         selectFirstOnUpdate="false" defaultLabel="Enter some value"
                                         width="125" enableManualInput="false" listWidth="150"
                                         listHeight="150"
-                                        rendered="#{item.table.columnType[column] == 'comboBox' }"
+                                        rendered="#{interCur.table.columnType[column] == 'comboBox' }"
                                         styleClass="tableInteractionInput">
-                                        <f:selectItems value="#{item.table.listConstraint[column]}" />
+                                        <f:selectItems value="#{interCur.table.tableConstraints[column]}" />
                                     </rich:comboBox>
         
                                     <h:inputText value="#{rowItem.row[ind]}"
-                                        rendered="#{item.columnType[column] == 'editor' }"
+                                        rendered="#{interCur.columnType[column] == 'editor' }"
                                         styleClass="tableInteractionInput">
                                         <a4j:support event="onclick" action="#{canvasModalBean.openHelpTextEditorModal}" 
                                             oncomplete="#{rich:component('textEditorPanel')}.show()" 
                                             reRender="commandText,listFields,listFunctions,listCategories,listOperation,listCategoriesOperation,command,tableInteraction">
-                                            <a4j:actionparam  name="idInteraction" value="#{item.id}"/>
+                                            <a4j:actionparam  name="idInteraction" value="#{interCur.id}"/>
                                             <a4j:actionparam  name="rowKey" value="#{rowNb}"/>
                                             <a4j:actionparam  name="column" value="#{column}"/>
                                         </a4j:support>
@@ -269,7 +269,7 @@
                             </div>
                         
                         <a4j:commandLink
-                            action="#{item.addNewLine}"
+                            action="#{interCur.addNewLine}"
                             reRender="tableInteraction">
                             <img id="tableInteractionBtAdd"
                                 src="../image/icons/button-plus.gif" />
@@ -323,7 +323,7 @@
                                 rendered="#{item.renderBrowserButton}"
                                 oncomplete="openModalOutputBrowser()">
                                 <a4j:actionparam name="nameOutput" value="#{item.name}"
-                                    assignTo="#{canvasModalBean.nameOutput}" />
+                                    assignTo="#{canvasModalBean.outputTab.nameOutput}" />
                             </a4j:commandButton>
                             
                             <h:outputText value="#{item.path}"/>
