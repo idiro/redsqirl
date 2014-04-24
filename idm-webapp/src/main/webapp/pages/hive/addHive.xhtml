@@ -12,10 +12,12 @@
 	<h:inputText value="#{hiveBean.newName}" onkeypress="return enableEnterKey(event, 'addHiveBtn');"/>
 	<br />
 
-	<a4j:repeat value="#{hiveBean.createProps}" var="title" >
+	<a4j:repeat value="#{hiveBean.createProps}" var="title" rowKeyVar="ind" >
 		<h:outputText value="#{title}" />
 		<br />
-		<h:inputText value="#{hiveBean.allProps[title]}" title="#{hiveBean.propsParam[title].help}" onkeypress="return enableEnterKey(event, 'addHiveBtn');"/>
+		<h:inputText value="#{hiveBean.allProps[ind]}" 
+		title="#{hiveBean.propsParam[ind].help}" 
+		onkeypress="return enableEnterKey(event, 'addHiveBtn');"/>
 		<br />
 		<br />
 	</a4j:repeat>

@@ -49,7 +49,6 @@
 		<a4j:actionparam name="nameFile" />
 	</a4j:jsFunction>
 
-
 	<h:outputText value="#{messages.label_path}" />
 	<h:inputText id="pathOpenFile" label="Path" value="#{browserHdfsBean.path}"
 		maxlength="255" style="width:395px;" onkeypress="return enableEnterKey(event, 'changePathLoadHdfsBtn');"/>
@@ -62,6 +61,7 @@
 		reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
 		<h:graphicImage id="btPrev" value="../image/icons/button-previous.gif" title='#{messages.HdfsInterface_previous_help}' />
 	</a4j:commandLink>
+	
 	<a4j:commandLink action="#{browserHdfsBean.goNext}" reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
 		<h:graphicImage id="btNext" value="../image/icons/button-next.gif" title='#{messages.HdfsInterface_next_help}' />
 	</a4j:commandLink>
@@ -71,7 +71,6 @@
 	</a4j:commandLink>
 	
 	<br/><br/>
-	
 	
 	<div style="width:590px;height:250px;overflow:auto;" >
 	
@@ -84,7 +83,7 @@
                 <f:facet name="header">
 					<h:outputText value="" />
 				</f:facet>
-                <h:selectOneRadio value="#{item.selected}" onclick="dataTableOpenSelectOneRadio(this, '#{item.row[0]}');">
+                <h:selectOneRadio value="#{item.selected}" onclick="dataTableOpenSelectOneRadio(this, '#{browserHdfsBean.allProps[indexTable]['name']}');">
                     <f:selectItem itemValue="true" />
                 </h:selectOneRadio>
             </rich:column>
@@ -94,24 +93,25 @@
 					<h:outputText value="" />
 				</f:facet>
 				<h:graphicImage value="../image/icons/button-property.gif" title='#{messages.HdfsInterface_properties_help}' 
-					rendered="#{browserHdfsBean.allProps[indexTable][type] == 'directory'}" styleClass="fileSystemIcon" />
+					rendered="#{browserHdfsBean.allProps[indexTable]['type'] == 'directory'}" styleClass="fileSystemIcon" />
 				<h:graphicImage value="../image/icons/button-file-icon.png" title='#{messages.HdfsInterface_properties_help}' 
-					rendered="#{browserHdfsBean.allProps[indexTable][type] == 'file'}" styleClass="fileSystemIcon" />
+					rendered="#{browserHdfsBean.allProps[indexTable]['type'] == 'file'}" styleClass="fileSystemIcon" />
 			</rich:column>
             
-            <rich:column sortBy="#{item.row[0]}" filterBy="#{item.row[0]}"
+            <rich:column sortBy="#{browserHdfsBean.allProps[indexTable]['name']}" filterBy="#{browserHdfsBean.allProps[indexTable]['name']}"
                 style="border-bottom:0px;border-right:0px;">
                 <f:facet name="header">
                     <h:outputText value="#{messages.label_name}" />
                 </f:facet>
-               <a4j:commandLink value="#{item.row[0]}}"
+               <a4j:commandLink value="#{browserHdfsBean.allProps[indexTable]['name']}"
 					action="#{browserHdfsBean.verifyIfIsFile}"
-					oncomplete="selectFileLoadHdfs('#{browserHdfsBean.file}', '#{item.row[0]}')">
-					<f:param name="nameFile" value="#{item.row[0]}" />
+					oncomplete="selectFileLoadHdfs('#{browserHdfsBean.file}', '#{browserHdfsBean.allProps[indexTable]['name']}')">
+					<f:param name="nameFile" value="#{browserHdfsBean.allProps[indexTable]['name']}" />
 				</a4j:commandLink>
             </rich:column>
     
-            <rich:columns value="#{browserHdfsBean.tableGrid.titles == null? canvasBean.emptyList : browserHdfsBean.tableGrid.titles}" var="column" index="ind" begin="1"
+            <rich:columns value="#{browserHdfsBean.tableGrid.titles == null? canvasBean.emptyList : browserHdfsBean.tableGrid.titles}" 
+            	var="column" index="ind"
                 style="border-bottom:0px;border-right:0px;">
                 <f:facet name="header">
                     <h:outputText value="#{column}" />
@@ -122,7 +122,6 @@
         </rich:extendedDataTable>
 
 	</div>
-
 
 	<br />
 

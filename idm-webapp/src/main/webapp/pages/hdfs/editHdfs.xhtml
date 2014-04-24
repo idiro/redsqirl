@@ -12,15 +12,15 @@
 	<h:inputText value="#{hdfsBean.newName}" />
 	<br />
 	
-	<a4j:repeat value="#{hdfsBean.editProps}" var="title" >
+	<a4j:repeat value="#{hdfsBean.editProps}" var="title" rowKeyVar="ind" >
 
 		<h:outputText value="#{title}" />
 		<br />
-		<h:inputText value="#{hdfsBean.allProps[title]}"
-			disabled="#{hdfsBean.propsParam[title].const}"
-			rendered="#{hdfsBean.propsParam[title].type != 'BOOLEAN'}" />
+		<h:inputText value="#{hdfsBean.allProps[ind]}"
+			disabled="#{hdfsBean.propsParam[ind].const}"
+			rendered="#{hdfsBean.propsParam[ind].type != 'BOOLEAN'}" />
 			
-		<h:selectOneRadio value="#{hdfsBean.allProps[title]}" rendered="#{hdfsBean.propsParam[title].type == 'BOOLEAN'}">
+		<h:selectOneRadio value="#{hdfsBean.allProps[ind]}" rendered="#{hdfsBean.propsParam[ind].type == 'BOOLEAN'}">
 			<f:selectItem itemValue="true" itemLabel="Yes" />
 			<f:selectItem itemValue="false" itemLabel="No" />
 		</h:selectOneRadio>

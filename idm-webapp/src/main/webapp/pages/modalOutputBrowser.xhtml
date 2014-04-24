@@ -84,19 +84,19 @@
 				<f:facet name="header">
 					<h:outputText value="" />
 				</f:facet>
-				<h:selectOneRadio value="#{item.selected}" onclick="outPutBrowserSelectOneRadio(this, '#{item.row[0]}');">
+				<h:selectOneRadio value="#{item.selected}" onclick="outPutBrowserSelectOneRadio(this, '#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}');">
 					<f:selectItem itemValue="true" />
 				</h:selectOneRadio>
 			</rich:column>
 	
-			<rich:column sortBy="#{item.row[0]}"
+			<rich:column sortBy="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}"
 				style="border-bottom:0px;border-right:0px;">
 				<f:facet name="header">
 					<h:outputText value="#{messages.label_name}" />
 				</f:facet>
-				<a4j:commandLink value="#{item.row[0]}" action="#{canvasModalBean.outputTab.fileSystem.selectFile}"
+				<a4j:commandLink value="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}" action="#{canvasModalBean.outputTab.fileSystem.selectFile}"
 					reRender="pathOpenFile,hdfsfsOpenFile">
-					<f:param name="nameFile" value="#{item.row[0]}" />
+					<f:param name="nameFile" value="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}" />
 				</a4j:commandLink>
 			</rich:column>
 	

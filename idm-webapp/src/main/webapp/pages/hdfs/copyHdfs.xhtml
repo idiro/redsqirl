@@ -60,23 +60,23 @@ function dataTableSelectOneRadio(radio) {
 				<h:outputText value="" />
 			</f:facet>
 				<h:graphicImage value="../image/icons/button-property.gif" title='#{messages.HdfsInterface_properties_help}' 
-				rendered="#{hdfsBean.allProps[indexTable][type] == 'directory'}" styleClass="fileSystemIcon" />
+				rendered="#{hdfsBean.allProps[indexTable]['type'] == 'directory'}" styleClass="fileSystemIcon" />
 				<h:graphicImage value="../image/icons/button-file-icon.png" title='#{messages.HdfsInterface_properties_help}' 
-				rendered="#{hdfsBean.allProps[indexTable][type] == 'file'}" styleClass="fileSystemIcon" />
+				rendered="#{hdfsBean.allProps[indexTable]['type'] == 'file'}" styleClass="fileSystemIcon" />
 		</rich:column>
 		
-		<rich:column sortBy="#{item.row[0]}"
+		<rich:column sortBy="#{hdfsBean.allProps[indexTable]['name']}"
 			style="border-bottom:0px;border-right:0px;">
 			<f:facet name="header">
 				<h:outputText value="#{messages.label_name}" />
 			</f:facet>
-			<a4j:commandLink value="#{item.row[0]}"
+			<a4j:commandLink value="#{hdfsBean.allProps[indexTable]['name']}"
 				action="#{hdfsBean.selectFile}" reRender="pathCopy,hdfsfsCopy">
-				<f:param name="nameFile" value="#{item.row[0]}" />
+				<f:param name="nameFile" value="#{hdfsBean.allProps[indexTable]['name']}" />
 			</a4j:commandLink>
 		</rich:column>
 
-		<rich:columns value="#{hdfsBean.tableGrid.titles == null? canvasBean.emptyList : hdfsBean.tableGrid.titles}" var="column" begin="1"
+		<rich:columns value="#{hdfsBean.tableGrid.titles == null? canvasBean.emptyList : hdfsBean.tableGrid.titles}" var="column"
 			index="ind" style="border-bottom:0px;border-right:0px;">
 			<f:facet name="header">
 				<h:outputText value="#{column}" />

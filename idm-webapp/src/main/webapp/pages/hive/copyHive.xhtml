@@ -56,14 +56,14 @@ function dataTableSelectOneRadio(radio) {
 			</h:selectOneRadio>
 
 		</rich:column>
-		<rich:column sortBy="#{item.row[0]}"
+		<rich:column sortBy="#{hiveBean.allProps[indexTable]['name']}"
 			style="border-bottom:0px;border-right:0px;">
 			<f:facet name="header">
 				<h:outputText value="Name" />
 			</f:facet>
-			<a4j:commandLink value="#{item.row[0]}"
+			<a4j:commandLink value="#{hiveBean.allProps[indexTable]['name']}"
 				action="#{hiveBean.selectFile}" reRender="pathCopy,hivefsCopy">
-				<f:param name="nameFile" value="#{item.row[0]}" />
+				<f:param name="nameFile" value="#{hiveBean.allProps[indexTable]['name']}" />
 			</a4j:commandLink>
 		</rich:column>
 

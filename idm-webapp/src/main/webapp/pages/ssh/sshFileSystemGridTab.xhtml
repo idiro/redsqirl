@@ -48,19 +48,19 @@
 					enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
 					rowClasses="even-row, odd-row" tableState="#{sshBean.tableState}" >
 	
-					<rich:column sortBy="#{item.row[0]}" filterBy="#{item.row[0]}"
+					<rich:column sortBy="#{sshBean.allProps[indexTable]['name']}" filterBy="#{sshBean.allProps[indexTable]['name']}"
 						style="border-bottom:0px;border-right:0px;">
 						<f:facet name="header">
 							<h:outputText value="#{messages.label_name}"/>
 								
 						</f:facet>
-						<a4j:commandLink value="#{item.row[0]}" action="#{sshBean.verifyIfIsFile}"
-	     					oncomplete="selectFileSsh('#{sshBean.file}', '#{item.row[0]}')">
-	     						<f:param name="nameFile" value="#{item.row[0]}" />
+						<a4j:commandLink value="#{sshBean.allProps[indexTable]['name']}" action="#{sshBean.verifyIfIsFile}"
+	     					oncomplete="selectFileSsh('#{sshBean.file}', '#{sshBean.allProps[indexTable]['name']}')">
+	     						<f:param name="nameFile" value="#{sshBean.allProps[indexTable]['name']}" />
 	     						<rich:dragSupport dragIndicator=":indicator"
-                               	 	dragValue="#{item.row[0]}" dragType="ssh">
-	                                <rich:dndParam name="label" value="#{item.row[0]}" />
-	                                <a4j:actionparam name="file" value="#{item.row[0]}" />
+                               	 	dragValue="#{sshBean.allProps[indexTable]['name']}" dragType="ssh">
+	                                <rich:dndParam name="label" value="#{sshBean.allProps[indexTable]['name']}" />
+	                                <a4j:actionparam name="file" value="#{sshBean.allProps[indexTable]['name']}" />
 	                                <a4j:actionparam name="path" value="#{sshBean.path}" />
 	                                <a4j:actionparam name="server" value="#{tab}" />
                             	</rich:dragSupport>

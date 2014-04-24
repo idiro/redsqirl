@@ -67,7 +67,7 @@ public class SelectableTable implements Serializable{
 		Iterator<String> it = titles.iterator();
 		int i = 0;
 		while(it.hasNext()){
-			toAdd[i] = row.get(it.next());
+			toAdd[i++] = row.get(it.next());
 		}
 		return add(new SelectableRow(toAdd));
 	}

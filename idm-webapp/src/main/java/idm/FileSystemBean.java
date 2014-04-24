@@ -103,7 +103,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			LinkedList<String> editProps = new LinkedList<String>();
 			LinkedList<String> createProps = new LinkedList<String>();
 
-			titles.addFirst("name");
+			//titles.addFirst("name");
 
 			for (String properties : propsParam.keySet()) {
 				
@@ -356,19 +356,19 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	 * @return ItemList
 	 * @author Igor.Souza
 	 */
-	public EditFileSystem getItemByName(String name) throws RemoteException {
+	/*public EditFileSystem getItemByName(String name) throws RemoteException {
 
 		logger.info("getItemByName");
 
-		/*for (EditFileSystem it : getListGrid()) {
+		for (EditFileSystem it : getListGrid()) {
 			if (it.getName().equals(name)) {
 				return it;
 			}
-		}*/
+		}
 
 		logger.info("getItemByName return null");
 		return null;
-	}
+	}*/
 
 	/**
 	 * editFileBefore
@@ -378,7 +378,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	 * @return
 	 * @author Igor.Souza
 	 */
-	public void editFileBefore() throws RemoteException {
+	/*public void editFileBefore() throws RemoteException {
 
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String name = params.get("nameFileEdit");
@@ -391,7 +391,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		logger.info("editFileBefore NV " + getItemByName(name).getNameValue());
 		logger.info("editFileBefore NVE " + getItemByName(name).getNameValueEdit());
 
-	}
+	}*/
 
 	/**
 	 * editFileAfter

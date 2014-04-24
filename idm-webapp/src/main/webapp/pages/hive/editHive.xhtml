@@ -12,19 +12,17 @@
 	<h:inputText value="#{hiveBean.newName}" />
 	<br />
 
-	<a4j:repeat value="#{hiveBean.editProps}" var="title" >
+	<a4j:repeat value="#{hiveBean.editProps}" var="title" rowKeyVar="ind" >
 	
 		<h:outputText value="#{title}" />
 		<br />
-		<h:inputText value="#{hiveBean.allProps[title]}" 
-			title="#{hiveBean.nameHelp[column]}"
-			disabled="#{hiveBean.propsParam[title].const}" 
-			rendered="#{hiveBean.propsParam[title].type != 'BOOLEAN'}"
+		<h:inputText value="#{hiveBean.allProps[ind]}" title="#{hiveBean.propsParam[ind].help}"
+			disabled="#{hiveBean.propsParam[ind].const}" 
+			rendered="#{hiveBean.propsParam[ind].type != 'BOOLEAN'}"
 		/>
-		<h:inputTextarea value="#{hiveBean.allProps[title]}" 
-			title="#{hiveBean.nameHelp[column]}"
-			disabled="#{hiveBean.propsParam[title].const}"
-			rendered="#{hiveBean.propsParam[title].type == 'BOOLEAN'}"
+		<h:inputTextarea value="#{hiveBean.allProps[ind]}" title="#{hiveBean.propsParam[ind].help}"
+			disabled="#{hiveBean.propsParam[ind].const}"
+			rendered="#{hiveBean.propsParam[ind].type == 'BOOLEAN'}"
 			cols="30" rows="10" style="overflow:auto;resize:vertical"
 		/>
 		<br />
