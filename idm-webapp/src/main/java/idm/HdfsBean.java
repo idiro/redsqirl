@@ -39,7 +39,7 @@ public class HdfsBean extends FileSystemBean {
 
 			setDataStore(getRmiHDFS());
 
-			if(getListGrid().isEmpty()){
+			if(getTableGrid().getRows().isEmpty()){
 				mountTable(getDataStore());
 			}
 
@@ -50,10 +50,10 @@ public class HdfsBean extends FileSystemBean {
 
 	}
 	
-	public void addFileAfter() throws RemoteException{
+	/*public void addFileAfter() throws RemoteException{
 		setNameValue(new HashMap<String, String>());
 		super.addFileAfter();
-	}
+	}*/
 	
 	public void processDrop(DropEvent dropEvent) throws RemoteException { 
 		logger.info("processDrop");

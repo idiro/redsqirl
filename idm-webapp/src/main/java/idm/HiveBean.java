@@ -30,7 +30,7 @@ public class HiveBean extends FileSystemBean {
 		try {
 			setDataStore(getHiveInterface());
 
-			if(getListGrid().isEmpty()){
+			if(getTableGrid().getRows().isEmpty()){
 				mountTable(getDataStore());
 			}
 			/*else{
