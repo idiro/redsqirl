@@ -63,7 +63,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	}
 
-	//@PostConstruct
+	/**
+	 * Init the canvas at the begining of a session
+	 */
 	public void init(){
 
 		logger.info("openCanvas");
@@ -388,7 +390,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	/**
 	 * load
 	 * 
-	 * Method to load a workflow
+	 * Method to create a new workflow and make it the default
 	 * 
 	 * @return
 	 * @author Igor.Souza
@@ -400,33 +402,24 @@ public class CanvasBean extends BaseBean implements Serializable {
 		logger.info("load " + path);
 
 		DataFlowInterface dfi;
+		String error = null;
 		try {
 			dfi = getworkFlowInterface();
 
 			String newWfName = generateWorkflowName(path);
-			String error = dfi.addWorkflow(newWfName);
+			error = dfi.addWorkflow(newWfName);
 
-			if (error != null) {
-				MessageUseful.addErrorMessage(error);
-				HttpServletRequest request = (HttpServletRequest) FacesContext
-						.getCurrentInstance().getExternalContext().getRequest();
-				request.setAttribute("msnError", "msnError");
-				return;
-			}
-			if (!getWorkflowMap().containsKey(newWfName)) {
-				logger.error("A key is not available on the back-end but on the front-end!");
-			}
+			if( error == null){
+				if (!getWorkflowMap().containsKey(newWfName)) {
+					logger.error("A key is not available on the back-end but on the front-end!");
+				}
 
-			DataFlow df = dfi.getWorkflow(newWfName);
-			error = df.read(path);
-			logger.info("load error " + error);
+				DataFlow df = dfi.getWorkflow(newWfName);
+				error = df.read(path);
+			}
 
 			if (error != null) {
 				dfi.removeWorkflow(newWfName);
-				MessageUseful.addErrorMessage(error);
-				HttpServletRequest request = (HttpServletRequest) FacesContext
-						.getCurrentInstance().getExternalContext().getRequest();
-				request.setAttribute("msnError", "msnError");
 			} else {
 				setNameWorkflow(newWfName);
 				setDf(df);
@@ -435,14 +428,20 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 				for (DataFlowElement e : df.getElement()){
 					getIdMap().get(getNameWorkflow()).put(e.getComponentId(), e.getComponentId());
-
-
 				}
 			}
 
 		} catch (Exception e) {
 			logger.info("Error loading workflow");
 			e.printStackTrace();
+		}
+
+		if (error != null) {
+			logger.info("error " + error);
+			MessageUseful.addErrorMessage(error);
+			HttpServletRequest request = (HttpServletRequest) FacesContext
+					.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
 		}
 	}
 
@@ -732,9 +731,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		setWorkflowUrl(url);
 	}
-	
+
 	public boolean isRunning() throws RemoteException{
-		
+
 		DataFlow df = getDf();
 		boolean running = false;
 		if (df != null) {
@@ -742,8 +741,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 		return running;
 	}
-	
-	
+
+
 	public void stopRunningWorkflow() throws RemoteException, Exception{
 		DataFlow df = getDf();
 		if (df != null && df.getOozieJobId() != null) {
@@ -1201,8 +1200,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 				jsonElements.toString(), jsonLinks.toString() };
 	}
 
-	
-	
+
+
 	public String getIdElement(String idGroup) {
 		return getIdMap().get(getNameWorkflow()).get(idGroup);
 	}

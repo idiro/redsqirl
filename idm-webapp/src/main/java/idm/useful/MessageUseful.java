@@ -1,15 +1,14 @@
 package idm.useful;
 
-import idm.ItemList;
-
 import java.text.Format;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpSession;
 
 import com.sun.faces.util.MessageFactory;
@@ -57,13 +56,13 @@ public class MessageUseful {
 		HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(false);
 		
 		if(session.getAttribute("listError") == null){
-			List<ItemList> listError = new ArrayList<ItemList>(); 
+			List<SelectItem> listError = new LinkedList<SelectItem>(); 
 			session.setAttribute("listError", listError);
 		}
 		
-		if( ((ArrayList<ItemList>)session.getAttribute("listError")).size() <= 500){
+		if( ((List<SelectItem>)session.getAttribute("listError")).size() <= 500){
 			Format formatter = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss");
-			((ArrayList<ItemList>)session.getAttribute("listError")).add(new ItemList(formatter.format(new Date()), msg));
+			((List<SelectItem>)session.getAttribute("listError")).add(new SelectItem(formatter.format(new Date()), msg));
 		}
 		
 		addErrorMessage(null, msg);

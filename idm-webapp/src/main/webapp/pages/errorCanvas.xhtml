@@ -24,18 +24,18 @@
 			enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'" 
 			rowClasses="even-row, odd-row" tableState="#{canvasBean.errorTableState}">
 			
-			<rich:column sortBy="#{item.name}" filterBy="#{item.name}">
+			<rich:column sortBy="#{item.value}" filterBy="#{item.value}">
 				<f:facet name="header">
 					<h:outputText value="#{messages.label_date}" />
 				</f:facet>
-				<h:outputText value="#{item.name}" style="width:100%;" readonly="true" />
+				<h:outputText value="#{item.value}" style="width:100%;" readonly="true" />
 			</rich:column>
 			
-			<rich:column sortBy="#{item.value}" filterBy="#{item.value}">
+			<rich:column sortBy="#{item.label}" filterBy="#{item.label}">
 				<f:facet name="header">
 					<h:outputText value="#{messages.label_messages}" />
 				</f:facet>
-				<h:outputText value="#{item.value}" style="width:100%;" readonly="true" />
+				<h:outputText value="#{item.label}" style="width:100%;" readonly="true" />
 			</rich:column>
 
 	</rich:extendedDataTable>
