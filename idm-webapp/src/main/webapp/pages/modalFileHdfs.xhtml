@@ -32,8 +32,43 @@
 
 	function selectFileLoadHdfs(isFile, nameFile){
     	if (isFile != "true"){
-        	updateTableLoadHdfs(nameFile);
+        	updateTableHdfs(nameFile);
     	}
+    }
+    
+    //Function for saving
+    function changeFile(f){
+        file = f;
+    }
+    
+    function verifyIfFileExists(path){
+        
+        var fileExist = false;
+        
+        var table = jQuery('#divSaveFileHdfs table.extdt-table-layout');
+        var tbody = table.find("tbody");
+        var rows = tbody.find("tr");
+
+        rows.each(function(key, value){
+            var file2 = jQuery(this).find("td a").html();
+            if ((file == file2) || (file+'.rs' == file2)){
+                fileExist = true;
+            }
+        });
+        
+        if (fileExist){
+            Richfaces.showModalPanel('modalConfirmOverwrite');
+        }
+        else{
+            Richfaces.hideModalPanel('modalFileHdfs');
+            save(path);
+        }
+    }
+
+    function selectFileSaveHdfs(isFile, nameFile){
+        if (isFile != "true"){
+            updateTableHdfs(nameFile);
+        }
     }
 	
 //]]>
@@ -43,9 +78,9 @@
 		onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
 		onstop="jQuery.unblockUI();" />
 
-	<a4j:jsFunction name="refreshHdfsOpenFileTable" action="#{browserHdfsBean.changePath}" reRender="hdfsfsOpenFile"/>
+	<a4j:jsFunction name="refreshHdfsOpenFileTable" action="#{browserHdfsBean.changePath}" reRender="hdfsfsFile"/>
 
-	<a4j:jsFunction name="updateTableLoadHdfs" action="#{browserHdfsBean.selectFile}" reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
+	<a4j:jsFunction name="updateTableHdfs" action="#{browserHdfsBean.selectFile}" reRender="pathOpenFile,hdfsfsFile,hdfsOpenFileBtn">
 		<a4j:actionparam name="nameFile" />
 	</a4j:jsFunction>
 
@@ -53,33 +88,37 @@
 	<h:inputText id="pathOpenFile" label="Path" value="#{browserHdfsBean.path}"
 		maxlength="255" style="width:395px;" onkeypress="return enableEnterKey(event, 'changePathLoadHdfsBtn');"/>
 		
-	<a4j:commandLink id="changePathLoadHdfsBtn" action="#{browserHdfsBean.changePath}" reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
+	<a4j:commandLink id="changePathLoadHdfsBtn" action="#{browserHdfsBean.changePath}" reRender="pathOpenFile,hdfsfsFile,hdfsOpenFileBtn">
 		<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' />
 	</a4j:commandLink>
 		
 	<a4j:commandLink action="#{browserHdfsBean.goPrevious}"
-		reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
+		reRender="pathOpenFile,hdfsfsFile,hdfsOpenFileBtn">
 		<h:graphicImage id="btPrev" value="../image/icons/button-previous.gif" title='#{messages.HdfsInterface_previous_help}' />
 	</a4j:commandLink>
 	
-	<a4j:commandLink action="#{browserHdfsBean.goNext}" reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
+	<a4j:commandLink action="#{browserHdfsBean.goNext}" reRender="pathOpenFile,hdfsfsFile,hdfsOpenFileBtn">
 		<h:graphicImage id="btNext" value="../image/icons/button-next.gif" title='#{messages.HdfsInterface_next_help}' />
 	</a4j:commandLink>
 	
-	<a4j:commandLink action="#{browserHdfsBean.goUp}" reRender="pathOpenFile,hdfsfsOpenFile,hdfsOpenFileBtn">
+	<a4j:commandLink action="#{browserHdfsBean.goUp}" reRender="pathOpenFile,hdfsfsFile,hdfsOpenFileBtn">
 		<h:graphicImage id="browserHdfsBeanGoup" value="../image/icons/button_up.jpg" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
 	</a4j:commandLink>
 	
 	<br/><br/>
+	<h:outputText value="#{messages.label_file_name}" rendered="#{browserHdfsBean.showSave == 'T'}"/>
+    <h:inputText id="nameSaveFile" label="Name" onchange="changeFile(this.value)" rendered="#{browserHdfsBean.showSave == 'T'}"
+        maxlength="255" style="width:395px;" onkeypress="return enableEnterKey(event, 'hdfsSaveFileBtn');"/>
+	<br/><br/>
 	
 	<div style="width:590px;height:250px;overflow:auto;" >
 	
-	   <rich:extendedDataTable id="hdfsfsOpenFile" value="#{browserHdfsBean.tableGrid.rows}" var="item" rowKeyVar="indexTable"
+	   <rich:extendedDataTable id="hdfsfsFile" value="#{browserHdfsBean.tableGrid.rows}" var="item" rowKeyVar="indexTable"
             width="50px" height="10px" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
             enableContextMenu="false" selectionMode="none" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
             rowClasses="even-row, odd-row">
     
-            <rich:column style="border-bottom:0px;border-right:0px;" styleClass="loadTableRadio" width="32px;">
+            <rich:column style="border-bottom:0px;border-right:0px;" styleClass="loadTableRadio" width="32px;" rendered="#{browserHdfsBean.showSave  == 'F'}">
                 <f:facet name="header">
 					<h:outputText value="" />
 				</f:facet>
@@ -125,15 +164,51 @@
 
 	<br />
 
-	<a4j:commandButton id="hdfsOpenFileBtn" styleClass="greenButton" action="#{canvasBean.load}" value="#{messages.button_ok}"
-		onclick="#{rich:component('modalLoadWorkflow')}.hide();" 
+	<a4j:commandButton id="hdfsOpenFileBtn" styleClass="greenButton" 
+	    action="#{canvasBean.load}" value="#{messages.button_ok}"
+	    rendered="#{browserHdfsBean.showSave == 'F'}"
+		onclick="#{rich:component('modalFileHdfs')}.hide();" 
 		reRender="formMenu, errorTable"
 		oncomplete="preLoadWorkflow()">
 		<a4j:actionparam value="getPath('#{browserHdfsBean.path}')" assignTo="#{canvasBean.path}" noEscape="true"/>
 	</a4j:commandButton>
 	
+	<a4j:commandButton id="hdfsSaveFileBtn" styleClass="greenButton"
+	    value="#{messages.button_ok}"  rendered="#{browserHdfsBean.showSave == 'T'}"
+        onclick="verifyIfFileExists(getPath('#{browserHdfsBean.path}'));"
+        oncomplete="" reRender="errorTable" >
+    </a4j:commandButton>
+	
+	
 	<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}"
-		onclick="#{rich:component('modalLoadWorkflow')}.hide();">
+		onclick="#{rich:component('modalFileHdfs')}.hide();">
 	</a4j:commandButton>
 	
+	   
+    <rich:modalPanel id="modalConfirmOverwrite" width="300" height="90"
+            style="overflow:auto;" resizeable="false">
+
+            <f:facet name="header">Overwrite file?</f:facet>
+            <f:facet name="controls">
+                <h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+                    style="cursor:pointer;width:22px;"
+                    onclick="#{rich:component('modalConfirmOverwrite')}.hide()" />
+            </f:facet>
+
+            <h:panelGroup>
+            
+                <h:outputText value="#{messages.file_already_exists}" />
+                <br />
+                <a4j:commandButton value="#{messages.button_ok}" styleClass="greenButton"
+                    onclick="#{rich:component('modalConfirmOverwrite')}.hide();#{rich:component('modalFileHdfs')}.hide();save(getPath('#{browserHdfsBean.path}'));"
+                    oncomplete="" reRender="errorTable" >
+                </a4j:commandButton>
+                
+                <a4j:commandButton value="#{messages.button_cancel}" styleClass="greenButton"
+                    onclick="#{rich:component('modalConfirmOverwrite')}.hide();">
+                </a4j:commandButton>
+            </h:panelGroup>
+
+        </rich:modalPanel>
+   
 </ui:composition>
