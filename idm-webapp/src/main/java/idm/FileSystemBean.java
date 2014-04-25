@@ -277,6 +277,15 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		file = getDataStore().getChildrenProperties() == null;
 		getDataStore().goPrevious();
 	}
+	
+	private void mountSelectedFilesList() throws RemoteException {
+		selectedFiles = new ArrayList<String[]>();
+		for (SelectableRow i : getTableGrid().getRows()) {
+			if (i.isSelected()) {
+				selectedFiles.add(new String[] { getDataStore().getPath(), i.getRow()[0] });
+			}
+		}
+	}
 
 	/**
 	 * copyFileBefore
@@ -517,15 +526,6 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		getDataStore().goNext();
 		updateTable();
 
-	}
-
-	private void mountSelectedFilesList() throws RemoteException {
-		selectedFiles = new ArrayList<String[]>();
-		for (SelectableRow i : getTableGrid().getRows()) {
-			if (i.isSelected()) {
-				selectedFiles.add(new String[] { getDataStore().getPath(), i.getRow()[0] });
-			}
-		}
 	}
 
 	/**
