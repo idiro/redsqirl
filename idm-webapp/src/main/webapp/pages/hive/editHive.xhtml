@@ -16,11 +16,13 @@
 	
 		<h:outputText value="#{title}" />
 		<br />
-		<h:inputText value="#{hiveBean.allProps[ind]}" title="#{hiveBean.propsParam[ind].help}"
+		<h:inputText value="#{hiveBean.allProps[hdfsBean.currentFileIndex][title]}" 
+			title="#{hiveBean.propsParam[ind].help}"
 			disabled="#{hiveBean.propsParam[ind].const}" 
 			rendered="#{hiveBean.propsParam[ind].type != 'BOOLEAN'}"
 		/>
-		<h:inputTextarea value="#{hiveBean.allProps[ind]}" title="#{hiveBean.propsParam[ind].help}"
+		<h:inputTextarea value="#{hiveBean.allProps[hdfsBean.currentFileIndex][title]}" 
+			title="#{hiveBean.propsParam[ind].help}"
 			disabled="#{hiveBean.propsParam[ind].const}"
 			rendered="#{hiveBean.propsParam[ind].type == 'BOOLEAN'}"
 			cols="30" rows="10" style="overflow:auto;resize:vertical"

@@ -15,6 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.faces.context.FacesContext;
 
@@ -36,9 +37,6 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	private List<Entry<String, String>> fieldsInitNeededTitleKey;
 	private ArrayList<ItemList> listHeaderGrid = new ArrayList<ItemList>();
 	 */
-
-	private UserInfoBean userInfoBean;
-	private DataStore dataStore;	
 	private boolean file;
 	private String name;
 	private String newName;
@@ -50,11 +48,13 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	 * The list of rows of the grid file system
 	 */
 	private SelectableTable tableGrid = new SelectableTable(); 
+
+	private DataStore dataStore;
 	private List<Map<String,String>> allProps;
 	private List<String> editProps;
 	private List<String> createProps;
 	private Map<String, ParamProperty> propsParam; 
-	
+	private Integer currentFileIndex;
 
 
 	
@@ -62,7 +62,6 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		logger.info("Create FileSystem: "+ (++nbCreate));
 	}
 	
-
 	/**
 	 * openCanvasScreen
 	 * 
@@ -100,7 +99,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 		Map<String, Map<String, String>> mapSSH = hInt.getChildrenProperties();
 		setPropsParam(hInt.getParamProperties());
-		
+
 		if (mapSSH != null) {
 			//Set list features
 			LinkedList<String> titles = new LinkedList<String>();
@@ -108,14 +107,15 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			LinkedList<String> createProps = new LinkedList<String>();
 
 			//titles.addFirst("name");
+			editProps.addFirst("name");
+			createProps.addFirst("name");
 
 			for (String properties : propsParam.keySet()) {
-				
+
 				if (!propsParam.get(properties).editOnly() && !propsParam.get(properties).createOnly()) {
 					titles.add(properties);
-				}
-
-				if (propsParam.get(properties).editOnly()) {
+					editProps.add(properties);
+				}else if (propsParam.get(properties).editOnly()) {
 					editProps.add(properties);
 				}else if (propsParam.get(properties).createOnly()) {
 					createProps.add(properties);
@@ -127,7 +127,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			setEditProps(editProps);
 			setCreateProps(createProps);
 			setAllProps(new LinkedList<Map<String,String>>());
-			
+
 			//Fill rows
 			for (String path : mapSSH.keySet()) {
 
@@ -144,7 +144,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		}
 
 		FacesContext context = FacesContext.getCurrentInstance();
-		userInfoBean = (UserInfoBean) context.getApplication()
+		UserInfoBean userInfoBean = (UserInfoBean) context.getApplication()
 				.evaluateExpressionGet(context, "#{userInfoBean}",
 						UserInfoBean.class);
 
@@ -382,20 +382,21 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	 * @return
 	 * @author Igor.Souza
 	 */
-	/*public void editFileBefore() throws RemoteException {
+	public void editFileBefore() throws RemoteException {
+
+		logger.info("editFileBefore");
 
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-		String name = params.get("nameFileEdit");
+		String index = params.get("indexFileEdit");
 
-		setName(name);
-		setNewName(name);
+		logger.info("index " + index);
 
-		//setItem(getItemByName(name));
+		if(index != null){
+			setCurrentFileIndex(Integer.parseInt(index));
+			setName(allProps.get(currentFileIndex).get("name"));
+		}
 
-		logger.info("editFileBefore NV " + getItemByName(name).getNameValue());
-		logger.info("editFileBefore NVE " + getItemByName(name).getNameValueEdit());
-
-	}*/
+	}
 
 	/**
 	 * editFileAfter
@@ -407,19 +408,29 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	 */
 	public void editFileAfter() throws RemoteException {
 
-		//logger.info("Change properties: " + getItem().getNameValueEdit().toString());
-		//logger.info("Keys : " + getItem().getNameValueEdit().keySet().toString());
+		Map<String,String> prop = new LinkedHashMap<String, String>();
+		Iterator<String> it = editProps.iterator();
+		while (it.hasNext()) {
+			String key = it.next();
+			if(!key.equals("name")){
+				prop.put(key, allProps.get(currentFileIndex).get(key));
+			}
+		}
+		String newName = prop.get("name");
 
 		try {
-			String error = getDataStore().changeProperties(getDataStore().getPath() + "/" + getName(), getTableGrid().getRow(0));
+			String error = getDataStore().changeProperties(getDataStore().getPath() + "/" + getName(), 
+					prop);
 			logger.info("change properties error : " + error);
 		} catch (Exception e) {
 			logger.error("Error change properties : " + e.getMessage());
 			MessageUseful.addErrorMessage("Fail to update properties of " + getDataStore().getPath() + "/" + getNewName() + " to " + getTableGrid().getRow(0));
 
 		}
-		logger.info("Rename " + getDataStore().getPath() + "/" + getName() + " to " + getDataStore().getPath() + "/" + getNewName());
-		getDataStore().move(getDataStore().getPath() + "/" + getName(),	getDataStore().getPath() + "/" + getNewName());
+		if(!newName.equals(name)){
+			logger.info("Rename " + getDataStore().getPath() + "/" + getName() + " to " + getDataStore().getPath() + "/" + getNewName());
+			getDataStore().move(getDataStore().getPath() + "/" + getName(),	getDataStore().getPath() + "/" + getNewName());
+		}
 
 	}
 
@@ -664,15 +675,6 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	 */
 
 
-	public UserInfoBean getUserInfoBean() {
-		return userInfoBean;
-	}
-
-	public void setUserInfoBean(UserInfoBean userInfoBean) {
-		this.userInfoBean = userInfoBean;
-	}
-
-
 	public SelectableTable getTableGrid() {
 		return tableGrid;
 	}
@@ -767,13 +769,21 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	public void setPropsParam(Map<String, ParamProperty> propsParam) {
 		this.propsParam = propsParam;
 	}
-	
+
 	public String getFileContent() {
 		return fileContent;
 	}
 
 	public void setFileContent(String content) {
 		fileContent = content;
+	}
+
+	public Integer getCurrentFileIndex() {
+		return currentFileIndex;
+	}
+
+	public void setCurrentFileIndex(Integer currentFileIndex) {
+		this.currentFileIndex = currentFileIndex;
 	}
 
 }
