@@ -99,4 +99,20 @@ public class HDFSInterfaceTests {
 			assertTrue(e.getMessage(), false);
 		}
 	}
+	
+	@Test
+	public void select(){
+		TestUtils.logTestTitle("HDFSInterfaceTests#chmod");
+		try{
+			HDFSInterface hInt = new HDFSInterface();
+			
+		}catch (Exception e){
+			logger.error(e.getMessage());
+			StackTraceElement[] errs = e.getStackTrace();
+			for (StackTraceElement er : errs) {
+				logger.error(er.getFileName() + " , " + er.getLineNumber());
+			}
+			assertTrue(e.getMessage(), false);
+		}
+	}
 }

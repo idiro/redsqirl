@@ -1331,6 +1331,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 		if (error == null) {
 			if (namesWithClassName.get(waName) == null) {
+				logger.info(namesWithClassName);
+				logger.info(waName);
 				error = LanguageManagerWF.getText(
 						"workflow.addElement_actionWaNamenotexist",
 						new Object[] { waName });

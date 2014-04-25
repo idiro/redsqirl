@@ -59,7 +59,11 @@
       <menu name="Documentation">
 	  <item name="Framework Javadoc" href="apidocs/index.html"/>
 	  <item name="Idiro engine Javadoc" href="apidocs/index.html"/>
-	  <item name="How to develop a package" href="developerDoc.html"/>
+	  <item name="How to develop a package" href="">
+	  	<item name="Basic Package Development" href="developerDocBsc.html"/>
+	  	<item name="Advanced Package Development" href="developerDocAdv.html"/>
+	  	<item name="Multiple Interaction Action" href="developerDocMulti.html"/>
+	  </item>
       </menu>
 
   </body>
