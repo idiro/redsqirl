@@ -37,7 +37,7 @@ public class Source extends AbstractSource {
 	 */
 	@Override
 	public String getName() throws RemoteException {
-		return "Source";
+		return "source";
 	}
 
 	// Override default static methods

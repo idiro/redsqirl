@@ -19,12 +19,12 @@
  <managed-bean>
   <managed-bean-name>hiveBean</managed-bean-name>
   <managed-bean-class>idm.HiveBean</managed-bean-class>
-  <managed-bean-scope>request</managed-bean-scope>
+  <managed-bean-scope>session</managed-bean-scope>
  </managed-bean>
  <managed-bean>
   <managed-bean-name>sshBean</managed-bean-name>
   <managed-bean-class>idm.SshBean</managed-bean-class>
-  <managed-bean-scope>request</managed-bean-scope>
+  <managed-bean-scope>session</managed-bean-scope>
  </managed-bean>
  <managed-bean>
   <managed-bean-name>userInfoBean</managed-bean-name>
@@ -39,37 +39,27 @@
  <managed-bean>
  	<managed-bean-name>configureTabsBean</managed-bean-name>
  	<managed-bean-class>idm.ConfigureTabsBean</managed-bean-class>
- 	<managed-bean-scope>request</managed-bean-scope>
+ 	<managed-bean-scope>session</managed-bean-scope>
  </managed-bean>
  <managed-bean>
  	<managed-bean-name>processManagerBean</managed-bean-name>
  	<managed-bean-class>idm.ProcessManagerBean</managed-bean-class>
- 	<managed-bean-scope>request</managed-bean-scope>
- </managed-bean>
- <managed-bean>
-  <managed-bean-name>browserHiveBean</managed-bean-name>
-  <managed-bean-class>idm.HiveBean</managed-bean-class>
-  <managed-bean-scope>request</managed-bean-scope>
- </managed-bean>
- <managed-bean>
-  <managed-bean-name>browserHdfsBean</managed-bean-name>
-  <managed-bean-class>idm.HdfsBrowserBean</managed-bean-class>
-  <managed-bean-scope>request</managed-bean-scope>
+ 	<managed-bean-scope>session</managed-bean-scope>
  </managed-bean>
 <managed-bean>
   <managed-bean-name>packageMngBean</managed-bean-name>
   <managed-bean-class>idm.PackageMngBean</managed-bean-class>
-  <managed-bean-scope>request</managed-bean-scope>
+  <managed-bean-scope>session</managed-bean-scope>
  </managed-bean>
  <managed-bean>
   <managed-bean-name>error</managed-bean-name>
   <managed-bean-class>idm.useful.Error</managed-bean-class>
-  <managed-bean-scope>request</managed-bean-scope>
+  <managed-bean-scope>session</managed-bean-scope>
  </managed-bean>
  <managed-bean>
   <managed-bean-name>helpBean</managed-bean-name>
   <managed-bean-class>idm.HelpBean</managed-bean-class>
-  <managed-bean-scope>request</managed-bean-scope>
+  <managed-bean-scope>session</managed-bean-scope>
  </managed-bean>
  
  <!-- **************************** NAVIGATION ******************************************************************* -->

@@ -140,7 +140,7 @@ public class Convert extends DataflowAction {
 	 */
 	@Override
 	public String getName() throws RemoteException {
-		return "Convert";
+		return "convert";
 	}
 
 	/**

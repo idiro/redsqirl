@@ -40,7 +40,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 				getworkFlowInterface().addWorkflow("canvas0");
 				DataFlow wf = getworkFlowInterface().getWorkflow("canvas0");
 				wf.loadMenu();
-				menuWA = wf.loadMenu(getCurrentPage());
+				menuWA = wf.getRelativeMenu(getCurrentPage());
 				if(allWANameWithClassName == null){
 					allWANameWithClassName = wf.getAllWANameWithClassName();
 				}
@@ -52,7 +52,6 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	public List<String> getTabs() {
@@ -157,7 +156,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 				selected = null;
 				setTabName("");
 				wf.saveMenu();
-				menuWA = wf.loadMenu(getCurrentPage());
+				menuWA = wf.getRelativeMenu(getCurrentPage());
 				getworkFlowInterface().removeWorkflow("canvas0");
 			}
 		} catch (RemoteException e1) {
