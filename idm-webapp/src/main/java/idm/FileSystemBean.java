@@ -147,6 +147,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		//Fill rows
 		if (mapSSH != null) {
 			setAllProps(new LinkedList<Map<String,String>>());
+			getTableGrid().getRows().clear();
 			for (String path : mapSSH.keySet()) {
 
 				String[] aux = path.split("/");
@@ -198,6 +199,12 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	public void changePath() throws RemoteException {
 		logger.info("changePath: " + getPath());
 		if (getDataStore().goTo(getPath())) {
+			
+			logger.info(""+ getPropsParam());
+			logger.info(""+ getTableGrid().getTitles());
+			logger.info(""+ getEditProps());
+			logger.info(""+ getCreateProps());
+			
 			updateTable();
 		} else {
 			getBundleMessage("error.invalid.path");
