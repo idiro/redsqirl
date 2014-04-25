@@ -33,7 +33,7 @@ public class HiveBean extends FileSystemBean {
 			if(getTableGrid() != null && 
 					getTableGrid().getRows() != null &&
 					getTableGrid().getRows().isEmpty()){
-				mountTable(getDataStore());
+				mountTable();
 			}
 			/*else{
 				for (EditFileSystem item : getListGrid()){

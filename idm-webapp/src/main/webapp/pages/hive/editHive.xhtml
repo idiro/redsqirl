@@ -7,21 +7,16 @@
 
 	<a4j:loadBundle basename="MessagesResources" var="messages" />
 
-	<h:outputText value="#{messages.label_name}" />
-	<h:inputHidden value="#{hiveBean.name}" />
-	<h:inputText value="#{hiveBean.newName}" />
-	<br />
-
 	<a4j:repeat value="#{hiveBean.editProps}" var="title" rowKeyVar="ind" >
 	
 		<h:outputText value="#{title}" />
 		<br />
-		<h:inputText value="#{hiveBean.allProps[hdfsBean.currentFileIndex][title]}" 
+		<h:inputText value="#{hiveBean.allProps[hiveBean.currentFileIndex][title]}" 
 			title="#{hiveBean.propsParam[ind].help}"
 			disabled="#{hiveBean.propsParam[ind].const}" 
 			rendered="#{hiveBean.propsParam[ind].type != 'BOOLEAN'}"
 		/>
-		<h:inputTextarea value="#{hiveBean.allProps[hdfsBean.currentFileIndex][title]}" 
+		<h:inputTextarea value="#{hiveBean.allProps[hiveBean.currentFileIndex][title]}" 
 			title="#{hiveBean.propsParam[ind].help}"
 			disabled="#{hiveBean.propsParam[ind].const}"
 			rendered="#{hiveBean.propsParam[ind].type == 'BOOLEAN'}"

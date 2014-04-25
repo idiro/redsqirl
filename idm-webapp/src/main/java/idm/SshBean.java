@@ -68,7 +68,7 @@ public class SshBean extends FileSystemBean implements Serializable{
 				if(getTableGrid() != null && 
 						getTableGrid().getRows() != null &&
 						getTableGrid().getRows().isEmpty()){
-					mountTable(getDataStore());
+					mountTable();
 				}
 			}
 			
@@ -149,7 +149,7 @@ public class SshBean extends FileSystemBean implements Serializable{
 			setSelectedTab(tabs.get(0));
 			setDataStore(getDataStoreArray().getStores().get(selectedTab));
 			
-			mountTable(getDataStore());
+			mountTable();
 		}
 		
 		if(error != null){
@@ -173,7 +173,7 @@ public class SshBean extends FileSystemBean implements Serializable{
 		setPath(getDataStore().getPath());
 		logger.info("path: "+getPath());
 
-		mountTable(getDataStore());
+		mountTable();
 		
 	}
 	
@@ -214,7 +214,7 @@ public class SshBean extends FileSystemBean implements Serializable{
 		
 		try{
 			getHDFS().copyToRemote(path+"/"+file, getPath()+"/"+file, getSelectedTab());
-			mountTable(getDataStore());
+			mountTable();
 		}
 		catch(Exception e){
 			logger.info("", e);

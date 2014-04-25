@@ -45,7 +45,7 @@ public class HdfsBean extends FileSystemBean {
 			if(getTableGrid() != null && 
 					getTableGrid().getRows() != null &&
 					getTableGrid().getRows().isEmpty()){
-				mountTable(getDataStore());
+				mountTable();
 			}
 
 		}catch(Exception e){
@@ -72,7 +72,7 @@ public class HdfsBean extends FileSystemBean {
 		
 		try{
 			getRmiHDFS().copyFromRemote(path+"/"+file, getPath()+"/"+file, server);
-			mountTable(getDataStore());
+			mountTable();
 		}
 		catch(Exception e){
 			logger.info("", e);

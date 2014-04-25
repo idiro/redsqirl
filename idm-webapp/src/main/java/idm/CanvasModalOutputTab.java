@@ -99,7 +99,7 @@ public class CanvasModalOutputTab implements Serializable{
 				String name = storeName.next();
 				FileSystemBean newFS = new FileSystemBean();
 				newFS.setDataStore(outDatastores.get(name));
-				newFS.mountTable(newFS.getDataStore());
+				newFS.mountTable();
 				datastores.put(name, newFS);
 			}
 		}

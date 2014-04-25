@@ -39,7 +39,6 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	 */
 	private boolean file;
 	private String name;
-	private String newName;
 	private String path;
 	private List<String[]> selectedFiles;
 	private String fileContent;
@@ -55,6 +54,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	private List<String> createProps;
 	private Map<String, ParamProperty> propsParam; 
 	private Integer currentFileIndex;
+	private LinkedHashMap<String, String> newProp;
 
 
 
@@ -90,7 +90,8 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	 * @return
 	 * @author Igor.Souza
 	 */
-	public void mountTable(DataStore hInt) throws RemoteException {
+	public void mountTable() throws RemoteException {
+		DataStore hInt = getDataStore();
 		logger.info("Started mounting table");
 		setPath(hInt.getPath());
 
@@ -102,10 +103,6 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			LinkedList<String> titles = new LinkedList<String>();
 			LinkedList<String> editProps = new LinkedList<String>();
 			LinkedList<String> createProps = new LinkedList<String>();
-
-			//titles.addFirst("name");
-			editProps.addFirst("name");
-			createProps.addFirst("name");
 
 			for (String properties : propsParam.keySet()) {
 
@@ -123,21 +120,9 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			setTableGrid(new SelectableTable(titles));
 			setEditProps(editProps);
 			setCreateProps(createProps);
-			setAllProps(new LinkedList<Map<String,String>>());
 
-			//Fill rows
-			for (String path : mapSSH.keySet()) {
+			updateTable();
 
-				String[] aux = path.split("/");
-				String name = aux[aux.length - 1];
-
-				Map<String, String> allProperties = new LinkedHashMap<String, String>();
-				allProperties.put("name", name);
-				allProperties.putAll(mapSSH.get(path));
-				getTableGrid().add(allProperties);
-				getAllProps().add(allProperties);
-
-			}
 		}
 
 		FacesContext context = FacesContext.getCurrentInstance();
@@ -152,6 +137,29 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		logger.info("Finished mounting table");
 	}
 
+	public void updateTable() throws RemoteException{
+
+		setPath(getDataStore().getPath());
+		Map<String, Map<String, String>> mapSSH = getDataStore().getChildrenProperties();
+		//Fill rows
+		if (mapSSH != null) {
+			setAllProps(new LinkedList<Map<String,String>>());
+			for (String path : mapSSH.keySet()) {
+
+				String[] aux = path.split("/");
+				String name = aux[aux.length - 1];
+
+				Map<String, String> allProperties = new LinkedHashMap<String, String>();
+				allProperties.put("name", name);
+				allProperties.putAll(mapSSH.get(path));
+				getTableGrid().add(allProperties);
+				getAllProps().add(allProperties);
+
+			}
+		}
+	}
+
+
 	/**
 	 * deleteFile
 	 * 
@@ -162,19 +170,15 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	 */
 	public void deleteFile() throws RemoteException {
 
-		for (Iterator<SelectableRow> i = getTableGrid().getRows().iterator(); i.hasNext();) {
-			SelectableRow item = i.next();
-
-			if (item.isSelected()) {
-
-				String directory = generatePath(getDataStore().getPath(),item.getRow()[0]);
-
+		List<Integer> posToDell = tableGrid.getAllSelected();
+		if(posToDell != null){
+			for (int i = 0; i < posToDell.size(); i++) {
+				int pos = posToDell.get(i);
+				String directory = generatePath(getDataStore().getPath(), allProps.get(pos).get("name"));
 				logger.info("Delete -" + directory);
-
 				getDataStore().delete(directory);
-				i.remove();
-
 			}
+			updateTable();
 		}
 
 	}
@@ -191,8 +195,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	public void changePath() throws RemoteException {
 		logger.info("changePath: " + getPath());
 		if (getDataStore().goTo(getPath())) {
-			getDataStore().getPath();
-			mountTable(getDataStore());
+			updateTable();
 		} else {
 			getBundleMessage("error.invalid.path");
 		}
@@ -219,7 +222,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 			if (getDataStore().goTo(path)) {
 				setPath(path);
-				mountTable(getDataStore());
+				updateTable();
 			} else {
 				logger.error("Error this is not a directory");
 			}
@@ -314,7 +317,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			}
 		}
 
-		mountTable(getDataStore());
+		updateTable();
 	}
 
 	/**
@@ -326,6 +329,14 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 */
 	public void addFileBefore() throws RemoteException {
+
+		newProp = new LinkedHashMap<String, String>();
+		Iterator<String> it = createProps.iterator();
+		while (it.hasNext()) {
+			String key = it.next();
+			newProp.put(key, null);
+		}
+
 	}
 
 	/**
@@ -337,16 +348,16 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 */
 	public void addFileAfter() throws RemoteException {
-		String newDirectory = generatePath(getDataStore().getPath(), getNewName());
 
-		Map<String, String> properties = new LinkedHashMap<String, String>();
-		/*for (Entry<String, String> e : nameValue.entrySet()) {
-			if (e.getValue() != null && !e.getValue().isEmpty()) {
-				properties.put(e.getKey(), e.getValue());
-			}
-		}*/
-		getDataStore().create(newDirectory, properties);
-		mountTable(getDataStore());
+		logger.info("addFileAfter");
+
+		setName(newProp.get("name"));
+
+		String newDirectory = generatePath(getDataStore().getPath(), getName());
+		getDataStore().create(newDirectory, getNewProp());
+
+		updateTable();
+
 	}
 
 	/**
@@ -390,7 +401,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 		if(index != null){
 			setCurrentFileIndex(Integer.parseInt(index));
-			setName(allProps.get(currentFileIndex).get("name"));
+			setName(allProps.get(getCurrentFileIndex()).get("name"));
 		}
 
 	}
@@ -409,11 +420,9 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		Iterator<String> it = editProps.iterator();
 		while (it.hasNext()) {
 			String key = it.next();
-			if(!key.equals("name")){
-				prop.put(key, allProps.get(currentFileIndex).get(key));
-			}
+			prop.put(key, allProps.get(getCurrentFileIndex()).get(key));
 		}
-		String newName = prop.get("name");
+		String newName = allProps.get(getCurrentFileIndex()).get("name");
 
 		try {
 			String error = getDataStore().changeProperties(getDataStore().getPath() + "/" + getName(), 
@@ -421,12 +430,12 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			logger.info("change properties error : " + error);
 		} catch (Exception e) {
 			logger.error("Error change properties : " + e.getMessage());
-			MessageUseful.addErrorMessage("Fail to update properties of " + getDataStore().getPath() + "/" + getNewName() + " to " + getTableGrid().getRow(0));
+			MessageUseful.addErrorMessage("Fail to update properties of " + getDataStore().getPath() + "/" + newName + " to " + getTableGrid().getRow(0));
 
 		}
 		if(!newName.equals(name)){
-			logger.info("Rename " + getDataStore().getPath() + "/" + getName() + " to " + getDataStore().getPath() + "/" + getNewName());
-			getDataStore().move(getDataStore().getPath() + "/" + getName(),	getDataStore().getPath() + "/" + getNewName());
+			logger.info("Rename " + getDataStore().getPath() + "/" + getName() + " to " + getDataStore().getPath() + "/" + newName);
+			getDataStore().move(getDataStore().getPath() + "/" + getName(),	getDataStore().getPath() + "/" + newName);
 		}
 
 	}
@@ -472,7 +481,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 				getDataStore().move(s[0] + "/" + s[1], getDataStore().getPath() + "/" + s[1]);
 			}
 		}
-		mountTable(getDataStore());
+		updateTable();
 	}
 
 	/**
@@ -487,7 +496,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	public void goPrevious() throws RemoteException {
 
 		getDataStore().goPrevious();
-		mountTable(getDataStore());
+		updateTable();
 
 	}
 
@@ -503,7 +512,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	public void goNext() throws RemoteException {
 
 		getDataStore().goNext();
-		mountTable(getDataStore());
+		updateTable();
 
 	}
 
@@ -543,8 +552,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 				logger.info("newPath" + newPath);
 
 				if (getDataStore().goTo(newPath)) {
-					getDataStore().getPath();
-					mountTable(getDataStore());
+					updateTable();
 				} else {
 					getBundleMessage("error.invalid.path");
 				}
@@ -566,13 +574,11 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		String newPath = "/user/" + System.getProperty("user.name") + "/idm-save";
 
 		if (getDataStore().goTo(newPath)) {
-			getDataStore().getPath();
-			mountTable(getDataStore());
+			updateTable();
 		} else {
 			getDataStore().create(newPath, new LinkedHashMap<String, String>());
 			if (getDataStore().goTo(newPath)) {
-				getDataStore().getPath();
-				mountTable(getDataStore());
+				updateTable();
 			} else {
 				getBundleMessage("error.invalid.path");
 			}
@@ -731,28 +737,20 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		return file;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public String getNewName() {
-		return newName;
-	}
-
-	public List<String[]> getSelectedFiles() {
-		return selectedFiles;
-	}
-
 	public void setFile(boolean file) {
 		this.file = file;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	public void setName(String name) {
 		this.name = name;
 	}
 
-	public void setNewName(String newName) {
-		this.newName = newName;
+	public List<String[]> getSelectedFiles() {
+		return selectedFiles;
 	}
 
 	public void setSelectedFiles(List<String[]> selectedFiles) {
@@ -781,6 +779,14 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 	public void setCurrentFileIndex(Integer currentFileIndex) {
 		this.currentFileIndex = currentFileIndex;
+	}
+
+	public LinkedHashMap<String, String> getNewProp() {
+		return newProp;
+	}
+
+	public void setNewProp(LinkedHashMap<String, String> newProp) {
+		this.newProp = newProp;
 	}
 
 }

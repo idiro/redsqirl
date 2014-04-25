@@ -144,8 +144,7 @@
 
 					<rich:column style="border-bottom:0px;border-right:0px;" width="50px;">
 						<f:facet name="header">
-							<h:selectBooleanCheckbox
-								onclick="selectAllCheckbox(this, /hdfsselect$/);" />
+							<h:selectBooleanCheckbox onclick="selectAllCheckbox(this, /hdfsselect$/);" />
 						</f:facet>
 						<h:selectBooleanCheckbox id="hdfsselect" value="#{item.selected}" />
 					</rich:column>
@@ -154,7 +153,7 @@
 						<f:facet name="header">
 							<h:outputText value="" />
 						</f:facet>
-						<a4j:commandLink action="#{hdfsBean.editFileBefore}" oncomplete="#{rich:component('hdfseditModalPanel')}.show()">
+						<a4j:commandLink action="#{hdfsBean.editFileBefore}" oncomplete="#{rich:component('hdfseditModalPanel')}.show();">
 							<h:graphicImage value="../image/icons/button-property.gif" title='#{messages.HdfsInterface_properties_help}' 
 							rendered="#{hdfsBean.allProps[indexTable]['type'] == 'directory'}" styleClass="fileSystemIcon" />
 							<h:graphicImage value="../image/icons/button-file-icon.png" title='#{messages.HdfsInterface_properties_help}' 
@@ -209,7 +208,7 @@
 
 			<h:form id="hdfsform2">
 				<h:panelGroup>
-					<a4j:include viewId="/pages/hdfs/copyHdfs.xhtml" />
+					<a4j:include viewId="/pages/hdfs/copyHdfs.xhtml" ajaxRendered="true"/>
 				</h:panelGroup>
 			</h:form>
 
@@ -231,7 +230,7 @@
 
 			<h:form id="hdfsform3">
 				<h:panelGroup>
-					<a4j:include viewId="/pages/hdfs/moveHdfs.xhtml" />
+					<a4j:include viewId="/pages/hdfs/moveHdfs.xhtml" ajaxRendered="true"/>
 				</h:panelGroup>
 			</h:form>
 
@@ -251,7 +250,7 @@
 
 			<h:form id="hdfsform4">
 				<h:panelGrid>
-					<a4j:include viewId="/pages/hdfs/addHdfs.xhtml" />
+					<a4j:include viewId="/pages/hdfs/addHdfs.xhtml" ajaxRendered="true"/>
 				</h:panelGrid>
 			</h:form>
 
@@ -273,7 +272,7 @@
 
 			<h:form id="hdfsform5">
 				<h:panelGrid>
-					<a4j:include viewId="/pages/hdfs/editHdfs.xhtml" />
+					<a4j:include viewId="/pages/hdfs/editHdfs.xhtml" ajaxRendered="true" />
 				</h:panelGrid>
 			</h:form>
 
@@ -295,7 +294,7 @@
 
 			<h:form id="hdfsform6">
 				<h:panelGrid>
-					<a4j:include viewId="/pages/hdfs/openFileHdfs.xhtml" />
+					<a4j:include viewId="/pages/hdfs/openFileHdfs.xhtml" ajaxRendered="true" />
 				</h:panelGrid>
 			</h:form>
 
