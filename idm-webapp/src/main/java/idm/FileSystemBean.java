@@ -23,7 +23,7 @@ import org.apache.log4j.Logger;
 public class FileSystemBean extends BaseBean implements Serializable {
 
 	private static Logger logger = Logger.getLogger(FileSystemBean.class);
-
+	private static int nbCreate = 0;
 	
 	private Map<String, String> nameHelp = new LinkedHashMap<String, String>();
 	private List<String> nameCreateFields = new ArrayList<String>();
@@ -55,6 +55,10 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	private List<String> editProps;
 	private List<String> createProps;
 	
+	
+	public FileSystemBean(){
+		logger.info("Create FileSystem: "+ (++nbCreate));
+	}
 	
 
 	/**
