@@ -38,8 +38,22 @@ public interface DataFlow extends Remote {
 	 */
 	public String loadMenu(Map<String,List<String>> newMenu) throws RemoteException;
 	
-	public Map<String,List<String[]>> loadMenu(File curPath) throws RemoteException;
+	/**
+	 * Get the menu loaded with relative path calculated from the input.
+	 * @param curPath
+	 * @return
+	 * @throws RemoteException
+	 */
+	public Map<String,List<String[]>> getRelativeMenu(File curPath) throws RemoteException;
 
+	
+	/**
+	 * Get the help html file path relatively to the input for each action name (key).
+	 * @param curPath 
+	 * @return
+	 */
+	public Map<String,String> getRelativeHelp(File curPath) throws RemoteException;
+	
 	/**
 	 * Save the icon menu.
 	 * 
