@@ -15,7 +15,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.faces.context.FacesContext;
 
@@ -554,32 +553,6 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			}
 		}
 
-	}
-
-	/**
-	 * createNewFolder
-	 * 
-	 * Method to create a default folder to save
-	 * 
-	 * @return
-	 * @author Igor.Souza
-	 */
-	public void createNewFolder() throws RemoteException {
-
-		String newPath = "/user/" + System.getProperty("user.name") + "/idm-save";
-
-		if (getDataStore().goTo(newPath)) {
-			getDataStore().getPath();
-			mountTable(getDataStore());
-		} else {
-			getDataStore().create(newPath, new LinkedHashMap<String, String>());
-			if (getDataStore().goTo(newPath)) {
-				getDataStore().getPath();
-				mountTable(getDataStore());
-			} else {
-				getBundleMessage("error.invalid.path");
-			}
-		}
 	}
 
 	private String generatePath(String path, String name) {

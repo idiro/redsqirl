@@ -17,6 +17,11 @@
   <managed-bean-scope>session</managed-bean-scope>
  </managed-bean>
  <managed-bean>
+  <managed-bean-name>browserHdfsBean</managed-bean-name>
+  <managed-bean-class>idm.HdfsBrowserBean</managed-bean-class>
+  <managed-bean-scope>session</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
   <managed-bean-name>hiveBean</managed-bean-name>
   <managed-bean-class>idm.HiveBean</managed-bean-class>
   <managed-bean-scope>session</managed-bean-scope>
