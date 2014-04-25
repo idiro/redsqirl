@@ -100,7 +100,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 		history.add(new Path(pathDataDefault.get()));
 		if (paramProp.isEmpty()) {
 			paramProp.put(key_type, new DSParamProperty(
-					"Type of the file: \"directory\" or \"file\"", true, false,
+					"Type of the file: \"directory\" or \"file\"", true, true,
 					false));
 			paramProp.put(key_owner, new DSParamProperty("Owner of the file",
 					true, false, false));
@@ -109,8 +109,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 			paramProp.put(key_permission, new DSParamProperty(
 					"Permission associated to the file", false, false, false));
 			paramProp.put(key_size, new DSParamProperty("Size of the file",
-					true, false, false));
-
+					true, true, false));
 			paramProp.put(key_recursive, new DSParamProperty(
 					"Apply change reccursively", false, true, false,
 					FeatureType.BOOLEAN));
