@@ -14,7 +14,7 @@
  <managed-bean>
   <managed-bean-name>hdfsBean</managed-bean-name>
   <managed-bean-class>idm.HdfsBean</managed-bean-class>
-  <managed-bean-scope>request</managed-bean-scope>
+  <managed-bean-scope>session</managed-bean-scope>
  </managed-bean>
  <managed-bean>
   <managed-bean-name>hiveBean</managed-bean-name>
