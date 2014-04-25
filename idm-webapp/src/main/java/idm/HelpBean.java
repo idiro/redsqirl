@@ -40,7 +40,6 @@ public class HelpBean extends BaseBean implements Serializable {
 			helpHtml = new LinkedList<String[]>();
 			try {
 				helpRel = wf.getRelativeHelp(getCurrentPage());
-				logger.info(helpRel);
 				Iterator<String> it = helpRel.keySet().iterator();
 				while (it.hasNext()) {
 					String key = it.next();
@@ -49,7 +48,6 @@ public class HelpBean extends BaseBean implements Serializable {
 							WordUtils.capitalizeFully(key.replace("_", " ")),
 							helpRel.get(key)};
 					
-					logger.info("Add: "+helpArray[0]+","+helpArray[1]+","+helpArray[2]+",");
 					helpHtml.add(helpArray);
 				}
 				Collections.sort(helpHtml, new Comparator<String[]>() {

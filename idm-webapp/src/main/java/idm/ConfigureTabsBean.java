@@ -74,9 +74,6 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	}
 
 	public Map<String, List<String[]>> getMenuWA() {
-		
-		logger.info("getMenuWA");
-		
 		if (menuWA == null) {
 			openCanvasScreen();
 		}
@@ -94,9 +91,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	}
 
 	public String[] getItems() {
-		
 		logger.info("getItems");
-		
 		String selectedTab = FacesContext.getCurrentInstance()
 				.getExternalContext().getRequestParameterMap().get("selected");
 		String[] items = new String[] {};

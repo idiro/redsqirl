@@ -418,7 +418,6 @@ public class CanvasModalOutputTab implements Serializable{
 	 * @see idm.dynamictable.UnselectableTable#getTitles()
 	 */
 	public List<String> getTitles() {
-		logger.info(grid == null?null:grid.getTitles());
 		return grid == null?null:grid.getTitles();
 	}
 
@@ -427,7 +426,6 @@ public class CanvasModalOutputTab implements Serializable{
 	 * @see idm.dynamictable.UnselectableTable#getRows()
 	 */
 	public List<String[]> getRows() {
-		logger.info(grid == null?null:grid.getRows());
 		return grid == null?null:grid.getRows();
 	}
 }
