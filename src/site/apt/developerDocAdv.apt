@@ -1,0 +1,602 @@
+
+Package Development
+
+	This Tutorial will show developers how to develop packages with a base action.
+	
+Create a package
+
+
+ [[1]]Step 1
+
+	Follow the Tutorial to create the project provided in {{{./pckdev.html}Here}} or download the Example Project. 
+
+ [[2]]Step 2
+
+	In the previous step we created a project that contains all the dependencies for the package.
+	
+	Next:
+	
+	* Create a new package under source main and call it 'idiro.workflow.server' (Actions need to be under this package name)
+	
+	* Create an abstract class so it extends 'DataFlowAction'
+	
+	* For the purposes of the tutorial , this abstract class will be called 'DemoAction'
+
+	[]
+	
+	These steps are the basic steps to create a project that will allow for development of a package that can be used in IDM
+	
+	For this tutorial we will create the package so that it runs over Pig.
+	To configure the package to run Pig processes  the 'DemoAction' the constructor must be 
+	canged so that it calls the superclass construnctor with a 'new PigAction()'
+
++-----------+
+public DemoAction() throws RemoteException {
+		super(new PigAction());
+	}
++-----------+
+
+	Once the constructor has been implemented it is then important to add the essentials for every pig action that is created using the abstract class.
+	In Pig script each line that performs an action is assigned to a 'Bag'. In this class we will create an integer that increments everytime a new bag is created.
+	With this integer we will have two methods that get the current bag and one to get the next one.
+	
++-----------+
+private int bagNum = 0;
++-----------+
+
+	The functions that uses it.
+
++-----------+
+protected String getCurrentName(){
+		return "A"+bagNum;
+	}
+protected String getNextName(){
+		bagNum++;
+		return "A"+bagNum;
+	}
++-----------+
+
+	An action can have many inputs, to accommodate the inputs ,  we implement a Map that will store the input and a name asocciated with it.
+	We also make a function that returns this map for reading later.
+	
++-----------+
+protected Map<String, DFELinkProperty> input;
+public Map<String, DFELinkProperty> getInput() throws RemoteException {
+		return input;
+	}
++-----------+
+
+	To make things easier for further development of other actions it may be easier to use key string to access parts of the input or output and other aspects
+	of the action. Here is a list of key string that might be useful
+	
++-----------+
+public static final String
+key_output = "",
+key_input = "in",
+key_delimiter="delimiter",
+key_condition = "condition",
+key_outputType = "output_type",
+default_delimiter = "\001",
+key_featureTable = "features";
++-----------+
+ 
+	
+
+	Every action generates an ouput, so we need to make sure that there is a map ready to be used which will contain the output.
+	For this we update thw map to have the right type of output and properties for that output.
+	
++-----------+
+public String updateOut() throws RemoteException {
+		String error = checkIntegrationUserVariables();
+		if(error == null){
+			FeatureList new_features = getNewFeatures();
+			if(output.get(key_output) == null){
+				output.put(key_output, new MapRedTextType());
+			}
+			output.get(key_output).setFeatures(new_features);
+			output.get(key_output).addProperty(MapRedTextType.key_delimiter, delimiterOutputInt.getValue());
+		}
+		return error;
+	}
++-----------+
+	
+	In every action of Pig it is necessary to set the output type and the delimiter. Pig accepts two types of output which is either text or binary.
+	This means we need two interactions just for the output.
+
++-----------+
+protected InputInteraction delimiterOutputInt;
+protected ListInteraction savetypeOutputInt;	
++-----------+
+
+	With the input and the outputs configured and updated (output) we can look at the initial methods for the action.
+	The init method actually initialized the input.
+	
++-----------+
+protected void init(int nbInMin, int nbInMax) throws RemoteException{
+		if(input == null){
+			Map<String, DFELinkProperty> in = new LinkedHashMap<String, DFELinkProperty>();
+			in.put(key_input, new DataProperty(MapRedBinaryType.class, nbInMin, nbInMax));
+			input = in;
+		}
+	}
++-----------+
+	
+	The features that available on initialization can be different from the output of the action. We have to create two methods to get the input features and the output features.
+	
++-----------+
+public abstract FeatureList getInFeatures() throws RemoteException;
+public abstract FeatureList getNewFeatures() throws RemoteException;
++-----------+
+	
+
+	
+
+	An important method that needs to be added is one to generate the query for the entire action for this we add an abstract method that gets the query.
+	When an action calls this method it will call all the interactions that it contains to get their part of the query.
+	
++-----------+
+public abstract String getQuery() throws RemoteException;
++-----------+
+
+	There are a few more functions that are important for creating a query. These functions are common between all Pig Actions, 
+	like get the query piece for reading the data with the correct read function with the attributes with correct data types , getting the piece
+	that writes the result of the query with the right storage function and delimter. They are listed below:
+	 
+
+	Remove the output directory before running the query
+	 
++-----------+
+public String getRemoveQueryPiece(String out) throws RemoteException{
+		logger.debug("create remove...");
+		return "rmf "+out;
+	}
++-----------+
+
+	Get the load or storage function for the data
+
++-----------+
+private String getLoadStoreFuncion(DFEOutput out, String delimiter) throws RemoteException{
+		String function = null;
+		if (out.getTypeName().equals("TEXT MAP-REDUCE DIRECTORY")){
+			function = "PigStorage('"+delimiter+"')";
+		}
+		else if (out.getTypeName().equals("BINARY MAP-REDUCE DIRECTORY")){
+			function = "BinStorage()";
+		}
+		return function;
+	}
++-----------+
+
+	Get the variable to load with the variable types and return as a string
+
++-----------+
+public String getLoadQueryPiece(DFEOutput out) throws RemoteException{
+	logger.debug("create load...");
+
+	String delimiter = out.getProperty(MapRedTextType.key_delimiter);
+	delimiter = ((MapRedTextType)out).getPigDelimiter();
+	if (delimiter == null){
+		delimiter = default_delimiter;
+	}
+
+	String function = getLoadStoreFuncion(out, delimiter);
+	String createSelect = "LOAD '" + out.getPath() + "' USING "+function+" as (";
+
+	Iterator<String> it = out.getFeatures().getFeaturesNames().iterator();
+	logger.info("attribute list size : "+out.getFeatures().getSize());
+	while (it.hasNext()){
+		String e = it.next();
+		createSelect += e+":"+PigTypeConvert.getPigType(out.getFeatures().getFeatureType(e));
+		if (it.hasNext()){
+			createSelect += ", ";
+		}
+	}
+	createSelect +=")";
+
+	return createSelect;
+	}
++-----------+
+
+	Get the query piece to store the results
+
++-----------+
+public String getStoreQueryPiece(DFEOutput out, String relationName) throws RemoteException{
+		MapRedTextType output = (MapRedTextType) getDFEOutput().get(key_output); 
+		String delimiter = output.getPigDelimiter();
+
+		String function = getStoreFunction(delimiter);
+		logger.info(function);
+		return "STORE "+relationName+" INTO '" + out.getPath() + "' USING "+function+";";
+	}
++-----------+
+
+	Get the storage function that pig should use to store the result with the correct delimiter
+	
++-----------+
+public String getStoreFunction(String delimiter) throws RemoteException{
+		String type = "";
+		String function = "";
+		if(delimiter==null || delimiter.equalsIgnoreCase("")){
+			delimiter ="|";
+		}
+		try{
+			type = savetypeOutputInt.getTree().getFirstChild("list").getFirstChild("output").getFirstChild().getHead();
+			logger.info("type: "+type);
+			if(type.equalsIgnoreCase("TEXT MAP-REDUCE DIRECTORY")){
+				function = "PigStorage('"+delimiter+"')";
+			}
+			if (type.equalsIgnoreCase("BINARY MAP-REDUCE DIRECTORY")){
+				function = "BinStorage()";
+			}
+			logger.info("Storing via "+function);
+			return function;
+		}catch (Exception e){
+			logger.error("There was an error getting the output type");
+		}
+		return null;
+
+	}
++-----------+
+
+	So far we have added functionality for the common query pieces for pig actions , bag numner handling and getting the intput and output maps aswel as updating the output map.
+	As IDM runs through Oozie it is important for each action to write their process so that it is comaptible with Oozie. 
+	For this all that needs to be done is to implement the 'writeOozieActionFiles(File[] files)' method. This method 
+	
++-----------+
+public boolean writeOozieActionFiles(File[] files) throws RemoteException {
+		logger.info("Write queries in file: "+files[0].getAbsolutePath());
+		String toWrite = getQuery();
+		boolean ok = toWrite != null;
+		if(ok){
+			logger.info("Content of "+files[0].getName()+": "+toWrite);
+			try {
+				FileWriter fw = new FileWriter(files[0]);
+				BufferedWriter bw = new BufferedWriter(fw);
+				bw.write(toWrite);	
+				bw.close();
+
+			} catch (IOException e) {
+				ok = false;
+				logger.error("Fail to write into the file "+files[0].getAbsolutePath());
+			}
+		}
+		return ok;
+	}
++-----------+
+	
+	Now that everything is is configured and we have all that is neccessary for a basic action lets take another look at the constructor.
+	As the two interaction mentioned earlier for configuring the output is common for all pig actions we can implement them in the constructor as
+	all actionsion will have to call the superclass construnctor ('DemoAction') as it set the Oozie action type to be a Pig Action. The following code is 
+	
++-----------+
+public DemoAction() throws RemoteException {
+		super(new PigAction());
+		init(1,1);
+
+		delimiterOutputInt = new InputInteraction(
+				key_delimiter,
+				"Pig Delimiter",
+				"Set the delimiter character for the  ", 
+				0, 0);
+		delimiterOutputInt.setRegex("^(#\\d{1,3}|.)?$");
+		delimiterOutputInt.setValue("#1");
+
+
+		savetypeOutputInt = new ListInteraction(
+				key_outputType,
+				"Pig Output Type",
+				"Set the Pig output type of the action", 1, 0);
+		savetypeOutputInt.setDisplayRadioButton(true);
+		List<String> saveTypePos = new LinkedList<String>();
+		saveTypePos.add( new MapRedTextType().getTypeName());
+		saveTypePos.add( new MapRedBinaryType().getTypeName());
+		savetypeOutputInt.setPossibleValues(saveTypePos);
+		savetypeOutputInt.setValue(new MapRedTextType().getTypeName());
+	}
++-----------+
+
+	<<Outcome:>> Project with abstract class complete ready for use.
+	The skeleton of the project can be found here :  CREATE A LINK (1)
+
+ [[3]]Step 3
+
+	Now that we have the abstract class that is implemented with the essentials we can now look at implementing our first action.
+	That action that we are going to implement is sample. Pig has an action that allows for sampling the data and all that is needed
+	is the size at which you sample.
+	
+	Let's identify the methods that we need to implement.
+	
+	This method simply returns the name of the method
+	
++-----------+
+	public String getName() throws RemoteException {
+		
+		return "sample";
+	}
++-----------+
+
+	This methods simple returns the features that are available from the input.
+
++-----------+
+	@Override
+	public FeatureList getInFeatures() throws RemoteException {
+		return getDFEInput().get(DemoAction.key_input).get(0).getFeatures();
+	}
++-----------+
+
+	This method returns the new features generated from the action , as the action we are implementing is only to sample there should be no new features.
+	Here we simply return the input features.
+	
++-----------+
+	@Override
+	public FeatureList getNewFeatures() throws RemoteException {
+		return getInFeatures();
+	}
++-----------+
+
+	Once these methods are implemented , let's implement the only interaction that we need which will inherit from 'InputInteraction'.
+	We still have two methods to implement and the constructor to finish but it is necessary to implement the interaction first.
+	
+	So create a new package for interactions and add a new class called 'SampleInteraction'.
+	Once 'SampleInteraction' has been created we should have a constuctor that looks like the code below.
+	
++-----------+
+public SampleInteraction(String id, String name, String legend, int column,
+			int placeInColumn) throws RemoteException {
+		super(id, name, legend, column, placeInColumn);
+	}
++-----------+
+
+	Before the interaction can be used , the interaction needs to be updated to have the correct configuration. Input Interaction only needs two lines of configuration , one that set the regular expressiona
+	and the other to set an initial value. These features can be configured as showin in the following peice of code.
+	 
++-----------+
+
+	public void update() throws RemoteException{
+		setRegex("[\\-\\+]?[0-9]*(\\.[0-9]+)?");
+		setValue("0.7");
+	}
+
++-----------+
+
+	For validation purposes we need to check each interaction , for this we can call a check method that returns the error of the interaction.
+	If there is an error in the interaction the string returned will contain an error message , if the the interaction is valid and there is no errors
+	the message will be null. As the sample interaction is just on input and is precentage/rate at what pig will sample by , the input will be a decimal type between 0 and 1.
+	As seen in the update method , the input interaction has a regular expression . This regular expression dictates what is acceptable as an input.
+	The check method might look like the method below.
+	
++-----------+
+public String check(){
+		String error = null;
+		try{
+			String value = getValue();
+			if(!value.matches(getRegex())){
+				error = "Sample rate is note in range";
+			}
+		}catch(Exception e){
+			error = "An error occured when checking the value";
+		}
+		return error;
+	}
++-----------+
+
+	The last part of the interaction is to get the query piece that the interaction generates.
+
++-----------+
+
+	public String getQueryPiece(String relation) throws RemoteException{
+		String query="";
+		if(check()==null){
+			query = "SAMPLE "+relation +" "+getValue()+";";
+		}
+		return query;
+	}
+
++-----------+
+
+	<<Outcome:>> Project with action class almost complete and a complete interaction.
+	The skeleton of the project can be found here :  CREATE A LINK (1)
+
+ [[4]]Step 4
+ 
+ 	Once we have the interaction finished , the final step to complete the 'ActionSample' is to add the last members of the action and write the constructor , update and get query method.
+ 	Inside the 'ActionSample' class we add need to add the last few members of the action.
+ 	
++-----------+
+//Interaction that was just written
+public SampleInteraction pigsample;
+//page in which the interaction is contained
+private Page page1;
++-----------+
+
+	With the interaction and page added we can now write/update the constructor to include these members and utilize them.
+ 	
++-----------+
+
+	public ActionSample() throws RemoteException {
+		super();
+
+		page1 = addPage("Sample",
+				"Sample Data with Pif", 1);
+
+		sample = new SampleInteraction("sample",
+				"Sample Interaction",
+				"Set the rate to sample the data", 0,
+				0);
+
+		page1.addInteraction(sample);
+		page1.addInteraction(delimiterOutputInt);
+		page1.addInteraction(savetypeOutputInt);
+	}
+
++-----------+
+
+	With the interaction and page added to the action, we need to update the interaction.
+	This is the case for all interactions , every interaction needs to updated before use.
+	We can call the update for the interaction within the our action.
+	
++-----------+
+
+	public void update(DFEInteraction interaction) throws RemoteException {
+		//just checking there is an input available
+		DFEOutput in = getDFEInput().get(key_input).get(0);
+		if (in != null) {
+			if (interaction.getId().equals(pigsample.getId())) {
+				pigsample.update();
+			}
+		}
+	}
+
++-----------+
+
+	Having completed the constructor and the update method the last method to implement is the 'getQuery' method
+	which returns the entire query of the action.
+	
++-----------+
+
+	public String getQuery() throws RemoteException {
+		String query = null;
+		if (getDFEInput() != null) {
+			DFEOutput in = getDFEInput().get(key_input).get(0);
+			// Output
+			DFEOutput out = output.values().iterator().next();
+			String remove = getRemoveQueryPiece(out.getPath()) + "\n\n";
+			String loader = getCurrentName();
+			String load = loader + " = " + getLoadQueryPiece(in) + ";\n\n";
+			String sampleval = getNextName() + " = "
+					+ sample.getQueryPiece(loader) + "\n\n";
+			String store = getStoreQueryPiece(out, getCurrentName());
+
+			if (sampleval != null || !sampleval.isEmpty()) {
+				query = remove;
+				query += load;
+				query += sampleval;
+				query += store;
+			}
+		}
+		return query;
+	}
+
++-----------+
+
+	<<Outcome:>> Project with finished action.
+	The skeleton of the project can be found here :  CREATE A LINK (1)
+
+ [[5]]Step 5
+ 
+ 	With the writing of the action finished , there are a couple of manadtory files to be included for each and the package.
+ 	An action must have a help file (html) and an image for the file (gif). These two files must have the same name as the one provided in our action.
+ 	In this case the files should be named 'sample.gif' and 'sample.html'.
+ 	
+ 	The image file should be 40x40 pixels. Use any image editor to create the gif file.
+ 	
+ 	Once we have these files we should look at the requirements for the package.
+ 	A package must contain two folder called 'pck' and 'pck-repo' , that are located under src/main of the project. The directory listing should look like this:
+ 
+-------------------------
+	src/
+	 main/
+	   java/
+	   pck/
+	   pck-repo/
+-------------------------
+ 	 
+ 	For the moment lets look at the contents of 'pck' which is the folder that holds the contents of the package .
+ 	As we have the html file and the gif file for the action we should create the folders that they will be housed in.
+ 	Create two new folders and name one 'help' amd the other 'images'. Once these folders have been created and named place the html file in
+ 	the help folder and the gif file in the images file. The directory listong should now look like this :
+ 	
+-------------------------
+	src/
+	 main/
+	   java/
+	   pck/
+	    help/
+	     sample.html
+	    images/
+	     sample.gif
+	   pck-repo/
+-------------------------
+	
+	There are two more files required for the package , an 'actions.txt' file that lists the actions in the package , so in this package's 'actions.txt'
+	file should only contain sample. The content of the file should be: 
+
++-----------+
+sample
++-----------+
+
+	The other file that is needed for the completion of the package is the 'package.properties' and it holds details on the package name and the package version.
+	It's contents should display this :
+	
++-----------+
+packageName=${project.artifactId}
+version=${project.version}
++-----------+
+
+	The directory listing should display the following 
+
+-------------------------
+	src/
+	 main/
+	   java/
+	   pck/
+	    help/
+	     sample.html
+	    images/
+	     sample.gif
+	    actions.txt
+	    package.properties
+	   pck-repo/
+-------------------------
+
+	With the package complete there is only the 'pck-repo' folder to populate. This is for repository managment. It should contain an sql file for adding a record to the repository
+	called 'record_repo.sql' . It's contents is a simple insert statement that is : 
+ 
+-------------------------
+INSERT INTO idm_pck_mng.idm_packages( 
+      id,
+      name,
+      version,
+      license,
+      price,
+      short_description,
+      html_file,
+      release_notes,
+      package_date,
+      zip_file)
+VALUES(
+      '#{ARTIFACTID}',
+      '#{NAME}',
+      '#{VERSION}',
+      'Apache',
+      '',
+      '#{DESCRIPTION}',
+      '#{ARTIFACTID}-#{VERSION}.html',
+      '',
+      str_to_date('#{TIMESTAMP}','%Y-%m-%d'),
+      '#{ARTIFACTID}-#{VERSION}.zip'
+      );
+
+-------------------------
+
+	The final file is a help file for the entire package. The help file title is the name of the package.
+	In this packages case the help file should be 'test.html'.
+	This help file should contain information on the package and general information on the framework used.
+	
+	The final directory listing from within source should be  :
+	
+-------------------------
+	src/
+	 main/
+	   java/
+	   pck/
+	    help/
+	     sample.html
+	    images/
+	     sample.gif
+	    actions.txt
+	    package.properties
+	   pck-repo/
+	    test.html
+	    record_repo.sql
+-------------------------
