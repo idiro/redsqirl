@@ -214,7 +214,7 @@ public interface DFEOutput extends Remote {
 	 * @return List of Lines from the output
 	 * @throws RemoteException
 	 */
-	List<String> select(int maxToRead) throws RemoteException;
+	List<Map<String,String>> select(int maxToRead) throws RemoteException;
 
 	/**
 	 * Set the features list of the object

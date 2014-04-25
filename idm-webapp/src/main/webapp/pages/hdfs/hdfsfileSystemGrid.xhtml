@@ -39,8 +39,7 @@
 <body>
 
 	<a4j:keepAlive beanName="hdfsBean" />
-	<div id="hdfsFileSystem"
-		style="min-width: 400px; overflow: hidden; min-height: 200px;">
+	<div id="hdfsFileSystem" style="min-width: 400px; overflow: hidden; min-height: 200px;">
 
 		<rich:dragIndicator id="indicator" />
 
@@ -136,16 +135,14 @@
 			<rich:panel style="border:none">
 				<rich:dropSupport acceptedTypes="ssh"
 					dropListener="#{hdfsBean.processDrop}" reRender="hdfsfs" oncomplete="resizeTables();"/>
-				<rich:extendedDataTable id="hdfsfs" value="#{hdfsBean.listGrid}"
+				
+				<rich:extendedDataTable id="hdfsfs" value="#{hdfsBean.tableGrid.rows}"
 					var="item" rowKeyVar="indexTable" width="100%" height="500px"
-					style="border:none;"
-					onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-					enableContextMenu="false"
-					onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+					style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+					enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
 					rowClasses="even-row, odd-row" tableState="#{hdfsBean.tableState}">
 
-					<rich:column style="border-bottom:0px;border-right:0px;"
-						width="50px;">
+					<rich:column style="border-bottom:0px;border-right:0px;" width="50px;">
 						<f:facet name="header">
 							<h:selectBooleanCheckbox
 								onclick="selectAllCheckbox(this, /hdfsselect$/);" />
@@ -153,51 +150,45 @@
 						<h:selectBooleanCheckbox id="hdfsselect" value="#{item.selected}" />
 					</rich:column>
 					
-					<rich:column style="border-bottom:0px;border-right:0px;"
-						width="50px;">
+					<rich:column style="border-bottom:0px;border-right:0px;" width="50px;">
 						<f:facet name="header">
 							<h:outputText value="" />
 						</f:facet>
-						<!-- oncomplete="#{rich:component('hdfseditModalPanel')}.show()" -->
-						<a4j:commandLink action="#{hdfsBean.editFileBefore}">
+						<a4j:commandLink onclick="#{rich:component('hdfseditModalPanel')}.show()">
 							<h:graphicImage value="../image/icons/button-property.gif" title='#{messages.HdfsInterface_properties_help}' 
-							rendered="#{item.file == 'N'}" styleClass="fileSystemIcon" />
+							rendered="#{hdfsBean.allProps[indexTable]['type'] == 'directory'}" styleClass="fileSystemIcon" />
 							<h:graphicImage value="../image/icons/button-file-icon.png" title='#{messages.HdfsInterface_properties_help}' 
-							rendered="#{item.file == 'S'}" styleClass="fileSystemIcon" />
-							<f:param name="nameFileEdit" value="#{item.name}" />
+							rendered="#{hdfsBean.allProps[indexTable]['type'] == 'file'}" styleClass="fileSystemIcon" />
 						</a4j:commandLink>
 					</rich:column>
 
-					<rich:column sortBy="#{item.name}" filterBy="#{item.name}"
+					<rich:column sortBy="#{hdfsBean.allProps[indexTable]['name']}" filterBy="#{hdfsBean.allProps[indexTable]['name']}"
 						style="border-bottom:0px;border-right:0px;" filterEvent="onchange">
 						<f:facet name="header">
-							<h:outputText value="Name" />
+							<h:outputText value="#{messages.label_name}" />
 						</f:facet>
-						<a4j:commandLink value="#{item.name}"
+						<a4j:commandLink value="#{hdfsBean.allProps[indexTable]['name']}"
 							action="#{hdfsBean.verifyIfIsFile}"
-							oncomplete="selectFileHdfs('#{hdfsBean.file}', '#{item.name}')">
-							<f:param name="nameFile" value="#{item.name}" />
+							oncomplete="selectFileHdfs('#{hdfsBean.file}', '#{hdfsBean.allProps[indexTable]['name']}')">
+							<f:param name="nameFile" value="#{hdfsBean.allProps[indexTable]['name']}" />
 							<rich:dragSupport dragIndicator=":indicator"
-								dragValue="#{item.name}" dragType="hdfs">
-								<rich:dndParam name="label" value="#{item.name}" />
-								<a4j:actionparam name="file" value="#{item.name}" />
+								dragValue="#{hdfsBean.allProps[indexTable]['name']}" dragType="hdfs">
+								<rich:dndParam name="label" value="#{hdfsBean.allProps[indexTable]['name']}" />
+								<a4j:actionparam name="file" value="#{hdfsBean.allProps[indexTable]['name']}" />
 								<a4j:actionparam name="path" value="#{hdfsBean.path}" />
 							</rich:dragSupport>
 						</a4j:commandLink>
 					</rich:column>
 
-					<rich:columns value="#{hdfsBean.keyAsListNameValue}" var="column"
-						index="ind" id="hdfscolumn#{ind}"
-						sortBy="#{item.nameValueEdit[column]}"
-						filterBy="#{item.nameValueEdit[column]}"
-						style="border-bottom:0px;border-right:0px;">
+					<rich:columns value="#{hdfsBean.tableGrid.titles == null? canvasBean.emptyList : hdfsBean.tableGrid.titles}" var="column" index="ind" 
+						sortBy="#{item.row[ind]}" filterBy="#{item.row[ind]}" style="border-bottom:0px;border-right:0px;">
 						<f:facet name="header">
 							<h:outputText value="#{column}" />
 						</f:facet>
-						<h:outputText value="#{item.nameValueEdit[column]}"
-							id="hdfsvalue#{ind}" />
+						<h:outputText value="#{item.row[ind]}" />
 					</rich:columns>
 				</rich:extendedDataTable>
+				
 			</rich:panel>
 		</h:form>
 	</div>
@@ -217,8 +208,7 @@
 
 			<h:form id="hdfsform2">
 				<h:panelGroup>
-					<a4j:include viewId="/pages/hdfs/copyHdfs.xhtml"
-						ajaxRendered="false" />
+					<a4j:include viewId="/pages/hdfs/copyHdfs.xhtml" />
 				</h:panelGroup>
 			</h:form>
 
@@ -240,8 +230,7 @@
 
 			<h:form id="hdfsform3">
 				<h:panelGroup>
-					<a4j:include viewId="/pages/hdfs/moveHdfs.xhtml"
-						ajaxRendered="true" />
+					<a4j:include viewId="/pages/hdfs/moveHdfs.xhtml" />
 				</h:panelGroup>
 			</h:form>
 
@@ -249,9 +238,7 @@
 	</a4j:region>
 
 	<a4j:region>
-		<rich:modalPanel id="hdfsaddModalPanel" width="600" height="400"
-			style="overflow:auto;" resizeable="false">
-			<!-- //FIXME -->
+		<rich:modalPanel id="hdfsaddModalPanel" width="600" height="400" style="overflow:auto;" resizeable="false">
 			<f:facet name="header">
 				<h:outputText value='#{messages.hdfsinterface_create_dir}' />
 			</f:facet>
@@ -263,7 +250,7 @@
 
 			<h:form id="hdfsform4">
 				<h:panelGrid>
-					<a4j:include viewId="/pages/hdfs/addHdfs.xhtml" ajaxRendered="true" />
+					<a4j:include viewId="/pages/hdfs/addHdfs.xhtml" />
 				</h:panelGrid>
 			</h:form>
 
@@ -285,8 +272,7 @@
 
 			<h:form id="hdfsform5">
 				<h:panelGrid>
-					<a4j:include viewId="/pages/hdfs/editHdfs.xhtml"
-						ajaxRendered="true" />
+					<a4j:include viewId="/pages/hdfs/editHdfs.xhtml" />
 				</h:panelGrid>
 			</h:form>
 
@@ -308,8 +294,7 @@
 
 			<h:form id="hdfsform6">
 				<h:panelGrid>
-					<a4j:include viewId="/pages/hdfs/openFileHdfs.xhtml"
-						ajaxRendered="true" />
+					<a4j:include viewId="/pages/hdfs/openFileHdfs.xhtml" />
 				</h:panelGrid>
 			</h:form>
 

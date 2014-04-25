@@ -88,6 +88,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	protected Map<String, List<String[]>> menuWA;
 
 	/**
+	 * Key: action name, Value: absolute file name
+	 */
+	protected Map<String,String> help;
+
+	/**
 	 * The current Action in the workflow
 	 */
 	protected LinkedList<DataFlowElement> element = new LinkedList<DataFlowElement>();
@@ -141,7 +146,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			}
 		});
 		menuWA = new LinkedHashMap<String, List<String[]>>();
-
 		Map<String, String> nameWithClass;
 		try {
 			nameWithClass = getAllWANameWithClassName();
@@ -160,10 +164,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 											.forName(nameWithClass.get(line))
 											.newInstance();
 
-									String[] parameters = new String[3];
+									String[] parameters = new String[2];
 									parameters[0] = line;
 									parameters[1] = dfe.getImage();
-									parameters[2] = dfe.getHelp();
 									new_list.add(parameters);
 								} else {
 									logger.warn("unknown workflow action '"
@@ -195,6 +198,31 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		return error;
 	}
 
+	public void loadHelp(){
+		help = new LinkedHashMap<String, String>();
+		Map<String, String> nameWithClass;
+		try {
+			nameWithClass = getAllWANameWithClassName();
+			Iterator<String> it = nameWithClass.keySet().iterator();
+			while(it.hasNext()){
+				String actionName = it.next();
+				try {
+					DataFlowElement dfe = (DataFlowElement) Class
+							.forName(nameWithClass.get(actionName))
+							.newInstance();
+
+					help.put(actionName, dfe.getHelp());
+				} catch (Exception e) {
+					logger.error(LanguageManagerWF.getText(
+							"workflow.loadclassfail",
+							new Object[] { actionName }));
+				}
+			}
+		}catch (Exception e) {
+			logger.error(LanguageManagerWF.getText("workflow.loadclassexception"));
+		}
+	}
+
 	public String loadMenu(Map<String,List<String>> newMenu) {
 
 		String error = "";
@@ -215,10 +243,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 										.forName(nameWithClass.get(action))
 										.newInstance();
 
-								String[] parameters = new String[3];
+								String[] parameters = new String[2];
 								parameters[0] = action;
 								parameters[1] = dfe.getImage();
-								parameters[2] = dfe.getHelp();
 								new_list.add(parameters);
 							} else {
 								logger.warn("unknown workflow action '"
@@ -248,7 +275,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		return error;
 	}
 
-	public Map<String,List<String[]>> loadMenu(File curPath) {
+
+	public Map<String,List<String[]>> getRelativeMenu(File curPath) {
 		if(menuWA == null || menuWA.isEmpty()){
 			loadMenu();
 		}
@@ -263,22 +291,45 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			Iterator<String[]> actionListit = menuWA.get(key).iterator();
 			List<String[]> newActionList = new ArrayList<String[]>();
 			while(actionListit.hasNext()){
-				String[] parameters = actionListit.next();
+				String[] parameters = new String[2];
+				String[] absCur = actionListit.next();
+				parameters[0] = absCur[0];
 				try{
-					logger.debug("loadMenu "+ curPath +" "+ parameters[1]);
-					logger.debug("loadMenu "+ curPath +" "+ parameters[2]);
-					parameters[1] = LocalFileSystem.relativize(curPath,parameters[1]);
-					parameters[2] = LocalFileSystem.relativize(curPath,parameters[2]);
+					logger.debug("loadMenu "+ curPath +" "+ absCur[1]);
+					parameters[1] = LocalFileSystem.relativize(curPath,absCur[1]);
 					newActionList.add(parameters);
 				}catch (Exception e){
 					logger.error(e.getMessage());
-					logger.error("Error Getting relative paths for Help and Image");
+					logger.error("Error Getting relative paths for Image");
 				}
 
 			}
 			ans.put(key, newActionList);
 		}
 
+		return ans;
+	}
+
+	@Override
+	public Map<String,String> getRelativeHelp(File curPath){
+		if(help == null || help.isEmpty()){
+			loadHelp();
+		}
+		if(curPath == null){
+			return help;
+		}
+		logger.info("Load help "+curPath.getPath());
+		Map<String,String> ans = new LinkedHashMap<String,String>();
+		Iterator<String> helpit = help.keySet().iterator();
+		while(helpit.hasNext()){
+			String key = helpit.next();
+			try{
+				ans.put(key, LocalFileSystem.relativize(curPath,help.get(key)));
+			}catch (Exception e){
+				logger.error(e.getMessage());
+				logger.error("Error Getting relative paths for Help");
+			}
+		}
 		return ans;
 	}
 

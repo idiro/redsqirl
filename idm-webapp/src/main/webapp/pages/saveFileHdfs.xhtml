@@ -95,41 +95,37 @@
 
 	<div id="divSaveFileHdfs" style="width:590px;height:265px;overflow: auto;" >
 
-		<rich:extendedDataTable id="hdfsfsSaveFile" value="#{browserHdfsBean.listGrid}" var="item"
-			width="50px" height="10px"
-			onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-			enableContextMenu="false" selectionMode="none"
-			onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
-			rowClasses="even-row, odd-row">
+		<rich:extendedDataTable id="hdfsfsSaveFile" value="#{browserHdfsBean.tableGrid.rows}" var="item" rowKeyVar="indexTable" width="50px" height="10px"
+			onRowMouseOver="this.style.backgroundColor='#F1F1F1'" enableContextMenu="false" selectionMode="none"
+			onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'" rowClasses="even-row, odd-row">
 			
 			<rich:column style="border-bottom:0px;border-right:0px;" width="50px;">
-			<f:facet name="header">
-				<h:outputText value="" />
-			</f:facet>
-				<h:graphicImage value="../image/icons/button-property.gif" title='#{messages.HdfsInterface_properties_help}' 
-				rendered="#{item.file == 'N'}" styleClass="fileSystemIcon" />
-				<h:graphicImage value="../image/icons/button-file-icon.png" title='#{messages.HdfsInterface_properties_help}' 
-				rendered="#{item.file == 'S'}" styleClass="fileSystemIcon" />
+				<f:facet name="header">
+					<h:outputText value="" />
+				</f:facet>
+					<h:graphicImage value="../image/icons/button-property.gif" title='#{messages.HdfsInterface_properties_help}' 
+					rendered="#{browserHdfsBean.allProps[indexTable]['type'] == 'directory'}" styleClass="fileSystemIcon" />
+					<h:graphicImage value="../image/icons/button-file-icon.png" title='#{messages.HdfsInterface_properties_help}' 
+					rendered="#{browserHdfsBean.allProps[indexTable]['type'] == 'file'}" styleClass="fileSystemIcon" />
 			</rich:column>
 	
-			<rich:column sortBy="#{item.name}" filterBy="#{item.name}"
+			<rich:column sortBy="#{browserHdfsBean.allProps[indexTable]['name']}" filterBy="#{browserHdfsBean.allProps[indexTable]['name']}"
 				style="border-bottom:0px;border-right:0px;">
 				<f:facet name="header">
-					<h:outputText value="Name" />
+					<h:outputText value="#{messages.label_name}" />
 				</f:facet>
-				<a4j:commandLink id="saveFileNameId" value="#{item.name}"
-					action="#{browserHdfsBean.verifyIfIsFile}" oncomplete="selectFileSaveHdfs('#{browserHdfsBean.file}', '#{item.name}')" >
-					<f:param name="nameFile" value="#{item.name}" />
+				<a4j:commandLink id="saveFileNameId" value="#{browserHdfsBean.allProps[indexTable]['name']}" 
+					action="#{browserHdfsBean.verifyIfIsFile}" oncomplete="selectFileSaveHdfs('#{browserHdfsBean.file}', '#{browserHdfsBean.allProps[indexTable]['name']}')" >
+					<f:param name="nameFile" value="#{browserHdfsBean.allProps[indexTable]['name']}" />
 				</a4j:commandLink>
 			</rich:column>
 	
-			<rich:columns value="#{browserHdfsBean.keyAsListNameValue}" var="column"
-				index="ind" id="column#{ind}"
+			<rich:columns value="#{browserHdfsBean.tableGrid.titles == null? canvasBean.emptyList : browserHdfsBean.tableGrid.titles}" var="column" index="ind" begin="1"
 				style="border-bottom:0px;border-right:0px;">
 				<f:facet name="header">
 					<h:outputText value="#{column}" />
 				</f:facet>
-				<h:outputText value="#{item.nameValue[column]}" id="value#{ind}" />
+				<h:outputText value="#{item.row[ind]}" />
 			</rich:columns>
 	
 		</rich:extendedDataTable>

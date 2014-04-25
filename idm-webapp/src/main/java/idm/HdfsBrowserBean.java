@@ -20,4 +20,5 @@ public class HdfsBrowserBean extends HdfsBean {
 	public DataStore getRmiHDFS() throws RemoteException{
 		return getHDFSBrowser();
 	}
+	
 }

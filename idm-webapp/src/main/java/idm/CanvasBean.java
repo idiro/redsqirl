@@ -1,7 +1,6 @@
 package idm;
 
 import idiro.utils.LocalFileSystem;
-import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idiro.workflow.server.enumeration.SavingState;
 import idiro.workflow.server.interfaces.DFELinkProperty;
@@ -12,7 +11,6 @@ import idiro.workflow.server.interfaces.JobManager;
 import idm.auth.UserInfoBean;
 import idm.useful.MessageUseful;
 
-import java.io.File;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -27,7 +25,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.WordUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,8 +43,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private String paramInId;
 	private String paramNameLink;
 	private String[] result;
-	private String idElement;
-	private String idGroup;
 	private String nameOutput;
 	private String linkLabel;
 	private Map<String, Map<String, String>> idMap;
@@ -57,11 +52,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private String workflowUrl;
 	private Map<String, DataFlow> workflowMap;
 	private String errorTableState = new String();
-
-	/**
-	 * Don't open the modal window after changing the ID.
-	 */
-	private boolean changeElementOnly = false;
+	private List<String> emptyList = new LinkedList<String>();
 
 	/**
 	 * 
@@ -72,7 +63,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	}
 
-	//@PostConstruct
+	/**
+	 * Init the canvas at the begining of a session
+	 */
 	public void init(){
 
 		logger.info("openCanvas");
@@ -397,7 +390,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	/**
 	 * load
 	 * 
-	 * Method to load a workflow
+	 * Method to create a new workflow and make it the default
 	 * 
 	 * @return
 	 * @author Igor.Souza
@@ -409,33 +402,24 @@ public class CanvasBean extends BaseBean implements Serializable {
 		logger.info("load " + path);
 
 		DataFlowInterface dfi;
+		String error = null;
 		try {
 			dfi = getworkFlowInterface();
 
 			String newWfName = generateWorkflowName(path);
-			String error = dfi.addWorkflow(newWfName);
+			error = dfi.addWorkflow(newWfName);
 
-			if (error != null) {
-				MessageUseful.addErrorMessage(error);
-				HttpServletRequest request = (HttpServletRequest) FacesContext
-						.getCurrentInstance().getExternalContext().getRequest();
-				request.setAttribute("msnError", "msnError");
-				return;
-			}
-			if (!getWorkflowMap().containsKey(newWfName)) {
-				logger.error("A key is not available on the back-end but on the front-end!");
-			}
+			if( error == null){
+				if (!getWorkflowMap().containsKey(newWfName)) {
+					logger.error("A key is not available on the back-end but on the front-end!");
+				}
 
-			DataFlow df = dfi.getWorkflow(newWfName);
-			error = df.read(path);
-			logger.info("load error " + error);
+				DataFlow df = dfi.getWorkflow(newWfName);
+				error = df.read(path);
+			}
 
 			if (error != null) {
 				dfi.removeWorkflow(newWfName);
-				MessageUseful.addErrorMessage(error);
-				HttpServletRequest request = (HttpServletRequest) FacesContext
-						.getCurrentInstance().getExternalContext().getRequest();
-				request.setAttribute("msnError", "msnError");
 			} else {
 				setNameWorkflow(newWfName);
 				setDf(df);
@@ -444,14 +428,20 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 				for (DataFlowElement e : df.getElement()){
 					getIdMap().get(getNameWorkflow()).put(e.getComponentId(), e.getComponentId());
-
-
 				}
 			}
 
 		} catch (Exception e) {
 			logger.info("Error loading workflow");
 			e.printStackTrace();
+		}
+
+		if (error != null) {
+			logger.info("error " + error);
+			MessageUseful.addErrorMessage(error);
+			HttpServletRequest request = (HttpServletRequest) FacesContext
+					.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
 		}
 	}
 
@@ -546,7 +536,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 * @throws JSONException
 	 */
-	@SuppressWarnings("rawtypes")
 	public void save() {
 
 		logger.info("save");
@@ -742,9 +731,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		setWorkflowUrl(url);
 	}
-	
+
 	public boolean isRunning() throws RemoteException{
-		
+
 		DataFlow df = getDf();
 		boolean running = false;
 		if (df != null) {
@@ -752,8 +741,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 		return running;
 	}
-	
-	
+
+
 	public void stopRunningWorkflow() throws RemoteException, Exception{
 		DataFlow df = getDf();
 		if (df != null && df.getOozieJobId() != null) {
@@ -875,18 +864,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 			request.setAttribute("msnError", "msnError");
 		}
 
-	}
-
-	public void openChangeIdModal() throws RemoteException {
-		logger.info("openChangeIdModal");
-		setIdElement(getIdMap().get(getNameWorkflow()).get(getIdGroup()));
-	}
-
-	public void changeIdElement() throws RemoteException {
-		logger.info("id new -> " + getIdElement());
-		String oldId = getIdMap().get(getNameWorkflow()).get(getIdGroup());
-		getIdMap().get(getNameWorkflow()).put(getIdGroup(), getIdElement());
-		getDf().changeElementId(oldId, getIdElement());
 	}
 
 	/**
@@ -1223,8 +1200,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 				jsonElements.toString(), jsonLinks.toString() };
 	}
 
-	
-	
+
+
 	public String getIdElement(String idGroup) {
 		return getIdMap().get(getNameWorkflow()).get(idGroup);
 	}
@@ -1304,22 +1281,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 		this.idMap = idMap;
 	}
 
-	public String getIdElement() {
-		return idElement;
-	}
-
-	public void setIdElement(String idElement) {
-		this.idElement = idElement;
-	}
-
-	public String getIdGroup() {
-		return idGroup;
-	}
-
-	public void setIdGroup(String idGroup) {
-		this.idGroup = idGroup;
-	}
-
 	public Map<String, DataFlow> getWorkflowMap() {
 		return workflowMap;
 	}
@@ -1384,20 +1345,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 	}
 
 	/**
-	 * @return the changeElementOnly
-	 */
-	public boolean isChangeElementOnly() {
-		return changeElementOnly;
-	}
-
-	/**
-	 * @param changeElementOnly the changeElementOnly to set
-	 */
-	public void setChangeElementOnly(boolean changeElementOnly) {
-		this.changeElementOnly = changeElementOnly;
-	}
-
-	/**
 	 * @return the workflowElementUrl
 	 */
 	public String getWorkflowElementUrl() {
@@ -1417,6 +1364,13 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void setWorkflowUrl(String workflowUrl) {
 		this.workflowUrl = workflowUrl;
+	}
+
+	/**
+	 * @return the emptyList
+	 */
+	public List<String> getEmptyList() {
+		return emptyList;
 	}
 
 }

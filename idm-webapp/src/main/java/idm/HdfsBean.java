@@ -3,10 +3,8 @@ package idm;
 import idiro.workflow.server.connect.interfaces.DataStore;
 
 import java.rmi.RemoteException;
-import java.util.HashMap;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.faces.context.FacesContext;
 
 import org.apache.log4j.Logger;
@@ -20,10 +18,14 @@ import org.richfaces.event.DropEvent;
  */
 public class HdfsBean extends FileSystemBean {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3643315645652064815L;
+
 	private static Logger logger = Logger.getLogger(HdfsBean.class);
 	
 	private String tableState = new String();
-	public boolean recursive = false;
 
 
 	/** openCanvasScreen
@@ -40,8 +42,9 @@ public class HdfsBean extends FileSystemBean {
 
 			setDataStore(getRmiHDFS());
 
-			if(getListGrid().isEmpty()){
-
+			if(getTableGrid() != null && 
+					getTableGrid().getRows() != null &&
+					getTableGrid().getRows().isEmpty()){
 				mountTable(getDataStore());
 			}
 
@@ -51,23 +54,11 @@ public class HdfsBean extends FileSystemBean {
 		}
 
 	}
-
-	/** openCanvasScreen
-	 * 
-	 * Method that is executed when the screen
-	 * 
-	 * @return
-	 * @author Igor.Souza
-	 */
-	@PreDestroy
-	public void closeCanvasScreen() {
-
-	}
 	
-	public void addFileAfter() throws RemoteException{
+	/*public void addFileAfter() throws RemoteException{
 		setNameValue(new HashMap<String, String>());
 		super.addFileAfter();
-	}
+	}*/
 	
 	public void processDrop(DropEvent dropEvent) throws RemoteException { 
 		logger.info("processDrop");

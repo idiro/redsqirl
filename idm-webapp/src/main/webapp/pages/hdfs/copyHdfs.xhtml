@@ -38,12 +38,9 @@ function dataTableSelectOneRadio(radio) {
 	</a4j:commandLink>
     
     <div style="width:100%;overflow:auto;height:305px;margin-top:5px;margin-bottom:10px;">
-	<rich:extendedDataTable id="hdfsfsCopy" value="#{hdfsBean.listGrid}" var="item"
-		width="100%" style="border:none;"
-		onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-		enableContextMenu="false" selectionMode="none"
-		onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
-		rowClasses="even-row, odd-row">
+	<rich:extendedDataTable id="hdfsfsCopy" value="#{hdfsBean.tableGrid.rows}" var="item" rowKeyVar="indexTable" width="100%" style="border:none;"
+		onRowMouseOver="this.style.backgroundColor='#F1F1F1'" enableContextMenu="false" selectionMode="none"
+		onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'" rowClasses="even-row, odd-row">
 
 		<f:facet name="header">
 			<h:outputText value="File System" />
@@ -53,13 +50,9 @@ function dataTableSelectOneRadio(radio) {
 			<f:facet name="header">
 				<h:outputText value="" />
 			</f:facet>
-			<h:selectBooleanCheckbox id="select" value="#{item.selected}"
-				style="display:none;" />
-			<h:selectOneRadio value="#{item.stringSelectedDestination}"
-				onclick="dataTableSelectOneRadio(this);">
+			<h:selectOneRadio value="#{item.selected}" onclick="dataTableSelectOneRadio(this);">
 				<f:selectItem itemValue="true" />
 			</h:selectOneRadio>
-
 		</rich:column>
 		
 		<rich:column style="border-bottom:0px;border-right:0px;" width="50px;">
@@ -67,29 +60,28 @@ function dataTableSelectOneRadio(radio) {
 				<h:outputText value="" />
 			</f:facet>
 				<h:graphicImage value="../image/icons/button-property.gif" title='#{messages.HdfsInterface_properties_help}' 
-				rendered="#{item.file == 'N'}" styleClass="fileSystemIcon" />
+				rendered="#{hdfsBean.allProps[indexTable]['type'] == 'directory'}" styleClass="fileSystemIcon" />
 				<h:graphicImage value="../image/icons/button-file-icon.png" title='#{messages.HdfsInterface_properties_help}' 
-				rendered="#{item.file == 'S'}" styleClass="fileSystemIcon" />
+				rendered="#{hdfsBean.allProps[indexTable]['type'] == 'file'}" styleClass="fileSystemIcon" />
 		</rich:column>
 		
-		<rich:column sortBy="#{item.name}"
+		<rich:column sortBy="#{hdfsBean.allProps[indexTable]['name']}"
 			style="border-bottom:0px;border-right:0px;">
 			<f:facet name="header">
-				<h:outputText value="Name" />
+				<h:outputText value="#{messages.label_name}" />
 			</f:facet>
-			<a4j:commandLink value="#{item.name}"
+			<a4j:commandLink value="#{hdfsBean.allProps[indexTable]['name']}"
 				action="#{hdfsBean.selectFile}" reRender="pathCopy,hdfsfsCopy">
-				<f:param name="nameFile" value="#{item.name}" />
+				<f:param name="nameFile" value="#{hdfsBean.allProps[indexTable]['name']}" />
 			</a4j:commandLink>
 		</rich:column>
 
-		<rich:columns value="#{hdfsBean.keyAsListNameValue}" var="column"
-			index="ind" id="column#{ind}"
-			style="border-bottom:0px;border-right:0px;">
+		<rich:columns value="#{hdfsBean.tableGrid.titles == null? canvasBean.emptyList : hdfsBean.tableGrid.titles}" var="column"
+			index="ind" style="border-bottom:0px;border-right:0px;">
 			<f:facet name="header">
 				<h:outputText value="#{column}" />
 			</f:facet>
-			<h:outputText value="#{item.nameValue[column]}" id="value#{ind}" />
+			<h:outputText value="#{item.row[ind]}" />
 		</rich:columns>
 
 	</rich:extendedDataTable>

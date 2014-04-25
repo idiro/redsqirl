@@ -1,36 +1,46 @@
 package idm.interaction;
 
 import idiro.utils.Tree;
-import idiro.workflow.server.connect.interfaces.DataFlowInterface;
-import idiro.workflow.server.connect.interfaces.DataStore;
 import idiro.workflow.server.interfaces.DFEInteraction;
+import idiro.workflow.server.interfaces.DataFlowElement;
+import idm.CanvasModalOutputTab;
+import idm.FileSystemBean;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
-import javax.servlet.http.HttpSession;
 
 public class BrowserInteraction extends CanvasModalInteraction {
 
-	String pathBrowser;
-	String typeBrowser;
-	List<String> listFeatures;
-	List<SelectItem> listProperties;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3020683683280306022L;
 
-	static Map<String,DataStore> datastores;
+	/**
+	 * List of the feature name
+	 */
+	private List<String> listFeatures;
 
-	public BrowserInteraction(DFEInteraction dfeInter) throws RemoteException {
+	/**
+	 * List of the properties
+	 */
+	private List<SelectItem> listProperties;
+
+	/**
+	 * Object that will manage the output and display it. 
+	 * It is supposed that a browser element has only one output.
+	 */
+	private CanvasModalOutputTab modalOutput;
+
+	public BrowserInteraction(DFEInteraction dfeInter,DataFlowElement dfe,CanvasModalOutputTab outputTab) throws RemoteException {
 		super(dfeInter);
-		if(datastores == null){
-			FacesContext fCtx = FacesContext.getCurrentInstance();
-			HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
-			datastores = ((DataFlowInterface) session.getAttribute("wfm")).getDatastores();
-		}
+		this.modalOutput = outputTab;
+		outputTab.resetNameOutput();
+		outputTab.updateDFEOutputTable();
 	}
 
 	@Override
@@ -38,50 +48,64 @@ public class BrowserInteraction extends CanvasModalInteraction {
 		// clean the map
 		listFeatures = new LinkedList<String>();
 		listProperties = new LinkedList<SelectItem>();
-
-		typeBrowser = inter.getTree()
-				.getFirstChild("browse").getFirstChild("type")
-				.getFirstChild().getHead();
-
-		if (inter.getTree().getFirstChild("browse")
-				.getFirstChild("output").getFirstChild("path") != null) {
-			pathBrowser = inter.getTree()
-					.getFirstChild("browse")
-					.getFirstChild("output").getFirstChild("path")
-					.getFirstChild().getHead();
-			logger.info("path mount " + pathBrowser);
-			if (!pathBrowser.startsWith("/")) {
-				pathBrowser = "/" + pathBrowser;
+		//logger.info(printTree(inter.getTree()));
+		try{
+			if (inter.getTree().getFirstChild("browse")
+					.getFirstChild("output").getFirstChild("path") != null) {
+				setPath(inter.getTree()
+						.getFirstChild("browse")
+						.getFirstChild("output").getFirstChild("path")
+						.getFirstChild().getHead());
+				logger.info("path mount " + getPath());
+				if (!getPath().startsWith("/")) {
+					setPath("/" + getPath());
+				}
 			}
+		}catch(Exception e){
+			logger.info("Exception: "+e.getMessage());
+			setPath(null);
 		}
 
 		//set properties
-		if (inter.getTree().getFirstChild("browse")
-				.getFirstChild("output").getChildren("property") != null) {
-			List<Tree<String>> props = inter.getTree().getFirstChild("browse")
-					.getFirstChild("output").getChildren("property");
-			if (props != null) {
-				logger.info("properties not null: " + props.size());
-				for (Tree<String> tree : props) {
-					listProperties.add(new SelectItem(tree.getHead(), tree
-							.getFirstChild().getHead()));
+		try{
+			if (inter.getTree().getFirstChild("browse")
+					.getFirstChild("output").getChildren("property") != null) {
+				List<Tree<String>> props = inter.getTree().getFirstChild("browse")
+						.getFirstChild("output").getFirstChild("property").getSubTreeList();
+				if (props != null) {
+					logger.info("properties not null: " + props.size());
+					for (Tree<String> tree : props) {
+						listProperties.add(new SelectItem(tree
+								.getFirstChild().getHead(),tree.getHead()));
+					}
 				}
 			}
+		}catch(Exception e){
+			logger.info("Exception: "+e.getMessage());
 		}
 
 		//set features
-		if (inter.getTree().getFirstChild("browse")
-				.getFirstChild("output").getChildren("property") != null) {
-			List<Tree<String>> feats = inter.getTree().getFirstChild("browse")
-					.getFirstChild("output").getChildren("feature");
-			if (feats != null) {
-				logger.info("properties not null: " + feats.size());
-				for (Tree<String> tree : feats) {
-					String name = tree.getFirstChild("name").getFirstChild().getHead();
-					String type = tree.getFirstChild("type").getFirstChild().getHead();
-					listFeatures.add(name+" "+type);
+		try{
+			if (inter.getTree().getFirstChild("browse")
+					.getFirstChild("output").getChildren("feature") != null) {
+				List<Tree<String>> feats = inter.getTree().getFirstChild("browse")
+						.getFirstChild("output").getChildren("feature");
+				if (feats != null) {
+					logger.info("features not null: " + feats.size());
+					for (Tree<String> tree : feats) {
+						String name = tree.getFirstChild("name").getFirstChild().getHead();
+						String type = tree.getFirstChild("type").getFirstChild().getHead();
+						listFeatures.add(name+" "+type);
+					}
 				}
 			}
+		}catch(Exception e){
+			logger.info("Exception: "+e.getMessage());
+		}
+		
+		if(modalOutput != null){
+			modalOutput.resetNameOutput();
+			modalOutput.updateDFEOutputTable();
 		}
 	}
 
@@ -91,7 +115,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 		.getFirstChild("output").removeAllChildren();
 		inter.getTree().getFirstChild("browse")
 		.getFirstChild("output").add("path")
-		.add(pathBrowser);
+		.add(getPath());
 
 		Tree<String> myProperty = inter.getTree()
 				.getFirstChild("browse").getFirstChild("output")
@@ -111,7 +135,6 @@ public class BrowserInteraction extends CanvasModalInteraction {
 			myFeature.add("name").add(value[0]);
 			myFeature.add("type").add(value[1]);
 		}
-		
 	}
 
 	@Override
@@ -122,8 +145,8 @@ public class BrowserInteraction extends CanvasModalInteraction {
 					.getFirstChild("output").getFirstChild("path")
 					.getFirstChild().getHead();
 			logger.info("Comparaison path: " + oldPath + " , "
-					+ pathBrowser);
-			unchanged = pathBrowser.equals(
+					+ getPath());
+			unchanged = getPath().equals(
 					oldPath);
 
 			// Check properties
@@ -194,34 +217,6 @@ public class BrowserInteraction extends CanvasModalInteraction {
 	}
 
 	/**
-	 * @return the pathBrowser
-	 */
-	public final String getPathBrowser() {
-		return pathBrowser;
-	}
-
-	/**
-	 * @param pathBrowser the pathBrowser to set
-	 */
-	public final void setPathBrowser(String pathBrowser) {
-		this.pathBrowser = pathBrowser;
-	}
-
-	/**
-	 * @return the typeBrowser
-	 */
-	public final String getTypeBrowser() {
-		return typeBrowser;
-	}
-
-	/**
-	 * @param typeBrowser the typeBrowser to set
-	 */
-	public final void setTypeBrowser(String typeBrowser) {
-		this.typeBrowser = typeBrowser;
-	}
-
-	/**
 	 * @return the listFeatures
 	 */
 	public final List<String> getListFeatures() {
@@ -250,17 +245,43 @@ public class BrowserInteraction extends CanvasModalInteraction {
 	}
 
 	/**
-	 * @return the datastores
+	 * @return
+	 * @see idm.CanvasModalOutputTab#getFileSystem()
 	 */
-	public static final Map<String, DataStore> getDatastores() {
-		return datastores;
+	public final FileSystemBean getFileSystem() {
+		return modalOutput.getFileSystem();
 	}
 
 	/**
-	 * @param datastores the datastores to set
+	 * @return
+	 * @see idm.CanvasModalOutputTab#getPath()
 	 */
-	public static final void setDatastores(Map<String, DataStore> datastores) {
-		BrowserInteraction.datastores = datastores;
+	public String getPath() {
+		return modalOutput.getPath();
+	}
+
+	/**
+	 * @param path
+	 * @see idm.CanvasModalOutputTab#setPath(java.lang.String)
+	 */
+	public void setPath(String path) {
+		modalOutput.setPath(path);
+	}
+
+	/**
+	 * @return
+	 * @see idm.CanvasModalOutputTab#getTitles()
+	 */
+	public List<String> getGridTitles() {
+		return modalOutput != null ? modalOutput.getTitles():null;
+	}
+
+	/**
+	 * @return
+	 * @see idm.CanvasModalOutputTab#getRows()
+	 */
+	public List<String[]> getGridRows() {
+		return modalOutput != null ? modalOutput.getRows():null;
 	}
 
 }

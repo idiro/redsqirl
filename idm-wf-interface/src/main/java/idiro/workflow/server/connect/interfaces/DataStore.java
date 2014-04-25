@@ -65,7 +65,7 @@ public interface DataStore extends Remote {
 		 * @return {@link idiro.workflow.server.enumeration.FeatureType} of property
 		 * @throws RemoteException
 		 */
-		FeatureType type() throws RemoteException;
+		FeatureType getType() throws RemoteException;
 	}
 	
 	/**

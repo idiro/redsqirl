@@ -5,23 +5,25 @@
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets">
 
-<a4j:loadBundle basename="MessagesResources" var="messages" />
+	<a4j:loadBundle basename="MessagesResources" var="messages" />
 
-	<h:outputText value="Name" />
+	<h:outputText value="#{messages.label_name}" />
 	<h:inputHidden value="#{hiveBean.name}" />
-	<h:inputText label="Name" value="#{hiveBean.newName}" />
+	<h:inputText value="#{hiveBean.newName}" />
 	<br />
 
-	<a4j:repeat value="#{hiveBean.item.keyAsListNameValueEdit}"
-		var="column" rowKeyVar="index">
-		<h:outputText value="#{hiveBean.item.keyAsListNameValueEdit[index]}" />
+	<a4j:repeat value="#{hiveBean.editProps}" var="title" rowKeyVar="ind" >
+	
+		<h:outputText value="#{title}" />
 		<br />
-		<h:inputText value="#{hiveBean.item.nameValue[column]}" title="#{hiveBean.nameHelp[column]}"
-			disabled="#{hiveBean.item.nameIsConst[column]}" rendered="#{not hiveBean.item.valueHasLineBreak[column]}"
+		<h:inputText value="#{hiveBean.allProps[ind]}" title="#{hiveBean.propsParam[ind].help}"
+			disabled="#{hiveBean.propsParam[ind].const}" 
+			rendered="#{hiveBean.propsParam[ind].type != 'BOOLEAN'}"
 		/>
-		<h:inputTextarea value="#{hiveBean.item.nameValue[column]}" title="#{hiveBean.nameHelp[column]}"
-			disabled="#{hiveBean.item.nameIsConst[column]}" cols="30" rows="10" style="overflow:auto;resize:vertical"
-			rendered="#{hiveBean.item.valueHasLineBreak[column]}"
+		<h:inputTextarea value="#{hiveBean.allProps[ind]}" title="#{hiveBean.propsParam[ind].help}"
+			disabled="#{hiveBean.propsParam[ind].const}"
+			rendered="#{hiveBean.propsParam[ind].type == 'BOOLEAN'}"
+			cols="30" rows="10" style="overflow:auto;resize:vertical"
 		/>
 		<br />
 		<br />

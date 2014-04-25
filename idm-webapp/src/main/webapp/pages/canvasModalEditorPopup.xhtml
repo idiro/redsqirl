@@ -84,10 +84,9 @@
 
 
 	<h:form>
-	
-	<div id="canvasModalBeanTextEditor" style="width:100%; overflow: auto; height: 375px;" >
+	<div id="canvasModalBeanTextEditor" style="width:100%; overflow: auto; height: 375px;" rendered="#{canvasModalBean.selEditor != null}" >
 
-		<h:inputTextarea maxlength="100" cols="70" rows="10" value="#{canvasModalBean.commandEdit}"
+		<h:inputTextarea maxlength="100" cols="70" rows="10" value="#{canvasModalBean.selEditor.value}"
 			style="resize:none;border:1px solid;" id="commandText" />
 
 		<br />
@@ -98,17 +97,19 @@
 				<tr style="vertical-align: top;">
 					<td width="45%">
 						<br /> 
-						
-						<rich:comboBox id="listCategories" value="#{canvasModalBean.list}" enableManualInput="false"
+						<rich:comboBox id="listCategories" 
+						    value="#{canvasModalBean.selEditor.selectedFunction}"
+						    suggestionValues="#{canvasModalBean.selEditor.textEditorFunctionMenu}" 
+						    enableManualInput="false"
 							width="200" listWidth="150" listHeight="200">
-							<a4j:support event="onselect" action="#{canvasModalBean.changeFunctionsTextEditor}"
+							<a4j:support event="onselect" 
 								reRender="listFunctions,btCompleteFunction" />
-							<f:selectItems value="#{canvasModalBean.listItensTable}" />
 						</rich:comboBox>
-						
 						<br />
 						
-						<rich:extendedDataTable id="listFunctions" value="#{canvasModalBean.listFunctions}" var="item"
+						<rich:extendedDataTable id="listFunctions" 
+						    value="#{canvasModalBean.selEditor.edit.textEditorFunctions[canvasModalBean.selEditor.selectedFunction]}" 
+						    var="item"
 							style="border:1px solid;" width="100%" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 							enableContextMenu="false" selectionMode="none"
 							onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
@@ -144,17 +145,18 @@
 	
 					<td width="10%">
 						<br />
-						
-						<rich:comboBox id="listCategoriesOperation" value="#{canvasModalBean.listOp}"
+						<rich:comboBox id="listCategoriesOperation" 
+					   	   value="#{canvasModalBean.selEditor.selectedOperation}"
+						   suggestionValues="#{canvasModalBean.selEditor.textEditorOperationMenu}"
 							enableManualInput="false" width="100" listWidth="150" listHeight="100">
-							<a4j:support event="onselect" action="#{canvasModalBean.changeOperationTextEditor}"
+							<a4j:support event="onselect"
 								reRender="listOperation" />
-							<f:selectItems value="#{canvasModalBean.listItensTableOperation}" />
 						</rich:comboBox>
-						
 						<br />
 						
-						<rich:extendedDataTable id="listOperation" value="#{canvasModalBean.listOperation}" var="item"
+						<rich:extendedDataTable id="listOperation" 
+						value="#{canvasModalBean.selEditor.edit.textEditorOperations[canvasModalBean.selEditor.selectedOperation]}" 
+						var="item"
 						style="border:1px solid;" width="100%" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 						enableContextMenu="false" selectionMode="none"
 						onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
@@ -180,7 +182,7 @@
 					<br />
 					<br />
 						
-						<rich:extendedDataTable id="listFields"	value="#{canvasModalBean.listFields}" var="item"
+						<rich:extendedDataTable id="listFields"	value="#{canvasModalBean.selEditor.edit.textEditorFieldsEntry}" var="item"
 							style="border:1px solid;" width="100%" onRowClick="completeFilds" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 							enableContextMenu="false" selectionMode="none"
 							onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
@@ -212,7 +214,7 @@
 		</a4j:region>
 		<br />
 
-		<a4j:commandButton action="#{canvasModalBean.confirm}"
+		<a4j:commandButton action="#{canvasModalBean.selEditor.confirmValueAndCopy}"
 		    styleClass="greenButton"
 			value="#{messages.button_ok}"
 			oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('textEditorPanel')}.hide() };"
@@ -220,10 +222,9 @@
 			
 		<h:commandButton styleClass="greenButton" value="#{messages.button_cancel}" type="button" onclick="#{rich:component('textEditorPanel')}.hide();"/>
 			
-		<a4j:commandButton  styleClass="greenButton" action="#{canvasModalBean.checkTextEditor}" value="#{messages.button_check}" reRender="command,tableInteraction, msnError, errorTable" />
+		<a4j:commandButton  styleClass="greenButton" action="#{canvasModalBean.selEditor.checkTextEditor}" value="#{messages.button_check}" reRender="command,tableInteraction, msnError, errorTable" />
 
 	</div>
-
 	</h:form>
 	
 </ui:composition>

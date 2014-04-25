@@ -6,15 +6,24 @@ import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
 
-import javax.faces.model.SelectItem;
-
+/**
+ * Make Editor interaction available to client.
+ * @author etienne
+ *
+ */
 public class EditorInteraction extends CanvasModalInteraction {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -9115060433093718102L;
+	
 	private EditorFromTree edit;
 	
 	public EditorInteraction(DFEInteraction dfeInter) throws RemoteException {
 		super(dfeInter);
-		edit = new EditorFromTree(dfeInter.getTree());
+		logger.info("tree: "+printTree(dfeInter.getTree().getFirstChild("editor")
+				.getFirstChild("keywords")));
 	}
 
 	@Override
@@ -38,8 +47,10 @@ public class EditorInteraction extends CanvasModalInteraction {
 
 	@Override
 	public void readInteraction() throws RemoteException {
+		edit = new EditorFromTree(inter.getTree());
 		edit.readInteraction();
 	}
+
 
 	/**
 	 * @return
@@ -77,7 +88,7 @@ public class EditorInteraction extends CanvasModalInteraction {
 	 * @return
 	 * @see idm.interaction.EditorFromTree#getTextEditorFunctionMenu()
 	 */
-	public final List<SelectItem> getTextEditorFunctionMenu() {
+	public final List<String> getTextEditorFunctionMenu() {
 		return edit.getTextEditorFunctionMenu();
 	}
 
@@ -86,7 +97,7 @@ public class EditorInteraction extends CanvasModalInteraction {
 	 * @see idm.interaction.EditorFromTree#setTextEditorFunctionMenu(java.util.List)
 	 */
 	public final void setTextEditorFunctionMenu(
-			List<SelectItem> textEditorFunctionMenu) {
+			List<String> textEditorFunctionMenu) {
 		edit.setTextEditorFunctionMenu(textEditorFunctionMenu);
 	}
 
@@ -94,7 +105,7 @@ public class EditorInteraction extends CanvasModalInteraction {
 	 * @return
 	 * @see idm.interaction.EditorFromTree#getTextEditorOperationMenu()
 	 */
-	public final List<SelectItem> getTextEditorOperationMenu() {
+	public final List<String> getTextEditorOperationMenu() {
 		return edit.getTextEditorOperationMenu();
 	}
 
@@ -103,7 +114,7 @@ public class EditorInteraction extends CanvasModalInteraction {
 	 * @see idm.interaction.EditorFromTree#setTextEditorOperationMenu(java.util.List)
 	 */
 	public final void setTextEditorOperationMenu(
-			List<SelectItem> textEditorOperationMenu) {
+			List<String> textEditorOperationMenu) {
 		edit.setTextEditorOperationMenu(textEditorOperationMenu);
 	}
 
@@ -155,6 +166,13 @@ public class EditorInteraction extends CanvasModalInteraction {
 	 */
 	public final void setOpenPopup(String openPopup) {
 		edit.setOpenPopup(openPopup);
+	}
+
+	/**
+	 * @return the edit
+	 */
+	public final EditorFromTree getEdit() {
+		return edit;
 	}
 
 }

@@ -2,30 +2,70 @@ package idm.interaction;
 
 import idiro.utils.Tree;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.faces.model.SelectItem;
-
 import org.apache.log4j.Logger;
 
-public class EditorFromTree {
+/**
+ * Setup an editor from a Tree object.
+ * 
+ * This class is used for a text editor and for a table interaction.
+ * 
+ * @author etienne
+ *
+ */
+public class EditorFromTree implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3420978034024666649L;
 
 	static protected Logger logger = Logger.getLogger(EditorFromTree.class);
 	
 	private Tree<String> tree;
 	
+	/**
+	 * What is inside the text editor
+	 */
 	private String textEditorValue;
+	/**
+	 * The fields available associated with their type.
+	 */
 	private Map<String, String> textEditorFields;
-	private List<SelectItem> textEditorFunctionMenu;
-	private List<SelectItem> textEditorOperationMenu;
+	
+	/**
+	 * The Function menu
+	 */
+	private List<String> textEditorFunctionMenu;
+	
+	
+	/**
+	 * The operation menu
+	 */
+	private List<String> textEditorOperationMenu;
+	
+	/**
+	 * The functions available for each function category
+	 */
 	private Map<String, List<String[]>> textEditorFunctions;
+	/**
+	 * The operations available for each operation category
+	 */
 	private Map<String, List<String[]>> textEditorOperations;
+	
+	/**
+	 * Flag "Y" if it is necessary to open a popup or "N".
+	 */
 	private String openPopup;
+
 
 	public EditorFromTree(Tree<String> tree) {
 		this.tree = tree;
@@ -46,23 +86,25 @@ public class EditorFromTree {
 		textEditorFields = new LinkedHashMap<String, String>();
 		try {
 			list = tree.getFirstChild("editor")
-					.getFirstChild("keywords").getFirstChild("features")
-					.getSubTreeList();
+					.getFirstChild("keywords").getSubTreeList();
 		} catch (Exception e) {
 			list = null;
 		}
 		if (list != null && !list.isEmpty()) {
-			// logger.info("list not null: "+list.toString());
+			
 			for (Tree<String> tree : list) {
 				textEditorFields.put(tree.getFirstChild("name").getFirstChild()
-						.getHead(), tree.getFirstChild("type").getFirstChild()
+						.getHead(), tree.getFirstChild("info").getFirstChild()
 						.getHead());
 			}
+			logger.info("features: "+textEditorFields.toString());
+		}else{
+			logger.info("no features...");
 		}
 
 		// Get the functions and operations
-		textEditorFunctionMenu = new LinkedList<SelectItem>();
-		textEditorOperationMenu = new LinkedList<SelectItem>();
+		textEditorFunctionMenu = new LinkedList<String>();
+		textEditorOperationMenu = new LinkedList<String>();
 		textEditorFunctions = new HashMap<String, List<String[]>>();
 		textEditorOperations = new HashMap<String, List<String[]>>();
 		try {
@@ -72,11 +114,12 @@ public class EditorFromTree {
 			list = null;
 		}
 		if (list != null && !list.isEmpty()) {
+			openPopup = "Y";
 			// logger.info("list not null: " + list.toString());
 			for (Tree<String> tree : list) {
 				logger.info("list value " + tree.getHead());
 				Map<String, List<String[]>> cur = null;
-				List<SelectItem> curL = null;
+				List<String> curL = null;
 				String menuName = null;
 				if (tree.getHead().startsWith("operation_")) {
 					cur = textEditorOperations;
@@ -90,7 +133,7 @@ public class EditorFromTree {
 				if (!cur.containsKey(menuName)) {
 					// Add one menu
 					cur.put(menuName, new LinkedList<String[]>());
-					curL.add(new SelectItem(menuName, menuName));
+					curL.add(menuName);
 				}
 
 				// Add the content
@@ -145,6 +188,10 @@ public class EditorFromTree {
 	public final Map<String, String> getTextEditorFields() {
 		return textEditorFields;
 	}
+	
+	public final List<Map.Entry<String,String>> getTextEditorFieldsEntry(){
+		return new ArrayList<Map.Entry<String,String>>(textEditorFields.entrySet());
+	}
 
 	/**
 	 * @param textEditorFields the textEditorFields to set
@@ -156,7 +203,7 @@ public class EditorFromTree {
 	/**
 	 * @return the textEditorFunctionMenu
 	 */
-	public final List<SelectItem> getTextEditorFunctionMenu() {
+	public final List<String> getTextEditorFunctionMenu() {
 		return textEditorFunctionMenu;
 	}
 
@@ -164,14 +211,14 @@ public class EditorFromTree {
 	 * @param textEditorFunctionMenu the textEditorFunctionMenu to set
 	 */
 	public final void setTextEditorFunctionMenu(
-			List<SelectItem> textEditorFunctionMenu) {
+			List<String> textEditorFunctionMenu) {
 		this.textEditorFunctionMenu = textEditorFunctionMenu;
 	}
 
 	/**
 	 * @return the textEditorOperationMenu
 	 */
-	public final List<SelectItem> getTextEditorOperationMenu() {
+	public final List<String> getTextEditorOperationMenu() {
 		return textEditorOperationMenu;
 	}
 
@@ -179,7 +226,7 @@ public class EditorFromTree {
 	 * @param textEditorOperationMenu the textEditorOperationMenu to set
 	 */
 	public final void setTextEditorOperationMenu(
-			List<SelectItem> textEditorOperationMenu) {
+			List<String> textEditorOperationMenu) {
 		this.textEditorOperationMenu = textEditorOperationMenu;
 	}
 

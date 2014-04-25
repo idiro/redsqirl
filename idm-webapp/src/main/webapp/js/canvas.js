@@ -1770,7 +1770,7 @@ function openCanvasModalJS(group, selectedTab){
     });
 
     if (!group.hasChangedId) {
-        openChangeIdModal(group.getId(), imagePath,false);
+        openChangeIdModal(group.getId(), imagePath,true);
         group.hasChangedId = true;
     } else {
         openModal(group.getId(), imagePath, selectedCanvas, selectedTab);
@@ -1792,7 +1792,7 @@ function openChangeIdModalJS(group){
     });
 
     if (group.hasChangedId){
-        openChangeIdModal(group.getId(), imagePath,true);
+        openChangeIdModal(group.getId(), imagePath,false);
     }
 }
 
