@@ -206,6 +206,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 					canvasBean.getNameWorkflow()).getElement(
 							canvasBean.getIdMap().get(canvasBean.getNameWorkflow())
 							.get(idGroup));
+			logger.info("Get element dfe");
 		} catch (RemoteException e) {
 			logger.error(e.getMessage());
 		}
@@ -214,8 +215,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 			logger.error("The element is null!");
 		}else{
 			elementId = getComponentId();
+			logger.info("Element id: "+elementId);
 			if (loadMainWindow) {
-
+				logger.info("load Main window");
 				try {
 
 					// validate if you can open or not the dynamic form of the
