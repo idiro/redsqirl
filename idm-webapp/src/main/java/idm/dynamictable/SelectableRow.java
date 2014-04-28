@@ -58,4 +58,16 @@ public class SelectableRow implements Serializable{
 	public final void setRow(String[] row) {
 		this.row = row;
 	}
+	
+	public String getSelectedStr(){
+		return selected ? "true" : "false";
+	}
+	
+	public void setSelectedStr(String selectedStr){
+		if(selectedStr != null && selectedStr.equalsIgnoreCase("true")){
+			selected = true;
+		}else{
+			selected = false;
+		}
+	}
 }

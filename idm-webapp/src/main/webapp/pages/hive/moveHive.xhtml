@@ -50,7 +50,7 @@ function dataTableSelectOneRadio(radio) {
 			<f:facet name="header">
 				<h:outputText value="" />
 			</f:facet>
-			<h:selectOneRadio value="#{item.selected}" onclick="dataTableSelectOneRadio(this);">
+			<h:selectOneRadio value="#{item.selectedStr}" onclick="dataTableSelectOneRadio(this);">
 				<f:selectItem itemValue="true" />
 			</h:selectOneRadio>
 
@@ -80,7 +80,7 @@ function dataTableSelectOneRadio(radio) {
 
 	<h:panelGrid columns="2">
 		<a4j:commandButton  styleClass="greenButton" action="#{hiveBean.moveFileAfter}" value="#{messages.button_ok}"
-			reRender="hivefs" onclick="#{rich:component('hivemoveModalPanel')}.hide()" />
+			reRender="hivefs,msnError" oncomplete="if(#{requestScope['msnError'] == null}){#{rich:component('hivemoveModalPanel')}.hide();}" />
 		<a4j:commandButton  styleClass="greenButton" value="#{messages.button_cancel}" type="button" 
 			onclick="#{rich:component('hivemoveModalPanel')}.hide();" />
 	</h:panelGrid>

@@ -167,8 +167,7 @@
 						<f:facet name="header">
 							<h:outputText value="#{messages.label_name}" />
 						</f:facet>
-						<a4j:commandLink value="#{hdfsBean.allProps[indexTable]['name']}"
-							action="#{hdfsBean.verifyIfIsFile}"
+						<a4j:commandLink value="#{hdfsBean.allProps[indexTable]['name']}" action="#{hdfsBean.verifyIfIsFile}"
 							oncomplete="selectFileHdfs('#{hdfsBean.file}', '#{hdfsBean.allProps[indexTable]['name']}')">
 							<f:param name="nameFile" value="#{hdfsBean.allProps[indexTable]['name']}" />
 							<rich:dragSupport dragIndicator=":indicator"
