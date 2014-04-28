@@ -31,12 +31,14 @@ function dataTableSelectOneRadio(radio) {
 			<h:graphicImage id="btSearch" value="../image/icons/button-search.gif"
             title='#{messages.button_ok}' />
     </a4j:commandLink>
-	<a4j:commandLink action="#{hdfsBean.goPrevious}"
-		reRender="pathMove,hdfsfsMove">
+	<a4j:commandLink action="#{hdfsBean.goPrevious}" reRender="pathMove,hdfsfsMove">
 		<h:graphicImage  id="btPrev" value="../image/icons/button-previous.gif" title='#{messages.HdfsInterface_previous_help}'/>
 	</a4j:commandLink>
-	<a4j:commandLink action="#{hdfsBean.goNext}" reRender="pathMove,dhfsfs">
+	<a4j:commandLink action="#{hdfsBean.goNext}" reRender="pathMove,hdfsfsMove">
 		<h:graphicImage  id="btNext" value="../image/icons/button-next.gif" title='#{messages.HdfsInterface_next_help}'/>
+	</a4j:commandLink>
+	<a4j:commandLink action="#{hdfsBean.goUp}" reRender="pathMove,hdfsfsMove" >
+		<h:graphicImage id="hdfsgoup" value="../image/icons/button_up.jpg" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
 	</a4j:commandLink>
 	
 	<div style="width:100%;overflow:auto;height:305px;margin-top:5px;margin-bottom:10px;">
@@ -52,7 +54,7 @@ function dataTableSelectOneRadio(radio) {
 			<f:facet name="header">
 				<h:outputText value="" />
 			</f:facet>
-			<h:selectOneRadio value="#{item.selected}" onclick="dataTableSelectOneRadio(this);">
+			<h:selectOneRadio value="#{item.selectedStr}" onclick="dataTableSelectOneRadio(this);">
 				<f:selectItem itemValue="true" />
 			</h:selectOneRadio>
 		</rich:column>
@@ -91,7 +93,7 @@ function dataTableSelectOneRadio(radio) {
     
 	<h:panelGrid columns="2">
 		<a4j:commandButton  styleClass="greenButton" action="#{hdfsBean.moveFileAfter}" value="#{messages.button_ok}"
-			reRender="hdfsfs" onclick="#{rich:component('hdfsmoveModalPanel')}.hide()" oncomplete="resizeTables();"/>
+			reRender="hdfsfs,msnError" oncomplete="resizeTables(); if(#{requestScope['msnError'] == null}){#{rich:component('hdfsmoveModalPanel')}.hide();}"/>
 		<a4j:commandButton  styleClass="greenButton" value="#{messages.button_cancel}" type="button" 
 			onclick="#{rich:component('hdfsmoveModalPanel')}.hide();" />
 	</h:panelGrid>

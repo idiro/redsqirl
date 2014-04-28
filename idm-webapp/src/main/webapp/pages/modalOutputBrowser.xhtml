@@ -81,7 +81,7 @@
 				<f:facet name="header">
 					<h:outputText value="" />
 				</f:facet>
-				<h:selectOneRadio value="#{item.selected}" onclick="outPutBrowserSelectOneRadio(this, '#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}');">
+				<h:selectOneRadio value="#{item.selectedStr}" onclick="outPutBrowserSelectOneRadio(this, '#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}');">
 					<f:selectItem itemValue="true" />
 				</h:selectOneRadio>
 			</rich:column>
