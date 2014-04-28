@@ -1,6 +1,9 @@
 package idm;
 
+import idm.auth.UserInfoBean;
+
 import javax.annotation.PostConstruct;
+import javax.faces.context.FacesContext;
 
 import org.apache.log4j.Logger;
 
@@ -35,11 +38,14 @@ public class HiveBean extends FileSystemBean {
 					getTableGrid().getRows().isEmpty()){
 				mountTable();
 			}
-			/*else{
-				for (EditFileSystem item : getListGrid()){
-					item.setSelected(false);
-				}
-			}*/
+
+			FacesContext context = FacesContext.getCurrentInstance();
+			UserInfoBean userInfoBean = (UserInfoBean) context.getApplication()
+					.evaluateExpressionGet(context, "#{userInfoBean}",
+							UserInfoBean.class);
+			
+			logger.info("update progressbar");
+			userInfoBean.setCurrentValue(userInfoBean.getCurrentValue()+24);
 
 		}catch(Exception e){
 			logger.error(e);

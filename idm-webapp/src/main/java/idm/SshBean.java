@@ -2,6 +2,7 @@ package idm;
 
 import idiro.workflow.server.connect.interfaces.DataStore;
 import idiro.workflow.server.connect.interfaces.DataStoreArray;
+import idm.auth.UserInfoBean;
 import idm.useful.MessageUseful;
 
 import java.io.Serializable;
@@ -50,6 +51,12 @@ public class SshBean extends FileSystemBean implements Serializable{
 	@PostConstruct
 	public void openCanvasScreen() {
 		
+		FacesContext context = FacesContext.getCurrentInstance();
+		UserInfoBean userInfoBean = (UserInfoBean) context.getApplication()
+				.evaluateExpressionGet(context, "#{userInfoBean}",
+						UserInfoBean.class);
+		logger.info("update progressbar");
+		userInfoBean.setCurrentValue(51);
 		logger.info("SshOpenCanvasScreen");
 		
 		try {

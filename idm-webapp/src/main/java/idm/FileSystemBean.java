@@ -2,7 +2,6 @@ package idm;
 
 import idiro.workflow.server.connect.interfaces.DataStore;
 import idiro.workflow.server.connect.interfaces.DataStore.ParamProperty;
-import idm.auth.UserInfoBean;
 import idm.dynamictable.SelectableRow;
 import idm.dynamictable.SelectableTable;
 import idm.useful.MessageUseful;
@@ -125,15 +124,6 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 			updateTable();
 
-		}
-
-		FacesContext context = FacesContext.getCurrentInstance();
-		UserInfoBean userInfoBean = (UserInfoBean) context.getApplication()
-				.evaluateExpressionGet(context, "#{userInfoBean}",
-						UserInfoBean.class);
-
-		if (userInfoBean.getCurrentValue() < 96) {
-			userInfoBean.setCurrentValue(userInfoBean.getCurrentValue() + 5);
 		}
 
 		logger.info("Finished mounting table");

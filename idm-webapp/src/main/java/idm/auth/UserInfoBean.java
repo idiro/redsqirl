@@ -119,7 +119,8 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 			setConn(conn);
 
-			setCurrentValue(getCurrentValue() + 3);
+			logger.info("update progressbar");
+			setCurrentValue(3);
 
 			// error with rmi connection
 			if (!createRegistry(userName, password)) {
@@ -127,9 +128,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 				invalidateSession();
 				return "failure";
 			}
-
-			setCurrentValue(getCurrentValue() + 5);
-
+			
 			setMsnError(null);
 			return "success";
 
@@ -284,8 +283,9 @@ public class UserInfoBean extends BaseBean implements Serializable {
 			}
 
 			registry = LocateRegistry.getRegistry(port);
-
-			setCurrentValue(getCurrentValue()+1);
+			
+			logger.info("update progressbar");
+			setCurrentValue(4);
 
 			session.setAttribute("serverThread", th);
 			sc.setAttribute("registry", registry);
@@ -293,7 +293,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 			for (String beanName : beans){
 
 				logger.info("createRegistry - " + beanName);
-				setCurrentValue(getCurrentValue()+2);
+				
 
 				if(beanName.equalsIgnoreCase("wfm")){
 					boolean error = true;
@@ -308,13 +308,18 @@ public class UserInfoBean extends BaseBean implements Serializable {
 							logger.info("workflow is running ");
 						}catch(Exception e ){
 							logger.info("workflow not running ");
-
 							Thread.sleep(500);
-							if(tryNumb > 4000){
+							if(tryNumb > 3*60*2){
 								throw e;
+							}
+							if( getCurrentValue() < 45 ){
+								logger.info("update progressbar");
+								setCurrentValue(getCurrentValue()+1);
 							}
 						}
 					}
+					logger.info("update progressbar");
+					setCurrentValue(45);
 				}
 				
 //				if(beanName.equalsIgnoreCase("oozie")){
@@ -336,11 +341,9 @@ public class UserInfoBean extends BaseBean implements Serializable {
 						Remote remoteObject = registry.lookup(user+"@"+beanName);
 						error = false;
 						session.setAttribute(beanName, remoteObject);
-						setCurrentValue(getCurrentValue()+1);
 					}catch(Exception e){
 						Thread.sleep(500);
 						logger.error(e.getMessage());
-						setCurrentValue(getCurrentValue()+1);
 						//Time out after 3 minutes
 						if(cont > 3*60*2){
 							throw e;
@@ -392,8 +395,8 @@ public class UserInfoBean extends BaseBean implements Serializable {
 			logger.info("Already Authenticated two");
 			return "failure";
 		}
-
-		setCurrentValue(getCurrentValue() + 5);
+		logger.info("update progressbar");
+		setCurrentValue(1);
 
 		logger.info("validateSecondLogin end");
 		
@@ -437,7 +440,8 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		logger.info("startProcess");
 		
 		setEnabled(true);
-		setCurrentValue(Long.valueOf(10));
+		logger.info("update progressbar");
+		setCurrentValue(Long.valueOf(0));
 
 		logger.info("startProcess end");
 		
