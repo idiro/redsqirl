@@ -74,9 +74,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		userInfoBean = (UserInfoBean) context.getApplication()
 				.evaluateExpressionGet(context, "#{userInfoBean}",
 						UserInfoBean.class);
-
-		userInfoBean.setCurrentValue(Long.valueOf(78));
-
+		
 		workflowMap = new HashMap<String, DataFlow>();
 		setNameWorkflow("canvas-1");
 
@@ -94,11 +92,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 				dfi.addWorkflow(getNameWorkflow());
 			}
 			logger.info("add new Workflow " + getNameWorkflow());
-
-			if (userInfoBean.getCurrentValue() < 98) {
-				userInfoBean
-				.setCurrentValue(userInfoBean.getCurrentValue() + 3);
-			}
 
 			setDf(dfi.getWorkflow(getNameWorkflow()));
 			getDf().getAllWANameWithClassName();
@@ -672,15 +665,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 			request.setAttribute("msnError", "msnError");
 		}
 
-		FacesContext context = FacesContext.getCurrentInstance();
-		userInfoBean = (UserInfoBean) context.getApplication()
-				.evaluateExpressionGet(context, "#{userInfoBean}",
-						UserInfoBean.class);
-
-		/*if (userInfoBean.getCurrentValue() < 98) {
-			userInfoBean.setCurrentValue(userInfoBean.getCurrentValue() + 3);
-		}*/
-
 	}
 
 	public void blockRunningWorkflow() throws Exception {
@@ -721,13 +705,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 				logger.error("error getting Oozie url : " + e.getMessage());
 			}
 		}
-
-		/*FacesContext context = FacesContext.getCurrentInstance();
-		userInfoBean = (UserInfoBean) context.getApplication()
-				.evaluateExpressionGet(context, "#{userInfoBean}",
-						UserInfoBean.class);
-
-		userInfoBean.setCurrentValue(Long.valueOf(100));*/
 
 		setWorkflowUrl(url);
 	}

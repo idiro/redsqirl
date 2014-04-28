@@ -48,37 +48,34 @@
     </a4j:region>
 
 	<h:outputText value="#{messages.label_path}" />
-	<h:inputText id="pathOpenFile" label="Path" value="#{canvasModalBean.outputTab.fileSystem.path}" maxlength="255" style="width:395px;" />
+	<h:inputText id="pathDataOutputBrowser" label="Path" value="#{canvasModalBean.outputTab.fileSystem.path}" maxlength="255" style="width:395px;" />
 	
-	<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.changePath}" reRender="hdfsfsOpenFile">
+	<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.changePath}" reRender="dataOutputBrowser">
 		<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' />
 	</a4j:commandLink>
 	
 	<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goPrevious}"
-		reRender="pathOpenFile,hdfsfsOpenFile">
-		<h:graphicImage id="btPrev" value="../image/icons/button-previous.gif" title='#{messages.Interface_previous_help}' />
+		reRender="pathDataOutputBrowser,dataOutputBrowser">
+		<h:graphicImage value="../image/icons/button-previous.gif" title='#{messages.Interface_previous_help}' />
 	</a4j:commandLink>
 	
 	<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goNext}"
-		reRender="pathOpenFile,hdfsfsOpenFile">
-		<h:graphicImage id="btNext" value="../image/icons/button-next.gif" title='#{messages.Interface_next_help}' />
+		reRender="pathDataOutputBrowser,dataOutputBrowser">
+		<h:graphicImage value="../image/icons/button-next.gif" title='#{messages.Interface_next_help}' />
 	</a4j:commandLink>
 	
-	<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goUp}" reRender="pathOpenFile,hdfsfsOpenFile">
-		<h:graphicImage id="browserBeanGoUp" value="../image/icons/button_up.jpg" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
+	<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goUp}" reRender="pathDataOutputBrowser,dataOutputBrowser">
+		<h:graphicImage value="../image/icons/button_up.jpg" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
 	</a4j:commandLink>
 	<br />
 	
 	<div style="width:100%; overflow: auto; height: 305px;" >
 
-		<rich:extendedDataTable id="hdfsfsOpenFile" value="#{canvasModalBean.outputTab.fileSystem.tableGrid.rows}"
+		<rich:extendedDataTable id="dataOutputBrowser" value="#{canvasModalBean.outputTab.fileSystem.tableGrid.rows}"
 			var="item" rowKeyVar="indexTable" width="100%" style="border:none;"
 			onRowMouseOver="this.style.backgroundColor='#F1F1F1'" enableContextMenu="false" selectionMode="none"
 			onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'" rowClasses="even-row, odd-row">
 	
-			<f:facet name="header">
-				<h:outputText value="File System" />
-			</f:facet>
 	
 			<rich:column style="border-bottom:0px;border-right:0px;" width="10px;">
 				<f:facet name="header">
@@ -95,7 +92,7 @@
 					<h:outputText value="#{messages.label_name}" />
 				</f:facet>
 				<a4j:commandLink value="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}" action="#{canvasModalBean.outputTab.fileSystem.selectFile}"
-					reRender="pathOpenFile,hdfsfsOpenFile">
+					reRender="pathDataOutputBrowser,dataOutputBrowser">
 					<f:param name="nameFile" value="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}" />
 				</a4j:commandLink>
 			</rich:column>

@@ -1,6 +1,7 @@
 package idm;
 
 import idiro.workflow.server.connect.interfaces.DataStore;
+import idm.auth.UserInfoBean;
 
 import java.rmi.RemoteException;
 
@@ -47,6 +48,13 @@ public class HdfsBean extends FileSystemBean {
 					getTableGrid().getRows().isEmpty()){
 				mountTable();
 			}
+			
+			FacesContext context = FacesContext.getCurrentInstance();
+			UserInfoBean userInfoBean = (UserInfoBean) context.getApplication()
+					.evaluateExpressionGet(context, "#{userInfoBean}",
+							UserInfoBean.class);
+			logger.info("update progressbar");
+			userInfoBean.setCurrentValue(userInfoBean.getCurrentValue() + 12);
 
 		}catch(Exception e){
 			logger.error(e);
