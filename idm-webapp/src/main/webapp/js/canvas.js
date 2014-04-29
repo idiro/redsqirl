@@ -1773,7 +1773,7 @@ function openCanvasModalJS(group, selectedTab){
         openChangeIdModal(group.getId(), imagePath,true);
         group.hasChangedId = true;
     } else {
-        openModal(group.getId(), imagePath, selectedCanvas, selectedTab);
+        openModal(group.getId(), imagePath, selectedTab);
     }
 }
 

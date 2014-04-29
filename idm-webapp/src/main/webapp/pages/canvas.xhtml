@@ -577,7 +577,7 @@
 	   	function verifyIfIsRunning(canvas){
 	   		jQuery('#canvas-tabs').unblock();
 	   		if (isRunning(canvas)){
-	   			updateWorkflowUrl();
+	   			blockRunningWorkflow();
 	   		}
 	   	}
 	   	
@@ -684,7 +684,7 @@
                 oncomplete="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });openModalFileHdfs('T');"/>
 				<a4j:jsFunction name="openModalLoadWorkflow" action="#{browserHdfsBean.createSaveFolder}" 
 				oncomplete="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });openModalFileHdfs('F');" />
-				<a4j:jsFunction name="openModalFileHdfs" reRender="modalLoadWorkflow" 
+				<a4j:jsFunction name="openModalFileHdfs" reRender="modalFileHdfs" 
 				oncomplete="#{rich:component('modalFileHdfs')}.show();jQuery('#canvas-tabs').unblock();" >
 				    <a4j:actionparam name="openCtrl" assignTo="#{browserHdfsBean.showSave}"/>
 				</a4j:jsFunction>
@@ -945,11 +945,11 @@
 
 				<a4j:jsFunction name="openChangeIdModal"
 					action="#{canvasModalBean.openCanvasModal}"
-					oncomplete="if(#{canvasModalBean.loadMainWindow} || confirm('Changing an action identification may cause errors and force you to reconfigure this object and its dependent nodes. Do you want to continue?')){#{rich:component('modalChangeId')}.show();}">
+                    data="#{canvasModalBean.loadMainWindow}"
+					oncomplete="if(data || confirm('Changing an action identification may cause errors and force you to reconfigure this object and its dependent nodes. Do you want to continue?')){#{rich:component('modalChangeId')}.show();}">
 					<a4j:actionparam name="paramGroupId" />
 					<a4j:actionparam name="paramPathImage" />
-                    <a4j:actionparam name="paramNameLoadMainWindow"
-                        assignTo="#{canvasModalBean.loadMainWindow}" />
+                    <a4j:actionparam name="paramLoadMainWindow"  />
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -967,7 +967,8 @@
 
 			<a4j:region>
 				<a4j:jsFunction name="closeChangeIdModal"
-					oncomplete="updateLabelObj('#{canvasModalBean.idGroup}','#{canvasModalBean.componentId}');if(#{canvasModalBean.loadMainWindow}){ openModal('#{canvasModalBean.idGroup}','#{canvasModalBean.pathImage}');}">
+				    reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError, errorTable, canvasModalTabPanel"
+					oncomplete="updateLabelObj('#{canvasModalBean.idGroup}','#{canvasModalBean.componentId}');if(#{canvasModalBean.loadMainWindow}){ #{rich:component('canvasModalPanel')}.show();}">
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -1041,15 +1042,22 @@
 				<div id="domMessageDivCanvas2" style="display: none;">
 					<img src="../image/icons/waiting.gif" />
 					<h:panelGroup id="right_area" layout="block">
-						<h:outputLink id="workflowUrl" value="#{canvasBean.workflowUrl}"
-							target="_blank" rendered="#{canvasBean.workflowUrl != null}">Oozie Console</h:outputLink>
-						<br />
-						<a4j:commandButton id="killProcessBtn" value="Kill Process" action="#{canvasBean.stopRunningWorkflow}"
+					    
+                        <h:outputLink id="workflowUrl" value="#{canvasBean.workflowUrl}" target="_blank" 
+                          style="float:left;margin-left:5px;" 
+                          rendered="#{canvasBean.workflowUrl != null}">
+                           <h:graphicImage  value="../image/icons/button-oozie_web_console.gif" 
+                                            title='#{messages.oozie_gotowebconsole}' 
+                                            alt="Oozie Console" class="fileSystemIcon"
+                           />
+                        </h:outputLink>
+						<a4j:commandButton id="killProcessBtn" styleClass="greenButton"  style="float:right;margin-right:5px;" 
+						     value="Kill Process" action="#{canvasBean.stopRunningWorkflow}"
 							rendered="#{canvasBean.running}"/>
 					</h:panelGroup>
 				</div>
 
-				<a4j:jsFunction name="updateWorkflowUrl"
+				<a4j:jsFunction name="blockRunningWorkflow"
 					action="#{canvasBean.blockRunningWorkflow}"
 					oncomplete="jQuery('#'+getSelected()).unblock();setRunning(getSelected(), false);updateRunningStatus();updateAllOutputStatus();">
 				</a4j:jsFunction>
@@ -1070,7 +1078,7 @@
 
 				<a4j:jsFunction name="runWorkflow"
 					action="#{canvasBean.runWorkflow}"
-					oncomplete="setRunning(getSelected(), true);updateWorkflowUrl();"
+					oncomplete="setRunning(getSelected(), true);blockRunningWorkflow();"
 					reRender="formMenu,domMessageDivCanvas2,killProcessBtn">
 					<a4j:actionparam name="positions" />
 					<a4j:actionparam name="select" />

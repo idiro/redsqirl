@@ -162,12 +162,8 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 							+ relativePath);
 		}
 		String absolutePath = f.getAbsoluteFile().getAbsolutePath();
-		String ans = "";
 		logger.debug("image absolutePath : "+absolutePath);
 		logger.debug("image relPath : "+relativePath);
-		if(absolutePath.contains(relativePath)){
-			ans = absolutePath.substring(relativePath.length());
-		}
 		return absolutePath;
 	}
 
@@ -645,7 +641,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		File f = null;
 		try {
 			f = new File(getImage());
-			if (!f.exists() || !f.isFile()) {
+			if (f != null && (!f.exists() || !f.isFile())) {
 				f = null;
 			}
 		} catch (Exception e) {

@@ -5,6 +5,7 @@ import idiro.workflow.server.DataOutput;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.Map;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -62,7 +63,7 @@ public class OutputActionTest extends DataOutput{
 	}
 
 	@Override
-	public List<String> select(int maxToRead) throws RemoteException {
+	public List<Map<String, String>> select(int maxToRead) throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
 	}
