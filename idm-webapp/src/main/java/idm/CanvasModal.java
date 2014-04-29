@@ -134,7 +134,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * List of the current interaction displayed
 	 */
 	private List<CanvasModalInteraction> inters = null;
-	
+
 	/**
 	 * List of the table column titles
 	 * To repeat this element is necessary because of JSF limitations.
@@ -209,6 +209,14 @@ public class CanvasModal extends BaseBean implements Serializable {
 			logger.info("Get element dfe");
 		} catch (RemoteException e) {
 			logger.error(e.getMessage());
+		}
+
+		String paramLMW = FacesContext.getCurrentInstance().getExternalContext()
+				.getRequestParameterMap().get("paramLoadMainWindow");
+		if(paramLMW != null){
+			loadMainWindow = !paramLMW.equalsIgnoreCase("false");
+		}else{
+			loadMainWindow = true;
 		}
 
 		if (dfe == null) {
