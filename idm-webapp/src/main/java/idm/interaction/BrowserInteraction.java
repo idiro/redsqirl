@@ -48,7 +48,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 		// clean the map
 		listFeatures = new LinkedList<String>();
 		listProperties = new LinkedList<SelectItem>();
-		//logger.info(printTree(inter.getTree()));
+		logger.info(printTree(inter.getTree()));
 		try{
 			if (inter.getTree().getFirstChild("browse")
 					.getFirstChild("output").getFirstChild("path") != null) {
@@ -86,23 +86,20 @@ public class BrowserInteraction extends CanvasModalInteraction {
 
 		//set features
 		try{
-			if (inter.getTree().getFirstChild("browse")
-					.getFirstChild("output").getChildren("feature") != null) {
-				List<Tree<String>> feats = inter.getTree().getFirstChild("browse")
-						.getFirstChild("output").getChildren("feature");
-				if (feats != null) {
-					logger.info("features not null: " + feats.size());
-					for (Tree<String> tree : feats) {
-						String name = tree.getFirstChild("name").getFirstChild().getHead();
-						String type = tree.getFirstChild("type").getFirstChild().getHead();
-						listFeatures.add(name+" "+type);
-					}
+			List<Tree<String>> feats = inter.getTree().getFirstChild("browse")
+					.getFirstChild("output").getChildren("feature");
+			if (feats != null && !feats.isEmpty()) {
+				logger.info("features not null: " + feats.size());
+				for (Tree<String> tree : feats) {
+					String name = tree.getFirstChild("name").getFirstChild().getHead();
+					String type = tree.getFirstChild("type").getFirstChild().getHead();
+					listFeatures.add(name+" "+type);
 				}
 			}
 		}catch(Exception e){
 			logger.info("Exception: "+e.getMessage());
 		}
-		
+
 		if(modalOutput != null){
 			modalOutput.resetNameOutput();
 			modalOutput.updateDFEOutputTable();

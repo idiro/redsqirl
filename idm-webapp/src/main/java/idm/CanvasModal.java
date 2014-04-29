@@ -240,6 +240,22 @@ public class CanvasModal extends BaseBean implements Serializable {
 						request.setAttribute("msnError", "msnError");
 
 					} else {
+						
+						// mount output tab
+						outputTab = new CanvasModalOutputTab(dfe);
+						Iterator<DFEInteraction> iterIt = dfe.getInteractions()
+								.iterator();
+						sourceNode = false;
+						while (iterIt.hasNext() && !sourceNode) {
+							sourceNode = iterIt.next().getDisplay()
+									.equals(DisplayType.browser);
+						}
+
+						if (sourceNode) {
+							outputTab.setShowOutputForm("N");
+						}
+						outputTab.mountOutputForm(!sourceNode);
+						
 
 						listPageSize = getPageList().size();
 
@@ -263,20 +279,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 					}
 
-					// mount output tab
-					outputTab = new CanvasModalOutputTab(dfe);
-					Iterator<DFEInteraction> iterIt = dfe.getInteractions()
-							.iterator();
-					sourceNode = false;
-					while (iterIt.hasNext() && !sourceNode) {
-						sourceNode = iterIt.next().getDisplay()
-								.equals(DisplayType.browser);
-					}
-
-					if (sourceNode) {
-						outputTab.setShowOutputForm("N");
-					}
-					outputTab.mountOutputForm(!sourceNode);
 
 				} catch (RemoteException e) {
 					e.printStackTrace();

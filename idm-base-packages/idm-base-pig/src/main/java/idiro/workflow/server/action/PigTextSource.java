@@ -35,7 +35,7 @@ public class PigTextSource extends AbstractSource {
 		posValuesSubType.add(type.getTypeName());
 		dataSubtype.setPossibleValues(posValuesSubType);
 		
-		dataType.setValue("HDFS");
+		dataType.setValue(type.getBrowser());
 		dataSubtype.setValue(type.getTypeName());
 		checkSubType();
 	}
