@@ -31,7 +31,7 @@
 
 	<h:panelGrid columns="2">
 		<a4j:commandButton  styleClass="greenButton" action="#{hiveBean.editFileAfter}" value="#{messages.button_ok}"
-			onclick="#{rich:component('hiveeditModalPanel')}.hide()" />
+			onclick="#{rich:component('hiveeditModalPanel')}.hide()" reRender="hivefs" />
 		<a4j:commandButton  styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('hiveeditModalPanel')}.hide();" />
 	</h:panelGrid>
 
