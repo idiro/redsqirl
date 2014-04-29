@@ -117,7 +117,6 @@
 	  	              	
 	  	              	jQuery("#"+jQuery(this).parent().attr("id")).tabs("option", "active", jQuery(ui.item[0]).index());
 	  	              	canvasResizeSplitter();
-
   	            }
 
   	        });
@@ -126,9 +125,11 @@
   	    		jQuery("#buttonstabRemote").hide();
 	  	    	jQuery("#buttonstabRemote").css("left", jQuery("#tabRemote").width()-30+'px');
    				validateArrows(jQuery("#tabRemote"),jQuery("#buttonstabRemote"));
+   				
 	        });
 
   	    	jQuery("#idtabFlowchart-1").click(function () {
+  	    		jQuery("#canvas-tabs").resize();
   	    		resizing();
 	        });
   	    	
@@ -180,9 +181,9 @@
 	    	  jQuery("#splitHCanvas").splitter({
 	        	  type: "h",
 	        	  outline: true,
+	        	  sizeTop: true,
 	        	  //minTop: 100,
 	        	  //minBottom: 100,
-	        	  resizeToWidth: true,
 	        	  dock: "top",
 	        	  dockSpeed: 200,
 	        	  cookie: "splitHCanvas"
@@ -577,7 +578,7 @@
 	   	function verifyIfIsRunning(canvas){
 	   		jQuery('#canvas-tabs').unblock();
 	   		if (isRunning(canvas)){
-	   			updateWorkflowUrl();
+	   			blockRunningWorkflow();
 	   		}
 	   	}
 	   	
@@ -680,17 +681,14 @@
 		<h:form id="formMenu">
 			
 			<a4j:region>
-				<a4j:jsFunction name="openModalSaveWorkflow" action="#{browserHdfsBean.createNewFolder}" 
-				oncomplete="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });openModalSaveWorkflowBrowser();" />
-				<a4j:jsFunction name="openModalSaveWorkflowBrowser" reRender="modalSaveWorkflow" 
-				oncomplete="#{rich:component('modalSaveWorkflow')}.show();jQuery('#canvas-tabs').unblock();" />
-			</a4j:region>
-			
-			<a4j:region>
-				<a4j:jsFunction name="openModalLoadWorkflow" action="#{browserHdfsBean.createNewFolder}" 
-				oncomplete="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });openModalLoadWorkflowBrowser();" />
-				<a4j:jsFunction name="openModalLoadWorkflowBrowser" reRender="modalLoadWorkflow" 
-				oncomplete="#{rich:component('modalLoadWorkflow')}.show();jQuery('#canvas-tabs').unblock();" />
+                <a4j:jsFunction name="openModalSaveWorkflow" action="#{browserHdfsBean.createSaveFolder}" 
+                oncomplete="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });openModalFileHdfs('T');"/>
+				<a4j:jsFunction name="openModalLoadWorkflow" action="#{browserHdfsBean.createSaveFolder}" 
+				oncomplete="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });openModalFileHdfs('F');" />
+				<a4j:jsFunction name="openModalFileHdfs" reRender="modalFileHdfs" 
+				oncomplete="#{rich:component('modalFileHdfs')}.show();jQuery('#canvas-tabs').unblock();" >
+				    <a4j:actionparam name="openCtrl" assignTo="#{browserHdfsBean.showSave}"/>
+				</a4j:jsFunction>
 			</a4j:region>
 
 			<a4j:region>
@@ -948,11 +946,11 @@
 
 				<a4j:jsFunction name="openChangeIdModal"
 					action="#{canvasModalBean.openCanvasModal}"
-					oncomplete="if(#{canvasModalBean.loadMainWindow} || confirm('Changing an action identification may cause errors and force you to reconfigure this object and its dependent nodes. Do you want to continue?')){#{rich:component('modalChangeId')}.show();}">
+                    data="#{canvasModalBean.loadMainWindow}"
+					oncomplete="if(data || confirm('Changing an action identification may cause errors and force you to reconfigure this object and its dependent nodes. Do you want to continue?')){#{rich:component('modalChangeId')}.show();}">
 					<a4j:actionparam name="paramGroupId" />
 					<a4j:actionparam name="paramPathImage" />
-                    <a4j:actionparam name="paramNameLoadMainWindow"
-                        assignTo="#{canvasModalBean.loadMainWindow}" />
+                    <a4j:actionparam name="paramLoadMainWindow"  />
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -970,7 +968,8 @@
 
 			<a4j:region>
 				<a4j:jsFunction name="closeChangeIdModal"
-					oncomplete="updateLabelObj('#{canvasModalBean.idGroup}','#{canvasModalBean.componentId}');if(#{canvasModalBean.loadMainWindow}){ openModal('#{canvasModalBean.idGroup}','#{canvasModalBean.pathImage}');}">
+				    reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError, errorTable, canvasModalTabPanel"
+					oncomplete="updateLabelObj('#{canvasModalBean.idGroup}','#{canvasModalBean.componentId}');if(#{canvasModalBean.loadMainWindow}){ #{rich:component('canvasModalPanel')}.show();}">
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -1044,15 +1043,22 @@
 				<div id="domMessageDivCanvas2" style="display: none;">
 					<img src="../image/icons/waiting.gif" />
 					<h:panelGroup id="right_area" layout="block">
-						<h:outputLink id="workflowUrl" value="#{canvasBean.workflowUrl}"
-							target="_blank" rendered="#{canvasBean.workflowUrl != null}">Oozie Console</h:outputLink>
-						<br />
-						<a4j:commandButton id="killProcessBtn" value="Kill Process" action="#{canvasBean.stopRunningWorkflow}"
+					    
+                        <h:outputLink id="workflowUrl" value="#{canvasBean.workflowUrl}" target="_blank" 
+                          style="float:left;margin-left:5px;" 
+                          rendered="#{canvasBean.workflowUrl != null}">
+                           <h:graphicImage  value="../image/icons/button-oozie_web_console.gif" 
+                                            title='#{messages.oozie_gotowebconsole}' 
+                                            alt="Oozie Console" class="fileSystemIcon"
+                           />
+                        </h:outputLink>
+						<a4j:commandButton id="killProcessBtn" styleClass="greenButton"  style="float:right;margin-right:5px;" 
+						     value="Kill Process" action="#{canvasBean.stopRunningWorkflow}"
 							rendered="#{canvasBean.running}"/>
 					</h:panelGroup>
 				</div>
 
-				<a4j:jsFunction name="updateWorkflowUrl"
+				<a4j:jsFunction name="blockRunningWorkflow"
 					action="#{canvasBean.blockRunningWorkflow}"
 					oncomplete="jQuery('#'+getSelected()).unblock();setRunning(getSelected(), false);updateRunningStatus();updateAllOutputStatus();">
 				</a4j:jsFunction>
@@ -1073,7 +1079,7 @@
 
 				<a4j:jsFunction name="runWorkflow"
 					action="#{canvasBean.runWorkflow}"
-					oncomplete="setRunning(getSelected(), true);updateWorkflowUrl();"
+					oncomplete="setRunning(getSelected(), true);blockRunningWorkflow();"
 					reRender="formMenu,domMessageDivCanvas2,killProcessBtn">
 					<a4j:actionparam name="positions" />
 					<a4j:actionparam name="select" />
@@ -1469,7 +1475,7 @@
 						</h:panelGroup>
 					</a4j:region>
 				</div>
-				<div id="tabs-2">
+				<div id="tabs-2" style="overflow:hidden;">
 					<a4j:region>
 
 						<a4j:status
@@ -1487,7 +1493,7 @@
 						</h:panelGroup>
 					</a4j:region>
 				</div>
-				<div id="tabs-3">
+				<div id="tabs-3" style="overflow:hidden;">
 
 					<h:panelGroup>
 						<ui:include src="/pages/errorCanvas.xhtml" />
@@ -1523,7 +1529,7 @@
 					</button>
 				</span>
 
-				<div id="tabs-7">
+				<div id="tabs-7" style="overflow:hidden;">
 					<a4j:region>
 
 						<a4j:status
@@ -1541,7 +1547,7 @@
 						</h:panelGroup>
 					</a4j:region>
 				</div>
-                <div id="tabs-4">
+                <div id="tabs-4" style="overflow:hidden;">
                     <a4j:region>
 
                         <a4j:status
@@ -1559,7 +1565,7 @@
                         </h:panelGroup>
                     </a4j:region>
                 </div>
-                <div id="tabs-5">
+                <div id="tabs-5" style="overflow:hidden;">
                     <p>not ready yet</p>
                 </div>
 			</div>
@@ -1610,42 +1616,20 @@
 	</a4j:region>
 
 	<a4j:region renderRegionOnly="true">
-		<rich:modalPanel id="modalSaveWorkflow" width="600" height="430"
+		<rich:modalPanel id="modalFileHdfs" width="600" height="430"
 			style="overflow:hide;" resizeable="false">
 
-			<f:facet name="header">Save</f:facet>
+			<f:facet name="header" >Hadoop Distributed File System Browser</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
 					style="cursor:pointer;width:22px;"
-					onclick="#{rich:component('modalSaveWorkflow')}.hide()" />
+					onclick="#{rich:component('modalFileHdfs')}.hide()" />
 			</f:facet>
 
-			<h:form id="formSaveWorkflow">
+            <h:form id="formLoadWorkflow">
 				<h:panelGroup>
-					<a4j:include viewId="/pages/saveFileHdfs.xhtml"
-						ajaxRendered="false" />
-				</h:panelGroup>
-			</h:form>
-
-		</rich:modalPanel>
-	</a4j:region>
-
-	<a4j:region renderRegionOnly="true">
-		<rich:modalPanel id="modalLoadWorkflow" width="600" height="430"
-			style="overflow:hide;" resizeable="false"
-			onbeforeshow="refreshHdfsOpenFileTable()">
-
-			<f:facet name="header">Load</f:facet>
-			<f:facet name="controls">
-				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer;width:22px;"
-					onclick="#{rich:component('modalLoadWorkflow')}.hide()" />
-			</f:facet>
-
-			<h:form id="formLoadWorkflow">
-				<h:panelGroup>
-					<a4j:include viewId="/pages/loadFileHdfs.xhtml"
-						ajaxRendered="false" />
+					<a4j:include viewId="/pages/modalFileHdfs.xhtml"
+						ajaxRendered="true" />
 				</h:panelGroup>
 			</h:form>
 

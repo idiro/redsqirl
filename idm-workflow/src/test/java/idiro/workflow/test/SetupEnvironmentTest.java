@@ -9,15 +9,19 @@ import idiro.workflow.server.EditorInteractionTests;
 import idiro.workflow.server.InputInteractionTests;
 import idiro.workflow.server.ListInteractionTests;
 import idiro.workflow.server.OozieDagTests;
+import idiro.workflow.server.OozieManagerTests;
 import idiro.workflow.server.TableInteractionTests;
 import idiro.workflow.server.WorkflowPrefManager;
+import idiro.workflow.server.WorkflowProcessesManagerTests;
 import idiro.workflow.server.WorkflowTests;
+import idiro.workflow.server.action.ActionTests;
 import idiro.workflow.server.action.ConvertTests;
 import idiro.workflow.server.action.SourceTests;
 import idiro.workflow.server.connect.HDFSInterface;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.connect.interfaces.HDFSInterfaceTests;
-import idiro.workflow.server.datatype.HDFSTypeTests;
+import idiro.workflow.server.connect.interfaces.SSHInterfaceArrayTests;
+import idiro.workflow.server.datatype.HiveTypePartitionTests;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -33,18 +37,22 @@ import org.junit.runners.Suite.SuiteClasses;
 
 
 @RunWith(Suite.class)
-@SuiteClasses({//ActionTests.class,
+@SuiteClasses({ActionTests.class,
 	WorkflowTests.class,
+	//FIXME CreateWorkflowTests does not work
 	//CreateWorkflowTests.class,
-		HDFSInterfaceTests.class,
-	//	HiveInterfaceTests.class,
-	//	SSHInterfaceTests.class,
-	//	SSHInterfaceArrayTests.class,
-	//	HiveTypeTests.class, 
-	//	HiveTypePartitionTests.class, 
-		SourceTests.class,
-	//	WorkflowProcessesManagerTests.class,
-	//	OozieManagerTests.class,
+	HDFSInterfaceTests.class,
+	//FIXME HiveInterfaceTests does not work
+	//HiveInterfaceTests.class,
+	//FIXME SSHInterfaceTests does not work
+	//SSHInterfaceTests.class,
+	SSHInterfaceArrayTests.class,
+	//FIXME Hive Type Tests does not work 
+	//HiveTypeTests.class, 
+	HiveTypePartitionTests.class, 
+	SourceTests.class,
+	WorkflowProcessesManagerTests.class,
+	OozieManagerTests.class,
 	//PackageManagerTests.class,
 	OozieDagTests.class,
 	OrderedFeatureListTests.class,
@@ -55,7 +63,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	ListInteractionTests.class,
 	EditorInteractionTests.class,
 	TableInteractionTests.class,
-	HDFSTypeTests.class,
+	//FIXME Test only done for keith user...
+	//HDFSTypeTests.class,
 })
 public class SetupEnvironmentTest {
 

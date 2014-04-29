@@ -83,7 +83,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 	protected static JdbcConnection conn;
 	/** History of paths/tables */
 	protected List<String> history = new LinkedList<String>();
-	/** Current position in histoy */
+	/** Current position in history */
 	protected int cur = 0;
 	/** HiveInterface IsInit */
 	private static boolean isInit = false;

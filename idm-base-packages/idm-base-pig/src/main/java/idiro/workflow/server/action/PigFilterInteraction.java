@@ -110,10 +110,10 @@ public class PigFilterInteraction extends EditorInteraction {
 				.getSubTreeList().size() > 0) {
 			//not all "." are to access fields of a bag, it could be a number
 			where = getTree().getFirstChild("editor").getFirstChild("output")
-					.getFirstChild().getHead().replaceAll(relationName+".", "::");
+					.getFirstChild().getHead().replaceAll("([A-Za-z]\\w*)\\.", "$1::");
 		}
 
-		String whereIn = getInputWhere().replaceAll(relationName+".", "::");
+		String whereIn = getInputWhere().replaceAll("([A-Za-z]\\w*)\\.", "$1::");
 		if (!where.isEmpty()) {
 			if (!whereIn.isEmpty()) {
 				where = "(" + where + ") AND (" + whereIn + ")";

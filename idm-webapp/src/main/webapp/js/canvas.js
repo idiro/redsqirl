@@ -1289,7 +1289,7 @@ function mountObj(canvasName) {
 			// stage to footer
 			stageTab = new Kinetic.Stage({
 				container : nameDiv,
-				width : jQuery("#canvas-tabs").width()-10,
+				width : jQuery("#canvas-tabs").width()-15,
 				height : 100
 			});
 			
@@ -1773,7 +1773,7 @@ function openCanvasModalJS(group, selectedTab){
         openChangeIdModal(group.getId(), imagePath,true);
         group.hasChangedId = true;
     } else {
-        openModal(group.getId(), imagePath, selectedCanvas, selectedTab);
+        openModal(group.getId(), imagePath, selectedTab);
     }
 }
 

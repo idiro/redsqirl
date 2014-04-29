@@ -74,9 +74,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		userInfoBean = (UserInfoBean) context.getApplication()
 				.evaluateExpressionGet(context, "#{userInfoBean}",
 						UserInfoBean.class);
-
-		userInfoBean.setCurrentValue(Long.valueOf(78));
-
+		
 		workflowMap = new HashMap<String, DataFlow>();
 		setNameWorkflow("canvas-1");
 
@@ -94,11 +92,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 				dfi.addWorkflow(getNameWorkflow());
 			}
 			logger.info("add new Workflow " + getNameWorkflow());
-
-			if (userInfoBean.getCurrentValue() < 98) {
-				userInfoBean
-				.setCurrentValue(userInfoBean.getCurrentValue() + 3);
-			}
 
 			setDf(dfi.getWorkflow(getNameWorkflow()));
 			getDf().getAllWANameWithClassName();
@@ -405,30 +398,38 @@ public class CanvasBean extends BaseBean implements Serializable {
 		String error = null;
 		try {
 			dfi = getworkFlowInterface();
-
+			DataFlow df = null;
 			String newWfName = generateWorkflowName(path);
-			error = dfi.addWorkflow(newWfName);
-
+			
 			if( error == null){
-				if (!getWorkflowMap().containsKey(newWfName)) {
-					logger.error("A key is not available on the back-end but on the front-end!");
+				if (getWorkflowMap().containsKey(newWfName)) {
+					error = "A workflow called "+newWfName+" already exist. Please close this workflow if you want to proceed.";
+				}else if(dfi.getWorkflow(newWfName) != null){
+					logger.warn("A workflow named "+newWfName+" already exist on the backend, closing it quietly...");
+					dfi.removeWorkflow(newWfName);
 				}
-
-				DataFlow df = dfi.getWorkflow(newWfName);
+			}
+			if(error == null){
+				error = dfi.addWorkflow(newWfName);
+			}
+			if(error == null){
+				df = dfi.getWorkflow(newWfName);
+				logger.info("read "+path);
 				error = df.read(path);
 			}
-
-			if (error != null) {
-				dfi.removeWorkflow(newWfName);
-			} else {
+			if (error == null) {
+				logger.info("set current worflow to "+newWfName);
 				setNameWorkflow(newWfName);
 				setDf(df);
+				
+				logger.info("Load element ids for front-end "+newWfName);
 				workflowMap.put(getNameWorkflow(), df);
 				getIdMap().put(getNameWorkflow(), new HashMap<String, String>());
-
+				logger.info("Nb elements: "+df.getElement().size());
 				for (DataFlowElement e : df.getElement()){
 					getIdMap().get(getNameWorkflow()).put(e.getComponentId(), e.getComponentId());
 				}
+				logger.info("Nb element loaded: "+ getIdMap().get(getNameWorkflow()).size());
 			}
 
 		} catch (Exception e) {
@@ -437,7 +438,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 
 		if (error != null) {
-			logger.info("error " + error);
+			logger.info("Error: " + error);
 			MessageUseful.addErrorMessage(error);
 			HttpServletRequest request = (HttpServletRequest) FacesContext
 					.getCurrentInstance().getExternalContext().getRequest();
@@ -670,16 +671,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 			HttpServletRequest request = (HttpServletRequest) FacesContext
 					.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
+		}else{
+			calcWorkflowUrl();
 		}
-
-		FacesContext context = FacesContext.getCurrentInstance();
-		userInfoBean = (UserInfoBean) context.getApplication()
-				.evaluateExpressionGet(context, "#{userInfoBean}",
-						UserInfoBean.class);
-
-		/*if (userInfoBean.getCurrentValue() < 98) {
-			userInfoBean.setCurrentValue(userInfoBean.getCurrentValue() + 3);
-		}*/
 
 	}
 
@@ -721,13 +715,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 				logger.error("error getting Oozie url : " + e.getMessage());
 			}
 		}
-
-		/*FacesContext context = FacesContext.getCurrentInstance();
-		userInfoBean = (UserInfoBean) context.getApplication()
-				.evaluateExpressionGet(context, "#{userInfoBean}",
-						UserInfoBean.class);
-
-		userInfoBean.setCurrentValue(Long.valueOf(100));*/
 
 		setWorkflowUrl(url);
 	}

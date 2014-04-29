@@ -12,7 +12,8 @@
 		<rich:dragIndicator id="indicator" />
 		
 		<a4j:form>
-			<h:outputText value="#{messages.label_path}" />
+			<br/>
+			<h:outputText value="#{messages.label_path}" style="padding-left:10px"/>
 			<h:inputText id="sshpath" styleClass="mainPageTextField"  label="Path" value="#{sshBean.path}"
 				maxlength="255" style="width:395px; margin-left:5px;" 
 				onkeypress="return enableEnterKey(event, 'sshchangePathBt');"/>

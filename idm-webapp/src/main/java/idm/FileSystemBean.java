@@ -2,7 +2,6 @@ package idm;
 
 import idiro.workflow.server.connect.interfaces.DataStore;
 import idiro.workflow.server.connect.interfaces.DataStore.ParamProperty;
-import idm.auth.UserInfoBean;
 import idm.dynamictable.SelectableRow;
 import idm.dynamictable.SelectableTable;
 import idm.useful.MessageUseful;
@@ -15,9 +14,9 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 
@@ -25,21 +24,9 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 	private static Logger logger = Logger.getLogger(FileSystemBean.class);
 	private static int nbCreate = 0;
-	
-	/*private Map<String, String> nameHelp = new LinkedHashMap<String, String>();
-	private List<String> nameCreateFields = new ArrayList<String>();
-	private Map<String, String> nameValue = new LinkedHashMap<String, String>();
-	private String path;
-	private EditFileSystem item;
-	private ArrayList<EditFileSystem> listGrid = new ArrayList<EditFileSystem>();*/
 
-	/*
-	private List<Entry<String, String>> fieldsInitNeededTitleKey;
-	private ArrayList<ItemList> listHeaderGrid = new ArrayList<ItemList>();
-	 */
 	private boolean file;
 	private String name;
-	private String newName;
 	private String path;
 	private List<String[]> selectedFiles;
 	private String fileContent;
@@ -55,13 +42,20 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	private List<String> createProps;
 	private Map<String, ParamProperty> propsParam; 
 	private Integer currentFileIndex;
-
-
+	private LinkedHashMap<String, String> newProp;
 	
+	/**
+	 * Have the same xhtml page for copy and move.
+	 * 'C' for showing copy and 'M' for showing move.
+	 */
+	private String showCopyMove;
+
+
+
 	public FileSystemBean(){
 		logger.info("Create FileSystem: "+ (++nbCreate));
 	}
-	
+
 	/**
 	 * openCanvasScreen
 	 * 
@@ -93,7 +87,8 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	 * @return
 	 * @author Igor.Souza
 	 */
-	public void mountTable(DataStore hInt) throws RemoteException {
+	public void mountTable() throws RemoteException {
+		DataStore hInt = getDataStore();
 		logger.info("Started mounting table");
 		setPath(hInt.getPath());
 
@@ -105,10 +100,6 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			LinkedList<String> titles = new LinkedList<String>();
 			LinkedList<String> editProps = new LinkedList<String>();
 			LinkedList<String> createProps = new LinkedList<String>();
-
-			//titles.addFirst("name");
-			editProps.addFirst("name");
-			createProps.addFirst("name");
 
 			for (String properties : propsParam.keySet()) {
 
@@ -126,9 +117,22 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			setTableGrid(new SelectableTable(titles));
 			setEditProps(editProps);
 			setCreateProps(createProps);
-			setAllProps(new LinkedList<Map<String,String>>());
 
-			//Fill rows
+			updateTable();
+
+		}
+
+		logger.info("Finished mounting table");
+	}
+
+	public void updateTable() throws RemoteException{
+
+		setPath(getDataStore().getPath());
+		Map<String, Map<String, String>> mapSSH = getDataStore().getChildrenProperties();
+		//Fill rows
+		if (mapSSH != null) {
+			setAllProps(new LinkedList<Map<String,String>>());
+			getTableGrid().getRows().clear();
 			for (String path : mapSSH.keySet()) {
 
 				String[] aux = path.split("/");
@@ -142,18 +146,8 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 			}
 		}
-
-		FacesContext context = FacesContext.getCurrentInstance();
-		UserInfoBean userInfoBean = (UserInfoBean) context.getApplication()
-				.evaluateExpressionGet(context, "#{userInfoBean}",
-						UserInfoBean.class);
-
-		if (userInfoBean.getCurrentValue() < 96) {
-			userInfoBean.setCurrentValue(userInfoBean.getCurrentValue() + 5);
-		}
-
-		logger.info("Finished mounting table");
 	}
+
 
 	/**
 	 * deleteFile
@@ -165,19 +159,15 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	 */
 	public void deleteFile() throws RemoteException {
 
-		for (Iterator<SelectableRow> i = getTableGrid().getRows().iterator(); i.hasNext();) {
-			SelectableRow item = i.next();
-
-			if (item.isSelected()) {
-
-				String directory = generatePath(getDataStore().getPath(),item.getRow()[0]);
-
+		List<Integer> posToDell = tableGrid.getAllSelected();
+		if(posToDell != null){
+			for (int i = 0; i < posToDell.size(); i++) {
+				int pos = posToDell.get(i);
+				String directory = generatePath(getDataStore().getPath(), allProps.get(pos).get("name"));
 				logger.info("Delete -" + directory);
-
 				getDataStore().delete(directory);
-				i.remove();
-
 			}
+			updateTable();
 		}
 
 	}
@@ -194,8 +184,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	public void changePath() throws RemoteException {
 		logger.info("changePath: " + getPath());
 		if (getDataStore().goTo(getPath())) {
-			getDataStore().getPath();
-			mountTable(getDataStore());
+			updateTable();
 		} else {
 			getBundleMessage("error.invalid.path");
 		}
@@ -214,15 +203,20 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 		try {
 
-			Map<String, String> params = FacesContext.getCurrentInstance()
-					.getExternalContext().getRequestParameterMap();
+			Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 			String name = params.get("nameFile");
 
-			String path = generatePath(getPath(), name);
+			logger.info("selectFile " + getPath() + " - " + name);
+			
+			String newPath = generatePath(getPath(), name);
 
-			if (getDataStore().goTo(path)) {
-				setPath(path);
-				mountTable(getDataStore());
+			logger.info("selectFile newPath " + newPath);
+			
+			if (getDataStore().goTo(newPath)) {
+				//setPath(newPath);
+				updateTable();
+				logger.info("selectFile updateTable");
+				
 			} else {
 				logger.error("Error this is not a directory");
 			}
@@ -245,7 +239,13 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	 */
 	public void openFile() throws RemoteException {
 		String name = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("nameFile");
+		
+		logger.info("openFile " + name);
+		
 		String path = generatePath(getPath(), name);
+		
+		logger.info("openFile path " + path);
+		
 		getDataStore().goTo(path);
 		List<String> contents = getDataStore().select(" | ", 10);
 		fileContent = "";
@@ -253,6 +253,8 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			fileContent += s + "<br/>";
 		}
 		getDataStore().goPrevious();
+		
+		logger.info("openFile fileContent " + fileContent);
 	}
 
 	/**
@@ -276,6 +278,89 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	}
 
 	/**
+	 * mountSelectedFilesList
+	 * 
+	 * Method to mount one list with the selecteds files
+	 * 
+	 * @return
+	 * @author Igor.Souza
+	 */
+	private void mountSelectedFilesList() throws RemoteException {
+		selectedFiles = new ArrayList<String[]>();
+		int i =0;
+		for (SelectableRow row : getTableGrid().getRows()) {
+			if (row.isSelected()) {
+				selectedFiles.add(new String[] { getDataStore().getPath(), getAllProps().get(i).get("name")});
+				logger.info("mountSelectedFilesList " + getAllProps().get(i).get("name"));
+			}
+			i++;
+		}
+	}
+
+	/**
+	 * copyMoveFile
+	 * 
+	 * Method to copy or move a file
+	 * 
+	 * @return
+	 * @author Igor.Souza
+	 */
+	public void copyMoveFile(String action) throws RemoteException {
+
+		logger.info("copyMoveFile");
+
+		SelectableRow itemSelect = null;
+		int indexDes = 0;
+		for (int i = 0; i < getTableGrid().getRows().size(); i++) {
+			SelectableRow item = (SelectableRow)getTableGrid().getRows().get(i);
+			if (item.isSelected()) {
+				itemSelect = item;
+				indexDes = i;
+				break;
+			}
+		}
+
+		String error = null;
+
+		for (String[] s : selectedFiles) {
+			if((getDataStore().getPath() + "/" + getAllProps().get(indexDes).get("name")).startsWith((s[0] + "/" + s[1]))){
+				error = getMessageResources("error_target_sorce");
+				break;
+			}
+		}
+		
+		if(error == null){
+			for (String[] s : selectedFiles) {
+				if (itemSelect != null) {
+					logger.info(action + " " + s[0] + "/" + s[1] + " to " + getDataStore().getPath() + "/" + getAllProps().get(indexDes).get("name"));
+					if(action.equals("copy")){
+						error = getDataStore().copy(s[0] + "/" + s[1], getDataStore().getPath() + "/" + getAllProps().get(indexDes).get("name") + "/" + s[1]);
+					}else{
+						error = getDataStore().move(s[0] + "/" + s[1], getDataStore().getPath() + "/" + getAllProps().get(indexDes).get("name") + "/" + s[1]);
+					}
+				} else {
+					logger.info(action + " " + s[0] + "/" + s[1] + " to " + getDataStore().getPath());
+					if(action.equals("copy")){
+						error = getDataStore().copy(s[0] + "/" + s[1], getDataStore().getPath() + "/" + s[1]);
+					}else{
+						error = getDataStore().move(s[0] + "/" + s[1], getDataStore().getPath() + "/" + s[1]);
+					}
+				}
+			}
+		}
+
+		if(error != null){
+			MessageUseful.addErrorMessage(error);
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
+		}
+		
+		updateTable();
+	}
+
+
+
+	/**
 	 * copyFileBefore
 	 * 
 	 * Method to execute before opening the screen to copy a file
@@ -296,142 +381,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 */
 	public void copyFileAfter() throws RemoteException {
-		logger.info("copy file after");
-		SelectableRow itemSelect = null;
-		for (Iterator<SelectableRow> i = getTableGrid().getRows().iterator(); i.hasNext();) {
-			SelectableRow item = i.next();
-
-			if (item.isSelected()) {
-				itemSelect = item;
-				break;
-			}
-		}
-
-		for (String[] s : selectedFiles) {
-			if (itemSelect != null) {
-				logger.info("move " + s[0] + "/" + s[1] + " to " + getDataStore().getPath() + "/" + itemSelect.getRow()[0]);
-				getDataStore().move(s[0] + "/" + s[1], getDataStore().getPath() + "/" + itemSelect.getRow()[0] + "/" + s[1]);
-			} else {
-				logger.info("move " + s[0] + "/" + s[1] + " to " + getDataStore().getPath());
-				getDataStore().move(s[0] + "/" + s[1], getDataStore().getPath() + "/" + s[1]);
-			}
-		}
-
-		mountTable(getDataStore());
-	}
-
-	/**
-	 * addFileBefore
-	 * 
-	 * Method to execute before opening the screen to add a file
-	 * 
-	 * @return
-	 * @author Igor.Souza
-	 */
-	public void addFileBefore() throws RemoteException {
-	}
-
-	/**
-	 * addFileAfter
-	 * 
-	 * Method to run the add file
-	 * 
-	 * @return
-	 * @author Igor.Souza
-	 */
-	public void addFileAfter() throws RemoteException {
-		String newDirectory = generatePath(getDataStore().getPath(), getNewName());
-
-		Map<String, String> properties = new LinkedHashMap<String, String>();
-		/*for (Entry<String, String> e : nameValue.entrySet()) {
-			if (e.getValue() != null && !e.getValue().isEmpty()) {
-				properties.put(e.getKey(), e.getValue());
-			}
-		}*/
-		getDataStore().create(newDirectory, properties);
-		mountTable(getDataStore());
-	}
-
-	/**
-	 * getItemByName
-	 * 
-	 * Method to retrieve the selected file by its name
-	 * 
-	 * @return ItemList
-	 * @author Igor.Souza
-	 */
-	/*public EditFileSystem getItemByName(String name) throws RemoteException {
-
-		logger.info("getItemByName");
-
-		for (EditFileSystem it : getListGrid()) {
-			if (it.getName().equals(name)) {
-				return it;
-			}
-		}
-
-		logger.info("getItemByName return null");
-		return null;
-	}*/
-
-	/**
-	 * editFileBefore
-	 * 
-	 * Method to execute before opening the screen to edit a file
-	 * 
-	 * @return
-	 * @author Igor.Souza
-	 */
-	public void editFileBefore() throws RemoteException {
-
-		logger.info("editFileBefore");
-
-		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-		String index = params.get("indexFileEdit");
-
-		logger.info("index " + index);
-
-		if(index != null){
-			setCurrentFileIndex(Integer.parseInt(index));
-			setName(allProps.get(currentFileIndex).get("name"));
-		}
-
-	}
-
-	/**
-	 * editFileAfter
-	 * 
-	 * Method to edit a file
-	 * 
-	 * @return
-	 * @author Igor.Souza
-	 */
-	public void editFileAfter() throws RemoteException {
-
-		Map<String,String> prop = new LinkedHashMap<String, String>();
-		Iterator<String> it = editProps.iterator();
-		while (it.hasNext()) {
-			String key = it.next();
-			if(!key.equals("name")){
-				prop.put(key, allProps.get(currentFileIndex).get(key));
-			}
-		}
-		String newName = prop.get("name");
-
-		try {
-			String error = getDataStore().changeProperties(getDataStore().getPath() + "/" + getName(), 
-					prop);
-			logger.info("change properties error : " + error);
-		} catch (Exception e) {
-			logger.error("Error change properties : " + e.getMessage());
-			MessageUseful.addErrorMessage("Fail to update properties of " + getDataStore().getPath() + "/" + getNewName() + " to " + getTableGrid().getRow(0));
-
-		}
-		if(!newName.equals(name)){
-			logger.info("Rename " + getDataStore().getPath() + "/" + getName() + " to " + getDataStore().getPath() + "/" + getNewName());
-			getDataStore().move(getDataStore().getPath() + "/" + getName(),	getDataStore().getPath() + "/" + getNewName());
-		}
-
+		copyMoveFile("copy");
 	}
 
 	/**
@@ -455,27 +405,105 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 */
 	public void moveFileAfter() throws RemoteException {
+		copyMoveFile("move");
+	}
 
-		SelectableRow itemSelect = null;
-		for (Iterator<SelectableRow> i = getTableGrid().getRows().iterator(); i.hasNext();) {
-			SelectableRow item = (SelectableRow) i.next();
+	/**
+	 * addFileBefore
+	 * 
+	 * Method to execute before opening the screen to add a file
+	 * 
+	 * @return
+	 * @author Igor.Souza
+	 */
+	public void addFileBefore() throws RemoteException {
 
-			if (item.isSelected()) {
-				itemSelect = item;
-				break;
-			}
+		newProp = new LinkedHashMap<String, String>();
+		Iterator<String> it = createProps.iterator();
+		while (it.hasNext()) {
+			String key = it.next();
+			newProp.put(key, null);
 		}
 
-		for (String[] s : selectedFiles) {
-			if (itemSelect != null) {
-				logger.info("move " + s[0] + "/" + s[1] + " to " + getDataStore().getPath() + "/" + getTableGrid().getRows().get(0));
-				getDataStore().move(s[0] + "/" + s[1], getDataStore().getPath() + "/" + getTableGrid().getRows().get(0) + "/" + s[1]);
-			} else {
-				logger.info("move " + s[0] + "/" + s[1] + " to " + getDataStore().getPath());
-				getDataStore().move(s[0] + "/" + s[1], getDataStore().getPath() + "/" + s[1]);
-			}
+	}
+
+	/**
+	 * addFileAfter
+	 * 
+	 * Method to run the add file
+	 * 
+	 * @return
+	 * @author Igor.Souza
+	 */
+	public void addFileAfter() throws RemoteException {
+
+		logger.info("addFileAfter");
+
+		setName(newProp.get("name"));
+
+		String newDirectory = generatePath(getDataStore().getPath(), getName());
+		getDataStore().create(newDirectory, getNewProp());
+
+		updateTable();
+
+	}
+
+	/**
+	 * editFileBefore
+	 * 
+	 * Method to execute before opening the screen to edit a file
+	 * 
+	 * @return
+	 * @author Igor.Souza
+	 */
+	public void editFileBefore() throws RemoteException {
+
+		logger.info("editFileBefore");
+
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String index = params.get("indexFileEdit");
+
+		logger.info("index " + index);
+
+		if(index != null){
+			setCurrentFileIndex(Integer.parseInt(index));
+			setName(allProps.get(getCurrentFileIndex()).get("name"));
 		}
-		mountTable(getDataStore());
+
+	}
+
+	/**
+	 * editFileAfter
+	 * 
+	 * Method to edit a file
+	 * 
+	 * @return
+	 * @author Igor.Souza
+	 */
+	public void editFileAfter() throws RemoteException {
+
+		Map<String,String> prop = new LinkedHashMap<String, String>();
+		Iterator<String> it = editProps.iterator();
+		while (it.hasNext()) {
+			String key = it.next();
+			prop.put(key, allProps.get(getCurrentFileIndex()).get(key));
+		}
+		String newName = allProps.get(getCurrentFileIndex()).get("name");
+
+		try {
+			String error = getDataStore().changeProperties(getDataStore().getPath() + "/" + getName(), 
+					prop);
+			logger.info("change properties error : " + error);
+		} catch (Exception e) {
+			logger.error("Error change properties : " + e.getMessage());
+			MessageUseful.addErrorMessage("Fail to update properties of " + getDataStore().getPath() + "/" + newName + " to " + getName());
+
+		}
+		if(!newName.equals(name)){
+			logger.info("Rename " + getDataStore().getPath() + "/" + getName() + " to " + getDataStore().getPath() + "/" + newName);
+			getDataStore().move(getDataStore().getPath() + "/" + getName(),	getDataStore().getPath() + "/" + newName);
+		}
+
 	}
 
 	/**
@@ -490,7 +518,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	public void goPrevious() throws RemoteException {
 
 		getDataStore().goPrevious();
-		mountTable(getDataStore());
+		updateTable();
 
 	}
 
@@ -506,17 +534,8 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	public void goNext() throws RemoteException {
 
 		getDataStore().goNext();
-		mountTable(getDataStore());
+		updateTable();
 
-	}
-
-	private void mountSelectedFilesList() throws RemoteException {
-		selectedFiles = new ArrayList<String[]>();
-		for (SelectableRow i : getTableGrid().getRows()) {
-			if (i.isSelected()) {
-				selectedFiles.add(new String[] { getDataStore().getPath(), i.getRow()[0] });
-			}
-		}
 	}
 
 	/**
@@ -546,40 +565,13 @@ public class FileSystemBean extends BaseBean implements Serializable {
 				logger.info("newPath" + newPath);
 
 				if (getDataStore().goTo(newPath)) {
-					getDataStore().getPath();
-					mountTable(getDataStore());
+					updateTable();
 				} else {
 					getBundleMessage("error.invalid.path");
 				}
 			}
 		}
 
-	}
-
-	/**
-	 * createNewFolder
-	 * 
-	 * Method to create a default folder to save
-	 * 
-	 * @return
-	 * @author Igor.Souza
-	 */
-	public void createNewFolder() throws RemoteException {
-
-		String newPath = "/user/" + System.getProperty("user.name") + "/idm-save";
-
-		if (getDataStore().goTo(newPath)) {
-			getDataStore().getPath();
-			mountTable(getDataStore());
-		} else {
-			getDataStore().create(newPath, new LinkedHashMap<String, String>());
-			if (getDataStore().goTo(newPath)) {
-				getDataStore().getPath();
-				mountTable(getDataStore());
-			} else {
-				getBundleMessage("error.invalid.path");
-			}
-		}
 	}
 
 	private String generatePath(String path, String name) {
@@ -608,72 +600,6 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	public String getCanCreate() throws RemoteException {
 		return getDataStore().canCreate();
 	}
-
-	/*
-
-	public ArrayList<EditFileSystem> getListGrid() {
-		return listGrid;
-	}
-
-	public void setListGrid(ArrayList<EditFileSystem> listGrid) {
-		this.listGrid = listGrid;
-	}
-
-	public EditFileSystem getItem() {
-		return item;
-	}
-
-	public void setItem(EditFileSystem item) {
-		this.item = item;
-	}
-
-	public Map<String, String> getNameValue() {
-		return nameValue;
-	}
-
-	public void setNameValue(Map<String, String> nameValue) {
-		this.nameValue = nameValue;
-	}
-
-	public Map<String, String> getNameHelp() {
-		return nameHelp;
-	}
-
-	public void setNameHelp(Map<String, String> nameHelp) {
-		this.nameHelp = nameHelp;
-	}
-
-	public List<String> getNameCreateFields() {
-		return nameCreateFields;
-	}
-
-	public void setNameCreateFields(List<String> nameCreateFields) {
-		this.nameCreateFields = nameCreateFields;
-	}
-
-	 */
-
-
-
-	/*
-	public ArrayList<ItemList> getListHeaderGrid() {
-		return listHeaderGrid;
-	}
-
-	public void setListHeaderGrid(ArrayList<ItemList> listHeaderGrid) {
-		this.listHeaderGrid = listHeaderGrid;
-	}
-
-	public List<Entry<String, String>> getFieldsInitNeededTitleKey() {
-		return fieldsInitNeededTitleKey;
-	}
-
-	public void setFieldsInitNeededTitleKey(
-			List<Entry<String, String>> fieldsInitNeededTitleKey) {
-		this.fieldsInitNeededTitleKey = fieldsInitNeededTitleKey;
-	}
-	 */
-
 
 	public SelectableTable getTableGrid() {
 		return tableGrid;
@@ -734,28 +660,20 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		return file;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public String getNewName() {
-		return newName;
-	}
-
-	public List<String[]> getSelectedFiles() {
-		return selectedFiles;
-	}
-
 	public void setFile(boolean file) {
 		this.file = file;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	public void setName(String name) {
 		this.name = name;
 	}
 
-	public void setNewName(String newName) {
-		this.newName = newName;
+	public List<String[]> getSelectedFiles() {
+		return selectedFiles;
 	}
 
 	public void setSelectedFiles(List<String[]> selectedFiles) {
@@ -786,4 +704,20 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		this.currentFileIndex = currentFileIndex;
 	}
 
+	public LinkedHashMap<String, String> getNewProp() {
+		return newProp;
+	}
+
+	public void setNewProp(LinkedHashMap<String, String> newProp) {
+		this.newProp = newProp;
+	}
+
+	public String getShowCopyMove() {
+		return showCopyMove;
+	}
+
+	public void setShowCopyMove(String showCopyMove) {
+		this.showCopyMove = showCopyMove;
+	}
+	
 }

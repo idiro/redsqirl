@@ -7,20 +7,19 @@
 
 <a4j:loadBundle basename="MessagesResources" var="messages" />
 
-	<h:outputText value="#{messages.label_name}" />
-	<h:inputHidden value="#{hdfsBean.name}" />
-	<h:inputText value="#{hdfsBean.newName}" onkeypress="return enableEnterKey(event, 'addHdfsBtn');"/>
-	<br />
 
-	<a4j:repeat value="#{hdfsBean.createProps}" var="title" rowKeyVar="ind" >
+		<h:outputText value="#{messages.label_name}" />
+		<h:inputText value="#{hdfsBean.newProp['name']}" />
+
+	<a4j:repeat value="#{hdfsBean.createProps}" var="title" >
 
 		<h:outputText value="#{title}" />
 		<br />
-		<h:inputText value="#{hdfsBean.allProps[hdfsBean.currentFileIndex][title]}"
+		<h:inputText value="#{hdfsBean.newProp[title]}"
 			disabled="#{hdfsBean.propsParam[title].const}"
 			rendered="#{hdfsBean.propsParam[title].type != 'BOOLEAN'}" />
 			
-		<h:selectOneRadio value="#{hdfsBean.allProps[hdfsBean.currentFileIndex][title]}" 
+		<h:selectOneRadio value="#{hdfsBean.newProp[title]}" 
 		rendered="#{hdfsBean.propsParam[title].type == 'BOOLEAN'}">
 			<f:selectItem itemValue="true" itemLabel="Yes" />
 			<f:selectItem itemValue="false" itemLabel="No" />

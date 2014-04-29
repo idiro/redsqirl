@@ -2,6 +2,7 @@ package idm;
 
 import idiro.workflow.server.connect.interfaces.DataStore;
 import idiro.workflow.server.connect.interfaces.DataStoreArray;
+import idm.auth.UserInfoBean;
 import idm.useful.MessageUseful;
 
 import java.io.Serializable;
@@ -50,6 +51,12 @@ public class SshBean extends FileSystemBean implements Serializable{
 	@PostConstruct
 	public void openCanvasScreen() {
 		
+		FacesContext context = FacesContext.getCurrentInstance();
+		UserInfoBean userInfoBean = (UserInfoBean) context.getApplication()
+				.evaluateExpressionGet(context, "#{userInfoBean}",
+						UserInfoBean.class);
+		logger.info("update progressbar");
+		userInfoBean.setCurrentValue(51);
 		logger.info("SshOpenCanvasScreen");
 		
 		try {
@@ -68,7 +75,7 @@ public class SshBean extends FileSystemBean implements Serializable{
 				if(getTableGrid() != null && 
 						getTableGrid().getRows() != null &&
 						getTableGrid().getRows().isEmpty()){
-					mountTable(getDataStore());
+					mountTable();
 				}
 			}
 			
@@ -149,7 +156,7 @@ public class SshBean extends FileSystemBean implements Serializable{
 			setSelectedTab(tabs.get(0));
 			setDataStore(getDataStoreArray().getStores().get(selectedTab));
 			
-			mountTable(getDataStore());
+			mountTable();
 		}
 		
 		if(error != null){
@@ -173,7 +180,7 @@ public class SshBean extends FileSystemBean implements Serializable{
 		setPath(getDataStore().getPath());
 		logger.info("path: "+getPath());
 
-		mountTable(getDataStore());
+		mountTable();
 		
 	}
 	
@@ -214,7 +221,7 @@ public class SshBean extends FileSystemBean implements Serializable{
 		
 		try{
 			getHDFS().copyToRemote(path+"/"+file, getPath()+"/"+file, getSelectedTab());
-			mountTable(getDataStore());
+			mountTable();
 		}
 		catch(Exception e){
 			logger.info("", e);

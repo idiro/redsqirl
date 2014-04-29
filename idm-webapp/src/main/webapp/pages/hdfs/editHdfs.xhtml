@@ -6,8 +6,11 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets">
 
 	<a4j:loadBundle basename="MessagesResources" var="messages" />
+
+	<h:outputText value="#{messages.label_name}" />
+	<h:inputText value="#{hdfsBean.allProps[hdfsBean.currentFileIndex]['name']}" />
 	
-	<a4j:repeat value="#{hdfsBean.editProps}" var="title" rowKeyVar="ind" >
+	<a4j:repeat value="#{hdfsBean.editProps}" var="title" >
 
 		<h:outputText value="#{title}" />
 		<br />

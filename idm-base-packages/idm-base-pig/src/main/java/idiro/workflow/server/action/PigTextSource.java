@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Action that read a source file. For now, only Hive type is supported.
+ * Action that read a Text Map Reduce Directory.
  * 
  * @author etienne
  * 
@@ -17,7 +17,7 @@ public class PigTextSource extends AbstractSource {
 	private static final long serialVersionUID = 7519928238030041208L;
 
 	/**
-	 * Constructor containing the pages, page checks and interactione
+	 * Constructor containing the pages, page checks and interaction
 	 * Initialization
 	 * 
 	 * @throws RemoteException

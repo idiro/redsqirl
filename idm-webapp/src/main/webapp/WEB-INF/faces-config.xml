@@ -3,8 +3,10 @@
  xmlns:xi="http://www.w3.org/2001/XInclude"
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_1_2.xsd">
  
- <!-- **************************** CONVERTERS ************************************************************** 
-		************************** MANAGED BEANS ******************************************************* -->
+ <!-- **************************** CONVERTERS ************************************************************** --> 
+ 
+ 
+<!-- ***************************** MANAGED BEANS ************************************************************* -->
 		
  <managed-bean>
   <managed-bean-name>canvasBean</managed-bean-name>
@@ -14,6 +16,11 @@
  <managed-bean>
   <managed-bean-name>hdfsBean</managed-bean-name>
   <managed-bean-class>idm.HdfsBean</managed-bean-class>
+  <managed-bean-scope>session</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
+  <managed-bean-name>browserHdfsBean</managed-bean-name>
+  <managed-bean-class>idm.HdfsBrowserBean</managed-bean-class>
   <managed-bean-scope>session</managed-bean-scope>
  </managed-bean>
  <managed-bean>
@@ -34,7 +41,7 @@
  <managed-bean>
   <managed-bean-name>canvasModalBean</managed-bean-name>
   <managed-bean-class>idm.CanvasModal</managed-bean-class>
-  <managed-bean-scope>request</managed-bean-scope>
+  <managed-bean-scope>session</managed-bean-scope>
  </managed-bean>
  <managed-bean>
  	<managed-bean-name>configureTabsBean</managed-bean-name>

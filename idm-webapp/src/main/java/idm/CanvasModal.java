@@ -134,7 +134,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * List of the current interaction displayed
 	 */
 	private List<CanvasModalInteraction> inters = null;
-	
+
 	/**
 	 * List of the table column titles
 	 * To repeat this element is necessary because of JSF limitations.
@@ -206,16 +206,26 @@ public class CanvasModal extends BaseBean implements Serializable {
 					canvasBean.getNameWorkflow()).getElement(
 							canvasBean.getIdMap().get(canvasBean.getNameWorkflow())
 							.get(idGroup));
+			logger.info("Get element dfe");
 		} catch (RemoteException e) {
 			logger.error(e.getMessage());
+		}
+
+		String paramLMW = FacesContext.getCurrentInstance().getExternalContext()
+				.getRequestParameterMap().get("paramLoadMainWindow");
+		if(paramLMW != null){
+			loadMainWindow = !paramLMW.equalsIgnoreCase("false");
+		}else{
+			loadMainWindow = true;
 		}
 
 		if (dfe == null) {
 			logger.error("The element is null!");
 		}else{
 			elementId = getComponentId();
+			logger.info("Element id: "+elementId);
 			if (loadMainWindow) {
-
+				logger.info("load Main window");
 				try {
 
 					// validate if you can open or not the dynamic form of the
