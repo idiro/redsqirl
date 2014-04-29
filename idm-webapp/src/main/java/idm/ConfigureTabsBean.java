@@ -43,6 +43,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 				menuWA = wf.getRelativeMenu(getCurrentPage());
 				if(allWANameWithClassName == null){
 					allWANameWithClassName = wf.getAllWANameWithClassName();
+					logger.info(allWANameWithClassName.keySet());
 				}
 				getworkFlowInterface().removeWorkflow("canvas0");
 			}
