@@ -40,11 +40,8 @@
 </script>
 
     <a4j:region>
-        <a4j:jsFunction name="modalOutputApplyPage" 
-                        action="#{canvasModalBean.applyPage}" 
-                        styleClass="greenButton" 
-                        value="#{messages.button_apply}" 
-                        reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, msnError, errorTable, canvasModalTabPanel, browserTableProp, browserTableData, browserPropLabel, browserPropValue" />
+       <a4j:jsFunction name="modalOutputApplyPage" action="#{canvasModalBean.applyPage}" styleClass="greenButton" value="#{messages.button_apply}" 
+	reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, msnError, errorTable, canvasModalTabPanel, browserTableProp, browserTableData, browserPropLabel, browserPropValue" />
     </a4j:region>
 
 	<h:outputText value="#{messages.label_path}" />
@@ -77,7 +74,7 @@
 			onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'" rowClasses="even-row, odd-row">
 	
 	
-			<rich:column style="border-bottom:0px;border-right:0px;" width="10px;">
+			<rich:column style="border-bottom:0px;border-right:0px;" width="35px;">
 				<f:facet name="header">
 					<h:outputText value="" />
 				</f:facet>

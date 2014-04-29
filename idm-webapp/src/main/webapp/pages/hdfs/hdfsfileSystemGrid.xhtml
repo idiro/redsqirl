@@ -46,12 +46,16 @@
 		<h:form id="fileSysGridForm">
 		
 			<a4j:jsFunction name="openFileHdfs" action="#{hdfsBean.openFile}"
-				oncomplete="alert('ccc');#{rich:component('hdfsOpenFileModalPanel')}.show();">
+				oncomplete="#{rich:component('hdfsOpenFileModalPanel')}.show();">
 				<a4j:actionparam name="nameFile" />
 			</a4j:jsFunction>
 
 			<a4j:jsFunction name="updateTableHdfsGrid" action="#{hdfsBean.selectFile}" reRender="hdfsfs,hdfspath" >
 				<a4j:actionparam name="nameFile" />
+			</a4j:jsFunction>
+			
+			<a4j:jsFunction name="openModalCopyMoveHdfs" reRender="copyMovelBt" oncomplete="#{rich:component('modalCopyMoveHdfs')}.show();" >
+			    <a4j:actionparam name="openCtrlCopyMove" assignTo="#{hdfsBean.showCopyMove}"/>
 			</a4j:jsFunction>
 
 			<br />
@@ -91,7 +95,7 @@
 				<a4j:commandLink id="hdfslinkCopyModalPanel"
 					action="#{hdfsBean.copyFileBefore}"
 					onclick="if(! validateSrc()){return false;}"
-					oncomplete="#{rich:component('hdfscopyModalPanel')}.show()">
+					oncomplete="openModalCopyMoveHdfs('C');">
 					<h:graphicImage value="../image/icons/button-copy.gif"
 						title='#{messages.HdfsInterface_copy_help}'
 						styleClass="fileSystemIcon" />
@@ -100,7 +104,7 @@
 				<a4j:commandLink id="hdfslinkMoveModalPanel"
 					action="#{hdfsBean.moveFileBefore}"
 					onclick="if(! validateSrc()){return false;}"
-					oncomplete="#{rich:component('hdfsmoveModalPanel')}.show()">
+					oncomplete="openModalCopyMoveHdfs('M');">
 					<h:graphicImage value="../image/icons/button-move.gif"
 						title='#{messages.HdfsInterface_move_help}'
 						styleClass="fileSystemIcon" />
@@ -192,7 +196,7 @@
 	</div>
 
 	<a4j:region>
-		<rich:modalPanel id="hdfscopyModalPanel" width="600" height="450"
+		<rich:modalPanel id="modalCopyMoveHdfs" width="600" height="450"
 			style="overflow:auto;" resizeable="false">
 
 			<f:facet name="header">
@@ -201,34 +205,12 @@
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
 					style="cursor:pointer;width:22px;"
-					onclick="#{rich:component('hdfscopyModalPanel')}.hide()" />
+					onclick="#{rich:component('modalCopyMoveHdfs')}.hide()" />
 			</f:facet>
 
 			<h:form id="hdfsform2">
 				<h:panelGroup>
-					<a4j:include viewId="/pages/hdfs/copyHdfs.xhtml" ajaxRendered="true"/>
-				</h:panelGroup>
-			</h:form>
-
-		</rich:modalPanel>
-	</a4j:region>
-
-	<a4j:region>
-		<rich:modalPanel id="hdfsmoveModalPanel" width="600" height="450"
-			style="overflow:auto;" resizeable="false">
-
-			<f:facet name="header">
-				<h:outputText value='#{messages.hdfsinterface_move_file}' />
-			</f:facet>
-			<f:facet name="controls">
-				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer;width:22px;"
-					onclick="#{rich:component('hdfsmoveModalPanel')}.hide()" />
-			</f:facet>
-
-			<h:form id="hdfsform3">
-				<h:panelGroup>
-					<a4j:include viewId="/pages/hdfs/moveHdfs.xhtml" ajaxRendered="true"/>
+					<a4j:include viewId="/pages/hdfs/copyMoveHdfs.xhtml" ajaxRendered="true"/>
 				</h:panelGroup>
 			</h:form>
 

@@ -8,12 +8,15 @@
 <a4j:loadBundle basename="MessagesResources" var="messages" />
 
 
-	<a4j:repeat value="#{hiveBean.createProps}" var="title" rowKeyVar="ind" >
+	<h:outputText value="#{messages.label_name}" />
+	<h:inputText value="#{hiveBean.newProp['name']}" />
+
+	<a4j:repeat value="#{hiveBean.createProps}" var="title" >
+	
 		<h:outputText value="#{title}" />
 		<br />
-		<h:inputText value="#{hiveBean.allProps[ind]}" 
-		title="#{hiveBean.propsParam[ind].help}" 
-		onkeypress="return enableEnterKey(event, 'addHiveBtn');"/>
+		<h:inputText value="#{hiveBean.newProp[title]}"	title="#{hiveBean.propsParam[ind].help}" 
+			onkeypress="return enableEnterKey(event, 'addHiveBtn');"/>
 		<br />
 		<br />
 	</a4j:repeat>

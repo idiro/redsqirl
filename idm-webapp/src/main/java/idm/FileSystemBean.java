@@ -43,6 +43,12 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	private Map<String, ParamProperty> propsParam; 
 	private Integer currentFileIndex;
 	private LinkedHashMap<String, String> newProp;
+	
+	/**
+	 * Have the same xhtml page for copy and move.
+	 * 'C' for showing copy and 'M' for showing move.
+	 */
+	private String showCopyMove;
 
 
 
@@ -326,14 +332,14 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		if(error == null){
 			for (String[] s : selectedFiles) {
 				if (itemSelect != null) {
-					logger.info("copyMove " + s[0] + "/" + s[1] + " to " + getDataStore().getPath() + "/" + getAllProps().get(indexDes).get("name"));
+					logger.info(action + " " + s[0] + "/" + s[1] + " to " + getDataStore().getPath() + "/" + getAllProps().get(indexDes).get("name"));
 					if(action.equals("copy")){
 						error = getDataStore().copy(s[0] + "/" + s[1], getDataStore().getPath() + "/" + getAllProps().get(indexDes).get("name") + "/" + s[1]);
 					}else{
 						error = getDataStore().move(s[0] + "/" + s[1], getDataStore().getPath() + "/" + getAllProps().get(indexDes).get("name") + "/" + s[1]);
 					}
 				} else {
-					logger.info("copyMove " + s[0] + "/" + s[1] + " to " + getDataStore().getPath());
+					logger.info(action + " " + s[0] + "/" + s[1] + " to " + getDataStore().getPath());
 					if(action.equals("copy")){
 						error = getDataStore().copy(s[0] + "/" + s[1], getDataStore().getPath() + "/" + s[1]);
 					}else{
@@ -375,7 +381,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 */
 	public void copyFileAfter() throws RemoteException {
-		copyMoveFile("copyy");
+		copyMoveFile("copy");
 	}
 
 	/**
@@ -706,4 +712,12 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		this.newProp = newProp;
 	}
 
+	public String getShowCopyMove() {
+		return showCopyMove;
+	}
+
+	public void setShowCopyMove(String showCopyMove) {
+		this.showCopyMove = showCopyMove;
+	}
+	
 }
