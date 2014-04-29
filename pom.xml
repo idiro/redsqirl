@@ -1,53 +1,81 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
     http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 
-    <groupId>idiro</groupId>
-    <artifactId>idm</artifactId>
-    <name>Red Sqirl</name>
-    <version>0.1-SNAPSHOT</version>
-    <packaging>pom</packaging>
+	<groupId>idiro</groupId>
+	<artifactId>idm</artifactId>
+	<name>Red Sqirl</name>
+	<version>0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
 
-    <modules>
-	<module>idm-wf-interface</module>
-	<module>idm-workflow</module>
-	<module>idm-webapp</module>
-	<module>idm-base-packages</module>
-	<module>idm-repo</module>
-    </modules>
+	<modules>
+		<module>idm-wf-interface</module>
+		<module>idm-workflow</module>
+		<module>idm-webapp</module>
+		<module>idm-base-packages</module>
+		<module>idm-repo</module>
+	</modules>
 
-    <organization>
-	<name>Idiro Technologies</name>
-	<url>http://www.idiro.com</url>
-    </organization>
-    <issueManagement>
-	<system>Redmine</system>
-	<url>http://swift:3000/projects/researchanddevelopment-idm</url>
-    </issueManagement>
+	<organization>
+		<name>Idiro Technologies</name>
+		<url>http://www.idiro.com</url>
+	</organization>
+	<issueManagement>
+		<system>Redmine</system>
+		<url>http://swift:3000/projects/researchanddevelopment-idm</url>
+	</issueManagement>
 
-    <distributionManagement>
-	<site>
-	    <id>website</id>
-	    <url>scp://dev.local.net/data/html/dev/idm</url>
-	</site>
-    </distributionManagement>
-    <reporting>
-	<plugins>
-	    <plugin>
-		<groupId>org.apache.maven.plugins</groupId>
-		<artifactId>maven-project-info-reports-plugin</artifactId>
-		<version>2.6</version>
-	    </plugin>
-	    <plugin>
-		<groupId>org.apache.maven.plugins</groupId>
-		<artifactId>maven-javadoc-plugin</artifactId>
-		<version>2.9</version>
-		<configuration>
-		</configuration>
-	    </plugin>
-	</plugins>
-    </reporting>
+	<distributionManagement>
+		<site>
+			<id>website</id>
+			<url>scp://dev.local.net:/data/html/idm</url>
+		</site>
+	</distributionManagement>
+
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<configuration>
+					<sourcepath>${basedir}/idm-wf-interface/src/main;${basedir}/idm-workflow/src/main</sourcepath>
+					<show>private</show>
+					<nohelp>true</nohelp>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>javadoc</goal>
+						</goals>
+						<phase>site</phase>
+						<configuration>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh</artifactId>
+				<version>1.0</version>
+			</extension>
+		</extensions>
+	</build>
+
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
 
 </project>
