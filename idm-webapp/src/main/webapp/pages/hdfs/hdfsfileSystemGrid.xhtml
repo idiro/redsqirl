@@ -19,7 +19,7 @@
     		openFileHdfs(nameFile);
     	}
     	else{
-    		updateTableHdfs(nameFile);
+    		updateTableHdfsGrid(nameFile);
     	}
     }
     
@@ -44,14 +44,13 @@
 		<rich:dragIndicator id="indicator" />
 
 		<h:form id="fileSysGridForm">
-
+		
 			<a4j:jsFunction name="openFileHdfs" action="#{hdfsBean.openFile}"
-				oncomplete="#{rich:component('hdfsOpenFileModalPanel')}.show();">
+				oncomplete="alert('ccc');#{rich:component('hdfsOpenFileModalPanel')}.show();">
 				<a4j:actionparam name="nameFile" />
 			</a4j:jsFunction>
 
-			<a4j:jsFunction name="updateTableHdfs"
-				action="#{hdfsBean.selectFile}" reRender="hdfsfs,hdfspath">
+			<a4j:jsFunction name="updateTableHdfsGrid" action="#{hdfsBean.selectFile}" reRender="hdfsfs,hdfspath" >
 				<a4j:actionparam name="nameFile" />
 			</a4j:jsFunction>
 

@@ -197,15 +197,20 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 		try {
 
-			Map<String, String> params = FacesContext.getCurrentInstance()
-					.getExternalContext().getRequestParameterMap();
+			Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 			String name = params.get("nameFile");
 
-			String path = generatePath(getPath(), name);
+			logger.info("selectFile " + getPath() + " - " + name);
+			
+			String newPath = generatePath(getPath(), name);
 
-			if (getDataStore().goTo(path)) {
-				setPath(path);
+			logger.info("selectFile newPath " + newPath);
+			
+			if (getDataStore().goTo(newPath)) {
+				//setPath(newPath);
 				updateTable();
+				logger.info("selectFile updateTable");
+				
 			} else {
 				logger.error("Error this is not a directory");
 			}
@@ -228,7 +233,13 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	 */
 	public void openFile() throws RemoteException {
 		String name = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("nameFile");
+		
+		logger.info("openFile " + name);
+		
 		String path = generatePath(getPath(), name);
+		
+		logger.info("openFile path " + path);
+		
 		getDataStore().goTo(path);
 		List<String> contents = getDataStore().select(" | ", 10);
 		fileContent = "";
@@ -236,6 +247,8 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			fileContent += s + "<br/>";
 		}
 		getDataStore().goPrevious();
+		
+		logger.info("openFile fileContent " + fileContent);
 	}
 
 	/**
