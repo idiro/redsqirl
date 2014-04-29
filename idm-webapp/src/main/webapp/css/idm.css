@@ -83,7 +83,8 @@ input {
 }
 
 #canvas-tabs {
-	margin-top: 0em;
+	margin-top: 0px;
+	padding-top:0px;
 }
 
 #canvas-tabs li .ui-icon-close {
@@ -856,6 +857,10 @@ div.splitter-bar.ui-state-highlight {
 	overflow: auto;
 }
 
+#tabsFooter .ui-tabs-panel.ui-widget-content.ui-corner-bottom{
+	overflow: auto;
+}
+
 
 /*table size*/
 .extdt-content{
@@ -1107,4 +1112,11 @@ height: 100% !important;
 .context-menu-theme-default .context-menu-item-disabled-hover {
     background-color: #C62127;
     color: white;
+}
+
+.kineticjs-content{
+	margin-left:10px;
+}
+#tabFlowchart-1{
+	border:none;
 }

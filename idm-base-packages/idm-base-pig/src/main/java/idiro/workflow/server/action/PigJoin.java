@@ -180,7 +180,7 @@ public class PigJoin extends PigElement {
 						
 				query += filter;
 				
-				 query += select;
+				query += select;
 
 				query += store;
 			}

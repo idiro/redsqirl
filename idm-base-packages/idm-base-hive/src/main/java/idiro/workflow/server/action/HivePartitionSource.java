@@ -1,14 +1,13 @@
 package idiro.workflow.server.action;
 
 import idiro.workflow.server.datatype.HiveTypePartition;
-import idiro.workflow.server.datatype.MapRedBinaryType;
 
 import java.rmi.RemoteException;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Action that read a source file. For now, only Hive type is supported.
+ * Action that read a Hive partition.
  * 
  * @author etienne
  * 

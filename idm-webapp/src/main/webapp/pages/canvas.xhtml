@@ -117,7 +117,6 @@
 	  	              	
 	  	              	jQuery("#"+jQuery(this).parent().attr("id")).tabs("option", "active", jQuery(ui.item[0]).index());
 	  	              	canvasResizeSplitter();
-
   	            }
 
   	        });
@@ -126,9 +125,11 @@
   	    		jQuery("#buttonstabRemote").hide();
 	  	    	jQuery("#buttonstabRemote").css("left", jQuery("#tabRemote").width()-30+'px');
    				validateArrows(jQuery("#tabRemote"),jQuery("#buttonstabRemote"));
+   				
 	        });
 
   	    	jQuery("#idtabFlowchart-1").click(function () {
+  	    		jQuery("#canvas-tabs").resize();
   	    		resizing();
 	        });
   	    	
@@ -180,9 +181,9 @@
 	    	  jQuery("#splitHCanvas").splitter({
 	        	  type: "h",
 	        	  outline: true,
+	        	  sizeTop: true,
 	        	  //minTop: 100,
 	        	  //minBottom: 100,
-	        	  resizeToWidth: true,
 	        	  dock: "top",
 	        	  dockSpeed: 200,
 	        	  cookie: "splitHCanvas"
@@ -1474,7 +1475,7 @@
 						</h:panelGroup>
 					</a4j:region>
 				</div>
-				<div id="tabs-2">
+				<div id="tabs-2" style="overflow:hidden;">
 					<a4j:region>
 
 						<a4j:status
@@ -1492,7 +1493,7 @@
 						</h:panelGroup>
 					</a4j:region>
 				</div>
-				<div id="tabs-3">
+				<div id="tabs-3" style="overflow:hidden;">
 
 					<h:panelGroup>
 						<ui:include src="/pages/errorCanvas.xhtml" />
@@ -1528,7 +1529,7 @@
 					</button>
 				</span>
 
-				<div id="tabs-7">
+				<div id="tabs-7" style="overflow:hidden;">
 					<a4j:region>
 
 						<a4j:status
@@ -1546,7 +1547,7 @@
 						</h:panelGroup>
 					</a4j:region>
 				</div>
-                <div id="tabs-4">
+                <div id="tabs-4" style="overflow:hidden;">
                     <a4j:region>
 
                         <a4j:status
@@ -1564,7 +1565,7 @@
                         </h:panelGroup>
                     </a4j:region>
                 </div>
-                <div id="tabs-5">
+                <div id="tabs-5" style="overflow:hidden;">
                     <p>not ready yet</p>
                 </div>
 			</div>
