@@ -104,7 +104,10 @@
 						<h:outputText value="" />
 					</f:facet>
 					<a4j:commandLink action="#{hiveBean.editFileBefore}" oncomplete="#{rich:component('hiveeditModalPanel')}.show()">
-						<h:graphicImage value="../image/icons/button-property.gif" title="#{messages.HiveInterface_properties_help}"/>
+						<h:graphicImage value="../image/icons/button-property.gif" title="#{messages.HiveInterface_properties_help}"
+						rendered="#{hiveBean.allProps[indexTable]['type'] == 'directory'}" styleClass="fileSystemIcon" />
+						<h:graphicImage value="../image/icons/button-file-icon.png" title="#{messages.HiveInterface_properties_help}"
+						rendered="#{hiveBean.allProps[indexTable]['type'] == 'file'}" styleClass="fileSystemIcon" />
 						<f:param name="indexFileEdit" value="#{indexTable}" />
 					</a4j:commandLink>
 				</rich:column>
