@@ -1289,7 +1289,7 @@ function mountObj(canvasName) {
 			// stage to footer
 			stageTab = new Kinetic.Stage({
 				container : nameDiv,
-				width : jQuery("#canvas-tabs").width()-10,
+				width : jQuery("#canvas-tabs").width()-15,
 				height : 100
 			});
 			
