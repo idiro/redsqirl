@@ -24,14 +24,14 @@
 			enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'" 
 			rowClasses="even-row, odd-row" tableState="#{canvasBean.errorTableState}">
 			
-			<rich:column sortBy="#{item.value}" filterBy="#{item.value}">
+			<rich:column sortBy="#{item.value}" filterBy="#{item.value}" width="150px;">
 				<f:facet name="header">
 					<h:outputText value="#{messages.label_date}" />
 				</f:facet>
 				<h:outputText value="#{item.value}" style="width:100%;" readonly="true" />
 			</rich:column>
 			
-			<rich:column sortBy="#{item.label}" filterBy="#{item.label}">
+			<rich:column sortBy="#{item.label}" filterBy="#{item.label}" width="600px;" >
 				<f:facet name="header">
 					<h:outputText value="#{messages.label_messages}" />
 				</f:facet>
