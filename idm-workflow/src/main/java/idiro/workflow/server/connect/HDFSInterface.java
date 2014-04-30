@@ -1276,4 +1276,15 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 	public String getBrowserName() throws RemoteException {
 		return "Hadoop Distributed File System";
 	}
+
+	@Override
+	public List<String> displaySelect(String path, int maxToRead) throws RemoteException {
+		return select(getPath(), maxToRead);
+	}
+
+	@Override
+	public List<String> displaySelect(int maxToRead) throws RemoteException {
+		return select(getPath(), maxToRead);
+	}
+	
 }

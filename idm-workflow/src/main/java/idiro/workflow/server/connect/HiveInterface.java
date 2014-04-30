@@ -28,7 +28,9 @@ import java.util.Properties;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.prefs.Preferences;
+import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -1822,4 +1824,168 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 	public String getBrowserName() throws RemoteException {
 		return "Apache Hive Metastore";
 	}
+
+	@Override
+	public List<String> displaySelect(String path, int maxToRead) throws RemoteException {
+		
+		String delimOut = "|";
+		
+		List<String> ans = null;
+		List<String> newAns = null;
+		List<String> newAnsList = null;
+		
+		if (exists(path)) {
+
+			String[] tableAndPartition = getTableAndPartitions(path);
+			String selector = "*";
+			Map<String, String> partsAndCond = new HashMap<String, String>();
+			partsAndCond = getFormattedType(path);
+			if (tableAndPartition.length > 1) {
+				String desc = getDescription(tableAndPartition[0]).get(key_describe);
+				List<String> partList = new ArrayList<String>();
+
+				for (int i = 1; i < tableAndPartition.length; ++i) {
+					if (tableAndPartition[i].contains("=")) {
+						partList.add(tableAndPartition[i].substring(0,
+								tableAndPartition[i].indexOf("=")));
+					}
+				}
+				if (desc.contains(";")) {
+					String[] cols = desc.split(";");
+					selector = "";
+					for (int i = 0; i < cols.length; ++i) {
+						String name = cols[i]
+								.substring(0, cols[i].indexOf(","))
+								.toLowerCase();
+						if (!partList.contains(name)) {
+							selector += name + ",";
+						}
+					}
+					logger.info(selector);
+					selector = selector.substring(0, selector.length() - 1);
+				} else {
+					selector = desc.substring(0, desc.indexOf(","));
+				}
+			}
+
+			String statement = "SELECT " + selector + " FROM "
+					+ tableAndPartition[0];
+			if (tableAndPartition.length > 1) {
+
+				String head = tableAndPartition[1].substring(0,
+						tableAndPartition[1].indexOf("="));
+
+				if (partsAndCond.containsKey(head.toLowerCase())) {
+					String partitionsList = " WHERE " + head + "="
+							+ partsAndCond.get(head.toLowerCase());
+					for (int i = 2; i < tableAndPartition.length; ++i) {
+						head = tableAndPartition[i].substring(0,
+								tableAndPartition[i].indexOf("="));
+						partitionsList += " AND " + head + "="
+								+ partsAndCond.get(head.toLowerCase());
+					}
+					statement += partitionsList;
+				}
+			}
+
+			statement += " limit " + maxToRead;
+			try {
+
+				ResultSet rs = executeQuery(statement);
+				int colNb = rs.getMetaData().getColumnCount();
+				ans = new ArrayList<String>(maxToRead);
+				newAns = new ArrayList<String>();
+				
+				String col = "";
+				boolean addCol = true;
+				String newLine = "";
+				List<Integer>sizes = new ArrayList<Integer>(maxToRead);
+				int sizeCol = 0;
+				
+				
+				while (rs.next()) {
+					String line = rs.getString(1);
+					col += rs.getMetaData().getColumnName(1);
+					
+					sizeCol = rs.getString(1).length();
+					if(rs.getString(1).length() > sizeCol){
+						sizeCol = rs.getString(1).length();
+					}
+					if(rs.getMetaData().getColumnName(1).length() > sizeCol){
+						sizeCol = rs.getMetaData().getColumnName(1).length();
+					}
+					
+					for (int i = 2; i <= colNb; ++i) {
+						line += delimOut + rs.getString(i);
+						col += delimOut + rs.getMetaData().getColumnName(i);
+						if(rs.getString(i).length() > sizeCol){
+							sizeCol = rs.getString(i).length();
+						}
+						if(rs.getMetaData().getColumnName(i).length() > sizeCol){
+							sizeCol = rs.getMetaData().getColumnName(i).length();
+						}
+					}
+					if(addCol){
+						ans.add(col);
+						sizes.add(sizeCol);
+						addCol = false;
+					}
+					ans.add(line);
+					sizes.add(sizeCol);
+				}
+				
+				int numbercol = rs.getMetaData().getColumnCount();
+				
+				rs.close();
+				
+				//logger.info("displaySelect list size" + sizes.size() + " " + ans.size());
+				
+				for (int i = 0; i < ans.size(); i++) {
+					//logger.info("displaySelect ans " + ans.get(i) + " delimOut " + delimOut);
+					String[] vet = ans.get(i).split(Pattern.quote(delimOut));
+					for (int j = 0; j < vet.length; j++) {
+						String c = vet[j];
+						//logger.info("displaySelect colSize" + sizes.get(i));
+						//logger.info("displaySelect vet " + c);
+						if(c.length() < sizes.get(i)){
+							newLine += StringUtils.rightPad(c, sizes.get(i), " ") + " | ";
+						}else{
+							newLine += c + " | ";
+						}
+					}
+					//logger.info("displaySelect -" + newLine + "-");
+					newAns.add(newLine);
+					newLine = "";
+				}
+				
+				newAnsList = new ArrayList<String>();
+				int contSizeLine = 0;
+				contSizeLine += newAns.get(0).length();
+				
+				boolean firstLine = true;
+				newAnsList.add(StringUtils.rightPad("+", contSizeLine, "-") + "+");
+				for (String lin : newAns) {
+					newAnsList.add("| " + lin);
+					if(firstLine){
+						newAnsList.add(StringUtils.rightPad("+", contSizeLine, "-") + "+");
+						firstLine = false;
+					}
+				}
+				newAnsList.add(StringUtils.rightPad("+", contSizeLine, "-") + "+");
+				
+			} catch (SQLException e) {
+				logger.error("Fail to select the table " + tableAndPartition[0]);
+				logger.error(e.getMessage());
+			}
+
+		}
+
+		return newAnsList;
+	}
+
+	@Override
+	public List<String> displaySelect(int maxToRead) throws RemoteException {
+		return displaySelect(history.get(cur), maxToRead);
+	}
+	
 }

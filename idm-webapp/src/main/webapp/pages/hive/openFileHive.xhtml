@@ -9,7 +9,9 @@
 
 	<h:outputText value="Content:" />
 	
-	<h:outputText value="#{hiveBean.fileContent}" escape="false"/>
+	<h:inputTextarea cols="75" value="#{hiveBean.fileContent}" rows="18" 
+		style="resize:none;border:1px solid;width:550px;height:278px" disabled="true" />
+	
 	<br />
 	
 	<h:commandButton value="#{messages.button_ok}" type="button" onclick="#{rich:component('hiveOpenFileModalPanel')}.hide();" />
