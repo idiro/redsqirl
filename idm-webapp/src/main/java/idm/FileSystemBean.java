@@ -247,10 +247,10 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		logger.info("openFile path " + path);
 		
 		getDataStore().goTo(path);
-		List<String> contents = getDataStore().select(" | ", 10);
+		List<String> contents = getDataStore().displaySelect(10);
 		fileContent = "";
 		for (String s : contents) {
-			fileContent += s + "<br/>";
+			fileContent += s + System.getProperty("line.separator");
 		}
 		getDataStore().goPrevious();
 		

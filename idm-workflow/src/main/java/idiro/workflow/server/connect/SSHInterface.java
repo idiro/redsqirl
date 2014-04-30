@@ -446,23 +446,23 @@ public class SSHInterface extends UnicastRemoteObject implements DataStore {
 		}
 		return error;
 	}
+	
 	/**
 	 * Not supported
 	 */
 	@Override
-	public List<String> select(String path, String delimiter, int maxToRead)
-			throws RemoteException {
-		throw new RemoteException(
-				"This datastore does not support reading into a file");
+	public List<String> select(String path, String delimiter, int maxToRead) throws RemoteException {
+		throw new RemoteException("This datastore does not support reading into a file");
 	}
+	
 	/**
 	 * Not supported
 	 */
 	@Override
-	public List<String> select(String delimiter, int maxToRead)
-			throws RemoteException {
+	public List<String> select(String delimiter, int maxToRead) throws RemoteException {
 		return select(history.get(cur), maxToRead);
 	}
+	
 	/**
 	 * Get the properties of a specified path
 	 * @param path
@@ -643,5 +643,15 @@ public class SSHInterface extends UnicastRemoteObject implements DataStore {
 	@Override
 	public String getBrowserName() throws RemoteException {
 		return "Remote server through SSH protocol";
+	}
+
+	@Override
+	public List<String> displaySelect(String path, int maxToRead) throws RemoteException {
+		return select(path, maxToRead);
+	}
+
+	@Override
+	public List<String> displaySelect(int maxToRead) throws RemoteException {
+		return select(history.get(cur), maxToRead);
 	}
 }
