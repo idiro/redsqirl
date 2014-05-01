@@ -41,7 +41,7 @@ public class ServerThread{
 
 				try {
 
-					final String command = "-cp "+BaseCommand.getBaseCommand(port)
+					final String command = "-cp "+BaseCommand.getBaseCommand(System.getProperty("user.name"),port)
 							+ " & echo $!";
 
 					logger.debug("getting java");

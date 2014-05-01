@@ -2,27 +2,15 @@ package idiro.workflow.test;
 
 import idiro.Log;
 import idiro.ProjectID;
-import idiro.workflow.server.HiveJdbcProcessesManager;
-import idiro.workflow.server.ProcessesManager;
 import idiro.workflow.server.WorkflowPrefManager;
-import idiro.workflow.server.action.ConditionInteractionTests;
-import idiro.workflow.server.action.HiveAggregTests;
-import idiro.workflow.server.action.HiveJoinTests;
 import idiro.workflow.server.action.HiveSelectTests;
-import idiro.workflow.server.action.HiveUnionConditionInteractionTests;
-import idiro.workflow.server.action.HiveUnionTests;
-import idiro.workflow.server.action.JoinRelationInteractionTests;
-import idiro.workflow.server.action.TableJoinInteractionTests;
-import idiro.workflow.server.action.TableSelectInteractionTests;
-import idiro.workflow.server.action.TableUnionInteractionTests;
-import idiro.workflow.server.action.test.HiveDictionaryTests;
 import idiro.workflow.server.connect.HiveInterface;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.Properties;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -63,24 +51,32 @@ public class SetupHiveEnvironmentTest {
 		
 		WorkflowPrefManager.pathSysCfgPref.put(testProp);
 		WorkflowPrefManager.pathUserCfgPref.put(testProp);
-		WorkflowPrefManager.pathOozieJob.put("target/test_out/");
-		
+
 		ProjectID.getInstance().setName("IdiroWorkflowServerTest");
 		ProjectID.getInstance().setVersion("0.01");
 		System.out.println(ProjectID.get());
-		
+
 		Log log = new Log();
 		log.put(log4jFile);
-		
+
 		WorkflowPrefManager.getInstance();
-		logger = Logger.getLogger(SetupHiveEnvironmentTest.class);
+		logger = Logger.getLogger(SetupEnvironmentTest.class);
+		File logfile = new File(log4jFile);
+
+		if(logfile.exists()){
+			BufferedReader reader = new BufferedReader(new FileReader(logfile));
+			String line ="";
+			while ((line = reader.readLine()) != null) {
+				logger.info(line);
+			}
+			reader.close();
+		}
 		logger.debug("Log4j initialised");
-		WorkflowPrefManager.pathUserPref.put(userPrefFile);
-		logger.debug("user preferences initialised");
 		HiveInterface.setUrl(
 				WorkflowPrefManager.getUserProperty(
 						WorkflowPrefManager.user_hive+"_"+System.getProperty("user.name")));
-		
+
+
 		Properties prop = new Properties();
 		try {
 			prop.load(new FileReader(testProp));
@@ -89,16 +85,22 @@ public class SetupHiveEnvironmentTest {
 			logger.error(e.getMessage());
 			throw new Exception();
 		}
-		
+
 		testDirOut = new File(new File(testProp).getParent(), prop.getProperty("outputDir"));
 		logger.debug("Create directory "+testDirOut.getCanonicalPath());
 		testDirOut.mkdir();
-		
+
 		File home = new File(testDirOut,"home_project");
 		home.mkdir();
-		logger.debug("made home dir");
-		WorkflowPrefManager.pathUserPref.put(home.getAbsolutePath());
-		WorkflowPrefManager.pathSysHome.put(home.getAbsolutePath());
+		WorkflowPrefManager.changeSysHome(home.getAbsolutePath());
+		WorkflowPrefManager.createUserHome(System.getProperty("user.name"));
+		WorkflowPrefManager.setupHome();
+		logger.debug(WorkflowPrefManager.pathSysHome.get());
+		logger.debug(WorkflowPrefManager.getPathuserpref());
+		logger.debug(WorkflowPrefManager.getPathiconmenu());
+		logger.debug(WorkflowPrefManager.pathUserCfgPref.get());
+		
+		/* I don't think we need that anymore
 		try {
 			ProcessesManager hjdbc = new HiveJdbcProcessesManager()
 					.getInstance();
@@ -107,6 +109,7 @@ public class SetupHiveEnvironmentTest {
 		}
 		Logger.getRootLogger().setLevel(Level.INFO);
 		logger.setLevel(Level.INFO);
+		*/
 	}
 	
 	@AfterClass

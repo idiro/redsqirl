@@ -423,12 +423,12 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 		Properties prop = new Properties();
 		try {
 			prop.load(new FileReader(new File(
-					WorkflowPrefManager.pathUserDFEOutputColour.get())));
+					WorkflowPrefManager.getPathuserdfeoutputcolour())));
 			colour_pref = prop.getProperty(getTypeName());
 			if (colour_pref == null) {
 				prop.put(getTypeName(), defaultCol);
 				prop.store(new FileWriter(new File(
-						WorkflowPrefManager.pathUserDFEOutputColour.get())),
+						WorkflowPrefManager.getPathuserdfeoutputcolour())),
 						"Add " + getTypeName() + " to the file");
 			}
 			prop.clear();
@@ -438,14 +438,14 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 			prop.put(getTypeName(), defaultCol);
 			try {
 				prop.store(new FileWriter(new File(
-						WorkflowPrefManager.pathUserDFEOutputColour.get())),
+						WorkflowPrefManager.getPathuserdfeoutputcolour())),
 						"Initialise file with " + getTypeName());
 			} catch (IOException e1) {
 				logger.error("Fail to save colour preference");
 			}
 		} catch (Exception e) {
 			logger.error("Error when loading "
-					+ WorkflowPrefManager.pathUserDFEOutputColour.get() + " "
+					+ WorkflowPrefManager.getPathuserdfeoutputcolour() + " "
 					+ e.getMessage());
 		}
 		return colour_pref != null ? colour_pref : defaultCol;
@@ -461,10 +461,10 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 		Properties prop = new Properties();
 		try {
 			prop.load(new FileReader(new File(
-					WorkflowPrefManager.pathUserDFEOutputColour.get())));
+					WorkflowPrefManager.getPathuserdfeoutputcolour())));
 			prop.put(getTypeName(), colour);
 			prop.store(new FileWriter(new File(
-					WorkflowPrefManager.pathUserDFEOutputColour.get())), "Add "
+					WorkflowPrefManager.getPathuserdfeoutputcolour())), "Add "
 					+ getTypeName() + " to the file");
 			prop.clear();
 		} catch (FileNotFoundException e) {
@@ -473,14 +473,14 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 			prop.put(getTypeName(), colour);
 			try {
 				prop.store(new FileWriter(new File(
-						WorkflowPrefManager.pathUserDFEOutputColour.get())),
+						WorkflowPrefManager.getPathuserdfeoutputcolour())),
 						"Initialise file with " + getTypeName());
 			} catch (IOException e1) {
 				logger.error("Fail to save colour preference");
 			}
 		} catch (Exception e) {
 			logger.error("Error when loading "
-					+ WorkflowPrefManager.pathUserDFEOutputColour.get() + " "
+					+ WorkflowPrefManager.getPathuserdfeoutputcolour() + " "
 					+ e.getMessage());
 		}
 	}

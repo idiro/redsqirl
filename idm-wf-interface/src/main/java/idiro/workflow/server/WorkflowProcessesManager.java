@@ -17,7 +17,7 @@ public class WorkflowProcessesManager extends ProcessesManager {
 	 */
 	public WorkflowProcessesManager() throws IOException  {
 
-		fname = new String(WorkflowPrefManager.pathUserPref.get() + "/tmp/"
+		fname = new String(WorkflowPrefManager.getPathuserpref() + "/tmp/"
 				+ workflow_pid + "_processes.txt");
 		file = new File(fname);
 		loadPid();
