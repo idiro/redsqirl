@@ -247,7 +247,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		logger.info("openFile path " + path);
 		
 		getDataStore().goTo(path);
-		List<String> contents = getDataStore().displaySelect(10);
+		List<String> contents = getDataStore().displaySelect(200);
 		fileContent = "";
 		for (String s : contents) {
 			fileContent += s + System.getProperty("line.separator");

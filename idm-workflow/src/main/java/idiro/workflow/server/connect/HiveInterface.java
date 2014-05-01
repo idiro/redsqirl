@@ -1831,8 +1831,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		String delimOut = "|";
 		
 		List<String> ans = null;
-		List<String> newAns = null;
-		List<String> newAnsList = null;
+		LinkedList<String> newAns = null;
 		
 		if (exists(path)) {
 
@@ -1894,84 +1893,87 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 				ResultSet rs = executeQuery(statement);
 				int colNb = rs.getMetaData().getColumnCount();
 				ans = new ArrayList<String>(maxToRead);
-				newAns = new ArrayList<String>();
 				
-				String col = "";
-				boolean addCol = true;
-				String newLine = "";
-				List<Integer>sizes = new ArrayList<Integer>(maxToRead);
+				
+				List<Integer>sizes = new LinkedList<Integer>();
 				int sizeCol = 0;
-				
-				
+				{
+					//Set column names
+					String col = "";
+					for (int i = 1; i <= colNb; ++i) {
+						if( i == 1 ){
+							col = rs.getMetaData().getColumnName(i);
+						}else{
+							col += delimOut + rs.getMetaData().getColumnName(i);
+						}
+						sizeCol = rs.getMetaData().getColumnName(i).length();
+						sizes.add(sizeCol);
+					}
+					ans.add(col);
+				}
 				while (rs.next()) {
-					String line = rs.getString(1);
-					col += rs.getMetaData().getColumnName(1);
+					String line = null;
 					
-					sizeCol = rs.getString(1).length();
-					if(rs.getString(1).length() > sizeCol){
-						sizeCol = rs.getString(1).length();
-					}
-					if(rs.getMetaData().getColumnName(1).length() > sizeCol){
-						sizeCol = rs.getMetaData().getColumnName(1).length();
-					}
-					
-					for (int i = 2; i <= colNb; ++i) {
-						line += delimOut + rs.getString(i);
-						col += delimOut + rs.getMetaData().getColumnName(i);
-						if(rs.getString(i).length() > sizeCol){
+					for (int i = 1; i <= colNb; ++i) {
+						if(i == 1){
+							line = rs.getString(i);
+						}else{
+							line += delimOut + rs.getString(i);
+						}
+						sizeCol = 0;
+						if(rs.getString(i) != null ){
 							sizeCol = rs.getString(i).length();
 						}
-						if(rs.getMetaData().getColumnName(i).length() > sizeCol){
-							sizeCol = rs.getMetaData().getColumnName(i).length();
+						if(sizeCol > sizes.get(i-1)){
+							sizes.set(i-1, sizeCol);
 						}
-					}
-					if(addCol){
-						ans.add(col);
-						sizes.add(sizeCol);
-						addCol = false;
+						
 					}
 					ans.add(line);
-					sizes.add(sizeCol);
 				}
-				
-				int numbercol = rs.getMetaData().getColumnCount();
 				
 				rs.close();
 				
 				//logger.info("displaySelect list size" + sizes.size() + " " + ans.size());
-				
+				newAns = new LinkedList<String>();
 				for (int i = 0; i < ans.size(); i++) {
+					String newLine = "| ";
 					//logger.info("displaySelect ans " + ans.get(i) + " delimOut " + delimOut);
 					String[] vet = ans.get(i).split(Pattern.quote(delimOut));
 					for (int j = 0; j < vet.length; j++) {
+						
 						String c = vet[j];
 						//logger.info("displaySelect colSize" + sizes.get(i));
 						//logger.info("displaySelect vet " + c);
-						if(c.length() < sizes.get(i)){
-							newLine += StringUtils.rightPad(c, sizes.get(i), " ") + " | ";
+						if(c.length() < sizes.get(j)){
+							newLine += StringUtils.rightPad(c, sizes.get(j), " ") + " | ";
 						}else{
 							newLine += c + " | ";
 						}
 					}
 					//logger.info("displaySelect -" + newLine + "-");
 					newAns.add(newLine);
-					newLine = "";
 				}
 				
-				newAnsList = new ArrayList<String>();
 				int contSizeLine = 0;
-				contSizeLine += newAns.get(0).length();
-				
-				boolean firstLine = true;
-				newAnsList.add(StringUtils.rightPad("+", contSizeLine, "-") + "+");
-				for (String lin : newAns) {
-					newAnsList.add("| " + lin);
-					if(firstLine){
-						newAnsList.add(StringUtils.rightPad("+", contSizeLine, "-") + "+");
-						firstLine = false;
-					}
+				if(newAns != null && !newAns.isEmpty()){
+					contSizeLine += newAns.get(0).length();
 				}
-				newAnsList.add(StringUtils.rightPad("+", contSizeLine, "-") + "+");
+				
+				String tableLine = StringUtils.rightPad("+", contSizeLine-2, "-") + "+";
+				int posPlus = 0;
+				for(int i = 0; i < sizes.size()-1;++i){
+					posPlus += sizes.get(i)+3;
+					tableLine = tableLine.substring(0,posPlus) + "+" + tableLine.substring(posPlus+1);
+				}
+				
+				if(newAns.size() > 0){
+					newAns.add(1,tableLine);
+				}
+				newAns.addFirst(tableLine);
+				if(ans.size() < maxToRead){
+					newAns.add(tableLine);
+				}
 				
 			} catch (SQLException e) {
 				logger.error("Fail to select the table " + tableAndPartition[0]);
@@ -1980,7 +1982,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 
 		}
 
-		return newAnsList;
+		return newAns;
 	}
 
 	@Override
