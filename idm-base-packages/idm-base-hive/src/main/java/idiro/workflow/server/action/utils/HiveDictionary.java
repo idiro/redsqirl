@@ -10,6 +10,7 @@ import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.interfaces.DFEOutput;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.jruby.compiler.ir.instructions.GetConstInstr;
 
 /**
  * Utilities for writing HiveQL operations. The class can: - generate a help for
@@ -32,6 +34,8 @@ public class HiveDictionary extends AbstractDictionary {
 	private static Logger logger = Logger.getLogger(HiveDictionary.class);
 	/** Logical operators key */
 	private static final String logicalOperators = "logicalOperators";
+	/** Key for conditional operator */
+	private static final String conditionalOperator = "conditionalOperator";
 	/** relational operators key */
 	private static final String relationalOperators = "relationalOperators";
 	/** arithmetic operators key */
@@ -309,6 +313,25 @@ public class HiveDictionary extends AbstractDictionary {
 										"@function:MAX( ELEMENT )@short:Use the MAX function to compute the maximum of a set of numeric values in a single-column table@param: ELEMENT item to get the maximum@description:Computes the maximum of the numeric values in a single-column table. @example: MAX(A.id) returns the maximum value of A.id" },
 		
 								});
+		
+		functionsMap
+				.put(conditionalOperator,
+						new String[][] {
+								new String[] {
+										"CASE END",
+										",EXPRESSION<ANY>[],",
+										"ANY",
+										"@function:AND@short:Boolean AND@param:boolean variable@param:boolean variable@description:boolean logic that returns true if the variables are equal@example:TRUE AND TRUE" },
+								new String[] {
+										"WHEN THEN",
+										",BOOLEAN,ANY",
+										"EXPRESSION<ANY>",
+										"@function:OR@short:Boolean OR@param:boolean variable@param:boolean variable@description:boolean logic that returns true if the varables are not the same@example:TRUE OR FALSE" },
+								new String[] {
+										"ELSE",
+										",ANY",
+										"EXPRESSION<ANY>",
+										"@function:NOT@short:Boolean NOT@param:boolean variable@param:boolean variable@description:boolean logic that returns true if the varables are  not equal@example:TRUE NOT FALSE" } });
 	}
 
 	public static FeatureType getType(String hiveType) {
@@ -443,6 +466,9 @@ public class HiveDictionary extends AbstractDictionary {
 				if (runLogicalOperation(expr, features, featureAggreg)) {
 					type = "BOOLEAN";
 				}
+			} else if (isConditionalOperation(expr)) {
+				logger.debug(expr + ", is a relational operation");
+				type = runConditionalOperation(expr, features, featureAggreg);
 			} else if (isRelationalOperation(expr)) {
 				logger.debug(expr + ", is a relational operation");
 				if (runRelationalOperation(expr, features, featureAggreg)) {
@@ -495,11 +521,13 @@ public class HiveDictionary extends AbstractDictionary {
 		}
 		logger.info(typeToBe + " , " + typeGiven);
 
-		typeGiven = typeGiven.trim();
-		typeToBe = typeToBe.trim();
+		typeGiven = typeGiven.trim().replace("[]", "");
+		typeToBe = typeToBe.trim().replace("[]", "");;
 
 		if (typeToBe.equalsIgnoreCase("ANY")) {
 			ok = true;
+		}else if (typeToBe.contains("<ANY>")) {
+			ok = removeDelimiterContent(typeGiven, '<', '>').equals(removeDelimiterContent(typeToBe, '<', '>'));
 		} else if (typeToBe.equalsIgnoreCase("NUMBER")) {
 			ok = !typeGiven.equals("STRING") && !typeGiven.equals("BOOLEAN");
 		} else if (typeToBe.equalsIgnoreCase("DOUBLE")) {
@@ -652,6 +680,8 @@ public class HiveDictionary extends AbstractDictionary {
 				functionsMap.get(doubleMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("utils"),
 				functionsMap.get(utilsMethods)));
+		help.add(createMenu(new TreeNonUnique<String>("conditional_operator"),
+				functionsMap.get(conditionalOperator)));
 		logger.debug("create Condition Help Menu");
 		return help;
 	}
@@ -676,6 +706,8 @@ public class HiveDictionary extends AbstractDictionary {
 				functionsMap.get(relationalOperators)));
 		help.add(createMenu(new TreeNonUnique<String>("operation_logic"),
 				functionsMap.get(logicalOperators)));
+		help.add(createMenu(new TreeNonUnique<String>("conditional_operator"),
+				functionsMap.get(conditionalOperator)));
 		logger.debug("create Select Help Menu");
 		return help;
 	}
@@ -703,6 +735,8 @@ public class HiveDictionary extends AbstractDictionary {
 				functionsMap.get(relationalOperators)));
 		help.add(createMenu(new TreeNonUnique<String>("operation_logic"),
 				functionsMap.get(logicalOperators)));
+		help.add(createMenu(new TreeNonUnique<String>("conditional_operator"),
+				functionsMap.get(conditionalOperator)));
 		logger.debug("create Group Select Help Menu");
 		return help;
 	}
@@ -808,7 +842,7 @@ public class HiveDictionary extends AbstractDictionary {
 	private boolean isRelationalOperation(String expr) {
 		return isInList(functionsMap.get(relationalOperators), expr);
 	}
-
+	
 	/**
 	 * Run an expression as a relational operation
 	 * 
@@ -825,6 +859,7 @@ public class HiveDictionary extends AbstractDictionary {
 		return runOperation(functionsMap.get(relationalOperators), expr,
 				features, aggregFeat);
 	}
+	
 
 	/**
 	 * Check if a an expression is a arithmetic operation
@@ -946,6 +981,105 @@ public class HiveDictionary extends AbstractDictionary {
 
 		return type;
 	}
+	
+	/**
+	 * Check if an expression is a conditional operation
+	 * 
+	 * @param expr
+	 * @return <code>true</code> if the expression is a relational operation
+	 *         else <code>false</code>
+	 */
+
+	private boolean isConditionalOperation(String expr) {
+		return isInList(functionsMap.get(conditionalOperator), expr);
+	}
+	
+	/**
+	 * Run a method
+	 * 
+	 * @param expr
+	 * @param features
+	 * @param aggregFeat
+	 * @return Error Message
+	 * @throws Exception
+	 */
+
+	private String runConditionalOperation(String expr, FeatureList features,
+			Set<String> aggregFeat) throws Exception {
+		String type = null;
+		List<String[]> methodsFound = findAll(functionsMap.get(conditionalOperator), expr);
+		if (!methodsFound.isEmpty()) {
+			String arg = getBracketContent(expr, '(', ')');
+			String[] argSplit = null;
+			int sizeSearched = -1;
+			// Find a method with the same number of argument
+			Iterator<String[]> it = methodsFound.iterator();
+			String[] method = null;
+			while (it.hasNext() && method == null) {
+				method = it.next();
+//				String delimiter = method[0].substring(
+//						method[0].indexOf("(") + 1, method[0].lastIndexOf(")"));
+//				if (delimiter.isEmpty()) {
+				String	delimiter = ",";
+//				}
+				argSplit = arg
+						.split(escapeString(delimiter) + "(?![^\\(]*\\))");
+				sizeSearched = argSplit.length;
+				if (method[1].trim().isEmpty()
+						&& expr.trim().equalsIgnoreCase(method[0].trim())) {
+					// Hard-copy method
+					type = method[2];
+				} else{
+					int methodArgs = method[1].isEmpty() ? 0 : method[1].split(",").length;
+					if (method[1].endsWith("[]") && sizeSearched > 0){
+						
+					}
+					else if (sizeSearched != methodArgs) {
+						method = null;
+					}
+				}
+
+			}
+
+			if (method != null && type == null) {
+				// Special case for CAST because it returns a dynamic type
+				logger.debug(expr.trim());
+				logger.debug(method[0].trim());
+				if (check(method, argSplit, features)) {
+					type = method[2];
+					if (type.equals("ANY")){
+						type = getReturnType(argSplit[0], features);
+						
+						if (type.contains("<") && type.contains(">")){
+							type = getBracketContent(type, '<', '>');
+						}
+					}
+					
+					else if (type.contains("ANY")){
+						String[] methodArgs = method[1].isEmpty() ? new String[]{} : method[1].split(",");
+						for (int i =0; i < methodArgs.length; ++i){
+							if (methodArgs[i].equals("ANY")){
+								type = type.replace("ANY", getReturnType(argSplit[i], features));
+								break;
+							}
+						}
+					}
+				}
+				
+			} else if (type == null) {
+				String error = "No method " + methodsFound.get(0)[0] + " with "
+						+ sizeSearched + " arguments, expr:" + expr;
+				logger.debug(error);
+				throw new Exception(error);
+			}
+		} else {
+			String error = "No method matching " + expr;
+			logger.debug(error);
+			throw new Exception(error);
+		}
+
+		return type;
+	}
 
 	/**
 	 * Run an operation
@@ -1046,6 +1180,22 @@ public class HiveDictionary extends AbstractDictionary {
 			for (int i = 0; i < argsTypeExpected.length; ++i) {
 				ok &= check(argsTypeExpected[i],
 						getReturnType(args[i], features));
+			}
+		} else if (argsTypeExpected[argsTypeExpected.length-1].endsWith("[]")
+				&& args.length >= argsTypeExpected.length){
+			ok = true;
+			int j = 0;
+			String typeArray = getReturnType(args[argsTypeExpected.length-1], features);
+			for (int i = 0; i < args.length && ok; ++i) {
+				String type = getReturnType(args[i], features);
+				ok &= check(argsTypeExpected[j],
+						type);
+				if (j < argsTypeExpected.length - 1){
+					++j;
+				}
+				else if (!type.equals(typeArray)){
+					ok = false;
+				}
 			}
 		}
 
@@ -1180,7 +1330,7 @@ public class HiveDictionary extends AbstractDictionary {
 	public static String escapeString(String expr) {
 		return "\\Q" + expr + "\\E";
 	}
-
+	
 	/**
 	 * Remove the content from brackets
 	 * 
@@ -1189,19 +1339,30 @@ public class HiveDictionary extends AbstractDictionary {
 	 */
 
 	public static String removeBracketContent(String expr) {
+		return removeDelimiterContent(expr, '(', ')');
+	}
+
+	/**
+	 * Remove the content from brackets
+	 * 
+	 * @param expr
+	 * @return cleanUp
+	 */
+
+	public static String removeDelimiterContent(String expr, char delimiterBegin, char delimiterEnd) {
 		int count = 0;
 		int index = 0;
 		String cleanUp = "";
 		while (index < expr.length()) {
-			if (expr.charAt(index) == '(') {
+			if (expr.charAt(index) == delimiterBegin) {
 				++count;
 				if (count == 1) {
-					cleanUp += '(';
+					cleanUp += delimiterBegin;
 				}
-			} else if (expr.charAt(index) == ')') {
+			} else if (expr.charAt(index) == delimiterEnd) {
 				--count;
 				if (count == 0) {
-					cleanUp += ')';
+					cleanUp += delimiterEnd;
 				}
 			} else if (count == 0) {
 				cleanUp += expr.charAt(index);
@@ -1209,6 +1370,40 @@ public class HiveDictionary extends AbstractDictionary {
 			++index;
 		}
 		return cleanUp;
+	}
+	
+	
+	/**
+	 * Get the content of the brackets
+	 * 
+	 * @param expr
+	 * @return cleanUp
+	 */
+
+	public static String getBracketContent(String expr, char delimiterBegin, char delimiterEnd) {
+		int count = 0;
+		int index = 0;
+		String cleanUp = "";
+		while (index < expr.length()) {
+			if (expr.charAt(index) == delimiterBegin) {
+				++count;
+				if (count > 1) {
+					cleanUp += delimiterBegin;
+				}
+			} else if (expr.charAt(index) == delimiterEnd) {
+				--count;
+				if (count > 0) {
+					cleanUp += delimiterEnd;
+				}
+				else{
+					cleanUp += ',';
+				}
+			} else if (count > 0) {
+				cleanUp += expr.charAt(index);
+			}
+			++index;
+		}
+		return cleanUp.substring(0, cleanUp.length() - 1);
 	}
 
 	/**
