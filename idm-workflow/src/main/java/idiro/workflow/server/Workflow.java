@@ -137,7 +137,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	public String loadMenu() {
 
 		String error = "";
-		File menuDir = new File(WorkflowPrefManager.pathIconMenu.get());
+		File menuDir = new File(WorkflowPrefManager.getPathiconmenu());
 		File[] children = menuDir.listFiles(new FileFilter() {
 
 			@Override
@@ -343,7 +343,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 		String error = "";
 
-		File menuDir = new File(WorkflowPrefManager.pathIconMenu.get());
+		File menuDir = new File(WorkflowPrefManager.getPathiconmenu());
 
 		try {
 			FileUtils.cleanDirectory(menuDir);
@@ -667,7 +667,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		try {
 			String[] path = filePath.split("/");
 			String fileName = path[path.length - 1];
-			String tempPath = WorkflowPrefManager.pathUserPref.get() + "/tmp/"
+			String tempPath = WorkflowPrefManager.getPathuserpref() + "/tmp/"
 					+ fileName + "_" + RandomString.getRandomName(4);
 			file = new File(tempPath);
 			logger.debug("Save xml: " + file.getAbsolutePath());
@@ -998,7 +998,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			String[] path = filePath.split("/");
 			String fileName = path[path.length - 1];
 			String userName = System.getProperty("user.name");
-			String tempPath = WorkflowPrefManager.pathUserPref.get() + "/tmp/"
+			String tempPath = WorkflowPrefManager.getPathtmpfolder()+"/"
 					+ fileName + "_" + RandomString.getRandomName(4);
 			FileSystem fs = NameNodeVar.getFS();
 			fs.copyToLocalFile(new Path(filePath), new Path(tempPath));
@@ -1170,8 +1170,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			saved = true;
 
 			// clean temporary files
-			String tempPathCrc = WorkflowPrefManager.pathUserPref.get()
-					+ "/tmp/." + fileName + ".crc";
+			String tempPathCrc = WorkflowPrefManager.getPathtmpfolder()+
+					"/." + fileName + ".crc";
 			File tempCrc = new File(tempPathCrc);
 			tempCrc.delete();
 			xmlFile.delete();

@@ -4,6 +4,7 @@ import idm.CanvasBean;
 import idm.ConfigureTabsBean;
 import idm.HelpBean;
 import idm.ProcessManagerBean;
+import idm.SettingsBean;
 
 import javax.faces.application.NavigationHandler;
 import javax.faces.context.FacesContext;
@@ -67,6 +68,9 @@ public class AuthorizationListener implements PhaseListener {
 				
 				HelpBean helpBean = (HelpBean) context.getApplication().evaluateExpressionGet(context, "#{helpBean}", HelpBean.class);
 				helpBean.calcHelpItens();
+				
+				SettingsBean prefBean = (SettingsBean) context.getApplication().evaluateExpressionGet(context, "#{settingsBean}", SettingsBean.class);
+				prefBean.calcSettings();
 				
 				session.setAttribute("startInit","n");
 			}

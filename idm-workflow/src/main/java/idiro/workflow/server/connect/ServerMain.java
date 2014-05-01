@@ -11,16 +11,12 @@ import idiro.workflow.server.interfaces.JobManager;
 import idiro.workflow.utils.PackageManager;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.RMISocketFactory;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -44,26 +40,20 @@ public class ServerMain {
 
 	public static void main(String[] arg) throws RemoteException{
 
-		try {
-			WorkflowPrefManager.resetSys();
-			WorkflowPrefManager.resetUser();
-			logger.info(WorkflowPrefManager.sysPackageLibPath);
-			logger.info(WorkflowPrefManager.userPackageLibPath);
-			//Update classpath with packages
-			updateClassPath(WorkflowPrefManager.sysPackageLibPath);
-			updateClassPath(WorkflowPrefManager.userPackageLibPath);
-
-		} catch (MalformedURLException e1) {
-			e1.printStackTrace();
-		}
-
 		int port = 2001;
-		
-		
+		if(arg.length > 0){
+			try{
+				port = Integer.valueOf(arg[0]);
+			}catch(Exception e){
+				port = 2001;
+			}
+		}
 		
 		// Initialise logs and jar
 		WorkflowPrefManager runner = WorkflowPrefManager.getInstance();
 		if(runner.isInit()){
+			//Setup the user home if not setup yet
+			WorkflowPrefManager.setupHome();
 			
 			logger = Logger.getLogger(ServerMain.class);
 			NameNodeVar.set(WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_namenode));
@@ -145,19 +135,7 @@ public class ServerMain {
 			}
 		}
 	}
-	/**
-	 * Update the classpath for java
-	 * @param path
-	 * @throws MalformedURLException
-	 */
-	public static void updateClassPath(String path) throws MalformedURLException{
-
-		URL url = new URL("file:"+path);
-		ClassLoader contextCL = Thread.currentThread().getContextClassLoader();
-		ClassLoader urlCL = URLClassLoader.newInstance(new URL[] { url }, contextCL);
-		Thread.currentThread().setContextClassLoader(urlCL);
-
-	}
+	
 	/**
 	 * Remove all processes in the registry
 	 */

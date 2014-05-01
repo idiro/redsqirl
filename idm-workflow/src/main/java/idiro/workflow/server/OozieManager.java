@@ -328,7 +328,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 		String error = null;
 		final String nameWF = df.getName();
 		String fileName = buildFileName(df);
-		File parentDir = new File(WorkflowPrefManager.pathOozieJob.get() + "/"
+		File parentDir = new File(WorkflowPrefManager.getPathooziejob() + "/"
 				+ fileName);
 		String hdfsWfPath = WorkflowPrefManager.getHDFSPathJobs() + "/"
 				+ fileName;

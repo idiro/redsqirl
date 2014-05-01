@@ -662,6 +662,9 @@
 			jQuery("#formMenu\\:installationMenuItem").click();
 	   	});
 	   	
+	   	shortcut.add("Ctrl+Alt+p",function() {
+            jQuery("#formMenu\\:settingsMenuItem").click();
+        });
 
 	</script>
 
@@ -1244,6 +1247,12 @@
 								onclick="openPackageModal();">
 								<h:outputText value="Ctrl+I" class="menuItemHotKey"/>
 							</rich:menuItem>
+							
+							<rich:menuItem id="settingsMenuItem" submitMode="ajax"
+                                value="#{messages.label_setting_modal}"
+                                onclick="#{rich:component('modalSettings')}.show();">
+                                <h:outputText value="Ctrl+Alt+P" class="menuItemHotKey"/>
+                            </rich:menuItem>
 		
 						</rich:dropDownMenu>
 		
@@ -1717,5 +1726,24 @@
 		</center>
 	</rich:modalPanel>
 	
+    <a4j:region renderRegionOnly="true">
+        <rich:modalPanel id="modalSettings" width="800" height="600"
+            style="overflow:auto;" resizeable="false">
+
+            <f:facet name="header">
+                <h:outputText value="#{messages.label_setting_modal}" />
+            </f:facet>
+            <f:facet name="controls">
+                <h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+                    style="cursor:pointer;width:22px;"
+                    onclick="#{rich:component('modalSettings')}.hide()" />
+            </f:facet>
+
+            <h:panelGroup>
+                <a4j:include viewId="/pages/modalSettings.xhtml" ajaxRendered="true" />
+            </h:panelGroup>
+
+        </rich:modalPanel>
+    </a4j:region>
 </body>
 </html>

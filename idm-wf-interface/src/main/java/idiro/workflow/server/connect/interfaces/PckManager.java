@@ -7,34 +7,36 @@ import java.util.List;
 public interface PckManager extends Remote {
 	/**
 	 * Remove packages
-	 * @param sys_package flag to indicate if it is a system package
+	 * @param user The user name or null for system package
 	 * @param packStr list of packages
 	 * @return error message
 	 * @throws RemoteException
 	 */
-	public String removePackage(boolean sys_package,String[] packStr) throws RemoteException;
+	public String removePackage(String user,String[] packStr) throws RemoteException;
+	
 	/**
 	 * Add packages
-	 * @param sys_package flag to indicate if it is a system package
+	 * @param user The user name or null for system package
 	 * @param packStr list of packages
 	 * @return error message
 	 * @throws RemoteException
 	 */
-	public String addPackage(boolean sys_package,String[] packStr) throws RemoteException;
+	public String addPackage(String user,String[] packStr) throws RemoteException;
 	/**
 	 * Get Package names of installed packages
-	 * @param root_pack
+	 * @param user The user name or null for system package
 	 * @return {@link java.util.List<String>}
 	 * @throws RemoteException
 	 */
-	public List<String> getPackageNames(boolean root_pack) throws RemoteException;
+	public List<String> getPackageNames(String user) throws RemoteException;
+	
 	/**
 	 * Get a propery of a package
-	 * @param root_pack is it a system package
+	 * @param user The user name or null for system package
 	 * @param packageName name of the package
 	 * @param property name
 	 * @return propterty value
 	 * @throws RemoteException
 	 */
-	public String getPackageProperty(boolean root_pack, String packageName, String property) throws RemoteException;
+	public String getPackageProperty(String user, String packageName, String property) throws RemoteException;
 }

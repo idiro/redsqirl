@@ -68,6 +68,11 @@
   <managed-bean-class>idm.HelpBean</managed-bean-class>
   <managed-bean-scope>session</managed-bean-scope>
  </managed-bean>
+ <managed-bean>
+  <managed-bean-name>settingsBean</managed-bean-name>
+  <managed-bean-class>idm.SettingsBean</managed-bean-class>
+  <managed-bean-scope>session</managed-bean-scope>
+ </managed-bean>
  
  <!-- **************************** NAVIGATION ******************************************************************* -->
  

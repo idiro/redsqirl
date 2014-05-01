@@ -121,7 +121,7 @@ public abstract class AbstractDictionary {
 		if (file.exists()) {
 			loadFunctionsFile(file);
 		} else {
-			file = new File(WorkflowPrefManager.pathUserPref.get() + "/"
+			file = new File(WorkflowPrefManager.getPathuserpref() + "/"
 					+ getNameFile());
 			if (file.exists()) {
 				loadFunctionsFile(file);

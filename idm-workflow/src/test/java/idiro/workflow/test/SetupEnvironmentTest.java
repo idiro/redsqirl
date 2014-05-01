@@ -2,26 +2,10 @@ package idiro.workflow.test;
 
 import idiro.Log;
 import idiro.ProjectID;
-import idiro.utils.OrderedFeatureListTests;
-import idiro.utils.TreeTests;
-import idiro.workflow.server.AppendListInteractionTests;
-import idiro.workflow.server.EditorInteractionTests;
-import idiro.workflow.server.InputInteractionTests;
-import idiro.workflow.server.ListInteractionTests;
-import idiro.workflow.server.OozieDagTests;
-import idiro.workflow.server.OozieManagerTests;
-import idiro.workflow.server.TableInteractionTests;
 import idiro.workflow.server.WorkflowPrefManager;
-import idiro.workflow.server.WorkflowProcessesManagerTests;
-import idiro.workflow.server.WorkflowTests;
-import idiro.workflow.server.action.ActionTests;
-import idiro.workflow.server.action.ConvertTests;
-import idiro.workflow.server.action.SourceTests;
 import idiro.workflow.server.connect.HDFSInterface;
 import idiro.workflow.server.connect.HiveInterface;
-import idiro.workflow.server.connect.interfaces.HDFSInterfaceTests;
-import idiro.workflow.server.connect.interfaces.SSHInterfaceArrayTests;
-import idiro.workflow.server.datatype.HiveTypePartitionTests;
+import idiro.workflow.utils.PackageManagerTests;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -37,7 +21,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 
 @RunWith(Suite.class)
-@SuiteClasses({ActionTests.class,
+@SuiteClasses({/*ActionTests.class,
 	WorkflowTests.class,
 	//FIXME CreateWorkflowTests does not work
 	//CreateWorkflowTests.class,
@@ -53,7 +37,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	SourceTests.class,
 	WorkflowProcessesManagerTests.class,
 	OozieManagerTests.class,
-	//PackageManagerTests.class,
+	
 	OozieDagTests.class,
 	OrderedFeatureListTests.class,
 	TreeTests.class,
@@ -62,9 +46,10 @@ import org.junit.runners.Suite.SuiteClasses;
 	AppendListInteractionTests.class,
 	ListInteractionTests.class,
 	EditorInteractionTests.class,
-	TableInteractionTests.class,
+	TableInteractionTests.class,*/
 	//FIXME Test only done for keith user...
 	//HDFSTypeTests.class,
+	PackageManagerTests.class,
 })
 public class SetupEnvironmentTest {
 
@@ -84,7 +69,6 @@ public class SetupEnvironmentTest {
 
 		WorkflowPrefManager.pathSysCfgPref.put(testProp);
 		WorkflowPrefManager.pathUserCfgPref.put(testProp);
-		WorkflowPrefManager.pathOozieJob.put("target/test_out/");
 
 		ProjectID.getInstance().setName("IdiroWorkflowServerTest");
 		ProjectID.getInstance().setVersion("0.01");
@@ -103,10 +87,9 @@ public class SetupEnvironmentTest {
 			while ((line = reader.readLine()) != null) {
 				logger.info(line);
 			}
+			reader.close();
 		}
 		logger.debug("Log4j initialised");
-		WorkflowPrefManager.pathUserPref.put(userPrefFile);
-		logger.debug("user preferences initialised");
 		HiveInterface.setUrl(
 				WorkflowPrefManager.getUserProperty(
 						WorkflowPrefManager.user_hive+"_"+System.getProperty("user.name")));
@@ -129,9 +112,13 @@ public class SetupEnvironmentTest {
 
 		File home = new File(testDirOut,"home_project");
 		home.mkdir();
-		WorkflowPrefManager.pathUserPref.put(home.getAbsolutePath());
-		WorkflowPrefManager.pathSysHome.put(home.getAbsolutePath());
-
+		WorkflowPrefManager.changeSysHome(home.getAbsolutePath());
+		WorkflowPrefManager.createUserHome(System.getProperty("user.name"));
+		WorkflowPrefManager.setupHome();
+		logger.debug(WorkflowPrefManager.pathSysHome.get());
+		logger.debug(WorkflowPrefManager.getPathuserpref());
+		logger.debug(WorkflowPrefManager.getPathiconmenu());
+		logger.debug(WorkflowPrefManager.pathUserCfgPref.get());
 	}
 
 	@AfterClass

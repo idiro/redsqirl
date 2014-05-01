@@ -2,17 +2,28 @@ package idiro.workflow.server;
 
 import idiro.BlockManager;
 import idiro.Log;
-import idiro.ProjectID;
 import idiro.hadoop.NameNodeVar;
 import idiro.tm.task.in.Preference;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Properties;
 import java.util.prefs.Preferences;
 
 import org.apache.log4j.Logger;
 
+/**
+ * Software preference manager.
+ * 
+ * The class contains different way of accessing properties.
+ * In order to look properties of the current user, you don't need
+ * to specify a user in the function.
+ * 
+ * @author etienne
+ *
+ */
 public class WorkflowPrefManager extends BlockManager {
 
 	/**
@@ -31,24 +42,21 @@ public class WorkflowPrefManager extends BlockManager {
 	private final static Preferences systemPrefs = Preferences
 			.systemNodeForPackage(WorkflowPrefManager.class);
 
+	public final static Preference<String>
+
+	/**
+	 * RedSqirl home directory path
+	 */
+	pathSysHome = new Preference<String>(systemPrefs, "Path Home",
+			"/usr/share/redsqirl");
+
+	public static Preference<String>
 	/**
 	 * Root of the system specific preferences
 	 */
-	public final static Preference<String> pathSystemPref = new Preference<String>(
-			systemPrefs, "Path to store/retrieve system preferences",
-			"/etc/idiroDM"),
-			/**
-			 * Icon Image directory path
-			 */
-			pathSysHome = new Preference<String>(systemPrefs, "Path Home",
-					"/usr/share/" + ProjectID.getInstance().getName() + "/"
-							+ ProjectID.get()),
-
-			/**
-			 * Icon Image directory path
-			 */
-			pathSysImagePref = new Preference<String>(systemPrefs,
-					"Path to retrieve system image files", "/packages/images"),
+	pathSystemPref = new Preference<String>(systemPrefs,
+			"Path to store/retrieve system preferences", pathSysHome.get()
+					+ "/conf"),
 
 			/**
 			 * Path of the packages
@@ -56,19 +64,92 @@ public class WorkflowPrefManager extends BlockManager {
 			pathSysPackagePref = new Preference<String>(systemPrefs,
 					"Path to retrieve system packages", pathSysHome.get()
 							+ "/packages"),
-
 			/**
-			 * Help directory path
-			 */
-			pathSysHelpPref = new Preference<String>(systemPrefs,
-					"Path to retrieve system help files", "/packages/help"),
-
-			/**
-			 * System preference
+			 * System preference file
 			 */
 			pathSysCfgPref = new Preference<String>(systemPrefs,
 					"Path to retrieve general system configuration",
-					pathSystemPref.get() + "/idm_sys.properties");
+					pathSystemPref.get() + "/idm_sys.properties"),
+			/**
+			 * System lang preference file.These properties are optional and are
+			 * used by the front-end to give a bit more details about user
+			 * settings. For each user property, you can create a #{key}_label
+			 * and a #{key}_desc property.
+			 */
+			pathSysLangCfgPref = new Preference<String>(systemPrefs,
+					"Path to retrieve labels of sys parameters",
+					pathSystemPref.get() + "/idm_sys_lang.properties"),
+
+			/**
+			 * Path users folder
+			 */
+			pathUsersFolder = new Preference<String>(systemPrefs,
+					"Path to store/retrieve system preferences",
+					pathSysHome.get() + "/users");
+
+	private static String
+	/**
+	 * Root of the user specific preferences. Accessible from idm-workflow side.
+	 */
+	pathUserPref = pathUsersFolder.get() + "/"
+			+ System.getProperty("user.name"),
+	/**
+	 * Where to find the icons menu. Accessible from idm-workflow side.
+	 */
+	pathIconMenu = pathUserPref + "/icon_menu",
+	/**
+	 * User Tmp folder. Accessible from idm-workflow side.
+	 */
+	pathTmpFolder = pathUserPref + "/tmp",
+	/**
+	 * The local directory to store oozie specific data. Accessible from
+	 * idm-workflow side.
+	 */
+	pathOozieJob = pathUserPref + "/jobs",
+	/**
+	 * The local directory to store temporarily workflow. Accessible from
+	 * idm-workflow side.
+	 */
+	pathWorkflow = pathUserPref + "/workflows",
+	/**
+	 * Colour pref file. Accessible from idm-workflow side.
+	 */
+	pathUserDFEOutputColour = pathUserPref + "/output_colours.properties",
+	/**
+	 * Path of the user packages. Accessible from idm-workflow side.
+	 */
+	pathUserPackagePref = pathUserPref + "/packages",
+	/**
+	 * Lib Path for system package
+	 */
+	sysPackageLibPath = pathSysHome.get() + "/lib/packages",
+	/**
+	 * Lib Path for user package. Accessible from idm-workflow side.
+	 */
+	userPackageLibPath = pathUserPref + "/lib/packages",
+	/**
+	 * Help directory path from package install directory.
+	 */
+	pathSysHelpPref = "/packages/help",
+
+	/**
+	 * Icon Image directory path from package install directory.
+	 */
+	pathSysImagePref = "/packages/images",
+
+	/**
+	 * Icon Image directory path for user packages. Accessible from idm-workflow
+	 * side.
+	 */
+	pathUserImagePref = "/packages/" + System.getProperty("user.name")
+			+ "/images",
+
+			/**
+			 * Help directory path for user packages. Accessible from
+			 * idm-workflow side.
+			 */
+			pathUserHelpPref = "/packages/" + System.getProperty("user.name")
+					+ "/help";
 
 	// User preferences
 	/**
@@ -78,73 +159,30 @@ public class WorkflowPrefManager extends BlockManager {
 			.userNodeForPackage(WorkflowPrefManager.class);
 
 	/**
-	 * Root of the user specific preferences
+	 * User properties. These properties cannot be changed in a production
+	 * environment. However they can be changed for back-end unit-testing.
 	 */
-	public final static Preference<String> pathUserPref = new Preference<String>(
-			userPrefs, "Path to store/retrieve user preferences",
-			System.getProperty("user.home") + "/.idiroDM"),
-			/**
-			 * Where to find the icons menu
-			 */
-			pathIconMenu = new Preference<String>(userPrefs,
-					"Path to the icon menu", pathUserPref.get() + "/icon_menu"),
-
-			/**
-			 * Icon Image directory path
-			 */
-			pathUserImagePref = new Preference<String>(userPrefs,
-					"Path to retrieve user image files", "/packages/"
-							+ System.getProperty("user.name") + "/images"),
-
-			/**
-			 * Path of the packages
-			 */
-			pathUserPackagePref = new Preference<String>(userPrefs,
-					"Path to retrieve user packages", pathUserPref.get()
-							+ "/packages"),
-
-			/**
-			 * Help directory path
-			 */
-			pathUserHelpPref = new Preference<String>(userPrefs,
-					"Path to retrieve user help files", "/packages/"
-							+ System.getProperty("user.name") + "/help"),
-
-			/**
-			 * The local directory to store oozie specific data
-			 */
-			pathOozieJob = new Preference<String>(userPrefs,
-					"Path to store/retrieve oozie jobs",
-					System.getProperty("user.home") + "/jobs"),
-
-			/**
-			 * The local directory to store workflow
-			 */
-			pathWorkflow = new Preference<String>(userPrefs,
-					"Path to store/retrieve idiro workflows",
-					System.getProperty("user.home") + "/workflows"),
-
-			/**
-			 * User properties
-			 */
-			pathUserCfgPref = new Preference<String>(userPrefs,
-					"Path to retrieve general user configuration",
-					pathUserPref.get() + "/idm_user.properties"),
-			/**
-			 * Colour
-			 */
-			pathUserDFEOutputColour = new Preference<String>(userPrefs,
-					"Path to retrieve output colours configuration",
-					pathUserPref.get() + "/output_colours.properties");
+	public static Preference<String>
+	/**
+	 * User properties with specific user settings.
+	 */
+	pathUserCfgPref = new Preference<String>(userPrefs,
+			"Path to retrieve general user configuration", pathUserPref
+					+ "/idm_user.properties"),
+	/**
+	 * User lang properties. These properties are optional and are used by the
+	 * front-end to give a bit more details about user settings. For each user
+	 * property, you can create a #{key}_label and a #{key}_desc property.
+	 */
+	pathUserLangCfgPref = new Preference<String>(userPrefs,
+			"Path to retrieve labels of sys parameters", pathUserPref
+					+ "/idm_user_lang.properties");
 
 	/**
-	 * Lib Path for system package
+	 * True if the instance is initialised.
 	 */
-	public static final String sysPackageLibPath = pathSysHome.get()
-			+ "/lib/packages", userPackageLibPath = pathUserPref.get()
-			+ "/lib/packages";
-
 	private boolean init = false;
+
 	/** Namenode url */
 	public static final String sys_namenode = "namenode",
 	/** idiro engine path */
@@ -159,7 +197,7 @@ public class WorkflowPrefManager extends BlockManager {
 	sys_oozie = "oozie_url",
 	/** Oozie xml schema location */
 	sys_oozie_xmlns = "oozie_xmlns",
-			// sys_oozie_build_mode = "oozie_build_mode",
+	// sys_oozie_build_mode = "oozie_build_mode",
 			/** Default Hive XML */
 			sys_hive_default_xml = "hive_default_xml",
 			/** Hive XML */
@@ -174,22 +212,22 @@ public class WorkflowPrefManager extends BlockManager {
 			sys_install_package = "package_dir",
 			/** URL for Package Manager */
 			sys_pack_manager_url = "pack_manager_url",
-			/**Trusted host to packages*/
+			/** Trusted host to packages */
 			sys_pack_download_trust = "trusted_pack_hosts",
-			/**The admin user*/
+			/** The admin user */
 			sys_admin_user = "admin_user";
-								/**Hive JDBC Url*/
+	/** Hive JDBC Url */
 	public static final String user_hive = "hive_jdbc_url",
-			/**Path to Private Key*/
-			user_rsa_private = "private_rsa_key",
-			/**Backup Path of workflow on HFDS*/
-			user_backup = "backup_path",
-			/**Maximum Number of Paths*/
-			user_nb_backup = "number_backup",
-			/**Number of oozie job directories to keep*/
-			user_nb_oozie_dir_tokeep = "number_oozie_job_directory_tokeep",
-			/**Path on HDFS to store Oozie Jobs*/
-			user_hdfspath_oozie_job = "hdfspath_oozie_job";
+	/** Path to Private Key */
+	user_rsa_private = "private_rsa_key",
+	/** Backup Path of workflow on HFDS */
+	user_backup = "backup_path",
+	/** Maximum Number of Paths */
+	user_nb_backup = "number_backup",
+	/** Number of oozie job directories to keep */
+	user_nb_oozie_dir_tokeep = "number_oozie_job_directory_tokeep",
+	/** Path on HDFS to store Oozie Jobs */
+	user_hdfspath_oozie_job = "hdfspath_oozie_job";
 
 	/**
 	 * Constructor.
@@ -214,6 +252,58 @@ public class WorkflowPrefManager extends BlockManager {
 	}
 
 	/**
+	 * Create the given user redsqirl home directory if it does not exist.
+	 * 
+	 * @param userName
+	 */
+	public static void createUserHome(String userName) {
+		File home = new File(getPathUserPref(userName));
+		logger.debug(home.getAbsolutePath());
+		if (!home.exists()) {
+			home.mkdirs();
+
+			File packageF = new File(getPathUserPackagePref(userName));
+			logger.debug(packageF.getAbsolutePath());
+			packageF.mkdir();
+
+			File libPackage = new File(getUserPackageLibPath(userName));
+			logger.debug(libPackage.getAbsolutePath());
+			libPackage.mkdirs();
+
+			// Everybody is able to write in this home folder
+			logger.debug("set permissions...");
+			home.setWritable(true, false);
+			home.setReadable(true, false);
+		}
+	}
+
+	/**
+	 * Setup a the redsqirl home directory from the back-end.
+	 */
+	public static void setupHome() {
+		File iconMenu = new File(pathIconMenu);
+		if (!iconMenu.exists()) {
+			iconMenu.mkdir();
+		}
+		File userProp = new File(pathUserCfgPref.get());
+		File userPropLang = new File(pathUserLangCfgPref.get());
+		if (!userProp.exists()) {
+			Properties prop = new Properties();
+			prop.setProperty(user_hive, "");
+
+			Properties propLang = new Properties();
+			propLang.setProperty(user_hive + "_label", "JDBC URL");
+			propLang.setProperty(user_hive + "_desc", "JDBC URL");
+			try {
+				prop.store(new FileWriter(userProp), "");
+				propLang.store(new FileWriter(userPropLang), "");
+			} catch (IOException e) {
+				logger.warn("Fail to write default properties");
+			}
+		}
+	}
+
+	/**
 	 * Is WorkflowPrefManager initialized
 	 * 
 	 * @return <code>true</code> if initialize else <code>false</code>
@@ -223,14 +313,65 @@ public class WorkflowPrefManager extends BlockManager {
 	}
 
 	/**
+	 * Change the sys home property, and update dependency properties.
+	 * 
+	 * If the sys home property changed, most of other class value that depends
+	 * of it have to change. This function update the syshome and all other
+	 * properties.
+	 * 
+	 * @param newValueSysHome
+	 *            new value of @see pathSysHome . If null it removes the
+	 *            property and use the default.
+	 */
+	public static void changeSysHome(String newValueSysHome) {
+
+		if (newValueSysHome == null || newValueSysHome.isEmpty()) {
+			pathSysHome.remove();
+		} else {
+			pathSysHome.put(newValueSysHome);
+		}
+
+		pathSysPackagePref = new Preference<String>(systemPrefs,
+				"Path to retrieve system packages", pathSysHome.get()
+						+ "/packages");
+		pathSysCfgPref = new Preference<String>(systemPrefs,
+				"Path to retrieve general system configuration",
+				pathSystemPref.get() + "/idm_sys.properties");
+		pathUsersFolder = new Preference<String>(systemPrefs,
+				"Path to store/retrieve system preferences", pathSysHome.get()
+						+ "/users");
+
+		pathUserPref = pathUsersFolder.get() + "/"
+				+ System.getProperty("user.name");
+		pathIconMenu = pathUserPref + "/icon_menu";
+		pathTmpFolder = pathUserPref + "/tmp";
+		pathOozieJob = pathUserPref + "/jobs";
+		pathWorkflow = pathUserPref + "/workflows";
+		pathUserDFEOutputColour = pathUserPref + "/output_colours.properties";
+		pathUserPackagePref = pathUserPref + "/packages";
+		sysPackageLibPath = pathSysHome.get() + "/lib/packages";
+		userPackageLibPath = pathUserPref + "/lib/packages";
+		pathSysHelpPref = "/packages/help";
+		pathSysImagePref = "/packages/images";
+
+		pathUserImagePref = "/packages/" + System.getProperty("user.name")
+				+ "/images";
+
+		pathUserHelpPref = "/packages/" + System.getProperty("user.name")
+				+ "/help";
+
+		pathUserCfgPref = new Preference<String>(userPrefs,
+				"Path to retrieve general user configuration", pathUserPref
+						+ "/idm_user.properties");
+	}
+
+	/**
 	 * Reset the System preferences
 	 */
 	public static void resetSys() {
 		pathSystemPref.remove();
 		pathSysHome.remove();
-		pathSysImagePref.remove();
 		pathSysPackagePref.remove();
-		pathSysHelpPref.remove();
 		pathSysCfgPref.remove();
 	}
 
@@ -238,15 +379,7 @@ public class WorkflowPrefManager extends BlockManager {
 	 * Reset the User preferences
 	 */
 	public static void resetUser() {
-		pathUserPref.remove();
-		pathIconMenu.remove();
-		pathUserImagePref.remove();
-		pathUserPackagePref.remove();
-		pathUserHelpPref.remove();
-		pathOozieJob.remove();
-		pathWorkflow.remove();
 		pathUserCfgPref.remove();
-		pathUserDFEOutputColour.remove();
 	}
 
 	/**
@@ -266,6 +399,22 @@ public class WorkflowPrefManager extends BlockManager {
 	}
 
 	/**
+	 * Get the lang properties for the System
+	 * 
+	 * @return
+	 */
+	public static Properties getSysLangProperties() {
+		Properties prop = new Properties();
+		try {
+			prop.load(new FileReader(new File(pathSysLangCfgPref.get())));
+		} catch (Exception e) {
+			logger.error("Error when loading " + pathSysLangCfgPref.get() + " "
+					+ e.getMessage());
+		}
+		return prop;
+	}
+
+	/**
 	 * Get the properties for System
 	 * 
 	 * @return system properties
@@ -275,8 +424,46 @@ public class WorkflowPrefManager extends BlockManager {
 		try {
 			prop.load(new FileReader(new File(pathUserCfgPref.get())));
 		} catch (Exception e) {
-			logger.error("Error when loading " + pathUserCfgPref.get() + " "
+			logger.error("Error when loading " + pathUserCfgPref + " "
 					+ e.getMessage());
+		}
+		return prop;
+	}
+
+	/**
+	 * Get the user properties a given user.
+	 * 
+	 * @param user
+	 *            The user name
+	 * @return The user properties.
+	 */
+	public static Properties getUserProperties(String user) {
+		Properties prop = new Properties();
+		try {
+			prop.load(new FileReader(new File(getPathUserPref(user)
+					+ "/idm_user.properties")));
+		} catch (Exception e) {
+			logger.error("Error when loading " + getPathUserPref(user)
+					+ "/idm_user.properties" + e.getMessage());
+		}
+		return prop;
+	}
+
+	/**
+	 * Get the lang properties of the given user.
+	 * 
+	 * @param user
+	 *            The user name
+	 * @return The lang user properties.
+	 */
+	public static Properties getUserLangProperties(String user) {
+		Properties prop = new Properties();
+		try {
+			prop.load(new FileReader(new File(getPathUserPref(user)
+					+ "/idm_user_lang.properties")));
+		} catch (Exception e) {
+			logger.error("Error when loading " + getPathUserPref(user)
+					+ "/idm_user_lang.properties" + e.getMessage());
 		}
 		return prop;
 	}
@@ -446,7 +633,7 @@ public class WorkflowPrefManager extends BlockManager {
 	 * @return User name for the System Administrator
 	 */
 	public static String[] getSysAdminUser() {
-		String[] sysUsers = new String[0];
+		String[] sysUsers = null;
 		String pack = getSysProperty(WorkflowPrefManager.sys_admin_user);
 		if (pack != null && !pack.isEmpty()) {
 			sysUsers = pack.split(":");
@@ -475,35 +662,210 @@ public class WorkflowPrefManager extends BlockManager {
 					pathSystemPref.put(pref[1]);
 				} else if (pref[0].equalsIgnoreCase("pathSysHome")) {
 					pathSysHome.put(pref[1]);
-				} else if (pref[0].equalsIgnoreCase("pathSysImagePref")) {
-					pathSysImagePref.put(pref[1]);
 				} else if (pref[0].equalsIgnoreCase("pathSysPackagePref")) {
 					pathSysPackagePref.put(pref[1]);
-				} else if (pref[0].equalsIgnoreCase("pathSysHelpPref")) {
-					pathSysHelpPref.put(pref[1]);
 				} else if (pref[0].equalsIgnoreCase("pathSysCfgPref")) {
 					pathSysCfgPref.put(pref[1]);
-				} else if (pref[0].equalsIgnoreCase("pathUserPref")) {
-					pathUserPref.put(pref[1]);
-				} else if (pref[0].equalsIgnoreCase("pathIconMenu")) {
-					pathIconMenu.put(pref[1]);
-				} else if (pref[0].equalsIgnoreCase("pathUserImagePref")) {
-					pathUserImagePref.put(pref[1]);
-				} else if (pref[0].equalsIgnoreCase("pathUserPackagePref")) {
-					pathUserPackagePref.put(pref[1]);
-				} else if (pref[0].equalsIgnoreCase("pathUserHelpPref")) {
-					pathUserHelpPref.put(pref[1]);
-				} else if (pref[0].equalsIgnoreCase("pathOozieJob")) {
-					pathOozieJob.put(pref[1]);
-				} else if (pref[0].equalsIgnoreCase("pathWorkflow")) {
-					pathWorkflow.put(pref[1]);
-				} else if (pref[0].equalsIgnoreCase("pathUserCfgPref")) {
-					pathUserCfgPref.put(pref[1]);
-				} else if (pref[0].equalsIgnoreCase("pathUserDFEOutputColour")) {
-					pathUserDFEOutputColour.put(pref[1]);
 				}
 			}
 		}
+	}
+
+	/**
+	 * User home directory.
+	 * @param user
+	 * @return
+	 */
+	public static String getPathUserPref(String user) {
+		return pathUsersFolder.get() + "/" + user;
+	}
+
+	/**
+	 * User icon menu directory.
+	 * @param user
+	 * @return
+	 */
+	public static String getPathIconMenu(String user) {
+		return getPathUserPref(user) + "/icon_menu";
+	}
+
+	/**
+	 * User temporary folder.
+	 * @param user
+	 * @return
+	 */
+	public static String getPathTmpFolder(String user) {
+		return getPathUserPref(user) + "/tmp";
+	}
+
+	/**
+	 * User oozie job folder
+	 * @param user
+	 * @return
+	 */
+	public static String getPathOozieJob(String user) {
+		return getPathUserPref(user) + "/jobs";
+	}
+
+	/**
+	 * User temporary workflow folder.
+	 * @param user
+	 * @return
+	 */
+	public static String getPathWorkflow(String user) {
+		return getPathUserPref(user) + "/workflows";
+	}
+
+	/**
+	 * User property file.
+	 * @param user
+	 * @return
+	 */
+	public static String getPathUserCfgPref(String user) {
+		return getPathUserPref(user) + "/idm_user.properties";
+	}
+
+	/**
+	 * User link colour property file.
+	 * @param user
+	 * @return
+	 */
+	public static String getPathUserDFEOutputColour(String user) {
+		return getPathUserPref(user) + "/output_colours.properties";
+	}
+
+	/**
+	 * User package folder.
+	 * @param user
+	 * @return
+	 */
+	public static String getPathUserPackagePref(String user) {
+		return getPathUserPref(user) + "/packages";
+	}
+
+	/**
+	 * Lib path folder.
+	 * @param user
+	 * @return
+	 */
+	public static String getUserPackageLibPath(String user) {
+		return getPathUserPref(user) + "/lib/packages";
+	}
+
+	/**
+	 * User Image folder from install directory.
+	 * @param user
+	 * @return
+	 */
+	public static String getPathUserImagePref(String user) {
+		return "/packages/" + user + "/images";
+	}
+
+	/**
+	 * Help folder from install directory.
+	 * @param user
+	 * @return
+	 */
+	public static String getPathUserHelpPref(String user) {
+		return "/packages/" + user + "/help";
+	}
+
+	/**
+	 * @return the pathsyspackagepref
+	 */
+	public static final Preference<String> getPathsyspackagepref() {
+		return pathSysPackagePref;
+	}
+
+	/**
+	 * @return the pathuserpref
+	 */
+	public static final String getPathuserpref() {
+		return pathUserPref;
+	}
+
+	/**
+	 * @return the pathiconmenu
+	 */
+	public static final String getPathiconmenu() {
+		return pathIconMenu;
+	}
+
+	/**
+	 * @return the pathtmpfolder
+	 */
+	public static final String getPathtmpfolder() {
+		return pathTmpFolder;
+	}
+
+	/**
+	 * @return the pathooziejob
+	 */
+	public static final String getPathooziejob() {
+		return pathOozieJob;
+	}
+
+	/**
+	 * @return the pathworkflow
+	 */
+	public static final String getPathworkflow() {
+		return pathWorkflow;
+	}
+
+	/**
+	 * @return the pathuserdfeoutputcolour
+	 */
+	public static final String getPathuserdfeoutputcolour() {
+		return pathUserDFEOutputColour;
+	}
+
+	/**
+	 * @return the pathuserpackagepref
+	 */
+	public static final String getPathuserpackagepref() {
+		return pathUserPackagePref;
+	}
+
+	/**
+	 * @return the userpackagelibpath
+	 */
+	public static final String getUserpackagelibpath() {
+		return userPackageLibPath;
+	}
+
+	/**
+	 * @return the pathsysimagepref
+	 */
+	public static final String getPathsysimagepref() {
+		return pathSysImagePref;
+	}
+
+	/**
+	 * @return the pathuserimagepref
+	 */
+	public static final String getPathuserimagepref() {
+		return pathUserImagePref;
+	}
+
+	/**
+	 * @return the pathuserhelppref
+	 */
+	public static final String getPathuserhelppref() {
+		return pathUserHelpPref;
+	}
+
+	/**
+	 * @return the sysPackageLibPath
+	 */
+	public static String getSysPackageLibPath() {
+		return sysPackageLibPath;
+	}
+
+	/**
+	 * @return the pathSysHelpPref
+	 */
+	public static String getPathSysHelpPref() {
+		return pathSysHelpPref;
 	}
 
 }

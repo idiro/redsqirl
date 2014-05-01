@@ -1,12 +1,11 @@
 package idm.auth;
 
+import idiro.workflow.server.BaseCommand;
 import idiro.workflow.server.ProcessesManager;
-import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.WorkflowProcessesManager;
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.rmi.RemoteException;
@@ -84,7 +83,7 @@ public class ServerProcess {
 
 
 					ProcessesManager pm = new WorkflowProcessesManager();
-					final String command = getBaseCommand(user, password, port)
+					final String command = BaseCommand.getBaseCommand(user,port)
 							+ " 1>/dev/null & echo $! 1> "+pm.getPath();
 					String old_pid = pm.getPid();
 
@@ -140,9 +139,6 @@ public class ServerProcess {
 					String javahome = getJava();
 					String argJava = " -Xmx1500m ";
 					logger.info("opening channel");
-					if (channel.isConnected()) {
-						channel.disconnect();
-					}
 					channel = session.openChannel("exec");
 					logger.info("command to launch:\n" + javahome + "\n"
 							+ argJava + "\n" + command);
@@ -175,53 +171,6 @@ public class ServerProcess {
 			}
 		}
 		return getS();
-	}
-
-	private String getBaseCommand(String user, String password, int port) {
-		String command = "";
-		try {
-
-			File file = new File(
-					WorkflowPrefManager.getSysProperty("workflow_lib_path"));
-			// Reading directory contents
-			logger.info("lib path : "+file.getPath());
-			File[] files = file.listFiles();
-
-			StringBuffer path = new StringBuffer();
-
-			for (int i = 0; i < files.length; i++) {
-
-				path.append(files[i] + ":");
-			}
-			String p = path.substring(0, path.length() - 1);
-
-			channel = session.openChannel("exec");
-			String c = getJava()
-					+ " -cp "
-					+ p
-					+ ":"
-					+ ServerProcess.class.getProtectionDomain().getCodeSource()
-					.getLocation().getPath()
-					.replace("idm/auth/ServerProcess.class", "")
-					+ " idiro.workflow.server.BaseCommand " + port;
-
-			logger.info("command in base command "+c);
-			((ChannelExec) channel).setCommand(c);
-			channel.connect();
-
-			BufferedReader br = new BufferedReader(new InputStreamReader(
-					channel.getInputStream()));
-			String line;
-			while ((line = br.readLine()) != null) {
-				command += line;
-			}
-			channel.disconnect();
-		} catch (Exception e) {
-			logger.error("there was an error getting base command");
-			e.printStackTrace();
-		}
-		logger.info("command : " + command);
-		return command;
 	}
 
 	private String getJava(Session session) throws IOException, JSchException {

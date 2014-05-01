@@ -1,5 +1,6 @@
 package idm.auth;
 
+import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idm.BaseBean;
 
@@ -275,6 +276,8 @@ public class UserInfoBean extends BaseBean implements Serializable {
 //				sc.removeAttribute("registry");
 //			}
 			
+			// Create home folder for this user if it does not exist yet
+			WorkflowPrefManager.createUserHome(user);
 			th = new ServerProcess(port);
 			Session s = th.run(user,password);
 			
