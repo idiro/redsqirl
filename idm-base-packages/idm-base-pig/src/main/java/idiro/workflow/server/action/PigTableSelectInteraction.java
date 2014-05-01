@@ -10,12 +10,15 @@ import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.utils.PigLanguageManager;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -44,6 +47,8 @@ public class PigTableSelectInteraction extends TableInteraction {
 	gen_operation_sum = "SUM",
 	/** Count Generation */
 	gen_operation_count = "COUNT",
+	/** Count Distinct Generation */
+	gen_operation_count_distinct = "COUNT_DISTINCT",
 	/** AUDIT Generation */
 	gen_operation_audit = "AUDIT";
 	/**
@@ -327,12 +332,18 @@ public class PigTableSelectInteraction extends TableInteraction {
 			addGeneratorRows(gen_operation_count, featList, fl, operationsList,
 					alias);
 			operationsList.clear();
+			
+			operationsList.add(gen_operation_count_distinct);
+			addGeneratorRows(gen_operation_count_distinct, featList, fl, operationsList,
+					alias);
+			operationsList.clear();
 
 			operationsList.add(gen_operation_max);
 			operationsList.add(gen_operation_min);
 			operationsList.add(gen_operation_avg);
 			operationsList.add(gen_operation_sum);
 			operationsList.add(gen_operation_count);
+			operationsList.add(gen_operation_count_distinct);
 			addGeneratorRows(gen_operation_audit, featList, fl, operationsList,
 					alias);
 
@@ -398,7 +409,8 @@ public class PigTableSelectInteraction extends TableInteraction {
 				logger.info("trying to add type for " + cur);
 				if (operation.equalsIgnoreCase(gen_operation_avg)) {
 					row.put(table_type_title, "DOUBLE");
-				} else if (operation.equalsIgnoreCase(gen_operation_count)) {
+				} else if (operation.equalsIgnoreCase(gen_operation_count) ||
+						operation.equalsIgnoreCase(gen_operation_count_distinct)) {
 					row.put(table_type_title, "INT");
 				} else {
 					row.put(table_type_title,
@@ -472,6 +484,16 @@ public class PigTableSelectInteraction extends TableInteraction {
 		String select = "";
 		String alias = getAlias();
 		Iterator<Map<String, String>> selIt = getValues().iterator();
+		
+		
+		while (selIt.hasNext()) {
+			Map<String, String> cur = selIt.next();
+			String opTitle = cur.get(table_op_title);
+			if (PigDictionary.getInstance().isCountDistinctMethod(opTitle)) {
+				return getQueryPieceCountDistinct(out, tableName, groupTableName);
+			}
+		}
+		
 
 		if (selIt.hasNext()) {
 			Map<String, String> cur = selIt.next();
@@ -525,6 +547,112 @@ public class PigTableSelectInteraction extends TableInteraction {
 
 		return select;
 	}
+	
+	
+	public String getQueryPieceCountDistinct(DFEOutput out, String tableName,
+			String groupTableName) throws RemoteException {
+		logger.debug("select...");
+		String select = "";
+		String alias = getAlias();
+		Iterator<Map<String, String>> selIt = getValues().iterator();
+		
+		List<String> countDistinct = new LinkedList<String>();
+		while (selIt.hasNext()) {
+			Map<String, String> cur = selIt.next();
+			String featName = cur.get(table_feat_title);
+			String opTitle = cur.get(table_op_title);
+
+			if (PigDictionary.getInstance().isCountDistinctMethod(opTitle)) {
+				
+				opTitle = opTitle.replace(
+						PigDictionary.getBracketContent(opTitle),
+						groupTableName + "." + featName);
+				
+				countDistinct.add(PigDictionary.getBracketContent(opTitle));
+			}
+
+		}
+		if (!countDistinct.isEmpty()){
+			select += " FOREACH "+tableName+" {\n";
+			
+			int cont = 0;
+			for (String e : countDistinct){
+				select += "a"+cont+" = "+e+";\n";
+				select += "b"+cont+" = distinct a"+cont+";\n";
+				cont++;
+			}
+
+		}
+		
+		int cont = 0;
+		selIt = getValues().iterator();
+		if (selIt.hasNext()) {
+			Map<String, String> cur = selIt.next();
+			String featName = cur.get(table_feat_title);
+			String opTitle = cur.get(table_op_title);
+
+			if (PigDictionary.getInstance().isAggregatorMethod(opTitle)){
+				if(!PigDictionary.getInstance().isCountDistinctMethod(opTitle)) {
+					opTitle = opTitle.replace(
+						PigDictionary.getBracketContent(opTitle),
+						groupTableName + "." + featName);
+				}
+				else{
+					opTitle = "COUNT(b"+cont+")";
+					cont++;
+				}
+			}
+
+			select += "GENERATE " + opTitle + " AS "
+					+ featName;
+		}
+
+		
+		while (selIt.hasNext()) {
+			Map<String, String> cur = selIt.next();
+			String featName = cur.get(table_feat_title);
+			String opTitle = cur.get(table_op_title);
+
+			if (PigDictionary.getInstance().isAggregatorMethod(opTitle)){
+				if (!PigDictionary.getInstance().isCountDistinctMethod(opTitle)) {
+					opTitle = opTitle.replace(
+						PigDictionary.getBracketContent(opTitle),
+						groupTableName + "." + featName);
+				}
+				else{
+					opTitle = "COUNT(b"+cont+")";
+					cont++;
+				}
+			}	
+
+			select += ",\n       " + opTitle + " AS " + featName;
+		}
+		
+		select += ";}";
+
+		logger.debug("select looks like : " + select);
+
+		if (hs.getGroupingInt() != null) {
+			List<String> grList = hs.getGroupingInt().getValues();
+			if (grList.size() > 1) {
+				Iterator<String> grListIt = grList.iterator();
+				while (grListIt.hasNext()) {
+					String cur = grListIt.next();
+					select = select.replaceAll(
+							Pattern.quote(alias + "." + cur), "group." + cur);
+				}
+			} else if (grList.size() == 1) {
+				Iterator<String> grListIt = grList.iterator();
+				while (grListIt.hasNext()) {
+					String cur = grListIt.next();
+					select = select.replaceAll(
+							Pattern.quote(alias + "." + cur), "group");
+				}
+			}
+		}
+
+		return select;
+	}
 
 	/**
 	 * Generate the query piece for selecting the from the input
@@ -533,7 +661,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 	 * @return query
 	 * @throws RemoteException
 	 */
-	public String getCreateQueryPiece(DFEOutput out) throws RemoteException {
+	/*public String getCreateQueryPiece(DFEOutput out) throws RemoteException {
 		logger.debug("create features...");
 		String createSelect = "";
 		Iterator<Tree<String>> selIt = getTree().getFirstChild("table")
@@ -561,7 +689,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 		createSelect += ")";
 
 		return createSelect;
-	}
+	}*/
 
 	/**
 	 * Get the alias for the

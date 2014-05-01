@@ -176,7 +176,8 @@ public class PigDictionary extends AbstractDictionary {
 								"RANDOM()",
 								"",
 								"DOUBLE",
-								"@function:RANDOM()@short: Generate a random double@description:Generates a random double and returns it" }, });
+								"@function:RANDOM()@short: Generate a random double@description:Generates a random double and returns it" }
+						});
 
 		functionsMap
 				.put(mathMethods,
@@ -364,7 +365,15 @@ public class PigDictionary extends AbstractDictionary {
 										"MAX()",
 										"NUMBER",
 										"NUMBER",
-										"@function:MAX( ELEMENT )@short:Use the MAX function to compute the maximum of a set of numeric values in a single-column bag@param: ELEMENT item to get the maximum@description:Computes the maximum of the numeric values in a single-column bag. MAX requires a preceding GROUP ALL statement for global sums and a GROUP BY statement for group sums@example: MAX(A.id) returns the maximum value of A.id" } });
+										"@function:MAX( ELEMENT )@short:Use the MAX function to compute the maximum of a set of numeric values in a single-column bag@param: ELEMENT item to get the maximum@description:Computes the maximum of the numeric values in a single-column bag. MAX requires a preceding GROUP ALL statement for global sums and a GROUP BY statement for group sums@example: MAX(A.id) returns the maximum value of A.id" },
+								new String[] {
+										"COUNT_DISTINCT()",
+										"ANY",
+										"INT",
+										"@function:COUNT_DISTINCT( ELEMENT )@short:Computes the number of distinct elements in a bag@param:ELEMENT item to count@description:Use the COUNT_DISTINCT function to compute the number of distinct elements in a bag. COUNT_DISTINCT requires a preceding GROUP ALL statement for global counts and a GROUP BY statement for group counts."
+												+ "The COUNT_DISTINCT function follows syntax semantics and ignores nulls. What this means is that a tuple in the bag will not be counted if the FIRST FIELD in this tuple is NULL. If you want to include NULL values in the count computation, use COUNT_STAR."
+												+ "Note: You cannot use the tuple designator (*) with COUNT_DISTINCT; that is, COUNT_DISTINCT(*) will not work.@example: COUNT_DISTINCT(A) returns the frequency of A"}});
+		
 	}
 
 	/**
@@ -1004,6 +1013,11 @@ public class PigDictionary extends AbstractDictionary {
 	public boolean isAggregatorMethod(String expr) {
 		return isInList(functionsMap.get(agregationMethods), expr);
 	}
+	
+	
+	public boolean isCountDistinctMethod(String expr) {
+		return expr.startsWith("COUNT_DISTINCT(");
+	}
 
 	/**
 	 * Check if a expression is a non aggregation method
@@ -1069,8 +1083,11 @@ public class PigDictionary extends AbstractDictionary {
 						&& expr.trim().equalsIgnoreCase(method[0].trim())) {
 					// Hard-copy method
 					type = method[2];
-				} else if (sizeSearched != method[1].split(",").length) {
-					method = null;
+				} else{
+					int methodArgs = method[1].isEmpty() ? 0 : method[1].split(",").length;
+					if (sizeSearched != methodArgs) {
+						method = null;
+					}
 				}
 
 			}

@@ -167,7 +167,12 @@ public class HiveDictionary extends AbstractDictionary {
 		functionsMap.put(utilsMethods, new String[][] {
 				new String[] { "RAND()", "", "DOUBLE" },
 				new String[] { "FROM_UNIXTIME()", "INT", "STRING" },
-				new String[] { "CAST( AS )", "ANY,TYPE", "TYPE" } });
+				new String[] { "CAST( AS )", "ANY,TYPE", "TYPE" },
+				new String[] {
+						"DISTINCT()",
+						"ANY",
+						"ANY",
+						"@function:DISTINCT( ELEMENT )@short:The DISTINCT statement is used to return only distinct (different) values."}});
 
 		functionsMap
 				.put(doubleMethods,
@@ -301,7 +306,9 @@ public class HiveDictionary extends AbstractDictionary {
 										"MAX()",
 										"NUMBER",
 										"DOUBLE",
-										"@function:MAX( ELEMENT )@short:Use the MAX function to compute the maximum of a set of numeric values in a single-column table@param: ELEMENT item to get the maximum@description:Computes the maximum of the numeric values in a single-column table. @example: MAX(A.id) returns the maximum value of A.id" } });
+										"@function:MAX( ELEMENT )@short:Use the MAX function to compute the maximum of a set of numeric values in a single-column table@param: ELEMENT item to get the maximum@description:Computes the maximum of the numeric values in a single-column table. @example: MAX(A.id) returns the maximum value of A.id" },
+		
+								});
 	}
 
 	public static FeatureType getType(String hiveType) {
@@ -900,8 +907,11 @@ public class HiveDictionary extends AbstractDictionary {
 						&& expr.trim().equalsIgnoreCase(method[0].trim())) {
 					// Hard-copy method
 					type = method[2];
-				} else if (sizeSearched != method[1].split(",").length) {
-					method = null;
+				} else{
+					int methodArgs = method[1].isEmpty() ? 0 : method[1].split(",").length;
+					if (sizeSearched != methodArgs) {
+						method = null;
+					}
 				}
 
 			}
@@ -918,6 +928,9 @@ public class HiveDictionary extends AbstractDictionary {
 					}
 				} else if (check(method, argSplit, features)) {
 					type = method[2];
+					if (type.equals("ANY")){
+						type = getReturnType(argSplit[0], features);
+					}
 				}
 			} else if (type == null) {
 				String error = "No method " + methodsFound.get(0)[0] + " with "

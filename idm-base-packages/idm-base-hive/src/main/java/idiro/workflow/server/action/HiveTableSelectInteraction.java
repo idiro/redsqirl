@@ -58,6 +58,8 @@ public class HiveTableSelectInteraction extends TableInteraction {
 	gen_operation_sum = "SUM",
 	/** count generation */
 	gen_operation_count = "COUNT",
+	/** count distinct generation */
+	gen_operation_count_distinct = "COUNT_DISTINCT",
 	/** audit generation */
 	gen_operation_audit = "AUDIT";
 
@@ -200,12 +202,18 @@ public class HiveTableSelectInteraction extends TableInteraction {
 			addGeneratorRows(gen_operation_count, featList, fl, operationsList,
 					alias);
 			operationsList.clear();
+			
+			operationsList.add(gen_operation_count_distinct);
+			addGeneratorRows(gen_operation_count_distinct, featList, fl, operationsList,
+					alias);
+			operationsList.clear();
 
 			operationsList.add(gen_operation_max);
 			operationsList.add(gen_operation_min);
 			operationsList.add(gen_operation_avg);
 			operationsList.add(gen_operation_sum);
 			operationsList.add(gen_operation_count);
+			operationsList.add(gen_operation_count_distinct);
 			addGeneratorRows(gen_operation_audit, featList, fl, operationsList,
 					alias);
 			operationsList.clear();
@@ -240,7 +248,12 @@ public class HiveTableSelectInteraction extends TableInteraction {
 	public String addOperation(String feat, String operation) {
 		String result = "";
 		if (!operation.isEmpty()) {
-			result = operation + "(" + feat + ")";
+			if (operation.equals(gen_operation_count_distinct)){
+				result = operation.replace("_", "(") + "(" + feat + "))";
+			}
+			else{
+				result = operation + "(" + feat + ")";
+			}
 		} else {
 			result = feat;
 		}
@@ -302,8 +315,9 @@ public class HiveTableSelectInteraction extends TableInteraction {
 				logger.info("trying to add type for " + cur);
 				if (operation.equalsIgnoreCase(gen_operation_avg)) {
 					row.put(table_type_title, "DOUBLE");
-				} else if (operation.equalsIgnoreCase(gen_operation_count)) {
-					row.put(table_type_title, "INT");
+				} else if (operation.equalsIgnoreCase(gen_operation_count) ||
+						operation.equalsIgnoreCase(gen_operation_count_distinct)) {
+					row.put(table_type_title, "BIGINT");
 				} else {
 					row.put(table_type_title,
 							HiveDictionary.getHiveType(in.getFeatureType(cur)));
@@ -488,6 +502,7 @@ public class HiveTableSelectInteraction extends TableInteraction {
 		types.add(FeatureType.DOUBLE.name());
 		types.add(FeatureType.FLOAT.name());
 		types.add(FeatureType.STRING.name());
+		types.add("BIGINT");
 
 		addColumn(table_type_title, null, types, null);
 	}
