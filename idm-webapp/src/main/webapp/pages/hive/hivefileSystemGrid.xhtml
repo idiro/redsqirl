@@ -38,7 +38,7 @@
 				<a4j:actionparam name="nameFile"/>
 			</a4j:jsFunction>
 			
-			<a4j:jsFunction name="updateTableHive" action="#{hiveBean.selectFile}" reRender="hivefs,hivepath">
+			<a4j:jsFunction name="updateTableHive" action="#{hiveBean.selectFile}" reRender="hivefs,hivepath" oncomplete="resizeTables();">
 				<a4j:actionparam name="nameFile"/>
 			</a4j:jsFunction>
 

@@ -50,7 +50,7 @@
 				<a4j:actionparam name="nameFile" />
 			</a4j:jsFunction>
 
-			<a4j:jsFunction name="updateTableHdfsGrid" action="#{hdfsBean.selectFile}" reRender="hdfsfs,hdfspath" >
+			<a4j:jsFunction name="updateTableHdfsGrid" action="#{hdfsBean.selectFile}" reRender="hdfsfs,hdfspath" oncomplete="resizeTables();" >
 				<a4j:actionparam name="nameFile" />
 			</a4j:jsFunction>
 			

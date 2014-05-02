@@ -150,12 +150,19 @@
                     <rich:panel style="border:none;" id="helpTextEditorPanel" >
                         <h:outputText value="#{messages.label_formula}" />
                         <br/>
-                        <h:inputTextarea maxlength="100" cols="70" rows="10" value="#{interCur.editor.textEditorValue}" style="resize:none;border:1px solid;" id="command">
-                            <a4j:support event="onclick" action="#{canvasModalBean.openHelpTextEditorModal}" oncomplete="#{rich:component('textEditorPanel')}.show()" 
-                                reRender="commandText,listFields,listFunctions,listCategories,listOperation,listCategoriesOperation" rendered="#{interCur.editor.openPopup == 'Y'}" >
-                                <a4j:actionparam name="idInteraction" value="#{interCur.id}"/>
-                            </a4j:support>
+                        
+                        <h:inputTextarea maxlength="100" cols="90" rows="10" value="#{interCur.editor.textEditorValue}" 
+                        	style="resize:none;border:1px solid;" id="command">
+                        	
+                       		<a4j:commandButton action="#{canvasModalBean.openHelpTextEditorModal}" value=". . ."  
+	                        	reRender="commandText,listFields,listFunctions,listCategories,listOperation,listCategoriesOperation" 
+	                            oncomplete="#{rich:component('textEditorPanel')}.show()" style="float:right;margin-right:57px;height: 46px;" 
+	                            rendered="#{interCur.editor.openPopup == 'Y'}">
+	                            <a4j:actionparam name="idInteraction" value="#{interCur.id}"/>
+							</a4j:commandButton>
+                            
                         </h:inputTextarea>
+                        
                         <br/>
                         <br/>
                     </rich:panel>
@@ -238,17 +245,23 @@
                                         <f:selectItems value="#{interCur.table.tableConstraints[column]}" />
                                     </rich:comboBox>
         
-                                    <h:inputText value="#{rowItem.row[ind]}"
-                                        rendered="#{interCur.columnType[column] == 'editor' }"
-                                        styleClass="tableInteractionInput">
-                                        <a4j:support event="onclick" action="#{canvasModalBean.openHelpTextEditorModal}" 
-                                            oncomplete="#{rich:component('textEditorPanel')}.show()" 
-                                            reRender="commandText,listFields,listFunctions,listCategories,listOperation,listCategoriesOperation,command,tableInteraction">
-                                            <a4j:actionparam  name="idInteraction" value="#{interCur.id}"/>
-                                            <a4j:actionparam  name="rowKey" value="#{rowNb}"/>
-                                            <a4j:actionparam  name="column" value="#{column}"/>
-                                        </a4j:support>
-                                    </h:inputText>
+        							<table>
+	        							<tr>
+	        								<td>
+	        									
+	        									<h:inputText value="#{rowItem.row[ind]}" rendered="#{interCur.columnType[column] == 'editor' }" styleClass="tableInteractionInput" >
+			                                   	<a4j:commandButton action="#{canvasModalBean.openHelpTextEditorModal}" value="..." style="float: right;" 
+			                                   		reRender="commandText,listFields,listFunctions,listCategories,listOperation,listCategoriesOperation,command,tableInteraction" 
+			                                   		oncomplete="#{rich:component('textEditorPanel')}.show()">
+			                                   		<a4j:actionparam  name="idInteraction" value="#{interCur.id}"/>
+			                                           <a4j:actionparam  name="rowKey" value="#{rowNb}"/>
+			                                           <a4j:actionparam  name="column" value="#{column}"/>
+												</a4j:commandButton>
+												</h:inputText>
+	        								
+	        								</td>
+	        							</tr>
+                                    </table>
         
                                 </rich:columns>
         
