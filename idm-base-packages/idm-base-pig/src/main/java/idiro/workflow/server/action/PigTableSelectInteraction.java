@@ -396,6 +396,11 @@ public class PigTableSelectInteraction extends TableInteraction {
 						continue;
 					}
 				}
+				else{
+					if (operation.equalsIgnoreCase(gen_operation_count_distinct)) {
+						continue;
+					}
+				}
 
 				String optitleRow = addOperation(cur, operation);
 				row.put(table_op_title, optitleRow);

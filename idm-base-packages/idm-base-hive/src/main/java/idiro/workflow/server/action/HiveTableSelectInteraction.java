@@ -295,6 +295,11 @@ public class HiveTableSelectInteraction extends TableInteraction {
 						continue;
 					}
 				}
+				else{
+					if (operation.equalsIgnoreCase(gen_operation_count_distinct)) {
+						continue;
+					}
+				}
 
 				String optitleRow = "";
 				String featname;
