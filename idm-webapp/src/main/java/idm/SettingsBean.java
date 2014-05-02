@@ -3,8 +3,6 @@ package idm;
 import idiro.workflow.server.WorkflowPrefManager;
 import idm.useful.MessageUseful;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collections;
@@ -83,14 +81,14 @@ public class SettingsBean extends BaseBean implements Serializable  {
 		String error = null;
 		if(isAdmin()){	
 			try {
-				getProps(sysSettings).store(new FileWriter(new File(WorkflowPrefManager.pathSysCfgPref.get())), "");
+				WorkflowPrefManager.storeSysProperties(getProps(sysSettings));
 			} catch (IOException e) {
 				error = e.getMessage();
 			}
 		}
 		if(error == null){
 			try {
-				getProps(userSettings).store(new FileWriter(new File(WorkflowPrefManager.pathUserCfgPref.get())), "");
+				getPrefs().storeUserProperties(getProps(userSettings));
 			} catch (IOException e) {
 				error = e.getMessage();
 			}

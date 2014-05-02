@@ -1,12 +1,10 @@
 package idiro.workflow.server;
 
 import idiro.BlockManager;
-import idiro.Log;
 import idiro.hadoop.NameNodeVar;
 import idiro.tm.task.in.Preference;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Properties;
@@ -56,36 +54,36 @@ public class WorkflowPrefManager extends BlockManager {
 	 */
 	pathSystemPref = new Preference<String>(systemPrefs,
 			"Path to store/retrieve system preferences", pathSysHome.get()
-					+ "/conf"),
+			+ "/conf"),
 
 			/**
 			 * Path of the packages
 			 */
 			pathSysPackagePref = new Preference<String>(systemPrefs,
 					"Path to retrieve system packages", pathSysHome.get()
-							+ "/packages"),
-			/**
-			 * System preference file
-			 */
-			pathSysCfgPref = new Preference<String>(systemPrefs,
-					"Path to retrieve general system configuration",
-					pathSystemPref.get() + "/idm_sys.properties"),
-			/**
-			 * System lang preference file.These properties are optional and are
-			 * used by the front-end to give a bit more details about user
-			 * settings. For each user property, you can create a #{key}_label
-			 * and a #{key}_desc property.
-			 */
-			pathSysLangCfgPref = new Preference<String>(systemPrefs,
-					"Path to retrieve labels of sys parameters",
-					pathSystemPref.get() + "/idm_sys_lang.properties"),
+					+ "/packages"),
+					/**
+					 * System preference file
+					 */
+					pathSysCfgPref = new Preference<String>(systemPrefs,
+							"Path to retrieve general system configuration",
+							pathSystemPref.get() + "/idm_sys.properties"),
+							/**
+							 * System lang preference file.These properties are optional and are
+							 * used by the front-end to give a bit more details about user
+							 * settings. For each user property, you can create a #{key}_label
+							 * and a #{key}_desc property.
+							 */
+							pathSysLangCfgPref = new Preference<String>(systemPrefs,
+									"Path to retrieve labels of sys parameters",
+									pathSystemPref.get() + "/idm_sys_lang.properties"),
 
-			/**
-			 * Path users folder
-			 */
-			pathUsersFolder = new Preference<String>(systemPrefs,
-					"Path to store/retrieve system preferences",
-					pathSysHome.get() + "/users");
+									/**
+									 * Path users folder
+									 */
+									pathUsersFolder = new Preference<String>(systemPrefs,
+											"Path to store/retrieve system preferences",
+											pathSysHome.get() + "/users");
 
 	private static String
 	/**
@@ -93,55 +91,55 @@ public class WorkflowPrefManager extends BlockManager {
 	 */
 	pathUserPref = pathUsersFolder.get() + "/"
 			+ System.getProperty("user.name"),
-	/**
-	 * Where to find the icons menu. Accessible from idm-workflow side.
-	 */
-	pathIconMenu = pathUserPref + "/icon_menu",
-	/**
-	 * User Tmp folder. Accessible from idm-workflow side.
-	 */
-	pathTmpFolder = pathUserPref + "/tmp",
-	/**
-	 * The local directory to store oozie specific data. Accessible from
-	 * idm-workflow side.
-	 */
-	pathOozieJob = pathUserPref + "/jobs",
-	/**
-	 * The local directory to store temporarily workflow. Accessible from
-	 * idm-workflow side.
-	 */
-	pathWorkflow = pathUserPref + "/workflows",
-	/**
-	 * Colour pref file. Accessible from idm-workflow side.
-	 */
-	pathUserDFEOutputColour = pathUserPref + "/output_colours.properties",
-	/**
-	 * Path of the user packages. Accessible from idm-workflow side.
-	 */
-	pathUserPackagePref = pathUserPref + "/packages",
-	/**
-	 * Lib Path for system package
-	 */
-	sysPackageLibPath = pathSysHome.get() + "/lib/packages",
-	/**
-	 * Lib Path for user package. Accessible from idm-workflow side.
-	 */
-	userPackageLibPath = pathUserPref + "/lib/packages",
-	/**
-	 * Help directory path from package install directory.
-	 */
-	pathSysHelpPref = "/packages/help",
+			/**
+			 * Where to find the icons menu. Accessible from idm-workflow side.
+			 */
+			pathIconMenu = pathUserPref + "/icon_menu",
+			/**
+			 * User Tmp folder. Accessible from idm-workflow side.
+			 */
+			pathTmpFolder = pathUserPref + "/tmp",
+			/**
+			 * The local directory to store oozie specific data. Accessible from
+			 * idm-workflow side.
+			 */
+			pathOozieJob = pathUserPref + "/jobs",
+			/**
+			 * The local directory to store temporarily workflow. Accessible from
+			 * idm-workflow side.
+			 */
+			pathWorkflow = pathUserPref + "/workflows",
+			/**
+			 * Colour pref file. Accessible from idm-workflow side.
+			 */
+			pathUserDFEOutputColour = pathUserPref + "/output_colours.properties",
+			/**
+			 * Path of the user packages. Accessible from idm-workflow side.
+			 */
+			pathUserPackagePref = pathUserPref + "/packages",
+			/**
+			 * Lib Path for system package
+			 */
+			sysPackageLibPath = pathSysHome.get() + "/lib/packages",
+			/**
+			 * Lib Path for user package. Accessible from idm-workflow side.
+			 */
+			userPackageLibPath = pathUserPref + "/lib/packages",
+			/**
+			 * Help directory path from package install directory.
+			 */
+			pathSysHelpPref = "/packages/help",
 
-	/**
-	 * Icon Image directory path from package install directory.
-	 */
-	pathSysImagePref = "/packages/images",
+			/**
+			 * Icon Image directory path from package install directory.
+			 */
+			pathSysImagePref = "/packages/images",
 
-	/**
-	 * Icon Image directory path for user packages. Accessible from idm-workflow
-	 * side.
-	 */
-	pathUserImagePref = "/packages/" + System.getProperty("user.name")
+			/**
+			 * Icon Image directory path for user packages. Accessible from idm-workflow
+			 * side.
+			 */
+			pathUserImagePref = "/packages/" + System.getProperty("user.name")
 			+ "/images",
 
 			/**
@@ -149,7 +147,7 @@ public class WorkflowPrefManager extends BlockManager {
 			 * idm-workflow side.
 			 */
 			pathUserHelpPref = "/packages/" + System.getProperty("user.name")
-					+ "/help";
+			+ "/help";
 
 	// User preferences
 	/**
@@ -168,14 +166,14 @@ public class WorkflowPrefManager extends BlockManager {
 	 */
 	pathUserCfgPref = new Preference<String>(userPrefs,
 			"Path to retrieve general user configuration", pathUserPref
-					+ "/idm_user.properties"),
-	/**
-	 * User lang properties. These properties are optional and are used by the
-	 * front-end to give a bit more details about user settings. For each user
-	 * property, you can create a #{key}_label and a #{key}_desc property.
-	 */
-	pathUserLangCfgPref = new Preference<String>(userPrefs,
-			"Path to retrieve labels of sys parameters", pathUserPref
+			+ "/idm_user.properties"),
+			/**
+			 * User lang properties. These properties are optional and are used by the
+			 * front-end to give a bit more details about user settings. For each user
+			 * property, you can create a #{key}_label and a #{key}_desc property.
+			 */
+			pathUserLangCfgPref = new Preference<String>(userPrefs,
+					"Path to retrieve labels of sys parameters", pathUserPref
 					+ "/idm_user_lang.properties");
 
 	/**
@@ -185,19 +183,19 @@ public class WorkflowPrefManager extends BlockManager {
 
 	/** Namenode url */
 	public static final String sys_namenode = "namenode",
-	/** idiro engine path */
-	sys_idiroEngine_path = "idiroengine_path",
-	/** Max number of workers for Giraph */
-	sys_max_workers = "max_workers",
-	/** Job Tracker URL for hadoop */
-	sys_jobtracker = "jobtracker",
-	/** Default queue for hadoop */
-	sys_oozie_queue = "queue",
-	/** Oozie URL */
-	sys_oozie = "oozie_url",
-	/** Oozie xml schema location */
-	sys_oozie_xmlns = "oozie_xmlns",
-	// sys_oozie_build_mode = "oozie_build_mode",
+			/** idiro engine path */
+			sys_idiroEngine_path = "idiroengine_path",
+			/** Max number of workers for Giraph */
+			sys_max_workers = "max_workers",
+			/** Job Tracker URL for hadoop */
+			sys_jobtracker = "jobtracker",
+			/** Default queue for hadoop */
+			sys_oozie_queue = "queue",
+			/** Oozie URL */
+			sys_oozie = "oozie_url",
+			/** Oozie xml schema location */
+			sys_oozie_xmlns = "oozie_xmlns",
+			// sys_oozie_build_mode = "oozie_build_mode",
 			/** Default Hive XML */
 			sys_hive_default_xml = "hive_default_xml",
 			/** Hive XML */
@@ -218,16 +216,19 @@ public class WorkflowPrefManager extends BlockManager {
 			sys_admin_user = "admin_user";
 	/** Hive JDBC Url */
 	public static final String user_hive = "hive_jdbc_url",
-	/** Path to Private Key */
-	user_rsa_private = "private_rsa_key",
-	/** Backup Path of workflow on HFDS */
-	user_backup = "backup_path",
-	/** Maximum Number of Paths */
-	user_nb_backup = "number_backup",
-	/** Number of oozie job directories to keep */
-	user_nb_oozie_dir_tokeep = "number_oozie_job_directory_tokeep",
-	/** Path on HDFS to store Oozie Jobs */
-	user_hdfspath_oozie_job = "hdfspath_oozie_job";
+			/** Path to Private Key */
+			user_rsa_private = "private_rsa_key",
+			/** Backup Path of workflow on HFDS */
+			user_backup = "backup_path",
+			/** Maximum Number of Paths */
+			user_nb_backup = "number_backup",
+			/** Number of oozie job directories to keep */
+			user_nb_oozie_dir_tokeep = "number_oozie_job_directory_tokeep",
+			/** Path on HDFS to store Oozie Jobs */
+			user_hdfspath_oozie_job = "hdfspath_oozie_job";
+
+
+	private static LocalProperties props;
 
 	/**
 	 * Constructor.
@@ -243,10 +244,13 @@ public class WorkflowPrefManager extends BlockManager {
 	 */
 	public static WorkflowPrefManager getInstance() {
 		if (!runner.init) {
-			runner.init = true;
-			// Loads in the log settings.
-			Log.init();
-			NameNodeVar.set(getUserProperty(sys_namenode));
+			try{
+				props = new LocalProperties();
+				NameNodeVar.set(getUserProperty(sys_namenode));
+				runner.init = true;
+			}catch(Exception e){
+				runner.init = false;
+			}
 		}
 		return runner;
 	}
@@ -333,13 +337,13 @@ public class WorkflowPrefManager extends BlockManager {
 
 		pathSysPackagePref = new Preference<String>(systemPrefs,
 				"Path to retrieve system packages", pathSysHome.get()
-						+ "/packages");
+				+ "/packages");
 		pathSysCfgPref = new Preference<String>(systemPrefs,
 				"Path to retrieve general system configuration",
 				pathSystemPref.get() + "/idm_sys.properties");
 		pathUsersFolder = new Preference<String>(systemPrefs,
 				"Path to store/retrieve system preferences", pathSysHome.get()
-						+ "/users");
+				+ "/users");
 
 		pathUserPref = pathUsersFolder.get() + "/"
 				+ System.getProperty("user.name");
@@ -362,7 +366,7 @@ public class WorkflowPrefManager extends BlockManager {
 
 		pathUserCfgPref = new Preference<String>(userPrefs,
 				"Path to retrieve general user configuration", pathUserPref
-						+ "/idm_user.properties");
+				+ "/idm_user.properties");
 	}
 
 	/**
@@ -380,142 +384,6 @@ public class WorkflowPrefManager extends BlockManager {
 	 */
 	public static void resetUser() {
 		pathUserCfgPref.remove();
-	}
-
-	/**
-	 * Get the properties for System
-	 * 
-	 * @return system properties
-	 */
-	public static Properties getSysProperties() {
-		Properties prop = new Properties();
-		try {
-			prop.load(new FileReader(new File(pathSysCfgPref.get())));
-		} catch (Exception e) {
-			logger.error("Error when loading " + pathSysCfgPref.get() + " "
-					+ e.getMessage());
-		}
-		return prop;
-	}
-
-	/**
-	 * Get the lang properties for the System
-	 * 
-	 * @return
-	 */
-	public static Properties getSysLangProperties() {
-		Properties prop = new Properties();
-		try {
-			prop.load(new FileReader(new File(pathSysLangCfgPref.get())));
-		} catch (Exception e) {
-			logger.error("Error when loading " + pathSysLangCfgPref.get() + " "
-					+ e.getMessage());
-		}
-		return prop;
-	}
-
-	/**
-	 * Get the properties for System
-	 * 
-	 * @return system properties
-	 */
-	public static Properties getUserProperties() {
-		Properties prop = new Properties();
-		try {
-			prop.load(new FileReader(new File(pathUserCfgPref.get())));
-		} catch (Exception e) {
-			logger.error("Error when loading " + pathUserCfgPref + " "
-					+ e.getMessage());
-		}
-		return prop;
-	}
-
-	/**
-	 * Get the user properties a given user.
-	 * 
-	 * @param user
-	 *            The user name
-	 * @return The user properties.
-	 */
-	public static Properties getUserProperties(String user) {
-		Properties prop = new Properties();
-		try {
-			prop.load(new FileReader(new File(getPathUserPref(user)
-					+ "/idm_user.properties")));
-		} catch (Exception e) {
-			logger.error("Error when loading " + getPathUserPref(user)
-					+ "/idm_user.properties" + e.getMessage());
-		}
-		return prop;
-	}
-
-	/**
-	 * Get the lang properties of the given user.
-	 * 
-	 * @param user
-	 *            The user name
-	 * @return The lang user properties.
-	 */
-	public static Properties getUserLangProperties(String user) {
-		Properties prop = new Properties();
-		try {
-			prop.load(new FileReader(new File(getPathUserPref(user)
-					+ "/idm_user_lang.properties")));
-		} catch (Exception e) {
-			logger.error("Error when loading " + getPathUserPref(user)
-					+ "/idm_user_lang.properties" + e.getMessage());
-		}
-		return prop;
-	}
-
-	/**
-	 * Get a System property
-	 * 
-	 * @param key
-	 *            property to receive
-	 * @return property from system properties
-	 */
-	public static String getSysProperty(String key) {
-		return getSysProperties().getProperty(key);
-	}
-
-	/**
-	 * 
-	 * Get a System property
-	 * 
-	 * @param key
-	 *            property requested
-	 * @param defaultValue
-	 *            if requested value is null
-	 * @return property from system properties
-	 */
-	public static String getSysProperty(String key, String defaultValue) {
-		return getSysProperties().getProperty(key, defaultValue);
-	}
-
-	/**
-	 * Get a User property
-	 * 
-	 * @param key
-	 *            property to receive
-	 * @return property from user properties
-	 */
-	public static String getUserProperty(String key) {
-		return getUserProperties().getProperty(key);
-	}
-
-	/**
-	 * 
-	 * Get a User property
-	 * 
-	 * @param key
-	 *            property requested
-	 * @param defaultValue
-	 *            if requested value is null
-	 * @return property from User properties
-	 */
-	public static String getUserProperty(String key, String defaultValue) {
-		return getUserProperties().getProperty(key, defaultValue);
 	}
 
 	/**
@@ -866,6 +734,111 @@ public class WorkflowPrefManager extends BlockManager {
 	 */
 	public static String getPathSysHelpPref() {
 		return pathSysHelpPref;
+	}
+
+	/**
+	 * @return
+	 * @see idiro.workflow.server.LocalProperties#getSysProperties()
+	 */
+	public static Properties getSysProperties() {
+		return props.getSysProperties();
+	}
+
+	/**
+	 * @param prop
+	 * @throws IOException
+	 * @see idiro.workflow.server.LocalProperties#storeSysProperties(java.util.Properties)
+	 */
+	public static void storeSysProperties(Properties prop) throws IOException {
+		props.storeSysProperties(prop);
+	}
+
+	/**
+	 * @return
+	 * @see idiro.workflow.server.LocalProperties#getSysLangProperties()
+	 */
+	public static Properties getSysLangProperties() {
+		return props.getSysLangProperties();
+	}
+
+	/**
+	 * @return
+	 * @see idiro.workflow.server.LocalProperties#getUserProperties()
+	 */
+	public static Properties getUserProperties() {
+		return props.getUserProperties();
+	}
+
+	/**
+	 * @param prop
+	 * @throws IOException
+	 * @see idiro.workflow.server.LocalProperties#storeUserProperties(java.util.Properties)
+	 */
+	public static void storeUserProperties(Properties prop) throws IOException {
+		props.storeUserProperties(prop);
+	}
+
+	/**
+	 * @param user
+	 * @return
+	 * @see idiro.workflow.server.LocalProperties#getUserProperties(java.lang.String)
+	 */
+	public static Properties getUserProperties(String user) {
+		return props.getUserProperties(user);
+	}
+
+	/**
+	 * @param user
+	 * @return
+	 * @see idiro.workflow.server.LocalProperties#getUserLangProperties(java.lang.String)
+	 */
+	public static Properties getUserLangProperties(String user) {
+		return props.getUserLangProperties(user);
+	}
+
+	/**
+	 * @param key
+	 * @return
+	 * @see idiro.workflow.server.LocalProperties#getSysProperty(java.lang.String)
+	 */
+	public static String getSysProperty(String key) {
+		return props.getSysProperty(key);
+	}
+
+	/**
+	 * @param key
+	 * @param defaultValue
+	 * @return
+	 * @see idiro.workflow.server.LocalProperties#getSysProperty(java.lang.String, java.lang.String)
+	 */
+	public static String getSysProperty(String key, String defaultValue) {
+		return props.getSysProperty(key, defaultValue);
+	}
+
+	/**
+	 * @param key
+	 * @return
+	 * @see idiro.workflow.server.LocalProperties#getUserProperty(java.lang.String)
+	 */
+	public static String getUserProperty(String key) {
+		return props.getUserProperty(key);
+	}
+
+	/**
+	 * @param key
+	 * @param defaultValue
+	 * @return
+	 * @see idiro.workflow.server.LocalProperties#getUserProperty(java.lang.String, java.lang.String)
+	 */
+	public static String getUserProperty(String key, String defaultValue) {
+		return props.getUserProperty(key, defaultValue);
+	}
+
+	/**
+	 * @return the props
+	 */
+	public static final LocalProperties getProps() {
+		return props;
 	}
 
 }

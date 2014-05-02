@@ -103,6 +103,14 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 		}
 		return ans;
 	}
+	
+	public Set<String> getBrowsersName(){
+		return new HashSet<String>(datastores.keySet());
+	}
+	
+	public DataStore getBrowser(String browserName){
+		return datastores.get(browserName);
+	}
 
 	/**
 	 * Add a Workflow to the list
@@ -224,7 +232,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	/**
 	 * @return the datastores
 	 */
-	public Map<String,DataStore> getDatastores() {
+	private Map<String,DataStore> getDatastores() {
 		return datastores;
 	}
 }

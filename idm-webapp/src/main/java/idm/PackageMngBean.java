@@ -39,6 +39,9 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	private static Logger logger = Logger.getLogger(PackageMngBean.class);
 
+
+	private PackageManager pckManager = new PackageManager();
+	
 	private boolean showMain = true;
 	private boolean userInstall = true;
 	private IdmPackage curPackage;
@@ -172,12 +175,11 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	public void calcSystemPackages() throws RemoteException{
 		logger.info("sys package");
-		PackageManager sysPckManager = new PackageManager();
-		Iterator<String> it = sysPckManager.getPackageNames(null).iterator();
+		Iterator<String> it = pckManager.getPackageNames(null).iterator();
 		List<SelectItem> result = new ArrayList<SelectItem>();
 		while(it.hasNext()){
 			String pck = it.next();
-			String version = sysPckManager.getPackageProperty(null, pck, PackageManager.property_version);
+			String version = pckManager.getPackageProperty(null, pck, PackageManager.property_version);
 			result.add(new SelectItem(pck,pck+"-"+version));
 		}
 		setSystemPackages(result);
@@ -188,11 +190,11 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext()
 				.getSession(false);
 		String user = (String) session.getAttribute("username");
-		Iterator<String> it = getPckMng().getPackageNames(user).iterator();
+		Iterator<String> it = pckManager.getPackageNames(user).iterator();
 		List<SelectItem> result = new ArrayList<SelectItem>();
 		while(it.hasNext()){
 			String pck = it.next();
-			String version = getPckMng().getPackageProperty(user, pck, PackageManager.property_version);
+			String version = pckManager.getPackageProperty(user, pck, PackageManager.property_version);
 			result.add(new SelectItem(pck,pck+"-"+version));
 		}
 		setUserPackages(result);
@@ -212,7 +214,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 			HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext()
 					.getSession(false);
 			String user = (String) session.getAttribute("username");
-			logger.info(getPckMng().removePackage(user,unUserPackage));
+			logger.info(pckManager.removePackage(user,unUserPackage));
 		}
 	}
 
@@ -283,7 +285,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 						HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext()
 								.getSession(false);
 						String user = (String) session.getAttribute("username");
-						error = getPckMng().addPackage(user, 
+						error = pckManager.addPackage(user, 
 								new String[]{pckFile.getAbsolutePath()});
 					}
 				} catch (MalformedURLException e) {

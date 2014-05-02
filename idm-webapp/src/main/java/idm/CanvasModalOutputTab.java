@@ -1,7 +1,5 @@
 package idm;
 
-import idiro.workflow.server.connect.interfaces.DataFlowInterface;
-import idiro.workflow.server.connect.interfaces.DataStore;
 import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.enumeration.SavingState;
 import idiro.workflow.server.interfaces.DFEOutput;
@@ -12,8 +10,6 @@ import idm.useful.MessageUseful;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +18,6 @@ import java.util.Map.Entry;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
@@ -78,8 +73,7 @@ public class CanvasModalOutputTab implements Serializable{
 	/**
 	 * List of the FileSystem available for configuring an output.
 	 */
-	private static Map<String,FileSystemBean> datastores;
-
+	private Map<String,FileSystemBean> datastores;
 	/**
 	 * Constructor.
 	 * The constructor will automatically load the first name as current name used.
@@ -87,22 +81,9 @@ public class CanvasModalOutputTab implements Serializable{
 	 * @param dfe
 	 * @throws RemoteException
 	 */
-	public CanvasModalOutputTab(DataFlowElement dfe) throws RemoteException{
+	public CanvasModalOutputTab(Map<String,FileSystemBean> datastores, DataFlowElement dfe) throws RemoteException{
 		this.dfe = dfe;
-		if(datastores == null){
-			FacesContext fCtx = FacesContext.getCurrentInstance();
-			HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
-			Map<String,DataStore> outDatastores = ((DataFlowInterface) session.getAttribute("wfm")).getDatastores();
-			datastores = new LinkedHashMap<String,FileSystemBean>();
-			Iterator<String> storeName = outDatastores.keySet().iterator();
-			while(storeName.hasNext()){
-				String name = storeName.next();
-				FileSystemBean newFS = new FileSystemBean();
-				newFS.setDataStore(outDatastores.get(name));
-				newFS.mountTable();
-				datastores.put(name, newFS);
-			}
-		}
+		this.datastores = datastores;
 		try{
 			resetNameOutput();
 			updateDFEOutputTable();

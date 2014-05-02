@@ -255,7 +255,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		beans.add("hive");
 		beans.add("oozie");
 		beans.add("hdfs");
-		beans.add("pckmng");
+		beans.add("prefs");
 		beans.add("hdfsbrowser");
 
 		FacesContext fCtx = FacesContext.getCurrentInstance();
@@ -263,18 +263,8 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
 		
 		try{
-//			for (String bean : beans){
-//				if(session.getAttribute(bean)!=null){
-//					session.removeAttribute(bean);
-//				}
-//			}
-//			
-//			if(session.getAttribute("serverThread")!=null){
-//				session.removeAttribute("serverThread");
-//			}
-//			if(sc.getAttribute("registry")!=null){
-//				sc.removeAttribute("registry");
-//			}
+			//Init workflow preference
+			WorkflowPrefManager.getInstance();
 			
 			// Create home folder for this user if it does not exist yet
 			WorkflowPrefManager.createUserHome(user);

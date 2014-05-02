@@ -3,7 +3,6 @@ package idiro.workflow.utils;
 import idiro.utils.LocalFileSystem;
 import idiro.utils.UnZip;
 import idiro.workflow.server.WorkflowPrefManager;
-import idiro.workflow.server.connect.interfaces.PckManager;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -31,7 +30,7 @@ import org.apache.log4j.Logger;
  * @author etienne
  * 
  */
-public class PackageManager extends UnicastRemoteObject implements PckManager {
+public class PackageManager extends UnicastRemoteObject {
 
 	/**
 	 * 
