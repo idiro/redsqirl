@@ -10,7 +10,6 @@ import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.interfaces.DFEOutput;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -20,7 +19,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.jruby.compiler.ir.instructions.GetConstInstr;
 
 /**
  * Utilities for writing HiveQL operations. The class can: - generate a help for
@@ -319,18 +317,18 @@ public class HiveDictionary extends AbstractDictionary {
 						new String[][] {
 								new String[] {
 										"CASE () END",
-										"EXPRESSION<ANY>[]",
-										"ANY",
+										"",
+										"",
 										"@function:AND@short:Boolean AND@param:boolean variable@param:boolean variable@description:boolean logic that returns true if the variables are equal@example:TRUE AND TRUE" },
 								new String[] {
 										"WHEN () THEN ()",
-										"BOOLEAN,ANY",
-										"EXPRESSION<ANY>",
+										"",
+										"",
 										"@function:OR@short:Boolean OR@param:boolean variable@param:boolean variable@description:boolean logic that returns true if the varables are not the same@example:TRUE OR FALSE" },
 								new String[] {
 										"ELSE ()",
-										"ANY",
-										"EXPRESSION<ANY>",
+										"",
+										"",
 										"@function:NOT@short:Boolean NOT@param:boolean variable@param:boolean variable@description:boolean logic that returns true if the varables are  not equal@example:TRUE NOT FALSE" } });
 	}
 
@@ -521,13 +519,11 @@ public class HiveDictionary extends AbstractDictionary {
 		}
 		logger.info(typeToBe + " , " + typeGiven);
 
-		typeGiven = typeGiven.trim().replace("[]", "");
-		typeToBe = typeToBe.trim().replace("[]", "");;
+		typeGiven = typeGiven.trim();
+		typeToBe = typeToBe.trim();
 
 		if (typeToBe.equalsIgnoreCase("ANY")) {
 			ok = true;
-		}else if (typeToBe.contains("<ANY>")) {
-			ok = removeDelimiterContent(typeGiven, '<', '>').equals(removeDelimiterContent(typeToBe, '<', '>'));
 		} else if (typeToBe.equalsIgnoreCase("NUMBER")) {
 			ok = !typeGiven.equals("STRING") && !typeGiven.equals("BOOLEAN");
 		} else if (typeToBe.equalsIgnoreCase("DOUBLE")) {
@@ -842,7 +838,7 @@ public class HiveDictionary extends AbstractDictionary {
 	private boolean isRelationalOperation(String expr) {
 		return isInList(functionsMap.get(relationalOperators), expr);
 	}
-	
+
 	/**
 	 * Run an expression as a relational operation
 	 * 
@@ -991,7 +987,8 @@ public class HiveDictionary extends AbstractDictionary {
 	 */
 
 	private boolean isConditionalOperation(String expr) {
-		return isInList(functionsMap.get(conditionalOperator), expr);
+		return expr.startsWith("CASE") && expr.endsWith("END");
+		//return isInList(functionsMap.get(conditionalOperator), expr);
 	}
 	
 	/**
@@ -1007,77 +1004,47 @@ public class HiveDictionary extends AbstractDictionary {
 	private String runConditionalOperation(String expr, FeatureList features,
 			Set<String> aggregFeat) throws Exception {
 		String type = null;
-		List<String[]> methodsFound = findAll(functionsMap.get(conditionalOperator), expr);
-		if (!methodsFound.isEmpty()) {
-			String arg = getBracketContent(expr, '(', ')');
-			String[] argSplit = null;
-			int sizeSearched = -1;
-			// Find a method with the same number of argument
-			Iterator<String[]> it = methodsFound.iterator();
-			String[] method = null;
-			while (it.hasNext() && method == null) {
-				method = it.next();
-//				String delimiter = method[0].substring(
-//						method[0].indexOf("(") + 1, method[0].lastIndexOf(")"));
-//				if (delimiter.isEmpty()) {
-				String	delimiter = ",";
-//				}
-				argSplit = arg
-						.split(escapeString(delimiter) + "(?![^\\(]*\\))");
-				sizeSearched = argSplit.length;
-				if (method[1].trim().isEmpty()
-						&& expr.trim().equalsIgnoreCase(method[0].trim())) {
-					// Hard-copy method
-					type = method[2];
-				} else{
-					int methodArgs = method[1].isEmpty() ? 0 : method[1].split(",").length;
-					if (method[1].endsWith("[]") && sizeSearched > 0){
-						
-					}
-					else if (sizeSearched != methodArgs) {
-						method = null;
-					}
-				}
-
-			}
-
-			if (method != null && type == null) {
-				// Special case for CAST because it returns a dynamic type
-				logger.debug(expr.trim());
-				logger.debug(method[0].trim());
-				if (check(method, argSplit, features)) {
-					type = method[2];
-					if (type.equals("ANY")){
-						type = getReturnType(argSplit[0], features);
-						
-						if (type.contains("<") && type.contains(">")){
-							type = getBracketContent(type, '<', '>');
-						}
-					}
+		String arg =  expr.replace("CASE", "").replace("END", "").trim();
+		String[] expressions = arg.split("(?=WHEN)|(?=ELSE)");
+			
+		for (int i =0; i < expressions.length; ++i){
+			String expression = expressions[i];
+			if (!expression.trim().isEmpty()){
+				String args2[] = getBracketContent(expression, '(', ')').split(",");
 					
-					else if (type.contains("ANY")){
-						String[] methodArgs = method[1].isEmpty() ? new String[]{} : method[1].split(",");
-						for (int i =0; i < methodArgs.length; ++i){
-							if (methodArgs[i].equals("ANY")){
-								type = type.replace("ANY", getReturnType(argSplit[i], features));
-								break;
-							}
-						}
+				String argType = null;
+					
+				if (expression.trim().startsWith("WHEN")){
+					if (!getReturnType(args2[0], features).equals("BOOLEAN")){
+						String error = "Should return boolean";
+						logger.debug(error);
+						throw new Exception(error);
+					}
+					argType = args2[1];
+				} else if (expression.trim().startsWith("ELSE")){
+					if (i != expressions.length -1){
+						String error = "Else must be the last expression";
+						logger.debug(error);
+						throw new Exception(error);
+					}
+					argType = args2[0];
+				}
+	
+						
+				String t = getReturnType(argType, features);
+				if (type == null){
+					type = t;
+				}
+				else{
+					if (!t.equals(type)){
+						String error = "All expressions should return the same type";
+						logger.debug(error);
+						throw new Exception(error);
 					}
 				}
-				
-			} else if (type == null) {
-				String error = "No method " + methodsFound.get(0)[0] + " with "
-						+ sizeSearched + " arguments, expr:" + expr;
-				logger.debug(error);
-				throw new Exception(error);
 			}
-		} else {
-			String error = "No method matching " + expr;
-			logger.debug(error);
-			throw new Exception(error);
 		}
-
+				
 		return type;
 	}
 
@@ -1180,22 +1147,6 @@ public class HiveDictionary extends AbstractDictionary {
 			for (int i = 0; i < argsTypeExpected.length; ++i) {
 				ok &= check(argsTypeExpected[i],
 						getReturnType(args[i], features));
-			}
-		} else if (argsTypeExpected[argsTypeExpected.length-1].endsWith("[]")
-				&& args.length >= argsTypeExpected.length){
-			ok = true;
-			int j = 0;
-			String typeArray = getReturnType(args[argsTypeExpected.length-1], features);
-			for (int i = 0; i < args.length && ok; ++i) {
-				String type = getReturnType(args[i], features);
-				ok &= check(argsTypeExpected[j],
-						type);
-				if (j < argsTypeExpected.length - 1){
-					++j;
-				}
-				else if (!type.equals(typeArray)){
-					ok = false;
-				}
 			}
 		}
 
