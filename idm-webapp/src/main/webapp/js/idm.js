@@ -2,6 +2,8 @@
 function canvasResizeSplitter(){
 	//<![CDATA[
 
+	
+	//alert("canvasResizeSplitter");
 	  
 	jQuery("#canvas").css("height", jQuery("#canvas-tabs").height()-160+'px');
 	jQuery("#canvas").css("width", jQuery("#canvas-tabs").width()+'px');
@@ -12,7 +14,7 @@ function canvasResizeSplitter(){
 	jQuery("#tabs2").css("width", jQuery("#splitHCanvas").width()-20 +'px');
 	
 	 
-	resizeCanvas();
+	resizeCanvas(30,30);
 	
 	resizeTabs();
 	
@@ -23,32 +25,22 @@ function canvasResizeSplitter(){
 	//]]>
   }
 
-function resizeCanvas(){
+function resizeCanvas(val1, val2){
 	
-	//jQuery("#tabsFooter canvas").parent().remove();
-	//mountObj();
-	
-	for (var i in nameTabs){
-		//alert(nameTabs[i]);
-		jQuery("#"+nameTabs[i]).css("height", jQuery("#canvas-tabs").height()-jQuery("#tabsFooter").height()-30+'px');
-		jQuery("#"+nameTabs[i]).css("width", jQuery("#canvas-tabs").width()+'px');
-		jQuery("#container-"+nameTabs[i]).css("height", jQuery("#canvas-tabs").height()-jQuery("#tabsFooter").height()-30+'px');
-	}
-	
-}
-
-function resizeCanvasOnPageReady(){
+	//alert("resizeCanvas");
 	
 	for (var i in nameTabs){
 		//alert(nameTabs[i]);
-		jQuery("#"+nameTabs[i]).css("height", jQuery("#canvas-tabs").height()-jQuery("#tabsFooter").height()-30+'px');
+		jQuery("#"+nameTabs[i]).css("height", jQuery("#canvas-tabs").height()-jQuery("#tabsFooter").height()-val1+'px');
 		jQuery("#"+nameTabs[i]).css("width", jQuery("#canvas-tabs").width()+'px');
-		jQuery("#container-"+nameTabs[i]).css("height", jQuery("#canvas-tabs").height()-jQuery("#tabsFooter").height()-330+'px');
+		jQuery("#container-"+nameTabs[i]).css("height", jQuery("#canvas-tabs").height()-jQuery("#tabsFooter").height()-val2+'px');
 	}
 	
 }
 
 function resizeTables(){
+	
+	//alert("resizeTables");
 	
 	jQuery("#processManager .extdt-content").style("height", jQuery("#tabs-2").height()-130+"px", "important");
 	
@@ -65,6 +57,8 @@ function resizeTables(){
 }
 
 function onPageReady(){
+	
+	//alert("onPageReady");
 	
 	  var leftSize = jQuery(window).width()*2/3;
 	  var topSize = jQuery(".splitter-bar-horizontal").css("top").replace(/[^-\d\.]/g, '');
@@ -91,7 +85,7 @@ function onPageReady(){
 	  jQuery("#canvas").css("width", jQuery("#canvas-tabs").width()+'px');
 	  
 	  resizeTabs();
-	  resizeTables();
+	  //resizeTables();
 	  
 	  jQuery("#buttonsCanvas1").hide();
 	  jQuery("#buttonsTabs1").hide();
@@ -107,9 +101,9 @@ function onPageReady(){
 	  jQuery(".splitter-pane").css("overflow", "hidden");
 	  jQuery("#tabRemote").css("overflow", "hidden");
 	  
-	  resizeCanvasOnPageReady();
+	  resizeCanvas(30,330);
 	  
-	  configureFooterCss();
+	  //configureFooterCss();
 
 	  validateArrowsAll();
 	  
@@ -117,16 +111,20 @@ function onPageReady(){
 
 function configureFooterCss(){
 	
+	//alert("configureFooterCss");
+	
 	  jQuery("#tabsFooter").css("width", jQuery("#canvas-tabs").width()+5+'px');
 	  jQuery("#tabsFooter").css("overflow", "hidden");
 	  jQuery("#tabsFooter").css("position", "absolute");
 	  jQuery("#tabsFooter").css("bottom", "0");
 	  jQuery("#tabsFooter").css("z-index", jQuery("#canvas-tabs").zIndex()+1);
 	  
-	  validateArrows(jQuery("#tabsFooter"),jQuery("#buttonsTabsFooter"));
+	  //validateArrows(jQuery("#tabsFooter"),jQuery("#buttonsTabsFooter"));
 }
 
 function resizing(){
+	
+	//alert("resizing");
 	
 	  isResizing = true;
 	  var leftSize = jQuery(window).width() - 46 - jQuery("#splitHCanvas").width();
@@ -153,7 +151,7 @@ function resizing(){
 	  
 	  isResizing = false;
 	  
-	  resizeCanvas();
+	  resizeCanvas(30,30);
 	  
 	  resizeTabs();
 
@@ -165,6 +163,8 @@ function resizing(){
 
 function configureLeft(){
 	
+	//alert("configureLeft");
+	
 	jQuery("#buttonsCanvas1").css("left", jQuery("#canvas-tabs").width()-30+'px');
 	jQuery("#buttonsTabs1").css("left", jQuery("#tabs1").width()-30+'px');
 	jQuery("#buttonsTabs2").css("left", jQuery("#tabs2").width()-30+'px');
@@ -175,6 +175,8 @@ function configureLeft(){
 
 function validateArrowsAll(){
 	
+	//alert("validateArrowsAll");
+	
 	validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
 	validateArrows(jQuery("#tabs1"),jQuery("#buttonsTabs1"));
 	validateArrows(jQuery("#tabs2"),jQuery("#buttonsTabs2"));
@@ -184,6 +186,8 @@ function validateArrowsAll(){
 }
 
 function validateArrows(tabPrincipal, spanButtons){
+	
+	//alert("validateArrows");
 	
 	var ul = tabPrincipal.tabs().children('ul').first();
 	var tabsRealWidth = 0;
@@ -217,6 +221,8 @@ function validateArrows(tabPrincipal, spanButtons){
 }
 
 function resizeTabs(){
+	
+	//alert("resizeTabs");
 	
 	if(jQuery("#tabs-1").parent("div").attr('id') == jQuery("#tabs1").attr('id')){
 		jQuery("#tabs-1").css("height", jQuery("#tabs1").height()-30+'px');
@@ -312,13 +318,6 @@ function addtooltip(text, event){
 function removetoottip(){
 	jQuery("div.tooltip").remove();
 	jQuery('div.help').remove();
-}
-
-function resizeCanvasChangeTab(){
-	for (var i in nameTabs){
-		jQuery("#"+nameTabs[i]).css("height", jQuery("#canvas-tabs").height()-jQuery("#tabsFooter").height()-30+'px');
-		jQuery("#container-"+nameTabs[i]).css("height", jQuery("#canvas-tabs").height()-jQuery("#tabsFooter").height()-30+'px');
-	}
 }
 
 /*function to select all checkbox in a table*/
