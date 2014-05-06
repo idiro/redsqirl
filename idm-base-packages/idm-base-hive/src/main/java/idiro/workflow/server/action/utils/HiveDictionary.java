@@ -318,18 +318,18 @@ public class HiveDictionary extends AbstractDictionary {
 				.put(conditionalOperator,
 						new String[][] {
 								new String[] {
-										"CASE END",
-										",EXPRESSION<ANY>[],",
+										"CASE () END",
+										"EXPRESSION<ANY>[]",
 										"ANY",
 										"@function:AND@short:Boolean AND@param:boolean variable@param:boolean variable@description:boolean logic that returns true if the variables are equal@example:TRUE AND TRUE" },
 								new String[] {
-										"WHEN THEN",
-										",BOOLEAN,ANY",
+										"WHEN () THEN ()",
+										"BOOLEAN,ANY",
 										"EXPRESSION<ANY>",
 										"@function:OR@short:Boolean OR@param:boolean variable@param:boolean variable@description:boolean logic that returns true if the varables are not the same@example:TRUE OR FALSE" },
 								new String[] {
-										"ELSE",
-										",ANY",
+										"ELSE ()",
+										"ANY",
 										"EXPRESSION<ANY>",
 										"@function:NOT@short:Boolean NOT@param:boolean variable@param:boolean variable@description:boolean logic that returns true if the varables are  not equal@example:TRUE NOT FALSE" } });
 	}
