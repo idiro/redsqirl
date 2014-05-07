@@ -259,7 +259,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 					if (error != null) {
 						MessageUseful.addErrorMessage(error);
 						request.setAttribute("msnError", "msnError");
-
 					} else {
 
 						// mount output tab

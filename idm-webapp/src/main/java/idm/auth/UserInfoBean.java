@@ -112,7 +112,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 	/**
 	 * The server process launched for this user.
 	 */
-	private ServerProcess th;
+	private transient ServerProcess th;
 
 	/**
 	 * RMI registry.
