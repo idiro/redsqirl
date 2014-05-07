@@ -47,6 +47,8 @@ public class PigDictionary extends AbstractDictionary {
 	private static final String stringMethods = "stringMethods";
 	/** Key for aggregation methods */
 	private static final String agregationMethods = "agregationMethods";
+	/** Key for aggregation methods */
+	private static final String conditionalOperator = "conditionalOperator";
 	/** Instance */
 	private static PigDictionary instance;
 
@@ -373,8 +375,22 @@ public class PigDictionary extends AbstractDictionary {
 										"@function:COUNT_DISTINCT( ELEMENT )@short:Computes the number of distinct elements in a bag@param:ELEMENT item to count@description:Use the COUNT_DISTINCT function to compute the number of distinct elements in a bag. COUNT_DISTINCT requires a preceding GROUP ALL statement for global counts and a GROUP BY statement for group counts."
 												+ "The COUNT_DISTINCT function follows syntax semantics and ignores nulls. What this means is that a tuple in the bag will not be counted if the FIRST FIELD in this tuple is NULL. If you want to include NULL values in the count computation, use COUNT_STAR."
 												+ "Note: You cannot use the tuple designator (*) with COUNT_DISTINCT; that is, COUNT_DISTINCT(*) will not work.@example: COUNT_DISTINCT(A) returns the frequency of A"}});
+		functionsMap
+				.put(conditionalOperator,
+							new String[][] {
+								new String[] {
+										"() ? () : ()",
+										"BOOLEAN,BOOLEAN",
+										"BOOLEAN",
+										"@function:AND@short:Boolean AND@param:boolean variable@param:boolean variable@description:boolean logic that returns true if the variables are equal@example:TRUE AND TRUE" }
+				});
+
+		
 		
 	}
+	
+	
+	
 
 	/**
 	 * Get the Pig type of the variable passed
@@ -575,6 +591,9 @@ public class PigDictionary extends AbstractDictionary {
 					}
 				}
 				type = runMethod(expr, fl, false);
+			} else if (isConditionalOperation(expr)){
+				logger.debug(expr + ", is an cast operation");
+				type = runConditionalOperation(expr, features, nonAggregFeats);
 			} else if (isCastOperation(expr)) {
 				logger.debug(expr + ", is an cast operation");
 				type = runCastOperation(expr, features, nonAggregFeats);
@@ -627,6 +646,44 @@ public class PigDictionary extends AbstractDictionary {
 			}
 		} else {
 			String error = "No method matching " + expr;
+			logger.debug(error);
+			throw new Exception(error);
+		}
+
+		return type;
+	}
+	
+	/**
+	 * Run a cast operation on an expression
+	 * 
+	 * @param expr
+	 * @param features
+	 * @param featureAggreg
+	 * @return type
+	 * @throws Exception
+	 */
+	private String runConditionalOperation(String expr, FeatureList features,
+			Set<String> featureAggreg) throws Exception {
+		String type = null;
+		
+		String[] args = getBracketsContent(expr);
+		
+		if (args.length != 3){
+			String error = "Wrong number of arguments.";
+			logger.debug(error);
+			throw new Exception(error);
+		}
+		
+		if (!getReturnType(args[0], features).equals("BOOLEAN")){
+			String error = "First argument of conditional expression must return a boolean";
+			logger.debug(error);
+			throw new Exception(error);
+		} 
+		
+		type = getReturnType(args[1], features);
+		
+		if (!type.equals(getReturnType(args[2], features))){
+			String error = "Types returned must be the same";
 			logger.debug(error);
 			throw new Exception(error);
 		}
@@ -803,6 +860,8 @@ public class PigDictionary extends AbstractDictionary {
 				functionsMap.get(mathMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("utils"),
 				functionsMap.get(utilsMethods)));
+		help.add(createMenu(new TreeNonUnique<String>("utils"),
+				functionsMap.get(conditionalOperator)));
 		logger.debug("create Condition Help Menu");
 		return help;
 	}
@@ -827,6 +886,8 @@ public class PigDictionary extends AbstractDictionary {
 				functionsMap.get(relationalOperators)));
 		help.add(createMenu(new TreeNonUnique<String>("operation_logic"),
 				functionsMap.get(logicalOperators)));
+		help.add(createMenu(new TreeNonUnique<String>("utils"),
+				functionsMap.get(conditionalOperator)));
 		logger.debug("create Select Help Menu");
 		return help;
 	}
@@ -851,6 +912,8 @@ public class PigDictionary extends AbstractDictionary {
 				functionsMap.get(relationalOperators)));
 		help.add(createMenu(new TreeNonUnique<String>("operation_logic"),
 				functionsMap.get(logicalOperators)));
+		help.add(createMenu(new TreeNonUnique<String>("utils"),
+				functionsMap.get(conditionalOperator)));
 		logger.debug("create Group Select Help Menu");
 		return help;
 	}
@@ -986,6 +1049,17 @@ public class PigDictionary extends AbstractDictionary {
 	 */
 	private boolean isCastOperation(String expr) {
 		return isInList(functionsMap.get(castOperator), expr);
+	}
+	
+	/**
+	 * Check if an expression is a conditional operation
+	 * 
+	 * @param expr
+	 * @return <code>true</code> id operation is a conditional operation else
+	 *         <code>false</code>
+	 */
+	private boolean isConditionalOperation(String expr) {
+		return isInList(functionsMap.get(conditionalOperator), expr);
 	}
 
 	/**
@@ -1405,6 +1479,39 @@ public class PigDictionary extends AbstractDictionary {
 			++index;
 		}
 		return cleanUp;
+	}
+	
+	/**
+	 * Get the content of the brackets delimited by comma
+	 * 
+	 * @param expr
+	 * @return cleanUp
+	 */
+
+	public static String[] getBracketsContent(String expr) {
+		int count = 0;
+		int index = 0;
+		String cleanUp = "";
+		while (index < expr.length()) {
+			if (expr.charAt(index) == '(') {
+				++count;
+				if (count > 1) {
+					cleanUp += '(';
+				}
+			} else if (expr.charAt(index) == ')') {
+				--count;
+				if (count > 0) {
+					cleanUp += ')';
+				}
+				else{
+					cleanUp += ',';
+				}
+			} else if (count > 0) {
+				cleanUp += expr.charAt(index);
+			}
+			++index;
+		}
+		return cleanUp.substring(0, cleanUp.length() - 1).split(",");
 	}
 
 	/**

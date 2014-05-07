@@ -1010,7 +1010,7 @@ public class HiveDictionary extends AbstractDictionary {
 		for (int i =0; i < expressions.length; ++i){
 			String expression = expressions[i];
 			if (!expression.trim().isEmpty()){
-				String args2[] = getBracketContent(expression, '(', ')').split(",");
+				String args2[] = getBracketsContent(expression);
 					
 				String argType = null;
 					
@@ -1331,20 +1331,20 @@ public class HiveDictionary extends AbstractDictionary {
 	 * @return cleanUp
 	 */
 
-	public static String getBracketContent(String expr, char delimiterBegin, char delimiterEnd) {
+	public static String[] getBracketsContent(String expr) {
 		int count = 0;
 		int index = 0;
 		String cleanUp = "";
 		while (index < expr.length()) {
-			if (expr.charAt(index) == delimiterBegin) {
+			if (expr.charAt(index) == '(') {
 				++count;
 				if (count > 1) {
-					cleanUp += delimiterBegin;
+					cleanUp += '(';
 				}
-			} else if (expr.charAt(index) == delimiterEnd) {
+			} else if (expr.charAt(index) == ')') {
 				--count;
 				if (count > 0) {
-					cleanUp += delimiterEnd;
+					cleanUp += ')';
 				}
 				else{
 					cleanUp += ',';
@@ -1354,7 +1354,7 @@ public class HiveDictionary extends AbstractDictionary {
 			}
 			++index;
 		}
-		return cleanUp.substring(0, cleanUp.length() - 1);
+		return cleanUp.substring(0, cleanUp.length() - 1).split(",");
 	}
 
 	/**

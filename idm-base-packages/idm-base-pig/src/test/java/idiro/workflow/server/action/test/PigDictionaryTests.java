@@ -1,7 +1,7 @@
 package idiro.workflow.server.action.test;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import idiro.utils.FeatureList;
 import idiro.utils.OrderedFeatureList;
 import idiro.workflow.server.action.utils.PigDictionary;
@@ -71,6 +71,12 @@ public class PigDictionaryTests {
 		assertTrue(expr,
 				PigDictionary.getInstance().getReturnType(expr, features)
 						.equalsIgnoreCase("NUMBER"));
+	}
+	
+	public void isString(String expr, FeatureList features) throws Exception {
+		assertTrue(expr,
+				PigDictionary.getInstance().getReturnType(expr, features)
+						.equalsIgnoreCase("STRING"));
 	}
 
 	public void isNotNumber(String expr, FeatureList features) throws Exception {
@@ -202,4 +208,19 @@ public class PigDictionaryTests {
 		}
 	}
 	
+	@Test
+	public void testConditionalOperation() throws RemoteException {
+		TestUtils.logTestTitle("PigDictionaryTests#testConditionalOperation");
+		FeatureList features = getFeatures();
+		try {
+			isString("(col4) ? (colAgg) : ('b')", features);
+			isString("(col2 > 0) ? (colAgg) : ('b')", features);
+			isString("(col4) ? (colAgg) : ((col3 == 1) ? ('a') : ('b'))", features);
+			is("(colAgg == 'a') ? (col2) : (1.0)", features, "DOUBLE");
+		} catch (Exception e) {
+			logger.error("Exception when testing conditional operations: "
+					+ e.getMessage());
+			assertTrue("Fail on exception", false);
+		}
+	}
 }
