@@ -54,7 +54,7 @@ public class HdfsBean extends FileSystemBean {
 					.evaluateExpressionGet(context, "#{userInfoBean}",
 							UserInfoBean.class);
 			logger.info("update progressbar");
-			userInfoBean.setCurrentValue(userInfoBean.getCurrentValue() + 12);
+			userInfoBean.setValueProgressBar(userInfoBean.getValueProgressBar() + 12);
 
 		}catch(Exception e){
 			logger.error(e);

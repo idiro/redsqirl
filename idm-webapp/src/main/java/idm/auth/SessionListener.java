@@ -1,13 +1,10 @@
 package idm.auth;
 
-import idm.CanvasBean;
-
 import java.rmi.registry.Registry;
 import java.util.Map;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
@@ -34,6 +31,14 @@ public class SessionListener implements HttpSessionListener{
 			logger.info("kill serverThread");
 			th.kill(session);
 		}
+		
+		//Disconnect ssh connection
+		FacesContext context = FacesContext.getCurrentInstance();
+		UserInfoBean uib = (UserInfoBean) context.getApplication()
+				.evaluateExpressionGet(context, "#{userInfoBean}",
+						UserInfoBean.class);
+		uib.sshDisconnect();
+		
 		String userName = (String) session.getAttribute("username");
 
 		try {

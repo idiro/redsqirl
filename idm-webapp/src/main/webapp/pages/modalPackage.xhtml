@@ -9,31 +9,8 @@
     
     <a4j:keepAlive beanName="packageMngBean"/>
     
-    <a4j:region renderRegionOnly="true">
-        <rich:modalPanel id="modalInstallPackage" width="900"
-            height="600" style="overflow:auto;" resizeable="true">
-            <f:facet name="header">Packages</f:facet>
-            <f:facet name="controls">
-                <h:graphicImage
-                    value="../image/icons/buttonCloseWindow.gif"
-                    style="cursor:pointer;width:22px;"
-                    onclick="#{rich:component('modalInstallPackage')}.hide()" />
-            </f:facet>
-                <h:panelGroup>
-                    <a4j:include
-                        viewId="/pages/modalInstallPackage.xhtml"
-                        ajaxRendered="true" />
-                </h:panelGroup>
-        </rich:modalPanel>
-    </a4j:region>
-    
     <h:form>
     <a4j:region>
-        <a4j:status
-            onstart="jQuery('#body').block({ message: jQuery('#domMessageDivCanvas1') });"
-            onerror="jQuery('#body').unblock();"
-            onsuccess="jQuery('#body').unblock();"
-            onstop="jQuery('#body').unblock();" />
         <a4j:jsFunction name="openInstallPackageModal"
             action="#{packageMngBean.setPackageScope}"
             oncomplete="#{rich:component('modalInstallPackage')}.show();">
@@ -42,22 +19,23 @@
     </a4j:region>
     <h:panelGrid id="packageList" columns="2">
         <rich:panel id="systemPck" header="System Packages"
-            style="overflow:auto;width:270px;height:390px;">
-            <h:panelGroup id="sysPckMenu"
-                style="overflow:auto;height:350px;"
+            style="width:270px;height:390px;" bodyClass="maxContent">
+            <h:panelGroup id="sysPckMenu" layout="block"
+                style="overflow:auto;height:330px;"
                 rendered="#{packageMngBean.admin}">
-                <h:selectManyCheckbox
+                <h:selectManyCheckbox layout="pageDirection"
                     value="#{packageMngBean.unSysPackage}">
                     <f:selectItems
                         value="#{packageMngBean.systemPackages}" var="n"
                         itemLabel="#{n.label}" itemValue="#{n.value}" />
                 </h:selectManyCheckbox>
             </h:panelGroup>
-            <h:panelGroup id="sysPckList"
+            <h:panelGroup id="sysPckList" layout="block" 
+                style="overflow:auto;height:330px;"
                 rendered="#{not packageMngBean.admin}">
                 <ui:repeat value="#{packageMngBean.systemPackages}"
                     var="item">
-                    #{item}<br />
+                    #{item.label}<br />
                 </ui:repeat>
             </h:panelGroup>
             <h:panelGrid id="pck_sys_buttons" columns="2"
@@ -73,27 +51,28 @@
                         styleClass="greenButton"
                         value="#{messages.button_sys_uninstall}"
                         action="#{packageMngBean.removeSystemPackage}"
-                        oncomplete="" />
+                        reRender="sysPckList" />
                 </rich:panel>
             </h:panelGrid>
         </rich:panel>
         <rich:panel id="userPck" header="User Packages"
-            style="overflow:auto;width:270px;height:390px;">
-            <h:panelGroup id="usPckMenu"
-                style="overflow:auto;height:350px;"
+            style="width:270px;height:390px;" bodyClass="maxContent">
+            <h:panelGroup id="usPckMenu" layout="block"
+                style="overflow:auto;height:330px;"
                 rendered="#{packageMngBean.userAllowInstall}">
-                <h:selectManyCheckbox
+                <h:selectManyCheckbox layout="pageDirection"
                     value="#{packageMngBean.unUserPackage}">
                     <f:selectItems
                         value="#{packageMngBean.userPackages}" var="n"
                         itemLabel="#{n.label}" itemValue="#{n.value}" />
                 </h:selectManyCheckbox>
             </h:panelGroup>
-            <h:panelGroup id="usPckList"
+            <h:panelGroup id="usPckList" layout="block"
+                style="overflow:auto;height:330px;"
                 rendered="#{not packageMngBean.userAllowInstall}">
                 <ui:repeat value="#{packageMngBean.userPackages}"
                     var="item">
-                    #{item}<br />
+                    #{item.label}<br />
                 </ui:repeat>
             </h:panelGroup>
             <h:panelGrid id="pck_user_buttons" columns="2"
@@ -109,7 +88,7 @@
                         styleClass="greenButton"
                         value="#{messages.button_user_uninstall}"
                         action="#{packageMngBean.removeUserPackage}"
-                        oncomplete="" />
+                        reRender="usPckList" />
                 </rich:panel>
             </h:panelGrid>
         </rich:panel>

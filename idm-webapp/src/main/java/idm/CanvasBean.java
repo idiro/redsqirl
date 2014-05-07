@@ -778,7 +778,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	}
 
 	public void reinitialize() throws RemoteException {
-		logger.info("invalidate session");
+		logger.info("Clear workflows");
 
 		for (java.util.Map.Entry<String, DataFlow> e : getWorkflowMap()
 				.entrySet()) {

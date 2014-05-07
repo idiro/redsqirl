@@ -45,7 +45,7 @@ public class HiveBean extends FileSystemBean {
 							UserInfoBean.class);
 			
 			logger.info("update progressbar");
-			userInfoBean.setCurrentValue(userInfoBean.getCurrentValue()+24);
+			userInfoBean.setValueProgressBar(userInfoBean.getValueProgressBar()+24);
 
 		}catch(Exception e){
 			logger.error(e);

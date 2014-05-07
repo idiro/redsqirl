@@ -56,7 +56,7 @@ public class SshBean extends FileSystemBean implements Serializable{
 				.evaluateExpressionGet(context, "#{userInfoBean}",
 						UserInfoBean.class);
 		logger.info("update progressbar");
-		userInfoBean.setCurrentValue(51);
+		userInfoBean.setValueProgressBar(51);
 		logger.info("SshOpenCanvasScreen");
 		
 		try {

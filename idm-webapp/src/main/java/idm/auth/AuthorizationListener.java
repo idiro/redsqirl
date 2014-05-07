@@ -40,7 +40,7 @@ public class AuthorizationListener implements PhaseListener {
 		HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
 
 		HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(false);
-		boolean isLoginPage = (currentPage.lastIndexOf("initial.xhtml") > -1) || (currentPage.lastIndexOf("restart.xhtml") > -1) || (currentPage.lastIndexOf("restart2.xhtml") > -1);
+		boolean isLoginPage = (currentPage.lastIndexOf("initial.xhtml") > -1) || (currentPage.lastIndexOf("restart.xhtml") > -1);
 		boolean iscanvasPage = (currentPage.lastIndexOf("canvas.xhtml") > -1);
 		
 		

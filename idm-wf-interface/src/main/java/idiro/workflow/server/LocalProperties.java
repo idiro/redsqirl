@@ -35,7 +35,7 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 		try {
 			prop.load(new FileReader(new File(WorkflowPrefManager.pathSysCfgPref.get())));
 		} catch (Exception e) {
-			logger.error("Error when loading " + WorkflowPrefManager.pathSysCfgPref.get() + " "
+			logger.error("Error when loading '" + WorkflowPrefManager.pathSysCfgPref.get() + "', "
 					+ e.getMessage());
 		}
 		return prop;
@@ -56,7 +56,7 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 		try {
 			prop.load(new FileReader(new File(WorkflowPrefManager.pathSysLangCfgPref.get())));
 		} catch (Exception e) {
-			logger.error("Error when loading " + WorkflowPrefManager.pathSysLangCfgPref.get() + " "
+			logger.error("Error when loading '" + WorkflowPrefManager.pathSysLangCfgPref.get() + "', "
 					+ e.getMessage());
 		}
 		return prop;
@@ -72,7 +72,7 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 		try {
 			prop.load(new FileReader(new File(WorkflowPrefManager.pathUserCfgPref.get())));
 		} catch (Exception e) {
-			logger.error("Error when loading " + WorkflowPrefManager.pathUserCfgPref.get() + " "
+			logger.error("Error when loading '" + WorkflowPrefManager.pathUserCfgPref.get() + "', "
 					+ e.getMessage());
 		}
 		return prop;
@@ -95,8 +95,8 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 			prop.load(new FileReader(new File(WorkflowPrefManager.getPathUserPref(user)
 					+ "/idm_user.properties")));
 		} catch (Exception e) {
-			logger.error("Error when loading " + WorkflowPrefManager.getPathUserPref(user)
-					+ "/idm_user.properties" + e.getMessage());
+			logger.error("Error when loading '" + WorkflowPrefManager.getPathUserPref(user)
+					+ "/idm_user.properties', " + e.getMessage());
 		}
 		return prop;
 	}
@@ -114,8 +114,8 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 			prop.load(new FileReader(new File(WorkflowPrefManager.getPathUserPref(user)
 					+ "/idm_user_lang.properties")));
 		} catch (Exception e) {
-			logger.error("Error when loading " + WorkflowPrefManager.getPathUserPref(user)
-					+ "/idm_user_lang.properties" + e.getMessage());
+			logger.error("Error when loading '" + WorkflowPrefManager.getPathUserPref(user)
+					+ "/idm_user_lang.properties', " + e.getMessage());
 		}
 		return prop;
 	}

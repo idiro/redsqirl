@@ -13,6 +13,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -224,7 +225,11 @@ public class PackageManager extends UnicastRemoteObject {
 			}
 			String errorPackageValid = isPackageValid(packs[i]);
 			if (errorPackageValid != null) {
-				error += errorPackageValid + "\n";
+				if(error == null){
+					error = errorPackageValid + "\n";
+				}else{
+					error += errorPackageValid + "\n";
+				}
 			}
 		}
 
@@ -455,6 +460,7 @@ public class PackageManager extends UnicastRemoteObject {
 		} catch (Exception e) {
 			logger.error("Package directory not found");
 		}
+		Collections.sort(packageNames);
 		return packageNames;
 	}
 
@@ -529,9 +535,7 @@ public class PackageManager extends UnicastRemoteObject {
 			}
 		}
 
-		return (user != null && !user.isEmpty()) || error != null ? error
-				: checkNoPackageNameDuplicate(pack_name, null, pack_version,
-						false);
+		return error;
 	}
 
 	/**
