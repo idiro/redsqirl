@@ -1,5 +1,6 @@
 package idm;
 
+import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEPage;
@@ -13,8 +14,10 @@ import idm.useful.MessageUseful;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
@@ -148,9 +151,28 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 */
 	private CanvasModalOutputTab outputTab = null;
 
+
+	/**
+	 * List of the FileSystem available for configuring an output.
+	 */
+	private static Map<String,FileSystemBean> datastores;
+
+
+	public CanvasModal() throws RemoteException{
+		DataFlowInterface dfi = getworkFlowInterface();
+		datastores = new LinkedHashMap<String,FileSystemBean>();
+		Iterator<String> storeName = dfi.getBrowsersName().iterator();
+		while(storeName.hasNext()){
+			String name = storeName.next();
+			FileSystemBean newFS = new FileSystemBean();
+			newFS.setDataStore(dfi.getBrowser(name));
+			newFS.mountTable();
+			datastores.put(name, newFS);
+		}
+	}
+
 	public void changeIdElement() throws RemoteException {
 		// Get the new id
-
 		logger.info("id new -> " + elementId);
 		logger.info(dfe == null);
 		if (dfe != null && elementId != null && !elementId.isEmpty()
@@ -235,14 +257,13 @@ public class CanvasModal extends BaseBean implements Serializable {
 					logger.info("error " + error);
 
 					if (error != null) {
-
 						MessageUseful.addErrorMessage(error);
 						request.setAttribute("msnError", "msnError");
 
 					} else {
-						
+
 						// mount output tab
-						outputTab = new CanvasModalOutputTab(dfe);
+						outputTab = new CanvasModalOutputTab(datastores,dfe);
 						Iterator<DFEInteraction> iterIt = dfe.getInteractions()
 								.iterator();
 						sourceNode = false;
@@ -255,7 +276,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 							outputTab.setShowOutputForm("N");
 						}
 						outputTab.mountOutputForm(!sourceNode);
-						
+
 
 						listPageSize = getPageList().size();
 

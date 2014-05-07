@@ -22,6 +22,11 @@ import org.apache.log4j.Logger;
 
 public class FileSystemBean extends BaseBean implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1685249123539175115L;
+	
 	private static Logger logger = Logger.getLogger(FileSystemBean.class);
 	private static int nbCreate = 0;
 

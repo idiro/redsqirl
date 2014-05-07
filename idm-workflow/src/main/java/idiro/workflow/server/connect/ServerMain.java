@@ -1,14 +1,14 @@
 package idiro.workflow.server.connect;
 
+import idiro.Log;
 import idiro.hadoop.NameNodeVar;
 import idiro.workflow.server.OozieManager;
 import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idiro.workflow.server.connect.interfaces.DataStore;
 import idiro.workflow.server.connect.interfaces.DataStoreArray;
-import idiro.workflow.server.connect.interfaces.PckManager;
+import idiro.workflow.server.connect.interfaces.PropertiesManager;
 import idiro.workflow.server.interfaces.JobManager;
-import idiro.workflow.utils.PackageManager;
 
 import java.io.IOException;
 import java.rmi.AccessException;
@@ -49,7 +49,9 @@ public class ServerMain {
 			}
 		}
 		
-		// Initialise logs and jar
+		// Loads in the log settings.
+		Log.init();
+		//Loads preferences
 		WorkflowPrefManager runner = WorkflowPrefManager.getInstance();
 		if(runner.isInit()){
 			//Setup the user home if not setup yet
@@ -69,7 +71,7 @@ public class ServerMain {
 				String nameOozie = System.getProperty("user.name")+"@oozie";
 				String nameHDFS = System.getProperty("user.name")+"@hdfs";
 				String nameHDFSBrowser = System.getProperty("user.name")+"@hdfsbrowser";
-				String namePckMng = System.getProperty("user.name")+"@pckmng";
+				String namePrefs = System.getProperty("user.name")+"@prefs";
 
 				registry = LocateRegistry.getRegistry(
 						"127.0.0.1",
@@ -121,11 +123,11 @@ public class ServerMain {
 				logger.info("nameHDFSBrowser: "+nameHDFSBrowser);
 
 				registry.rebind(
-						namePckMng,
-						(PckManager) new PackageManager()
+						namePrefs,
+						(PropertiesManager) WorkflowPrefManager.getProps()
 						);
 				
-				logger.info("namePckManager: "+namePckMng);
+				logger.info("namePrefs: "+namePrefs);
 				
 				logger.info("end server main");
 				

@@ -3,7 +3,6 @@ package idiro.workflow.utils;
 import idiro.utils.LocalFileSystem;
 import idiro.utils.UnZip;
 import idiro.workflow.server.WorkflowPrefManager;
-import idiro.workflow.server.connect.interfaces.PckManager;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -14,6 +13,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
  * @author etienne
  * 
  */
-public class PackageManager extends UnicastRemoteObject implements PckManager {
+public class PackageManager extends UnicastRemoteObject {
 
 	/**
 	 * 
@@ -225,7 +225,11 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 			}
 			String errorPackageValid = isPackageValid(packs[i]);
 			if (errorPackageValid != null) {
-				error += errorPackageValid + "\n";
+				if(error == null){
+					error = errorPackageValid + "\n";
+				}else{
+					error += errorPackageValid + "\n";
+				}
 			}
 		}
 
@@ -456,6 +460,7 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 		} catch (Exception e) {
 			logger.error("Package directory not found");
 		}
+		Collections.sort(packageNames);
 		return packageNames;
 	}
 
@@ -530,9 +535,7 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 			}
 		}
 
-		return (user != null && !user.isEmpty()) || error != null ? error
-				: checkNoPackageNameDuplicate(pack_name, null, pack_version,
-						false);
+		return error;
 	}
 
 	/**

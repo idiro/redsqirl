@@ -4,6 +4,12 @@ html,body {
     width: 99.5% !important;
 }
 
+.maxContent{
+    width: 99.5%;
+    height: 99.5%;
+    overflow:auto;
+}
+
 image {
 	border-width: 0px;
 }
@@ -435,6 +441,7 @@ div#body{
 
 /* Package css */
 .order-table{   
+    margin-left:25px;
     border-collapse:collapse;
 }
 
@@ -600,6 +607,14 @@ table.secondtable td{
 	padding: 0px 0px 0px 0px;
 }
 
+.rich-menu-item a:hover{
+    background-color:  #c62127;
+    border: none;
+    color:  #FFFFFF;
+    padding: 0px 0px 0px 0px;
+}
+
+
 .rich-menu-list-bg{
 	border-radius:7px;
 	color:#dadbdd;
@@ -643,6 +658,7 @@ table.secondtable td{
 
 /*signout button*/
 .signoutButton{
+       font-weight:bold;
        background-image:url('../image/icons/button-red.png');
        background-size: 100% 100%;
        width:96px;

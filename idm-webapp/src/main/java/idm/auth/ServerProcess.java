@@ -14,7 +14,6 @@ import java.rmi.registry.Registry;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Properties;
 import java.util.ResourceBundle;
 
 import javax.faces.context.FacesContext;
@@ -24,7 +23,6 @@ import org.apache.log4j.Logger;
 
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
-import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
@@ -44,10 +42,8 @@ public class ServerProcess {
 	private static List<ServerProcess> list = new LinkedList<ServerProcess>();
 
 	public final int port;
-	private boolean run;
-	private Channel channel;
+	private boolean run = false;
 	private Session session;
-	private Session s;
 
 	public ServerProcess(int port) {
 		this.port = port;
@@ -61,87 +57,26 @@ public class ServerProcess {
 	 * @return
 	 * @author Igor.Souza
 	 */
-	public Session run(final String user, final String password) {
-
+	public boolean run(String user, Session session) {
+		this.session = session;
 		if (!run) {
 
 			try {
 				list.add(this);
-
-				JSch shell = new JSch();
-				session = shell.getSession(user, "localhost");
-				session.setPassword(password);
-				setS(session);
-				Properties config = new Properties();
-				config.put("StrictHostKeyChecking", "no");
-
-				session.setConfig(config);
-
-				session.connect();
-
 				try {
 
-
 					ProcessesManager pm = new WorkflowProcessesManager();
+					killOldProcess(pm, user);
 					final String command = BaseCommand.getBaseCommand(user,port)
 							+ " 1>/dev/null & echo $! 1> "+pm.getPath();
-					String old_pid = pm.getPid();
 
-					logger.info("old workflow process : " + old_pid);
-					if (!old_pid.isEmpty()) {
-						String getPid = "ps -eo pid | grep -w \"" + old_pid
-								+ "\"";
-						channel = session.openChannel("exec");
-						((ChannelExec) channel).setCommand(getPid);
-						channel.connect();
-						logger.info("ran: \n" + getPid);
-						BufferedReader br1 = new BufferedReader(
-								new InputStreamReader(channel.getInputStream()));
-						logger.info("getting pid : ");
-						String pid1 = br1.readLine();
-						channel.disconnect();
-						logger.info("got pid : " + pid1);
-
-						if (pid1 != null
-								&& pid1.trim().equalsIgnoreCase(old_pid)) {
-							try {
-								logger.info("get registry");
-								Registry registry = LocateRegistry
-										.getRegistry(2001);
-								logger.info("get dfi");
-								DataFlowInterface dfi = (DataFlowInterface) registry
-										.lookup(user + "@wfm");
-								logger.info("back up ");
-								dfi.backupAll();
-								logger.info("clean up");
-								dfi.autoCleanAll();
-								logger.info("shutdown");
-								dfi.shutdown();
-							} catch (Exception e) {
-								FacesContext facesContext = FacesContext
-										.getCurrentInstance();
-								String messageBundleName = facesContext
-										.getApplication().getMessageBundle();
-								Locale locale = facesContext.getViewRoot()
-										.getLocale();
-								ResourceBundle bundle = ResourceBundle
-										.getBundle(messageBundleName, locale);
-								logger.info(bundle
-										.getString("old_workflow_deleted"));
-							}
-							kill(pid1);
-							pm.deleteFile();
-							logger.info("killed old process");
-						}
-
-					}
 					logger.info("getting java");
 					String javahome = getJava();
 					String argJava = " -Xmx1500m ";
 					logger.info("opening channel");
-					channel = session.openChannel("exec");
-					logger.info("command to launch:\n" + javahome + "\n"
-							+ argJava + "\n" + command);
+					Channel channel = session.openChannel("exec");
+					logger.info("command to launch:\n" + javahome
+							+ argJava + command);
 					((ChannelExec) channel).setCommand(javahome + argJava
 							+ command);
 					logger.info("connecting channel");
@@ -170,19 +105,75 @@ public class ServerProcess {
 				logger.error(e.getMessage());
 			}
 		}
-		return getS();
+		return run;
 	}
 
-	private String getJava(Session session) throws IOException, JSchException {
-		Channel channel = session.openChannel("exec");
-		((ChannelExec) channel).setCommand("which java");
-		channel.connect();
-		BufferedReader br = new BufferedReader(new InputStreamReader(
-				channel.getInputStream()));
-		String java = br.readLine();
-		logger.info("java path : " + java);
-		channel.disconnect();
-		return java;
+	protected void killOldProcess(ProcessesManager pm, String user){
+		String old_pid = null;
+
+		try{
+			old_pid = pm.getPid();
+		}catch(Exception e){
+			logger.info("Could not read the old pid, assuming there is none.");
+		}
+
+		logger.info("old workflow process : " + old_pid);
+		if (old_pid != null && !old_pid.isEmpty()) {
+
+			try{
+				String getPid = "ps -eo pid | grep -w \"" + old_pid
+						+ "\"";
+				Channel channel = session.openChannel("exec");
+				((ChannelExec) channel).setCommand(getPid);
+				channel.connect();
+				BufferedReader br1 = new BufferedReader(
+						new InputStreamReader(channel.getInputStream()));
+				String pid1 = br1.readLine();
+				channel.disconnect();
+				logger.info("got running process pid : " + pid1);
+
+				if (pid1 != null
+						&& pid1.trim().equals(old_pid)) {
+					try {
+						logger.info("Attempt to clean up old process.");
+						Registry registry = LocateRegistry
+								.getRegistry(port);
+						logger.info("get dfi");
+						DataFlowInterface dfi = (DataFlowInterface) registry
+								.lookup(user + "@wfm");
+						logger.info("back up ");
+						dfi.backupAll();
+						logger.info("clean up");
+						dfi.autoCleanAll();
+						logger.info("shutdown");
+						dfi.shutdown();
+					} catch (Exception e) {
+						logger.info("Unabled to clean up old proces, attempting to kill it...");
+						FacesContext facesContext = FacesContext
+								.getCurrentInstance();
+						String messageBundleName = facesContext
+								.getApplication().getMessageBundle();
+						Locale locale = facesContext.getViewRoot()
+								.getLocale();
+						ResourceBundle bundle = ResourceBundle
+								.getBundle(messageBundleName, locale);
+						logger.info(bundle
+								.getString("old_workflow_deleted"));
+					}
+					kill(pid1);
+					pm.deleteFile();
+					logger.info("killed old process");
+				}
+			} catch (Exception e) {
+				logger.info("Got an exception when attempting to kill old process, trying again more expeditively..");
+				try{
+					pm.deleteFile();
+					kill(old_pid);
+				}catch(Exception e1){
+					logger.info("Unable to kill process: "+e.getMessage());
+				}
+			}
+		}
 	}
 
 	private String getJava() throws IOException, JSchException {
@@ -219,16 +210,16 @@ public class ServerProcess {
 					dataFlowInterface.autoCleanAll();
 				} catch (RemoteException e) {
 					logger.warn("Failed closing workflows");
-					e.printStackTrace();
 				}
 			} catch (Exception e) {
 				logger.error("Failed getting 'wfm'");
-				e.printStackTrace();
 				logger.error(e.getMessage());
 			}
 			try{
 				kill(new WorkflowProcessesManager().getPid());
-			}catch(Exception e){}
+			}catch(Exception e){
+				logger.info("Exception: "+e.getMessage());
+			}
 			list.remove(this);
 			run = false;
 		} else if (session == null && run) {
@@ -237,19 +228,23 @@ public class ServerProcess {
 	}
 
 	protected void kill(String lpid){
-		logger.info("kill attempt");
-		Channel channel;
-		try {
-			logger.info(3);
-			channel = session.openChannel("exec");
-			logger.info("kill -9 " + lpid);
-			((ChannelExec) channel).setCommand("kill -9 " + lpid);
-			channel.connect();
-			channel.disconnect();
-			session.disconnect();
-			logger.info("process "+lpid+" successfully killed");
-		} catch (JSchException e) {
-			e.printStackTrace();
+		if(session == null){
+			logger.info("The SSH session is down");
+		}else{
+			logger.info("kill attempt");
+			try {
+				logger.info(3);
+				Channel channel = session.openChannel("exec");
+				logger.info("kill -9 " + lpid);
+				((ChannelExec) channel).setCommand("kill -9 " + lpid);
+				channel.connect();
+				channel.disconnect();
+				logger.info("process "+lpid+" successfully killed");
+			} catch (JSchException e) {
+				logger.info("JSchException: "+e.getMessage());
+			} catch(Exception e){
+				logger.info("Exception: "+e.getMessage());
+			}
 		}
 	}
 
@@ -265,14 +260,6 @@ public class ServerProcess {
 	 */
 	public final boolean isRun() {
 		return run;
-	}
-
-	public Session getS() {
-		return s;
-	}
-
-	public void setS(Session s) {
-		this.s = s;
 	}
 
 }

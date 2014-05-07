@@ -950,7 +950,8 @@
 				<a4j:jsFunction name="openChangeIdModal"
 					action="#{canvasModalBean.openCanvasModal}"
                     data="#{canvasModalBean.loadMainWindow}"
-					oncomplete="if(data || confirm('Changing an action identification may cause errors and force you to reconfigure this object and its dependent nodes. Do you want to continue?')){#{rich:component('modalChangeId')}.show();}">
+					oncomplete="if( #{requestScope['msnError'] == null}){if(data || confirm('Changing an action identification may cause errors and force you to reconfigure this object and its dependent nodes. Do you want to continue?')){#{rich:component('modalChangeId')}.show();}}">
+					reRender="msnError,errorTable,newIdElement"
 					<a4j:actionparam name="paramGroupId" />
 					<a4j:actionparam name="paramPathImage" />
                     <a4j:actionparam name="paramLoadMainWindow"  />
@@ -1258,6 +1259,13 @@
 		
 		
 						<rich:toolBarGroup location="right">
+						
+						  <a4j:commandButton value="#{messages.label_menu_signout}"
+                            styleClass="signoutButton"
+                            onclick="saveAllPositions(getAllIconPositions());jQuery.blockUI({ message: jQuery('#domMessageDivCanvas1') });signOut();" />
+                       
+                                
+						    <!-- Restart does not work
 							<rich:dropDownMenu value="#{messages.label_menu_signout}">
 		
 								<f:facet name="label">
@@ -1272,9 +1280,10 @@
 	
 								<rich:menuItem submitMode="ajax"
 									value="#{messages.label_menu_restart}"
-									onclick="jQuery.blockUI({ message: jQuery('#domMessageDivCanvas1') });signOutReLogin();" />
+									onclick="jQuery.blockUI({ message: jQuery('#domMessageDivCanvas1') });reStart();" />
 		
 							</rich:dropDownMenu>
+							-->
 						</rich:toolBarGroup>
 		
 					</rich:toolBar>
@@ -1304,8 +1313,8 @@
 
 			<a4j:jsFunction name="signOut" action="#{userInfoBean.signOut}"
 				oncomplete="jQuery.unblockUI();" />
-			<a4j:jsFunction name="signOutReLogin"
-				action="#{userInfoBean.signOutReLogin}"
+			<a4j:jsFunction name="reStart"
+				action="#{userInfoBean.signOut}"
 				oncomplete="jQuery.unblockUI();" />
 
 
@@ -1685,7 +1694,7 @@
 		</rich:modalPanel>
 	</a4j:region>
 	
-	<a4j:region renderRegionOnly="true">
+	<a4j:region>
 		<rich:modalPanel id="modalPackage" width="600" height="460"
 			style="overflow:auto;" resizeable="false">
 
@@ -1702,6 +1711,44 @@
 
 		</rich:modalPanel>
 	</a4j:region>
+	
+    <a4j:region>
+        <rich:modalPanel id="modalInstallPackage" width="900"
+            height="600" resizeable="true">
+            <f:facet name="header">Packages</f:facet>
+            <f:facet name="controls">
+                <h:graphicImage
+                    value="../image/icons/buttonCloseWindow.gif"
+                    style="cursor:pointer;width:22px;"
+                    onclick="#{rich:component('modalInstallPackage')}.hide()" />
+            </f:facet>
+                <h:panelGroup>
+                    <a4j:include
+                        viewId="/pages/modalInstallPackage.xhtml"
+                        ajaxRendered="true" />
+                </h:panelGroup>
+        </rich:modalPanel>
+    </a4j:region>
+    
+    <a4j:region renderRegionOnly="true">
+        <rich:modalPanel id="modalSettings" width="800" height="600"
+            style="overflow:auto;" resizeable="false">
+
+            <f:facet name="header">
+                <h:outputText value="#{messages.label_setting_modal}" />
+            </f:facet>
+            <f:facet name="controls">
+                <h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+                    style="cursor:pointer;width:22px;"
+                    onclick="#{rich:component('modalSettings')}.hide()" />
+            </f:facet>
+
+            <h:panelGroup>
+                <a4j:include viewId="/pages/modalSettings.xhtml" ajaxRendered="true" />
+            </h:panelGroup>
+
+        </rich:modalPanel>
+    </a4j:region>
 	
 	<rich:modalPanel id="msnError" showWhenRendered="#{requestScope['msnError'] != null}">
 		<center>
@@ -1725,25 +1772,5 @@
 
 		</center>
 	</rich:modalPanel>
-	
-    <a4j:region renderRegionOnly="true">
-        <rich:modalPanel id="modalSettings" width="800" height="600"
-            style="overflow:auto;" resizeable="false">
-
-            <f:facet name="header">
-                <h:outputText value="#{messages.label_setting_modal}" />
-            </f:facet>
-            <f:facet name="controls">
-                <h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-                    style="cursor:pointer;width:22px;"
-                    onclick="#{rich:component('modalSettings')}.hide()" />
-            </f:facet>
-
-            <h:panelGroup>
-                <a4j:include viewId="/pages/modalSettings.xhtml" ajaxRendered="true" />
-            </h:panelGroup>
-
-        </rich:modalPanel>
-    </a4j:region>
 </body>
 </html>

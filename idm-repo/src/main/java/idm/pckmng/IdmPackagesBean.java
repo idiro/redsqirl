@@ -48,6 +48,9 @@ public class IdmPackagesBean {
 			while(result.next()){
 				download_url = result.getString("name");
 			}
+			result.close();
+			ps.close();
+			con.close();
 		} catch (Exception e) {
 			System.out.println("C2");
 			e.printStackTrace();
@@ -102,6 +105,8 @@ public class IdmPackagesBean {
 			
 			list.add(pck);
 		}
+		result.close();
+		ps.close();
 		con.close();
 		return list;
 	}

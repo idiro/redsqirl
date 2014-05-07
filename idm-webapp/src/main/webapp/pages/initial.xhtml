@@ -77,28 +77,8 @@
 
 	<img src="./image/login_page_background.png" style="width:50%;position:absolute;z-index:-1;height:100%;" onError="this.onerror=null;this.src='../image/login_page_background.png';" />
 	<img src="./image/login_squirl_background.png" style="width:90%;position:absolute;z-index:0;height:90%;left:6%;min-width:600px;" onError="this.onerror=null;this.src='../image/login_squirl_background.png';" />
-
-	<div id="domMessageInitial" style="display: none;padding-right:0px;">
-		
-		<h:form>
-	        <a4j:outputPanel id="progressPanel">
-	            <rich:progressBar 
-                    value="#{userInfoBean.currentValue}"
-	                enabled="#{userInfoBean.enabled}"
-	                reRenderAfterComplete="progressPanel">
-	                  <h:outputText value="{value} %" />
-                </rich:progressBar>
-	        </a4j:outputPanel>
-	        
-		<!-- style="margin-left:78%;" -->
-			<a4j:commandButton value="#{messages.button_cancel}"
-			                   action="#{userInfoBean.signOut}"
-			                   style="float:right;margin-right:5px;"
-			                   styleClass="buttonLogin"
-			                   onclick="window.stop();jQuery.unblockUI();window.location.reload();" />
-		</h:form>
-	</div>
 	
+	<ui:include src="/pages/progressBar.xhtml" />
 	<table style="position:relative;left:6%;top:3%; height:87%;" >
 		<tr>
 			<td>
@@ -141,31 +121,29 @@
 								<br />
 								<h:outputText value="#{messages.error_login}" rendered="#{userInfoBean.msnError != null}" style="padding-left:200px;color:white;" />
 								<br />
-								<h:selectBooleanCheckbox value="#{userInfoBean.loginChek}" id="loginCheck" style="margin-left:160px;" />
+								<h:selectBooleanCheckbox id="loginCheck" style="margin-left:160px;" />
 								<h:outputText value="#{messages.label_rememberpassword}" style="color:#FFFFFF" />
 								<br />
 			
-								<h:inputText id="twoLoginChek" value="#{userInfoBean.twoLoginChek}" style="display:none;" />
+								<h:inputText id="alreadySignedInOtherMachine" value="#{userInfoBean.alreadySignedInOtherMachine}" style="display:none;" />
 			
-								<a4j:jsFunction name="reLogin" action="#{userInfoBean.login}" oncomplete="#{rich:component('mensagem')}.hide();" />
-			
-								<rich:modalPanel id="mensagem" showWhenRendered="#{userInfoBean.twoLoginChek != null}">
+								<rich:modalPanel id="modalAlreadySignedInOtherMachine" showWhenRendered="#{userInfoBean.alreadySignedInOtherMachine != null}">
 									<center>
-										<h:outputText value="#{messages.label_twoLoginChek}" />
+										<h:outputText value="#{messages.label_alreadySignedInOtherMachine}" />
 										<br />
 										<br />
-										<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('mensagem')}.hide(); return false;" />
-										<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" onclick="reLogin(); return false;" />
+										<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('modalAlreadySignedInOtherMachine')}.hide(); return false;" />
+										<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" onclick="#{rich:component('modalAlreadySignedInOtherMachine')}.hide();invalidateSession(); return false;" />
 									</center>
 								</rich:modalPanel>
 			
-								<rich:modalPanel id="mensagemLoginTwice" showWhenRendered="#{userInfoBean.msnLoginTwice != null}">
+								<rich:modalPanel id="modalAlreadySignedIn" showWhenRendered="#{userInfoBean.alreadySignedIn != null}">
 									<center>
-										<h:outputText value="#{messages.label_mensagemLoginTwice}" />
+										<h:outputText value="#{messages.label_alreadySignedIn}" />
 										<br />
 										<br />
-										<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}"
-											onclick="#{rich:component('mensagemLoginTwice')}.hide(); return false;" />
+										<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('modalAlreadySignedIn')}.hide(); return false;" />
+                                        <a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" onclick="#{rich:component('modalAlreadySignedIn')}.hide();invalidateSession(); return false;" />
 										</center>
 								</rich:modalPanel>
 			
@@ -200,14 +178,17 @@
 						<br />
 						
 						<a4j:commandButton 
-						    action="#{userInfoBean.startProcess}" 
+						    action="#{userInfoBean.startProgressBar}" 
 						    reRender="progressPanel" 
 							styleClass="buttonLogin" 
 							style="position:relative;vertical-align: middle;height:40px;top:-15px;width:107px;"
-							onclick="cookiePassword(); jQuery.blockUI({ message: jQuery('#domMessageInitial') }); "
-							oncomplete="validateSecondLogin();"
+							onclick="cookiePassword(); jQuery.blockUI({ message: jQuery('#divProgressBar') }); "
+							oncomplete="login('F');"
 							value="#{messages.label_login}" />
-						<a4j:jsFunction name="validateSecondLogin" action="#{userInfoBean.validateSecondLogin}" />
+						<a4j:jsFunction name="login" action="#{userInfoBean.login}">
+						  <a4j:actionparam name="force" assignTo="#{userInfoBean.forceSignIn}"/>
+						</a4j:jsFunction>
+						<a4j:jsFunction name="invalidateSession" action="#{userInfoBean.invalidateSession}" />
 						
 					</center>
 					<br />

@@ -4,7 +4,7 @@ import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idiro.workflow.server.connect.interfaces.DataStore;
 import idiro.workflow.server.connect.interfaces.DataStoreArray;
-import idiro.workflow.server.connect.interfaces.PckManager;
+import idiro.workflow.server.connect.interfaces.PropertiesManager;
 import idiro.workflow.server.interfaces.JobManager;
 import idm.useful.IdmEntry;
 import idm.useful.MessageUseful;
@@ -188,20 +188,20 @@ public class BaseBean {
 
 		return (JobManager) session.getAttribute("oozie");
 	}
-
-	/** getPckManager
+	
+	/** getPrefs
 	 * 
-	 * Methods to retrieve the object Package Manager from context
+	 * Methods to retrieve the object prefs from context
 	 * 
 	 * @return JobManager
 	 * @author Igor.Souza
 	 */
-	public PckManager getPckMng() throws RemoteException{
+	public PropertiesManager getPrefs() throws RemoteException{
 
 		FacesContext fCtx = FacesContext.getCurrentInstance();
 		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
 
-		return (PckManager) session.getAttribute("pckmng");
+		return (PropertiesManager) session.getAttribute("prefs");
 	}
 	
 

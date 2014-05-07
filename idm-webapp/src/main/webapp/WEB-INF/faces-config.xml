@@ -91,7 +91,13 @@
    <from-outcome>loginPage</from-outcome>
    <to-view-id>/pages/initial.xhtml</to-view-id>
   </navigation-case>
+  <navigation-case>
+   <from-outcome>cancelLogin</from-outcome>
+   <to-view-id>/pages/initial.xhtml</to-view-id>
+   <redirect/>
+  </navigation-case>
  </navigation-rule>
+ 
  <navigation-rule>
   <from-view-id>/pages/canvas.xhtml</from-view-id>
   <navigation-case>
@@ -103,35 +109,22 @@
    <from-outcome>loginPage</from-outcome>
    <to-view-id>/pages/initial.xhtml</to-view-id>
   </navigation-case>
-  
   <navigation-case>
    <from-outcome>reStart</from-outcome>
    <to-view-id>/pages/restart.xhtml</to-view-id>
    <redirect/>
   </navigation-case>
-  
  </navigation-rule>
+ 
+ 
  <navigation-rule>
-  <from-view-id>/pages/canvasModal1.xhtml</from-view-id>
-  <navigation-case>
-   <from-outcome>next</from-outcome>
-   <to-view-id>/pages/canvasModal2.xhtml</to-view-id>
-  </navigation-case>
- </navigation-rule>
- <navigation-rule>
-  <from-view-id>/pages/canvasModal2.xhtml</from-view-id>
-  <navigation-case>
-   <from-outcome>close</from-outcome>
-   <to-view-id>/pages/canvasModal1.xhtml</to-view-id>
-  </navigation-case>
- </navigation-rule>
- <navigation-rule>
-  <from-view-id>/pages/erro.xhtml</from-view-id>
+  <from-view-id>/pages/error.xhtml</from-view-id>
   <navigation-case>
    <from-outcome>initial</from-outcome>
    <to-view-id>/pages/initial.xhtml</to-view-id>
   </navigation-case>
  </navigation-rule>
+ 
  <navigation-rule>
   <from-view-id>/pages/signout.xhtml</from-view-id>
   <navigation-case>
@@ -145,19 +138,46 @@
   <from-view-id>/pages/restart.xhtml</from-view-id>
   <navigation-case>
    <from-outcome>reStart</from-outcome>
-   <to-view-id>/pages/restart2.xhtml</to-view-id>
+   <to-view-id>/pages/canvas.xhtml</to-view-id>
   </navigation-case>
- </navigation-rule>
- 
- <navigation-rule>
-  <from-view-id>/pages/restart2.xhtml</from-view-id>
   <navigation-case>
    <from-outcome>success</from-outcome>
    <to-view-id>/pages/canvas.xhtml</to-view-id>
    <redirect/>
   </navigation-case>
+  <navigation-case>
+   <from-outcome>failure</from-outcome>
+   <to-view-id>/pages/initial.xhtml</to-view-id>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>cancelLogin</from-outcome>
+   <to-view-id>/pages/initial.xhtml</to-view-id>
+   <redirect/>
+  </navigation-case>
  </navigation-rule>
  
+ <navigation-rule>
+  <from-view-id>/pages/modalInstallPackage.xhtml</from-view-id>
+  <navigation-case>
+   <from-outcome>signout</from-outcome>
+   <to-view-id>/pages/initial.xhtml</to-view-id>
+   <redirect/>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>reStart</from-outcome>
+   <to-view-id>/pages/restart.xhtml</to-view-id>
+   <redirect/>
+  </navigation-case>
+ </navigation-rule>
+ 
+ <navigation-rule>
+  <from-view-id>/pages/progressBar.xhtml</from-view-id>
+  <navigation-case>
+   <from-outcome>cancelLogin</from-outcome>
+   <to-view-id>/pages/initial.xhtml</to-view-id>
+   <redirect/>
+  </navigation-case>
+ </navigation-rule>
  
  <!-- *************************** RESOURCES ********************************************************** -->
  
