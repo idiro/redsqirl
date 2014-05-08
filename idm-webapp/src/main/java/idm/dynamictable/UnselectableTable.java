@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.WordUtils;
+
 public class UnselectableTable implements Serializable{
 
 	/**
@@ -15,27 +17,40 @@ public class UnselectableTable implements Serializable{
 	 */
 	private static final long serialVersionUID = -7850738860592864276L;
 
+	private List<String> columnIds;
 	private List<String> titles;
 	private List<String[]> rows;
 
 
 	/**
-	 * @param titles
+	 * @param columnIds
 	 * @param rows
 	 */
-	public UnselectableTable(LinkedList<String> titles) {
+	public UnselectableTable(LinkedList<String> columnIds) {
 		super();
-		this.titles = titles;
+		this.columnIds = columnIds;
 		this.rows = new LinkedList<String[]>();
+		updateTitles();
 	}
 
+	protected void updateTitles(){
+		if (columnIds != null) {
+			titles = new LinkedList<String>();
+			Iterator<String> columnIdsIt = columnIds.iterator();
+			while (columnIdsIt.hasNext()) {
+				titles.add(WordUtils.capitalizeFully(columnIdsIt.next()
+						.replace("_", " ")));
+			}
+		}
+	}
+	
 	/**
-	 * @param titles
+	 * @param columnIds
 	 * @param rows
 	 */
-	public UnselectableTable(LinkedList<String> titles, LinkedList<String[]> rows) {
+	public UnselectableTable(LinkedList<String> columnIds, LinkedList<String[]> rows) {
 		super();
-		this.titles = titles;
+		this.columnIds = columnIds;
 		this.rows = rows;
 	}
 
@@ -45,7 +60,7 @@ public class UnselectableTable implements Serializable{
 	}
 
 	public String getValueRow(int rowNb, String column){
-		return rows.get(rowNb)[titles.indexOf(column)];
+		return rows.get(rowNb)[columnIds.indexOf(column)];
 	}
 
 	public void setValueRow(int rowNb, int columnNb, String value){
@@ -53,12 +68,12 @@ public class UnselectableTable implements Serializable{
 	}
 
 	public void setValueRow(int rowNb, String column, String value){
-		rows.get(rowNb)[titles.indexOf(column)] = value;
+		rows.get(rowNb)[columnIds.indexOf(column)] = value;
 	}
 
 	public boolean add(Map<String,String> row){
-		String[] toAdd = new String[titles.size()];
-		Iterator<String> it = titles.iterator();
+		String[] toAdd = new String[columnIds.size()];
+		Iterator<String> it = columnIds.iterator();
 		int i = 0;
 		while(it.hasNext()){
 			toAdd[i] = row.get(it.next());
@@ -71,24 +86,25 @@ public class UnselectableTable implements Serializable{
 		String[] row = rows.get(index);
 		if(row != null){
 			ans = new LinkedHashMap<String,String>();
-			for(int i = 0; i < titles.size();++i){
-				ans.put(titles.get(i), row[i]);
+			for(int i = 0; i < columnIds.size();++i){
+				ans.put(columnIds.get(i), row[i]);
 			}
 		}
 		return ans;
 	}
 
 	/**
-	 * @return the titles
+	 * @return the columnIds
 	 */
-	public List<String> getTitles() {
-		return titles;
+	public List<String> getColumnIds() {
+		return columnIds;
 	}
 	/**
-	 * @param titles the titles to set
+	 * @param columnIds the columnIds to set
 	 */
-	public void setTitles(List<String> titles) {
-		this.titles = titles;
+	public void setColumnIds(List<String> columnIds) {
+		this.columnIds = columnIds;
+		updateTitles();
 	}
 
 	/**
@@ -127,8 +143,8 @@ public class UnselectableTable implements Serializable{
 	 * @return
 	 * @see java.util.List#indexOf(java.lang.Object)
 	 */
-	public int indexOf(Object o) {
-		return titles.indexOf(o);
+	public int columnIdsIndexOf(Object o) {
+		return columnIds.indexOf(o);
 	}
 
 	/**
@@ -138,6 +154,13 @@ public class UnselectableTable implements Serializable{
 	 */
 	public String[] remove(int index) {
 		return rows.remove(index);
+	}
+
+	/**
+	 * @return the titles
+	 */
+	public List<String> getTitles() {
+		return titles;
 	}
 
 
