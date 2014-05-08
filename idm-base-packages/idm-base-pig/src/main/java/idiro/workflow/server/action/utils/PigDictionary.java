@@ -155,7 +155,7 @@ public class PigDictionary extends AbstractDictionary {
 										"STRING,STRING, INT",
 										"STRING",
 										"@function:REGEX_EXTRACT( MYSTRING , CHAR , INDEX )@short:Performs regular expression matching and extracts the matched group defined by an index parameter@param:MYSTRING string to search@param:CHAR The regular expression@param:INDEX The index of the matched group to return@description:Use the REGEX_EXTRACT function to perform regular expression matching and to extract the matched group defined by the index parameter (where the index is a 1-based parameter.) The function uses Java regular expression form."
-												+ "The function returns a string that corresponds to the matched group in the position specified by the index. If there is no matched expression at that position, NULL is returned@example:REGEX_EXTRACT(\"helloworld#8020\", \"(.*)\\#(.*)\", 1) returns \"helloworld\"" } });
+												+ "The function returns a string that corresponds to the matched group in the position specified by the index. If there is no matched expression at that position, NULL is returned@example:REGEX_EXTRACT('helloworld#8020', '(.*)\\#(.*)', 1) returns 'helloworld'" } });
 
 		functionsMap
 				.put(castOperator,
@@ -284,53 +284,53 @@ public class PigDictionary extends AbstractDictionary {
 										"STRING",
 										"@function:SUBSTRING( MYSTRING , INDEX , LENGTH )@short:Returns a substring from a given string@param:MYSTRING The string from which a substring will be extracted@param: INDEX The index (type integer) of the first character of the substring."
 												+ "The index of a string begins with zero (0)@param:LENGTH The index (type integer) of the character following the last character of the substring@description:Use the SUBSTRING function to return a substring from a given string."
-												+ "Given a field named alpha whose value is ABCDEF, to return substring BCD use this statement: SUBSTRING(alpha,1,4). Note that 1 is the index of B (the first character of the substring) and 4 is the index of E (the character following the last character of the substring)@example:SUBSTR(\"help\",1,4) returns \"elp\"; @example:SUBSTR(\"example\",6,7) returns  \"le\"" },
+												+ "Given a field named alpha whose value is ABCDEF, to return substring BCD use this statement: SUBSTRING(alpha,1,4). Note that 1 is the index of B (the first character of the substring) and 4 is the index of E (the character following the last character of the substring)@example:SUBSTR('help',1,4) returns 'elp'; @example:SUBSTR('example',6,7) returns  'le'" },
 								new String[] {
 										"UPPER()",
 										"STRING",
 										"STRING",
-										"@function:UPPER( MYSTRING )@short:Returns a string converted to upper case@param:MYSTRING@description:Use the UPPER function to convert all characters in a string to upper case@example:UPPER(\"hello\") returns \"HELLO\"@example:UPPER(\"Example\") returns  \"EXAMPLE\"" },
+										"@function:UPPER( MYSTRING )@short:Returns a string converted to upper case@param:MYSTRING@description:Use the UPPER function to convert all characters in a string to upper case@example:UPPER('hello') returns 'HELLO'@example:UPPER('Example') returns  'EXAMPLE'" },
 								new String[] {
 										"LOWER()",
 										"STRING",
 										"STRING",
-										"@function:LOWER( MYSTRING )@short:Converts all characters in a string to lower case@param:MYSTRING@description:Use the LOWER function to convert all characters in a string to lower case@example:LOWER(\"HELLO\") returns \"hello\"@example:LOWER(\"Example\") returns  \"example\"" },
+										"@function:LOWER( MYSTRING )@short:Converts all characters in a string to lower case@param:MYSTRING@description:Use the LOWER function to convert all characters in a string to lower case@example:LOWER('HELLO') returns 'hello'@example:LOWER('Example') returns  'example'" },
 								new String[] {
 										"LCFIRST()",
 										"STRING",
 										"STRING",
-										"@function:LCFIRST( MYSTRING )@short:Converts the first character in a string to lower case@param:MYSTRING@description:Use the LCFIRST function to convert only the first character in a string to lower case@example:LCFIRST(\"HELLO\") returns \"hELLO\"@example:LCFIRST(\"Example\") returns  \"example\"" },
+										"@function:LCFIRST( MYSTRING )@short:Converts the first character in a string to lower case@param:MYSTRING@description:Use the LCFIRST function to convert only the first character in a string to lower case@example:LCFIRST('HELLO') returns 'hELLO'@example:LCFIRST('Example') returns  'example'" },
 								new String[] {
 										"UCFIRST()",
 										"STRING",
 										"STRING",
-										"@function:UCFIRST( MYSTRING )@short:Converts the first character in a string to upper case@param:MYSTRING@description:Use the UCFIRST function to convert only the first character in a string to upper case@example:UCFIRST(\"hELLO\") returns \"HELLO\"@example:UCFIRST(\"example\") returns  \"Example\"" },
+										"@function:UCFIRST( MYSTRING )@short:Converts the first character in a string to upper case@param:MYSTRING@description:Use the UCFIRST function to convert only the first character in a string to upper case@example:UCFIRST('hELLO') returns 'HELLO'@example:UCFIRST('example') returns  'Example'" },
 								new String[] {
 										"TRIM()",
 										"STRING",
 										"STRING",
-										"@function:TRIM( MYSTRING )@short:Returns a copy of a string with leading and trailing white space removed@param:MYSTRING@description:Use the TRIM function to remove leading and trailing white space from a string@example:TRIM(\" hello \") returns \"hello\"@example:TRIM(\" example \") returns  \"example\"" },
+										"@function:TRIM( MYSTRING )@short:Returns a copy of a string with leading and trailing white space removed@param:MYSTRING@description:Use the TRIM function to remove leading and trailing white space from a string@example:TRIM(' hello ') returns 'hello'@example:TRIM(' example ') returns  'example'" },
 								new String[] {
 										"INDEXOF()",
 										"STRING,STRING,INT",
 										"INT",
-										"@function:INDEXOF( MYSTRING , CHAR , INDEX )@short:Returns the index of the first occurrence of a character in a string. Searching forward from a start index@param:MYSTRING string to search@param:CHAR character to search for@param:INDEX index to start foreward search from@description:Use the INDEXOF function to determine the index of the first occurrence of a character in a string. The forward search for the character begins at the designated start index@example:INDEXOF(\"hello\",\"e\",0) returns 1@example:INDEXOF(\"example\",\"l\",1) returns  5" },
+										"@function:INDEXOF( MYSTRING , CHAR , INDEX )@short:Returns the index of the first occurrence of a character in a string. Searching forward from a start index@param:MYSTRING string to search@param:CHAR character to search for@param:INDEX index to start foreward search from@description:Use the INDEXOF function to determine the index of the first occurrence of a character in a string. The forward search for the character begins at the designated start index@example:INDEXOF('hello','e',0) returns 1@example:INDEXOF('example','l',1) returns  5" },
 								new String[] {
 										"LAST_INDEX_OF()",
 										"STRING,CHAR,INT",
 										"INT",
-										"@function:LAST_INDEX_OF( MYSTRING , CHAR , INDEX )@short:Returns the index of the last occurrence of a character in a string. Searching backward from a start index@param:MYSTRING string to search@param:CHAR character to search for@param:INDEX index to start backward search from@description:Use the INDEXOF function to determine the index of the first occurrence of a character in a string. The forward search for the character begins at the designated start index@example:LAST_INDEX_OF(\"hello\",\"l\",0) returns 3@example:LAST_INDEX_OF(\"eeeee\",\"e\",4) returns  4" },
+										"@function:LAST_INDEX_OF( MYSTRING , CHAR , INDEX )@short:Returns the index of the last occurrence of a character in a string. Searching backward from a start index@param:MYSTRING string to search@param:CHAR character to search for@param:INDEX index to start backward search from@description:Use the INDEXOF function to determine the index of the first occurrence of a character in a string. The forward search for the character begins at the designated start index@example:LAST_INDEX_OF('hello','l',0) returns 3@example:LAST_INDEX_OF('eeeee','e',4) returns  4" },
 								new String[] {
 										"REGEX_EXTRACT()",
 										"STRING,STRING,INT",
-										"INT",
+										"STRING",
 										"@function:REGEX_EXTRACT( MYSTRING , CHAR , INDEX )@short:Performs regular expression matching and extracts the matched group defined by an index parameter@param:MYSTRING string to search@param:CHAR The regular expression@param:INDEX The index of the matched group to return@description:Use the REGEX_EXTRACT function to perform regular expression matching and to extract the matched group defined by the index parameter (where the index is a 1-based parameter.) The function uses Java regular expression form."
-												+ "The function returns a string that corresponds to the matched group in the position specified by the index. If there is no matched expression at that position, NULL is returned@example:REGEX_EXTRACT(\"helloworld#8020\", \"(.*)\\#(.*)\", 1) returns \"helloworld\"" },
+												+ "The function returns a string that corresponds to the matched group in the position specified by the index. If there is no matched expression at that position, NULL is returned@example:REGEX_EXTRACT('helloworld#8020', '(.*)\\#(.*)', 1) returns 'helloworld'" },
 								new String[] {
 										"REPLACE()",
 										"STRING,STRING,STRING",
 										"INT",
-										"@function:REPLACE(MYSTRING , OLDCHAR , NEWCHAR)@short:Replaces existing characters in a string with new characters@param:MYSTRING string to replace@param:OLDCHAR character to replace@param:NEWCHAR character to replace with@description:Use the REPLACE function to replace existing characters in a string with new characters@example:REPLACE(\"open source software\",\"software\",\"wiki\") returns \"open source wiki\"" }, });
+										"@function:REPLACE(MYSTRING , OLDCHAR , NEWCHAR)@short:Replaces existing characters in a string with new characters@param:MYSTRING string to replace@param:OLDCHAR character to replace@param:NEWCHAR character to replace with@description:Use the REPLACE function to replace existing characters in a string with new characters@example:REPLACE('open source software','software','wiki') returns 'open source wiki'" }, });
 		functionsMap
 				.put(agregationMethods,
 						new String[][] {
@@ -860,7 +860,7 @@ public class PigDictionary extends AbstractDictionary {
 				functionsMap.get(mathMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("utils"),
 				functionsMap.get(utilsMethods)));
-		help.add(createMenu(new TreeNonUnique<String>("utils"),
+		help.add(createMenu(new TreeNonUnique<String>("conditional_operator"),
 				functionsMap.get(conditionalOperator)));
 		logger.debug("create Condition Help Menu");
 		return help;
@@ -886,7 +886,7 @@ public class PigDictionary extends AbstractDictionary {
 				functionsMap.get(relationalOperators)));
 		help.add(createMenu(new TreeNonUnique<String>("operation_logic"),
 				functionsMap.get(logicalOperators)));
-		help.add(createMenu(new TreeNonUnique<String>("utils"),
+		help.add(createMenu(new TreeNonUnique<String>("conditional_operator"),
 				functionsMap.get(conditionalOperator)));
 		logger.debug("create Select Help Menu");
 		return help;
@@ -912,7 +912,7 @@ public class PigDictionary extends AbstractDictionary {
 				functionsMap.get(relationalOperators)));
 		help.add(createMenu(new TreeNonUnique<String>("operation_logic"),
 				functionsMap.get(logicalOperators)));
-		help.add(createMenu(new TreeNonUnique<String>("utils"),
+		help.add(createMenu(new TreeNonUnique<String>("conditional_operator"),
 				functionsMap.get(conditionalOperator)));
 		logger.debug("create Group Select Help Menu");
 		return help;
