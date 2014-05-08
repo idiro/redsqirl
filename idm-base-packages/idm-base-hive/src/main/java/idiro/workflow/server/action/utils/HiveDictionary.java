@@ -32,6 +32,8 @@ public class HiveDictionary extends AbstractDictionary {
 	private static Logger logger = Logger.getLogger(HiveDictionary.class);
 	/** Logical operators key */
 	private static final String logicalOperators = "logicalOperators";
+	/** Key for conditional operator */
+	private static final String conditionalOperator = "conditionalOperator";
 	/** relational operators key */
 	private static final String relationalOperators = "relationalOperators";
 	/** arithmetic operators key */
@@ -167,7 +169,12 @@ public class HiveDictionary extends AbstractDictionary {
 		functionsMap.put(utilsMethods, new String[][] {
 				new String[] { "RAND()", "", "DOUBLE" },
 				new String[] { "FROM_UNIXTIME()", "INT", "STRING" },
-				new String[] { "CAST( AS )", "ANY,TYPE", "TYPE" } });
+				new String[] { "CAST( AS )", "ANY,TYPE", "TYPE" },
+				new String[] {
+						"DISTINCT()",
+						"ANY",
+						"ANY",
+						"@function:DISTINCT( ELEMENT )@short:The DISTINCT statement is used to return only distinct (different) values."}});
 
 		functionsMap
 				.put(doubleMethods,
@@ -301,7 +308,28 @@ public class HiveDictionary extends AbstractDictionary {
 										"MAX()",
 										"NUMBER",
 										"DOUBLE",
-										"@function:MAX( ELEMENT )@short:Use the MAX function to compute the maximum of a set of numeric values in a single-column table@param: ELEMENT item to get the maximum@description:Computes the maximum of the numeric values in a single-column table. @example: MAX(A.id) returns the maximum value of A.id" } });
+										"@function:MAX( ELEMENT )@short:Use the MAX function to compute the maximum of a set of numeric values in a single-column table@param: ELEMENT item to get the maximum@description:Computes the maximum of the numeric values in a single-column table. @example: MAX(A.id) returns the maximum value of A.id" },
+		
+								});
+		
+		functionsMap
+				.put(conditionalOperator,
+						new String[][] {
+								new String[] {
+										"CASE END",
+										"",
+										"",
+										"@function:CASE END@short:Conditional expression@example: CASE WHEN (A==1) THEN ('A') END" },
+								new String[] {
+										"WHEN () THEN ()",
+										"",
+										"",
+										"@function:WHEN (test) THEN (value)@short: Conditional expression to be used inside a CASE END@param:TEST Any Boolean expression@param:EXPRESSION1 An expression returned if test is true" },
+								new String[] {
+										"ELSE ()",
+										"",
+										"",
+										"@function:ELSE(VALUE)@short:Value to be returned when no condition inside a CASE END is found to be true" } });
 	}
 
 	public static FeatureType getType(String hiveType) {
@@ -436,6 +464,9 @@ public class HiveDictionary extends AbstractDictionary {
 				if (runLogicalOperation(expr, features, featureAggreg)) {
 					type = "BOOLEAN";
 				}
+			} else if (isConditionalOperation(expr)) {
+				logger.debug(expr + ", is a relational operation");
+				type = runConditionalOperation(expr, features, featureAggreg);
 			} else if (isRelationalOperation(expr)) {
 				logger.debug(expr + ", is a relational operation");
 				if (runRelationalOperation(expr, features, featureAggreg)) {
@@ -645,6 +676,8 @@ public class HiveDictionary extends AbstractDictionary {
 				functionsMap.get(doubleMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("utils"),
 				functionsMap.get(utilsMethods)));
+		help.add(createMenu(new TreeNonUnique<String>("conditional_operator"),
+				functionsMap.get(conditionalOperator)));
 		logger.debug("create Condition Help Menu");
 		return help;
 	}
@@ -669,6 +702,8 @@ public class HiveDictionary extends AbstractDictionary {
 				functionsMap.get(relationalOperators)));
 		help.add(createMenu(new TreeNonUnique<String>("operation_logic"),
 				functionsMap.get(logicalOperators)));
+		help.add(createMenu(new TreeNonUnique<String>("conditional_operator"),
+				functionsMap.get(conditionalOperator)));
 		logger.debug("create Select Help Menu");
 		return help;
 	}
@@ -696,6 +731,8 @@ public class HiveDictionary extends AbstractDictionary {
 				functionsMap.get(relationalOperators)));
 		help.add(createMenu(new TreeNonUnique<String>("operation_logic"),
 				functionsMap.get(logicalOperators)));
+		help.add(createMenu(new TreeNonUnique<String>("conditional_operator"),
+				functionsMap.get(conditionalOperator)));
 		logger.debug("create Group Select Help Menu");
 		return help;
 	}
@@ -818,6 +855,7 @@ public class HiveDictionary extends AbstractDictionary {
 		return runOperation(functionsMap.get(relationalOperators), expr,
 				features, aggregFeat);
 	}
+	
 
 	/**
 	 * Check if a an expression is a arithmetic operation
@@ -900,8 +938,11 @@ public class HiveDictionary extends AbstractDictionary {
 						&& expr.trim().equalsIgnoreCase(method[0].trim())) {
 					// Hard-copy method
 					type = method[2];
-				} else if (sizeSearched != method[1].split(",").length) {
-					method = null;
+				} else{
+					int methodArgs = method[1].isEmpty() ? 0 : method[1].split(",").length;
+					if (sizeSearched != methodArgs) {
+						method = null;
+					}
 				}
 
 			}
@@ -918,6 +959,9 @@ public class HiveDictionary extends AbstractDictionary {
 					}
 				} else if (check(method, argSplit, features)) {
 					type = method[2];
+					if (type.equals("ANY")){
+						type = getReturnType(argSplit[0], features);
+					}
 				}
 			} else if (type == null) {
 				String error = "No method " + methodsFound.get(0)[0] + " with "
@@ -931,6 +975,76 @@ public class HiveDictionary extends AbstractDictionary {
 			throw new Exception(error);
 		}
 
+		return type;
+	}
+	
+	/**
+	 * Check if an expression is a conditional operation
+	 * 
+	 * @param expr
+	 * @return <code>true</code> if the expression is a relational operation
+	 *         else <code>false</code>
+	 */
+
+	private boolean isConditionalOperation(String expr) {
+		return expr.startsWith("CASE") && expr.endsWith("END");
+		//return isInList(functionsMap.get(conditionalOperator), expr);
+	}
+	
+	/**
+	 * Run a method
+	 * 
+	 * @param expr
+	 * @param features
+	 * @param aggregFeat
+	 * @return Error Message
+	 * @throws Exception
+	 */
+
+	private String runConditionalOperation(String expr, FeatureList features,
+			Set<String> aggregFeat) throws Exception {
+		String type = null;
+		String arg =  expr.replace("CASE", "").replace("END", "").trim();
+		String[] expressions = arg.split("(?=WHEN)|(?=ELSE)");
+			
+		for (int i =0; i < expressions.length; ++i){
+			String expression = expressions[i];
+			if (!expression.trim().isEmpty()){
+				String args2[] = getBracketsContent(expression);
+					
+				String argType = null;
+					
+				if (expression.trim().startsWith("WHEN")){
+					if (!getReturnType(args2[0], features).equals("BOOLEAN")){
+						String error = "Should return boolean";
+						logger.debug(error);
+						throw new Exception(error);
+					}
+					argType = args2[1];
+				} else if (expression.trim().startsWith("ELSE")){
+					if (i != expressions.length -1){
+						String error = "Else must be the last expression";
+						logger.debug(error);
+						throw new Exception(error);
+					}
+					argType = args2[0];
+				}
+	
+						
+				String t = getReturnType(argType, features);
+				if (type == null){
+					type = t;
+				}
+				else{
+					if (!t.equals(type)){
+						String error = "All expressions should return the same type";
+						logger.debug(error);
+						throw new Exception(error);
+					}
+				}
+			}
+		}
+				
 		return type;
 	}
 
@@ -1167,7 +1281,7 @@ public class HiveDictionary extends AbstractDictionary {
 	public static String escapeString(String expr) {
 		return "\\Q" + expr + "\\E";
 	}
-
+	
 	/**
 	 * Remove the content from brackets
 	 * 
@@ -1176,19 +1290,30 @@ public class HiveDictionary extends AbstractDictionary {
 	 */
 
 	public static String removeBracketContent(String expr) {
+		return removeDelimiterContent(expr, '(', ')');
+	}
+
+	/**
+	 * Remove the content from brackets
+	 * 
+	 * @param expr
+	 * @return cleanUp
+	 */
+
+	public static String removeDelimiterContent(String expr, char delimiterBegin, char delimiterEnd) {
 		int count = 0;
 		int index = 0;
 		String cleanUp = "";
 		while (index < expr.length()) {
-			if (expr.charAt(index) == '(') {
+			if (expr.charAt(index) == delimiterBegin) {
 				++count;
 				if (count == 1) {
-					cleanUp += '(';
+					cleanUp += delimiterBegin;
 				}
-			} else if (expr.charAt(index) == ')') {
+			} else if (expr.charAt(index) == delimiterEnd) {
 				--count;
 				if (count == 0) {
-					cleanUp += ')';
+					cleanUp += delimiterEnd;
 				}
 			} else if (count == 0) {
 				cleanUp += expr.charAt(index);
@@ -1196,6 +1321,40 @@ public class HiveDictionary extends AbstractDictionary {
 			++index;
 		}
 		return cleanUp;
+	}
+	
+	
+	/**
+	 * Get the content of the brackets
+	 * 
+	 * @param expr
+	 * @return cleanUp
+	 */
+
+	public static String[] getBracketsContent(String expr) {
+		int count = 0;
+		int index = 0;
+		String cleanUp = "";
+		while (index < expr.length()) {
+			if (expr.charAt(index) == '(') {
+				++count;
+				if (count > 1) {
+					cleanUp += '(';
+				}
+			} else if (expr.charAt(index) == ')') {
+				--count;
+				if (count > 0) {
+					cleanUp += ')';
+				}
+				else{
+					cleanUp += ',';
+				}
+			} else if (count > 0) {
+				cleanUp += expr.charAt(index);
+			}
+			++index;
+		}
+		return cleanUp.substring(0, cleanUp.length() - 1).split(",");
 	}
 
 	/**

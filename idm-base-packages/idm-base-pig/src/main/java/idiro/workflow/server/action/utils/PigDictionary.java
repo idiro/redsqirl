@@ -47,6 +47,8 @@ public class PigDictionary extends AbstractDictionary {
 	private static final String stringMethods = "stringMethods";
 	/** Key for aggregation methods */
 	private static final String agregationMethods = "agregationMethods";
+	/** Key for aggregation methods */
+	private static final String conditionalOperator = "conditionalOperator";
 	/** Instance */
 	private static PigDictionary instance;
 
@@ -153,7 +155,7 @@ public class PigDictionary extends AbstractDictionary {
 										"STRING,STRING, INT",
 										"STRING",
 										"@function:REGEX_EXTRACT( MYSTRING , CHAR , INDEX )@short:Performs regular expression matching and extracts the matched group defined by an index parameter@param:MYSTRING string to search@param:CHAR The regular expression@param:INDEX The index of the matched group to return@description:Use the REGEX_EXTRACT function to perform regular expression matching and to extract the matched group defined by the index parameter (where the index is a 1-based parameter.) The function uses Java regular expression form."
-												+ "The function returns a string that corresponds to the matched group in the position specified by the index. If there is no matched expression at that position, NULL is returned@example:REGEX_EXTRACT(\"helloworld#8020\", \"(.*)\\#(.*)\", 1) returns \"helloworld\"" } });
+												+ "The function returns a string that corresponds to the matched group in the position specified by the index. If there is no matched expression at that position, NULL is returned@example:REGEX_EXTRACT('helloworld#8020', '(.*)\\#(.*)', 1) returns 'helloworld'" } });
 
 		functionsMap
 				.put(castOperator,
@@ -176,7 +178,8 @@ public class PigDictionary extends AbstractDictionary {
 								"RANDOM()",
 								"",
 								"DOUBLE",
-								"@function:RANDOM()@short: Generate a random double@description:Generates a random double and returns it" }, });
+								"@function:RANDOM()@short: Generate a random double@description:Generates a random double and returns it" }
+						});
 
 		functionsMap
 				.put(mathMethods,
@@ -281,53 +284,53 @@ public class PigDictionary extends AbstractDictionary {
 										"STRING",
 										"@function:SUBSTRING( MYSTRING , INDEX , LENGTH )@short:Returns a substring from a given string@param:MYSTRING The string from which a substring will be extracted@param: INDEX The index (type integer) of the first character of the substring."
 												+ "The index of a string begins with zero (0)@param:LENGTH The index (type integer) of the character following the last character of the substring@description:Use the SUBSTRING function to return a substring from a given string."
-												+ "Given a field named alpha whose value is ABCDEF, to return substring BCD use this statement: SUBSTRING(alpha,1,4). Note that 1 is the index of B (the first character of the substring) and 4 is the index of E (the character following the last character of the substring)@example:SUBSTR(\"help\",1,4) returns \"elp\"; @example:SUBSTR(\"example\",6,7) returns  \"le\"" },
+												+ "Given a field named alpha whose value is ABCDEF, to return substring BCD use this statement: SUBSTRING(alpha,1,4). Note that 1 is the index of B (the first character of the substring) and 4 is the index of E (the character following the last character of the substring)@example:SUBSTR('help',1,4) returns 'elp'; @example:SUBSTR('example',6,7) returns  'le'" },
 								new String[] {
 										"UPPER()",
 										"STRING",
 										"STRING",
-										"@function:UPPER( MYSTRING )@short:Returns a string converted to upper case@param:MYSTRING@description:Use the UPPER function to convert all characters in a string to upper case@example:UPPER(\"hello\") returns \"HELLO\"@example:UPPER(\"Example\") returns  \"EXAMPLE\"" },
+										"@function:UPPER( MYSTRING )@short:Returns a string converted to upper case@param:MYSTRING@description:Use the UPPER function to convert all characters in a string to upper case@example:UPPER('hello') returns 'HELLO'@example:UPPER('Example') returns  'EXAMPLE'" },
 								new String[] {
 										"LOWER()",
 										"STRING",
 										"STRING",
-										"@function:LOWER( MYSTRING )@short:Converts all characters in a string to lower case@param:MYSTRING@description:Use the LOWER function to convert all characters in a string to lower case@example:LOWER(\"HELLO\") returns \"hello\"@example:LOWER(\"Example\") returns  \"example\"" },
+										"@function:LOWER( MYSTRING )@short:Converts all characters in a string to lower case@param:MYSTRING@description:Use the LOWER function to convert all characters in a string to lower case@example:LOWER('HELLO') returns 'hello'@example:LOWER('Example') returns  'example'" },
 								new String[] {
 										"LCFIRST()",
 										"STRING",
 										"STRING",
-										"@function:LCFIRST( MYSTRING )@short:Converts the first character in a string to lower case@param:MYSTRING@description:Use the LCFIRST function to convert only the first character in a string to lower case@example:LCFIRST(\"HELLO\") returns \"hELLO\"@example:LCFIRST(\"Example\") returns  \"example\"" },
+										"@function:LCFIRST( MYSTRING )@short:Converts the first character in a string to lower case@param:MYSTRING@description:Use the LCFIRST function to convert only the first character in a string to lower case@example:LCFIRST('HELLO') returns 'hELLO'@example:LCFIRST('Example') returns  'example'" },
 								new String[] {
 										"UCFIRST()",
 										"STRING",
 										"STRING",
-										"@function:UCFIRST( MYSTRING )@short:Converts the first character in a string to upper case@param:MYSTRING@description:Use the UCFIRST function to convert only the first character in a string to upper case@example:UCFIRST(\"hELLO\") returns \"HELLO\"@example:UCFIRST(\"example\") returns  \"Example\"" },
+										"@function:UCFIRST( MYSTRING )@short:Converts the first character in a string to upper case@param:MYSTRING@description:Use the UCFIRST function to convert only the first character in a string to upper case@example:UCFIRST('hELLO') returns 'HELLO'@example:UCFIRST('example') returns  'Example'" },
 								new String[] {
 										"TRIM()",
 										"STRING",
 										"STRING",
-										"@function:TRIM( MYSTRING )@short:Returns a copy of a string with leading and trailing white space removed@param:MYSTRING@description:Use the TRIM function to remove leading and trailing white space from a string@example:TRIM(\" hello \") returns \"hello\"@example:TRIM(\" example \") returns  \"example\"" },
+										"@function:TRIM( MYSTRING )@short:Returns a copy of a string with leading and trailing white space removed@param:MYSTRING@description:Use the TRIM function to remove leading and trailing white space from a string@example:TRIM(' hello ') returns 'hello'@example:TRIM(' example ') returns  'example'" },
 								new String[] {
 										"INDEXOF()",
 										"STRING,STRING,INT",
 										"INT",
-										"@function:INDEXOF( MYSTRING , CHAR , INDEX )@short:Returns the index of the first occurrence of a character in a string. Searching forward from a start index@param:MYSTRING string to search@param:CHAR character to search for@param:INDEX index to start foreward search from@description:Use the INDEXOF function to determine the index of the first occurrence of a character in a string. The forward search for the character begins at the designated start index@example:INDEXOF(\"hello\",\"e\",0) returns 1@example:INDEXOF(\"example\",\"l\",1) returns  5" },
+										"@function:INDEXOF( MYSTRING , CHAR , INDEX )@short:Returns the index of the first occurrence of a character in a string. Searching forward from a start index@param:MYSTRING string to search@param:CHAR character to search for@param:INDEX index to start foreward search from@description:Use the INDEXOF function to determine the index of the first occurrence of a character in a string. The forward search for the character begins at the designated start index@example:INDEXOF('hello','e',0) returns 1@example:INDEXOF('example','l',1) returns  5" },
 								new String[] {
 										"LAST_INDEX_OF()",
 										"STRING,CHAR,INT",
 										"INT",
-										"@function:LAST_INDEX_OF( MYSTRING , CHAR , INDEX )@short:Returns the index of the last occurrence of a character in a string. Searching backward from a start index@param:MYSTRING string to search@param:CHAR character to search for@param:INDEX index to start backward search from@description:Use the INDEXOF function to determine the index of the first occurrence of a character in a string. The forward search for the character begins at the designated start index@example:LAST_INDEX_OF(\"hello\",\"l\",0) returns 3@example:LAST_INDEX_OF(\"eeeee\",\"e\",4) returns  4" },
+										"@function:LAST_INDEX_OF( MYSTRING , CHAR , INDEX )@short:Returns the index of the last occurrence of a character in a string. Searching backward from a start index@param:MYSTRING string to search@param:CHAR character to search for@param:INDEX index to start backward search from@description:Use the INDEXOF function to determine the index of the first occurrence of a character in a string. The forward search for the character begins at the designated start index@example:LAST_INDEX_OF('hello','l',0) returns 3@example:LAST_INDEX_OF('eeeee','e',4) returns  4" },
 								new String[] {
 										"REGEX_EXTRACT()",
 										"STRING,STRING,INT",
-										"INT",
+										"STRING",
 										"@function:REGEX_EXTRACT( MYSTRING , CHAR , INDEX )@short:Performs regular expression matching and extracts the matched group defined by an index parameter@param:MYSTRING string to search@param:CHAR The regular expression@param:INDEX The index of the matched group to return@description:Use the REGEX_EXTRACT function to perform regular expression matching and to extract the matched group defined by the index parameter (where the index is a 1-based parameter.) The function uses Java regular expression form."
-												+ "The function returns a string that corresponds to the matched group in the position specified by the index. If there is no matched expression at that position, NULL is returned@example:REGEX_EXTRACT(\"helloworld#8020\", \"(.*)\\#(.*)\", 1) returns \"helloworld\"" },
+												+ "The function returns a string that corresponds to the matched group in the position specified by the index. If there is no matched expression at that position, NULL is returned@example:REGEX_EXTRACT('helloworld#8020', '(.*)\\#(.*)', 1) returns 'helloworld'" },
 								new String[] {
 										"REPLACE()",
 										"STRING,STRING,STRING",
 										"INT",
-										"@function:REPLACE(MYSTRING , OLDCHAR , NEWCHAR)@short:Replaces existing characters in a string with new characters@param:MYSTRING string to replace@param:OLDCHAR character to replace@param:NEWCHAR character to replace with@description:Use the REPLACE function to replace existing characters in a string with new characters@example:REPLACE(\"open source software\",\"software\",\"wiki\") returns \"open source wiki\"" }, });
+										"@function:REPLACE(MYSTRING , OLDCHAR , NEWCHAR)@short:Replaces existing characters in a string with new characters@param:MYSTRING string to replace@param:OLDCHAR character to replace@param:NEWCHAR character to replace with@description:Use the REPLACE function to replace existing characters in a string with new characters@example:REPLACE('open source software','software','wiki') returns 'open source wiki'" }, });
 		functionsMap
 				.put(agregationMethods,
 						new String[][] {
@@ -364,8 +367,30 @@ public class PigDictionary extends AbstractDictionary {
 										"MAX()",
 										"NUMBER",
 										"NUMBER",
-										"@function:MAX( ELEMENT )@short:Use the MAX function to compute the maximum of a set of numeric values in a single-column bag@param: ELEMENT item to get the maximum@description:Computes the maximum of the numeric values in a single-column bag. MAX requires a preceding GROUP ALL statement for global sums and a GROUP BY statement for group sums@example: MAX(A.id) returns the maximum value of A.id" } });
+										"@function:MAX( ELEMENT )@short:Use the MAX function to compute the maximum of a set of numeric values in a single-column bag@param: ELEMENT item to get the maximum@description:Computes the maximum of the numeric values in a single-column bag. MAX requires a preceding GROUP ALL statement for global sums and a GROUP BY statement for group sums@example: MAX(A.id) returns the maximum value of A.id" },
+								new String[] {
+										"COUNT_DISTINCT()",
+										"ANY",
+										"INT",
+										"@function:COUNT_DISTINCT( ELEMENT )@short:Computes the number of distinct elements in a bag@param:ELEMENT item to count@description:Use the COUNT_DISTINCT function to compute the number of distinct elements in a bag. COUNT_DISTINCT requires a preceding GROUP ALL statement for global counts and a GROUP BY statement for group counts."
+												+ "The COUNT_DISTINCT function follows syntax semantics and ignores nulls. What this means is that a tuple in the bag will not be counted if the FIRST FIELD in this tuple is NULL. If you want to include NULL values in the count computation, use COUNT_STAR."
+												+ "Note: You cannot use the tuple designator (*) with COUNT_DISTINCT; that is, COUNT_DISTINCT(*) will not work.@example: COUNT_DISTINCT(A) returns the frequency of A"}});
+		functionsMap
+				.put(conditionalOperator,
+							new String[][] {
+								new String[] {
+										"() ? () : ()",
+										"BOOLEAN,ANY,ANY",
+										"ANY",
+										"@function: (TEST) ? (EXPRESSION1) : (EXPRESSION2)@short:Returns one of two expressions depending on a condition@param:TEST Any Boolean expression@param:EXPRESSION1 An expression returned if test is true@param:EXPRESSION2 An expression returned if test is false@example: (TRUE) ? ('VALUE1') : ('VALUE2') returns 'VALUE1'"}
+				});
+
+		
+		
 	}
+	
+	
+	
 
 	/**
 	 * Get the Pig type of the variable passed
@@ -566,6 +591,9 @@ public class PigDictionary extends AbstractDictionary {
 					}
 				}
 				type = runMethod(expr, fl, false);
+			} else if (isConditionalOperation(expr)){
+				logger.debug(expr + ", is an cast operation");
+				type = runConditionalOperation(expr, features, nonAggregFeats);
 			} else if (isCastOperation(expr)) {
 				logger.debug(expr + ", is an cast operation");
 				type = runCastOperation(expr, features, nonAggregFeats);
@@ -618,6 +646,44 @@ public class PigDictionary extends AbstractDictionary {
 			}
 		} else {
 			String error = "No method matching " + expr;
+			logger.debug(error);
+			throw new Exception(error);
+		}
+
+		return type;
+	}
+	
+	/**
+	 * Run a cast operation on an expression
+	 * 
+	 * @param expr
+	 * @param features
+	 * @param featureAggreg
+	 * @return type
+	 * @throws Exception
+	 */
+	private String runConditionalOperation(String expr, FeatureList features,
+			Set<String> featureAggreg) throws Exception {
+		String type = null;
+		
+		String[] args = getBracketsContent(expr);
+		
+		if (args.length != 3){
+			String error = "Wrong number of arguments.";
+			logger.debug(error);
+			throw new Exception(error);
+		}
+		
+		if (!getReturnType(args[0], features).equals("BOOLEAN")){
+			String error = "First argument of conditional expression must return a boolean";
+			logger.debug(error);
+			throw new Exception(error);
+		} 
+		
+		type = getReturnType(args[1], features);
+		
+		if (!type.equals(getReturnType(args[2], features))){
+			String error = "Types returned must be the same";
 			logger.debug(error);
 			throw new Exception(error);
 		}
@@ -794,6 +860,8 @@ public class PigDictionary extends AbstractDictionary {
 				functionsMap.get(mathMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("utils"),
 				functionsMap.get(utilsMethods)));
+		help.add(createMenu(new TreeNonUnique<String>("conditional_operator"),
+				functionsMap.get(conditionalOperator)));
 		logger.debug("create Condition Help Menu");
 		return help;
 	}
@@ -818,6 +886,8 @@ public class PigDictionary extends AbstractDictionary {
 				functionsMap.get(relationalOperators)));
 		help.add(createMenu(new TreeNonUnique<String>("operation_logic"),
 				functionsMap.get(logicalOperators)));
+		help.add(createMenu(new TreeNonUnique<String>("conditional_operator"),
+				functionsMap.get(conditionalOperator)));
 		logger.debug("create Select Help Menu");
 		return help;
 	}
@@ -842,6 +912,8 @@ public class PigDictionary extends AbstractDictionary {
 				functionsMap.get(relationalOperators)));
 		help.add(createMenu(new TreeNonUnique<String>("operation_logic"),
 				functionsMap.get(logicalOperators)));
+		help.add(createMenu(new TreeNonUnique<String>("conditional_operator"),
+				functionsMap.get(conditionalOperator)));
 		logger.debug("create Group Select Help Menu");
 		return help;
 	}
@@ -978,6 +1050,17 @@ public class PigDictionary extends AbstractDictionary {
 	private boolean isCastOperation(String expr) {
 		return isInList(functionsMap.get(castOperator), expr);
 	}
+	
+	/**
+	 * Check if an expression is a conditional operation
+	 * 
+	 * @param expr
+	 * @return <code>true</code> id operation is a conditional operation else
+	 *         <code>false</code>
+	 */
+	private boolean isConditionalOperation(String expr) {
+		return isInList(functionsMap.get(conditionalOperator), expr);
+	}
 
 	/**
 	 * Run arithmetic operation and check if result is ok
@@ -1003,6 +1086,11 @@ public class PigDictionary extends AbstractDictionary {
 	 */
 	public boolean isAggregatorMethod(String expr) {
 		return isInList(functionsMap.get(agregationMethods), expr);
+	}
+	
+	
+	public boolean isCountDistinctMethod(String expr) {
+		return expr.startsWith("COUNT_DISTINCT(");
 	}
 
 	/**
@@ -1069,8 +1157,11 @@ public class PigDictionary extends AbstractDictionary {
 						&& expr.trim().equalsIgnoreCase(method[0].trim())) {
 					// Hard-copy method
 					type = method[2];
-				} else if (sizeSearched != method[1].split(",").length) {
-					method = null;
+				} else{
+					int methodArgs = method[1].isEmpty() ? 0 : method[1].split(",").length;
+					if (sizeSearched != methodArgs) {
+						method = null;
+					}
 				}
 
 			}
@@ -1388,6 +1479,39 @@ public class PigDictionary extends AbstractDictionary {
 			++index;
 		}
 		return cleanUp;
+	}
+	
+	/**
+	 * Get the content of the brackets delimited by comma
+	 * 
+	 * @param expr
+	 * @return cleanUp
+	 */
+
+	public static String[] getBracketsContent(String expr) {
+		int count = 0;
+		int index = 0;
+		String cleanUp = "";
+		while (index < expr.length()) {
+			if (expr.charAt(index) == '(') {
+				++count;
+				if (count > 1) {
+					cleanUp += '(';
+				}
+			} else if (expr.charAt(index) == ')') {
+				--count;
+				if (count > 0) {
+					cleanUp += ')';
+				}
+				else{
+					cleanUp += ',';
+				}
+			} else if (count > 0) {
+				cleanUp += expr.charAt(index);
+			}
+			++index;
+		}
+		return cleanUp.substring(0, cleanUp.length() - 1).split(",");
 	}
 
 	/**

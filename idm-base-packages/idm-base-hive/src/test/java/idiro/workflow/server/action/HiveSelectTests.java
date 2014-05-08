@@ -302,7 +302,7 @@ public class HiveSelectTests {
 
 		logger.debug("update hive...");
 
-		hive.update(hive.getPartInt());
+		//hive.update(hive.getPartInt());
 		hive.update(hive.getGroupingInt());
 
 		Tree<String> gb = hive.getGroupingInt().getTree()
