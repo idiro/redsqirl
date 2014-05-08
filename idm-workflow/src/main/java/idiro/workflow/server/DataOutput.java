@@ -197,18 +197,20 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 		Iterator<String> itStr = dataProperty.keySet().iterator();
 		while (itStr.hasNext()) {
 			String cur = itStr.next();
-			logger.debug("property " + cur + "," + dataProperty.get(cur));
-			Element property = doc.createElement("property");
+			if (cur != null && dataProperty.get(cur) != null) {
+				logger.debug("property " + cur + "," + dataProperty.get(cur));
+				Element property = doc.createElement("property");
 
-			Element key = doc.createElement("key");
-			key.appendChild(doc.createTextNode(cur));
-			property.appendChild(key);
+				Element key = doc.createElement("key");
+				key.appendChild(doc.createTextNode(cur));
+				property.appendChild(key);
 
-			Element value = doc.createElement("value");
-			value.appendChild(doc.createTextNode(dataProperty.get(cur)));
-			property.appendChild(value);
+				Element value = doc.createElement("value");
+				value.appendChild(doc.createTextNode(dataProperty.get(cur)));
+				property.appendChild(value);
 
-			properties.appendChild(property);
+				properties.appendChild(property);
+			}
 
 		}
 		parent.appendChild(properties);
@@ -393,6 +395,7 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 
 	/**
 	 * Get the current Path
+	 * 
 	 * @return the path
 	 */
 	@Override
@@ -402,6 +405,7 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 
 	/**
 	 * Set the current Path
+	 * 
 	 * @param path
 	 *            the path to set
 	 * @throws RemoteException
@@ -422,14 +426,15 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 		String colour_pref = null;
 		Properties prop = new Properties();
 		try {
-			prop.load(new FileReader(new File(
-					WorkflowPrefManager.getPathuserdfeoutputcolour())));
+			prop.load(new FileReader(new File(WorkflowPrefManager
+					.getPathuserdfeoutputcolour())));
 			colour_pref = prop.getProperty(getTypeName());
 			if (colour_pref == null) {
 				prop.put(getTypeName(), defaultCol);
-				prop.store(new FileWriter(new File(
-						WorkflowPrefManager.getPathuserdfeoutputcolour())),
-						"Add " + getTypeName() + " to the file");
+				prop.store(
+						new FileWriter(new File(WorkflowPrefManager
+								.getPathuserdfeoutputcolour())), "Add "
+								+ getTypeName() + " to the file");
 			}
 			prop.clear();
 		} catch (FileNotFoundException e) {
@@ -437,8 +442,9 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 			prop.clear();
 			prop.put(getTypeName(), defaultCol);
 			try {
-				prop.store(new FileWriter(new File(
-						WorkflowPrefManager.getPathuserdfeoutputcolour())),
+				prop.store(
+						new FileWriter(new File(WorkflowPrefManager
+								.getPathuserdfeoutputcolour())),
 						"Initialise file with " + getTypeName());
 			} catch (IOException e1) {
 				logger.error("Fail to save colour preference");
@@ -460,20 +466,22 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 	public void setColour(String colour) throws RemoteException {
 		Properties prop = new Properties();
 		try {
-			prop.load(new FileReader(new File(
-					WorkflowPrefManager.getPathuserdfeoutputcolour())));
+			prop.load(new FileReader(new File(WorkflowPrefManager
+					.getPathuserdfeoutputcolour())));
 			prop.put(getTypeName(), colour);
-			prop.store(new FileWriter(new File(
-					WorkflowPrefManager.getPathuserdfeoutputcolour())), "Add "
-					+ getTypeName() + " to the file");
+			prop.store(
+					new FileWriter(new File(WorkflowPrefManager
+							.getPathuserdfeoutputcolour())), "Add "
+							+ getTypeName() + " to the file");
 			prop.clear();
 		} catch (FileNotFoundException e) {
 			logger.debug("No file found initialize one");
 			prop.clear();
 			prop.put(getTypeName(), colour);
 			try {
-				prop.store(new FileWriter(new File(
-						WorkflowPrefManager.getPathuserdfeoutputcolour())),
+				prop.store(
+						new FileWriter(new File(WorkflowPrefManager
+								.getPathuserdfeoutputcolour())),
 						"Initialise file with " + getTypeName());
 			} catch (IOException e1) {
 				logger.error("Fail to save colour preference");
@@ -484,17 +492,23 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 					+ e.getMessage());
 		}
 	}
+
 	/**
 	 * Get the default colour of the object
+	 * 
 	 * @return colour
 	 */
 	protected abstract String getDefaultColor();
-	
+
 	/**
-	 * Compare a path , features list  and properties to the current ones
-	 * @param path to compare to current
-	 * @param fl features list to compare to current
-	 * @param props to compare to current
+	 * Compare a path , features list and properties to the current ones
+	 * 
+	 * @param path
+	 *            to compare to current
+	 * @param fl
+	 *            features list to compare to current
+	 * @param props
+	 *            to compare to current
 	 * @return <code>true</code> if equal else <code>false</code>
 	 */
 	public boolean compare(String path, FeatureList fl,
@@ -510,9 +524,12 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 		return this.path.equals(path) && features.equals(fl)
 				&& dataProperty.equals(props);
 	}
+
 	/**
-	 * Get the FeatureType of 
-	 * @param expr to get FeatureType of 
+	 * Get the FeatureType of
+	 * 
+	 * @param expr
+	 *            to get FeatureType of
 	 * @return {@link idiro.workflow.server.enumeration.FeatureType}
 	 */
 	public static FeatureType getType(String expr) {

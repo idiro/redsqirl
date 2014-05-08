@@ -1086,6 +1086,7 @@
 					oncomplete="setRunning(getSelected(), true);blockRunningWorkflow();"
 					reRender="formMenu,domMessageDivCanvas2,killProcessBtn">
 					<a4j:actionparam name="positions" />
+					<a4j:actionparam name="savedFile" />
 					<a4j:actionparam name="select" />
 				</a4j:jsFunction>
 			</a4j:region>
@@ -1206,14 +1207,14 @@
 		
 							<rich:menuItem id="runMenuItem" submitMode="ajax"
 								value="#{messages.label_menu_runitems}"
-								onclick="var sels=getSelectedIconsCommaDelimited();if(sels.length > 0){runWorkflow(getIconPositions(),sels)}"
+								onclick="var sels=getSelectedIconsCommaDelimited();if(sels.length > 0){runWorkflow(getIconPositions(),sels,getPathFile(getSelected()))}"
 								reRender="formMenu,domMessageDivCanvas2,killProcessBtn">
 								<h:outputText value="Ctrl+Alt+R" class="menuItemHotKey"/>
 							</rich:menuItem>
 	
 							<rich:menuItem id="runSelectedMenuItem" submitMode="ajax"
 								value="#{messages.label_menu_runproject}"
-								onclick="runWorkflow(getIconPositions())"
+								onclick="runWorkflow(getIconPositions(),getPathFile(getSelected()))"
 								reRender="formMenu,domMessageDivCanvas2,killProcessBtn">
 								<h:outputText value="Ctrl+R" class="menuItemHotKey"/>
 							</rich:menuItem>

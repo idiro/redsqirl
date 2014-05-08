@@ -4,6 +4,7 @@ import idiro.Log;
 import idiro.hadoop.NameNodeVar;
 import idiro.utils.LocalFileSystem;
 import idiro.utils.RandomString;
+import idiro.utils.XmlUtils;
 import idiro.workflow.server.enumeration.SavingState;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.server.interfaces.DataFlow;
@@ -682,10 +683,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			doc.appendChild(rootElement);
 
 			Element jobId = doc.createElement("job-id");
-			String jobIdContent = getOozieJobId();
+			String jobIdContent = oozieJobId;
 			if (jobIdContent == null) {
 				jobIdContent = "";
 			}
+			logger.info("Job Id: "+jobIdContent);
 			jobId.appendChild(doc.createTextNode(jobIdContent));
 			rootElement.appendChild(jobId);
 
@@ -831,6 +833,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			if (error == null) {
 				logger.debug("write the file...");
 				// write the content into xml file
+				logger.info("Check Null text nodes...");
+				XmlUtils.checkForNullTextNodes(rootElement,"");
 				TransformerFactory transformerFactory = TransformerFactory
 						.newInstance();
 				Transformer transformer = transformerFactory.newTransformer();

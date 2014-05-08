@@ -447,25 +447,11 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 			throw new Exception(error);
 		}
 
-		/*
-		 * Logically this could be in a separate Thread. However we had issues
-		 * with Hadoop FileSystem object, so let's be careful.
-		 */
-		/*
-		 * (new Thread(){
-		 * 
-		 * @Override public void run(){
-		 */
 		try {
 			cleanJobDirectory(nameWF);
 		} catch (RemoteException e) {
 			logger.warn("Fail clean oozie directory for job " + nameWF);
 		}
-		/*
-		 * }
-		 * 
-		 * }).start();
-		 */
 
 		return jobId;
 	}
