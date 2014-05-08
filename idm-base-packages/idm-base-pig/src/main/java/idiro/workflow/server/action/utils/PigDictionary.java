@@ -380,9 +380,9 @@ public class PigDictionary extends AbstractDictionary {
 							new String[][] {
 								new String[] {
 										"() ? () : ()",
-										"BOOLEAN,BOOLEAN",
-										"BOOLEAN",
-										"@function:AND@short:Boolean AND@param:boolean variable@param:boolean variable@description:boolean logic that returns true if the variables are equal@example:TRUE AND TRUE" }
+										"BOOLEAN,ANY,ANY",
+										"ANY",
+										"@function: (TEST) ? (EXPRESSION1) : (EXPRESSION2)@short:Returns one of two expressions depending on a condition@param:TEST Any Boolean expression@param:EXPRESSION1 An expression returned if test is true@param:EXPRESSION2 An expression returned if test is false@example: (TRUE) ? ('VALUE1') : ('VALUE2') returns 'VALUE1'"}
 				});
 
 		

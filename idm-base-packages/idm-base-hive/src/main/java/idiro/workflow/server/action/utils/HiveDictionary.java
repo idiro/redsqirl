@@ -316,20 +316,20 @@ public class HiveDictionary extends AbstractDictionary {
 				.put(conditionalOperator,
 						new String[][] {
 								new String[] {
-										"CASE () END",
+										"CASE END",
 										"",
 										"",
-										"@function:AND@short:Boolean AND@param:boolean variable@param:boolean variable@description:boolean logic that returns true if the variables are equal@example:TRUE AND TRUE" },
+										"@function:CASE END@short:Conditional expression@example: CASE WHEN (A==1) THEN ('A') END" },
 								new String[] {
 										"WHEN () THEN ()",
 										"",
 										"",
-										"@function:OR@short:Boolean OR@param:boolean variable@param:boolean variable@description:boolean logic that returns true if the varables are not the same@example:TRUE OR FALSE" },
+										"@function:WHEN (test) THEN (value)@short: Conditional expression to be used inside a CASE END@param:TEST Any Boolean expression@param:EXPRESSION1 An expression returned if test is true" },
 								new String[] {
 										"ELSE ()",
 										"",
 										"",
-										"@function:NOT@short:Boolean NOT@param:boolean variable@param:boolean variable@description:boolean logic that returns true if the varables are  not equal@example:TRUE NOT FALSE" } });
+										"@function:ELSE(VALUE)@short:Value to be returned when no condition inside a CASE END is found to be true" } });
 	}
 
 	public static FeatureType getType(String hiveType) {
