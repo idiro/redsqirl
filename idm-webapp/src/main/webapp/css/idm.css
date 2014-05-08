@@ -1,7 +1,10 @@
 html,body {
     font-family: Verdana, Geneva, sans-serif;
-    height: 99.5% !important;
-    width: 99.5% !important;
+    height: 100% !important;
+    width: 100% !important;
+    margin: 0px;
+    padding: 0px;
+    overflow:hidden;
 }
 
 .maxContent{
@@ -688,6 +691,8 @@ table.secondtable td{
 /*gradient background on canvas*/
 #body{
     background: linear-gradient(white,#dadbdd, #dadbdd);
+    margin: 0px;
+    padding: 0px;
 }
 
 /*transparent background on tabs*/
@@ -728,6 +733,8 @@ table.secondtable td{
 	border:2px solid #a2a3a5;
 	border-radius:7px;
 	padding:5px 5px 5px 5px;
+	margin-right:5px;
+	margin-left:5px;
 }
 
 /*tabs*/

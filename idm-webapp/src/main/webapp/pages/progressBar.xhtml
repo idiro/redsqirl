@@ -21,10 +21,11 @@
 	    
 	    <!-- style="margin-left:78%;" -->
 		    <a4j:commandButton value="#{messages.button_cancel}"
+		               onkeypress="return false;"
 				       action="#{userInfoBean.cancelLogin}"
 				       style="float:right;margin-right:5px;"
 				       styleClass="buttonLogin"
-				       onclick="window.stop();jQuery.unblockUI();" />
+				       onclick="blur();window.stop();jQuery.unblockUI();" />
 	    </h:form>
     </div>
 
