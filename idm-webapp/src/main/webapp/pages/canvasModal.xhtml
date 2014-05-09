@@ -194,8 +194,7 @@
                         <br />
                         <br />
         
-                        <div id="DivTableInteraction"
-                            style="width: 580px; height: 220px; border: 1px solid black; overflow-x: hidden;">
+                        <div id="DivTableInteraction" style="width:100%; height: 220px; border: 1px solid black; overflow-x: hidden;">
                             
                             <rich:dataTable id="tableInteraction" value="#{interCur.table.tableGridRows}"
                                 var="rowItem" rowKeyVar="rowNb" width="100%" style="border:none;" 
@@ -249,8 +248,8 @@
 	        							<tr>
 	        								<td>
 	        									
-	        									<h:inputText value="#{rowItem.row[ind]}" rendered="#{interCur.columnType[column] == 'editor' }" styleClass="tableInteractionInput" >
-			                                   	<a4j:commandButton action="#{canvasModalBean.openHelpTextEditorModal}" value="..." style="float: right;" 
+	        									<h:inputText value="#{rowItem.row[ind]}" rendered="#{interCur.columnType[column] == 'editor' }" styleClass="tableInteractionTextEditor" >
+			                                   	<a4j:commandButton action="#{canvasModalBean.openHelpTextEditorModal}" value="..." style="float:right;width:15%;" 
 			                                   		reRender="commandText,listFields,listFunctions,listCategories,listOperation,listCategoriesOperation,command,tableInteraction" 
 			                                   		oncomplete="#{rich:component('textEditorPanel')}.show()">
 			                                   		<a4j:actionparam  name="idInteraction" value="#{interCur.id}"/>

@@ -48,7 +48,7 @@
 			<h:inputText id="hivepath" label="Path" styleClass="mainPageTextField" value="#{hiveBean.path}" maxlength="255" style="width:395px; margin-left:5px;" 
 				onkeypress="return enableEnterKey(event, 'hivefsPathBtn');"/>
 			
-			<a4j:commandLink id="hivefsPathBtn" action="#{hiveBean.changePath}" reRender="hivefs" style="color:#FFFFFF" >
+			<a4j:commandLink id="hivefsPathBtn" action="#{hiveBean.changePath}" reRender="hivefs" style="color:#FFFFFF" oncomplete="resizeTables();">
 				<h:graphicImage value="../image/icons/button-search.gif" title="#{messages.filesystem_change_path}" styleClass="refreshButton"/>
 			</a4j:commandLink>
 
@@ -67,16 +67,15 @@
 					<h:graphicImage id="hivebtDelete" value="../image/icons/button-delete2.gif" title="#{messages.HiveInterface_delete_help}" styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 	
-				<a4j:commandLink action="#{hiveBean.goPrevious}"
-					reRender="hivepath,hivefs">
+				<a4j:commandLink action="#{hiveBean.goPrevious}" reRender="hivepath,hivefs" oncomplete="resizeTables();" >
 					<h:graphicImage id="hivebtUndo" value="../image/icons/button-previous.gif" title="#{messages.HiveInterface_previous_help}" styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 	
-				<a4j:commandLink action="#{hiveBean.goNext}" reRender="hivepath,hivefs">
+				<a4j:commandLink action="#{hiveBean.goNext}" reRender="hivepath,hivefs" oncomplete="resizeTables();" >
 					<h:graphicImage id="hivebtRedo" value="../image/icons/button-next.gif" title="#{messages.HiveInterface_next_help}" styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 				
-				<a4j:commandLink action="#{hiveBean.goUp}" reRender="hivepath,hivefs">
+				<a4j:commandLink action="#{hiveBean.goUp}" reRender="hivepath,hivefs" oncomplete="resizeTables();" >
 					<h:graphicImage id="hivegoup" value="../image/icons/button_up.jpg" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 			</div>
