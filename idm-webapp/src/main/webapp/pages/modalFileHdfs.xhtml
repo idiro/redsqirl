@@ -136,6 +136,7 @@
                     <h:outputText value="#{messages.label_name}" />
                 </f:facet>
                <a4j:commandLink value="#{browserHdfsBean.allProps[indexTable]['name']}"
+                    title="#{browserHdfsBean.allProps[indexTable]['name']}"
 					action="#{browserHdfsBean.verifyIfIsFile}"
 					oncomplete="selectFileLoadHdfs('#{browserHdfsBean.file}', '#{browserHdfsBean.allProps[indexTable]['name']}')">
 					<f:param name="nameFile" value="#{browserHdfsBean.allProps[indexTable]['name']}" />
@@ -146,9 +147,9 @@
             	var="column" index="ind"
                 style="border-bottom:0px;border-right:0px;">
                 <f:facet name="header">
-                    <h:outputText value="#{column}" />
+                    <h:outputText value="#{column}"  />
                 </f:facet>
-                <h:outputText value="#{item.row[ind]}" />
+                <h:outputText value="#{item.row[ind]}" title="#{item.row[ind]}" />
             </rich:columns>
     
         </rich:extendedDataTable>

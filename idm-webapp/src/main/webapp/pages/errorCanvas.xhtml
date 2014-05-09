@@ -28,14 +28,14 @@
 				<f:facet name="header">
 					<h:outputText value="#{messages.label_date}" />
 				</f:facet>
-				<h:outputText value="#{item.value}" style="width:100%;" readonly="true" />
+				<h:outputText value="#{item.value}" style="width:100%;" title="#{item.value}" readonly="true" />
 			</rich:column>
 			
 			<rich:column sortBy="#{item.label}" filterBy="#{item.label}" width="600px;" >
 				<f:facet name="header">
 					<h:outputText value="#{messages.label_messages}" />
 				</f:facet>
-				<h:outputText value="#{item.label}" style="width:100%;" readonly="true" />
+				<h:outputText value="#{item.label}" style="width:100%;" title="#{item.label}" readonly="true" />
 			</rich:column>
 
 	</rich:extendedDataTable>

@@ -1207,7 +1207,7 @@
 		
 							<rich:menuItem id="runMenuItem" submitMode="ajax"
 								value="#{messages.label_menu_runitems}"
-								onclick="var sels=getSelectedIconsCommaDelimited();if(sels.length > 0){runWorkflow(getIconPositions(),sels,getPathFile(getSelected()))}"
+								onclick="var sels=getSelectedIconsCommaDelimited();if(sels.length > 0){runWorkflow(getIconPositions(),getPathFile(getSelected()),sels)}"
 								reRender="formMenu,domMessageDivCanvas2,killProcessBtn">
 								<h:outputText value="Ctrl+Alt+R" class="menuItemHotKey"/>
 							</rich:menuItem>

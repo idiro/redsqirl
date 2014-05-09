@@ -117,7 +117,10 @@
 					<f:facet name="header">
 						<h:outputText value="#{messages.label_name}" />
 					</f:facet>
-					<a4j:commandLink value="#{hiveBean.allProps[indexTable]['name']}" action="#{hiveBean.verifyIfIsFile}"
+					<a4j:commandLink 
+					    value="#{hiveBean.allProps[indexTable]['name']}"
+					    title="#{hiveBean.allProps[indexTable]['name']}" 
+					    action="#{hiveBean.verifyIfIsFile}"
      					oncomplete="selectFileHive('#{hiveBean.file}', '#{hiveBean.allProps[indexTable]['name']}')">
      						<f:param name="nameFile" value="#{hiveBean.allProps[indexTable]['name']}" />
      						<rich:dragSupport dragIndicator=":indicator"
@@ -135,7 +138,7 @@
 					<f:facet name="header">
 						<h:outputText value="#{column}" />
 					</f:facet>
-					<h:outputText value="#{item.row[ind]}" />
+					<h:outputText value="#{item.row[ind]}" title="#{item.row[ind]}" />
 				</rich:columns>
 
 			</rich:extendedDataTable>
