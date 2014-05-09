@@ -78,8 +78,8 @@ window.onload = function() {
 	
 	canvasArray = {};
 	
-	mountObj(canvasName);
 	configureCanvas(canvasName);
+	mountObj(canvasName);
 };
 
 function configureCanvas(canvasName){

@@ -1072,7 +1072,11 @@ height: 100% !important;
 }
 
 .tableInteractionInput{
-	width:82% !important;
+	width:95% !important;
+}
+
+.tableInteractionTextEditor{
+	width:80% !important;
 }
 
 

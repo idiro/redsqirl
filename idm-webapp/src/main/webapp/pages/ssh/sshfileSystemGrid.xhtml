@@ -55,7 +55,7 @@
 		
 			<ul class="ulCssCanvas">
 				<ui:repeat value="#{sshBean.tabs}" var="tab">
-					<li><a href="##{tab}" onclick="setSelectedRemoteTab('#{tab}')">#{tab}</a> 
+					<li class="locked" ><a href="##{tab}" onclick="setSelectedRemoteTab('#{tab}')">#{tab}</a> 
 						<span class='ui-icon ui-icon-close' onclick="closeTab(this);closeServer('#{tab}');"></span> </li>
 				</ui:repeat>
 				

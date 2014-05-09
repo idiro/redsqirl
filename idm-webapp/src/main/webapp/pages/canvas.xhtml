@@ -47,6 +47,7 @@
 	    	  configureFooter();
 
 	    	  var tabscanvas = jQuery("#canvas-tabs").tabs().scrollabletab();
+	    	  /* 
 	    	  tabscanvas.find(".ui-tabs-nav").sortable({
 	    	  axis: "x",
 	    	  items: 'li:not(.locked)',
@@ -54,6 +55,7 @@
 	    		  tabscanvas.tabs("refresh");
 	    	  	}
 	    	  });
+	    	  */
 
 	    	  jQuery("#tabs1").tabs().scrollabletab();
 	    	  jQuery("#tabs2").tabs().scrollabletab();
@@ -61,8 +63,8 @@
   	        var tabsGroup = jQuery( "#tabs1, #tabs2, #tabFlowchart" ).tabs();
   	        
   	    	tabsGroup.find( ".ui-tabs-nav" ).sortable({
-  	            connectWith: '.ulCss',
-  	          	items: 'li:not(.locked)',
+  	            connectWith: ".ulCss",
+  	          	items: "li:not(.locked)",
   	            receive: function (event, ui) {
   	            	
   	            		var receiver = jQuery(this).parent(),
@@ -100,12 +102,14 @@
 	  	            	//aria-controls
 	  	              	
 	  	              	//copy on source and delete from destination
+	  	              	var plusT = jQuery("#" + jQuery(this).parent().attr("id"));
+
 	  	              	var allTabsDestination = jQuery("#" + jQuery(this).parent().attr("id")).find(".allTabs");
 	  	              	var allTabsSource = jQuery("#" + jQuery(ui.sender[0]).parent().attr("id")).find(".allTabs");
 
 	  	              	allTabsDestination.find("a[href$=" + jQuery(ui.item[0]).attr("aria-controls") + "]").clone().click(function (event) {
 			    		  event.preventDefault();
-			    		  plusTabs.find('.allTabs').slideUp('fast');
+			    		  plusT.find('.allTabs').slideUp('fast');
 			    		}).appendTo(allTabsSource);
 	  	              	
 	  	            	allTabsDestination.find("a[href$=" + jQuery(ui.item[0]).attr("aria-controls") + "]").remove();
@@ -125,7 +129,6 @@
   	    		jQuery("#buttonstabRemote").hide();
 	  	    	jQuery("#buttonstabRemote").css("left", jQuery("#tabRemote").width()-30+'px');
    				validateArrows(jQuery("#tabRemote"),jQuery("#buttonstabRemote"));
-   				
 	        });
 
   	    	jQuery("#idtabFlowchart-1").click(function () {
@@ -368,22 +371,6 @@
                 }
 	    		setTimeout(function(){autoSaveAll()},10*60*1000);
             }
-	    			
-	    	function configureFooter(){
-	    		 var tabsFooter = jQuery("#tabsFooter").tabs().scrollabletab();
-		    	  tabsFooter.find(".ui-tabs-nav").sortable({
-		    	  axis: "x",
-		    	  stop: function() {
-		    		  tabsFooter.tabs("refresh");
-		    	  	}
-		    	  });
-		    	  
-		    	  jQuery("#tabsFooter").tabs().tabs('refresh');
-		    	  
-		    	  configureFooterCss();
-	    	}
-
-	    	
 
 	      function closeTab(arg){
 	    	  
@@ -593,16 +580,40 @@
 	   	
 	   	function configureTabsRemote(){
 		    var tabsRemote = jQuery("#tabRemote").tabs().scrollabletab();
-		  	tabsRemote.find(".ui-tabs-nav").sortable({
+
+		  	/* tabsRemote.find(".ui-tabs-nav").sortable({
+		  	  //connectWith: ".ulCssCanvas",
+		  	  items: "li:not(.locked)",
 		  	  axis: "x",
 		  	  stop: function() {
 		  		  tabsRemote.tabs("refresh");
 		  	  	}
-	  	 	 });
+	  	 	 }); */
 		  	
-		  	jQuery("#tabRemote").tabs().tabs('refresh');
+		  	//jQuery("#tabRemote").tabs().tabs('refresh');
 		  	//resizeTables();
 	   	}
+
+
+	   	function configureFooter(){
+   		 var tabsFooter = jQuery("#tabsFooter").tabs().scrollabletab();
+
+   	  		  /* tabsFooter.find(".ui-tabs-nav").sortable({
+	    	  //connectWith: ".ulCssCanvasFooter",
+	    	  items: "li:not(.locked)",
+	    	  axis: "x",
+	    	  stop: function() {
+	    		  tabsFooter.tabs("refresh");
+	    	  	}
+	    	  }); */
+	    	  
+	    	  //jQuery("#tabsFooter").tabs().tabs('refresh');
+	    	  
+	    	  configureFooterCss();
+	    	  validateArrows(jQuery("#tabsFooter"),jQuery("#buttonsTabsFooter"));
+	    	  
+   		}
+	   	
 	   	
 	   	/*keyboard shortcuts*/
 	   	
@@ -1318,13 +1329,18 @@
 	<div id="splitVCanvas">
 
 			<div id="tabFlowchart">
-				<ul class="ulCss">
+				<ul class="ulCss" id="ulTabFlowchart" >
 
-					<li class="locked"><a href="#tabFlowchart-1"
-						id="idtabFlowchart-1" onclick="jQuery('#helpmain_canvas').click();return false;"> Flowchart </a></li>
-                    <li class="locked"><a href="#tabs-8" id="idtabs-8" onclick="jQuery('#helpmain_ssh').click();return false;"> <h:outputText
-                                value="#{messages.label_tab_remotefilesystem}" />
-                    </a></li>
+					<li class="locked">
+						<a href="#tabFlowchart-1" id="idtabFlowchart-1" onclick="jQuery('#helpmain_canvas').click();return false;">
+							<h:outputText value="#{messages.label_tab_flowchart}" />
+						</a>
+					</li>
+                    <li class="locked">
+                    	<a href="#tabs-8" id="idtabs-8" onclick="jQuery('#helpmain_ssh').click();return false;" >
+                    		<h:outputText value="#{messages.label_tab_remotefilesystem}" />
+                    	</a>
+                    </li>
 					<button id="changeTabCanvas" style="border: hidden;">&#9660;</button>
 
 				</ul>
@@ -1373,11 +1389,11 @@
 						</div>
 						<h:panelGroup id="tabsFooterForm">
 							<div id="tabsFooter">
-								<ul class="ulCssCanvas">
+								<ul class="ulCssCanvasFooter">
 
 									<ui:repeat value="#{configureTabsBean.tabs}" var="tab"
 										varStatus="status">
-										<li><a href="##{tab}">#{tab}</a></li>
+										<li class="locked"><a href="##{tab}">#{tab}</a></li>
 									</ui:repeat>
 									<a4j:region>
 										<a4j:commandButton image="../image/icons/button-property.gif"
@@ -1440,20 +1456,25 @@
 
 		<div id="splitHCanvas">
 			<div id="tabs1">
-				<ul class="ulCss">
+				<ul class="ulCss" id="ulTabs1">
 
-					<li><a href="#tabs-1" onclick="jQuery('#helpmain_help').click();return false;" > <h:outputText
-								value="#{messages.label_tab_help}" />
-					</a></li>
-					<li><a href="#tabs-2" onclick="jQuery('#helpmain_procman').click();return false;"> <h:outputText
-								value="#{messages.label_tab_processmanager}" />
-					</a></li>
-					<li><a href="#tabs-3" onclick="jQuery('#helpmain_error').click();return false;"> <h:outputText
-								value="#{messages.label_tab_error}" />
-					</a></li>
+					<li>
+						<a href="#tabs-1" onclick="jQuery('#helpmain_help').click();return false;" >
+							<h:outputText value="#{messages.label_tab_help}" />
+						</a>
+					</li>
+					<li>
+						<a href="#tabs-2" onclick="jQuery('#helpmain_procman').click();return false;">
+							<h:outputText value="#{messages.label_tab_processmanager}" />
+						</a>
+					</li>
+					<li>
+						<a href="#tabs-3" onclick="jQuery('#helpmain_error').click();return false;">
+							<h:outputText value="#{messages.label_tab_error}" />
+						</a>
+					</li>
 
-					<button id="changeTabTabs1" style="border: hidden;">
-						&#9660;</button>
+					<button id="changeTabTabs1" style="border: hidden;">&#9660;</button>
 
 				</ul>
 
@@ -1513,19 +1534,24 @@
 
 
 			<div id="tabs2">
-				<ul class="ulCss">
-					<li><a href="#tabs-7" onclick="jQuery('#helpmain_hdfs').click();return false;"> <h:outputText
-								value="#{messages.label_tab_hadoopfilesystem}" />
-					</a></li>
-                    <li><a href="#tabs-4" onclick="jQuery('#helpmain_hive').click();return false;"> <h:outputText
-                                value="#{messages.label_tab_hiveview}" />
-                    </a></li>
-                    <li><a href="#tabs-5"> <h:outputText
-                                value="#{messages.label_tab_hbaseview}" />
-                    </a></li>
+				<ul class="ulCss" id="ulTabs2">
+					<li>
+						<a href="#tabs-7" onclick="jQuery('#helpmain_hdfs').click();return false;">
+							<h:outputText value="#{messages.label_tab_hadoopfilesystem}" />
+						</a>
+					</li>
+                    <li>
+                    	<a href="#tabs-4" onclick="jQuery('#helpmain_hive').click();return false;">
+                    		<h:outputText value="#{messages.label_tab_hiveview}" />
+                    	</a>
+                    </li>
+                    <li>
+                    	<a href="#tabs-5">
+                    		<h:outputText value="#{messages.label_tab_hbaseview}" />
+                    	</a>
+                    </li>
 
-					<button id="changeTabTabs2" style="border: hidden;">
-						&#9660;</button>
+					<button id="changeTabTabs2" style="border: hidden;">&#9660;</button>
 
 				</ul>
 
