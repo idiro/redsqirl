@@ -91,7 +91,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	/**
 	 * Key: action name, Value: absolute file name
 	 */
-	protected Map<String,String> help;
+	protected Map<String, String> help;
 
 	/**
 	 * The current Action in the workflow
@@ -123,7 +123,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		super();
 		this.name = name;
 	}
-
 
 	/**
 	 * Load the icon menu.
@@ -199,18 +198,17 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		return error;
 	}
 
-	public void loadHelp(){
+	public void loadHelp() {
 		help = new LinkedHashMap<String, String>();
 		Map<String, String> nameWithClass;
 		try {
 			nameWithClass = getAllWANameWithClassName();
 			Iterator<String> it = nameWithClass.keySet().iterator();
-			while(it.hasNext()){
+			while (it.hasNext()) {
 				String actionName = it.next();
 				try {
-					DataFlowElement dfe = (DataFlowElement) Class
-							.forName(nameWithClass.get(actionName))
-							.newInstance();
+					DataFlowElement dfe = (DataFlowElement) Class.forName(
+							nameWithClass.get(actionName)).newInstance();
 
 					help.put(actionName, dfe.getHelp());
 				} catch (Exception e) {
@@ -219,12 +217,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 							new Object[] { actionName }));
 				}
 			}
-		}catch (Exception e) {
-			logger.error(LanguageManagerWF.getText("workflow.loadclassexception"));
+		} catch (Exception e) {
+			logger.error(LanguageManagerWF
+					.getText("workflow.loadclassexception"));
 		}
 	}
 
-	public String loadMenu(Map<String,List<String>> newMenu) {
+	public String loadMenu(Map<String, List<String>> newMenu) {
 
 		String error = "";
 		menuWA = new LinkedHashMap<String, List<String[]>>();
@@ -232,13 +231,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		Map<String, String> nameWithClass;
 		try {
 			nameWithClass = getAllWANameWithClassName();
-			for (Entry<String,List<String>> cur : newMenu.entrySet()) {
+			for (Entry<String, List<String>> cur : newMenu.entrySet()) {
 				LinkedList<String[]> new_list = new LinkedList<String[]>();
 				Iterator<String> it = cur.getValue().iterator();
 				while (it.hasNext()) {
 					String action = it.next();
 					try {
-						if (action  != null && !action.isEmpty()) {
+						if (action != null && !action.isEmpty()) {
 							if (nameWithClass.get(action) != null) {
 								DataFlowElement dfe = (DataFlowElement) Class
 										.forName(nameWithClass.get(action))
@@ -250,7 +249,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 								new_list.add(parameters);
 							} else {
 								logger.warn("unknown workflow action '"
-										+ action+ "'");
+										+ action + "'");
 							}
 						}
 					} catch (Exception e) {
@@ -276,30 +275,30 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		return error;
 	}
 
-
-	public Map<String,List<String[]>> getRelativeMenu(File curPath) {
-		if(menuWA == null || menuWA.isEmpty()){
+	public Map<String, List<String[]>> getRelativeMenu(File curPath) {
+		if (menuWA == null || menuWA.isEmpty()) {
 			loadMenu();
 		}
-		if(curPath == null){
+		if (curPath == null) {
 			return menuWA;
 		}
-		logger.info("Load menu "+curPath.getPath());
-		Map<String,List<String[]>> ans = new LinkedHashMap<String,List<String[]>>();
+		logger.info("Load menu " + curPath.getPath());
+		Map<String, List<String[]>> ans = new LinkedHashMap<String, List<String[]>>();
 		Iterator<String> menuWAit = menuWA.keySet().iterator();
-		while(menuWAit.hasNext()){
+		while (menuWAit.hasNext()) {
 			String key = menuWAit.next();
 			Iterator<String[]> actionListit = menuWA.get(key).iterator();
 			List<String[]> newActionList = new ArrayList<String[]>();
-			while(actionListit.hasNext()){
+			while (actionListit.hasNext()) {
 				String[] parameters = new String[2];
 				String[] absCur = actionListit.next();
 				parameters[0] = absCur[0];
-				try{
-					logger.debug("loadMenu "+ curPath +" "+ absCur[1]);
-					parameters[1] = LocalFileSystem.relativize(curPath,absCur[1]);
+				try {
+					logger.debug("loadMenu " + curPath + " " + absCur[1]);
+					parameters[1] = LocalFileSystem.relativize(curPath,
+							absCur[1]);
 					newActionList.add(parameters);
-				}catch (Exception e){
+				} catch (Exception e) {
 					logger.error(e.getMessage());
 					logger.error("Error Getting relative paths for Image");
 				}
@@ -312,21 +311,21 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	}
 
 	@Override
-	public Map<String,String> getRelativeHelp(File curPath){
-		if(help == null || help.isEmpty()){
+	public Map<String, String> getRelativeHelp(File curPath) {
+		if (help == null || help.isEmpty()) {
 			loadHelp();
 		}
-		if(curPath == null){
+		if (curPath == null) {
 			return help;
 		}
-		logger.info("Load help "+curPath.getPath());
-		Map<String,String> ans = new LinkedHashMap<String,String>();
+		logger.info("Load help " + curPath.getPath());
+		Map<String, String> ans = new LinkedHashMap<String, String>();
 		Iterator<String> helpit = help.keySet().iterator();
-		while(helpit.hasNext()){
+		while (helpit.hasNext()) {
 			String key = helpit.next();
-			try{
-				ans.put(key, LocalFileSystem.relativize(curPath,help.get(key)));
-			}catch (Exception e){
+			try {
+				ans.put(key, LocalFileSystem.relativize(curPath, help.get(key)));
+			} catch (Exception e) {
 				logger.error(e.getMessage());
 				logger.error("Error Getting relative paths for Help");
 			}
@@ -687,7 +686,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			if (jobIdContent == null) {
 				jobIdContent = "";
 			}
-			logger.info("Job Id: "+jobIdContent);
+			logger.info("Job Id: " + jobIdContent);
 			jobId.appendChild(doc.createTextNode(jobIdContent));
 			rootElement.appendChild(jobId);
 
@@ -834,7 +833,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				logger.debug("write the file...");
 				// write the content into xml file
 				logger.info("Check Null text nodes...");
-				XmlUtils.checkForNullTextNodes(rootElement,"");
+				XmlUtils.checkForNullTextNodes(rootElement, "");
 				TransformerFactory transformerFactory = TransformerFactory
 						.newInstance();
 				Transformer transformer = transformerFactory.newTransformer();
@@ -884,33 +883,31 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 			@Override
 			public boolean accept(Path arg0) {
-				return arg0.getName().matches(".*[0-9]{14}.xml$");
+				return arg0.getName().matches(".*[0-9]{14}.rs$");
 			}
 		});
+		logger.info("Backup directory: " + fsA.length + " files, " + nbBackup
+				+ " to keep, " + Math.max(0, fsA.length - nbBackup)
+				+ " to remove");
 		if (fsA.length > nbBackup) {
 			int numberToRemove = fsA.length - nbBackup;
 			Map<Path, Long> pathToRemove = new HashMap<Path, Long>();
+			Path pathMin = null;
+			Long min = Long.MAX_VALUE;
 			for (FileStatus stat : fsA) {
 				if (pathToRemove.size() < numberToRemove) {
 					pathToRemove
-					.put(stat.getPath(), stat.getModificationTime());
-				} else {
-					Iterator<Path> it = pathToRemove.keySet().iterator();
-					Path pathCur = it.next();
-					Long min = pathToRemove.get(pathCur);
-					while (it.hasNext()) {
-						pathCur = it.next();
-						Long cur = pathToRemove.get(pathCur);
-						if (min > cur) {
-							cur = min;
-						}
-					}
-					if (min > stat.getModificationTime()) {
-						pathToRemove.remove(min);
-						pathToRemove.put(stat.getPath(),
-								stat.getModificationTime());
-					}
+							.put(stat.getPath(), stat.getModificationTime());
+				} else if (min > stat.getModificationTime()) {
+					pathToRemove.remove(pathMin);
+					pathToRemove
+							.put(stat.getPath(), stat.getModificationTime());
 				}
+				if (min > stat.getModificationTime()) {
+					min = stat.getModificationTime();
+					pathMin = stat.getPath();
+				}
+
 			}
 			for (Path pathDel : pathToRemove.keySet()) {
 				fs.delete(pathDel, false);
@@ -940,13 +937,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 * @throws RemoteException
 	 */
 	public void backup() throws RemoteException {
-		String path = WorkflowPrefManager
-				.getUserProperty(WorkflowPrefManager.user_backup);
+		String path = WorkflowPrefManager.getBackupPath();
 		DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 		Date date = new Date();
-		if (path == null || path.isEmpty()) {
-			path = "/user/" + System.getProperty("user.name") + "/idm-backup";
-		}
 		try {
 			FileSystem fs = NameNodeVar.getFS();
 			fs.mkdirs(new Path(path));
@@ -966,10 +959,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 		try {
 			if (error != null) {
+				logger.warn("Fail to back up: " + error);
 				FileSystem fs = NameNodeVar.getFS();
 				fs.delete(new Path(path), false);
-				fs.close();
 			}
+			logger.info("Clean up back up");
 			cleanUpBackup();
 		} catch (Exception e) {
 			logger.warn(e.getMessage());
@@ -1002,7 +996,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			String[] path = filePath.split("/");
 			String fileName = path[path.length - 1];
 			String userName = System.getProperty("user.name");
-			String tempPath = WorkflowPrefManager.getPathtmpfolder()+"/"
+			String tempPath = WorkflowPrefManager.getPathtmpfolder() + "/"
 					+ fileName + "_" + RandomString.getRandomName(4);
 			FileSystem fs = NameNodeVar.getFS();
 			fs.copyToLocalFile(new Path(filePath), new Path(tempPath));
@@ -1053,7 +1047,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				getElement(id).setPosition(x, y);
 				error = getElement(id).readValuesXml(
 						((Element) compCur)
-						.getElementsByTagName("interactions").item(0));
+								.getElementsByTagName("interactions").item(0));
 			}
 
 			// Link and data
@@ -1174,8 +1168,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			saved = true;
 
 			// clean temporary files
-			String tempPathCrc = WorkflowPrefManager.getPathtmpfolder()+
-					"/." + fileName + ".crc";
+			String tempPathCrc = WorkflowPrefManager.getPathtmpfolder() + "/."
+					+ fileName + ".crc";
 			File tempCrc = new File(tempPathCrc);
 			tempCrc.delete();
 			xmlFile.delete();
@@ -1321,7 +1315,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 * @throws RemoteException
 	 */
 	public String removeElement(String componentId) throws RemoteException,
-	Exception {
+			Exception {
 		logger.debug("remove element: " + componentId);
 		String error = null;
 		DataFlowElement dfe = getElement(componentId);
@@ -1500,7 +1494,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 */
 	public String removeLink(String outName, String componentIdOut,
 			String inName, String componentIdIn, boolean force)
-					throws RemoteException {
+			throws RemoteException {
 		String error = null;
 		DataFlowElement out = getElement(componentIdOut);
 		DataFlowElement in = getElement(componentIdIn);

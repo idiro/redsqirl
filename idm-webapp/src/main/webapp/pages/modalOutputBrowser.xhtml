@@ -88,7 +88,10 @@
 				<f:facet name="header">
 					<h:outputText value="#{messages.label_name}" />
 				</f:facet>
-				<a4j:commandLink value="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}" action="#{canvasModalBean.outputTab.fileSystem.selectFile}"
+				<a4j:commandLink 
+				    value="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}"
+				    title="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}"
+				    action="#{canvasModalBean.outputTab.fileSystem.selectFile}"
 					reRender="pathDataOutputBrowser,dataOutputBrowser">
 					<f:param name="nameFile" value="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}" />
 				</a4j:commandLink>
@@ -99,7 +102,7 @@
 				<f:facet name="header">
 					<h:outputText value="#{column}" />
 				</f:facet>
-				<h:outputText value="#{item.row[ind]}" />
+				<h:outputText value="#{item.row[ind]}" title="#{item.row[ind]}" />
 			</rich:columns>
 	
 		</rich:extendedDataTable>
