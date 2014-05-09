@@ -36,7 +36,7 @@ public class HelpBean extends BaseBean implements Serializable {
 			}
 
 			DataFlow wf = getworkFlowInterface().getWorkflow("canvas-1");
-			Map<String,String> helpRel = null;
+			Map<String,String[]> helpRel = null;
 			helpHtml = new LinkedList<String[]>();
 			try {
 				helpRel = wf.getRelativeHelp(getCurrentPage());
@@ -46,7 +46,8 @@ public class HelpBean extends BaseBean implements Serializable {
 					String[] helpArray = new String[]{
 							key, 
 							WordUtils.capitalizeFully(key.replace("_", " ")),
-							helpRel.get(key)};
+							helpRel.get(key)[0],
+							helpRel.get(key)[1]};
 					
 					helpHtml.add(helpArray);
 				}

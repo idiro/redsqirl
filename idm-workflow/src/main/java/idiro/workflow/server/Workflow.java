@@ -89,9 +89,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	protected Map<String, List<String[]>> menuWA;
 
 	/**
-	 * Key: action name, Value: absolute file name
+	 * Key: action name, Value: absolute help path, absolute image path
 	 */
-	protected Map<String, String> help;
+	protected Map<String, String[]> help;
 
 	/**
 	 * The current Action in the workflow
@@ -199,7 +199,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	}
 
 	public void loadHelp() {
-		help = new LinkedHashMap<String, String>();
+		help = new LinkedHashMap<String, String[]>();
 		Map<String, String> nameWithClass;
 		try {
 			nameWithClass = getAllWANameWithClassName();
@@ -210,7 +210,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					DataFlowElement dfe = (DataFlowElement) Class.forName(
 							nameWithClass.get(actionName)).newInstance();
 
-					help.put(actionName, dfe.getHelp());
+					help.put(actionName, new String[]{dfe.getHelp(),dfe.getImage()});
 				} catch (Exception e) {
 					logger.error(LanguageManagerWF.getText(
 							"workflow.loadclassfail",
@@ -311,7 +311,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	}
 
 	@Override
-	public Map<String, String> getRelativeHelp(File curPath) {
+	public Map<String, String[]> getRelativeHelp(File curPath) {
 		if (help == null || help.isEmpty()) {
 			loadHelp();
 		}
@@ -319,12 +319,15 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			return help;
 		}
 		logger.info("Load help " + curPath.getPath());
-		Map<String, String> ans = new LinkedHashMap<String, String>();
+		Map<String, String[]> ans = new LinkedHashMap<String, String[]>();
 		Iterator<String> helpit = help.keySet().iterator();
 		while (helpit.hasNext()) {
 			String key = helpit.next();
 			try {
-				ans.put(key, LocalFileSystem.relativize(curPath, help.get(key)));
+				ans.put(key, 
+						new String[]{LocalFileSystem.relativize(curPath, help.get(key)[0]),
+						LocalFileSystem.relativize(curPath, help.get(key)[1])}
+				);
 			} catch (Exception e) {
 				logger.error(e.getMessage());
 				logger.error("Error Getting relative paths for Help");

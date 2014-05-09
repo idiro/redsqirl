@@ -5,120 +5,113 @@
 <title>Source</title>
 </head>
 <body>
-	<div id="body">
-		<div id="helpImg"></div>
-		<div id="helpPage">
-			<img src="../image/source.gif" alt="Smiley face" height="42"
-				width="42" />
-			<h1>Source</h1>
+	<h1>Source</h1>
 
-			<h3>Description</h3>
-			<p>Source is an action that defines a data source for a workflow.
-				A data source can come from a type of sorage facility. There are two
-				types of storage facilities: Hive and HDFS.</p>
-			<h3>Quick Guide</h3>
-			<p>
+	<h3>Description</h3>
+	<p>Source is an action that defines a data source for a workflow.
+		A data source can come from a type of sorage facility. There are two
+		types of storage facilities: Hive and HDFS.</p>
+	<h3>Quick Guide</h3>
+	<p>
+	<ul>
+		<li>Inputs - No Inputs</li>
+		<li>DataType - The Type of data that is selected</li>
+		<ul>
+			<li>Hive - Select a Table</li>
+			<li>HDFS - Select a File</li>
+		</ul>
+		<li>SubType - Select the Subtype of the selected DataType</li>
+		<ul>
+			<li>Hive</li>
 			<ul>
-				<li>Inputs - No Inputs</li>
-				<li>DataType - The Type of data that is selected</li>
-				<ul>
-					<li>Hive - Select a Table</li>
-					<li>HDFS - Select a File</li>
-				</ul>
-				<li>SubType - Select the Subtype of the selected DataType</li>
-				<ul>
-					<li>Hive</li>
-					<ul>
-						<li>Table - Regular Table</li>
-						<li>Partition - Partitioned Table</li>
-					</ul>
-				</ul>
-				<ul>
-					<li>HDFS</li>
-					<ul>
-						<li>Text Map Reduce Directory - Text File</li>
-						<li>Binary Map Reduce Directory - Binary File</li>
-					</ul>
-				</ul>
-				<li>Browser</li>
-				<ul>
-					<li>Path - Path to the dataset</li>
-					<li>Header - Set Properties for the dataset</li>
-					<li>Table Preview - Preview the table</li>
-				</ul>
-				<li>Outputs - Single object specified from the DataType and
-					SubType</li>
+				<li>Table - Regular Table</li>
+				<li>Partition - Partitioned Table</li>
 			</ul>
-			</p>
-			<h3>
-				<a href="../helpimages/DataType.png" target="_blank"> Data Type
-					- Page 1</a>
+		</ul>
+		<ul>
+			<li>HDFS</li>
+			<ul>
+				<li>Text Map Reduce Directory - Text File</li>
+				<li>Binary Map Reduce Directory - Binary File</li>
+			</ul>
+		</ul>
+		<li>Browser</li>
+		<ul>
+			<li>Path - Path to the dataset</li>
+			<li>Header - Set Properties for the dataset</li>
+			<li>Table Preview - Preview the table</li>
+		</ul>
+		<li>Outputs - Single object specified from the DataType and
+			SubType</li>
+	</ul>
+	</p>
+	<h3>
+		<a href="../helpimages/DataType.png" target="_blank"> Data Type
+			- Page 1</a>
+	</h3>
+	<p>Data type is where the data storage facility is chosen. As
+		mentioned before the only options are Hive and HDFS.</p>
+
+	<h4>Hive</h4>
+	<p>Hive is a relational database that is used on Hadoop. It has a
+		query language called HiveQl that can be used like any other SQL.</p>
+
+	<h4>HDFS</h4>
+	<p>HDFS is the file system that is used on Hadoop. HDFS stands
+		for Hadoop Distributed File System.</p>
+
+	<h3>Data Sub-Type - Page 2</h3>
+	<p>With each data type there are data sub-types. These are
+		specific to the parent (data type)</p>
+
+	<h3>
+		<a href="../helpimages/HiveSubtype.png" target="_blank"> Hive</a>
+	</h3>
+	<h5>
+		Hive Table
+		</h3>
+		<p>A Hive table is table that is stored in Hive and is similar
+			to the table that is stored in other RMDB (Oracle)</p>
+
+		<h5>
+			Hive Partition
 			</h3>
-			<p>Data type is where the data storage facility is chosen. As
-				mentioned before the only options are Hive and HDFS.</p>
-
-			<h4>Hive</h4>
-			<p>Hive is a relational database that is used on Hadoop. It has a
-				query language called HiveQl that can be used like any other SQL.</p>
-
-			<h4>HDFS</h4>
-			<p>HDFS is the file system that is used on Hadoop. HDFS stands
-				for Hadoop Distributed File System.</p>
-
-			<h3>Data Sub-Type - Page 2</h3>
-			<p>With each data type there are data sub-types. These are
-				specific to the parent (data type)</p>
+			<p>A Hive partition is a similar to a table except it is stored
+				so that partition can be filtered based on a condition (i.e FNAME
+				= "ALAN")</p>
 
 			<h3>
-				<a href="../helpimages/HiveSubtype.png" target="_blank"> Hive</a>
+				<a href="../helpimages/HDFSSubTypes.png" target="_blank"> HDFS</a>
 			</h3>
+
+			<h5>Data File</h5>
+			<p>A Data File is the specific file that is to be used as the
+				data source</p>
+
+			<h5>Text Map Reduce Directory</h5>
+			<p>Text Map Reduce Directory is the directory that is to be
+				used that contains the data. The directory will contain all the
+				data that a map reduce job will output</p>
+
+			<h5>Binary Map Reduce Directory</h5>
+			<p>Binary Map Reduce Directory is a directory of a map reduce
+				job that stores the values in format.</p>
+			<h3>Browser - Page 3</h3>
 			<h5>
-				Hive Table
-				</h3>
-				<p>A Hive table is table that is stored in Hive and is similar
-					to the table that is stored in other RMDB (Oracle)</p>
+				<a href="#" onclick="showImg('../helpimages/BrowserSelect.png')"
+					target="_blank">Select Data</a>
+			</h5>
+			<p>Browser is where the data source can be selected b browsing
+				(depending on Data Type). The directory/table/file must be
+				selected for the screen to progress</p>
 
-				<h5>
-					Hive Partition
-					</h3>
-					<p>A Hive partition is a similar to a table except it is stored
-						so that partition can be filtered based on a condition (i.e FNAME
-						= "ALAN")</p>
-
-					<h3>
-						<a href="../helpimages/HDFSSubTypes.png" target="_blank"> HDFS</a>
-					</h3>
-
-					<h5>Data File</h5>
-					<p>A Data File is the specific file that is to be used as the
-						data source</p>
-
-					<h5>Text Map Reduce Directory</h5>
-					<p>Text Map Reduce Directory is the directory that is to be
-						used that contains the data. The directory will contain all the
-						data that a map reduce job will output</p>
-
-					<h5>Binary Map Reduce Directory</h5>
-					<p>Binary Map Reduce Directory is a directory of a map reduce
-						job that stores the values in format.</p>
-					<h3>Browser - Page 3</h3>
-					<h5>
-						<a href="#" onclick="showImg('../helpimages/BrowserSelect.png')"
-							target="_blank">Select Data</a>
-					</h5>
-					<p>Browser is where the data source can be selected b browsing
-						(depending on Data Type). The directory/table/file must be
-						selected for the screen to progress</p>
-
-					<h5>
-						<a href="#"
-							onclick="showImg('../helpimages/BrowserAttributes.png')"
-							target="_blank">Browser Attributes</a>
-					</h5>
-					<p>After the data source has been selected the data format can
-						be viewed and modified. Column names can be renamed and also view
-						what type of data the colmun will store</p>
-		</div>
-	</div>
+			<h5>
+				<a href="#"
+					onclick="showImg('../helpimages/BrowserAttributes.png')"
+					target="_blank">Browser Attributes</a>
+			</h5>
+			<p>After the data source has been selected the data format can
+				be viewed and modified. Column names can be renamed and also view
+				what type of data the colmun will store</p>
 </body>
 </html>
