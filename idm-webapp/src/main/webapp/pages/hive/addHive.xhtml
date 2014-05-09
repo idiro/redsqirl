@@ -9,7 +9,8 @@
 
 
 	<h:outputText value="#{messages.label_name}" />
-	<h:inputText value="#{hiveBean.newProp['name']}" />
+	<h:inputText value="#{hiveBean.newProp['name']}" 
+	onkeypress="return enableEnterKey(event, 'addHiveBtn');" />
 
 	<a4j:repeat value="#{hiveBean.createProps}" var="title" >
 	

@@ -8,7 +8,7 @@
 	<a4j:loadBundle basename="MessagesResources" var="messages" />
 
 	<h:outputText value="#{messages.label_name}" />
-	<h:inputText value="#{hdfsBean.allProps[hdfsBean.currentFileIndex]['name']}" />
+	<h:inputText value="#{hdfsBean.allProps[hdfsBean.currentFileIndex]['name']}" onkeypress="return enableEnterKey(event, 'editFileAfterOkBt');" />
 	
 	<a4j:repeat value="#{hdfsBean.editProps}" var="title" >
 
@@ -16,7 +16,8 @@
 		<br />
 		<h:inputText value="#{hdfsBean.allProps[hdfsBean.currentFileIndex][title]}"
 			disabled="#{hdfsBean.propsParam[title].const}"
-			rendered="#{hdfsBean.propsParam[title].type != 'BOOLEAN'}" />
+			rendered="#{hdfsBean.propsParam[title].type != 'BOOLEAN'}" 
+			/>
 			
 		<h:selectOneRadio value="#{hdfsBean.allProps[hdfsBean.currentFileIndex][title]}" 
 		rendered="#{hdfsBean.propsParam[title].type == 'BOOLEAN'}">
@@ -29,7 +30,7 @@
 
 	<h:panelGrid columns="2">
 
-		<a4j:commandButton styleClass="greenButton"	action="#{hdfsBean.editFileAfter}" 
+		<a4j:commandButton id="editFileAfterOkBt" styleClass="greenButton"	action="#{hdfsBean.editFileAfter}" oncomplete="resizeTables();"
 			value="#{messages.button_ok}" reRender="hdfsfs"	onclick="#{rich:component('hdfseditModalPanel')}.hide()" />
 		<a4j:commandButton styleClass="greenButton"
 			value="#{messages.button_cancel}" type="button" onclick="#{rich:component('hdfseditModalPanel')}.hide();" />
