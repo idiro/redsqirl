@@ -1,0 +1,49 @@
+body{
+	font-family:verdana;
+	font-size:16px;
+}
+
+h1 {
+    padding-top:3%;
+    text-align: center;
+    color: #505050 
+}
+
+h2 {
+    color: #888888
+}
+
+h3 {
+    color: #C0C0C0
+}
+
+h4 {
+    padding-left: 12%;
+}
+
+h5 {
+    padding-left: 12%;
+}
+
+.nav-list>li>a{
+    color:black;
+    font-weight:bold;
+}
+
+.nav-list>.active>a, .nav-list>.active>a:hover{
+    background-color:#c62127;
+    color:white;
+    font-weight:bold;
+}    
+
+
+
+.nav-list>li>a:hover{
+    background-color:#c62127;
+    color:white;
+    font-weight:bold;
+}
+
+p {
+	width:70%;
+}

@@ -8,6 +8,7 @@
 	<name>Red Sqirl</name>
 	<version>0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
+	<description>${project.name} is a platform</description>
 
 	<modules>
 		<module>idm-wf-interface</module>
@@ -33,6 +34,30 @@
 		</site>
 	</distributionManagement>
 
+	<mailingLists>
+		<mailingList>
+			<name>Project</name>
+			<post>announce@noonecares.com</post>
+			<subscribe>users-subscribe@noonecares.com</subscribe>
+			<unsubscribe>users-unsubscribe@noonecares.com</unsubscribe>
+			<archive>http://noonecares.archive.org</archive>
+		</mailingList>
+		<mailingList>
+			<name>Users</name>
+			<post>announce@noonecares.com</post>
+			<subscribe>users-subscribe@noonecares.com</subscribe>
+			<unsubscribe>users-unsubscribe@noonecares.com</unsubscribe>
+			<archive>http://noonecares.archive.org</archive>
+		</mailingList>
+		<mailingList>
+			<name>Developers</name>
+			<post>announce@noonecares.com</post>
+			<subscribe>users-subscribe@noonecares.com</subscribe>
+			<unsubscribe>users-unsubscribe@noonecares.com</unsubscribe>
+			<archive>http://noonecares.archive.org</archive>
+		</mailingList>
+	</mailingLists>
+
 
 	<build>
 		<plugins>
@@ -56,6 +81,12 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.6</version>
+
+			</plugin>
 		</plugins>
 		<extensions>
 			<extension>
@@ -65,17 +96,16 @@
 			</extension>
 		</extensions>
 	</build>
-
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>2.6</version>
-				<configuration>
-				</configuration>
-			</plugin>
-		</plugins>
-	</reporting>
-
+	<dependencies>
+		<dependency>
+			<groupId>idiro</groupId>
+			<artifactId>idm-webapp</artifactId>
+			<version>0.1-SNAPSHOT</version>
+			<type>pom</type>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+	<!-- <reporting> <plugins> <plugin> <groupId>org.apache.maven.plugins</groupId> 
+		<artifactId>maven-project-info-reports-plugin</artifactId> <version>2.6</version> 
+		</plugin> </plugins> </reporting> -->
 </project>
