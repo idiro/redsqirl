@@ -172,18 +172,23 @@ public class CanvasModal extends BaseBean implements Serializable {
 	}
 
 	public void changeIdElement() throws RemoteException {
+		String error = null;
 		// Get the new id
 		logger.info("id new -> " + elementId);
 		logger.info(dfe == null);
-		if (dfe != null && elementId != null && !elementId.isEmpty()
-				&& !elementId.equals("undefined")) {
-			String oldId = canvasBean.getIdMap()
-					.get(canvasBean.getNameWorkflow()).get(idGroup);
-			canvasBean.getIdMap().get(canvasBean.getNameWorkflow())
-			.put(idGroup, elementId);
-			canvasBean.getDf().changeElementId(oldId, elementId);
+		if (dfe != null && elementId != null && !elementId.isEmpty() && !elementId.equals("undefined")) {
+			String oldId = canvasBean.getIdMap().get(canvasBean.getNameWorkflow()).get(idGroup);
+			canvasBean.getIdMap().get(canvasBean.getNameWorkflow()).put(idGroup, elementId);
+			error = canvasBean.getDf().changeElementId(oldId, elementId);
 		}
 		logger.info(dfe == null);
+		
+		if (error != null) {
+			MessageUseful.addErrorMessage(error);
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
+		}
+		
 	}
 
 	/**
