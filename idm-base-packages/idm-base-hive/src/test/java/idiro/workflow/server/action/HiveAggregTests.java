@@ -229,7 +229,7 @@ public class HiveAggregTests {
 			HiveInterface hInt = new HiveInterface();
 			String new_path1 = "/" + TestUtils.getTableName(1);
 			// String new_path1 = "/keith_test2";
-			String new_path2 = "/" + TestUtils.getTableName(4);
+			String new_path2 = "/" + TestUtils.getTableName(2);
 
 			// hInt.delete(new_path1);
 			// hInt.delete(new_path2);

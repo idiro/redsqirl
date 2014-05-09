@@ -22,6 +22,11 @@ import org.apache.log4j.Logger;
 
 public class FileSystemBean extends BaseBean implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1685249123539175115L;
+	
 	private static Logger logger = Logger.getLogger(FileSystemBean.class);
 	private static int nbCreate = 0;
 
@@ -247,10 +252,10 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		logger.info("openFile path " + path);
 		
 		getDataStore().goTo(path);
-		List<String> contents = getDataStore().select(" | ", 10);
+		List<String> contents = getDataStore().displaySelect(200);
 		fileContent = "";
 		for (String s : contents) {
-			fileContent += s + "<br/>";
+			fileContent += s + System.getProperty("line.separator");
 		}
 		getDataStore().goPrevious();
 		

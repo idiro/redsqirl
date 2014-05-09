@@ -74,7 +74,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		userInfoBean = (UserInfoBean) context.getApplication()
 				.evaluateExpressionGet(context, "#{userInfoBean}",
 						UserInfoBean.class);
-		
+
 		workflowMap = new HashMap<String, DataFlow>();
 		setNameWorkflow("canvas-1");
 
@@ -400,7 +400,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			dfi = getworkFlowInterface();
 			DataFlow df = null;
 			String newWfName = generateWorkflowName(path);
-			
+
 			if( error == null){
 				if (getWorkflowMap().containsKey(newWfName)) {
 					error = "A workflow called "+newWfName+" already exist. Please close this workflow if you want to proceed.";
@@ -421,7 +421,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				logger.info("set current worflow to "+newWfName);
 				setNameWorkflow(newWfName);
 				setDf(df);
-				
+
 				logger.info("Load element ids for front-end "+newWfName);
 				workflowMap.put(getNameWorkflow(), df);
 				getIdMap().put(getNameWorkflow(), new HashMap<String, String>());
@@ -672,6 +672,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 					.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
 		}else{
+			String savedFile = FacesContext.getCurrentInstance().getExternalContext()
+					.getRequestParameterMap().get("savedFile");
+			if(getDf().isSaved()&& savedFile != null && !savedFile.isEmpty() 
+					&& !savedFile.equals("null") && !savedFile.equals("undefined")){
+				logger.info("Save the workflow in "+savedFile);
+				logger.info(df.getOozieJobId());
+				getDf().save(savedFile);
+			}
 			calcWorkflowUrl();
 		}
 
@@ -679,9 +687,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void blockRunningWorkflow() throws Exception {
 		if (getDf() != null) {
-			while (getDf().isrunning()) {
-				Thread.sleep(500);
-			}
+			try{
+				while (getDf().isrunning()) {
+					Thread.sleep(500);
+				}
+			}catch(Exception e){}
 		}
 	}
 
@@ -778,14 +788,12 @@ public class CanvasBean extends BaseBean implements Serializable {
 	}
 
 	public void reinitialize() throws RemoteException {
-		logger.info("invalidate session");
+		logger.info("Clear workflows");
 
-		for (java.util.Map.Entry<String, DataFlow> e : getWorkflowMap()
-				.entrySet()) {
+		for (Entry<String, DataFlow> e : getWorkflowMap().entrySet()) {
 			if (getworkFlowInterface().getWorkflow(e.getKey()) != null) {
 				logger.info("removing workflow");
 				getworkFlowInterface().removeWorkflow(e.getKey());
-
 			}
 		}
 
@@ -1023,6 +1031,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public String[][] getOutputStatus() throws Exception {
 
+		if(getDf() == null){
+			return new String[0][];
+		}
 		logger.info("getOutputStatus");
 
 		Map<String, String> params = FacesContext.getCurrentInstance()
@@ -1030,6 +1041,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 		String groupId = params.get("groupId");
 
 		DataFlowElement df = getDf().getElement(getIdElement(groupId));
+		if(df == null){
+			return new String[0][];
+		}
 
 		List<String[]> status = new LinkedList<String[]>();
 		getOutputStatus(df, status);
@@ -1045,6 +1059,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 	public String[][] getRunningStatus() throws Exception {
 
 		logger.info("getRunningStatus");
+
+		if(getNameWorkflow() == null || getIdMap().get(getNameWorkflow()) == null){
+			return new String[0][];
+		}
 
 		String[][] result = new String[getIdMap().get(getNameWorkflow()).size()][];
 
@@ -1089,18 +1107,20 @@ public class CanvasBean extends BaseBean implements Serializable {
 			String outputName) throws Exception {
 
 		logger.info("getArrowType");
+		
+		String color = null;
+		String typeName = null;
 
 		DataFlowElement df = getDf().getElement(
 				getIdMap().get(getNameWorkflow()).get(groupOutId));
-
-		String color = null;
-		String typeName = null;
-		for (Entry<String, DFEOutput> e : df.getDFEOutput().entrySet()) {
-			if (e.getKey().equals(outputName)) {
-				color = e.getValue().getColour();
-				typeName = e.getValue().getTypeName();
-				logger.info(e.getKey() + " - " + color);
-				break;
+		if(df.getDFEOutput() != null){
+			for (Entry<String, DFEOutput> e : df.getDFEOutput().entrySet()) {
+				if (e.getKey().equals(outputName)) {
+					color = e.getValue().getColour();
+					typeName = e.getValue().getTypeName();
+					logger.info(e.getKey() + " - " + color);
+					break;
+				}
 			}
 		}
 
@@ -1190,7 +1210,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 
 	public String getIdElement(String idGroup) {
-		return getIdMap().get(getNameWorkflow()).get(idGroup);
+		return getIdMap().get(getNameWorkflow()) == null ? null :getIdMap().get(getNameWorkflow()).get(idGroup);
 	}
 
 	public DataFlow getDf() {

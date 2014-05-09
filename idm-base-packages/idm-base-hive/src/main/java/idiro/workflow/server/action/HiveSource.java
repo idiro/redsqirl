@@ -1,7 +1,6 @@
 package idiro.workflow.server.action;
 
 import idiro.workflow.server.datatype.HiveType;
-import idiro.workflow.server.datatype.MapRedBinaryType;
 
 import java.rmi.RemoteException;
 import java.util.LinkedList;
@@ -36,7 +35,7 @@ public class HiveSource extends AbstractSource {
 		posValuesSubType.add(type.getTypeName());
 		dataSubtype.setPossibleValues(posValuesSubType);
 
-		dataType.setValue("Hive");
+		dataType.setValue(type.getBrowser());
 		dataSubtype.setValue(type.getTypeName());
 		checkSubType();
 	}

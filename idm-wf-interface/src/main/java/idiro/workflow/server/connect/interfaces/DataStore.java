@@ -241,7 +241,30 @@ public interface DataStore extends Remote {
 	 * @throws RemoteException
 	 */
 	List<String> select(String delimiter, int maxToRead) throws RemoteException;
-
+	
+	
+	/**
+	 * ASCII Human readable only select display from the given path the n first elements with a delimiter.
+	 * 
+	 * @param path
+	 * @param delimiter
+	 * @param maxToRead
+	 * @return {@link java.util.List<String>} of text from the dataset
+	 * @throws RemoteException
+	 */
+	List<String> displaySelect(String path, int maxToRead)
+			throws RemoteException;
+	
+	/**
+	 * ASCII Human readable only select display.
+	 * 
+	 * @param delimiter
+	 * @param maxToRead
+	 * @return {@link java.util.List<String>} of text from the dataset
+	 * @throws RemoteException
+	 */
+	List<String> displaySelect(int maxToRead) throws RemoteException;
+	
 	/**
 	 * Get the properties of the path element
 	 * 

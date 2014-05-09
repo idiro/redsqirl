@@ -7,33 +7,12 @@
     xmlns:ui="http://java.sun.com/jsf/facelets">
 
 <a4j:loadBundle basename="MessagesResources" var="messages" />
-    
-    <rich:modalPanel id="msnError2">
-			<center>
-			
-				<table>
-					<tr>
-						<td>
-							<rich:messages id="msg2" globalOnly="false" layout="list" styleClass="message"
-								infoClass="messageok" errorClass="messageerro"
-								warnClass="messagealert" showDetail="true" showSummary="false" ajaxRendered="false" />
-						</td>
-					</tr>
-				</table>
-			
-				<br />
-				<br />
-				
-				<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" onclick="#{rich:component('msnError2')}.hide(); return false;" reRender="msnError2, msg2" />
-				
-			</center>
-		</rich:modalPanel>
 		
     
-	<h:form>
+	<h:form style="min-height:535px;background-color:white;" >
 	    
         <h:panelGroup id="install_pck_main"
-            rendered="#{packageMngBean.showMain}" >
+            rendered="#{packageMngBean.showMain}" style="min-height:535px;overflow:auto;" >
             
             <div id="welcomePageRepo">
                 <ui:include src="#{packageMngBean.repoWelcomePage}" />
@@ -49,7 +28,7 @@
                 </f:facet>
                     <a4j:commandLink value="#{c.name}"
                         action="#{packageMngBean.retrievesExtPackages}"
-                        reRender="form_all,install_pck_spec">
+                        reRender="install_pck_spec">
                         <a4j:actionparam name="packageId"
                             value="#{c.id}" />
                     </a4j:commandLink>
@@ -68,7 +47,7 @@
             </h:column>
             </h:dataTable>
         </h:panelGroup>
-        <h:panelGroup id="install_pck_spec"
+        <h:panelGroup id="install_pck_spec"  style="min-height:535px;overflow:auto;"
             rendered="#{not packageMngBean.showMain}" >
             
             
@@ -76,7 +55,7 @@
             <div id="header">
                 <a4j:commandLink value="back"
                     action="#{packageMngBean.retrievesExtPackages}"
-                    reRender="form_all,install_pck_main" />
+                    reRender="install_pck_main" />
                     
             </div>
             
@@ -95,7 +74,7 @@
                 </f:facet>
                         <a4j:commandLink value="#{c.version}"
                             action="#{packageMngBean.retrievesExtPackages}"
-                            reRender="form_all,install_pck_spec">
+                            reRender="install_pck_spec">
                             <a4j:actionparam name="packageName"
                                 value="#{c.name}" />
                             <a4j:actionparam name="version"
@@ -113,14 +92,19 @@
 	                styleClass="greenButton"
 	                action="#{packageMngBean.installPackage}"
 	                value="#{messages.button_install}"
-	                oncomplete="if(#{requestScope['msnError2'] != null}){ #{rich:component('msnError2')}.show() }else{{ #{rich:component('modalInstallSuccess')}.show()}">
+	                oncomplete="if(#{requestScope['msnError'] == null} ){#{rich:component('modalInstallSuccess')}.show();}"
+	                reRender="usPckList,sysPckList,msnError,errorTable">
 	                <a4j:actionparam name="downloadUrl" value="#{packageMngBean.curPackage.url}" />
 	            </a4j:commandButton>
             </div>
         </h:panelGroup>
 	</h:form>
 	
-	<rich:modalPanel id="modalInstallSuccess" width="300" height="90"
+	<h:form>
+    <a4j:jsFunction name="reStartFromInstall"
+           action="#{userInfoBean.signOut}" />
+	
+	<rich:modalPanel id="modalInstallSuccess" width="300" height="120"
 			style="overflow:auto;" resizeable="false">
 
 			<f:facet name="header">Package Installed</f:facet>
@@ -130,19 +114,31 @@
 					onclick="#{rich:component('modalInstallSuccess')}.hide()" />
 			</f:facet>
 
-			<h:panelGroup>
-			
+			<div style="background-color:white;height:95%;padding:3px;" >
+			    
 				<h:outputText value="#{messages.package_installed}" />
 				<br />
-				<a4j:commandButton value="#{messages.button_ok}" styleClass="greenButton"
-					onclick="#{rich:component('modalInstallSuccess')}.hide();;"
-					oncomplete="" reRender="errorTable" >
-				</a4j:commandButton>
+				<rich:panel style="border:none;margin-top:10px;" >
 				
-				<a4j:commandButton value="#{messages.button_restart}" styleClass="greenButton"
+				<a4j:commandButton value="#{messages.button_ok}" styleClass="greenButton"
+                    style="margin-right:5px"
 					onclick="#{rich:component('modalInstallSuccess')}.hide();">
 				</a4j:commandButton>
-			</h:panelGroup>
+				
+                <a4j:commandButton value="#{messages.button_return_install}" styleClass="greenButton"
+                    onclick="#{rich:component('modalInstallSuccess')}.hide();#{rich:component('modalInstallPackage')}.hide();">
+                </a4j:commandButton>
+				
+				<a4j:commandButton value="#{messages.button_restart}" 
+				    styleClass="greenButton"
+				    style="margin-left:5px"
+					onclick="#{rich:component('modalInstallSuccess')}.hide();#{rich:component('modalInstallPackage')}.hide();#{rich:component('modalPackage')}.hide();"
+					oncomplete="reStartFromInstall();">
+				</a4j:commandButton>
+				
+				</rich:panel>
+			</div>
 
 		</rich:modalPanel>
+    </h:form>
 </ui:composition>

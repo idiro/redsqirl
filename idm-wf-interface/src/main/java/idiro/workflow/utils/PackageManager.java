@@ -3,7 +3,6 @@ package idiro.workflow.utils;
 import idiro.utils.LocalFileSystem;
 import idiro.utils.UnZip;
 import idiro.workflow.server.WorkflowPrefManager;
-import idiro.workflow.server.connect.interfaces.PckManager;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -14,6 +13,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
  * @author etienne
  * 
  */
-public class PackageManager extends UnicastRemoteObject implements PckManager {
+public class PackageManager extends UnicastRemoteObject {
 
 	/**
 	 * 
@@ -49,6 +49,7 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 	action_file = "actions.txt",
 	/** List of files name of file */
 	list_files = "files.txt",
+	
 	/**
 	 * Properies file name
 	 */
@@ -78,6 +79,7 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 			logger.info("Takes at least three arguments");
 			logger.info("Arg 1: 'add' or 'remove', add or remove the package");
 			logger.info("Arg 2: 'user' or 'system', design where to install/uninstall the package");
+			logger.info("Arg 3: user name if user is specified");
 			logger.info("Arg n: packages (directory if it is an install)");
 			System.exit(1);
 		}
@@ -93,26 +95,32 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 						+ " have to be set to 'true'");
 			}
 		}
+		String user = null;
+		int pckIdxStart = 2;
+		if(!sys_package){
+			user = arg[2];
+			pckIdxStart = 3;
+		}
 
 		if (sys_package && !arg[1].equalsIgnoreCase("system")) {
 			logger.info("Second argument should be 'user' or 'system'");
 			System.exit(1);
 		}
 
-		String[] packs = new String[arg.length - 2];
-		for (int i = 2; i < arg.length; ++i) {
-			packs[i - 2] = arg[i];
+		String[] packs = new String[arg.length - pckIdxStart];
+		for (int i = pckIdxStart; i < arg.length; ++i) {
+			packs[i - pckIdxStart] = arg[i];
 		}
 
 		PackageManager mng = new PackageManager();
 
 		if (arg[0].equalsIgnoreCase("add")) {
-			String error = mng.addPackage(sys_package, packs);
+			String error = mng.addPackage(user, packs);
 			if (error != null) {
 				System.out.println(error);
 			}
 		} else if (arg[0].equalsIgnoreCase("remove")) {
-			String error = mng.removePackage(sys_package, packs);
+			String error = mng.removePackage(user, packs);
 			if (error != null) {
 				System.out.println(error);
 			}
@@ -125,18 +133,18 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 	/**
 	 * Remove a package
 	 * 
-	 * @param sys_package
+	 * @param user if user is null or empty it is considered as system
 	 * @param packStr
 	 * @return
 	 */
-	public String removePackage(boolean sys_package, String[] packStr) {
+	public String removePackage(String user, String[] packStr) {
 		String error = null;
 
 		File[] packs = new File[packStr.length];
 		int i = 0;
 		for (i = 0; i < packStr.length; ++i) {
 			logger.debug("Find " + packStr[i]);
-			packs[i] = getPackage(packStr[i], sys_package);
+			packs[i] = getPackage(packStr[i], user);
 			if (!packs[i].exists()) {
 				error = PMLanguageManager.getText(
 						"PackageManager.packageDoesNotExist",
@@ -159,13 +167,13 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 								.substring(filePack.indexOf(":") + 1);
 						boolean ok = true;
 						if (type.equals(help_dir)) {
-							ok = new File(getHelpDir(sys_package), path)
+							ok = new File(getHelpDir(user), path)
 									.delete();
 						} else if (type.equals(image_dir)) {
-							ok = new File(getImageDir(sys_package), path)
+							ok = new File(getImageDir(user), path)
 									.delete();
 						} else if (type.equals(lib_dir)) {
-							ok = new File(getLibDir(sys_package), path)
+							ok = new File(getLibDir(user), path)
 									.delete();
 						}
 
@@ -193,25 +201,20 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 	/**
 	 * Add a package for users
 	 * 
-	 * @param sys_package
+	 * @param user if user is null or empty it is considered as system
 	 * @param packStr
 	 * @return Error Message
 	 */
-	public String addPackage(boolean sys_package, String[] packStr) {
+	public String addPackage(String user, String[] packStr) {
 		// boolean ok = true;
 		String error = null;
-		init(sys_package);
+		init(user);
 
 		File[] packs = new File[packStr.length];
 		for (int i = 0; i < packStr.length; ++i) {
 			File curPackage = new File(packStr[i]);
 			if (packStr[i].endsWith(".zip")) {
-				String tmp = null;
-				if (sys_package) {
-					tmp = WorkflowPrefManager.pathSysHome.get();
-				} else {
-					tmp = WorkflowPrefManager.pathUserPref.get();
-				}
+				String tmp = WorkflowPrefManager.pathSysHome.get();
 				tmp += "/tmp";
 				UnZip uz = new UnZip();
 				uz.unZipIt(curPackage, new File(tmp));
@@ -222,44 +225,46 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 			}
 			String errorPackageValid = isPackageValid(packs[i]);
 			if (errorPackageValid != null) {
-				error += errorPackageValid + "\n";
+				if(error == null){
+					error = errorPackageValid + "\n";
+				}else{
+					error += errorPackageValid + "\n";
+				}
 			}
 		}
 
 		if (error == null) {
 			logger.info("Install the packages one per one");
 			for (int i = 0; i < packs.length && error == null; ++i) {
-
+				logger.debug(packs[i].getAbsolutePath() + "...");
 				String packageName = getPackageProperties(
 						packs[i].getAbsolutePath()).getProperty(property_name);
 				String packageVersion = getPackageProperties(
 						packs[i].getAbsolutePath()).getProperty(
 						property_version);
-
-				logger.debug(packs[i].getAbsolutePath() + "...");
 				if ((error = checkNoPackageNameDuplicate(packageName,
-						sys_package, packageVersion, false)) == null
+						user, packageVersion, true)) == null
 						&& (error = checkNoHelpFileDuplicate(packs[i],
-								sys_package)) == null
+								user)) == null
 						&& (error = checkNoImageFileDuplicate(packs[i],
-								sys_package)) == null
+								user)) == null
 						&& (error = checkNoActionDuplicate(packs[i],
-								packageName, sys_package)) == null
+								packageName, user)) == null
 						&& (error = checkNoJarFileDuplicate(packs[i],
-								sys_package)) == null) {
+								user)) == null) {
 					logger.info("Installing " + packageName + "...");
 					List<String> files = getFileNames(packs[i], "");
 					files.remove("/" + action_file);
 					files.remove("/" + properties_file);
 
 					File newPack = null;
-					if (sys_package) {
+					if (user == null || user.isEmpty()) {
 						newPack = new File(
 								WorkflowPrefManager.pathSysPackagePref.get(),
 								packageName);
 					} else {
 						newPack = new File(
-								WorkflowPrefManager.pathUserPackagePref.get(),
+								WorkflowPrefManager.getPathUserPackagePref(user),
 								packageName);
 					}
 					logger.debug("install...");
@@ -276,13 +281,13 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 								newPack.getAbsolutePath() + "/"
 										+ properties_file);
 						LocalFileSystem.copyfile(packs[i].getAbsolutePath()
-								+ "/" + help_dir, getHelpDir(sys_package)
+								+ "/" + help_dir, getHelpDir(user)
 								.getAbsolutePath());
 						LocalFileSystem.copyfile(packs[i].getAbsolutePath()
-								+ "/" + image_dir, getImageDir(sys_package)
+								+ "/" + image_dir, getImageDir(user)
 								.getAbsolutePath());
 						LocalFileSystem.copyfile(packs[i].getAbsolutePath()
-								+ "/" + lib_dir, getLibDir(sys_package)
+								+ "/" + lib_dir, getLibDir(user)
 								.getAbsolutePath());
 					} catch (IOException e) {
 						logger.info("Fail when writing files/directory in package");
@@ -311,25 +316,25 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 	 * 
 	 * @param sys_package
 	 */
-	public void init(boolean sys_package) {
+	public void init(String user) {
 		File dir = null;
-		if (sys_package) {
+		if (user == null || user.isEmpty()) {
 			dir = new File(WorkflowPrefManager.pathSysPackagePref.get());
 		} else {
-			dir = new File(WorkflowPrefManager.pathUserPackagePref.get());
+			dir = new File(WorkflowPrefManager.getPathUserPref(user));
 		}
 		if (!dir.exists()) {
 			dir.mkdirs();
 		}
-		dir = getHelpDir(sys_package);
+		dir = getHelpDir(user);
 		if (!dir.exists()) {
 			dir.mkdirs();
 		}
-		dir = getImageDir(sys_package);
+		dir = getImageDir(user);
 		if (!dir.exists()) {
 			dir.mkdirs();
 		}
-		dir = getLibDir(sys_package);
+		dir = getLibDir(user);
 		if (!dir.exists()) {
 			dir.mkdirs();
 		}
@@ -341,15 +346,17 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 	 * @param sys_package
 	 * @return List of installed packages
 	 */
-	private List<File> getAllPackages(boolean sys_package) {
+	private List<File> getAllPackages(String user) {
 		String pathSys = WorkflowPrefManager.pathSysPackagePref.get();
-		String pathUser = WorkflowPrefManager.pathUserPackagePref.get();
 
 		List<File> ans = new LinkedList<File>();
 
-		File fUser = new File(pathUser);
+		File fUser = null;
+		if(user != null && !user.isEmpty()){
+			fUser = new File(WorkflowPrefManager.getPathUserPackagePref(user));
+		}
 
-		if (!sys_package
+		if ( (user != null && !user.isEmpty())
 				&& fUser.exists()
 				&& WorkflowPrefManager.getSysProperty(
 						WorkflowPrefManager.sys_allow_user_install, "FALSE")
@@ -438,13 +445,13 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 	 * @param root_pack
 	 * @return List of Packages
 	 */
-	public List<String> getPackageNames(boolean root_pack) {
+	public List<String> getPackageNames(String user) {
 		List<String> packageNames = new LinkedList<String>();
 		File packDir = null;
-		if (root_pack) {
+		if (user == null || user.isEmpty()) {
 			packDir = new File(WorkflowPrefManager.pathSysPackagePref.get());
 		} else {
-			packDir = new File(WorkflowPrefManager.pathUserPackagePref.get());
+			packDir = new File(WorkflowPrefManager.getPathUserPackagePref(user));
 		}
 		try {
 			for (File cur : packDir.listFiles()) {
@@ -453,6 +460,7 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 		} catch (Exception e) {
 			logger.error("Package directory not found");
 		}
+		Collections.sort(packageNames);
 		return packageNames;
 	}
 
@@ -464,14 +472,14 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 	 * @param property
 	 * @return Error Message
 	 */
-	public String getPackageProperty(boolean root_pack, String packageName,
+	public String getPackageProperty(String user, String packageName,
 			String property) {
 
 		File packDir = null;
-		if (root_pack) {
+		if (user == null || user.isEmpty()) {
 			packDir = new File(WorkflowPrefManager.pathSysPackagePref.get());
 		} else {
-			packDir = new File(WorkflowPrefManager.pathUserPackagePref.get());
+			packDir = new File(WorkflowPrefManager.getPathUserPackagePref(user));
 		}
 
 		Object p = getPackageProperties(packDir + "/" + packageName).get(
@@ -494,14 +502,14 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 	 * @return Error Message
 	 */
 	public String checkNoPackageNameDuplicate(final String pack_name,
-			boolean root_pack, String pack_version, boolean checkVersion) {
+			String user, String pack_version, boolean checkVersion) {
 		logger.debug("check no package name duplicate...");
 		String error = null;
 		File packDir = null;
-		if (root_pack) {
+		if (user == null || user.isEmpty()) {
 			packDir = new File(WorkflowPrefManager.pathSysPackagePref.get());
 		} else {
-			packDir = new File(WorkflowPrefManager.pathUserPackagePref.get());
+			packDir = new File(WorkflowPrefManager.getPathUserPackagePref(user));
 		}
 
 		if (packDir.exists()) {
@@ -515,7 +523,7 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 
 			if (exists.length != 0) {
 				if (checkVersion
-						&& !getPackageProperty(root_pack, pack_name,
+						&& !getPackageProperty(user, pack_name,
 								property_version).equals(pack_version)) {
 					error = null;
 				} else {
@@ -527,9 +535,7 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 			}
 		}
 
-		return root_pack || error != null ? error
-				: checkNoPackageNameDuplicate(pack_name, true, pack_version,
-						true);
+		return error;
 	}
 
 	/**
@@ -539,9 +545,9 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 	 * @param sys_package
 	 * @return Error Message
 	 */
-	public String checkNoHelpFileDuplicate(File pack, boolean sys_package) {
+	public String checkNoHelpFileDuplicate(File pack, String user) {
 		logger.debug("check no help file duplicate...");
-		File helpDir = getHelpDir(sys_package);
+		File helpDir = getHelpDir(user);
 		File packHelp = new File(pack, help_dir);
 
 		return checkNoFileNameDuplicate(pack.getName(), packHelp, helpDir);
@@ -554,9 +560,9 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 	 * @param sys_package
 	 * @return Error Message
 	 */
-	public String checkNoJarFileDuplicate(File pack, boolean sys_package) {
+	public String checkNoJarFileDuplicate(File pack, String user) {
 		logger.debug("check no jar file duplicate...");
-		File libDir = getLibDir(sys_package);
+		File libDir = getLibDir(user);
 		File packHelp = new File(pack, lib_dir);
 
 		return checkNoFileNameDuplicate(pack.getName(), packHelp, libDir);
@@ -569,9 +575,9 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 	 * @param sys_package
 	 * @return error message
 	 */
-	public String checkNoImageFileDuplicate(File pack, boolean sys_package) {
+	public String checkNoImageFileDuplicate(File pack, String user) {
 		logger.debug("check no image file duplicate...");
-		File imageDir = getImageDir(sys_package);
+		File imageDir = getImageDir(user);
 		File packImage = new File(pack, image_dir);
 
 		return checkNoFileNameDuplicate(pack.getName(), packImage, imageDir);
@@ -616,7 +622,7 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 	 * @return Error Message
 	 */
 	public String checkNoActionDuplicate(File pack, String pack_name,
-			boolean sys_package) {
+			String user) {
 		logger.debug("check no action duplicate...");
 		String error = null;
 		List<String> actions = new LinkedList<String>();
@@ -641,7 +647,7 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 		}
 
 		boolean ok = true;
-		Iterator<File> packageIt = getAllPackages(sys_package).iterator();
+		Iterator<File> packageIt = getAllPackages(user).iterator();
 		while (packageIt.hasNext() && error == null) {
 			File p = packageIt.next();
 			if (!p.getName().equals(pack_name)) {
@@ -678,7 +684,8 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 			br.close();
 		} catch (Exception e) {
 			logger.info(e.getMessage());
-			logger.info("Fail to read the file " + action_file);
+			logger.info(PMLanguageManager.getText("PackageManager.failToReadFile",
+					new String[] { action_file }));
 		}
 		return ok;
 	}
@@ -736,12 +743,12 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 	 * @param sys_package
 	 * @return directory
 	 */
-	public File getPackage(String packName, boolean sys_package) {
+	public File getPackage(String packName, String user) {
 		File packDir = null;
-		if (sys_package) {
+		if (user == null || user.isEmpty()) {
 			packDir = new File(WorkflowPrefManager.pathSysPackagePref.get());
 		} else {
-			packDir = new File(WorkflowPrefManager.pathUserPackagePref.get());
+			packDir = new File(WorkflowPrefManager.getPathUserPackagePref(user));
 		}
 		return new File(packDir, packName);
 	}
@@ -772,14 +779,14 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 	 * @param sys_package
 	 * @return directory
 	 */
-	public File getHelpDir(boolean sys_package) {
+	public File getHelpDir(String user) {
 		String tomcatpath = WorkflowPrefManager
 				.getSysProperty(WorkflowPrefManager.sys_tomcat_path);
 		String installPackage = WorkflowPrefManager.getSysProperty(
 				WorkflowPrefManager.sys_install_package, tomcatpath);
-		return sys_package ? new File(installPackage
-				+ WorkflowPrefManager.pathSysHelpPref.get()) : new File(
-				installPackage + WorkflowPrefManager.pathUserHelpPref.get());
+		return user == null || user.isEmpty() ? new File(installPackage
+				+ WorkflowPrefManager.getPathSysHelpPref()) : new File(
+						installPackage +WorkflowPrefManager.getPathUserHelpPref(user));
 	}
 
 	/**
@@ -788,14 +795,14 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 	 * @param sys_package
 	 * @return directory
 	 */
-	public File getImageDir(boolean sys_package) {
+	public File getImageDir(String user) {
 		String tomcatpath = WorkflowPrefManager
 				.getSysProperty(WorkflowPrefManager.sys_tomcat_path);
 		String installPackage = WorkflowPrefManager.getSysProperty(
 				WorkflowPrefManager.sys_install_package, tomcatpath);
-		return sys_package ? new File(installPackage
-				+ WorkflowPrefManager.pathSysImagePref.get()) : new File(
-				installPackage + WorkflowPrefManager.pathUserImagePref.get());
+		return user == null || user.isEmpty() ? new File(installPackage
+				+ WorkflowPrefManager.getPathsysimagepref()) : new File(
+						installPackage + WorkflowPrefManager.getPathUserImagePref(user));
 	}
 
 	/**
@@ -806,9 +813,9 @@ public class PackageManager extends UnicastRemoteObject implements PckManager {
 	 *            is it system package
 	 * @return directory
 	 */
-	public File getLibDir(boolean sys_package) {
-		return sys_package ? new File(WorkflowPrefManager.sysPackageLibPath)
-				: new File(WorkflowPrefManager.userPackageLibPath);
+	public File getLibDir(String user ) {
+		return user == null || user.isEmpty() ? new File(WorkflowPrefManager.getSysPackageLibPath())
+				: new File(WorkflowPrefManager.getUserPackageLibPath(user));
 	}
 
 	/**

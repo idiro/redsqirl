@@ -84,11 +84,11 @@ public class SelectedEditor extends BaseBean implements Serializable{
 	 * @param rowEdit
 	 */
 	public SelectedEditor(TableInteraction tableInter,
-			String columnEdit, int rowEdit) {
+			String columnEditTitle, int rowEdit) {
 		super();
 		logger.info("build selected editor in table inter...");
 		this.tableInter = tableInter;
-		this.columnEdit = columnEdit;
+		this.columnEdit = tableInter.getTableGrid().getColumnIds().get(tableInter.getTableGrid().getTitles().indexOf(columnEditTitle));
 		this.rowEdit = rowEdit;
 		this.edit = tableInter.getTableEditors().get(columnEdit);
 		this.value = tableInter.getTableGrid().getValueRow(rowEdit,columnEdit);

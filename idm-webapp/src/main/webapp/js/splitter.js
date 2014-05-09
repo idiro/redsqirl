@@ -96,7 +96,12 @@ jQuery.fn.splitter = function(args){
 			}
 			panes.css("-webkit-user-select", "text").find("iframe").removeClass(opts.iframeClass);
 			jQuery(document)
-				.unbind("mousemove"+opts.eventNamespace+" mouseup"+opts.eventNamespace);			
+				.unbind("mousemove"+opts.eventNamespace+" mouseup"+opts.eventNamespace);
+			
+			
+			canvasResizeSplitter();
+			
+			
 		}
 		function resplit(pos) {
 			bar._DA = bar[0][opts.pxSplit];		// bar size may change during dock
@@ -121,9 +126,9 @@ jQuery.fn.splitter = function(args){
 			A.css(opts.origin, 0).css(opts.split, pos).css(opts.fixed,  splitter._DF);
 			B.css(opts.origin, pos+bar._DA)
 				.css(opts.split, splitter._DA-bar._DA-pos).css(opts.fixed,  splitter._DF);
-				
-		    
-            canvasResizeSplitter();
+			
+            //canvasResizeSplitter();
+			
 			// IE fires resize for us; all others pay cash
             if ( !resize_auto_fired() ) panes.triggerHandler("resize");
 		}

@@ -1,7 +1,16 @@
 html,body {
     font-family: Verdana, Geneva, sans-serif;
-    height: 99.5% !important;
-    width: 99.5% !important;
+    height: 100% !important;
+    width: 100% !important;
+    margin: 0px;
+    padding: 0px;
+    overflow:hidden;
+}
+
+.maxContent{
+    width: 99.5%;
+    height: 99.5%;
+    overflow:auto;
 }
 
 image {
@@ -435,6 +444,7 @@ div#body{
 
 /* Package css */
 .order-table{   
+    margin-left:25px;
     border-collapse:collapse;
 }
 
@@ -600,6 +610,14 @@ table.secondtable td{
 	padding: 0px 0px 0px 0px;
 }
 
+.rich-menu-item a:hover{
+    background-color:  #c62127;
+    border: none;
+    color:  #FFFFFF;
+    padding: 0px 0px 0px 0px;
+}
+
+
 .rich-menu-list-bg{
 	border-radius:7px;
 	color:#dadbdd;
@@ -643,6 +661,7 @@ table.secondtable td{
 
 /*signout button*/
 .signoutButton{
+       font-weight:bold;
        background-image:url('../image/icons/button-red.png');
        background-size: 100% 100%;
        width:96px;
@@ -672,6 +691,8 @@ table.secondtable td{
 /*gradient background on canvas*/
 #body{
     background: linear-gradient(white,#dadbdd, #dadbdd);
+    margin: 0px;
+    padding: 0px;
 }
 
 /*transparent background on tabs*/
@@ -712,6 +733,8 @@ table.secondtable td{
 	border:2px solid #a2a3a5;
 	border-radius:7px;
 	padding:5px 5px 5px 5px;
+	margin-right:5px;
+	margin-left:5px;
 }
 
 /*tabs*/
@@ -1073,6 +1096,10 @@ height: 100% !important;
 
 .tableInteractionInput{
 	width:95% !important;
+}
+
+.tableInteractionTextEditor{
+	width:80% !important;
 }
 
 

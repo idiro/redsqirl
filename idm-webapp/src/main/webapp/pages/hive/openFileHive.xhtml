@@ -1,4 +1,4 @@
-<h:panelGrid xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:a4j="http://richfaces.org/a4j"
 	xmlns:rich="http://richfaces.org/rich"
@@ -9,9 +9,13 @@
 
 	<h:outputText value="Content:" />
 	
-	<h:outputText value="#{hiveBean.fileContent}" escape="false"/>
 	<br />
+	<h:inputTextarea value="#{hiveBean.fileContent}" rows="500" cols="500"
+		style="border:1px solid;width:550px;height:278px;" disabled="true" />
+	
+	<br />
+	
 	
 	<h:commandButton value="#{messages.button_ok}" type="button" onclick="#{rich:component('hiveOpenFileModalPanel')}.hide();" />
 
-</h:panelGrid>
+</ui:composition>

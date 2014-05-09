@@ -1,28 +1,32 @@
 package idm.auth;
 
+import idiro.workflow.server.WorkflowPrefManager;
+import idiro.workflow.server.WorkflowProcessesManager;
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idm.BaseBean;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
 import ch.ethz.ssh2.Connection;
 
+import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
-import com.jcraft.jsch.UserInfo;
 
 /**
  * UserInfoBean
@@ -36,215 +40,313 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 	private static Logger logger = Logger.getLogger(UserInfoBean.class);
 
+
+	/**
+	 * RMI server used.
+	 */
+	private static final String hostname = "localhost";
+
+	/**
+	 * RMI port used.
+	 */
+	private static final int port = 2001;
+
+
+
+	/**
+	 * User name used for this session.
+	 */
 	private String userName;
-	private String password;
+
+	/**
+	 * The password kept until the SSH session is created.
+	 */
+	private transient String password;
+
+
+
+	/**
+	 * An error message.
+	 */
 	private String msnError;
-	private String msnLoginTwice;
-	private boolean loginChek;
-	private String twoLoginChek;
 
-	private static ServerProcess th;
-	private static int port = 2001;
+	/**
+	 * Not null if the user is already signed in on this machine 
+	 */
+	private String alreadySignedIn;
 
+	/**
+	 * No null if the user is already signed in on another machine
+	 */
+	private String alreadySignedInOtherMachine;
+
+	/**
+	 * Force signing in even if the user is already connected. 'T' or 'F'
+	 */
+	private String forceSignIn = "F";
+
+
+
+	/**
+	 * Current value of the progress bar.
+	 */
+	private long valueProgressBar;
+
+	/**
+	 * True if the progressBar is enabled.
+	 */
+	private boolean progressBarEnabled;
+
+	private boolean
+	/**
+	 * True if the log in is canceled
+	 */
+	cancel = false, 
+	/**
+	 * True if the class is busy loading RMI objects (vs load rendered object).
+	 */
+	buildBackend = false;
+
+
+
+	/**
+	 * The server process launched for this user.
+	 */
+	private transient ServerProcess th;
+
+	/**
+	 * RMI registry.
+	 */
 	private static Registry registry;
 
-	private static Connection conn;
+	/**
+	 * SSH session kept from the moment a user log in.
+	 */
+	private transient Session sessionSSH;
 
-	private long currentValue;
-	private boolean enabled;
 
-	public UserInfoBean() {
-
+	/**
+	 * Init the progress bar.
+	 */
+	public void startProgressBar() {
+		logger.info("startProcess");
+		setProgressBarEnabled(true);
+		setValueProgressBar(Long.valueOf(0));
 	}
 
 	/**
-	 * Login
+	 * login
 	 * 
-	 * Method to validate permission of the user. Receives as input the login
-	 * and password of the user.
+	 * Method to validate permission of the user and call init.
 	 * 
 	 * @return String - success or failure
 	 * @author Igor.Souza
 	 */
 	public String login() {
-
-		logger.info("login: " + userName);
-
-		FacesContext fCtx = FacesContext.getCurrentInstance();
-		HttpSession session = (HttpSession) fCtx.getExternalContext()
-				.getSession(false);
-		ServletContext sc = (ServletContext) fCtx.getExternalContext()
-				.getContext();
-		Map<String, HttpSession> sessionLoginMap = (Map<String, HttpSession>) sc
-				.getAttribute("sessionLoginMap");
+		logger.info("login");
+		cancel = false;
+		buildBackend = true;
+		setAlreadySignedInOtherMachine(null);
+		setAlreadySignedIn(null);
 
 		try {
-
-			String hostname = "localhost";
-
-			conn = new Connection(hostname);
+			Connection conn = new Connection(hostname);
 			conn.connect();
 
 			boolean isAuthenticated = conn.authenticateWithPassword(userName,
 					password);
 
-			if (isAuthenticated == false) {
+			if (!isAuthenticated) {
 				setMsnError("error");
-				setTwoLoginChek(null);
+				setAlreadySignedInOtherMachine(null);
 
 				logger.info("Authentication Error");
 
 				return "failure";
 			}
-
-			HttpSession sessionLogin = sessionLoginMap.get(userName);
-
-			if (sessionLogin != null
-					&& !sessionLogin.getId().equals(session.getId())) {
-				sessionLoginMap.remove(userName);
-				setTwoLoginChek(null);
-				sessionLogin.invalidate();
-
-				logger.info("Change Session");
-
-			}
-
-			session.setAttribute("username", userName);
-			sessionLoginMap.put(userName, session);
-			sc.setAttribute("sessionLoginMap", sessionLoginMap);
-
-			session.setAttribute("startInit", "s");
-			
-			logger.info("Authentication Success");
-
-			setConn(conn);
-
-			logger.info("update progressbar");
-			setCurrentValue(3);
-
-			// error with rmi connection
-			if (!createRegistry(userName, password)) {
-				getBundleMessage("error.rmi.connection");
-				invalidateSession();
-				return "failure";
-			}
-			
-			setMsnError(null);
-			return "success";
-
 		} catch (IOException e) {
-
 			logger.error(e.getMessage());
 			invalidateSession();
 			setMsnError("error");
 			return "failure";
 		}
 
+		FacesContext fCtx = FacesContext.getCurrentInstance();
+		ServletContext sc = (ServletContext) fCtx.getExternalContext()
+				.getContext();
+		HttpSession session = (HttpSession) fCtx.getExternalContext()
+				.getSession(false);
+		@SuppressWarnings("unchecked")
+		Map<String, HttpSession> sessionLoginMap = (Map<String, HttpSession>) sc
+		.getAttribute("sessionLoginMap");
+
+		HttpSession sessionLogin = sessionLoginMap.get(userName);
+		if (sessionLogin != null) {
+
+			logger.info("validateSecondLogin sessionLogin");
+
+			if (sessionLogin.getId().equals(session.getId())) {
+				setAlreadySignedInOtherMachine(null);
+				setAlreadySignedIn("twice");
+
+				logger.info("Already Authenticated twice");
+				return "failure";
+			}else if(forceSignIn.equalsIgnoreCase("T")){
+				//Invalidate the session
+				invalidateSession(sessionLogin);
+			}else{
+				setAlreadySignedInOtherMachine("two");
+				logger.info("Already Authenticated two");
+				return "failure";
+			}
+		}
+		logger.info("update progressbar");
+		setValueProgressBar(1);
+
+		logger.info("validateSecondLogin end");
+
+		return init();
 	}
 
-	private void invalidateSessionReLogin() {
+	/**
+	 * Init
+	 * 
+	 * Method to initialize the user rmi server and call loginWithSessionSSH.
+	 * 
+	 * @return String - success or failure
+	 * @author Igor.Souza
+	 */
+	private String init() {
+		logger.info("init: " + userName);
+		try {
+			JSch shell = new JSch();
+			sessionSSH = shell.getSession(userName, "localhost");
+			sessionSSH.setPassword(password);
+			Properties config = new Properties();
+			config.put("StrictHostKeyChecking", "no");
+			sessionSSH.setConfig(config);
+			sessionSSH.connect();
+			password = null;
+		} catch (Exception e) {
+			password = null;
+			logger.info("Fail to connect through SSH to " + userName
+					+ "@localhost");
+			setMsnError("Fail to connect through SSH to " + userName
+					+ "@localhost");
+			return "failure";
+		}
+
+		return loginWithSessionSSH();
+
+	}
+
+	/**
+	 * Method that will update the Java objects from the RMI registry.
+	 * @return
+	 */
+	public String loginWithSessionSSH() {
+		buildBackend = true;
+
+		if (sessionSSH == null) {
+			logger.error("SSH session null");
+			return "failure";
+		}
 
 		FacesContext fCtx = FacesContext.getCurrentInstance();
 		HttpSession session = (HttpSession) fCtx.getExternalContext()
 				.getSession(false);
-
 		ServletContext sc = (ServletContext) fCtx.getExternalContext()
 				.getContext();
-		sc.setAttribute("userName", userName);
 
-		logger.info("before invalidade session");
-		session.invalidate();
-		logger.info("after invalidade session");
-	}
+		//Make sure that tomcat reininitialize the session object after this function.
+		fCtx.getExternalContext().getSessionMap().remove("#{canvasBean}");
+		fCtx.getExternalContext().getSessionMap().remove("#{hdfsBean}");
+		fCtx.getExternalContext().getSessionMap().remove("#{browserHdfsBean}");
+		fCtx.getExternalContext().getSessionMap().remove("#{hiveBean}");
+		fCtx.getExternalContext().getSessionMap().remove("#{sshBean}");
+		fCtx.getExternalContext().getSessionMap().remove("#{canvasModalBean}");
+		fCtx.getExternalContext().getSessionMap().remove("#{configureTabsBean}");
+		fCtx.getExternalContext().getSessionMap().remove("#{processManagerBean}");
+		fCtx.getExternalContext().getSessionMap().remove("#{packageMngBean}");
+		fCtx.getExternalContext().getSessionMap().remove("#{error}");
+		fCtx.getExternalContext().getSessionMap().remove("#{helpBean}");
+		fCtx.getExternalContext().getSessionMap().remove("#{settingsBean}");
 
-	public String signOutReLogin() {
-
-		logger.info("signOutReLogin");
-
-		// invalidateSessionReLogin();
-
-		return "reStart";
-	}
-
-	public String reStart() {
-
-		logger.info("reStart");
-
-		return "success";
-	}
-
-	public String reLogin() {
-
-		FacesContext fCtx = FacesContext.getCurrentInstance();
-
-		ServletContext scOld = (ServletContext) fCtx.getExternalContext()
-				.getContext();
-
-		if (scOld.getAttribute("UserInfo") != null && password == null) {
-			password = ((UserInfo) scOld.getAttribute("UserInfo"))
-					.getPassword();
-		}
-
-		if (scOld.getAttribute("userName") != null && userName == null) {
-			userName = (String) scOld.getAttribute("userName");
-		}
-
-		invalidateSessionReLogin();
-
-		HttpSession session = (HttpSession) fCtx.getExternalContext()
-				.getSession(true);
-		ServletContext sc = (ServletContext) fCtx.getExternalContext()
-				.getContext();
+		@SuppressWarnings("unchecked")
 		Map<String, HttpSession> sessionLoginMap = (Map<String, HttpSession>) sc
-				.getAttribute("sessionLoginMap");
-
-		logger.info("reLogin: " + userName);
-
-		String hostname = "localhost";
-
-		HttpSession sessionLogin = sessionLoginMap.get(userName);
-
-		if (sessionLogin != null
-				&& !sessionLogin.getId().equals(session.getId())) {
-			sessionLoginMap.remove(userName);
-			setTwoLoginChek(null);
-			sessionLogin.invalidate();
-
-			logger.info("Change Session");
-
-		}
+		.getAttribute("sessionLoginMap");
 
 		session.setAttribute("username", userName);
 		sessionLoginMap.put(userName, session);
 		sc.setAttribute("sessionLoginMap", sessionLoginMap);
 
+		session.setAttribute("startInit", "s");
 		logger.info("Authentication Success");
 
+		logger.info("update progressbar");
+		setValueProgressBar(3);
+
 		// error with rmi connection
-		if (!createRegistry(userName, password)) {
+		boolean succ = createRegistry();
+
+		if (cancel) {
+			if(th != null){
+				try {
+					String pid = new WorkflowProcessesManager().getPid();
+					logger.info("Kill the process " + pid);
+					th.kill(pid);
+				} catch (IOException e) {
+					logger.info("Fail killing job after canceling it");
+				}
+			}
+			invalidateSession();
+			buildBackend = false;
+			return null;
+		}
+
+		if (!succ) {
 			getBundleMessage("error.rmi.connection");
 			invalidateSession();
+			buildBackend = false;
 			return "failure";
 		}
 
-		HttpServletRequest request = (HttpServletRequest) FacesContext
-				.getCurrentInstance().getExternalContext().getRequest();
-		request.setAttribute("msnReLogin", "msnReLogin");
-
 		setMsnError(null);
-		return "reStart";
+		buildBackend = false;
+
+		/*
+		//Init some object here...
+		HdfsBean hdfsBean = new HdfsBean();
+		hdfsBean.openCanvasScreen();
+
+		HdfsBrowserBean hdfsBrowserBean = new HdfsBrowserBean();
+		hdfsBrowserBean.openCanvasScreen();
+
+		HiveBean hiveBean = new HiveBean();
+		hiveBean.openCanvasScreen();
+
+		SshBean sshBean = new SshBean();
+		sshBean.openCanvasScreen();
+
+		fCtx.getExternalContext().getSessionMap().put("#{hdfsBean}", hdfsBean);
+		fCtx.getExternalContext().getSessionMap().put("#{browserHdfsBean}", hdfsBrowserBean);
+		fCtx.getExternalContext().getSessionMap().put("#{hiveBean}", hiveBean);
+		fCtx.getExternalContext().getSessionMap().put("#{sshBean}", sshBean);
+		 */
+
+		return "success";
 	}
 
 	/**
 	 * createRegistry
 	 * 
 	 * Method to create the connection to the server rmi. Retrieve objects and
-	 * places them in the context of the application
+	 * places them in the context of the application.
 	 * 
 	 * @return
 	 * @author Igor.Souza
 	 */
-	public boolean createRegistry(String user,String password){
+	public boolean createRegistry() {
 
 		logger.info("createRegistry");
 
@@ -254,98 +356,104 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		beans.add("hive");
 		beans.add("oozie");
 		beans.add("hdfs");
-		beans.add("pckmng");
+		beans.add("prefs");
 		beans.add("hdfsbrowser");
 
 		FacesContext fCtx = FacesContext.getCurrentInstance();
-		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
-		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
-		
-		try{
-//			for (String bean : beans){
-//				if(session.getAttribute(bean)!=null){
-//					session.removeAttribute(bean);
-//				}
-//			}
-//			
-//			if(session.getAttribute("serverThread")!=null){
-//				session.removeAttribute("serverThread");
-//			}
-//			if(sc.getAttribute("registry")!=null){
-//				sc.removeAttribute("registry");
-//			}
-			
-			th = new ServerProcess(port);
-			Session s = th.run(user,password);
-			
-			if(s != null){
-				sc.setAttribute("UserInfo", s.getUserInfo());
+		ServletContext sc = (ServletContext) fCtx.getExternalContext()
+				.getContext();
+		HttpSession session = (HttpSession) fCtx.getExternalContext()
+				.getSession(false);
+
+
+		try {
+			registry = LocateRegistry.getRegistry(port);
+
+			Iterator<String> beanIt = beans.iterator();
+			while(beanIt.hasNext()){
+				String bean = beanIt.next();
+				try {
+					registry.unbind(userName+"@"+beanIt.next());
+				} catch (NotBoundException e) {
+					logger.warn("Object "+bean+" unable to unbind: "+e.getMessage());
+				} catch(Exception e){
+					logger.warn("Unexpected exception");
+					e.printStackTrace();
+				}
 			}
 
-			registry = LocateRegistry.getRegistry(port);
-			
+			// Init workflow preference
+			WorkflowPrefManager.getInstance();
+
+			// Create home folder for this user if it does not exist yet
+			WorkflowPrefManager.createUserHome(userName);
+			if (th != null) {
+				String pid = new WorkflowProcessesManager().getPid();
+				logger.info("Kill the process " + pid);
+				th.kill(pid);
+			}
+
+			th = new ServerProcess(port);
+			th.run(userName, sessionSSH);
+
+			if (sessionSSH != null) {
+				sc.setAttribute("UserInfo", sessionSSH.getUserInfo());
+			}
+
+
 			logger.info("update progressbar");
-			setCurrentValue(4);
+			setValueProgressBar(5);
 
 			session.setAttribute("serverThread", th);
 			sc.setAttribute("registry", registry);
-
-			for (String beanName : beans){
-
+			Iterator<String> itBean = beans.iterator();
+			while (itBean.hasNext() && !cancel) {
+				String beanName = itBean.next();
 				logger.info("createRegistry - " + beanName);
-				
 
-				if(beanName.equalsIgnoreCase("wfm")){
+				if (beanName.equalsIgnoreCase("wfm")) {
 					boolean error = true;
 					int tryNumb = 0;
-					while(error){
+					while (error && !cancel) {
 						++tryNumb;
-						try{
-							DataFlowInterface dfi = (DataFlowInterface)registry.lookup(user+"@"+beanName);
+						try {
+							DataFlowInterface dfi = (DataFlowInterface) registry
+									.lookup(userName + "@" + beanName);
 							dfi.addWorkflow("test");
 							error = false;
 							dfi.removeWorkflow("test");
 							logger.info("workflow is running ");
-						}catch(Exception e ){
+						} catch (Exception e) {
 							logger.info("workflow not running ");
 							Thread.sleep(500);
-							if(tryNumb > 3*60*2){
+							if (tryNumb > 1 * 60 * 2) {
 								throw e;
 							}
-							if( getCurrentValue() < 45 ){
+							if (getValueProgressBar() < 45) {
 								logger.info("update progressbar");
-								setCurrentValue(getCurrentValue()+1);
+								setValueProgressBar(getValueProgressBar() + 1);
 							}
 						}
 					}
 					logger.info("update progressbar");
-					setCurrentValue(45);
+					setValueProgressBar(46);
 				}
-				
-//				if(beanName.equalsIgnoreCase("oozie")){
-//					try{
-//						JobManager jm = (JobManager) registry.lookup(user+"@"+beanName);
-//						logger.info(jm.getUrl());
-//						
-//					}catch(Exception e){
-//						logger.error("trying to get oozie url : "+ e.getMessage());
-//					}
-//				}
-				
+
 				boolean error = true;
 				int cont = 0;
 
-				while(error){
+				while (error && !cancel) {
 					cont++;
-					try{
-						Remote remoteObject = registry.lookup(user+"@"+beanName);
+					try {
+						Remote remoteObject = registry.lookup(userName + "@"
+								+ beanName);
 						error = false;
 						session.setAttribute(beanName, remoteObject);
-					}catch(Exception e){
+					} catch (Exception e) {
 						Thread.sleep(500);
 						logger.error(e.getMessage());
-						//Time out after 3 minutes
-						if(cont > 3*60*2){
+						// Time out after 3 minutes
+						if (cont > 1 * 60 * 2) {
 							throw e;
 						}
 					}
@@ -354,56 +462,12 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 			return true;
 
-		}catch(Exception e){
-			logger.error("Fail to initialise registry, Exception: "+e.getMessage());
+		} catch (Exception e) {
+			logger.error("Fail to initialise registry, Exception: "
+					+ e.getMessage());
 			return false;
 		}
 
-	}
-
-	/**
-	 * validateSecondLogin
-	 * 
-	 * Method to validate permission of the user.
-	 * 
-	 * @return String - success or failure
-	 * @author Igor.Souza
-	 */
-	public String validateSecondLogin() {
-		
-		logger.info("validateSecondLogin");
-
-		FacesContext fCtx = FacesContext.getCurrentInstance();
-		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
-		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
-		Map<String, HttpSession> sessionLoginMap = (Map<String, HttpSession>) sc.getAttribute("sessionLoginMap");
-
-		HttpSession sessionLogin = sessionLoginMap.get(userName);
-		if (sessionLogin != null) {
-			
-			logger.info("validateSecondLogin sessionLogin");
-
-			if (sessionLogin.getId().equals(session.getId())) {
-				setTwoLoginChek(null);
-				setMsnLoginTwice("twice");
-
-				logger.info("Already Authenticated twice");
-				return "failure";
-			}
-
-			setTwoLoginChek("two");
-			logger.info("Already Authenticated two");
-			return "failure";
-		}
-		logger.info("update progressbar");
-		setCurrentValue(1);
-
-		logger.info("validateSecondLogin end");
-		
-		setTwoLoginChek(null);
-		String aux = login();
-
-		return aux;
 	}
 
 	/**
@@ -416,36 +480,73 @@ public class UserInfoBean extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 */
 	public String signOut() {
-
 		logger.info("signOut");
-
 		invalidateSession();
-
 		return "signout";
 	}
 
-	private void invalidateSession() {
+	/**
+	 * Call for a restart the application without changing session (no password required).
+	 * @return
+	 */
+	public String reStart() {
+		logger.info("reStart");
+		return "reStart";
+	}
 
+	/**
+	 * Call for canceling the login.
+	 * @return
+	 */
+	public String cancelLogin() {
+		logger.info("cancelLogin");
+		cancel = true;
+
+		if (!buildBackend) {
+			if (th != null) {
+				try {
+					String pid = new WorkflowProcessesManager().getPid();
+					logger.info("Kill the process " + pid);
+					th.kill(pid);
+				} catch (IOException e) {
+					logger.info("Fail killing job after canceling it");
+				}
+			}
+			invalidateSession();
+		}
+
+		return "cancelLogin";
+	}
+
+	/**
+	 * Method that will clean up the session objects once the user has finished with it.
+	 */
+	public void invalidateSession() {
 		FacesContext fCtx = FacesContext.getCurrentInstance();
 		HttpSession session = (HttpSession) fCtx.getExternalContext()
 				.getSession(false);
-
-		logger.info("before invalidating session");
-		session.invalidate();
-		logger.info("after invalidating session");
+		invalidateSession(session);
 	}
 
-	public String startProcess() {
+	public void sshDisconnect(){
+		logger.info("ssh disconnect");
+		try {
+			sessionSSH.disconnect();
+		} catch (Exception e) {
+			logger.info("Fail to disconnect from SSH session");
+		}
+		sessionSSH = null;
+	}
 
-		logger.info("startProcess");
-		
-		setEnabled(true);
-		logger.info("update progressbar");
-		setCurrentValue(Long.valueOf(0));
+	private void invalidateSession(HttpSession sessionOtherMachine){
+		logger.info("before invalidating session");
+		try {
+			sessionOtherMachine.invalidate();
+		} catch (Exception e) {
+			logger.info("Fail invalidate session: assume none created");
+		}
 
-		logger.info("startProcess end");
-		
-		return null;
+		logger.info("after invalidating session");
 	}
 
 	/**
@@ -481,52 +582,51 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		this.msnError = msnError;
 	}
 
-	public boolean isLoginChek() {
-		return loginChek;
+	public String getAlreadySignedInOtherMachine() {
+		return alreadySignedInOtherMachine;
 	}
 
-	public void setLoginChek(boolean loginChek) {
-		this.loginChek = loginChek;
+	public void setAlreadySignedInOtherMachine(String twoLoginChek) {
+		this.alreadySignedInOtherMachine = twoLoginChek;
 	}
 
-	public String getTwoLoginChek() {
-		return twoLoginChek;
+	public String getAlreadySignedIn() {
+		return alreadySignedIn;
 	}
 
-	public void setTwoLoginChek(String twoLoginChek) {
-		this.twoLoginChek = twoLoginChek;
+	public void setAlreadySignedIn(String msnLoginTwice) {
+		this.alreadySignedIn = msnLoginTwice;
 	}
 
-	public String getMsnLoginTwice() {
-		return msnLoginTwice;
+	public long getValueProgressBar() {
+		return valueProgressBar;
 	}
 
-	public void setMsnLoginTwice(String msnLoginTwice) {
-		this.msnLoginTwice = msnLoginTwice;
+	public void setValueProgressBar(long currentValue) {
+		this.valueProgressBar = currentValue;
 	}
 
-	public static Connection getConn() {
-		return conn;
+	public boolean isProgressBarEnabled() {
+		return progressBarEnabled;
 	}
 
-	public static void setConn(Connection conn) {
-		UserInfoBean.conn = conn;
+	public void setProgressBarEnabled(boolean enabled) {
+		this.progressBarEnabled = enabled;
 	}
 
-	public long getCurrentValue() {
-		return currentValue;
+	/**
+	 * @return the forceSignIn
+	 */
+	public String getForceSignIn() {
+		return forceSignIn;
 	}
 
-	public boolean isEnabled() {
-		return enabled;
-	}
-
-	public void setCurrentValue(long currentValue) {
-		this.currentValue = currentValue;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
+	/**
+	 * @param forceSignIn
+	 *            the forceSignIn to set
+	 */
+	public void setForceSignIn(String forceSignIn) {
+		this.forceSignIn = forceSignIn;
 	}
 
 }

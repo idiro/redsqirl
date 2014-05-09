@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 /**
@@ -19,11 +18,6 @@ public class BaseCommand {
 	 */
 	private static Logger logger = Logger.getLogger(BaseCommand.class);
 
-	public static void main(String[] args) {
-		Logger.getRootLogger().setLevel(Level.OFF);
-		System.out.println(getBaseCommand(Integer.valueOf(args[0])));
-	}
-
 	/**
 	 * 
 	 * Generate a base command that compiles a classpath containing every class
@@ -32,12 +26,14 @@ public class BaseCommand {
 	 * @return String Base command to launch
 	 * 
 	 */
-	public static String getBaseCommand(int port) {
+	public static String getBaseCommand(String user, int port) {
 
 		String command = null;
 		String classpath = null;
 
 		try {
+			logger.info(WorkflowPrefManager.pathSysCfgPref.get());
+			logger.info(WorkflowPrefManager.getSysProperty("workflow_lib_path"));
 			File file = new File(
 					WorkflowPrefManager.getSysProperty("workflow_lib_path"));
 			// Reading directory contents
@@ -50,8 +46,8 @@ public class BaseCommand {
 			}
 			String p = path.substring(0, path.length() - 1);
 			String packagePath = getPackageClasspath(
-					WorkflowPrefManager.userPackageLibPath,
-					WorkflowPrefManager.sysPackageLibPath);
+					WorkflowPrefManager.getUserPackageLibPath(user),
+					WorkflowPrefManager.getSysPackageLibPath());
 
 			classpath = " -classpath " + p + packagePath;
 		} catch (Exception e) {

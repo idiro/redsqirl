@@ -115,14 +115,14 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	 */
 	public String getHelp() throws RemoteException {
 		String fname = getName().toLowerCase() + ".html";
-		String relativePath = WorkflowPrefManager.pathUserHelpPref.get() + "/"
+		String relativePath = WorkflowPrefManager.getPathuserhelppref() + "/"
 				+ fname;
 		File f = new File(WorkflowPrefManager.getSysProperty(
 				WorkflowPrefManager.sys_install_package, WorkflowPrefManager
 						.getSysProperty(WorkflowPrefManager.sys_tomcat_path))
 				+ relativePath);
 		if (!f.exists() || !isUserAllowInstall()) {
-			relativePath = WorkflowPrefManager.pathSysHelpPref.get() + "/"
+			relativePath = WorkflowPrefManager.getPathSysHelpPref() + "/"
 					+ fname;
 			f = new File(
 					WorkflowPrefManager
@@ -147,14 +147,14 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	 */
 	public String getImage() throws RemoteException {
 		String fname = getName().toLowerCase() + ".gif";
-		String relativePath = WorkflowPrefManager.pathUserImagePref.get() + "/"
+		String relativePath = WorkflowPrefManager.getPathuserimagepref() + "/"
 				+ fname;
 		File f = new File(WorkflowPrefManager.getSysProperty(
 				WorkflowPrefManager.sys_install_package, WorkflowPrefManager
 						.getSysProperty(WorkflowPrefManager.sys_tomcat_path))
 				+ relativePath);
 		if (!f.exists() || !isUserAllowInstall()) {
-			relativePath = WorkflowPrefManager.pathSysImagePref.get() + "/"
+			relativePath = WorkflowPrefManager.getPathsysimagepref() + "/"
 					+ fname;
 			f = new File(
 					WorkflowPrefManager

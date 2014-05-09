@@ -111,7 +111,7 @@ public abstract class AbstractSource extends DataflowAction {
 
 		dataType.setDisplayRadioButton(true);
 		List<String> posValues = new LinkedList<String>();
-		posValues.addAll(WorkflowInterface.getInstance().getDatastores().keySet());
+		posValues.addAll(WorkflowInterface.getInstance().getBrowsersName());
 		dataType.setPossibleValues(posValues);
 	}
 	

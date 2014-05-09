@@ -38,7 +38,7 @@
 				<a4j:actionparam name="nameFile"/>
 			</a4j:jsFunction>
 			
-			<a4j:jsFunction name="updateTableHive" action="#{hiveBean.selectFile}" reRender="hivefs,hivepath">
+			<a4j:jsFunction name="updateTableHive" action="#{hiveBean.selectFile}" reRender="hivefs,hivepath" oncomplete="resizeTables();">
 				<a4j:actionparam name="nameFile"/>
 			</a4j:jsFunction>
 
@@ -48,7 +48,7 @@
 			<h:inputText id="hivepath" label="Path" styleClass="mainPageTextField" value="#{hiveBean.path}" maxlength="255" style="width:395px; margin-left:5px;" 
 				onkeypress="return enableEnterKey(event, 'hivefsPathBtn');"/>
 			
-			<a4j:commandLink id="hivefsPathBtn" action="#{hiveBean.changePath}" reRender="hivefs" style="color:#FFFFFF" >
+			<a4j:commandLink id="hivefsPathBtn" action="#{hiveBean.changePath}" reRender="hivefs" style="color:#FFFFFF" oncomplete="resizeTables();">
 				<h:graphicImage value="../image/icons/button-search.gif" title="#{messages.filesystem_change_path}" styleClass="refreshButton"/>
 			</a4j:commandLink>
 
@@ -67,16 +67,15 @@
 					<h:graphicImage id="hivebtDelete" value="../image/icons/button-delete2.gif" title="#{messages.HiveInterface_delete_help}" styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 	
-				<a4j:commandLink action="#{hiveBean.goPrevious}"
-					reRender="hivepath,hivefs">
+				<a4j:commandLink action="#{hiveBean.goPrevious}" reRender="hivepath,hivefs" oncomplete="resizeTables();" >
 					<h:graphicImage id="hivebtUndo" value="../image/icons/button-previous.gif" title="#{messages.HiveInterface_previous_help}" styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 	
-				<a4j:commandLink action="#{hiveBean.goNext}" reRender="hivepath,hivefs">
+				<a4j:commandLink action="#{hiveBean.goNext}" reRender="hivepath,hivefs" oncomplete="resizeTables();" >
 					<h:graphicImage id="hivebtRedo" value="../image/icons/button-next.gif" title="#{messages.HiveInterface_next_help}" styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 				
-				<a4j:commandLink action="#{hiveBean.goUp}" reRender="hivepath,hivefs">
+				<a4j:commandLink action="#{hiveBean.goUp}" reRender="hivepath,hivefs" oncomplete="resizeTables();" >
 					<h:graphicImage id="hivegoup" value="../image/icons/button_up.jpg" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 			</div>
@@ -104,7 +103,10 @@
 						<h:outputText value="" />
 					</f:facet>
 					<a4j:commandLink action="#{hiveBean.editFileBefore}" oncomplete="#{rich:component('hiveeditModalPanel')}.show()">
-						<h:graphicImage value="../image/icons/button-property.gif" title="#{messages.HiveInterface_properties_help}"/>
+						<h:graphicImage value="../image/icons/button-property.gif" title="#{messages.HiveInterface_properties_help}"
+						rendered="#{hiveBean.allProps[indexTable]['type'] == 'directory'}" styleClass="fileSystemIcon" />
+						<h:graphicImage value="../image/icons/button-file-icon.png" title="#{messages.HiveInterface_properties_help}"
+						rendered="#{hiveBean.allProps[indexTable]['type'] == 'file'}" styleClass="fileSystemIcon" />
 						<f:param name="indexFileEdit" value="#{indexTable}" />
 					</a4j:commandLink>
 				</rich:column>
@@ -114,7 +116,10 @@
 					<f:facet name="header">
 						<h:outputText value="#{messages.label_name}" />
 					</f:facet>
-					<a4j:commandLink value="#{hiveBean.allProps[indexTable]['name']}" action="#{hiveBean.verifyIfIsFile}"
+					<a4j:commandLink 
+					    value="#{hiveBean.allProps[indexTable]['name']}"
+					    title="#{hiveBean.allProps[indexTable]['name']}" 
+					    action="#{hiveBean.verifyIfIsFile}"
      					oncomplete="selectFileHive('#{hiveBean.file}', '#{hiveBean.allProps[indexTable]['name']}')">
      						<f:param name="nameFile" value="#{hiveBean.allProps[indexTable]['name']}" />
      						<rich:dragSupport dragIndicator=":indicator"
@@ -132,7 +137,7 @@
 					<f:facet name="header">
 						<h:outputText value="#{column}" />
 					</f:facet>
-					<h:outputText value="#{item.row[ind]}" />
+					<h:outputText value="#{item.row[ind]}" title="#{item.row[ind]}" />
 				</rich:columns>
 
 			</rich:extendedDataTable>
@@ -181,7 +186,7 @@
 	
 	<a4j:region>	
 		<rich:modalPanel id="hiveOpenFileModalPanel" width="600" height="400"
-			style="overflow:auto;" resizeable="false">
+			style="overflow:auto;" >
 	
 			<f:facet name="header">Preview File</f:facet>
 			<f:facet name="controls">

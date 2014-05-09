@@ -4,6 +4,7 @@ import idm.CanvasBean;
 import idm.ConfigureTabsBean;
 import idm.HelpBean;
 import idm.ProcessManagerBean;
+import idm.SettingsBean;
 
 import javax.faces.application.NavigationHandler;
 import javax.faces.context.FacesContext;
@@ -39,7 +40,7 @@ public class AuthorizationListener implements PhaseListener {
 		HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
 
 		HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(false);
-		boolean isLoginPage = (currentPage.lastIndexOf("initial.xhtml") > -1) || (currentPage.lastIndexOf("restart.xhtml") > -1) || (currentPage.lastIndexOf("restart2.xhtml") > -1);
+		boolean isLoginPage = (currentPage.lastIndexOf("initial.xhtml") > -1) || (currentPage.lastIndexOf("restart.xhtml") > -1);
 		boolean iscanvasPage = (currentPage.lastIndexOf("canvas.xhtml") > -1);
 		
 		
@@ -67,6 +68,9 @@ public class AuthorizationListener implements PhaseListener {
 				
 				HelpBean helpBean = (HelpBean) context.getApplication().evaluateExpressionGet(context, "#{helpBean}", HelpBean.class);
 				helpBean.calcHelpItens();
+				
+				SettingsBean prefBean = (SettingsBean) context.getApplication().evaluateExpressionGet(context, "#{settingsBean}", SettingsBean.class);
+				prefBean.calcSettings();
 				
 				session.setAttribute("startInit","n");
 			}

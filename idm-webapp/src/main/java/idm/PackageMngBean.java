@@ -5,6 +5,7 @@ import idiro.workflow.utils.PackageManager;
 import idm.useful.MessageUseful;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
@@ -15,7 +16,6 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,10 +39,13 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	private static Logger logger = Logger.getLogger(PackageMngBean.class);
 
+
+	private PackageManager pckManager = new PackageManager();
+	
 	private boolean showMain = true;
-	private boolean userInstall = true;
+	
+	private transient boolean userInstall = true;
 	private IdmPackage curPackage;
-	private String errorMsg;
 	private List<IdmPackage> extPackages;
 	private String[] unUserPackage,	unSysPackage;
 	private String repoWelcomePage;
@@ -50,13 +53,15 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	private List<SelectItem> userPackages;
 
 	public PackageMngBean() throws RemoteException{
+		logger.info("Call PackageMngBean constructor");
+		retrievesExtPackages();
 		retrievesRepoWelcomePage();
 		calcSystemPackages();
 		calcUserPackages();
 	}
 
 	public void retrievesExtPackages() {
-		
+
 		List<IdmPackage> lAns = new LinkedList<IdmPackage>();
 		try{
 			SimpleDateFormat dt = new SimpleDateFormat("yyyy-mm-dd");
@@ -140,7 +145,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		}catch(Exception e){
 			logger.error("Connection refused to package manager");
 		}
-		
+
 		setExtPackages(lAns);
 	}
 
@@ -153,9 +158,11 @@ public class PackageMngBean extends BaseBean implements Serializable{
 					.getSession(false);
 			String user = (String) session.getAttribute("username");
 			String[] admins = WorkflowPrefManager.getSysAdminUser();
-			for(String cur: admins){
-				admin = admin || cur.equals(user);
-				logger.debug("admin user: "+cur);
+			if(admins != null){
+				for(String cur: admins){
+					admin = admin || cur.equals(user);
+					logger.debug("admin user: "+cur);
+				}
 			}
 		}catch(Exception e){
 			logger.warn("Exception in isAdmin: "+e.getMessage());
@@ -169,12 +176,11 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	public void calcSystemPackages() throws RemoteException{
 		logger.info("sys package");
-		PackageManager sysPckManager = new PackageManager();
-		Iterator<String> it = sysPckManager.getPackageNames(true).iterator();
-		List<SelectItem> result = new ArrayList<SelectItem>();
+		Iterator<String> it = pckManager.getPackageNames(null).iterator();
+		List<SelectItem> result = new LinkedList<SelectItem>();
 		while(it.hasNext()){
 			String pck = it.next();
-			String version = sysPckManager.getPackageProperty(true, pck, PackageManager.property_version);
+			String version = pckManager.getPackageProperty(null, pck, PackageManager.property_version);
 			result.add(new SelectItem(pck,pck+"-"+version));
 		}
 		setSystemPackages(result);
@@ -182,11 +188,15 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	public void calcUserPackages() throws RemoteException{
 		logger.info("user packages");
-		Iterator<String> it = getPckMng().getPackageNames(false).iterator();
-		List<SelectItem> result = new ArrayList<SelectItem>();
+		HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext()
+				.getSession(false);
+		String user = (String) session.getAttribute("username");
+		Iterator<String> it = pckManager.getPackageNames(user).iterator();
+		List<SelectItem> result = new LinkedList<SelectItem>();
 		while(it.hasNext()){
 			String pck = it.next();
-			String version = getPckMng().getPackageProperty(false, pck, PackageManager.property_version);
+			String version = pckManager.getPackageProperty(user, pck, PackageManager.property_version);
+			logger.info("User Package: "+pck+"-"+version);
 			result.add(new SelectItem(pck,pck+"-"+version));
 		}
 		setUserPackages(result);
@@ -196,14 +206,19 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		logger.info("rm sys packages");
 		if(isAdmin()){
 			PackageManager sysPckManager = new PackageManager();
-			logger.info(sysPckManager.removePackage(true,unSysPackage));
+			logger.info(sysPckManager.removePackage(null,unSysPackage));
+			calcSystemPackages();
 		}
 	}
 
 	public void removeUserPackage() throws RemoteException{
 		logger.info("rm user packages");
 		if(isUserAllowInstall()){
-			logger.info(getPckMng().removePackage(false,unUserPackage));
+			HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext()
+					.getSession(false);
+			String user = (String) session.getAttribute("username");
+			logger.info(pckManager.removePackage(user,unUserPackage));
+			calcUserPackages();
 		}
 	}
 
@@ -211,26 +226,34 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		String userEnv = FacesContext.getCurrentInstance().getExternalContext().
 				getRequestParameterMap().get("user");
 		logger.info("set Package scope: "+userEnv);
-		userInstall = userEnv.equalsIgnoreCase("true");
+		userInstall = !"false".equalsIgnoreCase(userEnv);
+		logger.info("scope: "+userInstall);
 	}
 
 	public void installPackage() throws RemoteException{
 		logger.info("install package");
-
+		logger.info("scope: "+userInstall);
 		String error = null;
 		if( userInstall){
 			logger.info("install us pck");
 			if(isUserAllowInstall()){
 				error = installPackage(false);
+				calcUserPackages();
+			}else{
+				error =  getMessageResources("pckMng.no_user_install");
 			}
 		}else{
 			logger.info("install sys pck");
 			if(isAdmin()){
 				error = installPackage(true);
+				calcSystemPackages();
+			}else{
+				error = getMessageResources("pckMng.not_admin");
 			}
 		}
 
 		if (error != null){
+			logger.info(error);
 			setError(error);
 		}
 	}
@@ -248,13 +271,15 @@ public class PackageMngBean extends BaseBean implements Serializable{
 					ok = true;
 				}
 			}
+			if(!ok){
+				error= getMessageResources("pckMng.not_trusted_url");
+			}
 			//Package Name
 			String pckName = url.split("/")[url.split("/").length-1];
+			logger.info("installation of "+pckName);
 			File pckFile = new File("/tmp/"+pckName);
-			if(sys && getSystemPackages().contains(pckName)){
-				ok = false;
-			}
-			if(!sys && getUserPackages().contains(pckName)){
+			if(ok && ((!sys && getUserPackages().contains(pckName)) || (sys && getSystemPackages().contains(pckName)))) {
+				error=  getMessageResources("pckMng.already_installed");
 				ok = false;
 			}
 			if(ok){
@@ -265,25 +290,31 @@ public class PackageMngBean extends BaseBean implements Serializable{
 					FileOutputStream fos = new FileOutputStream(pckFile);
 					fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 					fos.close();
+					logger.info("package downloaded to: "+pckFile.getAbsolutePath());
 					//Install Package
 					if(sys){
 						PackageManager sysPckManager = new PackageManager();
-						error = sysPckManager.addPackage(true, 
+						error = sysPckManager.addPackage(null, 
 								new String[]{pckFile.getAbsolutePath()});
 					}else{
-						error = getPckMng().addPackage(false, 
+						HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext()
+								.getSession(false);
+						String user = (String) session.getAttribute("username");
+						error = pckManager.addPackage(user, 
 								new String[]{pckFile.getAbsolutePath()});
 					}
 				} catch (MalformedURLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					error="The URL given is Malformed: "+e.getMessage();
+				}catch(FileNotFoundException e){
+					error="Unable to download the package: file not found";
 				}catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					error="Error while downloading the file: "+e.getMessage();
 				}
 				pckFile.delete();
 
 			}
+		}else{
+			error= getMessageResources("pckMng.not_trusted_url");
 		}
 
 		return error;
@@ -306,14 +337,14 @@ public class PackageMngBean extends BaseBean implements Serializable{
 			repoPage = "/pages/unavailableRepo.html";
 		}
 		logger.trace("repo page: "+repoPage);
-		
+
 		setRepoWelcomePage(repoPage);
 	}
 
 	public String getRepoServer(){
-		
+
 		logger.info("getRepoServer");
-		
+
 		String pckServer = WorkflowPrefManager.getPckManagerUri();
 		if(!pckServer.endsWith("/")){
 			pckServer+="/";
@@ -326,9 +357,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		MessageUseful.addErrorMessage(error);
 		HttpServletRequest request = (HttpServletRequest) FacesContext
 				.getCurrentInstance().getExternalContext().getRequest();
-		request.setAttribute("msnError2", "msnError2");
-
-		setErrorMsg(error);
+		request.setAttribute("msnError", "msnError");
 	}
 
 	/**
@@ -385,28 +414,6 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	 */
 	public void setCurPackage(IdmPackage curPackage) {
 		this.curPackage = curPackage;
-	}
-
-	/**
-	 * @return the userInstall
-	 */
-	public boolean isUserInstall() {
-		return userInstall;
-	}
-
-	/**
-	 * @param userInstall the userInstall to set
-	 */
-	public void setUserInstall(boolean userInstall) {
-		this.userInstall = userInstall;
-	}
-
-	public String getErrorMsg() {
-		return errorMsg;
-	}
-
-	public void setErrorMsg(String errorMsg) {
-		this.errorMsg = errorMsg;
 	}
 
 	public void setExtPackages(List<IdmPackage> extPackages) {

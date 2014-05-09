@@ -15,6 +15,8 @@ import java.util.Map;
 
 import javax.faces.model.SelectItem;
 
+import org.apache.commons.lang.WordUtils;
+
 /**
  * Make Table interaction available to client.
  * @author etienne
@@ -149,8 +151,10 @@ public class TableInteraction extends CanvasModalInteraction{
 							.replaceAll("\n", "\n\t");
 				}
 				logger.info(aux);
-				columnType.put(tree.getFirstChild("title")
-						.getFirstChild().getHead(), aux);
+				columnType.put(WordUtils.capitalizeFully(
+						tree.getFirstChild("title")
+						.getFirstChild().getHead()
+						.replace("_", " ")), aux);
 				tableColumns.add(tree.getFirstChild("title")
 						.getFirstChild().getHead());
 			}
@@ -205,7 +209,7 @@ public class TableInteraction extends CanvasModalInteraction{
 			Tree<String> row = inter.getTree()
 					.getFirstChild("table").add("row");
 			logger.info("Table row");
-			Iterator<String> it = tableGrid.getTitles().iterator();
+			Iterator<String> it = tableGrid.getColumnIds().iterator();
 			int i = 0;
 			while(it.hasNext()) {
 				String column = it.next();
@@ -228,7 +232,7 @@ public class TableInteraction extends CanvasModalInteraction{
 			for (SelectableRow rowV : tableGrid.getRows()) {
 				String[] cur = rowV.getRow();
 				Tree<String> row = oldColumns.next();
-				Iterator<String> it = tableGrid.getTitles().iterator();
+				Iterator<String> it = tableGrid.getColumnIds().iterator();
 				int i = 0;
 				while(it.hasNext()) {
 					String column = it.next();
@@ -255,7 +259,7 @@ public class TableInteraction extends CanvasModalInteraction{
 	 */
 	public void addNewLine() {
 		logger.info("tableInteractionAddNewLine");
-		tableGrid.add(new SelectableRow(new String[tableGrid.getTitles().size()]));
+		tableGrid.add(new SelectableRow(new String[tableGrid.getColumnIds().size()]));
 	}
 
 	/**
@@ -275,7 +279,7 @@ public class TableInteraction extends CanvasModalInteraction{
 					selectedGenerator)) {
 				String[] value = new String[l.size()];
 				for (String column : l.keySet()) {
-					value[tableGrid.indexOf(column)] = l.get(column);
+					value[tableGrid.columnIdsIndexOf(column)] = l.get(column);
 				}
 				tableGrid.add(new SelectableRow(value));
 			}

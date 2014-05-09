@@ -24,7 +24,7 @@ public class HiveJdbcProcessesManager extends ProcessesManager {
 	 * @throws IOException
 	 */
 	public ProcessesManager getInstance() throws IOException {
-		fname = new String(WorkflowPrefManager.pathUserPref.get() + "/tmp/"
+		fname = new String(WorkflowPrefManager.getPathuserpref() + "/tmp/"
 				+ hive_pid + "_processes.txt");
 		file = new File(fname);
 		logger.info("checking if : " + fname + " exists");

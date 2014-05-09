@@ -4,7 +4,7 @@ import idiro.workflow.server.interfaces.DataFlow;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.Map;
+import java.util.Set;
 
 /**
  * Interface to retrieve/add/remove work flows.
@@ -51,9 +51,17 @@ public interface DataFlowInterface extends Remote{
 	public void shutdown() throws RemoteException;
 	
 	/**
-	 * Return the list of available datastore objects
+	 * Return the list of datastore names available
 	 * available to browse
 	 * @return
 	 */
-	public Map<String,DataStore> getDatastores() throws RemoteException;
+	public Set<String> getBrowsersName() throws RemoteException;;
+	
+	/**
+	 * Return the given datastore
+	 * @param browserName
+	 * @return
+	 * @throws RemoteException
+	 */
+	public DataStore getBrowser(String browserName) throws RemoteException;;
 }

@@ -150,12 +150,19 @@
                     <rich:panel style="border:none;" id="helpTextEditorPanel" >
                         <h:outputText value="#{messages.label_formula}" />
                         <br/>
-                        <h:inputTextarea maxlength="100" cols="70" rows="10" value="#{interCur.editor.textEditorValue}" style="resize:none;border:1px solid;" id="command">
-                            <a4j:support event="onclick" action="#{canvasModalBean.openHelpTextEditorModal}" oncomplete="#{rich:component('textEditorPanel')}.show()" 
-                                reRender="commandText,listFields,listFunctions,listCategories,listOperation,listCategoriesOperation" rendered="#{interCur.editor.openPopup == 'Y'}" >
-                                <a4j:actionparam name="idInteraction" value="#{interCur.id}"/>
-                            </a4j:support>
+                        
+                        <h:inputTextarea maxlength="100" cols="90" rows="10" value="#{interCur.editor.textEditorValue}" 
+                        	style="resize:none;border:1px solid;" id="command">
+                        	
+                       		<a4j:commandButton action="#{canvasModalBean.openHelpTextEditorModal}" value=". . ."  
+	                        	reRender="commandText,listFields,listFunctions,listCategories,listOperation,listCategoriesOperation" 
+	                            oncomplete="#{rich:component('textEditorPanel')}.show()" style="float:right;margin-right:57px;height: 46px;" 
+	                            rendered="#{interCur.editor.openPopup == 'Y'}">
+	                            <a4j:actionparam name="idInteraction" value="#{interCur.id}"/>
+							</a4j:commandButton>
+                            
                         </h:inputTextarea>
+                        
                         <br/>
                         <br/>
                     </rich:panel>
@@ -187,8 +194,7 @@
                         <br />
                         <br />
         
-                        <div id="DivTableInteraction"
-                            style="width: 580px; height: 220px; border: 1px solid black; overflow-x: hidden;">
+                        <div id="DivTableInteraction" style="width:100%; height: 220px; border: 1px solid black; overflow-x: hidden;">
                             
                             <rich:dataTable id="tableInteraction" value="#{interCur.table.tableGridRows}"
                                 var="rowItem" rowKeyVar="rowNb" width="100%" style="border:none;" 
@@ -238,17 +244,23 @@
                                         <f:selectItems value="#{interCur.table.tableConstraints[column]}" />
                                     </rich:comboBox>
         
-                                    <h:inputText value="#{rowItem.row[ind]}"
-                                        rendered="#{interCur.columnType[column] == 'editor' }"
-                                        styleClass="tableInteractionInput">
-                                        <a4j:support event="onclick" action="#{canvasModalBean.openHelpTextEditorModal}" 
-                                            oncomplete="#{rich:component('textEditorPanel')}.show()" 
-                                            reRender="commandText,listFields,listFunctions,listCategories,listOperation,listCategoriesOperation,command,tableInteraction">
-                                            <a4j:actionparam  name="idInteraction" value="#{interCur.id}"/>
-                                            <a4j:actionparam  name="rowKey" value="#{rowNb}"/>
-                                            <a4j:actionparam  name="column" value="#{column}"/>
-                                        </a4j:support>
-                                    </h:inputText>
+        							<table>
+	        							<tr>
+	        								<td>
+	        									
+	        									<h:inputText value="#{rowItem.row[ind]}" rendered="#{interCur.columnType[column] == 'editor' }" styleClass="tableInteractionTextEditor" >
+			                                   	<a4j:commandButton action="#{canvasModalBean.openHelpTextEditorModal}" value="..." style="float:right;width:15%;" 
+			                                   		reRender="commandText,listFields,listFunctions,listCategories,listOperation,listCategoriesOperation,command,tableInteraction" 
+			                                   		oncomplete="#{rich:component('textEditorPanel')}.show()">
+			                                   		<a4j:actionparam  name="idInteraction" value="#{interCur.id}"/>
+			                                           <a4j:actionparam  name="rowKey" value="#{rowNb}"/>
+			                                           <a4j:actionparam  name="column" value="#{column}"/>
+												</a4j:commandButton>
+												</h:inputText>
+	        								
+	        								</td>
+	        							</tr>
+                                    </table>
         
                                 </rich:columns>
         
@@ -277,13 +289,13 @@
             
                 <a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="closeDynamicForm();" reRender="panelBtCanvasModal, msnError, errorTable" />
                 
-                <a4j:commandButton action="#{canvasModalBean.previousPage}" styleClass="greenButton" value="#{messages.button_previous}" rendered="#{canvasModalBean.firstPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, msnError, errorTable" />
+                <a4j:commandButton action="#{canvasModalBean.previousPage}" styleClass="greenButton" value="#{messages.button_previous}" rendered="#{canvasModalBean.firstPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, msnError" />
                 
-                <a4j:commandButton action="#{canvasModalBean.applyPage}" styleClass="greenButton" value="#{messages.button_apply}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, msnError, errorTable, canvasModalTabPanel, browserTableProp, browserTableData, browserPropLabel, browserPropValue" />
+                <a4j:commandButton action="#{canvasModalBean.applyPage}" styleClass="greenButton" value="#{messages.button_apply}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, msnError, canvasModalTabPanel, browserTableProp, browserTableData, browserPropLabel, browserPropValue" />
     
-                <a4j:commandButton action="#{canvasModalBean.nextPage}" styleClass="greenButton" value="#{messages.button_next}" rendered="#{canvasModalBean.lastPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, browserTableData, msnError, errorTable" />
+                <a4j:commandButton action="#{canvasModalBean.nextPage}" styleClass="greenButton" value="#{messages.button_next}" rendered="#{canvasModalBean.lastPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, browserTableData, msnError" />
                 
-                <a4j:commandButton action="#{canvasModalBean.applyPage}" oncomplete="if(#{requestScope['msnError'] == null} )closeDynamicForm();" styleClass="greenButton" value="#{messages.button_ok}" rendered="#{canvasModalBean.lastPage == 'Y'}"/>
+                <a4j:commandButton action="#{canvasModalBean.applyPage}" oncomplete="if(#{requestScope['msnError'] == null} )closeDynamicForm();" styleClass="greenButton" value="#{messages.button_ok}" rendered="#{canvasModalBean.lastPage == 'Y'}" reRender="msnError, errorTable" />
             
             </rich:panel>
         

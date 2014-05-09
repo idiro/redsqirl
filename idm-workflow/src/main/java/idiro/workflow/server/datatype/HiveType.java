@@ -283,7 +283,7 @@ public class HiveType extends DataOutput{
 	 */
 	private void generateFeaturesMap(String table) throws RemoteException{
 		features = new OrderedFeatureList();
-		String[] lines = hInt.getDescription(hInt.getTableAndPartitions(table)[0]).split(";");
+		String[] lines = hInt.getDescription(hInt.getTableAndPartitions(table)[0]).get("describe").split(";");
 		for (String line : lines){
 			String[] feat = line.split(",");
 			try{
