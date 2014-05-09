@@ -55,7 +55,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 	/**
 	 * The logger.
 	 */
-	protected Logger logger = Logger.getLogger(this.getClass());
+	protected static Logger logger = Logger.getLogger(HiveInterface.class);
 
 	public static final String
 	// key for creating tables
@@ -76,7 +76,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 	key_describe_extended = "describe_extended",
 	/** Type Key */
 	key_type = "type",
-	/**Number of partition */
+	/** Number of partition */
 	key_partition_nb = "partition_nb";
 	/** Max History Size */
 	public static final int historyMax = 50;
@@ -110,7 +110,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 	/** Queue for commands to launch */
 	private static Queue<Integer> queue = new ConcurrentLinkedQueue<Integer>();
 	/** Map of commands and their execution number */
-	private static Map<String, String> queueMap = new HashMap<String, String>();
+	private static Map<Integer, String> queueMap = new HashMap<Integer, String>();
 
 	/**
 	 * Constructor
@@ -317,6 +317,239 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		}
 		queue.clear();
 		queueMap.clear();
+	}
+
+	protected static boolean waitFor(int myNum) {
+		// when 1 execute is finished or no queue, execute else wait
+		int iter = 0;
+		int error = 0;
+		int max = 10;
+		while ((queue.peek() != myNum)) {
+			try {
+				if (iter % 10 == 0) {
+					logger.info(queueMap.get(myNum) + " : " + myNum + " , "
+							+ queue.peek());
+				}
+				if (iter == max) {
+					if (!queue.contains(myNum)) {
+						logger.info("iter was reset");
+						return false;
+					}
+					iter = 0;
+				}
+				Thread.sleep(50);
+				++iter;
+			} catch (InterruptedException e) {
+				logger.info("caught in sleep 1 of refresh table");
+				++error;
+				if(error > 10){
+					logger.error("Too many error on sleep!");
+					queue.remove(myNum);
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	protected static Integer addTicket(String label){
+		Integer myNum = ++execute;
+		queue.add(myNum);
+		queueMap.put(myNum, label);
+		return myNum;
+	}
+
+	protected static Integer addTicketAndWaitFor(String label) {
+		Integer myNum = null;
+		int i = 0;
+		boolean end = false;
+		while (i < 5 && !end) {
+			myNum = addTicket(label);
+			logger.info("New ticket ("+i+"): " + myNum + ": " + label);
+			end = waitFor(myNum);
+			++i;
+		}
+		if (!end) {
+			logger.info("Fail to queue "+label);
+			myNum = null;
+		}
+		return myNum;
+	}
+
+	protected static void removeTicket(int number) {
+		logger.info("Remove ticket: "+number+": "+queue.poll());
+		queueMap.remove(number);
+	}
+
+	/**
+	 * Refresh the table list that stored in this instance
+	 * 
+	 * @throws SQLException
+	 */
+	protected static void refreshListTables() throws SQLException {
+		Logger logger = Logger.getLogger(HiveInterface.class);
+		if (tables == null || refreshTimeOut < System.currentTimeMillis() - updateTables) {
+			String label = "show tables";
+			++doARefreshcount;
+			if (doARefreshcount < 2) {
+				tables = null;
+				Integer myNum = addTicketAndWaitFor(label);
+				if (myNum != null) {
+					try {
+						// when 1 execute is finished or no queue, execute else
+						logger.info(label);
+						tables = conn.listTables(null);
+						updateTables = System.currentTimeMillis();
+						removeTicket(myNum);
+					}catch (SQLException e) {
+						logger.info("SQL Exception when listing tables");
+						removeTicket(myNum);
+						--doARefreshcount;
+						isInit = false;
+						reset();
+						throw e;
+					} catch (Exception e) {
+						logger.error("something went wrong : " + e.getMessage());
+						removeTicket(myNum);
+					} catch (Error er) {
+						logger.error("Error : " + er.getMessage());
+						isInit = false;
+						reset();
+					}
+				}
+			} else {
+				int iter = 0;
+				while (tables == null && doARefreshcount > 0 ) {
+					try {
+						if(iter % 10 == 0){
+							if(!queueMap.values().contains(label)){
+								doARefreshcount = 0;
+							}
+							logger.info("Waiting for 'show tables' to run");
+						}
+						Thread.sleep(50);
+					} catch (InterruptedException e) {
+						logger.info("caught in sleep 2 of refresh table");
+					}
+					++iter;
+				}
+				if (tables == null) {
+					refreshListTables();
+				}
+			}
+			--doARefreshcount;
+		} else {
+			logger.info("Using in memory version");
+		}
+	}
+
+	/**
+	 * Get the tables list
+	 * 
+	 * @return tables
+	 */
+	public static List<String> getTables() {
+		return tables;
+	}
+
+	/**
+	 * Delete a Table
+	 * 
+	 * @param path
+	 * @return <code>true</code> if table was deleted successfully else
+	 *         <code>false</code>
+	 * @throws SQLException
+	 */
+	public static boolean deleteTable(String path) throws SQLException {
+		Logger logger = Logger.getLogger(HiveInterface.class);
+		boolean result = false;
+		Integer myNum = addTicketAndWaitFor("delete " + path);
+		if (myNum != null) {
+			try {
+				result = conn.deleteTable(path);
+				removeTicket(myNum);
+			} catch (SQLException e) {
+				removeTicket(myNum);
+				throw e;
+			} catch (Exception e) {
+				logger.error("unexpected error : " + e.getMessage());
+				removeTicket(myNum);
+			} catch (Error er) {
+				logger.error("Error : " + er.getMessage());
+				isInit = false;
+				reset();
+				;
+
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Execute a query
+	 * 
+	 * @param query
+	 * @return <code>true</code> if query ran successfully else
+	 *         <code>false</code>
+	 * @throws SQLException
+	 */
+	public static boolean execute(String query) throws SQLException {
+		Logger logger = Logger.getLogger(HiveInterface.class);
+		boolean result = false;
+		Integer myNum = addTicketAndWaitFor(query);
+		if(myNum != null){
+			try {
+				logger.info("query : " + query);
+				result = conn.execute(query);
+				removeTicket(myNum);
+
+			} catch (SQLException e) {
+				removeTicket(myNum);
+				throw e;
+			} catch (Exception e) {
+				logger.error("unexpected error : " + e.getMessage());
+				removeTicket(myNum);
+			} catch (Error er) {
+				logger.error("Error : " + er.getMessage());
+				reset();
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Execute a query
+	 * 
+	 * @param query
+	 * @return ResultSet fom query
+	 * @throws SQLException
+	 */
+	public static ResultSet executeQuery(String query) throws SQLException {
+		ResultSet result = null;
+		Integer myNum = addTicketAndWaitFor(query);
+		if(myNum != null){
+			try {
+				logger.debug("exequte query : " + query);
+				result = conn.executeQuery(query);
+				queue.poll();
+			} catch (SQLException e) {
+				queue.poll();
+				throw e;
+			} catch (Exception e) {
+				logger.error("unexpected error : " + e.getMessage());
+				queue.poll();
+			} catch (Error er) {
+				logger.error("Error : " + er.getMessage());
+				isInit = false;
+				try {
+					new HiveInterface().open();
+				} catch (RemoteException e) {
+					logger.error("error resetting Hive Interface");
+				}
+			}
+		}
+
+		return result;
 	}
 
 	/**
@@ -573,14 +806,15 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 				}
 				if (properties.containsKey(key_field_sep)) {
 					String sep = properties.get(key_field_sep);
-					if(sep == null || sep.isEmpty()){
+					if (sep == null || sep.isEmpty()) {
 						sep = "1";
 					}
-					statement += "ROW FORMAT DELIMITED FIELDS TERMINATED BY '"+sep+"' ";
+					statement += "ROW FORMAT DELIMITED FIELDS TERMINATED BY '"
+							+ sep + "' ";
 				}
 				if (properties.containsKey(key_store)) {
 					String store = properties.get(key_store);
-					if(store == null || store.isEmpty()){
+					if (store == null || store.isEmpty()) {
 						store = "TEXTFILE";
 					}
 					statement += "STORED AS " + store;
@@ -753,7 +987,8 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 			Map<String, String> partsAndCond = new HashMap<String, String>();
 			partsAndCond = getFormattedType(path);
 			if (tableAndPartition.length > 1) {
-				String desc = getDescription(tableAndPartition[0]).get(key_describe);
+				String desc = getDescription(tableAndPartition[0]).get(
+						key_describe);
 				List<String> partList = new ArrayList<String>();
 
 				for (int i = 1; i < tableAndPartition.length; ++i) {
@@ -869,9 +1104,9 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		Map<String, String> ans = new HashMap<String, String>();
 		ans.putAll(getDescription(table));
 
-		if(Integer.valueOf(ans.get(key_partition_nb))+1 > getTableAndPartitions(path).length){
+		if (Integer.valueOf(ans.get(key_partition_nb)) + 1 > getTableAndPartitions(path).length) {
 			ans.put(key_type, "directory");
-		}else{
+		} else {
 			ans.put(key_type, "file");
 		}
 
@@ -955,7 +1190,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 				ans = null;
 			}
 		} catch (Exception e) {
-			logger.error("Unexpected exception: " + e.getMessage());
+			logger.error("Unexpected exception: " + e.getStackTrace()[0].toString()+" "+e.getMessage());
 			ans = null;
 		}
 		return ans;
@@ -1112,7 +1347,8 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 				refreshListTables();
 				boolean tableExists = tables.contains(tableAndPartitions[0]);
 				if (tableExists) {
-					String desc = getDescription(tableAndPartitions[0]).get(key_describe);
+					String desc = getDescription(tableAndPartitions[0]).get(
+							key_describe);
 
 					String[] feats = desc.split(";");
 					logger.info("split size " + feats.length);
@@ -1198,8 +1434,8 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 	 * @param table
 	 * @return description
 	 */
-	public Map<String,String> getDescription(String table) {
-		Map<String,String> ans = new LinkedHashMap<String, String>();
+	public Map<String, String> getDescription(String table) {
+		Map<String, String> ans = new LinkedHashMap<String, String>();
 		String featsStr = null;
 		try {
 			ResultSet rs = executeQuery("DESCRIBE " + table);
@@ -1224,15 +1460,16 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 					}
 				}
 				if (ok) {
-					if(featPart){
-						if(i == 0){
+					if (featPart) {
+						if (i == 0) {
 							featsStr = "";
 							featsStr += name.trim() + "," + type.trim();
-						}else{
+						} else {
 							featsStr += ";" + name.trim() + "," + type.trim();
 						}
-					}else {
-						if (name != null && !name.isEmpty() && !name.contains("#") && type != null) {
+					} else {
+						if (name != null && !name.isEmpty()
+								&& !name.contains("#") && type != null) {
 							++parts;
 						}
 					}
@@ -1241,7 +1478,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 			}
 			rs.close();
 
-			ans.put(key_describe,featsStr);
+			ans.put(key_describe, featsStr);
 			ans.put(key_partition_nb, parts.toString());
 
 		} catch (SQLException e) {
@@ -1497,217 +1734,6 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 	}
 
 	/**
-	 * Refresh the table list that stored in this instance
-	 * 
-	 * @throws SQLException
-	 */
-	protected static void refreshListTables() throws SQLException {
-		Logger logger = Logger.getLogger(HiveInterface.class);
-		long cur = System.currentTimeMillis();
-		if (tables == null || refreshTimeOut < cur - updateTables) {
-			++doARefreshcount;
-			if (doARefreshcount < 2) {
-				tables = null;
-				String val = String.valueOf(execute);
-				int myNum = execute++;
-				queue.add(myNum);
-				queueMap.put(String.valueOf(myNum), "show tables");
-				try {
-					// when 1 execute is finished or no queue, execute else wait
-					int iter = 0;
-					int max = 200;
-					while ((queue.peek() != myNum)) {
-						try {
-							logger.info(val + " : " + myNum + " , "
-									+ queue.peek() + " , " + queueMap.get(val));
-							Thread.sleep(50);
-							iter++;
-							if (iter == max) {
-								queue.poll();
-								iter = 0;
-								logger.info("iter was reset");
-							}
-						} catch (InterruptedException e) {
-							logger.info("caught in sleep 1 of refresh table");
-						}
-					}
-					tables = conn.listTables(null);
-					updateTables = cur;
-					queue.poll();
-					queueMap.remove(myNum);
-				} catch (SQLException e) {
-					queue.poll();
-					queueMap.remove(myNum);
-					throw e;
-				} catch (Exception e) {
-					logger.error("something went wrong : " + e.getMessage());
-					queue.poll();
-					queueMap.remove(myNum);
-				} catch (Error er) {
-					logger.error("Error : " + er.getMessage());
-					isInit = false;
-					reset();
-				}
-			} else {
-				int iterMax = 200;
-				int iter = 0;
-				while (iter++ < iterMax) {
-					try {
-						logger.info("sleeping 2");
-						logger.info("iter : " + iter);
-						logger.info("itermax " + iterMax);
-						logger.info(tables == null);
-						if (tables == null) {
-							Thread.sleep(50);
-						} else {
-							break;
-						}
-					} catch (InterruptedException e) {
-						logger.info("caught in sleep 2 of refresh table");
-					}
-				}
-				if (tables == null) {
-					--doARefreshcount;
-					refreshListTables();
-				}
-			}
-			--doARefreshcount;
-		} else {
-			logger.info("Using in memory version");
-		}
-	}
-
-	/**
-	 * Get the tables list
-	 * 
-	 * @return tables
-	 */
-	public static List<String> getTables() {
-		return tables;
-	}
-
-	/**
-	 * Delete a Table
-	 * 
-	 * @param path
-	 * @return <code>true</code> if table was deleted successfully else
-	 *         <code>false</code>
-	 * @throws SQLException
-	 */
-	public static boolean deleteTable(String path) throws SQLException {
-		Logger logger = Logger.getLogger(HiveInterface.class);
-		boolean result = false;
-		int myNum = execute++;
-		// logger.info("execute : "+execute);
-		queue.add(myNum);
-		while (queue.peek() != myNum) {
-			try {
-				Thread.sleep(50);
-			} catch (InterruptedException e) {
-			}
-			logger.error("caught in sleep of delete table");
-		}
-		try {
-			result = conn.deleteTable(path);
-			queue.poll();
-		} catch (SQLException e) {
-			queue.poll();
-			throw e;
-		} catch (Exception e) {
-			logger.error("unexpected error : " + e.getMessage());
-			queue.poll();
-		} catch (Error er) {
-			logger.error("Error : " + er.getMessage());
-			isInit = false;
-			reset();
-			;
-
-		}
-		return result;
-	}
-
-	/**
-	 * Execute a query
-	 * 
-	 * @param query
-	 * @return <code>true</code> if query ran successfully else
-	 *         <code>false</code>
-	 * @throws SQLException
-	 */
-	public static boolean execute(String query) throws SQLException {
-		Logger logger = Logger.getLogger(HiveInterface.class);
-		boolean result = false;
-		int myNum = execute++;
-		queue.add(myNum);
-		while (queue.peek() != myNum) {
-			try {
-				Thread.sleep(50);
-			} catch (InterruptedException e) {
-				logger.error("caught in sleep of execute");
-			}
-		}
-		try {
-			logger.info("query : " + query);
-			result = conn.execute(query);
-			queue.poll();
-
-		} catch (SQLException e) {
-			queue.poll();
-			throw e;
-		} catch (Exception e) {
-			logger.error("unexpected error : " + e.getMessage());
-			queue.poll();
-		} catch (Error er) {
-			logger.error("Error : " + er.getMessage());
-			reset();
-		}
-		return result;
-	}
-
-	/**
-	 * Execute a query
-	 * 
-	 * @param query
-	 * @return ResultSet fom query
-	 * @throws SQLException
-	 */
-	public static ResultSet executeQuery(String query) throws SQLException {
-		ResultSet result = null;
-		String val = String.valueOf(execute);
-		int myNum = execute++;
-		Logger logger = Logger.getLogger(HiveInterface.class);
-		queue.add(myNum);
-		while (queue.peek() != myNum) {
-			try {
-				Thread.sleep(50);
-			} catch (InterruptedException e) {
-				logger.error("caught in sleep of execute query");
-			}
-		}
-		try {
-			logger.debug("exequte query : " + query);
-			result = conn.executeQuery(query);
-			queue.poll();
-		} catch (SQLException e) {
-			queue.poll();
-			throw e;
-		} catch (Exception e) {
-			logger.error("unexpected error : " + e.getMessage());
-			queue.poll();
-		} catch (Error er) {
-			logger.error("Error : " + er.getMessage());
-			isInit = false;
-			try {
-				new HiveInterface().open();
-			} catch (RemoteException e) {
-				logger.error("error resetting Hive Interface");
-			}
-		}
-
-		return result;
-	}
-
-	/**
 	 * Get parameter properties for HiveInterface
 	 * 
 	 * @return Map of Properties for HiveInterface
@@ -1738,8 +1764,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 				false));
 
 		paramProp.put(key_partition_nb, new DSParamProperty(
-				"Number of partitions", true, true,
-				false));
+				"Number of partitions", true, true, false));
 
 		paramProp.put(key_describe, new DSParamProperty("Table description",
 				true, false, false));
@@ -1826,13 +1851,14 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 	}
 
 	@Override
-	public List<String> displaySelect(String path, int maxToRead) throws RemoteException {
-		
+	public List<String> displaySelect(String path, int maxToRead)
+			throws RemoteException {
+
 		String delimOut = "|";
-		
+
 		List<String> ans = null;
 		LinkedList<String> newAns = null;
-		
+
 		if (exists(path)) {
 
 			String[] tableAndPartition = getTableAndPartitions(path);
@@ -1840,7 +1866,8 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 			Map<String, String> partsAndCond = new HashMap<String, String>();
 			partsAndCond = getFormattedType(path);
 			if (tableAndPartition.length > 1) {
-				String desc = getDescription(tableAndPartition[0]).get(key_describe);
+				String desc = getDescription(tableAndPartition[0]).get(
+						key_describe);
 				List<String> partList = new ArrayList<String>();
 
 				for (int i = 1; i < tableAndPartition.length; ++i) {
@@ -1888,22 +1915,21 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 			}
 
 			statement += " limit " + maxToRead;
-			try {
 
+			int colNb = 0;
+			ans = new ArrayList<String>(maxToRead);
+			List<Integer> sizes = new LinkedList<Integer>();
+			int sizeCol = 0;
+			try {
 				ResultSet rs = executeQuery(statement);
-				int colNb = rs.getMetaData().getColumnCount();
-				ans = new ArrayList<String>(maxToRead);
-				
-				
-				List<Integer>sizes = new LinkedList<Integer>();
-				int sizeCol = 0;
+				colNb = rs.getMetaData().getColumnCount();
 				{
-					//Set column names
+					// Set column names
 					String col = "";
 					for (int i = 1; i <= colNb; ++i) {
-						if( i == 1 ){
+						if (i == 1) {
 							col = rs.getMetaData().getColumnName(i);
-						}else{
+						} else {
 							col += delimOut + rs.getMetaData().getColumnName(i);
 						}
 						sizeCol = rs.getMetaData().getColumnName(i).length();
@@ -1913,71 +1939,76 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 				}
 				while (rs.next()) {
 					String line = null;
-					
+
 					for (int i = 1; i <= colNb; ++i) {
-						if(i == 1){
+						if (i == 1) {
 							line = rs.getString(i);
-						}else{
+						} else {
 							line += delimOut + rs.getString(i);
 						}
 						sizeCol = 0;
-						if(rs.getString(i) != null ){
+						if (rs.getString(i) != null) {
 							sizeCol = rs.getString(i).length();
 						}
-						if(sizeCol > sizes.get(i-1)){
-							sizes.set(i-1, sizeCol);
+						if (sizeCol > sizes.get(i - 1)) {
+							sizes.set(i - 1, sizeCol);
 						}
-						
+
 					}
 					ans.add(line);
 				}
-				
+
 				rs.close();
-				
-				//logger.info("displaySelect list size" + sizes.size() + " " + ans.size());
-				newAns = new LinkedList<String>();
-				for (int i = 0; i < ans.size(); i++) {
-					String newLine = "| ";
-					//logger.info("displaySelect ans " + ans.get(i) + " delimOut " + delimOut);
-					String[] vet = ans.get(i).split(Pattern.quote(delimOut));
-					for (int j = 0; j < vet.length; j++) {
-						
-						String c = vet[j];
-						//logger.info("displaySelect colSize" + sizes.get(i));
-						//logger.info("displaySelect vet " + c);
-						if(c.length() < sizes.get(j)){
-							newLine += StringUtils.rightPad(c, sizes.get(j), " ") + " | ";
-						}else{
-							newLine += c + " | ";
-						}
-					}
-					//logger.info("displaySelect -" + newLine + "-");
-					newAns.add(newLine);
-				}
-				
-				int contSizeLine = 0;
-				if(newAns != null && !newAns.isEmpty()){
-					contSizeLine += newAns.get(0).length();
-				}
-				
-				String tableLine = StringUtils.rightPad("+", contSizeLine-2, "-") + "+";
-				int posPlus = 0;
-				for(int i = 0; i < sizes.size()-1;++i){
-					posPlus += sizes.get(i)+3;
-					tableLine = tableLine.substring(0,posPlus) + "+" + tableLine.substring(posPlus+1);
-				}
-				
-				if(newAns.size() > 0){
-					newAns.add(1,tableLine);
-				}
-				newAns.addFirst(tableLine);
-				if(ans.size() < maxToRead){
-					newAns.add(tableLine);
-				}
-				
+
 			} catch (SQLException e) {
 				logger.error("Fail to select the table " + tableAndPartition[0]);
 				logger.error(e.getMessage());
+			}
+
+			// logger.info("displaySelect list size" + sizes.size() + " " +
+			// ans.size());
+			newAns = new LinkedList<String>();
+			for (int i = 0; i < ans.size(); i++) {
+				String newLine = "| ";
+				// logger.info("displaySelect ans " + ans.get(i) +
+				// " delimOut " + delimOut);
+				String[] vet = ans.get(i).split(Pattern.quote(delimOut));
+				for (int j = 0; j < vet.length; j++) {
+
+					String c = vet[j];
+					// logger.info("displaySelect colSize" + sizes.get(i));
+					// logger.info("displaySelect vet " + c);
+					if (c.length() < sizes.get(j)) {
+						newLine += StringUtils.rightPad(c, sizes.get(j),
+								" ") + " | ";
+					} else {
+						newLine += c + " | ";
+					}
+				}
+				// logger.info("displaySelect -" + newLine + "-");
+				newAns.add(newLine);
+			}
+
+			int contSizeLine = 0;
+			if (newAns != null && !newAns.isEmpty()) {
+				contSizeLine += newAns.get(0).length();
+			}
+
+			String tableLine = StringUtils.rightPad("+", contSizeLine - 2,
+					"-") + "+";
+			int posPlus = 0;
+			for (int i = 0; i < sizes.size() - 1; ++i) {
+				posPlus += sizes.get(i) + 3;
+				tableLine = tableLine.substring(0, posPlus) + "+"
+						+ tableLine.substring(posPlus + 1);
+			}
+
+			if (newAns.size() > 0) {
+				newAns.add(1, tableLine);
+			}
+			newAns.addFirst(tableLine);
+			if (ans.size() < maxToRead) {
+				newAns.add(tableLine);
 			}
 
 		}
@@ -1989,5 +2020,5 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 	public List<String> displaySelect(int maxToRead) throws RemoteException {
 		return displaySelect(history.get(cur), maxToRead);
 	}
-	
+
 }

@@ -4,94 +4,92 @@
 <title>Pig Join Help</title>
 </head>
 <body>
-	<div id="body">
-		<h1>Pig Join</h1>
-		<h2>Description</h2>
-		<p>Pig Join is an action allow you to join any number of relations
-			together. A single type of join is performed through all the
-			relations and the relations are joined one after the other in the
-			order specified. The type of join supported are JOIN, LEFT OUTER
-			JOIN,RIGHT OUTER JOIN and FULL OUTER JOIN.</p>
-		<h3>Quick Guide</h3>
-		<p>
-		<ul>
-			<li>Input - at least two of either Text or Binary Map Reduce
-				Directory</li>
-			<li>Features - Select the features from the inputs</li>
-			<li>Join Type - Select the Join type to be used in the join</li>
-			<li>Join Relationship - Select the relationship between the
-				inputs</li>
-			<li>Output - Single Text or Binary Map Reduce Directory</li>
-		</ul>
-		<h2>Source</h2>
-		<p>The Source can be only HDFS (TEXT MAP REDUCE DIRECTORY). It has
-			to be a delimiter separated value. An example is when | is the
-			delimiter then the format for a line would be (X|Y|Z)</p>
+	<h1>Pig Join</h1>
+	<h2>Description</h2>
+	<p>Pig Join is an action allow you to join any number of relations
+		together. A single type of join is performed through all the
+		relations and the relations are joined one after the other in the
+		order specified. The type of join supported are JOIN, LEFT OUTER
+		JOIN,RIGHT OUTER JOIN and FULL OUTER JOIN.</p>
+	<h3>Quick Guide</h3>
+	<p>
+	<ul>
+		<li>Input - at least two of either Text or Binary Map Reduce
+			Directory</li>
+		<li>Features - Select the features from the inputs</li>
+		<li>Join Type - Select the Join type to be used in the join</li>
+		<li>Join Relationship - Select the relationship between the
+			inputs</li>
+		<li>Output - Single Text or Binary Map Reduce Directory</li>
+	</ul>
+	<h2>Source</h2>
+	<p>The Source can be only HDFS (TEXT MAP REDUCE DIRECTORY). It has
+		to be a delimiter separated value. An example is when | is the
+		delimiter then the format for a line would be (X|Y|Z)</p>
 
-		<h2>Operations - Page 1</h2>
+	<h2>Operations - Page 1</h2>
 
-		<h3>Operations</h3>
-		<p>Selecting and performing operations on features to be copied to
-			the output. Each Attribute of the data sources can be modified or
-			formatted to other forms when the join is being performed</p>
+	<h3>Operations</h3>
+	<p>Selecting and performing operations on features to be copied to
+		the output. Each Attribute of the data sources can be modified or
+		formatted to other forms when the join is being performed</p>
 
-		<h2>Relationship - Page 2</h2>
-		<p>Specify the relationship the data sources have between each
-			other</p>
-		<h3>Join Type</h3>
-		<p>Selecting the type of join to be performed</p>
-		<h3>Join Relationship</h3>
-		<p>Specify the relationship the data sources have by selecting the
-			column titles that share a relationship</p>
-		<h2>Select - Page 3</h2>
-		<h3>Filter Interaction</h3>
-		<p>Add filters to the join to get specific data that meets the
-			filters rules</p>
+	<h2>Relationship - Page 2</h2>
+	<p>Specify the relationship the data sources have between each
+		other</p>
+	<h3>Join Type</h3>
+	<p>Selecting the type of join to be performed</p>
+	<h3>Join Relationship</h3>
+	<p>Specify the relationship the data sources have by selecting the
+		column titles that share a relationship</p>
+	<h2>Select - Page 3</h2>
+	<h3>Filter Interaction</h3>
+	<p>Add filters to the join to get specific data that meets the
+		filters rules</p>
 
-		<h2>IDM Pig</h2>
-		<p>
-			Idm Pig is a package that contains actions that interface with <a
-				target="_blank" href="http://pig.apache.org/">Pig</a> on the IDM platform to perform
-			Pig actions. There are two other actions available from this package
-			<a class="stopLink" id="help_pig_select" onclick="return false;"
-				href="pig_select.html">Pig Select</a> ,<a class="stopLink"
-				id="help_pig_aggregator" onclick="return false;" href="pig_aggregator.html">Pig
-				Aggregator</a> , <a class="stopLink" id="help_pig_union"
-				onclick="return false;" href="pig_union.html">Pig Union</a> and <a
-				class="stopLink" id="help_pig_sample" onclick="return false;"
-				href="pig_sample.html">Pig Sample</a>
-		<p>On the last page of every pig action will have two interactions
-			that set the output format of the pig action. These interactions are
-			to set the delimiter of the file for a TEXT MAP REDUCE DIRECTORY and
-			the other is to set the output type of the file to be either TEXT MAP
-			REDUCE DIRECTORY or BINARY MAP-REDUCE DIRECTORY</p>
-		</p>
+	<h2>IDM Pig</h2>
+	<p>
+		Idm Pig is a package that contains actions that interface with <a
+			target="_blank" href="http://pig.apache.org/">Pig</a> on the IDM platform to perform
+		Pig actions. There are two other actions available from this package
+		<a class="stopLink" id="help_pig_select" onclick="return false;"
+			href="pig_select.html">Pig Select</a> ,<a class="stopLink"
+			id="help_pig_aggregator" onclick="return false;" href="pig_aggregator.html">Pig
+			Aggregator</a> , <a class="stopLink" id="help_pig_union"
+			onclick="return false;" href="pig_union.html">Pig Union</a> and <a
+			class="stopLink" id="help_pig_sample" onclick="return false;"
+			href="pig_sample.html">Pig Sample</a>
+	<p>On the last page of every pig action will have two interactions
+		that set the output format of the pig action. These interactions are
+		to set the delimiter of the file for a TEXT MAP REDUCE DIRECTORY and
+		the other is to set the output type of the file to be either TEXT MAP
+		REDUCE DIRECTORY or BINARY MAP-REDUCE DIRECTORY</p>
+	</p>
 
-		<p>Apache Pig is a platform for analyzing large data sets that
-			consists of a high-level language for expressing data analysis
-			programs, coupled with infrastructure for evaluating these programs.
-			The salient property of Pig programs is that their structure is
-			amenable to substantial parallelization, which in turns enables them
-			to handle very large data sets. At the present time, Pig's
-			infrastructure layer consists of a compiler that produces sequences
-			of Map-Reduce programs, for which large-scale parallel
-			implementations already exist (e.g., the Hadoop subproject). Pig's
-			language layer currently consists of a textual language called Pig
-			Latin, which has the following key properties:
-		<ul>
-			<li>Ease of programming. It is trivial to achieve parallel
-				execution of simple, "embarrassingly parallel" data analysis tasks.
-				Complex tasks comprised of multiple interrelated data
-				transformations are explicitly encoded as data flow sequences,
-				making them easy to write, understand, and maintain.</li>
-			<li>Optimization opportunities. The way in which tasks are
-				encoded permits the system to optimize their execution
-				automatically, allowing the user to focus on semantics rather than
-				efficiency.</li>
-			<li>Extensibility. Users can create their own functions to do
-				special-purpose processing.</li>
-		</ul>
-		</p>
-	</div>
+	<p>Apache Pig is a platform for analyzing large data sets that
+		consists of a high-level language for expressing data analysis
+		programs, coupled with infrastructure for evaluating these programs.
+		The salient property of Pig programs is that their structure is
+		amenable to substantial parallelization, which in turns enables them
+		to handle very large data sets. At the present time, Pig's
+		infrastructure layer consists of a compiler that produces sequences
+		of Map-Reduce programs, for which large-scale parallel
+		implementations already exist (e.g., the Hadoop subproject). Pig's
+		language layer currently consists of a textual language called Pig
+		Latin, which has the following key properties:
+	<ul>
+		<li>Ease of programming. It is trivial to achieve parallel
+			execution of simple, "embarrassingly parallel" data analysis tasks.
+			Complex tasks comprised of multiple interrelated data
+			transformations are explicitly encoded as data flow sequences,
+			making them easy to write, understand, and maintain.</li>
+		<li>Optimization opportunities. The way in which tasks are
+			encoded permits the system to optimize their execution
+			automatically, allowing the user to focus on semantics rather than
+			efficiency.</li>
+		<li>Extensibility. Users can create their own functions to do
+			special-purpose processing.</li>
+	</ul>
+	</p>
 </body>
 </html>

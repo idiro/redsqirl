@@ -136,8 +136,7 @@
 			<br />
 
 			<rich:panel style="border:none">
-				<rich:dropSupport acceptedTypes="ssh"
-					dropListener="#{hdfsBean.processDrop}" reRender="hdfsfs" oncomplete="resizeTables();"/>
+				<rich:dropSupport id="panelDropSupportHdfs" acceptedTypes="ssh" dropListener="#{hdfsBean.processDrop}" reRender="hdfsfs" oncomplete="resizeTables();"/>
 				
 				<rich:extendedDataTable id="hdfsfs" value="#{hdfsBean.tableGrid.rows}"
 					var="item" rowKeyVar="indexTable" width="100%" height="500px"
@@ -176,8 +175,7 @@
 						    action="#{hdfsBean.verifyIfIsFile}"
 							oncomplete="selectFileHdfs('#{hdfsBean.file}', '#{hdfsBean.allProps[indexTable]['name']}')">
 							<f:param name="nameFile" value="#{hdfsBean.allProps[indexTable]['name']}" />
-							<rich:dragSupport dragIndicator=":indicator"
-								dragValue="#{hdfsBean.allProps[indexTable]['name']}" dragType="hdfs">
+							<rich:dragSupport id="dragSupportIdHdfs" dragIndicator=":indicator" dragValue="#{hdfsBean.allProps[indexTable]['name']}" dragType="hdfs">
 								<rich:dndParam name="label" value="#{hdfsBean.allProps[indexTable]['name']}" />
 								<a4j:actionparam name="file" value="#{hdfsBean.allProps[indexTable]['name']}" />
 								<a4j:actionparam name="path" value="#{hdfsBean.path}" />
@@ -211,7 +209,7 @@
 					onclick="#{rich:component('modalCopyMoveHdfs')}.hide()" />
 			</f:facet>
 
-			<h:form id="hdfsform2">
+			<h:form>
 				<h:panelGroup>
 					<a4j:include viewId="/pages/hdfs/copyMoveHdfs.xhtml" ajaxRendered="true"/>
 				</h:panelGroup>

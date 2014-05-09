@@ -19,6 +19,13 @@
 </head>
 
 <body>
+
+	<h:form>
+	
+		<a4j:commandLink action="#{canvasBean.cleanErrorList}" reRender="errorTable">
+			<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.error_list_clear}' />
+		</a4j:commandLink>
+
 		<rich:extendedDataTable id="errorTable" value="#{sessionScope['listError']}" var="item"
 			width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'" 
 			enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'" 
@@ -38,7 +45,9 @@
 				<h:outputText value="#{item.label}" style="width:100%;" title="#{item.label}" readonly="true" />
 			</rich:column>
 
-	</rich:extendedDataTable>
+		</rich:extendedDataTable>
+	
+	</h:form>
 
 </body>
 </html>

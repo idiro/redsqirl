@@ -1000,7 +1000,7 @@
 					action="#{canvasBean.blockRunningWorkflow}"
 					data="#{canvasBean.positions}"
 					oncomplete="addElementJs(data[0],data[1],data[2],data[3]);"
-					reRender="tabFlowchart,errorTable" />
+					reRender="tabFlowchart,errorTable,msnError" />
 			</a4j:region>
 			
 			<a4j:region>
@@ -1067,7 +1067,7 @@
                                             alt="Oozie Console" class="fileSystemIcon"
                            />
                         </h:outputLink>
-						<a4j:commandButton id="killProcessBtn" styleClass="greenButton"  style="float:right;margin-right:5px;" 
+						<a4j:commandButton id="killProcessBtn" styleClass="greenButton" style="float:right;margin-right:5px;" 
 						     value="Kill Process" action="#{canvasBean.stopRunningWorkflow}"
 							rendered="#{canvasBean.running}"/>
 					</h:panelGroup>
@@ -1095,7 +1095,7 @@
 				<a4j:jsFunction name="runWorkflow"
 					action="#{canvasBean.runWorkflow}"
 					oncomplete="setRunning(getSelected(), true);blockRunningWorkflow();"
-					reRender="formMenu,domMessageDivCanvas2,killProcessBtn">
+					reRender="formMenu,domMessageDivCanvas2,killProcessBtn,msnError">
 					<a4j:actionparam name="positions" />
 					<a4j:actionparam name="savedFile" />
 					<a4j:actionparam name="select" />
@@ -1660,7 +1660,7 @@
 		</rich:modalPanel>
 	</a4j:region>
 
-	<a4j:region renderRegionOnly="true">
+	<a4j:region>
 		<rich:modalPanel id="modalFileHdfs" width="600" height="430"
 			style="overflow:hide;" resizeable="false">
 
@@ -1671,7 +1671,7 @@
 					onclick="#{rich:component('modalFileHdfs')}.hide()" />
 			</f:facet>
 
-            <h:form id="formLoadWorkflow">
+            <h:form>
 				<h:panelGroup>
 					<a4j:include viewId="/pages/modalFileHdfs.xhtml"
 						ajaxRendered="true" />
@@ -1701,16 +1701,11 @@
 		</rich:modalPanel>
 	</a4j:region>
 
-	<a4j:region renderRegionOnly="true">
+	<a4j:region>
 		<rich:modalPanel id="modalChangeId" width="250" height="140"
 			style="overflow:auto;" resizeable="true" zindex="2000">
 
 			<f:facet name="header" >Change Element Id</f:facet>
-			<!-- <f:facet name="controls">
-				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer;width:22px;"
-					onclick="#{rich:component('modalChangeId')}.hide()" />
-			</f:facet> -->
 
 			<h:form>
 				<h:panelGroup>

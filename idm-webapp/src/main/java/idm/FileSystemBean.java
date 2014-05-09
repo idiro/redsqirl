@@ -26,7 +26,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -1685249123539175115L;
-	
+
 	private static Logger logger = Logger.getLogger(FileSystemBean.class);
 	private static int nbCreate = 0;
 
@@ -48,7 +48,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	private Map<String, ParamProperty> propsParam; 
 	private Integer currentFileIndex;
 	private LinkedHashMap<String, String> newProp;
-	
+
 	/**
 	 * Have the same xhtml page for copy and move.
 	 * 'C' for showing copy and 'M' for showing move.
@@ -212,16 +212,16 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			String name = params.get("nameFile");
 
 			logger.info("selectFile " + getPath() + " - " + name);
-			
+
 			String newPath = generatePath(getPath(), name);
 
 			logger.info("selectFile newPath " + newPath);
-			
+
 			if (getDataStore().goTo(newPath)) {
 				//setPath(newPath);
 				updateTable();
 				logger.info("selectFile updateTable");
-				
+
 			} else {
 				logger.error("Error this is not a directory");
 			}
@@ -244,21 +244,21 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	 */
 	public void openFile() throws RemoteException {
 		String name = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("nameFile");
-		
+
 		logger.info("openFile " + name);
-		
+
 		String path = generatePath(getPath(), name);
-		
-		logger.info("openFile path " + path);
-		
-		getDataStore().goTo(path);
-		List<String> contents = getDataStore().displaySelect(200);
-		fileContent = "";
-		for (String s : contents) {
-			fileContent += s + System.getProperty("line.separator");
+
+		try{
+			List<String> contents = getDataStore().displaySelect(path,200);
+			fileContent = "";
+			for (String s : contents) {
+				fileContent += s + System.getProperty("line.separator");
+			}
+		}catch(Exception e){
+			logger.info("Exception happened, probably no permissions to view this file");
 		}
-		getDataStore().goPrevious();
-		
+
 		logger.info("openFile fileContent " + fileContent);
 	}
 
@@ -333,7 +333,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 				break;
 			}
 		}
-		
+
 		if(error == null){
 			for (String[] s : selectedFiles) {
 				if (itemSelect != null) {
@@ -359,7 +359,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
 		}
-		
+
 		updateTable();
 	}
 
@@ -724,5 +724,5 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	public void setShowCopyMove(String showCopyMove) {
 		this.showCopyMove = showCopyMove;
 	}
-	
+
 }

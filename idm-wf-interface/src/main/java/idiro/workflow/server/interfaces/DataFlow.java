@@ -52,7 +52,7 @@ public interface DataFlow extends Remote {
 	 * @param curPath 
 	 * @return
 	 */
-	public Map<String,String> getRelativeHelp(File curPath) throws RemoteException;
+	public Map<String,String[]> getRelativeHelp(File curPath) throws RemoteException;
 	
 	/**
 	 * Save the icon menu.

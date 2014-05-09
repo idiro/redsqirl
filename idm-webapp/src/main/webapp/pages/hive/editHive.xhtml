@@ -8,7 +8,8 @@
 	<a4j:loadBundle basename="MessagesResources" var="messages" />
 	
 	<h:outputText value="#{messages.label_name}" />
-	<h:inputText value="#{hiveBean.allProps[hiveBean.currentFileIndex]['name']}" />
+	<h:inputText value="#{hiveBean.allProps[hiveBean.currentFileIndex]['name']}" 
+	onkeypress="return enableEnterKey(event, 'editFileAfterHiveBt');" />
 
 	<a4j:repeat value="#{hiveBean.editProps}" var="title" >
 	
@@ -30,8 +31,8 @@
 	</a4j:repeat>
 
 	<h:panelGrid columns="2">
-		<a4j:commandButton  styleClass="greenButton" action="#{hiveBean.editFileAfter}" value="#{messages.button_ok}"
-			onclick="#{rich:component('hiveeditModalPanel')}.hide()" reRender="hivefs" />
+		<a4j:commandButton id="editFileAfterHiveBt" styleClass="greenButton" action="#{hiveBean.editFileAfter}" value="#{messages.button_ok}"
+			onclick="#{rich:component('hiveeditModalPanel')}.hide()" reRender="hivefs" oncomplete="resizeTables();" />
 		<a4j:commandButton  styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('hiveeditModalPanel')}.hide();" />
 	</h:panelGrid>
 
