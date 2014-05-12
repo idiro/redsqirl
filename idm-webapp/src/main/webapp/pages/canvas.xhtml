@@ -1052,7 +1052,7 @@
 			<a4j:region>
 
 				<a4j:status
-					onstart="jQuery('#'+getSelected()).block({ message: jQuery('#domMessageDivCanvas2') });"
+					onstart="jQuery('#'+getSelected()).block({ message: jQuery('#domMessageDivCanvas2') });resizeBlockUICanvas();"
 					onerror="jQuery('#'+getSelected()).unblock();setRunning(getSelected(), 'test')" />
 
 				<div id="domMessageDivCanvas2" style="display: none;">

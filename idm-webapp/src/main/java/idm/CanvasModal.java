@@ -180,6 +180,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 			String oldId = canvasBean.getIdMap().get(canvasBean.getNameWorkflow()).get(idGroup);
 			canvasBean.getIdMap().get(canvasBean.getNameWorkflow()).put(idGroup, elementId);
 			error = canvasBean.getDf().changeElementId(oldId, elementId);
+			logger.info("changeIdElement  " + oldId + " " + idGroup);
 		}
 		logger.info(dfe == null);
 		
@@ -797,6 +798,10 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 */
 	public final String getIdGroup() {
 		return idGroup;
+	}
+
+	public void setIdGroup(String idGroup) {
+		this.idGroup = idGroup;
 	}
 
 	/**

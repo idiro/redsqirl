@@ -25,6 +25,11 @@ function canvasResizeSplitter(){
 	//]]>
   }
 
+function resizeBlockUICanvas(){
+	jQuery(".blockOverlay").css("height", jQuery("#"+selectedCanvas+" canvas:eq(1)").height());
+	jQuery(".blockOverlay").css("width", jQuery("#"+selectedCanvas+" canvas:eq(1)").width());
+}
+
 function resizeCanvas(val1, val2){
 	
 	//alert("resizeCanvas");
