@@ -490,7 +490,6 @@ public class PigTableSelectInteraction extends TableInteraction {
 		String alias = getAlias();
 		Iterator<Map<String, String>> selIt = getValues().iterator();
 		
-		
 		while (selIt.hasNext()) {
 			Map<String, String> cur = selIt.next();
 			String opTitle = cur.get(table_op_title);
@@ -500,6 +499,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 		}
 		
 
+		selIt = getValues().iterator();
 		if (selIt.hasNext()) {
 			Map<String, String> cur = selIt.next();
 			String featName = cur.get(table_feat_title);

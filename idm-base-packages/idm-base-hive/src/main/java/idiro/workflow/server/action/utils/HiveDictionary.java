@@ -1066,7 +1066,7 @@ public class HiveDictionary extends AbstractDictionary {
 		String[] method = HiveDictionary.find(list, expr);
 		if (method != null) {
 			logger.debug("In " + expr + ", method found: " + method[0]);
-			String[] splitStr = expr.split(escapeString(method[0]));
+			String[] splitStr = expr.split(escapeString(method[0])+"(?![^()]*+\\))");
 			if (aggregFeat.isEmpty()) {
 				ok = check(method, splitStr, features);
 			} else {
