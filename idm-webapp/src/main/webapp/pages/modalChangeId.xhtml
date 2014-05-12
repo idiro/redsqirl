@@ -5,15 +5,37 @@
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets">
 
+<script>
+    var currentChangeIdGroup; 
+</script>
+
 <a4j:loadBundle basename="MessagesResources" var="messages" />
+
+        <a4j:region>
+
+            <a4j:jsFunction name="changeCurrentElementId"
+                oncomplete="currentChangeIdGroup = '#{canvasModalBean.idGroup}';changeIdElement(currentChangeIdGroup,'#{canvasModalBean.elementId}');">
+            </a4j:jsFunction>
+            
+            <a4j:jsFunction name="changeIdElement"
+                action="#{canvasBean.changeIdElement}"
+                oncomplete="updateLabelObj(currentChangeIdGroup,'#{canvasModalBean.componentId}');if( #{requestScope['msnError'] == null}){closeChangeIdModal();}"
+                reRender="msnError,errorTable">
+                <a4j:actionparam name="groupId" />
+                <a4j:actionparam name="elementId" />
+            </a4j:jsFunction>
+            
+        </a4j:region>
 
 		<h:outputText value="Name" />
 		<h:inputText label="Name" value="#{canvasModalBean.elementId}" size="16" style="padding-left: 3px;" styleClass="interModal" maxlength="15" id="newIdElement" 
 			onkeypress="return enableEnterKey(event, 'changeIdElementBt');" />
 	
 		<h:panelGrid columns="1">
-			<a4j:commandButton action="#{canvasModalBean.changeIdElement}" id="changeIdElementBt" styleClass="greenButton" reRender="msnError, errorTable"
-				onclick="#{rich:component('modalChangeId')}.hide();" oncomplete="updateLabelObj('#{canvasModalBean.idGroup}','#{canvasModalBean.componentId}');if( #{requestScope['msnError'] == null}){closeChangeIdModal();}" value="#{messages.button_ok}"/>
+			<a4j:commandButton id="changeIdElementBt" styleClass="greenButton" reRender="msnError, errorTable,newIdElement"
+				onclick="#{rich:component('modalChangeId')}.hide();"
+				oncomplete="changeCurrentElementId();" 
+				value="#{messages.button_ok}"/>
 		</h:panelGrid>
 
 </h:panelGrid>

@@ -1047,6 +1047,32 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 
 	}
+	
+
+	public void changeIdElement() throws RemoteException {
+		String error = null;
+		
+		Map<String, String> params = FacesContext.getCurrentInstance()
+				.getExternalContext().getRequestParameterMap();
+		String groupId = params.get("groupId");
+		String elementId = params.get("elementId");
+		String elementOldId = getIdElement(groupId);
+		
+		// Get the new id
+		logger.info("Update id "+groupId);
+		logger.info("id old -> " + elementOldId);
+		logger.info("Element "+elementId);
+		error = getDf().changeElementId(elementOldId, elementId);
+		
+		if (error != null) {
+			//If there is an error do show the main window.
+			MessageUseful.addErrorMessage(error);
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
+		}else{
+			getIdMap().get(getNameWorkflow()).put(groupId, elementId);
+		}
+	}
 
 	public String[][] getOutputStatus() throws Exception {
 
@@ -1058,6 +1084,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 		Map<String, String> params = FacesContext.getCurrentInstance()
 				.getExternalContext().getRequestParameterMap();
 		String groupId = params.get("groupId");
+		
+		logger.info("Update status "+groupId);
+		logger.info("Element "+getIdElement(groupId));
 
 		DataFlowElement df = getDf().getElement(getIdElement(groupId));
 		if (df == null) {
