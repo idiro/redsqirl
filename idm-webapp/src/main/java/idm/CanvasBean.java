@@ -1090,6 +1090,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		DataFlowElement df = getDf().getElement(getIdElement(groupId));
 		if (df == null) {
+			logger.info("getOutputStatus df == null");
 			return new String[0][];
 		}
 
@@ -1260,8 +1261,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 	}
 
 	public String getIdElement(String idGroup) {
-		return getIdMap().get(getNameWorkflow()) == null ? null : getIdMap()
-				.get(getNameWorkflow()).get(idGroup);
+		logger.info("getIdElement " + getIdMap().get(getNameWorkflow()));
+		return getIdMap().get(getNameWorkflow()) == null ? null : getIdMap().get(getNameWorkflow()).get(idGroup);
 	}
 	
 	/** 

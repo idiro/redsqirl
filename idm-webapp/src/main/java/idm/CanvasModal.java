@@ -779,6 +779,10 @@ public class CanvasModal extends BaseBean implements Serializable {
 		return idGroup;
 	}
 
+	public void setIdGroup(String idGroup) {
+		this.idGroup = idGroup;
+	}
+
 	/**
 	 * @return the outputTab
 	 */
