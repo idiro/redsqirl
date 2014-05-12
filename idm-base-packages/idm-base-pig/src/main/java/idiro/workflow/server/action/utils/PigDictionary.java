@@ -379,7 +379,7 @@ public class PigDictionary extends AbstractDictionary {
 				.put(conditionalOperator,
 							new String[][] {
 								new String[] {
-										"() ? () : ()",
+										"(() ? () : ())",
 										"BOOLEAN,ANY,ANY",
 										"ANY",
 										"@function: (TEST) ? (EXPRESSION1) : (EXPRESSION2)@short:Returns one of two expressions depending on a condition@param:TEST Any Boolean expression@param:EXPRESSION1 An expression returned if test is true@param:EXPRESSION2 An expression returned if test is false@example: (TRUE) ? ('VALUE1') : ('VALUE2') returns 'VALUE1'"}
