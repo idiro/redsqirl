@@ -184,6 +184,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 		logger.info(dfe == null);
 		
 		if (error != null) {
+			//If there is an error do show the main window.
+			loadMainWindow = false;
 			MessageUseful.addErrorMessage(error);
 			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");

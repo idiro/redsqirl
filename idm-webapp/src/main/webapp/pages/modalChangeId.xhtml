@@ -13,7 +13,7 @@
 	
 		<h:panelGrid columns="1">
 			<a4j:commandButton action="#{canvasModalBean.changeIdElement}" id="changeIdElementBt" styleClass="greenButton" reRender="msnError, errorTable"
-				onclick="#{rich:component('modalChangeId')}.hide();" oncomplete="closeChangeIdModal()" value="#{messages.button_ok}"/>
+				onclick="#{rich:component('modalChangeId')}.hide();" oncomplete="updateLabelObj('#{canvasModalBean.idGroup}','#{canvasModalBean.componentId}');if( #{requestScope['msnError'] == null}){closeChangeIdModal();}" value="#{messages.button_ok}"/>
 		</h:panelGrid>
 
 </h:panelGrid>

@@ -984,7 +984,7 @@
 			<a4j:region>
 				<a4j:jsFunction name="closeChangeIdModal"
 				    reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError, errorTable, canvasModalTabPanel"
-					oncomplete="updateLabelObj('#{canvasModalBean.idGroup}','#{canvasModalBean.componentId}');if(#{canvasModalBean.loadMainWindow}){ #{rich:component('canvasModalPanel')}.show();}">
+					oncomplete="if(#{canvasModalBean.loadMainWindow}){ #{rich:component('canvasModalPanel')}.show();}">
 				</a4j:jsFunction>
 			</a4j:region>
 

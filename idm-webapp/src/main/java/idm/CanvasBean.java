@@ -928,11 +928,13 @@ public class CanvasBean extends BaseBean implements Serializable {
 	public void closeAll() {
 		logger.info("closeAll");
 		int size = workflowMap.size();
+		int iterMax = size + 2;
+		int iter = 0;
 		if (size > 0) {
 			do {
 				closeWorkflow(workflowMap.keySet().iterator().next());
 				size = workflowMap.size();
-			} while (size - 1 == workflowMap.size());
+			} while (size > 0  && ++iter < iterMax);
 		}
 		setDf(null);
 	}
