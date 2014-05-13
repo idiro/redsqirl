@@ -51,14 +51,17 @@ public abstract class AbstractDictionary {
 	 * Functions Key
 	 */
 	protected Map<String, String[][]> functionsMap;
+
 	/**
-	 *Constructor 
+	 * Constructor
 	 */
 	protected AbstractDictionary() {
 		init();
 	}
+
 	/**
 	 * Load a file that contains all the functions
+	 * 
 	 * @param f
 	 */
 	private void loadFunctionsFile(File f) {
@@ -99,7 +102,7 @@ public abstract class AbstractDictionary {
 			}
 			logger.info("finishedLoadingFunctions");
 		} catch (Exception e) {
-			logger.error("Error loading hive functions file: " + e);
+			logger.error("Error loading functions file: " + e);
 			e.printStackTrace();
 		} finally {
 			if (br != null) {
@@ -111,6 +114,7 @@ public abstract class AbstractDictionary {
 			}
 		}
 	}
+
 	/**
 	 * Initialize the dictionary
 	 */
@@ -140,8 +144,10 @@ public abstract class AbstractDictionary {
 		// }
 		// }
 	}
+
 	/**
 	 * Save the functions into file
+	 * 
 	 * @param file
 	 */
 	private void saveFile(File file) {
@@ -182,17 +188,22 @@ public abstract class AbstractDictionary {
 			}
 		}
 	}
+
 	/**
-	 * Load the default functions 
+	 * Load the default functions
 	 */
 	protected abstract void loadDefaultFunctions();
+
 	/**
 	 * Get the file name that contains the function
+	 * 
 	 * @return fileName
 	 */
 	protected abstract String getNameFile();
+
 	/**
 	 * Convert the help of the function into HTML format
+	 * 
 	 * @param helpString
 	 * @return html formated Help
 	 */
@@ -203,27 +214,32 @@ public abstract class AbstractDictionary {
 		// logger.debug(helpString);
 		if (helpString.contains("@")) {
 			String[] element = helpString.split("@");
+
 			for (String function : element) {
-				// logger.debug(function);
-				if (function.contains(":")) {
-					String[] titleAndValue = function.split(":");
+				if (!function.isEmpty()) {
+					logger.info(function);
+					String key = function.substring(0, function.indexOf(':'));
+					String value = function
+							.substring(function.indexOf(':') + 1);
+
+					logger.info(key);
+					logger.info(value);
 
 					List<String> vals;
-					if (functions.containsKey(titleAndValue[0])) {
+					if (functions.containsKey(key)) {
 						// logger.debug("getting list for "+titleAndValue[0]);
-						vals = functions.get(titleAndValue[0]);
+						vals = functions.get(key);
 					} else {
 						vals = new LinkedList<String>();
 					}
 
-					vals.add(titleAndValue[1]);
+					vals.add(value);
 
 					// logger.debug(titleAndValue[0]+" , "+vals);
-					functions.put(titleAndValue[0], vals);
+					functions.put(key, vals);
+
 				}
-
 			}
-
 		}
 		Iterator<String> keys = functions.keySet().iterator();
 		List<String> values;
@@ -275,6 +291,7 @@ public abstract class AbstractDictionary {
 
 	/**
 	 * Get the Functions Map
+	 * 
 	 * @return the functionsMap
 	 */
 	public final Map<String, String[][]> getFunctionsMap() {
