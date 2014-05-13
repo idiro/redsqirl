@@ -11,8 +11,8 @@
     
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <main.pck>${project.build.directory}/${project.artifactId}-${project.version}/</main.pck>
-        <target.pck>src/main/pck</target.pck>
+        <generated.pck.dir>${project.build.directory}/${project.artifactId}-${project.version}/</generated.pck.dir>
+        <resources.pck.dir>src/main/pck</resources.pck.dir>
         <maven.build.timestamp.format>yyyy-MM-dd</maven.build.timestamp.format>
         <timestamp>${maven.build.timestamp}</timestamp>
         <pck-repo>${basedir}/src/main/pck-repo</pck-repo>
@@ -81,14 +81,6 @@
 		<configuration>
 		    <source>1.6</source>
 		    <target>1.6</target>
-		</configuration>
-	    </plugin>
-	    <plugin>
-		<groupId>org.apache.maven.plugins</groupId>
-		<artifactId>maven-jar-plugin</artifactId>
-		<version>2.3.1</version>
-		<configuration>
-		    <outputDirectory>${main.pck}/lib/</outputDirectory>
 		</configuration>
 	    </plugin>
 
@@ -181,10 +173,10 @@
 			    <goal>copy-resources</goal>
 			</goals>
 			<configuration>
-			    <outputDirectory>${main.pck}</outputDirectory>
+			    <outputDirectory>${generated.pck.dir}</outputDirectory>
 			    <resources>          
 				<resource>
-				    <directory>${target.pck}</directory>
+				    <directory>${resources.pck.dir}</directory>
 				    <filtering>true</filtering>
 				</resource>
 			    </resources>              
@@ -192,7 +184,32 @@
 		    </execution>
 		</executions>
 	    </plugin>
-
+        
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.8</version>
+                <executions>
+                    <execution>
+                        <id>copy-artifact</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>${project.artifactId}</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>${project.packaging}</type>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${generated.pck.dir}/lib/</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 	    <plugin>
 		<groupId>org.apache.maven.plugins</groupId>
 		<artifactId>maven-assembly-plugin</artifactId>
