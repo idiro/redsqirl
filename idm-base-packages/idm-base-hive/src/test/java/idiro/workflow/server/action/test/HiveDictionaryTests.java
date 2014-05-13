@@ -154,6 +154,7 @@ public class HiveDictionaryTests {
 			isBoolean("col2 IS NULL", features);
 			isBoolean("col2 IS NOT NULL", features);
 			isBoolean("col2 IS NOT NULL", features);
+			isBoolean("(col3 = 0) = TRUE", features);
 
 		} catch (Exception e) {
 			logger.error("Exception when testing boolean operations: "
@@ -254,6 +255,8 @@ public class HiveDictionaryTests {
 			is("CASE WHEN (colAgg='t') THEN (1) WHEN (colAgg='t2') THEN (2) ELSE (3) END", features, "INT");
 			is("CASE WHEN (col4) THEN (colAgg) WHEN (col2=0) THEN ('a') END", features, "STRING");
 			is("(CASE WHEN (col3>0) THEN (colAgg) END) = colAgg", features, "BOOLEAN");
+			
+			
 		} catch (Exception e) {
 			logger.error("Exception when testing case when operations: "
 					+ e.getMessage());

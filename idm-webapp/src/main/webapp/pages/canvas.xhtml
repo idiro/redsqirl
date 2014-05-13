@@ -984,7 +984,7 @@
 			<a4j:region>
 				<a4j:jsFunction name="closeChangeIdModal"
 				    reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError, errorTable, canvasModalTabPanel"
-					oncomplete="updateLabelObj('#{canvasModalBean.idGroup}','#{canvasModalBean.componentId}');if(#{canvasModalBean.loadMainWindow}){ #{rich:component('canvasModalPanel')}.show();}">
+					oncomplete="if(#{canvasModalBean.loadMainWindow}){ #{rich:component('canvasModalPanel')}.show();}">
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -1052,7 +1052,7 @@
 			<a4j:region>
 
 				<a4j:status
-					onstart="jQuery('#'+getSelected()).block({ message: jQuery('#domMessageDivCanvas2') });"
+					onstart="jQuery('#'+getSelected()).block({ message: jQuery('#domMessageDivCanvas2') });resizeBlockUICanvas();"
 					onerror="jQuery('#'+getSelected()).unblock();setRunning(getSelected(), 'test')" />
 
 				<div id="domMessageDivCanvas2" style="display: none;">
@@ -1599,7 +1599,7 @@
                             onstart="jQuery('#tabs-4').block({ message: jQuery('#domMessageDiv4') });"
                             onerror="jQuery('#tabs-4').unblock();"
                             onsuccess="jQuery('#tabs-4').unblock();"
-                            onstop="jQuery('#tabs-4').unblock();" />
+                            />
 
                         <div id="domMessageDiv4" style="display: none;">
                             <img src="../image/icons/waiting.gif" />

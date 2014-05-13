@@ -34,11 +34,11 @@
 		style="min-width: 400px; overflow: hidden; min-height: 200px;">
 		<h:form>
 		
-			<a4j:jsFunction name="openFileHive" action="#{hiveBean.openFile}" oncomplete="#{rich:component('hiveOpenFileModalPanel')}.show();" >
+			<a4j:jsFunction name="openFileHive" action="#{hiveBean.openFile}" oncomplete="#{rich:component('hiveOpenFileModalPanel')}.show();jQuery('#tabs-4').unblock();" >
 				<a4j:actionparam name="nameFile"/>
 			</a4j:jsFunction>
 			
-			<a4j:jsFunction name="updateTableHive" action="#{hiveBean.selectFile}" reRender="hivefs,hivepath" oncomplete="resizeTables();">
+			<a4j:jsFunction name="updateTableHive" action="#{hiveBean.selectFile}" reRender="hivefs,hivepath" oncomplete="resizeTables();jQuery('#tabs-4').unblock();">
 				<a4j:actionparam name="nameFile"/>
 			</a4j:jsFunction>
 
@@ -48,7 +48,7 @@
 			<h:inputText id="hivepath" label="Path" styleClass="mainPageTextField" value="#{hiveBean.path}" maxlength="255" style="width:395px; margin-left:5px;" 
 				onkeypress="return enableEnterKey(event, 'hivefsPathBtn');"/>
 			
-			<a4j:commandLink id="hivefsPathBtn" action="#{hiveBean.changePath}" reRender="hivefs" style="color:#FFFFFF" oncomplete="resizeTables();">
+			<a4j:commandLink id="hivefsPathBtn" action="#{hiveBean.changePath}" reRender="hivefs" style="color:#FFFFFF" oncomplete="resizeTables();jQuery('#tabs-4').unblock();">
 				<h:graphicImage value="../image/icons/button-search.gif" title="#{messages.filesystem_change_path}" styleClass="refreshButton"/>
 			</a4j:commandLink>
 
@@ -56,26 +56,26 @@
 			
 			<div class="divMenu">
 				<a4j:commandLink action="#{hiveBean.addFileBefore}"
-					oncomplete="#{rich:component('hiveaddModalPanel')}.show()"
+					oncomplete="#{rich:component('hiveaddModalPanel')}.show();jQuery('#tabs-4').unblock();"
 					rendered="#{hiveBean.canCreate != null}">
 					<h:graphicImage id="hivebtAdd" value="../image/icons/button-plus.gif" title="#{messages.HiveInterface_create_help}" styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 	
 				<a4j:commandLink action="#{hiveBean.deleteFile}" reRender="hivefs" 
 					onclick="if(!confirm('Are you sure you want to delete the selected files?')){return false;}"
-					rendered="#{hiveBean.canDelete != null}">
+					rendered="#{hiveBean.canDelete != null}" oncomplete="jQuery('#tabs-4').unblock();">
 					<h:graphicImage id="hivebtDelete" value="../image/icons/button-delete2.gif" title="#{messages.HiveInterface_delete_help}" styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 	
-				<a4j:commandLink action="#{hiveBean.goPrevious}" reRender="hivepath,hivefs" oncomplete="resizeTables();" >
+				<a4j:commandLink action="#{hiveBean.goPrevious}" reRender="hivepath,hivefs" oncomplete="resizeTables();jQuery('#tabs-4').unblock();" >
 					<h:graphicImage id="hivebtUndo" value="../image/icons/button-previous.gif" title="#{messages.HiveInterface_previous_help}" styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 	
-				<a4j:commandLink action="#{hiveBean.goNext}" reRender="hivepath,hivefs" oncomplete="resizeTables();" >
+				<a4j:commandLink action="#{hiveBean.goNext}" reRender="hivepath,hivefs" oncomplete="resizeTables();jQuery('#tabs-4').unblock();" >
 					<h:graphicImage id="hivebtRedo" value="../image/icons/button-next.gif" title="#{messages.HiveInterface_next_help}" styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 				
-				<a4j:commandLink action="#{hiveBean.goUp}" reRender="hivepath,hivefs" oncomplete="resizeTables();" >
+				<a4j:commandLink action="#{hiveBean.goUp}" reRender="hivepath,hivefs" oncomplete="resizeTables();jQuery('#tabs-4').unblock();" >
 					<h:graphicImage id="hivegoup" value="../image/icons/button_up.jpg" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 			</div>
@@ -102,7 +102,7 @@
 					<f:facet name="header">
 						<h:outputText value="" />
 					</f:facet>
-					<a4j:commandLink action="#{hiveBean.editFileBefore}" oncomplete="#{rich:component('hiveeditModalPanel')}.show()">
+					<a4j:commandLink action="#{hiveBean.editFileBefore}" oncomplete="#{rich:component('hiveeditModalPanel')}.show();jQuery('#tabs-4').unblock();">
 						<h:graphicImage value="../image/icons/button-property.gif" title="#{messages.HiveInterface_properties_help}"
 						rendered="#{hiveBean.allProps[indexTable]['type'] == 'directory'}" styleClass="fileSystemIcon" />
 						<h:graphicImage value="../image/icons/button-file-icon.png" title="#{messages.HiveInterface_properties_help}"
