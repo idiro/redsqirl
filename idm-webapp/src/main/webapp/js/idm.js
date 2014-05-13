@@ -23,11 +23,15 @@ function canvasResizeSplitter(){
 	validateArrowsAll();
 	
 	//]]>
-  }
+}
 
 function resizeBlockUICanvas(){
 	jQuery(".blockOverlay").css("height", jQuery("#"+selectedCanvas+" canvas:eq(1)").height());
 	jQuery(".blockOverlay").css("width", jQuery("#"+selectedCanvas+" canvas:eq(1)").width());
+}
+
+function resizeBlockUICanvasOnLoad(){
+	jQuery(".blockOverlay").css("top", "18px");
 }
 
 function resizeCanvas(val1, val2){
@@ -401,3 +405,9 @@ function selectAllCheckbox(checkbox, checkboxId) {
 	    }
 	  };
 	})(jQuery);
+
+function nospaces(t){
+	if(t.value.match(/\s/g)){
+		t.value=t.value.replace(/\s/g,'');
+	}
+}
