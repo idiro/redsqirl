@@ -119,7 +119,7 @@ public class PigDictionary extends AbstractDictionary {
 										">=",
 										"ANY,ANY",
 										"BOOLEAN",
-										"@function:>=@short:Greater or equal@param:Any value@param Any value@description:Compare the left value to the right and checks if the left value is greater or equal to the right@example:5>=1 returns TRUE" },
+										"@function:>=@short:Greater or equal@param:Any value@param:Any value@description:Compare the left value to the right and checks if the left value is greater or equal to the right@example:5>=1 returns TRUE" },
 								new String[] {
 										"<",
 										"ANY,ANY",

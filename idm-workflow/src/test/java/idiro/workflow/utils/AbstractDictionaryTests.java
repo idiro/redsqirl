@@ -24,10 +24,10 @@ public class AbstractDictionaryTests {
 				.put("conditionalOperator",
 							new String[][] {
 								new String[] {
-										"(() ? () : ())",
-										"BOOLEAN,ANY,ANY",
-										"ANY",
-										"@function: (TEST) ? (EXPRESSION1) : (EXPRESSION2)@short:Returns one of two expressions depending on a condition@param:TEST Any Boolean expression@param:EXPRESSION1 An expression returned if test is true@param:EXPRESSION2 An expression returned if test is false@example: (TRUE) ? ('VALUE1') : ('VALUE2') returns 'VALUE1'"}
+										">=",
+										"ANY,ANY",
+										"BOOLEAN",
+										"@function:>=@short:Greater or equal@param:Any value@param:Any value@description:Compare the left value to the right and checks if the left value is greater or equal to the right@example:5>=1 returns TRUE" },
 				});
 				
 			}
