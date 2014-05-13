@@ -83,16 +83,23 @@ public class PackageManager extends UnicastRemoteObject {
 			logger.info("Arg n: packages (directory if it is an install)");
 			System.exit(1);
 		}
+		
+		WorkflowPrefManager wpm = WorkflowPrefManager.getInstance();
+		if(!wpm.isInit()){
+			logger.info("Fail to initialise pref manager.");
+			System.exit(1);
+		}
+		
 		boolean sys_package = true;
 		if (arg[1].equalsIgnoreCase("user")) {
-			if (WorkflowPrefManager.getSysProperty(
-					WorkflowPrefManager.sys_allow_user_install)
-					.equalsIgnoreCase("true")) {
+			if (WorkflowPrefManager.isUserPckInstallAllowed()) {
 				sys_package = false;
 			} else {
 				logger.info("For allowing user package install, "
 						+ WorkflowPrefManager.sys_allow_user_install
 						+ " have to be set to 'true'");
+				System.exit(1);
+				
 			}
 		}
 		String user = null;
@@ -358,9 +365,7 @@ public class PackageManager extends UnicastRemoteObject {
 
 		if ( (user != null && !user.isEmpty())
 				&& fUser.exists()
-				&& WorkflowPrefManager.getSysProperty(
-						WorkflowPrefManager.sys_allow_user_install, "FALSE")
-						.equalsIgnoreCase("true")) {
+				&& WorkflowPrefManager.isUserPckInstallAllowed()) {
 			File[] userFiles = fUser.listFiles(new FileFilter() {
 
 				@Override
