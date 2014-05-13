@@ -1279,12 +1279,12 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 
 	@Override
 	public List<String> displaySelect(String path, int maxToRead) throws RemoteException {
-		return select(getPath(), maxToRead);
+		return select(path,",", maxToRead);
 	}
 
 	@Override
 	public List<String> displaySelect(int maxToRead) throws RemoteException {
-		return select(getPath(), maxToRead);
+		return select(getPath(),",", maxToRead);
 	}
 	
 }

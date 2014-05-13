@@ -102,7 +102,7 @@
 	
 	<h:form>
     <a4j:jsFunction name="reStartFromInstall"
-           action="#{userInfoBean.signOut}" />
+           action="#{userInfoBean.goToSignOut}" />
 	
 	<rich:modalPanel id="modalInstallSuccess" width="300" height="120"
 			style="overflow:auto;" resizeable="false">
@@ -132,6 +132,7 @@
 				<a4j:commandButton value="#{messages.button_restart}" 
 				    styleClass="greenButton"
 				    style="margin-left:5px"
+				    ajax="true"
 					onclick="#{rich:component('modalInstallSuccess')}.hide();#{rich:component('modalInstallPackage')}.hide();#{rich:component('modalPackage')}.hide();"
 					oncomplete="reStartFromInstall();">
 				</a4j:commandButton>
