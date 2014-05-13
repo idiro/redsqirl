@@ -102,7 +102,7 @@
   <from-view-id>/pages/canvas.xhtml</from-view-id>
   <navigation-case>
    <from-outcome>signout</from-outcome>
-   <to-view-id>/pages/initial.xhtml</to-view-id>
+   <to-view-id>/pages/signout.xhtml</to-view-id>
    <redirect/>
   </navigation-case>
   <navigation-case>
@@ -160,7 +160,7 @@
   <from-view-id>/pages/modalInstallPackage.xhtml</from-view-id>
   <navigation-case>
    <from-outcome>signout</from-outcome>
-   <to-view-id>/pages/initial.xhtml</to-view-id>
+   <to-view-id>/pages/signout.xhtml</to-view-id>
    <redirect/>
   </navigation-case>
   <navigation-case>

@@ -124,7 +124,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 	 */
 	private transient Session sessionSSH;
 
-
+	private boolean checkPassword = false;
 	/**
 	 * Init the progress bar.
 	 */
@@ -145,6 +145,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 	public String login() {
 		logger.info("login");
 		cancel = false;
+		checkPassword = false;
 		buildBackend = true;
 		setAlreadySignedInOtherMachine(null);
 		setAlreadySignedIn(null);
@@ -153,10 +154,10 @@ public class UserInfoBean extends BaseBean implements Serializable {
 			Connection conn = new Connection(hostname);
 			conn.connect();
 
-			boolean isAuthenticated = conn.authenticateWithPassword(userName,
+			checkPassword = conn.authenticateWithPassword(userName,
 					password);
 
-			if (!isAuthenticated) {
+			if (!checkPassword) {
 				setMsnError("error");
 				setAlreadySignedInOtherMachine(null);
 
@@ -377,8 +378,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 				} catch (NotBoundException e) {
 					logger.warn("Object "+bean+" unable to unbind: "+e.getMessage());
 				} catch(Exception e){
-					logger.warn("Unexpected exception");
-					e.printStackTrace();
+					logger.warn("Object "+bean+" unable to unbind: "+e.getMessage());
 				}
 			}
 
@@ -470,6 +470,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 	}
 
+
 	/**
 	 * signOut
 	 * 
@@ -482,6 +483,11 @@ public class UserInfoBean extends BaseBean implements Serializable {
 	public String signOut() {
 		logger.info("signOut");
 		invalidateSession();
+		return "signout";
+	}
+
+	public String goToSignOut(){
+		logger.info("go to signOut");
 		return "signout";
 	}
 
@@ -522,10 +528,15 @@ public class UserInfoBean extends BaseBean implements Serializable {
 	 * Method that will clean up the session objects once the user has finished with it.
 	 */
 	public void invalidateSession() {
-		FacesContext fCtx = FacesContext.getCurrentInstance();
-		HttpSession session = (HttpSession) fCtx.getExternalContext()
-				.getSession(false);
-		invalidateSession(session);
+		if(userName != null && checkPassword){
+			FacesContext fCtx = FacesContext.getCurrentInstance();
+			ServletContext sc = (ServletContext) fCtx.getExternalContext()
+					.getContext();
+			Map<String, HttpSession> sessionLoginMap = (Map<String, HttpSession>) sc
+					.getAttribute("sessionLoginMap");
+			invalidateSession(sessionLoginMap.get(userName));
+		}
+		checkPassword = false;
 	}
 
 	public void sshDisconnect(){
