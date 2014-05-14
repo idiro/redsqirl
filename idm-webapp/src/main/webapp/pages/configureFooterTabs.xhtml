@@ -49,8 +49,9 @@
 			<a4j:form ajaxRendered="false">
 				<h:outputText value="New tab:" />
 				<h:inputText label="Tab" value="#{configureTabsBean.tabName}"
-					maxlength="255" style="width:100px;" 
-					onkeypress="return enableEnterKey(event, 'configureTabsAddBtn');"/>
+					maxlength="30" style="width:100px;" 
+					onkeypress="return enableEnterKey(event, 'configureTabsAddBtn');"
+					onkeyup="nospaces(this)"/>
 				<a4j:commandButton id="configureTabsAddBtn" action="#{configureTabsBean.createTab}" type="reset" value="+" reRender="tabsMenu">
 				</a4j:commandButton>
 			</a4j:form>
