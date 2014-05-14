@@ -34,7 +34,7 @@ import org.w3c.dom.NodeList;
  * 
  */
 public abstract class DataOutput extends UnicastRemoteObject implements
-		DFEOutput {
+DFEOutput {
 
 	private static List<String> dataOutputClassName = null;
 
@@ -190,7 +190,11 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 
 		logger.debug("path: " + path);
 		Element pathE = doc.createElement("path");
-		pathE.appendChild(doc.createTextNode(path));
+		if(path != null){
+			pathE.appendChild(doc.createTextNode(path));
+		}else{
+			pathE.appendChild(doc.createTextNode("null"));
+		}
 		parent.appendChild(pathE);
 
 		Element properties = doc.createElement("properties");
@@ -216,22 +220,24 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 		parent.appendChild(properties);
 
 		Element featuresEl = doc.createElement("features");
-		itStr = features.getFeaturesNames().iterator();
-		while (itStr.hasNext()) {
-			String cur = itStr.next();
-			logger.debug("feature " + cur + "," + features.getFeatureType(cur));
-			Element feat = doc.createElement("feature");
+		if(features != null && features.getFeaturesNames() != null){
+			itStr = features.getFeaturesNames().iterator();
+			while (itStr.hasNext()) {
+				String cur = itStr.next();
+				logger.debug("feature " + cur + "," + features.getFeatureType(cur));
+				Element feat = doc.createElement("feature");
 
-			Element name = doc.createElement("name");
-			name.appendChild(doc.createTextNode(cur));
-			feat.appendChild(name);
+				Element name = doc.createElement("name");
+				name.appendChild(doc.createTextNode(cur));
+				feat.appendChild(name);
 
-			Element type = doc.createElement("type");
-			type.appendChild(doc.createTextNode(features.getFeatureType(cur)
-					.name()));
-			feat.appendChild(type);
+				Element type = doc.createElement("type");
+				type.appendChild(doc.createTextNode(features.getFeatureType(cur)
+						.name()));
+				feat.appendChild(type);
 
-			featuresEl.appendChild(feat);
+				featuresEl.appendChild(feat);
+			}
 		}
 		parent.appendChild(featuresEl);
 	}
@@ -434,7 +440,7 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 				prop.store(
 						new FileWriter(new File(WorkflowPrefManager
 								.getPathuserdfeoutputcolour())), "Add "
-								+ getTypeName() + " to the file");
+										+ getTypeName() + " to the file");
 			}
 			prop.clear();
 		} catch (FileNotFoundException e) {
@@ -445,7 +451,7 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 				prop.store(
 						new FileWriter(new File(WorkflowPrefManager
 								.getPathuserdfeoutputcolour())),
-						"Initialise file with " + getTypeName());
+								"Initialise file with " + getTypeName());
 			} catch (IOException e1) {
 				logger.error("Fail to save colour preference");
 			}
@@ -472,7 +478,7 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 			prop.store(
 					new FileWriter(new File(WorkflowPrefManager
 							.getPathuserdfeoutputcolour())), "Add "
-							+ getTypeName() + " to the file");
+									+ getTypeName() + " to the file");
 			prop.clear();
 		} catch (FileNotFoundException e) {
 			logger.debug("No file found initialize one");
@@ -482,7 +488,7 @@ public abstract class DataOutput extends UnicastRemoteObject implements
 				prop.store(
 						new FileWriter(new File(WorkflowPrefManager
 								.getPathuserdfeoutputcolour())),
-						"Initialise file with " + getTypeName());
+								"Initialise file with " + getTypeName());
 			} catch (IOException e1) {
 				logger.error("Fail to save colour preference");
 			}
