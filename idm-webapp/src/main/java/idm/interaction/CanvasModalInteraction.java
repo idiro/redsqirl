@@ -59,7 +59,6 @@ public abstract class CanvasModalInteraction implements Serializable{
 		this.inter = dfeInter;
 		this.name = inter.getName();
 		this.legend = inter.getLegend();
-		readInteraction();
 	}
 	
 	/**
@@ -97,6 +96,7 @@ public abstract class CanvasModalInteraction implements Serializable{
 			break;
 			
 		}
+		ans.readInteraction();
 		return ans;
 	}
 

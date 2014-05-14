@@ -475,7 +475,15 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				Collection<DFEOutput> outData = cur.getDFEOutput().values();
 				Map<String, List<DataFlowElement>> outComp = cur
 						.getOutputComponent();
-				if (outAllComp.size() == 0) {
+				
+				boolean lastElement = outAllComp.size() == 0;
+				Iterator<DataFlowElement> itE2 = outAllComp.iterator();
+				while(itE2.hasNext() && !lastElement){
+					lastElement = !elsIn.contains(itE2.next());
+				}
+				
+				if (lastElement) {
+					// Element at the end of what need to run
 					// Check if one element buffered/recorded exist or not
 					// if all elements are temporary and not exist calculate the
 					// element
