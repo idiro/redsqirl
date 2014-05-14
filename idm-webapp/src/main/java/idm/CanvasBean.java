@@ -752,6 +752,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 	}
 
 	public void stopRunningWorkflow() throws RemoteException, Exception {
+		
+		logger.info("stopRunningWorkflow ");
+		
 		DataFlow df = getDf();
 		if (df != null && df.getOozieJobId() != null) {
 			getOozie().kill(df.getOozieJobId());
