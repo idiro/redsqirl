@@ -1010,7 +1010,8 @@ function addElements(canvasName, positions) {
 	canvasArray[canvasName].countObj = 0;
 	var positionsArrays = JSON.parse(positions);
 	var numSides = 4;
-
+    var maxX = 0;
+    var maxY = 0;
 	//try{
 	
 	for ( var i = 0; i < positionsArrays.length; i++) {
@@ -1022,14 +1023,24 @@ function addElements(canvasName, positions) {
 					positionsArrays[i][4],
 					numSides,
 					positionsArrays[i][0]);
-		
+		maxX = Math.max(maxX,positionsArrays[i][3]);
+		maxY = Math.max(maxY,positionsArrays[i][4]);
 		updateIdObj(positionsArrays[i][0], positionsArrays[i][0]);
 		updateTypeObj(canvasName, positionsArrays[i][0], positionsArrays[i][0]);
 		updateLabelObj(positionsArrays[i][0], positionsArrays[i][0]);
-		
 		group.hasChangedId = true;
 	}
 	
+    
+	if(canvasArray[canvasName].stage.getWidth() < maxX + 100){
+       canvasArray[canvasName].stage.setWidth(maxX + 100);
+       canvasArray[canvasName].background.setWidth(maxX + 100);
+	}
+	if(canvasArray[canvasName].stage.getHeight() < maxY + 100){
+       canvasArray[canvasName].stage.setHeight(maxY + 100);
+       canvasArray[canvasName].background.setHeight(maxY + 100);
+    }
+    
 	canvasArray[canvasName].stage.draw();
 	
 	/*}catch(exception){
