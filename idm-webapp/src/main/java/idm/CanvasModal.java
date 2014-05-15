@@ -136,7 +136,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	/**
 	 * List of the current interaction displayed
 	 */
-	private List<CanvasModalInteraction> inters = null;
+	private List<CanvasModalInteraction> inters = new LinkedList<CanvasModalInteraction>();
 
 	/**
 	 * List of the table column titles
@@ -155,7 +155,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	/**
 	 * List of the FileSystem available for configuring an output.
 	 */
-	private static Map<String,FileSystemBean> datastores;
+	private Map<String,FileSystemBean> datastores;
 
 
 	public CanvasModal() throws RemoteException{
