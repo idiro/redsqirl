@@ -75,13 +75,13 @@ public class PigUnion extends PigElement {
 				key_alias_interaction,
 				PigLanguageManager.getText("pig.table_alias_interaction.title"),
 				PigLanguageManager.getText("pig.table_alias_interaction.legend"),
-				0, 0, this);
+				0, 0, this, 2);
 
 		page1.addInteraction(tAliasInt);
 		
 		page2 = addPage(
-				PigLanguageManager.getText("pig.union_page1.title"),
-				PigLanguageManager.getText("pig.union_page1.legend"), 1);
+				PigLanguageManager.getText("pig.union_page2.title"),
+				PigLanguageManager.getText("pig.union_page2.legend"), 1);
 
 		tUnionSelInt = new PigTableUnionInteraction(
 				key_featureTable,
@@ -92,8 +92,8 @@ public class PigUnion extends PigElement {
 		page2.addInteraction(tUnionSelInt);
 		
 		page3 = addPage(
-				PigLanguageManager.getText("pig.union_page2.title"),
-				PigLanguageManager.getText("pig.union_page2.legend"), 1);
+				PigLanguageManager.getText("pig.union_page3.title"),
+				PigLanguageManager.getText("pig.union_page3.legend"), 1);
 		
 		tUnionCond =  new  PigUnionConditions(
 				key_union_condition,
@@ -113,7 +113,7 @@ public class PigUnion extends PigElement {
 	public void init() throws RemoteException {
 		if (input == null) {
 			Map<String, DFELinkProperty> in = new LinkedHashMap<String, DFELinkProperty>();
-			in.put(key_input, new DataProperty(MapRedTextType.class, 2,
+			in.put(key_input, new DataProperty(MapRedTextType.class, 1,
 					Integer.MAX_VALUE));
 			input = in;
 		}
@@ -136,10 +136,12 @@ public class PigUnion extends PigElement {
 	 */
 	// @Override
 	public void update(DFEInteraction interaction) throws RemoteException {
+		
 		List<DFEOutput> in = getDFEInput().get(key_input);
 		String interId = interaction.getId();
 		logger.info("interaction to update : " + interaction.getName());
-		if (in.size() > 1) {
+		
+		if (in.size() > 0) {
 			logger.debug("in size > 1");
 			if (interId.equals(tUnionSelInt.getId())) {
 				logger.info("updating union seletion");

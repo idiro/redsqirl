@@ -34,9 +34,13 @@ public class HiveUnion extends HiveElement {
 	/** Union Condidtion Key */
 	public final String key_union_condition = "union_cond";
 	/**
+	 * key for alias interaction
+	 */
+	public final String key_alias_interaction = "alias_int";
+	/**
 	 * Pages
 	 */
-	private Page page1, page2;
+	private Page page1, page2, page3;
 	/**
 	 * Union Table Select Interaction
 	 */
@@ -45,6 +49,11 @@ public class HiveUnion extends HiveElement {
 	 * Union Condition Interaction
 	 */
 	private HiveUnionConditions tUnionCond;
+	
+	/**
+	 * Tabel alias interaction
+	 */
+	private HiveTableAliasInteraction tAliasInt;
 
 	/**
 	 * Constructor
@@ -52,10 +61,22 @@ public class HiveUnion extends HiveElement {
 	 * @throws RemoteException
 	 */
 	public HiveUnion() throws RemoteException {
-		super(2, 2, Integer.MAX_VALUE);
-
-		page1 = addPage(HiveLanguageManager.getText("hive.union_page1.title"),
+		super(2, 1, Integer.MAX_VALUE);
+		
+		page1 = addPage(
+				HiveLanguageManager.getText("hive.union_page1.title"),
 				HiveLanguageManager.getText("hive.union_page1.legend"), 1);
+		
+		tAliasInt = new HiveTableAliasInteraction(
+				key_alias_interaction,
+				HiveLanguageManager.getText("hive.table_alias_interaction.title"),
+				HiveLanguageManager.getText("hive.table_alias_interaction.legend"),
+				0, 0, this, 2);
+
+		page1.addInteraction(tAliasInt);
+
+		page2 = addPage(HiveLanguageManager.getText("hive.union_page2.title"),
+				HiveLanguageManager.getText("hive.union_page2.legend"), 1);
 
 		tUnionSelInt = new HiveTableUnionInteraction(key_featureTable,
 				HiveLanguageManager
@@ -64,24 +85,24 @@ public class HiveUnion extends HiveElement {
 						.getText("hive.union_features_interaction.legend"), 0,
 				0, this);
 
-		page1.addInteraction(tUnionSelInt);
+		page2.addInteraction(tUnionSelInt);
 
 		condInt = new HiveFilterInteraction(0, 0, this);
 
-		page1.addInteraction(condInt);
+		page2.addInteraction(condInt);
 
-		page2 = addPage(HiveLanguageManager.getText("pig.union_page2.title"),
-				HiveLanguageManager.getText("pig.union_page2.legend"), 1);
+		page3 = addPage(HiveLanguageManager.getText("hive.union_page3.title"),
+				HiveLanguageManager.getText("hive.union_page3.legend"), 1);
 
 		tUnionCond = new HiveUnionConditions(
 				key_union_condition,
-				HiveLanguageManager.getText("pig.union_cond_interaction.title"),
+				HiveLanguageManager.getText("hive.union_cond_interaction.title"),
 				HiveLanguageManager
-						.getText("pig.union_cond_interaction.legend"), 0, 0,
+						.getText("hive.union_cond_interaction.legend"), 0, 0,
 				this);
 
-		page2.addInteraction(tUnionCond);
-		page2.addInteraction(typeOutputInt);
+		page3.addInteraction(tUnionCond);
+		page3.addInteraction(typeOutputInt);
 
 	}
 
@@ -93,7 +114,7 @@ public class HiveUnion extends HiveElement {
 	public void init() throws RemoteException {
 		if (input == null) {
 			Map<String, DFELinkProperty> in = new LinkedHashMap<String, DFELinkProperty>();
-			in.put(key_input, new DataProperty(HiveType.class, 2,
+			in.put(key_input, new DataProperty(HiveType.class, 1,
 					Integer.MAX_VALUE));
 			input = in;
 		}
@@ -116,9 +137,9 @@ public class HiveUnion extends HiveElement {
 		String interId = interaction.getId();
 		logger.info("Hive Union interaction " + interaction.getName());
 
-		if (in != null && in.size() > 1) {
+		if (in != null && in.size() > 0) {
 			if (interId.equals(condInt.getId())) {
-				logger.info("uopdate condition interaction");
+				logger.info("update condition interaction");
 				condInt.update();
 				// partInt.update();
 			} else if (interId.equals(tUnionSelInt.getId())) {
@@ -126,6 +147,9 @@ public class HiveUnion extends HiveElement {
 				tUnionSelInt.update(in);
 			} else if (interId.equals(tUnionCond.getId())) {
 				tUnionCond.update(in);
+			} 
+			else if(interId.equals(tAliasInt.getId())){
+				tAliasInt.update();
 			}
 		}
 	}
@@ -186,20 +210,22 @@ public class HiveUnion extends HiveElement {
 	}
 
 	/**
-	 * Get the feature list for the given alias.
-	 * 
+	 * Get the input features with the alias
 	 * @param alias
-	 * @return
+	 * @return FeatureList
 	 * @throws RemoteException
 	 */
-	public FeatureList getInFeatures(Map<String, DFEOutput> aliases,
-			String alias) throws RemoteException {
-		FeatureList ans = new OrderedFeatureList();
-		FeatureList mapTable = aliases.get(alias).getFeatures();
-		Iterator<String> itFeat = mapTable.getFeaturesNames().iterator();
-		while (itFeat.hasNext()) {
-			String cur = itFeat.next();
-			ans.addFeature(alias + "." + cur, mapTable.getFeatureType(cur));
+	public FeatureList getInFeatures(String alias) throws RemoteException {
+		FeatureList ans = null;
+		Map<String, DFEOutput> aliases = getAliases();
+		if(aliases.get(alias) != null){
+			ans = new OrderedFeatureList();
+			FeatureList mapTable = aliases.get(alias).getFeatures();
+			Iterator<String> itFeat = mapTable.getFeaturesNames().iterator();
+			while (itFeat.hasNext()) {
+				String cur = itFeat.next();
+				ans.addFeature(alias + "." + cur, mapTable.getFeatureType(cur));
+			}
 		}
 		return ans;
 	}
@@ -227,6 +253,26 @@ public class HiveUnion extends HiveElement {
 	 */
 	public final HiveUnionConditions gettUnionCond() {
 		return tUnionCond;
+	}
+	
+	/**
+	 * Get the table Alias Interaction
+	 * @return tUnionSelInt
+	 */
+	public final HiveTableAliasInteraction gettAliasInt() {
+		return tAliasInt;
+	}
+	
+	@Override
+	public Map<String, DFEOutput> getAliases() throws RemoteException {
+		
+		Map<String, DFEOutput> aliases = tAliasInt.getAliases();
+		
+		if (aliases.isEmpty()){
+			aliases = super.getAliases();
+		}
+		
+		return aliases;
 	}
 
 }

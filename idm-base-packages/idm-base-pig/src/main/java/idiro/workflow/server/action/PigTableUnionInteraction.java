@@ -85,8 +85,7 @@ public class PigTableUnionInteraction extends TableInteraction {
 			FeatureList mapFeatType = getNewFeatures();
 
 			// Check if we have the right number of list
-			if (mapRelationRow.keySet().size() != hu.getAllInputComponent()
-					.size()) {
+			if (mapRelationRow.keySet().size() != hu.gettAliasInt().getValues().size()) {
 				msg = PigLanguageManager
 						.getText("pig.union_features_interaction.checkrownb");
 			}

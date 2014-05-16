@@ -32,8 +32,14 @@ public class PigJoin extends PigElement {
 	public static final String key_joinType = "join_type",
 			/**Join relationship key*/
 			key_joinRelation = "join_relationship";
+	
+	/**
+	 * key for alias interaction
+	 */
+	public final String key_alias_interaction = "alias_int";
+	
 	/**Pages*/
-	private Page page1, page2, page3;
+	private Page page1, page2, page3, page4;
 				/**Table Join Interaction*/
 	private PigTableJoinInteraction tJoinInt;
 	/**Join Relationship interaction*/
@@ -42,16 +48,34 @@ public class PigJoin extends PigElement {
 	private PigFilterInteraction filterInt;
 	/**Join Type Interaction*/
 	private ListInteraction joinTypeInt;
+	
+	/**
+	 * Tabel alias interaction
+	 */
+	private PigTableAliasInteraction tAliasInt;
+	
 	/**
 	 * Constructor
 	 * @throws RemoteException
 	 */
 	public PigJoin() throws RemoteException {
-		super(2, Integer.MAX_VALUE,1);
-
+		super(1, Integer.MAX_VALUE,1);
+		
 		page1 = addPage(
-				PigLanguageManager.getText("pig.join_page1.title"), 
-				PigLanguageManager.getText("pig.join_page1.legend"), 1);
+				PigLanguageManager.getText("pig.union_page1.title"),
+				PigLanguageManager.getText("pig.union_page1.legend"), 1);
+		
+		tAliasInt = new PigTableAliasInteraction(
+				key_alias_interaction,
+				PigLanguageManager.getText("pig.table_alias_interaction.title"),
+				PigLanguageManager.getText("pig.table_alias_interaction.legend"),
+				0, 0, this, 2);
+
+		page1.addInteraction(tAliasInt);
+
+		page2 = addPage(
+				PigLanguageManager.getText("pig.join_page2.title"), 
+				PigLanguageManager.getText("pig.join_page2.legend"), 1);
 
 		tJoinInt = new PigTableJoinInteraction(
 				key_featureTable,
@@ -59,11 +83,11 @@ public class PigJoin extends PigElement {
 				PigLanguageManager.getText("pig.join_features_interaction.legend"),
 				0, 0, this);
 
-		page1.addInteraction(tJoinInt);
+		page2.addInteraction(tJoinInt);
 
-		page2 = addPage(
-				PigLanguageManager.getText("pig.join_page2.title"), 
-				PigLanguageManager.getText("pig.join_page2.legend"), 1);
+		page3 = addPage(
+				PigLanguageManager.getText("pig.join_page3.title"), 
+				PigLanguageManager.getText("pig.join_page3.legend"), 1);
 
 		
 		joinTypeInt = new ListInteraction(
@@ -85,18 +109,18 @@ public class PigJoin extends PigElement {
 				PigLanguageManager.getText("pig.join_relationship_interaction.legend"),
 				0, 0, this);
 		
-		page2.addInteraction(joinTypeInt);
-		page2.addInteraction(jrInt);
+		page3.addInteraction(joinTypeInt);
+		page3.addInteraction(jrInt);
 
-		page3 = addPage(
-				PigLanguageManager.getText("pig.join_page3.title"), 
-				PigLanguageManager.getText("pig.join_page3.title"), 1);
+		page4 = addPage(
+				PigLanguageManager.getText("pig.join_page4.title"), 
+				PigLanguageManager.getText("pig.join_page4.title"), 1);
 
 		filterInt = new PigFilterInteraction(0, 1, this);
 
-		page3.addInteraction(filterInt);
-		page3.addInteraction(delimiterOutputInt);
-		page3.addInteraction(savetypeOutputInt);
+		page4.addInteraction(filterInt);
+		page4.addInteraction(delimiterOutputInt);
+		page4.addInteraction(savetypeOutputInt);
 
 	}
 	/**
@@ -121,6 +145,8 @@ public class PigJoin extends PigElement {
 			jrInt.update();
 		} else if (interId.equals(tJoinInt.getId())) {
 			tJoinInt.update();
+		} else if(interId.equals(tAliasInt.getId())){
+			tAliasInt.update();
 		}
 	}
 	/**
@@ -250,5 +276,25 @@ public class PigJoin extends PigElement {
 	@Override
 	public FeatureList getNewFeatures() throws RemoteException {
 		return tJoinInt.getNewFeatures();
+	}
+	
+	/**
+	 * Get the table Alias Interaction
+	 * @return tUnionSelInt
+	 */
+	public final PigTableAliasInteraction gettAliasInt() {
+		return tAliasInt;
+	}
+	
+	@Override
+	public Map<String, DFEOutput> getAliases() throws RemoteException {
+		
+		Map<String, DFEOutput> aliases = tAliasInt.getAliases();
+		
+		if (aliases.isEmpty()){
+			aliases = super.getAliases();
+		}
+		
+		return aliases;
 	}
 }
