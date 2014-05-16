@@ -49,7 +49,7 @@ public class HiveJoinTests {
 		src.update(src.getInteraction(Source.key_datatype));
 		Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype)
 				.getTree();
-		dataTypeTree.getFirstChild("list").getFirstChild("output").add("Hive");
+		dataTypeTree.getFirstChild("list").getFirstChild("output").add("Apache Hive Metastore");
 
 		src.update(src.getInteraction(Source.key_datasubtype));
 		Tree<String> dataSubTypeTree = src.getInteraction(
@@ -133,6 +133,7 @@ public class HiveJoinTests {
 			}
 		}
 		logger.info(alias1 + " , " + alias2);
+		hive.update(hive.gettAliasInt());
 		logger.info("updating join type");
 		hive.updateJoinType();
 		logger.info("updating condition int ");

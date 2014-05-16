@@ -34,10 +34,16 @@ public class PigUnion extends PigElement {
 	 * key for union command
 	 */
 	public final String key_union_condition = "union_cond";
+	
+	/**
+	 * key for alias interaction
+	 */
+	public final String key_alias_interaction = "alias_int";
+	
 	/**
 	 * Pages for the interaction
 	 */
-	private Page page1,page2;
+	private Page page1,page2,page3;
 	/**
 	 * Table union interaction
 	 */
@@ -47,16 +53,35 @@ public class PigUnion extends PigElement {
 	 * Tabel union condition
 	 */
 	private PigUnionConditions tUnionCond;
+	
+	/**
+	 * Tabel alias interaction
+	 */
+	private PigTableAliasInteraction tAliasInt;
+	
+	
 	/**
 	 * Constructor
 	 * @throws RemoteException
 	 */
 	public PigUnion() throws RemoteException {
-		super(2, Integer.MAX_VALUE,1);
-
+		super(1, Integer.MAX_VALUE,1);
+		
 		page1 = addPage(
 				PigLanguageManager.getText("pig.union_page1.title"),
 				PigLanguageManager.getText("pig.union_page1.legend"), 1);
+		
+		tAliasInt = new PigTableAliasInteraction(
+				key_alias_interaction,
+				PigLanguageManager.getText("pig.table_alias_interaction.title"),
+				PigLanguageManager.getText("pig.table_alias_interaction.legend"),
+				0, 0, this, 2);
+
+		page1.addInteraction(tAliasInt);
+		
+		page2 = addPage(
+				PigLanguageManager.getText("pig.union_page2.title"),
+				PigLanguageManager.getText("pig.union_page2.legend"), 1);
 
 		tUnionSelInt = new PigTableUnionInteraction(
 				key_featureTable,
@@ -64,11 +89,11 @@ public class PigUnion extends PigElement {
 				PigLanguageManager.getText("pig.union_features_interaction.legend"),
 				0, 0, this);
 
-		page1.addInteraction(tUnionSelInt);
+		page2.addInteraction(tUnionSelInt);
 		
-		page2 = addPage(
-				PigLanguageManager.getText("pig.union_page2.title"),
-				PigLanguageManager.getText("pig.union_page2.legend"), 1);
+		page3 = addPage(
+				PigLanguageManager.getText("pig.union_page3.title"),
+				PigLanguageManager.getText("pig.union_page3.legend"), 1);
 		
 		tUnionCond =  new  PigUnionConditions(
 				key_union_condition,
@@ -76,9 +101,9 @@ public class PigUnion extends PigElement {
 				PigLanguageManager.getText("pig.union_cond_interaction.legend"),
 				0, 0, this);
 		
-		page2.addInteraction(tUnionCond);
-		page2.addInteraction(delimiterOutputInt);
-		page2.addInteraction(savetypeOutputInt);
+		page3.addInteraction(tUnionCond);
+		page3.addInteraction(delimiterOutputInt);
+		page3.addInteraction(savetypeOutputInt);
 
 	}
 	/**
@@ -88,7 +113,7 @@ public class PigUnion extends PigElement {
 	public void init() throws RemoteException {
 		if (input == null) {
 			Map<String, DFELinkProperty> in = new LinkedHashMap<String, DFELinkProperty>();
-			in.put(key_input, new DataProperty(MapRedTextType.class, 2,
+			in.put(key_input, new DataProperty(MapRedTextType.class, 1,
 					Integer.MAX_VALUE));
 			input = in;
 		}
@@ -111,16 +136,20 @@ public class PigUnion extends PigElement {
 	 */
 	// @Override
 	public void update(DFEInteraction interaction) throws RemoteException {
+		
 		List<DFEOutput> in = getDFEInput().get(key_input);
 		String interId = interaction.getId();
 		logger.info("interaction to update : " + interaction.getName());
-		if (in.size() > 1) {
+		
+		if (in.size() > 0) {
 			logger.debug("in size > 1");
 			if (interId.equals(tUnionSelInt.getId())) {
 				logger.info("updating union seletion");
 				tUnionSelInt.update(in);
 			}else if(interId.equals(tUnionCond.getId())){
 				tUnionCond.update(in);
+			}else if(interId.equals(tAliasInt.getId())){
+				tAliasInt.update();
 			}
 		}
 
@@ -246,6 +275,14 @@ public class PigUnion extends PigElement {
 	public final PigTableUnionInteraction gettUnionSelInt() {
 		return tUnionSelInt;
 	}
+	
+	/**
+	 * Get the table Alias Interaction
+	 * @return tUnionSelInt
+	 */
+	public final PigTableAliasInteraction gettAliasInt() {
+		return tAliasInt;
+	}
 
 	/**
 	 * Get the Pig Union Condition Interaction
@@ -254,5 +291,16 @@ public class PigUnion extends PigElement {
 	public final PigUnionConditions gettUnionCond() {
 		return tUnionCond;
 	}
-
+	
+	@Override
+	public Map<String, DFEOutput> getAliases() throws RemoteException {
+		
+		Map<String, DFEOutput> aliases = tAliasInt.getAliases();
+		
+		if (aliases.isEmpty()){
+			aliases = super.getAliases();
+		}
+		
+		return aliases;
+	}
 }

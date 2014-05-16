@@ -83,8 +83,7 @@ public class HiveTableUnionInteraction extends TableInteraction {
 			FeatureList mapFeatType = getNewFeatures();
 
 			// Check if we have the right number of list
-			if (mapRelationRow.keySet().size() != hu.getAllInputComponent()
-					.size()) {
+			if (mapRelationRow.keySet().size() != hu.gettAliasInt().getValues().size()) {
 				msg = HiveLanguageManager
 						.getText("hive.union_features_interaction.checkrownb");
 			}
@@ -119,8 +118,7 @@ public class HiveTableUnionInteraction extends TableInteraction {
 											new String[] { row
 													.get(table_feat_title) });
 						} else {
-							String featureName = row.get(table_feat_title)
-									.toUpperCase();
+							String featureName = row.get(table_feat_title);
 							logger.info("is it contained in map : "
 									+ featureName);
 							if (!mapFeatType.containsFeature(featureName)) {

@@ -35,9 +35,13 @@ public class HiveJoin extends HiveElement {
 	/** Join Relation Key */
 	key_joinRelation = "Join_Relationship";
 	/**
+	 * key for alias interaction
+	 */
+	public final String key_alias_interaction = "alias_int";
+	/**
 	 * Pages
 	 */
-	private Page page1, page2, page3;
+	private Page page1, page2, page3, page4;
 	/**
 	 * Table Join Interaction
 	 */
@@ -50,6 +54,11 @@ public class HiveJoin extends HiveElement {
 	 * Joint Type Interaction
 	 */
 	private ListInteraction joinTypeInt;
+	
+	/**
+	 * Tabel alias interaction
+	 */
+	private HiveTableAliasInteraction tAliasInt;
 
 	/**
 	 * Constructor
@@ -57,9 +66,21 @@ public class HiveJoin extends HiveElement {
 	 * @throws RemoteException
 	 */
 	public HiveJoin() throws RemoteException {
-		super(3, 2, Integer.MAX_VALUE);
+		super(4, 1, Integer.MAX_VALUE);
+		
+		page1 = addPage(
+				HiveLanguageManager.getText("hive.join_page1.title"),
+				HiveLanguageManager.getText("hive.join_page1.legend"), 1);
+		
+		tAliasInt = new HiveTableAliasInteraction(
+				key_alias_interaction,
+				HiveLanguageManager.getText("hive.table_alias_interaction.title"),
+				HiveLanguageManager.getText("hive.table_alias_interaction.legend"),
+				0, 0, this, 2);
+		
+		page1.addInteraction(tAliasInt);
 
-		page1 = addPage(HiveLanguageManager.getText("hive.join_page1.title"),
+		page2 = addPage(HiveLanguageManager.getText("hive.join_page1.title"),
 				HiveLanguageManager.getText("hive.join_page1.legend"), 1);
 
 		tJoinInt = new HiveTableJoinInteraction(key_featureTable,
@@ -69,10 +90,10 @@ public class HiveJoin extends HiveElement {
 						.getText("hive.join_features_interaction.legend"), 0,
 				0, this);
 
-		page1.addInteraction(tJoinInt);
+		page2.addInteraction(tJoinInt);
 
-		page2 = addPage(HiveLanguageManager.getText("hive.join_page2.title"),
-				HiveLanguageManager.getText("hive.join_page2.legend"), 1);
+		page3 = addPage(HiveLanguageManager.getText("hive.join_page3.title"),
+				HiveLanguageManager.getText("hive.join_page3.legend"), 1);
 
 		jrInt = new HiveJoinRelationInteraction(key_joinRelation,
 				HiveLanguageManager
@@ -94,16 +115,16 @@ public class HiveJoin extends HiveElement {
 		joinTypeInt.setPossibleValues(valueJoinTypeInt);
 		joinTypeInt.setValue("JOIN");
 
-		page2.addInteraction(joinTypeInt);
-		page2.addInteraction(jrInt);
+		page3.addInteraction(joinTypeInt);
+		page3.addInteraction(jrInt);
 
-		page3 = addPage(HiveLanguageManager.getText("hive.join_page3.title"),
-				HiveLanguageManager.getText("hive.join_page3.title"), 1);
+		page4 = addPage(HiveLanguageManager.getText("hive.join_page4.title"),
+				HiveLanguageManager.getText("hive.join_page4.title"), 1);
 
 		condInt = new HiveFilterInteraction(0, 2, this);
 
-		page3.addInteraction(condInt);
-		page3.addInteraction(typeOutputInt);
+		page4.addInteraction(condInt);
+		page4.addInteraction(typeOutputInt);
 
 	}
 
@@ -135,6 +156,8 @@ public class HiveJoin extends HiveElement {
 			jrInt.update();
 		} else if (interaction.getName().equals(tJoinInt.getName())) {
 			tJoinInt.update();
+		} else if(interaction.getName().equals(tAliasInt.getName())){
+			tAliasInt.update();
 		}
 	}
 
@@ -254,5 +277,24 @@ public class HiveJoin extends HiveElement {
 	public FeatureList getNewFeatures() throws RemoteException {
 		return tJoinInt.getNewFeatures();
 	}
-
+	
+	/**
+	 * Get the table Alias Interaction
+	 * @return tUnionSelInt
+	 */
+	public final HiveTableAliasInteraction gettAliasInt() {
+		return tAliasInt;
+	}
+	
+	@Override
+	public Map<String, DFEOutput> getAliases() throws RemoteException {
+		
+		Map<String, DFEOutput> aliases = tAliasInt.getAliases();
+		
+		if (aliases.isEmpty()){
+			aliases = super.getAliases();
+		}
+		
+		return aliases;
+	}
 }

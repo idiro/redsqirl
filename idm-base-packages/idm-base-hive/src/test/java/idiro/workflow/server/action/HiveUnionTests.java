@@ -45,7 +45,7 @@ public class HiveUnionTests {
 				);
 		src.update(src.getInteraction(Source.key_datatype));
 		Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype).getTree();
-		dataTypeTree.getFirstChild("list").getFirstChild("output").add("Hive");
+		dataTypeTree.getFirstChild("list").getFirstChild("output").add("Apache Hive Metastore");
 		
 		src.update(src.getInteraction(Source.key_datasubtype));
 		Tree<String> dataSubTypeTree = src.getInteraction(Source.key_datasubtype).getTree();
@@ -130,6 +130,8 @@ public class HiveUnionTests {
 				alias2 = swp;
 			}
 		}
+		
+		hive.update(hive.gettAliasInt());
 		
 		logger.debug("updated hive aliases");
 		HiveTableUnionInteraction tsi = hive.gettUnionSelInt();
