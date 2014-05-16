@@ -25,12 +25,13 @@ public class SessionListener implements HttpSessionListener{
 		HttpSession session = arg0.getSession();
 		ServletContext sc = session.getServletContext();
 		Map<String, HttpSession> sessionLoginMap = (Map<String, HttpSession>) sc.getAttribute("sessionLoginMap");
-
+		String userName = (String) session.getAttribute("username");
+		
 		try{
 			ServerProcess th = (ServerProcess) session.getAttribute("serverThread");
 			if (th != null){
 				logger.info("kill serverThread");
-				th.kill(session);
+				th.kill(session,userName);
 			}
 		}catch(Exception e){
 			logger.warn("Fail to kill server process thread");
@@ -48,7 +49,6 @@ public class SessionListener implements HttpSessionListener{
 		}
 
 
-		String userName = (String) session.getAttribute("username");
 		try {
 			Registry registry = (Registry) sc.getAttribute("registry");
 			for (String name : registry.list()){

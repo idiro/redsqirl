@@ -65,7 +65,7 @@ public class ServerProcess {
 				list.add(this);
 				try {
 
-					ProcessesManager pm = new WorkflowProcessesManager();
+					ProcessesManager pm = new WorkflowProcessesManager(user);
 					killOldProcess(pm, user);
 					final String command = BaseCommand.getBaseCommand(user,port)
 							+ " 1>/dev/null & echo $! 1> "+pm.getPath();
@@ -197,7 +197,7 @@ public class ServerProcess {
 	 * @return
 	 * @author Igor.Souza
 	 */
-	public void kill(HttpSession httpSession) {
+	public void kill(HttpSession httpSession,String user) {
 		logger.info("kill attempt");
 		if (session != null && run) {
 			logger.info(1);
@@ -216,7 +216,7 @@ public class ServerProcess {
 				logger.error(e.getMessage());
 			}
 			try{
-				kill(new WorkflowProcessesManager().getPid());
+				kill(new WorkflowProcessesManager(user).getPid());
 			}catch(Exception e){
 				logger.info("Exception: "+e.getMessage());
 			}
