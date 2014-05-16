@@ -7,6 +7,75 @@
 
 <a4j:loadBundle basename="MessagesResources" var="messages" />
         
+<script>
+    var minSize = true;
+    function toggleTableSize(){
+        if(minSize){
+            //alert("hide all: "+minSize);
+            //alert("canvasModalHeader");
+            jQuery("#canvasModalHeader").hide();
+            jQuery('[id$="panelBtCanvasModal"]').hide();
+            
+            //alert("canvasModalInteractionHeader_");
+            jQuery('[id^="canvasModalInteractionHeader_"]').hide();
+            //alert("input");
+            if(jQuery('[id$="inputInteractionRegion"]')){
+                jQuery('[id$="inputInteractionRegion"]').hide();
+            }
+            //alert("list");
+            if(jQuery('[id$="listInteractionRegion"]')){
+                jQuery('[id$="listInteractionRegion"]').hide();
+            }
+            //alert("append");
+            if(jQuery('[id$="appendListInteractionRegion"]')){
+                jQuery('[id$="appendListInteractionRegion"]').hide();
+            }
+            //alert("browser");
+            if(jQuery('[id$="browserInteractionRegion"]')){
+                jQuery('[id$="browserInteractionRegion"]').hide();
+            }
+            //alert("text");
+            if(jQuery('[id$="textEditorInteractionRegion"]')){
+                jQuery('[id$="textEditorInteractionRegion"]').hide();
+            }
+            //alert("div");
+            jQuery("#DivTableInteraction").css("height","390");
+        }else{
+            //alert("show all: "+minSize);
+            
+            //alert("canvasModalHeader");
+            jQuery("#canvasModalHeader").show();
+            jQuery('[id$="panelBtCanvasModal"]').show();
+            //alert("canvasModalInteractionHeader_");
+            jQuery('[id^="canvasModalInteractionHeader_"]').show();
+            //alert("input");
+            if(jQuery('[id$="inputInteractionRegion"]')){
+                jQuery('[id$="inputInteractionRegion"]').show();
+            }
+            //alert("list");
+            if(jQuery('[id$="listInteractionRegion"]')){
+                jQuery('[id$="listInteractionRegion"]').show();
+            }
+            //alert("append");
+            if(jQuery('[id$="appendListInteractionRegion"]')){
+                jQuery('[id$="appendListInteractionRegion"]').show();
+            }
+            //alert("browser");
+            if(jQuery('[id$="browserInteractionRegion"]')){
+                jQuery('[id$="browserInteractionRegion"]').show();
+            }
+            //alert("text");
+            if(jQuery('[id$="textEditorInteractionRegion"]')){
+                jQuery('[id$="textEditorInteractionRegion"]').show();
+            }
+            //alert("div");
+            jQuery("#DivTableInteraction").css("height","220px");
+        }
+        minSize= !minSize;
+        //alert("new value: "+minSize);
+    }
+</script>
+        
 <h:form>
         
     <div id="domMessageDivModal" style="display: none;">
@@ -39,26 +108,43 @@
         <rich:tab id="confTabCM" label="#{messages.label_dynamic_configuration}" style="border:none;border-collapse:collapse;" >
         <rich:panel id="panelDynamicForm" style="border:none;min-height: 465px;" >
             
-            <img src="#{canvasModalBean.pathImage}" style="margin-top:-25px;margin-left:-15px;"/>
-            <h1><h:outputText value="#{canvasModalBean.pageTitle}"/></h1>
+            <span id="canvasModalHeader">
             
-            <br/>
-            <p><h:outputText value="#{canvasModalBean.pageLegend}"/></p>
+                <table style="width:100%;display:block;">
+                    <tbody style="width:100%">
+                        <tr style="width:100%;right:0px;position:relative;">
+                            <td style="width:50px;padding:0px;margin:0px;" >
+                                <img src="#{canvasModalBean.pathImage}"/>
+                            </td>
+                            <td style="width:700px;padding:0px;margin:0px;">
+                                <h1><h:outputText value="#{canvasModalBean.pageTitle}"/></h1>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <p><h:outputText value="#{canvasModalBean.pageLegend}"/></p>
+            
+            </span>
         
             <a4j:repeat value="#{canvasModalBean.inters}" var="interCur" rowKeyVar="interCurIdx" id="dynamicFormInteraction" >
                 
-                <h2><h:outputText value="#{interCur.name}"/></h2>
+                <span id="canvasModalInteractionHeader_#{interCurIdx}">
+                    
+                    <h2><h:outputText value="#{interCur.name}"/></h2>
+                    
+                    <p><h:outputText value="#{interCur.legend}"/></p>
+                    
+                </span>
                 
-                <p><h:outputText value="#{interCur.legend}"/></p>
-                
-                        <!-- input -->
-                          <a4j:region>
-                            <h:inputText  value="#{interCur.input.inputValue}" maxlength="255" style="width:395px;" styleClass="interModal" rendered="#{interCur.displayType == 'input'}"
-                                onkeypress="return disableEnterKey(event);"/>
-                          </a4j:region>     
+                <!-- input -->
+                <a4j:region id="inputInteractionRegion" rendered="#{interCur.displayType == 'input'}">
+                    <h:inputText  value="#{interCur.input.inputValue}" maxlength="255" style="width:395px;" styleClass="interModal"
+                        onkeypress="return disableEnterKey(event);"/>
+                </a4j:region>     
                 
                 <!-- list -->
-                <a4j:region rendered="#{interCur.displayType == 'list'}">
+                <a4j:region id="listInteractionRegion"  rendered="#{interCur.displayType == 'list'}">
                     <rich:comboBox value="#{interCur.list.selectedListOption}" selectFirstOnUpdate="false" width="200" 
                         listWidth="150" listHeight="200" enableManualInput="false" rendered="#{interCur.list.comboBox == 'Y'}" >
                         <f:selectItems value="#{interCur.list.listOptions}" />
@@ -69,17 +155,23 @@
                     </h:selectOneRadio>
                 </a4j:region>
                 <!-- appendList -->
-                <a4j:region rendered="#{interCur.displayType == 'appendList'}">
-                    <h:selectManyListbox value="#{interCur.appendList.selectedAppendListOptions}" rendered="#{interCur.appendList.comboBox == 'Y'}" >
+                <a4j:region id="appendListInteractionRegion" rendered="#{interCur.displayType == 'appendList'}">
+                    <rich:pickList
+                        copyAllControlLabel="Select all"
+                        copyControlLabel="Select"
+                        removeAllControlLabel="Unselect all"
+                        removeControlLabel="Unselect"
+                        value="#{interCur.appendList.selectedAppendListOptions}" 
+                        rendered="#{interCur.appendList.comboBox == 'Y'}" >
                         <f:selectItems value="#{interCur.appendList.appendListOptions}" />
-                    </h:selectManyListbox>
+                    </rich:pickList>
                     
                     <h:selectManyCheckbox value="#{interCur.appendList.selectedAppendListOptions}" rendered="#{interCur.appendList.comboBox == 'N'}" layout="pageDirection" >
                         <f:selectItems value="#{interCur.appendList.appendListOptions}" />
                     </h:selectManyCheckbox>
                 </a4j:region>
                 <!-- browser -->
-                <a4j:region rendered="#{interCur.displayType == 'browser'}">
+                <a4j:region id="browserInteractionRegion" rendered="#{interCur.displayType == 'browser'}">
                     <rich:panel style="border:none;" id="browserPanel" >
                     
                         <h:outputText value="#{messages.label_path}" />
@@ -146,7 +238,7 @@
                 </a4j:region>
                 
                 <!-- helpTextEditor -->
-                <a4j:region rendered="#{interCur.displayType == 'helpTextEditor'}">
+                <a4j:region id="textEditorInteractionRegion" rendered="#{interCur.displayType == 'helpTextEditor'}">
                     <rich:panel style="border:none;" id="helpTextEditorPanel" >
                         <h:outputText value="#{messages.label_formula}" />
                         <br/>
@@ -169,7 +261,7 @@
                 </a4j:region>
                 
                 <!-- table -->
-                <a4j:region rendered="#{interCur.displayType == 'table'}">
+                <a4j:region id="tableInteractionRegion" rendered="#{interCur.displayType == 'table'}">
                     <rich:panel style="border:none;" id="tablePanel">
                         
         
@@ -190,11 +282,21 @@
                             </a4j:commandButton>
                             
                         </h:panelGrid>
-                        
-                        <br />
-                        <br />
-        
-                        <div id="DivTableInteraction" style="width:100%; height: 220px; border: 1px solid black; overflow-x: hidden;">
+                        <a4j:commandLink
+                            title="Add new line"
+                            action="#{interCur.addNewLine}"
+                            reRender="tableInteraction">
+                            <img id="tableInteractionBtAdd"
+                                src="../image/icons/button-plus.gif" />
+                        </a4j:commandLink>
+                        <a4j:commandLink
+                            style="float:right;"
+                            title="Resize"
+                            onclick="toggleTableSize();">
+                            <img id="tableInteractionBtResize"
+                                src="../image/icons/resize-6-24.gif" />
+                        </a4j:commandLink>
+                        <div id="DivTableInteraction" style="width:100%; height: 220px; border: 1px solid grey; overflow-x: hidden;">
                             
                             <rich:dataTable id="tableInteraction" value="#{interCur.table.tableGridRows}"
                                 var="rowItem" rowKeyVar="rowNb" width="100%" style="border:none;" 
@@ -203,10 +305,16 @@
                                 onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
         
                                 <rich:column style="border-bottom:0px;border-right:0px;"
+                                    width="20px;">
+                                    <h:outputText value="#{rowNb+1}" />
+                                </rich:column>
+        
+                                <rich:column style="border-bottom:0px;border-right:0px;"
                                     width="40px;">
                                     <f:facet name="header">
                                         <h:panelGrid columns="1" styleClass="">
                                         <a4j:commandLink
+                                            title="Delete selected lines"
                                             action="#{interCur.table.deleteLine}"
                                             reRender="tableInteraction"
                                             onclick="if(!confirm('Are you sure you want to delete the selected line?')){return false;}">
@@ -244,23 +352,17 @@
                                         <f:selectItems value="#{interCur.table.tableConstraints[column]}" />
                                     </rich:comboBox>
         
-        							<table>
-	        							<tr>
-	        								<td>
-	        									
-	        									<h:inputText value="#{rowItem.row[ind]}" rendered="#{interCur.columnType[column] == 'editor' }" styleClass="tableInteractionTextEditor" >
-			                                   	<a4j:commandButton action="#{canvasModalBean.openHelpTextEditorModal}" value="..." style="float:right;width:15%;" 
-			                                   		reRender="commandText,listFields,listFunctions,listCategories,listOperation,listCategoriesOperation,command,tableInteraction" 
-			                                   		oncomplete="#{rich:component('textEditorPanel')}.show()">
-			                                   		<a4j:actionparam  name="idInteraction" value="#{interCur.id}"/>
-			                                           <a4j:actionparam  name="rowKey" value="#{rowNb}"/>
-			                                           <a4j:actionparam  name="column" value="#{column}"/>
-												</a4j:commandButton>
-												</h:inputText>
-	        								
-	        								</td>
-	        							</tr>
-                                    </table>
+									<h:inputText value="#{rowItem.row[ind]}" 
+									       rendered="#{interCur.columnType[column] == 'editor' }" 
+									       styleClass="tableInteractionTextEditor" >
+                                   	<a4j:commandButton action="#{canvasModalBean.openHelpTextEditorModal}" value="..." style="float:right;width:15%;" 
+                                   		reRender="commandText,listFields,listFunctions,listCategories,listOperation,listCategoriesOperation,command,tableInteraction" 
+                                   		oncomplete="#{rich:component('textEditorPanel')}.show()">
+                                   		<a4j:actionparam  name="idInteraction" value="#{interCur.id}"/>
+                                           <a4j:actionparam  name="rowKey" value="#{rowNb}"/>
+                                           <a4j:actionparam  name="column" value="#{column}"/>
+									</a4j:commandButton>
+									</h:inputText>	        								
         
                                 </rich:columns>
         
@@ -268,16 +370,8 @@
                             
                             </div>
                         
-                        <a4j:commandLink
-                            action="#{interCur.addNewLine}"
-                            reRender="tableInteraction">
-                            <img id="tableInteractionBtAdd"
-                                src="../image/icons/button-plus.gif" />
-                        </a4j:commandLink>
-                        
                     </rich:panel>
                 </a4j:region>
-            <br />
             </a4j:repeat>
             
             
@@ -373,7 +467,7 @@
     
                 </rich:panel>
                 
-                    <rich:panel columns="2" style="border:none; float:right;">
+                    <rich:panel columns="3" style="border:none; float:right;">
                         <a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="closeDynamicForm();" reRender="panelBtCanvasModal, msnError, errorTable" />
                         <a4j:commandButton value="#{messages.button_apply}"  styleClass="greenButton" action="#{canvasModalBean.outputTab.confirmOutput}" />
                         <a4j:commandButton value="#{messages.button_ok}"  styleClass="greenButton" action="#{canvasModalBean.outputTab.confirmOutput}" oncomplete="#{rich:component('canvasModalPanel')}.hide();updateOutputStatus('#{canvasModalBean.idGroup}')"/>
