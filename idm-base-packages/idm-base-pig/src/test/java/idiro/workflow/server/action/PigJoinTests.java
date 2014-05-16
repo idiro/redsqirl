@@ -77,8 +77,9 @@ public class PigJoinTests {
 			String relation_from_1,
 			String relation_from_2,
 			HDFSInterface hInt) throws RemoteException, Exception{
-		
 		logger.debug("update pig...");
+		pig.update(pig.gettAliasInt());
+		
 		PigFilterInteraction ci = pig.getCondInt();
 		pig.update(ci);
 		Tree<String> cond = ci.getTree()

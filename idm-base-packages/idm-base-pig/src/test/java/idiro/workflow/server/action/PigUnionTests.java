@@ -83,7 +83,7 @@ public class PigUnionTests {
 			HDFSInterface hInt) throws RemoteException, Exception{
 		
 		logger.debug("update pig...");
-		
+		pig.update(pig.gettAliasInt());
 		PigTableUnionInteraction tsi = pig.gettUnionSelInt();
 		pig.update(tsi);
 		{
