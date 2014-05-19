@@ -1010,6 +1010,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			String tempPath = WorkflowPrefManager.getPathtmpfolder() + "/"
 					+ fileName + "_" + RandomString.getRandomName(4);
 			FileSystem fs = NameNodeVar.getFS();
+			if(!fs.isFile(new Path(filePath))){
+				return "'"+filePath+"' is not a file.";
+			}
 			fs.copyToLocalFile(new Path(filePath), new Path(tempPath));
 
 			File xmlFile = new File(tempPath);
