@@ -293,7 +293,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		if (cancel) {
 			if(th != null){
 				try {
-					String pid = new WorkflowProcessesManager().getPid();
+					String pid = new WorkflowProcessesManager(userName).getPid();
 					logger.info("Kill the process " + pid);
 					th.kill(pid);
 				} catch (IOException e) {
@@ -388,7 +388,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 			// Create home folder for this user if it does not exist yet
 			WorkflowPrefManager.createUserHome(userName);
 			if (th != null) {
-				String pid = new WorkflowProcessesManager().getPid();
+				String pid = new WorkflowProcessesManager(userName).getPid();
 				logger.info("Kill the process " + pid);
 				th.kill(pid);
 			}
@@ -511,7 +511,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		if (!buildBackend) {
 			if (th != null) {
 				try {
-					String pid = new WorkflowProcessesManager().getPid();
+					String pid = new WorkflowProcessesManager(userName).getPid();
 					logger.info("Kill the process " + pid);
 					th.kill(pid);
 				} catch (IOException e) {

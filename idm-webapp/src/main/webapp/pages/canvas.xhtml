@@ -1003,12 +1003,6 @@
 					reRender="tabFlowchart,errorTable,msnError" />
 					
 			</a4j:region>
-			
-			<a4j:region>
-				<a4j:jsFunction name="preLoadWorkflow"
-					reRender="killProcessBtn"
-					oncomplete="loadWorkflow();" />
-			</a4j:region>
 
 			<a4j:region>
 				<a4j:status onerror="jQuery('#canvas-tabs').unblock();"
@@ -1052,7 +1046,7 @@
 
 				<a4j:status
 					onstart="jQuery('#'+getSelected()).block({ message: jQuery('#domMessageDivCanvas2') });resizeBlockUICanvas();"
-					onerror="jQuery('#'+getSelected()).unblock();setRunning(getSelected(), 'test')" />
+					onerror="jQuery('#'+getSelected()).unblock();" />
 
 				<div id="domMessageDivCanvas2" style="display: none;">
 					<img src="../image/icons/waiting.gif" />
@@ -1074,7 +1068,7 @@
 
 				<a4j:jsFunction name="blockRunningWorkflow"
 					action="#{canvasBean.blockRunningWorkflow}"
-					oncomplete="jQuery('#'+getSelected()).unblock();setRunning(getSelected(), false);updateRunningStatus();updateAllOutputStatus();">
+					oncomplete="jQuery('#'+'#{canvasBean.blockingWorkflowName}').unblock();if('#{canvasBean.blockingWorkflowName}' == getSelected()){setRunning(getSelected(), false);updateRunningStatus();updateAllOutputStatus();}">
 				</a4j:jsFunction>
 
 			</a4j:region>

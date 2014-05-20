@@ -23,7 +23,7 @@ public class HelpBean extends BaseBean implements Serializable {
 	
 	
 	private static Logger logger = Logger.getLogger(HelpBean.class);
-	private static List<String[]> helpHtml = null;
+	private List<String[]> helpHtml = null;
 
 	public void calcHelpItens(){
 

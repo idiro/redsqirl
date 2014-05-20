@@ -55,6 +55,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private String errorTableState = new String();
 	private List<String> emptyList = new LinkedList<String>();
 
+	private String blockingWorkflowName;
+
 	/**
 	 * 
 	 * @return
@@ -223,15 +225,18 @@ public class CanvasBean extends BaseBean implements Serializable {
 			if (getIdMap().get(workflowName).get(paramGroupID) != null) {
 				try {
 					DataFlow df = getDf();
-					df.getElement(
-							getIdMap().get(workflowName).get(paramGroupID))
-							.setPosition(Double.valueOf(posX).intValue(),
-									Double.valueOf(posY).intValue());
-					logger.info(workflowName + " - "
-							+ getIdMap().get(workflowName).get(paramGroupID)
-							+ " - " + Double.valueOf(posX).intValue() + " - "
-							+ Double.valueOf(posY).intValue());
-
+					if(df != null){
+						df.getElement(
+								getIdMap().get(workflowName).get(paramGroupID))
+								.setPosition(Double.valueOf(posX).intValue(),
+										Double.valueOf(posY).intValue());
+						logger.info(workflowName
+								+ " - "
+								+ getIdMap().get(workflowName)
+										.get(paramGroupID) + " - "
+								+ Double.valueOf(posX).intValue() + " - "
+								+ Double.valueOf(posY).intValue());
+					}
 				} catch (RemoteException e) {
 					e.printStackTrace();
 				} catch (Exception e) {
@@ -428,6 +433,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				logger.info("set current worflow to " + newWfName);
 				setNameWorkflow(newWfName);
 				setDf(df);
+				df.setName(newWfName);
 
 				logger.info("Load element ids for front-end " + newWfName);
 				workflowMap.put(getNameWorkflow(), df);
@@ -584,6 +590,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				logger.info("save workflow " + nameWorkflow + " in " + path);
 				DataFlow df = getWorkflowMap().get(nameWorkflow);
 				setDf(df);
+				df.setName(nameWorkflow);
 				msg = df.save(path);
 				logger.info("save msg :" + msg);
 			} catch (Exception e) {
@@ -697,14 +704,20 @@ public class CanvasBean extends BaseBean implements Serializable {
 	}
 
 	public void blockRunningWorkflow() throws Exception {
+		logger.info("blockRunningWorkflow");
 		if (getDf() != null) {
+			String name = getDf().getName();
+			logger.info("blockRunningWorkflow: "+name);
 			try {
-				while (getDf().isrunning()) {
-					Thread.sleep(500);
+				while (name.equals(getDf().getName()) && getDf().isrunning()) {
+					Thread.sleep(250);
 				}
+				logger.info("current workflow name: "+name); 
 			} catch (Exception e) {
 			}
+			blockingWorkflowName = name;
 		}
+		logger.info("end blockRunningWorkflow");
 	}
 
 	public void calcWorkflowUrl() {
@@ -923,6 +936,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		if (!getWorkflowMap().containsKey(name)) {
 			dfi.addWorkflow(name);
 			workflowMap.put(name, dfi.getWorkflow(name));
+			dfi.getWorkflow(name).setName(name);
 			getIdMap().put(name, new HashMap<String, String>());
 		}
 
@@ -1466,6 +1480,13 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 */
 	public List<String> getEmptyList() {
 		return emptyList;
+	}
+
+	/**
+	 * @return the blockingWorkflowName
+	 */
+	public final String getBlockingWorkflowName() {
+		return blockingWorkflowName;
 	}
 
 }
