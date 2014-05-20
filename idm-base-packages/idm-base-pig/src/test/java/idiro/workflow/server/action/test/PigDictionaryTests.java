@@ -213,9 +213,9 @@ public class PigDictionaryTests {
 		TestUtils.logTestTitle("PigDictionaryTests#testConditionalOperation");
 		FeatureList features = getFeatures();
 		try {
-			isString("((col4) ? (colAgg) : ('b'))", features);
+			isString("((col4) ? colAgg : 'b')", features);
 			isString("((col2 > 0) ? (colAgg) : ('b'))", features);
-			isString("((col4) ? (colAgg) : ((col3 == 1) ? ('a') : ('b')))", features);
+			isString("((col4) ? colAgg : ((col3 == 1) ? 'a' : 'b'))", features);
 			is("((colAgg == 'a') ? (col2) : (1.0))", features, "DOUBLE");
 		} catch (Exception e) {
 			logger.error("Exception when testing conditional operations: "
