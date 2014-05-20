@@ -341,7 +341,6 @@ function selectAllCheckbox(checkbox, checkboxId) {
 }
 
 
-
 (function(jQuery) {
 	  if (jQuery.fn.style) {
 	    return;
@@ -405,6 +404,7 @@ function selectAllCheckbox(checkbox, checkboxId) {
 	    }
 	  };
 	})(jQuery);
+
 
 function nospaces(t){
 	if(t.value.match(/\s/g)){

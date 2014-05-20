@@ -1,5 +1,6 @@
 package idm;
 
+import idiro.utils.FeatureList;
 import idiro.utils.LocalFileSystem;
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idiro.workflow.server.enumeration.SavingState;
@@ -26,6 +27,7 @@ import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.WordUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -975,14 +977,17 @@ public class CanvasBean extends BaseBean implements Serializable {
 		return result;
 	}
 
-	private String[] getOutputStatus(DataFlowElement dfe, String groupId)
-			throws RemoteException {
+	private String[] getOutputStatus(DataFlowElement dfe, String groupId) throws RemoteException {
 
 		logger.info("getOutputStatus");
 
 		String state = null;
 		String pathExistsStr = null;
+		StringBuffer tooltip = new StringBuffer();
 
+		tooltip.append("<center><span style='font-size:15px;'>" + dfe.getComponentId() + "</span></center><br/>");
+		tooltip.append("Type: " + WordUtils.capitalizeFully(dfe.getName().replace('_', ' ')) + "<br/>");
+		
 		if (dfe != null && dfe.getDFEOutput() != null) {
 			boolean pathExists = false;
 			for (Entry<String, DFEOutput> e : dfe.getDFEOutput().entrySet()) {
@@ -1009,8 +1014,51 @@ public class CanvasBean extends BaseBean implements Serializable {
 						state = stateCur;
 					}
 				}
+				
+				tooltip.append("<br/>");
+				if(!e.getKey().isEmpty()){
+					tooltip.append("Output Name: " + e.getKey() + "<br/>");
+				}else{
+					tooltip.append("<span style='font-size:14px;'>&nbsp;Output " + "</span><br/>");
+				}
+				tooltip.append("Output Type: " + e.getValue().getTypeName() + "<br/>");
+				
+				if(e.getValue().isPathExists()){
+					tooltip.append("Output Path: <span style='color:#adff2f'>" + e.getValue().getPath() + "</span><br/>");
+				}else{
+					tooltip.append("Output Path: <span style='color:#d2691e'>" + e.getValue().getPath() + "</span><br/>");
+				}
+				//tooltip.append("Path exist: " + e.getValue().isPathExists() + "<br/>");
 
 			}
+			
+			if (dfe != null && dfe.getDFEOutput() != null) {
+				for (Entry<String, DFEOutput> e : dfe.getDFEOutput().entrySet()) {
+					if(e.getValue().getFeatures() != null && e.getValue().getFeatures().getFeaturesNames() != null){
+						tooltip.append("<br/>");
+						tooltip.append("<table style='border:1px solid;width:100%;'>");
+						if(e.getKey() != null){
+							tooltip.append("<tr><td colspan='1'>" + e.getKey() +"</td></tr>");
+						}
+						tooltip.append("<tr><td> Features </td><td> Type </td></tr>");
+						int row = 0;
+						for (String name : e.getValue().getFeatures().getFeaturesNames()) {
+							if((row%2)==0){
+								tooltip.append("<tr class='odd-row'>");
+							}else{
+								tooltip.append("<tr>");
+							}
+							tooltip.append("<td>" + name + "</td>");
+							tooltip.append("<td>" + e.getValue().getFeatures().getFeatureType(name) + "</td></tr>");
+							row++;
+						}
+						tooltip.append("</table>");
+						tooltip.append("<br/>");
+					}
+				}
+			}
+			
+			
 			if (!dfe.getDFEOutput().isEmpty()) {
 				pathExistsStr = String.valueOf(pathExists);
 			}
@@ -1019,9 +1067,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 			logger.info("state " + state);
 			logger.info("pathExists " + String.valueOf(pathExistsStr));
 		}
-		logger.info("output status result " + groupId + " - " + state + " - "
-				+ pathExistsStr);
-		return new String[] { groupId, state, pathExistsStr };
+		logger.info("output status result " + groupId + " - " + state + " - " + pathExistsStr);
+		return new String[] { groupId, state, pathExistsStr, tooltip.toString() };
 	}
 
 	/**
@@ -1177,15 +1224,50 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		String color = null;
 		String typeName = null;
+		StringBuffer tooltip = new StringBuffer();
 
 		if(getDf() != null){
 			DataFlowElement df = getDf().getElement(
 					getIdMap().get(getNameWorkflow()).get(groupOutId));
+			DataFlowElement dfIn = getDf().getElement(
+					getIdMap().get(getNameWorkflow()).get(groupInId));
 			if (df != null && df.getDFEOutput() != null) {
 				for (Entry<String, DFEOutput> e : df.getDFEOutput().entrySet()) {
 					if (e.getKey().equals(outputName)) {
 						color = e.getValue().getColour();
 						typeName = e.getValue().getTypeName();
+						
+						tooltip.append("<center><span style='font-size:15px;'>" + df.getComponentId() + " -> " + dfIn.getComponentId() + "</span></center><br/>");
+						if(!outputName.isEmpty()){
+							tooltip.append("Name: " + outputName + "<br/>");
+						}
+						tooltip.append("Type: " + typeName + "<br/>");
+						
+						if(e.getValue().isPathExists()){
+							tooltip.append("Path: <span style='color:#adff2f'>" + e.getValue().getPath() + "</span><br/>");
+						}else{
+							tooltip.append("Path: <span style='color:#d2691e'>" + e.getValue().getPath() + "</span><br/>");
+						}
+						//tooltip.append("Path exist: " + e.getValue().isPathExists() + "<br/>");
+						
+						if(e.getValue().getFeatures() != null && e.getValue().getFeatures().getFeaturesNames() != null){
+							tooltip.append("<br/>");
+							tooltip.append("<table style='border:1px solid;width:100%;'><tr><td> Name </td><td> Type </td></tr>");
+							int row = 0;
+							for (String name : e.getValue().getFeatures().getFeaturesNames()) {
+								if((row%2)==0){
+									tooltip.append("<tr class='odd-row'>");
+								}else{
+									tooltip.append("<tr>");
+								}
+								tooltip.append("<td>" + name + "<td>");
+								tooltip.append("<td>" + e.getValue().getFeatures().getFeatureType(name) + "</td></tr>");
+								row++;
+							}
+							tooltip.append("</table>");
+							tooltip.append("<br/>");
+						}
+						
 						logger.info(e.getKey() + " - " + color);
 						break;
 					}
@@ -1197,7 +1279,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		logger.info("getArrowType " + color + " " + typeName);
 
-		return new String[] { groupOutId, groupInId, color, typeName };
+		return new String[] { groupOutId, groupInId, color, typeName, tooltip.toString() };
 	}
 
 	public String[] getArrowType() throws Exception {
