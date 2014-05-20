@@ -121,7 +121,7 @@ function configureCanvas(canvasName){
 	// layer to legend
 	var legendLayer = new Kinetic.Layer();
 	canvasArray[canvasName].legendLayer = legendLayer;
-
+	
 	// set width of the canvas
 	jQuery("#"+canvasContainer).css("width", jQuery(canvasName).width() + 'px');
 	
@@ -180,6 +180,7 @@ function configureCanvas(canvasName){
 	});
 
 	canvasArray[canvasName].arrow.on('click', function(e) {
+		jQuery(".tooltipCanvas").remove();
 
 		if (!e.ctrlKey) {
 			jQuery.each(layer.getChildren(), function(index, value) {
@@ -194,6 +195,18 @@ function configureCanvas(canvasName){
 		this.selected = true;
 		canvasArray[canvasName].clickArrow = true;
 		stage.draw();
+	});
+	
+	canvasArray[canvasName].arrow.on('mouseover', function(e) {
+		var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+this.tooltipArrow+'</div>');
+		help.css("top",(e.pageY)+"px" );
+		help.css("left",(e.pageX)+"px" );
+		jQuery("body").append(help);
+	    help.fadeIn("slow");
+	});
+	
+	canvasArray[canvasName].arrow.on('mouseout', function(e) {
+		jQuery(".tooltipCanvas").remove();
 	});
 
 	jQuery("#"+canvasContainer).click(
@@ -1107,7 +1120,7 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
 	        canvas.stroke(this);
 	    },
 	    fill: '#00D2FF',
-	    stroke: 'silver',
+	    stroke: '#c0c0c0',
 	    strokeWidth: 4,
 	    draggable:false
 	});
@@ -1126,7 +1139,7 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
 	        canvas.stroke(this);
 	    },
 	    fill: '#00D2FF',
-	    stroke: 'silver',
+	    stroke: '#c0c0c0',
 	    strokeWidth: 4,
 	    draggable:false
 	});
@@ -1145,9 +1158,51 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
 	        canvas.stroke(this);
 	    },
 	    fill: '#00D2FF',
-	    stroke: 'silver',
+	    stroke: '#c0c0c0',
 	    strokeWidth: 4,
 	    draggable:false
+	});
+	
+	var stage = canvasArray[selectedCanvas].stage;
+	
+	arc1.on('mouseover', function(e) {
+		var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+ getLabelOutputType(this.getStroke()) +'</div>');
+		help.css("top",(e.pageY)+"px" );
+		help.css("left",(e.pageX)+"px" );
+		jQuery("body").append(help);
+	    help.fadeIn("slow");
+	});
+	
+	arc1.on('mouseout', function(e) {
+		jQuery(".tooltipCanvas").remove();
+	});
+	
+	arc2.on('mouseover', function(e) {
+		var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+ getLabelRunning(this.getStroke()) +'</div>');
+		help.css("top",(e.pageY)+"px" );
+		if(this.getStroke() == '#008000'){
+			help.css("left",(e.pageX)-140+"px" );
+		}else{
+			help.css("left",(e.pageX)-190+"px" );
+		}
+		jQuery("body").append(help);
+	    help.fadeIn("slow");
+	});
+	
+	arc2.on('mouseout', function(e) {
+		jQuery(".tooltipCanvas").remove();
+	});
+	
+	arc3.on('mouseover', function(e) {
+		var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+ getLabelOutputExistence(this.getStroke()) +'</div>');
+		help.css("top",(e.pageY)+"px" );
+		help.css("left",(e.pageX)+"px" );
+		jQuery("body").append(help);
+	    help.fadeIn("slow");
+	});
+	
+	arc3.on('mouseout', function(e) {
+		jQuery(".tooltipCanvas").remove();
 	});
 	
 
@@ -1166,6 +1221,8 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
 	polygonLayer.add(group);
 
 	configureGroup(canvasName, group, posx, posy, polygon);
+	
+	group.tooltipObj = "Type: " + ucFirstAllWords(elementType.split("_").join(" "));
 	
 	return group;
 }
@@ -1393,7 +1450,19 @@ function mountObj(canvasName) {
 				polygonTabFake.on('click',function() {
                     jQuery("#help_"+typeText.getText()).click();
                 });
-
+				
+				polygonTabFake.on('mouseover',function(e) {
+					var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+ ucFirstAllWords(labelText.split("_").join(" ")) +'</div>');
+					help.css("top",(e.pageY)+"px" );
+					help.css("left",(e.pageX)+"px" );
+					jQuery("body").append(help);
+				    help.fadeIn("slow");
+                });
+				
+				polygonTabFake.on('mouseout', function(e) {
+					jQuery(".tooltipCanvas").remove();
+				});
+				
 				polygonTabFake.on('dragend',function() {
 					
 					var stage = canvasArray[selectedCanvas].stage;
@@ -1678,6 +1747,7 @@ function configureGroupListeners(canvasName, group) {
 		dragAndDropGroup(canvasName, this, e);
 		changePositionArrow(canvasName, this);
 		group.getChildren()[2].off('click');
+		jQuery(".tooltipCanvas").remove();
 	});
 
 	group.on('dragend', function(e) {
@@ -1685,6 +1755,7 @@ function configureGroupListeners(canvasName, group) {
 			return rulesDragAndDropObj(canvasName, pos, 80, 80);
 		});
 		makeHistory(canvasName);
+		jQuery(".tooltipCanvas").remove();
 	});
 	
 	group.on('click', function(e) {
@@ -1700,6 +1771,7 @@ function configureGroupListeners(canvasName, group) {
               cmenuCanvas.show(this,e);
               return false;
         }
+	    jQuery(".tooltipCanvas").remove();
 	});
 
 }
@@ -1864,16 +1936,27 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
 	});
 
 	polygon.on('click', function(e) {
-
 		polygonOnClick(this, e, canvasName);
-
 	});
 
 	polygon.on('mousedown', function(e) {
-
 		deselectOnClick(selectedCanvas, this, e);
-
 	});
+	
+	var stage = canvasArray[canvasName].stage;
+	
+	polygon.on('mouseover', function(e) {
+		var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+this.getParent().tooltipObj+'</div>');
+		help.css("top",(e.pageY)+"px" );
+		help.css("left",(e.pageX)+"px" );
+		jQuery("body").append(help);
+	    help.fadeIn("slow");
+	});
+	
+	polygon.on('mouseout', function(e) {
+		jQuery(".tooltipCanvas").remove();
+	});
+	
 
 	return [ polygon, polygonTab, polygonTabImage ];
 }
@@ -1983,6 +2066,24 @@ function updateLabelObj(groupId, newGroupId) {
 
 }
 
+function getLabelOutputType(color){
+	
+	var text = "Output Type: ";
+	
+	if (color == "#800080"){ //purple
+		return text+"Temporary";
+	}
+	else if (color == "#f08080"){  //lightcoral
+		return text+"Recorded";
+	}
+	else if (color == "#4682b4"){ //steelblue
+		return text+"Buffered";
+	}
+	else {
+		return text+"Undefined"; //silver
+	}
+}
+
 function getColorOutputType(status){
 	if (status == "TEMPORARY"){
 		return "#800080"; //purple
@@ -1998,6 +2099,19 @@ function getColorOutputType(status){
 	}
 }
 
+function getLabelOutputExistence(color){
+	
+	var text = "Output Dataset: ";
+	
+	if (color == "#adff2f"){ //greenyellow
+		return text+"At least one dataset exists";
+	}else if (color == "#d2691e"){ //chocolate
+		return  text+"No Dataset exist";
+	}else {
+		return text+"Undefined"; //silver
+	}
+}
+
 function getColorOutputExistence(fileExists){
 	
 	if (fileExists == "true"){
@@ -2006,6 +2120,21 @@ function getColorOutputExistence(fileExists){
 		return "#d2691e" //chocolate
 	}else {
 		return "#c0c0c0"; //silver
+	}
+}
+
+function getLabelRunning(color){
+
+	var text = "Running Status: ";
+
+	if (color == "#008000"){ //green
+		return text+"OK"; 
+	}
+	else if (color == "#ff0000"){
+		return text+"Error"; //red
+	}
+	else {
+		return text+"Undefined"; //silver
 	}
 }
 
@@ -2031,7 +2160,7 @@ function updateAllOutputStatus() {
 	}
 }
 
-function updateActionOutputStatus(groupId, status, fileExists) {
+function updateActionOutputStatus(groupId, status, fileExists, tooltip) {
 	
 	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
 	
@@ -2039,6 +2168,8 @@ function updateActionOutputStatus(groupId, status, fileExists) {
 	
 	group.getChildren()[5].setStroke(getColorOutputType(status));
 	group.getChildren()[7].setStroke(getColorOutputExistence(fileExists));
+	
+	group.tooltipObj = tooltip;
 	
 	polygonLayer.draw();
 
@@ -2057,7 +2188,7 @@ function updateActionRunningStatus(groupId, status, fileExists) {
 
 }
 
-function updateArrowType(idOutput, idInput, color, type) {
+function updateArrowType(idOutput, idInput, color, type, tooltip) {
 	
 	var layer = canvasArray[selectedCanvas].layer;
 
@@ -2067,6 +2198,7 @@ function updateArrowType(idOutput, idInput, color, type) {
 				if (value.idOutput == idOutput && value.idInput == idInput){
 					value.setStroke(color);
 					value.originalColor = color;
+					value.tooltipArrow = tooltip;
 					return false;
 				}
 			}

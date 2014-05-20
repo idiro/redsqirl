@@ -425,7 +425,7 @@
 	    	//<![CDATA[
 	    	  for (var i = 0; i < status.length; i++) {
 		    	  //alert(status[i][0] + " " + status[i][1] + " " + status[i][2]);
-		    	  updateActionOutputStatus(status[i][0], status[i][1], status[i][2]);
+		    	  updateActionOutputStatus(status[i][0], status[i][1], status[i][2], status[i][3]);
 	    	  }
 	    	//]]>
 	      }
@@ -914,7 +914,7 @@
 
 				<a4j:jsFunction name="updateArrowColor"
 					data="#{canvasBean.arrowType}"
-					oncomplete="updateArrowType(data[0], data[1], data[2], data[3]);updateArrowLabel(data[0], data[1], '#{canvasBean.linkLabel}');">
+					oncomplete="updateArrowType(data[0], data[1], data[2], data[3], data[4]);updateArrowLabel(data[0], data[1], '#{canvasBean.linkLabel}');">
 					<a4j:actionparam name="groupOutId" />
 					<a4j:actionparam name="groupInId" />
 					<a4j:actionparam name="outputName" />
@@ -929,7 +929,7 @@
 
 				<a4j:jsFunction name="updateAllArrowColor"
 					data="#{canvasBean.allArrowType}"
-					oncomplete="updateArrowType(data[0], data[1], data[2], data[3]);updateArrowLabel(data[0], data[1], '#{canvasBean.linkLabel}');">
+					oncomplete="updateArrowType(data[0], data[1], data[2], data[3], data[4]);updateArrowLabel(data[0], data[1], '#{canvasBean.linkLabel}');">
 					<a4j:actionparam name="groupOutId" />
 					<a4j:actionparam name="groupInId" />
 				</a4j:jsFunction>
