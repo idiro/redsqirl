@@ -38,13 +38,10 @@
 	</a4j:commandLink>
     
     <div style="width:100%;overflow:auto;height:305px;margin-top:5px;margin-bottom:10px;">
-	<rich:extendedDataTable id="hdfsfsCopy" value="#{hdfsBean.tableGrid.rows}" var="item" rowKeyVar="indexTable" width="100%" style="border:none;"
+	
+	<rich:dataTable id="hdfsfsCopy" value="#{hdfsBean.tableGrid.rows}" var="item" rowKeyVar="indexTable" width="100%" style="border:none;"
 		onRowMouseOver="this.style.backgroundColor='#F1F1F1'" enableContextMenu="false" selectionMode="none"
 		onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'" rowClasses="even-row, odd-row">
-
-		<f:facet name="header">
-			<h:outputText value="File System" />
-		</f:facet>
 
 		<rich:column style="border-bottom:0px;border-right:0px;" width="32px;">
 			<f:facet name="header">
@@ -71,6 +68,7 @@
 				<h:outputText value="#{messages.label_name}" />
 			</f:facet>
 			<a4j:commandLink value="#{hdfsBean.allProps[indexTable]['name']}"
+				title="#{hdfsBean.allProps[indexTable]['name']}"
 				action="#{hdfsBean.selectFile}" reRender="pathCopy,hdfsfsCopy">
 				<f:param name="nameFile" value="#{hdfsBean.allProps[indexTable]['name']}" />
 			</a4j:commandLink>
@@ -81,10 +79,10 @@
 			<f:facet name="header">
 				<h:outputText value="#{column}" />
 			</f:facet>
-			<h:outputText value="#{item.row[ind]}" />
+			<h:outputText value="#{item.row[ind]}" title="#{item.row[ind]}" />
 		</rich:columns>
 
-	</rich:extendedDataTable>
+	</rich:dataTable>
     </div>
 
 	<h:panelGrid columns="2" id="copyMovelBt">
@@ -92,8 +90,7 @@
 			reRender="hdfsfs,msnError,hdfspath" oncomplete="resizeTables(); if(#{requestScope['msnError'] == null}){#{rich:component('modalCopyMoveHdfs')}.hide();}"/>
 		<a4j:commandButton  styleClass="greenButton" action="#{hdfsBean.moveFileAfter}" value="#{messages.button_ok}" rendered="#{hdfsBean.showCopyMove == 'M'}"
 			reRender="hdfsfs,msnError,hdfspath" oncomplete="resizeTables(); if(#{requestScope['msnError'] == null}){#{rich:component('modalCopyMoveHdfs')}.hide();}"/>
-		<a4j:commandButton  styleClass="greenButton" value="#{messages.button_cancel}" type="button" 
-			onclick="#{rich:component('hdfscopyModalPanel')}.hide();" />
+		<a4j:commandButton  styleClass="greenButton" value="#{messages.button_cancel}" type="button" onclick="#{rich:component('modalCopyMoveHdfs')}.hide();" />
 	</h:panelGrid>
 
 </ui:composition>

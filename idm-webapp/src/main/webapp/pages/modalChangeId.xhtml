@@ -29,7 +29,7 @@
 
 		<h:outputText value="Name" />
 		<h:inputText label="Name" value="#{canvasModalBean.elementId}" size="16" style="padding-left: 3px;" styleClass="interModal" maxlength="15" id="newIdElement" 
-			onkeypress="return enableEnterKey(event, 'changeIdElementBt');" />
+			onkeypress="return enableEnterKey(event, 'changeIdElementBt');" onkeyup="nospaces(this);" />
 	
 		<h:panelGrid columns="1">
 			<a4j:commandButton id="changeIdElementBt" styleClass="greenButton" reRender="msnError, errorTable,newIdElement"

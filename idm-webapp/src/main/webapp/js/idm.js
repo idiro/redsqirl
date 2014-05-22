@@ -411,3 +411,7 @@ function nospaces(t){
 		t.value=t.value.replace(/\s/g,'');
 	}
 }
+
+function setPropValueFocus(index){
+	jQuery("[id$='"+index+":browserPropValueInput']").focus();
+}

@@ -9,9 +9,9 @@
 
 	<div id="sshFileSystem" style="min-width: 400px; overflow: hidden; min-height: 190px;">
 		
-		<rich:dragIndicator id="indicator" />
 		
-		<a4j:form>
+		<rich:dragIndicator id="indicator" />
+		<h:form>
 			<br/>
 			<h:outputText value="#{messages.label_path}" style="padding-left:10px"/>
 			<h:inputText id="sshpath" styleClass="mainPageTextField"  label="Path" value="#{sshBean.path}"
@@ -40,8 +40,7 @@
 			<br />
 
 			<rich:panel style="border:none">
-			
-				<rich:dropSupport  acceptedTypes="hdfs" dropListener="#{sshBean.processDrop}" reRender="sshfs" oncomplete="resizeTables();"/>
+				<rich:dropSupport id="panelDropSupportSsh" acceptedTypes="hdfs" dropListener="#{sshBean.processDrop}" reRender="sshfs" oncomplete="resizeTables();"/>
 				
 				<rich:extendedDataTable id="sshfs" value="#{sshBean.tableGrid.rows}"
 					var="item" rowKeyVar="indexTable" width="100%" style="border:none;"
@@ -61,8 +60,7 @@
 						    action="#{sshBean.verifyIfIsFile}"
 	     					oncomplete="selectFileSsh('#{sshBean.file}', '#{sshBean.allProps[indexTable]['name']}')">
 	     						<f:param name="nameFile" value="#{sshBean.allProps[indexTable]['name']}" />
-	     						<rich:dragSupport dragIndicator=":indicator"
-                               	 	dragValue="#{sshBean.allProps[indexTable]['name']}" dragType="ssh">
+	     						<rich:dragSupport dragIndicator=":indicator" dragValue="#{sshBean.allProps[indexTable]['name']}" dragType="ssh">
 	                                <rich:dndParam name="label" value="#{sshBean.allProps[indexTable]['name']}" />
 	                                <a4j:actionparam name="file" value="#{sshBean.allProps[indexTable]['name']}" />
 	                                <a4j:actionparam name="path" value="#{sshBean.path}" />
@@ -81,6 +79,6 @@
 	
 				</rich:extendedDataTable>
 			</rich:panel>
-		</a4j:form>
+		</h:form>
 	</div>
 </ui:composition>
