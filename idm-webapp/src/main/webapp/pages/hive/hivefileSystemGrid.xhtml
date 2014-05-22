@@ -30,8 +30,8 @@
 <body>
 
 	<a4j:keepAlive beanName = "hiveBean"/>
-	<div id="hiveFileSystem"
-		style="min-width: 400px; overflow: hidden; min-height: 200px;">
+	<div id="hiveFileSystem" style="min-width: 400px; overflow: hidden; min-height: 200px;">
+	
 		<h:form>
 		
 			<a4j:jsFunction name="openFileHive" action="#{hiveBean.openFile}" oncomplete="#{rich:component('hiveOpenFileModalPanel')}.show();jQuery('#tabs-4').unblock();" >
@@ -122,13 +122,6 @@
 					    action="#{hiveBean.verifyIfIsFile}"
      					oncomplete="selectFileHive('#{hiveBean.file}', '#{hiveBean.allProps[indexTable]['name']}')">
      						<f:param name="nameFile" value="#{hiveBean.allProps[indexTable]['name']}" />
-     						<rich:dragSupport dragIndicator=":indicator"
-                                dragValue="#{hiveBean.allProps[indexTable]['name']}" dragType="text">
-                                <rich:dndParam name="label" value="#{hiveBean.allProps[indexTable]['name']}" />
-                                <a4j:actionparam name="file" value="#{hiveBean.allProps[indexTable]['name']}" />
-                                <a4j:actionparam name="path" value="#{hiveBean.path}" />
-                                <a4j:actionparam name="type" value="hive" />
-                            </rich:dragSupport>
      				</a4j:commandLink>
 				</rich:column>
 

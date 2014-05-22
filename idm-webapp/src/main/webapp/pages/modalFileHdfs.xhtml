@@ -109,8 +109,8 @@
 	
 	<div style="width:590px;height:250px;overflow:auto;" id="divFileHdfs" >
 	
-	   <rich:extendedDataTable id="hdfsfsFile" value="#{browserHdfsBean.tableGrid.rows}" var="item" rowKeyVar="indexTable"
-            width="50px" height="10px" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+	   <rich:dataTable id="hdfsfsFile" value="#{browserHdfsBean.tableGrid.rows}" var="item" rowKeyVar="indexTable"
+            width="99%" height="10px" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
             enableContextMenu="false" selectionMode="none" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
             rowClasses="even-row, odd-row">
     
@@ -133,8 +133,7 @@
 					rendered="#{browserHdfsBean.allProps[indexTable]['type'] == 'file'}" styleClass="fileSystemIcon" />
 			</rich:column>
             
-            <rich:column sortBy="#{browserHdfsBean.allProps[indexTable]['name']}" filterBy="#{browserHdfsBean.allProps[indexTable]['name']}"
-                style="border-bottom:0px;border-right:0px;">
+            <rich:column style="border-bottom:0px;border-right:0px;">
                 <f:facet name="header">
                     <h:outputText value="#{messages.label_name}" />
                 </f:facet>
@@ -150,12 +149,12 @@
             	var="column" index="ind"
                 style="border-bottom:0px;border-right:0px;">
                 <f:facet name="header">
-                    <h:outputText value="#{column}"  />
+                    <h:outputText value="#{column}" />
                 </f:facet>
                 <h:outputText value="#{item.row[ind]}" title="#{item.row[ind]}" />
             </rich:columns>
     
-        </rich:extendedDataTable>
+        </rich:dataTable>
 
 	</div>
 

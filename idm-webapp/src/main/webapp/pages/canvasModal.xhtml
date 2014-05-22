@@ -74,6 +74,7 @@
         minSize= !minSize;
         //alert("new value: "+minSize);
     }
+    
 </script>
         
 <h:form>
@@ -185,7 +186,7 @@
                         
                             <rich:extendedDataTable id="browserTableProp" value="#{interCur.browser.listProperties}"
                                 var="property" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-                                enableContextMenu="false" selectionMode="none"
+                                enableContextMenu="false" selectionMode="none" rowKeyVar="index"
                                 onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
                                 rowClasses="even-row, odd-row" >
                                 
@@ -193,13 +194,13 @@
                                     <f:facet name="header">
                                         <h:outputText value="#{messages.label_properties}" />
                                     </f:facet>
-                                    <h:inputText styleClass="interModal" value="#{property.label}" style="border:none !important;width:95%;" readonly="true" />
+                                    <h:inputText styleClass="interModal" value="#{property.label}" style="border:none !important;width:95%;" readonly="true" onclick="setPropValueFocus(#{index});" />
                                 </rich:column>
                                 <rich:column id="browserPropValue" >
                                     <f:facet name="header">
                                         <h:outputText value="#{messages.label_value}" />
                                     </f:facet>
-                                    <h:inputText styleClass="interModal" value="#{property.value}" style="border:none !important;width:95%;" />
+                                    <h:inputText id="browserPropValueInput" styleClass="interModal" value="#{property.value}" style="border:none !important;width:95%;" />
                                 </rich:column>
                 
                             </rich:extendedDataTable>
