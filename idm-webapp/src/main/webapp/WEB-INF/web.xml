@@ -83,6 +83,11 @@
 		<param-name>com.sun.faces.injectionProvider</param-name>
 		<param-value>com.sun.faces.vendor.WebContainerInjectionProvider</param-value>
 	</context-param>
+	
+	<context-param>
+	    <param-name>com.sun.faces.enableRestoreView11Compatibility</param-name>
+	    <param-value>true</param-value>
+	</context-param>
 
 	<!-- <context-param>
 	    <param-name>com.sun.faces.expressionFactory</param-name>
