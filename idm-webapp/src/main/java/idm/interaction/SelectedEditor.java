@@ -130,6 +130,8 @@ public class SelectedEditor extends BaseBean implements Serializable{
 		boolean success = checkTextEditor();
 
 		if (success) {
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			request.removeAttribute("msnError");
 			if (tableInter != null) {
 				tableInter.getTableGrid().setValueRow(rowEdit,columnEdit,getValue());
 			} else {
@@ -183,15 +185,13 @@ public class SelectedEditor extends BaseBean implements Serializable{
 					.getRequest();
 			request.setAttribute("msnError", "msnError");
 		} else {
-			if (getConfirm() != null
-					&& !getConfirm().equalsIgnoreCase("Y")) {
-				MessageUseful
-				.addInfoMessage(getMessageResources("success_message"));
+			//if (getConfirm() != null && !getConfirm().equalsIgnoreCase("Y")) {
+				
+				MessageUseful.addInfoMessage(getMessageResources("success_message"));
 				HttpServletRequest request = (HttpServletRequest) FacesContext
-						.getCurrentInstance().getExternalContext()
-						.getRequest();
+						.getCurrentInstance().getExternalContext().getRequest();
 				request.setAttribute("msnError", "msnError");
-			}
+			//}
 			result = true;
 		}
 

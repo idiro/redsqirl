@@ -331,16 +331,19 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 */
 	public void applyPage() throws RemoteException {
 
-		logger.info("applyPage ");
+		logger.info("applyPage");
 
 		String error = checkNextPage();
-		if (error.length() > 1) {
+		HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+		if (error != null && error.length() > 1) {
 			MessageUseful.addErrorMessage(error);
-			HttpServletRequest request = (HttpServletRequest) FacesContext
-					.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
+		}else{
+			if (getListPageSize() - 1 > getListPosition()) {
+				MessageUseful.addInfoMessage(getMessageResources("success_message"));
+				request.setAttribute("msnError", "msnError");
+			}
 		}
-
 		setErrorMsg(error);
 
 	}
