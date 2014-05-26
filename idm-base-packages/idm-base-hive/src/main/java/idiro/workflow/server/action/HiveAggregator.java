@@ -1,16 +1,12 @@
 package idiro.workflow.server.action;
 
 import idiro.utils.FeatureList;
-import idiro.utils.Tree;
 import idiro.workflow.server.Page;
-import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.connect.HiveInterface;
-import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.utils.HiveLanguageManager;
 
-import java.awt.Desktop.Action;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 /**
@@ -152,8 +148,9 @@ public class HiveAggregator extends HiveElement {
 	 */
 	@Override
 	public FeatureList getNewFeatures() throws RemoteException {
-		return getDFEInput().get(key_input).get(0).getFeatures();
+		return tSelInt.getNewFeatures();
 	}
+	
 	/**
 	 * Update the interaction in the action
 	 * @param interaction

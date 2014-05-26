@@ -7,9 +7,7 @@ import idiro.workflow.server.OozieManager;
 import idiro.workflow.server.Workflow;
 import idiro.workflow.server.action.utils.TestUtils;
 import idiro.workflow.server.connect.HiveInterface;
-import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.enumeration.SavingState;
-import idiro.workflow.server.interfaces.DFEOutput;
 
 import java.rmi.RemoteException;
 import java.util.HashMap;
@@ -27,40 +25,23 @@ public class HiveAggregTests {
 
 	Map<String, String> getColumns() {
 		Map<String, String> ans = new HashMap<String, String>();
-		ans.put(HiveInterface.key_columns, "id INT, value String");
+		ans.put(HiveInterface.key_columns, "id String, value Int, category_Test String");
 		return ans;
 	}
 
 	public DataflowAction createSrc(Workflow w, HiveInterface hInt,
 			String new_path1) throws RemoteException, Exception {
 
-		String idSource = w.addElement((new Source()).getName());
-		Source src = (Source) w.getElement(idSource);
+		String idSource = w.addElement((new HiveSource()).getName());
+		HiveSource src = (HiveSource) w.getElement(idSource);
 
-		src.getDFEOutput().put(Source.out_name, new HiveType());
+		String deleteError = hInt.delete(new_path1);
+		// assertTrue("delete " + deleteError, deleteError == null
+		// || deleteError != null);
 
-		Map<String, DFEOutput> outs = src.getDFEOutput();
-		Iterator<String> keys = outs.keySet().iterator();
-		logger.info(outs.keySet().size());
-		while (keys.hasNext()) {
-			logger.info(outs.get(keys.next()).getTypeName());
-		}
-		logger.info("creating input table");
-		// assertTrue("create " + new_path1,
-		// hInt.create(new_path1, getColumns()) == null);
-		logger.info("created source");
-		src.update(src.getInteraction(Source.key_datatype));
-
-		Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype)
-				.getTree();
-		dataTypeTree.getFirstChild("list").getFirstChild("output").add("Hive");
-
-		src.update(src.getInteraction(Source.key_datasubtype));
-		Tree<String> datasubtypetree = src.getInteraction(
-				Source.key_datasubtype).getTree();
-		datasubtypetree.getFirstChild("list").getFirstChild("output")
-				.add(new HiveType().getTypeName());
-
+		String createError = hInt.create(new_path1, getColumns());
+		assertTrue("create " + createError, createError == null);
+		
 		src.update(src.getInteraction(Source.key_dataset));
 		Tree<String> dataSetTree = src.getInteraction(Source.key_dataset)
 				.getTree();
@@ -195,6 +176,10 @@ public class HiveAggregTests {
 			rowId.add(HiveTableSelectInteraction.table_feat_title).add("value");
 			rowId.add(HiveTableSelectInteraction.table_op_title).add("SUM(value)");
 			rowId.add(HiveTableSelectInteraction.table_type_title).add("DOUBLE");
+			rowId = out.add("row");
+			rowId.add(HiveTableSelectInteraction.table_feat_title).add("cnt_category");
+			rowId.add(HiveTableSelectInteraction.table_op_title).add("COUNT(DISTINCT(caTegory_test))");
+			rowId.add(HiveTableSelectInteraction.table_type_title).add("LONG");
 		}
 
 		logger.debug("HS update out...");
@@ -228,11 +213,10 @@ public class HiveAggregTests {
 			Workflow w = new Workflow("workflow1_" + getClass().getName());
 			HiveInterface hInt = new HiveInterface();
 			String new_path1 = "/" + TestUtils.getTableName(1);
-			// String new_path1 = "/keith_test2";
 			String new_path2 = "/" + TestUtils.getTableName(2);
 
-			// hInt.delete(new_path1);
-			// hInt.delete(new_path2);
+			hInt.delete(new_path1);
+			hInt.delete(new_path2);
 			logger.info("creating source");
 			DataflowAction src = createSrc(w, hInt, new_path1);
 			logger.info("creating hive");

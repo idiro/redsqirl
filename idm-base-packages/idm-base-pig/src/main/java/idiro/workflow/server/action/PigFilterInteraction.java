@@ -1,5 +1,6 @@
 package idiro.workflow.server.action;
 
+import idiro.utils.FeatureList;
 import idiro.utils.Tree;
 import idiro.workflow.server.EditorInteraction;
 import idiro.workflow.server.action.utils.PigDictionary;
@@ -54,9 +55,10 @@ public class PigFilterInteraction extends EditorInteraction {
 
 			String condition = getValue();
 			if (condition != null && !condition.isEmpty()) {
+				FeatureList f = el.getInFeatures();
 				logger.debug("Condition: " + condition
-						+ " features list size : "
-						+ el.getInFeatures().getSize());
+						+ " features list ("
+						+ f.getSize()+") "+f.getFeaturesNames());
 				String type = null;
 				Set<String> aggregation = null;
 				if(el.groupingInt != null){
@@ -64,7 +66,7 @@ public class PigFilterInteraction extends EditorInteraction {
 					logger.info("aggregation set size : "+ aggregation.size());
 				}
 				type = PigDictionary.getInstance().getReturnType(
-						condition, el.getInFeatures(),aggregation);
+						condition, f,aggregation);
 				if (!type.equalsIgnoreCase("boolean")) {
 					msg = PigLanguageManager.getText("pig.filter_interaction.checkerror",new String[]{type});
 					logger.info(msg);
@@ -73,7 +75,7 @@ public class PigFilterInteraction extends EditorInteraction {
 			}
 		} catch (Exception e) {
 			msg = PigLanguageManager.getText("pig.filter_interaction.checkexception");
-			logger.error(msg);
+			logger.error(msg,e);
 
 		}
 		return msg;

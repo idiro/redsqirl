@@ -2,8 +2,6 @@ package idiro.workflow.server.action;
 
 import idiro.utils.FeatureList;
 import idiro.utils.OrderedFeatureList;
-import idiro.utils.Tree;
-import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.TableInteraction;
 import idiro.workflow.server.action.utils.HiveDictionary;
 import idiro.workflow.server.enumeration.FeatureType;
@@ -11,7 +9,7 @@ import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.utils.HiveLanguageManager;
 
 import java.rmi.RemoteException;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -41,27 +39,27 @@ public class HiveTableSelectInteraction extends TableInteraction {
 			.getTextWithoutSpace("hive.select_features_interaction.op_column"),
 			/** feature title key */
 			table_feat_title = HiveLanguageManager
-					.getTextWithoutSpace("hive.select_features_interaction.feat_column"),
+			.getTextWithoutSpace("hive.select_features_interaction.feat_column"),
 			/** type title key */
 			table_type_title = HiveLanguageManager
-					.getTextWithoutSpace("hive.select_features_interaction.type_column");
+			.getTextWithoutSpace("hive.select_features_interaction.type_column");
 
 	/** copy generation */
 	public static final String gen_operation_copy = "copy",
-	/** max generation */
-	gen_operation_max = "MAX",
-	/** max generation */
-	gen_operation_min = "MIN",
-	/** avg generation */
-	gen_operation_avg = "AVG",
-	/** sum generation */
-	gen_operation_sum = "SUM",
-	/** count generation */
-	gen_operation_count = "COUNT",
-	/** count distinct generation */
-	gen_operation_count_distinct = "COUNT_DISTINCT",
-	/** audit generation */
-	gen_operation_audit = "AUDIT";
+			/** max generation */
+			gen_operation_max = "MAX",
+			/** max generation */
+			gen_operation_min = "MIN",
+			/** avg generation */
+			gen_operation_avg = "AVG",
+			/** sum generation */
+			gen_operation_sum = "SUM",
+			/** count generation */
+			gen_operation_count = "COUNT",
+			/** count distinct generation */
+			gen_operation_count_distinct = "COUNT_DISTINCT",
+			/** audit generation */
+			gen_operation_audit = "AUDIT";
 
 	/**
 	 * Constructor
@@ -76,7 +74,7 @@ public class HiveTableSelectInteraction extends TableInteraction {
 	 */
 	public HiveTableSelectInteraction(String id, String name, String legend,
 			int column, int placeInColumn, HiveElement hs)
-			throws RemoteException {
+					throws RemoteException {
 		super(id, name, legend, column, placeInColumn);
 		this.hs = hs;
 		createColumns();
@@ -103,7 +101,7 @@ public class HiveTableSelectInteraction extends TableInteraction {
 			} else {
 				logger.info("Feats " + in.getFeatures().getFeaturesNames());
 				Set<String> featGrouped = getFeatGrouped();
-				fl = getInputFeatureList();
+				fl = hs.getInFeatures();
 
 				Iterator<Map<String, String>> rows = lRow.iterator();
 				int rowNb = 0;
@@ -151,7 +149,7 @@ public class HiveTableSelectInteraction extends TableInteraction {
 		// get Alias
 		String alias = "";
 		logger.info("got alias");
-		FeatureList fl = getInputFeatureList();
+		FeatureList fl = hs.getInFeatures();
 		logger.info("got input featureList");
 		// Generate Editor
 		if (hs.getGroupingInt() != null) {
@@ -202,7 +200,7 @@ public class HiveTableSelectInteraction extends TableInteraction {
 			addGeneratorRows(gen_operation_count, featList, fl, operationsList,
 					alias);
 			operationsList.clear();
-			
+
 			operationsList.add(gen_operation_count_distinct);
 			addGeneratorRows(gen_operation_count_distinct, featList, fl, operationsList,
 					alias);
@@ -272,7 +270,7 @@ public class HiveTableSelectInteraction extends TableInteraction {
 	 */
 	protected void addGeneratorRows(String title, List<String> feats,
 			FeatureList in, List<String> operationList, String alias)
-			throws RemoteException {
+					throws RemoteException {
 		Iterator<String> featIt = feats.iterator();
 		Iterator<String> opIt = operationList.iterator();
 		logger.info("operations to add : " + operationList);
@@ -286,98 +284,58 @@ public class HiveTableSelectInteraction extends TableInteraction {
 			while (featIt.hasNext()) {
 				String cur = featIt.next();
 				Map<String, String> row = new LinkedHashMap<String, String>();
+				boolean genCur = false;
 
-				if (in.getFeatureType(cur) == FeatureType.STRING) {
-					if (operation.equalsIgnoreCase(gen_operation_sum)
+				if(operation.isEmpty() 
+						|| operation.equalsIgnoreCase(gen_operation_copy)
+						||operation.equalsIgnoreCase(gen_operation_count)){
+					genCur = true;
+				}else if(in.getFeatureType(cur) == FeatureType.CATEGORY){
+					genCur = operation.equalsIgnoreCase(gen_operation_count_distinct);
+				}else if(in.getFeatureType(cur) == FeatureType.DOUBLE 
+						||in.getFeatureType(cur) == FeatureType.FLOAT
+						||in.getFeatureType(cur) == FeatureType.LONG
+						||in.getFeatureType(cur) == FeatureType.INT){
+					genCur = operation.equalsIgnoreCase(gen_operation_sum)
 							|| operation.equalsIgnoreCase(gen_operation_avg)
 							|| operation.equalsIgnoreCase(gen_operation_min)
-							|| operation.equalsIgnoreCase(gen_operation_max)) {
-						continue;
-					}
-				}
-				else{
-					if (operation.equalsIgnoreCase(gen_operation_count_distinct)) {
-						continue;
-					}
+							|| operation.equalsIgnoreCase(gen_operation_max);
 				}
 
-				String optitleRow = "";
-				String featname;
-				if (alias.isEmpty()) {
-					optitleRow = addOperation(cur, operation);
-				} else {
-					optitleRow = addOperation(alias + "." + cur, operation);
-				}
+				if(genCur){
+					String optitleRow = "";
+					String featname;
+					if (alias.isEmpty()) {
+						optitleRow = addOperation(cur, operation);
+					} else {
+						optitleRow = addOperation(alias + "." + cur, operation);
+					}
 
-				row.put(table_op_title, optitleRow);
-				if (operation.isEmpty()) {
-					featname = cur;
-					row.put(table_feat_title, cur);
-				} else {
-					featname = cur + "_" + operation;
+					row.put(table_op_title, optitleRow);
+					if (operation.isEmpty()) {
+						featname = cur;
+						row.put(table_feat_title, cur);
+					} else {
+						featname = cur + "_" + operation;
+					}
+					row.put(table_feat_title, featname);
+					logger.info("trying to add type for " + cur);
+					if (operation.equalsIgnoreCase(gen_operation_avg)) {
+						row.put(table_type_title, "DOUBLE");
+					} else if (operation.equalsIgnoreCase(gen_operation_count) ||
+							operation.equalsIgnoreCase(gen_operation_count_distinct)) {
+						row.put(table_type_title, "LONG");
+					} else {
+						row.put(table_type_title,
+								HiveDictionary.getHiveType(in.getFeatureType(cur)));
+					}
+					rows.add(row);
 				}
-				row.put(table_feat_title, featname);
-				logger.info("trying to add type for " + cur);
-				if (operation.equalsIgnoreCase(gen_operation_avg)) {
-					row.put(table_type_title, "DOUBLE");
-				} else if (operation.equalsIgnoreCase(gen_operation_count) ||
-						operation.equalsIgnoreCase(gen_operation_count_distinct)) {
-					row.put(table_type_title, "BIGINT");
-				} else {
-					row.put(table_type_title,
-							HiveDictionary.getHiveType(in.getFeatureType(cur)));
-				}
-				rows.add(row);
 			}
 			featIt = feats.iterator();
 		}
 		updateGenerator(title, rows);
 
-	}
-
-	/**
-	 * Get a generated root table for the interaction
-	 * 
-	 * @return Tree of the root table
-	 * @throws RemoteException
-	 */
-	protected Tree<String> getRootTable() throws RemoteException {
-		// Table
-		Tree<String> input = new TreeNonUnique<String>("table");
-		Tree<String> columns = new TreeNonUnique<String>("columns");
-		input.add(columns);
-
-		// operation
-		columns.add("column").add("title").add(table_op_title);
-
-		// Feature name
-		Tree<String> newFeatureName = new TreeNonUnique<String>("column");
-		columns.add(newFeatureName);
-		newFeatureName.add("title").add(table_feat_title);
-
-		Tree<String> constraintFeat = new TreeNonUnique<String>("constraint");
-		newFeatureName.add(constraintFeat);
-		constraintFeat.add("count").add("1");
-
-		// Type
-		Tree<String> newType = new TreeNonUnique<String>("column");
-		columns.add(newType);
-		newType.add("title").add(table_type_title);
-
-		Tree<String> constraintType = new TreeNonUnique<String>("constraint");
-		newType.add(constraintType);
-
-		Tree<String> valsType = new TreeNonUnique<String>("values");
-		constraintType.add(valsType);
-
-		valsType.add("value").add(FeatureType.BOOLEAN.name());
-		valsType.add("value").add(FeatureType.INT.name());
-		valsType.add("value").add(FeatureType.DOUBLE.name());
-		valsType.add("value").add(FeatureType.STRING.name());
-		valsType.add("value").add(FeatureType.FLOAT.name());
-		valsType.add("value").add("BIGINT");
-
-		return input;
 	}
 
 	/**
@@ -439,27 +397,19 @@ public class HiveTableSelectInteraction extends TableInteraction {
 	public String getCreateQueryPiece(DFEOutput out) throws RemoteException {
 		logger.debug("create features...");
 		String createSelect = "";
-		Iterator<Tree<String>> selIt = getTree().getFirstChild("table")
-				.getChildren("row").iterator();
-		if (selIt.hasNext()) {
-			Tree<String> cur = selIt.next();
-			String featName = cur.getFirstChild(table_feat_title)
-					.getFirstChild().getHead();
-			createSelect = "("
-					+ featName
-					+ " "
-					+ cur.getFirstChild(table_type_title).getFirstChild()
-							.getHead();
+		FeatureList features = getNewFeatures();
+		Iterator<String> it = features.getFeaturesNames().iterator();
+		if (it.hasNext()) {
+			String featName = it.next();
+			String type = HiveDictionary.getHiveType(features
+					.getFeatureType(featName));
+			createSelect = "(" + featName + " " + type;
 		}
-		while (selIt.hasNext()) {
-			Tree<String> cur = selIt.next();
-			String featName = cur.getFirstChild(table_feat_title)
-					.getFirstChild().getHead();
-			createSelect += ","
-					+ featName
-					+ " "
-					+ cur.getFirstChild(table_type_title).getFirstChild()
-							.getHead();
+		while (it.hasNext()) {
+			String featName = it.next();
+			String type = HiveDictionary.getHiveType(features
+					.getFeatureType(featName));
+			createSelect += "," + featName + " " + type;
 		}
 		createSelect += ")";
 
@@ -482,7 +432,7 @@ public class HiveTableSelectInteraction extends TableInteraction {
 
 			logger.info(expression + " "
 					+ hs.getInFeatures().getFeaturesNames().toString() + " "
-					+ hs.getGroupByFeatures().toArray().toString());
+					+ hs.getGroupByFeatures());
 			if (HiveDictionary.getInstance().getReturnType(expression,
 					hs.getInFeatures(), hs.getGroupByFeatures()) == null) {
 				error = HiveLanguageManager.getText("hive.expressionnull");
@@ -495,37 +445,23 @@ public class HiveTableSelectInteraction extends TableInteraction {
 	}
 
 	protected void createColumns() throws RemoteException {
-
+		// operation
 		addColumn(table_op_title, null, null, null);
 
 		addColumn(table_feat_title, 1, "[a-zA-Z]([A-Za-z0-9_]{0,29})", null,
 				null);
 
-		List<String> types = new LinkedList<String>();
-		types.add(FeatureType.BOOLEAN.name());
-		types.add(FeatureType.INT.name());
-		types.add(FeatureType.DOUBLE.name());
-		types.add(FeatureType.FLOAT.name());
-		types.add(FeatureType.STRING.name());
-		types.add("BIGINT");
+		List<String> types = new ArrayList<String>(FeatureType.values().length);
+		for(FeatureType ft:FeatureType.values()){
+			types.add(ft.name());
+		}
+		types.remove(FeatureType.DATETIME.name());
 
 		addColumn(table_type_title, null, types, null);
+		
 	}
 
 	public Set<String> getFeatGrouped() throws RemoteException {
-		// Set<String> featGrouped = null;
-		// // only show what is in grouped interaction
-		// if (hs.getGroupingInt() != null) {
-		// featGrouped = new HashSet<String>();
-		// logger.info("group interaction is not null");
-		// Iterator<String> grInt = hs.getGroupingInt()
-		// .getValues().iterator();
-		// while (grInt.hasNext()) {
-		// String feat = grInt.next().toUpperCase();
-		// featGrouped.add(feat);
-		// }
-		// }
-
 		return hs.getGroupByFeatures();
 	}
 
@@ -533,8 +469,8 @@ public class HiveTableSelectInteraction extends TableInteraction {
 		List<String> featGrouped = null;
 		// only show what is in grouped interaction
 		if (hs.getGroupingInt() != null) {
-			featGrouped = new LinkedList<String>();
 			logger.info("group interaction is not null");
+			featGrouped = new LinkedList<String>();
 			Iterator<String> grInt = hs.getGroupingInt().getValues().iterator();
 			while (grInt.hasNext()) {
 				String feat = grInt.next();
@@ -542,30 +478,5 @@ public class HiveTableSelectInteraction extends TableInteraction {
 			}
 		}
 		return featGrouped;
-	}
-
-	public FeatureList getInputFeatureList() throws RemoteException {
-		FeatureList fl = null;
-		logger.debug("feature list is null");
-		DFEOutput in = hs.getDFEInput().get(HiveElement.key_input).get(0);
-		logger.debug("got dfe input");
-
-		// only show what is in grouped interaction
-		if (hs.getGroupingInt() != null) {
-			fl = new OrderedFeatureList();
-			logger.debug("geting dfe input features");
-			Iterator<String> inputFeatsIt = in.getFeatures().getFeaturesNames()
-					.iterator();
-			while (inputFeatsIt.hasNext()) {
-				String nameF = inputFeatsIt.next();
-				String nameFwithAlias = nameF;
-				fl.addFeature(nameFwithAlias,
-						in.getFeatures().getFeatureType(nameF.toLowerCase()));
-			}
-		} else {
-			fl = in.getFeatures();
-		}
-		logger.debug("returned feat list ");
-		return fl;
 	}
 }

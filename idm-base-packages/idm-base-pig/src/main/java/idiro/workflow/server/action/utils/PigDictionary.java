@@ -45,6 +45,8 @@ public class PigDictionary extends AbstractDictionary {
 	private static final String mathMethods = "mathMethods";
 	/** Key for string Methods */
 	private static final String stringMethods = "stringMethods";
+	/** Key for date methods */
+	private static final String dateMethods = "dateMethods";
 	/** Key for aggregation methods */
 	private static final String agregationMethods = "agregationMethods";
 	/** Key for aggregation methods */
@@ -331,6 +333,235 @@ public class PigDictionary extends AbstractDictionary {
 										"STRING,STRING,STRING",
 										"INT",
 										"@function:REPLACE(MYSTRING , OLDCHAR , NEWCHAR)@short:Replaces existing characters in a string with new characters@param:MYSTRING string to replace@param:OLDCHAR character to replace@param:NEWCHAR character to replace with@description:Use the REPLACE function to replace existing characters in a string with new characters@example:REPLACE('open source software','software','wiki') returns 'open source wiki'" }, });
+		
+		functionsMap
+		.put(dateMethods,
+				new String[][] {
+						new String[] {
+								"DaysBetween()",
+								"TIMESTAMP,TIMESTAMP",
+								"INT",
+								"@function:DaysBetween(datetime1, datetime2)@short:Returns the number of days between two DateTime objects."
+										+ "@param:datetime1 A datetime object. @param:datetime2 Another datetime object. @description:Use the DaysBetween function to get the number of days between the two given datetime objects."
+										+ "@example: returns 1; @example: returns  3" },
+						new String[] {
+								"GetDay()",
+								"TIMESTAMP",
+								"INT",
+								"@function:GetDay(datetime)@short:Returns the day of a month from a DateTime object."
+										+ "@param:datetime A datetime object."
+										+ "@description: Use the GetDay function to extract the day of a month from the given datetime object."
+										+ "@example: returns 1; @example: returns  3" },
+						new String[] {
+								"GetHour()",
+								"TIMESTAMP",
+								"INT",
+								"@function:GetHour(datetime)"
+										+ "@short:Returns the hour of a day from a DateTime object."
+										+ "@param:datetime A datetime object."
+										+ "@description: Use the GetHour function to extract the hour of a day from the given datetime object. "
+										+ "@example: returns 1; @example: returns  3" },
+						new String[] {
+								"GetMilliSecond()",
+								"TIMESTAMP",
+								"INT",
+								"@function:GetMilliSecond(datetime)"
+										+ "@short:Returns the millisecond of a second from a DateTime object."
+										+ "@param:datetime A datetime object."
+										+ "@description: Use the GetMilliSecond function to extract the millsecond of a second from the given datetime object."
+										+ "@example: returns 1; @example: returns  3" },
+						new String[] {
+								"GetMinute()",
+								"TIMESTAMP",
+								"INT",
+								"@function:GetMinute(datetime)"
+										+ "@short:Returns the minute of a hour from a DateTime object."
+										+ "@param:datetime A datetime object."
+										+ "@description: Use the GetMinute function to extract the minute of a hour from the given datetime object. "
+										+ "@example: returns 1; @example: returns  3" },
+						new String[] {
+								"GetMonth()",
+								"TIMESTAMP",
+								"INT",
+								"@function:GetMonth(datetime)"
+										+ "@short:Returns the month of a year from a DateTime object."
+										+ "@param:datetime A datetime object."
+										+ "@description:Use the GetMonth function to extract the month of a year from the given datetime object. "
+										+ "@example: returns 1; @example: returns  3" },
+						new String[] {
+								"GetSecond()",
+								"TIMESTAMP",
+								"INT",
+								"@function:GetSecond(datetime)"
+										+ "@short:Returns the second of a minute from a DateTime object."
+										+ "@param:datetime A datetime object."
+										+ "@description:Use the GetSecond function to extract the second of a minute from the given datetime object. "
+										+ "@example: returns 1; @example: returns  3" },
+						new String[] {
+								"GetWeek()",
+								"TIMESTAMP",
+								"INT",
+								"@function:GetWeek(datetime)"
+										+ "@short:Returns the week of a week year from a DateTime object."
+										+ "@param:datetime A datetime object."
+										+ "@description: Use the GetWeek function to extract the week of a week year from the given datetime object. Note that week year may be different from year. "
+										+ "@example: returns 1; @example: returns  3" },
+						new String[] {
+								"GetWeekYear()",
+								"TIMESTAMP",
+								"INT",
+								"@function:GetWeekYear(datetime)"
+										+ "@short:"
+										+ "@param:datetime A datetime object."
+										+ "@description: "
+										+ "@example: returns 1; @example: returns  3" },
+						new String[] {
+								"GetYear()",
+								"TIMESTAMP",
+								"INT",
+								"@function:GetYear(datetime)"
+										+ "@short:Returns the year from a DateTime object."
+										+ "@param:datetime A datetime object."
+										+ "@description: Use the GetYear function to extract the year from the given datetime object. "
+										+ "@example: returns 1; @example: returns  3" },
+						new String[] {
+								"HoursBetween()",
+								"TIMESTAMP,TIMESTAMP",
+								"INT",
+								"@function:HoursBetween(datetime1, datetime2)"
+										+ "@short:Returns the number of hours between two DateTime objects."
+										+ "@param:datetime1 A datetime object. @param:datetime2 Another datetime object."
+										+ "@description:Use the HoursBetween function to get the number of hours between the two given datetime objects. "
+										+ "@example: returns 1; @example: returns  3" },
+						new String[] {
+								"MilliSecondsBetween()",
+								"TIMESTAMP,TIMESTAMP",
+								"INT",
+								"@function:MilliSecondsBetween(datetime1, datetime2)"
+										+ "@short:Returns the number of milliseconds between two DateTime objects."
+										+ "@param:datetime1 A datetime object. @param:datetime2 Another datetime object."
+										+ "@description:Use the MilliSecondsBetween function to get the number of millseconds between the two given datetime objects. "
+										+ "@example: returns 1; @example: returns  3" },
+						new String[] {
+								"MinutesBetween()",
+								"TIMESTAMP,TIMESTAMP",
+								"INT",
+								"@function:MinutesBetween(datetime1, datetime2)"
+										+ "@short:Returns the number of minutes between two DateTime objects."
+										+ "@param:datetime1 A datetime object. @param:datetime2 Another datetime object."
+										+ "@description:Use the MinutesBetween function to get the number of minutes between the two given datetime objects. "
+										+ "@example: returns 1; @example: returns  3" },
+						new String[] {
+								"MonthsBetween()",
+								"TIMESTAMP,TIMESTAMP",
+								"INT",
+								"@function:MonthsBetween(datetime1, datetime2)"
+										+ "@short:Returns the number of months between two DateTime objects."
+										+ "@param:datetime1 A datetime object. @param:datetime2 Another datetime object."
+										+ "@description:Use the MonthsBetween function to get the number of months between the two given datetime objects. "
+										+ "@example: returns 1; @example: returns  3" },
+						new String[] {
+								"SecondsBetween()",
+								"TIMESTAMP,TIMESTAMP",
+								"INT",
+								"@function:SecondsBetween(datetime1, datetime2)"
+										+ "@short:Returns the number of seconds between two DateTime objects."
+										+ "@param:datetime1 A datetime object. @param:datetime2 Another datetime object."
+										+ "@description:Use the SecondsBetween function to get the number of seconds between the two given datetime objects. "
+										+ "@example: returns 1; @example: returns  3" },
+						new String[] {
+								"ToDate()",
+								"LONG",
+								"TIMESTAMP",
+								"@function:ToDate(millseconds)"
+										+ "@short:Returns a DateTime object according to parameters."
+										+ "@param:millseconds The offset from 1970-01-01T00:00:00.000Z in terms of the number milliseconds (either positive or negative)."
+										+ "@description:Use the ToDate function to generate a DateTime object."
+										+ "@example: returns 1; @example: returns  3" },
+						new String[] {
+								"ToDate()",
+								"STRING",
+								"TIMESTAMP",
+								"@function:ToDate(iosstring)"
+										+ "@short:Returns a DateTime object according to parameters."
+										+ "@param:iosstring The datetime string in the ISO 8601 format.."
+										+ "@description:Use the ToDate function to generate a DateTime object."
+										+ "@example: returns 1; @example: returns  3" },
+						new String[] {
+								"ToDate()",
+								"STRING,STRING",
+								"TIMESTAMP",
+								"@function:ToDate(userstring, format)"
+										+ "@short:Returns a DateTime object according to parameters."
+										+ "@param:userstring The datetime string in the user defined format. @param:formatThe date time format pattern string (see Java SimpleDateFormat class). "
+										+ "@description:Use the ToDate function to generate a DateTime object."
+										+ "@example: returns 1; @example: returns  3" },
+						new String[] {
+								"ToDate()",
+								"STRING,STRING,STRING",
+								"TIMESTAMP",
+								"@function:ToDate(userstring, format,timezone)"
+										+ "@short:Returns a DateTime object according to parameters."
+										+ "@param:userstring The datetime string in the user defined format. @param:formatThe date time format pattern string (see Java SimpleDateFormat class). @param:timezone The timezone string. Either the UTC offset and the location based format can be used as a parameter, while internally the timezone will be converted to the UTC offset format."
+										+ "@description:Use the ToDate function to generate a DateTime object."
+										+ "@example: returns 1; @example: returns  3" },
+						new String[] {
+								"ToMilliSeconds()",
+								"TIMESTAMP",
+								"LONG",
+								"@function:ToMilliSeconds(datetime)"
+										+ "@short:Returns the number of milliseconds elapsed since January 1, 1970, 00:00:00.000 GMT for a DateTime object. "
+										+ "@param:datetime A datetime object."
+										+ "@description:Use the ToMilliSeconds function to convert the DateTime to the number of milliseconds that have passed since January 1, 1970 00:00:00.000 GMT."
+										+ "@example: returns 1; @example: returns  3" },
+						new String[] {
+								"ToString()",
+								"TIMESTAMP",
+								"STRING",
+								"@function:ToString()"
+										+ "@short:ToString converts the DateTime object to the ISO or the customized string. "
+										+ "@param:datetime A datetime object."
+										+ "@description: Use the ToString function to convert the DateTime."
+										+ "@example: returns 1; @example: returns  3" },
+						new String[] {
+								"ToString()",
+								"TIMESTAMP,STRING",
+								"STRING",
+								"@function:ToString(format)"
+										+ "@short:ToString converts the DateTime object to the ISO or the customized string. "
+										+ "@param:datetime A datetime object.@param:format The date time format pattern string (see Java SimpleDateFormat class)."
+										+ "@description: Use the ToString function to convert the DateTime to the customized string. "
+										+ "@example: returns 1; @example: returns  3" },
+						new String[] {
+								"ToUnixTime()",
+								"TIMESTAMP",
+								"LONG",
+								"@function:ToUnixTime(datetime)"
+										+ "@short:Returns the Unix Time as long for a DateTime object. UnixTime is the number of seconds elapsed since January 1, 1970, 00:00:00.000 GMT. "
+										+ "@param:datetime A datetime object."
+										+ "@description:Use the ToUnixTime function to convert the DateTime to Unix Time. "
+										+ "@example: returns 1; @example: returns  3" },
+						new String[] {
+								"WeeksBetween()",
+								"TIMESTAMP,TIMESTAMP",
+								"INT",
+								"@function:WeeksBetween(datetime1, datetime2)"
+										+ "@short:Returns the number of weeks between two DateTime objects."
+										+ "@param:datetime1 A datetime object. @param:datetime2 Another datetime object."
+										+ "@description:Use the WeeksBetween function to get the number of weeks between the two given datetime objects. "
+										+ "@example: returns 1; @example: returns  3" },
+						new String[] {
+								"YearsBetween()",
+								"TIMESTAMP,TIMESTAMP",
+								"INT",
+								"@function:YearsBetween(datetime1, datetime2)"
+										+ "@short:Returns the number of years between two DateTime objects."
+										+ "@param:datetime1 A datetime object. @param:datetime2 Another datetime object."
+										+ "@description:Use the YearsBetween function to get the number of years between the two given datetime objects. "
+										+ "@example: returns 1; @example: returns  3" },
+										
+		});
+		
 		functionsMap
 				.put(agregationMethods,
 						new String[][] {
@@ -388,9 +619,6 @@ public class PigDictionary extends AbstractDictionary {
 		
 		
 	}
-	
-	
-	
 
 	/**
 	 * Get the Pig type of the variable passed
@@ -413,32 +641,6 @@ public class PigDictionary extends AbstractDictionary {
 	}
 
 	/**
-	 * Return the Type that is accepted by pig
-	 * 
-	 * @param feat
-	 *            a feature type that will be checked
-	 * @return Pig Type of the feature type given
-	 */
-	public static String getPigType(FeatureType feat) {
-		String featureType = feat.name();
-		switch (feat) {
-		case BOOLEAN:
-			break;
-		case INT:
-			break;
-		case FLOAT:
-			break;
-		case LONG:
-			break;
-		case DOUBLE:
-			break;
-		case STRING:
-			break;
-		}
-		return featureType;
-	}
-
-	/**
 	 * Get the return type of a pig based expression
 	 * 
 	 * @param expr
@@ -456,7 +658,7 @@ public class PigDictionary extends AbstractDictionary {
 			logger.error("No expressions to test");
 			throw new Exception("No expressions to test");
 		}
-		logger.info("expression is ok");
+		logger.debug("expression is ok");
 		if (nonAggregFeats != null
 				&& !features.getFeaturesNames().containsAll(nonAggregFeats)) {
 			logger.error("Aggregation features unknown");
@@ -464,10 +666,10 @@ public class PigDictionary extends AbstractDictionary {
 					+ nonAggregFeats.toString() + "): "
 					+ features.getFeaturesNames().toString());
 		}
-		logger.info("aggreg and feats ok");
+		logger.debug("aggreg and feats ok");
 
-		expr = expr.trim().toUpperCase();
-		logger.debug("expression : " + expr);
+		expr = expr.trim();
+		logger.info("expression : " + expr);
 		if (expr.startsWith("(") && expr.endsWith(")")) {
 			int count = 1;
 			int index = 1;
@@ -489,12 +691,15 @@ public class PigDictionary extends AbstractDictionary {
 				logger.debug("expresion after manipulations:" + expr);
 			}
 		}
+		
 		String type = null;
 		if (expr.equalsIgnoreCase("TRUE") || expr.equalsIgnoreCase("FALSE")) {
 			logger.debug("expression is boolean: " + expr);
 			type = "BOOLEAN";
 		} else if (expr.startsWith("'")) {
-			if (expr.endsWith("'") && expr.length() > 1) {
+			if (expr.endsWith("'") && expr.length() == 3) {
+				type = "CHAR";
+			} else if(expr.endsWith("'") && expr.length() > 1) {
 				type = "STRING";
 			} else {
 				String error = "string quote \"'\" not closed";
@@ -518,21 +723,13 @@ public class PigDictionary extends AbstractDictionary {
 
 		logger.debug("getting feature type if null " + type + " " + expr);
 		if (type == null) {
-			Iterator<String> itS = null;
 			if (nonAggregFeats != null) {
-				logger.debug("feataggreg is not empty : "
-						+ nonAggregFeats.toString());
-				itS = nonAggregFeats.iterator();
+				if(nonAggregFeats.contains(expr)){
+					type = features.getFeatureType(expr).name();
+				}
 			} else {
-				itS = features.getFeaturesNames().iterator();
-				// logger.debug("using features list "+features.getSize());
-			}
-			while (itS.hasNext() && type == null) {
-				String feat = itS.next();
-				logger.debug("feat " + feat + " expr " + expr);
-				if (feat.equalsIgnoreCase(expr)) {
-					type = getPigType(features.getFeatureType(feat));
-					logger.debug("type : " + type);
+				if(features.getFeaturesNames().contains(expr)){
+					type = features.getFeatureType(expr).name();
 				}
 			}
 		}
@@ -586,12 +783,12 @@ public class PigDictionary extends AbstractDictionary {
 					Iterator<String> featureAggIterator = nonAggregFeats
 							.iterator();
 					while (featureAggIterator.hasNext()) {
-						String nameF = featureAggIterator.next().toUpperCase();
+						String nameF = featureAggIterator.next();
 						fl.addFeature(nameF, features.getFeatureType(nameF));
 					}
 				}
 				type = runMethod(expr, fl, false);
-			} else if (isConditionalOperation(expr)){
+			} else if (isConditionalOperation(expr)) {
 				logger.debug(expr + ", is an cast operation");
 				type = runConditionalOperation(expr, features, nonAggregFeats);
 			} else if (isCastOperation(expr)) {
@@ -600,7 +797,7 @@ public class PigDictionary extends AbstractDictionary {
 			}
 		}
 
-		logger.debug("type returning: " + type);
+		logger.info("type returning: " + type);
 		return type;
 
 	}
@@ -652,7 +849,7 @@ public class PigDictionary extends AbstractDictionary {
 
 		return type;
 	}
-	
+
 	/**
 	 * Run a cast operation on an expression
 	 * 
@@ -664,30 +861,34 @@ public class PigDictionary extends AbstractDictionary {
 	 */
 	private String runConditionalOperation(String expr, FeatureList features,
 			Set<String> featureAggreg) throws Exception {
+		logger.info("Conditional operation: "+expr);
 		String type = null;
-		
+
 		String[] args = expr.split("(:|\\?)(?![^()]*+\\))");
-		
-		if (args.length != 3){
+
+		if (args.length != 3) {
 			String error = "Wrong number of arguments.";
-			logger.debug(error);
-			throw new Exception(error);
-		}
-		
-		if (!getReturnType(args[0], features).equals("BOOLEAN")){
-			String error = "First argument of conditional expression must return a boolean";
-			logger.debug(error);
-			throw new Exception(error);
-		} 
-		
-		type = getReturnType(args[1], features);
-		
-		if (!type.equals(getReturnType(args[2], features))){
-			String error = "Types returned must be the same";
-			logger.debug(error);
-			throw new Exception(error);
+			logger.warn(error);
 		}
 
+		if (!getReturnType(args[0], features).equals("BOOLEAN")) {
+			String error = "First argument of conditional expression must return a boolean";
+			logger.warn(error);
+			//throw new Exception(error);
+		}else{
+
+			type = getReturnType(args[1], features);
+			String type2 = getReturnType(args[2], features);
+			if(check(type, type2)){
+			}else if(check(type2,type)){
+				type = type2;
+			}else{
+				String error = "Types '"+type+"' and '"+type+"' are not implicitly convertible";
+				logger.warn(error);
+				//throw new Exception(error);
+				type = null;
+			}
+		}
 		return type;
 	}
 
@@ -723,24 +924,41 @@ public class PigDictionary extends AbstractDictionary {
 		if (typeToBe.equalsIgnoreCase("ANY")) {
 			ok = true;
 		} else if (typeToBe.equalsIgnoreCase("NUMBER")) {
-			ok = !typeGiven.equals("STRING") && !typeGiven.equals("BOOLEAN");
+			ok = typeGiven.equals("DOUBLE") ||
+				 typeGiven.equals("FLOAT") ||
+				 typeGiven.equals("LONG") ||
+				 typeGiven.equals("INT");
 		} else if (typeToBe.equalsIgnoreCase("DOUBLE")) {
-			ok = !typeGiven.equals("STRING") && !typeGiven.equals("BOOLEAN");
+			ok = typeGiven.equals("NUMBER") || 
+			     typeGiven.equals("FLOAT")  || 
+			     typeGiven.equals("LONG") || 
+			     typeGiven.equals("INT");
+
 		} else if (typeToBe.equalsIgnoreCase("INT")) {
 			ok = typeGiven.equalsIgnoreCase("NUMBER");
+
 		} else if (typeToBe.equalsIgnoreCase("FLOAT")) {
 			ok = typeGiven.equalsIgnoreCase("NUMBER");
+
 		} else if (typeToBe.equalsIgnoreCase("TYPE")) {
 			ok = typeGiven.equalsIgnoreCase("BOOLEAN")
 					|| typeGiven.equalsIgnoreCase("INT")
 					|| typeGiven.equalsIgnoreCase("LONG")
 					|| typeGiven.equalsIgnoreCase("FLOAT")
 					|| typeGiven.equalsIgnoreCase("DOUBLE")
-					|| typeGiven.equalsIgnoreCase("STRING");
+					|| typeGiven.equalsIgnoreCase("STRING")
+					|| typeGiven.equalsIgnoreCase("CHAR")
+					|| typeGiven.equalsIgnoreCase("DATETIME");
 
+		} else if (typeToBe.equalsIgnoreCase("DATETIME")) {
+			ok = typeGiven.equals("DATE");
+		} else if (typeToBe.equalsIgnoreCase("TIMESTAMP")) {
+			ok = typeGiven.equals("DATE") || typeGiven.equals("DATETIME");
+		} else if (typeToBe.equalsIgnoreCase("CATEGORY")) {
+			ok = typeGiven.equals("STRING") || typeGiven.equals("CHAR") || typeGiven.equals("INT");
 		} else if (typeToBe.equalsIgnoreCase("STRING")) {
-			ok = false;
-		} else if (typeToBe.equalsIgnoreCase("BOOLEAN")) {
+			ok = typeGiven.equals("CATEGORY") || typeGiven.equals("CHAR");
+		}else if (typeToBe.equalsIgnoreCase("BOOLEAN")) {
 			ok = false;
 		}
 
@@ -856,6 +1074,8 @@ public class PigDictionary extends AbstractDictionary {
 				functionsMap.get(arithmeticOperators)));
 		help.add(createMenu(new TreeNonUnique<String>("string"),
 				functionsMap.get(stringMethods)));
+		help.add(createMenu(new TreeNonUnique<String>("date"),
+				functionsMap.get(dateMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("math"),
 				functionsMap.get(mathMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("utils"),
@@ -878,6 +1098,8 @@ public class PigDictionary extends AbstractDictionary {
 				functionsMap.get(arithmeticOperators)));
 		help.add(createMenu(new TreeNonUnique<String>("string"),
 				functionsMap.get(stringMethods)));
+		help.add(createMenu(new TreeNonUnique<String>("date"),
+				functionsMap.get(dateMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("math"),
 				functionsMap.get(mathMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("utils"),
@@ -891,8 +1113,10 @@ public class PigDictionary extends AbstractDictionary {
 		logger.debug("create Select Help Menu");
 		return help;
 	}
+
 	/**
 	 * Create a select help menu for a grouped action
+	 * 
 	 * @return Grouped by tree
 	 * @throws RemoteException
 	 */
@@ -904,6 +1128,8 @@ public class PigDictionary extends AbstractDictionary {
 				functionsMap.get(agregationMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("string"),
 				functionsMap.get(stringMethods)));
+		help.add(createMenu(new TreeNonUnique<String>("date"),
+				functionsMap.get(dateMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("math"),
 				functionsMap.get(mathMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("integer"),
@@ -917,8 +1143,10 @@ public class PigDictionary extends AbstractDictionary {
 		logger.debug("create Group Select Help Menu");
 		return help;
 	}
+
 	/**
-	 *  Create Menu with help from list
+	 * Create Menu with help from list
+	 * 
 	 * @param root
 	 * @param list
 	 * @return menu Tree
@@ -937,10 +1165,13 @@ public class PigDictionary extends AbstractDictionary {
 		}
 		return root;
 	}
+
 	/**
 	 * Check if expression is a logical operation
+	 * 
 	 * @param expr
-	 * @return <code>true</code> if expression is a logical operation else <code>false</code> 
+	 * @return <code>true</code> if expression is a logical operation else
+	 *         <code>false</code>
 	 */
 	private static boolean isLogicalOperation(String expr) {
 		if (expr.trim().isEmpty()) {
@@ -955,8 +1186,10 @@ public class PigDictionary extends AbstractDictionary {
 		return cleanUp.startsWith("NOT ") || cleanUp.contains(" OR ")
 				|| cleanUp.contains(" AND ");
 	}
+
 	/**
-	 * Run a Logical operation and check if the operation ran ok 
+	 * Run a Logical operation and check if the operation ran ok
+	 * 
 	 * @param expr
 	 * @param features
 	 * @param aggregFeat
@@ -977,7 +1210,7 @@ public class PigDictionary extends AbstractDictionary {
 				while (!cur.endsWith(")")
 						&& countMatches(cur, "(") != countMatches(cur, ")")
 						&& i < split.length) {
-					cur += " and " + split[++i].trim();
+					cur += " AND " + split[++i].trim();
 				}
 
 				ok = check(
@@ -994,8 +1227,8 @@ public class PigDictionary extends AbstractDictionary {
 			}
 			if (!ok) {
 				String error = "Error in expression: '" + expr + "'";
-				logger.debug(error);
-				throw new Exception(error);
+				logger.warn(error);
+				//throw new Exception(error);
 			}
 			++i;
 		}
@@ -1050,7 +1283,7 @@ public class PigDictionary extends AbstractDictionary {
 	private boolean isCastOperation(String expr) {
 		return isInList(functionsMap.get(castOperator), expr);
 	}
-	
+
 	/**
 	 * Check if an expression is a conditional operation
 	 * 
@@ -1087,8 +1320,7 @@ public class PigDictionary extends AbstractDictionary {
 	public boolean isAggregatorMethod(String expr) {
 		return isInList(functionsMap.get(agregationMethods), expr);
 	}
-	
-	
+
 	public boolean isCountDistinctMethod(String expr) {
 		return expr.startsWith("COUNT_DISTINCT(");
 	}
@@ -1106,6 +1338,8 @@ public class PigDictionary extends AbstractDictionary {
 		} else if (isInList(functionsMap.get(mathMethods), expr)) {
 			return true;
 		} else if (isInList(functionsMap.get(stringMethods), expr)) {
+			return true;
+		} else if (isInList(functionsMap.get(dateMethods), expr)) {
 			return true;
 		}
 		return false;
@@ -1157,8 +1391,9 @@ public class PigDictionary extends AbstractDictionary {
 						&& expr.trim().equalsIgnoreCase(method[0].trim())) {
 					// Hard-copy method
 					type = method[2];
-				} else{
-					int methodArgs = method[1].isEmpty() ? 0 : method[1].split(",").length;
+				} else {
+					int methodArgs = method[1].isEmpty() ? 0 : method[1]
+							.split(",").length;
 					if (sizeSearched != methodArgs) {
 						method = null;
 					}
@@ -1391,6 +1626,7 @@ public class PigDictionary extends AbstractDictionary {
 			ans = findAll(functionsMap.get(utilsMethods), expr);
 			ans.addAll(findAll(functionsMap.get(mathMethods), expr));
 			ans.addAll(findAll(functionsMap.get(stringMethods), expr));
+			ans.addAll(findAll(functionsMap.get(dateMethods), expr));
 		}
 		logger.debug("found results for : " + expr + " with " + ans.size());
 		return ans;
@@ -1480,7 +1716,7 @@ public class PigDictionary extends AbstractDictionary {
 		}
 		return cleanUp;
 	}
-	
+
 	/**
 	 * Get the content of the brackets delimited by comma
 	 * 
@@ -1502,8 +1738,7 @@ public class PigDictionary extends AbstractDictionary {
 				--count;
 				if (count > 0) {
 					cleanUp += ')';
-				}
-				else{
+				} else {
 					cleanUp += ',';
 				}
 			} else if (count > 0) {

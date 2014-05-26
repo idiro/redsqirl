@@ -2,16 +2,12 @@ package idiro.workflow.server.action;
 
 import idiro.utils.FeatureList;
 import idiro.workflow.server.Page;
-import idiro.workflow.server.action.utils.HiveDictionary;
 import idiro.workflow.server.connect.HiveInterface;
-import idiro.workflow.server.datatype.HiveType;
-import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.utils.HiveLanguageManager;
 
 import java.rmi.RemoteException;
-import java.rmi.server.RemoteRef;
 
 /**
  * Action to do a simple select statement in HiveQL.
@@ -38,8 +34,7 @@ public class HiveSelect extends HiveElement {
 	 */
 
 	private HiveTableSelectInteraction tSelInt;
-	/**Group by Interaction*/
-	private HiveGroupByInteraction groupInt;
+
 	/**
 	 * Constructor
 	 * @throws RemoteException
@@ -213,13 +208,6 @@ public class HiveSelect extends HiveElement {
 	@Override
 	public FeatureList getNewFeatures() throws RemoteException {
 		return tSelInt.getNewFeatures();
-	}
-	/**
-	 * Get the GroupBy Interaction
-	 * @return groupInt
-	 */
-	public HiveGroupByInteraction getGroupInt() {
-		return groupInt;
 	}
 
 }

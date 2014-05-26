@@ -87,10 +87,6 @@ public class HiveUnion extends HiveElement {
 
 		page2.addInteraction(tUnionSelInt);
 
-		condInt = new HiveFilterInteraction(0, 0, this);
-
-		page2.addInteraction(condInt);
-
 		page3 = addPage(HiveLanguageManager.getText("hive.union_page3.title"),
 				HiveLanguageManager.getText("hive.union_page3.legend"), 1);
 
@@ -135,20 +131,15 @@ public class HiveUnion extends HiveElement {
 
 		List<DFEOutput> in = getDFEInput().get(key_input);
 		String interId = interaction.getId();
-		logger.info("Hive Union interaction " + interaction.getName());
+		logger.info("Hive Union interaction: " + interId+", "+interaction.getName());
 
 		if (in != null && in.size() > 0) {
-			if (interId.equals(condInt.getId())) {
-				logger.info("update condition interaction");
-				condInt.update();
-				// partInt.update();
-			} else if (interId.equals(tUnionSelInt.getId())) {
-				logger.info("uopdate tunuion interaction");
+			if (interId.equals(tUnionSelInt.getId())) {
+				logger.info("update tunuion interaction");
 				tUnionSelInt.update(in);
 			} else if (interId.equals(tUnionCond.getId())) {
 				tUnionCond.update(in);
-			} 
-			else if(interId.equals(tAliasInt.getId())){
+			} else if(interId.equals(tAliasInt.getId())){
 				tAliasInt.update();
 			}
 		}
@@ -174,14 +165,12 @@ public class HiveUnion extends HiveElement {
 					tUnionCond.getCondition());
 			String createSelect = tUnionSelInt.getCreateQueryPiece(out);
 
-			String condition = condInt.getQueryPiece();
-
 			if (select.isEmpty()) {
 				logger.debug("Nothing to select");
 			} else {
 				query = create + "\n" + createSelect + ";\n\n";
 
-				query += insert + "\n" + select + "\n" + condition + ";";
+				query += insert + "\n" + select + ";";
 			}
 		}
 

@@ -11,7 +11,6 @@ import idiro.workflow.server.interfaces.DFEOutput;
 
 import java.rmi.RemoteException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -44,6 +43,8 @@ public class HiveDictionary extends AbstractDictionary {
 	private static final String doubleMethods = "doubleMethods";
 	/** string methods key */
 	private static final String stringMethods = "stringMethods";
+	/** date methods key */
+	private static final String dateMethods = "dateMethods";
 	/** string methods key */
 	private static final String agregationMethods = "agregationMethods";
 	/**
@@ -121,7 +122,7 @@ public class HiveDictionary extends AbstractDictionary {
 										">=",
 										"ANY,ANY",
 										"BOOLEAN",
-										"@function:>=@short:Greater or equal@param:Any value@param Any value@description:Compare the left value to the right and checks if the left value is greater or equal to the right@example:5>=1 returns TRUE" },
+										"@function:>=@short:Greater or equal@param:Any value@param: Any value@description:Compare the left value to the right and checks if the left value is greater or equal to the right@example:5>=1 returns TRUE" },
 								new String[] {
 										"<",
 										"ANY,ANY",
@@ -182,17 +183,17 @@ public class HiveDictionary extends AbstractDictionary {
 								new String[] {
 										"ROUND()",
 										"DOUBLE",
-										"BIGINT",
+										"LONG",
 										"@function:ROUND()@short:Returns the value of an expression rounded to an integer@param:DOUBLE@description:Use the ROUND function to return the value of an expression rounded to an integer (if the result type is float) or rounded to a long (if the result type is double)@example:ROUND(4.6) returns 5@example:ROUND(2.3) returns 2" },
 								new String[] {
 										"FLOOR()",
 										"DOUBLE",
-										"BIGINT",
+										"LONG",
 										"@function:FLOOR()@short:Returns the value of an expression rounded down to the nearest integer@param:DOUBLE@description:Use the FLOOR function to return the value of an expression rounded down to the nearest integer. This function never increases the result value@example:FLOOR(4.6) returns 4@example:FLOOR(2.3) returns 2" },
 								new String[] {
 										"CEIL()",
 										"DOUBLE",
-										"BIGINT",
+										"LONG",
 										"@function:CEIL()@short:Returns the value of an expression rounded up to the nearest integer@param:DOUBLE@description:Use the CEIL function to return the value of an expression rounded up to the nearest integer. This function never decreases the result value@example:CEIL(4.6) returns 5@example:CEIL(2.3) returns 3" } });
 
 		functionsMap
@@ -207,9 +208,15 @@ public class HiveDictionary extends AbstractDictionary {
 										"SUBSTR()",
 										"STRING,INT,INT",
 										"STRING",
-										"@function:SUBSTRING( MYSTRING , INDEX , LENGTH )@short:Returns a substring from a given string@param:MYSTRING The string from which a substring will be extracted@param: INDEX The index (type integer) of the first character of the substring."
-												+ "The index of a string begins with zero (0)@param:LENGTH The index (type integer) of the character following the last character of the substring@description:Use the SUBSTRING function to return a substring from a given string."
-												+ "Given a field named alpha whose value is ABCDEF, to return substring BCD use this statement: SUBSTRING(alpha,1,4). Note that 1 is the index of B (the first character of the substring) and 4 is the index of E (the character following the last character of the substring)@example:SUBSTR(\"help\",1,4) returns \"elp\"; @example:SUBSTR(\"example\",6,7) returns  \"le\"" },
+										"@function:SUBSTRING( MYSTRING , INDEX , LENGTH )"
+										+"@short:Returns a substring from a given string"
+										+"@param:MYSTRING The string from which a substring will be extracted"
+										+"@param: INDEX The index (type integer) of the first character of the substring."
+												+ "The index of a string begins with zero (0)"
+										+"@param:LENGTH The index (type integer) of the character following the last character of the substring"
+										+"@description:Use the SUBSTRING function to return a substring from a given string."
+												+ "Given a field named alpha whose value is ABCDEF, to return substring BCD use this statement: SUBSTRING(alpha,1,4). Note that 1 is the index of B (the first character of the substring) and 4 is the index of E (the character following the last character of the substring)"
+										+"@example:SUBSTR(\"help\",1,4) returns \"elp\"; @example:SUBSTR(\"example\",6,7) returns  \"le\"" },
 								new String[] {
 										"UPPER()",
 										"STRING",
@@ -275,20 +282,185 @@ public class HiveDictionary extends AbstractDictionary {
 										"STRING,STRING,STRING,STRING",
 										"STRING",
 										"@function:CONCAT( STRING , OTHERSTRING ,ANOTHERSTRING , ANOTHERSTRING)@short:Adds two strings together@param:STRING the string that is added to @param:OTHERSTRING the string that is added to STRING@param:ANOTHERSTRING string to concatonate to the end of the resulting string@param:ANOTHERSTRING string to concatonate to the end of the resulting string@description:Adds two strings together to make a larger on@example: CONCAT(\"hello \", \"world\", \" !!!\" ,\" !!!\") returns \"hello world !!! !!!\"" } });
-
+		functionsMap
+		.put(dateMethods,
+				new String[][] {
+						new String[] {
+								"FROM_UNIXTIME()",
+								"LONG",
+								"TIMESTAMP",
+								"@function:FROM_UNIXTIME(UNIX_TIME)"
+										+"@short:Converts the number of seconds from unix epoch to a datetime."
+										+"@param: The unix time to convert "
+										+"@description:Converts the number of seconds from unix epoch (1970-01-01 00:00:00 UTC) to a timestamp."
+										+"@example: returns 1" },
+						new String[] {
+								"FROM_UNIXTIME()",
+								"LONG,STRING",
+								"TIMESTAMP",
+								"@function:FROM_UNIXTIME(UNIX_TIME,FORMAT)"
+										+"@short:Converts the number of seconds from unix epoch to a string."
+										+"@param:TIMESTAMP The unix time to convert.@param:FORMAT The date format."
+										+"@description: Converts the number of seconds from unix epoch (1970-01-01 00:00:00 UTC) to a string representing the timestamp of that moment in the current system time zone in the format of '1970-01-01 00:00:00'"
+										+"@example: returns 1" },
+						new String[] {
+								"UNIX_TIMESTAMP()",
+								"",
+								"LONG",
+								"@function:UNIX_TIMESTAMP()"
+										+"@short:Gets current Unix timestamp in seconds."
+										+"@description: Gets current Unix timestamp in seconds."
+										+"@example: returns 1" },
+						new String[] {
+								"UNIX_TIMESTAMP()",
+								"TIMESTAMP",
+								"LONG",
+								"@function:UNIX_TIMESTAMP(TIMESTAMP)"
+										+"@short:Converts timestamp to the number of seconds from unix epoch (1970-01-01 00:00:00 UTC)"
+										+"@param:TIMESTAMP The timestamp to convert."
+										+"@description: Converts timestamp to Unix timestamp (in seconds), using the default timezone and the default locale, return 0 if fail: unix_timestamp('2009-03-20 11:30:01') = 1237573801"
+										+"@example: returns 1" },
+						new String[] {
+								"UNIX_TIMESTAMP()",
+								"STRING,STRING",
+								"LONG",
+								"@function:FROM_UNIXTIME(STR_DATE,FORMAT)"
+										+"@short:Convert time string with given pattern."
+										+"@param:STR_DATE The string date to convert.@param:FORMAT The date format."
+										+"@description: Convert time string with given pattern to Unix time stamp (in seconds), return 0 if fail: unix_timestamp('2009-03-20', 'yyyy-MM-dd') = 1237532400"
+										+"@example: returns 1" },
+						new String[] {
+								"TO_DATE()",
+								"TIMESTAMP",
+								"DATE",
+								"@function:TO_DATE(TIMESTAMP)"
+										+"@short:Returns the date part of a timestamp."
+										+"@param:TIMESTAMP A timestamp "
+										+"@description: Returns the date part of a timestamp: to_date('1970-01-01 00:00:00') = '1970-01-01'"
+										+"@example: returns 1" },
+						new String[] {
+								"YEAR()",
+								"TIMESTAMP",
+								"INT",
+								"@function:YEAR(TIMESTAMP)"
+										+"@short: Returns the year part of a date or a timestamp"
+										+"@param:TIMESTAMP A timestamp "
+										+"@description: Returns the year part of a date or a timestamp: year('1970-01-01 00:00:00') = 1970, year('1970-01-01') = 1970"
+										+"@example: returns 1" },
+						new String[] {
+								"MONTH()",
+								"TIMESTAMP",
+								"INT",
+								"@function:MONTH(TIMESTAMP)"
+										+"@short:Returns the month part of a date or a timestamp."
+										+"@param:TIMESTAMP A timestamp "
+										+"@description: Returns the month part of a date or a timestamp: month('1970-11-01 00:00:00') = 11, month('1970-11-01') = 11"
+										+"@example: returns 1" },
+						new String[] {
+								"DAY()",
+								"TIMESTAMP",
+								"INT",
+								"@function:DAY(TIMESTAMP)"
+										+"@short: Return the day part of a date or a timestamp."
+										+"@param:TIMESTAMP A timestamp "
+										+"@description: Return the day part of a date or a timestamp: day('1970-11-01 00:00:00') = 1, day('1970-11-01') = 1"
+										+"@example: returns 1" },
+						new String[] {
+								"HOUR()",
+								"TIMESTAMP",
+								"INT",
+								"@function:HOUR(TIMESTAMP)"
+										+"@short: Returns the hour of the timestamp."
+										+"@param:TIMESTAMP A timestamp "
+										+"@description: Returns the hour of the timestamp: hour('2009-07-30 12:58:59') = 12, hour('12:58:59') = 12"
+										+"@example: returns 1" },
+						new String[] {
+								"MINUTE()",
+								"TIMESTAMP",
+								"INT",
+								"@function:MINUTE(TIMESTAMP)"
+										+"@short: Returns the minute of the timestamp."
+										+"@param:TIMESTAMP A timestamp "
+										+"@description: Returns the minute of the timestamp."
+										+"@example: returns 1" },
+						new String[] {
+								"SECOND()",
+								"TIMESTAMP",
+								"INT",
+								"@function:SECOND(TIMESTAMP)"
+										+"@short: Returns the second of the timestamp."
+										+"@param:TIMESTAMP A timestamp "
+										+"@description: Returns the second of the timestamp."
+										+"@example: returns 1" },
+						new String[] {
+								"WEEKOFYEAR()",
+								"TIMESTAMP",
+								"INT",
+								"@function:WEEKOFYEAR(TIMESTAMP)"
+										+"@short: Return the week number of a timestamp string: weekofyear('1970-11-01 00:00:00') = 44, weekofyear('1970-11-01') = 44"
+										+"@param:TIMESTAMP A timestamp "
+										+"@description: "
+										+"@example: returns 1" },
+						new String[] {
+								"DATEDIFF()",
+								"TIMESTAMP,TIMESTAMP",
+								"INT",
+								"@function:DATEDIFF(TIMESTAMP,TIMESTAMP)"
+										+"@short: Return the number of days from startdate to enddate."
+										+"@param:TIMESTAMP A timestamp "
+										+"@description: Return the number of days from startdate to enddate: datediff('2009-03-01', '2009-02-27') = 2."
+										+"@example: returns 1" },
+						new String[] {
+								"DATE_ADD()",
+								"DATE,INT",
+								"DATE",
+								"@function:DATE_ADD(DATE,DAYS_TO_ADD)"
+										+"@short: Add a number of days to startdate."
+										+"@param:DATE a date @param:DAYS_TO_ADD The number of days to add."
+										+"@description: Add a number of days to startdate: date_add('2008-12-31', 1) = '2009-01-01'"
+										+"@example: returns 1" },
+						new String[] {
+								"DATE_SUB()",
+								"DATE,INT",
+								"DATE",
+								"@function:DATE_SUB(DATE,DAYS_TO_SUB)"
+										+"@short: Substract a number of days to startdate."
+										+"@param:DATE a date @param:DAYS_TO_SUB The number of days to substract."
+										+"@description: Substract a number of days to startdate:  date_sub('2008-12-31', 1) = '2008-12-30'"
+										+"@example: returns 1" },
+						new String[] {
+								"FROM_UTC_TIMESTAMP()",
+								"TIMESTAMP,STRING",
+								"TIMESTAMP",
+								"@function:FROM_UTC_TIMESTAMP(TIMESTAMP,TIME_ZONE)"
+										+"@short: Assumes given timestamp is UTC and converts to given timezone."
+										+"@param:TIMESTAMP The timestamp @param:TIME_ZONE The timezone."
+										+"@description: Assumes given timestamp is UTC and converts to given timezone."
+										+"@example: returns 1" },
+						new String[] {
+								"TO_UTC_TIMESTAMP()",
+								"TIMESTAMP,STRING",
+								"TIMESTAMP",
+								"@function:TO_UTC_TIMESTAMP(TIMESTAMP,TIME_ZONE)"
+										+"@short: Assumes given timestamp is in given timezone and converts to UTC."
+										+"@param:TIMESTAMP The timestamp @param:TIME_ZONE The timezone."
+										+"@description: Assumes given timestamp is in given timezone and converts to UTC."
+										+"@example: returns 1" },
+		});
+		
 		functionsMap
 				.put(agregationMethods,
 						new String[][] {
 								new String[] {
 										"COUNT(*)",
 										"",
-										"BIGINT",
+										"LONG",
 										"@function:COUNT( * )@short:Computes the number of elements in a dataset@description:Use the COUNT function to compute the number of elements in a dataset.@example: COUNT(*) returns the frequency of Everything in that dataset" },
 								new String[] {
 										"COUNT()",
 										"ANY",
-										"BIGINT",
-										"@function:COUNT( ELEMENT )@short:Computes the number of elements in a dataset@param ELEMENT Count the frequency of Element is a dataset @description:Use the COUNT function to compute the number of elements in a dataset.@example: COUNT( ELEMENT ) returns the frequency of ELEMENT in that dataset" },
+										"LONG",
+										"@function:COUNT( ELEMENT )@short:Computes the number of elements in a dataset@param: ELEMENT Count the frequency of Element is a dataset @description:Use the COUNT function to compute the number of elements in a dataset.@example: COUNT( ELEMENT ) returns the frequency of ELEMENT in that dataset" },
 								new String[] {
 										"SUM()",
 										"NUMBER",
@@ -348,22 +520,22 @@ public class HiveDictionary extends AbstractDictionary {
 	 * @param feat
 	 * @return type
 	 */
-
 	public static String getHiveType(FeatureType feat) {
 		String featureType = feat.name();
 		switch (feat) {
-		case BOOLEAN:
-			break;
-		case INT:
-			break;
-		case FLOAT:
-			break;
 		case LONG:
 			featureType = "BIGINT";
 			break;
-		case DOUBLE:
+		case CATEGORY:
+			featureType = "STRING";
 			break;
-		case STRING:
+		case CHAR:
+			featureType = "STRING";
+			break;
+		case DATETIME:
+			featureType = "TIMESTAMP";
+			break;
+		default:
 			break;
 		}
 		return featureType;
@@ -374,26 +546,27 @@ public class HiveDictionary extends AbstractDictionary {
 	 * 
 	 * @param expr
 	 * @param features
-	 * @param featureAggreg
+	 * @param nonAggregFeats
 	 * @return returned type
 	 * @throws Exception
 	 */
 	public String getReturnType(String expr, FeatureList features,
-			Set<String> featureAggreg) throws Exception {
+			Set<String> nonAggregFeats) throws Exception {
 		logger.info("expression : " + expr);
+		logger.info("Aggreg operation: "+nonAggregFeats != null);
 		logger.info("features List : " + features.getFeaturesNames().toString());
-		// logger.info("features aggreg : "+featureAggreg.toString());
+		// logger.info("features aggreg : "+nonAggregFeats.toString());
 		if (expr == null || expr.trim().isEmpty()) {
 			throw new Exception("No expressions to test");
 		}
 		logger.info("features passed to dictionary : "
 				+ features.getFeaturesNames().toString());
-		// Test if all the featureAggreg have a type
-		if (featureAggreg != null
-				&& !features.getFeaturesNames().containsAll(featureAggreg)) {
+		// Test if all the nonAggregFeats have a type
+		if (nonAggregFeats != null
+				&& !features.getFeaturesNames().containsAll(nonAggregFeats)) {
 			logger.error("Aggregation features unknown");
 			throw new Exception("Aggregation features unknown("
-					+ featureAggreg.toString() + "): "
+					+ nonAggregFeats.toString() + "): "
 					+ features.getFeaturesNames().toString());
 		}
 
@@ -445,10 +618,10 @@ public class HiveDictionary extends AbstractDictionary {
 		}
 		if (type == null) {
 			Iterator<String> itS = null;
-			if (featureAggreg.isEmpty()) {
-				itS = features.getFeaturesNames().iterator();
+			if (nonAggregFeats != null) {
+				itS = nonAggregFeats.iterator();
 			} else {
-				itS = featureAggreg.iterator();
+				itS = features.getFeaturesNames().iterator();
 			}
 			while (itS.hasNext() && type == null) {
 				String feat = itS.next();
@@ -461,25 +634,58 @@ public class HiveDictionary extends AbstractDictionary {
 		if (type == null) {
 			if (isLogicalOperation(expr)) {
 				logger.debug(expr + ", is a logical operation");
-				if (runLogicalOperation(expr, features, featureAggreg)) {
+				if (runLogicalOperation(expr, features, nonAggregFeats)) {
 					type = "BOOLEAN";
 				}
 			} else if (isConditionalOperation(expr)) {
 				logger.debug(expr + ", is a relational operation");
-				type = runConditionalOperation(expr, features, featureAggreg);
+				type = runConditionalOperation(expr, features, nonAggregFeats);
 			} else if (isRelationalOperation(expr)) {
 				logger.debug(expr + ", is a relational operation");
-				if (runRelationalOperation(expr, features, featureAggreg)) {
+				if (runRelationalOperation(expr, features, nonAggregFeats)) {
 					type = "BOOLEAN";
 				}
 			} else if (isArithmeticOperation(expr)) {
 				logger.debug(expr + ", is an arithmetic operation");
-				if (runArithmeticOperation(expr, features, featureAggreg)) {
+				if (runArithmeticOperation(expr, features, nonAggregFeats)) {
 					type = "NUMBER";
 				}
-			} else if (isMethod(expr, !featureAggreg.isEmpty())) {
+			} else if (isAggregatorMethod(expr)) {
+				if (nonAggregFeats == null) {
+					throw new Exception("Cannot use aggregation method");
+				}
+				logger.debug(expr + ", is an agg method");
+				FeatureList fl = new OrderedFeatureList();
+				List<String> l = new LinkedList<String>();
+				l.addAll(features.getFeaturesNames());
+				l.removeAll(nonAggregFeats);
+				logger.debug("feats list size " + l.size());
+				Iterator<String> lIt = l.iterator();
+				while (lIt.hasNext()) {
+					String nameF = lIt.next();
+					logger.debug("name " + nameF);
+					fl.addFeature(nameF, features.getFeatureType(nameF));
+				}
+				type = runMethod(expr, fl, true);
+				
+			} else if (isMethod(expr)) {
 				logger.debug(expr + ", is a method");
-				type = runMethod(expr, features, featureAggreg);
+
+				if (nonAggregFeats != null && nonAggregFeats.isEmpty()) {
+					throw new Exception("Cannot use non aggregation method");
+				}
+
+				FeatureList fl = features;
+				if (nonAggregFeats != null) {
+					fl = new OrderedFeatureList();
+					Iterator<String> featureAggIterator = nonAggregFeats
+							.iterator();
+					while (featureAggIterator.hasNext()) {
+						String nameF = featureAggIterator.next();
+						fl.addFeature(nameF, features.getFeatureType(nameF));
+					}
+				}
+				type = runMethod(expr, fl, false);
 			}
 		}
 
@@ -499,7 +705,7 @@ public class HiveDictionary extends AbstractDictionary {
 	 */
 	public String getReturnType(String expr, FeatureList features)
 			throws Exception {
-		return getReturnType(expr, features, new HashSet<String>());
+		return getReturnType(expr, features, null);
 	}
 
 	/**
@@ -538,14 +744,12 @@ public class HiveDictionary extends AbstractDictionary {
 				ok = true;
 				typeToBe = typeGiven;
 			}
-		} else if (typeToBe.equalsIgnoreCase("TINYINT")) {
-			ok = false;
-		} else if (typeToBe.equalsIgnoreCase("FLOAT")) {
-			ok = false;
-		} else if (typeToBe.equalsIgnoreCase("STRING")) {
-			ok = false;
-		} else if (typeToBe.equalsIgnoreCase("BOOLEAN")) {
-			ok = false;
+		} else if (typeToBe.equalsIgnoreCase("CATEGORY")) {
+			ok = typeGiven.equals("STRING") || typeGiven.equals("CHAR") || typeGiven.equals("INT");;
+		} else if (typeToBe.equalsIgnoreCase("DATETIME")) {
+			ok = typeGiven.equals("DATE");
+		} else if (typeToBe.equalsIgnoreCase("TIMESTAMP")) {
+			ok = typeGiven.equals("DATE") || typeGiven.equals("DATETIME");
 		} else if (typeToBe.equalsIgnoreCase("TYPE")) {
 			ok = typeGiven.equalsIgnoreCase("BOOLEAN")
 					|| typeGiven.equalsIgnoreCase("TINYINT")
@@ -553,7 +757,9 @@ public class HiveDictionary extends AbstractDictionary {
 					|| typeGiven.equalsIgnoreCase("BIGINT")
 					|| typeGiven.equalsIgnoreCase("FLOAT")
 					|| typeGiven.equalsIgnoreCase("DOUBLE")
-					|| typeGiven.equalsIgnoreCase("STRING");
+					|| typeGiven.equalsIgnoreCase("STRING")
+					|| typeGiven.equalsIgnoreCase("DATE")
+					|| typeGiven.equalsIgnoreCase("TIMESTAMP");
 
 		}
 		if (!ok && typeToBe.equalsIgnoreCase(typeGiven)) {
@@ -672,6 +878,8 @@ public class HiveDictionary extends AbstractDictionary {
 				functionsMap.get(arithmeticOperators)));
 		help.add(createMenu(new TreeNonUnique<String>("string"),
 				functionsMap.get(stringMethods)));
+		help.add(createMenu(new TreeNonUnique<String>("date"),
+				functionsMap.get(dateMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("double"),
 				functionsMap.get(doubleMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("utils"),
@@ -694,6 +902,8 @@ public class HiveDictionary extends AbstractDictionary {
 				functionsMap.get(arithmeticOperators)));
 		help.add(createMenu(new TreeNonUnique<String>("string"),
 				functionsMap.get(stringMethods)));
+		help.add(createMenu(new TreeNonUnique<String>("date"),
+				functionsMap.get(dateMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("double"),
 				functionsMap.get(doubleMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("utils"),
@@ -723,6 +933,8 @@ public class HiveDictionary extends AbstractDictionary {
 				functionsMap.get(arithmeticOperators)));
 		help.add(createMenu(new TreeNonUnique<String>("string"),
 				functionsMap.get(stringMethods)));
+		help.add(createMenu(new TreeNonUnique<String>("date"),
+				functionsMap.get(dateMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("double"),
 				functionsMap.get(doubleMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("integer"),
@@ -853,7 +1065,7 @@ public class HiveDictionary extends AbstractDictionary {
 	private boolean runRelationalOperation(String expr, FeatureList features,
 			Set<String> aggregFeat) throws Exception {
 		return runOperation(functionsMap.get(relationalOperators), expr,
-				features, aggregFeat);
+				features, null);
 	}
 	
 
@@ -882,7 +1094,18 @@ public class HiveDictionary extends AbstractDictionary {
 	private boolean runArithmeticOperation(String expr, FeatureList features,
 			Set<String> aggregFeat) throws Exception {
 		return runOperation(functionsMap.get(arithmeticOperators), expr,
-				features, aggregFeat);
+				features, null);
+	}
+	
+	/**
+	 * Check if an expression is an aggregative method
+	 * 
+	 * @param expr
+	 * @return <code>true</code> if expression is aggregative else
+	 *         <code>false</code>
+	 */
+	public boolean isAggregatorMethod(String expr) {
+		return isInList(functionsMap.get(agregationMethods), expr);
 	}
 
 	/**
@@ -894,11 +1117,11 @@ public class HiveDictionary extends AbstractDictionary {
 	 *         <code>false</code>
 	 */
 
-	private boolean isMethod(String expr, boolean agregation) {
-		return agregation ? isInList(functionsMap.get(agregationMethods), expr)
-				: isInList(functionsMap.get(utilsMethods), expr)
+	private boolean isMethod(String expr) {
+		return isInList(functionsMap.get(utilsMethods), expr)
 						|| isInList(functionsMap.get(doubleMethods), expr)
-						|| isInList(functionsMap.get(stringMethods), expr);
+						|| isInList(functionsMap.get(stringMethods), expr)
+						|| isInList(functionsMap.get(dateMethods), expr);
 
 	}
 
@@ -913,9 +1136,9 @@ public class HiveDictionary extends AbstractDictionary {
 	 */
 
 	private String runMethod(String expr, FeatureList features,
-			Set<String> aggregFeat) throws Exception {
+			boolean isAggregMethod) throws Exception {
 		String type = null;
-		List<String[]> methodsFound = findAllMethod(expr, !aggregFeat.isEmpty());
+		List<String[]> methodsFound = findAllMethod(expr, isAggregMethod);
 		if (!methodsFound.isEmpty()) {
 			String arg = expr.substring(expr.indexOf("(") + 1,
 					expr.lastIndexOf(")"));
@@ -1061,17 +1284,17 @@ public class HiveDictionary extends AbstractDictionary {
 	 */
 
 	private boolean runOperation(String[][] list, String expr,
-			FeatureList features, Set<String> aggregFeat) throws Exception {
+			FeatureList features, Set<String> nonAggregFeat) throws Exception {
 		boolean ok = false;
 		String[] method = HiveDictionary.find(list, expr);
 		if (method != null) {
 			logger.debug("In " + expr + ", method found: " + method[0]);
 			String[] splitStr = expr.split(escapeString(method[0])+"(?![^()]*+\\))");
-			if (aggregFeat.isEmpty()) {
+			if (nonAggregFeat == null) {
 				ok = check(method, splitStr, features);
 			} else {
 				FeatureList AF = new OrderedFeatureList();
-				Iterator<String> itA = aggregFeat.iterator();
+				Iterator<String> itA = nonAggregFeat.iterator();
 				while (itA.hasNext()) {
 					String feat = itA.next();
 					AF.addFeature(feat, features.getFeatureType(feat));
@@ -1245,6 +1468,7 @@ public class HiveDictionary extends AbstractDictionary {
 			ans = findAll(functionsMap.get(utilsMethods), expr);
 			ans.addAll(findAll(functionsMap.get(doubleMethods), expr));
 			ans.addAll(findAll(functionsMap.get(stringMethods), expr));
+			ans.addAll(findAll(functionsMap.get(dateMethods), expr));
 		}
 		return ans;
 	}

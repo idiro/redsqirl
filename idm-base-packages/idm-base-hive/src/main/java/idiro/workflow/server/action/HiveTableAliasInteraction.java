@@ -23,19 +23,19 @@ public class HiveTableAliasInteraction extends TableInteraction {
 	 * 
 	 */
 	private static final long serialVersionUID = -4973968329944889374L;
-	/**Action that the interaction is contained in*/
+	/** Action that the interaction is contained in */
 	private HiveElement hu;
-								/**Relation Column Title*/
+	/** Relation Column Title */
 	public static final String table_input_title = HiveLanguageManager
 			.getTextWithoutSpace("hive.table_alias_interaction.input_column"),
 			/** Operation Column title */
 			table_alias_title = HiveLanguageManager
-					.getTextWithoutSpace("hive.table_alias_interaction.alias_column");
-			/** Feature Column title */
-	
+			.getTextWithoutSpace("hive.table_alias_interaction.alias_column");
+	/** Feature Column title */
+
 	private Map<String, DFEOutput> aliasInputMap;
-	
-	/* Minimum number of inputs*/
+
+	/* Minimum number of inputs */
 	private int minNumInputs;
 
 	/**
@@ -50,7 +50,8 @@ public class HiveTableAliasInteraction extends TableInteraction {
 	 * @throws RemoteException
 	 */
 	public HiveTableAliasInteraction(String id, String name, String legend,
-			int column, int placeInColumn, HiveElement hu, int minNumInputs) throws RemoteException {
+			int column, int placeInColumn, HiveElement hu, int minNumInputs)
+					throws RemoteException {
 		super(id, name, legend, column, placeInColumn);
 		this.hu = hu;
 		this.minNumInputs = minNumInputs;
@@ -64,43 +65,43 @@ public class HiveTableAliasInteraction extends TableInteraction {
 	 * @throws RemoteException
 	 */
 	public void update() throws RemoteException {
-		
+		logger.info("update alias");
 		aliasInputMap = new HashMap<String, DFEOutput>();
-		
-		
+
 		Map<String, List<DataFlowElement>> in = hu.getInputComponent();
-		
-		
+
 		boolean rowsEmpty = getValues().isEmpty();
-		
-			Iterator<String> it = in.keySet().iterator();
-			while (it.hasNext()) {
-				Iterator<DataFlowElement> it2 = in.get(it.next()).iterator();
-				while (it2.hasNext()) {
-					DataFlowElement cur = it2.next();
-					String out_id = hu.findNameOf(cur.getOutputComponent(), hu);
-	
-					String input = null;
-					if (out_id.isEmpty()) {
-						input = cur.getComponentId();
-						
-					} else {
-						input = cur.getComponentId() + "_" + out_id;
-					}
-					
-					aliasInputMap.put(input, cur.getDFEOutput().get(out_id));
-					
-					if (rowsEmpty){
-						Map<String, String> row = new HashMap<String, String>();
-						row.put(table_alias_title, input);
-						row.put(table_input_title, input);
-						
-						addRow(row);
-					}
+		logger.info("To set: "+rowsEmpty);
+		Iterator<String> it = in.keySet().iterator();
+		while (it.hasNext()) {
+			Iterator<DataFlowElement> it2 = in.get(it.next()).iterator();
+			while (it2.hasNext()) {
+				DataFlowElement cur = it2.next();
+				String out_id = hu.findNameOf(cur.getOutputComponent(), hu);
+				logger.info("Id: "+out_id);
+				String input = null;
+				if (out_id.isEmpty()) {
+					input = cur.getComponentId();
+
+				} else {
+					input = cur.getComponentId() + "_" + out_id;
+				}
+
+				aliasInputMap.put(input, cur.getDFEOutput().get(out_id));
+
+				if (rowsEmpty) {
+					logger.info("add alias row");
+					Map<String, String> row = new HashMap<String, String>();
+					row.put(table_alias_title, input);
+					row.put(table_input_title, input);
+
+					addRow(row);
 				}
 			}
-		
-		updateColumnConstraint(table_input_title, null, null, aliasInputMap.keySet());
+		}
+
+		updateColumnConstraint(table_input_title, null, null,
+				aliasInputMap.keySet());
 
 	}
 
@@ -113,11 +114,11 @@ public class HiveTableAliasInteraction extends TableInteraction {
 
 		addColumn(table_input_title, null, null, null);
 
-		addColumn(table_alias_title, 1, "[a-zA-Z]([A-Za-z0-9_]{0,29})", null, null);
+		addColumn(table_alias_title, 1, "[a-zA-Z]([A-Za-z0-9_]{0,29})", null,
+				null);
 
 	}
 
-	
 	/**
 	 * Get the new features list from the interaction
 	 * 
@@ -126,20 +127,23 @@ public class HiveTableAliasInteraction extends TableInteraction {
 	 */
 	public Map<String, DFEOutput> getAliases() throws RemoteException {
 		Map<String, DFEOutput> result = new HashMap<String, DFEOutput>();
-		
-		
+
 		List<Map<String, String>> rows = getValues();
+		if(aliasInputMap == null){
+			update();
+		}
 		
-		for (Map<String, String> row : rows){
-			DFEOutput out = aliasInputMap.get(row.get(table_input_title));
-			result.put(row.get(table_alias_title), out);
-			
+		if(aliasInputMap != null){
+			for (Map<String, String> row : rows) {
+				DFEOutput out = aliasInputMap.get(row.get(table_input_title));
+				result.put(row.get(table_alias_title), out);
+
+			}
 		}
 
 		return result;
 	}
-	
-	
+
 	/**
 	 * Check the interaction for errors
 	 * 
@@ -149,16 +153,16 @@ public class HiveTableAliasInteraction extends TableInteraction {
 	@Override
 	public String check() throws RemoteException {
 		String msg = super.check();
-		
-		if (msg == null){
+
+		if (msg == null) {
 			List<Map<String, String>> lRow = getValues();
-	
+
 			if (lRow.size() < minNumInputs) {
 				msg = HiveLanguageManager
 						.getText("hive.table_alias_interaction.checknumberinput");
 			} else {
-				for (Map<String, String> row : lRow){
-					if (!aliasInputMap.containsKey(row.get(table_input_title))){
+				for (Map<String, String> row : lRow) {
+					if (!aliasInputMap.containsKey(row.get(table_input_title))) {
 						msg = HiveLanguageManager
 								.getText("hive.table_alias_interaction.checkvalidinput");
 					}
@@ -169,5 +173,4 @@ public class HiveTableAliasInteraction extends TableInteraction {
 		return msg;
 	}
 
-	
 }

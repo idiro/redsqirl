@@ -13,7 +13,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +31,7 @@ public class PigUnionTests {
 			HDFSInterface hInt) throws RemoteException, Exception{
 		String error = null;
 		String idHS = w.addElement((new PigUnion()).getName());
-		logger.debug("Pig select: "+idHS);
+		logger.debug("Pig union: "+idHS);
 		
 		PigUnion pig = (PigUnion) w.getElement(idHS);
 		
@@ -42,7 +41,7 @@ public class PigUnionTests {
 		w.addLink(
 				PigBinarySource.out_name, src1.getComponentId(), 
 				PigUnion.key_input, idHS);
-		assertTrue("pig select add input: "+error,error == null);
+		assertTrue("pig union add input: "+error,error == null);
 		
 		logger.debug(PigBinarySource.out_name+" "+src2.getComponentId());
 		logger.debug(PigUnion.key_input+" "+idHS);
@@ -50,7 +49,7 @@ public class PigUnionTests {
 		w.addLink(
 				PigBinarySource.out_name, src2.getComponentId(), 
 				PigUnion.key_input, idHS);
-		assertTrue("pig select add input: "+error,error == null);
+		assertTrue("pig union add input: "+error,error == null);
 		
 		String alias1 ="";
 		String alias2 = "";

@@ -4,7 +4,6 @@ import static org.junit.Assert.assertTrue;
 import idiro.utils.Tree;
 import idiro.workflow.server.action.utils.TestUtils;
 import idiro.workflow.server.connect.HiveInterface;
-import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.interfaces.DataFlowElement;
 
 import java.rmi.RemoteException;
@@ -33,15 +32,7 @@ public class TableUnionInteractionTests {
 				hInt.create(path, getColumns()) == null
 				);
 		
-		Source src = new Source();
-
-		src.update(src.getInteraction(Source.key_datatype));
-		Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype).getTree();
-		dataTypeTree.getFirstChild("list").getFirstChild("output").add("Hive");
-		
-		src.update(src.getInteraction(Source.key_datasubtype));
-		Tree<String> dataSubTypeTree = src.getInteraction(Source.key_datasubtype).getTree();
-		dataSubTypeTree.getFirstChild("list").getFirstChild("output").add(new HiveType().getTypeName());
+		HiveSource src = new HiveSource();
 
 		src.update(src.getInteraction(Source.key_dataset));
 		Tree<String> dataSetTree = src.getInteraction(Source.key_dataset).getTree();
@@ -87,6 +78,7 @@ public class TableUnionInteractionTests {
 			error = hs.addInputComponent(HiveUnion.key_input, src2);
 			assertTrue("hive select add input: "+error,error == null);
 			
+			hs.update(hs.gettAliasInt());
 
 			String alias1 = null;
 			String alias2 = null;
@@ -101,10 +93,7 @@ public class TableUnionInteractionTests {
 			}
 			
 			logger.debug(hs.getDFEInput());
-			
-			hs.getFilterInt().update();
 			logger.debug("base update...");
-			//hs.getJoinTypeInt().update();
 			HiveTableUnionInteraction tui = hs.gettUnionSelInt();
 			
 			hs.update(tui);
@@ -123,7 +112,7 @@ public class TableUnionInteractionTests {
 				rowId.add(HiveTableUnionInteraction.table_feat_title).add("ID");
 				rowId.add(HiveTableUnionInteraction.table_type_title).add("STRING");
 				error = tui.check();
-				assertTrue("check "+error,error != null);
+				assertTrue("check1: "+error,error != null);
 				out.remove("row");
 			}
 			{
@@ -142,7 +131,7 @@ public class TableUnionInteractionTests {
 				rowId.add(HiveTableUnionInteraction.table_feat_title).add("ID");
 				rowId.add(HiveTableUnionInteraction.table_type_title).add("STRING");
 				error = tui.check();
-				assertTrue("check "+error,error != null);
+				assertTrue("check2: "+error,error != null);
 				out.remove("row");
 			}
 			{
@@ -161,7 +150,7 @@ public class TableUnionInteractionTests {
 				rowId.add(HiveTableUnionInteraction.table_feat_title).add("VALUE");
 				rowId.add(HiveTableUnionInteraction.table_type_title).add("INT");
 				error = tui.check();
-				assertTrue("check "+error,error != null);
+				assertTrue("check3: "+error,error != null);
 				out.remove("row");
 			}
 			{
@@ -180,12 +169,12 @@ public class TableUnionInteractionTests {
 				rowId.add(HiveTableUnionInteraction.table_feat_title).add("ID");
 				rowId.add(HiveTableUnionInteraction.table_type_title).add("STRING");
 				error = tui.check();
-				assertTrue("check "+error,error == null);
+				assertTrue("check4:  "+error,error == null);
 				out.remove("row");
 			}
 			
 		}catch(Exception e){
-			logger.error(e.getMessage());
+			logger.error(e.getMessage(),e);
 			assertTrue(e.getMessage(),false);
 		}
 	}

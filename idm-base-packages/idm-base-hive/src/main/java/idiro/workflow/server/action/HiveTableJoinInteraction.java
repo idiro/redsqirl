@@ -9,6 +9,7 @@ import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.utils.HiveLanguageManager;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -138,6 +139,7 @@ public class HiveTableJoinInteraction extends TableInteraction {
 		}
 		updateGenerator("copy", copyRows);
 	}
+	
 	/**
 	 * Generate a root table for the interaction
 	 * @throws RemoteException
@@ -148,13 +150,13 @@ public class HiveTableJoinInteraction extends TableInteraction {
 
 		addColumn(table_feat_title, 1, null, null);
 
-		List<String> typeValues = new LinkedList<String>();
-		typeValues.add(FeatureType.BOOLEAN.name());
-		typeValues.add(FeatureType.INT.name());
-		typeValues.add(FeatureType.DOUBLE.name());
-		typeValues.add(FeatureType.FLOAT.name());
+		List<String> types = new ArrayList<String>(FeatureType.values().length);
+		for(FeatureType ft:FeatureType.values()){
+			types.add(ft.name());
+		}
+		types.remove(FeatureType.DATETIME.name());
 
-		addColumn(table_type_title, null, typeValues, null);
+		addColumn(table_type_title, null, types, null);
 
 	}
 	/**
@@ -214,27 +216,19 @@ public class HiveTableJoinInteraction extends TableInteraction {
 	public String getCreateQueryPiece() throws RemoteException {
 		logger.debug("create features...");
 		String createSelect = "";
-		Iterator<Tree<String>> selIt = getTree().getFirstChild("table")
-				.getChildren("row").iterator();
-		if (selIt.hasNext()) {
-			Tree<String> cur = selIt.next();
-			String featName = cur.getFirstChild(table_feat_title)
-					.getFirstChild().getHead();
-			createSelect = "("
-					+ featName
-					+ " "
-					+ cur.getFirstChild(table_type_title).getFirstChild()
-							.getHead();
+		FeatureList features = getNewFeatures();
+		Iterator<String> it = features.getFeaturesNames().iterator();
+		if (it.hasNext()) {
+			String featName = it.next();
+			String type = HiveDictionary.getHiveType(features
+					.getFeatureType(featName));
+			createSelect = "(" + featName + " " + type;
 		}
-		while (selIt.hasNext()) {
-			Tree<String> cur = selIt.next();
-			String featName = cur.getFirstChild(table_feat_title)
-					.getFirstChild().getHead();
-			createSelect += ","
-					+ featName
-					+ " "
-					+ cur.getFirstChild(table_type_title).getFirstChild()
-							.getHead();
+		while (it.hasNext()) {
+			String featName = it.next();
+			String type = HiveDictionary.getHiveType(features
+					.getFeatureType(featName));
+			createSelect += "," + featName + " " + type;
 		}
 		createSelect += ")";
 

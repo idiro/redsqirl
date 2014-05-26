@@ -7,7 +7,6 @@ import idiro.workflow.server.OozieManager;
 import idiro.workflow.server.Workflow;
 import idiro.workflow.server.action.utils.TestUtils;
 import idiro.workflow.server.connect.HiveInterface;
-import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.enumeration.SavingState;
 
 import java.rmi.RemoteException;
@@ -37,19 +36,12 @@ public class HiveUnionTests {
 			HiveInterface hInt, 
 			String new_path1 ) throws RemoteException, Exception{
 		
-		String idSource = w.addElement((new Source()).getName());
+		String idSource = w.addElement((new HiveSource()).getName());
 		DataflowAction src = (DataflowAction) w.getElement(idSource);
 		
 		assertTrue("create "+new_path1,
 				hInt.create(new_path1, getColumns()) == null
 				);
-		src.update(src.getInteraction(Source.key_datatype));
-		Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype).getTree();
-		dataTypeTree.getFirstChild("list").getFirstChild("output").add("Apache Hive Metastore");
-		
-		src.update(src.getInteraction(Source.key_datasubtype));
-		Tree<String> dataSubTypeTree = src.getInteraction(Source.key_datasubtype).getTree();
-		dataSubTypeTree.getFirstChild("list").getFirstChild("output").add(new HiveType().getTypeName());
 
 		src.update(src.getInteraction(Source.key_dataset));
 		Tree<String> dataSetTree = src.getInteraction(Source.key_dataset).getTree();
@@ -118,6 +110,8 @@ public class HiveUnionTests {
 			String path_2,
 			HiveInterface hInt) throws RemoteException, Exception{
 		
+		hive.update(hive.gettAliasInt());
+		
 		logger.debug("update hive...");
 		String alias1 = null;
 		String alias2 = null;
@@ -130,8 +124,6 @@ public class HiveUnionTests {
 				alias2 = swp;
 			}
 		}
-		
-		hive.update(hive.gettAliasInt());
 		
 		logger.debug("updated hive aliases");
 		HiveTableUnionInteraction tsi = hive.gettUnionSelInt();
@@ -227,7 +219,7 @@ public class HiveUnionTests {
 		    assertTrue(error, error.contains("SUCCEEDED"));
 		    hInt.delete(new_path3);
 		}catch(Exception e){
-			logger.error(e.getMessage());
+			logger.error(e.getMessage(),e);
 			assertTrue(e.getMessage(),false);
 		}
 	}

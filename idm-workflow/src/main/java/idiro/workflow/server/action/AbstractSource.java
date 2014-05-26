@@ -388,6 +388,7 @@ public abstract class AbstractSource extends DataflowAction {
 
 					}
 				} catch (Exception e) {
+					logger.error("Exception in source.",e);
 					error = LanguageManagerWF.getText("source.exception",
 							new Object[] { e.getMessage() });
 				}

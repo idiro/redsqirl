@@ -6,12 +6,8 @@ import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.DataProperty;
 import idiro.workflow.server.DataflowAction;
 import idiro.workflow.server.ListInteraction;
-import idiro.workflow.server.UserInteraction;
-import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.datatype.HiveTypePartition;
-import idiro.workflow.server.datatype.MapRedBinaryType;
-import idiro.workflow.server.datatype.MapRedTextType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
@@ -23,7 +19,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -306,9 +301,10 @@ public abstract class HiveElement extends DataflowAction {
 	 * @throws RemoteException
 	 */
 	public Set<String> getGroupByFeatures() throws RemoteException {
-		Set<String> features = new HashSet<String>();
+		Set<String> features = null;
 		HiveGroupByInteraction group = getGroupingInt();
 		if (group != null) {
+			features = new HashSet<String>();
 			Tree<String> tree = group.getTree();
 			logger.info("group tree : "
 					+ ((TreeNonUnique<String>) tree).toString());

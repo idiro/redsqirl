@@ -4,7 +4,6 @@ import static org.junit.Assert.assertTrue;
 import idiro.utils.Tree;
 import idiro.workflow.server.action.utils.TestUtils;
 import idiro.workflow.server.connect.HiveInterface;
-import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.interfaces.DataFlowElement;
 
 import java.rmi.RemoteException;
@@ -33,15 +32,7 @@ public class TableJoinInteractionTests {
 				hInt.create(path, getColumns()) == null
 				);
 		
-		Source src = new Source();
-
-		src.update(src.getInteraction(Source.key_datatype));
-		Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype).getTree();
-		dataTypeTree.getFirstChild("list").getFirstChild("output").add("Hive");
-		
-		src.update(src.getInteraction(Source.key_datasubtype));
-		Tree<String> dataSubTypeTree = src.getInteraction(Source.key_datasubtype).getTree();
-		dataSubTypeTree.getFirstChild("list").getFirstChild("output").add(new HiveType().getTypeName());
+		HiveSource src = new HiveSource();
 
 		src.update(src.getInteraction(Source.key_dataset));
 		Tree<String> dataSetTree = src.getInteraction(Source.key_dataset).getTree();
@@ -179,7 +170,7 @@ public class TableJoinInteractionTests {
 			
 			
 		}catch(Exception e){
-			logger.error(e.getMessage());
+			logger.error(e.getMessage(),e);
 			assertTrue(e.getMessage(),false);
 		}
 	}

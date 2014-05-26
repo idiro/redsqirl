@@ -10,6 +10,7 @@ import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.utils.HiveLanguageManager;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -216,12 +217,11 @@ public class HiveTableUnionInteraction extends TableInteraction {
 		addColumn(table_feat_title, null, "[a-zA-Z]([A-Za-z0-9_]{0,29})", null,
 				null);
 
-		List<String> types = new LinkedList<String>();
-		types.add(FeatureType.BOOLEAN.name());
-		types.add(FeatureType.INT.name());
-		types.add(FeatureType.DOUBLE.name());
-		types.add(FeatureType.FLOAT.name());
-		types.add(FeatureType.STRING.name());
+		List<String> types = new ArrayList<String>(FeatureType.values().length);
+		for(FeatureType ft:FeatureType.values()){
+			types.add(ft.name());
+		}
+		types.remove(FeatureType.DATETIME.name());
 
 		addColumn(table_type_title, null, types, null);
 
@@ -323,14 +323,7 @@ public class HiveTableUnionInteraction extends TableInteraction {
 					+ hi.getTableAndPartitions(aliases.get(alias).getPath())[0]
 					+ " " + alias + "\n";
 			logger.debug("where...");
-			String where = hu.getFilterInt().getInputWhere(alias);
-			if (!where.isEmpty()) {
-				select += "\n      WHERE " + where + "\n";
-				if (conditions.get(alias) != null) {
-					select += " AND " + conditions.get(alias);
-				}
-
-			} else if (conditions.get(alias) != null) {
+			if (conditions.get(alias) != null) {
 				select += " 		WHERE " + conditions.get(alias) + "\n";
 			}
 		}
@@ -356,13 +349,7 @@ public class HiveTableUnionInteraction extends TableInteraction {
 			select += "\n      FROM "
 					+ hi.getTableAndPartitions(aliases.get(alias).getPath())[0]
 					+ " " + alias + "\n";
-			String where = hu.getFilterInt().getInputWhere(alias);
-			if (!where.isEmpty()) {
-				select += "\n      WHERE " + where + "\n";
-				if (conditions.get(alias) != null) {
-					select += " AND " + conditions.get(alias);
-				}
-			} else if (conditions.get(alias) != null) {
+			if (conditions.get(alias) != null) {
 				select += "		WHERE " + conditions.get(alias) + " \n ";
 			}
 		}
