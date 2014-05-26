@@ -1759,6 +1759,7 @@ function configureGroupListeners(canvasName, group) {
 	});
 	
 	group.on('click', function(e) {
+		jQuery(".tooltipCanvas").remove();
 	    if(e.button != 2){
 		  deselectOnClick(canvasName, group.getChildren()[2], e);
 		
@@ -1769,9 +1770,9 @@ function configureGroupListeners(canvasName, group) {
         }else{
               rightClickGroup = this;
               cmenuCanvas.show(this,e);
+              e.preventDefault();
               return false;
         }
-	    jQuery(".tooltipCanvas").remove();
 	});
 
 }

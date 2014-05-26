@@ -346,7 +346,7 @@
         
                                     <rich:comboBox value="#{rowItem.row[ind]}"
                                         selectFirstOnUpdate="false" defaultLabel="Enter some value"
-                                        width="125" enableManualInput="false" listWidth="150"
+                                        width="125" enableManualInput="true" listWidth="150"
                                         listHeight="150"
                                         rendered="#{interCur.table.columnType[column] == 'comboBox' }"
                                         styleClass="tableInteractionInput">
@@ -499,7 +499,7 @@
         
             </rich:modalPanel>
 
-            <rich:modalPanel id="textEditorPanel" width="600" height="420" style="overflow:hidden;" >
+            <rich:modalPanel id="textEditorPanel" width="650" height="420" style="overflow:hidden;" >
                     
                     <f:facet name="header">Editor</f:facet>
                     <f:facet name="controls">

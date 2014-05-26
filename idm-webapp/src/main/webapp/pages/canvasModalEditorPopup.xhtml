@@ -87,13 +87,12 @@
 	<div id="canvasModalBeanTextEditor" style="width:100%; overflow: auto; height: 375px;" rendered="#{canvasModalBean.selEditor != null}" >
 
 		<h:inputTextarea maxlength="100" cols="70" rows="10" value="#{canvasModalBean.selEditor.value}"
-			style="resize:none;border:1px solid;" id="commandText" />
+			style="resize:none;border:1px solid;width:97%;height:100px;" id="commandText" />
 
-		<br />
-		<br />
 
 		<a4j:region>
-			<table width="100%" id="table">
+		<div style="width:100%;overflow:auto;height:225px;overflow-x:hidden;overflow-y:auto;" >
+			<table width="100%" id="table" height="200px" style="border:none;">
 				<tr style="vertical-align: top;">
 					<td width="45%">
 						<br /> 
@@ -110,7 +109,7 @@
 						<rich:extendedDataTable id="listFunctions" 
 						    value="#{canvasModalBean.selEditor.edit.textEditorFunctions[canvasModalBean.selEditor.selectedFunction]}" 
 						    var="item"
-							style="border:1px solid;" width="100%" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+							style="border:0px;" width="100%" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 							enableContextMenu="false" selectionMode="none"
 							onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
 							rowClasses="even-row, odd-row">
@@ -157,7 +156,7 @@
 						<rich:extendedDataTable id="listOperation" 
 						value="#{canvasModalBean.selEditor.edit.textEditorOperations[canvasModalBean.selEditor.selectedOperation]}" 
 						var="item"
-						style="border:1px solid;" width="100%" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+						style="border:0px;" width="100%" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 						enableContextMenu="false" selectionMode="none"
 						onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
 						rowClasses="even-row, odd-row">
@@ -183,7 +182,7 @@
 					<br />
 						
 						<rich:extendedDataTable id="listFields"	value="#{canvasModalBean.selEditor.edit.textEditorFieldsEntry}" var="item"
-							style="border:1px solid;" width="100%" onRowClick="completeFilds" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+							style="border:0px;" width="100%" onRowClick="completeFilds" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 							enableContextMenu="false" selectionMode="none"
 							onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
 							rowClasses="even-row, odd-row">
@@ -211,6 +210,7 @@
 					</td>
 				</tr>
 			</table>
+			</div>
 		</a4j:region>
 		<br />
 
@@ -220,9 +220,9 @@
 			oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('textEditorPanel')}.hide() };"
 			reRender="command,tableInteraction, msnError, errorTable" />
 			
-		<h:commandButton styleClass="greenButton" value="#{messages.button_cancel}" type="button" onclick="#{rich:component('textEditorPanel')}.hide();"/>
+		<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('textEditorPanel')}.hide();"/>
 			
-		<a4j:commandButton  styleClass="greenButton" action="#{canvasModalBean.selEditor.checkTextEditor}" value="#{messages.button_check}" reRender="command,tableInteraction, msnError, errorTable" />
+		<a4j:commandButton styleClass="greenButton" action="#{canvasModalBean.selEditor.checkTextEditor}" value="#{messages.button_check}" reRender="command,tableInteraction, msnError, errorTable" />
 
 	</div>
 	</h:form>
