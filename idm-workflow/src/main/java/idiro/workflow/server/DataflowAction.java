@@ -646,7 +646,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			}
 		} catch (Exception e) {
 			waLogger.warn("Fail to get the name of the action");
-			waLogger.error(e.getMessage());
+			waLogger.error(e.getMessage(),e);
 		}
 
 		return addPage(title, f, legend, nbColumn);

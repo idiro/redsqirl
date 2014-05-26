@@ -211,19 +211,19 @@ public abstract class AbstractDictionary {
 		Map<String, List<String>> functions = new HashMap<String, List<String>>();
 		String output = "";
 		String template = "<div class=\"help\">";
-		// logger.debug(helpString);
+		logger.debug(helpString);
 		if (helpString.contains("@")) {
 			String[] element = helpString.split("@");
 
 			for (String function : element) {
-				if (!function.isEmpty()) {
-					logger.info(function);
-					String key = function.substring(0, function.indexOf(':'));
+				if (!function.trim().isEmpty()) {
+					logger.debug(function);
+					String key = function.substring(0, function.indexOf(':')).trim();
 					String value = function
-							.substring(function.indexOf(':') + 1);
+							.substring(function.indexOf(':') + 1).trim();
 
-					logger.info(key);
-					logger.info(value);
+					logger.debug(key);
+					logger.debug(value);
 
 					List<String> vals;
 					if (functions.containsKey(key)) {

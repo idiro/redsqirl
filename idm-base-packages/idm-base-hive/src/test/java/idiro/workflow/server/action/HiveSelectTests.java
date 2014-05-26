@@ -4,23 +4,18 @@ import static org.junit.Assert.assertTrue;
 import idiro.utils.Tree;
 import idiro.workflow.server.DataflowAction;
 import idiro.workflow.server.HiveJdbcProcessesManager;
-import idiro.workflow.server.ListInteraction;
 import idiro.workflow.server.OozieManager;
 import idiro.workflow.server.ProcessesManager;
 import idiro.workflow.server.Workflow;
 import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.action.utils.TestUtils;
 import idiro.workflow.server.connect.HiveInterface;
-import idiro.workflow.server.datatype.HiveType;
-import idiro.workflow.server.datatype.HiveTypePartition;
-import idiro.workflow.server.datatype.MapRedTextType;
 import idiro.workflow.server.enumeration.SavingState;
 
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.hadoop.hive.ql.index.HiveIndex;
 import org.apache.log4j.Logger;
 import org.apache.oozie.client.OozieClient;
 import org.junit.Test;
@@ -41,8 +36,8 @@ public class HiveSelectTests {
 	public DataflowAction createSrc(Workflow w, HiveInterface hInt,
 			String new_path1 ,boolean partition) throws RemoteException, Exception {
 
-		String idSource = w.addElement((new Source()).getName());
-		Source src = (Source) w.getElement(idSource);
+		String idSource = w.addElement((new HiveSource()).getName());
+		HiveSource src = (HiveSource) w.getElement(idSource);
 
 		String deleteError = hInt.delete(new_path1);
 		// assertTrue("delete " + deleteError, deleteError == null
@@ -50,17 +45,6 @@ public class HiveSelectTests {
 
 		String createError = hInt.create(new_path1, getColumns(false));
 		assertTrue("create " + createError, createError == null);
-
-		src.update(src.getInteraction(Source.key_datatype));
-		Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype)
-				.getTree();
-		dataTypeTree.getFirstChild("list").getFirstChild("output").add("Hive");
-
-		src.update(src.getInteraction(Source.key_datasubtype));
-		Tree<String> dataSubTypeTree = src.getInteraction(
-				Source.key_datasubtype).getTree();
-		dataSubTypeTree.getFirstChild("list").getFirstChild("output")
-				.add(new HiveType().getTypeName());
 
 		src.update(src.getInteraction(Source.key_dataset));
 		Tree<String> dataSetTree = src.getInteraction(Source.key_dataset)
@@ -105,26 +89,8 @@ public class HiveSelectTests {
 	public DataflowAction createSrcWithPart(Workflow w, HiveInterface hInt,
 			String new_path1) throws RemoteException, Exception {
 
-		String idSource = w.addElement((new Source()).getName());
-		Source src = (Source) w.getElement(idSource);
-
-		src.update(src.getInteraction(Source.key_datatype));
-		Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype)
-				.getTree();
-		dataTypeTree.getFirstChild("list").getFirstChild("output").add("Hive");
-
-		src.update(src.getInteraction(Source.key_datasubtype));
-		ListInteraction dataSubType = (ListInteraction) src
-				.getInteraction(Source.key_datasubtype);
-		dataSubType.setValue(new HiveTypePartition().getTypeName());
-		assertTrue(
-				"name of sub type "
-						+ ((ListInteraction) src
-								.getInteraction(Source.key_datasubtype))
-								.getValue(),
-				((ListInteraction) src.getInteraction(Source.key_datasubtype))
-						.getValue().equalsIgnoreCase(
-								new HiveTypePartition().getTypeName()));
+		String idSource = w.addElement((new HiveSource()).getName());
+		HiveSource src = (HiveSource) w.getElement(idSource);
 
 		src.update(src.getInteraction(Source.key_dataset));
 		Tree<String> dataSetTree = src.getInteraction(Source.key_dataset)
@@ -466,7 +432,7 @@ public class HiveSelectTests {
 			logger.info("create 2");
 			assertTrue("create2 " + error2, error2 == null);
 
-			Source src = (Source) createSrcWithPart(w, hInt, new_path1);
+			HiveSource src = (HiveSource) createSrcWithPart(w, hInt, new_path1);
 			logger.info("created source " + src.dataSubtype.getValue());
 			HiveSelect hive = createHiveWithSrc(w, src, hInt, true , false);
 			logger.info("created hive");
@@ -543,7 +509,7 @@ public class HiveSelectTests {
 			logger.info("create 2");
 			assertTrue("create2 " + error2, error2 == null);
 			
-			Source src = (Source) createSrc(w, hInt, new_path1, false);
+			HiveSource src = (HiveSource) createSrc(w, hInt, new_path1, false);
 			logger.info("created source " + src.dataSubtype.getValue());
 			HiveSelect hive = createHiveWithSrc(w, src, hInt, true , false);
 			logger.info("created hive");
@@ -617,7 +583,7 @@ public class HiveSelectTests {
 			logger.info("create 2");
 			assertTrue("create2 " + error2, error2 == null);
 
-			Source src = (Source) createSrcWithPart(w, hInt, new_path1);
+			HiveSource src = (HiveSource) createSrcWithPart(w, hInt, new_path1);
 			logger.info("created source " + src.dataSubtype.getValue());
 			HiveSelect hive = createHiveWithSrc(w, src, hInt, true , true);
 			logger.info("created hive");

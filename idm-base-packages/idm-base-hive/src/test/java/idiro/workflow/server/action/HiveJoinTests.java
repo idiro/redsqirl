@@ -4,7 +4,6 @@ import static org.junit.Assert.assertTrue;
 import idiro.hadoop.db.hive.HiveBasicStatement;
 import idiro.hadoop.utils.JdbcHdfsPrefsDetails;
 import idiro.utils.Tree;
-import idiro.utils.db.BasicStatement;
 import idiro.utils.db.JdbcConnection;
 import idiro.utils.db.JdbcDetails;
 import idiro.workflow.server.DataflowAction;
@@ -14,7 +13,6 @@ import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.action.utils.TestUtils;
 import idiro.workflow.server.connect.HDFSInterface;
 import idiro.workflow.server.connect.HiveInterface;
-import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.enumeration.SavingState;
 
 import java.rmi.RemoteException;
@@ -40,22 +38,11 @@ public class HiveJoinTests {
 	public DataflowAction createSrc(Workflow w, HiveInterface hInt,
 			String new_path1) throws RemoteException, Exception {
 
-		String idSource = w.addElement((new Source()).getName());
+		String idSource = w.addElement((new HiveSource()).getName());
 		DataflowAction src = (DataflowAction) w.getElement(idSource);
 
 		assertTrue("create " + new_path1,
 				hInt.create(new_path1, getColumns()) == null);
-
-		src.update(src.getInteraction(Source.key_datatype));
-		Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype)
-				.getTree();
-		dataTypeTree.getFirstChild("list").getFirstChild("output").add("Apache Hive Metastore");
-
-		src.update(src.getInteraction(Source.key_datasubtype));
-		Tree<String> dataSubTypeTree = src.getInteraction(
-				Source.key_datasubtype).getTree();
-		dataSubTypeTree.getFirstChild("list").getFirstChild("output")
-				.add(new HiveType().getTypeName());
 
 		src.update(src.getInteraction(Source.key_dataset));
 		Tree<String> dataSetTree = src.getInteraction(Source.key_dataset)
@@ -258,7 +245,7 @@ public class HiveJoinTests {
 			String deleteMsg = hInt.delete(new_path3);
 			assertTrue("error : " + deleteMsg, deleteMsg == null);
 		} catch (Exception e) {
-			logger.error(e.getMessage());
+			logger.error(e.getMessage(),e);
 			assertTrue(e.getMessage(), false);
 		}
 	}

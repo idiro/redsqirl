@@ -9,6 +9,7 @@ import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.utils.PigLanguageManager;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -224,7 +225,7 @@ public class PigTableUnionInteraction extends TableInteraction {
 					curMap.put(table_op_title, alias + "." + feature);
 					curMap.put(table_feat_title, feature);
 					curMap.put(table_type_title,
-							PigDictionary.getPigType(featureType));
+							featureType.name());
 
 					copyRows.add(curMap);
 				}
@@ -247,13 +248,10 @@ public class PigTableUnionInteraction extends TableInteraction {
 		addColumn(table_feat_title, null, "[a-zA-Z]([A-Za-z0-9_]{0,29})", null,
 				null);
 
-		List<String> types = new LinkedList<String>();
-		types.add(FeatureType.BOOLEAN.name());
-		types.add(FeatureType.INT.name());
-		types.add(FeatureType.LONG.name());
-		types.add(FeatureType.FLOAT.name());
-		types.add(FeatureType.DOUBLE.name());
-		types.add(FeatureType.STRING.name());
+		List<String> types = new ArrayList<String>(FeatureType.values().length);
+		for(FeatureType ft:FeatureType.values()){
+			types.add(ft.name());
+		}
 
 		addColumn(table_type_title, null, types, null);
 	}
@@ -324,14 +322,14 @@ public class PigTableUnionInteraction extends TableInteraction {
 		Iterator<String> it = features.getFeaturesNames().iterator();
 		if (it.hasNext()) {
 			String featName = it.next();
-			String type = PigDictionary.getPigType(features
-					.getFeatureType(featName));
+			String type = features
+					.getFeatureType(featName).name();
 			createSelect = "(" + featName + " " + type;
 		}
 		while (it.hasNext()) {
 			String featName = it.next();
-			String type = PigDictionary.getPigType(features
-					.getFeatureType(featName));
+			String type = features
+					.getFeatureType(featName).name();
 			createSelect += "," + featName + " " + type;
 		}
 		createSelect += ")";

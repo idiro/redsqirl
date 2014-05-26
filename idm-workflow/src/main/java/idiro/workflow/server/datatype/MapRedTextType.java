@@ -14,12 +14,15 @@ import idiro.workflow.utils.LanguageManagerWF;
 import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.hadoop.fs.FileStatus;
@@ -49,6 +52,20 @@ public class MapRedTextType extends DataOutput {
 	/** HDFS Interface */
 	protected static HDFSInterface hdfsInt;
 
+
+	protected static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+	protected static SimpleDateFormat datetimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+
+	protected static SimpleDateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+
+
+	protected List<FeatureType> featuresNumberHierarchicalOrder = new ArrayList<FeatureType>();
+
+	protected List<FeatureType> featuresStrHierarchicalOrder = new ArrayList<FeatureType>();
+
+	protected List<FeatureType> featuresDateHierarchicalOrder = new ArrayList<FeatureType>();
+
 	/**
 	 * Default Constructor
 	 * 
@@ -56,10 +73,7 @@ public class MapRedTextType extends DataOutput {
 	 */
 	public MapRedTextType() throws RemoteException {
 		super();
-		if (hdfsInt == null) {
-			hdfsInt = new HDFSInterface();
-		}
-		addProperty(key_header, "");
+		init();
 	}
 
 	/**
@@ -70,10 +84,32 @@ public class MapRedTextType extends DataOutput {
 	 */
 	public MapRedTextType(FeatureList features) throws RemoteException {
 		super(features);
+		init();
+	}
+
+	private void init() throws RemoteException{
+		
 		if (hdfsInt == null) {
 			hdfsInt = new HDFSInterface();
 		}
+		
 		addProperty(key_header, "");
+		featuresNumberHierarchicalOrder.add(FeatureType.INT);
+		featuresNumberHierarchicalOrder.add(FeatureType.LONG);
+		featuresNumberHierarchicalOrder.add(FeatureType.FLOAT);
+		featuresNumberHierarchicalOrder.add(FeatureType.DOUBLE);
+		featuresNumberHierarchicalOrder.add(FeatureType.CATEGORY);
+		featuresNumberHierarchicalOrder.add(FeatureType.STRING);
+
+		featuresStrHierarchicalOrder.add(FeatureType.CHAR);
+		featuresStrHierarchicalOrder.add(FeatureType.CATEGORY);
+		featuresStrHierarchicalOrder.add(FeatureType.STRING);
+
+		featuresDateHierarchicalOrder.add(FeatureType.DATE);
+		featuresDateHierarchicalOrder.add(FeatureType.DATETIME);
+		featuresDateHierarchicalOrder.add(FeatureType.TIMESTAMP);
+		featuresDateHierarchicalOrder.add(FeatureType.CATEGORY);
+		featuresDateHierarchicalOrder.add(FeatureType.STRING);
 	}
 
 	/**
@@ -180,11 +216,11 @@ public class MapRedTextType extends DataOutput {
 				FileStatus[] stat = fs.listStatus(new Path(getPath()),
 						new PathFilter() {
 
-							@Override
-							public boolean accept(Path arg0) {
-								return !arg0.getName().startsWith("_");
-							}
-						});
+					@Override
+					public boolean accept(Path arg0) {
+						return !arg0.getName().startsWith("_");
+					}
+				});
 				for (int i = 0; i < stat.length && error == null; ++i) {
 					if (stat[i].isDir()) {
 						error = LanguageManagerWF.getText(
@@ -316,7 +352,7 @@ public class MapRedTextType extends DataOutput {
 		}
 		return ans;
 	}
-	
+
 	public List<String> selectLine(int maxToRead) throws RemoteException {
 		List<String> ans = null;
 		if (isPathValid() == null && isPathExists()) {
@@ -325,11 +361,11 @@ public class MapRedTextType extends DataOutput {
 				FileStatus[] stat = fs.listStatus(new Path(getPath()),
 						new PathFilter() {
 
-							@Override
-							public boolean accept(Path arg0) {
-								return !arg0.getName().startsWith("_");
-							}
-						});
+					@Override
+					public boolean accept(Path arg0) {
+						return !arg0.getName().startsWith("_");
+					}
+				});
 				ans = new ArrayList<String>(maxToRead);
 				for (int i = 0; i < stat.length; ++i) {
 					ans.addAll(hdfsInt.select(stat[i].getPath().toString(),
@@ -507,45 +543,217 @@ public class MapRedTextType extends DataOutput {
 
 		FeatureList fl = new OrderedFeatureList();
 		try {
-			List<String> lines = this.selectLine(10);
+			List<String> lines = this.selectLine(2000);
+			Map<String,Set<String>> valueMap = new LinkedHashMap<String,Set<String>>();
+			Map<String,Integer> nbValueMap = new LinkedHashMap<String,Integer>();
 			logger.info(lines);
-			if (lines != null) {
+			if (lines != null) {							
+				logger.info("key_delimiter: "
+					+ Pattern
+					.quote(getChar(getProperty(key_delimiter))));
 				for (String line : lines) {
+					logger.info("line: " + line);
+					boolean full = true;
 					if (!line.trim().isEmpty()) {
 						int cont = 0;
-
 						for (String s : line.split(Pattern
 								.quote(getChar(getProperty(key_delimiter))))) {
 
 							String nameColumn = generateColumnName(cont++);
+							if(!valueMap.containsKey(nameColumn)){
+								valueMap.put(nameColumn, new LinkedHashSet<String>());
+								nbValueMap.put(nameColumn, 0);
+							}
 
-							logger.info("line: " + line);
-							logger.info("key_delimiter: "
-									+ Pattern
-											.quote(getChar(getProperty(key_delimiter))));
-							logger.info("s: " + s);
-							logger.info("new nameColumn: " + nameColumn);
-
-							FeatureType type = getType(s.trim());
-							if (fl.containsFeature(nameColumn)) {
-								if (!canCast(type,
-										fl.getFeatureType(nameColumn))) {
-									fl.addFeature(nameColumn, type);
-								}
-							} else {
-								fl.addFeature(nameColumn, type);
+							if(valueMap.get(nameColumn).size() < 101){
+								full = false;
+								valueMap.get(nameColumn).add(s.trim());
+								nbValueMap.put(nameColumn,nbValueMap.get(nameColumn)+1);
 							}
 
 						}
-
+					}
+					if(full){
+						break;
 					}
 				}
+				
+				Iterator<String> valueIt = valueMap.keySet().iterator();
+				while(valueIt.hasNext()){
+					String cat = valueIt.next();
+					fl.addFeature(cat,getType(valueMap.get(cat),nbValueMap.get(cat)));
+				}
+
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
 		return fl;
 
+	}
+
+	public FeatureType getType(Set<String> exValue, int numberOfValues){
+		FeatureType typeAns = null; 
+		boolean restart = false;
+		do{
+			restart = false;
+			Iterator<String> featureValueIt = exValue.iterator();
+			while(featureValueIt.hasNext() && !restart){
+				String featureValue = featureValueIt.next();
+				FeatureType typeCur = getType(featureValue);
+				logger.info("Value: "+featureValue);
+				logger.info("Type ans: "+typeAns);
+				logger.info("Type cur: "+typeCur);
+				if(typeAns == null){
+					typeAns = typeCur;
+				}else if(canCast(typeCur,typeAns)){
+					//Nothing to do
+				}else if(canCast(typeAns,typeCur)){
+					//Get the higher type
+					typeAns = typeCur;
+				}else{
+					logger.info("Have to reset the type");
+					//Not the good type
+					if(typeCur.equals(FeatureType.CHAR) && typeAns.equals(FeatureType.INT)){
+						logger.info("Test integer");
+						try {
+							Integer.valueOf(featureValue);
+						} catch (Exception e) {
+							typeAns = FeatureType.STRING;
+						}
+					}else if(typeAns.equals(FeatureType.CHAR) && typeCur.equals(FeatureType.INT)){
+						logger.info("Set to int and start again");
+						typeAns = FeatureType.INT;
+						restart = true;
+					}else{
+						logger.info("Set to string");
+						typeAns = FeatureType.STRING;
+					}
+				}
+			}
+			logger.info(restart);
+		}while(restart);
+
+		if(typeAns.equals(FeatureType.STRING)){
+			int nbValues = exValue.size();
+			logger.info(nbValues+" / "+numberOfValues);
+			if(nbValues < 101 && nbValues * 100 /numberOfValues < 5){
+				typeAns = FeatureType.CATEGORY;
+			}
+		}
+		
+		return typeAns;
+	}
+
+	/**
+	 * Check if a feature can be converted from one type to another
+	 * 
+	 * @param from
+	 * @param to
+	 * @return <code>true</code> the cast is possible else <code>false</code>
+	 */
+	public boolean canCast(FeatureType from, FeatureType to) {
+		if (from.equals(to)) {
+			return true;
+		}
+
+		if (from.equals(FeatureType.BOOLEAN)) {
+			if (to.equals(FeatureType.STRING) || to.equals(FeatureType.CATEGORY)) {
+				return true;
+			}
+			return false;
+		} else{
+			int fromNumberIdx = featuresNumberHierarchicalOrder.indexOf(from);
+			int toNumberIdx = featuresNumberHierarchicalOrder.indexOf(to);
+			if( fromNumberIdx != -1 && toNumberIdx != -1 && fromNumberIdx <= toNumberIdx){
+				return true;
+			}
+			int fromStrIdx = featuresStrHierarchicalOrder.indexOf(from);
+			int toStrIdx = featuresStrHierarchicalOrder.indexOf(to);
+			if( fromStrIdx != -1 && toStrIdx != -1 && fromStrIdx <= toStrIdx){
+				return true;
+			}
+			int fromDateIdx = featuresDateHierarchicalOrder.indexOf(from);
+			int toDateIdx = featuresDateHierarchicalOrder.indexOf(to);
+			if( fromDateIdx != -1 && toDateIdx != -1 && fromDateIdx <= toDateIdx){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Get the FeatureType of
+	 * 
+	 * @param expr
+	 *            to get FeatureType of
+	 * @return {@link idiro.workflow.server.enumeration.FeatureType}
+	 */
+	public static FeatureType getType(String expr) {
+
+		FeatureType type = null;
+		if (expr.equalsIgnoreCase("TRUE") || expr.equalsIgnoreCase("FALSE")) {
+			type = FeatureType.BOOLEAN;
+		} else {
+			if(expr.length() == 1){
+				type = FeatureType.CHAR;
+			}
+
+			try {
+				Integer.valueOf(expr);
+				type = FeatureType.INT;
+			} catch (Exception e) {
+			}
+			if (type == null) {
+				try {
+					Long.valueOf(expr);
+					type = FeatureType.LONG;
+				} catch (Exception e) {
+				}
+			}
+			if (type == null) {
+				try {
+					Float.valueOf(expr);
+					type = FeatureType.FLOAT;
+				} catch (Exception e) {
+				}
+			}
+			if (type == null) {
+				try {
+					Double.valueOf(expr);
+					type = FeatureType.DOUBLE;
+				} catch (Exception e) {
+				}
+			}
+			if (type == null && expr.length() < 11) {
+				try {
+					dateFormat.parse(expr);
+					type = FeatureType.DATE;
+				} catch (Exception e) {
+				}
+			}
+
+			if (type == null && expr.length() < 20) {
+				try {
+					datetimeFormat.parse(expr);
+					type = FeatureType.DATETIME;
+				} catch (Exception e) {
+				}
+			}
+
+			if (type == null) {
+				try {
+					timestampFormat.parse(expr);
+					type = FeatureType.TIMESTAMP;
+				} catch (Exception e) {
+				}
+			}
+
+			if (type == null) {
+				type = FeatureType.STRING;
+			}
+		}
+		return type;
 	}
 
 	/**
@@ -563,36 +771,6 @@ public class MapRedTextType extends DataOutput {
 			return "#124";
 		}
 		return "#1";
-	}
-
-	/**
-	 * Check if a feature can be converted from one type to another
-	 * 
-	 * @param from
-	 * @param to
-	 * @return <code>true</code> the cast is possible else <code>false</code>
-	 */
-	private boolean canCast(FeatureType from, FeatureType to) {
-		if (from.equals(to)) {
-			return true;
-		}
-
-		List<FeatureType> features = new ArrayList<FeatureType>();
-		features.add(FeatureType.INT);
-		features.add(FeatureType.LONG);
-		features.add(FeatureType.FLOAT);
-		features.add(FeatureType.DOUBLE);
-		features.add(FeatureType.STRING);
-
-		if (from.equals(FeatureType.BOOLEAN)) {
-			if (to.equals(FeatureType.STRING)) {
-				return true;
-			}
-			return false;
-		} else if (features.indexOf(from) <= features.indexOf(to)) {
-			return true;
-		}
-		return false;
 	}
 
 	/**
@@ -764,11 +942,7 @@ public class MapRedTextType extends DataOutput {
 	 * @return name
 	 */
 	private String generateColumnName(int columnIndex) {
-		if (columnIndex > 25) {
-			return generateColumnName(((columnIndex) / 26) - 1)
-					+ generateColumnName(((columnIndex) % 26));
-		} else
-			return String.valueOf((char) (columnIndex + 65));
+		return "COL"+(columnIndex+1);
 	}
 
 	/**
@@ -779,7 +953,10 @@ public class MapRedTextType extends DataOutput {
 	 */
 	protected String getChar(String asciiCode) {
 		String result = null;
-		if (asciiCode != null && asciiCode.startsWith("#")
+		if(asciiCode == null){
+			//default
+			result = "|";
+		}else if (asciiCode.startsWith("#")
 				&& asciiCode.length() > 1) {
 			result = String.valueOf(Character.toChars(Integer.valueOf(asciiCode
 					.substring(1))));

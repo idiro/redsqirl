@@ -9,6 +9,7 @@ import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.utils.PigLanguageManager;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -159,7 +160,7 @@ public class PigTableJoinInteraction extends TableInteraction {
 			curMap.put(table_op_title, cur);
 			curMap.put(table_feat_title, cur.replaceAll("\\.", "_"));
 			curMap.put(table_type_title,
-					PigDictionary.getPigType(feats.getFeatureType(cur)));
+					feats.getFeatureType(cur).name());
 			copyRows.add(curMap);
 		}
 		updateGenerator("copy", copyRows);
@@ -177,13 +178,10 @@ public class PigTableJoinInteraction extends TableInteraction {
 
 		addColumn(table_feat_title, 1, null, null);
 
-		List<String> typeValues = new LinkedList<String>();
-		typeValues.add(FeatureType.BOOLEAN.name());
-		typeValues.add(FeatureType.INT.name());
-		typeValues.add(FeatureType.LONG.name());
-		typeValues.add(FeatureType.FLOAT.name());
-		typeValues.add(FeatureType.DOUBLE.name());
-		typeValues.add(FeatureType.STRING.name());
+		List<String> typeValues = new ArrayList<String>(FeatureType.values().length);
+		for(FeatureType ft:FeatureType.values()){
+			typeValues.add(ft.name());
+		}
 
 		addColumn(table_type_title, null, typeValues, null);
 

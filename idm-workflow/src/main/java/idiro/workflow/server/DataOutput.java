@@ -74,7 +74,7 @@ DFEOutput {
 	 * For MapRedDirectory: delimiter For HBase: new features '|' delimited
 	 */
 	protected Map<String, String> dataProperty = new LinkedHashMap<String, String>();
-
+	
 	// public static final String hbase_new_feature = "hbase_new_feature";
 	/**
 	 * Default Constructor
@@ -530,50 +530,5 @@ DFEOutput {
 		return this.path.equals(path) && features.equals(fl)
 				&& dataProperty.equals(props);
 	}
-
-	/**
-	 * Get the FeatureType of
-	 * 
-	 * @param expr
-	 *            to get FeatureType of
-	 * @return {@link idiro.workflow.server.enumeration.FeatureType}
-	 */
-	public static FeatureType getType(String expr) {
-
-		FeatureType type = null;
-		if (expr.equalsIgnoreCase("TRUE") || expr.equalsIgnoreCase("FALSE")) {
-			type = FeatureType.BOOLEAN;
-		} else {
-			try {
-				Integer.valueOf(expr);
-				type = FeatureType.INT;
-			} catch (Exception e) {
-			}
-			if (type == null) {
-				try {
-					Long.valueOf(expr);
-					type = FeatureType.LONG;
-				} catch (Exception e) {
-				}
-			}
-			if (type == null) {
-				try {
-					Float.valueOf(expr);
-					type = FeatureType.FLOAT;
-				} catch (Exception e) {
-				}
-			}
-			if (type == null) {
-				try {
-					Double.valueOf(expr);
-					type = FeatureType.DOUBLE;
-				} catch (Exception e) {
-				}
-			}
-			if (type == null) {
-				type = FeatureType.STRING;
-			}
-		}
-		return type;
-	}
+	
 }

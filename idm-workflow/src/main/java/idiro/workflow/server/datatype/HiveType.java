@@ -52,11 +52,17 @@ public class HiveType extends DataOutput{
 	 * Default Constructor
 	 * @throws RemoteException
 	 */
+	
+
+	/** Header Key */
+	public final static String key_header = "header";
+	
 	public HiveType() throws RemoteException {
 		super();
 		if(hInt == null){
 			hInt = new HiveInterface();
 		}
+		addProperty(key_header, "");
 		setConstant(true);
 	}
 	/**
@@ -69,6 +75,7 @@ public class HiveType extends DataOutput{
 		if(hInt == null){
 			hInt = new HiveInterface();
 		}
+		addProperty(key_header, "");
 	}
 
 	/**
@@ -284,10 +291,38 @@ public class HiveType extends DataOutput{
 	private void generateFeaturesMap(String table) throws RemoteException{
 		features = new OrderedFeatureList();
 		String[] lines = hInt.getDescription(hInt.getTableAndPartitions(table)[0]).get("describe").split(";");
+		Map<String,FeatureType> reconvert = new LinkedHashMap<String,FeatureType>();
+		String header = getProperty(HiveType.key_header); 
+		if(header != null && !header.isEmpty()){
+			String[] feats = header.split(",");
+			for(String feat:feats){
+				String[] cur = feat.split("\\s+");
+				try{
+					reconvert.put(cur[0], FeatureType.valueOf(cur[1].trim().toUpperCase()));
+				}catch(Exception e){
+					logger.error("Error convert: "+cur[0]+" - "+cur[1], e);
+				}
+			}
+		}
 		for (String line : lines){
 			String[] feat = line.split(",");
 			try{
-				features.addFeature(feat[0].trim(), FeatureType.valueOf(feat[1].trim().toUpperCase()));
+				String featType = feat[1].trim();
+				boolean toCategory = false;
+				if(featType.equalsIgnoreCase("String") ||featType.equalsIgnoreCase("int")){
+					Iterator<String> it = reconvert.keySet().iterator();
+					while(it.hasNext() && !toCategory){
+						String cur = it.next();
+						if(cur.equalsIgnoreCase(feat[0]) && reconvert.get(cur).equals(FeatureType.CATEGORY)){
+							toCategory = true;
+						}
+					}
+				}
+				if(toCategory){
+					features.addFeature(feat[0].trim(), FeatureType.CATEGORY);
+				}else{
+					features.addFeature(feat[0].trim(), FeatureType.valueOf(feat[1].trim().toUpperCase()));
+				}
 			}
 			catch (Exception e){
 				logger.error("Error adding feature: "+feat[0]+" - "+feat[1], e);

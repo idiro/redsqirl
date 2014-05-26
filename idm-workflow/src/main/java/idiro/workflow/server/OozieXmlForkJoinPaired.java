@@ -221,8 +221,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			error = LanguageManagerWF.getText(
 					"ooziexmlforkjoinpaired.createxml.fail",
 					new Object[] { e.getMessage() });
-			logger.error(error);
-			logger.error(e);
+			logger.error(error,e);
 		}
 
 		return error;

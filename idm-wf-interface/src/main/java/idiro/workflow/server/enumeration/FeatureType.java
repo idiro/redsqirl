@@ -16,6 +16,16 @@ public enum FeatureType {
 	FLOAT,
 	/**Double Type*/
 	DOUBLE,
+	/**Char Type*/
+	CHAR,
+	/** Category Type */
+	CATEGORY,
 	/**String Type*/
-	STRING
+	STRING,
+	/** Date Type */
+	DATE,
+	/** Date time Type */
+	DATETIME,
+	/** TIMESTAMP Type */
+	TIMESTAMP
 }

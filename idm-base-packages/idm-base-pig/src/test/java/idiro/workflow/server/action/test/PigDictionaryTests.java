@@ -1,7 +1,7 @@
 package idiro.workflow.server.action.test;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import idiro.utils.FeatureList;
 import idiro.utils.OrderedFeatureList;
 import idiro.workflow.server.action.utils.PigDictionary;
@@ -106,6 +106,8 @@ public class PigDictionaryTests {
 						.equalsIgnoreCase(type));
 	}
 	
+
+	
 	@Test
 	public void testBooleanOperations() throws RemoteException {
 		TestUtils.logTestTitle("PigDictionaryTests#testBooleanOperations");
@@ -137,12 +139,11 @@ public class PigDictionaryTests {
 
 		} catch (Exception e) {
 			logger.error("Exception when testing boolean operations: "
-					+ e.getMessage());
+					+ e.getMessage(),e);
 			assertTrue("Fail on exception", false);
 		}
 		TestUtils.logTestTitle("success");
 	}
-	
 	
 	@Test
 	public void testArithmeticOperations() throws RemoteException {
@@ -159,67 +160,79 @@ public class PigDictionaryTests {
 			isNumber("(col2 - col3)/(col2+col3)", features);
 		} catch (Exception e) {
 			logger.error("Exception when testing boolean operations: "
-					+ e.getMessage());
+					+ e.getMessage(),e);
 			assertTrue("Fail on exception", false);
 		}
 	}
-	
+
 	@Test
 	public void testMethods() throws RemoteException {
 		TestUtils.logTestTitle("PigDictionaryTests#testMethods");
 		FeatureList features = getFeatures();
 		try {
-			is("substring('bla',1,2)", features, "STRING");
-			is("substring(substring('bla',1,2),1,2)", features, "STRING");
-			isNull("substring('bla',1,2,3)", features);
-			isNull("substring(1,1,2)",features);
-			isNull("round('1')",features);
+			is("SUBSTRING('bla',1,2)", features, "STRING");
+			is("SUBSTRING(SUBSTRING('bla',1,2),1,2)", features, "STRING");
+			isNull("SUBSTRING('bla',1,2,3)", features);
+			isNull("SUBSTRING(1,1,2)",features);
+			isNull("ROUND('1')",features);
 			//is("(CHARARRAY) `bla`", features, "STRING");
 			//is("(CHARARRAY)(SUBSTRING('bla',1,2))", features, "STRING");
 		} catch (Exception e) {
-			logger.error("Exception when testing boolean operations: "
-					+ e.getMessage());
+			logger.error("Exception when testing method operations: "
+					+ e.getMessage(),e);
 			assertTrue("Fail on exception", false);
 		}
 
 	}
-
 	
+	@Test
+	public void testDateMethods() throws RemoteException {
+		TestUtils.logTestTitle("PigDictionaryTests#testDateMethods");
+		FeatureList features = getFeatures();
+		try {
+			is("ToDate('20130101','YYYYMMDD')", features, "TIMESTAMP");
+		} catch (Exception e) {
+			logger.error("Exception when testing date methods: "
+					+ e.getMessage(),e);
+			assertTrue("Fail on exception", false);
+		}
+
+	}
 	@Test
 	public void testAggreg() throws RemoteException {
 		TestUtils.logTestTitle("PigDictionaryTests#testAggreg");
 		FeatureList features = getFeatures();
 		Set<String> agg = getAgg();
 		try {
-			is("count_star(col2)", features, agg, "NUMBER");
+			is("COUNT_STAR(col2)", features, agg, "NUMBER");
 			//is("(CHARARRAY) count_star(col2)", features, agg, "CHARARRAY");
-			is("sum(col2)", features, agg, "NUMBER");
-			is("avg(col2)", features, agg, "NUMBER");
-			is("max(col2)", features, agg, "NUMBER");
-			is("min(col2)", features, agg, "NUMBER");
+			is("SUM(col2)", features, agg, "NUMBER");
+			is("AVG(col2)", features, agg, "NUMBER");
+			is("MAX(col2)", features, agg, "NUMBER");
+			is("MIN(col2)", features, agg, "NUMBER");
 			is("colAgg", features, agg, "STRING");
 			isNull("col2", features, agg);
-			is("min(round(col2))", features, agg, "NUMBER");
-			is("min(round(col2)+random())", features, agg, "NUMBER");
+			is("MIN(ROUND(col2))", features, agg, "NUMBER");
+			is("MIN(ROUND(col2)+RANDOM())", features, agg, "NUMBER");
 		} catch (Exception e) {
 			logger.error("Exception when testing aggregation operations: "
-					+ e.getMessage());
+					+ e.getMessage(),e);
 			assertTrue("Fail on exception", false);
 		}
 	}
-	
+
 	@Test
 	public void testConditionalOperation() throws RemoteException {
 		TestUtils.logTestTitle("PigDictionaryTests#testConditionalOperation");
 		FeatureList features = getFeatures();
 		try {
-			isString("((col4) ? colAgg : 'b')", features);
-			isString("((col2 > 0) ? (colAgg) : ('b'))", features);
+			isString("((col4) ? colAgg : 'ba')", features);
+			isString("((col2 > 0) ? (colAgg) : ('a'))", features);
 			isString("((col4) ? colAgg : ((col3 == 1) ? 'a' : 'b'))", features);
 			is("((colAgg == 'a') ? (col2) : (1.0))", features, "DOUBLE");
 		} catch (Exception e) {
 			logger.error("Exception when testing conditional operations: "
-					+ e.getMessage());
+					+ e.getMessage(),e);
 			assertTrue("Fail on exception", false);
 		}
 	}

@@ -11,14 +11,12 @@ import idiro.workflow.utils.PigLanguageManager;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -37,20 +35,20 @@ public class PigTableSelectInteraction extends TableInteraction {
 	private static final long serialVersionUID = 8521366798554741811L;
 	/** Copy Generation */
 	public static final String gen_operation_copy = "copy",
-	/** Max Generation */
-	gen_operation_max = "MAX",
-	/** Min Generation */
-	gen_operation_min = "MIN",
-	/** AVG Generation */
-	gen_operation_avg = "AVG",
-	/** SUM Generation */
-	gen_operation_sum = "SUM",
-	/** Count Generation */
-	gen_operation_count = "COUNT",
-	/** Count Distinct Generation */
-	gen_operation_count_distinct = "COUNT_DISTINCT",
-	/** AUDIT Generation */
-	gen_operation_audit = "AUDIT";
+			/** Max Generation */
+			gen_operation_max = "MAX",
+			/** Min Generation */
+			gen_operation_min = "MIN",
+			/** AVG Generation */
+			gen_operation_avg = "AVG",
+			/** SUM Generation */
+			gen_operation_sum = "SUM",
+			/** Count Generation */
+			gen_operation_count = "COUNT",
+			/** Count Distinct Generation */
+			gen_operation_count_distinct = "COUNT_DISTINCT",
+			/** AUDIT Generation */
+			gen_operation_audit = "AUDIT";
 	/**
 	 * Element in which the interaction is held
 	 */
@@ -60,10 +58,10 @@ public class PigTableSelectInteraction extends TableInteraction {
 			.getTextWithoutSpace("pig.select_features_interaction.op_column"),
 			/** Feature Column Title */
 			table_feat_title = PigLanguageManager
-					.getTextWithoutSpace("pig.select_features_interaction.feat_column"),
+			.getTextWithoutSpace("pig.select_features_interaction.feat_column"),
 			/** Type Column title */
 			table_type_title = PigLanguageManager
-					.getTextWithoutSpace("pig.select_features_interaction.type_column");
+			.getTextWithoutSpace("pig.select_features_interaction.type_column");
 
 	/**
 	 * Constructor
@@ -78,7 +76,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 	 */
 	public PigTableSelectInteraction(String id, String name, String legend,
 			int column, int placeInColumn, PigElement hs)
-			throws RemoteException {
+					throws RemoteException {
 		super(id, name, legend, column, placeInColumn);
 		this.hs = hs;
 		createColumns();
@@ -332,7 +330,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 			addGeneratorRows(gen_operation_count, featList, fl, operationsList,
 					alias);
 			operationsList.clear();
-			
+
 			operationsList.add(gen_operation_count_distinct);
 			addGeneratorRows(gen_operation_count_distinct, featList, fl, operationsList,
 					alias);
@@ -371,7 +369,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 	 */
 	protected void addGeneratorRows(String title, List<String> feats,
 			FeatureList in, List<String> operationList, String alias)
-			throws RemoteException {
+					throws RemoteException {
 
 		Iterator<String> featIt = null;
 		Iterator<String> opIt = operationList.iterator();
@@ -387,41 +385,46 @@ public class PigTableSelectInteraction extends TableInteraction {
 			while (featIt.hasNext()) {
 				String cur = featIt.next();
 				Map<String, String> row = new LinkedHashMap<String, String>();
+				boolean genCur = false;
 
-				if (in.getFeatureType(cur) == FeatureType.STRING) {
-					if (operation.equalsIgnoreCase(gen_operation_sum)
+				if(operation.equalsIgnoreCase(gen_operation_copy)
+						||operation.equalsIgnoreCase(gen_operation_count)
+						||operation.isEmpty()){
+					genCur = true;
+				}else if(in.getFeatureType(cur) == FeatureType.CATEGORY){
+					genCur = operation.equalsIgnoreCase(gen_operation_count_distinct);
+				}else if(in.getFeatureType(cur) == FeatureType.DOUBLE 
+						||in.getFeatureType(cur) == FeatureType.FLOAT
+						||in.getFeatureType(cur) == FeatureType.LONG
+						||in.getFeatureType(cur) == FeatureType.INT){
+					genCur = operation.equalsIgnoreCase(gen_operation_sum)
 							|| operation.equalsIgnoreCase(gen_operation_avg)
 							|| operation.equalsIgnoreCase(gen_operation_min)
-							|| operation.equalsIgnoreCase(gen_operation_max)) {
-						continue;
+							|| operation.equalsIgnoreCase(gen_operation_max);
+				}
+				
+				if(genCur){
+					String optitleRow = addOperation(cur, operation);
+					row.put(table_op_title, optitleRow);
+					if (operation.isEmpty()) {
+						row.put(table_feat_title, cur.replace(alias + ".", ""));
+					} else {
+						row.put(table_feat_title, cur.replace(alias + ".", "")
+								+ "_" + operation);
 					}
-				}
-				else{
-					if (operation.equalsIgnoreCase(gen_operation_count_distinct)) {
-						continue;
+
+					logger.info("trying to add type for " + cur);
+					if (operation.equalsIgnoreCase(gen_operation_avg)) {
+						row.put(table_type_title, "DOUBLE");
+					} else if (operation.equalsIgnoreCase(gen_operation_count) ||
+							operation.equalsIgnoreCase(gen_operation_count_distinct)) {
+						row.put(table_type_title, "INT");
+					} else {
+						row.put(table_type_title,
+								in.getFeatureType(cur).name());
 					}
+					rows.add(row);
 				}
-
-				String optitleRow = addOperation(cur, operation);
-				row.put(table_op_title, optitleRow);
-				if (operation.isEmpty()) {
-					row.put(table_feat_title, cur.replace(alias + ".", ""));
-				} else {
-					row.put(table_feat_title, cur.replace(alias + ".", "")
-							+ "_" + operation);
-				}
-
-				logger.info("trying to add type for " + cur);
-				if (operation.equalsIgnoreCase(gen_operation_avg)) {
-					row.put(table_type_title, "DOUBLE");
-				} else if (operation.equalsIgnoreCase(gen_operation_count) ||
-						operation.equalsIgnoreCase(gen_operation_count_distinct)) {
-					row.put(table_type_title, "INT");
-				} else {
-					row.put(table_type_title,
-							PigDictionary.getPigType(in.getFeatureType(cur)));
-				}
-				rows.add(row);
 			}
 		}
 		updateGenerator(title, rows);
@@ -440,13 +443,10 @@ public class PigTableSelectInteraction extends TableInteraction {
 		addColumn(table_feat_title, 1, "[a-zA-Z]([A-Za-z0-9_]{0,29})", null,
 				null);
 
-		List<String> types = new LinkedList<String>();
-		types.add(FeatureType.BOOLEAN.name());
-		types.add(FeatureType.INT.name());
-		types.add(FeatureType.LONG.name());
-		types.add(FeatureType.FLOAT.name());
-		types.add(FeatureType.DOUBLE.name());
-		types.add(FeatureType.STRING.name());
+		List<String> types = new ArrayList<String>(FeatureType.values().length);
+		for(FeatureType ft:FeatureType.values()){
+			types.add(ft.name());
+		}
 
 		addColumn(table_type_title, null, types, null);
 	}
@@ -489,7 +489,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 		String select = "";
 		String alias = getAlias();
 		Iterator<Map<String, String>> selIt = getValues().iterator();
-		
+
 		while (selIt.hasNext()) {
 			Map<String, String> cur = selIt.next();
 			String opTitle = cur.get(table_op_title);
@@ -497,7 +497,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 				return getQueryPieceCountDistinct(out, tableName, groupTableName);
 			}
 		}
-		
+
 
 		selIt = getValues().iterator();
 		if (selIt.hasNext()) {
@@ -552,15 +552,15 @@ public class PigTableSelectInteraction extends TableInteraction {
 
 		return select;
 	}
-	
-	
+
+
 	public String getQueryPieceCountDistinct(DFEOutput out, String tableName,
 			String groupTableName) throws RemoteException {
 		logger.debug("select...");
 		String select = "";
 		String alias = getAlias();
 		Iterator<Map<String, String>> selIt = getValues().iterator();
-		
+
 		List<String> countDistinct = new LinkedList<String>();
 		while (selIt.hasNext()) {
 			Map<String, String> cur = selIt.next();
@@ -568,18 +568,18 @@ public class PigTableSelectInteraction extends TableInteraction {
 			String opTitle = cur.get(table_op_title);
 
 			if (PigDictionary.getInstance().isCountDistinctMethod(opTitle)) {
-				
+
 				opTitle = opTitle.replace(
 						PigDictionary.getBracketContent(opTitle),
 						groupTableName + "." + featName);
-				
+
 				countDistinct.add(PigDictionary.getBracketContent(opTitle));
 			}
 
 		}
 		if (!countDistinct.isEmpty()){
 			select += " FOREACH "+tableName+" {\n";
-			
+
 			int cont = 0;
 			for (String e : countDistinct){
 				select += "a"+cont+" = "+e+";\n";
@@ -588,7 +588,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 			}
 
 		}
-		
+
 		int cont = 0;
 		selIt = getValues().iterator();
 		if (selIt.hasNext()) {
@@ -599,8 +599,8 @@ public class PigTableSelectInteraction extends TableInteraction {
 			if (PigDictionary.getInstance().isAggregatorMethod(opTitle)){
 				if(!PigDictionary.getInstance().isCountDistinctMethod(opTitle)) {
 					opTitle = opTitle.replace(
-						PigDictionary.getBracketContent(opTitle),
-						groupTableName + "." + featName);
+							PigDictionary.getBracketContent(opTitle),
+							groupTableName + "." + featName);
 				}
 				else{
 					opTitle = "COUNT(b"+cont+")";
@@ -612,7 +612,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 					+ featName;
 		}
 
-		
+
 		while (selIt.hasNext()) {
 			Map<String, String> cur = selIt.next();
 			String featName = cur.get(table_feat_title);
@@ -621,8 +621,8 @@ public class PigTableSelectInteraction extends TableInteraction {
 			if (PigDictionary.getInstance().isAggregatorMethod(opTitle)){
 				if (!PigDictionary.getInstance().isCountDistinctMethod(opTitle)) {
 					opTitle = opTitle.replace(
-						PigDictionary.getBracketContent(opTitle),
-						groupTableName + "." + featName);
+							PigDictionary.getBracketContent(opTitle),
+							groupTableName + "." + featName);
 				}
 				else{
 					opTitle = "COUNT(b"+cont+")";
@@ -632,7 +632,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 
 			select += ",\n       " + opTitle + " AS " + featName;
 		}
-		
+
 		select += ";}";
 
 		logger.debug("select looks like : " + select);
