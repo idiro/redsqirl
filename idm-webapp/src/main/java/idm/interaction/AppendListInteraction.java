@@ -139,7 +139,6 @@ public class AppendListInteraction extends CanvasModalInteraction {
 
 	@Override
 	public void writeInteraction() throws RemoteException {
-		System.out.println("************************************* writeInteraction");
 			inter.getTree().getFirstChild("applist")
 			.getFirstChild("output").removeAllChildren();
 				for (String s : selectedAppendListOptions) {
