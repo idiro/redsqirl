@@ -22,7 +22,7 @@ public class PigSelect extends PigElement {
 	 */
 	private static final long serialVersionUID = 8969124219285130345L;
 	/** Pages for the interaction */
-	private Page page1, page2;
+	private Page page1, page2, page3;
 	/**Table select interaction for*/
 	private PigTableSelectInteraction tSelInt;
 	/**Group interaction*/
@@ -31,12 +31,14 @@ public class PigSelect extends PigElement {
 	 * Filter Interaction
 	 */
 	private PigFilterInteraction filterInt;
+	
+	
 	/**
 	 * Constructor
 	 * @throws RemoteException
 	 */
 	public PigSelect() throws RemoteException {
-		super(1, 1, 1);
+		super(1, 1, 4);
 
 		page1 = addPage(PigLanguageManager.getText("pig.select_page1.title"),
 				PigLanguageManager.getText("pig.select_page1.legend"), 3);
@@ -49,15 +51,23 @@ public class PigSelect extends PigElement {
 				0, this);
 
 		page1.addInteraction(tSelInt);
-
+		
+		
 		page2 = addPage(PigLanguageManager.getText("pig.select_page2.title"),
-				PigLanguageManager.getText("pig.select_page2.legend"), 1);
+				PigLanguageManager.getText("pig.select_page2.legend"), 3);
+		
+		page2.addInteraction(orderInt);
+		page2.addInteraction(orderTypeInt);
+
+		page3 = addPage(PigLanguageManager.getText("pig.select_page3.title"),
+				PigLanguageManager.getText("pig.select_page3.legend"), 1);
 
 		filterInt = new PigFilterInteraction(0, 0, this);
 
-		page2.addInteraction(filterInt);
-		page2.addInteraction(delimiterOutputInt);
-		page2.addInteraction(savetypeOutputInt);
+		page3.addInteraction(filterInt);
+		page3.addInteraction(parallelInt);
+		page3.addInteraction(delimiterOutputInt);
+		page3.addInteraction(savetypeOutputInt);
 
 	}
 	/**
@@ -81,6 +91,8 @@ public class PigSelect extends PigElement {
 				filterInt.update();
 			} else if (interId.equals(tSelInt.getId())) {
 				tSelInt.update(in);
+			} else if (interId.equals(orderInt.getId())) {
+				orderInt.update();
 			}
 		}
 	}
@@ -126,9 +138,14 @@ public class PigSelect extends PigElement {
 				filterLoader = loader;
 			}
 
-			String select = tSelInt.getQueryPiece(out, filterLoader, null);
+			String select = tSelInt.getQueryPiece(out, filterLoader, null, null);
 			if (!select.isEmpty()) {
 				select = getNextName() + " = " + select + ";\n\n";
+			}
+			
+			String order = orderInt.getQueryPiece(getCurrentName(), orderTypeInt.getValue(), parallelInt.getValue());
+			if (!order.isEmpty()){
+				order = getNextName() + " = " + order + ";\n\n";
 			}
 
 			String store = getStoreQueryPiece(out, getCurrentName());
@@ -140,6 +157,7 @@ public class PigSelect extends PigElement {
 				query += load;
 				query += filter;
 				query += select;
+				query += order;
 				query += store;
 			}
 		}
@@ -170,6 +188,8 @@ public class PigSelect extends PigElement {
 	public PigGroupInteraction getGroupingInt() {
 		return groupingInt;
 	}
+	
+	
 	/**
 	 * Get the input features
 	 * @return input FeatureList

@@ -29,7 +29,7 @@ public class PigSample extends PigElement {
 	/**
 	 * Page for action
 	 */
-	private Page page1;
+	private Page page1,page2;
 	/**
 	 * Constructor
 	 * @throws RemoteException
@@ -48,8 +48,14 @@ public class PigSample extends PigElement {
 		logger.info("created pig sample interaction");
 
 		page1.addInteraction(pigsample);
-		page1.addInteraction(delimiterOutputInt);
-		page1.addInteraction(savetypeOutputInt);
+		page1.addInteraction(orderInt);
+		page1.addInteraction(orderTypeInt);
+		
+		page2 = addPage(PigLanguageManager.getText("pig.sample_page2.title"),
+				PigLanguageManager.getText("pig.sample_page2.legend"), 1);
+		page2.addInteraction(parallelInt);
+		page2.addInteraction(delimiterOutputInt);
+		page2.addInteraction(savetypeOutputInt);
 		logger.info("added interactions");
 		logger.info("constructor ok");
 	}
@@ -79,12 +85,17 @@ public class PigSample extends PigElement {
 			String load = loader + " = " + getLoadQueryPiece(in) + ";\n\n";
 			String sample = getNextName() + " = "
 					+ pigsample.getQueryPiece(loader) + "\n\n";
+			String order = orderInt.getQueryPiece(getCurrentName(), orderTypeInt.getValue(), parallelInt.getValue());
+			if (!order.isEmpty()){
+				order = getNextName() + " = " + order + ";\n\n";
+			}
 			String store = getStoreQueryPiece(out, getCurrentName());
 
 			if (sample != null || !sample.isEmpty()) {
 				query = remove;
 				query += load;
 				query += sample;
+				query += order;
 				query += store;
 			}
 		}
@@ -119,6 +130,8 @@ public class PigSample extends PigElement {
 		if (in != null) {
 			if (interaction.getId().equals(pigsample.getId())) {
 				pigsample.update();
+			}else if (interaction.getId().equals(orderInt.getId())) {
+				orderInt.update();
 			}
 		}
 	}

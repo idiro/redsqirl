@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.faces.model.SelectItem;
 
+
 /**
  * Make AppendList object available to client.
  * @author etienne
@@ -30,13 +31,18 @@ public class AppendListInteraction extends CanvasModalInteraction {
 	/**
 	 * List of options
 	 */
+	private List<String> sortedAppendListOptions;
+	
+	/**
+	 * List of options
+	 */
 	private List<SelectItem> appendListOptions;
 	
 	/**
 	 * List of the selected options
 	 */
 	private List<String> selectedAppendListOptions;
-
+	
 	public AppendListInteraction(DFEInteraction dfeInter) throws RemoteException {
 		super(dfeInter);
 	}
@@ -44,26 +50,43 @@ public class AppendListInteraction extends CanvasModalInteraction {
 	@Override
 	public void readInteraction() throws RemoteException {
 		logger.info("appendList");
-		appendListOptions = new LinkedList<SelectItem>();
 		selectedAppendListOptions = new LinkedList<String>();
-		
-		//set options
+
+
+		// set display type
 		if (inter.getTree().getFirstChild("applist")
-				.getFirstChild("values") != null) {
-			List<Tree<String>> list = inter.getTree()
+				.getFirstChild("display") != null
+				&& inter.getTree()
+				.getFirstChild("applist")
+				.getFirstChild("display").getFirstChild() != null) {
+			String displayType = inter.getTree()
 					.getFirstChild("applist")
-					.getFirstChild("values").getChildren("value");
-			if (list != null) {
-				logger.info("list not null: " + list.size());
-				for (Tree<String> tree : list) {
-					logger.info("list value "
-							+ tree.getFirstChild().getHead());
-					appendListOptions.add(new SelectItem(tree
-							.getFirstChild().getHead(), tree
-							.getFirstChild().getHead()));
-				}
+					.getFirstChild("display").getFirstChild()
+					.getHead();
+			if (displayType.equalsIgnoreCase("combobox")) {
+				comboBox = "list";
+			} else if (displayType.equalsIgnoreCase("sorted")){
+				comboBox = "sortedList";
 			}
+			else{
+				comboBox = "checkbox";
+			}
+
+
+		} else {
+			comboBox = "list";
 		}
+
+
+		if (comboBox.equals("list") || comboBox.equals("checkbox")){
+			appendListOptions = new LinkedList<SelectItem>();
+		}
+		else{
+			sortedAppendListOptions = new LinkedList<String>();
+		}
+
+		//primeiro monta lista de selecionados, depois monta a lista de valores
+		//se for sorted, so adiciona na lista de valores os que nao forem selecionados
 
 		//set selected value
 		if (inter.getTree().getFirstChild("applist")
@@ -78,39 +101,53 @@ public class AppendListInteraction extends CanvasModalInteraction {
 				for (Tree<String> tree : listOut) {
 					selectedAppendListOptions.add(tree.getFirstChild()
 							.getHead());
+					logger.info("read appendList seleted: " + tree.getFirstChild()
+							.getHead());
+				}
+			}
+		}
+
+
+
+
+		//set options
+		if (inter.getTree().getFirstChild("applist")
+				.getFirstChild("values") != null) {
+			List<Tree<String>> list = inter.getTree()
+					.getFirstChild("applist")
+					.getFirstChild("values").getChildren("value");
+			if (list != null) {
+				logger.info("list not null: " + list.size());
+				for (Tree<String> tree : list) {
+					logger.info("list value "
+							+ tree.getFirstChild().getHead());
+
+					String value = tree
+							.getFirstChild().getHead();
+					
+					if (comboBox.equals("sortedList") && !selectedAppendListOptions.contains(value)){
+						sortedAppendListOptions.add(value);
+					}
+					else if (comboBox.equals("checkbox") || comboBox.equals("list")){
+						appendListOptions.add(new SelectItem(value, value));
+					}
 				}
 			}
 		}
 		
-		// set display type
-		if (inter.getTree().getFirstChild("applist")
-				.getFirstChild("display") != null
-				&& inter.getTree()
-						.getFirstChild("applist")
-						.getFirstChild("display").getFirstChild() != null) {
-			String displayType = inter.getTree()
-					.getFirstChild("applist")
-					.getFirstChild("display").getFirstChild()
-					.getHead();
-			if (displayType.equalsIgnoreCase("combobox")) {
-				comboBox = "Y";
-			} else {
-				comboBox = "N";
-			}
-		} else {
-			comboBox = "Y";
-		}
 	}
 
 	@Override
 	public void writeInteraction() throws RemoteException {
+		System.out.println("************************************* writeInteraction");
 			inter.getTree().getFirstChild("applist")
 			.getFirstChild("output").removeAllChildren();
-			for (String s : selectedAppendListOptions) {
-				logger.info("appendList seleted: " + s);
-				inter.getTree().getFirstChild("applist")
-				.getFirstChild("output").add("value").add(s);
-			}
+				for (String s : selectedAppendListOptions) {
+					logger.info("appendList seleted: " + s);
+					inter.getTree().getFirstChild("applist")
+					.getFirstChild("output").add("value").add(s);
+				}
+	
 	}
 
 	@Override
@@ -156,6 +193,20 @@ public class AppendListInteraction extends CanvasModalInteraction {
 	public final void setAppendListOptions(List<SelectItem> appendListOptions) {
 		this.appendListOptions = appendListOptions;
 	}
+	
+	/**
+	 * @return the appendListOptions
+	 */
+	public final List<String> getSortedAppendListOptions() {
+		return sortedAppendListOptions;
+	}
+
+	/**
+	 * @param appendListOptions the appendListOptions to set
+	 */
+	public final void setSortedAppendListOptions(List<String> appendListOptions) {
+		this.sortedAppendListOptions = appendListOptions;
+	}
 
 	/**
 	 * @return the selectedAppendListOptions
@@ -171,5 +222,4 @@ public class AppendListInteraction extends CanvasModalInteraction {
 			List<String> selectedAppendListOptions) {
 		this.selectedAppendListOptions = selectedAppendListOptions;
 	}
-
 }

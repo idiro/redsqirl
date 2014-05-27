@@ -41,7 +41,7 @@ public class HiveJoin extends HiveElement {
 	/**
 	 * Pages
 	 */
-	private Page page1, page2, page3, page4;
+	private Page page1, page2, page3, page4, page5;
 	/**
 	 * Table Join Interaction
 	 */
@@ -117,14 +117,18 @@ public class HiveJoin extends HiveElement {
 
 		page3.addInteraction(joinTypeInt);
 		page3.addInteraction(jrInt);
-
+		
 		page4 = addPage(HiveLanguageManager.getText("hive.join_page4.title"),
-				HiveLanguageManager.getText("hive.join_page4.title"), 1);
+				HiveLanguageManager.getText("hive.join_page4.legend"), 1);
+		page4.addInteraction(orderInt);
+
+		page5 = addPage(HiveLanguageManager.getText("hive.join_page5.title"),
+				HiveLanguageManager.getText("hive.join_page5.title"), 1);
 
 		condInt = new HiveFilterInteraction(0, 2, this);
 
-		page4.addInteraction(condInt);
-		page4.addInteraction(typeOutputInt);
+		page5.addInteraction(condInt);
+		page5.addInteraction(typeOutputInt);
 
 	}
 
@@ -158,6 +162,8 @@ public class HiveJoin extends HiveElement {
 			tJoinInt.update();
 		} else if(interaction.getName().equals(tAliasInt.getName())){
 			tAliasInt.update();
+		} else if (interaction.getName().equals(orderInt.getName())) {
+			orderInt.update();
 		}
 	}
 
@@ -203,13 +209,15 @@ public class HiveJoin extends HiveElement {
 
 			String select = tJoinInt.getQueryPiece();
 			String createSelect = tJoinInt.getCreateQueryPiece();
+			
+			String order = orderInt.getQueryPiece();
 
 			if (select.isEmpty()) {
 				logger.debug("Nothing to select");
 			} else {
 				query = create + "\n" + createSelect + ";\n\n";
 
-				query += insert + "\n" + select + "\n" + from + "\n" + where
+				query += insert + "\n" + select + "\n" + from + "\n" + where + "\n" + order 
 						+ ";";
 			}
 		}

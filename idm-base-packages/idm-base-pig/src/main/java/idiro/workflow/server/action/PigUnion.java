@@ -43,7 +43,7 @@ public class PigUnion extends PigElement {
 	/**
 	 * Pages for the interaction
 	 */
-	private Page page1,page2,page3;
+	private Page page1,page2,page3,page4;
 	/**
 	 * Table union interaction
 	 */
@@ -91,9 +91,15 @@ public class PigUnion extends PigElement {
 
 		page2.addInteraction(tUnionSelInt);
 		
-		page3 = addPage(
-				PigLanguageManager.getText("pig.union_page3.title"),
-				PigLanguageManager.getText("pig.union_page3.legend"), 1);
+		page3 = addPage(PigLanguageManager.getText("pig.union_page3.title"),
+				PigLanguageManager.getText("pig.union_page3.legend"), 3);
+		
+		page3.addInteraction(orderInt);
+		page3.addInteraction(orderTypeInt);
+		
+		page4 = addPage(
+				PigLanguageManager.getText("pig.union_page4.title"),
+				PigLanguageManager.getText("pig.union_page4.legend"), 1);
 		
 		tUnionCond =  new  PigUnionConditions(
 				key_union_condition,
@@ -101,9 +107,10 @@ public class PigUnion extends PigElement {
 				PigLanguageManager.getText("pig.union_cond_interaction.legend"),
 				0, 0, this);
 		
-		page3.addInteraction(tUnionCond);
-		page3.addInteraction(delimiterOutputInt);
-		page3.addInteraction(savetypeOutputInt);
+		page4.addInteraction(tUnionCond);
+		page4.addInteraction(parallelInt);
+		page4.addInteraction(delimiterOutputInt);
+		page4.addInteraction(savetypeOutputInt);
 
 	}
 	/**
@@ -150,6 +157,8 @@ public class PigUnion extends PigElement {
 				tUnionCond.update(in);
 			}else if(interId.equals(tAliasInt.getId())){
 				tAliasInt.update();
+			}else if (interId.equals(orderInt.getId())) {
+				orderInt.update();
 			}
 		}
 
@@ -200,6 +209,11 @@ public class PigUnion extends PigElement {
 			load += "\n";
 
 			String select = tUnionSelInt.getQueryPiece(out) + "\n\n";
+			
+			String order = orderInt.getQueryPiece(getCurrentName(), orderTypeInt.getValue(), parallelInt.getValue());
+			if (!order.isEmpty()){
+				order = getNextName() + " = " + order + ";\n\n";
+			}
 
 			String store = getStoreQueryPiece(out, getCurrentName());
 
@@ -211,6 +225,8 @@ public class PigUnion extends PigElement {
 				query += load;
 
 				query += select;
+				
+				query += order;
 
 				query += store;
 			}

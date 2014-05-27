@@ -5,6 +5,7 @@ import idiro.workflow.server.DataProperty;
 import idiro.workflow.server.DataflowAction;
 import idiro.workflow.server.InputInteraction;
 import idiro.workflow.server.ListInteraction;
+import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.HDFSInterface;
 import idiro.workflow.server.datatype.MapRedBinaryType;
 import idiro.workflow.server.datatype.MapRedTextType;
@@ -18,6 +19,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -54,7 +56,14 @@ public abstract class PigElement extends DataflowAction {
 			/**Default Delimiter*/
 			default_delimiter = "\001",
 			/**Feature Key for table*/
-			key_featureTable = "features";
+			key_featureTable = "features",
+			/**Parallel clause Key*/
+			key_parallel = "parallel",
+			/**Order Key*/
+			key_order = "order",
+			/**Order Type Key*/
+			key_order_type = "order_type";
+			
 	
 	/**Input Interaction for delimiter*/
 	protected InputInteraction delimiterOutputInt;
@@ -62,6 +71,22 @@ public abstract class PigElement extends DataflowAction {
 	protected ListInteraction savetypeOutputInt;
 	/**Group Interaction*/
 	public PigGroupInteraction groupingInt;
+	
+	/**
+	 * Order Interaction
+	 */
+	protected PigOrderInteraction orderInt;
+	
+	/**
+	 * Order Type Interaction
+	 */
+	protected ListInteraction orderTypeInt;
+	
+	/**
+	 * Parallel clause Interaction
+	 */
+	protected InputInteraction parallelInt;
+	
 	/**Map of inputs*/
 	protected Map<String, DFELinkProperty> input;
 	/**
@@ -78,12 +103,43 @@ public abstract class PigElement extends DataflowAction {
 	public PigElement( int nbInMin, int nbInMax,int placeDelimiterInPage) throws RemoteException {
 		super(new PigAction());
 		init(nbInMin,nbInMax);
+		
+		orderInt = new PigOrderInteraction(
+				key_order, 
+				PigLanguageManager.getText("pig.order_interaction.title"), 
+				PigLanguageManager.getText("pig.order_interaction.legend"), 
+				0, 0, this);
+		
+		orderTypeInt = new ListInteraction(
+				key_order_type, 
+				PigLanguageManager.getText("pig.order_type_interaction.title"), 
+				PigLanguageManager.getText("pig.order_type_interaction.title"), 
+				1, 0);
+		
+		orderTypeInt.setDisplayRadioButton(true);
+		List<String> values = new ArrayList<String>();
+		values.add("ASCENDENT");
+		values.add("DESCENDENT");
+		orderTypeInt.setPossibleValues(values);
+		
+		String pigParallel = WorkflowPrefManager.getUserProperty(WorkflowPrefManager.user_pig_parallel);
+		if (pigParallel == null){
+			pigParallel = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_pig_parallel);
+		}
+		
+		parallelInt = new InputInteraction(
+				key_parallel,
+				PigLanguageManager.getText("pig.parallel_interaction.title"),
+				PigLanguageManager.getText("pig.parallel_interaction.legend"), 
+				placeDelimiterInPage, 0);
+		parallelInt.setRegex("^\\d+$");
+		parallelInt.setValue(pigParallel);
 
 		delimiterOutputInt = new InputInteraction(
 				key_delimiter,
 				PigLanguageManager.getText("pig.delimiter_interaction.title"),
 				PigLanguageManager.getText("pig.delimiter_interaction.legend"), 
-				placeDelimiterInPage, 0);
+				placeDelimiterInPage+1, 0);
 		delimiterOutputInt.setRegex("^(#\\d{1,3}|.)?$");
 		delimiterOutputInt.setValue("#1");
 
@@ -91,7 +147,7 @@ public abstract class PigElement extends DataflowAction {
 		savetypeOutputInt = new ListInteraction(
 				key_outputType,
 				PigLanguageManager.getText("pig.outputtype_interaction.title"),
-				PigLanguageManager.getText("pig.outputtype_interaction.legend"), placeDelimiterInPage+1, 0);
+				PigLanguageManager.getText("pig.outputtype_interaction.legend"), placeDelimiterInPage+2, 0);
 		savetypeOutputInt.setDisplayRadioButton(true);
 		List<String> saveTypePos = new LinkedList<String>();
 		saveTypePos.add( new MapRedTextType().getTypeName());
@@ -348,5 +404,13 @@ public abstract class PigElement extends DataflowAction {
 	 */
 	public PigGroupInteraction getGroupingInt() {
 		return groupingInt;
+	}
+	
+	/**
+	 * Get the ordering interaction
+	 * @return groupingInt
+	 */
+	public PigOrderInteraction getOrderInt() {
+		return orderInt;
 	}
 }

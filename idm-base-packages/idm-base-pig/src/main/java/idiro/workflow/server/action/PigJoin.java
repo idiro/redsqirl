@@ -39,7 +39,7 @@ public class PigJoin extends PigElement {
 	public final String key_alias_interaction = "alias_int";
 	
 	/**Pages*/
-	private Page page1, page2, page3, page4;
+	private Page page1, page2, page3, page4, page5;
 				/**Table Join Interaction*/
 	private PigTableJoinInteraction tJoinInt;
 	/**Join Relationship interaction*/
@@ -111,16 +111,23 @@ public class PigJoin extends PigElement {
 		
 		page3.addInteraction(joinTypeInt);
 		page3.addInteraction(jrInt);
+		
+		page4 = addPage(PigLanguageManager.getText("pig.join_page4.title"),
+				PigLanguageManager.getText("pig.join_page4.legend"), 3);
+		
+		page4.addInteraction(orderInt);
+		page4.addInteraction(orderTypeInt);
 
-		page4 = addPage(
-				PigLanguageManager.getText("pig.join_page4.title"), 
-				PigLanguageManager.getText("pig.join_page4.title"), 1);
+		page5 = addPage(
+				PigLanguageManager.getText("pig.join_page5.title"), 
+				PigLanguageManager.getText("pig.join_page5.title"), 1);
 
 		filterInt = new PigFilterInteraction(0, 1, this);
 
-		page4.addInteraction(filterInt);
-		page4.addInteraction(delimiterOutputInt);
-		page4.addInteraction(savetypeOutputInt);
+		page5.addInteraction(filterInt);
+		page5.addInteraction(parallelInt);
+		page5.addInteraction(delimiterOutputInt);
+		page5.addInteraction(savetypeOutputInt);
 
 	}
 	/**
@@ -147,6 +154,8 @@ public class PigJoin extends PigElement {
 			tJoinInt.update();
 		} else if(interId.equals(tAliasInt.getId())){
 			tAliasInt.update();
+		} else if (interId.equals(orderInt.getId())) {
+			orderInt.update();
 		}
 	}
 	/**
@@ -192,6 +201,11 @@ public class PigJoin extends PigElement {
 			if (!select.isEmpty()) {
 				select = getNextName() + " = " + select + ";\n\n";
 			}
+			
+			String order = orderInt.getQueryPiece(getCurrentName(), orderTypeInt.getValue(), parallelInt.getValue());
+			if (!order.isEmpty()){
+				order = getNextName() + " = " + order + ";\n\n";
+			}
 
 			String store = getStoreQueryPiece(out, getCurrentName());
 
@@ -207,6 +221,8 @@ public class PigJoin extends PigElement {
 				query += filter;
 				
 				query += select;
+				
+				query += order;
 
 				query += store;
 			}

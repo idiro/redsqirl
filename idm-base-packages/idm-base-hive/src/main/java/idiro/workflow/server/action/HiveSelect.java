@@ -2,16 +2,12 @@ package idiro.workflow.server.action;
 
 import idiro.utils.FeatureList;
 import idiro.workflow.server.Page;
-import idiro.workflow.server.action.utils.HiveDictionary;
 import idiro.workflow.server.connect.HiveInterface;
-import idiro.workflow.server.datatype.HiveType;
-import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.utils.HiveLanguageManager;
 
 import java.rmi.RemoteException;
-import java.rmi.server.RemoteRef;
 
 /**
  * Action to do a simple select statement in HiveQL.
@@ -32,7 +28,7 @@ public class HiveSelect extends HiveElement {
 	/**
 	 * Pages
 	 */
-	private Page page1 , page2;
+	private Page page1 , page2, page3;
 	/**
 	 * Table Select Interaction
 	 */
@@ -58,14 +54,19 @@ public class HiveSelect extends HiveElement {
 				0, this);
 
 		page1.addInteraction(tSelInt);
-
+		
 		page2 = addPage(HiveLanguageManager.getText("hive.select_page2.title"),
 				HiveLanguageManager.getText("hive.select_page2.legend"), 1);
+		page2.addInteraction(orderInt);
+		
+
+		page3 = addPage(HiveLanguageManager.getText("hive.select_page3.title"),
+				HiveLanguageManager.getText("hive.select_page3.legend"), 1);
 
 		condInt = new HiveFilterInteraction(0, 0, this);
 
-		page2.addInteraction(condInt);
-		page2.addInteraction(typeOutputInt);
+		page3.addInteraction(condInt);
+		page3.addInteraction(typeOutputInt);
 
 	}
 	/**
@@ -94,6 +95,9 @@ public class HiveSelect extends HiveElement {
 			else if (interaction.getName().equals(tSelInt.getName())) {
 				logger.info("Hive tableSelect interaction updating");
 				tSelInt.update(in);
+			}
+			else if (interaction.getName().equals(orderInt.getName())) {
+				orderInt.update();
 			}
 		}
 	}
@@ -138,6 +142,8 @@ public class HiveSelect extends HiveElement {
 			String createSelect = tSelInt.getCreateQueryPiece(out);
 			logger.info("create select : "+createSelect);
 			
+			String order = orderInt.getQueryPiece();
+			
 			//partition code
 			String createPartition = "";
 			String insertPartition = "";
@@ -181,7 +187,7 @@ public class HiveSelect extends HiveElement {
 						+ ";\n\n";
 
 				query += insert + "\n" + insertPartition + select + "\n" + from + "\n" +
-						where + ";";
+						where + "\n" + order + ";";
 			}
 		}
 

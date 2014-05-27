@@ -11,7 +11,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
@@ -40,7 +39,7 @@ public class PigGroupInteraction extends AppendListInteraction{
 	 */
 	public PigGroupInteraction(String id, String name, String legend,
 			int column, int placeInColumn) throws RemoteException {
-		super(id, name, legend, column, placeInColumn);
+		super(id, name, legend, column, placeInColumn, false);
 	}
 	/**
 	 * Update the interaction with the input
@@ -62,7 +61,7 @@ public class PigGroupInteraction extends AppendListInteraction{
 	 * @return query
 	 * @throws RemoteException
 	 */
-	public String getQueryPiece(String relationName) throws RemoteException{
+	public String getQueryPiece(String relationName, String parallel) throws RemoteException{
 		logger.debug("group...");
 		String groupby = "";
 		
@@ -82,7 +81,7 @@ public class PigGroupInteraction extends AppendListInteraction{
 			groupby = "GROUP "+relationName+" ALL";
 			
 		}
-		return groupby;
+		return groupby  + " PARALLEL " + parallel;
 	}
 	/**
 	 * Receive the query that generates the features
@@ -91,7 +90,8 @@ public class PigGroupInteraction extends AppendListInteraction{
 	 * @return query
 	 * @throws RemoteException
 	 */
-	public String getForEachQueryPiece(String relationName, PigTableSelectInteraction selectInteraction) throws RemoteException{
+	public String getForEachQueryPiece(String relationName, PigTableSelectInteraction selectInteraction,
+			String parallel) throws RemoteException{
 		String select = "FOREACH " + relationName + " GENERATE ";
 		Iterator<Map<String,String>> selIt = selectInteraction.getValues().iterator();
 		Iterator<String> groupByIt = getValues().iterator();
@@ -130,7 +130,7 @@ public class PigGroupInteraction extends AppendListInteraction{
 		}
 
 		logger.debug("for each looks like : " + select);
-		return select;
+		return select  + " PARALLEL " + parallel;
 
 	}
 	/**

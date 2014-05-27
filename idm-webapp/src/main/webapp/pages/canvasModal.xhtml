@@ -156,17 +156,29 @@
                 </a4j:region>
                 <!-- appendList -->
                 <a4j:region id="appendListInteractionRegion" rendered="#{interCur.displayType == 'appendList'}">
-                    <rich:pickList
+                    
+                    <rich:listShuttle sourceValue="#{interCur.appendList.sortedAppendListOptions}"
+			            targetValue="#{interCur.appendList.selectedAppendListOptions}" var="items" listsHeight="150"
+			            sourceListWidth="130" targetListWidth="130" sourceCaptionLabel="Available Items"
+			            targetCaptionLabel="Currently Active Items"
+			            rendered="#{interCur.appendList.comboBox == 'sortedList'}"> 
+			            <rich:column width="18"> 
+			            	<h:outputText value="#{items}" />
+			            </rich:column>
+			        </rich:listShuttle>
+			        
+			        <rich:pickList
                         copyAllControlLabel="Select all"
                         copyControlLabel="Select"
                         removeAllControlLabel="Unselect all"
                         removeControlLabel="Unselect"
                         value="#{interCur.appendList.selectedAppendListOptions}" 
-                        rendered="#{interCur.appendList.comboBox == 'Y'}" >
+                        rendered="#{interCur.appendList.comboBox == 'list'}" >
                         <f:selectItems value="#{interCur.appendList.appendListOptions}" />
                     </rich:pickList>
                     
-                    <h:selectManyCheckbox value="#{interCur.appendList.selectedAppendListOptions}" rendered="#{interCur.appendList.comboBox == 'N'}" layout="pageDirection" >
+                    
+                    <h:selectManyCheckbox value="#{interCur.appendList.selectedAppendListOptions}" rendered="#{interCur.appendList.comboBox == 'checkbox'}" layout="pageDirection" >
                         <f:selectItems value="#{interCur.appendList.appendListOptions}" />
                     </h:selectManyCheckbox>
                 </a4j:region>

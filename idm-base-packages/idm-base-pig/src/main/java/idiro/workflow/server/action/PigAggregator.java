@@ -23,7 +23,7 @@ public class PigAggregator extends PigElement {
 	/**
 	 * Pages for action
 	 */
-	private Page page1, page2, page3;
+	private Page page1, page2, page3, page4;
 	/**
 	 * Table Select Interactiom
 	 */
@@ -67,17 +67,24 @@ public class PigAggregator extends PigElement {
 				0, 0, this);
 
 		page2.addInteraction(tSelInt);
+		
+		page3 = addPage(PigLanguageManager.getText("pig.aggregator_page3.title"),
+				PigLanguageManager.getText("pig.aggregator_page3.legend"), 3);
+		
+		page3.addInteraction(orderInt);
+		page3.addInteraction(orderTypeInt);
 
-		page3 = addPage(
-				PigLanguageManager.getText("pig.aggregator_page3.title"), 
-				PigLanguageManager.getText("pig.aggregator_page3.legend"), 
+		page4 = addPage(
+				PigLanguageManager.getText("pig.aggregator_page4.title"), 
+				PigLanguageManager.getText("pig.aggregator_page4.legend"), 
 				1);
 
 		filterInt = new PigFilterInteraction(0, 0, this);
 
-		page3.addInteraction(filterInt);
-		page3.addInteraction(delimiterOutputInt);
-		page3.addInteraction(savetypeOutputInt);
+		page4.addInteraction(filterInt);
+		page4.addInteraction(parallelInt);
+		page4.addInteraction(delimiterOutputInt);
+		page4.addInteraction(savetypeOutputInt);
 	}
 	/**
 	 * Get the name of the action
@@ -128,20 +135,25 @@ public class PigAggregator extends PigElement {
 				filterLoader = loader;
 			}
 			
-			String groupbyForEach = groupingInt.getForEachQueryPiece(filterLoader, tSelInt);
+			String groupbyForEach = groupingInt.getForEachQueryPiece(filterLoader, tSelInt, parallelInt.getValue());
 			String groupbyTableName = getNextName();
 			if (!groupbyForEach.isEmpty()) {
 				groupbyForEach = groupbyTableName + " = " + groupbyForEach + ";\n\n";
 			}
 
-			String groupby = groupingInt.getQueryPiece(getCurrentName());
+			String groupby = groupingInt.getQueryPiece(getCurrentName(), parallelInt.getValue());
 			if (!groupby.isEmpty()) {
 				groupby = getNextName() + " = " + groupby + ";\n\n";
 			}
 
-			String select = tSelInt.getQueryPiece(out, getCurrentName(), groupbyTableName);
+			String select = tSelInt.getQueryPiece(out, getCurrentName(), groupbyTableName, parallelInt.getValue());
 			if (!select.isEmpty()) {
 				select = getNextName() + " = " + select + ";\n\n";
+			}
+			
+			String order = orderInt.getQueryPiece(getCurrentName(), orderTypeInt.getValue(), parallelInt.getValue());
+			if (!order.isEmpty()){
+				order = getNextName() + " = " + order + ";\n\n";
 			}
 
 			String store = getStoreQueryPiece(out, getCurrentName());
@@ -155,6 +167,7 @@ public class PigAggregator extends PigElement {
 				query += groupbyForEach;
 				query += groupby;
 				query += select;
+				query += order;
 				query += store;
 			}
 		}
@@ -202,7 +215,9 @@ public class PigAggregator extends PigElement {
 				groupingInt.update(in);
 			}  else if (interId.equals(key_condition)) {
 				filterInt.update();
-			}else{
+			} else if (interId.equals(orderInt.getId())) {
+				orderInt.update();
+			} else{
 				logger.info("unknown interaction "+interId);
 			}
 

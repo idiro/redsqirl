@@ -40,7 +40,7 @@ public class HiveUnion extends HiveElement {
 	/**
 	 * Pages
 	 */
-	private Page page1, page2, page3;
+	private Page page1, page2, page3, page4;
 	/**
 	 * Union Table Select Interaction
 	 */
@@ -90,9 +90,13 @@ public class HiveUnion extends HiveElement {
 		condInt = new HiveFilterInteraction(0, 0, this);
 
 		page2.addInteraction(condInt);
-
+		
 		page3 = addPage(HiveLanguageManager.getText("hive.union_page3.title"),
 				HiveLanguageManager.getText("hive.union_page3.legend"), 1);
+		page3.addInteraction(orderInt);
+
+		page4 = addPage(HiveLanguageManager.getText("hive.union_page4.title"),
+				HiveLanguageManager.getText("hive.union_page4.legend"), 1);
 
 		tUnionCond = new HiveUnionConditions(
 				key_union_condition,
@@ -101,8 +105,8 @@ public class HiveUnion extends HiveElement {
 						.getText("hive.union_cond_interaction.legend"), 0, 0,
 				this);
 
-		page3.addInteraction(tUnionCond);
-		page3.addInteraction(typeOutputInt);
+		page4.addInteraction(tUnionCond);
+		page4.addInteraction(typeOutputInt);
 
 	}
 
@@ -151,6 +155,9 @@ public class HiveUnion extends HiveElement {
 			else if(interId.equals(tAliasInt.getId())){
 				tAliasInt.update();
 			}
+			else if (interaction.getName().equals(orderInt.getName())) {
+				orderInt.update();
+			}
 		}
 	}
 	/**
@@ -175,13 +182,15 @@ public class HiveUnion extends HiveElement {
 			String createSelect = tUnionSelInt.getCreateQueryPiece(out);
 
 			String condition = condInt.getQueryPiece();
+			
+			String order = orderInt.getQueryPiece();
 
 			if (select.isEmpty()) {
 				logger.debug("Nothing to select");
 			} else {
 				query = create + "\n" + createSelect + ";\n\n";
 
-				query += insert + "\n" + select + "\n" + condition + ";";
+				query += insert + "\n" + select + "\n" + condition + "\n" + order + ";";
 			}
 		}
 

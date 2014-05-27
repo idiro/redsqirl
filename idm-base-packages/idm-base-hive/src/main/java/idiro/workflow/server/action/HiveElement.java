@@ -6,12 +6,8 @@ import idiro.utils.TreeNonUnique;
 import idiro.workflow.server.DataProperty;
 import idiro.workflow.server.DataflowAction;
 import idiro.workflow.server.ListInteraction;
-import idiro.workflow.server.UserInteraction;
-import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.datatype.HiveType;
 import idiro.workflow.server.datatype.HiveTypePartition;
-import idiro.workflow.server.datatype.MapRedBinaryType;
-import idiro.workflow.server.datatype.MapRedTextType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
@@ -23,7 +19,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -55,7 +50,8 @@ public abstract class HiveElement extends DataflowAction {
 	public static final String key_output = "", key_input = "in",
 			key_condition = "Condition", key_grouping = "Grouping",
 			key_partitions = "Partitions", key_outputType = "Output_Type",
-			key_alias = "Alias";
+			key_alias = "Alias",
+			key_order = "Order";
 
 	/**
 	 * Common interactions
@@ -63,6 +59,11 @@ public abstract class HiveElement extends DataflowAction {
 	protected HiveFilterInteraction condInt;
 	protected ListInteraction typeOutputInt;
 	protected HiveGroupByInteraction groupingInt;
+	
+	/**
+	 * Order Interaction
+	 */
+	protected HiveOrderInteraction orderInt;
 
 	/**
 	 * entries
@@ -96,13 +97,18 @@ public abstract class HiveElement extends DataflowAction {
 		super(new HiveAction());
 		init(nbInMin, nbInMax);
 		this.minNbOfPage = minNbOfPage;
-
+		
+		orderInt = new HiveOrderInteraction(key_order, 
+				HiveLanguageManager.getText("hive.order_interaction.title"), 
+				HiveLanguageManager.getText("hive.order_interaction.legend"),  
+				0, 0, this);
+		
 		typeOutputInt = new ListInteraction(key_outputType,
 				HiveLanguageManager
 						.getText("hive.typeoutput_interaction.title"),
 				HiveLanguageManager
 						.getText("hive.typeoutput_interaction.legend"),
-				nbInMax + 1, 0);
+				nbInMax+1, 0);
 		typeOutputInt.setDisplayRadioButton(true);
 		List<String> typeOutput = new LinkedList<String>();
 		typeOutput.add(messageTypeTable);
@@ -327,5 +333,13 @@ public abstract class HiveElement extends DataflowAction {
 		}
 
 		return features;
+	}
+	
+	/**
+	 * Get the ordering interaction
+	 * @return groupingInt
+	 */
+	public HiveOrderInteraction getOrderInt() {
+		return orderInt;
 	}
 }

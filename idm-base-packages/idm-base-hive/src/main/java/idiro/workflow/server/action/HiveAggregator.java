@@ -1,16 +1,12 @@
 package idiro.workflow.server.action;
 
 import idiro.utils.FeatureList;
-import idiro.utils.Tree;
 import idiro.workflow.server.Page;
-import idiro.workflow.server.UserInteraction;
 import idiro.workflow.server.connect.HiveInterface;
-import idiro.workflow.server.enumeration.DisplayType;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.utils.HiveLanguageManager;
 
-import java.awt.Desktop.Action;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 /**
@@ -22,7 +18,7 @@ public class HiveAggregator extends HiveElement {
 	/**
 	 * Pages
 	 */
-	private Page page1, page2, page3;
+	private Page page1, page2, page3, page4;
 	/**
 	 * Group by Key
 	 */
@@ -69,11 +65,15 @@ public class HiveAggregator extends HiveElement {
 				0, 0, this);
 
 		page2.addInteraction(tSelInt);
+		
+		page3 = addPage(HiveLanguageManager.getText("hive.aggregator_page3.title"),
+				HiveLanguageManager.getText("hive.aggregator_page3.title"), 1);
+		page3.addInteraction(orderInt);
 
-		page3 = addPage(key_condition, "Create a condition for the attributes",
+		page4 = addPage(key_condition, "Create a condition for the attributes",
 				1);
 		condInt = new HiveFilterInteraction( 0, 0, this);
-		page3.addInteraction(condInt);
+		page4.addInteraction(condInt);
 	}
 	/**
 	 * Get the name of the action 
@@ -108,6 +108,8 @@ public class HiveAggregator extends HiveElement {
 			String from = " FROM " + tableIn + " ";
 			String create = "CREATE TABLE IF NOT EXISTS " + tableOut;
 			String where = condInt.getQueryPiece();
+			
+			String order = orderInt.getQueryPiece();
 
 			logger.debug("group by...");
 			String groupby = "";
@@ -130,7 +132,7 @@ public class HiveAggregator extends HiveElement {
 				query = create + "\n" + createSelect + ";\n\n";
 
 				query += insert + "\n" + select + "\n" + from + "\n" + where
-						+ groupby + ";";
+						+ groupby + "\n" + order + ";";
 			}
 		}
 
@@ -173,6 +175,9 @@ public class HiveAggregator extends HiveElement {
 			else if (interaction.getName().equals(tSelInt.getName())) {
 				logger.info("Hive tableSelect interaction updating");
 				tSelInt.update(in);
+			} 
+			else if (interaction.getName().equals(orderInt.getName())) {
+				orderInt.update();
 			}
 		}
 	}

@@ -29,10 +29,12 @@ public class AppendListInteraction extends UserInteraction{
 	 * @throws RemoteException
 	 */
 	public AppendListInteraction(String id,String name, String legend,
-			int column, int placeInColumn)
+			int column, int placeInColumn, boolean sorted)
 					throws RemoteException {
-		super(id,name, legend, DisplayType.appendList, column, placeInColumn);
+		super(id,name, legend, DisplayType.appendList, 
+				column, placeInColumn);
 		init();
+		setSorted(sorted);
 	}
 	/**
 	 * Initialize the tree
@@ -58,6 +60,26 @@ public class AppendListInteraction extends UserInteraction{
 				tree.getFirstChild("applist").getFirstChild("display").add("");
 			}else{
 				tree.getFirstChild("applist").add("display").add("checkbox");
+			}
+		}else{
+			if(tree.getFirstChild("applist").getFirstChild("display") != null){
+				tree.getFirstChild("applist").remove("display");
+			}
+		}
+	}
+	
+	/**
+	 * Set if the list is sorted or not
+	 * @param checkBox
+	 * @throws RemoteException
+	 */
+	public void setSorted(boolean sorted) throws RemoteException{
+		if(sorted){
+			if(tree.getFirstChild("applist").getFirstChild("display") != null){
+				tree.getFirstChild("applist").getFirstChild("display").removeAllChildren();
+				tree.getFirstChild("applist").getFirstChild("display").add("");
+			}else{
+				tree.getFirstChild("applist").add("display").add("sorted");
 			}
 		}else{
 			if(tree.getFirstChild("applist").getFirstChild("display") != null){

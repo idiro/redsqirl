@@ -10,15 +10,12 @@ import idiro.workflow.server.interfaces.DFEOutput;
 import idiro.workflow.utils.PigLanguageManager;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -484,7 +481,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 	 * @throws RemoteException
 	 */
 	public String getQueryPiece(DFEOutput out, String tableName,
-			String groupTableName) throws RemoteException {
+			String groupTableName, String parallel) throws RemoteException {
 		logger.debug("select...");
 		String select = "";
 		String alias = getAlias();
@@ -548,6 +545,10 @@ public class PigTableSelectInteraction extends TableInteraction {
 							Pattern.quote(alias + "." + cur), "group");
 				}
 			}
+		}
+		
+		if (parallel != null && select.contains("COUNT_DISTINCT")){
+			select += " PARALLEL " + parallel; 
 		}
 
 		return select;

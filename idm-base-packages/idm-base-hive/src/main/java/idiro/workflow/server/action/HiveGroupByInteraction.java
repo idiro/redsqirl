@@ -26,7 +26,7 @@ public class HiveGroupByInteraction extends AppendListInteraction{
 	 */
 	public HiveGroupByInteraction(String id, String name, String legend,
 			int column, int placeInColumn) throws RemoteException {
-		super(id, name, legend, column, placeInColumn);
+		super(id, name, legend, column, placeInColumn, false);
 	}
 	/**
 	 * Update the interaction with the input
