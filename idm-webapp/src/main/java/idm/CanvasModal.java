@@ -92,6 +92,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * The legend associated with the current wizard page
 	 */
 	private String pageLegend;
+	
+	/**
+	 * The text tip associated with the current wizard page
+	 */
+	private String pageTextTip;
 
 	/**
 	 * Last wizard page flag ('N' or 'Y')
@@ -456,6 +461,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 			setPageTitle(getPage().getTitle());
 			setPageLegend(getPage().getLegend());
+			setPageTextTip(getPage().getTextTip());
 
 			inters = new LinkedList<CanvasModalInteraction>();
 			for (DFEInteraction dfeInteraction : getPage().getInteractions()) {
@@ -830,6 +836,14 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 */
 	public final List<String> getTablesColumnTitle() {
 		return tablesColumnTitle;
+	}
+
+	public String getPageTextTip() {
+		return pageTextTip;
+	}
+
+	public void setPageTextTip(String pageTextTip) {
+		this.pageTextTip = pageTextTip;
 	}
 
 }

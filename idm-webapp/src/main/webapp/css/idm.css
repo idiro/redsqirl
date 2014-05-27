@@ -1174,3 +1174,12 @@ height: 100% !important;
 #tabFlowchart-1{
 	border:none;
 }
+
+.questionMarkIcon {
+	border: 0 solid;
+    padding-bottom: 0;
+    padding-right: 6px;
+    padding-top: 0;
+    width: 17px;
+    margin-bottom: -3px;
+}

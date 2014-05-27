@@ -124,7 +124,10 @@
                     </tbody>
                 </table>
                 
-                <p><h:outputText value="#{canvasModalBean.pageLegend}"/></p>
+                <p>
+                	<h:graphicImage value="../image/icons/question_mark.jpg" title='#{canvasModalBean.pageTextTip}' styleClass="questionMarkIcon" rendered="#{canvasModalBean.pageTextTip != null}" />
+                	<h:outputText value="#{canvasModalBean.pageLegend}"/>
+                </p>
             
             </span>
         
@@ -134,7 +137,10 @@
                     
                     <h2><h:outputText value="#{interCur.name}"/></h2>
                     
-                    <p><h:outputText value="#{interCur.legend}"/></p>
+                    <p>
+                    	<h:graphicImage value="../image/icons/question_mark.jpg" title='#{interCur.textTip}' styleClass="questionMarkIcon" rendered="#{interCur.textTip != null}"/>
+                    	<h:outputText value="#{interCur.legend}"/>
+                    </p>
                     
                 </span>
                 

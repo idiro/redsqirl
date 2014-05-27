@@ -54,6 +54,11 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	 * The legend associated to the interaction
 	 */
 	protected String legend;
+	
+	/**
+	 * the text tip associated to the interaction
+	 */
+	protected String textTip;
 
 	/**
 	 * The column to display the interaction on the page
@@ -99,6 +104,42 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 
 		this.tree = new TreeNonUnique<String>(id);
 		this.legend = legend;
+		this.display = display;
+		this.column = column;
+		this.placeInColumn = placeInColumn;
+		logger.debug("Init interaction "+name);
+	}
+	
+	/**
+	 * Unique constructor
+	 * @param id
+	 * @param name
+	 * @param legend
+	 * @param textTip
+	 * @param display
+	 * @param column
+	 * @param placeInColumn
+	 * @throws RemoteException 
+	 */
+	public UserInteraction(String id, String name, String legend, String textTip, DisplayType display, int column, int placeInColumn) throws RemoteException{
+		super();
+		this.name = name;
+		if(id.contains(" ")){
+			logger.warn("ID cannot contain space");
+			id = id.replaceAll(" ", "_");
+		}
+		if(id.matches("^.*[A-Z].*$")){
+			logger.warn("ID does not accept uppercase, change to lower case");
+			id = id.toLowerCase();
+		}
+		String regex = "[a-z]([a-z0-9_]*)";
+		if(!id.matches(regex)){
+			logger.warn("id "+id+" does not match '"+regex+"' can be dangerous during xml export.");
+		}
+
+		this.tree = new TreeNonUnique<String>(id);
+		this.legend = legend;
+		this.textTip = textTip;
 		this.display = display;
 		this.column = column;
 		this.placeInColumn = placeInColumn;
@@ -453,6 +494,12 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	@Override
 	public String getId() throws RemoteException {
 		return getTree().getHead();
+	}
+
+
+	@Override
+	public String getTextTip() throws RemoteException {
+		return textTip;
 	}
 
 }
