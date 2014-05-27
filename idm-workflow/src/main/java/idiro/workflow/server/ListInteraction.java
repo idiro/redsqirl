@@ -38,6 +38,25 @@ public class ListInteraction extends UserInteraction {
 		super(id, name, legend, DisplayType.list, column, placeInColumn);
 		init();
 	}
+	
+	/**
+	 * Constructor with necessary parameters
+	 * 
+	 * @param id
+	 * @param name
+	 * @param legend
+	 * @param textTip
+	 * @param column
+	 *            which column to place interaction in
+	 * @param placeInColumn
+	 *            place in the column where the interaction resides
+	 * @throws RemoteException
+	 */
+	public ListInteraction(String id, String name, String legend, String textTip, int column,
+			int placeInColumn) throws RemoteException {
+		super(id, name, legend, textTip, DisplayType.list, column, placeInColumn);
+		init();
+	}
 
 	/**
 	 * Initialise the interactions tree

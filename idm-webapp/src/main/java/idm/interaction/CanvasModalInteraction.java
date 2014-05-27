@@ -51,6 +51,11 @@ public abstract class CanvasModalInteraction implements Serializable{
 	protected String legend;
 	
 	/**
+	 * The text tip associated with the interaction.
+	 */
+	protected String textTip;
+	
+	/**
 	 * Constructor
 	 * @param dfeInter the interaction used
 	 * @throws RemoteException
@@ -59,6 +64,7 @@ public abstract class CanvasModalInteraction implements Serializable{
 		this.inter = dfeInter;
 		this.name = inter.getName();
 		this.legend = inter.getLegend();
+		this.textTip = inter.getTextTip();
 	}
 	
 	/**
@@ -228,4 +234,13 @@ public abstract class CanvasModalInteraction implements Serializable{
 	public String getDisplayType() throws RemoteException{
 	    return inter.getDisplay().toString();
 	}
+
+	public String getTextTip() {
+		return textTip;
+	}
+
+	public void setTextTip(String textTip) {
+		this.textTip = textTip;
+	}
+	
 }

@@ -49,6 +49,11 @@ public class Page extends UnicastRemoteObject implements DFEPage {
 	 * Legend associated to the page
 	 */
 	protected String legend;
+	
+	/**
+	 * the text tip associated to the interaction
+	 */
+	protected String textTip;
 
 	/**
 	 * List of the interactions
@@ -60,7 +65,13 @@ public class Page extends UnicastRemoteObject implements DFEPage {
 	public Page(String title, File image, String legend, int nbColumn)
 			throws RemoteException {
 		super();
-		init(title, image, legend, nbColumn);
+		init(title, image, legend, null, nbColumn);
+	}
+	
+	public Page(String title, File image, String legend, String textTip, int nbColumn)
+			throws RemoteException {
+		super();
+		init(title, image, legend, textTip, nbColumn);
 	}
 
 	/**
@@ -74,7 +85,7 @@ public class Page extends UnicastRemoteObject implements DFEPage {
 	public Page(String title, String legend, int nbColumn)
 			throws RemoteException {
 		super();
-		init(title, null, legend, nbColumn);
+		init(title, null, legend, null, nbColumn);
 	}
 
 	/**
@@ -87,7 +98,7 @@ public class Page extends UnicastRemoteObject implements DFEPage {
 	 */
 	public Page(String title, File image, int nbColumn) throws RemoteException {
 		super();
-		init(title, image, null, nbColumn);
+		init(title, image, null, null, nbColumn);
 	}
 
 	/**
@@ -99,7 +110,7 @@ public class Page extends UnicastRemoteObject implements DFEPage {
 	 */
 	public Page(String title, int nbColumn) throws RemoteException {
 		super();
-		init(title, null, null, nbColumn);
+		init(title, null, null, null, nbColumn);
 	}
 
 	/**
@@ -108,12 +119,14 @@ public class Page extends UnicastRemoteObject implements DFEPage {
 	 * @param title
 	 * @param image
 	 * @param legend
+	 * @param textTip
 	 * @param nbColumn
 	 */
-	private void init(String title, File image, String legend, int nbColumn) {
+	private void init(String title, File image, String legend, String textTip, int nbColumn) {
 		this.title = title;
 		this.image = image;
 		this.legend = legend;
+		this.textTip = textTip;
 		this.nbColumn = nbColumn;
 		setChecker(new PageCheckerDefault());
 	}
@@ -311,6 +324,11 @@ public class Page extends UnicastRemoteObject implements DFEPage {
 	 */
 	public final void setChecker(PageChecker checker) {
 		this.checker = checker;
+	}
+
+	@Override
+	public String getTextTip() throws RemoteException {
+		return textTip;
 	}
 
 }

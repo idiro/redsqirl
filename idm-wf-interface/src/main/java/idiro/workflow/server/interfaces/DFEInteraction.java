@@ -116,5 +116,14 @@ public interface DFEInteraction extends Remote {
 	 * @throws RemoteException
 	 */
 	public String getLegend() throws RemoteException;
+	
+	/**
+	 * Get text tip of the page.
+	 * text tip is display when the tip image is hovered.
+	 *  
+	 * @return
+	 * @throws RemoteException
+	 */
+	public String getTextTip()throws RemoteException;
 
 }
