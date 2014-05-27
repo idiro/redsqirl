@@ -19,7 +19,7 @@
             
             <a4j:jsFunction name="changeIdElement"
                 action="#{canvasBean.changeIdElement}"
-                oncomplete="updateLabelObj(currentChangeIdGroup,'#{canvasModalBean.componentId}');if( #{requestScope['msnError'] == null}){closeChangeIdModal();}"
+                oncomplete="updateLabelObj(currentChangeIdGroup,'#{canvasModalBean.componentId}');changeHelpAnchor(0);if( #{requestScope['msnError'] == null}){closeChangeIdModal();}"
                 reRender="msnError,errorTable">
                 <a4j:actionparam name="groupId" />
                 <a4j:actionparam name="elementId" />

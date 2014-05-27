@@ -415,3 +415,11 @@ function nospaces(t){
 function setPropValueFocus(index){
 	jQuery("[id$='"+index+":browserPropValueInput']").focus();
 }
+
+function changeHelpAnchor(index){
+	index++;
+	jQuery("#tabs-1").scrollTop( 0 );
+	if(jQuery("#page"+index).position()){
+		jQuery("#tabs-1").animate({scrollTop: jQuery("#page"+index).position().top-50}, 800);
+	}
+}

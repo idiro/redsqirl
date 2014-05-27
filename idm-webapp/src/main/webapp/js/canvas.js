@@ -1858,6 +1858,7 @@ function openCanvasModalJS(group, selectedTab){
         group.hasChangedId = true;
     } else {
         openModal(group.getId(), imagePath, selectedTab);
+        changeHelpAnchor(0);
     }
 }
 
@@ -2064,7 +2065,6 @@ function updateLabelObj(groupId, newGroupId) {
 
 	group.add(textLabelObj);
 	polygonLayer.draw();
-
 }
 
 function getLabelOutputType(color){

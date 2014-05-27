@@ -37,7 +37,8 @@
 		      jQuery("#imageHelp").hide();
 		    }
             //]]>
-		    
+
+		    jQuery("#tabs-1").scrollTop( 0 );
 		    jQuery("#btIndex").show();
 		    //<![CDATA[
 		    while( historyHelpIndex + 1 < historyHelp.length ){
@@ -62,6 +63,7 @@
 		    jQuery("#helpIndex").show();
             jQuery("#helpPanel").hide();
 		    jQuery("#btIndex").hide();
+		    jQuery("#tabs-1").scrollTop( 0 );
 		    //<![CDATA[
 		    while(historyHelpIndex + 1 < historyHelp.length){
 			historyHelp.pop();
@@ -102,7 +104,8 @@
               document.getElementById("imageHelp").innerHTML = "";
               jQuery("#imageHelp").hide();
             }
-            
+
+            jQuery("#tabs-1").scrollTop( 0 );
 		    jQuery("#btIndex").show();
 		}
 	    }
@@ -135,7 +138,8 @@
               document.getElementById("imageHelp").innerHTML = "";
               jQuery("#imageHelp").hide();
             }
-            
+
+            jQuery("#tabs-1").scrollTop( 0 );
 		    jQuery("#btIndex").show();
 		}
 	    }
@@ -149,7 +153,7 @@
     <div id="helpButtons">
         <button id="prevHelp" disabled="true">#{messages.label_help_previous}</button>
         <button id="nextHelp" disabled="true">#{messages.label_help_next}</button>
-        <input id="notMoveHelp" type="checkbox"/>Don't follow the links
+        <input id="notMoveHelp" type="checkbox"/>#{messages.label_on_the_page}
         <button id="btIndex" style="display: none;">#{messages.label_index}</button>
     </div>
     <div id="helpIndex">
