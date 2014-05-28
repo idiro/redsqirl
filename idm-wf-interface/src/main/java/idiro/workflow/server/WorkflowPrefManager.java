@@ -148,6 +148,8 @@ public class WorkflowPrefManager extends BlockManager {
 			 */
 			pathUserHelpPref = "/packages/" + System.getProperty("user.name")
 			+ "/help";
+	
+	
 
 	// User preferences
 	/**
@@ -213,7 +215,9 @@ public class WorkflowPrefManager extends BlockManager {
 			/** Trusted host to packages */
 			sys_pack_download_trust = "trusted_pack_hosts",
 			/** The admin user */
-			sys_admin_user = "admin_user";
+			sys_admin_user = "admin_user",
+			/** Parallel clause for pig */
+			sys_pig_parallel = "pig_parallel";
 	/** Hive JDBC Url */
 	public static final String user_hive = "hive_jdbc_url",
 			/** Path to Private Key */
@@ -225,7 +229,9 @@ public class WorkflowPrefManager extends BlockManager {
 			/** Number of oozie job directories to keep */
 			user_nb_oozie_dir_tokeep = "number_oozie_job_directory_tokeep",
 			/** Path on HDFS to store Oozie Jobs */
-			user_hdfspath_oozie_job = "hdfspath_oozie_job";
+			user_hdfspath_oozie_job = "hdfspath_oozie_job",
+			/** Parallel clause for pig */
+			user_pig_parallel = "pig_parallel";
 
 
 	private static LocalProperties props;
