@@ -46,7 +46,7 @@ public class PigFilterInteractionTests {
 			
 			
 		}catch(Exception e){
-			logger.error(e.getMessage());
+			logger.error(e.getMessage(),e);
 			assertTrue(e.getMessage(),false);
 		}
 	}

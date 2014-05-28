@@ -154,8 +154,9 @@ public class HiveAggregator extends HiveElement {
 	 */
 	@Override
 	public FeatureList getNewFeatures() throws RemoteException {
-		return getDFEInput().get(key_input).get(0).getFeatures();
+		return tSelInt.getNewFeatures();
 	}
+	
 	/**
 	 * Update the interaction in the action
 	 * @param interaction

@@ -3,7 +3,20 @@ package idiro.workflow.test;
 import idiro.Log;
 import idiro.ProjectID;
 import idiro.workflow.server.WorkflowPrefManager;
+import idiro.workflow.server.action.PigAggregatorTests;
+import idiro.workflow.server.action.PigAuditTests;
+import idiro.workflow.server.action.PigFilterInteractionTests;
+import idiro.workflow.server.action.PigJoinRelationInteractionTests;
+import idiro.workflow.server.action.PigJoinTests;
+import idiro.workflow.server.action.PigSampleTests;
+import idiro.workflow.server.action.PigSelectTests;
+import idiro.workflow.server.action.PigTableJoinInteractionTests;
 import idiro.workflow.server.action.PigTableSelectInteractionTests;
+import idiro.workflow.server.action.PigTableUnionInteractionTests;
+import idiro.workflow.server.action.PigUnionConditionsTests;
+import idiro.workflow.server.action.PigUnionTests;
+import idiro.workflow.server.action.PigWorkflowMngtTests;
+import idiro.workflow.server.action.test.PigDictionaryTests;
 import idiro.workflow.server.connect.HDFSInterface;
 import idiro.workflow.server.connect.HiveInterface;
 
@@ -22,19 +35,20 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-//	PigDictionaryTests.class,
-//	PigFilterInteractionTests.class,
+	PigDictionaryTests.class,
+	PigFilterInteractionTests.class,
 	PigTableSelectInteractionTests.class,
-//	PigJoinRelationInteractionTests.class,
-//	PigTableJoinInteractionTests.class,
-//	PigTableUnionInteractionTests.class,
-//	PigSelectTests.class,
-//	PigAggregatorTests.class,
-//	PigUnionTests.class,
-//	PigJoinTests.class,
-//	PigSampleTests.class,
-//	PigWorkflowMngtTests.class,
-//	PigUnionConditionsTests.class
+	PigJoinRelationInteractionTests.class,
+	PigTableJoinInteractionTests.class,
+	PigTableUnionInteractionTests.class,
+	PigSelectTests.class,
+	PigAggregatorTests.class,
+	PigUnionTests.class,
+	PigJoinTests.class,
+	PigSampleTests.class,
+	PigWorkflowMngtTests.class,
+	PigUnionConditionsTests.class,
+	PigAuditTests.class
 	})
 public class SetupPigEnvironmentTest {
 
@@ -62,7 +76,7 @@ public class SetupPigEnvironmentTest {
 		log.put(log4jFile);
 
 		WorkflowPrefManager.getInstance();
-		logger = Logger.getLogger(SetupEnvironmentTest.class);
+		logger = Logger.getLogger(SetupPigEnvironmentTest.class);
 		File logfile = new File(log4jFile);
 
 		if(logfile.exists()){

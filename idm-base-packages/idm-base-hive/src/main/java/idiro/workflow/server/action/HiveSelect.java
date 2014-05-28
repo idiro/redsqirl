@@ -34,8 +34,7 @@ public class HiveSelect extends HiveElement {
 	 */
 
 	private HiveTableSelectInteraction tSelInt;
-	/**Group by Interaction*/
-	private HiveGroupByInteraction groupInt;
+
 	/**
 	 * Constructor
 	 * @throws RemoteException
@@ -219,13 +218,6 @@ public class HiveSelect extends HiveElement {
 	@Override
 	public FeatureList getNewFeatures() throws RemoteException {
 		return tSelInt.getNewFeatures();
-	}
-	/**
-	 * Get the GroupBy Interaction
-	 * @return groupInt
-	 */
-	public HiveGroupByInteraction getGroupInt() {
-		return groupInt;
 	}
 
 }

@@ -92,6 +92,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * The legend associated with the current wizard page
 	 */
 	private String pageLegend;
+	
+	/**
+	 * The text tip associated with the current wizard page
+	 */
+	private String pageTextTip;
 
 	/**
 	 * Last wizard page flag ('N' or 'Y')
@@ -259,7 +264,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 						if (sourceNode) {
 							outputTab.setShowOutputForm("N");
 						}
-						outputTab.mountOutputForm(!sourceNode);
 
 
 						listPageSize = getPageList().size();
@@ -269,9 +273,15 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 						// retrieves the correct page
 						setCanvasTitle(WordUtils.capitalizeFully(dfe.getName().replace("_", " ")));
+						
+						if(listPageSize > 0){
+							mountInteractionForm();
+						}else{
+							updateOutputElement();
+						}
 
-						mountInteractionForm();
-
+						outputTab.mountOutputForm(!sourceNode);
+						
 						setFirstPage("Y");
 
 						logger.info("List size " + getListPageSize());
@@ -331,16 +341,19 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 */
 	public void applyPage() throws RemoteException {
 
-		logger.info("applyPage ");
+		logger.info("applyPage");
 
 		String error = checkNextPage();
-		if (error.length() > 1) {
+		HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+		if (error != null && error.length() > 1) {
 			MessageUseful.addErrorMessage(error);
-			HttpServletRequest request = (HttpServletRequest) FacesContext
-					.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
+		}else{
+			if (getListPageSize() - 1 > getListPosition()) {
+				MessageUseful.addInfoMessage(getMessageResources("success_message"));
+				request.setAttribute("msnError", "msnError");
+			}
 		}
-
 		setErrorMsg(error);
 
 	}
@@ -453,6 +466,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 			setPageTitle(getPage().getTitle());
 			setPageLegend(getPage().getLegend());
+			setPageTextTip(getPage().getTextTip());
 
 			inters = new LinkedList<CanvasModalInteraction>();
 			for (DFEInteraction dfeInteraction : getPage().getInteractions()) {
@@ -827,6 +841,14 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 */
 	public final List<String> getTablesColumnTitle() {
 		return tablesColumnTitle;
+	}
+
+	public String getPageTextTip() {
+		return pageTextTip;
+	}
+
+	public void setPageTextTip(String pageTextTip) {
+		this.pageTextTip = pageTextTip;
 	}
 
 }

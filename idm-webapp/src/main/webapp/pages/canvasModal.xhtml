@@ -74,6 +74,7 @@
         minSize= !minSize;
         //alert("new value: "+minSize);
     }
+    
 </script>
         
 <h:form>
@@ -105,7 +106,10 @@
                     onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
                     onstop="jQuery.unblockUI();" />
         
-        <rich:tab id="confTabCM" label="#{messages.label_dynamic_configuration}" style="border:none;border-collapse:collapse;" >
+        <rich:tab id="confTabCM" 
+            label="#{messages.label_dynamic_configuration}" 
+            style="border:none;border-collapse:collapse;"
+            rendered="#{canvasModalBean.listPageSize != 0}" >
         <rich:panel id="panelDynamicForm" style="border:none;min-height: 465px;" >
             
             <span id="canvasModalHeader">
@@ -123,7 +127,10 @@
                     </tbody>
                 </table>
                 
-                <p><h:outputText value="#{canvasModalBean.pageLegend}"/></p>
+                <p>
+                	<h:graphicImage value="../image/icons/question_mark.jpg" title='#{canvasModalBean.pageTextTip}' styleClass="questionMarkIcon" rendered="#{canvasModalBean.pageTextTip != null}" />
+                	<h:outputText value="#{canvasModalBean.pageLegend}"/>
+                </p>
             
             </span>
         
@@ -133,7 +140,10 @@
                     
                     <h2><h:outputText value="#{interCur.name}"/></h2>
                     
-                    <p><h:outputText value="#{interCur.legend}"/></p>
+                    <p>
+                    	<h:graphicImage value="../image/icons/question_mark.jpg" title='#{interCur.textTip}' styleClass="questionMarkIcon" rendered="#{interCur.textTip != null}"/>
+                    	<h:outputText value="#{interCur.legend}"/>
+                    </p>
                     
                 </span>
                 
@@ -200,7 +210,7 @@
                         
                             <rich:extendedDataTable id="browserTableProp" value="#{interCur.browser.listProperties}"
                                 var="property" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-                                enableContextMenu="false" selectionMode="none"
+                                enableContextMenu="false" selectionMode="none" rowKeyVar="index"
                                 onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
                                 rowClasses="even-row, odd-row" >
                                 
@@ -208,13 +218,13 @@
                                     <f:facet name="header">
                                         <h:outputText value="#{messages.label_properties}" />
                                     </f:facet>
-                                    <h:inputText styleClass="interModal" value="#{property.label}" style="border:none !important;width:95%;" readonly="true" />
+                                    <h:inputText styleClass="interModal" value="#{property.label}" style="border:none !important;width:95%;" readonly="true" onclick="setPropValueFocus(#{index});" />
                                 </rich:column>
                                 <rich:column id="browserPropValue" >
                                     <f:facet name="header">
                                         <h:outputText value="#{messages.label_value}" />
                                     </f:facet>
-                                    <h:inputText styleClass="interModal" value="#{property.value}" style="border:none !important;width:95%;" />
+                                    <h:inputText id="browserPropValueInput" styleClass="interModal" value="#{property.value}" style="border:none !important;width:95%;" />
                                 </rich:column>
                 
                             </rich:extendedDataTable>
@@ -360,7 +370,7 @@
         
                                     <rich:comboBox value="#{rowItem.row[ind]}"
                                         selectFirstOnUpdate="false" defaultLabel="Enter some value"
-                                        width="125" enableManualInput="false" listWidth="150"
+                                        width="125" enableManualInput="true" listWidth="150"
                                         listHeight="150"
                                         rendered="#{interCur.table.columnType[column] == 'comboBox' }"
                                         styleClass="tableInteractionInput">
@@ -398,11 +408,11 @@
             
                 <a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="closeDynamicForm();" reRender="panelBtCanvasModal, msnError, errorTable" />
                 
-                <a4j:commandButton action="#{canvasModalBean.previousPage}" styleClass="greenButton" value="#{messages.button_previous}" rendered="#{canvasModalBean.firstPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, msnError" />
+                <a4j:commandButton action="#{canvasModalBean.previousPage}" styleClass="greenButton" value="#{messages.button_previous}" rendered="#{canvasModalBean.firstPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, msnError" oncomplete="changeHelpAnchor('#{canvasModalBean.listPosition}');" />
                 
-                <a4j:commandButton action="#{canvasModalBean.applyPage}" styleClass="greenButton" value="#{messages.button_apply}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, msnError, canvasModalTabPanel, browserTableProp, browserTableData, browserPropLabel, browserPropValue" />
+                <a4j:commandButton action="#{canvasModalBean.applyPage}" styleClass="greenButton" value="#{messages.button_apply}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, msnError, canvasModalTabPanel, browserTableProp, browserTableData, browserPropLabel, browserPropValue" oncomplete="changeHelpAnchor('#{canvasModalBean.listPosition}');" />
     
-                <a4j:commandButton action="#{canvasModalBean.nextPage}" styleClass="greenButton" value="#{messages.button_next}" rendered="#{canvasModalBean.lastPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, browserTableData, msnError" />
+                <a4j:commandButton action="#{canvasModalBean.nextPage}" styleClass="greenButton" value="#{messages.button_next}" rendered="#{canvasModalBean.lastPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, browserTableData, msnError" oncomplete="changeHelpAnchor('#{canvasModalBean.listPosition}');" />
                 
                 <a4j:commandButton action="#{canvasModalBean.applyPage}" oncomplete="if(#{requestScope['msnError'] == null} )closeDynamicForm();" styleClass="greenButton" value="#{messages.button_ok}" rendered="#{canvasModalBean.lastPage == 'Y'}" reRender="msnError, errorTable" />
             
@@ -471,7 +481,7 @@
                                         <h:outputText value="#{column}" />
                                     </f:facet>
                                     
-                                    <h:outputText value="#{rowData[ind]}" />
+                                    <h:outputText value="#{rowData[ind]}" title="#{rowData[ind]}" />
                                     
                                 </rich:columns>
                 
@@ -513,7 +523,7 @@
         
             </rich:modalPanel>
 
-            <rich:modalPanel id="textEditorPanel" width="600" height="420" style="overflow:hidden;" >
+            <rich:modalPanel id="textEditorPanel" width="650" height="420" style="overflow:hidden;" >
                     
                     <f:facet name="header">Editor</f:facet>
                     <f:facet name="controls">

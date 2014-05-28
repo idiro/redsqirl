@@ -1,10 +1,14 @@
 package idm.interaction;
 
 import idiro.utils.Tree;
+import idm.useful.ListStringArrayComparator;
+import idm.useful.SelectItemComparator;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -164,6 +168,17 @@ public class EditorFromTree implements Serializable{
 
 		} else {
 			openPopup = "N";
+		}
+		
+		Collections.sort(textEditorFunctionMenu);
+		Collections.sort(textEditorOperationMenu);
+		for (String key : textEditorFunctions.keySet()) {
+			List<String[]> lfunc = textEditorFunctions.get(key);
+			Collections.sort(lfunc, new ListStringArrayComparator());
+		}
+		for (String key : textEditorOperations.keySet()) {
+			List<String[]> lop = textEditorOperations.get(key);
+			Collections.sort(lop, new ListStringArrayComparator());
 		}
 
 	}

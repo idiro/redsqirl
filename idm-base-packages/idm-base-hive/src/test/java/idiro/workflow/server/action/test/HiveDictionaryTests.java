@@ -6,8 +6,8 @@ import static org.junit.Assert.assertTrue;
 import idiro.utils.FeatureList;
 import idiro.utils.OrderedFeatureList;
 import idiro.workflow.server.action.utils.HiveDictionary;
-import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.action.utils.TestUtils;
+import idiro.workflow.server.enumeration.FeatureType;
 
 import java.rmi.RemoteException;
 import java.util.HashSet;
@@ -21,7 +21,7 @@ public class HiveDictionaryTests {
 
 	public FeatureList getFeatures() throws RemoteException {
 		FeatureList features = new OrderedFeatureList();
-		features.addFeature("colAgg", FeatureType.STRING);
+		features.addFeature("colAgg", FeatureType.CATEGORY);
 		features.addFeature("col2", FeatureType.DOUBLE);
 		features.addFeature("col3", FeatureType.INT);
 		features.addFeature("col4", FeatureType.BOOLEAN);
@@ -107,21 +107,26 @@ public class HiveDictionaryTests {
 	}
 
 	@Test
-	public void DictionaryTestLoad(){
-		HiveDictionary dictionary = HiveDictionary.getInstance();
-		Set<String> keys = dictionary.getFunctionsMap().keySet();
+	public void DictionaryTestLoad() {
+		try {
+			HiveDictionary dictionary = HiveDictionary.getInstance();
+			Set<String> keys = dictionary.getFunctionsMap().keySet();
 
-		for(String key : keys){
-			String[][] values =dictionary.getFunctionsMap().get(key);
-			logger.info(key+ " "+ values.length);
-			for(String[] functions :values){
-				for(String functionStrings : functions){
-					if(functionStrings.contains("@")){
-
-						logger.debug(dictionary.convertStringtoHelp(functionStrings));
+			for (String key : keys) {
+				String[][] values = dictionary.getFunctionsMap().get(key);
+				logger.info(key + " " + values.length);
+				for (String[] functions : values) {
+					for (String functionStrings : functions) {
+						if (functionStrings.contains("@")) {
+							logger.debug(dictionary
+									.convertStringtoHelp(functionStrings));
+						}
 					}
 				}
 			}
+		} catch (Exception e) {
+			logger.error("error", e);
+			assertTrue("Exception while loading",false);
 		}
 	}
 
@@ -180,7 +185,7 @@ public class HiveDictionaryTests {
 			isNumber("(col2 - col3)/(col2+col3)", features);
 		} catch (Exception e) {
 			logger.error("Exception when testing boolean operations: "
-					+ e.getMessage());
+					+ e.getMessage(),e);
 			assertTrue("Fail on exception", false);
 		}
 	}
@@ -199,7 +204,7 @@ public class HiveDictionaryTests {
 			//is("(CHARARRAY)(SUBSTRING('bla',1,2))", features, "STRING");
 		} catch (Exception e) {
 			logger.error("Exception when testing boolean operations: "
-					+ e.getMessage());
+					+ e.getMessage(),e);
 			assertTrue("Fail on exception", false);
 		}
 
@@ -224,7 +229,7 @@ public class HiveDictionaryTests {
 			is("min(round(col2)+rand())", features, agg, "DOUBLE");
 		} catch (Exception e) {
 			logger.error("Exception when testing aggregation operations: "
-					+ e.getMessage());
+					+ e.getMessage(),e);
 			assertTrue("Fail on exception", false);
 		}
 	}
@@ -238,10 +243,10 @@ public class HiveDictionaryTests {
 			is("DISTINCT(colAgg)",features, "STRING");
 			is("DISTINCT(col2 + col3)",features, "NUMBER");
 			is("DISTINCT(UPPER(colAgg))",features, "STRING");
-			is("COUNT(DISTINCT(colAgg))",features, agg, "BIGINT");
+			is("COUNT(DISTINCT(col2))",features, agg, "LONG");
 		} catch (Exception e) {
 			logger.error("Exception when testing distinct operation: "
-					+ e.getMessage());
+					+ e.getMessage(),e);
 			assertTrue("Fail on exception", false);
 		}
 	}
@@ -259,7 +264,7 @@ public class HiveDictionaryTests {
 			
 		} catch (Exception e) {
 			logger.error("Exception when testing case when operations: "
-					+ e.getMessage());
+					+ e.getMessage(),e);
 			assertTrue("Fail on exception", false);
 		}
 	}

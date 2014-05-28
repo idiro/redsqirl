@@ -312,9 +312,10 @@ public abstract class HiveElement extends DataflowAction {
 	 * @throws RemoteException
 	 */
 	public Set<String> getGroupByFeatures() throws RemoteException {
-		Set<String> features = new HashSet<String>();
+		Set<String> features = null;
 		HiveGroupByInteraction group = getGroupingInt();
 		if (group != null) {
+			features = new HashSet<String>();
 			Tree<String> tree = group.getTree();
 			logger.info("group tree : "
 					+ ((TreeNonUnique<String>) tree).toString());

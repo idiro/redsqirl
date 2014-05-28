@@ -44,6 +44,8 @@ public class PigTableUnionInteractionTests {
 			
 			logger.debug(hs.getDFEInput());
 			
+			hs.update(hs.gettAliasInt());
+			
 			String alias1 ="";
 			String alias2 = "";
 			Iterator<String> itAlias = hs.getAliases().keySet().iterator();

@@ -54,7 +54,7 @@ public abstract class PigElement extends DataflowAction {
 			/**Output Type Key*/
 			key_outputType = "output_type",
 			/**Default Delimiter*/
-			default_delimiter = "\001",
+			default_delimiter = new String(new char[]{'\001'}),
 			/**Feature Key for table*/
 			key_featureTable = "features",
 			/**Parallel clause Key*/
@@ -238,7 +238,7 @@ public abstract class PigElement extends DataflowAction {
 				bw.close();
 			} catch (IOException e) {
 				ok = false;
-				logger.error("Fail to write into the file "+files[1].getAbsolutePath());
+				logger.error("Fail to write into the file "+files[1].getAbsolutePath(),e);
 			}
 		}
 		return ok;
@@ -286,6 +286,7 @@ public abstract class PigElement extends DataflowAction {
 	public Map<String, DFELinkProperty> getInput() throws RemoteException {
 		return input;
 	}
+	
 	/**
 	 * Get the remove query piece of the query
 	 * @param out

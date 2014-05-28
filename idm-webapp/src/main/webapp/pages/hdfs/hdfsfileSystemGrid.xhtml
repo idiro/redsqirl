@@ -175,7 +175,7 @@
 						    action="#{hdfsBean.verifyIfIsFile}"
 							oncomplete="selectFileHdfs('#{hdfsBean.file}', '#{hdfsBean.allProps[indexTable]['name']}')">
 							<f:param name="nameFile" value="#{hdfsBean.allProps[indexTable]['name']}" />
-							<rich:dragSupport id="dragSupportIdHdfs" dragIndicator=":indicator" dragValue="#{hdfsBean.allProps[indexTable]['name']}" dragType="hdfs">
+							<rich:dragSupport dragIndicator=":indicator" dragValue="#{hdfsBean.allProps[indexTable]['name']}" dragType="hdfs">
 								<rich:dndParam name="label" value="#{hdfsBean.allProps[indexTable]['name']}" />
 								<a4j:actionparam name="file" value="#{hdfsBean.allProps[indexTable]['name']}" />
 								<a4j:actionparam name="path" value="#{hdfsBean.path}" />

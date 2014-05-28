@@ -4,9 +4,11 @@ import idiro.utils.Tree;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idm.dynamictable.SelectableRow;
 import idm.dynamictable.SelectableTable;
+import idm.useful.SelectItemComparator;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -109,6 +111,9 @@ public class TableInteraction extends CanvasModalInteraction{
 					selectedGenerator = tableGeneratorMenu.get(0).getLabel();
 				}
 			}
+			
+			Collections.sort(tableGeneratorMenu, new SelectItemComparator());
+			
 		}
 		
 		tableEditors = new LinkedHashMap<String, EditorFromTree>();
@@ -194,9 +199,8 @@ public class TableInteraction extends CanvasModalInteraction{
 							.getHead(), tree.getFirstChild().getHead()));
 				}
 			}
-			tableConstraints.put(
-					dfeInteractionTree.getFirstChild("title").getFirstChild()
-					.getHead(), listFields);
+			Collections.sort(listFields, new SelectItemComparator());
+			tableConstraints.put(dfeInteractionTree.getFirstChild("title").getFirstChild().getHead(), listFields);
 		}
 	}
 

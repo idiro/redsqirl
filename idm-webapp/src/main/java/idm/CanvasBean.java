@@ -1260,7 +1260,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 								}else{
 									tooltip.append("<tr>");
 								}
-								tooltip.append("<td>" + name + "<td>");
+								tooltip.append("<td>" + name + "</td>");
 								tooltip.append("<td>" + e.getValue().getFeatures().getFeatureType(name) + "</td></tr>");
 								row++;
 							}

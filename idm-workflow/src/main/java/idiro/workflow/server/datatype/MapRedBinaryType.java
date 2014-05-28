@@ -3,6 +3,7 @@ package idiro.workflow.server.datatype;
 import idiro.hadoop.NameNodeVar;
 import idiro.utils.FeatureList;
 import idiro.utils.OrderedFeatureList;
+import idiro.utils.RandomString;
 import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.utils.LanguageManagerWF;
 
@@ -65,6 +66,22 @@ public class MapRedBinaryType extends MapRedTextType {
 		return "BINARY MAP-REDUCE DIRECTORY";
 	}
 
+	/**
+	 * Gernate a path given values
+	 * 
+	 * @param userName
+	 * @param component
+	 * @param outputName
+	 * @return generated path
+	 * @throws RemoteException
+	 */
+	@Override
+	public String generatePathStr(String userName, String component,
+			String outputName) throws RemoteException {
+		return "/user/" + userName + "/tmp/idm_" + component + "_" + outputName
+				+ "_" + RandomString.getRandomName(8)+".mrbin";
+	}
+	
 	/**
 	 * Get the Colour of the type
 	 * 

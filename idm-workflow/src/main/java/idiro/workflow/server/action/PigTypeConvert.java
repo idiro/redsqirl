@@ -31,18 +31,22 @@ public class PigTypeConvert {
 	public static String getPigType(FeatureType feat) {
 		String featureType = feat.name();
 		switch (feat) {
-		case BOOLEAN:
-			break;
-		case INT:
-			break;
-		case FLOAT:
-			break;
-		case LONG:
-			break;
-		case DOUBLE:
-			break;
 		case STRING:
 			featureType = "CHARARRAY";
+			break;
+		case DATE:
+			featureType = "DATETIME";
+			break;
+		case DATETIME:
+			featureType = "DATETIME";
+			break;
+		case TIMESTAMP:
+			featureType = "DATETIME";
+			break;
+		case CATEGORY:
+			featureType = "CHARARRAY";
+			break;
+		default:
 			break;
 		}
 		return featureType;

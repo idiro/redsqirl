@@ -87,13 +87,11 @@
 	<div id="canvasModalBeanTextEditor" style="width:100%; overflow: auto; height: 375px;" rendered="#{canvasModalBean.selEditor != null}" >
 
 		<h:inputTextarea maxlength="100" cols="70" rows="10" value="#{canvasModalBean.selEditor.value}"
-			style="resize:none;border:1px solid;" id="commandText" />
-
-		<br />
-		<br />
+			style="resize:none;border:1px solid;width:97%;height:100px;" id="commandText" />
 
 		<a4j:region>
-			<table width="100%" id="table">
+		<div style="width:100%;overflow:auto;height:225px;overflow-x:hidden;overflow-y:auto;" >
+			<table width="100%" id="table" height="200px" style="border:none;">
 				<tr style="vertical-align: top;">
 					<td width="45%">
 						<br /> 
@@ -110,7 +108,7 @@
 						<rich:extendedDataTable id="listFunctions" 
 						    value="#{canvasModalBean.selEditor.edit.textEditorFunctions[canvasModalBean.selEditor.selectedFunction]}" 
 						    var="item"
-							style="border:1px solid;" width="100%" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+							style="border:0px;" width="100%" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 							enableContextMenu="false" selectionMode="none"
 							onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
 							rowClasses="even-row, odd-row">
@@ -122,7 +120,7 @@
 								<a4j:commandLink id="btCompleteFunction" onclick="completeCommand('#{item[0]}');"
 									onmouseover="addtooltip('#{item[3]}', event)" onmouseout="removetoottip()">
 									<f:param name="nameFunctions" value="#{item[0]}" />
-									<h:outputText value="#{item[0]}" />
+									<h:outputText value="#{item[0]}" title="#{item[0]}" />
 								</a4j:commandLink>
 							</rich:column>
 	
@@ -130,14 +128,14 @@
 								<f:facet name="header">
 									<h:outputText value="#{messages.label_input}" />
 								</f:facet>
-								<h:outputText value="#{item[1]}" />
+								<h:outputText value="#{item[1]}" title="#{item[1]}" />
 							</rich:column>
 	
 							<rich:column style="border-bottom:0px;border-right:0px;">
 								<f:facet name="header">
 									<h:outputText value="#{messages.label_return}" />
 								</f:facet>
-								<h:outputText value="#{item[2]}" />
+								<h:outputText value="#{item[2]}" title="#{item[2]}" />
 							</rich:column>
 	
 						</rich:extendedDataTable>
@@ -157,7 +155,7 @@
 						<rich:extendedDataTable id="listOperation" 
 						value="#{canvasModalBean.selEditor.edit.textEditorOperations[canvasModalBean.selEditor.selectedOperation]}" 
 						var="item"
-						style="border:1px solid;" width="100%" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+						style="border:0px;" width="100%" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 						enableContextMenu="false" selectionMode="none"
 						onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
 						rowClasses="even-row, odd-row">
@@ -169,7 +167,7 @@
 								<a4j:commandLink id="btCompleteFunction" onclick="completeCommand('#{item[0]}');"
 									onmouseover="addtooltip('#{item[3]}', event)" onmouseout="removetoottip()">
 									<f:param name="nameFunctions" value="#{item[0]}" />
-									<h:outputText value="#{item[0]}" />
+									<h:outputText value="#{item[0]}" title="#{item[0]}" />
 								</a4j:commandLink>
 							</rich:column>
 	
@@ -183,7 +181,7 @@
 					<br />
 						
 						<rich:extendedDataTable id="listFields"	value="#{canvasModalBean.selEditor.edit.textEditorFieldsEntry}" var="item"
-							style="border:1px solid;" width="100%" onRowClick="completeFilds" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+							style="border:0px;" width="100%" onRowClick="completeFilds" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 							enableContextMenu="false" selectionMode="none"
 							onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
 							rowClasses="even-row, odd-row">
@@ -195,7 +193,7 @@
 								<a4j:commandLink id="btCompleteFilds"
 									onclick="completeCommand('#{item.key}');">
 									<f:param name="nameFilds" value="#{item.key}" />
-									<h:outputText value="#{item.key}" />
+									<h:outputText value="#{item.key}" title="#{item.key}" />
 								</a4j:commandLink>
 							</rich:column>
 	
@@ -203,7 +201,7 @@
 								<f:facet name="header">
 									<h:outputText value="#{messages.label_type}" />
 								</f:facet>
-								<h:outputText value="#{item.value}" />
+								<h:outputText value="#{item.value}" title="#{item.value}" />
 							</rich:column>
 	
 						</rich:extendedDataTable>
@@ -211,6 +209,7 @@
 					</td>
 				</tr>
 			</table>
+			</div>
 		</a4j:region>
 		<br />
 
@@ -220,9 +219,9 @@
 			oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('textEditorPanel')}.hide() };"
 			reRender="command,tableInteraction, msnError, errorTable" />
 			
-		<h:commandButton styleClass="greenButton" value="#{messages.button_cancel}" type="button" onclick="#{rich:component('textEditorPanel')}.hide();"/>
+		<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('textEditorPanel')}.hide();"/>
 			
-		<a4j:commandButton  styleClass="greenButton" action="#{canvasModalBean.selEditor.checkTextEditor}" value="#{messages.button_check}" reRender="command,tableInteraction, msnError, errorTable" />
+		<a4j:commandButton styleClass="greenButton" action="#{canvasModalBean.selEditor.checkTextEditor}" value="#{messages.button_check}" reRender="command,tableInteraction, msnError, errorTable" />
 
 	</div>
 	</h:form>

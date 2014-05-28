@@ -1759,6 +1759,7 @@ function configureGroupListeners(canvasName, group) {
 	});
 	
 	group.on('click', function(e) {
+		jQuery(".tooltipCanvas").remove();
 	    if(e.button != 2){
 		  deselectOnClick(canvasName, group.getChildren()[2], e);
 		
@@ -1769,9 +1770,9 @@ function configureGroupListeners(canvasName, group) {
         }else{
               rightClickGroup = this;
               cmenuCanvas.show(this,e);
+              e.preventDefault();
               return false;
         }
-	    jQuery(".tooltipCanvas").remove();
 	});
 
 }
@@ -1857,6 +1858,7 @@ function openCanvasModalJS(group, selectedTab){
         group.hasChangedId = true;
     } else {
         openModal(group.getId(), imagePath, selectedTab);
+        changeHelpAnchor(0);
     }
 }
 
@@ -2063,7 +2065,6 @@ function updateLabelObj(groupId, newGroupId) {
 
 	group.add(textLabelObj);
 	polygonLayer.draw();
-
 }
 
 function getLabelOutputType(color){

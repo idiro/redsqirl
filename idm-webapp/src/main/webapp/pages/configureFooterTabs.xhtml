@@ -38,7 +38,7 @@
 					<a4j:commandButton action="#{configureTabsBean.deleteTab}" type="button" value="x" reRender="tabsMenu">
 						<f:param name="selected" value="#{item}" />
 					</a4j:commandButton>
-                	<h:commandButton value="Edit" type="button" onclick="showPanel('#{item}');" />
+                	<a4j:commandButton value="Edit" onclick="showPanel('#{item}');" />
 					<a4j:commandLink action="#{configureTabsBean.setSelected}" value="#{item}" reRender="actionsPanel">
 						<f:param name="selected" value="#{item}" />
 					</a4j:commandLink><br></br>

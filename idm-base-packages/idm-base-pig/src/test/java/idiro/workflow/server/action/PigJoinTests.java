@@ -38,7 +38,7 @@ public class PigJoinTests {
 		w.addLink(
 				PigBinarySource.out_name, src1.getComponentId(), 
 				PigJoin.key_input, idHS);
-		assertTrue("pig select add input: "+error,error == null);
+		assertTrue("pig join add input: "+error,error == null);
 		
 		logger.debug(PigBinarySource.out_name+" "+src2.getComponentId());
 		logger.debug(PigJoin.key_input+" "+idHS);
@@ -46,7 +46,7 @@ public class PigJoinTests {
 		w.addLink(
 				PigBinarySource.out_name, src2.getComponentId(), 
 				PigJoin.key_input, idHS);
-		assertTrue("pig select add input: "+error,error == null);
+		assertTrue("pig join add input: "+error,error == null);
 		
 		String alias1 ="";
 		String alias2 = "";
@@ -78,13 +78,8 @@ public class PigJoinTests {
 			String relation_from_2,
 			HDFSInterface hInt) throws RemoteException, Exception{
 		logger.debug("update pig...");
-		pig.update(pig.gettAliasInt());
 		
-		PigFilterInteraction ci = pig.getCondInt();
-		pig.update(ci);
-		Tree<String> cond = ci.getTree()
-				.getFirstChild("editor").getFirstChild("output");
-		cond.add(relation_from_1+".VALUE < 10");
+		pig.update(pig.gettAliasInt());
 		
 		PigJoinRelationInteraction jri = pig.getJrInt();
 		pig.update(jri);
@@ -116,6 +111,13 @@ public class PigJoinTests {
 			rowId.add(PigTableJoinInteraction.table_op_title).add(relation_from_2+".VALUE");
 			rowId.add(PigTableJoinInteraction.table_type_title).add("INT");
 		}
+		
+
+		PigFilterInteraction ci = pig.getCondInt();
+		pig.update(ci);
+		Tree<String> cond = ci.getTree()
+				.getFirstChild("editor").getFirstChild("output");
+		cond.add(relation_from_1+".VALUE < 10");
 
 		logger.debug("HS update out...");
 		String error = pig.updateOut();

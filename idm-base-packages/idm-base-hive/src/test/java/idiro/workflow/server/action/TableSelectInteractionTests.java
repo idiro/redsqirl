@@ -5,10 +5,7 @@ import idiro.utils.Tree;
 import idiro.workflow.server.Workflow;
 import idiro.workflow.server.action.utils.TestUtils;
 import idiro.workflow.server.connect.HiveInterface;
-import idiro.workflow.server.datatype.HiveType;
-import idiro.workflow.server.interfaces.DataFlowElement;
 
-import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,10 +22,10 @@ public class TableSelectInteractionTests {
 		return ans;
 	}
 	
-	public Source getSource(Workflow w, HiveInterface hInt,
+	public HiveSource getSource(Workflow w, HiveInterface hInt,
 			String new_path1) throws Exception{
-		String idSource = w.addElement((new Source()).getName());
-		Source src = (Source)w.getElement(idSource);
+		String idSource = w.addElement((new HiveSource()).getName());
+		HiveSource src = (HiveSource)w.getElement(idSource);
 		
 		String deleteError = hInt.delete(new_path1);
 		assertTrue("delete "+deleteError,
@@ -39,15 +36,7 @@ public class TableSelectInteractionTests {
 		assertTrue("create "+createError,
 				createError == null
 				);
-		
-		src.update(src.getInteraction(Source.key_datatype));
-		Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype).getTree();
-		dataTypeTree.getFirstChild("list").getFirstChild("output").add("Hive");
-		
-		src.update(src.getInteraction(Source.key_datasubtype));
-		Tree<String> dataSubTypeTree = src.getInteraction(Source.key_datasubtype).getTree();
-		dataSubTypeTree.getFirstChild("list").getFirstChild("output").add(new HiveType().getTypeName());
-
+	
 		src.update(src.getInteraction(Source.key_dataset));
 		Tree<String> dataSetTree = src.getInteraction(Source.key_dataset).getTree();
 		dataSetTree.getFirstChild("browse").getFirstChild("output").add("path").add(new_path1);
@@ -88,7 +77,7 @@ public class TableSelectInteractionTests {
 			String new_path1 = "/" + TestUtils.getTableName(1);
 			String new_path2 = "/" + TestUtils.getTableName(2);
 			HiveInterface hInt = new HiveInterface();
-			Source src = getSource(w,hInt,new_path1);
+			HiveSource src = getSource(w,hInt,new_path1);
 			HiveAggregator hs = new HiveAggregator();
 			src.setComponentId("1");
 			hs.setComponentId("2");
@@ -109,8 +98,8 @@ public class TableSelectInteractionTests {
 				Tree<String> rowId = out.add("row");
 				logger.debug("4");
 				rowId.add(HiveTableSelectInteraction.table_feat_title).add("id");
-				rowId.add(HiveTableSelectInteraction.table_op_title).add("id");
-				rowId.add(HiveTableSelectInteraction.table_type_title).add("STRING");
+				rowId.add(HiveTableSelectInteraction.table_op_title).add("COUNT(id)");
+				rowId.add(HiveTableSelectInteraction.table_type_title).add("LONG");
 				logger.debug("5");
 				error = tsi.check();
 				logger.debug("6");

@@ -646,10 +646,38 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			}
 		} catch (Exception e) {
 			waLogger.warn("Fail to get the name of the action");
+			waLogger.error(e.getMessage(),e);
+		}
+
+		return addPage(title, f, legend, null, nbColumn);
+	}
+	
+	/**
+	 * Add a page to the WorkflowAction.
+	 * 
+	 * This version try to find the image automatically through a name
+	 * convention.
+	 * 
+	 * @param title
+	 * @param legend
+	 * @param textTip
+	 * @param nbColumn
+	 * @return
+	 * @throws RemoteException
+	 */
+	protected Page addPage(String title, String legend, String textTip, int nbColumn) {
+		File f = null;
+		try {
+			f = new File(getImage());
+			if (f != null && (!f.exists() || !f.isFile())) {
+				f = null;
+			}
+		} catch (Exception e) {
+			waLogger.warn("Fail to get the name of the action");
 			waLogger.error(e.getMessage());
 		}
 
-		return addPage(title, f, legend, nbColumn);
+		return addPage(title, f, legend, textTip, nbColumn);
 	}
 
 	/**
@@ -658,14 +686,15 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	 * @param title
 	 * @param image
 	 * @param legend
+	 * @param textTip
 	 * @param nbColumn
 	 * @return
 	 * @throws RemoteException
 	 */
-	protected Page addPage(String title, File image, String legend, int nbColumn) {
+	protected Page addPage(String title, File image, String legend, String textTip, int nbColumn) {
 		Page page = null;
 		try {
-			page = new Page(title, image, legend, nbColumn);
+			page = new Page(title, image, legend, textTip, nbColumn);
 			pageList.add(page);
 		} catch (Exception e) {
 			waLogger.error("Page not correctly created, remote exception");
