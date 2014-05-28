@@ -92,7 +92,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * The legend associated with the current wizard page
 	 */
 	private String pageLegend;
-	
+
 	/**
 	 * The text tip associated with the current wizard page
 	 */
@@ -213,6 +213,16 @@ public class CanvasModal extends BaseBean implements Serializable {
 		// Get the Element
 		idGroup = FacesContext.getCurrentInstance().getExternalContext()
 				.getRequestParameterMap().get("paramGroupId");
+
+		Integer pageNb = null;
+		try {
+			pageNb = Integer.parseInt(FacesContext.getCurrentInstance().getExternalContext()
+					.getRequestParameterMap().get("paramPageNb"));
+		} catch (NumberFormatException e) {
+			pageNb = 0;
+			logger.error(e.getMessage());
+		}
+
 		try {
 			dfe = getworkFlowInterface().getWorkflow(
 					canvasBean.getNameWorkflow()).getElement(
@@ -265,11 +275,25 @@ public class CanvasModal extends BaseBean implements Serializable {
 							outputTab.setShowOutputForm("N");
 						}
 
-
 						listPageSize = getPageList().size();
 
-						// initialise the position of list
-						setListPosition(0);
+						//initialise the position of list and check all pages before
+						setListPosition(pageNb);
+						String e = null;
+						if(pageNb > 0){
+							int i = -1;
+							while(e == null && i < Math.min(pageNb ,listPageSize)){
+								++i;
+								e = getPageList().get(i).checkPage();
+							}
+							setListPosition(i);
+						}
+						//specific error message to validation object
+						if (e != null) {
+							logger.info("openCanvasModal checkpages before " + e);
+							MessageUseful.addErrorMessage(e);
+							request.setAttribute("msnErrorPage", "msnErrorPage");
+						}
 
 						// retrieves the correct page
 						setCanvasTitle(WordUtils.capitalizeFully(dfe.getName().replace("_", " ")));
@@ -281,16 +305,12 @@ public class CanvasModal extends BaseBean implements Serializable {
 						}
 
 						outputTab.mountOutputForm(!sourceNode);
-						
-						setFirstPage("Y");
+
+						checkFirstPage();
 
 						logger.info("List size " + getListPageSize());
 
-						if (getListPageSize() - 1 > getListPosition()) {
-							setLastPage("N");
-						} else {
-							setLastPage("Y");
-						}
+						checkLastPage();
 
 					}
 
@@ -389,17 +409,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 				logger.info(getPageList().size());
 
-				if (getListPageSize() - 1 > getListPosition()) {
-					setLastPage("N");
-				} else {
-					setLastPage("Y");
-				}
+				checkFirstPage();
 
-				if (getListPosition() == 0) {
-					setFirstPage("Y");
-				} else {
-					setFirstPage("N");
-				}
+				checkLastPage();
 
 				mountInteractionForm();
 			}
@@ -432,17 +444,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 		setListPosition(getListPosition() - 1);
 
-		if (getListPageSize() - 1 > getListPosition()) {
-			setLastPage("N");
-		} else {
-			setLastPage("Y");
-		}
+		checkFirstPage();
 
-		if (getListPosition() == 0) {
-			setFirstPage("Y");
-		} else {
-			setFirstPage("N");
-		}
+		checkLastPage();
 
 		mountInteractionForm();
 
@@ -593,6 +597,22 @@ public class CanvasModal extends BaseBean implements Serializable {
 			request.setAttribute("msnError", "msnError");
 		}
 
+	}
+
+	public void checkFirstPage() {
+		if (getListPosition() == 0) {
+			setFirstPage("Y");
+		} else {
+			setFirstPage("N");
+		}
+	}
+	
+	public void checkLastPage() {
+		if (getListPageSize() - 1 > getListPosition()) {
+			setLastPage("N");
+		} else {
+			setLastPage("Y");
+		}
 	}
 
 	protected DFEPage getPage() throws RemoteException {
