@@ -699,6 +699,12 @@
             jQuery("#formMenu\\:settingsMenuItem").click();
         });
 
+	   	function checkPageError(){
+		   	if(jQuery("#msnErrorPageContainer")){
+			 	jQuery("#msnErrorPageContainer").css("z-index", '1000');
+	    	}
+	   	}
+
 	</script>
 
 </head>
@@ -965,11 +971,12 @@
 
 				<a4j:jsFunction name="openModal"
 					action="#{canvasModalBean.openCanvasModal}"
-					oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('canvasModalPanel')}.show() }"
-					reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError, errorTable, canvasModalTabPanel">
+					oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('canvasModalPanel')}.show();checkPageError(); }"
+					reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError, errorTable, canvasModalTabPanel, msnErrorPage">
 					<a4j:actionparam name="paramGroupId" />
 					<a4j:actionparam name="paramPathImage" />
 					<a4j:actionparam name="paramSelectedTab" />
+					<a4j:actionparam name="paramPageNb" />
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -983,7 +990,7 @@
 				<a4j:jsFunction name="openChangeIdModal"
 					action="#{canvasModalBean.openCanvasModal}"
                     data="#{canvasModalBean.loadMainWindow}"
-					oncomplete="if( #{requestScope['msnError'] == null}){if(data || confirm('Changing an action identification may cause errors and force you to reconfigure this object and its dependent nodes. Do you want to continue?')){#{rich:component('modalChangeId')}.show();}}else{updateLabelObj('#{canvasModalBean.idGroup}','#{canvasModalBean.componentId}');changeHelpAnchor(0);}"
+					oncomplete="if( #{requestScope['msnError'] == null}){if(data || confirm('Changing an action identification may cause errors and force you to reconfigure this object and its dependent nodes. Do you want to continue?')){#{rich:component('modalChangeId')}.show();}}else{updateLabelObj('#{canvasModalBean.idGroup}','#{canvasModalBean.componentId}');changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');}"
 					reRender="msnError, errorTable, newIdElement">
 					<a4j:actionparam name="paramGroupId" />
 					<a4j:actionparam name="paramPathImage" />
@@ -1785,6 +1792,29 @@
 
         </rich:modalPanel>
     </a4j:region>
+    
+    <rich:modalPanel id="msnErrorPage" showWhenRendered="#{requestScope['msnErrorPage'] != null}">
+		<center>
+
+			<table>
+				<tr>
+					<td>
+						<rich:messages id="msgPage" globalOnly="false" layout="list"
+							styleClass="message" infoClass="messageok"
+							errorClass="messageerro" warnClass="messagealert"
+							showDetail="true" showSummary="false" ajaxRendered="false" />
+					</td>
+				</tr>
+			</table>
+
+			<br /> <br />
+
+			<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}"
+				onclick="#{rich:component('msnErrorPage')}.hide(); return false;"
+				reRender="msnErrorPage, msgPage, errorTable" />
+
+		</center>
+	</rich:modalPanel>
 	
 	<rich:modalPanel id="msnError" showWhenRendered="#{requestScope['msnError'] != null}">
 		<center>
@@ -1792,10 +1822,10 @@
 			<table>
 				<tr>
 					<td>
-					<rich:messages id="msg" globalOnly="false" layout="list"
-						styleClass="message" infoClass="messageok"
-						errorClass="messageerro" warnClass="messagealert"
-						showDetail="true" showSummary="false" ajaxRendered="false" />
+						<rich:messages id="msg" globalOnly="false" layout="list"
+							styleClass="message" infoClass="messageok"
+							errorClass="messageerro" warnClass="messagealert"
+							showDetail="true" showSummary="false" ajaxRendered="false" />
 					</td>
 				</tr>
 			</table>
