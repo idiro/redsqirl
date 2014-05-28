@@ -19,6 +19,7 @@ public class AppendListInteraction extends UserInteraction{
 	 * 
 	 */
 	private static final long serialVersionUID = -6059678937933664413L;
+	
 	/**
 	 * Constructor
 	 * @param id of interaction
@@ -26,6 +27,25 @@ public class AppendListInteraction extends UserInteraction{
 	 * @param legend the descritpion
 	 * @param column which column to place into
 	 * @param placeInColumn where in the column to place
+	 * @throws RemoteException
+	 */
+	public AppendListInteraction(String id,String name, String legend,
+			int column, int placeInColumn)
+					throws RemoteException {
+		super(id,name, legend, DisplayType.appendList, 
+				column, placeInColumn);
+		init();
+		setSorted(false);
+	}
+	
+	/**
+	 * Constructor
+	 * @param id of interaction
+	 * @param name of interaction
+	 * @param legend the descritpion
+	 * @param column which column to place into
+	 * @param placeInColumn where in the column to place
+	 * @param sorted Keep the output list in order
 	 * @throws RemoteException
 	 */
 	public AppendListInteraction(String id,String name, String legend,

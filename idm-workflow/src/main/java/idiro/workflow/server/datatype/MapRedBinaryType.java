@@ -253,7 +253,7 @@ public class MapRedBinaryType extends MapRedTextType {
 	 * @return Error Message
 	 * @throws RemoteException
 	 */
-	private String setFeaturesFromHeader() throws RemoteException {
+	protected String setFeaturesFromHeader() throws RemoteException {
 
 		logger.info("setFeaturesFromHeader()");
 
