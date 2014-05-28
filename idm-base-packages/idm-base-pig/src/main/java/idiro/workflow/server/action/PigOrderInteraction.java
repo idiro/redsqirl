@@ -48,8 +48,8 @@ public class PigOrderInteraction extends AppendListInteraction{
 	 */
 	public String getQueryPiece(String relation, String order, String parallel) throws RemoteException{
 		String query="";
-		order = order.equals("DESCENDENT") ? "DESC" : "ASC"; 
 		if(check() == null && !getValues().isEmpty()){
+			order = order.equals("DESCENDENT") ? "DESC" : "ASC"; 
 			query = "ORDER " + relation + " BY ";
 			for (int i = 0; i < getValues().size(); ++i){
 				
@@ -59,8 +59,10 @@ public class PigOrderInteraction extends AppendListInteraction{
 					query += ",";
 				}
 			}
+			
+			query += " PARALLEL " + parallel;
 		}
-		return query + " PARALLEL " + parallel;
+		return query;
 	}
 
 

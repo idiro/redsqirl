@@ -10,6 +10,7 @@ import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.enumeration.SavingState;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -143,6 +144,12 @@ public class HiveAggregTests {
 			rowId.add(HiveTableSelectInteraction.table_op_title).add("AVG(value)");
 			rowId.add(HiveTableSelectInteraction.table_type_title).add("INT");
 		}
+		
+		HiveOrderInteraction oi = hive.getOrderInt();
+		hive.update(oi);
+		List<String> values = new ArrayList<String>();
+		values.add("id");
+		oi.setValues(values);
 
 		logger.debug("HS update out...");
 		String error = hive.updateOut();

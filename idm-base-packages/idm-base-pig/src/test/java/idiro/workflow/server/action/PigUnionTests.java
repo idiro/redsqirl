@@ -2,6 +2,8 @@ package idiro.workflow.server.action;
 
 import static org.junit.Assert.assertTrue;
 import idiro.utils.Tree;
+import idiro.workflow.server.InputInteraction;
+import idiro.workflow.server.ListInteraction;
 import idiro.workflow.server.OozieManager;
 import idiro.workflow.server.Workflow;
 import idiro.workflow.server.connect.HDFSInterface;
@@ -120,6 +122,20 @@ public class PigUnionTests {
 		alias2MapConditions.put(PigUnionConditions.table_op_title, relation_from_2+".VALUE > 1");
 		values.add(alias1MapConditions);
 		values.add(alias2MapConditions);
+		
+		PigOrderInteraction oi = pig.getOrderInt();
+		pig.update(oi);
+		List<String> valuesOrder = new ArrayList<String>();
+		valuesOrder.add("ID");
+		oi.setValues(valuesOrder);
+		
+		ListInteraction ot = (ListInteraction) pig.getInteraction(PigElement.key_order_type);
+		pig.update(oi);
+		ot.setValue("ASCENDENT");
+		
+		InputInteraction pl = (InputInteraction) pig.getInteraction(PigElement.key_parallel);
+		pig.update(pl);
+		pl.setValue("1");
 		
 		pig.gettUnionCond().setValues(values);
 		logger.debug("HS update out...");
