@@ -188,19 +188,8 @@ public class HiveType extends DataOutput{
 		}
 		return error;
 	}
-	/**
-	 * Generate a Path and set it
-	 * @param userName
-	 * @param component
-	 * @param outputName
-	 * @throws RemoteException
-	 */
-	@Override
-	public void generatePath(String userName,
-			String component, 
-			String outputName) throws RemoteException {
-		setPath(generatePathStr(userName,component,outputName));
-	}	
+	
+	
 	/**
 	 * Generate a string for a path
 	 * @param userName

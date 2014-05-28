@@ -5,6 +5,7 @@ import idiro.ProjectID;
 import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.action.ConditionInteractionTests;
 import idiro.workflow.server.action.HiveAggregTests;
+import idiro.workflow.server.action.HiveAuditTests;
 import idiro.workflow.server.action.HiveJoinTests;
 import idiro.workflow.server.action.HiveSelectTests;
 import idiro.workflow.server.action.HiveUnionConditionInteractionTests;
@@ -42,7 +43,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	HiveUnionTests.class,
 	HiveJoinTests.class,
 	HiveAggregTests.class,
-	HiveDictionaryTests.class
+	HiveDictionaryTests.class,
+	HiveAuditTests.class,
 	})
 public class SetupHiveEnvironmentTest {
 

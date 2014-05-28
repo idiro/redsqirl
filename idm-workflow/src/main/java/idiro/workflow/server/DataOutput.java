@@ -298,6 +298,20 @@ DFEOutput {
 		}
 
 	}
+	
+	/**
+	 * Generate a path and set it as current path
+	 * 
+	 * @param userName
+	 * @param component
+	 * @param outputName
+	 * @throws RemoteException
+	 */
+	@Override
+	public void generatePath(String userName, String component,
+			String outputName) throws RemoteException {
+		setPath(generatePathStr(userName, component, outputName));
+	}
 
 	/**
 	 * Get the Features List

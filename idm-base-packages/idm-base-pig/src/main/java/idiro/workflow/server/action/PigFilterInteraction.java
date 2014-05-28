@@ -40,7 +40,7 @@ public class PigFilterInteraction extends EditorInteraction {
 					throws RemoteException {
 		super(PigElement.key_condition,
 				PigLanguageManager.getText("pig.filter_interaction.title"), 
-				PigLanguageManager.getText("pig.filter_interaction.title"), 
+				PigLanguageManager.getText("pig.filter_interaction.legend"), 
 				column, 
 				placeInColumn);
 		this.el = el;

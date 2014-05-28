@@ -106,7 +106,10 @@
                     onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
                     onstop="jQuery.unblockUI();" />
         
-        <rich:tab id="confTabCM" label="#{messages.label_dynamic_configuration}" style="border:none;border-collapse:collapse;" >
+        <rich:tab id="confTabCM" 
+            label="#{messages.label_dynamic_configuration}" 
+            style="border:none;border-collapse:collapse;"
+            rendered="#{canvasModalBean.listPageSize != 0}" >
         <rich:panel id="panelDynamicForm" style="border:none;min-height: 465px;" >
             
             <span id="canvasModalHeader">
