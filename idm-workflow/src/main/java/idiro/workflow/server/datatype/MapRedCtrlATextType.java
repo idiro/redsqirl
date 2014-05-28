@@ -27,6 +27,9 @@ public class MapRedCtrlATextType extends MapRedDir{
 	 */
 	private static final long serialVersionUID = -2256801373086895177L;
 
+	
+	private String delimiter = new String(new char[]{'\001'});
+	
 	public MapRedCtrlATextType() throws RemoteException {
 		super();
 	}
@@ -37,7 +40,7 @@ public class MapRedCtrlATextType extends MapRedDir{
 
 	@Override
 	public String getTypeName() throws RemoteException {
-		return "CTRL-A DELIMITED TEXT MAP-REDUCE DIRECTORY";
+		return "CTRL-A SEPARATED TEXT MAP-REDUCE DIRECTORY";
 	}
 
 	/**
@@ -122,7 +125,7 @@ public class MapRedCtrlATextType extends MapRedDir{
 	public List<Map<String, String>> select(int maxToRead)
 			throws RemoteException {
 		List<Map<String,String>> ans = new LinkedList<Map<String,String>>();
-		String patternStr = Pattern.quote(new String(new char[]{'\001'}));
+		String patternStr = Pattern.quote(delimiter);
 		Iterator<String> it = selectLine(maxToRead).iterator();
 		while(it.hasNext()){
 			String l = it.next();
@@ -143,6 +146,89 @@ public class MapRedCtrlATextType extends MapRedDir{
 			}
 		}
 		return ans;
+	}
+	
+	/**
+	 * Set the path
+	 * 
+	 * @param path
+	 * @throws RemoteException
+	 */
+	@Override
+	public void setPath(String path) throws RemoteException {
+		String oldPath = getPath();
+
+		if (path == null) {
+			super.setPath(path);
+			setFeatures(null);
+			return;
+		}
+
+		if (!path.equalsIgnoreCase(oldPath)) {
+
+			super.setPath(path);
+
+			logger.info("setPath() " + path);
+			if (isPathExists()) {
+
+				FeatureList fl = generateFeaturesMap(delimiter);
+
+				String error = null;
+				String header = getProperty(key_header);
+				if (header != null && !header.isEmpty()) {
+					logger.info("setFeaturesFromHeader --");
+					error = setFeaturesFromHeader();
+					if (error != null) {
+						throw new RemoteException(error);
+					}
+				} else {
+					if (features != null) {
+						logger.debug(features.getFeaturesNames());
+						logger.debug(fl.getFeaturesNames());
+					} else {
+						features = fl;
+					}
+				}
+
+				if (features.getSize() != fl.getSize()) {
+					if (header != null && !header.isEmpty()) {
+						error = LanguageManagerWF
+								.getText("mapredtexttype.setheaders.wronglabels");
+					}
+					features = fl;
+				} else {
+					Iterator<String> flIt = fl.getFeaturesNames().iterator();
+					Iterator<String> featIt = features.getFeaturesNames()
+							.iterator();
+					boolean ok = true;
+					int i = 1;
+					while (flIt.hasNext() && ok) {
+						String nf = flIt.next();
+						String of = featIt.next();
+						logger.info("types feat " + i + ": "
+								+ fl.getFeatureType(nf) + " , "
+								+ features.getFeatureType(of));
+						ok &= canCast(fl.getFeatureType(nf),
+								features.getFeatureType(of));
+						if (!ok) {
+							error = LanguageManagerWF.getText(
+									"mapredtexttype.msg_error_cannot_cast",
+									new Object[] { fl.getFeatureType(nf),
+											features.getFeatureType(of) });
+						}
+						++i;
+					}
+					if (!ok) {
+						features = fl;
+						if (error != null) {
+							throw new RemoteException(error);
+						}
+					}
+				}
+
+			}
+		}
+
 	}
 
 	@Override
