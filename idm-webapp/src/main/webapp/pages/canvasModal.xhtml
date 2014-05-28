@@ -159,9 +159,12 @@
                     
                     <rich:listShuttle sourceValue="#{interCur.appendList.sortedAppendListOptions}"
 			            targetValue="#{interCur.appendList.selectedAppendListOptions}" var="items" listsHeight="150"
-			            sourceListWidth="130" targetListWidth="130" sourceCaptionLabel="Available Items"
-			            targetCaptionLabel="Currently Active Items"
-			            rendered="#{interCur.appendList.comboBox == 'sortedList'}"> 
+			            sourceListWidth="130" targetListWidth="130"
+			            rendered="#{interCur.appendList.comboBox == 'sortedList'}"
+			            copyAllControlLabel="Select all"
+                        copyControlLabel="Select"
+                        removeAllControlLabel="Unselect all"
+                        removeControlLabel="Unselect"> 
 			            <rich:column width="18"> 
 			            	<h:outputText value="#{items}" />
 			            </rich:column>
