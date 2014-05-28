@@ -264,7 +264,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 						if (sourceNode) {
 							outputTab.setShowOutputForm("N");
 						}
-						outputTab.mountOutputForm(!sourceNode);
 
 
 						listPageSize = getPageList().size();
@@ -274,9 +273,15 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 						// retrieves the correct page
 						setCanvasTitle(WordUtils.capitalizeFully(dfe.getName().replace("_", " ")));
+						
+						if(listPageSize > 0){
+							mountInteractionForm();
+						}else{
+							updateOutputElement();
+						}
 
-						mountInteractionForm();
-
+						outputTab.mountOutputForm(!sourceNode);
+						
 						setFirstPage("Y");
 
 						logger.info("List size " + getListPageSize());

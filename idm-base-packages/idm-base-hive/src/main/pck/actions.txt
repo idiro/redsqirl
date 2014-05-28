@@ -1,3 +1,4 @@
+hive_audit
 hive_select
 hive_union
 hive_join

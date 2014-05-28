@@ -5,13 +5,9 @@ import idiro.hadoop.checker.HdfsFileChecker;
 import idiro.utils.FeatureList;
 import idiro.utils.OrderedFeatureList;
 import idiro.utils.RandomString;
-import idiro.workflow.server.DataOutput;
-import idiro.workflow.server.OozieManager;
-import idiro.workflow.server.connect.HDFSInterface;
 import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.utils.LanguageManagerWF;
 
-import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
@@ -29,8 +25,6 @@ import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.PathFilter;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 /**
  * Map-Reduce Text output type. Output given when an algorithm return a text
@@ -39,7 +33,7 @@ import org.w3c.dom.Element;
  * @author etienne
  * 
  */
-public class MapRedTextType extends DataOutput {
+public class MapRedTextType extends MapRedDir {
 
 	/**
 	 * 
@@ -49,8 +43,6 @@ public class MapRedTextType extends DataOutput {
 	public final static String key_delimiter = "delimiter";
 	/** Header Key */
 	public final static String key_header = "header";
-	/** HDFS Interface */
-	protected static HDFSInterface hdfsInt;
 
 
 	protected static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -88,11 +80,6 @@ public class MapRedTextType extends DataOutput {
 	}
 
 	private void init() throws RemoteException{
-		
-		if (hdfsInt == null) {
-			hdfsInt = new HDFSInterface();
-		}
-		
 		addProperty(key_header, "");
 		featuresNumberHierarchicalOrder.add(FeatureType.INT);
 		featuresNumberHierarchicalOrder.add(FeatureType.LONG);
@@ -123,30 +110,6 @@ public class MapRedTextType extends DataOutput {
 		return "TEXT MAP-REDUCE DIRECTORY";
 	}
 
-	/**
-	 * Get the DataBrowser
-	 * 
-	 * @return {@link idiro.workflow.server.enumeration.DataBrowser}
-	 * @throws RemoteException
-	 */
-	@Override
-	public String getBrowser() throws RemoteException {
-		return hdfsInt.getBrowserName();
-	}
-
-	/**
-	 * Generate a path and set it as current path
-	 * 
-	 * @param userName
-	 * @param component
-	 * @param outputName
-	 * @throws RemoteException
-	 */
-	@Override
-	public void generatePath(String userName, String component,
-			String outputName) throws RemoteException {
-		setPath(generatePathStr(userName, component, outputName));
-	}
 
 	/**
 	 * Gernate a path given values
@@ -161,38 +124,10 @@ public class MapRedTextType extends DataOutput {
 	public String generatePathStr(String userName, String component,
 			String outputName) throws RemoteException {
 		return "/user/" + userName + "/tmp/idm_" + component + "_" + outputName
-				+ "_" + RandomString.getRandomName(8);
+				+ "_" + RandomString.getRandomName(8)+".mrtxt";
 	}
 
-	/**
-	 * Move the current path to a new one
-	 * 
-	 * @param newPath
-	 * @throws RemoteException
-	 */
-	@Override
-	public void moveTo(String newPath) throws RemoteException {
-		if (isPathExists()) {
-			hdfsInt.move(getPath(), newPath);
-		}
-		setPath(newPath);
-	}
-
-	/**
-	 * Copy the current path to a new one
-	 * 
-	 * @param newPath
-	 * @throws RemoteException
-	 * 
-	 */
-	@Override
-	public void copyTo(String newPath) throws RemoteException {
-		if (isPathExists()) {
-			hdfsInt.copy(getPath(), newPath);
-		}
-		setPath(newPath);
-	}
-
+	
 	/**
 	 * Check if the path is a valid path
 	 * 
@@ -264,67 +199,6 @@ public class MapRedTextType extends DataOutput {
 						+ outputName + "_");
 	}
 
-	@Override
-	public boolean isPathExists() throws RemoteException {
-		boolean ok = false;
-		if (getPath() != null) {
-			logger.info("checking if path exists: " + getPath().toString());
-			int again = 10;
-			FileSystem fs = null;
-			while (again > 0) {
-				try {
-					fs = NameNodeVar.getFS();
-					logger.debug("Attempt " + (11 - again) + ": existence "
-							+ getPath());
-					ok = fs.exists(new Path(getPath()));
-					again = 0;
-				} catch (Exception e) {
-					logger.error(e);
-					--again;
-				}
-				try {
-					// fs.close();
-				} catch (Exception e) {
-					logger.error(e);
-				}
-				if (again > 0) {
-					try {
-						Thread.sleep(10);
-					} catch (InterruptedException e1) {
-						logger.error(e1);
-					}
-				}
-			}
-		}
-		return ok;
-	}
-
-	/**
-	 * Remove the current path from hdfs
-	 * 
-	 * @return Error Message
-	 * @throws RemoteException
-	 */
-	@Override
-	public String remove() throws RemoteException {
-		return hdfsInt.delete(getPath());
-	}
-
-	@Override
-	public boolean oozieRemove(Document oozieDoc, Element action,
-			File localDirectory, String pathFromOozieDir,
-			String fileNameWithoutExtension) throws RemoteException {
-		Element fs = oozieDoc.createElement("fs");
-		action.appendChild(fs);
-
-		Element rm = oozieDoc.createElement("delete");
-		rm.setAttribute("path", "${" + OozieManager.prop_namenode + "}"
-				+ getPath());
-		fs.appendChild(rm);
-
-		return true;
-	}
-
 	/**
 	 * Select data from the current path
 	 * 
@@ -337,7 +211,8 @@ public class MapRedTextType extends DataOutput {
 		List<Map<String,String>> ans = new LinkedList<Map<String,String>>();
 		Iterator<String> it = selectLine(maxToRead).iterator();
 		while(it.hasNext()){
-			String[] line = it.next().split(Pattern.quote(getChar(getProperty(key_delimiter))));
+			String l = it.next();
+			String[] line = l.split(Pattern.quote(getChar(getProperty(key_delimiter))),-1);
 			List<String> featureNames = getFeatures().getFeaturesNames(); 
 			if(featureNames.size() == line.length){
 				Map<String,String> cur = new LinkedHashMap<String,String>();
@@ -346,6 +221,9 @@ public class MapRedTextType extends DataOutput {
 				}
 				ans.add(cur);
 			}else{
+				logger.error("The line size ("+line.length+
+						") is not compatible to the number of features ("+featureNames.size()+").");
+				logger.error("Error line: "+l);
 				ans = null;
 				break;
 			}
@@ -353,51 +231,6 @@ public class MapRedTextType extends DataOutput {
 		return ans;
 	}
 
-	public List<String> selectLine(int maxToRead) throws RemoteException {
-		List<String> ans = null;
-		if (isPathValid() == null && isPathExists()) {
-			try {
-				FileSystem fs = NameNodeVar.getFS();
-				FileStatus[] stat = fs.listStatus(new Path(getPath()),
-						new PathFilter() {
-
-					@Override
-					public boolean accept(Path arg0) {
-						return !arg0.getName().startsWith("_");
-					}
-				});
-				ans = new ArrayList<String>(maxToRead);
-				for (int i = 0; i < stat.length; ++i) {
-					ans.addAll(hdfsInt.select(stat[i].getPath().toString(),
-							getChar(getProperty(key_delimiter)),
-							(maxToRead / stat.length) + 1));
-				}
-				try {
-					// fs.close();
-				} catch (Exception e) {
-					logger.error("Fail to close FileSystem: " + e);
-				}
-			} catch (IOException e) {
-				String error = "Unexpected error: " + e.getMessage();
-				logger.error(error);
-				ans = null;
-			}
-		}
-		return ans;
-	}
-
-	/**
-	 * Is name a variable
-	 * 
-	 * @param name
-	 * @return <code>true</code> if name matches structure of a variable name
-	 *         (contains characters with numbers) and has a maximum else
-	 *         <code>false</code>
-	 */
-	public boolean isVariableName(String name) {
-		String regex = "[a-zA-Z]([a-zA-Z0-9_]{0,29})";
-		return name.matches(regex);
-	}
 
 	/**
 	 * Set the features list of the data set from the header

@@ -356,6 +356,7 @@ public class HiveTableUnionInteraction extends TableInteraction {
 		select += ") union_table";
 		return select;
 	}
+	
 	/**
 	 * Get the create feature list for creating the output table
 	 * @param out

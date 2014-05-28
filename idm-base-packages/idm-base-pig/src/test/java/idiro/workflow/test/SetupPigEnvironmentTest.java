@@ -4,6 +4,7 @@ import idiro.Log;
 import idiro.ProjectID;
 import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.action.PigAggregatorTests;
+import idiro.workflow.server.action.PigAuditTests;
 import idiro.workflow.server.action.PigFilterInteractionTests;
 import idiro.workflow.server.action.PigJoinRelationInteractionTests;
 import idiro.workflow.server.action.PigJoinTests;
@@ -46,7 +47,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	PigJoinTests.class,
 	PigSampleTests.class,
 	PigWorkflowMngtTests.class,
-	PigUnionConditionsTests.class
+	PigUnionConditionsTests.class,
+	PigAuditTests.class
 	})
 public class SetupPigEnvironmentTest {
 
