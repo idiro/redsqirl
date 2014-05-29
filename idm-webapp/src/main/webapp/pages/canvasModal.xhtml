@@ -203,6 +203,10 @@
                         <br/>
                         <h:inputText id="browserPath" label="Path" value="#{interCur.browser.path}" maxlength="255" 
                             style="width:395px;" styleClass="interModal" onclick="openModalOutputBrowser();" />
+                            
+                        <a4j:commandLink style="color:#FFFFFF" onclick="openModalOutputBrowser();" >
+							<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' styleClass="refreshButton" />
+						</a4j:commandLink>
             
                         <br/><br/>
                         
@@ -421,6 +425,21 @@
          </rich:tab>
             
             <rich:tab id="outputTab" label="#{messages.label_dynamic_data}" rerender="dataOutputForm,dataDisplayReg,titleDisplay,displayTableDiv" rendered="#{canvasModalBean.outputTab.showOutputForm == 'Y'}" >
+                
+                <table style="width:100%;display:block;">
+                    <tbody style="width:100%">
+                        <tr style="width:100%;right:0px;position:relative;">
+                            <td style="width:50px;padding:0px;margin:0px;" >
+                                <img src="#{canvasModalBean.pathImage}"/>
+                            </td>
+                            <td style="width:700px;padding:0px;margin:0px;">
+                                <h1><h:outputText value="#{messages.label_node_output}"/></h1>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <br/>
                 
                 <rich:panel id="dataOutputForm" style="min-height:465px;border:none;">
                     <a4j:repeat value="#{canvasModalBean.outputTab.outputFormList}" var="item"

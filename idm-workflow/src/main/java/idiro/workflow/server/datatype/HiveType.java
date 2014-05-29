@@ -378,5 +378,10 @@ public class HiveType extends DataOutput{
 	public String closeInterface() throws RemoteException{
 		return hInt.close();
 	}
+	
+	@Override
+	public String[] getExtensions() throws RemoteException {
+		return new String[0];
+	}
 
 }

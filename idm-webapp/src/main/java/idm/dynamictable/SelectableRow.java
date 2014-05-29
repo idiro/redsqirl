@@ -8,9 +8,10 @@ public class SelectableRow implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 8193933708078904094L;
-	String[] row;
-	boolean selected;
-	
+	protected String[] row;
+	protected boolean selected;
+	protected boolean disableSelect;
+
 	/**
 	 * @param selected
 	 * @param row
@@ -19,6 +20,7 @@ public class SelectableRow implements Serializable{
 		super();
 		this.row = row;
 		this.selected = selected;
+		disableSelect = false;
 	}
 	
 	/**
@@ -29,6 +31,7 @@ public class SelectableRow implements Serializable{
 		super();
 		this.row = row;
 		this.selected = false;
+		disableSelect = false;
 	}
 
 	/**
@@ -70,4 +73,13 @@ public class SelectableRow implements Serializable{
 			selected = false;
 		}
 	}
+	
+	public boolean isDisableSelect() {
+		return disableSelect;
+	}
+
+	public void setDisableSelect(boolean disableSelect) {
+		this.disableSelect = disableSelect;
+	}
+	
 }
