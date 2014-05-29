@@ -1,15 +1,22 @@
 package idiro.workflow.server.action;
 
 import static org.junit.Assert.assertTrue;
+import idiro.utils.FeatureList;
+import idiro.utils.OrderedFeatureList;
 import idiro.workflow.server.OozieManager;
 import idiro.workflow.server.Workflow;
 import idiro.workflow.server.connect.HDFSInterface;
+import idiro.workflow.server.datatype.MapRedCtrlATextType;
+import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.enumeration.SavingState;
 import idiro.workflow.server.interfaces.DataFlowElement;
 import idiro.workflow.test.TestUtils;
 
 import java.rmi.RemoteException;
+import java.util.List;
+import java.util.Map;
 
+import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
 import org.apache.oozie.client.OozieClient;
 import org.junit.Test;
@@ -67,7 +74,7 @@ public class PigAuditTests {
 	
 	
 	
-	@Test
+	//@Test
 	public void basic(){
 		
 		TestUtils.logTestTitle(getClass().getName()+"#basic");
@@ -112,6 +119,35 @@ public class PigAuditTests {
 		    assertTrue(error, error.contains("SUCCEEDED"));
 		}catch(Exception e){
 			logger.error(e.getMessage());
+			assertTrue(e.getMessage(),false);
+		}
+	}
+	
+	@Test
+	public void readAudit(){
+		TestUtils.logTestTitle(getClass().getName()+"#readAudit");
+		String error = null;
+		try{
+			HDFSInterface hInt = new HDFSInterface();
+			String new_path1 = TestUtils.getPath(1);
+			hInt.delete(new_path1);
+			
+			MapRedCtrlATextType output = new MapRedCtrlATextType();
+			FeatureList fl = new OrderedFeatureList();
+			fl.addFeature("Legend", FeatureType.STRING);
+			fl.addFeature("AUDIT_ID", FeatureType.STRING);
+			fl.addFeature("AUDIT_VALUE", FeatureType.STRING);
+			
+			output.setFeatures(fl);
+			output.setPath(new_path1);
+			PigTestUtils.createDistinctValueAuditFile(new Path(new_path1));
+			
+			AuditGenerator ag = new AuditGenerator();
+			Map<String,List<String> > agMap = ag.readDistinctValuesAudit(null,output);
+			logger.info(agMap.toString());
+			
+		}catch(Exception e){
+			logger.error(e.getMessage(),e);
 			assertTrue(e.getMessage(),false);
 		}
 	}

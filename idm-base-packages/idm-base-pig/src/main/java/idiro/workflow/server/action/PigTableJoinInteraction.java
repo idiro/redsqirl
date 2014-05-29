@@ -145,7 +145,7 @@ public class PigTableJoinInteraction extends TableInteraction {
 		FeatureList feats = hj.getInFeatures();
 
 		updateEditor(table_op_title, PigDictionary.generateEditor(PigDictionary
-				.getInstance().createDefaultSelectHelpMenu(), feats));
+				.getInstance().createDefaultSelectHelpMenu(), feats,hj.getDistinctValues()));
 
 		// Set the Generator
 		logger.debug("Set the generator...");

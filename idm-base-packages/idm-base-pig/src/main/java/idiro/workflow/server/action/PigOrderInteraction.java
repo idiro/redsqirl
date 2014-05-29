@@ -59,10 +59,9 @@ public class PigOrderInteraction extends AppendListInteraction{
 					query += ",";
 				}
 			}
-			
 			query += " PARALLEL " + parallel;
 		}
-		return query;
+		return query; 
 	}
 
 

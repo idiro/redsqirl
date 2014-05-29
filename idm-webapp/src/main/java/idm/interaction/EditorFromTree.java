@@ -1,16 +1,13 @@
 package idm.interaction;
 
 import idiro.utils.Tree;
+import idm.dynamictable.UnselectableTable;
 import idm.useful.ListStringArrayComparator;
-import idm.useful.SelectItemComparator;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +40,7 @@ public class EditorFromTree implements Serializable{
 	/**
 	 * The fields available associated with their type.
 	 */
-	private Map<String, String> textEditorFields;
+	private UnselectableTable textEditorFields;
 	
 	/**
 	 * The Function menu
@@ -87,7 +84,10 @@ public class EditorFromTree implements Serializable{
 		List<Tree<String>> list = null;
 
 		// Get the features
-		textEditorFields = new LinkedHashMap<String, String>();
+		LinkedList<String> header = new LinkedList<String>();
+		header.add("Name");
+		header.add("Info");
+		textEditorFields = new UnselectableTable(header);
 		try {
 			list = tree.getFirstChild("editor")
 					.getFirstChild("keywords").getSubTreeList();
@@ -97,9 +97,9 @@ public class EditorFromTree implements Serializable{
 		if (list != null && !list.isEmpty()) {
 			
 			for (Tree<String> tree : list) {
-				textEditorFields.put(tree.getFirstChild("name").getFirstChild()
-						.getHead(), tree.getFirstChild("info").getFirstChild()
-						.getHead());
+				textEditorFields.add(new String[]{
+						tree.getFirstChild("name").getFirstChild().getHead(),
+						tree.getFirstChild("info").getFirstChild().getHead()});
 			}
 			logger.info("features: "+textEditorFields.toString());
 		}else{
@@ -200,18 +200,14 @@ public class EditorFromTree implements Serializable{
 	/**
 	 * @return the textEditorFields
 	 */
-	public final Map<String, String> getTextEditorFields() {
+	public final UnselectableTable getTextEditorFields() {
 		return textEditorFields;
-	}
-	
-	public final List<Map.Entry<String,String>> getTextEditorFieldsEntry(){
-		return new ArrayList<Map.Entry<String,String>>(textEditorFields.entrySet());
 	}
 
 	/**
 	 * @param textEditorFields the textEditorFields to set
 	 */
-	public final void setTextEditorFields(Map<String, String> textEditorFields) {
+	public final void setTextEditorFields(UnselectableTable textEditorFields) {
 		this.textEditorFields = textEditorFields;
 	}
 
@@ -287,6 +283,22 @@ public class EditorFromTree implements Serializable{
 	 */
 	public final void setOpenPopup(String openPopup) {
 		this.openPopup = openPopup;
+	}
+
+	/**
+	 * @return
+	 * @see idm.dynamictable.UnselectableTable#getRows()
+	 */
+	public List<String[]> getTextEditorFieldsRows() {
+		return textEditorFields.getRows();
+	}
+
+	/**
+	 * @return
+	 * @see idm.dynamictable.UnselectableTable#getTitles()
+	 */
+	public List<String> getTextEditorFieldsTitles() {
+		return textEditorFields.getTitles();
 	}
 
 }

@@ -138,7 +138,7 @@ public class PigJoinRelationInteraction extends TableInteraction {
 				table_feat_title,
 				PigDictionary.generateEditor(PigDictionary
 				.getInstance().createDefaultSelectHelpMenu(), hj
-				.getInFeatures()));
+				.getInFeatures(), null));
 		
 		if(getValues().isEmpty()){
 			List<Map<String,String>> lrows = new LinkedList<Map<String,String>>();

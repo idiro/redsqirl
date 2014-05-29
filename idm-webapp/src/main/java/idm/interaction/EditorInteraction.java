@@ -1,6 +1,7 @@
 package idm.interaction;
 
 import idiro.workflow.server.interfaces.DFEInteraction;
+import idm.dynamictable.UnselectableTable;
 
 import java.rmi.RemoteException;
 import java.util.List;
@@ -72,7 +73,7 @@ public class EditorInteraction extends CanvasModalInteraction {
 	 * @return
 	 * @see idm.interaction.EditorFromTree#getTextEditorFields()
 	 */
-	public final Map<String, String> getTextEditorFields() {
+	public final UnselectableTable getTextEditorFields() {
 		return edit.getTextEditorFields();
 	}
 
@@ -80,7 +81,7 @@ public class EditorInteraction extends CanvasModalInteraction {
 	 * @param textEditorFields
 	 * @see idm.interaction.EditorFromTree#setTextEditorFields(java.util.Map)
 	 */
-	public final void setTextEditorFields(Map<String, String> textEditorFields) {
+	public final void setTextEditorFields(UnselectableTable textEditorFields) {
 		edit.setTextEditorFields(textEditorFields);
 	}
 

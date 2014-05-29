@@ -113,7 +113,9 @@ public class PigUnionConditions  extends TableInteraction{
 				hu.getAliases().keySet());
 
 		updateEditor(table_op_title,
-				PigDictionary.generateEditor(PigDictionary.getInstance().createConditionHelpMenu(),hu.getInFeatures()));
+				PigDictionary.generateEditor(
+						PigDictionary.getInstance().createConditionHelpMenu(),
+						hu.getInFeatures(),null));
 
 
 	}
@@ -132,7 +134,7 @@ public class PigUnionConditions  extends TableInteraction{
 					expression,
 					hu.getInFeatures()
 					) == null) {
-				error =PigLanguageManager.getText("pig.expressionnull");
+				error = PigLanguageManager.getText("pig.expressionnull");
 			}
 		} catch (Exception e) {
 			error = PigLanguageManager.getText("pig.expressionexception");
