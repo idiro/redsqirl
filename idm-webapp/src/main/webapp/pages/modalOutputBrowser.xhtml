@@ -44,6 +44,8 @@
 	reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, msnError, errorTable, canvasModalTabPanel, browserTableProp, browserTableData, browserPropLabel, browserPropValue" />
     </a4j:region>
 
+	<a4j:jsFunction name="changePathModalOutput" action="#{canvasModalBean.outputTab.fileSystem.changePath}" />
+
 	<h:outputText value="#{messages.label_path}" />
 	<h:inputText id="pathDataOutputBrowser" label="Path" value="#{canvasModalBean.outputTab.fileSystem.path}" maxlength="255" style="width:395px;" />
 	
@@ -66,19 +68,19 @@
 	</a4j:commandLink>
 	<br />
 	
-	<div style="width:100%; overflow: auto; height: 305px;" >
+	<div style="width:100%; overflow: auto; height: 265px;" >
 
 		<rich:extendedDataTable id="dataOutputBrowser" value="#{canvasModalBean.outputTab.fileSystem.tableGrid.rows}"
 			var="item" rowKeyVar="indexTable" width="100%" style="border:none;"
 			onRowMouseOver="this.style.backgroundColor='#F1F1F1'" enableContextMenu="false" selectionMode="none"
 			onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'" rowClasses="even-row, odd-row">
 	
-	
 			<rich:column style="border-bottom:0px;border-right:0px;" width="35px;">
 				<f:facet name="header">
 					<h:outputText value="" />
 				</f:facet>
-				<h:selectOneRadio value="#{item.selectedStr}" onclick="outPutBrowserSelectOneRadio(this, '#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}');">
+				<h:selectOneRadio value="#{item.selectedStr}" onclick="outPutBrowserSelectOneRadio(this, '#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}');"
+				rendered="#{item.disableSelect}" >
 					<f:selectItem itemValue="true" />
 				</h:selectOneRadio>
 			</rich:column>
@@ -108,6 +110,16 @@
 		</rich:extendedDataTable>
 
 	</div>
+	
+	<br />
+	
+	<rich:comboBox value="#{canvasModalBean.outputTab.fileSystem.extensionsSelected}" width="200" enableManualInput="false"
+		id="generation" listWidth="150" listHeight="200" rendered="#{not empty canvasModalBean.outputTab.fileSystem.listExtensions}" 
+		onchange="changePathModalOutput();" style="padding-right:20px;float:right;" >
+        <f:selectItems styleClass="interModal" value="#{canvasModalBean.outputTab.fileSystem.listExtensions}" />
+   </rich:comboBox>
+   
+   <br />
 
 	<a4j:commandButton styleClass="greenButton" 
 	    action="#{canvasModalBean.outputTab.changePathOutputBrowser}" 

@@ -20,6 +20,15 @@ import org.w3c.dom.Element;
  */
 public interface DFEOutput extends Remote {
 
+	
+	/**
+	 * get default extensions of the output format.
+	 * 
+	 * @return
+	 * @throws RemoteException
+	 */
+	public String[] getExtensions() throws RemoteException;
+	
 	/**
 	 * The type name of the DFEOutput
 	 * 
