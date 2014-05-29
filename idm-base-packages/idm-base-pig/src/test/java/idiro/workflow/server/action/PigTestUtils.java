@@ -49,6 +49,12 @@ public class PigTestUtils {
 		out.close();
 		fileSystem.close();
 	}
+	
+	public static void createDistinctValueAuditFile(Path p) throws IOException {
+		String ctrA = new String(new char[]{'\001'});
+		String value="Distinct values"+ctrA+"{(0),(1)}"+ctrA+"\n";
+		createHDFSFile(p, value);
+	}
 
 	public static void create3INT_file(Path p) throws IOException {
 

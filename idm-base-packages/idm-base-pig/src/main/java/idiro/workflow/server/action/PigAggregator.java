@@ -85,6 +85,7 @@ public class PigAggregator extends PigElement {
 		page4.addInteraction(parallelInt);
 		page4.addInteraction(delimiterOutputInt);
 		page4.addInteraction(savetypeOutputInt);
+		page4.addInteraction(auditInt);
 	}
 	/**
 	 * Get the name of the action

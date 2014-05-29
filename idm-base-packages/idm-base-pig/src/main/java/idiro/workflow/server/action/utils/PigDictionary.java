@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -1036,7 +1037,7 @@ public class PigDictionary extends AbstractDictionary {
 	 * @throws RemoteException
 	 */
 	public static EditorInteraction generateEditor(Tree<String> help,
-			FeatureList inFeat) throws RemoteException {
+			FeatureList inFeat, Map<String,List<String> > extraWords) throws RemoteException {
 		logger.debug("generate Editor...");
 		Tree<String> editor = new TreeNonUnique<String>("editor");
 		Tree<String> keywords = new TreeNonUnique<String>("keywords");
@@ -1048,6 +1049,20 @@ public class PigDictionary extends AbstractDictionary {
 			word.add("name").add(cur);
 			word.add("info").add(inFeat.getFeatureType(cur).name());
 			keywords.add(word);
+		}
+		if(extraWords != null){
+			Iterator<String> it = extraWords.keySet().iterator();
+			while(it.hasNext()){
+				String cur = it.next();
+				Iterator<String> vals = extraWords.get(cur).iterator();
+				while(vals.hasNext()){
+					String val = vals.next();
+					Tree<String> word = new TreeNonUnique<String>("word");
+					word.add("name").add(cur);
+					word.add("info").add(val);
+					keywords.add(word);
+				}
+			}
 		}
 		editor.add(help);
 		editor.add("output");

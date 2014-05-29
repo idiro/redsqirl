@@ -68,7 +68,7 @@ public class PigSelect extends PigElement {
 		page3.addInteraction(parallelInt);
 		page3.addInteraction(delimiterOutputInt);
 		page3.addInteraction(savetypeOutputInt);
-
+		page3.addInteraction(auditInt);
 	}
 	/**
 	 * Get the name

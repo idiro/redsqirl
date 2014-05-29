@@ -91,7 +91,7 @@ public class PigFilterInteraction extends EditorInteraction {
 			tree.remove("editor");
 
 			Tree<String> base = PigDictionary.generateEditor(PigDictionary.getInstance()
-					.createConditionHelpMenu(), el.getInFeatures()).getTree();
+					.createConditionHelpMenu(), el.getInFeatures(), null).getTree();
 			//logger.debug(base);
 			tree.add(base.getFirstChild("editor"));
 			setValue(output);

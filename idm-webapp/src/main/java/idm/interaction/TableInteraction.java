@@ -122,6 +122,7 @@ public class TableInteraction extends CanvasModalInteraction{
 		List<Tree<String>> list2 = inter.getTree()
 				.getFirstChild("table").getFirstChild("columns")
 				.getSubTreeList();
+		logger.info(printTree(inter.getTree()));
 		if (list2 != null) {
 			for (Tree<String> tree : list2) {
 				logger.info("list2 value " + tree.getHead());

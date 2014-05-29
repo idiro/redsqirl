@@ -134,7 +134,17 @@ public class PigTableSelectInteraction extends TableInteraction {
 								.getText("pig.expressionexception");
 					}
 				}
-
+				
+				if(msg == null){
+					try{
+						//msg = hs.flatDistinctValues().toString();
+					}catch(Exception e){
+						msg = "Exception "+e.getMessage()+": \n";
+						for(int i = 0; i < Math.min(e.getStackTrace().length, 20);++i){
+							msg += e.getStackTrace()[i]+"\n";
+						}
+					}
+				}
 			}
 		}
 
@@ -198,6 +208,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 		}
 		return fl;
 	}
+	
 
 	public Set<String> getFeatGrouped() throws RemoteException {
 		Set<String> featGrouped = null;
@@ -272,12 +283,12 @@ public class PigTableSelectInteraction extends TableInteraction {
 			logger.info("aggregator");
 			updateEditor(table_op_title,
 					PigDictionary.generateEditor(PigDictionary.getInstance()
-							.createGroupSelectHelpMenu(), fl));
+							.createGroupSelectHelpMenu(), fl, hs.getDistinctValues()));
 		} else {
 			logger.info("select");
 			updateEditor(table_op_title, PigDictionary.generateEditor(
 					PigDictionary.getInstance().createDefaultSelectHelpMenu(),
-					fl));
+					fl, hs.getDistinctValues()));
 		}
 
 		// Set the Generator
