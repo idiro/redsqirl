@@ -1294,7 +1294,7 @@
 						
 						  <a4j:commandButton value="#{messages.label_menu_signout}"
                             styleClass="signoutButton"
-                            onclick="saveAllPositions(getAllIconPositions());jQuery.blockUI({ message: jQuery('#domMessageDivCanvas1') });signOut();"
+                            onclick="saveAllPositions(getAllIconPositions());signOut();"
                             ajax="true" />
                        
                                 
@@ -1344,12 +1344,8 @@
 
 			</a4j:region>
 
-			<a4j:jsFunction name="signOut" action="#{userInfoBean.goToSignOut}"
-				oncomplete="jQuery.unblockUI();" />
-			<a4j:jsFunction name="reStart"
-				action="#{userInfoBean.goToSignOut}"
-				oncomplete="jQuery.unblockUI();" />
-
+			<a4j:jsFunction name="signOut" action="#{userInfoBean.goToSignOut}" oncomplete="jQuery.unblockUI();" />
+			<a4j:jsFunction name="reStart" action="#{userInfoBean.goToSignOut}" oncomplete="jQuery.unblockUI();" />
 
 		</h:form>
 	</div>
