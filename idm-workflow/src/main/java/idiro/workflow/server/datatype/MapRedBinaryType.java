@@ -65,6 +65,11 @@ public class MapRedBinaryType extends MapRedTextType {
 	public String getTypeName() throws RemoteException {
 		return "BINARY MAP-REDUCE DIRECTORY";
 	}
+	
+	@Override
+	public String[] getExtensions() throws RemoteException {
+		return new String[]{"*.mrbin"};
+	}
 
 	/**
 	 * Gernate a path given values

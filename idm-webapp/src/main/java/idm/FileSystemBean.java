@@ -14,8 +14,10 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
@@ -30,6 +32,12 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	private static Logger logger = Logger.getLogger(FileSystemBean.class);
 	private static int nbCreate = 0;
 
+
+	private List<SelectItem> listExtensions;
+
+	private String extensionsSelected;
+	
+	
 	private boolean file;
 	private String name;
 	private String path;
@@ -138,6 +146,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		if (mapSSH != null) {
 			setAllProps(new LinkedList<Map<String,String>>());
 			getTableGrid().getRows().clear();
+			int i = 0;
 			for (String path : mapSSH.keySet()) {
 
 				String[] aux = path.split("/");
@@ -148,7 +157,11 @@ public class FileSystemBean extends BaseBean implements Serializable {
 				allProperties.putAll(mapSSH.get(path));
 				getTableGrid().add(allProperties);
 				getAllProps().add(allProperties);
-
+				
+				if(extensionsSelected != null && !extensionsSelected.isEmpty()){
+					getTableGrid().getRows().get(i).setDisableSelect(name.matches(extensionsSelected.replaceAll(Pattern.quote("*"), ".*")));
+				}
+				++i;
 			}
 		}
 	}
@@ -723,6 +736,22 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 	public void setShowCopyMove(String showCopyMove) {
 		this.showCopyMove = showCopyMove;
+	}
+
+	public List<SelectItem> getListExtensions() {
+		return listExtensions;
+	}
+
+	public String getExtensionsSelected() {
+		return extensionsSelected;
+	}
+
+	public void setListExtensions(List<SelectItem> listExtensions) {
+		this.listExtensions = listExtensions;
+	}
+
+	public void setExtensionsSelected(String extensionsSelected) {
+		this.extensionsSelected = extensionsSelected;
 	}
 
 }

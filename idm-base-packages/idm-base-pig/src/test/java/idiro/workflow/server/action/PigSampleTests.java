@@ -2,6 +2,8 @@ package idiro.workflow.server.action;
 
 import static org.junit.Assert.assertTrue;
 import idiro.utils.Tree;
+import idiro.workflow.server.InputInteraction;
+import idiro.workflow.server.ListInteraction;
 import idiro.workflow.server.OozieManager;
 import idiro.workflow.server.Workflow;
 import idiro.workflow.server.WorkflowPrefManager;
@@ -11,6 +13,8 @@ import idiro.workflow.server.interfaces.DataFlowElement;
 import idiro.workflow.test.TestUtils;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.apache.oozie.client.OozieClient;
@@ -59,6 +63,20 @@ public class PigSampleTests {
 
 		pig.pigsample.update();
 		pig.pigsample.setValue("0.75");
+		
+		PigOrderInteraction oi = pig.getOrderInt();
+		pig.update(oi);
+		List<String> values = new ArrayList<String>();
+		values.add("ID");
+		oi.setValues(values);
+		
+		ListInteraction ot = (ListInteraction) pig.getInteraction(PigElement.key_order_type);
+		pig.update(oi);
+		ot.setValue("ASCENDENT");
+		
+		InputInteraction pl = (InputInteraction) pig.getInteraction(PigElement.key_parallel);
+		pig.update(pl);
+		pl.setValue("1");
 
 		logger.info("HS update out...");
 		String error = pig.updateOut();

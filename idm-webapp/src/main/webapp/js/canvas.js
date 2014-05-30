@@ -1838,6 +1838,11 @@ function configureGroup(canvasName, group, mousePosX, mousePosY, polygon) {
 	makeHistory(canvasName);
 }
 
+function setPageNb(groupId, pageNb){
+	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+	var group = getElement(polygonLayer, groupId);
+	group.pageNb = pageNb;
+}
 
 function openCanvasModalJS(group, selectedTab){
 
@@ -1857,8 +1862,8 @@ function openCanvasModalJS(group, selectedTab){
         openChangeIdModal(group.getId(), imagePath,true);
         group.hasChangedId = true;
     } else {
-        openModal(group.getId(), imagePath, selectedTab);
-        changeHelpAnchor(0);
+        openModal(group.getId(), imagePath, selectedTab, group.pageNb);
+        changeHelpAnchor(group.pageNb);
     }
 }
 

@@ -16,8 +16,10 @@ import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.server.enumeration.SavingState;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.hadoop.fs.Path;
@@ -163,6 +165,12 @@ public class HiveJoinTests {
 					alias2 + ".VALUE");
 			rowId.add(HiveTableJoinInteraction.table_type_title).add("INT");
 		}
+		
+		HiveOrderInteraction oi = hive.getOrderInt();
+		hive.update(oi);
+		List<String> values = new ArrayList<String>();
+		values.add("id");
+		oi.setValues(values);
 
 		hive.update(hive.getJoinTypeInt());
 		hive.getJoinTypeInt().setValue("JOIN");

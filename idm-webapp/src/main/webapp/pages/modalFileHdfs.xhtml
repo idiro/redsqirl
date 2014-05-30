@@ -118,7 +118,8 @@
                 <f:facet name="header">
 					<h:outputText value="" />
 				</f:facet>
-                <h:selectOneRadio value="#{item.selectedStr}" onclick="dataTableOpenSelectOneRadio(this, '#{browserHdfsBean.allProps[indexTable]['name']}');">
+                <h:selectOneRadio value="#{item.selectedStr}" onclick="dataTableOpenSelectOneRadio(this, '#{browserHdfsBean.allProps[indexTable]['name']}');" 
+                rendered="#{item.disableSelect}">
                     <f:selectItem itemValue="true" />
                 </h:selectOneRadio>
             </rich:column>
@@ -157,8 +158,14 @@
         </rich:dataTable>
 
 	</div>
-
-	<br />
+	
+	<rich:comboBox value="#{browserHdfsBean.extensionsSelected}" width="200" enableManualInput="false"
+		id="generation" listWidth="150" listHeight="200" rendered="#{not empty browserHdfsBean.listExtensions}" 
+		onchange="refreshHdfsOpenFileTable();" style="padding-right:20px;float:right;" >
+        <f:selectItems styleClass="interModal" value="#{browserHdfsBean.listExtensions}" />
+    </rich:comboBox>
+    
+    <br />
 
 	<a4j:commandButton id="hdfsOpenFileBtn" styleClass="greenButton" 
 	    action="#{canvasBean.load}" value="#{messages.button_ok}"
