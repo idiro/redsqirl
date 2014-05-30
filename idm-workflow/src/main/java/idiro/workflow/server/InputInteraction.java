@@ -29,6 +29,21 @@ public class InputInteraction extends UserInteraction{
 		super(id, name, legend, DisplayType.input, column, placeInColumn);
 		init();
 	}
+	/**
+	 * Constructor with necessary parameters
+	 * @param id 
+	 * @param name
+	 * @param legend the description of the interaction
+	 * @param texttip the text tip
+	 * @param column which column to place the interaction
+	 * @param placeInColumn place in the column for interaction to reside
+	 * @throws RemoteException
+	 */
+	public InputInteraction(String id, String name, String legend,
+			String texttip,int column, int placeInColumn) throws RemoteException {
+		super(id, name, legend, texttip,DisplayType.input, column, placeInColumn);
+		init();
+	}
 	/** 
 	 * Init the interactions tree
 	 * @throws RemoteException
