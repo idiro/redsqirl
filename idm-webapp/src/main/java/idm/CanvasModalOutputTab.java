@@ -259,7 +259,7 @@ public class CanvasModalOutputTab implements Serializable {
 						String value = listExt[i];
 						listExtensions.add(new SelectItem(value, value));
 					}
-					listExtensions.add(new SelectItem(".*", ".*"));
+					listExtensions.add(new SelectItem("*", "*"));
 					getFileSystem().setExtensionsSelected(
 							listExtensions.get(0).getLabel());
 				}

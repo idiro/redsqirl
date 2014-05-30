@@ -280,8 +280,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			// generate the label to put in the arrow
 			String label = "";
 
-			if (dfeObjA.getDFEOutput().entrySet().size() > 1
-					|| dfeObjB.getInput().entrySet().size() > 1) {
+			if (dfeObjA.getDFEOutput().entrySet().size() > 1 || dfeObjB.getInput().entrySet().size() > 1) {
 				if (dfeObjA.getDFEOutput().entrySet().size() > 1) {
 					label += nameElementA;
 				}
@@ -289,6 +288,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 				if (dfeObjB.getInput().entrySet().size() > 1) {
 					label += nameElementB;
 				}
+			}
+			if(label.equals(" -> ")){
+				label = "";
 			}
 			setLinkLabel(label);
 
