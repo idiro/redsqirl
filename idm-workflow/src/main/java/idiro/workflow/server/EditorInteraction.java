@@ -33,6 +33,21 @@ public class EditorInteraction extends UserInteraction{
 		init();
 	}
 	/**
+	 * Constructor with the necessary params
+	 * @param id of interaction
+	 * @param name of interaction
+	 * @param legend of the interaction
+	 * @param texttip the text tip
+	 * @param column number to be placed in
+	 * @param placeInColumn place in the column
+	 * @throws RemoteException
+	 */
+	public EditorInteraction(String id, String name, String legend,
+			String texttip, int column, int placeInColumn) throws RemoteException {
+		super(id, name, legend, texttip, DisplayType.helpTextEditor, column, placeInColumn);
+		init();
+	}
+	/**
 	 * Initialize the interactions tree
 	 * @throws RemoteException
 	 */

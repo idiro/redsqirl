@@ -42,6 +42,22 @@ public class TableInteraction extends UserInteraction {
 		init();
 	}
 	/**
+	 * Constructor
+	 * @param id 
+	 * @param name
+	 * @param legend
+	 * @param texttip
+	 * @param column
+	 * @param placeInColumn
+	 * @throws RemoteException
+	 */
+	public TableInteraction(String id, String name, String legend,
+			String texttip, int column, int placeInColumn) 
+					throws RemoteException {
+		super(id, name, legend, texttip,DisplayType.table, column, placeInColumn);
+		init();
+	}
+	/**
 	 * Initialize the interaction
 	 * @throws RemoteException
 	 */

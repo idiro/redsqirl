@@ -128,7 +128,8 @@
                 </table>
                 
                 <p>
-                	<h:graphicImage value="../image/icons/question_mark.jpg" title='#{canvasModalBean.pageTextTip}' styleClass="questionMarkIcon" rendered="#{canvasModalBean.pageTextTip != null}" />
+                	<h:graphicImage value="../image/icons/question_mark.jpg" 
+                	   onmouseover="addtooltip('#{canvasModalBean.pageTextTip}', event)" onmouseout="removetoottip()" styleClass="questionMarkIcon" rendered="#{canvasModalBean.pageTextTip != null}" />
                 	<h:outputText value="#{canvasModalBean.pageLegend}"/>
                 </p>
             
@@ -141,7 +142,7 @@
                     <h2><h:outputText value="#{interCur.name}"/></h2>
                     
                     <p>
-                    	<h:graphicImage value="../image/icons/question_mark.jpg" title='#{interCur.textTip}' styleClass="questionMarkIcon" rendered="#{interCur.textTip != null}"/>
+                    	<h:graphicImage value="../image/icons/question_mark.jpg" onmouseover="addtooltip('#{interCur.textTip}', event)" onmouseout="removetoottip()" styleClass="questionMarkIcon" rendered="#{interCur.textTip != null}"/>
                     	<h:outputText value="#{interCur.legend}"/>
                     </p>
                     

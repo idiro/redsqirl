@@ -195,7 +195,11 @@ public abstract class PigElement extends DataflowAction {
 		Map<String, List<String>> ans = null;
 		List<DataFlowElement> lin = getInputComponent().get(key_input);
 		if(lin != null && lin.size() > 0){
-			ans = (new AuditGenerator()).readDistinctValuesAudit(null,lin.get(0).getDFEOutput().get(key_output_audit));
+			if(groupingInt != null){
+				ans = (new AuditGenerator()).readDistinctValuesAudit(getAliases().keySet().iterator().next(),lin.get(0).getDFEOutput().get(key_output_audit));
+			}else{
+				ans = (new AuditGenerator()).readDistinctValuesAudit(null,lin.get(0).getDFEOutput().get(key_output_audit));
+			}
 		}
 		
 		return ans;

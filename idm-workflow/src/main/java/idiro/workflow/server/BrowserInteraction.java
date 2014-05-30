@@ -27,5 +27,19 @@ public class BrowserInteraction extends UserInteraction{
 			int column, int placeInColumn) throws RemoteException {
 		super(id, name, legend, DisplayType.browser, column, placeInColumn);
 	}
+	/**
+	 * Constructor for the browser
+	 * @param id
+	 * @param name
+	 * @param legend
+	 * @param texttip
+	 * @param column
+	 * @param placeInColumn
+	 * @throws RemoteException
+	 */
+	public BrowserInteraction(String id, String name, String legend,
+			String texttip, int column, int placeInColumn) throws RemoteException {
+		super(id, name, legend, texttip, DisplayType.browser, column, placeInColumn);
+	}
 
 }

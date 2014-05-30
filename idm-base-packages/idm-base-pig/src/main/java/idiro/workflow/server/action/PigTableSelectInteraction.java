@@ -81,6 +81,26 @@ public class PigTableSelectInteraction extends TableInteraction {
 		this.hs = hs;
 		createColumns();
 	}
+	
+	/**
+	 * Constructor
+	 * 
+	 * @param id
+	 * @param name
+	 * @param legend
+	 * @param tooltip
+	 * @param column
+	 * @param placeInColumn
+	 * @param hs
+	 * @throws RemoteException
+	 */
+	public PigTableSelectInteraction(String id, String name, String legend, String texttip,
+			int column, int placeInColumn, PigElement hs)
+					throws RemoteException {
+		super(id, name, legend,texttip, column, placeInColumn);
+		this.hs = hs;
+		createColumns();
+	}
 
 	/**
 	 * Check the interaction for errors
