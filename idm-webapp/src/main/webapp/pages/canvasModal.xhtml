@@ -443,47 +443,57 @@
                 <br/>
                 
                 <rich:panel id="dataOutputForm" style="min-height:465px;border:none;">
-                    <a4j:repeat value="#{canvasModalBean.outputTab.outputFormList}" var="item"
-                        rowKeyVar="index">
-                        <h:panelGrid columns="6">
-                            <a4j:commandLink value="output #{item.name}" 
-                                             action="#{canvasModalBean.outputTab.displayOutput}" 
-                                             reRender="dataDisplayReg,titleDisplay,displayTableDiv">
-                                <a4j:actionparam name="outputName" value="#{item.name}" />
-                            </a4j:commandLink>
-                            <rich:comboBox id="outputCombo" selectFirstOnUpdate="false"
-                                width="200" value="#{item.savingState}" listWidth="150"
-                                listHeight="200" enableManualInput="false">
-                                <f:selectItems value="#{item.savingStateList}" />
-                                <a4j:support event="onchange" reRender="dataOutputForm" />
-                            </rich:comboBox>
-                            
-                            <a4j:commandButton value="Select" styleClass="greenButton"
-                                rendered="#{item.renderBrowserButton}"
-                                oncomplete="openModalOutputBrowser()">
-                                <a4j:actionparam name="nameOutput" value="#{item.name}"
-                                    assignTo="#{canvasModalBean.outputTab.nameOutput}" />
-                            </a4j:commandButton>
-                            
-                            <h:outputText value="#{item.path}"/>
-                            
-                            <h:inputText  styleClass="interModal" value="#{item.file}" maxlength="40" style="width:100px;" rendered="#{item.renderBrowserButton}"/>
-                                
-                            <a4j:commandButton value="#{messages.button_remove}" action="#{canvasModalBean.outputTab.removeData}"  styleClass="greenButton" >
-                                <a4j:actionparam name="nameOutputClean" value="#{item.name}" />
-                            </a4j:commandButton>
-                                
-                        </h:panelGrid>
-                    </a4j:repeat>
                     
+                    <table>
+                    
+	                    <a4j:repeat value="#{canvasModalBean.outputTab.outputFormList}" var="item" rowKeyVar="index">
+	                        
+	                       	<tr>
+	                       		<td>
+	                       			<a4j:commandLink value="output #{item.name}" action="#{canvasModalBean.outputTab.displayOutput}"
+	                       				reRender="dataOutputForm,dataDisplayReg,titleDisplay,displayTableDiv">
+		                                <a4j:actionparam name="outputName" value="#{item.name}" />
+		                            </a4j:commandLink>
+	                       		</td>
+	                       		<td>
+	                       			<rich:comboBox id="outputCombo" selectFirstOnUpdate="false"
+		                                width="200" value="#{item.savingState}" listWidth="150"
+		                                listHeight="200" enableManualInput="false">
+		                                <f:selectItems value="#{item.savingStateList}" />
+		                                <a4j:support event="onchange" reRender="dataOutputForm" />
+		                            </rich:comboBox>
+	                       		</td>
+	                       		<td>
+	                       			<a4j:commandButton value="Select" styleClass="greenButton"
+		                                rendered="#{item.renderBrowserButton}"
+		                                oncomplete="openModalOutputBrowser()">
+		                                <a4j:actionparam name="nameOutput" value="#{item.name}"
+		                                    assignTo="#{canvasModalBean.outputTab.nameOutput}" />
+		                            </a4j:commandButton>
+	                       		</td>
+	                       		<td>
+	                       			<h:outputText value="#{item.path}"/>
+	                       		</td>
+	                       		<td>
+	                       			<h:inputText styleClass="interModal" value="#{item.file}" maxlength="40" style="width:100px;" rendered="#{item.renderBrowserButton}"/>
+	                       		</td>
+	                       		<td>
+	                       			<a4j:commandButton value="#{messages.button_remove}" action="#{canvasModalBean.outputTab.removeData}"  styleClass="greenButton" >
+		                                <a4j:actionparam name="nameOutputClean" value="#{item.name}" />
+		                            </a4j:commandButton>
+	                       		</td>
+	                   		</tr>
+	                        
+	                    </a4j:repeat>
+                    
+                    </table>
                     
                 <!-- display data -->
-                <a4j:region style="border:none;"  id="dataDisplayReg">
+                <a4j:region style="border:none;" id="dataDisplayReg">
                 
                         <h:outputText  value="#{canvasModalBean.outputTab.nameOutput}" id="titleDisplay" rendered="#{canvasModalBean.outputTab.titles != null}"/>
                         <br/>
                         <div id="displayTableDiv" style="width:100%; height:240px; border:1px solid black; overflow-x: hidden;">
-                        
                         
                             <rich:scrollableDataTable id="displayTable" value="#{canvasModalBean.outputTab.rows}" height="100%"
                                 var="rowData" index="rowDataIndex" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
