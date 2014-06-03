@@ -3,7 +3,7 @@ package idiro.workflow.test;
 import idiro.Log;
 import idiro.ProjectID;
 import idiro.workflow.server.WorkflowPrefManager;
-import idiro.workflow.server.action.PigAuditTests;
+import idiro.workflow.server.action.test.PigDictionaryTests;
 import idiro.workflow.server.connect.HDFSInterface;
 import idiro.workflow.server.connect.HiveInterface;
 
@@ -22,8 +22,8 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-	/*PigDictionaryTests.class,
-	PigFilterInteractionTests.class,
+	PigDictionaryTests.class,
+	/*PigFilterInteractionTests.class,
 	PigTableSelectInteractionTests.class,
 	PigJoinRelationInteractionTests.class,
 	PigTableJoinInteractionTests.class,
@@ -34,8 +34,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	PigJoinTests.class,
 	PigSampleTests.class,
 	PigWorkflowMngtTests.class,
-	PigUnionConditionsTests.class,*/
-	PigAuditTests.class
+	PigUnionConditionsTests.class,
+	PigAuditTests.class*/
 	})
 public class SetupPigEnvironmentTest {
 
