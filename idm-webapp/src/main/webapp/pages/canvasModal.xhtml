@@ -74,7 +74,7 @@
         minSize= !minSize;
         //alert("new value: "+minSize);
     }
-    
+
 </script>
         
 <h:form>
@@ -326,79 +326,101 @@
                             <img id="tableInteractionBtResize"
                                 src="../image/icons/resize-6-24.gif" />
                         </a4j:commandLink>
-                        <div id="DivTableInteraction" style="width:100%; height: 220px; border: 1px solid grey; overflow-x: hidden;">
+                        
+                        <table style="width:100%">
+                        	<tr style="width:100%">
+                        		<td style="width:95%">
+                        		
+                        			<div id="DivTableInteraction" style="width:100%; height: 220px; border: 1px solid grey; overflow-x: hidden;">
                             
-                            <rich:dataTable id="tableInteraction" value="#{interCur.table.tableGridRows}"
-                                var="rowItem" rowKeyVar="rowNb" width="100%" style="border:none;" 
-                                onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-                                enableContextMenu="false" 
-                                onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
-        
-                                <rich:column style="border-bottom:0px;border-right:0px;"
-                                    width="20px;">
-                                    <h:outputText value="#{rowNb+1}" />
-                                </rich:column>
-        
-                                <rich:column style="border-bottom:0px;border-right:0px;"
-                                    width="40px;">
-                                    <f:facet name="header">
-                                        <h:panelGrid columns="1" styleClass="">
-                                        <a4j:commandLink
-                                            title="Delete selected lines"
-                                            action="#{interCur.table.deleteLine}"
-                                            reRender="tableInteraction"
-                                            onclick="if(!confirm('Are you sure you want to delete the selected line?')){return false;}">
-                                            <img id="tableInteractionBtDelete"
-                                                src="../image/icons/button-delete2.gif" />
-                                        </a4j:commandLink>
-                                        <h:selectBooleanCheckbox onclick="selectAllCheckbox(this, /tableInteractionSelect$/);"/>
-                                        </h:panelGrid>
-                                    </f:facet>
-        
-                                    <h:selectBooleanCheckbox id="tableInteractionSelect" value="#{rowItem.selected}">
-                                        <f:selectItem itemValue="true" />
-                                    </h:selectBooleanCheckbox>
-        
-                                </rich:column>
-                                
-                                <rich:columns value="#{canvasModalBean.tablesColumnTitle == null? canvasBean.emptyList : canvasModalBean.tablesColumnTitle}"
-                                    var="column" index="ind"
-                                    style="border-bottom:0px;border-right:0px;">
-                                    <f:facet name="header">
-                                        <h:outputText value="#{column}" />
-                                    </f:facet>
-        
-                                    <h:inputText value="#{rowItem.row[ind]}"
-                                        rendered="#{interCur.table.columnType[column] == 'textField' }"
-                                        styleClass="tableInteractionInput"
-                                        onkeypress="return disableEnterKey(event);"/>
-        
-                                    <rich:comboBox value="#{rowItem.row[ind]}"
-                                        selectFirstOnUpdate="false" defaultLabel="Enter some value"
-                                        width="125" enableManualInput="true" listWidth="150"
-                                        listHeight="150"
-                                        rendered="#{interCur.table.columnType[column] == 'comboBox' }"
-                                        styleClass="tableInteractionInput">
-                                        <f:selectItems value="#{interCur.table.tableConstraints[column]}" />
-                                    </rich:comboBox>
-        
-									<h:inputText value="#{rowItem.row[ind]}" 
-									       rendered="#{interCur.columnType[column] == 'editor' }" 
-									       styleClass="tableInteractionTextEditor" >
-                                   	<a4j:commandButton action="#{canvasModalBean.openHelpTextEditorModal}" value="..." style="float:right;width:15%;" 
-                                   		reRender="commandText,listFields,listFunctions,listCategories,listOperation,listCategoriesOperation,command,tableInteraction" 
-                                   		oncomplete="#{rich:component('textEditorPanel')}.show()">
-                                   		<a4j:actionparam  name="idInteraction" value="#{interCur.id}"/>
-                                           <a4j:actionparam  name="rowKey" value="#{rowNb}"/>
-                                           <a4j:actionparam  name="column" value="#{column}"/>
-									</a4j:commandButton>
-									</h:inputText>	        								
-        
-                                </rich:columns>
-        
-                            </rich:dataTable>
-                            
-                            </div>
+			                            <rich:dataTable id="tableInteraction" value="#{interCur.table.tableGridRows}"
+			                                var="rowItem" rowKeyVar="rowNb" width="100%" style="border:none;" 
+			                                onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+			                                enableContextMenu="false" 
+			                                onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
+			        
+			                                <rich:column style="border-bottom:0px;border-right:0px;"
+			                                    width="20px;">
+			                                    <h:outputText value="#{rowNb+1}" />
+			                                </rich:column>
+			        
+			                                <rich:column style="border-bottom:0px;border-right:0px;"
+			                                    width="40px;">
+			                                    <f:facet name="header">
+			                                        <h:panelGrid columns="1" styleClass="">
+			                                        <a4j:commandLink
+			                                            title="Delete selected lines"
+			                                            action="#{interCur.table.deleteLine}"
+			                                            reRender="tableInteraction"
+			                                            onclick="if(!confirm('Are you sure you want to delete the selected line?')){return false;}">
+			                                            <img id="tableInteractionBtDelete"
+			                                                src="../image/icons/button-delete2.gif" />
+			                                        </a4j:commandLink>
+			                                        <h:selectBooleanCheckbox onclick="selectAllCheckbox(this, /tableInteractionSelect$/);"/>
+			                                        </h:panelGrid>
+			                                    </f:facet>
+			        
+			                                    <h:selectBooleanCheckbox id="tableInteractionSelect" value="#{rowItem.selected}">
+			                                        <f:selectItem itemValue="true" />
+			                                    </h:selectBooleanCheckbox>
+			        
+			                                </rich:column>
+			                                
+			                                <rich:columns value="#{canvasModalBean.tablesColumnTitle == null? canvasBean.emptyList : canvasModalBean.tablesColumnTitle}"
+			                                    var="column" index="ind"
+			                                    style="border-bottom:0px;border-right:0px;">
+			                                    <f:facet name="header">
+			                                        <h:outputText value="#{column}" />
+			                                    </f:facet>
+			        
+			                                    <h:inputText value="#{rowItem.row[ind]}"
+			                                        rendered="#{interCur.table.columnType[column] == 'textField' }"
+			                                        styleClass="tableInteractionInput"
+			                                        onkeypress="return disableEnterKey(event);"/>
+			        
+			                                    <rich:comboBox value="#{rowItem.row[ind]}"
+			                                        selectFirstOnUpdate="false" defaultLabel="Enter some value"
+			                                        width="125" enableManualInput="true" listWidth="150"
+			                                        listHeight="150"
+			                                        rendered="#{interCur.table.columnType[column] == 'comboBox' }"
+			                                        styleClass="tableInteractionInput">
+			                                        <f:selectItems value="#{interCur.table.tableConstraints[column]}" />
+			                                    </rich:comboBox>
+			        
+												<h:inputText value="#{rowItem.row[ind]}" 
+												       rendered="#{interCur.columnType[column] == 'editor' }" 
+												       styleClass="tableInteractionTextEditor" >
+			                                   	<a4j:commandButton action="#{canvasModalBean.openHelpTextEditorModal}" value="..." style="float:right;width:15%;" 
+			                                   		reRender="commandText,listFields,listFunctions,listCategories,listOperation,listCategoriesOperation,command,tableInteraction" 
+			                                   		oncomplete="#{rich:component('textEditorPanel')}.show()">
+			                                   		<a4j:actionparam  name="idInteraction" value="#{interCur.id}"/>
+			                                           <a4j:actionparam  name="rowKey" value="#{rowNb}"/>
+			                                           <a4j:actionparam  name="column" value="#{column}"/>
+												</a4j:commandButton>
+												</h:inputText>	        								
+			        
+			                                </rich:columns>
+			        
+			                            </rich:dataTable>
+			                            
+			                    	</div>
+                        			
+                        		</td>
+                        		<td style="width:5%">
+                        		
+                        			 <div style="width:100%; height: 220px; border: 0px solid; overflow-x: hidden;">
+		                            	<a4j:commandButton styleClass="greenButton" style="width:40px;margin-top: 75px;" value="#{messages.button_first}" action="#{interCur.table.tableGrid.goFirst}" reRender="tableInteraction" />
+		                            	<br/>
+		                            	<a4j:commandButton styleClass="greenButton" style="width:40px;" value="#{messages.button_up}" action="#{interCur.table.tableGrid.goUp}" reRender="tableInteraction" />
+		                            	<br/>
+		                            	<a4j:commandButton styleClass="greenButton" style="width:40px;" value="#{messages.button_down}" action="#{interCur.table.tableGrid.goDown}" reRender="tableInteraction" />
+		                            	<br/>
+		                            	<a4j:commandButton styleClass="greenButton" style="width:40px;" value="#{messages.button_last}" action="#{interCur.table.tableGrid.goLast}" reRender="tableInteraction" />
+		                            </div>
+                        		
+                        		</td>
+                        	</tr>
+                        </table>
                         
                     </rich:panel>
                 </a4j:region>
