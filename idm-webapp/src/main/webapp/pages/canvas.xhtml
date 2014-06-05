@@ -159,7 +159,9 @@
 	          });
 
 		  var menusplitVCanvas = [
-		  {'Collapse/Restore right panels': function(menuItem,menu){jQuery("#splitVCanvas").trigger('toggleDock');}}
+		  {'Collapse/Restore right panels': function(menuItem,menu){
+			  jQuery("#splitVCanvas").trigger('toggleDock');
+			  }}
 		  ];
           
           
@@ -170,21 +172,21 @@
 			  jQuery("#tabs2").css("top", '0px');
 			  jQuery("#tabs2").css("height", jQuery("#splitVCanvas").height()-20+'px');
 			  resizeTabs();
-		  }},
+		  	}},
 		  {'Middle': function(menuItem,menu){ 
 			  jQuery("#tabs1").css("height", (jQuery("#splitVCanvas").height()-20)/2+'px');
 			  jQuery(".splitter-bar-horizontal").css("top", (jQuery("#splitVCanvas").height()-20)/2+'px');
 			  jQuery("#tabs2").css("top", (jQuery("#splitVCanvas").height()-20)/2+'px');
 			  jQuery("#tabs2").css("height", (jQuery("#splitVCanvas").height()-20)/2+'px');
 			  resizeTabs();
-		  }},
-		  {'Botton': function(menuItem,menu){
+		  	}},
+		  {'Bottom': function(menuItem,menu){
 			  jQuery("#tabs1").css("height", jQuery("#splitVCanvas").height()-20+'px');
 			  jQuery(".splitter-bar-horizontal").css("top", jQuery("#splitVCanvas").height()-20+'px');
 			  jQuery("#tabs2").css("top", jQuery("#splitVCanvas").height()-20+'px');
 			  jQuery("#tabs2").css("height", '0px');
 			  resizeTabs();
-		  }}
+		  	}}
 		  ];
 		  
          
@@ -216,7 +218,16 @@
 	
 		      jQuery(".splitter-bar-horizontal").contextMenu(menusplitHCanvas);
 
+
+		      jQuery(".splitter-bar-vertical").mousedown(function() {
+		    	  jQuery('#helpmain_splitter').click();return false;
+		      });
+		      jQuery(".splitter-bar-horizontal").mousedown(function() {
+		    	  jQuery('#helpmain_splitter').click();return false;
+		      });
+		      
 	    	  onPageReady();
+	    	  
               document.getElementById("canvas-tabs").addEventListener('contextmenu', function (event) {
               	event.preventDefault();
               });
