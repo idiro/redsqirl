@@ -98,18 +98,22 @@ public class AuditGenerator {
 		return function;
 	}
 
-	public String getQuery(DFEOutput in, DFEOutput audit_out, Integer parallel)
+	public String getQuery(DFEOutput in, DFEOutput audit_out, Integer parallel)throws RemoteException {
+		return getQuery(in,audit_out,parallel,null);
+	}
+	public String getQuery(DFEOutput in, DFEOutput audit_out, Integer parallel,String loader)
 			throws RemoteException {
 		String query = null;
 		if (in != null) {
 			logger.debug("In and out...");
 			// Output
 
-			String loader = "DATA_TO_AUDIT";
-
 			String remove = getRemoveQueryPiece(audit_out.getPath()) + "\n\n";
-
-			String load = loader + " = " + getLoadQueryPiece(in) + ";\n\n";
+			String load = "";
+			if(loader == null){
+				loader = "DATA_TO_AUDIT";
+				load = loader + " = " + getLoadQueryPiece(in) + ";\n\n";
+			}
 
 			FeatureList fl = in.getFeatures();
 			Set<String> stringFeats = new LinkedHashSet<String>();
@@ -234,8 +238,8 @@ public class AuditGenerator {
 		return query;
 	}
 
-	public Map<String, List<String>> readDistinctValuesAudit(String alias,DFEOutput auditOutput)
-			throws RemoteException {
+	public Map<String, List<String>> readDistinctValuesAudit(String alias,
+			DFEOutput auditOutput) throws RemoteException {
 		Map<String, List<String>> ans = null;
 		if (auditOutput != null && auditOutput instanceof MapRedCtrlATextType) {
 			ans = new LinkedHashMap<String, List<String>>();
@@ -269,14 +273,69 @@ public class AuditGenerator {
 										vals.add(valSplit[i]);
 									}
 									vals.add(valSplit[valSplit.length - 1]
-											.substring(0, valSplit[valSplit.length - 1].length() - 1));
+											.substring(
+													0,
+													valSplit[valSplit.length - 1]
+															.length() - 1));
 								}
 								logger.info("Values for " + feat + " in list: "
 										+ vals);
-								if(alias == null || alias.isEmpty()){
+								if (alias == null || alias.isEmpty()) {
 									ans.put(feat, vals);
-								}else{
-									ans.put(alias+"."+feat, vals);
+								} else {
+									ans.put(alias + "." + feat, vals);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return ans;
+	}
+
+	public Map<String, Double[]> readRangeValuesAudit(String alias,
+			DFEOutput auditOutput) throws RemoteException {
+		Map<String, Double[]> ans = null;
+		if (auditOutput != null && auditOutput instanceof MapRedCtrlATextType) {
+			ans = new LinkedHashMap<String, Double[]>();
+			if (auditOutput.isPathExists() && auditOutput.isPathValid() == null) {
+				List<Map<String, String>> values = auditOutput.select(10);
+				logger.info(values);
+				Iterator<Map<String, String>> itVals = values.iterator();
+				boolean found = false;
+				while (itVals.hasNext() && !found) {
+					Map<String, String> cur = itVals.next();
+					if (cur.get("Legend").contains("Range")) {
+						found = true;
+						Iterator<String> itAudit = cur.keySet().iterator();
+						while (itAudit.hasNext()) {
+							String nameAudit = itAudit.next();
+							logger.info("Values for " + nameAudit + ": "
+									+ cur.get(nameAudit));
+							if (nameAudit.startsWith("AUDIT_")
+									&& !cur.get(nameAudit).isEmpty()) {
+								String feat = nameAudit.substring(6);
+
+								try {
+									Double[] vals = new Double[2];
+									String[] valSplit = cur.get(nameAudit)
+											.split(" - ");
+									vals[0] = Double
+											.valueOf(valSplit[0].trim());
+									vals[1] = Double
+											.valueOf(valSplit[1].trim());
+
+									logger.info("Values for " + feat
+											+ " in list: " + vals[0] + " , "
+											+ vals[1]);
+									if (alias == null || alias.isEmpty()) {
+										ans.put(feat, vals);
+									} else {
+										ans.put(alias + "." + feat, vals);
+									}
+								} catch (NumberFormatException e) {
+									logger.debug(feat + " is not a number");
 								}
 							}
 						}

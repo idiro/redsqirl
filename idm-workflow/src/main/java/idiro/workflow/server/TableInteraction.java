@@ -402,7 +402,11 @@ public class TableInteraction extends UserInteraction {
 				while(lColRowIt.hasNext() && !end){
 					Tree<String> lColRow = lColRowIt.next();
 					String colName = lColRow.getHead();
-					String colValue = lColRow.getFirstChild().getHead();
+					
+					String colValue = "";
+					try{
+						colValue = lColRow.getFirstChild().getHead();
+					}catch(NullPointerException e){}
 					if(colName.equals(columnName)){
 						values.add(colValue);
 						end = true;
@@ -436,7 +440,10 @@ public class TableInteraction extends UserInteraction {
 				while(lColRowIt.hasNext()){
 					Tree<String> lColRow = lColRowIt.next();
 					String colName = lColRow.getHead();
-					String colValue = lColRow.getFirstChild().getHead();
+					String colValue = "";
+					try{
+						colValue = lColRow.getFirstChild().getHead();
+					}catch(NullPointerException e){}
 					curMap.put(colName, colValue);
 				}
 				if(!curMap.isEmpty()){

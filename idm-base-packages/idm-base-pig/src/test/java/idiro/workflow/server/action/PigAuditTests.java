@@ -13,6 +13,9 @@ import idiro.workflow.server.interfaces.DataFlowElement;
 import idiro.workflow.test.TestUtils;
 
 import java.rmi.RemoteException;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -123,7 +126,7 @@ public class PigAuditTests {
 		}
 	}
 	
-	@Test
+	//@Test
 	public void readAudit(){
 		TestUtils.logTestTitle(getClass().getName()+"#readAudit");
 		String error = null;
@@ -145,6 +148,70 @@ public class PigAuditTests {
 			AuditGenerator ag = new AuditGenerator();
 			Map<String,List<String> > agMap = ag.readDistinctValuesAudit(null,output);
 			logger.info(agMap.toString());
+			
+		}catch(Exception e){
+			logger.error(e.getMessage(),e);
+			assertTrue(e.getMessage(),false);
+		}
+	}
+	
+	@Test
+	public void testGenerator(){
+		TestUtils.logTestTitle(getClass().getName()+"#readAudit");
+		String error = null;
+		try{
+			HDFSInterface hInt = new HDFSInterface();
+			String new_path1 = TestUtils.getPath(1);
+			hInt.delete(new_path1);
+			
+			MapRedCtrlATextType output = new MapRedCtrlATextType();
+			FeatureList fl = new OrderedFeatureList();
+			fl.addFeature("Legend", FeatureType.STRING);
+			fl.addFeature("AUDIT_ID", FeatureType.STRING);
+			fl.addFeature("AUDIT_VALUE", FeatureType.STRING);
+			
+			output.setFeatures(fl);
+			output.setPath(new_path1);
+			PigTestUtils.createDistinctValueAuditFile(new Path(new_path1));
+			
+			AuditGenerator ag = new AuditGenerator();
+			Map<String,List<String> > agMap = ag.readDistinctValuesAudit(null,output);
+			logger.info(agMap.toString());
+			if (agMap != null) {
+				Iterator<String> it = agMap.keySet().iterator();
+				while (it.hasNext()) {
+					String feature = it.next();
+					List<Map<String, String>> rowCaseWhen = new LinkedList<Map<String, String>>();
+					List<Map<String, String>> rowCaseWhenElse = new LinkedList<Map<String, String>>();
+					List<Map<String, String>> rowAllCaseWhen = new LinkedList<Map<String, String>>();
+					Iterator<String> itVals = agMap.get(feature).iterator();
+					String allCase = "";
+					while (itVals.hasNext()) {
+						String valCur = itVals.next();
+						String code = "WHEN ("+ feature+" == '"+valCur+"') THEN () ";
+						allCase +=code;
+						Map<String, String> rowWhen = new LinkedHashMap<String, String>();
+						rowWhen.put("table_op_title", "CASE "+code+" END");
+						rowWhen.put("table_feat_title", valCur);
+						rowWhen.put("table_type_title", "STRING");
+						rowCaseWhen.add(rowWhen);
+
+						Map<String, String> rowWhenElse = new LinkedHashMap<String, String>();
+						rowWhenElse.put("table_op_title", "CASE "+code+" ELSE () END");
+						rowWhenElse.put("table_feat_title", valCur);
+						rowWhenElse.put("table_type_title", "STRING");
+						rowCaseWhenElse.add(rowWhenElse);
+					}
+					Map<String,String> row = new LinkedHashMap<String, String>();
+					row.put("table_op_title", "CASE "+allCase+" END");
+					row.put("table_feat_title", "_SWITCH");
+					row.put("table_type_title", "STRING");
+					rowAllCaseWhen.add(row);
+					logger.info(rowCaseWhen);
+					logger.info(rowAllCaseWhen);
+					logger.info(rowCaseWhenElse);
+				}
+			}
 			
 		}catch(Exception e){
 			logger.error(e.getMessage(),e);
