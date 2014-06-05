@@ -482,7 +482,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 			}
 
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error(e.getMessage(),e);
 			MessageUseful
 			.addErrorMessage(getMessageResources("msg_error_oops"));
 			HttpServletRequest request = (HttpServletRequest) FacesContext

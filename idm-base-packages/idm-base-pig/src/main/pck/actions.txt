@@ -6,3 +6,5 @@ pig_aggregator
 pig_sample
 pig_text_source
 pig_binary_source
+pig_value_binning
+pig_volume_binning
