@@ -102,7 +102,7 @@ public class PigAggregatorTests {
 		
 		ListInteraction ot = (ListInteraction) pig.getInteraction(PigElement.key_order_type);
 		pig.update(oi);
-		ot.setValue("ASCENDENT");
+		ot.setValue("ASCENDING");
 		
 		InputInteraction pl = (InputInteraction) pig.getInteraction(PigElement.key_parallel);
 		pig.update(pl);

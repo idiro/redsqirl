@@ -131,8 +131,8 @@ public abstract class PigElement extends DataflowAction {
 		
 		orderTypeInt.setDisplayRadioButton(true);
 		List<String> values = new ArrayList<String>();
-		values.add("ASCENDENT");
-		values.add("DESCENDENT");
+		values.add("ASCENDING");
+		values.add("DESCENDING");
 		orderTypeInt.setPossibleValues(values);
 		
 		String pigParallel = WorkflowPrefManager.getUserProperty(
