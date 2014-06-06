@@ -63,7 +63,7 @@ public class PigValueBinning extends PigBinning {
 	
 	@Override
 	public FeatureType getNewFeatureType(){
-		return FeatureType.INT;
+		return FeatureType.CATEGORY;
 	}
 
 	@Override
