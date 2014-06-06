@@ -159,8 +159,22 @@
 	          });
 
 		  var menusplitVCanvas = [
-		  {'Collapse/Restore right panels': function(menuItem,menu){
-			  jQuery("#splitVCanvas").trigger('toggleDock');
+		  {'Right': function(menuItem,menu){
+			  jQuery(".splitter-bar-vertical").css("left", jQuery(window).width()-40+'px');
+			  jQuery("#splitHCanvas").css("width", 0+'px');
+			  jQuery("#tabFlowchart").css("width", jQuery(window).width()-40+'px');
+			  canvasResizeSplitter();
+			  }},
+		  {'Middle': function(menuItem,menu){
+			  onPageReady();
+			  }},
+		  {'Left': function(menuItem,menu){
+			  
+			  jQuery(".splitter-bar-vertical").css("left", 0+'px');
+			  jQuery("#splitHCanvas").css("width", jQuery(window).width()-40+'px');
+			  jQuery("#splitHCanvas").css("left", 0+'px');
+			  jQuery("#tabFlowchart").css("width", 0+'px');
+			  canvasResizeSplitter();
 			  }}
 		  ];
           

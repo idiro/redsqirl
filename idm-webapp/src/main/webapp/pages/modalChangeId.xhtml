@@ -19,7 +19,7 @@
             
             <a4j:jsFunction name="changeIdElement"
                 action="#{canvasBean.changeIdElement}"
-                oncomplete="updateLabelObj(currentChangeIdGroup,'#{canvasModalBean.componentId}');changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');if( #{requestScope['msnError'] == null}){closeChangeIdModal();}"
+                oncomplete="updateLabelObj(currentChangeIdGroup,'#{canvasModalBean.componentId}');changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');if( #{requestScope['msnError'] == null}){closeChangeIdModal();}jQuery('#canvas-tabs').unblock();"
                 reRender="msnError,errorTable">
                 <a4j:actionparam name="groupId" />
                 <a4j:actionparam name="elementId" />
@@ -33,7 +33,7 @@
 	
 		<h:panelGrid columns="1">
 			<a4j:commandButton id="changeIdElementBt" styleClass="greenButton" reRender="msnError, errorTable,newIdElement"
-				onclick="#{rich:component('modalChangeId')}.hide();"
+				onclick="#{rich:component('modalChangeId')}.hide();jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
 				oncomplete="changeCurrentElementId();" 
 				value="#{messages.button_ok}"/>
 		</h:panelGrid>
