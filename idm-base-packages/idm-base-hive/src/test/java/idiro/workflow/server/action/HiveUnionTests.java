@@ -168,6 +168,11 @@ public class HiveUnionTests {
 		
 		hive.gettUnionCond().setValues(values);
 		
+		HiveOrderInteraction oi = hive.getOrderInt();
+		hive.update(oi);
+		List<String> valuesOrder = new ArrayList<String>();
+		valuesOrder.add("id");
+		oi.setValues(valuesOrder);
 		
 		logger.debug("HS update out...");
 		String error = hive.updateOut();
