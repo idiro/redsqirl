@@ -507,7 +507,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 		for (int i = 0; i < inters.size(); i++) {
 
 			CanvasModalInteraction cmInter = inters.get(i);
-
+			cmInter.setUnchanged();
 			boolean interactionChanged = !cmInter.isUnchanged();
 			logger.info(cmInter.getId()+": "+interactionChanged);
 			if (interactionChanged) {
