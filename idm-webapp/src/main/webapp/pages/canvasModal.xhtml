@@ -74,7 +74,7 @@
         minSize= !minSize;
         //alert("new value: "+minSize);
     }
-    
+
 </script>
         
 <h:form>
@@ -96,21 +96,21 @@
             reRender="modalOutputBrowser" oncomplete="#{rich:component('modalOutputBrowser')}.show()">
         </a4j:jsFunction>
     </a4j:region>
-    
             
-    <div style="width:100%; overflow: auto; height: 550px;" >
+    <div style="width:100%;overflow:auto;height:550px;" id="canvasModalDiv" >
                 
-        <rich:tabPanel id="canvasModalTabPanel"  style="border:none;" switchType="ajax" selectedTab="#{canvasModalBean.selectedTab}" >
+        <rich:tabPanel id="canvasModalTabPanel" style="border:none;width:100%;" switchType="ajax" selectedTab="#{canvasModalBean.selectedTab}" >
         
-                <a4j:status onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModal') });"
-                    onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
-                    onstop="jQuery.unblockUI();" />
+        <a4j:status onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModal') });"
+            onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
+            onstop="jQuery.unblockUI();" />
         
         <rich:tab id="confTabCM" 
             label="#{messages.label_dynamic_configuration}" 
             style="border:none;border-collapse:collapse;"
             rendered="#{canvasModalBean.listPageSize != 0}" >
-        <rich:panel id="panelDynamicForm" style="border:none;min-height: 465px;" >
+            
+        <rich:panel id="panelDynamicForm" style="border:none;min-height:465px;width:100%;" >
             
             <span id="canvasModalHeader">
             
@@ -128,7 +128,8 @@
                 </table>
                 
                 <p>
-                	<h:graphicImage value="../image/icons/question_mark.jpg" title='#{canvasModalBean.pageTextTip}' styleClass="questionMarkIcon" rendered="#{canvasModalBean.pageTextTip != null}" />
+                	<h:graphicImage value="../image/icons/question_mark.jpg" 
+                	   onmouseover="addtooltip('#{canvasModalBean.pageTextTip}', event)" onmouseout="removetoottip()" styleClass="questionMarkIcon" rendered="#{canvasModalBean.pageTextTip != null}" />
                 	<h:outputText value="#{canvasModalBean.pageLegend}"/>
                 </p>
             
@@ -141,7 +142,7 @@
                     <h2><h:outputText value="#{interCur.name}"/></h2>
                     
                     <p>
-                    	<h:graphicImage value="../image/icons/question_mark.jpg" title='#{interCur.textTip}' styleClass="questionMarkIcon" rendered="#{interCur.textTip != null}"/>
+                    	<h:graphicImage value="../image/icons/question_mark.jpg" onmouseover="addtooltip('#{interCur.textTip}', event)" onmouseout="removetoottip()" styleClass="questionMarkIcon" rendered="#{interCur.textTip != null}"/>
                     	<h:outputText value="#{interCur.legend}"/>
                     </p>
                     
@@ -197,16 +198,20 @@
                 </a4j:region>
                 <!-- browser -->
                 <a4j:region id="browserInteractionRegion" rendered="#{interCur.displayType == 'browser'}">
-                    <rich:panel style="border:none;" id="browserPanel" >
+                    <rich:panel style="border:none;width:100%;" id="browserPanel" >
                     
                         <h:outputText value="#{messages.label_path}" />
                         <br/>
                         <h:inputText id="browserPath" label="Path" value="#{interCur.browser.path}" maxlength="255" 
                             style="width:395px;" styleClass="interModal" onclick="openModalOutputBrowser();" />
+                            
+                        <a4j:commandLink style="color:#FFFFFF" onclick="openModalOutputBrowser();" >
+							<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' styleClass="refreshButton" />
+						</a4j:commandLink>
             
                         <br/><br/>
                         
-                        <div id="browserProperties" style="width:100%; height:70px;  border:1px solid black; overflow-x: hidden;">
+                        <div id="browserProperties" style="width:100%;height:80px;border:1px solid black;">
                         
                             <rich:extendedDataTable id="browserTableProp" value="#{interCur.browser.listProperties}"
                                 var="property" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
@@ -233,7 +238,7 @@
                         
                         <br/>
                         
-                        <div id="divBrowserData" style="width:100%; height:120px;  border:1px solid black; overflow-x: hidden;">
+                        <div id="divBrowserData" style="width:100%;height:120px;border:1px solid black;">
                         
                             <rich:scrollableDataTable id="browserTableData" value="#{interCur.browser.gridRows}" height="100%"
                                 var="rowData" index="rowDataIndex" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
@@ -321,79 +326,101 @@
                             <img id="tableInteractionBtResize"
                                 src="../image/icons/resize-6-24.gif" />
                         </a4j:commandLink>
-                        <div id="DivTableInteraction" style="width:100%; height: 220px; border: 1px solid grey; overflow-x: hidden;">
+                        
+                        <table style="width:100%">
+                        	<tr style="width:100%">
+                        		<td style="width:95%">
+                        		
+                        			<div id="DivTableInteraction" style="width:100%; height: 220px; border: 1px solid grey; overflow-x: hidden;">
                             
-                            <rich:dataTable id="tableInteraction" value="#{interCur.table.tableGridRows}"
-                                var="rowItem" rowKeyVar="rowNb" width="100%" style="border:none;" 
-                                onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-                                enableContextMenu="false" 
-                                onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
-        
-                                <rich:column style="border-bottom:0px;border-right:0px;"
-                                    width="20px;">
-                                    <h:outputText value="#{rowNb+1}" />
-                                </rich:column>
-        
-                                <rich:column style="border-bottom:0px;border-right:0px;"
-                                    width="40px;">
-                                    <f:facet name="header">
-                                        <h:panelGrid columns="1" styleClass="">
-                                        <a4j:commandLink
-                                            title="Delete selected lines"
-                                            action="#{interCur.table.deleteLine}"
-                                            reRender="tableInteraction"
-                                            onclick="if(!confirm('Are you sure you want to delete the selected line?')){return false;}">
-                                            <img id="tableInteractionBtDelete"
-                                                src="../image/icons/button-delete2.gif" />
-                                        </a4j:commandLink>
-                                        <h:selectBooleanCheckbox onclick="selectAllCheckbox(this, /tableInteractionSelect$/);"/>
-                                        </h:panelGrid>
-                                    </f:facet>
-        
-                                    <h:selectBooleanCheckbox id="tableInteractionSelect" value="#{rowItem.selected}">
-                                        <f:selectItem itemValue="true" />
-                                    </h:selectBooleanCheckbox>
-        
-                                </rich:column>
-                                
-                                <rich:columns value="#{canvasModalBean.tablesColumnTitle == null? canvasBean.emptyList : canvasModalBean.tablesColumnTitle}"
-                                    var="column" index="ind"
-                                    style="border-bottom:0px;border-right:0px;">
-                                    <f:facet name="header">
-                                        <h:outputText value="#{column}" />
-                                    </f:facet>
-        
-                                    <h:inputText value="#{rowItem.row[ind]}"
-                                        rendered="#{interCur.table.columnType[column] == 'textField' }"
-                                        styleClass="tableInteractionInput"
-                                        onkeypress="return disableEnterKey(event);"/>
-        
-                                    <rich:comboBox value="#{rowItem.row[ind]}"
-                                        selectFirstOnUpdate="false" defaultLabel="Enter some value"
-                                        width="125" enableManualInput="true" listWidth="150"
-                                        listHeight="150"
-                                        rendered="#{interCur.table.columnType[column] == 'comboBox' }"
-                                        styleClass="tableInteractionInput">
-                                        <f:selectItems value="#{interCur.table.tableConstraints[column]}" />
-                                    </rich:comboBox>
-        
-									<h:inputText value="#{rowItem.row[ind]}" 
-									       rendered="#{interCur.columnType[column] == 'editor' }" 
-									       styleClass="tableInteractionTextEditor" >
-                                   	<a4j:commandButton action="#{canvasModalBean.openHelpTextEditorModal}" value="..." style="float:right;width:15%;" 
-                                   		reRender="commandText,listFields,listFunctions,listCategories,listOperation,listCategoriesOperation,command,tableInteraction" 
-                                   		oncomplete="#{rich:component('textEditorPanel')}.show()">
-                                   		<a4j:actionparam  name="idInteraction" value="#{interCur.id}"/>
-                                           <a4j:actionparam  name="rowKey" value="#{rowNb}"/>
-                                           <a4j:actionparam  name="column" value="#{column}"/>
-									</a4j:commandButton>
-									</h:inputText>	        								
-        
-                                </rich:columns>
-        
-                            </rich:dataTable>
-                            
-                            </div>
+			                            <rich:dataTable id="tableInteraction" value="#{interCur.table.tableGridRows}"
+			                                var="rowItem" rowKeyVar="rowNb" width="100%" style="border:none;" 
+			                                onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+			                                enableContextMenu="false" 
+			                                onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
+			        
+			                                <rich:column style="border-bottom:0px;border-right:0px;"
+			                                    width="20px;">
+			                                    <h:outputText value="#{rowNb+1}" />
+			                                </rich:column>
+			        
+			                                <rich:column style="border-bottom:0px;border-right:0px;"
+			                                    width="40px;">
+			                                    <f:facet name="header">
+			                                        <h:panelGrid columns="1" styleClass="">
+			                                        <a4j:commandLink
+			                                            title="Delete selected lines"
+			                                            action="#{interCur.table.deleteLine}"
+			                                            reRender="tableInteraction"
+			                                            onclick="if(!confirm('Are you sure you want to delete the selected line?')){return false;}">
+			                                            <img id="tableInteractionBtDelete"
+			                                                src="../image/icons/button-delete2.gif" />
+			                                        </a4j:commandLink>
+			                                        <h:selectBooleanCheckbox onclick="selectAllCheckbox(this, /tableInteractionSelect$/);"/>
+			                                        </h:panelGrid>
+			                                    </f:facet>
+			        
+			                                    <h:selectBooleanCheckbox id="tableInteractionSelect" value="#{rowItem.selected}">
+			                                        <f:selectItem itemValue="true" />
+			                                    </h:selectBooleanCheckbox>
+			        
+			                                </rich:column>
+			                                
+			                                <rich:columns value="#{canvasModalBean.tablesColumnTitle == null? canvasBean.emptyList : canvasModalBean.tablesColumnTitle}"
+			                                    var="column" index="ind"
+			                                    style="border-bottom:0px;border-right:0px;">
+			                                    <f:facet name="header">
+			                                        <h:outputText value="#{column}" />
+			                                    </f:facet>
+			        
+			                                    <h:inputText value="#{rowItem.row[ind]}"
+			                                        rendered="#{interCur.table.columnType[column] == 'textField' }"
+			                                        styleClass="tableInteractionInput"
+			                                        onkeypress="return disableEnterKey(event);"/>
+			        
+			                                    <rich:comboBox value="#{rowItem.row[ind]}"
+			                                        selectFirstOnUpdate="false" defaultLabel="Enter some value"
+			                                        width="125" enableManualInput="true" listWidth="150"
+			                                        listHeight="150"
+			                                        rendered="#{interCur.table.columnType[column] == 'comboBox' }"
+			                                        styleClass="tableInteractionInput">
+			                                        <f:selectItems value="#{interCur.table.tableConstraints[column]}" />
+			                                    </rich:comboBox>
+			        
+												<h:inputText value="#{rowItem.row[ind]}" 
+												       rendered="#{interCur.columnType[column] == 'editor' }" 
+												       styleClass="tableInteractionTextEditor" >
+			                                   	<a4j:commandButton action="#{canvasModalBean.openHelpTextEditorModal}" value="..." style="float:right;width:15%;" 
+			                                   		reRender="commandText,listFields,listFunctions,listCategories,listOperation,listCategoriesOperation,command,tableInteraction" 
+			                                   		oncomplete="#{rich:component('textEditorPanel')}.show()">
+			                                   		<a4j:actionparam  name="idInteraction" value="#{interCur.id}"/>
+			                                           <a4j:actionparam  name="rowKey" value="#{rowNb}"/>
+			                                           <a4j:actionparam  name="column" value="#{column}"/>
+												</a4j:commandButton>
+												</h:inputText>	        								
+			        
+			                                </rich:columns>
+			        
+			                            </rich:dataTable>
+			                            
+			                    	</div>
+                        			
+                        		</td>
+                        		<td style="width:5%">
+                        		
+                        			 <div style="width:100%; height: 220px; border: 0px solid; overflow-x: hidden;">
+		                            	<a4j:commandButton styleClass="greenButton" style="width:40px;margin-top: 75px;" value="#{messages.button_first}" action="#{interCur.table.tableGrid.goFirst}" reRender="tableInteraction" />
+		                            	<br/>
+		                            	<a4j:commandButton styleClass="greenButton" style="width:40px;" value="#{messages.button_up}" action="#{interCur.table.tableGrid.goUp}" reRender="tableInteraction" />
+		                            	<br/>
+		                            	<a4j:commandButton styleClass="greenButton" style="width:40px;" value="#{messages.button_down}" action="#{interCur.table.tableGrid.goDown}" reRender="tableInteraction" />
+		                            	<br/>
+		                            	<a4j:commandButton styleClass="greenButton" style="width:40px;" value="#{messages.button_last}" action="#{interCur.table.tableGrid.goLast}" reRender="tableInteraction" />
+		                            </div>
+                        		
+                        		</td>
+                        	</tr>
+                        </table>
                         
                     </rich:panel>
                 </a4j:region>
@@ -410,7 +437,7 @@
                 
                 <a4j:commandButton action="#{canvasModalBean.previousPage}" styleClass="greenButton" value="#{messages.button_previous}" rendered="#{canvasModalBean.firstPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, msnError" oncomplete="changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');" />
                 
-                <a4j:commandButton action="#{canvasModalBean.applyPage}" styleClass="greenButton" value="#{messages.button_apply}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, msnError, canvasModalTabPanel, browserTableProp, browserTableData, browserPropLabel, browserPropValue" oncomplete="changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');" />
+                <a4j:commandButton action="#{canvasModalBean.applyPage}" styleClass="greenButton" value="#{messages.button_apply}" reRender="panelBtCanvasModal, msnError, msnSuccess, browserTableProp, browserTableData, browserPropLabel, browserPropValue" oncomplete="changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');" />
     
                 <a4j:commandButton action="#{canvasModalBean.nextPage}" styleClass="greenButton" value="#{messages.button_next}" rendered="#{canvasModalBean.lastPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, browserTableData, msnError" oncomplete="changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');" />
                 
@@ -422,48 +449,73 @@
             
             <rich:tab id="outputTab" label="#{messages.label_dynamic_data}" rerender="dataOutputForm,dataDisplayReg,titleDisplay,displayTableDiv" rendered="#{canvasModalBean.outputTab.showOutputForm == 'Y'}" >
                 
+                <table style="width:100%;display:block;">
+                    <tbody style="width:100%">
+                        <tr style="width:100%;right:0px;position:relative;">
+                            <td style="width:50px;padding:0px;margin:0px;" >
+                                <img src="#{canvasModalBean.pathImage}"/>
+                            </td>
+                            <td style="width:700px;padding:0px;margin:0px;">
+                                <h1><h:outputText value="#{messages.label_node_output}"/></h1>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <br/>
+                
                 <rich:panel id="dataOutputForm" style="min-height:465px;border:none;">
-                    <a4j:repeat value="#{canvasModalBean.outputTab.outputFormList}" var="item"
-                        rowKeyVar="index">
-                        <h:panelGrid columns="6">
-                            <a4j:commandLink value="output #{item.name}" 
-                                             action="#{canvasModalBean.outputTab.displayOutput}" 
-                                             reRender="dataDisplayReg,titleDisplay,displayTableDiv">
-                                <a4j:actionparam name="outputName" value="#{item.name}" />
-                            </a4j:commandLink>
-                            <rich:comboBox id="outputCombo" selectFirstOnUpdate="false"
-                                width="200" value="#{item.savingState}" listWidth="150"
-                                listHeight="200" enableManualInput="false">
-                                <f:selectItems value="#{item.savingStateList}" />
-                                <a4j:support event="onchange" reRender="dataOutputForm" />
-                            </rich:comboBox>
-                            
-                            <a4j:commandButton value="Select" styleClass="greenButton"
-                                rendered="#{item.renderBrowserButton}"
-                                oncomplete="openModalOutputBrowser()">
-                                <a4j:actionparam name="nameOutput" value="#{item.name}"
-                                    assignTo="#{canvasModalBean.outputTab.nameOutput}" />
-                            </a4j:commandButton>
-                            
-                            <h:outputText value="#{item.path}"/>
-                            
-                            <h:inputText  styleClass="interModal" value="#{item.file}" maxlength="40" style="width:100px;" rendered="#{item.renderBrowserButton}"/>
-                                
-                            <a4j:commandButton value="#{messages.button_remove}" action="#{canvasModalBean.outputTab.removeData}"  styleClass="greenButton" >
-                                <a4j:actionparam name="nameOutputClean" value="#{item.name}" />
-                            </a4j:commandButton>
-                                
-                        </h:panelGrid>
-                    </a4j:repeat>
                     
+                    <table>
+                    
+	                    <a4j:repeat value="#{canvasModalBean.outputTab.outputFormList}" var="item" rowKeyVar="index">
+	                        
+	                       	<tr>
+	                       		<td>
+	                       			<a4j:commandLink value="output #{item.name}" action="#{canvasModalBean.outputTab.displayOutput}"
+	                       				reRender="dataOutputForm,dataDisplayReg,titleDisplay,displayTableDiv">
+		                                <a4j:actionparam name="outputName" value="#{item.name}" />
+		                            </a4j:commandLink>
+	                       		</td>
+	                       		<td>
+	                       			<rich:comboBox id="outputCombo" selectFirstOnUpdate="false"
+		                                width="200" value="#{item.savingState}" listWidth="150"
+		                                listHeight="200" enableManualInput="false">
+		                                <f:selectItems value="#{item.savingStateList}" />
+		                                <a4j:support event="onchange" reRender="dataOutputForm" />
+		                            </rich:comboBox>
+	                       		</td>
+	                       		<td>
+	                       			<a4j:commandButton value="Select" styleClass="greenButton"
+		                                rendered="#{item.renderBrowserButton}"
+		                                oncomplete="openModalOutputBrowser()">
+		                                <a4j:actionparam name="nameOutput" value="#{item.name}"
+		                                    assignTo="#{canvasModalBean.outputTab.nameOutput}" />
+		                            </a4j:commandButton>
+	                       		</td>
+	                       		<td>
+	                       			<h:outputText value="#{item.path}"/>
+	                       		</td>
+	                       		<td>
+	                       			<h:inputText styleClass="interModal" value="#{item.file}" maxlength="40" style="width:100px;" rendered="#{item.renderBrowserButton}"/>
+	                       		</td>
+	                       		<td>
+	                       			<a4j:commandButton value="#{messages.button_remove}" action="#{canvasModalBean.outputTab.removeData}"  styleClass="greenButton" >
+		                                <a4j:actionparam name="nameOutputClean" value="#{item.name}" />
+		                            </a4j:commandButton>
+	                       		</td>
+	                   		</tr>
+	                        
+	                    </a4j:repeat>
+                    
+                    </table>
                     
                 <!-- display data -->
-                <a4j:region style="border:none;"  id="dataDisplayReg">
+                <a4j:region style="border:none;" id="dataDisplayReg">
                 
                         <h:outputText  value="#{canvasModalBean.outputTab.nameOutput}" id="titleDisplay" rendered="#{canvasModalBean.outputTab.titles != null}"/>
                         <br/>
                         <div id="displayTableDiv" style="width:100%; height:240px; border:1px solid black; overflow-x: hidden;">
-                        
                         
                             <rich:scrollableDataTable id="displayTable" value="#{canvasModalBean.outputTab.rows}" height="100%"
                                 var="rowData" index="rowDataIndex" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"

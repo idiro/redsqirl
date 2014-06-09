@@ -64,6 +64,17 @@ public class PigAggregator extends PigElement {
 				key_featureTable,
 				PigLanguageManager.getText("pig.aggregator_features_interaction.title"),
 				PigLanguageManager.getText("pig.aggregator_features_interaction.legend"),
+				PigLanguageManager.getText("pig.aggregator_explain_gen")
+				+"<ul>"
+				+ "<li>"+PigLanguageManager.getText("pig.aggregator_explain_copy_gen")+"</li>"
+				+ "<li>"+PigLanguageManager.getText("pig.aggregator_explain_min_gen")+"</li>"
+				+ "<li>"+PigLanguageManager.getText("pig.aggregator_explain_max_gen")+"</li>"
+				+ "<li>"+PigLanguageManager.getText("pig.aggregator_explain_avg_gen")+"</li>"
+				+ "<li>"+PigLanguageManager.getText("pig.aggregator_explain_sum_gen")+"</li>"
+				+ "<li>"+PigLanguageManager.getText("pig.aggregator_explain_count_gen")+"</li>"
+				+ "<li>"+PigLanguageManager.getText("pig.aggregator_explain_count_distinct_gen")+"</li>"
+				+ "<li>"+PigLanguageManager.getText("pig.aggregator_explain_audit_gen")+"</li>"
+				+ "</ul>",
 				0, 0, this);
 
 		page2.addInteraction(tSelInt);
@@ -85,6 +96,7 @@ public class PigAggregator extends PigElement {
 		page4.addInteraction(parallelInt);
 		page4.addInteraction(delimiterOutputInt);
 		page4.addInteraction(savetypeOutputInt);
+		page4.addInteraction(auditInt);
 	}
 	/**
 	 * Get the name of the action

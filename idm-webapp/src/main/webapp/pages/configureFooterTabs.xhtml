@@ -25,6 +25,8 @@
 	
 </script>
 
+<h:form>
+
 	<a4j:keepAlive beanName = "configureTabsBean"/>
 	
 	<a4j:status	onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModal') });"
@@ -32,56 +34,69 @@
 		onstop="jQuery.unblockUI();" />
 	
 	<h:panelGrid columns="2">
-		<rich:panel header="Tabs" style="overflow:auto;width:270px;height:300px;">
+		<rich:panel header="#{messages.label_tab_tabs}" style="overflow:auto;width:190px;height:300px;">
 			<h:panelGroup id="tabsMenu">
 				<ui:repeat value="#{configureTabsBean.tabs}" var="item">
 					<a4j:commandButton action="#{configureTabsBean.deleteTab}" type="button" value="x" reRender="tabsMenu">
 						<f:param name="selected" value="#{item}" />
 					</a4j:commandButton>
-                	<a4j:commandButton value="Edit" onclick="showPanel('#{item}');" />
-					<a4j:commandLink action="#{configureTabsBean.setSelected}" value="#{item}" reRender="actionsPanel">
+                	<a4j:commandButton value="#{messages.button_edit}" oncomplete="showPanel('#{item}');" />
+					<a4j:commandLink action="#{configureTabsBean.retrieveItems}" value="#{item}" reRender="actionsPanel">
 						<f:param name="selected" value="#{item}" />
 					</a4j:commandLink><br></br>
 					
 				</ui:repeat>
 			</h:panelGroup>
 			
-			<a4j:form ajaxRendered="false">
-				<h:outputText value="New tab:" />
-				<h:inputText label="Tab" value="#{configureTabsBean.tabName}"
-					maxlength="30" style="width:100px;" 
-					onkeypress="return enableEnterKey(event, 'configureTabsAddBtn');"
-					onkeyup="nospaces(this)"/>
-				<a4j:commandButton id="configureTabsAddBtn" action="#{configureTabsBean.createTab}" type="reset" value="+" reRender="tabsMenu">
-				</a4j:commandButton>
-			</a4j:form>
+			<br /><br />
+			
+			<h:outputText value="#{messages.button_new_menu}" />
+			<br />
+			<h:inputText value="#{configureTabsBean.tabName}" maxlength="30" style="width:100px;" 
+				onkeypress="return enableEnterKey(event, 'configureTabsAddBtn');" onkeyup="nospaces(this)"/>
+			<a4j:commandButton id="configureTabsAddBtn" action="#{configureTabsBean.createTab}" type="reset" value="+" reRender="tabsMenu" />
+			
 		</rich:panel>
 		
-		<rich:panel id="actionsPanel" header="Actions" style="overflow:auto;width:270px;height:300px;" >
-	    	<h:selectManyCheckbox value="#{configureTabsBean.items}" layout="pageDirection" rendered="#{not empty configureTabsBean.selected}">
-				<f:selectItems value="#{configureTabsBean.menuActions}" var="n"
-		   			itemLabel="#{n.label}" itemValue="#{n.value}"/>
-	   		</h:selectManyCheckbox>
+		<rich:panel id="actionsPanel" header="#{messages.label_tab_actions}" style="overflow:auto;width:390px;height:300px;" >
+	   		
+	   		<rich:listShuttle sourceValue="#{configureTabsBean.menuActions}"
+	            targetValue="#{configureTabsBean.items}" var="items" listsHeight="260"
+	            sourceListWidth="110" targetListWidth="110"
+	            rendered="#{not empty configureTabsBean.selected}"
+	            copyAllControlLabel="Select all"
+                      copyControlLabel="Select"
+                      removeAllControlLabel="Unselect all"
+                      removeControlLabel="Unselect"> 
+	            <rich:column width="18"> 
+	            	<h:outputText value="#{items}" />
+	            </rich:column>
+	        </rich:listShuttle>
+	   		
 	    </rich:panel>
 
 	</h:panelGrid>
 	<h:panelGrid columns="2">
-		<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" action="#{configureTabsBean.saveTabs}" oncomplete="#{rich:component('modalConfigureFooterTabs')}.hide();reRenderFooter()"/>
+		<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" action="#{configureTabsBean.saveTabs}" oncomplete="#{rich:component('modalConfigureFooterTabs')}.hide();reRenderFooter();"/>
 		<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" action="#{configureTabsBean.cancelChanges}" onclick="#{rich:component('modalConfigureFooterTabs')}.hide()" reRender="tabsMenu, actionsPanel"/>
 	</h:panelGrid>
-	
-	<rich:modalPanel header="Rename tab" id="editPane" domElementAttachment="parent" width="400" height="70">
-            <h:panelGrid columns="3">
-                <h:outputText value="NAME" />
-                <h:inputText id="renameTabValue" value="#{configureTabsBean.selected}"
-                	onkeypress="return enableEnterKey(event, 'configureTabsEditBtn');"/>
-                <rich:message id="vinMsg" for="vin" />
-            </h:panelGrid>
-            <a4j:commandButton id="configureTabsEditBtn" styleClass="greenButton" value="#{messages.button_ok}" action="#{configureTabsBean.changeTabName}"
-                oncomplete="#{rich:component('editPane')}.hide();" reRender="tabsMenu">
-                <a4j:actionparam name="oldName" noEscape="true" value="getOldTabName()"/>
-            </a4j:commandButton>
-            <a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('editPane')}.hide();" />
+
+</h:form>
+
+	<rich:modalPanel header="Rename tab" id="editPane" width="400" height="70">
+		<h:form>
+		    <h:panelGrid columns="3">
+		        <h:outputText value="NAME" />
+		        <h:inputText id="renameTabValue" value="#{configureTabsBean.selected}"
+		        	onkeypress="return enableEnterKey(event, 'configureTabsEditBtn');"/>
+		        <rich:message id="vinMsg" for="vin" />
+		    </h:panelGrid>
+		    <a4j:commandButton id="configureTabsEditBtn" styleClass="greenButton" value="#{messages.button_ok}" action="#{configureTabsBean.changeTabName}"
+		        oncomplete="#{rich:component('editPane')}.hide();" reRender="tabsMenu">
+		        <a4j:actionparam name="oldName" noEscape="true" value="getOldTabName()"/>
+		    </a4j:commandButton>
+		    <a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('editPane')}.hide();" />
+	    </h:form>
  	</rich:modalPanel>
- 	
+
 </h:panelGrid>

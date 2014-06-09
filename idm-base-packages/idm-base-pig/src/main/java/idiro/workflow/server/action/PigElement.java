@@ -1,6 +1,8 @@
 package idiro.workflow.server.action;
 
 import idiro.utils.FeatureList;
+import idiro.utils.OrderedFeatureList;
+import idiro.workflow.server.AppendListInteraction;
 import idiro.workflow.server.DataProperty;
 import idiro.workflow.server.DataflowAction;
 import idiro.workflow.server.InputInteraction;
@@ -8,9 +10,12 @@ import idiro.workflow.server.ListInteraction;
 import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.HDFSInterface;
 import idiro.workflow.server.datatype.MapRedBinaryType;
+import idiro.workflow.server.datatype.MapRedCtrlATextType;
 import idiro.workflow.server.datatype.MapRedTextType;
+import idiro.workflow.server.enumeration.FeatureType;
 import idiro.workflow.server.interfaces.DFELinkProperty;
 import idiro.workflow.server.interfaces.DFEOutput;
+import idiro.workflow.server.interfaces.DataFlowElement;
 import idiro.workflow.server.oozie.PigAction;
 import idiro.workflow.utils.PigLanguageManager;
 
@@ -45,6 +50,7 @@ public abstract class PigElement extends DataflowAction {
 								 * Output Key
 								 */
 	public static final String key_output = "",
+			key_output_audit = "audit",
 			/**Input Key*/
 			key_input = "in",
 			/**Delimiter Key*/
@@ -62,7 +68,9 @@ public abstract class PigElement extends DataflowAction {
 			/**Order Key*/
 			key_order = "order",
 			/**Order Type Key*/
-			key_order_type = "order_type";
+			key_order_type = "order_type",
+			/**Audit Key */
+			key_audit="audit";
 			
 	
 	/**Input Interaction for delimiter*/
@@ -81,6 +89,11 @@ public abstract class PigElement extends DataflowAction {
 	 * Order Type Interaction
 	 */
 	protected ListInteraction orderTypeInt;
+	
+	/**
+	 * Audit Interaction
+	 */
+	protected AppendListInteraction auditInt;
 	
 	/**
 	 * Parallel clause Interaction
@@ -118,21 +131,21 @@ public abstract class PigElement extends DataflowAction {
 		
 		orderTypeInt.setDisplayRadioButton(true);
 		List<String> values = new ArrayList<String>();
-		values.add("ASCENDENT");
-		values.add("DESCENDENT");
+		values.add("ASCENDING");
+		values.add("DESCENDING");
 		orderTypeInt.setPossibleValues(values);
 		
-		String pigParallel = WorkflowPrefManager.getUserProperty(WorkflowPrefManager.user_pig_parallel);
-		if (pigParallel == null){
-			pigParallel = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_pig_parallel);
-		}
+		String pigParallel = WorkflowPrefManager.getUserProperty(
+				WorkflowPrefManager.user_pig_parallel,
+				WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_pig_parallel,
+						"1"));
 		
 		parallelInt = new InputInteraction(
 				key_parallel,
 				PigLanguageManager.getText("pig.parallel_interaction.title"),
 				PigLanguageManager.getText("pig.parallel_interaction.legend"), 
 				placeDelimiterInPage, 0);
-		parallelInt.setRegex("^\\d+$");
+		parallelInt.setRegex("^[1-9]\\d*$");
 		parallelInt.setValue(pigParallel);
 
 		delimiterOutputInt = new InputInteraction(
@@ -154,6 +167,15 @@ public abstract class PigElement extends DataflowAction {
 		saveTypePos.add( new MapRedBinaryType().getTypeName());
 		savetypeOutputInt.setPossibleValues(saveTypePos);
 		savetypeOutputInt.setValue(new MapRedTextType().getTypeName());
+		
+		auditInt= new AppendListInteraction(key_audit,
+				  	PigLanguageManager.getText("pig.audit_interaction.title"),
+				  	PigLanguageManager.getText("pig.audit_interaction.legend"), placeDelimiterInPage+3, 0);
+		List<String> auditIntVal = new LinkedList<String>();
+		auditIntVal.add(PigLanguageManager.getText("pig.audit_interaction_doaudit"));
+		auditInt.setPossibleValues(auditIntVal);
+		auditInt.setDisplayCheckBox(true);
+		
 	}
 	/**
 	 * Initialise the element
@@ -168,6 +190,22 @@ public abstract class PigElement extends DataflowAction {
 			input = in;
 		}
 	}
+	
+	public Map<String,List<String>> getDistinctValues() throws RemoteException{
+		Map<String, List<String>> ans = null;
+		List<DataFlowElement> lin = getInputComponent().get(key_input);
+		if(lin != null && lin.size() > 0){
+			if(groupingInt != null){
+				ans = (new AuditGenerator()).readDistinctValuesAudit(getAliases().keySet().iterator().next(),lin.get(0).getDFEOutput().get(key_output_audit));
+			}else{
+				ans = (new AuditGenerator()).readDistinctValuesAudit(null,lin.get(0).getDFEOutput().get(key_output_audit));
+			}
+		}
+		
+		return ans;
+	}
+	
+
 	/**
 	 * Get the Query for the action
 	 * @return query
@@ -211,6 +249,16 @@ public abstract class PigElement extends DataflowAction {
 	public boolean writeOozieActionFiles(File[] files) throws RemoteException {
 		logger.info("Write queries in file: "+files[0].getAbsolutePath());
 		String toWrite = getQuery();
+		
+		int doAudit = auditInt.getValues().size();
+		if(doAudit > 0){
+			toWrite += "\n";
+			toWrite += (new AuditGenerator()).getQuery(
+					getDFEOutput().get(key_output), 
+					getDFEOutput().get(key_output_audit), 
+					Integer.valueOf(parallelInt.getValue()),
+					getCurrentName());
+		}
 		boolean ok = toWrite != null;
 		if(ok){
 			logger.info("Content of "+files[0].getName()+": "+toWrite);
@@ -274,6 +322,27 @@ public abstract class PigElement extends DataflowAction {
 			}
 			output.get(key_output).setFeatures(new_features);
 			output.get(key_output).addProperty(MapRedTextType.key_delimiter, delimiterOutputInt.getValue());
+			
+			int doAudit = auditInt.getValues().size();
+			if(doAudit > 0){
+				if (output.get(key_output_audit) == null) {
+					output.put(key_output_audit, new MapRedCtrlATextType());
+				}
+				try {
+					FeatureList fl = new OrderedFeatureList();
+					fl.addFeature("Legend", FeatureType.STRING);
+					Iterator<String> it = output.get(key_output)
+							.getFeatures().getFeaturesNames().iterator();
+					while (it.hasNext()) {
+						fl.addFeature("AUDIT_" + it.next(), FeatureType.STRING);
+					}
+					output.get(key_output_audit).setFeatures(fl);
+				} catch (Exception e) {
+					logger.error(e.getMessage(), e);
+				}
+			}else{
+				output.remove(key_output_audit);
+			}
 		}
 		return error;
 	}

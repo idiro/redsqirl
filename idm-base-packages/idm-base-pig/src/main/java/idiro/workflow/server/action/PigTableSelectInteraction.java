@@ -35,6 +35,12 @@ public class PigTableSelectInteraction extends TableInteraction {
 	private static final long serialVersionUID = 8521366798554741811L;
 	/** Copy Generation */
 	public static final String gen_operation_copy = "copy",
+			/** Case when operation */
+			gen_operation_all_cases = "ALL_CASES_",
+			/** Case when operation */
+			gen_operation_case_when = "CASE_WHEN_",
+		    /** Case when else operation */
+			gen_operation_case_when_else = "CASE_WHEN_ELSE_",
 			/** Max Generation */
 			gen_operation_max = "MAX",
 			/** Min Generation */
@@ -78,6 +84,26 @@ public class PigTableSelectInteraction extends TableInteraction {
 			int column, int placeInColumn, PigElement hs)
 					throws RemoteException {
 		super(id, name, legend, column, placeInColumn);
+		this.hs = hs;
+		createColumns();
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param id
+	 * @param name
+	 * @param legend
+	 * @param tooltip
+	 * @param column
+	 * @param placeInColumn
+	 * @param hs
+	 * @throws RemoteException
+	 */
+	public PigTableSelectInteraction(String id, String name, String legend,
+			String texttip, int column, int placeInColumn, PigElement hs)
+					throws RemoteException {
+		super(id, name, legend, texttip, column, placeInColumn);
 		this.hs = hs;
 		createColumns();
 	}
@@ -135,6 +161,17 @@ public class PigTableSelectInteraction extends TableInteraction {
 					}
 				}
 
+				if (msg == null) {
+					try {
+						// msg = hs.flatDistinctValues().toString();
+					} catch (Exception e) {
+						msg = "Exception " + e.getMessage() + ": \n";
+						for (int i = 0; i < Math.min(e.getStackTrace().length,
+								20); ++i) {
+							msg += e.getStackTrace()[i] + "\n";
+						}
+					}
+				}
 			}
 		}
 
@@ -270,14 +307,14 @@ public class PigTableSelectInteraction extends TableInteraction {
 		// Generate Editor
 		if (hs.getGroupingInt() != null) {
 			logger.info("aggregator");
-			updateEditor(table_op_title,
-					PigDictionary.generateEditor(PigDictionary.getInstance()
-							.createGroupSelectHelpMenu(), fl));
+			updateEditor(table_op_title, PigDictionary.generateEditor(
+					PigDictionary.getInstance().createGroupSelectHelpMenu(),
+					fl, hs.getDistinctValues()));
 		} else {
 			logger.info("select");
 			updateEditor(table_op_title, PigDictionary.generateEditor(
 					PigDictionary.getInstance().createDefaultSelectHelpMenu(),
-					fl));
+					fl, hs.getDistinctValues()));
 		}
 
 		// Set the Generator
@@ -301,7 +338,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 				addGeneratorRows(gen_operation_copy, featList, fl,
 						operationsList, alias);
 				operationsList.clear();
-
+				addCaseWhenOps(alias,featList);
 			}
 
 			featList = fl.getFeaturesNames();
@@ -332,8 +369,8 @@ public class PigTableSelectInteraction extends TableInteraction {
 			operationsList.clear();
 
 			operationsList.add(gen_operation_count_distinct);
-			addGeneratorRows(gen_operation_count_distinct, featList, fl, operationsList,
-					alias);
+			addGeneratorRows(gen_operation_count_distinct, featList, fl,
+					operationsList, alias);
 			operationsList.clear();
 
 			operationsList.add(gen_operation_max);
@@ -351,10 +388,52 @@ public class PigTableSelectInteraction extends TableInteraction {
 			operationsList.add(gen_operation_copy);
 			addGeneratorRows(gen_operation_copy, featList, fl, operationsList,
 					"");
+			addCaseWhenOps(alias,featList);
 
 		}
 		logger.info(getTree());
 		// logger.info("pig tsel tree "+ tree.toString());
+	}
+
+	protected void addCaseWhenOps(String alias,List<String> feats) throws RemoteException {
+		Map<String, List<String>> dist = hs.getDistinctValues();
+		if (dist != null) {
+			Iterator<String> it = dist.keySet().iterator();
+			while (it.hasNext()) {
+				String feature = it.next();
+				if(feats.contains(feature)){
+					List<Map<String, String>> rowCaseWhen = new LinkedList<Map<String, String>>();
+					List<Map<String, String>> rowCaseWhenElse = new LinkedList<Map<String, String>>();
+					List<Map<String, String>> rowAllCaseWhen = new LinkedList<Map<String, String>>();
+					Iterator<String> itVals = dist.get(feature).iterator();
+					String allCase = "";
+					while (itVals.hasNext()) {
+						String valCur = itVals.next();
+						String code = "WHEN "+ feature+" == '"+valCur+"' THEN '"+valCur+"' ";
+						allCase +=code;
+						Map<String, String> rowWhen = new LinkedHashMap<String, String>();
+						rowWhen.put(table_op_title, "CASE "+code+" END");
+						rowWhen.put(table_feat_title, feature.replace(alias + ".", "")+"_"+valCur);
+						rowWhen.put(table_type_title, "STRING");
+						rowCaseWhen.add(rowWhen);
+
+						Map<String, String> rowWhenElse = new LinkedHashMap<String, String>();
+						rowWhenElse.put(table_op_title, "CASE "+code+" ELSE '' END");
+						rowWhenElse.put(table_feat_title, feature.replace(alias + ".", "")+"_"+valCur);
+						rowWhenElse.put(table_type_title, "STRING");
+						rowCaseWhenElse.add(rowWhenElse);
+					}
+					Map<String,String> row = new LinkedHashMap<String, String>();
+					row.put(table_op_title, "CASE "+allCase+" END");
+					row.put(table_feat_title, feature.replace(alias + ".", "")+"_SWITCH");
+					row.put(table_type_title, "STRING");
+					rowAllCaseWhen.add(row);
+					updateGenerator(gen_operation_case_when+feature.replace(alias + ".", ""), rowCaseWhen);
+					updateGenerator(gen_operation_case_when_else+feature.replace(alias + ".", ""), rowCaseWhenElse);
+					updateGenerator(gen_operation_all_cases+feature.replace(alias + ".", ""), rowAllCaseWhen);
+				}
+			}
+		}
 	}
 
 	/**
@@ -387,23 +466,24 @@ public class PigTableSelectInteraction extends TableInteraction {
 				Map<String, String> row = new LinkedHashMap<String, String>();
 				boolean genCur = false;
 
-				if(operation.equalsIgnoreCase(gen_operation_copy)
-						||operation.equalsIgnoreCase(gen_operation_count)
-						||operation.isEmpty()){
+				if (operation.equalsIgnoreCase(gen_operation_copy)
+						|| operation.equalsIgnoreCase(gen_operation_count)
+						|| operation.isEmpty()) {
 					genCur = true;
-				}else if(in.getFeatureType(cur) == FeatureType.CATEGORY){
-					genCur = operation.equalsIgnoreCase(gen_operation_count_distinct);
-				}else if(in.getFeatureType(cur) == FeatureType.DOUBLE 
-						||in.getFeatureType(cur) == FeatureType.FLOAT
-						||in.getFeatureType(cur) == FeatureType.LONG
-						||in.getFeatureType(cur) == FeatureType.INT){
+				} else if (in.getFeatureType(cur) == FeatureType.CATEGORY) {
+					genCur = operation
+							.equalsIgnoreCase(gen_operation_count_distinct);
+				} else if (in.getFeatureType(cur) == FeatureType.DOUBLE
+						|| in.getFeatureType(cur) == FeatureType.FLOAT
+						|| in.getFeatureType(cur) == FeatureType.LONG
+						|| in.getFeatureType(cur) == FeatureType.INT) {
 					genCur = operation.equalsIgnoreCase(gen_operation_sum)
 							|| operation.equalsIgnoreCase(gen_operation_avg)
 							|| operation.equalsIgnoreCase(gen_operation_min)
 							|| operation.equalsIgnoreCase(gen_operation_max);
 				}
-				
-				if(genCur){
+
+				if (genCur) {
 					String optitleRow = addOperation(cur, operation);
 					row.put(table_op_title, optitleRow);
 					if (operation.isEmpty()) {
@@ -416,12 +496,12 @@ public class PigTableSelectInteraction extends TableInteraction {
 					logger.info("trying to add type for " + cur);
 					if (operation.equalsIgnoreCase(gen_operation_avg)) {
 						row.put(table_type_title, "DOUBLE");
-					} else if (operation.equalsIgnoreCase(gen_operation_count) ||
-							operation.equalsIgnoreCase(gen_operation_count_distinct)) {
+					} else if (operation.equalsIgnoreCase(gen_operation_count)
+							|| operation
+							.equalsIgnoreCase(gen_operation_count_distinct)) {
 						row.put(table_type_title, "INT");
 					} else {
-						row.put(table_type_title,
-								in.getFeatureType(cur).name());
+						row.put(table_type_title, in.getFeatureType(cur).name());
 					}
 					rows.add(row);
 				}
@@ -444,7 +524,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 				null);
 
 		List<String> types = new ArrayList<String>(FeatureType.values().length);
-		for(FeatureType ft:FeatureType.values()){
+		for (FeatureType ft : FeatureType.values()) {
 			types.add(ft.name());
 		}
 
@@ -494,10 +574,10 @@ public class PigTableSelectInteraction extends TableInteraction {
 			Map<String, String> cur = selIt.next();
 			String opTitle = cur.get(table_op_title);
 			if (PigDictionary.getInstance().isCountDistinctMethod(opTitle)) {
-				return getQueryPieceCountDistinct(out, tableName, groupTableName);
+				return getQueryPieceCountDistinct(out, tableName,
+						groupTableName);
 			}
 		}
-
 
 		selIt = getValues().iterator();
 		if (selIt.hasNext()) {
@@ -549,14 +629,13 @@ public class PigTableSelectInteraction extends TableInteraction {
 				}
 			}
 		}
-		
-		if (parallel != null && select.contains("COUNT_DISTINCT")){
-			select += " PARALLEL " + parallel; 
+
+		if (parallel != null && select.contains("COUNT_DISTINCT")) {
+			select += " PARALLEL " + parallel;
 		}
 
 		return select;
 	}
-
 
 	public String getQueryPieceCountDistinct(DFEOutput out, String tableName,
 			String groupTableName) throws RemoteException {
@@ -581,13 +660,13 @@ public class PigTableSelectInteraction extends TableInteraction {
 			}
 
 		}
-		if (!countDistinct.isEmpty()){
-			select += " FOREACH "+tableName+" {\n";
+		if (!countDistinct.isEmpty()) {
+			select += " FOREACH " + tableName + " {\n";
 
 			int cont = 0;
-			for (String e : countDistinct){
-				select += "a"+cont+" = "+e+";\n";
-				select += "b"+cont+" = distinct a"+cont+";\n";
+			for (String e : countDistinct) {
+				select += "a" + cont + " = " + e + ";\n";
+				select += "b" + cont + " = distinct a" + cont + ";\n";
 				cont++;
 			}
 
@@ -600,39 +679,35 @@ public class PigTableSelectInteraction extends TableInteraction {
 			String featName = cur.get(table_feat_title);
 			String opTitle = cur.get(table_op_title);
 
-			if (PigDictionary.getInstance().isAggregatorMethod(opTitle)){
-				if(!PigDictionary.getInstance().isCountDistinctMethod(opTitle)) {
+			if (PigDictionary.getInstance().isAggregatorMethod(opTitle)) {
+				if (!PigDictionary.getInstance().isCountDistinctMethod(opTitle)) {
 					opTitle = opTitle.replace(
 							PigDictionary.getBracketContent(opTitle),
 							groupTableName + "." + featName);
-				}
-				else{
-					opTitle = "COUNT(b"+cont+")";
+				} else {
+					opTitle = "COUNT(b" + cont + ")";
 					cont++;
 				}
 			}
 
-			select += "GENERATE " + opTitle + " AS "
-					+ featName;
+			select += "GENERATE " + opTitle + " AS " + featName;
 		}
-
 
 		while (selIt.hasNext()) {
 			Map<String, String> cur = selIt.next();
 			String featName = cur.get(table_feat_title);
 			String opTitle = cur.get(table_op_title);
 
-			if (PigDictionary.getInstance().isAggregatorMethod(opTitle)){
+			if (PigDictionary.getInstance().isAggregatorMethod(opTitle)) {
 				if (!PigDictionary.getInstance().isCountDistinctMethod(opTitle)) {
 					opTitle = opTitle.replace(
 							PigDictionary.getBracketContent(opTitle),
 							groupTableName + "." + featName);
-				}
-				else{
-					opTitle = "COUNT(b"+cont+")";
+				} else {
+					opTitle = "COUNT(b" + cont + ")";
 					cont++;
 				}
-			}	
+			}
 
 			select += ",\n       " + opTitle + " AS " + featName;
 		}
@@ -670,35 +745,22 @@ public class PigTableSelectInteraction extends TableInteraction {
 	 * @return query
 	 * @throws RemoteException
 	 */
-	/*public String getCreateQueryPiece(DFEOutput out) throws RemoteException {
-		logger.debug("create features...");
-		String createSelect = "";
-		Iterator<Tree<String>> selIt = getTree().getFirstChild("table")
-				.getChildren("row").iterator();
-		if (selIt.hasNext()) {
-			Tree<String> cur = selIt.next();
-			String featName = cur.getFirstChild(table_feat_title)
-					.getFirstChild().getHead();
-			createSelect = "("
-					+ featName
-					+ ":"
-					+ cur.getFirstChild(table_type_title).getFirstChild()
-							.getHead();
-		}
-		while (selIt.hasNext()) {
-			Tree<String> cur = selIt.next();
-			String featName = cur.getFirstChild(table_feat_title)
-					.getFirstChild().getHead();
-			createSelect += ","
-					+ featName
-					+ " "
-					+ cur.getFirstChild(table_type_title).getFirstChild()
-							.getHead();
-		}
-		createSelect += ")";
-
-		return createSelect;
-	}*/
+	/*
+	 * public String getCreateQueryPiece(DFEOutput out) throws RemoteException {
+	 * logger.debug("create features..."); String createSelect = "";
+	 * Iterator<Tree<String>> selIt = getTree().getFirstChild("table")
+	 * .getChildren("row").iterator(); if (selIt.hasNext()) { Tree<String> cur =
+	 * selIt.next(); String featName = cur.getFirstChild(table_feat_title)
+	 * .getFirstChild().getHead(); createSelect = "(" + featName + ":" +
+	 * cur.getFirstChild(table_type_title).getFirstChild() .getHead(); } while
+	 * (selIt.hasNext()) { Tree<String> cur = selIt.next(); String featName =
+	 * cur.getFirstChild(table_feat_title) .getFirstChild().getHead();
+	 * createSelect += "," + featName + " " +
+	 * cur.getFirstChild(table_type_title).getFirstChild() .getHead(); }
+	 * createSelect += ")";
+	 * 
+	 * return createSelect; }
+	 */
 
 	/**
 	 * Get the alias for the

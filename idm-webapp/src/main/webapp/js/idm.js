@@ -320,6 +320,8 @@ function addtooltip(text, event){
     var y = event.pageY;
     var help = jQuery('<div class="tooltip">'+text+'</div>');
     help.css("top",(y+10)+"px" );
+    help.css("background-color", "#F1F1F1");
+    help.css("color", "black");
     jQuery("body").append(help);
     help.fadeIn("slow");
 }

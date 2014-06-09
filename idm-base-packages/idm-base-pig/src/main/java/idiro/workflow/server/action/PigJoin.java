@@ -6,10 +6,12 @@ import idiro.workflow.server.ListInteraction;
 import idiro.workflow.server.Page;
 import idiro.workflow.server.interfaces.DFEInteraction;
 import idiro.workflow.server.interfaces.DFEOutput;
+import idiro.workflow.server.interfaces.DataFlowElement;
 import idiro.workflow.utils.PigLanguageManager;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -128,7 +130,7 @@ public class PigJoin extends PigElement {
 		page5.addInteraction(parallelInt);
 		page5.addInteraction(delimiterOutputInt);
 		page5.addInteraction(savetypeOutputInt);
-
+		page5.addInteraction(auditInt);
 	}
 	/**
 	 * Get the name of the action
@@ -300,6 +302,41 @@ public class PigJoin extends PigElement {
 	 */
 	public final PigTableAliasInteraction gettAliasInt() {
 		return tAliasInt;
+	}
+	
+	@Override
+	public Map<String, List<String>> getDistinctValues() throws RemoteException {
+		Map<String, List<String>> ans = new LinkedHashMap<String, List<String>>();
+		if (getInputComponent().get(key_input) != null) {
+
+			Iterator<Map<String, String>> it = tAliasInt.getValues().iterator();
+			while (it.hasNext()) {
+				Map<String, String> cur = it.next();
+				String inputComponentId = cur
+						.get(PigTableAliasInteraction.table_input_title);
+				String alias = cur
+						.get(PigTableAliasInteraction.table_alias_title);
+				if (alias != null && inputComponentId != null) {
+					boolean found = false;
+					Iterator<DataFlowElement> lin = getInputComponent().get(
+							key_input).iterator();
+					while (lin.hasNext() && !found) {
+						DataFlowElement el = lin.next();
+						if (el.getComponentId().equals(inputComponentId) &&
+								el.getDFEOutput().get(
+										key_output_audit) != null) {
+							found = true;
+							ans.putAll((new AuditGenerator())
+									.readDistinctValuesAudit(
+											alias,
+											el.getDFEOutput().get(
+													key_output_audit)));
+						}
+					}
+				}
+			}
+		}
+		return ans;
 	}
 	
 	@Override

@@ -8,3 +8,5 @@ pig_text_source
 pig_binary_source
 pig_transpose
 pig_anonymise
+pig_value_binning
+pig_volume_binning

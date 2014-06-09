@@ -4,10 +4,15 @@ import idiro.workflow.server.connect.interfaces.DataStore;
 
 import java.rmi.RemoteException;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.faces.model.SelectItem;
 
 import org.apache.log4j.Logger;
 
-/** HdfsBean
+/**
+ * HdfsBean
  * 
  * Class to screen control of the File System Hadoop
  * 
@@ -21,12 +26,20 @@ public class HdfsBrowserBean extends HdfsBean {
 	private static final long serialVersionUID = 2705226125355712008L;
 
 	private static Logger logger = Logger.getLogger(HdfsBrowserBean.class);
-	
+
 	/**
-	 * Have the same xhtml page for opening and loading.
-	 * 'T' for showing save, 'F' for open.
+	 * Have the same xhtml page for opening and loading. 'T' for showing save,
+	 * 'F' for open.
 	 */
-	private String showSave; 
+	private String showSave;
+
+	public HdfsBrowserBean() {
+		List<SelectItem> listExtensions = new LinkedList<SelectItem>();
+		listExtensions.add(new SelectItem("*.rs", "*.rs"));
+		listExtensions.add(new SelectItem("*", "*"));
+		setExtensionsSelected(listExtensions.get(0).getLabel());
+		setListExtensions(listExtensions);
+	}
 
 	/**
 	 * createSaveFolder
@@ -38,7 +51,8 @@ public class HdfsBrowserBean extends HdfsBean {
 	 */
 	public void createSaveFolder() throws RemoteException {
 
-		String newPath = "/user/" + System.getProperty("user.name") + "/idm-save";
+		String newPath = "/user/" + System.getProperty("user.name")
+				+ "/idm-save";
 
 		if (getDataStore().goTo(newPath)) {
 			updateTable();
@@ -53,7 +67,7 @@ public class HdfsBrowserBean extends HdfsBean {
 	}
 
 	@Override
-	public DataStore getRmiHDFS() throws RemoteException{
+	public DataStore getRmiHDFS() throws RemoteException {
 		return getHDFSBrowser();
 	}
 
@@ -65,10 +79,11 @@ public class HdfsBrowserBean extends HdfsBean {
 	}
 
 	/**
-	 * @param showSave the showSave to set
+	 * @param showSave
+	 *            the showSave to set
 	 */
 	public void setShowSave(String showSave) {
 		this.showSave = showSave;
 	}
-	
+
 }

@@ -159,7 +159,23 @@
 	          });
 
 		  var menusplitVCanvas = [
-		  {'Collapse/Restore right panels': function(menuItem,menu){jQuery("#splitVCanvas").trigger('toggleDock');}}
+		  {'Right': function(menuItem,menu){
+			  jQuery(".splitter-bar-vertical").css("left", jQuery(window).width()-40+'px');
+			  jQuery("#splitHCanvas").css("width", 0+'px');
+			  jQuery("#tabFlowchart").css("width", jQuery(window).width()-40+'px');
+			  canvasResizeSplitter();
+			  }},
+		  {'Middle': function(menuItem,menu){
+			  onPageReady();
+			  }},
+		  {'Left': function(menuItem,menu){
+			  
+			  jQuery(".splitter-bar-vertical").css("left", 0+'px');
+			  jQuery("#splitHCanvas").css("width", jQuery(window).width()-40+'px');
+			  jQuery("#splitHCanvas").css("left", 0+'px');
+			  jQuery("#tabFlowchart").css("width", 0+'px');
+			  canvasResizeSplitter();
+			  }}
 		  ];
           
           
@@ -170,21 +186,21 @@
 			  jQuery("#tabs2").css("top", '0px');
 			  jQuery("#tabs2").css("height", jQuery("#splitVCanvas").height()-20+'px');
 			  resizeTabs();
-		  }},
+		  	}},
 		  {'Middle': function(menuItem,menu){ 
 			  jQuery("#tabs1").css("height", (jQuery("#splitVCanvas").height()-20)/2+'px');
 			  jQuery(".splitter-bar-horizontal").css("top", (jQuery("#splitVCanvas").height()-20)/2+'px');
 			  jQuery("#tabs2").css("top", (jQuery("#splitVCanvas").height()-20)/2+'px');
 			  jQuery("#tabs2").css("height", (jQuery("#splitVCanvas").height()-20)/2+'px');
 			  resizeTabs();
-		  }},
-		  {'Botton': function(menuItem,menu){
+		  	}},
+		  {'Bottom': function(menuItem,menu){
 			  jQuery("#tabs1").css("height", jQuery("#splitVCanvas").height()-20+'px');
 			  jQuery(".splitter-bar-horizontal").css("top", jQuery("#splitVCanvas").height()-20+'px');
 			  jQuery("#tabs2").css("top", jQuery("#splitVCanvas").height()-20+'px');
 			  jQuery("#tabs2").css("height", '0px');
 			  resizeTabs();
-		  }}
+		  	}}
 		  ];
 		  
          
@@ -216,7 +232,16 @@
 	
 		      jQuery(".splitter-bar-horizontal").contextMenu(menusplitHCanvas);
 
+
+		      jQuery(".splitter-bar-vertical").mousedown(function() {
+		    	  jQuery('#helpmain_splitter').click();return false;
+		      });
+		      jQuery(".splitter-bar-horizontal").mousedown(function() {
+		    	  jQuery('#helpmain_splitter').click();return false;
+		      });
+		      
 	    	  onPageReady();
+	    	  
               document.getElementById("canvas-tabs").addEventListener('contextmenu', function (event) {
               	event.preventDefault();
               });
@@ -712,15 +737,15 @@
 
 	<a4j:keepAlive beanName="canvasModalBean" />
 
-	<div id="domMessageDivCanvas1" style="display: none;">
-		<img src="../image/icons/waiting.gif" />
-	</div>
-
 
 	<div id="invisible"></div>
 
 	<div id="menu">
 		<h:form id="formMenu">
+		
+			<div id="domMessageDivCanvas1" style="display: none;">
+				<img src="../image/icons/waiting.gif" />
+			</div>
 			
 			<a4j:region>
                 <a4j:jsFunction name="openModalSaveWorkflow" action="#{browserHdfsBean.createSaveFolder}" 
@@ -758,10 +783,8 @@
 					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
-				<a4j:jsFunction name="reRenderFooter" oncomplete="mountFooter()"
-					reRender="tabsFooterForm" />
-				<a4j:jsFunction name="mountFooter"
-					oncomplete="configureFooter();mountObj()" />
+				<a4j:jsFunction name="reRenderFooter" oncomplete="mountFooter();" reRender="tabsFooterForm" />
+				<a4j:jsFunction name="mountFooter" oncomplete="configureFooter();mountObj('#{canvasBean.nameWorkflow}')" />
 			</a4j:region>
 
 			<a4j:region>
@@ -1344,12 +1367,8 @@
 
 			</a4j:region>
 
-			<a4j:jsFunction name="signOut" action="#{userInfoBean.goToSignOut}"
-				oncomplete="jQuery.unblockUI();" />
-			<a4j:jsFunction name="reStart"
-				action="#{userInfoBean.goToSignOut}"
-				oncomplete="jQuery.unblockUI();" />
-
+			<a4j:jsFunction name="signOut" action="#{userInfoBean.goToSignOut}" oncomplete="jQuery.unblockUI();" />
+			<a4j:jsFunction name="reStart" action="#{userInfoBean.goToSignOut}" oncomplete="jQuery.unblockUI();" />
 
 		</h:form>
 	</div>
@@ -1661,8 +1680,7 @@
 	</a4j:region>
 
 	<a4j:region renderRegionOnly="true">
-		<rich:modalPanel id="modalConfigureFooterTabs" width="600"
-			height="400" style="overflow:auto;" resizeable="false" styleClass="noMaskClass">
+		<rich:modalPanel id="modalConfigureFooterTabs" width="630" height="420" style="overflow:auto;" resizeable="false" styleClass="noMaskClass">
 
 			<f:facet name="header">Configuration</f:facet>
 			<f:facet name="controls">
@@ -1671,12 +1689,9 @@
 					onclick="#{rich:component('modalConfigureFooterTabs')}.hide()" />
 			</f:facet>
 
-			<h:form id="formConfigureFooterTabs">
 				<h:panelGroup>
-					<a4j:include viewId="/pages/configureFooterTabs.xhtml"
-						ajaxRendered="false" />
+					<a4j:include viewId="/pages/configureFooterTabs.xhtml" ajaxRendered="true" />
 				</h:panelGroup>
-			</h:form>
 
 		</rich:modalPanel>
 	</a4j:region>
@@ -1723,7 +1738,7 @@
 	</a4j:region>
 
 	<a4j:region>
-		<rich:modalPanel id="modalChangeId" width="250" height="140"
+		<rich:modalPanel id="modalChangeId" width="250" height="145"
 			style="overflow:auto;" resizeable="true" zindex="2000">
 
 			<f:facet name="header" >Change Element Id</f:facet>
@@ -1838,5 +1853,29 @@
 
 		</center>
 	</rich:modalPanel>
+	
+	<rich:modalPanel id="msnSuccess" showWhenRendered="#{requestScope['msnSuccess'] != null}">
+		<center>
+
+			<table>
+				<tr>
+					<td>
+						<rich:messages id="msgS" globalOnly="false" layout="list"
+							styleClass="message" infoClass="messageok"
+							errorClass="messageerro" warnClass="messagealert"
+							showDetail="true" showSummary="false" ajaxRendered="false" />
+					</td>
+				</tr>
+			</table>
+
+			<br /> <br />
+
+			<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}"
+				onclick="#{rich:component('msnSuccess')}.hide(); return false;"
+				reRender="msnSuccess, msgS" />
+
+		</center>
+	</rich:modalPanel>
+	
 </body>
 </html>

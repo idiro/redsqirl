@@ -37,6 +37,24 @@ public class AppendListInteraction extends UserInteraction{
 		init();
 		setSorted(false);
 	}
+	/**
+	 * Constructor
+	 * @param id of interaction
+	 * @param name of interaction
+	 * @param legend the descritpion
+	 * @param texttip The text tip
+	 * @param column which column to place into
+	 * @param placeInColumn where in the column to place
+	 * @throws RemoteException
+	 */
+	public AppendListInteraction(String id,String name, String legend,
+			String texttip, int column, int placeInColumn)
+					throws RemoteException {
+		super(id,name, legend, texttip, DisplayType.appendList, 
+				column, placeInColumn);
+		init();
+		setSorted(false);
+	}
 	
 	/**
 	 * Constructor
@@ -52,6 +70,25 @@ public class AppendListInteraction extends UserInteraction{
 			int column, int placeInColumn, boolean sorted)
 					throws RemoteException {
 		super(id,name, legend, DisplayType.appendList, 
+				column, placeInColumn);
+		init();
+		setSorted(sorted);
+	}
+	/**
+	 * Constructor
+	 * @param id of interaction
+	 * @param name of interaction
+	 * @param legend the descrition
+	 * @param texttip the text tip
+	 * @param column which column to place into
+	 * @param placeInColumn where in the column to place
+	 * @param sorted Keep the output list in order
+	 * @throws RemoteException
+	 */
+	public AppendListInteraction(String id,String name, String legend,
+			String texttip, int column, int placeInColumn, boolean sorted)
+					throws RemoteException {
+		super(id,name, legend, texttip, DisplayType.appendList, 
 				column, placeInColumn);
 		init();
 		setSorted(sorted);

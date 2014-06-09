@@ -45,6 +45,6 @@ public interface FeatureList extends Remote {
 	 * @throws RemoteException
 	 */
 	public int getSize() throws RemoteException;
-	
-	
+
+	public FeatureList cloneRemote() throws RemoteException;
 }

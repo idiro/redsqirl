@@ -4,7 +4,6 @@ import idiro.workflow.server.enumeration.FeatureType;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,8 +39,17 @@ public class OrderedFeatureList extends UnicastRemoteObject implements
 	public OrderedFeatureList() throws RemoteException {
 		super();
 		features = new HashMap<String, FeatureType>();
-		positions = new ArrayList<String>();
+		positions = new LinkedList<String>();
 	}
+	
+	/** Default constructor */
+	protected OrderedFeatureList(Map<String,FeatureType>features, List<String> positions) throws RemoteException {
+		super();
+		this.features = features;
+		this.positions = positions;
+	}
+	
+	
 
 	/**
 	 * Check if a Feature name is contained in a list
@@ -117,6 +125,14 @@ public class OrderedFeatureList extends UnicastRemoteObject implements
 					&& comp.features.equals(this.features);
 		}
 		return ok;
+	}
+	
+	public OrderedFeatureList cloneRemote() throws RemoteException{
+		Map<String, FeatureType> clFeatures = new HashMap<String, FeatureType>();
+		List<String> clPositions = new LinkedList<String>();
+		clFeatures.putAll(features);
+		clPositions.addAll(positions);
+		return new OrderedFeatureList(clFeatures,clPositions);
 	}
 
 }

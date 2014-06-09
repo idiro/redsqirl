@@ -198,7 +198,7 @@ public class PigTableUnionInteraction extends TableInteraction {
 
 		updateEditor(table_op_title, PigDictionary.generateEditor(PigDictionary
 				.getInstance().createDefaultSelectHelpMenu(), hu
-				.getInFeatures()));
+				.getInFeatures(),hu.getDistinctValues()));
 
 		// Set the Generator
 		List<Map<String, String>> copyRows = new LinkedList<Map<String, String>>();

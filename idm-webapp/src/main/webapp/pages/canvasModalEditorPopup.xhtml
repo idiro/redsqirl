@@ -180,29 +180,26 @@
 					<br />
 					<br />
 						
-						<rich:extendedDataTable id="listFields"	value="#{canvasModalBean.selEditor.edit.textEditorFieldsEntry}" var="item"
-							style="border:0px;" width="100%" onRowClick="completeFilds" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+						<rich:extendedDataTable id="listFields"	value="#{canvasModalBean.selEditor.edit.textEditorFieldsRows}" var="rowItem"
+							style="border:0px;" width="100%" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 							enableContextMenu="false" selectionMode="none"
 							onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
 							rowClasses="even-row, odd-row">
 	
-							<rich:column style="border-bottom:0px;border-right:0px;">
-								<f:facet name="header">
-									<h:outputText value="#{messages.label_name}" />
-								</f:facet>
-								<a4j:commandLink id="btCompleteFilds"
-									onclick="completeCommand('#{item.key}');">
-									<f:param name="nameFilds" value="#{item.key}" />
-									<h:outputText value="#{item.key}" title="#{item.key}" />
-								</a4j:commandLink>
-							</rich:column>
-	
-							<rich:column style="border-bottom:0px;border-right:0px;">
-								<f:facet name="header">
-									<h:outputText value="#{messages.label_type}" />
-								</f:facet>
-								<h:outputText value="#{item.value}" title="#{item.value}" />
-							</rich:column>
+	                       <rich:columns value="#{canvasModalBean.selEditor.edit.textEditorFieldsTitles == null? canvasBean.emptyList : canvasModalBean.selEditor.edit.textEditorFieldsTitles}" 
+                                          var="column" 
+                                          index="ind">
+                                
+                                <f:facet name="header">
+                                    <h:outputText value="#{column}" />
+                                </f:facet>
+                                <a4j:commandLink
+                                    onclick="completeCommand('#{rowItem[ind]}');">
+                                    <f:param name="nameFilds" value="#{rowItem[ind]}" />
+                                    <h:outputText value="#{rowItem[ind]}" title="#{rowItem[ind]}" />
+                                </a4j:commandLink>
+                                
+                            </rich:columns>
 	
 						</rich:extendedDataTable>
 						

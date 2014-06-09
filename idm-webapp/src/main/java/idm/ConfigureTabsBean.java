@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.faces.context.FacesContext;
-import javax.faces.model.SelectItem;
 
 import org.apache.log4j.Logger;
 
@@ -25,12 +24,14 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 4626482566525824607L;
-	
-	
+
 	protected Map<String, List<String[]>> menuWA;
 	private String tabName;
 	private String selected;
 	private Map<String,String> allWANameWithClassName = null;
+	private List<String> menuActions;
+	private String[] items;
+	
 	private static Logger logger = Logger.getLogger(ConfigureTabsBean.class);
 
 	//@PostConstruct
@@ -47,6 +48,9 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 				}
 				getworkFlowInterface().removeWorkflow("canvas0");
 			}
+			
+			mountMenuActions();
+			
 		} catch (RemoteException e1) {
 			e1.printStackTrace();
 
@@ -54,24 +58,26 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public List<String> getTabs() {
 		return new ArrayList<String>(getMenuWA().keySet());
 	}
 
-	public List<SelectItem> getMenuActions() throws RemoteException, Exception {
-		
+	public void mountMenuActions() throws RemoteException, Exception {
+
 		logger.info("getMenuActions");
+
+		List<String> result = new ArrayList<String>();
 		
-		List<SelectItem> result = new ArrayList<SelectItem>();
-		if (allWANameWithClassName == null) {
+		/*if (allWANameWithClassName == null) {
 			openCanvasScreen();
+		}*/
+		
+		for (Entry<String, String> e : allWANameWithClassName.entrySet()) {
+			result.add(e.getKey());
 		}
-		for (Entry<String, String> e : allWANameWithClassName
-				.entrySet()) {
-			result.add(new SelectItem(e.getKey(), e.getKey()));
-		}
-		return result;
+		
+		setMenuActions(result);
 	}
 
 	public Map<String, List<String[]>> getMenuWA() {
@@ -81,8 +87,8 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 		return menuWA;
 	}
 
-	public void setItems(String[] items) {
-		if (selected != null) {
+	public void mountItems() {
+		if (selected != null && !"".equals(selected)) {
 			List<String[]> temp = new ArrayList<String[]>();
 			for (int i = 0; i < items.length; ++i) {
 				temp.add(new String[] { items[i] });
@@ -91,10 +97,13 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 		}
 	}
 
-	public String[] getItems() {
-		logger.info("getItems");
-		String selectedTab = FacesContext.getCurrentInstance()
-				.getExternalContext().getRequestParameterMap().get("selected");
+	public void retrieveItems() {
+		
+		logger.info("retrieveItems");
+		String selectedTab = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("selected");
+		
+		setSelected(selectedTab);
+		
 		String[] items = new String[] {};
 		if (getMenuWA().containsKey(selectedTab)) {
 			items = new String[getMenuWA().get(selectedTab).size()];
@@ -103,13 +112,11 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 				items[i] = getMenuWA().get(selectedTab).get(i)[0];
 			}
 		}
-		return items;
+		setItems(items);
 	}
 
 	public void deleteTab() {
-		getMenuWA().remove(
-				FacesContext.getCurrentInstance().getExternalContext()
-				.getRequestParameterMap().get("selected"));
+		getMenuWA().remove(FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("selected"));
 		setTabName("");
 	}
 
@@ -119,8 +126,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	}
 
 	public void changeTabName() {
-		String oldTabName = FacesContext.getCurrentInstance()
-				.getExternalContext().getRequestParameterMap().get("oldName");
+		String oldTabName = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("oldName");
 		List<String[]> list = getMenuWA().get(oldTabName);
 		getMenuWA().remove(oldTabName);
 		getMenuWA().put(selected, list);
@@ -135,6 +141,9 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	}
 
 	public void saveTabs() throws RemoteException {
+		
+		mountItems();
+		
 		try {
 			if (getworkFlowInterface().getWorkflow("canvas0") == null) {
 				getworkFlowInterface().addWorkflow("canvas0");
@@ -162,11 +171,26 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 			e.printStackTrace();
 		}
 	}
-
-	public void setSelected() {
-		selected = FacesContext.getCurrentInstance().getExternalContext()
-				.getRequestParameterMap().get("selected");
+	
+	public void cancelChanges() {
+		menuWA = null;
+		selected = null;
+		setTabName("");
 	}
+
+	public List<Entry<String, List<String[]>>> getMenuWAList() throws IOException {
+		List<Entry<String, List<String[]>>> list = new ArrayList<Entry<String, List<String[]>>>();
+		for (Entry<String, List<String[]>> e : getMenuWA().entrySet()) {
+			getMenuWA().get(e.getKey());
+			list.add(e);
+		}
+		return list;
+	}
+	
+
+	/*public void setSelected() {
+		selected = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("selected");
+	}*/
 
 	public void setSelected(String selected) {
 		this.selected = selected;
@@ -176,20 +200,20 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 		return selected;
 	}
 
-	public void cancelChanges() {
-		menuWA = null;
-		selected = null;
-		setTabName("");
+	public List<String> getMenuActions() {
+		return menuActions;
 	}
 
-	public List<Entry<String, List<String[]>>> getMenuWAList()
-			throws IOException {
-		List<Entry<String, List<String[]>>> list = new ArrayList<Entry<String, List<String[]>>>();
-		for (Entry<String, List<String[]>> e : getMenuWA().entrySet()) {
-			getMenuWA().get(e.getKey());
-			list.add(e);
-		}
-		return list;
+	public void setMenuActions(List<String> menuActions) {
+		this.menuActions = menuActions;
 	}
-	
+
+	public String[] getItems() {
+		return items;
+	}
+
+	public void setItems(String[] items) {
+		this.items = items;
+	}
+
 }

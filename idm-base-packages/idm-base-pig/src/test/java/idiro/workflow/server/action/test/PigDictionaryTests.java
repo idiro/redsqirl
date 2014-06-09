@@ -107,7 +107,6 @@ public class PigDictionaryTests {
 	}
 	
 
-	
 	@Test
 	public void testBooleanOperations() throws RemoteException {
 		TestUtils.logTestTitle("PigDictionaryTests#testBooleanOperations");
@@ -226,10 +225,14 @@ public class PigDictionaryTests {
 		TestUtils.logTestTitle("PigDictionaryTests#testConditionalOperation");
 		FeatureList features = getFeatures();
 		try {
-			isString("((col4) ? colAgg : 'ba')", features);
-			isString("((col2 > 0) ? (colAgg) : ('a'))", features);
+			isString("col4 ? colAgg : 'ba'", features);
+			isString("( col2 > 0 ? (colAgg) : ('a'))", features);
 			isString("((col4) ? colAgg : ((col3 == 1) ? 'a' : 'b'))", features);
 			is("((colAgg == 'a') ? (col2) : (1.0))", features, "DOUBLE");
+			is("CASE WHEN colAgg=='t' THEN 1 WHEN colAgg=='t2' THEN 2 ELSE 3 END", features, "INT");
+			
+			is("CASE WHEN (col4) THEN (colAgg) WHEN (col2==0) THEN ('a') END", features, "STRING");
+			is("(CASE WHEN (col3>0) THEN (colAgg) END) == colAgg", features, "BOOLEAN");
 		} catch (Exception e) {
 			logger.error("Exception when testing conditional operations: "
 					+ e.getMessage(),e);

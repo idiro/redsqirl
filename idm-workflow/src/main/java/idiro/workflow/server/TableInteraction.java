@@ -42,6 +42,22 @@ public class TableInteraction extends UserInteraction {
 		init();
 	}
 	/**
+	 * Constructor
+	 * @param id 
+	 * @param name
+	 * @param legend
+	 * @param texttip
+	 * @param column
+	 * @param placeInColumn
+	 * @throws RemoteException
+	 */
+	public TableInteraction(String id, String name, String legend,
+			String texttip, int column, int placeInColumn) 
+					throws RemoteException {
+		super(id, name, legend, texttip,DisplayType.table, column, placeInColumn);
+		init();
+	}
+	/**
 	 * Initialize the interaction
 	 * @throws RemoteException
 	 */
@@ -386,7 +402,11 @@ public class TableInteraction extends UserInteraction {
 				while(lColRowIt.hasNext() && !end){
 					Tree<String> lColRow = lColRowIt.next();
 					String colName = lColRow.getHead();
-					String colValue = lColRow.getFirstChild().getHead();
+					
+					String colValue = "";
+					try{
+						colValue = lColRow.getFirstChild().getHead();
+					}catch(NullPointerException e){}
 					if(colName.equals(columnName)){
 						values.add(colValue);
 						end = true;
@@ -420,7 +440,10 @@ public class TableInteraction extends UserInteraction {
 				while(lColRowIt.hasNext()){
 					Tree<String> lColRow = lColRowIt.next();
 					String colName = lColRow.getHead();
-					String colValue = lColRow.getFirstChild().getHead();
+					String colValue = "";
+					try{
+						colValue = lColRow.getFirstChild().getHead();
+					}catch(NullPointerException e){}
 					curMap.put(colName, colValue);
 				}
 				if(!curMap.isEmpty()){

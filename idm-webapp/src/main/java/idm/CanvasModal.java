@@ -369,10 +369,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 			MessageUseful.addErrorMessage(error);
 			request.setAttribute("msnError", "msnError");
 		}else{
-			if (getListPageSize() - 1 > getListPosition()) {
-				MessageUseful.addInfoMessage(getMessageResources("success_message"));
-				request.setAttribute("msnError", "msnError");
-			}
+			MessageUseful.addInfoMessage(getMessageResources("success_message"));
+			request.setAttribute("msnSuccess", "msnSuccess");
 		}
 		setErrorMsg(error);
 
@@ -482,7 +480,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 			}
 
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error(e.getMessage(),e);
 			MessageUseful
 			.addErrorMessage(getMessageResources("msg_error_oops"));
 			HttpServletRequest request = (HttpServletRequest) FacesContext
@@ -507,7 +505,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 		for (int i = 0; i < inters.size(); i++) {
 
 			CanvasModalInteraction cmInter = inters.get(i);
-
+			cmInter.setUnchanged();
 			boolean interactionChanged = !cmInter.isUnchanged();
 			logger.info(cmInter.getId()+": "+interactionChanged);
 			if (interactionChanged) {

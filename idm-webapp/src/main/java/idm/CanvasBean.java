@@ -221,23 +221,19 @@ public class CanvasBean extends BaseBean implements Serializable {
 		logger.info("getIdMap1 :" + getIdMap());
 		logger.info("getIdMap2 :" + getIdMap().get(workflowName));
 		logger.info("getIdMap3 :" + paramGroupID);
+		
+		logger.info("posX " + posX +" posY "+ posY);
+		
 		if (getIdMap().get(workflowName) != null) {
-			logger.info("getIdMap4 :"
-					+ getIdMap().get(workflowName).get(paramGroupID));
+			logger.info("getIdMap4 :" + getIdMap().get(workflowName).get(paramGroupID));
 			if (getIdMap().get(workflowName).get(paramGroupID) != null) {
 				try {
 					DataFlow df = getDf();
 					if(df != null){
-						df.getElement(
-								getIdMap().get(workflowName).get(paramGroupID))
-								.setPosition(Double.valueOf(posX).intValue(),
-										Double.valueOf(posY).intValue());
-						logger.info(workflowName
-								+ " - "
-								+ getIdMap().get(workflowName)
-										.get(paramGroupID) + " - "
-								+ Double.valueOf(posX).intValue() + " - "
-								+ Double.valueOf(posY).intValue());
+						df.getElement(getIdMap().get(workflowName).get(paramGroupID)).setPosition(Double.valueOf(posX).intValue(), 
+								Double.valueOf(posY).intValue());
+						logger.info(workflowName + " - " + getIdMap().get(workflowName).get(paramGroupID) + " - "
+								+ Double.valueOf(posX).intValue() + " - " + Double.valueOf(posY).intValue());
 					}
 				} catch (RemoteException e) {
 					e.printStackTrace();
@@ -284,8 +280,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			// generate the label to put in the arrow
 			String label = "";
 
-			if (dfeObjA.getDFEOutput().entrySet().size() > 1
-					|| dfeObjB.getInput().entrySet().size() > 1) {
+			if (dfeObjA.getDFEOutput().entrySet().size() > 1 || dfeObjB.getInput().entrySet().size() > 1) {
 				if (dfeObjA.getDFEOutput().entrySet().size() > 1) {
 					label += nameElementA;
 				}
@@ -293,6 +288,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 				if (dfeObjB.getInput().entrySet().size() > 1) {
 					label += nameElementB;
 				}
+			}
+			if(label.equals(" -> ")){
+				label = "";
 			}
 			setLinkLabel(label);
 

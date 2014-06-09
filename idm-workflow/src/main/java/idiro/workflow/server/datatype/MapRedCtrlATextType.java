@@ -42,6 +42,11 @@ public class MapRedCtrlATextType extends MapRedDir{
 	public String getTypeName() throws RemoteException {
 		return "CTRL-A SEPARATED TEXT MAP-REDUCE DIRECTORY";
 	}
+	
+	@Override
+	public String[] getExtensions() throws RemoteException {
+		return new String[]{"*.mrctra"};
+	}
 
 	/**
 	 * Gernate a path given values

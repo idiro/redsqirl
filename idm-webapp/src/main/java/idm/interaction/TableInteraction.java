@@ -9,6 +9,7 @@ import idm.useful.SelectItemComparator;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -78,7 +79,7 @@ public class TableInteraction extends CanvasModalInteraction{
 
 		tableGeneratorRowToInsert = new LinkedHashMap<String, List<Map<String, String>>>();
 		tableGeneratorMenu = new LinkedList<SelectItem>();
-
+		boolean isGeneratorMenuInt = true;
 		if (inter.getTree().getFirstChild("table")
 				.getFirstChild("generator") != null) {
 			List<Tree<String>> list = inter.getTree()
@@ -89,6 +90,13 @@ public class TableInteraction extends CanvasModalInteraction{
 					String menuName = tree
 							.getFirstChild("title").getFirstChild()
 							.getHead();
+					if(isGeneratorMenuInt){
+						try{
+							Integer.valueOf(menuName);
+						}catch(NumberFormatException e ){
+							isGeneratorMenuInt = false;
+						}
+					}
 					logger.info("list value "
 							+ menuName);
 					tableGeneratorMenu.add(new SelectItem(menuName,menuName));
@@ -101,8 +109,13 @@ public class TableInteraction extends CanvasModalInteraction{
 						Map<String, String> t = new LinkedHashMap<String, String>();
 						for (Tree<String> treeFeat : treeRows
 								.getSubTreeList()) {
-							t.put(treeFeat.getHead(), treeFeat
-									.getFirstChild().getHead());
+							String colValue = "";
+							try{
+								colValue = treeFeat
+										.getFirstChild().getHead();
+							}catch(NullPointerException e){}
+							
+							t.put(treeFeat.getHead(), colValue);
 						}
 						tableGeneratorRowToInsert.get(menuName).add(t);
 					}
@@ -112,7 +125,17 @@ public class TableInteraction extends CanvasModalInteraction{
 				}
 			}
 			
-			Collections.sort(tableGeneratorMenu, new SelectItemComparator());
+			if(isGeneratorMenuInt){
+				Collections.sort(tableGeneratorMenu, new Comparator<SelectItem>(){
+					@Override
+					public int compare(SelectItem arg0, SelectItem arg1) {
+						return Integer.valueOf(arg0.getLabel()).compareTo(Integer.valueOf(arg1.getLabel()));
+					}
+					
+				});
+			}else{
+				Collections.sort(tableGeneratorMenu, new SelectItemComparator());
+			}
 			
 		}
 		
@@ -122,6 +145,7 @@ public class TableInteraction extends CanvasModalInteraction{
 		List<Tree<String>> list2 = inter.getTree()
 				.getFirstChild("table").getFirstChild("columns")
 				.getSubTreeList();
+		logger.info(printTree(inter.getTree()));
 		if (list2 != null) {
 			for (Tree<String> tree : list2) {
 				logger.info("list2 value " + tree.getHead());
@@ -173,9 +197,13 @@ public class TableInteraction extends CanvasModalInteraction{
 			for (Tree<String> rows : list) {
 				Map<String,String> cur = new LinkedHashMap<String,String>();
 				for (Tree<String> row : rows.getSubTreeList()) {
-					cur.put(row.getHead(),row.getFirstChild().getHead());
+					String colValue = "";
+					try{
+						colValue = row.getFirstChild().getHead();
+					}catch(NullPointerException e){}
+					cur.put(row.getHead(),colValue);
 					logger.info(row.getHead() + " -> "
-							+ row.getFirstChild().getHead());
+							+ colValue);
 				}
 				tableGrid.add(cur);
 			}
@@ -241,8 +269,12 @@ public class TableInteraction extends CanvasModalInteraction{
 				while(it.hasNext()) {
 					String column = it.next();
 					String value = cur[i];
-					unchanged &= row.getFirstChild(column)
-							.getFirstChild().getHead().equals(value);
+					String colValue = "";
+					try{
+						colValue = row.getFirstChild(column)
+								.getFirstChild().getHead();
+					}catch(NullPointerException e){}
+					unchanged &= colValue.equals(value);
 					++i;
 				}
 			}
