@@ -160,6 +160,8 @@ public class EditorFromTree implements Serializable{
 							.getFirstChild("help").getFirstChild().getHead()
 							: "";
 
+					helpFunction = helpFunction.replaceAll("'", "\\\\\\'");
+							
 					cur.get(menuName).add(
 							new String[] { nameFunction, inputFunction,
 									returnFunction, helpFunction });

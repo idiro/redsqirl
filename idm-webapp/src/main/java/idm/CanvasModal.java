@@ -369,10 +369,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 			MessageUseful.addErrorMessage(error);
 			request.setAttribute("msnError", "msnError");
 		}else{
-			if (getListPageSize() - 1 > getListPosition()) {
-				MessageUseful.addInfoMessage(getMessageResources("success_message"));
-				request.setAttribute("msnError", "msnError");
-			}
+			MessageUseful.addInfoMessage(getMessageResources("success_message"));
+			request.setAttribute("msnSuccess", "msnSuccess");
 		}
 		setErrorMsg(error);
 
