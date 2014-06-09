@@ -96,21 +96,21 @@
             reRender="modalOutputBrowser" oncomplete="#{rich:component('modalOutputBrowser')}.show()">
         </a4j:jsFunction>
     </a4j:region>
-    
             
-    <div style="width:100%; overflow: auto; height: 550px;" >
+    <div style="width:100%;overflow:auto;height:550px;" id="canvasModalDiv" >
                 
-        <rich:tabPanel id="canvasModalTabPanel"  style="border:none;" switchType="ajax" selectedTab="#{canvasModalBean.selectedTab}" >
+        <rich:tabPanel id="canvasModalTabPanel" style="border:none;width:100%;" switchType="ajax" selectedTab="#{canvasModalBean.selectedTab}" >
         
-                <a4j:status onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModal') });"
-                    onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
-                    onstop="jQuery.unblockUI();" />
+        <a4j:status onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModal') });"
+            onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
+            onstop="jQuery.unblockUI();" />
         
         <rich:tab id="confTabCM" 
             label="#{messages.label_dynamic_configuration}" 
             style="border:none;border-collapse:collapse;"
             rendered="#{canvasModalBean.listPageSize != 0}" >
-        <rich:panel id="panelDynamicForm" style="border:none;min-height: 465px;" >
+            
+        <rich:panel id="panelDynamicForm" style="border:none;min-height:465px;width:100%;" >
             
             <span id="canvasModalHeader">
             
@@ -198,7 +198,7 @@
                 </a4j:region>
                 <!-- browser -->
                 <a4j:region id="browserInteractionRegion" rendered="#{interCur.displayType == 'browser'}">
-                    <rich:panel style="border:none;" id="browserPanel" >
+                    <rich:panel style="border:none;width:100%;" id="browserPanel" >
                     
                         <h:outputText value="#{messages.label_path}" />
                         <br/>
@@ -211,7 +211,7 @@
             
                         <br/><br/>
                         
-                        <div id="browserProperties" style="width:100%; height:70px;  border:1px solid black; overflow-x: hidden;">
+                        <div id="browserProperties" style="width:100%;height:80px;border:1px solid black;">
                         
                             <rich:extendedDataTable id="browserTableProp" value="#{interCur.browser.listProperties}"
                                 var="property" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
@@ -238,7 +238,7 @@
                         
                         <br/>
                         
-                        <div id="divBrowserData" style="width:100%; height:120px;  border:1px solid black; overflow-x: hidden;">
+                        <div id="divBrowserData" style="width:100%;height:120px;border:1px solid black;">
                         
                             <rich:scrollableDataTable id="browserTableData" value="#{interCur.browser.gridRows}" height="100%"
                                 var="rowData" index="rowDataIndex" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
@@ -437,7 +437,7 @@
                 
                 <a4j:commandButton action="#{canvasModalBean.previousPage}" styleClass="greenButton" value="#{messages.button_previous}" rendered="#{canvasModalBean.firstPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, msnError" oncomplete="changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');" />
                 
-                <a4j:commandButton action="#{canvasModalBean.applyPage}" styleClass="greenButton" value="#{messages.button_apply}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, msnError, canvasModalTabPanel, browserTableProp, browserTableData, browserPropLabel, browserPropValue" oncomplete="changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');" />
+                <a4j:commandButton action="#{canvasModalBean.applyPage}" styleClass="greenButton" value="#{messages.button_apply}" reRender="panelBtCanvasModal, msnError, msnSuccess, browserTableProp, browserTableData, browserPropLabel, browserPropValue" oncomplete="changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');" />
     
                 <a4j:commandButton action="#{canvasModalBean.nextPage}" styleClass="greenButton" value="#{messages.button_next}" rendered="#{canvasModalBean.lastPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, browserTableData, msnError" oncomplete="changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');" />
                 

@@ -1738,7 +1738,7 @@
 	</a4j:region>
 
 	<a4j:region>
-		<rich:modalPanel id="modalChangeId" width="250" height="140"
+		<rich:modalPanel id="modalChangeId" width="250" height="145"
 			style="overflow:auto;" resizeable="true" zindex="2000">
 
 			<f:facet name="header" >Change Element Id</f:facet>
@@ -1853,5 +1853,29 @@
 
 		</center>
 	</rich:modalPanel>
+	
+	<rich:modalPanel id="msnSuccess" showWhenRendered="#{requestScope['msnSuccess'] != null}">
+		<center>
+
+			<table>
+				<tr>
+					<td>
+						<rich:messages id="msgS" globalOnly="false" layout="list"
+							styleClass="message" infoClass="messageok"
+							errorClass="messageerro" warnClass="messagealert"
+							showDetail="true" showSummary="false" ajaxRendered="false" />
+					</td>
+				</tr>
+			</table>
+
+			<br /> <br />
+
+			<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}"
+				onclick="#{rich:component('msnSuccess')}.hide(); return false;"
+				reRender="msnSuccess, msgS" />
+
+		</center>
+	</rich:modalPanel>
+	
 </body>
 </html>

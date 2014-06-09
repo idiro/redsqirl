@@ -41,7 +41,8 @@
 
     <a4j:region>
        <a4j:jsFunction name="modalOutputApplyPage" action="#{canvasModalBean.applyPage}" styleClass="greenButton" value="#{messages.button_apply}" 
-	reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, msnError, errorTable, canvasModalTabPanel, browserTableProp, browserTableData, browserPropLabel, browserPropValue" />
+	reRender="panelBtCanvasModal, msnError, errorTable, browserTableProp, browserTableData, browserPropLabel, browserPropValue, browserPath" 
+	oncomplete="jQuery('#canvasModalDiv').unblock();" />
     </a4j:region>
 
 	<a4j:jsFunction name="changePathModalOutput" action="#{canvasModalBean.outputTab.fileSystem.changePath}" />
@@ -134,7 +135,7 @@
 	<a4j:commandButton styleClass="greenButton" 
 	    action="#{canvasModalBean.outputTab.changePathOutputBrowser}" 
 	    value="#{messages.button_ok}"
-		onclick="#{rich:component('modalOutputBrowser')}.hide();" 
+		onclick="jQuery('#canvasModalDiv').block({ message: jQuery('#domMessageDivModal') });#{rich:component('modalOutputBrowser')}.hide();" 
 		reRender="dataOutputForm"
 		oncomplete="if(#{canvasModalBean.sourceNode})modalOutputApplyPage();" >
 		<a4j:actionparam name="pathFile" value="getPathOutPut('#{canvasModalBean.outputTab.fileSystem.path}')" noEscape="true" />
