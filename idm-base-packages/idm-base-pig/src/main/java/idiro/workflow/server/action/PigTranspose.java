@@ -14,8 +14,8 @@ import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.List;
 /**
- * Action to create a sample of a data set
- * @author keith
+ * Action transpose a dataset
+ * @author marcos
  *
  */
 public class PigTranspose extends PigElement {
@@ -113,8 +113,8 @@ public class PigTranspose extends PigElement {
 			String loader = getCurrentName();
 			String load = loader + " = " + getLoadQueryPiece(in) + ";\n\n";
 			String transpose = getTransposeQuery(loader, getNextName(), 
-					in) + "\n\n";
-			String store = getStoreQueryPiece(out, getCurrentName());
+					in, out) + "\n\n";
+			String store = getStoreQueryPiece(out, getCurrentName()) + "\n\n";
 			String removeTemp = getRemoveQueryPiece(out.getPath()+"_temp") + "\n\n";
 
 			if (transpose != null || !transpose.isEmpty()) {
@@ -128,9 +128,9 @@ public class PigTranspose extends PigElement {
 		return query;
 	}
 	
-	private String getTransposeQuery(String loader, String nextName, DFEOutput out) throws RemoteException{
+	private String getTransposeQuery(String loader, String nextName, DFEOutput in, DFEOutput out) throws RemoteException{
 		
-		String delimiterIn = ((MapRedTextType)out).getPigDelimiter();
+		String delimiterIn = ((MapRedTextType)in).getPigDelimiter();
 		
 		MapRedTextType output = (MapRedTextType) getDFEOutput().get(key_output); 
 		String delimiterOut = output.getPigDelimiter();
@@ -159,23 +159,23 @@ public class PigTranspose extends PigElement {
 		
 		query += "TMP3 = LOAD '"+ tempPath +"' USING PigStorage('"+delimiterIn+"') as (" + load2 + ");\n\n";
 		
-		query += nextName + " = FOREACH TMP3 GENERATE \n" + test(featuresInt.getValues(), delimiterOut)+";";
+		query += nextName + " = FOREACH TMP3 GENERATE \n" + generateColumns(featuresInt.getValues(), delimiterOut)+";";
 		
 		return query;
 	}
 	
-	private String test(List<String> columns, String delimiter){
+	private String generateColumns(List<String> columns, String delimiter){
 		
 		if (columns.size() == 0){
 			return "";
 		}
 		
 		else if (columns.size() == 1){
-			return "REPLACE( SUBSTRING("+columns.get(0)+", 2, (int) SIZE("+columns.get(0)+")-2) , '\\\\),\\\\(' , '"+delimiter+"')\n";
+			return "CONCAT(REPLACE( SUBSTRING("+columns.get(0)+", 2, (int) SIZE("+columns.get(0)+")-2) , '\\\\),\\\\(' , '"+delimiter+"'), '\\n')\n";
 		}
 		
 		else {
-			return "CONCAT("+test(columns.subList(0, 1), delimiter)+",\n"+test(columns.subList(1, columns.size()), delimiter)+")";
+			return "CONCAT("+generateColumns(columns.subList(0, 1), delimiter)+",\n"+generateColumns(columns.subList(1, columns.size()), delimiter)+")";
 		}
 	}
 	
