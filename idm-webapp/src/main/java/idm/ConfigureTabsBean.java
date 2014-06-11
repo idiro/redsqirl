@@ -97,7 +97,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 		}
 	}
 
-	public void retrieveItems() {
+	public void retrieveItems() throws RemoteException, Exception {
 		
 		logger.info("retrieveItems");
 		String selectedTab = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("selected");
@@ -106,10 +106,16 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 		
 		String[] items = new String[] {};
 		if (getMenuWA().containsKey(selectedTab)) {
+			
+			mountMenuActions();
+			
 			items = new String[getMenuWA().get(selectedTab).size()];
 
 			for (int i = 0; i < items.length; ++i) {
 				items[i] = getMenuWA().get(selectedTab).get(i)[0];
+				if(getMenuActions() != null && getMenuActions().contains(items[i])){
+					getMenuActions().remove(items[i]);
+				}
 			}
 		}
 		setItems(items);

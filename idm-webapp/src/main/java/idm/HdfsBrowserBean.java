@@ -50,17 +50,22 @@ public class HdfsBrowserBean extends HdfsBean {
 	 * @author Igor.Souza
 	 */
 	public void createSaveFolder() throws RemoteException {
+		logger.info("createSaveFolder");
 
-		String newPath = "/user/" + System.getProperty("user.name")
-				+ "/idm-save";
+		String newPath = "/user/" + System.getProperty("user.name") + "/idm-save";
 
+		logger.info("createSaveFolder newPath " + newPath);
+		
 		if (getDataStore().goTo(newPath)) {
+			logger.info("createSaveFolder path is ok");
 			updateTable();
 		} else {
 			getDataStore().create(newPath, new LinkedHashMap<String, String>());
 			if (getDataStore().goTo(newPath)) {
+				logger.info("createSaveFolder create new path");
 				updateTable();
 			} else {
+				logger.info("createSaveFolder path error");
 				getBundleMessage("error.invalid.path");
 			}
 		}

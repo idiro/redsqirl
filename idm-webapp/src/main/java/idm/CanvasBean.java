@@ -221,9 +221,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 		logger.info("getIdMap1 :" + getIdMap());
 		logger.info("getIdMap2 :" + getIdMap().get(workflowName));
 		logger.info("getIdMap3 :" + paramGroupID);
-		
+
 		logger.info("posX " + posX +" posY "+ posY);
-		
+
 		if (getIdMap().get(workflowName) != null) {
 			logger.info("getIdMap4 :" + getIdMap().get(workflowName).get(paramGroupID));
 			if (getIdMap().get(workflowName).get(paramGroupID) != null) {
@@ -765,9 +765,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 	}
 
 	public void stopRunningWorkflow() throws RemoteException, Exception {
-		
+
 		logger.info("stopRunningWorkflow ");
-		
+
 		DataFlow df = getDf();
 		if (df != null && df.getOozieJobId() != null) {
 			getOozie().kill(df.getOozieJobId());
@@ -983,10 +983,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 		String pathExistsStr = null;
 		StringBuffer tooltip = new StringBuffer();
 
-		tooltip.append("<center><span style='font-size:15px;'>" + dfe.getComponentId() + "</span></center><br/>");
-		tooltip.append("Type: " + WordUtils.capitalizeFully(dfe.getName().replace('_', ' ')) + "<br/>");
-		
 		if (dfe != null && dfe.getDFEOutput() != null) {
+
+			tooltip.append("<center><span style='font-size:15px;'>" + dfe.getComponentId() + "</span></center><br/>");
+			tooltip.append("Type: " + WordUtils.capitalizeFully(dfe.getName().replace('_', ' ')) + "<br/>");
+
 			boolean pathExists = false;
 			for (Entry<String, DFEOutput> e : dfe.getDFEOutput().entrySet()) {
 
@@ -1012,7 +1013,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 						state = stateCur;
 					}
 				}
-				
+
 				tooltip.append("<br/>");
 				if(!e.getKey().isEmpty()){
 					tooltip.append("Output Name: " + e.getKey() + "<br/>");
@@ -1020,7 +1021,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 					tooltip.append("<span style='font-size:14px;'>&nbsp;Output " + "</span><br/>");
 				}
 				tooltip.append("Output Type: " + e.getValue().getTypeName() + "<br/>");
-				
+
 				if(e.getValue().isPathExists()){
 					tooltip.append("Output Path: <span style='color:#adff2f'>" + e.getValue().getPath() + "</span><br/>");
 				}else{
@@ -1029,7 +1030,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				//tooltip.append("Path exist: " + e.getValue().isPathExists() + "<br/>");
 
 			}
-			
+
 			if (dfe != null && dfe.getDFEOutput() != null) {
 				for (Entry<String, DFEOutput> e : dfe.getDFEOutput().entrySet()) {
 					if(e.getValue().getFeatures() != null && e.getValue().getFeatures().getFeaturesNames() != null){
@@ -1055,8 +1056,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 					}
 				}
 			}
-			
-			
+
+
 			if (!dfe.getDFEOutput().isEmpty()) {
 				pathExistsStr = String.valueOf(pathExists);
 			}
@@ -1234,20 +1235,20 @@ public class CanvasBean extends BaseBean implements Serializable {
 					if (e.getKey().equals(outputName)) {
 						color = e.getValue().getColour();
 						typeName = e.getValue().getTypeName();
-						
+
 						tooltip.append("<center><span style='font-size:15px;'>" + df.getComponentId() + " -> " + dfIn.getComponentId() + "</span></center><br/>");
 						if(!outputName.isEmpty()){
 							tooltip.append("Name: " + outputName + "<br/>");
 						}
 						tooltip.append("Type: " + typeName + "<br/>");
-						
+
 						if(e.getValue().isPathExists()){
 							tooltip.append("Path: <span style='color:#adff2f'>" + e.getValue().getPath() + "</span><br/>");
 						}else{
 							tooltip.append("Path: <span style='color:#d2691e'>" + e.getValue().getPath() + "</span><br/>");
 						}
 						//tooltip.append("Path exist: " + e.getValue().isPathExists() + "<br/>");
-						
+
 						if(e.getValue().getFeatures() != null && e.getValue().getFeatures().getFeaturesNames() != null){
 							tooltip.append("<br/>");
 							tooltip.append("<table style='border:1px solid;width:100%;'><tr><td> Name </td><td> Type </td></tr>");
@@ -1265,7 +1266,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 							tooltip.append("</table>");
 							tooltip.append("<br/>");
 						}
-						
+
 						logger.info(e.getKey() + " - " + color);
 						break;
 					}
