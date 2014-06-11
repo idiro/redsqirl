@@ -22,6 +22,21 @@
 	function getOldTabName(){
 		return oldTabName;
 	}
+
+	function checkNameFooter(){
+		
+		if(jQuery("#"+jQuery("[id$='newNameFooter']").val()).length  == 1){
+			alert("This Name is already used by the System");
+			jQuery("[id$='newNameFooter']").val('');
+			jQuery.unblockUI();
+			return false;
+		}else{
+			createTabJS();
+			jQuery("[id$='newNameFooter']").val('');
+		}
+
+		
+	}
 	
 </script>
 
@@ -52,9 +67,10 @@
 			
 			<h:outputText value="#{messages.button_new_menu}" />
 			<br />
-			<h:inputText value="#{configureTabsBean.tabName}" maxlength="30" style="width:100px;" 
+			<h:inputText id="newNameFooter" value="#{configureTabsBean.tabName}" maxlength="30" style="width:100px;" 
 				onkeypress="return enableEnterKey(event, 'configureTabsAddBtn');" onkeyup="nospaces(this)"/>
-			<a4j:commandButton id="configureTabsAddBtn" action="#{configureTabsBean.createTab}" type="reset" value="+" reRender="tabsMenu" />
+			<a4j:commandButton id="configureTabsAddBtn" onclick="checkNameFooter();" type="reset" value="+" reRender="tabsMenu" />
+			<a4j:jsFunction name="createTabJS" action="#{configureTabsBean.createTab}" />
 			
 		</rich:panel>
 		

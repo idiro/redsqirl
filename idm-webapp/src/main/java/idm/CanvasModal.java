@@ -297,7 +297,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 						// retrieves the correct page
 						setCanvasTitle(WordUtils.capitalizeFully(dfe.getName().replace("_", " ")));
-						
+
 						if(listPageSize > 0){
 							mountInteractionForm();
 						}else{
@@ -604,7 +604,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 			setFirstPage("N");
 		}
 	}
-	
+
 	public void checkLastPage() {
 		if (getListPageSize() - 1 > getListPosition()) {
 			setLastPage("N");
