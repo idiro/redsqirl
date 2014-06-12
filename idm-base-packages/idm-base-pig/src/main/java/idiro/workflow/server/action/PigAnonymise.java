@@ -4,6 +4,7 @@ import idiro.utils.FeatureList;
 import idiro.utils.OrderedFeatureList;
 import idiro.workflow.server.AppendListInteraction;
 import idiro.workflow.server.DataProperty;
+import idiro.workflow.server.InputInteraction;
 import idiro.workflow.server.Page;
 import idiro.workflow.server.datatype.MapRedTextType;
 import idiro.workflow.server.enumeration.FeatureType;
@@ -28,7 +29,7 @@ public class PigAnonymise extends PigElement {
 	 */
 	private static final long serialVersionUID = 600343170359664918L;
 	/**
-	 * Key Sample
+	 * Key Features
 	 */
 	public static String key_features = "features";
 	
@@ -37,13 +38,28 @@ public class PigAnonymise extends PigElement {
 	 */
 	public static String key_index_map = "index_map",
 	/*Key index output*/
-	key_output_index = "index";
-			
-			
+	key_output_index = "index",
+	/*Key factor interaction*/
+	key_factor = "factor",
+	/*Key offset interaction*/
+	key_offset = "offset";
+					
 	/**
 	 * Features Interaction
 	 */
 	public AppendListInteraction featuresInt;
+	
+	/**
+	 * Offset Interaction
+	 */
+	protected InputInteraction offsetInt;
+	
+	/**
+	 * Factor Interaction
+	 */
+	protected InputInteraction factorInt;
+	
+	
 	/**
 	 * Page for action
 	 */
@@ -56,21 +72,38 @@ public class PigAnonymise extends PigElement {
 		super(1, 2, 1);
 		init();
 		
-		page1 = addPage(PigLanguageManager.getText("pig.sample_page1.title"),
-				PigLanguageManager.getText("pig.sample_page1.legend"), 1);
+		page1 = addPage(PigLanguageManager.getText("pig.anonymise_page1.title"),
+				PigLanguageManager.getText("pig.anonymise_page1.legend"), 1);
 		logger.info("created page");
 
 		featuresInt = new AppendListInteraction(key_features,
-				PigLanguageManager.getText("pig.transpose.features_interaction.title"),
-				PigLanguageManager.getText("pig.transpose.features_interaction.legend"), 0,
+				PigLanguageManager.getText("pig.anonymise.features_interaction.title"),
+				PigLanguageManager.getText("pig.anonymise.features_interaction.legend"), 0,
 				0, true);
 		
+		offsetInt = new InputInteraction(
+				key_offset,
+				PigLanguageManager.getText("pig.anonymise.offset_interaction.title"),
+				PigLanguageManager.getText("pig.anonymise.offset_interaction.legend"), 
+				1, 0);
+		offsetInt.setRegex("^[1-9]\\d*$");
+		offsetInt.setValue("0");
+		
+		factorInt = new InputInteraction(
+				key_factor,
+				PigLanguageManager.getText("pig.anonymise.factor_interaction.title"),
+				PigLanguageManager.getText("pig.anonymise.factor_interaction.legend"), 
+				2, 0);
+		factorInt.setRegex("^[1-9]\\d*$");
+		factorInt.setValue("1");
+		
 		page1.addInteraction(featuresInt);
+		page1.addInteraction(offsetInt);
+		page1.addInteraction(factorInt);
 		
 		
-		page2 = addPage(PigLanguageManager.getText("pig.sample_page2.title"),
-				PigLanguageManager.getText("pig.sample_page2.legend"), 1);
-		page2.addInteraction(parallelInt);
+		page2 = addPage(PigLanguageManager.getText("pig.anonymise_page2.title"),
+				PigLanguageManager.getText("pig.anonymise_page2.legend"), 1);
 		page2.addInteraction(delimiterOutputInt);
 		page2.addInteraction(savetypeOutputInt);
 		logger.info("added interactions");
@@ -145,7 +178,7 @@ public class PigAnonymise extends PigElement {
 	
 	private String getAnonymiseStringQuery(String input) throws RemoteException{
 		
-		String anonFeature = featuresInt.getValues().get(0);
+		List<String> anonFeatures = featuresInt.getValues();
 		
 		int numFeat = getInFeatures().getFeaturesNames().size();
 		DFEOutput inIndex = null;
@@ -155,16 +188,37 @@ public class PigAnonymise extends PigElement {
 		
 		String query = "";
 		
-		query += "ids = FOREACH " + input + " GENERATE " + anonFeature + ";\n";
-		query += "ids2 = DISTINCT ids;\n\n";
+		int i = 0;
+		String idsUnion = "";
+		Iterator<String> anonFeatureIt = anonFeatures.iterator();
+		while (anonFeatureIt.hasNext()){
+			query += "ids_" + i + " = FOREACH " + input + " GENERATE " + anonFeatureIt.next() + ";\n";
+			idsUnion += "ids_" + i;
+			if (anonFeatureIt.hasNext()){
+				idsUnion += ", ";
+			}
+			i++;
+		}
+		if (anonFeatures.size() > 1){
+			query += "ids = UNION " + idsUnion + ";\n\n";
+			query += "ids2 = DISTINCT ids;\n\n";
+		}
+		else{
+			query += "ids2 = DISTINCT ids_0;\n\n";
+		}
+		
 		
 		if (inIndex != null){
 			
-			query += "indexes_input = LOAD '" + inIndex.getPath() + "' USING PigStorage('|') as (INDEX:INT, VALUE:CHARARRAY);\n";
-			query += "ids3 = JOIN ids2 BY " + anonFeature + " LEFT OUTER, indexes_input BY VALUE;\n\n";
-
-			query += "ids4 = FILTER ids3 BY VALUE IS NULL;\n";
-			query += "ids5 = FOREACH ids4 GENERATE " + anonFeature + ";\n";
+			query += "indexes_input = LOAD '" + inIndex.getPath() + "' USING PigStorage('|') as (INDEX:INT, VALUE:CHARARRAY);\n\n";
+			
+			query += "ids3_1 = JOIN ids2 BY $0 LEFT OUTER, indexes_input BY VALUE;\n";
+			query += "ids4_1 = FILTER ids3_1 BY VALUE IS NULL;\n";
+			query += "ids5_1 = FOREACH ids4_1 GENERATE $0;\n";
+				
+			query += "ids5 = DISTINCT ids5_1;\n\n";
+			
+			
 			query += "ids7 = GROUP indexes_input ALL;\n";
 			query += "ids8 = FOREACH ids7 GENERATE MAX(indexes_input.INDEX);\n\n";
 
@@ -177,22 +231,45 @@ public class PigAnonymise extends PigElement {
 			query += "indexes = RANK ids2;\n\n";
 		}
 		      
-		query += "result1 = JOIN " + input + " BY " + anonFeature + " LEFT OUTER, indexes by $1;\n";
-		query += getNextName() + " = FOREACH result1 GENERATE $" + numFeat + ", ";
 		
-		Iterator<String> it = getInFeatures().getFeaturesNames().iterator();
-		while (it.hasNext()){
-			String feat = it.next();
+		i = 0;
+		idsUnion = "";
+		anonFeatureIt = anonFeatures.iterator();
+		String dataSet = input;
+		while (anonFeatureIt.hasNext()){
+			String anonFeature = anonFeatureIt.next();
+			query += "result1_" + i + " = JOIN " + dataSet + " BY " + anonFeature + " LEFT OUTER, indexes by $1;\n";
 			
-			if (!feat.equals(anonFeature)){
-				query += feat;
+			if (anonFeatureIt.hasNext()){
+				dataSet = "result2_" + i;
+			}
+			else{
+				dataSet = getNextName();
+			}
+			
+			query += dataSet + " = FOREACH result1_" + i + " GENERATE ";
+			
+			Iterator<String> it = getInFeatures().getFeaturesNames().iterator();
+			int j = 0;
+			while (it.hasNext()){
+				String feat = it.next();
+				
+				if (!feat.equals(anonFeature)){
+					query += "$" + j;
+					
+				}
+				else{
+					query += "$" + numFeat;
+				}
 				
 				if (it.hasNext()){
 					query += ", ";
 				}
+				j++;
 			}
+			query += ";\n\n";
+			i++;
 		}
-		query += ";";
 		
 		
 		return query;
@@ -201,8 +278,8 @@ public class PigAnonymise extends PigElement {
 	private String getAnonymiseNumberQuery(String input) throws RemoteException{
 		
 		List<String> anonFeature = featuresInt.getValues();
-		String offset = "10";
-		String factor = "2";
+		String offset = offsetInt.getValue();
+		String factor = factorInt.getValue();
 		
 		String query = "";
 		
