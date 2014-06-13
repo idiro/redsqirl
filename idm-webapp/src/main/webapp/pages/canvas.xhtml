@@ -46,6 +46,11 @@
 	    	  configureTabsRemote();
 	    	  configureFooter();
 
+	    	jQuery("[id$='openCanvasScreenHdfs']").click();
+	    	jQuery("[id$='openCanvasScreenHive']").click();
+	    	jQuery("[id$='openCanvasScreenSsh']").click();
+	    	jQuery("[id$='openCanvasScreenHdfsBrowser']").click();
+
 	    	  var tabscanvas = jQuery("#canvas-tabs").tabs().scrollabletab();
 	    	  /* 
 	    	  tabscanvas.find(".ui-tabs-nav").sortable({
@@ -378,15 +383,19 @@
 		    		  
 	    		  });
 	    		 
-	    		 var isChrome = window.chrome;
-	    		 if(isChrome){
+	    		 //var isChrome = window.chrome;
+	    		 //if(isChrome){
 		    		 
 		    		 //disable select in chrome
 		    		 jQuery('*').css('-webkit-user-select', 'none');
+		    		 jQuery('*').css('-khtml-user-select', 'none');
+		    		 jQuery('*').css('-moz-user-select', 'none');
+		    		 jQuery('*').css('-o-user-select', 'none');
+		    		 jQuery('*').css('user-select', 'none');
 		    		 jQuery('input').css('-webkit-user-select', 'text');
 		    		 jQuery('#canvas-1').css('position', 'fixed');
 		    		 
-				 }
+				 //}
 
 	    		 jQuery("#tabsFooter").find("a").click(function() {
 	    			 resizeCanvas(30,30);
@@ -1159,6 +1168,22 @@
 					<a4j:actionparam name="allpositions" />
 				</a4j:jsFunction>
 			</a4j:region>
+			
+			<a4j:region>
+				
+				<a4j:commandLink id="openCanvasScreenHdfs" action="#{hdfsBean.openCanvasScreen}" style="display:none;" reRender="fileSysGridForm"
+				onclick="jQuery('#tabs-7').block({ message: jQuery('#domMessageDiv7') });" oncomplete="jQuery('#tabs-7').unblock();" />
+				
+				<a4j:commandLink id="openCanvasScreenHive" action="#{hiveBean.openCanvasScreen}" style="display:none;" reRender="fileSysGridFormHive"
+				onclick="jQuery('#tabs-4').block({ message: jQuery('#domMessageDiv4') });" oncomplete="jQuery('#tabs-4').unblock();" />
+				
+				<a4j:commandLink id="openCanvasScreenSsh" action="#{sshBean.openCanvasScreen}" style="display:none;" reRender="tabs-8, tabRemote, fileSysGridFormSsh, fileSysGridFormSshTab"
+				onclick="jQuery('#tabs-8').block({ message: jQuery('#domMessageDiv8') });" oncomplete="jQuery('#tabs-8').unblock();" />
+				
+				<a4j:commandLink id="openCanvasScreenHdfsBrowser" action="#{browserHdfsBean.openCanvasScreen}" style="display:none;" />
+				
+			</a4j:region>
+			
 
 			<a4j:region>
                 <!-- <h:panelGrid columns="2" width="100%"> -->
@@ -1697,8 +1722,7 @@
 	</a4j:region>
 
 	<a4j:region>
-		<rich:modalPanel id="modalFileHdfs" width="600" height="430"
-			style="overflow:hide;" resizeable="false">
+		<rich:modalPanel id="modalFileHdfs" width="600" height="430" style="overflow:hide;" resizeable="false">
 
 			<f:facet name="header" >Hadoop Distributed File System Browser</f:facet>
 			<f:facet name="controls">
@@ -1708,10 +1732,11 @@
 			</f:facet>
 
             <h:form>
+	            
 				<h:panelGroup>
-					<a4j:include viewId="/pages/modalFileHdfs.xhtml"
-						ajaxRendered="true" />
+					<a4j:include viewId="/pages/modalFileHdfs.xhtml" ajaxRendered="true" />
 				</h:panelGroup>
+				
 			</h:form>
 
 		</rich:modalPanel>

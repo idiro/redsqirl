@@ -48,16 +48,17 @@ public class SshBean extends FileSystemBean implements Serializable{
 	 * @author Igor.Souza
 	 * @throws Exception 
 	 */
-	@PostConstruct
+	//@PostConstruct
 	public void openCanvasScreen() {
 		
-		FacesContext context = FacesContext.getCurrentInstance();
+		logger.info("openCanvasScreen sshbean");
+		
+		/*FacesContext context = FacesContext.getCurrentInstance();
 		UserInfoBean userInfoBean = (UserInfoBean) context.getApplication()
 				.evaluateExpressionGet(context, "#{userInfoBean}",
 						UserInfoBean.class);
-		logger.info("update progressbar");
-		userInfoBean.setValueProgressBar(51);
-		logger.info("SshOpenCanvasScreen");
+		
+		userInfoBean.setValueProgressBar(51);*/
 		
 		try {
 			

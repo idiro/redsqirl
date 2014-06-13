@@ -717,20 +717,14 @@ function getCircleLineIntersectionPoint(pointAx, pointAy, pointBx, pointBy,
 	var caX = circleX - pointAx;
 	var caY = circleY - pointAy;
 
-	var a = baX * baX + baY * baY;
-	var bBy2 = baX * caX + baY * caY;
-	var c = caX * caX + caY * caY - radius * radius;
+	var a = 1 / (baX * baX + baY * baY);
 
-	var pBy2 = bBy2 / a;
-	var q = c / a;
+	var pBy2 = (baX * caX + baY * caY) * a;
 
-	var disc = pBy2 * pBy2 - q;
+	var tmpSqrt = Math.sqrt(pBy2 * pBy2 - (caX * caX + caY * caY - radius * radius) * a);
 
-	var tmpSqrt = Math.sqrt(disc);
-	var abScalingFactor1 = -pBy2 + tmpSqrt;
-
-	var px = pointAx - baX * abScalingFactor1;
-	var py = pointAy - baY * abScalingFactor1;
+	var px = pointAx - baX * (tmpSqrt - pBy2);
+	var py = pointAy - baY * (tmpSqrt - pBy2);
 
 	return [ px, py ];
 }
@@ -875,18 +869,26 @@ function getArrowPositions2(g, group, position, offsetX){
 }
 
 function updatePositionArrow(arrow, newPoint, newPoint2, headlen, headlen2, angle){
+	
+	sin_angle = Math.sin(angle);
+	cos_angle = Math.cos(angle);
+	cos6 = 0.866025;
+	sin6 = 0.5;
+	cos3 = 0.5;
+	sin3 = 0.866025;
+	
 	arrow.setPoints([ arrow.getPoints()[0].x, arrow.getPoints()[0].y,
-		newPoint2[0], newPoint2[1], newPoint2[0], newPoint2[1],
-		newPoint[0] - headlen * Math.cos(angle - Math.PI / 6),
-		newPoint[1] - headlen * Math.sin(angle - Math.PI / 6), newPoint[0],
-		newPoint[1], newPoint[0] - headlen * Math.cos(angle + Math.PI / 6),
-		newPoint[1] - headlen * Math.sin(angle + Math.PI / 6),
-		newPoint2[0], newPoint2[1],
-		newPoint2[0] - headlen2 * Math.cos(angle - Math.PI / 3),
-		newPoint2[1] - headlen2 * Math.sin(angle - Math.PI / 3),
-		newPoint2[0], newPoint2[1],
-		newPoint2[0] - headlen2 * Math.cos(angle + Math.PI / 3),
-		newPoint2[1] - headlen2 * Math.sin(angle + Math.PI / 3) ]);
+	newPoint2[0], newPoint2[1], newPoint2[0], newPoint2[1],
+	newPoint[0] - headlen * (cos_angle*cos6 + sin_angle*sin6), // Math.cos(angle - Math.PI / 6)
+	newPoint[1] - headlen * (sin_angle*cos6 - cos_angle*sin6), newPoint[0], // Math.sin(angle - Math.PI / 6)
+	newPoint[1], newPoint[0] - headlen * (cos_angle*cos6 - sin_angle*sin6), //Math.cos(angle + Math.PI / 6)
+	newPoint[1] - headlen * (sin_angle*cos6 + cos_angle*sin6), //Math.sin(angle + Math.PI / 6)
+	newPoint2[0], newPoint2[1],
+	newPoint2[0] - headlen2 * (cos_angle*cos3 + sin_angle*sin3), //Math.cos(angle - Math.PI / 3)
+	newPoint2[1] - headlen2 * (sin_angle*cos3 - cos_angle*sin3), //Math.sin(angle - Math.PI / 3)
+	newPoint2[0], newPoint2[1],
+	newPoint2[0] - headlen2 * (cos_angle*cos3 - sin_angle*sin3) , //Math.cos(angle + Math.PI / 3)
+	newPoint2[1] - headlen2 * (sin_angle*cos3 + cos_angle*sin3) ]); //Math.sin(angle + Math.PI / 3)
 	
 	if (arrow.label != null){
 		var x1 = arrow.getPoints()[0].x
@@ -895,8 +897,8 @@ function updatePositionArrow(arrow, newPoint, newPoint2, headlen, headlen2, angl
 		var x2 = arrow.getPoints()[1].x
 		var y2 = arrow.getPoints()[1].y
 		
-		arrow.label.setX((x1 + x2 + (Math.cos(angle) * 42))/2  - Math.abs((Math.cos(angle) * arrow.label.getText().length*2.7)));
-		arrow.label.setY((y1 + y2 + (Math.sin(angle) * 42))/2);
+		arrow.label.setX((x1 + x2 + (cos_angle * 42))*0.5  - Math.abs((cos_angle * arrow.label.getText().length*2.7)));
+		arrow.label.setY((y1 + y2 + (sin_angle * 42))*0.5);
 	}
 }
 
@@ -1759,19 +1761,22 @@ function configureGroupListeners(canvasName, group) {
 	});
 	
 	group.on('click', function(e) {
+		
 		jQuery(".tooltipCanvas").remove();
 	    if(e.button != 2){
 		  deselectOnClick(canvasName, group.getChildren()[2], e);
 		
 		  group.getChildren()[2].on('click', function(e) {
 			polygonOnClick(this, e, canvasName);
-		
-		  }); 
+		  });
+		  
         }else{
-              rightClickGroup = this;
-              cmenuCanvas.show(this,e);
-              e.preventDefault();
-              return false;
+        	rightClickGroup = this;
+            cmenuCanvas.show(this,e);
+           	e.preventDefault();
+           	//e.stopPropagation();
+           	//e.cancelBubble = true;
+            return false;
         }
 	});
 

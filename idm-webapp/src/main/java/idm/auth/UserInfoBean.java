@@ -202,7 +202,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 			}
 		}
 		logger.info("update progressbar");
-		setValueProgressBar(1);
+		setValueProgressBar(5);
 
 		logger.info("validateSecondLogin end");
 
@@ -285,7 +285,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		logger.info("Authentication Success");
 
 		logger.info("update progressbar");
-		setValueProgressBar(3);
+		setValueProgressBar(7);
 
 		// error with rmi connection
 		boolean succ = createRegistry();
@@ -400,9 +400,8 @@ public class UserInfoBean extends BaseBean implements Serializable {
 				sc.setAttribute("UserInfo", sessionSSH.getUserInfo());
 			}
 
-
 			logger.info("update progressbar");
-			setValueProgressBar(5);
+			setValueProgressBar(10);
 
 			session.setAttribute("serverThread", th);
 			sc.setAttribute("registry", registry);
@@ -431,12 +430,14 @@ public class UserInfoBean extends BaseBean implements Serializable {
 							}
 							if (getValueProgressBar() < 45) {
 								logger.info("update progressbar");
-								setValueProgressBar(getValueProgressBar() + 1);
+								setValueProgressBar(getValueProgressBar() + 3);
+							}else{
+								setValueProgressBar(getValueProgressBar() + 2);
 							}
 						}
 					}
 					logger.info("update progressbar");
-					setValueProgressBar(46);
+					setValueProgressBar(80);
 				}
 
 				boolean error = true;
@@ -445,8 +446,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 				while (error && !cancel) {
 					cont++;
 					try {
-						Remote remoteObject = registry.lookup(userName + "@"
-								+ beanName);
+						Remote remoteObject = registry.lookup(userName + "@" + beanName);
 						error = false;
 						session.setAttribute(beanName, remoteObject);
 					} catch (Exception e) {
@@ -459,7 +459,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 					}
 				}
 			}
-
+			
 			return true;
 
 		} catch (Exception e) {
@@ -469,7 +469,6 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		}
 
 	}
-
 
 	/**
 	 * signOut

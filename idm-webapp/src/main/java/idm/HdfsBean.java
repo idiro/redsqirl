@@ -36,7 +36,7 @@ public class HdfsBean extends FileSystemBean {
 	 * @return
 	 * @author Igor.Souza
 	 */
-	@PostConstruct
+	//@PostConstruct
 	public void openCanvasScreen() {
 		logger.info("HdfsOpenCanvasScreen");
 		try {
@@ -49,12 +49,12 @@ public class HdfsBean extends FileSystemBean {
 				mountTable();
 			}
 			
-			FacesContext context = FacesContext.getCurrentInstance();
+			/*FacesContext context = FacesContext.getCurrentInstance();
 			UserInfoBean userInfoBean = (UserInfoBean) context.getApplication()
 					.evaluateExpressionGet(context, "#{userInfoBean}",
 							UserInfoBean.class);
-			logger.info("update progressbar");
-			userInfoBean.setValueProgressBar(userInfoBean.getValueProgressBar() + 12);
+			
+			userInfoBean.setValueProgressBar(userInfoBean.getValueProgressBar() + 12);*/
 
 		}catch(Exception e){
 			logger.error(e);

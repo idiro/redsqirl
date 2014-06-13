@@ -2,6 +2,7 @@ package idm;
 
 import idiro.workflow.server.connect.interfaces.DataStore;
 import idiro.workflow.server.connect.interfaces.DataStore.ParamProperty;
+import idm.auth.UserInfoBean;
 import idm.dynamictable.SelectableRow;
 import idm.dynamictable.SelectableTable;
 import idm.useful.MessageUseful;
@@ -104,6 +105,16 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		DataStore hInt = getDataStore();
 		logger.info("Started mounting table");
 		setPath(hInt.getPath());
+		
+		
+		FacesContext context = FacesContext.getCurrentInstance();
+		UserInfoBean userInfoBean = (UserInfoBean) context.getApplication()
+				.evaluateExpressionGet(context, "#{userInfoBean}",
+						UserInfoBean.class);
+		
+		logger.info("update progressbar");
+		userInfoBean.setValueProgressBar(Math.min(100, userInfoBean.getValueProgressBar()+5));
+		
 
 		Map<String, Map<String, String>> mapSSH = hInt.getChildrenProperties();
 		setPropsParam(hInt.getParamProperties());
@@ -132,6 +143,10 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			setCreateProps(createProps);
 
 			updateTable();
+			
+			logger.info("update progressbar");
+			userInfoBean.setValueProgressBar(Math.min(100, userInfoBean.getValueProgressBar()+5));
+			
 
 		}
 
@@ -612,11 +627,11 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	}
 
 	public String getCanDelete() throws RemoteException {
-		return getDataStore().canDelete();
+		return getDataStore() != null ? getDataStore().canDelete() : "NULL";
 	}
 
 	public String getCanCreate() throws RemoteException {
-		return getDataStore().canCreate();
+		return getDataStore() != null ? getDataStore().canCreate() : "NULL";
 	}
 
 	public SelectableTable getTableGrid() {

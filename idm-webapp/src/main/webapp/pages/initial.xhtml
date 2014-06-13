@@ -33,9 +33,17 @@
 	
 	jQuery(document).ready(function() {
 		 //<![CDATA[
+		 
+		 
+		 jQuery(document).bind('keypress', function (e) {
+			if (e.which == 13) { // Delete
+				jQuery("[id$='idButtonLogin']").click();
+			}
+		});
+		 
+		 
 	
 	    var remember = jQuery.cookie('remember');
-	    
 	
 	    if (remember == 'true'){
 	        
@@ -144,7 +152,7 @@
 										<br />
 										<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('modalAlreadySignedIn')}.hide(); return false;" />
                                         <a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" onclick="#{rich:component('modalAlreadySignedIn')}.hide();invalidateSession(); return false;" />
-										</center>
+									</center>
 								</rich:modalPanel>
 			
 								<rich:modalPanel id="msnLoginError" showWhenRendered="#{requestScope['msnLoginError'] != null}">
@@ -204,7 +212,6 @@
 	</table>
 	
 	<div style="height:100px;width:100%;background:#C0D72F;position:relative;bottom:-17px;" />
-
 	
 </body>
 </html>

@@ -26,7 +26,7 @@ public class HiveBean extends FileSystemBean {
 	 * @return
 	 * @author Igor.Souza
 	 */
-	@PostConstruct
+	//@PostConstruct
 	public void openCanvasScreen() {
 		logger.info("HiveOpenCanvasScreen");
 
@@ -39,13 +39,12 @@ public class HiveBean extends FileSystemBean {
 				mountTable();
 			}
 
-			FacesContext context = FacesContext.getCurrentInstance();
+			/*FacesContext context = FacesContext.getCurrentInstance();
 			UserInfoBean userInfoBean = (UserInfoBean) context.getApplication()
 					.evaluateExpressionGet(context, "#{userInfoBean}",
 							UserInfoBean.class);
 			
-			logger.info("update progressbar");
-			userInfoBean.setValueProgressBar(userInfoBean.getValueProgressBar()+24);
+			userInfoBean.setValueProgressBar(userInfoBean.getValueProgressBar()+24);*/
 
 		}catch(Exception e){
 			logger.error(e);

@@ -7,7 +7,10 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
@@ -51,8 +54,12 @@ public class HdfsBrowserBean extends HdfsBean {
 	 */
 	public void createSaveFolder() throws RemoteException {
 		logger.info("createSaveFolder");
-
-		String newPath = "/user/" + System.getProperty("user.name") + "/idm-save";
+		
+		FacesContext fCtx = FacesContext.getCurrentInstance();
+		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
+		String userName = (String) session.getAttribute("username");
+		
+		String newPath = "/user/" + userName + "/idm-save";
 
 		logger.info("createSaveFolder newPath " + newPath);
 		
