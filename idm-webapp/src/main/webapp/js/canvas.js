@@ -280,6 +280,7 @@ function createLegend(canvasName) {
 
 	var runningStatusColours = [
 	    	                 ['OK',getColorRunning('OK')],
+	    	                 ['KILLED',getColorRunning('KILLED')],
 	    	                 ['ERROR',getColorRunning('ERROR')]];
 		
 	var arcColoursArray = {};
@@ -2141,6 +2142,9 @@ function getLabelRunning(color){
 	if (color == "#008000"){ //green
 		return text+"OK"; 
 	}
+	if (color == "#FFA500"){ //Orange
+		return text+"Killed";
+	}
 	else if (color == "#ff0000"){
 		return text+"Error"; //red
 	}
@@ -2153,6 +2157,9 @@ function getColorRunning(status){
 
 	if (status == "OK"){
 		return "#008000"; //green
+	}
+	if (status == "KILLED"){
+		return "#FFA500"; //orange
 	}
 	else if (status == "ERROR"){
 		return "#ff0000"; //red

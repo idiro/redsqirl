@@ -487,6 +487,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 				String actionName = "act_" + dfe.getComponentId();
 				if (actionName.equals(wfa.getName())) {
 					status = wfa.getStatus().toString();
+					logger.info("getElementStatus  " + status);
 				}
 			}
 		}

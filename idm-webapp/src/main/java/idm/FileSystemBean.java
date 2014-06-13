@@ -175,6 +175,8 @@ public class FileSystemBean extends BaseBean implements Serializable {
 				
 				if(extensionsSelected != null && !extensionsSelected.isEmpty()){
 					getTableGrid().getRows().get(i).setDisableSelect(name.matches(extensionsSelected.replaceAll(Pattern.quote("*"), ".*")));
+				}else{
+					getTableGrid().getRows().get(i).setDisableSelect(true);
 				}
 				++i;
 			}
