@@ -8,11 +8,17 @@ SCRIPT_PATH="${SCRIPT_PATH%/*}"
 
 CONF_FILE=${SCRIPT_PATH}/../conf/.internal.conf
 
-echo "Please specify the tomcat path where the war should be copied:"
-read TOMCAT_PATH_CUR
+source ${CONF_FILE} 2> /dev/null
+if [ -z "${TOMCAT_PATH}" ]; then
+    echo "Please specify the tomcat path where the war should be copied:"
+    read TOMCAT_PATH_CUR
+else
+    TOMCAT_PATH_CUR=TOMCAT_PATH
+fi
 
 if [ ! -d "${TOMCAT_PATH_CUR}" ]; then
    echo The file ${TOMCAT_PATH_CUR} does not exist.
+   echo You may want to reset old internal settings that no longer valids using the reset_internals script.
    exit;
 fi
 
@@ -27,7 +33,6 @@ fi
 
 #Read the dynamic conf file and update tomcat_path
 #The hive port needs to stick at the old value if any
-source ${CONF_FILE} 2> /dev/null
 rm ${CONF_FILE} 2> /dev/null
 echo TOMCAT_PATH=\"${TOMCAT_PATH_CUR}\" > ${CONF_FILE}
 echo HIVE_PORT_CUR=\"${HIVE_PORT_CUR}\" >> ${CONF_FILE}
