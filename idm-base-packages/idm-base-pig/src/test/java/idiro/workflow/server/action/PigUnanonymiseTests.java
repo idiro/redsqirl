@@ -17,26 +17,26 @@ import org.apache.log4j.Logger;
 import org.apache.oozie.client.OozieClient;
 import org.junit.Test;
 
-public class PigAnonymiseTests {
+public class PigUnanonymiseTests {
 
-	static Logger logger = Logger.getLogger(PigAnonymiseTests.class);
+	static Logger logger = Logger.getLogger(PigUnanonymiseTests.class);
 
 	public static DataFlowElement createPigWithSrc(Workflow w,
 			DataFlowElement src, HDFSInterface hInt) throws RemoteException,
 			Exception {
 		String error = null;
-		String idHS = w.addElement((new PigAnonymise()).getName());
+		String idHS = w.addElement((new PigUnanonymise()).getName());
 		logger.debug("Pig select: " + idHS);
 
-		PigAnonymise pig = (PigAnonymise) w.getElement(idHS);
+		PigUnanonymise pig = (PigUnanonymise) w.getElement(idHS);
 
 		logger.info(PigBinarySource.out_name + " " + src.getComponentId());
 		logger.debug(PigSelect.key_input + " " + idHS);
 
 		error = w.addLink(PigBinarySource.out_name, src.getComponentId(),
-				PigAnonymise.key_input, idHS);
+				PigUnanonymise.key_input, idHS);
 		error = w.addLink(PigBinarySource.out_name, src.getComponentId(),
-				PigAnonymise.key_index_map, idHS);
+				PigUnanonymise.key_index_map, idHS);
 		
 		assertTrue("pig select add link: " + error, error == null);
 
@@ -56,7 +56,7 @@ public class PigAnonymiseTests {
 		return pig;
 	}
 
-	public static void updatePig(Workflow w, PigAnonymise pig, HDFSInterface hInt)
+	public static void updatePig(Workflow w, PigUnanonymise pig, HDFSInterface hInt)
 			throws RemoteException, Exception {
 
 		logger.info("update pig...");
@@ -64,8 +64,7 @@ public class PigAnonymiseTests {
 		pig.update(pig.featuresInt);
 		
 		List<String> values = new ArrayList<String>();
-		values.add("ID");
-		values.add("VALUE2");
+		values.add("VALUE");
 		pig.featuresInt.setValues(values);
 
 		logger.info("HS update out...");
@@ -89,16 +88,12 @@ public class PigAnonymiseTests {
 
 			DataFlowElement src = PigTestUtils.createSrc_ID_2VALUE(w, hInt,
 					new_path1);
-			PigAnonymise pig = (PigAnonymise) createPigWithSrc(w, src, hInt);
+			PigUnanonymise pig = (PigUnanonymise) createPigWithSrc(w, src, hInt);
 
-			pig.getDFEOutput().get(PigAnonymise.key_output)
+			pig.getDFEOutput().get(PigUnanonymise.key_output)
 					.setSavingState(SavingState.RECORDED);
-			pig.getDFEOutput().get(PigAnonymise.key_output).setPath(new_path2);
+			pig.getDFEOutput().get(PigUnanonymise.key_output).setPath(new_path2);
 			
-			pig.getDFEOutput().get(PigAnonymise.key_output_index)
-					.setSavingState(SavingState.RECORDED);
-			pig.getDFEOutput().get(PigAnonymise.key_output_index).setPath(new_path3);
-
 			logger.info("run...");
 			OozieClient wc = OozieManager.getInstance().getOc();
 			logger.info("Got Oozie Client");

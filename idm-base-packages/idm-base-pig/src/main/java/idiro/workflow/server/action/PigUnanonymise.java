@@ -1,7 +1,6 @@
 package idiro.workflow.server.action;
 
 import idiro.utils.FeatureList;
-import idiro.utils.OrderedFeatureList;
 import idiro.workflow.server.AppendListInteraction;
 import idiro.workflow.server.DataProperty;
 import idiro.workflow.server.InputInteraction;
@@ -18,11 +17,11 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 /**
- * Action to anonymise a data set
+ * Action to unanonymise a data set
  * @author marcos
  *
  */
-public class PigAnonymise extends PigElement {
+public class PigUnanonymise extends PigElement {
 
 	/**
 	 * 
@@ -37,8 +36,6 @@ public class PigAnonymise extends PigElement {
 	 * Key Index Map
 	 */
 	public static String key_index_map = "index_map",
-	/*Key index output*/
-	key_output_index = "index",
 	/*Key factor interaction*/
 	key_factor = "factor",
 	/*Key offset interaction*/
@@ -67,31 +64,31 @@ public class PigAnonymise extends PigElement {
 	 * Constructor
 	 * @throws RemoteException
 	 */
-	public PigAnonymise() throws RemoteException {
-		super(1, 2, 1);
+	public PigUnanonymise() throws RemoteException {
+		super(2, 2, 1);
 		init();
 		
-		page1 = addPage(PigLanguageManager.getText("pig.anonymise_page1.title"),
-				PigLanguageManager.getText("pig.anonymise_page1.legend"), 1);
+		page1 = addPage(PigLanguageManager.getText("pig.unanonymise_page1.title"),
+				PigLanguageManager.getText("pig.unanonymise_page1.legend"), 1);
 		logger.info("created page");
 
 		featuresInt = new AppendListInteraction(key_features,
-				PigLanguageManager.getText("pig.anonymise.features_interaction.title"),
-				PigLanguageManager.getText("pig.anonymise.features_interaction.legend"), 0,
+				PigLanguageManager.getText("pig.unanonymise.features_interaction.title"),
+				PigLanguageManager.getText("pig.unanonymise.features_interaction.legend"), 0,
 				0, true);
 		
 		offsetInt = new InputInteraction(
 				key_offset,
-				PigLanguageManager.getText("pig.anonymise.offset_interaction.title"),
-				PigLanguageManager.getText("pig.anonymise.offset_interaction.legend"), 
+				PigLanguageManager.getText("pig.unanonymise.offset_interaction.title"),
+				PigLanguageManager.getText("pig.unanonymise.offset_interaction.legend"), 
 				1, 0);
 		offsetInt.setRegex("^[0-9]*\\.?[0-9]*$");
 		offsetInt.setValue("0");
 		
 		factorInt = new InputInteraction(
 				key_factor,
-				PigLanguageManager.getText("pig.anonymise.factor_interaction.title"),
-				PigLanguageManager.getText("pig.anonymise.factor_interaction.legend"), 
+				PigLanguageManager.getText("pig.unanonymise.factor_interaction.title"),
+				PigLanguageManager.getText("pig.unanonymise.factor_interaction.legend"), 
 				2, 0);
 		factorInt.setRegex("^[0-9]*\\.?[0-9]*$");
 		factorInt.setValue("1");
@@ -101,8 +98,8 @@ public class PigAnonymise extends PigElement {
 		page1.addInteraction(factorInt);
 		
 		
-		page2 = addPage(PigLanguageManager.getText("pig.anonymise_page2.title"),
-				PigLanguageManager.getText("pig.anonymise_page2.legend"), 1);
+		page2 = addPage(PigLanguageManager.getText("pig.unanonymise_page2.title"),
+				PigLanguageManager.getText("pig.unanonymise_page2.legend"), 1);
 		page2.addInteraction(delimiterOutputInt);
 		page2.addInteraction(savetypeOutputInt);
 		logger.info("added interactions");
@@ -124,10 +121,10 @@ public class PigAnonymise extends PigElement {
 	 * @throws RemoteException
 	 */
 	public String getName() throws RemoteException {
-		return "pig_anonymise";
+		return "pig_unanonymise";
 	}
 	/**
-	 * Get the query for the anonymise action
+	 * Get the query for the unanonymise action
 	 * @return query
 	 * @throws RemoteException
 	 */
@@ -144,34 +141,30 @@ public class PigAnonymise extends PigElement {
 			DFEOutput out = output.get(key_output);
 			String remove = getRemoveQueryPiece(out.getPath()) + "\n\n";
 			
-			DFEOutput outIndex = output.get(key_output_index);
-			String removeIndex = getRemoveQueryPiece(outIndex.getPath()) + "\n\n";;
-			
 			String loader = getCurrentName();
 			String load = loader + " = " + getLoadQueryPiece(in) + ";\n\n";
 			
-			String anonymise = "";
-			if (featureType.equals(FeatureType.STRING)){
-				anonymise = getAnonymiseStringQuery(loader, outIndex) + "\n\n";
+			String unanonymise = "";
+			if (getDFEInput().containsKey(key_index_map)){
+				unanonymise = getAnonymiseStringQuery(loader) + "\n\n";
 			}
 			else {
-				anonymise = getAnonymiseNumberQuery(loader) + "\n\n";
+				unanonymise = getAnonymiseNumberQuery(loader) + "\n\n";
 			}
 			
 			String store = getStoreQueryPiece(out, getCurrentName());
 			
-			if (anonymise != null || !anonymise.isEmpty()) {
+			if (unanonymise != null || !unanonymise.isEmpty()) {
 				query = remove;
-				query += removeIndex;
 				query += load;
-				query += anonymise;
+				query += unanonymise;
 				query += store;
 			}
 		}
 		return query;
 	}
 	
-	private String getAnonymiseStringQuery(String input, DFEOutput outIndex) throws RemoteException{
+	private String getAnonymiseStringQuery(String input) throws RemoteException{
 		
 		List<String> anonFeatures = featuresInt.getValues();
 		
@@ -183,61 +176,14 @@ public class PigAnonymise extends PigElement {
 		
 		String query = "";
 		
-		String idsUnion = "";
-		Iterator<String> anonFeatureIt = anonFeatures.iterator();
-		while (anonFeatureIt.hasNext()){
-			query += getNextName() + " = FOREACH " + input + " GENERATE " + anonFeatureIt.next() + ";\n";
-			idsUnion += getCurrentName();
-			if (anonFeatureIt.hasNext()){
-				idsUnion += ", ";
-			}
-		}
-		
-		String keys = null;
-		if (anonFeatures.size() > 1){
-			query +=  getNextName() + " = UNION " + idsUnion + ";\n\n";
-			keys = getNextName();
-			query += keys + " = DISTINCT " + getPreviousName() + ";\n\n";
-		}
-		else{
-			keys = getNextName();
-			query += keys + " = DISTINCT " + getPreviousName() + ";\n\n";
-		}
-		
-		String indexMap = null;
-		
-		if (inIndex != null){
-			
-			String index_map_input = getNextName();
-			query += index_map_input + " = LOAD '" + inIndex.getPath() + "' USING PigStorage('|') as (INDEX:INT, VALUE:CHARARRAY);\n\n";
-			
-			query += getNextName() + " = JOIN " + keys + " BY $0 LEFT OUTER, " + index_map_input + " BY VALUE;\n";
-			query += getNextName() + " = FILTER " + getPreviousName() + " BY VALUE IS NULL;\n";
-			query += getNextName() + " = FOREACH " + getPreviousName() + " GENERATE $0;\n";
-				
-			String newKeys = getNextName();
-			query += newKeys + " = DISTINCT " + getPreviousName() + ";\n\n";
-			
-			query += getNextName() + " = GROUP " + index_map_input + " ALL;\n";
-			String maxValue = getNextName();
-			query += maxValue + " = FOREACH " + getPreviousName() + " GENERATE MAX(" + index_map_input + ".INDEX);\n\n";
-
-			query += getNextName() + " = RANK " + newKeys + ";\n";
-			query += getNextName() + " = FOREACH " + getPreviousName() + " GENERATE $0 + (int) " + maxValue + ".$0, $1;\n\n";
-
-			indexMap = getNextName();
-			query += indexMap + " = UNION " + getPreviousName() + ", " + index_map_input + ";\n";
-		}
-		else{
-			indexMap = getNextName();
-			query += indexMap +" = RANK " + keys + ";\n\n";
-		}
+		String indexMap = getNextName();
+		query +=  indexMap + " = LOAD '" + inIndex.getPath() + "' USING PigStorage('|') as (INDEX:INT, VALUE:CHARARRAY);\n\n";
 		      
-		anonFeatureIt = anonFeatures.iterator();
+		Iterator<String> anonFeatureIt = anonFeatures.iterator();
 		String dataSet = input;
 		while (anonFeatureIt.hasNext()){
 			String anonFeature = anonFeatureIt.next();
-			query += getNextName() + " = JOIN " + dataSet + " BY " + anonFeature + " LEFT OUTER, " + indexMap + " by $1;\n";
+			query += getNextName() + " = JOIN " + dataSet + " BY " + anonFeature + " LEFT OUTER, " + indexMap + " by INDEX;\n";
 			
 			dataSet = getNextName();
 			query += dataSet + " = FOREACH " + getPreviousName() + " GENERATE ";
@@ -252,7 +198,7 @@ public class PigAnonymise extends PigElement {
 					
 				}
 				else{
-					query += "$" + numFeat;
+					query += "$" + (numFeat + 1);
 				}
 				
 				if (it.hasNext()){
@@ -262,8 +208,6 @@ public class PigAnonymise extends PigElement {
 			}
 			query += ";\n\n";
 		}
-		
-		query += getStoreQueryPiece(outIndex, indexMap);
 		
 		return query;
 	}
@@ -286,7 +230,7 @@ public class PigAnonymise extends PigElement {
 				query += feat;
 			}
 			else{
-				query += "(" + feat + " + " + offset + ") * " + factor;
+				query += "(" + feat + " / " + factor + ") - " + offset;
 			}
 			if (it.hasNext()){
 				query += ", ";
@@ -332,29 +276,4 @@ public class PigAnonymise extends PigElement {
 			}
 		}
 	}
-	
-	/**
-	 * Update the output of the action
-	 */
-	@Override
-	public String updateOut() throws RemoteException {
-		String error = super.updateOut();
-		if(error == null){
-			
-			if (output.get(key_output_index) == null) {
-				output.put(key_output_index, new MapRedTextType());
-			}
-			try {
-				FeatureList fl = new OrderedFeatureList();
-				fl.addFeature("Value", FeatureType.STRING);
-				fl.addFeature("Index", FeatureType.STRING);
-					
-				output.get(key_output_index).setFeatures(fl);
-			} catch (Exception e) {
-				logger.error(e.getMessage(), e);
-			}
-		}
-		return error;
-	}
-
 }
