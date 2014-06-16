@@ -152,13 +152,8 @@ public class PigDictionary extends AbstractDictionary {
 										"IS NULL",
 										"ANY,",
 										"BOOLEAN",
-										"@function:IS NULL@short:Is empty/null@param:Any value@description:Checks the value if it is null@example:x IS NULL" },
-								new String[] {
-										"REGEX_EXTRACT",
-										"STRING,STRING, INT",
-										"STRING",
-										"@function:REGEX_EXTRACT( MYSTRING , CHAR , INDEX )@short:Performs regular expression matching and extracts the matched group defined by an index parameter@param:MYSTRING string to search@param:CHAR The regular expression@param:INDEX The index of the matched group to return@description:Use the REGEX_EXTRACT function to perform regular expression matching and to extract the matched group defined by the index parameter (where the index is a 1-based parameter.) The function uses Java regular expression form."
-												+ "The function returns a string that corresponds to the matched group in the position specified by the index. If there is no matched expression at that position, NULL is returned@example:REGEX_EXTRACT('helloworld#8020', '(.*)\\#(.*)', 1) returns 'helloworld'" } });
+										"@function:IS NULL@short:Is empty/null@param:Any value@description:Checks the value if it is null@example:x IS NULL" }
+								});
 
 		functionsMap
 				.put(castOperator,
@@ -288,6 +283,27 @@ public class PigDictionary extends AbstractDictionary {
 												+ "The index of a string begins with zero (0)@param:LENGTH The index (type integer) of the character following the last character of the substring@description:Use the SUBSTRING function to return a substring from a given string."
 												+ "Given a field named alpha whose value is ABCDEF, to return substring BCD use this statement: SUBSTRING(alpha,1,4). Note that 1 is the index of B (the first character of the substring) and 4 is the index of E (the character following the last character of the substring)@example:SUBSTR('help',1,4) returns 'elp'; @example:SUBSTR('example',6,7) returns  'le'" },
 								new String[] {
+										"CONCAT()",
+										"STRING,STRING",
+										"STRING",
+										"@function:CONCAT( MYSTRING1, MYSTRING2 )"
+										+"@short:Concatenate two strings."
+										+ "@param:MYSTRING1"
+										+ "@param:MYSTRING2"
+										+ "@description:Use the CONCAT function to concatenate two expressions. The result values of the two expressions must have identical types."
+										+ " If either subexpression is null, the resulting expression is null."
+										+ "@example:CONCAT('hello','world') returns 'helloworld'"},
+								new String[] {
+									"SIZE()",
+									"STRING",
+									"LONG",
+									"@function:SIZE(MYSTRING)"
+									+"@short:Computes the number of elements based on any Pig data type."
+									+"@param: MYSTRING"
+									+"@description: Computes the number of elements based on any Pig data type."
+									+"@example: SIZE('hello') returns 5L."
+								},
+								new String[] {
 										"UPPER()",
 										"STRING",
 										"STRING",
@@ -313,6 +329,39 @@ public class PigDictionary extends AbstractDictionary {
 										"STRING",
 										"@function:TRIM( MYSTRING )@short:Returns a copy of a string with leading and trailing white space removed@param:MYSTRING@description:Use the TRIM function to remove leading and trailing white space from a string@example:TRIM(' hello ') returns 'hello'@example:TRIM(' example ') returns  'example'" },
 								new String[] {
+										"STARTSWITH()",
+										"STRING,STRING",
+										"BOOLEAN",
+										"@function:STARTSWITH(MYSTRING, TESTAGAINST)"
+										+ "@short:Use the STARTSWITH function to determine if the first argument starts with the string in the second. "
+										+ "@param: MYSTRING The string to be tested."
+										+ "@param: TESTAGAINST The string to test against."
+										+ "@description:Use the STARTSWITH function to determine if the first argument starts with the string in the second. "
+										+ "@example: STARTSWITH ('foobar', 'foo') will true, whereas STARTSWITH ('foobar', 'bar') will return false. "
+								},
+								new String[] {
+										"ENDSWITH()",
+										"STRING,STRING",
+										"BOOLEAN",
+										"@function:ENDSWITH(MYSTRING, TESTAGAINST)"
+										+ "@short: Tests inputs to determine if the first argument ends with the string in the second. "
+										+ "@param: MYSTRING The string to be tested."
+										+ "@param: TESTAGAINST The string to test against."
+										+ "@description:Tests inputs to determine if the first argument ends with the string in the second. "
+										+ "@example: ENDSWITH ('foobar', 'foo') will false, whereas ENDSWITH ('foobar', 'bar') will return true. "
+								},
+								new String[] {
+										"EqualsIgnoreCase()",
+										"STRING,STRING",
+										"BOOLEAN",
+										"@function: EqualsIgnoreCase(MYSTRING1,MYSTRING2)"
+										+ "@short: Compares two Strings ignoring case considerations."
+										+ "@param: MYSTRING1"
+										+ "@param: MYSTRING2"
+										+ "@description: Compares two Strings ignoring case considerations. "
+										+ "@example: EqualsIgnoreCase('hello World!', 'Hello world!') returns true."
+								},
+								new String[] {
 										"INDEXOF()",
 										"STRING,STRING,INT",
 										"INT",
@@ -326,8 +375,14 @@ public class PigDictionary extends AbstractDictionary {
 										"REGEX_EXTRACT()",
 										"STRING,STRING,INT",
 										"STRING",
-										"@function:REGEX_EXTRACT( MYSTRING , CHAR , INDEX )@short:Performs regular expression matching and extracts the matched group defined by an index parameter@param:MYSTRING string to search@param:CHAR The regular expression@param:INDEX The index of the matched group to return@description:Use the REGEX_EXTRACT function to perform regular expression matching and to extract the matched group defined by the index parameter (where the index is a 1-based parameter.) The function uses Java regular expression form."
-												+ "The function returns a string that corresponds to the matched group in the position specified by the index. If there is no matched expression at that position, NULL is returned@example:REGEX_EXTRACT('helloworld#8020', '(.*)\\#(.*)', 1) returns 'helloworld'" },
+										"@function:REGEX_EXTRACT( MYSTRING , REGEX , INDEX )"
+										+ "@short:Performs regular expression matching and extracts the matched group defined by an index parameter"
+										+ "@param:MYSTRING string to search"
+										+ "@param:REGEX The regular expression"
+										+ "@param:INDEX The index of the matched group to return"
+										+ "@description:Use the REGEX_EXTRACT function to perform regular expression matching and to extract the matched group defined by the index parameter (where the index is a 1-based parameter.) The function uses Java regular expression form."
+												+ "The function returns a string that corresponds to the matched group in the position specified by the index. If there is no matched expression at that position, NULL is returned."
+												+ "@example:REGEX_EXTRACT('helloworld#8020', '(.*)\\#(.*)', 1) returns 'helloworld'" },
 								new String[] {
 										"REPLACE()",
 										"STRING,STRING,STRING",

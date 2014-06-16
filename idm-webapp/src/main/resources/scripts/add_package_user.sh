@@ -6,7 +6,8 @@ SCRIPT_LOCATION=${BASH_SOURCE[0]}
 SCRIPT_PATH="$(cd $(dirname "${SCRIPT_LOCATION}"); pwd -P)/$(basename "${SCRIPT_LOCATION}")"
 SCRIPT_PATH="${SCRIPT_PATH%/*}"
 
-FILENAME=$1
+USER=$1
+FILENAME=$2
 if [ -z $FILENAME ]; then
 	echo "This script takes for argument the file path of the package to install"
 	exit
@@ -27,4 +28,5 @@ MAIN_CLASS=idiro.workflow.utils.PackageManager
 export SCRIPT_PATH PID
 
 JAVA_PATH=java
-$JAVA_PATH -server -classpath $CLASSPATH $MAIN_CLASS add user $FILENAME
+echo Install $FILENAME for user $USER
+$JAVA_PATH -server -classpath $CLASSPATH $MAIN_CLASS add user $USER $FILENAME

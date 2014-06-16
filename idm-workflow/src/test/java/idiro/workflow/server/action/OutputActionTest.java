@@ -110,4 +110,11 @@ public class OutputActionTest extends DataOutput{
 		
 	}
 
+
+	@Override
+	public String[] getExtensions() throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
