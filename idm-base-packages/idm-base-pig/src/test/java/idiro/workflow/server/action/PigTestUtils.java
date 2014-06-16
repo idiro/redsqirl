@@ -78,6 +78,18 @@ public class PigTestUtils {
 
 		createHDFSFile(p, content);
 	}
+	
+	public static void createStringIntString_file(Path p) throws IOException {
+		String content = "A,1,A\n";
+		content += "B,2,B\n";
+		content += "C,3,C\n";
+		content += "D,4,D\n";
+		content += "E,5,E\n";
+		content += "F,6,F\n";
+		content += "G,7,G\n";
+
+		createHDFSFile(p, content);
+	}
 
 	
 	public static DataFlowElement createSrc_ID_VALUE_RAW(Workflow w, HDFSInterface hInt,
@@ -213,6 +225,59 @@ public class PigTestUtils {
 		assertTrue("Feature list " + 
 				src.getDFEOutput().get(PigTextSource.out_name).getFeatures().getFeaturesNames(),
 				src.getDFEOutput().get(PigTextSource.out_name).getFeatures().getFeaturesNames().contains("VALUE"));
+		
+		return src;
+	}
+	
+	public static DataFlowElement createSrc_ID_2VALUE(
+			Workflow w,
+			HDFSInterface hInt, 
+			String new_path1 ) throws RemoteException, Exception{
+		
+		String idSource = w.addElement((new PigTextSource()).getName());
+		PigTextSource src = (PigTextSource)w.getElement(idSource);
+		
+		hInt.delete(new_path1);
+		createStringIntString_file(new Path(new_path1));
+		
+		src.update(src.getInteraction(PigTextSource.key_dataset));
+		Tree<String> dataSetTree = src.getInteraction(PigTextSource.key_dataset).getTree();
+		dataSetTree.getFirstChild("browse").getFirstChild("output").add("path").add(new_path1);
+		dataSetTree.getFirstChild("browse").getFirstChild("output").add("property").add(MapRedTextType.key_delimiter).add(",");
+
+		Tree<String> feat1 = dataSetTree.getFirstChild("browse")
+				.getFirstChild("output").add("feature");
+		feat1.add("name").add("ID");
+		feat1.add("type").add("STRING");
+
+		Tree<String> feat2 = dataSetTree.getFirstChild("browse")
+				.getFirstChild("output").add("feature");
+		feat2.add("name").add("VALUE");
+		feat2.add("type").add("INT");
+		
+		Tree<String> feat3 = dataSetTree.getFirstChild("browse")
+				.getFirstChild("output").add("feature");
+		feat3.add("name").add("VALUE2");
+		feat3.add("type").add("STRING");
+		
+		String error = src.updateOut();
+		
+		
+		assertTrue("source update: "+error,error == null);
+		
+		assertTrue("number of features in source should be 3 instead of " + 
+				src.getDFEOutput().get(PigTextSource.out_name).getFeatures().getSize(),
+				src.getDFEOutput().get(PigTextSource.out_name).getFeatures().getSize() == 3);
+		
+		assertTrue("Feature list " + 
+				src.getDFEOutput().get(PigTextSource.out_name).getFeatures().getFeaturesNames(),
+				src.getDFEOutput().get(PigTextSource.out_name).getFeatures().getFeaturesNames().contains("ID"));
+		assertTrue("Feature list " + 
+				src.getDFEOutput().get(PigTextSource.out_name).getFeatures().getFeaturesNames(),
+				src.getDFEOutput().get(PigTextSource.out_name).getFeatures().getFeaturesNames().contains("VALUE"));
+		assertTrue("Feature list " + 
+				src.getDFEOutput().get(PigTextSource.out_name).getFeatures().getFeaturesNames(),
+				src.getDFEOutput().get(PigTextSource.out_name).getFeatures().getFeaturesNames().contains("VALUE2"));
 		
 		return src;
 	}

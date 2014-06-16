@@ -468,6 +468,14 @@ public abstract class PigElement extends DataflowAction {
 		nameCont++;
 		return "A"+nameCont;
 	}
+	
+	/**
+	 * Get the Previous Name in the bag
+	 * @return next Name
+	 */
+	protected String getPreviousName(){
+		return "A"+(nameCont-1);
+	}
 	/**
 	 * Get the grouping interaction
 	 * @return groupingInt
