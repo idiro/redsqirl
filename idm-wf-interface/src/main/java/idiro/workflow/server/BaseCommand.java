@@ -32,7 +32,7 @@ public class BaseCommand {
 		String classpath = null;
 
 		try {
-			logger.info(WorkflowPrefManager.pathSysCfgPref.get());
+			logger.info(WorkflowPrefManager.pathSysCfgPref);
 			logger.info(WorkflowPrefManager.getSysProperty("workflow_lib_path"));
 			File file = new File(
 					WorkflowPrefManager.getSysProperty("workflow_lib_path"));
@@ -55,10 +55,11 @@ public class BaseCommand {
 		}
 		String codebase = " -Djava.rmi.server.codebase=" + getRMICodeBase();
 		String hostname = " -Djava.rmi.server.hostname=" + getRMIHost();
+		String catalinaBase = " -Dcatalina.base=" + System.getProperty("catalina.base");
 		logger.debug(classpath);
 		logger.debug(codebase);
 		logger.debug(hostname);
-		command = classpath + codebase + hostname
+		command = classpath + codebase + hostname + catalinaBase
 				+ " idiro.workflow.server.connect.ServerMain " + port;
 
 		return command;

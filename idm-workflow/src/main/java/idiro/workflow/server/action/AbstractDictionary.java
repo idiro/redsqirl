@@ -120,7 +120,7 @@ public abstract class AbstractDictionary {
 	 */
 	private void init() {
 
-		File file = new File(WorkflowPrefManager.pathSystemPref.get() + "/"
+		File file = new File(WorkflowPrefManager.pathSystemPref + "/"
 				+ getNameFile());
 		if (file.exists()) {
 			loadFunctionsFile(file);

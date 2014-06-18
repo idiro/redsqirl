@@ -2,15 +2,16 @@ package idiro.workflow.server;
 
 import idiro.BlockManager;
 import idiro.hadoop.NameNodeVar;
-import idiro.tm.task.in.Preference;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
-import java.util.prefs.Preferences;
 
 import org.apache.log4j.Logger;
+//import java.util.prefs.Preferences;
 
 /**
  * Software preference manager.
@@ -37,59 +38,51 @@ public class WorkflowPrefManager extends BlockManager {
 	/**
 	 * System Preferences
 	 */
-	private final static Preferences systemPrefs = Preferences
-			.systemNodeForPackage(WorkflowPrefManager.class);
+//	private final static Preferences systemPrefs = Preferences
+//			.systemNodeForPackage(WorkflowPrefManager.class);
 
-	public final static Preference<String>
+	public static String
 
 	/**
 	 * RedSqirl home directory path
 	 */
-	pathSysHome = new Preference<String>(systemPrefs, "Path Home",
-			"/usr/share/redsqirl");
+	pathSysHome = "/usr/share/redsqirl";
+	
+	//new Preference<String>(systemPrefs, "Path Home",
+	//		"/usr/share/redsqirl");
 
-	public static Preference<String>
+	public static String
 	/**
 	 * Root of the system specific preferences
 	 */
-	pathSystemPref = new Preference<String>(systemPrefs,
-			"Path to store/retrieve system preferences", pathSysHome.get()
-			+ "/conf"),
+	pathSystemPref,
 
-			/**
-			 * Path of the packages
-			 */
-			pathSysPackagePref = new Preference<String>(systemPrefs,
-					"Path to retrieve system packages", pathSysHome.get()
-					+ "/packages"),
-					/**
-					 * System preference file
-					 */
-					pathSysCfgPref = new Preference<String>(systemPrefs,
-							"Path to retrieve general system configuration",
-							pathSystemPref.get() + "/idm_sys.properties"),
-							/**
-							 * System lang preference file.These properties are optional and are
-							 * used by the front-end to give a bit more details about user
-							 * settings. For each user property, you can create a #{key}_label
-							 * and a #{key}_desc property.
-							 */
-							pathSysLangCfgPref = new Preference<String>(systemPrefs,
-									"Path to retrieve labels of sys parameters",
-									pathSystemPref.get() + "/idm_sys_lang.properties"),
+	/**
+	* Path of the packages
+	*/
+	pathSysPackagePref,
+	/**
+	* System preference file
+	*/
+	pathSysCfgPref,
+	/**
+	* System lang preference file.These properties are optional and are
+	* used by the front-end to give a bit more details about user
+	* settings. For each user property, you can create a #{key}_label
+	* and a #{key}_desc property.
+	*/
+	pathSysLangCfgPref,
 
-									/**
-									 * Path users folder
-									 */
-									pathUsersFolder = new Preference<String>(systemPrefs,
-											"Path to store/retrieve system preferences",
-											pathSysHome.get() + "/users");
+	/**
+	* Path users folder
+	*/
+	pathUsersFolder;
 
 	private static String
 	/**
 	 * Root of the user specific preferences. Accessible from idm-workflow side.
 	 */
-	pathUserPref = pathUsersFolder.get() + "/"
+	pathUserPref = pathUsersFolder + "/"
 			+ System.getProperty("user.name"),
 			/**
 			 * Where to find the icons menu. Accessible from idm-workflow side.
@@ -120,7 +113,7 @@ public class WorkflowPrefManager extends BlockManager {
 			/**
 			 * Lib Path for system package
 			 */
-			sysPackageLibPath = pathSysHome.get() + "/lib/packages",
+			sysPackageLibPath,
 			/**
 			 * Lib Path for user package. Accessible from idm-workflow side.
 			 */
@@ -155,28 +148,26 @@ public class WorkflowPrefManager extends BlockManager {
 	/**
 	 * User Preferences
 	 */
-	private final static Preferences userPrefs = Preferences
-			.userNodeForPackage(WorkflowPrefManager.class);
+	//private final static Preferences userPrefs = Preferences
+	//		.userNodeForPackage(WorkflowPrefManager.class);
 
 	/**
 	 * User properties. These properties cannot be changed in a production
 	 * environment. However they can be changed for back-end unit-testing.
 	 */
-	public static Preference<String>
+	public static String
 	/**
 	 * User properties with specific user settings.
 	 */
-	pathUserCfgPref = new Preference<String>(userPrefs,
-			"Path to retrieve general user configuration", pathUserPref
-			+ "/idm_user.properties"),
+	pathUserCfgPref =  pathUserPref
+			+ "/idm_user.properties",
 			/**
 			 * User lang properties. These properties are optional and are used by the
 			 * front-end to give a bit more details about user settings. For each user
 			 * property, you can create a #{key}_label and a #{key}_desc property.
 			 */
-			pathUserLangCfgPref = new Preference<String>(userPrefs,
-					"Path to retrieve labels of sys parameters", pathUserPref
-					+ "/idm_user_lang.properties");
+			pathUserLangCfgPref =  pathUserPref
+					+ "/idm_user_lang.properties";
 
 	/**
 	 * True if the instance is initialised.
@@ -241,7 +232,61 @@ public class WorkflowPrefManager extends BlockManager {
 	 * 
 	 */
 	private WorkflowPrefManager() {
+		String path = System.getProperty("catalina.base") +
+                File.separator + "conf" + File.separator + "idiro.properties";
+		
+		InputStream input;
+		try {
+			input = new FileInputStream(path);
+			Properties properties = new Properties();
+			properties.load(input);
+			
+			pathSysHome = properties.getProperty("path_sys_home");
+		} catch (IOException e) {
+			logger.info("idiro.properties not found. Using default path_sys_home");
+			pathSysHome = "/usr/share/redsqirl";
+			e.printStackTrace();
+		}
+		
+		/**
+		 * Root of the system specific preferences
+		 */
+		pathSystemPref = pathSysHome
+			+ "/conf";
 
+		/**
+		* Path of the packages
+		*/
+		pathSysPackagePref =  pathSysHome
+			+ "/packages";
+		
+		/**
+		* System preference file
+		*/
+		pathSysCfgPref = 
+			pathSystemPref + "/idm_sys.properties";
+		
+		/**
+		* System lang preference file.These properties are optional and are
+		* used by the front-end to give a bit more details about user
+		* settings. For each user property, you can create a #{key}_label
+		* and a #{key}_desc property.
+		*/
+		
+		pathSysLangCfgPref = 
+		pathSystemPref + "/idm_sys_lang.properties";
+
+		/**
+		* Path users folder
+		*/
+		pathUsersFolder = 
+			pathSysHome + "/users";
+		
+		/**
+		 * Lib Path for system package
+		 */
+		sysPackageLibPath = pathSysHome + "/lib/packages";
+		
 	}
 
 	/**
@@ -295,8 +340,8 @@ public class WorkflowPrefManager extends BlockManager {
 		if (!iconMenu.exists()) {
 			iconMenu.mkdir();
 		}
-		File userProp = new File(pathUserCfgPref.get());
-		File userPropLang = new File(pathUserLangCfgPref.get());
+		File userProp = new File(pathUserCfgPref);
+		File userPropLang = new File(pathUserLangCfgPref);
 		if (!userProp.exists()) {
 			Properties prop = new Properties();
 			prop.setProperty(user_hive, "");
@@ -336,22 +381,19 @@ public class WorkflowPrefManager extends BlockManager {
 	public static void changeSysHome(String newValueSysHome) {
 
 		if (newValueSysHome == null || newValueSysHome.isEmpty()) {
-			pathSysHome.remove();
+			pathSysHome = null;
 		} else {
-			pathSysHome.put(newValueSysHome);
+			pathSysHome = newValueSysHome;
 		}
 
-		pathSysPackagePref = new Preference<String>(systemPrefs,
-				"Path to retrieve system packages", pathSysHome.get()
-				+ "/packages");
-		pathSysCfgPref = new Preference<String>(systemPrefs,
-				"Path to retrieve general system configuration",
-				pathSystemPref.get() + "/idm_sys.properties");
-		pathUsersFolder = new Preference<String>(systemPrefs,
-				"Path to store/retrieve system preferences", pathSysHome.get()
-				+ "/users");
+		pathSysPackagePref =  pathSysHome
+				+ "/packages";
+		pathSysCfgPref = 
+				pathSystemPref + "/idm_sys.properties";
+		pathUsersFolder =  pathSysHome
+				+ "/users";
 
-		pathUserPref = pathUsersFolder.get() + "/"
+		pathUserPref = pathUsersFolder + "/"
 				+ System.getProperty("user.name");
 		pathIconMenu = pathUserPref + "/icon_menu";
 		pathTmpFolder = pathUserPref + "/tmp";
@@ -359,7 +401,7 @@ public class WorkflowPrefManager extends BlockManager {
 		pathWorkflow = pathUserPref + "/workflows";
 		pathUserDFEOutputColour = pathUserPref + "/output_colours.properties";
 		pathUserPackagePref = pathUserPref + "/packages";
-		sysPackageLibPath = pathSysHome.get() + "/lib/packages";
+		sysPackageLibPath = pathSysHome + "/lib/packages";
 		userPackageLibPath = pathUserPref + "/lib/packages";
 		pathSysHelpPref = "/packages/help";
 		pathSysImagePref = "/packages/images";
@@ -370,26 +412,25 @@ public class WorkflowPrefManager extends BlockManager {
 		pathUserHelpPref = "/packages/" + System.getProperty("user.name")
 				+ "/help";
 
-		pathUserCfgPref = new Preference<String>(userPrefs,
-				"Path to retrieve general user configuration", pathUserPref
-				+ "/idm_user.properties");
+		pathUserCfgPref =  pathUserPref
+				+ "/idm_user.properties";
 	}
 
 	/**
 	 * Reset the System preferences
 	 */
 	public static void resetSys() {
-		pathSystemPref.remove();
-		pathSysHome.remove();
-		pathSysPackagePref.remove();
-		pathSysCfgPref.remove();
+		pathSystemPref = null;
+		pathSysHome = null;
+		pathSysPackagePref = null;
+		pathSysCfgPref = null;
 	}
 
 	/**
 	 * Reset the User preferences
 	 */
 	public static void resetUser() {
-		pathUserCfgPref.remove();
+		pathUserCfgPref = null;
 	}
 
 	/**
@@ -533,13 +574,13 @@ public class WorkflowPrefManager extends BlockManager {
 				String[] pref = args[i].split("=");
 
 				if (pref[0].equalsIgnoreCase("pathSystemPref")) {
-					pathSystemPref.put(pref[1]);
+					pathSystemPref = pref[1];
 				} else if (pref[0].equalsIgnoreCase("pathSysHome")) {
-					pathSysHome.put(pref[1]);
+					pathSysHome = pref[1];
 				} else if (pref[0].equalsIgnoreCase("pathSysPackagePref")) {
-					pathSysPackagePref.put(pref[1]);
+					pathSysPackagePref = pref[1];
 				} else if (pref[0].equalsIgnoreCase("pathSysCfgPref")) {
-					pathSysCfgPref.put(pref[1]);
+					pathSysCfgPref = pref[1];
 				}
 			}
 		}
@@ -551,7 +592,7 @@ public class WorkflowPrefManager extends BlockManager {
 	 * @return
 	 */
 	public static String getPathUserPref(String user) {
-		return pathUsersFolder.get() + "/" + user;
+		return pathUsersFolder + "/" + user;
 	}
 
 	/**
@@ -647,7 +688,7 @@ public class WorkflowPrefManager extends BlockManager {
 	/**
 	 * @return the pathsyspackagepref
 	 */
-	public static final Preference<String> getPathsyspackagepref() {
+	public static final String getPathsyspackagepref() {
 		return pathSysPackagePref;
 	}
 

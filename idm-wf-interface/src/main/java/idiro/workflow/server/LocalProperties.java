@@ -33,16 +33,16 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 	public Properties getSysProperties() {
 		Properties prop = new Properties();
 		try {
-			prop.load(new FileReader(new File(WorkflowPrefManager.pathSysCfgPref.get())));
+			prop.load(new FileReader(new File(WorkflowPrefManager.pathSysCfgPref)));
 		} catch (Exception e) {
-			logger.error("Error when loading '" + WorkflowPrefManager.pathSysCfgPref.get() + "', "
+			logger.error("Error when loading '" + WorkflowPrefManager.pathSysCfgPref + "', "
 					+ e.getMessage());
 		}
 		return prop;
 	}
 	
 	public void storeSysProperties(Properties prop) throws IOException{
-		prop.store(new FileWriter(new File(WorkflowPrefManager.pathSysCfgPref.get())), "");
+		prop.store(new FileWriter(new File(WorkflowPrefManager.pathSysCfgPref)), "");
 	}
 	
 
@@ -54,9 +54,9 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 	public Properties getSysLangProperties() {
 		Properties prop = new Properties();
 		try {
-			prop.load(new FileReader(new File(WorkflowPrefManager.pathSysLangCfgPref.get())));
+			prop.load(new FileReader(new File(WorkflowPrefManager.pathSysLangCfgPref)));
 		} catch (Exception e) {
-			logger.error("Error when loading '" + WorkflowPrefManager.pathSysLangCfgPref.get() + "', "
+			logger.error("Error when loading '" + WorkflowPrefManager.pathSysLangCfgPref + "', "
 					+ e.getMessage());
 		}
 		return prop;
@@ -70,16 +70,16 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 	public Properties getUserProperties() {
 		Properties prop = new Properties();
 		try {
-			prop.load(new FileReader(new File(WorkflowPrefManager.pathUserCfgPref.get())));
+			prop.load(new FileReader(new File(WorkflowPrefManager.pathUserCfgPref)));
 		} catch (Exception e) {
-			logger.error("Error when loading '" + WorkflowPrefManager.pathUserCfgPref.get() + "', "
+			logger.error("Error when loading '" + WorkflowPrefManager.pathUserCfgPref + "', "
 					+ e.getMessage());
 		}
 		return prop;
 	}
 	
 	public void storeUserProperties(Properties prop) throws IOException{
-		prop.store(new FileWriter(new File(WorkflowPrefManager.pathUserCfgPref.get())), "");
+		prop.store(new FileWriter(new File(WorkflowPrefManager.pathUserCfgPref)), "");
 	}
 
 	/**

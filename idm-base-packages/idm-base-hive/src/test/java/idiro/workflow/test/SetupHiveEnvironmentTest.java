@@ -60,8 +60,8 @@ public class SetupHiveEnvironmentTest {
 		String testProp = SetupHiveEnvironmentTest.class.getResource( "/test.properties" ).getFile();
 		System.out.println(testProp);
 		
-		WorkflowPrefManager.pathSysCfgPref.put(testProp);
-		WorkflowPrefManager.pathUserCfgPref.put(testProp);
+		WorkflowPrefManager.pathSysCfgPref = testProp;
+		WorkflowPrefManager.pathUserCfgPref = testProp;
 
 		ProjectID.getInstance().setName("IdiroWorkflowServerTest");
 		ProjectID.getInstance().setVersion("0.01");
@@ -106,10 +106,10 @@ public class SetupHiveEnvironmentTest {
 		WorkflowPrefManager.changeSysHome(home.getAbsolutePath());
 		WorkflowPrefManager.createUserHome(System.getProperty("user.name"));
 		WorkflowPrefManager.setupHome();
-		logger.debug(WorkflowPrefManager.pathSysHome.get());
+		logger.debug(WorkflowPrefManager.pathSysHome);
 		logger.debug(WorkflowPrefManager.getPathuserpref());
 		logger.debug(WorkflowPrefManager.getPathiconmenu());
-		logger.debug(WorkflowPrefManager.pathUserCfgPref.get());
+		logger.debug(WorkflowPrefManager.pathUserCfgPref);
 		
 		/* I don't think we need that anymore
 		try {
