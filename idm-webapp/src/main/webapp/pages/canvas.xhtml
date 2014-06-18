@@ -17,7 +17,7 @@
 <link rel="stylesheet" type="text/css" href="#{facesContext.externalContext.requestContextPath}/css/idm.css" />
 
 <script	src="#{facesContext.externalContext.requestContextPath}/js/jquery-1.9.1.js"	type="text/javascript" />
-<script	src="#{facesContext.externalContext.requestContextPath}/js/jquery.contextmenu.js"	type="text/javascript" />
+<script	src="#{facesContext.externalContext.requestContextPath}/js/jquery.contextmenu.js" type="text/javascript" />
 <script	src="#{facesContext.externalContext.requestContextPath}/js/jquery-ui-1.10.0.custom.js" />
 <script	src="#{facesContext.externalContext.requestContextPath}/js/kinetic-v4.3.3.js" type="text/javascript" />
 <script	src="#{facesContext.externalContext.requestContextPath}/js/jquery.cookie.js" type="text/javascript" />
@@ -41,7 +41,7 @@
 
 		  jQuery(function() {
 			  
-			  nameTabs[0] = "canvas-1";
+			  nameTabs[0] = "flowchart-canvas-1";
 
 	    	  configureTabsRemote();
 	    	  configureFooter();
@@ -94,7 +94,6 @@
 
 		                jQuery(jQuery( "#" + panelId ).remove()).appendTo(receiver);
 	  	              	tabsGroup.tabs('refresh');
-	
 
 		  	            //source
 	  	            	//jQuery(ui.sender[0]).parent().attr("id");
@@ -118,7 +117,6 @@
 			    		}).appendTo(allTabsSource);
 	  	              	
 	  	            	allTabsDestination.find("a[href$=" + jQuery(ui.item[0]).attr("aria-controls") + "]").remove();
-
 	
 	  	              	jQuery("#canvas-tabs").tabs().tabs('refresh');
 	  	              	//jQuery("#tabRemote").tabs().tabs('refresh');
@@ -142,23 +140,17 @@
 	        });
   	    	
   	    	var contTabRemote = 1;
-  	        
 
 	    	  jQuery('#addtabCanvas').click( function(){
 	              //<![CDATA[
 	              
 	              contTabCanvas++;
-	                         
-	              var tabName = "canvas-"+contTabCanvas;
+	              var tabName = "flowchart-canvas-"+contTabCanvas;
 	              addWorkflowTab(tabName);
-	              
 	              addWorkflow(tabName);
 	              configureCanvas(tabName);
-	              
 	              setWorkflow(tabName);
-
 	              validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
-
 	              
 	              //]]>
 	          });
@@ -183,7 +175,6 @@
 			  }}
 		  ];
           
-          
 		  var menusplitHCanvas = [
 		  {'Top': function(menuItem,menu){
 			  jQuery("#tabs1").css("height", '0px');
@@ -207,8 +198,6 @@
 			  resizeTabs();
 		  	}}
 		  ];
-		  
-         
 
 	    	  jQuery("#splitVCanvas").splitter({
 	        	  type: "v",
@@ -234,9 +223,7 @@
 	          });
 	
 		      jQuery(".splitter-bar-vertical").contextMenu(menusplitVCanvas);
-	
 		      jQuery(".splitter-bar-horizontal").contextMenu(menusplitHCanvas);
-
 
 		      jQuery(".splitter-bar-vertical").mousedown(function() {
 		    	  jQuery('#helpmain_splitter').click();return false;
@@ -274,7 +261,6 @@
 		  	        expandIcon: "&#9660; ",
 		  	        dropWidth: "66%",
 		  	        sizeTweak: 30
-
 		  	    });
 
 	    		jQuery( "#tabs2" ).plusTabs({
@@ -285,7 +271,6 @@
 		  	        expandIcon: "&#9660; ",
 		  	        dropWidth: "66%",
 		  	        sizeTweak: 30
-
 		  	    });
 
 	    		jQuery( "#tabFlowchart" ).plusTabs({
@@ -296,9 +281,7 @@
 		  	        expandIcon: "&#9660; ",
 		  	        dropWidth: "66%",
 		  	        sizeTweak: 30
-
 		  	    });
-
 
 	    		var allTabs = jQuery("#tabs1").find(".allTabs");
 		  	    
@@ -393,7 +376,7 @@
 		    		 jQuery('*').css('-o-user-select', 'none');
 		    		 jQuery('*').css('user-select', 'none');
 		    		 jQuery('input').css('-webkit-user-select', 'text');
-		    		 jQuery('#canvas-1').css('position', 'fixed');
+		    		 jQuery('#flowchart-canvas-1').css('position', 'fixed');
 		    		 
 				 //}
 
@@ -427,18 +410,14 @@
             }
 
 	      function closeTab(arg){
-	    	  
 	    	  jQuery(jQuery( arg ).prev().attr('href')).remove();
 	    	  jQuery( arg ).offsetParent().remove();
-	    	  
 	      }
 	      
 	      function menuCloseTab(){
 	    	  var tabName = getSelected();
-	    	  
 	    	  var ul = jQuery("#canvas-tabs ul:first li #"+tabName+"-icon-close");
 	    	  closeWorkflowTab(ul, tabName);
-	    	  
 	      }
 	      
 	      function addElementJs(canvasName, path, positions, links){
@@ -484,24 +463,31 @@
 	    	//]]>
 	      }
 	      
-	      
 	      var numTabs = 1;
 	      var nameTabs = {};
 	      
 	      function addWorkflowTab(tabName){
 	    	//<![CDATA[
+	    	
 	    	  var tabs = jQuery("#canvas-tabs").tabs();
               var ul = jQuery("#canvas-tabs").tabs().find( "ul:first" );
-             
+
+              var newNameTab = "";
+              if(tabName.match("^flowchart-")){
+            	  newNameTab = tabName.substring(10, tabName.length)
+              }else{
+            	  newNameTab = tabName;
+              }
+              
               jQuery( "<li class='locked'><a href='#"+ tabName +"' onclick=\"jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('"+tabName+"');\">"+ 
-            		  tabName +"</a> <span id='"+tabName+"-icon-close' class='ui-icon ui-icon-close' role='presentation' onclick=\"closeWorkflowTab(this, '"+tabName+"')\"></span> </li>" ).appendTo( ul );
+            		  newNameTab +"</a> <span id='"+tabName+"-icon-close' class='ui-icon ui-icon-close' role='presentation' onclick=\"closeWorkflowTab(this, '"+tabName+"')\"></span> </li>" ).appendTo( ul );
               
               var div = "<div id='"+tabName+"' class='container-canvas'>"+
 				"<div id='container-"+tabName+"' class='container-"+tabName+"'>"+
 				"<div class='rich-panel headerLegend' onclick=\"jQuery('#panelLegend-"+tabName+"').toggle();return false;\"  style='position: fixed; z-index:101; width:190px'>"+
 					"<div class='rich-panel-header'>Legend</div>"+
 				"</div>"+
-				"<div class='rich-panel' id='panelLegend-"+tabName+"'  style='position: fixed; z-index:100; display: none; width:190px; height:300px'>"+
+				"<div class='rich-panel' id='panelLegend-"+tabName+"'  style='position: fixed; z-index:100; display: none; width:190px; height:330px'>"+
 					"<div class='rich-panel-body' style='overflow:hidden;'>"+
 						"<div id='container-legend-"+tabName+"' class='container-legend-"+tabName+"' style='overflow:hidden; position: relative; top:20px;'/>"+
 					"</div>"+
@@ -574,10 +560,10 @@
               numTabs = 0;
     	      nameTabs = {};
               
-              addWorkflowTab("canvas-1");
-              addWorkflow("canvas-1");
-              configureCanvas("canvas-1");
-              setWorkflow("canvas-1");
+              addWorkflowTab("flowchart-canvas-1");
+              addWorkflow("flowchart-canvas-1");
+              configureCanvas("flowchart-canvas-1");
+              setWorkflow("flowchart-canvas-1");
 	      }
 	      
 	     function selectTab(tabIndex){
@@ -855,8 +841,7 @@
 					action="#{canvasBean.changeWorkflow}"
 					oncomplete="setSelected('#{canvasBean.nameWorkflow}');verifyIfIsRunning(getSelected());"
 					reRender="formMenu,domMessageDivCanvas2,killProcessBtn">
-					<a4j:actionparam name="selectedCanvas"
-						assignTo="#{canvasBean.nameWorkflow}" />
+					<a4j:actionparam name="selectedCanvas" assignTo="#{canvasBean.nameWorkflow}" />
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -1423,10 +1408,10 @@
 
 					<div id="canvas-tabs">
 						<ul class="ulCssCanvas">
-							<li class="locked"><a href="#canvas-1"
-								onclick="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('canvas-1');">canvas-1</a>
+							<li class="locked"><a href="#flowchart-canvas-1"
+								onclick="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('flowchart-canvas-1');">canvas-1</a>
 								<span id="canvas-1-icon-close" class="ui-icon ui-icon-close" role="presentation"
-								onclick="closeWorkflowTab(this,'canvas-1')"></span></li>
+								onclick="closeWorkflowTab(this,'flowchart-canvas-1')"></span></li>
 							<img src="../image/icons/button-new_canvas.gif" alt="add"
 								style="width: 16px; padding-top: 2px;" id="addtabCanvas" />
 
@@ -1443,9 +1428,9 @@
 							</button>
 						</span>
 
-						<div id="canvas-1" class="container-canvas">
+						<div id="flowchart-canvas-1" class="container-canvas">
 
-							<div id="container-canvas-1" class="container-canvas-1">
+							<div id="container-flowchart-canvas-1" class="container-canvas-1">
 								<div class="rich-panel headerLegend"
 									onclick="jQuery('#panelLegend-canvas-1').toggle();return false;"
 									style="position: fixed; z-index: 101; width: 190px">
@@ -1454,7 +1439,7 @@
 								<div class="rich-panel" id="panelLegend-canvas-1"
 									style="position: fixed; z-index: 100; display: none; width: 190px; height: 330px">
 									<div class="rich-panel-body" style="overflow: hidden;">
-										<div id="container-legend-canvas-1"
+										<div id="container-legend-flowchart-canvas-1"
 											class="container-legend-canvas-1"
 											style="overflow: hidden; position: relative; top: 20px;" />
 									</div>
@@ -1468,7 +1453,7 @@
 
 									<ui:repeat value="#{configureTabsBean.tabs}" var="tab"
 										varStatus="status">
-										<li class="locked"><a href="##{tab}">#{tab}</a></li>
+										<li class="locked"><a href="#tabFooter-#{tab}">#{tab}</a></li>
 									</ui:repeat>
 									<a4j:region>
 										<a4j:commandButton image="../image/icons/button-property.gif"
@@ -1489,7 +1474,7 @@
 								</span>
 
 								<ui:repeat value="#{configureTabsBean.menuWAList}" var="tab">
-									<div id="#{tab.key}">
+									<div id="tabFooter-#{tab.key}">
 										<p>
 											<ui:repeat value="#{tab.value}" var="action">
 												<span id="spanImagensObj" style="display: none"> <img

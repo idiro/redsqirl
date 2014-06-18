@@ -71,7 +71,7 @@ if [ ! -e ${IDM_USER} ]; then
 	exit;
     fi
 
-    echo hive_jdbc_url=jdbc:hive://${{jdbc_hive_server}:${HIVE_PORT_CUR}/default > ${IDM_USER}
+    echo hive_jdbc_url=jdbc:hive://${jdbc_hive_server}:${HIVE_PORT_CUR}/default > ${IDM_USER}
 
     #Update internal conf
     if [ -n "${manual_assign}" ]; then
@@ -80,4 +80,4 @@ if [ ! -e ${IDM_USER} ]; then
 	echo TOMCAT_PATH=\"${TOMCAT_PATH_CUR}\" > ${CONF_FILE}
 	echo HIVE_PORT_CUR=\"${HIVE_PORT_CUR}\" >> ${CONF_FILE}
     fi
-fi
+

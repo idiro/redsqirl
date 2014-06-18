@@ -5,6 +5,7 @@ import idiro.ProjectID;
 import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.HDFSInterface;
 import idiro.workflow.server.connect.HiveInterface;
+import idiro.workflow.utils.AbstractDictionaryTests;
 import idiro.workflow.utils.PackageManagerTests;
 
 import java.io.BufferedReader;
@@ -49,7 +50,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	TableInteractionTests.class,*/
 	//FIXME Test only done for keith user...
 	//HDFSTypeTests.class,
-	PackageManagerTests.class,
+//	PackageManagerTests.class,
+	AbstractDictionaryTests.class
 })
 public class SetupEnvironmentTest {
 
