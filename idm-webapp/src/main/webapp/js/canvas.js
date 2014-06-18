@@ -47,7 +47,7 @@ function Canvas(name){
 	this.outputTypeColours = [];
 }
 
-var selectedCanvas = "canvas-1";
+var selectedCanvas = "flowchart-canvas-1";
 
 var canvasArray;
 var allPositionIcons;
@@ -74,10 +74,8 @@ function findHHandWW() {
 }
 
 window.onload = function() {
-	var canvasName = "canvas-1";
-	
+	var canvasName = "flowchart-canvas-1";
 	canvasArray = {};
-	
 	configureCanvas(canvasName);
 	mountObj(canvasName);
 };
@@ -85,10 +83,6 @@ window.onload = function() {
 function configureCanvas(canvasName){
 	
 	canvasArray[canvasName] = new Canvas(canvasName);
-	
-//	canvasArray[canvasName].outputTypeColours['hive'] = 'green';
-//	canvasArray[canvasName].outputTypeColours['hdfs'] = 'red';
-	
 	var canvasContainer = "container-"+canvasName;
 	var legendCanvasContainer = "container-legend-"+canvasName;
 	canvasArray[canvasName].canvasContainer = canvasContainer;
@@ -257,6 +251,7 @@ function configureCanvas(canvasName){
 	stage.add(polygonLayer);
 	
 	legendStage.add(legendLayer);
+	
 }
 
 function createLegend(canvasName) {
