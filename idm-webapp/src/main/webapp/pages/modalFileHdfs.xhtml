@@ -177,7 +177,7 @@
 	</a4j:commandButton>
 	
 	<a4j:commandButton id="hdfsSaveFileBtn" styleClass="greenButton"
-	    value="#{messages.button_ok}"  rendered="#{browserHdfsBean.showSave == 'T'}"
+	    value="#{messages.button_ok}" rendered="#{browserHdfsBean.showSave == 'T'}"
         onclick="if(! isHDFSFileExists(getPath('#{browserHdfsBean.path}')) || confirm('#{messages.file_already_exists}')){save(getPath('#{browserHdfsBean.path}'));#{rich:component('modalFileHdfs')}.hide();}"
         reRender="msnError" >
     </a4j:commandButton>

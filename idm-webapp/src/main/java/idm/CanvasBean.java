@@ -81,7 +81,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 						UserInfoBean.class);
 
 		workflowMap = new HashMap<String, DataFlow>();
-		setNameWorkflow("canvas-1");
+		setNameWorkflow("flowchart-canvas-1");
 
 		setIdMap(new HashMap<String, Map<String, String>>());
 		getIdMap().put(getNameWorkflow(), new HashMap<String, String>());
@@ -569,9 +569,13 @@ public class CanvasBean extends BaseBean implements Serializable {
 		updatePosition();
 		{
 			String nameWorkflowSwp = generateWorkflowName(path);
+			
+			if(!nameWorkflowSwp.startsWith("flowchart-")){
+				nameWorkflowSwp = "flowchart-"+nameWorkflowSwp;
+			}
+			
 			try {
-				msg = getworkFlowInterface().renameWorkflow(nameWorkflow,
-						nameWorkflowSwp);
+				msg = getworkFlowInterface().renameWorkflow(nameWorkflow, nameWorkflowSwp);
 			} catch (RemoteException e) {
 				msg = "Error when renaming workflow";
 				logger.error("Error when renaming workflow: " + e);
@@ -827,8 +831,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 		}
 
-		getworkFlowInterface().addWorkflow("canvas-1");
-		setDf(getworkFlowInterface().getWorkflow("canvas-1"));
+		getworkFlowInterface().addWorkflow("flowchart-canvas-1");
+		setDf(getworkFlowInterface().getWorkflow("flowchart-canvas-1"));
 
 		getWorkflowMap().clear();
 		getWorkflowMap().put(getNameWorkflow(), getDf());
@@ -1361,12 +1365,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		logger.info("getPositions getNameWorkflow " + getNameWorkflow());
 		logger.info("getPositions getPath " + getPath());
-		logger.info("getPositions jsonElements.toString "
-				+ jsonElements.toString());
+		logger.info("getPositions jsonElements.toString " + jsonElements.toString());
 		logger.info("getPositions jsonLinks.toString " + jsonLinks.toString());
 
-		return new String[] { getNameWorkflow(), getPath(),
-				jsonElements.toString(), jsonLinks.toString() };
+		return new String[] { getNameWorkflow(), getPath(), jsonElements.toString(), jsonLinks.toString() };
 	}
 
 	public String getIdElement(String idGroup) {
