@@ -39,22 +39,22 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
 	PigDictionaryTests.class,
-//	PigFilterInteractionTests.class,
-//	PigTableSelectInteractionTests.class,
-//	PigJoinRelationInteractionTests.class,
-//	PigTableJoinInteractionTests.class,
-//	PigTableUnionInteractionTests.class,
-//	PigSelectTests.class,
-//	PigAggregatorTests.class,
-//	PigUnionTests.class,
-//	PigJoinTests.class,
-//	PigSampleTests.class,
-//	PigWorkflowMngtTests.class,
-//	PigUnionConditionsTests.class,
-//	PigAuditTests.class,
-//	PigTransposeTests.class,
-//	PigAnonymiseTests.class,
-//	PigUnanonymiseTests.class
+	PigFilterInteractionTests.class,
+	PigTableSelectInteractionTests.class,
+	PigJoinRelationInteractionTests.class,
+	PigTableJoinInteractionTests.class,
+	PigTableUnionInteractionTests.class,
+	PigSelectTests.class,
+	PigAggregatorTests.class,
+	PigUnionTests.class,
+	PigJoinTests.class,
+	PigSampleTests.class,
+	PigWorkflowMngtTests.class,
+	PigUnionConditionsTests.class,
+	PigAuditTests.class,
+	PigTransposeTests.class,
+	PigAnonymiseTests.class,
+	PigUnanonymiseTests.class
 	})
 public class SetupPigEnvironmentTest {
 

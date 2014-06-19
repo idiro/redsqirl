@@ -50,3 +50,9 @@ $JAVA_PATH -server -classpath $CLASSPATH $MAIN_CLASS pathSystemPref="$(dirname  
 
 #Copy war file
 cp ${SCRIPT_PATH}/../war/* ${TOMCAT_PATH_CUR}
+
+if [ -w ${TOMCAT_PATH_CUR}/../conf/ ] ; then 
+    echo path_sys_home=/usr/share/redsqirl > ${TOMCAT_PATH_CUR}/../conf/idiro.properties
+else
+    echo "You don't have permission to write on ${TOMCAT_PATH_CUR}/../conf/. To RedSqirl work properly you will need a idiro.properties file on that folder, with a path_sys_home property pointing to RedSqirl home folder.";
+fi

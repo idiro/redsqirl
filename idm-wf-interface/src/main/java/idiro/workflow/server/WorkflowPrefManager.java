@@ -245,7 +245,6 @@ public class WorkflowPrefManager extends BlockManager {
 		} catch (IOException e) {
 			logger.info("idiro.properties not found. Using default path_sys_home");
 			pathSysHome = "/usr/share/redsqirl";
-			e.printStackTrace();
 		}
 		
 		/**
