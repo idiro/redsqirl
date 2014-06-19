@@ -41,7 +41,7 @@
 
 		  jQuery(function() {
 			  
-			  nameTabs[0] = "flowchart-canvas-1";
+			  nameTabs[0] = "canvas-1";
 
 	    	  configureTabsRemote();
 	    	  configureFooter();
@@ -145,7 +145,7 @@
 	              //<![CDATA[
 	              
 	              contTabCanvas++;
-	              var tabName = "flowchart-canvas-"+contTabCanvas;
+	              var tabName = "canvas-"+contTabCanvas;
 	              addWorkflowTab(tabName);
 	              addWorkflow(tabName);
 	              configureCanvas(tabName);
@@ -376,7 +376,7 @@
 		    		 jQuery('*').css('-o-user-select', 'none');
 		    		 jQuery('*').css('user-select', 'none');
 		    		 jQuery('input').css('-webkit-user-select', 'text');
-		    		 jQuery('#flowchart-canvas-1').css('position', 'fixed');
+		    		 jQuery('#canvas-1').css('position', 'fixed');
 		    		 
 				 //}
 
@@ -471,16 +471,9 @@
 	    	
 	    	  var tabs = jQuery("#canvas-tabs").tabs();
               var ul = jQuery("#canvas-tabs").tabs().find( "ul:first" );
-
-              var newNameTab = "";
-              if(tabName.match("^flowchart-")){
-            	  newNameTab = tabName.substring(10, tabName.length)
-              }else{
-            	  newNameTab = tabName;
-              }
               
               jQuery( "<li class='locked'><a href='#"+ tabName +"' onclick=\"jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('"+tabName+"');\">"+ 
-            		  newNameTab +"</a> <span id='"+tabName+"-icon-close' class='ui-icon ui-icon-close' role='presentation' onclick=\"closeWorkflowTab(this, '"+tabName+"')\"></span> </li>" ).appendTo( ul );
+            		  tabName +"</a> <span id='"+tabName+"-icon-close' class='ui-icon ui-icon-close' role='presentation' onclick=\"closeWorkflowTab(this, '"+tabName+"')\"></span> </li>" ).appendTo( ul );
               
               var div = "<div id='"+tabName+"' class='container-canvas'>"+
 				"<div id='container-"+tabName+"' class='container-"+tabName+"'>"+
@@ -560,10 +553,10 @@
               numTabs = 0;
     	      nameTabs = {};
               
-              addWorkflowTab("flowchart-canvas-1");
-              addWorkflow("flowchart-canvas-1");
-              configureCanvas("flowchart-canvas-1");
-              setWorkflow("flowchart-canvas-1");
+              addWorkflowTab("canvas-1");
+              addWorkflow("canvas-1");
+              configureCanvas("canvas-1");
+              setWorkflow("canvas-1");
 	      }
 	      
 	     function selectTab(tabIndex){
@@ -1408,10 +1401,10 @@
 
 					<div id="canvas-tabs">
 						<ul class="ulCssCanvas">
-							<li class="locked"><a href="#flowchart-canvas-1"
-								onclick="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('flowchart-canvas-1');">canvas-1</a>
+							<li class="locked"><a href="#canvas-1"
+								onclick="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('canvas-1');">canvas-1</a>
 								<span id="canvas-1-icon-close" class="ui-icon ui-icon-close" role="presentation"
-								onclick="closeWorkflowTab(this,'flowchart-canvas-1')"></span></li>
+								onclick="closeWorkflowTab(this,'canvas-1')"></span></li>
 							<img src="../image/icons/button-new_canvas.gif" alt="add"
 								style="width: 16px; padding-top: 2px;" id="addtabCanvas" />
 
@@ -1428,9 +1421,9 @@
 							</button>
 						</span>
 
-						<div id="flowchart-canvas-1" class="container-canvas">
+						<div id="canvas-1" class="container-canvas">
 
-							<div id="container-flowchart-canvas-1" class="container-canvas-1">
+							<div id="container-canvas-1" class="container-canvas-1">
 								<div class="rich-panel headerLegend"
 									onclick="jQuery('#panelLegend-canvas-1').toggle();return false;"
 									style="position: fixed; z-index: 101; width: 190px">
@@ -1439,7 +1432,7 @@
 								<div class="rich-panel" id="panelLegend-canvas-1"
 									style="position: fixed; z-index: 100; display: none; width: 190px; height: 330px">
 									<div class="rich-panel-body" style="overflow: hidden;">
-										<div id="container-legend-flowchart-canvas-1"
+										<div id="container-legend-canvas-1"
 											class="container-legend-canvas-1"
 											style="overflow: hidden; position: relative; top: 20px;" />
 									</div>

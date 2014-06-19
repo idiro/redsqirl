@@ -31,11 +31,11 @@ public class HelpBean extends BaseBean implements Serializable {
 
 		try {
 
-			if (getworkFlowInterface().getWorkflow("flowchart-canvas-1") == null) {
-				getworkFlowInterface().addWorkflow("flowchart-canvas-1");
+			if (getworkFlowInterface().getWorkflow("canvas-1") == null) {
+				getworkFlowInterface().addWorkflow("canvas-1");
 			}
 
-			DataFlow wf = getworkFlowInterface().getWorkflow("flowchart-canvas-1");
+			DataFlow wf = getworkFlowInterface().getWorkflow("canvas-1");
 			Map<String,String[]> helpRel = null;
 			helpHtml = new LinkedList<String[]>();
 			try {

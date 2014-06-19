@@ -81,7 +81,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 						UserInfoBean.class);
 
 		workflowMap = new HashMap<String, DataFlow>();
-		setNameWorkflow("flowchart-canvas-1");
+		setNameWorkflow("canvas-1");
 
 		setIdMap(new HashMap<String, Map<String, String>>());
 		getIdMap().put(getNameWorkflow(), new HashMap<String, String>());
@@ -570,9 +570,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 		{
 			String nameWorkflowSwp = generateWorkflowName(path);
 			
-			if(!nameWorkflowSwp.startsWith("flowchart-")){
+			/*if(!nameWorkflowSwp.startsWith("flowchart-")){
 				nameWorkflowSwp = "flowchart-"+nameWorkflowSwp;
-			}
+			}*/
 			
 			try {
 				msg = getworkFlowInterface().renameWorkflow(nameWorkflow, nameWorkflowSwp);
@@ -831,8 +831,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 		}
 
-		getworkFlowInterface().addWorkflow("flowchart-canvas-1");
-		setDf(getworkFlowInterface().getWorkflow("flowchart-canvas-1"));
+		getworkFlowInterface().addWorkflow("canvas-1");
+		setDf(getworkFlowInterface().getWorkflow("canvas-1"));
 
 		getWorkflowMap().clear();
 		getWorkflowMap().put(getNameWorkflow(), getDf());

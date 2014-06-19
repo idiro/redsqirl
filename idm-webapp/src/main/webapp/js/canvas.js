@@ -47,7 +47,7 @@ function Canvas(name){
 	this.outputTypeColours = [];
 }
 
-var selectedCanvas = "flowchart-canvas-1";
+var selectedCanvas = "canvas-1";
 
 var canvasArray;
 var allPositionIcons;
@@ -74,7 +74,7 @@ function findHHandWW() {
 }
 
 window.onload = function() {
-	var canvasName = "flowchart-canvas-1";
+	var canvasName = "canvas-1";
 	canvasArray = {};
 	configureCanvas(canvasName);
 	mountObj(canvasName);
