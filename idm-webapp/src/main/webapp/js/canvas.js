@@ -117,7 +117,7 @@ function configureCanvas(canvasName){
 	canvasArray[canvasName].legendLayer = legendLayer;
 	
 	// set width of the canvas
-	jQuery("#"+canvasContainer).css("width", jQuery(canvasName).width() + 'px');
+	jQuery("#"+canvasContainer).css("width", jQuery("#"+getCanvasId(canvasName)).width() + 'px');
 	
 	// white background
 	var background = new Kinetic.Rect({
@@ -2309,12 +2309,24 @@ function updateAllArrowColours(canvasName){
 	
 }
 
-function setSelected(selected){
+function getCanvasId(canvasName){
+	return "flowchart-"+canvasName;
+}
+
+function setSelectedByName(selected){
 	selectedCanvas = selected;
 }
 
-function getSelected(){
+function getSelectedByName(){
 	return selectedCanvas;
+}
+
+function setSelectedById(selected){
+	selectedCanvas = selected.substring(10);
+}
+
+function getSelectedById(){
+	return "flowchart-"+selectedCanvas;
 }
 
 function setRunning(canvasName, value){
