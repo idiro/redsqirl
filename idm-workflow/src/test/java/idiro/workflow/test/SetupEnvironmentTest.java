@@ -3,6 +3,8 @@ package idiro.workflow.test;
 import idiro.Log;
 import idiro.ProjectID;
 import idiro.workflow.server.WorkflowPrefManager;
+import idiro.workflow.server.action.ActionTests;
+import idiro.workflow.server.action.SendEmailTests;
 import idiro.workflow.server.connect.HDFSInterface;
 import idiro.workflow.server.connect.HiveInterface;
 import idiro.workflow.utils.AbstractDictionaryTests;
@@ -22,7 +24,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 
 @RunWith(Suite.class)
-@SuiteClasses({ActionTests.class
+@SuiteClasses({ActionTests.class,
 	/*WorkflowTests.class,
 	//FIXME CreateWorkflowTests does not work
 	//CreateWorkflowTests.class,
@@ -51,7 +53,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	//FIXME Test only done for keith user...
 	//HDFSTypeTests.class,
 //	PackageManagerTests.class,
-	AbstractDictionaryTests.class
+	AbstractDictionaryTests.class,
+	SendEmailTests.class
 })
 public class SetupEnvironmentTest {
 
