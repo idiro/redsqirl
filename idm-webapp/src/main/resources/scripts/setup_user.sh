@@ -20,7 +20,7 @@ PACKAGES=${MAIN_DIRECTORY}/packages
 TMP=${MAIN_DIRECTORY}/tmp
 IDM_USER=${MAIN_DIRECTORY}/idm_user.properties
 
-if [ -a ${MAIN_DIRECTORY} && ! -d ${MAIN_DIRECTORY} ]; then
+if [[ -a "${MAIN_DIRECTORY}" && ! -d "${MAIN_DIRECTORY}" ]]; then
     echo "${MAIN_DIRECTORY} has to be a directory"
     exit;
 fi
@@ -56,17 +56,17 @@ fi
 if [ ! -e ${IDM_USER} ]; then
     source ${CONF_FILE} 2> /dev/null
     source ${CONF_SYS_FILE}
-    if [ -z "${HIVE_PORT_CUR}" ]; then
+    if [ -z "${HIVE_PORT_CUR}" ]; then
 	HIVE_PORT_CUR=${start_hive_range}
     fi
 
-    if [ -z "${HIVE_PORT_CUR}" -o "${HIVE_PORT_CUR}" == "${end_hive_range}" ]; then
+    if [ -z "${HIVE_PORT_CUR}" || "${HIVE_PORT_CUR}" == "${end_hive_range}" ]; then
 	manual_assign="TRUE"
 	echo "IDM run out of hive jdbc port, please specify a port number available manually: "
 	read ${HIVE_PORT_CUR}
     fi
 
-    if [[ -z "${HIVE_PORT_CUR}" -o "${HIVE_PORT_CUR}" =~ "?^[1-9][0-9]*$" ]]; then
+    if [[ -z "${HIVE_PORT_CUR}" || "${HIVE_PORT_CUR}" =~ "?^[1-9][0-9]*$" ]]; then
 	echo "Port given, ${HIVE_PORT_CUR}, not supported"
 	exit;
     fi
@@ -80,4 +80,4 @@ if [ ! -e ${IDM_USER} ]; then
 	echo TOMCAT_PATH=\"${TOMCAT_PATH_CUR}\" > ${CONF_FILE}
 	echo HIVE_PORT_CUR=\"${HIVE_PORT_CUR}\" >> ${CONF_FILE}
     fi
-
+fi
