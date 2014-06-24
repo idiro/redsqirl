@@ -75,9 +75,7 @@ function findHHandWW() {
 
 window.onload = function() {
 	var canvasName = "canvas-1";
-	
 	canvasArray = {};
-	
 	configureCanvas(canvasName);
 	mountObj(canvasName);
 };
@@ -85,10 +83,6 @@ window.onload = function() {
 function configureCanvas(canvasName){
 	
 	canvasArray[canvasName] = new Canvas(canvasName);
-	
-//	canvasArray[canvasName].outputTypeColours['hive'] = 'green';
-//	canvasArray[canvasName].outputTypeColours['hdfs'] = 'red';
-	
 	var canvasContainer = "container-"+canvasName;
 	var legendCanvasContainer = "container-legend-"+canvasName;
 	canvasArray[canvasName].canvasContainer = canvasContainer;
@@ -123,7 +117,7 @@ function configureCanvas(canvasName){
 	canvasArray[canvasName].legendLayer = legendLayer;
 	
 	// set width of the canvas
-	jQuery("#"+canvasContainer).css("width", jQuery(canvasName).width() + 'px');
+	jQuery("#"+canvasContainer).css("width", jQuery("#"+getCanvasId(canvasName)).width() + 'px');
 	
 	// white background
 	var background = new Kinetic.Rect({
@@ -257,6 +251,7 @@ function configureCanvas(canvasName){
 	stage.add(polygonLayer);
 	
 	legendStage.add(legendLayer);
+	
 }
 
 function createLegend(canvasName) {
@@ -2314,12 +2309,24 @@ function updateAllArrowColours(canvasName){
 	
 }
 
-function setSelected(selected){
+function getCanvasId(canvasName){
+	return "flowchart-"+canvasName;
+}
+
+function setSelectedByName(selected){
 	selectedCanvas = selected;
 }
 
-function getSelected(){
+function getSelectedByName(){
 	return selectedCanvas;
+}
+
+function setSelectedById(selected){
+	selectedCanvas = selected.substring(10);
+}
+
+function getSelectedById(){
+	return "flowchart-"+selectedCanvas;
 }
 
 function setRunning(canvasName, value){

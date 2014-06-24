@@ -17,7 +17,7 @@
 <link rel="stylesheet" type="text/css" href="#{facesContext.externalContext.requestContextPath}/css/idm.css" />
 
 <script	src="#{facesContext.externalContext.requestContextPath}/js/jquery-1.9.1.js"	type="text/javascript" />
-<script	src="#{facesContext.externalContext.requestContextPath}/js/jquery.contextmenu.js"	type="text/javascript" />
+<script	src="#{facesContext.externalContext.requestContextPath}/js/jquery.contextmenu.js" type="text/javascript" />
 <script	src="#{facesContext.externalContext.requestContextPath}/js/jquery-ui-1.10.0.custom.js" />
 <script	src="#{facesContext.externalContext.requestContextPath}/js/kinetic-v4.3.3.js" type="text/javascript" />
 <script	src="#{facesContext.externalContext.requestContextPath}/js/jquery.cookie.js" type="text/javascript" />
@@ -94,7 +94,6 @@
 
 		                jQuery(jQuery( "#" + panelId ).remove()).appendTo(receiver);
 	  	              	tabsGroup.tabs('refresh');
-	
 
 		  	            //source
 	  	            	//jQuery(ui.sender[0]).parent().attr("id");
@@ -118,7 +117,6 @@
 			    		}).appendTo(allTabsSource);
 	  	              	
 	  	            	allTabsDestination.find("a[href$=" + jQuery(ui.item[0]).attr("aria-controls") + "]").remove();
-
 	
 	  	              	jQuery("#canvas-tabs").tabs().tabs('refresh');
 	  	              	//jQuery("#tabRemote").tabs().tabs('refresh');
@@ -142,23 +140,17 @@
 	        });
   	    	
   	    	var contTabRemote = 1;
-  	        
 
 	    	  jQuery('#addtabCanvas').click( function(){
 	              //<![CDATA[
 	              
 	              contTabCanvas++;
-	                         
 	              var tabName = "canvas-"+contTabCanvas;
 	              addWorkflowTab(tabName);
-	              
 	              addWorkflow(tabName);
 	              configureCanvas(tabName);
-	              
 	              setWorkflow(tabName);
-
 	              validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
-
 	              
 	              //]]>
 	          });
@@ -183,7 +175,6 @@
 			  }}
 		  ];
           
-          
 		  var menusplitHCanvas = [
 		  {'Top': function(menuItem,menu){
 			  jQuery("#tabs1").css("height", '0px');
@@ -207,8 +198,6 @@
 			  resizeTabs();
 		  	}}
 		  ];
-		  
-         
 
 	    	  jQuery("#splitVCanvas").splitter({
 	        	  type: "v",
@@ -234,9 +223,7 @@
 	          });
 	
 		      jQuery(".splitter-bar-vertical").contextMenu(menusplitVCanvas);
-	
 		      jQuery(".splitter-bar-horizontal").contextMenu(menusplitHCanvas);
-
 
 		      jQuery(".splitter-bar-vertical").mousedown(function() {
 		    	  jQuery('#helpmain_splitter').click();return false;
@@ -274,7 +261,6 @@
 		  	        expandIcon: "&#9660; ",
 		  	        dropWidth: "66%",
 		  	        sizeTweak: 30
-
 		  	    });
 
 	    		jQuery( "#tabs2" ).plusTabs({
@@ -285,7 +271,6 @@
 		  	        expandIcon: "&#9660; ",
 		  	        dropWidth: "66%",
 		  	        sizeTweak: 30
-
 		  	    });
 
 	    		jQuery( "#tabFlowchart" ).plusTabs({
@@ -296,9 +281,7 @@
 		  	        expandIcon: "&#9660; ",
 		  	        dropWidth: "66%",
 		  	        sizeTweak: 30
-
 		  	    });
-
 
 	    		var allTabs = jQuery("#tabs1").find(".allTabs");
 		  	    
@@ -393,7 +376,7 @@
 		    		 jQuery('*').css('-o-user-select', 'none');
 		    		 jQuery('*').css('user-select', 'none');
 		    		 jQuery('input').css('-webkit-user-select', 'text');
-		    		 jQuery('#canvas-1').css('position', 'fixed');
+		    		 jQuery('#flowchart-canvas-1').css('position', 'fixed');
 		    		 
 				 //}
 
@@ -406,8 +389,20 @@
 	    		 }
 	    		 
 	    		 setTimeout(function(){autoSaveAll()}, 10*1000);
+
+	    		 function fixOnChangeIssue() {
+		    		 jQuery('.rich-combobox ').each(function() {
+			    		 var combo = jQuery(this).closest('[component]');
+			    		 if(combo.length!=0) {
+				    		 combo = combo[0].component;
+				    		 if(combo.comboValue.value) {
+					    		 combo.field.prevValue = combo.comboValue.value;
+					    	 }
+					     }
+					 });
+				}
 	    		 
-	    	});	//---------- END jQuery(function
+	    	});	//---------- END jQuery function
 	    			
 	    	function autoSaveAll(){
 	    		try{
@@ -427,18 +422,14 @@
             }
 
 	      function closeTab(arg){
-	    	  
 	    	  jQuery(jQuery( arg ).prev().attr('href')).remove();
 	    	  jQuery( arg ).offsetParent().remove();
-	    	  
 	      }
 	      
 	      function menuCloseTab(){
-	    	  var tabName = getSelected();
-	    	  
+	    	  var tabName = getSelectedByName();
 	    	  var ul = jQuery("#canvas-tabs ul:first li #"+tabName+"-icon-close");
 	    	  closeWorkflowTab(ul, tabName);
-	    	  
 	      }
 	      
 	      function addElementJs(canvasName, path, positions, links){
@@ -484,24 +475,24 @@
 	    	//]]>
 	      }
 	      
-	      
 	      var numTabs = 1;
 	      var nameTabs = {};
 	      
 	      function addWorkflowTab(tabName){
 	    	//<![CDATA[
+	    	
 	    	  var tabs = jQuery("#canvas-tabs").tabs();
               var ul = jQuery("#canvas-tabs").tabs().find( "ul:first" );
-             
-              jQuery( "<li class='locked'><a href='#"+ tabName +"' onclick=\"jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('"+tabName+"');\">"+ 
+              
+              jQuery( "<li class='locked'><a href='#"+ getCanvasId(tabName) +"' onclick=\"jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('"+tabName+"');\">"+ 
             		  tabName +"</a> <span id='"+tabName+"-icon-close' class='ui-icon ui-icon-close' role='presentation' onclick=\"closeWorkflowTab(this, '"+tabName+"')\"></span> </li>" ).appendTo( ul );
               
-              var div = "<div id='"+tabName+"' class='container-canvas'>"+
+              var div = "<div id='"+getCanvasId(tabName)+"' class='container-canvas'>"+
 				"<div id='container-"+tabName+"' class='container-"+tabName+"'>"+
 				"<div class='rich-panel headerLegend' onclick=\"jQuery('#panelLegend-"+tabName+"').toggle();return false;\"  style='position: fixed; z-index:101; width:190px'>"+
 					"<div class='rich-panel-header'>Legend</div>"+
 				"</div>"+
-				"<div class='rich-panel' id='panelLegend-"+tabName+"'  style='position: fixed; z-index:100; display: none; width:190px; height:300px'>"+
+				"<div class='rich-panel' id='panelLegend-"+tabName+"'  style='position: fixed; z-index:100; display: none; width:190px; height:330px'>"+
 					"<div class='rich-panel-body' style='overflow:hidden;'>"+
 						"<div id='container-legend-"+tabName+"' class='container-legend-"+tabName+"' style='overflow:hidden; position: relative; top:20px;'/>"+
 					"</div>"+
@@ -516,14 +507,14 @@
               tabs.tabs("option", "active", numTabs);
               nameTabs[numTabs] = tabName;
               numTabs++;
-              setSelected(tabName);
+              setSelectedByName(tabName);
             //]]>
 	      }
 	      
           function closeCurrentTabWithoutCallingBackend(){
             //<![CDATA[
             
-              var tabName = getSelected();
+              var tabName = getSelectedByName();
               var tab = jQuery("#canvas-tabs ul:first li #"+tabName+"-icon-close");
               
               closeTab(tab);
@@ -626,8 +617,8 @@
 	   	}
 	   	
 	   	function menuSave(){
-			if (isSaved(getSelected())){
-				save(getPathFile(getSelected()));
+			if (isSaved(getSelectedByName())){
+				save(getPathFile(getSelectedByName()));
 	   		}
 	   		else{
 	   			openModalSaveWorkflow();
@@ -853,10 +844,9 @@
 
 				<a4j:jsFunction name="setWorkflow"
 					action="#{canvasBean.changeWorkflow}"
-					oncomplete="setSelected('#{canvasBean.nameWorkflow}');verifyIfIsRunning(getSelected());"
+					oncomplete="setSelectedByName('#{canvasBean.nameWorkflow}');verifyIfIsRunning(getSelectedByName());"
 					reRender="formMenu,domMessageDivCanvas2,killProcessBtn">
-					<a4j:actionparam name="selectedCanvas"
-						assignTo="#{canvasBean.nameWorkflow}" />
+					<a4j:actionparam name="selectedCanvas" assignTo="#{canvasBean.nameWorkflow}" />
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -951,17 +941,12 @@
 				<a4j:status
 					onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });" />
 
-				<a4j:jsFunction name="addLinkModalBt"
-					action="#{canvasBean.updateLinkPossibilities}"
-					oncomplete="if(#{canvasBean.nbLinkPossibilities} == 1){addLinkWhenUniq();}else{jQuery('#canvas-tabs').unblock();#{rich:component('modalSelectLink')}.show();};
-				                "
+				<a4j:jsFunction name="addLinkModalBt" action="#{canvasBean.updateLinkPossibilities}"
+					oncomplete="if(#{canvasBean.nbLinkPossibilities} == 1){addLinkWhenUniq();}else{jQuery('#canvas-tabs').unblock();#{rich:component('modalSelectLink')}.show();};"
 					reRender="selectLinkList">
-					<a4j:actionparam name="paramOutId"
-						assignTo="#{canvasBean.paramOutId}" />
-					<a4j:actionparam name="paramInId"
-						assignTo="#{canvasBean.paramInId}" />
-					<a4j:actionparam name="paramNameLink"
-						assignTo="#{canvasBean.paramNameLink}" />
+					<a4j:actionparam name="paramOutId" assignTo="#{canvasBean.paramOutId}" />
+					<a4j:actionparam name="paramInId" assignTo="#{canvasBean.paramInId}" />
+					<a4j:actionparam name="paramNameLink" assignTo="#{canvasBean.paramNameLink}" />
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -1058,7 +1043,7 @@
 
 				<a4j:jsFunction name="loadWorkflow"
 					data="#{canvasBean.positions}"
-					oncomplete="addElementJs(data[0],data[1],data[2],data[3]);setRunning(getSelected(), true);blockRunningWorkflow();"
+					oncomplete="addElementJs(data[0],data[1],data[2],data[3]);setRunning(getSelectedByName(), true);blockRunningWorkflow();"
 					reRender="tabFlowchart,errorTable,msnError" />
 					
 			</a4j:region>
@@ -1069,7 +1054,7 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
 				<a4j:jsFunction name="renameTab" data="#{canvasBean.positions}"
-					oncomplete="closeCurrentTabWithoutCallingBackend();setSelected(data[0]);addElementJs(data[0],data[1],data[2],data[3]);onHideModalSaveWorkflow(true);"
+					oncomplete="closeCurrentTabWithoutCallingBackend();setSelectedByName(data[0]);addElementJs(data[0],data[1],data[2],data[3]);onHideModalSaveWorkflow(true);jQuery.unblockUI();"
 					reRender="tabFlowchart" />
 			</a4j:region>
 
@@ -1104,8 +1089,8 @@
 			<a4j:region>
 
 				<a4j:status
-					onstart="jQuery('#'+getSelected()).block({ message: jQuery('#domMessageDivCanvas2') });resizeBlockUICanvas();"
-					onerror="jQuery('#'+getSelected()).unblock();" />
+					onstart="jQuery('#'+getSelectedById()).block({ message: jQuery('#domMessageDivCanvas2') });resizeBlockUICanvas();"
+					onerror="jQuery('#'+getSelectedById()).unblock();" />
 
 				<div id="domMessageDivCanvas2" style="display: none;">
 					<img src="../image/icons/waiting.gif" />
@@ -1127,7 +1112,7 @@
 
 				<a4j:jsFunction name="blockRunningWorkflow"
 					action="#{canvasBean.blockRunningWorkflow}"
-					oncomplete="jQuery('#'+'#{canvasBean.blockingWorkflowName}').unblock();if('#{canvasBean.blockingWorkflowName}' == getSelected()){setRunning(getSelected(), false);updateRunningStatus();updateAllOutputStatus();}">
+					oncomplete="jQuery('#flowchart-'+'#{canvasBean.blockingWorkflowName}').unblock();if('#{canvasBean.blockingWorkflowName}' == getSelectedByName()){setRunning(getSelectedByName(), false);updateRunningStatus();updateAllOutputStatus();}">
 				</a4j:jsFunction>
 
 			</a4j:region>
@@ -1146,7 +1131,7 @@
 
 				<a4j:jsFunction name="runWorkflow"
 					action="#{canvasBean.runWorkflow}"
-					oncomplete="setRunning(getSelected(), true);blockRunningWorkflow();"
+					oncomplete="setRunning(getSelectedByName(), true);blockRunningWorkflow();"
 					reRender="formMenu,domMessageDivCanvas2,killProcessBtn,msnError">
 					<a4j:actionparam name="positions" />
 					<a4j:actionparam name="savedFile" />
@@ -1164,7 +1149,7 @@
 
 
 				<a4j:jsFunction name="backupAll" action="#{canvasBean.backupAll}"
-					oncomplete="closeWorkflow(getSelected());">
+					oncomplete="closeWorkflow(getSelectedByName());">
 					<a4j:actionparam name="allpositions" />
 				</a4j:jsFunction>
 			</a4j:region>
@@ -1251,12 +1236,12 @@
 								</h:panelGroup>
 							</f:facet>
 							<rich:menuItem id="selectAllMenuItem" submitMode="none"
-								value="#{messages.label_menu_selectall}" onclick="selectAll(getSelected());" >
+								value="#{messages.label_menu_selectall}" onclick="selectAll(getSelectedByName());" >
 								<h:outputText value="Ctrl+A" class="menuItemHotKey"/>
 							</rich:menuItem>
 							<rich:menuItem id="deselectAllMenuItem" submitMode="none"
 								value="#{messages.label_menu_deselectall}"
-								onclick="deselectAll(getSelected());" >
+								onclick="deselectAll(getSelectedByName());" >
 								<h:outputText value="Ctrl+Shift+A" class="menuItemHotKey"/>
 							</rich:menuItem>
 							<rich:menuSeparator />
@@ -1286,14 +1271,14 @@
 		
 							<rich:menuItem id="runMenuItem" submitMode="ajax"
 								value="#{messages.label_menu_runitems}"
-								onclick="var sels=getSelectedIconsCommaDelimited();if(sels.length > 0){runWorkflow(getIconPositions(),getPathFile(getSelected()),sels)}"
+								onclick="var sels=getSelectedIconsCommaDelimited();if(sels.length > 0){runWorkflow(getIconPositions(),getPathFile(getSelectedByName()),sels)}"
 								reRender="formMenu,domMessageDivCanvas2,killProcessBtn">
 								<h:outputText value="Ctrl+Alt+R" class="menuItemHotKey"/>
 							</rich:menuItem>
 	
 							<rich:menuItem id="runSelectedMenuItem" submitMode="ajax"
 								value="#{messages.label_menu_runproject}"
-								onclick="runWorkflow(getIconPositions(),getPathFile(getSelected()))"
+								onclick="runWorkflow(getIconPositions(),getPathFile(getSelectedByName()))"
 								reRender="formMenu,domMessageDivCanvas2,killProcessBtn">
 								<h:outputText value="Ctrl+R" class="menuItemHotKey"/>
 							</rich:menuItem>
@@ -1423,13 +1408,12 @@
 
 					<div id="canvas-tabs">
 						<ul class="ulCssCanvas">
-							<li class="locked"><a href="#canvas-1"
+							<li class="locked"><a href="#flowchart-canvas-1"
 								onclick="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('canvas-1');">canvas-1</a>
 								<span id="canvas-1-icon-close" class="ui-icon ui-icon-close" role="presentation"
-								onclick="closeWorkflowTab(this,'canvas-1')"></span></li>
-							<img src="../image/icons/button-new_canvas.gif" alt="add"
-								style="width: 16px; padding-top: 2px;" id="addtabCanvas" />
-
+								onclick="closeWorkflowTab(this,'canvas-1')"></span>
+							</li>
+							<img src="../image/icons/button-new_canvas.gif" alt="add" style="width: 16px; padding-top: 2px;" id="addtabCanvas" />
 						</ul>
 
 						<span id="buttonsCanvas1" class="spanButtons">
@@ -1443,7 +1427,7 @@
 							</button>
 						</span>
 
-						<div id="canvas-1" class="container-canvas">
+						<div id="flowchart-canvas-1" class="container-canvas">
 
 							<div id="container-canvas-1" class="container-canvas-1">
 								<div class="rich-panel headerLegend"
@@ -1468,7 +1452,7 @@
 
 									<ui:repeat value="#{configureTabsBean.tabs}" var="tab"
 										varStatus="status">
-										<li class="locked"><a href="##{tab}">#{tab}</a></li>
+										<li class="locked"><a href="#tabFooter-#{tab}">#{tab}</a></li>
 									</ui:repeat>
 									<a4j:region>
 										<a4j:commandButton image="../image/icons/button-property.gif"
@@ -1489,7 +1473,7 @@
 								</span>
 
 								<ui:repeat value="#{configureTabsBean.menuWAList}" var="tab">
-									<div id="#{tab.key}">
+									<div id="tabFooter-#{tab.key}">
 										<p>
 											<ui:repeat value="#{tab.value}" var="action">
 												<span id="spanImagensObj" style="display: none"> <img

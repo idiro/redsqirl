@@ -569,9 +569,13 @@ public class CanvasBean extends BaseBean implements Serializable {
 		updatePosition();
 		{
 			String nameWorkflowSwp = generateWorkflowName(path);
+			
+			/*if(!nameWorkflowSwp.startsWith("flowchart-")){
+				nameWorkflowSwp = "flowchart-"+nameWorkflowSwp;
+			}*/
+			
 			try {
-				msg = getworkFlowInterface().renameWorkflow(nameWorkflow,
-						nameWorkflowSwp);
+				msg = getworkFlowInterface().renameWorkflow(nameWorkflow, nameWorkflowSwp);
 			} catch (RemoteException e) {
 				msg = "Error when renaming workflow";
 				logger.error("Error when renaming workflow: " + e);
@@ -1361,12 +1365,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		logger.info("getPositions getNameWorkflow " + getNameWorkflow());
 		logger.info("getPositions getPath " + getPath());
-		logger.info("getPositions jsonElements.toString "
-				+ jsonElements.toString());
+		logger.info("getPositions jsonElements.toString " + jsonElements.toString());
 		logger.info("getPositions jsonLinks.toString " + jsonLinks.toString());
 
-		return new String[] { getNameWorkflow(), getPath(),
-				jsonElements.toString(), jsonLinks.toString() };
+		return new String[] { getNameWorkflow(), getPath(), jsonElements.toString(), jsonLinks.toString() };
 	}
 
 	public String getIdElement(String idGroup) {

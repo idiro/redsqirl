@@ -119,7 +119,7 @@ public class PigTransposeTests {
 			 assertTrue(error, error.contains("SUCCEEDED"));
 			WorkflowPrefManager.resetSys();
 			WorkflowPrefManager.resetUser();
-			logger.info(WorkflowPrefManager.pathSysHome.get());
+			logger.info(WorkflowPrefManager.pathSysHome);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			assertTrue("caught exception : "+e.getMessage(), false);

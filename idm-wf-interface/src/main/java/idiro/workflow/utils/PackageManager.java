@@ -221,7 +221,7 @@ public class PackageManager extends UnicastRemoteObject {
 		for (int i = 0; i < packStr.length; ++i) {
 			File curPackage = new File(packStr[i]);
 			if (packStr[i].endsWith(".zip")) {
-				String tmp = WorkflowPrefManager.pathSysHome.get();
+				String tmp = WorkflowPrefManager.pathSysHome;
 				tmp += "/tmp";
 				UnZip uz = new UnZip();
 				uz.unZipIt(curPackage, new File(tmp));
@@ -267,7 +267,7 @@ public class PackageManager extends UnicastRemoteObject {
 					File newPack = null;
 					if (user == null || user.isEmpty()) {
 						newPack = new File(
-								WorkflowPrefManager.pathSysPackagePref.get(),
+								WorkflowPrefManager.pathSysPackagePref,
 								packageName);
 					} else {
 						newPack = new File(
@@ -326,7 +326,7 @@ public class PackageManager extends UnicastRemoteObject {
 	public void init(String user) {
 		File dir = null;
 		if (user == null || user.isEmpty()) {
-			dir = new File(WorkflowPrefManager.pathSysPackagePref.get());
+			dir = new File(WorkflowPrefManager.pathSysPackagePref);
 		} else {
 			dir = new File(WorkflowPrefManager.getPathUserPref(user));
 		}
@@ -354,7 +354,7 @@ public class PackageManager extends UnicastRemoteObject {
 	 * @return List of installed packages
 	 */
 	private List<File> getAllPackages(String user) {
-		String pathSys = WorkflowPrefManager.pathSysPackagePref.get();
+		String pathSys = WorkflowPrefManager.pathSysPackagePref;
 
 		List<File> ans = new LinkedList<File>();
 
@@ -454,7 +454,7 @@ public class PackageManager extends UnicastRemoteObject {
 		List<String> packageNames = new LinkedList<String>();
 		File packDir = null;
 		if (user == null || user.isEmpty()) {
-			packDir = new File(WorkflowPrefManager.pathSysPackagePref.get());
+			packDir = new File(WorkflowPrefManager.pathSysPackagePref);
 		} else {
 			packDir = new File(WorkflowPrefManager.getPathUserPackagePref(user));
 		}
@@ -482,7 +482,7 @@ public class PackageManager extends UnicastRemoteObject {
 
 		File packDir = null;
 		if (user == null || user.isEmpty()) {
-			packDir = new File(WorkflowPrefManager.pathSysPackagePref.get());
+			packDir = new File(WorkflowPrefManager.pathSysPackagePref);
 		} else {
 			packDir = new File(WorkflowPrefManager.getPathUserPackagePref(user));
 		}
@@ -512,7 +512,7 @@ public class PackageManager extends UnicastRemoteObject {
 		String error = null;
 		File packDir = null;
 		if (user == null || user.isEmpty()) {
-			packDir = new File(WorkflowPrefManager.pathSysPackagePref.get());
+			packDir = new File(WorkflowPrefManager.pathSysPackagePref);
 		} else {
 			packDir = new File(WorkflowPrefManager.getPathUserPackagePref(user));
 		}
@@ -751,7 +751,7 @@ public class PackageManager extends UnicastRemoteObject {
 	public File getPackage(String packName, String user) {
 		File packDir = null;
 		if (user == null || user.isEmpty()) {
-			packDir = new File(WorkflowPrefManager.pathSysPackagePref.get());
+			packDir = new File(WorkflowPrefManager.pathSysPackagePref);
 		} else {
 			packDir = new File(WorkflowPrefManager.getPathUserPackagePref(user));
 		}

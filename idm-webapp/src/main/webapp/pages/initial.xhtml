@@ -194,9 +194,11 @@
 							onclick="cookiePassword(); jQuery.blockUI({ message: jQuery('#divProgressBar') }); "
 							oncomplete="login('F');"
 							value="#{messages.label_login}" />
+							
 						<a4j:jsFunction name="login" action="#{userInfoBean.login}">
 						  <a4j:actionparam name="force" assignTo="#{userInfoBean.forceSignIn}"/>
 						</a4j:jsFunction>
+						
 						<a4j:jsFunction name="invalidateSession" action="#{userInfoBean.invalidateSession}" />
 						
 					</center>

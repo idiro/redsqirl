@@ -5,6 +5,7 @@ import idiro.ProjectID;
 import idiro.workflow.server.WorkflowPrefManager;
 import idiro.workflow.server.connect.HDFSInterface;
 import idiro.workflow.server.connect.HiveInterface;
+import idiro.workflow.utils.AbstractDictionaryTests;
 import idiro.workflow.utils.PackageManagerTests;
 
 import java.io.BufferedReader;
@@ -21,8 +22,8 @@ import org.junit.runners.Suite.SuiteClasses;
 
 
 @RunWith(Suite.class)
-@SuiteClasses({/*ActionTests.class,
-	WorkflowTests.class,
+@SuiteClasses({ActionTests.class
+	/*WorkflowTests.class,
 	//FIXME CreateWorkflowTests does not work
 	//CreateWorkflowTests.class,
 	HDFSInterfaceTests.class,
@@ -49,7 +50,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	TableInteractionTests.class,*/
 	//FIXME Test only done for keith user...
 	//HDFSTypeTests.class,
-	PackageManagerTests.class,
+//	PackageManagerTests.class,
+	AbstractDictionaryTests.class
 })
 public class SetupEnvironmentTest {
 
@@ -67,8 +69,8 @@ public class SetupEnvironmentTest {
 		System.out.println(testProp);
 
 
-		WorkflowPrefManager.pathSysCfgPref.put(testProp);
-		WorkflowPrefManager.pathUserCfgPref.put(testProp);
+		WorkflowPrefManager.pathSysCfgPref = testProp;
+		WorkflowPrefManager.pathUserCfgPref = testProp;
 
 		ProjectID.getInstance().setName("IdiroWorkflowServerTest");
 		ProjectID.getInstance().setVersion("0.01");
@@ -115,10 +117,10 @@ public class SetupEnvironmentTest {
 		WorkflowPrefManager.changeSysHome(home.getAbsolutePath());
 		WorkflowPrefManager.createUserHome(System.getProperty("user.name"));
 		WorkflowPrefManager.setupHome();
-		logger.debug(WorkflowPrefManager.pathSysHome.get());
+		logger.debug(WorkflowPrefManager.pathSysHome);
 		logger.debug(WorkflowPrefManager.getPathuserpref());
 		logger.debug(WorkflowPrefManager.getPathiconmenu());
-		logger.debug(WorkflowPrefManager.pathUserCfgPref.get());
+		logger.debug(WorkflowPrefManager.pathUserCfgPref);
 	}
 
 	@AfterClass
@@ -146,6 +148,6 @@ public class SetupEnvironmentTest {
 
 		WorkflowPrefManager.resetSys();
 		WorkflowPrefManager.resetUser();
-		logger.info(WorkflowPrefManager.pathSysHome.get());
+		logger.info(WorkflowPrefManager.pathSysHome);
 	}
 }
