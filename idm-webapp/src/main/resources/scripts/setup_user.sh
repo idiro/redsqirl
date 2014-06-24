@@ -60,7 +60,7 @@ if [ ! -e ${IDM_USER} ]; then
 	HIVE_PORT_CUR=${start_hive_range}
     fi
 
-    if [ -z "${HIVE_PORT_CUR}" -o "${HIVE_PORT_CUR}" == "${end_hive_range}" ]; then
+    if [ -z "${HIVE_PORT_CUR}" || "${HIVE_PORT_CUR}" == "${end_hive_range}" ]; then
 	manual_assign="TRUE"
 	echo "IDM run out of hive jdbc port, please specify a port number available manually: "
 	read ${HIVE_PORT_CUR}

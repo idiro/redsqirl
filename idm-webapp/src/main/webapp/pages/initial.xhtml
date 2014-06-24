@@ -81,6 +81,10 @@
 		
 	}
 
+	function relogin(){
+		jQuery("[id$='idButtonLogin']").click();
+	}
+
 </script>
 
 	<img src="./image/login_page_background.png" style="width:50%;position:absolute;z-index:-1;height:100%;" onError="this.onerror=null;this.src='../image/login_page_background.png';" />
@@ -121,7 +125,7 @@
 								<br />
 									
 								<img src="./image/icons/password_icon.gif" style="width:50px;padding-left:80px;position:relative;top:23px;" onError="this.onerror=null;this.src='../image/icons/password_icon.gif';" title="#{messages.label_password}" />
-								<h:inputSecret id="password" label="Password" style="background-color:white;border-style: none;border-radius:0px;" value="#{userInfoBean.password}" required="true" size="35" />
+								<h:inputSecret id="password" label="Password" style="background-color:white;border-style: none;border-radius:0px;" value="#{userInfoBean.password}" required="true" size="35" redisplay="true"/>
 								<h:outputText value="" />
 								<br />
 								<h:message for="password" style="padding-left:60px;" />
@@ -141,7 +145,7 @@
 										<br />
 										<br />
 										<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('modalAlreadySignedInOtherMachine')}.hide(); return false;" />
-										<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" onclick="#{rich:component('modalAlreadySignedInOtherMachine')}.hide();invalidateSession(); return false;" />
+										<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" onclick="#{rich:component('modalAlreadySignedInOtherMachine')}.hide();invalidateSession();relogin();" />
 									</center>
 								</rich:modalPanel>
 			
@@ -151,7 +155,7 @@
 										<br />
 										<br />
 										<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('modalAlreadySignedIn')}.hide(); return false;" />
-                                        <a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" onclick="#{rich:component('modalAlreadySignedIn')}.hide();invalidateSession(); return false;" />
+                                        <a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" onclick="#{rich:component('modalAlreadySignedIn')}.hide();invalidateSession();relogin();" />
 									</center>
 								</rich:modalPanel>
 			
@@ -194,9 +198,11 @@
 							onclick="cookiePassword(); jQuery.blockUI({ message: jQuery('#divProgressBar') }); "
 							oncomplete="login('F');"
 							value="#{messages.label_login}" />
+							
 						<a4j:jsFunction name="login" action="#{userInfoBean.login}">
 						  <a4j:actionparam name="force" assignTo="#{userInfoBean.forceSignIn}"/>
 						</a4j:jsFunction>
+						
 						<a4j:jsFunction name="invalidateSession" action="#{userInfoBean.invalidateSession}" />
 						
 					</center>

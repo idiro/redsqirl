@@ -173,13 +173,10 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		}
 
 		FacesContext fCtx = FacesContext.getCurrentInstance();
-		ServletContext sc = (ServletContext) fCtx.getExternalContext()
-				.getContext();
-		HttpSession session = (HttpSession) fCtx.getExternalContext()
-				.getSession(false);
+		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
+		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(true);
 		@SuppressWarnings("unchecked")
-		Map<String, HttpSession> sessionLoginMap = (Map<String, HttpSession>) sc
-		.getAttribute("sessionLoginMap");
+		Map<String, HttpSession> sessionLoginMap = (Map<String, HttpSession>) sc.getAttribute("sessionLoginMap");
 
 		HttpSession sessionLogin = sessionLoginMap.get(userName);
 		if (sessionLogin != null) {
@@ -481,6 +478,10 @@ public class UserInfoBean extends BaseBean implements Serializable {
 	 */
 	public String signOut() {
 		logger.info("signOut");
+		
+		setAlreadySignedInOtherMachine(null);
+		setAlreadySignedIn(null);
+		
 		invalidateSession();
 		return "signout";
 	}
