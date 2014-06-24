@@ -222,7 +222,9 @@ public class WorkflowPrefManager extends BlockManager {
 			/** Path on HDFS to store Oozie Jobs */
 			user_hdfspath_oozie_job = "hdfspath_oozie_job",
 			/** Parallel clause for pig */
-			user_pig_parallel = "pig_parallel";
+			user_pig_parallel = "pig_parallel",
+			/** Address to be used on SendEmail action */
+			user_email = "mail_user";
 
 
 	private static LocalProperties props;
