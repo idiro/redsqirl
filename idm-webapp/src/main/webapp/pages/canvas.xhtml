@@ -40,6 +40,18 @@
 	    jQuery.noConflict();
 
 		  jQuery(function() {
+
+			  function fixOnChangeIssue() {
+		    		 jQuery('.rich-combobox ').each(function() {
+			    		 var combo = jQuery(this).closest('[component]');
+			    		 if(combo.length!=0) {
+				    		 combo = combo[0].component;
+				    		 if(combo.comboValue.value) {
+					    		 combo.field.prevValue = combo.comboValue.value;
+					    	 }
+					     }
+					 });
+				}
 			  
 			  nameTabs[0] = "canvas-1";
 
@@ -389,18 +401,6 @@
 	    		 }
 	    		 
 	    		 setTimeout(function(){autoSaveAll()}, 10*1000);
-
-	    		 function fixOnChangeIssue() {
-		    		 jQuery('.rich-combobox ').each(function() {
-			    		 var combo = jQuery(this).closest('[component]');
-			    		 if(combo.length!=0) {
-				    		 combo = combo[0].component;
-				    		 if(combo.comboValue.value) {
-					    		 combo.field.prevValue = combo.comboValue.value;
-					    	 }
-					     }
-					 });
-				}
 	    		 
 	    	});	//---------- END jQuery function
 	    			

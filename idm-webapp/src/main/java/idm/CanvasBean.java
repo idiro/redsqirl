@@ -253,11 +253,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 */
 	public void addLink() {
+		
 		logger.info("addLink");
-		String idElementA = getIdMap().get(getNameWorkflow()).get(
-				getParamOutId());
-		String idElementB = getIdMap().get(getNameWorkflow()).get(
-				getParamInId());
+		
+		String idElementA = getIdMap().get(getNameWorkflow()).get(getParamOutId());
+		String idElementB = getIdMap().get(getNameWorkflow()).get(getParamInId());
 
 		String nameElementA = getSelectedLink().split(" -> ")[0];
 		String nameElementB = getSelectedLink().split(" -> ")[1];
@@ -269,11 +269,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 			DataFlowElement dfeObjA = df.getElement(idElementA);
 			DataFlowElement dfeObjB = df.getElement(idElementB);
 
-			df.addLink(nameElementA, dfeObjA.getComponentId(), nameElementB,
-					dfeObjB.getComponentId());
+			df.addLink(nameElementA, dfeObjA.getComponentId(), nameElementB, dfeObjB.getComponentId());
 
-			setResult(new String[] { getParamNameLink(), nameElementA,
-					nameElementB });
+			logger.info("addLink " + getParamNameLink() + " " + nameElementA + " " + nameElementB);
+			
+			setResult(new String[] { getParamNameLink(), nameElementA, nameElementB });
 
 			setNameOutput(nameElementA);
 
@@ -365,20 +365,20 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 */
 	public void removeLink() {
+		
 		logger.info("Remove link");
 
 		try {
-			Map<String, String> params = FacesContext.getCurrentInstance()
-					.getExternalContext().getRequestParameterMap();
-			String idElementA = getIdMap().get(getNameWorkflow()).get(
-					params.get("paramOutId"));
-			String idElementB = getIdMap().get(getNameWorkflow()).get(
-					params.get("paramInId"));
+			
+			Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+			String idElementA = getIdMap().get(getNameWorkflow()).get(params.get("paramOutId"));
+			String idElementB = getIdMap().get(getNameWorkflow()).get(params.get("paramInId"));
 			String nameElementA = params.get("paramOutName");
 			String nameElementB = params.get("paramInName");
+			
+			logger.info("RemoveLink " + params.get("paramOutId") + " " + params.get("paramInId") + " " + params.get("paramOutName") + " " + params.get("paramInName"));
 
-			getDf().removeLink(nameElementA, idElementA, nameElementB,
-					idElementB);
+			getDf().removeLink(nameElementA, idElementA, nameElementB, idElementB);
 
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -569,11 +569,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 		updatePosition();
 		{
 			String nameWorkflowSwp = generateWorkflowName(path);
-			
+
 			/*if(!nameWorkflowSwp.startsWith("flowchart-")){
 				nameWorkflowSwp = "flowchart-"+nameWorkflowSwp;
 			}*/
-			
+
 			try {
 				msg = getworkFlowInterface().renameWorkflow(nameWorkflow, nameWorkflowSwp);
 			} catch (RemoteException e) {

@@ -667,11 +667,11 @@ function deleteSelected() {
 		jQuery.each(layer.getChildren(), function(index, value) {
 			if (value !== undefined && value.isArrow == true) {
 				if (value.selected) {
-					removeLinkBt(
-						value.output,
-						value.nameOutput,
-						value.input,
-						value.nameInput);
+					
+					//alert(value.idOutput +" "+ value.nameOutput +" "+ value.idInput +" "+ value.nameInput);
+					
+					removeLinkBt(value.idOutput, value.nameOutput, value.idInput, value.nameInput);
+					
 					if (value.label != null){
 						value.label.remove();
 					}
@@ -1563,6 +1563,8 @@ function updateTypeObj(canvasName, groupID, elementId) {
 }
 
 function updateLink(linkName, nameOutput, nameInput) {
+	
+	//alert("updateLink "+ linkName + " " + nameOutput + " " + nameInput);
 	
 	var layer = canvasArray[selectedCanvas].layer;
 
