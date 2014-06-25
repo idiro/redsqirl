@@ -33,9 +33,9 @@ public class BaseCommand {
 
 		try {
 			logger.info(WorkflowPrefManager.pathSysCfgPref);
-			logger.info(WorkflowPrefManager.getSysProperty("workflow_lib_path"));
+			logger.info(WorkflowPrefManager.sysLibPath);
 			File file = new File(
-					WorkflowPrefManager.getSysProperty("workflow_lib_path"));
+					WorkflowPrefManager.sysLibPath);
 			// Reading directory contents
 			File[] files = file.listFiles();
 
@@ -154,10 +154,11 @@ public class BaseCommand {
 			Properties prop = new Properties();
 			prop.load(is);
 
-			String inClasspath = WorkflowPrefManager
-					.getSysProperty("idiro_interface_path");
+			//String inClasspath = WorkflowPrefManager
+			//		.getSysProperty("idiro_interface_path");
 
-			return "file:" + (inClasspath == null ? ans : inClasspath);
+			//return "file:" + (inClasspath == null ? ans : inClasspath);
+			return "file:" + ans;
 
 		} catch (Exception e) {
 			logger.warn("No RMI server codebase in application.properties, maybe set up in argument");

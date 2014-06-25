@@ -74,13 +74,15 @@ public class PackageManager extends UnicastRemoteObject {
 	 * @throws RemoteException
 	 */
 	public static void main(String[] arg) throws RemoteException {
-		if (arg.length < 3) {
+		if (arg.length < 4) {
 			logger.info("Synopsis");
 			logger.info("Takes at least three arguments");
 			logger.info("Arg 1: 'add' or 'remove', add or remove the package");
 			logger.info("Arg 2: 'user' or 'system', design where to install/uninstall the package");
 			logger.info("Arg 3: user name if user is specified");
+			logger.info("Arg 4: path sys home");
 			logger.info("Arg n: packages (directory if it is an install)");
+			
 			System.exit(1);
 		}
 		
@@ -102,11 +104,17 @@ public class PackageManager extends UnicastRemoteObject {
 				
 			}
 		}
+		
+		
 		String user = null;
-		int pckIdxStart = 2;
+		int pckIdxStart = 3;
 		if(!sys_package){
 			user = arg[2];
-			pckIdxStart = 3;
+			WorkflowPrefManager.changeSysHome(arg[3]);
+			pckIdxStart = 4;
+		}
+		else{
+			WorkflowPrefManager.changeSysHome(arg[2]);
 		}
 
 		if (sys_package && !arg[1].equalsIgnoreCase("system")) {

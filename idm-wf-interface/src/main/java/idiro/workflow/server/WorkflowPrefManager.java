@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.rmi.RemoteException;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
@@ -76,7 +77,12 @@ public class WorkflowPrefManager extends BlockManager {
 	/**
 	* Path users folder
 	*/
-	pathUsersFolder;
+	pathUsersFolder,
+	
+	/** 
+	* Path to the lib folder 
+	*/
+	sysLibPath;
 
 	private static String
 	/**
@@ -231,9 +237,11 @@ public class WorkflowPrefManager extends BlockManager {
 
 	/**
 	 * Constructor.
+	 * @throws RemoteException 
 	 * 
 	 */
 	private WorkflowPrefManager() {
+		
 		String path = System.getProperty("catalina.base") +
                 File.separator + "conf" + File.separator + "idiro.properties";
 		
@@ -288,6 +296,18 @@ public class WorkflowPrefManager extends BlockManager {
 		 */
 		sysPackageLibPath = pathSysHome + "/lib/packages";
 		
+		
+		String property = null;
+		try {
+			props = new LocalProperties();
+			property = getSysProperty("workflow_lib_path");
+		} catch (RemoteException e){
+			logger.info("Error trying to read local properties");
+		}
+		
+		if (property == null || property.isEmpty()){
+			sysLibPath = pathSysHome + "/lib";
+		}
 	}
 
 	/**
@@ -297,7 +317,6 @@ public class WorkflowPrefManager extends BlockManager {
 	public static WorkflowPrefManager getInstance() {
 		if (!runner.init) {
 			try{
-				props = new LocalProperties();
 				NameNodeVar.set(getUserProperty(sys_namenode));
 				runner.init = true;
 			}catch(Exception e){
