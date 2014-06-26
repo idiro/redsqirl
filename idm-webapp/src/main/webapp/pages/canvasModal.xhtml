@@ -92,9 +92,11 @@
                     onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
                     onstop="jQuery.unblockUI();" />
                     
-        <a4j:jsFunction name="openModalOutputBrowser"
-            reRender="modalOutputBrowser" oncomplete="#{rich:component('modalOutputBrowser')}.show()">
+        <a4j:jsFunction name="openModalOutputBrowser" action="#{canvasModalBean.outputTab.updateDFEOutputTable}" 
+        	reRender="modalOutputBrowser" oncomplete="#{rich:component('modalOutputBrowser')}.show();" >
+        	<a4j:actionparam name="openOutputData" assignTo="#{canvasModalBean.outputTab.fileSystem.openOutputData}"/>
         </a4j:jsFunction>
+        
     </a4j:region>
             
     <div style="width:100%;overflow:auto;height:550px;" id="canvasModalDiv" >
@@ -203,9 +205,9 @@
                         <h:outputText value="#{messages.label_path}" />
                         <br/>
                         <h:inputText id="browserPath" label="Path" value="#{interCur.browser.path}" maxlength="255" 
-                            style="width:395px;" styleClass="interModal" onclick="openModalOutputBrowser();" />
+                            style="width:395px;" styleClass="interModal" onclick="openModalOutputBrowser('N');" />
                             
-                        <a4j:commandLink style="color:#FFFFFF" onclick="openModalOutputBrowser();" >
+                        <a4j:commandLink style="color:#FFFFFF" onclick="openModalOutputBrowser('N');" >
 							<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' styleClass="refreshButton" />
 						</a4j:commandLink>
             
@@ -482,15 +484,13 @@
 		                                width="200" value="#{item.savingState}" listWidth="150"
 		                                listHeight="200" enableManualInput="false">
 		                                <f:selectItems value="#{item.savingStateList}" />
-		                                <a4j:support event="onchange" reRender="dataOutputForm" />
+		                                <a4j:support event="onchange" action="#{item.updateSavingState}" reRender="dataOutputForm" />
 		                            </rich:comboBox>
 	                       		</td>
 	                       		<td>
 	                       			<a4j:commandButton value="Select" styleClass="greenButton"
-		                                rendered="#{item.renderBrowserButton}"
-		                                oncomplete="openModalOutputBrowser()">
-		                                <a4j:actionparam name="nameOutput" value="#{item.name}"
-		                                    assignTo="#{canvasModalBean.outputTab.nameOutput}" />
+		                                rendered="#{item.renderBrowserButton}" oncomplete="openModalOutputBrowser('Y');">
+		                                <a4j:actionparam name="nameOutput" value="#{item.name}" assignTo="#{canvasModalBean.outputTab.nameOutput}" />
 		                            </a4j:commandButton>
 	                       		</td>
 	                       		<td>
@@ -500,7 +500,7 @@
 	                       			<h:inputText styleClass="interModal" value="#{item.file}" maxlength="40" style="width:100px;" rendered="#{item.renderBrowserButton}"/>
 	                       		</td>
 	                       		<td>
-	                       			<a4j:commandButton value="#{messages.button_remove}" action="#{canvasModalBean.outputTab.removeData}"  styleClass="greenButton" >
+	                       			<a4j:commandButton value="#{messages.button_remove}" action="#{canvasModalBean.outputTab.removeData}" styleClass="greenButton" >
 		                                <a4j:actionparam name="nameOutputClean" value="#{item.name}" />
 		                            </a4j:commandButton>
 	                       		</td>
@@ -546,8 +546,8 @@
                 
                     <rich:panel columns="3" style="border:none; float:right;">
                         <a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="closeDynamicForm();" reRender="panelBtCanvasModal, msnError, errorTable" />
-                        <a4j:commandButton value="#{messages.button_apply}"  styleClass="greenButton" action="#{canvasModalBean.outputTab.confirmOutput}" />
-                        <a4j:commandButton value="#{messages.button_ok}"  styleClass="greenButton" action="#{canvasModalBean.outputTab.confirmOutput}" oncomplete="#{rich:component('canvasModalPanel')}.hide();updateOutputStatus('#{canvasModalBean.idGroup}')"/>
+                        <a4j:commandButton value="#{messages.button_apply}" styleClass="greenButton" action="#{canvasModalBean.outputTab.confirmOutput}" />
+                        <a4j:commandButton value="#{messages.button_ok}" styleClass="greenButton" action="#{canvasModalBean.outputTab.confirmOutput}" oncomplete="#{rich:component('canvasModalPanel')}.hide();updateOutputStatus('#{canvasModalBean.idGroup}')"/>
                     </rich:panel>
                 
                 

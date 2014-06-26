@@ -7,11 +7,13 @@ import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpSession;
 
+import org.apache.hadoop.hdfs.server.datanode.DataStorage;
 import org.apache.log4j.Logger;
 
 public class OutputForm implements Serializable {
@@ -27,8 +29,10 @@ public class OutputForm implements Serializable {
 	private String path;
 	private String file;
 	private String user;
+	private Map<String, FileSystemBean> datastores;
 	
-	public OutputForm(DFEOutput dfeOutput, String componentId, String name) throws RemoteException{
+	public OutputForm(Map<String, FileSystemBean> datastores, DFEOutput dfeOutput, String componentId, String name) throws RemoteException{
+		this.datastores = datastores;
 		this.dfeOutput = dfeOutput;
 		this.componentId = componentId;
 		this.name = name;
@@ -113,7 +117,7 @@ public class OutputForm implements Serializable {
 		if (savingState.equals(SavingState.RECORDED.toString())){
 			logger.info("Recorded");
 			setRenderBrowserButton(true);
-			setPath("/");
+			//setPath("/");
 		}else if (savingState.equals(SavingState.BUFFERED.toString()) ||
 				savingState.equals(SavingState.TEMPORARY.toString())){
 			setRenderBrowserButton(false);
@@ -126,6 +130,12 @@ public class OutputForm implements Serializable {
 						getName());
 			}
 			setPath(getDfeOutput().getPath());
+		}
+	}
+
+	public void updateSavingState() throws RemoteException {
+		if (savingState.equals(SavingState.RECORDED.toString())){
+			setPath("/");
 		}
 	}
 
@@ -145,7 +155,6 @@ public class OutputForm implements Serializable {
 	}
 
 	public String updateDFEOutput() throws RemoteException{
-
 		
 		if (getSavingState().equals(SavingState.RECORDED.toString())) {
 			if ( getFile() == null || getFile().isEmpty()) {
@@ -158,10 +167,19 @@ public class OutputForm implements Serializable {
 			}
 			completePath += getFile();
 			logger.info("path: " + completePath);
-			if(dfeOutput.getSavingState() != SavingState.RECORDED){
-				dfeOutput.remove();
+			
+			Map<String,String> props = datastores.get(dfeOutput.getBrowser()).getDataStore().getProperties(completePath);
+			
+			if(dfeOutput.isPathExists() && dfeOutput.getSavingState() != SavingState.RECORDED){
+				if(props == null || props.isEmpty()){
+					dfeOutput.moveTo(completePath);
+				}else{
+					dfeOutput.remove();
+					dfeOutput.setPath(completePath);
+				}
+			}else{
+				dfeOutput.setPath(completePath);
 			}
-			dfeOutput.setPath(completePath);
 		}
 		
 		dfeOutput.setSavingState(SavingState.valueOf(getSavingState()));
@@ -175,6 +193,14 @@ public class OutputForm implements Serializable {
 
 	public void setUser(String user) {
 		this.user = user;
+	}
+
+	public Map<String, FileSystemBean> getDatastores() {
+		return datastores;
+	}
+
+	public void setDatastores(Map<String, FileSystemBean> datastores) {
+		this.datastores = datastores;
 	}
 
 }
