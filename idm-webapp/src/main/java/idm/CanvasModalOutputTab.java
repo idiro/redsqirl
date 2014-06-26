@@ -75,7 +75,13 @@ public class CanvasModalOutputTab implements Serializable {
 	 * List of the FileSystem available for configuring an output.
 	 */
 	private Map<String, FileSystemBean> datastores;
-
+	
+	/**
+	 * True if it is a source node and hence there is no output tab
+	 */
+	private boolean sourceNode;
+	
+	
 	/**
 	 * Constructor. The constructor will automatically load the first name as
 	 * current name used.
@@ -129,7 +135,7 @@ public class CanvasModalOutputTab implements Serializable {
 			outputFormList = new LinkedList<OutputForm>();
 
 			for (Entry<String, DFEOutput> e : dfe.getDFEOutput().entrySet()) {
-				OutputForm of = new OutputForm(e.getValue(),
+				OutputForm of = new OutputForm(datastores, e.getValue(),
 						dfe.getComponentId(), e.getKey());
 
 				List<SelectItem> outputList = new ArrayList<SelectItem>();
@@ -176,18 +182,19 @@ public class CanvasModalOutputTab implements Serializable {
 	 */
 	public void changePathOutputBrowser() throws RemoteException {
 		logger.info("changePathOutputBrowser");
-		path = FacesContext.getCurrentInstance().getExternalContext()
-				.getRequestParameterMap().get("pathFile");
+		path = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("pathFile");
+		
 		logger.info("Output: " + getNameOutput() + " - path: " + path);
 		if (showOutputForm.equals("Y")) {
 			for (OutputForm f : getOutputFormList()) {
 				if (f.getName().equals(getNameOutput())) {
 					f.setPath(path);
-					logger.info("Output found: " + getNameOutput()
-							+ " - path: " + path);
+					logger.info("Output found: " + getNameOutput() + " - path: " + path);
 				}
 			}
 		}
+		
+		setSourceNode(true);
 
 	}
 
@@ -251,20 +258,46 @@ public class CanvasModalOutputTab implements Serializable {
 			} else {
 				LinkedList<String> gridTitle = new LinkedList<String>();
 				
-				List<SelectItem> listExtensions = new LinkedList<SelectItem>();
-				if (dfeOut.getExtensions() != null
-						&& dfeOut.getExtensions().length != 0) {
+				
+				
+				
+				/*List<SelectItem> listExtensions = new LinkedList<SelectItem>();
+				if (dfeOut.getExtensions() != null && dfeOut.getExtensions().length != 0) {
 					String[] listExt = dfeOut.getExtensions();
 					for (int i = 0; i < listExt.length; i++) {
 						String value = listExt[i];
 						listExtensions.add(new SelectItem(value, value));
 					}
 					listExtensions.add(new SelectItem("*", "*"));
-					getFileSystem().setExtensionsSelected(
-							listExtensions.get(0).getLabel());
+					getFileSystem().setExtensionsSelected(listExtensions.get(0).getLabel());
+				}
+				getFileSystem().setListExtensions(listExtensions);
+				getFileSystem().updateTable();*/
+				
+				
+				List<SelectItem> listExtensions = new LinkedList<SelectItem>();
+				if (dfeOut.getExtensions() != null && dfeOut.getExtensions().length != 0) {
+					String[] listExt = dfeOut.getExtensions();
+					if(getFileSystem().getOpenOutputData() != null && getFileSystem().getOpenOutputData().equals("Y")){
+						listExtensions.add(new SelectItem("(?!.\\.).", "(?!.\\.).")); 
+					}
+					for (int i = 0; i < listExt.length; i++) {
+						String value = listExt[i];
+						if(getFileSystem().getOpenOutputData() != null && getFileSystem().getOpenOutputData().equals("Y")){
+							listExtensions.add(new SelectItem("(?!."+value+"$).", "(?!."+value+"$)."));
+						}else{
+							listExtensions.add(new SelectItem(value, value));
+						}
+					}
+					listExtensions.add(new SelectItem("*", "*"));
+					
+					getFileSystem().setExtensionsSelected(listExtensions.get(0).getLabel());
 				}
 				getFileSystem().setListExtensions(listExtensions);
 				getFileSystem().updateTable();
+				
+				
+				
 
 				if (dfeOut.getFeatures() != null) {
 
@@ -439,6 +472,14 @@ public class CanvasModalOutputTab implements Serializable {
 	 */
 	public List<String[]> getRows() {
 		return grid == null ? null : grid.getRows();
+	}
+
+	public boolean isSourceNode() {
+		return sourceNode;
+	}
+
+	public void setSourceNode(boolean sourceNode) {
+		this.sourceNode = sourceNode;
 	}
 
 }

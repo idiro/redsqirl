@@ -35,8 +35,8 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 
 	private List<SelectItem> listExtensions;
-
 	private String extensionsSelected;
+	private String openOutputData;
 	
 	
 	private boolean file;
@@ -106,7 +106,6 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		logger.info("Started mounting table");
 		setPath(hInt.getPath());
 		
-		
 		FacesContext context = FacesContext.getCurrentInstance();
 		UserInfoBean userInfoBean = (UserInfoBean) context.getApplication()
 				.evaluateExpressionGet(context, "#{userInfoBean}",
@@ -173,11 +172,28 @@ public class FileSystemBean extends BaseBean implements Serializable {
 				getTableGrid().add(allProperties);
 				getAllProps().add(allProperties);
 				
-				if(extensionsSelected != null && !extensionsSelected.isEmpty()){
-					getTableGrid().getRows().get(i).setDisableSelect(name.matches(extensionsSelected.replaceAll(Pattern.quote("*"), ".*")));
+				if(openOutputData != null && openOutputData.equals("Y")){
+					
+					if(getAllProps().get(i).get("type").equalsIgnoreCase("directory")){
+						if(extensionsSelected != null && !extensionsSelected.isEmpty()){
+							getTableGrid().getRows().get(i).setDisableSelect(name.matches(extensionsSelected.replaceAll(Pattern.quote("."), "\\.*").replaceAll(Pattern.quote("*"), ".*")));
+						}else{
+							getTableGrid().getRows().get(i).setDisableSelect(true);
+						}
+					}else{
+						getTableGrid().getRows().get(i).setDisableSelect(false);
+					}
+					
 				}else{
-					getTableGrid().getRows().get(i).setDisableSelect(true);
+					
+					if(extensionsSelected != null && !extensionsSelected.isEmpty()){
+						getTableGrid().getRows().get(i).setDisableSelect(name.matches(extensionsSelected.replaceAll(Pattern.quote("*"), ".*")));
+					}else{
+						getTableGrid().getRows().get(i).setDisableSelect(true);
+					}
+					
 				}
+				
 				++i;
 			}
 		}
@@ -769,6 +785,14 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 	public void setExtensionsSelected(String extensionsSelected) {
 		this.extensionsSelected = extensionsSelected;
+	}
+
+	public String getOpenOutputData() {
+		return openOutputData;
+	}
+
+	public void setOpenOutputData(String openOutputData) {
+		this.openOutputData = openOutputData;
 	}
 
 }
