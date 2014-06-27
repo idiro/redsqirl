@@ -427,9 +427,9 @@ public class UserInfoBean extends BaseBean implements Serializable {
 							}
 							if (getValueProgressBar() < 45) {
 								logger.info("update progressbar");
-								setValueProgressBar(getValueProgressBar() + 3);
+								setValueProgressBar(Math.min(79,getValueProgressBar() + 3));
 							}else{
-								setValueProgressBar(getValueProgressBar() + 2);
+								setValueProgressBar(Math.min(79,getValueProgressBar() + 2));
 							}
 						}
 					}
