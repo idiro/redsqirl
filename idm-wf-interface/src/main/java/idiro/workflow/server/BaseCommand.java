@@ -154,11 +154,9 @@ public class BaseCommand {
 			Properties prop = new Properties();
 			prop.load(is);
 
-			//String inClasspath = WorkflowPrefManager
-			//		.getSysProperty("idiro_interface_path");
+			String inClasspath = WorkflowPrefManager.interfacePath;
 
-			//return "file:" + (inClasspath == null ? ans : inClasspath);
-			return "file:" + ans;
+			return "file:" + (inClasspath == null ? ans : inClasspath);
 
 		} catch (Exception e) {
 			logger.warn("No RMI server codebase in application.properties, maybe set up in argument");

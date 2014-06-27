@@ -82,7 +82,12 @@ public class WorkflowPrefManager extends BlockManager {
 	/** 
 	* Path to the lib folder 
 	*/
-	sysLibPath;
+	sysLibPath,
+
+	/**
+ 	*  Path to the idiro interface path 
+	**/
+	interfacePath;
 
 	private static String
 	/**
@@ -297,16 +302,28 @@ public class WorkflowPrefManager extends BlockManager {
 		sysPackageLibPath = pathSysHome + "/lib/packages";
 		
 		
-		String property = null;
+		String workflowLibPath = null;
+		String idiroInterfacePath = null;
 		try {
 			props = new LocalProperties();
-			property = getSysProperty("workflow_lib_path");
+			workflowLibPath = getSysProperty("workflow_lib_path");
+			idiroInterfacePath = getSysProperty("idiro_interface_path");
 		} catch (RemoteException e){
 			logger.info("Error trying to read local properties");
 		}
 		
-		if (property == null || property.isEmpty()){
+		if (workflowLibPath == null || workflowLibPath.isEmpty()){
 			sysLibPath = pathSysHome + "/lib";
+		}
+		else{
+			sysLibPath = workflowLibPath;
+		}
+		
+		if (idiroInterfacePath == null || idiroInterfacePath.isEmpty()){
+			interfacePath = pathSysHome + "/lib/idm-wf-interface-0.1-SNAPSHOT.jar";
+		}
+		else{
+			interfacePath = idiroInterfacePath;
 		}
 	}
 
