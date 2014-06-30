@@ -247,8 +247,11 @@ public class WorkflowPrefManager extends BlockManager {
 	 */
 	private WorkflowPrefManager() {
 		
+		
+		
 		String path = System.getProperty("catalina.base") +
                 File.separator + "conf" + File.separator + "idiro.properties";
+		logger.info("Get path idiro.properties: "+path);
 		
 		InputStream input;
 		try {
@@ -262,45 +265,22 @@ public class WorkflowPrefManager extends BlockManager {
 			pathSysHome = "/usr/share/redsqirl";
 		}
 		
-		/**
-		 * Root of the system specific preferences
-		 */
+		logger.info("Get path sys home: "+pathSysHome);
+		changeSysHome(pathSysHome);
+		
+		/*
 		pathSystemPref = pathSysHome
 			+ "/conf";
-
-		/**
-		* Path of the packages
-		*/
 		pathSysPackagePref =  pathSysHome
 			+ "/packages";
-		
-		/**
-		* System preference file
-		*/
 		pathSysCfgPref = 
-			pathSystemPref + "/idm_sys.properties";
-		
-		/**
-		* System lang preference file.These properties are optional and are
-		* used by the front-end to give a bit more details about user
-		* settings. For each user property, you can create a #{key}_label
-		* and a #{key}_desc property.
-		*/
-		
+			pathSystemPref + "/idm_sys.properties";		
 		pathSysLangCfgPref = 
 		pathSystemPref + "/idm_sys_lang.properties";
-
-		/**
-		* Path users folder
-		*/
 		pathUsersFolder = 
 			pathSysHome + "/users";
-		
-		/**
-		 * Lib Path for system package
-		 */
 		sysPackageLibPath = pathSysHome + "/lib/packages";
-		
+		*/
 		
 		String workflowLibPath = null;
 		String idiroInterfacePath = null;
@@ -334,6 +314,8 @@ public class WorkflowPrefManager extends BlockManager {
 	public static WorkflowPrefManager getInstance() {
 		if (!runner.init) {
 			try{
+				logger.info("Call constructor");
+				runner = new WorkflowPrefManager();
 				NameNodeVar.set(getUserProperty(sys_namenode));
 				runner.init = true;
 			}catch(Exception e){
@@ -416,15 +398,16 @@ public class WorkflowPrefManager extends BlockManager {
 	 *            property and use the default.
 	 */
 	public static void changeSysHome(String newValueSysHome) {
-
+		logger.info("Change pathSysHome to be "+newValueSysHome);
 		if (newValueSysHome == null || newValueSysHome.isEmpty()) {
-			pathSysHome = null;
+			return;
 		} else {
 			pathSysHome = newValueSysHome;
 		}
 
 		pathSysPackagePref =  pathSysHome
 				+ "/packages";
+		pathSystemPref = pathSysHome + "/conf";
 		pathSysCfgPref = 
 				pathSystemPref + "/idm_sys.properties";
 		pathUsersFolder =  pathSysHome
@@ -602,25 +585,6 @@ public class WorkflowPrefManager extends BlockManager {
 	public static boolean isUserPckInstallAllowed() {
 		return getSysProperty(WorkflowPrefManager.sys_allow_user_install,
 				"FALSE").equalsIgnoreCase("true");
-	}
-
-	public static void main(String[] args) {
-		for (int i = 0; i < args.length; ++i) {
-			if (args[i].contains("=")
-					&& args[i].indexOf('=') == args[i].lastIndexOf('=')) {
-				String[] pref = args[i].split("=");
-
-				if (pref[0].equalsIgnoreCase("pathSystemPref")) {
-					pathSystemPref = pref[1];
-				} else if (pref[0].equalsIgnoreCase("pathSysHome")) {
-					pathSysHome = pref[1];
-				} else if (pref[0].equalsIgnoreCase("pathSysPackagePref")) {
-					pathSysPackagePref = pref[1];
-				} else if (pref[0].equalsIgnoreCase("pathSysCfgPref")) {
-					pathSysCfgPref = pref[1];
-				}
-			}
-		}
 	}
 
 	/**

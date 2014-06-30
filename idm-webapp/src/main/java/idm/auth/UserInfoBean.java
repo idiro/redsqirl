@@ -381,6 +381,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 			// Init workflow preference
 			WorkflowPrefManager.getInstance();
+			logger.info("Sys home is : "+WorkflowPrefManager.pathSysHome);
 
 			// Create home folder for this user if it does not exist yet
 			WorkflowPrefManager.createUserHome(userName);
@@ -391,7 +392,9 @@ public class UserInfoBean extends BaseBean implements Serializable {
 			}
 
 			th = new ServerProcess(port);
+			logger.info("Sys home is : "+WorkflowPrefManager.pathSysHome);
 			th.run(userName, sessionSSH);
+			logger.info("Sys home is : "+WorkflowPrefManager.pathSysHome);
 
 			if (sessionSSH != null) {
 				sc.setAttribute("UserInfo", sessionSSH.getUserInfo());
