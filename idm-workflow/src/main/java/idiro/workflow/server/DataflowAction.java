@@ -125,17 +125,15 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			relativePath = WorkflowPrefManager.getPathSysHelpPref() + "/"
 					+ fname;
 			f = new File(
-					WorkflowPrefManager
-							.getSysProperty(WorkflowPrefManager.sys_install_package)
+					WorkflowPrefManager.getSysProperty(
+							WorkflowPrefManager.sys_install_package, WorkflowPrefManager
+									.getSysProperty(WorkflowPrefManager.sys_tomcat_path))
 							+ relativePath);
 		}
 		String absolutePath = f.getAbsoluteFile().getAbsolutePath();
-		String ans = "";
 		logger.debug("help absolutePath : "+absolutePath);
 		logger.debug("help relPath : "+relativePath);
-		if(absolutePath.contains(relativePath)){
-			ans = absolutePath.substring(relativePath.length());
-		}
+		
 		return absolutePath;
 	}
 
@@ -157,8 +155,9 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			relativePath = WorkflowPrefManager.getPathsysimagepref() + "/"
 					+ fname;
 			f = new File(
-					WorkflowPrefManager
-							.getSysProperty(WorkflowPrefManager.sys_install_package)
+					WorkflowPrefManager.getSysProperty(
+							WorkflowPrefManager.sys_install_package, WorkflowPrefManager
+									.getSysProperty(WorkflowPrefManager.sys_tomcat_path))
 							+ relativePath);
 		}
 		String absolutePath = f.getAbsoluteFile().getAbsolutePath();

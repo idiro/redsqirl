@@ -423,14 +423,6 @@ public class WorkflowPrefManager extends BlockManager {
 		pathUserPackagePref = pathUserPref + "/packages";
 		sysPackageLibPath = pathSysHome + "/lib/packages";
 		userPackageLibPath = pathUserPref + "/lib/packages";
-		pathSysHelpPref = "/packages/help";
-		pathSysImagePref = "/packages/images";
-
-		pathUserImagePref = "/packages/" + System.getProperty("user.name")
-				+ "/images";
-
-		pathUserHelpPref = "/packages/" + System.getProperty("user.name")
-				+ "/help";
 
 		pathUserCfgPref =  pathUserPref
 				+ "/idm_user.properties";
