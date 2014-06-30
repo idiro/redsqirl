@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Pig Union Help</title>
+
+</head>
+<body>
+	<h1>Pig Union</h1>
+	<h2>Description</h2>
+	<p>Perform a Pig Union action on a number of input datasets. This
+		will output one data set.</p>
+	<h3>Quick Guide</h3>
+	<p>
+	<ul>
+		<li>Input - at least two of either Text or Binary Map Reduce
+			Directory</li>
+		<li>Features - Select the features from the inputs</li>
+		<li>Join Type - Select the Join type to be used in the join</li>
+		<li>Join Relationship - Select the relationship between the
+			inputs</li>
+		<li>Output - Single Text or Binary Map Reduce Directory</li>
+	</ul>
+	<h2>Source</h2>
+	<p>The Source can be only HDFS (TEXT MAP REDUCE DIRECTORY). It has
+		to be a delimiter separated value. An example is when | is the
+		delimiter then the format for a line would be (X|Y|Z)</p>
+	<h2><a id="page1">Operations - Page 1</a></h2>
+	<h3>Features</h3>
+	<p>Operations to transform the input data can be managed and
+		configured here. This will allow for data to be transformed into
+		another format or data type allowing the data to be used in other
+		types of actions</p>
+	<h2><a id="page2">Configurations - Page 2</a></h2>
+	<h3>Conditions</h3>
+	<p>Set conditions for columns on each table for filtering during
+		the join</p>
+	<h2>Red Sqirl Pig</h2>
+	<p>
+		Red Sqirl Pig is a package that contains actions that interface with <a
+			target="_blank" href="http://pig.apache.org/">Pig</a> on the Red Sqirl platform to perform
+		Pig actions. There are two other actions available from this package
+		<a class="stopLink" id="help_pig_select"
+			onclick="return false;" href="pig_select.html">Pig Select</a> , <a
+			class="stopLink" id="help_pig_join" onclick="return false;"
+			href="pig_join.html">Pig Join</a>, <a class="stopLink"
+			id="help_pig_aggregator" onclick="return false;" href="pig_aggregator.html">Pig
+			Aggregator</a> and <a class="stopLink" id="help_pig_sample"
+			onclick="return false;" href="pig_sample.html">Pig Sample</a>
+	<p>On the last page of every pig action will have two interactions
+		that set the output format of the pig action. These interactions are
+		to set the delimiter of the file for a TEXT MAP REDUCE DIRECTORY and
+		the other is to set the output type of the file to be either TEXT MAP
+		REDUCE DIRECTORY or BINARY MAP-REDUCE DIRECTORY</p>
+	</p>
+	</p>
+
+	<p>Apache Pig is a platform for analyzing large data sets that
+		consists of a high-level language for expressing data analysis
+		programs, coupled with infrastructure for evaluating these programs.
+		The salient property of Pig programs is that their structure is
+		amenable to substantial parallelization, which in turns enables them
+		to handle very large data sets. At the present time, Pig's
+		infrastructure layer consists of a compiler that produces sequences
+		of Map-Reduce programs, for which large-scale parallel
+		implementations already exist (e.g., the Hadoop subproject). Pig's
+		language layer currently consists of a textual language called Pig
+		Latin, which has the following key properties:
+	<ul>
+		<li>Ease of programming. It is trivial to achieve parallel
+			execution of simple, "embarrassingly parallel" data analysis tasks.
+			Complex tasks comprised of multiple interrelated data
+			transformations are explicitly encoded as data flow sequences,
+			making them easy to write, understand, and maintain.</li>
+		<li>Optimization opportunities. The way in which tasks are
+			encoded permits the system to optimize their execution
+			automatically, allowing the user to focus on semantics rather than
+			efficiency.</li>
+		<li>Extensibility. Users can create their own functions to do
+			special-purpose processing.</li>
+	</ul>
+	</p>
+</body>
+</html>

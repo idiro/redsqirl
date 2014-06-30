@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faces-config version="1.2" xmlns="http://java.sun.com/xml/ns/javaee"
+ xmlns:xi="http://www.w3.org/2001/XInclude"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_1_2.xsd">
+ 
+ <!-- **************************** CONVERTERS ************************************************************** 
+		************************** MANAGED BEANS ******************************************************* -->
+		
+ <managed-bean>
+  <managed-bean-name>canvasBean</managed-bean-name>
+  <managed-bean-class>com.redsqirl.CanvasBean</managed-bean-class>
+  <managed-bean-scope>session</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
+  <managed-bean-name>hdfsBean</managed-bean-name>
+  <managed-bean-class>com.redsqirl.HdfsBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
+  <managed-bean-name>hdfsLoadBean</managed-bean-name>
+  <managed-bean-class>com.redsqirl.HdfsBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+  <managed-bean>
+  <managed-bean-name>hdfsSaveBean</managed-bean-name>
+  <managed-bean-class>com.redsqirl.HdfsBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
+  <managed-bean-name>hiveBean</managed-bean-name>
+  <managed-bean-class>com.redsqirl.HiveBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
+  <managed-bean-name>sshBean</managed-bean-name>
+  <managed-bean-class>com.redsqirl.SshBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
+  <managed-bean-name>userInfoBean</managed-bean-name>
+  <managed-bean-class>com.redsqirl.auth.UserInfoBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
+  <managed-bean-name>canvasModalBean</managed-bean-name>
+  <managed-bean-class>com.redsqirl.CanvasModal</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
+ 	<managed-bean-name>configureTabsBean</managed-bean-name>
+ 	<managed-bean-class>com.redsqirl.ConfigureTabsBean</managed-bean-class>
+ 	<managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
+ 	<managed-bean-name>processManagerBean</managed-bean-name>
+ 	<managed-bean-class>com.redsqirl.ProcessManagerBean</managed-bean-class>
+ 	<managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
+  <managed-bean-name>browserHiveBean</managed-bean-name>
+  <managed-bean-class>com.redsqirl.HiveBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ <managed-bean>
+  <managed-bean-name>browserHdfsBean</managed-bean-name>
+  <managed-bean-class>com.redsqirl.HdfsBean</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ 
+ <managed-bean>
+  <managed-bean-name>error</managed-bean-name>
+  <managed-bean-class>com.redsqirl.useful.Error</managed-bean-class>
+  <managed-bean-scope>request</managed-bean-scope>
+ </managed-bean>
+ 
+ <!-- **************************** NAVIGATION ******************************************************************* -->
+ 
+ <navigation-rule>
+  <from-view-id>/pages/initial.xhtml</from-view-id>
+  <navigation-case>
+   <from-outcome>success</from-outcome>
+   <to-view-id>/pages/canvas.xhtml</to-view-id>
+   <redirect/>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>failure</from-outcome>
+   <to-view-id>/pages/initial.xhtml</to-view-id>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>loginPage</from-outcome>
+   <to-view-id>/pages/initial.xhtml</to-view-id>
+  </navigation-case>
+ </navigation-rule>
+ <navigation-rule>
+  <from-view-id>/pages/canvas.xhtml</from-view-id>
+  <navigation-case>
+   <from-outcome>signout</from-outcome>
+   <to-view-id>/pages/initial.xhtml</to-view-id>
+   <redirect/>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>loginPage</from-outcome>
+   <to-view-id>/pages/initial.xhtml</to-view-id>
+  </navigation-case>
+ </navigation-rule>
+ <navigation-rule>
+  <from-view-id>/pages/canvasModal1.xhtml</from-view-id>
+  <navigation-case>
+   <from-outcome>next</from-outcome>
+   <to-view-id>/pages/canvasModal2.xhtml</to-view-id>
+  </navigation-case>
+ </navigation-rule>
+ <navigation-rule>
+  <from-view-id>/pages/canvasModal2.xhtml</from-view-id>
+  <navigation-case>
+   <from-outcome>close</from-outcome>
+   <to-view-id>/pages/canvasModal1.xhtml</to-view-id>
+  </navigation-case>
+ </navigation-rule>
+ <navigation-rule>
+  <from-view-id>/pages/erro.xhtml</from-view-id>
+  <navigation-case>
+   <from-outcome>initial</from-outcome>
+   <to-view-id>/pages/initial.xhtml</to-view-id>
+  </navigation-case>
+ </navigation-rule>
+ 
+ <!-- *************************** RESOURCES ********************************************************** -->
+ 
+ <application>
+  <view-handler>org.ajax4jsf.application.AjaxViewHandler</view-handler>
+  <message-bundle>MessagesResources</message-bundle>
+  <locale-config>
+   <default-locale>en</default-locale>
+   <supported-locale>em_US</supported-locale>
+  </locale-config>
+ </application>
+ <lifecycle>
+  <phase-listener>com.redsqirl.auth.AuthorizationListener</phase-listener>
+ </lifecycle>
+</faces-config>

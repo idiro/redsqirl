@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j">
+
+<a4j:loadBundle basename="MessagesResources" var="messages" />
+
+<head>
+<link rel="icon" type="image/gif" href="./image/logo_redsqirl_favicon.gif" />
+<link rel="icon" type="image/gif" href="../image/logo_redsqirl_favicon.gif" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+</meta>
+<title><h:outputText value="#{messages.label_sistem}" /></title>
+
+<link rel="stylesheet" type="text/css" href='#{facesContext.externalContext.requestContextPath}/css/redsqirl.css' />
+<script	src='#{facesContext.externalContext.requestContextPath}/js/jquery-1.9.1.js'	type="text/javascript"></script>
+<script	src='#{facesContext.externalContext.requestContextPath}/js/jquery.cookie.js' type="text/javascript"></script>
+<script	src='#{facesContext.externalContext.requestContextPath}/js/jquery.blockUI.js' type="text/javascript"></script>
+</head>
+
+<body>
+
+	<script type="text/javascript">
+
+jQuery.noConflict();
+
+jQuery(document).ready(function() {
+	 //<![CDATA[
+
+   jQuery("[id$='restartBt']").click();
+   jQuery.blockUI({ message: jQuery('#divProgressBar') });
+
+
+  //]]>
+});
+
+
+</script>
+
+	<ui:include src="/pages/progressBar.xhtml" />
+	<h:form>
+	
+		<a4j:commandLink id="restartBt" action="#{userInfoBean.loginWithSessionSSH}" style="display:none;" />
+	
+	</h:form>
+	
+</body>
+</html>
