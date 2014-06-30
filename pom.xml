@@ -4,18 +4,18 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>idiro</groupId>
-	<artifactId>idm</artifactId>
+	<artifactId>redsqirl</artifactId>
 	<name>Red Sqirl</name>
 	<version>0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<description>${project.name} is a platform</description>
 
 	<modules>
-		<module>idm-wf-interface</module>
-		<module>idm-workflow</module>
-		<module>idm-webapp</module>
-		<module>idm-base-packages</module>
-		<module>idm-repo</module>
+		<module>redsqirl-wf-interface</module>
+		<module>redsqirl-workflow</module>
+		<module>redsqirl-webapp</module>
+		<module>redsqirl-base-packages</module>
+		<module>redsqirl-repo</module>
 	</modules>
 
 	<organization>
@@ -66,7 +66,7 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.9.1</version>
 				<configuration>
-					<sourcepath>${basedir}/idm-wf-interface/src/main;${basedir}/idm-workflow/src/main</sourcepath>
+					<sourcepath>${basedir}/redsqirl-wf-interface/src/main;${basedir}/redsqirl-workflow/src/main</sourcepath>
 					<show>private</show>
 					<nohelp>true</nohelp>
 				</configuration>
@@ -99,7 +99,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>idiro</groupId>
-			<artifactId>idm-webapp</artifactId>
+			<artifactId>redsqirl-webapp</artifactId>
 			<version>0.1-SNAPSHOT</version>
 			<type>pom</type>
 			<scope>compile</scope>

@@ -1,0 +1,71 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Hive Select Help</title>
+</head>
+<body>
+	<h1>Hive Select</h1>
+	<h2>Decription</h2>
+	<p>Hive Select is an action that is performed like any other
+		Select statement in a relational database.</p>
+	<h3>Quick Guide</h3>
+	<p>
+	<ul>
+		<li>Input - Single Hive Table or Partition</li>
+		<li>Features - Select the features to be used or calculated</li>
+		<li>Condition - Filter the selected data by a condition</li>
+		<li>Output - Set the output to support</li>
+		<ul>
+			<li>Do Not Support Partition - Do not Create a partition</li>
+			<li>Support Partition in output - Create a partition and return the table</li>
+			<li>Support Partition in output and return only new partition - Create a partition and return the partition only</li>
+		</ul>
+		<li>Output - Single Hive Table or Partition</li>
+	</ul>
+
+
+	<h2>Source</h2>
+	<p>The source type for Hive Select has to be Hive and the sub
+		types Hive Table or Hive Partition. Only one input is needed for Hive
+		Select</p>
+
+	<h2><a id="page1">Filters - Page 1</a></h2>
+	<p>The Filters page will allow for organizing by conditions,
+		partitions or grouping.</p>
+
+	<h3>Condition</h3>
+	<p>Condition is where the condition is set for the query. The
+		attributes can be selected to be included in the query , from there
+		the type of condition can be set based on the data type (String or
+		Double) and what type of comparison or condition is set on the chosen
+		attributes</p>
+	<h3>Group By</h3>
+	<p>In Group By the group by condition can be set to group the data
+		set by an attribute</p>
+	<h2>Feature Operations</h2>
+	<p>Feature operations allows data to be copied to the output table
+		and also do some transformation of the data. It allows casting of one
+		data type to another type or other operations to the attribute.</p>
+
+	<h2>Red Sqirl Hive</h2>
+	<p>
+		Red Sqirl Hive is the interface for Red Sqirl to interact with Hive on the hadoop
+		cluster. There are two other actions that are apart of Red Sqirl Hive
+		package <a class="stopLink" id="help_hive_join"
+			onclick="return false;" href="hive_join.html" >Hive
+			Join</a> , <a class="stopLink" id="help_hive_aggregator"
+			onclick="return false;" href="hive_aggregator.html" >Hive
+			Aggregator</a> and <a class="stopLink" id="help_hive_union"
+			onclick="return false;" href="hive_union.html" >Hive Union.</a>
+	</p>
+	<p>
+		<a href="http://hive.apache.org/" target="_blank">Hive</a> is a
+		hadoop implementation of a relational database that is used for data
+		warehousing for large data sets. Each query written in it's own
+		language called HiveQl that acts like a normal SQL query but runs as
+		a Map/Reduce job. Indexing is made easier and makes querying large
+		datasets quicker and more efficient
+	</p>
+</body>
+</html>

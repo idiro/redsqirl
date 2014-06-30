@@ -1,0 +1,138 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>idiro</groupId>
+    <artifactId>redsqirl-repo</artifactId>
+    <name>Red Sqirl Repository</name>
+    <packaging>war</packaging>
+
+    <parent>
+	<groupId>idiro</groupId>
+	<artifactId>redsqirl</artifactId>
+	<version>0.1-SNAPSHOT</version>
+    </parent>
+
+    <properties>
+	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	<main.resources.script>${basedir}/src/main/resources/scripts</main.resources.script>
+	<main.resources.conf>${basedir}/src/main/resources/conf</main.resources.conf>
+        <jersey.version>2.4.1</jersey.version>
+	<maven.tomcat.port>9090</maven.tomcat.port>
+    </properties>
+    <repositories>
+
+	<!-- JBoss Repository -->
+	<repository>
+	    <id>jboss-public-repository</id>
+	    <name>JBoss Repository</name>
+	    <url>https://repository.jboss.org/nexus/content/groups/public</url>
+	    <releases>
+		<enabled>true</enabled>
+	    </releases>
+	    <snapshots>
+		<enabled>false</enabled>
+	    </snapshots>
+	</repository>
+
+    </repositories>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.glassfish.jersey</groupId>
+                <artifactId>jersey-bom</artifactId>
+                <version>${jersey.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+	<extensions>
+	    <extension>
+		<groupId>org.apache.maven.wagon</groupId>
+		<artifactId>wagon-ssh</artifactId>
+		<version>1.0</version>
+	    </extension>
+	</extensions>
+
+	<plugins>
+
+	    <plugin>
+		<groupId>org.apache.tomcat.maven</groupId>
+		<artifactId>tomcat7-maven-plugin</artifactId>
+		<version>2.0</version>
+	    </plugin>
+	    <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-compiler-plugin</artifactId>
+		<version>3.1</version>
+		<configuration>
+		    <source>1.6</source>
+		    <target>1.6</target>
+		</configuration>
+	    </plugin>
+	    <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-war-plugin</artifactId>
+		<configuration>
+		    <warName>${project.artifactId}</warName>
+		</configuration>
+	    </plugin>
+	</plugins>
+    </build>
+
+    <dependencies>
+
+	<dependency>
+	    <groupId>org.apache.tomcat</groupId>
+	    <artifactId>servlet-api</artifactId>
+	    <version>6.0.37</version>
+	    <scope>provided</scope>
+	</dependency>
+
+
+	<!-- MySQL database driver -->
+	<dependency>
+	    <groupId>mysql</groupId>
+	    <artifactId>mysql-connector-java</artifactId>
+	    <version>5.1.9</version>
+	</dependency>
+
+	<dependency>
+	    <groupId>com.sun.el</groupId>
+	    <artifactId>el-ri</artifactId>
+	    <version>1.0</version>
+	    <scope>compile</scope>
+	</dependency>
+	<dependency>
+	    <groupId>org.json</groupId>
+	    <artifactId>json</artifactId>
+	    <version>20090211</version>
+	</dependency>
+
+	<!-- Jersey -->
+	<dependency>
+	    <groupId>org.glassfish.jersey.containers</groupId>
+	    <artifactId>jersey-container-servlet-core</artifactId>
+	    <!-- use the following artifactId if you don't need servlet 2.x compatibility -->
+	    <!-- artifactId>jersey-container-servlet</artifactId -->
+    </dependency>
+    <dependency>
+	<groupId>org.glassfish.jersey.media</groupId>
+	<artifactId>jersey-media-moxy</artifactId>
+    </dependency>
+
+    <!-- TEST -->
+
+    <dependency>
+	<groupId>log4j</groupId>
+	<artifactId>log4j</artifactId>
+	<version>1.2.16</version>
+    </dependency>
+
+
+</dependencies>
+</project>

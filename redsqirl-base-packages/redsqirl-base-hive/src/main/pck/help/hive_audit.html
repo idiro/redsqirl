@@ -1,0 +1,50 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Hive Audit Help</title>
+</head>
+<body>
+    <h1>Hive Audit</h1>
+    <h2>Decription</h2>
+    <p>Hive Audit is an action that is performed an audit on a Hive dataset.</p>
+    <h3>Quick Guide</h3>
+    <p>
+    <ul>
+        <li>Input - Single Hive Table or Partition</li>
+        <li>Output - Set the output to support</li>
+        <ul>
+            <li>Do Not Support Partition - Do not Create a partition</li>
+            <li>Support Partition in output - Create a partition and return the table</li>
+            <li>Support Partition in output and return only new partition - Create a partition and return the partition only</li>
+        </ul>
+        <li>Output - Single Hive Table or Partition</li>
+    </ul>
+
+
+    <h2>Source</h2>
+    <p>The source type for Hive Select has to be Hive and the sub
+        types Hive Table or Hive Partition. Only one input is needed for Hive
+        Select</p>
+
+    <h2>Red Sqirl Hive</h2>
+    <p>
+        Red Sqirl Hive is the interface for Red Sqirl to interact with Hive on the hadoop
+        cluster. There are two other actions that are apart of Red Sqirl Hive
+        package <a class="stopLink" id="help_hive_join"
+            onclick="return false;" href="hive_join.html" >Hive
+            Join</a> , <a class="stopLink" id="help_hive_aggregator"
+            onclick="return false;" href="hive_aggregator.html" >Hive
+            Aggregator</a> and <a class="stopLink" id="help_hive_union"
+            onclick="return false;" href="hive_union.html" >Hive Union.</a>
+    </p>
+    <p>
+        <a href="http://hive.apache.org/" target="_blank">Hive</a> is a
+        hadoop implementation of a relational database that is used for data
+        warehousing for large data sets. Each query written in it's own
+        language called HiveQl that acts like a normal SQL query but runs as
+        a Map/Reduce job. Indexing is made easier and makes querying large
+        datasets quicker and more efficient
+    </p>
+</body>
+</html>
