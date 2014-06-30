@@ -56,25 +56,25 @@
 
 	jQuery(document).on("click", "#btIndex", function(e) {
 	    if(! jQuery('#notMoveHelp').is(':checked')){
-		var id = jQuery(this).attr('id');
-		if(historyHelp[historyHelpIndex] != id){
-            jQuery("#nextHelp").attr("disabled", true);
-            jQuery("#prevHelp").attr("disabled", false);
-		    jQuery("#helpIndex").show();
-            jQuery("#helpPanel").hide();
-		    jQuery("#btIndex").hide();
-		    jQuery("#tabs-1").scrollTop( 0 );
-		    //<![CDATA[
-		    while(historyHelpIndex + 1 < historyHelp.length){
-			historyHelp.pop();
+		    var id = jQuery(this).attr('id');
+		    if(historyHelp[historyHelpIndex] != id){
+			    jQuery("#nextHelp").attr("disabled", true);
+			    jQuery("#prevHelp").attr("disabled", false);
+			    jQuery("#helpIndex").show();
+			    jQuery("#helpPanel").hide();
+			    jQuery("#btIndex").hide();
+			    jQuery("#tabs-1").scrollTop( 0 );
+			    //<![CDATA[
+			    while(historyHelpIndex + 1 < historyHelp.length){
+				    historyHelp.pop();
+				}
+				if(historyHelp.length > 100){
+					historyHelp.shift();
+				}
+		    	//]]>
+		    	historyHelpIndex = historyHelp.length;
+		    	historyHelp[historyHelpIndex] = id;
 		    }
-		    if(historyHelp.length > 100){
-			historyHelp.shift();
-		    }
-		    //]]>
-		    historyHelpIndex = historyHelp.length;
-		    historyHelp[historyHelpIndex] = id;
-		}
 	    }
 	});
 

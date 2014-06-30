@@ -67,11 +67,11 @@ var contextMenuCanvas = [
 
 var cmenuCanvas = jQuery.contextMenu.create(contextMenuCanvas);
 
-function findHHandWW() {
+/*function findHHandWW() {
 	imgHeight = this.height;
 	imgWidth = this.width;
 	return true;
-}
+}*/
 
 window.onload = function() {
 	var canvasName = "canvas-1";
@@ -148,7 +148,6 @@ function configureCanvas(canvasName){
 		y : 0,
 		width : 0,
 		height : 0,
-		// fill: 'red',
 		stroke : 'black',
 		strokeWidth : 1,
 		opacity : 0.5,
@@ -185,7 +184,7 @@ function configureCanvas(canvasName){
 			});
 		}
 
-		this.setStroke("red");
+		this.setStroke("#FFDB99");
 		this.selected = true;
 		canvasArray[canvasName].clickArrow = true;
 		stage.draw();
@@ -216,7 +215,9 @@ function configureCanvas(canvasName){
 				if (!canvasArray[canvasName].select) {
 
 					jQuery.each(polygonLayer.get('.polygon1'), function(index, value) {
-						value.setStroke('black');
+						//value.setStroke('white');
+						value.getParent().getChildren()[0].setFill("white");
+						value.getParent().getChildren()[1].setFill("white");
 						value.selected = false;
 					});
 
@@ -460,9 +461,9 @@ function rectSelectAllObj(canvasName, e) {
 
 	jQuery.each(polygonLayer.get('.group1'),
 			function(index, value) {
-				if (collidesObj(canvasArray[canvasName].rectSelect, value, value.getX() + 40, value
-						.getY() + 50)) {
-					value.getChildren()[2].setStroke("red");
+				if (collidesObj(canvasArray[canvasName].rectSelect, value, value.getX() + 40, value.getY() + 50)) {
+					value.getChildren()[0].setFill("#FFDB99");
+					value.getChildren()[1].setFill("#FFDB99");
 					value.getChildren()[2].selected = true;
 					polygonLayer.draw();
 					canvasArray[canvasName].select = true;
@@ -487,7 +488,9 @@ function deselectOnClick(canvasName, obj, e) {
 
 	if (!e.ctrlKey && !canvasArray[canvasName].dragDropGroup) {
 		jQuery.each(polygonLayer.get('.polygon1'), function(index, value) {
-			value.setStroke('black');
+			//value.setStroke('white');
+			value.getParent().getChildren()[0].setFill("white");
+			value.getParent().getChildren()[1].setFill("white");
 			value.selected = false;
 		});
 
@@ -502,7 +505,10 @@ function deselectOnClick(canvasName, obj, e) {
 
 	canvasArray[canvasName].dragDropGroup = false;
 
-	obj.setStroke("red");
+	obj.getParent().getChildren()[0].setFill("#FFDB99");
+	obj.getParent().getChildren()[1].setFill("#FFDB99");
+	
+	//obj.setStroke("red");
 	obj.selected = true;
 
 	stage.draw();
@@ -605,7 +611,9 @@ function selectAll(canvasName) {
 	var layer = canvasArray[canvasName].layer;
 	
 	jQuery.each(polygonLayer.get('.polygon1'), function(index, value) {
-		value.setStroke("red");
+		//value.setStroke("red");
+		value.getParent().getChildren()[0].setFill("#FFDB99");
+		value.getParent().getChildren()[1].setFill("#FFDB99");
 		value.selected = true;
 		polygonLayer.draw();
 	});
@@ -626,7 +634,9 @@ function deselectAll(canvasName) {
 	var layer = canvasArray[canvasName].layer;
 
 	jQuery.each(polygonLayer.get('.polygon1'), function(index, value) {
-		value.setStroke('black');
+		//value.setStroke('white');
+		value.getParent().getChildren()[0].setFill("white");
+		value.getParent().getChildren()[1].setFill("white");
 		value.selected = false;
 	});
 	try{
@@ -1076,7 +1086,7 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
 
 	var img = new Image();
 	img.src = elementImg;
-	img.onload = findHHandWW;
+	//img.onload = findHHandWW;
 
 	var result = createPolygon(img, 40, 50, numSides, canvasName);
 	var polygon = result[0];
@@ -1086,9 +1096,10 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
 		y : 50,
 		radius : 32,
 		draggable : false,
-		fill :'white',
-		stroke : 'white',
-		strokeWidth : 5
+		//fill :'white',
+		opacity: 0
+		//stroke : 'white',
+		//strokeWidth : 5
 	});
 	configureCircle(canvasName, circle0);
 
@@ -1097,9 +1108,10 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
 		y : 50,
 		radius : 42,
 		draggable : false,
+		opacity: 0.5,
 		fill :'white',
-		stroke : 'white',
-		strokeWidth : 5
+		//stroke : 'white',
+		//strokeWidth : 5
 	});
 	configureCircle(canvasName, circle1);
 	
@@ -1373,19 +1385,21 @@ function mountObj(canvasName) {
 
 				numObjs++;
 				
-				// variable to control image of
-				// the object
+				// variable to control image of the object
 				var imgTab = new Image();
 				
 				//alert(jQuery(this).attr("src"));
 				
 				imgTab.src = jQuery(this).attr("src");
-				imgTab.onload = findHHandWW;
+				//imgTab.onload = findHHandWW;
 				
-				var srcImageText = new Kinetic.Text({
+				
+				var srcImageText = jQuery(this).attr("src");
+				
+				/*var srcImageText = new Kinetic.Text({
 					text : jQuery(this).attr("src")
 				});
-				srcImageText.setStroke(null);
+				srcImageText.setStroke(null);*/
 				
 				
 				//label on footer
@@ -1428,7 +1442,7 @@ function mountObj(canvasName) {
 					x : 40,
 					y : 50,
 					opacity : 0,
-					radius : 30,
+					radius : 35,
 					sides : numSides,
 					draggable : true
 				});
@@ -1442,7 +1456,7 @@ function mountObj(canvasName) {
 
 				polygonTabFake.on('dragstart',function() {
                     jQuery("#help_"+typeText.getText()).click();
-					jQuery('#body').css('cursor','url('+ polygonTabImage+ ') 30 30,default');
+					jQuery('#body').css('cursor','url('+ polygonTabImage + ') 30 30,default');
 				});
 				
 				polygonTabFake.on('click',function() {
@@ -1470,7 +1484,7 @@ function mountObj(canvasName) {
 
 						addElement(selectedCanvas,
 								typeText.getText(),
-								srcImageText.getText(),
+								srcImageText,
 								mousePosStage.x - 30,
 								mousePosStage.y - 30,
 								numSides,
@@ -1824,7 +1838,9 @@ function configureGroup(canvasName, group, mousePosX, mousePosY, polygon) {
 	document.body.style.cursor = 'default';
 
 	deselectAll(canvasName);
-	polygon.setStroke("red");
+	//polygon.setStroke("red");
+	group.getChildren()[0].setFill("#FFDB99");
+	group.getChildren()[1].setFill("#FFDB99");
 	polygon.selected = true;
 
 	group.setPosition(mousePosX, mousePosY);
@@ -1849,7 +1865,10 @@ function setPageNb(groupId, pageNb){
 
 function openCanvasModalJS(group, selectedTab){
 
-    group.getChildren()[2].setStroke('black');
+    //group.getChildren()[2].setStroke('white');
+	group.getChildren()[0].setFill("white");
+	group.getChildren()[1].setFill("white");
+	
     group.getChildren()[2].selected = false;
     canvasArray[selectedCanvas].down = false;
 
@@ -1872,7 +1891,10 @@ function openCanvasModalJS(group, selectedTab){
 
 function openChangeIdModalJS(group){
 
-    group.getChildren()[2].setStroke('black');
+    //group.getChildren()[2].setStroke('white');
+	group.getChildren()[0].setFill("white");
+	group.getChildren()[1].setFill("white");
+	
     group.getChildren()[2].selected = false;
     canvasArray[selectedCanvas].down = false;
 
@@ -1900,8 +1922,8 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
 	var height = 44.5/imgHeight;
 	var width = 44.5/imgWidth;
 	
-	var offsetY = imgHeight/2;
 	var offsetX = imgWidth/2;
+	var offsetY = imgHeight/2;
 	
 	//FIXME - error on footer in the first time open
 	if(isNaN(offsetX) && isNaN(offsetY)){
@@ -1912,10 +1934,10 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
 	var polygonTab = new Kinetic.RegularPolygon({
 		x : 40,
 		y : 50,
-		radius : 30,
+		radius : 35,
 		sides : numSides,
-		stroke : 'black',
-		strokeWidth : 4,
+		//stroke : 'black',
+		//strokeWidth : 4,
 		fillPatternImage : imgTab,
 		fillPatternOffset : [ offsetX, offsetY ],
 //		fillPatternX : -18,
@@ -2112,7 +2134,7 @@ function getLabelOutputExistence(color){
 	
 	var text = "Output Dataset: ";
 	
-	if (color == "#adff2f"){ //greenyellow
+	if (color == "#008B8B"){ //DarkCyan
 		return text+"At least one dataset exists";
 	}else if (color == "#d2691e"){ //chocolate
 		return  text+"No Dataset exist";
@@ -2124,7 +2146,7 @@ function getLabelOutputExistence(color){
 function getColorOutputExistence(fileExists){
 	
 	if (fileExists == "true"){
-		return "#adff2f"; //greenyellow
+		return "#008B8B"; //DarkCyan
 	}else if (fileExists == "false"){
 		return "#d2691e" //chocolate
 	}else {

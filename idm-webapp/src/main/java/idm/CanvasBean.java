@@ -1027,7 +1027,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				tooltip.append("Output Type: " + e.getValue().getTypeName() + "<br/>");
 
 				if(e.getValue().isPathExists()){
-					tooltip.append("Output Path: <span style='color:#adff2f'>" + e.getValue().getPath() + "</span><br/>");
+					tooltip.append("Output Path: <span style='color:#008B8B'>" + e.getValue().getPath() + "</span><br/>");
 				}else{
 					tooltip.append("Output Path: <span style='color:#d2691e'>" + e.getValue().getPath() + "</span><br/>");
 				}
@@ -1247,7 +1247,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 						tooltip.append("Type: " + typeName + "<br/>");
 
 						if(e.getValue().isPathExists()){
-							tooltip.append("Path: <span style='color:#adff2f'>" + e.getValue().getPath() + "</span><br/>");
+							tooltip.append("Path: <span style='color:#008B8B'>" + e.getValue().getPath() + "</span><br/>");
 						}else{
 							tooltip.append("Path: <span style='color:#d2691e'>" + e.getValue().getPath() + "</span><br/>");
 						}
