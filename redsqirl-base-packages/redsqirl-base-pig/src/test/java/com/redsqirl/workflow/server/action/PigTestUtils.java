@@ -1,4 +1,4 @@
-package idiro.workflow.server.action;
+package com.redsqirl.workflow.server.action;
 
 import static org.junit.Assert.assertTrue;
 

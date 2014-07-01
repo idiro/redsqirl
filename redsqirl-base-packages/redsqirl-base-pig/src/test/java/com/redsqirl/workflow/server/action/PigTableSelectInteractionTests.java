@@ -1,7 +1,6 @@
-package idiro.workflow.server.action;
+package com.redsqirl.workflow.server.action;
 
 import static org.junit.Assert.assertTrue;
-import idiro.workflow.test.TestUtils;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -13,6 +12,7 @@ import com.redsqirl.workflow.server.action.PigSelect;
 import com.redsqirl.workflow.server.action.PigTableSelectInteraction;
 import com.redsqirl.workflow.server.action.Source;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
+import com.redsqirl.workflow.test.TestUtils;
 
 public class PigTableSelectInteractionTests {
 

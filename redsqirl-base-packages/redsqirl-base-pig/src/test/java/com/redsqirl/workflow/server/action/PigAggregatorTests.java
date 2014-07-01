@@ -1,7 +1,6 @@
-package idiro.workflow.server.action;
+package com.redsqirl.workflow.server.action;
 
 import static org.junit.Assert.assertTrue;
-import idiro.workflow.test.TestUtils;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -29,6 +28,7 @@ import com.redsqirl.workflow.server.action.PigTableSelectInteraction;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
+import com.redsqirl.workflow.test.TestUtils;
 
 public class PigAggregatorTests {
 	private static Logger logger = Logger.getLogger(PigAggregatorTests.class);

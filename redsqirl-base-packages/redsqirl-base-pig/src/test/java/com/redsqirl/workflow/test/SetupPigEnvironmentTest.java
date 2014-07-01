@@ -1,22 +1,5 @@
-package idiro.workflow.test;
+package com.redsqirl.workflow.test;
 
-import idiro.workflow.server.action.PigAggregatorTests;
-import idiro.workflow.server.action.PigAnonymiseTests;
-import idiro.workflow.server.action.PigAuditTests;
-import idiro.workflow.server.action.PigFilterInteractionTests;
-import idiro.workflow.server.action.PigJoinRelationInteractionTests;
-import idiro.workflow.server.action.PigJoinTests;
-import idiro.workflow.server.action.PigSampleTests;
-import idiro.workflow.server.action.PigSelectTests;
-import idiro.workflow.server.action.PigTableJoinInteractionTests;
-import idiro.workflow.server.action.PigTableSelectInteractionTests;
-import idiro.workflow.server.action.PigTableUnionInteractionTests;
-import idiro.workflow.server.action.PigTransposeTests;
-import idiro.workflow.server.action.PigUnanonymiseTests;
-import idiro.workflow.server.action.PigUnionConditionsTests;
-import idiro.workflow.server.action.PigUnionTests;
-import idiro.workflow.server.action.PigWorkflowMngtTests;
-import idiro.workflow.server.action.test.PigDictionaryTests;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -33,8 +16,26 @@ import org.junit.runners.Suite.SuiteClasses;
 import com.idiro.Log;
 import com.idiro.ProjectID;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
+import com.redsqirl.workflow.server.action.PigAggregatorTests;
+import com.redsqirl.workflow.server.action.PigAnonymiseTests;
+import com.redsqirl.workflow.server.action.PigAuditTests;
+import com.redsqirl.workflow.server.action.PigFilterInteractionTests;
+import com.redsqirl.workflow.server.action.PigJoinRelationInteractionTests;
+import com.redsqirl.workflow.server.action.PigJoinTests;
+import com.redsqirl.workflow.server.action.PigSampleTests;
+import com.redsqirl.workflow.server.action.PigSelectTests;
+import com.redsqirl.workflow.server.action.PigTableJoinInteractionTests;
+import com.redsqirl.workflow.server.action.PigTableSelectInteractionTests;
+import com.redsqirl.workflow.server.action.PigTableUnionInteractionTests;
+import com.redsqirl.workflow.server.action.PigTransposeTests;
+import com.redsqirl.workflow.server.action.PigUnanonymiseTests;
+import com.redsqirl.workflow.server.action.PigUnionConditionsTests;
+import com.redsqirl.workflow.server.action.PigUnionTests;
+import com.redsqirl.workflow.server.action.PigWorkflowMngtTests;
+import com.redsqirl.workflow.server.action.test.PigDictionaryTests;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.connect.HiveInterface;
+import com.redsqirl.workflow.test.TestUtils;
 
 
 @RunWith(Suite.class)

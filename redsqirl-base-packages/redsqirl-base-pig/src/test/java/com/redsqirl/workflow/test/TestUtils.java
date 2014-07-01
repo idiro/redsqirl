@@ -1,4 +1,4 @@
-package idiro.workflow.test;
+package com.redsqirl.workflow.test;
 
 
 
@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 
 import com.idiro.hadoop.NameNodeVar;
 import com.idiro.utils.RandomString;
+import com.redsqirl.workflow.test.TestUtils;
 
 
 public class TestUtils {

@@ -1,8 +1,7 @@
-package idiro.workflow.server.action.test;
+package com.redsqirl.workflow.server.action.test;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import idiro.workflow.test.TestUtils;
 
 import java.rmi.RemoteException;
 import java.util.HashSet;
@@ -15,6 +14,7 @@ import com.redsqirl.utils.FeatureList;
 import com.redsqirl.utils.OrderedFeatureList;
 import com.redsqirl.workflow.server.action.utils.PigDictionary;
 import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.workflow.test.TestUtils;
 
 public class PigDictionaryTests {
 

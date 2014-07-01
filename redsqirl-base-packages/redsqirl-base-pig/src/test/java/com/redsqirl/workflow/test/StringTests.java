@@ -1,4 +1,4 @@
-package idiro.workflow.test;
+package com.redsqirl.workflow.test;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
