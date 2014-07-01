@@ -92,6 +92,9 @@ public class DataProperty extends UnicastRemoteObject implements
 	 */
 	public boolean check(DFEOutput out) {
 		boolean ok = false;
+		if(typeAccepted == null || typeAccepted.isEmpty()){
+			return true;
+		}
 		Iterator<Class<? extends DFEOutput>> it = typeAccepted.iterator();
 		while (it.hasNext() && !ok) {
 			Class<?> cur = it.next();
