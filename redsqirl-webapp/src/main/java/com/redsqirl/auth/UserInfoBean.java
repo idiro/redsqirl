@@ -423,7 +423,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 							dfi.removeWorkflow("test");
 							logger.info("workflow is running ");
 						} catch (Exception e) {
-							logger.info("workflow not runninggggggggggggggggggggggg ");
+							logger.info("workflow not running ");
 							Thread.sleep(500);
 							if (tryNumb > 1 * 60 * 2000) {
 								throw e;
