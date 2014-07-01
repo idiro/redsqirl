@@ -94,9 +94,9 @@
 		    jQuery("#helpIndex").hide();
 		    
 		    jQuery("#helpPanel").show();
-            jQuery("#contentHelp").load(jQuery(this).attr("href"));
+            jQuery("#contentHelp").load(jQuery("#"+id).attr("href"));
             if(id != "help_main" && id.substring(0,5) == "help_"){
-              var obj = jQuery("#image_"+jQuery(this).attr("id"));
+              var obj = jQuery("#image_"+jQuery("#"+id).attr("id"));
               document.getElementById("imageHelp").innerHTML 
                 = "<img width='50px' src='"+jQuery(obj).attr("src")+"'/>";
               jQuery("#imageHelp").show();
@@ -128,9 +128,9 @@
 		    jQuery("#helpIndex").hide();
 		    
             jQuery("#helpPanel").show();
-            jQuery("#contentHelp").load(jQuery(this).attr("href"));
+            jQuery("#contentHelp").load(jQuery("#"+id).attr("href"));
             if(id != "help_main" && id.substring(0,5) == "help_"){
-              var obj = jQuery("#image_"+jQuery(this).attr("id"));
+              var obj = jQuery("#image_"+jQuery("#"+id).attr("id"));
               document.getElementById("imageHelp").innerHTML 
                 = "<img width='50px' src='"+jQuery(obj).attr("src")+"'/>";
               jQuery("#imageHelp").show();
