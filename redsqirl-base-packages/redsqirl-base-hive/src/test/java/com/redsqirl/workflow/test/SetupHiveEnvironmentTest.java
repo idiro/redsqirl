@@ -1,17 +1,5 @@
-package idiro.workflow.test;
+package com.redsqirl.workflow.test;
 
-import idiro.workflow.server.action.ConditionInteractionTests;
-import idiro.workflow.server.action.HiveAggregTests;
-import idiro.workflow.server.action.HiveAuditTests;
-import idiro.workflow.server.action.HiveJoinTests;
-import idiro.workflow.server.action.HiveSelectTests;
-import idiro.workflow.server.action.HiveUnionConditionInteractionTests;
-import idiro.workflow.server.action.HiveUnionTests;
-import idiro.workflow.server.action.JoinRelationInteractionTests;
-import idiro.workflow.server.action.TableJoinInteractionTests;
-import idiro.workflow.server.action.TableSelectInteractionTests;
-import idiro.workflow.server.action.TableUnionInteractionTests;
-import idiro.workflow.server.action.test.HiveDictionaryTests;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -28,6 +16,18 @@ import org.junit.runners.Suite.SuiteClasses;
 import com.idiro.Log;
 import com.idiro.ProjectID;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
+import com.redsqirl.workflow.server.action.ConditionInteractionTests;
+import com.redsqirl.workflow.server.action.HiveAggregTests;
+import com.redsqirl.workflow.server.action.HiveAuditTests;
+import com.redsqirl.workflow.server.action.HiveJoinTests;
+import com.redsqirl.workflow.server.action.HiveSelectTests;
+import com.redsqirl.workflow.server.action.HiveUnionConditionInteractionTests;
+import com.redsqirl.workflow.server.action.HiveUnionTests;
+import com.redsqirl.workflow.server.action.JoinRelationInteractionTests;
+import com.redsqirl.workflow.server.action.TableJoinInteractionTests;
+import com.redsqirl.workflow.server.action.TableSelectInteractionTests;
+import com.redsqirl.workflow.server.action.TableUnionInteractionTests;
+import com.redsqirl.workflow.server.action.test.HiveDictionaryTests;
 import com.redsqirl.workflow.server.connect.HiveInterface;
 
 

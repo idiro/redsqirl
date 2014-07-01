@@ -1,9 +1,8 @@
-package idiro.workflow.server.action.test;
+package com.redsqirl.workflow.server.action.test;
 
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import idiro.workflow.server.action.utils.TestUtils;
 
 import java.rmi.RemoteException;
 import java.util.HashSet;
@@ -15,6 +14,7 @@ import org.junit.Test;
 import com.redsqirl.utils.FeatureList;
 import com.redsqirl.utils.OrderedFeatureList;
 import com.redsqirl.workflow.server.action.utils.HiveDictionary;
+import com.redsqirl.workflow.server.action.utils.TestUtils;
 import com.redsqirl.workflow.server.enumeration.FeatureType;
 
 public class HiveDictionaryTests {

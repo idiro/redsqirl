@@ -1,7 +1,6 @@
-package idiro.workflow.server.action;
+package com.redsqirl.workflow.server.action;
 
 import static org.junit.Assert.assertTrue;
-import idiro.workflow.server.action.utils.TestUtils;
 
 import java.rmi.RemoteException;
 import java.util.HashMap;
@@ -21,6 +20,7 @@ import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.action.HiveAudit;
 import com.redsqirl.workflow.server.action.HiveSource;
 import com.redsqirl.workflow.server.action.Source;
+import com.redsqirl.workflow.server.action.utils.TestUtils;
 import com.redsqirl.workflow.server.connect.HiveInterface;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 
