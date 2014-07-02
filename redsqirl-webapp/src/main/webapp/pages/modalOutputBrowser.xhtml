@@ -48,9 +48,10 @@
 	<a4j:jsFunction name="changePathModalOutput" action="#{canvasModalBean.outputTab.fileSystem.changePath}" />
 
 	<h:outputText value="#{messages.label_path}" />
-	<h:inputText id="pathDataOutputBrowser" label="Path" value="#{canvasModalBean.outputTab.fileSystem.path}" maxlength="255" style="width:395px;" />
+	<h:inputText id="pathDataOutputBrowser" label="Path" value="#{canvasModalBean.outputTab.fileSystem.path}" 
+	       maxlength="255" style="width:395px;" onkeypress="return enableEnterKey(event, 'changePathModalOutputBtn');" />
 	
-	<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.changePath}" reRender="dataOutputBrowser">
+	<a4j:commandLink id="changePathModalOutputBtn" action="#{canvasModalBean.outputTab.fileSystem.changePath}" reRender="dataOutputBrowser">
 		<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' />
 	</a4j:commandLink>
 	
