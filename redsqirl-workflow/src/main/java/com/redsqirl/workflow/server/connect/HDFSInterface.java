@@ -64,16 +64,16 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 	protected Logger logger = Logger.getLogger(this.getClass());
 
 	public static final String key_permission = "permission",
-	/** Owner key */
-	key_owner = "owner",
-	/** Group Key */
-	key_group = "group",
-	/** Type Key */
-	key_type = "type",
-	/** Size Key */
-	key_size = "size",
-	/** Recursive Key */
-	key_recursive = "recursive";
+			/** Owner key */
+			key_owner = "owner",
+			/** Group Key */
+			key_group = "group",
+			/** Type Key */
+			key_type = "type",
+			/** Size Key */
+			key_size = "size",
+			/** Recursive Key */
+			key_recursive = "recursive";
 	/** max allowed history */
 	public static final int historyMax = 50;
 	/** Default path preference */
@@ -166,18 +166,24 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 	@Override
 	public boolean goTo(String path) throws RemoteException {
 		boolean ok = false;
-		HdfsFileChecker fCh = new HdfsFileChecker(path);
-		if (fCh.isDirectory() || fCh.isFile()) {
-			while (history.size() - 1 > cur) {
-				history.remove(history.size() - 1);
+		if(path != null && !path.isEmpty()){
+			try{
+			HdfsFileChecker fCh = new HdfsFileChecker(path);
+			if (fCh.isDirectory() || fCh.isFile()) {
+				while (history.size() - 1 > cur) {
+					history.remove(history.size() - 1);
+				}
+				history.add(new Path(path));
+				++cur;
+				while (history.size() > historyMax) {
+					history.remove(0);
+					--cur;
+				}
+				ok = true;
 			}
-			history.add(new Path(path));
-			++cur;
-			while (history.size() > historyMax) {
-				history.remove(0);
-				--cur;
+			}catch(Exception e){
+				logger.debug(e.getMessage(),e);
 			}
-			ok = true;
 		}
 		// fCh.close();
 		return ok;
@@ -1286,5 +1292,5 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 	public List<String> displaySelect(int maxToRead) throws RemoteException {
 		return select(getPath(),",", maxToRead);
 	}
-	
+
 }
