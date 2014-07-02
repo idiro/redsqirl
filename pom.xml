@@ -96,16 +96,7 @@
 			</extension>
 		</extensions>
 	</build>
-	<dependencies>
-		<dependency>
-			<groupId>idiro</groupId>
-			<artifactId>redsqirl-webapp</artifactId>
-			<version>0.1-SNAPSHOT</version>
-			<type>pom</type>
-			<scope>compile</scope>
-		</dependency>
-	</dependencies>
-	<!-- <reporting> <plugins> <plugin> <groupId>org.apache.maven.plugins</groupId> 
+		<!-- <reporting> <plugins> <plugin> <groupId>org.apache.maven.plugins</groupId> 
 		<artifactId>maven-project-info-reports-plugin</artifactId> <version>2.6</version> 
 		</plugin> </plugins> </reporting> -->
 </project>

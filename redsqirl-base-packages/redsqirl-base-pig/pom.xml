@@ -18,7 +18,7 @@
         <pck-repo>${basedir}/src/main/pck-repo</pck-repo>
         <target.pck-repo>${basedir}/target/pck-repo-${project.artifactId}-${project.version}</target.pck-repo>
     </properties>
-    
+
     <parent>
         <groupId>idiro</groupId>
         <artifactId>redsqirl-base-packages</artifactId>
