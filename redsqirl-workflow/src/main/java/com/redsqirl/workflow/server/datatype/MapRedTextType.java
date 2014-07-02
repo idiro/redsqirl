@@ -280,7 +280,8 @@ public class MapRedTextType extends MapRedDir {
 				}
 
 				FeatureList fl = generateFeaturesMap(getChar(getProperty(key_delimiter)));
-
+				features = fl;
+				
 				String error = null;
 				String header = getProperty(key_header);
 				if (header != null && !header.isEmpty()) {
