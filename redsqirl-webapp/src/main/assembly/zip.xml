@@ -4,12 +4,28 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <baseDirectory>..</baseDirectory>
   <formats>
-    <format>zip</format>
+    <format>tar.gz</format>
   </formats>
   <fileSets>
     <fileSet>
-      <directory>${dist}</directory>
-      <outputDirectory>${project.artifactId}</outputDirectory>
+      <directory>${dist}/bin</directory>
+      <outputDirectory>${project.artifactId}/bin</outputDirectory>
+      <includes>
+      	<include>*.sh</include>
+      </includes>
+      <fileMode>0755</fileMode>
+    </fileSet>
+    <fileSet>
+      <directory>${dist.war}</directory>
+      <outputDirectory>${project.artifactId}/war</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>${dist.lib}</directory>
+      <outputDirectory>${project.artifactId}/lib</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>${dist.conf}</directory>
+      <outputDirectory>${project.artifactId}/conf</outputDirectory>
     </fileSet>
   </fileSets>
 </assembly>
