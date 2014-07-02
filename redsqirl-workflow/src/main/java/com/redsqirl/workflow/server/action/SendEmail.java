@@ -1,6 +1,5 @@
 package com.redsqirl.workflow.server.action;
 
-
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.LinkedHashMap;
@@ -44,7 +43,7 @@ public class SendEmail extends DataflowAction {
 	/**
 	 * entries
 	 */
-	protected Map<String, DFELinkProperty> input;
+	protected static Map<String, DFELinkProperty> input;
 	
 	/**
 	 * Choose the email, subject and message.
@@ -71,7 +70,7 @@ public class SendEmail extends DataflowAction {
 		page1 = addPage(LanguageManagerWF.getText("email.page1.title"),
 				LanguageManagerWF.getText("email.page1.legend"), 1);
 		
-		String email = WorkflowPrefManager.getUserProperty(WorkflowPrefManager.user_email);
+		String email = WorkflowPrefManager.getUserProperty(WorkflowPrefManager.user_email,"");
 		
 		destinataryInt = new InputInteraction(
 				key_destinatary,
@@ -119,11 +118,9 @@ public class SendEmail extends DataflowAction {
 	 */
 	protected void init() throws RemoteException {
 		if (input == null) {
-			List<Class<? extends DFEOutput>> l = new LinkedList<Class<? extends DFEOutput>>();
-			l.add(HiveTypePartition.class);
-			l.add(MapRedTextType.class);
 			Map<String, DFELinkProperty> in = new LinkedHashMap<String, DFELinkProperty>();
-			in.put(key_input, new DataProperty(l, 1, 1));
+			in.put(key_input, new DataProperty(new LinkedList<Class<? extends DFEOutput>>(), 
+					0, Integer.MAX_VALUE));
 			input = in;
 		}
 
