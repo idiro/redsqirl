@@ -1450,15 +1450,21 @@
 							<div id="tabsFooter">
 								<ul class="ulCssCanvasFooter">
 
-									<ui:repeat value="#{configureTabsBean.tabs}" var="tab"
-										varStatus="status">
+									<ui:repeat value="#{configureTabsBean.tabs}" var="tab" varStatus="status">
 										<li class="locked"><a href="#tabFooter-#{tab}">#{tab}</a></li>
 									</ui:repeat>
+									
+									<h:form>
+									
 									<a4j:region>
 										<a4j:commandButton image="../image/icons/button-property.gif" title="#{messages.label_property_button}"
-											onclick="#{rich:component('modalConfigureFooterTabs')}.show();document.getElementById('helpmain_actfooter').click();"
+											action="#{configureTabsBean.openCanvasScreen}"
+											oncomplete="#{rich:component('modalConfigureFooterTabs')}.show();document.getElementById('helpmain_actfooter').click();"
 											style="border: hidden;width:22px;vertical-align:middle;" styleClass="configureFooterButton"/>
 									</a4j:region>
+									
+									</h:form>
+									
 								</ul>
 
 								<span id="buttonsTabsFooter" class="spanButtons">
@@ -1688,8 +1694,8 @@
 		</rich:modalPanel>
 	</a4j:region>
 
-	<a4j:region renderRegionOnly="true">
-		<rich:modalPanel id="modalConfigureFooterTabs" width="630" height="420" style="overflow:auto;" resizeable="false" styleClass="noMaskClass">
+	<a4j:region>
+		<rich:modalPanel id="modalConfigureFooterTabs" width="800" height="420" style="overflow:auto;" resizeable="false" styleClass="noMaskClass">
 
 			<f:facet name="header">Configuration</f:facet>
 			<f:facet name="controls">

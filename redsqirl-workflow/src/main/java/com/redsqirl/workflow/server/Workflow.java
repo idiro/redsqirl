@@ -142,54 +142,55 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		String error = "";
 		File menuDir = new File(WorkflowPrefManager.getPathiconmenu());
 		File[] children = menuDir.listFiles(new FileFilter() {
-
 			@Override
 			public boolean accept(File pathname) {
 				return !pathname.getName().startsWith(".");
 			}
 		});
+
 		menuWA = new LinkedHashMap<String, List<String[]>>();
 		Map<String, String> nameWithClass;
 		try {
 			nameWithClass = getAllWANameWithClassName();
+			String nameMenu = "";
 
 			for (int i = 0; i < children.length; ++i) {
 				if (children[i].isFile()) {
 					LinkedList<String[]> new_list = new LinkedList<String[]>();
-					BufferedReader br = new BufferedReader(new FileReader(
-							children[i]));
+					BufferedReader br = new BufferedReader(new FileReader(children[i]));
 					String line;
 					while ((line = br.readLine()) != null) {
 						try {
 							if (!line.isEmpty() && !line.startsWith("#")) {
-								if (nameWithClass.get(line) != null) {
-									DataFlowElement dfe = (DataFlowElement) Class
-											.forName(nameWithClass.get(line))
-											.newInstance();
 
-									String[] parameters = new String[2];
-									parameters[0] = line;
-									parameters[1] = dfe.getImage();
-									new_list.add(parameters);
-								} else {
-									logger.warn("unknown workflow action '"
-											+ line + "'");
+								if(line.startsWith("menu:")){
+									nameMenu = line.split(":")[1];
+									new_list = new LinkedList<String[]>();
+									menuWA.put(nameMenu, new_list);
+								}else{
+									if (nameWithClass.get(line) != null) {
+										DataFlowElement dfe = (DataFlowElement) Class.forName(nameWithClass.get(line)).newInstance();
+										String[] parameters = new String[2];
+										parameters[0] = line;
+										parameters[1] = dfe.getImage();
+										new_list.add(parameters);
+									} else {
+										logger.warn("unknown workflow action '"	+ line + "'");
+									}
 								}
+
 							}
 						} catch (Exception e) {
-							error = LanguageManagerWF.getText(
-									"workflow.loadclassfail",
-									new Object[] { line });
+							error = LanguageManagerWF.getText("workflow.loadclassfail",	new Object[] { line });
 						}
 					}
 					br.close();
-					menuWA.put(children[i].getName(), new_list);
+					//menuWA.put(children[i].getName(), new_list);
 				}
 			}
 
 		} catch (Exception e) {
-			error += "\n"
-					+ LanguageManagerWF.getText("workflow.loadclassexception");
+			error += "\n" + LanguageManagerWF.getText("workflow.loadclassexception");
 		}
 
 		if (error.isEmpty()) {
@@ -330,7 +331,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				ans.put(key, 
 						new String[]{LocalFileSystem.relativize(curPath, help.get(key)[0]),
 						LocalFileSystem.relativize(curPath, help.get(key)[1])}
-				);
+						);
 			} catch (Exception e) {
 				logger.error(e.getMessage());
 				logger.error("Error Getting relative paths for Help");
@@ -353,17 +354,17 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 		try {
 			FileUtils.cleanDirectory(menuDir);
+			File file = new File(menuDir.getAbsolutePath() + "/icon_menu.txt" );
+			PrintWriter s = new PrintWriter(file);
 
 			for (Entry<String, List<String[]>> e : menuWA.entrySet()) {
-				File file = new File(menuDir.getAbsolutePath() + "/"
-						+ e.getKey());
-
-				PrintWriter s = new PrintWriter(file);
+				s.println("menu:" + e.getKey());
 				for (String[] string : e.getValue()) {
 					s.println(string[0]);
 				}
-				s.close();
 			}
+			s.close();
+
 		} catch (Exception e) {
 			error += "\n" + LanguageManagerWF.getText("workflow.saveMenuFail");
 		}
@@ -478,13 +479,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				Collection<DFEOutput> outData = cur.getDFEOutput().values();
 				Map<String, List<DataFlowElement>> outComp = cur
 						.getOutputComponent();
-				
+
 				boolean lastElement = outAllComp.size() == 0;
 				Iterator<DataFlowElement> itE2 = outAllComp.iterator();
 				while(itE2.hasNext() && !lastElement){
 					lastElement = !elsIn.contains(itE2.next());
 				}
-				
+
 				if (lastElement) {
 					// Element at the end of what need to run
 					// Check if one element buffered/recorded exist or not
@@ -911,11 +912,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			for (FileStatus stat : fsA) {
 				if (pathToRemove.size() < numberToRemove) {
 					pathToRemove
-							.put(stat.getPath(), stat.getModificationTime());
+					.put(stat.getPath(), stat.getModificationTime());
 				} else if (min > stat.getModificationTime()) {
 					pathToRemove.remove(pathMin);
 					pathToRemove
-							.put(stat.getPath(), stat.getModificationTime());
+					.put(stat.getPath(), stat.getModificationTime());
 				}
 				if (min > stat.getModificationTime()) {
 					min = stat.getModificationTime();
@@ -1064,7 +1065,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				getElement(id).setPosition(x, y);
 				error = getElement(id).readValuesXml(
 						((Element) compCur)
-								.getElementsByTagName("interactions").item(0));
+						.getElementsByTagName("interactions").item(0));
 			}
 
 			// Link and data
@@ -1332,7 +1333,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 * @throws RemoteException
 	 */
 	public String removeElement(String componentId) throws RemoteException,
-			Exception {
+	Exception {
 		logger.debug("remove element: " + componentId);
 		String error = null;
 		DataFlowElement dfe = getElement(componentId);
@@ -1511,7 +1512,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 */
 	public String removeLink(String outName, String componentIdOut,
 			String inName, String componentIdIn, boolean force)
-			throws RemoteException {
+					throws RemoteException {
 		String error = null;
 		DataFlowElement out = getElement(componentIdOut);
 		DataFlowElement in = getElement(componentIdIn);
