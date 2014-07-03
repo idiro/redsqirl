@@ -1,4 +1,4 @@
-package idm.dynamictable;
+package com.redsqirl.dynamictable;
 
 import java.util.LinkedList;
 import java.util.List;

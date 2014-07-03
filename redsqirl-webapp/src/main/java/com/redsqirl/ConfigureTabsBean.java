@@ -16,6 +16,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 
+import com.redsqirl.dynamictable.SelectableRow;
+import com.redsqirl.dynamictable.SelectableRowFooter;
+import com.redsqirl.dynamictable.SelectableTable;
+import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
 
 public class ConfigureTabsBean extends BaseBean implements Serializable {
