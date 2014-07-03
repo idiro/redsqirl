@@ -12,6 +12,7 @@ import com.redsqirl.workflow.server.AppendListInteraction;
 import com.redsqirl.workflow.server.DataProperty;
 import com.redsqirl.workflow.server.InputInteraction;
 import com.redsqirl.workflow.server.Page;
+import com.redsqirl.workflow.server.datatype.MapRedCtrlATextType;
 import com.redsqirl.workflow.server.datatype.MapRedTextType;
 import com.redsqirl.workflow.server.enumeration.FeatureType;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
@@ -114,7 +115,7 @@ public class PigAnonymise extends PigElement {
 		input = new LinkedHashMap<String, DFELinkProperty>();
 		input.put(key_input, new DataProperty(MapRedTextType.class, 1,
 				1));
-		input.put(key_index_map, new DataProperty(MapRedTextType.class,
+		input.put(key_index_map, new DataProperty(MapRedCtrlATextType.class,
 				0, 1));
 	}
 	
@@ -343,7 +344,7 @@ public class PigAnonymise extends PigElement {
 		if(error == null){
 			
 			if (output.get(key_output_index) == null) {
-				output.put(key_output_index, new MapRedTextType());
+				output.put(key_output_index, new MapRedCtrlATextType());
 			}
 			try {
 				FeatureList fl = new OrderedFeatureList();
