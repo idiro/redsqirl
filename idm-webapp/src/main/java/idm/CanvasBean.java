@@ -1,6 +1,5 @@
 package idm;
 
-import idiro.utils.FeatureList;
 import idiro.utils.LocalFileSystem;
 import idiro.workflow.server.connect.interfaces.DataFlowInterface;
 import idiro.workflow.server.enumeration.SavingState;

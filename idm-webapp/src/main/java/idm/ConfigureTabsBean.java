@@ -1,6 +1,10 @@
 package idm;
 
 import idiro.workflow.server.interfaces.DataFlow;
+import idm.dynamictable.SelectableRow;
+import idm.dynamictable.SelectableRowFooter;
+import idm.dynamictable.SelectableTable;
+import idm.useful.MessageUseful;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -14,6 +18,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 
@@ -26,16 +31,18 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	private static final long serialVersionUID = 4626482566525824607L;
 
 	protected Map<String, List<String[]>> menuWA;
-	private String tabName;
-	private String selected;
 	private Map<String,String> allWANameWithClassName = null;
-	private List<String> menuActions;
-	private String[] items;
-	
+	private LinkedList<String> menuActions;
+	private List<String> tabs;
+	private LinkedList<String> columnIds;
+	private LinkedList<String> target;
+	private SelectableTable tableGrid = new SelectableTable();
+	private Integer index;
+
 	private static Logger logger = Logger.getLogger(ConfigureTabsBean.class);
 
 	//@PostConstruct
-	public void openCanvasScreen()  {
+	public void openCanvasScreen() {
 		try {
 			if (getworkFlowInterface().getWorkflow("canvas0") == null) {
 				getworkFlowInterface().addWorkflow("canvas0");
@@ -48,9 +55,24 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 				}
 				getworkFlowInterface().removeWorkflow("canvas0");
 			}
-			
+
 			mountMenuActions();
-			
+
+			setTabs(new LinkedList<String>(getMenuWA().keySet()));
+
+			setColumnIds(new LinkedList<String>());
+			getColumnIds().add("Name");
+			setTableGrid(new SelectableTable(columnIds));
+
+			for (String name : getMenuWA().keySet()) {
+				String[] value = new String[1];
+				value[0] = name;
+				retrieveItems(name);
+				getTableGrid().getRows().add(new SelectableRowFooter(value, getMenuActions(), getTarget()));
+			}
+
+			setIndex(null);
+
 		} catch (RemoteException e1) {
 			e1.printStackTrace();
 
@@ -59,24 +81,12 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 		}
 	}
 
-	public List<String> getTabs() {
-		return new ArrayList<String>(getMenuWA().keySet());
-	}
-
 	public void mountMenuActions() throws RemoteException, Exception {
-
 		logger.info("getMenuActions");
-
-		List<String> result = new ArrayList<String>();
-		
-		/*if (allWANameWithClassName == null) {
-			openCanvasScreen();
-		}*/
-		
+		LinkedList<String> result = new LinkedList<String>();
 		for (Entry<String, String> e : allWANameWithClassName.entrySet()) {
 			result.add(e.getKey());
 		}
-		
 		setMenuActions(result);
 	}
 
@@ -87,101 +97,149 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 		return menuWA;
 	}
 
-	public void mountItems() {
-		if (selected != null && !"".equals(selected)) {
-			List<String[]> temp = new ArrayList<String[]>();
-			for (int i = 0; i < items.length; ++i) {
-				temp.add(new String[] { items[i] });
+	public void retrieveItems() throws RemoteException, Exception {
+		logger.info("retrieveItems");
+		String selectedTab = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("selected");
+		if(selectedTab != null){
+			if(selectedTab.equals("new")){
+				if(getTableGrid().getRows().size() > 0){
+					setIndex(getTableGrid().getRows().size()-1);
+				}
+			}else{
+				setIndex(Integer.parseInt(selectedTab));
 			}
-			getMenuWA().put(selected, temp);
 		}
 	}
 
-	public void retrieveItems() throws RemoteException, Exception {
-		
-		logger.info("retrieveItems");
-		String selectedTab = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("selected");
-		
-		setSelected(selectedTab);
-		
+	public SelectableRowFooter getCurrentFooterMenu(){
+		if(index != null && tableGrid.getRows().size() > index){
+			return (SelectableRowFooter) tableGrid.getRows().get(index);
+		}
+		setIndex(null);
+		return null;
+	}
+
+	public void retrieveItems(String selectedTab) throws RemoteException, Exception {
+
 		String[] items = new String[] {};
 		if (getMenuWA().containsKey(selectedTab)) {
-			
+
 			mountMenuActions();
-			
+
 			items = new String[getMenuWA().get(selectedTab).size()];
+			target = new LinkedList<String>();
 
 			for (int i = 0; i < items.length; ++i) {
 				items[i] = getMenuWA().get(selectedTab).get(i)[0];
+				target.add(items[i]);
 				if(getMenuActions() != null && getMenuActions().contains(items[i])){
 					getMenuActions().remove(items[i]);
 				}
 			}
 		}
-		setItems(items);
+		setTarget(target);
 	}
 
 	public void deleteTab() {
-		getMenuWA().remove(FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("selected"));
-		setTabName("");
+		for (Iterator<SelectableRow> iterator = getTableGrid().getRows().iterator(); iterator.hasNext();) {
+			SelectableRow selectableRow = (SelectableRow) iterator.next();
+			if(selectableRow.isSelected()){
+				iterator.remove();
+			}
+		}
+		setIndex(null);
 	}
 
 	public void createTab() {
-		getMenuWA().put(tabName, new ArrayList<String[]>());
-		setTabName("");
+		String[] value = new String[1];
+		value[0] = "";
+		getTableGrid().getRows().add(new SelectableRowFooter(value, getMenuActions()));
 	}
 
-	public void changeTabName() {
-		String oldTabName = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("oldName");
-		List<String[]> list = getMenuWA().get(oldTabName);
-		getMenuWA().remove(oldTabName);
-		getMenuWA().put(selected, list);
-	}
+	public String checkSaveTabs() {
 
-	public String getTabName() {
-		return tabName;
-	}
+		String error = null;
+		String regex = "[a-z]([a-z0-9_]*)";
 
-	public void setTabName(String tabName) {
-		this.tabName = tabName;
-	}
-
-	public void saveTabs() throws RemoteException {
-		
-		mountItems();
-		
-		try {
-			if (getworkFlowInterface().getWorkflow("canvas0") == null) {
-				getworkFlowInterface().addWorkflow("canvas0");
-				DataFlow wf = getworkFlowInterface().getWorkflow("canvas0");
-				Map<String,List<String>> mapMenu = new LinkedHashMap<String,List<String>>();
-				for(Entry<String, List<String[]>> cur: getMenuWA().entrySet()){
-					List<String> l = new LinkedList<String>();
-					Iterator<String[]> it = cur.getValue().iterator();
-					while(it.hasNext()){
-						l.add(it.next()[0]);
-					}
-					mapMenu.put(cur.getKey(),l);
-				}
-				wf.loadMenu(mapMenu);
-				selected = null;
-				setTabName("");
-				wf.saveMenu();
-				menuWA = wf.getRelativeMenu(getCurrentPage());
-				getworkFlowInterface().removeWorkflow("canvas0");
+		//The field Name can not be blank
+		for (SelectableRow selectableRow : getTableGrid().getRows()) {
+			if(selectableRow.getRow()[0].equals("") || selectableRow.getRow()[0].isEmpty()){
+				error = getMessageResources("msg_error_save_footer");
+				break;
 			}
-		} catch (RemoteException e1) {
-			e1.printStackTrace();
+			
+			//The field Name can not contain special character.
+			if (!selectableRow.getRow()[0].matches(regex)) {
+				error = getMessageResources("msg_error_save_footer_name");
+				break;
+			}
 
-		} catch (Exception e) {
-			e.printStackTrace();
+			//The field Name already exists
+			for (SelectableRow selectableRow2 : getTableGrid().getRows()) {
+				if(!selectableRow.equals(selectableRow2) && selectableRow.getRow()[0].equalsIgnoreCase(selectableRow2.getRow()[0])){
+					error = getMessageResources("msg_error_save_footer_same");
+					break;
+				}
+			}
+
 		}
+
+		return error;
 	}
-	
+
+	public void saveTabs() {
+
+		String error = checkSaveTabs();
+
+		if(error == null){
+
+			try {
+				if (getworkFlowInterface().getWorkflow("canvas0") == null) {
+					getworkFlowInterface().addWorkflow("canvas0");
+					DataFlow wf = getworkFlowInterface().getWorkflow("canvas0");
+					Map<String,List<String>> mapMenu = new LinkedHashMap<String,List<String>>();
+
+					for (SelectableRow selectableRow : getTableGrid().getRows()) {
+
+						List<String[]> temp = new ArrayList<String[]>();
+						for (int i = 0; i < ((SelectableRowFooter) selectableRow).getTarget().size(); ++i) {
+							temp.add(new String[] { ((SelectableRowFooter) selectableRow).getTarget().get(i) });
+						}
+						getMenuWA().put(selectableRow.getRow()[0], temp);
+
+						List<String> l = new LinkedList<String>();
+						Iterator<String[]> it = getMenuWA().get(selectableRow.getRow()[0]).iterator();
+						while(it.hasNext()){
+							l.add(it.next()[0]);
+						}
+						mapMenu.put(selectableRow.getRow()[0],l);
+					}
+
+					wf.loadMenu(mapMenu);
+					wf.saveMenu();
+					menuWA = wf.getRelativeMenu(getCurrentPage());
+					getworkFlowInterface().removeWorkflow("canvas0");
+
+					setTabs(new LinkedList<String>(getMenuWA().keySet()));
+
+				}
+			} catch (RemoteException e1) {
+				e1.printStackTrace();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}else{
+			MessageUseful.addErrorMessage(error);
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
+		}
+
+	}
+
 	public void cancelChanges() {
 		menuWA = null;
-		selected = null;
-		setTabName("");
 	}
 
 	public List<Entry<String, List<String[]>>> getMenuWAList() throws IOException {
@@ -192,34 +250,53 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 		}
 		return list;
 	}
-	
 
-	/*public void setSelected() {
-		selected = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("selected");
-	}*/
-
-	public void setSelected(String selected) {
-		this.selected = selected;
-	}
-
-	public String getSelected() {
-		return selected;
-	}
-
-	public List<String> getMenuActions() {
+	public LinkedList<String> getMenuActions() {
 		return menuActions;
 	}
 
-	public void setMenuActions(List<String> menuActions) {
+	public void setMenuActions(LinkedList<String> menuActions) {
 		this.menuActions = menuActions;
 	}
 
-	public String[] getItems() {
-		return items;
+	public SelectableTable getTableGrid() {
+		return tableGrid;
 	}
 
-	public void setItems(String[] items) {
-		this.items = items;
+	public void setTableGrid(SelectableTable tableGrid) {
+		this.tableGrid = tableGrid;
+	}
+
+	public LinkedList<String> getColumnIds() {
+		return columnIds;
+	}
+
+	public void setColumnIds(LinkedList<String> columnIds) {
+		this.columnIds = columnIds;
+	}
+
+	public LinkedList<String> getTarget() {
+		return target;
+	}
+
+	public void setTarget(LinkedList<String> target) {
+		this.target = target;
+	}
+
+	public Integer getIndex() {
+		return index;
+	}
+
+	public void setIndex(Integer index) {
+		this.index = index;
+	}
+
+	public List<String> getTabs() {
+		return tabs;
+	}
+
+	public void setTabs(List<String> tabs) {
+		this.tabs = tabs;
 	}
 
 }
