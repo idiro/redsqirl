@@ -631,7 +631,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 			}
 		}
 
-		if (parallel != null && select.contains("COUNT_DISTINCT")) {
+		if (parallel != null && !parallel.isEmpty() && select.contains("COUNT_DISTINCT")) {
 			select += " PARALLEL " + parallel;
 		}
 

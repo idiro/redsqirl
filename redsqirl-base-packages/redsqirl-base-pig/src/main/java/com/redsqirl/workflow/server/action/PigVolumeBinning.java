@@ -76,7 +76,11 @@ public class PigVolumeBinning extends PigBinning{
 			
 			String group = getNextName();
 			
-			String select = group + " = GROUP "+loader+" ALL PARALLEL "+parallelInt.getValue()+";\n";
+			String select = group + " = GROUP "+loader+" ALL";
+			if (parallelInt.getValue() != null && !parallelInt.getValue().isEmpty()){
+				select += " PARALLEL "+parallelInt.getValue();
+			}
+			select += ";\n";
 			
 			String tmpOrder = getNextName();
 			String nameOutput = getNextName();
