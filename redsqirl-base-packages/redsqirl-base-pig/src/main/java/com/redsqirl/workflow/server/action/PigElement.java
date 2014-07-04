@@ -147,7 +147,7 @@ public abstract class PigElement extends DataflowAction {
 				PigLanguageManager.getText("pig.parallel_interaction.title"),
 				PigLanguageManager.getText("pig.parallel_interaction.legend"), 
 				placeDelimiterInPage, 0);
-		parallelInt.setRegex("^[1-9]\\d*$");
+		parallelInt.setRegex("^$|^[1-9]\\d*$");
 		parallelInt.setValue(pigParallel);
 
 		delimiterOutputInt = new InputInteraction(
@@ -258,7 +258,7 @@ public abstract class PigElement extends DataflowAction {
 			toWrite += (new AuditGenerator()).getQuery(
 					getDFEOutput().get(key_output), 
 					getDFEOutput().get(key_output_audit), 
-					Integer.valueOf(parallelInt.getValue()),
+					parallelInt.getValue(),
 					getCurrentName());
 		}
 		boolean ok = toWrite != null;

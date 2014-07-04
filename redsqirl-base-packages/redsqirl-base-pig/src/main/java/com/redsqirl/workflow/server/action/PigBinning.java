@@ -101,7 +101,13 @@ public abstract class PigBinning extends PigElement{
 				auditBin = "AUDITBIN";
 		String query = "";
 		if(auditInt.getValues().size() > 0){
-			String group = groupBin + " = group " +nameOutput+" by "+getNewFeatureName()+" PARALLEL "+parallelInt.getValue()+";\n";
+			String group = groupBin + " = group " +nameOutput+" by "+getNewFeatureName();
+			
+			if (parallelInt.getValue() != null && !parallelInt.getValue().isEmpty()){
+				group += " PARALLEL "+parallelInt.getValue();
+			}
+			group += ";\n";
+			
 			String generate = "FOREACH "+ groupBin+" GENERATE \n"
 					+"     $0 AS BIN"
 					+",\n     COUNT_STAR($1."+featureBin.getValue()+") AS BIN_SIZE"
