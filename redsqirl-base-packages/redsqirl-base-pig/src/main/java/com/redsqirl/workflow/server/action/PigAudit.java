@@ -118,7 +118,7 @@ public class PigAudit extends DataflowAction {
 		String toWrite = (new AuditGenerator()).getQuery(
 				getDFEInput().get(key_input).get(0), 
 				getDFEOutput().get(key_output), 
-				Integer.valueOf(parallelInt.getValue()));
+				parallelInt.getValue());
 		boolean ok = toWrite != null;
 		if(ok){
 			logger.info("Content of "+files[0].getName()+": "+toWrite);

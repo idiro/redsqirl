@@ -78,7 +78,8 @@ public class SendEmail extends DataflowAction {
 				LanguageManagerWF.getText("email.destinatary_interaction.legend"), 
 				0, 0);
 		destinataryInt.setValue(email);
-		destinataryInt.setRegex("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$");
+		destinataryInt.setRegex("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+" +
+				"(,[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+)*$");
 		
 		ccInt = new InputInteraction(
 				key_cc,
@@ -86,7 +87,8 @@ public class SendEmail extends DataflowAction {
 				LanguageManagerWF.getText("email.cc_interaction.legend"), 
 				1, 0);
 		ccInt.setValue("");
-		ccInt.setRegex("^$|^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$");
+		ccInt.setRegex("^$|^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+" +
+				"(,[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+)*$");
 		
 		subjectInt = new InputInteraction(
 				key_subject,

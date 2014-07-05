@@ -13,8 +13,8 @@ import com.redsqirl.workflow.server.AppendListInteraction;
 import com.redsqirl.workflow.server.DataProperty;
 import com.redsqirl.workflow.server.InputInteraction;
 import com.redsqirl.workflow.server.Page;
+import com.redsqirl.workflow.server.datatype.MapRedCtrlATextType;
 import com.redsqirl.workflow.server.datatype.MapRedTextType;
-import com.redsqirl.workflow.server.enumeration.FeatureType;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
@@ -115,7 +115,7 @@ public class PigUnanonymise extends PigElement {
 		input = new LinkedHashMap<String, DFELinkProperty>();
 		input.put(key_input, new DataProperty(MapRedTextType.class, 1,
 				1));
-		input.put(key_index_map, new DataProperty(MapRedTextType.class,
+		input.put(key_index_map, new DataProperty(MapRedCtrlATextType.class,
 				0, 1,getIndexFeatures()));
 	}
 	
@@ -138,7 +138,7 @@ public class PigUnanonymise extends PigElement {
 		String query = null;
 		if (getDFEInput() != null) {
 			
-			FeatureType featureType = getInFeatures().getFeatureType(featuresInt.getValues().get(0));
+			//FeatureType featureType = getInFeatures().getFeatureType(featuresInt.getValues().get(0));
 			
 			DFEOutput in = getDFEInput().get(key_input).get(0);
 			logger.debug("In and out...");

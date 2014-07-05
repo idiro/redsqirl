@@ -100,10 +100,10 @@ public class AuditGenerator {
 		return function;
 	}
 
-	public String getQuery(DFEOutput in, DFEOutput audit_out, Integer parallel)throws RemoteException {
+	public String getQuery(DFEOutput in, DFEOutput audit_out, String parallel)throws RemoteException {
 		return getQuery(in,audit_out,parallel,null);
 	}
-	public String getQuery(DFEOutput in, DFEOutput audit_out, Integer parallel,String loader)
+	public String getQuery(DFEOutput in, DFEOutput audit_out, String parallel,String loader)
 			throws RemoteException {
 		String query = null;
 		if (in != null) {
@@ -143,8 +143,11 @@ public class AuditGenerator {
 					break;
 				}
 			}
-			String select = "G_ALL = group " + loader + " ALL PARALLEL "
-					+ parallel + ";\n";
+			String select = "G_ALL = group " + loader + " ALL";
+			if (parallel != null && !parallel.isEmpty()){
+				select += " PARALLEL " + parallel;
+			}
+			select += ";\n";
 
 			select += "GLOB_TMP = FOREACH G_ALL{\n";
 			Iterator<String> stringFeatsIt = stringFeats.iterator();

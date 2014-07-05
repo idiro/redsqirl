@@ -2,18 +2,26 @@ package com.redsqirl.workflow.server;
 
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.Properties;
+import java.util.Map.Entry;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 //import java.util.prefs.Preferences;
 
 import com.idiro.BlockManager;
 import com.idiro.hadoop.NameNodeVar;
+import com.redsqirl.workflow.server.interfaces.DataFlow;
+import com.redsqirl.workflow.utils.LanguageManagerWF;
+import com.redsqirl.workflow.utils.PackageManager;
 
 /**
  * Software preference manager.
@@ -40,8 +48,8 @@ public class WorkflowPrefManager extends BlockManager {
 	/**
 	 * System Preferences
 	 */
-//	private final static Preferences systemPrefs = Preferences
-//			.systemNodeForPackage(WorkflowPrefManager.class);
+	//	private final static Preferences systemPrefs = Preferences
+	//			.systemNodeForPackage(WorkflowPrefManager.class);
 
 	public static String
 
@@ -49,7 +57,7 @@ public class WorkflowPrefManager extends BlockManager {
 	 * RedSqirl home directory path
 	 */
 	pathSysHome = "/usr/share/redsqirl";
-	
+
 	//new Preference<String>(systemPrefs, "Path Home",
 	//		"/usr/share/redsqirl");
 
@@ -60,31 +68,31 @@ public class WorkflowPrefManager extends BlockManager {
 	pathSystemPref,
 
 	/**
-	* Path of the packages
-	*/
+	 * Path of the packages
+	 */
 	pathSysPackagePref,
 	/**
-	* System preference file
-	*/
+	 * System preference file
+	 */
 	pathSysCfgPref,
 	/**
-	* System lang preference file.These properties are optional and are
-	* used by the front-end to give a bit more details about user
-	* settings. For each user property, you can create a #{key}_label
-	* and a #{key}_desc property.
-	*/
+	 * System lang preference file.These properties are optional and are
+	 * used by the front-end to give a bit more details about user
+	 * settings. For each user property, you can create a #{key}_label
+	 * and a #{key}_desc property.
+	 */
 	pathSysLangCfgPref,
 
 	/**
-	* Path users folder
-	*/
+	 * Path users folder
+	 */
 	pathUsersFolder,
-	
+
 	/** 
-	* Path to the lib folder 
-	*/
+	 * Path to the lib folder 
+	 */
 	sysLibPath,
-	
+
 	/**
 	 * Path to the idiro interface path 
 	 */
@@ -153,8 +161,8 @@ public class WorkflowPrefManager extends BlockManager {
 			 */
 			pathUserHelpPref = "/packages/" + System.getProperty("user.name")
 			+ "/help";
-	
-	
+
+
 
 	// User preferences
 	/**
@@ -172,14 +180,14 @@ public class WorkflowPrefManager extends BlockManager {
 	 * User properties with specific user settings.
 	 */
 	pathUserCfgPref =  pathUserPref
-			+ "/redsqirl_user.properties",
-			/**
-			 * User lang properties. These properties are optional and are used by the
-			 * front-end to give a bit more details about user settings. For each user
-			 * property, you can create a #{key}_label and a #{key}_desc property.
-			 */
-			pathUserLangCfgPref =  pathUserPref
-					+ "/redsqirl_user_lang.properties";
+	+ "/redsqirl_user.properties",
+	/**
+	 * User lang properties. These properties are optional and are used by the
+	 * front-end to give a bit more details about user settings. For each user
+	 * property, you can create a #{key}_label and a #{key}_desc property.
+	 */
+	pathUserLangCfgPref =  pathUserPref
+	+ "/redsqirl_user_lang.properties";
 
 	/**
 	 * True if the instance is initialised.
@@ -247,28 +255,28 @@ public class WorkflowPrefManager extends BlockManager {
 	 * 
 	 */
 	private WorkflowPrefManager() {
-		
-		
-		
+
+
+
 		String path = System.getProperty("catalina.base") +
-                File.separator + "conf" + File.separator + "idiro.properties";
+				File.separator + "conf" + File.separator + "idiro.properties";
 		logger.info("Get path idiro.properties: "+path);
-		
+
 		InputStream input;
 		try {
 			input = new FileInputStream(path);
 			Properties properties = new Properties();
 			properties.load(input);
-			
+
 			pathSysHome = properties.getProperty("path_sys_home");
 		} catch (IOException e) {
 			logger.info("idiro.properties not found. Using default path_sys_home");
 			pathSysHome = "/usr/share/redsqirl";
 		}
-		
+
 		logger.info("Get path sys home: "+pathSysHome);
 		changeSysHome(pathSysHome);
-		
+
 		/*
 		pathSystemPref = pathSysHome
 			+ "/conf";
@@ -281,24 +289,24 @@ public class WorkflowPrefManager extends BlockManager {
 		pathSystemPref + "/idm_sys_lang.properties";
 =======
 			pathSystemPref + "/redsqirl_sys.properties";
-		
-		/**
-		* System lang preference file.These properties are optional and are
-		* used by the front-end to give a bit more details about user
-		* settings. For each user property, you can create a #{key}_label
-		* and a #{key}_desc property.
-		*/
-		
-		pathSysLangCfgPref = 
-		pathSystemPref + "/redsqirl_sys_lang.properties";
 
 		/**
-		* Path users folder
-		*/
+		 * System lang preference file.These properties are optional and are
+		 * used by the front-end to give a bit more details about user
+		 * settings. For each user property, you can create a #{key}_label
+		 * and a #{key}_desc property.
+		 */
+
+		pathSysLangCfgPref = 
+				pathSystemPref + "/redsqirl_sys_lang.properties";
+
+		/**
+		 * Path users folder
+		 */
 		pathUsersFolder = 
-			pathSysHome + "/users";
+				pathSysHome + "/users";
 		sysPackageLibPath = pathSysHome + "/lib/packages";
-		
+
 		String workflowLibPath = null;
 		String idiroInterfacePath = null;
 		try {
@@ -308,14 +316,14 @@ public class WorkflowPrefManager extends BlockManager {
 		} catch (RemoteException e){
 			logger.info("Error trying to read local properties");
 		}
-		
+
 		if (workflowLibPath == null || workflowLibPath.isEmpty()){
 			sysLibPath = pathSysHome + "/lib";
 		}
 		else{
 			sysLibPath = workflowLibPath;
 		}
-		
+
 		if (idiroInterfacePath == null || idiroInterfacePath.isEmpty()){
 			interfacePath = pathSysHome + "/lib/redsqirl-wf-interface-0.1-SNAPSHOT.jar";
 		}
@@ -365,6 +373,77 @@ public class WorkflowPrefManager extends BlockManager {
 			logger.debug("set permissions...");
 			home.setWritable(true, false);
 			home.setReadable(true, false);
+		}
+
+	}
+
+	public static void createUserFooter(String userName) {
+		logger.info("createUserFooter" + getPathIconMenu(userName));
+
+		File menuDir = new File(getPathIconMenu(userName));
+		File[] childrenoMenuDir = menuDir.listFiles(new FileFilter() {
+			@Override
+			public boolean accept(File pathname) {
+				return pathname.getName().equalsIgnoreCase("icon_menu.txt");
+			}
+		});
+
+		if (childrenoMenuDir.length <= 0) {
+			try {
+
+				FileUtils.cleanDirectory(menuDir);
+				File file = new File(menuDir.getAbsolutePath() + "/icon_menu.txt" );
+				PrintWriter s = new PrintWriter(file);
+
+				PackageManager p = new PackageManager();
+				List<String> listActions = p.getActions(userName);
+
+				if(listActions.contains("pig_text_source") || listActions.contains("pig_select") || 
+						listActions.contains("pig_join") || listActions.contains("pig_aggregator") || 
+						listActions.contains("pig_union") ){
+					s.println("menu:Pig");
+				}
+
+				if(listActions.contains("pig_text_source")){
+					s.println("pig_text_source");
+				}
+				if(listActions.contains("pig_select")){
+					s.println("pig_select");
+				}
+				if(listActions.contains("pig_join")){
+					s.println("pig_join");
+				}
+				if(listActions.contains("pig_aggregator")){
+					s.println("pig_aggregator");
+				}
+				if(listActions.contains("pig_union")){
+					s.println("pig_union");
+				}
+
+				if(listActions.contains("hama_logistic_regression") || listActions.contains("hama_kmeans") ||
+						listActions.contains("Page_Rank_Action") ){
+					s.println("menu:Model");
+				}
+
+				if(listActions.contains("hama_logistic_regression") ){
+					s.println("hama_logistic_regression");
+				}
+				if(listActions.contains("hama_kmeans")){
+					s.println("hama_kmeans");
+				}
+				if(listActions.contains("Page_Rank_Action")){
+					s.println("Page_Rank_Action");
+				}
+
+				s.println("menu:Utils");
+				s.println("send_email");
+				s.println("convert");
+
+				s.close();
+
+			} catch (Exception e) {
+				logger.debug("createUserFooter Error - " +  e.getMessage());
+			}
 		}
 	}
 

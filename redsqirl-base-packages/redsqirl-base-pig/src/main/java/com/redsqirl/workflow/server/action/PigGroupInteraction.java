@@ -82,7 +82,12 @@ public class PigGroupInteraction extends AppendListInteraction{
 			groupby = "GROUP "+relationName+" ALL";
 			
 		}
-		return groupby  + " PARALLEL " + parallel;
+		
+		if (parallel != null && !parallel.isEmpty()){
+			groupby += " PARALLEL " + parallel;
+		}
+		
+		return groupby;
 	}
 	/**
 	 * Receive the query that generates the features
@@ -131,7 +136,12 @@ public class PigGroupInteraction extends AppendListInteraction{
 		}
 
 		logger.debug("for each looks like : " + select);
-		return select  + " PARALLEL " + parallel;
+		
+		if (parallel != null && !parallel.isEmpty()){
+			select += " PARALLEL " + parallel;
+		}
+		
+		return select;
 
 	}
 	/**

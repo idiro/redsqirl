@@ -49,7 +49,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	/**
 	 * The list of rows of the grid file system
 	 */
-	private SelectableTable tableGrid = new SelectableTable(); 
+	private SelectableTable tableGrid = new SelectableTable();
 
 	private DataStore dataStore;
 	private List<Map<String,String>> allProps;

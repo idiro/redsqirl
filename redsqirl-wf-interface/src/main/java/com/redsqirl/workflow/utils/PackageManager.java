@@ -679,6 +679,35 @@ public class PackageManager extends UnicastRemoteObject {
 		return error;
 	}
 
+	public List<String> getActions(String user){
+		List<String> actions = new LinkedList<String>();
+		Iterator<File> packageIt = getAllPackages(user).iterator();
+		while (packageIt.hasNext()) {
+			File p = new File(packageIt.next(), action_file);
+			actions.addAll(getAction(p));
+		}
+		return actions;
+	}
+	
+	public List<String> getAction(File f){
+		List<String> actions = new LinkedList<String>();
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(f));
+			String line;
+			while ((line = br.readLine()) != null) {
+				if (line.matches("[a-zA-Z0-9_]+")) {
+					actions.add(line.trim());
+				}
+			}
+			br.close();
+		} catch (Exception e) {
+			logger.info(e.getMessage());
+			logger.info(PMLanguageManager.getText("PackageManager.failToReadFile",
+					new String[] { action_file }));
+		}
+		return actions;
+	}
+	
 	/**
 	 * Check if the file is an action
 	 * 

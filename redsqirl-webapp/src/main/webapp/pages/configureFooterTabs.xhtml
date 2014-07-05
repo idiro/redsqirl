@@ -7,39 +7,6 @@
 
 <a4j:loadBundle basename="MessagesResources" var="messages" />
 
-<script>
-	
-	var oldTabName;
-	
-	var selected;
-	
-	function showPanel(tabName){
-		oldTabName = tabName;
-		jQuery("input[id$='renameTabValue']").val(tabName);
-		Richfaces.showModalPanel('editPane');
-	}
-	
-	function getOldTabName(){
-		return oldTabName;
-	}
-
-	function checkNameFooter(){
-		
-	/* 	if(jQuery("#"+jQuery("[id$='newNameFooter']").val()).length  == 1){
-			alert("This Name is already used by the System");
-			jQuery("[id$='newNameFooter']").val('');
-			jQuery.unblockUI();
-			return false;
-		}else{ */
-			createTabJS();
-			jQuery("[id$='newNameFooter']").val('');
-		//}
-
-		
-	}
-	
-</script>
-
 <h:form>
 
 	<a4j:keepAlive beanName = "configureTabsBean"/>
@@ -49,42 +16,95 @@
 		onstop="jQuery.unblockUI();" />
 	
 	<h:panelGrid columns="2">
-		<rich:panel header="#{messages.label_tab_tabs}" style="overflow:auto;width:190px;height:300px;">
+		<rich:panel header="#{messages.label_tab_tabs}" style="overflow:auto;width:260px;height:315px;">
 			<h:panelGroup id="tabsMenu">
-				<ui:repeat value="#{configureTabsBean.tabs}" var="item">
-					<a4j:commandButton action="#{configureTabsBean.deleteTab}" type="button" value="x" reRender="tabsMenu">
-						<f:param name="selected" value="#{item}" />
-					</a4j:commandButton>
-                	<a4j:commandButton value="#{messages.button_edit}" oncomplete="showPanel('#{item}');" />
-					<a4j:commandLink action="#{configureTabsBean.retrieveItems}" value="#{item}" reRender="actionsPanel">
-						<f:param name="selected" value="#{item}" />
-					</a4j:commandLink><br></br>
-					
-				</ui:repeat>
+			
+			<table style="width:100%">
+	           	<tr style="width:100%">
+	           		<td style="width:95%">
+				
+				 <rich:dataTable id="tableNameMenuFooter" value="#{configureTabsBean.tableGrid.rows}"
+	                 var="rowItem" rowKeyVar="rowNb" width="100%" style="border:none;" 
+	                 onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+	                 enableContextMenu="false" 
+	                 onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
+	                 
+                	<rich:column style="border-bottom:0px;border-right:0px;" width="40px;">
+                        <f:facet name="header">
+                            <h:panelGrid columns="1" styleClass="">
+                            <a4j:commandLink
+                                title="Delete selected lines"
+                                action="#{configureTabsBean.deleteTab}"
+                                reRender="tableNameMenuFooter"
+                                onclick="if(!confirm('Are you sure you want to delete the selected line?')){return false;}">
+                                <img src="../image/icons/button-delete2.gif" />
+                            </a4j:commandLink>
+                            <h:selectBooleanCheckbox onclick="selectAllCheckbox(this, /tableNameMenuSelect$/);"/>
+                            </h:panelGrid>
+                        </f:facet>
+
+                        <h:selectBooleanCheckbox id="tableNameMenuSelect" value="#{rowItem.selected}">
+                            <f:selectItem itemValue="true" />
+                        </h:selectBooleanCheckbox>
+
+                    </rich:column>
+                      
+                    <rich:columns value="#{configureTabsBean.columnIds == null? canvasBean.emptyList : configureTabsBean.columnIds}" 
+                      	var="column" index="ind" style="border-bottom:0px;border-right:0px;" >
+                      	
+                      	<f:facet name="header">
+                        	<h:outputText value="#{column}" />
+                        </f:facet>
+                        <h:inputText value="#{rowItem.row[ind]}" size="10" onkeyup="nospaces(this);" />
+                        <a4j:commandButton action="#{configureTabsBean.retrieveItems}" value="..." reRender="actionsPanel">
+							<f:param name="selected" value="#{rowNb}" />
+						</a4j:commandButton>
+                       
+                   	</rich:columns>
+                
+                </rich:dataTable>
+                
+                
+                </td>
+                <td style="width:5%">
+                        		
+	            	<div style="width:100%; height:220px; border: 0px solid; overflow-x: hidden;">
+	                   	<a4j:commandButton styleClass="greenButton" style="width:40px;margin-top: 75px;" value="#{messages.button_first}" action="#{configureTabsBean.tableGrid.goFirst}" reRender="tableInteraction" />
+	                   	<br/>
+	                   	<a4j:commandButton styleClass="greenButton" style="width:40px;" value="#{messages.button_up}" action="#{configureTabsBean.tableGrid.goUp}" reRender="tableInteraction" />
+	                   	<br/>
+	                   	<a4j:commandButton styleClass="greenButton" style="width:40px;" value="#{messages.button_down}" action="#{configureTabsBean.tableGrid.goDown}" reRender="tableInteraction" />
+	                   	<br/>
+	                   	<a4j:commandButton styleClass="greenButton" style="width:40px;" value="#{messages.button_last}" action="#{configureTabsBean.tableGrid.goLast}" reRender="tableInteraction" />
+	                </div>
+             		
+             	</td>
+             </tr>
+             </table>
+				
 			</h:panelGroup>
 			
-			<br /><br />
+			<a4j:commandLink title="Add new line" action="#{configureTabsBean.createTab}" reRender="tabsMenu" oncomplete="newRetrieveItems();">
+				<img src="../image/icons/button-plus.gif" />
+			</a4j:commandLink>
 			
-			<h:outputText value="#{messages.button_new_menu}" />
-			<br />
-			<h:inputText id="newNameFooter" value="#{configureTabsBean.tabName}" maxlength="30" style="width:100px;" 
-				onkeypress="return enableEnterKey(event, 'configureTabsAddBtn');" onkeyup="nospaces(this)"/>
-			<a4j:commandButton id="configureTabsAddBtn" onclick="checkNameFooter();" type="reset" value="+" reRender="tabsMenu" />
-			<a4j:jsFunction name="createTabJS" action="#{configureTabsBean.createTab}" />
+			<a4j:jsFunction name="newRetrieveItems" action="#{configureTabsBean.retrieveItems}" reRender="actionsPanel" >
+				<f:param name="selected" value="new" />
+			</a4j:jsFunction>
 			
 		</rich:panel>
 		
-		<rich:panel id="actionsPanel" header="#{messages.label_tab_actions}" style="overflow:auto;width:390px;height:300px;" >
+		<rich:panel id="actionsPanel" header="#{messages.label_tab_actions}" style="overflow:auto;width:490px;height:315px;" >
 	   		
-	   		<rich:listShuttle sourceValue="#{configureTabsBean.menuActions}"
-	            targetValue="#{configureTabsBean.items}" var="items" listsHeight="260"
-	            sourceListWidth="110" targetListWidth="110"
-	            rendered="#{not empty configureTabsBean.selected}"
+	   		<rich:listShuttle sourceValue="#{configureTabsBean.currentFooterMenu.actions}"
+	            targetValue="#{configureTabsBean.currentFooterMenu.target}" var="items" listsHeight="275"
+	            sourceListWidth="165" targetListWidth="165"
+	            rendered="#{configureTabsBean.index != null}"
 	            copyAllControlLabel="Select all"
                       copyControlLabel="Select"
                       removeAllControlLabel="Unselect all"
-                      removeControlLabel="Unselect"> 
-	            <rich:column width="18"> 
+                      removeControlLabel="Unselect">
+	            <rich:column width="18">
 	            	<h:outputText value="#{items}" />
 	            </rich:column>
 	        </rich:listShuttle>
@@ -93,26 +113,10 @@
 
 	</h:panelGrid>
 	<h:panelGrid columns="2">
-		<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" action="#{configureTabsBean.saveTabs}" oncomplete="#{rich:component('modalConfigureFooterTabs')}.hide();reRenderFooter();"/>
+		<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" action="#{configureTabsBean.saveTabs}" oncomplete="if(#{requestScope['msnError'] == null} ){#{rich:component('modalConfigureFooterTabs')}.hide();reRenderFooter();}" reRender="msnError"/>
 		<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" action="#{configureTabsBean.cancelChanges}" onclick="#{rich:component('modalConfigureFooterTabs')}.hide()" reRender="tabsMenu, actionsPanel"/>
 	</h:panelGrid>
 
 </h:form>
-
-	<rich:modalPanel header="Rename tab" id="editPane" width="400" height="70">
-		<h:form>
-		    <h:panelGrid columns="3">
-		        <h:outputText value="NAME" />
-		        <h:inputText id="renameTabValue" value="#{configureTabsBean.selected}"
-		        	onkeypress="return enableEnterKey(event, 'configureTabsEditBtn');"/>
-		        <rich:message id="vinMsg" for="vin" />
-		    </h:panelGrid>
-		    <a4j:commandButton id="configureTabsEditBtn" styleClass="greenButton" value="#{messages.button_ok}" action="#{configureTabsBean.changeTabName}"
-		        oncomplete="#{rich:component('editPane')}.hide();" reRender="tabsMenu">
-		        <a4j:actionparam name="oldName" noEscape="true" value="getOldTabName()"/>
-		    </a4j:commandButton>
-		    <a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('editPane')}.hide();" />
-	    </h:form>
- 	</rich:modalPanel>
 
 </h:panelGrid>
