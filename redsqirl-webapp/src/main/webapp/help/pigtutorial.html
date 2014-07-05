@@ -1,0 +1,389 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
+<html>
+<head>
+  <title>Pig Tutorial</title>
+</head>
+
+<body>
+  <h1>Pig Tutorial</h1>
+
+  <h2>Goals:</h2>
+
+  <ul>
+      <li>Create Ssh Connections to remote
+    servers</li>
+
+    <li>Copying files from remote servers to
+    Hadoop File system</li>
+
+    <li>build workflows that perform queries
+    over data sets</li>
+
+    <li>Learn how to use some of the actions
+    that are available in the Pig Package</li>
+  </ul>
+
+
+  <p>The actions footer, is the little frame on the bottom left of
+  your screen. Click the green information symbol. Once the
+  configuration popup has appeared in the new tab field enter a
+  name and click the &ldquo;+&rdquo; symbol. Once the new tab has
+  been created click on the link and click the checkbox beside all
+  the pig actions and the source action and then ok.</p>
+
+  <p>The new tab that was just created should be
+  on the footer now with the actions selected</p>
+
+  <h2>Pig Workflow</h2>
+
+  <p>
+  The purpose
+  of this task is to demonstrate the &ldquo;Remote File
+  System&rdquo; functionality.</p>
+
+  <p>It will show how to connect to remote servers
+  and copying files from the remote server to the Hadoop file
+  system and to show how one would use the Pig Package to query
+  files and get results.</p>
+
+  <p>
+  On the last
+  page of every pig action there are options for the output of the
+  action such as the delimiter to use, or the output type either
+  Text or Binary. It is recommended to only use Text for the moment
+  but you can use any delimiter. The delimiter can be any non alpha
+  numeric value or an ASCII value such as &ldquo;#1&rdquo; which in
+  ASCII value is &ldquo;\001&rdquo;.</p>
+
+  
+
+  <ul>
+    <li>Click on Remote File System</li>
+  </ul>
+
+  <ul>
+    <li>Click the plus symbol to create a new
+    ssh connection to a remote server</li>
+  </ul>
+
+  <ul>
+    <li>Host : keane</li>
+
+    <li>Port : (do not
+    select)</li>
+
+    <li>Save (do not select)</li>
+  </ul>
+
+  <ul>
+    <li>change the working directory to
+    &ldquo;/tmp/&rdquo; via the path that is above listed
+    directories and click the search symbol</li>
+
+    <li>drag the hadoop file system tab to the
+    other tabs above (Hive View , Errors etc.)</li>
+
+    <li>from the remote file system tab that
+    should display the &ldquo;/tmp/&rdquo; directory on keane ,
+    drag the file &ldquo;export.txt&rdquo; to the hadoop file
+    system tab.</li>
+
+    <li>locate the &ldquo;export.txt&rdquo;
+    file on the hadoop file system tab (might have to click the
+    search beside the current path)</li>
+
+    <li>click the plus symbol to create a new
+    file/directory on hadoop file system and give it a
+    name.</li>
+
+    <li>click the checkbox beside the
+    &ldquo;export.txt&rdquo; file and then click the move symbol
+    under the current working directory.</li>
+
+    <li>in the new window click the radio
+    button beside the new file that was created and click
+    ok.</li>
+  </ul>
+
+
+
+  <p>This Task will show how the source
+  &ldquo;action&rdquo; can be configured to select flat files and
+  change the properties such as the delimiter of the file and also
+  the headings and types of the file. For this tutorial the
+  workflow needs to be run after each action is configured except
+  for source.</p>
+
+  <ul>
+    <li>in the actions footer drag a new source
+    icon onto the canvas.</li>
+  </ul>
+
+  <ul>
+    <li>double click to open source and select
+    hdfs as the data type then click next,</li>
+
+    <li>select &ldquo; text map reduce
+    type&rdquo; as the data subtype and click next</li>
+
+    <li>on the data set screen select
+    path.</li>
+  </ul>
+
+  <ul>
+    <li>click the radio button beside the
+    directory that contains the &ldquo;export.txt&rdquo; file and
+    then ok</li>
+  </ul>
+
+  <ul>
+    <li>under the property
+    &ldquo;delimiter&rdquo; change the value to be &ldquo;,&rdquo;
+    by typing it in</li>
+
+    <li>under the property &ldquo;header
+    &rdquo; paste &ldquo;subscriber_number String , Friend String ,
+    offpeak_voice INT , offpeak_sms INT , offpeak_mms INT
+    ,peak_voice INT,peak_sms INT , peak_mms INT , sna_weight INT ,
+    subscriber_onnet INT ,friend_onnet INT&rdquo; into the value
+    field</li>
+
+    <li>click apply and then ok</li>
+  </ul>
+
+  
+
+  <p>PLEASE NOTE:
+  It is advised that you save the workflow after each
+  action is configured. To do this, select the save icon above the
+  canvas. It will ask for a name to save the workflow as. Input a
+  name and click ok at the bottom of the page. The default
+  extension of a workflow file is &lsquo;.rs&rsquo;</p>
+
+
+  <p>
+  Pig
+  Aggregator is action where aggregation methods are allowed to be
+  used when selecting columns as you would in an sql statement.
+  These aggregation methods are AVG , MAX , SUM etc. These methods
+  are allowed because this action will group by either the selected
+  attributes or all (default if none is selected).</p>
+
+  <ul>
+    <li>drag a pig aggregator action to the
+    canvas</li>
+  </ul>
+
+  <ul>
+    <li>Create a link between the source that
+    was just configured and the new pig aggregator action by
+    clicking inside the source action and then clicking on the pig
+    aggregator action</li>
+
+    <li>Open the new pig
+    aggregator click ok to the element id pop up or change
+    it</li>
+
+    <li>click the field
+    &ldquo;subscriber_number&rdquo; in the Group by interaction and
+    click ok and then next</li>
+
+    <li>Select the copy from the dropdown menu
+    on the generator interaction and click ok</li>
+
+    <li>on the bottom of the table click the
+    &ldquo;+&rdquo; symbol to add a new row to the
+    table</li>
+
+    <li>Click in the Operation field of the new
+    row and click the &ldquo;SUM()&rdquo; function and add the
+    parameters &ldquo;offpeak_voice&rdquo; and
+    &ldquo;peak_voice&rdquo;. In the between the parameters add a
+    &ldquo;+&rdquo; symbol so that the operation would read
+    &ldquo;SUM(offpeak_voice + peak_voice)&rdquo;and click
+    ok</li>
+
+    <li>once the operation field add a name
+    like &ldquo;total_voice&rdquo; for the new column and change
+    the type to DOUBLE and click next and then ok.</li>
+
+    <li>Click the save Icon to save the
+    workflow, giving it a name</li>
+
+    <li>on the top of the screen on the main
+    menu, click project and then run to run the
+    workflow</li>
+  </ul>
+
+
+  <ul>
+    <li>Drop another pig aggregator onto the
+    canvas</li>
+  </ul>
+
+  <ul>
+    <li>Again make a link between the source
+    and the new pig aggregator</li>
+
+    <li>change the element if required and
+    click ok</li>
+
+    <li>This time leave the group by list alone
+    so nothing is selected and click ok</li>
+
+    <li>On this page we don&rsquo;t want to
+    click any of the generators so all we do is create a new
+    row</li>
+
+    <li>in this new row click the operation
+    field and then click &ldquo;AVG()&rdquo; function from the
+    functions list.</li>
+
+    <li>The feature we want to calculate the
+    average is the sum of &ldquo;offpeak_voice&rdquo; and
+    &ldquo;peak_voice&rdquo; feature so enter the editor above and
+    inside the brackets click both these features and put a
+    &ldquo;+&rdquo; symbol between them so the operation reads
+    &ldquo;AVG(offpeak_voice + peak_voice)&rdquo;.</li>
+
+    <li>Enter the title field and give it a
+    title</li>
+
+    <li>once the title is complete
+    click ok and next on the page, then click ok on the final
+    page</li>
+  </ul>
+
+  
+
+  <p>
+  To make
+  each dataset interactable with each other it is necessary to
+  perform a join on them.</p>
+
+  
+
+  <ul>
+    <li>to do this we drop a pig join
+    onto the canvas</li>
+  </ul>
+
+  <ul>
+    <li>create a link from the pig aggregator
+    that contains the sum of &ldquo;total_voice&rdquo; to the new
+    pig join action</li>
+
+    <li>create another link from the pig
+    aggregator that contains the average of
+    &ldquo;total_voice&rdquo; to the new pig join</li>
+
+    <li>double click the pig join and change
+    the element if necessary</li>
+
+    <li>on the first page we see a generator
+    interaction, make sure that &ldquo;copy&rdquo; is selected as
+    the generator and click ok</li>
+
+    <li>change the newly generated features as
+    required/wanted</li>
+
+    <li>click ok to proceed to the next
+    page</li>
+
+    <li>This page has two interaction that
+    specify the join type and the features to join on , we use the
+    default join type which is &ldquo;Join&rdquo; so this does not
+    need to be changed</li>
+
+    <li>to specify the features that we use to
+    join click inside the &ldquo;Join_Feature&rdquo; box on one of
+    and input &ldquo;1&rdquo; inside the editor</li>
+  </ul>
+
+  <ul>
+    <li>This condition will join
+    the two tables together</li>
+  </ul>
+
+  <ul>
+    <li>do the same for the second
+    row</li>
+
+    <li>click next to proceed to the next page
+    and then click ok</li>
+  </ul>
+
+  
+
+  <p>
+  Now we want
+  to make a condition to see what subscribers have a higher total
+  of total voice calls than the average of the entire
+  dataset.</p>
+
+  
+
+  <ul>
+    <li>Drop a new pig select action onto the
+    canvas</li>
+  </ul>
+
+  <ul>
+    <li>create a link from the pig join action
+    to the new pig select action</li>
+
+    <li>open it and change the element id if
+    required</li>
+
+    <li>On the first page of the generator the
+    copy generator needs to used</li>
+
+    <li>click next to proceed to the next
+    page</li>
+
+    <li>click in the editor interaction and
+    click the feature that represents the sum of
+    &ldquo;total_voice&rdquo; for each subscriber</li>
+
+    <li>Now add the &ldquo;&gt;&rdquo;
+    symbol to the end</li>
+
+    <li>next we add the average of &ldquo;total_voice&rdquo;</li>
+
+    <li>click ok and then finish the
+    action by clicking ok</li>
+  </ul>
+
+  
+
+  <h3>Summary of workflow</h3>
+
+  
+
+  <p>In this workflow we have</p>
+
+  <ul>
+    <li>Configured source for a hdfs
+    file</li>
+
+    <li>selected the sum of two
+    columns</li>
+
+    <li>gotten the average of a
+    column</li>
+
+    <li>Gotten the sum of a column when
+    grouping by another</li>
+
+    <li>joined the two tables</li>
+
+    <li>filtered a table with a
+    condition</li>
+  </ul>
+
+  
+
+  
+</body>
+</html>

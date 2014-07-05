@@ -1,39 +1,54 @@
 <html>
 <head>
-<link rel="stylesheet" type="text/css" href="../css/redsqirl.css">
+<link rel="stylesheet" type="text/css" href="../css/idm.css">
 <title>Technologies</title>
 </head>
 <body>
 	<h1>Technologies</h1>
 	<h2><a href="http://hadoop.apache.org/" target="_blank">Hadoop</a></h2>
-	<p>Hadoop is distrubuted system that is implemented over a cluster
+	<p>Hadoop is a distrubuted system that is implemented over a cluster
 		of computers. There can be many nodes in a cluster but there can only
-		be one control node known as namnode. A cluster can contain many nodes
+		be one control node known as namenode. A cluster can contain many nodes
 		that are slaves to the namenode these are known as datanodes. These
 		datanodes can usually hold the storage space for HDFS or Hive but also
-		has resources to perform processes like Map/Reduce</p>
+		have resources to perform processes like Map/Reduce</p>
 	<h2><a href="http://hive.apache.org/" target="_blank">Hive</a></h2>
-	<p>Hive is a hadoop implementation of a relational database that is
+	<p>Hive is a Hadoop implementation of a relational database that is
 		used for data warehousing for large data sets. Each query written in
-		it's own language called HiveQl that acts like a normal SQL query but
+		its own language called HiveQl, acts like a normal SQL query but
 		runs as a Map/Reduce job. Indexing is made easier and makes querying
 		large datasets quicker and more efficient</p>
 	<h2><a href="http://hadoop.apache.org/docs/r1.2.1/hdfs_design.html" target="_blank">HDFS</a></h2>
 	<p>HDFS is the distributed storage facility that is included within
-		hadoop. Any datanode that is in the cluster and configured to use HDFS
-		will be a replication of all other datanode , this means that all data
-		is synchronized across the cluster. In the event that a datanode has
-		to be excluded from the cluster the data that is stored on that
+		Hadoop. Any datanode that is in the cluster and configured to use HDFS
+		will be a replication of all other datanodes, this means that all data
+		are synchronized across the cluster. In the event that a datanode has
+		to be excluded from the cluster, the data that is stored on that
 		datanode is already available within the cluster.</p>
 	<h2><a href="http://oozie.apache.org/" target="_blank">Oozie</a></h2>
-	<p>To run a chain of processes together it can be difficult , Oozie
-		is technology that provides workflow functionality to the processes
-		available in hadoop. A workflow can contain many actions/processes and
-		it is often important to run each process sequentially. Oozie provides
-		this functionality</p>
-	<p>To build a workflow, actions have to be generated and configured
-		and linked to other actions.</p>
 
+	<p>It can be difficult to run a chain of processes together, but Oozie
+		is technology that provides workflow functionality to the processes
+		available in Hadoop. </p>
+	<p>Oozie also provides functionality to manage workflows. Through
+	Oozie and the Red Sqirl Process Manager tab, you can review job details
+	and control running jobs.</p>
 	<a class="stopLink" id="help_main" onclick="return false;" href="../help/main.html">return to Red Sqirl help</a>
+
+	<h2><a href="http://pig.apache.org/" target="_blank">Pig</a></h2>
+
+
+	<p>Apache Pig is a platform for analyzing large data sets, which
+		consists of a high-level language for expressing data analysis
+		programs, coupled with infrastructure for evaluating these programs.
+		The salient property of Pig programs is that their structure is
+		amenable to substantial parallelization, which in turns enables them
+		to handle very large data sets. At the present time, Pig's
+		infrastructure layer consists of a compiler that produces sequences
+		of Map-Reduce programs, for which large-scale parallel
+		implementations already exist (e.g., the Hadoop subproject). Pig's
+		language layer currently consists of a textual language called Pig
+		Latin, which has the following key properties:
+	</p>
 </body>
 </html>

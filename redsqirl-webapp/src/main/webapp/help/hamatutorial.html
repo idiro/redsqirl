@@ -1,0 +1,128 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
+<html>
+<head>
+  <title>Hama Tutorial</title>
+</head>
+
+<body>
+  <h1>Hama Tutorial</h1>
+
+  <h2>Hama Workflow</h2>
+
+  
+
+  <p>This workflow will demonstrate the Hama
+  Logistic regression action. This action allows us to run logistic
+  regression over a data set. It&rsquo;s inputs are the training
+  set and the prediction dataset. That means that two source
+  actions are needed.</p>
+
+  <p>There are two files in the /tmp/ directory
+  on keane called training.txt and the other prediction.txt.
+  Transfer these files onto the hadoop file system into two new
+  directories as performed in the previous tutorial. Use
+  &ldquo;,&rdquo; as the delimiter in both source actions but use
+  &ldquo;id STRING , height FLOAT, colour String, age INT , churner
+  INT&rdquo; as the header for the &ldquo;training,txt&rdquo; file,
+  and use &ldquo;id STRING , height FLOAT, colour String, age
+  INT&rdquo; as the header for the &ldquo;prediction.txt&rdquo;
+  file,</p>
+
+  
+
+  <ul>
+    <li>Create a new canvas by clicking the
+    plus symbol on the canvas tabs bar</li>
+  </ul>
+
+  <ul>
+    <li>create the two source actions with the
+    two files provided on keane</li>
+
+    <li>On the actions footer below click the
+    actions property Icon</li>
+
+    <li>Either edit the current actions tab by
+    click the title of it or create a new tab by inputting the new
+    tab title in the field provided and click the &ldquo;i&rdquo;
+    symbol</li>
+
+    <li>once in a configurable tab , click the
+    checkbox beside &ldquo;hama_logistic_regression&rdquo; and then
+    ok</li>
+
+    <li>make sure you are on tab that was just
+    configures to include hama logistic regression and drag it to
+    the canvas</li>
+
+    <li>select the source that is set to use
+    the &ldquo;training.txt&rdquo; file and create a link to the
+    new &ldquo;hama LR&rdquo; action.</li>
+  </ul>
+
+  <ul>
+    <li>a new window should appear and ask you to
+    select whether it is a training data set or a prediction data
+    set, select training and then click ok</li>
+  </ul>
+
+  <ul>
+    <li>select the source that is set to use
+    the &ldquo;prediction.txt&rdquo; file and create a link to the
+    &ldquo;hama LR&rdquo; action</li>
+  </ul>
+
+  <ul>
+    <li>in this window select prediction and then
+    click ok</li>
+  </ul>
+
+  <ul>
+    <li>once the &ldquo;hama LR&rdquo; action
+    has the two required inputs , open it and change the element id
+    if required</li>
+
+    <li>the first page with list three
+    interactions : Label , ID and Label Value.</li>
+
+    <li>in the Label interaction select
+    churner</li>
+
+    <li>in the Id interaction select
+    id</li>
+
+    <li>finally in the Label Value interaction
+    input 1 as the value</li>
+
+    <li>click next to see the Model settings
+    such as predictors and parameters for running the
+    model.</li>
+
+    <li>For the purposes of the is tutorial we
+    will leave these interactions alone and just click next and
+    ok</li>
+  </ul>
+
+  <ul>
+    <li>Run the workflow</li>
+  </ul>
+
+  
+
+  <h3>Summary of workflow</h3>
+
+  <ul>
+    <li>added actions to an actions
+    tab</li>
+
+    <li>labeled the inputs for logistic
+    regression</li>
+
+    <li>configured and ran a logistic
+    regression</li>
+  </ul>
+
+  
+
+ 
