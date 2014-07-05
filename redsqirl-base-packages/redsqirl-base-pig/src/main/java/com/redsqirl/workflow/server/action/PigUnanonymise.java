@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import com.redsqirl.utils.FeatureList;
+import com.redsqirl.utils.OrderedFeatureList;
 import com.redsqirl.workflow.server.AppendListInteraction;
 import com.redsqirl.workflow.server.DataProperty;
 import com.redsqirl.workflow.server.InputInteraction;
@@ -77,6 +78,7 @@ public class PigUnanonymise extends PigElement {
 				PigLanguageManager.getText("pig.unanonymise.features_interaction.title"),
 				PigLanguageManager.getText("pig.unanonymise.features_interaction.legend"), 0,
 				0, true);
+		featuresInt.setNonEmptyChecker();
 		
 		offsetInt = new InputInteraction(
 				key_offset,
@@ -112,7 +114,7 @@ public class PigUnanonymise extends PigElement {
 		input.put(key_input, new DataProperty(MapRedTextType.class, 1,
 				1));
 		input.put(key_index_map, new DataProperty(MapRedTextType.class,
-				0, 1));
+				0, 1,getIndexFeatures()));
 	}
 	
 	
@@ -276,5 +278,12 @@ public class PigUnanonymise extends PigElement {
 				orderInt.update();
 			}
 		}
+	}
+	
+	public FeatureList getIndexFeatures() throws RemoteException{
+		FeatureList fl = new OrderedFeatureList();
+		fl.addFeature("Value", FeatureType.STRING);
+		fl.addFeature("Index", FeatureType.STRING);
+		return fl;
 	}
 }

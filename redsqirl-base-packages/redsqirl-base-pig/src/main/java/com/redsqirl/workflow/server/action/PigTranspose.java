@@ -8,6 +8,8 @@ import java.util.List;
 import com.redsqirl.utils.FeatureList;
 import com.redsqirl.workflow.server.AppendListInteraction;
 import com.redsqirl.workflow.server.Page;
+import com.redsqirl.workflow.server.action.PigElement;
+import com.redsqirl.workflow.server.action.PigTableTransposeInteraction;
 import com.redsqirl.workflow.server.datatype.MapRedTextType;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;

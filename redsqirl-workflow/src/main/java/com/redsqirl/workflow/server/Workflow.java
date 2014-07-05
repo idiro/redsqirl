@@ -49,7 +49,6 @@ import com.idiro.hadoop.NameNodeVar;
 import com.idiro.utils.LocalFileSystem;
 import com.idiro.utils.RandomString;
 import com.idiro.utils.XmlUtils;
-import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
@@ -1577,8 +1576,12 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			} else {
 				if (!in.getInput().get(inName)
 						.check(out.getDFEOutput().get(outName))) {
-					error = LanguageManagerWF
-							.getText("workflow.addLink_linkincompatible");
+
+					error = in.getInput().get(inName).checkStr(
+							out.getDFEOutput().get(outName), 
+							in.getComponentId(), 
+							in.getName(),
+							out.getName());
 				} else {
 					out.addOutputComponent(outName, in);
 					error = in.addInputComponent(inName, out);
@@ -1628,8 +1631,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					new Object[] { outName });
 		} else if (!in.getInput().get(inName)
 				.check(out.getDFEOutput().get(outName))) {
-			error = LanguageManagerWF
-					.getText("workflow.check_linksIncompatible");
+			error = in.getInput().get(inName).checkStr(
+					out.getDFEOutput().get(outName), 
+					componentIdIn, 
+					inName,
+					out.getName());
 		}
 		if (error != null) {
 			return false;

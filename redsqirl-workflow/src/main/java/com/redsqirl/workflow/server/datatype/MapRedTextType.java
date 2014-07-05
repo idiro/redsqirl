@@ -177,20 +177,25 @@ public class MapRedTextType extends MapRedDir {
 		Iterator<String> it = selectLine(maxToRead).iterator();
 		while(it.hasNext()){
 			String l = it.next();
-			String[] line = l.split(Pattern.quote(getChar(getProperty(key_delimiter))),-1);
-			List<String> featureNames = getFeatures().getFeaturesNames(); 
-			if(featureNames.size() == line.length){
-				Map<String,String> cur = new LinkedHashMap<String,String>();
-				for(int i = 0; i < line.length; ++i){
-					cur.put(featureNames.get(i),line[i]);
+			if(l != null && ! l.isEmpty()){
+				String[] line = l.split(
+						Pattern.quote(getChar(getProperty(key_delimiter))), -1);
+				List<String> featureNames = getFeatures().getFeaturesNames();
+				if (featureNames.size() == line.length) {
+					Map<String, String> cur = new LinkedHashMap<String, String>();
+					for (int i = 0; i < line.length; ++i) {
+						cur.put(featureNames.get(i), line[i]);
+					}
+					ans.add(cur);
+				} else {
+					logger.error("The line size (" + line.length
+							+ ") is not compatible to the number of features ("
+							+ featureNames.size() + "). " + "The splitter is '"
+							+ getChar(getProperty(key_delimiter)) + "'.");
+					logger.error("Error line: " + l);
+					ans = null;
+					break;
 				}
-				ans.add(cur);
-			}else{
-				logger.error("The line size ("+line.length+
-						") is not compatible to the number of features ("+featureNames.size()+").");
-				logger.error("Error line: "+l);
-				ans = null;
-				break;
 			}
 		}
 		return ans;

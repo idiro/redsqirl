@@ -4,6 +4,9 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
 
+import com.redsqirl.utils.FeatureList;
+import com.redsqirl.workflow.server.enumeration.FeatureType;
+
 /**
  * Properties for links
  * 
@@ -44,4 +47,30 @@ public interface DFELinkProperty extends Remote {
 	 * @throws RemoteException
 	 */
 	public int getMaxOccurence() throws RemoteException;
+	
+	/**
+	 * @return the acceptableFeatureList
+	 */
+	public FeatureList getFeatureListAccepted() throws RemoteException;
+
+	/**
+	 * @return the acceptableFeatureType
+	 */
+	public List<FeatureType> getFeatureTypeAccepted() throws RemoteException;
+	
+	/**
+	 * Return an error message if check returns false
+	 * @param out
+	 * @param componentId
+	 * @param componentName
+	 * @param outName
+	 * @return
+	 * @throws RemoteException
+	 */
+	public String checkStr(
+			DFEOutput out, 
+			String componentId, 
+			String componentName, 
+			String outName)throws RemoteException;
+	
 }

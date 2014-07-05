@@ -9,11 +9,14 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.redsqirl.utils.FeatureList;
+import com.redsqirl.workflow.server.enumeration.FeatureType;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
+import com.redsqirl.workflow.utils.LanguageManagerWF;
 
 public class DataProperty extends UnicastRemoteObject implements
-		DFELinkProperty {
+DFELinkProperty {
 
 	/**
 	 * 
@@ -26,6 +29,8 @@ public class DataProperty extends UnicastRemoteObject implements
 	protected List<Class<? extends DFEOutput>> typeAccepted;
 	protected int minOccurence;
 	protected int maxOccurence;
+	protected FeatureList featureListAccepted;
+	protected List<FeatureType> featureTypeAccepted;
 
 	/**
 	 * Constructor with one accepted type and the min and max occurrence values
@@ -60,6 +65,42 @@ public class DataProperty extends UnicastRemoteObject implements
 	}
 
 	/**
+	 * Constructor with one accepted type and the min, max occurrence values
+	 * and a list of acceptable feature.
+	 * 
+	 * @param typeAccepted
+	 * @param minOccurence
+	 * @param maxOccurence
+	 * @param acceptableFeatureList
+	 * @throws RemoteException
+	 */
+	public DataProperty(Class<? extends DFEOutput> typeAccepted,
+			int minOccurence, int maxOccurence,FeatureList acceptableFeatureList) throws RemoteException {
+		super();
+		this.typeAccepted = new LinkedList<Class<? extends DFEOutput>>();
+		this.typeAccepted.add(typeAccepted);
+		this.featureListAccepted = acceptableFeatureList;
+		init(minOccurence, maxOccurence);
+	}
+
+	/**
+	 * Constructor with a list of accepted types and the min and max occurrence
+	 * values
+	 * 
+	 * @param typeAccepted
+	 * @param minOccurence
+	 * @param maxOccurence
+	 * @throws RemoteException
+	 */
+	public DataProperty(List<Class<? extends DFEOutput>> typeAccepted,
+			int minOccurence, int maxOccurence,List<FeatureType> acceptableFeatureType) throws RemoteException {
+		super();
+		this.typeAccepted = typeAccepted;
+		this.featureTypeAccepted = acceptableFeatureType;
+		init(minOccurence, maxOccurence);
+	}
+
+	/**
 	 * Initialize the Data property with min and max occurence values
 	 * 
 	 * @param minOccurence
@@ -89,9 +130,10 @@ public class DataProperty extends UnicastRemoteObject implements
 	}
 
 	/**
+	 * @throws RemoteException 
 	 * 
 	 */
-	public boolean check(DFEOutput out) {
+	public boolean check(DFEOutput out) throws RemoteException {
 		boolean ok = false;
 		if(typeAccepted == null || typeAccepted.isEmpty()){
 			return true;
@@ -107,7 +149,38 @@ public class DataProperty extends UnicastRemoteObject implements
 				cur = cur.getSuperclass();
 			}
 		}
+
+		if(ok){
+			if(featureListAccepted != null){
+				ok = featureListAccepted.equals(out.getFeatures());
+			}else if(featureTypeAccepted != null){
+				ok = featureTypeAccepted.equals(out.getFeatures().getTypes());
+			}
+		}
 		return ok;
+	}
+
+	public String checkStr(DFEOutput out, String componentId, String componentName, String outName)throws RemoteException{
+		String ans = null;
+		if(!check(out)){
+			if(getFeatureListAccepted() != null){
+				ans += LanguageManagerWF.getText(
+						"dataflowaction.checkIn_linkIncompatible_with_features",
+						new Object[] { componentId, componentName,
+								outName,featureListAccepted.toString() });
+			}else if(getFeatureTypeAccepted() != null){
+				ans += LanguageManagerWF.getText(
+						"dataflowaction.checkIn_linkIncompatible_with_types",
+						new Object[] { componentId, componentName,
+								outName,featureTypeAccepted.toString() });
+			}else{
+				ans += LanguageManagerWF.getText(
+						"dataflowaction.checkIn_linkIncompatible",
+						new Object[] { componentId, componentName,
+								outName });
+			}
+		}
+		return ans;
 	}
 
 	/**
@@ -135,5 +208,19 @@ public class DataProperty extends UnicastRemoteObject implements
 	 */
 	public List<Class<? extends DFEOutput>> getTypeAccepted() {
 		return typeAccepted;
+	}
+
+	/**
+	 * @return the acceptableFeatureList
+	 */
+	public final FeatureList getFeatureListAccepted() {
+		return featureListAccepted;
+	}
+
+	/**
+	 * @return the acceptableFeatureType
+	 */
+	public final List<FeatureType> getFeatureTypeAccepted() {
+		return featureTypeAccepted;
 	}
 }
