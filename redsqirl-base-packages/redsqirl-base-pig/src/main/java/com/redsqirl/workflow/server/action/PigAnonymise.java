@@ -4,6 +4,7 @@ package com.redsqirl.workflow.server.action;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.redsqirl.utils.FeatureList;
@@ -329,7 +330,19 @@ public class PigAnonymise extends PigElement {
 		DFEOutput in = getDFEInput().get(key_input).get(0);
 		if (in != null) {
 			if (interaction.getId().equals(featuresInt.getId())) {
-				featuresInt.setPossibleValues(getInFeatures().getFeaturesNames());
+				FeatureList inFeat = getInFeatures();
+				List<String> posValues = new LinkedList<String>();
+				Iterator<String> it = inFeat.getFeaturesNames().iterator();
+				while (it.hasNext()) {
+					String cur = it.next();
+					FeatureType typeCur = inFeat.getFeatureType(cur);
+					if (!(FeatureType.DATE.equals(typeCur)
+							|| FeatureType.DATETIME.equals(typeCur) || FeatureType.TIMESTAMP
+								.equals(typeCur))) {
+						posValues.add(cur);
+					}
+				}
+				featuresInt.setPossibleValues(posValues);
 			}else if (interaction.getId().equals(orderInt.getId())) {
 				orderInt.update();
 			}
