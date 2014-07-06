@@ -358,7 +358,6 @@ public class PigAnonymise extends PigElement {
 		String error = super.updateOut();
 		if(error == null){
 			
-<<<<<<< HEAD
 			//Check if an index has to be created
 			FeatureList inFeats = getInFeatures();
 			boolean createIndex = false;
@@ -368,14 +367,10 @@ public class PigAnonymise extends PigElement {
 				
 				createIndex = FeatureType.CATEGORY.equals(inFeats.getFeatureType(fName))
 						|| FeatureType.STRING.equals(inFeats.getFeatureType(fName));
-=======
-			if (output.get(key_output_index) == null) {
-				output.put(key_output_index, new MapRedCtrlATextType());
->>>>>>> bf7f4811f829d05ea274329497a83df0a3a70f68
 			}
 			if(createIndex){
 				if (output.get(key_output_index) == null) {
-					output.put(key_output_index, new MapRedTextType());
+				        output.put(key_output_index, new MapRedCtrlATextType());
 				}
 				try {
 					output.get(key_output_index).setFeatures(getIndexFeatures());
