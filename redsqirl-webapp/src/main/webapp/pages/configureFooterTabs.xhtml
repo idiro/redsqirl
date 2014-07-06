@@ -29,6 +29,11 @@
 	                 enableContextMenu="false" 
 	                 onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
 	                 
+			 <rich:column style="border-bottom:0px;border-right:0px;"
+			 width="20px;">
+			 <h:outputText value="#{rowNb+1}" />
+			 </rich:column>
+
                 	<rich:column style="border-bottom:0px;border-right:0px;" width="40px;">
                         <f:facet name="header">
                             <h:panelGrid columns="1" styleClass="">
@@ -56,7 +61,7 @@
                         	<h:outputText value="#{column}" />
                         </f:facet>
                         <h:inputText value="#{rowItem.row[ind]}" size="10" onkeyup="nospaces(this);" />
-                        <a4j:commandButton action="#{configureTabsBean.retrieveItems}" value="..." reRender="actionsPanel">
+			<a4j:commandButton title="#{messages.title_dispacts}" action="#{configureTabsBean.retrieveItems}" value="..." reRender="actionsPanel">
 							<f:param name="selected" value="#{rowNb}" />
 						</a4j:commandButton>
                        
@@ -95,9 +100,11 @@
 		</rich:panel>
 		
 		<rich:panel id="actionsPanel" header="#{messages.label_tab_actions}" style="overflow:auto;width:490px;height:315px;" >
-	   		
+
+		    <h2> <h:outputText value="#{messages.label_tab_actions_menu} #{configureTabsBean.index + 1}" rendered="#{configureTabsBean.index != null}"/></h2>
+
 	   		<rich:listShuttle sourceValue="#{configureTabsBean.currentFooterMenu.actions}"
-	            targetValue="#{configureTabsBean.currentFooterMenu.target}" var="items" listsHeight="275"
+	            targetValue="#{configureTabsBean.currentFooterMenu.target}" var="items" listsHeight="225"
 	            sourceListWidth="165" targetListWidth="165"
 	            rendered="#{configureTabsBean.index != null}"
 	            copyAllControlLabel="Select all"

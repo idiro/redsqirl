@@ -71,7 +71,11 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 				getTableGrid().getRows().add(new SelectableRowFooter(value, getMenuActions(), getTarget()));
 			}
 
-			setIndex(null);
+			if(getMenuWA().isEmpty()){
+			    setIndex(null);
+			}else{
+			    setIndex(0);
+			}
 
 		} catch (RemoteException e1) {
 			e1.printStackTrace();
