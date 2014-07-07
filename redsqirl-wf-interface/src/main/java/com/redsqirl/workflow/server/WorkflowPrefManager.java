@@ -11,7 +11,6 @@ import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Properties;
-import java.util.Map.Entry;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -19,8 +18,6 @@ import org.apache.log4j.Logger;
 
 import com.idiro.BlockManager;
 import com.idiro.hadoop.NameNodeVar;
-import com.redsqirl.workflow.server.interfaces.DataFlow;
-import com.redsqirl.workflow.utils.LanguageManagerWF;
 import com.redsqirl.workflow.utils.PackageManager;
 
 /**
@@ -380,7 +377,7 @@ public class WorkflowPrefManager extends BlockManager {
 	public static void createUserFooter(String userName) {
 		logger.info("createUserFooter" + getPathIconMenu(userName));
 
-		File menuDir = new File(getPathIconMenu(userName));
+		File menuDir = new File(getPathIconMenu(userName)).getParentFile();
 		File[] childrenoMenuDir = menuDir.listFiles(new FileFilter() {
 			@Override
 			public boolean accept(File pathname) {
@@ -392,7 +389,7 @@ public class WorkflowPrefManager extends BlockManager {
 			try {
 
 				FileUtils.cleanDirectory(menuDir);
-				File file = new File(menuDir.getAbsolutePath() + "/icon_menu.txt" );
+				File file = new File(getPathIconMenu(userName));
 				PrintWriter s = new PrintWriter(file);
 
 				PackageManager p = new PackageManager();
@@ -690,7 +687,7 @@ public class WorkflowPrefManager extends BlockManager {
 	 * @return
 	 */
 	public static String getPathIconMenu(String user) {
-		return getPathUserPref(user) + "/icon_menu";
+		return getPathUserPref(user) + "/icon_menu.txt";
 	}
 
 	/**
