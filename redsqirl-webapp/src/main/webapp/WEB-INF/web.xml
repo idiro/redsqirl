@@ -6,66 +6,62 @@
 
 
 	<!-- Faces Parameters -->
-	 <context-param>
-        <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
-        <param-value>server</param-value>
-    </context-param>
-    <!--
-    <context-param>
-        <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
-        <param-value>client</param-value>
-    </context-param>
-    -->
-    <context-param>
-        <param-name>javax.faces.DEFAULT_SUFFIX</param-name>
-        <param-value>.xhtml</param-value>
-    </context-param>
-    <context-param>
-        <param-name>com.sun.faces.numberOfViewsInSession</param-name>
-        <param-value>15</param-value>
-    </context-param>
-    <context-param>
-        <param-name>com.sun.faces.numberOfLogicalViews</param-name>
-        <param-value>15</param-value>
-    </context-param>
-    <context-param>
-        <param-name>com.sun.faces.validateXml</param-name>
-        <param-value>false</param-value>
-    </context-param>
-    <context-param>
-        <param-name>com.sun.faces.verifyObjects</param-name>
-        <param-value>false</param-value>
-    </context-param>
-    <context-param>
-        <param-name>com.sun.faces.forceLoadConfiguration</param-name>
-        <param-value>false</param-value>
-    </context-param>
-    <context-param>
-        <param-name>com.sun.faces.disableVersionTracking</param-name>
-        <param-value>false</param-value>
-    </context-param>
-    <context-param>
-        <param-name>com.sun.faces.enableHtmlTagLibValidator</param-name>
-        <param-value>false</param-value>
-    </context-param>
-    <context-param>
-        <param-name>com.sun.faces.preferXHTML</param-name>
-        <param-value>false</param-value>
-    </context-param>
-    <context-param>
-        <param-name>com.sun.faces.compressViewState</param-name>
-        <param-value>true</param-value>
-    </context-param>
-    
-	
-	
+	<context-param>
+		<param-name>javax.faces.STATE_SAVING_METHOD</param-name>
+		<param-value>server</param-value>
+	</context-param>
+	<!-- <context-param> <param-name>javax.faces.STATE_SAVING_METHOD</param-name> 
+		<param-value>client</param-value> </context-param> -->
+	<context-param>
+		<param-name>javax.faces.DEFAULT_SUFFIX</param-name>
+		<param-value>.xhtml</param-value>
+	</context-param>
+	<context-param>
+		<param-name>com.sun.faces.numberOfViewsInSession</param-name>
+		<param-value>15</param-value>
+	</context-param>
+	<context-param>
+		<param-name>com.sun.faces.numberOfLogicalViews</param-name>
+		<param-value>15</param-value>
+	</context-param>
+	<context-param>
+		<param-name>com.sun.faces.validateXml</param-name>
+		<param-value>false</param-value>
+	</context-param>
+	<context-param>
+		<param-name>com.sun.faces.verifyObjects</param-name>
+		<param-value>false</param-value>
+	</context-param>
+	<context-param>
+		<param-name>com.sun.faces.forceLoadConfiguration</param-name>
+		<param-value>false</param-value>
+	</context-param>
+	<context-param>
+		<param-name>com.sun.faces.disableVersionTracking</param-name>
+		<param-value>false</param-value>
+	</context-param>
+	<context-param>
+		<param-name>com.sun.faces.enableHtmlTagLibValidator</param-name>
+		<param-value>false</param-value>
+	</context-param>
+	<context-param>
+		<param-name>com.sun.faces.preferXHTML</param-name>
+		<param-value>false</param-value>
+	</context-param>
+	<context-param>
+		<param-name>com.sun.faces.compressViewState</param-name>
+		<param-value>true</param-value>
+	</context-param>
+
+
+
 	<context-param>
 		<param-name>facelets.DEVELOPMENT</param-name>
 		<param-value>true</param-value>
 	</context-param>
-	
-	
-	
+
+
+
 	<context-param>
 		<param-name>org.ajax4jsf.VIEW_HANDLERS</param-name>
 		<param-value>com.sun.facelets.FaceletViewHandler</param-value>
@@ -83,16 +79,14 @@
 		<param-name>com.sun.faces.injectionProvider</param-name>
 		<param-value>com.sun.faces.vendor.WebContainerInjectionProvider</param-value>
 	</context-param>
-	
+
 	<context-param>
-	    <param-name>com.sun.faces.enableRestoreView11Compatibility</param-name>
-	    <param-value>true</param-value>
+		<param-name>com.sun.faces.enableRestoreView11Compatibility</param-name>
+		<param-value>true</param-value>
 	</context-param>
 
-	<!-- <context-param>
-	    <param-name>com.sun.faces.expressionFactory</param-name>
-	    <param-value>com.sun.el.ExpressionFactoryImpl</param-value>
-	</context-param> -->
+	<!-- <context-param> <param-name>com.sun.faces.expressionFactory</param-name> 
+		<param-value>com.sun.el.ExpressionFactoryImpl</param-value> </context-param> -->
 
 	<filter>
 		<display-name>RichFaces Filter</display-name>
@@ -105,6 +99,15 @@
 		<dispatcher>REQUEST</dispatcher>
 		<dispatcher>FORWARD</dispatcher>
 		<dispatcher>INCLUDE</dispatcher>
+	</filter-mapping>
+
+	<filter>
+		<filter-name>RichFacesFilter</filter-name>
+		<filter-class>com.redsqirl.useful.RichFacesFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>RichFacesFilter</filter-name>
+		<url-pattern>/a4j/*</url-pattern>
 	</filter-mapping>
 
 	<listener>
@@ -136,24 +139,22 @@
 	<welcome-file-list>
 		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
-	
+
 	<context-param>
-	    <param-name>javax.faces.PROJECT_STAGE</param-name>
-	    <param-value>Development</param-value>
+		<param-name>javax.faces.PROJECT_STAGE</param-name>
+		<param-value>Development</param-value>
 	</context-param>
-	
+
 
 	<error-page>
 		<exception-type>javax.faces.application.ViewExpiredException</exception-type>
 		<location>/pages/initial.xhtml</location>
 	</error-page>
-	
-	<!-- <error-page>
-		<error-code>500</error-code>
-		<location>/pages/error.xhtml</location>
-	</error-page> -->
-	
-	
+
+	<!-- <error-page> <error-code>500</error-code> <location>/pages/error.xhtml</location> 
+		</error-page> -->
+
+
 	<session-config>
 		<session-timeout>30</session-timeout>
 	</session-config>
