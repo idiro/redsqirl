@@ -154,7 +154,8 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 		setIndex(null);
 	}
 
-	public void createTab() {
+	public void createTab() throws RemoteException, Exception {
+		mountMenuActions();
 		String[] value = new String[1];
 		value[0] = "";
 		getTableGrid().getRows().add(new SelectableRowFooter(value, getMenuActions()));
