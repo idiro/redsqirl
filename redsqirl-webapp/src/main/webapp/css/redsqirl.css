@@ -468,6 +468,12 @@ div#body{
     padding:8px;
 }
 
+.order-table-header-help{
+    background:none repeat scroll 0 0 #E5E5E5;
+    border-bottom:1px solid #BBBBBB;
+    padding:8px;
+}
+
 .order-table-odd-row{
     text-align:center;
     background:none repeat scroll 0 0 #FFFFFFF;

@@ -16,7 +16,7 @@
 		onstop="jQuery.unblockUI();" />
 	
 	<h:panelGrid columns="2">
-		<rich:panel header="#{messages.label_tab_tabs}" style="overflow:auto;width:260px;height:315px;">
+		<rich:panel header="#{messages.label_tab_tabs}" style="overflow:auto;width:280px;height:315px;">
 			<h:panelGroup id="tabsMenu">
 			
 			<table style="width:100%">
@@ -99,13 +99,13 @@
 			
 		</rich:panel>
 		
-		<rich:panel id="actionsPanel" header="#{messages.label_tab_actions}" style="overflow:auto;width:490px;height:315px;" >
+		<rich:panel id="actionsPanel" header="#{messages.label_tab_actions}" style="overflow:auto;width:470px;height:315px;" >
 
 		    <h2> <h:outputText value="#{messages.label_tab_actions_menu} #{configureTabsBean.index + 1}" rendered="#{configureTabsBean.index != null}"/></h2>
 
 	   		<rich:listShuttle sourceValue="#{configureTabsBean.currentFooterMenu.actions}"
 	            targetValue="#{configureTabsBean.currentFooterMenu.target}" var="items" listsHeight="225"
-	            sourceListWidth="165" targetListWidth="165"
+	            sourceListWidth="145" targetListWidth="145"
 	            rendered="#{configureTabsBean.index != null}"
 	            copyAllControlLabel="Select all"
                       copyControlLabel="Select"

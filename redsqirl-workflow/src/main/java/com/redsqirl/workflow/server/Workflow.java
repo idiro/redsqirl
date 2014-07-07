@@ -139,13 +139,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	public String loadMenu() {
 
 		String error = "";
-		File menuDir = new File(WorkflowPrefManager.getPathiconmenu());
-		File[] children = menuDir.listFiles(new FileFilter() {
+		File menuDir = new File(WorkflowPrefManager.getPathIconMenu());
+		/*File[] children = menuDir.listFiles(new FileFilter() {
 			@Override
 			public boolean accept(File pathname) {
 				return !pathname.getName().startsWith(".");
 			}
-		});
+		});*/
 
 		menuWA = new LinkedHashMap<String, List<String[]>>();
 		Map<String, String> nameWithClass;
@@ -153,10 +153,10 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			nameWithClass = getAllWANameWithClassName();
 			String nameMenu = "";
 
-			for (int i = 0; i < children.length; ++i) {
-				if (children[i].isFile()) {
+			//for (int i = 0; i < children.length; ++i) {
+				//if (children[i].isFile()) {
 					LinkedList<String[]> new_list = new LinkedList<String[]>();
-					BufferedReader br = new BufferedReader(new FileReader(children[i]));
+					BufferedReader br = new BufferedReader(new FileReader(menuDir));
 					String line;
 					while ((line = br.readLine()) != null) {
 						try {
@@ -185,8 +185,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					}
 					br.close();
 					//menuWA.put(children[i].getName(), new_list);
-				}
-			}
+				//}
+			//}
 
 		} catch (Exception e) {
 			error += "\n" + LanguageManagerWF.getText("workflow.loadclassexception");
@@ -349,12 +349,12 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 		String error = "";
 
-		File menuDir = new File(WorkflowPrefManager.getPathiconmenu());
+		File menuDir = new File(WorkflowPrefManager.getPathIconMenu());
 
 		try {
-			FileUtils.cleanDirectory(menuDir);
-			File file = new File(menuDir.getAbsolutePath() + "/icon_menu.txt" );
-			PrintWriter s = new PrintWriter(file);
+			//FileUtils.cleanDirectory(menuDir);
+			//File file = new File(menuDir.getAbsolutePath() + "/icon_menu.txt" );
+			PrintWriter s = new PrintWriter(menuDir);
 
 			for (Entry<String, List<String[]>> e : menuWA.entrySet()) {
 				s.println("menu:" + e.getKey());

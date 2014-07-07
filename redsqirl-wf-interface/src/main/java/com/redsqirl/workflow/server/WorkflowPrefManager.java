@@ -102,10 +102,6 @@ public class WorkflowPrefManager extends BlockManager {
 	pathUserPref = pathUsersFolder + "/"
 			+ System.getProperty("user.name"),
 			/**
-			 * Where to find the icons menu. Accessible from redsqirl-workflow side.
-			 */
-			pathIconMenu = pathUserPref + "/icon_menu",
-			/**
 			 * User Tmp folder. Accessible from redsqirl-workflow side.
 			 */
 			pathTmpFolder = pathUserPref + "/tmp",
@@ -375,7 +371,7 @@ public class WorkflowPrefManager extends BlockManager {
 	}
 
 	public static void createUserFooter(String userName) {
-		logger.info("createUserFooter" + getPathIconMenu(userName));
+		logger.info("createUserFooter " + getPathIconMenu(userName));
 
 		File menuDir = new File(getPathIconMenu(userName)).getParentFile();
 		File[] childrenoMenuDir = menuDir.listFiles(new FileFilter() {
@@ -384,12 +380,17 @@ public class WorkflowPrefManager extends BlockManager {
 				return pathname.getName().equalsIgnoreCase("icon_menu.txt");
 			}
 		});
+		
+		logger.info("createUserFooter " + menuDir.toString());
 
 		if (childrenoMenuDir.length <= 0) {
 			try {
 
-				FileUtils.cleanDirectory(menuDir);
+				//FileUtils.cleanDirectory(menuDir);
 				File file = new File(getPathIconMenu(userName));
+				
+				logger.info("createUserFooter " + file.toString());
+				
 				PrintWriter s = new PrintWriter(file);
 
 				PackageManager p = new PackageManager();
@@ -448,10 +449,6 @@ public class WorkflowPrefManager extends BlockManager {
 	 * Setup a the redsqirl home directory from the back-end.
 	 */
 	public static void setupHome() {
-		File iconMenu = new File(pathIconMenu);
-		if (!iconMenu.exists()) {
-			iconMenu.mkdir();
-		}
 		File userProp = new File(pathUserCfgPref);
 		File userPropLang = new File(pathUserLangCfgPref);
 		if (!userProp.exists()) {
@@ -508,7 +505,6 @@ public class WorkflowPrefManager extends BlockManager {
 
 		pathUserPref = pathUsersFolder + "/"
 				+ System.getProperty("user.name");
-		pathIconMenu = pathUserPref + "/icon_menu";
 		pathTmpFolder = pathUserPref + "/tmp";
 		pathOozieJob = pathUserPref + "/jobs";
 		pathWorkflow = pathUserPref + "/workflows";
@@ -686,6 +682,15 @@ public class WorkflowPrefManager extends BlockManager {
 	 * @param user
 	 * @return
 	 */
+	public static String getPathIconMenu() {
+		return  pathUserPref+ "/icon_menu.txt";
+	}
+	
+	/**
+	 * User icon menu directory.
+	 * @param user
+	 * @return
+	 */
 	public static String getPathIconMenu(String user) {
 		return getPathUserPref(user) + "/icon_menu.txt";
 	}
@@ -783,13 +788,6 @@ public class WorkflowPrefManager extends BlockManager {
 	 */
 	public static final String getPathuserpref() {
 		return pathUserPref;
-	}
-
-	/**
-	 * @return the pathiconmenu
-	 */
-	public static final String getPathiconmenu() {
-		return pathIconMenu;
 	}
 
 	/**
