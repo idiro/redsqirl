@@ -189,8 +189,8 @@ public class WorkflowPrefManager extends BlockManager {
 
 	/** Namenode url */
 	public static final String sys_namenode = "namenode",
-			/** idiro engine path */
-			sys_idiroEngine_path = "idiroengine_path",
+			/** Sqirl nutcracker path */
+			sys_nutcracker_path = "nutcracker_path",
 			/** Max number of workers for Giraph */
 			sys_max_workers = "max_workers",
 			/** Job Tracker URL for hadoop */
@@ -269,19 +269,6 @@ public class WorkflowPrefManager extends BlockManager {
 
 		logger.info("Get path sys home: "+pathSysHome);
 		changeSysHome(pathSysHome);
-
-		/*
-		pathSystemPref = pathSysHome
-			+ "/conf";
-		pathSysPackagePref =  pathSysHome
-			+ "/packages";
-		pathSysCfgPref = 
-<<<<<<< HEAD:idm-wf-interface/src/main/java/idiro/workflow/server/WorkflowPrefManager.java
-			pathSystemPref + "/idm_sys.properties";		
-		pathSysLangCfgPref = 
-		pathSystemPref + "/idm_sys_lang.properties";
-=======
-			pathSystemPref + "/redsqirl_sys.properties";
 
 		/**
 		 * System lang preference file.These properties are optional and are

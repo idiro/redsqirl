@@ -24,7 +24,7 @@ import com.redsqirl.workflow.server.WorkflowPrefManager;
  * @author etienne
  * 
  */
-public class IdiroEngineAction extends OozieActionAbs {
+public class SqirlNutcrackerAction extends OozieActionAbs {
 
 	/**
 	 * 
@@ -38,7 +38,7 @@ public class IdiroEngineAction extends OozieActionAbs {
 	 * Constructor
 	 * @throws RemoteException
 	 */
-	public IdiroEngineAction() throws RemoteException {
+	public SqirlNutcrackerAction() throws RemoteException {
 		super();
 	}
 	/**
@@ -56,7 +56,7 @@ public class IdiroEngineAction extends OozieActionAbs {
 
 		defaultParam(oozieXmlDoc, java);
 		String path = WorkflowPrefManager
-				.getSysProperty(WorkflowPrefManager.sys_idiroEngine_path);
+				.getSysProperty(WorkflowPrefManager.sys_nutcracker_path);
 		try {
 			FileSystem fs = NameNodeVar.getFS();
 			if (fs.isDirectory(new Path(path))) {
@@ -109,7 +109,7 @@ public class IdiroEngineAction extends OozieActionAbs {
 				// </prepare>
 				Element mainClass = oozieXmlDoc.createElement("main-class");
 				mainClass.appendChild(oozieXmlDoc
-						.createTextNode("idiro.xmlm.IdiroEngineMain"));
+						.createTextNode("com.sqirlnutcracker.SqirlNutcrackerMain"));
 				java.appendChild(mainClass);
 
 				Element javaopts = oozieXmlDoc.createElement("java-opts");
