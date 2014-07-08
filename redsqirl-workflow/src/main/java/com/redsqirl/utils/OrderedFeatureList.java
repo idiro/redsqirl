@@ -146,4 +146,22 @@ public class OrderedFeatureList extends UnicastRemoteObject implements
 		return new OrderedFeatureList(clFeatures,clPositions);
 	}
 
+	@Override
+	public String mountStringHeader() throws RemoteException {
+		
+		StringBuffer stringHeader = new StringBuffer();
+		int index = 0;
+		for (String featureName : getFeaturesNames()) {
+			stringHeader.append(featureName);
+			stringHeader.append(" ");
+			stringHeader.append(getFeatureType(featureName));
+			if(index < getFeaturesNames().size()-1){
+				stringHeader.append(",");
+			}
+			index++;
+		}
+		
+		return stringHeader.toString();
+	}
+
 }

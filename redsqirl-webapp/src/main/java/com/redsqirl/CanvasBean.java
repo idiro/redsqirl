@@ -254,9 +254,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 */
 	public void addLink() {
-		
+
 		logger.info("addLink");
-		
+
 		String idElementA = getIdMap().get(getNameWorkflow()).get(getParamOutId());
 		String idElementB = getIdMap().get(getNameWorkflow()).get(getParamInId());
 
@@ -273,7 +273,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			df.addLink(nameElementA, dfeObjA.getComponentId(), nameElementB, dfeObjB.getComponentId());
 
 			logger.info("addLink " + getParamNameLink() + " " + nameElementA + " " + nameElementB);
-			
+
 			setResult(new String[] { getParamNameLink(), nameElementA, nameElementB });
 
 			setNameOutput(nameElementA);
@@ -366,17 +366,17 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 */
 	public void removeLink() {
-		
+
 		logger.info("Remove link");
 
 		try {
-			
+
 			Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 			String idElementA = getIdMap().get(getNameWorkflow()).get(params.get("paramOutId"));
 			String idElementB = getIdMap().get(getNameWorkflow()).get(params.get("paramInId"));
 			String nameElementA = params.get("paramOutName");
 			String nameElementB = params.get("paramInName");
-			
+
 			logger.info("RemoveLink " + params.get("paramOutId") + " " + params.get("paramInId") + " " + params.get("paramOutName") + " " + params.get("paramInName"));
 
 			getDf().removeLink(nameElementA, idElementA, nameElementB, idElementB);
@@ -545,6 +545,19 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 	}
 
+	public void checkName() {
+		String msg = null;
+		String regex = "[a-zA-Z]([a-zA-Z0-9_]*)";
+		String name[] = getPath().split("/");
+		if(name != null && !checkString(regex, name[name.length-1])){
+			msg = getMessageResources("msg_error_save");
+			MessageUseful.addErrorMessage(msg);
+			HttpServletRequest request = (HttpServletRequest) FacesContext
+					.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
+		}
+	}
+
 	/**
 	 * save
 	 * 
@@ -559,21 +572,15 @@ public class CanvasBean extends BaseBean implements Serializable {
 		logger.info("save");
 		String msg = null;
 		// Set path
-		path = FacesContext.getCurrentInstance().getExternalContext()
-				.getRequestParameterMap().get("pathFile");
+		path = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("pathFile");
 
 		if (!path.contains(".")) {
-
 			path += ".rs";
 		}
 		// Update the object positions
 		updatePosition();
 		{
 			String nameWorkflowSwp = generateWorkflowName(path);
-
-			/*if(!nameWorkflowSwp.startsWith("flowchart-")){
-				nameWorkflowSwp = "flowchart-"+nameWorkflowSwp;
-			}*/
 
 			try {
 				msg = getworkFlowInterface().renameWorkflow(nameWorkflow, nameWorkflowSwp);

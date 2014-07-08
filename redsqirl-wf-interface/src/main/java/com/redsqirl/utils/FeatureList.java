@@ -55,4 +55,6 @@ public interface FeatureList extends Remote {
 	public List<FeatureType> getTypes()throws RemoteException;
 	
 	public FeatureList cloneRemote() throws RemoteException;
+	
+	public String mountStringHeader() throws RemoteException;
 }

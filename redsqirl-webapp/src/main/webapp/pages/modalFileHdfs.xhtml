@@ -176,10 +176,11 @@
 		<a4j:actionparam value="getPath('#{browserHdfsBean.path}')" assignTo="#{canvasBean.path}" noEscape="true"/>
 	</a4j:commandButton>
 	
-	<a4j:commandButton id="hdfsSaveFileBtn" styleClass="greenButton"
+	<a4j:commandButton id="hdfsSaveFileBtn" styleClass="greenButton" action="#{canvasBean.checkName}"
 	    value="#{messages.button_ok}" rendered="#{browserHdfsBean.showSave == 'T'}"
-        onclick="if(! isHDFSFileExists(getPath('#{browserHdfsBean.path}')) || confirm('#{messages.file_already_exists}')){save(getPath('#{browserHdfsBean.path}'));#{rich:component('modalFileHdfs')}.hide();}"
+        oncomplete="if(#{requestScope['msnError'] == null} ){ if(! isHDFSFileExists(getPath('#{browserHdfsBean.path}')) || confirm('#{messages.file_already_exists}')){save(getPath('#{browserHdfsBean.path}'));#{rich:component('modalFileHdfs')}.hide();}}"
         reRender="msnError" >
+        <a4j:actionparam value="getPath('#{browserHdfsBean.path}')" assignTo="#{canvasBean.path}" noEscape="true"/>
     </a4j:commandButton>
 	
 	
