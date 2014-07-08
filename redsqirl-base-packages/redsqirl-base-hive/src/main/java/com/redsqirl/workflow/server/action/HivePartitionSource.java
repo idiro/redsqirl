@@ -25,7 +25,7 @@ public class HivePartitionSource extends AbstractSource {
 	 * @throws RemoteException
 	 */
 	public HivePartitionSource() throws RemoteException {
-		super();
+		super(null);
 		
 		initializeDataTypeInteraction();
 		initializeDataSubtypeInteraction();

@@ -25,7 +25,7 @@ public class HiveSource extends AbstractSource {
 	 * @throws RemoteException
 	 */
 	public HiveSource() throws RemoteException {
-		super();
+		super(null);
 		
 		initializeDataTypeInteraction();
 		initializeDataSubtypeInteraction();

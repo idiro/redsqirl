@@ -1,12 +1,25 @@
 package com.redsqirl.workflow.server.action;
 
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.redsqirl.workflow.server.action.AbstractSource;
+import com.redsqirl.utils.FeatureList;
+import com.redsqirl.utils.OrderedFeatureList;
+import com.redsqirl.workflow.server.AppendListInteraction;
+import com.redsqirl.workflow.server.InputInteraction;
+import com.redsqirl.workflow.server.WorkflowPrefManager;
+import com.redsqirl.workflow.server.datatype.MapRedCtrlATextType;
 import com.redsqirl.workflow.server.datatype.MapRedTextType;
+import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.workflow.server.oozie.PigAction;
+import com.redsqirl.workflow.utils.PigLanguageManager;
 
 /**
  * Action that read a Text Map Reduce Directory.
@@ -17,7 +30,23 @@ import com.redsqirl.workflow.server.datatype.MapRedTextType;
 public class PigTextSource extends AbstractSource {
 
 	private static final long serialVersionUID = 7519928238030041208L;
-
+	
+	/**
+	 * Audit output name
+	 */
+	public static final String audit_out_name = "audit",
+							   key_audit="audit";
+	
+	/**
+	 * Audit Interaction
+	 */
+	protected AppendListInteraction auditInt;
+	
+	/**
+	 * Parallel Interaction
+	 */
+	public InputInteraction parallelInt;
+	
 	/**
 	 * Constructor containing the pages, page checks and interaction
 	 * Initialization
@@ -25,11 +54,35 @@ public class PigTextSource extends AbstractSource {
 	 * @throws RemoteException
 	 */
 	public PigTextSource() throws RemoteException {
-		super();
+		super(new PigAction());
 		
 		initializeDataTypeInteraction();
 		initializeDataSubtypeInteraction();
 		addSourcePage();
+		
+		auditInt= new AppendListInteraction(key_audit,
+			  	PigLanguageManager.getText("pig.audit_interaction.title"),
+			  	PigLanguageManager.getText("pig.audit_interaction.legend"), 1, 0);
+		List<String> auditIntVal = new LinkedList<String>();
+		auditIntVal.add(PigLanguageManager.getText("pig.audit_interaction_doaudit"));
+		auditInt.setPossibleValues(auditIntVal);
+		auditInt.setDisplayCheckBox(true);
+		
+		String pigParallel = WorkflowPrefManager.getUserProperty(
+				WorkflowPrefManager.user_pig_parallel,
+				WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_pig_parallel,
+						"1"));
+		
+		parallelInt = new InputInteraction(
+				"parallel",
+				PigLanguageManager.getText("pig.parallel_interaction.title"),
+				PigLanguageManager.getText("pig.parallel_interaction.legend"), 
+				2, 0);
+		parallelInt.setRegex("^\\d+$");
+		parallelInt.setValue(pigParallel);
+		
+		getSourcePage().addInteraction(auditInt);
+		getSourcePage().addInteraction(parallelInt);
 		
 		MapRedTextType type = new MapRedTextType();
 
@@ -50,5 +103,83 @@ public class PigTextSource extends AbstractSource {
 	 */
 	public String getName() throws RemoteException {
 		return "pig_text_source";
+	}
+	
+	
+	/**
+	 * Update the output
+	 * 
+	 * @return Error Message
+	 * @throws RemoteException
+	 */
+	@Override
+	public String updateOut() throws RemoteException {
+		
+		String error = super.updateOut();
+		if (error == null){
+			
+			int doAudit = auditInt.getValues().size();
+			if(doAudit > 0){
+			
+				if (output.get(audit_out_name) == null) {
+					output.put(audit_out_name, new MapRedCtrlATextType());
+				}
+				
+				try {
+					FeatureList fl = new OrderedFeatureList();
+					fl.addFeature("Legend", FeatureType.STRING);
+					
+//					Iterator<String> it = getDFEInput().get(key_input).get(0)
+//							.getFeatures().getFeaturesNames().iterator();
+					
+					Iterator<String> it = output.get(out_name).getFeatures()
+							.getFeaturesNames().iterator();
+					
+					while (it.hasNext()) {
+						fl.addFeature("AUDIT_" + it.next(), FeatureType.STRING);
+					}
+					output.get(audit_out_name).setFeatures(fl);
+				} catch (Exception e) {
+					error = e.getMessage();
+					logger.error(e.getMessage(), e);
+				}
+				
+			}
+			else if (output.get(audit_out_name) != null){
+				output.remove(audit_out_name);
+			}
+		}
+		return error;
+		
+	}
+	
+	@Override
+	public boolean writeOozieActionFiles(File[] files) throws RemoteException {
+		logger.info("Write queries in file: "+files[0].getAbsolutePath());
+		boolean ok = true;
+		
+		int doAudit = auditInt.getValues().size();
+		if(doAudit > 0){
+			String toWrite = (new AuditGenerator()).getQuery(
+					output.get(out_name), 
+					output.get(audit_out_name), 
+					parallelInt.getValue());
+			ok = toWrite != null;
+			if(ok){
+				logger.info("Content of "+files[0].getName()+": "+toWrite);
+				try {
+					FileWriter fw = new FileWriter(files[0]);
+					BufferedWriter bw = new BufferedWriter(fw);
+					bw.write(toWrite);	
+					bw.close();
+	
+				} catch (IOException e) {
+					ok = false;
+					logger.error("Fail to write into the file "+files[0].getAbsolutePath());
+				}
+			}
+		}
+		
+		return ok;
 	}
 }

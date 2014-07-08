@@ -25,7 +25,7 @@ public class PigBinarySource extends AbstractSource {
 	 * @throws RemoteException
 	 */
 	public PigBinarySource() throws RemoteException {
-		super();
+		super(null);
 		
 		initializeDataTypeInteraction();
 		initializeDataSubtypeInteraction();

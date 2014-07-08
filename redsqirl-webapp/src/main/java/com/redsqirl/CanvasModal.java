@@ -272,7 +272,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 									.equals(DisplayType.browser);
 						}
 
-						if (sourceNode) {
+						if (sourceNode && dfe.getDFEOutput().size() <= 1) {
 							outputTab.setShowOutputForm("N");
 						}
 
@@ -305,7 +305,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 							updateOutputElement();
 						}
 
-						outputTab.mountOutputForm(!sourceNode);
+						outputTab.mountOutputForm(!sourceNode || dfe.getDFEOutput().size() > 1);
 
 						checkFirstPage();
 
@@ -370,6 +370,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 			MessageUseful.addErrorMessage(error);
 			request.setAttribute("msnError", "msnError");
 		}else{
+			outputTab.mountOutputForm(!sourceNode || dfe.getDFEOutput().size() > 1);
 			MessageUseful.addInfoMessage(getMessageResources("success_message"));
 			request.setAttribute("msnSuccess", "msnSuccess");
 		}
@@ -549,7 +550,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 					error.append(e);
 					error.append(System.getProperty("line.separator"));
 				}
-				outputTab.mountOutputForm(!sourceNode);
+				outputTab.mountOutputForm(!sourceNode || dfe.getDFEOutput().size() > 1);
 
 			}
 		}

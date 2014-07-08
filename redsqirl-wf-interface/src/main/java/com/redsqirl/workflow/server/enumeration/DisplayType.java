@@ -46,13 +46,14 @@ public enum DisplayType {
 
 	// Browser
 	// Format in: browse>[type>DataType.getName()]/[subtype>namei]
-	// [output>[path>mypath]/[feature>[name>value]/[type>value]]/[property>namei>valuei]]
+	// [output>[name>myname]/[path>mypath]/[feature>[name>value]/[type>value]]/[property>namei>valuei]]
 	/**
 	 * <pre>
 	 * <code>
 	 * browse >[type>DataType.getName()]
 	 * 		   [subtype>namei]
-	 * 		   [output>[path>mypath]
+	 * 		   [output>[name>myname]
+	 * 				   [path>mypath]
 	 * 				   [feature>[name>value]
 	 * 				   [type>value]]
 	 * 	       		   [property>namei>valuei]]

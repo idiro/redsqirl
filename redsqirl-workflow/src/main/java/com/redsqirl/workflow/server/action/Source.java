@@ -23,7 +23,7 @@ public class Source extends AbstractSource {
 	 * @throws RemoteException
 	 */
 	public Source() throws RemoteException {
-		super();
+		super(null);
 
 		addTypePage();
 		addSubTypePage();

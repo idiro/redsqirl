@@ -449,7 +449,14 @@ public class MapRedTextType extends MapRedDir {
 		} else if (asciiCode.length() == 1) {
 			c = asciiCode.charAt(0);
 		}
-		return new String() + c;
+		
+		String result = null;
+		
+		if (c != null){
+			result = String.valueOf(c);
+		}
+		
+		return result;
 	}
 
 	/**

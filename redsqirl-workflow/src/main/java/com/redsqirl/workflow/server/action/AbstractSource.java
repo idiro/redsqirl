@@ -13,21 +13,21 @@ import com.redsqirl.utils.FeatureList;
 import com.redsqirl.utils.OrderedFeatureList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.utils.TreeNonUnique;
+import com.redsqirl.workflow.server.BrowserInteraction;
 import com.redsqirl.workflow.server.DataOutput;
 import com.redsqirl.workflow.server.DataflowAction;
 import com.redsqirl.workflow.server.ListInteraction;
 import com.redsqirl.workflow.server.Page;
-import com.redsqirl.workflow.server.UserInteraction;
 import com.redsqirl.workflow.server.connect.WorkflowInterface;
 import com.redsqirl.workflow.server.datatype.HiveType;
 import com.redsqirl.workflow.server.datatype.MapRedTextType;
-import com.redsqirl.workflow.server.enumeration.DisplayType;
 import com.redsqirl.workflow.server.enumeration.FeatureType;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DFEPage;
+import com.redsqirl.workflow.server.interfaces.OozieAction;
 import com.redsqirl.workflow.server.interfaces.PageChecker;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
@@ -70,14 +70,20 @@ public abstract class AbstractSource extends DataflowAction {
 	 * Interaction for the DataSubType
 	 */
 	protected ListInteraction dataSubtype;
+	/**
+	 * Interaction for the Dataset
+	 */
+	protected BrowserInteraction browser;
+	
+	protected Page page1, page2, page3;
 
 	/**
 	 * Constructor to initalize the DataFlowAction.
 	 * 
 	 * @throws RemoteException
 	 */
-	public AbstractSource() throws RemoteException {
-		super(null);
+	public AbstractSource(OozieAction action) throws RemoteException {
+		super(action);
 		
 	}
 	
@@ -88,7 +94,7 @@ public abstract class AbstractSource extends DataflowAction {
 	 * 
 	 */
 	protected void addTypePage() throws RemoteException{
-		Page page1 = addPage(LanguageManagerWF.getText("source.page1.title"),
+		page1 = addPage(LanguageManagerWF.getText("source.page1.title"),
 				LanguageManagerWF.getText("source.page1.legend"), 1);
 
 		initializeDataTypeInteraction();
@@ -123,7 +129,7 @@ public abstract class AbstractSource extends DataflowAction {
 	 * 
 	 */
 	protected void addSubTypePage() throws RemoteException{
-		Page page2 = addPage(LanguageManagerWF.getText("source.page2.title"),
+		page2 = addPage(LanguageManagerWF.getText("source.page2.title"),
 				LanguageManagerWF.getText("source.page2.legend"), 1);
 
 		initializeDataSubtypeInteraction();
@@ -205,15 +211,15 @@ public abstract class AbstractSource extends DataflowAction {
 	 * 
 	 */
 	protected void addSourcePage() throws RemoteException{
-		Page page3 = addPage(LanguageManagerWF.getText("source.page3.title"),
+		page3 = addPage(LanguageManagerWF.getText("source.page3.title"),
 				LanguageManagerWF.getText("source.page3.legend"), 1);
 
-		DFEInteraction browse = new UserInteraction(key_dataset,
+		browser = new BrowserInteraction(key_dataset,
 				LanguageManagerWF.getText("source.browse_interaction.title"),
 				LanguageManagerWF.getText("source.browse_interaction.legend"),
-				DisplayType.browser, 0, 0);
+				0, 0);
 
-		page3.addInteraction(browse);
+		page3.addInteraction(browser);
 
 		page3.setChecker(new PageChecker() {
 
@@ -331,6 +337,27 @@ public abstract class AbstractSource extends DataflowAction {
 									new Object[] { e.getMessage() });
 						}
 					}
+					
+					// Name
+					String name = null;
+					if (error == null) {
+						try {
+							name = getInteraction(key_dataset).getTree()
+									.getFirstChild("browse")
+									.getFirstChild("output")
+									.getFirstChild("name").getFirstChild()
+									.getHead();
+
+							if (name == null) {
+								error = LanguageManagerWF
+										.getText("source.name_null");
+							}
+						} catch (Exception e) {
+							error = LanguageManagerWF.getText(
+									"source.name_null",
+									new Object[] { e.getMessage() });
+						}
+					}
 
 					if (error == null) {
 						boolean ok = false;
@@ -363,10 +390,17 @@ public abstract class AbstractSource extends DataflowAction {
 							logger.info(out.getFeatures().getFeaturesNames());
 
 						}
+						
 						getInteraction(key_dataset).getTree()
 								.removeAllChildren();
 						getInteraction(key_dataset).getTree()
 								.add(out.getTree());
+						
+						getInteraction(key_dataset).getTree()
+								.getFirstChild("browse")
+								.getFirstChild("output")
+								.add("name")
+								.add(name);
 					}
 
 					// Check path
@@ -431,8 +465,8 @@ public abstract class AbstractSource extends DataflowAction {
 			updateDataType(interaction.getTree());
 		} else if (interId.equals(key_datasubtype)) {
 			updateDataSubType(interaction.getTree());
-		} else {
-			updateDataSet(interaction.getTree());
+		} else if (interId.equals(key_dataset)){
+			browser.update(dataType.getValue(), dataSubtype.getValue());
 		}
 	}
 
@@ -491,38 +525,6 @@ public abstract class AbstractSource extends DataflowAction {
 	}
 
 	/**
-	 * Update the DataSet Interaction
-	 * 
-	 * @param treeDataset
-	 * @throws RemoteException
-	 */
-	public void updateDataSet(Tree<String> treeDataset) throws RemoteException {
-
-		String newType = dataType.getValue();
-		logger.info("type : " + newType);
-		String newSubtype = dataSubtype.getValue();
-		logger.info("subtype : " + newSubtype);
-
-		if (treeDataset.getSubTreeList().isEmpty()) {
-			treeDataset.add("browse").add("output");
-			treeDataset.getFirstChild("browse").add("subtype").add(newSubtype);
-			treeDataset.getFirstChild("browse").add("type").add(newType);
-		} else {
-			Tree<String> oldType = treeDataset.getFirstChild("browse")
-					.getFirstChild("type").getFirstChild();
-
-			if (oldType != null && !oldType.getHead().equals(newType)) {
-				treeDataset.getFirstChild("browse").remove("type");
-				treeDataset.getFirstChild("browse").remove("output");
-				treeDataset.getFirstChild("browse").add("output");
-				treeDataset.getFirstChild("browse").add("type").add(newType);
-				treeDataset.getFirstChild("browse").add("subtype")
-						.add(newSubtype);
-			}
-		}
-	}
-
-	/**
 	 * Update the output
 	 * 
 	 * @return Error Message
@@ -540,5 +542,9 @@ public abstract class AbstractSource extends DataflowAction {
 	@Override
 	public boolean writeOozieActionFiles(File[] files) throws RemoteException {
 		return false;
+	}
+	
+	protected Page getSourcePage(){
+		return page3;
 	}
 }

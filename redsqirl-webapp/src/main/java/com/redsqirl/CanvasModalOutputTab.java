@@ -146,7 +146,8 @@ public class CanvasModalOutputTab implements Serializable {
 				of.setSavingStateList(outputList);
 				logger.info("saving state "
 						+ e.getValue().getSavingState().toString());
-				if (e.getValue().getSavingState() == SavingState.RECORDED) {
+				if (e.getValue().getSavingState() == SavingState.RECORDED &&
+						e.getValue().getPath() != null) {
 					int lastSlash = e.getValue().getPath().lastIndexOf('/');
 					if (lastSlash != -1) {
 						if (lastSlash == 0) {

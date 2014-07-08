@@ -114,6 +114,9 @@ public class BrowserInteraction extends CanvasModalInteraction {
 		inter.getTree().getFirstChild("browse")
 		.getFirstChild("output").add("path")
 		.add(getPath());
+		inter.getTree().getFirstChild("browse")
+		.getFirstChild("output").add("name")
+		.add("");
 
 		Tree<String> myProperty = inter.getTree()
 				.getFirstChild("browse").getFirstChild("output")

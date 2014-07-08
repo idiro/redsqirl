@@ -3,6 +3,7 @@ package com.redsqirl.workflow.server;
 
 import java.rmi.RemoteException;
 
+import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.enumeration.DisplayType;
 /**
  * Implent a browser interaction 
@@ -41,6 +42,37 @@ public class BrowserInteraction extends UserInteraction{
 	public BrowserInteraction(String id, String name, String legend,
 			String texttip, int column, int placeInColumn) throws RemoteException {
 		super(id, name, legend, texttip, DisplayType.browser, column, placeInColumn);
+	}
+	
+	/**
+	 * Update the interaction
+	 * 
+	 * @param in
+	 * @throws RemoteException
+	 */
+	public void update(String newType, String newSubtype) throws RemoteException {
+		logger.info("type : " + newType);
+		logger.info("subtype : " + newSubtype);
+		
+		Tree<String> treeDataset = getTree();
+
+		if (treeDataset.getSubTreeList().isEmpty()) {
+			treeDataset.add("browse").add("output");
+			treeDataset.getFirstChild("browse").add("subtype").add(newSubtype);
+			treeDataset.getFirstChild("browse").add("type").add(newType);
+		} else {
+			Tree<String> oldType = treeDataset.getFirstChild("browse")
+					.getFirstChild("type").getFirstChild();
+
+			if (oldType != null && !oldType.getHead().equals(newType)) {
+				treeDataset.getFirstChild("browse").remove("type");
+				treeDataset.getFirstChild("browse").remove("output");
+				treeDataset.getFirstChild("browse").add("output");
+				treeDataset.getFirstChild("browse").add("type").add(newType);
+				treeDataset.getFirstChild("browse").add("subtype")
+						.add(newSubtype);
+			}
+		}
 	}
 
 }
