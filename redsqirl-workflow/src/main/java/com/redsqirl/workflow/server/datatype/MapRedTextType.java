@@ -297,6 +297,8 @@ public class MapRedTextType extends MapRedDir {
 					}
 				} else {
 					if (features != null) {
+						String myHeader = fl.mountStringHeader();
+						addProperty(key_header, myHeader);
 						logger.debug(features.getFeaturesNames());
 						logger.debug(fl.getFeaturesNames());
 					} else {
