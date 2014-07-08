@@ -49,7 +49,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 		// clean the map
 		listFeatures = new LinkedList<String>();
 		listProperties = new LinkedList<SelectItem>();
-		logger.info(printTree(inter.getTree()));
+		//logger.info(printTree(inter.getTree()));
 		try{
 			if (inter.getTree().getFirstChild("browse")
 					.getFirstChild("output").getFirstChild("path") != null) {
