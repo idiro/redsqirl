@@ -38,57 +38,69 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	private LinkedList<String> target;
 	private SelectableTable tableGrid = new SelectableTable();
 	private Integer index;
+	private String showTab = "N";
+
 
 	/**
 	 * Value to give when index is null
 	 */
 	private SelectableRowFooter menuNull = new SelectableRowFooter(
 			new String[3], getMenuActions());
-	
+
 	private static Logger logger = Logger.getLogger(ConfigureTabsBean.class);
+
+
+	public ConfigureTabsBean(){
+	}
 
 	//@PostConstruct
 	public void openCanvasScreen() {
-		try {
-			if (getworkFlowInterface().getWorkflow("canvas0") == null) {
-				getworkFlowInterface().addWorkflow("canvas0");
-				DataFlow wf = getworkFlowInterface().getWorkflow("canvas0");
-				wf.loadMenu();
-				menuWA = wf.getRelativeMenu(getCurrentPage());
-				if(allWANameWithClassName == null){
-					allWANameWithClassName = wf.getAllWANameWithClassName();
-					logger.info(allWANameWithClassName.keySet());
+
+		if(menuWA != null){
+			showTab = "Y";
+		}else{
+			try {
+				if (getworkFlowInterface().getWorkflow("canvas0") == null) {
+					getworkFlowInterface().addWorkflow("canvas0");
+					DataFlow wf = getworkFlowInterface().getWorkflow("canvas0");
+					wf.loadMenu();
+					menuWA = wf.getRelativeMenu(getCurrentPage());
+					if(allWANameWithClassName == null){
+						allWANameWithClassName = wf.getAllWANameWithClassName();
+						logger.info(allWANameWithClassName.keySet());
+					}
+					getworkFlowInterface().removeWorkflow("canvas0");
 				}
-				getworkFlowInterface().removeWorkflow("canvas0");
-			}
 
-			mountMenuActions();
-			menuNull = new SelectableRowFooter(
+				mountMenuActions();
+				menuNull = new SelectableRowFooter(
 						new String[3], getMenuActions());
-			setTabs(new LinkedList<String>(getMenuWA().keySet()));
+				setTabs(new LinkedList<String>(getMenuWA().keySet()));
 
-			setColumnIds(new LinkedList<String>());
-			getColumnIds().add("Name");
-			setTableGrid(new SelectableTable(columnIds));
+				setColumnIds(new LinkedList<String>());
+				getColumnIds().add("Name");
+				setTableGrid(new SelectableTable(columnIds));
 
-			for (String name : getMenuWA().keySet()) {
-				String[] value = new String[1];
-				value[0] = name;
-				retrieveItems(name);
-				getTableGrid().getRows().add(new SelectableRowFooter(value, getMenuActions(), getTarget()));
+				for (String name : getMenuWA().keySet()) {
+					String[] value = new String[1];
+					value[0] = name;
+					retrieveItems(name);
+					getTableGrid().getRows().add(new SelectableRowFooter(value, getMenuActions(), getTarget()));
+				}
+
+				if(getMenuWA().isEmpty()){
+					setIndex(null);
+				}else{
+					setIndex(0);
+				}
+
+
+			} catch (RemoteException e1) {
+				e1.printStackTrace();
+
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-
-			if(getMenuWA().isEmpty()){
-			    setIndex(null);
-			}else{
-			    setIndex(0);
-			}
-
-		} catch (RemoteException e1) {
-			e1.printStackTrace();
-
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -180,7 +192,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 				error = getMessageResources("msg_error_save_footer");
 				break;
 			}
-			
+
 			//The field Name can not contain special character.
 			if (!selectableRow.getRow()[0].matches(regex)) {
 				error = getMessageResources("msg_error_save_footer_name");
@@ -236,13 +248,13 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 					setTabs(new LinkedList<String>(getMenuWA().keySet()));
 
 				}
+				showTab = "N";
 			} catch (RemoteException e1) {
 				e1.printStackTrace();
 
 			} catch (Exception e) {
 				e.printStackTrace();
-			}
-
+			};
 		}else{
 			MessageUseful.addErrorMessage(error);
 			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
@@ -310,6 +322,20 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 
 	public void setTabs(List<String> tabs) {
 		this.tabs = tabs;
+	}
+
+	/**
+	 * @return the showTab
+	 */
+	public String getShowTab() {
+		return showTab;
+	}
+
+	/**
+	 * @param showTab the showTab to set
+	 */
+	public void setShowTab(String showTab) {
+		this.showTab = showTab;
 	}
 
 }
