@@ -1,43 +1,99 @@
 <html>
     <head></head>
     <body>
-	<h1>Red Sqirl Pig</h1>
-	<p>
-	    Red Sqirl Pig is a package that contains actions that interface with <a
-	    href="http://pig.apache.org/" target="_blank">Pig</a> on the Red Sqirl platform to perform
-	    Pig actions. The actions currently available on the package are:
-	    <ul>
-		<li>Pig Select</li>
-		<li>Pig Aggregator</li>
-		<li>Pig Join</li>
-		<li>Pig Union</li>
-	    </ul>	
-	</p>
+    
+    
+    <h1>Red Sqirl Pig</h1>
+    <p>
+        Red Sqirl Pig is a package that contains actions that interface with <a
+            target="_blank" href="http://pig.apache.org/">Pig</a> on the Red Sqirl platform to perform
+            Pig actions.
+           
+           The pig actions available from the package are
+           <ul>
+               <li> Pig Aggregator 
+               </li>
+            <li>
+                Pig Anonymise
+            </li>
+            <li>
+                Pig Binary Source
+            </li>
+               <li>
+                Pig Join
+            </li>
+            <li>
+                Pig Sample
+            </li>
+            <li>
+                Pig Select
+            </li>
+            <li>
+                Pig Text Source
+            </li>
+            <li>
+                Pig Transpose
+            </li>
+            <li>
+                Pig Unanonymise
+            </li>
+            <li>
+                 Pig Union 
+            </li>
+            <li>
+                Pig Value Binning
+            </li>
+            <li>
+                Pig Volume Binning
+            </li>
+           </ul>
 
-	<p>Apache Pig is a platform for analyzing large data sets that
-	consists of a high-level language for expressing data analysis
-	programs, coupled with infrastructure for evaluating these programs.
-	The salient property of Pig programs is that their structure is
-	amenable to substantial parallelization, which in turns enables them
-	to handle very large data sets. At the present time, Pig's
-	infrastructure layer consists of a compiler that produces sequences of
-	Map-Reduce programs, for which large-scale parallel implementations
-	already exist (e.g., the Hadoop subproject). Pig's language layer
-	currently consists of a textual language called Pig Latin, which has
-	the following key properties:
+    </p>
+    
+    <h2>Redsqirl Pig Data set</h2>
 
-	<ul>
-	    <li>Ease of programming. It is trivial to achieve parallel
-	    execution of simple, "embarrassingly parallel" data analysis tasks.
-	    Complex tasks comprised of multiple interrelated data transformations
-	    are explicitly encoded as data flow sequences, making them easy to
-	    write, understand, and maintain.</li>
-	    <li>Optimization opportunities. The way in which tasks are
-	    encoded permits the system to optimize their execution automatically,
-	    allowing the user to focus on semantics rather than efficiency.</li>
-	    <li>Extensibility. Users can create their own functions to do
-	    special-purpose processing.</li>
-	</ul>
-	</p>
+    <p>The last page of every pig action will have two interactions
+        that set the output format of the pig action. These interactions are
+        to set the delimiter of the file for a TEXT MAP REDUCE DIRECTORY and
+        the other is to set the output type of the file to be either TEXT MAP
+        REDUCE DIRECTORY or BINARY MAP-REDUCE DIRECTORY
+    </p>
+
+    <h2>Auditing</h2>
+    
+    <p> After each Pig action it is possible to audit the result in order to
+    have a better idea of the data set and help make decisions on what to
+    do next. For example you may want to do an audit before using a binning
+    node in order to have an idea of your value range. Also result of the
+    audit may create auto-generated options.
+    </p>
+
+    <h2>Apache Pig</h2>
+
+    <p>Apache Pig is a platform for analyzing large data sets, which
+        consists of a high-level language for expressing data analysis
+        programs, coupled with infrastructure for evaluating these programs.
+        The salient property of Pig programs is that their structure is
+        amenable to substantial parallelization, which in turns enables them
+        to handle very large data sets. At the present time, Pig's
+        infrastructure layer consists of a compiler that produces sequences
+        of Map-Reduce programs, for which large-scale parallel
+        implementations already exist (e.g., the Hadoop subproject). Pig's
+        language layer currently consists of a textual language called Pig
+        Latin, which has the following key properties:
+    <ul>
+        <li>Ease of programming. It is trivial to achieve parallel
+            execution of simple, "embarrassingly parallel" data analysis tasks.
+            Complex tasks comprised of multiple interrelated data
+            transformations are explicitly encoded as data flow sequences,
+            making them easy to write, understand, and maintain.</li>
+        <li>Optimization opportunities. The way in which tasks are
+            encoded permits the system to optimize their execution
+            automatically, allowing the user to focus on semantics rather than
+            efficiency.</li>
+        <li>Extensibility. Users can create their own functions to do
+            special-purpose processing.</li>
+    </ul>
+    </p>
     </body>
 </html>

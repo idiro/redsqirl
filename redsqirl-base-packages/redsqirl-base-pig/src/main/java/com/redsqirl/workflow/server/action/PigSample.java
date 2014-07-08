@@ -57,6 +57,8 @@ public class PigSample extends PigElement {
 		page2.addInteraction(parallelInt);
 		page2.addInteraction(delimiterOutputInt);
 		page2.addInteraction(savetypeOutputInt);
+		page2.addInteraction(auditInt);
+		
 		logger.info("added interactions");
 		logger.info("constructor ok");
 	}

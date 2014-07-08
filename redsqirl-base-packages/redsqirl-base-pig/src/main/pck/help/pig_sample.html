@@ -32,6 +32,7 @@
 		    <li>Choose the sample ratio</li>
 		    <li> Sort data </li>
 		    <li> Choose data format </li>
+		    <li> Perform audit on the result </li>
 		</ul>
 	    </li>
 	    <li>Output
@@ -42,6 +43,13 @@
 			    href="../help/canvas.html#output_type">
 			    Text or Binary Map Reduce Directory
 			</a>
+		    </li>
+		    <li>audit (OPT): 
+			<a class="stopLink" id="helpmain_canvas" 
+			    onclick="return false;" 
+			    href="../help/canvas.html#output_type">
+			    Control-A delimited directory 
+			</a> with global audit values
 		    </li>
 		</ul>
 	    </li>
@@ -82,7 +90,16 @@
 	<li> Text: save the result in a text format which is user readable, very handy for re-using the output</li>
 	<li> Binary: Use pig binary format. Binary format for reading and writing is a bit faster than a text 		     format.</li>
 	</ul>
-	
+		
+	<h3>Audit</h3>
+
+	When the audit is enabled a second data set is generated with aggregate
+	value that can give an overview to the user. For each column
+	when relevant the range, the average, the number of non-null
+	and null values as well as the number of distinct values (only for
+	CATEGORY type) are calculated.
+
+
 	<h2>Red Sqirl Pig</h2>
 	<p>
 		Red Sqirl Pig is a package that contains actions that interface with <a
@@ -91,63 +108,40 @@
 		   
 		   The pig actions available from the package are
 		   <ul>
-		       <li> <a class="stopLink" id="help_pig_aggregator"
-			   onclick="return false;" href="pig_aggregator.html">Pig Aggregator</a> 
+		       <li> Pig Aggregator 
 		       </li>
 			<li>
-			    <a class="stopLink" id="help_pig_anonymise"
-				onclick="return false;"
-				href="pig_anonymise.html">Pig Anonymise</a>
+			    Pig Anonymise
 			</li>
 			<li>
-			    <a class="stopLink" id="help_pig_binary_source"
-				onclick="return false;"
-				href="pig_binary_source.html">Pig Binary Source</a>
+			    Pig Binary Source
 			</li>
 		       <li>
-			    <a
-				class="stopLink" id="help_pig_join" onclick="return false;"
-				href="pig_join.html">Pig Join</a>
+			    Pig Join
 			</li>
 			<li>
-			    <a class="stopLink" id="help_pig_sample"
-				onclick="return false;" href="pig_sample.html">Pig Sample</a>
+			    Pig Sample
 			</li>
 			<li>
-			    <a class="stopLink" id="help_pig_select"
-				onclick="return false;"
-				href="pig_select.html">Pig Select</a>
+			    Pig Select
 			</li>
 			<li>
-			    <a class="stopLink" id="help_pig_text_source"
-				onclick="return false;"
-				href="pig_text_source.html">Pig Text Source</a>
+			    Pig Text Source
 			</li>
 			<li>
-			    <a class="stopLink" id="help_pig_transpose"
-				onclick="return false;"
-				href="pig_transpose.html">Pig Transpose</a>
+			    Pig Transpose
 			</li>
 			<li>
-			    <a class="stopLink" id="help_pig_unanonymise"
-				onclick="return false;"
-				href="pig_unanonymise.html">Pig Unanonymise</a>
+			    Pig Unanonymise
 			</li>
 			<li>
-			     <a class="stopLink"
-				id="help_pig_union" onclick="return false;" href="pig_union.html">Pig
-				Union</a> 
+			     Pig Union 
 			</li>
 			<li>
-			    <a class="stopLink" id="help_pig_value_binning"
-				onclick="return false;"
-				href="pig_value_binning.html">Pig Value Binning</a>
+			    Pig Value Binning
 			</li>
 			<li>
-			    <a class="stopLink" id="help_pig_volume_binning"
-				onclick="return false;"
-				href="pig_volume_binning.html">Pig Volume
-				Binning</a>
+			    Pig Volume Binning
 			</li>
 		   </ul>
 
