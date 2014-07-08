@@ -4,18 +4,22 @@ package com.redsqirl.workflow.server.action;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.redsqirl.utils.FeatureList;
+import com.redsqirl.utils.OrderedFeatureList;
 import com.redsqirl.workflow.server.AppendListInteraction;
 import com.redsqirl.workflow.server.DataProperty;
 import com.redsqirl.workflow.server.InputInteraction;
 import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.datatype.MapRedCtrlATextType;
 import com.redsqirl.workflow.server.datatype.MapRedTextType;
+import com.redsqirl.workflow.server.enumeration.FeatureType;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
+import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.utils.PigLanguageManager;
 /**
  * Action to unanonymise a data set
@@ -77,6 +81,7 @@ public class PigUnanonymise extends PigElement {
 				PigLanguageManager.getText("pig.unanonymise.features_interaction.title"),
 				PigLanguageManager.getText("pig.unanonymise.features_interaction.legend"), 0,
 				0, true);
+		featuresInt.setNonEmptyChecker();
 		
 		offsetInt = new InputInteraction(
 				key_offset,
@@ -112,7 +117,7 @@ public class PigUnanonymise extends PigElement {
 		input.put(key_input, new DataProperty(MapRedTextType.class, 1,
 				1));
 		input.put(key_index_map, new DataProperty(MapRedCtrlATextType.class,
-				0, 1));
+				0, 1,getIndexFeatures()));
 	}
 	
 	
@@ -271,10 +276,43 @@ public class PigUnanonymise extends PigElement {
 		DFEOutput in = getDFEInput().get(key_input).get(0);
 		if (in != null) {
 			if (interaction.getId().equals(featuresInt.getId())) {
-				featuresInt.setPossibleValues(getInFeatures().getFeaturesNames());
+				FeatureList inFeat = getInFeatures();
+				List<DataFlowElement> ind = getInputComponent().get(key_index_map);
+				List<String> posValues = new LinkedList<String>();
+				Iterator<String> it = inFeat.getFeaturesNames().iterator();
+				if(ind != null && !ind.isEmpty()){
+					while(it.hasNext()){
+						String cur = it.next();
+						FeatureType typeCur = inFeat.getFeatureType(cur);
+						if(!( FeatureType.DATE.equals(typeCur)
+								|| FeatureType.DATETIME.equals(typeCur)
+								|| FeatureType.TIMESTAMP.equals(typeCur))){
+							posValues.add(cur);
+						}
+					}
+				}else{
+					while(it.hasNext()){
+						String cur = it.next();
+						FeatureType typeCur = inFeat.getFeatureType(cur);
+						if(!( FeatureType.STRING.equals(typeCur)|| FeatureType.CATEGORY.equals(typeCur)
+								|| FeatureType.DATE.equals(typeCur)
+								|| FeatureType.DATETIME.equals(typeCur)
+								|| FeatureType.TIMESTAMP.equals(typeCur))){
+							posValues.add(cur);
+						}
+					}
+				}
+				featuresInt.setPossibleValues(posValues);
 			}else if (interaction.getId().equals(orderInt.getId())) {
 				orderInt.update();
 			}
 		}
+	}
+	
+	public FeatureList getIndexFeatures() throws RemoteException{
+		FeatureList fl = new OrderedFeatureList();
+		fl.addFeature("Value", FeatureType.STRING);
+		fl.addFeature("Index", FeatureType.STRING);
+		return fl;
 	}
 }

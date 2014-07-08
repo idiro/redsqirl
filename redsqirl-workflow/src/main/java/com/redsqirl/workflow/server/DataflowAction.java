@@ -22,7 +22,6 @@ import org.w3c.dom.NodeList;
 
 import com.idiro.Log;
 import com.idiro.check.FileChecker;
-import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
@@ -216,10 +215,9 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 											cur.getName() });
 						} else if (!prop.check(cur.getDFEOutput().get(
 								nonEntryName))) {
-							cur_ans += LanguageManagerWF.getText(
-									"dataflowaction.checkIn_linkIncompatible",
-									new Object[] { getComponentId(), getName(),
-											cur.getName() });
+							cur_ans += prop.checkStr(cur.getDFEOutput().get(
+									nonEntryName), getComponentId(), getName(),
+									cur.getName());
 						}
 
 						ans += cur_ans;

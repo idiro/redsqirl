@@ -35,17 +35,6 @@ rm ${CONF_FILE} 2> /dev/null
 echo TOMCAT_PATH=\"${TOMCAT_PATH_CUR}\" > ${CONF_FILE}
 echo HIVE_PORT_CUR=\"${HIVE_PORT_CUR}\" >> ${CONF_FILE}
 
-for i in ${SCRIPT_PATH}/../lib/*.jar ; do
-    CLASSPATH=$CLASSPATH:$i
-done
-
-MAIN_CLASS=com.redsqirl.workflow.utils.WorkflowPrefManager
-export SCRIPT_PATH PID
-
-JAVA_PATH=java
-#echo $JAVA_PATH -server -classpath $CLASSPATH $MAIN_CLASS pathSystemPref="$(dirname  ${SCRIPT_PATH})/conf" pathSysHome="$(dirname  ${SCRIPT_PATH})"
-$JAVA_PATH -server -classpath $CLASSPATH $MAIN_CLASS pathSystemPref="$(dirname  ${SCRIPT_PATH})/conf" pathSysHome="$(dirname  ${SCRIPT_PATH})"
-
 #Copy war file
 cp ${SCRIPT_PATH}/../war/* ${TOMCAT_PATH_CUR}
 

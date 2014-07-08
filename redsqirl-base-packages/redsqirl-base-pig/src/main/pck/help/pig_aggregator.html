@@ -8,61 +8,188 @@
 <body>
 	<h1>Pig Aggregator</h1>
 	<h2>Decription</h2>
-	<p>Pig Aggregator is an action that is allows data to be
-		aggregated .</p>
+	<p>Pig Aggregator is an action that allows data to be
+		aggregated.</p>
 	<h3>Quick Guide</h3>
 	<p>
 	<ul>
-		<li>Input - Single Text or Binary Map Reduce Directory</li>
-		<li>Group By - Group the dataset by a selection of features</li>
-		<li>Features - Select the features to be used or calculated</li>
-		<li>Filter - Filter the selected data by a condition</li>
-		<li>Output - Single Text or Binary Map Reduce Directory</li>
+	    <li>Input
+		<ul>
+		    <li>
+			<a class="stopLink" id="helpmain_canvas" 
+			    onclick="return false;" 
+			    href="../help/canvas.html#output_type">
+			    Text or Binary Map Reduce Directory
+			</a>
+		    </li>
+		</ul>
+	    </li>
+	    <li>Configurations
+		<ul>
+		    <li>Group By - Group the dataset by a selection of features</li>
+		    <li> Transform data related to the group by</li>
+		    <li> Sort data </li>
+		    <li> Filter data row per row</li>
+		    <li> Choose data format </li>
+		    <li> Perform audit on the result </li>
+		</ul>
+	    </li>
+	    <li>Output
+		<ul>
+		    <li>
+			<a class="stopLink" id="helpmain_canvas" 
+			    onclick="return false;" 
+			    href="../help/canvas.html#output_type">
+			    Text or Binary Map Reduce Directory
+			</a>
+		    </li>
+		    <li>audit (OPT): 
+			<a class="stopLink" id="helpmain_canvas" 
+			    onclick="return false;" 
+			    href="../help/canvas.html#output_type">
+			    Control-A delimited directory 
+			</a> with global audit values
+		    </li>
+		</ul>
+	    </li>
 	</ul>
 	</p>
 
-
-	<h2>Source</h2>
-	<p>The source type for Pig Aggregator has to be Hive and the sub
-		types Text Map Reduce Directory or Binary Map Reduce Directory. Only
-		one input is needed for Pig Aggregator</p>
-
 	<h2><a id="page1">Group By - Page 1</a></h2>
-	<p>The Group By Interaction allows for features to be selected
-		that the query will be grouped by.</p>
 
-	<h3>Group By</h3>
 	<p>In Group By the group by condition can be set to group the data
-		set by an attribute</p>
-	<h2>Feature Operations</h2>
+		set by an attribute. When nothing is selected, the data set will be
+		aggregated in one row.</p>
+
+	<h2><a id="page2">Feature Operations - Page 2</a></h2>
+
 	<p>Feature operations allows data to be copied to the output table
-		and also do some transformation of the data. It allows casting of one
-		data type to another type or other operations to the attribute.</p>
-	<p>There is a generator action that will generate the action
-		depending on the generation type. If the generator action is select
-		on MAX it will generate all the features available in the MAX
-		function</p>
+		and also to do some transformations of the data. It allows casting of one
+		data type to another type or other operations to the attribute.
+	   Operations can be process over a list of rows defined by the group by
+	   clause.
+	</p>
+	<p>Generator options are:
+	    <ul>
+		<li>copy - copy the features that are grouped by</li>
+		<li>AVG - calculate the average on every aggregated number features</li>
+		<li>COUNT - count the number of non null values on every aggregated number features</li>
+		<li>COUNT_DISTINCT - count the number of distinct values on every aggregated number features</li>
+		<li>MAX - calculate the maximum value on every aggregated number features</li>
+		<li>MIN - calculate the minimum value on every aggregated number features</li>
+		<li>SUM - calculate the sum on every aggregated number features</li>
+		<li>AUDIT - same as generate AVG, COUNT, COUNT_DISTINCT, MAX,
+		MIN and SUM</li>
+	    </ul>
+	</p>
+
+
+	<h2><a id="page3">Ordering dataset - Page 2</a></h2>
+
+	<p>In this page you can order the features at your convenience. If
+	nothing is specified the data set will not be ordered.</p>
+
+	<h2><a id="page4">Filtering, Formating and Auditing - Page 3</a></h2>
+
+	<h3>Condition</h3>
+	<p>Conditions can be set to filter out the row of interest. The filter is applied row per row 		indepently. The query can be as complicated  or as complex as needed.
+	</p>
+
+	<h3>Parallel</h3>
+
+	<p> The parallel clause lets you choose the number of reducers used when ordering the dataset. This 	  parameter is optional and useful if you have performance issues. Please read the performance guide, 
+	parallel section of the pig documentation.
+	</p>
+
+	<h3>Delimiter</h3>
+
+	<p> Choose the delimiter character used to separate the output dataset field in each row. The 		delimiter is used only if you choose Text format.
+	</p> 
+	<h3>Format</h3>
+	
+	<ul>
+	<li> Text: save the result in a text format which is user readable, very handy for re-using the output</li>
+	<li> Binary: Use pig binary format. Binary format for reading and writing is a bit faster than a text 		     format.</li>
+	</ul>
+	
+	<h3>Audit</h3>
+
+	When the audit is enabled a second data set is generated with aggregate
+	value that can give an overview to the user. For each column
+	when relevant the range, the average, the number of non-null
+	and null values as well as the number of distinct values (only for
+	CATEGORY type) are calculated.
+
+
 
 	<h2>Red Sqirl Pig</h2>
 	<p>
 		Red Sqirl Pig is a package that contains actions that interface with <a
-			target="_blank" href="http://pig.apache.org/">Pig</a> on the Red Sqirl
-		platform to perform Pig actions. There are two other actions
-		available from this package <a class="stopLink" id="help_pig_select"
-			onclick="return false;" href="pig_select.html">Pig Select</a> , <a
-			class="stopLink" id="help_pig_join" onclick="return false;"
-			href="pig_join.html">Pig Join</a>, <a class="stopLink"
-			id="help_pig_union" onclick="return false;" href="pig_union.html">Pig
-			Union</a> and <a class="stopLink" id="help_pig_sample"
-			onclick="return false;" href="pig_sample.html">Pig Sample</a>
-	<p>On the last page of every pig action will have two interactions
+			target="_blank" href="http://pig.apache.org/">Pig</a> on the Red Sqirl platform to perform
+		    Pig actions.
+		   
+		   The pig actions available from the package are
+		   <ul>
+		       <li> Pig Aggregator 
+		       </li>
+			<li>
+			    Pig Anonymise
+			</li>
+			<li>
+			    Pig Binary Source
+			</li>
+		       <li>
+			    Pig Join
+			</li>
+			<li>
+			    Pig Sample
+			</li>
+			<li>
+			    Pig Select
+			</li>
+			<li>
+			    Pig Text Source
+			</li>
+			<li>
+			    Pig Transpose
+			</li>
+			<li>
+			    Pig Unanonymise
+			</li>
+			<li>
+			     Pig Union 
+			</li>
+			<li>
+			    Pig Value Binning
+			</li>
+			<li>
+			    Pig Volume Binning
+			</li>
+		   </ul>
+
+	</p>
+	
+	<h3>Redsqirl Pig Data set</h3>
+
+	<p>The last page of every pig action will have two interactions
 		that set the output format of the pig action. These interactions are
 		to set the delimiter of the file for a TEXT MAP REDUCE DIRECTORY and
 		the other is to set the output type of the file to be either TEXT MAP
-		REDUCE DIRECTORY or BINARY MAP-REDUCE DIRECTORY</p>
+		REDUCE DIRECTORY or BINARY MAP-REDUCE DIRECTORY
 	</p>
 
-	<p>Apache Pig is a platform for analyzing large data sets that
+	<h3>Auditing</h3>
+	
+	<p> After each Pig action it is possible to audit the result in order to
+	have a better idea of the data set and help make decisions on what to
+	do next. For example you may want to do an audit before using a binning
+	node in order to have an idea of your value range. Also result of the
+	audit may create auto-generated options.
+	</p>
+
+	<h3>Apache Pig</h3>
+
+	<p>Apache Pig is a platform for analyzing large data sets, which
 		consists of a high-level language for expressing data analysis
 		programs, coupled with infrastructure for evaluating these programs.
 		The salient property of Pig programs is that their structure is
@@ -87,6 +214,6 @@
 			special-purpose processing.</li>
 	</ul>
 	</p>
-	
 </body>
 </html>
+

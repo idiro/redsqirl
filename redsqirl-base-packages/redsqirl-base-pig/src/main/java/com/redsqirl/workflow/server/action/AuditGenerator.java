@@ -121,6 +121,7 @@ public class AuditGenerator {
 			Set<String> stringFeats = new LinkedHashSet<String>();
 			Set<String> categoryFeats = new LinkedHashSet<String>();
 			Set<String> numericFeats = new LinkedHashSet<String>();
+			Set<String> dateFeats = new LinkedHashSet<String>();
 			Iterator<String> flNames = fl.getFeaturesNames().iterator();
 			while (flNames.hasNext()) {
 				String name = flNames.next();
@@ -139,6 +140,10 @@ public class AuditGenerator {
 				case INT:
 					numericFeats.add(name);
 					break;
+				case DATE:
+				case DATETIME:
+				case TIMESTAMP:
+					dateFeats.add(name);
 				default:
 					break;
 				}
@@ -163,9 +168,15 @@ public class AuditGenerator {
 			flNames = fl.getFeaturesNames().iterator();
 			while (flNames.hasNext()) {
 				String name = flNames.next();
-				select += ",\n\t\t\tCONCAT( (CHARARRAY) MIN(" + loader + "."
+				if(!dateFeats.contains(name)){
+				    select += ",\n\t\t\tCONCAT( (CHARARRAY) MIN(" + loader + "."
 						+ name + "), " + "CONCAT(' - ', (CHARARRAY) MAX("
 						+ loader + "." + name + ")))";
+				}else{
+				    select += ",\n\t\t\tCONCAT( ToString (MIN(" + loader + "."
+						+ name + "),'YYYY-MM-DD hh:mm:ss.s'), " + "CONCAT(' - ',  ToString(MAX("
+						+ loader + "." + name + "),'YYYY-MM-DD hh:mm:ss.s')))";
+				}
 			}
 			select += "\n\t\t),\n";
 

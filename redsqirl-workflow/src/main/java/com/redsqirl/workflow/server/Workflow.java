@@ -49,7 +49,6 @@ import com.idiro.hadoop.NameNodeVar;
 import com.idiro.utils.LocalFileSystem;
 import com.idiro.utils.RandomString;
 import com.idiro.utils.XmlUtils;
-import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
@@ -140,13 +139,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	public String loadMenu() {
 
 		String error = "";
-		File menuDir = new File(WorkflowPrefManager.getPathiconmenu());
-		File[] children = menuDir.listFiles(new FileFilter() {
+		File menuDir = new File(WorkflowPrefManager.getPathIconMenu());
+		/*File[] children = menuDir.listFiles(new FileFilter() {
 			@Override
 			public boolean accept(File pathname) {
 				return !pathname.getName().startsWith(".");
 			}
-		});
+		});*/
 
 		menuWA = new LinkedHashMap<String, List<String[]>>();
 		Map<String, String> nameWithClass;
@@ -154,10 +153,10 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			nameWithClass = getAllWANameWithClassName();
 			String nameMenu = "";
 
-			for (int i = 0; i < children.length; ++i) {
-				if (children[i].isFile()) {
+			//for (int i = 0; i < children.length; ++i) {
+				//if (children[i].isFile()) {
 					LinkedList<String[]> new_list = new LinkedList<String[]>();
-					BufferedReader br = new BufferedReader(new FileReader(children[i]));
+					BufferedReader br = new BufferedReader(new FileReader(menuDir));
 					String line;
 					while ((line = br.readLine()) != null) {
 						try {
@@ -186,8 +185,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					}
 					br.close();
 					//menuWA.put(children[i].getName(), new_list);
-				}
-			}
+				//}
+			//}
 
 		} catch (Exception e) {
 			error += "\n" + LanguageManagerWF.getText("workflow.loadclassexception");
@@ -350,12 +349,12 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 		String error = "";
 
-		File menuDir = new File(WorkflowPrefManager.getPathiconmenu());
+		File menuDir = new File(WorkflowPrefManager.getPathIconMenu());
 
 		try {
-			FileUtils.cleanDirectory(menuDir);
-			File file = new File(menuDir.getAbsolutePath() + "/icon_menu.txt" );
-			PrintWriter s = new PrintWriter(file);
+			//FileUtils.cleanDirectory(menuDir);
+			//File file = new File(menuDir.getAbsolutePath() + "/icon_menu.txt" );
+			PrintWriter s = new PrintWriter(menuDir);
 
 			for (Entry<String, List<String[]>> e : menuWA.entrySet()) {
 				s.println("menu:" + e.getKey());
@@ -1578,8 +1577,12 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			} else {
 				if (!in.getInput().get(inName)
 						.check(out.getDFEOutput().get(outName))) {
-					error = LanguageManagerWF
-							.getText("workflow.addLink_linkincompatible");
+
+					error = in.getInput().get(inName).checkStr(
+							out.getDFEOutput().get(outName), 
+							in.getComponentId(), 
+							in.getName(),
+							out.getName());
 				} else {
 					out.addOutputComponent(outName, in);
 					error = in.addInputComponent(inName, out);
@@ -1629,8 +1632,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					new Object[] { outName });
 		} else if (!in.getInput().get(inName)
 				.check(out.getDFEOutput().get(outName))) {
-			error = LanguageManagerWF
-					.getText("workflow.check_linksIncompatible");
+			error = in.getInput().get(inName).checkStr(
+					out.getDFEOutput().get(outName), 
+					componentIdIn, 
+					inName,
+					out.getName());
 		}
 		if (error != null) {
 			return false;

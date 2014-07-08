@@ -8,6 +8,8 @@ import java.util.List;
 
 import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.enumeration.DisplayType;
+import com.redsqirl.workflow.server.interfaces.DFEInteraction;
+import com.redsqirl.workflow.server.interfaces.DFEInteractionChecker;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 /**
  * Generic Class that implements an interaction using an append list
@@ -145,6 +147,22 @@ public class AppendListInteraction extends UserInteraction{
 			}
 		}
 	}
+	
+	public void setNonEmptyChecker() throws RemoteException{
+		setChecker(new DFEInteractionChecker() {
+			
+			@Override
+			public String check(DFEInteraction interaction) throws RemoteException {
+				try{
+					return tree.getFirstChild("applist").getFirstChild("output").getChildren("value").size() > 0 ?
+							null: LanguageManagerWF.getText("AppendListInteraction.empty");
+				}catch(Exception e){
+					return LanguageManagerWF.getText("AppendListInteraction.empty");
+				}
+			}
+		});
+	}
+	
 	/**
 	 * Get the list of possible values that can be used
 	 * @return

@@ -6,48 +6,168 @@
 
 </head>
 <body>
+
+
 	<h1>Pig Sample</h1>
 	<h2>Description</h2>
-	<p>Perform an sample statement over a data set that is stored as
-		an hdfs file/binary MapReduce file.</p>
+	<p>Perform a sample statement over a data set that is stored as
+		a hdfs file/binary MapReduce file.</p>
+	
+<h3>Quick Guide</h3>
 	<p>
 	<ul>
-		<li>Input - Single Text or Binary Map Reduce Directory</li>
-		<li>Sample - Select the rate at to sample by</li>
-		<li>Output - Single Text or Binary Map Reduce Directory</li>
+	    <li>Input
+		<ul>
+		    <li>
+			<a class="stopLink" id="helpmain_canvas" 
+			    onclick="return false;" 
+			    href="../help/canvas.html#output_type">
+			    Text or Binary Map Reduce Directory
+			</a>
+		    </li>
+		</ul>
+	    </li>
+	    <li>Configurations
+		<ul>
+		    <li>Choose the sample ratio</li>
+		    <li> Sort data </li>
+		    <li> Choose data format </li>
+		    <li> Perform audit on the result </li>
+		</ul>
+	    </li>
+	    <li>Output
+		<ul>
+		    <li>
+			<a class="stopLink" id="helpmain_canvas" 
+			    onclick="return false;" 
+			    href="../help/canvas.html#output_type">
+			    Text or Binary Map Reduce Directory
+			</a>
+		    </li>
+		    <li>audit (OPT): 
+			<a class="stopLink" id="helpmain_canvas" 
+			    onclick="return false;" 
+			    href="../help/canvas.html#output_type">
+			    Control-A delimited directory 
+			</a> with global audit values
+		    </li>
+		</ul>
+	    </li>
 	</ul>
 	</p>
-	<h2>Source</h2>
-	<p>The Source can be only HDFS (TEXT MAP REDUCE DIRECTORY). It has
-		to be a delimiter separated value. An example is when | is the
-		delimiter then the format for a line would be (X|Y|Z)</p>
 
-	<h2><a id="page1">Sample - Page 1</a></h2>
+	<h2><a id="page1">Sample and Sorting - Page 1</a></h2>
+
 	<p>This page lets operations be perfomed over the data .</p>
+
 	<h3>Sample</h3>
-	<p>Sample data giving a precent as input</p>
+	<p>When choosing the rate to sample by it must be between 0 and 1. For
+	example, if you want to sample every 5th observation, take its inverse
+	i.e. 1/5 which is 0.2</p>
+	
+	<h3>Ordering Dataset</h3>
+
+	<p>In this page you can order the features at your convenience. If
+	nothing is specified the data set will not be ordered.</p>
+
+	
+	<h2><a id="page3">Filtering, Formating and Auditing - Page 3</a></h2>
+
+	<h3>Parallel</h3>
+
+	<p> The parallel clause lets you choose the number of reducers used when ordering the dataset. This 	  parameter is optional and useful if you have performance issues. Please read the performance guide, 
+	parallel section of the pig documentation.
+	</p>
+
+	<h3>Delimiter</h3>
+
+	<p> Choose the delimiter character used to separate the output dataset field in each row. The 		delimiter is used only if you choose Text format.
+	</p> 
+
+	<h3>Format</h3>
+	
+	<ul>
+	<li> Text: save the result in a text format which is user readable, very handy for re-using the output</li>
+	<li> Binary: Use pig binary format. Binary format for reading and writing is a bit faster than a text 		     format.</li>
+	</ul>
+		
+	<h3>Audit</h3>
+
+	When the audit is enabled a second data set is generated with aggregate
+	value that can give an overview to the user. For each column
+	when relevant the range, the average, the number of non-null
+	and null values as well as the number of distinct values (only for
+	CATEGORY type) are calculated.
+
 
 	<h2>Red Sqirl Pig</h2>
 	<p>
 		Red Sqirl Pig is a package that contains actions that interface with <a
 			target="_blank" href="http://pig.apache.org/">Pig</a> on the Red Sqirl platform to perform
-		Pig actions. There are two other actions available from this package
-		<a class="stopLink" id="help_pig_select"
-			onclick="return false;" href="pig_select.html">Pig Select</a> , <a
-			class="stopLink" id="help_pig_join" onclick="return false;"
-			href="pig_join.html">Pig Join</a>, <a class="stopLink"
-			id="help_pig_union" onclick="return false;" href="pig_union.html">Pig
-			Union</a> and <a class="stopLink" id="help_pig_aggregator"
-			onclick="return false;" href="pig_aggregator.html">Pig Aggregator</a>
-	<p>On the last page of every pig action will have two interactions
+		    Pig actions.
+		   
+		   The pig actions available from the package are
+		   <ul>
+		       <li> Pig Aggregator 
+		       </li>
+			<li>
+			    Pig Anonymise
+			</li>
+			<li>
+			    Pig Binary Source
+			</li>
+		       <li>
+			    Pig Join
+			</li>
+			<li>
+			    Pig Sample
+			</li>
+			<li>
+			    Pig Select
+			</li>
+			<li>
+			    Pig Text Source
+			</li>
+			<li>
+			    Pig Transpose
+			</li>
+			<li>
+			    Pig Unanonymise
+			</li>
+			<li>
+			     Pig Union 
+			</li>
+			<li>
+			    Pig Value Binning
+			</li>
+			<li>
+			    Pig Volume Binning
+			</li>
+		   </ul>
+
+	</p>
+	
+	<h3>Redsqirl Pig Data set</h3>
+
+	<p>The last page of every pig action will have two interactions
 		that set the output format of the pig action. These interactions are
 		to set the delimiter of the file for a TEXT MAP REDUCE DIRECTORY and
 		the other is to set the output type of the file to be either TEXT MAP
-		REDUCE DIRECTORY or BINARY MAP-REDUCE DIRECTORY</p>
+		REDUCE DIRECTORY or BINARY MAP-REDUCE DIRECTORY
 	</p>
 
+	<h3>Auditing</h3>
+	
+	<p> After each Pig action it is possible to audit the result in order to
+	have a better idea of the data set and help make decisions on what to
+	do next. For example you may want to do an audit before using a binning
+	node in order to have an idea of your value range. Also result of the
+	audit may create auto-generated options.
+	</p>
 
-	<p>Apache Pig is a platform for analyzing large data sets that
+	<h3>Apache Pig</h3>
+
+	<p>Apache Pig is a platform for analyzing large data sets, which
 		consists of a high-level language for expressing data analysis
 		programs, coupled with infrastructure for evaluating these programs.
 		The salient property of Pig programs is that their structure is
@@ -72,9 +192,5 @@
 			special-purpose processing.</li>
 	</ul>
 	</p>
-		<ul>
-		<li>add quick guide</li>
-		<li>add interaction descriptions</li>
-	</ul>
 </body>
 </html>

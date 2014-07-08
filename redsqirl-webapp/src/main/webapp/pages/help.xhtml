@@ -26,6 +26,8 @@
 		    jQuery("#helpIndex").hide();
             jQuery("#helpPanel").show();
 		    jQuery("#contentHelp").load(jQuery(this).attr("href"));
+		    
+            
 		    //<![CDATA[
 		    if(id != "help_main" && id.substring(0,5) == "help_"){
 		      var obj = jQuery("#image_"+jQuery(this).attr("id"));
@@ -37,9 +39,15 @@
 		      jQuery("#imageHelp").hide();
 		    }
             //]]>
-
-		    jQuery("#tabs-1").scrollTop( 0 );
-		    jQuery("#btIndex").show();
+            
+            jQuery("#btIndex").show();
+            if(jQuery(this).attr("href").indexOf('#') == -1){
+		      jQuery("#tabs-1").scrollTop( 0 );
+            }else{
+              jQuery("#tabs-1").animate({
+                  scrollTop: jQuery(jQuery(this,'href')).offset().top}, 800);
+		    }
+		    
 		    //<![CDATA[
 		    while( historyHelpIndex + 1 < historyHelp.length ){
 			historyHelp.pop();
@@ -176,7 +184,10 @@
 	<a class="stopLink" id="helpmain_hive" style="display: none;" onclick="return false;" href="../help/hive_view.html">Hive</a>
 	<a class="stopLink" id="helpmain_hdfs" style="display: none;" onclick="return false;" href="../help/hdfs_view.html">Hadoop File System</a>
 	<a class="stopLink" id="helpmain_splitter" style="display: none;" onclick="return false;" href="../help/splitter.html">Splitter</a>
-
+    <a class="stopLink" id="helpmain_pigtuto" style="display: none;" onclick="return false;" href="../help/pigtutorial.html">Pig Tutorial</a>
+    <a class="stopLink" id="helpmain_hamatuto" style="display: none;" onclick="return false;" href="../help/hamatutorial.html">Hama Tutorial</a>
+    <a class="stopLink" id="helpmain_snatuto" style="display: none;" onclick="return false;" href="../help/snatutorial.html">SNA Tutorial</a>
+    
 	<h2>Available Actions (#{helpBean.helpSize})</h2>
 	<ul>
 	    <ui:repeat value="#{helpBean.helpHtml}" var="action">

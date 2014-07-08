@@ -1,26 +1,297 @@
 <html>
 <head>
-<link rel="stylesheet" type="text/css" href="../css/redsqirl.css">
+<link rel="stylesheet" type="text/css" href="../css/idm.css">
 <title>Canvas</title>
 </head>
 <body>
 	<h1>Canvas</h1>
-	<h2>
-		<a href="../helpimages/Workflow.png">Workflow</a>
-	</h2>
-	<p>The canvas area is designated to build workflows, theses
+	
+	<h2><a name="workflow">Workflow</a></h2>
+
+	<p>The canvas area is designated to build workflows, these
 		workflows that are used in Red Sqirl are controlled by Oozie to run jobs. A
 		workflow can contain many linked actions that produce results. When an
 		action is added to the canvas it will have an auto generated name
 		which can be renamed. This new action must be configured to ensure
 		that the workflow will run correctly. Source should be the first
 		action that is added to the workflow, this action will identify the
-		type and source location of the data. From there linking actions
+		type and source location of the data. From there, linking actions
 		together is now possible. Linking actions together depends on what the
-		input and output types of each action is. To link a source and and
-		Hive action together, the source data type has to be Hive .</p>
+		input and output types of each action is. To link a source and
+		Hive action together, the source data type has to be Hive.</p>
 	
-	<h2><a class="stopLink" id="helpmain_buildwork" onclick="return false;" href="../help/buildingworkflow.html">How to build a workflow</a></h2>
+		<p>Canvas tutorials can be found 
+		<a class="stopLink" id="helpmain_buildwork" onclick="return false;" 
+	    href="../help/buildingworkflow.html">here</a>
+
+
+		<h2><a name="action">Action</a></h2>
+
+<p>
+In Red Sqirl an action is a procedure that controls a data set and/or runs a process on Hadoop.
+An action can take one or several input actions to form a complex workflow.
+</p>
+
+
+<h2><a name="output_type">Output Type</a></h2>
+
+<p>
+The output type defines what is needed to read a data set. It may
+be the technology used (Apache Hive or Hadoop Distributed File System), the path
+to the data set or format details.
+</p>
+<p> Packages may includes their own output types, but some exist by default.
+
+<ul>
+<li>
+<ul> The following types directly use the Hadoop Distributed File System. 
+<li> TEXT MAP-REDUCE DIRECTORY : The entire data set is available in a
+directory. Every file in it that does not start with '_' is a part of the data.
+Each file contains a record on each line. Each record has the same number of
+fields. Fields are separated by a given character. An example is when "|" is the
+delimiter then the format for a line would be "X|Y|Z" </li>
+<li> CTRL-A SEPARATED TEXT MAP-REDUCE DIRECTORY : Similar to TEXT MAP-REDUCE directory except that the field is separated by the CTRL-A character ('\001' ASCII character) </li>
+<li> BINARY MAP-REDUCE DIRECTORY: Format used by 
+    <a class="stopLink" id="helpmain_tech" onclick="return false;"
+	href="../help/technologies.html">pig</a>
+    More documentation about Pig binary format is available on the <a href="http://pig.apache.org" target="_blank">pig website</a>.</li>
+	
+</ul>
+</li>
+<li>
+<ul> The following types use Hive metastore. 
+<li> Hive Table : A Apache Hive table </li>
+<li> Hive Partition: A Apache Hive partition </li>
+</ul>
+</li>
+</ul>
+</p>
+
+
+<h2><a name="input_class">Action's Input Class</a></h2>
+
+<p>An action can take several input classes.
+A class is a set of datasets, each dataset
+has to validate the class constraints on their
+type and sometimes on their features.
+Each class is associated with a unique name within
+the action.
+</p>
+	
+<h2><a name="saving_state">Saving State</a></h2>
+
+<p> An output is generated afer each canvas action runs. Three category of action exists
+<ul>
+<li> TEMPORARY: This is the default type, as soon as the action is fed into its dependent actions it is removed. If the last output created is TEMPORARY, the data set won't be removed and will behave like a BUFFERED dataset.</li>
+<li> BUFFERED: The dataset is saved but is removed if the action or a dependency configuration is modified.</li>
+<li> RECORDED: The dataset is manually set and can only be manually removed. Actions may generate incorrect results if they depend on an out of date RECORDED data set.</li>
+</ul>
+
+<h2><a name="output_links">Output Links</a></h2>
+
+Certain actions may create more than 1 dataset and others may accept more than 1 type of dataset. 
+In these case all of them can be used and when creating a link you may be asked to choose a data set.
+A link name will always be in the form output -&gt; input, where output/input is respectively the name of 
+the action output/input. When no other options are possible, output or input names are omitted. For example
+'-&gt; input', means that the output action has only one output that fits with the input constraint.
+
+<h2><a name="data_type">Data Type</a></h2>
+
+Every field is associated to a type in Red Sqirl. Type will help the user to clarify what
+the fields are and what can be done from it, for example it would not make sense to add two dates together.
+
+<ul>
+<li>BOOLEAN: Binary value</li>
+<li>INT: an integer</li>
+<li>LONG: a big integer</li>
+<li>FLOAT: a number</li>
+<li>DOUBLE: a high precision number</li>
+<li>CHAR: a character</li>
+<li>STRING: an array of character</li>
+<li>CATEGORY: a STRING but the entire dataset contains a limited number of distinct values.</li>
+<li>DATE: A date (Year, month, day)</li>
+<li>DATETIME: A time (Year, month, day, hour, minute, second) </li>
+<li>TIMESTAMP: An instant (Year, month, day, hour, minute, second, fractions)</li>
+</ul>
+
+<h2><a name"interactions">Grid</a></h2>
+
+Grids are often used in Red Sqirl, they come sometimes with generators. A
+generator is used to add pre-prepared rows to your grid. These can then stay as
+they are or be modified to fit your needs.
+
+
+<h2><a name"regex">Regular expressions</a></h2>
+
+Regular expressions are used a lot in Red Sqirl and users may cross some
+from time to time.  A regular expression will validate an entry that a user typed.
+
+<br/><br/>
+
+ <table style='border:1px solid;width:100%;padding:5px;' summary="Regular expression constructs, and what they match">
+
+ <tr align="left" class='order-table-header-help'>
+ <th align="left" id="construct">Construct</th>
+ <th align="left" id="matches">Matches</th>
+ </tr>
+
+ <tr><th>&nbsp;</th></tr>
+ <tr align="left" class='order-table-header-help'><th colspan="2" id="examples">Examples</th></tr>
+
+ <tr><td valign="top" headers="construct characters"><i>^.*[A-Z].*$</i></td>
+     <td headers="matches">Contains an upper case character</td></tr>
+ <tr class='odd-row'><td valign="top" headers="construct characters"><i>[a-z]([a-z0-9_]*)</i></td>
+     <td headers="matches">Starts with a lower case character optionaly followed by other lower case character, under score or number</td></tr>
+ <tr><td valign="top" headers="construct characters"><i>^(#\\d{1,3}|.)?$</i></td>
+     <td headers="matches">1 to 3 digit or one character</td></tr>
+
+ <tr><th>&nbsp;</th></tr>
+ <tr align="left" class='order-table-header-help'><th colspan="2" id="characters">Characters</th></tr>
+
+ <tr class='odd-row'><td valign="top" headers="construct characters"><i>x</i></td>
+     <td headers="matches">The character <i>x</i></td></tr>
+ <tr><td valign="top" headers="construct characters"><tt>\\</tt></td>
+     <td headers="matches">The backslash character</td></tr>
+ <tr class='odd-row'><td valign="top" headers="matches"><tt>\t</tt></td>
+     <td headers="matches">The tab character (<tt>'&#92;u0009'</tt>)</td></tr>
+ <tr><td valign="top" headers="construct characters"><tt>\n</tt></td>
+     <td headers="matches">The newline (line feed) character (<tt>'&#92;u000A'</tt>)</td></tr>
+ <tr class='odd-row'><td valign="top" headers="construct characters"><tt>\r</tt></td>
+     <td headers="matches">The carriage-return character (<tt>'&#92;u000D'</tt>)</td></tr>
+
+ <tr><th>&nbsp;</th></tr>
+ <tr align="left" class='order-table-header-help'><th colspan="2" id="classes">Character classes</th></tr>
+
+ <tr class='odd-row'><td valign="top" headers="construct classes"><tt>[abc]</tt></td>
+     <td headers="matches"><tt>a</tt>, <tt>b</tt>, or <tt>c</tt> (simple class)</td></tr>
+ <tr><td valign="top" headers="construct classes"><tt>[^abc]</tt></td>
+     <td headers="matches">Any character except <tt>a</tt>, <tt>b</tt>, or <tt>c</tt> (negation)</td></tr>
+ <tr class='odd-row'><td valign="top" headers="construct classes"><tt>[a-zA-Z]</tt></td>
+     <td headers="matches"><tt>a</tt> through <tt>z</tt>
+         or <tt>A</tt> through <tt>Z</tt>, inclusive (range)</td></tr>
+ <tr><td valign="top" headers="construct classes"><tt>[a-d[m-p]]</tt></td>
+     <td headers="matches"><tt>a</tt> through <tt>d</tt>,
+      or <tt>m</tt> through <tt>p</tt>: <tt>[a-dm-p]</tt> (union)</td></tr>
+ <tr class='odd-row'><td valign="top" headers="construct classes"><tt>[a-z&&[def]]</tt></td>
+     <td headers="matches"><tt>d</tt>, <tt>e</tt>, or <tt>f</tt> (intersection)</tr>
+ <tr><td valign="top" headers="construct classes"><tt>[a-z&&[^bc]]</tt></td>
+     <td headers="matches"><tt>a</tt> through <tt>z</tt>,
+         except for <tt>b</tt> and <tt>c</tt>: <tt>[ad-z]</tt> (subtraction)</td></tr>
+ <tr class='odd-row'><td valign="top" headers="construct classes"><tt>[a-z&&[^m-p]]</tt></td>
+     <td headers="matches"><tt>a</tt> through <tt>z</tt>,
+          and not <tt>m</tt> through <tt>p</tt>: <tt>[a-lq-z]</tt>(subtraction)</td></tr>
+ <tr><th>&nbsp;</th></tr>
+
+ <tr align="left" class='order-table-header-help'><th colspan="2" id="predef">Predefined character classes</th></tr>
+
+ <tr><td valign="top" headers="construct predef"><tt>.</tt></td>
+     <td headers="matches">Any character</td></tr>
+ <tr class='odd-row'><td valign="top" headers="construct predef"><tt>\d</tt></td>
+     <td headers="matches">A digit: <tt>[0-9]</tt></td></tr>
+ <tr><td valign="top" headers="construct predef"><tt>\D</tt></td>
+     <td headers="matches">A non-digit: <tt>[^0-9]</tt></td></tr>
+ <tr class='odd-row'><td valign="top" headers="construct predef"><tt>\s</tt></td>
+     <td headers="matches">A whitespace character: <tt>[ \t\n\x0B\f\r]</tt></td></tr>
+ <tr><td valign="top" headers="construct predef"><tt>\S</tt></td>
+     <td headers="matches">A non-whitespace character: <tt>[^\s]</tt></td></tr>
+ <tr class='odd-row'><td valign="top" headers="construct predef"><tt>\w</tt></td>
+     <td headers="matches">A word character: <tt>[a-zA-Z_0-9]</tt></td></tr>
+ <tr><td valign="top" headers="construct predef"><tt>\W</tt></td>
+     <td headers="matches">A non-word character: <tt>[^\w]</tt></td></tr>
+
+ <tr><th>&nbsp;</th></tr>
+ <tr align="left" class='order-table-header-help'><th colspan="2" id="bounds">Boundary matchers</th></tr>
+
+ <tr><td valign="top" headers="construct bounds"><tt>^</tt></td>
+     <td headers="matches">The beginning of a line</td></tr>
+ <tr class='odd-row'><td valign="top" headers="construct bounds"><tt>$</tt></td>
+     <td headers="matches">The end of a line</td></tr>
+ <tr><td valign="top" headers="construct bounds"><tt>\b</tt></td>
+     <td headers="matches">A word boundary</td></tr>
+ <tr class='odd-row'><td valign="top" headers="construct bounds"><tt>\B</tt></td>
+     <td headers="matches">A non-word boundary</td></tr>
+ <tr><td valign="top" headers="construct bounds"><tt>\A</tt></td>
+     <td headers="matches">The beginning of the input</td></tr>
+ <tr class='odd-row'><td valign="top" headers="construct bounds"><tt>\G</tt></td>
+     <td headers="matches">The end of the previous match</td></tr>
+ <tr><td valign="top" headers="construct bounds"><tt>\Z</tt></td>
+     <td headers="matches">The end of the input but for the final
+         <a href="#lt">terminator</a>, if&nbsp;any</td></tr>
+ <tr class='odd-row'><td valign="top" headers="construct bounds"><tt>\z</tt></td>
+     <td headers="matches">The end of the input</td></tr>
+
+ <tr><th>&nbsp;</th></tr>
+ <tr align="left" class='order-table-header-help'><th colspan="2" id="greedy">Greedy quantifiers</th></tr>
+
+ <tr><td valign="top" headers="construct greedy"><i>X</i><tt>?</tt></td>
+     <td headers="matches"><i>X</i>, once or not at all</td></tr>
+ <tr class='odd-row'><td valign="top" headers="construct greedy"><i>X</i><tt>*</tt></td>
+     <td headers="matches"><i>X</i>, zero or more times</td></tr>
+ <tr><td valign="top" headers="construct greedy"><i>X</i><tt>+</tt></td>
+     <td headers="matches"><i>X</i>, one or more times</td></tr>
+ <tr class='odd-row'><td valign="top" headers="construct greedy"><i>X</i><tt>{</tt><i>n</i><tt>}</tt></td>
+     <td headers="matches"><i>X</i>, exactly <i>n</i> times</td></tr>
+ <tr><td valign="top" headers="construct greedy"><i>X</i><tt>{</tt><i>n</i><tt>,}</tt></td>
+     <td headers="matches"><i>X</i>, at least <i>n</i> times</td></tr>
+ <tr class='odd-row'><td valign="top" headers="construct greedy"><i>X</i><tt>{</tt><i>n</i><tt>,</tt><i>m</i><tt>}</tt></td>
+     <td headers="matches"><i>X</i>, at least <i>n</i> but not more than <i>m</i> times</td></tr>
+
+ <tr><th>&nbsp;</th></tr>
+ <tr align="left" class='order-table-header-help'><th colspan="2" id="reluc">Reluctant quantifiers</th></tr>
+
+ <tr><td valign="top" headers="construct reluc"><i>X</i><tt>??</tt></td>
+     <td headers="matches"><i>X</i>, once or not at all</td></tr>
+ <tr class='odd-row'><td valign="top" headers="construct reluc"><i>X</i><tt>*?</tt></td>
+     <td headers="matches"><i>X</i>, zero or more times</td></tr>
+ <tr><td valign="top" headers="construct reluc"><i>X</i><tt>+?</tt></td>
+     <td headers="matches"><i>X</i>, one or more times</td></tr>
+ <tr class='odd-row'><td valign="top" headers="construct reluc"><i>X</i><tt>{</tt><i>n</i><tt>}?</tt></td>
+     <td headers="matches"><i>X</i>, exactly <i>n</i> times</td></tr>
+ <tr><td valign="top" headers="construct reluc"><i>X</i><tt>{</tt><i>n</i><tt>,}?</tt></td>
+     <td headers="matches"><i>X</i>, at least <i>n</i> times</td></tr>
+ <tr class='odd-row'><td valign="top" headers="construct reluc"><i>X</i><tt>{</tt><i>n</i><tt>,</tt><i>m</i><tt>}?</tt></td>
+     <td headers="matches"><i>X</i>, at least <i>n</i> but not more than <i>m</i> times</td></tr>
+
+ <tr><th>&nbsp;</th></tr>
+ <tr align="left" class='order-table-header-help'><th colspan="2" id="poss">Possessive quantifiers</th></tr>
+
+ <tr><td valign="top" headers="construct poss"><i>X</i><tt>?+</tt></td>
+     <td headers="matches"><i>X</i>, once or not at all</td></tr>
+ <tr class='odd-row'><td valign="top" headers="construct poss"><i>X</i><tt>*+</tt></td>
+     <td headers="matches"><i>X</i>, zero or more times</td></tr>
+ <tr><td valign="top" headers="construct poss"><i>X</i><tt>++</tt></td>
+     <td headers="matches"><i>X</i>, one or more times</td></tr>
+ <tr class='odd-row'><td valign="top" headers="construct poss"><i>X</i><tt>{</tt><i>n</i><tt>}+</tt></td>
+     <td headers="matches"><i>X</i>, exactly <i>n</i> times</td></tr>
+ <tr><td valign="top" headers="construct poss"><i>X</i><tt>{</tt><i>n</i><tt>,}+</tt></td>
+     <td headers="matches"><i>X</i>, at least <i>n</i> times</td></tr>
+ <tr class='odd-row'><td valign="top" headers="construct poss"><i>X</i><tt>{</tt><i>n</i><tt>,</tt><i>m</i><tt>}+</tt></td>
+     <td headers="matches"><i>X</i>, at least <i>n</i> but not more than <i>m</i> times</td></tr>
+
+ <tr><th>&nbsp;</th></tr>
+ <tr align="left" class='order-table-header-help'><th colspan="2" id="logical">Logical operators</th></tr>
+
+ <tr><td valign="top" headers="construct logical"><i>XY</i></td>
+     <td headers="matches"><i>X</i> followed by <i>Y</i></td></tr>
+ <tr class='odd-row'><td valign="top" headers="construct logical"><i>X</i><tt>|</tt><i>Y</i></td>
+     <td headers="matches">Either <i>X</i> or <i>Y</i></td></tr>
+ <tr><td valign="top" headers="construct logical"><tt>(</tt><i>X</i><tt>)</tt></td>
+     <td headers="matches">X, as a <a href="#cg">capturing group</a></td></tr>
+
+ <tr><th>&nbsp;</th></tr>
+ <tr align="left" class='order-table-header-help'><th colspan="2" id="quot">Quotation</th></tr>
+
+ <tr><td valign="top" headers="construct quot"><tt>\</tt></td>
+     <td headers="matches">Nothing, but quotes the following character</td></tr>
+ <tr class='odd-row'><td valign="top" headers="construct quot"><tt>\Q</tt></td>
+     <td headers="matches">Nothing, but quotes all characters until <tt>\E</tt></td></tr>
+ <tr><td valign="top" headers="construct quot"><tt>\E</tt></td>
+     <td headers="matches">Nothing, but ends quoting started by <tt>\Q</tt></td></tr>
+
+ </table>
+ 
+ <br/>
+
 	<a class="stopLink" id="help_main" onclick="return false;" href="../help/main.html">return to Red Sqirl help</a>
 </body>
 </html>

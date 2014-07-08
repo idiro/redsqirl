@@ -71,7 +71,11 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 				getTableGrid().getRows().add(new SelectableRowFooter(value, getMenuActions(), getTarget()));
 			}
 
-			setIndex(null);
+			if(getMenuWA().isEmpty()){
+			    setIndex(null);
+			}else{
+			    setIndex(0);
+			}
 
 		} catch (RemoteException e1) {
 			e1.printStackTrace();
@@ -150,7 +154,8 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 		setIndex(null);
 	}
 
-	public void createTab() {
+	public void createTab() throws RemoteException, Exception {
+		mountMenuActions();
 		String[] value = new String[1];
 		value[0] = "";
 		getTableGrid().getRows().add(new SelectableRowFooter(value, getMenuActions()));
@@ -159,7 +164,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	public String checkSaveTabs() {
 
 		String error = null;
-		String regex = "[a-z]([a-z0-9_]*)";
+		String regex = "[a-zA-Z]([a-zA-Z0-9_]*)";
 
 		//The field Name can not be blank
 		for (SelectableRow selectableRow : getTableGrid().getRows()) {

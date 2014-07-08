@@ -4,13 +4,13 @@ package com.redsqirl.utils;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.redsqirl.utils.FeatureList;
 import com.redsqirl.workflow.server.enumeration.FeatureType;
 
 /** Class that maintains a list of features in order */
@@ -127,6 +127,15 @@ public class OrderedFeatureList extends UnicastRemoteObject implements
 					&& comp.features.equals(this.features);
 		}
 		return ok;
+	}
+	
+	public List<FeatureType> getTypes(){
+		List<FeatureType> ans = new LinkedList<FeatureType>();
+		Iterator<String> it = positions.iterator();
+		while(it.hasNext()){
+			ans.add(getFeatureType(it.next()));
+		}
+		return ans;
 	}
 	
 	public OrderedFeatureList cloneRemote() throws RemoteException{

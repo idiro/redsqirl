@@ -7,70 +7,168 @@
 <body>
     <h1>Pig Unanonymise</h1>
     <h2>Description</h2>
-    <p>The unanonymise action let you unanonymise features of a data set.</p>
-    <p>
-    <ul>
-        <li>Input - Single Text Map Reduce Directory</li>
-        <li>A txt file '\001' delimited</li>
-    </ul>
+    <p>The Pig unanonymise action undo the 
+	<a class="stopLink" id="help_pig_anonymise"
+	    onclick="return false;"
+	    href="pig_anonymise.html">Pig anonymise</a> action.
     </p>
-   
-    <h2>Unnonymise - Page 1</h2>
-    <p>This page let you choose the features to unanonymise.</p>
-    
-     <h2>Unnonymise - Page 2</h2>
-    <p>This page let you configure the pig output settings.</p>
+<h3>Quick Guide</h3>
+	<p>
 
-    <h2>Red Sqirl Pig</h2>
-    <p>
-        Red Sqirl Pig is a package that contains actions that interface with <a
-            target="_blank" href="http://pig.apache.org/">Pig</a> on the Red Sqirl platform to perform
-        Pig actions. There are five other actions available from this package
-        <a class="stopLink" id="help_pig_select"
-            onclick="return false;" href="pig_select.html">Pig Select</a> , <a
-            class="stopLink" id="help_pig_join" onclick="return false;"
-            href="pig_join.html">Pig Join</a>, <a class="stopLink"
-            id="help_pig_union" onclick="return false;" href="pig_union.html">Pig
-            Union</a>, <a class="stopLink"
-            id="help_pig_transpose" onclick="return false;" href="pig_transpose.html">Pig
-            Transpose</a> and <a class="stopLink" id="help_pig_aggregator"
-            onclick="return false;" href="pig_aggregator.html">Pig Aggregator</a>
-    <p>On the last page of every pig action will have two interactions
-        that set the output format of the pig action. These interactions are
-        to set the delimiter of the file for a TEXT MAP REDUCE DIRECTORY and
-        the other is to set the output type of the file to be either TEXT MAP
-        REDUCE DIRECTORY or BINARY MAP-REDUCE DIRECTORY</p>
-    </p>
-
-
-    <p>Apache Pig is a platform for analyzing large data sets that
-        consists of a high-level language for expressing data analysis
-        programs, coupled with infrastructure for evaluating these programs.
-        The salient property of Pig programs is that their structure is
-        amenable to substantial parallelization, which in turns enables them
-        to handle very large data sets. At the present time, Pig's
-        infrastructure layer consists of a compiler that produces sequences
-        of Map-Reduce programs, for which large-scale parallel
-        implementations already exist (e.g., the Hadoop subproject). Pig's
-        language layer currently consists of a textual language called Pig
-        Latin, which has the following key properties:
-    <ul>
-        <li>Ease of programming. It is trivial to achieve parallel
-            execution of simple, "embarrassingly parallel" data analysis tasks.
-            Complex tasks comprised of multiple interrelated data
-            transformations are explicitly encoded as data flow sequences,
-            making them easy to write, understand, and maintain.</li>
-        <li>Optimization opportunities. The way in which tasks are
-            encoded permits the system to optimize their execution
-            automatically, allowing the user to focus on semantics rather than
-            efficiency.</li>
-        <li>Extensibility. Users can create their own functions to do
-            special-purpose processing.</li>
-    </ul>
-    </p>
-    	<ul>
-		<li>add quick guide</li>
-		<li>add interaction descriptions</li>
+	<ul>
+	    <li>Input
+		<ul>
+		    <li>
+			<a class="stopLink" id="helpmain_canvas" 
+			    onclick="return false;" 
+			    href="../help/canvas.html#output_type">
+			    Text or Binary Map Reduce Directory
+			</a>
+		    </li>
+		    <li>index (OPT): 
+			<a class="stopLink" id="helpmain_canvas" 
+			    onclick="return false;" 
+			    href="../help/canvas.html#output_type">
+			    Control-A delimited directory 
+			</a> - when anonymising STRING an index is created. This
+			index is needed for unanonymise the data or to anonymise
+			another dataset with the same index. 
+		    </li>
+		</ul>
+	    </li>
+	    <li>Configurations
+		<ul>
+		    <li> Choose field to unanonymise</li>
+		    <li> Choose data format </li>
+		</ul>
+	    </li>
+	    <li>Output
+		<ul>
+		    <li>
+			<a class="stopLink" id="helpmain_canvas" 
+			    onclick="return false;" 
+			    href="../help/canvas.html#output_type">
+			    Text or Binary Map Reduce Directory
+			</a>
+		    </li>
+		</ul>
+	    </li>
 	</ul>
+   
+	<h2><a id="page1">Unanonymisation Parameters - Page 1</a></h2>
+
+	<p>This page lets you choose the fields to unanonymise.</p>
+
+	<p>For numbers the offset and factor used in the anonymisation process
+	have to be given.</p>
+
+	<p>If the fields anonymised are STRING the index built during the
+	anonymisation action is needed.</p>
+
+	<h2><a id="page2">Formating - Page 2</a></h2>
+
+	<h3>Delimiter</h3>
+
+	<p> Choose the delimiter character used to separate the output dataset field in each row. The 		delimiter is used only if you choose Text format.
+	</p> 
+	<h3>Format</h3>
+	
+	<ul>
+	<li> Text: save the result in a text format which is user readable, very handy for re-using the output</li>
+	<li> Binary: Use pig binary format. Binary format for reading and writing is a bit faster than a text 		     format.</li>
+	</ul>
+
+   <h2>Red Sqirl Pig</h2>
+	<p>
+		Red Sqirl Pig is a package that contains actions that interface with <a
+			target="_blank" href="http://pig.apache.org/">Pig</a> on the Red Sqirl platform to perform
+		    Pig actions.
+		   
+		   The pig actions available from the package are
+		   <ul>
+		       <li> Pig Aggregator 
+		       </li>
+			<li>
+			    Pig Anonymise
+			</li>
+			<li>
+			    Pig Binary Source
+			</li>
+		       <li>
+			    Pig Join
+			</li>
+			<li>
+			    Pig Sample
+			</li>
+			<li>
+			    Pig Select
+			</li>
+			<li>
+			    Pig Text Source
+			</li>
+			<li>
+			    Pig Transpose
+			</li>
+			<li>
+			    Pig Uanonymise
+			</li>
+			<li>
+			     Pig Union 
+			</li>
+			<li>
+			    Pig Value Binning
+			</li>
+			<li>
+			    Pig Volume Binning
+			</li>
+		</ul>
+
+	</p>
+	
+	<h3>Redsqirl Pig Data set</h3>
+
+	<p>The last page of every pig action will have two interactions
+		that set the output format of the pig action. These interactions are
+		to set the delimiter of the file for a TEXT MAP REDUCE DIRECTORY and
+		the other is to set the output type of the file to be either TEXT MAP
+		REDUCE DIRECTORY or BINARY MAP-REDUCE DIRECTORY
+	</p>
+
+	<h3>Auditing</h3>
+	
+	<p> After each Pig action it is possible to audit the result in order to
+	have a better idea of the data set and help make decisions on what to
+	do next. For example you may want to do an audit before using a binning
+	node in order to have an idea of your value range. Also result of the
+	audit may create auto-generated options.
+	</p>
+
+	<h3>Apache Pig</h3>
+
+	<p>Apache Pig is a platform for analyzing large data sets, which
+		consists of a high-level language for expressing data analysis
+		programs, coupled with infrastructure for evaluating these programs.
+		The salient property of Pig programs is that their structure is
+		amenable to substantial parallelization, which in turns enables them
+		to handle very large data sets. At the present time, Pig's
+		infrastructure layer consists of a compiler that produces sequences
+		of Map-Reduce programs, for which large-scale parallel
+		implementations already exist (e.g., the Hadoop subproject). Pig's
+		language layer currently consists of a textual language called Pig
+		Latin, which has the following key properties:
+	<ul>
+		<li>Ease of programming. It is trivial to achieve parallel
+			execution of simple, "embarrassingly parallel" data analysis tasks.
+			Complex tasks comprised of multiple interrelated data
+			transformations are explicitly encoded as data flow sequences,
+			making them easy to write, understand, and maintain.</li>
+		<li>Optimization opportunities. The way in which tasks are
+			encoded permits the system to optimize their execution
+			automatically, allowing the user to focus on semantics rather than
+			efficiency.</li>
+		<li>Extensibility. Users can create their own functions to do
+			special-purpose processing.</li>
+	</ul>
+	</p>
 </body>
 </html>

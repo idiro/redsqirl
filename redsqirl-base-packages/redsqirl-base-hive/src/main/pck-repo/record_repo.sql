@@ -1,4 +1,4 @@
-INSERT INTO idm_pck_mng.idm_packages( 
+INSERT INTO redsqirl_pck_mng.redsqirl_packages( 
       id,
       name,
       version,

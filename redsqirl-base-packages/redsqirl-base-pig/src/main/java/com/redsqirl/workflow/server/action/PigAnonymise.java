@@ -4,6 +4,7 @@ package com.redsqirl.workflow.server.action;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.redsqirl.utils.FeatureList;
@@ -81,6 +82,8 @@ public class PigAnonymise extends PigElement {
 				PigLanguageManager.getText("pig.anonymise.features_interaction.title"),
 				PigLanguageManager.getText("pig.anonymise.features_interaction.legend"), 0,
 				0, true);
+		featuresInt.setNonEmptyChecker();
+		
 		
 		offsetInt = new InputInteraction(
 				key_offset,
@@ -116,7 +119,7 @@ public class PigAnonymise extends PigElement {
 		input.put(key_input, new DataProperty(MapRedTextType.class, 1,
 				1));
 		input.put(key_index_map, new DataProperty(MapRedCtrlATextType.class,
-				0, 1));
+				0, 1,getIndexFeatures()));
 	}
 	
 	
@@ -328,7 +331,19 @@ public class PigAnonymise extends PigElement {
 		DFEOutput in = getDFEInput().get(key_input).get(0);
 		if (in != null) {
 			if (interaction.getId().equals(featuresInt.getId())) {
-				featuresInt.setPossibleValues(getInFeatures().getFeaturesNames());
+				FeatureList inFeat = getInFeatures();
+				List<String> posValues = new LinkedList<String>();
+				Iterator<String> it = inFeat.getFeaturesNames().iterator();
+				while (it.hasNext()) {
+					String cur = it.next();
+					FeatureType typeCur = inFeat.getFeatureType(cur);
+					if (!(FeatureType.DATE.equals(typeCur)
+							|| FeatureType.DATETIME.equals(typeCur) || FeatureType.TIMESTAMP
+								.equals(typeCur))) {
+						posValues.add(cur);
+					}
+				}
+				featuresInt.setPossibleValues(posValues);
 			}else if (interaction.getId().equals(orderInt.getId())) {
 				orderInt.update();
 			}
@@ -343,20 +358,37 @@ public class PigAnonymise extends PigElement {
 		String error = super.updateOut();
 		if(error == null){
 			
-			if (output.get(key_output_index) == null) {
-				output.put(key_output_index, new MapRedCtrlATextType());
+			//Check if an index has to be created
+			FeatureList inFeats = getInFeatures();
+			boolean createIndex = false;
+			Iterator<String> it = featuresInt.getValues().iterator();
+			while(it.hasNext() && !createIndex){
+				String fName = it.next();
+				
+				createIndex = FeatureType.CATEGORY.equals(inFeats.getFeatureType(fName))
+						|| FeatureType.STRING.equals(inFeats.getFeatureType(fName));
 			}
-			try {
-				FeatureList fl = new OrderedFeatureList();
-				fl.addFeature("Value", FeatureType.STRING);
-				fl.addFeature("Index", FeatureType.STRING);
-					
-				output.get(key_output_index).setFeatures(fl);
-			} catch (Exception e) {
-				logger.error(e.getMessage(), e);
+			if(createIndex){
+				if (output.get(key_output_index) == null) {
+				        output.put(key_output_index, new MapRedCtrlATextType());
+				}
+				try {
+					output.get(key_output_index).setFeatures(getIndexFeatures());
+				} catch (Exception e) {
+					logger.error(e.getMessage(), e);
+				}
+			}else{
+				output.remove(key_output_index);
 			}
 		}
 		return error;
+	}
+	
+	public FeatureList getIndexFeatures() throws RemoteException{
+		FeatureList fl = new OrderedFeatureList();
+		fl.addFeature("Value", FeatureType.STRING);
+		fl.addFeature("Index", FeatureType.STRING);
+		return fl;
 	}
 
 }

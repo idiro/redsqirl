@@ -2,21 +2,60 @@
 <html>
 <head>
 <title>Pig Volume Binning Help</title>
-
 </head>
 <body>
     <h1>Pig Volume Binning</h1>
-    <h2>Description</h2>
-    <p>
-    <ul>
-        <li>Input - Single Text or Binary Map Reduce Directory</li>
-    </ul>
-    </p>
-    <h2>Source</h2>
-    <p>The Source can be only HDFS (TEXT MAP REDUCE DIRECTORY). It has
-        to be a delimiter separated value. An example is when | is the
-        delimiter then the format for a line would be (X|Y|Z)</p>
 
+ <h2>Description</h2>
+	<p> The Pig Volume Binning action creates bin in your dataset according
+	to the number of bin given. Concretely a new field will be created with the bin
+	name for each row. The bin names will always be an integer where 1 are
+	the smallest value of a given field.
+	</p>
+
+<h3>Quick Guide</h3>
+	<p>
+
+	<ul>
+	    <li>Input
+		<ul>
+		    <li>
+			<a class="stopLink" id="helpmain_canvas" 
+			    onclick="return false;" 
+			    href="../help/canvas.html#output_type">
+			    Text or Binary Map Reduce Directory
+			</a>
+		    </li>
+		</ul>
+	    </li>
+	    <li>Configurations
+		<ul>
+		    <li>Features - Select the column to use for binning</li>
+		    <li>Split Zones - Define the bin names and the born to be used for splitting</li>
+		    <li> Choose data format </li>
+		    <li> Perform audit on the result </li>
+		</ul>
+	    </li>
+	    <li>Output
+		<ul>
+		    <li>
+			<a class="stopLink" id="helpmain_canvas" 
+			    onclick="return false;" 
+			    href="../help/canvas.html#output_type">
+			    Text or Binary Map Reduce Directory
+			</a>
+		    </li>
+		    <li>audit (OPT): 
+			<a class="stopLink" id="helpmain_canvas" 
+			    onclick="return false;" 
+			    href="../help/canvas.html#output_type">
+			    Control-A delimited directory 
+			</a> with global audit values
+		    </li>
+		</ul>
+	    </li>
+	</ul>
+   
      <h2><a id="page1">Volume Binning - Page 1</a></h2>
     
     <h3>Binning Column</h3>
@@ -30,77 +69,125 @@
 
     <h2><a id="page2">Volume Binning - Page 2</a></h2>
 
-    <h3>Parallel</h3>
-    
-    Set the parallel parameter in the entire pig script. 
-    This parameter control the number of reducers on the pig job.
-    
-    <h3>Delimiter</h3>
-    
-    Set the delimiter of the output type. It is only relevant when using Text type format.
-    
-    <h3>Output Type</h3>
-    
-    Set the output type Text or Binary.
-    
-    <h3>Audit the output</h3>
-    
-    <p>
-    If tick the default action output will be audited. This audit can be read by the user or used in 
-    the next actions for some actions.
-    </p>
-    <p> A further bin audit is also done for having the size and the born for each bin. </p>
-    
+	<h3>Parallel</h3>
 
-    <h2>Red Sqirl Pig</h2>
-    
-    <p>
-        Red Sqirl Pig is a package that contains actions that interface with <a
-            target="_blank" href="http://pig.apache.org/">Pig</a> on the Red Sqirl platform to perform
-        Pig actions. There are two other actions available from this package
-        <a class="stopLink" id="help_pig_select"
-            onclick="return false;" href="pig_select.html">Pig Select</a> , <a
-            class="stopLink" id="help_pig_join" onclick="return false;"
-            href="pig_join.html">Pig Join</a>, <a class="stopLink"
-            id="help_pig_union" onclick="return false;" href="pig_union.html">Pig
-            Union</a> and <a class="stopLink" id="help_pig_aggregator"
-            onclick="return false;" href="pig_aggregator.html">Pig Aggregator</a>
-    <p>On the last page of every pig action will have two interactions
-        that set the output format of the pig action. These interactions are
-        to set the delimiter of the file for a TEXT MAP REDUCE DIRECTORY and
-        the other is to set the output type of the file to be either TEXT MAP
-        REDUCE DIRECTORY or BINARY MAP-REDUCE DIRECTORY</p>
-    </p>
+	Set the parallel parameter in the entire pig script. This parameter
+	controls the number of reducers on the pig job.
 
+	<h3>Delimiter</h3>
 
-    <p>Apache Pig is a platform for analyzing large data sets that
-        consists of a high-level language for expressing data analysis
-        programs, coupled with infrastructure for evaluating these programs.
-        The salient property of Pig programs is that their structure is
-        amenable to substantial parallelization, which in turns enables them
-        to handle very large data sets. At the present time, Pig's
-        infrastructure layer consists of a compiler that produces sequences
-        of Map-Reduce programs, for which large-scale parallel
-        implementations already exist (e.g., the Hadoop subproject). Pig's
-        language layer currently consists of a textual language called Pig
-        Latin, which has the following key properties:
-    <ul>
-        <li>Ease of programming. It is trivial to achieve parallel
-            execution of simple, "embarrassingly parallel" data analysis tasks.
-            Complex tasks comprised of multiple interrelated data
-            transformations are explicitly encoded as data flow sequences,
-            making them easy to write, understand, and maintain.</li>
-        <li>Optimization opportunities. The way in which tasks are
-            encoded permits the system to optimize their execution
-            automatically, allowing the user to focus on semantics rather than
-            efficiency.</li>
-        <li>Extensibility. Users can create their own functions to do
-            special-purpose processing.</li>
-    </ul>
-    </p>
-    	<ul>
-		<li>add quick guide</li>
-		<li>add interaction descriptions</li>
+	<p> Choose the delimiter character used to separate the output dataset field in each row. The 		delimiter is used only if you choose Text format.
+	</p> 
+
+	<h3>Format</h3>
+	
+	<ul>
+	<li> Text: save the result in a text format which is user readable, very handy for re-using the output</li>
+	<li> Binary: Use pig binary format. Binary format for reading and writing is a bit faster than a text 		     format.</li>
 	</ul>
+	
+	<h3>Audit</h3>
+
+	When the audit is enabled a second data set is generated with aggregate
+	value that can give an overview to the user. For each column
+	when relevant the range, the average, the number of non-null
+	and null values as well as the number of distinct values (only for
+	CATEGORY type) are calculated.
+
+	<p>Also a further bin audit calculates the size and the
+		born for each bin.</p>
+
+  <h2>Red Sqirl Pig</h2>
+	<p>
+		Red Sqirl Pig is a package that contains actions that interface with <a
+			target="_blank" href="http://pig.apache.org/">Pig</a> on the Red Sqirl platform to perform
+		    Pig actions.
+		   
+		   The pig actions available from the package are
+		   <ul>
+		       <li> Pig Aggregator 
+		       </li>
+			<li>
+			    Pig Anonymise
+			</li>
+			<li>
+			    Pig Binary Source
+			</li>
+		       <li>
+			    Pig Join
+			</li>
+			<li>
+			    Pig Sample
+			</li>
+			<li>
+			    Pig Select
+			</li>
+			<li>
+			    Pig Text Source
+			</li>
+			<li>
+			    Pig Transpose
+			</li>
+			<li>
+			    Pig Unanonymise
+			</li>
+			<li>
+			     Pig Union 
+			</li>
+			<li>
+			    Pig Value Binning
+			</li>
+			<li>
+			    Pig Volume Binning
+			</li>
+		</ul>
+
+	</p>
+	
+	<h3>Redsqirl Pig Data set</h3>
+
+	<p>The last page of every pig action will have two interactions
+		that set the output format of the pig action. These interactions are
+		to set the delimiter of the file for a TEXT MAP REDUCE DIRECTORY and
+		the other is to set the output type of the file to be either TEXT MAP
+		REDUCE DIRECTORY or BINARY MAP-REDUCE DIRECTORY
+	</p>
+
+	<h3>Auditing</h3>
+	
+	<p> After each Pig action it is possible to audit the result in order to
+	have a better idea of the data set and help make decisions on what to
+	do next. For example you may want to do an audit before using a binning
+	node in order to have an idea of your value range. Also result of the
+	audit may create auto-generated options.
+	</p>
+
+	<h3>Apache Pig</h3>
+
+	<p>Apache Pig is a platform for analyzing large data sets, which
+		consists of a high-level language for expressing data analysis
+		programs, coupled with infrastructure for evaluating these programs.
+		The salient property of Pig programs is that their structure is
+		amenable to substantial parallelization, which in turns enables them
+		to handle very large data sets. At the present time, Pig's
+		infrastructure layer consists of a compiler that produces sequences
+		of Map-Reduce programs, for which large-scale parallel
+		implementations already exist (e.g., the Hadoop subproject). Pig's
+		language layer currently consists of a textual language called Pig
+		Latin, which has the following key properties:
+	<ul>
+		<li>Ease of programming. It is trivial to achieve parallel
+			execution of simple, "embarrassingly parallel" data analysis tasks.
+			Complex tasks comprised of multiple interrelated data
+			transformations are explicitly encoded as data flow sequences,
+			making them easy to write, understand, and maintain.</li>
+		<li>Optimization opportunities. The way in which tasks are
+			encoded permits the system to optimize their execution
+			automatically, allowing the user to focus on semantics rather than
+			efficiency.</li>
+		<li>Extensibility. Users can create their own functions to do
+			special-purpose processing.</li>
+	</ul>
+	</p>
 </body>
 </html>
