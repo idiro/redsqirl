@@ -39,6 +39,12 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	private SelectableTable tableGrid = new SelectableTable();
 	private Integer index;
 
+	/**
+	 * Value to give when index is null
+	 */
+	private SelectableRowFooter menuNull = new SelectableRowFooter(
+			new String[3], getMenuActions());
+	
 	private static Logger logger = Logger.getLogger(ConfigureTabsBean.class);
 
 	//@PostConstruct
@@ -57,7 +63,8 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 			}
 
 			mountMenuActions();
-
+			menuNull = new SelectableRowFooter(
+						new String[3], getMenuActions());
 			setTabs(new LinkedList<String>(getMenuWA().keySet()));
 
 			setColumnIds(new LinkedList<String>());
@@ -118,9 +125,10 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	public SelectableRowFooter getCurrentFooterMenu(){
 		if(index != null && tableGrid.getRows().size() > index){
 			return (SelectableRowFooter) tableGrid.getRows().get(index);
+		}else{
+			setIndex(null);
+			return menuNull;
 		}
-		setIndex(null);
-		return null;
 	}
 
 	public void retrieveItems(String selectedTab) throws RemoteException, Exception {
