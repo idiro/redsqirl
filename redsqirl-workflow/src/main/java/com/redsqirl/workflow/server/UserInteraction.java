@@ -252,7 +252,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	 * Get the column the interaction is stored in
 	 * @return the column
 	 */
-	public int getColumn() {
+	public int getField() {
 		return column;
 	}
 
@@ -261,7 +261,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	 * Get the interactions place in the column
 	 * @return the placeInColumn
 	 */
-	public int getPlaceInColumn() {
+	public int getPlaceInField() {
 		return placeInColumn;
 	}
 

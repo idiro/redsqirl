@@ -9,8 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.redsqirl.utils.FeatureList;
-import com.redsqirl.utils.OrderedFeatureList;
+import com.redsqirl.utils.FieldList;
+import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.utils.TreeNonUnique;
 import com.redsqirl.workflow.server.BrowserInteraction;
@@ -21,7 +21,7 @@ import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.connect.WorkflowInterface;
 import com.redsqirl.workflow.server.datatype.HiveType;
 import com.redsqirl.workflow.server.datatype.MapRedTextType;
-import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
@@ -273,22 +273,22 @@ public abstract class AbstractSource extends DataflowAction {
 						}
 					}
 
-					// Features
-					FeatureList outF = new OrderedFeatureList();
+					// Fields
+					FieldList outF = new OrderedFieldList();
 					if (error == null) {
 						try {
 							logger.info("tree is "
 									+ getInteraction(key_dataset).getTree());
-							List<Tree<String>> features = getInteraction(
+							List<Tree<String>> fields = getInteraction(
 									key_dataset).getTree()
 									.getFirstChild("browse")
 									.getFirstChild("output")
-									.getChildren("feature");
-							if (features == null || features.isEmpty()) {
-								logger.warn("The list of features cannot be null or empty, could be calculated automatically from the path");
+									.getChildren("field");
+							if (fields == null || fields.isEmpty()) {
+								logger.warn("The list of fields cannot be null or empty, could be calculated automatically from the path");
 							} else {
 
-								for (Iterator<Tree<String>> iterator = features
+								for (Iterator<Tree<String>> iterator = fields
 										.iterator(); iterator.hasNext();) {
 									Tree<String> cur = iterator.next();
 
@@ -301,8 +301,8 @@ public abstract class AbstractSource extends DataflowAction {
 									logger.info("updateOut type " + type);
 
 									try {
-										outF.addFeature(name,
-												FeatureType.valueOf(type));
+										outF.addField(name,
+												FieldType.valueOf(type));
 									} catch (Exception e) {
 										error = "The type " + type
 												+ " does not exist";
@@ -371,7 +371,7 @@ public abstract class AbstractSource extends DataflowAction {
 									+ componentId);
 							try {
 								out.setPath(null);
-								out.setFeatures(null);
+								out.setFields(null);
 								out.removeAllProperties();
 							} catch (Exception e) {
 							}
@@ -382,12 +382,12 @@ public abstract class AbstractSource extends DataflowAction {
 								out.addProperty(cur, props.get(cur));
 							}
 
-							// Update the feature list only if it looks good
-							out.setFeatures(outF);
-							logger.info(out.getFeatures().getFeaturesNames());
+							// Update the field list only if it looks good
+							out.setFields(outF);
+							logger.info(out.getFields().getFieldNames());
 							logger.info("Setpath : " + path);
 							out.setPath(path);
-							logger.info(out.getFeatures().getFeaturesNames());
+							logger.info(out.getFields().getFieldNames());
 
 						}
 						

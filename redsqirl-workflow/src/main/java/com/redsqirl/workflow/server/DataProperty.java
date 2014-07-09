@@ -9,8 +9,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.redsqirl.utils.FeatureList;
-import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.utils.FieldList;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
@@ -29,8 +29,8 @@ DFELinkProperty {
 	protected List<Class<? extends DFEOutput>> typeAccepted;
 	protected int minOccurence;
 	protected int maxOccurence;
-	protected FeatureList featureListAccepted;
-	protected List<FeatureType> featureTypeAccepted;
+	protected FieldList fieldListAccepted;
+	protected List<FieldType> fieldTypeAccepted;
 
 	/**
 	 * Constructor with one accepted type and the min and max occurrence values
@@ -66,20 +66,20 @@ DFELinkProperty {
 
 	/**
 	 * Constructor with one accepted type and the min, max occurrence values
-	 * and a list of acceptable feature.
+	 * and a list of acceptable field.
 	 * 
 	 * @param typeAccepted
 	 * @param minOccurence
 	 * @param maxOccurence
-	 * @param acceptableFeatureList
+	 * @param acceptableFieldList
 	 * @throws RemoteException
 	 */
 	public DataProperty(Class<? extends DFEOutput> typeAccepted,
-			int minOccurence, int maxOccurence,FeatureList acceptableFeatureList) throws RemoteException {
+			int minOccurence, int maxOccurence,FieldList acceptableFieldList) throws RemoteException {
 		super();
 		this.typeAccepted = new LinkedList<Class<? extends DFEOutput>>();
 		this.typeAccepted.add(typeAccepted);
-		this.featureListAccepted = acceptableFeatureList;
+		this.fieldListAccepted = acceptableFieldList;
 		init(minOccurence, maxOccurence);
 	}
 
@@ -93,10 +93,10 @@ DFELinkProperty {
 	 * @throws RemoteException
 	 */
 	public DataProperty(List<Class<? extends DFEOutput>> typeAccepted,
-			int minOccurence, int maxOccurence,List<FeatureType> acceptableFeatureType) throws RemoteException {
+			int minOccurence, int maxOccurence,List<FieldType> acceptableFieldType) throws RemoteException {
 		super();
 		this.typeAccepted = typeAccepted;
-		this.featureTypeAccepted = acceptableFeatureType;
+		this.fieldTypeAccepted = acceptableFieldType;
 		init(minOccurence, maxOccurence);
 	}
 
@@ -151,10 +151,10 @@ DFELinkProperty {
 		}
 
 		if(ok){
-			if(featureListAccepted != null){
-				ok = featureListAccepted.equals(out.getFeatures());
-			}else if(featureTypeAccepted != null){
-				ok = featureTypeAccepted.equals(out.getFeatures().getTypes());
+			if(fieldListAccepted != null){
+				ok = fieldListAccepted.equals(out.getFields());
+			}else if(fieldTypeAccepted != null){
+				ok = fieldTypeAccepted.equals(out.getFields().getTypes());
 			}
 		}
 		return ok;
@@ -163,16 +163,16 @@ DFELinkProperty {
 	public String checkStr(DFEOutput out, String componentId, String componentName, String outName)throws RemoteException{
 		String ans = null;
 		if(!check(out)){
-			if(getFeatureListAccepted() != null){
+			if(getFieldListAccepted() != null){
 				ans += LanguageManagerWF.getText(
 						"dataflowaction.checkIn_linkIncompatible_with_features",
 						new Object[] { componentId, componentName,
-								outName,featureListAccepted.toString() });
-			}else if(getFeatureTypeAccepted() != null){
+								outName,fieldListAccepted.toString() });
+			}else if(getFieldTypeAccepted() != null){
 				ans += LanguageManagerWF.getText(
 						"dataflowaction.checkIn_linkIncompatible_with_types",
 						new Object[] { componentId, componentName,
-								outName,featureTypeAccepted.toString() });
+								outName,fieldTypeAccepted.toString() });
 			}else{
 				ans += LanguageManagerWF.getText(
 						"dataflowaction.checkIn_linkIncompatible",
@@ -211,16 +211,16 @@ DFELinkProperty {
 	}
 
 	/**
-	 * @return the acceptableFeatureList
+	 * @return the acceptableFieldList
 	 */
-	public final FeatureList getFeatureListAccepted() {
-		return featureListAccepted;
+	public final FieldList getFieldListAccepted() {
+		return fieldListAccepted;
 	}
 
 	/**
-	 * @return the acceptableFeatureType
+	 * @return the acceptableFieldType
 	 */
-	public final List<FeatureType> getFeatureTypeAccepted() {
-		return featureTypeAccepted;
+	public final List<FieldType> getFieldTypeAccepted() {
+		return fieldTypeAccepted;
 	}
 }

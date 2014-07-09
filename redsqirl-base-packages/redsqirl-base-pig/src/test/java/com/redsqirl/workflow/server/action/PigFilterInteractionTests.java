@@ -40,7 +40,7 @@ public class PigFilterInteractionTests {
 			ci.setValue("VAL < 10");
 			
 			
-			logger.info(hs.getDFEInput().get(PigElement.key_input).get(0).getFeatures().getFeaturesNames().toString());
+			logger.info(hs.getDFEInput().get(PigElement.key_input).get(0).getFields().getFieldNames().toString());
 			error = ci.check();
 			
 			assertTrue("check1: VAL does not exist",error != null);

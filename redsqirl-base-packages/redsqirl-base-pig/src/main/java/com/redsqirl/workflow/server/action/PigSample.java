@@ -3,7 +3,7 @@ package com.redsqirl.workflow.server.action;
 
 import java.rmi.RemoteException;
 
-import com.redsqirl.utils.FeatureList;
+import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
@@ -110,8 +110,8 @@ public class PigSample extends PigElement {
 	 * @throws RemoteException
 	 */
 	@Override
-	public FeatureList getInFeatures() throws RemoteException {
-		return getDFEInput().get(key_input).get(0).getFeatures();
+	public FieldList getInFields() throws RemoteException {
+		return getDFEInput().get(key_input).get(0).getFields();
 	}
 	/**
 	 * Get the new Features from the action
@@ -119,8 +119,8 @@ public class PigSample extends PigElement {
 	 * @throws RemoteException
 	 */
 	@Override
-	public FeatureList getNewFeatures() throws RemoteException {
-		return getInFeatures();
+	public FieldList getNewField() throws RemoteException {
+		return getInFields();
 	}
 	/**
 	 * Update the interaction 

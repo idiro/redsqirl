@@ -12,7 +12,7 @@ import org.apache.hadoop.fs.Path;
 
 import com.idiro.hadoop.checker.HdfsFileChecker;
 import com.idiro.utils.RandomString;
-import com.redsqirl.utils.FeatureList;
+import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
 public class MapRedModelType extends MapRedDir {
@@ -28,8 +28,8 @@ public class MapRedModelType extends MapRedDir {
 		super();
 	}
 
-	public MapRedModelType(FeatureList features) throws RemoteException {
-		super(features);
+	public MapRedModelType(FieldList fields) throws RemoteException {
+		super(fields);
 	}
 
 	@Override
@@ -97,17 +97,17 @@ public class MapRedModelType extends MapRedDir {
 		while (it.hasNext()) {
 			String l = it.next();
 			String[] line = l.split(patternStr, -1);
-			List<String> featureNames = getFeatures().getFeaturesNames();
-			if (featureNames.size() == line.length) {
+			List<String> fieldNames = getFields().getFieldNames();
+			if (fieldNames.size() == line.length) {
 				Map<String, String> cur = new LinkedHashMap<String, String>();
 				for (int i = 0; i < line.length; ++i) {
-					cur.put(featureNames.get(i), line[i]);
+					cur.put(fieldNames.get(i), line[i]);
 				}
 				ans.add(cur);
 			} else {
 				logger.error("The line size (" + line.length
-						+ ") is not compatible to the number of features ("
-						+ featureNames.size() + ").");
+						+ ") is not compatible to the number of fields ("
+						+ fieldNames.size() + ").");
 				logger.error("Error line: " + l);
 				ans = null;
 				break;
@@ -128,7 +128,7 @@ public class MapRedModelType extends MapRedDir {
 
 		if (path == null) {
 			super.setPath(path);
-			setFeatures(null);
+			setFields(null);
 			return;
 		}
 
@@ -139,55 +139,55 @@ public class MapRedModelType extends MapRedDir {
 			logger.info("setPath() " + path);
 			if (isPathExists()) {
 
-				FeatureList fl = generateFeaturesMap(delimiter);
+				FieldList fl = generateFieldsMap(delimiter);
 
 				String error = null;
 				String header = getProperty(key_header);
 				if (header != null && !header.isEmpty()) {
-					logger.info("setFeaturesFromHeader --");
-					error = setFeaturesFromHeader();
+					logger.info("setFieldsFromHeader --");
+					error = setFieldsFromHeader();
 					if (error != null) {
 						throw new RemoteException(error);
 					}
 				} else {
-					if (features != null) {
-						logger.debug(features.getFeaturesNames());
-						logger.debug(fl.getFeaturesNames());
+					if (fields != null) {
+						logger.debug(fields.getFieldNames());
+						logger.debug(fl.getFieldNames());
 					} else {
-						features = fl;
+						fields = fl;
 					}
 				}
 
-				if (features.getSize() != fl.getSize()) {
+				if (fields.getSize() != fl.getSize()) {
 					if (header != null && !header.isEmpty()) {
 						error = LanguageManagerWF
 								.getText("mapredtexttype.setheaders.wronglabels");
 					}
-					features = fl;
+					fields = fl;
 				} else {
-					Iterator<String> flIt = fl.getFeaturesNames().iterator();
-					Iterator<String> featIt = features.getFeaturesNames()
+					Iterator<String> flIt = fl.getFieldNames().iterator();
+					Iterator<String> fieldIt = fields.getFieldNames()
 							.iterator();
 					boolean ok = true;
 					int i = 1;
 					while (flIt.hasNext() && ok) {
 						String nf = flIt.next();
-						String of = featIt.next();
-						logger.info("types feat " + i + ": "
-								+ fl.getFeatureType(nf) + " , "
-								+ features.getFeatureType(of));
-						ok &= canCast(fl.getFeatureType(nf),
-								features.getFeatureType(of));
+						String of = fieldIt.next();
+						logger.info("types field " + i + ": "
+								+ fl.getFieldType(nf) + " , "
+								+ fields.getFieldType(of));
+						ok &= canCast(fl.getFieldType(nf),
+								fields.getFieldType(of));
 						if (!ok) {
 							error = LanguageManagerWF.getText(
 									"mapredtexttype.msg_error_cannot_cast",
-									new Object[] { fl.getFeatureType(nf),
-											features.getFeatureType(of) });
+									new Object[] { fl.getFieldType(nf),
+											fields.getFieldType(of) });
 						}
 						++i;
 					}
 					if (!ok) {
-						features = fl;
+						fields = fl;
 						if (error != null) {
 							throw new RemoteException(error);
 						}

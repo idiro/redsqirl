@@ -58,34 +58,34 @@ public class SourceTests {
 		dataSetTree.getFirstChild("browse").getFirstChild("output").add("path")
 				.add(new_path1);
 
-		Tree<String> feat1 = dataSetTree.getFirstChild("browse")
-				.getFirstChild("output").add("feature");
-		feat1.add("name").add("ID");
-		feat1.add("type").add("STRING");
+		Tree<String> field1 = dataSetTree.getFirstChild("browse")
+				.getFirstChild("output").add("field");
+		field1.add("name").add("ID");
+		field1.add("type").add("STRING");
 
-		Tree<String> feat2 = dataSetTree.getFirstChild("browse")
-				.getFirstChild("output").add("feature");
-		feat2.add("name").add("VALUE");
-		feat2.add("type").add("INT");
+		Tree<String> field2 = dataSetTree.getFirstChild("browse")
+				.getFirstChild("output").add("field");
+		field2.add("name").add("VALUE");
+		field2.add("type").add("INT");
 
 		String error = src.updateOut();
 		assertTrue("source update: " + error, error == null);
 
-		assertTrue("number of features in source should be 2 instead of "
-				+ src.getDFEOutput().get(Source.out_name).getFeatures()
+		assertTrue("number of fields in source should be 2 instead of "
+				+ src.getDFEOutput().get(Source.out_name).getFields()
 						.getSize(), src.getDFEOutput().get(Source.out_name)
-				.getFeatures().getSize() == 2);
+				.getFields().getSize() == 2);
 
-		assertTrue("Feature list "
-				+ src.getDFEOutput().get(Source.out_name).getFeatures()
-						.getFeaturesNames(),
-				src.getDFEOutput().get(Source.out_name).getFeatures()
-						.getFeaturesNames().contains("id"));
-		assertTrue("Feature list "
-				+ src.getDFEOutput().get(Source.out_name).getFeatures()
-						.getFeaturesNames(),
-				src.getDFEOutput().get(Source.out_name).getFeatures()
-						.getFeaturesNames().contains("value"));
+		assertTrue("field list "
+				+ src.getDFEOutput().get(Source.out_name).getFields()
+						.getFieldNames(),
+				src.getDFEOutput().get(Source.out_name).getFields()
+						.getFieldNames().contains("id"));
+		assertTrue("field list "
+				+ src.getDFEOutput().get(Source.out_name).getFields()
+						.getFieldNames(),
+				src.getDFEOutput().get(Source.out_name).getFields()
+						.getFieldNames().contains("value"));
 
 		return src;
 	}
@@ -140,15 +140,15 @@ public class SourceTests {
 			dataSetTree.getFirstChild("browse").getFirstChild("output")
 					.add("path").add(new_path1);
 
-			Tree<String> feat1 = dataSetTree.getFirstChild("browse")
-					.getFirstChild("output").add("feature");
-			feat1.add("name").add("ID");
-			feat1.add("type").add("STRING");
+			Tree<String> field1 = dataSetTree.getFirstChild("browse")
+					.getFirstChild("output").add("field");
+			field1.add("name").add("ID");
+			field1.add("type").add("STRING");
 
-			Tree<String> feat2 = dataSetTree.getFirstChild("browse")
-					.getFirstChild("output").add("feature");
-			feat2.add("name").add("VALUE");
-			feat2.add("type").add("INT");
+			Tree<String> field2 = dataSetTree.getFirstChild("browse")
+					.getFirstChild("output").add("field");
+			field2.add("name").add("VALUE");
+			field2.add("type").add("INT");
 
 			error = page3.checkPage();
 			assertTrue("check page 3: " + error, error == null);
@@ -259,8 +259,8 @@ public class SourceTests {
 				result.add(el);
 			}
 			assertTrue("Not equal " + result.size() + " , "
-					+ out.getFeatures().getSize(),
-					out.getFeatures().getSize() == result.size());
+					+ out.getfields().getSize(),
+					out.getfields().getSize() == result.size());
 
 			result = out.select(50);
 
@@ -272,8 +272,8 @@ public class SourceTests {
 			// result.add(el);
 			// }
 			assertTrue("Not equal " + result.size() + " , "
-					+ out.getFeatures().getSize(),
-					(out.getFeatures().getSize()) != result.size());
+					+ out.getfields().getSize(),
+					(out.getfields().getSize()) != result.size());
 			logger.info(result);
 			WorkflowPrefManager.resetSys();
 			WorkflowPrefManager.resetUser();

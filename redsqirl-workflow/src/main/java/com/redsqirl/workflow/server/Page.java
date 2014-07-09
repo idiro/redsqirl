@@ -145,19 +145,19 @@ public class Page extends UnicastRemoteObject implements DFEPage {
 		Iterator<DFEInteraction> it = interactions.iterator();
 		while (it.hasNext() && ok) {
 			DFEInteraction ii = it.next();
-			LinkedList<Integer> placeInPage = pages.get(ii.getColumn());
+			LinkedList<Integer> placeInPage = pages.get(ii.getField());
 			if (placeInPage != null) {
-				if (placeInPage.contains(ii.getPlaceInColumn())) {
+				if (placeInPage.contains(ii.getPlaceInField())) {
 					ok = false;
 					logger.error("There is 2 element that have the same place");
 				}
 			} else {
 				placeInPage = new LinkedList<Integer>();
-				pages.put(ii.getColumn(), placeInPage);
+				pages.put(ii.getField(), placeInPage);
 			}
 
 			if (ok) {
-				placeInPage.add(ii.getPlaceInColumn());
+				placeInPage.add(ii.getPlaceInField());
 			}
 		}
 		if (ok) {
@@ -213,7 +213,7 @@ public class Page extends UnicastRemoteObject implements DFEPage {
 	 */
 	public boolean addInteraction(DFEInteraction e) throws RemoteException {
 		try {
-			nbColumn = Math.max(e.getColumn() + 1, nbColumn);
+			nbColumn = Math.max(e.getField() + 1, nbColumn);
 			return interactions.add(e);
 		} catch (RemoteException er) {
 			logger.error("RemoteException error when creating an interaction");

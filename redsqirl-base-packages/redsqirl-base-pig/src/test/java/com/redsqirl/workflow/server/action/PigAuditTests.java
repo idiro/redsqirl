@@ -14,8 +14,8 @@ import org.apache.log4j.Logger;
 import org.apache.oozie.client.OozieClient;
 import org.junit.Test;
 
-import com.redsqirl.utils.FeatureList;
-import com.redsqirl.utils.OrderedFeatureList;
+import com.redsqirl.utils.FieldList;
+import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.OozieManager;
 import com.redsqirl.workflow.server.Workflow;
 import com.redsqirl.workflow.server.action.AuditGenerator;
@@ -23,7 +23,7 @@ import com.redsqirl.workflow.server.action.PigAudit;
 import com.redsqirl.workflow.server.action.PigBinarySource;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.datatype.MapRedCtrlATextType;
-import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.test.TestUtils;
@@ -58,7 +58,7 @@ public class PigAuditTests {
 		logger.debug("HS update out...");
 		error = pig.updateOut();
 		assertTrue("pig select update: "+error,error == null);
-		logger.debug("Features "+pig.getDFEOutput().get(PigAudit.key_output).getFeatures());
+		logger.debug("Fields "+pig.getDFEOutput().get(PigAudit.key_output).getFields());
 		
 		pig.getDFEOutput().get(PigAudit.key_output).generatePath(
 				System.getProperty("user.name"), 
@@ -140,12 +140,12 @@ public class PigAuditTests {
 			hInt.delete(new_path1);
 			
 			MapRedCtrlATextType output = new MapRedCtrlATextType();
-			FeatureList fl = new OrderedFeatureList();
-			fl.addFeature("Legend", FeatureType.STRING);
-			fl.addFeature("AUDIT_ID", FeatureType.STRING);
-			fl.addFeature("AUDIT_VALUE", FeatureType.STRING);
+			FieldList fl = new OrderedFieldList();
+			fl.addField("Legend", FieldType.STRING);
+			fl.addField("AUDIT_ID", FieldType.STRING);
+			fl.addField("AUDIT_VALUE", FieldType.STRING);
 			
-			output.setFeatures(fl);
+			output.setFields(fl);
 			output.setPath(new_path1);
 			PigTestUtils.createDistinctValueAuditFile(new Path(new_path1));
 			
@@ -169,12 +169,12 @@ public class PigAuditTests {
 			hInt.delete(new_path1);
 			
 			MapRedCtrlATextType output = new MapRedCtrlATextType();
-			FeatureList fl = new OrderedFeatureList();
-			fl.addFeature("Legend", FeatureType.STRING);
-			fl.addFeature("AUDIT_ID", FeatureType.STRING);
-			fl.addFeature("AUDIT_VALUE", FeatureType.STRING);
+			FieldList fl = new OrderedFieldList();
+			fl.addField("Legend", FieldType.STRING);
+			fl.addField("AUDIT_ID", FieldType.STRING);
+			fl.addField("AUDIT_VALUE", FieldType.STRING);
 			
-			output.setFeatures(fl);
+			output.setFields(fl);
 			output.setPath(new_path1);
 			PigTestUtils.createDistinctValueAuditFile(new Path(new_path1));
 			
@@ -184,31 +184,31 @@ public class PigAuditTests {
 			if (agMap != null) {
 				Iterator<String> it = agMap.keySet().iterator();
 				while (it.hasNext()) {
-					String feature = it.next();
+					String field = it.next();
 					List<Map<String, String>> rowCaseWhen = new LinkedList<Map<String, String>>();
 					List<Map<String, String>> rowCaseWhenElse = new LinkedList<Map<String, String>>();
 					List<Map<String, String>> rowAllCaseWhen = new LinkedList<Map<String, String>>();
-					Iterator<String> itVals = agMap.get(feature).iterator();
+					Iterator<String> itVals = agMap.get(field).iterator();
 					String allCase = "";
 					while (itVals.hasNext()) {
 						String valCur = itVals.next();
-						String code = "WHEN ("+ feature+" == '"+valCur+"') THEN () ";
+						String code = "WHEN ("+ field+" == '"+valCur+"') THEN () ";
 						allCase +=code;
 						Map<String, String> rowWhen = new LinkedHashMap<String, String>();
 						rowWhen.put("table_op_title", "CASE "+code+" END");
-						rowWhen.put("table_feat_title", valCur);
+						rowWhen.put("table_field_title", valCur);
 						rowWhen.put("table_type_title", "STRING");
 						rowCaseWhen.add(rowWhen);
 
 						Map<String, String> rowWhenElse = new LinkedHashMap<String, String>();
 						rowWhenElse.put("table_op_title", "CASE "+code+" ELSE () END");
-						rowWhenElse.put("table_feat_title", valCur);
+						rowWhenElse.put("table_field_title", valCur);
 						rowWhenElse.put("table_type_title", "STRING");
 						rowCaseWhenElse.add(rowWhenElse);
 					}
 					Map<String,String> row = new LinkedHashMap<String, String>();
 					row.put("table_op_title", "CASE "+allCase+" END");
-					row.put("table_feat_title", "_SWITCH");
+					row.put("table_field_title", "_SWITCH");
 					row.put("table_type_title", "STRING");
 					rowAllCaseWhen.add(row);
 					logger.info(rowCaseWhen);

@@ -17,7 +17,7 @@ import com.redsqirl.workflow.server.interfaces.DFEOutput;
 
 
 /**
- * Interaction that manages grouping of features
+ * Interaction that manages grouping of fields
  * @author marcos
  *
  */
@@ -50,7 +50,7 @@ public class PigGroupInteraction extends AppendListInteraction{
 	public void update(DFEOutput in) throws RemoteException{
 		List<String> posValues = new LinkedList<String>();
 		
-		Iterator<String> it = in.getFeatures().getFeaturesNames().iterator();
+		Iterator<String> it = in.getFields().getFieldNames().iterator();
 		while(it.hasNext()){
 			posValues.add(it.next());
 		}
@@ -90,7 +90,7 @@ public class PigGroupInteraction extends AppendListInteraction{
 		return groupby;
 	}
 	/**
-	 * Receive the query that generates the features
+	 * Receive the query that generates the fields
 	 * @param relationName
 	 * @param selectInteraction
 	 * @return query
@@ -116,10 +116,10 @@ public class PigGroupInteraction extends AppendListInteraction{
 		boolean firsElement = groupBy.isEmpty();
 		while (selIt.hasNext()) {
 			Map<String,String> cur = selIt.next();
-			String featName = cur.get(PigTableSelectInteraction.table_feat_title);
+			String fieldName = cur.get(PigTableSelectInteraction.table_field_title);
 			String opTitle = cur.get(PigTableSelectInteraction.table_op_title).replace(relationName+".", "");
 			
-			if (!groupByList.contains(featName)){
+			if (!groupByList.contains(fieldName)){
 			
 				if (PigDictionary.getInstance().isAggregatorMethod(opTitle)){
 					opTitle = PigDictionary.getBracketContent(opTitle);
@@ -130,7 +130,7 @@ public class PigGroupInteraction extends AppendListInteraction{
 				}
 				
 				select += "       " + opTitle + " AS "
-						+ featName;
+						+ fieldName;
 				firsElement = false;
 			}
 		}
@@ -145,22 +145,22 @@ public class PigGroupInteraction extends AppendListInteraction{
 
 	}
 	/**
-	 * Get the aggregated features
+	 * Get the aggregated field
 	 * @param in
-	 * @return Set of aggregated features
+	 * @return Set of aggregated field
 	 * @throws RemoteException
 	 */
-	public Set<String> getAggregationFeatures(DFEOutput in) throws RemoteException{
-		Set<String> aggregationFeatures = new HashSet<String>();
+	public Set<String> getAggregationField(DFEOutput in) throws RemoteException{
+		Set<String> aggregationField = new HashSet<String>();
 		
-		in.getFeatures().getFeaturesNames();
-		if(in.getFeatures().getFeaturesNames().size() > 0){
-			Iterator<String> gIt =in.getFeatures().getFeaturesNames().iterator();
+		in.getFields().getFieldNames();
+		if(in.getFields().getFieldNames().size() > 0){
+			Iterator<String> gIt =in.getFields().getFieldNames().iterator();
 			while (gIt.hasNext()){
-				aggregationFeatures.add(gIt.next());
+				aggregationField.add(gIt.next());
 			}
 		}
 	
-		return aggregationFeatures;
+		return aggregationField;
 	}
 }

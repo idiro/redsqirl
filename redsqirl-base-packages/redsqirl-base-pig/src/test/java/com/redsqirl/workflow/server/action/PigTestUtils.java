@@ -16,14 +16,14 @@ import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
 
 import com.idiro.hadoop.NameNodeVar;
-import com.redsqirl.utils.FeatureList;
-import com.redsqirl.utils.OrderedFeatureList;
+import com.redsqirl.utils.FieldList;
+import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.Workflow;
 import com.redsqirl.workflow.server.action.PigTextSource;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.datatype.MapRedTextType;
-import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 
 public class PigTestUtils {
@@ -112,35 +112,35 @@ public class PigTestUtils {
 		dataSetTree.getFirstChild("browse").getFirstChild("output")
 				.add("property").add(MapRedTextType.key_delimiter).add(";");
 
-		Tree<String> feat1 = dataSetTree.getFirstChild("browse")
-				.getFirstChild("output").add("feature");
-		feat1.add("name").add("ID");
-		feat1.add("type").add("INT");
+		Tree<String> field1 = dataSetTree.getFirstChild("browse")
+				.getFirstChild("output").add("field");
+		field1.add("name").add("ID");
+		field1.add("type").add("INT");
 
-		Tree<String> feat2 = dataSetTree.getFirstChild("browse")
-				.getFirstChild("output").add("feature");
-		feat2.add("name").add("VALUE");
-		feat2.add("type").add("INT");
-		Tree<String> feat3 = dataSetTree.getFirstChild("browse")
-				.getFirstChild("output").add("feature");
-		feat3.add("name").add("RAW");
-		feat3.add("type").add("INT");
+		Tree<String> field2 = dataSetTree.getFirstChild("browse")
+				.getFirstChild("output").add("field");
+		field2.add("name").add("VALUE");
+		field2.add("type").add("INT");
+		Tree<String> field3 = dataSetTree.getFirstChild("browse")
+				.getFirstChild("output").add("field");
+		field3.add("name").add("RAW");
+		field3.add("type").add("INT");
 		
 		
 		String error = src.updateOut();
 		assertTrue("source update: " + error, error == null);
 		
-		assertTrue("number of features in source should be 3 instead of " + 
-				src.getDFEOutput().get(PigTextSource.out_name).getFeatures().getSize(),
-				src.getDFEOutput().get(PigTextSource.out_name).getFeatures().getSize() == 3);
+		assertTrue("number of fields in source should be 3 instead of " + 
+				src.getDFEOutput().get(PigTextSource.out_name).getFields().getSize(),
+				src.getDFEOutput().get(PigTextSource.out_name).getFields().getSize() == 3);
 		
-		List<String> feats = new LinkedList<String>();
-		feats.add("ID");
-		feats.add("VALUE");
-		feats.add("RAW");
-		assertTrue("Feature list " + 
-				src.getDFEOutput().get(PigTextSource.out_name).getFeatures().getFeaturesNames(),
-				src.getDFEOutput().get(PigTextSource.out_name).getFeatures().getFeaturesNames().containsAll(feats));
+		List<String> fields = new LinkedList<String>();
+		fields.add("ID");
+		fields.add("VALUE");
+		fields.add("RAW");
+		assertTrue("field list " + 
+				src.getDFEOutput().get(PigTextSource.out_name).getFields().getFieldNames(),
+				src.getDFEOutput().get(PigTextSource.out_name).getFields().getFieldNames().containsAll(fields));
 		
 		return src;
 	}
@@ -159,15 +159,15 @@ public class PigTestUtils {
 		Tree<String> dataSetTree = src.getInteraction(PigTextSource.key_dataset).getTree();
 		dataSetTree.getFirstChild("browse").getFirstChild("output").add("path").add(path);
 		
-		Tree<String> feat1 = dataSetTree.getFirstChild("browse")
-				.getFirstChild("output").add("feature");
-		feat1.add("name").add("ID");
-		feat1.add("type").add("STRING");
+		Tree<String> field1 = dataSetTree.getFirstChild("browse")
+				.getFirstChild("output").add("field");
+		field1.add("name").add("ID");
+		field1.add("type").add("STRING");
 
-		Tree<String> feat2 = dataSetTree.getFirstChild("browse")
-				.getFirstChild("output").add("feature");
-		feat2.add("name").add("VALUE");
-		feat2.add("type").add("INT");
+		Tree<String> field2 = dataSetTree.getFirstChild("browse")
+				.getFirstChild("output").add("field");
+		field2.add("name").add("VALUE");
+		field2.add("type").add("INT");
 		
 		logger.info(dataSetTree.toString());
 		
@@ -175,14 +175,14 @@ public class PigTestUtils {
 		assertTrue("source update: "+error,error == null);
 		
 
-		FeatureList fl = new OrderedFeatureList();
-		fl.addFeature("ID", FeatureType.STRING);
-		fl.addFeature("VALUE", FeatureType.INT);
-		src.getDFEOutput().get(PigTextSource.out_name).setFeatures(fl);
+		FieldList fl = new OrderedFieldList();
+		fl.addField("ID", FieldType.STRING);
+		fl.addField("VALUE", FieldType.INT);
+		src.getDFEOutput().get(PigTextSource.out_name).setFields(fl);
 		
-		assertTrue("number of features in source should be 2 instead of " + 
-				src.getDFEOutput().get(PigTextSource.out_name).getFeatures().getSize(),
-				src.getDFEOutput().get(PigTextSource.out_name).getFeatures().getSize() == 2);
+		assertTrue("number of fields in source should be 2 instead of " + 
+				src.getDFEOutput().get(PigTextSource.out_name).getFields().getSize(),
+				src.getDFEOutput().get(PigTextSource.out_name).getFields().getSize() == 2);
 		
 		return src;
 	}
@@ -203,31 +203,31 @@ public class PigTestUtils {
 		dataSetTree.getFirstChild("browse").getFirstChild("output").add("path").add(new_path1);
 		dataSetTree.getFirstChild("browse").getFirstChild("output").add("property").add(MapRedTextType.key_delimiter).add(",");
 
-		Tree<String> feat1 = dataSetTree.getFirstChild("browse")
-				.getFirstChild("output").add("feature");
-		feat1.add("name").add("ID");
-		feat1.add("type").add("STRING");
+		Tree<String> field1 = dataSetTree.getFirstChild("browse")
+				.getFirstChild("output").add("field");
+		field1.add("name").add("ID");
+		field1.add("type").add("STRING");
 
-		Tree<String> feat2 = dataSetTree.getFirstChild("browse")
-				.getFirstChild("output").add("feature");
-		feat2.add("name").add("VALUE");
-		feat2.add("type").add("INT");
+		Tree<String> field2 = dataSetTree.getFirstChild("browse")
+				.getFirstChild("output").add("field");
+		field2.add("name").add("VALUE");
+		field2.add("type").add("INT");
 		
 		String error = src.updateOut();
 		
 		
 		assertTrue("source update: "+error,error == null);
 		
-		assertTrue("number of features in source should be 2 instead of " + 
-				src.getDFEOutput().get(PigTextSource.out_name).getFeatures().getSize(),
-				src.getDFEOutput().get(PigTextSource.out_name).getFeatures().getSize() == 2);
+		assertTrue("number of fields in source should be 2 instead of " + 
+				src.getDFEOutput().get(PigTextSource.out_name).getFields().getSize(),
+				src.getDFEOutput().get(PigTextSource.out_name).getFields().getSize() == 2);
 		
-		assertTrue("Feature list " + 
-				src.getDFEOutput().get(PigTextSource.out_name).getFeatures().getFeaturesNames(),
-				src.getDFEOutput().get(PigTextSource.out_name).getFeatures().getFeaturesNames().contains("ID"));
-		assertTrue("Feature list " + 
-				src.getDFEOutput().get(PigTextSource.out_name).getFeatures().getFeaturesNames(),
-				src.getDFEOutput().get(PigTextSource.out_name).getFeatures().getFeaturesNames().contains("VALUE"));
+		assertTrue("field list " + 
+				src.getDFEOutput().get(PigTextSource.out_name).getFields().getFieldNames(),
+				src.getDFEOutput().get(PigTextSource.out_name).getFields().getFieldNames().contains("ID"));
+		assertTrue("field list " + 
+				src.getDFEOutput().get(PigTextSource.out_name).getFields().getFieldNames(),
+				src.getDFEOutput().get(PigTextSource.out_name).getFields().getFieldNames().contains("VALUE"));
 		
 		return src;
 	}
@@ -248,39 +248,39 @@ public class PigTestUtils {
 		dataSetTree.getFirstChild("browse").getFirstChild("output").add("path").add(new_path1);
 		dataSetTree.getFirstChild("browse").getFirstChild("output").add("property").add(MapRedTextType.key_delimiter).add(",");
 
-		Tree<String> feat1 = dataSetTree.getFirstChild("browse")
-				.getFirstChild("output").add("feature");
-		feat1.add("name").add("ID");
-		feat1.add("type").add("STRING");
+		Tree<String> field1 = dataSetTree.getFirstChild("browse")
+				.getFirstChild("output").add("field");
+		field1.add("name").add("ID");
+		field1.add("type").add("STRING");
 
-		Tree<String> feat2 = dataSetTree.getFirstChild("browse")
-				.getFirstChild("output").add("feature");
-		feat2.add("name").add("VALUE");
-		feat2.add("type").add("INT");
+		Tree<String> field2 = dataSetTree.getFirstChild("browse")
+				.getFirstChild("output").add("field");
+		field2.add("name").add("VALUE");
+		field2.add("type").add("INT");
 		
-		Tree<String> feat3 = dataSetTree.getFirstChild("browse")
-				.getFirstChild("output").add("feature");
-		feat3.add("name").add("VALUE2");
-		feat3.add("type").add("STRING");
+		Tree<String> field3 = dataSetTree.getFirstChild("browse")
+				.getFirstChild("output").add("field");
+		field3.add("name").add("VALUE2");
+		field3.add("type").add("STRING");
 		
 		String error = src.updateOut();
 		
 		
 		assertTrue("source update: "+error,error == null);
 		
-		assertTrue("number of features in source should be 3 instead of " + 
-				src.getDFEOutput().get(PigTextSource.out_name).getFeatures().getSize(),
-				src.getDFEOutput().get(PigTextSource.out_name).getFeatures().getSize() == 3);
+		assertTrue("number of fields in source should be 3 instead of " + 
+				src.getDFEOutput().get(PigTextSource.out_name).getFields().getSize(),
+				src.getDFEOutput().get(PigTextSource.out_name).getFields().getSize() == 3);
 		
-		assertTrue("Feature list " + 
-				src.getDFEOutput().get(PigTextSource.out_name).getFeatures().getFeaturesNames(),
-				src.getDFEOutput().get(PigTextSource.out_name).getFeatures().getFeaturesNames().contains("ID"));
-		assertTrue("Feature list " + 
-				src.getDFEOutput().get(PigTextSource.out_name).getFeatures().getFeaturesNames(),
-				src.getDFEOutput().get(PigTextSource.out_name).getFeatures().getFeaturesNames().contains("VALUE"));
-		assertTrue("Feature list " + 
-				src.getDFEOutput().get(PigTextSource.out_name).getFeatures().getFeaturesNames(),
-				src.getDFEOutput().get(PigTextSource.out_name).getFeatures().getFeaturesNames().contains("VALUE2"));
+		assertTrue("field list " + 
+				src.getDFEOutput().get(PigTextSource.out_name).getFields().getFieldNames(),
+				src.getDFEOutput().get(PigTextSource.out_name).getFields().getFieldNames().contains("ID"));
+		assertTrue("field list " + 
+				src.getDFEOutput().get(PigTextSource.out_name).getFields().getFieldNames(),
+				src.getDFEOutput().get(PigTextSource.out_name).getFields().getFieldNames().contains("VALUE"));
+		assertTrue("field list " + 
+				src.getDFEOutput().get(PigTextSource.out_name).getFields().getFieldNames(),
+				src.getDFEOutput().get(PigTextSource.out_name).getFields().getFieldNames().contains("VALUE2"));
 		
 		return src;
 	}

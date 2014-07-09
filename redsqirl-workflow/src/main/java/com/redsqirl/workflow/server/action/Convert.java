@@ -12,8 +12,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.redsqirl.utils.FeatureList;
-import com.redsqirl.utils.OrderedFeatureList;
+import com.redsqirl.utils.FieldList;
+import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.DataProperty;
 import com.redsqirl.workflow.server.DataflowAction;
 import com.redsqirl.workflow.server.ListInteraction;
@@ -163,13 +163,13 @@ public class Convert extends DataflowAction {
 	public void updateOutput() throws RemoteException {
 		logger.info("Initialise convert");
 		DFEOutput in = getDFEInput().get(key_input).get(0);
-		FeatureList new_features = new OrderedFeatureList();
+		FieldList new_fields = new OrderedFieldList();
 
-		FeatureList in_feat = in.getFeatures();
-		Iterator<String> it = in_feat.getFeaturesNames().iterator();
+		FieldList in_field = in.getFields();
+		Iterator<String> it = in_field.getFieldNames().iterator();
 		while (it.hasNext()) {
 			String name = it.next();
-			new_features.addFeature(name, in_feat.getFeatureType(name));
+			new_fields.addField(name, in_field.getFieldType(name));
 		}
 
 		String convert = formats.getValue();
@@ -188,7 +188,7 @@ public class Convert extends DataflowAction {
 						.getTypeName().equalsIgnoreCase(convert))) {
 			output.put(key_output, new HiveType());
 		}
-		output.get(key_output).setFeatures(new_features);
+		output.get(key_output).setFields(new_fields);
 	}
 	/**
 	 * Update the output of the action
@@ -204,16 +204,16 @@ public class Convert extends DataflowAction {
 		}
 		if (error == null) {
 			DFEOutput in = getDFEInput().get(key_input).get(0);
-			FeatureList new_features = new OrderedFeatureList();
+			FieldList new_fields = new OrderedFieldList();
 
-			FeatureList in_feat = in.getFeatures();
-			Iterator<String> it = in_feat.getFeaturesNames().iterator();
+			FieldList in_field = in.getFields();
+			Iterator<String> it = in_field.getFieldNames().iterator();
 			while (it.hasNext()) {
 				String name = it.next();
-				new_features.addFeature(name, in_feat.getFeatureType(name));
+				new_fields.addField(name, in_field.getFieldType(name));
 			}
 
-			output.get(key_output).setFeatures(new_features);
+			output.get(key_output).setFields(new_fields);
 			Map<String, String> properties = cpi.getProperties();
 			if (properties != null && !properties.isEmpty()) {
 				Iterator<String> itP = properties.keySet().iterator();
@@ -243,12 +243,12 @@ public class Convert extends DataflowAction {
 		String create_out = "CREATE TABLE IF NOT EXISTS  " + table_out + "(";
 		String create_ext = "CREATE EXTERNAL TABLE IF NOT EXISTS  " + table_ext
 				+ "(";
-		Iterator<String> itFeat = out.getFeatures().getFeaturesNames()
+		Iterator<String> itField = out.getFields().getFieldNames()
 				.iterator();
-		while (itFeat.hasNext()) {
-			String name = itFeat.next();
-			String type = HiveTypeConvert.getHiveType(out.getFeatures()
-					.getFeatureType(name));
+		while (itField.hasNext()) {
+			String name = itField.next();
+			String type = HiveTypeConvert.getHiveType(out.getFields()
+					.getFieldType(name));
 			create_out += name + " " + type + ",";
 			create_ext += name + " " + type + ",";
 		}
@@ -286,13 +286,13 @@ public class Convert extends DataflowAction {
 				+ "_" + System.getProperty("user.name") + "_ext";
 		String create_ext = "CREATE EXTERNAL TABLE IF NOT EXISTS " + table_ext
 				+ "(";
-		Iterator<String> itFeat = out.getFeatures().getFeaturesNames()
+		Iterator<String> itField = out.getFields().getFieldNames()
 				.iterator();
-		while (itFeat.hasNext()) {
+		while (itField.hasNext()) {
 			logger.debug(7);
-			String name = itFeat.next();
-			String type = HiveTypeConvert.getHiveType(out.getFeatures()
-					.getFeatureType(name));
+			String name = itField.next();
+			String type = HiveTypeConvert.getHiveType(out.getFields()
+					.getFieldType(name));
 			create_ext += name + " " + type + ",";
 		}
 		create_ext = create_ext.substring(0, create_ext.length() - 1);

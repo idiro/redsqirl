@@ -12,7 +12,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.redsqirl.utils.FeatureList;
+import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.action.PigTypeConvert;
 import com.redsqirl.workflow.server.datatype.MapRedCtrlATextType;
 import com.redsqirl.workflow.server.datatype.MapRedTextType;
@@ -54,14 +54,14 @@ public class AuditGenerator {
 		String createSelect = "LOAD '" + out.getPath() + "' USING " + function
 				+ " as (";
 
-		Iterator<String> it = out.getFeatures().getFeaturesNames().iterator();
-		logger.info("attribute list size : " + out.getFeatures().getSize());
+		Iterator<String> it = out.getFields().getFieldNames().iterator();
+		logger.info("attribute list size : " + out.getFields().getSize());
 		while (it.hasNext()) {
 			String e = it.next();
 			createSelect += e
 					+ ":"
-					+ PigTypeConvert.getPigType(out.getFeatures()
-							.getFeatureType(e));
+					+ PigTypeConvert.getPigType(out.getFields()
+							.getFieldType(e));
 			if (it.hasNext()) {
 				createSelect += ", ";
 			}
@@ -117,15 +117,15 @@ public class AuditGenerator {
 				load = loader + " = " + getLoadQueryPiece(in) + ";\n\n";
 			}
 
-			FeatureList fl = in.getFeatures();
+			FieldList fl = in.getFields();
 			Set<String> stringFeats = new LinkedHashSet<String>();
 			Set<String> categoryFeats = new LinkedHashSet<String>();
 			Set<String> numericFeats = new LinkedHashSet<String>();
 			Set<String> dateFeats = new LinkedHashSet<String>();
-			Iterator<String> flNames = fl.getFeaturesNames().iterator();
+			Iterator<String> flNames = fl.getFieldNames().iterator();
 			while (flNames.hasNext()) {
 				String name = flNames.next();
-				switch (fl.getFeatureType(name)) {
+				switch (fl.getFieldType(name)) {
 				case CHAR:
 				case STRING:
 					stringFeats.add(name);
@@ -165,7 +165,7 @@ public class AuditGenerator {
 
 			// Range
 			select += "\t\t('Range'";
-			flNames = fl.getFeaturesNames().iterator();
+			flNames = fl.getFieldNames().iterator();
 			while (flNames.hasNext()) {
 				String name = flNames.next();
 				if(!dateFeats.contains(name)){
@@ -182,7 +182,7 @@ public class AuditGenerator {
 
 			// Not null values
 			select += "\t\t('Not null values'";
-			flNames = fl.getFeaturesNames().iterator();
+			flNames = fl.getFieldNames().iterator();
 			while (flNames.hasNext()) {
 				String name = flNames.next();
 				select += ",\n\t\t\tCOUNT(" + loader + "." + name + ")";
@@ -190,7 +190,7 @@ public class AuditGenerator {
 			select += "\n\t\t),\n";
 			// Null values
 			select += "\t\t('Null values'";
-			flNames = fl.getFeaturesNames().iterator();
+			flNames = fl.getFieldNames().iterator();
 			while (flNames.hasNext()) {
 				String name = flNames.next();
 				select += ",\n\t\t\tCOUNT_STAR(" + loader + ") - COUNT("
@@ -200,7 +200,7 @@ public class AuditGenerator {
 
 			// Average
 			select += "\t\t('Average'";
-			flNames = fl.getFeaturesNames().iterator();
+			flNames = fl.getFieldNames().iterator();
 			while (flNames.hasNext()) {
 				String name = flNames.next();
 				if (numericFeats.contains(name)) {
@@ -213,7 +213,7 @@ public class AuditGenerator {
 
 			// Count Distinct
 			select += "\t\t('Count distinct values'";
-			flNames = fl.getFeaturesNames().iterator();
+			flNames = fl.getFieldNames().iterator();
 			while (flNames.hasNext()) {
 				String name = flNames.next();
 				if (stringFeats.contains(name)) {
@@ -226,7 +226,7 @@ public class AuditGenerator {
 
 			// Distinct
 			select += "\t\t('Distinct values'";
-			flNames = fl.getFeaturesNames().iterator();
+			flNames = fl.getFieldNames().iterator();
 			while (flNames.hasNext()) {
 				String name = flNames.next();
 				if (categoryFeats.contains(name)) {

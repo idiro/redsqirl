@@ -10,8 +10,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.redsqirl.utils.FeatureList;
-import com.redsqirl.utils.OrderedFeatureList;
+import com.redsqirl.utils.FieldList;
+import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.DataProperty;
 import com.redsqirl.workflow.server.DataflowAction;
 import com.redsqirl.workflow.server.InputInteraction;
@@ -19,7 +19,7 @@ import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.datatype.MapRedBinaryType;
 import com.redsqirl.workflow.server.datatype.MapRedCtrlATextType;
-import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
 import com.redsqirl.workflow.server.oozie.PigAction;
@@ -95,14 +95,14 @@ public class PigAudit extends DataflowAction {
 			output.put(key_output, new MapRedCtrlATextType());
 		}
 		try {
-			FeatureList fl = new OrderedFeatureList();
-			fl.addFeature("Legend", FeatureType.STRING);
+			FieldList fl = new OrderedFieldList();
+			fl.addField("Legend", FieldType.STRING);
 			Iterator<String> it = getDFEInput().get(key_input).get(0)
-					.getFeatures().getFeaturesNames().iterator();
+					.getFields().getFieldNames().iterator();
 			while (it.hasNext()) {
-				fl.addFeature("AUDIT_" + it.next(), FeatureType.STRING);
+				fl.addField("AUDIT_" + it.next(), FieldType.STRING);
 			}
-			output.get(key_output).setFeatures(fl);
+			output.get(key_output).setFields(fl);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}

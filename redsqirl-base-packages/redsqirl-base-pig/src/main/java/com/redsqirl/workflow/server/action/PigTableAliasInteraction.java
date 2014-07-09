@@ -32,7 +32,7 @@ public class PigTableAliasInteraction extends TableInteraction {
 	/** Operation Column title */
 	table_alias_title = PigLanguageManager
 			.getTextWithoutSpace("pig.table_alias_interaction.alias_column");
-	/** Feature Column title */
+	/** Field Column title */
 
 	private Map<String, DFEOutput> aliasInputMap;
 
@@ -120,9 +120,9 @@ public class PigTableAliasInteraction extends TableInteraction {
 	}
 
 	/**
-	 * Get the new features list from the interaction
+	 * Get the new field list from the interaction
 	 * 
-	 * @return FeatureList
+	 * @return FieldList
 	 * @throws RemoteException
 	 */
 	public Map<String, DFEOutput> getAliases() throws RemoteException {

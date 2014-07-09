@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.redsqirl.workflow.server.Page;
-import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
@@ -37,7 +37,7 @@ public class PigValueBinning extends PigBinning {
 				PigLanguageManager.getText("pig.valuebinning_page2.legend"), 1);
 
 		tValueBinningInt = new PigTableValueBinningInteraction(
-				key_featureTable,
+				key_fieldTable,
 				PigLanguageManager
 						.getText("pig.valuebinning_split_interaction.title"),
 				PigLanguageManager
@@ -63,8 +63,8 @@ public class PigValueBinning extends PigBinning {
 	}
 	
 	@Override
-	public FeatureType getNewFeatureType(){
-		return FeatureType.CATEGORY;
+	public FieldType getNewFieldType(){
+		return FieldType.CATEGORY;
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public class PigValueBinning extends PigBinning {
 
 			String load = loader + " = " + getLoadQueryPiece(in) + ";\n\n";
 
-			String select = tValueBinningInt.getQuery(loader, featureBin.getValue());
+			String select = tValueBinningInt.getQuery(loader, fieldBin.getValue());
 			if (!select.isEmpty()) {
 				select = getNextName() + " = " + select + ";\n\n";
 			}
@@ -114,20 +114,20 @@ public class PigValueBinning extends PigBinning {
 	@Override
 	public void update(DFEInteraction interaction) throws RemoteException {
 		String id = interaction.getId();
-		if (id.equals(featureBin.getId())) {
+		if (id.equals(fieldBin.getId())) {
 			List<String> posValues = new LinkedList<String>();
-			Iterator<String> allFeatIt = getInFeatures().getFeaturesNames().iterator();
-			while(allFeatIt.hasNext()){
-				String featName = allFeatIt.next();
-				FeatureType featType = getInFeatures().getFeatureType(featName);
-				if(featType.equals(FeatureType.DOUBLE)
-						|| featType.equals(FeatureType.FLOAT) 
-						|| featType.equals(FeatureType.INT) 
-						|| featType.equals(FeatureType.LONG)){
-					posValues.add(featName);
+			Iterator<String> allFieldIt = getInFields().getFieldNames().iterator();
+			while(allFieldIt.hasNext()){
+				String fieldName = allFieldIt.next();
+				FieldType fieldType = getInFields().getFieldType(fieldName);
+				if(fieldType.equals(FieldType.DOUBLE)
+						|| fieldType.equals(FieldType.FLOAT) 
+						|| fieldType.equals(FieldType.INT) 
+						|| fieldType.equals(FieldType.LONG)){
+					posValues.add(fieldName);
 				}
 			}
-			featureBin.setPossibleValues(posValues);
+			fieldBin.setPossibleValues(posValues);
 		} else if (id.equals(tValueBinningInt.getId())) {
 			tValueBinningInt.update();
 		}
@@ -135,13 +135,13 @@ public class PigValueBinning extends PigBinning {
 
 	public Double[] getMinMaxValues() throws RemoteException {
 		List<DataFlowElement> lin = getInputComponent().get(key_input);
-		String valFeat = featureBin.getValue();
+		String valField = fieldBin.getValue();
 		if (lin != null && lin.size() > 0 && 
 				lin.get(0).getDFEOutput().get(key_output_audit) != null &&
-				valFeat != null) {
+				valField != null) {
 			return (new AuditGenerator()).readRangeValuesAudit(null,
 					lin.get(0).getDFEOutput().get(key_output_audit)).get(
-					valFeat);
+					valField);
 		}
 		return null;
 	}

@@ -27,7 +27,7 @@ import com.idiro.hadoop.db.hive.HiveBasicStatement;
 import com.idiro.hadoop.utils.JdbcHdfsPrefsDetails;
 import com.idiro.tm.task.in.Preference;
 import com.idiro.utils.db.JdbcConnection;
-import com.redsqirl.utils.FeatureList;
+import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.HiveJdbcProcessesManager;
 import com.redsqirl.workflow.server.ProcessesManager;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
@@ -1326,16 +1326,16 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 	 * Check if a path is a valid path
 	 * 
 	 * @param path
-	 * @param features
+	 * @param fields
 	 * @param partitions
 	 * @return Error Message
 	 * @throws RemoteException
 	 */
-	public String isPathValid(String path, FeatureList features,
+	public String isPathValid(String path, FieldList fields,
 			boolean partitions) throws RemoteException {
 		String error = null;
 		boolean ok = false;
-		logger.info("path : " + path + " , " + features.getFeaturesNames()
+		logger.info("path : " + path + " , " + fields.getFieldNames()
 				+ " , partitions : " + partitions);
 		try {
 			if (path.startsWith("/") && path.length() > 1) {
@@ -1350,16 +1350,16 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 				if (tableExists) {
 					String desc = getDescription(tableAndPartitions[0]).get(
 							key_describe);
-
-					String[] feats = desc.split(";");
-					logger.info("split size " + feats.length);
-					if (feats.length - tableAndPartitions.length + 1 == features
+					
+					String[] fieldSs = desc.split(";");
+					logger.info("split size " + fieldSs.length);
+					if (fieldSs.length - tableAndPartitions.length + 1 == fields
 							.getSize()) {
 						// TODO
 						ok = true;
 						logger.info("ok 1");
-						for (int i = 0; i < feats.length; ++i) {
-							Iterator<String> itS = features.getFeaturesNames()
+						for (int i = 0; i < fieldSs.length; ++i) {
+							Iterator<String> itS = fields.getFieldNames()
 									.iterator();
 							boolean found = false;
 							while (itS.hasNext() && !found) {
@@ -1367,15 +1367,15 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 										.next()
 										.trim()
 										.equalsIgnoreCase(
-												feats[i].split(",")[0].trim());
+												fieldSs[i].split(",")[0].trim());
 							}
 							logger.info("ok 2");
 							if (!found) {
 								error = LanguageManagerWF.getText(
 										"hiveinterface.featsnotin",
 										new Object[] {
-												feats[i].split(",")[0],
-												features.getFeaturesNames()
+												fieldSs[i].split(",")[0],
+												fields.getFieldNames()
 												.toString() });
 							}
 							ok &= found;
@@ -1437,12 +1437,12 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 	 */
 	public Map<String, String> getDescription(String table) {
 		Map<String, String> ans = new LinkedHashMap<String, String>();
-		String featsStr = null;
+		String fieldsStr = null;
 		try {
 			ResultSet rs = executeQuery("DESCRIBE " + table);
 			int i = 0;
 			Integer parts = 0;
-			boolean featPart = true;
+			boolean fieldPart = true;
 			while (rs.next()) {
 				boolean ok = true;
 				String name = rs.getString(1);
@@ -1453,7 +1453,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 					logger.debug("name is empty " + name.isEmpty());
 					logger.debug("type is null " + type == null + " , " + type);
 					ok = false;
-					featPart = false;
+					fieldPart = false;
 				}
 				if (ok) {
 					if (type.equalsIgnoreCase("null")) {
@@ -1461,12 +1461,12 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 					}
 				}
 				if (ok) {
-					if (featPart) {
+					if (fieldPart) {
 						if (i == 0) {
-							featsStr = "";
-							featsStr += name.trim() + "," + type.trim();
+							fieldsStr = "";
+							fieldsStr += name.trim() + "," + type.trim();
 						} else {
-							featsStr += ";" + name.trim() + "," + type.trim();
+							fieldsStr += ";" + name.trim() + "," + type.trim();
 						}
 					} else {
 						if (name != null && !name.isEmpty()
@@ -1479,7 +1479,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 			}
 			rs.close();
 
-			ans.put(key_describe, featsStr);
+			ans.put(key_describe, fieldsStr);
 			ans.put(key_partition_nb, parts.toString());
 
 		} catch (SQLException e) {
@@ -1637,7 +1637,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 	 * Format the path's partitions for correct types
 	 * 
 	 * @param path
-	 * @return Map of formated feature values
+	 * @return Map of formated field values
 	 */
 	public Map<String, String> getFormattedType(String path) {
 		String[] tableAndPartition = getTableAndPartitions(path);

@@ -124,7 +124,7 @@ public class SetupEnvironmentTest {
 		WorkflowPrefManager.setupHome();
 		logger.debug(WorkflowPrefManager.pathSysHome);
 		logger.debug(WorkflowPrefManager.getPathuserpref());
-		logger.debug(WorkflowPrefManager.getPathiconmenu());
+//		logger.debug(WorkflowPrefManager.getPathiconmenu());
 		logger.debug(WorkflowPrefManager.pathUserCfgPref);
 	}
 

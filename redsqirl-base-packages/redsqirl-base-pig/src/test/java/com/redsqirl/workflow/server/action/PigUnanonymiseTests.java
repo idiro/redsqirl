@@ -50,7 +50,7 @@ public class PigUnanonymiseTests {
 		error = pig.updateOut();
 		assertTrue("pig select update: " + error, error == null);
 		logger.debug("Features "
-				+ pig.getDFEOutput().get(PigSelect.key_output).getFeatures());
+				+ pig.getDFEOutput().get(PigSelect.key_output).getFields());
 
 		pig.getDFEOutput()
 				.get(PigSelect.key_output)
@@ -65,11 +65,11 @@ public class PigUnanonymiseTests {
 
 		logger.info("update pig...");
 
-		pig.update(pig.featuresInt);
+		pig.update(pig.fieldsInt);
 		
 		List<String> values = new ArrayList<String>();
 		values.add("VALUE");
-		pig.featuresInt.setValues(values);
+		pig.fieldsInt.setValues(values);
 
 		logger.info("HS update out...");
 		String error = pig.updateOut();

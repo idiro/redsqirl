@@ -6,7 +6,7 @@ import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
 
-import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 
 /**
  * Interface for browsing data. An historic of actions is kept in order to go on
@@ -63,10 +63,10 @@ public interface DataStore extends Remote {
 		/**
 		 * Type associated to the property
 		 * 
-		 * @return {@link com.redsqirl.workflow.server.enumeration.FeatureType} of property
+		 * @return {@link com.redsqirl.workflow.server.enumeration.FieldType} of property
 		 * @throws RemoteException
 		 */
-		FeatureType getType() throws RemoteException;
+		FieldType getType() throws RemoteException;
 	}
 	
 	/**

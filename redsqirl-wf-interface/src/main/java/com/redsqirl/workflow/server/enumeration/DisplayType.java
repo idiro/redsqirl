@@ -46,7 +46,7 @@ public enum DisplayType {
 
 	// Browser
 	// Format in: browse>[type>DataType.getName()]/[subtype>namei]
-	// [output>[name>myname]/[path>mypath]/[feature>[name>value]/[type>value]]/[property>namei>valuei]]
+	// [output>[name>myname]/[path>mypath]/[field>[name>value]/[type>value]]/[property>namei>valuei]]
 	/**
 	 * <pre>
 	 * <code>
@@ -54,7 +54,7 @@ public enum DisplayType {
 	 * 		   [subtype>namei]
 	 * 		   [output>[name>myname]
 	 * 				   [path>mypath]
-	 * 				   [feature>[name>value]
+	 * 				   [field>[name>value]
 	 * 				   [type>value]]
 	 * 	       		   [property>namei>valuei]]
 	 * </code>
@@ -63,13 +63,13 @@ public enum DisplayType {
 	browser,
 
 	// Editor
-	// Format in: editor>[keywords>features>feature>[name>value]]/[type>value]]/
+	// Format in: editor>[keywords>fields>field>[name>value]]/[type>value]]/
 	// [help>submenu>[name>value]/[suggestion>[word>value]/[input>value]/[return>value]]]/
 	// [output>text]
 	/**
 	 * <pre>
 	 * <code>{@value
-	 * editor>[keywords>features>feature>[name>value]]
+	 * editor>[keywords>fields>field>[name>value]]
 	 * 							[type>value]]
 	 * 							[help>submenu>[name>value]
 	 * 										[suggestion>[word>value]
@@ -83,7 +83,7 @@ public enum DisplayType {
 	helpTextEditor,
 
 	// Table
-	// Format in: table>[columns>column>[title>value]/
+	// Format in: table>[fields>field>[title>value]/
 	// [constraint>[count>i(optional)]/
 	// [values>[value>choice(optional)]]/
 	// [regex>reg(optional)]]/
@@ -94,7 +94,7 @@ public enum DisplayType {
 	/**
 	 * <pre>
 	 * <code>
-	 * table>[columns>column>[title>value]
+	 * table>[fields>field>[title>value]
 	 * 						 [constraint>[count>i(optional)]
 	 * 						 [values>[value>choice(optional)]]
 	 * 						 [regex>reg(optional)]]

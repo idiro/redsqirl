@@ -46,8 +46,8 @@ public class PigTransposeTests {
 		logger.debug("HS update out...");
 		error = pig.updateOut();
 		assertTrue("pig select update: " + error, error == null);
-		logger.debug("Features "
-				+ pig.getDFEOutput().get(PigSelect.key_output).getFeatures());
+		logger.debug("Field "
+				+ pig.getDFEOutput().get(PigSelect.key_output).getFields());
 
 		pig.getDFEOutput()
 				.get(PigSelect.key_output)
@@ -62,12 +62,12 @@ public class PigTransposeTests {
 
 		logger.info("update pig...");
 
-		pig.update(pig.featuresInt);
+		pig.update(pig.fieldsInt);
 		
 		List<String> values = new ArrayList<String>();
 		values.add("ID");
 		values.add("VALUE");
-		pig.featuresInt.setValues(values);
+		pig.fieldsInt.setValues(values);
 
 		pig.update(pig.gettTransInt());
 		

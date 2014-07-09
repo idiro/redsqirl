@@ -4,7 +4,7 @@ package com.redsqirl.workflow.server.action;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 
-import com.redsqirl.utils.FeatureList;
+import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
@@ -44,7 +44,7 @@ public class PigSelect extends PigElement {
 		page1 = addPage(PigLanguageManager.getText("pig.select_page1.title"),
 				PigLanguageManager.getText("pig.select_page1.legend"), 3);
 
-		tSelInt = new PigTableSelectInteraction(key_featureTable,
+		tSelInt = new PigTableSelectInteraction(key_fieldTable,
 				PigLanguageManager
 						.getText("pig.select_features_interaction.title"),
 				PigLanguageManager
@@ -192,23 +192,23 @@ public class PigSelect extends PigElement {
 	
 	
 	/**
-	 * Get the input features
-	 * @return input FeatureList
+	 * Get the input field
+	 * @return input fieldList
 	 * @throws RemoteException
 	 */
 	@Override
-	public FeatureList getInFeatures() throws RemoteException {
-		return getDFEInput().get(key_input).get(0).getFeatures();
+	public FieldList getInFields() throws RemoteException {
+		return getDFEInput().get(key_input).get(0).getFields();
 	}
 	/**
-	 * Get the new features
-	 * @return new FeatureList
+	 * Get the new field
+	 * @return new FieldList
 	 * @throws RemoteExcsption
 	 * 
 	 */
 	@Override
-	public FeatureList getNewFeatures() throws RemoteException {
-		return tSelInt.getNewFeatures();
+	public FieldList getNewField() throws RemoteException {
+		return tSelInt.getNewFields();
 	}
 
 }

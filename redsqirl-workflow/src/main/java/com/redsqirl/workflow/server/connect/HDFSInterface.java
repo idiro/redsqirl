@@ -34,10 +34,10 @@ import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
-import com.redsqirl.utils.FeatureList;
+import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
 import com.redsqirl.workflow.server.datatype.MapRedBinaryType;
-import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
 /**
@@ -112,7 +112,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 					true, true, false));
 			paramProp.put(key_recursive, new DSParamProperty(
 					"Apply change reccursively", false, true, false,
-					FeatureType.BOOLEAN));
+					FieldType.BOOLEAN));
 		}
 		open();
 	}
@@ -453,12 +453,12 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 	 * @param path
 	 * @param delimiter
 	 * @param maxToRead
-	 * @param feats
+	 * @param fields
 	 * @return List of read rows from the path
 	 * @throws RemoteException
 	 */
 	public List<String> selectSeq(String path, String delimiter, int maxToRead,
-			FeatureList feats) throws RemoteException {
+			FieldList fields) throws RemoteException {
 
 		Path p = new Path(path);
 		List<String> ans = null;
@@ -479,7 +479,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 				Text line = new Text();
 				reader.readLine(line);
 				int lineNb = 0;
-				maxToRead *= feats.getSize();
+				maxToRead *= fields.getSize();
 				int i = 0;
 				String toWrite = "";
 				logger.info("delim : " + delimiter);
@@ -487,34 +487,34 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 					int val = BytesWritable.Comparator.readInt(line.getBytes(),
 							0);
 					++lineNb;
-					FeatureType type = feats.getFeatureType(feats
-							.getFeaturesNames().get(i));
-					if (type == FeatureType.BOOLEAN) {
+					FieldType type = fields.getFieldType(fields
+							.getFieldNames().get(i));
+					if (type == FieldType.BOOLEAN) {
 						toWrite += BytesWritable.Comparator.readInt(
 								line.getBytes(), 0);
-					} else if (type == FeatureType.INT) {
+					} else if (type == FieldType.INT) {
 						toWrite += BytesWritable.Comparator.readInt(
 								line.getBytes(), 0);
-					} else if (type == FeatureType.FLOAT) {
+					} else if (type == FieldType.FLOAT) {
 						toWrite += BytesWritable.Comparator.readFloat(
 								line.getBytes(), 0);
-					} else if (type == FeatureType.DOUBLE) {
+					} else if (type == FieldType.DOUBLE) {
 						toWrite += BytesWritable.Comparator.readDouble(
 								line.getBytes(), 0);
-					} else if (type == FeatureType.LONG) {
+					} else if (type == FieldType.LONG) {
 						toWrite += BytesWritable.Comparator.readLong(
 								line.getBytes(), 0);
-					} else if (type == FeatureType.STRING) {
+					} else if (type == FieldType.STRING) {
 						toWrite += line.getBytes().toString();
 					}
-					if ((i + 1) % feats.getSize() == 0) {
+					if ((i + 1) % fields.getSize() == 0) {
 						ans.add(toWrite);
 						toWrite = "";
 					} else {
 						toWrite += MapRedBinaryType.delim;
 					}
 					++i;
-					if (i >= feats.getSize()) {
+					if (i >= fields.getSize()) {
 						i = 0;
 					}
 

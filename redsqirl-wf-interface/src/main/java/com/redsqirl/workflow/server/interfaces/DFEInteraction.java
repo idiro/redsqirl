@@ -45,20 +45,20 @@ public interface DFEInteraction extends Remote {
 	public DisplayType getDisplay() throws RemoteException;
 
 	/**
-	 * Get the column number
+	 * Get the field number
 	 * 
-	 * @return column number
+	 * @return field number
 	 * @throws RemoteException
 	 */
-	public int getColumn() throws RemoteException;
+	public int getField() throws RemoteException;
 
 	/**
-	 * Get the place in the column
+	 * Get the place in the field
 	 * 
-	 * @return place in the column
+	 * @return place in the field
 	 * @throws RemoteException
 	 */
-	public int getPlaceInColumn() throws RemoteException;
+	public int getPlaceInField() throws RemoteException;
 
 	/**
 	 * The id of the interaction (unique inside an action).

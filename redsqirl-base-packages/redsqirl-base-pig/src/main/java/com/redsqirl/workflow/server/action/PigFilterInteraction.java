@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import com.redsqirl.utils.FeatureList;
+import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.EditorInteraction;
 import com.redsqirl.workflow.server.action.utils.PigDictionary;
@@ -56,14 +56,14 @@ public class PigFilterInteraction extends EditorInteraction {
 
 			String condition = getValue();
 			if (condition != null && !condition.isEmpty()) {
-				FeatureList f = el.getInFeatures();
+				FieldList f = el.getInFields();
 				logger.debug("Condition: " + condition
-						+ " features list ("
-						+ f.getSize()+") "+f.getFeaturesNames());
+						+ " field list ("
+						+ f.getSize()+") "+f.getFieldNames());
 				String type = null;
 				Set<String> aggregation = null;
 				if(el.groupingInt != null){
-					aggregation = el.groupingInt.getAggregationFeatures(el.getDFEInput().get(PigElement.key_input).get(0));
+					aggregation = el.groupingInt.getAggregationField(el.getDFEInput().get(PigElement.key_input).get(0));
 					logger.info("aggregation set size : "+ aggregation.size());
 				}
 				type = PigDictionary.getInstance().getReturnType(
@@ -92,7 +92,7 @@ public class PigFilterInteraction extends EditorInteraction {
 			tree.remove("editor");
 
 			Tree<String> base = PigDictionary.generateEditor(PigDictionary.getInstance()
-					.createConditionHelpMenu(), el.getInFeatures(), null).getTree();
+					.createConditionHelpMenu(), el.getInFields(), null).getTree();
 			//logger.debug(base);
 			tree.add(base.getFirstChild("editor"));
 			setValue(output);

@@ -1,6 +1,6 @@
 package com.redsqirl.workflow.server.action;
 
-import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 
 /**
  * Convert class for changing types to Hive
@@ -13,14 +13,14 @@ public class HiveTypeConvert {
 	 * Get the type as a Hive Type
 	 * 
 	 * @param hiveType
-	 * @return {@link com.redsqirl.workflow.server.enumeration.FeatureType}
+	 * @return {@link com.redsqirl.workflow.server.enumeration.FieldType}
 	 */
-	public static FeatureType getType(String hiveType) {
-		FeatureType ans = null;
+	public static FieldType getType(String hiveType) {
+		FieldType ans = null;
 		if (hiveType.equalsIgnoreCase("BIGINT")) {
-			ans = FeatureType.LONG;
+			ans = FieldType.LONG;
 		} else {
-			ans = FeatureType.valueOf(hiveType);
+			ans = FieldType.valueOf(hiveType);
 		}
 		return ans;
 	}
@@ -29,12 +29,12 @@ public class HiveTypeConvert {
 	 * Make Sure that the type is suitable for Hive by converting it when
 	 * necessary
 	 * 
-	 * @param feat
+	 * @param field
 	 * @return convertedType
 	 */
-	public static String getHiveType(FeatureType feat) {
-		String featureType = feat.name();
-		switch (feat) {
+	public static String getHiveType(FieldType field) {
+		String fieldType = field.name();
+		switch (field) {
 		case BOOLEAN:
 			break;
 		case INT:
@@ -42,13 +42,13 @@ public class HiveTypeConvert {
 		case FLOAT:
 			break;
 		case LONG:
-			featureType = "BIGINT";
+			fieldType = "BIGINT";
 			break;
 		case DOUBLE:
 			break;
 		case STRING:
 			break;
 		}
-		return featureType;
+		return fieldType;
 	}
 }

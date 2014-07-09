@@ -4,8 +4,8 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
 
-import com.redsqirl.utils.FeatureList;
-import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.utils.FieldList;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 
 /**
  * Properties for links
@@ -49,14 +49,14 @@ public interface DFELinkProperty extends Remote {
 	public int getMaxOccurence() throws RemoteException;
 	
 	/**
-	 * @return the acceptableFeatureList
+	 * @return the acceptableFieldList
 	 */
-	public FeatureList getFeatureListAccepted() throws RemoteException;
+	public FieldList getFieldListAccepted() throws RemoteException;
 
 	/**
-	 * @return the acceptableFeatureType
+	 * @return the acceptableFieldType
 	 */
-	public List<FeatureType> getFeatureTypeAccepted() throws RemoteException;
+	public List<FieldType> getFieldTypeAccepted() throws RemoteException;
 	
 	/**
 	 * Return an error message if check returns false

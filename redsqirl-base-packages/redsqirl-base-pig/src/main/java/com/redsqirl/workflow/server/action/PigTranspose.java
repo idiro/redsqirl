@@ -5,7 +5,7 @@ import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.List;
 
-import com.redsqirl.utils.FeatureList;
+import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.AppendListInteraction;
 import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.action.PigElement;
@@ -28,18 +28,18 @@ public class PigTranspose extends PigElement {
 	 */
 	private static final long serialVersionUID = 600343170359664918L;
 	/**
-	 * Key Features
+	 * Key fields
 	 */
-	public static String key_features = "features",
-						 key_features_name = "features_name";
+	public static String key_fields = "fields",
+						 key_fields_name = "fields_name";
 	/**
-	 * Features Interaction
+	 * fields Interaction
 	 */
-	public AppendListInteraction featuresInt;
+	public AppendListInteraction fieldsInt;
 	/**
 	 * PigTableTransposeInteraction
 	 */
-	public PigTableTransposeInteraction featuresNameInt;
+	public PigTableTransposeInteraction fieldsNameInt;
 	/**
 	 * Page for action
 	 */
@@ -55,21 +55,21 @@ public class PigTranspose extends PigElement {
 				PigLanguageManager.getText("pig.transpose_page1.legend"), 1);
 		logger.info("created page");
 
-		featuresInt = new AppendListInteraction(key_features,
-				PigLanguageManager.getText("pig.transpose.features_interaction.title"),
-				PigLanguageManager.getText("pig.transpose.features_interaction.legend"), 0,
+		fieldsInt = new AppendListInteraction(key_fields,
+				PigLanguageManager.getText("pig.transpose.fields_interaction.title"),
+				PigLanguageManager.getText("pig.transpose.fields_interaction.legend"), 0,
 				0, true);
 		
 		
-		page1.addInteraction(featuresInt);
+		page1.addInteraction(fieldsInt);
 		
 		page1.setChecker(new PageChecker() {
 
 			@Override
 			public String check(DFEPage page) throws RemoteException {
 				String error = null;
-				if (featuresInt.getValues().isEmpty()){
-					error = PigLanguageManager.getText("pig.transpose.features_interaction.empty");
+				if (fieldsInt.getValues().isEmpty()){
+					error = PigLanguageManager.getText("pig.transpose.fields_interaction.empty");
 				}
 				return error;
 			}
@@ -79,13 +79,13 @@ public class PigTranspose extends PigElement {
 		page2 = addPage(PigLanguageManager.getText("pig.transpose_page2.title"),
 				PigLanguageManager.getText("pig.transpose_page2.legend"), 1);
 		
-		featuresNameInt = new PigTableTransposeInteraction(key_features_name, 
-				PigLanguageManager.getText("pig.transpose.features_names_interaction.title"),
-				PigLanguageManager.getText("pig.transpose.features_names_interaction.legend"),
+		fieldsNameInt = new PigTableTransposeInteraction(key_fields_name, 
+				PigLanguageManager.getText("pig.transpose.fields_names_interaction.title"),
+				PigLanguageManager.getText("pig.transpose.fields_names_interaction.legend"),
 				0, 
 				0, this);
 		
-		page2.addInteraction(featuresNameInt);
+		page2.addInteraction(fieldsNameInt);
 		page2.addInteraction(delimiterOutputInt);
 		page2.addInteraction(savetypeOutputInt);
 		logger.info("added interactions");
@@ -144,14 +144,14 @@ public class PigTranspose extends PigElement {
 		query += "TMP = GROUP " + loader + " ALL;\n";
 		query += "TMP2 = FOREACH TMP GENERATE\n";
 		
-		Iterator<String> featureIt = featuresInt.getValues().iterator();
+		Iterator<String> fieldIt = fieldsInt.getValues().iterator();
 		
 		String load2 = "";
-		while (featureIt.hasNext()){
-			String feature = featureIt.next();
-			query += "$1." + feature;
-			load2 += feature + ":CHARARRAY";
-			if (featureIt.hasNext()){
+		while (fieldIt.hasNext()){
+			String field = fieldIt.next();
+			query += "$1." + field;
+			load2 += field + ":CHARARRAY";
+			if (fieldIt.hasNext()){
 				query += ",\n";
 				load2 += ", ";
 			}
@@ -162,7 +162,7 @@ public class PigTranspose extends PigElement {
 		
 		query += "TMP3 = LOAD '"+ tempPath +"' USING PigStorage('"+delimiterIn+"') as (" + load2 + ");\n\n";
 		
-		query += nextName + " = FOREACH TMP3 GENERATE \n" + generateColumns(featuresInt.getValues(), delimiterOut)+";";
+		query += nextName + " = FOREACH TMP3 GENERATE \n" + generateColumns(fieldsInt.getValues(), delimiterOut)+";";
 		
 		return query;
 	}
@@ -184,13 +184,13 @@ public class PigTranspose extends PigElement {
 	
 	
 	/**
-	 * Get the Input Features
-	 * @return input FeatureList
+	 * Get the Input fields
+	 * @return input fieldList
 	 * @throws RemoteException
 	 */
 	@Override
-	public FeatureList getInFeatures() throws RemoteException {
-		return getDFEInput().get(key_input).get(0).getFeatures();
+	public FieldList getInFields() throws RemoteException {
+		return getDFEInput().get(key_input).get(0).getFields();
 	}
 	
 	/**
@@ -198,18 +198,18 @@ public class PigTranspose extends PigElement {
 	 * @return tSelInt
 	 */
 	public PigTableTransposeInteraction gettTransInt() {
-		return featuresNameInt;
+		return fieldsNameInt;
 	}
 	
 	/**
-	 * Get the new features
-	 * @return new FeatureList
+	 * Get the new fields
+	 * @return new fieldList
 	 * @throws RemoteExcsption
 	 * 
 	 */
 	@Override
-	public FeatureList getNewFeatures() throws RemoteException {
-		return featuresNameInt.getNewFeatures();
+	public FieldList getNewField() throws RemoteException {
+		return fieldsNameInt.getNewFields();
 	}
 	/**
 	 * Update the interaction 
@@ -220,11 +220,11 @@ public class PigTranspose extends PigElement {
 	public void update(DFEInteraction interaction) throws RemoteException {
 		DFEOutput in = getDFEInput().get(key_input).get(0);
 		if (in != null) {
-			if (interaction.getId().equals(featuresInt.getId())) {
-				featuresInt.setPossibleValues(getInFeatures().getFeaturesNames());
+			if (interaction.getId().equals(fieldsInt.getId())) {
+				fieldsInt.setPossibleValues(getInFields().getFieldNames());
 			}
-			if (interaction.getId().equals(featuresNameInt.getId())) {
-				featuresNameInt.update();
+			if (interaction.getId().equals(fieldsNameInt.getId())) {
+				fieldsNameInt.update();
 			}
 		}
 	}

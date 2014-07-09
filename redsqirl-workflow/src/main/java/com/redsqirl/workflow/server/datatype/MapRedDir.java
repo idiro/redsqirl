@@ -24,12 +24,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.idiro.hadoop.NameNodeVar;
-import com.redsqirl.utils.FeatureList;
-import com.redsqirl.utils.OrderedFeatureList;
+import com.redsqirl.utils.FieldList;
+import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.DataOutput;
 import com.redsqirl.workflow.server.OozieManager;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
-import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
 public abstract class MapRedDir extends DataOutput{
@@ -54,19 +54,19 @@ public abstract class MapRedDir extends DataOutput{
 	protected static SimpleDateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
 
-	protected List<FeatureType> featuresNumberHierarchicalOrder = new LinkedList<FeatureType>();
+	protected List<FieldType> fieldsNumberHierarchicalOrder = new LinkedList<FieldType>();
 
-	protected List<FeatureType> featuresStrHierarchicalOrder = new LinkedList<FeatureType>();
+	protected List<FieldType> fieldsStrHierarchicalOrder = new LinkedList<FieldType>();
 
-	protected List<FeatureType> featuresDateHierarchicalOrder = new LinkedList<FeatureType>();
+	protected List<FieldType> fieldsDateHierarchicalOrder = new LinkedList<FieldType>();
 	
 	public MapRedDir() throws RemoteException{
 		super();
 		init();
 	}
 	
-	public MapRedDir(FeatureList features) throws RemoteException {
-		super(features);
+	public MapRedDir(FieldList fields) throws RemoteException {
+		super(fields);
 		init();
 	}
 	
@@ -77,23 +77,23 @@ public abstract class MapRedDir extends DataOutput{
 		
 		addProperty(key_header, "");
 
-		featuresNumberHierarchicalOrder.add(FeatureType.INT);
-		featuresNumberHierarchicalOrder.add(FeatureType.LONG);
-		featuresNumberHierarchicalOrder.add(FeatureType.FLOAT);
-		featuresNumberHierarchicalOrder.add(FeatureType.DOUBLE);
-		featuresNumberHierarchicalOrder.add(FeatureType.CATEGORY);
-		featuresNumberHierarchicalOrder.add(FeatureType.STRING);
+		fieldsNumberHierarchicalOrder.add(FieldType.INT);
+		fieldsNumberHierarchicalOrder.add(FieldType.LONG);
+		fieldsNumberHierarchicalOrder.add(FieldType.FLOAT);
+		fieldsNumberHierarchicalOrder.add(FieldType.DOUBLE);
+		fieldsNumberHierarchicalOrder.add(FieldType.CATEGORY);
+		fieldsNumberHierarchicalOrder.add(FieldType.STRING);
 
-		featuresStrHierarchicalOrder.add(FeatureType.CHAR);
-		featuresStrHierarchicalOrder.add(FeatureType.CATEGORY);
-		featuresStrHierarchicalOrder.add(FeatureType.STRING);
-		featuresStrHierarchicalOrder.add(FeatureType.CATEGORY);
+		fieldsStrHierarchicalOrder.add(FieldType.CHAR);
+		fieldsStrHierarchicalOrder.add(FieldType.CATEGORY);
+		fieldsStrHierarchicalOrder.add(FieldType.STRING);
+		fieldsStrHierarchicalOrder.add(FieldType.CATEGORY);
 
-		featuresDateHierarchicalOrder.add(FeatureType.DATE);
-		featuresDateHierarchicalOrder.add(FeatureType.DATETIME);
-		featuresDateHierarchicalOrder.add(FeatureType.TIMESTAMP);
-		featuresDateHierarchicalOrder.add(FeatureType.CATEGORY);
-		featuresDateHierarchicalOrder.add(FeatureType.STRING);
+		fieldsDateHierarchicalOrder.add(FieldType.DATE);
+		fieldsDateHierarchicalOrder.add(FieldType.DATETIME);
+		fieldsDateHierarchicalOrder.add(FieldType.TIMESTAMP);
+		fieldsDateHierarchicalOrder.add(FieldType.CATEGORY);
+		fieldsDateHierarchicalOrder.add(FieldType.STRING);
 	}
 	
 
@@ -249,14 +249,14 @@ public abstract class MapRedDir extends DataOutput{
 	
 
 	/**
-	 * Set the features list of the data set from the header
+	 * Set the fields list of the data set from the header
 	 * 
 	 * @return Error Message
 	 * @throws RemoteException
 	 */
-	protected String setFeaturesFromHeader() throws RemoteException {
+	protected String setFieldsFromHeader() throws RemoteException {
 
-		logger.info("setFeaturesFromHeader()");
+		logger.info("setFieldsFromHeader()");
 
 		String header = getProperty(key_header);
 		String error = null;
@@ -265,20 +265,20 @@ public abstract class MapRedDir extends DataOutput{
 
 			String newLabels[] = header.split(",");
 
-			logger.info("setFeaturesFromHeader features " + features);
+			logger.info("setFieldsFromHeader fields " + fields);
 
 			if (header.trim().endsWith(",")) {
 				error = LanguageManagerWF
 						.getText("mapredtexttype.setheaders.wronglabels");
 			}
 
-			FeatureList newFL = new OrderedFeatureList();
+			FieldList newFL = new OrderedFieldList();
 
 			try {
 
 				if (newLabels[0].trim().split("\\s+").length > 1) {
 
-					logger.info("setFeaturesFromHeader if ");
+					logger.info("setFieldsFromHeader if ");
 
 					for (int j = 0; j < newLabels.length && error == null; j++) {
 						String label = newLabels[j].trim();
@@ -293,7 +293,7 @@ public abstract class MapRedDir extends DataOutput{
 							if (isVariableName(nameType[0])) {
 
 								try {
-									FeatureType ft = FeatureType
+									FieldType ft = FieldType
 											.valueOf(nameType[1].toUpperCase());
 									if (ft == null) {
 										error = LanguageManagerWF
@@ -301,7 +301,7 @@ public abstract class MapRedDir extends DataOutput{
 														"mapredtexttype.msg_error_type_new_header",
 														new Object[] { nameType[1] });
 									} else {
-										newFL.addFeature(nameType[0], ft);
+										newFL.addField(nameType[0], ft);
 									}
 								} catch (Exception e) {
 									logger.error(e);
@@ -322,24 +322,24 @@ public abstract class MapRedDir extends DataOutput{
 
 				} else {
 
-					logger.info("setFeaturesFromHeader else ");
+					logger.info("setFieldsFromHeader else ");
 
-					logger.info("setFeaturesFromHeader else error  " + error);
-					// logger.info("setFeaturesFromHeader else features "+
-					// features);
+					logger.info("setFieldsFromHeader else error  " + error);
+					// logger.info("setFieldsFromHeader else Fields "+
+					// Fields);
 
-					if (error == null && features != null
-							&& features.getFeaturesNames() != null) {
-						Iterator<String> it = features.getFeaturesNames()
+					if (error == null && fields != null
+							&& fields.getFieldNames() != null) {
+						Iterator<String> it = fields.getFieldNames()
 								.iterator();
 						int j = 0;
 						while (it.hasNext() && error == null) {
-							String featName = it.next();
-							logger.info("getFeatureType featName " + featName);
+							String fieldName = it.next();
+							logger.info("getFieldType fieldName " + fieldName);
 
 							if (isVariableName(newLabels[j].trim())) {
-								newFL.addFeature(newLabels[j].trim(),
-										features.getFeatureType(featName));
+								newFL.addField(newLabels[j].trim(),
+										fields.getFieldType(fieldName));
 							} else {
 								error = LanguageManagerWF.getText(
 										"mapredtexttype.msg_error_name_header",
@@ -358,12 +358,12 @@ public abstract class MapRedDir extends DataOutput{
 						.getText("mapredtexttype.setheaders.typeunknown");
 			}
 
-			if (error == null && !newFL.getFeaturesNames().isEmpty()) {
-				setFeatures(newFL);
+			if (error == null && !newFL.getFieldNames().isEmpty()) {
+				setFields(newFL);
 			}
 		}
 
-		logger.info("setFeaturesFromHeader-error " + error);
+		logger.info("setFieldsFromHeader-error " + error);
 
 		return error;
 	}
@@ -380,16 +380,16 @@ public abstract class MapRedDir extends DataOutput{
 	}
 	
 	/**
-	 * Generate a features list from the data in the current path
+	 * Generate a fields list from the data in the current path
 	 * 
-	 * @return FeatureList
+	 * @return FieldList
 	 * @throws RemoteException
 	 */
-	protected FeatureList generateFeaturesMap(String delimiter) throws RemoteException {
+	protected FieldList generateFieldsMap(String delimiter) throws RemoteException {
 
-		logger.info("generateFeaturesMap --");
+		logger.info("generateFieldsMap --");
 
-		FeatureList fl = new OrderedFeatureList();
+		FieldList fl = new OrderedFieldList();
 		try {
 			List<String> lines = this.selectLine(2000);
 			Map<String,Set<String>> valueMap = new LinkedHashMap<String,Set<String>>();
@@ -429,7 +429,7 @@ public abstract class MapRedDir extends DataOutput{
 				Iterator<String> valueIt = valueMap.keySet().iterator();
 				while(valueIt.hasNext()){
 					String cat = valueIt.next();
-					fl.addFeature(cat,getType(valueMap.get(cat),nbValueMap.get(cat)));
+					fl.addField(cat,getType(valueMap.get(cat),nbValueMap.get(cat)));
 				}
 
 			}
@@ -441,16 +441,16 @@ public abstract class MapRedDir extends DataOutput{
 	}
 	
 
-	public FeatureType getType(Set<String> exValue, int numberOfValues){
-		FeatureType typeAns = null; 
+	public FieldType getType(Set<String> exValue, int numberOfValues){
+		FieldType typeAns = null; 
 		boolean restart = false;
 		do{
 			restart = false;
-			Iterator<String> featureValueIt = exValue.iterator();
-			while(featureValueIt.hasNext() && !restart){
-				String featureValue = featureValueIt.next();
-				FeatureType typeCur = getType(featureValue);
-				logger.info("Value: "+featureValue);
+			Iterator<String> fieldValueIt = exValue.iterator();
+			while(fieldValueIt.hasNext() && !restart){
+				String fieldValue = fieldValueIt.next();
+				FieldType typeCur = getType(fieldValue);
+				logger.info("Value: "+fieldValue);
 				logger.info("Type ans: "+typeAns);
 				logger.info("Type cur: "+typeCur);
 				if(typeAns == null){
@@ -463,31 +463,31 @@ public abstract class MapRedDir extends DataOutput{
 				}else{
 					logger.info("Have to reset the type");
 					//Not the good type
-					if(typeCur.equals(FeatureType.CHAR) && typeAns.equals(FeatureType.INT)){
+					if(typeCur.equals(FieldType.CHAR) && typeAns.equals(FieldType.INT)){
 						logger.info("Test integer");
 						try {
-							Integer.valueOf(featureValue);
+							Integer.valueOf(fieldValue);
 						} catch (Exception e) {
-							typeAns = FeatureType.STRING;
+							typeAns = FieldType.STRING;
 						}
-					}else if(typeAns.equals(FeatureType.CHAR) && typeCur.equals(FeatureType.INT)){
+					}else if(typeAns.equals(FieldType.CHAR) && typeCur.equals(FieldType.INT)){
 						logger.info("Set to int and start again");
-						typeAns = FeatureType.INT;
+						typeAns = FieldType.INT;
 						restart = true;
 					}else{
 						logger.info("Set to string");
-						typeAns = FeatureType.STRING;
+						typeAns = FieldType.STRING;
 					}
 				}
 			}
 			logger.info(restart);
 		}while(restart);
 
-		if(typeAns.equals(FeatureType.STRING)){
+		if(typeAns.equals(FieldType.STRING)){
 			int nbValues = exValue.size();
 			logger.info(nbValues+" / "+numberOfValues);
 			if(nbValues < 101 && nbValues * 100 /numberOfValues < 5){
-				typeAns = FeatureType.CATEGORY;
+				typeAns = FieldType.CATEGORY;
 			}
 		}
 		
@@ -495,52 +495,52 @@ public abstract class MapRedDir extends DataOutput{
 	}
 
 	/**
-	 * Get the FeatureType of
+	 * Get the FieldType of
 	 * 
 	 * @param expr
-	 *            to get FeatureType of
-	 * @return {@link com.redsqirl.workflow.server.enumeration.FeatureType}
+	 *            to get FieldType of
+	 * @return {@link com.redsqirl.workflow.server.enumeration.FieldType}
 	 */
-	public static FeatureType getType(String expr) {
+	public static FieldType getType(String expr) {
 
-		FeatureType type = null;
+		FieldType type = null;
 		if (expr.equalsIgnoreCase("TRUE") || expr.equalsIgnoreCase("FALSE")) {
-			type = FeatureType.BOOLEAN;
+			type = FieldType.BOOLEAN;
 		} else {
 			if(expr.length() == 1){
-				type = FeatureType.CHAR;
+				type = FieldType.CHAR;
 			}
 
 			try {
 				Integer.valueOf(expr);
-				type = FeatureType.INT;
+				type = FieldType.INT;
 			} catch (Exception e) {
 			}
 			if (type == null) {
 				try {
 					Long.valueOf(expr);
-					type = FeatureType.LONG;
+					type = FieldType.LONG;
 				} catch (Exception e) {
 				}
 			}
 			if (type == null) {
 				try {
 					Float.valueOf(expr);
-					type = FeatureType.FLOAT;
+					type = FieldType.FLOAT;
 				} catch (Exception e) {
 				}
 			}
 			if (type == null) {
 				try {
 					Double.valueOf(expr);
-					type = FeatureType.DOUBLE;
+					type = FieldType.DOUBLE;
 				} catch (Exception e) {
 				}
 			}
 			if (type == null && expr.length() < 11) {
 				try {
 					dateFormat.parse(expr);
-					type = FeatureType.DATE;
+					type = FieldType.DATE;
 				} catch (Exception e) {
 				}
 			}
@@ -548,7 +548,7 @@ public abstract class MapRedDir extends DataOutput{
 			if (type == null && expr.length() < 20) {
 				try {
 					datetimeFormat.parse(expr);
-					type = FeatureType.DATETIME;
+					type = FieldType.DATETIME;
 				} catch (Exception e) {
 				}
 			}
@@ -556,13 +556,13 @@ public abstract class MapRedDir extends DataOutput{
 			if (type == null) {
 				try {
 					timestampFormat.parse(expr);
-					type = FeatureType.TIMESTAMP;
+					type = FieldType.TIMESTAMP;
 				} catch (Exception e) {
 				}
 			}
 
 			if (type == null) {
-				type = FeatureType.STRING;
+				type = FieldType.STRING;
 			}
 		}
 		return type;
@@ -570,35 +570,35 @@ public abstract class MapRedDir extends DataOutput{
 	
 
 	/**
-	 * Check if a feature can be converted from one type to another
+	 * Check if a field can be converted from one type to another
 	 * 
 	 * @param from
 	 * @param to
 	 * @return <code>true</code> the cast is possible else <code>false</code>
 	 */
-	public boolean canCast(FeatureType from, FeatureType to) {
+	public boolean canCast(FieldType from, FieldType to) {
 		if (from.equals(to)) {
 			return true;
 		}
 
-		if (from.equals(FeatureType.BOOLEAN)) {
-			if (to.equals(FeatureType.STRING) || to.equals(FeatureType.CATEGORY)) {
+		if (from.equals(FieldType.BOOLEAN)) {
+			if (to.equals(FieldType.STRING) || to.equals(FieldType.CATEGORY)) {
 				return true;
 			}
 			return false;
 		} else{
-			int fromNumberIdx = featuresNumberHierarchicalOrder.indexOf(from);
-			int toNumberIdx = featuresNumberHierarchicalOrder.lastIndexOf(to);
+			int fromNumberIdx = fieldsNumberHierarchicalOrder.indexOf(from);
+			int toNumberIdx = fieldsNumberHierarchicalOrder.lastIndexOf(to);
 			if( fromNumberIdx != -1 && toNumberIdx != -1 && fromNumberIdx <= toNumberIdx){
 				return true;
 			}
-			int fromStrIdx = featuresStrHierarchicalOrder.indexOf(from);
-			int toStrIdx = featuresStrHierarchicalOrder.lastIndexOf(to);
+			int fromStrIdx = fieldsStrHierarchicalOrder.indexOf(from);
+			int toStrIdx = fieldsStrHierarchicalOrder.lastIndexOf(to);
 			if( fromStrIdx != -1 && toStrIdx != -1 && fromStrIdx <= toStrIdx){
 				return true;
 			}
-			int fromDateIdx = featuresDateHierarchicalOrder.indexOf(from);
-			int toDateIdx = featuresDateHierarchicalOrder.lastIndexOf(to);
+			int fromDateIdx = fieldsDateHierarchicalOrder.indexOf(from);
+			int toDateIdx = fieldsDateHierarchicalOrder.lastIndexOf(to);
 			if( fromDateIdx != -1 && toDateIdx != -1 && fromDateIdx <= toDateIdx){
 				return true;
 			}

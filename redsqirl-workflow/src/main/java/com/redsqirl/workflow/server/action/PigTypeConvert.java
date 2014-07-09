@@ -1,6 +1,6 @@
 package com.redsqirl.workflow.server.action;
 
-import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 
 /**
  * Class to make sure that the type is suitable for Pig
@@ -10,48 +10,48 @@ import com.redsqirl.workflow.server.enumeration.FeatureType;
  */
 public class PigTypeConvert {
 	/**
-	 * Get the type as FeatureType
+	 * Get the type as FieldType
 	 * @param hiveType
-	 * @return {@link com.redsqirl.workflow.server.enumeration.FeatureType}
+	 * @return {@link com.redsqirl.workflow.server.enumeration.FieldType}
 	 */
-	public static FeatureType getType(String hiveType) {
-		FeatureType ans = null;
+	public static FieldType getType(String hiveType) {
+		FieldType ans = null;
 		if (hiveType.equalsIgnoreCase("CHARARRAY")) {
-			ans = FeatureType.STRING;
+			ans = FieldType.STRING;
 		} else {
-			ans = FeatureType.valueOf(hiveType);
+			ans = FieldType.valueOf(hiveType);
 		}
 		return ans;
 	}
 	/**
 	 * Make sure the type is suitable for Pig
-	 * @param feat
+	 * @param field
 	 * @return type
 	 */
-	public static String getPigType(FeatureType feat) {
-		String featureType = feat.name();
-		switch (feat) {
+	public static String getPigType(FieldType field) {
+		String fieldType = field.name();
+		switch (field) {
 		case STRING:
-			featureType = "CHARARRAY";
+			fieldType = "CHARARRAY";
 			break;
 		case DATE:
-			featureType = "DATETIME";
+			fieldType = "DATETIME";
 			break;
 		case DATETIME:
-			featureType = "DATETIME";
+			fieldType = "DATETIME";
 			break;
 		case TIMESTAMP:
-			featureType = "DATETIME";
+			fieldType = "DATETIME";
 			break;
 		case CATEGORY:
-			featureType = "CHARARRAY";
+			fieldType = "CHARARRAY";
 			break;
 		case CHAR:
-			featureType = "CHARARRAY";
+			fieldType = "CHARARRAY";
 			break;
 		default:
 			break;
 		}
-		return featureType;
+		return fieldType;
 	}
 }

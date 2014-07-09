@@ -52,7 +52,7 @@ public class PigSampleTests {
 		error = pig.updateOut();
 		assertTrue("pig select update: " + error, error == null);
 		logger.debug("Features "
-				+ pig.getDFEOutput().get(PigSelect.key_output).getFeatures());
+				+ pig.getDFEOutput().get(PigSelect.key_output).getFields());
 
 		pig.getDFEOutput()
 				.get(PigSelect.key_output)

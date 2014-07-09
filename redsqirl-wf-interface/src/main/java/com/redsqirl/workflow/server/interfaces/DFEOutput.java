@@ -10,7 +10,7 @@ import java.util.Map;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.redsqirl.utils.FeatureList;
+import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 
 /**
@@ -62,12 +62,12 @@ public interface DFEOutput extends Remote {
 	public void setColour(String colour) throws RemoteException;
 
 	/**
-	 * Get the features for the object
+	 * Get the fields for the object
 	 * 
-	 * @return FeaturesList for object
+	 * @return FieldsList for object
 	 * @throws RemoteException
 	 */
-	public FeatureList getFeatures() throws RemoteException;
+	public FieldList getFields() throws RemoteException;
 
 	/**
 	 * Get the properties of the output
@@ -227,13 +227,13 @@ public interface DFEOutput extends Remote {
 	List<Map<String,String>> select(int maxToRead) throws RemoteException;
 
 	/**
-	 * Set the features list of the object
+	 * Set the fields list of the object
 	 * 
-	 * @param features
-	 *            FeaturesList to set
+	 * @param fields
+	 *            FieldsList to set
 	 * @throws RemoteException
 	 */
-	public void setFeatures(FeatureList features) throws RemoteException;
+	public void setFields(FieldList fields) throws RemoteException;
 
 	/**
 	 * Get the save state of the object
@@ -296,6 +296,6 @@ public interface DFEOutput extends Remote {
 	 *         objects else <code>false</code>
 	 * @throws RemoteException
 	 */
-	boolean compare(String path, FeatureList fl, Map<String, String> props)
+	boolean compare(String path, FieldList fl, Map<String, String> props)
 			throws RemoteException;
 }

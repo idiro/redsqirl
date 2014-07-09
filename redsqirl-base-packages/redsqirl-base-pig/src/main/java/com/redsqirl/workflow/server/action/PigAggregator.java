@@ -4,7 +4,7 @@ package com.redsqirl.workflow.server.action;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 
-import com.redsqirl.utils.FeatureList;
+import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
@@ -62,7 +62,7 @@ public class PigAggregator extends PigElement {
 
 
 		tSelInt = new PigTableSelectInteraction(
-				key_featureTable,
+				key_fieldTable,
 				PigLanguageManager.getText("pig.aggregator_features_interaction.title"),
 				PigLanguageManager.getText("pig.aggregator_features_interaction.legend"),
 				PigLanguageManager.getText("pig.aggregator_explain_gen")
@@ -188,22 +188,22 @@ public class PigAggregator extends PigElement {
 	}
 	
 	/**
-	 * Get the input Features
-	 * @return input FeatureList
+	 * Get the input Field
+	 * @return input FieldList
 	 * @throws RemoteException
 	 */
 	@Override
-	public FeatureList getInFeatures() throws RemoteException {
-		return getDFEInput().get(key_input).get(0).getFeatures();
+	public FieldList getInFields() throws RemoteException {
+		return getDFEInput().get(key_input).get(0).getFields();
 	}
 	/**
-	 * Get the new Features from the action
-	 * @return new FeatureList
+	 * Get the new Field from the action
+	 * @return new FieldList
 	 * @throws RemoteException
 	 */
 	@Override
-	public FeatureList getNewFeatures() throws RemoteException {
-		return tSelInt.getNewFeatures();
+	public FieldList getNewField() throws RemoteException {
+		return tSelInt.getNewFields();
 	}
 	
 	/**
@@ -216,13 +216,13 @@ public class PigAggregator extends PigElement {
 		
 		
 		DFEOutput in = getDFEInput().get(key_input).get(0);
-		logger.info(in.getFeatures().getFeaturesNames());
+		logger.info(in.getFields().getFieldNames());
 		String interId = interaction.getId();
 		logger.info("looking for "+interId);
 		if (in != null) {
 			logger.info("In not null");
 			if (interId.equals(tSelInt.getId())) {
-				logger.info("update features");
+				logger.info("update field");
 				tSelInt.update(in);
 			} else if (interId.equals(key_grouping)) {
 				groupingInt.update(in);

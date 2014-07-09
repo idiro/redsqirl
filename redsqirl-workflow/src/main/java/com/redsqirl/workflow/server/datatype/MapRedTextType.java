@@ -19,7 +19,7 @@ import org.apache.hadoop.fs.PathFilter;
 import com.idiro.hadoop.NameNodeVar;
 import com.idiro.hadoop.checker.HdfsFileChecker;
 import com.idiro.utils.RandomString;
-import com.redsqirl.utils.FeatureList;
+import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
 /**
@@ -50,13 +50,13 @@ public class MapRedTextType extends MapRedDir {
 	}
 
 	/**
-	 * Constructor with FeatureList
+	 * Constructor with FieldList
 	 * 
-	 * @param features
+	 * @param fields
 	 * @throws RemoteException
 	 */
-	public MapRedTextType(FeatureList features) throws RemoteException {
-		super(features);
+	public MapRedTextType(FieldList fields) throws RemoteException {
+		super(fields);
 	}
 
 	/**
@@ -180,17 +180,17 @@ public class MapRedTextType extends MapRedDir {
 			if(l != null && ! l.isEmpty()){
 				String[] line = l.split(
 						Pattern.quote(getChar(getProperty(key_delimiter))), -1);
-				List<String> featureNames = getFeatures().getFeaturesNames();
-				if (featureNames.size() == line.length) {
+				List<String> fieldNames = getFields().getFieldNames();
+				if (fieldNames.size() == line.length) {
 					Map<String, String> cur = new LinkedHashMap<String, String>();
 					for (int i = 0; i < line.length; ++i) {
-						cur.put(featureNames.get(i), line[i]);
+						cur.put(fieldNames.get(i), line[i]);
 					}
 					ans.add(cur);
 				} else {
 					logger.error("The line size (" + line.length
-							+ ") is not compatible to the number of features ("
-							+ featureNames.size() + "). " + "The splitter is '"
+							+ ") is not compatible to the number of fields ("
+							+ fieldNames.size() + "). " + "The splitter is '"
 							+ getChar(getProperty(key_delimiter)) + "'.");
 					logger.error("Error line: " + l);
 					ans = null;
@@ -203,15 +203,15 @@ public class MapRedTextType extends MapRedDir {
 
 
 	/**
-	 * Set the FeatureList for the data set
+	 * Set the FieldList for the data set
 	 * 
 	 * @param fl
 	 * 
 	 */
 	@Override
-	public void setFeatures(FeatureList fl) {
-		logger.info("setFeatures :");
-		super.setFeatures(fl);
+	public void setFields(FieldList fl) {
+		logger.info("setFields :");
+		super.setFields(fl);
 	}
 
 
@@ -259,7 +259,7 @@ public class MapRedTextType extends MapRedDir {
 
 		if (path == null) {
 			super.setPath(path);
-			setFeatures(null);
+			setFields(null);
 			return;
 		}
 
@@ -284,56 +284,56 @@ public class MapRedTextType extends MapRedDir {
 
 				}
 
-				FeatureList fl = generateFeaturesMap(getChar(getProperty(key_delimiter)));
-				features = fl;
+				FieldList fl = generateFieldsMap(getChar(getProperty(key_delimiter)));
+				fields = fl;
 				
 				String error = null;
 				String header = getProperty(key_header);
 				if (header != null && !header.isEmpty()) {
-					logger.info("setFeaturesFromHeader --");
-					error = setFeaturesFromHeader();
+					logger.info("setFieldsFromHeader --");
+					error = setFieldsFromHeader();
 					if (error != null) {
 						throw new RemoteException(error);
 					}
 				} else {
-					if (features != null) {
-						logger.debug(features.getFeaturesNames());
-						logger.debug(fl.getFeaturesNames());
+					if (fields != null) {
+						logger.debug(fields.getFieldNames());
+						logger.debug(fl.getFieldNames());
 					} else {
-						features = fl;
+						fields = fl;
 					}
 				}
 
-				if (features.getSize() != fl.getSize()) {
+				if (fields.getSize() != fl.getSize()) {
 					if (header != null && !header.isEmpty()) {
 						error = LanguageManagerWF
 								.getText("mapredtexttype.setheaders.wronglabels");
 					}
-					features = fl;
+					fields = fl;
 				} else {
-					Iterator<String> flIt = fl.getFeaturesNames().iterator();
-					Iterator<String> featIt = features.getFeaturesNames()
+					Iterator<String> flIt = fl.getFieldNames().iterator();
+					Iterator<String> fieldIt = fields.getFieldNames()
 							.iterator();
 					boolean ok = true;
 					int i = 1;
 					while (flIt.hasNext() && ok) {
 						String nf = flIt.next();
-						String of = featIt.next();
-						logger.info("types feat " + i + ": "
-								+ fl.getFeatureType(nf) + " , "
-								+ features.getFeatureType(of));
-						ok &= canCast(fl.getFeatureType(nf),
-								features.getFeatureType(of));
+						String of = fieldIt.next();
+						logger.info("types field " + i + ": "
+								+ fl.getFieldType(nf) + " , "
+								+ fields.getFieldType(of));
+						ok &= canCast(fl.getFieldType(nf),
+								fields.getFieldType(of));
 						if (!ok) {
 							error = LanguageManagerWF.getText(
 									"mapredtexttype.msg_error_cannot_cast",
-									new Object[] { fl.getFeatureType(nf),
-											features.getFeatureType(of) });
+									new Object[] { fl.getFieldType(nf),
+											fields.getFieldType(of) });
 						}
 						++i;
 					}
 					if (!ok) {
-						features = fl;
+						fields = fl;
 						if (error != null) {
 							throw new RemoteException(error);
 						}
@@ -346,7 +346,7 @@ public class MapRedTextType extends MapRedDir {
 	}
 
 	/**
-	 * Compare the current path , FeatureList , properties to others
+	 * Compare the current path , FieldList , properties to others
 	 * 
 	 * @param path
 	 * @param fl
@@ -354,13 +354,13 @@ public class MapRedTextType extends MapRedDir {
 	 * @return <code>true</code> if items are equal else <code>false</code>
 	 */
 	@Override
-	public boolean compare(String path, FeatureList fl,
+	public boolean compare(String path, FieldList fl,
 			Map<String, String> props) {
 		logger.debug("Comparaison MapRed:");
 		logger.debug(this.getPath() + " " + path);
 		try {
-			logger.debug(features.getFeaturesNames() + " "
-					+ fl.getFeaturesNames());
+			logger.debug(fields.getFieldNames() + " "
+					+ fl.getFieldNames());
 		} catch (Exception e) {
 		}
 		logger.debug(dataProperty + " " + props);
@@ -391,8 +391,8 @@ public class MapRedTextType extends MapRedDir {
 			compProps = true;
 		}
 
-		return !(this.getPath() == null || features == null) && compProps
-				&& (this.getPath().equals(path) && features.equals(fl));
+		return !(this.getPath() == null || fields == null) && compProps
+				&& (this.getPath().equals(path) && fields.equals(fl));
 	}
 
 

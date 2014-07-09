@@ -21,11 +21,11 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
-import com.redsqirl.utils.FeatureList;
-import com.redsqirl.utils.OrderedFeatureList;
+import com.redsqirl.utils.FieldList;
+import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.HiveInterface;
-import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.test.TestUtils;
 
 public class HiveInterfaceTests {
@@ -261,11 +261,11 @@ public class HiveInterfaceTests {
 			HiveInterface hInt = new HiveInterface();
 			String path = "/keith_part/id=my_id";
 			// String path = "/keith_part";
-			FeatureList fl = new OrderedFeatureList();
-			fl.addFeature("a", FeatureType.INT);
-			fl.addFeature("b", FeatureType.INT);
-			fl.addFeature("weight", FeatureType.INT);
-			fl.addFeature("id", FeatureType.STRING);
+			FieldList fl = new OrderedFieldList();
+			fl.addField("a", FieldType.INT);
+			fl.addField("b", FieldType.INT);
+			fl.addField("weight", FieldType.INT);
+			fl.addField("id", FieldType.STRING);
 			logger.info(hInt.isPathValid(path, fl, true));
 
 		} catch (RemoteException e) {

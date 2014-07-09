@@ -3,7 +3,7 @@ package com.redsqirl.workflow.server.datatype;
 
 import java.rmi.RemoteException;
 
-import com.redsqirl.utils.FeatureList;
+import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
 /**
@@ -50,13 +50,13 @@ public class HiveTypePartition extends HiveType{
 		}
 	}
 	/**
-	 * Constructor with FeatureList
-	 * @param features
+	 * Constructor with FieldList
+	 * @param fields
 	 * @throws RemoteException
 	 */
-	public HiveTypePartition(FeatureList features)
+	public HiveTypePartition(FieldList fields)
 			throws RemoteException {
-		super(features);
+		super(fields);
 	}
 	
 	/**
@@ -106,7 +106,7 @@ public class HiveTypePartition extends HiveType{
 		}
 		if(error == null){
 			if (isPathExists()) {
-				return hInt.isPathValid(getPath(), features,
+				return hInt.isPathValid(getPath(), fields,
 						true);
 			} else {
 				String regex = "[a-zA-Z_]([A-Za-z0-9_]+)";

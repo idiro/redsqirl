@@ -11,11 +11,11 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
-import com.redsqirl.utils.FeatureList;
-import com.redsqirl.utils.OrderedFeatureList;
+import com.redsqirl.utils.FieldList;
+import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.connect.HiveInterface;
 import com.redsqirl.workflow.server.datatype.HiveTypePartition;
-import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.test.TestUtils;
 
 public class HiveTypePartitionTests {
@@ -34,19 +34,19 @@ public class HiveTypePartitionTests {
 		return ans;
 	}
 
-	FeatureList getFeatures() throws RemoteException {
-		FeatureList ans = new OrderedFeatureList();
-		ans.addFeature("ID", FeatureType.STRING);
-		ans.addFeature("VALUE", FeatureType.INT);
+	FieldList getFeatures() throws RemoteException {
+		FieldList ans = new OrderedFieldList();
+		ans.addField("ID", FieldType.STRING);
+		ans.addField("VALUE", FieldType.INT);
 		return ans;
 	}
 
-	FeatureList getFeaturesWPart() throws RemoteException {
-		FeatureList ans = new OrderedFeatureList();
-		ans.addFeature("ID", FeatureType.STRING);
-		ans.addFeature("VALUE", FeatureType.INT);
-		ans.addFeature("COUNTRY", FeatureType.STRING);
-		ans.addFeature("DT", FeatureType.STRING);
+	FieldList getFeaturesWPart() throws RemoteException {
+		FieldList ans = new OrderedFieldList();
+		ans.addField("ID", FieldType.STRING);
+		ans.addField("VALUE", FieldType.INT);
+		ans.addField("COUNTRY", FieldType.STRING);
+		ans.addField("DT", FieldType.STRING);
 		return ans;
 	}
 

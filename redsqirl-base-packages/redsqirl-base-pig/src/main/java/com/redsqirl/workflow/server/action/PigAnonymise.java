@@ -7,15 +7,15 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.redsqirl.utils.FeatureList;
-import com.redsqirl.utils.OrderedFeatureList;
+import com.redsqirl.utils.FieldList;
+import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.AppendListInteraction;
 import com.redsqirl.workflow.server.DataProperty;
 import com.redsqirl.workflow.server.InputInteraction;
 import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.datatype.MapRedCtrlATextType;
 import com.redsqirl.workflow.server.datatype.MapRedTextType;
-import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
@@ -32,9 +32,9 @@ public class PigAnonymise extends PigElement {
 	 */
 	private static final long serialVersionUID = 600343170359664918L;
 	/**
-	 * Key Features
+	 * Key fields
 	 */
-	public static String key_features = "features";
+	public static String key_fields = "fields";
 	
 	/**
 	 * Key Index Map
@@ -48,9 +48,9 @@ public class PigAnonymise extends PigElement {
 	key_offset = "offset";
 					
 	/**
-	 * Features Interaction
+	 * fields Interaction
 	 */
-	public AppendListInteraction featuresInt;
+	public AppendListInteraction fieldsInt;
 	
 	/**
 	 * Offset Interaction
@@ -78,11 +78,11 @@ public class PigAnonymise extends PigElement {
 				PigLanguageManager.getText("pig.anonymise_page1.legend"), 1);
 		logger.info("created page");
 
-		featuresInt = new AppendListInteraction(key_features,
+		fieldsInt = new AppendListInteraction(key_fields,
 				PigLanguageManager.getText("pig.anonymise.features_interaction.title"),
 				PigLanguageManager.getText("pig.anonymise.features_interaction.legend"), 0,
 				0, true);
-		featuresInt.setNonEmptyChecker();
+		fieldsInt.setNonEmptyChecker();
 		
 		
 		offsetInt = new InputInteraction(
@@ -101,7 +101,7 @@ public class PigAnonymise extends PigElement {
 		factorInt.setRegex("^[0-9]*\\.?[0-9]*$");
 		factorInt.setValue("1");
 		
-		page1.addInteraction(featuresInt);
+		page1.addInteraction(fieldsInt);
 		page1.addInteraction(offsetInt);
 		page1.addInteraction(factorInt);
 		
@@ -141,7 +141,7 @@ public class PigAnonymise extends PigElement {
 		String query = null;
 		if (getDFEInput() != null) {
 			
-			FeatureType featureType = getInFeatures().getFeatureType(featuresInt.getValues().get(0));
+			FieldType fieldType = getInFields().getFieldType(fieldsInt.getValues().get(0));
 			
 			DFEOutput in = getDFEInput().get(key_input).get(0);
 			logger.debug("In and out...");
@@ -156,7 +156,7 @@ public class PigAnonymise extends PigElement {
 			String load = loader + " = " + getLoadQueryPiece(in) + ";\n\n";
 			
 			String anonymise = "";
-			if (featureType.equals(FeatureType.STRING)){
+			if (fieldType.equals(FieldType.STRING)){
 				anonymise = getAnonymiseStringQuery(loader, outIndex) + "\n\n";
 			}
 			else {
@@ -178,9 +178,9 @@ public class PigAnonymise extends PigElement {
 	
 	private String getAnonymiseStringQuery(String input, DFEOutput outIndex) throws RemoteException{
 		
-		List<String> anonFeatures = featuresInt.getValues();
+		List<String> anonFields = fieldsInt.getValues();
 		
-		int numFeat = getInFeatures().getFeaturesNames().size();
+		int numFeat = getInFields().getFieldNames().size();
 		DFEOutput inIndex = null;
 		if (getDFEInput().containsKey(key_index_map)){
 			inIndex = getDFEInput().get(key_index_map).get(0);
@@ -189,17 +189,17 @@ public class PigAnonymise extends PigElement {
 		String query = "";
 		
 		String idsUnion = "";
-		Iterator<String> anonFeatureIt = anonFeatures.iterator();
-		while (anonFeatureIt.hasNext()){
-			query += getNextName() + " = FOREACH " + input + " GENERATE " + anonFeatureIt.next() + ";\n";
+		Iterator<String> anonFieldIt = anonFields.iterator();
+		while (anonFieldIt.hasNext()){
+			query += getNextName() + " = FOREACH " + input + " GENERATE " + anonFieldIt.next() + ";\n";
 			idsUnion += getCurrentName();
-			if (anonFeatureIt.hasNext()){
+			if (anonFieldIt.hasNext()){
 				idsUnion += ", ";
 			}
 		}
 		
 		String keys = null;
-		if (anonFeatures.size() > 1){
+		if (anonFields.size() > 1){
 			query +=  getNextName() + " = UNION " + idsUnion + ";\n\n";
 			keys = getNextName();
 			query += keys + " = DISTINCT " + getPreviousName() + ";\n\n";
@@ -238,21 +238,21 @@ public class PigAnonymise extends PigElement {
 			query += indexMap +" = RANK " + keys + ";\n\n";
 		}
 		      
-		anonFeatureIt = anonFeatures.iterator();
+		anonFieldIt = anonFields.iterator();
 		String dataSet = input;
-		while (anonFeatureIt.hasNext()){
-			String anonFeature = anonFeatureIt.next();
-			query += getNextName() + " = JOIN " + dataSet + " BY " + anonFeature + " LEFT OUTER, " + indexMap + " by $1;\n";
+		while (anonFieldIt.hasNext()){
+			String anonField = anonFieldIt.next();
+			query += getNextName() + " = JOIN " + dataSet + " BY " + anonField + " LEFT OUTER, " + indexMap + " by $1;\n";
 			
 			dataSet = getNextName();
 			query += dataSet + " = FOREACH " + getPreviousName() + " GENERATE ";
 			
-			Iterator<String> it = getInFeatures().getFeaturesNames().iterator();
+			Iterator<String> it = getInFields().getFieldNames().iterator();
 			int j = 0;
 			while (it.hasNext()){
 				String feat = it.next();
 				
-				if (!feat.equals(anonFeature)){
+				if (!feat.equals(anonField)){
 					query += "$" + j;
 					
 				}
@@ -275,7 +275,7 @@ public class PigAnonymise extends PigElement {
 	
 	private String getAnonymiseNumberQuery(String input) throws RemoteException{
 		
-		List<String> anonFeature = featuresInt.getValues();
+		List<String> anonField = fieldsInt.getValues();
 		String offset = offsetInt.getValue();
 		String factor = factorInt.getValue();
 		
@@ -283,11 +283,11 @@ public class PigAnonymise extends PigElement {
 		
 		query += getNextName() + " = FOREACH " + input + " GENERATE ";
 		
-		Iterator<String> it = getInFeatures().getFeaturesNames().iterator();
+		Iterator<String> it = getInFields().getFieldNames().iterator();
 		while (it.hasNext()){
 			String feat = it.next();
 			
-			if (!anonFeature.contains(feat)){
+			if (!anonField.contains(feat)){
 				query += feat;
 			}
 			else{
@@ -304,22 +304,22 @@ public class PigAnonymise extends PigElement {
 	}
 	
 	/**
-	 * Get the Input Features
-	 * @return input FeatureList
+	 * Get the Input Fields
+	 * @return input FieldList
 	 * @throws RemoteException
 	 */
 	@Override
-	public FeatureList getInFeatures() throws RemoteException {
-		return getDFEInput().get(key_input).get(0).getFeatures();
+	public FieldList getInFields() throws RemoteException {
+		return getDFEInput().get(key_input).get(0).getFields();
 	}
 	/**
-	 * Get the new Features from the action
-	 * @return new FeatureList
+	 * Get the new Fields from the action
+	 * @return new FieldList
 	 * @throws RemoteException
 	 */
 	@Override
-	public FeatureList getNewFeatures() throws RemoteException {
-		return getInFeatures();
+	public FieldList getNewField() throws RemoteException {
+		return getInFields();
 	}
 	/**
 	 * Update the interaction 
@@ -330,20 +330,20 @@ public class PigAnonymise extends PigElement {
 	public void update(DFEInteraction interaction) throws RemoteException {
 		DFEOutput in = getDFEInput().get(key_input).get(0);
 		if (in != null) {
-			if (interaction.getId().equals(featuresInt.getId())) {
-				FeatureList inFeat = getInFeatures();
+			if (interaction.getId().equals(fieldsInt.getId())) {
+				FieldList inFeat = getInFields();
 				List<String> posValues = new LinkedList<String>();
-				Iterator<String> it = inFeat.getFeaturesNames().iterator();
+				Iterator<String> it = inFeat.getFieldNames().iterator();
 				while (it.hasNext()) {
 					String cur = it.next();
-					FeatureType typeCur = inFeat.getFeatureType(cur);
-					if (!(FeatureType.DATE.equals(typeCur)
-							|| FeatureType.DATETIME.equals(typeCur) || FeatureType.TIMESTAMP
+					FieldType typeCur = inFeat.getFieldType(cur);
+					if (!(FieldType.DATE.equals(typeCur)
+							|| FieldType.DATETIME.equals(typeCur) || FieldType.TIMESTAMP
 								.equals(typeCur))) {
 						posValues.add(cur);
 					}
 				}
-				featuresInt.setPossibleValues(posValues);
+				fieldsInt.setPossibleValues(posValues);
 			}else if (interaction.getId().equals(orderInt.getId())) {
 				orderInt.update();
 			}
@@ -359,21 +359,21 @@ public class PigAnonymise extends PigElement {
 		if(error == null){
 			
 			//Check if an index has to be created
-			FeatureList inFeats = getInFeatures();
+			FieldList inFeats = getInFields();
 			boolean createIndex = false;
-			Iterator<String> it = featuresInt.getValues().iterator();
+			Iterator<String> it = fieldsInt.getValues().iterator();
 			while(it.hasNext() && !createIndex){
 				String fName = it.next();
 				
-				createIndex = FeatureType.CATEGORY.equals(inFeats.getFeatureType(fName))
-						|| FeatureType.STRING.equals(inFeats.getFeatureType(fName));
+				createIndex = FieldType.CATEGORY.equals(inFeats.getFieldType(fName))
+						|| FieldType.STRING.equals(inFeats.getFieldType(fName));
 			}
 			if(createIndex){
 				if (output.get(key_output_index) == null) {
 				        output.put(key_output_index, new MapRedCtrlATextType());
 				}
 				try {
-					output.get(key_output_index).setFeatures(getIndexFeatures());
+					output.get(key_output_index).setFields(getIndexFeatures());
 				} catch (Exception e) {
 					logger.error(e.getMessage(), e);
 				}
@@ -384,10 +384,10 @@ public class PigAnonymise extends PigElement {
 		return error;
 	}
 	
-	public FeatureList getIndexFeatures() throws RemoteException{
-		FeatureList fl = new OrderedFeatureList();
-		fl.addFeature("Value", FeatureType.STRING);
-		fl.addFeature("Index", FeatureType.STRING);
+	public FieldList getIndexFeatures() throws RemoteException{
+		FieldList fl = new OrderedFieldList();
+		fl.addField("Value", FieldType.STRING);
+		fl.addField("Index", FieldType.STRING);
 		return fl;
 	}
 

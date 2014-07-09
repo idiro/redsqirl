@@ -12,17 +12,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import com.redsqirl.utils.FeatureList;
-import com.redsqirl.utils.OrderedFeatureList;
+import com.redsqirl.utils.FieldList;
+import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.TableInteraction;
 import com.redsqirl.workflow.server.action.utils.PigDictionary;
-import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.utils.PigLanguageManager;
 
 /**
  * Interaction for selecting output of a union action. The interaction is a
- * table with for columns: 'Relation', 'Operation', 'Feature name', 'Type'.
+ * table with for columns: 'Relation', 'Operation', 'Field name', 'Type'.
  * 
  * @author marcos
  * 
@@ -41,8 +41,8 @@ public class PigTableUnionInteraction extends TableInteraction {
 			/** Operation Column title */
 			table_op_title = PigLanguageManager
 					.getTextWithoutSpace("pig.union_features_interaction.op_column"),
-			/** Feature Column title */
-			table_feat_title = PigLanguageManager
+			/** Field Column title */
+			table_field_title = PigLanguageManager
 					.getTextWithoutSpace("pig.union_features_interaction.feat_column"),
 			/**Type Column Title*/
 			table_type_title = PigLanguageManager
@@ -84,7 +84,7 @@ public class PigTableUnionInteraction extends TableInteraction {
 		} else {
 
 			Map<String, List<Map<String, String>>> mapRelationRow = getSubQuery();
-			FeatureList mapFeatType = getNewFeatures();
+			FieldList mapFieldType = getNewField();
 
 			// Check if we have the right number of list
 			if (mapRelationRow.keySet().size() != hu.gettAliasInt().getValues().size()) {
@@ -105,7 +105,7 @@ public class PigTableUnionInteraction extends TableInteraction {
 							new Object[] { relationName });
 				}
 
-				Set<String> featuresTitle = new LinkedHashSet<String>();
+				Set<String> fieldTitle = new LinkedHashSet<String>();
 				rows = listRow.iterator();
 				while (rows.hasNext() && msg == null) {
 					//
@@ -115,26 +115,26 @@ public class PigTableUnionInteraction extends TableInteraction {
 								row.get(table_type_title),
 								PigDictionary.getInstance().getReturnType(
 										row.get(table_op_title),
-										hu.getInFeatures()))) {
+										hu.getInFields()))) {
 							msg = PigLanguageManager
 									.getText(
 											"pig.union_features_interaction.checkreturntype",
 											new String[] { row
-													.get(table_feat_title) });
+													.get(table_field_title) });
 						} else {
-							String featureName = row.get(table_feat_title)
+							String fieldName = row.get(table_field_title)
 									.toUpperCase();
 							logger.info("is it contained in map : "
-									+ featureName);
-							if (!mapFeatType.containsFeature(featureName)) {
+									+ fieldName);
+							if (!mapFieldType.containsField(fieldName)) {
 								msg = PigLanguageManager
 										.getText("pig.union_features_interaction.checkfeatimplemented");
 							} else {
-								featuresTitle.add(featureName);
+								fieldTitle.add(fieldName);
 								if (!PigDictionary.getType(
 										row.get(table_type_title))
-										.equals(mapFeatType
-												.getFeatureType(featureName))) {
+										.equals(mapFieldType
+												.getFieldType(fieldName))) {
 									msg = PigLanguageManager
 											.getText("pig.union_features_interaction.checktype");
 								}
@@ -145,12 +145,12 @@ public class PigTableUnionInteraction extends TableInteraction {
 					}
 				}
 
-				if (msg == null && listRow.size() != featuresTitle.size()) {
+				if (msg == null && listRow.size() != fieldTitle.size()) {
 					msg = PigLanguageManager.getText(
 							"pig.union_features_interaction.checknbfeat",
-							new Object[] { lRow.size() - featuresTitle.size(),
-									lRow.size(), featuresTitle.size() });
-					logger.debug(featuresTitle);
+							new Object[] { lRow.size() - fieldTitle.size(),
+									lRow.size(), fieldTitle.size() });
+					logger.debug(fieldTitle);
 				}
 			}
 		}
@@ -172,7 +172,7 @@ public class PigTableUnionInteraction extends TableInteraction {
 		String error = null;
 		try {
 			if (PigDictionary.getInstance().getReturnType(expression,
-					hu.getInFeatures()) == null) {
+					hu.getInFields()) == null) {
 				error = PigLanguageManager.getText("pig.expressionnull");
 			}
 		} catch (Exception e) {
@@ -193,28 +193,28 @@ public class PigTableUnionInteraction extends TableInteraction {
 		updateColumnConstraint(table_relation_title, null, null, hu
 				.getAliases().keySet());
 
-		updateColumnConstraint(table_feat_title,
+		updateColumnConstraint(table_field_title,
 				"[a-zA-Z]([A-Za-z0-9_]{0,29})", hu.getAllInputComponent()
 						.size(), null);
 
 		updateEditor(table_op_title, PigDictionary.generateEditor(PigDictionary
 				.getInstance().createDefaultSelectHelpMenu(), hu
-				.getInFeatures(),hu.getDistinctValues()));
+				.getInFields(),hu.getDistinctValues()));
 
 		// Set the Generator
 		List<Map<String, String>> copyRows = new LinkedList<Map<String, String>>();
-		FeatureList firstIn = in.get(0).getFeatures();
-		Iterator<String> featIt = firstIn.getFeaturesNames().iterator();
-		while (featIt.hasNext()) {
-			String feature = featIt.next();
-			FeatureType featureType = firstIn.getFeatureType(feature);
+		FieldList firstIn = in.get(0).getFields();
+		Iterator<String> fieldInIt = firstIn.getFieldNames().iterator();
+		while (fieldInIt.hasNext()) {
+			String field = fieldInIt.next();
+			FieldType fieldType = firstIn.getFieldType(field);
 			Iterator<DFEOutput> itIn = in.iterator();
 			itIn.next();
 			boolean found = true;
 			while (itIn.hasNext() && found) {
 				DFEOutput cur = itIn.next();
-				found = featureType.equals(cur.getFeatures().getFeatureType(
-						feature));
+				found = fieldType.equals(cur.getFields().getFieldType(
+						field));
 			}
 			if (found) {
 				Iterator<String> aliases = hu.getAliases().keySet().iterator();
@@ -223,10 +223,10 @@ public class PigTableUnionInteraction extends TableInteraction {
 					String alias = aliases.next();
 
 					curMap.put(table_relation_title, alias);
-					curMap.put(table_op_title, alias + "." + feature);
-					curMap.put(table_feat_title, feature);
+					curMap.put(table_op_title, alias + "." + field);
+					curMap.put(table_field_title, field);
 					curMap.put(table_type_title,
-							featureType.name());
+							fieldType.name());
 
 					copyRows.add(curMap);
 				}
@@ -246,11 +246,11 @@ public class PigTableUnionInteraction extends TableInteraction {
 
 		addColumn(table_op_title, null, null, null);
 
-		addColumn(table_feat_title, null, "[a-zA-Z]([A-Za-z0-9_]{0,29})", null,
+		addColumn(table_field_title, null, "[a-zA-Z]([A-Za-z0-9_]{0,29})", null,
 				null);
 
-		List<String> types = new ArrayList<String>(FeatureType.values().length);
-		for(FeatureType ft:FeatureType.values()){
+		List<String> types = new ArrayList<String>(FieldType.values().length);
+		for(FieldType ft:FieldType.values()){
 			types.add(ft.name());
 		}
 
@@ -258,13 +258,13 @@ public class PigTableUnionInteraction extends TableInteraction {
 	}
 
 	/**
-	 * Get the new features list from the interaction
+	 * Get the new field list from the interaction
 	 * 
-	 * @return FeatureList
+	 * @return FieldList
 	 * @throws RemoteException
 	 */
-	public FeatureList getNewFeatures() throws RemoteException {
-		FeatureList new_features = new OrderedFeatureList();
+	public FieldList getNewField() throws RemoteException {
+		FieldList new_field = new OrderedFieldList();
 
 		Map<String, List<Map<String, String>>> mapRelationRow = getSubQuery();
 
@@ -272,11 +272,11 @@ public class PigTableUnionInteraction extends TableInteraction {
 				mapRelationRow.keySet().iterator().next()).iterator();
 		while (rowIt.hasNext()) {
 			Map<String, String> rowCur = rowIt.next();
-			String name = rowCur.get(table_feat_title);
+			String name = rowCur.get(table_field_title);
 			String type = rowCur.get(table_type_title);
-			new_features.addFeature(name, PigDictionary.getType(type));
+			new_field.addField(name, PigDictionary.getType(type));
 		}
-		return new_features;
+		return new_field;
 
 	}
 
@@ -317,21 +317,21 @@ public class PigTableUnionInteraction extends TableInteraction {
 	 * @throws RemoteException
 	 */
 	public String getCreateQueryPiece(DFEOutput out) throws RemoteException {
-		logger.debug("create features...");
+		logger.debug("create field...");
 		String createSelect = "";
-		FeatureList features = getNewFeatures();
-		Iterator<String> it = features.getFeaturesNames().iterator();
+		FieldList field = getNewField();
+		Iterator<String> it = field.getFieldNames().iterator();
 		if (it.hasNext()) {
-			String featName = it.next();
-			String type = features
-					.getFeatureType(featName).name();
-			createSelect = "(" + featName + " " + type;
+			String fieldName = it.next();
+			String type = field
+					.getFieldType(fieldName).name();
+			createSelect = "(" + fieldName + " " + type;
 		}
 		while (it.hasNext()) {
-			String featName = it.next();
-			String type = features
-					.getFeatureType(featName).name();
-			createSelect += "," + featName + " " + type;
+			String fieldName = it.next();
+			String type = field
+					.getFieldType(fieldName).name();
+			createSelect += "," + fieldName + " " + type;
 		}
 		createSelect += ")";
 
@@ -339,7 +339,7 @@ public class PigTableUnionInteraction extends TableInteraction {
 	}
 
 	/**
-	 * Get Query piece for selecting the features and generating them with a new
+	 * Get Query piece for selecting the field and generating them with a new
 	 * name
 	 * 
 	 * @return query
@@ -358,20 +358,20 @@ public class PigTableUnionInteraction extends TableInteraction {
 			Iterator<Map<String, String>> itTree = subQuery.get(relationName)
 					.iterator();
 			if (itTree.hasNext()) {
-				Map<String, String> featTree = itTree.next();
-				String featName = featTree.get(table_feat_title);
-				String op = featTree.get(table_op_title).replaceAll(
+				Map<String, String> fieldTree = itTree.next();
+				String fieldName = fieldTree.get(table_field_title);
+				String op = fieldTree.get(table_op_title).replaceAll(
 						Pattern.quote(relationName + "."), "");
 				select += hu.getNextName() + " = FOREACH " + relationName
-						+ " GENERATE " + op + " AS " + featName;
+						+ " GENERATE " + op + " AS " + fieldName;
 			}
 			while (itTree.hasNext()) {
-				Map<String, String> featTree = itTree.next();
-				String featName = featTree.get(table_feat_title);
-				String op = featTree.get(table_op_title).replaceAll(
+				Map<String, String> fieldTree = itTree.next();
+				String fieldName = fieldTree.get(table_field_title);
+				String op = fieldTree.get(table_op_title).replaceAll(
 						Pattern.quote(relationName + "."), "");
 				;
-				select += ", " + op + " AS " + featName;
+				select += ", " + op + " AS " + fieldName;
 			}
 			select += ";\n\n";
 

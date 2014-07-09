@@ -1,11 +1,11 @@
 package com.redsqirl.workflow.server.enumeration;
 
 /**
- * The Type associated with a feature within an entry.
+ * The Type associated with a field within an entry.
  * @author etienne
  *
  */
-public enum FeatureType {
+public enum FieldType {
 	/**Boolean Type*/
 	BOOLEAN,
 	/**Integer Type*/

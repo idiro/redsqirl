@@ -53,7 +53,7 @@ public class PigAggregatorTests {
 		assertTrue("pig aggreg update: " + error, error == null);
 		logger.debug("Features "
 				+ pig.getDFEOutput().get(PigAggregator.key_output)
-				.getFeatures());
+				.getFields());
 
 		pig.getDFEOutput()
 		.get(PigAggregator.key_output)
@@ -93,12 +93,12 @@ public class PigAggregatorTests {
 			Tree<String> out = tsi.getTree().getFirstChild("table");
 			Tree<String> rowId = out.add("row");
 			if (!groupByAll){
-				rowId.add(PigTableSelectInteraction.table_feat_title).add("VALUE");
+				rowId.add(PigTableSelectInteraction.table_field_title).add("VALUE");
 				rowId.add(PigTableSelectInteraction.table_op_title).add(inAlias + ".VALUE");
 				rowId.add(PigTableSelectInteraction.table_type_title).add("INT");
 				rowId = out.add("row");
 			}
-			rowId.add(PigTableSelectInteraction.table_feat_title).add("RAW");
+			rowId.add(PigTableSelectInteraction.table_field_title).add("RAW");
 			rowId.add(PigTableSelectInteraction.table_op_title).add("COUNT_DISTINCT("+inAlias + ".RAW)");
 			rowId.add(PigTableSelectInteraction.table_type_title).add("INT");
 		}

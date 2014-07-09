@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.redsqirl.utils.FeatureList;
-import com.redsqirl.utils.OrderedFeatureList;
+import com.redsqirl.utils.FieldList;
+import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.AppendListInteraction;
 import com.redsqirl.workflow.server.DataProperty;
 import com.redsqirl.workflow.server.DataflowAction;
@@ -28,7 +28,7 @@ import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.datatype.MapRedBinaryType;
 import com.redsqirl.workflow.server.datatype.MapRedCtrlATextType;
 import com.redsqirl.workflow.server.datatype.MapRedTextType;
-import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
@@ -63,8 +63,8 @@ public abstract class PigElement extends DataflowAction {
 			key_outputType = "output_type",
 			/**Default Delimiter*/
 			default_delimiter = new String(new char[]{'\001'}),
-			/**Feature Key for table*/
-			key_featureTable = "features",
+			/**Field Key for table*/
+			key_fieldTable = "field",
 			/**Parallel clause Key*/
 			key_parallel = "parallel",
 			/**Order Key*/
@@ -215,17 +215,17 @@ public abstract class PigElement extends DataflowAction {
 	 */
 	public abstract String getQuery() throws RemoteException;
 	/**
-	 * Get the Input Features
-	 * @return input FeatureList
+	 * Get the Input Field
+	 * @return input FieldList
 	 * @throws RemoteException
 	 */
-	public abstract FeatureList getInFeatures() throws RemoteException;
+	public abstract FieldList getInFields() throws RemoteException;
 	/**
-	 * Get the new Features
-	 * @return new FeatureList
+	 * Get the new Field
+	 * @return new FieldList
 	 * @throws RemoteException
 	 */
-	public abstract FeatureList getNewFeatures() throws RemoteException;
+	public abstract FieldList getNewField() throws RemoteException;
 	/**
 	 * Get the Input Relations
 	 * @return Set of Input relations
@@ -302,12 +302,12 @@ public abstract class PigElement extends DataflowAction {
 	public String getProperties(DFEOutput out) throws RemoteException{
 		String properties = "";
 
-		properties += "number_features="+out.getFeatures().getSize()+"\n";
+		properties += "number_fields="+out.getFields().getSize()+"\n";
 
 		int cont = 0;
-		for (String name : out.getFeatures().getFeaturesNames()){
-			properties += "feature"+cont+"_name="+name+"\n";
-			properties += "feature"+cont+"_value="+out.getFeatures().getFeatureType(name)+"\n";
+		for (String name : out.getFields().getFieldNames()){
+			properties += "field"+cont+"_name="+name+"\n";
+			properties += "field"+cont+"_value="+out.getFields().getFieldType(name)+"\n";
 		}
 
 		return properties;
@@ -318,11 +318,11 @@ public abstract class PigElement extends DataflowAction {
 	public String updateOut() throws RemoteException {
 		String error = checkIntegrationUserVariables();
 		if(error == null){
-			FeatureList new_features = getNewFeatures();
+			FieldList new_field = getNewField();
 			if(output.get(key_output) == null){
 				output.put(key_output, new MapRedTextType());
 			}
-			output.get(key_output).setFeatures(new_features);
+			output.get(key_output).setFields(new_field);
 			output.get(key_output).addProperty(MapRedTextType.key_delimiter, delimiterOutputInt.getValue());
 			
 			int doAudit = auditInt.getValues().size();
@@ -331,14 +331,14 @@ public abstract class PigElement extends DataflowAction {
 					output.put(key_output_audit, new MapRedCtrlATextType());
 				}
 				try {
-					FeatureList fl = new OrderedFeatureList();
-					fl.addFeature("Legend", FeatureType.STRING);
+					FieldList fl = new OrderedFieldList();
+					fl.addField("Legend", FieldType.STRING);
 					Iterator<String> it = output.get(key_output)
-							.getFeatures().getFeaturesNames().iterator();
+							.getFields().getFieldNames().iterator();
 					while (it.hasNext()) {
-						fl.addFeature("AUDIT_" + it.next(), FeatureType.STRING);
+						fl.addField("AUDIT_" + it.next(), FieldType.STRING);
 					}
-					output.get(key_output_audit).setFeatures(fl);
+					output.get(key_output_audit).setFields(fl);
 				} catch (Exception e) {
 					logger.error(e.getMessage(), e);
 				}
@@ -386,11 +386,11 @@ public abstract class PigElement extends DataflowAction {
 		String function = getLoadStoreFuncion(out, delimiter);
 		String createSelect = "LOAD '" + out.getPath() + "' USING "+function+" as (";
 
-		Iterator<String> it = out.getFeatures().getFeaturesNames().iterator();
-		logger.info("attribute list size : "+out.getFeatures().getSize());
+		Iterator<String> it = out.getFields().getFieldNames().iterator();
+		logger.info("attribute list size : "+out.getFields().getSize());
 		while (it.hasNext()){
 			String e = it.next();
-			createSelect += e+":"+PigTypeConvert.getPigType(out.getFeatures().getFeatureType(e));
+			createSelect += e+":"+PigTypeConvert.getPigType(out.getFields().getFieldType(e));
 			if (it.hasNext()){
 				createSelect += ", ";
 			}

@@ -10,8 +10,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.redsqirl.utils.FeatureList;
-import com.redsqirl.utils.OrderedFeatureList;
+import com.redsqirl.utils.FieldList;
+import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.ListInteraction;
 import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
@@ -81,7 +81,7 @@ public class PigJoin extends PigElement {
 				PigLanguageManager.getText("pig.join_page2.legend"), 1);
 
 		tJoinInt = new PigTableJoinInteraction(
-				key_featureTable,
+				key_fieldTable,
 				PigLanguageManager.getText("pig.join_features_interaction.title"),
 				PigLanguageManager.getText("pig.join_features_interaction.legend"),
 				0, 0, this);
@@ -238,19 +238,19 @@ public class PigJoin extends PigElement {
 	 * @return input FeatureList
 	 * @throws RemoteException
 	 */
-	public FeatureList getInFeatures() throws RemoteException {
+	public FieldList getInFields() throws RemoteException {
 
-		FeatureList ans = new OrderedFeatureList();
+		FieldList ans = new OrderedFieldList();
 		Map<String, DFEOutput> aliases = getAliases();
 
 		Iterator<String> it = aliases.keySet().iterator();
 		while (it.hasNext()) {
 			String alias = it.next();
-			FeatureList mapTable = aliases.get(alias).getFeatures();
-			Iterator<String> itFeat = mapTable.getFeaturesNames().iterator();
+			FieldList mapTable = aliases.get(alias).getFields();
+			Iterator<String> itFeat = mapTable.getFieldNames().iterator();
 			while (itFeat.hasNext()) {
 				String cur = itFeat.next();
-				ans.addFeature(alias + "." + cur, mapTable.getFeatureType(cur));
+				ans.addField(alias + "." + cur, mapTable.getFieldType(cur));
 			}
 		}
 		return ans;
@@ -293,8 +293,8 @@ public class PigJoin extends PigElement {
 	 * @throws RemoteException
 	 */
 	@Override
-	public FeatureList getNewFeatures() throws RemoteException {
-		return tJoinInt.getNewFeatures();
+	public FieldList getNewField() throws RemoteException {
+		return tJoinInt.getNewField();
 	}
 	
 	/**

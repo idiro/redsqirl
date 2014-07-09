@@ -73,7 +73,7 @@ public class PigJoinTests {
 		}
 		
 		updatePig(w,pig,alias1,alias2,hInt);
-		logger.debug("Features "+pig.getDFEOutput().get(PigJoin.key_output).getFeatures());
+		logger.debug("Features "+pig.getDFEOutput().get(PigJoin.key_output).getFields());
 		
 		pig.getDFEOutput().get(PigJoin.key_output).generatePath(
 				System.getProperty("user.name"), 
@@ -111,15 +111,15 @@ public class PigJoinTests {
 		{
 			Tree<String> out = tsi.getTree().getFirstChild("table");
 			Tree<String> rowId = out.add("row");
-			rowId.add(PigTableJoinInteraction.table_feat_title).add("ID");
+			rowId.add(PigTableJoinInteraction.table_field_title).add("ID");
 			rowId.add(PigTableJoinInteraction.table_op_title).add(relation_from_1+".ID");
 			rowId.add(PigTableJoinInteraction.table_type_title).add("STRING");
 			rowId = out.add("row");
-			rowId.add(PigTableJoinInteraction.table_feat_title).add("VALUE_1");
+			rowId.add(PigTableJoinInteraction.table_field_title).add("VALUE_1");
 			rowId.add(PigTableJoinInteraction.table_op_title).add(relation_from_1+".VALUE");
 			rowId.add(PigTableJoinInteraction.table_type_title).add("INT");
 			rowId = out.add("row");
-			rowId.add(PigTableJoinInteraction.table_feat_title).add("VALUE_2");
+			rowId.add(PigTableJoinInteraction.table_field_title).add("VALUE_2");
 			rowId.add(PigTableJoinInteraction.table_op_title).add(relation_from_2+".VALUE");
 			rowId.add(PigTableJoinInteraction.table_type_title).add("INT");
 		}

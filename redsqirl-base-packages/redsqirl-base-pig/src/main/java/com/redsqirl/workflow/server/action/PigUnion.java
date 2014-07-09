@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.redsqirl.utils.FeatureList;
-import com.redsqirl.utils.OrderedFeatureList;
+import com.redsqirl.utils.FieldList;
+import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.DataProperty;
 import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.datatype.MapRedTextType;
@@ -84,7 +84,7 @@ public class PigUnion extends PigElement {
 		page2 = addPage(PigLanguageManager.getText("pig.union_page2.title"),
 				PigLanguageManager.getText("pig.union_page2.legend"), 1);
 
-		tUnionSelInt = new PigTableUnionInteraction(key_featureTable,
+		tUnionSelInt = new PigTableUnionInteraction(key_fieldTable,
 				PigLanguageManager
 						.getText("pig.union_features_interaction.title"),
 				PigLanguageManager
@@ -244,46 +244,46 @@ public class PigUnion extends PigElement {
 	}
 
 	/**
-	 * Get the input features with the alias
+	 * Get the input field with the alias
 	 * 
 	 * @param alias
-	 * @return FeatureList
+	 * @return FieldList
 	 * @throws RemoteException
 	 */
-	public FeatureList getInFeatures(String alias) throws RemoteException {
-		FeatureList ans = null;
+	public FieldList getInField(String alias) throws RemoteException {
+		FieldList ans = null;
 		Map<String, DFEOutput> aliases = getAliases();
 		if (aliases.get(alias) != null) {
-			ans = new OrderedFeatureList();
-			FeatureList mapTable = aliases.get(alias).getFeatures();
-			Iterator<String> itFeat = mapTable.getFeaturesNames().iterator();
-			while (itFeat.hasNext()) {
-				String cur = itFeat.next();
-				ans.addFeature(alias + "." + cur, mapTable.getFeatureType(cur));
+			ans = new OrderedFieldList();
+			FieldList mapTable = aliases.get(alias).getFields();
+			Iterator<String> itField = mapTable.getFieldNames().iterator();
+			while (itField.hasNext()) {
+				String cur = itField.next();
+				ans.addField(alias + "." + cur, mapTable.getFieldType(cur));
 			}
 		}
 		return ans;
 	}
 
 	/**
-	 * Get the Input Features
+	 * Get the Input Field
 	 * 
-	 * @return FeatureList
+	 * @return FieldList
 	 * @throws RemoteExceptions
 	 */
 	@Override
-	public FeatureList getInFeatures() throws RemoteException {
-		FeatureList ans = new OrderedFeatureList();
+	public FieldList getInFields() throws RemoteException {
+		FieldList ans = new OrderedFieldList();
 		Map<String, DFEOutput> aliases = getAliases();
 
 		Iterator<String> it = aliases.keySet().iterator();
 		while (it.hasNext()) {
 			String alias = it.next();
-			FeatureList mapTable = aliases.get(alias).getFeatures();
-			Iterator<String> itFeat = mapTable.getFeaturesNames().iterator();
-			while (itFeat.hasNext()) {
-				String cur = itFeat.next();
-				ans.addFeature(alias + "." + cur, mapTable.getFeatureType(cur));
+			FieldList mapTable = aliases.get(alias).getFields();
+			Iterator<String> itField = mapTable.getFieldNames().iterator();
+			while (itField.hasNext()) {
+				String cur = itField.next();
+				ans.addField(alias + "." + cur, mapTable.getFieldType(cur));
 			}
 		}
 		return ans;
@@ -325,11 +325,11 @@ public class PigUnion extends PigElement {
 	}
 
 	/**
-	 * Get the new features from the Union Interaction
+	 * Get the new field from the Union Interaction
 	 */
 	@Override
-	public FeatureList getNewFeatures() throws RemoteException {
-		return tUnionSelInt.getNewFeatures();
+	public FieldList getNewField() throws RemoteException {
+		return tUnionSelInt.getNewField();
 	}
 
 	/**

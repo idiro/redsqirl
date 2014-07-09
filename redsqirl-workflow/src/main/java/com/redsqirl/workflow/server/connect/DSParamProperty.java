@@ -5,7 +5,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
-import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 
 /**
  * Class that contains properties for a property for datastore
@@ -28,8 +28,8 @@ public class DSParamProperty extends UnicastRemoteObject implements
 	editOnly,
 	/**Create Only Flag*/
 	createOnly;
-	/**FeatureType*/
-	protected FeatureType type;
+	/**FieldType*/
+	protected FieldType type;
 
 	/**
 	 * Create the parameter of a property
@@ -41,7 +41,7 @@ public class DSParamProperty extends UnicastRemoteObject implements
 	public DSParamProperty(String help, boolean constant, boolean editOnly,
 			boolean createOnly) throws RemoteException {
 		super();
-		init(help, constant, editOnly, createOnly, FeatureType.STRING);
+		init(help, constant, editOnly, createOnly, FieldType.STRING);
 	}
 
 	/**
@@ -52,7 +52,7 @@ public class DSParamProperty extends UnicastRemoteObject implements
 	 * @throws RemoteException
 	 */
 	public DSParamProperty(String help, boolean constant, boolean editOnly,
-			boolean createOnly, FeatureType type) throws RemoteException {
+			boolean createOnly, FieldType type) throws RemoteException {
 		super();
 		init(help, constant, editOnly, createOnly, type);
 	}
@@ -67,7 +67,7 @@ public class DSParamProperty extends UnicastRemoteObject implements
 	 * @param type
 	 */
 	private void init(String help, boolean constant, boolean editOnly,
-			boolean createOnly, FeatureType type) {
+			boolean createOnly, FieldType type) {
 		this.help = help;
 		this.constant = constant;
 		this.editOnly = editOnly;
@@ -120,15 +120,15 @@ public class DSParamProperty extends UnicastRemoteObject implements
 	
 	/**
 	 * Get the property type
-	 * @return FeatureType
+	 * @return FieldType
 	 * @throws RemoteException
 	 */
 	@Override
-	public FeatureType getType() {
+	public FieldType getType() {
 		return type;
 	}
 
-	public void setType(FeatureType type) {
+	public void setType(FieldType type) {
 		this.type = type;
 	}
 

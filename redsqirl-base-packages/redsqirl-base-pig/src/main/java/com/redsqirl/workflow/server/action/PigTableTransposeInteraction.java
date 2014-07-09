@@ -8,11 +8,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.redsqirl.utils.FeatureList;
-import com.redsqirl.utils.OrderedFeatureList;
+import com.redsqirl.utils.FieldList;
+import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.TableInteraction;
-import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.utils.PigLanguageManager;
 
@@ -33,8 +33,8 @@ public class PigTableTransposeInteraction extends TableInteraction {
 	/** Type Column Title */
 	public static final String table_type_title = PigLanguageManager
 			.getTextWithoutSpace("pig.transpose.table_interaction.type"),
-	/** Feature Column title */
-	table_feature_title = PigLanguageManager
+	/** Field Column title */
+	table_field_title = PigLanguageManager
 			.getTextWithoutSpace("pig.transpose.table_interaction.feature");
 
 
@@ -73,8 +73,8 @@ public class PigTableTransposeInteraction extends TableInteraction {
 			for (int i = 0; i < lines.size(); ++i){
 				Map<String, String> row = new HashMap<String, String>();
 				
-				row.put(table_feature_title, "feature_"+i);
-				row.put(table_type_title, FeatureType.STRING.toString());
+				row.put(table_field_title, "field_"+i);
+				row.put(table_type_title, FieldType.STRING.toString());
 				addRow(row);
 			}
 		}
@@ -87,11 +87,11 @@ public class PigTableTransposeInteraction extends TableInteraction {
 	 */
 	protected void getRootTable() throws RemoteException {
 		
-		addColumn(table_feature_title, 1, "[a-zA-Z]([A-Za-z0-9_]{0,29})", null,
+		addColumn(table_field_title, 1, "[a-zA-Z]([A-Za-z0-9_]{0,29})", null,
 				null);
 		
-		List<String> types = new ArrayList<String>(FeatureType.values().length);
-		for(FeatureType ft:FeatureType.values()){
+		List<String> types = new ArrayList<String>(FieldType.values().length);
+		for(FieldType ft:FieldType.values()){
 			types.add(ft.name());
 		}
 		addColumn(table_type_title, null, types, null);
@@ -117,25 +117,25 @@ public class PigTableTransposeInteraction extends TableInteraction {
 	}
 	
 	/**
-	 * Get the new features from the interaction
+	 * Get the new field from the interaction
 	 * 
-	 * @return new FeatureList
+	 * @return new FieldList
 	 * @throws RemoteException
 	 */
-	public FeatureList getNewFeatures() throws RemoteException {
-		FeatureList new_features = new OrderedFeatureList();
+	public FieldList getNewFields() throws RemoteException {
+		FieldList new_field = new OrderedFieldList();
 		Iterator<Tree<String>> rowIt = getTree().getFirstChild("table")
 				.getChildren("row").iterator();
 
 		while (rowIt.hasNext()) {
 			Tree<String> rowCur = rowIt.next();
-			String name = rowCur.getFirstChild(table_feature_title)
+			String name = rowCur.getFirstChild(table_field_title)
 					.getFirstChild().getHead();
 			String type = rowCur.getFirstChild(table_type_title)
 					.getFirstChild().getHead();
-			new_features.addFeature(name, FeatureType.valueOf(type));
+			new_field.addField(name, FieldType.valueOf(type));
 		}
-		return new_features;
+		return new_field;
 	}
 
 }

@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import com.redsqirl.utils.Tree;
 import com.redsqirl.utils.TreeNonUnique;
-import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 
 public class TreeTests {
 
@@ -23,19 +23,19 @@ public class TreeTests {
 		input.add(columns);
 
 		String table_op_title = "Operations";
-		String table_feat_title= "Feature";
+		String table_field_title= "Field";
 		String table_type_title= "Type";
 		// operation
 		columns.add("column").add("title").add(table_op_title);
 
-		// Feature name
-		Tree<String> newFeatureName = new TreeNonUnique<String>("column");
-		columns.add(newFeatureName);
-		newFeatureName.add("title").add(table_feat_title);
+		// Field name
+		Tree<String> newFieldName = new TreeNonUnique<String>("column");
+		columns.add(newFieldName);
+		newFieldName.add("title").add(table_field_title);
 
-		Tree<String> constraintFeat = new TreeNonUnique<String>("constraint");
-		newFeatureName.add(constraintFeat);
-		constraintFeat.add("count").add("1");
+		Tree<String> constraintField = new TreeNonUnique<String>("constraint");
+		newFieldName.add(constraintField);
+		constraintField.add("count").add("1");
 
 		// Type
 		Tree<String> newType = new TreeNonUnique<String>("column");
@@ -48,10 +48,10 @@ public class TreeTests {
 		Tree<String> valsType = new TreeNonUnique<String>("values");
 		constraintType.add(valsType);
 
-		valsType.add("value").add(FeatureType.BOOLEAN.name());
-		valsType.add("value").add(FeatureType.INT.name());
-		valsType.add("value").add(FeatureType.DOUBLE.name());
-		valsType.add("value").add(FeatureType.FLOAT.name());
+		valsType.add("value").add(FieldType.BOOLEAN.name());
+		valsType.add("value").add(FieldType.INT.name());
+		valsType.add("value").add(FieldType.DOUBLE.name());
+		valsType.add("value").add(FieldType.FLOAT.name());
 		valsType.add("value").add("BIGINT");
 		
 		assertTrue("Input head incorrect",input.getHead().equals("table"));

@@ -10,14 +10,14 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.redsqirl.utils.FeatureList;
-import com.redsqirl.utils.OrderedFeatureList;
+import com.redsqirl.utils.FieldList;
+import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.AppendListInteraction;
 import com.redsqirl.workflow.server.InputInteraction;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.datatype.MapRedCtrlATextType;
 import com.redsqirl.workflow.server.datatype.MapRedTextType;
-import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.oozie.PigAction;
 import com.redsqirl.workflow.utils.PigLanguageManager;
 
@@ -126,19 +126,19 @@ public class PigTextSource extends AbstractSource {
 				}
 				
 				try {
-					FeatureList fl = new OrderedFeatureList();
-					fl.addFeature("Legend", FeatureType.STRING);
+					FieldList fl = new OrderedFieldList();
+					fl.addField("Legend", FieldType.STRING);
 					
 //					Iterator<String> it = getDFEInput().get(key_input).get(0)
 //							.getFeatures().getFeaturesNames().iterator();
 					
-					Iterator<String> it = output.get(out_name).getFeatures()
-							.getFeaturesNames().iterator();
+					Iterator<String> it = output.get(out_name).getFields()
+							.getFieldNames().iterator();
 					
 					while (it.hasNext()) {
-						fl.addFeature("AUDIT_" + it.next(), FeatureType.STRING);
+						fl.addField("AUDIT_" + it.next(), FieldType.STRING);
 					}
-					output.get(audit_out_name).setFeatures(fl);
+					output.get(audit_out_name).setFields(fl);
 				} catch (Exception e) {
 					error = e.getMessage();
 					logger.error(e.getMessage(), e);

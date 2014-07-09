@@ -104,7 +104,7 @@ public class PigTableValueBinningInteraction extends TableInteraction {
 		
 		String select = "FOREACH " + in + " GENERATE ";
 		boolean firstLine = true;
-		Iterator<String> it = pvb.getInFeatures().getFeaturesNames().iterator();
+		Iterator<String> it = pvb.getInFields().getFieldNames().iterator();
 		while(it.hasNext()){
 			String name = it.next();
 			if(firstLine){

@@ -7,7 +7,7 @@ import java.util.Iterator;
 import com.redsqirl.workflow.server.InputInteraction;
 import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.action.PigTypeConvert;
-import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.utils.PigLanguageManager;
@@ -85,15 +85,15 @@ public class PigVolumeBinning extends PigBinning{
 			String tmpOrder = getNextName();
 			String nameOutput = getNextName();
 			select += "\n"+ nameOutput+" = FOREACH "+group+" {\n\t"
-					+tmpOrder+" = order "+loader+" by "+featureBin.getValue()+";";
+					+tmpOrder+" = order "+loader+" by "+fieldBin.getValue()+";";
 			select += "\n\tgenerate flatten(Stitch("+tmpOrder
-					+", Over("+tmpOrder+"."+featureBin.getValue()
+					+", Over("+tmpOrder+"."+fieldBin.getValue()
 					+", 'ntile', -1, -1, "+numberBinInt.getValue()+")))";
 			select +=" AS (";
-			Iterator<String> it = getInFeatures().getFeaturesNames().iterator();
+			Iterator<String> it = getInFields().getFieldNames().iterator();
 			while(it.hasNext()){
 				String e = it.next();
-				select +=e+":"+PigTypeConvert.getPigType(getInFeatures().getFeatureType(e))+",";
+				select +=e+":"+PigTypeConvert.getPigType(getInFields().getFieldType(e))+",";
 			}
 			select +=getNewFeatureName()+":INT);";
 			select += "\n};\n\n";
@@ -117,16 +117,16 @@ public class PigVolumeBinning extends PigBinning{
 	}
 	
 	@Override
-	public FeatureType getNewFeatureType(){
-		return FeatureType.INT;
+	public FieldType getNewFieldType(){
+		return FieldType.INT;
 	}
 
 	
 	@Override
 	public void update(DFEInteraction interaction) throws RemoteException {
 		String id = interaction.getId();
-		if (id.equals(featureBin.getId())) {
-			featureBin.setPossibleValues(getInFeatures().getFeaturesNames());
+		if (id.equals(fieldBin.getId())) {
+			fieldBin.setPossibleValues(getInFields().getFieldNames());
 		}
 	}
 

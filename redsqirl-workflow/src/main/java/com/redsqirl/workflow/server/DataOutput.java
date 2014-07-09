@@ -19,12 +19,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import com.redsqirl.utils.FeatureList;
-import com.redsqirl.utils.OrderedFeatureList;
+import com.redsqirl.utils.FieldList;
+import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.utils.TreeNonUnique;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
-import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 
@@ -66,18 +66,18 @@ DFEOutput {
 	private String path;
 
 	/**
-	 * Feature
+	 * Field
 	 */
-	protected FeatureList features = null;
+	protected FieldList fields = null;
 
 	/**
 	 * Property of an output, This map gather information needed to plug the
 	 * output, the key depends on the data type: For DATAFILE: header delimiter
-	 * For MapRedDirectory: delimiter For HBase: new features '|' delimited
+	 * For MapRedDirectory: delimiter For HBase: new fields '|' delimited
 	 */
 	protected Map<String, String> dataProperty = new LinkedHashMap<String, String>();
 	
-	// public static final String hbase_new_feature = "hbase_new_feature";
+	// public static final String hbase_new_field = "hbase_new_field";
 	/**
 	 * Default Constructor
 	 * 
@@ -89,14 +89,14 @@ DFEOutput {
 	}
 
 	/**
-	 * Constructor with feature list
+	 * Constructor with field list
 	 * 
-	 * @param features
+	 * @param fields
 	 * @throws RemoteException
 	 */
-	public DataOutput(FeatureList features) throws RemoteException {
+	public DataOutput(FieldList fields) throws RemoteException {
 		super();
-		this.features = features;
+		this.fields = fields;
 	}
 
 	/**
@@ -164,12 +164,12 @@ DFEOutput {
 			property.add(key).add(dataProperty.get(key));
 		}
 
-		Iterator<String> featIt = features.getFeaturesNames().iterator();
-		while (featIt.hasNext()) {
-			String featName = featIt.next();
-			Tree<String> feat = output.add("feature");
-			feat.add("name").add(featName);
-			feat.add("type").add(features.getFeatureType(featName).name());
+		Iterator<String> fieldIt = fields.getFieldNames().iterator();
+		while (fieldIt.hasNext()) {
+			String fieldName = fieldIt.next();
+			Tree<String> fl = output.add("field");
+			fl.add("name").add(fieldName);
+			fl.add("type").add(fields.getFieldType(fieldName).name());
 		}
 		return root;
 	}
@@ -221,27 +221,27 @@ DFEOutput {
 		}
 		parent.appendChild(properties);
 
-		Element featuresEl = doc.createElement("features");
-		if(features != null && features.getFeaturesNames() != null){
-			itStr = features.getFeaturesNames().iterator();
+		Element fieldEl = doc.createElement("fields");
+		if(fields != null && fields.getFieldNames() != null){
+			itStr = fields.getFieldNames().iterator();
 			while (itStr.hasNext()) {
 				String cur = itStr.next();
-				logger.debug("feature " + cur + "," + features.getFeatureType(cur));
-				Element feat = doc.createElement("feature");
+				logger.debug("field " + cur + "," + fields.getFieldType(cur));
+				Element feildE = doc.createElement("field");
 
 				Element name = doc.createElement("name");
 				name.appendChild(doc.createTextNode(cur));
-				feat.appendChild(name);
+				feildE.appendChild(name);
 
 				Element type = doc.createElement("type");
-				type.appendChild(doc.createTextNode(features.getFeatureType(cur)
+				type.appendChild(doc.createTextNode(fields.getFieldType(cur)
 						.name()));
-				feat.appendChild(type);
+				feildE.appendChild(type);
 
-				featuresEl.appendChild(feat);
+				fieldEl.appendChild(feildE);
 			}
 		}
-		parent.appendChild(featuresEl);
+		parent.appendChild(fieldEl);
 	}
 
 	@Override
@@ -283,20 +283,20 @@ DFEOutput {
 			addProperty(key, value);
 		}
 
-		logger.debug("features");
-		features = new OrderedFeatureList();
-		NodeList featuresEl = parent.getElementsByTagName("features").item(0)
+		logger.debug("fields");
+		fields = new OrderedFieldList();
+		NodeList fieldEl = parent.getElementsByTagName("field").item(0)
 				.getChildNodes();
-		for (int i = 0; i < featuresEl.getLength(); ++i) {
-			String name = ((Element) featuresEl.item(i))
+		for (int i = 0; i < fieldEl.getLength(); ++i) {
+			String name = ((Element) fieldEl.item(i))
 					.getElementsByTagName("name").item(0).getChildNodes()
 					.item(0).getNodeValue();
 			logger.debug("name: " + name);
-			String type = ((Element) featuresEl.item(i))
+			String type = ((Element) fieldEl.item(i))
 					.getElementsByTagName("type").item(0).getChildNodes()
 					.item(0).getNodeValue();
 			logger.debug("type: " + type);
-			features.addFeature(name, FeatureType.valueOf(type));
+			fields.addField(name, FieldType.valueOf(type));
 		}
 
 	}
@@ -316,22 +316,22 @@ DFEOutput {
 	}
 
 	/**
-	 * Get the Features List
+	 * Get the field List
 	 * 
-	 * @return features
+	 * @return field
 	 */
-	public final FeatureList getFeatures() {
-		return features;
+	public final FieldList getFields() {
+		return fields;
 	}
 
 	/**
-	 * Set the Features
+	 * Set the field
 	 * 
-	 * @param features
-	 *            the features to set
+	 * @param field
+	 *            the fields to set
 	 */
-	public void setFeatures(FeatureList features) {
-		this.features = features;
+	public void setFields(FieldList fields) {
+		this.fields = fields;
 	}
 
 	/**
@@ -523,27 +523,27 @@ DFEOutput {
 	protected abstract String getDefaultColor();
 
 	/**
-	 * Compare a path , features list and properties to the current ones
+	 * Compare a path , fields list and properties to the current ones
 	 * 
 	 * @param path
 	 *            to compare to current
 	 * @param fl
-	 *            features list to compare to current
+	 *            fields list to compare to current
 	 * @param props
 	 *            to compare to current
 	 * @return <code>true</code> if equal else <code>false</code>
 	 */
-	public boolean compare(String path, FeatureList fl,
+	public boolean compare(String path, FieldList fl,
 			Map<String, String> props) {
 		if (this.path == null) {
 			return false;
 		}
 		/*
-		 * + fl.getFeaturesNames()); } catch (RemoteException e) { }
+		 * + fl.getfieldsNames()); } catch (RemoteException e) { }
 		 * logger.debug(dataProperty + " " + props); logger.info(dataProperty +
 		 * " " + props);
 		 */
-		return this.path.equals(path) && features.equals(fl)
+		return this.path.equals(path) && fields.equals(fl)
 				&& dataProperty.equals(props);
 	}
 	

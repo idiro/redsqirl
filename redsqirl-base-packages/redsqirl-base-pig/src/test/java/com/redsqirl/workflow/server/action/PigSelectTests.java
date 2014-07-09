@@ -56,7 +56,7 @@ public class PigSelectTests {
 		logger.debug("HS update out...");
 		error = pig.updateOut();
 		assertTrue("pig select update: "+error,error == null);
-		logger.debug("Features "+pig.getDFEOutput().get(PigSelect.key_output).getFeatures());
+		logger.debug("Features "+pig.getDFEOutput().get(PigSelect.key_output).getFields());
 		
 		pig.getDFEOutput().get(PigSelect.key_output).generatePath(
 				System.getProperty("user.name"), 
@@ -119,11 +119,11 @@ public class PigSelectTests {
 		{
 			Tree<String> out = tsi.getTree().getFirstChild("table");
 			Tree<String> rowId = out.add("row");
-			rowId.add(PigTableSelectInteraction.table_feat_title).add("ID");
+			rowId.add(PigTableSelectInteraction.table_field_title).add("ID");
 			rowId.add(PigTableSelectInteraction.table_op_title).add("ID");
 			rowId.add(PigTableSelectInteraction.table_type_title).add("STRING");
 			rowId = out.add("row");
-			rowId.add(PigTableSelectInteraction.table_feat_title).add("VALUE");
+			rowId.add(PigTableSelectInteraction.table_field_title).add("VALUE");
 			rowId.add(PigTableSelectInteraction.table_op_title).add("VALUE");
 			rowId.add(PigTableSelectInteraction.table_type_title).add("INT");
 		}

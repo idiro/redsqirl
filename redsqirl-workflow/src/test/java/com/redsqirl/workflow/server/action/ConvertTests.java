@@ -47,7 +47,7 @@ static Logger logger = Logger.getLogger(ConvertTests.class);
 		logger.debug("HS update out...");
 		error = conv.updateOut();
 		assertTrue("convert update: "+error,error == null);
-		logger.debug("Features "+conv.getDFEOutput().get(Convert.key_output).getFeatures());
+		logger.debug("Features "+conv.getDFEOutput().get(Convert.key_output).getFields());
 		
 		conv.getDFEOutput().get(Convert.key_output).generatePath(
 				System.getProperty("user.name"), 

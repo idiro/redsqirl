@@ -5,7 +5,7 @@ import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.redsqirl.utils.FeatureList;
+import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.enumeration.DisplayType;
 /**
@@ -94,50 +94,50 @@ public class EditorInteraction extends UserInteraction{
 	}
 	
 	/**
-	 * Add a features list to the interaction
+	 * Add a fields list to the interaction
 	 * @param fl
 	 * @throws RemoteException
 	 */
-	public void addFeatures(FeatureList fl) throws RemoteException{
-		Iterator<String> it = fl.getFeaturesNames().iterator();
-		Tree<String> feats = tree.getFirstChild("editor").getFirstChild("keywords");
-		if(feats == null){
-			feats = tree.getFirstChild("editor").add("keywords");
+	public void addField(FieldList fl) throws RemoteException{
+		Iterator<String> it = fl.getFieldNames().iterator();
+		Tree<String> fields = tree.getFirstChild("editor").getFirstChild("keywords");
+		if(fields == null){
+			fields = tree.getFirstChild("editor").add("keywords");
 		}
 		while(it.hasNext()){
 			String name = it.next();
-			String type = fl.getFeatureType(name).name();
-			Tree<String> feature = feats.add("word");
-			feature.add("name").add(name);
-			feature.add("info").add(type);
+			String type = fl.getFieldType(name).name();
+			Tree<String> field = fields.add("word");
+			field.add("name").add(name);
+			field.add("info").add(type);
 		}
 	}
 	
 	/**
-	 * Add a Map of features to the interaction
+	 * Add a Map of fields to the interaction
 	 * @param fl
 	 * @throws RemoteException
 	 */
-	public void addFeatures(Map<String,String> fl) throws RemoteException{
+	public void addFields(Map<String,String> fl) throws RemoteException{
 		Iterator<String> it = fl.keySet().iterator();
-		Tree<String> feats = tree.getFirstChild("editor").getFirstChild("keywords");
-		if(feats == null){
-			feats = tree.getFirstChild("editor").add("keywords");
+		Tree<String> fields = tree.getFirstChild("editor").getFirstChild("keywords");
+		if(fields == null){
+			fields = tree.getFirstChild("editor").add("keywords");
 		}
 		while(it.hasNext()){
 			String name = it.next();
 			String type = fl.get(name);
-			Tree<String> feature = feats.add("word");
-			feature.add("name").add(name);
-			feature.add("info").add(type);
+			Tree<String> field = fields.add("word");
+			field.add("name").add(name);
+			field.add("info").add(type);
 		}
 		
 	}
 	/**
-	 * Remove the features of the Interaction
+	 * Remove the fields of the Interaction
 	 * @throws RemoteException
 	 */
-	public void removeFeatures() throws RemoteException{
+	public void removeFields() throws RemoteException{
 		tree.getFirstChild("editor").getFirstChild("keywords").removeAllChildren();
 	}
 	/**

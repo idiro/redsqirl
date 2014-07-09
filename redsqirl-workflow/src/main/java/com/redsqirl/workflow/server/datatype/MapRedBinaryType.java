@@ -18,9 +18,9 @@ import org.apache.hadoop.fs.PathFilter;
 
 import com.idiro.hadoop.NameNodeVar;
 import com.idiro.utils.RandomString;
-import com.redsqirl.utils.FeatureList;
-import com.redsqirl.utils.OrderedFeatureList;
-import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.utils.FieldList;
+import com.redsqirl.utils.OrderedFieldList;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
 /**
@@ -51,13 +51,13 @@ public class MapRedBinaryType extends MapRedTextType {
 	}
 
 	/**
-	 * Constructor with FeatureList
+	 * Constructor with FieldList
 	 * 
-	 * @param features
+	 * @param fields
 	 * @throws RemoteException
 	 */
-	public MapRedBinaryType(FeatureList features) throws RemoteException {
-		super(features);
+	public MapRedBinaryType(FieldList fields) throws RemoteException {
+		super(fields);
 	}
 
 	/**
@@ -111,11 +111,11 @@ public class MapRedBinaryType extends MapRedTextType {
 		Iterator<String> it = selectLine(maxToRead).iterator();
 		while(it.hasNext()){
 			String[] line = it.next().split(delim);
-			List<String> featureNames = getFeatures().getFeaturesNames(); 
-			if(featureNames.size() == line.length){
+			List<String> fieldNames = getFields().getFieldNames(); 
+			if(fieldNames.size() == line.length){
 				Map<String,String> cur = new LinkedHashMap<String,String>();
 				for(int i = 0; i < line.length; ++i){
-					cur.put(getFeatures().getFeaturesNames().get(i),line[i]);
+					cur.put(getFields().getFieldNames().get(i),line[i]);
 				}
 				ans.add(cur);
 			}else{
@@ -130,7 +130,7 @@ public class MapRedBinaryType extends MapRedTextType {
 	public List<String> selectLine(int maxToRead) throws RemoteException {
 		List<String> ans = null;
 
-		if (getFeatures() != null) {
+		if (getFields() != null) {
 			if (isPathValid() == null && isPathExists()) {
 				try {
 					final FileSystem fs = NameNodeVar.getFS();
@@ -153,7 +153,7 @@ public class MapRedBinaryType extends MapRedTextType {
 								+ getChar(getProperty(key_header)));
 
 						ans.addAll(hdfsInt.selectSeq(stat[i].getPath()
-								.toString(), delim, maxToRead, getFeatures()));
+								.toString(), delim, maxToRead, getFields()));
 					}
 				} catch (IOException e) {
 					String error = "Unexpected IOException error: " + e.getMessage();
@@ -182,10 +182,10 @@ public class MapRedBinaryType extends MapRedTextType {
 				+ this.getClass().getCanonicalName() + " , " + path);
 
 		String oldPath = getPath();
-		features = new OrderedFeatureList();
+		fields = new OrderedFieldList();
 		if (path == null) {
 			super.setPath(path);
-			setFeatures(null);
+			setFields(null);
 			return;
 		}
 
@@ -197,52 +197,52 @@ public class MapRedBinaryType extends MapRedTextType {
 			if (isPathExists()) {
 				List<String> list = selectLine(1);
 
-				// FeatureList fl = generateFeaturesMap();
+				// FieldList fl = generateFieldsMap();
 
 				String error = null;
 				String header = getProperty(key_header);
 				logger.info("header :  " + header);
 				if (header != null && !header.isEmpty()) {
-					logger.info("setFeaturesFromHeader --");
-					error = setFeaturesFromHeader();
+					logger.info("setFieldsFromHeader --");
+					error = setFieldsFromHeader();
 					if (error != null) {
 						throw new RemoteException(error);
 					}
 				} else {
-					if (features != null) {
-						logger.debug(features.getFeaturesNames());
-						// logger.debug(fl.getFeaturesNames());
+					if (fields != null) {
+						logger.debug(fields.getFieldNames());
+						// logger.debug(fl.getFieldsNames());
 					} else {
-						// features = fl;
+						// fields = fl;
 					}
 				}
 
-				if (features.getSize() != features.getSize()) {
+				if (fields.getSize() != fields.getSize()) {
 
-					Iterator<String> flIt = features.getFeaturesNames()
+					Iterator<String> flIt = fields.getFieldNames()
 							.iterator();
-					Iterator<String> featIt = features.getFeaturesNames()
+					Iterator<String> fieldIt = fields.getFieldNames()
 							.iterator();
 					boolean ok = true;
 					int i = 1;
 					while (flIt.hasNext() && ok) {
 						String nf = flIt.next();
-						String of = featIt.next();
-						logger.info("types feat " + i + ": "
-								+ features.getFeatureType(nf) + " , "
-								+ features.getFeatureType(of));
-						// ok &= canCast(features.getFeatureType(nf),
-						// features.getFeatureType(of));
+						String of = fieldIt.next();
+						logger.info("types field " + i + ": "
+								+ fields.getFieldType(nf) + " , "
+								+ fields.getFieldType(of));
+						// ok &= canCast(fields.getFieldType(nf),
+						// fields.getFieldType(of));
 						if (!ok) {
 							error = LanguageManagerWF.getText(
 									"mapredtexttype.msg_error_cannot_cast",
-									new Object[] { features.getFeatureType(nf),
-											features.getFeatureType(of) });
+									new Object[] { fields.getFieldType(nf),
+											fields.getFieldType(of) });
 						}
 						++i;
 					}
 					if (!ok) {
-						// features = fl;
+						// fields = fl;
 						if (error != null) {
 							throw new RemoteException(error);
 						}
@@ -255,14 +255,14 @@ public class MapRedBinaryType extends MapRedTextType {
 	}
 
 	/**
-	 * Set the feature names from the header
+	 * Set the field names from the header
 	 * 
 	 * @return Error Message
 	 * @throws RemoteException
 	 */
-	protected String setFeaturesFromHeader() throws RemoteException {
+	protected String setFieldsFromHeader() throws RemoteException {
 
-		logger.info("setFeaturesFromHeader()");
+		logger.info("setFieldsFromHeader()");
 
 		String header = getProperty(key_header);
 		String error = null;
@@ -271,15 +271,15 @@ public class MapRedBinaryType extends MapRedTextType {
 
 			String newLabels[] = header.split(",");
 
-			logger.info("setFeaturesFromHeader features "
-					+ features.getFeaturesNames());
+			logger.info("setFieldsFromHeader fields "
+					+ fields.getFieldNames());
 
 			if (header.trim().endsWith(",")) {
 				error = LanguageManagerWF
 						.getText("mapredtexttype.setheaders.wronglabels");
 			}
 
-			FeatureList newFL = new OrderedFeatureList();
+			FieldList newFL = new OrderedFieldList();
 
 			try {
 
@@ -296,7 +296,7 @@ public class MapRedBinaryType extends MapRedTextType {
 						if (isVariableName(nameType[0])) {
 
 							try {
-								FeatureType ft = FeatureType
+								FieldType ft = FieldType
 										.valueOf(nameType[1].toUpperCase());
 								if (ft == null) {
 									error = LanguageManagerWF
@@ -304,8 +304,8 @@ public class MapRedBinaryType extends MapRedTextType {
 													"mapredtexttype.msg_error_type_new_header",
 													new Object[] { nameType[1] });
 								} else {
-									logger.info("adding new feat");
-									newFL.addFeature(nameType[0], ft);
+									logger.info("adding new field");
+									newFL.addField(nameType[0], ft);
 								}
 							} catch (Exception e) {
 								logger.error(e);
@@ -330,12 +330,12 @@ public class MapRedBinaryType extends MapRedTextType {
 						.getText("mapredtexttype.setheaders.typeunknown");
 			}
 
-			if (error == null && !newFL.getFeaturesNames().isEmpty()) {
-				setFeatures(newFL);
+			if (error == null && !newFL.getFieldNames().isEmpty()) {
+				setFields(newFL);
 			}
 		}
 
-		logger.info("setFeaturesFromHeader-error " + error);
+		logger.info("setFieldsFromHeader-error " + error);
 
 		return error;
 	}

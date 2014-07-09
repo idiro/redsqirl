@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.redsqirl.utils.FeatureList;
+import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.utils.TreeNonUnique;
 import com.redsqirl.workflow.server.TableInteraction;
@@ -74,8 +74,8 @@ public class PigJoinRelationInteraction extends TableInteraction {
 			msg = PigLanguageManager.getText("pig.join_relationship_interaction.checkrownb");
 		}else{
 			Set<String> featType = new LinkedHashSet<String>();
-			FeatureList inFeats = hj.getInFeatures();
-			logger.debug(inFeats.getFeaturesNames());
+			FieldList inFeats = hj.getInFields();
+			logger.debug(inFeats.getFieldNames());
 			Iterator<Map<String,String>> rows = lRow.iterator();
 			int rowNb = 0;
 			while (rows.hasNext() && msg == null) {
@@ -139,7 +139,7 @@ public class PigJoinRelationInteraction extends TableInteraction {
 				table_feat_title,
 				PigDictionary.generateEditor(PigDictionary
 				.getInstance().createDefaultSelectHelpMenu(), hj
-				.getInFeatures(), null));
+				.getInFields(), null));
 		
 		if(getValues().isEmpty()){
 			List<Map<String,String>> lrows = new LinkedList<Map<String,String>>();
@@ -165,7 +165,7 @@ public class PigJoinRelationInteraction extends TableInteraction {
 		try {
 			if (PigDictionary.getInstance().getReturnType(
 					expression,
-					hj.getInFeatures()
+					hj.getInFields()
 					) == null) {
 				error = PigLanguageManager.getText("pig.expressionnull");
 			}

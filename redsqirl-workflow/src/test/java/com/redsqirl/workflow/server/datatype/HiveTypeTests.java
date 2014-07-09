@@ -10,12 +10,12 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
-import com.redsqirl.utils.FeatureList;
-import com.redsqirl.utils.OrderedFeatureList;
+import com.redsqirl.utils.FieldList;
+import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.connect.HiveInterface;
 import com.redsqirl.workflow.server.connect.interfaces.HiveInterfaceTests;
 import com.redsqirl.workflow.server.datatype.HiveType;
-import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.test.TestUtils;
 
 public class HiveTypeTests {
@@ -35,19 +35,19 @@ public class HiveTypeTests {
 		return ans;
 	}
 
-	FeatureList getFeatures() throws RemoteException {
-		FeatureList ans = new OrderedFeatureList();
-		ans.addFeature("ID", FeatureType.STRING);
-		ans.addFeature("VALUE", FeatureType.INT);
+	FieldList getFields() throws RemoteException {
+		FieldList ans = new OrderedFieldList();
+		ans.addField("ID", FieldType.STRING);
+		ans.addField("VALUE", FieldType.INT);
 		return ans;
 	}
 
-	FeatureList getFeaturesWPart() throws RemoteException {
-		FeatureList ans = new OrderedFeatureList();
-		ans.addFeature("ID", FeatureType.STRING);
-		ans.addFeature("VALUE", FeatureType.INT);
-		ans.addFeature("COUNTRY", FeatureType.STRING);
-		ans.addFeature("DT", FeatureType.STRING);
+	FieldList getFieldWPart() throws RemoteException {
+		FieldList ans = new OrderedFieldList();
+		ans.addField("ID", FieldType.STRING);
+		ans.addField("VALUE", FieldType.INT);
+		ans.addField("COUNTRY", FieldType.STRING);
+		ans.addField("DT", FieldType.STRING);
 		return ans;
 	}
 
@@ -70,8 +70,8 @@ public class HiveTypeTests {
 
 			logger.info("init Hive type...");
 			HiveType ht = new HiveType();
-			logger.info("set features...");
-			ht.setFeatures(getFeatures());
+			logger.info("set fields...");
+			ht.setFields(getFields());
 			logger.info("set path...");
 			ht.setPath(new_path1);
 
@@ -116,8 +116,8 @@ public class HiveTypeTests {
 
 			logger.info("init Hive type...");
 			HiveType ht = new HiveType();
-			logger.info("set features...");
-			ht.setFeatures(getFeatures());
+			logger.info("set fields...");
+			ht.setFields(getFields());
 			logger.info("set path...");
 			ht.setPath(new_path1);
 

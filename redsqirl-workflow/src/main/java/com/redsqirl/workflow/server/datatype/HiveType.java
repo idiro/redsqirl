@@ -18,11 +18,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.idiro.utils.RandomString;
-import com.redsqirl.utils.FeatureList;
-import com.redsqirl.utils.OrderedFeatureList;
+import com.redsqirl.utils.FieldList;
+import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.DataOutput;
 import com.redsqirl.workflow.server.connect.HiveInterface;
-import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.oozie.HiveAction;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
@@ -68,12 +68,12 @@ public class HiveType extends DataOutput{
 		setConstant(true);
 	}
 	/**
-	 * Constructor with FeatureList
-	 * @param features
+	 * Constructor with FieldList
+	 * @param fields
 	 * @throws RemoteException
 	 */
-	public HiveType(FeatureList features) throws RemoteException{
-		super(features);
+	public HiveType(FieldList fields) throws RemoteException{
+		super(fields);
 		if(hInt == null){
 			hInt = new HiveInterface();
 		}
@@ -145,11 +145,11 @@ public class HiveType extends DataOutput{
 		Iterator<String> it = hInt.select(getPath(), "'\001'" ,maxToRead).iterator();
 		while(it.hasNext()){
 			String[] line = it.next().split("\001");
-			List<String> featureNames = getFeatures().getFeaturesNames(); 
-			if(featureNames.size() == line.length){
+			List<String> fieldNames = getFields().getFieldNames(); 
+			if(fieldNames.size() == line.length){
 				Map<String,String> cur = new LinkedHashMap<String,String>();
 				for(int i = 0; i < line.length; ++i){
-					cur.put(getFeatures().getFeaturesNames().get(i),line[i]);
+					cur.put(getFields().getFieldNames().get(i),line[i]);
 				}
 				ans.add(cur);
 			}else{
@@ -178,7 +178,7 @@ public class HiveType extends DataOutput{
 			if(hInt.getTableAndPartitions(getPath()).length > 1){
 				return LanguageManagerWF.getText("hivetype.ispathvalid.noPartitions" , new Object[]{getPath()});
 			}
-			return hInt.isPathValid(getPath(), features, false);
+			return hInt.isPathValid(getPath(), fields, false);
 		}else{
 			String regex = "[a-zA-Z_]([A-Za-z0-9_]+)";
 			if (!hInt.getTableAndPartitions(getPath())[0].matches(regex)) {
@@ -275,48 +275,48 @@ public class HiveType extends DataOutput{
 		this.constant = constant;
 	}
 	/**
-	 * Generate Map of features from the table
+	 * Generate Map of fields from the table
 	 * @param table
 	 * @throws RemoteException
 	 */
-	private void generateFeaturesMap(String table) throws RemoteException{
-		features = new OrderedFeatureList();
+	private void generateFieldsMap(String table) throws RemoteException{
+		fields = new OrderedFieldList();
 		String[] lines = hInt.getDescription(hInt.getTableAndPartitions(table)[0]).get("describe").split(";");
-		Map<String,FeatureType> reconvert = new LinkedHashMap<String,FeatureType>();
+		Map<String,FieldType> reconvert = new LinkedHashMap<String,FieldType>();
 		String header = getProperty(HiveType.key_header); 
 		if(header != null && !header.isEmpty()){
-			String[] feats = header.split(",");
-			for(String feat:feats){
-				String[] cur = feat.split("\\s+");
+			String[] fieldsStr = header.split(",");
+			for(String field:fieldsStr){
+				String[] cur = field.split("\\s+");
 				try{
-					reconvert.put(cur[0], FeatureType.valueOf(cur[1].trim().toUpperCase()));
+					reconvert.put(cur[0], FieldType.valueOf(cur[1].trim().toUpperCase()));
 				}catch(Exception e){
 					logger.error("Error convert: "+cur[0]+" - "+cur[1], e);
 				}
 			}
 		}
 		for (String line : lines){
-			String[] feat = line.split(",");
+			String[] field = line.split(",");
 			try{
-				String featType = feat[1].trim();
+				String fieldType = field[1].trim();
 				boolean toCategory = false;
-				if(featType.equalsIgnoreCase("String") ||featType.equalsIgnoreCase("int")){
+				if(fieldType.equalsIgnoreCase("String") ||fieldType.equalsIgnoreCase("int")){
 					Iterator<String> it = reconvert.keySet().iterator();
 					while(it.hasNext() && !toCategory){
 						String cur = it.next();
-						if(cur.equalsIgnoreCase(feat[0]) && reconvert.get(cur).equals(FeatureType.CATEGORY)){
+						if(cur.equalsIgnoreCase(field[0]) && reconvert.get(cur).equals(FieldType.CATEGORY)){
 							toCategory = true;
 						}
 					}
 				}
 				if(toCategory){
-					features.addFeature(feat[0].trim(), FeatureType.CATEGORY);
+					fields.addField(field[0].trim(), FieldType.CATEGORY);
 				}else{
-					features.addFeature(feat[0].trim(), FeatureType.valueOf(feat[1].trim().toUpperCase()));
+					fields.addField(field[0].trim(), FieldType.valueOf(field[1].trim().toUpperCase()));
 				}
 			}
 			catch (Exception e){
-				logger.error("Error adding feature: "+feat[0]+" - "+feat[1], e);
+				logger.error("Error adding field: "+field[0]+" - "+field[1], e);
 			}
 		}
 	}
@@ -330,7 +330,7 @@ public class HiveType extends DataOutput{
 		super.setPath(path);
 		if(path != null){
 			if (!path.equals("/") && isPathExists()){
-				generateFeaturesMap(path);
+				generateFieldsMap(path);
 			}
 		}
 		logger.info("path : "+ getPath());
@@ -344,28 +344,28 @@ public class HiveType extends DataOutput{
 		return "DodgerBlue";
 	}
 	/**
-	 * Check a features list
+	 * Check a fields list
 	 * @param fl
 	 * @return Error Message
 	 * @throws RemoteException
 	 */
-	public String checkFeatures(FeatureList fl) throws RemoteException {
+	public String checkFields(FieldList fl) throws RemoteException {
 		String error = null;
-		if( isPathExists() && features != null){
-			if(features.getSize() != fl.getSize()){
+		if( isPathExists() && fields != null){
+			if(fields.getSize() != fl.getSize()){
 				error = LanguageManagerWF.getText("hivetype.checkfeatures.incorrectsize");
 			}
-			if(!features.getFeaturesNames().containsAll(fl.getFeaturesNames())){
+			if(!fields.getFieldNames().containsAll(fl.getFieldNames())){
 				error = LanguageManagerWF.getText("hivetype.checkfeatures.incorrectlist");
 			}
 			if(error == null){
-				Iterator<String> flIt = fl.getFeaturesNames().iterator();
-				Iterator<String> featuresIt = features.getFeaturesNames().iterator();
+				Iterator<String> flIt = fl.getFieldNames().iterator();
+				Iterator<String> fieldIt = fields.getFieldNames().iterator();
 				while(flIt.hasNext() && error != null){
 					String flName = flIt.next();
-					String featName = featuresIt.next();
-					if(!fl.getFeatureType(flName).equals(features.getFeatureType(featName))){
-						error = LanguageManagerWF.getText("hivetype.checkfeatures.incorrectfeatures",new Object[]{flName,featName});
+					String fieldName = fieldIt.next();
+					if(!fl.getFieldType(flName).equals(fields.getFieldType(fieldName))){
+						error = LanguageManagerWF.getText("hivetype.checkfeatures.incorrectfeatures",new Object[]{flName,fieldName});
 					}
 				}
 			}

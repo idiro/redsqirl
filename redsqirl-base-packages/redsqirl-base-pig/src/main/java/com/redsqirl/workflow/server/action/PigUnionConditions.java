@@ -69,7 +69,7 @@ public class PigUnionConditions  extends TableInteraction{
 						"boolean", 
 						PigDictionary.getInstance().getReturnType(
 								row.get(table_op_title),
-								hu.getInFeatures(row.get(table_relation_title)))
+								hu.getInField(row.get(table_relation_title)))
 						)){
 					msg = PigLanguageManager.getText("pig.union_cond_interaction.checkreturntype",
 							new String[]{row.get(table_relation_title)});
@@ -116,7 +116,7 @@ public class PigUnionConditions  extends TableInteraction{
 		updateEditor(table_op_title,
 				PigDictionary.generateEditor(
 						PigDictionary.getInstance().createConditionHelpMenu(),
-						hu.getInFeatures(),null));
+						hu.getInFields(),null));
 
 
 	}
@@ -133,7 +133,7 @@ public class PigUnionConditions  extends TableInteraction{
 		try {
 			if (PigDictionary.getInstance().getReturnType(
 					expression,
-					hu.getInFeatures()
+					hu.getInFields()
 					) == null) {
 				error = PigLanguageManager.getText("pig.expressionnull");
 			}

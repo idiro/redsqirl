@@ -12,13 +12,13 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.redsqirl.utils.FeatureList;
-import com.redsqirl.utils.OrderedFeatureList;
+import com.redsqirl.utils.FieldList;
+import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.utils.TreeNonUnique;
 import com.redsqirl.workflow.server.EditorInteraction;
 import com.redsqirl.workflow.server.action.AbstractDictionary;
-import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 
 /**
@@ -693,17 +693,17 @@ public class PigDictionary extends AbstractDictionary {
 	 * 
 	 * @param String
 	 *            of the variable type
-	 * @return FeatureType of Pig variable
+	 * @return fieldType of Pig variable
 	 */
-	public static FeatureType getType(String pigType) {
-		FeatureType ans = null;
+	public static FieldType getType(String pigType) {
+		FieldType ans = null;
 		logger.debug("Type of: " + pigType);
 		if (pigType.equalsIgnoreCase("CHARARRAY")) {
-			ans = FeatureType.STRING;
+			ans = FieldType.STRING;
 		} else if (pigType.equalsIgnoreCase("NUMBER")) {
-			ans = FeatureType.DOUBLE;
+			ans = FieldType.DOUBLE;
 		} else {
-			ans = FeatureType.valueOf(pigType);
+			ans = FieldType.valueOf(pigType);
 		}
 		return ans;
 	}
@@ -713,14 +713,14 @@ public class PigDictionary extends AbstractDictionary {
 	 * 
 	 * @param expr
 	 *            operation to check return type
-	 * @param features
-	 *            list of features to check
+	 * @param fields
+	 *            list of fields to check
 	 * @param nonAggregFeats
-	 *            set of non aggregated features
+	 *            set of non aggregated fields
 	 * @return type of the expression
 	 * @throws Exception
 	 */
-	public String getReturnType(String expr, final FeatureList features,
+	public String getReturnType(String expr, final FieldList fields,
 			final Set<String> nonAggregFeats) throws Exception {
 		if (expr == null || expr.trim().isEmpty()) {
 			logger.error("No expressions to test");
@@ -728,11 +728,11 @@ public class PigDictionary extends AbstractDictionary {
 		}
 		logger.debug("expression is ok");
 		if (nonAggregFeats != null
-				&& !features.getFeaturesNames().containsAll(nonAggregFeats)) {
-			logger.error("Aggregation features unknown");
-			throw new Exception("Aggregation features unknown("
+				&& !fields.getFieldNames().containsAll(nonAggregFeats)) {
+			logger.error("Aggregation fields unknown");
+			throw new Exception("Aggregation fields unknown("
 					+ nonAggregFeats.toString() + "): "
-					+ features.getFeaturesNames().toString());
+					+ fields.getFieldNames().toString());
 		}
 		logger.debug("aggreg and feats ok");
 
@@ -789,15 +789,15 @@ public class PigDictionary extends AbstractDictionary {
 			}
 		}
 
-		logger.debug("getting feature type if null " + type + " " + expr);
+		logger.debug("getting field type if null " + type + " " + expr);
 		if (type == null) {
 			if (nonAggregFeats != null) {
 				if (nonAggregFeats.contains(expr)) {
-					type = features.getFeatureType(expr).name();
+					type = fields.getFieldType(expr).name();
 				}
 			} else {
-				if (features.getFeaturesNames().contains(expr)) {
-					type = features.getFeatureType(expr).name();
+				if (fields.getFieldNames().contains(expr)) {
+					type = fields.getFieldType(expr).name();
 				}
 			}
 		}
@@ -808,20 +808,20 @@ public class PigDictionary extends AbstractDictionary {
 			logger.debug("checking all types of functions");
 			if (isLogicalOperation(expr)) {
 				logger.debug(expr + ", is a logical operation");
-				if (runLogicalOperation(expr, features, nonAggregFeats)) {
+				if (runLogicalOperation(expr, fields, nonAggregFeats)) {
 					type = "BOOLEAN";
 				}
 			} else if (isConditionalOperation(expr)) {
 				logger.debug(expr + ", is a conditional operation");
-				type = runConditionalOperation(expr, features, nonAggregFeats);
+				type = runConditionalOperation(expr, fields, nonAggregFeats);
 			} else if (isRelationalOperation(expr)) {
 				logger.debug(expr + ", is a relational operation");
-				if (runRelationalOperation(expr, features, nonAggregFeats)) {
+				if (runRelationalOperation(expr, fields, nonAggregFeats)) {
 					type = "BOOLEAN";
 				}
 			} else if (isArithmeticOperation(expr)) {
 				logger.debug(expr + ", is an arithmetic operation");
-				if (runArithmeticOperation(expr, features, nonAggregFeats)) {
+				if (runArithmeticOperation(expr, fields, nonAggregFeats)) {
 					type = "NUMBER";
 				}
 			} else if (isAggregatorMethod(expr)) {
@@ -829,16 +829,16 @@ public class PigDictionary extends AbstractDictionary {
 					throw new Exception("Cannot use aggregation method");
 				}
 				logger.debug(expr + ", is an agg method");
-				FeatureList fl = new OrderedFeatureList();
+				FieldList fl = new OrderedFieldList();
 				List<String> l = new LinkedList<String>();
-				l.addAll(features.getFeaturesNames());
+				l.addAll(fields.getFieldNames());
 				l.removeAll(nonAggregFeats);
 				logger.debug("feats list size " + l.size());
 				Iterator<String> lIt = l.iterator();
 				while (lIt.hasNext()) {
 					String nameF = lIt.next();
 					logger.debug("name " + nameF);
-					fl.addFeature(nameF, features.getFeatureType(nameF));
+					fl.addField(nameF, fields.getFieldType(nameF));
 				}
 				type = runMethod(expr, fl, true);
 			} else if (isNonAggMethod(expr)) {
@@ -848,20 +848,20 @@ public class PigDictionary extends AbstractDictionary {
 					throw new Exception("Cannot use non aggregation method");
 				}
 
-				FeatureList fl = features;
+				FieldList fl = fields;
 				if (nonAggregFeats != null) {
-					fl = new OrderedFeatureList();
-					Iterator<String> featureAggIterator = nonAggregFeats
+					fl = new OrderedFieldList();
+					Iterator<String> fieldAggIterator = nonAggregFeats
 							.iterator();
-					while (featureAggIterator.hasNext()) {
-						String nameF = featureAggIterator.next();
-						fl.addFeature(nameF, features.getFeatureType(nameF));
+					while (fieldAggIterator.hasNext()) {
+						String nameF = fieldAggIterator.next();
+						fl.addField(nameF, fields.getFieldType(nameF));
 					}
 				}
 				type = runMethod(expr, fl, false);
 			} else if (isCastOperation(expr)) {
 				logger.debug(expr + ", is an cast operation");
-				type = runCastOperation(expr, features, nonAggregFeats);
+				type = runCastOperation(expr, fields, nonAggregFeats);
 			}
 		}
 
@@ -874,13 +874,13 @@ public class PigDictionary extends AbstractDictionary {
 	 * Run a cast operation on an expression
 	 * 
 	 * @param expr
-	 * @param features
-	 * @param featureAggreg
+	 * @param fields
+	 * @param fieldAggreg
 	 * @return type
 	 * @throws Exception
 	 */
-	private String runCastOperation(String expr, FeatureList features,
-			Set<String> featureAggreg) throws Exception {
+	private String runCastOperation(String expr, FieldList fields,
+			Set<String> fieldAggreg) throws Exception {
 		logger.debug("casting");
 		String type = null;
 		List<String[]> methodsFound = findAll(functionsMap.get(castOperator),
@@ -904,7 +904,7 @@ public class PigDictionary extends AbstractDictionary {
 				// Special case for CAST because it returns a dynamic type
 				logger.debug(expr.trim());
 				logger.debug(method[0].trim());
-				getReturnType(argSplit[0], features);
+				getReturnType(argSplit[0], fields);
 				if (check("TYPE", argSplit[0])) {
 					type = argSplit[0];
 				}
@@ -922,13 +922,13 @@ public class PigDictionary extends AbstractDictionary {
 	 * Run a cast operation on an expression
 	 * 
 	 * @param expr
-	 * @param features
-	 * @param featureAggreg
+	 * @param fields
+	 * @param fieldAggreg
 	 * @return type
 	 * @throws Exception
 	 */
-	private String runConditionalOperation(String expr, FeatureList features,
-			Set<String> featureAggreg) throws Exception {
+	private String runConditionalOperation(String expr, FieldList fields,
+			Set<String> fieldAggreg) throws Exception {
 		logger.info("Conditional operation: " + expr);
 		String type = null;
 
@@ -944,7 +944,7 @@ public class PigDictionary extends AbstractDictionary {
 					if (expression.startsWith("WHEN")) {
 						String[] args2 = expression.replace("WHEN", "").split(
 								"THEN");
-						if (!getReturnType(args2[0], features)
+						if (!getReturnType(args2[0], fields)
 								.equals("BOOLEAN")) {
 							String error = "Should return boolean";
 							logger.debug(error);
@@ -960,7 +960,7 @@ public class PigDictionary extends AbstractDictionary {
 						argType = expression.replace("ELSE", "");
 					}
 
-					String t = getReturnType(argType, features);
+					String t = getReturnType(argType, fields);
 					if (type == null) {
 						type = t;
 					} else if(check(type, t)){
@@ -983,14 +983,14 @@ public class PigDictionary extends AbstractDictionary {
 				logger.warn(error);
 			}
 
-			if (!getReturnType(args[0], features).equals("BOOLEAN")) {
+			if (!getReturnType(args[0], fields).equals("BOOLEAN")) {
 				String error = "First argument of conditional expression must return a boolean";
 				logger.warn(error);
 				// throw new Exception(error);
 			} else {
 
-				type = getReturnType(args[1], features);
-				String type2 = getReturnType(args[2], features);
+				type = getReturnType(args[1], fields);
+				String type2 = getReturnType(args[2], fields);
 				if (check(type, type2)) {
 				} else if (check(type2, type)) {
 					type = type2;
@@ -1010,13 +1010,13 @@ public class PigDictionary extends AbstractDictionary {
 	 * Get the return type using an empty list for aggregation
 	 * 
 	 * @param expr
-	 * @param features
+	 * @param fields
 	 * @return type
 	 * @throws Exception
 	 */
-	public String getReturnType(String expr, FeatureList features)
+	public String getReturnType(String expr, FieldList fields)
 			throws Exception {
-		return getReturnType(expr, features, null);
+		return getReturnType(expr, fields, null);
 	}
 
 	/**
@@ -1109,22 +1109,22 @@ public class PigDictionary extends AbstractDictionary {
 		Tree<String> keywords = new TreeNonUnique<String>("keywords");
 		editor.add(keywords);
 		Iterator<DFEOutput> itIn = in.iterator();
-		Set<String> featureName = new LinkedHashSet<String>();
+		Set<String> fieldName = new LinkedHashSet<String>();
 		while (itIn.hasNext()) {
 			DFEOutput inCur = itIn.next();
-			Iterator<String> it = inCur.getFeatures().getFeaturesNames()
+			Iterator<String> it = inCur.getFields().getFieldNames()
 					.iterator();
-			logger.debug("add features...");
+			logger.debug("add fields...");
 			while (it.hasNext()) {
 				String cur = it.next();
 				logger.debug(cur);
-				if (!featureName.contains(cur)) {
+				if (!fieldName.contains(cur)) {
 					Tree<String> word = new TreeNonUnique<String>("word");
 					word.add("name").add(cur);
 					word.add("info").add(
-							inCur.getFeatures().getFeatureType(cur).name());
+							inCur.getFields().getFieldType(cur).name());
 					keywords.add(word);
-					featureName.add(cur);
+					fieldName.add(cur);
 				}
 			}
 		}
@@ -1139,7 +1139,7 @@ public class PigDictionary extends AbstractDictionary {
 	}
 
 	/**
-	 * Generate an EditorInteraction with FeatureList
+	 * Generate an EditorInteraction with fieldList
 	 * 
 	 * @param help
 	 * @param inFeat
@@ -1147,18 +1147,18 @@ public class PigDictionary extends AbstractDictionary {
 	 * @throws RemoteException
 	 */
 	public static EditorInteraction generateEditor(Tree<String> help,
-			FeatureList inFeat, Map<String, List<String>> extraWords)
+			FieldList inFeat, Map<String, List<String>> extraWords)
 			throws RemoteException {
 		logger.debug("generate Editor...");
 		Tree<String> editor = new TreeNonUnique<String>("editor");
 		Tree<String> keywords = new TreeNonUnique<String>("keywords");
 		editor.add(keywords);
-		Iterator<String> itFeats = inFeat.getFeaturesNames().iterator();
+		Iterator<String> itFeats = inFeat.getFieldNames().iterator();
 		while (itFeats.hasNext()) {
 			String cur = itFeats.next();
 			Tree<String> word = new TreeNonUnique<String>("word");
 			word.add("name").add(cur);
-			word.add("info").add(inFeat.getFeatureType(cur).name());
+			word.add("info").add(inFeat.getFieldType(cur).name());
 			keywords.add(word);
 		}
 		if (extraWords != null) {
@@ -1317,12 +1317,12 @@ public class PigDictionary extends AbstractDictionary {
 	 * Run a Logical operation and check if the operation ran ok
 	 * 
 	 * @param expr
-	 * @param features
+	 * @param fields
 	 * @param aggregFeat
 	 * @return <code>true</code> if operation ran ok else <code>false</code>
 	 * @throws Exception
 	 */
-	private boolean runLogicalOperation(String expr, FeatureList features,
+	private boolean runLogicalOperation(String expr, FieldList fields,
 			Set<String> aggregFeat) throws Exception {
 
 		logger.debug("logical operator ");
@@ -1342,14 +1342,14 @@ public class PigDictionary extends AbstractDictionary {
 				ok = check(
 						"BOOLEAN",
 						getReturnType(cur.substring(1, cur.length() - 1),
-								features, aggregFeat));
+								fields, aggregFeat));
 			} else if (cur.startsWith("NOT ")) {
 				ok = check(
 						"BOOLEAN",
 						getReturnType(cur.substring(4, cur.length()).trim(),
-								features, aggregFeat));
+								fields, aggregFeat));
 			} else {
-				ok = check("BOOLEAN", getReturnType(cur, features, aggregFeat));
+				ok = check("BOOLEAN", getReturnType(cur, fields, aggregFeat));
 			}
 			if (!ok) {
 				String error = "Error in expression: '" + expr + "'";
@@ -1376,16 +1376,16 @@ public class PigDictionary extends AbstractDictionary {
 	 * Run a relational operation and check if the result is ok
 	 * 
 	 * @param expr
-	 * @param features
+	 * @param fields
 	 * @param aggregFeat
 	 * @return <code>true</code> if relational operation is ok else
 	 *         <code>false</code>
 	 * @throws Exception
 	 */
-	private boolean runRelationalOperation(String expr, FeatureList features,
+	private boolean runRelationalOperation(String expr, FieldList fields,
 			Set<String> aggregFeat) throws Exception {
 		return runOperation(functionsMap.get(relationalOperators), expr,
-				features, aggregFeat);
+				fields, aggregFeat);
 	}
 
 	/**
@@ -1427,15 +1427,15 @@ public class PigDictionary extends AbstractDictionary {
 	 * Run arithmetic operation and check if result is ok
 	 * 
 	 * @param expr
-	 * @param features
+	 * @param fields
 	 * @param aggregFeat
 	 * @return <code>true</code> if operation ran ok else <code>false</code>
 	 * @throws Exception
 	 */
-	private boolean runArithmeticOperation(String expr, FeatureList features,
+	private boolean runArithmeticOperation(String expr, FieldList fields,
 			Set<String> aggregFeat) throws Exception {
 		return runOperation(functionsMap.get(arithmeticOperators), expr,
-				features, aggregFeat);
+				fields, aggregFeat);
 	}
 
 	/**
@@ -1478,12 +1478,12 @@ public class PigDictionary extends AbstractDictionary {
 	 * Run a method to check if it runs ok
 	 * 
 	 * @param expr
-	 * @param features
+	 * @param fields
 	 * @param aggregFeat
 	 * @return <cod>true</code> if method runs ok else <cod>false</code>
 	 * @throws Exception
 	 */
-	private String runMethod(String expr, FeatureList features,
+	private String runMethod(String expr, FieldList fields,
 			boolean isAggregMethod) throws Exception {
 		String type = null;
 		List<String[]> methodsFound = findAllMethod(expr, isAggregMethod);
@@ -1535,11 +1535,11 @@ public class PigDictionary extends AbstractDictionary {
 				logger.debug(method[0].trim());
 				if (removeBracketContent(method[0]).equalsIgnoreCase("CAST()")) {
 					// Check the first argument
-					getReturnType(argSplit[0], features);
+					getReturnType(argSplit[0], fields);
 					if (check("TYPE", argSplit[1])) {
 						type = argSplit[1];
 					}
-				} else if (check(method, argSplit, features)) {
+				} else if (check(method, argSplit, fields)) {
 					type = method[2];
 				}
 			} else if (type == null) {
@@ -1560,29 +1560,29 @@ public class PigDictionary extends AbstractDictionary {
 	 * 
 	 * @param list
 	 * @param expr
-	 * @param features
+	 * @param fields
 	 * @param aggregFeat
 	 * @return <cod>true</code> if operation runs ok else <cod>false</code>
 	 * @throws Exception
 	 */
 	private boolean runOperation(String[][] list, String expr,
-			FeatureList features, Set<String> aggregFeat) throws Exception {
+			FieldList fields, Set<String> aggregFeat) throws Exception {
 		boolean ok = false;
 		String[] method = PigDictionary.find(list, expr);
 		if (method != null) {
 			logger.debug("In " + expr + ", method found: " + method[0]);
 			String[] splitStr = expr.split(escapeString(method[0]));
 			if (aggregFeat == null) {
-				ok = check(method, splitStr, features);
+				ok = check(method, splitStr, fields);
 			} else if (aggregFeat.isEmpty()) {
 				// No addition in a total aggregation
 				ok = false;
 			} else {
-				FeatureList AF = new OrderedFeatureList();
+				FieldList AF = new OrderedFieldList();
 				Iterator<String> itA = aggregFeat.iterator();
 				while (itA.hasNext()) {
 					String feat = itA.next();
-					AF.addFeature(feat, features.getFeatureType(feat));
+					AF.addField(feat, fields.getFieldType(feat));
 				}
 				ok = check(method, splitStr, AF);
 			}
@@ -1620,17 +1620,17 @@ public class PigDictionary extends AbstractDictionary {
 	}
 
 	/**
-	 * Check if the arguments passed to a method are the same in the feature
+	 * Check if the arguments passed to a method are the same in the field
 	 * list and are acceptable by the method
 	 * 
 	 * @param method
 	 * @param args
-	 * @param features
+	 * @param fields
 	 * @return <cod>true</code> if arguments match else <cod>false</code>
 	 * @throws Exception
 	 */
 
-	private boolean check(String[] method, String[] args, FeatureList features)
+	private boolean check(String[] method, String[] args, FieldList fields)
 			throws Exception {
 		boolean ok = false;
 		String[] argsTypeExpected = method[1].split(",");
@@ -1642,7 +1642,7 @@ public class PigDictionary extends AbstractDictionary {
 			ok = true;
 			for (int i = 1; i < argsTypeExpected.length; ++i) {
 				ok &= check(argsTypeExpected[i],
-						getReturnType(args[i - 1], features));
+						getReturnType(args[i - 1], fields));
 			}
 		} else if (argsTypeExpected[argsTypeExpected.length - 1].isEmpty()
 				&& argsTypeExpected.length - 1 == args.length) {
@@ -1651,17 +1651,17 @@ public class PigDictionary extends AbstractDictionary {
 			logger.debug("right operator");
 			for (int i = 0; i < argsTypeExpected.length - 1; ++i) {
 				ok &= check(argsTypeExpected[i],
-						getReturnType(args[i], features));
+						getReturnType(args[i], fields));
 			}
 		} else if (argsTypeExpected.length == args.length) {
 			ok = true;
 			for (int i = 0; i < argsTypeExpected.length; ++i) {
 				logger.debug("only one arg : " + argsTypeExpected.length);
-				logger.debug("features " + features.getFeaturesNames());
+				logger.debug("fields " + fields.getFieldNames());
 				logger.debug("arg " + args[i]);
-				logger.info("return type : " + getReturnType(args[i], features));
+				logger.info("return type : " + getReturnType(args[i], fields));
 				ok &= check(argsTypeExpected[i],
-						getReturnType(args[i], features));
+						getReturnType(args[i], fields));
 			}
 		}
 		if (!ok) {
