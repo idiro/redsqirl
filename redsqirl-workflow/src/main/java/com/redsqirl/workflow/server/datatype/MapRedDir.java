@@ -376,7 +376,7 @@ public abstract class MapRedDir extends DataOutput{
 	 * @return name
 	 */
 	private String generateColumnName(int columnIndex) {
-		return "COL"+(columnIndex+1);
+		return "FIELD"+(columnIndex+1);
 	}
 	
 	/**

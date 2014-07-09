@@ -1,8 +1,8 @@
 <Context>
 
-  <Resource name="jdbc/idm_pck_mng" auth="Container" type="javax.sql.DataSource"
+  <Resource name="jdbc/redsqirl_pck_mng" auth="Container" type="javax.sql.DataSource"
                maxActive="100" maxIdle="30" maxWait="10000"
-               username="idm_pck" password="hadoop" driverClassName="com.mysql.jdbc.Driver"
-               url="jdbc:mysql://localhost:3306/idm_pck_mng"/>
+               username="redsqirl_pck" password="hadoop" driverClassName="com.mysql.jdbc.Driver"
+               url="jdbc:mysql://localhost:3306/redsqirl_pck_mng"/>
 
 </Context>

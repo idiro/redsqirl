@@ -55,4 +55,5 @@ public interface FieldList extends Remote {
 	public List<FieldType> getTypes()throws RemoteException;
 	
 	public FieldList cloneRemote() throws RemoteException;
+	public String mountStringHeader() throws RemoteException;
 }

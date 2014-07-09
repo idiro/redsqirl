@@ -109,7 +109,7 @@ public class MapRedTextType extends MapRedDir {
 			FileSystem fs;
 			try {
 				fs = NameNodeVar.getFS();
-				hCh.setPath(new Path(getPath()));
+				hCh.setPath(new Path(getPath()).getParent());
 				if (!hCh.isDirectory()) {
 					error = LanguageManagerWF.getText("mapredtexttype.nodir");
 				}
@@ -296,7 +296,10 @@ public class MapRedTextType extends MapRedDir {
 						throw new RemoteException(error);
 					}
 				} else {
+
 					if (fields != null) {
+						String myHeader = fl.mountStringHeader();
+						addProperty(key_header, myHeader);
 						logger.debug(fields.getFieldNames());
 						logger.debug(fl.getFieldNames());
 					} else {

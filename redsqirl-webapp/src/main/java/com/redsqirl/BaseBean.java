@@ -241,4 +241,9 @@ public class BaseBean {
 
 		return f;
 	}
+	
+	public boolean checkString(String regex, String value){
+		return value.matches(regex);
+	}
+	
 }

@@ -39,9 +39,9 @@ public class RedSqirlPackagesBean {
 			System.out.println("C1");
 			Context ctx = new InitialContext();
 			ds = (DataSource)ctx.lookup("java:comp/env/jdbc/redsqirl_pck_mng");
-			//ds = (DataSource) context.getAttribute("java:comp/env/jdbc/idm_pck_mng");
+			//ds = (DataSource) context.getAttribute("java:comp/env/jdbc/redsqirl_pck_mng");
 			Connection con = ds.getConnection();
-			PreparedStatement ps = con.prepareStatement("SELECT * FROM idm_hosts LIMIT 1");
+			PreparedStatement ps = con.prepareStatement("SELECT * FROM redsqirl_hosts LIMIT 1");
 			
 			//get customer data from database
 			ResultSet result =  ps.executeQuery();
@@ -115,11 +115,11 @@ public class RedSqirlPackagesBean {
 	private String query(String packageId, String version){
 		String ans = null;
 		if(packageId == null){
-			ans = "select distinct id, name, license, short_description from idm_packages order by id";
+			ans = "select distinct id, name, license, short_description from redsqirl_packages order by id";
 		}else if(version == null){
-			ans = "select * from idm_packages where id = '"+packageId+"'  order by package_date DESC";
+			ans = "select * from redsqirl_packages where id = '"+packageId+"'  order by package_date DESC";
 		}else{
-			ans = "select * from idm_packages where id = '"+packageId+"' AND version = '"+version+"' order by package_date DESC";
+			ans = "select * from redsqirl_packages where id = '"+packageId+"' AND version = '"+version+"' order by package_date DESC";
 		}
 		return ans;
 	}

@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 
-import com.redsqirl.dynamictable.SelectableRow;
 import com.redsqirl.dynamictable.UnselectableTable;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.enumeration.FieldType;
@@ -30,7 +29,7 @@ import com.redsqirl.workflow.server.interfaces.DataFlowElement;
  * @author etienne
  * 
  */
-public class CanvasModalOutputTab implements Serializable {
+public class CanvasModalOutputTab extends BaseBean implements Serializable {
 
 	/**
 	 * 
@@ -76,13 +75,13 @@ public class CanvasModalOutputTab implements Serializable {
 	 * List of the FileSystem available for configuring an output.
 	 */
 	private Map<String, FileSystemBean> datastores;
-	
+
 	/**
 	 * True if it is a source node and hence there is no output tab
 	 */
 	private boolean sourceNode;
-	
-	
+
+
 	/**
 	 * Constructor. The constructor will automatically load the first name as
 	 * current name used.
@@ -185,7 +184,7 @@ public class CanvasModalOutputTab implements Serializable {
 	public void changePathOutputBrowser() throws RemoteException {
 		logger.info("changePathOutputBrowser");
 		path = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("pathFile");
-		
+
 		logger.info("Output: " + getNameOutput() + " - path: " + path);
 		if (showOutputForm.equals("Y")) {
 			for (OutputForm f : getOutputFormList()) {
@@ -195,7 +194,7 @@ public class CanvasModalOutputTab implements Serializable {
 				}
 			}
 		}
-		
+
 		setSourceNode(true);
 
 	}
@@ -212,8 +211,28 @@ public class CanvasModalOutputTab implements Serializable {
 		for (OutputForm f : getOutputFormList()) {
 
 			logger.info("confirmOutput path " + f.getPath());
+			if(f.getPath() == null){
+				error = "Path cannot be null";
+			}else{
+				String fileName = f.getFile();
+				if(fileName == null ){
+					try{
+						fileName = f.getPath().substring(f.getPath().indexOf('/')+1);
+					}catch(Exception e){
+						fileName = "";
+					}
+				}
+			
+				String regex = "[a-zA-Z]([a-zA-Z0-9_\\.]*)";
+				if (!fileName.matches(regex)) {
+					error = getMessageResources("msg_error_save");
+				}
+			}
 
-			error = f.updateDFEOutput();
+			if(error == null){
+				error = f.updateDFEOutput();
+			}
+
 			if (error != null) {
 				logger.error(error);
 				MessageUseful.addErrorMessage(error);
@@ -221,7 +240,7 @@ public class CanvasModalOutputTab implements Serializable {
 						.getCurrentInstance().getExternalContext().getRequest();
 				request.setAttribute("msnError", "msnError");
 			}
-			logger.info("output ok");
+			
 		}
 
 	}
@@ -233,8 +252,7 @@ public class CanvasModalOutputTab implements Serializable {
 	 * @throws RemoteException
 	 */
 	public void displayOutput() throws RemoteException {
-		String outputN = FacesContext.getCurrentInstance().getExternalContext()
-				.getRequestParameterMap().get("outputName");
+		String outputN = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("outputName");
 
 		if (outputN != null && !outputN.equalsIgnoreCase("undefined")) {
 			setNameOutput(outputN);
@@ -259,10 +277,8 @@ public class CanvasModalOutputTab implements Serializable {
 				logger.info("no output named: " + nameOutput);
 			} else {
 				LinkedList<String> gridTitle = new LinkedList<String>();
-				
-				
-				
-				
+
+
 				/*List<SelectItem> listExtensions = new LinkedList<SelectItem>();
 				if (dfeOut.getExtensions() != null && dfeOut.getExtensions().length != 0) {
 					String[] listExt = dfeOut.getExtensions();
@@ -275,8 +291,8 @@ public class CanvasModalOutputTab implements Serializable {
 				}
 				getFileSystem().setListExtensions(listExtensions);
 				getFileSystem().updateTable();*/
-				
-				
+
+
 				List<SelectItem> listExtensions = new LinkedList<SelectItem>();
 				if (dfeOut.getExtensions() != null && dfeOut.getExtensions().length != 0) {
 					String[] listExt = dfeOut.getExtensions();
@@ -292,14 +308,12 @@ public class CanvasModalOutputTab implements Serializable {
 						}
 					}
 					listExtensions.add(new SelectItem("*", "*"));
-					
+
 					getFileSystem().setExtensionsSelected(listExtensions.get(0).getLabel());
 				}
 				getFileSystem().setListExtensions(listExtensions);
 				getFileSystem().updateTable();
-				
-				
-				
+
 
 				if (dfeOut.getFields() != null) {
 
@@ -324,25 +338,30 @@ public class CanvasModalOutputTab implements Serializable {
 					}
 					grid = new UnselectableTable(gridTitle);
 					try {
-						List<Map<String, String>> outputLines = dfeOut
-								.select(10);
-						logger.info("line: " + outputLines);
+						
+						if(dfeOut.isPathValid() == null){
+							
+							List<Map<String, String>> outputLines = dfeOut.select(10);
+							logger.info("line: " + outputLines);
 
-						if (outputLines != null) {
+							if (outputLines != null) {
 
-							for (Map<String, String> line : outputLines) {
-								int i = 0;
-								String[] rowCur = new String[gridTitle.size()];
-								for (String field : line.keySet()) {
-									rowCur[i] = line.get(field);
-									++i;
+								for (Map<String, String> line : outputLines) {
+									int i = 0;
+									String[] rowCur = new String[gridTitle.size()];
+									for (String feat : line.keySet()) {
+										rowCur[i] = line.get(feat);
+										++i;
+									}
+									grid.add(rowCur);
 								}
-								grid.add(rowCur);
 							}
+							
 						}
+						
+						
 					} catch (Exception e) {
-						logger.info("Error when getting data: "
-								+ e.getMessage());
+						logger.info("Error when getting data: " + e);
 					}
 
 				}
