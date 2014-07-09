@@ -23,7 +23,6 @@ import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.utils.TreeNonUnique;
-import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
@@ -285,7 +284,7 @@ DFEOutput {
 
 		logger.debug("fields");
 		fields = new OrderedFieldList();
-		NodeList fieldEl = parent.getElementsByTagName("field").item(0)
+		NodeList fieldEl = parent.getElementsByTagName("fields").item(0)
 				.getChildNodes();
 		for (int i = 0; i < fieldEl.getLength(); ++i) {
 			String name = ((Element) fieldEl.item(i))

@@ -4,7 +4,6 @@ package com.redsqirl.workflow.server;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -30,7 +29,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -1193,7 +1191,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 		} catch (Exception e) {
 			error = LanguageManagerWF.getText("workflow.read_failXml");
-			logger.error(error);
+			logger.error(error,e);
 
 		}
 
