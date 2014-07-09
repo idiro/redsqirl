@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
 import com.redsqirl.dynamictable.SelectableRow;
 import com.redsqirl.dynamictable.UnselectableTable;
 import com.redsqirl.useful.MessageUseful;
-import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
@@ -301,25 +301,25 @@ public class CanvasModalOutputTab implements Serializable {
 				
 				
 
-				if (dfeOut.getFeatures() != null) {
+				if (dfeOut.getFields() != null) {
 
 					try {
-						List<String> outputFeatureList = dfeOut.getFeatures()
-								.getFeaturesNames();
-						for (String outputFeature : outputFeatureList) {
+						List<String> outputFieldList = dfeOut.getFields()
+								.getFieldNames();
+						for (String outputField : outputFieldList) {
 
-							// logger.info("outputFeatureNames " +
-							// outputFeature);
-							FeatureType featureType = dfeOut.getFeatures()
-									.getFeatureType(outputFeature);
-							// logger.info("featureType " + featureType);
+							// logger.info("outputFieldureNames " +
+							// outputFieldure);
+							FieldType fieldType = dfeOut.getFields()
+									.getFieldType(outputField);
+							// logger.info("FieldureType " + FieldureType);
 
-							gridTitle.add(outputFeature + " "
-									+ featureType.toString());
+							gridTitle.add(outputField + " "
+									+ fieldType.toString());
 						}
 						logger.info("grid titles: " + gridTitle);
 					} catch (Exception e) {
-						logger.info("Error when getting the features: "
+						logger.info("Error when getting the field: "
 								+ e.getMessage());
 					}
 					grid = new UnselectableTable(gridTitle);
@@ -333,8 +333,8 @@ public class CanvasModalOutputTab implements Serializable {
 							for (Map<String, String> line : outputLines) {
 								int i = 0;
 								String[] rowCur = new String[gridTitle.size()];
-								for (String feat : line.keySet()) {
-									rowCur[i] = line.get(feat);
+								for (String field : line.keySet()) {
+									rowCur[i] = line.get(field);
 									++i;
 								}
 								grid.add(rowCur);

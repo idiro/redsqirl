@@ -22,9 +22,9 @@ public class BrowserInteraction extends CanvasModalInteraction {
 	private static final long serialVersionUID = 3020683683280306022L;
 
 	/**
-	 * List of the feature name
+	 * List of the field name
 	 */
-	private List<String> listFeatures;
+	private List<String> listFields;
 
 	/**
 	 * List of the properties
@@ -47,7 +47,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 	@Override
 	public void readInteraction() throws RemoteException {
 		// clean the map
-		listFeatures = new LinkedList<String>();
+		listFields = new LinkedList<String>();
 		listProperties = new LinkedList<SelectItem>();
 		//logger.info(printTree(inter.getTree()));
 		try{
@@ -85,16 +85,16 @@ public class BrowserInteraction extends CanvasModalInteraction {
 			logger.info("Exception: "+e.getMessage());
 		}
 
-		//set features
+		//set fields
 		try{
-			List<Tree<String>> feats = inter.getTree().getFirstChild("browse")
-					.getFirstChild("output").getChildren("feature");
-			if (feats != null && !feats.isEmpty()) {
-				logger.info("features not null: " + feats.size());
-				for (Tree<String> tree : feats) {
+			List<Tree<String>> field = inter.getTree().getFirstChild("browse")
+					.getFirstChild("output").getChildren("field");
+			if (field != null && !field.isEmpty()) {
+				logger.info("fields not null: " + field.size());
+				for (Tree<String> tree : field) {
 					String name = tree.getFirstChild("name").getFirstChild().getHead();
 					String type = tree.getFirstChild("type").getFirstChild().getHead();
-					listFeatures.add(name+" "+type);
+					listFields.add(name+" "+type);
 				}
 			}
 		}catch(Exception e){
@@ -128,13 +128,13 @@ public class BrowserInteraction extends CanvasModalInteraction {
 					item.getValue().toString());
 		}
 
-		for (String nameValue : listFeatures) {
-			Tree<String> myFeature = inter.getTree()
+		for (String nameValue : listFields) {
+			Tree<String> myField = inter.getTree()
 					.getFirstChild("browse")
-					.getFirstChild("output").add("feature");
+					.getFirstChild("output").add("field");
 			String value[] = nameValue.split(" ");
-			myFeature.add("name").add(value[0]);
-			myFeature.add("type").add(value[1]);
+			myField.add("name").add(value[0]);
+			myField.add("type").add(value[1]);
 		}
 	}
 
@@ -174,34 +174,34 @@ public class BrowserInteraction extends CanvasModalInteraction {
 				}
 			}
 
-			// Check features
+			// Check fields
 			if (unchanged) {
-				List<Tree<String>> oldFeatureList = inter.getTree()
+				List<Tree<String>> oldFieldsList = inter.getTree()
 						.getFirstChild("browse")
-						.getFirstChild("output").getChildren("feature");
-				logger.info("comparaison features: "
-						+ oldFeatureList.size() + " , "
-						+ listFeatures.size());
-				if (unchanged &= oldFeatureList.size() == listFeatures.size()) {
-					Iterator<Tree<String>> oldFeatureIt = oldFeatureList
+						.getFirstChild("output").getChildren("field");
+				logger.info("comparaison fields: "
+						+ oldFieldsList.size() + " , "
+						+ listFields.size());
+				if (unchanged &= oldFieldsList.size() == listFields.size()) {
+					Iterator<Tree<String>> oldFieldIt = oldFieldsList
 							.iterator();
-					for (String nameValue : listFeatures) {
-						Tree<String> feature = oldFeatureIt.next();
+					for (String nameValue : listFields) {
+						Tree<String> field = oldFieldIt.next();
 						String value[] = nameValue.split(" ");
-						logger.info("Comparaison feature: "
-								+ feature.getFirstChild("name")
+						logger.info("Comparaison field: "
+								+ field.getFirstChild("name")
 								.getFirstChild().getHead()
 								+ " , "
 								+ value[0]
 										+ " | type "
-										+ feature.getFirstChild("type")
+										+ field.getFirstChild("type")
 										.getFirstChild().getHead()
 										+ " , " + value[1]);
 
-						if (feature.getFirstChild("name")
+						if (field.getFirstChild("name")
 								.getFirstChild().getHead()
 								.equals(value[0])) {
-							unchanged &= feature
+							unchanged &= field
 									.getFirstChild("type")
 									.getFirstChild().getHead()
 									.equals(value[1]);
@@ -218,17 +218,17 @@ public class BrowserInteraction extends CanvasModalInteraction {
 	}
 
 	/**
-	 * @return the listFeatures
+	 * @return the listFields
 	 */
-	public final List<String> getListFeatures() {
-		return listFeatures;
+	public final List<String> getListFields() {
+		return listFields;
 	}
 
 	/**
-	 * @param listFeatures the listFeatures to set
+	 * @param listFields the listFields to set
 	 */
-	public final void setListFeatures(List<String> listFeatures) {
-		this.listFeatures = listFeatures;
+	public final void setListFields(List<String> listFields) {
+		this.listFields = listFields;
 	}
 
 	/**

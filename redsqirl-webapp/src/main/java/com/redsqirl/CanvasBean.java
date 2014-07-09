@@ -25,7 +25,7 @@ import org.json.JSONObject;
 import com.idiro.utils.LocalFileSystem;
 import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.useful.MessageUseful;
-import com.redsqirl.utils.FeatureList;
+import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
@@ -1038,22 +1038,22 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 			if (dfe != null && dfe.getDFEOutput() != null) {
 				for (Entry<String, DFEOutput> e : dfe.getDFEOutput().entrySet()) {
-					if(e.getValue().getFeatures() != null && e.getValue().getFeatures().getFeaturesNames() != null){
+					if(e.getValue().getFields() != null && e.getValue().getFields().getFieldNames() != null){
 						tooltip.append("<br/>");
 						tooltip.append("<table style='border:1px solid;width:100%;'>");
 						if(e.getKey() != null){
 							tooltip.append("<tr><td colspan='1'>" + e.getKey() +"</td></tr>");
 						}
-						tooltip.append("<tr><td> Features </td><td> Type </td></tr>");
+						tooltip.append("<tr><td> Fields </td><td> Type </td></tr>");
 						int row = 0;
-						for (String name : e.getValue().getFeatures().getFeaturesNames()) {
+						for (String name : e.getValue().getFields().getFieldNames()) {
 							if((row%2)==0){
 								tooltip.append("<tr class='odd-row'>");
 							}else{
 								tooltip.append("<tr>");
 							}
 							tooltip.append("<td>" + name + "</td>");
-							tooltip.append("<td>" + e.getValue().getFeatures().getFeatureType(name) + "</td></tr>");
+							tooltip.append("<td>" + e.getValue().getFields().getFieldType(name) + "</td></tr>");
 							row++;
 						}
 						tooltip.append("</table>");
@@ -1254,18 +1254,18 @@ public class CanvasBean extends BaseBean implements Serializable {
 						}
 						//tooltip.append("Path exist: " + e.getValue().isPathExists() + "<br/>");
 
-						if(e.getValue().getFeatures() != null && e.getValue().getFeatures().getFeaturesNames() != null){
+						if(e.getValue().getFields() != null && e.getValue().getFields().getFieldNames() != null){
 							tooltip.append("<br/>");
 							tooltip.append("<table style='border:1px solid;width:100%;'><tr><td> Name </td><td> Type </td></tr>");
 							int row = 0;
-							for (String name : e.getValue().getFeatures().getFeaturesNames()) {
+							for (String name : e.getValue().getFields().getFieldNames()) {
 								if((row%2)==0){
 									tooltip.append("<tr class='odd-row'>");
 								}else{
 									tooltip.append("<tr>");
 								}
 								tooltip.append("<td>" + name + "</td>");
-								tooltip.append("<td>" + e.getValue().getFeatures().getFeatureType(name) + "</td></tr>");
+								tooltip.append("<td>" + e.getValue().getFields().getFieldType(name) + "</td></tr>");
 								row++;
 							}
 							tooltip.append("</table>");

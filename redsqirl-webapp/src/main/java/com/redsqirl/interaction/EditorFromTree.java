@@ -84,7 +84,7 @@ public class EditorFromTree implements Serializable{
 		}
 		List<Tree<String>> list = null;
 
-		// Get the features
+		// Get the fieldures
 		LinkedList<String> header = new LinkedList<String>();
 		header.add("Name");
 		header.add("Info");
@@ -102,9 +102,9 @@ public class EditorFromTree implements Serializable{
 						tree.getFirstChild("name").getFirstChild().getHead(),
 						tree.getFirstChild("info").getFirstChild().getHead()});
 			}
-			logger.info("features: "+textEditorFields.toString());
+			logger.info("fields: "+textEditorFields.toString());
 		}else{
-			logger.info("no features...");
+			logger.info("no fields...");
 		}
 
 		// Get the functions and operations

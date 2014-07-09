@@ -120,7 +120,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		setPropsParam(hInt.getParamProperties());
 
 		if (mapSSH != null) {
-			//Set list features
+			//Set list field
 			LinkedList<String> titles = new LinkedList<String>();
 			LinkedList<String> editProps = new LinkedList<String>();
 			LinkedList<String> createProps = new LinkedList<String>();
