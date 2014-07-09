@@ -65,14 +65,19 @@ public class MapRedModelType extends MapRedDir {
 		if (!hCh.isInitialized() || hCh.isFile()) {
 			error = LanguageManagerWF.getText("mapredtexttype.dirisfile");
 		} else {
-
-			hCh.setPath(new Path(getPath(), "output"));
-			if (!hCh.isFile()) {
-				error = LanguageManagerWF.getText("mapredmodeltype.nooutput");
+			hCh.setPath(new Path(getPath()).getParent());
+			if (!hCh.isDirectory()) {
+				error = LanguageManagerWF.getText("mapredtexttype.nodir",new String[]{getPath()});
 			}
-			hCh.setPath(new Path(getPath(), "_output"));
-			if (!hCh.isFile()) {
-				error = LanguageManagerWF.getText("mapredmodeltype.no_output");
+			if(isPathExists()){
+				hCh.setPath(new Path(getPath(), "output"));
+				if (!hCh.isFile()) {
+					error = LanguageManagerWF.getText("mapredmodeltype.nooutput");
+				}
+				hCh.setPath(new Path(getPath(), "_output"));
+				if (!hCh.isFile()) {
+					error = LanguageManagerWF.getText("mapredmodeltype.no_output");
+				}
 			}
 
 		}

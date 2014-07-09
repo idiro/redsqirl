@@ -76,9 +76,9 @@ public class MapRedCtrlATextType extends MapRedDir{
 			FileSystem fs;
 			try {
 				fs = NameNodeVar.getFS();
-				hCh.setPath(new Path(getPath()));
+				hCh.setPath(new Path(getPath()).getParent());
 				if (!hCh.isDirectory()) {
-					error = LanguageManagerWF.getText("mapredtexttype.nodir");
+					error = LanguageManagerWF.getText("mapredtexttype.nodir",new String[]{getPath()});
 				}
 				FileStatus[] stat = fs.listStatus(new Path(getPath()),
 						new PathFilter() {

@@ -217,11 +217,13 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 				String fileName = f.getFile();
 				if(fileName == null ){
 					try{
-						fileName = f.getPath().substring(f.getPath().indexOf('/')+1);
+						fileName = f.getPath().substring(f.getPath().lastIndexOf('/')+1);
 					}catch(Exception e){
 						fileName = "";
 					}
 				}
+				
+				logger.info(fileName);
 			
 				String regex = "[a-zA-Z]([a-zA-Z0-9_\\.]*)";
 				if (!fileName.matches(regex)) {

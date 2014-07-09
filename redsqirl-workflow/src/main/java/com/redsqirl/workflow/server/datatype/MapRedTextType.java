@@ -111,7 +111,7 @@ public class MapRedTextType extends MapRedDir {
 				fs = NameNodeVar.getFS();
 				hCh.setPath(new Path(getPath()).getParent());
 				if (!hCh.isDirectory()) {
-					error = LanguageManagerWF.getText("mapredtexttype.nodir");
+					error = LanguageManagerWF.getText("mapredtexttype.nodir",new String[]{getPath()});
 				}
 				FileStatus[] stat = fs.listStatus(new Path(getPath()),
 						new PathFilter() {
