@@ -385,8 +385,6 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 			// Create home folder for this user if it does not exist yet
 			WorkflowPrefManager.createUserHome(userName);
-			// Create a default menu if dont exist
-			WorkflowPrefManager.createUserFooter(userName);
 			
 			if (th != null) {
 				String pid = new WorkflowProcessesManager(userName).getPid();

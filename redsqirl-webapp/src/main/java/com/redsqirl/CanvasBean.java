@@ -25,7 +25,6 @@ import org.json.JSONObject;
 import com.idiro.utils.LocalFileSystem;
 import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.useful.MessageUseful;
-import com.redsqirl.utils.FeatureList;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
@@ -141,14 +140,19 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		try {
 			DataFlow df = getDf();
-
-			if (nameElement != null && paramGroupID != null) {
+			if(df == null){
+				MessageUseful.addErrorMessage("The workflow '"+nameWorkflow+"' has not been initialised!"); 
+				HttpServletRequest request = (HttpServletRequest) FacesContext
+						.getCurrentInstance().getExternalContext()
+						.getRequest();
+				request.setAttribute("msnError", "msnError");
+			}else if (nameElement != null && paramGroupID != null) {
 				String idElement = df.addElement(nameElement);
 				if (idElement != null) {
 					getIdMap().get(getNameWorkflow()).put(paramGroupID,
 							idElement);
 				} else {
-					MessageUseful.addErrorMessage("NULL POINTER"); // FIXME
+					MessageUseful.addErrorMessage("NULL POINTER"); 
 					HttpServletRequest request = (HttpServletRequest) FacesContext
 							.getCurrentInstance().getExternalContext()
 							.getRequest();
@@ -156,8 +160,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 				}
 			}
 
-		} catch (RemoteException e) {
-			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -254,9 +256,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 */
 	public void addLink() {
-		
+
 		logger.info("addLink");
-		
+
 		String idElementA = getIdMap().get(getNameWorkflow()).get(getParamOutId());
 		String idElementB = getIdMap().get(getNameWorkflow()).get(getParamInId());
 
@@ -273,7 +275,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			df.addLink(nameElementA, dfeObjA.getComponentId(), nameElementB, dfeObjB.getComponentId());
 
 			logger.info("addLink " + getParamNameLink() + " " + nameElementA + " " + nameElementB);
-			
+
 			setResult(new String[] { getParamNameLink(), nameElementA, nameElementB });
 
 			setNameOutput(nameElementA);
@@ -366,17 +368,17 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 */
 	public void removeLink() {
-		
+
 		logger.info("Remove link");
 
 		try {
-			
+
 			Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 			String idElementA = getIdMap().get(getNameWorkflow()).get(params.get("paramOutId"));
 			String idElementB = getIdMap().get(getNameWorkflow()).get(params.get("paramInId"));
 			String nameElementA = params.get("paramOutName");
 			String nameElementB = params.get("paramInName");
-			
+
 			logger.info("RemoveLink " + params.get("paramOutId") + " " + params.get("paramInId") + " " + params.get("paramOutName") + " " + params.get("paramInName"));
 
 			getDf().removeLink(nameElementA, idElementA, nameElementB, idElementB);
@@ -545,6 +547,19 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 	}
 
+	public void checkName() {
+		String msg = null;
+		String regex = "[a-zA-Z]([a-zA-Z0-9_]*)";
+		String name[] = getPath().split("/");
+		if(name != null && !checkString(regex, name[name.length-1])){
+			msg = getMessageResources("msg_error_save");
+			MessageUseful.addErrorMessage(msg);
+			HttpServletRequest request = (HttpServletRequest) FacesContext
+					.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
+		}
+	}
+
 	/**
 	 * save
 	 * 
@@ -559,21 +574,15 @@ public class CanvasBean extends BaseBean implements Serializable {
 		logger.info("save");
 		String msg = null;
 		// Set path
-		path = FacesContext.getCurrentInstance().getExternalContext()
-				.getRequestParameterMap().get("pathFile");
+		path = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("pathFile");
 
 		if (!path.contains(".")) {
-
 			path += ".rs";
 		}
 		// Update the object positions
 		updatePosition();
 		{
 			String nameWorkflowSwp = generateWorkflowName(path);
-
-			/*if(!nameWorkflowSwp.startsWith("flowchart-")){
-				nameWorkflowSwp = "flowchart-"+nameWorkflowSwp;
-			}*/
 
 			try {
 				msg = getworkFlowInterface().renameWorkflow(nameWorkflow, nameWorkflowSwp);
@@ -632,21 +641,19 @@ public class CanvasBean extends BaseBean implements Serializable {
 		try {
 			DataFlow dfCur = workflowMap.get(workflowName);
 			if (dfCur != null) {
+				logger.info("remove "+workflowName);
 				dfCur.close();
 				getworkFlowInterface().removeWorkflow(workflowName);
 				workflowMap.remove(workflowName);
 				idMap.remove(workflowName);
-				if (getDf() != null) {
-					if (dfCur.getName() != null
+				if (getDf() != null && dfCur.getName() != null
 							&& dfCur.getName().equals(getDf().getName())) {
 						setDf(null);
-					}
 				}
 			}
 
-		} catch (RemoteException e) {
-			logger.error("Fail closing " + workflowName);
-			e.printStackTrace();
+		} catch (Exception e) {
+			logger.error("Fail closing " + workflowName,e);
 		}
 	}
 
@@ -924,7 +931,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void changeWorkflow() throws RemoteException {
 
-		logger.info(getNameWorkflow());
+		logger.info("change workflow to "+getNameWorkflow());
 		setDf(getWorkflowMap().get(getNameWorkflow()));
 	}
 
@@ -939,6 +946,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 		DataFlowInterface dfi = getworkFlowInterface();
 
 		if (!getWorkflowMap().containsKey(name)) {
+			logger.info("create Workflow: " + name);
+			
 			dfi.addWorkflow(name);
 			workflowMap.put(name, dfi.getWorkflow(name));
 			dfi.getWorkflow(name).setName(name);
@@ -1130,7 +1139,12 @@ public class CanvasBean extends BaseBean implements Serializable {
 		logger.info("Update id "+groupId);
 		logger.info("id old -> " + elementOldId);
 		logger.info("Element "+elementId);
-		error = getDf().changeElementId(elementOldId, elementId);
+		
+		if(getDf() != null){
+			error = getDf().changeElementId(elementOldId, elementId);
+		}else{
+			error = "The workflow '"+nameWorkflow+"' has not been initialised!";
+		}
 
 		if (error != null) {
 			//If there is an error do show the main window.

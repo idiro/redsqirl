@@ -58,6 +58,7 @@ public class ServerMain {
 		if(runner.isInit()){
 			//Setup the user home if not setup yet
 			WorkflowPrefManager.setupHome();
+			WorkflowPrefManager.createUserFooter();
 			
 			logger = Logger.getLogger(ServerMain.class);
 			NameNodeVar.set(WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_namenode));

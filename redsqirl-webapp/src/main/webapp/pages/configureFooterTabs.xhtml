@@ -15,7 +15,7 @@
 		onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
 		onstop="jQuery.unblockUI();" />
 	
-	<h:panelGrid columns="2">
+	<h:panelGrid columns="2" >
 		<rich:panel header="#{messages.label_tab_tabs}" style="overflow:auto;width:280px;height:315px;">
 			<h:panelGroup id="tabsMenu">
 			
@@ -103,10 +103,10 @@
 
 		    <h2> <h:outputText value="#{messages.label_tab_actions_menu} #{configureTabsBean.index + 1}" rendered="#{configureTabsBean.index != null}"/></h2>
 
-	   		<rich:listShuttle sourceValue="#{configureTabsBean.currentFooterMenu.actions}"
+	   		<rich:listShuttle id="actionOptionForMenu" sourceValue="#{configureTabsBean.currentFooterMenu.actions}"
 	            targetValue="#{configureTabsBean.currentFooterMenu.target}" var="items" listsHeight="225"
 	            sourceListWidth="145" targetListWidth="145"
-	            rendered="#{configureTabsBean.index != null}"
+	            rendered="#{configureTabsBean.index != null &amp;&amp; configureTabsBean.showTab == 'Y' }"
 	            copyAllControlLabel="Select all"
                       copyControlLabel="Select"
                       removeAllControlLabel="Unselect all"
@@ -119,6 +119,7 @@
 	    </rich:panel>
 
 	</h:panelGrid>
+	
 	<h:panelGrid columns="2">
 		<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" action="#{configureTabsBean.saveTabs}" oncomplete="if(#{requestScope['msnError'] == null} ){#{rich:component('modalConfigureFooterTabs')}.hide();reRenderFooter();}" reRender="msnError"/>
 		<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" action="#{configureTabsBean.cancelChanges}" onclick="#{rich:component('modalConfigureFooterTabs')}.hide()" reRender="tabsMenu, actionsPanel"/>

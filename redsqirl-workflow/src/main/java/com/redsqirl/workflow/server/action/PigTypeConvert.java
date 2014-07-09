@@ -46,6 +46,9 @@ public class PigTypeConvert {
 		case CATEGORY:
 			featureType = "CHARARRAY";
 			break;
+		case CHAR:
+			featureType = "CHARARRAY";
+			break;
 		default:
 			break;
 		}
