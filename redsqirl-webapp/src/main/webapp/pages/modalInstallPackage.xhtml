@@ -9,10 +9,10 @@
 <a4j:loadBundle basename="MessagesResources" var="messages" />
 		
     
-	<h:form style="min-height:535px;background-color:white;" >
+	<h:form style="height:535px;background-color:white;overflow:auto;" >
 	    
         <h:panelGroup id="install_pck_main"
-            rendered="#{packageMngBean.showMain}" style="min-height:535px;overflow:auto;" >
+            rendered="#{packageMngBean.showMain}" style="height:100%;overflow:auto;" >
             
             <div id="welcomePageRepo">
                 <ui:include src="#{packageMngBean.repoWelcomePage}" />
@@ -47,7 +47,7 @@
             </h:column>
             </h:dataTable>
         </h:panelGroup>
-        <h:panelGroup id="install_pck_spec"  style="min-height:535px;overflow:auto;"
+        <h:panelGroup id="install_pck_spec"  style="height:100%;overflow:auto;"
             rendered="#{not packageMngBean.showMain}" >
             
             
@@ -59,7 +59,7 @@
                     
             </div>
             
-            <div id="left">
+            <div id="left" style="height:100%">
             
                 <ui:include src="#{packageMngBean.curPackage == null || packageMngBean.curPackage.description == null ? '/pages/blankPage.html' :  packageMngBean.curPackage.description}" />
                 
