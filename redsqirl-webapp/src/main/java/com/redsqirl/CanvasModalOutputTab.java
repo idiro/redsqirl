@@ -217,11 +217,13 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 				String fileName = f.getFile();
 				if(fileName == null ){
 					try{
-						fileName = f.getPath().substring(f.getPath().indexOf('/')+1);
+						fileName = f.getPath().substring(f.getPath().lastIndexOf('/')+1);
 					}catch(Exception e){
 						fileName = "";
 					}
 				}
+				
+				logger.info(fileName);
 			
 				String regex = "[a-zA-Z]([a-zA-Z0-9_\\.]*)";
 				if (!fileName.matches(regex)) {
@@ -279,20 +281,6 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 				LinkedList<String> gridTitle = new LinkedList<String>();
 
 
-				/*List<SelectItem> listExtensions = new LinkedList<SelectItem>();
-				if (dfeOut.getExtensions() != null && dfeOut.getExtensions().length != 0) {
-					String[] listExt = dfeOut.getExtensions();
-					for (int i = 0; i < listExt.length; i++) {
-						String value = listExt[i];
-						listExtensions.add(new SelectItem(value, value));
-					}
-					listExtensions.add(new SelectItem("*", "*"));
-					getFileSystem().setExtensionsSelected(listExtensions.get(0).getLabel());
-				}
-				getFileSystem().setListExtensions(listExtensions);
-				getFileSystem().updateTable();*/
-
-
 				List<SelectItem> listExtensions = new LinkedList<SelectItem>();
 				if (dfeOut.getExtensions() != null && dfeOut.getExtensions().length != 0) {
 					String[] listExt = dfeOut.getExtensions();
@@ -339,7 +327,7 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 					grid = new UnselectableTable(gridTitle);
 					try {
 						
-						if(dfeOut.isPathValid() == null){
+						if(dfeOut.isPathExists() && dfeOut.isPathValid() == null){
 							
 							List<Map<String, String>> outputLines = dfeOut.select(10);
 							logger.info("line: " + outputLines);
