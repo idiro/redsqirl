@@ -109,7 +109,7 @@ public class MapRedTextType extends MapRedDir {
 			FileSystem fs;
 			try {
 				fs = NameNodeVar.getFS();
-				hCh.setPath(new Path(getPath()));
+				hCh.setPath(new Path(getPath()).getParent());
 				if (!hCh.isDirectory()) {
 					error = LanguageManagerWF.getText("mapredtexttype.nodir");
 				}

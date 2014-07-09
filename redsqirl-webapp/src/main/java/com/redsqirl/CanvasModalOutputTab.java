@@ -268,8 +268,6 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 				LinkedList<String> gridTitle = new LinkedList<String>();
 
 
-
-
 				/*List<SelectItem> listExtensions = new LinkedList<SelectItem>();
 				if (dfeOut.getExtensions() != null && dfeOut.getExtensions().length != 0) {
 					String[] listExt = dfeOut.getExtensions();
@@ -306,8 +304,6 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 				getFileSystem().updateTable();
 
 
-
-
 				if (dfeOut.getFeatures() != null) {
 
 					try {
@@ -331,25 +327,30 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 					}
 					grid = new UnselectableTable(gridTitle);
 					try {
-						List<Map<String, String>> outputLines = dfeOut
-								.select(10);
-						logger.info("line: " + outputLines);
+						
+						if(dfeOut.isPathValid() == null){
+							
+							List<Map<String, String>> outputLines = dfeOut.select(10);
+							logger.info("line: " + outputLines);
 
-						if (outputLines != null) {
+							if (outputLines != null) {
 
-							for (Map<String, String> line : outputLines) {
-								int i = 0;
-								String[] rowCur = new String[gridTitle.size()];
-								for (String feat : line.keySet()) {
-									rowCur[i] = line.get(feat);
-									++i;
+								for (Map<String, String> line : outputLines) {
+									int i = 0;
+									String[] rowCur = new String[gridTitle.size()];
+									for (String feat : line.keySet()) {
+										rowCur[i] = line.get(feat);
+										++i;
+									}
+									grid.add(rowCur);
 								}
-								grid.add(rowCur);
 							}
+							
 						}
+						
+						
 					} catch (Exception e) {
-						logger.info("Error when getting data: "
-								+ e.getMessage());
+						logger.info("Error when getting data: " + e);
 					}
 
 				}
