@@ -76,13 +76,14 @@
     }
 
 </script>
-        
-<h:form>
+     
         
     <div id="domMessageDivModal" style="display: none;">
         <img src="../image/icons/waiting.gif" />
     </div>
         
+<h:form>
+     
     <a4j:region>
         <a4j:jsFunction name="closeDynamicForm" oncomplete="#{rich:component('canvasModalPanel')}.hide();updateOutputStatus('#{canvasModalBean.idGroup}');" />
     </a4j:region>

@@ -136,9 +136,9 @@
 	<a4j:commandButton styleClass="greenButton" 
 	    action="#{canvasModalBean.outputTab.changePathOutputBrowser}" 
 	    value="#{messages.button_ok}"
-		onclick="jQuery('#canvasModalDiv').block({ message: jQuery('#domMessageDivModal') });#{rich:component('modalOutputBrowser')}.hide();" 
+		onclick="#{rich:component('modalOutputBrowser')}.hide();" 
 		reRender="dataOutputForm"
-		oncomplete="if(#{canvasModalBean.sourceNode}){modalOutputApplyPage();}else{if(#{canvasModalBean.outputTab.sourceNode})jQuery('#canvasModalDiv').unblock();}" >
+		oncomplete="if(#{canvasModalBean.sourceNode}){modalOutputApplyPage();}" >
 		<a4j:actionparam name="pathFile" value="getPathOutPut('#{canvasModalBean.outputTab.fileSystem.path}')" noEscape="true" />
 	</a4j:commandButton>
 
