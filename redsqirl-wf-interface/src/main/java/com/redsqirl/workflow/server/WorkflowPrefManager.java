@@ -12,7 +12,6 @@ import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 //import java.util.prefs.Preferences;
 
@@ -357,10 +356,11 @@ public class WorkflowPrefManager extends BlockManager {
 
 	}
 
-	public static void createUserFooter(String userName) {
-		logger.info("createUserFooter " + getPathIconMenu(userName));
+	public static void createUserFooter() {
+		logger.info("createUserFooter " + getPathIconMenu());
 
-		File menuDir = new File(getPathIconMenu(userName)).getParentFile();
+		String userName = System.getProperty("user.name");
+		File menuDir = new File(getPathIconMenu()).getParentFile();
 		File[] childrenoMenuDir = menuDir.listFiles(new FileFilter() {
 			@Override
 			public boolean accept(File pathname) {
@@ -374,7 +374,7 @@ public class WorkflowPrefManager extends BlockManager {
 			try {
 
 				//FileUtils.cleanDirectory(menuDir);
-				File file = new File(getPathIconMenu(userName));
+				File file = new File(getPathIconMenu());
 				
 				logger.info("createUserFooter " + file.toString());
 				

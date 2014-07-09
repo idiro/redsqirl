@@ -40,7 +40,8 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	private Integer index;
 	private String showTab = "N";
 
-
+	private String workflowNameTmp = "wf-footer-123";
+	
 	/**
 	 * Value to give when index is null
 	 */
@@ -60,17 +61,18 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 			showTab = "Y";
 		}else{
 			try {
-				if (getworkFlowInterface().getWorkflow("canvas0") == null) {
-					getworkFlowInterface().addWorkflow("canvas0");
-					DataFlow wf = getworkFlowInterface().getWorkflow("canvas0");
-					wf.loadMenu();
-					menuWA = wf.getRelativeMenu(getCurrentPage());
-					if(allWANameWithClassName == null){
-						allWANameWithClassName = wf.getAllWANameWithClassName();
-						logger.info(allWANameWithClassName.keySet());
-					}
-					getworkFlowInterface().removeWorkflow("canvas0");
+				if (getworkFlowInterface().getWorkflow(workflowNameTmp) == null) {
+					getworkFlowInterface().addWorkflow(workflowNameTmp);
 				}
+				
+				DataFlow wf = getworkFlowInterface().getWorkflow(workflowNameTmp);
+				wf.loadMenu();
+				menuWA = wf.getRelativeMenu(getCurrentPage());
+				if(allWANameWithClassName == null){
+					allWANameWithClassName = wf.getAllWANameWithClassName();
+					logger.info(allWANameWithClassName.keySet());
+				}
+				getworkFlowInterface().removeWorkflow(workflowNameTmp);
 
 				mountMenuActions();
 				menuNull = new SelectableRowFooter(
@@ -219,35 +221,34 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 		if(error == null){
 
 			try {
-				if (getworkFlowInterface().getWorkflow("canvas0") == null) {
-					getworkFlowInterface().addWorkflow("canvas0");
-					DataFlow wf = getworkFlowInterface().getWorkflow("canvas0");
-					Map<String,List<String>> mapMenu = new LinkedHashMap<String,List<String>>();
-
-					for (SelectableRow selectableRow : getTableGrid().getRows()) {
-
-						List<String[]> temp = new ArrayList<String[]>();
-						for (int i = 0; i < ((SelectableRowFooter) selectableRow).getTarget().size(); ++i) {
-							temp.add(new String[] { ((SelectableRowFooter) selectableRow).getTarget().get(i) });
-						}
-						getMenuWA().put(selectableRow.getRow()[0], temp);
-
-						List<String> l = new LinkedList<String>();
-						Iterator<String[]> it = getMenuWA().get(selectableRow.getRow()[0]).iterator();
-						while(it.hasNext()){
-							l.add(it.next()[0]);
-						}
-						mapMenu.put(selectableRow.getRow()[0],l);
-					}
-
-					wf.loadMenu(mapMenu);
-					wf.saveMenu();
-					menuWA = wf.getRelativeMenu(getCurrentPage());
-					getworkFlowInterface().removeWorkflow("canvas0");
-
-					setTabs(new LinkedList<String>(getMenuWA().keySet()));
-
+				if (getworkFlowInterface().getWorkflow(workflowNameTmp) == null) {
+					getworkFlowInterface().addWorkflow(workflowNameTmp);
 				}
+				DataFlow wf = getworkFlowInterface().getWorkflow(workflowNameTmp);
+				Map<String,List<String>> mapMenu = new LinkedHashMap<String,List<String>>();
+
+				for (SelectableRow selectableRow : getTableGrid().getRows()) {
+
+					List<String[]> temp = new ArrayList<String[]>();
+					for (int i = 0; i < ((SelectableRowFooter) selectableRow).getTarget().size(); ++i) {
+						temp.add(new String[] { ((SelectableRowFooter) selectableRow).getTarget().get(i) });
+					}
+					getMenuWA().put(selectableRow.getRow()[0], temp);
+
+					List<String> l = new LinkedList<String>();
+					Iterator<String[]> it = getMenuWA().get(selectableRow.getRow()[0]).iterator();
+					while(it.hasNext()){
+						l.add(it.next()[0]);
+					}
+					mapMenu.put(selectableRow.getRow()[0],l);
+				}
+
+				wf.loadMenu(mapMenu);
+				wf.saveMenu();
+				menuWA = wf.getRelativeMenu(getCurrentPage());
+				getworkFlowInterface().removeWorkflow(workflowNameTmp);
+				setTabs(new LinkedList<String>(getMenuWA().keySet()));
+
 				showTab = "N";
 			} catch (RemoteException e1) {
 				e1.printStackTrace();
