@@ -158,8 +158,8 @@
 	              
 	              contTabCanvas++;
 	              var tabName = "canvas-"+contTabCanvas;
-	              addWorkflowTab(tabName);
 	              addWorkflow(tabName);
+	              addWorkflowTab(tabName);
 	              configureCanvas(tabName);
 	              setWorkflow(tabName);
 	              validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
@@ -565,8 +565,8 @@
               numTabs = 0;
     	      nameTabs = {};
               
-              addWorkflowTab("canvas-1");
               addWorkflow("canvas-1");
+              addWorkflowTab("canvas-1");
               configureCanvas("canvas-1");
               setWorkflow("canvas-1");
 	      }
