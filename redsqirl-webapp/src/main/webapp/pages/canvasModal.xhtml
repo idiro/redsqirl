@@ -547,7 +547,7 @@
                     <rich:panel columns="3" style="border:none; float:right;">
                         <a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="closeDynamicForm();" reRender="panelBtCanvasModal, msnError, errorTable" />
                         <a4j:commandButton value="#{messages.button_apply}" styleClass="greenButton" action="#{canvasModalBean.outputTab.confirmOutput}" />
-                        <a4j:commandButton value="#{messages.button_ok}" styleClass="greenButton" action="#{canvasModalBean.outputTab.confirmOutput}" oncomplete="#{rich:component('canvasModalPanel')}.hide();updateOutputStatus('#{canvasModalBean.idGroup}')"/>
+                        <a4j:commandButton value="#{messages.button_ok}" styleClass="greenButton" action="#{canvasModalBean.outputTab.confirmOutput}" oncomplete="if(#{requestScope['msnError'] == null}){#{rich:component('canvasModalPanel')}.hide();updateOutputStatus('#{canvasModalBean.idGroup}')}" reRender="msnError, errorTable" />
                     </rich:panel>
                 
                 
