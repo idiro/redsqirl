@@ -211,10 +211,10 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 		String error = null;
 		for (OutputForm f : getOutputFormList()) {
 
-			logger.info("confirmOutput path " + f.getPath());
+			logger.info("confirmOutput path file  " + f.getPath() + "  " + f.getFile());
 
 			String regex = "[a-zA-Z]([a-zA-Z0-9_\\.]*)";
-			if (!f.getFile().matches(regex)) {
+			if (f.getFile() != null && !f.getFile().matches(regex)) {
 				error = getMessageResources("msg_error_save");
 			}
 
@@ -230,7 +230,6 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 				request.setAttribute("msnError", "msnError");
 			}
 			
-			logger.info("output ok");
 		}
 
 	}
@@ -242,8 +241,7 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 	 * @throws RemoteException
 	 */
 	public void displayOutput() throws RemoteException {
-		String outputN = FacesContext.getCurrentInstance().getExternalContext()
-				.getRequestParameterMap().get("outputName");
+		String outputN = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("outputName");
 
 		if (outputN != null && !outputN.equalsIgnoreCase("undefined")) {
 			setNameOutput(outputN);
