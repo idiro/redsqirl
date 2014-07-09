@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 
-import com.redsqirl.dynamictable.SelectableRow;
 import com.redsqirl.dynamictable.UnselectableTable;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.enumeration.FeatureType;
@@ -211,11 +210,23 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 		String error = null;
 		for (OutputForm f : getOutputFormList()) {
 
-			logger.info("confirmOutput path file  " + f.getPath() + "  " + f.getFile());
-
-			String regex = "[a-zA-Z]([a-zA-Z0-9_\\.]*)";
-			if (f.getFile() != null && !f.getFile().matches(regex)) {
-				error = getMessageResources("msg_error_save");
+			logger.info("confirmOutput path " + f.getPath());
+			if(f.getPath() == null){
+				error = "Path cannot be null";
+			}else{
+				String fileName = f.getFile();
+				if(fileName == null ){
+					try{
+						fileName = f.getPath().substring(f.getPath().indexOf('/')+1);
+					}catch(Exception e){
+						fileName = "";
+					}
+				}
+			
+				String regex = "[a-zA-Z]([a-zA-Z0-9_\\.]*)";
+				if (!f.getFile().matches(regex)) {
+					error = getMessageResources("msg_error_save");
+				}
 			}
 
 			if(error == null){
