@@ -151,11 +151,11 @@ public class OrderedFieldList extends UnicastRemoteObject implements
 		
 		StringBuffer stringHeader = new StringBuffer();
 		int index = 0;
-		for (String featureName : getFeaturesNames()) {
+		for (String featureName : getFieldNames()) {
 			stringHeader.append(featureName);
 			stringHeader.append(" ");
-			stringHeader.append(getFeatureType(featureName));
-			if(index < getFeaturesNames().size()-1){
+			stringHeader.append(getFieldType(featureName));
+			if(index < getFieldNames().size()-1){
 				stringHeader.append(",");
 			}
 			index++;
