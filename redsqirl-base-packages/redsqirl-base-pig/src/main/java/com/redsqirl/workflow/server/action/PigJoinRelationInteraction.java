@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.Tree;
@@ -208,6 +209,7 @@ public class PigJoinRelationInteraction extends TableInteraction {
 				.getFirstChild("output").getFirstChild().getHead()
 				.replace("JOIN", "");
 
+		Set<String> aliases = hj.getAliases().keySet();
 		String join = "";
 		Iterator<Map<String,String>> it = getValues().iterator();
 		if (it.hasNext()) {
@@ -215,13 +217,18 @@ public class PigJoinRelationInteraction extends TableInteraction {
 		}
 		while (it.hasNext()) {
 			Map<String,String> cur = it.next();
-			String feat = cur.get(table_feat_title);
-			logger.info(feat);
-			String[] ans = feat.split("\\.");
+			String expr = cur.get(table_feat_title);
+			logger.info(expr);
+			
+			Iterator<String> namesIt = aliases.iterator();
+			String ans = expr;
+			while(namesIt.hasNext()){
+				ans = ans.replaceAll(Pattern.quote(namesIt.next()+"."), "");
+			}
 
 			String relation = cur.get(table_relation_title);
 
-			join += " " + relation + " BY " + ans[ans.length-1];
+			join += " " + relation + " BY " + ans;
 			if (!joinType.isEmpty()) {
 				join += " " + joinType;
 			}
