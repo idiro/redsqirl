@@ -347,15 +347,9 @@ public abstract class AbstractSource extends DataflowAction {
 									.getFirstChild("output")
 									.getFirstChild("name").getFirstChild()
 									.getHead();
-
-							if (name == null) {
-								error = LanguageManagerWF
-										.getText("source.name_null");
-							}
 						} catch (Exception e) {
-							error = LanguageManagerWF.getText(
-									"source.name_null",
-									new Object[] { e.getMessage() });
+							logger.warn(LanguageManagerWF.getText(
+									"source.name_null"));
 						}
 					}
 
