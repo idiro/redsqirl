@@ -1866,14 +1866,25 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			DataFlowElement el) throws RemoteException {
 		LinkedList<DataFlowElement> ans = new LinkedList<DataFlowElement>();
 		ans.add(el);
-		Iterator<DataFlowElement> it = el.getAllInputComponent().iterator();
+		
+		Map<String, List<DFEOutput>> ins = el.getDependencies();
+		Iterator<String> it = ins.keySet().iterator();
 		while (it.hasNext()) {
-			Iterator<DataFlowElement> itCur = getItAndAllElementsNeeded(
-					it.next()).iterator();
-			while (itCur.hasNext()) {
-				DataFlowElement cans = itCur.next();
-				if (!ans.contains(cans)) {
-					ans.add(cans);
+			String cur = it.next();
+			boolean needed = false;
+			Iterator<DFEOutput> itOut = ins.get(cur).iterator();
+			while(itOut.hasNext() && !needed){
+				DFEOutput outCur = itOut.next();
+				needed = ! outCur.isPathExists();
+			}
+			if(needed){
+				Iterator<DataFlowElement> itCur = getItAndAllElementsNeeded(
+						getElement(cur)).iterator();
+				while (itCur.hasNext()) {
+					DataFlowElement cans = itCur.next();
+					if (!ans.contains(cans)) {
+						ans.add(cans);
+					}
 				}
 			}
 		}

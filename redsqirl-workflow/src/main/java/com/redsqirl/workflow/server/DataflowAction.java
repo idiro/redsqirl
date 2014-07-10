@@ -489,6 +489,32 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 
 		return ans;
 	}
+	
+	/**
+	 * Get the DFEOutput needed per component id
+	 * 
+	 * @return a map with the data sorted by component id
+	 * @throws RemoteException
+	 */
+	public Map<String, List<DFEOutput>> getDependencies() throws RemoteException {
+		Map<String, List<DFEOutput>> ans = new LinkedHashMap<String, List<DFEOutput>>();
+
+		Iterator<String> itS = inputComponent.keySet().iterator();
+		while (itS.hasNext()) {
+			String name = itS.next();
+			Iterator<DataFlowElement> itW = inputComponent.get(name).iterator();
+			while (itW.hasNext()) {
+				DataFlowElement cur = itW.next();
+				if(!ans.containsKey(cur.getComponentId())){
+					ans.put(cur.getComponentId(),new LinkedList<DFEOutput>() );
+				}
+				ans.get(cur.getComponentId()).add(cur.getDFEOutput().get(
+						findNameOf(cur.getOutputComponent(), this)));
+			}
+		}
+
+		return ans;
+	}
 
 	/**
 	 * Get all Aliases

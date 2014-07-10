@@ -125,6 +125,14 @@ public interface DataFlowElement extends Remote{
 	public Map<String, List<DFEOutput>> getDFEInput() throws RemoteException;
 
 	/**
+	 * Get the DFEOutput needed per component id
+	 * 
+	 * @return a map with the data sorted by component id
+	 * @throws RemoteException
+	 */
+	public Map<String, List<DFEOutput>> getDependencies() throws RemoteException;
+	
+	/**
 	 * Get a suggested alias to use in the interactions for each output order by input.
 	 * @return Map of suggested aliases
 	 * @throws RemoteException
