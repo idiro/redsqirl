@@ -216,7 +216,8 @@
 			oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('textEditorPanel')}.hide() };"
 			reRender="command,tableInteraction, msnError, errorTable" />
 			
-		<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('textEditorPanel')}.hide();"/>
+		<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('textEditorPanel')}.hide();" 
+			reRender="command,tableInteraction, msnError, errorTable" />
 			
 		<a4j:commandButton styleClass="greenButton" action="#{canvasModalBean.selEditor.checkTextEditor}" value="#{messages.button_check}" reRender="command,tableInteraction, msnError, errorTable" />
 
