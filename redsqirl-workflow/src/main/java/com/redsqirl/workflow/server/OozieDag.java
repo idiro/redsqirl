@@ -65,15 +65,39 @@ public class OozieDag {
 	 * @param elementTo
 	 */
 	public void addLink(String elementFrom, String elementTo) {
-		if (!graphOut.containsKey(elementFrom)) {
-			graphOut.put(elementFrom, new LinkedHashSet<String>());
+		
+		boolean found = false;
+		Iterator<String> previousElementIt = getAllBefore(elementFrom).iterator();
+		String previousElement = null;
+		while(previousElementIt.hasNext() && !found){
+			previousElement = previousElementIt.next();
+			if(graphIn.containsKey(elementTo)){
+				found = graphIn.get(elementTo).contains(previousElement);
+			}
 		}
-		graphOut.get(elementFrom).add(elementTo);
+		if(found){
+			removeLink(previousElement, elementTo);
+		}
+		
+		if(!isLeafOf(elementTo,elementFrom)){
+		
+			if (!graphOut.containsKey(elementFrom)) {
+				graphOut.put(elementFrom, new LinkedHashSet<String>());
+			}
+			graphOut.get(elementFrom).add(elementTo);
 
-		if (!graphIn.containsKey(elementTo)) {
-			graphIn.put(elementTo, new LinkedHashSet<String>());
+		
+		
+			if (!graphIn.containsKey(elementTo)) {
+				graphIn.put(elementTo, new LinkedHashSet<String>());
+			}
+			graphIn.get(elementTo).add(elementFrom);
 		}
-		graphIn.get(elementTo).add(elementFrom);
+	}
+	
+	public void removeLink(String elementFrom,String elementTo){
+		graphOut.get(elementFrom).remove(elementTo);
+		graphIn.get(elementTo).remove(elementFrom);
 	}
 
 	/**
