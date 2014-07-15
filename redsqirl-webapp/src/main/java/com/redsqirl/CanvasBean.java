@@ -730,8 +730,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 				logger.info("blockRunningWorkflow error " + e);
 			}
 			blockingWorkflowName = name;
+		}else{
+			logger.info("blockRunningWorkflow getDf() = null");
 		}
-		logger.info("end blockRunningWorkflow");
+		logger.info("end blockRunningWorkflow ");
 	}
 
 	public void calcWorkflowUrl() {
@@ -1096,32 +1098,43 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 *            the list to append the result
 	 * @throws RemoteException
 	 */
-	private void getOutputStatus(DataFlowElement dfe, List<String[]> status) throws RemoteException {
+	private void getOutputStatus(DataFlowElement dfe, List<String[]> status) {
 
 		logger.info("getOutputStatus");
 
-		if (dfe != null && dfe.getDFEOutput() != null) {
-			String compId = dfe.getComponentId();
-			if (compId == null) {
-				logger.info("Error component id cannot be null");
-			} else {
-				String groupId = null;
-				Map<String, String> mapIdW = getIdMap().get(getNameWorkflow());
-				for (Entry<String, String> e : mapIdW.entrySet()) {
-					if (compId.equals(e.getValue())) {
-						groupId = e.getKey();
-					}
-				}
-				if (groupId == null) {
-					logger.info("Error getting status: " + compId);
-				} else {
-					status.add(getOutputStatus(dfe, groupId));
+		try{
 
-					for (DataFlowElement cur : dfe.getAllOutputComponent()) {
-						getOutputStatus(cur, status);
+			if (dfe != null && dfe.getDFEOutput() != null) {
+				String compId = dfe.getComponentId();
+				if (compId == null) {
+					logger.info("Error component id cannot be null");
+				} else {
+					String groupId = null;
+					Map<String, String> mapIdW = getIdMap().get(getNameWorkflow());
+					for (Entry<String, String> e : mapIdW.entrySet()) {
+						if (compId.equals(e.getValue())) {
+							groupId = e.getKey();
+						}
+					}
+					if (groupId == null) {
+						logger.info("Error getting status: " + compId);
+					} else {
+						status.add(getOutputStatus(dfe, groupId));
+
+						for (DataFlowElement cur : dfe.getAllOutputComponent()) {
+							getOutputStatus(cur, status);
+						}
 					}
 				}
+			}else{
+				logger.info("getOutputStatus null ");
 			}
+
+		} catch (Exception e) {
+			logger.info("Error " + e + " - " + e.getMessage());	
+			MessageUseful.addErrorMessage(getMessageResources("msg_error_oops"));
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
 		}
 
 	}
@@ -1129,8 +1142,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	public void changeIdElement() throws RemoteException {
 		String error = null;
 
-		Map<String, String> params = FacesContext.getCurrentInstance()
-				.getExternalContext().getRequestParameterMap();
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String groupId = params.get("groupId");
 		String elementId = params.get("elementId");
 		String elementOldId = getIdElement(groupId);
@@ -1404,7 +1416,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
 		}
-		
+
 		return new String[]{};
 	}
 

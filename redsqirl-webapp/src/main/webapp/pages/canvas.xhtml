@@ -824,7 +824,7 @@
 
 				<a4j:jsFunction name="updateAllArcsStatus"
 					data="#{canvasBean.allOutputStatus}"
-					oncomplete="updateArcStatus(data);" reRender="errorTable" />
+					oncomplete="updateArcStatus(data);jQuery('#canvas-tabs').unblock();" reRender="errorTable" />
 			</a4j:region>
 
 			<a4j:region>
@@ -836,7 +836,7 @@
 
 				<a4j:jsFunction name="updateRunningStatus"
 					data="#{canvasBean.runningStatus}"
-					oncomplete="updateCanvasRunningStatus(data);" reRender="errorTable, msnError" />
+					oncomplete="updateCanvasRunningStatus(data);jQuery('#canvas-tabs').unblock();" reRender="errorTable, msnError" />
 			</a4j:region>
 
 			<a4j:region>
