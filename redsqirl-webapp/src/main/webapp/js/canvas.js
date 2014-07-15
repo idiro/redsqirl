@@ -1046,7 +1046,7 @@ function addElements(canvasName, positions) {
 					positionsArrays[i][0]);
 		maxX = Math.max(maxX,positionsArrays[i][3]);
 		maxY = Math.max(maxY,positionsArrays[i][4]);
-		updateIdObj(positionsArrays[i][0], positionsArrays[i][0]);
+		//updateIdObj(positionsArrays[i][0], positionsArrays[i][0]);
 		updateTypeObj(canvasName, positionsArrays[i][0], positionsArrays[i][0]);
 		updateLabelObj(positionsArrays[i][0], positionsArrays[i][0]);
 		group.hasChangedId = true;

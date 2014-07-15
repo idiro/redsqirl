@@ -25,7 +25,6 @@ import org.json.JSONObject;
 import com.idiro.utils.LocalFileSystem;
 import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.useful.MessageUseful;
-import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
@@ -444,9 +443,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 				getIdMap()
 				.put(getNameWorkflow(), new HashMap<String, String>());
 				logger.info("Nb elements: " + df.getElement().size());
-				for (DataFlowElement e : df.getElement()) {
-					getIdMap().get(getNameWorkflow()).put(e.getComponentId(),
-							e.getComponentId());
+				
+				Iterator<String> itCompIds = df.getComponentIds().iterator();
+				while(itCompIds.hasNext()){
+					String cur = itCompIds.next();
+					idMap.get(nameWorkflow).put(cur,cur);
 				}
 				logger.info("Nb element loaded: "
 						+ getIdMap().get(getNameWorkflow()).size());
@@ -605,6 +606,12 @@ public class CanvasBean extends BaseBean implements Serializable {
 				setDf(df);
 				df.setName(nameWorkflow);
 				msg = df.save(path);
+				Iterator<String> itCompIds = df.getComponentIds().iterator();
+				while(itCompIds.hasNext()){
+					String cur = itCompIds.next();
+					idMap.get(nameWorkflow).put(cur,cur);
+				}
+				
 				logger.info("save msg :" + msg);
 			} catch (Exception e) {
 				logger.info("Error saving workflow");
