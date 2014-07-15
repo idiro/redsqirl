@@ -6,6 +6,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +48,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private String paramNameLink;
 	private String[] result;
 	private String nameOutput;
-	private String linkLabel;
 	private Map<String, Map<String, String>> idMap;
 	private UserInfoBean userInfoBean;
 	private String path;
@@ -273,15 +273,35 @@ public class CanvasBean extends BaseBean implements Serializable {
 			DataFlowElement dfeObjB = df.getElement(idElementB);
 
 			df.addLink(nameElementA, dfeObjA.getComponentId(), nameElementB, dfeObjB.getComponentId());
-
-			logger.info("addLink " + getParamNameLink() + " " + nameElementA + " " + nameElementB);
-
+			
 			setResult(new String[] { getParamNameLink(), nameElementA, nameElementB });
-
 			setNameOutput(nameElementA);
+			
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-			// generate the label to put in the arrow
-			String label = "";
+	}
+	
+	public String getLinkLabel(String nameElementA, DataFlowElement dfeObjA,  DataFlowElement dfeObjB) {
+
+
+		// generate the label to put in the arrow
+		String label = "";
+		try {
+			logger.info("getLinkLabel "+nameElementA+" "+dfeObjA.getComponentId()+" "+dfeObjB.getComponentId());
+			String nameElementB = null;
+
+			Iterator<String> it = dfeObjB.getInputComponent().keySet().iterator();
+			boolean found = false;
+			while(it.hasNext() && !found){
+				nameElementB = it.next();
+				found = dfeObjB.getInputComponent().get(nameElementB).contains(dfeObjA);
+			}
+
+			logger.info("addLink " + " " + nameElementA + " " + nameElementB);
 
 			if (dfeObjA.getDFEOutput().entrySet().size() > 1 || dfeObjB.getInput().entrySet().size() > 1) {
 				if (dfeObjA.getDFEOutput().entrySet().size() > 1) {
@@ -295,16 +315,17 @@ public class CanvasBean extends BaseBean implements Serializable {
 			if(label.equals(" -> ")){
 				label = "";
 			}
-			setLinkLabel(label);
 
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		return label;
 
 	}
-
+	
 	public void updateLinkPossibilities() {
 
 		logger.info("updateLinkPossibilities");
@@ -1277,7 +1298,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		String color = null;
 		String typeName = null;
 		StringBuffer tooltip = new StringBuffer();
-
+		String label = "";
 		if(getDf() != null){
 			DataFlowElement df = getDf().getElement(
 					getIdMap().get(getNameWorkflow()).get(groupOutId));
@@ -1321,6 +1342,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 						}
 
 						logger.info(e.getKey() + " - " + color);
+						label = getLinkLabel(outputName,df,dfIn);
 						break;
 					}
 				}
@@ -1328,10 +1350,38 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}else{
 			logger.info("Error getArrowType getDf NULL ");
 		}
+		logger.info("getArrowType " + color + " " + typeName +" " + label);
 
-		logger.info("getArrowType " + color + " " + typeName);
-
-		return new String[] { groupOutId, groupInId, color, typeName, tooltip.toString() };
+		return new String[] { groupOutId, groupInId, color, typeName, tooltip.toString(), label};
+	}
+	
+	public String[][] getAllArrows() throws Exception{
+		
+		List<String[]> ans = new LinkedList<String[]>();
+		
+		Map<String,String> inverseIdMap = new LinkedHashMap<String,String>();
+		for(Entry<String,String> e : idMap.get(nameWorkflow).entrySet()){
+			inverseIdMap.put(e.getValue(), e.getKey());
+		}
+		
+		Iterator<DataFlowElement> iterator = getDf().getElement().iterator();
+		while(iterator.hasNext()){
+			DataFlowElement cur = iterator.next();
+			Iterator<String> outIt = cur.getOutputComponent().keySet().iterator();
+			while(outIt.hasNext()){
+				String outName = outIt.next();
+				Iterator<DataFlowElement> outElIt = cur.getOutputComponent().get(outName).iterator();
+				while(outElIt.hasNext()){
+					ans.add(
+							getArrowType(
+									inverseIdMap.get(cur.getComponentId()),
+									inverseIdMap.get(outElIt.next().getComponentId()),
+									outName));
+				}
+			}
+		}
+		
+		return ans.toArray(new String[ans.size()][]);
 	}
 
 	public String[] getArrowType() throws Exception {
@@ -1344,33 +1394,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 		String outputName = params.get("outputName");
 
 		logger.info("getArrowType " + groupOutId + " " + groupInId + " " + outputName);
-
-		return getArrowType(groupOutId, groupInId, outputName);
-	}
-
-	public String[] getAllArrowType() throws Exception {
-
-		logger.info("getAllArrowType");
-
-		Map<String, String> params = FacesContext.getCurrentInstance()
-				.getExternalContext().getRequestParameterMap();
-		String groupOutId = params.get("groupOutId");
-		String groupInId = params.get("groupInId");
-		String outputName = "";
-		try {
-			DataFlowElement df = getDf().getElement(
-					getIdMap().get(getNameWorkflow()).get(groupOutId));
-			for (String value : df.getOutputComponent().keySet()) {
-				outputName = value;
-				break;
-			}
-		} catch (Exception e) {
-			MessageUseful.addErrorMessage(getMessageResources("msg_error_update_link_colors"));
-			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-			request.setAttribute("msnError", "msnError");
-		}
-
-		logger.info("getAllArrowType " + groupOutId + " " + groupInId + " "	+ outputName);
 
 		return getArrowType(groupOutId, groupInId, outputName);
 	}
@@ -1572,14 +1595,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void setNameOutput(String nameOutput) {
 		this.nameOutput = nameOutput;
-	}
-
-	public String getLinkLabel() {
-		return linkLabel;
-	}
-
-	public void setLinkLabel(String nameLink) {
-		this.linkLabel = nameLink;
 	}
 
 	public String getErrorTableState() {
