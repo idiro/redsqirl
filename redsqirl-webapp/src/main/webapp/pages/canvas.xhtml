@@ -446,17 +446,10 @@
 
 		    	  //change arc's colors
 		    	  updateAllArcsStatus();
-
-				  //alert("1");
-		    	  
 		    	  updateRunningStatus();
-
-		    	  //alert("2");
 	
 		    	  //change arrow colours
 		    	  updateAllArrowColours(canvasName);
-
-		    	  //alert("3");
 		    	  
 		    	  resizeCanvas(30,30);
 	          }
@@ -831,7 +824,7 @@
 
 				<a4j:jsFunction name="updateAllArcsStatus"
 					data="#{canvasBean.allOutputStatus}"
-					oncomplete="updateArcStatus(data);" reRender="errorTable" />
+					oncomplete="updateArcStatus(data);jQuery('#canvas-tabs').unblock();" reRender="errorTable" />
 			</a4j:region>
 
 			<a4j:region>
@@ -843,7 +836,7 @@
 
 				<a4j:jsFunction name="updateRunningStatus"
 					data="#{canvasBean.runningStatus}"
-					oncomplete="updateCanvasRunningStatus(data);" reRender="errorTable, msnError" />
+					oncomplete="updateCanvasRunningStatus(data);jQuery('#canvas-tabs').unblock();" reRender="errorTable, msnError" />
 			</a4j:region>
 
 			<a4j:region>
@@ -1118,7 +1111,7 @@
 
 				<a4j:jsFunction name="blockRunningWorkflow"
 					action="#{canvasBean.blockRunningWorkflow}"
-					oncomplete="jQuery('#flowchart-'+'#{canvasBean.blockingWorkflowName}').unblock();if('#{canvasBean.blockingWorkflowName}' == getSelectedByName()){setRunning(getSelectedByName(), false);updateRunningStatus();updateAllOutputStatus();}">
+					oncomplete="jQuery('#'+getSelectedById()).unblock();if('#{canvasBean.blockingWorkflowName}' == getSelectedByName()){setRunning(getSelectedByName(), false);updateRunningStatus();updateAllOutputStatus();}">
 				</a4j:jsFunction>
 
 			</a4j:region>
