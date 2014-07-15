@@ -500,9 +500,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 * Push the object position on the backend for all workflows
 	 */
 	public void updateAllPosition() {
-		String allPositions = FacesContext.getCurrentInstance()
-				.getExternalContext().getRequestParameterMap()
-				.get("allpositions");
+		String allPositions = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("allpositions");
 		logger.info(allPositions);
 		logger.info(workflowMap.keySet());
 		try {
@@ -1261,6 +1259,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			request.setAttribute("msnError", "msnError");
 		}
 
+		logger.info("result");
 		return result;
 	}
 

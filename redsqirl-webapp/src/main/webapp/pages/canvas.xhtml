@@ -446,10 +446,17 @@
 
 		    	  //change arc's colors
 		    	  updateAllArcsStatus();
+
+				  //alert("1");
+		    	  
 		    	  updateRunningStatus();
+
+		    	  //alert("2");
 	
 		    	  //change arrow colours
 		    	  updateAllArrowColours(canvasName);
+
+		    	  //alert("3");
 		    	  
 		    	  resizeCanvas(30,30);
 	          }
@@ -759,9 +766,8 @@
 				</a4j:jsFunction>
 			</a4j:region>
 
-			<a4j:region>
-				<a4j:jsFunction name="saveAllPositions"
-					action="#{canvasBean.updateAllPosition}">
+			<a4j:region renderRegionOnly="true">
+				<a4j:jsFunction name="saveAllPositions" action="#{canvasBean.updateAllPosition}">
 					<a4j:actionparam name="allpositions" />
 				</a4j:jsFunction>
 			</a4j:region>
@@ -825,7 +831,7 @@
 
 				<a4j:jsFunction name="updateAllArcsStatus"
 					data="#{canvasBean.allOutputStatus}"
-					oncomplete="updateArcStatus(data);jQuery('#canvas-tabs').unblock();" reRender="errorTable" />
+					oncomplete="updateArcStatus(data);" reRender="errorTable" />
 			</a4j:region>
 
 			<a4j:region>
@@ -837,7 +843,7 @@
 
 				<a4j:jsFunction name="updateRunningStatus"
 					data="#{canvasBean.runningStatus}"
-					oncomplete="updateCanvasRunningStatus(data);jQuery('#canvas-tabs').unblock();" reRender="errorTable, msnError" />
+					oncomplete="updateCanvasRunningStatus(data);" reRender="errorTable, msnError" />
 			</a4j:region>
 
 			<a4j:region>
