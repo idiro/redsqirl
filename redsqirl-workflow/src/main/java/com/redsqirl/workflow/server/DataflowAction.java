@@ -977,10 +977,11 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 
 		File[] files = new File[extensions.length];
 		for (int i = 0; i < extensions.length; ++i) {
-			fileNames[i] = pathFromOozieDir + "/" + fileNameWithoutExtension
-					+ extensions[i];
-			files[i] = new File(localDirectoryToWrite, fileNameWithoutExtension
-					+ extensions[i]);
+			fileNames[i] = pathFromOozieDir + "/" + fileNameWithoutExtension + extensions[i];
+			files[i] = new File(localDirectoryToWrite, fileNameWithoutExtension	+ extensions[i]);
+			
+			logger.info("writeProcess fileNames  " + fileNames[i].toString());
+			logger.info("writeProcess files  " + files[i].toString());
 		}
 
 		logger.info("writeProcess 1");

@@ -648,8 +648,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 				workflowMap.remove(workflowName);
 				idMap.remove(workflowName);
 				if (getDf() != null && dfCur.getName() != null
-							&& dfCur.getName().equals(getDf().getName())) {
-						setDf(null);
+						&& dfCur.getName().equals(getDf().getName())) {
+					setDf(null);
 				}
 			}
 
@@ -727,6 +727,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				}
 				logger.info("current workflow name: "+name); 
 			} catch (Exception e) {
+				logger.info("blockRunningWorkflow error " + e);
 			}
 			blockingWorkflowName = name;
 		}
@@ -948,7 +949,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		if (!getWorkflowMap().containsKey(name)) {
 			logger.info("create Workflow: " + name);
-			
+
 			dfi.addWorkflow(name);
 			workflowMap.put(name, dfi.getWorkflow(name));
 			dfi.getWorkflow(name).setName(name);
@@ -1095,8 +1096,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 *            the list to append the result
 	 * @throws RemoteException
 	 */
-	private void getOutputStatus(DataFlowElement dfe, List<String[]> status)
-			throws RemoteException {
+	private void getOutputStatus(DataFlowElement dfe, List<String[]> status) throws RemoteException {
 
 		logger.info("getOutputStatus");
 
@@ -1126,7 +1126,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	}
 
-
 	public void changeIdElement() throws RemoteException {
 		String error = null;
 
@@ -1140,7 +1139,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		logger.info("Update id "+groupId);
 		logger.info("id old -> " + elementOldId);
 		logger.info("Element "+elementId);
-		
+
 		if(getDf() != null){
 			error = getDf().changeElementId(elementOldId, elementId);
 		}else{
@@ -1148,7 +1147,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 
 		if (error != null) {
-			//If there is an error do show the main window.
 			MessageUseful.addErrorMessage(error);
 			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
@@ -1159,85 +1157,102 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public String[][] getOutputStatus() throws Exception {
 
-		if (getDf() == null) {
-			return new String[0][];
+		try{
+
+			if (getDf() == null) {
+				return new String[0][];
+			}
+			logger.info("getOutputStatus");
+
+			Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+			String groupId = params.get("groupId");
+
+			logger.info("Update status "+groupId);
+			logger.info("Element "+getIdElement(groupId));
+
+			DataFlowElement df = getDf().getElement(getIdElement(groupId));
+			if (df == null) {
+				logger.info("getOutputStatus df == null");
+				return new String[0][];
+			}
+
+			List<String[]> status = new LinkedList<String[]>();
+			getOutputStatus(df, status);
+			String[][] ans = new String[status.size()][];
+			int i = 0;
+			for (String[] elStat : status) {
+				ans[i++] = elStat;
+			}
+
+			return ans;
+
+		} catch (Exception e) {
+			logger.info("Error " + e + " - " + e.getMessage());	
+			MessageUseful.addErrorMessage(getMessageResources("msg_error_oops"));
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
 		}
-		logger.info("getOutputStatus");
 
-		Map<String, String> params = FacesContext.getCurrentInstance()
-				.getExternalContext().getRequestParameterMap();
-		String groupId = params.get("groupId");
-
-		logger.info("Update status "+groupId);
-		logger.info("Element "+getIdElement(groupId));
-
-		DataFlowElement df = getDf().getElement(getIdElement(groupId));
-		if (df == null) {
-			logger.info("getOutputStatus df == null");
-			return new String[0][];
-		}
-
-		List<String[]> status = new LinkedList<String[]>();
-		getOutputStatus(df, status);
-		String[][] ans = new String[status.size()][];
-		int i = 0;
-		for (String[] elStat : status) {
-			ans[i++] = elStat;
-		}
-
-		return ans;
+		return new String[][]{};
 	}
 
-	public String[][] getRunningStatus() throws Exception {
+	public String[][] getRunningStatus() {
 
 		logger.info("getRunningStatus");
 
-		if (getNameWorkflow() == null
-				|| getIdMap().get(getNameWorkflow()) == null) {
+		if (getNameWorkflow() == null || getIdMap().get(getNameWorkflow()) == null) {
 			return new String[0][];
 		}
 
 		String[][] result = new String[getIdMap().get(getNameWorkflow()).size()][];
 
-		int i = 0;
-		for (Entry<String, String> e : getIdMap().get(getNameWorkflow())
-				.entrySet()) {
+		try{
 
-			DataFlowElement cur = getDf().getElement(e.getValue());
-			if (cur == null) {
-				String msg = "Element " + e.getValue() + " does not exist.";
-				logger.warn(msg);
-				MessageUseful.addErrorMessage(msg);
-			} else {
-				String status = getOozie().getElementStatus(getDf(), cur);
+			int i = 0;
+			for (Entry<String, String> e : getIdMap().get(getNameWorkflow())
+					.entrySet()) {
 
-				logger.info(e.getKey() + " - " + status);
+				DataFlowElement cur = getDf().getElement(e.getValue());
+				if (cur == null) {
+					String msg = "Element " + e.getValue() + " does not exist.";
+					logger.warn(msg);
+					MessageUseful.addErrorMessage(msg);
+				} else {
+					String status = getOozie().getElementStatus(getDf(), cur);
 
-				String pathExistsStr = null;
-				if (cur != null) {
-					boolean pathExists = false;
-					for (Entry<String, DFEOutput> e2 : cur.getDFEOutput()
-							.entrySet()) {
+					logger.info(e.getKey() + " - " + status);
 
-						logger.info("path: " + e2.getValue().getPath());
+					String pathExistsStr = null;
+					if (cur != null) {
+						boolean pathExists = false;
+						for (Entry<String, DFEOutput> e2 : cur.getDFEOutput()
+								.entrySet()) {
 
-						pathExists |= e2.getValue().isPathExists();
+							logger.info("path: " + e2.getValue().getPath());
 
+							pathExists |= e2.getValue().isPathExists();
+
+						}
+						if (!cur.getDFEOutput().isEmpty()) {
+							pathExistsStr = String.valueOf(pathExists);
+						}
 					}
-					if (!cur.getDFEOutput().isEmpty()) {
-						pathExistsStr = String.valueOf(pathExists);
-					}
+
+					result[i++] = new String[] { e.getKey(), status, pathExistsStr };
 				}
-
-				result[i++] = new String[] { e.getKey(), status, pathExistsStr };
 			}
+
+		} catch (Exception e) {
+			logger.info("Error " + e + " - " + e.getMessage());	
+			MessageUseful.addErrorMessage(getMessageResources("msg_error_oozie_process"));
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
 		}
 
 		return result;
 	}
 
-	public String[] getArrowType(String groupOutId, String groupInId,
-			String outputName) throws Exception {
+	public String[] getArrowType(String groupOutId, String groupInId, String outputName) throws Exception {
 
 		logger.info("getArrowType");
 
@@ -1305,14 +1320,12 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		logger.info("getArrowType");
 
-		Map<String, String> params = FacesContext.getCurrentInstance()
-				.getExternalContext().getRequestParameterMap();
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String groupOutId = params.get("groupOutId");
 		String groupInId = params.get("groupInId");
 		String outputName = params.get("outputName");
 
-		logger.info("getArrowType " + groupOutId + " " + groupInId + " "
-				+ outputName);
+		logger.info("getArrowType " + groupOutId + " " + groupInId + " " + outputName);
 
 		return getArrowType(groupOutId, groupInId, outputName);
 	}
@@ -1334,16 +1347,12 @@ public class CanvasBean extends BaseBean implements Serializable {
 				break;
 			}
 		} catch (Exception e) {
-			MessageUseful
-			.addErrorMessage("Error when updating link colors: NULL POINTER"); // FIXME
-			HttpServletRequest request = (HttpServletRequest) FacesContext
-					.getCurrentInstance().getExternalContext().getRequest();
+			MessageUseful.addErrorMessage(getMessageResources("msg_error_update_link_colors"));
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
-
 		}
 
-		logger.info("getAllArrowType " + groupOutId + " " + groupInId + " "
-				+ outputName);
+		logger.info("getAllArrowType " + groupOutId + " " + groupInId + " "	+ outputName);
 
 		return getArrowType(groupOutId, groupInId, outputName);
 	}
@@ -1352,39 +1361,51 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		logger.info("getPositions");
 
-		JSONArray jsonElements = new JSONArray();
-		JSONArray jsonLinks = new JSONArray();
+		try{
 
-		if(getDf() != null){
+			JSONArray jsonElements = new JSONArray();
+			JSONArray jsonLinks = new JSONArray();
 
-			for (DataFlowElement e : getDf().getElement()) {
-				jsonElements.put(new Object[] { e.getComponentId(), e.getName(),
-						LocalFileSystem.relativize(getCurrentPage(), e.getImage()),
-						e.getX(), e.getY() });
-			}
+			if(getDf() != null){
 
-			for (DataFlowElement e : getDf().getElement()) {
-				Map<String,List<DataFlowElement>> elMap = e.getInputComponent(); 
-				if(elMap != null){
-					for (Map.Entry<String, List<DataFlowElement>> entry : elMap.entrySet()) {
-						for (DataFlowElement dfe : entry.getValue()) {
-							jsonLinks.put(new Object[] { dfe.getComponentId(),
-									e.getComponentId() });
+				for (DataFlowElement e : getDf().getElement()) {
+					jsonElements.put(new Object[] { e.getComponentId(), e.getName(),
+							LocalFileSystem.relativize(getCurrentPage(), e.getImage()),
+							e.getX(), e.getY() });
+				}
+
+				for (DataFlowElement e : getDf().getElement()) {
+					Map<String,List<DataFlowElement>> elMap = e.getInputComponent(); 
+					if(elMap != null){
+						for (Map.Entry<String, List<DataFlowElement>> entry : elMap.entrySet()) {
+							for (DataFlowElement dfe : entry.getValue()) {
+								jsonLinks.put(new Object[] { dfe.getComponentId(),
+										e.getComponentId() });
+							}
 						}
 					}
 				}
+
+			}else{
+				logger.info("Error getPositions getDf NULL ");
 			}
 
-		}else{
-			logger.info("Error getPositions getDf NULL ");
+			logger.info("getPositions getNameWorkflow " + getNameWorkflow());
+			logger.info("getPositions getPath " + getPath());
+			logger.info("getPositions jsonElements.toString " + jsonElements.toString());
+			logger.info("getPositions jsonLinks.toString " + jsonLinks.toString());
+
+			return new String[] { getNameWorkflow(), getPath(), jsonElements.toString(), jsonLinks.toString() };
+
+
+		} catch (Exception e) {
+			logger.info("Error " + e + " - " + e.getMessage());	
+			MessageUseful.addErrorMessage(getMessageResources("msg_error_oops"));
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
 		}
-
-		logger.info("getPositions getNameWorkflow " + getNameWorkflow());
-		logger.info("getPositions getPath " + getPath());
-		logger.info("getPositions jsonElements.toString " + jsonElements.toString());
-		logger.info("getPositions jsonLinks.toString " + jsonLinks.toString());
-
-		return new String[] { getNameWorkflow(), getPath(), jsonElements.toString(), jsonLinks.toString() };
+		
+		return new String[]{};
 	}
 
 	public String getIdElement(String idGroup) {

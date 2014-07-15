@@ -794,9 +794,8 @@
 					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
-				<a4j:jsFunction name="updateOutputStatus"
-					data="#{canvasBean.outputStatus}"
-					oncomplete="updateArcStatus(data);" reRender="errorTable">
+				<a4j:jsFunction name="updateOutputStatus" data="#{canvasBean.outputStatus}"
+					oncomplete="updateArcStatus(data);" reRender="errorTable, msnError" >
 					<a4j:actionparam name="groupId" />
 				</a4j:jsFunction>
 			</a4j:region>
@@ -837,7 +836,7 @@
 
 				<a4j:jsFunction name="updateRunningStatus"
 					data="#{canvasBean.runningStatus}"
-					oncomplete="updateCanvasRunningStatus(data);" reRender="errorTable" />
+					oncomplete="updateCanvasRunningStatus(data);" reRender="errorTable, msnError" />
 			</a4j:region>
 
 			<a4j:region>
@@ -1610,11 +1609,7 @@
                     		<h:outputText value="#{messages.label_tab_hiveview}" />
                     	</a>
                     </li>
-                    <li>
-                    	<a href="#tabs-5">
-                    		<h:outputText value="#{messages.label_tab_hbaseview}" />
-                    	</a>
-                    </li>
+                    
 
 					<button id="changeTabTabs2" style="border: hidden;">&#9660;</button>
 
@@ -1665,9 +1660,7 @@
                         </h:panelGroup>
                     </a4j:region>
                 </div>
-                <div id="tabs-5" style="overflow:hidden;">
-                    <p>not ready yet</p>
-                </div>
+                
 			</div>
 
 		</div>

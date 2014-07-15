@@ -250,24 +250,22 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 		Iterator<DataFlowElement> it = list.iterator();
 		while (it.hasNext()) {
 			DataFlowElement cur = it.next();
-			logger.debug("Delete action " + cur.getName() + " "
-					+ cur.getComponentId());
+			logger.info("Delete action " + cur.getName() + " " + cur.getComponentId());
 			if (cur.getOozieAction() != null) {
-				logger.debug("Have to delete it...");
+				logger.info("Have to delete it...");
 				Iterator<String> itS = cur.getDFEOutput().keySet().iterator();
-				Map<String, DFEOutput> mapO = new HashMap<String, DFEOutput>(
-						cur.getDFEOutput().size());
+				Map<String, DFEOutput> mapO = new HashMap<String, DFEOutput>(cur.getDFEOutput().size());
 				while (itS.hasNext()) {
 					String key = itS.next();
 					DFEOutput o = cur.getDFEOutput().get(key);
 
-					if (o != null
-							&& o.getSavingState() == SavingState.TEMPORARY
-							&& (cur.getOutputComponent().get(key) != null && !cur
-									.getOutputComponent().get(key).isEmpty())) {
+					if (o != null && o.getSavingState() == SavingState.TEMPORARY
+							&& (cur.getOutputComponent().get(key) != null 
+							&& !cur.getOutputComponent().get(key).isEmpty())) {
 						mapO.put(key, o);
 					}
 				}
+				
 				if (mapO.size() > 0) {
 					String attrNameStr = "delete_" + cur.getComponentId();
 					deleteList.add(cur.getComponentId());
@@ -281,9 +279,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 					while (itS.hasNext()) {
 						String key = itS.next();
 						DFEOutput o = mapO.get(key);
-						o.oozieRemove(doc, action, directoryToWrite,
-								directoryToWrite.getName(),
-								"delete_" + cur.getComponentId());
+						o.oozieRemove(doc, action, directoryToWrite, directoryToWrite.getName(), "delete_" + cur.getComponentId());
 					}
 
 					elements.put(attrNameStr, action);
@@ -315,18 +311,19 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 		logger.info("createOozieJob");
 
 		// Get delete list
-		List<String> deleteList = createDelete(doc, error, endElement,
-				directoryToWrite, list);
+		List<String> deleteList = createDelete(doc, error, endElement, directoryToWrite, list);
 
+		logger.info("createDelete OK");
+		
 		// Do action
 		Iterator<DataFlowElement> it = list.iterator();
 		while (it.hasNext()) {
 			DataFlowElement cur = it.next();
-			logger.debug("Create action " + cur.getName() + " "
-					+ cur.getComponentId());
+			logger.info("Create action " + cur.getName() + " " + cur.getComponentId());
 			if (cur.getOozieAction() != null) {
-				logger.debug("Oozie action is not null");
+				logger.info("Oozie action is not null");
 				String attrNameStr = getNameAction(cur);
+				logger.info("attrNameStr " + attrNameStr);
 				// Implement the action
 				Element action = doc.createElement("action");
 				Attr attrName = doc.createAttribute("name");
@@ -335,26 +332,21 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				action.setAttributeNode(attrName);
 
 				// Create action node
-				logger.debug("write process...");
-				cur.writeProcess(doc, action, directoryToWrite,
-						directoryToWrite.getName(), getNameAction(cur));
+				logger.info("write process...");
+				cur.writeProcess(doc, action, directoryToWrite, directoryToWrite.getName(), getNameAction(cur));
 
-				logger.debug("Plug with delete of previous actions...");
+				logger.info("Plug with delete of previous actions...");
 
 				// Get What is after
-				Set<String> out = new HashSet<String>(cur
-						.getAllInputComponent().size()
-						+ cur.getAllOutputComponent().size());
-				Iterator<DataFlowElement> itIn = cur.getAllInputComponent()
-						.iterator();
+				Set<String> out = new HashSet<String>(cur.getAllInputComponent().size()	+ cur.getAllOutputComponent().size());
+				Iterator<DataFlowElement> itIn = cur.getAllInputComponent().iterator();
 				while (itIn.hasNext()) {
 					DataFlowElement in = itIn.next();
 					if (deleteList.contains(in.getComponentId())) {
 						out.add("delete_" + in.getComponentId());
 					}
 				}
-				Iterator<DataFlowElement> itOut = cur.getAllOutputComponent()
-						.iterator();
+				Iterator<DataFlowElement> itOut = cur.getAllOutputComponent().iterator();
 				while (itOut.hasNext()) {
 					DataFlowElement outEl = itOut.next();
 					if (list.contains(outEl)) {
