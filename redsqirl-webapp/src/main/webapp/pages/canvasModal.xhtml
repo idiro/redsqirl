@@ -280,8 +280,8 @@
                         	style="resize:none;border:1pxsolid;width:85%;" id="command">
                         	
                        		<a4j:commandButton action="#{canvasModalBean.openHelpTextEditorModal}" value=". . ."  
-	                        	reRender="commandText,listFields,listFunctions,listCategories,listOperation,listCategoriesOperation" 
-	                            oncomplete="#{rich:component('textEditorPanel')}.show()" style="float:right;margin-right:62px;height:46px;" 
+	                        	reRender="commandText,listFields,listFunctions,listCategories,listOperation,listCategoriesOperation,errorTable,msnError" 
+	                            oncomplete="#{rich:component('textEditorPanel')}.show();" style="float:right;margin-right:62px;height:46px;" 
 	                            rendered="#{interCur.editor.openPopup == 'Y'}">
 	                            <a4j:actionparam name="idInteraction" value="#{interCur.id}"/>
 							</a4j:commandButton>
@@ -394,8 +394,8 @@
 												       rendered="#{interCur.columnType[column] == 'editor' }" 
 												       styleClass="tableInteractionTextEditor" >
 			                                   	<a4j:commandButton action="#{canvasModalBean.openHelpTextEditorModal}" value="..." style="float:right;width:15%;" 
-			                                   		reRender="commandText,listFields,listFunctions,listCategories,listOperation,listCategoriesOperation,command,tableInteraction" 
-			                                   		oncomplete="#{rich:component('textEditorPanel')}.show()">
+			                                   		reRender="commandText,listFields,listFunctions,listCategories,listOperation,listCategoriesOperation,command,tableInteraction,errorTable,msnError" 
+			                                   		oncomplete="#{rich:component('textEditorPanel')}.show();">
 			                                   		<a4j:actionparam  name="idInteraction" value="#{interCur.id}"/>
 			                                           <a4j:actionparam  name="rowKey" value="#{rowNb}"/>
 			                                           <a4j:actionparam  name="column" value="#{column}"/>
