@@ -2321,15 +2321,12 @@ function updateArrowLabel(idOutput, idInput, label) {
 
 }
 
-function updateAllArrowColours(canvasName){
-	
+function updateAllArrowColours(canvasName, data){
 	var layer = canvasArray[canvasName].layer;
-	
-	jQuery.each(layer.getChildren(), function(index, value) {
-		if (value.isArrow == true) {
-			updateAllArrowColor(value.idOutput, value.idInput);
-		}
-	});
+	for (var i = 0; i < data.length; i++) {
+        updateArrowType(data[i][0], data[i][1], data[i][2], data[i][3], data[i][4]);
+        updateArrowLabel(data[i][0], data[i][1], data[i][5]);
+    }
 	
 }
 

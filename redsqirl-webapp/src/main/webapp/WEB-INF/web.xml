@@ -4,15 +4,14 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 	<display-name>redsqirl</display-name>
 
-
-<context-param>
-    <param-name>javax.faces.PARTIAL_STATE_SAVING</param-name>
-    <param-value>false</param-value>
-</context-param>
-<context-param>  
- <param-name>org.ajax4jsf.SERIALIZE_SERVER_STATE</param-name>  
- <param-value>true</param-value>  
- </context-param>
+	<context-param>
+		<param-name>org.ajax4jsf.SERIALIZE_SERVER_STATE</param-name>
+		<param-value>true</param-value>
+	</context-param>
+	<context-param>
+		<param-name>javax.faces.PARTIAL_STATE_SAVING</param-name>
+		<param-value>false</param-value>
+	</context-param>
 
 	<!-- Faces Parameters -->
 	<context-param>
@@ -109,16 +108,16 @@
 		<dispatcher>FORWARD</dispatcher>
 		<dispatcher>INCLUDE</dispatcher>
 	</filter-mapping>
-   
-    <filter>
-        <filter-name>RichFacesFilter</filter-name>
-        <filter-class>com.redsqirl.useful.RichFacesFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>RichFacesFilter</filter-name>
-        <url-pattern>/a4j/*</url-pattern>
-    </filter-mapping>
-     
+
+	<filter>
+		<filter-name>RichFacesFilter</filter-name>
+		<filter-class>com.redsqirl.useful.RichFacesFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>RichFacesFilter</filter-name>
+		<url-pattern>/a4j/*</url-pattern>
+	</filter-mapping>
+
 	<listener>
 		<listener-class>com.sun.faces.config.ConfigureListener</listener-class>
 	</listener>
