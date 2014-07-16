@@ -1046,7 +1046,7 @@ function addElements(canvasName, positions) {
 					positionsArrays[i][0]);
 		maxX = Math.max(maxX,positionsArrays[i][3]);
 		maxY = Math.max(maxY,positionsArrays[i][4]);
-		updateIdObj(positionsArrays[i][0], positionsArrays[i][0]);
+		//updateIdObj(positionsArrays[i][0], positionsArrays[i][0]);
 		updateTypeObj(canvasName, positionsArrays[i][0], positionsArrays[i][0]);
 		updateLabelObj(positionsArrays[i][0], positionsArrays[i][0]);
 		group.hasChangedId = true;
@@ -2321,15 +2321,12 @@ function updateArrowLabel(idOutput, idInput, label) {
 
 }
 
-function updateAllArrowColours(canvasName){
-	
+function updateAllArrowColours(canvasName, data){
 	var layer = canvasArray[canvasName].layer;
-	
-	jQuery.each(layer.getChildren(), function(index, value) {
-		if (value.isArrow == true) {
-			updateAllArrowColor(value.idOutput, value.idInput);
-		}
-	});
+	for (var i = 0; i < data.length; i++) {
+        updateArrowType(data[i][0], data[i][1], data[i][2], data[i][3], data[i][4]);
+        updateArrowLabel(data[i][0], data[i][1], data[i][5]);
+    }
 	
 }
 

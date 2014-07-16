@@ -55,6 +55,14 @@ public class OozieDag {
 				addLink(key, elIt.next());
 			}
 		}
+		Iterator<String> elsIt = graphOut.keySet().iterator();
+		while(elsIt.hasNext()){
+			String el = elsIt.next();
+			Iterator<String> linkIt = graphOut.get(el).iterator();
+			while(linkIt.hasNext()){
+				removeIregularLink(el,linkIt.next());
+			}
+		}
 	}
 
 	/**
@@ -66,19 +74,8 @@ public class OozieDag {
 	 */
 	public void addLink(String elementFrom, String elementTo) {
 		
-		boolean found = false;
-		Iterator<String> previousElementIt = getAllBefore(elementFrom).iterator();
-		String previousElement = null;
-		while(previousElementIt.hasNext() && !found){
-			previousElement = previousElementIt.next();
-			if(graphIn.containsKey(elementTo)){
-				found = graphIn.get(elementTo).contains(previousElement);
-			}
-		}
-		if(found){
-			removeLink(previousElement, elementTo);
-		}
 		
+		//Add a link only if there is no dependency yet
 		if(!isLeafOf(elementTo,elementFrom)){
 		
 			if (!graphOut.containsKey(elementFrom)) {
@@ -92,6 +89,27 @@ public class OozieDag {
 				graphIn.put(elementTo, new LinkedHashSet<String>());
 			}
 			graphIn.get(elementTo).add(elementFrom);
+		}
+		
+		removeIregularLink(elementFrom,elementTo);
+	}
+	
+	protected void removeIregularLink(String elementFrom,String elementTo){
+
+		//Search if among the ancestor of elementFrom there is a parent of elementTo. 
+		//If it is the case we remove the link
+		boolean found = false;
+		Iterator<String> previousElementIt = getAllBefore(elementFrom).iterator();
+		String previousElement = null;
+		while(previousElementIt.hasNext() && !found){
+			previousElement = previousElementIt.next();
+			if(graphIn.containsKey(elementTo)){
+				found = graphIn.get(elementTo).contains(previousElement);
+			}
+		}
+		
+		if(found){
+			removeLink(previousElement, elementTo);
 		}
 	}
 	
@@ -244,6 +262,9 @@ public class OozieDag {
 			}
 
 		}
+		if(!found){
+			rootTest = null;
+		}
 		return rootTest;
 	}
 
@@ -326,6 +347,9 @@ public class OozieDag {
 				}
 				toTest = swap;
 			}
+		}
+		if(!found){
+			leafTest = null;
 		}
 		return leafTest;
 	}
