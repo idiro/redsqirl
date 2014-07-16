@@ -61,12 +61,12 @@ public class HiveJoinTests {
 				.add(new_path1);
 
 		Tree<String> feat1 = dataSetTree.getFirstChild("browse")
-				.getFirstChild("output").add("feature");
+				.getFirstChild("output").add("field");
 		feat1.add("name").add("ID");
 		feat1.add("type").add("STRING");
 
 		Tree<String> feat2 = dataSetTree.getFirstChild("browse")
-				.getFirstChild("output").add("feature");
+				.getFirstChild("output").add("field");
 		feat2.add("name").add("VALUE");
 		feat2.add("type").add("INT");
 
@@ -102,7 +102,7 @@ public class HiveJoinTests {
 		updateHive(w, hive, TestUtils.getTablePath(1),
 				TestUtils.getTablePath(2), hInt);
 		logger.debug("Features "
-				+ hive.getDFEOutput().get(HiveJoin.key_output).getFeatures());
+				+ hive.getDFEOutput().get(HiveJoin.key_output).getFields());
 
 		hive.getDFEOutput()
 				.get(HiveJoin.key_output)

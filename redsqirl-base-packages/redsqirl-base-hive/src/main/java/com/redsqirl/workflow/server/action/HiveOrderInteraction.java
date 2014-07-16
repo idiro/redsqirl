@@ -3,7 +3,7 @@ package com.redsqirl.workflow.server.action;
 
 import java.rmi.RemoteException;
 
-import com.redsqirl.utils.FeatureList;
+import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.AppendListInteraction;
 
 public class HiveOrderInteraction extends AppendListInteraction{
@@ -37,8 +37,8 @@ public class HiveOrderInteraction extends AppendListInteraction{
 	 * @throws RemoteException
 	 */
 	public void update() throws RemoteException{
-		FeatureList features = el.getNewFeatures();
-		setPossibleValues(features.getFeaturesNames());
+		FieldList fields = el.getNewFields();
+		setPossibleValues(fields.getFieldNames());
 		
 	}
 	/**

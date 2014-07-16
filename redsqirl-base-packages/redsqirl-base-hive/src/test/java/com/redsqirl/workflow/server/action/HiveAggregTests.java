@@ -59,14 +59,19 @@ public class HiveAggregTests {
 				.add(new_path1);
 
 		Tree<String> feat2 = dataSetTree.getFirstChild("browse")
-				.getFirstChild("output").add("feature");
+				.getFirstChild("output").add("field");
 		feat2.add("name").add("id");
 		feat2.add("type").add("STRING");
 
 		Tree<String> feat3 = dataSetTree.getFirstChild("browse")
-				.getFirstChild("output").add("feature");
+				.getFirstChild("output").add("field");
 		feat3.add("name").add("value");
 		feat3.add("type").add("INT");
+		
+		Tree<String> feat4 = dataSetTree.getFirstChild("browse")
+				.getFirstChild("output").add("field");
+		feat4.add("name").add("category_Test");
+		feat4.add("type").add("STRING");
 
 		logger.info("updating out");
 		String error = src.updateOut();
@@ -99,7 +104,7 @@ public class HiveAggregTests {
 		error = hive.updateOut();
 		assertTrue("hive select update: " + error, error == null);
 		logger.debug("Features "
-				+ hive.getDFEOutput().get(HiveSelect.key_output).getFeatures());
+				+ hive.getDFEOutput().get(HiveSelect.key_output).getFields());
 
 		hive.getDFEOutput()
 				.get(HiveSelect.key_output)
@@ -194,7 +199,7 @@ public class HiveAggregTests {
 			rowId.add(HiveTableSelectInteraction.table_type_title).add("DOUBLE");
 			rowId = out.add("row");
 			rowId.add(HiveTableSelectInteraction.table_feat_title).add("cnt_category");
-			rowId.add(HiveTableSelectInteraction.table_op_title).add("COUNT(DISTINCT(caTegory_test))");
+			rowId.add(HiveTableSelectInteraction.table_op_title).add("COUNT(DISTINCT(category_Test))");
 			rowId.add(HiveTableSelectInteraction.table_type_title).add("LONG");
 		}
 

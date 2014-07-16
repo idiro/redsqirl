@@ -7,8 +7,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.redsqirl.utils.FeatureList;
-import com.redsqirl.utils.OrderedFeatureList;
+import com.redsqirl.utils.FieldList;
+import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.DataProperty;
 import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.connect.HiveInterface;
@@ -30,8 +30,8 @@ public class HiveUnion extends HiveElement {
 	 * 
 	 */
 	private static final long serialVersionUID = -2971963679008329394L;
-	/** Feature Key */
-	public static final String key_featureTable = "Features";
+	/** Field Key */
+	public static final String key_fieldTable = "Fields";
 	/** Union Condidtion Key */
 	public final String key_union_condition = "union_cond";
 	/**
@@ -79,11 +79,11 @@ public class HiveUnion extends HiveElement {
 		page2 = addPage(HiveLanguageManager.getText("hive.union_page2.title"),
 				HiveLanguageManager.getText("hive.union_page2.legend"), 1);
 
-		tUnionSelInt = new HiveTableUnionInteraction(key_featureTable,
+		tUnionSelInt = new HiveTableUnionInteraction(key_fieldTable,
 				HiveLanguageManager
-						.getText("hive.union_features_interaction.title"),
+						.getText("hive.union_fields_interaction.title"),
 				HiveLanguageManager
-						.getText("hive.union_features_interaction.legend"), 0,
+						.getText("hive.union_fields_interaction.legend"), 0,
 				0, this);
 
 		page2.addInteraction(tUnionSelInt);
@@ -187,55 +187,55 @@ public class HiveUnion extends HiveElement {
 		return query;
 	}
 	/**
-	 * Get the features that are in the input
-	 * @return input FeatureList
+	 * Get the fields that are in the input
+	 * @return input FieldList
 	 * @throws RemoteException
 	 */
-	public FeatureList getInFeatures() throws RemoteException {
-		FeatureList ans = new OrderedFeatureList();
+	public FieldList getInFields() throws RemoteException {
+		FieldList ans = new OrderedFieldList();
 		Map<String, DFEOutput> aliases = getAliases();
 
 		Iterator<String> it = aliases.keySet().iterator();
 		while (it.hasNext()) {
 			String alias = it.next();
-			FeatureList mapTable = aliases.get(alias).getFeatures();
-			Iterator<String> itFeat = mapTable.getFeaturesNames().iterator();
+			FieldList mapTable = aliases.get(alias).getFields();
+			Iterator<String> itFeat = mapTable.getFieldNames().iterator();
 			while (itFeat.hasNext()) {
 				String cur = itFeat.next();
-				ans.addFeature(alias + "." + cur, mapTable.getFeatureType(cur));
+				ans.addField(alias + "." + cur, mapTable.getFieldType(cur));
 			}
 		}
 		return ans;
 	}
 
 	/**
-	 * Get the input features with the alias
+	 * Get the input fields with the alias
 	 * @param alias
-	 * @return FeatureList
+	 * @return FieldList
 	 * @throws RemoteException
 	 */
-	public FeatureList getInFeatures(String alias) throws RemoteException {
-		FeatureList ans = null;
+	public FieldList getInFields(String alias) throws RemoteException {
+		FieldList ans = null;
 		Map<String, DFEOutput> aliases = getAliases();
 		if(aliases.get(alias) != null){
-			ans = new OrderedFeatureList();
-			FeatureList mapTable = aliases.get(alias).getFeatures();
-			Iterator<String> itFeat = mapTable.getFeaturesNames().iterator();
+			ans = new OrderedFieldList();
+			FieldList mapTable = aliases.get(alias).getFields();
+			Iterator<String> itFeat = mapTable.getFieldNames().iterator();
 			while (itFeat.hasNext()) {
 				String cur = itFeat.next();
-				ans.addFeature(alias + "." + cur, mapTable.getFeatureType(cur));
+				ans.addField(alias + "." + cur, mapTable.getFieldType(cur));
 			}
 		}
 		return ans;
 	}
 	/**
-	 * Get the feature list that are generated from this action
-	 * @return new FeatureList
+	 * Get the field list that are generated from this action
+	 * @return new FieldList
 	 * @throws RemoteException
 	 */
 	@Override
-	public FeatureList getNewFeatures() throws RemoteException {
-		return tUnionSelInt.getNewFeatures();
+	public FieldList getNewFields() throws RemoteException {
+		return tUnionSelInt.getNewFields();
 	}
 
 	/**

@@ -11,13 +11,13 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.redsqirl.utils.FeatureList;
-import com.redsqirl.utils.OrderedFeatureList;
+import com.redsqirl.utils.FieldList;
+import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.utils.TreeNonUnique;
 import com.redsqirl.workflow.server.EditorInteraction;
 import com.redsqirl.workflow.server.action.AbstractDictionary;
-import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 
 /**
@@ -505,70 +505,70 @@ public class HiveDictionary extends AbstractDictionary {
 										"@function:ELSE(VALUE)@short:Value to be returned when no condition inside a CASE END is found to be true" } });
 	}
 
-	public static FeatureType getType(String hiveType) {
-		FeatureType ans = null;
+	public static FieldType getType(String hiveType) {
+		FieldType ans = null;
 		if (hiveType.equalsIgnoreCase("BIGINT")) {
-			ans = FeatureType.LONG;
+			ans = FieldType.LONG;
 		} else {
-			ans = FeatureType.valueOf(hiveType);
+			ans = FieldType.valueOf(hiveType);
 		}
 		return ans;
 	}
 
 	/**
-	 * Get the Hive type from a FeatureType
+	 * Get the Hive type from a FieldType
 	 * 
 	 * @param feat
 	 * @return type
 	 */
-	public static String getHiveType(FeatureType feat) {
-		String featureType = feat.name();
+	public static String getHiveType(FieldType feat) {
+		String fieldType = feat.name();
 		switch (feat) {
 		case LONG:
-			featureType = "BIGINT";
+			fieldType = "BIGINT";
 			break;
 		case CATEGORY:
-			featureType = "STRING";
+			fieldType = "STRING";
 			break;
 		case CHAR:
-			featureType = "STRING";
+			fieldType = "STRING";
 			break;
 		case DATETIME:
-			featureType = "TIMESTAMP";
+			fieldType = "TIMESTAMP";
 			break;
 		default:
 			break;
 		}
-		return featureType;
+		return fieldType;
 	}
 
 	/**
 	 * Get the return type of an expression
 	 * 
 	 * @param expr
-	 * @param features
+	 * @param fields
 	 * @param nonAggregFeats
 	 * @return returned type
 	 * @throws Exception
 	 */
-	public String getReturnType(String expr, FeatureList features,
+	public String getReturnType(String expr, FieldList fields,
 			Set<String> nonAggregFeats) throws Exception {
 		logger.info("expression : " + expr);
 		logger.info("Aggreg operation: "+nonAggregFeats != null);
-		logger.info("features List : " + features.getFeaturesNames().toString());
-		// logger.info("features aggreg : "+nonAggregFeats.toString());
+		logger.info("fields List : " + fields.getFieldNames().toString());
+		// logger.info("fields aggreg : "+nonAggregFeats.toString());
 		if (expr == null || expr.trim().isEmpty()) {
 			throw new Exception("No expressions to test");
 		}
-		logger.info("features passed to dictionary : "
-				+ features.getFeaturesNames().toString());
+		logger.info("fields passed to dictionary : "
+				+ fields.getFieldNames().toString());
 		// Test if all the nonAggregFeats have a type
 		if (nonAggregFeats != null
-				&& !features.getFeaturesNames().containsAll(nonAggregFeats)) {
-			logger.error("Aggregation features unknown");
-			throw new Exception("Aggregation features unknown("
+				&& !fields.getFieldNames().containsAll(nonAggregFeats)) {
+			logger.error("Aggregation fields unknown");
+			throw new Exception("Aggregation fields unknown("
 					+ nonAggregFeats.toString() + "): "
-					+ features.getFeaturesNames().toString());
+					+ fields.getFieldNames().toString());
 		}
 
 		expr = expr.trim().toUpperCase();
@@ -622,12 +622,12 @@ public class HiveDictionary extends AbstractDictionary {
 			if (nonAggregFeats != null) {
 				itS = nonAggregFeats.iterator();
 			} else {
-				itS = features.getFeaturesNames().iterator();
+				itS = fields.getFieldNames().iterator();
 			}
 			while (itS.hasNext() && type == null) {
 				String feat = itS.next();
 				if (feat.equalsIgnoreCase(expr)) {
-					type = getHiveType(features.getFeatureType(feat));
+					type = getHiveType(fields.getFieldType(feat));
 				}
 			}
 		}
@@ -635,20 +635,20 @@ public class HiveDictionary extends AbstractDictionary {
 		if (type == null) {
 			if (isLogicalOperation(expr)) {
 				logger.debug(expr + ", is a logical operation");
-				if (runLogicalOperation(expr, features, nonAggregFeats)) {
+				if (runLogicalOperation(expr, fields, nonAggregFeats)) {
 					type = "BOOLEAN";
 				}
 			} else if (isConditionalOperation(expr)) {
 				logger.debug(expr + ", is a relational operation");
-				type = runConditionalOperation(expr, features, nonAggregFeats);
+				type = runConditionalOperation(expr, fields, nonAggregFeats);
 			} else if (isRelationalOperation(expr)) {
 				logger.debug(expr + ", is a relational operation");
-				if (runRelationalOperation(expr, features, nonAggregFeats)) {
+				if (runRelationalOperation(expr, fields, nonAggregFeats)) {
 					type = "BOOLEAN";
 				}
 			} else if (isArithmeticOperation(expr)) {
 				logger.debug(expr + ", is an arithmetic operation");
-				if (runArithmeticOperation(expr, features, nonAggregFeats)) {
+				if (runArithmeticOperation(expr, fields, nonAggregFeats)) {
 					type = "NUMBER";
 				}
 			} else if (isAggregatorMethod(expr)) {
@@ -656,16 +656,16 @@ public class HiveDictionary extends AbstractDictionary {
 					throw new Exception("Cannot use aggregation method");
 				}
 				logger.debug(expr + ", is an agg method");
-				FeatureList fl = new OrderedFeatureList();
+				FieldList fl = new OrderedFieldList();
 				List<String> l = new LinkedList<String>();
-				l.addAll(features.getFeaturesNames());
+				l.addAll(fields.getFieldNames());
 				l.removeAll(nonAggregFeats);
 				logger.debug("feats list size " + l.size());
 				Iterator<String> lIt = l.iterator();
 				while (lIt.hasNext()) {
 					String nameF = lIt.next();
 					logger.debug("name " + nameF);
-					fl.addFeature(nameF, features.getFeatureType(nameF));
+					fl.addField(nameF, fields.getFieldType(nameF));
 				}
 				type = runMethod(expr, fl, true);
 				
@@ -676,14 +676,14 @@ public class HiveDictionary extends AbstractDictionary {
 					throw new Exception("Cannot use non aggregation method");
 				}
 
-				FeatureList fl = features;
+				FieldList fl = fields;
 				if (nonAggregFeats != null) {
-					fl = new OrderedFeatureList();
-					Iterator<String> featureAggIterator = nonAggregFeats
+					fl = new OrderedFieldList();
+					Iterator<String> fieldAggIterator = nonAggregFeats
 							.iterator();
-					while (featureAggIterator.hasNext()) {
-						String nameF = featureAggIterator.next();
-						fl.addFeature(nameF, features.getFeatureType(nameF));
+					while (fieldAggIterator.hasNext()) {
+						String nameF = fieldAggIterator.next();
+						fl.addField(nameF, fields.getFieldType(nameF));
 					}
 				}
 				type = runMethod(expr, fl, false);
@@ -697,16 +697,16 @@ public class HiveDictionary extends AbstractDictionary {
 
 	/**
 	 * Get a return type of an expression with an empty set of aggregation
-	 * features
+	 * fields
 	 * 
 	 * @param expr
-	 * @param features
+	 * @param fields
 	 * @return returned type
 	 * @throws Exception
 	 */
-	public String getReturnType(String expr, FeatureList features)
+	public String getReturnType(String expr, FieldList fields)
 			throws Exception {
-		return getReturnType(expr, features, null);
+		return getReturnType(expr, fields, null);
 	}
 
 	/**
@@ -801,22 +801,22 @@ public class HiveDictionary extends AbstractDictionary {
 		Tree<String> keywords = new TreeNonUnique<String>("keywords");
 		editor.add(keywords);
 		Iterator<DFEOutput> itIn = in.iterator();
-		Set<String> featureName = new LinkedHashSet<String>();
+		Set<String> fieldName = new LinkedHashSet<String>();
 		while (itIn.hasNext()) {
 			DFEOutput inCur = itIn.next();
-			Iterator<String> it = inCur.getFeatures().getFeaturesNames()
+			Iterator<String> it = inCur.getFields().getFieldNames()
 					.iterator();
-			logger.debug("add features...");
+			logger.debug("add fields...");
 			while (it.hasNext()) {
 				String cur = it.next();
 				logger.debug(cur);
-				if (!featureName.contains(cur)) {
+				if (!fieldName.contains(cur)) {
 					Tree<String> word = new TreeNonUnique<String>("word");
 					word.add("name").add(cur);
 					word.add("info").add(
-							inCur.getFeatures().getFeatureType(cur).name());
+							inCur.getFields().getFieldType(cur).name());
 					keywords.add(word);
-					featureName.add(cur);
+					fieldName.add(cur);
 				}
 			}
 		}
@@ -833,7 +833,7 @@ public class HiveDictionary extends AbstractDictionary {
 	}
 
 	/**
-	 * Generate an EditorInteraction from a FeatureList
+	 * Generate an EditorInteraction from a FieldList
 	 * 
 	 * @param help
 	 * @param inFeat
@@ -841,17 +841,17 @@ public class HiveDictionary extends AbstractDictionary {
 	 * @throws RemoteException
 	 */
 	public static EditorInteraction generateEditor(Tree<String> help,
-			FeatureList inFeat) throws RemoteException {
+			FieldList inFeat) throws RemoteException {
 		logger.debug("generate Editor...");
 		Tree<String> editor = new TreeNonUnique<String>("editor");
 		Tree<String> keywords = new TreeNonUnique<String>("keywords");
 		editor.add(keywords);
-		Iterator<String> itFeats = inFeat.getFeaturesNames().iterator();
+		Iterator<String> itFeats = inFeat.getFieldNames().iterator();
 		while (itFeats.hasNext()) {
 			String cur = itFeats.next();
 			Tree<String> word = new TreeNonUnique<String>("word");
 			word.add("name").add(cur);
-			word.add("info").add(inFeat.getFeatureType(cur).name());
+			word.add("info").add(inFeat.getFieldType(cur).name());
 			keywords.add(word);
 		}
 		editor.add(help);
@@ -995,14 +995,14 @@ public class HiveDictionary extends AbstractDictionary {
 	 * Run an expression as a logical operation
 	 * 
 	 * @param expr
-	 * @param features
+	 * @param fields
 	 * @param aggregFeat
 	 * @return <code>true</code> if the expression ran successfully as a logical
 	 *         operator else <code>false</code>
 	 * @throws Exception
 	 */
 
-	private boolean runLogicalOperation(String expr, FeatureList features,
+	private boolean runLogicalOperation(String expr, FieldList fields,
 			Set<String> aggregFeat) throws Exception {
 
 		String[] split = expr.split("OR|AND");
@@ -1021,14 +1021,14 @@ public class HiveDictionary extends AbstractDictionary {
 				ok = check(
 						"BOOLEAN",
 						getReturnType(cur.substring(1, cur.length() - 1),
-								features, aggregFeat));
+								fields, aggregFeat));
 			} else if (cur.startsWith("NOT ")) {
 				ok = check(
 						"BOOLEAN",
 						getReturnType(cur.substring(4, cur.length()).trim(),
-								features, aggregFeat));
+								fields, aggregFeat));
 			} else {
-				ok = check("BOOLEAN", getReturnType(cur, features, aggregFeat));
+				ok = check("BOOLEAN", getReturnType(cur, fields, aggregFeat));
 			}
 			if (!ok) {
 				String error = "Error in expression: '" + expr + "'";
@@ -1056,17 +1056,17 @@ public class HiveDictionary extends AbstractDictionary {
 	 * Run an expression as a relational operation
 	 * 
 	 * @param expr
-	 * @param features
+	 * @param fields
 	 * @param aggregFeat
 	 * @return <code>true</code> if the expression ran as relational operation
 	 *         else <code>false</code>
 	 * @throws Exception
 	 */
 
-	private boolean runRelationalOperation(String expr, FeatureList features,
+	private boolean runRelationalOperation(String expr, FieldList fields,
 			Set<String> aggregFeat) throws Exception {
 		return runOperation(functionsMap.get(relationalOperators), expr,
-				features, null);
+				fields, null);
 	}
 	
 
@@ -1086,16 +1086,16 @@ public class HiveDictionary extends AbstractDictionary {
 	 * Run an expression as an arithmetic operation
 	 * 
 	 * @param expr
-	 * @param features
+	 * @param fields
 	 * @param agregation
 	 * @return <code>true</code> if the expression runs successfully else
 	 *         <code>false</code>
 	 */
 
-	private boolean runArithmeticOperation(String expr, FeatureList features,
+	private boolean runArithmeticOperation(String expr, FieldList fields,
 			Set<String> aggregFeat) throws Exception {
 		return runOperation(functionsMap.get(arithmeticOperators), expr,
-				features, null);
+				fields, null);
 	}
 	
 	/**
@@ -1130,13 +1130,13 @@ public class HiveDictionary extends AbstractDictionary {
 	 * Run a method
 	 * 
 	 * @param expr
-	 * @param features
+	 * @param fields
 	 * @param aggregFeat
 	 * @return Error Message
 	 * @throws Exception
 	 */
 
-	private String runMethod(String expr, FeatureList features,
+	private String runMethod(String expr, FieldList fields,
 			boolean isAggregMethod) throws Exception {
 		String type = null;
 		List<String[]> methodsFound = findAllMethod(expr, isAggregMethod);
@@ -1177,14 +1177,14 @@ public class HiveDictionary extends AbstractDictionary {
 				logger.debug(method[0].trim());
 				if (removeBracketContent(method[0]).equalsIgnoreCase("CAST()")) {
 					// Check the first argument
-					getReturnType(argSplit[0], features);
+					getReturnType(argSplit[0], fields);
 					if (check("TYPE", argSplit[1])) {
 						type = argSplit[1];
 					}
-				} else if (check(method, argSplit, features)) {
+				} else if (check(method, argSplit, fields)) {
 					type = method[2];
 					if (type.equals("ANY")){
-						type = getReturnType(argSplit[0], features);
+						type = getReturnType(argSplit[0], fields);
 					}
 				}
 			} else if (type == null) {
@@ -1219,13 +1219,13 @@ public class HiveDictionary extends AbstractDictionary {
 	 * Run a method
 	 * 
 	 * @param expr
-	 * @param features
+	 * @param fields
 	 * @param aggregFeat
 	 * @return Error Message
 	 * @throws Exception
 	 */
 
-	private String runConditionalOperation(String expr, FeatureList features,
+	private String runConditionalOperation(String expr, FieldList fields,
 			Set<String> aggregFeat) throws Exception {
 		String type = null;
 		String arg =  expr.replace("CASE", "").replace("END", "").trim();
@@ -1239,7 +1239,7 @@ public class HiveDictionary extends AbstractDictionary {
 				String argType = null;
 					
 				if (expression.trim().startsWith("WHEN")){
-					if (!getReturnType(args2[0], features).equals("BOOLEAN")){
+					if (!getReturnType(args2[0], fields).equals("BOOLEAN")){
 						String error = "Should return boolean";
 						logger.debug(error);
 						throw new Exception(error);
@@ -1255,7 +1255,7 @@ public class HiveDictionary extends AbstractDictionary {
 				}
 	
 						
-				String t = getReturnType(argType, features);
+				String t = getReturnType(argType, fields);
 				if (type == null){
 					type = t;
 				}
@@ -1277,7 +1277,7 @@ public class HiveDictionary extends AbstractDictionary {
 	 * 
 	 * @param list
 	 * @param expr
-	 * @param features
+	 * @param fields
 	 * @param aggregFeat
 	 * @return <code>true</code> if the operation ran successfully else
 	 *         <code>false</code>
@@ -1285,20 +1285,20 @@ public class HiveDictionary extends AbstractDictionary {
 	 */
 
 	private boolean runOperation(String[][] list, String expr,
-			FeatureList features, Set<String> nonAggregFeat) throws Exception {
+			FieldList fields, Set<String> nonAggregFeat) throws Exception {
 		boolean ok = false;
 		String[] method = HiveDictionary.find(list, expr);
 		if (method != null) {
 			logger.debug("In " + expr + ", method found: " + method[0]);
 			String[] splitStr = expr.split(escapeString(method[0])+"(?![^()]*+\\))");
 			if (nonAggregFeat == null) {
-				ok = check(method, splitStr, features);
+				ok = check(method, splitStr, fields);
 			} else {
-				FeatureList AF = new OrderedFeatureList();
+				FieldList AF = new OrderedFieldList();
 				Iterator<String> itA = nonAggregFeat.iterator();
 				while (itA.hasNext()) {
 					String feat = itA.next();
-					AF.addFeature(feat, features.getFeatureType(feat));
+					AF.addField(feat, fields.getFieldType(feat));
 				}
 				ok = check(method, splitStr, AF);
 			}
@@ -1336,17 +1336,16 @@ public class HiveDictionary extends AbstractDictionary {
 	}
 
 	/**
-	 * Check if a arguments and features are accepted my a method
+	 * Check if a arguments and fields are accepted my a method
 	 * 
 	 * @param method
-	 * @param args
-	 * @param features
+	 * @param arfield@param fields
 	 * @return <code>true</code> if the arguments are acceptable else
 	 *         <code>false</code>
 	 * @throws Exception
 	 */
 
-	private boolean check(String[] method, String[] args, FeatureList features)
+	private boolean check(String[] method, String[] args, FieldList fields)
 			throws Exception {
 		boolean ok = false;
 		String[] argsTypeExpected = method[1].split(",");
@@ -1356,7 +1355,7 @@ public class HiveDictionary extends AbstractDictionary {
 			ok = true;
 			for (int i = 1; i < argsTypeExpected.length; ++i) {
 				ok &= check(argsTypeExpected[i],
-						getReturnType(args[i - 1], features));
+						getReturnType(args[i - 1], fields));
 			}
 		} else if (argsTypeExpected[argsTypeExpected.length - 1].isEmpty()
 				&& argsTypeExpected.length - 1 == args.length) {
@@ -1364,13 +1363,13 @@ public class HiveDictionary extends AbstractDictionary {
 			ok = true;
 			for (int i = 0; i < argsTypeExpected.length - 1; ++i) {
 				ok &= check(argsTypeExpected[i],
-						getReturnType(args[i], features));
+						getReturnType(args[i], fields));
 			}
 		} else if (argsTypeExpected.length == args.length) {
 			ok = true;
 			for (int i = 0; i < argsTypeExpected.length; ++i) {
 				ok &= check(argsTypeExpected[i],
-						getReturnType(args[i], features));
+						getReturnType(args[i], fields));
 			}
 		}
 

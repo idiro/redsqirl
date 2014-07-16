@@ -134,8 +134,8 @@ public class PigSampleTests {
 			// logger.info(wc.getJobInfo(jobId));
 			// error = wc.getJobInfo(jobId).toString();
 			// assertTrue(error, error.contains("SUCCEEDED"));
-			WorkflowPrefManager.resetSys();
-			WorkflowPrefManager.resetUser();
+//			WorkflowPrefManager.resetSys();
+//			WorkflowPrefManager.resetUser();
 			logger.info(WorkflowPrefManager.pathSysHome);
 		} catch (Exception e) {
 			logger.error(e.getMessage());

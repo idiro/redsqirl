@@ -377,12 +377,11 @@ public abstract class AbstractSource extends DataflowAction {
 							}
 
 							// Update the field list only if it looks good
-							out.setFields(outF);
-							logger.info(out.getFields().getFieldNames());
 							logger.info("Setpath : " + path);
 							out.setPath(path);
 							logger.info(out.getFields().getFieldNames());
-
+							out.setFields(outF);
+							logger.info(out.getFields().getFieldNames());
 						}
 						
 						getInteraction(key_dataset).getTree()

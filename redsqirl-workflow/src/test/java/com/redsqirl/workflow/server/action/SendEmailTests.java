@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import com.redsqirl.workflow.server.OozieManager;
 import com.redsqirl.workflow.server.Workflow;
+import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.action.SendEmail;
 import com.redsqirl.workflow.server.action.Source;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
@@ -62,7 +63,11 @@ static Logger logger = Logger.getLogger(SendEmailTests.class);
 		conv.getSubjectInt().setValue("test");
 		
 		logger.info("update properties...");
-		conv.getDestinataryInt().setValue("marcos.freitas@idiro.com");
+		
+		String email = WorkflowPrefManager.getUserProperty(
+				WorkflowPrefManager.user_email +"_"+System.getProperty("user.name"));
+				
+		conv.getDestinataryInt().setValue(email);
 		
 		logger.info("update properties...");
 		conv.getMessageInt().setValue("body message");

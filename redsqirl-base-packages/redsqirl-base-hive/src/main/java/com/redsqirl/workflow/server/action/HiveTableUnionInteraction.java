@@ -11,18 +11,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.redsqirl.utils.FeatureList;
-import com.redsqirl.utils.OrderedFeatureList;
+import com.redsqirl.utils.FieldList;
+import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.TableInteraction;
 import com.redsqirl.workflow.server.action.utils.HiveDictionary;
 import com.redsqirl.workflow.server.connect.HiveInterface;
-import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.utils.HiveLanguageManager;
 
 /**
  * Interaction for selecting output of a union action. The interaction is a
- * table with for columns: 'Table', 'Operation', 'Feature name', 'Type'.
+ * table with for columns: 'Table', 'Operation', 'Field name', 'Type'.
  * 
  * @author etienne
  * 
@@ -39,16 +39,16 @@ public class HiveTableUnionInteraction extends TableInteraction {
 	private HiveUnion hu;
 	/** Relation title key */
 	public static final String table_table_title = HiveLanguageManager
-			.getText("hive.union_features_interaction.relation_column"),
+			.getText("hive.union_fields_interaction.relation_column"),
 			/** operations title key */
 			table_op_title = HiveLanguageManager
-					.getTextWithoutSpace("hive.union_features_interaction.op_column"),
-			/** feature title key */
+					.getTextWithoutSpace("hive.union_fields_interaction.op_column"),
+			/** field title key */
 			table_feat_title = HiveLanguageManager
-					.getTextWithoutSpace("hive.union_features_interaction.feat_column"),
+					.getTextWithoutSpace("hive.union_fields_interaction.feat_column"),
 			/** type title key */
 			table_type_title = HiveLanguageManager
-					.getTextWithoutSpace("hive.union_features_interaction.type_column");
+					.getTextWithoutSpace("hive.union_fields_interaction.type_column");
 	/**
 	 * Constructor
 	 * @param id
@@ -78,16 +78,16 @@ public class HiveTableUnionInteraction extends TableInteraction {
 
 		if (lRow.isEmpty()) {
 			msg = HiveLanguageManager
-					.getText("hive.union_features_interaction.checkrownb");
+					.getText("hive.union_fields_interaction.checkrownb");
 		} else {
 
 			Map<String, List<Map<String, String>>> mapRelationRow = getSubQuery();
-			FeatureList mapFeatType = getNewFeatures();
+			FieldList mapFeatType = getNewFields();
 
 			// Check if we have the right number of list
 			if (mapRelationRow.keySet().size() != hu.gettAliasInt().getValues().size()) {
 				msg = HiveLanguageManager
-						.getText("hive.union_features_interaction.checkrownb");
+						.getText("hive.union_fields_interaction.checkrownb");
 			}
 
 			Iterator<String> itRelation = mapRelationRow.keySet().iterator();
@@ -99,11 +99,11 @@ public class HiveTableUnionInteraction extends TableInteraction {
 				if (listRow.size() != lRow.size()
 						/ mapRelationRow.keySet().size()) {
 					msg = HiveLanguageManager.getText(
-							"hive.union_features_interaction.checkrowbalance",
+							"hive.union_fields_interaction.checkrowbalance",
 							new Object[] { relationName });
 				}
 
-				Set<String> featuresTitle = new LinkedHashSet<String>();
+				Set<String> fieldsTitle = new LinkedHashSet<String>();
 				rows = listRow.iterator();
 				while (rows.hasNext() && msg == null) {
 					//
@@ -113,27 +113,27 @@ public class HiveTableUnionInteraction extends TableInteraction {
 								row.get(table_type_title),
 								HiveDictionary.getInstance().getReturnType(
 										row.get(table_op_title),
-										hu.getInFeatures()))) {
+										hu.getInFields()))) {
 							msg = HiveLanguageManager
 									.getText(
-											"hive.union_features_interaction.checkreturntype",
+											"hive.union_fields_interaction.checkreturntype",
 											new String[] { row
 													.get(table_feat_title) });
 						} else {
-							String featureName = row.get(table_feat_title);
+							String fieldName = row.get(table_feat_title);
 							logger.info("is it contained in map : "
-									+ featureName);
-							if (!mapFeatType.containsFeature(featureName)) {
+									+ fieldName);
+							if (!mapFeatType.containsField(fieldName)) {
 								msg = HiveLanguageManager
-										.getText("hive.union_features_interaction.checkfeatimplemented");
+										.getText("hive.union_fields_interaction.checkfeatimplemented");
 							} else {
-								featuresTitle.add(featureName);
+								fieldsTitle.add(fieldName);
 								if (!HiveDictionary.getType(
 										row.get(table_type_title))
 										.equals(mapFeatType
-												.getFeatureType(featureName))) {
+												.getFieldType(fieldName))) {
 									msg = HiveLanguageManager
-											.getText("hive.union_features_interaction.checktype");
+											.getText("hive.union_fields_interaction.checktype");
 								}
 							}
 						}
@@ -142,12 +142,12 @@ public class HiveTableUnionInteraction extends TableInteraction {
 					}
 				}
 
-				if (msg == null && listRow.size() != featuresTitle.size()) {
+				if (msg == null && listRow.size() != fieldsTitle.size()) {
 					msg = HiveLanguageManager.getText(
-							"hive.union_features_interaction.checknbfeat",
-							new Object[] { lRow.size() - featuresTitle.size(),
-									lRow.size(), featuresTitle.size() });
-					logger.debug(featuresTitle);
+							"hive.union_fields_interaction.checknbfeat",
+							new Object[] { lRow.size() - fieldsTitle.size(),
+									lRow.size(), fieldsTitle.size() });
+					logger.debug(fieldsTitle);
 				}
 			}
 		}
@@ -169,22 +169,22 @@ public class HiveTableUnionInteraction extends TableInteraction {
 
 		updateEditor(table_op_title, HiveDictionary.generateEditor(
 				HiveDictionary.getInstance().createDefaultSelectHelpMenu(),
-				hu.getInFeatures()));
+				hu.getInFields()));
 
 		// Set the Generator
 		List<Map<String, String>> copyRows = new LinkedList<Map<String, String>>();
-		FeatureList firstIn = in.get(0).getFeatures();
-		Iterator<String> featIt = firstIn.getFeaturesNames().iterator();
+		FieldList firstIn = in.get(0).getFields();
+		Iterator<String> featIt = firstIn.getFieldNames().iterator();
 		while (featIt.hasNext()) {
-			String feature = featIt.next();
-			FeatureType featureType = firstIn.getFeatureType(feature);
+			String field = featIt.next();
+			FieldType fieldType = firstIn.getFieldType(field);
 			Iterator<DFEOutput> itIn = in.iterator();
 			itIn.next();
 			boolean found = true;
 			while (itIn.hasNext() && found) {
 				DFEOutput cur = itIn.next();
-				found = featureType.equals(cur.getFeatures().getFeatureType(
-						feature));
+				found = fieldType.equals(cur.getFields().getFieldType(
+						field));
 			}
 			if (found) {
 				Iterator<String> aliases = hu.getAliases().keySet().iterator();
@@ -193,10 +193,10 @@ public class HiveTableUnionInteraction extends TableInteraction {
 					String alias = aliases.next();
 
 					curMap.put(table_table_title, alias);
-					curMap.put(table_op_title, alias + "." + feature);
-					curMap.put(table_feat_title, feature);
+					curMap.put(table_op_title, alias + "." + field);
+					curMap.put(table_feat_title, field);
 					curMap.put(table_type_title,
-							HiveDictionary.getHiveType(featureType));
+							HiveDictionary.getHiveType(fieldType));
 
 					copyRows.add(curMap);
 				}
@@ -218,22 +218,22 @@ public class HiveTableUnionInteraction extends TableInteraction {
 		addColumn(table_feat_title, null, "[a-zA-Z]([A-Za-z0-9_]{0,29})", null,
 				null);
 
-		List<String> types = new ArrayList<String>(FeatureType.values().length);
-		for(FeatureType ft:FeatureType.values()){
+		List<String> types = new ArrayList<String>(FieldType.values().length);
+		for(FieldType ft:FieldType.values()){
 			types.add(ft.name());
 		}
-		types.remove(FeatureType.DATETIME.name());
+		types.remove(FieldType.DATETIME.name());
 
 		addColumn(table_type_title, null, types, null);
 
 	}
 	/**
-	 * Get the new features that the interaction generates
-	 * @return new FeatureList
+	 * Get the new fields that the interaction generates
+	 * @return new FieldList
 	 * @throws RemoteException
 	 */
-	public FeatureList getNewFeatures() throws RemoteException {
-		FeatureList new_features = new OrderedFeatureList();
+	public FieldList getNewFields() throws RemoteException {
+		FieldList new_fields = new OrderedFieldList();
 
 		Map<String, List<Map<String, String>>> mapRelationRow = getSubQuery();
 
@@ -243,12 +243,12 @@ public class HiveTableUnionInteraction extends TableInteraction {
 			Map<String, String> rowCur = rowIt.next();
 			String name = rowCur.get(table_feat_title);
 			String type = rowCur.get(table_type_title);
-			new_features.addFeature(name, HiveDictionary.getType(type));
+			new_fields.addField(name, HiveDictionary.getType(type));
 		}
-		return new_features;
+		return new_fields;
 	}
 	/**
-	 * Get a map of sub queries for each feature
+	 * Get a map of sub queries for each field
 	 * @return Map of sub queries
 	 * @throws RemoteException
 	 */
@@ -285,8 +285,8 @@ public class HiveTableUnionInteraction extends TableInteraction {
 		logger.debug("select...");
 		HiveInterface hi = new HiveInterface();
 		String select = "";
-		FeatureList features = getNewFeatures();
-		Iterator<String> it = features.getFeaturesNames().iterator();
+		FieldList fields = getNewFields();
+		Iterator<String> it = fields.getFieldNames().iterator();
 		if (it.hasNext()) {
 			String featName = it.next();
 			select = "SELECT " + featName + " AS " + featName;
@@ -359,26 +359,26 @@ public class HiveTableUnionInteraction extends TableInteraction {
 	}
 	
 	/**
-	 * Get the create feature list for creating the output table
+	 * Get the create field list for creating the output table
 	 * @param out
 	 * @return query piece
 	 * @throws RemoteException
 	 */
 	public String getCreateQueryPiece(DFEOutput out) throws RemoteException {
-		logger.debug("create features...");
+		logger.debug("create fields...");
 		String createSelect = "";
-		FeatureList features = getNewFeatures();
-		Iterator<String> it = features.getFeaturesNames().iterator();
+		FieldList fields = getNewFields();
+		Iterator<String> it = fields.getFieldNames().iterator();
 		if (it.hasNext()) {
 			String featName = it.next();
-			String type = HiveDictionary.getHiveType(features
-					.getFeatureType(featName));
+			String type = HiveDictionary.getHiveType(fields
+					.getFieldType(featName));
 			createSelect = "(" + featName + " " + type;
 		}
 		while (it.hasNext()) {
 			String featName = it.next();
-			String type = HiveDictionary.getHiveType(features
-					.getFeatureType(featName));
+			String type = HiveDictionary.getHiveType(fields
+					.getFieldType(featName));
 			createSelect += "," + featName + " " + type;
 		}
 		createSelect += ")";
@@ -397,7 +397,7 @@ public class HiveTableUnionInteraction extends TableInteraction {
 		String error = null;
 		try {
 			if (HiveDictionary.getInstance().getReturnType(expression,
-					hu.getInFeatures()) == null) {
+					hu.getInFields()) == null) {
 				error = "Expression does not have a return type";
 			}
 		} catch (Exception e) {

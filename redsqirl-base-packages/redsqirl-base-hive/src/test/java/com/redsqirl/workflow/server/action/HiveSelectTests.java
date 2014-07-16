@@ -19,12 +19,6 @@ import com.redsqirl.workflow.server.OozieManager;
 import com.redsqirl.workflow.server.ProcessesManager;
 import com.redsqirl.workflow.server.Workflow;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
-import com.redsqirl.workflow.server.action.HiveFilterInteraction;
-import com.redsqirl.workflow.server.action.HiveOrderInteraction;
-import com.redsqirl.workflow.server.action.HiveSelect;
-import com.redsqirl.workflow.server.action.HiveSource;
-import com.redsqirl.workflow.server.action.HiveTableSelectInteraction;
-import com.redsqirl.workflow.server.action.Source;
 import com.redsqirl.workflow.server.action.utils.TestUtils;
 import com.redsqirl.workflow.server.connect.HiveInterface;
 import com.redsqirl.workflow.server.enumeration.SavingState;
@@ -62,12 +56,12 @@ public class HiveSelectTests {
 				.add(new_path1);
 
 		Tree<String> feat1 = dataSetTree.getFirstChild("browse")
-				.getFirstChild("output").add("feature");
+				.getFirstChild("output").add("field");
 		feat1.add("name").add("ID");
 		feat1.add("type").add("STRING");
 
 		Tree<String> feat2 = dataSetTree.getFirstChild("browse")
-				.getFirstChild("output").add("feature");
+				.getFirstChild("output").add("field");
 		feat2.add("name").add("VALUE");
 		feat2.add("type").add("INT");
 		
@@ -76,21 +70,21 @@ public class HiveSelectTests {
 		String error = src.updateOut();
 		assertTrue("source update: " + error, error == null);
 
-		assertTrue("number of features in source should be 2 instead of "
-				+ src.getDFEOutput().get(Source.out_name).getFeatures()
+		assertTrue("number of fields in source should be 2 instead of "
+				+ src.getDFEOutput().get(Source.out_name).getFields()
 						.getSize(), src.getDFEOutput().get(Source.out_name)
-				.getFeatures().getSize() == 2);
+				.getFields().getSize() == 2);
 
 		assertTrue("Feature list "
-				+ src.getDFEOutput().get(Source.out_name).getFeatures()
-						.getFeaturesNames(),
-				src.getDFEOutput().get(Source.out_name).getFeatures()
-						.getFeaturesNames().contains("id"));
+				+ src.getDFEOutput().get(Source.out_name).getFields()
+						.getFieldNames(),
+				src.getDFEOutput().get(Source.out_name).getFields()
+						.getFieldNames().contains("id"));
 		assertTrue("Feature list "
-				+ src.getDFEOutput().get(Source.out_name).getFeatures()
-						.getFeaturesNames(),
-				src.getDFEOutput().get(Source.out_name).getFeatures()
-						.getFeaturesNames().contains("value"));
+				+ src.getDFEOutput().get(Source.out_name).getFields()
+						.getFieldNames(),
+				src.getDFEOutput().get(Source.out_name).getFields()
+						.getFieldNames().contains("value"));
 
 		return src;
 	}
@@ -108,37 +102,37 @@ public class HiveSelectTests {
 				.add(new_path1);
 
 		Tree<String> feat1 = dataSetTree.getFirstChild("browse")
-				.getFirstChild("output").add("feature");
+				.getFirstChild("output").add("field");
 		feat1.add("name").add("ID");
 		feat1.add("type").add("STRING");
 
 		Tree<String> feat2 = dataSetTree.getFirstChild("browse")
-				.getFirstChild("output").add("feature");
+				.getFirstChild("output").add("field");
 		feat2.add("name").add("VALUE");
 		feat2.add("type").add("INT");
 		Tree<String> feat3 = dataSetTree.getFirstChild("browse")
-				.getFirstChild("output").add("feature");
+				.getFirstChild("output").add("field");
 		feat3.add("name").add("TYPE");
 		feat3.add("type").add("INT");
 
 		String error = src.updateOut();
 		assertTrue("source update: " + error, error == null);
 
-		assertTrue("number of features in source should be 3 instead of "
-				+ src.getDFEOutput().get(Source.out_name).getFeatures()
+		assertTrue("number of fields in source should be 3 instead of "
+				+ src.getDFEOutput().get(Source.out_name).getFields()
 						.getSize(), src.getDFEOutput().get(Source.out_name)
-				.getFeatures().getSize() == 3);
+				.getFields().getSize() == 3);
 
 		assertTrue("Feature list "
-				+ src.getDFEOutput().get(Source.out_name).getFeatures()
-						.getFeaturesNames(),
-				src.getDFEOutput().get(Source.out_name).getFeatures()
-						.getFeaturesNames().contains("id"));
+				+ src.getDFEOutput().get(Source.out_name).getFields()
+						.getFieldNames(),
+				src.getDFEOutput().get(Source.out_name).getFields()
+						.getFieldNames().contains("ID"));
 		assertTrue("Feature list "
-				+ src.getDFEOutput().get(Source.out_name).getFeatures()
-						.getFeaturesNames(),
-				src.getDFEOutput().get(Source.out_name).getFeatures()
-						.getFeaturesNames().contains("value"));
+				+ src.getDFEOutput().get(Source.out_name).getFields()
+						.getFieldNames(),
+				src.getDFEOutput().get(Source.out_name).getFields()
+						.getFieldNames().contains("VALUE"));
 
 		return src;
 	}
@@ -168,8 +162,8 @@ public class HiveSelectTests {
 		}
 		error = hive.updateOut();
 		assertTrue("hive select update: " + error, error == null);
-		logger.debug("Features "
-				+ hive.getDFEOutput().get(HiveSelect.key_output).getFeatures());
+		logger.debug("Fields "
+				+ hive.getDFEOutput().get(HiveSelect.key_output).getFields());
 
 		// hive.getDFEOutput()
 		// .get(HiveSelect.key_output)
@@ -365,8 +359,8 @@ public class HiveSelectTests {
 			// hInt.delete(new_path2);
 			// assertTrue(error, error.contains("SUCCEEDED"));
 			//
-			WorkflowPrefManager.resetSys();
-			WorkflowPrefManager.resetUser();
+//			WorkflowPrefManager.resetSys();
+//			WorkflowPrefManager.resetUser();
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			assertTrue("error : " + e.getMessage(), false);
@@ -488,8 +482,8 @@ public class HiveSelectTests {
 			hInt.delete(new_path2);
 			assertTrue(error, error.contains("SUCCEEDED"));
 
-			WorkflowPrefManager.resetSys();
-			WorkflowPrefManager.resetUser();
+//			WorkflowPrefManager.resetSys();
+//			WorkflowPrefManager.resetUser();
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			assertTrue("error : " + e.getMessage(), false);
@@ -563,8 +557,8 @@ public class HiveSelectTests {
 			hInt.delete(new_path2);
 			assertTrue(error, error.contains("SUCCEEDED"));
 			
-			WorkflowPrefManager.resetSys();
-			WorkflowPrefManager.resetUser();
+//			WorkflowPrefManager.resetSys();
+//			WorkflowPrefManager.resetUser();
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			assertTrue("error : " + e.getMessage(), false);
@@ -637,8 +631,8 @@ public class HiveSelectTests {
 			hInt.delete(new_path2);
 			assertTrue(error, error.contains("SUCCEEDED"));
 
-			WorkflowPrefManager.resetSys();
-			WorkflowPrefManager.resetUser();
+//			WorkflowPrefManager.resetSys();
+//			WorkflowPrefManager.resetUser();
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			assertTrue("error : " + e.getMessage(), false);

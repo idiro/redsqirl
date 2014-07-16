@@ -4,7 +4,7 @@ package com.redsqirl.workflow.server.action;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 
-import com.redsqirl.utils.FeatureList;
+import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.connect.HiveInterface;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
@@ -25,9 +25,9 @@ public class HiveAggregator extends HiveElement {
 	 */
 	private static final String key_group = "Group By";
 	/**
-	 * features key
+	 * fields key
 	 */
-	private static final String key_features = "Features";
+	private static final String key_fields = "Fields";
 	// private static final String key_group ="";
 	/**
 	 * Table Select interaction
@@ -58,11 +58,11 @@ public class HiveAggregator extends HiveElement {
 				HiveLanguageManager.getText("hive.aggregator_page2.legend"), 1);
 
 		tSelInt = new HiveTableSelectInteraction(
-				key_features,
+				key_fields,
 				HiveLanguageManager
-						.getText("hive.aggregator_features_interaction.title"),
+						.getText("hive.aggregator_fields_interaction.title"),
 				HiveLanguageManager
-						.getText("hive.aggregator_features_interaction.legend"),
+						.getText("hive.aggregator_fields_interaction.legend"),
 				0, 0, this);
 
 		page2.addInteraction(tSelInt);
@@ -114,7 +114,7 @@ public class HiveAggregator extends HiveElement {
 
 			logger.debug("group by...");
 			String groupby = "";
-			Iterator<String> gIt = getGroupByFeatures().iterator();
+			Iterator<String> gIt = getGroupByFields().iterator();
 			if (gIt.hasNext()) {
 				groupby = gIt.next();
 			}
@@ -140,22 +140,22 @@ public class HiveAggregator extends HiveElement {
 		return query;
 	}
 	/**
-	 * Get the input FeatureList
-	 * @return input FeatureList
+	 * Get the input FieldList
+	 * @return input FieldList
 	 * @throws RemoteException
 	 */
 	@Override
-	public FeatureList getInFeatures() throws RemoteException {
-		return getDFEInput().get(key_input).get(0).getFeatures();
+	public FieldList getInFields() throws RemoteException {
+		return getDFEInput().get(key_input).get(0).getFields();
 	}
 	/**
-	 * Get the new features from the action
-	 * @return new FeatureList
+	 * Get the new fields from the action
+	 * @return new FieldList
 	 * @throws RemoteException
 	 */
 	@Override
-	public FeatureList getNewFeatures() throws RemoteException {
-		return tSelInt.getNewFeatures();
+	public FieldList getNewFields() throws RemoteException {
+		return tSelInt.getNewFields();
 	}
 	
 	/**
@@ -203,7 +203,7 @@ public class HiveAggregator extends HiveElement {
 			list.remove("values");
 		}
 		Tree<String> values = list.add("values");
-		Iterator<String> it = in.getFeatures().getFeaturesNames().iterator();
+		Iterator<String> it = in.getFields().getFieldNames().iterator();
 		while (it.hasNext()) {
 			values.add("value").add(it.next());
 		}

@@ -45,7 +45,7 @@ import com.redsqirl.workflow.server.connect.HiveInterface;
 	HiveJoinTests.class,
 	HiveAggregTests.class,
 	HiveDictionaryTests.class,
-	HiveAuditTests.class,
+	HiveAuditTests.class
 	})
 public class SetupHiveEnvironmentTest {
 
@@ -106,10 +106,11 @@ public class SetupHiveEnvironmentTest {
 		home.mkdir();
 		WorkflowPrefManager.changeSysHome(home.getAbsolutePath());
 		WorkflowPrefManager.createUserHome(System.getProperty("user.name"));
+		WorkflowPrefManager.pathSysCfgPref = testProp;
+		WorkflowPrefManager.pathUserCfgPref = testProp;
 		WorkflowPrefManager.setupHome();
 		logger.debug(WorkflowPrefManager.pathSysHome);
 		logger.debug(WorkflowPrefManager.getPathuserpref());
-		logger.debug(WorkflowPrefManager.getPathiconmenu());
 		logger.debug(WorkflowPrefManager.pathUserCfgPref);
 		
 		/* I don't think we need that anymore

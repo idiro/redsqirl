@@ -7,8 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.redsqirl.utils.FeatureList;
-import com.redsqirl.utils.OrderedFeatureList;
+import com.redsqirl.utils.FieldList;
+import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.ListInteraction;
 import com.redsqirl.workflow.server.Page;
@@ -29,8 +29,8 @@ public class HiveJoin extends HiveElement {
 	 * 
 	 */
 	private static final long serialVersionUID = -3035179016090477413L;
-	/** Features key */
-	public static final String key_featureTable = "Features",
+	/** Fields key */
+	public static final String key_fieldTable = "Fields",
 	/** Join Type Key */
 	key_joinType = "Join_Type",
 	/** Join Relation Key */
@@ -84,11 +84,11 @@ public class HiveJoin extends HiveElement {
 		page2 = addPage(HiveLanguageManager.getText("hive.join_page1.title"),
 				HiveLanguageManager.getText("hive.join_page1.legend"), 1);
 
-		tJoinInt = new HiveTableJoinInteraction(key_featureTable,
+		tJoinInt = new HiveTableJoinInteraction(key_fieldTable,
 				HiveLanguageManager
-						.getText("hive.join_features_interaction.title"),
+						.getText("hive.join_fields_interaction.title"),
 				HiveLanguageManager
-						.getText("hive.join_features_interaction.legend"), 0,
+						.getText("hive.join_fields_interaction.legend"), 0,
 				0, this);
 
 		page2.addInteraction(tJoinInt);
@@ -227,23 +227,23 @@ public class HiveJoin extends HiveElement {
 	}
 
 	/**
-	 * Get the features from the input
+	 * Get the fields from the input
 	 * 
-	 * @return input FeatureList
+	 * @return input FieldList
 	 * @throws RemoteException
 	 */
-	public FeatureList getInFeatures() throws RemoteException {
-		FeatureList ans = new OrderedFeatureList();
+	public FieldList getInFields() throws RemoteException {
+		FieldList ans = new OrderedFieldList();
 		Map<String, DFEOutput> aliases = getAliases();
 
 		Iterator<String> it = aliases.keySet().iterator();
 		while (it.hasNext()) {
 			String alias = it.next();
-			FeatureList mapTable = aliases.get(alias).getFeatures();
-			Iterator<String> itFeat = mapTable.getFeaturesNames().iterator();
+			FieldList mapTable = aliases.get(alias).getFields();
+			Iterator<String> itFeat = mapTable.getFieldNames().iterator();
 			while (itFeat.hasNext()) {
 				String cur = itFeat.next();
-				ans.addFeature(alias + "." + cur, mapTable.getFeatureType(cur));
+				ans.addField(alias + "." + cur, mapTable.getFieldType(cur));
 			}
 		}
 		return ans;
@@ -277,14 +277,14 @@ public class HiveJoin extends HiveElement {
 	}
 
 	/**
-	 * Get the new features from the join interaction
+	 * Get the new fields from the join interaction
 	 * 
-	 * @return new FeatureList
+	 * @return new FieldList
 	 * @throws RemoteExceptions
 	 */
 	@Override
-	public FeatureList getNewFeatures() throws RemoteException {
-		return tJoinInt.getNewFeatures();
+	public FieldList getNewFields() throws RemoteException {
+		return tJoinInt.getNewFields();
 	}
 	
 	/**

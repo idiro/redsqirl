@@ -14,7 +14,6 @@ import com.redsqirl.workflow.server.OozieManager;
 import com.redsqirl.workflow.server.Workflow;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.action.PigBinarySource;
-import com.redsqirl.workflow.server.action.PigSelect;
 import com.redsqirl.workflow.server.action.PigTranspose;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.enumeration.SavingState;
@@ -30,29 +29,29 @@ public class PigTransposeTests {
 			Exception {
 		String error = null;
 		String idHS = w.addElement((new PigTranspose()).getName());
-		logger.debug("Pig select: " + idHS);
+		logger.debug("Pig transpose: " + idHS);
 
 		PigTranspose pig = (PigTranspose) w.getElement(idHS);
 
 		logger.info(PigBinarySource.out_name + " " + src.getComponentId());
-		logger.debug(PigSelect.key_input + " " + idHS);
+		logger.debug(PigTranspose.key_input + " " + idHS);
 
 		error = w.addLink(PigBinarySource.out_name, src.getComponentId(),
-				PigSelect.key_input, idHS);
-		assertTrue("pig select add link: " + error, error == null);
+				PigTranspose.key_input, idHS);
+		assertTrue("pig transpose add link: " + error, error == null);
 
 		updatePig(w, pig, hInt);
 
 		logger.debug("HS update out...");
 		error = pig.updateOut();
-		assertTrue("pig select update: " + error, error == null);
+		assertTrue("pig transpose update: " + error, error == null);
 		logger.debug("Field "
-				+ pig.getDFEOutput().get(PigSelect.key_output).getFields());
+				+ pig.getDFEOutput().get(PigTranspose.key_output).getFields());
 
 		pig.getDFEOutput()
-				.get(PigSelect.key_output)
+				.get(PigTranspose.key_output)
 				.generatePath(System.getProperty("user.name"),
-						pig.getComponentId(), PigSelect.key_output);
+						pig.getComponentId(), PigTranspose.key_output);
 
 		return pig;
 	}
@@ -73,7 +72,7 @@ public class PigTransposeTests {
 		
 		logger.info("HS update out...");
 		String error = pig.updateOut();
-		assertTrue("pig select update: " + error, error == null);
+		assertTrue("pig transpose update: " + error, error == null);
 	}
 
 	@Test
@@ -88,14 +87,15 @@ public class PigTransposeTests {
 			String new_path2 = TestUtils.getPath(2);
 
 			hInt.delete(new_path1);
+			hInt.delete(new_path2);
 
 			DataFlowElement src = PigTestUtils.createSrc_ID_VALUE(w, hInt,
 					new_path1);
 			PigTranspose pig = (PigTranspose) createPigWithSrc(w, src, hInt);
 
-			pig.getDFEOutput().get(PigSelect.key_output)
+			pig.getDFEOutput().get(PigTranspose.key_output)
 					.setSavingState(SavingState.RECORDED);
-			pig.getDFEOutput().get(PigSelect.key_output).setPath(new_path2);
+			pig.getDFEOutput().get(PigTranspose.key_output).setPath(new_path2);
 
 			logger.info("run...");
 			OozieClient wc = OozieManager.getInstance().getOc();
@@ -121,8 +121,8 @@ public class PigTransposeTests {
 			 logger.info(wc.getJobInfo(jobId));
 			 error = wc.getJobInfo(jobId).toString();
 			 assertTrue(error, error.contains("SUCCEEDED"));
-			WorkflowPrefManager.resetSys();
-			WorkflowPrefManager.resetUser();
+//			WorkflowPrefManager.resetSys();
+//			WorkflowPrefManager.resetUser();
 			logger.info(WorkflowPrefManager.pathSysHome);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);

@@ -37,7 +37,7 @@ public class HiveGroupByInteraction extends AppendListInteraction{
 	public void update(DFEOutput in) throws RemoteException{
 		List<String> posValues = new LinkedList<String>();
 		
-		Iterator<String> it = in.getFeatures().getFeaturesNames().iterator();
+		Iterator<String> it = in.getFields().getFieldNames().iterator();
 		while(it.hasNext()){
 			posValues.add(it.next());
 		}
@@ -72,23 +72,23 @@ public class HiveGroupByInteraction extends AppendListInteraction{
 		return groupby;
 	}
 	/**
-	 * Get the features that can be used in aggregative functions
+	 * Get the fields that can be used in aggregative functions
 	 * @param in
-	 * @return Set of Features
+	 * @return Set of Fields
 	 * @throws RemoteException
 	 */
-	public Set<String> getAggregationFeatures(DFEOutput in) throws RemoteException{
-		Set<String> aggregationFeatures = new HashSet<String>();
+	public Set<String> getAggregationFields(DFEOutput in) throws RemoteException{
+		Set<String> aggregationFields = new HashSet<String>();
 		
-		in.getFeatures().getFeaturesNames();
-		if(in.getFeatures().getFeaturesNames().size() > 0){
-			Iterator<String> gIt =in.getFeatures().getFeaturesNames().iterator();
+		in.getFields().getFieldNames();
+		if(in.getFields().getFieldNames().size() > 0){
+			Iterator<String> gIt =in.getFields().getFieldNames().iterator();
 			while (gIt.hasNext()){
-				aggregationFeatures.add(gIt.next());
+				aggregationFields.add(gIt.next());
 			}
 		}
 	
-		return aggregationFeatures;
+		return aggregationFields;
 	}
 
 }

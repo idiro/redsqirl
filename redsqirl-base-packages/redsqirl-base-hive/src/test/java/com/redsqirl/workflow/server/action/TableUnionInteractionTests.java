@@ -44,12 +44,12 @@ public class TableUnionInteractionTests {
 		dataSetTree.getFirstChild("browse").getFirstChild("output").add("path").add(path);
 
 		Tree<String> feat1 = dataSetTree.getFirstChild("browse")
-				.getFirstChild("output").add("feature");
+				.getFirstChild("output").add("field");
 		feat1.add("name").add("ID");
 		feat1.add("type").add("STRING");
 
 		Tree<String> feat2 = dataSetTree.getFirstChild("browse")
-				.getFirstChild("output").add("feature");
+				.getFirstChild("output").add("field");
 		feat2.add("name").add("VALUE");
 		feat2.add("type").add("INT");
 		
