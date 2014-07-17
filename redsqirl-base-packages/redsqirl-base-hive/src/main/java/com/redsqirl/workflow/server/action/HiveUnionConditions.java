@@ -69,7 +69,7 @@ public class HiveUnionConditions extends TableInteraction {
 						"boolean",
 						HiveDictionary.getInstance().getReturnType(
 								row.get(table_op_title),
-								hu.getInFeatures(row.get(table_relation_title))))) {
+								hu.getInFields(row.get(table_relation_title))))) {
 					msg = HiveLanguageManager.getText(
 							"hive.union_cond_interaction.checkreturntype",
 							new String[] { row.get(table_relation_title) });
@@ -115,7 +115,7 @@ public class HiveUnionConditions extends TableInteraction {
 
 		updateEditor(table_op_title, HiveDictionary.generateEditor(
 				HiveDictionary.getInstance().createConditionHelpMenu(),
-				hu.getInFeatures()));
+				hu.getInFields()));
 
 	}
 	/**

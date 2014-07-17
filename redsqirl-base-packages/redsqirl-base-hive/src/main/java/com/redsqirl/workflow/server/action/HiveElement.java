@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.redsqirl.utils.FeatureList;
+import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.utils.TreeNonUnique;
 import com.redsqirl.workflow.server.DataProperty;
@@ -146,20 +146,20 @@ public abstract class HiveElement extends DataflowAction {
 	public abstract String getQuery() throws RemoteException;
 
 	/**
-	 * Input features
+	 * Input fields
 	 * 
 	 * @return
 	 * @throws RemoteException
 	 */
-	public abstract FeatureList getInFeatures() throws RemoteException;
+	public abstract FieldList getInFields() throws RemoteException;
 
 	/**
-	 * New features
+	 * New fields
 	 * 
 	 * @return
 	 * @throws RemoteException
 	 */
-	public abstract FeatureList getNewFeatures() throws RemoteException;
+	public abstract FieldList getNewFields() throws RemoteException;
 	/**
 	 * Write the Oozie Action Files 
 	 * @param files
@@ -194,7 +194,7 @@ public abstract class HiveElement extends DataflowAction {
 	public String updateOut() throws RemoteException {
 		String error = checkIntegrationUserVariables();
 		if (error == null) {
-			FeatureList new_features = getNewFeatures();
+			FieldList new_fields = getNewFields();
 
 			HiveType type = (HiveType) output.get(key_output);
 			if (!useTable()) {
@@ -219,7 +219,7 @@ public abstract class HiveElement extends DataflowAction {
 			}
 			output.put(key_output, type);
 //			logger.info("path is : "+output.get(key_output).getPath());
-			output.get(key_output).setFeatures(new_features);
+			output.get(key_output).setFields(new_fields);
 		}
 		return error;
 	}
@@ -242,7 +242,7 @@ public abstract class HiveElement extends DataflowAction {
 			list.remove("values");
 		}
 		Tree<String> values = list.add("values");
-		Iterator<String> it = in.getFeatures().getFeaturesNames().iterator();
+		Iterator<String> it = in.getFields().getFieldNames().iterator();
 		while (it.hasNext()) {
 			values.add("value").add(it.next());
 		}
@@ -308,15 +308,15 @@ public abstract class HiveElement extends DataflowAction {
 		return groupingInt;
 	}
 	/**
-	 * Get the Group By Features
-	 * @return Set of group by features
+	 * Get the Group By Fields
+	 * @return Set of group by fields
 	 * @throws RemoteException
 	 */
-	public Set<String> getGroupByFeatures() throws RemoteException {
-		Set<String> features = null;
+	public Set<String> getGroupByFields() throws RemoteException {
+		Set<String> fields = null;
 		HiveGroupByInteraction group = getGroupingInt();
 		if (group != null) {
-			features = new HashSet<String>();
+			fields = new HashSet<String>();
 			Tree<String> tree = group.getTree();
 			logger.info("group tree : "
 					+ ((TreeNonUnique<String>) tree).toString());
@@ -327,14 +327,14 @@ public abstract class HiveElement extends DataflowAction {
 						.getFirstChild("output").getChildren("value")
 						.iterator();
 				while (values.hasNext()) {
-					features.add(values.next().getFirstChild().getHead());
+					fields.add(values.next().getFirstChild().getHead());
 				}
 			}
 		} else {
 			logger.info("group interaction is null");
 		}
 
-		return features;
+		return fields;
 	}
 	
 	/**

@@ -11,17 +11,17 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.redsqirl.utils.FeatureList;
-import com.redsqirl.utils.OrderedFeatureList;
+import com.redsqirl.utils.FieldList;
+import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.TableInteraction;
 import com.redsqirl.workflow.server.action.utils.HiveDictionary;
-import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.utils.HiveLanguageManager;
 
 /**
  * Interaction to choose the field of the join output. The interaction is a
- * table with 3 fields 'Operation', 'Feature name' and 'Type'.
+ * table with 3 fields 'Operation', 'Field name' and 'Type'.
  * 
  * @author etienne
  * 
@@ -40,13 +40,13 @@ public class HiveTableJoinInteraction extends TableInteraction {
 	private HiveJoin hj;
 	/** Operation title key */
 	public static final String table_op_title = HiveLanguageManager
-			.getTextWithoutSpace("hive.join_features_interaction.op_column"),
-	/** Feature title key */
+			.getTextWithoutSpace("hive.join_fields_interaction.op_column"),
+	/** Field title key */
 	table_feat_title = HiveLanguageManager
-			.getTextWithoutSpace("hive.join_features_interaction.feat_column"),
+			.getTextWithoutSpace("hive.join_fields_interaction.feat_column"),
 	/** Type title key */
 	table_type_title = HiveLanguageManager
-			.getTextWithoutSpace("hive.join_features_interaction.type_column");
+			.getTextWithoutSpace("hive.join_fields_interaction.type_column");
 	/**
 	 * Constructor
 	 * @param id
@@ -70,7 +70,7 @@ public class HiveTableJoinInteraction extends TableInteraction {
 	 */
 	@Override
 	public String check() throws RemoteException {
-		FeatureList features = hj.getInFeatures();
+		FieldList fields = hj.getInFields();
 		int rowNb = 0;
 		String msg = null;
 
@@ -78,10 +78,10 @@ public class HiveTableJoinInteraction extends TableInteraction {
 
 		if (lRow.isEmpty()) {
 			msg = HiveLanguageManager
-					.getText("hive.join_features_interaction.checkempty");
+					.getText("hive.join_fields_interaction.checkempty");
 		}
 
-		logger.debug(features.getFeaturesNames());
+		logger.debug(fields.getFieldNames());
 		Iterator<Map<String, String>> rows = lRow.iterator();
 		while (rows.hasNext() && msg == null) {
 			++rowNb;
@@ -89,18 +89,18 @@ public class HiveTableJoinInteraction extends TableInteraction {
 
 			String type = row.get(table_type_title);
 			String op = row.get(table_op_title);
-			String feature = row.get(table_feat_title);
-			if (!HiveDictionary.isVariableName(feature)) {
+			String field = row.get(table_feat_title);
+			if (!HiveDictionary.isVariableName(field)) {
 				msg = HiveLanguageManager.getText(
-						"hive.join_features_interaction.featureinvalid",
-						new Object[] { rowNb, feature });
+						"hive.join_fields_interaction.fieldinvalid",
+						new Object[] { rowNb, field });
 			} else {
 				try {
 					if (!HiveDictionary.check(type, HiveDictionary
-							.getInstance().getReturnType(op, features))) {
+							.getInstance().getReturnType(op, fields))) {
 						msg = HiveLanguageManager.getText(
-								"hive.join_features_interaction.typeinvalid",
-								new Object[] { rowNb, feature });
+								"hive.join_fields_interaction.typeinvalid",
+								new Object[] { rowNb, field });
 					}
 				} catch (Exception e) {
 					msg = e.getMessage();
@@ -116,7 +116,7 @@ public class HiveTableJoinInteraction extends TableInteraction {
 	 */
 	public void update() throws RemoteException {
 
-		FeatureList feats = hj.getInFeatures();
+		FieldList feats = hj.getInFields();
 
 		updateEditor(table_op_title, HiveDictionary.generateEditor(
 				HiveDictionary.getInstance().createDefaultSelectHelpMenu(),
@@ -127,7 +127,7 @@ public class HiveTableJoinInteraction extends TableInteraction {
 
 		// Copy Generator operation
 		List<Map<String, String>> copyRows = new LinkedList<Map<String, String>>();
-		Iterator<String> featIt = feats.getFeaturesNames().iterator();
+		Iterator<String> featIt = feats.getFieldNames().iterator();
 		while (featIt.hasNext()) {
 			Map<String, String> curMap = new LinkedHashMap<String, String>();
 			String cur = featIt.next();
@@ -135,7 +135,7 @@ public class HiveTableJoinInteraction extends TableInteraction {
 			curMap.put(table_op_title, cur);
 			curMap.put(table_feat_title, cur.replaceAll("\\.", "_"));
 			curMap.put(table_type_title,
-					HiveDictionary.getHiveType(feats.getFeatureType(cur)));
+					HiveDictionary.getHiveType(feats.getFieldType(cur)));
 			copyRows.add(curMap);
 		}
 		updateGenerator("copy", copyRows);
@@ -151,22 +151,22 @@ public class HiveTableJoinInteraction extends TableInteraction {
 
 		addColumn(table_feat_title, 1, null, null);
 
-		List<String> types = new ArrayList<String>(FeatureType.values().length);
-		for(FeatureType ft:FeatureType.values()){
+		List<String> types = new ArrayList<String>(FieldType.values().length);
+		for(FieldType ft:FieldType.values()){
 			types.add(ft.name());
 		}
-		types.remove(FeatureType.DATETIME.name());
+		types.remove(FieldType.DATETIME.name());
 
 		addColumn(table_type_title, null, types, null);
 
 	}
 	/**
-	 * Get the new features from the interaction
-	 * @return new FeatureList
+	 * Get the new fields from the interaction
+	 * @return new FieldList
 	 * @throws RemoteException
 	 */
-	public FeatureList getNewFeatures() throws RemoteException {
-		FeatureList new_features = new OrderedFeatureList();
+	public FieldList getNewFields() throws RemoteException {
+		FieldList new_fields = new OrderedFieldList();
 		Iterator<Tree<String>> rowIt = getTree().getFirstChild("table")
 				.getChildren("row").iterator();
 
@@ -176,9 +176,9 @@ public class HiveTableJoinInteraction extends TableInteraction {
 					.getFirstChild().getHead();
 			String type = rowCur.getFirstChild(table_type_title)
 					.getFirstChild().getHead();
-			new_features.addFeature(name, FeatureType.valueOf(type));
+			new_fields.addField(name, FieldType.valueOf(type));
 		}
-		return new_features;
+		return new_fields;
 	}
 	/**
 	 * Get the query piece that selects the data
@@ -215,20 +215,20 @@ public class HiveTableJoinInteraction extends TableInteraction {
 	 * @throws RemoteException
 	 */
 	public String getCreateQueryPiece() throws RemoteException {
-		logger.debug("create features...");
+		logger.debug("create fields...");
 		String createSelect = "";
-		FeatureList features = getNewFeatures();
-		Iterator<String> it = features.getFeaturesNames().iterator();
+		FieldList fields = getNewFields();
+		Iterator<String> it = fields.getFieldNames().iterator();
 		if (it.hasNext()) {
 			String featName = it.next();
-			String type = HiveDictionary.getHiveType(features
-					.getFeatureType(featName));
+			String type = HiveDictionary.getHiveType(fields
+					.getFieldType(featName));
 			createSelect = "(" + featName + " " + type;
 		}
 		while (it.hasNext()) {
 			String featName = it.next();
-			String type = HiveDictionary.getHiveType(features
-					.getFeatureType(featName));
+			String type = HiveDictionary.getHiveType(fields
+					.getFieldType(featName));
 			createSelect += "," + featName + " " + type;
 		}
 		createSelect += ")";
@@ -247,7 +247,7 @@ public class HiveTableJoinInteraction extends TableInteraction {
 		String error = null;
 		try {
 			if (HiveDictionary.getInstance().getReturnType(expression,
-					hj.getInFeatures()) == null) {
+					hj.getInFields()) == null) {
 				error = HiveLanguageManager.getText(
 						"hive.expressionnull");
 			}

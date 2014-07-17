@@ -215,16 +215,13 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 * @param posX
 	 * @param posY
 	 */
-	public void updatePosition(String workflowName, String paramGroupID,
-			String posX, String posY) {
+	public void updatePosition(String workflowName, String paramGroupID, String posX, String posY) {
 
 		logger.info("updatePosition");
 		logger.info("canvas Name: " + getIdMap().keySet());
-
 		logger.info("getIdMap1 :" + getIdMap());
 		logger.info("getIdMap2 :" + getIdMap().get(workflowName));
 		logger.info("getIdMap3 :" + paramGroupID);
-
 		logger.info("posX " + posX +" posY "+ posY);
 
 		if (getIdMap().get(workflowName) != null) {
@@ -233,15 +230,13 @@ public class CanvasBean extends BaseBean implements Serializable {
 				try {
 					DataFlow df = getDf();
 					if(df != null){
-						df.getElement(getIdMap().get(workflowName).get(paramGroupID)).setPosition(Double.valueOf(posX).intValue(), 
-								Double.valueOf(posY).intValue());
-						logger.info(workflowName + " - " + getIdMap().get(workflowName).get(paramGroupID) + " - "
-								+ Double.valueOf(posX).intValue() + " - " + Double.valueOf(posY).intValue());
+						df.getElement(getIdMap().get(workflowName).get(paramGroupID)).setPosition(Double.valueOf(posX).intValue(), Double.valueOf(posY).intValue());
+						logger.info(workflowName + " - " + getIdMap().get(workflowName).get(paramGroupID) + " - " + Double.valueOf(posX).intValue() + " - " + Double.valueOf(posY).intValue());
 					}
 				} catch (RemoteException e) {
-					e.printStackTrace();
+					logger.info("updatePosition error " + e,e);
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.info("updatePosition error " + e,e);
 				}
 			}
 		}
@@ -273,10 +268,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 			DataFlowElement dfeObjB = df.getElement(idElementB);
 
 			df.addLink(nameElementA, dfeObjA.getComponentId(), nameElementB, dfeObjB.getComponentId());
-			
+
 			setResult(new String[] { getParamNameLink(), nameElementA, nameElementB });
 			setNameOutput(nameElementA);
-			
+
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
@@ -284,7 +279,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 
 	}
-	
+
 	public String getLinkLabel(String nameElementA, DataFlowElement dfeObjA,  DataFlowElement dfeObjB) {
 
 
@@ -321,11 +316,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		return label;
 
 	}
-	
+
 	public void updateLinkPossibilities() {
 
 		logger.info("updateLinkPossibilities");
@@ -464,7 +459,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				getIdMap()
 				.put(getNameWorkflow(), new HashMap<String, String>());
 				logger.info("Nb elements: " + df.getElement().size());
-				
+
 				Iterator<String> itCompIds = df.getComponentIds().iterator();
 				while(itCompIds.hasNext()){
 					String cur = itCompIds.next();
@@ -632,7 +627,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 					String cur = itCompIds.next();
 					idMap.get(nameWorkflow).put(cur,cur);
 				}
-				
+
 				logger.info("save msg :" + msg);
 			} catch (Exception e) {
 				logger.info("Error saving workflow");
@@ -1354,16 +1349,16 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		return new String[] { groupOutId, groupInId, color, typeName, tooltip.toString(), label};
 	}
-	
+
 	public String[][] getAllArrows() throws Exception{
-		
+
 		List<String[]> ans = new LinkedList<String[]>();
-		
+
 		Map<String,String> inverseIdMap = new LinkedHashMap<String,String>();
 		for(Entry<String,String> e : idMap.get(nameWorkflow).entrySet()){
 			inverseIdMap.put(e.getValue(), e.getKey());
 		}
-		
+
 		Iterator<DataFlowElement> iterator = getDf().getElement().iterator();
 		while(iterator.hasNext()){
 			DataFlowElement cur = iterator.next();
@@ -1380,7 +1375,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				}
 			}
 		}
-		
+
 		return ans.toArray(new String[ans.size()][]);
 	}
 

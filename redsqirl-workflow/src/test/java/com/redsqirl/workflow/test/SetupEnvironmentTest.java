@@ -15,19 +15,35 @@ import org.junit.runners.Suite.SuiteClasses;
 
 import com.idiro.Log;
 import com.idiro.ProjectID;
+import com.redsqirl.utils.OrderedFieldListTests;
+import com.redsqirl.utils.TreeTests;
+import com.redsqirl.workflow.server.AppendListInteractionTests;
+import com.redsqirl.workflow.server.EditorInteractionTests;
+import com.redsqirl.workflow.server.InputInteractionTests;
+import com.redsqirl.workflow.server.ListInteractionTests;
+import com.redsqirl.workflow.server.OozieDagTests;
+import com.redsqirl.workflow.server.OozieManagerTests;
+import com.redsqirl.workflow.server.TableInteractionTests;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
+import com.redsqirl.workflow.server.WorkflowProcessesManagerTests;
+import com.redsqirl.workflow.server.WorkflowTests;
 import com.redsqirl.workflow.server.action.ActionTests;
+import com.redsqirl.workflow.server.action.ConvertTests;
 import com.redsqirl.workflow.server.action.SendEmailTests;
+import com.redsqirl.workflow.server.action.SourceTests;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.connect.HiveInterface;
-import com.redsqirl.workflow.test.TestUtils;
+import com.redsqirl.workflow.server.connect.interfaces.HDFSInterfaceTests;
+import com.redsqirl.workflow.server.connect.interfaces.SSHInterfaceArrayTests;
+import com.redsqirl.workflow.server.datatype.HiveTypePartitionTests;
 import com.redsqirl.workflow.utils.AbstractDictionaryTests;
 import com.redsqirl.workflow.utils.PackageManagerTests;
 
 
 @RunWith(Suite.class)
-@SuiteClasses({ActionTests.class,
-	/*WorkflowTests.class,
+@SuiteClasses({
+	ActionTests.class,
+	WorkflowTests.class,
 	//FIXME CreateWorkflowTests does not work
 	//CreateWorkflowTests.class,
 	HDFSInterfaceTests.class,
@@ -44,17 +60,17 @@ import com.redsqirl.workflow.utils.PackageManagerTests;
 	OozieManagerTests.class,
 	
 	OozieDagTests.class,
-	OrderedFeatureListTests.class,
+	OrderedFieldListTests.class,
 	TreeTests.class,
 	ConvertTests.class,
 	InputInteractionTests.class,
 	AppendListInteractionTests.class,
 	ListInteractionTests.class,
 	EditorInteractionTests.class,
-	TableInteractionTests.class,*/
+	TableInteractionTests.class,
 	//FIXME Test only done for keith user...
 	//HDFSTypeTests.class,
-//	PackageManagerTests.class,
+	PackageManagerTests.class,
 	AbstractDictionaryTests.class,
 	SendEmailTests.class
 })
@@ -121,10 +137,11 @@ public class SetupEnvironmentTest {
 		home.mkdir();
 		WorkflowPrefManager.changeSysHome(home.getAbsolutePath());
 		WorkflowPrefManager.createUserHome(System.getProperty("user.name"));
+		WorkflowPrefManager.pathSysCfgPref = testProp;
+		WorkflowPrefManager.pathUserCfgPref = testProp;
 		WorkflowPrefManager.setupHome();
 		logger.debug(WorkflowPrefManager.pathSysHome);
 		logger.debug(WorkflowPrefManager.getPathuserpref());
-//		logger.debug(WorkflowPrefManager.getPathiconmenu());
 		logger.debug(WorkflowPrefManager.pathUserCfgPref);
 	}
 

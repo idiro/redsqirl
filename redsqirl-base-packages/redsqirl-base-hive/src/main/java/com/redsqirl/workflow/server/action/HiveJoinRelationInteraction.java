@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.redsqirl.utils.FeatureList;
+import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.utils.TreeNonUnique;
 import com.redsqirl.workflow.server.TableInteraction;
@@ -39,7 +39,7 @@ public class HiveJoinRelationInteraction extends TableInteraction {
 	/** Table title */
 	public static final String table_table_title = HiveLanguageManager
 			.getTextWithoutSpace("hive.join_relationship_interaction.relation_column"),
-			/** Feature title */
+			/** Field title */
 			table_feat_title = HiveLanguageManager
 					.getTextWithoutSpace("hive.join_relationship_interaction.op_column");
 
@@ -82,8 +82,8 @@ public class HiveJoinRelationInteraction extends TableInteraction {
 					.getText("hive.join_relationship_interaction.checkrownb");
 		} else {
 			Set<String> featType = new LinkedHashSet<String>();
-			FeatureList inFeats = hj.getInFeatures();
-			logger.debug(inFeats.getFeaturesNames());
+			FieldList inFeats = hj.getInFields();
+			logger.debug(inFeats.getFieldNames());
 			Iterator<Map<String, String>> rows = lRow.iterator();
 			int rowNb = 0;
 			while (rows.hasNext() && msg == null) {
@@ -146,7 +146,7 @@ public class HiveJoinRelationInteraction extends TableInteraction {
 		updateColumnConstraint(table_feat_title, null, null, null);
 		updateEditor(table_feat_title, HiveDictionary.generateEditor(
 				HiveDictionary.getInstance().createDefaultSelectHelpMenu(),
-				hj.getInFeatures()));
+				hj.getInFields()));
 
 		if (getValues().isEmpty()) {
 			List<Map<String, String>> lrows = new LinkedList<Map<String, String>>();
@@ -174,7 +174,7 @@ public class HiveJoinRelationInteraction extends TableInteraction {
 		Tree<String> columns = new TreeNonUnique<String>("columns");
 		input.add(columns);
 
-		// Feature name
+		// Field name
 		Tree<String> table = new TreeNonUnique<String>("column");
 		columns.add(table);
 		table.add("title").add(table_table_title);
@@ -237,7 +237,7 @@ public class HiveJoinRelationInteraction extends TableInteraction {
 		String error = null;
 		try {
 			if (HiveDictionary.getInstance().getReturnType(expression,
-					hj.getInFeatures()) == null) {
+					hj.getInFields()) == null) {
 				error = HiveLanguageManager.getText("hive.expressionnull");
 			}
 		} catch (Exception e) {

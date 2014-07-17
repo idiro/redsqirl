@@ -10,10 +10,6 @@ import org.junit.Test;
 
 import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.Workflow;
-import com.redsqirl.workflow.server.action.HiveAggregator;
-import com.redsqirl.workflow.server.action.HiveSource;
-import com.redsqirl.workflow.server.action.HiveTableSelectInteraction;
-import com.redsqirl.workflow.server.action.Source;
 import com.redsqirl.workflow.server.action.utils.TestUtils;
 import com.redsqirl.workflow.server.connect.HiveInterface;
 
@@ -47,28 +43,28 @@ public class TableSelectInteractionTests {
 		dataSetTree.getFirstChild("browse").getFirstChild("output").add("path").add(new_path1);
 
 		Tree<String> feat1 = dataSetTree.getFirstChild("browse")
-				.getFirstChild("output").add("feature");
+				.getFirstChild("output").add("field");
 		feat1.add("name").add("id");
 		feat1.add("type").add("STRING");
 
 		Tree<String> feat2 = dataSetTree.getFirstChild("browse")
-				.getFirstChild("output").add("feature");
+				.getFirstChild("output").add("field");
 		feat2.add("name").add("value");
 		feat2.add("type").add("INT");
 		
 		String error = src.updateOut();
 		assertTrue("source update: "+error,error == null);
 		
-		assertTrue("number of features in source should be 2 instead of " + 
-				src.getDFEOutput().get(Source.out_name).getFeatures().getSize(),
-				src.getDFEOutput().get(Source.out_name).getFeatures().getSize() == 2);
+		assertTrue("number of fields in source should be 2 instead of " + 
+				src.getDFEOutput().get(Source.out_name).getFields().getSize(),
+				src.getDFEOutput().get(Source.out_name).getFields().getSize() == 2);
 		
 		assertTrue("Feature list " + 
-				src.getDFEOutput().get(Source.out_name).getFeatures().getFeaturesNames(),
-				src.getDFEOutput().get(Source.out_name).getFeatures().getFeaturesNames().contains("id"));
+				src.getDFEOutput().get(Source.out_name).getFields().getFieldNames(),
+				src.getDFEOutput().get(Source.out_name).getFields().getFieldNames().contains("id"));
 		assertTrue("Feature list " + 
-				src.getDFEOutput().get(Source.out_name).getFeatures().getFeaturesNames(),
-				src.getDFEOutput().get(Source.out_name).getFeatures().getFeaturesNames().contains("value"));
+				src.getDFEOutput().get(Source.out_name).getFields().getFieldNames(),
+				src.getDFEOutput().get(Source.out_name).getFields().getFieldNames().contains("value"));
 		
 		return src;
 	}

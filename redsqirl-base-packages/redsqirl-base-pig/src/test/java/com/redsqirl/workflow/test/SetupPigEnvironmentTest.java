@@ -72,7 +72,6 @@ public class SetupPigEnvironmentTest {
 		String testProp = SetupPigEnvironmentTest.class.getResource( "/test.properties" ).getFile();
 		System.out.println(testProp);
 		
-		
 		WorkflowPrefManager.pathSysCfgPref = testProp;
 		WorkflowPrefManager.pathUserCfgPref = testProp;
 
@@ -118,10 +117,11 @@ public class SetupPigEnvironmentTest {
 		home.mkdir();
 		WorkflowPrefManager.changeSysHome(home.getAbsolutePath());
 		WorkflowPrefManager.createUserHome(System.getProperty("user.name"));
+		WorkflowPrefManager.pathSysCfgPref = testProp;
+		WorkflowPrefManager.pathUserCfgPref = testProp;
 		WorkflowPrefManager.setupHome();
 		logger.debug(WorkflowPrefManager.pathSysHome);
 		logger.debug(WorkflowPrefManager.getPathuserpref());
-		logger.debug(WorkflowPrefManager.getPathiconmenu());
 		logger.debug(WorkflowPrefManager.pathUserCfgPref);	
 	}
 	

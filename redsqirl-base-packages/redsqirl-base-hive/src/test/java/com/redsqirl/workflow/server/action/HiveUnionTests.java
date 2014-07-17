@@ -55,12 +55,12 @@ public class HiveUnionTests {
 		dataSetTree.getFirstChild("browse").getFirstChild("output").add("path").add(new_path1);
 
 		Tree<String> feat1 = dataSetTree.getFirstChild("browse")
-				.getFirstChild("output").add("feature");
+				.getFirstChild("output").add("field");
 		feat1.add("name").add("ID");
 		feat1.add("type").add("STRING");
 
 		Tree<String> feat2 = dataSetTree.getFirstChild("browse")
-				.getFirstChild("output").add("feature");
+				.getFirstChild("output").add("field");
 		feat2.add("name").add("VALUE");
 		feat2.add("type").add("INT");
 		
@@ -99,7 +99,7 @@ public class HiveUnionTests {
 		
 		updateHive(w,hive,TestUtils.getTablePath(1),TestUtils.getTablePath(2),hInt);
 		logger.info("update hive ok");
-		logger.debug("Features "+hive.getDFEOutput().get(HiveUnion.key_output).getFeatures());
+		logger.debug("Features "+hive.getDFEOutput().get(HiveUnion.key_output).getFields());
 		
 		hive.getDFEOutput().get(HiveUnion.key_output).generatePath(
 				System.getProperty("user.name"), 

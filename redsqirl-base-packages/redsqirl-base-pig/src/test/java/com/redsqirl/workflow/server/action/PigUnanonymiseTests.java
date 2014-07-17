@@ -13,9 +13,6 @@ import org.junit.Test;
 import com.redsqirl.workflow.server.OozieManager;
 import com.redsqirl.workflow.server.Workflow;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
-import com.redsqirl.workflow.server.action.PigBinarySource;
-import com.redsqirl.workflow.server.action.PigSelect;
-import com.redsqirl.workflow.server.action.PigUnanonymise;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
@@ -26,36 +23,38 @@ public class PigUnanonymiseTests {
 	static Logger logger = Logger.getLogger(PigUnanonymiseTests.class);
 
 	public static DataFlowElement createPigWithSrc(Workflow w,
-			DataFlowElement src, HDFSInterface hInt) throws RemoteException,
+			DataFlowElement src, DataFlowElement srcIndex, HDFSInterface hInt) throws RemoteException,
 			Exception {
 		String error = null;
 		String idHS = w.addElement((new PigUnanonymise()).getName());
-		logger.debug("Pig select: " + idHS);
+		logger.debug("Pig unanonymise: " + idHS);
 
 		PigUnanonymise pig = (PigUnanonymise) w.getElement(idHS);
 
 		logger.info(PigBinarySource.out_name + " " + src.getComponentId());
-		logger.debug(PigSelect.key_input + " " + idHS);
+		logger.debug(PigUnanonymise.key_input + " " + idHS);
 
 		error = w.addLink(PigBinarySource.out_name, src.getComponentId(),
 				PigUnanonymise.key_input, idHS);
-		error = w.addLink(PigBinarySource.out_name, src.getComponentId(),
+		assertTrue("pig unanonymise add link: " + error, error == null);
+		
+		error = w.addLink(PigBinarySource.out_name, srcIndex.getComponentId(),
 				PigUnanonymise.key_index_map, idHS);
 		
-		assertTrue("pig select add link: " + error, error == null);
+		assertTrue("pig unanonymise add link: " + error, error == null);
 
 		updatePig(w, pig, hInt);
 
 		logger.debug("HS update out...");
 		error = pig.updateOut();
-		assertTrue("pig select update: " + error, error == null);
+		assertTrue("pig unanonymise update: " + error, error == null);
 		logger.debug("Features "
-				+ pig.getDFEOutput().get(PigSelect.key_output).getFields());
+				+ pig.getDFEOutput().get(PigUnanonymise.key_output).getFields());
 
 		pig.getDFEOutput()
-				.get(PigSelect.key_output)
+				.get(PigUnanonymise.key_output)
 				.generatePath(System.getProperty("user.name"),
-						pig.getComponentId(), PigSelect.key_output);
+						pig.getComponentId(), PigUnanonymise.key_output);
 
 		return pig;
 	}
@@ -73,7 +72,7 @@ public class PigUnanonymiseTests {
 
 		logger.info("HS update out...");
 		String error = pig.updateOut();
-		assertTrue("pig select update: " + error, error == null);
+		assertTrue("pig unanonymise update: " + error, error == null);
 	}
 
 	@Test
@@ -89,14 +88,18 @@ public class PigUnanonymiseTests {
 			String new_path3 = TestUtils.getPath(3);
 
 			hInt.delete(new_path1);
+			hInt.delete(new_path2);
+			hInt.delete(new_path3);
 
 			DataFlowElement src = PigTestUtils.createSrc_ID_2VALUE(w, hInt,
 					new_path1);
-			PigUnanonymise pig = (PigUnanonymise) createPigWithSrc(w, src, hInt);
+			DataFlowElement srcIndex = PigTestUtils.createSrc_INDEX_VALUE(w, hInt,
+					new_path2);
+			PigUnanonymise pig = (PigUnanonymise) createPigWithSrc(w, src, srcIndex, hInt);
 
 			pig.getDFEOutput().get(PigUnanonymise.key_output)
 					.setSavingState(SavingState.RECORDED);
-			pig.getDFEOutput().get(PigUnanonymise.key_output).setPath(new_path2);
+			pig.getDFEOutput().get(PigUnanonymise.key_output).setPath(new_path3);
 			
 			logger.info("run...");
 			OozieClient wc = OozieManager.getInstance().getOc();
@@ -122,8 +125,8 @@ public class PigUnanonymiseTests {
 			 logger.info(wc.getJobInfo(jobId));
 			 error = wc.getJobInfo(jobId).toString();
 			 assertTrue(error, error.contains("SUCCEEDED"));
-			WorkflowPrefManager.resetSys();
-			WorkflowPrefManager.resetUser();
+//			WorkflowPrefManager.resetSys();
+//			WorkflowPrefManager.resetUser();
 			logger.info(WorkflowPrefManager.pathSysHome);
 		} catch (Exception e) {
 			logger.error(e.getMessage());

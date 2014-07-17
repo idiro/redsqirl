@@ -10,8 +10,6 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.redsqirl.utils.Tree;
-import com.redsqirl.workflow.server.WorkflowPrefManager;
-import com.redsqirl.workflow.server.action.Source;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.connect.HiveInterface;
 import com.redsqirl.workflow.server.datatype.HiveType;
@@ -80,12 +78,12 @@ public class SourceTests {
 				+ src.getDFEOutput().get(Source.out_name).getFields()
 						.getFieldNames(),
 				src.getDFEOutput().get(Source.out_name).getFields()
-						.getFieldNames().contains("id"));
+						.getFieldNames().contains("ID"));
 		assertTrue("field list "
 				+ src.getDFEOutput().get(Source.out_name).getFields()
 						.getFieldNames(),
 				src.getDFEOutput().get(Source.out_name).getFields()
-						.getFieldNames().contains("value"));
+						.getFieldNames().contains("VALUE"));
 
 		return src;
 	}
@@ -201,8 +199,8 @@ public class SourceTests {
 			error = src.updateOut();
 			assertTrue("error update out : " + error, error == null);
 
-			WorkflowPrefManager.resetSys();
-			WorkflowPrefManager.resetUser();
+//			WorkflowPrefManager.resetSys();
+//			WorkflowPrefManager.resetUser();
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			assertTrue(e.toString(), false);

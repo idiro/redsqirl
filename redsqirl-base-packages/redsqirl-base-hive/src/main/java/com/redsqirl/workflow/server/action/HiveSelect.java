@@ -3,7 +3,7 @@ package com.redsqirl.workflow.server.action;
 
 import java.rmi.RemoteException;
 
-import com.redsqirl.utils.FeatureList;
+import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.connect.HiveInterface;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
@@ -24,8 +24,8 @@ public class HiveSelect extends HiveElement {
 	private static final long serialVersionUID = 8969124219285130345L;
 	/**Grouping Key*/
 	public static final String key_grouping = "Grouping",
-			/**Features Key*/
-			key_featureTable = "Features";
+			/**Fields Key*/
+			key_fieldTable = "Fields";
 	/**
 	 * Pages
 	 */
@@ -46,11 +46,11 @@ public class HiveSelect extends HiveElement {
 		page1 = addPage(HiveLanguageManager.getText("hive.select_page1.title"),
 				HiveLanguageManager.getText("hive.select_page1.legend"), 1);
 
-		tSelInt = new HiveTableSelectInteraction(key_featureTable,
+		tSelInt = new HiveTableSelectInteraction(key_fieldTable,
 				HiveLanguageManager
-						.getText("hive.select_features_interaction.title"),
+						.getText("hive.select_fields_interaction.title"),
 				HiveLanguageManager
-						.getText("hive.select_features_interaction.legend"), 0,
+						.getText("hive.select_fields_interaction.legend"), 0,
 				0, this);
 
 		page1.addInteraction(tSelInt);
@@ -121,7 +121,7 @@ public class HiveSelect extends HiveElement {
 			// Output
 			DFEOutput out = output.get(key_output);
 			logger.info("ouput "+output.size());
-			logger.info(out.getFeatures().getFeaturesNames().toString());
+			logger.info(out.getFields().getFieldNames().toString());
 			logger.info("path : "+out.getPath());
 			String[] tableOutArray = hInt.getTableAndPartitions(out.getPath());
 			logger.info("paths : "+tableOutArray);
@@ -163,7 +163,7 @@ public class HiveSelect extends HiveElement {
 				for (int i = 1; i < partitions.length; ++i){
 //					String name = partitions[i].split("=")[0];
 					String value = partitions[i].split("=")[1];
-//					FeatureType type = HiveType.getType(value);
+//					FieldType type = HiveType.getType(value);
 					
 //					createPartition += name + " " + HiveDictionary.getHiveType(type);
 					insertPartition += partitions[i];
@@ -203,22 +203,22 @@ public class HiveSelect extends HiveElement {
 	}
 
 	/**
-	 * Get the Features from the input
-	 * @return input FeatureList
+	 * Get the Fields from the input
+	 * @return input FieldList
 	 * @throws RemoteException
 	 */
 	@Override
-	public FeatureList getInFeatures() throws RemoteException {
-		return getDFEInput().get(key_input).get(0).getFeatures();
+	public FieldList getInFields() throws RemoteException {
+		return getDFEInput().get(key_input).get(0).getFields();
 	}
 	/**
-	 * Get the new features that are generated from the action
-	 * @return new FeatureList
+	 * Get the new fields that are generated from the action
+	 * @return new FieldList
 	 * @throws RemoteException
 	 */
 	@Override
-	public FeatureList getNewFeatures() throws RemoteException {
-		return tSelInt.getNewFeatures();
+	public FieldList getNewFields() throws RemoteException {
+		return tSelInt.getNewFields();
 	}
 
 }

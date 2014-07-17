@@ -192,8 +192,8 @@ public class HiveInterfaceTests {
 			List<String> result = hInt.select("\001", 5);
 			logger.info("result : " + result.toString());
 			hInt.delete(path_1);
-			WorkflowPrefManager.resetSys();
-			WorkflowPrefManager.resetUser();
+//			WorkflowPrefManager.resetSys();
+//			WorkflowPrefManager.resetUser();
 
 		} catch (RemoteException e) {
 			e.printStackTrace();

@@ -13,15 +13,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.redsqirl.utils.FeatureList;
-import com.redsqirl.utils.OrderedFeatureList;
+import com.redsqirl.utils.FieldList;
+import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.DataProperty;
 import com.redsqirl.workflow.server.DataflowAction;
 import com.redsqirl.workflow.server.action.utils.HiveDictionary;
 import com.redsqirl.workflow.server.connect.HiveInterface;
 import com.redsqirl.workflow.server.datatype.HiveType;
 import com.redsqirl.workflow.server.datatype.HiveTypePartition;
-import com.redsqirl.workflow.server.enumeration.FeatureType;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
@@ -79,14 +79,14 @@ public class HiveAudit extends DataflowAction {
 			output.put(key_output, new HiveType());
 		}
 		try {
-			FeatureList fl = new OrderedFeatureList();
-			fl.addFeature("Legend", FeatureType.STRING);
+			FieldList fl = new OrderedFieldList();
+			fl.addField("Legend", FieldType.STRING);
 			Iterator<String> it = getDFEInput().get(key_input).get(0)
-					.getFeatures().getFeaturesNames().iterator();
+					.getFields().getFieldNames().iterator();
 			while (it.hasNext()) {
-				fl.addFeature("AUDIT_" + it.next(), FeatureType.STRING);
+				fl.addField("AUDIT_" + it.next(), FieldType.STRING);
 			}
-			output.get(key_output).setFeatures(fl);
+			output.get(key_output).setFields(fl);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
@@ -105,8 +105,8 @@ public class HiveAudit extends DataflowAction {
 		logger.debug("select...");
 		HiveInterface hi = new HiveInterface();
 		String select = "";
-		FeatureList features = output.get(key_output).getFeatures();
-		Iterator<String> it = features.getFeaturesNames().iterator();
+		FieldList fields = output.get(key_output).getFields();
+		Iterator<String> it = fields.getFieldNames().iterator();
 		if (it.hasNext()) {
 			String featName = it.next();
 			select = "SELECT " + featName + " AS " + featName;
@@ -117,15 +117,15 @@ public class HiveAudit extends DataflowAction {
 		}
 		select += "\nFROM (\n";
 
-		// Do feature list depending of the type.
+		// Do field list depending of the type.
 		Set<String> stringFeats = new LinkedHashSet<String>();
 		Set<String> categoryFeats = new LinkedHashSet<String>();
 		Set<String> numericFeats = new LinkedHashSet<String>();
-		FeatureList fl = getDFEInput().get(key_input).get(0).getFeatures();
-		Iterator<String> flNames = fl.getFeaturesNames().iterator();
+		FieldList fl = getDFEInput().get(key_input).get(0).getFields();
+		Iterator<String> flNames = fl.getFieldNames().iterator();
 		while (flNames.hasNext()) {
 			String name = flNames.next();
-			switch (fl.getFeatureType(name)) {
+			switch (fl.getFieldType(name)) {
 			case CHAR:
 			case STRING:
 				stringFeats.add(name);
@@ -147,7 +147,7 @@ public class HiveAudit extends DataflowAction {
 
 		// Range
 		select += "\tSELECT 'Range' AS LEGEND";
-		flNames = fl.getFeaturesNames().iterator();
+		flNames = fl.getFieldNames().iterator();
 		while (flNames.hasNext()) {
 			String name = flNames.next();
 			select += ",\n\t\tCONCAT( MIN(" + name + "), ' - ', MAX(" + name
@@ -159,14 +159,14 @@ public class HiveAudit extends DataflowAction {
 
 		// Not null values
 		select += "\tSELECT 'Count not null values' AS LEGEND";
-		flNames = fl.getFeaturesNames().iterator();
+		flNames = fl.getFieldNames().iterator();
 		while (flNames.hasNext()) {
 			String name = flNames.next();
 			select += ",\n\t\tCOUNT_" + name + " AS AUDIT_" + name;
 		}
 		select += "\n\tFROM (";
 		select += "\t\tSELECT ";
-		flNames = fl.getFeaturesNames().iterator();
+		flNames = fl.getFieldNames().iterator();
 		if (flNames.hasNext()) {
 			String name = flNames.next();
 			select += "\n\t\t\tCOUNT(" + name + ") AS COUNT_" + name;
@@ -181,14 +181,14 @@ public class HiveAudit extends DataflowAction {
 
 		// Null values
 		select += "\tSELECT 'Count null values' AS LEGEND";
-		flNames = fl.getFeaturesNames().iterator();
+		flNames = fl.getFieldNames().iterator();
 		while (flNames.hasNext()) {
 			String name = flNames.next();
 			select += ",\n\t\tCOUNT_" + name + " AS AUDIT_" + name;
 		}
 		select += "\n\tFROM (";
 		select += "\t\tSELECT ";
-		flNames = fl.getFeaturesNames().iterator();
+		flNames = fl.getFieldNames().iterator();
 		if (flNames.hasNext()) {
 			String name = flNames.next();
 			select += "\n\t\t\tCOUNT(*) - COUNT(" + name + ") AS COUNT_" + name;
@@ -206,7 +206,7 @@ public class HiveAudit extends DataflowAction {
 			select += "UNION ALL\n";
 
 			select += "\tSELECT 'Average' AS LEGEND";
-			flNames = fl.getFeaturesNames().iterator();
+			flNames = fl.getFieldNames().iterator();
 			while (flNames.hasNext()) {
 				String name = flNames.next();
 				if (numericFeats.contains(name)) {
@@ -235,7 +235,7 @@ public class HiveAudit extends DataflowAction {
 			select += "UNION ALL\n";
 
 			select += "\tSELECT 'Count distinct values' AS LEGEND";
-			flNames = fl.getFeaturesNames().iterator();
+			flNames = fl.getFieldNames().iterator();
 			while (flNames.hasNext()) {
 				String name = flNames.next();
 				if (stringFeats.contains(name)) {
@@ -268,7 +268,7 @@ public class HiveAudit extends DataflowAction {
 			select += "UNION ALL\n";
 
 			select += "\tSELECT 'Distinct values' AS LEGEND";
-			flNames = fl.getFeaturesNames().iterator();
+			flNames = fl.getFieldNames().iterator();
 			while (flNames.hasNext()) {
 				String name = flNames.next();
 				if (categoryFeats.contains(name)) {
@@ -296,7 +296,7 @@ public class HiveAudit extends DataflowAction {
 	}
 
 	/**
-	 * Get the create query piece that gets the features to be used in the
+	 * Get the create query piece that gets the fields to be used in the
 	 * create statement
 	 * 
 	 * @param out
@@ -304,20 +304,20 @@ public class HiveAudit extends DataflowAction {
 	 * @throws RemoteException
 	 */
 	public String getCreateQueryPiece() throws RemoteException {
-		logger.debug("create features...");
+		logger.debug("create fields...");
 		String createSelect = "";
-		FeatureList features = output.get(key_output).getFeatures();
-		Iterator<String> it = features.getFeaturesNames().iterator();
+		FieldList fields = output.get(key_output).getFields();
+		Iterator<String> it = fields.getFieldNames().iterator();
 		if (it.hasNext()) {
 			String featName = it.next();
-			String type = HiveDictionary.getHiveType(features
-					.getFeatureType(featName));
+			String type = HiveDictionary.getHiveType(fields
+					.getFieldType(featName));
 			createSelect = "(" + featName + " " + type;
 		}
 		while (it.hasNext()) {
 			String featName = it.next();
-			String type = HiveDictionary.getHiveType(features
-					.getFeatureType(featName));
+			String type = HiveDictionary.getHiveType(fields
+					.getFieldType(featName));
 			createSelect += "," + featName + " " + type;
 		}
 		createSelect += ")";
@@ -367,7 +367,7 @@ public class HiveAudit extends DataflowAction {
 			// Output
 			DFEOutput out = output.get(key_output);
 			logger.info("ouput " + output.size());
-			logger.info(out.getFeatures().getFeaturesNames().toString());
+			logger.info(out.getFields().getFieldNames().toString());
 			logger.info("path : " + out.getPath());
 			String[] tableOutArray = hInt.getTableAndPartitions(out.getPath());
 			logger.info("paths : " + tableOutArray);

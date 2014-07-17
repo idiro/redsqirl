@@ -59,16 +59,16 @@ public class HiveFilterInteraction extends EditorInteraction {
 			logger.info("condition : "+condition);
 			if (condition != null && !condition.isEmpty()) {
 				logger.debug("Condition: " + condition
-						+ " features list size : "
-						+ el.getInFeatures().getSize());
+						+ " fields list size : "
+						+ el.getInFields().getSize());
 				String type = null;
 				Set<String> aggregation = new HashSet<String>();
 				if(el.groupingInt != null){
-					aggregation = el.groupingInt.getAggregationFeatures(el.getDFEInput().get(HiveElement.key_input).get(0));
+					aggregation = el.groupingInt.getAggregationFields(el.getDFEInput().get(HiveElement.key_input).get(0));
 					logger.info("aggregation set size : "+ aggregation.size());
 				}
 				type = HiveDictionary.getInstance().getReturnType(
-						condition, el.getInFeatures(),aggregation);
+						condition, el.getInFields(),aggregation);
 				logger.info("return type : "+type);
 				if (!type.equalsIgnoreCase("boolean")) {
 					msg = HiveLanguageManager.getText("hive.filter_interaction.checkerror",new String[]{type});
@@ -94,7 +94,7 @@ public class HiveFilterInteraction extends EditorInteraction {
 			tree.remove("editor");
 
 			Tree<String> base = HiveDictionary.generateEditor(HiveDictionary.getInstance()
-					.createConditionHelpMenu(), el.getInFeatures()).getTree();
+					.createConditionHelpMenu(), el.getInFields()).getTree();
 //			logger.debug(base);
 			tree.add(base.getFirstChild("editor"));
 			setValue(output);

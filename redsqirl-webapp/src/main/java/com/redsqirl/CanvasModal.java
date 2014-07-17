@@ -563,40 +563,34 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * @throws RemoteException
 	 */
 	public void openHelpTextEditorModal() throws RemoteException {
-
-		String idInteraction = FacesContext.getCurrentInstance()
-				.getExternalContext().getRequestParameterMap()
-				.get("idInteraction");
-
-		logger.info("interaction: " + idInteraction);
-		int indexOf = getPage().getInteractions().indexOf(
-				getPage().getInteraction(idInteraction));
-
-		CanvasModalInteraction cmInt = inters.get(indexOf);
-		if (cmInt instanceof TableInteraction) {
-			logger.info("Table interaction");
-			Integer rowKey = Integer.valueOf(FacesContext.getCurrentInstance()
-					.getExternalContext().getRequestParameterMap()
-					.get("rowKey"));
-			String column = FacesContext.getCurrentInstance()
-					.getExternalContext().getRequestParameterMap()
-					.get("column");
-
-			logger.info("row: " + rowKey);
-			logger.info("column: " + column);
-			selEditor = new SelectedEditor((TableInteraction) cmInt, column,
-					rowKey);
-		} else if (cmInt instanceof EditorInteraction) {
-			logger.info("Editor interaction");
-			selEditor = new SelectedEditor((EditorInteraction) cmInt);
-		} else {
-			MessageUseful
-			.addErrorMessage("Object should be a Table or an Editor");
-			HttpServletRequest request = (HttpServletRequest) FacesContext
-					.getCurrentInstance().getExternalContext().getRequest();
+		logger.info("openHelpTextEditorModal");
+		String idInteraction = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("idInteraction");
+		if(idInteraction != null){
+			logger.info("interaction: " + idInteraction);
+			int indexOf = getPage().getInteractions().indexOf(getPage().getInteraction(idInteraction));
+			CanvasModalInteraction cmInt = inters.get(indexOf);
+			if (cmInt instanceof TableInteraction) {
+				logger.info("Table interaction");
+				Integer rowKey = Integer.valueOf(FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("rowKey"));
+				String column = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("column");
+				logger.info("row: " + rowKey);
+				logger.info("column: " + column);
+				selEditor = new SelectedEditor((TableInteraction) cmInt, column, rowKey);
+			} else if (cmInt instanceof EditorInteraction) {
+				logger.info("Editor interaction");
+				selEditor = new SelectedEditor((EditorInteraction) cmInt);
+			} else {
+				logger.info("openHelpTextEditorModal error ");
+				MessageUseful.addErrorMessage(getMessageResources("msg_error_selEditor"));
+				HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+				request.setAttribute("msnError", "msnError");
+			}
+		}else{
+			logger.info("openHelpTextEditorModal error idInteraction = NULL ");
+			MessageUseful.addErrorMessage(getMessageResources("msg_error_oops"));
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
 		}
-
 	}
 
 	public void checkFirstPage() {

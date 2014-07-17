@@ -22,6 +22,7 @@ import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.Workflow;
 import com.redsqirl.workflow.server.action.PigTextSource;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
+import com.redsqirl.workflow.server.datatype.MapRedCtrlATextType;
 import com.redsqirl.workflow.server.datatype.MapRedTextType;
 import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
@@ -78,6 +79,18 @@ public class PigTestUtils {
 		content += "E,5\n";
 		content += "F,6\n";
 		content += "G,7\n";
+
+		createHDFSFile(p, content);
+	}
+	
+	public static void createIntString_file(Path p) throws IOException {
+		String content = "1,A\n";
+		content += "2,B\n";
+		content += "3,C\n";
+		content += "4,D\n";
+		content += "5,E\n";
+		content += "6,F\n";
+		content += "7,G\n";
 
 		createHDFSFile(p, content);
 	}
@@ -228,6 +241,62 @@ public class PigTestUtils {
 		assertTrue("field list " + 
 				src.getDFEOutput().get(PigTextSource.out_name).getFields().getFieldNames(),
 				src.getDFEOutput().get(PigTextSource.out_name).getFields().getFieldNames().contains("VALUE"));
+		
+		return src;
+	}
+	
+	public static DataFlowElement createSrc_INDEX_VALUE(
+			Workflow w,
+			HDFSInterface hInt, 
+			String new_path1 ) throws RemoteException, Exception{
+		
+		String idSource = w.addElement((new Source()).getName());
+		Source src = (Source)w.getElement(idSource);
+		
+		hInt.delete(new_path1);
+		createIntString_file(new Path(new_path1));
+		
+		MapRedCtrlATextType type = new MapRedCtrlATextType();
+		
+		src.update(src.getInteraction(Source.key_datatype));
+		Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype).getTree();
+		dataTypeTree.getFirstChild("list").getFirstChild("output").add(type.getBrowser());
+		
+		src.update(src.getInteraction(Source.key_datasubtype));
+		Tree<String> dataSubTypeTree = src.getInteraction(Source.key_datasubtype).getTree();
+		dataSubTypeTree.getFirstChild("list").getFirstChild("output").removeAllChildren();
+		dataSubTypeTree.getFirstChild("list").getFirstChild("output").add(type.getTypeName());
+		
+		src.update(src.getInteraction(Source.key_dataset));
+		Tree<String> dataSetTree = src.getInteraction(Source.key_dataset).getTree();
+		dataSetTree.getFirstChild("browse").getFirstChild("output").add("path").add(new_path1);
+		dataSetTree.getFirstChild("browse").getFirstChild("output").add("property").add(MapRedTextType.key_delimiter).add(",");
+
+		Tree<String> field2 = dataSetTree.getFirstChild("browse")
+				.getFirstChild("output").add("field");
+		field2.add("name").add("Value");
+		field2.add("type").add("STRING");
+		
+		Tree<String> field1 = dataSetTree.getFirstChild("browse")
+				.getFirstChild("output").add("field");
+		field1.add("name").add("Index");
+		field1.add("type").add("STRING");
+		
+		String error = src.updateOut();
+		
+		
+		assertTrue("source update: "+error,error == null);
+		
+		assertTrue("number of fields in source should be 2 instead of " + 
+				src.getDFEOutput().get(Source.out_name).getFields().getSize(),
+				src.getDFEOutput().get(Source.out_name).getFields().getSize() == 2);
+		
+		assertTrue("field list " + 
+				src.getDFEOutput().get(Source.out_name).getFields().getFieldNames(),
+				src.getDFEOutput().get(Source.out_name).getFields().getFieldNames().contains("Value"));
+		assertTrue("field list " + 
+				src.getDFEOutput().get(Source.out_name).getFields().getFieldNames(),
+				src.getDFEOutput().get(Source.out_name).getFields().getFieldNames().contains("Index"));
 		
 		return src;
 	}
