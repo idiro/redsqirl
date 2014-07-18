@@ -890,37 +890,10 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 			logger.debug("Delete hive object " + path);
 			String[] tableAndPartition = getTableAndPartitions(path);
 			try {
-				if (tableAndPartition.length == 1) {
-					ok = deleteTable(tableAndPartition[0]);
-				} else if (tableAndPartition.length > 1) {
-					Map<String, String> partsAndTypeFormatted = getFormattedType(path);
+				String statement = deleteStatement(path);
+				logger.info(statement);
+				ok = execute(statement);
 
-					// partsAndType
-
-					String part = tableAndPartition[1].substring(0,
-							tableAndPartition[1].indexOf("=")).toLowerCase();
-					String cond = partsAndTypeFormatted
-							.get(tableAndPartition[1].substring(0,
-									tableAndPartition[1].indexOf("="))
-									.toLowerCase());
-
-					String partitionsList = part + "=" + cond;
-					for (int i = 2; i < tableAndPartition.length; ++i) {
-						part = tableAndPartition[i].substring(0,
-								tableAndPartition[i].indexOf("="))
-								.toLowerCase();
-						cond = partsAndTypeFormatted
-								.get(tableAndPartition[i].substring(0,
-										tableAndPartition[i].indexOf("="))
-										.toLowerCase());
-						partitionsList += ", " + part + "=" + cond;
-					}
-					logger.info("ALTER TABLE " + tableAndPartition[0]
-							+ " DROP PARTITION (" + partitionsList + ")");
-					ok = execute("ALTER TABLE " + tableAndPartition[0]
-							+ " DROP PARTITION (" + partitionsList + ")");
-
-				}
 				updateTables = 0;
 			} catch (SQLException e) {
 				ok = false;
