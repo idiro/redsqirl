@@ -112,11 +112,11 @@ public class SSHInterfaceTests {
 			assertTrue("List should not contain namenode anymore", !SSHInterface.getKnownHost().contains("localhost"));
 			logger.info("12");
 			
-			Map<String,DataStore> l = SSHInterface.getHosts();
+			Set<String> l = SSHInterface.getKnownHost();
 			logger.info("13");
 			assertTrue(l.size() == 1);
 			logger.info("14");
-			l.get("datanode2").close();
+			SSHInterface.getHosts().get("datanode2").close();
 			logger.info("15");
 			assertTrue("Fail to remove localhost",SSHInterface.removeKnownHost("datanode2") == null);
 			logger.info("16");

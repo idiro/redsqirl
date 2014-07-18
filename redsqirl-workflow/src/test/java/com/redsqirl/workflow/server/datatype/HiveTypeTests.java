@@ -110,7 +110,9 @@ public class HiveTypeTests {
 
 			String new_path1 = TestUtils.getTablePath(1)
 					+ getParts();
-			hInt.delete(new_path1);
+
+			hInt.delete(TestUtils.getTablePath(1));
+			
 			assertTrue("create " + new_path1,
 					hInt.create(new_path1, getPartitions()) == null);
 

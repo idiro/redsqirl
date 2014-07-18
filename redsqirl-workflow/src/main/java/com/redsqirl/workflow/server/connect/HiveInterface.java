@@ -906,12 +906,12 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 
 					String partitionsList = part + "=" + cond;
 					for (int i = 2; i < tableAndPartition.length; ++i) {
-						part = tableAndPartition[1].substring(0,
-								tableAndPartition[1].indexOf("="))
+						part = tableAndPartition[i].substring(0,
+								tableAndPartition[i].indexOf("="))
 								.toLowerCase();
 						cond = partsAndTypeFormatted
-								.get(tableAndPartition[1].substring(0,
-										tableAndPartition[1].indexOf("="))
+								.get(tableAndPartition[i].substring(0,
+										tableAndPartition[i].indexOf("="))
 										.toLowerCase());
 						partitionsList += ", " + part + "=" + cond;
 					}
