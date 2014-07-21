@@ -34,7 +34,7 @@
 			 <h:outputText value="#{rowNb+1}" />
 			 </rich:column>
 
-                	<rich:column style="border-bottom:0px;border-right:0px;" width="40px;">
+                	<rich:column style="border-bottom:0px;border-right:0px;" width="35px;">
                         <f:facet name="header">
                             <h:panelGrid columns="1" styleClass="">
                             <a4j:commandLink
@@ -60,7 +60,7 @@
                       	<f:facet name="header">
                         	<h:outputText value="#{column}" />
                         </f:facet>
-                        <h:inputText value="#{rowItem.row[ind]}" size="10" onkeyup="nospaces(this);" />
+                        <h:inputText value="#{rowItem.row[ind]}" size="9" onkeyup="nospaces(this);" />
 						<a4j:commandButton title="#{messages.title_dispacts}" action="#{configureTabsBean.retrieveItems}" value="..." reRender="actionsPanel">
 							<f:param name="selected" value="#{rowNb}" />
 						</a4j:commandButton>
@@ -74,13 +74,13 @@
                 <td style="width:5%">
                         		
 	            	<div style="width:100%; height:220px; border: 0px solid; overflow-x: hidden;">
-	                   	<a4j:commandButton styleClass="greenButton" style="width:40px;margin-top: 75px;" value="#{messages.button_first}" action="#{configureTabsBean.tableGrid.goFirst}" reRender="tableInteraction" />
+	                   	<a4j:commandButton styleClass="greenButton" style="width:40px;margin-top: 75px;" value="#{messages.button_first}" action="#{configureTabsBean.tableGrid.goFirst}" reRender="tableInteraction" onclick="this.disabled=true" oncomplete="this.disabled=false;" />
 	                   	<br/>
-	                   	<a4j:commandButton styleClass="greenButton" style="width:40px;" value="#{messages.button_up}" action="#{configureTabsBean.tableGrid.goUp}" reRender="tableInteraction" />
+	                   	<a4j:commandButton styleClass="greenButton" style="width:40px;" value="#{messages.button_up}" action="#{configureTabsBean.tableGrid.goUp}" reRender="tableInteraction" onclick="this.disabled=true" oncomplete="this.disabled=false;" />
 	                   	<br/>
-	                   	<a4j:commandButton styleClass="greenButton" style="width:40px;" value="#{messages.button_down}" action="#{configureTabsBean.tableGrid.goDown}" reRender="tableInteraction" />
+	                   	<a4j:commandButton styleClass="greenButton" style="width:40px;" value="#{messages.button_down}" action="#{configureTabsBean.tableGrid.goDown}" reRender="tableInteraction" onclick="this.disabled=true" oncomplete="this.disabled=false;" />
 	                   	<br/>
-	                   	<a4j:commandButton styleClass="greenButton" style="width:40px;" value="#{messages.button_last}" action="#{configureTabsBean.tableGrid.goLast}" reRender="tableInteraction" />
+	                   	<a4j:commandButton styleClass="greenButton" style="width:40px;" value="#{messages.button_last}" action="#{configureTabsBean.tableGrid.goLast}" reRender="tableInteraction" onclick="this.disabled=true" oncomplete="this.disabled=false;" />
 	                </div>
              		
              	</td>
