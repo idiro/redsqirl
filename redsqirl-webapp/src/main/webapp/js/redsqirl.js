@@ -413,6 +413,11 @@ function nospaces(t){
 		t.value=t.value.replace(/\s/g,'');
 	}
 }
+function noLetters(t){
+	if(t.value.match(/\D+/)){
+		t.value=t.value.replace(/\D+/,'');
+	}
+}
 
 function setPropValueFocus(index){
 	jQuery("[id$='"+index+":browserPropValueInput']").focus();
@@ -424,4 +429,17 @@ function changeHelpAnchor(index){
 	if(jQuery("#page"+index).position()){
 		jQuery("#tabs-1").animate({scrollTop: jQuery("#page"+index).position().top-50}, 800);
 	}
+}
+
+function changeTableInteractionAnchorBottom(){
+	jQuery("#divTableInteraction").animate({ scrollTop: jQuery("[id$='tableInteraction']").height()}, 800);
+}
+function changeTableInteractionAnchorTop(){
+	jQuery("#divTableInteraction").animate({ scrollTop: 0}, 800);
+}
+function changeTableInteractionAnchorUp(){
+	jQuery("#divTableInteraction").animate({ scrollTop: jQuery("[id$='divTableInteraction']").scrollTop()-30 }, 800);
+}
+function changeTableInteractionAnchorDown(){
+	jQuery("#divTableInteraction").animate({ scrollTop: jQuery("[id$='divTableInteraction']").scrollTop()+30 }, 800);
 }

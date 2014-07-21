@@ -11,7 +11,9 @@ import java.util.Map;
 import org.apache.commons.lang.WordUtils;
 import org.apache.log4j.Logger;
 
-public class SelectableTable implements Serializable {
+import com.redsqirl.BaseBean;
+
+public class SelectableTable extends BaseBean implements Serializable {
 
 	/**
 	 * 
@@ -23,6 +25,7 @@ public class SelectableTable implements Serializable {
 	private List<String> columnIds;
 	private List<String> titles;
 	private List<SelectableRow> rows;
+	private String rowNumber;
 
 	public SelectableTable() {
 		this.columnIds = new LinkedList<String>();
@@ -39,7 +42,7 @@ public class SelectableTable implements Serializable {
 		this.rows = new LinkedList<SelectableRow>();
 		updateTitles();
 	}
-	
+
 	protected void updateTitles(){
 		if (columnIds != null) {
 			titles = new LinkedList<String>();
@@ -103,7 +106,7 @@ public class SelectableTable implements Serializable {
 	public boolean add(String[] e) {
 		return rows.add(new SelectableRow(e));
 	}
-	
+
 	public boolean add(String[] e, boolean selected) {
 		return rows.add(new SelectableRow(e, selected));
 	}
@@ -147,6 +150,83 @@ public class SelectableTable implements Serializable {
 			rows.remove((int) l.get(i));
 		}
 	}
+
+	public void goUp() {
+		List<SelectableRow> list = getRows();
+		List<Integer> listSelected = getAllSelected();
+		for (int i = 0; i < listSelected.size(); i++) {
+			int index = listSelected.get(i);
+			if(index > 0){
+				list.add(index-1, list.get(index));
+				list.remove(index+1);
+			}
+		}
+	}
+
+	public void goDown() {
+		List<SelectableRow> list = getRows();
+		List<Integer> listSelected = getAllSelected();
+		for (int i = listSelected.size()-1; i >=0 ; i--) {
+			int index = listSelected.get(i);
+			if(index < getRows().size()-2){
+				list.add(index+2, list.get(index));
+				list.remove(index);
+			}else{
+				list.add(list.get(index-i));
+				list.remove(index-i);
+			}
+		}
+	}
+
+	public void goFirst() {
+		List<SelectableRow> list = getRows();
+		List<Integer> listSelected = getAllSelected();
+		for (int i = 0; i < listSelected.size(); i++) {
+			int index = listSelected.get(i);
+			list.add(0, list.get(index));
+			list.remove(index+1);
+		}
+	}
+
+	public void goLast() {
+		List<SelectableRow> list = getRows();
+		List<Integer> listSelected = getAllSelected();
+		for (int i = 0; i < listSelected.size(); i++) {
+			int index = listSelected.get(i);
+			list.add(list.get(index-i));
+			list.remove(index-i);
+		}
+	}
+
+	public void goNumberRow() {
+		String regex = "([0-9]*)";
+		List<SelectableRow> list = getRows();
+		List<Integer> listSelected = getAllSelected();
+		if(getRowNumber() != null && checkString(regex, getRowNumber())){
+			int newLine = Integer.parseInt(getRowNumber());
+			if(newLine == 0){
+				goFirst();
+			}else if(newLine > list.size()){
+				goLast();
+			}else{
+				for (int i = 0; i < listSelected.size(); i++) {
+					int index = listSelected.get(i);
+					if(newLine-1 != index){
+						if(newLine-1 > index){
+							list.add(newLine, list.get(index-i));
+							list.remove(index-i);
+						}else{
+							list.add(newLine-1, list.get(index));
+							list.remove(index+1);
+						}
+					}
+				}
+			}
+		}
+		setRowNumber(null);
+	}
+
+
 
 	/**
 	 * @return the columnIds
@@ -221,52 +301,13 @@ public class SelectableTable implements Serializable {
 	public List<String> getTitles() {
 		return titles;
 	}
-	
-	public void goUp() {
-		List<SelectableRow> list = getRows();
-		List<Integer> listSelected = getAllSelected();
-		for (int i = 0; i < listSelected.size(); i++) {
-			int index = listSelected.get(i);
-			if(index > 0){
-				list.add(index-1, list.get(index));
-				list.remove(index+1);
-			}
-		}
+
+	public String getRowNumber() {
+		return rowNumber;
 	}
-	
-	public void goDown() {
-		List<SelectableRow> list = getRows();
-		List<Integer> listSelected = getAllSelected();
-		for (int i = listSelected.size()-1; i >=0 ; i--) {
-			int index = listSelected.get(i);
-			if(index < getRows().size()-2){
-				list.add(index+2, list.get(index));
-				list.remove(index);
-			}else{
-				list.add(list.get(index-i));
-				list.remove(index-i);
-			}
-		}
-	}
-	
-	public void goFirst() {
-		List<SelectableRow> list = getRows();
-		List<Integer> listSelected = getAllSelected();
-		for (int i = 0; i < listSelected.size(); i++) {
-			int index = listSelected.get(i);
-			list.add(0, list.get(index));
-			list.remove(index+1);
-		}
-	}
-	
-	public void goLast() {
-		List<SelectableRow> list = getRows();
-		List<Integer> listSelected = getAllSelected();
-		for (int i = 0; i < listSelected.size(); i++) {
-			int index = listSelected.get(i);
-			list.add(list.get(index-i));
-			list.remove(index-i);
-		}
+
+	public void setRowNumber(String rowNumber) {
+		this.rowNumber = rowNumber;
 	}
 
 }
