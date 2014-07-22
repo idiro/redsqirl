@@ -39,7 +39,7 @@
                 jQuery('[id$="textEditorInteractionRegion"]').hide();
             }
             //alert("div");
-            jQuery("#DivTableInteraction").css("height","390");
+            jQuery("#divTableInteraction").css("height","390");
         }else{
             //alert("show all: "+minSize);
             
@@ -69,7 +69,7 @@
                 jQuery('[id$="textEditorInteractionRegion"]').show();
             }
             //alert("div");
-            jQuery("#DivTableInteraction").css("height","220px");
+            jQuery("#divTableInteraction").css("height","220px");
         }
         minSize= !minSize;
         //alert("new value: "+minSize);
@@ -313,28 +313,21 @@
                                 action="#{interCur.table.generateLines}"
                                 value="#{messages.button_ok}" reRender="tableInteraction">
                             </a4j:commandButton>
-                            
                         </h:panelGrid>
-                        <a4j:commandLink
-                            title="Add new line"
-                            action="#{interCur.addNewLine}"
-                            reRender="tableInteraction">
-                            <img id="tableInteractionBtAdd"
-                                src="../image/icons/button-plus.gif" />
+                        
+                        <a4j:commandLink title="Add new line" action="#{interCur.addNewLine}" reRender="tableInteraction" oncomplete="changeTableInteractionAnchorBottom();">
+                            <img id="tableInteractionBtAdd" src="../image/icons/button-plus.gif" />
                         </a4j:commandLink>
-                        <a4j:commandLink
-                            style="float:right;"
-                            title="Resize"
-                            onclick="toggleTableSize();">
-                            <img id="tableInteractionBtResize"
-                                src="../image/icons/resize-6-24.gif" />
+                        
+                        <a4j:commandLink style="float:right;" title="Resize" onclick="toggleTableSize();">
+                            <img id="tableInteractionBtResize" src="../image/icons/resize-6-24.gif" />
                         </a4j:commandLink>
                         
                         <table style="width:100%">
                         	<tr style="width:100%">
                         		<td style="width:95%">
                         		
-                        			<div id="DivTableInteraction" style="width:100%; height: 220px; border: 1px solid grey; overflow-x: hidden;">
+                        			<div id="divTableInteraction" style="width:100%; height: 220px; border: 1px solid grey; overflow-x: hidden;">
                             
 			                            <rich:dataTable id="tableInteraction" value="#{interCur.table.tableGridRows}"
 			                                var="rowItem" rowKeyVar="rowNb" width="100%" style="border:none;" 
@@ -411,14 +404,17 @@
                         		</td>
                         		<td style="width:5%">
                         		
-                        			 <div style="width:100%; height: 220px; border: 0px solid; overflow-x: hidden;">
-		                            	<a4j:commandButton styleClass="greenButton" style="width:40px;margin-top: 75px;" value="#{messages.button_first}" action="#{interCur.table.tableGrid.goFirst}" reRender="tableInteraction" />
+                        			<div style="width:100%; height: 220px; border: 0px solid; overflow-x: hidden;">
+                        				<h:inputText id="newNumberRow" value="#{interCur.table.tableGrid.rowNumber}" maxlength="4" size="1" title="#{messages.button_goto}" onkeyup="noLetters(this);" onkeypress="return enableEnterKey(event, 'goNumberRowButton');" style="margin-top: 50px;border:1px solid;" />
+		                            	<a4j:commandButton id="goNumberRowButton" action="#{interCur.table.tableGrid.goNumberRow}" reRender="tableInteraction,newNumberRow" style="display:none;" />
+		                            	<br/><br/>
+		                            	<a4j:commandButton styleClass="greenButton" style="width:40px;" value="#{messages.button_first}" action="#{interCur.table.tableGrid.goFirst}" reRender="tableInteraction" onclick="this.disabled=true" oncomplete="changeTableInteractionAnchorTop();this.disabled=false;" />
 		                            	<br/>
-		                            	<a4j:commandButton styleClass="greenButton" style="width:40px;" value="#{messages.button_up}" action="#{interCur.table.tableGrid.goUp}" reRender="tableInteraction" />
+		                            	<a4j:commandButton styleClass="greenButton" style="width:40px;" value="#{messages.button_up}" action="#{interCur.table.tableGrid.goUp}" reRender="tableInteraction" onclick="this.disabled=true" oncomplete="changeTableInteractionAnchorUp();this.disabled=false;" />
 		                            	<br/>
-		                            	<a4j:commandButton styleClass="greenButton" style="width:40px;" value="#{messages.button_down}" action="#{interCur.table.tableGrid.goDown}" reRender="tableInteraction" />
+		                            	<a4j:commandButton styleClass="greenButton" style="width:40px;" value="#{messages.button_down}" action="#{interCur.table.tableGrid.goDown}" reRender="tableInteraction" onclick="this.disabled=true" oncomplete="changeTableInteractionAnchorDown();this.disabled=false;" />
 		                            	<br/>
-		                            	<a4j:commandButton styleClass="greenButton" style="width:40px;" value="#{messages.button_last}" action="#{interCur.table.tableGrid.goLast}" reRender="tableInteraction" />
+		                            	<a4j:commandButton styleClass="greenButton" style="width:40px;" value="#{messages.button_last}" action="#{interCur.table.tableGrid.goLast}" reRender="tableInteraction" onclick="this.disabled=true" oncomplete="changeTableInteractionAnchorBottom();this.disabled=false;" />
 		                            </div>
                         		
                         		</td>
