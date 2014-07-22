@@ -19,12 +19,15 @@
             
             <a4j:jsFunction name="changeIdElement"
                 action="#{canvasBean.changeIdElement}"
-                oncomplete="updateLabelObj(currentChangeIdGroup,'#{canvasModalBean.componentId}');changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');if( #{requestScope['msnError'] == null}){closeChangeIdModal();}jQuery('#canvas-tabs').unblock();"
+                oncomplete="changeModalTitle();updateLabelObj(currentChangeIdGroup,'#{canvasModalBean.componentId}');changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');if( #{requestScope['msnError'] == null}){closeChangeIdModal();}jQuery('#canvas-tabs').unblock();"
                 reRender="msnError,errorTable">
                 <a4j:actionparam name="groupId" />
                 <a4j:actionparam name="elementId" />
             </a4j:jsFunction>
             
+            <a4j:jsFunction name="changeModalTitle"
+                action="#{canvasModalBean.changeTitle}">
+            </a4j:jsFunction>
         </a4j:region>
 
 		<h:outputText value="Name" />
