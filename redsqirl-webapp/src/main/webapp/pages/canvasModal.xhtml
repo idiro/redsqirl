@@ -444,7 +444,7 @@
     
                 <a4j:commandButton action="#{canvasModalBean.nextPage}" styleClass="greenButton" value="#{messages.button_next}" rendered="#{canvasModalBean.lastPage == 'N'}" reRender="canvasModalTabPanel, outputTab, panelDynamicForm, panelBtCanvasModal, browserPanel, browserTableData, msnError" oncomplete="changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');" />
                 
-                <a4j:commandButton action="#{canvasModalBean.applyPage}" oncomplete="if(#{requestScope['msnError'] == null} )closeDynamicForm();" styleClass="greenButton" value="#{messages.button_ok}" rendered="#{canvasModalBean.lastPage == 'Y'}" reRender="msnError, errorTable" />
+                <a4j:commandButton action="#{canvasModalBean.applyPage}" value="#{messages.button_ok}" oncomplete="if(#{requestScope['msnError'] == null} )closeDynamicForm();" styleClass="greenButton" rendered="#{canvasModalBean.lastPage == 'Y'}" reRender="msnError, errorTable" />
             
             </rich:panel>
         
