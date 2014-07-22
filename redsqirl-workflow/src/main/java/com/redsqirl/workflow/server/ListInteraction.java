@@ -4,6 +4,7 @@ package com.redsqirl.workflow.server;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.enumeration.DisplayType;
@@ -98,6 +99,7 @@ public class ListInteraction extends UserInteraction {
 			}
 		}
 	}
+	
 	/**
 	 * Get the value of the list
 	 * @return value
@@ -116,6 +118,32 @@ public class ListInteraction extends UserInteraction {
 		}
 		return ans;
 	}
+	
+	/**
+	 * Replace the values in Possible values and value
+	 */
+	@Override
+	public void replaceOutputInTree(String oldName, String newName)
+			throws RemoteException {
+		List<Tree<String>> vals = tree.getFirstChild("list").getFirstChild("values").getSubTreeList();
+		if(!vals.isEmpty()){
+			Iterator<Tree<String>> itValPos = vals.iterator();
+			while(itValPos.hasNext()){
+				Tree<String> cur = itValPos.next();
+				try{
+					String valCur = cur.getFirstChild().getHead(); 
+					cur.getFirstChild().setHead(valCur.replaceAll(Pattern.quote(oldName), newName));
+				}catch(Exception e){
+					logger.error(e.getMessage(),e);
+				}
+			}
+			String val = getValue();
+			if(val != null && !val.isEmpty()){
+				setValue(val.replaceAll(Pattern.quote(oldName), newName));
+			}
+		}
+	}
+	
 	/**
 	 * Get the list of possible values
 	 * @return List of possible values

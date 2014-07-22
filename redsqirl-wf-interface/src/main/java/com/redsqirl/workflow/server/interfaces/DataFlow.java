@@ -14,7 +14,7 @@ import com.redsqirl.workflow.server.WorkflowPrefManager;
  * @author etienne
  * 
  */
-public interface DataFlow extends Remote {
+public interface DataFlow extends Remote, Cloneable{
 
 	/**
 	 * Load the icon menu.
@@ -113,11 +113,11 @@ public interface DataFlow extends Remote {
 	 * Regenerate path and copy or move the existing data
 	 * 
 	 * @param copy
-	 *            true to copy, false to move
+	 *            null only set the path, true to copy, false to move
 	 * @return Error message
 	 * @throws RemoteException
 	 */
-	public String regeneratePaths(boolean copy) throws RemoteException;
+	public String regeneratePaths(Boolean copy) throws RemoteException;
 
 	/**
 	 * Save a workflow. A workflow is a zip file containing two files: - an xml
@@ -172,6 +172,13 @@ public interface DataFlow extends Remote {
 	public String topoligicalSort() throws RemoteException;
 
 	/**
+	 * Generate a unique id that can be used for a new Element
+	 * @return
+	 * @throws RemoteException
+	 */
+	public String generateNewId() throws RemoteException;
+	
+	/**
 	 * Add a WorkflowAction in the Workflow. The element is at the end of the
 	 * workingWA list
 	 * 
@@ -183,7 +190,14 @@ public interface DataFlow extends Remote {
 	 */
 	public String addElement(String elementName) throws RemoteException,
 			Exception;
-
+	
+	/**
+	 * Add a DataFlowElement to the workflow
+	 * @param dfe
+	 * @throws RemoteException
+	 */
+	public void addElement(DataFlowElement dfe) throws RemoteException;
+	
 	/**
 	 * Change the id of an element
 	 * 
@@ -200,6 +214,15 @@ public interface DataFlow extends Remote {
 	public String removeElement(String componentId) throws RemoteException,
 			Exception;
 
+	/**
+	 * Replace in the interaction of all elements 
+	 * @param componentIds
+	 * @param oldName
+	 * @param newName
+	 * @throws RemoteException
+	 */
+	public void replaceInAllElements(List<String> componentIds, String oldStr, String newStr)  throws RemoteException;
+	
 	/**
 	 * Get the WorkflowAction corresponding to the componentId.
 	 * 

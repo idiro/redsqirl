@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.enumeration.DisplayType;
@@ -227,6 +228,40 @@ public class AppendListInteraction extends UserInteraction{
 			error = LanguageManagerWF.getText("AppendListInteraction.setValues", new Object[]{values.toString()});
 		}
 		return error;
+	}
+	
+	/**
+	 * Replace the values in Possible values and values
+	 */
+	@Override
+	public void replaceOutputInTree(String oldName, String newName)
+			throws RemoteException {
+		List<Tree<String>> vals = tree.getFirstChild("list").getFirstChild("values").getSubTreeList();
+		if(!vals.isEmpty()){
+			Iterator<Tree<String>> itValPos = vals.iterator();
+			while(itValPos.hasNext()){
+				Tree<String> cur = itValPos.next();
+				try{
+					String valCur = cur.getFirstChild().getHead(); 
+					cur.getFirstChild().setHead(valCur.replaceAll(Pattern.quote(oldName), newName));
+				}catch(Exception e){
+					logger.error(e.getMessage(),e);
+				}
+			}
+		}
+		vals = tree.getFirstChild("list").getFirstChild("output").getSubTreeList();
+		if(!vals.isEmpty()){
+			Iterator<Tree<String>> itVals = vals.iterator();
+			while(itVals.hasNext()){
+				Tree<String> cur = itVals.next();
+				try{
+					String valCur = cur.getFirstChild().getHead(); 
+					cur.getFirstChild().setHead(valCur.replaceAll(Pattern.quote(oldName), newName));
+				}catch(Exception e){
+					logger.error(e.getMessage(),e);
+				}
+			}
+		}
 	}
 
 }

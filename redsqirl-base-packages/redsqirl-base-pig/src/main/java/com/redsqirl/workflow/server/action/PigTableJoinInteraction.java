@@ -177,7 +177,7 @@ public class PigTableJoinInteraction extends TableInteraction {
 
 		addColumn(table_op_title, null, null, null);
 
-		addColumn(table_field_title, 1, null, null);
+		addColumn(table_field_title, 1, "[a-zA-Z]([A-Za-z0-9_]{0,29})", null, null);
 
 		List<String> typeValues = new ArrayList<String>(FieldType.values().length);
 		for(FieldType ft:FieldType.values()){

@@ -2,7 +2,6 @@ package com.redsqirl.utils;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Serializable;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -139,12 +138,20 @@ public interface Tree<T> extends Remote{
 	 * @throws RemoteException
 	 */
 	public void setParent(Tree<T> parent) throws RemoteException;
+	
 	/**
 	 * Get the head of the tree
 	 * @return T the head of the tree
 	 * @throws RemoteException
 	 */
 	public T getHead() throws RemoteException;
+	
+	/**
+	 * Set the head of the tree
+	 * @throws RemoteException
+	 */
+	public void setHead(T head) throws RemoteException;
+	
 	/**
 	 * Get the List of sub trees
 	 * @return List of Tree containing the subTreeList

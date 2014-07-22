@@ -231,7 +231,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 							.get(idGroup));
 			logger.info("Get element dfe");
 		} catch (RemoteException e) {
-			logger.error(e.getMessage());
+			logger.error(e.getMessage(),e);
 		}
 
 		String paramLMW = FacesContext.getCurrentInstance().getExternalContext()
@@ -297,7 +297,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 						}
 
 						// retrieves the correct page
-						setCanvasTitle(WordUtils.capitalizeFully(dfe.getName().replace("_", " ")));
+						setCanvasTitle(WordUtils.capitalizeFully(dfe.getName().replace("_", " "))+": "+elementId);
 
 						if(listPageSize > 0){
 							mountInteractionForm();
@@ -324,6 +324,18 @@ public class CanvasModal extends BaseBean implements Serializable {
 					logger.error(e.getMessage());
 				}
 			}
+		}
+	}
+	
+	public void changeTitle(){
+		try {
+			DataFlowElement dfe = getworkFlowInterface().getWorkflow(
+					canvasBean.getNameWorkflow()).getElement(
+							canvasBean.getIdMap().get(canvasBean.getNameWorkflow())
+							.get(idGroup));
+			setCanvasTitle(WordUtils.capitalizeFully(dfe.getName().replace("_", " "))+": "+dfe.getComponentId());
+		} catch (Exception e) {
+			logger.error(e.getMessage());
 		}
 	}
 
@@ -370,6 +382,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 			MessageUseful.addErrorMessage(error);
 			request.setAttribute("msnError", "msnError");
 		}else{
+			updateOutputElement();
 			outputTab.mountOutputForm(!sourceNode || dfe.getDFEOutput().size() > 1);
 			MessageUseful.addInfoMessage(getMessageResources("success_message"));
 			request.setAttribute("msnSuccess", "msnSuccess");

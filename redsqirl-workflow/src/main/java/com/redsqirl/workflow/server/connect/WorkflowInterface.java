@@ -6,6 +6,8 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -17,6 +19,7 @@ import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
+import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
 /**
@@ -47,12 +50,12 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	 * Map of workflows
 	 */
 	private Map<String,DataFlow> wf = new LinkedHashMap<String,DataFlow>();
-	
+
 	/**
 	 * Map of datastores
 	 */
 	private Map<String,DataStore> datastores;
-	
+
 	/**
 	 * Constructor
 	 * @throws RemoteException
@@ -61,15 +64,15 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 		super();
 		datastores = WorkflowInterface.getAllClassDataStore();
 	}
-	
-	
+
+
 	/**
 	 * Get a List of output classes for data to be held in
 	 * 
 	 * @return List output classes
 	 */
 	private static Map<String,DataStore> getAllClassDataStore() {
-		
+
 		//Get the browser name used in DataOutput
 		logger.info("Get the output class...");
 		Set<String> browsersFromDataOut = new HashSet<String>();
@@ -83,7 +86,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 			} catch (Exception e) {
 			}
 		}
-		
+
 		//Return a map containing only the one used in DataOutput
 		Map<String,DataStore> ans = new LinkedHashMap<String,DataStore>();
 		Iterator<String> datastoreClassName = WorkflowPrefManager.getInstance()
@@ -104,11 +107,11 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 		}
 		return ans;
 	}
-	
+
 	public Set<String> getBrowsersName(){
 		return new HashSet<String>(datastores.keySet());
 	}
-	
+
 	public DataStore getBrowser(String browserName){
 		return datastores.get(browserName);
 	}
@@ -160,6 +163,47 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 		}
 		return error;
 	}
+
+	/**
+	 * Copy a subset of a workflow into another.
+	 * @param from
+	 * @param elements
+	 * @param to
+	 */
+	public void copy(DataFlow from, List<String> elements, DataFlow to){
+		if(from != null && elements != null && !elements.isEmpty() && to != null){
+			try {
+				Workflow cloneFrom = (Workflow) ((Workflow) from).clone();
+				Iterator<DataFlowElement> cloneElIt = cloneFrom.getElement().iterator();
+				List<String> toDelete = new LinkedList<String>();
+				while(cloneElIt.hasNext()){
+					DataFlowElement curEl = cloneElIt.next();
+					if(!elements.contains(curEl.getComponentId())){
+						toDelete.add(curEl.getComponentId());
+					}else{
+						String newName = to.generateNewId();
+						cloneFrom.changeElementId(curEl.getComponentId(),newName);
+						cloneFrom.replaceInAllElements(cloneFrom.getComponentIds(), curEl.getComponentId(), newName);
+						curEl.setPosition(curEl.getX()+75, curEl.getY()+75);
+					}
+				}
+				Iterator<String> itDel = toDelete.iterator();
+				while(itDel.hasNext()){
+					cloneFrom.removeElement(itDel.next());
+				}
+				cloneFrom.regeneratePaths(null);
+				Iterator<DataFlowElement> copyElIt = cloneFrom.getElement().iterator();
+				while(copyElIt.hasNext()){
+					DataFlowElement cur = copyElIt.next();
+					to.addElement(cur);
+				}
+			} catch (Exception e) {
+				logger.error(e.getMessage(),e);
+			}
+		}
+
+	}
+
 	/**
 	 * Remove a Workflow
 	 * @param name
@@ -168,7 +212,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	public void removeWorkflow(String name){
 		wf.remove(name);
 	}
-	
+
 	/**
 	 * Get a Workflow by Name
 	 * @param name

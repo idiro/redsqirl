@@ -2,6 +2,7 @@ package com.redsqirl.workflow.server;
 
 
 import java.rmi.RemoteException;
+import java.util.regex.Pattern;
 
 import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.enumeration.DisplayType;
@@ -88,6 +89,19 @@ public class InputInteraction extends UserInteraction{
 			logger.error(getId()+": Tree structure incorrect");
 		}
 		return ans;
+	}
+	
+	/**
+	 * Replace the values in regex and value
+	 */
+	@Override
+	public void replaceOutputInTree(String oldName, String newName)
+			throws RemoteException {
+		String val = getValue();
+		if(val != null && !val.isEmpty()){
+			getTree().getFirstChild("input").getFirstChild("output")
+					.getFirstChild().setHead(val.replaceAll(Pattern.quote(oldName), newName));
+		}
 	}
 	/**
 	 * Set the value for the interaction

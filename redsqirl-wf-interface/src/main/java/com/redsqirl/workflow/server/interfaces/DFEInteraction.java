@@ -36,6 +36,17 @@ public interface DFEInteraction extends Remote {
 	 */
 	public void readXml(Node n) throws RemoteException, Exception;
 
+	
+	/**
+	 * Replace a string by another in the tree.
+	 * If the output can be located only replace it there for avoiding
+	 * conflicts.
+	 * @param oldName
+	 * @param newName
+	 * @throws RemoteException
+	 */
+	public void replaceOutputInTree(String oldName, String newName) throws RemoteException;
+	
 	/**
 	 * Get the Display Type of the interaction
 	 * 

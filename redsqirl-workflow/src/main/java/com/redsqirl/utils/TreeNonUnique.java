@@ -354,4 +354,9 @@ public class TreeNonUnique<T> extends UnicastRemoteObject implements Tree<T>{
 	public boolean isEmpty() {
 		return subTreeList.isEmpty();
 	}
+
+	@Override
+	public void setHead(T head) throws RemoteException {
+		this.head = head;
+	}
 }

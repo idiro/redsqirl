@@ -6,6 +6,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.DOMException;
@@ -235,6 +236,27 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 			}else if(curNode.getNodeType() == Node.ELEMENT_NODE){
 				readXml(curNode,curTree.add(curNode.getNodeName()));
 			}
+		}
+	}
+	
+
+	@Override
+	public void replaceOutputInTree(String oldName, String newName)
+			throws RemoteException {
+		replaceOutputInTree(getTree(),oldName,newName);
+	}
+	
+	protected void replaceOutputInTree(Tree<String> curTree, String oldName, String newName) throws RemoteException{
+		if(curTree == null || curTree.isEmpty()){
+			try{
+				curTree.setHead(curTree.getHead().replaceAll(Pattern.quote(oldName), newName));
+			}catch(Exception e){
+				logger.error(e.getMessage(),e);
+			}
+		}
+		Iterator<Tree<String>> it = curTree.getSubTreeList().iterator();
+		while(it.hasNext()){
+			replaceOutputInTree(it.next(),oldName,newName);
 		}
 	}
 
@@ -502,5 +524,6 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	public String getTextTip() throws RemoteException {
 		return textTip;
 	}
+
 
 }

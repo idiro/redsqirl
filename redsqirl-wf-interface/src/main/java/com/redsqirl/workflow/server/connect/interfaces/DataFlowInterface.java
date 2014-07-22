@@ -3,6 +3,7 @@ package com.redsqirl.workflow.server.connect.interfaces;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.Set;
 
 import com.redsqirl.workflow.server.interfaces.DataFlow;
@@ -64,5 +65,13 @@ public interface DataFlowInterface extends Remote{
 	 * @return
 	 * @throws RemoteException
 	 */
-	public DataStore getBrowser(String browserName) throws RemoteException;;
+	public DataStore getBrowser(String browserName) throws RemoteException;
+	
+	/**
+	 * Copy a subset of a workflow into another.
+	 * @param from
+	 * @param elements
+	 * @param to
+	 */
+	public void copy(DataFlow from, List<String> elements, DataFlow to) throws RemoteException;
 }

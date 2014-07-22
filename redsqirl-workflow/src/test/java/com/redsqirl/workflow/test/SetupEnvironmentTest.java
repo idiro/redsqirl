@@ -36,8 +36,8 @@ import com.redsqirl.workflow.server.connect.HiveInterface;
 import com.redsqirl.workflow.server.connect.interfaces.HDFSInterfaceTests;
 import com.redsqirl.workflow.server.connect.interfaces.SSHInterfaceArrayTests;
 import com.redsqirl.workflow.server.datatype.HiveTypePartitionTests;
+import com.redsqirl.workflow.server.connect.interfaces.WorkflowInterfaceTests;
 import com.redsqirl.workflow.utils.AbstractDictionaryTests;
-import com.redsqirl.workflow.utils.PackageManagerTests;
 
 
 @RunWith(Suite.class)
@@ -72,7 +72,8 @@ import com.redsqirl.workflow.utils.PackageManagerTests;
 	//HDFSTypeTests.class,
 	PackageManagerTests.class,
 	AbstractDictionaryTests.class,
-	SendEmailTests.class
+	SendEmailTests.class,
+	WorkflowInterfaceTests.class
 })
 public class SetupEnvironmentTest {
 

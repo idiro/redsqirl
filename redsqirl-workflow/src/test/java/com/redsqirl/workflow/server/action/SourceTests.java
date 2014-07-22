@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.redsqirl.utils.Tree;
+import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.connect.HiveInterface;
 import com.redsqirl.workflow.server.datatype.HiveType;
@@ -84,6 +85,65 @@ public class SourceTests {
 						.getFieldNames(),
 				src.getDFEOutput().get(Source.out_name).getFields()
 						.getFieldNames().contains("VALUE"));
+
+		return src;
+	}
+	
+	public static DataFlowElement createSrc_ID_VALUE(DataFlow w,
+			HDFSInterface hInt, String new_path1) throws RemoteException,
+			Exception {
+
+		String idSource = w.addElement((new Source()).getName());
+		Source src = (Source) w.getElement(idSource);
+
+		assertTrue("create " + new_path1,
+				hInt.create(new_path1, getColumns()) == null);
+
+		src.update(src.getInteraction(Source.key_datatype));
+		Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype)
+				.getTree();
+		dataTypeTree.getFirstChild("list").getFirstChild("output").add(hInt.getBrowserName());
+
+		src.update(src.getInteraction(Source.key_datasubtype));
+		Tree<String> dataSubTypeTree = src.getInteraction(
+				Source.key_datasubtype).getTree();
+		dataSubTypeTree.getFirstChild("list").getFirstChild("output")
+				.add(new MapRedTextType().getTypeName());
+
+		src.update(src.getInteraction(Source.key_dataset));
+		Tree<String> dataSetTree = src.getInteraction(Source.key_dataset)
+				.getTree();
+		dataSetTree.getFirstChild("browse").getFirstChild("output").add("path")
+				.add(new_path1);
+
+		Tree<String> field1 = dataSetTree.getFirstChild("browse")
+				.getFirstChild("output").add("field");
+		field1.add("name").add("ID");
+		field1.add("type").add("STRING");
+
+		Tree<String> field2 = dataSetTree.getFirstChild("browse")
+				.getFirstChild("output").add("field");
+		field2.add("name").add("VALUE");
+		field2.add("type").add("INT");
+
+		String error = src.updateOut();
+		assertTrue("source update: " + error, error == null);
+
+		assertTrue("number of fields in source should be 2 instead of "
+				+ src.getDFEOutput().get(Source.out_name).getFields()
+						.getSize(), src.getDFEOutput().get(Source.out_name)
+				.getFields().getSize() == 2);
+
+		assertTrue("field list "
+				+ src.getDFEOutput().get(Source.out_name).getFields()
+						.getFieldNames(),
+				src.getDFEOutput().get(Source.out_name).getFields()
+						.getFieldNames().contains("id"));
+		assertTrue("field list "
+				+ src.getDFEOutput().get(Source.out_name).getFields()
+						.getFieldNames(),
+				src.getDFEOutput().get(Source.out_name).getFields()
+						.getFieldNames().contains("value"));
 
 		return src;
 	}

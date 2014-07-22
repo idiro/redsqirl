@@ -63,6 +63,15 @@ public interface DataFlowElement extends Remote{
 	 */
 	public String getHelp() throws RemoteException;
 	
+	
+	/**
+	 * Replace in all interaction a string by another
+	 * @param oldName
+	 * @param newName
+	 * @throws RemoteException
+	 */
+	public void replaceInAllInteraction(String oldStr, String newStr)  throws RemoteException;
+	
 	/**
 	 * Static methods, get the image of the icon
 	 * @return icon file
