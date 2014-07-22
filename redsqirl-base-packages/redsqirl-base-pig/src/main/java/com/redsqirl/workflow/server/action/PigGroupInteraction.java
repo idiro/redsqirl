@@ -136,9 +136,12 @@ public class PigGroupInteraction extends AppendListInteraction{
 		}
 
 		logger.debug("for each looks like : " + select);
-		
-		if (parallel != null && !parallel.isEmpty()){
-			select += " PARALLEL " + parallel;
+		if(groupByList.isEmpty()){
+			select += " PARALLEL 1";
+		}else{
+			if (parallel != null && !parallel.isEmpty()){
+				select += " PARALLEL " + parallel;
+			}
 		}
 		
 		return select;

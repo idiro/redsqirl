@@ -327,11 +327,18 @@ public class PigJoin extends PigElement {
 								el.getDFEOutput().get(
 										key_output_audit) != null) {
 							found = true;
-							ans.putAll((new AuditGenerator())
+							try{
+								Map<String,List<String>> auditValCur = (new AuditGenerator())
 									.readDistinctValuesAudit(
 											alias,
 											el.getDFEOutput().get(
-													key_output_audit)));
+													key_output_audit));
+								if(auditValCur != null){
+									ans.putAll(auditValCur);
+								}
+							}catch(Exception e){
+								logger.error(e.getMessage(),e);
+							}
 						}
 					}
 				}

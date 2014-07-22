@@ -656,6 +656,16 @@ public class PigDictionary extends AbstractDictionary {
 										"NUMBER",
 										"@function:MAX( ELEMENT )@short:Use the MAX function to compute the maximum of a set of numeric values in a single-column bag@param: ELEMENT item to get the maximum@description:Computes the maximum of the numeric values in a single-column bag. MAX requires a preceding GROUP ALL statement for global sums and a GROUP BY statement for group sums@example: MAX(A.id) returns the maximum value of A.id" },
 								new String[] {
+										"MIN()",
+										"STRING",
+										"STRING",
+										"@function:MIN( ELEMENT )@short:Use the MIN function to compute the minimum of a set of numeric values in a single-column bag@param: ELEMENT item to get the minimum@description:Computes the minimum of the numeric values in a single-column bag. MIN requires a preceding GROUP ALL statement for global sums and a GROUP BY statement for group sums@example: MIN(A.id) returns the minimum value of A.id" },
+								new String[] {
+										"MAX()",
+										"STRING",
+										"STRING",
+										"@function:MAX( ELEMENT )@short:Use the MAX function to compute the maximum of a set of numeric values in a single-column bag@param: ELEMENT item to get the maximum@description:Computes the maximum of the numeric values in a single-column bag. MAX requires a preceding GROUP ALL statement for global sums and a GROUP BY statement for group sums@example: MAX(A.id) returns the maximum value of A.id" },
+								new String[] {
 										"COUNT_DISTINCT()",
 										"ANY",
 										"INT",
@@ -1496,7 +1506,7 @@ public class PigDictionary extends AbstractDictionary {
 			// Find a method with the same number of argument
 			Iterator<String[]> it = methodsFound.iterator();
 			String[] method = null;
-			while (it.hasNext() && method == null) {
+			while (it.hasNext() && type == null) {
 				method = it.next();
 				logger.debug("method " + method[0] + " " + method[1] + " "
 						+ method[2]);
@@ -1526,23 +1536,24 @@ public class PigDictionary extends AbstractDictionary {
 						method = null;
 					}
 				}
-
+				
+				if (method != null && type == null) {
+					// Special case for CAST because it returns a dynamic type
+					logger.debug(expr.trim());
+					logger.debug(method[0].trim());
+					if (removeBracketContent(method[0]).equalsIgnoreCase("CAST()")) {
+						// Check the first argument
+						getReturnType(argSplit[0], fields);
+						if (check("TYPE", argSplit[1])) {
+							type = argSplit[1];
+						}
+					} else if (check(method, argSplit, fields)) {
+						type = method[2];
+					}
+				}
 			}
 
-			if (method != null && type == null) {
-				// Special case for CAST because it returns a dynamic type
-				logger.debug(expr.trim());
-				logger.debug(method[0].trim());
-				if (removeBracketContent(method[0]).equalsIgnoreCase("CAST()")) {
-					// Check the first argument
-					getReturnType(argSplit[0], fields);
-					if (check("TYPE", argSplit[1])) {
-						type = argSplit[1];
-					}
-				} else if (check(method, argSplit, fields)) {
-					type = method[2];
-				}
-			} else if (type == null) {
+			if (type == null) {
 				String error = "No method " + methodsFound.get(0)[0] + " with "
 						+ sizeSearched + " arguments, expr:" + expr;
 				logger.debug(error);
