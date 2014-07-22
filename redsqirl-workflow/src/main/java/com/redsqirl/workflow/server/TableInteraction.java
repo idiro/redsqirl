@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.enumeration.DisplayType;
@@ -496,6 +497,25 @@ public class TableInteraction extends UserInteraction {
 			}
 		}
 	}
+	
+	/**
+	 * Replace the value only in the content of each row (not the column names).
+	 */
+	@Override
+	public void replaceOutputInTree(String oldName, String newName)
+			throws RemoteException {
+		List<Tree<String>> rows = getTree().getFirstChild("table").getChildren("row");
+		if(rows != null && !rows.isEmpty()){
+			Iterator<Tree<String>> it = rows.iterator();
+			while(it.hasNext()){
+				Tree<String> cur = it.next();
+				String content = cur.getFirstChild().getHead();
+				cur.getFirstChild().setHead(
+						content.replaceAll(Pattern.quote(oldName), newName));
+			}
+		}
+	}
+	
 	/**
 	 * Remove all generators
 	 * @throws RemoteException

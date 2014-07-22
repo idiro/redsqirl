@@ -4,6 +4,7 @@ package com.redsqirl.workflow.server;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.Tree;
@@ -61,6 +62,20 @@ public class EditorInteraction extends UserInteraction{
 			//editor.add("help");
 		}
 	}
+	
+	/**
+	 * Replace the values in the output
+	 */
+	@Override
+	public void replaceOutputInTree(String oldName, String newName)
+			throws RemoteException {
+		String val = getValue();
+		if(val != null && !val.isEmpty()){
+			getTree().getFirstChild("editor").getFirstChild("output")
+					.getFirstChild().setHead(val.replaceAll(Pattern.quote(oldName), newName));
+		}
+	}
+	
 	/**
 	 * Set the value of the interaction
 	 * @param value

@@ -1,9 +1,13 @@
 package com.redsqirl.workflow.server;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -120,6 +124,26 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	public Workflow(String name) throws RemoteException {
 		super();
 		this.name = name;
+	}
+	
+	public Object clone() throws CloneNotSupportedException {    
+	    Object ans = null;
+		try {
+			//Check if T is instance of Serializeble other throw CloneNotSupportedException
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			ObjectOutputStream out = new ObjectOutputStream(bos);
+			//Serialize it
+			out.writeObject(this);
+			byte[] bytes = bos.toByteArray();
+			ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(bytes));
+			//Deserialize it
+			ans = ois.readObject();
+		} catch (IOException e) {
+			logger.error(e.getMessage(), e);
+		} catch (ClassNotFoundException e) {
+			logger.error(e.getMessage(), e);
+		}
+	    return ans;
 	}
 
 	/**
@@ -621,7 +645,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 * @param copy
 	 * @throws RemoteException
 	 */
-	public String regeneratePaths(boolean copy) throws RemoteException {
+	public String regeneratePaths(Boolean copy) throws RemoteException {
 		Iterator<DataFlowElement> it = element.iterator();
 		while (it.hasNext()) {
 			DataFlowElement cur = it.next();
@@ -636,7 +660,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						String newPath = curOut.generatePathStr(
 								System.getProperty("user.name"),
 								cur.getComponentId(), curOutStr);
-						if (copy) {
+						if(copy == null){
+							curOut.setPath(newPath);
+						}else if (copy) {
 							curOut.copyTo(newPath);
 						} else {
 							curOut.moveTo(newPath);
@@ -1301,16 +1327,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		return err;
 	}
 
-	/**
-	 * Add a WorkflowAction in the Workflow. The element is at the end of the
-	 * workingWA list
-	 * 
-	 * @param waName
-	 *            the name of the action @see {@link DataflowAction#getName()}
-	 * @return null if OK, or a description of the error.
-	 * @throws Exception
-	 */
-	public String addElement(String waName) throws Exception {
+	public String generateNewId() throws RemoteException{
 		boolean found = false;
 		String newId = null;
 		int length = (int) (Math.log10(element.size() + 1) + 2);
@@ -1327,9 +1344,27 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			}
 
 		}
+		return newId;
+	}
+	
+	/**
+	 * Add a WorkflowAction in the Workflow. The element is at the end of the
+	 * workingWA list
+	 * 
+	 * @param waName
+	 *            the name of the action @see {@link DataflowAction#getName()}
+	 * @return null if OK, or a description of the error.
+	 * @throws Exception
+	 */
+	public String addElement(String waName) throws Exception {
+		String newId = generateNewId();
 		logger.debug("Attempt to add an element: " + waName + ", " + newId);
 
 		return addElement(waName, newId);
+	}
+	
+	public void addElement(DataFlowElement dfe) throws RemoteException{
+		element.add(dfe);
 	}
 
 	/**
@@ -1379,6 +1414,21 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		return error;
 	}
 
+	
+	@Override
+	public void replaceInAllElements(List<String> componentIds, String oldStr, String newStr)  throws RemoteException{
+		if(componentIds != null){
+			Iterator<String> it = componentIds.iterator();
+			while(it.hasNext()){
+				String componentId = it.next();
+				DataFlowElement dfe = getElement(componentId);
+				if(dfe != null){
+					dfe.replaceInAllInteraction(oldStr, newStr);
+				}
+			}
+		}
+	}
+	
 	/**
 	 * Add a WorkflowAction in the Workflow. The element is at the end of the
 	 * workingWA list

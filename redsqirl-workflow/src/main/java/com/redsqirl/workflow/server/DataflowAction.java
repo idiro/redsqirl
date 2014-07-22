@@ -411,6 +411,18 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 
 		return error;
 	}
+	
+	@Override
+	public void replaceInAllInteraction(String oldStr, String newStr)  throws RemoteException{
+		try {
+			Iterator<DFEInteraction> itInter = getInteractions().iterator();
+			while (itInter.hasNext()) {
+				itInter.next().replaceOutputInTree(oldStr, newStr);
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage(),e);
+		}
+	}
 
 	/**
 	 * Update a page that the action contains
