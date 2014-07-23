@@ -182,7 +182,13 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 					if(!elements.contains(curEl.getComponentId())){
 						toDelete.add(curEl.getComponentId());
 					}else{
-						String newName = to.generateNewId();
+						String newName = null;
+						while(newName == null){
+							newName = to.generateNewId();
+							if(cloneFrom.getElement(newName) != null){
+								newName = null;
+							}
+						}
 						cloneFrom.changeElementId(curEl.getComponentId(),newName);
 						cloneFrom.replaceInAllElements(cloneFrom.getComponentIds(), curEl.getComponentId(), newName);
 						curEl.setPosition(curEl.getX()+75, curEl.getY()+75);
