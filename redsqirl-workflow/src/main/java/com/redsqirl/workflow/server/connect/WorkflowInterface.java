@@ -84,6 +84,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 				logger.info(outNew.getTypeName());
 				browsersFromDataOut.add(outNew.getBrowser());
 			} catch (Exception e) {
+				logger.error(e,e);
 			}
 		}
 

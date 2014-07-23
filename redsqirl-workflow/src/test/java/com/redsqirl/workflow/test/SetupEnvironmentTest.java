@@ -35,9 +35,10 @@ import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.connect.HiveInterface;
 import com.redsqirl.workflow.server.connect.interfaces.HDFSInterfaceTests;
 import com.redsqirl.workflow.server.connect.interfaces.SSHInterfaceArrayTests;
-import com.redsqirl.workflow.server.datatype.HiveTypePartitionTests;
 import com.redsqirl.workflow.server.connect.interfaces.WorkflowInterfaceTests;
+import com.redsqirl.workflow.server.datatype.HiveTypePartitionTests;
 import com.redsqirl.workflow.utils.AbstractDictionaryTests;
+import com.redsqirl.workflow.utils.PackageManagerTests;
 
 
 @RunWith(Suite.class)
@@ -91,8 +92,6 @@ public class SetupEnvironmentTest {
 		System.out.println(testProp);
 
 
-		WorkflowPrefManager.pathSysCfgPref = testProp;
-		WorkflowPrefManager.pathUserCfgPref = testProp;
 
 		ProjectID.getInstance().setName("IdiroWorkflowServerTest");
 		ProjectID.getInstance().setVersion("0.01");
@@ -102,6 +101,8 @@ public class SetupEnvironmentTest {
 		log.put(log4jFile);
 
 		WorkflowPrefManager.getInstance();
+		WorkflowPrefManager.pathSysCfgPref = testProp;
+		WorkflowPrefManager.pathUserCfgPref = testProp;
 		logger = Logger.getLogger(SetupEnvironmentTest.class);
 		File logfile = new File(log4jFile);
 
@@ -114,6 +115,10 @@ public class SetupEnvironmentTest {
 			reader.close();
 		}
 		logger.debug("Log4j initialised");
+		logger.info("Hive url '"+ 
+						WorkflowPrefManager.user_hive+"_"+System.getProperty("user.name")+
+						"': "+WorkflowPrefManager.getUserProperty(
+						WorkflowPrefManager.user_hive+"_"+System.getProperty("user.name")));
 		HiveInterface.setUrl(
 				WorkflowPrefManager.getUserProperty(
 						WorkflowPrefManager.user_hive+"_"+System.getProperty("user.name")));

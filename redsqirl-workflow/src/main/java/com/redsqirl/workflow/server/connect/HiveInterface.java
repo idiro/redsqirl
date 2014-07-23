@@ -270,7 +270,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 			}
 		} catch (Exception e) {
 
-			logger.error(e);
+			logger.error(e,e);
 			error = LanguageManagerWF.getText("hiveinterface.jdbcfail",
 					new Object[] { url, e.getMessage() });
 			logger.error(error);
