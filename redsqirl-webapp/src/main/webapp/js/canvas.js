@@ -57,6 +57,8 @@ var imgWidth;
 
 var rightClickGroup;
 
+var curToolTip;
+
 var contextMenuCanvas = [
  {'Create Link': function(menuItem,menu){createLink(rightClickGroup.getChildren()[0]);}},
  {'Rename Object...': function(menuItem,menu){openChangeIdModalJS(rightClickGroup);}},
@@ -190,16 +192,28 @@ function configureCanvas(canvasName){
 		stage.draw();
 	});
 	
-	canvasArray[canvasName].arrow.on('mouseover', function(e) {
-		var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+this.tooltipArrow+'</div>');
-		help.css("top",(e.pageY)+"px" );
-		help.css("left",(e.pageX)+"px" );
+	canvasArray[canvasName].arrow.on('mouseenter', function(e) {
+		var help = jQuery('<div class="tooltipCanvas" style="background-color:white;">'+this.tooltipArrow+'</div>');
+		help.css("top",(e.pageY-10)+"px" );
+		help.css("left",(e.pageX-10)+"px" );
 		jQuery("body").append(help);
 	    help.fadeIn("slow");
-	});
-	
-	canvasArray[canvasName].arrow.on('mouseout', function(e) {
-		jQuery(".tooltipCanvas").remove();
+	    
+	    var previewPosition = help.position().top + help.height();
+	    var windowHeight = jQuery(window).height();
+	    if (previewPosition > windowHeight) {
+	    	help.css("overflow", "auto");
+	    	help.css("height", windowHeight-help.position().top-20);
+	    }
+	    
+	    jQuery(".tooltipCanvas").mouseleave(function() {
+	    	jQuery(this).remove();
+	    });
+	    
+	    jQuery(".tooltipCanvas").click(function() {
+	    	jQuery(this).remove();
+	    });
+	    
 	});
 
 	jQuery("#"+canvasContainer).click(
@@ -1977,18 +1991,50 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
 	
 	var stage = canvasArray[canvasName].stage;
 	
-	polygon.on('mouseover', function(e) {
-		var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+this.getParent().tooltipObj+'</div>');
-		help.css("top",(e.pageY)+"px" );
-		help.css("left",(e.pageX)+"px" );
-		jQuery("body").append(help);
-	    help.fadeIn("slow");
+	polygon.on('mouseenter', function(e) {
+		
+		if(this.getParent().getId() != curToolTip){
+			jQuery(".tooltipCanvas").remove();
+			curToolTip = this.getParent().getId();
+			var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+this.getParent().tooltipObj+'</div>');
+			var scrollLeft = jQuery("#flowchart-"+canvasName).scrollLeft();
+			var scrollTop = jQuery("#flowchart-"+canvasName).scrollTop();
+			help.css("top",(this.getParent().getPosition().y-scrollTop+190)+"px" );
+			help.css("left",(this.getParent().getPosition().x-scrollLeft+90)+"px" );
+			jQuery("body").append(help);
+		    help.fadeIn("slow");
+		    
+		    var previewPosition = help.position().top + help.height();
+		    var windowHeight = jQuery(window).height();
+		    if (previewPosition > windowHeight) {
+		    	help.css("overflow", "auto");
+		    	help.css("height", windowHeight-help.position().top-20);
+		    }
+		    
+		    jQuery(".tooltipCanvas").mouseleave(function() {
+		    	jQuery(this).remove();
+		    	curToolTip = null;
+		    });
+		    
+		    jQuery(".tooltipCanvas").click(function() {
+		    	jQuery(this).remove();
+		    	curToolTip = null;
+		    });
+		}
 	});
 	
 	polygon.on('mouseout', function(e) {
-		jQuery(".tooltipCanvas").remove();
+		var scrollTop = jQuery("#flowchart-"+canvasName).scrollTop();
+		var scrollLeft = jQuery("#flowchart-"+canvasName).scrollLeft();
+		if(this.getParent().getPosition().x-scrollLeft+90 > e.pageX){
+			jQuery(".tooltipCanvas").remove();
+			curToolTip = null;
+		}
+		if(this.getParent().getPosition().y-scrollTop+190 > e.pageY){
+			jQuery(".tooltipCanvas").remove();
+			curToolTip = null;
+		}
 	});
-	
 
 	return [ polygon, polygonTab, polygonTabImage ];
 }
