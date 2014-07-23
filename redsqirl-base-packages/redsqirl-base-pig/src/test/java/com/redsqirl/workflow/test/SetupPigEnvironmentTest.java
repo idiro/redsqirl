@@ -20,6 +20,8 @@ import com.redsqirl.workflow.server.action.PigAggregatorTests;
 import com.redsqirl.workflow.server.action.PigAnonymiseTests;
 import com.redsqirl.workflow.server.action.PigAuditTests;
 import com.redsqirl.workflow.server.action.PigFilterInteractionTests;
+import com.redsqirl.workflow.server.action.PigGroupRank;
+import com.redsqirl.workflow.server.action.PigGroupRankTests;
 import com.redsqirl.workflow.server.action.PigJoinRelationInteractionTests;
 import com.redsqirl.workflow.server.action.PigJoinTests;
 import com.redsqirl.workflow.server.action.PigSampleTests;
@@ -40,7 +42,7 @@ import com.redsqirl.workflow.test.TestUtils;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-	PigDictionaryTests.class,
+	/*PigDictionaryTests.class,
 	PigFilterInteractionTests.class,
 	PigTableSelectInteractionTests.class,
 	PigJoinRelationInteractionTests.class,
@@ -56,7 +58,8 @@ import com.redsqirl.workflow.test.TestUtils;
 	PigAuditTests.class,
 	PigTransposeTests.class,
 	PigAnonymiseTests.class,
-	PigUnanonymiseTests.class
+	PigUnanonymiseTests.class*/
+	PigGroupRankTests.class
 	})
 public class SetupPigEnvironmentTest {
 
@@ -95,9 +98,9 @@ public class SetupPigEnvironmentTest {
 			reader.close();
 		}
 		logger.debug("Log4j initialised");
-		HiveInterface.setUrl(
-				WorkflowPrefManager.getUserProperty(
-						WorkflowPrefManager.user_hive+"_"+System.getProperty("user.name")));
+//		HiveInterface.setUrl(
+//				WorkflowPrefManager.getUserProperty(
+//						WorkflowPrefManager.user_hive+"_"+System.getProperty("user.name")));
 
 
 		Properties prop = new Properties();

@@ -329,7 +329,7 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 						
 						if(dfeOut.isPathExists() && dfeOut.isPathValid() == null){
 							
-							List<Map<String, String>> outputLines = dfeOut.select(10);
+							List<Map<String, String>> outputLines = dfeOut.select(200);
 							logger.info("line: " + outputLines);
 
 							if (outputLines != null) {

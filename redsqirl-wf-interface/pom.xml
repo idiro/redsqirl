@@ -4,9 +4,9 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<idiro-base.version>0.1-SNAPSHOT</idiro-base.version>
-		<idiro-hadoop.version>0.1-SNAPSHOT</idiro-hadoop.version>
-		<idiro-tm.version>0.1-SNAPSHOT</idiro-tm.version>
+		<idiro-base.version>0.1</idiro-base.version>
+		<idiro-hadoop.version>0.1</idiro-hadoop.version>
+		<idiro-tm.version>0.1</idiro-tm.version>
 	</properties>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>idiro</groupId>
