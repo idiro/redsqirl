@@ -1,6 +1,7 @@
 package com.redsqirl.auth;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.rmi.NotBoundException;
@@ -17,6 +18,7 @@ import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import ch.ethz.ssh2.Connection;
@@ -24,6 +26,7 @@ import ch.ethz.ssh2.Connection;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import com.redsqirl.BaseBean;
+import com.redsqirl.SimpleFileIndexer;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.WorkflowProcessesManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
@@ -312,7 +315,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		setMsnError(null);
 		buildBackend = false;
 
-		/*
+		/* FIXME -used to restart doesn't work
 		//Init some object here...
 		HdfsBean hdfsBean = new HdfsBean();
 		hdfsBean.openCanvasScreen();
@@ -331,6 +334,12 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		fCtx.getExternalContext().getSessionMap().put("#{hiveBean}", hiveBean);
 		fCtx.getExternalContext().getSessionMap().put("#{sshBean}", sshBean);
 		 */
+
+		try {
+			luceneIndex();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		return "success";
 	}
@@ -385,7 +394,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 			// Create home folder for this user if it does not exist yet
 			WorkflowPrefManager.createUserHome(userName);
-			
+
 			if (th != null) {
 				String pid = new WorkflowProcessesManager(userName).getPid();
 				logger.info("Kill the process " + pid);
@@ -460,7 +469,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 					}
 				}
 			}
-			
+
 			return true;
 
 		} catch (Exception e) {
@@ -482,10 +491,10 @@ public class UserInfoBean extends BaseBean implements Serializable {
 	 */
 	public String signOut() {
 		logger.info("signOut");
-		
+
 		setAlreadySignedInOtherMachine(null);
 		setAlreadySignedIn(null);
-		
+
 		invalidateSession();
 		return "signout";
 	}
@@ -562,6 +571,93 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		}
 
 		logger.info("after invalidating session");
+	}
+
+	public void luceneIndex() throws Exception {
+		logger.info("luceneIndex ");
+
+		String tomcatpath = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path);
+		String installPackage = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_install_package, tomcatpath);
+
+		String indexResultPath = WorkflowPrefManager.getPathUserPref(getUserName())+"/lucene/index";
+		String indexPckUserPath = WorkflowPrefManager.getPathUserPref(getUserName())+"/lucene/pck";
+		String indexPckSysPath = WorkflowPrefManager.pathSysHome+"/lucene/pck";
+		String indexMainHelpPath = WorkflowPrefManager.pathSysHome+"/lucene/mainHelp";
+		String indexMergeSysPath = WorkflowPrefManager.pathSysHome+"/lucene/indexMerge";
+
+		String userPath = installPackage+WorkflowPrefManager.getPathUserHelpPref(getUserName());
+		String sysPath = installPackage+WorkflowPrefManager.getPathSysHelpPref();
+		String mainlHelpPath = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path)+"/help";
+
+		logger.info("indexPath " + indexResultPath);
+		logger.info("indexUserPath " + indexPckUserPath);
+		logger.info("indexSystemPath " + indexPckSysPath);
+		logger.info("indexDefaultPath " + indexMainHelpPath);
+
+		logger.info("userPath " + userPath);
+		logger.info("systemPath " + sysPath);
+		logger.info("defaultPath " + mainlHelpPath);
+
+		File fileIndexResultPath = new File(indexResultPath);
+		if(fileIndexResultPath != null && fileIndexResultPath.isDirectory()){
+			SimpleFileIndexer sfi = new SimpleFileIndexer();
+			File fileUserPath = new File(userPath);
+			if(fileUserPath != null && fileUserPath.isDirectory()){
+				if(fileUserPath.lastModified() > fileIndexResultPath.lastModified()){
+					File fileIndexPckUserPath = new File(indexPckUserPath);
+					if(fileIndexPckUserPath != null){
+						FileUtils.cleanDirectory(fileIndexPckUserPath);
+					}
+					FileUtils.cleanDirectory(fileIndexResultPath);
+					createIndex(indexPckUserPath, userPath);
+					sfi.merge(indexResultPath, indexMergeSysPath, indexPckUserPath);
+				}
+			}
+			File fileSysPath = new File(sysPath);
+			if(fileSysPath != null && fileSysPath.isDirectory()){
+				if(fileSysPath.lastModified() > fileIndexResultPath.lastModified()){
+					File fileIndexPckSysPath = new File(indexPckSysPath);
+					if(fileIndexPckSysPath != null){
+						FileUtils.cleanDirectory(fileIndexPckSysPath);
+					}
+					FileUtils.cleanDirectory(fileIndexResultPath);
+					merge(indexResultPath, indexPckUserPath, indexPckSysPath, indexMainHelpPath, indexMergeSysPath);
+				}
+			}
+		}else{
+			createIndex(indexPckUserPath, userPath);
+			createIndex(indexPckSysPath, sysPath);
+			createIndex(indexMainHelpPath, mainlHelpPath);
+			merge(indexResultPath, indexPckUserPath, indexPckSysPath, indexMainHelpPath, indexMergeSysPath);
+		}
+	}
+
+	public void createIndex(String indexResultPath, String dataPath) throws Exception {
+
+		logger.info("createIndex ");
+
+		SimpleFileIndexer sfi = new SimpleFileIndexer();
+		long start = System.currentTimeMillis();
+		File indexDir = new File(indexResultPath);
+		File dataDir = new File(dataPath);
+		String suffix = "html";
+		int numIndex = sfi.index(indexDir, dataDir, suffix);
+
+		logger.info("Total files indexed " + numIndex);
+		logger.info((System.currentTimeMillis() - start));
+	}
+
+	public void merge(String indexResultPath, String indexPckUserPath, String indexPckSysPath, String indexMainHelpPath, String indexMergeSysPath) throws Exception {
+
+		logger.info("merge ");
+
+		SimpleFileIndexer sfi = new SimpleFileIndexer();
+		File fileIndexMergeSysPath = new File(indexMergeSysPath);
+		if(fileIndexMergeSysPath != null && fileIndexMergeSysPath.isDirectory()){
+			FileUtils.cleanDirectory(fileIndexMergeSysPath);
+		}
+		sfi.merge(indexMergeSysPath, indexPckSysPath, indexMainHelpPath);
+		sfi.merge(indexResultPath, indexMergeSysPath, indexPckUserPath);
 	}
 
 	/**

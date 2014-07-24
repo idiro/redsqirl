@@ -128,7 +128,7 @@
 				<configuration>
 					<outputDirectory>${dist.war}</outputDirectory>
 					<warName>redsqirl</warName>
-          			<warSourceExcludes>pages/packages/**</warSourceExcludes>
+					<warSourceExcludes>pages/packages/**</warSourceExcludes>
 				</configuration>
 			</plugin>
 
@@ -319,6 +319,11 @@
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>20090211</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+			<version>3.5.0</version>
 		</dependency>
 
 		<!-- TEST -->

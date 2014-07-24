@@ -18,51 +18,56 @@
     var historyHelpIndex = 0;
 
 	jQuery(document).on("click", ".stopLink", function(e){
+
+		showTabResult();
+		jQuery("#divTabHelp").scrollTop( 0 );
+		
 	    if(! jQuery('#notMoveHelp').is(':checked')){
-		var id = jQuery(this).attr('id');
-		if( historyHelp[historyHelpIndex] != id ){
-            jQuery("#nextHelp").attr("disabled", true);
-            jQuery("#prevHelp").attr("disabled", false);
-		    jQuery("#helpIndex").hide();
-            jQuery("#helpPanel").show();
-		    jQuery("#contentHelp").load(jQuery(this).attr("href"));
-		    
-            
-		    //<![CDATA[
-		    if(id != "help_main" && id.substring(0,5) == "help_"){
-		      var obj = jQuery("#image_"+jQuery(this).attr("id"));
-		      document.getElementById("imageHelp").innerHTML 
-                = "<img width='50px' src='"+jQuery(obj).attr("src")+"'/>";
-              jQuery("#imageHelp").show();
-		    }else{
-		      document.getElementById("imageHelp").innerHTML = "";
-		      jQuery("#imageHelp").hide();
-		    }
-            //]]>
-            
-            jQuery("#btIndex").show();
-            if(jQuery(this).attr("href").indexOf('#') == -1){
-		      jQuery("#tabs-1").scrollTop( 0 );
-            }else{
-              jQuery("#tabs-1").animate({
-                  scrollTop: jQuery(jQuery(this,'href')).offset().top}, 800);
-		    }
-		    
-		    //<![CDATA[
-		    while( historyHelpIndex + 1 < historyHelp.length ){
-			historyHelp.pop();
-		    }
-		    if(historyHelp.length > 100){
-			historyHelp.shift();
-		    }
-		    //]]>
-		    historyHelpIndex = historyHelp.length;
-		    historyHelp[historyHelpIndex] = id;
-		}
+			var id = jQuery(this).attr('id');
+			if( historyHelp[historyHelpIndex] != id ){
+	            jQuery("#nextHelp").attr("disabled", true);
+	            jQuery("#prevHelp").attr("disabled", false);
+			    jQuery("#helpIndex").hide();
+	            jQuery("#helpPanel").show();
+			    jQuery("#contentHelp").load(jQuery(this).attr("href"));
+	            
+			    //<![CDATA[
+			    if(id != "help_main" && id.substring(0,5) == "help_"){
+			      var obj = jQuery("#image_"+jQuery(this).attr("id"));
+			      document.getElementById("imageHelp").innerHTML = "<img width='50px' src='"+jQuery(obj).attr("src")+"'/>";
+	              jQuery("#imageHelp").show();
+			    }else{
+			      document.getElementById("imageHelp").innerHTML = "";
+			      jQuery("#imageHelp").hide();
+			    }
+	            //]]>
+	            
+	            jQuery("#btIndex").show();
+	            if(jQuery(this).attr("href").indexOf('#') == -1){
+			      jQuery("#tabs-1").scrollTop( 0 );
+	            }else{
+	              jQuery("#tabs-1").animate({
+	                  scrollTop: jQuery(jQuery(this,'href')).offset().top}, 800);
+			    }
+			    
+			    //<![CDATA[
+			    while( historyHelpIndex + 1 < historyHelp.length ){
+				historyHelp.pop();
+			    }
+			    if(historyHelp.length > 100){
+				historyHelp.shift();
+			    }
+			    //]]>
+			    historyHelpIndex = historyHelp.length;
+			    historyHelp[historyHelpIndex] = id;
+			}
 	    }
 	});
 
 	jQuery(document).on("click", "#btIndex", function(e) {
+
+		jQuery("#divTabHelp").scrollTop( 0 );
+		
 	    if(! jQuery('#notMoveHelp').is(':checked')){
 		    var id = jQuery(this).attr('id');
 		    if(historyHelp[historyHelpIndex] != id){
@@ -87,6 +92,10 @@
 	});
 
 	jQuery(document).on("click", "#prevHelp", function(e) {
+
+		showTabResult();
+		jQuery("#divTabHelp").scrollTop( 0 );
+		
 	    //<![CDATA[
 	    if(historyHelpIndex > 0){
 		var id = historyHelp[--historyHelpIndex];
@@ -121,6 +130,10 @@
 	});
 
 	jQuery(document).on("click", "#nextHelp", function(e) {
+
+		showTabResult();
+		jQuery("#divTabHelp").scrollTop( 0 );
+		
 	    //<![CDATA[
 	    if(historyHelpIndex  < historyHelp.length - 1){
 		var id = historyHelp[++historyHelpIndex];
@@ -153,52 +166,98 @@
 	    }
 	    //]]>
 	});
+
+	function showTabResult(){
+		jQuery("#resultTableDiv").hide();
+	}
+
+	function showDivHelp(){
+		jQuery("#helpIndex").hide();
+		jQuery("#helpPanel").hide();
+		jQuery("#resultTableDiv").show();
+	}
 	
     </script>
 </head>
 <body>
 
-    <div id="helpButtons">
-        <button id="prevHelp" disabled="true">#{messages.label_help_previous}</button>
-        <button id="nextHelp" disabled="true">#{messages.label_help_next}</button>
-        <input id="notMoveHelp" type="checkbox"/>#{messages.label_on_the_page}
-        <button id="btIndex" style="display: none;">#{messages.label_index}</button>
-    </div>
-    <div id="helpIndex">
-	<h1>Red Sqirl Help</h1>
-	<p>
-	Red Sqirl is a platform that builds data related workflows that runs on
-	hadoop. For more help on Red Sqirl click <a class="stopLink" id="help_main"
-	    onclick="return false;" href="../help/main.html">here</a>
-	</p>
+	<div id="helpButtons" class="divMenu" style="margin-top:3px;">
+	
+		<table>
+			<tr>
+				<td>
+					<h:graphicImage id="prevHelp" value="../image/icons/button-previous.gif" title='#{messages.HdfsInterface_previous_help}' styleClass="fileSystemIcon" />
+				    <h:graphicImage id="nextHelp" value="../image/icons/button-next.gif" title='#{messages.HdfsInterface_next_help}' styleClass="fileSystemIcon" />
+				    <h:graphicImage id="btIndex" value="../image/icons/button-home.png" title='#{messages.label_index}' styleClass="fileSystemIcon" />
+				    <h:selectBooleanCheckbox id="notMoveHelp" title="#{messages.label_on_the_page}" />
+				</td>
+				<td>    
+					<h:form>
+				        <h:inputText styleClass="mainPageTextField" value="#{helpBean.fieldSearch}" maxlength="255" size="15" onkeypress="return enableEnterKey(event, 'searchBt');" />
+						<a4j:commandLink id="searchBt" action="#{helpBean.helpSearch}" style="color:#FFFFFF" reRender="resultTable" oncomplete="showDivHelp();" >
+							<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' styleClass="refreshButton" />
+						</a4j:commandLink>
+					</h:form>
+				</td>
+			</tr>
+		</table>
+	   	
+	</div>
 
-	<a class="stopLink" id="helpmain_tech" style="display: none;" onclick="return false;" href="../help/technologies.html">Technologies</a>
-	<a class="stopLink" id="helpmain_menu" style="display: none;" onclick="return false;" href="../help/menu.html">Menu</a>
-	<a class="stopLink" id="helpmain_canvas" style="display: none;" onclick="return false;" href="../help/canvas.html">Canvas</a>
-	<a class="stopLink" id="helpmain_actfooter" style="display: none;" onclick="return false;" href="../help/actionsfooter.html">Actions Footer</a>
-	<a class="stopLink" id="helpmain_buildwork" style="display: none;" onclick="return false;" href="../help/buildingworkflow.html">How to build a workflow</a>
-	<a class="stopLink" id="helpmain_ssh" style="display: none;" onclick="return false;" href="../help/ssh_view.html">Remote File System</a>
-	<a class="stopLink" id="helpmain_help" style="display: none;" onclick="return false;" href="../help/help_view.html">Help</a>
-	<a class="stopLink" id="helpmain_procman" style="display: none;" onclick="return false;" href="../help/process_manager.html">Process manager</a>
-	<a class="stopLink" id="helpmain_error" style="display: none;" onclick="return false;" href="../help/error_view.html">Error</a>
-	<a class="stopLink" id="helpmain_hive" style="display: none;" onclick="return false;" href="../help/hive_view.html">Hive</a>
-	<a class="stopLink" id="helpmain_hdfs" style="display: none;" onclick="return false;" href="../help/hdfs_view.html">Hadoop File System</a>
-	<a class="stopLink" id="helpmain_splitter" style="display: none;" onclick="return false;" href="../help/splitter.html">Splitter</a>
-    <a class="stopLink" id="helpmain_pigtuto" style="display: none;" onclick="return false;" href="../help/pigtutorial.html">Pig Tutorial</a>
-    <a class="stopLink" id="helpmain_hamatuto" style="display: none;" onclick="return false;" href="../help/hamatutorial.html">Hama Tutorial</a>
-    <a class="stopLink" id="helpmain_snatuto" style="display: none;" onclick="return false;" href="../help/snatutorial.html">SNA Tutorial</a>
+<div id="divTabHelp" style="overflow:auto;" >
+
+	<div id="resultTableDiv">
+		<rich:panel id="resultTable" rendered="#{helpBean.result != null}" style="border:none">
+			<ul>
+				<ui:repeat value="#{helpBean.result}" var="item">
+			    	<li>
+			    		<a class="stopLink" href="#{item[0]}" id="#{item[2]}" onclick="showTabResult();return false;">
+			    			<h:outputText value="#{item[1]}" title="#{item[1]}" style="font-size:16px;" />
+			    		</a>
+			    	</li>
+			    </ui:repeat>
+		    </ul>
+	    </rich:panel>
+	</div>
     
-	<h2>Available Actions (#{helpBean.helpSize})</h2>
-	<ul>
-	    <ui:repeat value="#{helpBean.helpHtml}" var="action">
-	    <li><img id="image_help_#{action[0]}" width="25px" src="#{action[3]}"/> <a class="stopLink" id="help_#{action[0]}" href="#{action[2]}" onclick="return false;">#{action[1]}</a></li>
-	    </ui:repeat>
-	</ul>
+    <div id="helpIndex">
+    
+		<h1>Red Sqirl Help</h1>
+		<p>
+		Red Sqirl is a platform that builds data related workflows that runs on
+		hadoop. For more help on Red Sqirl click <a class="stopLink" id="help_main"
+		    onclick="return false;" href="../help/main.html">here</a>
+		</p>
+	
+		<a class="stopLink" id="helpmain_tech" style="display: none;" onclick="return false;" href="../help/technologies.html">Technologies</a>
+		<a class="stopLink" id="helpmain_menu" style="display: none;" onclick="return false;" href="../help/menu.html">Menu</a>
+		<a class="stopLink" id="helpmain_canvas" style="display: none;" onclick="return false;" href="../help/canvas.html">Canvas</a>
+		<a class="stopLink" id="helpmain_actfooter" style="display: none;" onclick="return false;" href="../help/actionsfooter.html">Actions Footer</a>
+		<a class="stopLink" id="helpmain_buildwork" style="display: none;" onclick="return false;" href="../help/buildingworkflow.html">How to build a workflow</a>
+		<a class="stopLink" id="helpmain_ssh" style="display: none;" onclick="return false;" href="../help/ssh_view.html">Remote File System</a>
+		<a class="stopLink" id="helpmain_help" style="display: none;" onclick="return false;" href="../help/help_view.html">Help</a>
+		<a class="stopLink" id="helpmain_procman" style="display: none;" onclick="return false;" href="../help/process_manager.html">Process manager</a>
+		<a class="stopLink" id="helpmain_error" style="display: none;" onclick="return false;" href="../help/error_view.html">Error</a>
+		<a class="stopLink" id="helpmain_hive" style="display: none;" onclick="return false;" href="../help/hive_view.html">Hive</a>
+		<a class="stopLink" id="helpmain_hdfs" style="display: none;" onclick="return false;" href="../help/hdfs_view.html">Hadoop File System</a>
+		<a class="stopLink" id="helpmain_splitter" style="display: none;" onclick="return false;" href="../help/splitter.html">Splitter</a>
+	    <a class="stopLink" id="helpmain_pigtuto" style="display: none;" onclick="return false;" href="../help/pigtutorial.html">Pig Tutorial</a>
+	    <a class="stopLink" id="helpmain_hamatuto" style="display: none;" onclick="return false;" href="../help/hamatutorial.html">Hama Tutorial</a>
+	    <a class="stopLink" id="helpmain_snatuto" style="display: none;" onclick="return false;" href="../help/snatutorial.html">SNA Tutorial</a>
+	    
+		<h2>Available Actions (#{helpBean.helpSize})</h2>
+		<ul>
+		    <ui:repeat value="#{helpBean.helpHtml}" var="action">
+		    <li><img id="image_help_#{action[0]}" width="25px" src="#{action[3]}"/> <a class="stopLink" id="help_#{action[0]}" href="#{action[2]}" onclick="return false;">#{action[1]}</a></li>
+		    </ui:repeat>
+		</ul>
     </div>
-    <div id="helpPanel">
+    
+    <div id="helpPanel" style="margin-top:5px;">
         <div id="imageHelp" />
         <div id="contentHelp"/>
     </div>
     
+</div>
 </body>
 </html>
