@@ -30,7 +30,7 @@ import com.redsqirl.workflow.utils.LanguageManagerWF;
  * @author keith
  * 
  */
-public class MapRedBinaryType extends MapRedTextType {
+public class MapRedBinaryType extends MapRedCompressedType {
 
 	/**
 	 * 

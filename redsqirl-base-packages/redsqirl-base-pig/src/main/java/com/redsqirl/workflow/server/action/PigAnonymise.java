@@ -13,8 +13,8 @@ import com.redsqirl.workflow.server.AppendListInteraction;
 import com.redsqirl.workflow.server.DataProperty;
 import com.redsqirl.workflow.server.InputInteraction;
 import com.redsqirl.workflow.server.Page;
+import com.redsqirl.workflow.server.datatype.MapRedCompressedType;
 import com.redsqirl.workflow.server.datatype.MapRedCtrlATextType;
-import com.redsqirl.workflow.server.datatype.MapRedTextType;
 import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
@@ -116,7 +116,7 @@ public class PigAnonymise extends PigElement {
 	
 	public void init() throws RemoteException {
 		input = new LinkedHashMap<String, DFELinkProperty>();
-		input.put(key_input, new DataProperty(MapRedTextType.class, 1,
+		input.put(key_input, new DataProperty(MapRedCompressedType.class, 1,
 				1));
 		input.put(key_index_map, new DataProperty(MapRedCtrlATextType.class,
 				0, 1,getIndexFeatures()));

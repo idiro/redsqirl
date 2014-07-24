@@ -23,9 +23,9 @@ import com.redsqirl.workflow.server.DataflowAction;
 import com.redsqirl.workflow.server.InputInteraction;
 import com.redsqirl.workflow.server.ListInteraction;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
-import com.redsqirl.workflow.server.action.PigTypeConvert;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.datatype.MapRedBinaryType;
+import com.redsqirl.workflow.server.datatype.MapRedCompressedType;
 import com.redsqirl.workflow.server.datatype.MapRedCtrlATextType;
 import com.redsqirl.workflow.server.datatype.MapRedTextType;
 import com.redsqirl.workflow.server.enumeration.FieldType;
@@ -167,8 +167,9 @@ public abstract class PigElement extends DataflowAction {
 		List<String> saveTypePos = new LinkedList<String>();
 		saveTypePos.add( new MapRedTextType().getTypeName());
 		saveTypePos.add( new MapRedBinaryType().getTypeName());
+		saveTypePos.add( new MapRedCompressedType().getTypeName());
 		savetypeOutputInt.setPossibleValues(saveTypePos);
-		savetypeOutputInt.setValue(new MapRedTextType().getTypeName());
+		savetypeOutputInt.setValue(new MapRedCompressedType().getTypeName());
 		
 		auditInt= new AppendListInteraction(key_audit,
 				  	PigLanguageManager.getText("pig.audit_interaction.title"),
@@ -384,7 +385,12 @@ public abstract class PigElement extends DataflowAction {
 		}
 
 		String function = getLoadStoreFuncion(out, delimiter);
-		String createSelect = "LOAD '" + out.getPath() + "' USING "+function+" as (";
+		String createSelect = "LOAD '" + out.getPath() + "'";
+		
+		if (function != null){
+			createSelect += " USING "+function;
+		}
+		createSelect += " as (";
 
 		Iterator<String> it = out.getFields().getFieldNames().iterator();
 		logger.info("attribute list size : "+out.getFields().getSize());
@@ -406,7 +412,14 @@ public abstract class PigElement extends DataflowAction {
 
 		String function = getStoreFunction(delimiter);
 		logger.info(function);
-		return "STORE "+relationName+" INTO '" + out.getPath() + "' USING "+function+";";
+		
+		String query = "STORE "+relationName+" INTO '" + out.getPath() + "'";
+				
+		if (function != null){
+			query += " USING "+function+";";
+		}
+				
+		return query;
 	}
 
 	/**
@@ -417,7 +430,7 @@ public abstract class PigElement extends DataflowAction {
 	 */
 	public String getStoreFunction(String delimiter) throws RemoteException{
 		String type = "";
-		String function = "";
+		String function = null;
 		if(delimiter==null || delimiter.equalsIgnoreCase("")){
 			delimiter ="|";
 		}
@@ -447,7 +460,8 @@ public abstract class PigElement extends DataflowAction {
 	 */
 	private String getLoadStoreFuncion(DFEOutput out, String delimiter) throws RemoteException{
 		String function = null;
-		if (out.getTypeName().equals("TEXT MAP-REDUCE DIRECTORY")){
+		if (out.getTypeName().equals("TEXT MAP-REDUCE DIRECTORY") ||
+				out.getTypeName().equals("COMPRESSED MAP-REDUCE DIRECTORY")){
 			function = "PigStorage('"+delimiter+"')";
 		}
 		else if (out.getTypeName().equals("BINARY MAP-REDUCE DIRECTORY")){
@@ -492,5 +506,13 @@ public abstract class PigElement extends DataflowAction {
 	 */
 	public PigOrderInteraction getOrderInt() {
 		return orderInt;
+	}
+	
+	/**
+	 * Get the ordering interaction
+	 * @return groupingInt
+	 */
+	public ListInteraction getSaveTypeInt() {
+		return savetypeOutputInt;
 	}
 }
