@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileStatus;
@@ -23,6 +25,8 @@ import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.permission.FsPermission;
 import org.apache.hadoop.io.BytesWritable;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.util.LineReader;
 import org.apache.log4j.Logger;
@@ -426,7 +430,13 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 					ans.add(fsA[i].getPath().toString());
 				}
 			} else if (fCh.isFile()) {
-				FSDataInputStream in = fs.open(p);
+				InputStream in = fs.open(p);
+				
+				if (path.endsWith(".bz2")){
+					BZip2CompressorInputStream bzipReader = new BZip2CompressorInputStream(in);
+					in = bzipReader;
+				}
+				
 				LineReader reader = new LineReader(in);
 				ans = new ArrayList<String>(maxToRead);
 				Text line = new Text();
@@ -484,9 +494,10 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 				String toWrite = "";
 				logger.info("delim : " + delimiter);
 				while (reader.readLine(line) != 0 && lineNb < maxToRead) {
-					int val = BytesWritable.Comparator.readInt(line.getBytes(),
-							0);
+					reader.readLine(line);
+					logger.info("line : " + line);
 					++lineNb;
+					
 					FieldType type = fields.getFieldType(fields
 							.getFieldNames().get(i));
 					if (type == FieldType.BOOLEAN) {
