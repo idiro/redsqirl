@@ -1,7 +1,6 @@
 
 function canvasResizeSplitter(){
 	//<![CDATA[
-
 	
 	//alert("canvasResizeSplitter");
 	  
@@ -12,11 +11,12 @@ function canvasResizeSplitter(){
 	jQuery(".splitter-bar-horizontal").css("width", jQuery(window).width()-jQuery(".splitter-pane").width()-28 +'px');
 	jQuery("#tabs1").css("width", jQuery("#splitHCanvas").width()-20 +'px');
 	jQuery("#tabs2").css("width", jQuery("#splitHCanvas").width()-20 +'px');
-	
 	 
 	resizeCanvas(30,30);
 	
 	resizeTabs();
+	
+	jQuery("#divTabHelp").css("height", jQuery("#tabs-1").height()-45+'px');
 	
 	configureLeft();
 
@@ -96,6 +96,8 @@ function onPageReady(){
 	  resizeTabs();
 	  //resizeTables();
 	  
+	  jQuery("#divTabHelp").css("height", jQuery("#tabs-1").height()-45+'px');
+	  
 	  jQuery("#buttonsCanvas1").hide();
 	  jQuery("#buttonsTabs1").hide();
 	  jQuery("#buttonsTabs2").hide();
@@ -115,7 +117,6 @@ function onPageReady(){
 	  //configureFooterCss();
 
 	  validateArrowsAll();
-	  
 }
 
 function configureFooterCss(){

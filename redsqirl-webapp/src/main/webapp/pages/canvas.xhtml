@@ -194,6 +194,7 @@
 			  jQuery("#tabs2").css("top", '0px');
 			  jQuery("#tabs2").css("height", jQuery("#splitVCanvas").height()-20+'px');
 			  resizeTabs();
+			  jQuery("#divTabHelp").css("height", jQuery("#tabs-1").height()-45+'px');
 		  	}},
 		  {'Middle': function(menuItem,menu){ 
 			  jQuery("#tabs1").css("height", (jQuery("#splitVCanvas").height()-20)/2+'px');
@@ -201,6 +202,7 @@
 			  jQuery("#tabs2").css("top", (jQuery("#splitVCanvas").height()-20)/2+'px');
 			  jQuery("#tabs2").css("height", (jQuery("#splitVCanvas").height()-20)/2+'px');
 			  resizeTabs();
+			  jQuery("#divTabHelp").css("height", jQuery("#tabs-1").height()-45+'px');
 		  	}},
 		  {'Bottom': function(menuItem,menu){
 			  jQuery("#tabs1").css("height", jQuery("#splitVCanvas").height()-20+'px');
@@ -208,6 +210,7 @@
 			  jQuery("#tabs2").css("top", jQuery("#splitVCanvas").height()-20+'px');
 			  jQuery("#tabs2").css("height", '0px');
 			  resizeTabs();
+			  jQuery("#divTabHelp").css("height", jQuery("#tabs-1").height()-45+'px');
 		  	}}
 		  ];
 
@@ -1553,7 +1556,7 @@
 					</button>
 				</span>
 
-				<div id="tabs-1" style="overflow:auto;">
+				<div id="tabs-1">
 					<a4j:region>
 
 						<a4j:status
