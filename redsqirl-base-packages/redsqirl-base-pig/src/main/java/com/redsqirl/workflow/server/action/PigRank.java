@@ -2,58 +2,50 @@ package com.redsqirl.workflow.server.action;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.redsqirl.utils.FieldList;
+import com.redsqirl.workflow.server.AppendListInteraction;
 import com.redsqirl.workflow.server.ListInteraction;
 import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.utils.PigLanguageManager;
 
-public class PigGroupRank extends PigElement {
+public class PigRank extends PigElement {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -5312828268150978644L;
 
-	private Page page1, page2, page3;
+	private Page page1, page2;
 
-	public ListInteraction rank;
 
 	private PigFilterInteraction filterInt;
 
-	public static final String key_grouping = "grouping", key_rank = "rank",
-			key_order = "order";
+	public AppendListInteraction rank;
+	
+	public PigOrderInteraction order;
 
-	public PigGroupRank() throws RemoteException {
+	public static final String key_rank = "rank", key_order = "order";
+
+	public PigRank() throws RemoteException {
 		super(1, 1, 3);
 
-		page1 = addPage(
-				PigLanguageManager.getText("pig.grouprank_page1.title"),
-				PigLanguageManager.getText("pig.grouprank_page1.legend"), 1);
+		page1 = addPage(PigLanguageManager.getText("pig.rank_page1.title"),
+				PigLanguageManager.getText("pig.rank_page1.legend"), 1);
 
-		groupingInt = new PigGroupInteraction(key_grouping,
-				PigLanguageManager
-						.getText("pig.grouprank_group_interaction.title"),
-				PigLanguageManager
-						.getText("pig.grouprank_group_interaction.legend"), 0,
-				0);
-		groupingInt.setNonEmptyChecker();
 
-		page1.addInteraction(groupingInt);
-
-		page2 = addPage(
-				PigLanguageManager.getText("pig.grouprank_page2.title"),
-				PigLanguageManager.getText("pig.grouprank_page2.legend"), 1);
-
-		rank = new ListInteraction(key_rank,
-				PigLanguageManager
-						.getText("pig.grouprank_rank_interaction.title"),
-				PigLanguageManager
-						.getText("pig.grouprank_rank_interaction.legend"), 0, 0);
-
+		rank = new AppendListInteraction(key_rank,
+				PigLanguageManager.getText("pig.rank_interaction.title"),
+				PigLanguageManager.getText("pig.rank_interaction.title"),
+				0, 0);
+		
+		rank.setNonEmptyChecker();
+		
+		
 		orderTypeInt = new ListInteraction(key_order_type,
 				PigLanguageManager.getText("pig.order_type_interaction.title"),
 				PigLanguageManager.getText("pig.order_type_interaction.title"),
@@ -66,25 +58,25 @@ public class PigGroupRank extends PigElement {
 		orderTypeInt.setPossibleValues(values);
 		orderTypeInt.setValue("ASCENDING");
 
-		page2.addInteraction(rank);
-		page2.addInteraction(orderTypeInt);
+		page1.addInteraction(rank);
+		page1.addInteraction(orderTypeInt);
 
 		filterInt = new PigFilterInteraction(0, 0, this);
 
-		page3 = addPage(
-				PigLanguageManager.getText("pig.grouprank_page3.title"),
-				PigLanguageManager.getText("pig.grouprank_page3.legend"), 1);
+		page2 = addPage(
+				PigLanguageManager.getText("pig.rank_page2.title"),
+				PigLanguageManager.getText("pig.rank_page2.legend"), 1);
 
-		page3.addInteraction(filterInt);
-		page3.addInteraction(delimiterOutputInt);
-		page3.addInteraction(savetypeOutputInt);
-		page3.addInteraction(auditInt);
+		page2.addInteraction(filterInt);
+		page2.addInteraction(delimiterOutputInt);
+		page2.addInteraction(savetypeOutputInt);
+		page2.addInteraction(auditInt);
 
 	}
 
 	@Override
 	public String getName() throws RemoteException {
-		return "pig_group_rank";
+		return "pig_rank";
 	}
 
 	@Override
@@ -107,8 +99,7 @@ public class PigGroupRank extends PigElement {
 			 * 1,1))); };
 			 */
 
-			query = "DEFINE IOver org.apache.pig.piggybank.evaluation.Over('INT');\n"
-					+ "DEFINE Stitch org.apache.pig.piggybank.evaluation.Stitch();\n\n";
+			query = "";
 
 			String remove = getRemoveQueryPiece(out.getPath()) + ";\n\n";
 
@@ -116,25 +107,31 @@ public class PigGroupRank extends PigElement {
 
 			String load = getCurrentName() + " = " + getLoadQueryPiece(in);
 			query += load + ";\n\n";
-
+			
 			String order = orderTypeInt.getValue();
 			order = order.equals("DESCENDING") ? "DESC" : "ASC";
+			
+			Iterator<String> rankVals =  rank.getValues().iterator();
+			String ranking = key_rank.toUpperCase()+" = RANK "+getCurrentName()+" by ";
+			int valsCount =0;
+			
+			while (rankVals.hasNext()){
+				String rankVal = rankVals.next();
+				++valsCount;
+				ranking+=rankVal;
+				if(rankVals.hasNext()){
+					ranking+= " , ";
+				}else{
+					ranking+=" "+order+ " ;\n ";
+				}
+			
+			}
+			if(valsCount == 0){
+				return null;
+			}
 
-			String group = key_rank.toUpperCase()
-					+ " = FOREACH("
-					+ groupingInt.getQueryPiece(getCurrentName(), null)
-					+ " ) {\n"
-					+ "\tORD = ORDER "
-					+ getCurrentName()
-					+ " by "
-					+ rank.getValue()
-					+ " "
-					+ order
-					+ " ;\n"
-					+ "\tGENERATE FLATTEN(Stitch(ORD,\n\tIOver(ORD,'rank',-1,-1,"
-					+ in.getFields().getFieldNames().indexOf(rank.getValue())
-					+ ")));\n};";
-			query += group + "\n\n";
+
+			query += ranking + "\n\n";
 
 			String filter = filterInt.getQueryPiece(key_rank.toUpperCase());
 			String storeAl = key_rank.toUpperCase();
@@ -143,7 +140,7 @@ public class PigGroupRank extends PigElement {
 				storeAl = "FLT";
 			}
 
-			String store ;
+			String store;
 			store = getStoreQueryPiece(out, storeAl);
 			query += store;
 
@@ -167,9 +164,7 @@ public class PigGroupRank extends PigElement {
 	public void update(DFEInteraction interaction) throws RemoteException {
 		DFEOutput data = getDFEInput().get(PigElement.key_input).get(0);
 		if (data != null) {
-			if (interaction.getId().equals(groupingInt.getId())) {
-				groupingInt.update(data);
-			} else if (interaction.getId().equals(rank.getId())) {
+			 if (interaction.getId().equals(rank.getId())) {
 				rankUpdate();
 			} else if (interaction.getId().equals(filterInt.getId())) {
 				filterInt.update();
@@ -183,7 +178,6 @@ public class PigGroupRank extends PigElement {
 	public void rankUpdate() {
 		try {
 			rank.setPossibleValues(getInFields().getFieldNames());
-			rank.setValue(rank.getPossibleValues().get(0));
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
