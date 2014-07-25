@@ -78,6 +78,7 @@ public class PigGroupRank extends PigElement {
 		page3.addInteraction(filterInt);
 		page3.addInteraction(delimiterOutputInt);
 		page3.addInteraction(savetypeOutputInt);
+		page3.addInteraction(parallelInt);
 		page3.addInteraction(auditInt);
 
 	}
@@ -117,12 +118,18 @@ public class PigGroupRank extends PigElement {
 			String load = getCurrentName() + " = " + getLoadQueryPiece(in);
 			query += load + ";\n\n";
 
+			String parallel ="";
+			if(parallelInt.getValue() !=null && !parallelInt.getValue().isEmpty()){
+				parallel +=" PARALLEL "+parallelInt.getValue();
+			}
+			
 			String order = orderTypeInt.getValue();
 			order = order.equals("DESCENDING") ? "DESC" : "ASC";
 
 			String group = key_rank.toUpperCase()
 					+ " = FOREACH("
 					+ groupingInt.getQueryPiece(getCurrentName(), null)
+					+ parallel
 					+ " ) {\n"
 					+ "\tORD = ORDER "
 					+ getCurrentName()

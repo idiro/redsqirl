@@ -22,11 +22,10 @@ public class PigRank extends PigElement {
 
 	private Page page1, page2;
 
-
 	private PigFilterInteraction filterInt;
 
-	public AppendListInteraction rank;
-	
+	public ListInteraction rank;
+
 	public PigOrderInteraction order;
 
 	public static final String key_rank = "rank", key_order = "order";
@@ -37,15 +36,10 @@ public class PigRank extends PigElement {
 		page1 = addPage(PigLanguageManager.getText("pig.rank_page1.title"),
 				PigLanguageManager.getText("pig.rank_page1.legend"), 1);
 
+		rank = new ListInteraction(key_rank,
+				PigLanguageManager.getText("pig.rank_interaction.title"),
+				PigLanguageManager.getText("pig.rank_interaction.title"), 0, 0);
 
-		rank = new AppendListInteraction(key_rank,
-				PigLanguageManager.getText("pig.rank_interaction.title"),
-				PigLanguageManager.getText("pig.rank_interaction.title"),
-				0, 0);
-		
-		rank.setNonEmptyChecker();
-		
-		
 		orderTypeInt = new ListInteraction(key_order_type,
 				PigLanguageManager.getText("pig.order_type_interaction.title"),
 				PigLanguageManager.getText("pig.order_type_interaction.title"),
@@ -63,8 +57,7 @@ public class PigRank extends PigElement {
 
 		filterInt = new PigFilterInteraction(0, 0, this);
 
-		page2 = addPage(
-				PigLanguageManager.getText("pig.rank_page2.title"),
+		page2 = addPage(PigLanguageManager.getText("pig.rank_page2.title"),
 				PigLanguageManager.getText("pig.rank_page2.legend"), 1);
 
 		page2.addInteraction(filterInt);
@@ -107,29 +100,14 @@ public class PigRank extends PigElement {
 
 			String load = getCurrentName() + " = " + getLoadQueryPiece(in);
 			query += load + ";\n\n";
-			
+
 			String order = orderTypeInt.getValue();
 			order = order.equals("DESCENDING") ? "DESC" : "ASC";
-			
-			Iterator<String> rankVals =  rank.getValues().iterator();
-			String ranking = key_rank.toUpperCase()+" = RANK "+getCurrentName()+" by ";
-			int valsCount =0;
-			
-			while (rankVals.hasNext()){
-				String rankVal = rankVals.next();
-				++valsCount;
-				ranking+=rankVal;
-				if(rankVals.hasNext()){
-					ranking+= " , ";
-				}else{
-					ranking+=" "+order+ " ;\n ";
-				}
-			
-			}
-			if(valsCount == 0){
-				return null;
-			}
 
+			String ranking = key_rank.toUpperCase() + " = RANK "
+					+ getCurrentName() + " by " + rank.getValue();
+
+			ranking += " " + order + " ;\n ";
 
 			query += ranking + "\n\n";
 
@@ -156,7 +134,7 @@ public class PigRank extends PigElement {
 	@Override
 	public FieldList getNewField() throws RemoteException {
 		FieldList newFieldList = getInFields();
-//		newFieldList.addField("Rank", FieldType.INT);
+		// newFieldList.addField("Rank", FieldType.INT);
 		return newFieldList;
 	}
 
@@ -164,7 +142,7 @@ public class PigRank extends PigElement {
 	public void update(DFEInteraction interaction) throws RemoteException {
 		DFEOutput data = getDFEInput().get(PigElement.key_input).get(0);
 		if (data != null) {
-			 if (interaction.getId().equals(rank.getId())) {
+			if (interaction.getId().equals(rank.getId())) {
 				rankUpdate();
 			} else if (interaction.getId().equals(filterInt.getId())) {
 				filterInt.update();
