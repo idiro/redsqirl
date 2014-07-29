@@ -26,6 +26,7 @@ public class SelectableTable extends BaseBean implements Serializable {
 	private List<String> titles;
 	private List<SelectableRow> rows;
 	private String rowNumber;
+	private String name;
 
 	public SelectableTable() {
 		this.columnIds = new LinkedList<String>();
@@ -308,6 +309,14 @@ public class SelectableTable extends BaseBean implements Serializable {
 
 	public void setRowNumber(String rowNumber) {
 		this.rowNumber = rowNumber;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }

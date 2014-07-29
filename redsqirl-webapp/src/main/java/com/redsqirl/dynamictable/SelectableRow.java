@@ -11,6 +11,8 @@ public class SelectableRow implements Serializable{
 	protected String[] row;
 	protected boolean selected;
 	protected boolean disableSelect;
+	private String nameTab;
+	private String nameTabHidden;
 
 	/**
 	 * @param selected
@@ -80,6 +82,22 @@ public class SelectableRow implements Serializable{
 
 	public void setDisableSelect(boolean disableSelect) {
 		this.disableSelect = disableSelect;
+	}
+
+	public String getNameTab() {
+		return nameTab;
+	}
+
+	public void setNameTab(String nameTab) {
+		this.nameTab = nameTab;
+	}
+
+	public String getNameTabHidden() {
+		return nameTabHidden;
+	}
+
+	public void setNameTabHidden(String nameTabHidden) {
+		this.nameTabHidden = nameTabHidden;
 	}
 	
 }
