@@ -30,7 +30,8 @@ public class OozieDag {
 	Map<String, Set<String>> graphIn;
 	/** Sorted List of elements */
 	List<String> elementSorted;
-	private Logger logger = Logger.getLogger(getClass());
+	
+	private static Logger logger = Logger.getLogger(OozieDag.class);
 
 	/**
 	 * Default Constructor

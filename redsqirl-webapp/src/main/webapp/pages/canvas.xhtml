@@ -478,7 +478,7 @@
 	    	//<![CDATA[
 	    	  for (var i = 0; i < status.length; i++) {
 		    	  //alert(status[i][0] + " " + status[i][1] + " " + status[i][2]);
-		    	  updateActionOutputStatus(status[i][0], status[i][1], status[i][2], status[i][3]);
+		    	  updateActionOutputStatus(status[i][0], status[i][1], status[i][2], status[i][3], status[i][4]);
 	    	  }
 	    	//]]>
 	      }
@@ -708,6 +708,18 @@
 			jQuery("#formMenu\\:deselectAllMenuItem").click();
 	   	});
 	   	
+	   	shortcut.add("Ctrl+c",function() {
+            jQuery("#formMenu\\:copyMenuItem").click();
+        });
+        
+        shortcut.add("Ctrl+v",function() {
+            jQuery("#formMenu\\:pasteMenuItem").click();
+        });
+        
+        shortcut.add("Ctrl+r",function() {
+            jQuery("#formMenu\\:replaceMenuItem").click();
+        });
+	   	
 		shortcut.add("Ctrl+j",function() {
 			jQuery("#formMenu\\:oozieMenuItem").click();
 	   	});
@@ -806,6 +818,19 @@
 					<a4j:actionparam name="groupId" />
 				</a4j:jsFunction>
 			</a4j:region>
+			
+			<a4j:region>
+                <a4j:status
+                    onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+                    onerror="jQuery('#canvas-tabs').unblock();"
+                    onsuccess="jQuery('#canvas-tabs').unblock();"
+                    onstop="jQuery('#canvas-tabs').unblock();" />
+
+                <a4j:jsFunction name="updateSelectedOutputStatus" data="#{canvasBean.selectedOutputStatus}"
+                    oncomplete="updateArcStatus(data);" reRender="errorTable, msnError" >
+                    <a4j:actionparam name="select" />
+                </a4j:jsFunction>
+            </a4j:region>
 
            <a4j:region>
                 <a4j:status
@@ -924,7 +949,51 @@
 					<a4j:actionparam name="positions" />
 				</a4j:jsFunction>
 			</a4j:region>
+            
+            <a4j:region>
 
+                <a4j:status
+                    onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+                    onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
+                    onstop="jQuery('#canvas-tabs').unblock();" />
+
+                <a4j:jsFunction name="copy" action="#{canvasBean.copy}"
+                    reRender="errorTable">
+                    <a4j:actionparam name="select" />
+                </a4j:jsFunction>
+            </a4j:region>           
+            <a4j:region>
+
+                <a4j:status
+                    onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+                    onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
+                    onstop="jQuery('#canvas-tabs').unblock();" />
+
+                <a4j:jsFunction name="paste" action="#{canvasBean.paste}"
+                    oncomplete="saveAllPositions(getAllIconPositions());renameTab();"
+                    reRender="errorTable">
+                </a4j:jsFunction>
+            </a4j:region>
+            
+            <a4j:region>
+
+                <a4j:status
+                    onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+                    onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
+                    onstop="jQuery('#canvas-tabs').unblock();" />
+
+                <a4j:jsFunction name="replaceAll" action="#{canvasBean.replaceAll}"
+                    reRender="errorTable">
+                    <a4j:actionparam name="select" />
+                </a4j:jsFunction>
+            </a4j:region>   
+            <a4j:region>    
+                <a4j:jsFunction name="showReplaceAllModal"
+                    reRender="errorTable"
+                    oncomplete="#{rich:component('modalReplaceAll')}.show()">
+                </a4j:jsFunction>
+            </a4j:region> 
+            
 			<a4j:region>
 
 				<a4j:status onerror="jQuery('#canvas-tabs').unblock();" />
@@ -1249,6 +1318,20 @@
 								<h:outputText value="Ctrl+Shift+A" class="menuItemHotKey"/>
 							</rich:menuItem>
 							<rich:menuSeparator />
+                            <rich:menuItem id="copyMenuItem" submitMode="ajax" value="#{messages.label_menu_copy}" 
+                                onclick="saveAllPositions(getAllIconPositions());copy(getSelectedIconsCommaDelimited());" >
+                                <h:outputText value="Ctrl+C" class="menuItemHotKey"/>
+                            </rich:menuItem>
+                            <rich:menuItem id="pasteMenuItem" submitMode="ajax" value="#{messages.label_menu_paste}" 
+                                onclick="paste();" >
+                                <h:outputText value="Ctrl+V" class="menuItemHotKey"/>
+                            </rich:menuItem>
+                            <rich:menuSeparator />
+                            <rich:menuItem id="replaceMenuItem" submitMode="ajax" value="#{messages.label_menu_replace}" 
+                                onclick="showReplaceAllModal();" >
+                                <h:outputText value="Ctrl+R" class="menuItemHotKey"/>
+                            </rich:menuItem>
+							<rich:menuSeparator />
 							<rich:menuItem submitMode="none"
 								value="#{messages.label_menu_delete}" onclick="deleteSelected();" >
 								<h:outputText value="Del" class="menuItemHotKey"/>
@@ -1371,6 +1454,12 @@
 							<span style="cursor:pointer;">
 								<img src="../image/icons/button-save_all.gif" alt="saveall" class="shortMenuIcon" onclick="saveAll();" title="#{messages.label_menu_saveall}" />
 							</span>
+                            <span style="cursor:pointer;">
+                                <img src="../image/icons/button-copy.gif" alt="copy" class="shortMenuIcon" onclick="saveAllPositions(getAllIconPositions());copy(getSelectedIconsCommaDelimited());" title="#{messages.label_menu_copy}" />
+                            </span>
+                            <span style="cursor:pointer;">
+                                <img src="../image/icons/button-copy.gif" alt="paste" class="shortMenuIcon" onclick="paste();" title="#{messages.label_menu_paste}" />
+                            </span>
 						</div>
 					</div>
 					</h:panelGrid>
@@ -1749,7 +1838,7 @@
 	</a4j:region>
 
 	<a4j:region>
-		<rich:modalPanel id="modalChangeId" width="250" height="145"
+		<rich:modalPanel id="modalChangeId" width="300" height="235"
 			style="overflow:auto;" resizeable="true" zindex="2000">
 
 			<f:facet name="header" >Change Element Id</f:facet>
@@ -1762,6 +1851,49 @@
 
 		</rich:modalPanel>
 	</a4j:region>
+	
+	<a4j:region>
+        <rich:modalPanel id="modalReplaceAll" width="425" height="220"
+            style="overflow:auto;" resizeable="true" zindex="2000">
+
+            <f:facet name="header" >Replace All</f:facet>
+            <f:facet name="controls">
+                <h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+                    style="cursor:pointer;width:22px;"
+                    onclick="#{rich:component('modalReplaceAll')}.hide()" />
+            </f:facet>
+
+            <h:form>
+                <h:outputText value="#{messages.label_string_to_replace}"/>
+                <br />
+                <h:inputText value="#{canvasBean.rpModal.string}" size="50" />
+                <br />
+                <br />
+                <h:outputText value="#{messages.label_replace_value}"/>
+                <br />
+                <h:inputText value="#{canvasBean.rpModal.replace}" size="50" />
+                <br />
+                <br />
+                <h:outputText value="#{messages.label_replace_action_names}"/>
+                <br />
+                <h:selectBooleanCheckbox value="#{canvasBean.rpModal.replaceActionNames}">
+                    <f:selectItem itemValue="true" />
+                </h:selectBooleanCheckbox>
+                <br />
+                
+                <rich:panel style="border:none; float:right;" >
+            
+                    <a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" oncomplete="#{rich:component('modalReplaceAll')}.hide()" />
+                    <a4j:commandButton value="#{messages.button_ok}" onclick="#{rich:component('modalReplaceAll')}.hide();" styleClass="greenButton" 
+                        oncomplete="replaceAll(getSelectedIconsCommaDelimited());updateSelectedOutputStatus(getSelectedIconsCommaDelimited())" />
+            
+                </rich:panel>
+                
+                 
+            </h:form>
+
+        </rich:modalPanel>
+    </a4j:region>
 	
 	<a4j:region>
 		<rich:modalPanel id="modalPackage" width="600" height="460"

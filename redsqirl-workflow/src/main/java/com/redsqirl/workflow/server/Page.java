@@ -122,8 +122,9 @@ public class Page extends UnicastRemoteObject implements DFEPage {
 	 * @param legend
 	 * @param textTip
 	 * @param nbColumn
+	 * @throws RemoteException 
 	 */
-	private void init(String title, File image, String legend, String textTip, int nbColumn) {
+	private void init(String title, File image, String legend, String textTip, int nbColumn) throws RemoteException {
 		this.title = title;
 		this.image = image;
 		this.legend = legend;

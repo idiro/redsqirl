@@ -13,6 +13,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.idiro.utils.RandomString;
 import com.redsqirl.workflow.server.DataOutput;
 import com.redsqirl.workflow.server.Workflow;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
@@ -51,6 +52,12 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	 */
 	private Map<String,DataFlow> wf = new LinkedHashMap<String,DataFlow>();
 
+	/**
+	 * Map of workflow clones
+	 */
+	private Map<String,DataFlow> wfClones = new LinkedHashMap<String,DataFlow>();
+	
+	
 	/**
 	 * Map of datastores
 	 */
@@ -164,17 +171,65 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 		}
 		return error;
 	}
+	
+	/**
+	 * Clone a data flow
+	 * @param from
+	 * @return
+	 */
+	@Override
+	public String cloneDataFlow(String wfName){
+		String cloneId = generateNewCloneId();
+		if(wf.containsKey(wfName)){
+			try {
+				wfClones.put(cloneId, (Workflow) ((Workflow) wf.get(wfName)).clone());
+			} catch (Exception e) {
+				logger.error(e.getMessage(),e);
+			}
+		}
+		return cloneId;
+	}
+	
+	@Override
+	public void eraseClone(String cloneId){
+		wfClones.remove(cloneId);
+	}
 
+	protected String generateNewCloneId(){
+		boolean found = false;
+		String newId = null;
+		int length = 10;
+
+		while (newId == null) {
+			newId = RandomString.getRandomNameStartByLetter(length);
+			Iterator<String> itA = wfClones.keySet().iterator();
+			found = false;
+			while (itA.hasNext() && !found) {
+				found = itA.next().equals(newId);
+			}
+			if (found) {
+				newId = null;
+			}
+
+		}
+		return newId;
+	}
+	
 	/**
 	 * Copy a subset of a workflow into another.
 	 * @param from
 	 * @param elements
 	 * @param to
 	 */
-	public void copy(DataFlow from, List<String> elements, DataFlow to){
-		if(from != null && elements != null && !elements.isEmpty() && to != null){
+	public void copy(String cloneId, List<String> elements, String wfName){
+		if(wfClones.containsKey(cloneId) && 
+				elements != null && 
+				!elements.isEmpty() && 
+				wf.containsKey(wfName)){
 			try {
-				Workflow cloneFrom = (Workflow) ((Workflow) from).clone();
+				Workflow from = (Workflow) wfClones.get(cloneId);
+				DataFlow to  = wf.get(wfName);
+				Workflow cloneFrom = (Workflow) from.clone();
 				Iterator<DataFlowElement> cloneElIt = cloneFrom.getElement().iterator();
 				List<String> toDelete = new LinkedList<String>();
 				while(cloneElIt.hasNext()){
@@ -182,9 +237,17 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 					if(!elements.contains(curEl.getComponentId())){
 						toDelete.add(curEl.getComponentId());
 					}else{
-						String newName = to.generateNewId();
-						cloneFrom.changeElementId(curEl.getComponentId(),newName);
-						cloneFrom.replaceInAllElements(cloneFrom.getComponentIds(), curEl.getComponentId(), newName);
+						String newName = null;
+						while(newName == null){
+							newName = to.generateNewId();
+							logger.info("new name: "+newName+" in "+ to.getComponentIds()+ " for "+cloneFrom.getComponentIds());
+							if(cloneFrom.getElement(newName) != null){
+								newName = null;
+							}
+						}
+						String oldName = curEl.getComponentId();
+						cloneFrom.changeElementId(oldName,newName);
+						cloneFrom.replaceInAllElements(cloneFrom.getComponentIds(), oldName, newName);
 						curEl.setPosition(curEl.getX()+75, curEl.getY()+75);
 					}
 				}

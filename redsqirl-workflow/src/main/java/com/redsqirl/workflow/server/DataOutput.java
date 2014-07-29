@@ -50,11 +50,6 @@ DFEOutput {
 	protected static Logger statLogger = Logger.getLogger(DataOutput.class);
 
 	/**
-	 * The logger.
-	 */
-	protected Logger logger = Logger.getLogger(this.getClass());
-
-	/**
 	 * Saving state
 	 */
 	protected SavingState savingState = SavingState.TEMPORARY;
@@ -182,14 +177,14 @@ DFEOutput {
 	 */
 	@Override
 	public void write(Document doc, Element parent) throws RemoteException {
-		logger.debug("into write...");
+		statLogger.debug("into write...");
 
-		logger.debug("state " + savingState.toString());
+		statLogger.debug("state " + savingState.toString());
 		Element state = doc.createElement("state");
 		state.appendChild(doc.createTextNode(savingState.toString()));
 		parent.appendChild(state);
 
-		logger.debug("path: " + path);
+		statLogger.debug("path: " + path);
 		Element pathE = doc.createElement("path");
 		if(path != null){
 			pathE.appendChild(doc.createTextNode(path));
@@ -203,7 +198,7 @@ DFEOutput {
 		while (itStr.hasNext()) {
 			String cur = itStr.next();
 			if (cur != null && dataProperty.get(cur) != null) {
-				logger.debug("property " + cur + "," + dataProperty.get(cur));
+				statLogger.debug("property " + cur + "," + dataProperty.get(cur));
 				Element property = doc.createElement("property");
 
 				Element key = doc.createElement("key");
@@ -225,7 +220,7 @@ DFEOutput {
 			itStr = fields.getFieldNames().iterator();
 			while (itStr.hasNext()) {
 				String cur = itStr.next();
-				logger.debug("field " + cur + "," + fields.getFieldType(cur));
+				statLogger.debug("field " + cur + "," + fields.getFieldType(cur));
 				Element feildE = doc.createElement("field");
 
 				Element name = doc.createElement("name");
@@ -253,24 +248,24 @@ DFEOutput {
 
 		String savStateStr = parent.getElementsByTagName("state").item(0)
 				.getChildNodes().item(0).getNodeValue();
-		logger.debug("Saving state: " + savStateStr);
+		statLogger.debug("Saving state: " + savStateStr);
 		savingState = SavingState.valueOf(savStateStr);
 
 		path = parent.getElementsByTagName("path").item(0).getChildNodes()
 				.item(0).getNodeValue();
-		logger.debug("Path: " + path);
+		statLogger.debug("Path: " + path);
 		if (path.equals("null")) {
 			path = null;
 		}
 
-		logger.debug("properties");
+		statLogger.debug("properties");
 		NodeList property = parent.getElementsByTagName("properties").item(0)
 				.getChildNodes();
 		for (int i = 0; i < property.getLength(); ++i) {
 			String key = ((Element) property.item(i))
 					.getElementsByTagName("key").item(0).getChildNodes()
 					.item(0).getNodeValue();
-			logger.debug("key: " + key);
+			statLogger.debug("key: " + key);
 			String value = null;
 			if (((Element) property.item(i)).getElementsByTagName("value")
 					.item(0).getChildNodes().item(0) != null) {
@@ -278,11 +273,11 @@ DFEOutput {
 						.getElementsByTagName("value").item(0).getChildNodes()
 						.item(0).getNodeValue();
 			}
-			logger.debug("value: " + value);
+			statLogger.debug("value: " + value);
 			addProperty(key, value);
 		}
 
-		logger.debug("fields");
+		statLogger.debug("fields");
 		fields = new OrderedFieldList();
 		NodeList fieldEl = parent.getElementsByTagName("fields").item(0)
 				.getChildNodes();
@@ -290,11 +285,11 @@ DFEOutput {
 			String name = ((Element) fieldEl.item(i))
 					.getElementsByTagName("name").item(0).getChildNodes()
 					.item(0).getNodeValue();
-			logger.debug("name: " + name);
+			statLogger.debug("name: " + name);
 			String type = ((Element) fieldEl.item(i))
 					.getElementsByTagName("type").item(0).getChildNodes()
 					.item(0).getNodeValue();
-			logger.debug("type: " + type);
+			statLogger.debug("type: " + type);
 			fields.addField(name, FieldType.valueOf(type));
 		}
 
@@ -459,7 +454,7 @@ DFEOutput {
 			}
 			prop.clear();
 		} catch (FileNotFoundException e) {
-			logger.debug("No file found initialize one");
+			statLogger.debug("No file found initialize one");
 			prop.clear();
 			prop.put(getTypeName(), defaultCol);
 			try {
@@ -468,10 +463,10 @@ DFEOutput {
 								.getPathuserdfeoutputcolour())),
 								"Initialise file with " + getTypeName());
 			} catch (IOException e1) {
-				logger.error("Fail to save colour preference");
+				statLogger.error("Fail to save colour preference");
 			}
 		} catch (Exception e) {
-			logger.error("Error when loading "
+			statLogger.error("Error when loading "
 					+ WorkflowPrefManager.getPathuserdfeoutputcolour() + " "
 					+ e.getMessage());
 		}
@@ -496,7 +491,7 @@ DFEOutput {
 									+ getTypeName() + " to the file");
 			prop.clear();
 		} catch (FileNotFoundException e) {
-			logger.debug("No file found initialize one");
+			statLogger.debug("No file found initialize one");
 			prop.clear();
 			prop.put(getTypeName(), colour);
 			try {
@@ -505,10 +500,10 @@ DFEOutput {
 								.getPathuserdfeoutputcolour())),
 								"Initialise file with " + getTypeName());
 			} catch (IOException e1) {
-				logger.error("Fail to save colour preference");
+				statLogger.error("Fail to save colour preference");
 			}
 		} catch (Exception e) {
-			logger.error("Error when loading "
+			statLogger.error("Error when loading "
 					+ WorkflowPrefManager.getPathuserdfeoutputcolour() + " "
 					+ e.getMessage());
 		}
@@ -539,7 +534,7 @@ DFEOutput {
 		}
 		/*
 		 * + fl.getfieldsNames()); } catch (RemoteException e) { }
-		 * logger.debug(dataProperty + " " + props); logger.info(dataProperty +
+		 * statLogger.debug(dataProperty + " " + props); logger.info(dataProperty +
 		 * " " + props);
 		 */
 		return this.path.equals(path) && fields.equals(fl)

@@ -163,6 +163,10 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 */
 	private Map<String,FileSystemBean> datastores;
 
+	/**
+	 * Set the comment of an element in change id
+	 */
+	private String elementComment;
 
 	public CanvasModal() throws RemoteException{
 		DataFlowInterface dfi = getworkFlowInterface();
@@ -221,7 +225,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 					.getRequestParameterMap().get("paramPageNb"));
 		} catch (NumberFormatException e) {
 			pageNb = 0;
-			logger.error(e.getMessage());
+			logger.warn("Page nb issue: "+e.getMessage(),e);
 		}
 
 		try {
@@ -247,6 +251,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 		}else{
 			elementId = getComponentId();
 			logger.info("Element id: "+elementId);
+			elementComment = dfe.getComment();
 			if (loadMainWindow) {
 				logger.info("load Main window");
 				try {
@@ -876,6 +881,20 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 	public void setPageTextTip(String pageTextTip) {
 		this.pageTextTip = pageTextTip;
+	}
+
+	/**
+	 * @return the elementComment
+	 */
+	public String getElementComment() {
+		return elementComment;
+	}
+
+	/**
+	 * @param elementComment the elementComment to set
+	 */
+	public void setElementComment(String elementComment) {
+		this.elementComment = elementComment;
 	}
 
 }

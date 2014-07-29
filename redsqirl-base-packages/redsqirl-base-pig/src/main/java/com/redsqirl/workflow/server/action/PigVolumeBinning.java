@@ -4,9 +4,10 @@ package com.redsqirl.workflow.server.action;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 
+import org.apache.log4j.Logger;
+
 import com.redsqirl.workflow.server.InputInteraction;
 import com.redsqirl.workflow.server.Page;
-import com.redsqirl.workflow.server.action.PigTypeConvert;
 import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
@@ -19,6 +20,8 @@ public class PigVolumeBinning extends PigBinning{
 	 */
 	private static final long serialVersionUID = -4263867378140677757L;
 
+	private static Logger logger = Logger.getLogger(PigVolumeBinning.class);
+	
 	private Page page2;
 	
 	private InputInteraction numberBinInt;

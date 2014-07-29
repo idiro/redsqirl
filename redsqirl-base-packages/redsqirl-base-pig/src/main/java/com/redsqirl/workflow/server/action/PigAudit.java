@@ -10,6 +10,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.DataProperty;
@@ -32,6 +34,8 @@ public class PigAudit extends DataflowAction {
 	 */
 	private static final long serialVersionUID = 4652143460618748778L;
 
+	private static Logger logger = Logger.getLogger(PigAudit.class);
+	
 	/**
 	 * Names of different elements
 	 */

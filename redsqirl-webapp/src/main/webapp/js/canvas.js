@@ -2243,7 +2243,7 @@ function updateAllOutputStatus() {
 	}
 }
 
-function updateActionOutputStatus(groupId, status, fileExists, tooltip) {
+function updateActionOutputStatus(groupId, status, fileExists, tooltip, noError) {
 	
 	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
 	
@@ -2253,6 +2253,29 @@ function updateActionOutputStatus(groupId, status, fileExists, tooltip) {
 	group.getChildren()[7].setStroke(getColorOutputExistence(fileExists));
 	
 	group.tooltipObj = tooltip;
+	
+	if( noError.toUpperCase() === "FALSE" ){
+	   //Add error icon
+	   var errorImg = new Image();
+	   errorImg.src = '../image/icons/li_msg_error.gif';
+        
+        var errorK = new Kinetic.Image({
+          id: 'error_img',
+          x: 64,
+          y: 61,
+          image: errorImg,
+          width: 13,
+          height: 13
+        });
+        
+        group.add(errorK);
+	}else{
+	   jQuery.each(group.getChildren(), function(index, value) {
+	        if(value.getId() === 'error_img'){
+	           group.getChildren()[index].remove();
+	        }
+       });
+	}
 	
 	polygonLayer.draw();
 

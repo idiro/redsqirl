@@ -6,6 +6,8 @@ import java.rmi.RemoteException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.redsqirl.workflow.server.DataProperty;
 import com.redsqirl.workflow.server.DataflowAction;
 import com.redsqirl.workflow.server.Page;
@@ -22,6 +24,9 @@ public class TestAction extends DataflowAction{
 	 * 
 	 */
 	private static final long serialVersionUID = 787818657954622484L;
+	
+	private static Logger logger = Logger.getLogger(TestAction.class);
+	
 	protected static boolean init = false;
 	protected static Map<String, DFELinkProperty> input;
 	

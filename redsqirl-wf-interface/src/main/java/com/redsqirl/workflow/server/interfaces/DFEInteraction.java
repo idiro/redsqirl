@@ -45,7 +45,7 @@ public interface DFEInteraction extends Remote {
 	 * @param newName
 	 * @throws RemoteException
 	 */
-	public void replaceOutputInTree(String oldName, String newName) throws RemoteException;
+	public void replaceInTree(String oldName, String newName) throws RemoteException;
 	
 	/**
 	 * Get the Display Type of the interaction
@@ -137,5 +137,21 @@ public interface DFEInteraction extends Remote {
 	 * @throws RemoteException
 	 */
 	public String getTextTip()throws RemoteException;
+	
+	/**
+	 * True if the interaction cannot be replaced
+	 *  
+	 * @return
+	 * @throws RemoteException
+	 */
+	public boolean isReplaceDisable()throws RemoteException;
+	
+	/**
+	 * 
+	 * @param replaceDisable
+	 * @throws RemoteException
+	 */
+	public void setReplaceDisable(boolean replaceDisable) throws RemoteException;
+	
 
 }

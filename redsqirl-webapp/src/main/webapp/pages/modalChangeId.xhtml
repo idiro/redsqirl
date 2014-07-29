@@ -14,7 +14,7 @@
         <a4j:region>
 
             <a4j:jsFunction name="changeCurrentElementId"
-                oncomplete="currentChangeIdGroup = '#{canvasModalBean.idGroup}';changeIdElement(currentChangeIdGroup,'#{canvasModalBean.elementId}');">
+                oncomplete="currentChangeIdGroup = '#{canvasModalBean.idGroup}';changeIdElement(currentChangeIdGroup,'#{canvasModalBean.elementId}','#{canvasModalBean.elementComment}');">
             </a4j:jsFunction>
             
             <a4j:jsFunction name="changeIdElement"
@@ -23,6 +23,7 @@
                 reRender="msnError,errorTable">
                 <a4j:actionparam name="groupId" />
                 <a4j:actionparam name="elementId" />
+                <a4j:actionparam name="comment" />
             </a4j:jsFunction>
             
             <a4j:jsFunction name="changeModalTitle"
@@ -33,6 +34,11 @@
 		<h:outputText value="Name" />
 		<h:inputText label="Name" value="#{canvasModalBean.elementId}" size="16" style="padding-left: 3px;" styleClass="interModal" maxlength="15" id="newIdElement" 
 			onkeypress="return enableEnterKey(event, 'changeIdElementBt');" onkeyup="nospaces(this);" />
+		<br/>
+		<h:outputText value="Comment" />
+        <h:inputTextarea label="Comment" value="#{canvasModalBean.elementComment}" style="padding-left: 3px;height:50px;width:250px;"
+            onkeypress="return enableEnterKey(event, 'changeIdElementBt');" />
+	   
 	
 		<h:panelGrid columns="1">
 			<a4j:commandButton id="changeIdElementBt" styleClass="greenButton" reRender="msnError, errorTable,newIdElement"

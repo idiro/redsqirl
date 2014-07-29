@@ -79,6 +79,11 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 
 	/**Interaction Checker*/
 	protected DFEInteractionChecker checker = null;
+	
+	/**
+	 * Enable replacement by default
+	 */
+	protected boolean replaceDisable = false;
 
 	/**
 	 * Unique constructor
@@ -240,7 +245,17 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	}
 	
 
+	
+	
 	@Override
+	public final void replaceInTree(String oldName, String newName) throws RemoteException{
+		if(!isReplaceDisable()){
+			logger.info("replace "+oldName+" by "+newName);
+			replaceOutputInTree(oldName, newName);
+			logger.info(getTree().toString());
+		}
+	}
+	
 	public void replaceOutputInTree(String oldName, String newName)
 			throws RemoteException {
 		replaceOutputInTree(getTree(),oldName,newName);
@@ -523,6 +538,16 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	@Override
 	public String getTextTip() throws RemoteException {
 		return textTip;
+	}
+
+	@Override
+	public boolean isReplaceDisable() throws RemoteException {
+		return replaceDisable;
+	}
+
+	@Override
+	public void setReplaceDisable(boolean replaceDisable) throws RemoteException {
+		this.replaceDisable = replaceDisable;
 	}
 
 

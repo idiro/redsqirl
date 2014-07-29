@@ -12,6 +12,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.DataProperty;
@@ -35,6 +37,9 @@ public class Convert extends DataflowAction {
 	 * 
 	 */
 	private static final long serialVersionUID = 6342079587552236953L;
+	
+	private static Logger logger = Logger.getLogger(Convert.class);
+	
 	/**
 	 * Map of inputs
 	 */

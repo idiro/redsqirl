@@ -5,11 +5,11 @@ import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.AppendListInteraction;
 import com.redsqirl.workflow.server.Page;
-import com.redsqirl.workflow.server.action.PigElement;
-import com.redsqirl.workflow.server.action.PigTableTransposeInteraction;
 import com.redsqirl.workflow.server.datatype.MapRedTextType;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
@@ -27,6 +27,9 @@ public class PigTranspose extends PigElement {
 	 * 
 	 */
 	private static final long serialVersionUID = 600343170359664918L;
+	
+	private static Logger logger = Logger.getLogger(PigTranspose.class);
+	
 	/**
 	 * Key fields
 	 */
