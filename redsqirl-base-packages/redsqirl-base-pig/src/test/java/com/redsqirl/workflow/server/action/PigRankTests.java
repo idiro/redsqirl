@@ -3,7 +3,6 @@ package com.redsqirl.workflow.server.action;
 import static org.junit.Assert.assertTrue;
 
 import java.rmi.RemoteException;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -12,9 +11,6 @@ import org.junit.Test;
 
 import com.redsqirl.workflow.server.OozieManager;
 import com.redsqirl.workflow.server.Workflow;
-import com.redsqirl.workflow.server.action.PigBinarySource;
-import com.redsqirl.workflow.server.action.PigElement;
-import com.redsqirl.workflow.server.action.PigSelect;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
@@ -89,7 +85,7 @@ public class PigRankTests {
 
 		pig.orderTypeInt.setValue(pig.orderTypeInt.getPossibleValues().get(0));
 		
-		pig.rank.setValues(vals);
+		pig.rank.setValue(rnk);
 		
 		pig.getFilterInt().update();
 		

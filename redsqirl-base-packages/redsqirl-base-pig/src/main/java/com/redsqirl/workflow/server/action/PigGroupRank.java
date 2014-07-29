@@ -4,6 +4,8 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.ListInteraction;
 import com.redsqirl.workflow.server.Page;
@@ -18,6 +20,8 @@ public class PigGroupRank extends PigElement {
 	 */
 	private static final long serialVersionUID = -5312828268150978644L;
 
+	private static Logger logger = Logger.getLogger(PigGroupRank.class);
+	
 	private Page page1, page2, page3;
 
 	public ListInteraction rank;
