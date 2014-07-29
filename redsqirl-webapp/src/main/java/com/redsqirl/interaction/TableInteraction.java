@@ -37,7 +37,12 @@ public class TableInteraction extends CanvasModalInteraction{
 	 * The list of rows of the grid.
 	 */
 	private SelectableTable tableGrid;
-	
+
+	private SelectableTable allTableGrid;
+	private List<SelectableTable> listTableGrid;
+
+	private String selectedTab;
+
 
 	/**
 	 * The type of the column "textField", "comboBox" or "editor"
@@ -47,28 +52,28 @@ public class TableInteraction extends CanvasModalInteraction{
 	 * The list of value possible for each field if any
 	 */
 	private Map<String,List<SelectItem>> tableConstraints;
-		
+
 	/**
 	 * The list of editors.
 	 */
 	private Map<String,EditorFromTree> tableEditors;
-	
-	
+
+
 	/**
 	 * The generator currently selected.
 	 */
 	private String selectedGenerator;
-	
+
 	/**
 	 * The list of possible generation 
 	 */
 	private List<SelectItem> tableGeneratorMenu;
-	
+
 	/**
 	 * The rows to insert in case of generation
 	 */
 	private Map<String,List<Map<String,String>>> tableGeneratorRowToInsert;
-	
+
 
 	public TableInteraction(DFEInteraction dfeInter) throws RemoteException {
 		super(dfeInter);
@@ -115,7 +120,7 @@ public class TableInteraction extends CanvasModalInteraction{
 								colValue = treeFeat
 										.getFirstChild().getHead();
 							}catch(NullPointerException e){}
-							
+
 							t.put(treeFeat.getHead(), colValue);
 						}
 						tableGeneratorRowToInsert.get(menuName).add(t);
@@ -125,21 +130,21 @@ public class TableInteraction extends CanvasModalInteraction{
 					selectedGenerator = tableGeneratorMenu.get(0).getLabel();
 				}
 			}
-			
+
 			if(isGeneratorMenuInt){
 				Collections.sort(tableGeneratorMenu, new Comparator<SelectItem>(){
 					@Override
 					public int compare(SelectItem arg0, SelectItem arg1) {
 						return Integer.valueOf(arg0.getLabel()).compareTo(Integer.valueOf(arg1.getLabel()));
 					}
-					
+
 				});
 			}else{
 				Collections.sort(tableGeneratorMenu, new SelectItemComparator());
 			}
-			
+
 		}
-		
+
 		tableEditors = new LinkedHashMap<String, EditorFromTree>();
 		LinkedList<String> tableColumns = new LinkedList<String>();
 		columnType = new LinkedHashMap<String, String>();
@@ -283,9 +288,9 @@ public class TableInteraction extends CanvasModalInteraction{
 			unchanged = false;
 		}
 	}
-	
-	
-	
+
+
+
 	/**
 	 * tableInteractionAddNewLine
 	 * 
@@ -310,10 +315,8 @@ public class TableInteraction extends CanvasModalInteraction{
 	public void generateLines() {
 		logger.info("tableInteractionGenerationLines: "+selectedGenerator);
 		if(tableGeneratorRowToInsert.containsKey(selectedGenerator)){
-			logger.info("Number of row to add: "+tableGeneratorRowToInsert.get(
-					selectedGenerator).size());
-			for (Map<String, String> l : tableGeneratorRowToInsert.get(
-					selectedGenerator)) {
+			logger.info("Number of row to add: "+tableGeneratorRowToInsert.get(selectedGenerator).size());
+			for (Map<String, String> l : tableGeneratorRowToInsert.get(selectedGenerator)) {
 				String[] value = new String[l.size()];
 				for (String column : l.keySet()) {
 					value[tableGrid.columnIdsIndexOf(column)] = l.get(column);
@@ -324,6 +327,27 @@ public class TableInteraction extends CanvasModalInteraction{
 			logger.info(tableGeneratorMenu.toString());
 			logger.info(tableGeneratorRowToInsert.toString());
 		}
+	}
+
+	public SelectableTable generateLinesTableInteractionPanel(SelectableTable tg, String generetor){
+		if(tableGeneratorRowToInsert.containsKey(generetor)){
+			logger.info("Number of row to add: "+tableGeneratorRowToInsert.get(generetor).size());
+			int index = 0;
+			for (Map<String, String> l : tableGeneratorRowToInsert.get(generetor)) {
+				String[] value = new String[l.size()];
+				for (String column : l.keySet()) {
+					if(tg.columnIdsIndexOf(WordUtils.capitalizeFully(column.replace("_", " "))) >= 0){
+						value[tg.columnIdsIndexOf(WordUtils.capitalizeFully(column.replace("_", " ")))] = l.get(column);
+					}
+				}
+				SelectableRow s = new SelectableRow(value);
+				s.setNameTabHidden(index+1 + generetor);
+				s.setNameTab(WordUtils.capitalizeFully(generetor));
+				tg.add(s);
+				index++;
+			}
+		}
+		return tg;
 	}
 
 	/**
@@ -338,7 +362,53 @@ public class TableInteraction extends CanvasModalInteraction{
 		logger.info("tableInteractionDeleteLine");
 		tableGrid.removeAllSelected();
 	}
+
+	public void mountTableInteractionPanel() {
+
+		listTableGrid = new ArrayList<SelectableTable>();
+		allTableGrid = new SelectableTable((LinkedList<String>) getTableGridColumns());
+		allTableGrid.setName("All");
+
+		for (SelectItem sel : tableGeneratorMenu) {
+			SelectableTable tg = new SelectableTable((LinkedList<String>) getTableGridColumns());
+			tg = generateLinesTableInteractionPanel(tg, sel.getLabel());
+			tg.setName(sel.getLabel());
+			//allTableGrid = generateLinesTableInteractionPanel(allTableGrid, sel.getLabel());
+			listTableGrid.add(tg);
+		}
+
+	}
+
+	public void changeTabTableInteraction(){
+		for (SelectableTable selectableTable : listTableGrid) {
+
+			for (SelectableRow selectableRow : selectableTable.getRows()) {
+				if(selectableRow.isSelected() && !checkIfAlreadyExist(selectableRow.getNameTabHidden())){
+					allTableGrid.add(selectableRow);
+				}else if(!selectableRow.isSelected() && checkIfAlreadyExist(selectableRow.getNameTabHidden())){
+					allTableGrid.getRows().remove(selectableRow);
+				}
+			}
+		}
+		setSelectedTab("All");
+	}
+
+	public boolean checkIfAlreadyExist(String nameTabHidden){
+		for (SelectableRow selectableRow : allTableGrid.getRows()) {
+			if(selectableRow.getNameTabHidden().equals(nameTabHidden)){
+				return true;
+			}
+		}
+		return false;
+	}
 	
+	public void applyTabTableInteractionPopUp(){
+		for (SelectableRow selectableRow : allTableGrid.getRows()) {
+			selectableRow.setSelected(true);
+			getTableGrid().add(selectableRow);
+		}
+	}
+
 
 	/**
 	 * @return the tableConstraints
@@ -423,6 +493,30 @@ public class TableInteraction extends CanvasModalInteraction{
 	 */
 	public final SelectableTable getTableGrid() {
 		return tableGrid;
+	}
+
+	public List<SelectableTable> getListTableGrid() {
+		return listTableGrid;
+	}
+
+	public void setListTableGrid(List<SelectableTable> listTableGrid) {
+		this.listTableGrid = listTableGrid;
+	}
+
+	public SelectableTable getAllTableGrid() {
+		return allTableGrid;
+	}
+
+	public void setAllTableGrid(SelectableTable allTableGrid) {
+		this.allTableGrid = allTableGrid;
+	}
+
+	public String getSelectedTab() {
+		return selectedTab;
+	}
+
+	public void setSelectedTab(String selectedTab) {
+		this.selectedTab = selectedTab;
 	}
 
 }
