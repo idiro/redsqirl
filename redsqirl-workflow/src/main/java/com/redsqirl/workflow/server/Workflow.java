@@ -99,12 +99,18 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 * The current Action in the workflow
 	 */
 	protected LinkedList<DataFlowElement> element = new LinkedList<DataFlowElement>();
-	/** Name of the workflow */
-	protected String name,
-	/** OozieJobId */
-	oozieJobId;
+	
+	protected String
+		/** Name of the workflow */
+		name,
+		/** Comment of the workflow */
+		comment = "",
+		/** OozieJobId */
+		oozieJobId;
 
 	protected boolean saved = false;
+	
+	
 
 	/**
 	 * Default Constructor
@@ -660,6 +666,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						String newPath = curOut.generatePathStr(
 								System.getProperty("user.name"),
 								cur.getComponentId(), curOutStr);
+						logger.info("New path for "+cur.getComponentId()+"("+curOut.getPath()+"): "+newPath);
 						if(copy == null){
 							curOut.setPath(newPath);
 						}else if (copy) {
@@ -725,6 +732,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			Document doc = docBuilder.newDocument();
 			Element rootElement = doc.createElement("workflow");
 			doc.appendChild(rootElement);
+			
 
 			Element jobId = doc.createElement("job-id");
 			String jobIdContent = oozieJobId;
@@ -734,6 +742,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			logger.info("Job Id: " + jobIdContent);
 			jobId.appendChild(doc.createTextNode(jobIdContent));
 			rootElement.appendChild(jobId);
+			
+			Element wfComment = doc.createElement("wfcomment");
+			wfComment.appendChild(doc.createTextNode(comment));
+			rootElement.appendChild(wfComment);
+			
 
 			Iterator<DataFlowElement> it = element.iterator();
 			while (it.hasNext() && error == null) {
@@ -753,6 +766,12 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				attrName.setValue(cur.getName());
 				component.setAttributeNode(attrName);
 
+				// Comment
+				logger.debug("add positions...");
+				Element comment = doc.createElement("comment");
+				comment.appendChild(doc.createTextNode(cur.getComment()));
+				component.appendChild(comment);
+				
 				// Position
 				logger.debug("add positions...");
 				Element position = doc.createElement("position");
@@ -1065,6 +1084,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				}
 			} catch (Exception e) {
 			}
+			
+			comment = "";
+			try {
+				comment = doc.getElementsByTagName("wfcomment").item(0)
+				.getChildNodes().item(0).getNodeValue();
+			} catch (Exception e) {
+			}
 
 			// Needs to do two reading,
 			// for the element and there id
@@ -1078,9 +1104,20 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 				String name = compCur.getAttributes().getNamedItem("name")
 						.getNodeValue();
+				
+				
+				
 				String id = compCur.getAttributes().getNamedItem("id")
 						.getNodeValue();
-
+				
+				String compComment = "";
+				try {
+					compComment = ((Element) compCur)
+					.getElementsByTagName("comment").item(0)
+					.getChildNodes().item(0).getNodeValue();
+				} catch (Exception e) {
+				}
+				
 				int x = Integer.valueOf(((Element) (((Element) compCur)
 						.getElementsByTagName("position").item(0)))
 						.getElementsByTagName("x").item(0).getChildNodes()
@@ -1093,6 +1130,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						+ x + "," + y + ")");
 				addElement(name, id);
 				getElement(id).setPosition(x, y);
+				getElement(id).setComment(compComment);
 				error = getElement(id).readValuesXml(
 						((Element) compCur)
 								.getElementsByTagName("interactions").item(0));
@@ -1417,6 +1455,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	
 	@Override
 	public void replaceInAllElements(List<String> componentIds, String oldStr, String newStr)  throws RemoteException{
+		logger.info("replace "+oldStr+" by "+newStr+" in "+componentIds);
 		if(componentIds != null){
 			Iterator<String> it = componentIds.iterator();
 			while(it.hasNext()){
@@ -1971,6 +2010,22 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			}
 		}
 		return ans;
+	}
+
+	/**
+	 * @return the comment
+	 */
+	@Override
+	public final String getComment() {
+		return comment;
+	}
+
+	/**
+	 * @param comment the comment to set
+	 */
+	@Override
+	public final void setComment(String comment) {
+		this.comment = comment;
 	}
 
 }

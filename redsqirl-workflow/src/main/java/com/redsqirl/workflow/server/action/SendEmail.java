@@ -7,14 +7,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.redsqirl.workflow.server.DataProperty;
 import com.redsqirl.workflow.server.DataflowAction;
 import com.redsqirl.workflow.server.EditorInteraction;
 import com.redsqirl.workflow.server.InputInteraction;
 import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
-import com.redsqirl.workflow.server.datatype.HiveTypePartition;
-import com.redsqirl.workflow.server.datatype.MapRedTextType;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
@@ -27,6 +27,8 @@ public class SendEmail extends DataflowAction {
 	 * 
 	 */
 	private static final long serialVersionUID = -5931579127027856445L;
+	
+	private static Logger logger = Logger.getLogger(SendEmail.class);
 
 	public static final String key_output = "", 
 			/**Input Key*/

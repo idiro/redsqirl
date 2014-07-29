@@ -2,6 +2,8 @@ package com.redsqirl.workflow.server.action;
 
 import java.rmi.RemoteException;
 
+import org.apache.log4j.Logger;
+
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.ListInteraction;
@@ -18,6 +20,8 @@ public abstract class PigBinning extends PigElement{
 	 */
 	private static final long serialVersionUID = 3985779292599023996L;
 
+	private static Logger logger = Logger.getLogger(PigBinning.class);
+	
 	public static final String key_output_count_bin = "bin_audit";
 	
 	protected Page page1;

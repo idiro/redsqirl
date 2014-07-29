@@ -61,7 +61,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 	/**
 	 * The logger.
 	 */
-	protected Logger logger = Logger.getLogger(this.getClass());
+	protected static Logger logger = Logger.getLogger(DataStore.class);
 
 	public static final String key_permission = "permission",
 			/** Owner key */

@@ -55,6 +55,8 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	 */
 	protected String componentId;
 
+	protected String comment = "";
+	
 	/**
 	 * The position of the component in the workflow
 	 */
@@ -82,7 +84,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	 */
 	protected Map<String, DFEOutput> output = new LinkedHashMap<String, DFEOutput>();
 
-	protected Logger logger = Logger.getLogger(getClass());
+	//private static Logger logger = Logger.getLogger(.class);
 
 	/**
 	 * Constructor that takes a type of
@@ -133,8 +135,8 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 							+ relativePath);
 		}
 		String absolutePath = f.getAbsoluteFile().getAbsolutePath();
-		logger.debug("help absolutePath : "+absolutePath);
-		logger.debug("help relPath : "+relativePath);
+		waLogger.debug("help absolutePath : "+absolutePath);
+		waLogger.debug("help relPath : "+relativePath);
 		
 		return absolutePath;
 	}
@@ -163,8 +165,8 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 							+ relativePath);
 		}
 		String absolutePath = f.getAbsoluteFile().getAbsolutePath();
-		logger.debug("image absolutePath : "+absolutePath);
-		logger.debug("image relPath : "+relativePath);
+		waLogger.debug("image absolutePath : "+absolutePath);
+		waLogger.debug("image relPath : "+relativePath);
 		return absolutePath;
 	}
 
@@ -228,7 +230,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		if (ans != null && (ans.isEmpty() || ans.equalsIgnoreCase("null"))) {
 			ans = null;
 		}
-		logger.debug("Check Entry: " + ans);
+		waLogger.debug("Check Entry: " + ans);
 		return ans;
 	}
 
@@ -269,7 +271,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			++pageNb;
 			try {
 				DFEPage page = it.next();
-				// logger.info("page title : "+page.getTitle());
+				// waLogger.info("page title : "+page.getTitle());
 				error = page.checkPage();
 			} catch (Exception e) {
 				error = e.getMessage();
@@ -354,7 +356,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		for (int i = 0; i < nl.getLength(); ++i) {
 			Node cur = nl.item(i);
 			String id = cur.getNodeName();
-			logger.debug(componentId + ": loads " + id + "...");
+			waLogger.debug(componentId + ": loads " + id + "...");
 			try {
 				DFEInteraction intCur = getInteraction(id);
 				if (intCur != null) {
@@ -388,7 +390,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			Iterator<DFEInteraction> itInter = getInteractions().iterator();
 			while (itInter.hasNext()) {
 				DFEInteraction interCur = itInter.next();
-				logger.info("action name to write xml: " + interCur.getId());
+				waLogger.info("action name to write xml: " + interCur.getId());
 				Element inter = doc.createElement(interCur.getId());
 				interCur.writeXml(doc, inter);
 				parent.appendChild(inter);
@@ -403,7 +405,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 					new Object[] { e.getMessage() });
 		}
 
-		logger.info("writeValuesXml error: " + error);
+		waLogger.info("writeValuesXml error: " + error);
 
 		if (error != null) {
 			waLogger.error(error);
@@ -417,10 +419,12 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		try {
 			Iterator<DFEInteraction> itInter = getInteractions().iterator();
 			while (itInter.hasNext()) {
-				itInter.next().replaceOutputInTree(oldStr, newStr);
+				DFEInteraction interCur = itInter.next();
+				waLogger.info("replace "+oldStr+" by "+newStr+" in "+ interCur.getName());
+				interCur.replaceInTree(oldStr, newStr);
 			}
 		} catch (Exception e) {
-			logger.error(e.getMessage(),e);
+			waLogger.error(e.getMessage(),e);
 		}
 	}
 
@@ -442,16 +446,16 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 
 					update(interaction);
 				} catch (Exception e) {
-					logger.error(e);
+					waLogger.error(e);
 					for (int i = 0; i < 6 && i < e.getStackTrace().length; ++i) {
-						logger.error(e.getStackTrace()[i].toString());
+						waLogger.error(e.getStackTrace()[i].toString());
 					}
-					logger.error("Error when updating the element "
+					waLogger.error("Error when updating the element "
 							+ interaction.getId());
 				}
 			}
 		} catch (Exception e) {
-			logger.error("The page number " + pageNb + " does not exist");
+			waLogger.error("The page number " + pageNb + " does not exist");
 		}
 		Log.flushAllLogs();
 	}
@@ -757,7 +761,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			found = it.next().getInteraction(id);
 		}
 		if (found == null) {
-			logger.info("Interaction '" + id + "' not found");
+			waLogger.info("Interaction '" + id + "' not found");
 		}
 		return found;
 	}
@@ -945,7 +949,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	 * @return the inputComponent
 	 */
 	public Map<String, List<DataFlowElement>> getInputComponent() {
-		// logger.debug("Input components: "+inputComponent.toString());
+		// waLogger.debug("Input components: "+inputComponent.toString());
 		return inputComponent;
 	}
 
@@ -962,7 +966,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	 * @return the outputComponent
 	 */
 	public Map<String, List<DataFlowElement>> getOutputComponent() {
-		// logger.debug("Output components: "+inputComponent.toString());
+		// waLogger.debug("Output components: "+inputComponent.toString());
 		return outputComponent;
 	}
 
@@ -980,31 +984,31 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			File localDirectoryToWrite, String pathFromOozieDir,
 			String fileNameWithoutExtension) throws RemoteException {
 
-		logger.info("writeProcess");
+		waLogger.info("writeProcess");
 
 		String[] extensions = oozieAction.getFileExtensions();
 		String[] fileNames = new String[extensions.length];
 
-		logger.info("writeProcess extensionslength " + extensions.length);
+		waLogger.info("writeProcess extensionslength " + extensions.length);
 
 		File[] files = new File[extensions.length];
 		for (int i = 0; i < extensions.length; ++i) {
 			fileNames[i] = pathFromOozieDir + "/" + fileNameWithoutExtension + extensions[i];
 			files[i] = new File(localDirectoryToWrite, fileNameWithoutExtension	+ extensions[i]);
 			
-			logger.info("writeProcess fileNames  " + fileNames[i].toString());
-			logger.info("writeProcess files  " + files[i].toString());
+			waLogger.info("writeProcess fileNames  " + fileNames[i].toString());
+			waLogger.info("writeProcess files  " + files[i].toString());
 		}
 
-		logger.info("writeProcess 1");
+		waLogger.info("writeProcess 1");
 
 		oozieAction.createOozieElement(oozieXmlDoc, action, fileNames);
 
-		logger.info("writeProcess 2");
+		waLogger.info("writeProcess 2");
 
 		writeOozieActionFiles(files);
 
-		logger.info("writeProcess 3");
+		waLogger.info("writeProcess 3");
 	}
 
 	@Override
@@ -1094,7 +1098,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 
 	public List<String> listFilesRecursively(String path) {
 		List<String> files = new ArrayList<String>();
-		logger.debug(path);
+		waLogger.debug(path);
 		if (path != null && !path.isEmpty()) {
 			File root = new File(path);
 			File[] list = root.listFiles();
@@ -1112,6 +1116,22 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		}
 		return files;
 
+	}
+
+	/**
+	 * @return the comment
+	 */
+	@Override
+	public final String getComment() {
+		return comment;
+	}
+
+	/**
+	 * @param comment the comment to set
+	 */
+	@Override
+	public final void setComment(String comment) {
+		this.comment = comment;
 	}
 
 }

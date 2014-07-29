@@ -66,7 +66,7 @@ input {
 
 .divMenuImage{
 	margin-left: 300px;
-	width: 140px;
+	width: 200px;
 	padding-bottom: 2px;
 	padding-top: 2px;
 }
@@ -447,6 +447,7 @@ div#body{
     padding-left: 10px;
     padding-right: 10px;
     padding-top: 5px;
+    max-width:400px;
 }
 
 /* Canvas Modal */

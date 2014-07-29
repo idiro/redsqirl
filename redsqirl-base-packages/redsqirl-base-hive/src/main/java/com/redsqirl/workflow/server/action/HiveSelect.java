@@ -3,6 +3,8 @@ package com.redsqirl.workflow.server.action;
 
 import java.rmi.RemoteException;
 
+import org.apache.log4j.Logger;
+
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.connect.HiveInterface;
@@ -22,6 +24,9 @@ public class HiveSelect extends HiveElement {
 	 * 
 	 */
 	private static final long serialVersionUID = 8969124219285130345L;
+	
+	private static Logger logger = Logger.getLogger(HiveSelect.class);
+	
 	/**Grouping Key*/
 	public static final String key_grouping = "Grouping",
 			/**Fields Key*/

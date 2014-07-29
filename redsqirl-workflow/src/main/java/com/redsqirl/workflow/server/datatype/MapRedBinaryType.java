@@ -15,6 +15,7 @@ import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.PathFilter;
+import org.apache.log4j.Logger;
 
 import com.idiro.hadoop.NameNodeVar;
 import com.idiro.utils.RandomString;
@@ -36,6 +37,9 @@ public class MapRedBinaryType extends MapRedTextType {
 	 * 
 	 */
 	private static final long serialVersionUID = -6720621203419913600L;
+	
+	private static Logger logger = Logger.getLogger(MapRedBinaryType.class);
+	
 	/**
 	 * Delimier
 	 */

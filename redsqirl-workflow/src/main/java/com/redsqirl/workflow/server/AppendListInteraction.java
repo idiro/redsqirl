@@ -236,8 +236,8 @@ public class AppendListInteraction extends UserInteraction{
 	@Override
 	public void replaceOutputInTree(String oldName, String newName)
 			throws RemoteException {
-		List<Tree<String>> vals = tree.getFirstChild("list").getFirstChild("values").getSubTreeList();
-		if(!vals.isEmpty()){
+		List<Tree<String>> vals = tree.getFirstChild("applist").getFirstChild("values").getSubTreeList();
+		if(vals != null && !vals.isEmpty()){
 			Iterator<Tree<String>> itValPos = vals.iterator();
 			while(itValPos.hasNext()){
 				Tree<String> cur = itValPos.next();
@@ -249,8 +249,8 @@ public class AppendListInteraction extends UserInteraction{
 				}
 			}
 		}
-		vals = tree.getFirstChild("list").getFirstChild("output").getSubTreeList();
-		if(!vals.isEmpty()){
+		vals = tree.getFirstChild("applist").getFirstChild("output").getSubTreeList();
+		if(vals != null && !vals.isEmpty()){
 			Iterator<Tree<String>> itVals = vals.iterator();
 			while(itVals.hasNext()){
 				Tree<String> cur = itVals.next();

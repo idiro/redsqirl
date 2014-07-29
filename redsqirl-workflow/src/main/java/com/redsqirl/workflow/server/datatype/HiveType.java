@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -41,6 +42,9 @@ public class HiveType extends DataOutput{
 	 * 
 	 */
 	private static final long serialVersionUID = -4797761333298548415L;
+	
+	private static Logger logger = Logger.getLogger(HiveType.class);
+	
 	/**
 	 * HiveInterface Instance
 	 */

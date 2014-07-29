@@ -7,6 +7,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.AppendListInteraction;
@@ -31,6 +33,9 @@ public class PigAnonymise extends PigElement {
 	 * 
 	 */
 	private static final long serialVersionUID = 600343170359664918L;
+	
+	private static Logger logger = Logger.getLogger(PigAnonymise.class);
+	
 	/**
 	 * Key fields
 	 */

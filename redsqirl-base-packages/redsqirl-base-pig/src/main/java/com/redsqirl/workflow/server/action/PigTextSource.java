@@ -10,6 +10,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.AppendListInteraction;
@@ -30,6 +32,8 @@ import com.redsqirl.workflow.utils.PigLanguageManager;
 public class PigTextSource extends AbstractSource {
 
 	private static final long serialVersionUID = 7519928238030041208L;
+	
+	private static Logger logger = Logger.getLogger(PigTextSource.class);
 	
 	/**
 	 * Audit output name
@@ -67,6 +71,7 @@ public class PigTextSource extends AbstractSource {
 		auditIntVal.add(PigLanguageManager.getText("pig.audit_interaction_doaudit"));
 		auditInt.setPossibleValues(auditIntVal);
 		auditInt.setDisplayCheckBox(true);
+		auditInt.setReplaceDisable(true);
 		
 		String pigParallel = WorkflowPrefManager.getUserProperty(
 				WorkflowPrefManager.user_pig_parallel,

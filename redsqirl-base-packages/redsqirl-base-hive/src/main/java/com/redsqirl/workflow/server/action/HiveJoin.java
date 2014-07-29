@@ -7,6 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.utils.Tree;
@@ -29,6 +31,9 @@ public class HiveJoin extends HiveElement {
 	 * 
 	 */
 	private static final long serialVersionUID = -3035179016090477413L;
+	
+	private static Logger logger = Logger.getLogger(HiveJoin.class);
+	
 	/** Fields key */
 	public static final String key_fieldTable = "Fields",
 	/** Join Type Key */

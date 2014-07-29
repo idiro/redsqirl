@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.utils.TreeNonUnique;
@@ -45,6 +47,8 @@ public abstract class HiveElement extends DataflowAction {
 	 */
 	private static final long serialVersionUID = -1651299366774317959L;
 
+	private static Logger logger = Logger.getLogger(HiveElement.class);
+	
 	/**
 	 * Names of different elements
 	 */

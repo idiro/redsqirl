@@ -26,6 +26,20 @@ public interface DataFlowElement extends Remote{
 	public String getName() throws RemoteException;
 
 
+	/**
+	 * Get an action comment
+	 * @return
+	 * @throws RemoteException
+	 */
+	public String getComment() throws RemoteException;
+	
+	/**
+	 * Set a action comment
+	 * @param comment
+	 * @throws RemoteException
+	 */
+	public void setComment(String comment) throws RemoteException;
+	
 	//Normal Methods
 	
 	/**
