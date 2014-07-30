@@ -296,10 +296,9 @@
                 <!-- table -->
                 <a4j:region id="tableInteractionRegion" rendered="#{interCur.displayType == 'table'}">
                     <rich:panel style="border:none;" id="tablePanel">
-                        
         
-                        <h:panelGrid id="table" columns="3" rendered="#{!empty interCur.table.tableGeneratorMenu}">
-                        <h:outputText value="#{messages.label_generation}" />
+                        <h:panelGrid id="table" columns="4" rendered="#{!empty interCur.table.tableGeneratorMenu}">
+                        	<h:outputText value="#{messages.label_generation}" />
                             <rich:comboBox
                                 value="#{interCur.table.selectedGenerator}" width="200"
                                 enableManualInput="false" id="generation" listWidth="150"
@@ -313,6 +312,12 @@
                                 action="#{interCur.table.generateLines}"
                                 value="#{messages.button_ok}" reRender="tableInteraction">
                             </a4j:commandButton>
+                            
+                            <a4j:commandButton action="#{canvasModalBean.openTableInteractionPanel}" value="#{messages.button_configure}" styleClass="greenButton"  
+	                        	reRender="tableInteractionPanelPopUp" oncomplete="#{rich:component('tableInteractionPanel')}.show();" >
+	                        	<a4j:actionparam name="idInteraction" value="#{interCur.id}"/>
+	                        </a4j:commandButton>
+                            
                         </h:panelGrid>
                         
                         <a4j:commandLink title="Add new line" action="#{interCur.addNewLine}" reRender="tableInteraction" oncomplete="changeTableInteractionAnchorBottom();">
@@ -574,7 +579,9 @@
 
             <rich:modalPanel id="textEditorPanel" width="650" height="420" style="overflow:hidden;" >
                     
-                    <f:facet name="header">Editor</f:facet>
+                    <f:facet name="header">
+                    	<h:outputText value="#{messages.label_Editor}" />
+                    </f:facet>
                     <f:facet name="controls">
                         <h:graphicImage value="../image/icons/buttonCloseWindow.gif"
                             style="cursor:pointer;width:22px;"
@@ -584,6 +591,23 @@
                     <h:panelGroup>
                         <ui:include src="/pages/canvasModalEditorPopup.xhtml" />
                     </h:panelGroup>
+                    
+            </rich:modalPanel>
+            
+            <rich:modalPanel id="tableInteractionPanel" width="650" height="420" style="overflow:hidden;" >
+                    
+	            <f:facet name="header">
+	            	<h:outputText value="#{messages.label_generator_configuration}" />
+	            </f:facet>
+	            <f:facet name="controls">
+	                <h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+	                    style="cursor:pointer;width:22px;"
+	                    onclick="#{rich:component('tableInteractionPanel')}.hide()" />
+	            </f:facet>
+	            
+	            <h:panelGroup>
+	                <a4j:include viewId="/pages/tableInteractionPanelPopup.xhtml" ajaxRendered="true" />
+	            </h:panelGroup>
                     
             </rich:modalPanel>
     

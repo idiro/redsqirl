@@ -143,6 +143,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * List of the current interaction displayed
 	 */
 	private List<CanvasModalInteraction> inters = new LinkedList<CanvasModalInteraction>();
+	private CanvasModalInteraction canvasModalInteractionTableInteractionPanel;
 
 	/**
 	 * List of the table column titles
@@ -331,7 +332,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 			}
 		}
 	}
-	
+
 	public void changeTitle(){
 		try {
 			DataFlowElement dfe = getworkFlowInterface().getWorkflow(
@@ -605,6 +606,26 @@ public class CanvasModal extends BaseBean implements Serializable {
 			}
 		}else{
 			logger.info("openHelpTextEditorModal error idInteraction = NULL ");
+			MessageUseful.addErrorMessage(getMessageResources("msg_error_oops"));
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
+		}
+	}
+
+	public void openTableInteractionPanel() throws RemoteException{
+		logger.info("openTableInteractionPanel");
+		String idInteraction = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("idInteraction");
+		if(idInteraction != null){
+			logger.info("interaction: " + idInteraction);
+			int indexOf = getPage().getInteractions().indexOf(getPage().getInteraction(idInteraction));
+			CanvasModalInteraction cmInt = inters.get(indexOf);
+			if (cmInt instanceof TableInteraction) {
+				logger.info("Table interaction");
+				((TableInteraction) cmInt).mountTableInteractionPanel();
+				setCanvasModalInteractionTableInteractionPanel(cmInt);
+			}
+		}else{
+			logger.info("openTableInteractionPanel error idInteraction = NULL ");
 			MessageUseful.addErrorMessage(getMessageResources("msg_error_oops"));
 			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
@@ -895,6 +916,15 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 */
 	public void setElementComment(String elementComment) {
 		this.elementComment = elementComment;
+	}
+
+	public CanvasModalInteraction getCanvasModalInteractionTableInteractionPanel() {
+		return canvasModalInteractionTableInteractionPanel;
+	}
+
+	public void setCanvasModalInteractionTableInteractionPanel(
+			CanvasModalInteraction canvasModalInteractionTableInteractionPanel) {
+		this.canvasModalInteractionTableInteractionPanel = canvasModalInteractionTableInteractionPanel;
 	}
 
 }
