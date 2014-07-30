@@ -66,28 +66,31 @@
 
 	jQuery(document).on("click", "#btIndex", function(e) {
 
+		showTabResult();
 		jQuery("#divTabHelp").scrollTop( 0 );
 		
 	    if(! jQuery('#notMoveHelp').is(':checked')){
 		    var id = jQuery(this).attr('id');
-		    if(historyHelp[historyHelpIndex] != id){
+
+		  //<![CDATA[
+		    if(historyHelp[historyHelpIndex] != id || (id == "btIndex" && historyHelp[historyHelpIndex] == "btIndex") ){
 			    jQuery("#nextHelp").attr("disabled", true);
 			    jQuery("#prevHelp").attr("disabled", false);
 			    jQuery("#helpIndex").show();
 			    jQuery("#helpPanel").hide();
 			    jQuery("#btIndex").hide();
 			    jQuery("#tabs-1").scrollTop( 0 );
-			    //<![CDATA[
 			    while(historyHelpIndex + 1 < historyHelp.length){
 				    historyHelp.pop();
 				}
 				if(historyHelp.length > 100){
 					historyHelp.shift();
 				}
-		    	//]]>
+		    	
 		    	historyHelpIndex = historyHelp.length;
 		    	historyHelp[historyHelpIndex] = id;
 		    }
+		  //]]>
 	    }
 	});
 
@@ -175,6 +178,7 @@
 		jQuery("#helpIndex").hide();
 		jQuery("#helpPanel").hide();
 		jQuery("#resultTableDiv").show();
+		jQuery("#btIndex").show();
 	}
 	
     </script>
