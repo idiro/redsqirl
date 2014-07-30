@@ -497,7 +497,7 @@
               
               var div = "<div id='"+getCanvasId(tabName)+"' class='container-canvas'>"+
 				"<div id='container-"+tabName+"' class='container-"+tabName+"'>"+
-				"<div class='rich-panel headerLegend' onclick=\"jQuery('#panelLegend-"+tabName+"').toggle();return false;\"  style='position: fixed; z-index:101; width:190px'>"+
+				"<div class='rich-panel headerLegend' onclick=\"jQuery('#panelLegend-"+tabName+"').toggle();jQuery('#container-comment-"+tabName+"').hide();return false;\"  style='position: fixed; z-index:101; width:60px'>"+
 					"<div class='rich-panel-header'>Legend</div>"+
 				"</div>"+
 				"<div class='rich-panel' id='panelLegend-"+tabName+"'  style='position: fixed; z-index:100; display: none; width:190px; height:330px'>"+
@@ -505,6 +505,14 @@
 						"<div id='container-legend-"+tabName+"' class='container-legend-"+tabName+"' style='overflow:hidden; position: relative; top:20px;'/>"+
 					"</div>"+
 	        	"</div>"+
+	        	"<div class='rich-panel headerComment' "+
+	        	      "onclick=\"jQuery('#container-comment-"+tabName+"').toggle();jQuery('#panelLegend-"+tabName+"').hide();return false;\""+
+                      " style='left:82px;position: fixed; z-index: 101; width: 60px'>"+
+                      " <div class='rich-panel-header'>Comment</div>"+
+                " </div>"+
+                " <div id='container-comment-"+tabName+"' class='rich-panel container-comment-"+tabName+"'"+
+                    " style='overflow: auto;position: fixed; z-index: 100; display: none; width: 330px; height:400px;resize:both;'>"+
+                " </div>"+
               	"</div>"+
 				"</div>";
               
@@ -831,7 +839,20 @@
                     <a4j:actionparam name="select" />
                 </a4j:jsFunction>
             </a4j:region>
+            
+            <a4j:region>
+                <a4j:status
+                    onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+                    onerror="jQuery('#canvas-tabs').unblock();"
+                    onsuccess="jQuery('#canvas-tabs').unblock();"
+                    onstop="jQuery('#canvas-tabs').unblock();" />
 
+                <a4j:jsFunction name="updateWfDisplayComment" data="#{canvasBean.savedWfComment}"
+                    oncomplete="jQuery('.container-comment-'+getSelectedByName()).html(data);" reRender="errorTable, msnError" >
+                </a4j:jsFunction>
+            </a4j:region>
+            
+            
            <a4j:region>
                 <a4j:status
                     onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
@@ -875,7 +896,7 @@
 
 				<a4j:jsFunction name="setWorkflow"
 					action="#{canvasBean.changeWorkflow}"
-					oncomplete="setSelectedByName('#{canvasBean.nameWorkflow}');verifyIfIsRunning(getSelectedByName());"
+					oncomplete="setSelectedByName('#{canvasBean.nameWorkflow}');updateWfDisplayComment();verifyIfIsRunning(getSelectedByName());"
 					reRender="formMenu,domMessageDivCanvas2,killProcessBtn">
 					<a4j:actionparam name="selectedCanvas" assignTo="#{canvasBean.nameWorkflow}" />
 				</a4j:jsFunction>
@@ -1348,7 +1369,7 @@
 									<h:outputText value="#{messages.label_menu_project}" />
 								</h:panelGroup>
 							</f:facet>
-	
+							
 	
 							<rich:menuItem id="oozieMenuItem" submitMode="none">
 								<h:outputLink value="#{canvasBean.workflowUrl}" style="font-size:13px;" target="_blank">#{messages.label_menu_see_oozie_job}</h:outputLink>
@@ -1369,7 +1390,15 @@
 								reRender="formMenu,domMessageDivCanvas2,killProcessBtn">
 								<h:outputText value="Ctrl+R" class="menuItemHotKey"/>
 							</rich:menuItem>
-	
+	                        
+                            <rich:menuSeparator />
+	                        
+                            <rich:menuItem id="wfeditorMenuItem" submitMode="ajax"
+                                value="#{messages.label_menu_editorWfcomment}"
+                                oncomplete="#{rich:component('modalWfEditor')}.show()" 
+                                reRender="wfEditor">
+                            </rich:menuItem>
+                            
 							<rich:menuSeparator />
 	
 							<rich:menuItem id="cleanMenuItem" submitMode="ajax"
@@ -1524,8 +1553,8 @@
 
 							<div id="container-canvas-1" class="container-canvas-1">
 								<div class="rich-panel headerLegend"
-									onclick="jQuery('#panelLegend-canvas-1').toggle();return false;"
-									style="position: fixed; z-index: 101; width: 190px">
+									onclick="jQuery('#panelLegend-canvas-1').toggle();jQuery('#container-comment-canvas-1').hide();return false;"
+									style="position: fixed; z-index: 101; width: 60px">
 									<div class="rich-panel-header">Legend</div>
 								</div>
 								<div class="rich-panel" id="panelLegend-canvas-1"
@@ -1536,6 +1565,14 @@
 											style="overflow: hidden; position: relative; top: 20px;" />
 									</div>
 								</div>
+								<div class="rich-panel headerComment"
+                                    onclick="jQuery('#container-comment-canvas-1').toggle();jQuery('#panelLegend-canvas-1').hide();return false;"
+                                    style="left:82px;position: fixed; z-index: 101; width: 60px">
+                                    <div class="rich-panel-header">Comment</div>
+                                </div>
+                                <div id="container-comment-canvas-1" class="rich-panel container-comment-canvas-1"
+                                    style="overflow: auto;position: fixed; z-index: 100; display: none; width: 330px; height:400px;resize:both;">
+                                </div>
 							</div>
 
 						</div>
@@ -1851,6 +1888,38 @@
 
 		</rich:modalPanel>
 	</a4j:region>
+	
+	<a4j:region>
+        <rich:modalPanel id="modalWfEditor" width="800" height="600" domElementAttachment="parent" 
+            style="overflow:auto;" resizeable="true" zindex="2000">
+
+            <f:facet name="header" >Workflow Editor</f:facet>
+            <f:facet name="controls">
+                <h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+                    style="cursor:pointer;width:22px;"
+                    onclick="#{rich:component('modalWfEditor')}.hide()" />
+            </f:facet>
+            
+            <h:form>
+                <rich:panel>
+                <rich:editor 
+                        id="wfEditor" value="#{canvasBean.commentWf}" 
+                        theme="advanced" width="765" height="500">
+                    <f:param name="theme_advanced_toolbar_location" value="top"/>
+                </rich:editor>
+            
+                <rich:panel style="margin-top:8px; border:none; float:right;" >
+                
+                    <a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" oncomplete="#{rich:component('modalWfEditor')}.hide()" />
+                    <a4j:commandButton value="#{messages.button_save}" onclick="#{rich:component('modalWfEditor')}.hide();" styleClass="greenButton" 
+                            action="#{canvasBean.updateWfComment}" oncomplete="updateWfDisplayComment();" />
+                
+                </rich:panel>
+                </rich:panel>
+            </h:form>
+                
+        </rich:modalPanel>
+    </a4j:region>
 	
 	<a4j:region>
         <rich:modalPanel id="modalReplaceAll" width="425" height="220"

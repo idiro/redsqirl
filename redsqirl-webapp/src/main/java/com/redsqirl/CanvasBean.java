@@ -69,6 +69,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	private ReplaceModal rpModal = new ReplaceModal();
 	
+	private String commentWf = "";
+	
 	/**
 	 * 
 	 * @return
@@ -1040,6 +1042,22 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		return "initial";
 	}
+	
+	public void updateWfComment() throws RemoteException{
+		logger.info("updateWfComment");
+		if(getDf() != null){
+			try{
+				logger.info(commentWf);
+				getDf().setComment(commentWf);
+			}catch(Exception e){
+				logger.warn(e,e);
+			}
+		}
+	}
+	
+	public String getSavedWfComment() throws RemoteException{
+		return getDf() == null ? "" : getDf().getComment();
+	}
 
 	private String generateWorkflowName(String path) {
 		String name;
@@ -1655,6 +1673,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void setDf(DataFlow df) {
 		this.df = df;
+		try{
+			commentWf = df.getComment();
+		}catch(Exception e){}
 	}
 
 	public String getNameWorkflow() {
@@ -1828,6 +1849,22 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 */
 	public void setRpModal(ReplaceModal rpModal) {
 		this.rpModal = rpModal;
+	}
+
+	/**
+	 * @return the commentWf
+	 * @throws RemoteException 
+	 */
+	public String getCommentWf() throws RemoteException {
+		return commentWf;//getDf() != null ? getDf().getComment() : "";
+	}
+
+	/**
+	 * @param commentWf the commentWf to set
+	 * @throws RemoteException 
+	 */
+	public void setCommentWf(String commentWf) throws RemoteException {
+		this.commentWf = commentWf;
 	}
 
 }

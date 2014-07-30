@@ -450,6 +450,12 @@ div#body{
     max-width:400px;
 }
 
+.wfComment{
+    background-color: #111;
+    position: absolute;
+    z-index: 9001;
+}
+
 /* Canvas Modal */
 .noMaskClass .rich-mpnl-mask-div{
   display:none;
@@ -818,6 +824,11 @@ div.splitter-bar.ui-state-highlight {
 .rich-panel.headerLegend{
 	border:none;
 	background-color:transparent;
+}
+
+.rich-panel.headerComment{
+    border:none;
+    background-color:transparent;
 }
 
 /*white selected tab on canvas*/

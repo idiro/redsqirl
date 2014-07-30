@@ -768,9 +768,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 				// Comment
 				logger.debug("add positions...");
-				Element comment = doc.createElement("comment");
-				comment.appendChild(doc.createTextNode(cur.getComment()));
-				component.appendChild(comment);
+				Element commentEl = doc.createElement("comment");
+				commentEl.appendChild(doc.createTextNode(cur.getComment()));
+				component.appendChild(commentEl);
 				
 				// Position
 				logger.debug("add positions...");
