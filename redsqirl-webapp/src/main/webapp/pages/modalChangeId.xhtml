@@ -6,7 +6,7 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets">
 
 <script>
-    var currentChangeIdGroup; 
+    var currentChangeIdGroup;
 </script>
 
 <a4j:loadBundle basename="MessagesResources" var="messages" />
@@ -14,7 +14,7 @@
         <a4j:region>
 
             <a4j:jsFunction name="changeCurrentElementId"
-                oncomplete="currentChangeIdGroup = '#{canvasModalBean.idGroup}';changeIdElement(currentChangeIdGroup,'#{canvasModalBean.elementId}','#{canvasModalBean.elementComment}');">
+                oncomplete="currentChangeIdGroup = '#{canvasModalBean.idGroup}';changeIdElement(currentChangeIdGroup,'#{canvasModalBean.elementId}','#{canvasModalBean.elementComment}');updateSelectedOutputStatus(currentChangeIdGroup);">
             </a4j:jsFunction>
             
             <a4j:jsFunction name="changeIdElement"
