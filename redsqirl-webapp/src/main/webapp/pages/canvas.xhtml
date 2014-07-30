@@ -435,14 +435,14 @@
 	    	  closeWorkflowTab(ul, tabName);
 	      }
 	      
-	      function addElementJs(canvasName, path, positions, links){
+	      function addElementJs(canvasName, path, positions, links, selecteds){
 	          //Add the workflow tab only if the name does not exist yet.
 	          //alert(document.getElementById(canvasName) == null);
 	          if(document.getElementById(canvasName) == null) {
 	    	      addWorkflowTab(canvasName);
 	    	      configureCanvas(canvasName);
 		    	  setWorkflow(canvasName);
-	    	      addElements(canvasName, positions);
+	    	      addElements(canvasName, positions, selecteds);
 	    	      setSaved(canvasName, true);
 	    	      setPathFile(canvasName, path);
 	    	      
@@ -947,6 +947,7 @@
 					<a4j:actionparam name="nameWorkflow" />
 					<a4j:actionparam name="pathFile" />
 					<a4j:actionparam name="positions" />
+					<a4j:actionparam name="selecteds" />
 				</a4j:jsFunction>
 			</a4j:region>
             
@@ -1116,7 +1117,7 @@
 
 				<a4j:jsFunction name="loadWorkflow"
 					data="#{canvasBean.positions}"
-					oncomplete="addElementJs(data[0],data[1],data[2],data[3]);setRunning(getSelectedByName(), true);blockRunningWorkflow();"
+					oncomplete="addElementJs(data[0],data[1],data[2],data[3],data[4]);setRunning(getSelectedByName(), true);blockRunningWorkflow();"
 					reRender="tabFlowchart,errorTable,msnError" />
 					
 			</a4j:region>
@@ -1127,7 +1128,7 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
 				<a4j:jsFunction name="renameTab" data="#{canvasBean.positions}"
-					oncomplete="closeCurrentTabWithoutCallingBackend();addElementJs(data[0],data[1],data[2],data[3]);updateRunningStatus();updateAllOutputStatus();onHideModalSaveWorkflow(true);jQuery.unblockUI();"
+					oncomplete="closeCurrentTabWithoutCallingBackend();addElementJs(data[0],data[1],data[2],data[3],data[4]);updateRunningStatus();updateAllOutputStatus();onHideModalSaveWorkflow(true);jQuery.unblockUI();"
 					reRender="tabFlowchart" />
 			</a4j:region>
 

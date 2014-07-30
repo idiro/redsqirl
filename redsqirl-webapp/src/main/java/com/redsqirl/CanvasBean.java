@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -602,6 +603,12 @@ public class CanvasBean extends BaseBean implements Serializable {
 		// Set path
 		path = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("pathFile");
 
+		String selecteds = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("selecteds");
+		logger.info("save " + selecteds);
+		FacesContext fCtx = FacesContext.getCurrentInstance();
+		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
+		sc.setAttribute("selecteds", selecteds);
+		
 		if (!path.contains(".")) {
 			path += ".rs";
 		}
@@ -1575,6 +1582,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 	public String[] getPositions() throws Exception {
 
 		logger.info("getPositions");
+		
+		FacesContext fCtx = FacesContext.getCurrentInstance();
+		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
+		String selecteds = (String) sc.getAttribute("selecteds");
+		logger.info("getPositions " + selecteds);
 
 		try{
 
@@ -1610,7 +1622,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			logger.info("getPositions jsonElements.toString " + jsonElements.toString());
 			logger.info("getPositions jsonLinks.toString " + jsonLinks.toString());
 
-			return new String[] { getNameWorkflow(), getPath(), jsonElements.toString(), jsonLinks.toString() };
+			return new String[] { getNameWorkflow(), getPath(), jsonElements.toString(), jsonLinks.toString(), selecteds };
 
 
 		} catch (Exception e) {
