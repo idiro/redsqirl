@@ -4,6 +4,8 @@ package com.redsqirl.workflow.server.action;
 import java.rmi.RemoteException;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 
 /**
@@ -16,6 +18,8 @@ public class Source extends AbstractSource {
 
 	private static final long serialVersionUID = 7519928238030041208L;
 
+	private static Logger logger = Logger.getLogger(Source.class);
+	
 	/**
 	 * Constructor containing the pages, page checks and interaction
 	 * Initialization

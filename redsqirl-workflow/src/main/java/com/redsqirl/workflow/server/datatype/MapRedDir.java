@@ -20,6 +20,7 @@ import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.PathFilter;
+import org.apache.log4j.Logger;
 import org.apache.pig.data.DataType;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -44,6 +45,8 @@ public abstract class MapRedDir extends DataOutput{
 	 * 
 	 */
 	private static final long serialVersionUID = 3497308078096391496L;
+	
+	private static Logger logger = Logger.getLogger(MapRedDir.class);
 	
 	/** HDFS Interface */
 	protected static HDFSInterface hdfsInt;

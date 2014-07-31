@@ -4,6 +4,8 @@ package com.redsqirl.workflow.server.action;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 
+import org.apache.log4j.Logger;
+
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.connect.HiveInterface;
@@ -16,6 +18,15 @@ import com.redsqirl.workflow.utils.HiveLanguageManager;
  *
  */
 public class HiveAggregator extends HiveElement {
+	
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5757307122737374106L;
+	
+	private static Logger logger = Logger.getLogger(HiveAggregator.class);
+	
 	/**
 	 * Pages
 	 */

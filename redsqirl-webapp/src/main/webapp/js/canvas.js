@@ -1041,7 +1041,7 @@ function makeHistory(canvasName) {
 
 }
 
-function addElements(canvasName, positions) {
+function addElements(canvasName, positions, selecteds) {
 	canvasArray[canvasName].countObj = 0;
 	var positionsArrays = JSON.parse(positions);
 	var numSides = 4;
@@ -1053,11 +1053,11 @@ function addElements(canvasName, positions) {
 		
 		//alert(positionsArrays[i][2]);
 		
-			var group = addElement(canvasName, positionsArrays[i][1],
-					positionsArrays[i][2], positionsArrays[i][3],
-					positionsArrays[i][4],
-					numSides,
-					positionsArrays[i][0]);
+		var group = addElement(canvasName, positionsArrays[i][1],
+				positionsArrays[i][2], positionsArrays[i][3],
+				positionsArrays[i][4],
+				numSides,
+				positionsArrays[i][0], selecteds);
 		maxX = Math.max(maxX,positionsArrays[i][3]);
 		maxY = Math.max(maxY,positionsArrays[i][4]);
 		//updateIdObj(positionsArrays[i][0], positionsArrays[i][0]);
@@ -1092,7 +1092,7 @@ function checkImg(src){
    });
 }
 
-function addElement(canvasName, elementType, elementImg, posx, posy, numSides, idElement) {
+function addElement(canvasName, elementType, elementImg, posx, posy, numSides, idElement, selecteds) {
 	
 	//alert(elementImg);
 	
@@ -1243,8 +1243,18 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
 	var group = createGroup(canvasName, circle0, circle1, polygon, srcImageText, typeText, idElement, arc1,arc2,arc3);
 	
 	polygonLayer.add(group);
+	
+	var selectedObj = false
+	if(selecteds != null){
+		var res = selecteds.split(",");
+		for (var i in res) {
+			if(res[i] == idElement){
+				selectedObj = true;
+			}
+		}
+	}
 
-	configureGroup(canvasName, group, posx, posy, polygon);
+	configureGroup(canvasName, group, posx, posy, polygon, selectedObj);
 	
 	group.tooltipObj = "Type: " + ucFirstAllWords(elementType.split("_").join(" "));
 	
@@ -1502,7 +1512,7 @@ function mountObj(canvasName) {
 								mousePosStage.x - 30,
 								mousePosStage.y - 30,
 								numSides,
-								"group" + (+canvasArray[selectedCanvas].countObj+1));
+								"group" + (+canvasArray[selectedCanvas].countObj+1), "");
 						
 						addElementBt(typeText.getText(),"group"+ canvasArray[selectedCanvas].countObj);
 						updateTypeObj(selectedCanvas, "group"+ canvasArray[selectedCanvas].countObj, "group"+ canvasArray[selectedCanvas].countObj);
@@ -1652,7 +1662,7 @@ function getAllIconPositions(){
 function save(path) {
 	setSaved(selectedCanvas, true);
 	setPathFile(selectedCanvas, path);
-	saveWorkflow(selectedCanvas, path, getIconPositions());
+	saveWorkflow(selectedCanvas, path, getIconPositions(), getSelectedIconsCommaDelimited());
 }
 
 function configureCircle(canvasName, circle1) {
@@ -1847,15 +1857,19 @@ function createGroup(canvasName, circle0, circle1, polygon, srcImageText, typeTe
 	return group1;
 }
 
-function configureGroup(canvasName, group, mousePosX, mousePosY, polygon) {
+function configureGroup(canvasName, group, mousePosX, mousePosY, polygon, selectedObj) {
 
 	document.body.style.cursor = 'default';
 
-	deselectAll(canvasName);
+	//deselectAll(canvasName);
 	//polygon.setStroke("red");
-	group.getChildren()[0].setFill("#FFDB99");
-	group.getChildren()[1].setFill("#FFDB99");
-	polygon.selected = true;
+	//polygon.selected = true;
+	
+	if(selectedObj){
+		group.getChildren()[0].setFill("#FFDB99");
+		group.getChildren()[1].setFill("#FFDB99");
+		group.getChildren()[2].selected = true;
+	}
 
 	group.setPosition(mousePosX, mousePosY);
 	group.hasChangedId = false;
@@ -2243,7 +2257,7 @@ function updateAllOutputStatus() {
 	}
 }
 
-function updateActionOutputStatus(groupId, status, fileExists, tooltip) {
+function updateActionOutputStatus(groupId, status, fileExists, tooltip, noError) {
 	
 	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
 	
@@ -2253,6 +2267,29 @@ function updateActionOutputStatus(groupId, status, fileExists, tooltip) {
 	group.getChildren()[7].setStroke(getColorOutputExistence(fileExists));
 	
 	group.tooltipObj = tooltip;
+	
+	if( noError.toUpperCase() === "FALSE" ){
+	   //Add error icon
+	   var errorImg = new Image();
+	   errorImg.src = '../image/icons/li_msg_error.gif';
+        
+        var errorK = new Kinetic.Image({
+          id: 'error_img',
+          x: 64,
+          y: 61,
+          image: errorImg,
+          width: 13,
+          height: 13
+        });
+        
+        group.add(errorK);
+	}else{
+	   jQuery.each(group.getChildren(), function(index, value) {
+	        if(value.getId() === 'error_img'){
+	           group.getChildren()[index].remove();
+	        }
+       });
+	}
 	
 	polygonLayer.draw();
 

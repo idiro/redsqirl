@@ -3,6 +3,8 @@ package com.redsqirl.workflow.server.datatype;
 
 import java.rmi.RemoteException;
 
+import org.apache.log4j.Logger;
+
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
@@ -20,6 +22,9 @@ public class HiveTypePartition extends HiveType{
 	 * 
 	 */
 	private static final long serialVersionUID = 937674007867999596L;
+	
+	private static Logger logger = Logger.getLogger(HiveTypePartition.class);
+	
 	/**
 	 * Partition Key
 	 */

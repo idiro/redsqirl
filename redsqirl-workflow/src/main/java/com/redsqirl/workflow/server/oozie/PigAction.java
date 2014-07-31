@@ -21,7 +21,7 @@ public class PigAction extends OozieActionAbs {
 	 */
 	private static final long serialVersionUID = 233700291606047641L;
 	
-	private Logger logger = Logger.getLogger(getClass());
+	private static Logger logger = Logger.getLogger(PigAction.class);
 	
 	/**
 	 * Constructor

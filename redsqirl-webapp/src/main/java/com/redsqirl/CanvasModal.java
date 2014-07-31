@@ -143,6 +143,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * List of the current interaction displayed
 	 */
 	private List<CanvasModalInteraction> inters = new LinkedList<CanvasModalInteraction>();
+	private CanvasModalInteraction canvasModalInteractionTableInteractionPanel;
 
 	/**
 	 * List of the table column titles
@@ -163,6 +164,10 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 */
 	private Map<String,FileSystemBean> datastores;
 
+	/**
+	 * Set the comment of an element in change id
+	 */
+	private String elementComment;
 
 	public CanvasModal() throws RemoteException{
 		DataFlowInterface dfi = getworkFlowInterface();
@@ -221,7 +226,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 					.getRequestParameterMap().get("paramPageNb"));
 		} catch (NumberFormatException e) {
 			pageNb = 0;
-			logger.error(e.getMessage());
+			logger.warn("Page nb issue: "+e.getMessage(),e);
 		}
 
 		try {
@@ -247,6 +252,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 		}else{
 			elementId = getComponentId();
 			logger.info("Element id: "+elementId);
+			elementComment = dfe.getComment();
 			if (loadMainWindow) {
 				logger.info("load Main window");
 				try {
@@ -326,7 +332,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 			}
 		}
 	}
-	
+
 	public void changeTitle(){
 		try {
 			DataFlowElement dfe = getworkFlowInterface().getWorkflow(
@@ -606,6 +612,26 @@ public class CanvasModal extends BaseBean implements Serializable {
 		}
 	}
 
+	public void openTableInteractionPanel() throws RemoteException{
+		logger.info("openTableInteractionPanel");
+		String idInteraction = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("idInteraction");
+		if(idInteraction != null){
+			logger.info("interaction: " + idInteraction);
+			int indexOf = getPage().getInteractions().indexOf(getPage().getInteraction(idInteraction));
+			CanvasModalInteraction cmInt = inters.get(indexOf);
+			if (cmInt instanceof TableInteraction) {
+				logger.info("Table interaction");
+				((TableInteraction) cmInt).mountTableInteractionPanel();
+				setCanvasModalInteractionTableInteractionPanel(cmInt);
+			}
+		}else{
+			logger.info("openTableInteractionPanel error idInteraction = NULL ");
+			MessageUseful.addErrorMessage(getMessageResources("msg_error_oops"));
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
+		}
+	}
+
 	public void checkFirstPage() {
 		if (getListPosition() == 0) {
 			setFirstPage("Y");
@@ -876,6 +902,29 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 	public void setPageTextTip(String pageTextTip) {
 		this.pageTextTip = pageTextTip;
+	}
+
+	/**
+	 * @return the elementComment
+	 */
+	public String getElementComment() {
+		return elementComment;
+	}
+
+	/**
+	 * @param elementComment the elementComment to set
+	 */
+	public void setElementComment(String elementComment) {
+		this.elementComment = elementComment;
+	}
+
+	public CanvasModalInteraction getCanvasModalInteractionTableInteractionPanel() {
+		return canvasModalInteractionTableInteractionPanel;
+	}
+
+	public void setCanvasModalInteractionTableInteractionPanel(
+			CanvasModalInteraction canvasModalInteractionTableInteractionPanel) {
+		this.canvasModalInteractionTableInteractionPanel = canvasModalInteractionTableInteractionPanel;
 	}
 
 }

@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.AppendListInteraction;
@@ -48,6 +50,9 @@ public abstract class PigElement extends DataflowAction {
 	 * 
 	 */
 	private static final long serialVersionUID = -1651299366774317959L;
+	
+	private static Logger logger = Logger.getLogger(PigElement.class);
+	
 								/**
 								 * Output Key
 								 */
@@ -136,6 +141,7 @@ public abstract class PigElement extends DataflowAction {
 		values.add("ASCENDING");
 		values.add("DESCENDING");
 		orderTypeInt.setPossibleValues(values);
+		orderTypeInt.setReplaceDisable(true);
 		
 		String pigParallel = WorkflowPrefManager.getUserProperty(
 				WorkflowPrefManager.user_pig_parallel,
@@ -170,6 +176,7 @@ public abstract class PigElement extends DataflowAction {
 		saveTypePos.add( new MapRedCompressedType().getTypeName());
 		savetypeOutputInt.setPossibleValues(saveTypePos);
 		savetypeOutputInt.setValue(new MapRedCompressedType().getTypeName());
+		savetypeOutputInt.setReplaceDisable(true);
 		
 		auditInt= new AppendListInteraction(key_audit,
 				  	PigLanguageManager.getText("pig.audit_interaction.title"),
@@ -178,6 +185,7 @@ public abstract class PigElement extends DataflowAction {
 		auditIntVal.add(PigLanguageManager.getText("pig.audit_interaction_doaudit"));
 		auditInt.setPossibleValues(auditIntVal);
 		auditInt.setDisplayCheckBox(true);
+		auditInt.setReplaceDisable(true);
 		
 	}
 	/**

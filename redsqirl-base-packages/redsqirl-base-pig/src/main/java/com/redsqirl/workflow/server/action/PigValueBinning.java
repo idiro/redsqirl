@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
@@ -20,6 +22,8 @@ public class PigValueBinning extends PigBinning {
 	 */
 	private static final long serialVersionUID = -8014432801360544277L;
 
+	private static Logger logger = Logger.getLogger(PigValueBinning.class);
+	
 	
 	/** Pages for the interaction */
 	private Page page2, page3;

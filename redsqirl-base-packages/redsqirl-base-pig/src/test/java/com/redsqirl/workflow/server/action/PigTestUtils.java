@@ -2,7 +2,6 @@ package com.redsqirl.workflow.server.action;
 
 import static org.junit.Assert.assertTrue;
 
-
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.HashMap;
@@ -20,7 +19,6 @@ import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.Workflow;
-import com.redsqirl.workflow.server.action.PigTextSource;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.datatype.MapRedCtrlATextType;
 import com.redsqirl.workflow.server.datatype.MapRedTextType;
@@ -124,6 +122,8 @@ public class PigTestUtils {
 				.add(new_path1);
 		dataSetTree.getFirstChild("browse").getFirstChild("output")
 				.add("property").add(MapRedTextType.key_delimiter).add(";");
+		
+		src.getDFEOutput().get("").addProperty(MapRedTextType.key_header, "ID INT, VALUE INT, RAW INT");
 
 		Tree<String> field1 = dataSetTree.getFirstChild("browse")
 				.getFirstChild("output").add("field");

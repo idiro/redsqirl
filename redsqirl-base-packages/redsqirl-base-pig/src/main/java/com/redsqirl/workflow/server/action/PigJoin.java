@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.ListInteraction;
@@ -31,6 +33,9 @@ public class PigJoin extends PigElement {
 	 * 
 	 */
 	private static final long serialVersionUID = -3035179016090477413L;
+	
+	private static Logger logger = Logger.getLogger(PigJoin.class);
+	
 								/**Join type key*/			
 	public static final String key_joinType = "join_type",
 			/**Join relationship key*/

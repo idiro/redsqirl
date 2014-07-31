@@ -45,7 +45,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 	 * 
 	 */
 	private static final long serialVersionUID = 5952914634333010421L;
-	private Logger logger = Logger.getLogger(getClass());
+	private static Logger logger = Logger.getLogger(OozieXmlCreatorAbs.class);
 	/** List of elements */
 	Map<String, Element> elements = new LinkedHashMap<String, Element>();
 	/** Out edges */

@@ -15,6 +15,7 @@ import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.PathFilter;
+import org.apache.log4j.Logger;
 
 import com.idiro.hadoop.NameNodeVar;
 import com.idiro.hadoop.checker.HdfsFileChecker;
@@ -37,7 +38,8 @@ public class MapRedTextType extends MapRedDir {
 	private static final long serialVersionUID = 8260229620701006942L;
 	/** Delimiter Key */
 	public final static String key_delimiter = "delimiter";
-
+	
+	private static Logger logger = Logger.getLogger(MapRedTextType.class);
 
 
 	/**

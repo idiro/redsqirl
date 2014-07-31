@@ -14,10 +14,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.lang.WordUtils;
 import org.apache.log4j.Logger;
 
 import com.idiro.utils.LocalFileSystem;
+import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
 
 public class HelpBean extends BaseBean implements Serializable {
@@ -81,7 +85,10 @@ public class HelpBean extends BaseBean implements Serializable {
 		
 		logger.info("helpSearch");
 		
-		File indexDir = new File("/usr/share/redsqirl/users/igor/lucene/index");
+		HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+		String user = (String) session.getAttribute("username");
+		String indexResultPath = WorkflowPrefManager.getPathUserPref(user)+"/lucene/index";
+		File indexDir = new File(indexResultPath);
 		int hits = 100;
 		
 		SimpleSearcher searcher = new SimpleSearcher();
