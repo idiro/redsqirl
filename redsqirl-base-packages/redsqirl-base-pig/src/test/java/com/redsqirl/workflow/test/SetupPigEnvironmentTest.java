@@ -19,10 +19,12 @@ import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.action.PigAggregatorTests;
 import com.redsqirl.workflow.server.action.PigAnonymiseTests;
 import com.redsqirl.workflow.server.action.PigAuditTests;
+import com.redsqirl.workflow.server.action.PigCompressTests;
 import com.redsqirl.workflow.server.action.PigFilterInteractionTests;
 import com.redsqirl.workflow.server.action.PigJoinRelationInteractionTests;
 import com.redsqirl.workflow.server.action.PigJoinTests;
 import com.redsqirl.workflow.server.action.PigSampleTests;
+import com.redsqirl.workflow.server.action.PigSchemaTests;
 import com.redsqirl.workflow.server.action.PigSelectTests;
 import com.redsqirl.workflow.server.action.PigTableJoinInteractionTests;
 import com.redsqirl.workflow.server.action.PigTableSelectInteractionTests;
@@ -35,7 +37,6 @@ import com.redsqirl.workflow.server.action.PigWorkflowMngtTests;
 import com.redsqirl.workflow.server.action.test.PigDictionaryTests;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.connect.HiveInterface;
-import com.redsqirl.workflow.test.TestUtils;
 
 
 @RunWith(Suite.class)
@@ -56,7 +57,9 @@ import com.redsqirl.workflow.test.TestUtils;
 	PigAuditTests.class,
 	PigTransposeTests.class,
 	PigAnonymiseTests.class,
-	PigUnanonymiseTests.class
+	PigUnanonymiseTests.class,
+	PigCompressTests.class,
+	PigSchemaTests.class
 	})
 public class SetupPigEnvironmentTest {
 
