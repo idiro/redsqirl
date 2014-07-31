@@ -112,7 +112,10 @@ public class PigTranspose extends PigElement {
 			logger.debug("In and out...");
 			// Output
 			DFEOutput out = output.values().iterator().next();
-			String remove = getRemoveQueryPiece(out.getPath()) + "\n\n";
+			
+			String remove = getRemoveQueryPiece(out.getPath()) + "\n";
+			remove += getRemoveQueryPiece(out.getPath()+"_temp") + "\n\n";
+			
 			String loader = getCurrentName();
 			String load = loader + " = " + getLoadQueryPiece(in) + ";\n\n";
 			String transpose = getTransposeQuery(loader, getNextName(), 

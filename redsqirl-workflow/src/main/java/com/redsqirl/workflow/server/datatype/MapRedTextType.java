@@ -285,7 +285,6 @@ public class MapRedTextType extends MapRedDir {
 				}
 
 				FieldList fl = generateFieldsMap(getChar(getProperty(key_delimiter)));
-				fields = fl;
 				
 				String error = null;
 				String header = getProperty(key_header);
@@ -293,18 +292,19 @@ public class MapRedTextType extends MapRedDir {
 					logger.info("setFieldsFromHeader --");
 					error = setFieldsFromHeader();
 					if (error != null) {
+						if(checkCompatibility(fl,fields) != null){
+							fields = fl;
+						}
 						throw new RemoteException(error);
 					}
 				} else {
-
-					if (fields != null) {
-						String myHeader = fl.mountStringHeader();
-						addProperty(key_header, myHeader);
-						logger.debug(fields.getFieldNames());
-						logger.debug(fl.getFieldNames());
-					} else {
+					if(checkCompatibility(fl,fields) != null){
 						fields = fl;
 					}
+					String myHeader = fl.mountStringHeader();
+					addProperty(key_header, myHeader);
+					logger.debug(fields.getFieldNames());
+					logger.debug(fl.getFieldNames());
 				}
 
 				if (fields.getSize() != fl.getSize()) {
@@ -314,38 +314,48 @@ public class MapRedTextType extends MapRedDir {
 					}
 					fields = fl;
 				} else {
-					Iterator<String> flIt = fl.getFieldNames().iterator();
-					Iterator<String> fieldIt = fields.getFieldNames()
-							.iterator();
-					boolean ok = true;
-					int i = 1;
-					while (flIt.hasNext() && ok) {
-						String nf = flIt.next();
-						String of = fieldIt.next();
-						logger.info("types field " + i + ": "
-								+ fl.getFieldType(nf) + " , "
-								+ fields.getFieldType(of));
-						ok &= canCast(fl.getFieldType(nf),
-								fields.getFieldType(of));
-						if (!ok) {
-							error = LanguageManagerWF.getText(
-									"mapredtexttype.msg_error_cannot_cast",
-									new Object[] { fl.getFieldType(nf),
-											fields.getFieldType(of) });
-						}
-						++i;
-					}
-					if (!ok) {
-						fields = fl;
-						if (error != null) {
-							throw new RemoteException(error);
-						}
+					error = checkCompatibility(fl,fields);
+					if (error != null) {
+						fields = fl;						
+						throw new RemoteException(error);
 					}
 				}
 
 			}
 		}
-
+	}
+	
+	private String checkCompatibility(FieldList from, FieldList to) throws RemoteException{
+		Iterator<String> flIt = from.getFieldNames().iterator();
+		Iterator<String> fieldIt = to.getFieldNames()
+				.iterator();
+		String error = null;
+		boolean ok = true;
+		int i = 1;
+		while (flIt.hasNext() && ok) {
+			String nf = flIt.next();
+			if (!fieldIt.hasNext()){
+				ok = false;
+				error = LanguageManagerWF.getText(
+						"mapredtexttype.msg_error_number_fields");
+			}
+			else{
+				String of = fieldIt.next();
+				logger.info("types field " + i + ": "
+						+ from.getFieldType(nf) + " , "
+						+ to.getFieldType(of));
+				ok &= canCast(from.getFieldType(nf),
+						to.getFieldType(of));
+				if (!ok) {
+					error = LanguageManagerWF.getText(
+							"mapredtexttype.msg_error_cannot_cast",
+							new Object[] { from.getFieldType(nf),
+									to.getFieldType(of) });
+				}
+				++i;
+			}
+		}
+		return error;
 	}
 
 	/**

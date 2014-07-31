@@ -416,8 +416,9 @@ public abstract class PigElement extends DataflowAction {
 		String query = "STORE "+relationName+" INTO '" + out.getPath() + "'";
 				
 		if (function != null){
-			query += " USING "+function+";";
+			query += " USING "+function;
 		}
+		query += ";";
 				
 		return query;
 	}
@@ -438,7 +439,7 @@ public abstract class PigElement extends DataflowAction {
 			type = savetypeOutputInt.getTree().getFirstChild("list").getFirstChild("output").getFirstChild().getHead();
 			logger.info("type: "+type);
 			if(type.equalsIgnoreCase("TEXT MAP-REDUCE DIRECTORY")){
-				function = "PigStorage('"+delimiter+"')";
+				function = "PigStorage('"+delimiter+"', '-schema')";
 			}
 			if (type.equalsIgnoreCase("BINARY MAP-REDUCE DIRECTORY")){
 				function = "BinStorage()";
