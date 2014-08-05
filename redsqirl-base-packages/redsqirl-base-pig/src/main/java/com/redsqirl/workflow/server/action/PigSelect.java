@@ -6,6 +6,9 @@ import java.util.Iterator;
 
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.Page;
+import com.redsqirl.workflow.server.interaction.PigFilterInteraction;
+import com.redsqirl.workflow.server.interaction.PigGroupInteraction;
+import com.redsqirl.workflow.server.interaction.PigTableSelectInteraction;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.utils.PigLanguageManager;
@@ -131,7 +134,7 @@ public class PigSelect extends PigElement {
 				}
 			}
 
-			String remove = getRemoveQueryPiece(out.getPath()) + "\n\n";
+			String remove = getRemoveQueryPiece(out.getPath()) + ";\n\n";
 
 			String load = loader + " = " + getLoadQueryPiece(in) + ";\n\n";
 

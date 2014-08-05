@@ -1,4 +1,4 @@
-package com.redsqirl.workflow.server.action;
+package com.redsqirl.workflow.server.interaction;
 
 
 import java.rmi.RemoteException;
@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.redsqirl.workflow.server.TableInteraction;
+import com.redsqirl.workflow.server.action.PigValueBinning;
 import com.redsqirl.workflow.utils.PigLanguageManager;
 
 public class PigTableValueBinningInteraction extends TableInteraction {

@@ -1,4 +1,4 @@
-package com.redsqirl.workflow.server.action;
+package com.redsqirl.workflow.server.interaction;
 
 
 import java.rmi.RemoteException;

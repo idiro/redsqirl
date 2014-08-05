@@ -1,10 +1,11 @@
-package com.redsqirl.workflow.server.action;
+package com.redsqirl.workflow.server.interaction;
 
 
 import java.rmi.RemoteException;
 
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.AppendListInteraction;
+import com.redsqirl.workflow.server.action.PigElement;
 
 public class PigOrderInteraction extends AppendListInteraction{
 	

@@ -11,8 +11,8 @@ import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.Workflow;
 import com.redsqirl.workflow.server.action.PigBinarySource;
 import com.redsqirl.workflow.server.action.PigElement;
-import com.redsqirl.workflow.server.action.PigTableUnionInteraction;
 import com.redsqirl.workflow.server.action.PigUnion;
+import com.redsqirl.workflow.server.interaction.PigTableUnionInteraction;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.test.TestUtils;
 

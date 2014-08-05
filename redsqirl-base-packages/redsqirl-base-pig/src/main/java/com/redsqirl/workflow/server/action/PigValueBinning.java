@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.enumeration.FieldType;
+import com.redsqirl.workflow.server.interaction.PigTableValueBinningInteraction;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;

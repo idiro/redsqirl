@@ -110,7 +110,7 @@ public class AuditGenerator {
 			logger.debug("In and out...");
 			// Output
 
-			String remove = getRemoveQueryPiece(audit_out.getPath()) + "\n\n";
+			String remove = getRemoveQueryPiece(audit_out.getPath()) + ";\n\n";
 			String load = "";
 			if(loader == null){
 				loader = "DATA_TO_AUDIT";

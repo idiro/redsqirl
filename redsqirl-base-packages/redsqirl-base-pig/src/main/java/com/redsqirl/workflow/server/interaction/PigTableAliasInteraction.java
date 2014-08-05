@@ -1,4 +1,4 @@
-package com.redsqirl.workflow.server.action;
+package com.redsqirl.workflow.server.interaction;
 
 
 import java.rmi.RemoteException;
@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.redsqirl.workflow.server.TableInteraction;
+import com.redsqirl.workflow.server.action.PigElement;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.utils.PigLanguageManager;
