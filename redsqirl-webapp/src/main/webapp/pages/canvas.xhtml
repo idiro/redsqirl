@@ -22,6 +22,7 @@
 <script	src="#{facesContext.externalContext.requestContextPath}/js/kinetic-v4.3.3.js" type="text/javascript" />
 <script	src="#{facesContext.externalContext.requestContextPath}/js/jquery.cookie.js" type="text/javascript" />
 <script	src="#{facesContext.externalContext.requestContextPath}/js/canvas.js" type="text/javascript" />
+<script	src="#{facesContext.externalContext.requestContextPath}/js/rs-history-engine.js" type="text/javascript" />
 <script	src="#{facesContext.externalContext.requestContextPath}/js/redsqirl.js" type="text/javascript" />
 <script	src="#{facesContext.externalContext.requestContextPath}/js/splitter.js"	type="text/javascript" />
 <script	src="#{facesContext.externalContext.requestContextPath}/js/scrollabletab.js" type="text/javascript" />
@@ -160,7 +161,7 @@
 	              var tabName = "canvas-"+contTabCanvas;
 	              addWorkflow(tabName);
 	              addWorkflowTab(tabName);
-	              configureCanvas(tabName);
+	              configureCanvas(tabName, true);
 	              setWorkflow(tabName);
 	              validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
 	              
@@ -403,11 +404,11 @@
 	    			 invalidateSession();
 	    		 }
 	    		 
-	    		 setTimeout(function(){autoSaveAll()}, 10*1000);
+	    		 //setTimeout(function(){autoSaveAll()}, 10*1000);
 	    		 
 	    	});	//---------- END jQuery function
 	    			
-	    	function autoSaveAll(){
+	    	/* function autoSaveAll(){
 	    		try{
 	    			var currentSelect = getAllIconPositions();
 	                if(allPositionIcons === undefined){
@@ -422,7 +423,7 @@
                 }catch(err){
                 }
 	    		setTimeout(function(){autoSaveAll()},10*60*1000);
-            }
+            } */
 
 	      function closeTab(arg){
 	    	  jQuery(jQuery( arg ).prev().attr('href')).remove();
@@ -435,30 +436,25 @@
 	    	  closeWorkflowTab(ul, tabName);
 	      }
 	      
-	      function addElementJs(canvasName, path, positions, links, selecteds){
+	      function addElementJs(canvasName, path, positions, links, selecteds, reset){
 	          //Add the workflow tab only if the name does not exist yet.
-	          //alert(document.getElementById(canvasName) == null);
 	          if(document.getElementById(canvasName) == null) {
 	    	      addWorkflowTab(canvasName);
-	    	      configureCanvas(canvasName);
+	    	      configureCanvas(canvasName, reset);
 		    	  setWorkflow(canvasName);
 	    	      addElements(canvasName, positions, selecteds);
 	    	      setSaved(canvasName, true);
 	    	      setPathFile(canvasName, path);
-	    	      
 	    	      addLinks(canvasName, links);
-
-		    	  //change arc's colors
-		    	  //Updated after workflow
-		    	  //updateAllArcsStatus();
-		    	  //updateRunningStatus();
-
-		    	  //alert("2");
-	
-		    	  //change arrow colours
 		    	  updateAllArrowColor();
-		    	  
 		    	  resizeCanvas(30,30);
+	          }
+	      }
+
+	      function addSelectedElement(canvasName, path, positions, links, selecteds){
+	          if(document.getElementById(canvasName) == null) {
+	    	      addElements(canvasName, positions, selecteds);
+	    	      addLinks(canvasName, links);
 	          }
 	      }
 	      
@@ -467,6 +463,9 @@
 	      }
 	      
 	      function updateCanvasRunningStatus(status){
+
+		      alert('f');
+		      
 	    	//<![CDATA[
 	    	  for (var i = 0; i < status.length; i++) {
 		    	  updateActionRunningStatus(status[i][0], status[i][1], status[i][2]);
@@ -583,7 +582,7 @@
               
               addWorkflow("canvas-1");
               addWorkflowTab("canvas-1");
-              configureCanvas("canvas-1");
+              configureCanvas("canvas-1", true);
               setWorkflow("canvas-1");
 	      }
 	      
@@ -887,15 +886,12 @@
 					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
-				<a4j:jsFunction name="updateRunningStatus"
-					data="#{canvasBean.runningStatus}"
+				<a4j:jsFunction name="updateRunningStatus" data="#{canvasBean.runningStatus}"
 					oncomplete="updateCanvasRunningStatus(data);jQuery('#canvas-tabs').unblock();" reRender="errorTable, msnError" />
 			</a4j:region>
 
 			<a4j:region>
-
-				<a4j:jsFunction name="setWorkflow"
-					action="#{canvasBean.changeWorkflow}"
+				<a4j:jsFunction name="setWorkflow" action="#{canvasBean.changeWorkflow}"
 					oncomplete="setSelectedByName('#{canvasBean.nameWorkflow}');updateWfDisplayComment();verifyIfIsRunning(getSelectedByName());"
 					reRender="formMenu,domMessageDivCanvas2,killProcessBtn">
 					<a4j:actionparam name="selectedCanvas" assignTo="#{canvasBean.nameWorkflow}" />
@@ -962,8 +958,7 @@
 					onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
-				<a4j:jsFunction name="saveWorkflow" action="#{canvasBean.save}"
-					reRender="errorTable"
+				<a4j:jsFunction name="saveWorkflow" action="#{canvasBean.save}" reRender="errorTable"
 					oncomplete="if(document.getElementById('#{canvasBean.nameWorkflow}') == null){renameTab();} else {onHideModalSaveWorkflow(true);jQuery('#canvas-tabs').unblock();}">
 					<a4j:actionparam name="nameWorkflow" />
 					<a4j:actionparam name="pathFile" />
@@ -1067,8 +1062,7 @@
 					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
-				<a4j:jsFunction name="updateAllArrowColor"
-					data="#{canvasBean.allArrows}"
+				<a4j:jsFunction name="updateAllArrowColor" data="#{canvasBean.allArrows}"
 					oncomplete="updateAllArrowColours('#{canvasBean.nameWorkflow}', data)">
 				</a4j:jsFunction>
 
@@ -1136,9 +1130,8 @@
 					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
-				<a4j:jsFunction name="loadWorkflow"
-					data="#{canvasBean.positions}"
-					oncomplete="addElementJs(data[0],data[1],data[2],data[3],data[4]);setRunning(getSelectedByName(), true);blockRunningWorkflow();"
+				<a4j:jsFunction name="loadWorkflow" data="#{canvasBean.positions}"
+					oncomplete="addElementJs(data[0],data[1],data[2],data[3],data[4], true);setRunning(getSelectedByName(), true);blockRunningWorkflow();"
 					reRender="tabFlowchart,errorTable,msnError" />
 					
 			</a4j:region>
@@ -1149,7 +1142,7 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
 				<a4j:jsFunction name="renameTab" data="#{canvasBean.positions}"
-					oncomplete="closeCurrentTabWithoutCallingBackend();addElementJs(data[0],data[1],data[2],data[3],data[4]);updateRunningStatus();updateAllOutputStatus();onHideModalSaveWorkflow(true);jQuery.unblockUI();"
+					oncomplete="closeCurrentTabWithoutCallingBackend();addElementJs(data[0],data[1],data[2],data[3],data[4], true);updateRunningStatus();updateAllOutputStatus();onHideModalSaveWorkflow(true);jQuery.unblockUI();"
 					reRender="tabFlowchart" />
 			</a4j:region>
 
@@ -1205,8 +1198,7 @@
 					</h:panelGroup>
 				</div>
 
-				<a4j:jsFunction name="blockRunningWorkflow"
-					action="#{canvasBean.blockRunningWorkflow}"
+				<a4j:jsFunction name="blockRunningWorkflow" action="#{canvasBean.blockRunningWorkflow}"
 					oncomplete="jQuery('#'+getSelectedById()).unblock();if('#{canvasBean.blockingWorkflowName}' == getSelectedByName()){setRunning(getSelectedByName(), false);updateRunningStatus();updateAllOutputStatus();}">
 				</a4j:jsFunction>
 
@@ -1248,6 +1240,37 @@
 					<a4j:actionparam name="allpositions" />
 				</a4j:jsFunction>
 			</a4j:region>
+			
+			
+			
+			
+			<a4j:region>
+
+				<a4j:status
+					onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+					onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
+					onstop="jQuery('#canvas-tabs').unblock();" />
+					
+				<a4j:jsFunction name="deleteElements" action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}" 
+					oncomplete="tmpCommandObj.cloneId = data;deleteElementsJS(tmpCommandObj.selecteds, tmpCommandObj.selectedArrows)" >
+					<a4j:actionparam name="allpositions" />
+				</a4j:jsFunction>
+				
+				<a4j:jsFunction name="undoDeleteSelected" action="#{canvasBean.undoDeleteSelected}"
+					oncomplete="rebuildJS();" reRender="errorTable,tabFlowchart" >
+					<a4j:actionparam name="selectedItens" />
+					<a4j:actionparam name="idCloneMap" />
+				</a4j:jsFunction>
+					
+				<a4j:jsFunction name="rebuildJS" data="#{canvasBean.positions}"
+					oncomplete="addSelectedElement(data[0],data[1],data[2],data[3],data[4]);updateAllArrowColor();updateRunningStatus();updateAllOutputStatus();"
+					reRender="tabFlowchart" />
+					
+			</a4j:region>
+			
+			
+			
+			
 			
 			<a4j:region>
 				
@@ -1355,7 +1378,7 @@
                             </rich:menuItem>
 							<rich:menuSeparator />
 							<rich:menuItem submitMode="none"
-								value="#{messages.label_menu_delete}" onclick="deleteSelected();" >
+								value="#{messages.label_menu_delete}" onclick="deleteSelected(getSelectedByName());" >
 								<h:outputText value="Del" class="menuItemHotKey"/>
 							</rich:menuItem>
 	
@@ -1489,6 +1512,12 @@
                             </span>
                             <span style="cursor:pointer;">
                                 <img src="../image/icons/button-copy.gif" alt="paste" class="shortMenuIcon" onclick="paste();" title="#{messages.label_menu_paste}" />
+                            </span>
+                            <span style="cursor:pointer;">
+                                <img src="../image/icons/button-undo.gif" alt="undo" class="shortMenuIcon" onclick="undo();" title="#{messages.label_menu_undo}" />
+                            </span>
+                            <span style="cursor:pointer;">
+                                <img src="../image/icons/button-redo.gif" alt="redo" class="shortMenuIcon" onclick="redo();" title="#{messages.label_menu_redo}" />
                             </span>
 						</div>
 					</div>

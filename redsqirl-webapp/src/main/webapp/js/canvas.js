@@ -1,8 +1,7 @@
 function Canvas(name){
 	this.name=name;
-	this.history = [];
-	this.history2 = [];
-	this.historyStep = -1;
+	
+	this.commandHistory = new CommandHistory();
 	
 	this.rectSelect = null;
 	this.arrow = null;
@@ -48,16 +47,16 @@ function Canvas(name){
 }
 
 var selectedCanvas = "canvas-1";
-
 var canvasArray;
 var allPositionIcons;
-
 var imgHeight;
 var imgWidth;
-
 var rightClickGroup;
-
 var curToolTip;
+var isSaveAll = false;
+var indexSaving;
+var contSaving;
+var tmpCommandObj;
 
 var contextMenuCanvas = [
  {'Create Link': function(menuItem,menu){createLink(rightClickGroup.getChildren()[0]);}},
@@ -69,22 +68,19 @@ var contextMenuCanvas = [
 
 var cmenuCanvas = jQuery.contextMenu.create(contextMenuCanvas);
 
-/*function findHHandWW() {
-	imgHeight = this.height;
-	imgWidth = this.width;
-	return true;
-}*/
-
 window.onload = function() {
 	var canvasName = "canvas-1";
 	canvasArray = {};
-	configureCanvas(canvasName);
+	configureCanvas(canvasName, true);
 	mountObj(canvasName);
 };
 
-function configureCanvas(canvasName){
+function configureCanvas(canvasName, reset){
 	
-	canvasArray[canvasName] = new Canvas(canvasName);
+	if(reset){
+		canvasArray[canvasName] = new Canvas(canvasName);
+	}
+	
 	var canvasContainer = "container-"+canvasName;
 	var legendCanvasContainer = "container-legend-"+canvasName;
 	canvasArray[canvasName].canvasContainer = canvasContainer;
@@ -166,11 +162,10 @@ function configureCanvas(canvasName){
 
 	configureStage(canvasName);
 
-	makeHistory(canvasName);
 
 	jQuery("#body").keydown(function(event) {
 		if (event.keyCode == 46) { // Delete
-			deleteSelected();
+			deleteSelected(canvasName);
 		}
 	});
 
@@ -668,25 +663,44 @@ function deselectAll(canvasName) {
 
 }
 
-function deleteSelected() {
+function checkIfExistID(nameId, listIds) {
+	var ids = listIds.split(",");
+	for ( var i = 0; i < ids.length; i++) {
+		if(ids[i] == nameId){
+			return true;
+		}
+	}
+	return false;
+}
+
+function deleteElementsJS(listIds, listArrowsIds) {
 	
 	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
 	var layer = canvasArray[selectedCanvas].layer;
 
-	makeHistory(selectedCanvas);
-
 	jQuery.each(polygonLayer.get('.group1'), function(index, value) {
 		var group = this;
-		jQuery.each(value.getChildren(), function(index, value2) {
+		
+		//alert(group.getId());
+		//alert(checkIfExistID(group.getId(),listIds));
+		
+		if(checkIfExistID(group.getId(),listIds)){
+			removeElement(group.getId());
+			deleteLayerChildren(selectedCanvas, group.getId());
+			group.remove();
+		}
+		
+		/*jQuery.each(value.getChildren(), function(index, value2) {
 			if (value2.selected) {
 				removeElement(group.getId());
 				deleteLayerChildren(selectedCanvas, group.getId());
 				group.remove();
 			}
-		});
+		});*/
+		
 	});
 
-	var listSize = layer.getChildren().size();
+	/*var listSize = layer.getChildren().size();
 	for ( var i = 0; i < listSize; i++) {
 		jQuery.each(layer.getChildren(), function(index, value) {
 			if (value !== undefined && value.isArrow == true) {
@@ -704,7 +718,15 @@ function deleteSelected() {
 				}
 			}
 		});
+	}*/
+	
+	//alert(listArrowsIds);
+	
+	var l = listArrowsIds.split(",");
+	for (var i in l) {
+		removeLink(l[i]);
 	}
+	
 	layer.draw();
 	polygonLayer.draw();
 
@@ -859,7 +881,6 @@ function addLink(canvasName, outId, inId) {
 	layer.draw();
 	polygonLayer.draw();
 
-	makeHistory(canvasName);
 	
 	return arrowClone;
 }
@@ -998,48 +1019,7 @@ function rulesDragAndDropGroupObj(canvasName, pos, valueX, valueY) {
 	// ]]>
 }
 
-function makeHistory(canvasName) {
-	
-	var polygonLayer = canvasArray[canvasName].polygonLayer;
-	var layer = canvasArray[canvasName].layer;
-	
-	canvasArray[canvasName].historyStep++;
-	if (canvasArray[canvasName].historyStep < history.length) {
-		canvasArray[canvasName].history.length = canvasArray[canvasName].historyStep;
-		canvasArray[canvasName].history2.length = canvasArray[canvasName].historyStep;
-	}
 
-	jQuery.each(polygonLayer.getChildren(), function(index, value) {
-		if (value === undefined) {
-			value.remove();
-		}
-	});
-
-	jQuery.each(layer.getChildren(), function(index, value) {
-		if (value === undefined) {
-			value.remove();
-		}
-	});
-
-	deleteArrowOutsideStandard(canvasName);
-	canvasArray[canvasName].rectSelect.remove();
-
-	var json2 = layer.toJSON();
-	json2 = json2.replace('"children":"', '"children":');
-	json2 = json2.substring(0, json2.length - 2) + json2.substring(json2.length - 1, json2.length);
-	json2 = json2.replace(/\\/g, "");
-
-	canvasArray[canvasName].history2.push(json2);
-	// console.log(json2);
-
-	var json = polygonLayer.toJSON();
-	json = json.replace('"children":"', '"children":');
-	json = json.substring(0, json.length - 2) + json.substring(json.length - 1, json.length);
-	json = json.replace(/\\/g, "");
-	canvasArray[canvasName].history.push(json);
-	// console.log(json);
-
-}
 
 function addElements(canvasName, positions, selecteds) {
 	canvasArray[canvasName].countObj = 0;
@@ -1062,7 +1042,7 @@ function addElements(canvasName, positions, selecteds) {
 		maxY = Math.max(maxY,positionsArrays[i][4]);
 		//updateIdObj(positionsArrays[i][0], positionsArrays[i][0]);
 		updateTypeObj(canvasName, positionsArrays[i][0], positionsArrays[i][0]);
-		updateLabelObj(positionsArrays[i][0], positionsArrays[i][0]);
+		updateLabelObj(positionsArrays[i][0], positionsArrays[i][5]);
 		group.hasChangedId = true;
 	}
 	
@@ -1100,7 +1080,6 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
 
 	var img = new Image();
 	img.src = elementImg;
-	//img.onload = findHHandWW;
 
 	var result = createPolygon(img, 40, 50, numSides, canvasName);
 	var polygon = result[0];
@@ -1261,36 +1240,7 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
 	return group;
 }
 
-function undoHistory() {
-	
-	if (canvasArray[selectedCanvas].historyStep > 0) {
-		canvasArray[selectedCanvas].historyStep--;
 
-		var json = canvasArray[selectedCanvas].history[canvasArray[selectedCanvas].historyStep];
-		var json2 = canvasArray[selectedCanvas].history2[canvasArray[selectedCanvas].historyStep];
-
-		canvasArray[selectedCanvas].polygonLayer = Kinetic.Node.create(json, selectedCanvas);
-		canvasArray[selectedCanvas].layer = Kinetic.Node.create(json2, selectedCanvas);
-
-		ready(selectedCanvas);
-	}
-	
-}
-
-function redoHistory() {
-	
-	if (canvasArray[selectedCanvas].historyStep < history.length - 1) {
-		canvasArray[selectedCanvas].historyStep++;
-
-		var json = canvasArray[selectedCanvas].history[canvasArray[selectedCanvas].historyStep];
-		var json2 = canvasArray[selectedCanvas].history2[canvasArray[selectedCanvas].historyStep];
-
-		canvasArray[selectedCanvas].polygonLayer = Kinetic.Node.create(json, selectedCanvas);
-		canvasArray[selectedCanvas].layer = Kinetic.Node.create(json2, selectedCanvas);
-
-		ready(selectedCanvas);
-	}
-}
 
 function ready(canvasName) {
 	
@@ -1415,16 +1365,7 @@ function mountObj(canvasName) {
 				//alert(jQuery(this).attr("src"));
 				
 				imgTab.src = jQuery(this).attr("src");
-				//imgTab.onload = findHHandWW;
-				
-				
 				var srcImageText = jQuery(this).attr("src");
-				
-				/*var srcImageText = new Kinetic.Text({
-					text : jQuery(this).attr("src")
-				});
-				srcImageText.setStroke(null);*/
-				
 				
 				//label on footer
 				var labelText = jQuery(this).next().text();
@@ -1631,6 +1572,28 @@ function getSelectedIconsCommaDelimited(){
     return ans;
 }
 
+function getSelectedArrowsCommaDelimited(){
+	
+	var layer = canvasArray[selectedCanvas].layer;
+	var listSize = layer.getChildren().size();
+	var ans = "";
+	
+	for ( var i = 0; i < listSize; i++) {
+		jQuery.each(layer.getChildren(), function(index, value) {
+			if (value !== undefined && value.isArrow == true) {
+				if (value.selected) {
+					ans = ans.concat(",",value.getName());
+				}
+			}
+		});
+	}
+	if(ans.length > 0){
+    	return ans.substring(1);
+    }
+    return ans;
+}
+
+
 function getIconPositions(){
 	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
     var positions = {};
@@ -1792,7 +1755,6 @@ function configureGroupListeners(canvasName, group) {
 		group.setDragBoundFunc(function(pos) {
 			return rulesDragAndDropObj(canvasName, pos, 80, 80);
 		});
-		makeHistory(canvasName);
 		jQuery(".tooltipCanvas").remove();
 	});
 	
@@ -1882,7 +1844,6 @@ function configureGroup(canvasName, group, mousePosX, mousePosY, polygon, select
         openCanvasModalJS(this);
 	});
 
-	makeHistory(canvasName);
 }
 
 function setPageNb(groupId, pageNb){
@@ -2127,6 +2088,9 @@ function removeLink(name) {
 function updateLabelObj(groupId, newGroupId) {
 	
 	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+	
+	//alert(groupId);
+	//alert(newGroupId);
 	
 	var group = getElement(polygonLayer, groupId);
 	var px = group.getChildren()[2].getX() - (newGroupId.length*2);
@@ -2413,58 +2377,6 @@ function updateAllArrowColours(canvasName, data){
 	
 }
 
-function getCanvasId(canvasName){
-	return "flowchart-"+canvasName;
-}
-
-function setSelectedByName(selected){
-	selectedCanvas = selected;
-}
-
-function getSelectedByName(){
-	return selectedCanvas;
-}
-
-function setSelectedById(selected){
-	selectedCanvas = selected.substring(10);
-}
-
-function getSelectedById(){
-	return "flowchart-"+selectedCanvas;
-}
-
-function setRunning(canvasName, value){
-	canvasArray[canvasName].running = value;
-}
-
-function isRunning(canvasName){
-	return canvasArray[canvasName].running;
-}
-
-function setSaved(canvasName, value){
-	canvasArray[canvasName].saved = value;
-}
-
-function isSaved(canvasName){
-	return canvasArray[canvasName].saved;
-}
-
-function setPathFile(canvasName, value){
-	canvasArray[canvasName].pathFile = value;
-}
-
-function getPathFile(canvasName){
-	return canvasArray[canvasName].pathFile;
-}
-
-function capitaliseFirstLetter(string){
-    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();;
-}
-
-var isSaveAll = false;
-var indexSaving;
-var contSaving;
-	
 function saveAll(){
 	isSaveAll = true;
 	indexSaving = 0;
@@ -2515,4 +2427,62 @@ function ucFirstAllWords( str ){
         pieces[i] = j + pieces[i].substr(1);
     }
     return pieces.join(" ");
+}
+
+function capitaliseFirstLetter(string){
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+}
+
+function undo(){
+	canvasArray[getSelectedByName()].commandHistory.undo();
+}
+
+function redo(){
+	canvasArray[getSelectedByName()].commandHistory.redo();
+}
+
+
+
+function getCanvasId(canvasName){
+	return "flowchart-"+canvasName;
+}
+
+function setSelectedByName(selected){
+	selectedCanvas = selected;
+}
+
+function getSelectedByName(){
+	return selectedCanvas;
+}
+
+function setSelectedById(selected){
+	selectedCanvas = selected.substring(10);
+}
+
+function getSelectedById(){
+	return "flowchart-"+selectedCanvas;
+}
+
+function setRunning(canvasName, value){
+	canvasArray[canvasName].running = value;
+}
+
+function isRunning(canvasName){
+	return canvasArray[canvasName].running;
+}
+
+function setSaved(canvasName, value){
+	canvasArray[canvasName].saved = value;
+}
+
+function isSaved(canvasName){
+	return canvasArray[canvasName].saved;
+}
+
+function setPathFile(canvasName, value){
+	canvasArray[canvasName].pathFile = value;
+}
+
+function getPathFile(canvasName){
+	return canvasArray[canvasName].pathFile;
 }
