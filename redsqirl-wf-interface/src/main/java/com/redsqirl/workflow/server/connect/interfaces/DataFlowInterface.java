@@ -83,4 +83,7 @@ public interface DataFlowInterface extends Remote{
 	 * @param to
 	 */
 	public void copy(String cloneId, List<String> elements, String wfName) throws RemoteException;
+	
+	public void copyUndoElement(String id, String wfName) throws RemoteException;
+	
 }

@@ -344,4 +344,14 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	private Map<String,DataStore> getDatastores() {
 		return datastores;
 	}
+	
+	public void copyUndoElement(String id, String wfName) throws RemoteException{
+
+		if(wfClones.containsKey(id) && wf.containsKey(wfName)){
+			wf.remove(wfName);
+			wf.put(wfName,wfClones.get(id));
+		}
+
+	}
+	
 }
