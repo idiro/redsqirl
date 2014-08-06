@@ -461,6 +461,15 @@ div#body{
   display:none;
 }
 
+.wizzard_quick_navig{
+    background-image:url('../image/green_arrow.gif');
+    background-repeat: no-repeat;
+    background-size: 485px 24px;
+    height: 20px;
+    width: 485px;
+}
+
+
 
 /* Package css */
 .order-table{   

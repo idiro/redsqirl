@@ -1083,7 +1083,7 @@
 
 				<a4j:jsFunction name="openModal"
 					action="#{canvasModalBean.openCanvasModal}"
-					oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('canvasModalPanel')}.show();checkPageError(); }"
+					oncomplete="if(#{requestScope['msnError'] == null}){ #{rich:component('canvasModalPanel')}.show();checkPageError();createOptionTitles(); }"
 					reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError, errorTable, canvasModalTabPanel, msnErrorPage">
 					<a4j:actionparam name="paramGroupId" />
 					<a4j:actionparam name="paramPathImage" />
@@ -1125,7 +1125,7 @@
 			<a4j:region>
 				<a4j:jsFunction name="closeChangeIdModal"
 				    reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError, errorTable, canvasModalTabPanel"
-					oncomplete="if(#{canvasModalBean.loadMainWindow}){ #{rich:component('canvasModalPanel')}.show();}">
+					oncomplete="if(#{canvasModalBean.loadMainWindow}){ #{rich:component('canvasModalPanel')}.show();createOptionTitles();}">
 				</a4j:jsFunction>
 			</a4j:region>
 
