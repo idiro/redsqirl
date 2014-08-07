@@ -123,3 +123,122 @@ CommandDelete.prototype.getName = function(){
 function deleteSelected(canvasName){
 	canvasArray[canvasName].commandHistory.execute(new CommandDelete(getSelectedIconsCommaDelimited(), getSelectedArrowsCommaDelimited()));
 }
+
+
+
+
+function CommandAddObj(canvasName, elementType, elementImg, posx, posy, numSides, idElement, selecteds) {
+	Command.call(this);
+	this.canvasName = canvasName;
+	this.elementType = elementType;
+	this.elementImg = elementImg;
+	this.posx = posx;
+	this.posy = posy;
+	this.numSides = numSides;
+	this.idElement = idElement;
+	this.selecteds = selecteds;
+};
+
+CommandAddObj.prototype = Object.create(Command.prototype);
+CommandAddObj.prototype.constructor = CommandAddObj;
+
+CommandAddObj.prototype.undo = function(){
+	deleteElementsJS(this.idElement, "");
+};
+
+CommandAddObj.prototype.redo = function(){
+	
+	addElement(this.canvasName,
+			this.elementType,
+			this.elementImg,
+			this.posx,
+			this.posy,
+			this.numSides,
+			this.idElement,
+			this.selecteds
+		);
+	canvasArray[this.canvasName].polygonLayer.draw();
+	
+};
+
+CommandAddObj.prototype.getName = function(){
+	return "add Element";
+};
+
+
+function CommandAddArrow(canvasName, outId, inId, name) {
+	Command.call(this);
+	this.canvasName = canvasName;
+	this.outId = outId;
+	this.inId = inId;
+	this.name = name;
+};
+
+CommandAddArrow.prototype = Object.create(Command.prototype);
+CommandAddArrow.prototype.constructor = CommandAddArrow;
+
+CommandAddArrow.prototype.undo = function(){
+	deleteElementsJS("", this.name);
+};
+
+CommandAddArrow.prototype.redo = function(){
+	addLink(this.canvasName, this.outId, this.inId);
+	updateAllArrowColor();
+};
+
+CommandAddArrow.prototype.getName = function(){
+	return "add Arrow";
+};
+
+
+function CommandPaste() {
+	Command.call(this);
+	this.idsToPaste = "";
+};
+
+CommandPaste.prototype = Object.create(Command.prototype);
+CommandPaste.prototype.constructor = CommandPaste;
+
+CommandPaste.prototype.undo = function(){
+	deleteElementsJS(this.idsToPaste, "");
+};
+
+CommandPaste.prototype.redo = function(){
+	tmpCommandObj = this;
+	pasteJS();
+};
+
+CommandPaste.prototype.getName = function(){
+	return "paste";
+};
+
+function paste(canvasName){
+	canvasArray[canvasName].commandHistory.execute(new CommandPaste());
+}
+
+
+function CommandReplaceAll(selecteds) {
+	Command.call(this);
+	this.selecteds = selecteds;
+	this.cloneId = "";
+};
+
+CommandReplaceAll.prototype = Object.create(Command.prototype);
+CommandReplaceAll.prototype.constructor = CommandReplaceAll;
+
+CommandReplaceAll.prototype.undo = function(){
+	undoDeleteSelected(this.cloneId);
+};
+
+CommandReplaceAll.prototype.redo = function(){
+	tmpCommandObj = this;
+	replaceAll(this.selecteds);
+};
+
+CommandReplaceAll.prototype.getName = function(){
+	return "replaceAll";
+};
+
+function replaceAll(canvasName){
+	canvasArray[canvasName].commandHistory.execute(new CommandReplaceAll(getSelectedIconsCommaDelimited()));
+}

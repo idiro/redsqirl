@@ -675,14 +675,14 @@ function checkIfExistID(nameId, listIds) {
 
 function deleteElementsJS(listIds, listArrowsIds) {
 	
+	//alert(listIds);
+	//alert(listArrowsIds);
+	
 	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
 	var layer = canvasArray[selectedCanvas].layer;
 
 	jQuery.each(polygonLayer.get('.group1'), function(index, value) {
 		var group = this;
-		
-		//alert(group.getId());
-		//alert(checkIfExistID(group.getId(),listIds));
 		
 		if(checkIfExistID(group.getId(),listIds)){
 			removeElement(group.getId());
@@ -719,8 +719,6 @@ function deleteElementsJS(listIds, listArrowsIds) {
 			}
 		});
 	}*/
-	
-	//alert(listArrowsIds);
 	
 	var l = listArrowsIds.split(",");
 	for (var i in l) {
@@ -1027,25 +1025,28 @@ function addElements(canvasName, positions, selecteds) {
 	var numSides = 4;
     var maxX = 0;
     var maxY = 0;
+    
 	//try{
 	
+    var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+    
 	for ( var i = 0; i < positionsArrays.length; i++) {
 		
-		//alert(positionsArrays[i][2]);
+		if(getElement(polygonLayer, positionsArrays[i][0]) == null){
+			var group = addElement(canvasName, positionsArrays[i][1],
+					positionsArrays[i][2], positionsArrays[i][3],
+					positionsArrays[i][4],
+					numSides,
+					positionsArrays[i][0], selecteds);
+			maxX = Math.max(maxX,positionsArrays[i][3]);
+			maxY = Math.max(maxY,positionsArrays[i][4]);
+			//updateIdObj(positionsArrays[i][0], positionsArrays[i][0]);
+			updateTypeObj(canvasName, positionsArrays[i][0], positionsArrays[i][0]);
+			updateLabelObj(positionsArrays[i][0], positionsArrays[i][5]);
+			group.hasChangedId = true;
+		}
 		
-		var group = addElement(canvasName, positionsArrays[i][1],
-				positionsArrays[i][2], positionsArrays[i][3],
-				positionsArrays[i][4],
-				numSides,
-				positionsArrays[i][0], selecteds);
-		maxX = Math.max(maxX,positionsArrays[i][3]);
-		maxY = Math.max(maxY,positionsArrays[i][4]);
-		//updateIdObj(positionsArrays[i][0], positionsArrays[i][0]);
-		updateTypeObj(canvasName, positionsArrays[i][0], positionsArrays[i][0]);
-		updateLabelObj(positionsArrays[i][0], positionsArrays[i][5]);
-		group.hasChangedId = true;
 	}
-	
     
 	if(canvasArray[canvasName].stage.getWidth() < maxX + 100){
        canvasArray[canvasName].stage.setWidth(maxX + 100);
@@ -1447,13 +1448,15 @@ function mountObj(canvasName) {
 					var mousePosStage = stage.getMousePosition();
 					if (mousePosStage !== undefined){
 
-						addElement(selectedCanvas,
+						canvasArray[selectedCanvas].commandHistory.execute(new CommandAddObj(selectedCanvas,
 								typeText.getText(),
 								srcImageText,
 								mousePosStage.x - 30,
 								mousePosStage.y - 30,
 								numSides,
-								"group" + (+canvasArray[selectedCanvas].countObj+1), "");
+								"group" + (+canvasArray[selectedCanvas].countObj+1),
+								"")
+						);
 						
 						addElementBt(typeText.getText(),"group"+ canvasArray[selectedCanvas].countObj);
 						updateTypeObj(selectedCanvas, "group"+ canvasArray[selectedCanvas].countObj, "group"+ canvasArray[selectedCanvas].countObj);
@@ -1662,6 +1665,7 @@ function createLink(circleGp){
             var output = arrow.output.getChildren()[4].getText();
             var input = circleGp.getParent().getChildren()[4].getText();
             var arrowClone = addLink(selectedCanvas, output, input);
+            canvasArray[selectedCanvas].commandHistory.push_command(new CommandAddArrow(selectedCanvas, output, input, arrowClone.getName()));
             
             addLinkModalBt(arrow.output.getId(), circleGp.getParent().getId(), arrowClone.getName());
 
@@ -2032,6 +2036,7 @@ function polygonOnClick(obj,e, canvasName){
 				var output = arrow.output.getChildren()[4].getText();
 				var input = obj.getParent().getChildren()[4].getText();
 				var arrowClone = addLink(canvasName, output, input);
+				canvasArray[canvasName].commandHistory.push_command(new CommandAddArrow(canvasName, output, input, arrowClone.getName()));
 				
 				//alert(arrow.output.getId() + "  " + obj.getParent().getId());
 				addLinkModalBt(arrow.output.getId(), obj.getParent().getId(), arrowClone.getName());
@@ -2197,7 +2202,7 @@ function getLabelRunning(color){
 }
 
 function getColorRunning(status){
-
+	
 	if (status == "OK"){
 		return "#008000"; //green
 	}
@@ -2260,7 +2265,7 @@ function updateActionOutputStatus(groupId, status, fileExists, tooltip, noError)
 }
 
 function updateActionRunningStatus(groupId, status, fileExists) {
-	
+
 	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
 	
 	var group = getElement(polygonLayer, groupId);
