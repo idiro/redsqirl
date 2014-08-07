@@ -1,8 +1,8 @@
 /********************************************************************/
 /********************************************************************/
 /********************************************************************/
-/********************************************************************/
-//Framework
+/*********************** Framework **********************************/
+//
 
 function CommandHistory() {
 	this.cur_index = -1;
@@ -70,31 +70,7 @@ Command.prototype.clean = function(){
 
 /********************************************************************/
 /********************************************************************/
-/********************************************************************/
-/********************************************************************/
-//Example
-function CommandExample(myExStr) {
-	Command.call(this);
-	this.myExStr = myExStr;
-};
-
-CommandExample.prototype = Object.create(Command.prototype); // See note below
-CommandExample.prototype.constructor = CommandExample;
-
-CommandExample.prototype.undo = function(){
-};
-
-CommandExample.prototype.redo = function(){
-};
-
-CommandExample.prototype.getName = function(){
-};
-/********************************************************************/
-/********************************************************************/
-/********************************************************************/
-/********************************************************************/
-
-
+/*********************** CommandDelete ******************************/
 function CommandDelete(selecteds, selectedArrows) {
 	Command.call(this);
 	this.selecteds = selecteds;
@@ -125,8 +101,9 @@ function deleteSelected(canvasName){
 }
 
 
-
-
+/********************************************************************/
+/********************************************************************/
+/********************* Command Add Object ***************************/
 function CommandAddObj(canvasName, elementType, elementImg, posx, posy, numSides, idElement, selecteds) {
 	Command.call(this);
 	this.canvasName = canvasName;
@@ -166,6 +143,9 @@ CommandAddObj.prototype.getName = function(){
 };
 
 
+/********************************************************************/
+/********************************************************************/
+/********************** CommandAddArrow *****************************/
 function CommandAddArrow(canvasName, outId, inId, name) {
 	Command.call(this);
 	this.canvasName = canvasName;
@@ -191,6 +171,9 @@ CommandAddArrow.prototype.getName = function(){
 };
 
 
+/********************************************************************/
+/********************************************************************/
+/*********************** CommandPaste *******************************/
 function CommandPaste() {
 	Command.call(this);
 	this.idsToPaste = "";
@@ -217,6 +200,9 @@ function paste(canvasName){
 }
 
 
+/********************************************************************/
+/********************************************************************/
+/********************* CommandReplaceAll ****************************/
 function CommandReplaceAll(selecteds) {
 	Command.call(this);
 	this.selecteds = selecteds;
@@ -242,3 +228,101 @@ CommandReplaceAll.prototype.getName = function(){
 function replaceAll(canvasName){
 	canvasArray[canvasName].commandHistory.execute(new CommandReplaceAll(getSelectedIconsCommaDelimited()));
 }
+
+/********************************************************************/
+/********************************************************************/
+/************************ CommandMove *******************************/
+function CommandMove(canvasName, oldValues,newValues) {
+    Command.call(this);
+    this.canvasName = canvasName;
+    this.oldValues = oldValues;
+    this.newValues = newValues;
+};
+
+CommandMove.prototype = Object.create(Command.prototype);
+CommandMove.prototype.constructor = CommandMove;
+
+CommandMove.prototype.undo = function(){
+    //alert("Undo");
+    var canvasNameCur = this.canvasName;
+    jQuery.each(this.oldValues, function(index, value) {
+        if(value.elementId !== undefined ){
+            var group = canvasArray[canvasNameCur].polygonLayer.get('#' + value.elementId)[0];
+            //alert(group.getId());
+            //alert(group.getId()+" ("+group.X+","+group.Y+") ("+value.X+","+value.Y+")");
+            group.setPosition(value.X,value.Y);
+            changePositionArrow(canvasNameCur, group);
+        }
+    });
+    
+    canvasArray[this.canvasName].polygonLayer.draw();
+    canvasArray[this.canvasName].layer.draw();
+};
+
+CommandMove.prototype.redo = function(){
+    //alert("Redo");
+    var canvasNameCur = this.canvasName;
+    jQuery.each(this.newValues, function(index, value) {
+        if(value.elementId !== undefined ){
+            var group = canvasArray[canvasNameCur].polygonLayer.get('#' + value.elementId)[0];
+            group.setPosition(value.X,value.Y);
+            changePositionArrow(canvasNameCur, group);
+        }
+    });
+    canvasArray[this.canvasName].polygonLayer.draw();
+    canvasArray[this.canvasName].layer.draw();
+};
+
+CommandMove.prototype.getName = function(){
+    return "move elements";
+};
+
+/********************************************************************/
+/********************************************************************/
+/********************** CommandChangeId *****************************/
+var currentChangeIdGroup = null;
+
+function CommandChangeId(groupId, oldId,newId, oldComment, newComment) {
+    Command.call(this);
+    this.groupId = groupId;
+    this.oldId = oldId;
+    this.newId = newId;
+    this.oldComment = oldComment; 
+    this.newComment = newComment;
+};
+
+CommandChangeId.prototype = Object.create(Command.prototype);
+CommandChangeId.prototype.constructor = CommandChangeId;
+
+CommandChangeId.prototype.undo = function(){
+    //alert("Undo");
+    jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });
+    currentChangeIdGroup = this.groupId;
+    changeIdElement(this.groupId,this.oldId,this.oldComment);
+    updateLabelObj(this.groupId,this.oldId);
+};
+
+CommandChangeId.prototype.redo = function(){
+    //alert("Redo");
+    jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });
+    currentChangeIdGroup = this.groupId;
+    changeIdElement(this.groupId,this.newId,this.newComment);
+    updateLabelObj(this.groupId,this.newId);
+};
+
+CommandChangeId.prototype.getName = function(){
+    return "change element id";
+};
+
+function execChangeIdElementCommand(groupId, oldId,newId, oldComment, newComment){
+    if(oldId != newId || oldComment != newComment){
+        canvasArray[selectedCanvas].commandHistory.execute(
+        new CommandChangeId(groupId, oldId,newId, oldComment, newComment));
+    }else{
+        jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });
+        currentChangeIdGroup = groupId;
+        changeIdElement(groupId,newId,newComment);
+        updateLabelObj(groupId,newId);
+    }
+}
+
