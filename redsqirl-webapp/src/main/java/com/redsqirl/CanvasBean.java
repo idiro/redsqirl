@@ -65,7 +65,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private String errorTableState = new String();
 	private List<String> emptyList = new LinkedList<String>();
 	private String cloneWFId;
-
+	private String idsToPaste;
 	private String blockingWorkflowName;
 
 	private WFCopyBuffer wfCopyBuffer;
@@ -726,16 +726,23 @@ public class CanvasBean extends BaseBean implements Serializable {
 	}
 
 	public void paste() throws RemoteException{
+		logger.info("paste");
 		if(wfCopyBuffer != null && getDf() != null){
 			getworkFlowInterface().copy(wfCopyBuffer.getDfCloneId(), wfCopyBuffer.getElementsToCopy(), getNameWorkflow());
 			Iterator<String> elIt = getDf().getComponentIds().iterator();
 			Map<String,String> idMapWf = idMap.get(getNameWorkflow());
+			StringBuffer ans = new StringBuffer();
 			while(elIt.hasNext()){
 				String elCur = elIt.next();
 				if(!idMapWf.containsValue(elCur)){
 					idMapWf.put(elCur,elCur);
+					ans = ans.append(","+elCur);
 				}
 			}
+			if(ans.length() > 0){
+		    	setIdsToPaste(ans.substring(1));
+		    	logger.info(getIdsToPaste());
+		    }
 		}
 	}
 
@@ -1953,6 +1960,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void setCloneWFId(String cloneWFId) {
 		this.cloneWFId = cloneWFId;
+	}
+
+	public String getIdsToPaste() {
+		return idsToPaste;
+	}
+
+	public void setIdsToPaste(String idsToPaste) {
+		this.idsToPaste = idsToPaste;
 	}
 
 }
