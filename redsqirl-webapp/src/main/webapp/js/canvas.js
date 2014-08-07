@@ -2541,6 +2541,9 @@ function getCanvasId(canvasName){
 
 function setSelectedByName(selected){
     selectedCanvas = selected;
+    try{
+        canvasArray[selectedCanvas].commandHistory.update_buttonname();
+    }catch(e){}
 }
 
 function getSelectedByName(){
@@ -2549,6 +2552,9 @@ function getSelectedByName(){
 
 function setSelectedById(selected){
     selectedCanvas = selected.substring(10);
+    try{
+        canvasArray[selectedCanvas].commandHistory.update_buttonname();
+    }catch(e){}
 }
 
 function getSelectedById(){

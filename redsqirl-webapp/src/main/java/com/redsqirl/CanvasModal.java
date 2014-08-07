@@ -1046,4 +1046,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 		return reachablePages == null ? 0 : reachablePages.size();
 	}
 
+	/**
+	 * @return the elementToUpdate
+	 */
+	public final boolean isElementToUpdate() {
+		return elementToUpdate;
+	}
+
 }
