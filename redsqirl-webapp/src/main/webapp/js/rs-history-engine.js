@@ -123,3 +123,53 @@ CommandDelete.prototype.getName = function(){
 function deleteSelected(canvasName){
 	canvasArray[canvasName].commandHistory.execute(new CommandDelete(getSelectedIconsCommaDelimited(), getSelectedArrowsCommaDelimited()));
 }
+
+
+/********************************************************************/
+/********************************************************************/
+/************************ CommandMove *******************************/
+function CommandMove(canvasName, oldValues,newValues) {
+    Command.call(this);
+    this.canvasName = canvasName;
+    this.oldValues = oldValues;
+    this.newValues = newValues;
+};
+
+CommandMove.prototype = Object.create(Command.prototype);
+CommandMove.prototype.constructor = CommandMove;
+
+CommandMove.prototype.undo = function(){
+    //alert("Undo");
+    var canvasNameCur = this.canvasName;
+    jQuery.each(this.oldValues, function(index, value) {
+        if(value.elementId !== undefined ){
+            var group = canvasArray[canvasNameCur].polygonLayer.get('#' + value.elementId)[0];
+            //alert(group.getId());
+            //alert(group.getId()+" ("+group.X+","+group.Y+") ("+value.X+","+value.Y+")");
+            group.setPosition(value.X,value.Y);
+            changePositionArrow(canvasNameCur, group);
+        }
+    });
+    
+    canvasArray[this.canvasName].polygonLayer.draw();
+    canvasArray[this.canvasName].layer.draw();
+};
+
+CommandMove.prototype.redo = function(){
+    //alert("Redo");
+    var canvasNameCur = this.canvasName;
+    jQuery.each(this.newValues, function(index, value) {
+        if(value.elementId !== undefined ){
+            var group = canvasArray[canvasNameCur].polygonLayer.get('#' + value.elementId)[0];
+            group.setPosition(value.X,value.Y);
+            changePositionArrow(canvasNameCur, group);
+        }
+    });
+    canvasArray[this.canvasName].polygonLayer.draw();
+    canvasArray[this.canvasName].layer.draw();
+};
+
+CommandMove.prototype.getName = function(){
+    return "move elements";
+};
+
