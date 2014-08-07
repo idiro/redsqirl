@@ -173,3 +173,55 @@ CommandMove.prototype.getName = function(){
     return "move elements";
 };
 
+/********************************************************************/
+/********************************************************************/
+/************************ CommandChangeId *******************************/
+
+var currentChangeIdGroup = null;
+
+function CommandChangeId(groupId, oldId,newId, oldComment, newComment) {
+    Command.call(this);
+    this.groupId = groupId;
+    this.oldId = oldId;
+    this.newId = newId;
+    this.oldComment = oldComment; 
+    this.newComment = newComment;
+};
+
+CommandChangeId.prototype = Object.create(Command.prototype);
+CommandChangeId.prototype.constructor = CommandChangeId;
+
+CommandChangeId.prototype.undo = function(){
+    //alert("Undo");
+    jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });
+    currentChangeIdGroup = this.groupId;
+    changeIdElement(this.groupId,this.oldId,this.oldComment);
+    updateLabelObj(this.groupId,this.oldId);
+};
+
+CommandChangeId.prototype.redo = function(){
+    //alert("Redo");
+    jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });
+    currentChangeIdGroup = this.groupId;
+    changeIdElement(this.groupId,this.newId,this.newComment);
+    updateLabelObj(this.groupId,this.newId);
+};
+
+CommandChangeId.prototype.getName = function(){
+    return "change element id";
+};
+
+function execChangeIdElementCommand(groupId, oldId,newId, oldComment, newComment){
+    if(oldId != newId || oldComment != newComment){
+        canvasArray[selectedCanvas].commandHistory.execute(
+        new CommandChangeId(groupId, oldId,newId, oldComment, newComment));
+    }else{
+        jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });
+        currentChangeIdGroup = groupId;
+        changeIdElement(groupId,newId,newComment);
+        updateLabelObj(groupId,newId);
+    }
+}
+
+
+

@@ -337,6 +337,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 			}
 		}
 	}
+	
+	public void closeCanvasModal() throws RemoteException {
+		logger.info("closeCanvasModal");
+		loadMainWindow = false;
+	}
 
 	public void changeTitle(){
 		try {
@@ -740,6 +745,14 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 */
 	protected List<DFEPage> getPageList() throws RemoteException {
 		return dfe != null ? dfe.getPageList() : null;
+	}
+	
+	public final String getCurElId() throws RemoteException{
+		return dfe!= null ? dfe.getComponentId():null;
+	}
+	
+	public final String getCurElComment() throws RemoteException{
+		return dfe!= null ? dfe.getComment() : null;
 	}
 
 	/**

@@ -1381,7 +1381,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			error = "The workflow '"+nameWorkflow+"' has not been initialised!";
 		}
 
-		if(error == null && comment != null && !comment.isEmpty() && !comment.equals("undefined")){
+		if(error == null && comment != null && !comment.equals("undefined")){
 			logger.info("set comment: "+comment);
 			getDf().getElement(elementId).setComment(comment);
 		}
