@@ -102,7 +102,7 @@
     <a4j:region>
         <a4j:jsFunction name="closeDynamicForm" 
                 action="#{canvasModalBean.closeCanvasModal}"
-                oncomplete="#{rich:component('canvasModalPanel')}.hide();updateOutputStatus('#{canvasModalBean.idGroup}');" />
+                oncomplete="#{rich:component('canvasModalPanel')}.hide();if(#{canvasModalBean.elementToUpdate}){updateOutputStatus('#{canvasModalBean.idGroup}');cloneAfterUpdateElement();}else{removeCloneWorkflow(cloneCommandUpdateElementBuffer)}" />
     </a4j:region>
 
     <a4j:region>

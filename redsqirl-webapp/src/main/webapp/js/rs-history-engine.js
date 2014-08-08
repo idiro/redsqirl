@@ -267,7 +267,7 @@ CommandReplaceAll.prototype.constructor = CommandReplaceAll;
 
 CommandReplaceAll.prototype.undo = function(){
 	tmpCommandObj = this;
-	undoReplaceAll(this.selecteds, this.cloneId);
+	rebuildElementsFromClone(this.selecteds, this.cloneId);
 	
 };
 
@@ -383,4 +383,44 @@ function execChangeIdElementCommand(groupId, oldId,newId, oldComment, newComment
         changeIdElement(groupId,newId,newComment);
         updateLabelObj(groupId,newId);
     }
+}
+
+
+/********************************************************************/
+/********************************************************************/
+/******************** CommandUpdateElement **************************/
+var cloneCommandUpdateElementBuffer = null;
+
+function CommandUpdateElement(groupId,beforeCloneId,afterCloneId) {
+    Command.call(this);
+    this.groupId = groupId;
+    this.beforeCloneId = beforeCloneId;
+    this.afterCloneId = afterCloneId;
+};
+
+CommandUpdateElement.prototype = Object.create(Command.prototype);
+CommandUpdateElement.prototype.constructor = CommandUpdateElement;
+
+CommandUpdateElement.prototype.undo = function(){
+    tmpCommandObj = this;
+    rebuildElementsFromClone(this.groupId, this.beforeCloneId);
+    
+};
+
+CommandUpdateElement.prototype.redo = function(){
+    tmpCommandObj = this;
+    rebuildElementsFromClone(this.groupId, this.afterCloneId);
+};
+
+CommandUpdateElement.prototype.getName = function(){
+    return "Update Element";
+};
+
+CommandUpdateElement.prototype.clean = function(){
+    removeCloneWorkflow(this.beforeCloneId);
+    removeCloneWorkflow(this.afterCloneId);
+};
+
+function stackUpdateElement(groupId, beforeCloneId,afterCloneId){
+    canvasArray[selectedCanvas].commandHistory.push_command(new CommandUpdateElement(groupId, beforeCloneId,afterCloneId));
 }
