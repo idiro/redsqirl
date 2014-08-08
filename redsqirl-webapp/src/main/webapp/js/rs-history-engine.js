@@ -2,7 +2,6 @@
 /********************************************************************/
 /********************************************************************/
 /*********************** Framework **********************************/
-//
 
 function CommandHistory() {
 	this.cur_index = -1;
@@ -82,7 +81,7 @@ CommandDelete.prototype = Object.create(Command.prototype);
 CommandDelete.prototype.constructor = CommandDelete;
 
 CommandDelete.prototype.undo = function(){
-	undoCloneWorkflow(this.selecteds,this.cloneId);
+	replaceWFByClone(this.selecteds,this.cloneId, false);
 };
 
 CommandDelete.prototype.redo = function(){
@@ -98,15 +97,13 @@ CommandDelete.prototype.clean = function(){
 	removeCloneWorkflow(this.cloneId);
 };
 
-
 function deleteSelected(canvasName){
 	canvasArray[canvasName].commandHistory.execute(new CommandDelete(getSelectedIconsCommaDelimited(), getSelectedArrowsCommaDelimited()));
 }
 
-
 /********************************************************************/
 /********************************************************************/
-/********************* Command Add Object ***************************/
+/********************* CommandAddObj ***************************/
 function CommandAddObj(canvasName, elementType, elementImg, posx, posy, numSides, idElement, selecteds) {
 	Command.call(this);
 	this.canvasName = canvasName;
@@ -145,7 +142,6 @@ CommandAddObj.prototype.getName = function(){
 	return "add Element";
 };
 
-
 /********************************************************************/
 /********************************************************************/
 /********************** CommandAddArrow *****************************/
@@ -173,7 +169,6 @@ CommandAddArrow.prototype.getName = function(){
 	return "add Arrow";
 };
 
-
 /********************************************************************/
 /********************************************************************/
 /*********************** CommandPaste *******************************/
@@ -198,7 +193,7 @@ CommandPaste.prototype.redo = function(){
 		pasteJS(this.selecteds);
 	}else{
 		//use clone
-		
+		undoPasteCloneWorkflow(this.selecteds, this.cloneId, true);
 	}
 };
 
@@ -206,10 +201,13 @@ CommandPaste.prototype.getName = function(){
 	return "paste";
 };
 
+CommandPaste.prototype.clean = function(){
+	removeCloneWorkflow(this.cloneId);
+};
+
 function paste(canvasName,selecteds){
 	canvasArray[canvasName].commandHistory.execute(new CommandPaste(selecteds));
 }
-
 
 /********************************************************************/
 /********************************************************************/
@@ -228,7 +226,7 @@ CommandReplaceAll.prototype.constructor = CommandReplaceAll;
 
 CommandReplaceAll.prototype.undo = function(){
 	tmpCommandObj = this;
-	undoReplaceAll(this.selecteds, this.cloneId);
+	undoReplaceAll(this.selecteds, this.cloneId, false);
 	
 };
 

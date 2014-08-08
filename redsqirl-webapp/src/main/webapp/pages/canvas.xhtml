@@ -986,16 +986,6 @@
                 </a4j:jsFunction>
             </a4j:region>
             
-            <a4j:region>
-                <a4j:status
-                    onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
-                    onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
-                    onstop="jQuery('#canvas-tabs').unblock();" />
-
-                <a4j:jsFunction name="pasteJS" action="#{canvasBean.paste}" data="#{canvasBean.idsToPaste}" reRender="errorTable"
-                    oncomplete="saveAllPositions(getAllIconPositions());rebuildJS(); tmpCommandObj.idsToPaste = data;" />
-            </a4j:region>
-            
 			<a4j:region>
 
 				<a4j:status onerror="jQuery('#canvas-tabs').unblock();" />
@@ -1238,10 +1228,11 @@
 					<a4j:actionparam name="allpositions" />
 				</a4j:jsFunction>
 				
-				<a4j:jsFunction name="undoCloneWorkflow" action="#{canvasBean.undoCloneWorkflow}"
+				<a4j:jsFunction name="replaceWFByClone" action="#{canvasBean.replaceWFByClone}"
 					oncomplete="rebuildJS();" reRender="errorTable,tabFlowchart" >
 					<a4j:actionparam name="selectedItens" />
 					<a4j:actionparam name="idCloneMap" />
+					<a4j:actionparam name="keepClone" />
 				</a4j:jsFunction>
 					
 				<a4j:jsFunction name="rebuildJS" data="#{canvasBean.positions}"
@@ -1270,10 +1261,11 @@
                     <a4j:actionparam name="changeLabel" />
                 </a4j:jsFunction>
 				
-				<a4j:jsFunction name="undoReplaceAll" action="#{canvasBean.undoCloneWorkflow}"
+				<a4j:jsFunction name="undoReplaceAll" action="#{canvasBean.replaceWFByClone}"
 					oncomplete="rebuildReplaceJS();" reRender="errorTable,tabFlowchart" >
 					<a4j:actionparam name="selectedItens" />
 					<a4j:actionparam name="idCloneMap" />
+					<a4j:actionparam name="keepClone" />
 				</a4j:jsFunction>
 					
 				<a4j:jsFunction name="rebuildReplaceJS" data="#{canvasBean.positions}"
@@ -1323,10 +1315,33 @@
 					onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 					
-				<a4j:jsFunction name="pasteCloneWorkflow" action="#{canvasBean.cloneWorkflow}" >
-					<a4j:actionparam name="idCloneMap" />
+				<a4j:jsFunction name="pasteCloneWorkflow" action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
+					oncomplete="tmpCommandObj.cloneId = data;" >
+					<a4j:actionparam name="allpositions" />
 				</a4j:jsFunction>
+				
+				<a4j:jsFunction name="undoPasteCloneWorkflow" action="#{canvasBean.replaceWFByClone}"
+					oncomplete="rebuildPasteJS();" reRender="errorTable,tabFlowchart" >
+					<a4j:actionparam name="selectedItens" />
+					<a4j:actionparam name="idCloneMap" />
+					<a4j:actionparam name="keepClone" />
+				</a4j:jsFunction>
+					
+				<a4j:jsFunction name="rebuildPasteJS" data="#{canvasBean.positions}"
+					oncomplete="addSelectedElement(data[0],data[1],data[2],data[3],data[4]);updateAllArrowColor();updateRunningStatus();updateAllOutputStatus();"
+					reRender="tabFlowchart" />
+				
 			</a4j:region>
+			
+			<a4j:region>
+                <a4j:status
+                    onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+                    onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
+                    onstop="jQuery('#canvas-tabs').unblock();" />
+
+                <a4j:jsFunction name="pasteJS" action="#{canvasBean.paste}" data="#{canvasBean.idsToPaste}" reRender="errorTable"
+                    oncomplete="saveAllPositions(getAllIconPositions());rebuildJS(); tmpCommandObj.idsToPaste = data; pasteCloneWorkflow(getAllIconPositions());" />
+            </a4j:region>
 			
 			<a4j:region>
 				

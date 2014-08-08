@@ -1626,9 +1626,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 		String selecteds = (String) sc.getAttribute("selecteds");
 		logger.info("getPositions " + selecteds);
 		
-		Map<String, String> elements = getReverseIdMap();
-		
 		try{
+				
+			Map<String, String> elements = getReverseIdMap();
 
 			JSONArray jsonElements = new JSONArray();
 			JSONArray jsonLinks = new JSONArray();
@@ -1723,23 +1723,32 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	}
 
-	public void undoCloneWorkflow() throws Exception{
-		logger.info("undoCloneWorkflow");
+	public void replaceWFByClone() throws Exception{
+		logger.info("replaceWFByClone");
 
 		String idCloneMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("idCloneMap");
+		boolean keepClone = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("keepClone").equalsIgnoreCase("true");
 		logger.info(idCloneMap);
+		logger.info(keepClone);
 		
 		Map<String,String> cloneMap = getIdMapClone().get(idCloneMap);
 
 		logger.info(idMap.get(getNameWorkflow()));
 		logger.info(idCloneMap + " " + cloneMap);
 
-		getworkFlowInterface().copyUndoElement(idCloneMap, getNameWorkflow());
-		setDf(getworkFlowInterface().getWorkflow(getNameWorkflow()));
 		//idMap.remove(getNameWorkflow());
-		idMap.put(getNameWorkflow(),cloneMap);
-		getIdMapClone().remove(idCloneMap);
+		if(!keepClone){
+			getworkFlowInterface().replaceWFByClone(idCloneMap, getNameWorkflow(),false);
+			idMap.put(getNameWorkflow(),cloneMap);
+			getIdMapClone().remove(idCloneMap);
+		}else{
+			getworkFlowInterface().replaceWFByClone(idCloneMap, getNameWorkflow(),true);
+			Map<String,String> newIdMapObj = new LinkedHashMap<String,String>();
+			newIdMapObj.putAll(cloneMap);
+			idMap.put(getNameWorkflow(),newIdMapObj);
+		}
 		getWorkflowMap().put(getNameWorkflow(), getworkFlowInterface().getWorkflow(getNameWorkflow()));
+		setDf(getworkFlowInterface().getWorkflow(getNameWorkflow()));
 
 	}
 	
@@ -1768,8 +1777,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 		return result;
 	}
-	
-
 
 
 
