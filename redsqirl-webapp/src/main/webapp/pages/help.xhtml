@@ -16,8 +16,11 @@
 
     var historyHelp = new Array("btIndex");
     var historyHelpIndex = 0;
-
-	jQuery(document).on("click", ".stopLink", function(e){
+    
+    jQuery(function() {
+    	showTabResult();	
+    });
+    jQuery(document).on("click", ".stopLink", function(e){
 
 		showTabResult();
 		jQuery("#divTabHelp").scrollTop( 0 );
@@ -185,7 +188,7 @@
 </head>
 <body>
 
-	<div id="helpButtons" class="divMenu" style="margin-top:3px;">
+	<div id="helpButtons" class="pathHeader" style="margin-top:3px;">
 	
 		<table>
 			<tr>
@@ -213,7 +216,7 @@
 	<div id="resultTableDiv">
 		<rich:panel id="resultTable" rendered="#{helpBean.result != null}" style="border:none">
 			<ul>
-				<ui:repeat value="#{helpBean.result}" var="item">
+				<ui:repeat value="#{helpBean.result}" var="item" class="test">
 			    	<li>
 			    		<a class="stopLink" href="#{item[0]}" id="#{item[2]}" onclick="showTabResult();return false;">
 			    			<h:outputText value="#{item[1]}" title="#{item[1]}" style="font-size:16px;" />

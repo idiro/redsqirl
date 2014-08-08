@@ -42,17 +42,16 @@
 				<a4j:actionparam name="nameFile"/>
 			</a4j:jsFunction>
 
-			<br />
-
+			<div class="pathHeader">
 			<h:outputText value="#{messages.label_path}" />
-			<h:inputText id="hivepath" label="Path" styleClass="mainPageTextField" value="#{hiveBean.path}" maxlength="255" style="width:395px; margin-left:5px;" 
+			<h:inputText id="hivepath" label="Path" styleClass="mainPageTextField" value="#{hiveBean.path}" maxlength="255" style="width:395px; margin-left:5px; background:white" 
 				onkeypress="return enableEnterKey(event, 'hivefsPathBtn');"/>
 			
 			<a4j:commandLink id="hivefsPathBtn" action="#{hiveBean.changePath}" reRender="hivefs" style="color:#FFFFFF" oncomplete="resizeTables();jQuery('#tabs-4').unblock();">
 				<h:graphicImage value="../image/icons/button-search.gif" title="#{messages.filesystem_change_path}" styleClass="refreshButton"/>
 			</a4j:commandLink>
+			</div>
 
-			<br />
 			
 			<div class="divMenu">
 				<a4j:commandLink action="#{hiveBean.addFileBefore}"
@@ -80,11 +79,10 @@
 				</a4j:commandLink>
 			</div>
 
-			<br />
 
 			<rich:extendedDataTable id="hivefs" value="#{hiveBean.tableGrid.rows}"
 				var="item" rowKeyVar="indexTable" width="100%" style="border:none;"
-				onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+				onRowMouseOver="this.style.backgroundColor='#f2b97a'"
 				enableContextMenu="false"
 				onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
 				rowClasses="even-row, odd-row"

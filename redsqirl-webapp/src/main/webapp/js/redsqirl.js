@@ -11,6 +11,7 @@ function canvasResizeSplitter(){
 	jQuery(".splitter-bar-horizontal").css("width", jQuery(window).width()-jQuery(".splitter-pane").width()-28 +'px');
 	jQuery("#tabs1").css("width", jQuery("#splitHCanvas").width()-20 +'px');
 	jQuery("#tabs2").css("width", jQuery("#splitHCanvas").width()-20 +'px');
+	jQuery("#splitHCanvas").css("width", jQuery(window).width()-jQuery("#tabFlowchart").width()-100+'px');
 	 
 	resizeCanvas(30,30);
 	
@@ -92,6 +93,7 @@ function onPageReady(){
 	  jQuery("#canvas-tabs").css("height", jQuery(window).height()-215+'px');
 	  jQuery("#canvas").css("height", jQuery("#canvas-tabs").height()-160+'px');
 	  jQuery("#canvas").css("width", jQuery("#canvas-tabs").width()+'px');
+	  jQuery("#splitHCanvas").css("width", jQuery(window).width()-jQuery("#tabFlowchart").width()-100+'px');
 	  
 	  resizeTabs();
 	  //resizeTables();
@@ -159,6 +161,7 @@ function resizing(){
 //	  jQuery("#canvas").css("height", jQuery("#canvas-tabs").height()-160+'px');
 	  jQuery("#canvas").css("width", jQuery("#canvas-tabs").width()+'px');
 	  jQuery("#tabsFooter").css("width", jQuery("#canvas-tabs").width()-10+'px');
+//	  jQuery("#splitHCanvas").css("width", jQuery(window).width()-jQuery("#tabFlowchart").width()-100+'px');
 	  
 	  isResizing = false;
 	  

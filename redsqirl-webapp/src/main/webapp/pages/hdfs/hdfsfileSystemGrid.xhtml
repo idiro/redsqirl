@@ -39,7 +39,7 @@
 <body>
 
 	<a4j:keepAlive beanName="hdfsBean" />
-	<div id="hdfsFileSystem" style="min-width: 400px; overflow: hidden; min-height: 200px;">
+	<!-- <div id="hdfsFileSystem" style="min-width: 400px; overflow: hidden; min-height: 200px;"> -->
 
 		<rich:dragIndicator id="indicator" />
 
@@ -58,8 +58,7 @@
 			    <a4j:actionparam name="openCtrlCopyMove" assignTo="#{hdfsBean.showCopyMove}"/>
 			</a4j:jsFunction>
 
-			<br />
-
+			<div class="pathHeader">
 			<h:outputText value="#{messages.label_path}" />
 			<h:inputText id="hdfspath" label="Path"
 				styleClass="mainPageTextField" value="#{hdfsBean.path}"
@@ -72,8 +71,7 @@
 					title='#{messages.filesystem_change_path}'
 					styleClass="refreshButton" />
 			</a4j:commandLink>
-
-			<br />
+			</div>
 
 			<div class="divMenu">
 				<a4j:commandLink action="#{hdfsBean.addFileBefore}"
@@ -133,14 +131,13 @@
 				</a4j:commandLink>
 			</div>
 
-			<br />
-
+			<div class="fileSystem">
 			<rich:panel style="border:none">
 				<rich:dropSupport id="panelDropSupportHdfs" acceptedTypes="ssh" dropListener="#{hdfsBean.processDrop}" reRender="hdfsfs" oncomplete="resizeTables();"/>
 				
 				<rich:extendedDataTable id="hdfsfs" value="#{hdfsBean.tableGrid.rows}"
 					var="item" rowKeyVar="indexTable" width="100%" height="500px"
-					style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+					style="border:none;" onRowMouseOver="this.style.backgroundColor='#f2b97a'"
 					enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
 					rowClasses="even-row, odd-row" tableState="#{hdfsBean.tableState}">
 
@@ -193,8 +190,9 @@
 				</rich:extendedDataTable>
 				
 			</rich:panel>
+			</div>
 		</h:form>
-	</div>
+	<!-- </div> -->
 
 	<a4j:region>
 		<rich:modalPanel id="modalCopyMoveHdfs" width="600" height="450"
