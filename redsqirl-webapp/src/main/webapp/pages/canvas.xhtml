@@ -1728,14 +1728,12 @@
 
 								<ui:repeat value="#{configureTabsBean.menuWAList}" var="tab">
 									<div id="tabFooter-#{tab.key}">
-										<p>
 											<ui:repeat value="#{tab.value}" var="action">
 												<span id="spanImagensObj" style="display: none"> <img
 													src="#{action[1]}" class="footerIcon" />
 													<span>#{action[0]}</span>
 												</span>
 											</ui:repeat>
-										</p>
 									</div>
 								</ui:repeat>
 							</div>

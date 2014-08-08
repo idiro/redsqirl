@@ -1,11 +1,8 @@
 function Canvas(name){
     this.name=name;
-    
     this.commandHistory = new CommandHistory();
-    
     this.rectSelect = null;
     this.arrow = null;
-    
     this.countObj = 0;
     this.positionX = 0;
     this.positionY = 0;
@@ -23,21 +20,15 @@ function Canvas(name){
     this.dragDropGroup = false;
 
     this.down = false;
-    
     this.canvasContainer = null;
     this.legendCanvasContainer = null;
-    
     this.stage = null;
     this.layer = null;
     this.polygonLayer = null;
-    
-    
     this.running = false;
     this.saved = false;
     this.pathFile = null;
-    
     this.oldIdSelected = null;
-    
     this.legendStage = null;
     this.legendLayer = null;
     this.legend = null;
@@ -67,6 +58,12 @@ var contextMenuCanvas = [
 ];
 
 var cmenuCanvas = jQuery.contextMenu.create(contextMenuCanvas);
+
+function findHHandWW() {
+	imgHeight = this.height;
+	imgWidth = this.width;
+	return true;
+}
 
 window.onload = function() {
     var canvasName = "canvas-1";
@@ -1117,6 +1114,7 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
 
     var img = new Image();
     img.src = elementImg;
+    //img.onload = findHHandWW;
 
     var result = createPolygon(img, 40, 50, numSides, canvasName);
     var polygon = result[0];
@@ -1363,23 +1361,13 @@ function mountObj(canvasName) {
 	// for list divs
 	jQuery("#tabsFooter ul:first li").each(function(index) {
 
-		var posInitX = 40;//4
-		var poxInitY = 20;//5
+		var posInitX = 40;
+		var poxInitY = 50;
 		
 		var posInitTextX = 16;
-		var posInitTextY = 50;
+		var posInitTextY = 80;
 
 		var nameDiv = jQuery(this).attr("aria-controls");
-    // for list divs
-
-			// stage to footer
-			stageTab = new Kinetic.Stage({
-				container : nameDiv,
-				width : jQuery("#"+nameDiv).width(),
-				height : jQuery("#"+nameDiv).height(),
-			});
-			
-			jQuery("#" +  nameDiv).find(".kineticjs-content").css("background-image", "none");
 			
         if (nameDiv != undefined) { // groupNumber
 
@@ -1412,6 +1400,7 @@ function mountObj(canvasName) {
                 //alert(jQuery(this).attr("src"));
                 
                 imgTab.src = jQuery(this).attr("src");
+                //imgTab.onload = findHHandWW;
                 var srcImageText = jQuery(this).attr("src");
                 
                 //label on footer
@@ -1968,8 +1957,8 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
         rotateDeg = 360/(2*numSides);
     }
 
-    var height = 44.5/imgHeight;
-    var width = 44.5/imgWidth;
+    var height = 50/imgHeight;
+    var width = 50/imgWidth;
     
     var offsetX = imgWidth/2;
     var offsetY = imgHeight/2;
