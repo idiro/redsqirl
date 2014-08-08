@@ -40,8 +40,6 @@ function Canvas(name){
 var selectedCanvas = "canvas-1";
 var canvasArray;
 var allPositionIcons;
-var imgHeight;
-var imgWidth;
 var rightClickGroup;
 var curToolTip;
 var isSaveAll = false;
@@ -58,12 +56,6 @@ var contextMenuCanvas = [
 ];
 
 var cmenuCanvas = jQuery.contextMenu.create(contextMenuCanvas);
-
-function findHHandWW() {
-	imgHeight = this.height;
-	imgWidth = this.width;
-	return true;
-}
 
 window.onload = function() {
     var canvasName = "canvas-1";
@@ -1114,7 +1106,6 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
 
     var img = new Image();
     img.src = elementImg;
-    //img.onload = findHHandWW;
 
     var result = createPolygon(img, 40, 50, numSides, canvasName);
     var polygon = result[0];
@@ -1400,7 +1391,6 @@ function mountObj(canvasName) {
                 //alert(jQuery(this).attr("src"));
                 
                 imgTab.src = jQuery(this).attr("src");
-                //imgTab.onload = findHHandWW;
                 var srcImageText = jQuery(this).attr("src");
                 
                 //label on footer
@@ -1950,6 +1940,9 @@ function openChangeIdModalJS(group){
 
 
 function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
+    
+    imgHeight = imgTab.height;
+    imgWidth = imgTab.width;
     
     var rotateDeg = 0;
     if (numSides%2 == 0 ){
