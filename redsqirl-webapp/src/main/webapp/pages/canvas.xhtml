@@ -33,6 +33,18 @@
 <title><h:outputText value="#{messages.label_sistem}" /></title>
 
 <script type="text/javascript">
+		 
+		//Message that we need in javascript
+        var msg_confirm_changeid = '#{messages.confirm_changeid}';
+		var msg_delete_command='#{messages.msg_delete_command}';
+        var msg_addelement_command='#{messages.msg_addelement_command}';
+        var msg_addarrow_command='#{messages.msg_addarrow_command}';
+        var msg_paste_command='#{messages.msg_paste_command}';
+        var msg_replaceAll_command='#{messages.msg_replaceAll_command}';
+        var msg_moveelements_command='#{messages.msg_moveelements_command}';
+        var msg_changeelementid_command='#{messages.msg_changeelementid_command}';
+        var msg_updateelement_command='#{messages.msg_updateelement_command}';
+        var msg_changeworkflowcomment_command='#{messages.msg_changeworkflowcomment_command}';
 		           
 		 var contTabCanvas = 1;
 		 
@@ -381,6 +393,7 @@
 		    		  });
 		    		  
 	    		  });
+	    		  
 	    		 
 	    		 //var isChrome = window.chrome;
 	    		 //if(isChrome){
@@ -852,7 +865,12 @@
                     onerror="jQuery('#canvas-tabs').unblock();"
                     onsuccess="jQuery('#canvas-tabs').unblock();"
                     onstop="jQuery('#canvas-tabs').unblock();" />
-
+               
+               <a4j:jsFunction name="updateWfComment" action="#{canvasBean.updateWfComment}"
+                    oncomplete="updateWfDisplayComment()">
+                     <a4j:actionparam name="commentWf" assignTo="#{canvasBean.commentWf}"/>
+               </a4j:jsFunction>
+                    
                 <a4j:jsFunction name="updateWfDisplayComment" data="#{canvasBean.savedWfComment}"
                     oncomplete="jQuery('.container-comment-'+getSelectedByName()).html(data);" reRender="errorTable, msnError" >
                 </a4j:jsFunction>
@@ -952,9 +970,12 @@
 
 			<a4j:region>
 				<a4j:jsFunction name="addElementBt"
-					action="#{canvasBean.addElement}">
+					action="#{canvasBean.addElement}"
+					data="#{canvasBean.idLastElementInserted}"
+					oncomplete="tmpCommandObj.elementId = data;" >
 					<a4j:actionparam name="paramNameElement" />
 					<a4j:actionparam name="paramGroupID" />
+                    <a4j:actionparam name="paramIdElement" />
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -1052,7 +1073,7 @@
 
 				<a4j:jsFunction name="openModal"
 					action="#{canvasModalBean.openCanvasModal}"
-					oncomplete="if(#{requestScope['msnError'] == null}){cloneBeforeUpdateElement();checkPageError();createOptionTitles(); }"
+					oncomplete="if(#{requestScope['msnError'] == null}){cloneBeforeUpdateElement();checkPageError();}"
 					reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError, errorTable, canvasModalTabPanel, msnErrorPage">
 					<a4j:actionparam name="paramGroupId" />
 					<a4j:actionparam name="paramPathImage" />
@@ -1071,7 +1092,7 @@
 				<a4j:jsFunction name="openChangeIdModal"
 					action="#{canvasModalBean.openCanvasModal}"
                     data="#{canvasModalBean.loadMainWindow}"
-					oncomplete="if( #{requestScope['msnError'] == null}){if(data || confirm('Changing an action identification may cause errors and force you to reconfigure this object and its dependent nodes. Do you want to continue?')){#{rich:component('modalChangeId')}.show();}}else{updateLabelObj('#{canvasModalBean.idGroup}','#{canvasModalBean.componentId}');changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');}"
+					oncomplete="if( #{requestScope['msnError'] == null}){if(data || confirm(msg_confirm_changeid)){#{rich:component('modalChangeId')}.show();}}else{updateLabelObj('#{canvasModalBean.idGroup}','#{canvasModalBean.componentId}');changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');}"
 					reRender="msnError, errorTable, newIdElement">
 					<a4j:actionparam name="paramGroupId" />
 					<a4j:actionparam name="paramPathImage" />
@@ -1094,7 +1115,7 @@
 			<a4j:region>
 				<a4j:jsFunction name="closeChangeIdModal"
 				    reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError, errorTable, canvasModalTabPanel"
-					oncomplete="if(#{canvasModalBean.loadMainWindow}){cloneBeforeUpdateElement();createOptionTitles();}">
+					oncomplete="if(#{canvasModalBean.loadMainWindow}){changeModalTitle();changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');cloneBeforeUpdateElement();}else{updateSelectedOutputStatus(currentChangeIdGroup);}">
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -1305,7 +1326,7 @@
                     onstop="jQuery('#canvas-tabs').unblock();" />
                     
                 <a4j:jsFunction name="cloneBeforeUpdateElement" action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
-                    oncomplete="cloneCommandUpdateElementBuffer = data;#{rich:component('canvasModalPanel')}.show();" >
+                    oncomplete="cloneCommandUpdateElementBuffer = data;createOptionTitles();#{rich:component('canvasModalPanel')}.show();" >
                     <a4j:actionparam name="allpositions" />
                 </a4j:jsFunction>
                 
@@ -1458,6 +1479,13 @@
                             <rich:menuItem id="pasteMenuItem" submitMode="ajax" value="#{messages.label_menu_paste}" 
                                 onclick="paste(getSelectedByName());" >
                                 <h:outputText value="Ctrl+V" class="menuItemHotKey"/>
+                            </rich:menuItem>
+                            <rich:menuSeparator />
+                            <rich:menuItem id="undoMenuItem" submitMode="ajax" value="#{messages.label_menu_undo}" 
+                                onclick="undo();" >
+                            </rich:menuItem>
+                            <rich:menuItem id="redoMenuItem" submitMode="ajax" value="#{messages.label_menu_redo}" 
+                                onclick="redo();" >
                             </rich:menuItem>
                             <rich:menuSeparator />
                             <rich:menuItem id="replaceMenuItem" submitMode="ajax" value="#{messages.label_menu_replace}" 
@@ -2020,12 +2048,12 @@
                         theme="advanced" width="765" height="500">
                     <f:param name="theme_advanced_toolbar_location" value="top"/>
                 </rich:editor>
-            
+                
                 <rich:panel style="margin-top:8px; border:none; float:right;" >
                 
                     <a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" oncomplete="#{rich:component('modalWfEditor')}.hide()" />
                     <a4j:commandButton value="#{messages.button_save}" onclick="#{rich:component('modalWfEditor')}.hide();" styleClass="greenButton" 
-                            action="#{canvasBean.updateWfComment}" oncomplete="updateWfDisplayComment();" />
+                            oncomplete="execChangeCommentWfCommand('#{canvasBean.savedWfComment}', '#{canvasBean.commentWf}');" />
                 
                 </rich:panel>
                 </rich:panel>

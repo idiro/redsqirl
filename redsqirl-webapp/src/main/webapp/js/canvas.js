@@ -1483,17 +1483,16 @@ function mountObj(canvasName) {
 
                     var mousePosStage = stage.getMousePosition();
                     if (mousePosStage !== undefined){
-
-                        addElement(selectedCanvas,
+                    
+                        canvasArray[selectedCanvas].commandHistory.execute(new CommandAddObj(selectedCanvas,
                                 typeText.getText(),
                                 srcImageText,
                                 mousePosStage.x - 30,
                                 mousePosStage.y - 30,
                                 numSides,
-                                "group" + (+canvasArray[selectedCanvas].countObj+1), "");
-                        
-                        addElementBt(typeText.getText(),"group"+ canvasArray[selectedCanvas].countObj);
-                        updateTypeObj(selectedCanvas, "group"+ canvasArray[selectedCanvas].countObj, "group"+ canvasArray[selectedCanvas].countObj);
+                                "group" + (+canvasArray[selectedCanvas].countObj+1),
+                                "")
+                        );
                         
                     }
                     document.body.style.cursor = 'default';

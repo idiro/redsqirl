@@ -129,7 +129,7 @@ CommandDelete.prototype.redo = function(){
 };
 
 CommandDelete.prototype.getName = function(){
-	return "delete";
+	return msg_delete_command;
 };
 
 CommandDelete.prototype.clean = function(){
@@ -143,7 +143,7 @@ function deleteSelected(canvasName){
 /********************************************************************/
 /********************************************************************/
 /********************* CommandAddObj ***************************/
-function CommandAddObj(canvasName, elementType, elementImg, posx, posy, numSides, idElement, selecteds) {
+function CommandAddObj(canvasName, elementType, elementImg, posx, posy, numSides, groupId, selecteds) {
 	Command.call(this);
 	this.canvasName = canvasName;
 	this.elementType = elementType;
@@ -151,15 +151,16 @@ function CommandAddObj(canvasName, elementType, elementImg, posx, posy, numSides
 	this.posx = posx;
 	this.posy = posy;
 	this.numSides = numSides;
-	this.idElement = idElement;
+	this.groupId = groupId;
 	this.selecteds = selecteds;
+	this.elementId = '';
 };
 
 CommandAddObj.prototype = Object.create(Command.prototype);
 CommandAddObj.prototype.constructor = CommandAddObj;
 
 CommandAddObj.prototype.undo = function(){
-	deleteElementsJS(this.idElement, "");
+	deleteElementsJS(this.groupId, "");
 };
 
 CommandAddObj.prototype.redo = function(){
@@ -170,15 +171,18 @@ CommandAddObj.prototype.redo = function(){
 			this.posx,
 			this.posy,
 			this.numSides,
-			this.idElement,
+			this.groupId,
 			this.selecteds
 		);
+    tmpCommandObj = this;
+    addElementBt(this.elementType,this.groupId,this.elementId);
+    updateTypeObj(this.canvasName, this.groupId, this.groupId);
 	canvasArray[this.canvasName].polygonLayer.draw();
 	
 };
 
 CommandAddObj.prototype.getName = function(){
-	return "add Element";
+	return msg_addelement_command;
 };
 
 /********************************************************************/
@@ -205,7 +209,7 @@ CommandAddArrow.prototype.redo = function(){
 };
 
 CommandAddArrow.prototype.getName = function(){
-	return "add Arrow";
+	return msg_addarrow_command;
 };
 
 /********************************************************************/
@@ -237,7 +241,7 @@ CommandPaste.prototype.redo = function(){
 };
 
 CommandPaste.prototype.getName = function(){
-	return "paste";
+	return msg_paste_command;
 };
 
 CommandPaste.prototype.clean = function(){
@@ -275,7 +279,7 @@ CommandReplaceAll.prototype.redo = function(){
 };
 
 CommandReplaceAll.prototype.getName = function(){
-	return "replaceAll";
+	return msg_replaceAll_command;
 };
 
 CommandReplaceAll.prototype.clean = function(){
@@ -331,7 +335,7 @@ CommandMove.prototype.redo = function(){
 };
 
 CommandMove.prototype.getName = function(){
-    return "move elements";
+    return msg_moveelements_command;
 };
 
 /********************************************************************/
@@ -368,7 +372,7 @@ CommandChangeId.prototype.redo = function(){
 };
 
 CommandChangeId.prototype.getName = function(){
-    return "change element id";
+    return msg_changeelementid_command;
 };
 
 function execChangeIdElementCommand(groupId, oldId,newId, oldComment, newComment){
@@ -391,7 +395,8 @@ var cloneCommandUpdateElementBuffer = null;
 
 function CommandUpdateElement(groupId,beforeCloneId,afterCloneId) {
     Command.call(this);
-    this.groupId = groupId;
+    //Needed with that name in canvas.xhtml
+    this.selecteds = groupId;
     this.beforeCloneId = beforeCloneId;
     this.afterCloneId = afterCloneId;
 };
@@ -401,17 +406,17 @@ CommandUpdateElement.prototype.constructor = CommandUpdateElement;
 
 CommandUpdateElement.prototype.undo = function(){
     tmpCommandObj = this;
-    rebuildElementsFromClone(this.groupId, this.beforeCloneId,true);
+    rebuildElementsFromClone(this.selecteds, this.beforeCloneId,true);
     
 };
 
 CommandUpdateElement.prototype.redo = function(){
     tmpCommandObj = this;
-    rebuildElementsFromClone(this.groupId, this.afterCloneId,true);
+    rebuildElementsFromClone(this.selecteds, this.afterCloneId,true);
 };
 
 CommandUpdateElement.prototype.getName = function(){
-    return "Update Element";
+    return msg_updateelement_command;
 };
 
 CommandUpdateElement.prototype.clean = function(){
@@ -422,3 +427,39 @@ CommandUpdateElement.prototype.clean = function(){
 function stackUpdateElement(groupId, beforeCloneId,afterCloneId){
     canvasArray[selectedCanvas].commandHistory.push_command(new CommandUpdateElement(groupId, beforeCloneId,afterCloneId));
 }
+
+/********************************************************************/
+/********************************************************************/
+/********************** CommandChangeCommentWf *****************************/
+var currentChangeIdGroup = null;
+
+function CommandChangeCommentWf(oldComment, newComment) {
+    Command.call(this);
+    this.oldComment = oldComment; 
+    this.newComment = newComment;
+};
+
+CommandChangeCommentWf.prototype = Object.create(Command.prototype);
+CommandChangeCommentWf.prototype.constructor = CommandChangeCommentWf;
+
+CommandChangeCommentWf.prototype.undo = function(){
+    //alert("Undo");
+    updateWfComment(this.oldComment);
+};
+
+CommandChangeCommentWf.prototype.redo = function(){
+    //alert("Redo");
+    updateWfComment(this.newComment);
+};
+
+CommandChangeCommentWf.prototype.getName = function(){
+    return msg_changeworkflowcomment_command;
+};
+
+function execChangeCommentWfCommand(oldComment, newComment){
+    if(oldComment != newComment){
+        canvasArray[selectedCanvas].commandHistory.execute(
+        new CommandChangeCommentWf(oldComment, newComment));
+    }
+}
+
