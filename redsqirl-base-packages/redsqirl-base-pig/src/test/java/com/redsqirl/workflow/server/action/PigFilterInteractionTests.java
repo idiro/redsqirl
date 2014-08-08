@@ -8,8 +8,8 @@ import org.junit.Test;
 import com.redsqirl.workflow.server.Workflow;
 import com.redsqirl.workflow.server.action.PigBinarySource;
 import com.redsqirl.workflow.server.action.PigElement;
-import com.redsqirl.workflow.server.action.PigFilterInteraction;
 import com.redsqirl.workflow.server.action.PigSelect;
+import com.redsqirl.workflow.server.interaction.PigFilterInteraction;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.test.TestUtils;
 

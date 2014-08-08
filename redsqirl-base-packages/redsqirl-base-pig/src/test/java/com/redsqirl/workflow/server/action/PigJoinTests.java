@@ -18,13 +18,13 @@ import com.redsqirl.workflow.server.OozieManager;
 import com.redsqirl.workflow.server.Workflow;
 import com.redsqirl.workflow.server.action.PigBinarySource;
 import com.redsqirl.workflow.server.action.PigElement;
-import com.redsqirl.workflow.server.action.PigFilterInteraction;
 import com.redsqirl.workflow.server.action.PigJoin;
-import com.redsqirl.workflow.server.action.PigJoinRelationInteraction;
-import com.redsqirl.workflow.server.action.PigOrderInteraction;
-import com.redsqirl.workflow.server.action.PigTableJoinInteraction;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.enumeration.SavingState;
+import com.redsqirl.workflow.server.interaction.PigFilterInteraction;
+import com.redsqirl.workflow.server.interaction.PigJoinRelationInteraction;
+import com.redsqirl.workflow.server.interaction.PigOrderInteraction;
+import com.redsqirl.workflow.server.interaction.PigTableJoinInteraction;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.test.TestUtils;
 

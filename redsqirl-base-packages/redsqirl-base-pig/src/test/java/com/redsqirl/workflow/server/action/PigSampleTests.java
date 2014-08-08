@@ -18,11 +18,11 @@ import com.redsqirl.workflow.server.Workflow;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.action.PigBinarySource;
 import com.redsqirl.workflow.server.action.PigElement;
-import com.redsqirl.workflow.server.action.PigOrderInteraction;
 import com.redsqirl.workflow.server.action.PigSample;
 import com.redsqirl.workflow.server.action.PigSelect;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.enumeration.SavingState;
+import com.redsqirl.workflow.server.interaction.PigOrderInteraction;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.test.TestUtils;
 

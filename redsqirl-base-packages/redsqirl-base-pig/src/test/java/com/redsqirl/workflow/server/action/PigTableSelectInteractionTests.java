@@ -9,8 +9,8 @@ import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.Workflow;
 import com.redsqirl.workflow.server.action.PigAggregator;
 import com.redsqirl.workflow.server.action.PigSelect;
-import com.redsqirl.workflow.server.action.PigTableSelectInteraction;
 import com.redsqirl.workflow.server.action.Source;
+import com.redsqirl.workflow.server.interaction.PigTableSelectInteraction;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.test.TestUtils;
 

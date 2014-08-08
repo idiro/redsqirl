@@ -31,6 +31,8 @@ import com.redsqirl.workflow.server.datatype.MapRedCompressedType;
 import com.redsqirl.workflow.server.datatype.MapRedCtrlATextType;
 import com.redsqirl.workflow.server.datatype.MapRedTextType;
 import com.redsqirl.workflow.server.enumeration.FieldType;
+import com.redsqirl.workflow.server.interaction.PigGroupInteraction;
+import com.redsqirl.workflow.server.interaction.PigOrderInteraction;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
@@ -482,14 +484,14 @@ public abstract class PigElement extends DataflowAction {
 	 * Get the Current Name of the bag
 	 * @return current Name
 	 */
-	protected String getCurrentName(){
+	public String getCurrentName(){
 		return "A"+nameCont;
 	}
 	/**
 	 * Get the Next Name in the bag
 	 * @return next Name
 	 */
-	protected String getNextName(){
+	public String getNextName(){
 		nameCont++;
 		return "A"+nameCont;
 	}
@@ -498,7 +500,7 @@ public abstract class PigElement extends DataflowAction {
 	 * Get the Previous Name in the bag
 	 * @return next Name
 	 */
-	protected String getPreviousName(){
+	public String getPreviousName(){
 		return "A"+(nameCont-1);
 	}
 	/**

@@ -1675,10 +1675,10 @@
 				<div id="tabFlowchart-1">
 
 					<div id="canvas-tabs">
-						<ul class="ulCssCanvas">
+						<ul class="ulCssCanvas removeDefaults topBanner">
 							<li class="locked"><a href="#flowchart-canvas-1"
 								onclick="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('canvas-1');">canvas-1</a>
-								<span id="canvas-1-icon-close" class="ui-icon ui-icon-close" role="presentation"
+								<span id="canvas-1-icon-close" class="ui-icon ui-icon-close " role="presentation"
 								onclick="closeWorkflowTab(this,'canvas-1')"></span>
 							</li>
 							<img src="../image/icons/button-new_canvas.gif" alt="add" style="width: 16px; padding-top: 2px;" id="addtabCanvas" />
@@ -1724,7 +1724,7 @@
 						</div>
 						<h:panelGroup id="tabsFooterForm">
 							<div id="tabsFooter">
-								<ul class="ulCssCanvasFooter">
+								<ul class="canvasFooter">
 
 									<ui:repeat value="#{configureTabsBean.tabs}" var="tab" varStatus="status">
 										<li class="locked"><a href="#tabFooter-#{tab}">#{tab}</a></li>
@@ -1756,14 +1756,12 @@
 
 								<ui:repeat value="#{configureTabsBean.menuWAList}" var="tab">
 									<div id="tabFooter-#{tab.key}">
-										<p>
 											<ui:repeat value="#{tab.value}" var="action">
 												<span id="spanImagensObj" style="display: none"> <img
 													src="#{action[1]}" class="footerIcon" />
 													<span>#{action[0]}</span>
 												</span>
 											</ui:repeat>
-										</p>
 									</div>
 								</ui:repeat>
 							</div>

@@ -16,6 +16,8 @@ import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.DataProperty;
 import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.datatype.MapRedTextType;
+import com.redsqirl.workflow.server.interaction.PigTableAliasInteraction;
+import com.redsqirl.workflow.server.interaction.PigTableUnionInteraction;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
