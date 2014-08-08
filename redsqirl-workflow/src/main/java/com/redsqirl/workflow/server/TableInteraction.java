@@ -508,10 +508,17 @@ public class TableInteraction extends UserInteraction {
 		if(rows != null && !rows.isEmpty()){
 			Iterator<Tree<String>> it = rows.iterator();
 			while(it.hasNext()){
-				Tree<String> cur = it.next();
-				String content = cur.getFirstChild().getHead();
-				cur.getFirstChild().setHead(
-						content.replaceAll(Pattern.quote(oldName), newName));
+				Tree<String> row = it.next();
+				Iterator<Tree<String>> lColRowIt = row.getSubTreeList().iterator();
+				while(lColRowIt.hasNext()){
+					Tree<String> lColRow = lColRowIt.next();
+					try{
+						String content = lColRow.getFirstChild().getHead();
+						logger.info("replace "+oldName+" by "+newName+" in "+content);
+						lColRow.getFirstChild().setHead(
+								content.replaceAll(Pattern.quote(oldName), newName));
+					}catch(NullPointerException e){}
+				}
 			}
 		}
 	}

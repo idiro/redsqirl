@@ -74,6 +74,21 @@
         minSize= !minSize;
         //alert("new value: "+minSize);
     }
+    
+    function createOptionTitles() {
+         //alert('createOptionTitles');
+         var inputs =  jQuery('[id$="quickNavigation"] input[type=radio]');
+         //alert(inputs);
+         inputs.each(function (index)
+         {
+             //alert(index);
+             var label = jQuery(this).siblings('label').text();
+             // For debugging purposes...
+             //alert(index + ': ' + label);
+             jQuery(this).attr('title',label);
+             jQuery(this).siblings('label').text('');
+         });
+    }
 
 </script>
      
@@ -85,7 +100,9 @@
 <h:form>
      
     <a4j:region>
-        <a4j:jsFunction name="closeDynamicForm" oncomplete="#{rich:component('canvasModalPanel')}.hide();updateOutputStatus('#{canvasModalBean.idGroup}');" />
+        <a4j:jsFunction name="closeDynamicForm" 
+                action="#{canvasModalBean.closeCanvasModal}"
+                oncomplete="#{rich:component('canvasModalPanel')}.hide();if(#{canvasModalBean.elementToUpdate}){updateOutputStatus('#{canvasModalBean.idGroup}');cloneAfterUpdateElement();}else{removeCloneWorkflow(cloneCommandUpdateElementBuffer)}" />
     </a4j:region>
 
     <a4j:region>
@@ -296,10 +313,9 @@
                 <!-- table -->
                 <a4j:region id="tableInteractionRegion" rendered="#{interCur.displayType == 'table'}">
                     <rich:panel style="border:none;" id="tablePanel">
-                        
         
-                        <h:panelGrid id="table" columns="3" rendered="#{!empty interCur.table.tableGeneratorMenu}">
-                        <h:outputText value="#{messages.label_generation}" />
+                        <h:panelGrid id="table" columns="4" rendered="#{!empty interCur.table.tableGeneratorMenu}">
+                        	<h:outputText value="#{messages.label_generation}" />
                             <rich:comboBox
                                 value="#{interCur.table.selectedGenerator}" width="200"
                                 enableManualInput="false" id="generation" listWidth="150"
@@ -313,6 +329,12 @@
                                 action="#{interCur.table.generateLines}"
                                 value="#{messages.button_ok}" reRender="tableInteraction">
                             </a4j:commandButton>
+                            
+                            <a4j:commandButton action="#{canvasModalBean.openTableInteractionPanel}" value="#{messages.button_configure}" styleClass="greenButton"  
+	                        	reRender="tableInteractionPanelPopUp" oncomplete="#{rich:component('tableInteractionPanel')}.show();" >
+	                        	<a4j:actionparam name="idInteraction" value="#{interCur.id}"/>
+	                        </a4j:commandButton>
+                            
                         </h:panelGrid>
                         
                         <a4j:commandLink title="Add new line" action="#{interCur.addNewLine}" reRender="tableInteraction" oncomplete="changeTableInteractionAnchorBottom();">
@@ -429,21 +451,27 @@
         </rich:panel>
             
             <br/>
-        
+            <h:panelGrid columns="2" width="100%">
+            
+            <h:selectOneRadio id="quickNavigation" styleClass="wizzard_quick_navig" rendered="#{canvasModalBean.reachablePagesSize > 1}" value="#{canvasModalBean.pageToGoTo}" >
+                <f:selectItems value="#{canvasModalBean.reachablePages}" />
+                <a4j:support event="onchange" action="#{canvasModalBean.goToPage}" oncomplete="setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');createOptionTitles();" reRender="canvasModalTabPanel, outputTab, panelDynamicForm, panelBtCanvasModal, browserPanel, browserTableData, msnError" />
+            </h:selectOneRadio>
+                    
             <rich:panel id="panelBtCanvasModal" style="border:none; float:right;" >
             
                 <a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="closeDynamicForm();" reRender="panelBtCanvasModal, msnError, errorTable" />
                 
-                <a4j:commandButton action="#{canvasModalBean.previousPage}" styleClass="greenButton" value="#{messages.button_previous}" rendered="#{canvasModalBean.firstPage == 'N'}" reRender="panelDynamicForm, panelBtCanvasModal, browserPanel, msnError" oncomplete="changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');" />
+                <a4j:commandButton action="#{canvasModalBean.previousPage}" styleClass="greenButton" value="#{messages.button_previous}" rendered="#{canvasModalBean.firstPage == 'N'}" reRender="canvasModalTabPanel, outputTab, panelDynamicForm, panelBtCanvasModal, browserPanel, browserTableData, msnError" oncomplete="changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');createOptionTitles();" />
                 
-                <a4j:commandButton action="#{canvasModalBean.applyPage}" styleClass="greenButton" value="#{messages.button_apply}" reRender="canvasModalTabPanel, outputTab, panelBtCanvasModal, msnError, msnSuccess, browserTableProp, browserTableData, browserPropLabel, browserPropValue" oncomplete="changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');" />
+                <a4j:commandButton action="#{canvasModalBean.applyPage}" styleClass="greenButton" value="#{messages.button_apply}" reRender="canvasModalTabPanel, outputTab, panelBtCanvasModal, msnError, msnSuccess, browserTableProp, browserTableData, browserPropLabel, browserPropValue" oncomplete="changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');createOptionTitles();" />
     
-                <a4j:commandButton action="#{canvasModalBean.nextPage}" styleClass="greenButton" value="#{messages.button_next}" rendered="#{canvasModalBean.lastPage == 'N'}" reRender="canvasModalTabPanel, outputTab, panelDynamicForm, panelBtCanvasModal, browserPanel, browserTableData, msnError" oncomplete="changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');" />
+                <a4j:commandButton action="#{canvasModalBean.nextPage}" styleClass="greenButton" value="#{messages.button_next}" rendered="#{canvasModalBean.lastPage == 'N'}" reRender="canvasModalTabPanel, outputTab, panelDynamicForm, panelBtCanvasModal, browserPanel, browserTableData, msnError" oncomplete="changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');createOptionTitles();" />
                 
                 <a4j:commandButton action="#{canvasModalBean.applyPage}" value="#{messages.button_ok}" oncomplete="if(#{requestScope['msnError'] == null} )closeDynamicForm();" styleClass="greenButton" rendered="#{canvasModalBean.lastPage == 'Y'}" reRender="msnError, errorTable" />
             
             </rich:panel>
-        
+            </h:panelGrid>
          </rich:tab>
             
             <rich:tab id="outputTab" label="#{messages.label_dynamic_data}" rerender="dataOutputForm,dataDisplayReg,titleDisplay,displayTableDiv" rendered="#{canvasModalBean.outputTab.showOutputForm == 'Y'}" >
@@ -574,7 +602,9 @@
 
             <rich:modalPanel id="textEditorPanel" width="650" height="420" style="overflow:hidden;" >
                     
-                    <f:facet name="header">Editor</f:facet>
+                    <f:facet name="header">
+                    	<h:outputText value="#{messages.label_Editor}" />
+                    </f:facet>
                     <f:facet name="controls">
                         <h:graphicImage value="../image/icons/buttonCloseWindow.gif"
                             style="cursor:pointer;width:22px;"
@@ -584,6 +614,23 @@
                     <h:panelGroup>
                         <ui:include src="/pages/canvasModalEditorPopup.xhtml" />
                     </h:panelGroup>
+                    
+            </rich:modalPanel>
+            
+            <rich:modalPanel id="tableInteractionPanel" width="650" height="420" style="overflow:hidden;" >
+                    
+	            <f:facet name="header">
+	            	<h:outputText value="#{messages.label_generator_configuration}" />
+	            </f:facet>
+	            <f:facet name="controls">
+	                <h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+	                    style="cursor:pointer;width:22px;"
+	                    onclick="#{rich:component('tableInteractionPanel')}.hide()" />
+	            </f:facet>
+	            
+	            <h:panelGroup>
+	                <a4j:include viewId="/pages/tableInteractionPanelPopup.xhtml" ajaxRendered="true" />
+	            </h:panelGroup>
                     
             </rich:modalPanel>
     

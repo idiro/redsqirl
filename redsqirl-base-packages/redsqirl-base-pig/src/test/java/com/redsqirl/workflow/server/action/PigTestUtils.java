@@ -2,7 +2,6 @@ package com.redsqirl.workflow.server.action;
 
 import static org.junit.Assert.assertTrue;
 
-
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.HashMap;
@@ -20,7 +19,6 @@ import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.Workflow;
-import com.redsqirl.workflow.server.action.PigTextSource;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.datatype.MapRedCtrlATextType;
 import com.redsqirl.workflow.server.datatype.MapRedTextType;
@@ -84,13 +82,13 @@ public class PigTestUtils {
 	}
 	
 	public static void createIntString_file(Path p) throws IOException {
-		String content = "1,A\n";
-		content += "2,B\n";
-		content += "3,C\n";
-		content += "4,D\n";
-		content += "5,E\n";
-		content += "6,F\n";
-		content += "7,G\n";
+		String content = "1\001A\n";
+		content += "2\001B\n";
+		content += "3\001C\n";
+		content += "4\001D\n";
+		content += "5\001E\n";
+		content += "6\001F\n";
+		content += "7\001G\n";
 
 		createHDFSFile(p, content);
 	}
@@ -124,6 +122,8 @@ public class PigTestUtils {
 				.add(new_path1);
 		dataSetTree.getFirstChild("browse").getFirstChild("output")
 				.add("property").add(MapRedTextType.key_delimiter).add(";");
+		
+		src.getDFEOutput().get("").addProperty(MapRedTextType.key_header, "ID INT, VALUE INT, RAW INT");
 
 		Tree<String> field1 = dataSetTree.getFirstChild("browse")
 				.getFirstChild("output").add("field");
@@ -215,7 +215,7 @@ public class PigTestUtils {
 		Tree<String> dataSetTree = src.getInteraction(PigTextSource.key_dataset).getTree();
 		dataSetTree.getFirstChild("browse").getFirstChild("output").add("path").add(new_path1);
 		dataSetTree.getFirstChild("browse").getFirstChild("output").add("property").add(MapRedTextType.key_delimiter).add(",");
-
+		
 		Tree<String> field1 = dataSetTree.getFirstChild("browse")
 				.getFirstChild("output").add("field");
 		field1.add("name").add("ID");
@@ -227,7 +227,6 @@ public class PigTestUtils {
 		field2.add("type").add("INT");
 		
 		String error = src.updateOut();
-		
 		
 		assertTrue("source update: "+error,error == null);
 		

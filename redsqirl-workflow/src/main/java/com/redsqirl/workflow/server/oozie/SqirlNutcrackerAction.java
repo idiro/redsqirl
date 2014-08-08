@@ -32,7 +32,7 @@ public class SqirlNutcrackerAction extends OozieActionAbs {
 	 */
 	private static final long serialVersionUID = -2656343380409195545L;
 	
-	private Logger logger = Logger.getLogger(getClass());
+	private static Logger logger = Logger.getLogger(SqirlNutcrackerAction.class);
 	
 	/**
 	 * Set of paths to remove

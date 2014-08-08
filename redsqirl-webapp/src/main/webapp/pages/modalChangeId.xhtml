@@ -5,24 +5,21 @@
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets">
 
-<script>
-    var currentChangeIdGroup; 
-</script>
-
 <a4j:loadBundle basename="MessagesResources" var="messages" />
 
         <a4j:region>
 
             <a4j:jsFunction name="changeCurrentElementId"
-                oncomplete="currentChangeIdGroup = '#{canvasModalBean.idGroup}';changeIdElement(currentChangeIdGroup,'#{canvasModalBean.elementId}');">
+                oncomplete="execChangeIdElementCommand('#{canvasModalBean.idGroup}', '#{canvasModalBean.curElId}' ,'#{canvasModalBean.elementId}', '#{canvasModalBean.curElComment}', '#{canvasModalBean.elementComment}');">
             </a4j:jsFunction>
             
             <a4j:jsFunction name="changeIdElement"
                 action="#{canvasBean.changeIdElement}"
-                oncomplete="changeModalTitle();updateLabelObj(currentChangeIdGroup,'#{canvasModalBean.componentId}');changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');if( #{requestScope['msnError'] == null}){closeChangeIdModal();}jQuery('#canvas-tabs').unblock();"
+                oncomplete="updateSelectedOutputStatus(currentChangeIdGroup);changeModalTitle();changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');if( #{requestScope['msnError'] == null}){closeChangeIdModal();}jQuery('#canvas-tabs').unblock();"
                 reRender="msnError,errorTable">
                 <a4j:actionparam name="groupId" />
                 <a4j:actionparam name="elementId" />
+                <a4j:actionparam name="comment" />
             </a4j:jsFunction>
             
             <a4j:jsFunction name="changeModalTitle"
@@ -33,10 +30,15 @@
 		<h:outputText value="Name" />
 		<h:inputText label="Name" value="#{canvasModalBean.elementId}" size="16" style="padding-left: 3px;" styleClass="interModal" maxlength="15" id="newIdElement" 
 			onkeypress="return enableEnterKey(event, 'changeIdElementBt');" onkeyup="nospaces(this);" />
+		<br/>
+		<h:outputText value="Comment" />
+        <h:inputTextarea label="Comment" value="#{canvasModalBean.elementComment}" style="padding-left: 3px;height:50px;width:250px;"
+            onkeypress="return enableEnterKey(event, 'changeIdElementBt');" />
+	   
 	
 		<h:panelGrid columns="1">
 			<a4j:commandButton id="changeIdElementBt" styleClass="greenButton" reRender="msnError, errorTable,newIdElement"
-				onclick="#{rich:component('modalChangeId')}.hide();jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+				onclick="#{rich:component('modalChangeId')}.hide();"
 				oncomplete="changeCurrentElementId();" 
 				value="#{messages.button_ok}"/>
 		</h:panelGrid>

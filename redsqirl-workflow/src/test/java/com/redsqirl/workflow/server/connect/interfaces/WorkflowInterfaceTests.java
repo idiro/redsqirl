@@ -8,7 +8,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
-import com.redsqirl.workflow.server.Workflow;
 import com.redsqirl.workflow.server.action.SourceTests;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.connect.WorkflowInterface;
@@ -31,7 +30,9 @@ public class WorkflowInterfaceTests {
 		//String new_path2 = TestUtils.getTablePath(2);
 		String error = null;
 		try{
-			DataFlow dfIn = new Workflow("test_copy");
+			DataFlowInterface dfi = WorkflowInterface.getInstance();
+			dfi.addWorkflow("test_copy"); 
+			DataFlow dfIn = dfi.getWorkflow("test_copy");
 			
 			//hiveInt = new HiveInterface();
 			hdfsInt = new HDFSInterface();
@@ -46,18 +47,18 @@ public class WorkflowInterfaceTests {
 			conv.getDFEOutput().get(Convert.key_output).setSavingState(SavingState.RECORDED);
 			conv.getDFEOutput().get(Convert.key_output).setPath(new_path2);*/
 			
-			DataFlowInterface dfi = WorkflowInterface.getInstance();
 			List<String> els = null;
-			dfi.copy(dfIn,els,dfIn);
+			String cloneId = dfi.cloneDataFlow("test_copy");
+			dfi.copy(cloneId,els,"test_copy");
 			assertTrue("Cp Null",dfIn.getElement().size() == 1);
 			
 			els = new LinkedList<String>();
-			dfi.copy(dfIn,els,dfIn);
+			dfi.copy(cloneId,els,"test_copy");
 			assertTrue("Cp Empty",dfIn.getElement().size() == 1);
 			
 			els.add(source);
 			//els.add(convert);
-			dfi.copy(dfIn,els,dfIn);
+			dfi.copy(cloneId,els,"test_copy");
 			assertTrue("Cp two elements",dfIn.getElement().size() == 2);
 			
 			

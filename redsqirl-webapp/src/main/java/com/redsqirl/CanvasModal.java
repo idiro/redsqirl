@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 
 import org.ajax4jsf.model.KeepAlive;
@@ -73,6 +74,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * The current page number (from 0)
 	 */
 	private int listPosition;
+	
+	private String pageToGoTo;
 
 	/**
 	 * The title of the modal
@@ -143,6 +146,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * List of the current interaction displayed
 	 */
 	private List<CanvasModalInteraction> inters = new LinkedList<CanvasModalInteraction>();
+	private CanvasModalInteraction canvasModalInteractionTableInteractionPanel;
 
 	/**
 	 * List of the table column titles
@@ -163,6 +167,12 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 */
 	private Map<String,FileSystemBean> datastores;
 
+	/**
+	 * Set the comment of an element in change id
+	 */
+	private String elementComment;
+	
+	private List<SelectItem> reachablePages = null;
 
 	public CanvasModal() throws RemoteException{
 		DataFlowInterface dfi = getworkFlowInterface();
@@ -221,7 +231,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 					.getRequestParameterMap().get("paramPageNb"));
 		} catch (NumberFormatException e) {
 			pageNb = 0;
-			logger.error(e.getMessage());
+			logger.warn("Page nb issue: "+e.getMessage(),e);
 		}
 
 		try {
@@ -247,6 +257,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 		}else{
 			elementId = getComponentId();
 			logger.info("Element id: "+elementId);
+			elementComment = dfe.getComment();
 			if (loadMainWindow) {
 				logger.info("load Main window");
 				try {
@@ -327,6 +338,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 		}
 	}
 	
+	public void closeCanvasModal() throws RemoteException {
+		logger.info("closeCanvasModal");
+		loadMainWindow = false;
+	}
+
 	public void changeTitle(){
 		try {
 			DataFlowElement dfe = getworkFlowInterface().getWorkflow(
@@ -361,6 +377,33 @@ public class CanvasModal extends BaseBean implements Serializable {
 		} catch (Exception e) {
 		}
 		return error;
+	}
+	
+	protected void updateReachablePage(){
+		reachablePages = new LinkedList<SelectItem>();
+		try{
+			for(int i = 0; i <= getListPosition();++i){
+				reachablePages.add(new SelectItem(Integer.valueOf(i),
+						Integer.valueOf(i+1)+": "+getPageList().get(i).getTitle(),"",false));
+			}
+			int i = getListPosition()+1;
+			String error = null;
+			while( i < getListPageSize() && error == null){
+				if( (error = getPageList().get(i).checkPage()) == null){
+					reachablePages.add(new SelectItem(Integer.valueOf(i),
+							Integer.valueOf(i+1)+": "+getPageList().get(i).getTitle(),"",false));
+					++i;
+				}
+			}
+			while( i < getListPageSize()){
+				reachablePages.add(new SelectItem(Integer.valueOf(i),
+						Integer.valueOf(i+1)+": "+getPageList().get(i).getTitle(),"",true));
+				++i;
+			}
+		}catch(Exception e){
+			logger.error(e,e);
+		}
+		pageToGoTo = String.valueOf(getListPosition());
 	}
 
 	/**
@@ -464,6 +507,54 @@ public class CanvasModal extends BaseBean implements Serializable {
 		mountInteractionForm();
 
 	}
+	
+
+	public void goToPage(){
+		
+		try {
+			String error = checkNextPage();
+			if(error.isEmpty()){
+				error = null;
+				int pageNb = Integer.valueOf(pageToGoTo);
+				if(pageNb > getListPosition()){
+					int i = getListPosition();
+					while(error == null && i < Math.min(pageNb ,listPageSize)){
+						++i;
+						error = getPageList().get(i).checkPage();
+					}
+					setListPosition(i);
+				}else{
+					setListPosition(pageNb);
+				}
+			}
+			
+			
+			if (error != null) {
+				MessageUseful.addErrorMessage(error);
+				HttpServletRequest request = (HttpServletRequest) FacesContext
+						.getCurrentInstance().getExternalContext().getRequest();
+				request.setAttribute("msnError", "msnError");
+				pageToGoTo = String.valueOf(getListPosition());
+			} else {
+
+				logger.info("check nextPage Ok ");
+
+				checkFirstPage();
+
+				checkLastPage();
+
+				mountInteractionForm();
+			}
+
+		} catch (Exception e) {
+			logger.error(e);
+			MessageUseful
+			.addErrorMessage(getMessageResources("msg_error_oops"));
+			HttpServletRequest request = (HttpServletRequest) FacesContext
+					.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
+		}
+	}
 
 	/**
 	 * mountInteractionForm
@@ -494,6 +585,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 				}
 			}
 
+			updateReachablePage();
 		} catch (Exception e) {
 			logger.error(e.getMessage(),e);
 			MessageUseful
@@ -606,6 +698,26 @@ public class CanvasModal extends BaseBean implements Serializable {
 		}
 	}
 
+	public void openTableInteractionPanel() throws RemoteException{
+		logger.info("openTableInteractionPanel");
+		String idInteraction = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("idInteraction");
+		if(idInteraction != null){
+			logger.info("interaction: " + idInteraction);
+			int indexOf = getPage().getInteractions().indexOf(getPage().getInteraction(idInteraction));
+			CanvasModalInteraction cmInt = inters.get(indexOf);
+			if (cmInt instanceof TableInteraction) {
+				logger.info("Table interaction");
+				((TableInteraction) cmInt).mountTableInteractionPanel();
+				setCanvasModalInteractionTableInteractionPanel(cmInt);
+			}
+		}else{
+			logger.info("openTableInteractionPanel error idInteraction = NULL ");
+			MessageUseful.addErrorMessage(getMessageResources("msg_error_oops"));
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
+		}
+	}
+
 	public void checkFirstPage() {
 		if (getListPosition() == 0) {
 			setFirstPage("Y");
@@ -633,6 +745,14 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 */
 	protected List<DFEPage> getPageList() throws RemoteException {
 		return dfe != null ? dfe.getPageList() : null;
+	}
+	
+	public final String getCurElId() throws RemoteException{
+		return dfe!= null ? dfe.getComponentId():null;
+	}
+	
+	public final String getCurElComment() throws RemoteException{
+		return dfe!= null ? dfe.getComment() : null;
 	}
 
 	/**
@@ -876,6 +996,61 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 	public void setPageTextTip(String pageTextTip) {
 		this.pageTextTip = pageTextTip;
+	}
+
+	/**
+	 * @return the elementComment
+	 */
+	public String getElementComment() {
+		return elementComment;
+	}
+
+	/**
+	 * @param elementComment the elementComment to set
+	 */
+	public void setElementComment(String elementComment) {
+		this.elementComment = elementComment;
+	}
+
+	public CanvasModalInteraction getCanvasModalInteractionTableInteractionPanel() {
+		return canvasModalInteractionTableInteractionPanel;
+	}
+
+	public void setCanvasModalInteractionTableInteractionPanel(
+			CanvasModalInteraction canvasModalInteractionTableInteractionPanel) {
+		this.canvasModalInteractionTableInteractionPanel = canvasModalInteractionTableInteractionPanel;
+	}
+
+	/**
+	 * @return the reachablePage
+	 */
+	public final List<SelectItem> getReachablePages() {
+		return reachablePages;
+	}
+
+	/**
+	 * @return the pageToGoTo
+	 */
+	public String getPageToGoTo() {
+		return pageToGoTo;
+	}
+
+	/**
+	 * @param pageToGoTo the pageToGoTo to set
+	 */
+	public void setPageToGoTo(String pageToGoTo) {
+		this.pageToGoTo = pageToGoTo;
+	}
+	
+	public final int getReachablePagesSize(){
+		return reachablePages == null ? 0 : reachablePages.size();
+	}
+
+	/**
+	 * @return the elementToUpdate
+	 */
+	public final boolean isElementToUpdate() {
+		return elementToUpdate;
 	}
 
 }

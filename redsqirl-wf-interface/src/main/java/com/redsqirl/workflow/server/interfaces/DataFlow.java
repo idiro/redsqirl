@@ -382,6 +382,22 @@ public interface DataFlow extends Remote, Cloneable{
 	public void setName(String name) throws RemoteException;
 
 	/**
+	 * Get the workflow comment
+	 * 
+	 * @return Comment of the Workflow
+	 * @throws RemoteException
+	 */
+	public String getComment() throws RemoteException;
+
+	/**
+	 * Set the Workflow comment
+	 * 
+	 * @param comment
+	 * @throws RemoteException
+	 */
+	public void setComment(String comment) throws RemoteException;
+	
+	/**
 	 * Get the oozie job id of the job currently running or previously run
 	 * 
 	 * @return Job Id on oozie

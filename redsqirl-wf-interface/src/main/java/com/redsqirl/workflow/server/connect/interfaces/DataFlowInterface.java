@@ -68,10 +68,29 @@ public interface DataFlowInterface extends Remote{
 	public DataStore getBrowser(String browserName) throws RemoteException;
 	
 	/**
+	 * Clone a data flow
+	 * @param from
+	 * @return
+	 */
+	public String cloneDataFlow(String wfName) throws RemoteException;
+	
+	public void eraseClone(String cloneId) throws RemoteException;
+	
+	/**
 	 * Copy a subset of a workflow into another.
 	 * @param from
 	 * @param elements
 	 * @param to
 	 */
-	public void copy(DataFlow from, List<String> elements, DataFlow to) throws RemoteException;
+	public void copy(String cloneId, List<String> elements, String wfName) throws RemoteException;
+	
+	/**
+	 * Replace an existing workflow by a clone.
+	 * @param id clone id
+	 * @param wfName Workflow id
+	 * @param keepClone false erase the clone
+	 * @throws RemoteException
+	 */
+	public void replaceWFByClone(String id, String wfName,boolean keepClone) throws RemoteException;
+	
 }

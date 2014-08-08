@@ -3,6 +3,8 @@ package com.redsqirl.workflow.server.action;
 
 import java.rmi.RemoteException;
 
+import org.apache.log4j.Logger;
+
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.interaction.PigSampleInteraction;
@@ -20,6 +22,9 @@ public class PigSample extends PigElement {
 	 * 
 	 */
 	private static final long serialVersionUID = 600343170359664918L;
+	
+	private static Logger logger = Logger.getLogger(PigSample.class);
+	
 	/**
 	 * Key Sample
 	 */

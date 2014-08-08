@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -41,6 +42,9 @@ public class HiveType extends DataOutput{
 	 * 
 	 */
 	private static final long serialVersionUID = -4797761333298548415L;
+	
+	private static Logger logger = Logger.getLogger(HiveType.class);
+	
 	/**
 	 * HiveInterface Instance
 	 */
@@ -280,7 +284,9 @@ public class HiveType extends DataOutput{
 	 * @throws RemoteException
 	 */
 	private void generateFieldsMap(String table) throws RemoteException{
+		FieldList oldFields = fields;
 		fields = new OrderedFieldList();
+		
 		String[] lines = hInt.getDescription(hInt.getTableAndPartitions(table)[0]).get("describe").split(";");
 		Map<String,FieldType> reconvert = new LinkedHashMap<String,FieldType>();
 		String header = getProperty(HiveType.key_header); 
@@ -309,11 +315,24 @@ public class HiveType extends DataOutput{
 						}
 					}
 				}
+				FieldType type;
 				if(toCategory){
-					fields.addField(field[0].trim(), FieldType.CATEGORY);
+					type = FieldType.CATEGORY;
 				}else{
-					fields.addField(field[0].trim(), FieldType.valueOf(field[1].trim().toUpperCase()));
+					type = FieldType.valueOf(field[1].trim().toUpperCase());
 				}
+				
+				boolean found = false;
+				for (String fieldName : oldFields.getFieldNames()){
+					if (fieldName.equalsIgnoreCase(field[0].trim())){
+						fields.addField(fieldName, type);
+						found = true;
+					}
+				}
+				if (!found){
+					fields.addField(field[0].trim(), type);
+				}
+				
 			}
 			catch (Exception e){
 				logger.error("Error adding field: "+field[0]+" - "+field[1], e);

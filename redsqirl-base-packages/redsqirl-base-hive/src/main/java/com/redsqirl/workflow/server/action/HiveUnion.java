@@ -7,6 +7,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.DataProperty;
@@ -30,6 +32,9 @@ public class HiveUnion extends HiveElement {
 	 * 
 	 */
 	private static final long serialVersionUID = -2971963679008329394L;
+	
+	private static Logger logger = Logger.getLogger(HiveUnion.class);
+	
 	/** Field Key */
 	public static final String key_fieldTable = "Fields";
 	/** Union Condidtion Key */

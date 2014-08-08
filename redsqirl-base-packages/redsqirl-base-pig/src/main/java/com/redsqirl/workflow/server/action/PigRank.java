@@ -2,11 +2,11 @@ package com.redsqirl.workflow.server.action;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.redsqirl.utils.FieldList;
-import com.redsqirl.workflow.server.AppendListInteraction;
 import com.redsqirl.workflow.server.ListInteraction;
 import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.interaction.PigFilterInteraction;
@@ -22,6 +22,8 @@ public class PigRank extends PigElement {
 	 */
 	private static final long serialVersionUID = -5312828268150978644L;
 
+	private static Logger logger = Logger.getLogger(PigRank.class);
+	
 	private Page page1, page2;
 
 	private PigFilterInteraction filterInt;

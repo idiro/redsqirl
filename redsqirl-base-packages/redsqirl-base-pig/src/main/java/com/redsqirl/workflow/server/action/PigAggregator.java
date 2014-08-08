@@ -4,6 +4,8 @@ package com.redsqirl.workflow.server.action;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 
+import org.apache.log4j.Logger;
+
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.interaction.PigFilterInteraction;
@@ -24,6 +26,9 @@ public class PigAggregator extends PigElement {
 	 * 
 	 */
 	private static final long serialVersionUID = 4640611831909705304L;
+	
+	private static Logger logger = Logger.getLogger(PigAggregator.class);
+	
 	/**
 	 * Pages for action
 	 */

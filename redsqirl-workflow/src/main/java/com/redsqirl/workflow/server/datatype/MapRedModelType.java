@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.hadoop.fs.Path;
+import org.apache.log4j.Logger;
 
 import com.idiro.hadoop.checker.HdfsFileChecker;
 import com.idiro.utils.RandomString;
@@ -22,6 +23,8 @@ public class MapRedModelType extends MapRedDir {
 	 */
 	private static final long serialVersionUID = -2256801373086895177L;
 
+	private static Logger logger = Logger.getLogger(MapRedModelType.class);
+	
 	private String delimiter = new String(new char[] { '\001' });
 
 	public MapRedModelType() throws RemoteException {

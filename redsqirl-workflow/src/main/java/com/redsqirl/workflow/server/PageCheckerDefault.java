@@ -2,6 +2,7 @@ package com.redsqirl.workflow.server;
 
 
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Iterator;
 
 import org.apache.log4j.Logger;
@@ -15,10 +16,21 @@ import com.redsqirl.workflow.server.interfaces.PageChecker;
  * @author etienne
  *
  */
-public class PageCheckerDefault 
+public class PageCheckerDefault
+extends UnicastRemoteObject
 implements PageChecker{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1531242759979525830L;
+	
 	protected static Logger logger = Logger.getLogger(PageCheckerDefault.class);
+	
+	public PageCheckerDefault() throws RemoteException{
+		super();
+	}
+	
 	/**
 	 * Check a page
 	 * @param page to check

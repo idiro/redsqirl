@@ -20,6 +20,12 @@ import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.PathFilter;
+import org.apache.log4j.Logger;
+import org.apache.pig.data.DataType;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -39,6 +45,8 @@ public abstract class MapRedDir extends DataOutput{
 	 * 
 	 */
 	private static final long serialVersionUID = 3497308078096391496L;
+	
+	private static Logger logger = Logger.getLogger(MapRedDir.class);
 	
 	/** HDFS Interface */
 	protected static HDFSInterface hdfsInt;
@@ -224,7 +232,7 @@ public abstract class MapRedDir extends DataOutput{
 
 					@Override
 					public boolean accept(Path arg0) {
-						return !arg0.getName().startsWith("_");
+						return !arg0.getName().startsWith("_") && !arg0.getName().startsWith(".");
 					}
 				});
 				ans = new ArrayList<String>(maxToRead);
@@ -388,12 +396,16 @@ public abstract class MapRedDir extends DataOutput{
 	protected FieldList generateFieldsMap(String delimiter) throws RemoteException {
 
 		logger.info("generateFieldsMap --");
-
+		
 		FieldList fl = new OrderedFieldList();
 		try {
 			List<String> lines = this.selectLine(2000);
 			Map<String,Set<String>> valueMap = new LinkedHashMap<String,Set<String>>();
 			Map<String,Integer> nbValueMap = new LinkedHashMap<String,Integer>();
+			
+			List<String[]> schemaList = getSchemaList();
+			Map<String, FieldType> schemaTypeMap = new LinkedHashMap<String, FieldType>();
+			
 			logger.info(lines);
 			if (lines != null) {							
 				logger.info("key_delimiter: "
@@ -407,7 +419,27 @@ public abstract class MapRedDir extends DataOutput{
 						for (String s : line.split(Pattern
 								.quote(delimiter))) {
 
-							String nameColumn = generateColumnName(cont++);
+							String nameColumn;
+							if (schemaList != null && !schemaList.isEmpty() 
+									&& schemaList.size() > cont){
+								nameColumn = schemaList.get(cont)[0];
+								String typeColumn = schemaList.get(cont++)[1].toUpperCase();
+								FieldType fieldType;
+								
+								if (typeColumn.equalsIgnoreCase("CHARARRAY")) {
+									fieldType = FieldType.STRING;
+								} else if (typeColumn.equalsIgnoreCase("NUMBER")) {
+									fieldType = FieldType.DOUBLE;
+								} else {
+									fieldType = FieldType.valueOf(typeColumn);
+								}
+								
+								schemaTypeMap.put(nameColumn, fieldType);
+							}
+							else{
+								nameColumn = generateColumnName(cont++);
+							}
+							
 							if(!valueMap.containsKey(nameColumn)){
 								valueMap.put(nameColumn, new LinkedHashSet<String>());
 								nbValueMap.put(nameColumn, 0);
@@ -429,20 +461,49 @@ public abstract class MapRedDir extends DataOutput{
 				Iterator<String> valueIt = valueMap.keySet().iterator();
 				while(valueIt.hasNext()){
 					String cat = valueIt.next();
-					fl.addField(cat,getType(valueMap.get(cat),nbValueMap.get(cat)));
+					fl.addField(cat,getType(valueMap.get(cat),nbValueMap.get(cat), schemaTypeMap.get(cat)));
 				}
 
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
-		}
+		} 
 		return fl;
 
 	}
 	
+	private List<String[]> getSchemaList(){
+		
+		JSONParser parser = new JSONParser();
+		List<String[]> schemaMap = new ArrayList<String[]>();
+		
+		List<String> schemaList;
+		try {
+			schemaList = hdfsInt.select(getPath()+"/.pig_schema", "", 10);
+			
+			
+			if (schemaList != null && !schemaList.isEmpty()){
+				JSONObject a = (JSONObject) parser.parse(schemaList.get(0));
+				
+				JSONArray fields = (JSONArray) a.get("fields");
+				for (int i = 0; i < fields.size(); ++i){
+					JSONObject obj = (JSONObject) fields.get(i);
+					schemaMap.add(new String[]{String.valueOf(obj.get("name")), 
+							DataType.findTypeName( ((Long)obj.get("type")).byteValue() )});
+				}
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+		return schemaMap;
+	}
+	
 
-	public FieldType getType(Set<String> exValue, int numberOfValues){
-		FieldType typeAns = null; 
+	public FieldType getType(Set<String> exValue, int numberOfValues, FieldType schemaType){
+		FieldType typeAns = schemaType; 
 		boolean restart = false;
 		do{
 			restart = false;

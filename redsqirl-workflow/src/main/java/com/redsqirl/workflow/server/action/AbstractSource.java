@@ -9,6 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.utils.Tree;
@@ -42,6 +44,9 @@ import com.redsqirl.workflow.utils.LanguageManagerWF;
 public abstract class AbstractSource extends DataflowAction {
 
 	private static final long serialVersionUID = 7519928238030041208L;
+	
+	private static Logger logger = Logger.getLogger(AbstractSource.class);
+	
 	/**
 	 * Map of inputs
 	 */
@@ -136,7 +141,13 @@ public abstract class AbstractSource extends DataflowAction {
 
 		page2.addInteraction(dataSubtype);
 
-		page2.setChecker(new PageChecker() {
+		
+		page2.setChecker(new PageChecker(){
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 3411961312502537625L;
 
 			@Override
 			public String check(DFEPage page) throws RemoteException {
@@ -222,6 +233,11 @@ public abstract class AbstractSource extends DataflowAction {
 		page3.addInteraction(browser);
 
 		page3.setChecker(new PageChecker() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1718709208939991206L;
 
 			@Override
 			public String check(DFEPage page) throws RemoteException {
@@ -382,8 +398,6 @@ public abstract class AbstractSource extends DataflowAction {
 							logger.info("Setpath : " + path);
 							out.setPath(path);
 							logger.info(out.getFields().getFieldNames());
-							
-							
 						}
 						
 						getInteraction(key_dataset).getTree()

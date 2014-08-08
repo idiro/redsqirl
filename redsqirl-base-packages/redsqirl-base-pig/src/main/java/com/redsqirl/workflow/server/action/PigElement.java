@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.AppendListInteraction;
@@ -50,6 +52,9 @@ public abstract class PigElement extends DataflowAction {
 	 * 
 	 */
 	private static final long serialVersionUID = -1651299366774317959L;
+	
+	private static Logger logger = Logger.getLogger(PigElement.class);
+	
 								/**
 								 * Output Key
 								 */
@@ -138,6 +143,7 @@ public abstract class PigElement extends DataflowAction {
 		values.add("ASCENDING");
 		values.add("DESCENDING");
 		orderTypeInt.setPossibleValues(values);
+		orderTypeInt.setReplaceDisable(true);
 		
 		String pigParallel = WorkflowPrefManager.getUserProperty(
 				WorkflowPrefManager.user_pig_parallel,
@@ -172,6 +178,7 @@ public abstract class PigElement extends DataflowAction {
 		saveTypePos.add( new MapRedCompressedType().getTypeName());
 		savetypeOutputInt.setPossibleValues(saveTypePos);
 		savetypeOutputInt.setValue(new MapRedCompressedType().getTypeName());
+		savetypeOutputInt.setReplaceDisable(true);
 		
 		auditInt= new AppendListInteraction(key_audit,
 				  	PigLanguageManager.getText("pig.audit_interaction.title"),
@@ -180,6 +187,7 @@ public abstract class PigElement extends DataflowAction {
 		auditIntVal.add(PigLanguageManager.getText("pig.audit_interaction_doaudit"));
 		auditInt.setPossibleValues(auditIntVal);
 		auditInt.setDisplayCheckBox(true);
+		auditInt.setReplaceDisable(true);
 		
 	}
 	/**
@@ -418,8 +426,9 @@ public abstract class PigElement extends DataflowAction {
 		String query = "STORE "+relationName+" INTO '" + out.getPath() + "'";
 				
 		if (function != null){
-			query += " USING "+function+";";
+			query += " USING "+function;
 		}
+		query += ";";
 				
 		return query;
 	}
@@ -440,7 +449,7 @@ public abstract class PigElement extends DataflowAction {
 			type = savetypeOutputInt.getTree().getFirstChild("list").getFirstChild("output").getFirstChild().getHead();
 			logger.info("type: "+type);
 			if(type.equalsIgnoreCase("TEXT MAP-REDUCE DIRECTORY")){
-				function = "PigStorage('"+delimiter+"')";
+				function = "PigStorage('"+delimiter+"', '-schema')";
 			}
 			if (type.equalsIgnoreCase("BINARY MAP-REDUCE DIRECTORY")){
 				function = "BinStorage()";
