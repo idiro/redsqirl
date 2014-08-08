@@ -1366,11 +1366,11 @@ function mountObj(canvasName) {
 	// for list divs
 	jQuery("#tabsFooter ul:first li").each(function(index) {
 
-		var posInitX = 40;
-		var poxInitY = 50;
+		var posInitX = 40;//4
+		var poxInitY = 20;//5
 		
 		var posInitTextX = 16;
-		var posInitTextY = 80;
+		var posInitTextY = 50;
 
 		var nameDiv = jQuery(this).attr("aria-controls");
 
@@ -1381,8 +1381,8 @@ function mountObj(canvasName) {
 			// stage to footer
 			stageTab = new Kinetic.Stage({
 				container : nameDiv,
-				width : jQuery("#canvas-tabs").width()-15,
-				height : 100
+				width : jQuery("#"+nameDiv).width(),
+				height : jQuery("#"+nameDiv).height(),
 			});
 			
 			jQuery("#" +  nameDiv).find(".kineticjs-content").css("background-image", "none");
