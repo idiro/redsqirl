@@ -1,11 +1,8 @@
 function Canvas(name){
     this.name=name;
-    
     this.commandHistory = new CommandHistory();
-    
     this.rectSelect = null;
     this.arrow = null;
-    
     this.countObj = 0;
     this.positionX = 0;
     this.positionY = 0;
@@ -23,21 +20,15 @@ function Canvas(name){
     this.dragDropGroup = false;
 
     this.down = false;
-    
     this.canvasContainer = null;
     this.legendCanvasContainer = null;
-    
     this.stage = null;
     this.layer = null;
     this.polygonLayer = null;
-    
-    
     this.running = false;
     this.saved = false;
     this.pathFile = null;
-    
     this.oldIdSelected = null;
-    
     this.legendStage = null;
     this.legendLayer = null;
     this.legend = null;
@@ -49,8 +40,6 @@ function Canvas(name){
 var selectedCanvas = "canvas-1";
 var canvasArray;
 var allPositionIcons;
-var imgHeight;
-var imgWidth;
 var rightClickGroup;
 var curToolTip;
 var isSaveAll = false;
@@ -1363,23 +1352,13 @@ function mountObj(canvasName) {
 	// for list divs
 	jQuery("#tabsFooter ul:first li").each(function(index) {
 
-		var posInitX = 40;//4
-		var poxInitY = 20;//5
+		var posInitX = 40;
+		var poxInitY = 50;
 		
 		var posInitTextX = 16;
-		var posInitTextY = 50;
+		var posInitTextY = 80;
 
 		var nameDiv = jQuery(this).attr("aria-controls");
-    // for list divs
-
-			// stage to footer
-			stageTab = new Kinetic.Stage({
-				container : nameDiv,
-				width : jQuery("#"+nameDiv).width(),
-				height : jQuery("#"+nameDiv).height(),
-			});
-			
-			jQuery("#" +  nameDiv).find(".kineticjs-content").css("background-image", "none");
 			
         if (nameDiv != undefined) { // groupNumber
 
@@ -1493,17 +1472,16 @@ function mountObj(canvasName) {
 
                     var mousePosStage = stage.getMousePosition();
                     if (mousePosStage !== undefined){
-
-                        addElement(selectedCanvas,
+                    
+                        canvasArray[selectedCanvas].commandHistory.execute(new CommandAddObj(selectedCanvas,
                                 typeText.getText(),
                                 srcImageText,
                                 mousePosStage.x - 30,
                                 mousePosStage.y - 30,
                                 numSides,
-                                "group" + (+canvasArray[selectedCanvas].countObj+1), "");
-                        
-                        addElementBt(typeText.getText(),"group"+ canvasArray[selectedCanvas].countObj);
-                        updateTypeObj(selectedCanvas, "group"+ canvasArray[selectedCanvas].countObj, "group"+ canvasArray[selectedCanvas].countObj);
+                                "group" + (+canvasArray[selectedCanvas].countObj+1),
+                                "")
+                        );
                         
                     }
                     document.body.style.cursor = 'default';
@@ -1963,13 +1941,16 @@ function openChangeIdModalJS(group){
 
 function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
     
+    imgHeight = imgTab.height;
+    imgWidth = imgTab.width;
+    
     var rotateDeg = 0;
     if (numSides%2 == 0 ){
         rotateDeg = 360/(2*numSides);
     }
 
-    var height = 44.5/imgHeight;
-    var width = 44.5/imgWidth;
+    var height = 50/imgHeight;
+    var width = 50/imgWidth;
     
     var offsetX = imgWidth/2;
     var offsetY = imgHeight/2;

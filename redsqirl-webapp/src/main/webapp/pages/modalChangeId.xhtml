@@ -15,7 +15,7 @@
             
             <a4j:jsFunction name="changeIdElement"
                 action="#{canvasBean.changeIdElement}"
-                oncomplete="updateSelectedOutputStatus(currentChangeIdGroup);changeModalTitle();changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');if( #{requestScope['msnError'] == null}){closeChangeIdModal();}jQuery('#canvas-tabs').unblock();"
+                oncomplete="if( #{requestScope['msnError'] == null}){closeChangeIdModal();}jQuery('#canvas-tabs').unblock();"
                 reRender="msnError,errorTable">
                 <a4j:actionparam name="groupId" />
                 <a4j:actionparam name="elementId" />

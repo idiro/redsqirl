@@ -100,9 +100,11 @@
 <h:form>
      
     <a4j:region>
+        <a4j:jsFunction name="closeCanvasModal" 
+                action="#{canvasModalBean.closeCanvasModal}" />
         <a4j:jsFunction name="closeDynamicForm" 
-                action="#{canvasModalBean.closeCanvasModal}"
-                oncomplete="#{rich:component('canvasModalPanel')}.hide();if(#{canvasModalBean.elementToUpdate}){updateOutputStatus('#{canvasModalBean.idGroup}');cloneAfterUpdateElement();}else{removeCloneWorkflow(cloneCommandUpdateElementBuffer)}" />
+                data="#{canvasModalBean.idGroup}"
+                oncomplete="closeCanvasModal();#{rich:component('canvasModalPanel')}.hide();if(#{canvasModalBean.elementToUpdate}){updateOutputStatus(data);cloneAfterUpdateElement();}else{removeCloneWorkflow(cloneCommandUpdateElementBuffer);if(#{canvasModalBean.loadMainWindow}){updateOutputStatus(data);}}" />
     </a4j:region>
 
     <a4j:region>

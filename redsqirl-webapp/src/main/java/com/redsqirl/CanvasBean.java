@@ -73,6 +73,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	private String commentWf = "";
 
+	private String idLastElementInserted;
+
 	/**
 	 * 
 	 * @return
@@ -148,9 +150,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		String nameElement = params.get("paramNameElement");
 		String paramGroupID = params.get("paramGroupID");
+		String paramIdElement = params.get("paramIdElement");
 
 		logger.info("nameElement " + nameElement);
 		logger.info("paramGroupID " + paramGroupID);
+		logger.info("paramidElement "+paramIdElement);
 
 		try {
 			DataFlow df = getDf();
@@ -161,10 +165,15 @@ public class CanvasBean extends BaseBean implements Serializable {
 						.getRequest();
 				request.setAttribute("msnError", "msnError");
 			}else if (nameElement != null && paramGroupID != null) {
-				String idElement = df.addElement(nameElement);
-				if (idElement != null) {
+				idLastElementInserted = df.addElement(nameElement);
+				if(paramIdElement != null && ! paramIdElement.isEmpty() && ! paramIdElement.equalsIgnoreCase("undefined")){
+					if( df.changeElementId(idLastElementInserted, paramIdElement) == null){
+						idLastElementInserted = paramIdElement;
+					}
+				}
+				if (idLastElementInserted != null) {
 					getIdMap().get(getNameWorkflow()).put(paramGroupID,
-							idElement);
+							idLastElementInserted);
 				} else {
 					MessageUseful.addErrorMessage("NULL POINTER"); 
 					HttpServletRequest request = (HttpServletRequest) FacesContext
@@ -2002,6 +2011,20 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void setIdsToPaste(String idsToPaste) {
 		this.idsToPaste = idsToPaste;
+	}
+
+	/**
+	 * @return the idLastElementInserted
+	 */
+	public final String getIdLastElementInserted() {
+		return idLastElementInserted;
+	}
+
+	/**
+	 * @param idLastElementInserted the idLastElementInserted to set
+	 */
+	public final void setIdLastElementInserted(String idLastElementInserted) {
+		this.idLastElementInserted = idLastElementInserted;
 	}
 	
 }
