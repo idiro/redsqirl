@@ -5,6 +5,7 @@
 //
 
 function CommandHistory() {
+    this.size_max = 50;
 	this.cur_index = -1;
 	this.hist_stack = new Array();
 }
@@ -17,40 +18,78 @@ CommandHistory.prototype.undoName = function() {
 	return name;
 };
 
+CommandHistory.prototype.redoName = function() {
+    var name = "";
+    if(this.cur_index < this.hist_stack.length -1 ){
+        name = this.hist_stack[this.cur_index+1].getName();
+    }
+    return name;
+};
+
+CommandHistory.prototype.update_buttonname = function() {
+    var undoName = this.undoName();
+    var redoName = this.redoName();
+    var buttonUndo = jQuery('#buttonundo');
+    if(undoName.length > 0){
+        buttonUndo.attr('title',buttonUndo.attr('alt')+": "+undoName);
+    }else{
+        buttonUndo.attr('title',buttonUndo.attr('alt'));
+    }
+    var buttonRedo = jQuery('#buttonredo');
+    if(redoName.length > 0){
+        buttonRedo.attr('title',buttonRedo.attr('alt')+": "+redoName);
+    }else{
+        buttonRedo.attr('title',buttonRedo.attr('alt'));
+    }
+};
+
 CommandHistory.prototype.undo = function() {
 	if(this.cur_index >= 0){
 		this.hist_stack[this.cur_index].undo();
 		--this.cur_index;
+		this.update_buttonname();
 	}
 };
 
-CommandHistory.prototype.redoName = function() {
-	var name = "";
-	if(this.cur_index < this.hist_stack.length -1 ){
-		name = this.hist_stack[this.cur_index+1].getName();
-	}
-	return name;
-};
 
 CommandHistory.prototype.redo = function() {
 	if(this.cur_index < this.hist_stack.length -1 ){
 		++this.cur_index;
 		this.hist_stack[this.cur_index].redo();
+		this.update_buttonname();
 	}
 };
 
+CommandHistory.prototype.clean = function(){
+    if(this.hist_stack.length >= this.size_max ){
+        var size_transform = this.size_max / 2;
+        var i = 0;
+        for(i=0; i < size_transform;++i){
+            this.hist_stack[0].clean();
+            delete this.hist_stack[0];
+            this.hist_stack.shift();
+        }
+        this.cur_index -= i; 
+    }
+}
+
 CommandHistory.prototype.push_command = function(command) {
 	while(this.cur_index + 1 < this.hist_stack.length){
-		this.hist_stack.pop();
+		var el = this.hist_stack.pop();
+		el.clean();
+		delete el;
 	}
 	++this.cur_index;
 	this.hist_stack[this.cur_index] = command;
+	this.clean();
+	this.update_buttonname();
 };
 
 CommandHistory.prototype.execute = function(command) {
 	this.push_command(command);
 	command.redo();
 };
+
 
 
 function Command(){
