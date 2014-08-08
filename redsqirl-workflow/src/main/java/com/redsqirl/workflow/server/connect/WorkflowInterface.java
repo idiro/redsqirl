@@ -345,10 +345,29 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 		return datastores;
 	}
 	
-	public void copyUndoElement(String id, String wfName) throws RemoteException{
+	public void replaceWFByClone(String id, String wfName,boolean keepClone) throws RemoteException{
 
 		if(wfClones.containsKey(id) && wf.containsKey(wfName)){
 			wf.remove(wfName);
+			if(!keepClone){
+				wf.put(wfName,wfClones.get(id));
+				wfClones.remove(id);
+			}else{
+				try{
+					wf.put(wfName, (DataFlow) ((Workflow)wfClones.get(id)).clone());
+				}catch(Exception e){
+					logger.error("Fail to clone a cloned Workflow: "+e,e);
+				}
+			}
+		}
+
+	}
+	
+	public void copy(String id, String wfName) throws RemoteException{
+
+		if(wfClones.containsKey(id) && wf.containsKey(wfName)){
+			wf.remove(wfName);
+			wfClones.remove(id);
 			wf.put(wfName,wfClones.get(id));
 		}
 
