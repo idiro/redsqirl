@@ -1521,49 +1521,6 @@ function mountObj(canvasName) {
 				polygonTabFake.on('mouseout', function(e) {
 					jQuery(".tooltipCanvas").remove();
 				});
-				
-				polygonTabFake.on('dragend',function() {
-					
-					var stage = canvasArray[selectedCanvas].stage;
-
-					var mousePosStage = stage.getMousePosition();
-					if (mousePosStage !== undefined){
-
-						canvasArray[selectedCanvas].commandHistory.execute(new CommandAddObj(selectedCanvas,
-								typeText.getText(),
-								srcImageText,
-								mousePosStage.x - 30,
-								mousePosStage.y - 30,
-								numSides,
-								"group" + (+canvasArray[selectedCanvas].countObj+1),
-								"")
-						);
-						
-						addElementBt(typeText.getText(),"group"+ canvasArray[selectedCanvas].countObj);
-						updateTypeObj(selectedCanvas, "group"+ canvasArray[selectedCanvas].countObj, "group"+ canvasArray[selectedCanvas].countObj);
-						
-					}
-					document.body.style.cursor = 'default';
-					
-					var polygonTabFakeClone = polygonTabFake.clone();
-					polygonTabFakeClone.setAbsolutePosition(polygonTabFake.posInitX,polygonTabFake.posInitY);
-					layerTab.add(polygonTabFakeClone);
-					this.remove();
-					
-					layerTab.draw();
-					canvasArray[selectedCanvas].polygonLayer.draw();
-				});
-
-				polygonTabFake.on('mouseup',function() {
-					document.body.style.cursor = 'default';
-					
-					var polygonTabFakeClone = polygonTabFake.clone();
-					polygonTabFakeClone.setAbsolutePosition(polygonTabFake.posInitX,polygonTabFake.posInitY);
-					layerTab.add(polygonTabFakeClone);
-					this.remove();
-					
-					layerTab.draw();
-				});
 
 				layerTab.add(polygonTab);
 				layerTab.add(polygonTabFake.clone());

@@ -67,7 +67,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private String cloneWFId;
 	private String idsToPaste;
 	private String blockingWorkflowName;
-
 	private WFCopyBuffer wfCopyBuffer;
 
 	private ReplaceModal rpModal = new ReplaceModal();
@@ -747,14 +746,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 	}
 
 	public void replaceAll()  throws RemoteException{
+		logger.info("Replace all ");
+		
 		List<String> elements = new LinkedList<String>();
 		String error = null;
-		String select = FacesContext.getCurrentInstance().getExternalContext()
-				.getRequestParameterMap().get("select");
-		String string = rpModal.getString();
-		String replaceString = rpModal.getReplace();
-
-		boolean replaceActionNames = rpModal.isReplaceActionNames();
+		String select = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("select");
+		String string = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("oldStr");
+		String replaceString = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("newStr");
+		boolean replaceActionNames = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("changeLabel").equalsIgnoreCase("true");
 
 		logger.info("Replace all " + string + " by "+replaceString +" in "+select);
 
@@ -770,28 +769,31 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}else{
 			String[] groupIds = select.split(",");
 			for (String groupId : groupIds) {
-				elements.add(idMap.get(getNameWorkflow()).get(groupId));
+				String el = idMap.get(getNameWorkflow()).get(groupId);
+				elements.add(el);
 			}
-		}
-
-		if(error == null){
-			getDf().replaceInAllElements(elements, string, replaceString);
-			Iterator<String> it = elements.iterator();
-			while(it.hasNext()){
-				String cur = it.next();
-				getDf().getElement(cur).cleanThisAndAllElementAfter();
-				if(replaceActionNames){
-					getDf().changeElementId(cur, cur.replaceAll(Pattern.quote(string), replaceString));
+			
+			if(error == null){
+				getDf().replaceInAllElements(elements, string, replaceString);
+				Iterator<String> it = elements.iterator();
+				for (String groupId : groupIds) {
+					String cur = idMap.get(getNameWorkflow()).get(groupId);
+					getDf().getElement(cur).cleanThisAndAllElementAfter();
+					if(replaceActionNames){
+						String newId = cur.replaceAll(Pattern.quote(string), replaceString);
+						if(getDf().changeElementId(cur,newId ) == null){
+							idMap.get(getNameWorkflow()).put(groupId,newId);
+						}
+					}
 				}
+				error = getDf().check();
 			}
-			error = getDf().check();
 		}
 
 		if (error != null) {
 			logger.error(error);
 			MessageUseful.addErrorMessage(error);
-			HttpServletRequest request = (HttpServletRequest) FacesContext
-					.getCurrentInstance().getExternalContext().getRequest();
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
 		}
 	}
@@ -1721,8 +1723,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	}
 
-	public void undoDeleteSelected() throws Exception{
-		logger.info("undoDeleteSelected");
+	public void undoCloneWorkflow() throws Exception{
+		logger.info("undoCloneWorkflow");
 
 		String idCloneMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("idCloneMap");
 		logger.info(idCloneMap);
@@ -1740,7 +1742,32 @@ public class CanvasBean extends BaseBean implements Serializable {
 		getWorkflowMap().put(getNameWorkflow(), getworkFlowInterface().getWorkflow(getNameWorkflow()));
 
 	}
+	
+	public void removeCloneWorkflow() throws Exception{
+		logger.info("removeCloneWorkflow");
 
+		String idCloneMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("idCloneMap");
+		logger.info(idCloneMap);
+		
+		getworkFlowInterface().eraseClone(idCloneMap);
+		getIdMapClone().remove(idCloneMap);
+
+	}
+
+	public String[][] getSelectedElementLegend(){
+		String select = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("select");
+
+		String[] groupIds = select.split(",");
+		String[][] result = new String[groupIds.length][];
+		if(select == null || select.isEmpty() || select.equals("undefined")){
+		}else{
+			int i = 0;
+			for (String groupId : groupIds) {
+				result[i++] = new String[] { groupId, idMap.get(getNameWorkflow()).get(groupId) };					
+			}
+		}
+		return result;
+	}
 	
 
 
@@ -1969,5 +1996,5 @@ public class CanvasBean extends BaseBean implements Serializable {
 	public void setIdsToPaste(String idsToPaste) {
 		this.idsToPaste = idsToPaste;
 	}
-
+	
 }

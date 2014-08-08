@@ -82,12 +82,10 @@ CommandDelete.prototype = Object.create(Command.prototype);
 CommandDelete.prototype.constructor = CommandDelete;
 
 CommandDelete.prototype.undo = function(){
-	//alert(" undo ");
-	undoDeleteSelected(this.selecteds,this.cloneId);
+	undoCloneWorkflow(this.selecteds,this.cloneId);
 };
 
 CommandDelete.prototype.redo = function(){
-	//alert(" redo ");
 	tmpCommandObj = this;
 	deleteElements(getAllIconPositions());
 };
@@ -95,6 +93,11 @@ CommandDelete.prototype.redo = function(){
 CommandDelete.prototype.getName = function(){
 	return "delete";
 };
+
+CommandDelete.prototype.clean = function(){
+	removeCloneWorkflow(this.cloneId);
+};
+
 
 function deleteSelected(canvasName){
 	canvasArray[canvasName].commandHistory.execute(new CommandDelete(getSelectedIconsCommaDelimited(), getSelectedArrowsCommaDelimited()));
@@ -174,9 +177,11 @@ CommandAddArrow.prototype.getName = function(){
 /********************************************************************/
 /********************************************************************/
 /*********************** CommandPaste *******************************/
-function CommandPaste() {
+function CommandPaste(selecteds) {
 	Command.call(this);
+	this.selecteds = selecteds;
 	this.idsToPaste = "";
+	this.cloneId = "";
 };
 
 CommandPaste.prototype = Object.create(Command.prototype);
@@ -188,24 +193,33 @@ CommandPaste.prototype.undo = function(){
 
 CommandPaste.prototype.redo = function(){
 	tmpCommandObj = this;
-	pasteJS();
+	if(this.cloneId.empty()){
+		//generate clone inside
+		pasteJS(this.selecteds);
+	}else{
+		//use clone
+		
+	}
 };
 
 CommandPaste.prototype.getName = function(){
 	return "paste";
 };
 
-function paste(canvasName){
-	canvasArray[canvasName].commandHistory.execute(new CommandPaste());
+function paste(canvasName,selecteds){
+	canvasArray[canvasName].commandHistory.execute(new CommandPaste(selecteds));
 }
 
 
 /********************************************************************/
 /********************************************************************/
 /********************* CommandReplaceAll ****************************/
-function CommandReplaceAll(selecteds) {
+function CommandReplaceAll(selecteds, oldStr, newStr, changeLabel) {
 	Command.call(this);
 	this.selecteds = selecteds;
+	this.oldStr = oldStr;
+	this.newStr = newStr;
+	this.changeLabel = changeLabel;
 	this.cloneId = "";
 };
 
@@ -213,20 +227,26 @@ CommandReplaceAll.prototype = Object.create(Command.prototype);
 CommandReplaceAll.prototype.constructor = CommandReplaceAll;
 
 CommandReplaceAll.prototype.undo = function(){
-	undoDeleteSelected(this.cloneId);
+	tmpCommandObj = this;
+	undoReplaceAll(this.selecteds, this.cloneId);
+	
 };
 
 CommandReplaceAll.prototype.redo = function(){
 	tmpCommandObj = this;
-	replaceAll(this.selecteds);
+	replaceJS(getAllIconPositions());
 };
 
 CommandReplaceAll.prototype.getName = function(){
 	return "replaceAll";
 };
 
-function replaceAll(canvasName){
-	canvasArray[canvasName].commandHistory.execute(new CommandReplaceAll(getSelectedIconsCommaDelimited()));
+CommandReplaceAll.prototype.clean = function(){
+	removeCloneWorkflow(this.cloneId);
+};
+
+function replaceAll(canvasName,selecteds, oldStr, newStr, changeLabel){
+	canvasArray[canvasName].commandHistory.execute(new CommandReplaceAll(selecteds, oldStr, newStr, changeLabel));
 }
 
 /********************************************************************/
@@ -325,4 +345,3 @@ function execChangeIdElementCommand(groupId, oldId,newId, oldComment, newComment
         updateLabelObj(groupId,newId);
     }
 }
-
