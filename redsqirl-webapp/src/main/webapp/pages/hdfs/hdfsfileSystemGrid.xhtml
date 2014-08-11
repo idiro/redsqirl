@@ -134,61 +134,80 @@
 			<div class="fileSystem">
 			<rich:panel style="border:none">
 				<rich:dropSupport id="panelDropSupportHdfs" acceptedTypes="ssh" dropListener="#{hdfsBean.processDrop}" reRender="hdfsfs" oncomplete="resizeTables();"/>
-				
-				<rich:extendedDataTable id="hdfsfs" value="#{hdfsBean.tableGrid.rows}"
-					var="item" rowKeyVar="indexTable" width="100%" height="500px"
-					style="border:none;" onRowMouseOver="this.style.backgroundColor='#f2b97a'"
-					enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+
+				<rich:extendedDataTable id="hdfsfs"
+					value="#{hdfsBean.tableGrid.rows}" var="item"
+					rowKeyVar="indexTable" width="100%" height="400px"
+					style="border:none;"
+					onRowMouseOver="this.style.backgroundColor='#f2b97a'"
+					enableContextMenu="false"
+					onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
 					rowClasses="even-row, odd-row" tableState="#{hdfsBean.tableState}">
 
-					<rich:column style="border-bottom:0px;border-right:0px;" width="50px;">
+					<rich:column style="border-bottom:0px;border-right:0px;"
+						width="50px;">
 						<f:facet name="header">
-							<h:selectBooleanCheckbox onclick="selectAllCheckbox(this, /hdfsselect$/);" />
+							<h:selectBooleanCheckbox
+								onclick="selectAllCheckbox(this, /hdfsselect$/);" />
 						</f:facet>
 						<h:selectBooleanCheckbox id="hdfsselect" value="#{item.selected}" />
 					</rich:column>
-					
-					<rich:column style="border-bottom:0px;border-right:0px;" width="50px;">
+
+					<rich:column style="border-bottom:0px;border-right:0px;"
+						width="50px;">
 						<f:facet name="header">
 							<h:outputText value="" />
 						</f:facet>
-						<a4j:commandLink action="#{hdfsBean.editFileBefore}" oncomplete="#{rich:component('hdfseditModalPanel')}.show();">
-							<h:graphicImage value="../image/icons/button-property.gif" title='#{messages.HdfsInterface_properties_help}' 
-							rendered="#{hdfsBean.allProps[indexTable]['type'] == 'directory'}" styleClass="fileSystemIcon" />
-							<h:graphicImage value="../image/icons/button-file-icon.png" title='#{messages.HdfsInterface_properties_help}' 
-							rendered="#{hdfsBean.allProps[indexTable]['type'] == 'file'}" styleClass="fileSystemIcon" />
+						<a4j:commandLink action="#{hdfsBean.editFileBefore}"
+							oncomplete="#{rich:component('hdfseditModalPanel')}.show();">
+							<h:graphicImage value="../image/icons/button-property.gif"
+								title='#{messages.HdfsInterface_properties_help}'
+								rendered="#{hdfsBean.allProps[indexTable]['type'] == 'directory'}"
+								styleClass="fileSystemIcon" />
+							<h:graphicImage value="../image/icons/button-file-icon.png"
+								title='#{messages.HdfsInterface_properties_help}'
+								rendered="#{hdfsBean.allProps[indexTable]['type'] == 'file'}"
+								styleClass="fileSystemIcon" />
 							<f:param name="indexFileEdit" value="#{indexTable}" />
 						</a4j:commandLink>
 					</rich:column>
 
-					<rich:column sortBy="#{hdfsBean.allProps[indexTable]['name']}" filterBy="#{hdfsBean.allProps[indexTable]['name']}"
+					<rich:column sortBy="#{hdfsBean.allProps[indexTable]['name']}"
+						filterBy="#{hdfsBean.allProps[indexTable]['name']}"
 						style="border-bottom:0px;border-right:0px;" filterEvent="onchange">
 						<f:facet name="header">
 							<h:outputText value="#{messages.label_name}" />
 						</f:facet>
-						<a4j:commandLink 
-						    value="#{hdfsBean.allProps[indexTable]['name']}" 
-						    title="#{hdfsBean.allProps[indexTable]['name']}"
-						    action="#{hdfsBean.verifyIfIsFile}"
+						<a4j:commandLink value="#{hdfsBean.allProps[indexTable]['name']}"
+							title="#{hdfsBean.allProps[indexTable]['name']}"
+							action="#{hdfsBean.verifyIfIsFile}"
 							oncomplete="selectFileHdfs('#{hdfsBean.file}', '#{hdfsBean.allProps[indexTable]['name']}')">
-							<f:param name="nameFile" value="#{hdfsBean.allProps[indexTable]['name']}" />
-							<rich:dragSupport dragIndicator=":indicator" dragValue="#{hdfsBean.allProps[indexTable]['name']}" dragType="hdfs">
-								<rich:dndParam name="label" value="#{hdfsBean.allProps[indexTable]['name']}" />
-								<a4j:actionparam name="file" value="#{hdfsBean.allProps[indexTable]['name']}" />
+							<f:param name="nameFile"
+								value="#{hdfsBean.allProps[indexTable]['name']}" />
+							<rich:dragSupport dragIndicator=":indicator"
+								dragValue="#{hdfsBean.allProps[indexTable]['name']}"
+								dragType="hdfs">
+								<rich:dndParam name="label"
+									value="#{hdfsBean.allProps[indexTable]['name']}" />
+								<a4j:actionparam name="file"
+									value="#{hdfsBean.allProps[indexTable]['name']}" />
 								<a4j:actionparam name="path" value="#{hdfsBean.path}" />
 							</rich:dragSupport>
 						</a4j:commandLink>
 					</rich:column>
 
-					<rich:columns value="#{hdfsBean.tableGrid.titles == null? canvasBean.emptyList : hdfsBean.tableGrid.titles}" var="column" index="ind" 
-						sortBy="#{item.row[ind]}" filterBy="#{item.row[ind]}" style="border-bottom:0px;border-right:0px;">
+					<rich:columns
+						value="#{hdfsBean.tableGrid.titles == null? canvasBean.emptyList : hdfsBean.tableGrid.titles}"
+						var="column" index="ind" sortBy="#{item.row[ind]}"
+						filterBy="#{item.row[ind]}"
+						style="border-bottom:0px;border-right:0px;">
 						<f:facet name="header">
 							<h:outputText value="#{column}" />
 						</f:facet>
 						<h:outputText value="#{item.row[ind]}" title="#{item.row[ind]}" />
 					</rich:columns>
 				</rich:extendedDataTable>
-				
+
 			</rich:panel>
 			</div>
 		</h:form>

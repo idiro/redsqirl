@@ -215,7 +215,7 @@ input {
 
 .ui-tabs .ui-tabs-nav {
 	position: relative;
-	width: 10000px;
+	width: 1200px;
 }
 
 .spanButtons {
@@ -752,6 +752,7 @@ table.secondtable td {
 #tabFlowchart {
 	background-color: transparent;
 	border: none;
+	margin-left:1.5em;
 }
 
 #splitHCanvas {
@@ -847,6 +848,8 @@ div.splitter-bar.ui-state-highlight {
 /*remove the white boxes in the background*/
 .ui-widget.ui-widget-content {
 	/*background-image: url();*/
+	background-color: transparent;
+	/*background: linear-gradient(#f5f4f6, #f3eef2);*/
 }
 
 /*legend panel*/
@@ -949,10 +952,12 @@ div.splitter-bar.ui-state-highlight {
 
 .ui-corner-all, .ui-corner-bottom, .ui-corner-right, .ui-corner-br{
 	border-top-left-radius:0px;
+	border-bottom-right-radius:0px;
 }
 .ui-widget-header {
-	border:0px;
+	/*border:0px;*/
 	border-bottom-left-radius:0px;
+	border-bottom-radius:3px;
 	border-bottom: 3px solid #c6161d;
 	background: transparent;
 }
@@ -1026,6 +1031,7 @@ div.splitter-bar.ui-state-highlight {
 .container-canvas.ui-tabs-panel.ui-widget-content.ui-corner-bottom {
 	border: none;
 	overflow: auto;
+	.ui-widget.ui-widget-content
 }
 
 #tabsFooter .ui-tabs-panel.ui-widget-content.ui-corner-bottom {
@@ -1168,7 +1174,8 @@ div.splitter-bar.ui-state-highlight {
 }
 
 .rich-mpnl-body {
-	background: linear-gradient(white, #dadbdd, #dadbdd);
+	background: linear-gradient(#f5f4f6, #f3eef2);
+	
 }
 
 .rich-mpnl-controls {
@@ -1306,6 +1313,7 @@ div.splitter-bar.ui-state-highlight {
 
 .context-menu-theme-default .context-menu-item-hover {
 	background-color: #C62127;
+	background : linear-gradient(#ea1b23,#b2030b);
 	color: white;
 }
 
