@@ -83,7 +83,7 @@ function onPageReady(){
 	  jQuery("#menu").css('width', jQuery(window).width()-20+'px');
 	  jQuery("#splitVCanvas").css('width', jQuery(window).width()-30+'px');
 	  jQuery("#splitVCanvas").css('height', jQuery(window).height()-110+'px');
-	  jQuery("#tabFlowchart").css("height", jQuery(window).height()-110+'px');
+	  jQuery("#tabFlowchart").css("height", jQuery(window).height()-80+'px');
 	  jQuery("#tabs1").css("width", jQuery("#splitHCanvas").width()-20 +'px');
 	  jQuery("#tabs2").css("width", jQuery("#splitHCanvas").width()-20 +'px');
 	  jQuery("#tabs1").children('ul').first().css("left", 0+'px');
@@ -91,7 +91,7 @@ function onPageReady(){
 	  jQuery("#buttonsTabs1").css("left", jQuery("#tabs1").width()-30+'px');
 	  jQuery("#buttonsTabs2").css("left", jQuery("#tabs2").width()-30+'px');
 	  jQuery("#tabFlowchart-1").css("height", jQuery(window).height()-205+'px');
-	  jQuery("#canvas-tabs").css("height", jQuery(window).height()-165+'px');
+	  jQuery("#canvas-tabs").css("height", jQuery(window).height()-125+'px');
 	  jQuery("#canvas").css("height", jQuery("#canvas-tabs").height()-160+'px');
 	  jQuery("#canvas").css("width", jQuery("#canvas-tabs").width()+'px');
 	  jQuery("#splitHCanvas").css("width", jQuery(window).width()-jQuery("#tabFlowchart").width()-100+'px');
@@ -153,13 +153,13 @@ function resizing(){
 	  jQuery("#splitVCanvas").css('height', jQuery(window).height()-110+'px');
 	  jQuery(".splitter-pane").css("height", jQuery(window).height()-160+'px');
 	  jQuery("#splitHCanvas").css("height", jQuery(window).height()-180+'px');
-	  jQuery("#tabFlowchart").css("height", jQuery(window).height()-110+'px');
+	  jQuery("#tabFlowchart").css("height", jQuery(window).height()-80+'px');
 	  jQuery(".splitter-bar-horizontal").css("width", jQuery(window).width()-jQuery(".splitter-pane").width()-46 +'px').trigger("resize", [topSize]);
 	  jQuery("#splitVCanvas").css("height", jQuery(window).height()-100+'px').trigger("resize", [leftSize]);
 	  jQuery("#tabs1").css("width", jQuery("#splitHCanvas").width()-20 +'px');
 	  jQuery("#tabs2").css("width", jQuery("#splitHCanvas").width()-20 +'px');
 	  jQuery("#tabFlowchart-1").css("height", jQuery(window).height()-205+'px');
-	  jQuery("#canvas-tabs").css("height", jQuery(window).height()-165+'px');
+	  jQuery("#canvas-tabs").css("height", jQuery(window).height()-125+'px');
 	  jQuery("#canvas").css("height", jQuery("#canvas-tabs").height()-160+'px');
 	  jQuery("#canvas").css("width", jQuery("#canvas-tabs").width()+'px');
 	  jQuery("#tabsFooter").css("width", jQuery("#canvas-tabs").width()-0+'px');

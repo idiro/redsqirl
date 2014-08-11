@@ -1395,20 +1395,20 @@
 				<a4j:commandLink id="openCanvasScreenHdfsBrowser" action="#{browserHdfsBean.openCanvasScreen}" style="display:none;" />
 				
 			</a4j:region>
-			
 
 			<a4j:region>
-                <!-- <h:panelGrid columns="2" width="100%"> -->
-			    <table style="width:100%;display:block;">
+			
+			    <table style="width:100%;display:block;background: none repeat scroll 0 0 #FFFFFF;">
+			    
 			        <tr style="width:100%;right:0px;position:relative;">
 			        <td style="max-width=105px;padding=0px;margin=0px;" >
-				    <a class="stopLink" id="help_main"
-					onclick="return false;" href="../help/main.html">
-					<h:graphicImage id="logoImg" width="100px" url="../image/icons/logo.png"/>
-				    </a>
+					    <a class="stopLink" id="help_main" onclick="return false;" href="../help/main.html">
+							<h:graphicImage id="logoImg" width="150px" url="../image/logo.png"/>
+					    </a>
 					</td>
 					<td style="width:100%;">
-					<h:panelGrid columns="1" width="100%" style="right:5px;position:relative;">
+					
+					<div style="float:right;">
 					<rich:toolBar>
 		
 						<rich:dropDownMenu>
@@ -1497,8 +1497,6 @@
 								value="#{messages.label_menu_delete}" onclick="deleteSelected(getSelectedByName());" >
 								<h:outputText value="Del" class="menuItemHotKey"/>
 							</rich:menuItem>
-	
-	
 		
 						</rich:dropDownMenu>
 		
@@ -1509,7 +1507,6 @@
 									<h:outputText value="#{messages.label_menu_project}" />
 								</h:panelGroup>
 							</f:facet>
-							
 	
 							<rich:menuItem id="oozieMenuItem" submitMode="none">
 								<h:outputLink value="#{canvasBean.workflowUrl}" style="font-size:13px;" target="_blank">#{messages.label_menu_see_oozie_job}</h:outputLink>
@@ -1578,8 +1575,7 @@
 		
 						</rich:dropDownMenu>
 		
-		
-						<rich:toolBarGroup location="right">
+						<rich:toolBarGroup>
 						
 						  <a4j:commandButton value="#{messages.label_menu_signout}"
                             styleClass="signoutButton"
@@ -1609,39 +1605,46 @@
 						</rich:toolBarGroup>
 		
 					</rich:toolBar>
-					<div id="shortMenu" class="divMenu">
-						<div class="divMenuImage">
-							<span style="cursor:pointer;">
-								<img src="../image/icons/button-open.gif" alt="open" class="shortMenuIcon" onclick="openModalLoadWorkflow()" title="#{messages.label_menu_open}" />
-							</span>
-							<span style="cursor:pointer;">
-								<img src="../image/icons/button-save.gif" alt="save" class="shortMenuIcon" onclick="menuSave()" title="#{messages.label_menu_save}" />
-							</span>
-							<span style="cursor:pointer;">
-								<img src="../image/icons/button-save_as.gif" alt="saveas" class="shortMenuIcon" onclick="openModalSaveWorkflow();" title="#{messages.label_menu_saveas}" />
-							</span>
-							<span style="cursor:pointer;">
-								<img src="../image/icons/button-save_all.gif" alt="saveall" class="shortMenuIcon" onclick="saveAll();" title="#{messages.label_menu_saveall}" />
-							</span>
-                            <span style="cursor:pointer;">
-                                <img src="../image/icons/button-copy.gif" alt="copy" class="shortMenuIcon" onclick="saveAllPositions(getAllIconPositions());copy(getSelectedIconsCommaDelimited());" title="#{messages.label_menu_copy}" />
-                            </span>
-                            <span style="cursor:pointer;">
-                                <img src="../image/icons/button-copy.gif" alt="paste" class="shortMenuIcon" onclick="paste(getSelectedByName());" title="#{messages.label_menu_paste}" />
-                            </span>
-                            <span style="cursor:pointer;">
-                                <img src="../image/icons/button-undo.gif" id="buttonundo" alt="#{messages.label_menu_undo}" class="shortMenuIcon" onclick="undo();" title="#{messages.label_menu_undo}" />
-                            </span>
-                            <span style="cursor:pointer;">
-                                <img src="../image/icons/button-redo.gif" id="buttonredo" alt="#{messages.label_menu_redo}" class="shortMenuIcon" onclick="redo();" title="#{messages.label_menu_redo}" />
-                            </span>
-						</div>
 					</div>
-					</h:panelGrid>
+					
+					
+					
                     </td>
                     </tr>
                 </table>
-				<!-- </h:panelGrid> -->
+                
+                
+                <div id="shortMenu" class="divMenu">
+					<div class="divMenuImage">
+						<span style="cursor:pointer;">
+							<img src="../image/icons/button-open.gif" alt="open" class="shortMenuIcon" onclick="openModalLoadWorkflow()" title="#{messages.label_menu_open}" />
+						</span>
+						<span style="cursor:pointer;">
+							<img src="../image/icons/button-save.gif" alt="save" class="shortMenuIcon" onclick="menuSave()" title="#{messages.label_menu_save}" />
+						</span>
+						<span style="cursor:pointer;">
+							<img src="../image/icons/button-save_as.gif" alt="saveas" class="shortMenuIcon" onclick="openModalSaveWorkflow();" title="#{messages.label_menu_saveas}" />
+						</span>
+						<span style="cursor:pointer;">
+							<img src="../image/icons/button-save_all.gif" alt="saveall" class="shortMenuIcon" onclick="saveAll();" title="#{messages.label_menu_saveall}" />
+						</span>
+                        <span style="cursor:pointer;">
+                            <img src="../image/icons/button-copy.gif" alt="copy" class="shortMenuIcon" onclick="saveAllPositions(getAllIconPositions());copy(getSelectedIconsCommaDelimited());" title="#{messages.label_menu_copy}" />
+                        </span>
+                        <span style="cursor:pointer;">
+                            <img src="../image/icons/button-copy.gif" alt="paste" class="shortMenuIcon" onclick="paste(getSelectedByName());" title="#{messages.label_menu_paste}" />
+                        </span>
+                        <span style="cursor:pointer;">
+                            <img src="../image/icons/button-undo.gif" id="buttonundo" alt="#{messages.label_menu_undo}" class="shortMenuIcon" onclick="undo();" title="#{messages.label_menu_undo}" />
+                        </span>
+                        <span style="cursor:pointer;">
+                            <img src="../image/icons/button-redo.gif" id="buttonredo" alt="#{messages.label_menu_redo}" class="shortMenuIcon" onclick="redo();" title="#{messages.label_menu_redo}" />
+                        </span>
+					</div>
+				</div>
+                
+                
+                
 
 			</a4j:region>
 
@@ -1686,12 +1689,10 @@
 
 						<span id="buttonsCanvas1" class="spanButtons">
 							<button class="buttonsArrowsLeft">
-								<img src="../image/icons/button-left_arrow.gif"
-									style="width: 16px;" />
+								<img src="../image/icons/button-left_arrow.gif" style="width: 16px;" />
 							</button>
 							<button class="buttonsArrowsRight">
-								<img src="../image/icons/button-right_arrow.gif"
-									style="width: 16px;" />
+								<img src="../image/icons/button-right_arrow.gif" style="width: 16px;" />
 							</button>
 						</span>
 
