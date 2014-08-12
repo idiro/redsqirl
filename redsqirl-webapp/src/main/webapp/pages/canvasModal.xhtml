@@ -39,6 +39,7 @@
                 jQuery('[id$="textEditorInteractionRegion"]').hide();
             }
             //alert("div");
+            jQuery('[id$="quickNavigation"]').hide();
             jQuery("#divTableInteraction").css("height","390");
         }else{
             //alert("show all: "+minSize);
@@ -69,6 +70,7 @@
                 jQuery('[id$="textEditorInteractionRegion"]').show();
             }
             //alert("div");
+            jQuery('[id$="quickNavigation"]').show();
             jQuery("#divTableInteraction").css("height","220px");
         }
         minSize= !minSize;
@@ -77,6 +79,7 @@
     
     function createOptionTitles() {
          //alert('createOptionTitles');
+         jQuery('[id$="quickNavigation"]').hide();
          var inputs =  jQuery('[id$="quickNavigation"] input[type=radio]');
          //alert(inputs);
          inputs.each(function (index)
@@ -87,7 +90,11 @@
              //alert(index + ': ' + label);
              jQuery(this).attr('title',label);
              jQuery(this).siblings('label').text('');
+             
          });
+         if(inputs.length > 1){
+            jQuery('[id$="quickNavigation"]').show();
+         }
     }
 
 </script>
@@ -236,7 +243,7 @@
                         <div id="browserProperties" style="width:100%;height:80px;border:1px solid black;">
                         
                             <rich:extendedDataTable id="browserTableProp" value="#{interCur.browser.listProperties}"
-                                var="property" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+                                var="property" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#f2b97a'"
                                 enableContextMenu="false" selectionMode="none" rowKeyVar="index"
                                 onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
                                 rowClasses="even-row, odd-row" >
@@ -455,7 +462,7 @@
             <br/>
             <h:panelGrid columns="2" width="100%">
             
-            <h:selectOneRadio id="quickNavigation" styleClass="wizzard_quick_navig" rendered="#{canvasModalBean.reachablePagesSize > 1}" value="#{canvasModalBean.pageToGoTo}" >
+            <h:selectOneRadio id="quickNavigation" styleClass="wizzard_quick_navig" rendered="true" value="#{canvasModalBean.pageToGoTo}" >
                 <f:selectItems value="#{canvasModalBean.reachablePages}" />
                 <a4j:support event="onchange" action="#{canvasModalBean.goToPage}" oncomplete="setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');createOptionTitles();" reRender="canvasModalTabPanel, outputTab, panelDynamicForm, panelBtCanvasModal, browserPanel, browserTableData, msnError" />
             </h:selectOneRadio>
