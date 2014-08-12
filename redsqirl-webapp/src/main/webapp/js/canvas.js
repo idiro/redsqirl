@@ -79,7 +79,7 @@ function configureCanvas(canvasName, reset){
     var stage = new Kinetic.Stage({
         container : canvasContainer,
         width : 800,
-        height : 600
+        height : jQuery("#canvas-tabs").height()-jQuery("#tabsFooter").height()-45
     });
     canvasArray[canvasName].stage = stage;
     
@@ -104,7 +104,8 @@ function configureCanvas(canvasName, reset){
     canvasArray[canvasName].legendLayer = legendLayer;
     
     // set width of the canvas
-    jQuery("#"+canvasContainer).css("width", jQuery("#"+getCanvasId(canvasName)).width() + 'px');
+    //jQuery("#"+canvasContainer).css("width", jQuery("#"+getCanvasId(canvasName)).width() + 'px');
+    //jQuery("#"+canvasContainer).css("height", jQuery("#flowchart-"+canvasName).height() + 'px');
     
     // white background
     var background = new Kinetic.Rect({
@@ -117,10 +118,9 @@ function configureCanvas(canvasName, reset){
     
     // puts a different colour on the canvas before it is opened
     jQuery("#"+canvasContainer).css("background-color", "#FFFAFA");
-    jQuery(".kineticjs-content").css("background-color", "white");
-    jQuery(".kineticjs-content").css("background-image", "url('../image/canvas_squirl.png')");
-    jQuery(".kineticjs-content").css("background-size", "920px");
-    //jQuery(".kineticjs-content").css("background-repeat", "no-repeat");
+    jQuery("#" +  canvasContainer).find(".kineticjs-content").css("background-color", "white");
+    jQuery("#" +  canvasContainer).find(".kineticjs-content").css("background-image", "url('../image/canvas_squirl.png')");
+    jQuery("#" +  canvasContainer).find(".kineticjs-content").css("background-size", "920px");
     
     
     canvasArray[canvasName].background = background;
@@ -1008,6 +1008,7 @@ function rulesDragAndDropGroupObj(canvasName, pos, valueX, valueY) {
     
     var stage = canvasArray[canvasName].stage;
     var background = canvasArray[canvasName].background;
+    var canvasContainer = canvasArray[canvasName].canvasContainer;
 
     var xCanvas = stage.getWidth();
     var yCanvas = stage.getHeight();
@@ -1353,10 +1354,10 @@ function mountObj(canvasName) {
 	jQuery("#tabsFooter ul:first li").each(function(index) {
 
 		var posInitX = 40;
-		var poxInitY = 50;
+		var poxInitY = 35;
 		
 		var posInitTextX = 16;
-		var posInitTextY = 80;
+		var posInitTextY = 65;
 
 		var nameDiv = jQuery(this).attr("aria-controls");
 			
