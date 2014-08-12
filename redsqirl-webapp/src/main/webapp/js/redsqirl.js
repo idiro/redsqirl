@@ -135,7 +135,7 @@ function configureFooterCss(){
 	  jQuery("#tabsFooter").css("width", jQuery("#canvas-tabs").width()+5+'px');
 	  jQuery("#tabsFooter").css("overflow", "hidden");
 	  jQuery("#tabsFooter").css("position", "absolute");
-	  jQuery("#tabsFooter").css("bottom", "0");
+	  jQuery("#tabsFooter").css("bottom", "30px");
 	  jQuery("#tabsFooter").css("z-index", jQuery("#canvas-tabs").zIndex()+1);
 	  jQuery("#tabsFooter").css("background", "none repeat scroll 0 0 rgba(0, 0, 0, 0)");
 	  
