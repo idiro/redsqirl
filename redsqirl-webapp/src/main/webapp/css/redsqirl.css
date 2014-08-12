@@ -35,7 +35,7 @@ input {
 	padding-right: 3px;
 	padding-top: 3px;
 	border: solid 0px;
-	width: 25px;
+	width: 35px;
 }
 
 .footerIcon {
@@ -173,13 +173,13 @@ input {
 }
 
 .splitter-bar-vertical {
-	width: 40px;
+	width: 6px;
 	background-repeat: no-repeat;
 	background-position: center;
 }
 
 .splitter-bar-horizontal {
-	height: 15px;
+	height: 6px;
 	background-repeat: no-repeat;
 	background-position: center;
 }
@@ -228,7 +228,7 @@ input {
 }
 
 .spanButtons {
-	margin-top: -19px;
+	margin-top: -35px;
 	left: 800px;
 	position: absolute;
 	z-index: 10000;
@@ -237,20 +237,20 @@ input {
 	border: none;
 	color: #222222;
 	font-weight: bold;
-	height: 18px;
-	width: 50px;
+	height: 38px;
+	width: 80px;
 }
 
 .buttonsArrowsLeft,.buttonsArrowsRight {
 	padding: 0px 0px 0px 0px;
 	border: none;
-	height: 18px;
-	width: 15px;
+	height: 30px;
+	width: 30px;
 	background-color: transparent;
 }
 
 #buttonsTabs1.spanButtons,#buttonsTabs2.spanButtons {
-	margin-top: -24px;
+	margin-top: -35px;
 	margin-left: -20px;
 	height: 22px;
 	width: 100px;
@@ -762,7 +762,7 @@ table.secondtable td {
 #tabFlowchart {
 	background-color: transparent;
 	border: none;
-	margin-left:1.5em;
+	//margin-left:1.5em;
 }
 
 #splitHCanvas {
@@ -1041,6 +1041,7 @@ div.splitter-bar.ui-state-highlight {
 	padding-left: 5px;
 	padding-bottom: 1px;
 	vertical-align: middle;
+	width: 30px;
 }
 
 .configureFooterButton {
@@ -1369,3 +1370,14 @@ input:-webkit-autofill {
 	-webkit-box-shadow: 0 0 0px 1000px white inset;
 }
 
+.bt {
+	width: 35px;
+}
+
+.btfileSystem {
+	padding-bottom: 3px;
+	padding-right: 3px;
+	padding-top: 3px;
+	border: solid 0px;
+	width: 25px;
+}

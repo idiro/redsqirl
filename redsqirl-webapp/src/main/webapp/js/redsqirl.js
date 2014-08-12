@@ -11,7 +11,7 @@ function canvasResizeSplitter(){
 	jQuery(".splitter-bar-horizontal").css("width", jQuery(window).width()-jQuery(".splitter-pane").width() +'px');
 	jQuery("#tabs1").css("width", jQuery("#splitHCanvas").width() +'px');
 	jQuery("#tabs2").css("width", jQuery("#splitHCanvas").width() +'px');
-	jQuery("#splitHCanvas").css("width", jQuery(window).width()-jQuery("#tabFlowchart").width()-100+'px');
+	//jQuery("#splitHCanvas").css("width", jQuery(window).width()-jQuery("#tabFlowchart").width()-100+'px');
 	 
 	resizeCanvas(30,45);
 	
@@ -81,7 +81,7 @@ function onPageReady(){
 	  jQuery("#splitHCanvas").css("height", jQuery(window).height()-130+'px');
 	  jQuery(".splitter-bar-horizontal").css("width", jQuery(window).width()-jQuery(".splitter-pane").width()+'px').trigger("resize", [topSize]);
 	  jQuery("#splitVCanvas").css("height", jQuery(window).height()-50+'px').trigger("resize", [leftSize]);
-	  jQuery("#menu").css('width', jQuery(window).width()-20+'px');
+	  //jQuery("#menu").css('width', jQuery(window).width()-20+'px');
 	  jQuery("#splitVCanvas").css('width', jQuery(window).width()-30+'px');
 	  jQuery("#splitVCanvas").css('height', jQuery(window).height()-110+'px');
 	  jQuery("#tabFlowchart").css("height", jQuery(window).height()-80+'px');
@@ -97,7 +97,7 @@ function onPageReady(){
 	  jQuery("#canvas-tabs").css("height", jQuery(window).height()-125+'px');
 	  jQuery("#canvas").css("height", jQuery("#canvas-tabs").height()-160+'px');
 	  jQuery("#canvas").css("width", jQuery("#canvas-tabs").width()+'px');
-	  jQuery("#splitHCanvas").css("width", jQuery(window).width()-jQuery("#tabFlowchart").width()-100+'px');
+	  //jQuery("#splitHCanvas").css("width", jQuery(window).width()-jQuery("#tabFlowchart").width()-100+'px');
 	  jQuery("#tabsFooter").css("width", jQuery("#canvas-tabs").width()+15+'px');
 	  
 	  resizeTabs();
@@ -133,7 +133,7 @@ function configureFooterCss(){
 	  jQuery("#tabsFooter").css("width", jQuery("#canvas-tabs").width()+15+'px');
 	  jQuery("#tabsFooter").css("overflow", "hidden");
 	  jQuery("#tabsFooter").css("position", "absolute");
-	  jQuery("#tabsFooter").css("bottom", "30px");
+	  jQuery("#tabsFooter").css("bottom", "3px");
 	  jQuery("#tabsFooter").css("z-index", jQuery("#canvas-tabs").zIndex()+1);
 	  jQuery("#tabsFooter").css("background", "none repeat scroll 0 0 rgba(0, 0, 0, 0)");
 	  
@@ -151,14 +151,14 @@ function resizing(){
 	  jQuery("#body").css('width', jQuery(window).width()-20+'px');
 	  jQuery("#body").css('height', jQuery(window).height()-20+'px');
 	  jQuery("#splitVCanvas").css("height", jQuery(window).height()-100+'px').trigger("resize", [leftSize]);
-	  jQuery("#menu").css('width', jQuery(window).width()-20+'px');
+	  //jQuery("#menu").css('width', jQuery(window).width()-20+'px');
 	  jQuery("#splitVCanvas").css('width', jQuery(window).width()-30+'px');
 	  jQuery("#splitVCanvas").css('height', jQuery(window).height()-110+'px');
 	  jQuery(".splitter-pane").css("height", jQuery(window).height()-160+'px');
 
 	  /*jQuery("#splitHCanvas").css("height", jQuery(window).height()-130+'px');
 	  jQuery("#tabFlowchart").css("height", jQuery(window).height()-110+'px');*/
-	  jQuery("#tabFlowchart").css("margin", '1.5em');
+	  //jQuery("#tabFlowchart").css("margin", '1.5em');
 	  
 	  jQuery("#splitHCanvas").css("height", jQuery(window).height()-180+'px');
 	  jQuery("#tabFlowchart").css("height", jQuery(window).height()-80+'px');
@@ -189,11 +189,11 @@ function configureLeft(){
 	
 	//alert("configureLeft");
 	
-	jQuery("#buttonsCanvas1").css("left", jQuery("#canvas-tabs").width()-30+'px');
-	jQuery("#buttonsTabs1").css("left", jQuery("#tabs1").width()-30+'px');
-	jQuery("#buttonsTabs2").css("left", jQuery("#tabs2").width()-30+'px');
-	jQuery("#buttonstabRemote").css("left", jQuery("#tabRemote").width()-30+'px');
-	jQuery("#buttonsTabsFooter").css("left", jQuery("#tabsFooter").width()-30+'px');
+	jQuery("#buttonsCanvas1").css("left", jQuery("#canvas-tabs").width()-70+'px');
+	jQuery("#buttonsTabs1").css("left", jQuery("#tabs1").width()-50+'px');
+	jQuery("#buttonsTabs2").css("left", jQuery("#tabs2").width()-50+'px');
+	jQuery("#buttonstabRemote").css("left", jQuery("#tabRemote").width()-70+'px');
+	jQuery("#buttonsTabsFooter").css("left", jQuery("#tabsFooter").width()-70+'px');
 	
 }
 

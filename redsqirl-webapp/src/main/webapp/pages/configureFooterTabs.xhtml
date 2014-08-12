@@ -36,13 +36,13 @@
 
                 	<rich:column style="border-bottom:0px;border-right:0px;" width="35px;">
                         <f:facet name="header">
-                            <h:panelGrid columns="1" styleClass="">
+                            <h:panelGrid columns="1" >
                             <a4j:commandLink
                                 title="Delete selected lines"
                                 action="#{configureTabsBean.deleteTab}"
                                 reRender="tableNameMenuFooter"
                                 onclick="if(!confirm('Are you sure you want to delete the selected line?')){return false;}">
-                                <img src="../image/icons/button-delete2.gif" />
+                                <img src="../image/icons/button-delete2.gif" class="bt" />
                             </a4j:commandLink>
                             <h:selectBooleanCheckbox onclick="selectAllCheckbox(this, /tableNameMenuSelect$/);"/>
                             </h:panelGrid>
@@ -90,7 +90,7 @@
 			</h:panelGroup>
 			
 			<a4j:commandLink title="Add new line" action="#{configureTabsBean.createTab}" reRender="tabsMenu" oncomplete="newRetrieveItems();">
-				<img src="../image/icons/button-plus.gif" />
+				<img src="../image/icons/button-plus.gif" class="bt" />
 			</a4j:commandLink>
 			
 			<a4j:jsFunction name="newRetrieveItems" action="#{configureTabsBean.retrieveItems}" reRender="actionsPanel" >

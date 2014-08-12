@@ -52,17 +52,17 @@
 	       maxlength="255" style="width:395px;" onkeypress="return enableEnterKey(event, 'changePathModalOutputBtn');" />
 	
 	<a4j:commandLink id="changePathModalOutputBtn" action="#{canvasModalBean.outputTab.fileSystem.changePath}" reRender="dataOutputBrowser">
-		<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' />
+		<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' styleClass="bt" />
 	</a4j:commandLink>
 	
 	<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goPrevious}"
 		reRender="pathDataOutputBrowser,dataOutputBrowser">
-		<h:graphicImage value="../image/icons/button-previous.gif" title='#{messages.Interface_previous_help}' />
+		<h:graphicImage value="../image/icons/button-previous.gif" title='#{messages.Interface_previous_help}' styleClass="bt" />
 	</a4j:commandLink>
 	
 	<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goNext}"
 		reRender="pathDataOutputBrowser,dataOutputBrowser">
-		<h:graphicImage value="../image/icons/button-next.gif" title='#{messages.Interface_next_help}' />
+		<h:graphicImage value="../image/icons/button-next.gif" title='#{messages.Interface_next_help}' styleClass="bt" />
 	</a4j:commandLink>
 	
 	<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goUp}" reRender="pathDataOutputBrowser,dataOutputBrowser">
@@ -92,9 +92,9 @@
 					<h:outputText value="" />
 				</f:facet>
 				<h:graphicImage value="../image/icons/button-property.gif" title='#{messages.HdfsInterface_properties_help}' 
-					rendered="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['type'] == 'directory'}" styleClass="fileSystemIcon" />
+					rendered="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['type'] == 'directory'}" styleClass="btfileSystem" />
 				<h:graphicImage value="../image/icons/button-file-icon.png" title='#{messages.HdfsInterface_properties_help}' 
-					rendered="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['type'] == 'file'}" styleClass="fileSystemIcon" />
+					rendered="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['type'] == 'file'}" styleClass="btfileSystem" />
 			</rich:column>
 	
 			<rich:column sortBy="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}"

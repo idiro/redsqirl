@@ -25,11 +25,11 @@
 			<div class="divMenu">
 				<a4j:commandLink action="#{sshBean.goPrevious}"
 					reRender="sshpath,sshfs">
-					<h:graphicImage id="sshbtUndo" value="../image/icons/button-previous.gif" title='#{messages.canvas_previous}' />
+					<h:graphicImage id="sshbtUndo" value="../image/icons/button-previous.gif" title='#{messages.canvas_previous}' styleClass="bt" />
 				</a4j:commandLink>
 	
 				<a4j:commandLink action="#{sshBean.goNext}" reRender="sshpath,sshfs" oncomplete="resizeTables();" >
-					<h:graphicImage id="sshbtRedo" value="../image/icons/button-next.gif" title='#{messages.canvas_next}' />
+					<h:graphicImage id="sshbtRedo" value="../image/icons/button-next.gif" title='#{messages.canvas_next}' styleClass="bt" />
 				</a4j:commandLink>
 				
 				<a4j:commandLink action="#{sshBean.goUp}" reRender="sshpath,sshfs" oncomplete="resizeTables();" >
