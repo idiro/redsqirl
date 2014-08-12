@@ -1649,8 +1649,6 @@
 					<button id="changeTabCanvas" style="border: hidden;">&#9660;</button>
 					
 					
-					
-					
 					<div class="divMenuImage">
 						<span style="cursor:pointer;">
 							<img src="../image/icons/button-open.gif" alt="open" class="shortMenuIcon" onclick="openModalLoadWorkflow()" title="#{messages.label_menu_open}" />
@@ -1677,9 +1675,6 @@
                             <img src="../image/icons/button-redo.gif" id="buttonredo" alt="#{messages.label_menu_redo}" class="shortMenuIcon" onclick="redo();" title="#{messages.label_menu_redo}" />
                         </span>
 					</div>
-					
-					
-					
 					
 
 				</ul>
@@ -1741,12 +1736,12 @@
 									
 									<h:form>
 									
-									<a4j:region>
-										<a4j:commandButton image="../image/icons/button-property.gif" title="#{messages.label_property_button}"
-											action="#{configureTabsBean.openCanvasScreen}"
-											oncomplete="#{rich:component('modalConfigureFooterTabs')}.show();document.getElementById('helpmain_actfooter').click();"
-											style="border: hidden;width:27px;vertical-align:middle;" styleClass="configureFooterButton"/>
-									</a4j:region>
+										<a4j:region>
+											<a4j:commandButton image="../image/icons/button-property.gif" title="#{messages.label_property_button}"
+												action="#{configureTabsBean.openCanvasScreen}"
+												oncomplete="#{rich:component('modalConfigureFooterTabs')}.show();document.getElementById('helpmain_actfooter').click();"
+												style="border: hidden;width:27px;vertical-align:middle;" styleClass="configureFooterButton"/>
+										</a4j:region>
 									
 									</h:form>
 									
@@ -1799,7 +1794,6 @@
                     </a4j:region>
                 </div>
 			</div>
-
 
 
 		<div id="splitHCanvas">
