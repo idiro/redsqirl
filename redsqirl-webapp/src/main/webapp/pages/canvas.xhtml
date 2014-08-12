@@ -176,6 +176,7 @@
 	              configureCanvas(tabName, true);
 	              setWorkflow(tabName);
 	              validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
+	              resizeCanvas(30,45);
 	              
 	              //]]>
 	          });
@@ -1614,7 +1615,42 @@
                 </table>
                 
                 
-                <div id="shortMenu" class="divMenu">
+					
+                
+                
+                
+
+			</a4j:region>
+
+			<a4j:jsFunction name="signOut" action="#{userInfoBean.goToSignOut}" oncomplete="jQuery.unblockUI();" />
+			<a4j:jsFunction name="reStart" action="#{userInfoBean.goToSignOut}" oncomplete="jQuery.unblockUI();" />
+
+		</h:form>
+	</div>
+
+	<div id="mainPanelDiv">
+
+
+	<div id="splitVCanvas">
+
+			<div id="tabFlowchart">
+				<ul class="ulCss" id="ulTabFlowchart" style="width:100%;min-width:600px;">
+
+					<li class="locked">
+						<a href="#tabFlowchart-1" id="idtabFlowchart-1" onclick="jQuery('#helpmain_canvas').click();return false;">
+							<h:outputText value="#{messages.label_tab_flowchart}" />
+						</a>
+					</li>
+                    <li class="locked">
+                    	<a href="#tabs-8" id="idtabs-8" onclick="jQuery('#helpmain_ssh').click();return false;" >
+                    		<h:outputText value="#{messages.label_tab_remotefilesystem}" />
+                    	</a>
+                    </li>
+					<button id="changeTabCanvas" style="border: hidden;">&#9660;</button>
+					
+					
+					
+					
 					<div class="divMenuImage">
 						<span style="cursor:pointer;">
 							<img src="../image/icons/button-open.gif" alt="open" class="shortMenuIcon" onclick="openModalLoadWorkflow()" title="#{messages.label_menu_open}" />
@@ -1641,44 +1677,16 @@
                             <img src="../image/icons/button-redo.gif" id="buttonredo" alt="#{messages.label_menu_redo}" class="shortMenuIcon" onclick="redo();" title="#{messages.label_menu_redo}" />
                         </span>
 					</div>
-				</div>
-                
-                
-                
-
-			</a4j:region>
-
-			<a4j:jsFunction name="signOut" action="#{userInfoBean.goToSignOut}" oncomplete="jQuery.unblockUI();" />
-			<a4j:jsFunction name="reStart" action="#{userInfoBean.goToSignOut}" oncomplete="jQuery.unblockUI();" />
-
-		</h:form>
-	</div>
-
-	<div id="mainPanelDiv">
-
-
-	<div id="splitVCanvas">
-
-			<div id="tabFlowchart">
-				<ul class="ulCss" id="ulTabFlowchart" >
-
-					<li class="locked">
-						<a href="#tabFlowchart-1" id="idtabFlowchart-1" onclick="jQuery('#helpmain_canvas').click();return false;">
-							<h:outputText value="#{messages.label_tab_flowchart}" />
-						</a>
-					</li>
-                    <li class="locked">
-                    	<a href="#tabs-8" id="idtabs-8" onclick="jQuery('#helpmain_ssh').click();return false;" >
-                    		<h:outputText value="#{messages.label_tab_remotefilesystem}" />
-                    	</a>
-                    </li>
-					<button id="changeTabCanvas" style="border: hidden;">&#9660;</button>
+					
+					
+					
+					
 
 				</ul>
 				<div id="tabFlowchart-1">
 
 					<div id="canvas-tabs">
-						<ul class="ulCssCanvas removeDefaults topBanner">
+						<ul class="ulCssCanvas removeDefaults topBanner" style="width:100%;">
 							<li class="locked canvasTabsInactive"><a href="#flowchart-canvas-1" class="canvasTabsInactive canvasTab"
 								onclick="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('canvas-1');">canvas-1</a>
 								<span id="canvas-1-icon-close" class="ui-icon ui-icon-close " role="presentation"
@@ -1725,7 +1733,7 @@
 						</div>
 						<h:panelGroup id="tabsFooterForm">
 							<div id="tabsFooter">
-								<ul class="canvasFooter">
+								<ul class="canvasFooter" style="width:100%;min-width:400px;">
 
 									<ui:repeat value="#{configureTabsBean.tabs}" var="tab" varStatus="status">
 										<li class="locked footerTab"><a href="#tabFooter-#{tab}" >#{tab}</a></li>
@@ -1737,7 +1745,7 @@
 										<a4j:commandButton image="../image/icons/button-property.gif" title="#{messages.label_property_button}"
 											action="#{configureTabsBean.openCanvasScreen}"
 											oncomplete="#{rich:component('modalConfigureFooterTabs')}.show();document.getElementById('helpmain_actfooter').click();"
-											style="border: hidden;width:22px;vertical-align:middle;" styleClass="configureFooterButton"/>
+											style="border: hidden;width:27px;vertical-align:middle;" styleClass="configureFooterButton"/>
 									</a4j:region>
 									
 									</h:form>
@@ -1756,7 +1764,7 @@
 								</span>
 
 								<ui:repeat value="#{configureTabsBean.menuWAList}" var="tab">
-									<div id="tabFooter-#{tab.key}">
+									<div id="tabFooter-#{tab.key}" style=" overflow-y:hidden;">
 											<ui:repeat value="#{tab.value}" var="action">
 												<span id="spanImagensObj" style="display: none"> <img
 													src="#{action[1]}" class="footerIcon" />

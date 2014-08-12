@@ -43,7 +43,8 @@ function resizeCanvas(val1, val2){
 		//alert(nameTabs[i]);
 		jQuery("#"+getCanvasId(nameTabs[i])).css("height", jQuery("#canvas-tabs").height()-jQuery("#tabsFooter").height()-val1+'px');
 		jQuery("#"+getCanvasId(nameTabs[i])).css("width", jQuery("#canvas-tabs").width()+'px');
-		jQuery("#container-"+nameTabs[i]).css("height", jQuery("#canvas-tabs").height()-jQuery("#tabsFooter").height()-val2+'px');
+		//jQuery("#container-"+nameTabs[i]).css("width", jQuery("#canvas-tabs").width()-15+'px');
+		//jQuery("#container-"+nameTabs[i]).css("height", jQuery("#canvas-tabs").height()-jQuery("#tabsFooter").height()-val2+'px');
 		jQuery("#flowchart-"+nameTabs[i]).css("height", jQuery("#canvas-tabs").height()-jQuery("#tabsFooter").height()-val2+'px');
 	}
 	
@@ -83,13 +84,10 @@ function onPageReady(){
 	  jQuery("#menu").css('width', jQuery(window).width()-20+'px');
 	  jQuery("#splitVCanvas").css('width', jQuery(window).width()-30+'px');
 	  jQuery("#splitVCanvas").css('height', jQuery(window).height()-110+'px');
-
-	  jQuery("#tabFlowchart").css("height", jQuery(window).height()-110+'px');
-	  jQuery("#tabFlowchart").css("margin", '1.5em');
+	  jQuery("#tabFlowchart").css("height", jQuery(window).height()-80+'px');
 	  jQuery("#tabs1").css("width", jQuery("#splitHCanvas").width() +'px');
 	  jQuery("#tabs2").css("width", jQuery("#splitHCanvas").width() +'px');
 
-	 /* jQuery("#tabFlowchart").css("height", jQuery(window).height()-80+'px');*/
 
 	  jQuery("#tabs1").children('ul').first().css("left", 0+'px');
 	  jQuery("#tabs2").children('ul').first().css("left", 0+'px');
@@ -100,7 +98,7 @@ function onPageReady(){
 	  jQuery("#canvas").css("height", jQuery("#canvas-tabs").height()-160+'px');
 	  jQuery("#canvas").css("width", jQuery("#canvas-tabs").width()+'px');
 	  jQuery("#splitHCanvas").css("width", jQuery(window).width()-jQuery("#tabFlowchart").width()-100+'px');
-	  jQuery("#tabsFooter").css("width", jQuery("#canvas-tabs").width()-0+'px');
+	  jQuery("#tabsFooter").css("width", jQuery("#canvas-tabs").width()+15+'px');
 	  
 	  resizeTabs();
 	  //resizeTables();
@@ -132,7 +130,7 @@ function configureFooterCss(){
 	
 	//alert("configureFooterCss");
 	
-	  jQuery("#tabsFooter").css("width", jQuery("#canvas-tabs").width()+5+'px');
+	  jQuery("#tabsFooter").css("width", jQuery("#canvas-tabs").width()+15+'px');
 	  jQuery("#tabsFooter").css("overflow", "hidden");
 	  jQuery("#tabsFooter").css("position", "absolute");
 	  jQuery("#tabsFooter").css("bottom", "30px");
