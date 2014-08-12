@@ -208,7 +208,7 @@
 			  jQuery("#tabs2").css("top", '0px');
 			  jQuery("#tabs2").css("height", jQuery("#splitVCanvas").height()-20+'px');
 			  resizeTabs();
-			  jQuery("#divTabHelp").css("height", jQuery("#tabs-1").height()-45+'px');
+			  jQuery("#divTabHelp").css("height", jQuery("#tabs-1").height()-56+'px');
 		  	}},
 		  {'Middle': function(menuItem,menu){ 
 			  jQuery("#tabs1").css("height", (jQuery("#splitVCanvas").height()-20)/2+'px');
@@ -216,7 +216,7 @@
 			  jQuery("#tabs2").css("top", (jQuery("#splitVCanvas").height()-20)/2+'px');
 			  jQuery("#tabs2").css("height", (jQuery("#splitVCanvas").height()-20)/2+'px');
 			  resizeTabs();
-			  jQuery("#divTabHelp").css("height", jQuery("#tabs-1").height()-45+'px');
+			  jQuery("#divTabHelp").css("height", jQuery("#tabs-1").height()-56+'px');
 		  	}},
 		  {'Bottom': function(menuItem,menu){
 			  jQuery("#tabs1").css("height", jQuery("#splitVCanvas").height()-20+'px');
@@ -224,7 +224,7 @@
 			  jQuery("#tabs2").css("top", jQuery("#splitVCanvas").height()-20+'px');
 			  jQuery("#tabs2").css("height", '0px');
 			  resizeTabs();
-			  jQuery("#divTabHelp").css("height", jQuery("#tabs-1").height()-45+'px');
+			  jQuery("#divTabHelp").css("height", jQuery("#tabs-1").height()-56+'px');
 		  	}}
 		  ];
 
@@ -1835,7 +1835,7 @@
 					</button>
 				</span>
 
-				<div id="tabs-1">
+				<div id="tabs-1"  class="tabBorder">
 					<a4j:region>
 
 						<a4j:status
@@ -1853,7 +1853,7 @@
 						</h:panelGroup>
 					</a4j:region>
 				</div>
-				<div id="tabs-2" style="overflow:hidden;">
+				<div id="tabs-2"   class="tabBorder" style="overflow:hidden;">
 					<a4j:region>
 
 						<a4j:status
@@ -1871,7 +1871,7 @@
 						</h:panelGroup>
 					</a4j:region>
 				</div>
-				<div id="tabs-3" style="overflow:hidden;">
+				<div id="tabs-3"   class="tabBorder" style="overflow:hidden;">
 
 					<h:panelGroup>
 						<ui:include src="/pages/errorCanvas.xhtml" />
@@ -1908,7 +1908,7 @@
 					</button>
 				</span>
 
-				<div id="tabs-7" style="overflow:hidden;">
+				<div id="tabs-7" class="tabBorder" style="overflow:hidden;">
 					<a4j:region>
 
 						<a4j:status
@@ -1926,7 +1926,7 @@
 						</h:panelGroup>
 					</a4j:region>
 				</div>
-                <div id="tabs-4" style="overflow:hidden;">
+                <div id="tabs-4"  class="tabBorder" style="overflow:hidden;">
                     <a4j:region>
 
                         <a4j:status
