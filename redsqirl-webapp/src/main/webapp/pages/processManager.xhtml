@@ -23,11 +23,12 @@
 	
 	<br />
 	
-	<div id="processManager" 
-		style="min-width: 400px; overflow: hidden; min-height: 140px;">
+	<div id="processManager" style="min-width: 400px; overflow: hidden; min-height: 140px;">
 		<a4j:form>
-			<div class="divMenu">
-				<a href="#{processManagerBean.oozieUrl}" target="_blank"><h:graphicImage  value="../image/icons/button-oozie_web_console.gif" title='#{messages.oozie_gotowebconsole}' alt="Oozie" class="fileSystemIcon"/></a>
+			<div class="pathHeader">
+				<a href="#{processManagerBean.oozieUrl}" target="_blank">
+					<h:graphicImage  value="../image/icons/button-oozie_web_console.gif" title='#{messages.oozie_gotowebconsole}' alt="Oozie" class="fileSystemIcon"/>
+				</a>
 				
 				<a4j:commandButton id="RefreshProcessManager" action="#{processManagerBean.updateProcessesGrid}" 
 				reRender="processManagerTable" image="../image/icons/button-refresh.gif" title='#{messages.oozie_refresh}' styleClass="fileSystemIcon" />

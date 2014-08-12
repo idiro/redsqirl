@@ -25,13 +25,13 @@
 	<h:outputText value="#{messages.label_path}" />
 	<h:inputText id="pathCopy" label="Path" value="#{hdfsBean.path}" maxlength="255" style="width:395px;" onkeypress="return enableEnterKey(event, 'changePathHdfsfsCopyBt');"/>
 	<a4j:commandLink type="submit" id="changePathHdfsfsCopyBt" action="#{hdfsBean.changePath}" reRender="hdfsfsCopy" >
-		<h:graphicImage id="btSearch" value="../image/icons/button-search.gif" title='#{messages.button_ok}' />
+		<h:graphicImage id="btSearch" value="../image/icons/button-search.gif" title='#{messages.button_ok}' styleClass="bt" />
     </a4j:commandLink>
 	<a4j:commandLink action="#{hdfsBean.goPrevious}" reRender="pathCopy,hdfsfsCopy">
-		<img id="btAdd" src="../image/icons/button-previous.gif" title='#{messages.HdfsInterface_previous_help}' />
+		<img id="btAdd" src="../image/icons/button-previous.gif" title='#{messages.HdfsInterface_previous_help}' class="bt" />
 	</a4j:commandLink>
 	<a4j:commandLink action="#{hdfsBean.goNext}" reRender="pathCopy,hdfsfsCopy">
-		<img id="btAdd" src="../image/icons/button-next.gif" title='#{messages.HdfsInterface_next_help}' />
+		<img id="btAdd" src="../image/icons/button-next.gif" title='#{messages.HdfsInterface_next_help}' class="bt" />
 	</a4j:commandLink>
 	<a4j:commandLink action="#{hdfsBean.goUp}" reRender="pathCopy,hdfsfsCopy" >
 		<h:graphicImage id="hdfsgoup" value="../image/icons/button_up.jpg" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
@@ -57,9 +57,9 @@
 				<h:outputText value="" />
 			</f:facet>
 				<h:graphicImage value="../image/icons/button-property.gif" title='#{messages.HdfsInterface_properties_help}' 
-				rendered="#{hdfsBean.allProps[indexTable]['type'] == 'directory'}" styleClass="fileSystemIcon" />
+				rendered="#{hdfsBean.allProps[indexTable]['type'] == 'directory'}" styleClass="btfileSystem" />
 				<h:graphicImage value="../image/icons/button-file-icon.png" title='#{messages.HdfsInterface_properties_help}' 
-				rendered="#{hdfsBean.allProps[indexTable]['type'] == 'file'}" styleClass="fileSystemIcon" />
+				rendered="#{hdfsBean.allProps[indexTable]['type'] == 'file'}" styleClass="btfileSystem" />
 		</rich:column>
 		
 		<rich:column sortBy="#{hdfsBean.allProps[indexTable]['name']}"

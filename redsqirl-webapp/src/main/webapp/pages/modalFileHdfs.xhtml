@@ -85,20 +85,20 @@
 		maxlength="255" style="width:395px;" onkeypress="return enableEnterKey(event, 'changePathLoadHdfsBtn');"/>
 		
 	<a4j:commandLink id="changePathLoadHdfsBtn" action="#{browserHdfsBean.changePath}" reRender="pathOpenFile,hdfsfsFile,hdfsOpenFileBtn">
-		<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' />
+		<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' styleClass="bt" />
 	</a4j:commandLink>
 		
 	<a4j:commandLink action="#{browserHdfsBean.goPrevious}"
 		reRender="pathOpenFile,hdfsfsFile,hdfsOpenFileBtn">
-		<h:graphicImage id="btPrev" value="../image/icons/button-previous.gif" title='#{messages.HdfsInterface_previous_help}' />
+		<h:graphicImage id="btPrev" value="../image/icons/button-previous.gif" title='#{messages.HdfsInterface_previous_help}' styleClass="bt" />
 	</a4j:commandLink>
 	
 	<a4j:commandLink action="#{browserHdfsBean.goNext}" reRender="pathOpenFile,hdfsfsFile,hdfsOpenFileBtn">
-		<h:graphicImage id="btNext" value="../image/icons/button-next.gif" title='#{messages.HdfsInterface_next_help}' />
+		<h:graphicImage id="btNext" value="../image/icons/button-next.gif" title='#{messages.HdfsInterface_next_help}' styleClass="bt" />
 	</a4j:commandLink>
 	
 	<a4j:commandLink action="#{browserHdfsBean.goUp}" reRender="pathOpenFile,hdfsfsFile,hdfsOpenFileBtn">
-		<h:graphicImage id="browserHdfsBeanGoup" value="../image/icons/button_up.jpg" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
+		<h:graphicImage id="browserHdfsBeanGoup" value="../image/icons/button_up.jpg" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" style="bt" />
 	</a4j:commandLink>
 	
 	<br/><br/>
@@ -129,9 +129,9 @@
 					<h:outputText value="" />
 				</f:facet>
 				<h:graphicImage value="../image/icons/button-property.gif" title='#{messages.HdfsInterface_properties_help}' 
-					rendered="#{browserHdfsBean.allProps[indexTable]['type'] == 'directory'}" styleClass="fileSystemIcon" />
+					rendered="#{browserHdfsBean.allProps[indexTable]['type'] == 'directory'}" styleClass="btfileSystem" />
 				<h:graphicImage value="../image/icons/button-file-icon.png" title='#{messages.HdfsInterface_properties_help}' 
-					rendered="#{browserHdfsBean.allProps[indexTable]['type'] == 'file'}" styleClass="fileSystemIcon" />
+					rendered="#{browserHdfsBean.allProps[indexTable]['type'] == 'file'}" styleClass="btfileSystem" />
 			</rich:column>
             
             <rich:column style="border-bottom:0px;border-right:0px;">

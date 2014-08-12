@@ -26,7 +26,7 @@ input {
 .shortMenuIcon {
 	padding-right: 0px;
 	border: solid 0px;
-	width: 33px;
+	width: 35px;
 	vertical-align: middle;
 }
 
@@ -35,7 +35,7 @@ input {
 	padding-right: 3px;
 	padding-top: 3px;
 	border: solid 0px;
-	width: 25px;
+	width: 35px;
 }
 
 .footerIcon {
@@ -176,13 +176,13 @@ input {
 }
 
 .splitter-bar-vertical {
-	width: 40px;
+	width: 6px;
 	background-repeat: no-repeat;
 	background-position: center;
 }
 
 .splitter-bar-horizontal {
-	height: 15px;
+	height: 6px;
 	background-repeat: no-repeat;
 	background-position: center;
 }
@@ -232,7 +232,7 @@ input {
 }
 
 .spanButtons {
-	margin-top: -19px;
+	margin-top: -35px;
 	left: 800px;
 	position: absolute;
 	z-index: 10000;
@@ -241,20 +241,20 @@ input {
 	border: none;
 	color: #222222;
 	font-weight: bold;
-	height: 18px;
-	width: 50px;
+	height: 38px;
+	width: 80px;
 }
 
 .buttonsArrowsLeft,.buttonsArrowsRight {
 	padding: 0px 0px 0px 0px;
 	border: none;
-	height: 18px;
-	width: 15px;
+	height: 30px;
+	width: 30px;
 	background-color: transparent;
 }
 
 #buttonsTabs1.spanButtons,#buttonsTabs2.spanButtons {
-	margin-top: -24px;
+	margin-top: -35px;
 	margin-left: -20px;
 	height: 22px;
 	width: 100px;
@@ -767,7 +767,7 @@ table.secondtable td {
 #tabFlowchart {
 	background-color: transparent;
 	border: none;
-	margin-left:1.5em;
+	//margin-left:1.5em;
 }
 
 #splitHCanvas {
@@ -824,7 +824,7 @@ table.secondtable td {
 .ui-tabs .ui-tabs-nav li a{
 	padding-right:1.25em;
 	padding-left:1.25em;
-	height:30px;
+	height:32px;
 	line-height:30px;
 	border-bottom-left-radius: 0px;
 	border-bottom-right-radius: 0px;
@@ -939,7 +939,7 @@ div.splitter-bar.ui-state-highlight {
 
 #tabsFooter.ui-tabs .ui-tabs-nav li.ui-tabs-active a,#tabsFooter.ui-tabs .ui-tabs-nav li.ui-state-disabled a,#tabsFooter.ui-tabs .ui-tabs-nav li.ui-tabs-loading a
 	{
-	height: 30px;
+	height: 32px;
 	line-height: 30px;
 	cursor: pointer;
 	background-color: #c6161d;
@@ -957,19 +957,16 @@ div.splitter-bar.ui-state-highlight {
 	padding-left:1.25em;
 	/*padding-top:1.25em;
 	padding-bottom:1.25em;*/
-	height:30px;
+	height:32px;
 	line-height:30px;
 	border-top-left-radius: 4px;
 	border-top-right-radius: 4px;
-	height: 30px;
-	line-height: 30px;
 	margin-right: 0em;
 }
 
 .canvasFooter {
 	font-family: Verdana, Arial, sans-serif;
 	left: 0px;
-	
 	position: relative;
 	width: 10%;
 }
@@ -1011,7 +1008,6 @@ div.splitter-bar.ui-state-highlight {
 	padding-right:0px;
 	padding-top:0px;
 	padding-bottom:0px;
-	
 	border:0px;
 	border-radius:0px;
 }
@@ -1055,10 +1051,11 @@ div.splitter-bar.ui-state-highlight {
 	padding-left: 5px;
 	padding-bottom: 1px;
 	vertical-align: middle;
+	width: 35px;
 }
 
 .configureFooterButton {
-	padding-top: 6px;
+	padding-top: 0px;
 	vertical-align: middle;
 }
 
@@ -1382,3 +1379,18 @@ input:-webkit-autofill {
 	-webkit-box-shadow: 0 0 0px 1000px white inset;
 }
 
+.bt {
+	width: 35px;
+}
+
+.btConfigureFooter {
+	width: 25px;
+}
+
+.btfileSystem {
+	padding-bottom: 3px;
+	padding-right: 3px;
+	padding-top: 3px;
+	border: solid 0px;
+	width: 25px;
+}

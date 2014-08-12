@@ -23,7 +23,7 @@
 	<h:form>
 	
 		<a4j:commandLink action="#{canvasBean.cleanErrorList}" reRender="errorTable">
-			<h:graphicImage value="../image/icons/button-delete2.gif" title='#{messages.error_list_clear}' />
+			<h:graphicImage value="../image/icons/button-delete2.gif" title='#{messages.error_list_clear}' styleClass="bt" />
 		</a4j:commandLink>
 
 		<rich:extendedDataTable id="errorTable" value="#{sessionScope['listError']}" var="item"

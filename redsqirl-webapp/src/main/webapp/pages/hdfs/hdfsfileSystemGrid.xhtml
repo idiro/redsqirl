@@ -163,11 +163,11 @@
 							<h:graphicImage value="../image/icons/button-property.gif"
 								title='#{messages.HdfsInterface_properties_help}'
 								rendered="#{hdfsBean.allProps[indexTable]['type'] == 'directory'}"
-								styleClass="fileSystemIcon" />
+								styleClass="btfileSystem" />
 							<h:graphicImage value="../image/icons/button-file-icon.png"
 								title='#{messages.HdfsInterface_properties_help}'
 								rendered="#{hdfsBean.allProps[indexTable]['type'] == 'file'}"
-								styleClass="fileSystemIcon" />
+								styleClass="btfileSystem" />
 							<f:param name="indexFileEdit" value="#{indexTable}" />
 						</a4j:commandLink>
 					</rich:column>

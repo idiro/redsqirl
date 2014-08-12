@@ -788,7 +788,7 @@
 
 	<div id="invisible"></div>
 
-	<div id="menu">
+	<div id="menu" style="width: 100%">
 		<h:form id="formMenu" class="menu">
 		
 			<div id="domMessageDivCanvas1" style="display: none;">
@@ -1649,8 +1649,6 @@
 					<button id="changeTabCanvas" style="border: hidden;">&#9660;</button>
 					
 					
-					
-					
 					<div class="divMenuImage">
 						<span style="cursor:pointer;">
 							<img src="../image/icons/button-open.gif" alt="open" class="shortMenuIcon" onclick="openModalLoadWorkflow()" title="#{messages.label_menu_open}" />
@@ -1678,9 +1676,6 @@
                         </span>
 					</div>
 					
-					
-					
-					
 
 				</ul>
 				<div id="tabFlowchart-1">
@@ -1697,10 +1692,10 @@
 
 						<span id="buttonsCanvas1" class="spanButtons">
 							<button class="buttonsArrowsLeft">
-								<img src="../image/icons/button-left_arrow.gif" style="width: 16px;" />
+								<img src="../image/icons/button-left_arrow.gif" style="width: 30px;" />
 							</button>
 							<button class="buttonsArrowsRight">
-								<img src="../image/icons/button-right_arrow.gif" style="width: 16px;" />
+								<img src="../image/icons/button-right_arrow.gif" style="width: 30px;" />
 							</button>
 						</span>
 
@@ -1741,12 +1736,12 @@
 									
 									<h:form>
 									
-									<a4j:region>
-										<a4j:commandButton image="../image/icons/button-property.gif" title="#{messages.label_property_button}"
-											action="#{configureTabsBean.openCanvasScreen}"
-											oncomplete="#{rich:component('modalConfigureFooterTabs')}.show();document.getElementById('helpmain_actfooter').click();"
-											style="border: hidden;width:27px;vertical-align:middle;" styleClass="configureFooterButton"/>
-									</a4j:region>
+										<a4j:region>
+											<a4j:commandButton image="../image/icons/button-property.gif" title="#{messages.label_property_button}"
+												action="#{configureTabsBean.openCanvasScreen}"
+												oncomplete="#{rich:component('modalConfigureFooterTabs')}.show();document.getElementById('helpmain_actfooter').click();"
+												style="border: hidden;width:35px;vertical-align:middle;" styleClass="configureFooterButton"/>
+										</a4j:region>
 									
 									</h:form>
 									
@@ -1754,12 +1749,10 @@
 
 								<span id="buttonsTabsFooter" class="spanButtons">
 									<button class="buttonsArrowsLeft">
-										<img src="../image/icons/button-left_arrow.gif"
-											style="width: 16px;" />
+										<img src="../image/icons/button-left_arrow.gif" style="width: 30px;" />
 									</button>
 									<button class="buttonsArrowsRight">
-										<img src="../image/icons/button-right_arrow.gif"
-											style="width: 16px;" />
+										<img src="../image/icons/button-right_arrow.gif" style="width: 30px;" />
 									</button>
 								</span>
 
@@ -1801,7 +1794,6 @@
 			</div>
 
 
-
 		<div id="splitHCanvas">
 			<div id="tabs1">
 				<ul class="ulCss" id="ulTabs1">
@@ -1828,10 +1820,10 @@
 
 				<span id="buttonsTabs1" class="spanButtons">
 					<button class="buttonsArrowsLeft">
-						<h:graphicImage  width="22px" value="../image/icons/button-left_arrow.gif"/>
+						<h:graphicImage width="30px" value="../image/icons/button-left_arrow.gif"/>
 					</button>
 					<button class="buttonsArrowsRight">
-						<h:graphicImage  width="22px" value="../image/icons/button-right_arrow.gif"/>
+						<h:graphicImage width="30px" value="../image/icons/button-right_arrow.gif"/>
 					</button>
 				</span>
 
@@ -1901,10 +1893,10 @@
 
 				<span id="buttonsTabs2" class="spanButtons">
 					<button class="buttonsArrowsLeft">
-						<h:graphicImage  width="22px" value="../image/icons/button-left_arrow.gif"/>
+						<h:graphicImage width="30px" value="../image/icons/button-left_arrow.gif"/>
 					</button>
 					<button class="buttonsArrowsRight">
-						<h:graphicImage  width="22px" value="../image/icons/button-right_arrow.gif"/>
+						<h:graphicImage width="30px" value="../image/icons/button-right_arrow.gif"/>
 					</button>
 				</span>
 
