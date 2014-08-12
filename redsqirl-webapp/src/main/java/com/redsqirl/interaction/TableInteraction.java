@@ -321,7 +321,7 @@ public class TableInteraction extends CanvasModalInteraction{
 				for (String column : l.keySet()) {
 					value[tableGrid.columnIdsIndexOf(column)] = l.get(column);
 				}
-				tableGrid.add(new SelectableRow(value));
+				tableGrid.add(new SelectableRow(value, true));
 			}
 		}else{
 			logger.info(tableGeneratorMenu.toString());
