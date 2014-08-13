@@ -42,7 +42,7 @@
                                 action="#{configureTabsBean.deleteTab}"
                                 reRender="tableNameMenuFooter"
                                 onclick="if(!confirm('Are you sure you want to delete the selected line?')){return false;}">
-                                <img src="../image/icons/button-delete2.gif" class="btConfigureFooter" />
+                                <img src="../image/icons/button-delete-small.gif" class="btConfigureFooter" />
                             </a4j:commandLink>
                             <h:selectBooleanCheckbox onclick="selectAllCheckbox(this, /tableNameMenuSelect$/);"/>
                             </h:panelGrid>
@@ -90,7 +90,7 @@
 			</h:panelGroup>
 			
 			<a4j:commandLink title="Add new line" action="#{configureTabsBean.createTab}" reRender="tabsMenu" oncomplete="newRetrieveItems();">
-				<img src="../image/icons/button-plus.gif" class="btConfigureFooter" />
+				<img src="../image/icons/button-plus-small.gif" class="btConfigureFooter" />
 			</a4j:commandLink>
 			
 			<a4j:jsFunction name="newRetrieveItems" action="#{configureTabsBean.retrieveItems}" reRender="actionsPanel" >
