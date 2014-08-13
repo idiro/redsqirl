@@ -56,6 +56,8 @@ input {
 
 .pathHeader{
 	padding: 0px 0px 0px 5px;
+	padding-top:5px;
+	padding-bottom:5px;
 	background: linear-gradient(#f6f5f5, #c4c3c5);
 	/*background-color:blue;*/
 }

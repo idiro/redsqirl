@@ -12,15 +12,23 @@
 		
 		<rich:dragIndicator id="indicator" />
 		<h:form id="fileSysGridFormSshTab">
-			<br/>
+			<div class="pathHeader">
 			<h:outputText value="#{messages.label_path}" style="padding-left:10px"/>
 			<h:inputText id="sshpath" styleClass="mainPageTextField"  label="Path" value="#{sshBean.path}"
 				maxlength="255" style="width:395px; margin-left:5px;" 
 				onkeypress="return enableEnterKey(event, 'sshchangePathBt');"/>
-			<a4j:commandButton  styleClass="greenButton" id="sshchangePathBt" oncomplete="resizeTables();" 
-				action="#{sshBean.changePath}" value="#{messages.button_ok}" reRender="sshfs" />
-
-			<br />
+				
+				<a4j:commandLink 
+					id="sshchangePathBt"
+					oncomplete="resizeTables();"
+					reRender="sshfs">
+					<h:graphicImage
+						class="refreshButton"
+						action="#{sshBean.changePath}" 
+						value="../image/icons/button-search.gif"
+						title='#{messages.canvas_path}' styleClass="bt" />
+				</a4j:commandLink>
+			</div>
 
 			<div class="divMenu">
 				<a4j:commandLink action="#{sshBean.goPrevious}"
@@ -33,18 +41,16 @@
 				</a4j:commandLink>
 				
 				<a4j:commandLink action="#{sshBean.goUp}" reRender="sshpath,sshfs" oncomplete="resizeTables();" >
-					<h:graphicImage id="sshbtGoUp" value="../image/icons/button-up.gif" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
+					<h:graphicImage id="sshbtGoUp" value="../image/icons/button-up.gif" title='#{messages.hdfs_goup}' styleClass="bt" />
 				</a4j:commandLink>
 			</div>
 			
-			<br />
-
 			<rich:panel style="border:none">
 				<rich:dropSupport id="panelDropSupportSsh" acceptedTypes="hdfs" dropListener="#{sshBean.processDrop}" reRender="sshfs" oncomplete="resizeTables();"/>
 				
 				<rich:extendedDataTable id="sshfs" value="#{sshBean.tableGrid.rows}"
 					var="item" rowKeyVar="indexTable" width="100%" style="border:none;"
-					onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+					onRowMouseOver="this.style.backgroundColor='#f2b97a'"
 					enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
 					rowClasses="even-row, odd-row" tableState="#{sshBean.tableState}" >
 	

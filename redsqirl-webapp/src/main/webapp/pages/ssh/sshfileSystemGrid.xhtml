@@ -53,14 +53,14 @@
 				<a4j:actionparam name="nameTab"/>
 			</a4j:jsFunction>
 		
-			<ul class="ulCssCanvas">
+			<ul class="ulCssCanvas removeDefaults topBanner">
 				<ui:repeat value="#{sshBean.tabs}" var="tab">
-					<li class="locked" ><a href="##{tab}" onclick="setSelectedRemoteTab('#{tab}')">#{tab}</a> 
+					<li class="locked canvasTabsInactive" ><a href="##{tab}" class="canvasTab" onclick="setSelectedRemoteTab('#{tab}')">#{tab}</a> 
 						<span class='ui-icon ui-icon-close' onclick="closeTab(this);closeServer('#{tab}');"></span> </li>
 				</ui:repeat>
 				
 				<a4j:commandButton image="../image/icons/button-new_canvas.gif" action="#{sshBean.openNewSsh}" oncomplete="#{rich:component('modalNewSsh')}.show()" 
-					style="border:hidden;width:16px;" rerender="modalNewSsh"/>
+					style="border:hidden;width:25px;" rerender="modalNewSsh"/>
 			</ul>
 				
 			<span id="buttonstabRemote" class="spanButtons">
