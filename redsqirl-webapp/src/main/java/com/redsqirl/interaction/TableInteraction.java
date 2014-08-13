@@ -37,12 +37,9 @@ public class TableInteraction extends CanvasModalInteraction{
 	 * The list of rows of the grid.
 	 */
 	private SelectableTable tableGrid;
-
 	private SelectableTable allTableGrid;
 	private List<SelectableTable> listTableGrid;
-
 	private String selectedTab;
-
 
 	/**
 	 * The type of the column "textField", "comboBox" or "editor"
@@ -57,7 +54,6 @@ public class TableInteraction extends CanvasModalInteraction{
 	 * The list of editors.
 	 */
 	private Map<String,EditorFromTree> tableEditors;
-
 
 	/**
 	 * The generator currently selected.
@@ -363,6 +359,25 @@ public class TableInteraction extends CanvasModalInteraction{
 		tableGrid.removeAllSelected();
 	}
 
+	public void deleteLineTableInteractionPanel() {
+		logger.info("tableInteractionDeleteLine");
+
+		for (SelectableRow selectRow : allTableGrid.getRows()) {
+			if(selectRow.isSelected()){
+
+				for (SelectableTable selectableTable : listTableGrid) {
+					for (SelectableRow selectableRow : selectableTable.getRows()) {
+						if(selectableRow.isSelected() && selectableRow.getNameTabHidden().equals(selectRow.getNameTabHidden())){
+							selectableRow.setSelected(false);
+						}
+					}
+				}
+
+			}
+		}
+		allTableGrid.removeAllSelected();
+	}
+
 	public void mountTableInteractionPanel() {
 
 		listTableGrid = new ArrayList<SelectableTable>();
@@ -384,9 +399,15 @@ public class TableInteraction extends CanvasModalInteraction{
 
 			for (SelectableRow selectableRow : selectableTable.getRows()) {
 				if(selectableRow.isSelected() && !checkIfAlreadyExist(selectableRow.getNameTabHidden())){
-					allTableGrid.add(selectableRow);
+					SelectableRow s = new SelectableRow(selectableRow.getRow(), selectableRow.isSelected());
+					s.setNameTab(selectableRow.getNameTab());
+					s.setNameTabHidden(selectableRow.getNameTabHidden());
+					allTableGrid.add(s);
 				}else if(!selectableRow.isSelected() && checkIfAlreadyExist(selectableRow.getNameTabHidden())){
-					allTableGrid.getRows().remove(selectableRow);
+					SelectableRow s = new SelectableRow(selectableRow.getRow(), selectableRow.isSelected());
+					s.setNameTab(selectableRow.getNameTab());
+					s.setNameTabHidden(selectableRow.getNameTabHidden());
+					allTableGrid.getRows().remove(s);
 				}
 			}
 		}
@@ -401,14 +422,16 @@ public class TableInteraction extends CanvasModalInteraction{
 		}
 		return false;
 	}
-	
+
 	public void applyTabTableInteractionPopUp(){
+		for (SelectableRow select : tableGrid.getRows()) {
+			select.setSelected(false);
+		}
 		for (SelectableRow selectableRow : allTableGrid.getRows()) {
 			selectableRow.setSelected(true);
 			getTableGrid().add(selectableRow);
 		}
 	}
-
 
 	/**
 	 * @return the tableConstraints
