@@ -347,7 +347,7 @@
                         </h:panelGrid>
                         
                         <a4j:commandLink title="Add new line" action="#{interCur.addNewLine}" reRender="tableInteraction" oncomplete="changeTableInteractionAnchorBottom();">
-                            <img id="tableInteractionBtAdd" src="../image/icons/button-plus.gif" class="bt" />
+                            <img id="tableInteractionBtAdd" src="../image/icons/button-plus-small.gif" class="btConfigureFooter" />
                         </a4j:commandLink>
                         
                         <a4j:commandLink style="float:right;" title="Resize" onclick="toggleTableSize();">
@@ -377,7 +377,7 @@
 				                                        <a4j:commandLink title="Delete selected lines"
 				                                            action="#{interCur.table.deleteLine}" reRender="tableInteraction"
 				                                            onclick="if(!confirm('Are you sure you want to delete the selected line?')){return false;}">
-				                                            <img id="tableInteractionBtDelete" src="../image/icons/button-delete2.gif" class="bt" />
+				                                            <img id="tableInteractionBtDelete" src="../image/icons/button-delete-small.gif" class="btConfigureFooter" />
 				                                        </a4j:commandLink>
 				                                        <h:selectBooleanCheckbox onclick="selectAllCheckbox(this, /tableInteractionSelect$/);"/>
 			                                        </h:panelGrid>
@@ -589,7 +589,7 @@
     
     </h:form>
             
-            <rich:modalPanel id="modalOutputBrowser" width="600" height="400" style="overflow:hidden;" resizeable="false">
+            <rich:modalPanel id="modalOutputBrowser" width="600" height="420" style="overflow:hidden;" resizeable="false">
     
                 <f:facet name="header">Browser</f:facet>
                 <f:facet name="controls">
