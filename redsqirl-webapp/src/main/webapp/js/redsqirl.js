@@ -145,10 +145,10 @@ function configureFooterCss(){
 	
 	  jQuery("#tabsFooter").css("width", jQuery("#canvas-tabs").width()+15+'px');
 	  jQuery("#tabsFooter").css("overflow", "hidden");
-	  jQuery("#tabsFooter").css("position", "absolute");
+	  jQuery("#tabsFooter").css("position", "fixed");
 	  jQuery("#tabsFooter").css("bottom", "3px");
 	  jQuery("#tabsFooter").css("z-index", jQuery("#canvas-tabs").zIndex()+1);
-	  jQuery("#tabsFooter").css("background", "none repeat scroll 0 0 rgba(0, 0, 0, 0)");
+//	  jQuery("#tabsFooter").css("background", "none repeat scroll 0 0 rgba(0, 0, 0, 0)");
 	  
 	  //validateArrows(jQuery("#tabsFooter"),jQuery("#buttonsTabsFooter"));
 }

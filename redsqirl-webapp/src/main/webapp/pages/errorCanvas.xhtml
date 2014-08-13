@@ -21,11 +21,11 @@
 <body>
 
 	<h:form>
-	
+		<div class="pathHeader">
 		<a4j:commandLink action="#{canvasBean.cleanErrorList}" reRender="errorTable">
 			<h:graphicImage value="../image/icons/button-delete2.gif" title='#{messages.error_list_clear}' styleClass="bt" />
 		</a4j:commandLink>
-
+		</div>
 		<rich:extendedDataTable id="errorTable" value="#{sessionScope['listError']}" var="item"
 			width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'" 
 			enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'" 

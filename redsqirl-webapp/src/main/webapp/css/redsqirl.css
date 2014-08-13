@@ -85,9 +85,6 @@ input {
 	border: 0px solid;
 }
 
-#tabsFooter {
-	margin-top: 0em;
-}
 
 #tabsFooter li .ui-icon-close {
 	float: left;
@@ -769,7 +766,8 @@ table.secondtable td {
 }
 
 #tabsFooter {
-	background-color: transparent;
+	/* background-color: transparent; */
+	padding-top : 0.25em;
 	border: none;
 }
 
@@ -871,9 +869,9 @@ div.splitter-bar.ui-state-highlight {
 
 /*remove the white boxes in the background*/
 .ui-widget.ui-widget-content {
-	/*background-image: url();*/
+	/*background-image: url();
 	background-color: transparent;
-	/*background: linear-gradient(#f5f4f6, #f3eef2);*/
+	background: linear-gradient(#f5f4f6, #f3eef2);*/
 }
 
 /*legend panel*/
