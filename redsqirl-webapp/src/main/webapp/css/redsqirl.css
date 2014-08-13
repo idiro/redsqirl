@@ -121,6 +121,13 @@ input {
 	
 }
 
+li[aria-selected='false']>a.canvasTab{
+	
+background-color:transparent !important;
+color:black !important;
+line-height:25px !important;
+}
+
 #tabRemote {
 	margin-top: 0em;
 }
@@ -922,11 +929,12 @@ div.splitter-bar.ui-state-highlight {
 	background-color: #646464;
 }
 
+/*
 .canvasTab{
 	padding-top: 0px !important;
 	padding-bottom: 0px !important;
 }
-
+**/
 .footerTab{
 	background-color: #c6161d !important;
 	border-bottom-right-radius:0px !important;
@@ -1151,7 +1159,7 @@ div.splitter-bar.ui-state-highlight {
 }
 
 .extdt-thead {
-	background-color: #b8b9bd;
+	background-color: #e1e1e1;
 	display: table-header-group;
 	-moz-border-radius: 10px;
 	-webkit-border-radius: 10px;
