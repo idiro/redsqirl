@@ -75,7 +75,7 @@
 				</a4j:commandLink>
 				
 				<a4j:commandLink action="#{hiveBean.goUp}" reRender="hivepath,hivefs" oncomplete="resizeTables();jQuery('#tabs-4').unblock();" >
-					<h:graphicImage id="hivegoup" value="../image/icons/button_up.jpg" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
+					<h:graphicImage id="hivegoup" value="../image/icons/button-up.gif" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 			</div>
 
@@ -101,7 +101,7 @@
 						<h:outputText value="" />
 					</f:facet>
 					<a4j:commandLink action="#{hiveBean.editFileBefore}" oncomplete="#{rich:component('hiveeditModalPanel')}.show();jQuery('#tabs-4').unblock();">
-						<h:graphicImage value="../image/icons/button-property.gif" title="#{messages.HiveInterface_properties_help}"
+						<h:graphicImage value="../image/icons/button-property-small.gif" title="#{messages.HiveInterface_properties_help}"
 						rendered="#{hiveBean.allProps[indexTable]['type'] == 'directory'}" styleClass="btfileSystem" />
 						<h:graphicImage value="../image/icons/button-file-icon.png" title="#{messages.HiveInterface_properties_help}"
 						rendered="#{hiveBean.allProps[indexTable]['type'] == 'file'}" styleClass="btfileSystem" />

@@ -66,7 +66,7 @@
 	</a4j:commandLink>
 	
 	<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goUp}" reRender="pathDataOutputBrowser,dataOutputBrowser">
-		<h:graphicImage value="../image/icons/button_up.jpg" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
+		<h:graphicImage value="../image/icons/button-up.gif" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
 	</a4j:commandLink>
 	<br />
 	
@@ -91,7 +91,7 @@
 				<f:facet name="header">
 					<h:outputText value="" />
 				</f:facet>
-				<h:graphicImage value="../image/icons/button-property.gif" title='#{messages.HdfsInterface_properties_help}' 
+				<h:graphicImage value="../image/icons/button-property-small.gif" title='#{messages.HdfsInterface_properties_help}' 
 					rendered="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['type'] == 'directory'}" styleClass="btfileSystem" />
 				<h:graphicImage value="../image/icons/button-file-icon.png" title='#{messages.HdfsInterface_properties_help}' 
 					rendered="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['type'] == 'file'}" styleClass="btfileSystem" />
