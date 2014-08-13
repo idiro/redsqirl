@@ -74,7 +74,7 @@ function configureCanvas(canvasName, reset){
     var legendCanvasContainer = "container-legend-"+canvasName;
     canvasArray[canvasName].canvasContainer = canvasContainer;
     canvasArray[canvasName].legendCanvasContainer = legendCanvasContainer;
-
+    
     // main stage
     var stage = new Kinetic.Stage({
         container : canvasContainer,
