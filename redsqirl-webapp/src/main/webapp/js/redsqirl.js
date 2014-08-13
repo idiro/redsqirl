@@ -44,8 +44,6 @@ function resizeCanvas(val1, val2){
 		//alert(nameTabs[i]);
 		jQuery("#"+getCanvasId(nameTabs[i])).css("height", jQuery("#canvas-tabs").height()-jQuery("#tabsFooter").height()-val1+'px');
 		jQuery("#"+getCanvasId(nameTabs[i])).css("width", jQuery("#canvas-tabs").width()+'px');
-		//jQuery("#container-"+nameTabs[i]).css("width", jQuery("#canvas-tabs").width()-15+'px');
-		//jQuery("#container-"+nameTabs[i]).css("height", jQuery("#canvas-tabs").height()-jQuery("#tabsFooter").height()-val2+'px');
 		jQuery("#flowchart-"+nameTabs[i]).css("height", jQuery("#canvas-tabs").height()-jQuery("#tabsFooter").height()-val2+'px');
 	}
 	

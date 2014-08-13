@@ -98,7 +98,7 @@
 	</a4j:commandLink>
 	
 	<a4j:commandLink action="#{browserHdfsBean.goUp}" reRender="pathOpenFile,hdfsfsFile,hdfsOpenFileBtn">
-		<h:graphicImage id="browserHdfsBeanGoup" value="../image/icons/button_up.jpg" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" style="bt" />
+		<h:graphicImage id="browserHdfsBeanGoup" value="../image/icons/button-up.gif" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" style="bt" />
 	</a4j:commandLink>
 	
 	<br/><br/>
@@ -128,7 +128,7 @@
 				<f:facet name="header">
 					<h:outputText value="" />
 				</f:facet>
-				<h:graphicImage value="../image/icons/button-property.gif" title='#{messages.HdfsInterface_properties_help}' 
+				<h:graphicImage value="../image/icons/button-property-small.gif" title='#{messages.HdfsInterface_properties_help}' 
 					rendered="#{browserHdfsBean.allProps[indexTable]['type'] == 'directory'}" styleClass="btfileSystem" />
 				<h:graphicImage value="../image/icons/button-file-icon.png" title='#{messages.HdfsInterface_properties_help}' 
 					rendered="#{browserHdfsBean.allProps[indexTable]['type'] == 'file'}" styleClass="btfileSystem" />

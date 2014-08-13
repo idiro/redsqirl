@@ -371,18 +371,15 @@
 			                                    <h:outputText value="#{rowNb+1}" />
 			                                </rich:column>
 			        
-			                                <rich:column style="border-bottom:0px;border-right:0px;"
-			                                    width="40px;">
+			                                <rich:column style="border-bottom:0px;border-right:0px;" width="40px;">
 			                                    <f:facet name="header">
-			                                        <h:panelGrid columns="1" styleClass="">
-			                                        <a4j:commandLink
-			                                            title="Delete selected lines"
-			                                            action="#{interCur.table.deleteLine}"
-			                                            reRender="tableInteraction"
-			                                            onclick="if(!confirm('Are you sure you want to delete the selected line?')){return false;}">
-			                                            <img id="tableInteractionBtDelete" src="../image/icons/button-delete2.gif" class="bt" />
-			                                        </a4j:commandLink>
-			                                        <h:selectBooleanCheckbox onclick="selectAllCheckbox(this, /tableInteractionSelect$/);"/>
+			                                        <h:panelGrid columns="1" >
+				                                        <a4j:commandLink title="Delete selected lines"
+				                                            action="#{interCur.table.deleteLine}" reRender="tableInteraction"
+				                                            onclick="if(!confirm('Are you sure you want to delete the selected line?')){return false;}">
+				                                            <img id="tableInteractionBtDelete" src="../image/icons/button-delete2.gif" class="bt" />
+				                                        </a4j:commandLink>
+				                                        <h:selectBooleanCheckbox onclick="selectAllCheckbox(this, /tableInteractionSelect$/);"/>
 			                                        </h:panelGrid>
 			                                    </f:facet>
 			        

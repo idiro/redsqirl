@@ -34,7 +34,7 @@
 		<img id="btAdd" src="../image/icons/button-next.gif" title='#{messages.HdfsInterface_next_help}' class="bt" />
 	</a4j:commandLink>
 	<a4j:commandLink action="#{hdfsBean.goUp}" reRender="pathCopy,hdfsfsCopy" >
-		<h:graphicImage id="hdfsgoup" value="../image/icons/button_up.jpg" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
+		<h:graphicImage id="hdfsgoup" value="../image/icons/button-up.gif" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
 	</a4j:commandLink>
     
     <div style="width:100%;overflow:auto;height:305px;margin-top:5px;margin-bottom:10px;">
@@ -56,7 +56,7 @@
 			<f:facet name="header">
 				<h:outputText value="" />
 			</f:facet>
-				<h:graphicImage value="../image/icons/button-property.gif" title='#{messages.HdfsInterface_properties_help}' 
+				<h:graphicImage value="../image/icons/button-property-small.gif" title='#{messages.HdfsInterface_properties_help}' 
 				rendered="#{hdfsBean.allProps[indexTable]['type'] == 'directory'}" styleClass="btfileSystem" />
 				<h:graphicImage value="../image/icons/button-file-icon.png" title='#{messages.HdfsInterface_properties_help}' 
 				rendered="#{hdfsBean.allProps[indexTable]['type'] == 'file'}" styleClass="btfileSystem" />

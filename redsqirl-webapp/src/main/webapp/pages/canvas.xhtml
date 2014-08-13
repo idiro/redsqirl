@@ -595,6 +595,9 @@
               addWorkflowTab("canvas-1");
               configureCanvas("canvas-1", true);
               setWorkflow("canvas-1");
+
+              resizeCanvas(30,45);
+              
 	      }
 	      
 	     function selectTab(tabIndex){
@@ -1407,9 +1410,8 @@
 							<h:graphicImage id="logoImg" width="150px" url="../image/logo.png"/>
 					    </a>
 					</td>
-					<td style="width:100%;">
+					<td style="width:100%;vertical-align:bottom;">
 					
-					<div style="float:right;">
 					<rich:toolBar>
 		
 						<rich:dropDownMenu>
@@ -1576,7 +1578,7 @@
 		
 						</rich:dropDownMenu>
 		
-						<rich:toolBarGroup>
+						<rich:toolBarGroup location="right">
 						
 						  <a4j:commandButton value="#{messages.label_menu_signout}"
                             styleClass="signoutButton"
@@ -1606,7 +1608,6 @@
 						</rich:toolBarGroup>
 		
 					</rich:toolBar>
-					</div>
 					
 					
 					
