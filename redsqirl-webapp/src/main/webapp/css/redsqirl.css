@@ -1093,7 +1093,8 @@ div.splitter-bar.ui-state-highlight {
 
 /*filesystem table*/
 .extdt-content{
-	height: 300px !important;
+	/* height: 300px !important; */
+	height: inherit !important;
 }
 
 
