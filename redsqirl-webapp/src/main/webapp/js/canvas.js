@@ -2016,8 +2016,8 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
             var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+this.getParent().tooltipObj+'</div>');
             var scrollLeft = jQuery("#flowchart-"+canvasName).scrollLeft();
             var scrollTop = jQuery("#flowchart-"+canvasName).scrollTop();
-            help.css("top",(this.getParent().getPosition().y-scrollTop+190)+"px" );
-            help.css("left",(this.getParent().getPosition().x-scrollLeft+90)+"px" );
+            help.css("top",(this.getParent().getPosition().y-scrollTop+160)+"px" );
+            help.css("left",(this.getParent().getPosition().x-scrollLeft+80)+"px" );
             jQuery("body").append(help);
             help.fadeIn("slow");
             
