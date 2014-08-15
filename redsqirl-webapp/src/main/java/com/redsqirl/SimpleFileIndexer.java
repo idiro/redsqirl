@@ -102,10 +102,12 @@ public class SimpleFileIndexer {
 		}
 		indexes[i] = FSDirectory.open(pathB);
 		 */
+		
 		logger.info(" Merging added indexes ");
 		writer.addIndexesNoOptimize(indexes);
 		logger.info(" Optimizing index ");
 		writer.optimize();
+		writer.commit();
 		writer.close();
 	}
 
