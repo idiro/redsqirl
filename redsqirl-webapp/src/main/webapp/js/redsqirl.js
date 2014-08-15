@@ -74,7 +74,8 @@ function resizeTables(){
 	
 	//alert("resizeTables");
 	
-	jQuery("#processManager .extdt-content").style("height", jQuery("#tabs-2").height()-130+"px", "important");
+	jQuery("#processManager .extdt-content").css("height", jQuery("#tabs-2").height()-105+"px", "important");
+	jQuery("#processManager .extdt-content").css("width", jQuery("#splitHCanvas").width(), "important");
 	
 	jQuery("#errorTable .extdt-content").style("height", jQuery("#tabs-3").height()-60+"px", "important");
 	
