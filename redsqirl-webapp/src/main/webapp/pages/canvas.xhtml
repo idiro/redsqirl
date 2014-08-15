@@ -1388,7 +1388,7 @@
 			<a4j:region>
 				
 				<a4j:commandLink id="openCanvasScreenHdfs" action="#{hdfsBean.openCanvasScreen}" style="display:none;" reRender="fileSysGridForm"
-				onclick="jQuery('#tabs-7').block({ message: jQuery('#domMessageDiv7') });" oncomplete="jQuery('#tabs-7').unblock();" />
+				onclick="jQuery('#tabs-7').block({ message: jQuery('#domMessageDiv7') });" oncomplete="jQuery('#tabs-7').unblock();onPageReady()" />
 				
 				<a4j:commandLink id="openCanvasScreenHive" action="#{hiveBean.openCanvasScreen}" style="display:none;" reRender="fileSysGridFormHive"
 				onclick="jQuery('#tabs-4').block({ message: jQuery('#domMessageDiv4') });" oncomplete="jQuery('#tabs-4').unblock();" />

@@ -11,8 +11,8 @@ function canvasResizeSplitter(){
 	jQuery(".splitter-bar-horizontal").css("width", jQuery(window).width()-jQuery(".splitter-pane").width() +'px');
 
 	jQuery("#splitHCanvas").css("width", jQuery(window).width()-jQuery("#tabFlowchart").width()+'px');
-	jQuery("#tabs1").css("width", jQuery("#splitHCanvas").width()-80+'px');
-	jQuery("#tabs2").css("width", jQuery("#splitHCanvas").width()-80+'px');
+	jQuery("#tabs1").css("width", jQuery("#splitHCanvas").width()-40+'px');
+	jQuery("#tabs2").css("width", jQuery("#splitHCanvas").width()-40+'px');
 	 
 	resizeCanvas(30,45);
 	
@@ -78,27 +78,24 @@ function onPageReady(){
 	  jQuery("#body").css('height', jQuery(window).height()-20+'px');
 	  jQuery(".splitter-pane").css("height", jQuery(window).height()-160+'px');
 	  
-//	  jQuery("#splitHCanvas").css("height", jQuery(window).height()-40+'px');
 	  
 	  jQuery(".splitter-bar-horizontal").css("width", jQuery(window).width()-jQuery(".splitter-pane").width()+'px').trigger("resize", [topSize]);
 	  jQuery("#splitVCanvas").css("height", jQuery(window).height()-50+'px').trigger("resize", [leftSize]);
 	  //jQuery("#menu").css('width', jQuery(window).width()-20+'px');
 	  jQuery("#splitVCanvas").css('width', jQuery(window).width()-30+'px');
 	  
-//	  jQuery("#splitVCanvas").css('height', jQuery(window).height()-110+'px');
-	  jQuery("#splitVCanvas").css('height', '51.5em');
+	  jQuery("#splitVCanvas").css('height', jQuery(window).height()-60+'px');
 	  
-//	  jQuery("#tabFlowchart").css("height", jQuery(window).height()-50+'px');
 	  jQuery("#tabFlowchart").css("height", 'inherit');
 
 	  jQuery("#splitHCanvas").css("width", jQuery(window).width()-jQuery("#tabFlowchart").width()-3+'px');
-	  jQuery("#splitHCanvas").css("height", 'inherit');
+	  jQuery("#splitHCanvas").css("height", jQuery("#splitVCanvas").height()+'px');
 	  
-//	  jQuery("#tabs1").css("width", jQuery("#splitHCanvas").width()-80 +'px');
 	  jQuery("#tabs1").css("width", jQuery("#splitHCanvas").width()-80 +'px');
+	  jQuery("#tabs1").css("height", jQuery("#splitHCanvas").height()/2 +'px');
 	  
-//	  jQuery("#tabs2").css("width", jQuery("#splitHCanvas").width()-80+'px');
 	  jQuery("#tabs2").css("width", jQuery("#splitHCanvas").width()-80+'px');
+	  jQuery("#tabs2").css("height", jQuery("#splitHCanvas").height()/2 +'px');
 
 
 	  jQuery("#tabs1").children('ul').first().css("left", 0+'px');
@@ -114,7 +111,6 @@ function onPageReady(){
 //	  jQuery("#splitHCanvas").css("width", jQuery(window).width()-jQuery("#tabFlowchart").width()-100+'px');
 	  
 	  resizeTabs();
-	  //resizeTables();
 	  
 	  jQuery("#divTabHelp").css("height", jQuery("#tabs-1").height()-56+'px');
 	  
@@ -137,6 +133,8 @@ function onPageReady(){
 	  //configureFooterCss();
 
 	  validateArrowsAll();
+	  resizeTables();
+//	  jQuery(".extdt-content").css("height","300px");
 }
 
 function configureFooterCss(){
@@ -168,15 +166,15 @@ function resizing(){
 	  //jQuery("#menu").css('width', jQuery(window).width()-20+'px');
 	  jQuery("#splitVCanvas").css('width', jQuery(window).width()-30+'px');
 	  /*jQuery("#splitVCanvas").css('height', jQuery(window).height()-110+'px');*/
-	  jQuery("#splitVCanvas").css('height', '51.5em');
+	  jQuery("#splitVCanvas").css('height', jQuery(window).height()-60+'px');
 	  jQuery(".splitter-pane").css("height", jQuery(window).height()-160+'px');
 
 
 	  
-	  jQuery("#splitHCanvas").css("height", jQuery(window).height()-40+'px');
+	  jQuery("#splitHCanvas").css("height", jQuery("#splitVCanvas").height()+'px');
 
 	  jQuery(".splitter-bar-horizontal").css("width", jQuery(window).width()-jQuery(".splitter-pane").width()-46 +'px').trigger("resize", [topSize]);
-	  jQuery("#splitVCanvas").css("height", jQuery(window).height()-100+'px').trigger("resize", [leftSize]);
+	  jQuery("#splitVCanvas").css("height", jQuery(window).height()-60+'px').trigger("resize", [leftSize]);
 	  jQuery("#tabs1").css("width", jQuery("#splitHCanvas").width() +'px');
 	  jQuery("#tabs2").css("width", jQuery("#splitHCanvas").width() +'px');
 	  

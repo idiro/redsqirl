@@ -272,6 +272,10 @@ line-height:25px !important;
 	width: 22px;
 }
 
+#browserProperties{
+	height: 100% !important;
+}
+
 #tabs1 {
 	position: relative;
 	float: left;
@@ -1079,7 +1083,7 @@ div.splitter-bar.ui-state-highlight {
 
 
 .rich-extdt-maindiv {
-	height: auto !important;
+	height: 100% !important;
 }
 
 .rich-extdt-maindiv,.extdt-innerdiv {
@@ -1087,14 +1091,14 @@ div.splitter-bar.ui-state-highlight {
 }
 
 .extdt-outerdiv {
-	height: auto !important;
+	/*height: auto !important;*/
 	overflow: visible !important;
 }
 
 /*filesystem table*/
 .extdt-content{
-	/* height: 300px !important; */
-	height: inherit !important;
+	height: 23em ;
+	/* height: inherit !important; */
 }
 
 
