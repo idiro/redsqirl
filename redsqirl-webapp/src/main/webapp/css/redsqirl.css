@@ -182,13 +182,13 @@ line-height:25px !important;
 }
 
 .splitter-bar-vertical {
-	width: 6px;
+	width: 16px;
 	background-repeat: no-repeat;
 	background-position: center;
 }
 
 .splitter-bar-horizontal {
-	height: 6px;
+	height: 16px;
 	background-repeat: no-repeat;
 	background-position: center;
 }
