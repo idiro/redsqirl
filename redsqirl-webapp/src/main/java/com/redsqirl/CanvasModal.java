@@ -371,9 +371,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 				dfe.cleanThisAndAllElementAfter();
 			}
 			error = dfe.updateOut();
-			if (error != null) {
-				MessageUseful.addErrorMessage(error);
-			}
 		} catch (Exception e) {
 		}
 		return error;
@@ -424,13 +421,14 @@ public class CanvasModal extends BaseBean implements Serializable {
 		if (error != null && error.length() > 1) {
 			MessageUseful.addErrorMessage(error);
 			request.setAttribute("msnError", "msnError");
+			setErrorMsg(error);
 		}else{
 			updateOutputElement();
 			outputTab.mountOutputForm(!sourceNode || dfe.getDFEOutput().size() > 1);
 			MessageUseful.addInfoMessage(getMessageResources("success_message"));
 			request.setAttribute("msnSuccess", "msnSuccess");
+			setErrorMsg("");
 		}
-		setErrorMsg(error);
 
 	}
 
@@ -450,7 +448,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 		try {
 
 			String error = checkNextPage();
-			if (error.length() > 1) {
+			if (error != null && error.length() > 1) {
 				MessageUseful.addErrorMessage(error);
 				HttpServletRequest request = (HttpServletRequest) FacesContext
 						.getCurrentInstance().getExternalContext().getRequest();
@@ -510,12 +508,12 @@ public class CanvasModal extends BaseBean implements Serializable {
 	
 
 	public void goToPage(){
-		
 		try {
 			String error = checkNextPage();
-			if(error.isEmpty()){
+			int pageNb = Integer.valueOf(pageToGoTo);
+			if( pageNb != getListPosition() && (error == null || error.isEmpty())){
+				logger.info("Go to page: "+pageNb);
 				error = null;
-				int pageNb = Integer.valueOf(pageToGoTo);
 				if(pageNb > getListPosition()){
 					int i = getListPosition();
 					while(error == null && i < Math.min(pageNb ,listPageSize)){
@@ -607,8 +605,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * @throws RemoteException
 	 */
 	protected String checkNextPage() throws RemoteException {
-
-		StringBuffer error = new StringBuffer();
+		logger.info("Check page : "+getListPosition());
 		for (int i = 0; i < inters.size(); i++) {
 
 			CanvasModalInteraction cmInter = inters.get(i);
@@ -620,20 +617,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 				cmInter.writeInteraction();
 			}
 
-			String e = cmInter.getInter().check();
-			logger.info("error interaction -> " + e);
-			if (e != null) {
-				error.append(e);
-				error.append(System.getProperty("line.separator"));
-			}
 		}
-
 		String e = getPageList().get(getListPosition()).checkPage();
-		if(e == null && error.length() == 0 && sourceNode){
+		if(e == null && sourceNode){
 			for (int i = 0; i < inters.size(); i++) {
 				CanvasModalInteraction cmInter = inters.get(i);
-
-				logger.info("error interaction -> " + e);
 				if(!cmInter.isUnchanged() && 
 						cmInter.getDisplayType().toString().equals(DisplayType.browser.toString())){
 					logger.info("read back browser...");
@@ -642,24 +630,17 @@ public class CanvasModal extends BaseBean implements Serializable {
 			}
 		}
 
-		logger.info("error page -> " + e);
-		if (e != null) {
-			error.append(e);
-			error.append(System.getProperty("line.separator"));
-		} else {
+		if (e == null) {
 			// Update output only if it is the last page
 			// or an output already exist
 			if (getListPageSize() - 1 == getListPosition()) {
 				e = updateOutputElement();
-				if (e != null) {
-					error.append(e);
-					error.append(System.getProperty("line.separator"));
-				}
 				outputTab.mountOutputForm(!sourceNode || dfe.getDFEOutput().size() > 1);
-
+				
 			}
 		}
-		return error.toString();
+		logger.info("error page -> " + e);
+		return e;
 	}
 
 	/**
