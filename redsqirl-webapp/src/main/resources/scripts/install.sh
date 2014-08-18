@@ -40,14 +40,14 @@ PREV_DIR_PCK=${TOMCAT_PATH_CUR}/packages
 if [[ -d "${PREV_DIR_RS}" ]]; then
     echo "Do you want to delete the previous ${PREV_DIR_RS} directory? [y/N]"
     read DEL_DIR_RS
-    if [[ "${DEL_DIR_RS}" != 'y' && "${DEL_DIR_RS}" != 'Y' ]]; then
+    if [[ "${DEL_DIR_RS}" == 'y' || "${DEL_DIR_RS}" == 'Y' ]]; then
 	rm -r ${PREV_DIR_RS}
     fi
 fi
 if [[ -d "${PREV_DIR_PCK}" ]]; then
     echo "Do you want to delete the previous ${PREV_DIR_PCK} directory? [y/N]"
     read DEL_DIR_PCK
-    if [[ "${DEL_DIR_PCK}" != 'y' && "${DEL_DIR_PCK}" != 'Y' ]]; then
+    if [[ "${DEL_DIR_PCK}" == 'y' || "${DEL_DIR_PCK}" == 'Y' ]]; then
 	rm -r ${PREV_DIR_PCK}
     fi
 fi

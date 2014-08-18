@@ -1,3 +1,4 @@
+
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="http://java.sun.com/jsf/html"
     xmlns:a4j="http://richfaces.org/a4j"
@@ -19,24 +20,24 @@
             //alert("canvasModalInteractionHeader_");
             jQuery('[id^="canvasModalInteractionHeader_"]').hide();
             //alert("input");
-            if(jQuery('[id$="inputInteractionRegion"]')){
-                jQuery('[id$="inputInteractionRegion"]').hide();
+            if(jQuery('[id^="inputInteractionRegion"]')){
+                jQuery('[id^="inputInteractionRegion"]').hide();
             }
             //alert("list");
-            if(jQuery('[id$="listInteractionRegion"]')){
-                jQuery('[id$="listInteractionRegion"]').hide();
+            if(jQuery('[id^="listInteractionRegion"]')){
+                jQuery('[id^="listInteractionRegion"]').hide();
             }
             //alert("append");
-            if(jQuery('[id$="appendListInteractionRegion"]')){
-                jQuery('[id$="appendListInteractionRegion"]').hide();
+            if(jQuery('[id^="appendListInteractionRegion"]')){
+                jQuery('[id^="appendListInteractionRegion"]').hide();
             }
             //alert("browser");
-            if(jQuery('[id$="browserInteractionRegion"]')){
-                jQuery('[id$="browserInteractionRegion"]').hide();
+            if(jQuery('[id^="browserInteractionRegion"]')){
+                jQuery('[id^="browserInteractionRegion"]').hide();
             }
             //alert("text");
-            if(jQuery('[id$="textEditorInteractionRegion"]')){
-                jQuery('[id$="textEditorInteractionRegion"]').hide();
+            if(jQuery('[id^="textEditorInteractionRegion"]')){
+                jQuery('[id^="textEditorInteractionRegion"]').hide();
             }
             //alert("div");
             jQuery('[id$="quickNavigation"]').hide();
@@ -50,24 +51,24 @@
             //alert("canvasModalInteractionHeader_");
             jQuery('[id^="canvasModalInteractionHeader_"]').show();
             //alert("input");
-            if(jQuery('[id$="inputInteractionRegion"]')){
-                jQuery('[id$="inputInteractionRegion"]').show();
+            if(jQuery('[id^="inputInteractionRegion"]')){
+                jQuery('[id^="inputInteractionRegion"]').show();
             }
             //alert("list");
-            if(jQuery('[id$="listInteractionRegion"]')){
-                jQuery('[id$="listInteractionRegion"]').show();
+            if(jQuery('[id^="listInteractionRegion"]')){
+                jQuery('[id^="listInteractionRegion"]').show();
             }
             //alert("append");
-            if(jQuery('[id$="appendListInteractionRegion"]')){
-                jQuery('[id$="appendListInteractionRegion"]').show();
+            if(jQuery('[id^="appendListInteractionRegion"]')){
+                jQuery('[id^="appendListInteractionRegion"]').show();
             }
             //alert("browser");
-            if(jQuery('[id$="browserInteractionRegion"]')){
-                jQuery('[id$="browserInteractionRegion"]').show();
+            if(jQuery('[id^="browserInteractionRegion"]')){
+                jQuery('[id^="browserInteractionRegion"]').show();
             }
             //alert("text");
-            if(jQuery('[id$="textEditorInteractionRegion"]')){
-                jQuery('[id$="textEditorInteractionRegion"]').show();
+            if(jQuery('[id^="textEditorInteractionRegion"]')){
+                jQuery('[id^="textEditorInteractionRegion"]').show();
             }
             //alert("div");
             jQuery('[id$="quickNavigation"]').show();
@@ -179,13 +180,17 @@
                 </span>
                 
                 <!-- input -->
+                
                 <a4j:region id="inputInteractionRegion" rendered="#{interCur.displayType == 'input'}">
-                    <h:inputText  value="#{interCur.input.inputValue}" maxlength="255" style="width:395px;" styleClass="interModal"
-                        onkeypress="return disableEnterKey(event);"/>
+                    <span id="inputInteractionRegion_#{interCurIdx}">
+                        <h:inputText  value="#{interCur.input.inputValue}" maxlength="255" style="width:395px;" styleClass="interModal"
+                            onkeypress="return disableEnterKey(event);"/>
+                    </span>
                 </a4j:region>     
                 
                 <!-- list -->
                 <a4j:region id="listInteractionRegion"  rendered="#{interCur.displayType == 'list'}">
+                <span id="listInteractionRegion_#{interCurIdx}">
                     <rich:comboBox value="#{interCur.list.selectedListOption}" selectFirstOnUpdate="false" width="200" 
                         listWidth="150" listHeight="200" enableManualInput="false" rendered="#{interCur.list.comboBox == 'Y'}" >
                         <f:selectItems value="#{interCur.list.listOptions}" />
@@ -194,10 +199,11 @@
                     <h:selectOneRadio value="#{interCur.list.selectedListOption}" rendered="#{interCur.list.comboBox == 'N'}" layout="pageDirection" >
                         <f:selectItems value="#{interCur.list.listOptions}" />
                     </h:selectOneRadio>
+                </span>
                 </a4j:region>
                 <!-- appendList -->
                 <a4j:region id="appendListInteractionRegion" rendered="#{interCur.displayType == 'appendList'}">
-                    
+                <span id="appendListInteractionRegion_#{interCurIdx}">
                     <rich:listShuttle sourceValue="#{interCur.appendList.sortedAppendListOptions}"
 			            targetValue="#{interCur.appendList.selectedAppendListOptions}" var="items" listsHeight="150"
 			            sourceListWidth="130" targetListWidth="130"
@@ -225,9 +231,11 @@
                     <h:selectManyCheckbox value="#{interCur.appendList.selectedAppendListOptions}" rendered="#{interCur.appendList.comboBox == 'checkbox'}" layout="pageDirection" >
                         <f:selectItems value="#{interCur.appendList.appendListOptions}" />
                     </h:selectManyCheckbox>
+                </span>
                 </a4j:region>
                 <!-- browser -->
                 <a4j:region id="browserInteractionRegion" rendered="#{interCur.displayType == 'browser'}">
+                <span id="browserInteractionRegion_#{interCurIdx}">
                     <rich:panel style="border:none;width:100%;" id="browserPanel" >
                     
                         <h:outputText value="#{messages.label_path}" />
@@ -295,10 +303,12 @@
                         </div>
                         
                     </rich:panel>
+                </span>
                 </a4j:region>
                 
                 <!-- helpTextEditor -->
                 <a4j:region id="textEditorInteractionRegion" rendered="#{interCur.displayType == 'helpTextEditor'}">
+                <span id="textEditorInteractionRegion_#{interCurIdx}">
                     <rich:panel style="border:none;" id="helpTextEditorPanel" >
                         <h:outputText value="#{messages.label_formula}" />
                         <br/>
@@ -318,10 +328,12 @@
                         <br/>
                         <br/>
                     </rich:panel>
+                </span>
                 </a4j:region>
                 
                 <!-- table -->
                 <a4j:region id="tableInteractionRegion" rendered="#{interCur.displayType == 'table'}">
+                <span id="tableInteractionRegion_#{interCurIdx}" >
                     <rich:panel style="border:none;" id="tablePanel">
         
                         <h:panelGrid id="table" columns="4" rendered="#{!empty interCur.table.tableGeneratorMenu}">
@@ -450,6 +462,7 @@
                         </table>
                         
                     </rich:panel>
+                </span>
                 </a4j:region>
             </a4j:repeat>
             
