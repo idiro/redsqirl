@@ -1,5 +1,5 @@
             ------
-            IDM - Getting started
+            Red Sqirl - Getting started
             ------
 
 Getting started
@@ -46,7 +46,7 @@ avoid permission conflicts.
 
   * Unzip the directory where you want to install it through the tomcat user
 
-  * Set up your conf/idm_sys.properties file
+  * Set up your conf/redsqirl_sys.properties file
 
   * Run the script bin/update.sh, it will ask for your tomcat webapps directory
 
@@ -58,21 +58,26 @@ avoid permission conflicts.
 
 ----------------------------------------
 
-namenode=hdfs://namenode:9000
-jobtracker=namenode:9001
-queue=default
-oozie_url=http://namenode:11000/oozie
-oozie_xmlns=uri:oozie:workflow:0.2
-idiroengine_path=/usr/lib/idiro/idiro-engine/idiro-engine-0.1-SNAPSHOT
-hive_xml=/user/oozie/share/hive/hive-site.xml
-hive_default_xml=/user/oozie/share/hive/hive-default.xml
-allow_user_install=true
-tomcat_path=/home/etienne/git/idm/idm-webapp/src/main/webapp/WEB-INF/classes
-start_hive_range=10000
+nutcracker_path=/user/oozie/share/lib/sqirl-nutcracker
+jdbc_hive_server=namenode
+start_hive_range=10003
+hive_xml=/etc/hive/hive-site.xml
+trusted_pack_hosts=http\://dev\:8090/
 end_hive_range=100100
-workflow_lib_path=/home/etienne/git/idm/idm-workflow/target/idm-workflow/lib/
-idiro_interface_path=/home/etienne/git/idm/idm-wf-interface/target/idm-wf-interface-0.1-SNAPSHOT.jar
-jdbc_hive_server=datanode1
+oozie_xmlns=uri\:oozie\:workflow\:0.2
+jobtracker=namenode\:9001
+allow_user_install=true
+admin_user=
+erver=namenode
+namenode=hdfs\://namenode\:9000
+hive_default_xml=/etc/hive/hive-default.xml
+tomcat_path=/data/apache-tomcat-7.0.42/webapps
+trusted_host=http\://dev\:8090/
+queue=default
+pack_manager_url=http\://dev\:8090/redsqirl-repo
+repo_address=http\://dev\:8090/redsqirl-repo/
+oozie_url=http\://namenode\:11000/oozie
+
 
 ----------------------------------------
 
@@ -118,9 +123,7 @@ jdbc_hive_server=datanode1
 *----------+--------------+----------------+
 | end_hive_range | Optional, end of automatic range allocation (excluded)| 10100|
 *----------+--------------+----------------+
-| workflow_lib_path | Do we still need that? | |
-*----------+--------------+----------------+
-| idiro_interface_path | Do we still need that? | |
+| nutcracker_path|Path on hdfs for nutcracker path|/user/oozie/share/lib/sqirl-nutcracker| |
 *----------+--------------+----------------+
 | jdbc_hive_server | The name of the Hive server to use | namenode |
 *----------+--------------+----------------+

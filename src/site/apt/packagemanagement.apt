@@ -1,5 +1,5 @@
             ------
-            IDM - Package Management
+            Red Sqirl - Package Management
             ------
 
 Introduction
@@ -21,7 +21,7 @@ find a repository online or create your own.
 
 Package Management Setup
 
-  The package management in IDM is divided in two components.
+  The package management in Red Sqirl is divided in two components.
 
   * A REST server that contains descriptions of all the packages that are
 available to you.
@@ -51,10 +51,10 @@ $ cd /tmp
 $ wget http://www.example.com/my_package.zip
 
 $ su ${tomcat_user}
-$ ${idm-webapp_HOME}bin/add_package_system.sh /tmp/my_package.zip
+$ ${redsqirl-webapp_HOME}bin/add_package_system.sh /tmp/my_package.zip
 OR
 $ su ${my_user}
-$ ${idm-webapp_HOME}bin/add_package_user.sh /tmp/my_package.zip
+$ ${redsqirl-webapp_HOME}bin/add_package_user.sh /tmp/my_package.zip
 ----------------------------------------
 
 **  Uninstalling a package
@@ -65,10 +65,10 @@ $ ${idm-webapp_HOME}bin/add_package_user.sh /tmp/my_package.zip
   
 ----------------------------------------
 $ su ${tomcat_user}
-$ ${idm-webapp_HOME}/bin/remove_package_system.sh my_package
+$ ${redsqirl-webapp_HOME}/bin/remove_package_system.sh my_package
 OR
 $ su ${my_user}
-$ ${idm-webapp_HOME}/bin/remove_package_user.sh my_package
+$ ${redsqirl-webapp_HOME}/bin/remove_package_user.sh my_package
 ----------------------------------------
 
 System Preferences

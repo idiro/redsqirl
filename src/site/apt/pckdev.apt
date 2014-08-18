@@ -1,16 +1,16 @@
             ------
-            IDM - Package Development
+            Red Sqirl - Package Development
             ------
 
 What is a package
 	
-	Packages are a group of actions that are used in IDM to perform specific processes on IDM. 
+	Packages are a group of actions that are used in Red Sqirl to perform specific processes on Red Sqirl. 
 	They generally run on the same platform , e.g,. Pig , Hive 
-	etc. This how IDM mudualarises its functionalities and manages what is available for the users.
+	etc. This how Red Sqirl mudualarises its functionalities and manages what is available for the users.
 
 What is in a  Package
 
-	A Package will contain actions that can be used on IDM once the package is installed. 
+	A Package will contain actions that can be used on Red Sqirl once the package is installed. 
 	An action will have two files that are required , these are the help and image files.
 
 Create a package
@@ -142,7 +142,7 @@ Create a package
 							<goal>replace</goal>
 						</goals>
 						<configuration>
-							<file>${pck-repo}/idm-hama.html</file>
+							<file>${pck-repo}/Red-Sqirl-hama.html</file>
 							<outputFile>${target.pck-repo}/${project.artifactId}-${project.version}.html</outputFile>
 							<replacements>
 								<replacement>
@@ -239,13 +239,13 @@ Create a package
 
 		<dependency>
 			<groupId>idiro</groupId>
-			<artifactId>idm-wf-interface</artifactId>
+			<artifactId>redsqirl-wf-interface</artifactId>
 			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>idiro</groupId>
-			<artifactId>idm-workflow</artifactId>
+			<artifactId>redsqirl-workflow</artifactId>
 			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>

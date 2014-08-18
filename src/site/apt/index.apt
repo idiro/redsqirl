@@ -1,12 +1,12 @@
             ------
-            IDM
+            Red Sqirl
             ------
 
 Red Sqirl
 
-  Idiro Data Miner (IDM) is a web-based application front end, designed to compose
+  Red Sqirl is a web-based application front end, designed to compose
 data workflows for processing on a Hadoop-based back-end system. The purpose of
-the IDM GUI is to enable data analysts to compose workflows and run evaluations
+the Red Sqirl GUI is to enable data analysts to compose workflows and run evaluations
 on large-scale datasets using the Hadoop-based back-end, specifically, by
 running Pig/HiveQL commands or other hadoop base technology through Oozie. For
 example, using a simple workflow, an analyst would drag and drop an import,
