@@ -739,6 +739,7 @@
 			jQuery("#formMenu\\:deselectAllMenuItem").click();
 	   	});
 	   	
+	   	/* Overwrite normal shortcut !!!
 	   	shortcut.add("Ctrl+c",function() {
             jQuery("#formMenu\\:copyMenuItem").click();
         });
@@ -746,7 +747,7 @@
         shortcut.add("Ctrl+v",function() {
             jQuery("#formMenu\\:pasteMenuItem").click();
         });
-        
+        */
         shortcut.add("Ctrl+r",function() {
             jQuery("#formMenu\\:replaceMenuItem").click();
         });
@@ -1477,11 +1478,11 @@
 							<rich:menuSeparator />
                             <rich:menuItem id="copyMenuItem" submitMode="ajax" value="#{messages.label_menu_copy}" 
                                 onclick="saveAllPositions(getAllIconPositions());copy(getSelectedIconsCommaDelimited());" >
-                                <h:outputText value="Ctrl+C" class="menuItemHotKey"/>
+                                <!-- <h:outputText value="Ctrl+C" class="menuItemHotKey"/> -->
                             </rich:menuItem>
                             <rich:menuItem id="pasteMenuItem" submitMode="ajax" value="#{messages.label_menu_paste}" 
                                 onclick="paste(getSelectedByName());" >
-                                <h:outputText value="Ctrl+V" class="menuItemHotKey"/>
+                                <!-- <h:outputText value="Ctrl+V" class="menuItemHotKey"/> -->
                             </rich:menuItem>
                             <rich:menuSeparator />
                             <rich:menuItem id="undoMenuItem" submitMode="ajax" value="#{messages.label_menu_undo}" 
