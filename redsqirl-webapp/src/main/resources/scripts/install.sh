@@ -35,6 +35,25 @@ rm ${CONF_FILE} 2> /dev/null
 echo TOMCAT_PATH=\"${TOMCAT_PATH_CUR}\" > ${CONF_FILE}
 echo HIVE_PORT_CUR=\"${HIVE_PORT_CUR}\" >> ${CONF_FILE}
 
+PREV_DIR_RS=${TOMCAT_PATH_CUR}/redsqirl
+PREV_DIR_PCK=${TOMCAT_PATH_CUR}/packages
+if [[ -d "${PREV_DIR_RS}" ]]; then
+    echo "Do you want to delete the previous ${PREV_DIR_RS} directory? [y/N]"
+    read DEL_DIR_RS
+    if [[ "${DEL_DIR_RS}" != 'y' && "${DEL_DIR_RS}" != 'Y' ]]; then
+	rm -r ${PREV_DIR_RS}
+    fi
+fi
+if [[ -d "${PREV_DIR_PCK}" ]]; then
+    echo "Do you want to delete the previous ${PREV_DIR_PCK} directory? [y/N]"
+    read DEL_DIR_PCK
+    if [[ "${DEL_DIR_PCK}" != 'y' && "${DEL_DIR_PCK}" != 'Y' ]]; then
+	rm -r ${PREV_DIR_PCK}
+    fi
+fi
+
+
+
 #Copy war file
 cp ${SCRIPT_PATH}/../war/* ${TOMCAT_PATH_CUR}
 
