@@ -1178,7 +1178,7 @@ div.splitter-bar.ui-state-highlight {
 }
 
 .rich-sdt-header-cell {
-	background-color: #b8b9bd;
+	background-color: #e1e1e1;
 	border-top: none;
 	border-bottom: none;
 	border-right: none;
@@ -1301,7 +1301,7 @@ div.splitter-bar.ui-state-highlight {
 }
 
 .rich-table-subheader {
-	background-color: #B8B9BD;
+	background-color: #e1e1e1;
 }
 
 .rich-table-subheadercell {
