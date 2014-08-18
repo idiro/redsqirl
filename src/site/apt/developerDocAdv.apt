@@ -16,7 +16,7 @@ Create a package
 	
 	Next:
 	
-	* Create a new package under source main and call it 'idiro.workflow.server' (Actions need to be under this package name)
+	* Create a new package under source main and call it 'com.idiro.workflow.server' (Actions need to be under this package name)
 	
 	* Create an abstract class so it extends 'DataFlowAction'
 	
@@ -24,7 +24,7 @@ Create a package
 
 	[]
 	
-	These steps are the basic steps to create a project that will allow for development of a package that can be used in IDM
+	These steps are the basic steps to create a project that will allow for development of a package that can be used in Red Sqirl
 	
 	For this tutorial we will create the package so that it runs over Pig.
 	To configure the package to run Pig processes  the 'DemoAction' the constructor must be 
@@ -239,7 +239,7 @@ public String getStoreFunction(String delimiter) throws RemoteException{
 +-----------+
 
 	So far we have added functionality for the common query pieces for pig actions , bag numner handling and getting the intput and output maps aswel as updating the output map.
-	As IDM runs through Oozie it is important for each action to write their process so that it is comaptible with Oozie. 
+	As Red Sqirl runs through Oozie it is important for each action to write their process so that it is comaptible with Oozie. 
 	For this all that needs to be done is to implement the 'writeOozieActionFiles(File[] files)' method. This method 
 	
 +-----------+
@@ -553,7 +553,7 @@ version=${project.version}
 	called 'record_repo.sql' . It's contents is a simple insert statement that is : 
  
 -------------------------
-INSERT INTO idm_pck_mng.idm_packages( 
+INSERT INTO redsqirl_pck_mng.redsqirl_packages( 
       id,
       name,
       version,
