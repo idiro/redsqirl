@@ -157,7 +157,7 @@ public class SelectableTable extends BaseBean implements Serializable {
 		List<Integer> listSelected = getAllSelected();
 		for (int i = 0; i < listSelected.size(); i++) {
 			int index = listSelected.get(i);
-			if(index > 0){
+			if(index > 0 && index != i){
 				list.add(index-1, list.get(index));
 				list.remove(index+1);
 			}
@@ -169,12 +169,15 @@ public class SelectableTable extends BaseBean implements Serializable {
 		List<Integer> listSelected = getAllSelected();
 		for (int i = listSelected.size()-1; i >=0 ; i--) {
 			int index = listSelected.get(i);
-			if(index < getRows().size()-2){
-				list.add(index+2, list.get(index));
-				list.remove(index);
-			}else{
-				list.add(list.get(index-i));
-				list.remove(index-i);
+			logger.info("go down: "+list.size()+" "+index+" "+listSelected.size()+" "+i);
+			if( list.size() - index != listSelected.size() - i){
+				if(index < getRows().size()-2){
+					list.add(index+2, list.get(index));
+					list.remove(index);
+				}else{
+					list.add(list.get(index));
+					list.remove(index);
+				}
 			}
 		}
 	}
@@ -184,7 +187,7 @@ public class SelectableTable extends BaseBean implements Serializable {
 		List<Integer> listSelected = getAllSelected();
 		for (int i = 0; i < listSelected.size(); i++) {
 			int index = listSelected.get(i);
-			list.add(0, list.get(index));
+			list.add(i, list.get(index));
 			list.remove(index+1);
 		}
 	}
@@ -210,16 +213,17 @@ public class SelectableTable extends BaseBean implements Serializable {
 			}else if(newLine > list.size()){
 				goLast();
 			}else{
+				int lineTmp = newLine;
 				for (int i = 0; i < listSelected.size(); i++) {
 					int index = listSelected.get(i);
-					if(newLine-1 != index){
-						if(newLine-1 > index){
-							list.add(newLine, list.get(index-i));
-							list.remove(index-i);
-						}else{
-							list.add(newLine-1, list.get(index));
-							list.remove(index+1);
-						}
+					logger.info("go number: "+list.size()+" "+index+" "+listSelected.size()+" "+i+" "+lineTmp);
+					if(lineTmp > index){
+						list.add(lineTmp , list.get(index-i));
+						list.remove(index-i);
+					}else{
+						list.add(lineTmp, list.get(index));
+						list.remove(index+1);
+						++lineTmp;
 					}
 				}
 			}

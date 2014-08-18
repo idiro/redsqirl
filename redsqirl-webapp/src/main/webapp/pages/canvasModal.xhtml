@@ -128,7 +128,7 @@
             
     <div style="width:100%;height:100%;overflow:hidden;" id="canvasModalDiv" >
                 
-        <rich:tabPanel id="canvasModalTabPanel" style="border:none;width:100%;" switchType="ajax" selectedTab="#{canvasModalBean.selectedTab}">
+        <rich:tabPanel id="canvasModalTabPanel" style="border:none;width:100%;" switchType="ajax" selectedTab="#{canvasModalBean.selectedTab}" >
         
         <a4j:status onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModal') });"
             onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
@@ -137,7 +137,8 @@
         <rich:tab id="confTabCM" 
             label="#{messages.label_dynamic_configuration}" 
             style="border:none;border-collapse:collapse;"
-            rendered="#{canvasModalBean.listPageSize != 0}" >
+            rendered="#{canvasModalBean.listPageSize != 0}" 
+            oncomplete="createOptionTitles()">
             
         <rich:panel id="panelDynamicForm" style="border:none;overflow:auto;height:465px;width:100%;padding-left: 3px;padding-right: 3px;" >
             
