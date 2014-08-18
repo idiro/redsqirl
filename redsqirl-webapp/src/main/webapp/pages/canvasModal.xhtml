@@ -126,9 +126,9 @@
         
     </a4j:region>
             
-    <div style="width:100%;overflow:auto;height:100%;" id="canvasModalDiv" >
+    <div style="width:100%;height:100%;overflow:hidden;" id="canvasModalDiv" >
                 
-        <rich:tabPanel id="canvasModalTabPanel" style="border:none;width:100%;" switchType="ajax" selectedTab="#{canvasModalBean.selectedTab}" >
+        <rich:tabPanel id="canvasModalTabPanel" style="border:none;width:100%;" switchType="ajax" selectedTab="#{canvasModalBean.selectedTab}">
         
         <a4j:status onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModal') });"
             onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
@@ -139,7 +139,7 @@
             style="border:none;border-collapse:collapse;"
             rendered="#{canvasModalBean.listPageSize != 0}" >
             
-        <rich:panel id="panelDynamicForm" style="border:none;min-height:465px;width:100%;" >
+        <rich:panel id="panelDynamicForm" style="border:none;overflow:auto;height:465px;width:100%;padding-left: 3px;padding-right: 3px;" >
             
             <span id="canvasModalHeader">
             
@@ -481,6 +481,9 @@
             
             <rich:tab id="outputTab" label="#{messages.label_dynamic_data}" rerender="dataOutputForm,dataDisplayReg,titleDisplay,displayTableDiv" rendered="#{canvasModalBean.outputTab.showOutputForm == 'Y'}" >
                 
+                
+                <rich:panel id="dataOutputForm" style="height:465px;border:none;overflow:auto;padding-right: 3px;padding-left: 3px;">
+                    
                 <table style="width:100%;display:block;">
                     <tbody style="width:100%">
                         <tr style="width:100%;right:0px;position:relative;">
@@ -495,9 +498,6 @@
                 </table>
                 
                 <br/>
-                
-                <rich:panel id="dataOutputForm" style="min-height:465px;border:none;">
-                    
                     <table>
                     
 	                    <a4j:repeat value="#{canvasModalBean.outputTab.outputFormList}" var="item" rowKeyVar="index">
