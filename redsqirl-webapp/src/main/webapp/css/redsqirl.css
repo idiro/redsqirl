@@ -376,6 +376,8 @@ canvas {
 .messageok {
 	background: url("../image/icons/li_msg_ok.gif") no-repeat;
 	padding-left: 20px;
+	padding-top: 20px;
+	padding-bottom: 20px;
 	color: #336699;
 }
 
@@ -1013,7 +1015,7 @@ div.splitter-bar.ui-state-highlight {
 }
 
 .ui-tabs .ui-tabs-panel{
-	height:100px;
+	height:100%;
 	background: linear-gradient(#e1e2e1,#e2e2e2);
 	padding-left:0px;
 	padding-right:0px;
@@ -1040,8 +1042,10 @@ div.splitter-bar.ui-state-highlight {
 
 
 .removeDefaults{
+	margin:0px !important;
 	border-bottom:0px;
-	border-top-right-radius:0px;
+	border-radius:0px !important;
+	border-top-left-radius:0px !important;
 	
 }
 

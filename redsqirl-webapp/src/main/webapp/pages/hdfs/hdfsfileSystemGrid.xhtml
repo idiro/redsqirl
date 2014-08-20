@@ -160,11 +160,11 @@
 						</f:facet>
 						<a4j:commandLink action="#{hdfsBean.editFileBefore}"
 							oncomplete="#{rich:component('hdfseditModalPanel')}.show();">
-							<h:graphicImage value="../image/icons/button-property-small.gif"
+							<h:graphicImage value="../image/icons/button-directory-property.gif"
 								title='#{messages.HdfsInterface_properties_help}'
 								rendered="#{hdfsBean.allProps[indexTable]['type'] == 'directory'}"
 								styleClass="btfileSystem" />
-							<h:graphicImage value="../image/icons/button-file-icon.png"
+							<h:graphicImage value="../image/icons/button-file-property.gif"
 								title='#{messages.HdfsInterface_properties_help}'
 								rendered="#{hdfsBean.allProps[indexTable]['type'] == 'file'}"
 								styleClass="btfileSystem" />

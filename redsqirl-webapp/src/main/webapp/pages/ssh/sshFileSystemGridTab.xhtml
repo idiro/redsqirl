@@ -7,7 +7,7 @@
 
 <a4j:loadBundle basename="MessagesResources" var="messages" />
 
-	<div id="sshFileSystem" style="min-width: 400px; overflow: hidden; min-height: 190px;">
+	<div id="sshFileSystem" style="min-width: 400px; overflow: hidden; min-height: 300px;">
 		
 		
 		<rich:dragIndicator id="indicator" />
@@ -15,16 +15,16 @@
 			<div class="pathHeader">
 			<h:outputText value="#{messages.label_path}" style="padding-left:10px"/>
 			<h:inputText id="sshpath" styleClass="mainPageTextField"  label="Path" value="#{sshBean.path}"
-				maxlength="255" style="width:395px; margin-left:5px;" 
+				maxlength="255" style="width:395px; margin-left:5px;"
 				onkeypress="return enableEnterKey(event, 'sshchangePathBt');"/>
 				
 				<a4j:commandLink 
 					id="sshchangePathBt"
-					oncomplete="resizeTables();"
-					reRender="sshfs">
+					action="#{sshBean.changePath}" 
+					reRender="sshpath,sshfs"
+					oncomplete="resizeTables();">
 					<h:graphicImage
-						class="refreshButton"
-						action="#{sshBean.changePath}" 
+						id="sshbtgo"
 						value="../image/icons/button-search.gif"
 						title='#{messages.canvas_path}' styleClass="bt" />
 				</a4j:commandLink>
@@ -36,20 +36,20 @@
 					<h:graphicImage id="sshbtUndo" value="../image/icons/button-previous.gif" title='#{messages.canvas_previous}' styleClass="bt" />
 				</a4j:commandLink>
 	
-				<a4j:commandLink action="#{sshBean.goNext}" reRender="sshpath,sshfs" oncomplete="resizeTables();" >
+				<a4j:commandLink action="#{sshBean.goNext}" reRender="sshpath,sshfs" >
 					<h:graphicImage id="sshbtRedo" value="../image/icons/button-next.gif" title='#{messages.canvas_next}' styleClass="bt" />
 				</a4j:commandLink>
 				
-				<a4j:commandLink action="#{sshBean.goUp}" reRender="sshpath,sshfs" oncomplete="resizeTables();" >
+				<a4j:commandLink action="#{sshBean.goUp}" reRender="sshpath,sshfs" >
 					<h:graphicImage id="sshbtGoUp" value="../image/icons/button-up.gif" title='#{messages.hdfs_goup}' styleClass="bt" />
 				</a4j:commandLink>
 			</div>
 			
 			<rich:panel style="border:none">
-				<rich:dropSupport id="panelDropSupportSsh" acceptedTypes="hdfs" dropListener="#{sshBean.processDrop}" reRender="sshfs" oncomplete="resizeTables();"/>
+				<rich:dropSupport id="panelDropSupportSsh" acceptedTypes="hdfs" dropListener="#{sshBean.processDrop}" reRender="sshfs"/>
 				
-				<rich:extendedDataTable id="sshfs" value="#{sshBean.tableGrid.rows}"
-					var="item" rowKeyVar="indexTable" width="100%" style="border:none;"
+				<rich:extendedDataTable id="sshfs"  value="#{sshBean.tableGrid.rows}"
+					var="item" rowKeyVar="indexTable" width="100%" style="border:none; min-height:300px"
 					onRowMouseOver="this.style.backgroundColor='#f2b97a'"
 					enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
 					rowClasses="even-row, odd-row" tableState="#{sshBean.tableState}" >

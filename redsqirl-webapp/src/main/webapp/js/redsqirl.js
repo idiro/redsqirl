@@ -20,7 +20,7 @@ function canvasResizeSplitter(){
 	jQuery("#body").css('height', jQuery(window).height()-20+'px');
 	jQuery("#splitVCanvas").css("height", jQuery(window).height()-100+'px').trigger("resize", [leftSize]);
 	jQuery("#splitVCanvas").css('width', jQuery(window).width()-30+'px');
-	jQuery("#splitVCanvas").css('height', jQuery(window).height()-60+'px');
+	jQuery("#splitVCanvas").css('height', jQuery(window).height()-80+'px');
 	jQuery(".splitter-pane").css("height", jQuery(window).height()-160+'px');
 	jQuery("#splitHCanvas").css("height", jQuery("#splitVCanvas").height()+'px');
 	jQuery(".splitter-bar-horizontal").css("width", jQuery(window).width()-jQuery(".splitter-pane").width()-46 +'px').trigger("resize", [topSize]);
@@ -72,7 +72,8 @@ function resizeCanvas(val1, val2){
 
 function resizeTables(){
 	
-	//alert("resizeTables");
+//	alert("resizeTables");
+//	console.log('resize Tables');
 	
 	jQuery("#processManager .extdt-content").css("height", jQuery("#tabs-2").height()-105+"px", "important");
 	jQuery("#processManager .extdt-content").css("width", jQuery("#splitHCanvas").width(), "important");
@@ -83,7 +84,7 @@ function resizeTables(){
 	
 	jQuery("#hdfsFileSystem .extdt-content").style("height", jQuery("#tabs-7").height()-160+"px", "important");
 	
-	jQuery("#tabRemote .extdt-content").style("height", jQuery("#tabs-8").height()-185+"px", "important");
+	jQuery("#tabRemote .extdt-content").css("height", jQuery("#tabs-8").height()-205+"px", "important");
 
 	//jQuery("#hdfsfsSaveFile .extdt-content").style("height", "20px", "important");
 	

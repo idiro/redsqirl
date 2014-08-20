@@ -1395,7 +1395,7 @@
 				onclick="jQuery('#tabs-4').block({ message: jQuery('#domMessageDiv4') });" oncomplete="jQuery('#tabs-4').unblock();" />
 				
 				<a4j:commandLink id="openCanvasScreenSsh" action="#{sshBean.openCanvasScreen}" style="display:none;" reRender="tabs-8, tabRemote, fileSysGridFormSsh, fileSysGridFormSshTab"
-				onclick="jQuery('#tabs-8').block({ message: jQuery('#domMessageDiv8') });" oncomplete="jQuery('#tabs-8').unblock();" />
+				onclick="jQuery('#tabs-8').block({ message: jQuery('#domMessageDiv8') });" oncomplete="jQuery('#tabs-8').unblock();resizeTables();" />
 				
 				<a4j:commandLink id="openCanvasScreenHdfsBrowser" action="#{browserHdfsBean.openCanvasScreen}" style="display:none;" />
 				
@@ -1668,7 +1668,7 @@
                             <img src="../image/icons/button-copy.gif" alt="copy" class="shortMenuIcon" onclick="saveAllPositions(getAllIconPositions());copy(getSelectedIconsCommaDelimited());" title="#{messages.label_menu_copy}" />
                         </span>
                         <span style="cursor:pointer;">
-                            <img src="../image/icons/button-copy.gif" alt="paste" class="shortMenuIcon" onclick="paste(getSelectedByName());" title="#{messages.label_menu_paste}" />
+                            <img src="../image/icons/button-paste.gif" alt="paste" class="shortMenuIcon" onclick="paste(getSelectedByName());" title="#{messages.label_menu_paste}" />
                         </span>
                         <span style="cursor:pointer;">
                             <img src="../image/icons/button-undo.gif" id="buttonundo" alt="#{messages.label_menu_undo}" class="shortMenuIcon" onclick="undo();" title="#{messages.label_menu_undo}" />
