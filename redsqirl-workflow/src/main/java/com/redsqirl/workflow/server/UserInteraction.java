@@ -539,7 +539,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	public String getTextTip() throws RemoteException {
 		return textTip;
 	}
-
+	
 	@Override
 	public boolean isReplaceDisable() throws RemoteException {
 		return replaceDisable;
@@ -548,6 +548,11 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	@Override
 	public void setReplaceDisable(boolean replaceDisable) throws RemoteException {
 		this.replaceDisable = replaceDisable;
+	}
+
+	@Override
+	public void setTextTip(String tip) throws RemoteException {
+		this.textTip = tip;
 	}
 
 

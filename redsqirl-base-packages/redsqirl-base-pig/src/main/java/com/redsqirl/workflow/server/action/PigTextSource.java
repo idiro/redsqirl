@@ -59,14 +59,16 @@ public class PigTextSource extends AbstractSource {
 	 */
 	public PigTextSource() throws RemoteException {
 		super(new PigAction());
-		
+			
 		initializeDataTypeInteraction();
 		initializeDataSubtypeInteraction();
 		addSourcePage();
+		browser.setTextTip(PigLanguageManager.getText("pig.test_source_browser_interaction.header_help"));
 		
 		auditInt= new AppendListInteraction(key_audit,
 			  	PigLanguageManager.getText("pig.audit_interaction.title"),
-			  	PigLanguageManager.getText("pig.audit_interaction.legend"), 1, 0);
+			  	PigLanguageManager.getText("pig.audit_interaction.legend"),
+			  	1, 0);
 		List<String> auditIntVal = new LinkedList<String>();
 		auditIntVal.add(PigLanguageManager.getText("pig.audit_interaction_doaudit"));
 		auditInt.setPossibleValues(auditIntVal);
