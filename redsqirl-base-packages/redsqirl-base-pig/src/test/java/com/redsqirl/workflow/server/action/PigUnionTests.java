@@ -18,7 +18,7 @@ import com.redsqirl.workflow.server.InputInteraction;
 import com.redsqirl.workflow.server.ListInteraction;
 import com.redsqirl.workflow.server.OozieManager;
 import com.redsqirl.workflow.server.Workflow;
-import com.redsqirl.workflow.server.action.PigBinarySource;
+import com.redsqirl.workflow.server.action.PigCompressSource;
 import com.redsqirl.workflow.server.action.PigElement;
 import com.redsqirl.workflow.server.action.PigUnion;
 import com.redsqirl.workflow.server.action.PigUnionConditions;
@@ -44,19 +44,19 @@ public class PigUnionTests {
 		
 		PigUnion pig = (PigUnion) w.getElement(idHS);
 		
-		logger.debug(PigBinarySource.out_name+" "+src1.getComponentId());
+		logger.debug(PigCompressSource.out_name+" "+src1.getComponentId());
 		logger.debug(PigUnion.key_input+" "+idHS);
 		
 		w.addLink(
-				PigBinarySource.out_name, src1.getComponentId(), 
+				PigCompressSource.out_name, src1.getComponentId(), 
 				PigUnion.key_input, idHS);
 		assertTrue("pig union add input: "+error,error == null);
 		
-		logger.debug(PigBinarySource.out_name+" "+src2.getComponentId());
+		logger.debug(PigCompressSource.out_name+" "+src2.getComponentId());
 		logger.debug(PigUnion.key_input+" "+idHS);
 		
 		w.addLink(
-				PigBinarySource.out_name, src2.getComponentId(), 
+				PigCompressSource.out_name, src2.getComponentId(), 
 				PigUnion.key_input, idHS);
 		assertTrue("pig union add input: "+error,error == null);
 		

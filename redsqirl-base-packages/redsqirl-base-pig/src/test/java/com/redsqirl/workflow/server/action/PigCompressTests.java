@@ -18,6 +18,9 @@ import com.redsqirl.workflow.server.Workflow;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.datatype.MapRedCompressedType;
 import com.redsqirl.workflow.server.enumeration.SavingState;
+import com.redsqirl.workflow.server.interaction.PigFilterInteraction;
+import com.redsqirl.workflow.server.interaction.PigOrderInteraction;
+import com.redsqirl.workflow.server.interaction.PigTableSelectInteraction;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.test.TestUtils;
 
@@ -36,11 +39,11 @@ public class PigCompressTests {
 		
 		PigSelect pig = (PigSelect) w.getElement(idHS);
 		
-		logger.info(PigBinarySource.out_name+" "+src.getComponentId());
+		logger.info(PigCompressSource.out_name+" "+src.getComponentId());
 		logger.debug(PigSelect.key_input+" "+idHS);
 		
 		error = w.addLink(
-				PigBinarySource.out_name, src.getComponentId(), 
+				PigCompressSource.out_name, src.getComponentId(), 
 				PigSelect.key_input, idHS);
 		assertTrue("pig select add link: "+error,error == null);
 		

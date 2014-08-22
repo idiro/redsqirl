@@ -20,7 +20,7 @@ import com.redsqirl.workflow.server.OozieManager;
 import com.redsqirl.workflow.server.Workflow;
 import com.redsqirl.workflow.server.action.AuditGenerator;
 import com.redsqirl.workflow.server.action.PigAudit;
-import com.redsqirl.workflow.server.action.PigBinarySource;
+import com.redsqirl.workflow.server.action.PigCompressSource;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.datatype.MapRedCtrlATextType;
 import com.redsqirl.workflow.server.enumeration.FieldType;
@@ -44,11 +44,11 @@ public class PigAuditTests {
 		
 		PigAudit pig = (PigAudit) w.getElement(idHS);
 		
-		logger.info(PigBinarySource.out_name+" "+src.getComponentId());
+		logger.info(PigCompressSource.out_name+" "+src.getComponentId());
 		logger.debug(PigAudit.key_input+" "+idHS);
 		
 		error = w.addLink(
-				PigBinarySource.out_name, src.getComponentId(), 
+				PigCompressSource.out_name, src.getComponentId(), 
 				PigAudit.key_input, idHS);
 		assertTrue("pig select add link: "+error,error == null);
 		

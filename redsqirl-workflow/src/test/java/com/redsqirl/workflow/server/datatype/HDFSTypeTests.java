@@ -10,10 +10,8 @@ import java.util.Map.Entry;
 
 import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.redsqirl.workflow.server.connect.HDFSInterface;
-import com.redsqirl.workflow.test.SetupEnvironmentTest;
 
 public class HDFSTypeTests {
 
@@ -25,38 +23,6 @@ public class HDFSTypeTests {
 	String binary_file = "/user/"+System.getProperty("user.name")+"/unit_test/binary_file4";
 	String ctrla_file = "/user/"+System.getProperty("user.name")+"/unit_test/ctrla_text_file";
 
-	@Test
-	public void MapRedBinTypeTest() throws RemoteException {
-//		HDFSInterface fs = null;
-		try {
-			
-//			fs = new HDFSInterface();
-//			fs.copyFromRemote(SetupEnvironmentTest.class.getResource( "/binary_file/part-m-00000" ).getFile(), binary_file, "localhost");
-			
-			MapRedBinaryType bin = new MapRedBinaryType();
-			bin.setPath(binary_file);
-			bin.isPathExists();
-//			assertTrue(bin.getFields().getSize() == 1);
-			
-			List<String> firstLine = bin.selectLine(100);
-			logger.info(firstLine.toString());
-//			assertTrue(firstLine.size() == 1);
-//			assertTrue(firstLine.get(0).equals("line"));
-			
-			List<Map<String, String>> first = bin.select(100);
-			logger.info(first.toString());
-//			assertTrue(first.size() == 1);
-			
-			for (Entry<String, String> e : valuesMap.entrySet()){
-//				assertTrue(first.get(0).get(e.getKey()).equals(e.getValue()));
-			}
-			
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-		} finally {
-//			fs.delete(binary_file);
-		}
-	}
 	
 //	@Test
 	public void MapRedTextTypeTest() throws RemoteException {

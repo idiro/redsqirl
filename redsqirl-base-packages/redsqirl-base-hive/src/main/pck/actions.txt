@@ -1,7 +1,6 @@
-hive_audit
-hive_select
-hive_union
-hive_join
 hive_aggregator
-hive_source
+hive_join
 hive_partition_source
+hive_select
+hive_source
+hive_union

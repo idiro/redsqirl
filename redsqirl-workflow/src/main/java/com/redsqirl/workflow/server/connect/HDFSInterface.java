@@ -4,7 +4,6 @@ package com.redsqirl.workflow.server.connect;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.StringWriter;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.text.DecimalFormat;
@@ -16,12 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
-import org.apache.commons.compress.compressors.CompressorException;
-import org.apache.commons.compress.compressors.CompressorInputStream;
-import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
-import org.apache.commons.io.IOUtils;
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileStatus;
@@ -30,11 +24,7 @@ import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.permission.FsPermission;
 import org.apache.hadoop.io.BytesWritable;
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.io.compress.CompressionCodec;
-import org.apache.hadoop.io.compress.CompressionCodecFactory;
 import org.apache.hadoop.util.LineReader;
 import org.apache.log4j.Logger;
 
@@ -47,7 +37,6 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
-import com.redsqirl.workflow.server.datatype.MapRedBinaryType;
 import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
@@ -437,35 +426,14 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 					ans.add(fsA[i].getPath().toString());
 				}
 			} else if (fCh.isFile()) {
-				// NEW
-				/*
-				 * CompressionCodecFactory factory = new
-				 * CompressionCodecFactory(NameNodeVar.getConf());
-				 * CompressionCodec codec = factory.getCodec(p); InputStream
-				 * stream = null;
-				 * 
-				 * // check if we have a compression codec we need to use if
-				 * (codec != null) { stream =
-				 * codec.createInputStream(fs.open(p)); } else { stream =
-				 * fs.open(p); }
-				 * 
-				 * StringWriter writer = new StringWriter();
-				 * IOUtils.copy(stream, writer, "UTF-8"); String raw =
-				 * writer.toString(); String[] resulting = raw.split("\n"); ans
-				 * = new ArrayList<String>(maxToRead); for(String str:
-				 * raw.split("\n")) { ans.add(str); }
-				 * 
-				 * return ans;
-				 */
-
-
-				InputStream in = fs.open(p);
-
-				if (path.endsWith(".bz2")) {
-					BZip2CompressorInputStream bzipReader = new BZip2CompressorInputStream(
-							in);
+				InputStream inS = fs.open(p);
+				InputStream in = null;
+				BZip2CompressorInputStream bzipReader = null;
+				if (path.endsWith(".bz2") || path.endsWith(".bz")){
+					bzipReader = new BZip2CompressorInputStream(inS);
 					in = bzipReader;
-					bzipReader.close();
+				}else{
+					in = inS;
 				}
 
 				LineReader reader = new LineReader(in);
@@ -473,15 +441,18 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 				Text line = new Text();
 				int lineNb = 0;
 				while (reader.readLine(line) != 0 && lineNb < maxToRead) {
-
 					ans.add(line.toString());
 					++lineNb;
 				}
+				if(bzipReader != null){
+					bzipReader.close();
+				}
+				inS.close();
 			}
 			// fs.close();
 		} catch (IOException e) {
 			logger.error("Cannot select the file or directory: " + p);
-			logger.error(e.getMessage());
+			logger.error(e.getMessage(),e);
 		}
 		// fCh.close();
 		
@@ -553,7 +524,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 						ans.add(toWrite);
 						toWrite = "";
 					} else {
-						toWrite += MapRedBinaryType.delim;
+						toWrite += '\001';
 					}
 					++i;
 					if (i >= fields.getSize()) {

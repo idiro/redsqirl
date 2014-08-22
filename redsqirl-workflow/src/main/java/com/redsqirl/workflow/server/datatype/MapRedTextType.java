@@ -2,7 +2,6 @@ package com.redsqirl.workflow.server.datatype;
 
 
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -11,14 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.apache.hadoop.fs.FileStatus;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.fs.PathFilter;
 import org.apache.log4j.Logger;
 
-import com.idiro.hadoop.NameNodeVar;
-import com.idiro.hadoop.checker.HdfsFileChecker;
 import com.idiro.utils.RandomString;
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
@@ -103,56 +96,10 @@ public class MapRedTextType extends MapRedDir {
 	 */
 	@Override
 	public String isPathValid() throws RemoteException {
-		String error = null;
-		HdfsFileChecker hCh = new HdfsFileChecker(getPath());
-		if (!hCh.isInitialized() || hCh.isFile()) {
-			error = LanguageManagerWF.getText("mapredtexttype.dirisfile");
-		} else {
-			FileSystem fs;
-			try {
-				fs = NameNodeVar.getFS();
-				hCh.setPath(new Path(getPath()).getParent());
-				if (!hCh.isDirectory()) {
-					error = LanguageManagerWF.getText("mapredtexttype.nodir",new String[]{getPath()});
-				}
-				FileStatus[] stat = fs.listStatus(new Path(getPath()),
-						new PathFilter() {
-
-					@Override
-					public boolean accept(Path arg0) {
-						return !arg0.getName().startsWith("_");
-					}
-				});
-				for (int i = 0; i < stat.length && error == null; ++i) {
-					if (stat[i].isDir()) {
-						error = LanguageManagerWF.getText(
-								"mapredtexttype.notmrdir",
-								new Object[] { getPath() });
-					} else {
-						try {
-							hdfsInt.select(stat[i].getPath().toString(),"", 1);
-						} catch (Exception e) {
-							error = LanguageManagerWF
-									.getText("mapredtexttype.notmrdir");
-						}
-					}
-				}
-				try {
-					// fs.close();
-				} catch (Exception e) {
-					logger.error("Fail to close FileSystem: " + e);
-				}
-			} catch (IOException e) {
-
-				error = LanguageManagerWF.getText("unexpectedexception",
-						new Object[] { e.getMessage() });
-
-				logger.error(error);
-			}
-
-		}
-		// hCh.close();
-		return error;
+		List<String> shouldNotHaveExt = new LinkedList<String>();
+		shouldNotHaveExt.add(".bz");
+		shouldNotHaveExt.add(".bz2");
+		return isPathValid(shouldNotHaveExt,null);
 	}
 
 	/**

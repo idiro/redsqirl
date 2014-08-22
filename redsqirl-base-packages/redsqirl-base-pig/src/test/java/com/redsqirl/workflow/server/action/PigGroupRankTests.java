@@ -16,7 +16,7 @@ import com.redsqirl.workflow.server.InputInteraction;
 import com.redsqirl.workflow.server.ListInteraction;
 import com.redsqirl.workflow.server.OozieManager;
 import com.redsqirl.workflow.server.Workflow;
-import com.redsqirl.workflow.server.action.PigBinarySource;
+import com.redsqirl.workflow.server.action.PigCompressSource;
 import com.redsqirl.workflow.server.action.PigElement;
 import com.redsqirl.workflow.server.action.PigSelect;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
@@ -40,10 +40,10 @@ public class PigGroupRankTests {
 
 		PigGroupRank pig = (PigGroupRank) w.getElement(idHS);
 
-		logger.info(PigBinarySource.out_name + " " + src.getComponentId());
+		logger.info(PigCompressSource.out_name + " " + src.getComponentId());
 		logger.debug(PigSelect.key_input + " " + idHS);
 
-		error = w.addLink(PigBinarySource.out_name, src.getComponentId(),
+		error = w.addLink(PigCompressSource.out_name, src.getComponentId(),
 				PigSelect.key_input, idHS);
 		assertTrue("pig select add link: " + error, error == null);
 

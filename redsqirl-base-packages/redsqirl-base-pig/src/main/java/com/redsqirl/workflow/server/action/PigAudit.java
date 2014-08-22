@@ -19,7 +19,7 @@ import com.redsqirl.workflow.server.DataflowAction;
 import com.redsqirl.workflow.server.InputInteraction;
 import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
-import com.redsqirl.workflow.server.datatype.MapRedBinaryType;
+import com.redsqirl.workflow.server.datatype.MapRedCompressedType;
 import com.redsqirl.workflow.server.datatype.MapRedCtrlATextType;
 import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
@@ -80,7 +80,7 @@ public class PigAudit extends DataflowAction {
 	protected void init() throws RemoteException {
 		if (input == null) {
 			Map<String, DFELinkProperty> in = new LinkedHashMap<String, DFELinkProperty>();
-			in.put(key_input, new DataProperty(MapRedBinaryType.class, 1, 1));
+			in.put(key_input, new DataProperty(MapRedCompressedType.class, 1, 1));
 			input = in;
 		}
 

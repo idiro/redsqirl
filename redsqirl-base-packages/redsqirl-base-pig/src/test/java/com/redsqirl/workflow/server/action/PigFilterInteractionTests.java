@@ -6,7 +6,7 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.redsqirl.workflow.server.Workflow;
-import com.redsqirl.workflow.server.action.PigBinarySource;
+import com.redsqirl.workflow.server.action.PigCompressSource;
 import com.redsqirl.workflow.server.action.PigElement;
 import com.redsqirl.workflow.server.action.PigSelect;
 import com.redsqirl.workflow.server.interaction.PigFilterInteraction;
@@ -29,7 +29,7 @@ public class PigFilterInteractionTests {
 			PigSelect hs = (PigSelect)w.getElement(idHs);
 			
 			error = w.addLink(
-					PigBinarySource.out_name, src.getComponentId(), 
+					PigCompressSource.out_name, src.getComponentId(), 
 					PigSelect.key_input, idHs);
 			assertTrue("pig select link: "+error,error == null);
 			

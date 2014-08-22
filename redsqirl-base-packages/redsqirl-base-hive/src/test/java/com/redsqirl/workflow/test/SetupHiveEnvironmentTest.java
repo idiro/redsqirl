@@ -18,7 +18,6 @@ import com.idiro.ProjectID;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.action.ConditionInteractionTests;
 import com.redsqirl.workflow.server.action.HiveAggregTests;
-import com.redsqirl.workflow.server.action.HiveAuditTests;
 import com.redsqirl.workflow.server.action.HiveJoinTests;
 import com.redsqirl.workflow.server.action.HiveSelectTests;
 import com.redsqirl.workflow.server.action.HiveUnionConditionInteractionTests;
@@ -45,7 +44,6 @@ import com.redsqirl.workflow.server.connect.HiveInterface;
 	HiveJoinTests.class,
 	HiveAggregTests.class,
 	HiveDictionaryTests.class,
-	HiveAuditTests.class
 	})
 public class SetupHiveEnvironmentTest {
 

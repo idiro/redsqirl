@@ -18,7 +18,7 @@ import com.redsqirl.workflow.server.OozieManager;
 import com.redsqirl.workflow.server.UserInteraction;
 import com.redsqirl.workflow.server.Workflow;
 import com.redsqirl.workflow.server.action.PigAggregator;
-import com.redsqirl.workflow.server.action.PigBinarySource;
+import com.redsqirl.workflow.server.action.PigCompressSource;
 import com.redsqirl.workflow.server.action.PigElement;
 import com.redsqirl.workflow.server.action.PigSelect;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
@@ -41,10 +41,10 @@ public class PigAggregatorTests {
 		logger.info("Pig agge: " + idHS);
 
 		PigAggregator pig = (PigAggregator) w.getElement(idHS);
-		logger.info(PigBinarySource.out_name + " " + src.getComponentId());
+		logger.info(PigCompressSource.out_name + " " + src.getComponentId());
 		logger.debug(PigAggregator.key_input + " " + idHS);
 
-		w.addLink(PigBinarySource.out_name, src.getComponentId(),
+		w.addLink(PigCompressSource.out_name, src.getComponentId(),
 				PigAggregator.key_input, idHS);
 
 		assertTrue("pig aggreg add input: " + error, error == null);
