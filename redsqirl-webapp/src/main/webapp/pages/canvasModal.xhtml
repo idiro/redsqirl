@@ -518,8 +518,8 @@
 	                        
 	                       	<tr>
 	                       		<td>
-	                       			<a4j:commandLink value="output #{item.name}" action="#{canvasModalBean.outputTab.displayOutput}"
-	                       				reRender="dataOutputForm,dataDisplayReg,titleDisplay,displayTableDiv">
+	                       			<a4j:commandLink value="output #{item.name}" onclick="alert('#{item.path}');" action="#{canvasModalBean.outputTab.displayOutput}"
+	                       				reRender="dataOutputForm,dataDisplayReg,titleDisplay,displayTableDiv,outputTab">
 		                                <a4j:actionparam name="outputName" value="#{item.name}" />
 		                            </a4j:commandLink>
 	                       		</td>

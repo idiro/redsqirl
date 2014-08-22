@@ -328,11 +328,27 @@ public abstract class PigElement extends DataflowAction {
 	 */
 	public String updateOut() throws RemoteException {
 		String error = checkIntegrationUserVariables();
+		logger.info("Error in updae out : "+error);
 		if(error == null){
 			FieldList new_field = getNewField();
-			if(output.get(key_output) == null){
-				output.put(key_output, new MapRedTextType());
+			String type = savetypeOutputInt.getValue();
+			DFEOutput out = output.get(key_output);
+			logger.info("output type : "+type);
+			
+			if(out != null && !type.equalsIgnoreCase(out.getTypeName())){
+				output.remove(key_output).clean();
 			}
+			
+			if(output.get(key_output) == null){
+				if(type.equalsIgnoreCase(new MapRedTextType().getTypeName())){
+					output.put(key_output, new MapRedTextType());
+				}else if(type.equalsIgnoreCase(new MapRedBinaryType().getTypeName())){
+					output.put(key_output, new MapRedBinaryType());
+				}else if(type.equalsIgnoreCase(new MapRedCompressedType().getTypeName())){
+					output.put(key_output, new MapRedCompressedType());
+				}
+			}
+			
 			output.get(key_output).setFields(new_field);
 			output.get(key_output).addProperty(MapRedTextType.key_delimiter, delimiterOutputInt.getValue());
 			
@@ -425,9 +441,7 @@ public abstract class PigElement extends DataflowAction {
 		
 		String query = "STORE "+relationName+" INTO '" + out.getPath() + "'";
 				
-		if (function != null){
-			query += " USING "+function;
-		}
+		query += " USING "+function;
 		query += ";";
 				
 		return query;
@@ -446,9 +460,10 @@ public abstract class PigElement extends DataflowAction {
 			delimiter ="|";
 		}
 		try{
+			
 			type = savetypeOutputInt.getTree().getFirstChild("list").getFirstChild("output").getFirstChild().getHead();
 			logger.info("type: "+type);
-			if(type.equalsIgnoreCase("TEXT MAP-REDUCE DIRECTORY")){
+			if(type.equalsIgnoreCase("TEXT MAP-REDUCE DIRECTORY")||type.equalsIgnoreCase("COMPRESSED MAP-REDUCE DIRECTORY")){
 				function = "PigStorage('"+delimiter+"', '-schema')";
 			}
 			if (type.equalsIgnoreCase("BINARY MAP-REDUCE DIRECTORY")){

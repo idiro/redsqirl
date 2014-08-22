@@ -163,7 +163,7 @@ public class MapRedTextType extends MapRedDir {
 			String component, String outputName) throws RemoteException {
 		return getPath().startsWith(
 				"/user/" + userName + "/tmp/redsqirl_" + component + "_"
-						+ outputName + "_");
+						+ outputName + "_") && getPath().endsWith(".mrtxt");
 	}
 
 	/**
