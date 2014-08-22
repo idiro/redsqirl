@@ -2,25 +2,12 @@ package com.redsqirl.workflow.server.datatype;
 
 
 
-import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
-import org.apache.hadoop.fs.FSDataInputStream;
-import org.apache.hadoop.fs.FileStatus;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.BytesWritable;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.util.LineReader;
-
-import com.idiro.hadoop.NameNodeVar;
-import com.idiro.hadoop.checker.HdfsFileChecker;
 import com.idiro.utils.RandomString;
 import com.redsqirl.utils.FieldList;
-import com.redsqirl.workflow.server.enumeration.FieldType;
 
 /**
  * Class to read files that are stored in MapReduce Directories and are stored
@@ -72,6 +59,20 @@ public class MapRedCompressedType extends MapRedTextType {
 		return new String[]{"*.bz", "*.bz2"};
 	}
 
+	/**
+	 * Check if the path is a valid path
+	 * 
+	 * @return Error Message
+	 * @throws RemoteException
+	 */
+	@Override
+	public String isPathValid() throws RemoteException {
+		List<String> shouldHaveExt = new LinkedList<String>();
+		shouldHaveExt.add(".bz");
+		shouldHaveExt.add(".bz2");
+		return isPathValid(null,shouldHaveExt);
+	}
+	
 	/**
 	 * Gernate a path given values
 	 * 

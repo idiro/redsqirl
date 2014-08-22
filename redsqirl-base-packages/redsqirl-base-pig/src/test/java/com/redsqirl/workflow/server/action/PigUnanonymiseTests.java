@@ -31,14 +31,14 @@ public class PigUnanonymiseTests {
 
 		PigUnanonymise pig = (PigUnanonymise) w.getElement(idHS);
 
-		logger.info(PigBinarySource.out_name + " " + src.getComponentId());
+		logger.info(PigCompressSource.out_name + " " + src.getComponentId());
 		logger.debug(PigUnanonymise.key_input + " " + idHS);
 
-		error = w.addLink(PigBinarySource.out_name, src.getComponentId(),
+		error = w.addLink(PigCompressSource.out_name, src.getComponentId(),
 				PigUnanonymise.key_input, idHS);
 		assertTrue("pig unanonymise add link: " + error, error == null);
 		
-		error = w.addLink(PigBinarySource.out_name, srcIndex.getComponentId(),
+		error = w.addLink(PigCompressSource.out_name, srcIndex.getComponentId(),
 				PigUnanonymise.key_index_map, idHS);
 		
 		assertTrue("pig unanonymise add link: " + error, error == null);

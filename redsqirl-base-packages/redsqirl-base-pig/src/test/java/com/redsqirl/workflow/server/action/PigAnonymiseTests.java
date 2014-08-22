@@ -32,7 +32,7 @@ public class PigAnonymiseTests {
 
 		PigAnonymise pig = (PigAnonymise) w.getElement(idHS);
 
-		logger.info(PigBinarySource.out_name + " " + src.getComponentId());
+		logger.info(PigCompressSource.out_name + " " + src.getComponentId());
 		logger.debug(PigAnonymise.key_input + " " + idHS);
 
 		error = w.addLink(PigTextSource.out_name, src.getComponentId(),

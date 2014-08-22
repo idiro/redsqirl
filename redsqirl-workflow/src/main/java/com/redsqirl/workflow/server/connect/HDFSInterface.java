@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.prefs.Preferences;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileStatus;
@@ -25,8 +24,6 @@ import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.permission.FsPermission;
 import org.apache.hadoop.io.BytesWritable;
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.util.LineReader;
 import org.apache.log4j.Logger;
@@ -40,7 +37,6 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
-import com.redsqirl.workflow.server.datatype.MapRedBinaryType;
 import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
@@ -430,11 +426,14 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 					ans.add(fsA[i].getPath().toString());
 				}
 			} else if (fCh.isFile()) {
-				InputStream in = fs.open(p);
-				
-				if (path.endsWith(".bz2")){
-					BZip2CompressorInputStream bzipReader = new BZip2CompressorInputStream(in);
+				InputStream inS = fs.open(p);
+				InputStream in = null;
+				BZip2CompressorInputStream bzipReader = null;
+				if (path.endsWith(".bz2") || path.endsWith(".bz")){
+					bzipReader = new BZip2CompressorInputStream(in);
 					in = bzipReader;
+				}else{
+					in = inS;
 				}
 				
 				LineReader reader = new LineReader(in);
@@ -446,11 +445,15 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 					ans.add(line.toString());
 					++lineNb;
 				}
+				if(bzipReader != null){
+					bzipReader.close();
+				}
+				inS.close();
 			}
 			// fs.close();
 		} catch (IOException e) {
 			logger.error("Cannot select the file or directory: " + p);
-			logger.error(e.getMessage());
+			logger.error(e.getMessage(),e);
 		}
 		// fCh.close();
 
@@ -522,7 +525,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 						ans.add(toWrite);
 						toWrite = "";
 					} else {
-						toWrite += MapRedBinaryType.delim;
+						toWrite += '\001';
 					}
 					++i;
 					if (i >= fields.getSize()) {
