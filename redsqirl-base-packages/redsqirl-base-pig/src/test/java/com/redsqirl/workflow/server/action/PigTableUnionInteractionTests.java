@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.Workflow;
-import com.redsqirl.workflow.server.action.PigBinarySource;
+import com.redsqirl.workflow.server.action.PigCompressSource;
 import com.redsqirl.workflow.server.action.PigElement;
 import com.redsqirl.workflow.server.action.PigUnion;
 import com.redsqirl.workflow.server.interaction.PigTableUnionInteraction;
@@ -38,12 +38,12 @@ public class PigTableUnionInteractionTests {
 			
 
 			error = w.addLink(
-					PigBinarySource.out_name, src1.getComponentId(), 
+					PigCompressSource.out_name, src1.getComponentId(), 
 					PigElement.key_input, idHs);
 			assertTrue("pig select link 1: "+error,error == null);
 			
 			error = w.addLink(
-					PigBinarySource.out_name, src2.getComponentId(), 
+					PigCompressSource.out_name, src2.getComponentId(), 
 					PigElement.key_input, idHs);
 			assertTrue("pig select link 2: "+error,error == null);
 			

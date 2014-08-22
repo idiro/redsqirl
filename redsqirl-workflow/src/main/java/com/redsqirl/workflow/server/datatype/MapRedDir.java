@@ -30,6 +30,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.idiro.hadoop.NameNodeVar;
+import com.idiro.hadoop.checker.HdfsFileChecker;
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.DataOutput;
@@ -150,6 +151,85 @@ public abstract class MapRedDir extends DataOutput{
 			}
 		}
 		return ok;
+	}
+	
+	public String isPathValid(List<String> shouldNotHaveExt, List<String> shouldHaveExt) throws RemoteException {
+		String error = null;
+		HdfsFileChecker hCh = new HdfsFileChecker(getPath());
+		if (!hCh.isInitialized() || hCh.isFile()) {
+			error = LanguageManagerWF.getText("mapredtexttype.dirisfile");
+		} else {
+			FileSystem fs;
+			try {
+				fs = NameNodeVar.getFS();
+				hCh.setPath(new Path(getPath()).getParent());
+				if (!hCh.isDirectory()) {
+					error = LanguageManagerWF.getText("mapredtexttype.nodir",new String[]{getPath()});
+				}
+				FileStatus[] stat = fs.listStatus(new Path(getPath()),
+						new PathFilter() {
+
+					@Override
+					public boolean accept(Path arg0) {
+						return !arg0.getName().startsWith("_");
+					}
+				});
+				for (int i = 0; i < stat.length && error == null; ++i) {
+					if (stat[i].isDir()) {
+						error = LanguageManagerWF.getText(
+								"mapredtexttype.notmrdir",
+								new Object[] { getPath() });
+					}else{
+						
+						if(shouldHaveExt != null && !shouldHaveExt.isEmpty()){
+							boolean found = false;
+							for(String extCur: shouldHaveExt){
+								found |= stat[i].getPath().getName().endsWith(extCur);
+							}
+							if(!found){
+								error = LanguageManagerWF.getText(
+										"mapredtexttype.shouldhaveext",
+										new Object[] { getPath(),shouldHaveExt });
+								
+							}
+						}else if(shouldNotHaveExt != null && ! shouldNotHaveExt.isEmpty()){
+							boolean found = false;
+							for(String extCur: shouldNotHaveExt){
+								found |= stat[i].getPath().getName().endsWith(extCur);
+							}
+							if(found){
+								error = LanguageManagerWF.getText(
+										"mapredtexttype.shouldnothaveext",
+										new Object[] { getPath(),shouldNotHaveExt });
+								
+							}
+						}
+						
+						
+						try {
+							hdfsInt.select(stat[i].getPath().toString(),"", 1);
+						} catch (Exception e) {
+							error = LanguageManagerWF
+									.getText("mapredtexttype.notmrdir");
+						}
+					}
+				}
+				try {
+					// fs.close();
+				} catch (Exception e) {
+					logger.error("Fail to close FileSystem: " + e);
+				}
+			} catch (IOException e) {
+
+				error = LanguageManagerWF.getText("unexpectedexception",
+						new Object[] { e.getMessage() });
+
+				logger.error(error);
+			}
+
+		}
+		// hCh.close();
+		return error;
 	}
 	
 	/**

@@ -10,7 +10,6 @@ import org.apache.log4j.Logger;
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.AppendListInteraction;
 import com.redsqirl.workflow.server.Page;
-import com.redsqirl.workflow.server.action.PigElement;
 import com.redsqirl.workflow.server.datatype.MapRedTextType;
 import com.redsqirl.workflow.server.interaction.PigTableTransposeInteraction;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
@@ -69,6 +68,11 @@ public class PigTranspose extends PigElement {
 		page1.addInteraction(fieldsInt);
 		
 		page1.setChecker(new PageChecker() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -7668460935747190945L;
 
 			@Override
 			public String check(DFEPage page) throws RemoteException {

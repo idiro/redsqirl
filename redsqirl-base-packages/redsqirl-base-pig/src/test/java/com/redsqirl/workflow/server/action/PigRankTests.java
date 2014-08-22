@@ -29,10 +29,10 @@ public class PigRankTests {
 
 		PigRank pig = (PigRank) w.getElement(idHS);
 
-		logger.info(PigBinarySource.out_name + " " + src.getComponentId());
+		logger.info(PigCompressSource.out_name + " " + src.getComponentId());
 		logger.debug(PigSelect.key_input + " " + idHS);
 
-		error = w.addLink(PigBinarySource.out_name, src.getComponentId(),
+		error = w.addLink(PigCompressSource.out_name, src.getComponentId(),
 				PigSelect.key_input, idHS);
 		assertTrue("pig select add link: " + error, error == null);
 

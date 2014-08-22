@@ -16,7 +16,7 @@ import com.redsqirl.workflow.server.InputInteraction;
 import com.redsqirl.workflow.server.ListInteraction;
 import com.redsqirl.workflow.server.OozieManager;
 import com.redsqirl.workflow.server.Workflow;
-import com.redsqirl.workflow.server.action.PigBinarySource;
+import com.redsqirl.workflow.server.action.PigCompressSource;
 import com.redsqirl.workflow.server.action.PigElement;
 import com.redsqirl.workflow.server.action.PigJoin;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
@@ -44,19 +44,19 @@ public class PigJoinTests {
 		
 		PigJoin pig = (PigJoin) w.getElement(idHS);
 		
-		logger.debug(PigBinarySource.out_name+" "+src1.getComponentId());
+		logger.debug(PigCompressSource.out_name+" "+src1.getComponentId());
 		logger.debug(PigJoin.key_input+" "+idHS);
 		
 		w.addLink(
-				PigBinarySource.out_name, src1.getComponentId(), 
+				PigCompressSource.out_name, src1.getComponentId(), 
 				PigJoin.key_input, idHS);
 		assertTrue("pig join add input: "+error,error == null);
 		
-		logger.debug(PigBinarySource.out_name+" "+src2.getComponentId());
+		logger.debug(PigCompressSource.out_name+" "+src2.getComponentId());
 		logger.debug(PigJoin.key_input+" "+idHS);
 		
 		w.addLink(
-				PigBinarySource.out_name, src2.getComponentId(), 
+				PigCompressSource.out_name, src2.getComponentId(), 
 				PigJoin.key_input, idHS);
 		assertTrue("pig join add input: "+error,error == null);
 		

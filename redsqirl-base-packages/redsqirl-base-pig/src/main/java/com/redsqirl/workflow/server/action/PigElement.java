@@ -26,7 +26,6 @@ import com.redsqirl.workflow.server.InputInteraction;
 import com.redsqirl.workflow.server.ListInteraction;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
-import com.redsqirl.workflow.server.datatype.MapRedBinaryType;
 import com.redsqirl.workflow.server.datatype.MapRedCompressedType;
 import com.redsqirl.workflow.server.datatype.MapRedCtrlATextType;
 import com.redsqirl.workflow.server.datatype.MapRedTextType;
@@ -174,7 +173,6 @@ public abstract class PigElement extends DataflowAction {
 		savetypeOutputInt.setDisplayRadioButton(true);
 		List<String> saveTypePos = new LinkedList<String>();
 		saveTypePos.add( new MapRedTextType().getTypeName());
-		saveTypePos.add( new MapRedBinaryType().getTypeName());
 		saveTypePos.add( new MapRedCompressedType().getTypeName());
 		savetypeOutputInt.setPossibleValues(saveTypePos);
 		savetypeOutputInt.setValue(new MapRedCompressedType().getTypeName());
@@ -199,7 +197,7 @@ public abstract class PigElement extends DataflowAction {
 	protected void init(int nbInMin, int nbInMax) throws RemoteException{
 		if(input == null){
 			Map<String, DFELinkProperty> in = new LinkedHashMap<String, DFELinkProperty>();
-			in.put(key_input, new DataProperty(MapRedBinaryType.class, nbInMin, nbInMax));
+			in.put(key_input, new DataProperty(MapRedCompressedType.class, nbInMin, nbInMax));
 			input = in;
 		}
 	}

@@ -13,7 +13,7 @@ import org.junit.Test;
 import com.redsqirl.workflow.server.OozieManager;
 import com.redsqirl.workflow.server.Workflow;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
-import com.redsqirl.workflow.server.action.PigBinarySource;
+import com.redsqirl.workflow.server.action.PigCompressSource;
 import com.redsqirl.workflow.server.action.PigTranspose;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.enumeration.SavingState;
@@ -33,10 +33,10 @@ public class PigTransposeTests {
 
 		PigTranspose pig = (PigTranspose) w.getElement(idHS);
 
-		logger.info(PigBinarySource.out_name + " " + src.getComponentId());
+		logger.info(PigCompressSource.out_name + " " + src.getComponentId());
 		logger.debug(PigTranspose.key_input + " " + idHS);
 
-		error = w.addLink(PigBinarySource.out_name, src.getComponentId(),
+		error = w.addLink(PigCompressSource.out_name, src.getComponentId(),
 				PigTranspose.key_input, idHS);
 		assertTrue("pig transpose add link: " + error, error == null);
 
