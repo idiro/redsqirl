@@ -340,8 +340,6 @@ public abstract class PigElement extends DataflowAction {
 			if(output.get(key_output) == null){
 				if(type.equalsIgnoreCase(new MapRedTextType().getTypeName())){
 					output.put(key_output, new MapRedTextType());
-				}else if(type.equalsIgnoreCase(new MapRedBinaryType().getTypeName())){
-					output.put(key_output, new MapRedBinaryType());
 				}else if(type.equalsIgnoreCase(new MapRedCompressedType().getTypeName())){
 					output.put(key_output, new MapRedCompressedType());
 				}
