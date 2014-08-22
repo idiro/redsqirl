@@ -156,6 +156,30 @@ public abstract class MapRedDir extends DataOutput{
 	public String isPathValid(List<String> shouldNotHaveExt, List<String> shouldHaveExt) throws RemoteException {
 		String error = null;
 		HdfsFileChecker hCh = new HdfsFileChecker(getPath());
+		if(shouldHaveExt != null && !shouldHaveExt.isEmpty()){
+			boolean found = false;
+			for(String extCur: shouldHaveExt){
+				found |= getPath().endsWith(extCur);
+			}
+			if(!found){
+				error = LanguageManagerWF.getText(
+						"mapredtexttype.shouldhaveext",
+						new Object[] { getPath(),shouldHaveExt });
+				
+			}
+		}else if(shouldNotHaveExt != null && ! shouldNotHaveExt.isEmpty()){
+			boolean found = false;
+			for(String extCur: shouldNotHaveExt){
+				found |= getPath().endsWith(extCur);
+			}
+			if(found){
+				error = LanguageManagerWF.getText(
+						"mapredtexttype.shouldnothaveext",
+						new Object[] { getPath(),shouldNotHaveExt });
+				
+			}
+		}
+		
 		if (!hCh.isInitialized() || hCh.isFile()) {
 			error = LanguageManagerWF.getText("mapredtexttype.dirisfile");
 		} else {
@@ -171,7 +195,7 @@ public abstract class MapRedDir extends DataOutput{
 
 					@Override
 					public boolean accept(Path arg0) {
-						return !arg0.getName().startsWith("_");
+						return !arg0.getName().startsWith("_") && !arg0.getName().startsWith(".");
 					}
 				});
 				for (int i = 0; i < stat.length && error == null; ++i) {

@@ -4,7 +4,6 @@ package com.redsqirl.workflow.server.connect;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.StringWriter;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.text.DecimalFormat;
@@ -16,12 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
-import org.apache.commons.compress.compressors.CompressorException;
-import org.apache.commons.compress.compressors.CompressorInputStream;
-import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
-import org.apache.commons.io.IOUtils;
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileStatus;
@@ -31,8 +25,6 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.permission.FsPermission;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.io.compress.CompressionCodec;
-import org.apache.hadoop.io.compress.CompressionCodecFactory;
 import org.apache.hadoop.util.LineReader;
 import org.apache.log4j.Logger;
 
@@ -438,7 +430,7 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 				InputStream in = null;
 				BZip2CompressorInputStream bzipReader = null;
 				if (path.endsWith(".bz2") || path.endsWith(".bz")){
-					bzipReader = new BZip2CompressorInputStream(in);
+					bzipReader = new BZip2CompressorInputStream(inS);
 					in = bzipReader;
 				}else{
 					in = inS;
