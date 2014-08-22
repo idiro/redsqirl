@@ -79,33 +79,34 @@
 	<a4j:jsFunction name="updateTableHdfs" action="#{browserHdfsBean.selectFile}" reRender="pathOpenFile,hdfsfsFile,hdfsOpenFileBtn">
 		<a4j:actionparam name="nameFile" />
 	</a4j:jsFunction>
-
+	
+	<div class="pathHeader">
 	<h:outputText value="#{messages.label_path}" />
-	<h:inputText id="pathOpenFile" label="Path" value="#{browserHdfsBean.path}"
+	<h:inputText id="pathOpenFile" styleClass="mainPageTextField" label="Path" value="#{browserHdfsBean.path}"
 		maxlength="255" style="width:395px;" onkeypress="return enableEnterKey(event, 'changePathLoadHdfsBtn');"/>
 		
 	<a4j:commandLink id="changePathLoadHdfsBtn" action="#{browserHdfsBean.changePath}" reRender="pathOpenFile,hdfsfsFile,hdfsOpenFileBtn">
-		<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' styleClass="bt" />
+		<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' styleClass="refreshButton" />
 	</a4j:commandLink>
-		
+	
 	<a4j:commandLink action="#{browserHdfsBean.goPrevious}"
 		reRender="pathOpenFile,hdfsfsFile,hdfsOpenFileBtn">
-		<h:graphicImage id="btPrev" value="../image/icons/button-previous.gif" title='#{messages.HdfsInterface_previous_help}' styleClass="bt" />
+		<h:graphicImage id="btPrev" value="../image/icons/button-previous.gif" title='#{messages.HdfsInterface_previous_help}' styleClass="refreshButton" />
 	</a4j:commandLink>
 	
 	<a4j:commandLink action="#{browserHdfsBean.goNext}" reRender="pathOpenFile,hdfsfsFile,hdfsOpenFileBtn">
-		<h:graphicImage id="btNext" value="../image/icons/button-next.gif" title='#{messages.HdfsInterface_next_help}' styleClass="bt" />
+		<h:graphicImage id="btNext" value="../image/icons/button-next.gif" title='#{messages.HdfsInterface_next_help}' styleClass="refreshButton" />
 	</a4j:commandLink>
 	
 	<a4j:commandLink action="#{browserHdfsBean.goUp}" reRender="pathOpenFile,hdfsfsFile,hdfsOpenFileBtn">
-		<h:graphicImage id="browserHdfsBeanGoup" value="../image/icons/button-up.gif" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" style="bt" />
+		<h:graphicImage id="browserHdfsBeanGoup" value="../image/icons/button-up.gif" title='#{messages.hdfs_goup}' styleClass="refreshButton" style="bt" />
 	</a4j:commandLink>
-	
-	<br/><br/>
-	<h:outputText value="#{messages.label_file_name}" rendered="#{browserHdfsBean.showSave == 'T'}"/>
+	</div>
+	<div class="divMenu">
+	<h:outputText value="#{messages.label_file_name}  " rendered="#{browserHdfsBean.showSave == 'T'}"/>
     <h:inputText id="nameSaveFile" label="Name" onchange="changeFile(this.value)" rendered="#{browserHdfsBean.showSave == 'T'}"
         maxlength="40" style="width:395px;" onkeypress="return enableEnterKey(event, 'hdfsSaveFileBtn');" onkeyup="nospaces(this)" />
-	<br/><br/>
+	</div>
 	
 	<div style="width:590px;height:250px;overflow:auto;" id="divFileHdfs" >
 	

@@ -38,7 +38,7 @@
 	
 //]]>
 </script>
-
+	<div style="padding:0px;">
     <a4j:region>
        <a4j:jsFunction name="modalOutputApplyPage" action="#{canvasModalBean.applyPage}" styleClass="greenButton" value="#{messages.button_apply}" 
 		reRender="panelBtCanvasModal, msnError, errorTable, browserTableProp, browserTableData, browserPropLabel, browserPropValue, browserPath" 
@@ -46,33 +46,33 @@
     </a4j:region>
 
 	<a4j:jsFunction name="changePathModalOutput" action="#{canvasModalBean.outputTab.fileSystem.changePath}" />
-
+	<div class="pathHeader">
 	<h:outputText value="#{messages.label_path}" />
-	<h:inputText id="pathDataOutputBrowser" label="Path" value="#{canvasModalBean.outputTab.fileSystem.path}" 
+	<h:inputText id="pathDataOutputBrowser"  styleClass="mainPageTextField"  label="Path" value="#{canvasModalBean.outputTab.fileSystem.path}" 
 		maxlength="255" style="width:395px;" onkeypress="return enableEnterKey(event, 'changePathModalOutputBtn');" />
 	
 	<a4j:commandLink id="changePathModalOutputBtn" action="#{canvasModalBean.outputTab.fileSystem.changePath}" reRender="dataOutputBrowser">
-		<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' styleClass="bt" 
-			style="position:relative;top:10px;" />
+		<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' styleClass="refreshButton" 
+			 />
 	</a4j:commandLink>
-	
+
 	<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goPrevious}"
 		reRender="pathDataOutputBrowser,dataOutputBrowser">
-		<h:graphicImage value="../image/icons/button-previous.gif" title='#{messages.Interface_previous_help}' styleClass="bt"
-		style="position:relative;top:10px;" />
+		<h:graphicImage value="../image/icons/button-previous.gif" title='#{messages.Interface_previous_help}' styleClass="refreshButton"
+		/>
 	</a4j:commandLink>
 	
 	<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goNext}"
 		reRender="pathDataOutputBrowser,dataOutputBrowser">
-		<h:graphicImage value="../image/icons/button-next.gif" title='#{messages.Interface_next_help}' styleClass="bt"
-		style="position:relative;top:10px;" />
+		<h:graphicImage value="../image/icons/button-next.gif" title='#{messages.Interface_next_help}' styleClass="refreshButton"
+		/>
 	</a4j:commandLink>
 	
 	<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goUp}" reRender="pathDataOutputBrowser,dataOutputBrowser">
-		<h:graphicImage value="../image/icons/button-up.gif" title='#{messages.hdfs_goup}' styleClass="bt"
-		style="position:relative;top:10px;" />
+		<h:graphicImage value="../image/icons/button-up.gif" title='#{messages.hdfs_goup}' styleClass="refreshButton"
+		/>
 	</a4j:commandLink>
-	
+	</div>
 	
 	<div style="width:100%; overflow: auto; height: 265px;" >
 
@@ -147,5 +147,5 @@
 	</a4j:commandButton>
 
 	<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('modalOutputBrowser')}.hide();" />
-
+	</div>
 </ui:composition>

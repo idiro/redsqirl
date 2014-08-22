@@ -55,11 +55,8 @@ input {
 }
 
 .pathHeader{
-	padding: 0px 0px 0px 5px;
-	padding-top:5px;
-	padding-bottom:5px;
+	padding: 5px 5px 5px 5px;
 	background: linear-gradient(#f6f5f5, #c4c3c5);
-	/*background-color:blue;*/
 }
 
 #menuPanelGroup {
@@ -371,19 +368,26 @@ canvas {
 	font-size: 12 px;
 	font-weight: bold;
 	font-family: Verdana, Arial, sans-serif;
+	text-align:right;
 }
 
 .messageok {
 	background: url("../image/icons/li_msg_ok.gif") no-repeat;
-	padding-left: 20px;
-	padding-top: 20px;
-	padding-bottom: 20px;
+	background-position:bottom center;
+	background-position:left;
+	text-aling:right;
+	width:75px;
+	height:25px;
 	color: #336699;
 }
 
 .messageerro {
 	background: url("../image/icons/li_msg_error.gif") no-repeat;
 	padding-left: 20px;
+	background-position:left;
+	text-aling:right;
+	width:75px;
+	height:25px;
 	color: #000000;
 }
 
@@ -391,12 +395,20 @@ canvas {
 	background: url("../image/icons/li_msg_error.gif") no-repeat;
 	padding-left: 20px;
 	color: #FFFFFF;
+	background-position:left;
+	text-aling:right;
+	height:70px;
+	height:25px;
 }
 
 .messagealert {
 	background: url("../image/icons/li_msg_warn.gif") no-repeat;
 	padding-left: 20px;
 	color: #336699;
+	background-position:left;
+	text-aling:right;
+	width:75px;
+	height:25px;
 }
 
 .rich-panel-body {

@@ -1978,7 +1978,7 @@
 	</a4j:region>
 
 	<a4j:region>
-		<rich:modalPanel id="modalFileHdfs" width="600" height="430" style="overflow:hide;" resizeable="false">
+		<rich:modalPanel id="modalFileHdfs" width="620" height="430" style="overflow:hide;" resizeable="false">
 
 			<f:facet name="header" >Hadoop Distributed File System Browser</f:facet>
 			<f:facet name="controls">
@@ -2162,7 +2162,7 @@
         </rich:modalPanel>
     </a4j:region>
     
-    <rich:modalPanel id="msnErrorPage" showWhenRendered="#{requestScope['msnErrorPage'] != null}">
+    <rich:modalPanel height="70" width="250" id="msnErrorPage" showWhenRendered="#{requestScope['msnErrorPage'] != null}">
 		<center>
 
 			<table>
@@ -2173,19 +2173,19 @@
 							errorClass="messageerro" warnClass="messagealert"
 							showDetail="true" showSummary="false" ajaxRendered="false" />
 					</td>
+					<td><a4j:commandButton styleClass="greenButton"
+							value="#{messages.button_ok}"
+							onclick="#{rich:component('msnErrorPage')}.hide(); return false;"
+							reRender="msnErrorPage, msgPage, errorTable" /></td>
 				</tr>
 			</table>
 
-			<br /> <br />
 
-			<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}"
-				onclick="#{rich:component('msnErrorPage')}.hide(); return false;"
-				reRender="msnErrorPage, msgPage, errorTable" />
 
 		</center>
 	</rich:modalPanel>
 	
-	<rich:modalPanel id="msnError" showWhenRendered="#{requestScope['msnError'] != null}">
+	<rich:modalPanel height="70" width="250" id="msnError" showWhenRendered="#{requestScope['msnError'] != null}">
 		<center>
 
 			<table>
@@ -2196,19 +2196,18 @@
 							errorClass="messageerro" warnClass="messagealert"
 							showDetail="true" showSummary="false" ajaxRendered="false" />
 					</td>
+					<td><a4j:commandButton styleClass="greenButton"
+							value="#{messages.button_ok}"
+							onclick="#{rich:component('msnError')}.hide(); return false;"
+							reRender="msnError, msg, errorTable" /></td>
 				</tr>
 			</table>
 
-			<br /> <br />
-
-			<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}"
-				onclick="#{rich:component('msnError')}.hide(); return false;"
-				reRender="msnError, msg, errorTable" />
 
 		</center>
 	</rich:modalPanel>
 	
-	<rich:modalPanel id="msnSuccess" showWhenRendered="#{requestScope['msnSuccess'] != null}">
+	<rich:modalPanel height="70" width="250" id="msnSuccess" showWhenRendered="#{requestScope['msnSuccess'] != null}">
 		<center>
 
 			<table>
@@ -2219,14 +2218,14 @@
 							errorClass="messageerro" warnClass="messagealert"
 							showDetail="true" showSummary="false" ajaxRendered="false" />
 					</td>
+					<td><a4j:commandButton styleClass="greenButton"
+							value="#{messages.button_ok}"
+							onclick="#{rich:component('msnSuccess')}.hide(); return false;"
+							reRender="msnSuccess, msgS" /></td>
 				</tr>
 			</table>
 
-			<br /> <br />
 
-			<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}"
-				onclick="#{rich:component('msnSuccess')}.hide(); return false;"
-				reRender="msnSuccess, msgS" />
 
 		</center>
 	</rich:modalPanel>
