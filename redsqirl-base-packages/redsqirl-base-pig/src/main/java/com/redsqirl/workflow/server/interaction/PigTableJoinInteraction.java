@@ -34,7 +34,7 @@ public class PigTableJoinInteraction extends TableInteraction {
 	 */
 	private static final long serialVersionUID = 8521366798554741811L;
 	/** Logger */
-	private Logger logger = Logger.getLogger(getClass());
+	private static Logger logger = Logger.getLogger(PigTableJoinInteraction.class);
 	/** Pig Join action where the interaction is contained */
 	private PigJoin hj;
 	/** Operation column title */

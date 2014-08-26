@@ -1650,14 +1650,18 @@ public class CanvasBean extends BaseBean implements Serializable {
 							LocalFileSystem.relativize(getCurrentPage(), e.getImage()),
 							e.getX(), e.getY(), compId });
 				}
-
-				for (DataFlowElement e : getDf().getElement()) {
-					Map<String,List<DataFlowElement>> elMap = e.getInputComponent(); 
-					if(elMap != null){
-						for (Map.Entry<String, List<DataFlowElement>> entry : elMap.entrySet()) {
-							for (DataFlowElement dfe : entry.getValue()) {
-								jsonLinks.put(new Object[] { elements.get(dfe.getComponentId()), elements.get(e.getComponentId()) });
-							}
+				
+				
+				for (DataFlowElement outEl : getDf().getElement()) {
+					String outElId = outEl.getComponentId();
+					Map<String,Map<String,String> > inputsPerOutputs = outEl.getInputNamePerOutput();
+					Iterator<String> outputNameIt = inputsPerOutputs.keySet().iterator();
+					while(outputNameIt.hasNext()){
+						String outputNameCur = outputNameIt.next();
+						Iterator<String> elInIdIt = inputsPerOutputs.get(outputNameCur).keySet().iterator();
+						while(elInIdIt.hasNext()){
+							String inElId = elInIdIt.next();
+							jsonLinks.put(new Object[] { elements.get(outElId), outputNameCur,elements.get(inElId), inputsPerOutputs.get(outputNameCur).get(inElId) });
 						}
 					}
 				}

@@ -151,13 +151,6 @@ function configureCanvas(canvasName, reset){
 
     configureStage(canvasName);
 
-
-    jQuery("#body").keydown(function(event) {
-        if (event.keyCode == 46) { // Delete
-            deleteSelected(canvasName);
-        }
-    });
-
     canvasArray[canvasName].arrow.on('click', function(e) {
         jQuery(".tooltipCanvas").remove();
 
@@ -716,40 +709,22 @@ function deleteElementsJS(listIds, listArrowsIds) {
 			group.remove();
 		}
 		
-		/*jQuery.each(value.getChildren(), function(index, value2) {
-			if (value2.selected) {
-				removeElement(group.getId());
-				deleteLayerChildren(selectedCanvas, group.getId());
-				group.remove();
-			}
-		});*/
-		
 	});
 
-	/*var listSize = layer.getChildren().size();
-	for ( var i = 0; i < listSize; i++) {
-		jQuery.each(layer.getChildren(), function(index, value) {
-			if (value !== undefined && value.isArrow == true) {
-				if (value.selected) {
-					
-					//alert(value.idOutput +" "+ value.nameOutput +" "+ value.idInput +" "+ value.nameInput);
-					
-					removeLinkBt(value.idOutput, value.nameOutput, value.idInput, value.nameInput);
-					
-					if (value.label != null){
-						value.label.remove();
-					}
-					value.remove();
-					return false;
-				}
-			}
-		});
-	}*/
 	
-	var l = listArrowsIds.split(",");
-	for (var i in l) {
-		removeLink(l[i]);
-	}
+	jQuery.each(layer.getChildren(), function(index, value) {
+            if (value !== undefined && value.isArrow == true) {
+                if (checkIfExistID(value.getName(), listArrowsIds)) {
+                    
+                    removeLinkBt(value.idOutput, value.nameOutput, value.idInput, value.nameInput);
+                    
+                    if (value.label != null){
+                        value.label.remove();
+                    }
+                    value.remove();
+                }
+            }
+        });
 	
 	layer.draw();
 	polygonLayer.draw();
@@ -870,7 +845,8 @@ function addLinks(canvasName, positions) {
     var linkArrays = JSON.parse(positions);
 
     for ( var i = 0; i < linkArrays.length; i++) {
-        addLink(canvasName, linkArrays[i][0], linkArrays[i][1]);
+        addLink(canvasName, linkArrays[i][0], linkArrays[i][2]);
+        updateLink("arrow" + linkArrays[i][0] + "-" + linkArrays[i][2],linkArrays[i][1] , linkArrays[i][3]);
     }
 }
 
@@ -1068,7 +1044,7 @@ function addElements(canvasName, positions, selecteds) {
 			maxY = Math.max(maxY,positionsArrays[i][4]);
 			//updateIdObj(positionsArrays[i][0], positionsArrays[i][0]);
 			updateTypeObj(canvasName, positionsArrays[i][0], positionsArrays[i][0]);
-			updateLabelObj(positionsArrays[i][0], positionsArrays[i][5]);
+			updateLabelObj(positionsArrays[i][0], positionsArrays[i][5],false);
 			group.hasChangedId = true;
 		}
 		
@@ -1083,6 +1059,7 @@ function addElements(canvasName, positions, selecteds) {
        canvasArray[canvasName].background.setHeight(maxY + 100);
     }
     
+    polygonLayer.draw();
     canvasArray[canvasName].stage.draw();
     
     /*}catch(exception){
@@ -2111,24 +2088,9 @@ function polygonOnClick(obj,e, canvasName){
 	
 }
 
-function removeLink(name) {
+function updateLabelObj(groupId, newGroupId,drawCanvas) {
     
-    var layer = canvasArray[selectedCanvas].layer;
-    
-    for ( var i = 0; i < layer.getChildren().length; i++) {
-        var arrow = layer.getChildren()[i];
-        if (arrow.getName() == name) {
-            arrow.remove();
-            if (arrow.label != null){
-                arrow.label.remove();
-            }
-            layer.draw();
-            return;
-        }
-    }
-}
-
-function updateLabelObj(groupId, newGroupId) {
+    drawCanvas = typeof drawCanvas !== 'undefined' ? drawCanvas : true;
     
     var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
     
@@ -2161,7 +2123,10 @@ function updateLabelObj(groupId, newGroupId) {
     });
 
     group.add(textLabelObj);
-    polygonLayer.draw();
+    
+    if(drawCanvas){
+        polygonLayer.draw();
+    }
 }
 
 function getLabelOutputType(color){
@@ -2263,8 +2228,11 @@ function updateAllOutputStatus() {
     }
 }
 
-function updateActionOutputStatus(groupId, status, fileExists, tooltip, noError) {
+function updateActionOutputStatus(groupId, status, fileExists, tooltip, noError, drawCanvas) {
     
+    drawCanvas = typeof drawCanvas !== 'undefined' ? drawCanvas : true;
+    
+    var layer = canvasArray[selectedCanvas].layer;
     var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
     
     var group = getElement(polygonLayer, groupId);
@@ -2296,13 +2264,17 @@ function updateActionOutputStatus(groupId, status, fileExists, tooltip, noError)
             }
        });
     }
-    
-    polygonLayer.draw();
+    if(drawCanvas){
+        layer.draw();
+        polygonLayer.draw();
+    }
 
 }
 
-function updateActionRunningStatus(groupId, status, fileExists) {
+function updateActionRunningStatus(groupId, status, fileExists,drawCanvas) {
 
+    drawCanvas = typeof drawCanvas !== 'undefined' ? drawCanvas : true;
+    
 	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
 	
 	var group = getElement(polygonLayer, groupId);
@@ -2310,21 +2282,27 @@ function updateActionRunningStatus(groupId, status, fileExists) {
 	group.getChildren()[6].setStroke(getColorRunning(status));
 	group.getChildren()[7].setStroke(getColorOutputExistence(fileExists));
 	
-	polygonLayer.draw();
+	if(drawCanvas){
+	   polygonLayer.draw();
+	}
 }
 
-function updateArrowType(idOutput, idInput, color, type, tooltip) {
+function updateArrowType(idOutput, idInput, color, type, tooltip,drawCanvas) {
+    
+    drawCanvas = typeof drawCanvas !== 'undefined' ? drawCanvas : true;
     
     var layer = canvasArray[selectedCanvas].layer;
 
     jQuery.each(layer.getChildren(),
         function(index, value) {
             if (value !== undefined && value.isArrow == true) {
+                //alert("Current link: "+value.idOutput+" "+value.idInput);
                 if (value.idOutput == idOutput && value.idInput == idInput){
+                    //alert("Update the arrow");
                     value.setStroke(color);
                     value.originalColor = color;
                     value.tooltipArrow = tooltip;
-                    return false;
+                    return true;
                 }
             }
         }
@@ -2351,13 +2329,16 @@ function updateArrowType(idOutput, idInput, color, type, tooltip) {
         createLegend(selectedCanvas);
     }
     
-    layer.draw();
+    if(drawCanvas){
+        layer.draw();
+    }
 
 }
 
 
-function updateArrowLabel(idOutput, idInput, label) {
+function updateArrowLabel(idOutput, idInput, label,drawCanvas) {
     
+    drawCanvas = typeof drawCanvas !== 'undefined' ? drawCanvas : true;
     var layer = canvasArray[selectedCanvas].layer;
     
     var posx;
@@ -2405,16 +2386,21 @@ function updateArrowLabel(idOutput, idInput, label) {
     
     layer.add(textLabelObj)
     
-    layer.draw();
+    if(drawCanvas){
+        layer.draw();
+    }
 
 }
 
 function updateAllArrowColours(canvasName, data){
+    //alert("Update All arrow colours");
     var layer = canvasArray[canvasName].layer;
     for (var i = 0; i < data.length; i++) {
-        updateArrowType(data[i][0], data[i][1], data[i][2], data[i][3], data[i][4]);
-        updateArrowLabel(data[i][0], data[i][1], data[i][5]);
+        //alert(data[i][0]+" "+ data[i][1]+" "+ data[i][2]+" "+ data[i][3]+" "+ data[i][4]+" "+data[i][5]);
+        updateArrowType(data[i][0], data[i][1], data[i][2], data[i][3], data[i][4],false);
+        updateArrowLabel(data[i][0], data[i][1], data[i][5],false);
     }
+    layer.draw();
     
 }
 
