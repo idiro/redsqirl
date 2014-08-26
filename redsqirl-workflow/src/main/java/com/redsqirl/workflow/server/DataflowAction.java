@@ -609,6 +609,22 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		}
 		return ans;
 	}
+	
+	public Map<String,Map<String,String>> getInputNamePerOutput() throws RemoteException {
+		Iterator<String> itNameOutput = outputComponent.keySet().iterator();
+		Map<String,Map<String,String>> ans = new LinkedHashMap<String,Map<String,String>>();
+		while(itNameOutput.hasNext()){
+			String outputNameCur = itNameOutput.next();
+			Iterator<DataFlowElement> itOutputElements = outputComponent.get(outputNameCur).iterator();
+			Map<String,String> curOutAns = new LinkedHashMap<String,String>();
+			while(itOutputElements.hasNext()){
+				DataFlowElement outputElement = itOutputElements.next();
+				curOutAns.put(outputElement.getComponentId(), findNameOf(outputElement.getInputComponent(),this));
+			}
+			ans.put(outputNameCur,curOutAns);
+		}
+		return ans;
+	}
 
 	/**
 	 * Add a component in a map. This method is called by @see

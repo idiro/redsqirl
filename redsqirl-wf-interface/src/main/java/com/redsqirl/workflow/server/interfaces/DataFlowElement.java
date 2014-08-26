@@ -221,6 +221,12 @@ public interface DataFlowElement extends Remote{
 	public String removeOutputComponent(String outputName, DataFlowElement wa) throws RemoteException;
 
 	/**
+	 * For each output of this object gives the input ids and the input name related to this object.
+	 * @return
+	 * @throws RemoteException
+	 */
+	public Map<String,Map<String,String>> getInputNamePerOutput() throws RemoteException;
+	/**
 	 * Get a List of pages
 	 * @return the pageList
 	 * @throws RemoteException

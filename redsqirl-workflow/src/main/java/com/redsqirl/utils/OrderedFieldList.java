@@ -82,14 +82,18 @@ public class OrderedFieldList extends UnicastRemoteObject implements
 	 * @param type FieldType of the Field
 	 */
 	public void addField(String name, FieldType type) {
-
-		logger.info("addField name " + name + " " + type.toString());
-
+		
+		if(logger.isDebugEnabled()){
+			logger.debug("addField name " + name + " " + type.toString());
+		}
+		
 		if (!field.containsKey(name)) {
-			logger.info("addField  name " + name);
+			if(logger.isDebugEnabled()){
+				logger.info("addField  name " + name);
+			}
 			positions.add(name);
-		} else {
-			logger.info("addField  name no " + name);
+		} else if(logger.isDebugEnabled()){
+			logger.debug("addField  name no " + name);
 		}
 
 		field.put(name, type);

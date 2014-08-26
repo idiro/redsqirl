@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.ListInteraction;
 import com.redsqirl.workflow.server.Page;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.interaction.PigFilterInteraction;
 import com.redsqirl.workflow.server.interaction.PigGroupInteraction;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
@@ -171,8 +172,15 @@ public class PigGroupRank extends PigElement {
 
 	@Override
 	public FieldList getNewField() throws RemoteException {
-		FieldList newFieldList = getInFields();
-//		newFieldList.addField("Rank", FieldType.INT);
+		FieldList newFieldList = getInFields().cloneRemote();
+		if(newFieldList != null){
+			String rankValue = rank.getValue();
+			if(rankValue.length() > 24){
+				newFieldList.addField("Rank_"+rankValue.substring(0,24), FieldType.INT);
+			}else{
+				newFieldList.addField("Rank_"+rankValue , FieldType.INT);
+			}
+		}
 		return newFieldList;
 	}
 

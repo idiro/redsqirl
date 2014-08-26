@@ -152,6 +152,11 @@ public class AppendListInteraction extends UserInteraction{
 	public void setNonEmptyChecker() throws RemoteException{
 		setChecker(new DFEInteractionChecker() {
 			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 4743871962800977873L;
+
 			@Override
 			public String check(DFEInteraction interaction) throws RemoteException {
 				try{
