@@ -376,8 +376,8 @@ canvas {
 	background-position:bottom center;
 	background-position:left;
 	text-aling:right;
-	width:75px;
-	height:25px;
+	/* width:75px;
+	height:25px; */
 	color: #336699;
 }
 
@@ -386,8 +386,8 @@ canvas {
 	padding-left: 20px;
 	background-position:left;
 	text-aling:right;
-	width:75px;
-	height:25px;
+	/* width:75px;
+	height:25px; */
 	color: #000000;
 }
 
@@ -397,8 +397,8 @@ canvas {
 	color: #FFFFFF;
 	background-position:left;
 	text-aling:right;
-	height:70px;
-	height:25px;
+	/* height:70px;
+	height:25px; */
 }
 
 .messagealert {
@@ -407,8 +407,8 @@ canvas {
 	color: #336699;
 	background-position:left;
 	text-aling:right;
-	width:75px;
-	height:25px;
+	/* width:75px;
+	height:25px */;
 }
 
 .rich-panel-body {
