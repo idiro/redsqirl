@@ -84,14 +84,14 @@
 
 
 	<h:form>
-	<div id="canvasModalBeanTextEditor" style="width:100%; overflow: auto; height: 375px;" rendered="#{canvasModalBean.selEditor != null}" >
+	<div id="canvasModalBeanTextEditor" style="width:100%; overflow: auto; height: 100%;" rendered="#{canvasModalBean.selEditor != null}" >
 
 		<h:inputTextarea maxlength="100" cols="70" rows="10" value="#{canvasModalBean.selEditor.value}"
 			style="resize:none;border:1px solid;width:97%;height:100px;" id="commandText" />
 
 		<a4j:region>
-		<div style="width:100%;overflow:auto;height:225px;overflow-x:hidden;overflow-y:auto;" >
-			<table width="100%" id="table" height="200px" style="border:none;">
+		<div style="width:100%;overflow:auto;height:100%;overflow-x:hidden;overflow-y:auto;" >
+			<table width="100%" id="table" style="border:none;">
 				<tr style="vertical-align: top;">
 					<td width="45%">
 						<br /> 
@@ -108,12 +108,13 @@
 						<rich:extendedDataTable id="listFunctions" 
 						    value="#{canvasModalBean.selEditor.edit.textEditorFunctions[canvasModalBean.selEditor.selectedFunction]}" 
 						    var="item"
-							style="border:0px;" width="100%" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+							style="border:0px; height:200px !important;" width="100%" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 							enableContextMenu="false" selectionMode="none"
 							onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
-							rowClasses="even-row, odd-row">
+							rowClasses="even-row, odd-row"
+							>
 	
-							<rich:column style="border-bottom:0px;border-right:0px;">
+							<rich:column style="border-bottom:0px;border-right:0px;" >
 								<f:facet name="header">
 									<h:outputText value="#{messages.label_word}" />
 								</f:facet>
@@ -141,7 +142,7 @@
 						</rich:extendedDataTable>
 					</td>
 	
-					<td width="10%">
+					<td width="15%">
 						<br />
 						<rich:comboBox id="listCategoriesOperation" 
 					   	   value="#{canvasModalBean.selEditor.selectedOperation}"
@@ -155,10 +156,11 @@
 						<rich:extendedDataTable id="listOperation" 
 						value="#{canvasModalBean.selEditor.edit.textEditorOperations[canvasModalBean.selEditor.selectedOperation]}" 
 						var="item"
-						style="border:0px;" width="100%" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+						style="border:0px;height:200px !important; " width="100%" onRowMouseOver="this.style.backgroundColor='#f2b97a'"
 						enableContextMenu="false" selectionMode="none"
 						onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
-						rowClasses="even-row, odd-row">
+						rowClasses="even-row, odd-row"
+						>
 
 							<rich:column style="border-bottom:0px;border-right:0px;">
 								<f:facet name="header">
@@ -174,14 +176,14 @@
 						</rich:extendedDataTable>
 					</td>
 	
-					<td width="45%">
+					<td width="40%">
 					
 					<br />
 					<br />
 					<br />
 						
 						<rich:extendedDataTable id="listFields"	value="#{canvasModalBean.selEditor.edit.textEditorFieldsRows}" var="rowItem"
-							style="border:0px;" width="100%" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+							style="border:0px;height:200px !important;" width="100%" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 							enableContextMenu="false" selectionMode="none"
 							onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
 							rowClasses="even-row, odd-row">
