@@ -1094,10 +1094,10 @@
 					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
+
 				<a4j:jsFunction name="openChangeIdModal"
 					action="#{canvasModalBean.openCanvasModal}"
-                    data="#{canvasModalBean.loadMainWindow}"
-					oncomplete="if( #{requestScope['msnError'] == null}){if(data || confirm(msg_confirm_changeid)){#{rich:component('modalChangeId')}.show();}}else{updateLabelObj('#{canvasModalBean.idGroup}','#{canvasModalBean.componentId}');changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');}"
+					oncomplete="if( #{requestScope['msnError'] == null}){#{rich:component('modalChangeId')}.show();}"
 					reRender="msnError, errorTable, newIdElement">
 					<a4j:actionparam name="paramGroupId" />
 					<a4j:actionparam name="paramPathImage" />

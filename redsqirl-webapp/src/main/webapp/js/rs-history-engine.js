@@ -375,11 +375,19 @@ CommandChangeId.prototype.getName = function(){
     return msg_changeelementid_command;
 };
 
-function execChangeIdElementCommand(groupId, oldId,newId, oldComment, newComment){
-    if(oldId != newId || oldComment != newComment){
+function execChangeIdElementCommand(loadMainWindow , groupId, oldId,newId, oldComment, newComment){
+	if(oldId != newId || oldComment != newComment){
+		if(oldId != newId ){
+			if(!(loadMainWindow==='true')){
+				if (!confirm(msg_confirm_changeid)) {
+					return false;
+				}
+			}
+		}
         canvasArray[selectedCanvas].commandHistory.execute(
         new CommandChangeId(groupId, oldId,newId, oldComment, newComment));
     }else{
+    	//TODO Fix for update only when id changed
         jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });
         currentChangeIdGroup = groupId;
         changeIdElement(groupId,newId,newComment);
