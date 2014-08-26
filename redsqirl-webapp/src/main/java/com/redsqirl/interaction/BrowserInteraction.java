@@ -145,7 +145,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 			String oldPath = inter.getTree().getFirstChild("browse")
 					.getFirstChild("output").getFirstChild("path")
 					.getFirstChild().getHead();
-			logger.info("Comparaison path: " + oldPath + " , "
+			logger.debug("Comparaison path: " + oldPath + " , "
 					+ getPath());
 			unchanged = getPath().equals(
 					oldPath);
@@ -154,7 +154,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 			if (unchanged) {
 				for (SelectItem itemList : listProperties) {
 					String key = itemList.getLabel();
-					logger.info("Comparaison property "
+					logger.trace("Comparaison property "
 							+ key
 							+ ": "
 							+ itemList.getValue()
@@ -179,7 +179,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 				List<Tree<String>> oldFieldsList = inter.getTree()
 						.getFirstChild("browse")
 						.getFirstChild("output").getChildren("field");
-				logger.info("comparaison fields: "
+				logger.debug("comparaison fields: "
 						+ oldFieldsList.size() + " , "
 						+ listFields.size());
 				if (unchanged &= oldFieldsList.size() == listFields.size()) {
@@ -188,7 +188,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 					for (String nameValue : listFields) {
 						Tree<String> field = oldFieldIt.next();
 						String value[] = nameValue.split(" ");
-						logger.info("Comparaison field: "
+						logger.trace("Comparaison field: "
 								+ field.getFirstChild("name")
 								.getFirstChild().getHead()
 								+ " , "

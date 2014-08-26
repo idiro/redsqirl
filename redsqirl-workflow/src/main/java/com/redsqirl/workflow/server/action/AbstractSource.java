@@ -252,10 +252,11 @@ public abstract class AbstractSource extends DataflowAction {
 				}
 				logger.info("got type");
 				try {
-					logger.info("tree is : "
+					if(logger.isDebugEnabled()){
+						logger.debug("tree is : "
 							+ ((TreeNonUnique<String>) getInteraction(
 									key_dataset).getTree()).toString());
-
+					}
 					// Properties
 					Map<String, String> props = new LinkedHashMap<String, String>();
 					if (error == null) {
@@ -293,8 +294,10 @@ public abstract class AbstractSource extends DataflowAction {
 					FieldList outF = new OrderedFieldList();
 					if (error == null) {
 						try {
-							logger.info("tree is "
+							if(logger.isDebugEnabled()){
+								logger.debug("tree is "
 									+ getInteraction(key_dataset).getTree());
+							}
 							List<Tree<String>> fields = getInteraction(
 									key_dataset).getTree()
 									.getFirstChild("browse")

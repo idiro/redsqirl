@@ -475,21 +475,25 @@
 	      }
 	      
 	      function updateCanvasRunningStatus(status){
-		      
+		      var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
 	    	//<![CDATA[
 	    	  for (var i = 0; i < status.length; i++) {
-		    	  updateActionRunningStatus(status[i][0], status[i][1], status[i][2]);
+		    	  updateActionRunningStatus(status[i][0], status[i][1], status[i][2],false);
 	    	  }
+		      polygonLayer.draw();
 	    	//]]>
 	      }
 
 	      function updateArcStatus(status){
-		      
+		      var layer = canvasArray[selectedCanvas].layer;
+		      var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
 	    	//<![CDATA[
 	    	  for (var i = 0; i < status.length; i++) {
 		    	  //alert(status[i][0] + " " + status[i][1] + " " + status[i][2]);
-		    	  updateActionOutputStatus(status[i][0], status[i][1], status[i][2], status[i][3], status[i][4]);
+		    	  updateActionOutputStatus(status[i][0], status[i][1], status[i][2], status[i][3], status[i][4],false);
 	    	  }
+		      layer.draw();
+		      polygonLayer.draw();
 	    	//]]>
 	      }
 	      
@@ -605,15 +609,12 @@
 	    	 tabs.tabs("option", "active", tabIndex);
 	    	 setWorkflow(nameTabs[tabIndex]);
 	     }
-		
-	   		jQuery(document).bind('keypress', function (e) {
-			if (e.which == 13) { // Delete
-				//alert(jQuery("#modalChangeIdCDiv").is(':visible'));
-				if(jQuery("#modalChangeIdCDiv").is(':visible')){ // modalChangeId
-					jQuery("[id$='changeIdElementBt']").click();
-				}
-			}
-		});
+	    
+        jQuery(document).bind('keydown', function (e) {
+            if (e.keyCode == 46) { // Delete
+                deleteSelected(selectedCanvas);
+            }
+        });
 	   		
 	   	function disableEnterKey(e){
 	        var key;
@@ -629,7 +630,7 @@
 	        if(window.event)
 	             key = window.event.keyCode;
 	        else
-	             key = e.which;
+	             key = e.keyCode;
 	        
 	        if (key == 13){
 	        	e.preventDefault();

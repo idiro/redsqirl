@@ -137,7 +137,9 @@ CommandDelete.prototype.clean = function(){
 };
 
 function deleteSelected(canvasName){
-	canvasArray[canvasName].commandHistory.execute(new CommandDelete(getSelectedIconsCommaDelimited(), getSelectedArrowsCommaDelimited()));
+    if(getSelectedIconsCommaDelimited() || getSelectedArrowsCommaDelimited()){
+	   canvasArray[canvasName].commandHistory.execute(new CommandDelete(getSelectedIconsCommaDelimited(), getSelectedArrowsCommaDelimited()));
+	}
 }
 
 /********************************************************************/

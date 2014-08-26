@@ -510,13 +510,11 @@ public abstract class MapRedDir extends DataOutput{
 			List<String[]> schemaList = getSchemaList();
 			Map<String, FieldType> schemaTypeMap = new LinkedHashMap<String, FieldType>();
 			
-			logger.info(lines);
 			if (lines != null) {							
-				logger.info("key_delimiter: "
+				logger.trace("key_delimiter: "
 					+ Pattern
 					.quote(delimiter));
 				for (String line : lines) {
-					logger.info("line: " + line);
 					boolean full = true;
 					if (!line.trim().isEmpty()) {
 						int cont = 0;
