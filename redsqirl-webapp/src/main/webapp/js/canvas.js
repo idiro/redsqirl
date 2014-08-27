@@ -1022,7 +1022,6 @@ function rulesDragAndDropGroupObj(canvasName, pos, valueX, valueY) {
 
 
 function addElements(canvasName, positions, selecteds) {
-    canvasArray[canvasName].countObj = 0;
     var positionsArrays = JSON.parse(positions);
     var numSides = 4;
     var maxX = 0;
@@ -1222,7 +1221,6 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
         text : elementType
     });
 
-    canvasArray[canvasName].countObj++;
     var group = createGroup(canvasName, circle0, circle1, polygon, srcImageText, typeText, idElement, arc1,arc2,arc3);
     
     polygonLayer.add(group);
@@ -1457,7 +1455,7 @@ function mountObj(canvasName) {
                                 mousePosStage.x - 30,
                                 mousePosStage.y - 30,
                                 numSides,
-                                "group" + (+canvasArray[selectedCanvas].countObj+1),
+                                "group" + (+canvasArray[selectedCanvas].countObj++),
                                 "")
                         );
                         

@@ -12,133 +12,205 @@
 	
 <rich:panel id="tableInteractionPanelPopUp" style="border:none;min-height:370px;width:100%;" >
 
-	<rich:tabPanel id="tableInteractionPanelPopUpTab" style="border:none;width:100%;" switchType="ajax"	
-		selectedTab="#{canvasModalBean.canvasModalInteractionTableInteractionPanel.selectedTab}">
+			<rich:tabPanel id="tableInteractionPanelPopUpTab"
+				style="border:none;width:100%;" switchType="ajax"
+				selectedTab="#{canvasModalBean.canvasModalInteractionTableInteractionPanel.selectedTab}">
 
 
-		<rich:tab label="#{canvasModalBean.canvasModalInteractionTableInteractionPanel.allTableGrid.name}" 
-			style="border:none;border-collapse:collapse;" id="tableInteractionPanelPopUpTabAll"
-			rendered="#{not empty canvasModalBean.canvasModalInteractionTableInteractionPanel.allTableGrid.rows}" >
+				<rich:tab
+					label="#{canvasModalBean.canvasModalInteractionTableInteractionPanel.allTableGrid.name}"
+					style="border:none;border-collapse:collapse;"
+					id="tableInteractionPanelPopUpTabAll"
+					rendered="#{not empty canvasModalBean.canvasModalInteractionTableInteractionPanel.allTableGrid.rows}">
+					<table style="width: 100%">
+						<tr>
+							<td>
+								<div
+									style="width: 100%; height: 305px; border: 1px solid grey; overflow: auto;">
+									<table style="width: 100%">
+										<tr style="width: 100%">
+											<td style="width: 95%"><rich:dataTable
+													id="tableInteractionPanelAll"
+													value="#{canvasModalBean.canvasModalInteractionTableInteractionPanel.allTableGrid.rows}"
+													var="rowItem" rowKeyVar="rowNb" width="100%"
+													style="border:none;"
+													onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+													onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
 
-			<table style="width:100%">
-            	<tr style="width:100%">
-            		<td style="width:95%">
+													<rich:column style="border-bottom:0px;border-right:0px;"
+														width="20px;">
+														<h:outputText value="#{rowNb+1}" />
+													</rich:column>
 
-						<rich:dataTable id="tableInteractionPanelAll" value="#{canvasModalBean.canvasModalInteractionTableInteractionPanel.allTableGrid.rows}" 
-							var="rowItem" rowKeyVar="rowNb" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-							onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
-			
-							<rich:column style="border-bottom:0px;border-right:0px;" width="20px;">
-								<h:outputText value="#{rowNb+1}" />
-							</rich:column>
-			
-							<rich:column style="border-bottom:0px;border-right:0px;" width="40px;">
-								<f:facet name="header">
-                                   <h:panelGrid columns="1" >
-                                   <a4j:commandLink title="Delete selected lines" action="#{canvasModalBean.canvasModalInteractionTableInteractionPanel.deleteLineTableInteractionPanel}"
-                                       reRender="tableInteractionPanelAll" onclick="if(!confirm('Are you sure you want to delete the selected line?')){return false;}">
-                                       <img id="tableInteractionBtDelete" src="../image/icons/button-delete-small.gif" class="bt" />
-                                   </a4j:commandLink>
-                                   <h:selectBooleanCheckbox onclick="selectAllCheckbox(this, /tableInteractionPopUpAllSelect$/);"/>
-                                   </h:panelGrid>
-                                </f:facet>
-								<h:selectBooleanCheckbox id="tableInteractionPopUpAllSelect" value="#{rowItem.selected}">
-									<f:selectItem itemValue="true" />
-								</h:selectBooleanCheckbox>
-							</rich:column>
+													<rich:column style="border-bottom:0px;border-right:0px;"
+														width="40px;">
+														<f:facet name="header">
+															<h:panelGrid columns="1">
+																<a4j:commandLink title="Delete selected lines"
+																	action="#{canvasModalBean.canvasModalInteractionTableInteractionPanel.deleteLineTableInteractionPanel}"
+																	reRender="tableInteractionPanelAll"
+																	onclick="if(!confirm('Are you sure you want to delete the selected line?')){return false;}">
+																	<img id="tableInteractionBtDelete"
+																		src="../image/icons/button-delete-small.gif"
+																		class="bt" />
+																</a4j:commandLink>
+																<h:selectBooleanCheckbox
+																	onclick="selectAllCheckbox(this, /tableInteractionPopUpAllSelect$/);" />
+															</h:panelGrid>
+														</f:facet>
+														<h:selectBooleanCheckbox
+															id="tableInteractionPopUpAllSelect"
+															value="#{rowItem.selected}">
+															<f:selectItem itemValue="true" />
+														</h:selectBooleanCheckbox>
+													</rich:column>
+
+													<rich:column style="border-bottom:0px;border-right:0px;"
+														width="40px;">
+														<f:facet name="header">
+															<h:outputText value="#{messages.label_generation}" />
+														</f:facet>
+														<h:outputText value="#{rowItem.nameTab}" />
+													</rich:column>
+
+													<rich:columns
+														value="#{canvasModalBean.tablesColumnTitle == null? canvasBean.emptyList : canvasModalBean.tablesColumnTitle}"
+														var="column" index="ind"
+														style="border-bottom:0px;border-right:0px;">
+														<f:facet name="header">
+															<h:outputText value="#{column}" />
+														</f:facet>
+														<h:outputText value="#{rowItem.row[ind]}" />
+													</rich:columns>
+
+												</rich:dataTable></td>
+											<!--     <td style="width:5%">
 							
-							<rich:column style="border-bottom:0px;border-right:0px;" width="40px;">
-								<f:facet name="header">
-									<h:outputText value="#{messages.label_generation}" />
-								</f:facet>
-								<h:outputText value="#{rowItem.nameTab}" />
-							</rich:column>
-			
-							<rich:columns value="#{canvasModalBean.tablesColumnTitle == null? canvasBean.emptyList : canvasModalBean.tablesColumnTitle}"
-								var="column" index="ind" style="border-bottom:0px;border-right:0px;">
-								<f:facet name="header">
-									<h:outputText value="#{column}" />
-								</f:facet>
-								<h:outputText value="#{rowItem.row[ind]}" />
-							</rich:columns>
-							
-						</rich:dataTable>
-							
-					</td>
-			        <td style="width:5%">
-							
-						<div style="width:100%; height: 220px; border: 0px solid; overflow-x: hidden;">
-		         			<h:inputText id="newNumberRow" value="#{canvasModalBean.canvasModalInteractionTableInteractionPanel.allTableGrid.rowNumber}" maxlength="4" size="1" title="#{messages.button_goto}" onkeyup="noLetters(this);" onkeypress="return enableEnterKey(event, 'goNumberRowButtonTIPopUp');" style="margin-top: 50px;border:1px solid;" />
-		               		<a4j:commandButton id="goNumberRowButtonTIPopUp" action="#{canvasModalBean.canvasModalInteractionTableInteractionPanel.allTableGrid.goNumberRow}" reRender="tableInteraction,newNumberRow" style="display:none;" />
-		               		<br/><br/>
-		               		<a4j:commandButton styleClass="greenButton" style="width:40px;" value="#{messages.button_first}" action="#{canvasModalBean.canvasModalInteractionTableInteractionPanel.allTableGrid.goFirst}" reRender="tableInteraction" onclick="this.disabled=true" oncomplete="this.disabled=false;" />
-		               		<br/>
-		               		<a4j:commandButton styleClass="greenButton" style="width:40px;" value="#{messages.button_up}" action="#{canvasModalBean.canvasModalInteractionTableInteractionPanel.allTableGrid.goUp}" reRender="tableInteraction" onclick="this.disabled=true" oncomplete="this.disabled=false;" />
-		               		<br/>
-		               		<a4j:commandButton styleClass="greenButton" style="width:40px;" value="#{messages.button_down}" action="#{canvasModalBean.canvasModalInteractionTableInteractionPanel.allTableGrid.goDown}" reRender="tableInteraction" onclick="this.disabled=true" oncomplete="this.disabled=false;" />
-		               		<br/>
-		               		<a4j:commandButton styleClass="greenButton" style="width:40px;" value="#{messages.button_last}" action="#{canvasModalBean.canvasModalInteractionTableInteractionPanel.allTableGrid.goLast}" reRender="tableInteraction" onclick="this.disabled=true" oncomplete="this.disabled=false;" />
-		               	</div>
 				
-					</td>
-				</tr>
-        	</table>
-        	
-        	<rich:panel id="divBtTableInteractionPopUp" style="border:none;float:right;padding-right:10px;" >
-				<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('tableInteractionPanel')}.hide();" reRender="msnError, errorTable" />
-			    <a4j:commandButton action="#{canvasModalBean.canvasModalInteractionTableInteractionPanel.applyTabTableInteractionPopUp}" 
-			    	value="#{messages.label_menu_generate}" oncomplete="if(#{requestScope['msnError'] == null} ){#{rich:component('tableInteractionPanel')}.hide();changeTableInteractionAnchorBottom();}" 
-			    	styleClass="greenButton" reRender="msnError, errorTable,tableInteraction" />
-			</rich:panel>
+					</td> -->
+										</tr>
+									</table>
+								</div>
+							</td>
+							<td>
 
-		</rich:tab>
+								<div
+									style="width: 100%; height: 220px; border: 0px solid; overflow-x: hidden;">
+									<h:inputText id="newNumberRow"
+										value="#{canvasModalBean.canvasModalInteractionTableInteractionPanel.allTableGrid.rowNumber}"
+										maxlength="4" size="1" title="#{messages.button_goto}"
+										onkeyup="noLetters(this);"
+										onkeypress="return enableEnterKey(event, 'goNumberRowButtonTIPopUp');"
+										style="margin-top: 50px;border:1px solid;" />
+									<a4j:commandButton id="goNumberRowButtonTIPopUp"
+										action="#{canvasModalBean.canvasModalInteractionTableInteractionPanel.allTableGrid.goNumberRow}"
+										reRender="tableInteraction,newNumberRow" style="display:none;" />
+									<br /> <br />
+									<a4j:commandButton styleClass="greenButton" style="width:40px;"
+										value="#{messages.button_first}"
+										action="#{canvasModalBean.canvasModalInteractionTableInteractionPanel.allTableGrid.goFirst}"
+										reRender="tableInteraction" onclick="this.disabled=true"
+										oncomplete="this.disabled=false;" />
+									<br />
+									<a4j:commandButton styleClass="greenButton" style="width:40px;"
+										value="#{messages.button_up}"
+										action="#{canvasModalBean.canvasModalInteractionTableInteractionPanel.allTableGrid.goUp}"
+										reRender="tableInteraction" onclick="this.disabled=true"
+										oncomplete="this.disabled=false;" />
+									<br />
+									<a4j:commandButton styleClass="greenButton" style="width:40px;"
+										value="#{messages.button_down}"
+										action="#{canvasModalBean.canvasModalInteractionTableInteractionPanel.allTableGrid.goDown}"
+										reRender="tableInteraction" onclick="this.disabled=true"
+										oncomplete="this.disabled=false;" />
+									<br />
+									<a4j:commandButton styleClass="greenButton" style="width:40px;"
+										value="#{messages.button_last}"
+										action="#{canvasModalBean.canvasModalInteractionTableInteractionPanel.allTableGrid.goLast}"
+										reRender="tableInteraction" onclick="this.disabled=true"
+										oncomplete="this.disabled=false;" />
+								</div>
+							</td>
+						</tr>
+					</table>
 
-			<c:forEach items="#{canvasModalBean.canvasModalInteractionTableInteractionPanel.listTableGrid}" var="cmi" >
-			
-				<rich:tab label="#{cmi.name}" style="border:none;border-collapse:collapse;" >
-			
-					<div style="width:100%;height:305px;border:1px solid grey;overflow:auto;">
-				
-						<rich:dataTable value="#{cmi.rows}" var="rowItem" rowKeyVar="rowNb" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-							onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
-			
-							<rich:column style="border-bottom:0px;border-right:0px;" width="20px;">
-								<h:outputText value="#{rowNb+1}" />
-							</rich:column>
-			
-							<rich:column style="border-bottom:0px;border-right:0px;" width="40px;">
-								<f:facet name="header">
-									<h:selectBooleanCheckbox onclick="selectAllCheckbox(this, /tableInteractionPopUpSelect$/);"/>
-								</f:facet>
-								<h:selectBooleanCheckbox id="tableInteractionPopUpSelect" value="#{rowItem.selected}" title="#{rowItem.selected}">
-									<f:selectItem itemValue="true" />
-								</h:selectBooleanCheckbox>
-							</rich:column>
-			
-							<rich:columns value="#{canvasModalBean.tablesColumnTitle == null? canvasBean.emptyList : canvasModalBean.tablesColumnTitle}"
-								var="column" index="ind" style="border-bottom:0px;border-right:0px;">
-								<f:facet name="header">
-									<h:outputText value="#{column}" />
-								</f:facet>
-								<h:outputText value="#{rowItem.row[ind]}" title="#{rowItem.row[ind]}" />
-							</rich:columns>
-			
-						</rich:dataTable>
-						
-					</div>
-					
-					<br />
 
-					<a4j:commandButton action="#{canvasModalBean.canvasModalInteractionTableInteractionPanel.changeTabTableInteraction}" 
-						value="#{messages.button_add}" styleClass="greenButton" style="float:right;" reRender="tableInteractionPanelPopUp" />
-				
+					<rich:panel id="divBtTableInteractionPopUp"
+						style="border:none;float:right;padding-right:10px;">
+						<a4j:commandButton styleClass="greenButton"
+							value="#{messages.button_cancel}"
+							onclick="#{rich:component('tableInteractionPanel')}.hide();"
+							reRender="msnError, errorTable" />
+						<a4j:commandButton
+							action="#{canvasModalBean.canvasModalInteractionTableInteractionPanel.applyTabTableInteractionPopUp}"
+							value="#{messages.label_menu_generate}"
+							oncomplete="if(#{requestScope['msnError'] == null} ){#{rich:component('tableInteractionPanel')}.hide();changeTableInteractionAnchorBottom();}"
+							styleClass="greenButton"
+							reRender="msnError, errorTable,tableInteraction" />
+					</rich:panel>
 				</rich:tab>
-	
-			</c:forEach>
 
-	</rich:tabPanel>
-	
-</rich:panel>
+				<c:forEach
+					items="#{canvasModalBean.canvasModalInteractionTableInteractionPanel.listTableGrid}"
+					var="cmi">
+
+					<rich:tab label="#{cmi.name}"
+						style="border:none;border-collapse:collapse;">
+
+						<div
+							style="width: 100%; height: 305px; border: 1px solid grey; overflow: auto;">
+
+							<rich:dataTable value="#{cmi.rows}" var="rowItem"
+								rowKeyVar="rowNb" width="100%" style="border:none;"
+								onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+								onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
+
+								<rich:column style="border-bottom:0px;border-right:0px;"
+									width="20px;">
+									<h:outputText value="#{rowNb+1}" />
+								</rich:column>
+
+								<rich:column style="border-bottom:0px;border-right:0px;"
+									width="40px;">
+									<f:facet name="header">
+										<h:selectBooleanCheckbox
+											onclick="selectAllCheckbox(this, /tableInteractionPopUpSelect$/);" />
+									</f:facet>
+									<h:selectBooleanCheckbox id="tableInteractionPopUpSelect"
+										value="#{rowItem.selected}" title="#{rowItem.selected}">
+										<f:selectItem itemValue="true" />
+									</h:selectBooleanCheckbox>
+								</rich:column>
+
+								<rich:columns
+									value="#{canvasModalBean.tablesColumnTitle == null? canvasBean.emptyList : canvasModalBean.tablesColumnTitle}"
+									var="column" index="ind"
+									style="border-bottom:0px;border-right:0px;">
+									<f:facet name="header">
+										<h:outputText value="#{column}" />
+									</f:facet>
+									<h:outputText value="#{rowItem.row[ind]}"
+										title="#{rowItem.row[ind]}" />
+								</rich:columns>
+
+							</rich:dataTable>
+
+						</div>
+
+						<br />
+
+						<a4j:commandButton
+							action="#{canvasModalBean.canvasModalInteractionTableInteractionPanel.changeTabTableInteraction}"
+							value="#{messages.button_add}" styleClass="greenButton"
+							style="float:right;" reRender="tableInteractionPanelPopUp" />
+
+					</rich:tab>
+
+				</c:forEach>
+
+			</rich:tabPanel>
+
+		</rich:panel>
 
 </h:form>
 
