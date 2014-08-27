@@ -129,7 +129,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 				msg = PigLanguageManager
 						.getText("pig.select_features_interaction.checkempty");
 			} else {
-				logger.info("Fields " + in.getFields().getFieldNames());
+				logger.debug("Fields " + in.getFields().getFieldNames());
 				Set<String> fieldGrouped = getFieldGrouped();
 				fl = getInputFieldList(in);
 
@@ -146,7 +146,9 @@ public class PigTableSelectInteraction extends TableInteraction {
 					try {
 						String typeRetuned = PigDictionary.getInstance()
 								.getReturnType(fieldoperation, fl, fieldGrouped);
-						logger.info("type returned : " + typeRetuned);
+						if(logger.isDebugEnabled()){
+							logger.info("type returned : " + typeRetuned);
+						}
 						if (!PigDictionary.check(fieldtype, typeRetuned)) {
 							msg = PigLanguageManager
 									.getText(
@@ -155,8 +157,10 @@ public class PigTableSelectInteraction extends TableInteraction {
 													fieldoperation, typeRetuned,
 													fieldtype });
 						}
-						logger.info("added : " + fieldoperation
+						if(logger.isDebugEnabled()){
+							logger.debug("added : " + fieldoperation
 								+ " to field type list");
+						}
 					} catch (Exception e) {
 						msg = PigLanguageManager
 								.getText("pig.expressionexception");
@@ -221,14 +225,14 @@ public class PigTableSelectInteraction extends TableInteraction {
 		if (hs.getGroupingInt() != null) {
 			String alias = getAlias();
 			fl = new OrderedFieldList();
-			logger.info("Fields " + in.getFields().getFieldNames());
+			logger.debug("Fields " + in.getFields().getFieldNames());
 			Iterator<String> inputFieldIt = in.getFields().getFieldNames()
 					.iterator();
 			while (inputFieldIt.hasNext()) {
 				String nameF = inputFieldIt.next();
 				String nameFwithAlias = alias + "." + nameF;
-				logger.info(nameF);
-				logger.info(in.getFields().getFieldType(nameF));
+				logger.debug(nameF);
+				logger.debug(in.getFields().getFieldType(nameF));
 				fl.addField(nameFwithAlias,
 						in.getFields().getFieldType(nameF));
 			}
@@ -244,7 +248,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 		if (hs.getGroupingInt() != null) {
 			String alias = getAlias();
 			fieldGrouped = new HashSet<String>();
-			logger.info("group interaction is not null");
+			logger.debug("group interaction is not null");
 			Iterator<String> grInt = hs.getGroupingInt().getValues().iterator();
 			while (grInt.hasNext()) {
 				String field = alias + "." + grInt.next();
@@ -393,7 +397,9 @@ public class PigTableSelectInteraction extends TableInteraction {
 			addCaseWhenOps(alias,fieldList);
 
 		}
-		logger.info(getTree());
+		if(logger.isDebugEnabled()){
+			logger.debug(getTree());
+		}
 		// logger.info("pig tsel tree "+ tree.toString());
 	}
 
@@ -494,8 +500,9 @@ public class PigTableSelectInteraction extends TableInteraction {
 						row.put(table_field_title, cur.replace(alias + ".", "")
 								+ "_" + operation);
 					}
-
-					logger.info("trying to add type for " + cur);
+					if(logger.isDebugEnabled()){
+						logger.debug("trying to add type for " + cur);
+					}
 					if (operation.equalsIgnoreCase(gen_operation_avg)) {
 						row.put(table_type_title, "DOUBLE");
 					} else if (operation.equalsIgnoreCase(gen_operation_count)

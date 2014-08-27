@@ -50,7 +50,7 @@ public class AppendListInteraction extends CanvasModalInteraction {
 
 	@Override
 	public void readInteraction() throws RemoteException {
-		logger.info("appendList");
+		logger.debug("appendList");
 		selectedAppendListOptions = new LinkedList<String>();
 
 
@@ -102,7 +102,7 @@ public class AppendListInteraction extends CanvasModalInteraction {
 				for (Tree<String> tree : listOut) {
 					selectedAppendListOptions.add(tree.getFirstChild()
 							.getHead());
-					logger.info("read appendList seleted: " + tree.getFirstChild()
+					logger.debug("read appendList selected: " + tree.getFirstChild()
 							.getHead());
 				}
 			}
@@ -118,9 +118,9 @@ public class AppendListInteraction extends CanvasModalInteraction {
 					.getFirstChild("applist")
 					.getFirstChild("values").getChildren("value");
 			if (list != null) {
-				logger.info("list not null: " + list.size());
+				logger.debug("list not null: " + list.size());
 				for (Tree<String> tree : list) {
-					logger.info("list value "
+					logger.debug("list value "
 							+ tree.getFirstChild().getHead());
 
 					String value = tree
@@ -143,7 +143,7 @@ public class AppendListInteraction extends CanvasModalInteraction {
 			inter.getTree().getFirstChild("applist")
 			.getFirstChild("output").removeAllChildren();
 				for (String s : selectedAppendListOptions) {
-					logger.info("appendList seleted: " + s);
+					logger.debug("appendList seleted: " + s);
 					inter.getTree().getFirstChild("applist")
 					.getFirstChild("output").add("value").add(s);
 				}

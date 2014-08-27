@@ -747,7 +747,7 @@ public class PigDictionary extends AbstractDictionary {
 		logger.debug("aggreg and feats ok");
 
 		expr = expr.trim();
-		logger.info("expression : " + expr);
+		logger.debug("expression : " + expr);
 		if (expr.startsWith("(") && expr.endsWith(")")) {
 			int count = 1;
 			int index = 1;
@@ -875,7 +875,7 @@ public class PigDictionary extends AbstractDictionary {
 			}
 		}
 
-		logger.info("type returning: " + type);
+		logger.debug("type returning: " + type);
 		return type;
 
 	}
@@ -939,7 +939,7 @@ public class PigDictionary extends AbstractDictionary {
 	 */
 	private String runConditionalOperation(String expr, FieldList fields,
 			Set<String> fieldAggreg) throws Exception {
-		logger.info("Conditional operation: " + expr);
+		logger.debug("Conditional operation: " + expr);
 		String type = null;
 
 		if (expr.startsWith("CASE") && expr.endsWith("END")) {
@@ -949,7 +949,7 @@ public class PigDictionary extends AbstractDictionary {
 			for (int i = 0; i < expressions.length; ++i) {
 				String expression = expressions[i].trim();
 				if (!expression.isEmpty()) {
-					logger.info(expression);
+					logger.debug(expression);
 					String argType = null;
 					if (expression.startsWith("WHEN")) {
 						String[] args2 = expression.replace("WHEN", "").split(
@@ -1616,13 +1616,17 @@ public class PigDictionary extends AbstractDictionary {
 	 */
 	private static boolean isInList(String[][] list, String expr) {
 		String cleanUp = removeBracketContent(expr);
-		logger.info(cleanUp);
+		if(logger.isDebugEnabled()){
+			logger.debug(cleanUp);
+		}
 		boolean found = false;
 		int i = 0;
 		while (!found && list.length > i) {
 			String regex = getRegexToFind(removeBracketContent(list[i][0]
 					.trim()));
-			logger.info("Is " + cleanUp + " contains " + regex);
+			if(logger.isDebugEnabled()){
+				logger.debug("Is " + cleanUp + " contains " + regex);
+			}
 			found = cleanUp.matches(regex);
 			++i;
 		}
@@ -1670,7 +1674,7 @@ public class PigDictionary extends AbstractDictionary {
 				logger.debug("only one arg : " + argsTypeExpected.length);
 				logger.debug("fields " + fields.getFieldNames());
 				logger.debug("arg " + args[i]);
-				logger.info("return type : " + getReturnType(args[i], fields));
+				logger.debug("return type : " + getReturnType(args[i], fields));
 				ok &= check(argsTypeExpected[i],
 						getReturnType(args[i], fields));
 			}

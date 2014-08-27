@@ -120,9 +120,9 @@
 
 	</h:panelGrid>
 	
-	<h:panelGrid columns="2">
-		<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" action="#{configureTabsBean.saveTabs}" oncomplete="if(#{requestScope['msnError'] == null} ){#{rich:component('modalConfigureFooterTabs')}.hide();reRenderFooter();}" reRender="msnError"/>
+	<h:panelGrid columns="2" style="border:none; float:right;">
 		<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" action="#{configureTabsBean.cancelChanges}" onclick="#{rich:component('modalConfigureFooterTabs')}.hide()" reRender="tabsMenu, actionsPanel"/>
+		<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" action="#{configureTabsBean.saveTabs}" oncomplete="if(#{requestScope['msnError'] == null} ){#{rich:component('modalConfigureFooterTabs')}.hide();reRenderFooter();}" reRender="msnError"/>
 	</h:panelGrid>
 
 </h:form>

@@ -545,33 +545,35 @@ public class CanvasBean extends BaseBean implements Serializable {
 		String allPositions = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("allpositions");
 		logger.info(allPositions);
 		logger.info(workflowMap.keySet());
-		try {
-			JSONObject allPositionsArray = new JSONObject(allPositions);
-			Iterator itWorkflow = allPositionsArray.keys();
-			while (itWorkflow.hasNext()) {
-				String workflowId = (String) itWorkflow.next();
-				JSONObject positionsArray = new JSONObject(allPositionsArray
-						.get(workflowId).toString());
-				Iterator it = positionsArray.keys();
-				while (it.hasNext()) {
-					String groupId = (String) it.next();
-					Object objc = positionsArray.get(groupId);
+		if(allPositions != null && !allPositions.isEmpty() && !allPositions.equalsIgnoreCase("undefined")){
+			try {
+				JSONObject allPositionsArray = new JSONObject(allPositions);
+				Iterator itWorkflow = allPositionsArray.keys();
+				while (itWorkflow.hasNext()) {
+					String workflowId = (String) itWorkflow.next();
+					JSONObject positionsArray = new JSONObject(allPositionsArray
+							.get(workflowId).toString());
+					Iterator it = positionsArray.keys();
+					while (it.hasNext()) {
+						String groupId = (String) it.next();
+						Object objc = positionsArray.get(groupId);
 
-					JSONArray elementArray = new JSONArray(objc.toString());
-					logger.info("Update :" + workflowId + " " + groupId + " "
-							+ elementArray.get(0).toString() + " "
-							+ elementArray.get(1).toString());
+						JSONArray elementArray = new JSONArray(objc.toString());
+						logger.info("Update :" + workflowId + " " + groupId + " "
+								+ elementArray.get(0).toString() + " "
+								+ elementArray.get(1).toString());
 
-					if (!groupId.equalsIgnoreCase("legend")) {
-						updatePosition(workflowId, groupId, elementArray.get(0)
-								.toString(), elementArray.get(1).toString());
+						if (!groupId.equalsIgnoreCase("legend")) {
+							updatePosition(workflowId, groupId, elementArray.get(0)
+									.toString(), elementArray.get(1).toString());
+						}
+
 					}
-
 				}
+			} catch (JSONException e) {
+				logger.info("Error updating positions");
+				e.printStackTrace();
 			}
-		} catch (JSONException e) {
-			logger.info("Error updating positions");
-			e.printStackTrace();
 		}
 	}
 
@@ -1225,8 +1227,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		logger.info("getOutputStatus");
 
-		String state = null;
+		String outputType = null;
 		String pathExistsStr = null;
+		String runningStatus = null;
 		StringBuffer tooltip = new StringBuffer();
 		String errorOut = null;
 		if (dfe != null && dfe.getDFEOutput() != null) {
@@ -1253,20 +1256,20 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 				pathExists |= e.getValue().isPathExists();
 				if (stateCur != null) {
-					if (state == null) {
-						state = stateCur;
-					} else if (state.equalsIgnoreCase(SavingState.BUFFERED
+					if (outputType == null) {
+						outputType = stateCur;
+					} else if (outputType.equalsIgnoreCase(SavingState.BUFFERED
 							.toString())
 							&& stateCur.equalsIgnoreCase(SavingState.RECORDED
 									.toString())) {
-						state = stateCur;
-					} else if (state.equalsIgnoreCase(SavingState.TEMPORARY
+						outputType = stateCur;
+					} else if (outputType.equalsIgnoreCase(SavingState.TEMPORARY
 							.toString())
 							&& (stateCur.equalsIgnoreCase(SavingState.RECORDED
 									.toString()) || stateCur
 									.equalsIgnoreCase(SavingState.BUFFERED
 											.toString()))) {
-						state = stateCur;
+						outputType = stateCur;
 					}
 				}
 
@@ -1317,13 +1320,18 @@ public class CanvasBean extends BaseBean implements Serializable {
 			if (!dfe.getDFEOutput().isEmpty()) {
 				pathExistsStr = String.valueOf(pathExists);
 			}
+			try {
+				runningStatus = getOozie().getElementStatus(getDf(), dfe);
+			} catch (Exception e1) {
+				logger.info("Error getting the status: "+e1.getMessage(),e1);
+			}
 
 			logger.info("element " + dfe.getComponentId());
-			logger.info("state " + state);
+			logger.info("state " + outputType);
 			logger.info("pathExists " + String.valueOf(pathExistsStr));
 		}
-		logger.info("output status result " + groupId + " - " + state + " - " + pathExistsStr);
-		return new String[] { groupId, state, pathExistsStr, tooltip.toString(), Boolean.toString(errorOut == null) };
+		logger.info("output status result " + groupId + " - " + outputType + " - " + pathExistsStr+ " - "+runningStatus);
+		return new String[] { groupId, outputType, pathExistsStr, runningStatus, tooltip.toString(), Boolean.toString(errorOut == null) };
 	}
 
 	/**

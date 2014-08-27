@@ -283,6 +283,78 @@ public class TableInteraction extends UserInteraction {
 		}
 		return error;
 	}
+
+	/**
+	 * Get the possible value for each column that have the constraint
+	 * @return
+	 * @throws RemoteException
+	 */
+	protected Map<String,Set<String>> getColumnsPosValue() throws RemoteException{
+		Map<String,Set<String>> ans = new LinkedHashMap<String,Set<String>>();
+		String error = null;
+		List<Tree<String>> values = null;
+		Tree<String> constraint = null;
+
+		Tree<String> columns = tree.getFirstChild("table").getFirstChild("columns");
+		if(columns.getChildren("column") != null){
+			Iterator<Tree<String>> it = columns.getChildren("column").iterator();
+			while(it.hasNext()){
+				Tree<String> column = it.next();
+				String columnName = column.getFirstChild("title").getFirstChild().getHead();
+				constraint = column.getFirstChild("constraint"); 
+				if(constraint != null){
+					if(logger.isDebugEnabled()){
+						logger.debug(findColumn(columnName));
+						logger.debug(findColumn(columnName).getFirstChild("constraint").getFirstChild("values"));
+					}
+					try{
+						values = constraint.getFirstChild("values").getChildren("value");
+
+						if(values != null && !values.isEmpty()){
+							Set<String> valuesPos = new HashSet<String>();
+							Iterator<Tree<String>> itTree = values.iterator();
+							while(itTree.hasNext()){
+								valuesPos.add(itTree.next().getFirstChild().getHead());
+							}
+							if(logger.isDebugEnabled()){
+								logger.debug("Possible values: "+valuesPos);
+							}
+							ans.put(columnName, valuesPos);
+						}
+					}catch(NullPointerException e){}
+				}
+			}
+		}
+
+		return ans;
+	}
+
+	protected Map<String,String> getColumnsRegex() throws RemoteException{
+		Map<String,String> regex = new LinkedHashMap<String,String>();
+		Tree<String> constraint = null;
+		try{
+			Tree<String> columns = tree.getFirstChild("table").getFirstChild("columns");
+			if(columns.getChildren("column") != null){
+				Iterator<Tree<String>> it = columns.getChildren("column").iterator();
+				while(it.hasNext()){
+					try{
+						Tree<String> column = it.next();
+						String columnName = column.getFirstChild("title").getFirstChild().getHead();
+						constraint = column.getFirstChild("constraint");
+
+						if( constraint != null && constraint.getFirstChild("regex") != null){
+							regex.put(columnName, constraint.getFirstChild("regex").getFirstChild().getHead());
+
+						}
+					}catch(Exception e){}
+				}
+			}
+
+		}catch(Exception e){}
+
+		return regex;
+	}
+
 	/**
 	 * Check if a value is contained in a column
 	 * @param columnName
@@ -290,33 +362,14 @@ public class TableInteraction extends UserInteraction {
 	 * @return error message
 	 * @throws RemoteException
 	 */
-	protected String checkValue(String columnName, String value) throws RemoteException{
+	protected String checkValue(String columnName, Set<String> valuesPos, String regex, String value) throws RemoteException{
 		String error = null;
-		List<Tree<String>> values = null;
-		Tree<String> constraint = null;
-		//logger.info(tree);
-		try{
-			constraint = findColumn(columnName).getFirstChild("constraint"); 
-			//logger.info(findColumn(columnName));
-			//logger.info(findColumn(columnName).getFirstChild("constraint").getFirstChild("values"));
-			values = constraint.getFirstChild("values").getChildren("value");
 
-			if(values != null && !values.isEmpty()){
-				Set<String> valuesPos = new HashSet<String>();
-				Iterator<Tree<String>> itTree = values.iterator();
-				while(itTree.hasNext()){
-					valuesPos.add(itTree.next().getFirstChild().getHead());
-				}
+		if(valuesPos != null && !valuesPos.contains(value)){
+			error = LanguageManagerWF.getText("tableInteraction.NotInValue",new String[]{value,valuesPos.toString()});
+		}
 
-				//logger.info("Possible values: "+valuesPos);
-				if(!valuesPos.contains(value)){
-					error = LanguageManagerWF.getText("tableInteraction.NotInValue",new String[]{value,valuesPos.toString()});
-				}
-			}
-		}catch(Exception e){}
-
-		if( constraint != null && constraint.getFirstChild("regex") != null){
-			String regex = constraint.getFirstChild("regex").getFirstChild().getHead();
+		if(error == null && regex != null && !regex.isEmpty()){
 			if(!value.matches(regex)){
 				error = LanguageManagerWF.getText("tableInteraction.NotMatchRegex",new String[]{value,regex});
 			}
@@ -357,6 +410,8 @@ public class TableInteraction extends UserInteraction {
 		try{
 			logger.debug("check values...");
 			Iterator<Map<String,String>> rows = getValues().iterator();
+			Map<String,Set<String>> columnsPosValues = getColumnsPosValue();
+			Map<String,String> columnsRegex = getColumnsRegex();
 			//logger.info("Got the rows, check them now");
 			while(rows.hasNext() && error == null){
 				Map<String,String> row = rows.next();
@@ -364,7 +419,7 @@ public class TableInteraction extends UserInteraction {
 				while(columnNameIt.hasNext() && error == null){
 					String colName = columnNameIt.next();
 					logger.debug("check "+colName+": "+row.get(colName));
-					error = checkValue(colName, row.get(colName));
+					error = checkValue(colName, columnsPosValues.get(colName), columnsRegex.get(colName),row.get(colName));
 				}
 			}
 
@@ -397,14 +452,25 @@ public class TableInteraction extends UserInteraction {
 			lRow = getTree()
 					.getFirstChild("table").getChildren("row"); 
 			rows = lRow.iterator();
+			int indexCol = 0;
 			while(rows.hasNext()){
 				Tree<String> row = rows.next();
 				Iterator<Tree<String>> lColRowIt = row.getSubTreeList().iterator();
 				boolean end = false;
+				try{
+					Tree<String> lColRow = row.getSubTreeList().get(indexCol);
+					if(columnName.equals(lColRow.getHead())){
+						values.add(lColRow.getFirstChild().getHead());
+						end = true;
+					}
+				}catch(Exception e){}
+				if(!end){
+					indexCol = 0;
+				}
 				while(lColRowIt.hasNext() && !end){
 					Tree<String> lColRow = lColRowIt.next();
 					String colName = lColRow.getHead();
-					
+
 					String colValue = "";
 					try{
 						colValue = lColRow.getFirstChild().getHead();
@@ -413,6 +479,7 @@ public class TableInteraction extends UserInteraction {
 						values.add(colValue);
 						end = true;
 					}
+					++indexCol;
 				}
 			}
 		}catch(Exception e){
@@ -497,7 +564,7 @@ public class TableInteraction extends UserInteraction {
 			}
 		}
 	}
-	
+
 	/**
 	 * Replace the value only in the content of each row (not the column names).
 	 */
@@ -522,7 +589,7 @@ public class TableInteraction extends UserInteraction {
 			}
 		}
 	}
-	
+
 	/**
 	 * Remove all generators
 	 * @throws RemoteException

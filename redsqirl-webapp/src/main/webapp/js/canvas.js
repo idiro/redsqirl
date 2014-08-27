@@ -1633,6 +1633,7 @@ function save(path) {
     setSaved(selectedCanvas, true);
     setPathFile(selectedCanvas, path);
     saveWorkflow(selectedCanvas, path, getIconPositions(), getSelectedIconsCommaDelimited());
+    jQuery(".tooltipCanvas").remove();
 }
 
 function configureCircle(canvasName, circle1) {
@@ -2219,16 +2220,7 @@ function getColorRunning(status){
 	}
 }
 
-function updateAllOutputStatus() {
-    
-    var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
-    
-    for ( var i = 0; i < polygonLayer.getChildren().length; i++) {
-        updateOutputStatus(polygonLayer.getChildren()[i].getChildren()[4].getText());
-    }
-}
-
-function updateActionOutputStatus(groupId, status, fileExists, tooltip, noError, drawCanvas) {
+function updateActionOutputStatus(groupId, outputType, fileExists, runningStatus, tooltip, noError, drawCanvas) {
     
     drawCanvas = typeof drawCanvas !== 'undefined' ? drawCanvas : true;
     
@@ -2237,7 +2229,8 @@ function updateActionOutputStatus(groupId, status, fileExists, tooltip, noError,
     
     var group = getElement(polygonLayer, groupId);
     
-    group.getChildren()[5].setStroke(getColorOutputType(status));
+    group.getChildren()[5].setStroke(getColorOutputType(outputType));
+    group.getChildren()[6].setStroke(getColorRunning(runningStatus));
     group.getChildren()[7].setStroke(getColorOutputExistence(fileExists));
     
     group.tooltipObj = tooltip;
@@ -2275,16 +2268,16 @@ function updateActionRunningStatus(groupId, status, fileExists,drawCanvas) {
 
     drawCanvas = typeof drawCanvas !== 'undefined' ? drawCanvas : true;
     
-	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
-	
-	var group = getElement(polygonLayer, groupId);
-	
-	group.getChildren()[6].setStroke(getColorRunning(status));
-	group.getChildren()[7].setStroke(getColorOutputExistence(fileExists));
-	
-	if(drawCanvas){
-	   polygonLayer.draw();
-	}
+    var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+    
+    var group = getElement(polygonLayer, groupId);
+    
+    group.getChildren()[6].setStroke(getColorRunning(status));
+    group.getChildren()[7].setStroke(getColorOutputExistence(fileExists));
+    
+    if(drawCanvas){
+       polygonLayer.draw();
+    }
 }
 
 function updateArrowType(idOutput, idInput, color, type, tooltip,drawCanvas) {

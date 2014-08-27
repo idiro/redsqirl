@@ -46,14 +46,15 @@ public class BrowserInteraction extends CanvasModalInteraction {
 
 	@Override
 	public void readInteraction() throws RemoteException {
+		setTree();
 		// clean the map
 		listFields = new LinkedList<String>();
 		listProperties = new LinkedList<SelectItem>();
-		//logger.info(printTree(inter.getTree()));
+		//logger.info(printTree(tree));
 		try{
-			if (inter.getTree().getFirstChild("browse")
+			if (tree.getFirstChild("browse")
 					.getFirstChild("output").getFirstChild("path") != null) {
-				setPath(inter.getTree()
+				setPath(tree
 						.getFirstChild("browse")
 						.getFirstChild("output").getFirstChild("path")
 						.getFirstChild().getHead());
@@ -69,9 +70,9 @@ public class BrowserInteraction extends CanvasModalInteraction {
 
 		//set properties
 		try{
-			if (inter.getTree().getFirstChild("browse")
+			if (tree.getFirstChild("browse")
 					.getFirstChild("output").getChildren("property") != null) {
-				List<Tree<String>> props = inter.getTree().getFirstChild("browse")
+				List<Tree<String>> props = tree.getFirstChild("browse")
 						.getFirstChild("output").getFirstChild("property").getSubTreeList();
 				if (props != null) {
 					logger.info("properties not null: " + props.size());
@@ -87,7 +88,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 
 		//set fields
 		try{
-			List<Tree<String>> field = inter.getTree().getFirstChild("browse")
+			List<Tree<String>> field = tree.getFirstChild("browse")
 					.getFirstChild("output").getChildren("field");
 			if (field != null && !field.isEmpty()) {
 				logger.info("fields not null: " + field.size());
@@ -142,7 +143,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 	public void setUnchanged() {
 		try {
 			// Check path
-			String oldPath = inter.getTree().getFirstChild("browse")
+			String oldPath = tree.getFirstChild("browse")
 					.getFirstChild("output").getFirstChild("path")
 					.getFirstChild().getHead();
 			logger.debug("Comparaison path: " + oldPath + " , "
@@ -159,13 +160,13 @@ public class BrowserInteraction extends CanvasModalInteraction {
 							+ ": "
 							+ itemList.getValue()
 							+ " , "
-							+ inter.getTree()
+							+ tree
 							.getFirstChild("browse")
 							.getFirstChild("output")
 							.getFirstChild("property")
 							.getFirstChild(key).getFirstChild()
 							.getHead());
-					unchanged &= inter.getTree()
+					unchanged &= tree
 							.getFirstChild("browse")
 							.getFirstChild("output")
 							.getFirstChild("property")
@@ -176,7 +177,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 
 			// Check fields
 			if (unchanged) {
-				List<Tree<String>> oldFieldsList = inter.getTree()
+				List<Tree<String>> oldFieldsList = tree
 						.getFirstChild("browse")
 						.getFirstChild("output").getChildren("field");
 				logger.debug("comparaison fields: "

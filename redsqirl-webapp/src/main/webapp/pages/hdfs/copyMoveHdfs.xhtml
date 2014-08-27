@@ -85,12 +85,12 @@
 	</rich:dataTable>
     </div>
 
-	<h:panelGrid columns="2" id="copyMovelBt">
+	<h:panelGrid columns="2" id="copyMovelBt" style="border:none; float:right;">
+		<a4j:commandButton  styleClass="greenButton" value="#{messages.button_cancel}" type="button" onclick="#{rich:component('modalCopyMoveHdfs')}.hide();" />
 		<a4j:commandButton  styleClass="greenButton" action="#{hdfsBean.copyFileAfter}" value="#{messages.button_ok}" rendered="#{hdfsBean.showCopyMove == 'C'}" 
 			reRender="hdfsfs,msnError,hdfspath" oncomplete="resizeTables(); if(#{requestScope['msnError'] == null}){#{rich:component('modalCopyMoveHdfs')}.hide();}"/>
 		<a4j:commandButton  styleClass="greenButton" action="#{hdfsBean.moveFileAfter}" value="#{messages.button_ok}" rendered="#{hdfsBean.showCopyMove == 'M'}"
 			reRender="hdfsfs,msnError,hdfspath" oncomplete="resizeTables(); if(#{requestScope['msnError'] == null}){#{rich:component('modalCopyMoveHdfs')}.hide();}"/>
-		<a4j:commandButton  styleClass="greenButton" value="#{messages.button_cancel}" type="button" onclick="#{rich:component('modalCopyMoveHdfs')}.hide();" />
 	</h:panelGrid>
 
 </ui:composition>

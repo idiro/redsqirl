@@ -225,13 +225,17 @@ public class CanvasModal extends BaseBean implements Serializable {
 		idGroup = FacesContext.getCurrentInstance().getExternalContext()
 				.getRequestParameterMap().get("paramGroupId");
 
-		Integer pageNb = null;
-		try {
-			pageNb = Integer.parseInt(FacesContext.getCurrentInstance().getExternalContext()
-					.getRequestParameterMap().get("paramPageNb"));
-		} catch (NumberFormatException e) {
-			pageNb = 0;
-			logger.warn("Page nb issue: "+e.getMessage(),e);
+		Integer pageNb = 0;
+		String pageNbParam = FacesContext.getCurrentInstance().getExternalContext()
+				.getRequestParameterMap().get("paramPageNb");
+		if(pageNbParam != null && !pageNbParam.isEmpty() && !pageNbParam.equalsIgnoreCase("undefined")){
+			try {
+				pageNb = Integer.parseInt(FacesContext.getCurrentInstance().getExternalContext()
+						.getRequestParameterMap().get("paramPageNb"));
+			} catch (NumberFormatException e) {
+				pageNb = 0;
+				logger.warn("Page nb issue: "+e.getMessage(),e);
+			}
 		}
 
 		try {

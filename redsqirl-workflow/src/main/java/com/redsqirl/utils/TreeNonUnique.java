@@ -11,8 +11,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-
-import com.redsqirl.utils.Tree;
 /**
  * 
  * Generic tree representation that is used to store options and configurations

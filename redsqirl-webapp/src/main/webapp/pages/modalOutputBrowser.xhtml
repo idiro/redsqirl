@@ -136,16 +136,22 @@
    </rich:comboBox>
    
    <br />
-
-	<a4j:commandButton styleClass="greenButton" 
-	    action="#{canvasModalBean.outputTab.changePathOutputBrowser}" 
-	    value="#{messages.button_ok}"
-		onclick="#{rich:component('modalOutputBrowser')}.hide();" 
-		reRender="dataOutputForm"
-		oncomplete="if(#{canvasModalBean.sourceNode}){modalOutputApplyPage();}" >
-		<a4j:actionparam name="pathFile" value="getPathOutPut('#{canvasModalBean.outputTab.fileSystem.path}')" noEscape="true" />
-	</a4j:commandButton>
-
-	<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('modalOutputBrowser')}.hide();" />
+   <br />
+    
+   <rich:panel id="panelBtOutputBrowser" style="border:none; float:right;" >
+   
+    	<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('modalOutputBrowser')}.hide();" />
+    
+    	<a4j:commandButton styleClass="greenButton" 
+    	    action="#{canvasModalBean.outputTab.changePathOutputBrowser}" 
+    	    value="#{messages.button_ok}"
+    		onclick="#{rich:component('modalOutputBrowser')}.hide();" 
+    		reRender="dataOutputForm"
+    		oncomplete="if(#{canvasModalBean.sourceNode}){modalOutputApplyPage();}" >
+    		<a4j:actionparam name="pathFile" value="getPathOutPut('#{canvasModalBean.outputTab.fileSystem.path}')" noEscape="true" />
+    	</a4j:commandButton>
+    	
+    </rich:panel>
+    
 	</div>
 </ui:composition>
