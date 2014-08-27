@@ -364,30 +364,43 @@ canvas {
 	background: none repeat scroll 0 0 #f8e1c8;
 }
 
+table[id*="msnError"]{
+	/* height:300px;
+	max-height:400px; */
+}
+
+#msg dt{
+	/* max-height:60%;*/
+	height:100%;
+	overflow:auto;
+}
+.rich-messages-label{
+	padding-left:10px;
+	overflow:auto;
+}
+
+
 .message {
 	font-size: 12 px;
 	font-weight: bold;
 	font-family: Verdana, Arial, sans-serif;
-	text-align:right;
+	text-align:left;
+	/* max-height:75%;*/
+	height:75%; 
+	position:relative;
 }
 
 .messageok {
 	background: url("../image/icons/li_msg_ok.gif") no-repeat;
-	background-position:bottom center;
-	background-position:left;
-	text-aling:right;
-	/* width:75px;
-	height:25px; */
+	background-position: top left;
+	background-attachment: fixed;
 	color: #336699;
 }
 
 .messageerro {
 	background: url("../image/icons/li_msg_error.gif") no-repeat;
 	padding-left: 20px;
-	background-position:left;
-	text-aling:right;
-	/* width:75px;
-	height:25px; */
+	background-position: top left;
 	color: #000000;
 }
 
@@ -395,20 +408,16 @@ canvas {
 	background: url("../image/icons/li_msg_error.gif") no-repeat;
 	padding-left: 20px;
 	color: #FFFFFF;
-	background-position:left;
-	text-aling:right;
-	/* height:70px;
-	height:25px; */
+	background-position: top left;
+	overflow:auto;
 }
 
 .messagealert {
 	background: url("../image/icons/li_msg_warn.gif") no-repeat;
 	padding-left: 20px;
 	color: #336699;
-	background-position:left;
-	text-aling:right;
-	/* width:75px;
-	height:25px */;
+	background-position: top left;
+	overflow:auto;
 }
 
 .rich-panel-body {
@@ -550,6 +559,10 @@ div#body {
 #all {
 	max-width: 1000px;
 	margin: 0 auto;
+}
+
+#errorForm{
+	height:100%;
 }
 
 /* Text CSS */

@@ -2163,80 +2163,55 @@
 
         </rich:modalPanel>
     </a4j:region>
-    
-    <rich:modalPanel height="200" width="250" id="msnErrorPage" showWhenRendered="#{requestScope['msnErrorPage'] != null}">
-		<center>
 
-			<table>
-				<tr>
-					<td>
-						<rich:messages id="msgPage" globalOnly="false" layout="list"
-							styleClass="message" infoClass="messageok"
-							errorClass="messageerro" warnClass="messagealert"
-							showDetail="true" showSummary="false" ajaxRendered="false" />
-					</td>
-					</tr>
-					<tr>
-					<td><a4j:commandButton styleClass="greenButton"
-							value="#{messages.button_ok}"
-							onclick="#{rich:component('msnErrorPage')}.hide(); return false;"
-							reRender="msnErrorPage, msgPage, errorTable" /></td>
-				</tr>
-			</table>
+	<rich:modalPanel id="msnErrorPage"
+		showWhenRendered="#{requestScope['msnErrorPage'] != null}">
+		<div style="width: 100%; height: 100%; overflow: auto;">
+			<rich:messages id="msgPage" globalOnly="false" layout="list"
+				styleClass="message" infoClass="messageok" errorClass="messageerro"
+				warnClass="messagealert" showDetail="true" showSummary="false"
+				ajaxRendered="false" />
 
+			<a4j:commandButton styleClass="greenButton"
+				value="#{messages.button_ok}"
+				onclick="#{rich:component('msnErrorPage')}.hide(); return false;"
+				style="bottom:14%;position:relative;"
+				reRender="msnErrorPage, msgPage, errorTable" />
 
+		</div>
 
-		</center>
 	</rich:modalPanel>
-	
-	<rich:modalPanel height="200" width="250" id="msnError" showWhenRendered="#{requestScope['msnError'] != null}">
-		<center>
 
-			<table>
-				<tr>
-					<td>
-						<rich:messages id="msg" globalOnly="false" layout="list"
-							styleClass="message" infoClass="messageok"
-							errorClass="messageerro" warnClass="messagealert"
-							showDetail="true" showSummary="false" ajaxRendered="false" />
-					</td>
-					</tr>
-					<tr>
-					<td><a4j:commandButton styleClass="greenButton"
-							value="#{messages.button_ok}"
-							onclick="#{rich:component('msnError')}.hide(); return false;"
-							reRender="msnError, msg, errorTable" /></td>
-				</tr>
-			</table>
+	<rich:modalPanel id="msnError"
+		showWhenRendered="#{requestScope['msnError'] != null}">
+		<div style="width: 100%; height: 100%; overflow: auto;">
+			<rich:messages id="msg" globalOnly="false" layout="list"
+				styleClass="message" infoClass="messageok" errorClass="messageerro"
+				warnClass="messagealert" showDetail="true" showSummary="false"
+				ajaxRendered="false" />
 
+			<a4j:commandButton styleClass="greenButton"
+				value="#{messages.button_ok}"
+				onclick="#{rich:component('msnError')}.hide(); return false;"
+				style="bottom:14%;position:relative;"
+				reRender="msnError, msg, errorTable" />
 
-		</center>
+		</div>
 	</rich:modalPanel>
-	
-	<rich:modalPanel height="200" width="250" id="msnSuccess" showWhenRendered="#{requestScope['msnSuccess'] != null}">
-		<center>
 
-			<table>
-				<tr>
-					<td>
-						<rich:messages id="msgS" globalOnly="false" layout="list"
-							styleClass="message" infoClass="messageok"
-							errorClass="messageerro" warnClass="messagealert"
-							showDetail="true" showSummary="false" ajaxRendered="false" />
-					</td>
-					</tr>
-					<tr>
-					<td><a4j:commandButton styleClass="greenButton"
-							value="#{messages.button_ok}"
-							onclick="#{rich:component('msnSuccess')}.hide(); return false;"
-							reRender="msnSuccess, msgS" /></td>
-				</tr>
-			</table>
-
-
-
-		</center>
+	<rich:modalPanel id="msnSuccess"
+		showWhenRendered="#{requestScope['msnSuccess'] != null}">
+		<div style="width: 100%; height: 100%; overflow: auto;">
+			<rich:messages id="msgS" globalOnly="false" layout="list"
+				styleClass="message" infoClass="messageok" errorClass="messageerro"
+				warnClass="messagealert" showDetail="true" showSummary="false"
+				ajaxRendered="false" />
+			<a4j:commandButton styleClass="greenButton"
+				value="#{messages.button_ok}"
+				onclick="#{rich:component('msnSuccess')}.hide(); return false;"
+				style="bottom:14%;position:relative;" reRender="msnSuccess, msgS" />
+		</div>
 	</rich:modalPanel>
-	
+
 </body>
 </html>

@@ -20,30 +20,35 @@
 
 <body>
 
-	<h:form>
+	<h:form id="errorForm" height="400px">
 		<div class="pathHeader">
 		<a4j:commandLink action="#{canvasBean.cleanErrorList}" reRender="errorTable">
 			<h:graphicImage value="../image/icons/button-delete2.gif" title='#{messages.error_list_clear}' styleClass="bt" />
 		</a4j:commandLink>
 		</div>
 		<rich:extendedDataTable id="errorTable" value="#{sessionScope['listError']}" var="item"
-			width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'" 
+			width="100%" height="100% !important;"  style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'" 
 			enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'" 
 			rowClasses="even-row, odd-row" tableState="#{canvasBean.errorTableState}">
-			
-			<rich:column sortBy="#{item.value}" filterBy="#{item.value}" width="150px;">
-				<f:facet name="header">
-					<h:outputText value="#{messages.label_date}" />
-				</f:facet>
-				<h:outputText value="#{item.value}" style="width:100%;" title="#{item.value}" readonly="true" />
-			</rich:column>
-			
-			<rich:column sortBy="#{item.label}" filterBy="#{item.label}" width="600px;" >
-				<f:facet name="header">
-					<h:outputText value="#{messages.label_messages}" />
-				</f:facet>
-				<h:outputText value="#{item.label}" style="width:100%;" title="#{item.label}" readonly="true" />
-			</rich:column>
+			<div heigh="100%">
+				<rich:column sortBy="#{item.value}" filterBy="#{item.value}"
+					width="150px;">
+					<f:facet name="header">
+						<h:outputText value="#{messages.label_date}" />
+					</f:facet>
+					<h:outputText value="#{item.value}" style="width:100%;"
+						title="#{item.value}" readonly="true" />
+				</rich:column>
+
+				<rich:column sortBy="#{item.label}" filterBy="#{item.label}"
+					width="600px;">
+					<f:facet name="header">
+						<h:outputText value="#{messages.label_messages}" />
+					</f:facet>
+					<h:outputText value="#{item.label}" style="width:100%;"
+						title="#{item.label}" readonly="true" />
+				</rich:column>
+			</div>
 
 		</rich:extendedDataTable>
 	

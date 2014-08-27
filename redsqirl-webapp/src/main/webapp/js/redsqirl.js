@@ -73,12 +73,11 @@ function resizeCanvas(val1, val2){
 function resizeTables(){
 	
 //	alert("resizeTables");
-//	console.log('resize Tables');
 	
 	jQuery("#processManager .extdt-content").css("height", jQuery("#tabs-2").height()-105+"px", "important");
 	jQuery("#processManager .extdt-content").css("width", jQuery("#splitHCanvas").width(), "important");
 	
-	jQuery("#errorTable .extdt-content").style("height", jQuery("#tabs-3").height()-60+"px", "important");
+	jQuery("#errorTable .extdt-content").css("height", jQuery("#tabs-3").height()-35+"px", "important");
 	
 	jQuery("#hiveFileSystem .extdt-content").style("height", jQuery("#tabs-4").height()-160+"px", "important");
 	
