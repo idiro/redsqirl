@@ -315,10 +315,12 @@ public abstract class AbstractSource extends DataflowAction {
 											.getFirstChild().getHead();
 									String type = cur.getFirstChild("type")
 											.getFirstChild().getHead();
-
-									logger.info("updateOut name " + name);
-									logger.info("updateOut type " + type);
-
+									
+									if(logger.isDebugEnabled()){
+										logger.debug("updateOut name " + name);
+										logger.debug("updateOut type " + type);
+									}
+									
 									try {
 										outF.addField(name,
 												FieldType.valueOf(type));

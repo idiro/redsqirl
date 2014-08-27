@@ -43,6 +43,7 @@ CommandHistory.prototype.update_buttonname = function() {
 };
 
 CommandHistory.prototype.undo = function() {
+    jQuery(".tooltipCanvas").remove();
 	if(this.cur_index >= 0){
 		this.hist_stack[this.cur_index].undo();
 		--this.cur_index;
@@ -52,6 +53,7 @@ CommandHistory.prototype.undo = function() {
 
 
 CommandHistory.prototype.redo = function() {
+    jQuery(".tooltipCanvas").remove();
 	if(this.cur_index < this.hist_stack.length -1 ){
 		++this.cur_index;
 		this.hist_stack[this.cur_index].redo();
@@ -73,6 +75,7 @@ CommandHistory.prototype.clean = function(){
 }
 
 CommandHistory.prototype.push_command = function(command) {
+    jQuery(".tooltipCanvas").remove();
 	while(this.cur_index + 1 < this.hist_stack.length){
 		var el = this.hist_stack.pop();
 		el.clean();
@@ -389,7 +392,6 @@ function execChangeIdElementCommand(loadMainWindow , groupId, oldId,newId, oldCo
         canvasArray[selectedCanvas].commandHistory.execute(
         new CommandChangeId(groupId, oldId,newId, oldComment, newComment));
     }else{
-    	//TODO Fix for update only when id changed
         jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });
         currentChangeIdGroup = groupId;
         changeIdElement(groupId,newId,newComment);

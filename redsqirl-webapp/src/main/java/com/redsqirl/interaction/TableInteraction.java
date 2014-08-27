@@ -77,14 +77,15 @@ public class TableInteraction extends CanvasModalInteraction{
 
 	@Override
 	public void readInteraction() throws RemoteException {
+		setTree();
 		tableConstraints = new LinkedHashMap<String, List<SelectItem>>();
 
 		tableGeneratorRowToInsert = new LinkedHashMap<String, List<Map<String, String>>>();
 		tableGeneratorMenu = new LinkedList<SelectItem>();
 		boolean isGeneratorMenuInt = true;
-		if (inter.getTree().getFirstChild("table")
+		if (tree.getFirstChild("table")
 				.getFirstChild("generator") != null) {
-			List<Tree<String>> list = inter.getTree()
+			List<Tree<String>> list = tree
 					.getFirstChild("table")
 					.getFirstChild("generator").getSubTreeList();
 			if (list != null) {
@@ -144,13 +145,13 @@ public class TableInteraction extends CanvasModalInteraction{
 		tableEditors = new LinkedHashMap<String, EditorFromTree>();
 		LinkedList<String> tableColumns = new LinkedList<String>();
 		columnType = new LinkedHashMap<String, String>();
-		List<Tree<String>> list2 = inter.getTree()
+		List<Tree<String>> list2 = tree
 				.getFirstChild("table").getFirstChild("columns")
 				.getSubTreeList();
-		//logger.info(printTree(inter.getTree()));
+		//logger.info(printTree(tree));
 		if (list2 != null) {
 			for (Tree<String> tree : list2) {
-				logger.info("list2 value " + tree.getHead());
+				logger.debug("list2 value " + tree.getHead());
 				String aux = null;
 				if (tree.getFirstChild("constraint") != null) {
 					if (tree.getFirstChild("constraint")
@@ -181,7 +182,7 @@ public class TableInteraction extends CanvasModalInteraction{
 							+ it.next().toString()
 							.replaceAll("\n", "\n\t");
 				}
-				logger.info(aux);
+				logger.debug(aux);
 				columnType.put(WordUtils.capitalizeFully(
 						tree.getFirstChild("title")
 						.getFirstChild().getHead()
@@ -192,9 +193,9 @@ public class TableInteraction extends CanvasModalInteraction{
 		}
 		logger.info("Grid column titles: "+tableColumns);
 		tableGrid = new SelectableTable(tableColumns);
-		if (inter.getTree().getFirstChild("table")
+		if (tree.getFirstChild("table")
 				.getChildren("row") != null) {
-			List<Tree<String>> list = inter.getTree()
+			List<Tree<String>> list = tree
 					.getFirstChild("table").getChildren("row");
 			for (Tree<String> rows : list) {
 				Map<String,String> cur = new LinkedHashMap<String,String>();
@@ -204,8 +205,10 @@ public class TableInteraction extends CanvasModalInteraction{
 						colValue = row.getFirstChild().getHead();
 					}catch(NullPointerException e){}
 					cur.put(row.getHead(),colValue);
-					logger.info(row.getHead() + " -> "
+					if(logger.isDebugEnabled()){
+						logger.debug(row.getHead() + " -> "
 							+ colValue);
+					}
 				}
 				tableGrid.add(cur);
 			}
@@ -224,7 +227,7 @@ public class TableInteraction extends CanvasModalInteraction{
 			if (list != null) {
 				// logger.info("list not null: " + list.toString());
 				for (Tree<String> tree : list) {
-					logger.info("list value " + tree.getFirstChild().getHead());
+					logger.debug("list value " + tree.getFirstChild().getHead());
 					listFields.add(new SelectItem(tree.getFirstChild()
 							.getHead(), tree.getFirstChild().getHead()));
 				}
@@ -242,14 +245,13 @@ public class TableInteraction extends CanvasModalInteraction{
 			String[] cur = rowV.getRow();
 			Tree<String> row = inter.getTree()
 					.getFirstChild("table").add("row");
-			logger.info("Table row");
 			Iterator<String> it = tableGrid.getColumnIds().iterator();
 			int i = 0;
 			while(it.hasNext()) {
 				String column = it.next();
 				String value = cur[i];
 				row.add(column).add(value);
-				logger.info(column + " -> " + value);
+				logger.debug(column + " -> " + value);
 				++i;
 			}
 		}	
@@ -260,7 +262,7 @@ public class TableInteraction extends CanvasModalInteraction{
 		unchanged = true;
 		try {
 
-			Iterator<Tree<String>> oldColumns = inter.getTree()
+			Iterator<Tree<String>> oldColumns = tree
 					.getFirstChild("table").getChildren("row")
 					.iterator();
 			for (SelectableRow rowV : tableGrid.getRows()) {

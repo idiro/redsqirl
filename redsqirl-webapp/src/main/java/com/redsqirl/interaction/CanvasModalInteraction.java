@@ -1,6 +1,10 @@
 package com.redsqirl.interaction;
 
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.Iterator;
@@ -55,6 +59,11 @@ public abstract class CanvasModalInteraction implements Serializable{
 	 * The text tip associated with the interaction.
 	 */
 	protected String textTip;
+	
+	/**
+	 * The copied over tree
+	 */
+	protected Tree<String> tree;
 	
 	/**
 	 * Constructor
@@ -168,6 +177,29 @@ public abstract class CanvasModalInteraction implements Serializable{
 		}
 
 		return ans;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void setTree(){
+		try {
+			Object ans = null;
+			//Check if T is instance of Serializeble other throw CloneNotSupportedException
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			ObjectOutputStream out = new ObjectOutputStream(bos);
+			//Serialize it
+			out.writeObject(inter.getTree());
+			byte[] bytes = bos.toByteArray();
+			ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(bytes));
+			//Deserialize it
+			ans = ois.readObject();
+			tree = (Tree<String>)ans;
+		} catch (Exception e) {
+			logger.error("Fail to copy the tree over: "+e.getMessage(),e);
+		}
+	}
+	
+	public Tree<String> getTree(){
+		return tree;
 	}
 	
 	/**
