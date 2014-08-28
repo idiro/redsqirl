@@ -207,7 +207,7 @@ public class TableInteraction extends CanvasModalInteraction{
 					cur.put(row.getHead(),colValue);
 					if(logger.isDebugEnabled()){
 						logger.debug(row.getHead() + " -> "
-							+ colValue);
+								+ colValue);
 					}
 				}
 				tableGrid.add(cur);
@@ -261,25 +261,28 @@ public class TableInteraction extends CanvasModalInteraction{
 	public void setUnchanged() {
 		unchanged = true;
 		try {
-
-			Iterator<Tree<String>> oldColumns = tree
-					.getFirstChild("table").getChildren("row")
-					.iterator();
-			for (SelectableRow rowV : tableGrid.getRows()) {
-				String[] cur = rowV.getRow();
-				Tree<String> row = oldColumns.next();
-				Iterator<String> it = tableGrid.getColumnIds().iterator();
-				int i = 0;
-				while(it.hasNext()) {
-					String column = it.next();
-					String value = cur[i];
-					String colValue = "";
-					try{
-						colValue = row.getFirstChild(column)
-								.getFirstChild().getHead();
-					}catch(NullPointerException e){}
-					unchanged &= colValue.equals(value);
-					++i;
+			unchanged = tree.getFirstChild("table").getChildren("row").size()
+					== tableGrid.getRows().size();
+			if(unchanged){
+				Iterator<Tree<String>> oldColumns = tree
+						.getFirstChild("table").getChildren("row")
+						.iterator();
+				for (SelectableRow rowV : tableGrid.getRows()) {
+					String[] cur = rowV.getRow();
+					Tree<String> row = oldColumns.next();
+					Iterator<String> it = tableGrid.getColumnIds().iterator();
+					int i = 0;
+					while(it.hasNext()) {
+						String column = it.next();
+						String value = cur[i];
+						String colValue = "";
+						try{
+							colValue = row.getFirstChild(column)
+									.getFirstChild().getHead();
+						}catch(NullPointerException e){}
+						unchanged &= colValue.equals(value);
+						++i;
+					}
 				}
 			}
 		} catch (Exception e) {
