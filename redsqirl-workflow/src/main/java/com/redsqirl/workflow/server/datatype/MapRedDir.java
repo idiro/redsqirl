@@ -462,7 +462,17 @@ public abstract class MapRedDir extends DataOutput{
 							++j;
 						}
 					}
-
+					
+					if(error == null && newFL != null && !newFL.getFieldNames().isEmpty()){
+						header = "";
+						Iterator<String> fieldIt = newFL.getFieldNames().iterator();
+						while(fieldIt.hasNext()){
+							String fieldName = fieldIt.next();
+							header +=","+fieldName+" "+newFL.getFieldType(fieldName).toString();
+						}
+						header = header.substring(1);
+						addProperty(key_header, header);
+					}
 				}
 			} catch (Exception e) {
 				logger.error(e);
