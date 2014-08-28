@@ -4,6 +4,7 @@ package com.redsqirl.workflow.client;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -44,7 +45,7 @@ public class ServerThread{
 					final String command = "-cp "+BaseCommand.getBaseCommand(System.getProperty("user.name"),port)
 							+ " & echo $!";
 
-					logger.debug("getting java");
+					logger.info("getting java");
 					String javahome = getJava();
 					String argJava = " -Xmx1500m ";
 					
@@ -52,17 +53,19 @@ public class ServerThread{
 					String final_command = javahome + argJava + command;
 					logger.debug("command start: "+final_command.substring(0,200));
 					logger.debug("command end: "+final_command.substring(final_command.length()-200));
+					logger.info(final_command);
 					Process p = Runtime.getRuntime().exec(
 							new String[] { "/bin/bash", "-c", final_command});
 					p.getInputStream().close();
 					p.getOutputStream().close();
+					this.p = p;
 				} catch (Exception e) {
 					logger.error("Fail to launch the server process");
 					logger.error(e.getMessage());
 					StackTraceElement[] message = e.getStackTrace();
 
 					for (int i = 0; i < message.length; ++i) {
-						logger.debug(message[i].getMethodName() + " "
+						logger.info(message[i].getMethodName() + " "
 								+ message[i].getFileName() + " "
 								+ message[i].getLineNumber());
 					}
@@ -71,18 +74,22 @@ public class ServerThread{
 				}
 			} catch (Exception e) {
 				p = null;
-				logger.error(e.getMessage());
+				logger.error("Exception "+e.getMessage());
 			}
 		}
 	}
 
 	private String getJava() throws IOException, JSchException {
 		Runtime rt = Runtime.getRuntime();
-		Process pr = rt.exec("which java");
+		Map<String,String> env = System.getenv();
+		Process pr = rt.exec(new String[]{"/bin/bash", "-c", "which java"});
 		BufferedReader stdInput = new BufferedReader(new InputStreamReader(
 				pr.getInputStream()));
-
-		return stdInput.readLine();
+		String result = stdInput.readLine();
+		if(result==null){
+			result="java";
+		}
+		return result;
 	}
 
 	/**

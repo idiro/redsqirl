@@ -2,8 +2,12 @@ package com.redsqirl.workflow.client;
 
 import static org.junit.Assert.assertTrue;
 
+import java.rmi.Naming;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.RMIClientSocketFactory;
+import java.rmi.server.RMIServerSocketFactory;
 import java.rmi.server.RMISocketFactory;
 
 import org.apache.log4j.Logger;
@@ -15,13 +19,14 @@ import com.redsqirl.workflow.server.BasicWorkflowTest;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.test.TestUtils;
+import com.redsqirl.workflow.utils.RestrictedRMIRegistry;
 
 public class CreateWorkflowTests{
 
 	private static Logger logger = Logger.getLogger(CreateWorkflowTests.class);
 	private static int port = 2001;
 	private static ServerThread th;
-	private static Registry registry;
+	private static Registry registry = null;
 	private static DataFlowInterface dfi;
 	public CreateWorkflowTests() {
 	}
@@ -29,40 +34,66 @@ public class CreateWorkflowTests{
 	@BeforeClass
 	public static void createRegistry(){
 		TestUtils.logTestTitle("CreateWorkflowTests#createRegistry");
-//		try {
-//			Registry reg = LocateRegistry.createRegistry(
-//					port,
-//					//RMISocketFactory.getDefaultSocketFactory(),
-//					new ClientRMIRegistry(),
-//				new RestrictedRMIRegistry());
-//		} catch (RemoteException e) {
-//			logger.error("Fail to intialise the registry");
-//			logger.error(e.getMessage());
-//			assertTrue(false);
-//		}
+
 		
 		String error = null;
 		try{
 			
 			
-			th = new ServerThread(port);
-			th.run();
-			if(!th.isRunning()){
-				assertTrue("Fail to create the redsqirl-workflow job",false);
-			}
+			logger.info("1");
+//			registry = 
+			LocateRegistry.createRegistry(port,
+					RMISocketFactory.getDefaultSocketFactory(),
+					// RMIServerSocketFactory
+					new RestrictedRMIRegistry());
 			
 			registry = LocateRegistry.getRegistry(
-					"127.0.0.1",
-					port,
-					RMISocketFactory.getDefaultSocketFactory()
-            		);
+					port
+					);
 
+			
+			
+			logger.info("2");
+			th = new ServerThread(port);
+			
+			logger.info("3");
+			
+			th.run();
+			String[] names = registry.list();
+			logger.info("registry list size "+names.length);
+			for (int i = 0; i < names.length; i++) {
+				logger.info(names[i]);
+			}
+
+			
+			logger.info("4");
+			if(!th.isRunning()){
+				logger.info("fail");
+				assertTrue("Fail to create the redsqirl-workflow job",false);
+			}
+
+			
+			logger.info("6");
+			
+			String host;
+			host = "127.0.0.1:"+port;
+			
+			
+			names = registry.list();
+//			String[] names = Naming.list("//" + host + "/");
+			for (int i = 0; i < names.length; i++) {
+				logger.info(names[i]);
+			}
+				
+			logger.info("7");
+			
+			
 			String name = System.getProperty("user.name")+"@wfm";
 			
 			dfi = (DataFlowInterface) registry.lookup(name);
 
 		}catch(Exception e){
-			logger.error("Fail to initialise registry, Exception: "+e.getMessage());
+			logger.error("Fail to initialise registry, Exception: ",e);
 			assertTrue(false);
 		}
 		logger.info("Registry Initialised ");
@@ -93,18 +124,18 @@ public class CreateWorkflowTests{
 
 			assertTrue("df is null", df != null);
 
-			logger.debug(2);
+			logger.info(2);
 			String c1 = df.addElement("hivetest1");
 			assertTrue("Element not found",df.getElement(c1) != null);
 
-			logger.debug(5);
+			logger.info(5);
 
 			String c2 = df.addElement("hivetest1");
 			assertTrue("Element not found",df.getElement(c2) != null);
 
 			
 			dfi.removeWorkflow("test");
-			logger.debug("end test");
+			logger.info("end test");
 
 		}catch(Exception e){
 			logger.error("Exception: "+e.getMessage());

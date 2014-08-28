@@ -57,10 +57,11 @@ public class BaseCommand {
 		String codebase = " -Djava.rmi.server.codebase=" + getRMICodeBase();
 		String hostname = " -Djava.rmi.server.hostname=" + getRMIHost();
 		String catalinaBase = " -Dcatalina.base=" + System.getProperty("catalina.base");
+		String disableUseCodeBaseOnly =" -Djava.rmi.server.useCodebaseOnly=false ";
 		logger.debug(classpath);
 		logger.debug(codebase);
 		logger.debug(hostname);
-		command = classpath + codebase + hostname + catalinaBase
+		command = disableUseCodeBaseOnly + classpath + codebase + hostname + catalinaBase
 				+ " com.redsqirl.workflow.server.connect.ServerMain " + port;
 
 		return command;
