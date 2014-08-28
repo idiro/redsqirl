@@ -385,7 +385,6 @@ table[id*="msnError"]{
 	font-weight: bold;
 	font-family: Verdana, Arial, sans-serif;
 	text-align:left;
-	/* max-height:75%;*/
 	height:75%; 
 	position:relative;
 }
@@ -393,12 +392,14 @@ table[id*="msnError"]{
 .messageok {
 	background: url("../image/icons/li_msg_ok.gif") no-repeat;
 	background-position: top left;
-	background-attachment: fixed;
+	padding-left: 20px;
+	height:35px;
 	color: #336699;
 }
 
 .messageerro {
 	background: url("../image/icons/li_msg_error.gif") no-repeat;
+	height:35px;
 	padding-left: 20px;
 	background-position: top left;
 	color: #000000;
@@ -406,6 +407,7 @@ table[id*="msnError"]{
 
 .messageerrologin {
 	background: url("../image/icons/li_msg_error.gif") no-repeat;
+	height:35px;
 	padding-left: 20px;
 	color: #FFFFFF;
 	background-position: top left;
@@ -415,6 +417,7 @@ table[id*="msnError"]{
 .messagealert {
 	background: url("../image/icons/li_msg_warn.gif") no-repeat;
 	padding-left: 20px;
+	height:35px;
 	color: #336699;
 	background-position: top left;
 	overflow:auto;
