@@ -147,7 +147,7 @@ public abstract class PigElement extends DataflowAction {
 		String pigParallel = WorkflowPrefManager.getUserProperty(
 				WorkflowPrefManager.user_pig_parallel,
 				WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_pig_parallel,
-						"1"));
+						""));
 		
 		parallelInt = new InputInteraction(
 				key_parallel,

@@ -70,7 +70,7 @@ public class InputInteraction extends UserInteraction{
 				ans = getTree().getFirstChild("input").getFirstChild("output").getFirstChild().getHead();
 			}
 		}catch(Exception e){
-			logger.error(getId()+": Tree structure incorrect");
+			ans = "";
 		}
 		return ans;
 	}

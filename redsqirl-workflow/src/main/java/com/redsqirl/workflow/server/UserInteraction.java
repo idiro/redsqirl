@@ -56,7 +56,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	 * The legend associated to the interaction
 	 */
 	protected String legend;
-	
+
 	/**
 	 * the text tip associated to the interaction
 	 */
@@ -79,7 +79,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 
 	/**Interaction Checker*/
 	protected DFEInteractionChecker checker = null;
-	
+
 	/**
 	 * Enable replacement by default
 	 */
@@ -116,7 +116,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 		this.placeInColumn = placeInColumn;
 		logger.debug("Init interaction "+name);
 	}
-	
+
 	/**
 	 * Unique constructor
 	 * @param id
@@ -243,10 +243,10 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 			}
 		}
 	}
-	
 
-	
-	
+
+
+
 	@Override
 	public final void replaceInTree(String oldName, String newName) throws RemoteException{
 		if(!isReplaceDisable()){
@@ -255,12 +255,12 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 			logger.info(getTree().toString());
 		}
 	}
-	
+
 	public void replaceOutputInTree(String oldName, String newName)
 			throws RemoteException {
 		replaceOutputInTree(getTree(),oldName,newName);
 	}
-	
+
 	protected void replaceOutputInTree(Tree<String> curTree, String oldName, String newName) throws RemoteException{
 		if(curTree == null || curTree.isEmpty()){
 			try{
@@ -369,10 +369,14 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 			try{
 				String value = null;
 				String regex = null;
-				if(getTree()
-						.getFirstChild("input").getFirstChild("output") != null){
-					value = getTree()
-							.getFirstChild("input").getFirstChild("output").getFirstChild().getHead();
+				try{
+					if(getTree()
+							.getFirstChild("input").getFirstChild("output") != null){
+						value = getTree()
+								.getFirstChild("input").getFirstChild("output").getFirstChild().getHead();
+					}
+				}catch(Exception e){
+					value = "";
 				}
 				if(getTree()
 						.getFirstChild("input").getFirstChild("regex") != null){
@@ -539,7 +543,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	public String getTextTip() throws RemoteException {
 		return textTip;
 	}
-	
+
 	@Override
 	public boolean isReplaceDisable() throws RemoteException {
 		return replaceDisable;
