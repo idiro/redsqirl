@@ -1122,7 +1122,7 @@
 			<a4j:region>
 				<a4j:jsFunction name="closeChangeIdModal"
 				    reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError, errorTable, canvasModalTabPanel"
-					oncomplete="if(#{canvasModalBean.loadMainWindow}){changeModalTitle();changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');cloneBeforeUpdateElement();}else{updateSelectedOutputStatus(currentChangeIdGroup);}">
+					oncomplete="if(#{canvasModalBean.loadMainWindow}){changeModalTitle();changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');cloneBeforeUpdateElement();}else{updateOutputStatus(currentChangeIdGroup);}">
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -1282,7 +1282,7 @@
                     onstop="jQuery('#canvas-tabs').unblock();" />
 
                 <a4j:jsFunction name="replaceAllJS" action="#{canvasBean.replaceAll}" reRender="errorTable" 
-                	oncomplete="updateSelectedElementLegend(tmpCommandObj.selecteds);updateSelectedOutputStatus(tmpCommandObj.selecteds);" >
+                	oncomplete="updateSelectedElementLegend(tmpCommandObj.selecteds);updateAllArcsStatus();" >
                     <a4j:actionparam name="select" />
                     <a4j:actionparam name="oldStr" />
                     <a4j:actionparam name="newStr" />

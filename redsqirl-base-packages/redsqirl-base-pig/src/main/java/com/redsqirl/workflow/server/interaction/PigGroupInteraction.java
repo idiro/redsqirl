@@ -96,8 +96,8 @@ public class PigGroupInteraction extends AppendListInteraction{
 	 * @return query
 	 * @throws RemoteException
 	 */
-	public String getForEachQueryPiece(String relationName, PigTableSelectInteraction selectInteraction,
-			String parallel) throws RemoteException{
+	public String getForEachQueryPiece(String relationName, PigTableSelectInteraction selectInteraction) 
+			throws RemoteException{
 		String select = "FOREACH " + relationName + " GENERATE ";
 		Iterator<Map<String,String>> selIt = selectInteraction.getValues().iterator();
 		Iterator<String> groupByIt = getValues().iterator();
@@ -136,13 +136,6 @@ public class PigGroupInteraction extends AppendListInteraction{
 		}
 
 		logger.debug("for each looks like : " + select);
-		if(groupByList.isEmpty()){
-			select += " PARALLEL 1";
-		}else{
-			if (parallel != null && !parallel.isEmpty()){
-				select += " PARALLEL " + parallel;
-			}
-		}
 		
 		return select;
 
