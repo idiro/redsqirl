@@ -460,7 +460,7 @@ public abstract class PigElement extends DataflowAction {
 			type = savetypeOutputInt.getTree().getFirstChild("list").getFirstChild("output").getFirstChild().getHead();
 			logger.info("type: "+type);
 			if(type.equalsIgnoreCase("TEXT MAP-REDUCE DIRECTORY")||type.equalsIgnoreCase("COMPRESSED MAP-REDUCE DIRECTORY")){
-				function = "PigStorage('"+delimiter+"', '-schema')";
+				function = "PigStorage('"+delimiter+"')";//TODO Schema IS a problem, '-schema');
 			}
 			if (type.equalsIgnoreCase("BINARY MAP-REDUCE DIRECTORY")){
 				function = "BinStorage()";
