@@ -7,10 +7,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.faces.context.FacesContext;
@@ -1209,7 +1211,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 			result = new String[elements.size()][];
 
 			int i = 0;
-			getDf().topoligicalSort();
 			Iterator<String> elSels = getDf().getComponentIds().iterator();
 			while(elSels.hasNext()){
 				String curId = elSels.next();
@@ -1344,32 +1345,19 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 *            the list to append the result
 	 * @throws RemoteException
 	 */
-	private List<String[]>  getOutputStatusThisAndDesc(DataFlowElement dfe) {
-
+	private Set<String> getAllElementAfterForOutput(DataFlowElement dfe){
 		logger.info("getOutputStatus");
-		List<String[]> status = null;
+		Set<String> ans = new LinkedHashSet<String>();
 		try{
-			status = new LinkedList<String[]>();
 			if (dfe != null && dfe.getDFEOutput() != null) {
+				
 				String compId = dfe.getComponentId();
 				if (compId == null) {
 					logger.info("Error component id cannot be null");
 				} else {
-					String groupId = null;
-					Map<String, String> mapIdW = getIdMap().get(getNameWorkflow());
-					for (Entry<String, String> e : mapIdW.entrySet()) {
-						if (compId.equals(e.getValue())) {
-							groupId = e.getKey();
-						}
-					}
-					if (groupId == null) {
-						logger.info("Error getting status: " + compId);
-					} else {
-						status.add(getOutputStatus(dfe, groupId));
-
-						for (DataFlowElement cur : dfe.getAllOutputComponent()) {
-							status.addAll(getOutputStatusThisAndDesc(cur));
-						}
+					ans.add(compId);
+					for (DataFlowElement cur : dfe.getAllOutputComponent()) {
+						ans.addAll(getAllElementAfterForOutput(cur));
 					}
 				}
 			}else{
@@ -1382,7 +1370,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
 		}
-		return status;
+		return ans;
 	}
 
 	public void changeIdElement() throws RemoteException {
@@ -1446,12 +1434,17 @@ public class CanvasBean extends BaseBean implements Serializable {
 				logger.info("getOutputStatus df == null");
 				return new String[0][];
 			}
-
-			List<String[]> status = getOutputStatusThisAndDesc(df);
-			String[][] ans = new String[status.size()][];
+			
+			Set<String> els = getAllElementAfterForOutput(df);
+			String[][] ans = new String[els.size()][];
 			int i = 0;
-			for (String[] elStat : status) {
-				ans[i++] = elStat;
+			Map<String,String> gIds = getReverseIdMap();
+			Iterator<String> allCompIt = getDf().getComponentIds().iterator();
+			while(allCompIt.hasNext()){
+				String compCur = allCompIt.next();
+				if(els.contains(compCur)){
+					ans[i++] = getOutputStatus(getDf().getElement(compCur), gIds.get(compCur));
+				}
 			}
 
 			return ans;
