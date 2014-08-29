@@ -156,7 +156,7 @@ public class PigAggregator extends PigElement {
 				filterLoader = loader;
 			}
 			
-			String groupbyForEach = groupingInt.getForEachQueryPiece(filterLoader, tSelInt, parallelInt.getValue());
+			String groupbyForEach = groupingInt.getForEachQueryPiece(filterLoader, tSelInt);
 			String groupbyTableName = getNextName();
 			if (!groupbyForEach.isEmpty()) {
 				groupbyForEach = groupbyTableName + " = " + groupbyForEach + ";\n\n";
