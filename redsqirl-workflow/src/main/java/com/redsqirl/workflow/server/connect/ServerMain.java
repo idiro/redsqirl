@@ -135,8 +135,17 @@ public class ServerMain {
 				logger.info("end server main");
 				
 			} catch (IOException e) {
-				logger.error(e.getMessage());
+				logger.error("IO Exception ",e);
+				StackTraceElement[] st = e.getStackTrace();
+				for (StackTraceElement s : st){
+					logger.error(s.getFileName()+" , "+s.toString());
+				}
+				
 				System.exit(1);
+			} catch (Exception e){
+				logger.error("Exception ",e);
+				System.exit(1);
+				
 			}
 		}
 	}

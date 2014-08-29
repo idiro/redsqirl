@@ -3,6 +3,7 @@ package com.redsqirl.workflow.client;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Map;
 
@@ -56,6 +57,17 @@ public class ServerThread{
 					logger.info(final_command);
 					Process p = Runtime.getRuntime().exec(
 							new String[] { "/bin/bash", "-c", final_command});
+
+					InputStream stdin = p.getInputStream();
+					InputStreamReader isr = new InputStreamReader(stdin);
+					BufferedReader br = new BufferedReader(isr);
+
+					String line = null;
+
+					while ( (line = br.readLine()) != null){
+					     logger.info((line));
+					}
+					
 					p.getInputStream().close();
 					p.getOutputStream().close();
 					this.p = p;

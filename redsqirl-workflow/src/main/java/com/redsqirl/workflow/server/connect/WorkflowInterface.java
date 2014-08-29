@@ -1,6 +1,11 @@
 package com.redsqirl.workflow.server.connect;
 
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashSet;
@@ -13,6 +18,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.idiro.utils.LocalFileSystem;
 import com.idiro.utils.RandomString;
 import com.redsqirl.workflow.server.DataOutput;
 import com.redsqirl.workflow.server.Workflow;
@@ -55,7 +61,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	/**
 	 * Map of workflow clones
 	 */
-	private Map<String,DataFlow> wfClones = new LinkedHashMap<String,DataFlow>();
+	private List<String> wfClones = new LinkedList<String>();
 	
 	
 	/**
@@ -182,7 +188,9 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 		String cloneId = generateNewCloneId();
 		if(wf.containsKey(wfName)){
 			try {
-				wfClones.put(cloneId, (Workflow) ((Workflow) wf.get(wfName)).clone());
+				if(((Workflow) wf.get(wfName)).cloneToFile(cloneId)){
+					wfClones.add(cloneId);
+				}
 			} catch (Exception e) {
 				logger.error(e.getMessage(),e);
 			}
@@ -202,7 +210,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 
 		while (newId == null) {
 			newId = RandomString.getRandomNameStartByLetter(length);
-			Iterator<String> itA = wfClones.keySet().iterator();
+			Iterator<String> itA = wfClones.iterator();
 			found = false;
 			while (itA.hasNext() && !found) {
 				found = itA.next().equals(newId);
@@ -222,12 +230,13 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	 * @param to
 	 */
 	public void copy(String cloneId, List<String> elements, String wfName){
-		if(wfClones.containsKey(cloneId) && 
+		
+		if(wfClones.contains(cloneId) && 
 				elements != null && 
 				!elements.isEmpty() && 
 				wf.containsKey(wfName)){
 			try {
-				Workflow from = (Workflow) wfClones.get(cloneId);
+				Workflow from = (Workflow) readCloneFile(cloneId);
 				DataFlow to  = wf.get(wfName);
 				Workflow cloneFrom = (Workflow) from.clone();
 				Iterator<DataFlowElement> cloneElIt = cloneFrom.getElement().iterator();
@@ -266,6 +275,51 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 			}
 		}
 
+	}
+	/**
+	 * Read the clone file
+	 * @param cloneId
+	 * @return Bytes version of Workflow
+	 */
+	public Object readCloneFile(String cloneId){
+		Object result = null;
+		try {
+			// Check if T is instance of Serializeble other throw
+			// CloneNotSupportedException
+			String path = WorkflowPrefManager.getPathtmpfolder() + "/clones/"
+					+ cloneId;
+			
+			File file = new File(path);
+			FileInputStream fin = null;
+			// create FileInputStream object
+			fin = new FileInputStream(file);
+
+			byte fileContent[] = new byte[(int) file.length()];
+
+			// Reads up to certain bytes of data from this input stream into
+			// an array of bytes.
+			fin.read(fileContent);
+
+			ObjectInputStream ois = new ObjectInputStream(
+					new ByteArrayInputStream(fileContent));
+			// Deserialize it
+			result = ois.readObject();
+			fin.close();
+			ois.close();
+		} catch (IOException e) {
+			logger.error(e.getMessage(), e);
+			result = null;
+		} catch (ClassNotFoundException e) {
+			logger.error(e.getMessage(), e);
+			result = null;
+		}
+		return result;
+	}
+	
+	public void removeClone(String cloneId){
+		String path = WorkflowPrefManager.getPathtmpfolder()+"/clones/"+cloneId;
+		new File(path).delete();
+		wfClones.remove(cloneId);
 	}
 
 	/**
@@ -335,6 +389,12 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	 * Shutdown the server
 	 */
 	public void shutdown() throws RemoteException{
+		try {
+			LocalFileSystem.delete(
+					new File(WorkflowPrefManager.getPathtmpfolder()+"/clones"));
+		} catch (IOException e) {
+			logger.error("Failed to remove Clones Folder ",e);
+		}
 		ServerMain.shutdown();
 	}
 
@@ -347,17 +407,11 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	
 	public void replaceWFByClone(String id, String wfName,boolean keepClone) throws RemoteException{
 
-		if(wfClones.containsKey(id) && wf.containsKey(wfName)){
+		if(wfClones.contains(id) && wf.containsKey(wfName)){
 			wf.remove(wfName);
+			wf.put(wfName,(Workflow)readCloneFile(id));
 			if(!keepClone){
-				wf.put(wfName,wfClones.get(id));
-				wfClones.remove(id);
-			}else{
-				try{
-					wf.put(wfName, (DataFlow) ((Workflow)wfClones.get(id)).clone());
-				}catch(Exception e){
-					logger.error("Fail to clone a cloned Workflow: "+e,e);
-				}
+				removeClone(id);
 			}
 		}
 
@@ -365,10 +419,10 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	
 	public void copy(String id, String wfName) throws RemoteException{
 
-		if(wfClones.containsKey(id) && wf.containsKey(wfName)){
+		if(wfClones.contains(id) && wf.containsKey(wfName)){
 			wf.remove(wfName);
-			wfClones.remove(id);
-			wf.put(wfName,wfClones.get(id));
+			removeClone(id);
+			wf.put(wfName,(Workflow)readCloneFile(id));
 		}
 
 	}

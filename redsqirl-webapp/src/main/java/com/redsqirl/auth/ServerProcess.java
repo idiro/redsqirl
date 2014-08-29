@@ -208,6 +208,7 @@ public class ServerProcess {
 					logger.info("Clean and close all the open worfklows");
 					dataFlowInterface.backupAll();
 					dataFlowInterface.autoCleanAll();
+					dataFlowInterface.shutdown();
 				} catch (RemoteException e) {
 					logger.warn("Failed closing workflows");
 				}

@@ -4,6 +4,9 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -31,6 +34,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -131,6 +135,41 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		super();
 		this.name = name;
 	}
+	
+	public boolean cloneToFile(String cloneId) throws CloneNotSupportedException{ 
+		boolean clonedok = true;
+		
+		try {
+			
+			//Check if T is instance of Serializeble other throw CloneNotSupportedException
+			String path = WorkflowPrefManager.getPathtmpfolder()+"/clones/"+cloneId;
+			
+			File clonesFolder = new File(WorkflowPrefManager.getPathtmpfolder()+"/clones");
+			clonesFolder.mkdir();
+			FileOutputStream output = new FileOutputStream(new File(path));
+			
+			
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			ObjectOutputStream out = new ObjectOutputStream(bos);
+			//Serialize it
+			out.writeObject(this);
+			byte[] bytes = bos.toByteArray();
+			IOUtils.write(bytes, output);
+			bos.close();
+			out.close();
+			output.close();
+			ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(bytes));
+			//Deserialize it
+		} catch (IOException e) {
+			logger.error(e.getMessage(), e);
+			return false;
+		}
+		
+		
+		return clonedok;
+	}
+	
+	
 	
 	public Object clone() throws CloneNotSupportedException {    
 	    Object ans = null;
