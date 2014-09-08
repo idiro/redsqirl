@@ -133,29 +133,46 @@ public class PigGroupRank extends PigElement {
 			String order = orderTypeInt.getValue();
 			order = order.equals("DESCENDING") ? "DESC" : "ASC";
 
-			String group = key_rank.toUpperCase()
+			String loader = getCurrentName();
+			
+			String group = getNextName()
 					+ " = FOREACH("
-					+ groupingInt.getQueryPiece(getCurrentName(), null)
+					+ groupingInt.getQueryPiece(loader, null)
 					+ parallel
 					+ " ) {\n"
 					+ "\tORD = ORDER "
-					+ getCurrentName()
+					+ loader
 					+ " by "
 					+ rank.getValue()
 					+ " "
 					+ order
 					+ " ;\n"
-					+ "\tGENERATE FLATTEN(Stitch(ORD,\n\tIOver(ORD,'rank',-1,-1,"
-					+ in.getFields().getFieldNames().indexOf(rank.getValue())
-					+ ")));\n};";
+					+ "\tGENERATE FLATTEN(Stitch(ORD,\n\tIOver(ORD,'rank',-1,-1,0"
+					+ ")))"
+					+ ";\n};";
 			query += group + "\n\n";
-
-			String filter = filterInt.getQueryPiece(key_rank.toUpperCase());
+//			 TODO Check if the method will fail
+			loader = getCurrentName();
+			
+			//foreach C generate s, $9;
+			query += getNextName()+" = foreach "+loader +" generate ";
+			int i = 0;
+			for(String field : getNewField().getFieldNames()){
+				++i;
+				if(i == getNewField().getSize()){
+					query += " $"+(i-1)+" as " + field+";\n ";
+				}else {
+					query += field +" as "+field+" ,\n";
+				}
+			}
+			
+			String filter = filterInt.getQueryPiece(getCurrentName());
 			String storeAl = key_rank.toUpperCase();
 			if (!filter.isEmpty()) {
-				query += "FLT = " + filter + ";\n\n";
-				storeAl = "FLT";
+				query += getNextName()+" = " + filter + ";\n\n";
+				storeAl = getCurrentName();
 			}
+			
 
 			String store ;
 			store = getStoreQueryPiece(out, storeAl);

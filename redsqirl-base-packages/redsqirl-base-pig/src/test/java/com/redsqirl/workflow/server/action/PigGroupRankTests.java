@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -26,6 +27,7 @@ import com.redsqirl.workflow.server.interaction.PigOrderInteraction;
 import com.redsqirl.workflow.server.interaction.PigTableSelectInteraction;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.test.TestUtils;
+import com.redsqirl.workflow.utils.PigLanguageManager;
 
 public class PigGroupRankTests {
 
@@ -52,7 +54,7 @@ public class PigGroupRankTests {
 		logger.debug("HS update out...");
 		error = pig.updateOut();
 		assertTrue("pig select update: " + error, error == null);
-		logger.debug("Features "
+		logger.info("Features "
 				+ pig.getDFEOutput().get(PigSelect.key_output).getFields());
 
 		pig.getDFEOutput()
@@ -104,7 +106,14 @@ public class PigGroupRankTests {
 		pig.getFilterInt().update();
 		
 		pig.getFilterInt().setValue(rnk + " < 3");
-
+		
+		List<String> doAudit = new LinkedList<String>();
+		doAudit.add(PigLanguageManager.getText("pig.audit_interaction_doaudit"));
+		
+		pig.auditInt.setValues(doAudit);
+		
+		pig.delimiterOutputInt.setValue("|");
+		
 		String error = pig.updateOut();
 		assertTrue("pig select update: " + error, error == null);
 	}

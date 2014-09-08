@@ -260,9 +260,11 @@ public abstract class PigElement extends DataflowAction {
 	public boolean writeOozieActionFiles(File[] files) throws RemoteException {
 		logger.info("Write queries in file: "+files[0].getAbsolutePath());
 		String toWrite = getQuery();
-		
+		logger.info("fields out "+getDFEOutput().get(key_output).getFields().getFieldNames());
 		int doAudit = auditInt.getValues().size();
 		if(doAudit > 0){
+			logger.info("audit out "+getDFEOutput().get(key_output_audit));
+			logger.info("audit out path "+getDFEOutput().get(key_output_audit).getPath());
 			toWrite += "\n";
 			toWrite += (new AuditGenerator()).getQuery(
 					getDFEOutput().get(key_output), 
@@ -331,6 +333,7 @@ public abstract class PigElement extends DataflowAction {
 			FieldList new_field = getNewField();
 			String type = savetypeOutputInt.getValue();
 			DFEOutput out = output.get(key_output);
+			logger.info("new fields "+new_field.getFieldNames());
 			logger.info("output type : "+type);
 			
 			if(out != null && !type.equalsIgnoreCase(out.getTypeName())){
@@ -362,6 +365,10 @@ public abstract class PigElement extends DataflowAction {
 						fl.addField("AUDIT_" + it.next(), FieldType.STRING);
 					}
 					output.get(key_output_audit).setFields(fl);
+					if(output.get(key_output_audit).getPath()==null || output.get(key_output_audit).getPath().isEmpty()){
+						// FIXME wont generate otherwise?
+						output.get(key_output_audit).generatePath(System.getProperty("user.name"), key_output_audit, this.componentId);
+					}
 				} catch (Exception e) {
 					logger.error(e.getMessage(), e);
 				}
@@ -455,12 +462,14 @@ public abstract class PigElement extends DataflowAction {
 		if(delimiter==null || delimiter.equalsIgnoreCase("")){
 			delimiter ="|";
 		}
+		logger.info("delim is : "+delimiter);
 		try{
 			
 			type = savetypeOutputInt.getTree().getFirstChild("list").getFirstChild("output").getFirstChild().getHead();
 			logger.info("type: "+type);
 			if(type.equalsIgnoreCase("TEXT MAP-REDUCE DIRECTORY")||type.equalsIgnoreCase("COMPRESSED MAP-REDUCE DIRECTORY")){
-				function = "PigStorage('"+delimiter+"')";//TODO Schema IS a problem, '-schema');
+
+				function = "PigStorage('"+delimiter+"','-schema')";//TODO Schema IS a problem, '-schema'); Didnt Have propblem ?
 			}
 			if (type.equalsIgnoreCase("BINARY MAP-REDUCE DIRECTORY")){
 				function = "BinStorage()";

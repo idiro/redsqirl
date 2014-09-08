@@ -107,7 +107,7 @@ public class AuditGenerator {
 			throws RemoteException {
 		String query = null;
 		if (in != null) {
-			logger.debug("In and out...");
+			logger.info("In and out...");
 			// Output
 
 			String remove = getRemoveQueryPiece(audit_out.getPath()) + ";\n\n";

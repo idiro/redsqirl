@@ -196,7 +196,7 @@ public class PigSchemaTests {
 		    error = wc.getJobInfo(jobId).toString();
 		    assertTrue(error, error.contains("SUCCEEDED"));
 		}catch(Exception e){
-			logger.error(e.getMessage());
+			logger.error("Exception : ",e);
 			assertTrue(e.getMessage(),false);
 		}
 	}

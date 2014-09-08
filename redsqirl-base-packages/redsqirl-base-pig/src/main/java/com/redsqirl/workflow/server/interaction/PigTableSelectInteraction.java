@@ -593,11 +593,13 @@ public class PigTableSelectInteraction extends TableInteraction {
 			Map<String, String> cur = selIt.next();
 			String fieldName = cur.get(table_field_title);
 			String opTitle = cur.get(table_op_title);
-
+			logger.info(fieldName +" , " + opTitle);
 			if (PigDictionary.getInstance().isAggregatorMethod(opTitle)) {
+				String tmp = PigDictionary.getBracketContent(opTitle);
+				tmp = tmp.substring(tmp.indexOf('.')+1);
 				opTitle = opTitle.replace(
 						PigDictionary.getBracketContent(opTitle),
-						groupTableName + "." + fieldName);
+						groupTableName + "." + tmp);
 			}
 
 			select = "FOREACH " + tableName + " GENERATE " + opTitle + " AS "
@@ -608,12 +610,16 @@ public class PigTableSelectInteraction extends TableInteraction {
 			Map<String, String> cur = selIt.next();
 			String fieldName = cur.get(table_field_title);
 			String opTitle = cur.get(table_op_title);
+			logger.info(fieldName +" , " + opTitle);
 
 			if (PigDictionary.getInstance().isAggregatorMethod(opTitle)) {
+				String tmp = PigDictionary.getBracketContent(opTitle);
+				tmp = tmp.substring(tmp.indexOf('.')+1);
 				opTitle = opTitle.replace(
 						PigDictionary.getBracketContent(opTitle),
-						groupTableName + "." + fieldName);
+						groupTableName + "." + tmp);
 			}
+			logger.info("is agg?" + fieldName +" , " + opTitle);
 
 			select += ",\n       " + opTitle + " AS " + fieldName;
 		}
@@ -661,11 +667,12 @@ public class PigTableSelectInteraction extends TableInteraction {
 
 			if (PigDictionary.getInstance().isCountDistinctMethod(opTitle)) {
 
-				opTitle = opTitle.replace(
-						PigDictionary.getBracketContent(opTitle),
-						groupTableName + "." + fieldName);
-
-				countDistinct.add(PigDictionary.getBracketContent(opTitle));
+				opTitle = 
+						PigDictionary.getBracketContent(opTitle);
+//						groupTableName + "." + fieldName);
+//						PigDictionary.getBracketContent(opTitle));
+				logger.info("replaced op "+opTitle);
+				countDistinct.add(opTitle.substring(opTitle.indexOf('.')+1));
 			}
 
 		}
@@ -674,7 +681,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 
 			int cont = 0;
 			for (String e : countDistinct) {
-				select += "a" + cont + " = " + e + ";\n";
+				select += "a" + cont + " = " + groupTableName + "." + e + ";\n";
 				select += "b" + cont + " = distinct a" + cont + ";\n";
 				cont++;
 			}
@@ -690,9 +697,12 @@ public class PigTableSelectInteraction extends TableInteraction {
 
 			if (PigDictionary.getInstance().isAggregatorMethod(opTitle)) {
 				if (!PigDictionary.getInstance().isCountDistinctMethod(opTitle)) {
+					String tmp = PigDictionary.getBracketContent(opTitle);
+					tmp = tmp.substring(tmp.indexOf('.')+1);
 					opTitle = opTitle.replace(
 							PigDictionary.getBracketContent(opTitle),
-							groupTableName + "." + fieldName);
+//							groupTableName + "." + fieldName);
+							groupTableName + "." + tmp);
 				} else {
 					opTitle = "COUNT(b" + cont + ")";
 					cont++;
@@ -709,9 +719,11 @@ public class PigTableSelectInteraction extends TableInteraction {
 
 			if (PigDictionary.getInstance().isAggregatorMethod(opTitle)) {
 				if (!PigDictionary.getInstance().isCountDistinctMethod(opTitle)) {
+					String tmp = PigDictionary.getBracketContent(opTitle);
+					tmp = tmp.substring(tmp.indexOf('.')+1);
 					opTitle = opTitle.replace(
 							PigDictionary.getBracketContent(opTitle),
-							groupTableName + "." + fieldName);
+							groupTableName + "." + tmp);
 				} else {
 					opTitle = "COUNT(b" + cont + ")";
 					cont++;

@@ -35,7 +35,7 @@ public class PigAggregatorTests {
 
 
 	public static DataFlowElement createPigWithSrc(Workflow w, DataFlowElement src,
-			HDFSInterface hInt,boolean filter, boolean groupByAll) throws RemoteException, Exception {
+			HDFSInterface hInt,boolean filter, boolean groupByAll,boolean countDist) throws RemoteException, Exception {
 		String error = null;
 		String idHS = w.addElement((new PigAggregator()).getName());
 		logger.info("Pig agge: " + idHS);
@@ -48,7 +48,7 @@ public class PigAggregatorTests {
 				PigAggregator.key_input, idHS);
 
 		assertTrue("pig aggreg add input: " + error, error == null);
-		updatePig(w, pig, hInt,filter, groupByAll);
+		updatePig(w, pig, hInt,filter, groupByAll,countDist);
 		error = pig.updateOut();
 		assertTrue("pig aggreg update: " + error, error == null);
 		logger.debug("Features "
@@ -62,7 +62,7 @@ public class PigAggregatorTests {
 		return pig;
 	}
 
-	public static void updatePig(Workflow w, PigAggregator pig, HDFSInterface hInt,boolean filter, boolean groupByAll)
+	public static void updatePig(Workflow w, PigAggregator pig, HDFSInterface hInt,boolean filter, boolean groupByAll,boolean countDist)
 			throws RemoteException, Exception {
 
 		logger.info("update pig...");
@@ -93,14 +93,20 @@ public class PigAggregatorTests {
 			Tree<String> out = tsi.getTree().getFirstChild("table");
 			Tree<String> rowId = out.add("row");
 			if (!groupByAll){
-				rowId.add(PigTableSelectInteraction.table_field_title).add("VALUE");
+				rowId.add(PigTableSelectInteraction.table_field_title).add("VALUE_ED");
 				rowId.add(PigTableSelectInteraction.table_op_title).add(inAlias + ".VALUE");
 				rowId.add(PigTableSelectInteraction.table_type_title).add("INT");
 				rowId = out.add("row");
 			}
-			rowId.add(PigTableSelectInteraction.table_field_title).add("RAW");
+			if(countDist){
+			rowId.add(PigTableSelectInteraction.table_field_title).add("RAW_ED");
 			rowId.add(PigTableSelectInteraction.table_op_title).add("COUNT_DISTINCT("+inAlias + ".RAW)");
 			rowId.add(PigTableSelectInteraction.table_type_title).add("INT");
+			}else{
+				rowId.add(PigTableSelectInteraction.table_field_title).add("RAW_ED");
+				rowId.add(PigTableSelectInteraction.table_op_title).add("SUM("+inAlias + ".RAW)");
+				rowId.add(PigTableSelectInteraction.table_type_title).add("INT");
+			}
 		}
 		
 		PigOrderInteraction oi = pig.getOrderInt();
@@ -131,7 +137,7 @@ public class PigAggregatorTests {
 	}
 	
 
-	public void runWorkflow(boolean filter, boolean groupByAll) {
+	public void runWorkflow(boolean filter, boolean groupByAll,boolean countDist) {
 		
 
 		String error = null;
@@ -146,7 +152,7 @@ public class PigAggregatorTests {
 			logger.info("built workflow");
 
 			DataFlowElement src = PigTestUtils.createSrc_ID_VALUE_RAW(w, hInt, new_path1);
-			PigAggregator pig = (PigAggregator) createPigWithSrc(w, src, hInt,filter, groupByAll);
+			PigAggregator pig = (PigAggregator) createPigWithSrc(w, src, hInt,filter, groupByAll,countDist);
 
 			pig.getDFEOutput().get(PigAggregator.key_output)
 			.setSavingState(SavingState.RECORDED);
@@ -193,9 +199,9 @@ public class PigAggregatorTests {
 	@Test
 	public void basic() {
 		TestUtils.logTestTitle(getClass().getName()+"#basic");
-		runWorkflow(false, false);
-		runWorkflow(true, false);
-		runWorkflow(false, true);
+		runWorkflow(false, false , false);
+		runWorkflow(true, false , true );
+		runWorkflow(false, true, true);
 	}
 
 }
