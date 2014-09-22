@@ -613,13 +613,10 @@ public class PigTableSelectInteraction extends TableInteraction {
 			logger.info(fieldName +" , " + opTitle);
 
 			if (PigDictionary.getInstance().isAggregatorMethod(opTitle)) {
-				String tmp = PigDictionary.getBracketContent(opTitle);
-				tmp = tmp.substring(tmp.indexOf('.')+1);
 				opTitle = opTitle.replace(
 						PigDictionary.getBracketContent(opTitle),
-						groupTableName + "." + tmp);
+						groupTableName + "." + fieldName);
 			}
-			logger.info("is agg?" + fieldName +" , " + opTitle);
 
 			select += ",\n       " + opTitle + " AS " + fieldName;
 		}
