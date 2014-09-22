@@ -54,7 +54,9 @@
 				<a4j:actionparam name="nameFile" />
 			</a4j:jsFunction>
 			
-			<a4j:jsFunction name="openModalCopyMoveHdfs" reRender="copyMovelBt" oncomplete="#{rich:component('modalCopyMoveHdfs')}.show();" >
+			<a4j:jsFunction name="unselectAll" action="#{hdfsBean.tableGrid.unselectAll}" />
+			
+			<a4j:jsFunction name="openModalCopyMoveHdfs" reRender="copyMovelBt" oncomplete="unselectAll();#{rich:component('modalCopyMoveHdfs')}.show();" >
 			    <a4j:actionparam name="openCtrlCopyMove" assignTo="#{hdfsBean.showCopyMove}"/>
 			</a4j:jsFunction>
 
