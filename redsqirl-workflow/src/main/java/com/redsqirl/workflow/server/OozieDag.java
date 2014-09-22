@@ -502,6 +502,7 @@ public class OozieDag {
 		if (graphIn.containsKey(element)) {
 			Iterator<String> itIn = graphIn.get(element).iterator();
 			while (itIn.hasNext()) {
+				// FIXME possible infinite loop
 				String cur = itIn.next();
 				actionBefore.add(cur);
 				actionBefore.addAll(getAllBefore(cur));

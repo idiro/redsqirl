@@ -374,7 +374,11 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 
 		try {
-			registry = LocateRegistry.getRegistry(port);
+			try{
+				registry = LocateRegistry.getRegistry(port);
+			} catch (Exception e){
+				registry = LocateRegistry.createRegistry(port);
+			}
 
 			Iterator<String> beanIt = beans.iterator();
 			while(beanIt.hasNext()){

@@ -76,17 +76,28 @@ public class ServerMain {
 				String nameHDFSBrowser = System.getProperty("user.name")+"@hdfsbrowser";
 				String namePrefs = System.getProperty("user.name")+"@prefs";
 
-				registry = LocateRegistry.getRegistry(
-						"127.0.0.1",
-						port,
-						RMISocketFactory.getDefaultSocketFactory()
-						//new ClientRMIRegistry()	
-						);
+				try{
+					registry = LocateRegistry.createRegistry(port);
+					logger.info(" ---------------- create registry");
+				} catch (Exception e){
+					registry = LocateRegistry.getRegistry(port);
+					logger.info(" ---------------- Got registry");
+				}
+
+				int i =0;
 				
-				registry.rebind(
-						nameWorkflow,
-						(DataFlowInterface) WorkflowInterface.getInstance()
-						);
+				DataFlowInterface dfi = (DataFlowInterface) WorkflowInterface
+						.getInstance();
+				while (i < 40) {
+					try {
+						registry.rebind(nameWorkflow, dfi);
+						break;
+					} catch (Exception e) {
+						++i;
+						Thread.sleep(1000);
+						logger.info("Sleep " + i);
+					}
+				}
 
 				logger.info("nameWorkflow: "+nameWorkflow);
 

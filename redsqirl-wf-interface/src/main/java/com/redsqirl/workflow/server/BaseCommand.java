@@ -55,7 +55,7 @@ public class BaseCommand {
 			classpath = System.getProperty("java.class.path");
 		}
 		String codebase = " -Djava.rmi.server.codebase=" + getRMICodeBase();
-		String hostname = " -Djava.rmi.server.hostname=" + getRMIHost();
+		String hostname = " ";//"-Djava.rmi.server.hostname=" + getRMIHost();
 		String catalinaBase = " -Dcatalina.base=" + System.getProperty("catalina.base");
 		String disableUseCodeBaseOnly =" -Djava.rmi.server.useCodebaseOnly=false ";
 		logger.debug(classpath);

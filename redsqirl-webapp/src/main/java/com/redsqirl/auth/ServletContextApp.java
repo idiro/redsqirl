@@ -1,5 +1,8 @@
 package com.redsqirl.auth;
 
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,6 +12,10 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+
+import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
+import com.redsqirl.workflow.server.connect.interfaces.DataStore;
+import com.redsqirl.workflow.server.interfaces.DataFlow;
 
 /** ServletContextApp
  * 
@@ -35,8 +42,13 @@ public class ServletContextApp implements ServletContextListener{
 		
 		ServletContext context = contextEvent.getServletContext();
 		context.setAttribute("sessionLoginMap", sessionLoginMap);
-
-		logger.info("Context Created");
+		Registry reg = null ;
+		try {
+			reg= LocateRegistry.createRegistry(2001);
+			logger.error("Created registry");
+		} catch (RemoteException e) {
+			logger.info("Got registry");
+		}
 
 	}
 
