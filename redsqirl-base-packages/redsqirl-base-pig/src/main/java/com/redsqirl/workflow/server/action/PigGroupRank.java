@@ -167,15 +167,10 @@ public class PigGroupRank extends PigElement {
 			}
 			
 			String filter = filterInt.getQueryPiece(getCurrentName());
-			String storeAl = key_rank.toUpperCase();
 			if (!filter.isEmpty()) {
 				query += getNextName()+" = " + filter + ";\n\n";
-				storeAl = getCurrentName();
 			}
-			
-
-			String store ;
-			store = getStoreQueryPiece(out, storeAl);
+			String store = getStoreQueryPiece(out, getCurrentName());
 			query += store;
 
 		}
