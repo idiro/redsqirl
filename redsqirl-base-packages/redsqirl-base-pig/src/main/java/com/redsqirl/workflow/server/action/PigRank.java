@@ -109,7 +109,7 @@ public class PigRank extends PigElement {
 			String order = orderTypeInt.getValue();
 			order = order.equals("DESCENDING") ? "DESC" : "ASC";
 
-			String ranking = key_rank.toUpperCase() + " = RANK "
+			String ranking = getNextName() + " = RANK "
 					+ getCurrentName() + " by " + rank.getValue();
 
 			ranking += " " + order + " ;\n ";
@@ -117,14 +117,11 @@ public class PigRank extends PigElement {
 			query += ranking + "\n\n";
 
 			String filter = filterInt.getQueryPiece(key_rank.toUpperCase());
-			String storeAl = key_rank.toUpperCase();
 			if (!filter.isEmpty()) {
-				query += "FLT = " + filter + ";\n\n";
-				storeAl = "FLT";
+				query += getNextName()+ " = " + filter + ";\n\n";
 			}
 
-			String store;
-			store = getStoreQueryPiece(out, storeAl);
+			String store = getStoreQueryPiece(out, getCurrentName());
 			query += store;
 
 		}
