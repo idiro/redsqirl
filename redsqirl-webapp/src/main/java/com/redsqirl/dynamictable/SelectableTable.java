@@ -143,6 +143,12 @@ public class SelectableTable extends BaseBean implements Serializable {
 		logger.info("selected: " + list.toString());
 		return list;
 	}
+	
+	public void unselectAll(){
+		for (int i = 0; i < getRows().size(); i++) {
+			getRows().get(i).setSelected(false);
+		}
+	}
 
 	public void removeAllSelected() {
 		List<Integer> l = getAllSelected();
