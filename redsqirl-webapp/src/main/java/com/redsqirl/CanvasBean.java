@@ -1030,6 +1030,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	}
 
+	public void regeneratePathsProject() throws RemoteException {
+		logger.info("regenerate paths project");
+		regeneratePathsProject(null);
+	}
+	
 	public void regeneratePathsProjectCopy() throws RemoteException {
 		logger.info("regenerate paths project copy");
 		regeneratePathsProject(true);
@@ -1048,7 +1053,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 * @throws RemoteException
 	 */
-	public void regeneratePathsProject(boolean copy) throws RemoteException {
+	public void regeneratePathsProject(Boolean copy) throws RemoteException {
 
 		DataFlow wf = getworkFlowInterface().getWorkflow(getNameWorkflow());
 		String error = wf.regeneratePaths(copy);
