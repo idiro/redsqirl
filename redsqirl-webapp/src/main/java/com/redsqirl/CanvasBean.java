@@ -1246,8 +1246,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 			if(comment != null && !comment.isEmpty()){
 				tooltip.append("<i>"+comment+"</i><br/>");
 			}
-
-			errorOut = dfe.updateOut();
+			
+			try{
+				errorOut = dfe.updateOut();
+			}catch(Exception e){
+				logger.error(e,e);
+				errorOut = "Unexpected program error while checking this action.";
+			}
+			
 			if(errorOut != null){
 				tooltip.append("<br/><b>Error:</b><br/>" + errorOut.replaceAll("\n", "<br/>") + "<br/>");
 			}
