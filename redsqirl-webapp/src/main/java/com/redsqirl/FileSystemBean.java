@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.faces.context.FacesContext;
@@ -38,8 +39,8 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	private List<SelectItem> listExtensions;
 	private String extensionsSelected;
 	private String openOutputData;
-	
-	
+
+
 	private boolean file;
 	private String name;
 	private String path;
@@ -106,15 +107,15 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		DataStore hInt = getDataStore();
 		logger.info("Started mounting table");
 		setPath(hInt.getPath());
-		
+
 		FacesContext context = FacesContext.getCurrentInstance();
 		UserInfoBean userInfoBean = (UserInfoBean) context.getApplication()
 				.evaluateExpressionGet(context, "#{userInfoBean}",
 						UserInfoBean.class);
-		
+
 		logger.info("update progressbar");
 		userInfoBean.setValueProgressBar(Math.min(100, userInfoBean.getValueProgressBar()+5));
-		
+
 
 		Map<String, Map<String, String>> mapSSH = hInt.getChildrenProperties();
 		setPropsParam(hInt.getParamProperties());
@@ -143,10 +144,10 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			setCreateProps(createProps);
 
 			updateTable();
-			
+
 			logger.info("update progressbar");
 			userInfoBean.setValueProgressBar(Math.min(100, userInfoBean.getValueProgressBar()+5));
-			
+
 
 		}
 
@@ -157,6 +158,12 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 		setPath(getDataStore().getPath());
 		Map<String, Map<String, String>> mapSSH = getDataStore().getChildrenProperties();
+		
+		String regex = null;
+		if(extensionsSelected != null && !extensionsSelected.isEmpty()){
+			regex = extensionsSelected.replaceAll(Pattern.quote("."), Matcher.quoteReplacement("\\.")).replaceAll(Pattern.quote("*"), ".*");
+			logger.info("Regex: "+regex);
+		}
 		//Fill rows
 		if (mapSSH != null) {
 			setAllProps(new LinkedList<Map<String,String>>());
@@ -172,29 +179,18 @@ public class FileSystemBean extends BaseBean implements Serializable {
 				allProperties.putAll(mapSSH.get(path));
 				getTableGrid().add(allProperties);
 				getAllProps().add(allProperties);
-				
-				if(openOutputData != null && openOutputData.equals("Y")){
-					
-					if(getAllProps().get(i).get("type").equalsIgnoreCase("directory")){
-						if(extensionsSelected != null && !extensionsSelected.isEmpty()){
-							getTableGrid().getRows().get(i).setDisableSelect(name.matches(extensionsSelected.replaceAll(Pattern.quote("."), "\\.*").replaceAll(Pattern.quote("*"), ".*")));
-						}else{
-							getTableGrid().getRows().get(i).setDisableSelect(true);
-						}
-					}else{
-						getTableGrid().getRows().get(i).setDisableSelect(false);
-					}
-					
+
+				if(openOutputData != null && openOutputData.equals("Y")
+						&& !getAllProps().get(i).get("type").equalsIgnoreCase("directory")){
+					getTableGrid().getRows().get(i).setDisableSelect(false);
 				}else{
-					
-					if(extensionsSelected != null && !extensionsSelected.isEmpty()){
-						getTableGrid().getRows().get(i).setDisableSelect(name.matches(extensionsSelected.replaceAll(Pattern.quote("*"), ".*")));
+					if(regex != null){
+						getTableGrid().getRows().get(i).setDisableSelect(name.matches(regex));
 					}else{
 						getTableGrid().getRows().get(i).setDisableSelect(true);
 					}
-					
 				}
-				
+
 				++i;
 			}
 		}
@@ -361,21 +357,22 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 		logger.info("copyMoveFile");
 
-		SelectableRow itemSelect = null;
-		int indexDes = 0;
+		Integer indexDes = null;
 		for (int i = 0; i < getTableGrid().getRows().size(); i++) {
 			SelectableRow item = (SelectableRow)getTableGrid().getRows().get(i);
 			if (item.isSelected()) {
-				itemSelect = item;
 				indexDes = i;
 				break;
 			}
 		}
 
 		String error = null;
-
+		String destination = getDataStore().getPath();
+		if(indexDes != null){
+			destination += "/" + getAllProps().get(indexDes).get("name");
+		}
 		for (String[] s : selectedFiles) {
-			if((getDataStore().getPath() + "/" + getAllProps().get(indexDes).get("name")).startsWith((s[0] + "/" + s[1]))){
+			if(destination.startsWith((s[0] + "/" + s[1]))){
 				error = getMessageResources("error_target_sorce");
 				break;
 			}
@@ -383,20 +380,11 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 		if(error == null){
 			for (String[] s : selectedFiles) {
-				if (itemSelect != null) {
-					logger.info(action + " " + s[0] + "/" + s[1] + " to " + getDataStore().getPath() + "/" + getAllProps().get(indexDes).get("name"));
-					if(action.equals("copy")){
-						error = getDataStore().copy(s[0] + "/" + s[1], getDataStore().getPath() + "/" + getAllProps().get(indexDes).get("name") + "/" + s[1]);
-					}else{
-						error = getDataStore().move(s[0] + "/" + s[1], getDataStore().getPath() + "/" + getAllProps().get(indexDes).get("name") + "/" + s[1]);
-					}
-				} else {
-					logger.info(action + " " + s[0] + "/" + s[1] + " to " + getDataStore().getPath());
-					if(action.equals("copy")){
-						error = getDataStore().copy(s[0] + "/" + s[1], getDataStore().getPath() + "/" + s[1]);
-					}else{
-						error = getDataStore().move(s[0] + "/" + s[1], getDataStore().getPath() + "/" + s[1]);
-					}
+				logger.info(action + " " + s[0] + "/" + s[1] + " to " + destination);
+				if(action.equals("copy")){
+					error = getDataStore().copy(s[0] + "/" + s[1], destination + "/" + s[1]);
+				}else{
+					error = getDataStore().move(s[0] + "/" + s[1], destination + "/" + s[1]);
 				}
 			}
 		}
