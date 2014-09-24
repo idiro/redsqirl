@@ -374,8 +374,14 @@ public class CanvasModal extends BaseBean implements Serializable {
 				logger.info("Remove element data");
 				dfe.cleanThisAndAllElementAfter();
 			}
-			error = dfe.updateOut();
+			try{
+				error = dfe.updateOut();
+			}catch(Exception e){
+				logger.error(e,e);
+				error = "Unexpected program error while checking this action.";
+			}
 		} catch (Exception e) {
+			
 		}
 		return error;
 	}
