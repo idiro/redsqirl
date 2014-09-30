@@ -87,6 +87,13 @@ public interface DataFlowElement extends Remote{
 	public void replaceInAllInteraction(String oldStr, String newStr)  throws RemoteException;
 	
 	/**
+	 * Regenerate the path in all the outputs
+	 * @param copy  null only set the path, true to copy, false to move
+	 * @param force true will set all the Output to be TEMPORARY
+	 */
+	public String regeneratePaths(Boolean copy,boolean force) throws RemoteException;
+	
+	/**
 	 * Static methods, get the image of the icon
 	 * @return icon file
 	 * @throws RemoteException

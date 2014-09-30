@@ -4,8 +4,6 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -29,6 +27,7 @@ import java.util.Map.Entry;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -53,6 +52,7 @@ import com.idiro.hadoop.NameNodeVar;
 import com.idiro.utils.LocalFileSystem;
 import com.idiro.utils.RandomString;
 import com.idiro.utils.XmlUtils;
+import com.redsqirl.workflow.server.action.superaction.SuperAction;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
@@ -103,18 +103,18 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 * The current Action in the workflow
 	 */
 	protected LinkedList<DataFlowElement> element = new LinkedList<DataFlowElement>();
-	
+
 	protected String
-		/** Name of the workflow */
-		name,
-		/** Comment of the workflow */
-		comment = "",
-		/** OozieJobId */
-		oozieJobId;
+	/** Name of the workflow */
+	name,
+	/** Comment of the workflow */
+	comment = "",
+	/** OozieJobId */
+	oozieJobId;
 
 	protected boolean saved = false;
-	
-	
+
+
 
 	/**
 	 * Default Constructor
@@ -135,20 +135,20 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		super();
 		this.name = name;
 	}
-	
+
 	public boolean cloneToFile(String cloneId) throws CloneNotSupportedException{ 
 		boolean clonedok = true;
-		
+
 		try {
-			
+
 			//Check if T is instance of Serializeble other throw CloneNotSupportedException
 			String path = WorkflowPrefManager.getPathtmpfolder()+"/clones/"+cloneId;
-			
+
 			File clonesFolder = new File(WorkflowPrefManager.getPathtmpfolder()+"/clones");
 			clonesFolder.mkdir();
 			FileOutputStream output = new FileOutputStream(new File(path));
-			
-			
+
+
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			ObjectOutputStream out = new ObjectOutputStream(bos);
 			//Serialize it
@@ -164,15 +164,15 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			logger.error(e.getMessage(), e);
 			return false;
 		}
-		
-		
+
+
 		return clonedok;
 	}
-	
-	
-	
+
+
+
 	public Object clone() throws CloneNotSupportedException {    
-	    Object ans = null;
+		Object ans = null;
 		try {
 			//Check if T is instance of Serializeble other throw CloneNotSupportedException
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -188,7 +188,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		} catch (ClassNotFoundException e) {
 			logger.error(e.getMessage(), e);
 		}
-	    return ans;
+		return ans;
 	}
 
 	/**
@@ -400,8 +400,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			try {
 				ans.put(key,
 						new String[] {
-								LocalFileSystem.relativize(curPath,
-										help.get(key)[0]),
+						LocalFileSystem.relativize(curPath,
+								help.get(key)[0]),
 								LocalFileSystem.relativize(curPath,
 										help.get(key)[1]) });
 			} catch (Exception e) {
@@ -517,6 +517,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 * @return error message
 	 * @throws RemoteException
 	 */
+	@SuppressWarnings({ "unused", "null" })
 	public String run(List<String> dataFlowElement) throws RemoteException {
 
 		// Close all file systems
@@ -529,24 +530,47 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		String error = check();
 		logger.info("run check: " + error);
 
+		if(error == null){
+			LinkedList<DataFlowElement> elsIn = new LinkedList<DataFlowElement>();
+			if (dataFlowElement.size() < element.size()) {
+				Iterator<DataFlowElement> itIn = getEls(dataFlowElement).iterator();
+				while (itIn.hasNext()) {
+					DataFlowElement cur = itIn.next();
+					elsIn = getAllWithoutDuplicate(elsIn,
+							getItAndAllElementsNeeded(cur));
+				}
+			} else {
+				elsIn.addAll(getEls(dataFlowElement));
+			}
+			
+			error = runWF(dataFlowElement);
+		}
+		return error;
+	}
+	
+	public List<DataFlowElement> subsetToRun(List<String> dataFlowElements) throws Exception{
+		
+		String error = null;
+		
 		LinkedList<DataFlowElement> elsIn = new LinkedList<DataFlowElement>();
-		if (dataFlowElement.size() < element.size()) {
-			Iterator<DataFlowElement> itIn = getEls(dataFlowElement).iterator();
+		if (dataFlowElements.size() < element.size()) {
+			Iterator<DataFlowElement> itIn = getEls(dataFlowElements).iterator();
 			while (itIn.hasNext()) {
 				DataFlowElement cur = itIn.next();
 				elsIn = getAllWithoutDuplicate(elsIn,
 						getItAndAllElementsNeeded(cur));
 			}
 		} else {
-			elsIn.addAll(getEls(dataFlowElement));
+			elsIn.addAll(getEls(dataFlowElements));
 		}
+
 
 		// Run only what have not been calculated in the workflow.
 		List<DataFlowElement> toRun = new LinkedList<DataFlowElement>();
 		Iterator<DataFlowElement> itE = elsIn.descendingIterator();
 		while (itE.hasNext() && error == null) {
 			DataFlowElement cur = itE.next();
-			if (!toRun.contains(cur)) {
+			if (cur.getOozieAction() != null && !toRun.contains(cur)) {
 				boolean haveTobeRun = false;
 				List<DataFlowElement> outAllComp = cur.getAllOutputComponent();
 				Collection<DFEOutput> outData = cur.getDFEOutput().values();
@@ -639,6 +663,25 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 			}
 		}
+		
+		if(error != null){
+			throw new Exception(error);
+		}
+		
+		return toRun;
+		
+	}
+
+	protected String runWF(List<String> dataFlowElement) throws RemoteException{
+		String error = null;
+		List<DataFlowElement> toRun = null;
+				
+		try{
+			toRun = subsetToRun(dataFlowElement);
+		}catch(Exception e){
+			error = e.getMessage();
+		}
+		
 
 		if (error == null && toRun.isEmpty()) {
 			error = LanguageManagerWF.getText("workflow.torun_uptodate");
@@ -693,29 +736,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	public String regeneratePaths(Boolean copy) throws RemoteException {
 		Iterator<DataFlowElement> it = element.iterator();
 		while (it.hasNext()) {
-			DataFlowElement cur = it.next();
-			Iterator<String> lOutIt = cur.getDFEOutput().keySet().iterator();
-			while (lOutIt.hasNext()) {
-				String curOutStr = lOutIt.next();
-				DFEOutput curOut = cur.getDFEOutput().get(curOutStr);
-				if (curOut != null) {
-					SavingState curSav = curOut.getSavingState();
-					if (curSav.equals(SavingState.BUFFERED)
-							|| curSav.equals(SavingState.TEMPORARY)) {
-						String newPath = curOut.generatePathStr(
-								System.getProperty("user.name"),
-								cur.getComponentId(), curOutStr);
-						logger.info("New path for "+cur.getComponentId()+"("+curOut.getPath()+"): "+newPath);
-						if(copy == null){
-							curOut.setPath(newPath);
-						}else if (copy) {
-							curOut.copyTo(newPath);
-						} else {
-							curOut.moveTo(newPath);
-						}
-					}
-				}
-			}
+			it.next().regeneratePaths(copy,false);
 		}
 		return null;
 	}
@@ -750,8 +771,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 * @param file
 	 *            the xml file to write in.
 	 * @return null if OK, or a description of the error.
+	 * @throws RemoteException 
 	 */
-	public String save(final String filePath) {
+	public String save(final String filePath) throws RemoteException {
 		String error = null;
 		File file = null;
 
@@ -763,180 +785,18 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			file = new File(tempPath);
 			logger.debug("Save xml: " + file.getAbsolutePath());
 			file.getParentFile().mkdirs();
-			DocumentBuilderFactory docFactory = DocumentBuilderFactory
-					.newInstance();
-			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-
-			// root elements
-			Document doc = docBuilder.newDocument();
-			Element rootElement = doc.createElement("workflow");
-			doc.appendChild(rootElement);
-			
-
-			Element jobId = doc.createElement("job-id");
-			String jobIdContent = oozieJobId;
-			if (jobIdContent == null) {
-				jobIdContent = "";
+			Document doc = null;
+			try{
+				doc = saveInXML();
+			}catch(IOException e){
+				error = e.getMessage();
 			}
-			logger.info("Job Id: " + jobIdContent);
-			jobId.appendChild(doc.createTextNode(jobIdContent));
-			rootElement.appendChild(jobId);
 			
-			Element wfComment = doc.createElement("wfcomment");
-			wfComment.appendChild(doc.createTextNode(comment));
-			rootElement.appendChild(wfComment);
-			
-
-			Iterator<DataFlowElement> it = element.iterator();
-			while (it.hasNext() && error == null) {
-				DataflowAction cur = (DataflowAction) it.next();
-				logger.debug("write: " + cur.getComponentId());
-
-				Element component = doc.createElement("component");
-
-				// attribute
-				logger.debug("add attributes...");
-				Attr attrId = doc.createAttribute("id");
-				attrId.setValue(cur.componentId);
-				component.setAttributeNode(attrId);
-
-				logger.debug("name: " + cur.getName());
-				Attr attrName = doc.createAttribute("name");
-				attrName.setValue(cur.getName());
-				component.setAttributeNode(attrName);
-
-				// Comment
-				logger.debug("add positions...");
-				Element commentEl = doc.createElement("comment");
-				commentEl.appendChild(doc.createTextNode(cur.getComment()));
-				component.appendChild(commentEl);
-				
-				// Position
-				logger.debug("add positions...");
-				Element position = doc.createElement("position");
-				Element x = doc.createElement("x");
-				x.appendChild(doc.createTextNode(String.valueOf(cur
-						.getPosition().x)));
-				position.appendChild(x);
-				Element y = doc.createElement("y");
-				y.appendChild(doc.createTextNode(String.valueOf(cur
-						.getPosition().y)));
-				position.appendChild(y);
-				component.appendChild(position);
-
-				// Saving data
-				Map<String, DFEOutput> saveMap = cur.getDFEOutput();
-				if (saveMap != null) {
-					logger.debug("find state of the outputs...");
-					Iterator<String> itStr = saveMap.keySet().iterator();
-					while (itStr.hasNext()) {
-						String outName = itStr.next();
-						if (saveMap.get(outName) != null) {
-							logger.debug("save data named " + outName);
-							Element data = doc.createElement("data");
-
-							Attr attrDataName = doc.createAttribute("name");
-							attrDataName.setValue(outName);
-							data.setAttributeNode(attrDataName);
-
-							Attr attrTypeName = doc.createAttribute("typename");
-							attrTypeName.setValue(saveMap.get(outName)
-									.getTypeName());
-							data.setAttributeNode(attrTypeName);
-
-							logger.debug("Enter in write...");
-							saveMap.get(outName).write(doc, data);
-
-							component.appendChild(data);
-						}
-					}
-				}
-
-				// Input
-				logger.debug("add inputs...");
-				Element inputs = doc.createElement("inputs");
-				Map<String, List<DataFlowElement>> inComp = cur
-						.getInputComponent();
-				if (inComp != null) {
-					logger.debug("inputs not null");
-					Iterator<String> itS = inComp.keySet().iterator();
-					logger.debug("inputs size " + inComp.size());
-					while (itS.hasNext()) {
-						String inputName = itS.next();
-						logger.debug("save " + inputName + "...");
-						if (inComp.get(inputName) != null) {
-							Iterator<DataFlowElement> wa = inComp
-									.get(inputName).iterator();
-							while (wa.hasNext()) {
-								Element input = doc.createElement("input");
-								String inId = wa.next().getComponentId();
-								logger.debug("add " + inputName + " " + inId);
-
-								Attr attrNameEl = doc.createAttribute("name");
-								attrNameEl.setValue(inputName);
-								input.setAttributeNode(attrNameEl);
-
-								Element id = doc.createElement("id");
-								id.appendChild(doc.createTextNode(inId));
-								input.appendChild(id);
-
-								inputs.appendChild(input);
-							}
-						}
-					}
-				}
-				component.appendChild(inputs);
-
-				// Output
-				logger.debug("add outputs...");
-				Element outputs = doc.createElement("outputs");
-				Map<String, List<DataFlowElement>> outComp = cur
-						.getOutputComponent();
-				if (outComp != null) {
-					logger.debug("outputs not null");
-					Iterator<String> itS = outComp.keySet().iterator();
-					logger.debug("outputs size " + outComp.size());
-					while (itS.hasNext()) {
-						String outputName = itS.next();
-						logger.debug("save " + outputName + "...");
-						Iterator<DataFlowElement> wa = outComp.get(outputName)
-								.iterator();
-						logger.debug(2);
-						while (wa.hasNext()) {
-							logger.debug(3);
-							Element output = doc.createElement("output");
-							logger.debug(31);
-							String outId = wa.next().getComponentId();
-							logger.debug("add " + outputName + " " + outId);
-
-							Attr attrNameEl = doc.createAttribute("name");
-							attrNameEl.setValue(outputName);
-							output.setAttributeNode(attrNameEl);
-
-							Element id = doc.createElement("id");
-							id.appendChild(doc.createTextNode(outId));
-							output.appendChild(id);
-
-							outputs.appendChild(output);
-						}
-						logger.debug(4);
-
-					}
-				}
-				component.appendChild(outputs);
-
-				// Element
-				Element interactions = doc.createElement("interactions");
-				error = cur.writeValuesXml(doc, interactions);
-				component.appendChild(interactions);
-
-				rootElement.appendChild(component);
-			}
 			if (error == null) {
 				logger.debug("write the file...");
 				// write the content into xml file
 				logger.info("Check Null text nodes...");
-				XmlUtils.checkForNullTextNodes(rootElement, "");
+				XmlUtils.checkForNullTextNodes(doc.getDocumentElement(), "");
 				TransformerFactory transformerFactory = TransformerFactory
 						.newInstance();
 				Transformer transformer = transformerFactory.newTransformer();
@@ -970,6 +830,185 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 		return error;
 	}
+	
+	protected Document saveInXML() throws ParserConfigurationException, IOException{
+		String error = null;
+		DocumentBuilderFactory docFactory = DocumentBuilderFactory
+				.newInstance();
+		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+		// root elements
+		Document doc = docBuilder.newDocument();
+		Element rootElement = doc.createElement("workflow");
+		doc.appendChild(rootElement);
+
+
+		Element jobId = doc.createElement("job-id");
+		String jobIdContent = oozieJobId;
+		if (jobIdContent == null) {
+			jobIdContent = "";
+		}
+		logger.info("Job Id: " + jobIdContent);
+		jobId.appendChild(doc.createTextNode(jobIdContent));
+		rootElement.appendChild(jobId);
+
+		Element wfComment = doc.createElement("wfcomment");
+		wfComment.appendChild(doc.createTextNode(comment));
+		rootElement.appendChild(wfComment);
+
+
+		Iterator<DataFlowElement> it = element.iterator();
+		while (it.hasNext() && error == null) {
+			DataflowAction cur = (DataflowAction) it.next();
+			logger.debug("write: " + cur.getComponentId());
+
+			Element component = doc.createElement("component");
+
+			// attribute
+			logger.debug("add attributes...");
+			Attr attrId = doc.createAttribute("id");
+			attrId.setValue(cur.componentId);
+			component.setAttributeNode(attrId);
+
+			logger.debug("name: " + cur.getName());
+			Attr attrName = doc.createAttribute("name");
+			attrName.setValue(cur.getName());
+			component.setAttributeNode(attrName);
+
+			// Comment
+			logger.debug("add positions...");
+			Element commentEl = doc.createElement("comment");
+			commentEl.appendChild(doc.createTextNode(cur.getComment()));
+			component.appendChild(commentEl);
+
+			// Position
+			logger.debug("add positions...");
+			Element position = doc.createElement("position");
+			Element x = doc.createElement("x");
+			x.appendChild(doc.createTextNode(String.valueOf(cur
+					.getPosition().x)));
+			position.appendChild(x);
+			Element y = doc.createElement("y");
+			y.appendChild(doc.createTextNode(String.valueOf(cur
+					.getPosition().y)));
+			position.appendChild(y);
+			component.appendChild(position);
+
+			// Saving data
+			Map<String, DFEOutput> saveMap = cur.getDFEOutput();
+			if (saveMap != null) {
+				logger.debug("find state of the outputs...");
+				Iterator<String> itStr = saveMap.keySet().iterator();
+				while (itStr.hasNext()) {
+					String outName = itStr.next();
+					if (saveMap.get(outName) != null) {
+						logger.debug("save data named " + outName);
+						Element data = doc.createElement("data");
+
+						Attr attrDataName = doc.createAttribute("name");
+						attrDataName.setValue(outName);
+						data.setAttributeNode(attrDataName);
+
+						Attr attrTypeName = doc.createAttribute("typename");
+						attrTypeName.setValue(saveMap.get(outName)
+								.getTypeName());
+						data.setAttributeNode(attrTypeName);
+
+						logger.debug("Enter in write...");
+						saveMap.get(outName).write(doc, data);
+
+						component.appendChild(data);
+					}
+				}
+			}
+
+			// Input
+			logger.debug("add inputs...");
+			Element inputs = doc.createElement("inputs");
+			Map<String, List<DataFlowElement>> inComp = cur
+					.getInputComponent();
+			if (inComp != null) {
+				logger.debug("inputs not null");
+				Iterator<String> itS = inComp.keySet().iterator();
+				logger.debug("inputs size " + inComp.size());
+				while (itS.hasNext()) {
+					String inputName = itS.next();
+					logger.debug("save " + inputName + "...");
+					if (inComp.get(inputName) != null) {
+						Iterator<DataFlowElement> wa = inComp
+								.get(inputName).iterator();
+						while (wa.hasNext()) {
+							Element input = doc.createElement("input");
+							String inId = wa.next().getComponentId();
+							logger.debug("add " + inputName + " " + inId);
+
+							Attr attrNameEl = doc.createAttribute("name");
+							attrNameEl.setValue(inputName);
+							input.setAttributeNode(attrNameEl);
+
+							Element id = doc.createElement("id");
+							id.appendChild(doc.createTextNode(inId));
+							input.appendChild(id);
+
+							inputs.appendChild(input);
+						}
+					}
+				}
+			}
+			component.appendChild(inputs);
+
+			// Output
+			logger.debug("add outputs...");
+			Element outputs = doc.createElement("outputs");
+			Map<String, List<DataFlowElement>> outComp = cur
+					.getOutputComponent();
+			if (outComp != null) {
+				logger.debug("outputs not null");
+				Iterator<String> itS = outComp.keySet().iterator();
+				logger.debug("outputs size " + outComp.size());
+				while (itS.hasNext()) {
+					String outputName = itS.next();
+					logger.debug("save " + outputName + "...");
+					Iterator<DataFlowElement> wa = outComp.get(outputName)
+							.iterator();
+					logger.debug(2);
+					while (wa.hasNext()) {
+						logger.debug(3);
+						Element output = doc.createElement("output");
+						logger.debug(31);
+						String outId = wa.next().getComponentId();
+						logger.debug("add " + outputName + " " + outId);
+
+						Attr attrNameEl = doc.createAttribute("name");
+						attrNameEl.setValue(outputName);
+						output.setAttributeNode(attrNameEl);
+
+						Element id = doc.createElement("id");
+						id.appendChild(doc.createTextNode(outId));
+						output.appendChild(id);
+
+						outputs.appendChild(output);
+					}
+					logger.debug(4);
+
+				}
+			}
+			component.appendChild(outputs);
+
+			// Element
+			Element interactions = doc.createElement("interactions");
+			error = cur.writeValuesXml(doc, interactions);
+			component.appendChild(interactions);
+
+			rootElement.appendChild(component);
+		}
+		
+		if(error != null){
+			throw new IOException(error);
+		}
+		return doc;
+	}
+	
 
 	/**
 	 * Clean the backup directory
@@ -986,7 +1025,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 			@Override
 			public boolean accept(Path arg0) {
-				return arg0.getName().matches(".*[0-9]{14}.rs$");
+				return arg0.getName().matches(".*[0-9]{14}(.rs|.srs)$");
 			}
 		});
 		logger.info("Backup directory: " + fsA.length + " files, " + nbBackup
@@ -1000,11 +1039,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			for (FileStatus stat : fsA) {
 				if (pathToRemove.size() < numberToRemove) {
 					pathToRemove
-							.put(stat.getPath(), stat.getModificationTime());
+					.put(stat.getPath(), stat.getModificationTime());
 				} else if (min > stat.getModificationTime()) {
 					pathToRemove.remove(pathMin);
 					pathToRemove
-							.put(stat.getPath(), stat.getModificationTime());
+					.put(stat.getPath(), stat.getModificationTime());
 				}
 				if (min > stat.getModificationTime()) {
 					min = stat.getModificationTime();
@@ -1033,6 +1072,17 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			logger.warn("Error closing " + getName());
 		}
 	}
+	
+	public String getBackupName(String path) throws RemoteException{
+		DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+		Date date = new Date();
+		if (getName() != null && !getName().isEmpty()) {
+			path += "/" + getName() + "-" + dateFormat.format(date) + ".rs";
+		} else {
+			path += "/redsqirl-backup-" + dateFormat.format(date) + ".rs";
+		}
+		return path;
+	}
 
 	/**
 	 * Backup the workflow
@@ -1041,8 +1091,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 */
 	public void backup() throws RemoteException {
 		String path = WorkflowPrefManager.getBackupPath();
-		DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-		Date date = new Date();
 		try {
 			FileSystem fs = NameNodeVar.getFS();
 			fs.mkdirs(new Path(path));
@@ -1051,11 +1099,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			logger.warn(e.getMessage());
 			logger.warn("Fail creating backup directory");
 		}
-		if (getName() != null && !getName().isEmpty()) {
-			path += "/" + getName() + "-" + dateFormat.format(date) + ".rs";
-		} else {
-			path += "/redsqirl-backup-" + dateFormat.format(date) + ".rs";
-		}
+		path = getBackupName(path);
 		boolean save_swp = isSaved();
 		String error = save(path);
 		saved = save_swp;
@@ -1093,12 +1137,10 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 */
 	public String read(String filePath) {
 		String error = null;
-		element.clear();
 
 		try {
 			String[] path = filePath.split("/");
 			String fileName = path[path.length - 1];
-			String userName = System.getProperty("user.name");
 			String tempPath = WorkflowPrefManager.getPathtmpfolder() + "/"
 					+ fileName + "_" + RandomString.getRandomName(4);
 			FileSystem fs = NameNodeVar.getFS();
@@ -1108,198 +1150,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			fs.copyToLocalFile(new Path(filePath), new Path(tempPath));
 
 			File xmlFile = new File(tempPath);
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory
-					.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(xmlFile);
-			doc.getDocumentElement().normalize();
-
-			Node jobId = doc.getElementsByTagName("job-id").item(0);
-			try {
-				String jobIdContent = jobId.getChildNodes().item(0)
-						.getNodeValue();
-				if (!jobIdContent.isEmpty()) {
-					setOozieJobId(jobIdContent);
-				}
-			} catch (Exception e) {
-			}
-			
-			comment = "";
-			try {
-				comment = doc.getElementsByTagName("wfcomment").item(0)
-				.getChildNodes().item(0).getNodeValue();
-			} catch (Exception e) {
-			}
-
-			// Needs to do two reading,
-			// for the element and there id
-			// for link all the element
-			logger.debug("loads elements...");
-			NodeList compList = doc.getElementsByTagName("component");
-			// Init element
-			for (int temp = 0; temp < compList.getLength() && error == null; ++temp) {
-
-				Node compCur = compList.item(temp);
-
-				String name = compCur.getAttributes().getNamedItem("name")
-						.getNodeValue();
-				
-				
-				
-				String id = compCur.getAttributes().getNamedItem("id")
-						.getNodeValue();
-				
-				String compComment = "";
-				try {
-					compComment = ((Element) compCur)
-					.getElementsByTagName("comment").item(0)
-					.getChildNodes().item(0).getNodeValue();
-				} catch (Exception e) {
-				}
-				
-				int x = Integer.valueOf(((Element) (((Element) compCur)
-						.getElementsByTagName("position").item(0)))
-						.getElementsByTagName("x").item(0).getChildNodes()
-						.item(0).getNodeValue());
-				int y = Integer.valueOf(((Element) (((Element) compCur)
-						.getElementsByTagName("position").item(0)))
-						.getElementsByTagName("y").item(0).getChildNodes()
-						.item(0).getNodeValue());
-				logger.debug("create new Action: " + name + " " + id + ": ("
-						+ x + "," + y + ")");
-				addElement(name, id);
-				getElement(id).setPosition(x, y);
-				getElement(id).setComment(compComment);
-				error = getElement(id).readValuesXml(
-						((Element) compCur)
-								.getElementsByTagName("interactions").item(0));
-			}
-
-			// Link and data
-			String warn = null;
-			logger.debug("loads links...");
-			for (int temp = 0; temp < compList.getLength() && error == null; ++temp) {
-
-				Node compCur = compList.item(temp);
-				String compId = compCur.getAttributes().getNamedItem("id")
-						.getNodeValue();
-				DataFlowElement el = getElement(compId);
-				Map<String, List<DataFlowElement>> elInputComponent = el
-						.getInputComponent();
-				Map<String, List<DataFlowElement>> elOutputComponent = el
-						.getOutputComponent();
-
-				logger.debug(compId + ": input...");
-				NodeList inList = ((Element) compCur)
-						.getElementsByTagName("inputs").item(0).getChildNodes();
-				if (inList != null) {
-					for (int index = 0; index < inList.getLength()
-							&& error == null; index++) {
-						logger.debug(compId + ": input index " + index);
-						Node inCur = inList.item(index);
-						String nameIn = inCur.getAttributes()
-								.getNamedItem("name").getNodeValue();
-						String id = ((Element) inCur)
-								.getElementsByTagName("id").item(0)
-								.getChildNodes().item(0).getNodeValue();
-
-						warn = el.addInputComponent(nameIn, getElement(id));
-						if (warn != null) {
-							logger.warn(warn);
-							warn = null;
-							List<DataFlowElement> lwa = elInputComponent
-									.get(nameIn);
-							if (lwa == null) {
-								lwa = new LinkedList<DataFlowElement>();
-								elInputComponent.put(name, lwa);
-							}
-							lwa.add(getElement(id));
-						}
-					}
-				}
-
-				// Save element
-				logger.debug("loads dataset: " + compId);
-				Map<String, DFEOutput> mapOutput = el.getDFEOutput();
-				NodeList dataList = ((Element) compCur)
-						.getElementsByTagName("data");
-				for (int ind = 0; ind < dataList.getLength() && error == null; ++ind) {
-					Node dataCur = dataList.item(ind);
-
-					String dataName = dataCur.getAttributes()
-							.getNamedItem("name").getNodeValue();
-					String typeName = dataCur.getAttributes()
-							.getNamedItem("typename").getNodeValue();
-					DFEOutput cur = DataOutput.getOutput(typeName);
-					if (cur != null) {
-						mapOutput.put(dataName, cur);
-						logger.debug("loads state dataset: " + dataName);
-						mapOutput.get(dataName).read((Element) dataCur);
-						if ( mapOutput.get(dataName).getSavingState() != SavingState.RECORDED
-								&& ( mapOutput.get(dataName).getPath() == null
-								|| !mapOutput.get(dataName)
-										.isPathAutoGeneratedForUser(userName,
-												compId, dataName))) {
-							mapOutput.get(dataName).generatePath(userName,
-									compId, dataName);
-						}
-					} else {
-						error = LanguageManagerWF.getText(
-								"workflow.read_unknownType",
-								new Object[] { typeName });
-						error = "Unknown typename " + typeName;
-					}
-
-				}
-
-				logger.debug(compId + ": output...");
-				NodeList outList = ((Element) compCur)
-						.getElementsByTagName("outputs").item(0)
-						.getChildNodes();
-				if (outList != null) {
-					for (int index = 0; index < outList.getLength()
-							&& error == null; index++) {
-						try {
-							logger.debug(compId + ": output index " + index);
-							Node outCur = outList.item(index);
-
-							String nameOut = outCur.getAttributes()
-									.getNamedItem("name").getNodeValue();
-							String id = ((Element) outCur)
-									.getElementsByTagName("id").item(0)
-									.getChildNodes().item(0).getNodeValue();
-
-							warn = el.addOutputComponent(nameOut,
-									getElement(id));
-							if (warn != null) {
-								logger.warn(warn);
-								warn = null;
-								List<DataFlowElement> lwa = elOutputComponent
-										.get(nameOut);
-								if (lwa == null) {
-									lwa = new LinkedList<DataFlowElement>();
-									elOutputComponent.put(name, lwa);
-								}
-								lwa.add(getElement(id));
-							}
-						} catch (Exception e) {
-							error = LanguageManagerWF
-									.getText("workflow.read_failLoadOut");
-							logger.error(error);
-						}
-					}
-				}
-
-			}
-
-			// This workflow has been saved
-			saved = true;
+			error = readFromLocal(xmlFile);
 
 			// clean temporary files
-			String tempPathCrc = WorkflowPrefManager.getPathtmpfolder() + "/."
-					+ fileName + ".crc";
-			File tempCrc = new File(tempPathCrc);
-			tempCrc.delete();
 			xmlFile.delete();
 
 		} catch (Exception e) {
@@ -1308,6 +1161,216 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 		}
 
+		return error;
+	}
+	
+
+	@Override
+	public String readFromLocal(File xmlFile) throws RemoteException {
+		String error = null;
+		element.clear();
+		try{
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory
+					.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(xmlFile);
+			
+			error = readFromXml(doc);
+
+			// This workflow has been saved
+			saved = true;
+
+
+		} catch (Exception e) {
+			error = LanguageManagerWF.getText("workflow.read_failXml");
+			logger.error(error, e);
+
+		}
+		
+		return error;
+	}
+	
+	protected String readFromXml(Document doc) throws Exception{
+		String userName = System.getProperty("user.name");
+		String error = null;
+		doc.getDocumentElement().normalize();
+		Node jobId = doc.getElementsByTagName("job-id").item(0);
+		try {
+			String jobIdContent = jobId.getChildNodes().item(0)
+					.getNodeValue();
+			if (!jobIdContent.isEmpty()) {
+				setOozieJobId(jobIdContent);
+			}
+		} catch (Exception e) {
+		}
+
+		comment = "";
+		try {
+			comment = doc.getElementsByTagName("wfcomment").item(0)
+					.getChildNodes().item(0).getNodeValue();
+		} catch (Exception e) {
+		}
+
+		// Needs to do two reading,
+		// for the element and there id
+		// for link all the element
+		logger.debug("loads elements...");
+		NodeList compList = doc.getElementsByTagName("component");
+		// Init element
+		for (int temp = 0; temp < compList.getLength() && error == null; ++temp) {
+
+			Node compCur = compList.item(temp);
+
+			String name = compCur.getAttributes().getNamedItem("name")
+					.getNodeValue();
+
+
+
+			String id = compCur.getAttributes().getNamedItem("id")
+					.getNodeValue();
+
+			String compComment = "";
+			try {
+				compComment = ((Element) compCur)
+						.getElementsByTagName("comment").item(0)
+						.getChildNodes().item(0).getNodeValue();
+			} catch (Exception e) {
+			}
+
+			int x = Integer.valueOf(((Element) (((Element) compCur)
+					.getElementsByTagName("position").item(0)))
+					.getElementsByTagName("x").item(0).getChildNodes()
+					.item(0).getNodeValue());
+			int y = Integer.valueOf(((Element) (((Element) compCur)
+					.getElementsByTagName("position").item(0)))
+					.getElementsByTagName("y").item(0).getChildNodes()
+					.item(0).getNodeValue());
+			logger.debug("create new Action: " + name + " " + id + ": ("
+					+ x + "," + y + ")");
+			addElement(name, id);
+			getElement(id).setPosition(x, y);
+			getElement(id).setComment(compComment);
+			error = getElement(id).readValuesXml(
+					((Element) compCur)
+					.getElementsByTagName("interactions").item(0));
+		}
+
+		// Link and data
+		String warn = null;
+		logger.debug("loads links...");
+		for (int temp = 0; temp < compList.getLength() && error == null; ++temp) {
+
+			Node compCur = compList.item(temp);
+			String compId = compCur.getAttributes().getNamedItem("id")
+					.getNodeValue();
+			DataFlowElement el = getElement(compId);
+			Map<String, List<DataFlowElement>> elInputComponent = el
+					.getInputComponent();
+			Map<String, List<DataFlowElement>> elOutputComponent = el
+					.getOutputComponent();
+
+			logger.debug(compId + ": input...");
+			NodeList inList = ((Element) compCur)
+					.getElementsByTagName("inputs").item(0).getChildNodes();
+			if (inList != null) {
+				for (int index = 0; index < inList.getLength()
+						&& error == null; index++) {
+					logger.debug(compId + ": input index " + index);
+					Node inCur = inList.item(index);
+					String nameIn = inCur.getAttributes()
+							.getNamedItem("name").getNodeValue();
+					String id = ((Element) inCur)
+							.getElementsByTagName("id").item(0)
+							.getChildNodes().item(0).getNodeValue();
+
+					warn = el.addInputComponent(nameIn, getElement(id));
+					if (warn != null) {
+						logger.warn(warn);
+						warn = null;
+						List<DataFlowElement> lwa = elInputComponent
+								.get(nameIn);
+						if (lwa == null) {
+							lwa = new LinkedList<DataFlowElement>();
+							elInputComponent.put(name, lwa);
+						}
+						lwa.add(getElement(id));
+					}
+				}
+			}
+
+			// Save element
+			logger.debug("loads dataset: " + compId);
+			Map<String, DFEOutput> mapOutput = el.getDFEOutput();
+			NodeList dataList = ((Element) compCur)
+					.getElementsByTagName("data");
+			for (int ind = 0; ind < dataList.getLength() && error == null; ++ind) {
+				Node dataCur = dataList.item(ind);
+
+				String dataName = dataCur.getAttributes()
+						.getNamedItem("name").getNodeValue();
+				String typeName = dataCur.getAttributes()
+						.getNamedItem("typename").getNodeValue();
+				DFEOutput cur = DataOutput.getOutput(typeName);
+				if (cur != null) {
+					mapOutput.put(dataName, cur);
+					logger.debug("loads state dataset: " + dataName);
+					mapOutput.get(dataName).read((Element) dataCur);
+					if ( mapOutput.get(dataName).getSavingState() != SavingState.RECORDED
+							&& ( mapOutput.get(dataName).getPath() == null
+							|| !mapOutput.get(dataName)
+							.isPathAutoGeneratedForUser(userName,
+									compId, dataName))) {
+						mapOutput.get(dataName).generatePath(userName,
+								compId, dataName);
+					}
+				} else {
+					error = LanguageManagerWF.getText(
+							"workflow.read_unknownType",
+							new Object[] { typeName });
+					error = "Unknown typename " + typeName;
+				}
+
+			}
+
+			logger.debug(compId + ": output...");
+			NodeList outList = ((Element) compCur)
+					.getElementsByTagName("outputs").item(0)
+					.getChildNodes();
+			if (outList != null) {
+				for (int index = 0; index < outList.getLength()
+						&& error == null; index++) {
+					try {
+						logger.debug(compId + ": output index " + index);
+						Node outCur = outList.item(index);
+
+						String nameOut = outCur.getAttributes()
+								.getNamedItem("name").getNodeValue();
+						String id = ((Element) outCur)
+								.getElementsByTagName("id").item(0)
+								.getChildNodes().item(0).getNodeValue();
+
+						warn = el.addOutputComponent(nameOut,
+								getElement(id));
+						if (warn != null) {
+							logger.warn(warn);
+							warn = null;
+							List<DataFlowElement> lwa = elOutputComponent
+									.get(nameOut);
+							if (lwa == null) {
+								lwa = new LinkedList<DataFlowElement>();
+								elOutputComponent.put(name, lwa);
+							}
+							lwa.add(getElement(id));
+						}
+					} catch (Exception e) {
+						error = LanguageManagerWF
+								.getText("workflow.read_failLoadOut");
+						logger.error(error);
+					}
+				}
+			}
+
+		}
 		return error;
 	}
 
@@ -1423,7 +1486,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 		return newId;
 	}
-	
+
 	/**
 	 * Add a WorkflowAction in the Workflow. The element is at the end of the
 	 * workingWA list
@@ -1439,7 +1502,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 		return addElement(waName, newId);
 	}
-	
+
 	public void addElement(DataFlowElement dfe) throws RemoteException{
 		element.add(dfe);
 	}
@@ -1452,7 +1515,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 * @throws RemoteException
 	 */
 	public String removeElement(String componentId) throws RemoteException,
-			Exception {
+	Exception {
 		logger.debug("remove element: " + componentId);
 		String error = null;
 		DataFlowElement dfe = getElement(componentId);
@@ -1491,7 +1554,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		return error;
 	}
 
-	
+
 	@Override
 	public void replaceInAllElements(List<String> componentIds, String oldStr, String newStr)  throws RemoteException{
 		logger.info("replace "+oldStr+" by "+newStr+" in "+componentIds);
@@ -1506,7 +1569,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			}
 		}
 	}
-	
+
 	/**
 	 * Add a WorkflowAction in the Workflow. The element is at the end of the
 	 * workingWA list
@@ -1532,7 +1595,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					new Object[] { e.getMessage() });
 		}
 		if (error == null) {
-			if (namesWithClassName.get(waName) == null) {
+			if (namesWithClassName.get(waName) == null && !waName.startsWith("sa_")) {
 				logger.info(namesWithClassName);
 				logger.info(waName);
 				error = LanguageManagerWF.getText(
@@ -1542,16 +1605,20 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				try {
 					logger.debug("initiate the action " + waName + " "
 							+ namesWithClassName.get(waName));
-					DataFlowElement new_wa = (DataFlowElement) Class.forName(
-							namesWithClassName.get(waName)).newInstance();
+					DataFlowElement new_wa = null;
+					if(waName.startsWith("sa_")){
+						new_wa = new SuperAction(waName);
+					}else{
+						new_wa = (DataFlowElement) Class.forName(
+								namesWithClassName.get(waName)).newInstance();
+					}
 					logger.debug("set the componentId...");
 					new_wa.setComponentId(componentId);
 					logger.debug("Add the element to the list...");
 					element.add(new_wa);
 				} catch (Exception e) {
-					logger.debug("exception...");
 					error = e.getMessage();
-					logger.debug(error);
+					logger.debug(error,e);
 				}
 			}
 		}
@@ -1647,7 +1714,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 */
 	public String removeLink(String outName, String componentIdOut,
 			String inName, String componentIdIn, boolean force)
-			throws RemoteException {
+					throws RemoteException {
 		String error = null;
 		DataFlowElement out = getElement(componentIdOut);
 		DataFlowElement in = getElement(componentIdIn);
@@ -1813,7 +1880,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				} catch (Exception e) {
 					logger.error("Error instanciating class : " + className);
 				}
-
 			}
 			logger.debug("WorkflowAction found : " + flowElement.toString());
 		}

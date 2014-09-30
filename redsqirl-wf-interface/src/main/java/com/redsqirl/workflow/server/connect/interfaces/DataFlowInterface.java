@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.redsqirl.workflow.server.interfaces.DataFlow;
+import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 
 /**
  * Interface to retrieve/add/remove work flows.
@@ -21,6 +22,15 @@ public interface DataFlowInterface extends Remote{
 	 * @throws RemoteException
 	 */
 	public String addWorkflow(String name)throws RemoteException;
+	
+	/**
+	 *  Add a new sub workflow 
+	 * @param name Name of workflow
+	 * @return message 
+	 * @throws RemoteException
+	 */
+	public String addSubWorkflow(String name)throws RemoteException;
+	
 	/**
 	 * Rename a workflow
 	 * @param oldName of workflow
@@ -35,6 +45,7 @@ public interface DataFlowInterface extends Remote{
 	 * @throws RemoteException
 	 */
 	public void removeWorkflow(String name)throws RemoteException;
+	
 	/**
 	 * Get a Workflow
 	 * @param name of workflow to get
@@ -42,6 +53,15 @@ public interface DataFlowInterface extends Remote{
 	 * @throws RemoteException
 	 */
 	public DataFlow getWorkflow(String name)throws RemoteException;
+	
+	/**
+	 * Get a sub Workflow
+	 * @param name
+	 * @return
+	 * @throws RemoteException
+	 */
+	public SubDataFlow getSubWorkflow(String name) throws RemoteException;
+	
 	/**
 	 * Backup all workflows up into files
 	 * @throws RemoteException

@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
@@ -287,7 +288,7 @@ public class Convert extends DataflowAction {
 		MapRedTextType out = (MapRedTextType) getDFEOutput().get(key_output);
 		String delimiter = out.getDelimiterOrOctal();
 		String table_ext = out.getPath().substring(1).split("/")[out.getPath()
-				.substring(1).split("/").length - 1]
+				.substring(1).split("/").length - 1].replaceAll(Pattern.quote("."), "_")
 				+ "_" + System.getProperty("user.name") + "_ext";
 		String create_ext = "CREATE EXTERNAL TABLE IF NOT EXISTS " + table_ext
 				+ "(";

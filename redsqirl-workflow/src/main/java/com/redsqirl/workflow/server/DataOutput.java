@@ -295,6 +295,28 @@ DFEOutput {
 
 	}
 	
+	@Override
+	public boolean regeneratePath(Boolean copy, String userName, String component,
+			String outputName) throws RemoteException {
+		boolean regen = false;
+		if (savingState.equals(SavingState.BUFFERED)
+				|| savingState.equals(SavingState.TEMPORARY)) {
+			String newPath = generatePathStr(
+					System.getProperty("user.name"),
+					component, outputName);
+			statLogger.info("New path for "+component+"("+getPath()+"): "+newPath);
+			if(copy == null){
+				setPath(newPath);
+			}else if (copy) {
+				copyTo(newPath);
+			} else {
+				moveTo(newPath);
+			}
+			regen = true;
+		}
+		return regen;
+	}
+	
 	/**
 	 * Generate a path and set it as current path
 	 * 

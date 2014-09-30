@@ -36,7 +36,6 @@ import org.codehaus.jettison.json.JSONObject;
 import com.idiro.hadoop.NameNodeVar;
 import com.idiro.utils.LocalFileSystem;
 import com.idiro.utils.RandomString;
-import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.JobManager;
@@ -69,16 +68,18 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 	private OozieClient oc = null;
 	/** XMLNS scheme */
 	public final String xmlns;
-	/** Namenode */
+	/** Namenode property key */
 	public static final String prop_namenode = "namenode",
-	/** JobTracker link */
+	/** JobTracker link property key */
 	prop_jobtracker = "jobtracker",
-	/** Queue for namenode */
+	/** Queue for namenode property key */
 	prop_queue = "queue",
-	/** User Name */
+	/** User Name property key */
 	prop_user = "user.name",
-	/** Library Path for Oozie */
-	prop_libpath = "oozie.libpath";
+	/** Library Path for Oozie property key */
+	prop_libpath = "oozie.libpath",
+	/** Main Workflow path property key */
+	prop_workflowpath = "pathWorkflow";
 
 	public static final String oozie_mode_default = "default";
 
@@ -253,6 +254,10 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 	 */
 	protected String buildFileName(DataFlow df) throws RemoteException {
 		final String nameWf = df.getName();
+		if(nameWf == null){
+			logger.warn("The workflow to run has no name");
+			df.setName(RandomString.getRandomName(8));
+		}
 		String ans = null;
 		Path hdfsWfPath = new Path(WorkflowPrefManager.getHDFSPathJobs());
 		FileSystem fs = null;
@@ -540,8 +545,9 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 				propSys.getProperty(WorkflowPrefManager.sys_namenode));
 		properties.put(prop_queue,
 				propSys.getProperty(WorkflowPrefManager.sys_oozie_queue));
-		// properties.put(prop_libpath,
-		// propSys.getProperty(WorkflowPrefManager.sys_idiroEngine_path));
+		properties.put(prop_workflowpath,
+				propSys.getProperty(WorkflowPrefManager.sys_namenode)
+				+ hdfsWfPath);
 		properties.put(OozieClient.APP_PATH,
 				propSys.getProperty(WorkflowPrefManager.sys_namenode)
 						+ hdfsWfPath);

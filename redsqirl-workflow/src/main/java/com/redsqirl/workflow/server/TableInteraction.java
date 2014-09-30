@@ -14,6 +14,8 @@ import java.util.regex.Pattern;
 
 import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.enumeration.DisplayType;
+import com.redsqirl.workflow.server.interfaces.DFEInteraction;
+import com.redsqirl.workflow.server.interfaces.DFEInteractionChecker;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
 public class TableInteraction extends UserInteraction {
@@ -68,6 +70,27 @@ public class TableInteraction extends UserInteraction {
 			tree.add("table").add("columns");
 		}
 	}
+	
+	public void setNonEmptyChecker() throws RemoteException{
+		setChecker(new DFEInteractionChecker() {
+			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 4743871962800977873L;
+
+			@Override
+			public String check(DFEInteraction interaction) throws RemoteException {
+				try{
+					return tree.getFirstChild("table").getChildren("row").size() > 0 ?
+							null: LanguageManagerWF.getText("AppendListInteraction.empty");
+				}catch(Exception e){
+					return LanguageManagerWF.getText("AppendListInteraction.empty");
+				}
+			}
+		});
+	}
+	
 	/**
 	 * Remove the space in the column name
 	 * @param columnName

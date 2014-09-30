@@ -10,7 +10,6 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.redsqirl.utils.Tree;
-import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.connect.HiveInterface;
 import com.redsqirl.workflow.server.datatype.HiveType;
@@ -36,9 +35,11 @@ public class SourceTests {
 
 		String idSource = w.addElement((new Source()).getName());
 		Source src = (Source) w.getElement(idSource);
-
-		assertTrue("create " + new_path1,
-				hInt.create(new_path1, getColumns()) == null);
+		
+		hInt.delete(new_path1);
+		String error = hInt.create(new_path1, getColumns());
+		assertTrue("create " + new_path1+": "+error,
+				 error == null);
 
 		src.update(src.getInteraction(Source.key_datatype));
 		Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype)
@@ -67,7 +68,7 @@ public class SourceTests {
 		field2.add("name").add("VALUE");
 		field2.add("type").add("INT");
 
-		String error = src.updateOut();
+		error = src.updateOut();
 		assertTrue("source update: " + error, error == null);
 
 		assertTrue("number of fields in source should be 2 instead of "

@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.Properties;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -15,6 +16,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 import com.idiro.Log;
 import com.idiro.ProjectID;
+import com.idiro.hadoop.NameNodeVar;
 import com.redsqirl.utils.OrderedFieldListTests;
 import com.redsqirl.utils.TreeTests;
 import com.redsqirl.workflow.server.AppendListInteractionTests;
@@ -31,6 +33,8 @@ import com.redsqirl.workflow.server.action.ActionTests;
 import com.redsqirl.workflow.server.action.ConvertTests;
 import com.redsqirl.workflow.server.action.SendEmailTests;
 import com.redsqirl.workflow.server.action.SourceTests;
+import com.redsqirl.workflow.server.action.superaction.SubWorkflowTests;
+import com.redsqirl.workflow.server.action.superaction.SuperActionTests;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.connect.HiveInterface;
 import com.redsqirl.workflow.server.connect.interfaces.HDFSInterfaceTests;
@@ -74,7 +78,9 @@ import com.redsqirl.workflow.utils.PackageManagerTests;
 	PackageManagerTests.class,
 	AbstractDictionaryTests.class,
 	SendEmailTests.class,
-	WorkflowInterfaceTests.class
+	WorkflowInterfaceTests.class,
+	SubWorkflowTests.class,
+	SuperActionTests.class
 })
 public class SetupEnvironmentTest {
 
@@ -99,6 +105,7 @@ public class SetupEnvironmentTest {
 
 		Log log = new Log();
 		log.put(log4jFile);
+		Logger.getRootLogger().setLevel(Level.DEBUG);
 
 		WorkflowPrefManager.getInstance();
 		WorkflowPrefManager.pathSysCfgPref = testProp;
@@ -123,7 +130,7 @@ public class SetupEnvironmentTest {
 				WorkflowPrefManager.getUserProperty(
 						WorkflowPrefManager.user_hive+"_"+System.getProperty("user.name")));
 
-
+		NameNodeVar.set(WorkflowPrefManager.getUserProperty(WorkflowPrefManager.sys_namenode));
 		Properties prop = new Properties();
 		try {
 			prop.load(new FileReader(testProp));
