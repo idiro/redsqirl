@@ -1,12 +1,22 @@
 package com.redsqirl.workflow.server;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
+import org.apache.pig.builtin.GetMonth;
+
+import com.idiro.ProjectID;
+import com.redsqirl.keymanager.ciphers.Decrypter;
+import com.redsqirl.workflow.utils.PackageManager;
 
 /**
  * Class that generates a command that has the base classes necessary for
@@ -18,6 +28,8 @@ public class BaseCommand {
 	 */
 	private static Logger logger = Logger.getLogger(BaseCommand.class);
 
+	private static List<String> notIncludedJars = new ArrayList<String>();
+	
 	/**
 	 * 
 	 * Generate a base command that compiles a classpath containing every class
@@ -27,7 +39,7 @@ public class BaseCommand {
 	 * @return String Base command to launch
 	 * 
 	 */
-	public static String getBaseCommand(String user, int port) {
+	public static String getBaseCommand(String user, int port,String softwareLicense) {
 
 		String command = null;
 		String classpath = null;
@@ -45,10 +57,17 @@ public class BaseCommand {
 			for (int i = 0; i < files.length; i++) {
 				path.append(files[i] + ":");
 			}
+			Properties properties = new Properties();
+			File licenseFile = new File(WorkflowPrefManager.getPathSystemLicence());
+			properties.load(new FileInputStream(licenseFile));
+			
 			String p = path.substring(0, path.length() - 1);
 			String packagePath = getPackageClasspath(
-					WorkflowPrefManager.getUserPackageLibPath(user),
-					WorkflowPrefManager.getSysPackageLibPath());
+					WorkflowPrefManager.getPathUserPackagePref(user),
+					WorkflowPrefManager.getPathsyspackagepref(),
+					properties,
+					user,
+					softwareLicense);
 
 			classpath = " -classpath " + p + packagePath;
 		} catch (Exception e) {
@@ -67,8 +86,11 @@ public class BaseCommand {
 		return command;
 	}
 
-	private static String getPackageClasspath(String pathUser, String pathSys) {
+	static String getPackageClasspath(String pathUser, String pathSys,Properties licenseKeys, String userName , String softwareKey) throws IOException {
 		File fUser = new File(pathUser);
+		File userLibPath = new File(WorkflowPrefManager.getUserPackageLibPath(userName));
+		File systemLibPath = new File(WorkflowPrefManager.getSysPackageLibPath());
+		PackageManager pm = new PackageManager();
 		String classPath = "";
 		List<String> filesUser = new ArrayList<String>();
 		if (fUser.exists()
@@ -76,18 +98,50 @@ public class BaseCommand {
 						WorkflowPrefManager.sys_allow_user_install, "FALSE")
 						.equalsIgnoreCase("true")) {
 			for (File file : fUser.listFiles()) {
-				if (file.isFile()) {
-					classPath += ":" + pathUser + "/" + file.getName();
-					filesUser.add(file.getName());
-				}
+					String pck = pm.getPackageProperties(file.getAbsolutePath())
+							.getProperty(PackageManager.property_name)
+							+"-"+ pm.getPackageProperties(file.getAbsolutePath()).getProperty(
+									PackageManager.property_version);
+					String pcktrimmed = pck.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
+					String jar = null;
+					for (String s : pm.getFiles(file)){
+						if (s.substring(0,4).equals("lib:")){
+							jar = s.substring(4);
+						}
+					}
+					logger.debug(pcktrimmed+ " , "+jar);
+					if(!valid(userName,pcktrimmed,licenseKeys.getProperty(userName+"_"+pcktrimmed),licenseKeys, softwareKey,false)){
+						notIncludedJars.add("Didnt add "+jar+ " for the user "+userName);
+					}else{
+						logger.debug("Added "+jar+ " for the "+userName);
+						classPath += ":" + userLibPath.getAbsolutePath() + "/" + jar;
+						filesUser.add(jar);						
+					}
 			}
 		}
-
 		File fSys = new File(pathSys);
 		if (fSys.exists()) {
 			for (File file : fSys.listFiles()) {
-				if (file.isFile() && !filesUser.contains(file.getName())) {
-					classPath += ":" + pathSys + "/" + file.getName();
+				String jar = null;
+				for (String s : pm.getFiles(file)){
+					if (s.substring(0,4).equals("lib:")){
+						jar = s.substring(4);
+					}
+				}
+				
+				if (!filesUser.contains(jar)) {
+					String pck = pm.getPackageProperties(file.getAbsolutePath())
+							.getProperty(PackageManager.property_name)
+							+"-"+ pm.getPackageProperties(file.getAbsolutePath()).getProperty(
+									PackageManager.property_version);
+					String pcktrimmed = pck.replaceAll("[^A-Za-z0-9 ]", "").toLowerCase();
+					
+					if(!valid(userName,pcktrimmed , licenseKeys.getProperty("system_"+pcktrimmed),licenseKeys,softwareKey,true)){
+						notIncludedJars.add("Didnt add "+jar+ " for the system lib "+userName);
+					}else{
+						logger.debug("Added "+jar+ " for the system lib "+userName);
+						classPath += ":" + systemLibPath.getAbsolutePath() + "/" + jar;
+					}
 				}
 			}
 		}
@@ -166,5 +220,48 @@ public class BaseCommand {
 		return System.getProperties().getProperty("java.rmi.server.codebase",
 				ans);
 	}
+	
+	private static boolean valid(String user , String packageName,String key , Properties licenses , String softwareKey , boolean system){
+		boolean valid = true;
+		if(key == null|| key.isEmpty()){
+			logger.error("Key empty or Null for "+packageName +"  "+user);
+			return false;
+		}
+		
+		if(softwareKey==null || softwareKey.isEmpty()){
+			logger.error("Sofware License empty or Null");
+			return false;
+			
+		}
+		Decrypter dec = new Decrypter();
+		dec.decrypt_key_module(key);
+		String softwareLicense = licenses.getProperty(softwareKey.replaceAll("[^A-Za-z0-9 ]", "").toLowerCase());
+		
+		Map<String,String> keyModule = new HashMap<String,String>();
+		
+		
+		keyModule.put(Decrypter.license, softwareLicense);
+		keyModule.put(Decrypter.name, packageName);
+		
+		String systemVal = system ? "s" : "u";
+		String systemValBoolean = "";
+		if(system){
+			systemValBoolean ="true";
+		}else{
+			systemValBoolean= "false";
+		}
+		keyModule.put("system", systemValBoolean);
+		keyModule.put(Decrypter.userName, systemVal+user);
+		
+		valid = dec.validateAllValuesModule(keyModule);
+		return valid;
+	}
 
+	/**
+	 * @return the notIncludedJars
+	 */
+	public static List<String> getNotIncludedJars() {
+		return notIncludedJars;
+	}
+	
 }

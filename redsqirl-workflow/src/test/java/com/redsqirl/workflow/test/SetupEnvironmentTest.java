@@ -17,6 +17,7 @@ import com.idiro.Log;
 import com.idiro.ProjectID;
 import com.redsqirl.utils.OrderedFieldListTests;
 import com.redsqirl.utils.TreeTests;
+import com.redsqirl.workflow.client.CreateWorkflowTests;
 import com.redsqirl.workflow.server.AppendListInteractionTests;
 import com.redsqirl.workflow.server.EditorInteractionTests;
 import com.redsqirl.workflow.server.InputInteractionTests;
@@ -43,11 +44,12 @@ import com.redsqirl.workflow.utils.PackageManagerTests;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-	ActionTests.class,
-	WorkflowTests.class,
+//	ActionTests.class,
+//	WorkflowTests.class,
 	//FIXME CreateWorkflowTests does not work
-	//CreateWorkflowTests.class,
-	HDFSInterfaceTests.class,
+	CreateWorkflowTests.class,
+//	ServerMainTests.class,
+	/*HDFSInterfaceTests.class,
 	//FIXME HiveInterfaceTests does not work
 	//HiveInterfaceTests.class,
 	//FIXME SSHInterfaceTests does not work
@@ -74,7 +76,8 @@ import com.redsqirl.workflow.utils.PackageManagerTests;
 	PackageManagerTests.class,
 	AbstractDictionaryTests.class,
 	SendEmailTests.class,
-	WorkflowInterfaceTests.class
+	WorkflowInterfaceTests.class.*/
+	
 })
 public class SetupEnvironmentTest {
 
@@ -93,7 +96,7 @@ public class SetupEnvironmentTest {
 
 
 
-		ProjectID.getInstance().setName("IdiroWorkflowServerTest");
+		ProjectID.getInstance().setName("RedSqirlWorkflowServerTest");
 		ProjectID.getInstance().setVersion("0.01");
 		System.out.println(ProjectID.get());
 
@@ -134,7 +137,7 @@ public class SetupEnvironmentTest {
 		}
 
 		testDirOut = new File(new File(testProp).getParent(), prop.getProperty("outputDir"));
-		logger.debug("Create directory "+testDirOut.getCanonicalPath());
+		logger.info("Create directory "+testDirOut.getCanonicalPath());
 		testDirOut.mkdir();
 
 		pathSaveWorkflow = prop.getProperty("path_save_workflow");
@@ -146,9 +149,9 @@ public class SetupEnvironmentTest {
 		WorkflowPrefManager.pathSysCfgPref = testProp;
 		WorkflowPrefManager.pathUserCfgPref = testProp;
 		WorkflowPrefManager.setupHome();
-		logger.debug(WorkflowPrefManager.pathSysHome);
-		logger.debug(WorkflowPrefManager.getPathuserpref());
-		logger.debug(WorkflowPrefManager.pathUserCfgPref);
+		logger.info(WorkflowPrefManager.pathSysHome);
+		logger.info(WorkflowPrefManager.getPathuserpref());
+		logger.info(WorkflowPrefManager.pathUserCfgPref);
 	}
 
 	@AfterClass

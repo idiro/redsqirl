@@ -23,6 +23,7 @@ import com.redsqirl.workflow.test.TestUtils;
 public class SourceTests {
 
 	Logger logger = Logger.getLogger(getClass());
+//	static Logger logger2 = Logger.getLogger(SourceTests.class);
 
 	static Map<String, String> getColumns() {
 		Map<String, String> ans = new HashMap<String, String>();
@@ -33,7 +34,8 @@ public class SourceTests {
 	public static DataFlowElement createSrc_ID_VALUE(DataFlow w,
 			HiveInterface hInt, String new_path1) throws RemoteException,
 			Exception {
-
+		
+		
 		String idSource = w.addElement((new Source()).getName());
 		Source src = (Source) w.getElement(idSource);
 

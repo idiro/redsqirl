@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.idiro.ProjectID;
 import com.jcraft.jsch.JSchException;
 import com.redsqirl.workflow.server.BaseCommand;
 
@@ -43,7 +44,7 @@ public class ServerThread{
 
 				try {
 
-					final String command = "-cp "+BaseCommand.getBaseCommand(System.getProperty("user.name"),port)
+					final String command = "-cp "+BaseCommand.getBaseCommand(System.getProperty("user.name"),port,ProjectID.get())
 							+ " & echo $!";
 
 					logger.info("getting java");
