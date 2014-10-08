@@ -30,6 +30,7 @@ import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
+import com.redsqirl.workflow.server.interfaces.OozieSubWorkflowAction;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
 /**
@@ -67,9 +68,51 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 	@Override
 	public String createXml(DataFlow df, List<DataFlowElement> list,
 			File directory) throws RemoteException {
+		String error = createMainXml(df, list,directory);
+		
+		if(error == null){
+			error = createSubXmls(df,list,directory);
+		}
+		
+		return error;
+	}
+	
+	public String createSubXmls(DataFlow df, List<DataFlowElement> list,
+			File directory) throws RemoteException {
+		String error = null;
+		Iterator<DataFlowElement> it = list.iterator();
+		while(it.hasNext() && error == null){
+			DataFlowElement cur = it.next();
+			if(cur.getOozieAction() instanceof OozieSubWorkflowAction){
+				OozieSubWorkflowAction oswa = (OozieSubWorkflowAction) cur.getOozieAction();
+				try{
+					error = createSubXml(oswa.getWfId(),oswa.getSubWf(),oswa.getSubWf().subsetToRun(oswa.getSubWf().getComponentIds()),directory);
+				}catch(Exception e){
+					error = e.getMessage();
+				}
+				if(error != null){
+					createSubXmls(oswa.getSubWf(),oswa.getSubWf().getElement(),directory);
+				}
+			}
+		}
+		return error;
+	}
+	public String createSubXml(String dfId, DataFlow df, List<DataFlowElement> list,
+			File directory) throws RemoteException {
+		return createXml(dfId,df, list,new File(directory,dfId));
+	}
+	
+	public String createMainXml(DataFlow df, List<DataFlowElement> list,
+			File directory) throws RemoteException {
+		return createXml(df.getName(),df, list,directory);
+	}
+	
+	public String createXml(String wfId,DataFlow df, List<DataFlowElement> list,
+			File directory) throws RemoteException {
+		
 
 		logger.info("createXml");
-
+		String filename = "workflow.xml";
 		String error = null;
 
 		File scripts = new File(directory, "scripts");
@@ -87,7 +130,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			doc.appendChild(rootElement);
 
 			Attr attrName = doc.createAttribute("name");
-			attrName.setValue(df.getName());
+			attrName.setValue(wfId);
 			rootElement.setAttributeNode(attrName);
 
 			Attr attrXmlns = doc.createAttribute("xmlns");
@@ -215,7 +258,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
 				DOMSource source = new DOMSource(doc);
 				StreamResult result = new StreamResult(new File(directory,
-						"workflow.xml"));
+						filename));
 				transformer.transform(source, result);
 			}
 		} catch (Exception e) {

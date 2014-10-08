@@ -427,6 +427,28 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			waLogger.error(e.getMessage(),e);
 		}
 	}
+	
+	@Override
+	public String regeneratePaths(Boolean copy,boolean force)  throws RemoteException{
+		Iterator<String> lOutIt = getDFEOutput().keySet().iterator();
+		while (lOutIt.hasNext()) {
+			String curOutStr = lOutIt.next();
+			DFEOutput curOut = getDFEOutput().get(curOutStr);
+			if (curOut != null) {
+				Boolean copyCur = copy;
+				if(force && getDFEOutput().get(curOutStr).getSavingState().equals(SavingState.RECORDED)){
+					getDFEOutput().get(curOutStr).setSavingState(SavingState.TEMPORARY);
+					copyCur = null;
+				}
+				getDFEOutput().get(curOutStr).regeneratePath(
+						copyCur, 
+						System.getProperty("user.name"), 
+						getComponentId(), 
+						curOutStr);
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * Update a page that the action contains

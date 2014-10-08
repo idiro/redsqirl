@@ -64,13 +64,15 @@ public class Source extends AbstractSource {
 				break;
 			}
 		}
-		String ans = "";
-		if (absolutePath.contains(path)) {
-			ans = absolutePath.substring(path.length());
+		if(logger.isDebugEnabled()){
+			String ans = "";
+			if (absolutePath.contains(path)) {
+				ans = absolutePath.substring(path.length());
+			}
+			logger.debug("Source help absPath : " + absolutePath);
+			logger.debug("Source help Path : " + path);
+			logger.debug("Source help ans : " + ans);
 		}
-		logger.debug("Source help absPath : " + absolutePath);
-		logger.debug("Source help Path : " + path);
-		logger.debug("Source help ans : " + ans);
 		// absolutePath
 		return absolutePath;
 	}
@@ -94,14 +96,15 @@ public class Source extends AbstractSource {
 				break;
 			}
 		}
-		String ans = "";
-		if (absolutePath.contains(path)) {
-			ans = absolutePath.substring(path.length());
+		if(logger.isDebugEnabled()){
+			String ans = "";
+			if (absolutePath.contains(path)) {
+				ans = absolutePath.substring(path.length());
+			}
+			logger.debug("Source image abs Path : " + absolutePath);
+			logger.debug("Source image Path : " + path);
+			logger.debug("Source image ans : " + ans);
 		}
-		logger.debug("Source image abs Path : " + absolutePath);
-		logger.debug("Source image Path : " + path);
-		logger.debug("Source image ans : " + ans);
-
 		return absolutePath;
 	}
 }

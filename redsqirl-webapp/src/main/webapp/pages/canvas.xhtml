@@ -173,7 +173,22 @@
 	              var tabName = "canvas-"+contTabCanvas;
 	              addWorkflow(tabName);
 	              addWorkflowTab(tabName);
-	              configureCanvas(tabName, true);
+	              configureCanvas(tabName, true, "W");
+	              setWorkflow(tabName);
+	              validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
+	              resizeCanvas(30,45);
+	              
+	              //]]>
+	          });
+
+	    	  jQuery('#addsubtabCanvas').click( function(){
+	              //<![CDATA[
+	              
+	              contTabCanvas++;
+	              var tabName = "canvas-"+contTabCanvas;
+	              addSubWorkflow(tabName);
+	              addWorkflowTab(tabName);
+	              configureCanvas(tabName, true, "S");
 	              setWorkflow(tabName);
 	              validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
 	              resizeCanvas(30,45);
@@ -450,11 +465,11 @@
 	    	  closeWorkflowTab(ul, tabName);
 	      }
 	      
-	      function addElementJs(canvasName, path, positions, links, selecteds, reset){
+	      function addElementJs(canvasName, path, positions, links, selecteds, reset, workflowType){
 	          //Add the workflow tab only if the name does not exist yet.
 	          if(document.getElementById(canvasName) == null) {
 	    	      addWorkflowTab(canvasName);
-	    	      configureCanvas(canvasName, reset);
+	    	      configureCanvas(canvasName, reset, workflowType);
 		    	  setWorkflow(canvasName);
 	    	      addElements(canvasName, positions, selecteds);
 	    	      setSaved(canvasName, true);
@@ -597,7 +612,7 @@
               
               addWorkflow("canvas-1");
               addWorkflowTab("canvas-1");
-              configureCanvas("canvas-1", true);
+              configureCanvas("canvas-1", true, "W");
               setWorkflow("canvas-1");
 
               resizeCanvas(30,45);
@@ -924,21 +939,23 @@
 
 			<a4j:region>
 				<a4j:jsFunction name="setWorkflow" action="#{canvasBean.changeWorkflow}"
-					oncomplete="setSelectedByName('#{canvasBean.nameWorkflow}');updateWfDisplayComment();verifyIfIsRunning(getSelectedByName());"
+					oncomplete="setSelectedByName('#{canvasBean.nameWorkflow}');updateWfDisplayComment();verifyIfIsRunning(getSelectedByName());changeFooter(getSelectedByName());"
 					reRender="formMenu,domMessageDivCanvas2,killProcessBtn">
 					<a4j:actionparam name="selectedCanvas" assignTo="#{canvasBean.nameWorkflow}" />
 				</a4j:jsFunction>
 			</a4j:region>
 
 			<a4j:region>
-				<a4j:status
-					onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+				<a4j:status onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
 					onerror="jQuery('#canvas-tabs').unblock();"
 					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
-				<a4j:jsFunction name="addWorkflow"
-					action="#{canvasBean.addWorkflow}">
+				<a4j:jsFunction name="addWorkflow" action="#{canvasBean.addWorkflow}">
+					<a4j:actionparam name="name" />
+				</a4j:jsFunction>
+				
+				<a4j:jsFunction name="addSubWorkflow" action="#{canvasBean.addSubWorkflow}">
 					<a4j:actionparam name="name" />
 				</a4j:jsFunction>
 			</a4j:region>
@@ -999,6 +1016,7 @@
 					<a4j:actionparam name="pathFile" />
 					<a4j:actionparam name="positions" />
 					<a4j:actionparam name="selecteds" />
+					<a4j:actionparam name="workflowType" />
 				</a4j:jsFunction>
 			</a4j:region>
             
@@ -1134,7 +1152,7 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
 				<a4j:jsFunction name="loadWorkflow" data="#{canvasBean.positions}"
-					oncomplete="addElementJs(data[0],data[1],data[2],data[3],data[4], true);setRunning(getSelectedByName(), true);"
+					oncomplete="addElementJs(data[0],data[1],data[2],data[3],data[4], true, data[5]);setRunning(getSelectedByName(), true);"
 					reRender="tabFlowchart,errorTable,msnError" />
 					
 			</a4j:region>
@@ -1145,7 +1163,7 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
 				<a4j:jsFunction name="renameTab" data="#{canvasBean.positions}"
-					oncomplete="closeCurrentTabWithoutCallingBackend();addElementJs(data[0],data[1],data[2],data[3],data[4], true);updateAllArcsStatus();onHideModalSaveWorkflow(true);jQuery.unblockUI();"
+					oncomplete="closeCurrentTabWithoutCallingBackend();addElementJs(data[0],data[1],data[2],data[3],data[4], true, data[5]);updateAllArcsStatus();onHideModalSaveWorkflow(true);jQuery.unblockUI();"
 					reRender="tabFlowchart" />
 			</a4j:region>
 
@@ -1424,12 +1442,22 @@
 									<h:outputText value="#{messages.label_menu_file}" />
 								</h:panelGroup>
 							</f:facet>
-		
-							<rich:menuItem id="newMenuItem" submitMode="none"
-								value="#{messages.label_menu_new}"
-								onclick="jQuery('#addtabCanvas').click();" >
-								<h:outputText value="Ctrl+N" class="menuItemHotKey"/>
-							</rich:menuItem>
+							
+							<rich:menuGroup value="#{messages.label_menu_new}">
+								
+	                            <rich:menuItem id="newMenuItem" submitMode="none"
+									value="#{messages.label_menu_new_canvas}"
+									onclick="jQuery('#addtabCanvas').click();" >
+									<h:outputText value="Ctrl+N" class="menuItemHotKey"/>
+								</rich:menuItem>
+								<rich:menuItem id="newSubMenuItem" submitMode="none"
+									value="#{messages.label_menu_new_subcanvas}"
+									onclick="jQuery('#addsubtabCanvas').click();" >
+									<h:outputText value="Ctrl+N" class="menuItemHotKey"/>
+								</rich:menuItem>
+	
+							</rich:menuGroup>
+							
 							<rich:menuItem id="openMenuItem" submitMode="ajax"
 								value="#{messages.label_menu_open}"
 								onclick="openModalLoadWorkflow()"
@@ -1552,21 +1580,40 @@
 							</rich:menuItem>
 	
 							<rich:menuGroup value="#{messages.label_menu_generate}">
+	                            <rich:menuItem submitMode="ajax"
+                                    value="#{messages.label_menu_regenerate_project}"
+                                    action="#{canvasBean.regeneratePathsProject}"
+                                    oncomplete="updateAllArcsStatus();" />
+                                    
+                                <rich:menuItem submitMode="ajax"
+                                    value="#{messages.label_menu_regeneratemove_project}"
+                                    action="#{canvasBean.regeneratePathsProjectMove}"
+                                    oncomplete="updateAllArcsStatus();" />
 	
 								<rich:menuItem submitMode="ajax"
 									value="#{messages.label_menu_regeneratecopy_project}"
 									action="#{canvasBean.regeneratePathsProjectCopy}"
 									oncomplete="updateAllArcsStatus();" />
 	
-								<rich:menuItem submitMode="ajax"
-									value="#{messages.label_menu_regeneratemove_project}"
-									action="#{canvasBean.regeneratePathsProjectMove}"
-									oncomplete="updateAllArcsStatus();" />
-	
 							</rich:menuGroup>
-		
+							
 							<rich:menuSeparator />
+							
+							<rich:menuItem id="installSubWorkflow" submitMode="ajax"
+								value="#{messages.label_menu_install_sub_workflow}"	>
+								<h:outputText value="Ctrl+I" class="menuItemHotKey"/>
+							</rich:menuItem>
 		
+						</rich:dropDownMenu>
+						
+						<rich:dropDownMenu>
+		
+							<f:facet name="label">
+								<h:panelGroup>
+									<h:outputText value="#{messages.label_menu_software}" />
+								</h:panelGroup>
+							</f:facet>
+							
 							<rich:menuItem id="installationMenuItem" submitMode="ajax"
 								value="#{messages.label_menu_package}"
 								onclick="openPackageModal();">
@@ -1578,8 +1625,9 @@
                                 onclick="#{rich:component('modalSettings')}.show();">
                                 <h:outputText value="Ctrl+Alt+P" class="menuItemHotKey"/>
                             </rich:menuItem>
-		
+							
 						</rich:dropDownMenu>
+						
 		
 						<rich:toolBarGroup location="right">
 						
@@ -1692,6 +1740,7 @@
 								onclick="closeWorkflowTab(this,'canvas-1')"></span>
 							</li>
 							<img src="../image/icons/button-new_canvas.gif" alt="add" style="width: 25px; padding-top: 2px;" id="addtabCanvas" />
+							<img src="../image/icons/button-new_canvas.gif" alt="add" style="display:none" id="addsubtabCanvas" />
 						</ul>
 
 						<span id="buttonsCanvas1" class="spanButtons">

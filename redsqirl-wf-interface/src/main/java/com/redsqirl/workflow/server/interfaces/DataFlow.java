@@ -94,6 +94,14 @@ public interface DataFlow extends Remote, Cloneable{
 	public String run(List<String> dataFlowElement) throws RemoteException;
 
 	/**
+	 * List the elements to run, removing the actions that already produced the data
+	 * @param dataFlowElements
+	 * @return
+	 * @throws Exception
+	 */
+	public List<DataFlowElement> subsetToRun(List<String> dataFlowElements) throws Exception;
+	
+	/**
 	 * Check if workflow is running
 	 * 
 	 * @return <code>true</code> if the workflow is currently processed (for
@@ -161,6 +169,11 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @return null if OK, or a description of the error.
 	 */
 	public String read(String file) throws RemoteException;
+	
+	/**
+	 * Reads a workflow from a local file.
+	 */
+	public String readFromLocal(File f) throws RemoteException;
 
 	/**
 	 * Do sort of the workflow.

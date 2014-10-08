@@ -94,6 +94,17 @@ public interface DFEOutput extends Remote {
 	public void setPath(String path) throws RemoteException;
 
 	/**
+	 * Regenerate the path for TEMPORARY and BUFFERED dataset
+	 * @param copy  null only set the path, true to copy, false to move
+	 * @param userName
+	 * @param component
+	 * @param outputName
+	 * @return true if the path has been regenerated
+	 */
+	boolean regeneratePath(Boolean copy, String userName, String component,
+			String outputName) throws RemoteException;
+	
+	/**
 	 * Generate automatically a valid path for the given user.
 	 * 
 	 * @param userName
@@ -298,4 +309,5 @@ public interface DFEOutput extends Remote {
 	 */
 	boolean compare(String path, FieldList fl, Map<String, String> props)
 			throws RemoteException;
+
 }

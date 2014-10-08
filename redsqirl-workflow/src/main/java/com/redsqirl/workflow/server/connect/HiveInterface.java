@@ -142,7 +142,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		}
 		try {
 			if (!isInit) {
-
+				logger.info("Init connection to "+url);
 				final String nameStore = url.substring(url.indexOf("://") + 3,
 						url.lastIndexOf(":"));
 				final String port = url.substring(url.lastIndexOf(":") + 1,
@@ -156,13 +156,12 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 					try {
 						Properties config = new Properties();
 						config.put("StrictHostKeyChecking", "no");
-
 						ProcessesManager hjdbc = new HiveJdbcProcessesManager()
 						.getInstance();
 
 						String old_pid = hjdbc.getPid();
 
-						logger.info("old hive process : " + old_pid);
+						logger.debug("old hive process : " + old_pid);
 						if (!old_pid.isEmpty()) {
 							String getPid = "ssh " + nameStore
 									+ " <<< \"ps -eo pid | grep -w \""
@@ -172,7 +171,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 							BufferedReader br1 = new BufferedReader(
 									new InputStreamReader(p.getInputStream()));
 							String pid1 = br1.readLine();
-							logger.info("gotten pid : " + pid1);
+							logger.debug("gotten pid : " + pid1);
 
 							if (pid1 != null
 									&& pid1.trim().equalsIgnoreCase(old_pid)) {
@@ -206,19 +205,16 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 						Process proc = Runtime.getRuntime().exec(
 								new String[] { "/bin/bash", "-c", command });
 
-						logger.debug("Launch hive server : " + command);
+						logger.info("Launch hive server : " + command);
 
 						BufferedReader br = new BufferedReader(
 								new InputStreamReader(proc.getInputStream()));
 
 						String pid = br.readLine();
-						logger.info("new pid for jdbc: " + pid);
+						logger.debug("new pid for jdbc: " + pid);
 
 						hjdbc.storePid(pid);
-						logger.info("Stored pid");
-
-						logger.info("Pass ... test ");
-
+						logger.debug("Stored pid");
 					} catch (Exception e) {
 						logger.error("Fail to launch the server process");
 						logger.error(e.getMessage());
@@ -239,11 +235,8 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 					try {
 						logger.debug("new jdbc");
 						jdbcHdfspref = new JdbcHdfsPrefsDetails(url);
-						logger.debug("got prefs");
 						stm = new HiveBasicStatement();
-						logger.debug("got statement");
 						conn = new JdbcConnection(jdbcHdfspref, stm);
-						logger.debug("got connection");
 						started = conn.showAllTables().next();
 						if (!started) {
 							conn.closeConnection();
@@ -252,15 +245,17 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 						}
 					} catch (Exception e) {
 						logger.error("error checking connection : "
-								+ e.getMessage());
+								+ e.getMessage(),e);
 						isInit = false;
 					}
-					logger.info("attempt number : " + maxattempts);
-					--maxattempts;
-					try {
-						Thread.sleep(500);
-					} catch (Exception e) {
-						logger.info("error sleeping in open interface");
+					logger.info("attempt number : " + attempts);
+					++attempts;
+					if(!started && attempts <= maxattempts){
+						try {
+							Thread.sleep(500);
+						} catch (Exception e) {
+							logger.info("error sleeping in open interface");
+						}
 					}
 
 				}

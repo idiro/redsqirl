@@ -70,12 +70,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private String idsToPaste;
 	private String blockingWorkflowName;
 	private WFCopyBuffer wfCopyBuffer;
-
 	private ReplaceModal rpModal = new ReplaceModal();
-
 	private String commentWf = "";
-
 	private String idLastElementInserted;
+	private String workflowType;
+	private Map<String, String> mapWorkflowType;
 
 	/**
 	 * 
@@ -100,6 +99,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		workflowMap = new HashMap<String, DataFlow>();
 		setNameWorkflow("canvas-1");
+		
+		mapWorkflowType = new LinkedHashMap<String, String>();
+		setWorkflowType("W");
+		mapWorkflowType.put(getNameWorkflow(), getWorkflowType());
 
 		setIdMap(new HashMap<String, Map<String, String>>());
 		getIdMap().put(getNameWorkflow(), new HashMap<String, String>());
@@ -494,6 +497,17 @@ public class CanvasBean extends BaseBean implements Serializable {
 				}
 				logger.info("Nb element loaded: "
 						+ getIdMap().get(getNameWorkflow()).size());
+				
+				
+				if(path.endsWith(".srs")){
+					setWorkflowType("S");
+				}else{
+					setWorkflowType("W");
+				}
+				mapWorkflowType.put(getNameWorkflow(), getWorkflowType());
+				
+				logger.info("Load workflow type " + getWorkflowType());
+				
 			}
 
 		} catch (Exception e) {
@@ -627,9 +641,23 @@ public class CanvasBean extends BaseBean implements Serializable {
 		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
 		sc.setAttribute("selecteds", selecteds);
 
-		if (!path.contains(".")) {
-			path += ".rs";
+		workflowType = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("workflowType");
+		logger.info("workflow Type " + workflowType);
+		
+		String name = generateWorkflowName(path);
+		if (!name.startsWith("sa_")) {
+			name = "sa_"+name;
+			path = path.substring(0, path.lastIndexOf("/")) +"/"+ name;
 		}
+		
+		if (!path.contains(".")) {
+			if(workflowType != null && workflowType.equals("S")){
+				path += ".srs";
+			}else{
+				path += ".rs";
+			}
+		}
+		
 		// Update the object positions
 		updatePosition();
 		{
@@ -1030,6 +1058,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	}
 
+	public void regeneratePathsProject() throws RemoteException {
+		logger.info("regenerate paths project");
+		regeneratePathsProject(null);
+	}
+	
 	public void regeneratePathsProjectCopy() throws RemoteException {
 		logger.info("regenerate paths project copy");
 		regeneratePathsProject(true);
@@ -1048,7 +1081,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 * @throws RemoteException
 	 */
-	public void regeneratePathsProject(boolean copy) throws RemoteException {
+	public void regeneratePathsProject(Boolean copy) throws RemoteException {
 
 		DataFlow wf = getworkFlowInterface().getWorkflow(getNameWorkflow());
 		String error = wf.regeneratePaths(copy);
@@ -1100,13 +1133,17 @@ public class CanvasBean extends BaseBean implements Serializable {
 		} else {
 			name = path;
 		}
-		return name.replace(".rs", "");
+		return name.replace(".rs", "").replace(".srs", "");
 	}
 
 	public void changeWorkflow() throws RemoteException {
 
 		logger.info("change workflow to "+getNameWorkflow());
 		setDf(getWorkflowMap().get(getNameWorkflow()));
+		
+		setWorkflowType(getMapWorkflowType().get(getNameWorkflow()));
+		logger.info("workflow type "+getWorkflowType());
+		
 	}
 
 	public void addWorkflow() throws RemoteException {
@@ -1126,6 +1163,33 @@ public class CanvasBean extends BaseBean implements Serializable {
 			workflowMap.put(name, dfi.getWorkflow(name));
 			dfi.getWorkflow(name).setName(name);
 			getIdMap().put(name, new HashMap<String, String>());
+			
+			getMapWorkflowType().put(name, "W");
+			
+		}
+
+	}
+	
+	public void addSubWorkflow() throws RemoteException {
+
+		Map<String, String> params = FacesContext.getCurrentInstance()
+				.getExternalContext().getRequestParameterMap();
+		String name = params.get("name");
+
+		logger.info("addSubWorkflow: " + name);
+
+		DataFlowInterface dfi = getworkFlowInterface();
+
+		if (!getWorkflowMap().containsKey(name)) {
+			logger.info("create addSubWorkflow: " + name);
+
+			dfi.addSubWorkflow(name);
+			workflowMap.put(name, dfi.getWorkflow(name));
+			dfi.getSubWorkflow(name).setName(name);
+			getIdMap().put(name, new HashMap<String, String>());
+			
+			getMapWorkflowType().put(name, "S");
+			
 		}
 
 	}
@@ -1241,8 +1305,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 			if(comment != null && !comment.isEmpty()){
 				tooltip.append("<i>"+comment+"</i><br/>");
 			}
-
-			errorOut = dfe.updateOut();
+			
+			try{
+				errorOut = dfe.updateOut();
+			}catch(Exception e){
+				logger.error(e,e);
+				errorOut = "Unexpected program error while checking this action.";
+			}
+			
 			if(errorOut != null){
 				tooltip.append("<br/><b>Error:</b><br/>" + errorOut.replaceAll("\n", "<br/>") + "<br/>");
 			}
@@ -1675,8 +1745,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 			logger.info("getPositions getPath " + getPath());
 			logger.info("getPositions jsonElements.toString " + jsonElements.toString());
 			logger.info("getPositions jsonLinks.toString " + jsonLinks.toString());
+			
+			setWorkflowType(getMapWorkflowType().get(getNameWorkflow()));
+			logger.info("getPositions getWorkflowType " + getWorkflowType());
 
-			return new String[] { getNameWorkflow(), getPath(), jsonElements.toString(), jsonLinks.toString(), selecteds };
+			return new String[] { getNameWorkflow(), getPath(), jsonElements.toString(), jsonLinks.toString(), selecteds, getWorkflowType() };
 
 
 		} catch (Exception e) {
@@ -2030,6 +2103,22 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 */
 	public final void setIdLastElementInserted(String idLastElementInserted) {
 		this.idLastElementInserted = idLastElementInserted;
+	}
+
+	public String getWorkflowType() {
+		return workflowType;
+	}
+
+	public void setWorkflowType(String workflowType) {
+		this.workflowType = workflowType;
+	}
+
+	public Map<String, String> getMapWorkflowType() {
+		return mapWorkflowType;
+	}
+
+	public void setMapWorkflowType(Map<String, String> mapWorkflowType) {
+		this.mapWorkflowType = mapWorkflowType;
 	}
 	
 }

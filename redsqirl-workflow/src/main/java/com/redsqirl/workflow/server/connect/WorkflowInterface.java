@@ -23,10 +23,12 @@ import com.idiro.utils.RandomString;
 import com.redsqirl.workflow.server.DataOutput;
 import com.redsqirl.workflow.server.Workflow;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
+import com.redsqirl.workflow.server.action.superaction.SubWorkflow;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
+import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
 /**
@@ -341,6 +343,32 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	}
 
 
+
+	@Override
+	public String addSubWorkflow(String name) throws RemoteException {
+		String error = null;
+		if(!wf.containsKey(name)){
+			try {
+				wf.put(name, new SubWorkflow());
+			} catch (Exception e) {
+				error = e.getMessage();
+			}
+		}else{
+			error=LanguageManagerWF.getText("workflowinterface.addWorkflow_workflowexists",new Object[]{name});
+		}
+		if(error != null){
+			logger.error(error);
+		}
+		return error;
+	}
+
+
+	@Override
+	public SubDataFlow getSubWorkflow(String name)
+			throws RemoteException {
+		return (SubDataFlow) wf.get(name);
+	}
+	
 	/**
 	 * Get an Instance of the interface
 	 * @return instance

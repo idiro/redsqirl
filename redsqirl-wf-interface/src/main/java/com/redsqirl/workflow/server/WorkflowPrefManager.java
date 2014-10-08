@@ -97,7 +97,12 @@ public class WorkflowPrefManager extends BlockManager {
 	/**
 	 * Path to the idiro interface path 
 	 */
-	interfacePath;
+	interfacePath,
+	
+	/**
+	 * Path System super action directory
+	 */
+	pathSysSuperAction;
 
 	private static String
 	/**
@@ -114,6 +119,10 @@ public class WorkflowPrefManager extends BlockManager {
 			 * redsqirl-workflow side.
 			 */
 			pathOozieJob = pathUserPref + "/jobs",
+			/**
+			 * The local directory to access super-actions
+			 */
+			pathUserSuperAction = pathUserPref + "/superactions",
 			/**
 			 * The local directory to store temporarily workflow. Accessible from
 			 * redsqirl-workflow side.
@@ -307,6 +316,8 @@ public class WorkflowPrefManager extends BlockManager {
 		else{
 			sysLibPath = workflowLibPath;
 		}
+		
+		pathSysSuperAction = pathSysHome+"/superactions";
 
 		if (idiroInterfacePath == null || idiroInterfacePath.isEmpty()){
 			interfacePath = pathSysHome + "/lib/redsqirl-wf-interface-0.1-SNAPSHOT.jar";
@@ -978,6 +989,27 @@ public class WorkflowPrefManager extends BlockManager {
 	 */
 	public static String getPathUsersFolder() {
 		return pathUsersFolder;
+	}
+
+	/**
+	 * @return the pathUserSuperAction
+	 */
+	public static String getPathUserSuperAction() {
+		return pathUserSuperAction;
+	}
+	
+	/**
+	 * @return the pathUserSuperAction
+	 */
+	public static String getPathUserSuperAction(String user) {
+		return getPathUserPref(user)+"/superactions";
+	}
+
+	/**
+	 * @return the pathSysSuperAction
+	 */
+	public static final String getPathSysSuperAction() {
+		return pathSysSuperAction;
 	}
 
 }

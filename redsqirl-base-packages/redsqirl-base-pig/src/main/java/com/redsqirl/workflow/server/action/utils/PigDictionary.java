@@ -570,7 +570,7 @@ public class PigDictionary extends AbstractDictionary {
 												+ "@param:datetime A datetime object."
 												+ "@description:Use the ToMilliSeconds function to convert the DateTime to the number of milliseconds that have passed since January 1, 1970 00:00:00.000 GMT."
 												+ "@example: returns 1; @example: returns  3" },
-								new String[] {
+								/* This function does not work when tested new String[] {
 										"ToString()",
 										"TIMESTAMP",
 										"STRING",
@@ -578,16 +578,16 @@ public class PigDictionary extends AbstractDictionary {
 												+ "@short:ToString converts the DateTime object to the ISO or the customized string. "
 												+ "@param:datetime A datetime object."
 												+ "@description: Use the ToString function to convert the DateTime."
-												+ "@example: returns 1; @example: returns  3" },
+												+ "@example: returns 1; @example: returns  3" },*/
 								new String[] {
 										"ToString()",
 										"TIMESTAMP,STRING",
 										"STRING",
-										"@function:ToString(format)"
+										"@function:ToString(datetime,format)"
 												+ "@short:ToString converts the DateTime object to the ISO or the customized string. "
 												+ "@param:datetime A datetime object.@param:format The date time format pattern string (see Java SimpleDateFormat class)."
 												+ "@description: Use the ToString function to convert the DateTime to the customized string. "
-												+ "@example: returns 1; @example: returns  3" },
+												+ "@example: ToString(mydate,'yyyyMMdd') returns '20140923'" },
 								new String[] {
 										"ToUnixTime()",
 										"TIMESTAMP",
