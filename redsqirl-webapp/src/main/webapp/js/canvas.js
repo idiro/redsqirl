@@ -1544,7 +1544,7 @@ function changeFooter(canvasName) {
 		for ( var i = 0; i < list.length; i++) {
 			
 			var e = list[i];
-			alert(e.name);
+			//alert(e.name);
 			
 			if(type == "S"){
 				
