@@ -35,6 +35,7 @@ function Canvas(name){
     this.legendWidth = 170;
     this.legendHidden = false;
     this.outputTypeColours = [];
+    this.workflowType = null;
 }
 
 var selectedCanvas = "canvas-1";
@@ -46,6 +47,7 @@ var isSaveAll = false;
 var indexSaving;
 var contSaving;
 var tmpCommandObj;
+var stageArrayTab;
 
 var contextMenuCanvas = [
  {'Create Link': function(menuItem,menu){createLink(rightClickGroup.getChildren()[0]);}},
@@ -60,15 +62,18 @@ var cmenuCanvas = jQuery.contextMenu.create(contextMenuCanvas);
 window.onload = function() {
     var canvasName = "canvas-1";
     canvasArray = {};
-    configureCanvas(canvasName, true);
+    stageArrayTab = [];
+    configureCanvas(canvasName, true, 'W');
     mountObj(canvasName);
 };
 
-function configureCanvas(canvasName, reset){
+function configureCanvas(canvasName, reset, workflowType){
     
     if(reset){
         canvasArray[canvasName] = new Canvas(canvasName);
     }
+    
+    canvasArray[canvasName].workflowType = workflowType;
     
     var canvasContainer = "container-"+canvasName;
     var legendCanvasContainer = "container-legend-"+canvasName;
@@ -1325,6 +1330,7 @@ function ready(canvasName) {
  */
 function mountObj(canvasName) {
 
+	
 	// for list divs
 	jQuery("#tabsFooter ul:first li").each(function(index) {
 
@@ -1335,7 +1341,10 @@ function mountObj(canvasName) {
 		var posInitTextY = 65;
 
 		var nameDiv = jQuery(this).attr("aria-controls");
-			
+		
+		var stageTab;
+		var ind = 0;
+		
         if (nameDiv != undefined) { // groupNumber
 
             // ------------ START TAB
@@ -1400,7 +1409,7 @@ function mountObj(canvasName) {
                     canvasName);
                 var polygonTab = result[1];
                 var polygonTabImage = result[2];
-
+                
                 var rotateDeg = 0;
                 if (numSides%2 == 0 ){
                     rotateDeg = 360/(2*numSides);
@@ -1486,8 +1495,17 @@ function mountObj(canvasName) {
 					jQuery(".tooltipCanvas").remove();
 				});
 
+				//polygonTab.name = "polygonTab";
+				//polygonTabFake.name = "polygonTabFake";
+				//typeLabel.name = "typeLabel";
+				
+				polygonTab.name = jQuery(this).next().text();
+				polygonTabFake.name = jQuery(this).next().text();
+				typeLabel.name = jQuery(this).next().text();
+				
+				
 				layerTab.add(polygonTab);
-				layerTab.add(polygonTabFake.clone());
+				layerTab.add(polygonTabFake);
 				layerTab.add(typeLabel);
 
 				// jQuery( "#"+nameDiv ).find("img").remove();
@@ -1502,10 +1520,53 @@ function mountObj(canvasName) {
 			stageTab.add(layerTab);
 
 		}// END IF
+        
+        if(nameDiv != undefined){
+        	stageArrayTab[stageArrayTab.length] = stageTab;
+        }
 
 	});
 	// END for divs
 
+	changeFooter(canvasName);
+	
+}
+
+function changeFooter(canvasName) {
+	
+	var type = getWorkflowType(canvasName);
+	
+	//alert(stageArrayTab.length);
+	
+	for (var int = 0; int < stageArrayTab.size(); int++) {
+		var list = stageArrayTab[int].getChildren()[0].getChildren();
+		
+		for ( var i = 0; i < list.length; i++) {
+			
+			var e = list[i];
+			alert(e.name);
+			
+			if(type == "S"){
+				
+				if(e.name == "superactioninput" || e.name == "superactionoutput"){
+					e.setDraggable(true);
+					e.setOpacity(1);
+				}
+				
+			}else{
+				
+				if(e.name == "superactioninput" || e.name == "superactionoutput"){
+					e.setDraggable(false);
+					e.setOpacity(0.4);
+				}
+				
+			}
+			
+		}
+		
+		stageArrayTab[int].draw();
+	}
+	 
 }
 
 function clearCanvas() {
@@ -1630,7 +1691,7 @@ function getAllIconPositions(){
 function save(path) {
     setSaved(selectedCanvas, true);
     setPathFile(selectedCanvas, path);
-    saveWorkflow(selectedCanvas, path, getIconPositions(), getSelectedIconsCommaDelimited());
+    saveWorkflow(selectedCanvas, path, getIconPositions(), getSelectedIconsCommaDelimited(), getWorkflowType(selectedCanvas));
     jQuery(".tooltipCanvas").remove();
 }
 
@@ -1827,9 +1888,12 @@ function createGroup(canvasName, circle0, circle1, polygon, srcImageText, typeTe
     group1.add(poly);
     group1.add(srcImageText.clone());
     group1.add(typeText.clone());
-    group1.add(arc1);
-    group1.add(arc2);
-    group1.add(arc3);
+    
+    if(getWorkflowType(canvasName) == "W"){
+    	group1.add(arc1);
+    	group1.add(arc2);
+    	group1.add(arc3);
+    }
 
     return group1;
 }
@@ -2459,8 +2523,6 @@ function redo(){
     canvasArray[getSelectedByName()].commandHistory.redo();
 }
 
-
-
 function getCanvasId(canvasName){
     return "flowchart-"+canvasName;
 }
@@ -2509,4 +2571,8 @@ function setPathFile(canvasName, value){
 
 function getPathFile(canvasName){
     return canvasArray[canvasName].pathFile;
+}
+
+function getWorkflowType(canvasName){
+    return canvasArray[canvasName].workflowType;
 }

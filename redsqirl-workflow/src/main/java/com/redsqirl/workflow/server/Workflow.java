@@ -1876,7 +1876,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				try {
 					DataflowAction wa = (DataflowAction) Class.forName(
 							className).newInstance();
-					flowElement.put(wa.getName(), className);
+					if(!(flowElement instanceof SuperAction)){
+						flowElement.put(wa.getName(), className);
+					}
 				} catch (Exception e) {
 					logger.error("Error instanciating class : " + className);
 				}
