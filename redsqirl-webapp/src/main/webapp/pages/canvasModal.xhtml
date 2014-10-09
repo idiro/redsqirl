@@ -493,7 +493,7 @@
             </h:panelGrid>
          </rich:tab>
             
-            <rich:tab id="outputTab" label="#{messages.label_dynamic_data}" rerender="dataOutputForm,dataDisplayReg,titleDisplay,displayTableDiv" rendered="#{canvasModalBean.outputTab.showOutputForm == 'Y' }" >
+            <rich:tab id="outputTab" label="#{messages.label_dynamic_data}" rerender="dataOutputForm,dataDisplayReg,titleDisplay,displayTableDiv" rendered="#{canvasModalBean.outputTab.showOutputForm == 'Y' &amp;&amp; canvasBean.workflowType == 'W' }" >
                 
                 
                 <rich:panel id="dataOutputForm" style="height:465px;border:none;overflow:auto;padding-right: 3px;padding-left: 3px;">

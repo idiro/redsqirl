@@ -21,6 +21,7 @@ import com.redsqirl.dynamictable.SelectableRowFooter;
 import com.redsqirl.dynamictable.SelectableTable;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
+import com.redsqirl.workflow.utils.SuperActionManager;
 
 public class ConfigureTabsBean extends BaseBean implements Serializable {
 
@@ -107,11 +108,17 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	}
 
 	public void mountMenuActions() throws RemoteException, Exception {
-		logger.info("getMenuActions");
+		logger.info("mountMenuActions");
 		LinkedList<String> result = new LinkedList<String>();
 		for (Entry<String, String> e : allWANameWithClassName.entrySet()) {
 			result.add(e.getKey());
 		}
+
+		List<String> listSuperAction = new SuperActionManager().getAvailableSuperActions(System.getProperty("user.name"));
+		for (String name : listSuperAction) {
+			result.add(name);
+		}
+
 		setMenuActions(result);
 	}
 
