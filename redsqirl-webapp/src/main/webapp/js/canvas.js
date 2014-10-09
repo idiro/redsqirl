@@ -1379,6 +1379,7 @@ function mountObj(canvasName) {
                 var srcImageText = jQuery(this).attr("src");
                 
                 //label on footer
+                var nameObj = jQuery(this).next().text();
                 var labelText = jQuery(this).next().text();
                 var labelTextSize8 = labelText;
                 if(labelText.length > 8){
@@ -1472,6 +1473,7 @@ function mountObj(canvasName) {
                     document.body.style.cursor = 'default';
                     
                     var polygonTabFakeClone = polygonTabFake.clone();
+                    polygonTabFakeClone.name = nameObj;
                     polygonTabFakeClone.setAbsolutePosition(polygonTabFake.posInitX,polygonTabFake.posInitY);
                     layerTab.add(polygonTabFakeClone);
                     this.remove();
@@ -1484,6 +1486,7 @@ function mountObj(canvasName) {
                     document.body.style.cursor = 'default';
                     
                     var polygonTabFakeClone = polygonTabFake.clone();
+                    polygonTabFakeClone = nameObj;
                     polygonTabFakeClone.setAbsolutePosition(polygonTabFake.posInitX,polygonTabFake.posInitY);
                     layerTab.add(polygonTabFakeClone);
                     this.remove();
@@ -1495,17 +1498,16 @@ function mountObj(canvasName) {
 					jQuery(".tooltipCanvas").remove();
 				});
 
-				//polygonTab.name = "polygonTab";
-				//polygonTabFake.name = "polygonTabFake";
-				//typeLabel.name = "typeLabel";
 				
-				polygonTab.name = jQuery(this).next().text();
-				polygonTabFake.name = jQuery(this).next().text();
-				typeLabel.name = jQuery(this).next().text();
+				polygonTab.name = nameObj;
+				polygonTabFake.name = nameObj;
+				//typeLabel.name = nameObj;
 				
+				var polygonTabFakeC = polygonTabFake.clone();
+				polygonTabFakeC.name = nameObj;
 				
 				layerTab.add(polygonTab);
-				layerTab.add(polygonTabFake);
+				layerTab.add(polygonTabFakeC);
 				layerTab.add(typeLabel);
 
 				// jQuery( "#"+nameDiv ).find("img").remove();

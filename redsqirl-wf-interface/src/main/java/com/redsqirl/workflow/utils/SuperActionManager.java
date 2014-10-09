@@ -7,6 +7,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -20,9 +21,9 @@ import com.redsqirl.workflow.server.interfaces.SubDataFlow;
  *
  */
 public class SuperActionManager {
-	
+
 	private static Logger logger = Logger.getLogger(SuperActionManager.class);
-	
+
 	public String install(String user, SubDataFlow toInstall, Boolean privilege) throws RemoteException{
 		String name = toInstall.getName();
 		File mainDir = getSuperActionMainDir(user);
@@ -35,7 +36,7 @@ public class SuperActionManager {
 			logger.debug("Check installation file");
 			error = toInstall.check();
 		}
-		
+
 		if(error == null){
 			logger.debug("Save main file into: "+mainFile.getPath());
 			error = toInstall.saveLocal(mainFile, privilege);
@@ -65,48 +66,55 @@ public class SuperActionManager {
 				}
 			}
 		}
-		
+
 		return error;
 	}
-	
+
 	public List<String> getAvailableSuperActions(String user){
 		File sysSA = getSuperActionMainDir(null);
 		File userSA = getSuperActionMainDir(user);
 		final String pattern= "^[a-zA-Z0-9]*$";
 
-		List<String> ansL = Arrays.asList(
-				sysSA.list(new FilenameFilter() {
+		List<String> ansL = new LinkedList<String>();
+		try{
+			ansL.addAll(Arrays.asList(
+					sysSA.list(new FilenameFilter() {
 
-					@Override
-					public boolean accept(File arg0, String name) {
-						return name.matches(pattern) && name.startsWith("sa_");
-					}
-				}));
+						@Override
+						public boolean accept(File arg0, String name) {
+							return name.matches(pattern) && name.startsWith("sa_");
+						}
+					})));
+		} catch(Exception e){
+			logger.error(e);
+		}
+		try{
+			ansL.addAll(
+					Arrays.asList(
+							userSA.list(new FilenameFilter() {
 
-		ansL.addAll(
-				Arrays.asList(
-						userSA.list(new FilenameFilter() {
-
-							@Override
-							public boolean accept(File arg0, String name) {
-								return name.matches(pattern) && name.startsWith("sa_");
-							}
-						})));
-
+								@Override
+								public boolean accept(File arg0, String name) {
+									return name.matches(pattern) && name.startsWith("sa_");
+								}
+							})));
+		}catch(Exception e){
+			logger.error(e);
+		}
 		return ansL;
-		
+
 	}
-	
+
 	public String uninstall(String user, String name){
 		File mainFile = new File(getSuperActionMainDir(user),name);
 		File helpFile = new File(getSuperActionHelpDir(user),name+".html");
-		
+
 		mainFile.delete();
 		helpFile.delete();
-		
+
 		return null;
 	}
-	
+
 	public File getSuperActionMainDir(String user){
 		File ans = null;
 		if(user != null){
@@ -116,9 +124,9 @@ public class SuperActionManager {
 		}
 		logger.debug("Super action path for "+(user == null? "sys":user)+": "+ans.getPath());
 		return ans;
-		
+
 	}
-	
+
 	public File getSuperActionHelpDir(String user){
 		String tomcatpath = WorkflowPrefManager
 				.getSysProperty(WorkflowPrefManager.sys_tomcat_path);

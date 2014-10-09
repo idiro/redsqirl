@@ -439,4 +439,6 @@ public interface DataFlow extends Remote, Cloneable{
 	public boolean check(String outName, String componentIdOut, String inName,
 			String componentIdIn) throws RemoteException;
 
+	Map<String, String[]> getRelativeHelpSuperAction(File curPath) throws RemoteException;
+
 }

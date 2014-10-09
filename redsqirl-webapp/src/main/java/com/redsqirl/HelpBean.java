@@ -30,12 +30,13 @@ public class HelpBean extends BaseBean implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -7223013564153599958L;
-	
+
 	private static Logger logger = Logger.getLogger(HelpBean.class);
 	private List<String[]> helpHtml = null;
 	private String fieldSearch;
 	private List<String[]> result = new ArrayList<String[]>();
 	private List<String> listHelp = new ArrayList<String>();
+	private List<String[]> helpHtmlSuperAction = null;
 
 	public void calcHelpItens(){
 
@@ -48,49 +49,96 @@ public class HelpBean extends BaseBean implements Serializable {
 			}
 
 			DataFlow wf = getworkFlowInterface().getWorkflow("canvas-1");
-			Map<String,String[]> helpRel = null;
-			helpHtml = new LinkedList<String[]>();
-			try {
-				helpRel = wf.getRelativeHelp(getCurrentPage());
-				Iterator<String> it = helpRel.keySet().iterator();
-				while (it.hasNext()) {
-					String key = it.next();
-					String[] helpArray = new String[]{
-							key, 
-							WordUtils.capitalizeFully(key.replace("_", " ")),
-							helpRel.get(key)[0],
-							helpRel.get(key)[1]};
-					
-					helpHtml.add(helpArray);
-					listHelp.add(key);
-				}
-				Collections.sort(helpHtml, new Comparator<String[]>() {
 
-					@Override
-					public int compare(String[] o1, String[] o2) {
-						return o1[0].compareTo(o2[0]);
-					}
-				});
-			} catch (Exception e) {
-				logger.info("E");
-			}
+			mountRelativeHelp(wf);
+			
+			mountRelativeHelpSuperAction(wf);
 
 		} catch (RemoteException e) {
+			logger.error(e);
+		} catch (Exception e) {
 			logger.error(e);
 		}
 
 	}
 	
+	public void refreshRelativeHelp() throws Exception{
+		DataFlow wf = getworkFlowInterface().getWorkflow("canvas-1");
+		mountRelativeHelpSuperAction(wf);
+	}
+
+	public void mountRelativeHelp(DataFlow wf) throws Exception{
+
+		Map<String,String[]> helpRel = null;
+		helpHtml = new LinkedList<String[]>();
+		try {
+			helpRel = wf.getRelativeHelp(getCurrentPage());
+			Iterator<String> it = helpRel.keySet().iterator();
+			while (it.hasNext()) {
+				String key = it.next();
+				String[] helpArray = new String[]{
+						key, 
+						WordUtils.capitalizeFully(key.replace("_", " ")),
+						helpRel.get(key)[0],
+						helpRel.get(key)[1]};
+
+				helpHtml.add(helpArray);
+				listHelp.add(key);
+			}
+			Collections.sort(helpHtml, new Comparator<String[]>() {
+
+				@Override
+				public int compare(String[] o1, String[] o2) {
+					return o1[0].compareTo(o2[0]);
+				}
+			});
+		} catch (Exception e) {
+			logger.info("E");
+		}
+
+	}
+
+	public void mountRelativeHelpSuperAction(DataFlow wf) throws Exception{
+
+		Map<String,String[]> helpRel = null;
+		helpHtmlSuperAction = new LinkedList<String[]>();
+		try {
+			helpRel = wf.getRelativeHelpSuperAction(getCurrentPage());
+			Iterator<String> it = helpRel.keySet().iterator();
+			while (it.hasNext()) {
+				String key = it.next();
+				String[] helpArray = new String[]{
+						key, 
+						WordUtils.capitalizeFully(key.replace("_", " ")),
+						helpRel.get(key)[0],
+						helpRel.get(key)[1]};
+
+				helpHtmlSuperAction.add(helpArray);
+				listHelp.add(key);
+			}
+			Collections.sort(helpHtmlSuperAction, new Comparator<String[]>() {
+
+				@Override
+				public int compare(String[] o1, String[] o2) {
+					return o1[0].compareTo(o2[0]);
+				}
+			});
+		} catch (Exception e) {
+			logger.info("E");
+		}
+
+	}
+
 	public void helpSearch() throws Exception{
-		
+
 		logger.info("helpSearch");
-		
+
 		HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
 		String user = (String) session.getAttribute("username");
 		String indexResultPath = WorkflowPrefManager.getPathUserPref(user)+"/lucene/index";
 		File indexDir = new File(indexResultPath);
 		int hits = 100;
-		
+
 		SimpleSearcher searcher = new SimpleSearcher();
 		if(getFieldSearch() != null && !"".equals(getFieldSearch())){
 			logger.info("search " + getFieldSearch());
@@ -99,9 +147,9 @@ public class HelpBean extends BaseBean implements Serializable {
 		}else{
 			setResult(null);
 		}
-		
+
 	}
-	
+
 	public void mountListResult(List<String> list) throws Exception{
 		String newName ="";
 		File currentPage = getCurrentPage();
@@ -132,9 +180,13 @@ public class HelpBean extends BaseBean implements Serializable {
 	public final List<String[]> getHelpHtml() {
 		return helpHtml;
 	}
-	
+
 	public final int getHelpSize(){
 		return helpHtml.size();
+	}
+	
+	public final int getHelpSuperActionSize(){
+		return helpHtmlSuperAction.size();
 	}
 
 	public String getFieldSearch() {
@@ -159,6 +211,14 @@ public class HelpBean extends BaseBean implements Serializable {
 
 	public void setListHelp(List<String> listHelp) {
 		this.listHelp = listHelp;
+	}
+
+	public List<String[]> getHelpHtmlSuperAction() {
+		return helpHtmlSuperAction;
+	}
+
+	public void setHelpHtmlSuperAction(List<String[]> helpHtmlSuperAction) {
+		this.helpHtmlSuperAction = helpHtmlSuperAction;
 	}
 
 }

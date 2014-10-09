@@ -256,9 +256,34 @@
 		<h2>Available Actions (#{helpBean.helpSize})</h2>
 		<ul>
 		    <ui:repeat value="#{helpBean.helpHtml}" var="action">
-		    <li><img id="image_help_#{action[0]}" width="25px" src="#{action[3]}"/> <a class="stopLink" id="help_#{action[0]}" href="#{action[2]}" onclick="return false;">#{action[1]}</a></li>
+		    <li>
+		    	<img id="image_help_#{action[0]}" width="25px" src="#{action[3]}"/>
+		    	<a class="stopLink" id="help_#{action[0]}" href="#{action[2]}" onclick="return false;">#{action[1]}</a>
+		    </li>
 		    </ui:repeat>
 		</ul>
+
+		<table>
+			<tr>
+				<td>
+					<a4j:commandButton action="#{helpBean.refreshRelativeHelp}" reRender="helpHtmlSuperAction" 
+						image="../image/icons/button-refresh.gif" title='#{messages.button_refresh}' styleClass="fileSystemIcon"/>
+				</td>
+				<td>
+					<h2>Available Super Actions (#{helpBean.helpSuperActionSize})</h2>
+				</td>
+			</tr>
+		</table>
+		
+		<ul id="helpHtmlSuperAction">
+		    <ui:repeat value="#{helpBean.helpHtmlSuperAction}" var="action">
+		    <li>
+		    	<img id="image_help_#{action[0]}" width="25px" src="#{action[3]}"/>
+		    	<a class="stopLink" id="help_#{action[0]}" href="#{action[2]}" onclick="return false;">#{action[1]}</a>
+		    </li>
+		    </ui:repeat>
+		</ul>
+		
     </div>
     
     <div id="helpPanel" style="margin-top:5px;">

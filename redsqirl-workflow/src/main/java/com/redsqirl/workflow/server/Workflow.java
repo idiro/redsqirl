@@ -58,6 +58,7 @@ import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
+import com.redsqirl.workflow.utils.SuperActionManager;
 
 /**
  * Class that manages a workflow.
@@ -404,6 +405,54 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 								help.get(key)[0]),
 								LocalFileSystem.relativize(curPath,
 										help.get(key)[1]) });
+			} catch (Exception e) {
+				logger.error(e.getMessage());
+				logger.error("Error Getting relative paths for Help");
+			}
+		}
+		return ans;
+	}
+	
+	@Override
+	public Map<String, String[]> getRelativeHelpSuperAction(File curPath) {
+		Map<String, String[]> helpSuperAction = null;
+		if (helpSuperAction == null || helpSuperAction.isEmpty()) {
+			helpSuperAction = new LinkedHashMap<String, String[]>();
+			try {
+				Iterator<String> it = new SuperActionManager().getAvailableSuperActions(System.getProperty("user.name")).iterator();
+				while (it.hasNext()) {
+					String actionName = it.next();
+					try {
+						DataFlowElement dfe = new SuperAction(actionName);
+
+						helpSuperAction.put(actionName,
+								new String[] { dfe.getHelp(), dfe.getImage() });
+					} catch (Exception e) {
+						logger.error(LanguageManagerWF.getText(
+								"workflow.loadclassfail",
+								new Object[] { actionName }));
+					}
+				}
+			} catch (Exception e) {
+				logger.error(LanguageManagerWF
+						.getText("workflow.loadclassexception"));
+			}
+		}
+		if (curPath == null) {
+			return helpSuperAction;
+		}
+		logger.info("Load helpSuperAction " + curPath.getPath());
+		Map<String, String[]> ans = new LinkedHashMap<String, String[]>();
+		Iterator<String> helpit = helpSuperAction.keySet().iterator();
+		while (helpit.hasNext()) {
+			String key = helpit.next();
+			try {
+				ans.put(key,
+						new String[] {
+						LocalFileSystem.relativize(curPath,
+								helpSuperAction.get(key)[0]),
+								LocalFileSystem.relativize(curPath,
+										helpSuperAction.get(key)[1]) });
 			} catch (Exception e) {
 				logger.error(e.getMessage());
 				logger.error("Error Getting relative paths for Help");
