@@ -27,6 +27,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.utils.PackageManager;
@@ -154,10 +155,11 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		boolean admin = false;
 		try{
 			logger.debug("is admin");
-			FacesContext fCtx = FacesContext.getCurrentInstance();
-			HttpSession session = (HttpSession) fCtx.getExternalContext()
-					.getSession(false);
-			String user = (String) session.getAttribute("username");
+			FacesContext context = FacesContext.getCurrentInstance();
+			UserInfoBean userInfoBean = (UserInfoBean) context.getApplication()
+					.evaluateExpressionGet(context, "#{userInfoBean}",
+							UserInfoBean.class);
+			String user = userInfoBean.getUserName();
 			String[] admins = WorkflowPrefManager.getSysAdminUser();
 			if(admins != null){
 				for(String cur: admins){

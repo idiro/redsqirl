@@ -1,0 +1,62 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<a4j:loadBundle basename="MessagesResources" var="messages" />
+
+	<h:form>
+
+		<div id="domMessageDivModalSettings" style="display: none;">
+			<img src="../image/icons/waiting.gif" />
+		</div>
+
+		<a4j:region>
+			<a4j:status
+				onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModalSettings') });"
+				onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
+				onstop="jQuery.unblockUI();" />
+		</a4j:region>
+
+
+		<div style="width: 270px; height: 200px;">
+
+					<rich:panel id="installSubWfParams"
+						style="padding-left:5px; overflow: auto; height:200px;">
+
+
+							<h:form>
+								<br/>
+								<h:outputText value="Name" />
+								<br/>
+								<h:inputText value="#{subwfBean.name}"/>
+								<h:selectOneRadio id="subscriptions"
+									value="#{subwfBean.asSystem}"
+									disabled="!#{subwfBean.admin}">
+									<f:selectItem id="System" itemLabel="System" itemValue="System" />
+									<f:selectItem id="User" itemLabel="User" itemValue="User" />
+								</h:selectOneRadio>
+							</h:form>
+					</rich:panel>
+
+					<h:panelGrid columns="3">
+						<a4j:commandButton styleClass="greenButton"
+							value="#{messages.button_cancel}" type="button"
+							reRender="errorTable"
+							onclick="#{rich:component('modalSubWfInstall')}.hide();" />
+						<a4j:commandButton styleClass="greenButton"
+							value="Install" reRender="installSubWfParams,msnError,errorTable,msnErrorPage"
+							action="#{subwfBean.installCurrentSubWorkflow}" 
+							oncomplete="if(#{requestScope['msnError'] == null})#{rich:component('modalSubWfInstall')}.hide();"
+							/>
+					</h:panelGrid>
+
+
+
+		</div>
+
+	</h:form>
+
+</ui:composition>

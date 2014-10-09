@@ -5,30 +5,58 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:f="http://java.sun.com/jsf/core"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:rich="http://richfaces.org/rich"
-    xmlns:a4j="http://richfaces.org/a4j">
+	xmlns:a4j="http://richfaces.org/a4j">
 
 <a4j:loadBundle basename="MessagesResources" var="messages" />
 
 <head>
-<link rel="icon" type="image/gif" href="../image/logo_redsqirl_favicon.gif" />
-<link rel="stylesheet" type="text/css" href="#{facesContext.externalContext.requestContextPath}/css/jquery-ui.css" />
-<link rel="stylesheet" type="text/css" href="#{facesContext.externalContext.requestContextPath}/css/redsqirl.css" />
+<link rel="icon" type="image/gif"
+	href="../image/logo_redsqirl_favicon.gif" />
+<link rel="stylesheet" type="text/css"
+	href="#{facesContext.externalContext.requestContextPath}/css/jquery-ui.css" />
+<link rel="stylesheet" type="text/css"
+	href="#{facesContext.externalContext.requestContextPath}/css/redsqirl.css" />
 
-<script	src="#{facesContext.externalContext.requestContextPath}/js/jquery-1.9.1.js"	type="text/javascript" />
-<script	src="#{facesContext.externalContext.requestContextPath}/js/jquery.contextmenu.js" type="text/javascript" />
-<script	src="#{facesContext.externalContext.requestContextPath}/js/jquery-ui-1.10.0.custom.js" />
-<script	src="#{facesContext.externalContext.requestContextPath}/js/kinetic-v4.3.3.js" type="text/javascript" />
-<script	src="#{facesContext.externalContext.requestContextPath}/js/jquery.cookie.js" type="text/javascript" />
-<script	src="#{facesContext.externalContext.requestContextPath}/js/canvas.js" type="text/javascript" />
-<script	src="#{facesContext.externalContext.requestContextPath}/js/rs-history-engine.js" type="text/javascript" />
-<script	src="#{facesContext.externalContext.requestContextPath}/js/redsqirl.js" type="text/javascript" />
-<script	src="#{facesContext.externalContext.requestContextPath}/js/splitter.js"	type="text/javascript" />
-<script	src="#{facesContext.externalContext.requestContextPath}/js/scrollabletab.js" type="text/javascript" />
-<script	src="#{facesContext.externalContext.requestContextPath}/js/plusTabs.js"	type="text/javascript" />
-<script	src="#{facesContext.externalContext.requestContextPath}/js/jquery.blockUI.js" type="text/javascript" />
-<script	src="#{facesContext.externalContext.requestContextPath}/js/jquery.hotkeys.js" type="text/javascript" />
+<script
+	src="#{facesContext.externalContext.requestContextPath}/js/jquery-1.9.1.js"
+	type="text/javascript" />
+<script
+	src="#{facesContext.externalContext.requestContextPath}/js/jquery.contextmenu.js"
+	type="text/javascript" />
+<script
+	src="#{facesContext.externalContext.requestContextPath}/js/jquery-ui-1.10.0.custom.js" />
+<script
+	src="#{facesContext.externalContext.requestContextPath}/js/kinetic-v4.3.3.js"
+	type="text/javascript" />
+<script
+	src="#{facesContext.externalContext.requestContextPath}/js/jquery.cookie.js"
+	type="text/javascript" />
+<script
+	src="#{facesContext.externalContext.requestContextPath}/js/canvas.js"
+	type="text/javascript" />
+<script
+	src="#{facesContext.externalContext.requestContextPath}/js/rs-history-engine.js"
+	type="text/javascript" />
+<script
+	src="#{facesContext.externalContext.requestContextPath}/js/redsqirl.js"
+	type="text/javascript" />
+<script
+	src="#{facesContext.externalContext.requestContextPath}/js/splitter.js"
+	type="text/javascript" />
+<script
+	src="#{facesContext.externalContext.requestContextPath}/js/scrollabletab.js"
+	type="text/javascript" />
+<script
+	src="#{facesContext.externalContext.requestContextPath}/js/plusTabs.js"
+	type="text/javascript" />
+<script
+	src="#{facesContext.externalContext.requestContextPath}/js/jquery.blockUI.js"
+	type="text/javascript" />
+<script
+	src="#{facesContext.externalContext.requestContextPath}/js/jquery.hotkeys.js"
+	type="text/javascript" />
 
 <title><h:outputText value="#{messages.label_sistem}" /></title>
 
@@ -810,24 +838,28 @@
 
 	<div id="menu" style="width: 100%">
 		<h:form id="formMenu" class="menu">
-		
+
 			<div id="domMessageDivCanvas1" style="display: none;">
 				<img src="../image/icons/waiting.gif" />
 			</div>
-			
+
 			<a4j:region>
-                <a4j:jsFunction name="openModalSaveWorkflow" action="#{browserHdfsBean.createSaveFolder}" 
-                oncomplete="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });openModalFileHdfs('T');"/>
-				<a4j:jsFunction name="openModalLoadWorkflow" action="#{browserHdfsBean.createSaveFolder}" 
-				oncomplete="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });openModalFileHdfs('F');" />
-				<a4j:jsFunction name="openModalFileHdfs" reRender="modalFileHdfs" 
-				oncomplete="#{rich:component('modalFileHdfs')}.show();jQuery('#canvas-tabs').unblock();" >
-				    <a4j:actionparam name="openCtrl" assignTo="#{browserHdfsBean.showSave}"/>
+				<a4j:jsFunction name="openModalSaveWorkflow"
+					action="#{browserHdfsBean.createSaveFolder}"
+					oncomplete="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });openModalFileHdfs('T');" />
+				<a4j:jsFunction name="openModalLoadWorkflow"
+					action="#{browserHdfsBean.createSaveFolder}"
+					oncomplete="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });openModalFileHdfs('F');" />
+				<a4j:jsFunction name="openModalFileHdfs" reRender="modalFileHdfs"
+					oncomplete="#{rich:component('modalFileHdfs')}.show();jQuery('#canvas-tabs').unblock();">
+					<a4j:actionparam name="openCtrl"
+						assignTo="#{browserHdfsBean.showSave}" />
 				</a4j:jsFunction>
 			</a4j:region>
 
 			<a4j:region renderRegionOnly="true">
-				<a4j:jsFunction name="saveAllPositions" action="#{canvasBean.updateAllPosition}">
+				<a4j:jsFunction name="saveAllPositions"
+					action="#{canvasBean.updateAllPosition}">
 					<a4j:actionparam name="allpositions" />
 				</a4j:jsFunction>
 			</a4j:region>
@@ -850,8 +882,10 @@
 					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
-				<a4j:jsFunction name="reRenderFooter" oncomplete="mountFooter();" reRender="tabsFooterForm" />
-				<a4j:jsFunction name="mountFooter" oncomplete="configureFooter();mountObj('#{canvasBean.nameWorkflow}')" />
+				<a4j:jsFunction name="reRenderFooter" oncomplete="mountFooter();"
+					reRender="tabsFooterForm" />
+				<a4j:jsFunction name="mountFooter"
+					oncomplete="configureFooter();mountObj('#{canvasBean.nameWorkflow}')" />
 			</a4j:region>
 
 			<a4j:region>
@@ -861,58 +895,64 @@
 					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
-				<a4j:jsFunction name="updateOutputStatus" data="#{canvasBean.outputStatus}"
-					oncomplete="updateArcStatus(data);" reRender="errorTable, msnError" >
+				<a4j:jsFunction name="updateOutputStatus"
+					data="#{canvasBean.outputStatus}"
+					oncomplete="updateArcStatus(data);" reRender="errorTable, msnError">
 					<a4j:actionparam name="groupId" />
 				</a4j:jsFunction>
-	
+
 			</a4j:region>
-			
+
 			<a4j:region>
-                <a4j:status
-                    onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
-                    onerror="jQuery('#canvas-tabs').unblock();"
-                    onsuccess="jQuery('#canvas-tabs').unblock();"
-                    onstop="jQuery('#canvas-tabs').unblock();" />
+				<a4j:status
+					onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+					onerror="jQuery('#canvas-tabs').unblock();"
+					onsuccess="jQuery('#canvas-tabs').unblock();"
+					onstop="jQuery('#canvas-tabs').unblock();" />
 
-                <a4j:jsFunction name="updateSelectedOutputStatus" data="#{canvasBean.selectedOutputStatus}"
-                    oncomplete="updateArcStatus(data);" reRender="errorTable, msnError" >
-                    <a4j:actionparam name="select" />
-                </a4j:jsFunction>
-            </a4j:region>
-            
-            <a4j:region>
-                <a4j:status
-                    onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
-                    onerror="jQuery('#canvas-tabs').unblock();"
-                    onsuccess="jQuery('#canvas-tabs').unblock();"
-                    onstop="jQuery('#canvas-tabs').unblock();" />
-               
-               <a4j:jsFunction name="updateWfComment" action="#{canvasBean.updateWfComment}"
-                    oncomplete="updateWfDisplayComment()">
-                     <a4j:actionparam name="commentWf" assignTo="#{canvasBean.commentWf}"/>
-               </a4j:jsFunction>
-                    
-                <a4j:jsFunction name="updateWfDisplayComment" data="#{canvasBean.savedWfComment}"
-                    oncomplete="jQuery('.container-comment-'+getSelectedByName()).html(data);" reRender="errorTable, msnError" >
-                </a4j:jsFunction>
-            </a4j:region>
-            
-            
-           <a4j:region>
-                <a4j:status
-                    onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
-                    onerror="jQuery('#canvas-tabs').unblock();"
-                    onsuccess="jQuery('#canvas-tabs').unblock();"
-                    onstop="jQuery('#canvas-tabs').unblock();" />
+				<a4j:jsFunction name="updateSelectedOutputStatus"
+					data="#{canvasBean.selectedOutputStatus}"
+					oncomplete="updateArcStatus(data);" reRender="errorTable, msnError">
+					<a4j:actionparam name="select" />
+				</a4j:jsFunction>
+			</a4j:region>
 
-                <a4j:jsFunction name="openWorkflowElementUrl"
-                    action="#{canvasBean.calcWorkflowElementUrl}"
-                    data="#{canvasBean.workflowElementUrl}"
-                    oncomplete="window.open(data,'_blank')" reRender="errorTable">
-                    <a4j:actionparam name="groupId" />
-                </a4j:jsFunction>
-            </a4j:region>
+			<a4j:region>
+				<a4j:status
+					onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+					onerror="jQuery('#canvas-tabs').unblock();"
+					onsuccess="jQuery('#canvas-tabs').unblock();"
+					onstop="jQuery('#canvas-tabs').unblock();" />
+
+				<a4j:jsFunction name="updateWfComment"
+					action="#{canvasBean.updateWfComment}"
+					oncomplete="updateWfDisplayComment()">
+					<a4j:actionparam name="commentWf"
+						assignTo="#{canvasBean.commentWf}" />
+				</a4j:jsFunction>
+
+				<a4j:jsFunction name="updateWfDisplayComment"
+					data="#{canvasBean.savedWfComment}"
+					oncomplete="jQuery('.container-comment-'+getSelectedByName()).html(data);"
+					reRender="errorTable, msnError">
+				</a4j:jsFunction>
+			</a4j:region>
+
+
+			<a4j:region>
+				<a4j:status
+					onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+					onerror="jQuery('#canvas-tabs').unblock();"
+					onsuccess="jQuery('#canvas-tabs').unblock();"
+					onstop="jQuery('#canvas-tabs').unblock();" />
+
+				<a4j:jsFunction name="openWorkflowElementUrl"
+					action="#{canvasBean.calcWorkflowElementUrl}"
+					data="#{canvasBean.workflowElementUrl}"
+					oncomplete="window.open(data,'_blank')" reRender="errorTable">
+					<a4j:actionparam name="groupId" />
+				</a4j:jsFunction>
+			</a4j:region>
 
 			<a4j:region>
 				<a4j:status
@@ -923,7 +963,8 @@
 
 				<a4j:jsFunction name="updateAllArcsStatus"
 					data="#{canvasBean.allOutputStatus}"
-					oncomplete="updateArcStatus(data);jQuery('#canvas-tabs').unblock();" reRender="errorTable" />
+					oncomplete="updateArcStatus(data);jQuery('#canvas-tabs').unblock();"
+					reRender="errorTable" />
 			</a4j:region>
 
 			<a4j:region>
@@ -933,29 +974,36 @@
 					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
-				<a4j:jsFunction name="updateRunningStatus" data="#{canvasBean.runningStatus}"
-					oncomplete="updateCanvasRunningStatus(data);jQuery('#canvas-tabs').unblock();" reRender="errorTable, msnError" />
+				<a4j:jsFunction name="updateRunningStatus"
+					data="#{canvasBean.runningStatus}"
+					oncomplete="updateCanvasRunningStatus(data);jQuery('#canvas-tabs').unblock();"
+					reRender="errorTable, msnError" />
 			</a4j:region>
 
 			<a4j:region>
-				<a4j:jsFunction name="setWorkflow" action="#{canvasBean.changeWorkflow}"
+				<a4j:jsFunction name="setWorkflow"
+					action="#{canvasBean.changeWorkflow}"
 					oncomplete="setSelectedByName('#{canvasBean.nameWorkflow}');updateWfDisplayComment();verifyIfIsRunning(getSelectedByName());changeFooter(getSelectedByName());"
 					reRender="formMenu,domMessageDivCanvas2,killProcessBtn">
-					<a4j:actionparam name="selectedCanvas" assignTo="#{canvasBean.nameWorkflow}" />
+					<a4j:actionparam name="selectedCanvas"
+						assignTo="#{canvasBean.nameWorkflow}" />
 				</a4j:jsFunction>
 			</a4j:region>
 
 			<a4j:region>
-				<a4j:status onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+				<a4j:status
+					onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
 					onerror="jQuery('#canvas-tabs').unblock();"
 					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
-				<a4j:jsFunction name="addWorkflow" action="#{canvasBean.addWorkflow}">
+				<a4j:jsFunction name="addWorkflow"
+					action="#{canvasBean.addWorkflow}">
 					<a4j:actionparam name="name" />
 				</a4j:jsFunction>
-				
-				<a4j:jsFunction name="addSubWorkflow" action="#{canvasBean.addSubWorkflow}">
+
+				<a4j:jsFunction name="addSubWorkflow"
+					action="#{canvasBean.addSubWorkflow}">
 					<a4j:actionparam name="name" />
 				</a4j:jsFunction>
 			</a4j:region>
@@ -996,10 +1044,10 @@
 				<a4j:jsFunction name="addElementBt"
 					action="#{canvasBean.addElement}"
 					data="#{canvasBean.idLastElementInserted}"
-					oncomplete="tmpCommandObj.elementId = data;" >
+					oncomplete="tmpCommandObj.elementId = data;">
 					<a4j:actionparam name="paramNameElement" />
 					<a4j:actionparam name="paramGroupID" />
-                    <a4j:actionparam name="paramIdElement" />
+					<a4j:actionparam name="paramIdElement" />
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -1007,10 +1055,12 @@
 
 				<a4j:status
 					onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
-					onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
+					onerror="jQuery('#canvas-tabs').unblock();"
+					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
-				<a4j:jsFunction name="saveWorkflow" action="#{canvasBean.save}" reRender="errorTable"
+				<a4j:jsFunction name="saveWorkflow" action="#{canvasBean.save}"
+					reRender="errorTable"
 					oncomplete="if(document.getElementById('#{canvasBean.nameWorkflow}') == null){renameTab();} else {onHideModalSaveWorkflow(true);jQuery('#canvas-tabs').unblock();}">
 					<a4j:actionparam name="nameWorkflow" />
 					<a4j:actionparam name="pathFile" />
@@ -1019,19 +1069,20 @@
 					<a4j:actionparam name="workflowType" />
 				</a4j:jsFunction>
 			</a4j:region>
-            
-            <a4j:region>
-                <a4j:status
-                    onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
-                    onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
-                    onstop="jQuery('#canvas-tabs').unblock();" />
 
-                <a4j:jsFunction name="copy" action="#{canvasBean.copy}"
-                    reRender="errorTable">
-                    <a4j:actionparam name="select" />
-                </a4j:jsFunction>
-            </a4j:region>
-            
+			<a4j:region>
+				<a4j:status
+					onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+					onerror="jQuery('#canvas-tabs').unblock();"
+					onsuccess="jQuery('#canvas-tabs').unblock();"
+					onstop="jQuery('#canvas-tabs').unblock();" />
+
+				<a4j:jsFunction name="copy" action="#{canvasBean.copy}"
+					reRender="errorTable">
+					<a4j:actionparam name="select" />
+				</a4j:jsFunction>
+			</a4j:region>
+
 			<a4j:region>
 
 				<a4j:status onerror="jQuery('#canvas-tabs').unblock();" />
@@ -1054,12 +1105,16 @@
 				<a4j:status
 					onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });" />
 
-				<a4j:jsFunction name="addLinkModalBt" action="#{canvasBean.updateLinkPossibilities}"
+				<a4j:jsFunction name="addLinkModalBt"
+					action="#{canvasBean.updateLinkPossibilities}"
 					oncomplete="if(#{canvasBean.nbLinkPossibilities} == 1){addLinkWhenUniq();}else{jQuery('#canvas-tabs').unblock();#{rich:component('modalSelectLink')}.show();};"
 					reRender="selectLinkList">
-					<a4j:actionparam name="paramOutId" assignTo="#{canvasBean.paramOutId}" />
-					<a4j:actionparam name="paramInId" assignTo="#{canvasBean.paramInId}" />
-					<a4j:actionparam name="paramNameLink" assignTo="#{canvasBean.paramNameLink}" />
+					<a4j:actionparam name="paramOutId"
+						assignTo="#{canvasBean.paramOutId}" />
+					<a4j:actionparam name="paramInId"
+						assignTo="#{canvasBean.paramInId}" />
+					<a4j:actionparam name="paramNameLink"
+						assignTo="#{canvasBean.paramNameLink}" />
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -1083,7 +1138,8 @@
 					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
-				<a4j:jsFunction name="updateAllArrowColor" data="#{canvasBean.allArrows}"
+				<a4j:jsFunction name="updateAllArrowColor"
+					data="#{canvasBean.allArrows}"
 					oncomplete="updateAllArrowColours('#{canvasBean.nameWorkflow}', data)">
 				</a4j:jsFunction>
 
@@ -1121,7 +1177,7 @@
 					reRender="msnError, errorTable, newIdElement">
 					<a4j:actionparam name="paramGroupId" />
 					<a4j:actionparam name="paramPathImage" />
-                    <a4j:actionparam name="paramLoadMainWindow"  />
+					<a4j:actionparam name="paramLoadMainWindow" />
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -1139,7 +1195,7 @@
 
 			<a4j:region>
 				<a4j:jsFunction name="closeChangeIdModal"
-				    reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError, errorTable, canvasModalTabPanel"
+					reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError, errorTable, canvasModalTabPanel"
 					oncomplete="if(#{canvasModalBean.loadMainWindow}){changeModalTitle();changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');cloneBeforeUpdateElement();}else{updateOutputStatus(currentChangeIdGroup);}">
 				</a4j:jsFunction>
 			</a4j:region>
@@ -1154,7 +1210,7 @@
 				<a4j:jsFunction name="loadWorkflow" data="#{canvasBean.positions}"
 					oncomplete="addElementJs(data[0],data[1],data[2],data[3],data[4], true, data[5]);setRunning(getSelectedByName(), true);"
 					reRender="tabFlowchart,errorTable,msnError" />
-					
+
 			</a4j:region>
 
 			<a4j:region>
@@ -1204,22 +1260,24 @@
 				<div id="domMessageDivCanvas2" style="display: none;">
 					<img src="../image/icons/waiting.gif" />
 					<h:panelGroup id="right_area" layout="block">
-					    
-                        <h:outputLink id="workflowUrl" value="#{canvasBean.workflowUrl}" target="_blank" 
-                          style="float:left;margin-left:5px;" 
-                          rendered="#{canvasBean.workflowUrl != null}">
-                           <h:graphicImage  value="../image/icons/button-oozie_web_console.gif" 
-                                            title='#{messages.oozie_gotowebconsole}' 
-                                            alt="Oozie Console" class="fileSystemIcon"
-                           />
-                        </h:outputLink>
-						<a4j:commandButton id="killProcessBtn" styleClass="greenButton" style="float:right;margin-right:5px;" 
-						     value="Kill Process" action="#{canvasBean.stopRunningWorkflow}"
-							rendered="#{canvasBean.running}"/>
+
+						<h:outputLink id="workflowUrl" value="#{canvasBean.workflowUrl}"
+							target="_blank" style="float:left;margin-left:5px;"
+							rendered="#{canvasBean.workflowUrl != null}">
+							<h:graphicImage
+								value="../image/icons/button-oozie_web_console.gif"
+								title='#{messages.oozie_gotowebconsole}' alt="Oozie Console"
+								class="fileSystemIcon" />
+						</h:outputLink>
+						<a4j:commandButton id="killProcessBtn" styleClass="greenButton"
+							style="float:right;margin-right:5px;" value="Kill Process"
+							action="#{canvasBean.stopRunningWorkflow}"
+							rendered="#{canvasBean.running}" />
 					</h:panelGroup>
 				</div>
 
-				<a4j:jsFunction name="blockRunningWorkflow" action="#{canvasBean.blockRunningWorkflow}"
+				<a4j:jsFunction name="blockRunningWorkflow"
+					action="#{canvasBean.blockRunningWorkflow}"
 					oncomplete="jQuery('#'+getSelectedById()).unblock();if('#{canvasBean.blockingWorkflowName}' == getSelectedByName()){setRunning(getSelectedByName(), false);updateAllArcsStatus();}">
 				</a4j:jsFunction>
 
@@ -1261,383 +1319,445 @@
 					<a4j:actionparam name="allpositions" />
 				</a4j:jsFunction>
 			</a4j:region>
-			
+
 			<a4j:region>
 
 				<a4j:status
 					onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
-					onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
+					onerror="jQuery('#canvas-tabs').unblock();"
+					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
-					
-				<a4j:jsFunction name="deleteElements" action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}" 
-					oncomplete="tmpCommandObj.cloneId = data;deleteElementsJS(tmpCommandObj.selecteds, tmpCommandObj.selectedArrows)" >
+
+				<a4j:jsFunction name="deleteElements"
+					action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
+					oncomplete="tmpCommandObj.cloneId = data;deleteElementsJS(tmpCommandObj.selecteds, tmpCommandObj.selectedArrows)">
 					<a4j:actionparam name="allpositions" />
 				</a4j:jsFunction>
-				
-				<a4j:jsFunction name="replaceWFByClone" action="#{canvasBean.replaceWFByClone}"
-					oncomplete="rebuildJS();" reRender="errorTable,tabFlowchart" >
+
+				<a4j:jsFunction name="replaceWFByClone"
+					action="#{canvasBean.replaceWFByClone}" oncomplete="rebuildJS();"
+					reRender="errorTable,tabFlowchart">
 					<a4j:actionparam name="selectedItens" />
 					<a4j:actionparam name="idCloneMap" />
 					<a4j:actionparam name="keepClone" />
 				</a4j:jsFunction>
-					
+
 				<a4j:jsFunction name="rebuildJS" data="#{canvasBean.positions}"
 					oncomplete="addSelectedElement(data[0],data[1],data[2],data[3],data[4]);updateAllArrowColor();updateAllArcsStatus();"
 					reRender="tabFlowchart" />
-					
-			</a4j:region>
-			
-			<a4j:region>
-                <a4j:jsFunction name="showReplaceAllModal" reRender="errorTable"
-                    oncomplete="#{rich:component('modalReplaceAll')}.show()">
-                </a4j:jsFunction>
-            </a4j:region>
-			
-			<a4j:region>
-                <a4j:status
-                    onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
-                    onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
-                    onstop="jQuery('#canvas-tabs').unblock();" />
 
-                <a4j:jsFunction name="replaceAllJS" action="#{canvasBean.replaceAll}" reRender="errorTable" 
-                	oncomplete="updateSelectedElementLegend(tmpCommandObj.selecteds);updateAllArcsStatus();" >
-                    <a4j:actionparam name="select" />
-                    <a4j:actionparam name="oldStr" />
-                    <a4j:actionparam name="newStr" />
-                    <a4j:actionparam name="changeLabel" />
-                </a4j:jsFunction>
-				
-				<a4j:jsFunction name="rebuildElementsFromClone" action="#{canvasBean.replaceWFByClone}"
-					oncomplete="rebuildReplaceJS();" reRender="errorTable,tabFlowchart" >
+			</a4j:region>
+
+			<a4j:region>
+				<a4j:jsFunction name="showReplaceAllModal" reRender="errorTable"
+					oncomplete="#{rich:component('modalReplaceAll')}.show()">
+				</a4j:jsFunction>
+			</a4j:region>
+
+			<a4j:region>
+				<a4j:status
+					onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+					onerror="jQuery('#canvas-tabs').unblock();"
+					onsuccess="jQuery('#canvas-tabs').unblock();"
+					onstop="jQuery('#canvas-tabs').unblock();" />
+
+				<a4j:jsFunction name="replaceAllJS"
+					action="#{canvasBean.replaceAll}" reRender="errorTable"
+					oncomplete="updateSelectedElementLegend(tmpCommandObj.selecteds);updateAllArcsStatus();">
+					<a4j:actionparam name="select" />
+					<a4j:actionparam name="oldStr" />
+					<a4j:actionparam name="newStr" />
+					<a4j:actionparam name="changeLabel" />
+				</a4j:jsFunction>
+
+				<a4j:jsFunction name="rebuildElementsFromClone"
+					action="#{canvasBean.replaceWFByClone}"
+					oncomplete="rebuildReplaceJS();" reRender="errorTable,tabFlowchart">
 					<a4j:actionparam name="selectedItens" />
 					<a4j:actionparam name="idCloneMap" />
 					<a4j:actionparam name="keepClone" />
 				</a4j:jsFunction>
-					
-				<a4j:jsFunction name="rebuildReplaceJS" data="#{canvasBean.positions}"
+
+				<a4j:jsFunction name="rebuildReplaceJS"
+					data="#{canvasBean.positions}"
 					oncomplete="updateSelectedElementLegend(tmpCommandObj.selecteds);updateSelectedOutputStatus(tmpCommandObj.selecteds);"
 					reRender="tabFlowchart" />
 			</a4j:region>
-			
-			<a4j:region>
-                <a4j:status
-                    onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
-                    onerror="jQuery('#canvas-tabs').unblock();"
-                    onsuccess="jQuery('#canvas-tabs').unblock();"
-                    onstop="jQuery('#canvas-tabs').unblock();" />
 
-                <a4j:jsFunction name="updateSelectedElementLegend" data="#{canvasBean.selectedElementLegend}"
-                    oncomplete="updateObjsNameReplace(data);" reRender="errorTable, msnError" >
-                    <a4j:actionparam name="select" />
-                </a4j:jsFunction>
-            </a4j:region>
-			
 			<a4j:region>
 				<a4j:status
 					onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
-					onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
+					onerror="jQuery('#canvas-tabs').unblock();"
+					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
-					
-				<a4j:jsFunction name="replaceJS" action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
-					oncomplete="tmpCommandObj.cloneId = data; replaceAllJS(tmpCommandObj.selecteds, tmpCommandObj.oldStr, tmpCommandObj.newStr, tmpCommandObj.changeLabel );" >
+
+				<a4j:jsFunction name="updateSelectedElementLegend"
+					data="#{canvasBean.selectedElementLegend}"
+					oncomplete="updateObjsNameReplace(data);"
+					reRender="errorTable, msnError">
+					<a4j:actionparam name="select" />
+				</a4j:jsFunction>
+			</a4j:region>
+
+			<a4j:region>
+				<a4j:status
+					onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+					onerror="jQuery('#canvas-tabs').unblock();"
+					onsuccess="jQuery('#canvas-tabs').unblock();"
+					onstop="jQuery('#canvas-tabs').unblock();" />
+
+				<a4j:jsFunction name="replaceJS"
+					action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
+					oncomplete="tmpCommandObj.cloneId = data; replaceAllJS(tmpCommandObj.selecteds, tmpCommandObj.oldStr, tmpCommandObj.newStr, tmpCommandObj.changeLabel );">
 					<a4j:actionparam name="allpositions" />
 				</a4j:jsFunction>
 			</a4j:region>
-			
-			<a4j:region>
-                <a4j:status
-                    onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
-                    onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
-                    onstop="jQuery('#canvas-tabs').unblock();" />
-                    
-                <a4j:jsFunction name="cloneBeforeUpdateElement" action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
-                    oncomplete="cloneCommandUpdateElementBuffer = data;createOptionTitles();#{rich:component('canvasModalPanel')}.show();" >
-                    <a4j:actionparam name="allpositions" />
-                </a4j:jsFunction>
-                
-                <a4j:jsFunction name="cloneAfterUpdateElement" action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
-                    oncomplete="stackUpdateElement('#{canvasModalBean.idGroup}', cloneCommandUpdateElementBuffer,data);" >
-                    <a4j:actionparam name="allpositions" />
-                </a4j:jsFunction>
-            </a4j:region>
-			
+
 			<a4j:region>
 				<a4j:status
 					onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
-					onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
+					onerror="jQuery('#canvas-tabs').unblock();"
+					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
-					
-				<a4j:jsFunction name="removeCloneWorkflow" action="#{canvasBean.removeCloneWorkflow}" >
+
+				<a4j:jsFunction name="cloneBeforeUpdateElement"
+					action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
+					oncomplete="cloneCommandUpdateElementBuffer = data;createOptionTitles();#{rich:component('canvasModalPanel')}.show();">
+					<a4j:actionparam name="allpositions" />
+				</a4j:jsFunction>
+
+				<a4j:jsFunction name="cloneAfterUpdateElement"
+					action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
+					oncomplete="stackUpdateElement('#{canvasModalBean.idGroup}', cloneCommandUpdateElementBuffer,data);">
+					<a4j:actionparam name="allpositions" />
+				</a4j:jsFunction>
+			</a4j:region>
+
+			<a4j:region>
+				<a4j:status
+					onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+					onerror="jQuery('#canvas-tabs').unblock();"
+					onsuccess="jQuery('#canvas-tabs').unblock();"
+					onstop="jQuery('#canvas-tabs').unblock();" />
+
+				<a4j:jsFunction name="removeCloneWorkflow"
+					action="#{canvasBean.removeCloneWorkflow}">
 					<a4j:actionparam name="idCloneMap" />
 				</a4j:jsFunction>
 			</a4j:region>
-			
+
 			<a4j:region>
 				<a4j:status
 					onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
-					onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
+					onerror="jQuery('#canvas-tabs').unblock();"
+					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
-					
-				<a4j:jsFunction name="pasteCloneWorkflow" action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
-					oncomplete="tmpCommandObj.cloneId = data;" >
+
+				<a4j:jsFunction name="pasteCloneWorkflow"
+					action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
+					oncomplete="tmpCommandObj.cloneId = data;">
 					<a4j:actionparam name="allpositions" />
 				</a4j:jsFunction>
-				
-				<a4j:jsFunction name="undoPasteCloneWorkflow" action="#{canvasBean.replaceWFByClone}"
-					oncomplete="rebuildPasteJS();" reRender="errorTable,tabFlowchart" >
+
+				<a4j:jsFunction name="undoPasteCloneWorkflow"
+					action="#{canvasBean.replaceWFByClone}"
+					oncomplete="rebuildPasteJS();" reRender="errorTable,tabFlowchart">
 					<a4j:actionparam name="selectedItens" />
 					<a4j:actionparam name="idCloneMap" />
 					<a4j:actionparam name="keepClone" />
 				</a4j:jsFunction>
-					
+
 				<a4j:jsFunction name="rebuildPasteJS" data="#{canvasBean.positions}"
 					oncomplete="addSelectedElement(data[0],data[1],data[2],data[3],data[4]);updateAllArrowColor();updateAllArcsStatus();"
 					reRender="tabFlowchart" />
-				
-			</a4j:region>
-			
-			<a4j:region>
-                <a4j:status
-                    onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
-                    onerror="jQuery('#canvas-tabs').unblock();" onsuccess="jQuery('#canvas-tabs').unblock();"
-                    onstop="jQuery('#canvas-tabs').unblock();" />
 
-                <a4j:jsFunction name="pasteJS" action="#{canvasBean.paste}" data="#{canvasBean.idsToPaste}" reRender="errorTable"
-                    oncomplete="saveAllPositions(getAllIconPositions());rebuildJS(); tmpCommandObj.idsToPaste = data; pasteCloneWorkflow(getAllIconPositions());" />
-            </a4j:region>
-			
-			<a4j:region>
-				
-				<a4j:commandLink id="openCanvasScreenHdfs" action="#{hdfsBean.openCanvasScreen}" style="display:none;" reRender="fileSysGridForm"
-				onclick="jQuery('#tabs-7').block({ message: jQuery('#domMessageDiv7') });" oncomplete="jQuery('#tabs-7').unblock();onPageReady()" />
-				
-				<a4j:commandLink id="openCanvasScreenHive" action="#{hiveBean.openCanvasScreen}" style="display:none;" reRender="fileSysGridFormHive"
-				onclick="jQuery('#tabs-4').block({ message: jQuery('#domMessageDiv4') });" oncomplete="jQuery('#tabs-4').unblock();" />
-				
-				<a4j:commandLink id="openCanvasScreenSsh" action="#{sshBean.openCanvasScreen}" style="display:none;" reRender="tabs-8, tabRemote, fileSysGridFormSsh, fileSysGridFormSshTab"
-				onclick="jQuery('#tabs-8').block({ message: jQuery('#domMessageDiv8') });" oncomplete="jQuery('#tabs-8').unblock();resizeTables();" />
-				
-				<a4j:commandLink id="openCanvasScreenHdfsBrowser" action="#{browserHdfsBean.openCanvasScreen}" style="display:none;" />
-				
 			</a4j:region>
 
 			<a4j:region>
-			
-			    <table style="width:100%;display:block;background: none repeat scroll 0 0 #FFFFFF;">
-			    
-			        <tr style="width:100%;right:0px;position:relative;">
-			        <td style="max-width=105px;padding=0px;margin=0px;" >
-					    <a class="stopLink" id="help_main" onclick="return false;" href="../help/main.html">
-							<h:graphicImage id="logoImg" width="150px" url="../image/logo.png"/>
-					    </a>
-					</td>
-					<td style="width:100%;vertical-align:bottom;">
-					
-					<rich:toolBar>
-		
-						<rich:dropDownMenu>
-		
-							<f:facet name="label">
-								<h:panelGroup>
-									<h:outputText value="#{messages.label_menu_file}" />
-								</h:panelGroup>
-							</f:facet>
-							
-							<rich:menuGroup value="#{messages.label_menu_new}">
-								
-	                            <rich:menuItem id="newMenuItem" submitMode="none"
-									value="#{messages.label_menu_new_canvas}"
-									onclick="jQuery('#addtabCanvas').click();" >
-									<h:outputText value="Ctrl+N" class="menuItemHotKey"/>
-								</rich:menuItem>
-								<rich:menuItem id="newSubMenuItem" submitMode="none"
-									value="#{messages.label_menu_new_subcanvas}"
-									onclick="jQuery('#addsubtabCanvas').click();" >
-									<h:outputText value="Ctrl+N" class="menuItemHotKey"/>
-								</rich:menuItem>
-	
-							</rich:menuGroup>
-							
-							<rich:menuItem id="openMenuItem" submitMode="ajax"
-								value="#{messages.label_menu_open}"
-								onclick="openModalLoadWorkflow()"
-								rerender="hdfsfsOpenFile">
-								<h:outputText value="Ctrl+O" class="menuItemHotKey"/>
-							</rich:menuItem>
-							<rich:menuSeparator />
-							<rich:menuItem id="saveMenuItem" submitMode="ajax" value="#{messages.label_menu_save}" 
-								onclick="menuSave();" >
-								<h:outputText value="Ctrl+S" class="menuItemHotKey"/>
-							</rich:menuItem>
-							<rich:menuItem id="saveAsMenuItem" submitMode="ajax" value="#{messages.label_menu_saveas}" 
-								onclick="openModalSaveWorkflow()" >
-								<h:outputText value="Ctrl+Alt+X" class="menuItemHotKey"/>
-							</rich:menuItem>
-							<rich:menuItem id="saveAllMenuItem" submitMode="ajax" value="#{messages.label_menu_saveall}" 
-								onclick="saveAll();" >
-								<h:outputText value="Ctrl+Shift+S" class="menuItemHotKey"/>
-							</rich:menuItem>
-							<rich:menuSeparator />
-							<rich:menuItem id="closeMenuItem" submitMode="none"
-								value="#{messages.label_menu_close}" onclick="menuCloseTab();" >
-								<h:outputText value="Ctrl+W" class="menuItemHotKey"/>
-							</rich:menuItem>
-							<rich:menuItem id="closeAllMenuItem" submitMode="ajax"
-								value="#{messages.label_menu_closeall}" onclick="closeAll();" >
-								<h:outputText value="Ctrl+Shift+W" class="menuItemHotKey"/>
-							</rich:menuItem>
-	
-						</rich:dropDownMenu>
-		
-						<rich:dropDownMenu>
-	
-							<f:facet name="label">
-								<h:panelGroup>
-									<h:outputText value="#{messages.label_menu_edit}" />
-								</h:panelGroup>
-							</f:facet>
-							<rich:menuItem id="selectAllMenuItem" submitMode="none"
-								value="#{messages.label_menu_selectall}" onclick="selectAll(getSelectedByName());" >
-								<h:outputText value="Ctrl+A" class="menuItemHotKey"/>
-							</rich:menuItem>
-							<rich:menuItem id="deselectAllMenuItem" submitMode="none"
-								value="#{messages.label_menu_deselectall}"
-								onclick="deselectAll(getSelectedByName());" >
-								<h:outputText value="Ctrl+Shift+A" class="menuItemHotKey"/>
-							</rich:menuItem>
-							<rich:menuSeparator />
-                            <rich:menuItem id="copyMenuItem" submitMode="ajax" value="#{messages.label_menu_copy}" 
-                                onclick="saveAllPositions(getAllIconPositions());copy(getSelectedIconsCommaDelimited());" >
-                                <!-- <h:outputText value="Ctrl+C" class="menuItemHotKey"/> -->
-                            </rich:menuItem>
-                            <rich:menuItem id="pasteMenuItem" submitMode="ajax" value="#{messages.label_menu_paste}" 
-                                onclick="paste(getSelectedByName());" >
-                                <!-- <h:outputText value="Ctrl+V" class="menuItemHotKey"/> -->
-                            </rich:menuItem>
-                            <rich:menuSeparator />
-                            <rich:menuItem id="undoMenuItem" submitMode="ajax" value="#{messages.label_menu_undo}" 
-                                onclick="undo();" >
-                            </rich:menuItem>
-                            <rich:menuItem id="redoMenuItem" submitMode="ajax" value="#{messages.label_menu_redo}" 
-                                onclick="redo();" >
-                            </rich:menuItem>
-                            <rich:menuSeparator />
-                            <rich:menuItem id="replaceMenuItem" submitMode="ajax" value="#{messages.label_menu_replace}" 
-                                onclick="showReplaceAllModal();" >
-                                <h:outputText value="Ctrl+R" class="menuItemHotKey"/>
-                            </rich:menuItem>
-							<rich:menuSeparator />
-							<rich:menuItem submitMode="none"
-								value="#{messages.label_menu_delete}" onclick="deleteSelected(getSelectedByName());" >
-								<h:outputText value="Del" class="menuItemHotKey"/>
-							</rich:menuItem>
-		
-						</rich:dropDownMenu>
-		
-						<rich:dropDownMenu>
-		
-							<f:facet name="label">
-								<h:panelGroup>
-									<h:outputText value="#{messages.label_menu_project}" />
-								</h:panelGroup>
-							</f:facet>
-	
-							<rich:menuItem id="oozieMenuItem" submitMode="none">
-								<h:outputLink value="#{canvasBean.workflowUrl}" style="font-size:13px;" target="_blank">#{messages.label_menu_see_oozie_job}</h:outputLink>
-							</rich:menuItem>
-	
-							<rich:menuSeparator />
-		
-							<rich:menuItem id="runMenuItem" submitMode="ajax"
-								value="#{messages.label_menu_runitems}"
-								onclick="var sels=getSelectedIconsCommaDelimited();if(sels.length > 0){runWorkflow(getIconPositions(),getPathFile(getSelectedByName()),sels)}else{alert('#{messages.run_nothing_selected}')}"
-								reRender="formMenu,domMessageDivCanvas2,killProcessBtn">
-								<h:outputText value="Ctrl+Alt+R" class="menuItemHotKey"/>
-							</rich:menuItem>
-	
-							<rich:menuItem id="runSelectedMenuItem" submitMode="ajax"
-								value="#{messages.label_menu_runproject}"
-								onclick="runWorkflow(getIconPositions(),getPathFile(getSelectedByName()))"
-								reRender="formMenu,domMessageDivCanvas2,killProcessBtn">
-								<h:outputText value="Ctrl+R" class="menuItemHotKey"/>
-							</rich:menuItem>
-	                        
-                            <rich:menuSeparator />
-	                        
-                            <rich:menuItem id="wfeditorMenuItem" submitMode="ajax"
-                                value="#{messages.label_menu_editorWfcomment}"
-                                oncomplete="#{rich:component('modalWfEditor')}.show()" 
-                                reRender="wfEditor">
-                            </rich:menuItem>
-                            
-							<rich:menuSeparator />
-	
-							<rich:menuItem id="cleanMenuItem" submitMode="ajax"
-								value="#{messages.label_menu_clean_project}"
-								action="#{canvasBean.cleanCanvasProject}"
-								oncomplete="updateAllArcsStatus();" >
-								<h:outputText value="Ctrl+L" class="menuItemHotKey"/>
-							</rich:menuItem>
-	
-							<rich:menuGroup value="#{messages.label_menu_generate}">
-	                            <rich:menuItem submitMode="ajax"
-                                    value="#{messages.label_menu_regenerate_project}"
-                                    action="#{canvasBean.regeneratePathsProject}"
-                                    oncomplete="updateAllArcsStatus();" />
-                                    
-                                <rich:menuItem submitMode="ajax"
-                                    value="#{messages.label_menu_regeneratemove_project}"
-                                    action="#{canvasBean.regeneratePathsProjectMove}"
-                                    oncomplete="updateAllArcsStatus();" />
-	
-								<rich:menuItem submitMode="ajax"
-									value="#{messages.label_menu_regeneratecopy_project}"
-									action="#{canvasBean.regeneratePathsProjectCopy}"
-									oncomplete="updateAllArcsStatus();" />
-	
-							</rich:menuGroup>
-							
-							<rich:menuSeparator />
-							
-							<rich:menuItem id="installSubWorkflow" submitMode="ajax"
-								value="#{messages.label_menu_install_sub_workflow}"	>
-								<h:outputText value="Ctrl+I" class="menuItemHotKey"/>
-							</rich:menuItem>
-		
-						</rich:dropDownMenu>
-						
-						<rich:dropDownMenu>
-		
-							<f:facet name="label">
-								<h:panelGroup>
-									<h:outputText value="#{messages.label_menu_software}" />
-								</h:panelGroup>
-							</f:facet>
-							
-							<rich:menuItem id="installationMenuItem" submitMode="ajax"
-								value="#{messages.label_menu_package}"
-								onclick="openPackageModal();">
-								<h:outputText value="Ctrl+I" class="menuItemHotKey"/>
-							</rich:menuItem>
-							
-							<rich:menuItem id="settingsMenuItem" submitMode="ajax"
-                                value="#{messages.label_setting_modal}"
-                                onclick="#{rich:component('modalSettings')}.show();">
-                                <h:outputText value="Ctrl+Alt+P" class="menuItemHotKey"/>
-                            </rich:menuItem>
-							
-						</rich:dropDownMenu>
-						
-		
-						<rich:toolBarGroup location="right">
-						
-						  <a4j:commandButton value="#{messages.label_menu_signout}"
-                            styleClass="signoutButton"
-                            onclick="saveAllPositions(getAllIconPositions());jQuery.blockUI({ message: jQuery('#domMessageDivCanvas1') });signOut();"
-                            ajax="true" />
-                       
-                                
-						    <!-- Restart does not work
+				<a4j:status
+					onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+					onerror="jQuery('#canvas-tabs').unblock();"
+					onsuccess="jQuery('#canvas-tabs').unblock();"
+					onstop="jQuery('#canvas-tabs').unblock();" />
+
+				<a4j:jsFunction name="pasteJS" action="#{canvasBean.paste}"
+					data="#{canvasBean.idsToPaste}" reRender="errorTable"
+					oncomplete="saveAllPositions(getAllIconPositions());rebuildJS(); tmpCommandObj.idsToPaste = data; pasteCloneWorkflow(getAllIconPositions());" />
+			</a4j:region>
+
+			<a4j:region>
+
+				<a4j:commandLink id="openCanvasScreenHdfs"
+					action="#{hdfsBean.openCanvasScreen}" style="display:none;"
+					reRender="fileSysGridForm"
+					onclick="jQuery('#tabs-7').block({ message: jQuery('#domMessageDiv7') });"
+					oncomplete="jQuery('#tabs-7').unblock();onPageReady()" />
+
+				<a4j:commandLink id="openCanvasScreenHive"
+					action="#{hiveBean.openCanvasScreen}" style="display:none;"
+					reRender="fileSysGridFormHive"
+					onclick="jQuery('#tabs-4').block({ message: jQuery('#domMessageDiv4') });"
+					oncomplete="jQuery('#tabs-4').unblock();" />
+
+				<a4j:commandLink id="openCanvasScreenSsh"
+					action="#{sshBean.openCanvasScreen}" style="display:none;"
+					reRender="tabs-8, tabRemote, fileSysGridFormSsh, fileSysGridFormSshTab"
+					onclick="jQuery('#tabs-8').block({ message: jQuery('#domMessageDiv8') });"
+					oncomplete="jQuery('#tabs-8').unblock();resizeTables();" />
+
+				<a4j:commandLink id="openCanvasScreenHdfsBrowser"
+					action="#{browserHdfsBean.openCanvasScreen}" style="display:none;" />
+
+			</a4j:region>
+
+			<a4j:region>
+
+				<table
+					style="width: 100%; display: block; background: none repeat scroll 0 0 #FFFFFF;">
+
+					<tr style="width: 100%; right: 0px; position: relative;">
+						<td style=""><a class="stopLink" id="help_main"
+							onclick="return false;" href="../help/main.html"> <h:graphicImage
+									id="logoImg" width="150px" url="../image/logo.png" />
+						</a></td>
+						<td style="width: 100%; vertical-align: bottom;"><rich:toolBar>
+
+								<rich:dropDownMenu>
+
+									<f:facet name="label">
+										<h:panelGroup>
+											<h:outputText value="#{messages.label_menu_file}" />
+										</h:panelGroup>
+									</f:facet>
+
+									<rich:menuGroup value="#{messages.label_menu_new}">
+
+										<rich:menuItem id="newMenuItem" submitMode="none"
+											value="#{messages.label_menu_new_canvas}"
+											onclick="jQuery('#addtabCanvas').click();">
+											<h:outputText value="Ctrl+N" class="menuItemHotKey" />
+										</rich:menuItem>
+										<rich:menuItem id="newSubMenuItem" submitMode="none"
+											value="#{messages.label_menu_new_subcanvas}"
+											onclick="jQuery('#addsubtabCanvas').click();">
+											<h:outputText value="Ctrl+N" class="menuItemHotKey" />
+										</rich:menuItem>
+
+									</rich:menuGroup>
+
+									<rich:menuItem id="openMenuItem" submitMode="ajax"
+										value="#{messages.label_menu_open}"
+										onclick="openModalLoadWorkflow()" rerender="hdfsfsOpenFile">
+										<h:outputText value="Ctrl+O" class="menuItemHotKey" />
+									</rich:menuItem>
+									<rich:menuSeparator />
+									<rich:menuItem id="saveMenuItem" submitMode="ajax"
+										value="#{messages.label_menu_save}" onclick="menuSave();">
+										<h:outputText value="Ctrl+S" class="menuItemHotKey" />
+									</rich:menuItem>
+									<rich:menuItem id="saveAsMenuItem" submitMode="ajax"
+										value="#{messages.label_menu_saveas}"
+										onclick="openModalSaveWorkflow()">
+										<h:outputText value="Ctrl+Alt+X" class="menuItemHotKey" />
+									</rich:menuItem>
+									<rich:menuItem id="saveAllMenuItem" submitMode="ajax"
+										value="#{messages.label_menu_saveall}" onclick="saveAll();">
+										<h:outputText value="Ctrl+Shift+S" class="menuItemHotKey" />
+									</rich:menuItem>
+									<rich:menuSeparator />
+									<rich:menuItem id="closeMenuItem" submitMode="none"
+										value="#{messages.label_menu_close}" onclick="menuCloseTab();">
+										<h:outputText value="Ctrl+W" class="menuItemHotKey" />
+									</rich:menuItem>
+									<rich:menuItem id="closeAllMenuItem" submitMode="ajax"
+										value="#{messages.label_menu_closeall}" onclick="closeAll();">
+										<h:outputText value="Ctrl+Shift+W" class="menuItemHotKey" />
+									</rich:menuItem>
+
+								</rich:dropDownMenu>
+
+								<rich:dropDownMenu>
+
+									<f:facet name="label">
+										<h:panelGroup>
+											<h:outputText value="#{messages.label_menu_edit}" />
+										</h:panelGroup>
+									</f:facet>
+									<rich:menuItem id="selectAllMenuItem" submitMode="none"
+										value="#{messages.label_menu_selectall}"
+										onclick="selectAll(getSelectedByName());">
+										<h:outputText value="Ctrl+A" class="menuItemHotKey" />
+									</rich:menuItem>
+									<rich:menuItem id="deselectAllMenuItem" submitMode="none"
+										value="#{messages.label_menu_deselectall}"
+										onclick="deselectAll(getSelectedByName());">
+										<h:outputText value="Ctrl+Shift+A" class="menuItemHotKey" />
+									</rich:menuItem>
+									<rich:menuSeparator />
+									<rich:menuItem id="copyMenuItem" submitMode="ajax"
+										value="#{messages.label_menu_copy}"
+										onclick="saveAllPositions(getAllIconPositions());copy(getSelectedIconsCommaDelimited());">
+										<!-- <h:outputText value="Ctrl+C" class="menuItemHotKey"/> -->
+									</rich:menuItem>
+									<rich:menuItem id="pasteMenuItem" submitMode="ajax"
+										value="#{messages.label_menu_paste}"
+										onclick="paste(getSelectedByName());">
+										<!-- <h:outputText value="Ctrl+V" class="menuItemHotKey"/> -->
+									</rich:menuItem>
+									<rich:menuSeparator />
+									<rich:menuItem id="undoMenuItem" submitMode="ajax"
+										value="#{messages.label_menu_undo}" onclick="undo();">
+									</rich:menuItem>
+									<rich:menuItem id="redoMenuItem" submitMode="ajax"
+										value="#{messages.label_menu_redo}" onclick="redo();">
+									</rich:menuItem>
+									<rich:menuSeparator />
+									<rich:menuItem id="replaceMenuItem" submitMode="ajax"
+										value="#{messages.label_menu_replace}"
+										onclick="showReplaceAllModal();">
+										<h:outputText value="Ctrl+R" class="menuItemHotKey" />
+									</rich:menuItem>
+									<rich:menuSeparator />
+									<rich:menuItem submitMode="none"
+										value="#{messages.label_menu_delete}"
+										onclick="deleteSelected(getSelectedByName());">
+										<h:outputText value="Del" class="menuItemHotKey" />
+									</rich:menuItem>
+
+								</rich:dropDownMenu>
+
+								<rich:dropDownMenu>
+
+									<f:facet name="label">
+										<h:panelGroup>
+											<h:outputText value="#{messages.label_menu_project}" />
+										</h:panelGroup>
+									</f:facet>
+
+									<rich:menuItem id="oozieMenuItem" submitMode="none">
+										<h:outputLink value="#{canvasBean.workflowUrl}"
+											style="font-size:13px;" target="_blank">#{messages.label_menu_see_oozie_job}</h:outputLink>
+									</rich:menuItem>
+
+									<rich:menuSeparator />
+
+									<rich:menuItem id="runMenuItem" submitMode="ajax"
+										value="#{messages.label_menu_runitems}"
+										onclick="var sels=getSelectedIconsCommaDelimited();if(sels.length > 0){runWorkflow(getIconPositions(),getPathFile(getSelectedByName()),sels)}else{alert('#{messages.run_nothing_selected}')}"
+										reRender="formMenu,domMessageDivCanvas2,killProcessBtn"
+										disabled="#{canvasBean.workflowType == 'S'}">
+										<h:outputText value="Ctrl+Alt+R" class="menuItemHotKey" />
+									</rich:menuItem>
+
+									<rich:menuItem id="runSelectedMenuItem" submitMode="ajax"
+										value="#{messages.label_menu_runproject}"
+										onclick="runWorkflow(getIconPositions(),getPathFile(getSelectedByName()))"
+										reRender="formMenu,domMessageDivCanvas2,killProcessBtn"
+										disabled="#{canvasBean.workflowType == 'S'}">
+										<h:outputText value="Ctrl+R" class="menuItemHotKey" />
+									</rich:menuItem>
+
+									<rich:menuSeparator />
+
+									<rich:menuItem id="wfeditorMenuItem" submitMode="ajax"
+										value="#{messages.label_menu_editorWfcomment}"
+										oncomplete="#{rich:component('modalWfEditor')}.show()"
+										reRender="wfEditor">
+									</rich:menuItem>
+
+									<rich:menuSeparator />
+
+									<rich:menuItem id="cleanMenuItem" submitMode="ajax"
+										value="#{messages.label_menu_clean_project}"
+										action="#{canvasBean.cleanCanvasProject}"
+										oncomplete="updateAllArcsStatus();"
+										disabled="#{canvasBean.workflowType == 'S'}">
+										<h:outputText value="Ctrl+L" class="menuItemHotKey" />
+									</rich:menuItem>
+
+									<rich:menuGroup value="#{messages.label_menu_generate}"
+										disabled="#{canvasBean.workflowType == 'S'}">
+										<rich:menuItem submitMode="ajax"
+											value="#{messages.label_menu_regenerate_project}"
+											action="#{canvasBean.regeneratePathsProject}"
+											oncomplete="updateAllArcsStatus();" />
+
+										<rich:menuItem submitMode="ajax"
+											value="#{messages.label_menu_regeneratemove_project}"
+											action="#{canvasBean.regeneratePathsProjectMove}"
+											oncomplete="updateAllArcsStatus();" />
+
+										<rich:menuItem submitMode="ajax"
+											value="#{messages.label_menu_regeneratecopy_project}"
+											action="#{canvasBean.regeneratePathsProjectCopy}"
+											oncomplete="updateAllArcsStatus();" />
+
+									</rich:menuGroup>
+
+								</rich:dropDownMenu>
+
+								<rich:dropDownMenu>
+
+									<f:facet name="label">
+										<h:panelGroup>
+											<h:outputText value="#{messages.label_menu_software}" />
+										</h:panelGroup>
+									</f:facet>
+									<rich:menuGroup value="#{messages.label_menu_subworkflow}"
+										>
+										<rich:menuItem id="installSubWorkflow" submitMode="ajax"
+											value="#{messages.label_menu_install_sub_workflow}"
+											disabled="#{canvasBean.workflowType == 'W'}"
+											onclick="#{rich:component('modalSubWfInstall')}.show();"
+											action="#{subwfBean.mountSubName}"
+											>
+											<h:outputText value="Ctrl+I" class="menuItemHotKey" />
+											<f:param name="subWorkflowName" value="#{canvasBean.nameWorkflow}" />
+										</rich:menuItem>
+										<rich:menuItem id="uninstallSubWorkflow" submitMode="ajax"
+											value="#{messages.label_menu_uninstall_sub_workflow}">
+											<h:outputText value="Ctrl+I" class="menuItemHotKey" />
+										</rich:menuItem>
+										<rich:menuItem id="installSubWorkflowHDFS" submitMode="ajax"
+											value="#{messages.label_menu_import_sub_workflowfrom_hdfs}">
+											<h:outputText value="Ctrl+I" class="menuItemHotKey" />
+										</rich:menuItem>
+										<rich:menuItem id="exportSubWorkflowHDFS" submitMode="ajax"
+											value="#{messages.label_menu_export_sub_workflowto_hdfs}"
+											disabled="#{canvasBean.workflowType == 'W'}">
+											<h:outputText value="Ctrl+I" class="menuItemHotKey" />
+										</rich:menuItem>
+									</rich:menuGroup>
+									<rich:menuItem id="installationMenuItem" submitMode="ajax"
+										value="#{messages.label_menu_package}"
+										onclick="openPackageModal();">
+										<h:outputText value="Ctrl+I" class="menuItemHotKey" />
+									</rich:menuItem>
+
+									<rich:menuItem id="settingsMenuItem" submitMode="ajax"
+										value="#{messages.label_setting_modal}"
+										onclick="#{rich:component('modalSettings')}.show();">
+										<h:outputText value="Ctrl+Alt+P" class="menuItemHotKey" />
+									</rich:menuItem>
+									<rich:menuSeparator />
+									<rich:menuItem id="aboutMenuItem" submitMode="ajax"
+										value="#{messages.label_menu_about}"
+										disable="true">
+										<h:outputText value="Ctrl+Alt+P" class="menuItemHotKey" />
+									</rich:menuItem>
+
+								</rich:dropDownMenu>
+
+
+								<rich:toolBarGroup location="right">
+
+									<a4j:commandButton value="#{messages.label_menu_signout}"
+										styleClass="signoutButton"
+										onclick="saveAllPositions(getAllIconPositions());jQuery.blockUI({ message: jQuery('#domMessageDivCanvas1') });signOut();"
+										ajax="true" />
+
+
+									<!-- Restart does not work
 							<rich:dropDownMenu value="#{messages.label_menu_signout}">
 		
 								<f:facet name="label">
@@ -1656,26 +1776,24 @@
 		
 							</rich:dropDownMenu>
 							-->
-						</rich:toolBarGroup>
-		
-					</rich:toolBar>
-					
-					
-					
-                    </td>
-                    </tr>
-                </table>
-                
-                
-					
-                
-                
-                
+								</rich:toolBarGroup>
+
+							</rich:toolBar></td>
+					</tr>
+				</table>
+
+
+
+
+
+
 
 			</a4j:region>
 
-			<a4j:jsFunction name="signOut" action="#{userInfoBean.goToSignOut}" oncomplete="jQuery.unblockUI();" />
-			<a4j:jsFunction name="reStart" action="#{userInfoBean.goToSignOut}" oncomplete="jQuery.unblockUI();" />
+			<a4j:jsFunction name="signOut" action="#{userInfoBean.goToSignOut}"
+				oncomplete="jQuery.unblockUI();" />
+			<a4j:jsFunction name="reStart" action="#{userInfoBean.goToSignOut}"
+				oncomplete="jQuery.unblockUI();" />
 
 		</h:form>
 	</div>
@@ -1683,72 +1801,88 @@
 	<div id="mainPanelDiv">
 
 
-	<div id="splitVCanvas">
+		<div id="splitVCanvas">
 
 			<div id="tabFlowchart">
-				<ul class="ulCss" id="ulTabFlowchart" style="width:100%;min-width:600px;">
+				<ul class="ulCss" id="ulTabFlowchart"
+					style="width: 100%; min-width: 600px;">
 
-					<li class="locked">
-						<a href="#tabFlowchart-1" id="idtabFlowchart-1" onclick="jQuery('#helpmain_canvas').click();return false;">
-							<h:outputText value="#{messages.label_tab_flowchart}" />
-						</a>
-					</li>
-                    <li class="locked">
-                    	<a href="#tabs-8" id="idtabs-8" onclick="jQuery('#helpmain_ssh').click();return false;" >
-                    		<h:outputText value="#{messages.label_tab_remotefilesystem}" />
-                    	</a>
-                    </li>
+					<li class="locked"><a href="#tabFlowchart-1"
+						id="idtabFlowchart-1"
+						onclick="jQuery('#helpmain_canvas').click();return false;"> <h:outputText
+								value="#{messages.label_tab_flowchart}" />
+					</a></li>
+					<li class="locked"><a href="#tabs-8" id="idtabs-8"
+						onclick="jQuery('#helpmain_ssh').click();return false;"> <h:outputText
+								value="#{messages.label_tab_remotefilesystem}" />
+					</a></li>
 					<button id="changeTabCanvas" style="border: hidden;">&#9660;</button>
-					
-					
+
+
 					<div class="divMenuImage">
-						<span style="cursor:pointer;">
-							<img src="../image/icons/button-open.gif" alt="open" class="shortMenuIcon" onclick="openModalLoadWorkflow()" title="#{messages.label_menu_open}" />
+						<span style="cursor: pointer;"> <img
+							src="../image/icons/button-open.gif" alt="open"
+							class="shortMenuIcon" onclick="openModalLoadWorkflow()"
+							title="#{messages.label_menu_open}" />
+						</span> <span style="cursor: pointer;"> <img
+							src="../image/icons/button-save.gif" alt="save"
+							class="shortMenuIcon" onclick="menuSave()"
+							title="#{messages.label_menu_save}" />
+						</span> <span style="cursor: pointer;"> <img
+							src="../image/icons/button-save_as.gif" alt="saveas"
+							class="shortMenuIcon" onclick="openModalSaveWorkflow();"
+							title="#{messages.label_menu_saveas}" />
+						</span> <span style="cursor: pointer;"> <img
+							src="../image/icons/button-save_all.gif" alt="saveall"
+							class="shortMenuIcon" onclick="saveAll();"
+							title="#{messages.label_menu_saveall}" />
+						</span> <span style="cursor: pointer;"> <img
+							src="../image/icons/button-copy.gif" alt="copy"
+							class="shortMenuIcon"
+							onclick="saveAllPositions(getAllIconPositions());copy(getSelectedIconsCommaDelimited());"
+							title="#{messages.label_menu_copy}" />
+						</span> <span style="cursor: pointer;"> <img
+							src="../image/icons/button-paste.gif" alt="paste"
+							class="shortMenuIcon" onclick="paste(getSelectedByName());"
+							title="#{messages.label_menu_paste}" />
+						</span> <span style="cursor: pointer;"> <img
+							src="../image/icons/button-undo.gif" id="buttonundo"
+							alt="#{messages.label_menu_undo}" class="shortMenuIcon"
+							onclick="undo();" title="#{messages.label_menu_undo}" />
+						</span> <span style="cursor: pointer;"> <img
+							src="../image/icons/button-redo.gif" id="buttonredo"
+							alt="#{messages.label_menu_redo}" class="shortMenuIcon"
+							onclick="redo();" title="#{messages.label_menu_redo}" />
 						</span>
-						<span style="cursor:pointer;">
-							<img src="../image/icons/button-save.gif" alt="save" class="shortMenuIcon" onclick="menuSave()" title="#{messages.label_menu_save}" />
-						</span>
-						<span style="cursor:pointer;">
-							<img src="../image/icons/button-save_as.gif" alt="saveas" class="shortMenuIcon" onclick="openModalSaveWorkflow();" title="#{messages.label_menu_saveas}" />
-						</span>
-						<span style="cursor:pointer;">
-							<img src="../image/icons/button-save_all.gif" alt="saveall" class="shortMenuIcon" onclick="saveAll();" title="#{messages.label_menu_saveall}" />
-						</span>
-                        <span style="cursor:pointer;">
-                            <img src="../image/icons/button-copy.gif" alt="copy" class="shortMenuIcon" onclick="saveAllPositions(getAllIconPositions());copy(getSelectedIconsCommaDelimited());" title="#{messages.label_menu_copy}" />
-                        </span>
-                        <span style="cursor:pointer;">
-                            <img src="../image/icons/button-paste.gif" alt="paste" class="shortMenuIcon" onclick="paste(getSelectedByName());" title="#{messages.label_menu_paste}" />
-                        </span>
-                        <span style="cursor:pointer;">
-                            <img src="../image/icons/button-undo.gif" id="buttonundo" alt="#{messages.label_menu_undo}" class="shortMenuIcon" onclick="undo();" title="#{messages.label_menu_undo}" />
-                        </span>
-                        <span style="cursor:pointer;">
-                            <img src="../image/icons/button-redo.gif" id="buttonredo" alt="#{messages.label_menu_redo}" class="shortMenuIcon" onclick="redo();" title="#{messages.label_menu_redo}" />
-                        </span>
 					</div>
-					
+
 
 				</ul>
 				<div id="tabFlowchart-1">
 
 					<div id="canvas-tabs">
-						<ul class="ulCssCanvas removeDefaults topBanner" style="width:100%;">
-							<li class="locked canvasTabsInactive"><a href="#flowchart-canvas-1" class="canvasTab"
+						<ul class="ulCssCanvas removeDefaults topBanner"
+							style="width: 100%;">
+							<li class="locked canvasTabsInactive"><a
+								href="#flowchart-canvas-1" class="canvasTab"
 								onclick="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('canvas-1');">canvas-1</a>
-								<span id="canvas-1-icon-close" class="ui-icon ui-icon-close " role="presentation"
-								onclick="closeWorkflowTab(this,'canvas-1')"></span>
+								<span id="canvas-1-icon-close" class="ui-icon ui-icon-close "
+								role="presentation" onclick="closeWorkflowTab(this,'canvas-1')"></span>
 							</li>
-							<img src="../image/icons/button-new_canvas.gif" alt="add" style="width: 25px; padding-top: 2px;" id="addtabCanvas" />
-							<img src="../image/icons/button-new_canvas.gif" alt="add" style="display:none" id="addsubtabCanvas" />
+							<img src="../image/icons/button-new_canvas.gif" alt="add"
+								style="width: 25px; padding-top: 2px;" id="addtabCanvas" />
+							<img src="../image/icons/button-new_canvas.gif" alt="add"
+								style="display: none" id="addsubtabCanvas" />
 						</ul>
 
 						<span id="buttonsCanvas1" class="spanButtons">
 							<button class="buttonsArrowsLeft">
-								<img src="../image/icons/button-left_arrow.gif" style="width: 30px;" />
+								<img src="../image/icons/button-left_arrow.gif"
+									style="width: 30px;" />
 							</button>
 							<button class="buttonsArrowsRight">
-								<img src="../image/icons/button-right_arrow.gif" style="width: 30px;" />
+								<img src="../image/icons/button-right_arrow.gif"
+									style="width: 30px;" />
 							</button>
 						</span>
 
@@ -1769,54 +1903,59 @@
 									</div>
 								</div>
 								<div class="rich-panel headerComment"
-                                    onclick="jQuery('#container-comment-canvas-1').toggle();jQuery('#panelLegend-canvas-1').hide();return false;"
-                                    style="left:82px;position: fixed; z-index: 101; width: 60px">
-                                    <div class="rich-panel-header">Comment</div>
-                                </div>
-                                <div id="container-comment-canvas-1" class="rich-panel container-comment-canvas-1"
-                                    style="overflow: auto;position: fixed; z-index: 100; display: none; width: 330px; height:400px;resize:both;">
-                                </div>
+									onclick="jQuery('#container-comment-canvas-1').toggle();jQuery('#panelLegend-canvas-1').hide();return false;"
+									style="left: 82px; position: fixed; z-index: 101; width: 60px">
+									<div class="rich-panel-header">Comment</div>
+								</div>
+								<div id="container-comment-canvas-1"
+									class="rich-panel container-comment-canvas-1"
+									style="overflow: auto; position: fixed; z-index: 100; display: none; width: 330px; height: 400px; resize: both;">
+								</div>
 							</div>
 
 						</div>
 						<h:panelGroup id="tabsFooterForm">
 							<div id="tabsFooter">
-								<ul class="canvasFooter" style="width:100%;min-width:400px;">
+								<ul class="canvasFooter" style="width: 100%; min-width: 400px;">
 
-									<ui:repeat value="#{configureTabsBean.tabs}" var="tab" varStatus="status">
-										<li class="locked footerTab"><a href="#tabFooter-#{tab}" >#{tab}</a></li>
+									<ui:repeat value="#{configureTabsBean.tabs}" var="tab"
+										varStatus="status">
+										<li class="locked footerTab"><a href="#tabFooter-#{tab}">#{tab}</a></li>
 									</ui:repeat>
-									
+
 									<h:form>
-									
+
 										<a4j:region>
-											<a4j:commandButton image="../image/icons/button-property.gif" title="#{messages.label_property_button}"
+											<a4j:commandButton image="../image/icons/button-property.gif"
+												title="#{messages.label_property_button}"
 												action="#{configureTabsBean.openCanvasScreen}"
 												oncomplete="#{rich:component('modalConfigureFooterTabs')}.show();document.getElementById('helpmain_actfooter').click();"
-												style="border: hidden;width:35px;vertical-align:middle;" styleClass="configureFooterButton"/>
+												style="border: hidden;width:35px;vertical-align:middle;"
+												styleClass="configureFooterButton" />
 										</a4j:region>
-									
+
 									</h:form>
-									
+
 								</ul>
 
 								<span id="buttonsTabsFooter" class="spanButtons">
 									<button class="buttonsArrowsLeft">
-										<img src="../image/icons/button-left_arrow.gif" style="width: 30px;" />
+										<img src="../image/icons/button-left_arrow.gif"
+											style="width: 30px;" />
 									</button>
 									<button class="buttonsArrowsRight">
-										<img src="../image/icons/button-right_arrow.gif" style="width: 30px;" />
+										<img src="../image/icons/button-right_arrow.gif"
+											style="width: 30px;" />
 									</button>
 								</span>
 
 								<ui:repeat value="#{configureTabsBean.menuWAList}" var="tab">
-									<div id="tabFooter-#{tab.key}" style=" overflow-y:hidden;">
-											<ui:repeat value="#{tab.value}" var="action">
-												<span id="spanImagensObj" style="display: none"> <img
-													src="#{action[1]}" class="footerIcon" />
-													<span>#{action[0]}</span>
-												</span>
-											</ui:repeat>
+									<div id="tabFooter-#{tab.key}" style="overflow-y: hidden;">
+										<ui:repeat value="#{tab.value}" var="action">
+											<span id="spanImagensObj" style="display: none"> <img
+												src="#{action[1]}" class="footerIcon" /> <span>#{action[0]}</span>
+											</span>
+										</ui:repeat>
 									</div>
 								</ui:repeat>
 							</div>
@@ -1825,175 +1964,173 @@
 					</div>
 
 				</div>
-				                
-                <div id="tabs-8">
-                    <a4j:region>
 
-                        <a4j:status
-                            onstart="jQuery('#tabs-8').block({ message: jQuery('#domMessageDiv8') });"
-                            onerror="jQuery('#tabs-8').unblock();"
-                            onsuccess="jQuery('#tabs-8').unblock();"
-                            onstop="jQuery('#tabs-8').unblock();" />
-
-                        <div id="domMessageDiv8" style="display: none;">
-							<img src="../image/icons/waiting.gif" />
-						</div>
-
-                        <h:panelGroup>
-                            <ui:include src="/pages/ssh/sshfileSystemGrid.xhtml" />
-                        </h:panelGroup>
-                    </a4j:region>
-                </div>
-			</div>
-
-
-		<div id="splitHCanvas">
-			<div id="tabs1">
-				<ul class="ulCss" id="ulTabs1">
-
-					<li>
-						<a href="#tabs-1" onclick="jQuery('#helpmain_help').click();return false;" >
-							<h:outputText value="#{messages.label_tab_help}" />
-						</a>
-					</li>
-					<li>
-						<a href="#tabs-2" onclick="jQuery('#helpmain_procman').click();return false;">
-							<h:outputText value="#{messages.label_tab_processmanager}" />
-						</a>
-					</li>
-					<li>
-						<a href="#tabs-3" onclick="jQuery('#helpmain_error').click();return false;">
-							<h:outputText value="#{messages.label_tab_error}" />
-						</a>
-					</li>
-
-					<button id="changeTabTabs1" style="border: hidden;">&#9660;</button>
-
-				</ul>
-
-				<span id="buttonsTabs1" class="spanButtons">
-					<button class="buttonsArrowsLeft">
-						<h:graphicImage width="30px" value="../image/icons/button-left_arrow.gif"/>
-					</button>
-					<button class="buttonsArrowsRight">
-						<h:graphicImage width="30px" value="../image/icons/button-right_arrow.gif"/>
-					</button>
-				</span>
-
-				<div id="tabs-1"  class="tabBorder">
+				<div id="tabs-8">
 					<a4j:region>
 
 						<a4j:status
-							onstart="jQuery('#tabs-1').block({ message: jQuery('#domMessageDiv1') });"
-							onerror="jQuery('#tabs-1').unblock();"
-							onsuccess="jQuery('#tabs-1').unblock();"
-							onstop="jQuery('#tabs-1').unblock();" />
+							onstart="jQuery('#tabs-8').block({ message: jQuery('#domMessageDiv8') });"
+							onerror="jQuery('#tabs-8').unblock();"
+							onsuccess="jQuery('#tabs-8').unblock();"
+							onstop="jQuery('#tabs-8').unblock();" />
 
-						<div id="domMessageDiv1" style="display: none;">
-							<img src="../image/icons/waiting.gif" />
-						</div>
-
-						<h:panelGroup >
-							<ui:include src="/pages/help.xhtml" />
-						</h:panelGroup>
-					</a4j:region>
-				</div>
-				<div id="tabs-2"   class="tabBorder" style="overflow:hidden;">
-					<a4j:region>
-
-						<a4j:status
-							onstart="jQuery('#tabs-2').block({ message: jQuery('#domMessageDiv2') });"
-							onerror="jQuery('#tabs-2').unblock();"
-							onsuccess="jQuery('#tabs-2').unblock();"
-							onstop="jQuery('#tabs-2').unblock();" />
-
-						<div id="domMessageDiv2"  style="display: none;">
+						<div id="domMessageDiv8" style="display: none;">
 							<img src="../image/icons/waiting.gif" />
 						</div>
 
 						<h:panelGroup>
-							<ui:include src="/pages/processManager.xhtml" />
+							<ui:include src="/pages/ssh/sshfileSystemGrid.xhtml" />
 						</h:panelGroup>
 					</a4j:region>
-				</div>
-				<div id="tabs-3"   class="tabBorder" style="overflow:hidden;">
-
-					<h:panelGroup>
-						<ui:include src="/pages/errorCanvas.xhtml" />
-					</h:panelGroup>
-
 				</div>
 			</div>
 
 
-			<div id="tabs2">
-				<ul class="ulCss" id="ulTabs2">
-					<li>
-						<a href="#tabs-7" onclick="jQuery('#helpmain_hdfs').click();return false;">
-							<h:outputText value="#{messages.label_tab_hadoopfilesystem}" />
-						</a>
-					</li>
-                    <li>
-                    	<a href="#tabs-4" onclick="jQuery('#helpmain_hive').click();return false;">
-                    		<h:outputText value="#{messages.label_tab_hiveview}" />
-                    	</a>
-                    </li>
-                    
+			<div id="splitHCanvas">
+				<div id="tabs1">
+					<ul class="ulCss" id="ulTabs1">
 
-					<button id="changeTabTabs2" style="border: hidden;">&#9660;</button>
+						<li><a href="#tabs-1"
+							onclick="jQuery('#helpmain_help').click();return false;"> <h:outputText
+									value="#{messages.label_tab_help}" />
+						</a></li>
+						<li><a href="#tabs-2"
+							onclick="jQuery('#helpmain_procman').click();return false;">
+								<h:outputText value="#{messages.label_tab_processmanager}" />
+						</a></li>
+						<li><a href="#tabs-3"
+							onclick="jQuery('#helpmain_error').click();return false;"> <h:outputText
+									value="#{messages.label_tab_error}" />
+						</a></li>
 
-				</ul>
+						<button id="changeTabTabs1" style="border: hidden;">&#9660;</button>
 
-				<span id="buttonsTabs2" class="spanButtons">
-					<button class="buttonsArrowsLeft">
-						<h:graphicImage width="30px" value="../image/icons/button-left_arrow.gif"/>
-					</button>
-					<button class="buttonsArrowsRight">
-						<h:graphicImage width="30px" value="../image/icons/button-right_arrow.gif"/>
-					</button>
-				</span>
+					</ul>
 
-				<div id="tabs-7" class="tabBorder" style="overflow:hidden;">
-					<a4j:region>
+					<span id="buttonsTabs1" class="spanButtons">
+						<button class="buttonsArrowsLeft">
+							<h:graphicImage width="30px"
+								value="../image/icons/button-left_arrow.gif" />
+						</button>
+						<button class="buttonsArrowsRight">
+							<h:graphicImage width="30px"
+								value="../image/icons/button-right_arrow.gif" />
+						</button>
+					</span>
 
-						<a4j:status
-							onstart="jQuery('#tabs-7').block({ message: jQuery('#domMessageDiv7') });"
-							onerror="jQuery('#tabs-7').unblock();"
-							onsuccess="jQuery('#tabs-7').unblock();"
-							onstop="jQuery('#tabs-7').unblock();" />
+					<div id="tabs-1" class="tabBorder">
+						<a4j:region>
 
-						<div id="domMessageDiv7" style="display: none;" >
-							<img  src="../image/icons/waiting.gif" />
-						</div>
+							<a4j:status
+								onstart="jQuery('#tabs-1').block({ message: jQuery('#domMessageDiv1') });"
+								onerror="jQuery('#tabs-1').unblock();"
+								onsuccess="jQuery('#tabs-1').unblock();"
+								onstop="jQuery('#tabs-1').unblock();" />
+
+							<div id="domMessageDiv1" style="display: none;">
+								<img src="../image/icons/waiting.gif" />
+							</div>
+
+							<h:panelGroup>
+								<ui:include src="/pages/help.xhtml" />
+							</h:panelGroup>
+						</a4j:region>
+					</div>
+					<div id="tabs-2" class="tabBorder" style="overflow: hidden;">
+						<a4j:region>
+
+							<a4j:status
+								onstart="jQuery('#tabs-2').block({ message: jQuery('#domMessageDiv2') });"
+								onerror="jQuery('#tabs-2').unblock();"
+								onsuccess="jQuery('#tabs-2').unblock();"
+								onstop="jQuery('#tabs-2').unblock();" />
+
+							<div id="domMessageDiv2" style="display: none;">
+								<img src="../image/icons/waiting.gif" />
+							</div>
+
+							<h:panelGroup>
+								<ui:include src="/pages/processManager.xhtml" />
+							</h:panelGroup>
+						</a4j:region>
+					</div>
+					<div id="tabs-3" class="tabBorder" style="overflow: hidden;">
 
 						<h:panelGroup>
-							<ui:include src="/pages/hdfs/hdfsfileSystemGrid.xhtml" />
+							<ui:include src="/pages/errorCanvas.xhtml" />
 						</h:panelGroup>
-					</a4j:region>
+
+					</div>
 				</div>
-                <div id="tabs-4"  class="tabBorder" style="overflow:hidden;">
-                    <a4j:region>
 
-                        <a4j:status
-                            onstart="jQuery('#tabs-4').block({ message: jQuery('#domMessageDiv4') });"
-                            onerror="jQuery('#tabs-4').unblock();"
-                            onsuccess="jQuery('#tabs-4').unblock();"
-                            />
 
-                        <div id="domMessageDiv4" style="display: none;" >
-                            <img  src="../image/icons/waiting.gif" />
-                        </div>
+				<div id="tabs2">
+					<ul class="ulCss" id="ulTabs2">
+						<li><a href="#tabs-7"
+							onclick="jQuery('#helpmain_hdfs').click();return false;"> <h:outputText
+									value="#{messages.label_tab_hadoopfilesystem}" />
+						</a></li>
+						<li><a href="#tabs-4"
+							onclick="jQuery('#helpmain_hive').click();return false;"> <h:outputText
+									value="#{messages.label_tab_hiveview}" />
+						</a></li>
 
-                        <h:panelGroup>
-                           <ui:include src="/pages/hive/hivefileSystemGrid.xhtml" />
-                        </h:panelGroup>
-                    </a4j:region>
-                </div>
-                
+
+						<button id="changeTabTabs2" style="border: hidden;">&#9660;</button>
+
+					</ul>
+
+					<span id="buttonsTabs2" class="spanButtons">
+						<button class="buttonsArrowsLeft">
+							<h:graphicImage width="30px"
+								value="../image/icons/button-left_arrow.gif" />
+						</button>
+						<button class="buttonsArrowsRight">
+							<h:graphicImage width="30px"
+								value="../image/icons/button-right_arrow.gif" />
+						</button>
+					</span>
+
+					<div id="tabs-7" class="tabBorder" style="overflow: hidden;">
+						<a4j:region>
+
+							<a4j:status
+								onstart="jQuery('#tabs-7').block({ message: jQuery('#domMessageDiv7') });"
+								onerror="jQuery('#tabs-7').unblock();"
+								onsuccess="jQuery('#tabs-7').unblock();"
+								onstop="jQuery('#tabs-7').unblock();" />
+
+							<div id="domMessageDiv7" style="display: none;">
+								<img src="../image/icons/waiting.gif" />
+							</div>
+
+							<h:panelGroup>
+								<ui:include src="/pages/hdfs/hdfsfileSystemGrid.xhtml" />
+							</h:panelGroup>
+						</a4j:region>
+					</div>
+					<div id="tabs-4" class="tabBorder" style="overflow: hidden;">
+						<a4j:region>
+
+							<a4j:status
+								onstart="jQuery('#tabs-4').block({ message: jQuery('#domMessageDiv4') });"
+								onerror="jQuery('#tabs-4').unblock();"
+								onsuccess="jQuery('#tabs-4').unblock();" />
+
+							<div id="domMessageDiv4" style="display: none;">
+								<img src="../image/icons/waiting.gif" />
+							</div>
+
+							<h:panelGroup>
+								<ui:include src="/pages/hive/hivefileSystemGrid.xhtml" />
+							</h:panelGroup>
+						</a4j:region>
+					</div>
+
+				</div>
+
 			</div>
-
 		</div>
-	</div>
 	</div>
 
 	<a4j:region>
@@ -2012,7 +2149,9 @@
 	</a4j:region>
 
 	<a4j:region>
-		<rich:modalPanel id="modalConfigureFooterTabs" width="800" height="420" style="overflow:auto;" resizeable="false" styleClass="noMaskClass">
+		<rich:modalPanel id="modalConfigureFooterTabs" width="800"
+			height="420" style="overflow:auto;" resizeable="false"
+			styleClass="noMaskClass">
 
 			<f:facet name="header">Configuration</f:facet>
 			<f:facet name="controls">
@@ -2021,26 +2160,29 @@
 					onclick="#{rich:component('modalConfigureFooterTabs')}.hide()" />
 			</f:facet>
 
-				<h:panelGroup>
-					<a4j:include viewId="/pages/configureFooterTabs.xhtml" ajaxRendered="true" />
-				</h:panelGroup>
+			<h:panelGroup>
+				<a4j:include viewId="/pages/configureFooterTabs.xhtml"
+					ajaxRendered="true" />
+			</h:panelGroup>
 
 		</rich:modalPanel>
 	</a4j:region>
 
 	<a4j:region>
-		<rich:modalPanel id="modalFileHdfs" width="620" height="430" style="overflow:hide;" resizeable="false">
+		<rich:modalPanel id="modalFileHdfs" width="620" height="430"
+			style="overflow:hide;" resizeable="false">
 
-			<f:facet name="header" >Hadoop Distributed File System Browser</f:facet>
+			<f:facet name="header">Hadoop Distributed File System Browser</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
 					style="cursor:pointer;width:22px;"
 					onclick="#{rich:component('modalFileHdfs')}.hide()" />
 			</f:facet>
 
-            <h:form>
+			<h:form>
 				<h:panelGroup>
-					<a4j:include viewId="/pages/modalFileHdfs.xhtml" ajaxRendered="true" />
+					<a4j:include viewId="/pages/modalFileHdfs.xhtml"
+						ajaxRendered="true" />
 				</h:panelGroup>
 			</h:form>
 
@@ -2071,92 +2213,102 @@
 		<rich:modalPanel id="modalChangeId" width="300" height="235"
 			style="overflow:auto;" resizeable="true" zindex="2000">
 
-			<f:facet name="header" >Change Element Id</f:facet>
+			<f:facet name="header">Change Element Id</f:facet>
 
 			<h:form>
 				<h:panelGroup>
-					<a4j:include viewId="/pages/modalChangeId.xhtml" ajaxRendered="true" />
+					<a4j:include viewId="/pages/modalChangeId.xhtml"
+						ajaxRendered="true" />
 				</h:panelGroup>
 			</h:form>
 
 		</rich:modalPanel>
 	</a4j:region>
-	
+
 	<a4j:region>
-        <rich:modalPanel id="modalWfEditor" width="800" height="600" domElementAttachment="parent" 
-            style="overflow:auto;" resizeable="true" zindex="2000">
+		<rich:modalPanel id="modalWfEditor" width="800" height="600"
+			domElementAttachment="parent" style="overflow:auto;"
+			resizeable="true" zindex="2000">
 
-            <f:facet name="header" >Workflow Editor</f:facet>
-            <f:facet name="controls">
-                <h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-                    style="cursor:pointer;width:22px;"
-                    onclick="#{rich:component('modalWfEditor')}.hide()" />
-            </f:facet>
-            
-            <h:form>
-                <rich:panel>
-                <rich:editor 
-                        id="wfEditor" value="#{canvasBean.commentWf}" 
-                        theme="advanced" width="765" height="500">
-                    <f:param name="theme_advanced_toolbar_location" value="top"/>
-                </rich:editor>
-                
-                <rich:panel style="margin-top:8px; border:none; float:right;" >
-                
-                    <a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" oncomplete="#{rich:component('modalWfEditor')}.hide()" />
-                    <a4j:commandButton value="#{messages.button_save}" onclick="#{rich:component('modalWfEditor')}.hide();" styleClass="greenButton" 
-                            oncomplete="execChangeCommentWfCommand('#{canvasBean.savedWfComment}', '#{canvasBean.commentWf}');" />
-                
-                </rich:panel>
-                </rich:panel>
-            </h:form>
-                
-        </rich:modalPanel>
-    </a4j:region>
-	
+			<f:facet name="header">Workflow Editor</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+					style="cursor:pointer;width:22px;"
+					onclick="#{rich:component('modalWfEditor')}.hide()" />
+			</f:facet>
+
+			<h:form>
+				<rich:panel>
+					<rich:editor id="wfEditor" value="#{canvasBean.commentWf}"
+						theme="advanced" width="765" height="500">
+						<f:param name="theme_advanced_toolbar_location" value="top" />
+					</rich:editor>
+
+					<rich:panel style="margin-top:8px; border:none; float:right;">
+
+						<a4j:commandButton styleClass="greenButton"
+							value="#{messages.button_cancel}"
+							oncomplete="#{rich:component('modalWfEditor')}.hide()" />
+						<a4j:commandButton value="#{messages.button_save}"
+							onclick="#{rich:component('modalWfEditor')}.hide();"
+							styleClass="greenButton"
+							oncomplete="execChangeCommentWfCommand('#{canvasBean.savedWfComment}', '#{canvasBean.commentWf}');" />
+
+					</rich:panel>
+				</rich:panel>
+			</h:form>
+
+		</rich:modalPanel>
+	</a4j:region>
+
 	<a4j:region>
-        <rich:modalPanel id="modalReplaceAll" width="425" height="220"
-            style="overflow:auto;" resizeable="true" zindex="2000">
+		<rich:modalPanel id="modalReplaceAll" width="425" height="220"
+			style="overflow:auto;" resizeable="true" zindex="2000">
 
-            <f:facet name="header" >Replace All</f:facet>
-            <f:facet name="controls">
-                <h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-                    style="cursor:pointer;width:22px;"
-                    onclick="#{rich:component('modalReplaceAll')}.hide()" />
-            </f:facet>
+			<f:facet name="header">Replace All</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+					style="cursor:pointer;width:22px;"
+					onclick="#{rich:component('modalReplaceAll')}.hide()" />
+			</f:facet>
 
-            <h:form>
-                <h:outputText value="#{messages.label_string_to_replace}"/>
-                <br />
-                <h:inputText value="#{canvasBean.rpModal.string}" size="50" />
-                <br />
-                <br />
-                <h:outputText value="#{messages.label_replace_value}"/>
-                <br />
-                <h:inputText value="#{canvasBean.rpModal.replace}" size="50" />
-                <br />
-                <br />
-                <h:outputText value="#{messages.label_replace_action_names}"/>
-                <br />
-                <h:selectBooleanCheckbox value="#{canvasBean.rpModal.replaceActionNames}">
-                    <f:selectItem itemValue="true" />
-                </h:selectBooleanCheckbox>
-                <br />
-                
-                <rich:panel style="border:none; float:right;" >
-            
-                    <a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" oncomplete="#{rich:component('modalReplaceAll')}.hide()" />
-                    <a4j:commandButton value="#{messages.button_ok}" onclick="#{rich:component('modalReplaceAll')}.hide();" styleClass="greenButton" 
-                        oncomplete="replaceAll(getSelectedByName(),getSelectedIconsCommaDelimited(),'#{canvasBean.rpModal.string}','#{canvasBean.rpModal.replace}','#{canvasBean.rpModal.replaceActionNames}');" />
-            
-                </rich:panel>
-                
-                 
-            </h:form>
+			<h:form>
+				<h:outputText value="#{messages.label_string_to_replace}" />
+				<br />
+				<h:inputText value="#{canvasBean.rpModal.string}" size="50" />
+				<br />
+				<br />
+				<h:outputText value="#{messages.label_replace_value}" />
+				<br />
+				<h:inputText value="#{canvasBean.rpModal.replace}" size="50" />
+				<br />
+				<br />
+				<h:outputText value="#{messages.label_replace_action_names}" />
+				<br />
+				<h:selectBooleanCheckbox
+					value="#{canvasBean.rpModal.replaceActionNames}">
+					<f:selectItem itemValue="true" />
+				</h:selectBooleanCheckbox>
+				<br />
 
-        </rich:modalPanel>
-    </a4j:region>
-	
+				<rich:panel style="border:none; float:right;">
+
+					<a4j:commandButton styleClass="greenButton"
+						value="#{messages.button_cancel}"
+						oncomplete="#{rich:component('modalReplaceAll')}.hide()" />
+					<a4j:commandButton value="#{messages.button_ok}"
+						onclick="#{rich:component('modalReplaceAll')}.hide();"
+						styleClass="greenButton"
+						oncomplete="replaceAll(getSelectedByName(),getSelectedIconsCommaDelimited(),'#{canvasBean.rpModal.string}','#{canvasBean.rpModal.replace}','#{canvasBean.rpModal.replaceActionNames}');" />
+
+				</rich:panel>
+
+
+			</h:form>
+
+		</rich:modalPanel>
+	</a4j:region>
+
 	<a4j:region>
 		<rich:modalPanel id="modalPackage" width="600" height="460"
 			style="overflow:auto;" resizeable="false">
@@ -2174,44 +2326,61 @@
 
 		</rich:modalPanel>
 	</a4j:region>
-	
-    <a4j:region>
-        <rich:modalPanel id="modalInstallPackage" width="900"
-            height="600" resizeable="true">
-            <f:facet name="header">Packages</f:facet>
-            <f:facet name="controls">
-                <h:graphicImage
-                    value="../image/icons/buttonCloseWindow.gif"
-                    style="cursor:pointer;width:22px;"
-                    onclick="#{rich:component('modalInstallPackage')}.hide()" />
-            </f:facet>
-                <h:panelGroup>
-                    <a4j:include
-                        viewId="/pages/modalInstallPackage.xhtml"
-                        ajaxRendered="true" />
-                </h:panelGroup>
-        </rich:modalPanel>
-    </a4j:region>
-    
-    <a4j:region renderRegionOnly="true">
-        <rich:modalPanel id="modalSettings" width="800" height="600"
-            style="overflow:auto;" resizeable="false">
 
-            <f:facet name="header">
-                <h:outputText value="#{messages.label_setting_modal}" />
-            </f:facet>
-            <f:facet name="controls">
-                <h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-                    style="cursor:pointer;width:22px;"
-                    onclick="#{rich:component('modalSettings')}.hide()" />
-            </f:facet>
+	<a4j:region>
+		<rich:modalPanel id="modalInstallPackage" width="900" height="600"
+			resizeable="true">
+			<f:facet name="header">Packages</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+					style="cursor:pointer;width:22px;"
+					onclick="#{rich:component('modalInstallPackage')}.hide()" />
+			</f:facet>
+			<h:panelGroup>
+				<a4j:include viewId="/pages/modalInstallPackage.xhtml"
+					ajaxRendered="true" />
+			</h:panelGroup>
+		</rich:modalPanel>
+	</a4j:region>
 
-            <h:panelGroup>
-                <a4j:include viewId="/pages/modalSettings.xhtml" ajaxRendered="true" />
-            </h:panelGroup>
+	<a4j:region renderRegionOnly="true">
+		<rich:modalPanel id="modalSettings" width="800" height="600"
+			style="overflow:auto;" resizeable="false">
 
-        </rich:modalPanel>
-    </a4j:region>
+			<f:facet name="header">
+				<h:outputText value="#{messages.label_setting_modal}" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+					style="cursor:pointer;width:22px;"
+					onclick="#{rich:component('modalSettings')}.hide()" />
+			</f:facet>
+
+			<h:panelGroup>
+				<a4j:include viewId="/pages/modalSettings.xhtml" ajaxRendered="true" />
+			</h:panelGroup>
+
+		</rich:modalPanel>
+	</a4j:region>
+	<a4j:region>
+		<rich:modalPanel id="modalSubWfInstall" width="300" height="300"
+			style="overflow:auto;" resizeable="false">
+
+			<f:facet name="header">
+				<h:outputText value="Install Sub Workflow" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+					style="cursor:pointer;width:22px;"
+					onclick="#{rich:component('modalSubWfInstall')}.hide()" />
+			</f:facet>
+
+			<h:panelGroup>
+				<a4j:include viewId="/pages/modalSubWfInstall.xhtml" ajaxRendered="true" />
+			</h:panelGroup>
+
+		</rich:modalPanel>
+	</a4j:region>
 
 	<rich:modalPanel id="msnErrorPage"
 		showWhenRendered="#{requestScope['msnErrorPage'] != null}">
