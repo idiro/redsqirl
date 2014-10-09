@@ -13,6 +13,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
+import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
 import com.redsqirl.workflow.server.interfaces.DataFlow;

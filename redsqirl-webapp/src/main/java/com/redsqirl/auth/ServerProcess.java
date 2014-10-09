@@ -17,10 +17,13 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
+import com.idiro.ProjectID;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import com.redsqirl.BaseBean;
+import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.BaseCommand;
 import com.redsqirl.workflow.server.ProcessesManager;
 import com.redsqirl.workflow.server.WorkflowProcessesManager;
@@ -67,7 +70,7 @@ public class ServerProcess {
 
 					ProcessesManager pm = new WorkflowProcessesManager(user);
 					killOldProcess(pm, user);
-					final String command = BaseCommand.getBaseCommand(user,port)
+					final String command = BaseCommand.getBaseCommand(user,port,ProjectID.get())
 							+ " 1>/dev/null & echo $! 1> "+pm.getPath();
 
 					logger.info("getting java");
@@ -84,6 +87,9 @@ public class ServerProcess {
 
 					channel.getInputStream().close();
 					channel.disconnect();
+					for (String errorJar : BaseCommand.getNotIncludedJars()){
+						MessageUseful.addErrorMessage(errorJar);
+					}
 
 				} catch (Exception e) {
 					logger.error("Fail to launch the server process");

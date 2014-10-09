@@ -1636,6 +1636,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		Map<String, String> namesWithClassName = null;
 		try {
 			namesWithClassName = getAllWANameWithClassName();
+			logger.info(namesWithClassName);
 		} catch (Exception e) {
 			// This should not happend if the workflow has been initialised
 			// corretly

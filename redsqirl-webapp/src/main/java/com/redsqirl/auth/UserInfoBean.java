@@ -1,7 +1,10 @@
 package com.redsqirl.auth;
 
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
 import java.rmi.NotBoundException;
@@ -9,6 +12,7 @@ import java.rmi.Remote;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -20,13 +24,16 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.record.formula.functions.Proper;
 
 import ch.ethz.ssh2.Connection;
 
+import com.idiro.ProjectID;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import com.redsqirl.BaseBean;
 import com.redsqirl.SimpleFileIndexer;
+import com.redsqirl.keymanager.ciphers.Decrypter;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.WorkflowProcessesManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
@@ -168,6 +175,64 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 				return "failure";
 			}
+			try {
+				String licence = "";
+				File licenseP = new File(
+						WorkflowPrefManager.getPathSystemLicence());
+				Properties props = new Properties();
+				logger.info(ProjectID.get());
+				String licenseKey = ProjectID.get().trim();
+				if (licenseP.exists()) {
+					props.load(new FileInputStream(licenseP));
+					logger.info(props.toString());
+					
+					licenseKey = licenseKey.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
+					logger.info(licenseKey);
+					licence =  props.getProperty(licenseKey);
+				} else {
+					setMsnError("Could not find license key");
+					logger.info("Could not find license key");
+					invalidateSession();
+					return "failure";
+				}
+				
+				if(licence == null || licence.isEmpty()){
+					setMsnError("License key was empty");
+					logger.info("License key was empty");
+					invalidateSession();
+					return "failure";
+				}
+
+				Decrypter decrypt = new Decrypter();
+				decrypt.decrypt(licence);
+				File file = new File(WorkflowPrefManager.getPathUsersFolder());
+				int homes = 0;
+				if(file.exists()){
+					homes = file.list().length;
+				}
+				Map<String,String> params = new HashMap<String,String>();
+				
+				params.put(Decrypter.usersNb, String.valueOf(homes));
+				params.put(Decrypter.mac, decrypt.getMACAddress());
+				params.put(Decrypter.name, licenseKey);
+				
+				boolean valid = decrypt.validateAllValuesSoft(params);
+
+				if(!valid){
+					setMsnError("License Key is Invalid");
+					logger.info("License Key is Invalid");
+					invalidateSession();
+
+					return "failure";
+				}
+				
+				
+			} catch (Exception e) {
+				setMsnError("Failed to get license");
+				invalidateSession();
+				return "failure";
+			}
+			
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 			invalidateSession();

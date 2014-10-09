@@ -78,6 +78,11 @@ public class WorkflowPrefManager extends BlockManager {
 	 * and a #{key}_desc property.
 	 */
 	pathSysLangCfgPref,
+	
+	/**
+	 * License path
+	 */
+	pathSystemLicence,
 
 	/**
 	 * Path users folder
@@ -500,6 +505,7 @@ public class WorkflowPrefManager extends BlockManager {
 				pathSystemPref + "/redsqirl_sys.properties";
 		pathUsersFolder =  pathSysHome
 				+ "/users";
+		pathSystemLicence = pathSystemPref + "/licenseKey.properties";
 
 		pathUserPref = pathUsersFolder + "/"
 				+ System.getProperty("user.name");
@@ -968,6 +974,21 @@ public class WorkflowPrefManager extends BlockManager {
 	 */
 	public static final LocalProperties getProps() {
 		return props;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public static String getPathSystemLicence() {
+		return pathSystemLicence;
+	}
+	/**
+	 * 
+	 * @return
+	 */
+	public static String getPathUsersFolder() {
+		return pathUsersFolder;
 	}
 
 	/**

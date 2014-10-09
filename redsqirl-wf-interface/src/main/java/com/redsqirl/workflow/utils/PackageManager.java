@@ -11,6 +11,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -868,7 +869,7 @@ public class PackageManager extends UnicastRemoteObject {
 	 * @param pack_dir
 	 * @return property
 	 */
-	private static Properties getPackageProperties(String pack_dir) {
+	public static Properties getPackageProperties(String pack_dir) {
 
 		Properties prop = new Properties();
 		try {
@@ -881,5 +882,26 @@ public class PackageManager extends UnicastRemoteObject {
 					+ properties_file + " " + e.getMessage());
 		}
 		return prop;
+	}
+	
+	public File[] getLibJars(String path){
+		File lib = getLibDir(path);
+		File[] jars = null;
+		if(lib.exists()){
+			jars = lib.listFiles();
+		}
+		return jars;
+	}
+	
+	public List<String> getLibJarsPath(String path){
+		List<String> paths = new ArrayList<String>();
+		File[] files = getLibJars(path);
+		if (files != null) {
+			for (File f : files) {
+				logger.info(f.getAbsoluteFile());
+				paths.add(f.getAbsolutePath());
+			}
+		}
+		return paths;
 	}
 }
