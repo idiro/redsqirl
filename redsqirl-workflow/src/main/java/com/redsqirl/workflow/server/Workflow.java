@@ -323,8 +323,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 								parameters[1] = dfe.getImage();
 								new_list.add(parameters);
 							} else {
-								logger.warn("unknown workflow action '"
-										+ action + "'");
+								logger.warn("unknown workflow action '"	+ action + "'");
 							}
 						}
 					} catch (Exception e) {
@@ -1911,29 +1910,34 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 * @throws Exception
 	 *             if one action cannot be load
 	 */
-	public Map<String, String> getAllWANameWithClassName()
-			throws RemoteException, Exception {
+	public Map<String, String> getAllWANameWithClassName() throws RemoteException, Exception {
+		
 		logger.debug("get all the Workflow actions");
+		
 		if (flowElement.isEmpty()) {
 
-			Iterator<String> actionClassName = WorkflowPrefManager
-					.getInstance()
-					.getNonAbstractClassesFromSuperClass(
-							DataflowAction.class.getCanonicalName()).iterator();
+			Iterator<String> actionClassName = WorkflowPrefManager.getInstance()
+					.getNonAbstractClassesFromSuperClass(DataflowAction.class.getCanonicalName()).iterator();
 
 			while (actionClassName.hasNext()) {
 				String className = actionClassName.next();
 				try {
-					DataflowAction wa = (DataflowAction) Class.forName(
-							className).newInstance();
-					if(!(flowElement instanceof SuperAction)){
+					DataflowAction wa = (DataflowAction) Class.forName(className).newInstance();
+					if(!(wa instanceof SuperAction)){
 						flowElement.put(wa.getName(), className);
 					}
 				} catch (Exception e) {
 					logger.error("Error instanciating class : " + className);
 				}
 			}
-			logger.debug("WorkflowAction found : " + flowElement.toString());
+			
+			Iterator<String> it = new SuperActionManager().getAvailableSuperActions(System.getProperty("user.name")).iterator();
+			while (it.hasNext()) {
+				String actionName = it.next();
+				flowElement.put(actionName, SuperAction.class.getName());
+			}
+			
+			logger.info("WorkflowAction found : " + flowElement.toString());
 		}
 		return flowElement;
 	}

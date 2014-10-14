@@ -73,7 +73,8 @@ public class SuperActionManager {
 	public List<String> getAvailableSuperActions(String user){
 		File sysSA = getSuperActionMainDir(null);
 		File userSA = getSuperActionMainDir(user);
-		final String pattern= "^[a-zA-Z0-9]*$";
+		//final String pattern= "^[a-zA-Z0-9]*$";
+		final String pattern= "sa_[a-zA-Z0-9]*";
 
 		List<String> ansL = new LinkedList<String>();
 		try{
