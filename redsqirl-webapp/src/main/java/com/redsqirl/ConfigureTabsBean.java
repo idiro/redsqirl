@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 
+import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.dynamictable.SelectableRow;
 import com.redsqirl.dynamictable.SelectableRowFooter;
 import com.redsqirl.dynamictable.SelectableTable;
@@ -76,6 +77,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 				getworkFlowInterface().removeWorkflow(workflowNameTmp);
 
 				mountMenuActions();
+				
 				menuNull = new SelectableRowFooter(
 						new String[3], getMenuActions());
 				setTabs(new LinkedList<String>(getMenuWA().keySet()));
@@ -108,13 +110,19 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	}
 
 	public void mountMenuActions() throws RemoteException, Exception {
+		
 		logger.info("mountMenuActions");
+		
 		LinkedList<String> result = new LinkedList<String>();
 		for (Entry<String, String> e : allWANameWithClassName.entrySet()) {
 			result.add(e.getKey());
 		}
-
-		List<String> listSuperAction = new SuperActionManager().getAvailableSuperActions(System.getProperty("user.name"));
+		
+		FacesContext context = FacesContext.getCurrentInstance();
+		UserInfoBean userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
+		logger.info("User: " + userInfoBean.getUserName());
+		
+		List<String> listSuperAction = new SuperActionManager().getAvailableSuperActions(userInfoBean.getUserName());
 		for (String name : listSuperAction) {
 			result.add(name);
 		}
@@ -243,9 +251,10 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 					getMenuWA().put(selectableRow.getRow()[0], temp);
 
 					List<String> l = new LinkedList<String>();
-					Iterator<String[]> it = getMenuWA().get(selectableRow.getRow()[0]).iterator();
-					while(it.hasNext()){
-						l.add(it.next()[0]);
+					
+					List<String[]> menuList = getMenuWA().get(selectableRow.getRow()[0]);
+					for (String[] menuName : menuList) {
+						l.add(menuName[0]);
 					}
 					mapMenu.put(selectableRow.getRow()[0],l);
 				}
