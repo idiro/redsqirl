@@ -1,0 +1,91 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets">
+    
+<a4j:loadBundle basename="MessagesResources" var="messages" />
+    
+    <div id="domMessageDivModalSubWFUninstall" style="display: none;">
+			<img src="../image/icons/waiting.gif" />
+		</div>
+
+		<a4j:region>
+			<a4j:status
+				onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModalSubWFUninstall') });"
+				onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
+				onstop="jQuery.unblockUI();" />
+		</a4j:region>
+    <h:form>
+	    <h:panelGrid id="superactionsList" columns="2">
+	        <rich:panel id="systemSa" header="System Super Actions"
+	            style="width:270px;height:390px;" bodyClass="maxContent">
+	            
+	            <h:panelGroup id="sysSaMenu" layout="block"
+	                style="overflow:auto;height:330px;"
+	                rendered="#{subwfBean.admin}">
+	                <h:selectManyCheckbox layout="pageDirection"
+	                    value="#{subwfBean.uninstallSysSa}">
+	                    <f:selectItems
+	                        value="#{subwfBean.systemSA}" var="n"
+	                        itemLabel="#{n.label}" itemValue="#{n.value}" />
+	                </h:selectManyCheckbox>
+	            </h:panelGroup>
+	            <h:panelGroup id="sysSAList" layout="block" 
+	                style="overflow:auto;height:330px;"
+	                rendered="#{subwfBean.admin}">
+	                <ui:repeat value="#{subwfBean.systemSA}"
+	                    var="item">
+	                    #{item.label}<br />
+	                </ui:repeat>
+	            </h:panelGroup>
+	            <h:panelGrid id="sa_sys_buttons" columns="2"
+	                rendered="#{subwfBean.admin}">
+	                <rich:panel id="sa_sys_uninstall">
+	                    <a4j:commandButton
+	                        styleClass="greenButton"
+	                        value="#{messages.button_sys_uninstall}"
+	                        action="#{subwfBean.deleteSASystem}"
+	                        reRender="sysSAList" />
+	                </rich:panel>
+	            </h:panelGrid>
+	            
+	        </rich:panel>
+	        <rich:panel id="userSa" header="User Super Actions"
+	            style="width:270px;height:390px;" bodyClass="maxContent">
+	            
+	            <h:panelGroup id="userSaMenu" layout="block"
+	                style="overflow:auto;height:330px;"
+	                >
+	                <h:selectManyCheckbox layout="pageDirection"
+	                    value="#{subwfBean.uninstallUserSa}">
+	                    <f:selectItems
+	                        value="#{subwfBean.userSA}" var="n"
+	                        itemLabel="#{n.label}" itemValue="#{n.value}" />
+	                </h:selectManyCheckbox>
+	            </h:panelGroup>
+	            <h:panelGroup id="userSAList" layout="block" 
+	                style="overflow:auto;height:330px;"
+	                >
+	                <ui:repeat value="#{subwfBean.userSA}"
+	                    var="item">
+	                    #{item.label}<br />
+	                </ui:repeat>
+	            </h:panelGroup>
+	            <h:panelGrid id="sa_user_buttons" columns="2"
+	                >
+	                <rich:panel id="sa_user_uninstall">
+	                    <a4j:commandButton
+	                        styleClass="greenButton"
+	                        value="#{messages.button_sys_uninstall}"
+	                        action="#{subwfBean.deleteSaUser}"
+	                        reRender="userSAList" />
+	                </rich:panel>
+	            </h:panelGrid>
+	            
+	        </rich:panel>
+	     
+	    </h:panelGrid>
+    </h:form>
+</ui:composition>

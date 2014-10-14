@@ -9,13 +9,13 @@
 
 	<h:form>
 
-		<div id="domMessageDivModalSettings" style="display: none;">
+		<div id="domMessageDivModalSubWFInstall" style="display: none;">
 			<img src="../image/icons/waiting.gif" />
 		</div>
 
 		<a4j:region>
 			<a4j:status
-				onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModalSettings') });"
+				onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModalSubWFInstall') });"
 				onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
 				onstop="jQuery.unblockUI();" />
 		</a4j:region>

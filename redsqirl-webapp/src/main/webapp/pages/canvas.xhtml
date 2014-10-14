@@ -1733,7 +1733,9 @@
 											<f:param name="subWorkflowName" value="#{canvasBean.nameWorkflow}" />
 										</rich:menuItem>
 										<rich:menuItem id="uninstallSubWorkflow" submitMode="ajax"
-											value="#{messages.label_menu_uninstall_sub_workflow}">
+											value="#{messages.label_menu_uninstall_sub_workflow}"
+											oncomplete="#{rich:component('modalSubWfUninstall')}.show();"
+											action="#{subwfBean.mountSubName}"											>
 											<h:outputText value="Ctrl+I" class="menuItemHotKey" />
 										</rich:menuItem>
 										<rich:menuItem id="installSubWorkflowHDFS" submitMode="ajax"
@@ -2395,6 +2397,25 @@
 
 			<h:panelGroup>
 				<a4j:include viewId="/pages/modalSubWfInstall.xhtml" ajaxRendered="true" />
+			</h:panelGroup>
+
+		</rich:modalPanel>
+	</a4j:region>
+	<a4j:region>
+		<rich:modalPanel id="modalSubWfUninstall" width="800" height="600"
+			style="overflow:auto;" resizeable="false">
+
+			<f:facet name="header">
+				<h:outputText value="Uninstall Sub Workflow" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+					style="cursor:pointer;width:22px;"
+					onclick="#{rich:component('modalSubWfUninstall')}.hide()" />
+			</f:facet>
+
+			<h:panelGroup>
+				<a4j:include viewId="/pages/modalSubWFUninstall.xhtml" ajaxRendered="true" />
 			</h:panelGroup>
 
 		</rich:modalPanel>
