@@ -1735,7 +1735,7 @@
 										<rich:menuItem id="uninstallSubWorkflow" submitMode="ajax"
 											value="#{messages.label_menu_uninstall_sub_workflow}"
 											oncomplete="#{rich:component('modalSubWfUninstall')}.show();"
-											action="#{subwfBean.mountSubName}"											>
+											action="#{subwfBean.refreshSubworkflowsAllList}"											>
 											<h:outputText value="Ctrl+I" class="menuItemHotKey" />
 										</rich:menuItem>
 										<rich:menuItem id="installSubWorkflowHDFS" submitMode="ajax"

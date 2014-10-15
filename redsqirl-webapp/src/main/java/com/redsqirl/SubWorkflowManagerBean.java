@@ -27,14 +27,25 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable{
 	private String name ="";
 	private String actualName ="";
 	
+	private boolean admin = false;
+	
+	/**
+	 * @param admin the admin to set
+	 */
+	public void setAdmin(boolean admin) {
+		this.admin = admin;
+	}
+
+
 	private String asSystem = "";
 	
 	//For selection uninstall
-	private List<SelectItem> uninstallUserSa = new ArrayList<SelectItem>(),	uninstallSysSa = new ArrayList<SelectItem>();
+	private List<SelectItem> uninstallUserSa = new ArrayList<SelectItem>(),
+			uninstallSysSa = new ArrayList<SelectItem>();
 	
 	//List of sub workflows
-	private List<String> userSA = new ArrayList<String>();
-	private List<String> systemSA = new ArrayList<String>();
+	private String[] userSA = new String[]{};
+	private String[] systemSA = new String[]{} ;
 	
 	public void installCurrentSubWorkflow() throws RemoteException{
 		boolean ok = false;
@@ -80,12 +91,14 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable{
 	}
 
 
-	
-	
 	public boolean getAdmin(){
-		boolean admin = false;
+		return admin;
+	}
+	
+	public void getAdminValue(){
+		admin = false;
 		try{
-			logger.debug("is admin");
+			logger.info("is admin");
 			
 			String user = getUserInfoBean().getUserName();
 			String[] admins = WorkflowPrefManager.getSysAdminUser();
@@ -98,7 +111,7 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable{
 		}catch(Exception e){
 			logger.warn("Exception in isAdmin: "+e.getMessage());
 		}
-		return admin;
+		logger.info("is admin "+admin);
 	}
 	public void mountSubName(){
 		String val = FacesContext.getCurrentInstance().getExternalContext().
@@ -125,37 +138,58 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable{
 	}
 	
 	public void refreshSubworkflowsAllList(){
+		getAdminValue();
 		refreshSubworkflowsSystemList();
 		refreshSubworkflowsUser();
 	}
 
 	
 	public void refreshSubworkflowsSystemList(){
-		systemSA = saManager.getAvailableSuperActions(null);
-		uninstallSysSa = new ArrayList<SelectItem>(systemSA.size());
+		List<String> listSa = saManager.getAvailableSuperActions(null);
+		
+		systemSA = new String[listSa.size()];
+		uninstallSysSa = new ArrayList<SelectItem>();
+		
+		for(int i = 0; i < listSa.size() ;++i){
+			String s = listSa.get(i);
+			systemSA[i] = s;
+			uninstallSysSa.add(new SelectItem(s,s));
+		}
+		logger.info("system sa "+systemSA.length);
 		setSystemSA(systemSA);
 	}
 	
 	public void refreshSubworkflowsUser(){
-		
-		userSA =  saManager.getAvailableSuperActions(getUserInfoBean().getUserName());
-		uninstallUserSa = new ArrayList<SelectItem>(userSA.size());
+		List<String> listSa = saManager.getAvailableSuperActions(getUserInfoBean().getUserName());
+		userSA = new String[listSa.size()];
+		uninstallUserSa = new ArrayList<SelectItem>();
+		for(int i = 0; i < listSa.size() ;++i){
+			String s = listSa.get(i);
+			userSA[i] = s;
+			uninstallUserSa.add(new SelectItem(s,s));
+		}
 		setUserSA(userSA);
 	}
 	
 	public void deleteSASystem(){
+		logger.info("delete user sa");
 		if(getAdmin()){
-			for(SelectItem saName : uninstallSysSa){
-				saManager.uninstall(null, saName.getLabel());
+			for (String s : getSystemSA()){
+				saManager.uninstall(null, s);
 			}
 		}
+		refreshSubworkflowsSystemList();
 	}
 	
 	public void deleteSaUser(){
+		logger.info("delete user sa");
 		String user = getUserInfoBean().getUserName();
-		for(SelectItem saName : uninstallUserSa){
-			saManager.uninstall(user, saName.getLabel());
+		for (String s : getUserSA()){
+			logger.info("delete user sa "+s);
+			saManager.uninstall(user, s);
 		}
+		refreshSubworkflowsUser();
+			
 	}
 	
 	private UserInfoBean getUserInfoBean(){
@@ -172,16 +206,16 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable{
 	/**
 	 * @return the userSA
 	 */
-	public List<String> getUserSA() {
+	public String[] getUserSA() {
 		return userSA;
 	}
 
 
 	/**
-	 * @param userSA the userSA to set
+	 * @param userSA2 the userSA to set
 	 */
-	public void setUserSA(List<String> userSA) {
-		this.userSA = userSA;
+	public void setUserSA(String[] userSA2) {
+		this.userSA = userSA2;
 	}
 
 	
@@ -189,7 +223,7 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable{
 	/**
 	 * @param systemSA the systemSA to set
 	 */
-	public void setSystemSA(List<String> systemSA) {
+	public void setSystemSA(String[] systemSA) {
 		this.systemSA = systemSA;
 	}
 
@@ -197,7 +231,7 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable{
 	/**
 	 * @return the systemSA
 	 */
-	public List<String> getSystemSA() {
+	public String[] getSystemSA() {
 		return systemSA;
 	}
 
