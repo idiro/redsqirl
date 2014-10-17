@@ -123,9 +123,8 @@ public class SuperActionManager {
 		}else{
 			ans = new File(WorkflowPrefManager.getPathSysSuperAction());
 		}
-		logger.debug("Super action path for "+(user == null? "sys":user)+": "+ans.getPath());
+		logger.info("Super action path for "+(user == null? "sys":user)+": "+ans.getPath());
 		return ans;
-
 	}
 
 	public File getSuperActionHelpDir(String user){

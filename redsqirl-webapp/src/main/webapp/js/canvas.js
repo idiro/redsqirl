@@ -1244,6 +1244,8 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
     
     group.tooltipObj = "Type: " + ucFirstAllWords(elementType.split("_").join(" "));
     
+    group.elementType = elementType;
+    
     return group;
 }
 
@@ -1935,7 +1937,6 @@ function setPageNb(groupId, pageNb){
 
 function openCanvasModalJS(group, selectedTab){
 
-    //group.getChildren()[2].setStroke('white');
     group.getChildren()[0].setFill("white");
     group.getChildren()[1].setFill("white");
     
@@ -1950,13 +1951,22 @@ function openCanvasModalJS(group, selectedTab){
         height : 80
     });
 
-    if (!group.hasChangedId) {
-        openChangeIdModal(group.getId(), imagePath,true);
-        group.hasChangedId = true;
-    } else {
-        openModal(group.getId(), imagePath, selectedTab, group.pageNb);
-        changeHelpAnchor(group.pageNb);
+    
+    //check if start with sa and open a new sub work flow
+    if(group.elementType.startsWith("sa")){
+    	openSubWorkflow(group.elementType);
+    }else{
+    	
+    	if (!group.hasChangedId) {
+	        openChangeIdModal(group.getId(), imagePath,true);
+	        group.hasChangedId = true;
+	    } else {
+	        openModal(group.getId(), imagePath, selectedTab, group.pageNb);
+	        changeHelpAnchor(group.pageNb);
+	    }
+	
     }
+    
 }
 
 function openChangeIdModalJS(group){
