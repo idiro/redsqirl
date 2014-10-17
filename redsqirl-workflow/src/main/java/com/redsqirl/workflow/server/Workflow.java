@@ -1934,7 +1934,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			Iterator<String> it = new SuperActionManager().getAvailableSuperActions(System.getProperty("user.name")).iterator();
 			while (it.hasNext()) {
 				String actionName = it.next();
-				flowElement.put(actionName, SuperAction.class.getName());
+				if(!flowElement.containsKey(actionName)){
+					flowElement.put(actionName, SuperAction.class.getName());
+				}
 			}
 			
 			logger.info("WorkflowAction found : " + flowElement.toString());

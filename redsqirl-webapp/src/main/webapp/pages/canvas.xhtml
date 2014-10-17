@@ -1230,6 +1230,13 @@
 					reRender="tabFlowchart,errorTable,msnError" />
 
 			</a4j:region>
+			
+			<a4j:region>
+				<a4j:jsFunction name="openSubWorkflow" action="#{canvasBean.openSubWorkflow}" 
+					oncomplete="if(#{requestScope['msnError'] == null} ){loadWorkflow();}" >
+					<a4j:actionparam name="nameSubWorkflow" />
+				</a4j:jsFunction>
+			</a4j:region>
 
 			<a4j:region>
 				<a4j:status onerror="jQuery('#canvas-tabs').unblock();"
