@@ -289,15 +289,15 @@ public class CanvasBean extends BaseBean implements Serializable {
 		String idElementA = getIdMap().get(getNameWorkflow()).get(getParamOutId());
 		String idElementB = getIdMap().get(getNameWorkflow()).get(getParamInId());
 
-		//String nameElementA = getSelectedLink().split(" -> ")[0];
-		//String nameElementB = getSelectedLink().split(" -> ")[1];
+		String nameElementA = getSelectedLink().split(" -> ")[0];
+		String nameElementB = getSelectedLink().split(" -> ")[1];
 		
-		String nameElementA = "";
+		/*String nameElementA = "";
 		String nameElementB = "";
 		if(getSelectedLink().split(" -> ").length > 0){
 			nameElementA = getSelectedLink().split(" -> ")[0];
 			nameElementB = getSelectedLink().split(" -> ")[1];
-		}
+		}*/
 
 		try {
 
