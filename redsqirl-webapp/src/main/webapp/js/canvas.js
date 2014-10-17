@@ -1735,6 +1735,7 @@ function createLink(circleGp){
             var arrowClone = addLink(selectedCanvas, output, input);
             canvasArray[selectedCanvas].commandHistory.push_command(new CommandAddArrow(selectedCanvas, output, input, arrowClone.getName()));
             
+            //alert("createLink  " + arrow.output.getId() + "  " + circleGp.getParent().getId() + "  " + arrowClone.getName());
             addLinkModalBt(arrow.output.getId(), circleGp.getParent().getId(), arrowClone.getName());
 
         } else {
@@ -2128,7 +2129,7 @@ function polygonOnClick(obj,e, canvasName){
 				var arrowClone = addLink(canvasName, output, input);
 				canvasArray[canvasName].commandHistory.push_command(new CommandAddArrow(canvasName, output, input, arrowClone.getName()));
 				
-				//alert(arrow.output.getId() + "  " + obj.getParent().getId());
+				//alert("polygonOnClick  " + arrow.output.getId() + "  " + obj.getParent().getId() + "  " + arrowClone.getName());
 				addLinkModalBt(arrow.output.getId(), obj.getParent().getId(), arrowClone.getName());
 				
 			}

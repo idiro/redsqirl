@@ -1127,12 +1127,9 @@
 					action="#{canvasBean.updateLinkPossibilities}"
 					oncomplete="if(#{canvasBean.nbLinkPossibilities} == 1){addLinkWhenUniq();}else{jQuery('#canvas-tabs').unblock();#{rich:component('modalSelectLink')}.show();};"
 					reRender="selectLinkList">
-					<a4j:actionparam name="paramOutId"
-						assignTo="#{canvasBean.paramOutId}" />
-					<a4j:actionparam name="paramInId"
-						assignTo="#{canvasBean.paramInId}" />
-					<a4j:actionparam name="paramNameLink"
-						assignTo="#{canvasBean.paramNameLink}" />
+					<a4j:actionparam name="paramOutId" assignTo="#{canvasBean.paramOutId}" />
+					<a4j:actionparam name="paramInId" assignTo="#{canvasBean.paramInId}" />
+					<a4j:actionparam name="paramNameLink" assignTo="#{canvasBean.paramNameLink}" />
 				</a4j:jsFunction>
 			</a4j:region>
 

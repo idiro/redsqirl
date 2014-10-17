@@ -289,8 +289,15 @@ public class CanvasBean extends BaseBean implements Serializable {
 		String idElementA = getIdMap().get(getNameWorkflow()).get(getParamOutId());
 		String idElementB = getIdMap().get(getNameWorkflow()).get(getParamInId());
 
-		String nameElementA = getSelectedLink().split(" -> ")[0];
-		String nameElementB = getSelectedLink().split(" -> ")[1];
+		//String nameElementA = getSelectedLink().split(" -> ")[0];
+		//String nameElementB = getSelectedLink().split(" -> ")[1];
+		
+		String nameElementA = "";
+		String nameElementB = "";
+		if(getSelectedLink().split(" -> ").length > 0){
+			nameElementA = getSelectedLink().split(" -> ")[0];
+			nameElementB = getSelectedLink().split(" -> ")[1];
+		}
 
 		try {
 
@@ -357,12 +364,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		logger.info("updateLinkPossibilities");
 
-		Map<String, String> params = FacesContext.getCurrentInstance()
-				.getExternalContext().getRequestParameterMap();
-		String idElementA = getIdMap().get(getNameWorkflow()).get(
-				params.get("paramOutId"));
-		String idElementB = getIdMap().get(getNameWorkflow()).get(
-				params.get("paramInId"));
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String idElementA = getIdMap().get(getNameWorkflow()).get(params.get("paramOutId"));
+		String idElementB = getIdMap().get(getNameWorkflow()).get(params.get("paramInId"));
 
 		logger.info("idElementA " + idElementA);
 		logger.info("idElementB " + idElementB);
@@ -376,20 +380,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 			DataFlowElement dfeObjA = df.getElement(idElementA);
 			DataFlowElement dfeObjB = df.getElement(idElementB);
 
-			for (Map.Entry<String, DFELinkProperty> entryInput : dfeObjB
-					.getInput().entrySet()) {
-				for (Map.Entry<String, DFEOutput> entryOutput : dfeObjA
-						.getDFEOutput().entrySet()) {
+			for (Map.Entry<String, DFELinkProperty> entryInput : dfeObjB.getInput().entrySet()) {
+				for (Map.Entry<String, DFEOutput> entryOutput : dfeObjA.getDFEOutput().entrySet()) {
 
-					logger.info("entryInput " + entryInput);
-					logger.info("entryOutput " + entryOutput);
+					//logger.info("entryInput " + entryInput);
+					//logger.info("entryOutput " + entryOutput);
 
-					if (df.check(entryOutput.getKey(),
-							dfeObjA.getComponentId(), entryInput.getKey(),
-							dfeObjB.getComponentId())) {
-						linkPossibilities.add(new SelectItem(entryOutput
-								.getKey() + " -> " + entryInput.getKey()));
-
+					if (df.check(entryOutput.getKey(), dfeObjA.getComponentId(), entryInput.getKey(), dfeObjB.getComponentId())) {
+						linkPossibilities.add(new SelectItem(entryOutput.getKey() + " -> " + entryInput.getKey()));
 					}
 				}
 			}
