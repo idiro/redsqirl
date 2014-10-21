@@ -697,6 +697,10 @@
 	   			openModalSaveWorkflow();
 	   		}
 	   	}
+
+	   	function importSubWorkflow(){
+			openModalImportSubworkflow();
+		}
 	   	
 	   	function configureTabsRemote(){
 		    var tabsRemote = jQuery("#tabRemote").tabs().scrollabletab();
@@ -843,7 +847,7 @@
 				<img src="../image/icons/waiting.gif" />
 			</div>
 
-			<a4j:region>
+			<a4j:region id="functionsForSave">
 				<a4j:jsFunction name="openModalSaveWorkflow"
 					action="#{browserHdfsBean.createSaveFolder}"
 					oncomplete="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });openModalFileHdfs('T');" />
@@ -855,6 +859,13 @@
 					<a4j:actionparam name="openCtrl"
 						assignTo="#{browserHdfsBean.showSave}" />
 				</a4j:jsFunction>
+			</a4j:region>
+
+			<a4j:region>
+				<a4j:jsFunction name="openModalImportSubworkflow"
+					oncomplete="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });openModalFileHdfs('F');">
+				</a4j:jsFunction>
+
 			</a4j:region>
 
 			<a4j:region renderRegionOnly="true">
@@ -910,30 +921,36 @@
 					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
-                <a4j:jsFunction name="updateSelectedOutputStatus" data="#{canvasBean.selectedOutputStatus}"
-                    oncomplete="updateArcStatus(data);" reRender="errorTable, msnError" >
-                    <a4j:actionparam name="select" />
-                </a4j:jsFunction>
-            </a4j:region>
-            
-            <a4j:region>
-                <a4j:status
-                    onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
-                    onerror="jQuery('#canvas-tabs').unblock();"
-                    onsuccess="jQuery('#canvas-tabs').unblock();"
-                    onstop="jQuery('#canvas-tabs').unblock();" />
-               
-               <a4j:jsFunction name="updateWfComment" action="#{canvasBean.updateWfComment}" oncomplete="updateWfDisplayComment()">
-                    <a4j:actionparam name="commentWf" assignTo="#{canvasBean.commentWf}"/>
-               </a4j:jsFunction>
-                    
-            </a4j:region>
-            
-            <a4j:region>
-            	<a4j:jsFunction name="updateWfDisplayComment" data="#{canvasBean.savedWfComment}"
-                    oncomplete="jQuery('.container-comment-'+getSelectedByName()).html(data);" reRender="errorTable, msnError" >
-                </a4j:jsFunction>
-            </a4j:region>
+				<a4j:jsFunction name="updateSelectedOutputStatus"
+					data="#{canvasBean.selectedOutputStatus}"
+					oncomplete="updateArcStatus(data);" reRender="errorTable, msnError">
+					<a4j:actionparam name="select" />
+				</a4j:jsFunction>
+			</a4j:region>
+
+			<a4j:region>
+				<a4j:status
+					onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+					onerror="jQuery('#canvas-tabs').unblock();"
+					onsuccess="jQuery('#canvas-tabs').unblock();"
+					onstop="jQuery('#canvas-tabs').unblock();" />
+
+				<a4j:jsFunction name="updateWfComment"
+					action="#{canvasBean.updateWfComment}"
+					oncomplete="updateWfDisplayComment()">
+					<a4j:actionparam name="commentWf"
+						assignTo="#{canvasBean.commentWf}" />
+				</a4j:jsFunction>
+
+			</a4j:region>
+
+			<a4j:region>
+				<a4j:jsFunction name="updateWfDisplayComment"
+					data="#{canvasBean.savedWfComment}"
+					oncomplete="jQuery('.container-comment-'+getSelectedByName()).html(data);"
+					reRender="errorTable, msnError">
+				</a4j:jsFunction>
+			</a4j:region>
 
 			<a4j:region>
 				<a4j:status
@@ -1268,6 +1285,7 @@
 					<a4j:actionparam name="id" />
 				</a4j:jsFunction>
 			</a4j:region>
+
 
 			<a4j:region>
 
@@ -1721,31 +1739,35 @@
 											<h:outputText value="#{messages.label_menu_software}" />
 										</h:panelGroup>
 									</f:facet>
-									<rich:menuGroup value="#{messages.label_menu_subworkflow}"
-										>
+									<rich:menuGroup value="#{messages.label_menu_subworkflow}">
 										<rich:menuItem id="installSubWorkflow" submitMode="ajax"
 											value="#{messages.label_menu_install_sub_workflow}"
 											disabled="#{canvasBean.workflowType == 'W'}"
 											onclick="#{rich:component('modalSubWfInstall')}.show();"
-											action="#{subwfBean.mountSubName}"
-											>
+											action="#{subwfBean.mountSubName}">
 											<h:outputText value="Ctrl+I" class="menuItemHotKey" />
-											<f:param name="subWorkflowName" value="#{canvasBean.nameWorkflow}" />
+											<f:param name="subWorkflowName"
+												value="#{canvasBean.nameWorkflow}" />
 										</rich:menuItem>
 										<rich:menuItem id="uninstallSubWorkflow" submitMode="ajax"
 											value="#{messages.label_menu_uninstall_sub_workflow}"
 											oncomplete="#{rich:component('modalSubWfUninstall')}.show();"
-											action="#{subwfBean.refreshSubworkflowsAllList}"											>
+											action="#{subwfBean.refreshSubworkflowsAllList}">
 											<h:outputText value="Ctrl+I" class="menuItemHotKey" />
 										</rich:menuItem>
-										<rich:menuItem id="installSubWorkflowHDFS" submitMode="ajax"
-											value="#{messages.label_menu_import_sub_workflowfrom_hdfs}">
+										<rich:menuItem id="importSubWorkflowHDFS" submitMode="ajax"
+											value="#{messages.label_menu_import_sub_workflowfrom_hdfs}"
+											oncomplete="#{rich:component('modalSubWfimport')}.show();">
 											<h:outputText value="Ctrl+I" class="menuItemHotKey" />
 										</rich:menuItem>
 										<rich:menuItem id="exportSubWorkflowHDFS" submitMode="ajax"
 											value="#{messages.label_menu_export_sub_workflowto_hdfs}"
-											disabled="#{canvasBean.workflowType == 'W'}">
+											disabled="#{canvasBean.workflowType == 'W'}"
+											oncomplete="#{rich:component('modalSubWfexport')}.show();"
+											action="#{subwfBean.mountSubName}">
 											<h:outputText value="Ctrl+I" class="menuItemHotKey" />
+											<f:param name="subWorkflowName"
+												value="#{canvasBean.nameWorkflow}" />
 										</rich:menuItem>
 									</rich:menuGroup>
 									<rich:menuItem id="installationMenuItem" submitMode="ajax"
@@ -1761,8 +1783,7 @@
 									</rich:menuItem>
 									<rich:menuSeparator />
 									<rich:menuItem id="aboutMenuItem" submitMode="ajax"
-										value="#{messages.label_menu_about}"
-										disable="true">
+										value="#{messages.label_menu_about}" disable="true">
 										<h:outputText value="Ctrl+Alt+P" class="menuItemHotKey" />
 									</rich:menuItem>
 
@@ -1972,9 +1993,8 @@
 								<ui:repeat value="#{configureTabsBean.menuWAList}" var="tab">
 									<div id="tabFooter-#{tab.key}" style="overflow-y: hidden;">
 										<ui:repeat value="#{tab.value}" var="action">
-											<span id="spanImagensObj" style="display: none">
-												<img src="#{action[1]}" class="footerIcon" />
-												<span>#{action[0]}</span>
+											<span id="spanImagensObj" style="display: none"> <img
+												src="#{action[1]}" class="footerIcon" /> <span>#{action[0]}</span>
 											</span>
 										</ui:repeat>
 									</div>
@@ -2210,6 +2230,7 @@
 		</rich:modalPanel>
 	</a4j:region>
 
+
 	<a4j:region renderRegionOnly="true">
 		<rich:modalPanel id="modalSelectLink" width="300" height="200"
 			style="overflow:auto;" resizeable="false">
@@ -2397,13 +2418,14 @@
 			</f:facet>
 
 			<h:panelGroup>
-				<a4j:include viewId="/pages/modalSubWfInstall.xhtml" ajaxRendered="true" />
+				<a4j:include viewId="/pages/subWF/modalSubWFInstall.xhtml"
+					ajaxRendered="true" />
 			</h:panelGroup>
 
 		</rich:modalPanel>
 	</a4j:region>
 	<a4j:region>
-		<rich:modalPanel id="modalSubWfUninstall" width="800" height="600"
+		<rich:modalPanel id="modalSubWfUninstall" width="600" height="490"
 			style="overflow:auto;" resizeable="false">
 
 			<f:facet name="header">
@@ -2416,8 +2438,50 @@
 			</f:facet>
 
 			<h:panelGroup>
-				<a4j:include viewId="/pages/modalSubWFUninstall.xhtml" ajaxRendered="true" />
+				<a4j:include viewId="/pages/subWF/modalSubWFUninstall.xhtml"
+					ajaxRendered="true" />
 			</h:panelGroup>
+
+		</rich:modalPanel>
+	</a4j:region>
+	<a4j:region>
+		<rich:modalPanel id="modalSubWfexport" width="300" height="300"
+			style="overflow:auto;" resizeable="false">
+
+			<f:facet name="header">
+				<h:outputText value="Export Sub Workflow" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+					style="cursor:pointer;width:22px;"
+					onclick="#{rich:component('modalSubWfexport')}.hide()" />
+			</f:facet>
+
+			<h:panelGroup>
+				<a4j:include viewId="/pages/subWF/modalSubWFexport.xhtml"
+					ajaxRendered="true" />
+			</h:panelGroup>
+
+		</rich:modalPanel>
+	</a4j:region>
+	<a4j:region>
+		<rich:modalPanel id="modalSubWfimport" width="650" height="450"
+			style="overflow:auto;" resizeable="false">
+
+			<f:facet name="header">
+				<h:outputText value="Export Sub Workflow" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+					style="cursor:pointer;width:22px;"
+					onclick="#{rich:component('modalSubWfimport')}.hide()" />
+			</f:facet>
+			<h:form>
+				<h:panelGroup>
+					<a4j:include viewId="/pages/subWF/modalSubWFImport.xhtml"
+						ajaxRendered="true" />
+				</h:panelGroup>
+			</h:form>
 
 		</rich:modalPanel>
 	</a4j:region>

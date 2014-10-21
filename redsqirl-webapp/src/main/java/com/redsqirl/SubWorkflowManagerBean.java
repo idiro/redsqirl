@@ -1,5 +1,6 @@
 package com.redsqirl;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.List;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
@@ -15,112 +17,111 @@ import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
+import com.redsqirl.workflow.server.connect.interfaces.DataStore;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 import com.redsqirl.workflow.utils.SuperActionManager;
 
-public class SubWorkflowManagerBean extends BaseBean implements Serializable{
-	
+public class SubWorkflowManagerBean extends BaseBean implements Serializable {
+
 	private SuperActionManager saManager = new SuperActionManager();
-	
+
 	private Logger logger = Logger.getLogger(getClass());
 
-	private String name ="";
-	private String actualName ="";
-	
+	private String name = "";
+	private String actualName = "";
+	private String canEdit = "";
+	private String pathHDFS = "";
 	private boolean admin = false;
-	
+
 	/**
-	 * @param admin the admin to set
+	 * @param admin
+	 *            the admin to set
 	 */
 	public void setAdmin(boolean admin) {
 		this.admin = admin;
 	}
 
-
 	private String asSystem = "";
-	
-	//For selection uninstall
+
+	// For selection uninstall
 	private List<SelectItem> uninstallUserSa = new ArrayList<SelectItem>(),
-			uninstallSysSa = new ArrayList<SelectItem>();
-	
-	//List of sub workflows
-	private String[] userSA = new String[]{};
-	private String[] systemSA = new String[]{} ;
-	
-	public void installCurrentSubWorkflow() throws RemoteException{
-		boolean ok = false;
-		
-		
-		logger.info("subWorkflow name  "+name);
-		logger.info("subWorkflow name  "+actualName);
+			uninstallSysSa = new ArrayList<SelectItem>(),
+			exportList = new ArrayList<SelectItem>();
+
+	// List of sub workflows
+	private String[] userSA = new String[] {};
+	private String[] systemSA = new String[] {};
+	private String[] exportsSA = new String[] {};
+
+	public void installCurrentSubWorkflow() throws RemoteException {
+
+		logger.info("subWorkflow name  " + name);
+		logger.info("subWorkflow name  " + actualName);
 		DataFlowInterface dfi = getworkFlowInterface();
 		SubDataFlow swa = dfi.getSubWorkflow(actualName);
-		
+
 		boolean system = asSystem.equals("System");
-		swa.setName("sa_"+name);
-		
+		swa.setName("sa_" + name);
+
 		String username = system ? null : getUserInfoBean().getUserName();
-		
+
 		String error = saManager.install(username, swa, null);
-		
-		
-		if(error!=null && !error.isEmpty()){
+
+		if (error != null && !error.isEmpty()) {
 			MessageUseful.addErrorMessage(error);
 			HttpServletRequest request = (HttpServletRequest) FacesContext
 					.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
-			logger.info(" "+error);
-		}else{
-			MessageUseful.addInfoMessage("Install Success for "+swa.getName());
+			logger.info(" " + error);
+		} else {
+			MessageUseful
+					.addInfoMessage("Install Success for " + swa.getName());
 			HttpServletRequest request = (HttpServletRequest) FacesContext
 					.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnSuccess", "msnSuccess");
-			
+
 		}
-		ok = error ==null || error.isEmpty();
 	}
-	
-	
-	public String getName(){
+
+	public String getName() {
 		return name;
 	}
-	
+
 	public void setName(String name) {
-		
+
 		this.name = name;
 	}
 
-
-	public boolean getAdmin(){
+	public boolean getAdmin() {
 		return admin;
 	}
-	
-	public void getAdminValue(){
+
+	public void getAdminValue() {
 		admin = false;
-		try{
+		try {
 			logger.info("is admin");
-			
+
 			String user = getUserInfoBean().getUserName();
 			String[] admins = WorkflowPrefManager.getSysAdminUser();
-			if(admins != null){
-				for(String cur: admins){
+			if (admins != null) {
+				for (String cur : admins) {
 					admin = admin || cur.equals(user);
-					logger.debug("admin user: "+cur);
+					logger.debug("admin user: " + cur);
 				}
 			}
-		}catch(Exception e){
-			logger.warn("Exception in isAdmin: "+e.getMessage());
+		} catch (Exception e) {
+			logger.warn("Exception in isAdmin: " + e.getMessage());
 		}
-		logger.info("is admin "+admin);
+		logger.info("is admin " + admin);
 	}
-	public void mountSubName(){
-		String val = FacesContext.getCurrentInstance().getExternalContext().
-				getRequestParameterMap().get("subWorkflowName");
+
+	public void mountSubName() {
+		String val = FacesContext.getCurrentInstance().getExternalContext()
+				.getRequestParameterMap().get("subWorkflowName");
 		setAsSystem("User");
 		this.actualName = val;
 		setName(val);
 	}
-
 
 	/**
 	 * @return the asSystem
@@ -129,79 +130,135 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable{
 		return asSystem;
 	}
 
-
 	/**
-	 * @param asSystem the asSystem to set
+	 * @param asSystem
+	 *            the asSystem to set
 	 */
 	public void setAsSystem(String asSystem) {
 		this.asSystem = asSystem;
 	}
-	
-	public void refreshSubworkflowsAllList(){
+
+	public void refreshSubworkflowsAllList() {
 		getAdminValue();
 		refreshSubworkflowsSystemList();
 		refreshSubworkflowsUser();
 	}
 
-	
-	public void refreshSubworkflowsSystemList(){
+	public void refreshSubworkflowsSystemList() {
 		List<String> listSa = saManager.getAvailableSuperActions(null);
-		
+
 		systemSA = new String[listSa.size()];
 		uninstallSysSa = new ArrayList<SelectItem>();
-		
-		for(int i = 0; i < listSa.size() ;++i){
+
+		for (int i = 0; i < listSa.size(); ++i) {
 			String s = listSa.get(i);
 			systemSA[i] = s;
-			uninstallSysSa.add(new SelectItem(s,s));
+			uninstallSysSa.add(new SelectItem(s, s));
 		}
-		logger.info("system sa "+systemSA.length);
+		logger.info("system sa " + systemSA.length);
 		setSystemSA(systemSA);
 	}
-	
-	public void refreshSubworkflowsUser(){
-		List<String> listSa = saManager.getAvailableSuperActions(getUserInfoBean().getUserName());
+
+	public void refreshSubworkflowsUser() {
+		List<String> listSa = saManager
+				.getAvailableSuperActions(getUserInfoBean().getUserName());
 		userSA = new String[listSa.size()];
 		uninstallUserSa = new ArrayList<SelectItem>();
-		for(int i = 0; i < listSa.size() ;++i){
+		for (int i = 0; i < listSa.size(); ++i) {
 			String s = listSa.get(i);
 			userSA[i] = s;
-			uninstallUserSa.add(new SelectItem(s,s));
+			uninstallUserSa.add(new SelectItem(s, s));
 		}
 		setUserSA(userSA);
 	}
-	
-	public void deleteSASystem(){
+
+	public void deleteSASystem() {
 		logger.info("delete user sa");
-		if(getAdmin()){
-			for (String s : getSystemSA()){
+		if (getAdmin()) {
+			for (String s : getSystemSA()) {
 				saManager.uninstall(null, s);
 			}
 		}
 		refreshSubworkflowsSystemList();
 	}
-	
-	public void deleteSaUser(){
+
+	public void deleteSaUser() {
 		logger.info("delete user sa");
 		String user = getUserInfoBean().getUserName();
-		for (String s : getUserSA()){
-			logger.info("delete user sa "+s);
+		for (String s : getUserSA()) {
+			logger.info("delete user sa " + s);
 			saManager.uninstall(user, s);
 		}
 		refreshSubworkflowsUser();
-			
+
 	}
-	
-	private UserInfoBean getUserInfoBean(){
+
+	public void exportSa() throws RemoteException {
+		logger.info("subWorkflow name  " + name);
+		logger.info("subWorkflow name  " + actualName);
+		DataFlowInterface dfi = getworkFlowInterface();
+		SubDataFlow swa = dfi.getSubWorkflow(actualName);
+		logger.info("canEdit : '" + canEdit + "'");
+		Boolean edit = canEdit.equals("Yes");
+		swa.setName("sa_" + name);
+
+		String error = saManager.export(getUserInfoBean().getUserName(), swa,
+				null);
+
+		if (error != null && !error.isEmpty()) {
+			MessageUseful.addErrorMessage(error);
+			HttpServletRequest request = (HttpServletRequest) FacesContext
+					.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
+			logger.info(" " + error);
+		} else {
+			MessageUseful
+					.addInfoMessage("Install Success for " + swa.getName());
+			HttpServletRequest request = (HttpServletRequest) FacesContext
+					.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnSuccess", "msnSuccess");
+
+		}
+
+	}
+
+	public void importSa() throws IOException {
+
+		String pathHdfs = getPathHDFS();
+		logger.info("path '" + pathHdfs + "'");
+		if (pathHdfs == null || pathHdfs.isEmpty()) {
+			MessageUseful.addErrorMessage("Path to get SubWorkflow is Empty");
+			HttpServletRequest request = (HttpServletRequest) FacesContext
+					.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
+		} else {
+
+			String error = saManager.importSA(getUserInfoBean().getUserName(),
+					pathHdfs);
+
+			if (error != null && !error.isEmpty()) {
+				MessageUseful.addErrorMessage(error);
+				HttpServletRequest request = (HttpServletRequest) FacesContext
+						.getCurrentInstance().getExternalContext().getRequest();
+				request.setAttribute("msnError", "msnError");
+			} else {
+				MessageUseful.addInfoMessage("Import Success");
+				HttpServletRequest request = (HttpServletRequest) FacesContext
+						.getCurrentInstance().getExternalContext().getRequest();
+				request.setAttribute("msnSuccess", "msnSuccess");
+			}
+		}
+
+	}
+
+	private UserInfoBean getUserInfoBean() {
 		FacesContext context = FacesContext.getCurrentInstance();
 		UserInfoBean userInfoBean = (UserInfoBean) context.getApplication()
 				.evaluateExpressionGet(context, "#{userInfoBean}",
 						UserInfoBean.class);
-		
+
 		return userInfoBean;
 	}
-	
-
 
 	/**
 	 * @return the userSA
@@ -210,23 +267,21 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable{
 		return userSA;
 	}
 
-
 	/**
-	 * @param userSA2 the userSA to set
+	 * @param userSA2
+	 *            the userSA to set
 	 */
 	public void setUserSA(String[] userSA2) {
 		this.userSA = userSA2;
 	}
 
-	
-
 	/**
-	 * @param systemSA the systemSA to set
+	 * @param systemSA
+	 *            the systemSA to set
 	 */
 	public void setSystemSA(String[] systemSA) {
 		this.systemSA = systemSA;
 	}
-
 
 	/**
 	 * @return the systemSA
@@ -235,7 +290,6 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable{
 		return systemSA;
 	}
 
-
 	/**
 	 * @return the uninstallUserSa
 	 */
@@ -243,14 +297,13 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable{
 		return uninstallUserSa;
 	}
 
-
 	/**
-	 * @param uninstallUserSa the uninstallUserSa to set
+	 * @param uninstallUserSa
+	 *            the uninstallUserSa to set
 	 */
 	public void setUninstallUserSa(List<SelectItem> uninstallUserSa) {
 		this.uninstallUserSa = uninstallUserSa;
 	}
-
 
 	/**
 	 * @return the uninstallSysSa
@@ -259,17 +312,28 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable{
 		return uninstallSysSa;
 	}
 
-
 	/**
-	 * @param uninstallSysSa the uninstallSysSa to set
+	 * @param uninstallSysSa
+	 *            the uninstallSysSa to set
 	 */
 	public void setUninstallSysSa(List<SelectItem> uninstallSysSa) {
 		this.uninstallSysSa = uninstallSysSa;
 	}
 
-	
+	public String getCanEdit() {
+		return canEdit;
+	}
 
+	public void setCanEdit(String canEdit) {
+		this.canEdit = canEdit;
+	}
 
+	public String getPathHDFS() {
+		return pathHDFS;
+	}
 
+	public void setPathHDFS(String pathHDFS) {
+		this.pathHDFS = pathHDFS;
+	}
 
 }

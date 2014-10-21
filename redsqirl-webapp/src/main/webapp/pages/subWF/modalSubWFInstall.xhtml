@@ -47,7 +47,7 @@
 							reRender="errorTable"
 							onclick="#{rich:component('modalSubWfInstall')}.hide();" />
 						<a4j:commandButton styleClass="greenButton"
-							value="Install" reRender="installSubWfParams,msnError,errorTable,msnErrorPage"
+							value="Install" reRender="installSubWfParams,msnError,errorTable,msnErrorPage,msnSuccess"
 							action="#{subwfBean.installCurrentSubWorkflow}" 
 							oncomplete="if(#{requestScope['msnError'] == null})#{rich:component('modalSubWfInstall')}.hide();"
 							/>

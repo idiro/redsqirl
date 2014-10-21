@@ -40,6 +40,7 @@ public class HdfsBrowserBean extends HdfsBean {
 	public HdfsBrowserBean() {
 		List<SelectItem> listExtensions = new LinkedList<SelectItem>();
 		listExtensions.add(new SelectItem("*.rs", "*.rs"));
+		listExtensions.add(new SelectItem("*.srs", "*.srs"));
 		listExtensions.add(new SelectItem("*", "*"));
 		setExtensionsSelected(listExtensions.get(0).getLabel());
 		setListExtensions(listExtensions);

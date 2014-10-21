@@ -7,8 +7,6 @@
 
 	<a4j:loadBundle basename="MessagesResources" var="messages" />
 
-	<a4j:keepAlive beanName="packageMngBean" />
-
 	<div id="domMessageDivModalSubWFUninstall" style="display: none;">
 		<img src="../image/icons/waiting.gif" />
 	</div>
@@ -24,7 +22,7 @@
 			<rich:panel id="systemSa" header="System Super Actions"
 				style="width:270px;height:390px;" bodyClass="maxContent">
 
-				<h:panelGroup id="sysSaMenu" layout="block" style="overflow:auto;"
+				<h:panelGroup id="sysSaMenu" layout="block" style="overflow:auto;height:330px;"
 					rendered="#{subwfBean.admin}">
 					<h:selectManyCheckbox layout="pageDirection"
 						value="#{subwfBean.systemSA}">
@@ -46,7 +44,7 @@
 			<rich:panel id="userSa" header="User Super Actions"
 				style="width:270px;height:390px;" bodyClass="maxContent">
 
-				<h:panelGroup id="userSaMenu" layout="block" style="overflow:auto;">
+				<h:panelGroup id="userSaMenu" layout="block" style="overflow:auto;height:330px;">
 					<h:selectManyCheckbox layout="pageDirection"
 						value="#{subwfBean.userSA}">
 						<f:selectItems value="#{subwfBean.uninstallUserSa}" var="n"
@@ -62,17 +60,26 @@
 					</ui:repeat>
 				</h:panelGroup>
 				
-				<h:panelGrid id="sa_user_buttons" columns="2">
+				<h:panelGrid id="sa_user_buttons" columns="2"
+				 style="vertical-align:bottom;">
 					<rich:panel id="sa_user_uninstall">
 						<a4j:commandButton styleClass="greenButton"
 							value="#{messages.button_sys_uninstall}"
 							action="#{subwfBean.deleteSaUser}" 
-							reRender="userSaMenu" />
+							reRender="userSaMenu,msnSuccess" />
 					</rich:panel>
 				</h:panelGrid>
 
 			</rich:panel>
 
 		</h:panelGrid>
+		<h:panelGrid id="sa_main_buttons" columns="2"
+				 style="vertical-align:bottom;">
+					<rich:panel id="sa_ok">
+						<a4j:commandButton styleClass="greenButton"
+							value="ok"
+							onclick="#{rich:component('modalSubWfUninstall')}.hide()"/>
+					</rich:panel>
+				</h:panelGrid>
 	</h:form>
 </ui:composition>
