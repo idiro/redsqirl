@@ -10,8 +10,11 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
 
+import com.idiro.hadoop.NameNodeVar;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 
@@ -24,7 +27,30 @@ import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 public class SuperActionManager {
 
 	private static Logger logger = Logger.getLogger(SuperActionManager.class);
-
+	
+	public String export(String user ,SubDataFlow toExport , Boolean privilage) throws RemoteException{
+		String error = null;
+		String filePath ="/user/"+user+"/tmp/"+toExport.getName();
+		error = toExport.save(filePath, privilage);
+		return error;
+	}
+	
+	public String importSA(String user,String pathHdfs) throws IOException{
+		String error = null;
+		FileSystem fs = NameNodeVar.getFS();
+		Path path = new Path(pathHdfs);
+		Path dest = new Path(getSuperActionMainDir(user).getAbsolutePath());
+		if(fs.isFile(path)){
+			try{
+				fs.copyToLocalFile(path, dest);
+			} catch (Exception e ){
+				error ="Problem transfering "+pathHdfs+" on HDFS to "+ dest.getName()+" on local filesystem";
+			}
+		}
+		return error;
+		
+	}
+	
 	public String install(String user, SubDataFlow toInstall, Boolean privilege)
 			throws RemoteException {
 		String name = toInstall.getName();
@@ -44,7 +70,7 @@ public class SuperActionManager {
 		if (error == null) {
 			logger.debug("Save main file into: " + mainFile.getPath());
 			error = toInstall.saveLocal(mainFile, privilege);
-
+			
 			if (error != null) {
 				mainFile.delete();
 			} else {
