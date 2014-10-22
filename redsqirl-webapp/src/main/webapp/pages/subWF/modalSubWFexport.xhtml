@@ -1,0 +1,70 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<a4j:loadBundle basename="MessagesResources" var="messages" />
+
+	<h:form>
+
+		<div id="domMessageDivModalSubWFexport" style="display: none;">
+			<img src="../image/icons/waiting.gif" />
+		</div>
+
+		<a4j:region>
+			<a4j:status
+				onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModalSubWFexport') });"
+				onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
+				onstop="jQuery.unblockUI();" />
+		</a4j:region>
+
+
+		<div style="width: 270px; height: 200px;">
+
+					<rich:panel id="exportSubWf"
+						style="padding-left:5px; overflow: auto; height:200px;">
+
+
+							<h:form id="exportToHDFS">
+								<br/>
+								<h:outputText value="Name" />
+								<br/>
+								<h:inputText value="#{subwfBean.name}"/>
+								<h:selectOneRadio id="exporttype"
+									value="#{subwfBean.asSystem}"
+									disabled="!#{subwfBean.admin}">
+									<f:selectItem id="exportSystem" itemLabel="System" itemValue="System" />
+									<f:selectItem id="exportUser" itemLabel="User" itemValue="User" />
+								</h:selectOneRadio>
+								<h:outputText value="Can Edit" />
+								<h:selectOneRadio id="editable"
+									value="#{subwfBean.canEdit}"
+									>
+									<f:selectItem id="modifySFYes" itemLabel="Yes" itemValue="yes" />
+									<f:selectItem id="modifySFNo" itemLabel="No" itemValue="no" />
+								</h:selectOneRadio>
+							</h:form>
+					</rich:panel>
+
+					<h:panelGrid columns="3">
+						<a4j:commandButton styleClass="greenButton"
+							value="#{messages.button_cancel}" type="button"
+							reRender="errorTable"
+							onclick="#{rich:component('modalSubWfexport')}.hide();" />
+						<a4j:commandButton styleClass="greenButton"
+							value="Export" 
+							reRender="exportSubWf,msnError,errorTable,msnErrorPage,msnSuccess"
+							action="#{subwfBean.exportSa}" 
+							oncomplete="if(#{requestScope['msnError'] == null})#{rich:component('modalSubWfexport')}.hide();"
+							/>
+					</h:panelGrid>
+
+
+
+		</div>
+
+	</h:form>
+
+</ui:composition>

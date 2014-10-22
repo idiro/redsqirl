@@ -161,6 +161,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		
 		String regex = null;
 		if(extensionsSelected != null && !extensionsSelected.isEmpty()){
+			logger.info("extension select: "+extensionsSelected);
 			regex = extensionsSelected.replaceAll(Pattern.quote("."), Matcher.quoteReplacement("\\.")).replaceAll(Pattern.quote("*"), ".*");
 			logger.info("Regex: "+regex);
 		}
@@ -316,12 +317,14 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 	public void verifyIfIsFile() throws RemoteException {
 		String name = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("nameFile");
+		logger.info("verifying "+name);
 		verifyIfIsFile(name);
 	}
 
 	public void verifyIfIsFile(String name) throws RemoteException {
 		getDataStore().goTo(generatePath(getDataStore().getPath(), name));
 		file = getDataStore().getChildrenProperties() == null;
+		logger.info("verifying is "+name + " a file "+file);
 		getDataStore().goPrevious();
 	}
 
