@@ -37,8 +37,7 @@ public class SubWorkflowOutput extends DataflowAction{
 	
 	private static void init() throws RemoteException{
 		if(input.isEmpty()){
-			input.put("",new DataProperty(new LinkedList<Class<? extends DFEOutput>>(), 
-					1, 1));
+			input.put("",new DataProperty(new LinkedList<Class<? extends DFEOutput>>(), 1, 1));
 		}
 	}
 

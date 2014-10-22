@@ -1953,19 +1953,23 @@ function openCanvasModalJS(group, selectedTab){
     });
 
     
-    //check if start with sa and open a new sub work flow
-    if(group.elementType.startsWith("sa")){
-    	openSubWorkflow(group.elementType);
-    }else{
+    if(group.elementType != "superactionoutput"){
     	
-    	if (!group.hasChangedId) {
-	        openChangeIdModal(group.getId(), imagePath,true);
-	        group.hasChangedId = true;
-	    } else {
-	        openModal(group.getId(), imagePath, selectedTab, group.pageNb);
-	        changeHelpAnchor(group.pageNb);
-	    }
-	
+    	//check if start with sa and open a new sub work flow
+        if(group.elementType.startsWith("sa")){
+        	openSubWorkflow(group.elementType);
+        }else{
+        	
+        	if (!group.hasChangedId) {
+    	        openChangeIdModal(group.getId(), imagePath,true);
+    	        group.hasChangedId = true;
+    	    } else {
+    	        openModal(group.getId(), imagePath, selectedTab, group.pageNb);
+    	        changeHelpAnchor(group.pageNb);
+    	    }
+    	
+        }
+    	
     }
     
 }
@@ -2508,6 +2512,23 @@ function onHideModalSaveWorkflow(saved){
         isSaveAll = false;
     }
     //]]>
+}
+
+function removeLink(name) {
+	
+    var layer = canvasArray[selectedCanvas].layer;
+    
+    for ( var i = 0; i < layer.getChildren().length; i++) {
+        var arrow = layer.getChildren()[i];
+        if (arrow.getName() == name) {
+            arrow.remove();
+            if (arrow.label != null){
+                arrow.label.remove();
+            }
+            layer.draw();
+            return;
+        }
+    }
 }
 
 /**

@@ -101,7 +101,7 @@ public class HelpBean extends BaseBean implements Serializable {
 	public void mountRelativeHelpSuperAction(DataFlow wf) throws Exception{
 
 		Map<String,String[]> helpRel = null;
-		helpHtmlSuperAction = new LinkedList<String[]>();
+		List<String[]> helpHtmlSA = new LinkedList<String[]>();
 		try {
 			helpRel = wf.getRelativeHelpSuperAction(getCurrentPage());
 			Iterator<String> it = helpRel.keySet().iterator();
@@ -113,10 +113,10 @@ public class HelpBean extends BaseBean implements Serializable {
 						helpRel.get(key)[0],
 						helpRel.get(key)[1]};
 
-				helpHtmlSuperAction.add(helpArray);
+				helpHtmlSA.add(helpArray);
 				listHelp.add(key);
 			}
-			Collections.sort(helpHtmlSuperAction, new Comparator<String[]>() {
+			Collections.sort(helpHtmlSA, new Comparator<String[]>() {
 
 				@Override
 				public int compare(String[] o1, String[] o2) {
@@ -126,6 +126,8 @@ public class HelpBean extends BaseBean implements Serializable {
 		} catch (Exception e) {
 			logger.info("E");
 		}
+		
+		setHelpHtmlSuperAction(helpHtmlSA);
 
 	}
 

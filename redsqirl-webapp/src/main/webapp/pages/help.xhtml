@@ -268,23 +268,28 @@
 				<tr>
 					<td>
 						<h:form>
-							<a4j:commandButton action="#{helpBean.refreshRelativeHelp}" reRender="helpHtmlSuperAction" 
+							<a4j:commandButton action="#{helpBean.refreshRelativeHelp}" reRender="helpHtmlSuperAction, helpSuperActionSize" 
 								image="../image/icons/button-refresh.gif" title='#{messages.button_refresh}' styleClass="fileSystemIcon"/>
 						</h:form>
 					</td>
 					<td>
-						<h2>Available Super Actions (#{helpBean.helpSuperActionSize})</h2>
+						<h2>
+							<h:outputText value="#{messages.available_super_actions}" />
+							(<h:outputText value="#{helpBean.helpSuperActionSize}" id="helpSuperActionSize" />)
+						</h2>
 					</td>
 				</tr>
 			</table>
 			
-			<ul id="helpHtmlSuperAction">
-			    <ui:repeat value="#{helpBean.helpHtmlSuperAction}" var="action">
-				    <li>
-				    	<img id="image_help_#{action[0]}" width="25px" src="#{action[3]}"/>
-				    	<a class="stopLink" id="help_#{action[0]}" href="#{action[2]}" onclick="return false;">#{action[1]}</a>
-				    </li>
-			    </ui:repeat>
+			<ul>
+				<h:panelGroup id="helpHtmlSuperAction" >
+				    <ui:repeat value="#{helpBean.helpHtmlSuperAction}" var="action">
+					    <li>
+					    	<img id="image_help_#{action[0]}" width="25px" src="#{action[3]}"/>
+					    	<a class="stopLink" id="help_#{action[0]}" href="#{action[2]}" onclick="return false;">#{action[1]}</a>
+					    </li>
+				    </ui:repeat>
+			    </h:panelGroup>
 			</ul>
 			
 	    </div>

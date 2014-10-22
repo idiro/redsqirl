@@ -380,7 +380,7 @@ CommandChangeId.prototype.getName = function(){
     return msg_changeelementid_command;
 };
 
-function execChangeIdElementCommand(loadMainWindow , groupId, oldId,newId, oldComment, newComment){
+function execChangeIdElementCommand(loadMainWindow , groupId, oldId, newId, oldComment, newComment){
 	if(oldId != newId || oldComment != newComment){
 		if(oldId != newId ){
 			if(!(loadMainWindow==='true')){

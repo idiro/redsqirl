@@ -40,18 +40,12 @@ import com.redsqirl.workflow.utils.LanguageManagerWF;
  */
 public class SuperAction extends DataflowAction implements SuperElement{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 4061277134086282971L;
 
 	private static Logger logger = Logger.getLogger(SuperAction.class);
 
-
 	private Map<String, DFELinkProperty> input = new LinkedHashMap<String, DFELinkProperty>();
-
 	private Map<LinkedList<String>, DFEOutput> tmpOutput = new LinkedHashMap<LinkedList<String>,DFEOutput>();
-
 	private String name = null;
 	private String errorInit = null;
 
