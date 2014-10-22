@@ -124,7 +124,9 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 		
 		List<String> listSuperAction = new SuperActionManager().getAvailableSuperActions(userInfoBean.getUserName());
 		for (String name : listSuperAction) {
-			result.add(name);
+			if(!result.contains(name)){
+				result.add(name);
+			}
 		}
 
 		setMenuActions(result);

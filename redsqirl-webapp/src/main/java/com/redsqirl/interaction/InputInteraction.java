@@ -11,7 +11,7 @@ import com.redsqirl.workflow.server.interfaces.DFEInteraction;
  *
  */
 public class InputInteraction extends CanvasModalInteraction {
-	
+
 	/**
 	 * 
 	 */
@@ -21,12 +21,12 @@ public class InputInteraction extends CanvasModalInteraction {
 	 * The value in the input interaction 
 	 */
 	private String inputValue;
-	
+
 	/**
 	 * The regex value
 	 */
 	private String inputRegex;
-	
+
 	public InputInteraction(DFEInteraction dfeInter) throws RemoteException {
 		super(dfeInter);
 	}
@@ -34,15 +34,15 @@ public class InputInteraction extends CanvasModalInteraction {
 	@Override
 	public void readInteraction() throws RemoteException {
 		try{
-			inputValue = inter.getTree()
-				.getFirstChild("input").getFirstChild("output")
-				.getFirstChild().getHead();
+			inputValue = inter.getTree().getFirstChild("input").getFirstChild("output").getFirstChild().getHead();
 		}catch(Exception e){
 			inputValue = "";
 		}
-		inputRegex = inter.getTree()
-				.getFirstChild("input").getFirstChild("regex")
-				.getFirstChild().getHead();
+		try{
+			inputRegex = inter.getTree().getFirstChild("input").getFirstChild("regex").getFirstChild().getHead();
+		}catch(Exception e){
+			inputRegex = "";
+		}
 	}
 
 	@Override
