@@ -9,7 +9,6 @@ import java.util.List;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
@@ -17,7 +16,6 @@ import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
-import com.redsqirl.workflow.server.connect.interfaces.DataStore;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 import com.redsqirl.workflow.utils.SuperActionManager;
 
@@ -29,7 +27,7 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 
 	private String name = "";
 	private String actualName = "";
-	private String canEdit = "";
+	private String privilage = "";
 	private String pathHDFS = "";
 	private boolean admin = false;
 
@@ -44,15 +42,13 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 	private String asSystem = "";
 
 	// For selection uninstall
-	private List<SelectItem> uninstallUserSa = new ArrayList<SelectItem>(),
-			uninstallSysSa = new ArrayList<SelectItem>(),
-			exportList = new ArrayList<SelectItem>();
+	private List<SelectItem> 
+	uninstallUserSa = new ArrayList<SelectItem>(),
+	uninstallSysSa = new ArrayList<SelectItem>();
 
 	// List of sub workflows
 	private String[] userSA = new String[] {};
 	private String[] systemSA = new String[] {};
-	private String[] exportsSA = new String[] {};
-
 	public void installCurrentSubWorkflow() throws RemoteException {
 
 		logger.info("subWorkflow name  " + name);
@@ -75,7 +71,7 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 			logger.info(" " + error);
 		} else {
 			MessageUseful
-					.addInfoMessage("Install Success for " + swa.getName());
+			.addInfoMessage("Install Success for " + swa.getName());
 			HttpServletRequest request = (HttpServletRequest) FacesContext
 					.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnSuccess", "msnSuccess");
@@ -121,6 +117,7 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 		setAsSystem("User");
 		this.actualName = val;
 		setName(val);
+		setPrivilage("run");
 	}
 
 	/**
@@ -198,12 +195,12 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 		logger.info("subWorkflow name  " + actualName);
 		DataFlowInterface dfi = getworkFlowInterface();
 		SubDataFlow swa = dfi.getSubWorkflow(actualName);
-		logger.info("canEdit : '" + canEdit + "'");
-		Boolean edit = canEdit.equals("Yes");
+		logger.info("privilage : '" + privilage + "'");
+		Boolean privilage = null;
 		swa.setName("sa_" + name);
 
 		String error = saManager.export(getUserInfoBean().getUserName(), swa,
-				null);
+				privilage);
 
 		if (error != null && !error.isEmpty()) {
 			MessageUseful.addErrorMessage(error);
@@ -213,7 +210,7 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 			logger.info(" " + error);
 		} else {
 			MessageUseful
-					.addInfoMessage("Install Success for " + swa.getName());
+			.addInfoMessage("Install Success for " + swa.getName());
 			HttpServletRequest request = (HttpServletRequest) FacesContext
 					.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnSuccess", "msnSuccess");
@@ -320,13 +317,6 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 		this.uninstallSysSa = uninstallSysSa;
 	}
 
-	public String getCanEdit() {
-		return canEdit;
-	}
-
-	public void setCanEdit(String canEdit) {
-		this.canEdit = canEdit;
-	}
 
 	public String getPathHDFS() {
 		return pathHDFS;
@@ -334,6 +324,14 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 
 	public void setPathHDFS(String pathHDFS) {
 		this.pathHDFS = pathHDFS;
+	}
+
+	public String getPrivilage() {
+		return privilage;
+	}
+
+	public void setPrivilage(String privilage) {
+		this.privilage = privilage;
 	}
 
 }
