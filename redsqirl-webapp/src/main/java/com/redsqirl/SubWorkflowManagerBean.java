@@ -42,14 +42,13 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 	private String asSystem = "";
 
 	// For selection uninstall
-	private List<SelectItem> 
-			uninstallUserSa = new ArrayList<SelectItem>(),
+	private List<SelectItem> uninstallUserSa = new ArrayList<SelectItem>(),
 			uninstallSysSa = new ArrayList<SelectItem>();
 
 	// List of sub workflows
 	private String[] userSA = new String[] {};
 	private String[] systemSA = new String[] {};
-	
+
 	public void installCurrentSubWorkflow() throws RemoteException {
 
 		logger.info("subWorkflow name  " + name);
@@ -198,14 +197,15 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 		SubDataFlow swa = dfi.getSubWorkflow(actualName);
 		logger.info("privilage : '" + privilage + "'");
 		Boolean privilageVal = null;
-		if(privilage.equals("edit")){
-			
-		}else if (privilage.equals("run")){
+		if (privilage.equals("edit")) {
+
+		} else if (privilage.equals("run")) {
 			privilageVal = new Boolean(false);
-		}else if (privilage.equals("license")){
+		} else if (privilage.equals("license")) {
 			privilageVal = new Boolean(true);
 		}
-		logger.info(privilage+" + "+privilageVal);
+		logger.info(privilage + " + " + privilageVal);
+		Boolean privilage = null;
 		swa.setName("sa_" + name);
 
 		String error = saManager.export(getUserInfoBean().getUserName(), swa,
@@ -325,7 +325,6 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 	public void setUninstallSysSa(List<SelectItem> uninstallSysSa) {
 		this.uninstallSysSa = uninstallSysSa;
 	}
-
 
 	public String getPathHDFS() {
 		return pathHDFS;

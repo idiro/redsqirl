@@ -115,18 +115,20 @@
 			    </tr>
 		    </table>
 
-	   		<rich:listShuttle id="actionOptionForMenu" sourceValue="#{configureTabsBean.currentFooterMenu.actions}"
-	            targetValue="#{configureTabsBean.currentFooterMenu.target}" var="items" listsHeight="225"
-	            sourceListWidth="145" targetListWidth="145"
-	            rendered="#{configureTabsBean.index != null &amp;&amp; configureTabsBean.showTab == 'Y' }"
-	            copyAllControlLabel="Select all"
-                      copyControlLabel="Select"
-                      removeAllControlLabel="Unselect all"
-                      removeControlLabel="Unselect">
-	            <rich:column width="18">
-	            	<h:outputText value="#{items}" />
-	            </rich:column>
-	        </rich:listShuttle>
+			<h:panelGroup id="actionOptionForMenu" >
+		   		<rich:listShuttle sourceValue="#{configureTabsBean.currentFooterMenu.actions}"
+		            targetValue="#{configureTabsBean.currentFooterMenu.target}" var="items" listsHeight="225"
+		            sourceListWidth="145" targetListWidth="145"
+		            rendered="#{configureTabsBean.index != null &amp;&amp; configureTabsBean.showTab == 'Y' }"
+		            copyAllControlLabel="Select all"
+	                      copyControlLabel="Select"
+	                      removeAllControlLabel="Unselect all"
+	                      removeControlLabel="Unselect">
+		            <rich:column width="18">
+		            	<h:outputText value="#{items}" />
+		            </rich:column>
+		        </rich:listShuttle>
+	        </h:panelGroup>
 	   		
 	    </rich:panel>
 

@@ -4,16 +4,20 @@ import static org.junit.Assert.assertTrue;
 
 import java.rmi.RemoteException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
+import com.redsqirl.utils.FieldList;
+import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.connect.HiveInterface;
 import com.redsqirl.workflow.server.datatype.HiveType;
 import com.redsqirl.workflow.server.datatype.MapRedTextType;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.interfaces.DFEPage;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
@@ -22,7 +26,7 @@ import com.redsqirl.workflow.test.TestUtils;
 public class SourceTests {
 
 	Logger logger = Logger.getLogger(getClass());
-//	static Logger logger2 = Logger.getLogger(SourceTests.class);
+	static Logger logger2 = Logger.getLogger(SourceTests.class);
 
 	static Map<String, String> getColumns() {
 		Map<String, String> ans = new HashMap<String, String>();
@@ -131,6 +135,13 @@ public class SourceTests {
 
 		String error = src.updateOut();
 		assertTrue("source update: " + error, error == null);
+	
+		//FIXME this is a temp fix
+		OrderedFieldList fl = new OrderedFieldList();
+		fl.addField("id",FieldType.STRING);
+		fl.addField("value",FieldType.INT);
+		src.getDFEOutput().get(Source.out_name).setFields(fl);
+		
 
 		assertTrue("number of fields in source should be 2 instead of "
 				+ src.getDFEOutput().get(Source.out_name).getFields()

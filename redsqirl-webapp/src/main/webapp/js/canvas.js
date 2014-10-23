@@ -1735,6 +1735,7 @@ function createLink(circleGp){
             var arrowClone = addLink(selectedCanvas, output, input);
             canvasArray[selectedCanvas].commandHistory.push_command(new CommandAddArrow(selectedCanvas, output, input, arrowClone.getName()));
             
+            //alert("createLink  " + arrow.output.getId() + "  " + circleGp.getParent().getId() + "  " + arrowClone.getName());
             addLinkModalBt(arrow.output.getId(), circleGp.getParent().getId(), arrowClone.getName());
 
         } else {
@@ -1952,19 +1953,23 @@ function openCanvasModalJS(group, selectedTab){
     });
 
     
-    //check if start with sa and open a new sub work flow
-    if(group.elementType.startsWith("sa")){
-    	openSubWorkflow(group.elementType);
-    }else{
+    if(group.elementType != "superactionoutput"){
     	
-    	if (!group.hasChangedId) {
-	        openChangeIdModal(group.getId(), imagePath,true);
-	        group.hasChangedId = true;
-	    } else {
-	        openModal(group.getId(), imagePath, selectedTab, group.pageNb);
-	        changeHelpAnchor(group.pageNb);
-	    }
-	
+    	//check if start with sa and open a new sub work flow
+        if(group.elementType.startsWith("sa")){
+        	openSubWorkflow(group.elementType);
+        }else{
+        	
+        	if (!group.hasChangedId) {
+    	        openChangeIdModal(group.getId(), imagePath,true);
+    	        group.hasChangedId = true;
+    	    } else {
+    	        openModal(group.getId(), imagePath, selectedTab, group.pageNb);
+    	        changeHelpAnchor(group.pageNb);
+    	    }
+    	
+        }
+    	
     }
     
 }
@@ -2128,7 +2133,7 @@ function polygonOnClick(obj,e, canvasName){
 				var arrowClone = addLink(canvasName, output, input);
 				canvasArray[canvasName].commandHistory.push_command(new CommandAddArrow(canvasName, output, input, arrowClone.getName()));
 				
-				//alert(arrow.output.getId() + "  " + obj.getParent().getId());
+				//alert("polygonOnClick  " + arrow.output.getId() + "  " + obj.getParent().getId() + "  " + arrowClone.getName());
 				addLinkModalBt(arrow.output.getId(), obj.getParent().getId(), arrowClone.getName());
 				
 			}
@@ -2507,6 +2512,23 @@ function onHideModalSaveWorkflow(saved){
         isSaveAll = false;
     }
     //]]>
+}
+
+function removeLink(name) {
+	
+    var layer = canvasArray[selectedCanvas].layer;
+    
+    for ( var i = 0; i < layer.getChildren().length; i++) {
+        var arrow = layer.getChildren()[i];
+        if (arrow.getName() == name) {
+            arrow.remove();
+            if (arrow.label != null){
+                arrow.label.remove();
+            }
+            layer.draw();
+            return;
+        }
+    }
 }
 
 /**

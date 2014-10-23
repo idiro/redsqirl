@@ -289,8 +289,15 @@ public class CanvasBean extends BaseBean implements Serializable {
 		String idElementA = getIdMap().get(getNameWorkflow()).get(getParamOutId());
 		String idElementB = getIdMap().get(getNameWorkflow()).get(getParamInId());
 
-		String nameElementA = getSelectedLink().split(" -> ")[0];
-		String nameElementB = getSelectedLink().split(" -> ")[1];
+		//String nameElementA = getSelectedLink().split(" -> ")[0];
+		//String nameElementB = getSelectedLink().split(" -> ")[1];
+		
+		String nameElementA = "";
+		String nameElementB = "";
+		if(getSelectedLink().split(" -> ").length > 0){
+			nameElementA = getSelectedLink().split(" -> ")[0];
+			nameElementB = getSelectedLink().split(" -> ")[1];
+		}
 
 		try {
 
@@ -357,17 +364,15 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		logger.info("updateLinkPossibilities");
 
-		Map<String, String> params = FacesContext.getCurrentInstance()
-				.getExternalContext().getRequestParameterMap();
-		String idElementA = getIdMap().get(getNameWorkflow()).get(
-				params.get("paramOutId"));
-		String idElementB = getIdMap().get(getNameWorkflow()).get(
-				params.get("paramInId"));
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String idElementA = getIdMap().get(getNameWorkflow()).get(params.get("paramOutId"));
+		String idElementB = getIdMap().get(getNameWorkflow()).get(params.get("paramInId"));
 
 		logger.info("idElementA " + idElementA);
 		logger.info("idElementB " + idElementB);
 
 		try {
+			
 			linkPossibilities = new ArrayList<SelectItem>();
 			nbLinkPossibilities = 0;
 
@@ -376,20 +381,18 @@ public class CanvasBean extends BaseBean implements Serializable {
 			DataFlowElement dfeObjA = df.getElement(idElementA);
 			DataFlowElement dfeObjB = df.getElement(idElementB);
 
-			for (Map.Entry<String, DFELinkProperty> entryInput : dfeObjB
-					.getInput().entrySet()) {
-				for (Map.Entry<String, DFEOutput> entryOutput : dfeObjA
-						.getDFEOutput().entrySet()) {
+			for (Map.Entry<String, DFELinkProperty> entryInput : dfeObjB.getInput().entrySet()) {
+				for (Map.Entry<String, DFEOutput> entryOutput : dfeObjA.getDFEOutput().entrySet()) {
+					
+					String entryInputKey = entryInput.getKey();
+					String entryoutputKey = entryOutput.getKey();
 
-					logger.info("entryInput " + entryInput);
-					logger.info("entryOutput " + entryOutput);
+					logger.info("entryInput '" + entryInputKey+"'");
+					logger.info("entryOutput '" + entryoutputKey+"'");
+					
 
-					if (df.check(entryOutput.getKey(),
-							dfeObjA.getComponentId(), entryInput.getKey(),
-							dfeObjB.getComponentId())) {
-						linkPossibilities.add(new SelectItem(entryOutput
-								.getKey() + " -> " + entryInput.getKey()));
-
+					if (df.check(entryoutputKey, dfeObjA.getComponentId(), entryInputKey, dfeObjB.getComponentId())) {
+						linkPossibilities.add(new SelectItem(entryoutputKey + " -> " + entryInputKey));
 					}
 				}
 			}
@@ -453,6 +456,28 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		logger.info("load " + path);
 
+		if(path.endsWith(".srs")){
+			loadSubWorkflow();
+		}else{
+			loadWorkFlow();
+		}
+		
+	}
+	
+	/**
+	 * loadWorkFlow
+	 * 
+	 * Method to create a new workflow and make it the default
+	 * 
+	 * @return
+	 * @author Igor.Souza
+	 */
+	public void loadWorkFlow() {
+
+		String path = getPath();
+
+		logger.info("loadWorkFlow " + path);
+
 		DataFlowInterface dfi;
 		String error = null;
 		try {
@@ -497,15 +522,92 @@ public class CanvasBean extends BaseBean implements Serializable {
 					String cur = itCompIds.next();
 					idMap.get(nameWorkflow).put(cur,cur);
 				}
-				logger.info("Nb element loaded: "
-						+ getIdMap().get(getNameWorkflow()).size());
+				logger.info("Nb element loaded: " + getIdMap().get(getNameWorkflow()).size());
 				
+				setWorkflowType("W");
 				
-				if(path.endsWith(".srs")){
-					setWorkflowType("S");
-				}else{
-					setWorkflowType("W");
+				mapWorkflowType.put(getNameWorkflow(), getWorkflowType());
+				
+				logger.info("Load workflow type " + getWorkflowType());
+				
+			}
+
+		} catch (Exception e) {
+			logger.info("Error loading workflow");
+			e.printStackTrace();
+		}
+
+		if (error != null) {
+			logger.info("Error: " + error);
+			MessageUseful.addErrorMessage(error);
+			HttpServletRequest request = (HttpServletRequest) FacesContext
+					.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
+		}
+	}
+	
+	/**
+	 * loadSubWorkflow
+	 * 
+	 * Method to create a new sub workflow and make it the default
+	 * 
+	 * @return
+	 * @author Igor.Souza
+	 */
+	public void loadSubWorkflow() {
+
+		String path = getPath();
+
+		logger.info("loadSubWorkflow " + path);
+
+		DataFlowInterface dfi;
+		String error = null;
+		try {
+			dfi = getworkFlowInterface();
+			DataFlow df = null;
+			String newWfName = generateWorkflowName(path);
+
+			if (error == null) {
+				if (getWorkflowMap().containsKey(newWfName)) {
+					error = "A workflow called "
+							+ newWfName
+							+ " already exist. Please close this workflow if you want to proceed.";
+				} else if (dfi.getWorkflow(newWfName) != null) {
+					logger.warn("A workflow named "
+							+ newWfName
+							+ " already exist on the backend, closing it quietly...");
+					dfi.removeWorkflow(newWfName);
 				}
+			}
+			if (error == null) {
+				error = dfi.addSubWorkflow(newWfName);
+			}
+			if (error == null) {
+				df = dfi.getSubWorkflow(newWfName);
+				logger.info("read " + path);
+				error = df.read(path);
+			}
+			if (error == null) {
+				logger.info("set current worflow to " + newWfName);
+				setNameWorkflow(newWfName);
+				setDf(df);
+				df.setName(newWfName);
+
+				logger.info("Load element ids for front-end " + newWfName);
+				workflowMap.put(getNameWorkflow(), df);
+				getIdMap()
+				.put(getNameWorkflow(), new HashMap<String, String>());
+				logger.info("Nb elements: " + df.getElement().size());
+
+				Iterator<String> itCompIds = df.getComponentIds().iterator();
+				while(itCompIds.hasNext()){
+					String cur = itCompIds.next();
+					idMap.get(nameWorkflow).put(cur,cur);
+				}
+				logger.info("Nb element loaded: " + getIdMap().get(getNameWorkflow()).size());
+				
+				setWorkflowType("S");
+				
 				mapWorkflowType.put(getNameWorkflow(), getWorkflowType());
 				
 				logger.info("Load workflow type " + getWorkflowType());
@@ -1739,7 +1841,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 						Iterator<String> elInIdIt = inputsPerOutputs.get(outputNameCur).keySet().iterator();
 						while(elInIdIt.hasNext()){
 							String inElId = elInIdIt.next();
-							jsonLinks.put(new Object[] { elements.get(outElId), outputNameCur,elements.get(inElId), inputsPerOutputs.get(outputNameCur).get(inElId) });
+							jsonLinks.put(new Object[] { elements.get(outElId), outputNameCur, elements.get(inElId), inputsPerOutputs.get(outputNameCur).get(inElId) });
 						}
 					}
 				}
@@ -1885,20 +1987,20 @@ public class CanvasBean extends BaseBean implements Serializable {
 		File file = new SuperActionManager().getSuperActionMainDir(userInfoBean.getUserName());
 		logger.info("file path " + file.getAbsolutePath());
 		
-		loadSubWorkFlow(file.getAbsolutePath() + "/" + nameSubWorkflow);
+		loadSubWorkFlowFromLocal(file.getAbsolutePath() + "/" + nameSubWorkflow);
 	}
 	
 	/**
-	 * loadSubWorkFlow
+	 * loadSubWorkFlowFromLocal
 	 * 
-	 * Method to create a new workflow and make it the default
+	 * Method to create a new sub workflow and make it the default
 	 * 
 	 * @return
 	 * @author Igor.Souza
 	 */
-	public void loadSubWorkFlow(String path) {
+	public void loadSubWorkFlowFromLocal(String path) {
 
-		logger.info("load sub workflow " + path);
+		logger.info("load sub workflow FromLocal " + path);
 
 		DataFlowInterface dfi;
 		String error = null;
@@ -1916,10 +2018,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 				}
 			}
 			if (error == null) {
-				error = dfi.addWorkflow(newWfName);
+				error = dfi.addSubWorkflow(newWfName);
 			}
 			if (error == null) {
-				df = dfi.getWorkflow(newWfName);
+				df = dfi.getSubWorkflow(newWfName);
 				logger.info("read " + path);
 				error = df.readFromLocal(new File(path));
 			}

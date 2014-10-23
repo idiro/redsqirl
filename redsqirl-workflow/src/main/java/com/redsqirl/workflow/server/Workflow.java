@@ -1868,29 +1868,29 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 * 
 	 * @throws RemoteException
 	 */
-	public boolean check(String outName, String componentIdOut, String inName,
-			String componentIdIn) throws RemoteException {
+	public boolean check(String outName, String componentIdOut, String inName, String componentIdIn) throws RemoteException {
 
 		String error = null;
 		DataFlowElement out = getElement(componentIdOut);
 		DataFlowElement in = getElement(componentIdIn);
+		
+		logger.info("componentIdOut " + componentIdOut);
+		logger.info("componentIdIn " + componentIdIn);
+		logger.info("in " + in.getName());
+		logger.info("out" + out.getName());
+		
 		if (out == null || in == null) {
-			error = LanguageManagerWF
-					.getText("workflow.check_elementnotexists");
+			error = LanguageManagerWF.getText("workflow.check_elementnotexists");
 		} else if (in.getInput().get(inName) == null) {
-			error = LanguageManagerWF.getText("workflow.check_inputNotexits",
-					new Object[] { inName });
+			error = LanguageManagerWF.getText("workflow.check_inputNotexits", new Object[] { inName });
 		} else if (out.getDFEOutput().get(outName) == null) {
-			error = LanguageManagerWF.getText("workflow.check_outputNotexits",
-					new Object[] { outName });
-		} else if (!in.getInput().get(inName)
-				.check(out.getDFEOutput().get(outName))) {
-			error = in
-					.getInput()
-					.get(inName)
-					.checkStr(out.getDFEOutput().get(outName), componentIdIn,
-							inName, out.getName());
+			error = LanguageManagerWF.getText("workflow.check_outputNotexits", new Object[] { outName });
+		} else if (!in.getInput().get(inName).check(out.getDFEOutput().get(outName))) {
+			error = in.getInput().get(inName).checkStr(out.getDFEOutput().get(outName), componentIdIn, inName, out.getName());
 		}
+		
+		logger.info("check " + error);
+		
 		if (error != null) {
 			return false;
 		}

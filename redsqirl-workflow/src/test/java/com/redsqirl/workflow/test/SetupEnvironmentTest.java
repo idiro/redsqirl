@@ -51,37 +51,37 @@ import com.redsqirl.workflow.utils.PackageManagerTests;
 //	ActionTests.class,
 //	WorkflowTests.class,
 	//FIXME CreateWorkflowTests does not work
-	CreateWorkflowTests.class,
-//	ServerMainTests.class,
-	HDFSInterfaceTests.class,
-	//FIXME HiveInterfaceTests does not work
-	//HiveInterfaceTests.class,
-	//FIXME SSHInterfaceTests does not work
-	//SSHInterfaceTests.class,
-	SSHInterfaceArrayTests.class,
-	//FIXME Hive Type Tests does not work 
-	//HiveTypeTests.class, 
-	HiveTypePartitionTests.class, 
-	SourceTests.class,
-	WorkflowProcessesManagerTests.class,
-	OozieManagerTests.class,
-	
-	OozieDagTests.class,
-	OrderedFieldListTests.class,
-	TreeTests.class,
-	ConvertTests.class,
-	InputInteractionTests.class,
-	AppendListInteractionTests.class,
-	ListInteractionTests.class,
-	EditorInteractionTests.class,
-	TableInteractionTests.class,
-	//FIXME Test only done for keith user...
-	//HDFSTypeTests.class,
-	PackageManagerTests.class,
-	AbstractDictionaryTests.class,
-	SendEmailTests.class,
-	WorkflowInterfaceTests.class,
-	SubWorkflowTests.class,
+//	CreateWorkflowTests.class,
+////	ServerMainTests.class,
+//	HDFSInterfaceTests.class,
+//	//FIXME HiveInterfaceTests does not work
+//	//HiveInterfaceTests.class,
+//	//FIXME SSHInterfaceTests does not work
+//	//SSHInterfaceTests.class,
+//	SSHInterfaceArrayTests.class,
+//	//FIXME Hive Type Tests does not work 
+//	//HiveTypeTests.class, 
+//	HiveTypePartitionTests.class, 
+//	SourceTests.class,
+//	WorkflowProcessesManagerTests.class,
+//	OozieManagerTests.class,
+//	
+//	OozieDagTests.class,
+//	OrderedFieldListTests.class,
+//	TreeTests.class,
+//	ConvertTests.class,
+//	InputInteractionTests.class,
+//	AppendListInteractionTests.class,
+//	ListInteractionTests.class,
+//	EditorInteractionTests.class,
+//	TableInteractionTests.class,
+//	//FIXME Test only done for keith user...
+//	//HDFSTypeTests.class,
+//	PackageManagerTests.class,
+//	AbstractDictionaryTests.class,
+//	SendEmailTests.class,
+//	WorkflowInterfaceTests.class,
+//	SubWorkflowTests.class,
 	SuperActionTests.class
 })
 public class SetupEnvironmentTest {
@@ -107,7 +107,7 @@ public class SetupEnvironmentTest {
 
 		Log log = new Log();
 		log.put(log4jFile);
-		Logger.getRootLogger().setLevel(Level.DEBUG);
+//		Logger.getRootLogger().setLevel(Level.DEBUG);
 
 		WorkflowPrefManager.getInstance();
 		WorkflowPrefManager.pathSysCfgPref = testProp;

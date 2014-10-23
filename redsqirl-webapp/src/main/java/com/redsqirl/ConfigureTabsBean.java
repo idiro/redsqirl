@@ -27,9 +27,6 @@ import com.redsqirl.workflow.utils.SuperActionManager;
 public class ConfigureTabsBean extends BaseBean implements Serializable {
 
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 4626482566525824607L;
 
 	protected Map<String, List<String[]>> menuWA;
@@ -41,9 +38,8 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	private SelectableTable tableGrid = new SelectableTable();
 	private Integer index;
 	private String showTab = "N";
-
 	private String workflowNameTmp = "wf-footer-123";
-	
+
 	/**
 	 * Value to give when index is null
 	 */
@@ -66,7 +62,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 				if (getworkFlowInterface().getWorkflow(workflowNameTmp) == null) {
 					getworkFlowInterface().addWorkflow(workflowNameTmp);
 				}
-				
+
 				DataFlow wf = getworkFlowInterface().getWorkflow(workflowNameTmp);
 				wf.loadMenu();
 				menuWA = wf.getRelativeMenu(getCurrentPage());
@@ -77,21 +73,6 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 				getworkFlowInterface().removeWorkflow(workflowNameTmp);
 
 				mountMenuActions();
-				
-				menuNull = new SelectableRowFooter(
-						new String[3], getMenuActions());
-				setTabs(new LinkedList<String>(getMenuWA().keySet()));
-
-				setColumnIds(new LinkedList<String>());
-				getColumnIds().add("Name");
-				setTableGrid(new SelectableTable(columnIds));
-
-				for (String name : getMenuWA().keySet()) {
-					String[] value = new String[1];
-					value[0] = name;
-					retrieveItems(name);
-					getTableGrid().getRows().add(new SelectableRowFooter(value, getMenuActions(), getTarget()));
-				}
 
 				if(getMenuWA().isEmpty()){
 					setIndex(null);
@@ -110,19 +91,32 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	}
 
 	public void mountMenuActions() throws RemoteException, Exception {
-		
+
 		logger.info("mountMenuActions");
-		
+
 		LinkedList<String> result = new LinkedList<String>();
-		for (Entry<String, String> e : allWANameWithClassName.entrySet()) {
-			result.add(e.getKey());
-		}
-		
+
 		FacesContext context = FacesContext.getCurrentInstance();
 		UserInfoBean userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
 		logger.info("User: " + userInfoBean.getUserName());
-		
+
+		//list of super action
 		List<String> listSuperAction = new SuperActionManager().getAvailableSuperActions(userInfoBean.getUserName());
+
+		//list of normal action
+		for (Iterator iterator = allWANameWithClassName.entrySet().iterator(); iterator.hasNext();) {
+			Entry<String, String> e = (Entry<String, String>) iterator.next();
+
+			if(e.getValue().equals("com.redsqirl.workflow.server.action.superaction.SuperAction")){
+				if(!listSuperAction.contains(e.getKey())){
+					iterator.remove();
+					continue;
+				}
+			}
+
+			result.add(e.getKey());
+		}
+
 		for (String name : listSuperAction) {
 			if(!result.contains(name)){
 				result.add(name);
@@ -130,6 +124,23 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 		}
 
 		setMenuActions(result);
+		
+		
+		menuNull = new SelectableRowFooter(new String[3], getMenuActions());
+		setTabs(new LinkedList<String>(getMenuWA().keySet()));
+
+		setColumnIds(new LinkedList<String>());
+		getColumnIds().add("Name");
+		setTableGrid(new SelectableTable(columnIds));
+
+		for (String name : getMenuWA().keySet()) {
+			String[] value = new String[1];
+			value[0] = name;
+			retrieveItems(name);
+			getTableGrid().getRows().add(new SelectableRowFooter(value, getMenuActions(), getTarget()));
+		}
+		
+		
 	}
 
 	public Map<String, List<String[]>> getMenuWA() {
@@ -167,7 +178,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 		String[] items = new String[] {};
 		if (getMenuWA().containsKey(selectedTab)) {
 
-			mountMenuActions();
+			//mountMenuActions();
 
 			items = new String[getMenuWA().get(selectedTab).size()];
 			target = new LinkedList<String>();
@@ -253,7 +264,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 					getMenuWA().put(selectableRow.getRow()[0], temp);
 
 					List<String> l = new LinkedList<String>();
-					
+
 					List<String[]> menuList = getMenuWA().get(selectableRow.getRow()[0]);
 					for (String[] menuName : menuList) {
 						l.add(menuName[0]);

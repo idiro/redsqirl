@@ -7,6 +7,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.DataOutput;
@@ -30,6 +32,8 @@ public class SubWorkflowInput extends AbstractSource{
 	 * 
 	 */
 	private static final long serialVersionUID = 2646594330930112981L;
+	
+	public Logger logger = Logger.getLogger(SubWorkflowInput.class);
 	
 	private static Map<String, DFELinkProperty> input = new LinkedHashMap<String, DFELinkProperty>();
 	
@@ -174,7 +178,10 @@ public class SubWorkflowInput extends AbstractSource{
 						newVal += cur+" "+fl.getFieldType(cur).toString()+", ";
 					}
 					headerInt.setValue(newVal.substring(0,newVal.length()-2));
+					
 				}
+			}else{
+				logger.info("the field list was empty");
 			}
 		} else if (interId.equals(key_fieldDefInt)) {
 			defFieldInt.update(headerInt.getValue());

@@ -15,8 +15,10 @@ import com.redsqirl.workflow.server.ListInteraction;
 import com.redsqirl.workflow.server.action.Convert;
 import com.redsqirl.workflow.server.action.ConvertTests;
 import com.redsqirl.workflow.server.action.Source;
+import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.connect.HiveInterface;
 import com.redsqirl.workflow.server.datatype.HiveType;
+import com.redsqirl.workflow.server.datatype.MapRedTextType;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.test.TestUtils;
 import com.redsqirl.workflow.utils.SuperActionManager;
@@ -42,6 +44,55 @@ public class SubWorkflowTests {
 	public static SubWorkflowInput createInput_ID_VALUE(SubWorkflow w,
 			HiveInterface hInt,String idInput) throws RemoteException,
 			Exception {
+		
+		String tmpId = w.addElement((new SubWorkflowInput()).getName());
+		w.changeElementId(tmpId, idInput);
+		
+		SubWorkflowInput input = (SubWorkflowInput) w.getElement(idInput);
+		
+		logger.debug("Init data type");
+		input.update(input.getInteraction(Source.key_datatype));
+		Tree<String> dataTypeTree = input.getInteraction(Source.key_datatype)
+				.getTree();
+		dataTypeTree.getFirstChild("list").getFirstChild("output").add(hInt.getBrowserName());
+		
+		logger.debug("Init data sub type");
+		input.update(input.getInteraction(Source.key_datasubtype));
+		((ListInteraction) input.getInteraction(Source.key_datasubtype))
+		.setValue(new HiveType().getTypeName());
+		
+		
+		input.update(input.getInteraction(SubWorkflowInput.key_headerInt));
+		InputInteraction header = (InputInteraction) input.getInteraction(SubWorkflowInput.key_headerInt);
+		header.setValue("ID STRING, VALUE INT");
+		
+		input.update(input.getInteraction(SubWorkflowInput.key_fieldDefInt));
+		
+		
+		String error = input.updateOut();
+		assertTrue("source update: " + error, error == null);
+		
+		assertTrue("number of fields in source should be 2 instead of "
+				+ input.getDFEOutput().get(Source.out_name).getFields()
+				.getSize(), input.getDFEOutput().get(Source.out_name)
+				.getFields().getSize() == 2);
+		
+		assertTrue("field list "
+				+ input.getDFEOutput().get(Source.out_name).getFields()
+				.getFieldNames(),
+				input.getDFEOutput().get(Source.out_name).getFields()
+				.getFieldNames().contains("ID"));
+		assertTrue("field list "
+				+ input.getDFEOutput().get(Source.out_name).getFields()
+				.getFieldNames(),
+				input.getDFEOutput().get(Source.out_name).getFields()
+				.getFieldNames().contains("VALUE"));
+		
+		return input;
+	}
+	public static SubWorkflowInput createInput_ID_VALUE(SubWorkflow w,
+			HDFSInterface hInt,String idInput) throws RemoteException,
+			Exception {
 
 		String tmpId = w.addElement((new SubWorkflowInput()).getName());
 		w.changeElementId(tmpId, idInput);
@@ -57,7 +108,7 @@ public class SubWorkflowTests {
 		logger.debug("Init data sub type");
 		input.update(input.getInteraction(Source.key_datasubtype));
 		((ListInteraction) input.getInteraction(Source.key_datasubtype))
-			.setValue(new HiveType().getTypeName());
+			.setValue(new MapRedTextType().getTypeName());
 		
 		
 		input.update(input.getInteraction(SubWorkflowInput.key_headerInt));
@@ -111,6 +162,27 @@ public class SubWorkflowTests {
 		try{
 			
 			hiveInt = new HiveInterface();
+			sw = new SubWorkflow(name);
+			SubWorkflowInput input = createInput_ID_VALUE(
+					sw,hiveInt,"in");
+			
+			Convert conv = (Convert )ConvertTests.createConvertWithSrc(sw,input);
+			
+			SubWorkflowOutput output = createOutput(sw, conv, Convert.key_output);
+			
+		} catch (Exception e) {
+			logger.error(e.getMessage(),e);
+			assertTrue(e.toString(), false);
+		}
+		
+		return sw;
+	}
+	public static SubWorkflow createBasicSubWorkflowHdfs(String name) throws RemoteException{
+		SubWorkflow sw = null;
+		HDFSInterface hiveInt = null;
+		try{
+			
+			hiveInt = new HDFSInterface();
 			sw = new SubWorkflow(name);
 			SubWorkflowInput input = createInput_ID_VALUE(
 					sw,hiveInt,"in");
