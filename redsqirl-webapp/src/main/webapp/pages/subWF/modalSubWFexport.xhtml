@@ -34,16 +34,19 @@
 								<h:inputText value="#{subwfBean.name}"/>
 								<h:selectOneRadio id="exporttype"
 									value="#{subwfBean.asSystem}"
-									disabled="!#{subwfBean.admin}">
+									disabled="!#{subwfBean.admin}"
+									layout="pageDirection">
 									<f:selectItem id="exportSystem" itemLabel="System" itemValue="System" />
 									<f:selectItem id="exportUser" itemLabel="User" itemValue="User" />
 								</h:selectOneRadio>
-								<h:outputText value="Can Edit" />
+									<br/>
+								<h:outputText value="Privilages" />
 								<h:selectOneRadio id="editable"
-									value="#{subwfBean.canEdit}"
-									>
-									<f:selectItem id="modifySFYes" itemLabel="Yes" itemValue="yes" />
-									<f:selectItem id="modifySFNo" itemLabel="No" itemValue="no" />
+									value="#{subwfBean.privilage}" 
+									layout="pageDirection">
+									<f:selectItem id="privilagesRun" itemLabel="Run Only" itemValue="run" />
+									<f:selectItem id="privilagesEdit" itemLabel="Editable" itemValue="edit" />
+									<f:selectItem id="privilagesLicense" itemLabel="Licensed" itemValue="license" />
 								</h:selectOneRadio>
 							</h:form>
 					</rich:panel>

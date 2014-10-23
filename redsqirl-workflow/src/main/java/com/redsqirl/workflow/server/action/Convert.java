@@ -455,4 +455,10 @@ public class Convert extends DataflowAction {
 		return cpi;
 	}
 
+	@Override
+	public Boolean getPrivilege() throws RemoteException {
+		// leave as null otherwise never editable
+		return null;
+	}
+
 }

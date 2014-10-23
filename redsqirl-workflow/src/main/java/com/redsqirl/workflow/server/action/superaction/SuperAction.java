@@ -55,6 +55,8 @@ public class SuperAction extends DataflowAction implements SuperElement{
 	private String name = null;
 	private String errorInit = null;
 
+	private Boolean privilege = null;
+	
 	public SuperAction() throws RemoteException {
 		super(new SubWorkflowAction());
 		name = "superaction";
@@ -75,6 +77,7 @@ public class SuperAction extends DataflowAction implements SuperElement{
 				tmpOutput = saw.getTmpOutput();
 				generateTmpPathsIfNull();
 				output = saw.getOutputSuperAction();
+				privilege = saw.getPrivilege();
 			}else{
 				logger.debug("Error when reading the metadata: "+errorInit);
 			}
@@ -387,6 +390,11 @@ public class SuperAction extends DataflowAction implements SuperElement{
 	 */
 	public final void setTmpOutput(Map<LinkedList<String>, DFEOutput> tmpOutput) {
 		this.tmpOutput = tmpOutput;
+	}
+
+	@Override
+	public Boolean getPrivilege() throws RemoteException {
+		return null;
 	}
 
 }

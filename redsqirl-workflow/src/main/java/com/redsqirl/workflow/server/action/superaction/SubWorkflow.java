@@ -313,7 +313,7 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 		Document doc = dBuilder.parse(xmlFile);
 
 		doc.getDocumentElement().normalize();
-
+		Element docEL = doc.getDocumentElement();
 		// Needs to do two reading,
 		// for the element and there id
 		// for link all the element
@@ -322,8 +322,21 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 		SubWorkflowInput saIn = new SubWorkflowInput();
 		Map<String,String> globOut = new LinkedHashMap<String,String>();
 
-
+		
 		NodeList compList = doc.getElementsByTagName("sa_global_outputs");
+		String security = doc.getElementsByTagName("security").item(0).getChildNodes().item(0).getTextContent();
+		logger.info("Security "+security);
+		
+		if(security.equals("editable")){
+			this.privilege = null;
+		}else if(security.equals("runnable")){
+			this.privilege = new Boolean(false);
+		}else if (security.equals("licensed")){
+			this.privilege = new Boolean(true);
+		}
+		
+		logger.info("privilege '"+this.privilege+"'");
+		
 		for (int temp = 0; temp < compList.getLength() && error == null; ++temp) {
 
 			Node compCur = compList.item(temp);

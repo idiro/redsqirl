@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import com.redsqirl.workflow.server.OozieManager;
 import com.redsqirl.workflow.server.Workflow;
+import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.action.Source;
 import com.redsqirl.workflow.server.action.SourceTests;
 import com.redsqirl.workflow.server.connect.HiveInterface;
@@ -122,6 +123,8 @@ public class SuperActionTests {
 		    SuperAction sa2 = addSuperAction(w, sName,"in", (Source)src);
 		    runWorkflow(w);
 			
+		    sw.save(WorkflowPrefManager.getPathUserSuperAction(System.getProperty("user.name")));
+		    sw.readMetaData();
 			
 		} catch (Exception e) {
 			logger.error(e.getMessage(),e);

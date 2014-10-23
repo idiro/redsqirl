@@ -239,6 +239,13 @@ public interface DataFlowElement extends Remote{
 	 * @throws RemoteException
 	 */
 	public List<DFEPage> getPageList() throws RemoteException;
+	
+	/**
+	 * Get the privilege of the Element
+	 * @return privilege
+	 * @throws RemoteException
+	 */
+	public Boolean getPrivilege() throws RemoteException;
 
 	/**
 	 * Get the component ID

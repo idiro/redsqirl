@@ -1719,9 +1719,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 				for (DataFlowElement e : getDf().getElement()) {
 					String compId = e.getComponentId();
+					try{
+					logger.info("privlege id '"+e.getPrivilege()+"'");
+					}catch(Exception ep){
+						
+					}
 					jsonElements.put(new Object[] { elements.get(compId), e.getName(),
 							LocalFileSystem.relativize(getCurrentPage(), e.getImage()),
-							e.getX(), e.getY(), compId });
+							e.getX(), e.getY(), compId  });
 				}
 				
 				

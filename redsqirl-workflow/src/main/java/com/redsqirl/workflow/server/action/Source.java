@@ -107,4 +107,10 @@ public class Source extends AbstractSource {
 		}
 		return absolutePath;
 	}
+
+	@Override
+	public Boolean getPrivilege() throws RemoteException {
+		// leave null or otherwise never editable
+		return null;
+	}
 }
