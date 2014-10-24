@@ -43,9 +43,20 @@ public class SuperActionManager {
 		if(fs.isFile(path)){
 			try{
 				fs.copyToLocalFile(path, dest);
+				String filename = pathHdfs.substring(pathHdfs.lastIndexOf("/"));
+				String filenameReplced = filename.substring(0,filename.indexOf(".srs"));
+				logger.info(getSuperActionMainDir(user).getAbsolutePath() +filename);
+				logger.info(getSuperActionMainDir(user).getAbsolutePath() +filenameReplced);
+				File file = new File(getSuperActionMainDir(user).getAbsolutePath()+filename);
+				File file2 = new File(getSuperActionMainDir(user).getAbsolutePath()+filenameReplced);
+				
+				file.renameTo(file2);
+				
 			} catch (Exception e ){
 				error ="Problem transfering "+pathHdfs+" on HDFS to "+ dest.getName()+" on local filesystem";
 			}
+		}else{
+			error = "Propelem with file :"+path;
 		}
 		return error;
 		
@@ -102,10 +113,7 @@ public class SuperActionManager {
 
 	public List<String> getAvailableSuperActions(String user) {
 		File sysSA = getSuperActionMainDir(null);
-		logger.info("sysSa : " + (sysSA == null));
-		logger.info("sysSa exists: " + sysSA.exists() );
 		File userSA = getSuperActionMainDir(user);
-		logger.info("userSa exists: " + userSA.exists());
 		// final String pattern= "^[a-zA-Z0-9]*$";
 		final String pattern = "sa_[a-zA-Z0-9]*";
 

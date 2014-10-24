@@ -180,7 +180,6 @@ public class SuperAction extends DataflowAction implements SuperElement{
 			Node cur = nl.item(i);
 
 			try {
-
 				String queueStr = ((Element) cur)
 						.getElementsByTagName("stack").item(0)
 						.getChildNodes().item(0).getNodeValue();
@@ -203,6 +202,7 @@ public class SuperAction extends DataflowAction implements SuperElement{
 				error = LanguageManagerWF.getText(
 						"dataflowaction.readvaluesxml",
 						new Object[] { componentId });
+				logger.error("error ",e);
 			}
 		}
 

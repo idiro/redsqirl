@@ -57,8 +57,13 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 		SubDataFlow swa = dfi.getSubWorkflow(actualName);
 
 		boolean system = asSystem.equals("System");
-		swa.setName("sa_" + name);
+		
+		if(!name.startsWith("sa_")){
+			name = "sa_"+name;
+		}
 
+		swa.setName(name);
+		
 		String username = system ? null : getUserInfoBean().getUserName();
 
 		String error = saManager.install(username, swa, null);
@@ -205,9 +210,15 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 			privilageVal = new Boolean(true);
 		}
 		logger.info(privilage + " + " + privilageVal);
-		Boolean privilage = null;
-		swa.setName("sa_" + name);
-
+		if(!name.startsWith("sa_")){
+			name = "sa_"+name;
+		}
+		
+		if(!name.contains(".")){
+			name = name+".srs";
+		}
+		swa.setName(name);
+		
 		String error = saManager.export(getUserInfoBean().getUserName(), swa,
 				privilageVal);
 
@@ -238,7 +249,6 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 					.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
 		} else {
-
 			String error = saManager.importSA(getUserInfoBean().getUserName(),
 					pathHdfs);
 

@@ -158,9 +158,12 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 
 	protected String saveXmlOnLocal(File file, Boolean privilege) throws RemoteException{
 		String error = null;
-		String pattern= "^[a-zA-Z0-9_]*$";
+//		String pattern= "^[a-zA-Z0-9_]*$";
+		String pattern= "sa_[a-zA-Z0-9]*";
+		logger.info(name+ "  "+name.matches(pattern));
+		logger.info(name+ "  "+name.startsWith("sa_"));
 		if(!name.matches(pattern) || !name.startsWith("sa_")){
-			error = "The super action name should be alpha-numeric only and start by 'sa_'.";
+			error = "The super action name should be alpha-numeric only and start by 'sa_'. '"+name+"'" ;
 		}else{
 
 		}
