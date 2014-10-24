@@ -217,6 +217,15 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		Map<String, String> nameWithClass;
 		try {
 			nameWithClass = getAllWANameWithClassName();
+			
+			Iterator<String> ite = new SuperActionManager().getAvailableSuperActions(System.getProperty("user.name")).iterator();
+			while (ite.hasNext()) {
+				String actionName = ite.next();
+				if(!nameWithClass.containsKey(actionName)){
+					nameWithClass.put(actionName, SuperAction.class.getName());
+				}
+			}
+			
 			String nameMenu = "";
 
 			// for (int i = 0; i < children.length; ++i) {
@@ -306,6 +315,15 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		Map<String, String> nameWithClass;
 		try {
 			nameWithClass = getAllWANameWithClassName();
+			
+			Iterator<String> ite = new SuperActionManager().getAvailableSuperActions(System.getProperty("user.name")).iterator();
+			while (ite.hasNext()) {
+				String actionName = ite.next();
+				if(!nameWithClass.containsKey(actionName)){
+					nameWithClass.put(actionName, SuperAction.class.getName());
+				}
+			}
+			
 			for (Entry<String, List<String>> cur : newMenu.entrySet()) {
 				LinkedList<String[]> new_list = new LinkedList<String[]>();
 				Iterator<String> it = cur.getValue().iterator();
@@ -352,6 +370,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	public Map<String, List<String[]>> getRelativeMenu(File curPath) {
 		if (menuWA == null || menuWA.isEmpty()) {
 			loadMenu();
+			logger.info("getRelativeMenu loadMenu ");
 		}
 		if (curPath == null) {
 			return menuWA;
