@@ -1,5 +1,6 @@
 package com.redsqirl.workflow.server;
 
+import java.awt.Point;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -52,12 +53,18 @@ import com.idiro.hadoop.NameNodeVar;
 import com.idiro.utils.LocalFileSystem;
 import com.idiro.utils.RandomString;
 import com.idiro.utils.XmlUtils;
+import com.redsqirl.utils.Tree;
+import com.redsqirl.workflow.server.action.Source;
+import com.redsqirl.workflow.server.action.superaction.SubWorkflow;
+import com.redsqirl.workflow.server.action.superaction.SubWorkflowInput;
+import com.redsqirl.workflow.server.action.superaction.SubWorkflowOutput;
 import com.redsqirl.workflow.server.action.superaction.SuperAction;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
+import com.redsqirl.workflow.utils.SuperActionManager;
 
 /**
  * Class that manages a workflow.
@@ -158,8 +165,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			bos.close();
 			out.close();
 			output.close();
-			ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(bytes));
-			//Deserialize it
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e);
 			return false;
@@ -542,16 +547,16 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			} else {
 				elsIn.addAll(getEls(dataFlowElement));
 			}
-			
+
 			error = runWF(dataFlowElement);
 		}
 		return error;
 	}
-	
+
 	public List<DataFlowElement> subsetToRun(List<String> dataFlowElements) throws Exception{
-		
+
 		String error = null;
-		
+
 		LinkedList<DataFlowElement> elsIn = new LinkedList<DataFlowElement>();
 		if (dataFlowElements.size() < element.size()) {
 			Iterator<DataFlowElement> itIn = getEls(dataFlowElements).iterator();
@@ -663,25 +668,25 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 			}
 		}
-		
+
 		if(error != null){
 			throw new Exception(error);
 		}
-		
+
 		return toRun;
-		
+
 	}
 
 	protected String runWF(List<String> dataFlowElement) throws RemoteException{
 		String error = null;
 		List<DataFlowElement> toRun = null;
-				
+
 		try{
 			toRun = subsetToRun(dataFlowElement);
 		}catch(Exception e){
 			error = e.getMessage();
 		}
-		
+
 
 		if (error == null && toRun.isEmpty()) {
 			error = LanguageManagerWF.getText("workflow.torun_uptodate");
@@ -791,7 +796,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			}catch(IOException e){
 				error = e.getMessage();
 			}
-			
+
 			if (error == null) {
 				logger.debug("write the file...");
 				// write the content into xml file
@@ -830,7 +835,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 		return error;
 	}
-	
+
 	protected Document saveInXML() throws ParserConfigurationException, IOException{
 		String error = null;
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory
@@ -1002,13 +1007,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 			rootElement.appendChild(component);
 		}
-		
+
 		if(error != null){
 			throw new IOException(error);
 		}
 		return doc;
 	}
-	
+
 
 	/**
 	 * Clean the backup directory
@@ -1072,7 +1077,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			logger.warn("Error closing " + getName());
 		}
 	}
-	
+
 	public String getBackupName(String path) throws RemoteException{
 		DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 		Date date = new Date();
@@ -1163,7 +1168,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 		return error;
 	}
-	
+
 
 	@Override
 	public String readFromLocal(File xmlFile) throws RemoteException {
@@ -1174,7 +1179,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(xmlFile);
-			
+
 			error = readFromXml(doc);
 
 			// This workflow has been saved
@@ -1186,10 +1191,10 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			logger.error(error, e);
 
 		}
-		
+
 		return error;
 	}
-	
+
 	protected String readFromXml(Document doc) throws Exception{
 		String userName = System.getProperty("user.name");
 		String error = null;
@@ -1552,6 +1557,233 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			element.remove(element.indexOf(dfe));
 		}
 		return error;
+	}
+
+	public String aggregateElements(
+			List<String> componentIds, 
+			String subworkflowName,
+			Map<String,Entry<String,String>> inputs, 
+			Map<String,Entry<String,String>> outputs) throws RemoteException{
+		String error = null;
+		//Create subworkflow object
+		if(!subworkflowName.startsWith("sa_")){
+			subworkflowName = "sa_"+subworkflowName;
+		}
+		SubWorkflow sw = new SubWorkflow(subworkflowName);
+
+		//Copy Elements
+		Workflow copy = null;
+		try{
+			copy = (Workflow)clone();
+		}catch(Exception e){
+			error = "Fail to clone the workflow";
+			logger.error(error,e);
+			return error;
+		}
+
+		Iterator<String> idIt = copy.getComponentIds().iterator();
+		try {
+			while(idIt.hasNext()){
+				String cur = idIt.next();
+				if(!componentIds.contains(cur)){
+					copy.removeElement(cur);
+				}
+			}
+		} catch (Exception e) {
+			error = "Fail to remove an element";
+			logger.error(error,e);
+			return error;
+		}
+
+
+		idIt = componentIds.iterator();
+		while(idIt.hasNext()){
+			String cur = idIt.next();
+			sw.addElement(copy.getElement(cur));
+			DataFlowElement newEl = sw.getElement(cur);
+			newEl.setPosition(newEl.getX()+50, newEl.getY());
+		}
+
+		try{
+			//Create Action inputs
+			Iterator<String> entries = inputs.keySet().iterator();
+			while(entries.hasNext()){
+				String inputName = entries.next();
+
+				//Get the DFEOutput from which we copy the constraint
+				DFEOutput constraint = this.getElement(inputs.get(inputName).getKey())
+						.getDFEOutput().get(inputs.get(inputName).getValue());
+
+				String tmpId = sw.addElement((new SubWorkflowInput()).getName());
+				sw.changeElementId(tmpId, inputName);
+
+				//Update Data Type
+				SubWorkflowInput input = (SubWorkflowInput) sw.getElement(inputName);
+				input.update(input.getInteraction(Source.key_datatype));
+				Tree<String> dataTypeTree = input.getInteraction(Source.key_datatype)
+						.getTree();
+				dataTypeTree.getFirstChild("list").getFirstChild("output").add(constraint.getBrowser());
+
+				//Update Data SubType
+				input.update(input.getInteraction(Source.key_datasubtype));
+				((ListInteraction) input.getInteraction(Source.key_datasubtype))
+				.setValue(constraint.getTypeName());
+
+				//Update header
+				input.update(input.getInteraction(SubWorkflowInput.key_headerInt));
+				InputInteraction header = (InputInteraction) input.getInteraction(SubWorkflowInput.key_headerInt);
+				header.setValue(constraint.getFields().mountStringHeader());
+
+				input.update(input.getInteraction(SubWorkflowInput.key_fieldDefInt));
+
+				input.updateOut();
+
+				Iterator<DataFlowElement> toLinkIt = this.getElement(inputs.get(inputName).getKey()).getOutputComponent()
+						.get(inputs.get(inputName).getValue()).iterator();
+				Point positionSuperActionInput = new Point(0,0);
+				int numberOfInput = 0;
+				while(toLinkIt.hasNext()){
+					DataFlowElement curEl = toLinkIt.next();
+					if(componentIds.contains(curEl.getComponentId())){
+						//Create link
+						sw.addLink(
+								SubWorkflowInput.out_name, 
+								inputName, 
+								getElement(inputs.get(inputName).getKey())
+								.getInputNamePerOutput().get(inputs.get(inputName).getValue())
+								.get(curEl.getComponentId()), curEl.getComponentId());
+						sw.getElement(curEl.getComponentId()).replaceInAllInteraction(inputs.get(inputName).getKey(), inputName);
+						positionSuperActionInput.move((int)positionSuperActionInput.getX()+curEl.getX(), 
+								(int)positionSuperActionInput.getY()+curEl.getY());
+						++numberOfInput;
+					}
+				}
+				input.setPosition((int) (positionSuperActionInput.getX()/numberOfInput), (int)(positionSuperActionInput.getY()/numberOfInput));
+			}
+
+			//Create Action outputs
+			entries = outputs.keySet().iterator();
+			while(entries.hasNext()){
+				String outputName = entries.next();
+
+
+				String tmpId = sw.addElement((new SubWorkflowOutput()).getName());
+				sw.changeElementId(tmpId, outputName);
+
+				sw.addLink(
+						outputs.get(outputName).getValue(),
+						outputs.get(outputName).getKey(),
+						SubWorkflowOutput.input_name,
+						outputName);
+				DataFlowElement in = sw.getElement(outputs.get(outputName).getKey());
+				sw.getElement(outputName).setPosition(in.getX()+100, in.getY());
+			}
+		
+		} catch (Exception e) {
+			error = "Fail to create an input or output super action";
+			logger.error(error,e);
+			return error;
+		}
+
+		//Install the subworkflow
+		error = new SuperActionManager().install(System.getProperty("user.name"), sw, null);
+		if(error != null){
+			return error;
+		}
+		
+		//Replace elements by the subworkflow
+		Point positionSuperAction = new Point(0,0);
+		try{
+			copy = (Workflow)clone();
+		}catch(Exception e){
+			error = "Fail to clone the workflow";
+			logger.error(error,e);
+			return error;
+		}
+
+		logger.debug("Elements before aggregating: "+getComponentIds());
+		try{
+			Iterator<String> itToDel = componentIds.iterator();
+			while(itToDel.hasNext()){
+				String id = itToDel.next();
+				positionSuperAction.move(
+						(int)positionSuperAction.getX()+getElement(id).getX(),
+						(int)positionSuperAction.getY()+getElement(id).getY());
+				removeElement(id);
+			}
+		} catch (Exception e) {
+			error = "Fail to remove an element";
+			logger.error(error,e);
+			return error;
+		}
+		
+		
+		positionSuperAction.move(
+				(int)positionSuperAction.getX()/componentIds.size(),
+				(int)positionSuperAction.getY()/componentIds.size());
+
+		String idSA = null;
+		try{
+			idSA = addElement(subworkflowName);
+		}catch (Exception e) {
+			error = "Fail to create the super action "+subworkflowName;
+			logger.error(error,e);
+			return error;
+		}
+		
+		DataFlowElement newSA = getElement(idSA);
+		newSA.setPosition((int)positionSuperAction.getX(), (int)positionSuperAction.getY());
+		logger.debug("Elements after aggregating: "+getComponentIds());
+		Iterator<String> entries = inputs.keySet().iterator();
+		while(entries.hasNext()){
+			String inputName = entries.next();
+			if(logger.isDebugEnabled()){
+				logger.debug("link "+inputs.get(inputName).getKey()+","+ inputs.get(inputName).getValue()+"->"+ inputName+","+ idSA);
+			}
+			addLink(inputs.get(inputName).getValue(), inputs.get(inputName).getKey(), inputName, idSA);
+		}
+
+		entries = outputs.keySet().iterator();
+		while(entries.hasNext()){
+			String outputName = entries.next();
+			logger.debug("Old elements: "+copy.getComponentIds());
+			logger.debug("Get element "+outputs.get(outputName).getKey()+","+outputs.get(outputName).getValue() );
+			Map<String, List<DataFlowElement>> outEls = copy.getElement(outputs.get(outputName).getKey()).getOutputComponent();
+			if(outEls != null && outEls.containsKey(outputs.get(outputName).getValue()) && outEls.get(outputs.get(outputName).getValue()) != null){
+				Iterator<DataFlowElement> it = outEls
+						.get(outputs.get(outputName).getValue()).iterator();
+				while(it.hasNext()){
+					DataFlowElement curEl = it.next();
+					if(logger.isDebugEnabled()){
+						logger.debug("link "+
+								outputName+","+ 
+								idSA+"->"+
+								copy.getElement(outputs.get(outputName).getKey()).getInputNamePerOutput()
+								.get(outputs.get(outputName).getValue()).get(curEl.getComponentId())+","+
+								curEl.getComponentId());
+					}
+					addLink(outputName, 
+							idSA,
+							copy.getElement(outputs.get(outputName).getKey()).getInputNamePerOutput()
+							.get(outputs.get(outputName).getValue()).get(curEl.getComponentId()),
+							curEl.getComponentId());
+					String newAlias = getElement(curEl.getComponentId()).getAliasesPerComponentInput().get(idSA).getKey();
+					String oldAlias = curEl.getAliasesPerComponentInput().get(outputs.get(outputName).getKey()).getKey();
+
+					getElement(curEl.getComponentId()).replaceInAllInteraction(
+							oldAlias,
+							newAlias);
+
+					getElement(curEl.getComponentId()).replaceInAllInteraction(
+							outputs.get(outputName).getKey(),
+							idSA);
+
+				}
+			}
+		}
+		
+		return error;
+
 	}
 
 

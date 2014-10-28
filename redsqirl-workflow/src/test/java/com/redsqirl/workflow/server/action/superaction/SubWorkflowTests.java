@@ -3,8 +3,13 @@ package com.redsqirl.workflow.server.action.superaction;
 import static org.junit.Assert.assertTrue;
 
 import java.rmi.RemoteException;
+import java.util.AbstractMap;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -12,9 +17,12 @@ import org.junit.Test;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.InputInteraction;
 import com.redsqirl.workflow.server.ListInteraction;
+import com.redsqirl.workflow.server.Workflow;
 import com.redsqirl.workflow.server.action.Convert;
 import com.redsqirl.workflow.server.action.ConvertTests;
 import com.redsqirl.workflow.server.action.Source;
+import com.redsqirl.workflow.server.action.SourceTests;
+import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.connect.HiveInterface;
 import com.redsqirl.workflow.server.datatype.HiveType;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
@@ -166,5 +174,49 @@ public class SubWorkflowTests {
 			assertTrue(e.toString(), false);
 		}
 		
+	}
+	
+	@Test
+	public void aggregate(){
+		TestUtils.logTestTitle("SubWorkflowTests#aggregate");
+		String sName = "sa_unittest2";
+
+		String new_path1 =TestUtils.getTablePath(1);
+		String userName = System.getProperty("user.name");
+		String error = null;
+		try{
+			new SuperActionManager().uninstall(userName, sName);
+
+			//Create
+			Workflow w = new Workflow("workflowAgg_"+getClass().getName());
+			HiveInterface hiveInt = new HiveInterface();
+			HDFSInterface hdfsInt = new HDFSInterface();
+			
+			logger.info("deleted paths if existed");
+			hiveInt.delete(new_path1);
+			
+			DataFlowElement src = SourceTests.createSrc_ID_VALUE(w, hiveInt, new_path1);
+			DataFlowElement conv1 = ConvertTests.createConvertWithSrc(w,src); 
+			DataFlowElement conv2 = ConvertTests.createConvWithConv(w,conv1);
+			
+			Map<String,Entry<String,String>> inputs = new LinkedHashMap<String,Entry<String,String>>();
+			inputs.put("source",new AbstractMap.SimpleEntry<String,String>(src.getComponentId(),Source.out_name));
+			
+
+			Map<String,Entry<String,String>> outputs = new LinkedHashMap<String,Entry<String,String>>();
+			outputs.put("copy",new AbstractMap.SimpleEntry<String,String>(conv2.getComponentId(),Convert.key_output));
+			
+			List<String> components = new LinkedList<String>();
+			components.add(conv1.getComponentId());
+			components.add(conv2.getComponentId());
+			
+			error = w.aggregateElements(components, sName, inputs, outputs);
+			assertTrue("Fail to aggregate: "+error, error == null);
+			
+			
+		} catch (Exception e) {
+			logger.error(e.getMessage(),e);
+			assertTrue(e.toString(), false);
+		}
 	}
 }
