@@ -5,6 +5,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -169,6 +170,13 @@ public interface DataFlowElement extends Remote{
 	 */
 	public Map<String,Map<String,DFEOutput>> getAliasesPerInput() throws RemoteException;
 	
+	/**
+	 * Get the aliases per input component ids
+	 * @return
+	 * @throws RemoteException
+	 */
+	public Map<String, Entry<String, DFEOutput>> getAliasesPerComponentInput()
+			throws RemoteException;
 	/**
 	 * Get a suggested alias to use in the interactions for each output.
 	 * @return Map of aliases 
