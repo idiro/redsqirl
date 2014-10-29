@@ -1628,6 +1628,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	public String aggregateElements(
 			List<String> componentIds, 
 			String subworkflowName,
+			String subworkflowComment,
 			Map<String,Entry<String,String>> inputs, 
 			Map<String,Entry<String,String>> outputs) throws RemoteException{
 		int posIncr = 100;
@@ -1637,7 +1638,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			subworkflowName = "sa_"+subworkflowName;
 		}
 		SubWorkflow sw = new SubWorkflow(subworkflowName);
-
+		sw.setComment(subworkflowComment);
+		
 		//Copy Elements
 		Workflow copy = null;
 		try{

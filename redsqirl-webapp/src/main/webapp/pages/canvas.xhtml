@@ -868,8 +868,8 @@
 			</a4j:region>
 			
 			<a4j:region>
-				<a4j:jsFunction name="openModalAggregate" action="#{canvasBean.openAggregate}" 
-					oncomplete="#{rich:component('modalAggregate')}.show();" >
+				<a4j:jsFunction name="openModalAggregate" action="#{canvasBean.openAggregate}" reRender="errorTable, msnError"
+					oncomplete="if( #{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.show();}" >
 					<a4j:actionparam name="selectedIcons" />
 				</a4j:jsFunction>
 			</a4j:region>

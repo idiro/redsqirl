@@ -29,6 +29,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.idiro.utils.LocalFileSystem;
+import com.idiro.utils.RandomString;
 import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
@@ -2217,7 +2218,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	}
 
 	public void openAggregate() throws RemoteException {
-
+		String error = null;
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String selectedIcons = params.get("selectedIcons");
 
@@ -2225,14 +2226,16 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		Map<String,String> ansIn = new HashMap<String,String>();
 		Map<String,String> ansOut = new HashMap<String,String>();
-
+		Set<String> nextComponents = new LinkedHashSet<String>();
 		Iterator<DataFlowElement> iterator = getDf().getElement().iterator();
-		while (iterator.hasNext()) {
+		while (iterator.hasNext() && error == null) {
 			DataFlowElement cur = iterator.next();
 
 
 			if(selectedIcons.contains(cur.getComponentId())){
 
+
+				//Get all the inputs
 				for (Map.Entry<String,List<DataFlowElement>> entryInput : cur.getInputComponent().entrySet()) {
 					for (DataFlowElement dfeIn : entryInput.getValue()) {
 						if(!selectedIcons.contains(dfeIn.getComponentId())){
@@ -2242,7 +2245,15 @@ public class CanvasBean extends BaseBean implements Serializable {
 								for (Map.Entry<String, String> e : eOutput.getValue().entrySet()) {
 
 									if(e.getKey().equals(cur.getComponentId())){
-										ansIn.put(dfeIn.getComponentId(), eOutput.getKey());
+										if(ansIn.containsKey(dfeIn.getComponentId())){
+											if(!ansIn.get(dfeIn.getComponentId()).equals(eOutput.getKey())){
+												if(error == null){
+													error = getMessageResourcesWithParameter("msg_error_agg_input_conflict",new String[]{dfeIn.getComponentId()});
+												}
+											}
+										}else{
+											ansIn.put(dfeIn.getComponentId(), eOutput.getKey());
+										}
 									}
 								}
 							}
@@ -2251,14 +2262,24 @@ public class CanvasBean extends BaseBean implements Serializable {
 					}
 				}
 
+				//Get all the outside links
 				for (Map.Entry<String, List<DataFlowElement>> entryOutput : cur.getOutputComponent().entrySet()) {
 					for (DataFlowElement dfeOut : entryOutput.getValue()) {
 						if(!selectedIcons.contains(dfeOut.getComponentId())){
-							ansOut.put(cur.getComponentId(), entryOutput.getKey()); 
+							if(nextComponents.contains(dfeOut.getComponentId())){
+								if(error == null){
+									error = getMessageResourcesWithParameter("msg_error_agg_output_conflict",new String[]{dfeOut.getComponentId()});
+								}
+							}else{
+								nextComponents.add(dfeOut.getComponentId());
+								ansOut.put(cur.getComponentId(), entryOutput.getKey());
+							}
 						}
 					}
 				}
 
+
+				//Get all the non used outputs
 				Iterator<String> outIt = cur.getDFEOutput().keySet().iterator();
 				while (outIt.hasNext()) {
 					String outName = outIt.next();
@@ -2273,17 +2294,19 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		}
 
+		setInputNameSubWorkflow(nameWorkflow.replaceAll("[^A-Za-z0-9]", "")+RandomString.getRandomName(4));
+
 		setInputNamesList(new ArrayList<String[]>());
 		for (String name : ansIn.keySet()) {
 			logger.info("openAggregate ansIn: " + name + " " + ansIn.get(name));
-			String[] vet = {"", name, ansIn.get(name)};
+			String[] vet = {name+(ansIn.get(name).isEmpty()? "_out":"_"+ansIn.get(name)), name, ansIn.get(name)};
 			getInputNamesList().add(vet);
 		}
 
 		setOutputNamesList(new ArrayList<String[]>());
 		for (String name : ansOut.keySet()) {
 			logger.info("openAggregate ansOut: " + name + " " + ansOut.get(name));
-			String[] vet = {"", name, ansOut.get(name)};
+			String[] vet = {name+(ansOut.get(name).isEmpty()? "_out":"_"+ansOut.get(name)), name, ansOut.get(name)};
 			getOutputNamesList().add(vet);
 		}
 
@@ -2294,51 +2317,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 		setComponentIds(componentIds);
 
-	}
-
-	public void aggregate() {
-
-		logger.info("aggregate ");
-		logger.info("name sub workflow " + getInputNameSubWorkflow());
-
-		//check name unique
-		//check regex
-
-		//check inputname and outputname do not exist on workflow
-
-
-		Map<String, Entry<String,String>> inputs = new HashMap<String, Entry<String,String>>();
-		Map<String, Entry<String,String>> outputs = new HashMap<String, Entry<String,String>>();
-
-		for (String[] vet : getInputNamesList()) {
-			logger.info("openAggregate ansIn: " + vet[0] + " " + vet[1] + " " + vet[2]);
-			inputs.put(vet[0], new AbstractMap.SimpleEntry<String,String>(vet[1], vet[2]));
-		}
-
-		for (String[] vet : getOutputNamesList()) {
-			logger.info("openAggregate ansOut: " + vet[0] + " " + vet[1] + " " + vet[2]);
-			outputs.put(vet[0], new AbstractMap.SimpleEntry<String,String>(vet[1], vet[2]));
-		}
-
-		String error = null;
-		try {
-			
-			error = getDf().aggregateElements(getComponentIds(), getInputNameSubWorkflow(), inputs, outputs);
-			logger.info("Elements: " + getDf().getComponentIds());
-			
-			Iterator<String> elIt = getDf().getComponentIds().iterator();
-			Map<String, String> idMapWf = idMap.get(getNameWorkflow());
-			idMapWf.clear();
-			while (elIt.hasNext()) {
-				String elCur = elIt.next();
-				idMapWf.put(elCur, elCur);
-			}
-			
-		} catch (RemoteException e) {
-			e.printStackTrace();
-			logger.info("Error: " + e,e);
-		}
-
 		if (error != null) {
 			logger.info("Error: " + error);
 			MessageUseful.addErrorMessage(error);
@@ -2348,18 +2326,99 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	}
 
-	public void checkInput() {
+	public void aggregate() {
 
-		//check if the input are the same type
+		String error = null;
+		logger.info("aggregate ");
+		logger.info("name sub workflow " + getInputNameSubWorkflow());
 
+		//check name unique
+		if(!getInputNameSubWorkflow().startsWith("sa_")){
+			setInputNameSubWorkflow("sa_"+getInputNameSubWorkflow());
+		}
+		String pattern= "sa_[a-zA-Z0-9]*";
+		if(!getInputNameSubWorkflow().matches(pattern)){
+			//check regex
+			error = getMessageResources("msg_error_agg_subworkflow_name");
+		}
+
+		if(error == null){
+			try {
+
+
+				Map<String, Entry<String,String>> inputs = new HashMap<String, Entry<String,String>>();
+				Map<String, Entry<String,String>> outputs = new HashMap<String, Entry<String,String>>();
+
+				for (String[] vet : getInputNamesList()) {
+					logger.info("openAggregate ansIn: " + vet[0] + " " + vet[1] + " " + vet[2]);
+					inputs.put(vet[0], new AbstractMap.SimpleEntry<String,String>(vet[1], vet[2]));
+				}
+
+				for (String[] vet : getOutputNamesList()) {
+					logger.info("openAggregate ansOut: " + vet[0] + " " + vet[1] + " " + vet[2]);
+					outputs.put(vet[0], new AbstractMap.SimpleEntry<String,String>(vet[1], vet[2]));
+				}
+
+				//check inputname and outputname do not exist on workflow
+				List<String> outputNames = new ArrayList<String>(outputs.size());
+				outputNames.addAll(outputs.keySet());
+
+				List<String> componentIds = getDf().getComponentIds();
+				Iterator<String[]> it = getInputNamesList().iterator();
+				while(it.hasNext() && error == null){
+					String cur = it.next()[0];
+					if(componentIds.contains(cur) || outputNames.contains(cur)){
+						error = getMessageResourcesWithParameter("msg_error_agg_input_unique",new String[]{cur});
+					}
+				}
+				it = getOutputNamesList().iterator();
+				while(it.hasNext() && error == null){
+					String cur = it.next()[0];
+					if(componentIds.contains(cur)){
+						error = getMessageResourcesWithParameter("msg_error_agg_output_unique",new String[]{cur});
+					}
+				}
+
+				if(error == null){
+					error = getDf().aggregateElements(getComponentIds(), getInputNameSubWorkflow(),"", inputs, outputs);
+					logger.info("Elements: " + getDf().getComponentIds());
+
+					Iterator<String> elIt = getDf().getComponentIds().iterator();
+					Map<String, String> idMapWf = idMap.get(getNameWorkflow());
+					idMapWf.clear();
+					while (elIt.hasNext()) {
+						String elCur = elIt.next();
+						idMapWf.put(elCur, elCur);
+					}
+				}
+			} catch (RemoteException e) {
+				e.printStackTrace();
+				logger.info("Error: " + e,e);
+			}
+
+			if (error != null) {
+				logger.info("Error: " + error);
+				MessageUseful.addErrorMessage(error);
+				HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+				request.setAttribute("msnError", "msnError");
+			}
+		}
 
 	}
 
-	public void checkOutput() {
+	public String checkInput(Map<String, Entry<String,String>> inputs) {
+		String error = null;
+		//check if the input are the same type
 
+
+		return error;
+	}
+
+	public String checkOutput(Map<String, Entry<String,String>> outputs) {
+		String error = null;
 		//check if the output are the same type
 
-
+		return error;
 	}
 
 	public DataFlow getDf() {
