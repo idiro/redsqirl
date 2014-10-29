@@ -3,6 +3,7 @@ package com.redsqirl;
 import java.io.File;
 import java.io.Serializable;
 import java.rmi.RemoteException;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -79,6 +80,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private List<String[]> inputNamesList = new ArrayList<String[]>();
 	private List<String[]> outputNamesList = new ArrayList<String[]>();
 	private String inputNameSubWorkflow;
+	private List<String> componentIds;
 
 	/**
 	 * 
@@ -1915,8 +1917,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		logger.info("getPositions");
 
 		FacesContext fCtx = FacesContext.getCurrentInstance();
-		ServletContext sc = (ServletContext) fCtx.getExternalContext()
-				.getContext();
+		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
 		String selecteds = (String) sc.getAttribute("selecteds");
 		logger.info("getPositions " + selecteds);
 
@@ -1973,10 +1974,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 			logger.info("getPositions getNameWorkflow " + getNameWorkflow());
 			logger.info("getPositions getPath " + getPath());
-			logger.info("getPositions jsonElements.toString "
-					+ jsonElements.toString());
-			logger.info("getPositions jsonLinks.toString "
-					+ jsonLinks.toString());
+			logger.info("getPositions jsonElements.toString " + jsonElements.toString());
+			logger.info("getPositions jsonLinks.toString " + jsonLinks.toString());
 
 			setWorkflowType(getMapWorkflowType().get(getNameWorkflow()));
 			logger.info("getPositions getWorkflowType " + getWorkflowType());
@@ -2288,22 +2287,18 @@ public class CanvasBean extends BaseBean implements Serializable {
 			getOutputNamesList().add(vet);
 		}
 
-
-		/*
+		List<String> componentIds = new ArrayList<String>();
 		String[] groupIds = selectedIcons.split(",");
 		for (String groupId : groupIds) {
-			idMap.get(getNameWorkflow()).get(groupId);
-
-			logger.info("openAggregate ids: " + groupId);
+			componentIds.add(groupId);
 		}
-		 */
+		setComponentIds(componentIds);
 
 	}
 
 	public void aggregate() {
 
 		logger.info("aggregate ");
-
 		logger.info("name sub workflow " + getInputNameSubWorkflow());
 
 		//check name unique
@@ -2312,15 +2307,43 @@ public class CanvasBean extends BaseBean implements Serializable {
 		//check inputname and outputname do not exist on workflow
 
 
-		Map<String, Entry<String,String>> ansIn = new HashMap<String, Entry<String,String>>();
-		Map<String, Entry<String,String>> ansOut = new HashMap<String, Entry<String,String>>();
+		Map<String, Entry<String,String>> inputs = new HashMap<String, Entry<String,String>>();
+		Map<String, Entry<String,String>> outputs = new HashMap<String, Entry<String,String>>();
 
 		for (String[] vet : getInputNamesList()) {
 			logger.info("openAggregate ansIn: " + vet[0] + " " + vet[1] + " " + vet[2]);
+			inputs.put(vet[0], new AbstractMap.SimpleEntry<String,String>(vet[1], vet[2]));
 		}
 
 		for (String[] vet : getOutputNamesList()) {
 			logger.info("openAggregate ansOut: " + vet[0] + " " + vet[1] + " " + vet[2]);
+			outputs.put(vet[0], new AbstractMap.SimpleEntry<String,String>(vet[1], vet[2]));
+		}
+
+		String error = null;
+		try {
+			
+			error = getDf().aggregateElements(getComponentIds(), getInputNameSubWorkflow(), inputs, outputs);
+			logger.info("Elements: " + getDf().getComponentIds());
+			
+			Iterator<String> elIt = getDf().getComponentIds().iterator();
+			Map<String, String> idMapWf = idMap.get(getNameWorkflow());
+			idMapWf.clear();
+			while (elIt.hasNext()) {
+				String elCur = elIt.next();
+				idMapWf.put(elCur, elCur);
+			}
+			
+		} catch (RemoteException e) {
+			e.printStackTrace();
+			logger.info("Error: " + e,e);
+		}
+
+		if (error != null) {
+			logger.info("Error: " + error);
+			MessageUseful.addErrorMessage(error);
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
 		}
 
 	}
@@ -2619,6 +2642,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void setInputNameSubWorkflow(String inputNameSubWorkflow) {
 		this.inputNameSubWorkflow = inputNameSubWorkflow;
+	}
+
+	public List<String> getComponentIds() {
+		return componentIds;
+	}
+
+	public void setComponentIds(List<String> componentIds) {
+		this.componentIds = componentIds;
 	}
 
 }

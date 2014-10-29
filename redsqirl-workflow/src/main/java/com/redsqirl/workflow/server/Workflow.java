@@ -1630,6 +1630,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			String subworkflowName,
 			Map<String,Entry<String,String>> inputs, 
 			Map<String,Entry<String,String>> outputs) throws RemoteException{
+		int posIncr = 100;
 		String error = null;
 		//Create subworkflow object
 		if(!subworkflowName.startsWith("sa_")){
@@ -1667,7 +1668,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			String cur = idIt.next();
 			sw.addElement(copy.getElement(cur));
 			DataFlowElement newEl = sw.getElement(cur);
-			newEl.setPosition(newEl.getX()+50, newEl.getY());
+			newEl.setPosition(newEl.getX()+posIncr, newEl.getY());
 		}
 
 		try{
@@ -1742,7 +1743,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						SubWorkflowOutput.input_name,
 						outputName);
 				DataFlowElement in = sw.getElement(outputs.get(outputName).getKey());
-				sw.getElement(outputName).setPosition(in.getX()+100, in.getY());
+				sw.getElement(outputName).setPosition(in.getX()+2*posIncr, in.getY());
 			}
 		
 		} catch (Exception e) {
