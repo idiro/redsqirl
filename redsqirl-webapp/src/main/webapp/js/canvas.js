@@ -2610,3 +2610,34 @@ function getPathFile(canvasName){
 function getWorkflowType(canvasName){
     return canvasArray[canvasName].workflowType;
 }
+
+/*
+function getSelectedInputOutput() {
+	
+    var layer = canvasArray[selectedCanvas].layer;
+    var listIds = getSelectedIconsCommaDelimited();
+    var ansIn = "";
+    var ansOut = "";
+    
+    jQuery.each(layer.getChildren(), function(index, value) {
+        if (value !== undefined && value.isArrow) {
+        	//alert(value.getName());
+        	if(checkIfExistID(value.idInput, listIds)){
+        		if(!checkIfExistID(value.idOutput, listIds)){
+        			//input
+        			ansIn = ansIn.concat(",",value.idOutput);
+        			//alert("in"+value.idOutput);
+        		}
+        	}else{
+        		if(checkIfExistID(value.idOutput, listIds)){
+        			//output
+        			ansOut = ansOut.concat(",",value.idInput);
+        			//alert("out"+value.idInput);
+        		}
+        	}
+        }
+    });
+    
+    return [ansIn , ansOut];
+}
+*/
