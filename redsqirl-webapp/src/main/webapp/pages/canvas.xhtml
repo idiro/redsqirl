@@ -215,7 +215,7 @@
 	              contTabCanvas++;
 	              var tabName = "canvas-"+contTabCanvas;
 	              addSubWorkflow(tabName);
-	              addWorkflowTab(tabName);
+	              addWorkflowTab(tabName,"S");
 	              configureCanvas(tabName, true, "S");
 	              setWorkflow(tabName);
 	              validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
@@ -496,7 +496,7 @@
 	      function addElementJs(canvasName, path, positions, links, selecteds, reset, workflowType){
 	          //Add the workflow tab only if the name does not exist yet.
 	          if(document.getElementById(canvasName) == null) {
-	    	      addWorkflowTab(canvasName);
+	    	      addWorkflowTab(canvasName,workflowType);
 	    	      configureCanvas(canvasName, reset, workflowType);
 		    	  setWorkflow(canvasName);
 	    	      addElements(canvasName, positions, selecteds);
@@ -543,13 +543,14 @@
 	      var numTabs = 1;
 	      var nameTabs = {};
 	      
-	      function addWorkflowTab(tabName){
+	      function addWorkflowTab(tabName,type){
 	    	//<![CDATA[
-	    	
+	    	  var tabImage = typeof type == 'undefined' || type == "W" ? "../image/workflow_tab.gif" : "../image/subworkflow_tab.gif"  ;
+	    	  
 	    	  var tabs = jQuery("#canvas-tabs").tabs();
               var ul = jQuery("#canvas-tabs").tabs().find( "ul:first" );
               
-              jQuery( "<li class='locked canvasTabsInactive'><a href='#"+ getCanvasId(tabName) +"' class='canvasTab' onclick=\"jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('"+tabName+"');\">"+ 
+              jQuery( "<li class='locked canvasTabsInactive'><a href='#"+ getCanvasId(tabName) +"' class='canvasTab' onclick=\"jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('"+tabName+"');\"><img src='"+tabImage+"' style='width: 15px;'/>"+ 
             		  tabName +"</a> <span id='"+tabName+"-icon-close' class='ui-icon ui-icon-close' role='presentation' onclick=\"closeWorkflowTab(this, '"+tabName+"')\"></span> </li>" ).appendTo( ul );
               
               var div = "<div id='"+getCanvasId(tabName)+"' class='container-canvas'>"+
@@ -1922,7 +1923,7 @@
 							style="width: 100%;">
 							<li class="locked canvasTabsInactive"><a
 								href="#flowchart-canvas-1" class="canvasTab"
-								onclick="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('canvas-1');">canvas-1</a>
+								onclick="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('canvas-1');"><img src="../image/workflow_tab.gif" style="width: 15px;"/>canvas-1</a>
 								<span id="canvas-1-icon-close" class="ui-icon ui-icon-close "
 								role="presentation" onclick="closeWorkflowTab(this,'canvas-1')"></span>
 							</li>
