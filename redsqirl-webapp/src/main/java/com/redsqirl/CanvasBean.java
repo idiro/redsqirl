@@ -2027,27 +2027,17 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void cloneWorkflow() throws Exception {
 		logger.info("cloneWorkflow");
-
-		// String selecteds =
-		// FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("selecteds");
-
 		updateAllPosition();
-		String wfClone = getworkFlowInterface()
-				.cloneDataFlow(getNameWorkflow());
+		String wfClone = getworkFlowInterface().cloneDataFlow(getNameWorkflow());
 		FacesContext fCtx = FacesContext.getCurrentInstance();
-		ServletContext sc = (ServletContext) fCtx.getExternalContext()
-				.getContext();
+		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
 		Map<String, String> cloneMap = new LinkedHashMap<String, String>();
 		cloneMap.putAll(idMap.get(getNameWorkflow()));
 		sc.setAttribute("cloneMap", cloneMap);
 		sc.setAttribute("wfClone", wfClone);
-
 		getIdMapClone().put(wfClone, cloneMap);
 		logger.info(wfClone);
 		setCloneWFId(wfClone);
-
-		// sc.setAttribute("selecteds", selecteds);
-
 	}
 
 	public void replaceWFByClone() throws Exception {

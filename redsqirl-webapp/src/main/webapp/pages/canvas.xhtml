@@ -73,6 +73,7 @@
         var msg_changeelementid_command='#{messages.msg_changeelementid_command}';
         var msg_updateelement_command='#{messages.msg_updateelement_command}';
         var msg_changeworkflowcomment_command='#{messages.msg_changeworkflowcomment_command}';
+        var msg_aggregate_command='#{messages.msg_aggregate_command}';
 		           
 		 var contTabCanvas = 1;
 		 
@@ -873,6 +874,16 @@
 					oncomplete="if( #{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.show();}" >
 					<a4j:actionparam name="selectedIcons" />
 				</a4j:jsFunction>
+				
+				<a4j:jsFunction name="cloneBeforeAggregate"
+					action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
+					oncomplete="tmpCommandObj.cloneId = data;aggregate();">
+					<a4j:actionparam name="allpositions" />
+				</a4j:jsFunction>
+				
+				<a4j:jsFunction name="aggregate" action="#{canvasBean.aggregate}"
+					oncomplete="if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.hide();deleteAllElements();rebuildJS();}" />
+				
 			</a4j:region>
 
 			<a4j:region>
