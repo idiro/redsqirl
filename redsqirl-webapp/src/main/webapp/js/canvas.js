@@ -1891,18 +1891,27 @@ function configureGroupListeners(canvasName, group) {
           
         }else{
             rightClickGroup = this;
-            cmenuCanvas = jQuery.contextMenu.create(contextMenuCanvasAction)
-            if(canvasArray[canvasName].workflowType == 'w'){
+            var temp = [];
+            for ( var i =0; i<  contextMenuCanvasAction.length ;i++){
+            	var key = Object.keys(contextMenuCanvasAction[i])[0];
+            	var item = contextMenuCanvasAction[i];
             	
-            }else if(canvasArray[canvasName].workflowType == 's'){
-            	
+            	if(canvasArray[canvasName].workflowType == 'W' || (key.indexOf('Data Output...') !=0 && key.indexOf('Oozie Action Logs') != 0)){
+            		if(group.elementType.indexOf('sa_')==0){
+            				temp[temp.length] = item;
+            		}else{
+            			if( key.indexOf('Edit SuperAction')!=0){
+            				temp[temp.length] = item;
+            			}
+            		}
+            		
+            	}
             }
+            cmenuCanvas = jQuery.contextMenu.create(temp);
             if(group.elementType.indexOf('sa_')==0){
             	if(group.privilege != null){
             		if(!jQuery("body").find(".context-menu-item:contains('Edit SuperAction')").hasClass("context-menu-item-disabled")){
-//            			jQuery("body").find(".context-menu-item-inner:contains('Edit SuperAction')").addClass("context-menu-item-disabled");
-//            			jQuery("body").find(".context-menu-item:contains('Edit SuperAction')").addClass("context-menu-item-disabled");
-            			jQuery("body").find(".context-menu-item:contains('Edit SuperAction')").css("display:none");
+            			jQuery("body").find(".context-menu-item:contains('Edit SuperAction')").addClass("context-menu-item-disabled");
             		}
             	}else{
             		if(jQuery("body").find(".context-menu-item:contains('Edit SuperAction')").hasClass("context-menu-item-disabled")){
