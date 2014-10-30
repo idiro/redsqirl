@@ -2012,20 +2012,13 @@ function openCanvasModalJS(group, selectedTab){
     });
 
     
-	    if (group.elementType != "superactionoutput") {
-		console.log(group.privilege);
-		console.log(group.elementType);
-
-			if (!group.hasChangedId) {
-			openChangeIdModal(group.getId(), imagePath, true);
-			group.hasChangedId = true;
-		} else {
-			openModal(group.getId(), imagePath, selectedTab, group.pageNb);
-			changeHelpAnchor(group.pageNb);
-		}
-
-	}
-    
+    if (!group.hasChangedId) {
+	openChangeIdModal(group.getId(), imagePath,true);
+	group.hasChangedId = true;
+    } else {
+	openModal(group.getId(), imagePath, selectedTab, group.pageNb);
+	changeHelpAnchor(group.pageNb);
+    }
 }
 
 function openChangeIdModalJS(group){
@@ -2362,9 +2355,11 @@ function updateActionOutputStatus(groupId, outputType, fileExists, runningStatus
     
     var group = getElement(polygonLayer, groupId);
     
-    group.getChildren()[5].setStroke(getColorOutputType(outputType));
-    group.getChildren()[6].setStroke(getColorRunning(runningStatus));
-    group.getChildren()[7].setStroke(getColorOutputExistence(fileExists));
+    if(getSelectedWorkflowType() == 'W'){
+        group.getChildren()[5].setStroke(getColorOutputType(outputType));
+        group.getChildren()[6].setStroke(getColorRunning(runningStatus));
+        group.getChildren()[7].setStroke(getColorOutputExistence(fileExists));
+    }
     
     group.tooltipObj = tooltip;
     
@@ -2663,6 +2658,10 @@ function getPathFile(canvasName){
 
 function getWorkflowType(canvasName){
     return canvasArray[canvasName].workflowType;
+}
+
+function getSelectedWorkflowType(){
+    return getWorkflowType(selectedCanvas);
 }
 
 /*
