@@ -493,7 +493,8 @@
 	    	  closeWorkflowTab(ul, tabName);
 	      }
 	      
-	      function addElementJs(canvasName, path, positions, links, selecteds, reset, workflowType){
+	      function addElementJs(canvasName, path, positions, links, selecteds, reset, workflowType ){
+		 //     alert(positions);
 	          //Add the workflow tab only if the name does not exist yet.
 	          if(document.getElementById(canvasName) == null) {
 	    	      addWorkflowTab(canvasName);
@@ -1997,6 +1998,7 @@
 										<ui:repeat value="#{tab.value}" var="action">
 											<span id="spanImagensObj" style="display: none"> <img
 												src="#{action[1]}" class="footerIcon" /> <span>#{action[0]}</span>
+												<span>#{action[2]}</span>
 											</span>
 										</ui:repeat>
 									</div>

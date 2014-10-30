@@ -37,6 +37,7 @@ import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.JobManager;
+import com.redsqirl.workflow.server.interfaces.SuperElement;
 import com.redsqirl.workflow.utils.SuperActionManager;
 
 public class CanvasBean extends BaseBean implements Serializable {
@@ -1929,20 +1930,35 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 				for (DataFlowElement e : getDf().getElement()) {
 					String compId = e.getComponentId();
-					try {
-						logger.info("privlege id '" + e.getPrivilege() + "'");
-					} catch (Exception ep) {
-
+					String privilege = null;
+					Boolean privilegeObj;
+					try{
+						privilegeObj = null;
+						privilegeObj= ((SuperElement)e).getPrivilege();
+					}catch (Exception epriv){
+						privilegeObj = null;
 					}
+					
+					if(privilegeObj!= null && privilegeObj.booleanValue()){
+						privilege = "true";
+					}else if(privilegeObj != null ){
+						privilege = "false";
+					}
+					
+					logger.info(compId+" privilege "+privilege);
 					jsonElements
 							.put(new Object[] {
 									elements.get(compId),
 									e.getName(),
 									LocalFileSystem.relativize(
 											getCurrentPage(), e.getImage()),
-									e.getX(), e.getY(), compId });
+									e.getX(), 
+									e.getY(),
+									compId ,
+									privilege});
 				}
-
+				
+				
 				for (DataFlowElement outEl : getDf().getElement()) {
 					String outElId = outEl.getComponentId();
 					Map<String, Map<String, String>> inputsPerOutputs = outEl

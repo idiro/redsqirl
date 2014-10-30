@@ -1,5 +1,6 @@
 package com.redsqirl;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.rmi.RemoteException;
@@ -30,6 +31,7 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 	private String privilage = "";
 	private String pathHDFS = "";
 	private boolean admin = false;
+	private String exists ;
 
 	/**
 	 * @param admin
@@ -52,11 +54,23 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 	public void installCurrentSubWorkflow() throws RemoteException {
 
 		logger.info("subWorkflow name  " + name);
-		logger.info("subWorkflow name  " + actualName);
+		logger.info("subWorkflow actual name  " + actualName);
 		DataFlowInterface dfi = getworkFlowInterface();
 		SubDataFlow swa = dfi.getSubWorkflow(actualName);
 
 		boolean system = asSystem.equals("System");
+		
+		logger.info("privilage : '" + privilage + "'");
+		Boolean privilageVal = null;
+		if (privilage.equals("edit")) {
+
+		} else if (privilage.equals("run")) {
+			privilageVal = new Boolean(false);
+		} else if (privilage.equals("license")) {
+			privilageVal = new Boolean(true);
+		}
+		logger.info(privilage + " + " + privilageVal);
+		
 		
 		if(!name.startsWith("sa_")){
 			name = "sa_"+name;
@@ -65,8 +79,11 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 		swa.setName(name);
 		
 		String username = system ? null : getUserInfoBean().getUserName();
-
-		String error = saManager.install(username, swa, null);
+		String error = null;
+		
+		saManager.uninstall(username,swa.getName());
+		
+		error = saManager.install(username, swa, privilageVal);
 
 		if (error != null && !error.isEmpty()) {
 			MessageUseful.addErrorMessage(error);
@@ -81,6 +98,29 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 					.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnSuccess", "msnSuccess");
 
+		}
+	}
+	
+	public void checkExistenceCurrentSubWorkflow() throws RemoteException{
+		exists = "false";
+		DataFlowInterface dfi = getworkFlowInterface();
+		SubDataFlow swa = dfi.getSubWorkflow(actualName);
+		boolean system = asSystem.equals("System");
+		String username = system ? null : getUserInfoBean().getUserName();
+		logger.info(system);
+		logger.info(username);
+		logger.info(name);
+		logger.info(actualName);
+		logger.info(swa==null);
+		
+		if(!name.startsWith("sa_")){
+			name = "sa_"+name;
+		}
+
+		swa.setName(name);
+		
+		if(!saManager.getAvailableSuperActions(username).contains(swa.getName())){
+			exists = "true";
 		}
 	}
 
@@ -350,6 +390,14 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 
 	public void setPrivilage(String privilage) {
 		this.privilage = privilage;
+	}
+
+	public String getExists() {
+		return exists;
+	}
+
+	public void setExists(String exists) {
+		this.exists = exists;
 	}
 
 }

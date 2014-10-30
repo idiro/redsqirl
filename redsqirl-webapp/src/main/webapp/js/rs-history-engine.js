@@ -148,7 +148,7 @@ function deleteSelected(canvasName){
 /********************************************************************/
 /********************************************************************/
 /********************* CommandAddObj ***************************/
-function CommandAddObj(canvasName, elementType, elementImg, posx, posy, numSides, groupId, selecteds) {
+function CommandAddObj(canvasName, elementType, elementImg, posx, posy, numSides, groupId, selecteds,privilege) {
 	Command.call(this);
 	this.canvasName = canvasName;
 	this.elementType = elementType;
@@ -159,6 +159,7 @@ function CommandAddObj(canvasName, elementType, elementImg, posx, posy, numSides
 	this.groupId = groupId;
 	this.selecteds = selecteds;
 	this.elementId = '';
+	this.privilege = privilege;
 };
 
 CommandAddObj.prototype = Object.create(Command.prototype);
@@ -177,7 +178,8 @@ CommandAddObj.prototype.redo = function(){
 			this.posy,
 			this.numSides,
 			this.groupId,
-			this.selecteds
+			this.selecteds,
+			this.privilege
 		);
     tmpCommandObj = this;
     addElementBt(this.elementType,this.groupId,this.elementId);
