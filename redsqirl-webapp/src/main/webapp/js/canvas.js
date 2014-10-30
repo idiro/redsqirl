@@ -49,24 +49,16 @@ var contSaving;
 var tmpCommandObj;
 var stageArrayTab;
 
-var contextMenuCanvasNormalAction = [
+var contextMenuCanvasAction = [
 	{'Create Link': function(menuItem,menu){createLink(rightClickGroup.getChildren()[0]);}},
 	{'Rename Object...': function(menuItem,menu){openChangeIdModalJS(rightClickGroup);}},
 	{'Configure...': function(menuItem,menu){openCanvasModalJS(rightClickGroup);}},
 	{'Data Output...': function(menuItem,menu){openCanvasModalJS(rightClickGroup,"outputTab");}},
 	{'Oozie Action Logs': function(menuItem,menu){openWorkflowElementUrl(rightClickGroup.getId());}},
-];
-var contextMenuCanvasSuperAction = [
- {'Create Link': function(menuItem,menu){createLink(rightClickGroup.getChildren()[0]);}},
- {'Rename Object...': function(menuItem,menu){openChangeIdModalJS(rightClickGroup);}},
- {'Configure...': function(menuItem,menu){openCanvasModalJS(rightClickGroup);}},
- {'Data Output...': function(menuItem,menu){openCanvasModalJS(rightClickGroup,"outputTab");}},
- {'Oozie Action Logs': function(menuItem,menu){openWorkflowElementUrl(rightClickGroup.getId());}},
- {'Edit SuperAction': function(menuItem,menu){if(rightClickGroup.privilege ==null){openSubWorkflow(rightClickGroup.elementType);}}},
+	{'Edit SuperAction': function(menuItem,menu){if(rightClickGroup.privilege ==null){openSubWorkflow(rightClickGroup.elementType);}}},
 ];
 
-var cmenuCanvasNormal = jQuery.contextMenu.create(contextMenuCanvasNormalAction);
-var cmenuCanvasSuper = jQuery.contextMenu.create(contextMenuCanvasSuperAction);
+var cmenuCanvas = null;
 
 window.onload = function() {
     var canvasName = "canvas-1";
@@ -1899,8 +1891,13 @@ function configureGroupListeners(canvasName, group) {
           
         }else{
             rightClickGroup = this;
+            cmenuCanvas = jQuery.contextMenu.create(contextMenuCanvasAction)
+            if(canvasArray[canvasName].workflowType == 'w'){
+            	
+            }else if(canvasArray[canvasName].workflowType == 's'){
+            	
+            }
             if(group.elementType.indexOf('sa_')==0){
-            	cmenuCanvasSuper.show(this,e);
             	if(group.privilege != null){
             		if(!jQuery("body").find(".context-menu-item:contains('Edit SuperAction')").hasClass("context-menu-item-disabled")){
 //            			jQuery("body").find(".context-menu-item-inner:contains('Edit SuperAction')").addClass("context-menu-item-disabled");
@@ -1912,9 +1909,8 @@ function configureGroupListeners(canvasName, group) {
             			jQuery("body").find(".context-menu-item:contains('Edit SuperAction')").removeClass("context-menu-item-disabled")
             		}
             	}
-            }else{
-            	cmenuCanvasNormal.show(this,e);
             }
+            cmenuCanvas.show(this,e);
             e.preventDefault();
             //e.stopPropagation();
             //e.cancelBubble = true;
