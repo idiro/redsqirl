@@ -6,12 +6,14 @@ import java.awt.Point;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.DOMException;
@@ -125,7 +127,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 				WorkflowPrefManager.sys_install_package, WorkflowPrefManager
 						.getSysProperty(WorkflowPrefManager.sys_tomcat_path))
 				+ relativePath);
-		if (!f.exists() || !isUserAllowInstall()) {
+		if (!f.exists()) {
 			relativePath = WorkflowPrefManager.getPathSysHelpPref() + "/"
 					+ fname;
 			f = new File(
@@ -155,7 +157,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 				WorkflowPrefManager.sys_install_package, WorkflowPrefManager
 						.getSysProperty(WorkflowPrefManager.sys_tomcat_path))
 				+ relativePath);
-		if (!f.exists() || !isUserAllowInstall()) {
+		if (!f.exists()) {
 			relativePath = WorkflowPrefManager.getPathsysimagepref() + "/"
 					+ fname;
 			f = new File(
@@ -607,6 +609,32 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 					ansCur.put(cur.getComponentId() + "_" + out_id, cur
 							.getDFEOutput().get(out_id));
 				}
+			}
+		}
+		return ans;
+	}
+	
+	/**
+	 * Get Map of Aliases per input of
+	 * 
+	 * @return Map of Aliases and input components
+	 * @throws RemoteException
+	 */
+	public Map<String, Entry<String, DFEOutput>> getAliasesPerComponentInput()
+			throws RemoteException {
+		Map<String, Entry<String, DFEOutput>> ans = new LinkedHashMap<String, Entry<String, DFEOutput>>();
+		Map<String, List<DataFlowElement>> in = getInputComponent();
+		Iterator<DataFlowElement> it = getAllInputComponent().iterator();
+		while (it.hasNext()) {
+			DataFlowElement inEl = it.next();
+			String out_id = findNameOf(inEl.getOutputComponent(), this);
+			if (out_id.isEmpty()) {
+				ans.put(inEl.getComponentId(),
+						 new AbstractMap.SimpleEntry<String,DFEOutput>(inEl.getComponentId(),
+						inEl.getDFEOutput().get(out_id)));
+			} else {
+				ans.put(inEl.getComponentId(),new AbstractMap.SimpleEntry<String,DFEOutput>(inEl.getComponentId() + "_" + out_id, inEl
+						.getDFEOutput().get(out_id)));
 			}
 		}
 		return ans;
@@ -1126,12 +1154,6 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		while (it.hasNext()) {
 			it.next().cleanThisAndAllElementAfter();
 		}
-	}
-
-	protected static boolean isUserAllowInstall() {
-		return WorkflowPrefManager.getSysProperty(
-				WorkflowPrefManager.sys_allow_user_install, "FALSE")
-				.equalsIgnoreCase("true");
 	}
 
 	public List<String> listFilesRecursively(String path) {

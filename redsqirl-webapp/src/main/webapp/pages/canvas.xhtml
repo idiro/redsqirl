@@ -73,6 +73,7 @@
         var msg_changeelementid_command='#{messages.msg_changeelementid_command}';
         var msg_updateelement_command='#{messages.msg_updateelement_command}';
         var msg_changeworkflowcomment_command='#{messages.msg_changeworkflowcomment_command}';
+        var msg_aggregate_command='#{messages.msg_aggregate_command}';
 		           
 		 var contTabCanvas = 1;
 		 
@@ -215,7 +216,7 @@
 	              contTabCanvas++;
 	              var tabName = "canvas-"+contTabCanvas;
 	              addSubWorkflow(tabName);
-	              addWorkflowTab(tabName);
+	              addWorkflowTab(tabName,"S");
 	              configureCanvas(tabName, true, "S");
 	              setWorkflow(tabName);
 	              validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
@@ -497,7 +498,7 @@
 		 //     alert(positions);
 	          //Add the workflow tab only if the name does not exist yet.
 	          if(document.getElementById(canvasName) == null) {
-	    	      addWorkflowTab(canvasName);
+	    	      addWorkflowTab(canvasName,workflowType);
 	    	      configureCanvas(canvasName, reset, workflowType);
 		    	  setWorkflow(canvasName);
 	    	      addElements(canvasName, positions, selecteds);
@@ -544,13 +545,14 @@
 	      var numTabs = 1;
 	      var nameTabs = {};
 	      
-	      function addWorkflowTab(tabName){
+	      function addWorkflowTab(tabName,type){
 	    	//<![CDATA[
-	    	
+	    	  var tabImage = typeof type == 'undefined' || type == "W" ? "../image/workflow_tab.gif" : "../image/subworkflow_tab.gif"  ;
+	    	  
 	    	  var tabs = jQuery("#canvas-tabs").tabs();
               var ul = jQuery("#canvas-tabs").tabs().find( "ul:first" );
               
-              jQuery( "<li class='locked canvasTabsInactive'><a href='#"+ getCanvasId(tabName) +"' class='canvasTab' onclick=\"jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('"+tabName+"');\">"+ 
+              jQuery( "<li class='locked canvasTabsInactive'><a href='#"+ getCanvasId(tabName) +"' class='canvasTab' onclick=\"jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('"+tabName+"');\"><img src='"+tabImage+"' style='width: 15px;'/>"+ 
             		  tabName +"</a> <span id='"+tabName+"-icon-close' class='ui-icon ui-icon-close' role='presentation' onclick=\"closeWorkflowTab(this, '"+tabName+"')\"></span> </li>" ).appendTo( ul );
               
               var div = "<div id='"+getCanvasId(tabName)+"' class='container-canvas'>"+
@@ -748,7 +750,18 @@
 			}
 			//]]>
 		}
-	   	
+
+	    function checkOpenModalAggregate(){
+	    	if(getSelectedIconsCommaDelimited() != ""){
+	    		openModalAggregate(getSelectedIconsCommaDelimited());
+		    }else{
+		    	alert("You need select one object");
+			}
+	    }
+
+	    function refreshRelativeHelp(){
+	    	 jQuery('[id$="refreshRelativeHelp"]').click();
+	    }
 	   	
 	   	/*keyboard shortcuts*/
 	   	
@@ -838,7 +851,6 @@
 
 	<a4j:keepAlive beanName="canvasModalBean" />
 
-
 	<div id="invisible"></div>
 
 	<div id="menu" style="width: 100%">
@@ -861,12 +873,30 @@
 						assignTo="#{browserHdfsBean.showSave}" />
 				</a4j:jsFunction>
 			</a4j:region>
+			
+			<a4j:region>
+				<a4j:jsFunction name="openModalAggregate" action="#{canvasBean.openAggregate}" reRender="errorTable, msnError"
+					oncomplete="if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.show();}" >
+					<a4j:actionparam name="selectedIcons" />
+				</a4j:jsFunction>
+				
+				<a4j:jsFunction name="cloneBeforeAggregate" action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
+					oncomplete="tmpCommandObj.cloneId = data;aggregate();">
+					<a4j:actionparam name="allpositions" />
+				</a4j:jsFunction>
+				
+				<a4j:jsFunction name="aggregate" action="#{canvasBean.aggregate}" data="#{canvasBean.inputNameSubWorkflow}"
+					oncomplete="tmpCommandObj.nameSA = data;if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.hide();deleteAllElements();rebuildJS();refreshRelativeHelp();}" />
+					
+				<a4j:jsFunction name="undoAggregate" action="#{canvasBean.undoAggregate}" >
+					<a4j:actionparam name="nameSA" />
+				</a4j:jsFunction>
+			</a4j:region>
 
 			<a4j:region>
 				<a4j:jsFunction name="openModalImportSubworkflow"
 					oncomplete="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });openModalFileHdfs('F');">
 				</a4j:jsFunction>
-
 			</a4j:region>
 
 			<a4j:region renderRegionOnly="true">
@@ -1822,14 +1852,10 @@
 							-->
 								</rich:toolBarGroup>
 
-							</rich:toolBar></td>
+							</rich:toolBar>
+							</td>
 					</tr>
 				</table>
-
-
-
-
-
 
 
 			</a4j:region>
@@ -1864,6 +1890,12 @@
 
 
 					<div class="divMenuImage">
+					
+						<span style="cursor: pointer;">
+							<img src="../image/icons/button-aggregate.png" alt="aggregate" class="shortMenuIcon" 
+								onclick="checkOpenModalAggregate()" title="#{messages.label_menu_aggregate}" />
+						</span>
+					
 						<span style="cursor: pointer;"> <img
 							src="../image/icons/button-open.gif" alt="open"
 							class="shortMenuIcon" onclick="openModalLoadWorkflow()"
@@ -1909,7 +1941,7 @@
 							style="width: 100%;">
 							<li class="locked canvasTabsInactive"><a
 								href="#flowchart-canvas-1" class="canvasTab"
-								onclick="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('canvas-1');">canvas-1</a>
+								onclick="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('canvas-1');"><img src="../image/workflow_tab.gif" style="width: 15px;"/>canvas-1</a>
 								<span id="canvas-1-icon-close" class="ui-icon ui-icon-close "
 								role="presentation" onclick="closeWorkflowTab(this,'canvas-1')"></span>
 							</li>
@@ -2484,6 +2516,24 @@
 				<h:panelGroup>
 					<a4j:include viewId="/pages/subWF/modalSubWFImport.xhtml"
 						ajaxRendered="true" />
+				</h:panelGroup>
+			</h:form>
+
+		</rich:modalPanel>
+	</a4j:region>
+	<a4j:region>
+		<rich:modalPanel id="modalAggregate" width="650" height="450" style="overflow:auto;" resizeable="false">
+
+			<f:facet name="header">
+				<h:outputText value="#{messages.label_menu_aggregate}" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:22px;"
+					onclick="#{rich:component('modalAggregate')}.hide()" />
+			</f:facet>
+			<h:form>
+				<h:panelGroup>
+					<a4j:include viewId="/pages/modalAggregate.xhtml" ajaxRendered="true" />
 				</h:panelGroup>
 			</h:form>
 

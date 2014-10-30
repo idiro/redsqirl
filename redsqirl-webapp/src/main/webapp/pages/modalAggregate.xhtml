@@ -1,0 +1,65 @@
+<h:panelGrid xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<a4j:loadBundle basename="MessagesResources" var="messages" />
+
+	<h:outputText value="#{messages.name_sub_workflow}" title="#{messages.name_sub_workflow}" />
+	<h:inputText value="#{canvasBean.inputNameSubWorkflow}" />
+	
+	<h:outputText value="#{messages.name_inpuputlist}" title="#{messages.name_inpuputlist}" />
+	
+	<rich:dataTable value="#{canvasBean.inputNamesList}" var="item" rowKeyVar="indexTable"
+            width="40%" onRowMouseOver="this.style.backgroundColor='#f2b97a'"
+            enableContextMenu="false" selectionMode="none" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+            rowClasses="even-row, odd-row">
+            
+             <rich:column style="border-bottom:0px;border-right:0px;" >
+                <f:facet name="header">
+					<h:outputText value="" />
+				</f:facet>
+                <h:outputText value="#{item[1]}" title="#{item[1]}" />
+            </rich:column>
+            
+             <rich:column style="border-bottom:0px;border-right:0px;" >
+                <f:facet name="header">
+					<h:outputText value="" />
+				</f:facet>
+                <h:inputText value="#{item[0]}" />
+            </rich:column>
+            
+    </rich:dataTable>
+	
+	<h:outputText value="#{messages.name_outputlist}" title="#{messages.name_outputlist}" />
+	
+	<rich:dataTable value="#{canvasBean.outputNamesList}" var="item" rowKeyVar="indexTable"
+            width="40%" onRowMouseOver="this.style.backgroundColor='#f2b97a'"
+            enableContextMenu="false" selectionMode="none" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+            rowClasses="even-row, odd-row">
+            
+             <rich:column style="border-bottom:0px;border-right:0px;" >
+                <f:facet name="header">
+					<h:outputText value="" />
+				</f:facet>
+                <h:outputText value="#{item[1]}" title="#{item[1]}" />
+            </rich:column>
+            
+             <rich:column style="border-bottom:0px;border-right:0px;" >
+                <f:facet name="header">
+					<h:outputText value="" />
+				</f:facet>
+                <h:inputText value="#{item[0]}" />
+            </rich:column>
+            
+    </rich:dataTable>
+	
+	<h:panelGrid columns="2" style="border:none; float:right;">
+		<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('modalAggregate')}.hide()" />
+		<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" 
+		oncomplete="undoRedoAggregate();" reRender="errorTable,msnError"/>
+	</h:panelGrid>
+       
+</h:panelGrid>

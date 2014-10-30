@@ -744,6 +744,32 @@ function deleteElementsJS(listIds, listArrowsIds) {
 	polygonLayer.draw();
 }
 
+function deleteAllElements() {
+	
+	selectAll(selectedCanvas);
+	
+	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+	var layer = canvasArray[selectedCanvas].layer;
+
+	jQuery.each(polygonLayer.get('.group1'), function(index, value) {
+		var group = this;
+		deleteLayerChildren(selectedCanvas, group.getId());
+		group.remove();
+	});
+	
+	jQuery.each(layer.getChildren(), function(index, value) {
+        if (value !== undefined && value.isArrow == true) {
+            if (value.label != null){
+                value.label.remove();
+            }
+            value.remove();
+        }
+    });
+	
+	layer.draw();
+	polygonLayer.draw();
+}
+
 // remove the arrows that are outside the standard
 function deleteArrowOutsideStandard(canvasName) {
     var layer = canvasArray[canvasName].layer;
@@ -2642,3 +2668,34 @@ function getPathFile(canvasName){
 function getWorkflowType(canvasName){
     return canvasArray[canvasName].workflowType;
 }
+
+/*
+function getSelectedInputOutput() {
+	
+    var layer = canvasArray[selectedCanvas].layer;
+    var listIds = getSelectedIconsCommaDelimited();
+    var ansIn = "";
+    var ansOut = "";
+    
+    jQuery.each(layer.getChildren(), function(index, value) {
+        if (value !== undefined && value.isArrow) {
+        	//alert(value.getName());
+        	if(checkIfExistID(value.idInput, listIds)){
+        		if(!checkIfExistID(value.idOutput, listIds)){
+        			//input
+        			ansIn = ansIn.concat(",",value.idOutput);
+        			//alert("in"+value.idOutput);
+        		}
+        	}else{
+        		if(checkIfExistID(value.idOutput, listIds)){
+        			//output
+        			ansOut = ansOut.concat(",",value.idInput);
+        			//alert("out"+value.idInput);
+        		}
+        	}
+        }
+    });
+    
+    return [ansIn , ansOut];
+}
+*/

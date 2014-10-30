@@ -105,9 +105,12 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 		List<String> listSuperAction = new SuperActionManager().getAvailableSuperActions(userInfoBean.getUserName());
 
 		//list of normal action
+		List<String> listAction = new ArrayList<String>();
 		for (Iterator iterator = allWANameWithClassName.entrySet().iterator(); iterator.hasNext();) {
 			Entry<String, String> e = (Entry<String, String>) iterator.next();
 
+			listAction.add(e.getKey());
+			
 			if(e.getValue().equals("com.redsqirl.workflow.server.action.superaction.SuperAction")){
 				if(!listSuperAction.contains(e.getKey())){
 					iterator.remove();
@@ -125,8 +128,8 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 		}
 
 		setMenuActions(result);
-		
-		
+
+
 		menuNull = new SelectableRowFooter(new String[3], getMenuActions());
 		setTabs(new LinkedList<String>(getMenuWA().keySet()));
 
@@ -140,8 +143,17 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 			retrieveItems(name);
 			getTableGrid().getRows().add(new SelectableRowFooter(value, getMenuActions(), getTarget()));
 		}
-		
-		
+
+		for (int i = 0; i < tableGrid.getRows().size(); i++) {
+			SelectableRowFooter selectableRowFooter = (SelectableRowFooter) tableGrid.getRows().get(i);
+			for (Iterator iterator = selectableRowFooter.getTarget().iterator(); iterator.hasNext();) {
+				String value = (String) iterator.next();
+				if(!listSuperAction.contains(value) && !listAction.contains(value)){
+					iterator.remove();
+				}
+			}
+		}
+
 	}
 
 	public Map<String, List<String[]>> getMenuWA() {
