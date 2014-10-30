@@ -22,6 +22,7 @@ import com.redsqirl.dynamictable.SelectableRowFooter;
 import com.redsqirl.dynamictable.SelectableTable;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
+import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.utils.SuperActionManager;
 
 public class ConfigureTabsBean extends BaseBean implements Serializable {

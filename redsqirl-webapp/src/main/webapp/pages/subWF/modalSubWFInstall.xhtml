@@ -18,14 +18,32 @@
 				onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModalSubWFInstall') });"
 				onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
 				onstop="jQuery.unblockUI();" />
+			<a4j:jsFunction name="intallSW"
+							reRender="installSubWfParams,msnError,errorTable,msnErrorPage,msnSuccess"
+							action="#{subwfBean.installCurrentSubWorkflow}" 
+							oncomplete="if(#{requestScope['msnError'] == null}){#{rich:component('modalSubWfInstall')}.hide();}"
+							/>
+			
 		</a4j:region>
-
 
 		<div style="width: 270px; height: 200px;">
 
-					<rich:panel id="installSubWfParams"
-						style="padding-left:5px; overflow: auto; height:200px;">
+			<rich:panel id="installSubWfParams"
+				style="padding-left:5px; overflow: auto; height:200px;">
 
+			<h:form>
+				<br/>
+				<h:outputText value="Name" />
+				<br/>
+				<h:inputText value="#{subwfBean.name}"/>
+				<h:selectOneRadio id="subscriptions"
+					value="#{subwfBean.asSystem}"
+					disabled="!#{subwfBean.admin}">
+					<f:selectItem id="System" itemLabel="System" itemValue="System" />
+					<f:selectItem id="User" itemLabel="User" itemValue="User" />
+				</h:selectOneRadio>
+			</h:form>
+			</rich:panel>
 
 							<h:form>
 								<br/>
@@ -38,6 +56,14 @@
 									<f:selectItem id="System" itemLabel="System" itemValue="System" />
 									<f:selectItem id="User" itemLabel="User" itemValue="User" />
 								</h:selectOneRadio>
+								<h:outputText value="Privilages" />
+								<h:selectOneRadio id="editable"
+									value="#{subwfBean.privilage}" 
+									layout="pageDirection">
+									<f:selectItem id="privilagesRun" itemLabel="Run Only" itemValue="run" />
+									<f:selectItem id="privilagesEdit" itemLabel="Editable" itemValue="edit" />
+									<f:selectItem id="privilagesLicense" itemLabel="Licensed" itemValue="license" />
+								</h:selectOneRadio>
 							</h:form>
 					</rich:panel>
 
@@ -47,9 +73,11 @@
 							reRender="errorTable"
 							onclick="#{rich:component('modalSubWfInstall')}.hide();" />
 						<a4j:commandButton styleClass="greenButton"
-							value="Install" reRender="installSubWfParams,msnError,errorTable,msnErrorPage,msnSuccess"
-							action="#{subwfBean.installCurrentSubWorkflow}" 
-							oncomplete="if(#{requestScope['msnError'] == null})#{rich:component('modalSubWfInstall')}.hide();"
+							value="Install"
+							reRender="installSubWfParams,msnError,errorTable,msnErrorPage,msnSuccess"
+							action="#{subwfBean.checkExistenceCurrentSubWorkflow}"
+							data="#{subwfBean.exists}"
+							oncomplete="if(data == 'true' || confirm('Sub Workflow already exists,\\nOverwrite the existing one?')){intallSW();}else{#{rich:component('modalSubWfInstall')}.hide();}"
 							/>
 					</h:panelGrid>
 

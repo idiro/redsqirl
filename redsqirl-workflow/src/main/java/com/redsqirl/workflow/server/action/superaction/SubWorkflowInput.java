@@ -190,10 +190,5 @@ public class SubWorkflowInput extends AbstractSource{
 		}
 	}
 
-	@Override
-	public Boolean getPrivilege() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 }

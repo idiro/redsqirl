@@ -494,7 +494,8 @@
 	    	  closeWorkflowTab(ul, tabName);
 	      }
 	      
-	      function addElementJs(canvasName, path, positions, links, selecteds, reset, workflowType){
+	      function addElementJs(canvasName, path, positions, links, selecteds, reset, workflowType ){
+		 //     alert(positions);
 	          //Add the workflow tab only if the name does not exist yet.
 	          if(document.getElementById(canvasName) == null) {
 	    	      addWorkflowTab(canvasName,workflowType);
@@ -757,6 +758,10 @@
 		    	alert("You need select one object");
 			}
 	    }
+
+	    function refreshRelativeHelp(){
+	    	 jQuery('[id$="refreshRelativeHelp"]').click();
+	    }
 	   	
 	   	/*keyboard shortcuts*/
 	   	
@@ -871,19 +876,21 @@
 			
 			<a4j:region>
 				<a4j:jsFunction name="openModalAggregate" action="#{canvasBean.openAggregate}" reRender="errorTable, msnError"
-					oncomplete="if( #{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.show();}" >
+					oncomplete="if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.show();}" >
 					<a4j:actionparam name="selectedIcons" />
 				</a4j:jsFunction>
 				
-				<a4j:jsFunction name="cloneBeforeAggregate"
-					action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
+				<a4j:jsFunction name="cloneBeforeAggregate" action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
 					oncomplete="tmpCommandObj.cloneId = data;aggregate();">
 					<a4j:actionparam name="allpositions" />
 				</a4j:jsFunction>
 				
-				<a4j:jsFunction name="aggregate" action="#{canvasBean.aggregate}"
-					oncomplete="if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.hide();deleteAllElements();rebuildJS();}" />
-				
+				<a4j:jsFunction name="aggregate" action="#{canvasBean.aggregate}" data="#{canvasBean.inputNameSubWorkflow}"
+					oncomplete="tmpCommandObj.nameSA = data;if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.hide();deleteAllElements();rebuildJS();refreshRelativeHelp();}" />
+					
+				<a4j:jsFunction name="undoAggregate" action="#{canvasBean.undoAggregate}" >
+					<a4j:actionparam name="nameSA" />
+				</a4j:jsFunction>
 			</a4j:region>
 
 			<a4j:region>
@@ -2023,6 +2030,7 @@
 										<ui:repeat value="#{tab.value}" var="action">
 											<span id="spanImagensObj" style="display: none"> <img
 												src="#{action[1]}" class="footerIcon" /> <span>#{action[0]}</span>
+												<span>#{action[2]}</span>
 											</span>
 										</ui:repeat>
 									</div>

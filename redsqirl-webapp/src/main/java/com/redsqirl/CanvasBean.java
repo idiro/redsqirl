@@ -40,6 +40,7 @@ import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.JobManager;
+import com.redsqirl.workflow.server.interfaces.SuperElement;
 import com.redsqirl.workflow.utils.SuperActionManager;
 
 public class CanvasBean extends BaseBean implements Serializable {
@@ -1934,20 +1935,36 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 				for (DataFlowElement e : getDf().getElement()) {
 					String compId = e.getComponentId();
-					try {
-						logger.info("privlege id '" + e.getPrivilege() + "'");
-					} catch (Exception ep) {
-
+					String privilege = null;
+					Boolean privilegeObj;
+					try{
+						privilegeObj = null;
+						privilegeObj= ((SuperElement)e).getPrivilege();
+					}catch (Exception epriv){
+						privilegeObj = null;
 					}
+					
+					if(privilegeObj!= null && privilegeObj.booleanValue()){
+						privilege = "true";
+					}else if(privilegeObj != null ){
+						privilege = "false";
+					}
+					
+					logger.info(compId+" privilege "+privilege);
 					jsonElements
-					.put(new Object[] {
-							elements.get(compId),
-							e.getName(),
-							LocalFileSystem.relativize(
-									getCurrentPage(), e.getImage()),
-									e.getX(), e.getY(), compId });
-				}
+							.put(new Object[] {
+									elements.get(compId),
+									e.getName(),
+									LocalFileSystem.relativize(
+											getCurrentPage(), e.getImage()),
+									e.getX(), 
+									e.getY(),
+									compId ,
+									privilege});
 
+				}
+				
+				
 				for (DataFlowElement outEl : getDf().getElement()) {
 					String outElId = outEl.getComponentId();
 					Map<String, Map<String, String>> inputsPerOutputs = outEl
@@ -2336,7 +2353,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 		if(error == null){
 			try {
 
-
 				Map<String, Entry<String,String>> inputs = new HashMap<String, Entry<String,String>>();
 				Map<String, Entry<String,String>> outputs = new HashMap<String, Entry<String,String>>();
 				Map<String,DFEOutput> inputsForHelp = new HashMap<String,DFEOutput>();
@@ -2404,20 +2420,18 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	}
 
-	public String checkInput(Map<String, Entry<String,String>> inputs) {
-		String error = null;
-		//check if the input are the same type
-
-
-		return error;
+	// uninstall the super action
+	public void undoAggregate(){
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String nameSA = params.get("nameSA");
+		String user = getUserInfoBean().getUserName();
+		
+		if(nameSA != null){
+			SuperActionManager saManager = new SuperActionManager();
+			saManager.uninstall(user, nameSA);
+		}
 	}
-
-	public String checkOutput(Map<String, Entry<String,String>> outputs) {
-		String error = null;
-		//check if the output are the same type
-
-		return error;
-	}
+	
 
 	public DataFlow getDf() {
 		return df;

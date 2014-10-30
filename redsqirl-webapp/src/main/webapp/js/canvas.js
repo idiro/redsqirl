@@ -49,15 +49,24 @@ var contSaving;
 var tmpCommandObj;
 var stageArrayTab;
 
-var contextMenuCanvas = [
+var contextMenuCanvasNormalAction = [
+	{'Create Link': function(menuItem,menu){createLink(rightClickGroup.getChildren()[0]);}},
+	{'Rename Object...': function(menuItem,menu){openChangeIdModalJS(rightClickGroup);}},
+	{'Configure...': function(menuItem,menu){openCanvasModalJS(rightClickGroup);}},
+	{'Data Output...': function(menuItem,menu){openCanvasModalJS(rightClickGroup,"outputTab");}},
+	{'Oozie Action Logs': function(menuItem,menu){openWorkflowElementUrl(rightClickGroup.getId());}},
+];
+var contextMenuCanvasSuperAction = [
  {'Create Link': function(menuItem,menu){createLink(rightClickGroup.getChildren()[0]);}},
  {'Rename Object...': function(menuItem,menu){openChangeIdModalJS(rightClickGroup);}},
  {'Configure...': function(menuItem,menu){openCanvasModalJS(rightClickGroup);}},
  {'Data Output...': function(menuItem,menu){openCanvasModalJS(rightClickGroup,"outputTab");}},
  {'Oozie Action Logs': function(menuItem,menu){openWorkflowElementUrl(rightClickGroup.getId());}},
+ {'Edit SuperAction': function(menuItem,menu){if(rightClickGroup.privilege ==null){openSubWorkflow(rightClickGroup.elementType);}}},
 ];
 
-var cmenuCanvas = jQuery.contextMenu.create(contextMenuCanvas);
+var cmenuCanvasNormal = jQuery.contextMenu.create(contextMenuCanvasNormalAction);
+var cmenuCanvasSuper = jQuery.contextMenu.create(contextMenuCanvasSuperAction);
 
 window.onload = function() {
     var canvasName = "canvas-1";
@@ -1065,11 +1074,12 @@ function addElements(canvasName, positions, selecteds) {
 	for ( var i = 0; i < positionsArrays.length; i++) {
 		
 		if(getElement(polygonLayer, positionsArrays[i][0]) == null){
+//			alert(positionsArrays[i][6]);
 			var group = addElement(canvasName, positionsArrays[i][1],
 					positionsArrays[i][2], positionsArrays[i][3],
 					positionsArrays[i][4],
 					numSides,
-					positionsArrays[i][0], selecteds);
+					positionsArrays[i][0], selecteds,positionsArrays[i][6]);
 			maxX = Math.max(maxX,positionsArrays[i][3]);
 			maxY = Math.max(maxY,positionsArrays[i][4]);
 			//updateIdObj(positionsArrays[i][0], positionsArrays[i][0]);
@@ -1106,9 +1116,9 @@ function checkImg(src){
    });
 }
 
-function addElement(canvasName, elementType, elementImg, posx, posy, numSides, idElement, selecteds) {
+function addElement(canvasName, elementType, elementImg, posx, posy, numSides, idElement, selecteds,privilege) {
     
-    //alert(elementImg);
+//    alert(privilege);
     
     var polygonLayer = canvasArray[canvasName].polygonLayer;
 
@@ -1272,6 +1282,8 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
     
     group.elementType = elementType;
     
+    group.privilege = privilege;
+    
     return group;
 }
 
@@ -1403,6 +1415,8 @@ function mountObj(canvasName) {
                 
                 //alert(jQuery(this).attr("src"));
                 
+                
+                
                 imgTab.src = jQuery(this).attr("src");
                 var srcImageText = jQuery(this).attr("src");
                 
@@ -1413,6 +1427,13 @@ function mountObj(canvasName) {
                 if(labelText.length > 8){
                     labelTextSize8 = labelText.substring(0,7).concat(".");
                 }
+                var priv = jQuery(this).next().next().text();
+                if(priv){
+
+                }else{
+                	priv = null;
+                }
+                
                 labelTextSize8 = labelTextSize8.replace("_"," ");
                 labelTextSize8 = ucFirstAllWords(labelTextSize8);
 
@@ -1494,7 +1515,8 @@ function mountObj(canvasName) {
                                 mousePosStage.y - 30,
                                 numSides,
                                 "group" + (+canvasArray[selectedCanvas].countObj++),
-                                "")
+                                "",
+                                priv)
                         );
                         
                     }
@@ -1877,7 +1899,22 @@ function configureGroupListeners(canvasName, group) {
           
         }else{
             rightClickGroup = this;
-            cmenuCanvas.show(this,e);
+            if(group.elementType.indexOf('sa_')==0){
+            	cmenuCanvasSuper.show(this,e);
+            	if(group.privilege != null){
+            		if(!jQuery("body").find(".context-menu-item:contains('Edit SuperAction')").hasClass("context-menu-item-disabled")){
+//            			jQuery("body").find(".context-menu-item-inner:contains('Edit SuperAction')").addClass("context-menu-item-disabled");
+//            			jQuery("body").find(".context-menu-item:contains('Edit SuperAction')").addClass("context-menu-item-disabled");
+            			jQuery("body").find(".context-menu-item:contains('Edit SuperAction')").css("display:none");
+            		}
+            	}else{
+            		if(jQuery("body").find(".context-menu-item:contains('Edit SuperAction')").hasClass("context-menu-item-disabled")){
+            			jQuery("body").find(".context-menu-item:contains('Edit SuperAction')").removeClass("context-menu-item-disabled")
+            		}
+            	}
+            }else{
+            	cmenuCanvasNormal.show(this,e);
+            }
             e.preventDefault();
             //e.stopPropagation();
             //e.cancelBubble = true;
@@ -1904,7 +1941,7 @@ function createGroup(canvasName, circle0, circle1, polygon, srcImageText, typeTe
          jQuery("#help_"+typeText.getText()).click();
     });
     
-    jQuery("#"+groupId).contextMenu(contextMenuCanvas);
+//    jQuery("#"+groupId).contextMenu(contextMenuCanvas);
 
     var circ0 = circle0.clone();
     var circ = circle1.clone();
@@ -1979,26 +2016,18 @@ function openCanvasModalJS(group, selectedTab){
     });
 
     
-	//check if start with sa and open a new sub work flow
-    if(group.elementType.startsWith("sa")){
-    	openSubWorkflow(group.elementType);
-    }else{
-        	
-    	if (!group.hasChangedId) {
-	        openChangeIdModal(group.getId(), imagePath,true);
-	        group.hasChangedId = true;
-	    } else {
-	        openModal(group.getId(), imagePath, selectedTab, group.pageNb);
-	        changeHelpAnchor(group.pageNb);
-	    }
-    	
+    if (!group.hasChangedId) {
+	openChangeIdModal(group.getId(), imagePath,true);
+	group.hasChangedId = true;
+    } else {
+	openModal(group.getId(), imagePath, selectedTab, group.pageNb);
+	changeHelpAnchor(group.pageNb);
     }
-    
 }
 
 function openChangeIdModalJS(group){
 
-    //group.getChildren()[2].setStroke('white');
+    // group.getChildren()[2].setStroke('white');
     group.getChildren()[0].setFill("white");
     group.getChildren()[1].setFill("white");
     

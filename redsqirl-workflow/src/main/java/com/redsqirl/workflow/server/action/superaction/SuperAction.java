@@ -53,7 +53,7 @@ public class SuperAction extends DataflowAction implements SuperElement{
 	
 	public SuperAction() throws RemoteException {
 		super(new SubWorkflowAction());
-		name = "superaction";
+		setName("superaction");
 	}
 
 	public SuperAction(String name) throws RemoteException {
@@ -66,20 +66,21 @@ public class SuperAction extends DataflowAction implements SuperElement{
 			SubWorkflow saw = new SubWorkflow(name);
 			errorInit = saw.readMetaData();
 			if(errorInit == null){
-				logger.debug("Set input and output of the action");
+				logger.info("Set input and output of the action");
 				input = saw.getInputSuperAction();
 				tmpOutput = saw.getTmpOutput();
 				generateTmpPathsIfNull();
 				output = saw.getOutputSuperAction();
 				privilege = saw.getPrivilege();
 			}else{
-				logger.debug("Error when reading the metadata: "+errorInit);
+				logger.info("Error when reading the metadata: "+errorInit);
 			}
 		}catch(Exception e){
 			logger.error("Fail to read Super Action Meta data: "+e,e);
 		}
 	}
 
+	@Override
 	public void setName(String name) throws RemoteException{
 		if(name == null){
 			logger.debug("No name: Clear input and output...");
