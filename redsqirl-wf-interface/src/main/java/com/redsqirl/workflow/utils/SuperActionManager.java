@@ -30,7 +30,7 @@ public class SuperActionManager {
 	
 	public String export(String user ,SubDataFlow toExport , Boolean privilage) throws RemoteException{
 		String error = null;
-		String filePath ="/user/"+user+"/tmp/"+toExport.getName();
+		String filePath ="/user/"+user+"/redsqirl-save/"+toExport.getName();
 		error = toExport.save(filePath, privilage);
 		return error;
 	}
@@ -45,8 +45,6 @@ public class SuperActionManager {
 				fs.copyToLocalFile(path, dest);
 				String filename = pathHdfs.substring(pathHdfs.lastIndexOf("/"));
 				String filenameReplced = filename.substring(0,filename.indexOf(".srs"));
-				logger.info(getSuperActionMainDir(user).getAbsolutePath() +filename);
-				logger.info(getSuperActionMainDir(user).getAbsolutePath() +filenameReplced);
 				File file = new File(getSuperActionMainDir(user).getAbsolutePath()+filename);
 				File file2 = new File(getSuperActionMainDir(user).getAbsolutePath()+filenameReplced);
 				

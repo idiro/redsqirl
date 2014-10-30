@@ -338,7 +338,7 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 			this.privilege = new Boolean(true);
 		}
 		
-		logger.info("privilege '"+this.privilege+"'");
+		logger.info(getName()+" privilege '"+this.privilege+"'");
 		
 		for (int temp = 0; temp < compList.getLength() && error == null; ++temp) {
 

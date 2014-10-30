@@ -247,9 +247,4 @@ public class SendEmail extends DataflowAction {
 		return ccInt;
 	}
 
-	@Override
-	public Boolean getPrivilege() throws RemoteException {
-		// leave as null or otherwise never editable
-		return null;
-	}
 }

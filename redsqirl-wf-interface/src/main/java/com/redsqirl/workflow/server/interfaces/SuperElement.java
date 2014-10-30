@@ -23,4 +23,15 @@ public interface SuperElement extends DataFlowElement{
 	void setTmpOutput(Map<LinkedList<String>, DFEOutput> tmpOutput) throws RemoteException;
 	
 	public void updateOozieSubWorkflowAction() throws RemoteException;
+	
+	/**
+	 * Get the privilege of the Element
+	 * @return privilege
+	 * @throws RemoteException
+	 */
+	public Boolean getPrivilege() throws RemoteException;
+	
+	public void setName(String name) throws RemoteException;
+	
+	public String getName() throws RemoteException;
 }
