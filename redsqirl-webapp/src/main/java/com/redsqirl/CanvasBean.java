@@ -32,6 +32,7 @@ import com.idiro.utils.LocalFileSystem;
 import com.idiro.utils.RandomString;
 import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.useful.MessageUseful;
+import com.redsqirl.useful.WorkflowHelpUtils;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
@@ -2294,7 +2295,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		}
 
-		setInputNameSubWorkflow(nameWorkflow.replaceAll("[^A-Za-z0-9]", "")+RandomString.getRandomName(4));
+		setInputNameSubWorkflow((nameWorkflow.replaceAll("[^A-Za-z0-9]", "")+RandomString.getRandomName(4)).toLowerCase());
 
 		setInputNamesList(new ArrayList<String[]>());
 		for (String name : ansIn.keySet()) {
@@ -2336,7 +2337,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		if(!getInputNameSubWorkflow().startsWith("sa_")){
 			setInputNameSubWorkflow("sa_"+getInputNameSubWorkflow());
 		}
-		String pattern= "sa_[a-zA-Z0-9]*";
+		String pattern= "sa_[a-z0-9]*";
 		if(!getInputNameSubWorkflow().matches(pattern)){
 			//check regex
 			error = getMessageResources("msg_error_agg_subworkflow_name");
@@ -2348,15 +2349,19 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 				Map<String, Entry<String,String>> inputs = new HashMap<String, Entry<String,String>>();
 				Map<String, Entry<String,String>> outputs = new HashMap<String, Entry<String,String>>();
+				Map<String,DFEOutput> inputsForHelp = new HashMap<String,DFEOutput>();
+				Map<String,DFEOutput> outputsForHelp = new HashMap<String,DFEOutput>();
 
 				for (String[] vet : getInputNamesList()) {
 					logger.info("openAggregate ansIn: " + vet[0] + " " + vet[1] + " " + vet[2]);
 					inputs.put(vet[0], new AbstractMap.SimpleEntry<String,String>(vet[1], vet[2]));
+					inputsForHelp.put(vet[0], getDf().getElement(vet[1]).getDFEOutput().get(vet[2]));
 				}
 
 				for (String[] vet : getOutputNamesList()) {
 					logger.info("openAggregate ansOut: " + vet[0] + " " + vet[1] + " " + vet[2]);
 					outputs.put(vet[0], new AbstractMap.SimpleEntry<String,String>(vet[1], vet[2]));
+					outputsForHelp.put(vet[0], getDf().getElement(vet[1]).getDFEOutput().get(vet[2]));
 				}
 
 				//check inputname and outputname do not exist on workflow
@@ -2380,7 +2385,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 				}
 
 				if(error == null){
-					error = getDf().aggregateElements(getComponentIds(), getInputNameSubWorkflow(),"", inputs, outputs);
+					error = getDf().aggregateElements(getComponentIds(), 
+							getInputNameSubWorkflow(),
+							WorkflowHelpUtils.generateHelp(getInputNameSubWorkflow(), inputsForHelp, outputsForHelp), 
+							inputs, outputs);
 					logger.info("Elements: " + getDf().getComponentIds());
 
 					Iterator<String> elIt = getDf().getComponentIds().iterator();
