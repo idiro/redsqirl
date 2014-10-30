@@ -757,6 +757,10 @@
 		    	alert("You need select one object");
 			}
 	    }
+
+	    function refreshRelativeHelp(){
+	    	 jQuery('[id$="refreshRelativeHelp"]').click();
+	    }
 	   	
 	   	/*keyboard shortcuts*/
 	   	
@@ -871,19 +875,21 @@
 			
 			<a4j:region>
 				<a4j:jsFunction name="openModalAggregate" action="#{canvasBean.openAggregate}" reRender="errorTable, msnError"
-					oncomplete="if( #{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.show();}" >
+					oncomplete="if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.show();}" >
 					<a4j:actionparam name="selectedIcons" />
 				</a4j:jsFunction>
 				
-				<a4j:jsFunction name="cloneBeforeAggregate"
-					action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
+				<a4j:jsFunction name="cloneBeforeAggregate" action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
 					oncomplete="tmpCommandObj.cloneId = data;aggregate();">
 					<a4j:actionparam name="allpositions" />
 				</a4j:jsFunction>
 				
-				<a4j:jsFunction name="aggregate" action="#{canvasBean.aggregate}"
-					oncomplete="if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.hide();deleteAllElements();rebuildJS();}" />
-				
+				<a4j:jsFunction name="aggregate" action="#{canvasBean.aggregate}" data="#{canvasBean.inputNameSubWorkflow}"
+					oncomplete="tmpCommandObj.nameSA = data;if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.hide();deleteAllElements();rebuildJS();refreshRelativeHelp();}" />
+					
+				<a4j:jsFunction name="undoAggregate" action="#{canvasBean.undoAggregate}" >
+					<a4j:actionparam name="nameSA" />
+				</a4j:jsFunction>
 			</a4j:region>
 
 			<a4j:region>

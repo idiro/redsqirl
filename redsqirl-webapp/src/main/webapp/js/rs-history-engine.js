@@ -475,6 +475,7 @@ function execChangeCommentWfCommand(oldComment, newComment){
 function CommandAggregate() {
     Command.call(this);
     this.cloneId = "";
+    this.nameSA = "";
 };
 
 CommandAggregate.prototype = Object.create(Command.prototype);
@@ -484,6 +485,7 @@ CommandAggregate.prototype.undo = function(){
 	//alert("undo");
 	deleteAllElements();
 	replaceWFByClone("",this.cloneId, false);
+	undoAggregate(this.nameSA);
 };
 
 CommandAggregate.prototype.redo = function(){
