@@ -230,8 +230,12 @@ public class AnalyticsStoreModuleDetailBean implements Serializable{
 		return null;
 	}
 	
-	private String getRepoServer(){
-		return "http://localhost:9090/analytics-store/";
+	public String getRepoServer(){
+		String pckServer = WorkflowPrefManager.getPckManagerUri();
+		if(!pckServer.endsWith("/")){
+			pckServer+="/";
+		}
+		return pckServer;
 	}
 
 	public RedSqirlModule getModuleVersion() {

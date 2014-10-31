@@ -10,6 +10,7 @@ import javax.faces.context.FacesContext;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -43,6 +44,8 @@ public class AnalyticsStoreLoginBean implements Serializable {
 		try{
 			String uri = getRepoServer()+"rest/login";
 			
+			System.out.println(uri);
+			
 			JSONObject object = new JSONObject();
 			object.put("email", email);
 			object.put("password", password);
@@ -53,6 +56,8 @@ public class AnalyticsStoreLoginBean implements Serializable {
 			ClientResponse response = webResource.type("application/json")
 			   .post(ClientResponse.class, object.toString());
 			String ansServer = response.getEntity(String.class);
+			
+			System.out.println(ansServer);
 
 			try{
 				JSONObject pckObj = new JSONObject(ansServer);
@@ -98,8 +103,12 @@ public class AnalyticsStoreLoginBean implements Serializable {
 		return null;
 	}
 	
-	private String getRepoServer(){
-		return "http://localhost:9090/analytics-store/";
+	public String getRepoServer(){
+		String pckServer = WorkflowPrefManager.getPckManagerUri();
+		if(!pckServer.endsWith("/")){
+			pckServer+="/";
+		}
+		return pckServer;
 	}
 
 	/**

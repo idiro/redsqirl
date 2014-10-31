@@ -504,7 +504,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 						} catch (Exception e) {
 							logger.info("workflow not running ");
 							Thread.sleep(500);
-							if (tryNumb > 1 * 60 * 2000) {
+							if (tryNumb > 1 * 60 * 2000000) {
 								throw e;
 							}
 							if (getValueProgressBar() < 45) {
@@ -532,7 +532,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 						Thread.sleep(500);
 						logger.error(e.getMessage());
 						// Time out after 3 minutes
-						if (cont > 1 * 60 * 2000) {
+						if (cont > 1 * 60 * 2000000) {
 							throw e;
 						}
 					}
