@@ -84,6 +84,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private List<String[]> outputNamesList = new ArrayList<String[]>();
 	private String inputNameSubWorkflow;
 	private List<String> componentIds;
+	private String inputAreaSubWorkflow;
 
 	/**
 	 * 
@@ -1530,12 +1531,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 				tooltip.append("Output Type: " + e.getValue().getTypeName()
 						+ "<br/>");
 
-				if (e.getValue().isPathExists()) {
-					tooltip.append("Output Path: <span style='color:#008B8B'>"
-							+ e.getValue().getPath() + "</span><br/>");
-				} else {
-					tooltip.append("Output Path: <span style='color:#d2691e'>"
-							+ e.getValue().getPath() + "</span><br/>");
+				if("W".equals(workflowType)){
+					if (e.getValue().isPathExists()) {
+						tooltip.append("Output Path: <span style='color:#008B8B'>"
+								+ e.getValue().getPath() + "</span><br/>");
+					} else {
+						tooltip.append("Output Path: <span style='color:#d2691e'>"
+								+ e.getValue().getPath() + "</span><br/>");
+					}
 				}
 				// tooltip.append("Path exist: " + e.getValue().isPathExists() +
 				// "<br/>");
@@ -1821,13 +1824,15 @@ public class CanvasBean extends BaseBean implements Serializable {
 							tooltip.append("Name: " + outputName + "<br/>");
 						}
 						tooltip.append("Type: " + typeName + "<br/>");
-
-						if (e.getValue().isPathExists()) {
-							tooltip.append("Path: <span style='color:#008B8B'>"
-									+ e.getValue().getPath() + "</span><br/>");
-						} else {
-							tooltip.append("Path: <span style='color:#d2691e'>"
-									+ e.getValue().getPath() + "</span><br/>");
+						
+						if("W".equals(workflowType)){
+							if (e.getValue().isPathExists()) {
+								tooltip.append("Path: <span style='color:#008B8B'>"
+										+ e.getValue().getPath() + "</span><br/>");
+							} else {
+								tooltip.append("Path: <span style='color:#d2691e'>"
+										+ e.getValue().getPath() + "</span><br/>");
+							}
 						}
 						// tooltip.append("Path exist: " +
 						// e.getValue().isPathExists() + "<br/>");
@@ -2393,7 +2398,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				if(error == null){
 					error = getDf().aggregateElements(getComponentIds(), 
 							getInputNameSubWorkflow(),
-							WorkflowHelpUtils.generateHelp(getInputNameSubWorkflow(), inputsForHelp, outputsForHelp), 
+							WorkflowHelpUtils.generateHelp(getInputNameSubWorkflow(), getInputAreaSubWorkflow() ,inputsForHelp, outputsForHelp), 
 							inputs, outputs);
 					logger.info("Elements: " + getDf().getComponentIds());
 
@@ -2721,6 +2726,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void setComponentIds(List<String> componentIds) {
 		this.componentIds = componentIds;
+	}
+
+	public String getInputAreaSubWorkflow() {
+		return inputAreaSubWorkflow;
+	}
+
+	public void setInputAreaSubWorkflow(String inputAreaSubWorkflow) {
+		this.inputAreaSubWorkflow = inputAreaSubWorkflow;
 	}
 
 }
