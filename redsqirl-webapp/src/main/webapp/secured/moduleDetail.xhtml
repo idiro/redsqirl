@@ -19,11 +19,10 @@
     </head>
  
 	<h:form>
-		<h:outputLink value="redsqirl_search.xhtml">Back</h:outputLink><br />		
+		<h:outputLink value="search.xhtml">Back</h:outputLink><br />		
 		<table>
 			<tr>
 				<td style="width:80%">
-				
 					<h:outputText value="#{analyticsStoreModuleDetailBean.moduleVersion.htmlDescription}" escape="false"/><br/><br/>
 								
 					<rich:panel header="#{messages.moduleDetail_version_note}"
@@ -33,7 +32,7 @@
 										
 					<rich:panel header="#{messages.moduleDetail_versions}">
 						<ui:repeat value="#{analyticsStoreModuleDetailBean.moduleVersionList}" var="value">
-							<h:commandLink value="#{value.versionName}" action="/redsqirl_moduleDetail.xhtml">
+							<h:commandLink value="#{value.versionName}" action="/moduleDetail.xhtml">
 								<f:param name="id" value="#{param['id']}"/>
 								<f:param name="version" value="#{value.idVersion}"/>
 							</h:commandLink><br />
@@ -57,6 +56,7 @@
 						action="#{analyticsStoreModuleDetailBean.installPackage}" 
 						rendered="#{!analyticsStoreModuleDetailBean.installed}">
 						<f:param name="id" value="#{param['id']}"/>
+						<f:param name="userInstall" value="#{param['userInstall']}"/>
 					</a4j:commandButton>
 							    
 					<h:graphicImage value="/images/verified.png" width="50" height="50"

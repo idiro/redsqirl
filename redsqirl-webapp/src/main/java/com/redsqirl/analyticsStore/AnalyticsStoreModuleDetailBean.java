@@ -42,6 +42,7 @@ public class AnalyticsStoreModuleDetailBean implements Serializable{
 	private RedSqirlModule moduleVersion;
 	
 	private boolean installed;
+	private boolean userInstall;
 	
 	private List<RedSqirlModule> versionList;
 	
@@ -52,6 +53,7 @@ public class AnalyticsStoreModuleDetailBean implements Serializable{
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String id = params.get("id");
 		String version = params.get("version");
+		userInstall = params.get("userInstall").equals("true");
 		
 		versionList = new ArrayList<RedSqirlModule>();
 		
@@ -203,7 +205,17 @@ public class AnalyticsStoreModuleDetailBean implements Serializable{
 	    System.out.println("installing package: " + packagePath + ": " + key);
 	    
 	    PackageManager pckMng = new PackageManager();
-	    pckMng.addPackage(System.getProperty("user.name"), new String[]{packagePath});
+	    
+	    String user = null;
+	    if (userInstall){
+	    	System.getProperty("user.name");
+	    	System.out.println("installing user package");
+	    }
+	    else{
+	    	System.out.println("installing system package");
+	    }
+	    	
+	    pckMng.addPackage(user, new String[]{packagePath});
 	    
 	    File file = new File(packagePath);
 		file.delete();

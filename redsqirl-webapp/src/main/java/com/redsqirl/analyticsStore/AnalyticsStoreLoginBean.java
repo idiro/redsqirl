@@ -79,7 +79,7 @@ public class AnalyticsStoreLoginBean implements Serializable {
 			ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
 			String originalUrl = (String) externalContext.getRequestParameterMap().get("originalURL");
 			String queryString = (String) externalContext.getRequestParameterMap().get("originalQuery");
-			String url = originalUrl != null && !originalUrl.isEmpty() ? originalUrl : "secured_redsqirl/redsqirl_search.xhtml";
+			String url = originalUrl != null && !originalUrl.isEmpty() ? originalUrl : "secured/search.xhtml";
 			if (queryString != null && !queryString.isEmpty()){
 				url += "?" + queryString;
 			}
