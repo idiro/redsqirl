@@ -231,7 +231,8 @@ public interface DataFlow extends Remote, Cloneable{
 	/**
 	 * Aggregate the Elements in one SuperAction that is created
 	 * @param componentIds The components to aggregate
-	 * @param subworkflowName The name of the new Super Actions
+	 * @param subworkflowName The name of the new Super Action
+	 * @param subworkflowComment A comment associated with the new Super Action
 	 * @param inputs the input names with the component id and output name (those components are not in the componentIds list)
 	 * @param outputs the output names with the component id and output name (those components are in the componentIds list)
 	 * @return The error message if any or null
@@ -240,6 +241,7 @@ public interface DataFlow extends Remote, Cloneable{
 	public String aggregateElements(
 			List<String> componentIds, 
 			String subworkflowName,
+			String subworkflowComment,
 			Map<String,Entry<String,String>> inputs, 
 			Map<String,Entry<String,String>> outputs) throws RemoteException;
 	/**

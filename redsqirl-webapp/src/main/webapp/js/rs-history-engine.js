@@ -145,10 +145,15 @@ function deleteSelected(canvasName){
 	}
 }
 
+function deleteArrow(canvasName,arrowName){
+     canvasArray[canvasName].commandHistory.execute(new CommandDelete("",arrowName));
+}
+
 /********************************************************************/
 /********************************************************************/
 /********************* CommandAddObj ***************************/
-function CommandAddObj(canvasName, elementType, elementImg, posx, posy, numSides, groupId, selecteds) {
+function CommandAddObj(canvasName, elementType, elementImg, posx, posy, numSides, groupId, selecteds,privilege) {
+
 	Command.call(this);
 	this.canvasName = canvasName;
 	this.elementType = elementType;
@@ -159,6 +164,7 @@ function CommandAddObj(canvasName, elementType, elementImg, posx, posy, numSides
 	this.groupId = groupId;
 	this.selecteds = selecteds;
 	this.elementId = '';
+	this.privilege = privilege;
 };
 
 CommandAddObj.prototype = Object.create(Command.prototype);
@@ -177,7 +183,8 @@ CommandAddObj.prototype.redo = function(){
 			this.posy,
 			this.numSides,
 			this.groupId,
-			this.selecteds
+			this.selecteds,
+			this.privilege
 		);
     tmpCommandObj = this;
     addElementBt(this.elementType,this.groupId,this.elementId);
@@ -309,7 +316,6 @@ CommandMove.prototype = Object.create(Command.prototype);
 CommandMove.prototype.constructor = CommandMove;
 
 CommandMove.prototype.undo = function(){
-    //alert("Undo");
     var canvasNameCur = this.canvasName;
     jQuery.each(this.oldValues, function(index, value) {
         if(value.elementId !== undefined ){
@@ -326,7 +332,6 @@ CommandMove.prototype.undo = function(){
 };
 
 CommandMove.prototype.redo = function(){
-    //alert("Redo");
     var canvasNameCur = this.canvasName;
     jQuery.each(this.newValues, function(index, value) {
         if(value.elementId !== undefined ){
@@ -361,7 +366,6 @@ CommandChangeId.prototype = Object.create(Command.prototype);
 CommandChangeId.prototype.constructor = CommandChangeId;
 
 CommandChangeId.prototype.undo = function(){
-    //alert("Undo");
     jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });
     currentChangeIdGroup = this.groupId;
     changeIdElement(this.groupId,this.oldId,this.oldComment);
@@ -369,7 +373,6 @@ CommandChangeId.prototype.undo = function(){
 };
 
 CommandChangeId.prototype.redo = function(){
-    //alert("Redo");
     jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });
     currentChangeIdGroup = this.groupId;
     changeIdElement(this.groupId,this.newId,this.newComment);
@@ -442,7 +445,7 @@ function stackUpdateElement(groupId, beforeCloneId,afterCloneId){
 
 /********************************************************************/
 /********************************************************************/
-/********************** CommandChangeCommentWf *****************************/
+/********************** CommandChangeCommentWf **********************/
 var currentChangeIdGroup = null;
 
 function CommandChangeCommentWf(oldComment, newComment) {
@@ -455,12 +458,10 @@ CommandChangeCommentWf.prototype = Object.create(Command.prototype);
 CommandChangeCommentWf.prototype.constructor = CommandChangeCommentWf;
 
 CommandChangeCommentWf.prototype.undo = function(){
-    //alert("Undo");
     updateWfComment(this.oldComment);
 };
 
 CommandChangeCommentWf.prototype.redo = function(){
-    //alert("Redo");
     updateWfComment(this.newComment);
 };
 
@@ -475,3 +476,39 @@ function execChangeCommentWfCommand(oldComment, newComment){
     }
 }
 
+/********************************************************************/
+/********************************************************************/
+/********************* CommandAggregate *****************************/
+function CommandAggregate() {
+    Command.call(this);
+    this.cloneId = "";
+    this.nameSA = "";
+};
+
+CommandAggregate.prototype = Object.create(Command.prototype);
+CommandAggregate.prototype.constructor = CommandAggregate;
+
+CommandAggregate.prototype.undo = function(){
+	//alert("undo");
+	deleteAllElements();
+	replaceWFByClone("",this.cloneId, false);
+	undoAggregate(this.nameSA);
+};
+
+CommandAggregate.prototype.redo = function(){
+	//alert("redo");
+	tmpCommandObj = this;
+	cloneBeforeAggregate(getAllIconPositions());
+};
+
+CommandAggregate.prototype.getName = function(){
+	return msg_aggregate_command;
+};
+
+CommandAggregate.prototype.clean = function(){
+	removeCloneWorkflow(this.cloneId);
+};
+
+function undoRedoAggregate(){
+	canvasArray[selectedCanvas].commandHistory.execute(new CommandAggregate());
+}

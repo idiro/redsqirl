@@ -56,11 +56,10 @@
             
     </rich:dataTable>
 	
-	
-	
 	<h:panelGrid columns="2" style="border:none; float:right;">
 		<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('modalAggregate')}.hide()" />
-		<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" action="#{canvasBean.aggregate}" oncomplete="if(#{requestScope['msnError'] == null} ){#{rich:component('modalAggregate')}.hide();}" reRender="msnError"/>
+		<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" 
+		oncomplete="undoRedoAggregate();" reRender="errorTable,msnError"/>
 	</h:panelGrid>
        
 </h:panelGrid>

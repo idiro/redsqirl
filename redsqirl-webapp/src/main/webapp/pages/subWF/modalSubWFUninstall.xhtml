@@ -36,7 +36,8 @@
 					<rich:panel id="sa_sys_uninstall">
 						<a4j:commandButton styleClass="greenButton"
 							value="#{messages.button_sys_uninstall}"
-							action="#{subwfBean.deleteSASystem}" reRender="systemSA" />
+							action="#{subwfBean.deleteSASystem}" reRender="systemSA,msnSuccess" 
+							oncomplete="refreshRelativeHelp();" />
 					</rich:panel>
 				</h:panelGrid>
 
@@ -60,13 +61,10 @@
 					</ui:repeat>
 				</h:panelGroup>
 				
-				<h:panelGrid id="sa_user_buttons" columns="2"
-				 style="vertical-align:bottom;">
+				<h:panelGrid id="sa_user_buttons" columns="2" style="vertical-align:bottom;">
 					<rich:panel id="sa_user_uninstall">
-						<a4j:commandButton styleClass="greenButton"
-							value="#{messages.button_sys_uninstall}"
-							action="#{subwfBean.deleteSaUser}" 
-							reRender="userSaMenu,msnSuccess" />
+						<a4j:commandButton styleClass="greenButton" value="#{messages.button_sys_uninstall}" 
+							action="#{subwfBean.deleteSaUser}" oncomplete="refreshRelativeHelp();" reRender="userSaMenu,msnSuccess" />
 					</rich:panel>
 				</h:panelGrid>
 

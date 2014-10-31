@@ -176,14 +176,13 @@
     	    value="Import"
     		action="#{subwfBean.importSa}"
     		reRender="msnError,errorTable,formMenu,msnSuccess"
-    		oncomplete="if(#{requestScope['msnError'] == null})#{rich:component('modalSubWfimport')}.hide();"
+    		oncomplete="if(#{requestScope['msnError'] == null}){#{rich:component('modalSubWfimport')}.hide();refreshRelativeHelp();}"
     		>
     		<a4j:actionparam name="username" 
     		value="getPath('#{browserHdfsBean.path}')" 
     		assignTo="#{subwfBean.pathHDFS}" 
     		noEscape="true"/>
     	</a4j:commandButton>
-    	
 	
 	</rich:panel>
    

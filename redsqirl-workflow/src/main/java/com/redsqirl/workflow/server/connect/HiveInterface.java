@@ -361,7 +361,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		boolean end = false;
 		while (i < 5 && !end) {
 			myNum = addTicket(label);
-			logger.info("New ticket ("+i+"): " + myNum + ": " + label);
+			logger.debug("New ticket ("+i+"): " + myNum + ": " + label);
 			end = waitFor(myNum);
 			++i;
 		}

@@ -108,10 +108,5 @@ public class SubWorkflowOutput extends DataflowAction{
 	public void update(DFEInteraction interaction) throws RemoteException {
 	}
 
-	@Override
-	public Boolean getPrivilege() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 }

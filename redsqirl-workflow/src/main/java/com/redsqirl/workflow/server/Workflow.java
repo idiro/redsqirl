@@ -63,6 +63,7 @@ import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
+import com.redsqirl.workflow.server.interfaces.SuperElement;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 import com.redsqirl.workflow.utils.SuperActionManager;
 
@@ -247,12 +248,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 							menuWA.put(nameMenu, new_list);
 						} else {
 							if (nameWithClass.get(line) != null) {
-								DataFlowElement dfe = (DataFlowElement) Class
-										.forName(nameWithClass.get(line))
-										.newInstance();
-								String[] parameters = new String[2];
+								DataFlowElement dfe = createElementFromClassName(
+										nameWithClass, line);
+								String[] parameters = new String[3];
 								parameters[0] = line;
 								parameters[1] = dfe.getImage();
+								parameters = setPrivilegeOfClass(dfe,line,parameters);
+//								logger.info(parameters[0] + " , "+parameters[2]);
 								new_list.add(parameters);
 							} else {
 								logger.warn("unknown workflow action '" + line
@@ -336,13 +338,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					try {
 						if (action != null && !action.isEmpty()) {
 							if (nameWithClass.get(action) != null) {
-								DataFlowElement dfe = (DataFlowElement) Class
-										.forName(nameWithClass.get(action))
-										.newInstance();
+								DataFlowElement dfe = createElementFromClassName(
+										nameWithClass, action);
 
-								String[] parameters = new String[2];
+								String[] parameters = new String[3];
 								parameters[0] = action;
 								parameters[1] = dfe.getImage();
+								parameters = setPrivilegeOfClass(dfe,action,parameters);
 								new_list.add(parameters);
 							} else {
 								logger.warn("unknown workflow action '"	+ action + "'");
@@ -387,13 +389,14 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			Iterator<String[]> actionListit = menuWA.get(key).iterator();
 			List<String[]> newActionList = new ArrayList<String[]>();
 			while (actionListit.hasNext()) {
-				String[] parameters = new String[2];
+				String[] parameters = new String[3];
 				String[] absCur = actionListit.next();
 				parameters[0] = absCur[0];
 				try {
 					logger.debug("loadMenu " + curPath + " " + absCur[1]);
 					parameters[1] = LocalFileSystem.relativize(curPath,
 							absCur[1]);
+					parameters[2] = absCur[2];									
 					newActionList.add(parameters);
 				} catch (Exception e) {
 					logger.error(e.getMessage());
@@ -1628,15 +1631,18 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	public String aggregateElements(
 			List<String> componentIds, 
 			String subworkflowName,
+			String subworkflowComment,
 			Map<String,Entry<String,String>> inputs, 
 			Map<String,Entry<String,String>> outputs) throws RemoteException{
+		int posIncr = 150;
 		String error = null;
 		//Create subworkflow object
 		if(!subworkflowName.startsWith("sa_")){
 			subworkflowName = "sa_"+subworkflowName;
 		}
 		SubWorkflow sw = new SubWorkflow(subworkflowName);
-
+		sw.setComment(subworkflowComment);
+		
 		//Copy Elements
 		Workflow copy = null;
 		try{
@@ -1667,7 +1673,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			String cur = idIt.next();
 			sw.addElement(copy.getElement(cur));
 			DataFlowElement newEl = sw.getElement(cur);
-			newEl.setPosition(newEl.getX()+50, newEl.getY());
+			newEl.setPosition(newEl.getX()+posIncr, newEl.getY());
 		}
 
 		try{
@@ -1742,7 +1748,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						SubWorkflowOutput.input_name,
 						outputName);
 				DataFlowElement in = sw.getElement(outputs.get(outputName).getKey());
-				sw.getElement(outputName).setPosition(in.getX()+100, in.getY());
+				sw.getElement(outputName).setPosition(in.getX()+posIncr, in.getY());
 			}
 		
 		} catch (Exception e) {
@@ -1885,7 +1891,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		Map<String, String> namesWithClassName = null;
 		try {
 			namesWithClassName = getAllWANameWithClassName();
-			logger.info(namesWithClassName);
+			logger.debug(namesWithClassName);
 		} catch (Exception e) {
 			// This should not happend if the workflow has been initialised
 			// corretly
@@ -1905,12 +1911,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					logger.debug("initiate the action " + waName + " "
 							+ namesWithClassName.get(waName));
 					DataFlowElement new_wa = null;
-					if(waName.startsWith("sa_")){
-						new_wa = new SuperAction(waName);
-					}else{
-						new_wa = (DataFlowElement) Class.forName(
-								namesWithClassName.get(waName)).newInstance();
-					}
+					new_wa = createElementFromClassName(namesWithClassName,waName);
 					logger.debug("set the componentId...");
 					new_wa.setComponentId(componentId);
 					logger.debug("Add the element to the list...");
@@ -2189,7 +2190,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				}
 			}
 			
-			logger.info("WorkflowAction found : " + flowElement.toString());
+			logger.debug("WorkflowAction found : " + flowElement.toString());
 		}
 		return flowElement;
 	}
@@ -2439,6 +2440,40 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	@Override
 	public final void setComment(String comment) {
 		this.comment = comment;
+	}
+	
+	public DataFlowElement createElementFromClassName(
+			Map<String, String> namesWithClassName, String className)
+			throws RemoteException, InstantiationException,
+			IllegalAccessException, ClassNotFoundException {
+		DataFlowElement dfe =null;
+		if(className.startsWith("sa_")){
+			dfe = new SuperAction(className);
+		}else{
+			dfe = (DataFlowElement) Class.forName(
+					namesWithClassName.get(className)).newInstance();
+		}
+		return dfe;
+	}
+
+	public String[] setPrivilegeOfClass(DataFlowElement dfe, String name,
+			String[] parameters) throws RemoteException {
+		if (dfe instanceof SuperElement) {
+			((SuperElement) dfe).setName(name);
+			Boolean priv = ((SuperElement) dfe).getPrivilege();
+			logger.info(dfe.getName() + " " + name + " '" + priv + "");
+			if (priv == null) {
+				parameters[2] = null;
+			} else {
+				parameters[2] = String.valueOf(((SuperElement) dfe)
+						.getPrivilege());
+			}
+		} else {
+			parameters[2] = null;
+
+		}
+
+		return parameters;
 	}
 
 }

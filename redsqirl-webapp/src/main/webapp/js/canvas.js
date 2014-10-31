@@ -49,15 +49,16 @@ var contSaving;
 var tmpCommandObj;
 var stageArrayTab;
 
-var contextMenuCanvas = [
- {'Create Link': function(menuItem,menu){createLink(rightClickGroup.getChildren()[0]);}},
- {'Rename Object...': function(menuItem,menu){openChangeIdModalJS(rightClickGroup);}},
- {'Configure...': function(menuItem,menu){openCanvasModalJS(rightClickGroup);}},
- {'Data Output...': function(menuItem,menu){openCanvasModalJS(rightClickGroup,"outputTab");}},
- {'Oozie Action Logs': function(menuItem,menu){openWorkflowElementUrl(rightClickGroup.getId());}},
+var contextMenuCanvasAction = [
+	{'Create Link': function(menuItem,menu){createLink(rightClickGroup.getChildren()[0]);}},
+	{'Rename Object...': function(menuItem,menu){openChangeIdModalJS(rightClickGroup);}},
+	{'Configure...': function(menuItem,menu){openCanvasModalJS(rightClickGroup);}},
+	{'Data Output...': function(menuItem,menu){openCanvasModalJS(rightClickGroup,"outputTab");}},
+	{'Oozie Action Logs': function(menuItem,menu){openWorkflowElementUrl(rightClickGroup.getId());}},
+	{'Edit SuperAction': function(menuItem,menu){if(rightClickGroup.privilege ==null){openSubWorkflow(rightClickGroup.elementType);}}},
 ];
 
-var cmenuCanvas = jQuery.contextMenu.create(contextMenuCanvas);
+var cmenuCanvas = null;
 
 window.onload = function() {
     var canvasName = "canvas-1";
@@ -175,7 +176,8 @@ function configureCanvas(canvasName, reset, workflowType){
     });
     
     canvasArray[canvasName].arrow.on('mouseenter', function(e) {
-        var help = jQuery('<div class="tooltipCanvas" style="background-color:white;">'+this.tooltipArrow+'</div>');
+        var deleteButton = '<button style="float:right" onclick="deleteArrow(selectedCanvas,\''+this.getName()+'\');" >Delete</button>';
+        var help = jQuery('<div class="tooltipCanvas" style="background-color:white;">'+deleteButton+this.tooltipArrow+'</div>');
         help.css("top",(e.pageY-10)+"px" );
         help.css("left",(e.pageX-10)+"px" );
         jQuery("body").append(help);
@@ -735,6 +737,32 @@ function deleteElementsJS(listIds, listArrowsIds) {
 	polygonLayer.draw();
 }
 
+function deleteAllElements() {
+	
+	selectAll(selectedCanvas);
+	
+	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+	var layer = canvasArray[selectedCanvas].layer;
+
+	jQuery.each(polygonLayer.get('.group1'), function(index, value) {
+		var group = this;
+		deleteLayerChildren(selectedCanvas, group.getId());
+		group.remove();
+	});
+	
+	jQuery.each(layer.getChildren(), function(index, value) {
+        if (value !== undefined && value.isArrow == true) {
+            if (value.label != null){
+                value.label.remove();
+            }
+            value.remove();
+        }
+    });
+	
+	layer.draw();
+	polygonLayer.draw();
+}
+
 // remove the arrows that are outside the standard
 function deleteArrowOutsideStandard(canvasName) {
     var layer = canvasArray[canvasName].layer;
@@ -1039,11 +1067,12 @@ function addElements(canvasName, positions, selecteds) {
 	for ( var i = 0; i < positionsArrays.length; i++) {
 		
 		if(getElement(polygonLayer, positionsArrays[i][0]) == null){
+//			alert(positionsArrays[i][6]);
 			var group = addElement(canvasName, positionsArrays[i][1],
 					positionsArrays[i][2], positionsArrays[i][3],
 					positionsArrays[i][4],
 					numSides,
-					positionsArrays[i][0], selecteds);
+					positionsArrays[i][0], selecteds,positionsArrays[i][6]);
 			maxX = Math.max(maxX,positionsArrays[i][3]);
 			maxY = Math.max(maxY,positionsArrays[i][4]);
 			//updateIdObj(positionsArrays[i][0], positionsArrays[i][0]);
@@ -1080,9 +1109,9 @@ function checkImg(src){
    });
 }
 
-function addElement(canvasName, elementType, elementImg, posx, posy, numSides, idElement, selecteds) {
+function addElement(canvasName, elementType, elementImg, posx, posy, numSides, idElement, selecteds,privilege) {
     
-    //alert(elementImg);
+//    alert(privilege);
     
     var polygonLayer = canvasArray[canvasName].polygonLayer;
 
@@ -1246,6 +1275,8 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
     
     group.elementType = elementType;
     
+    group.privilege = privilege;
+    
     return group;
 }
 
@@ -1377,6 +1408,8 @@ function mountObj(canvasName) {
                 
                 //alert(jQuery(this).attr("src"));
                 
+                
+                
                 imgTab.src = jQuery(this).attr("src");
                 var srcImageText = jQuery(this).attr("src");
                 
@@ -1387,6 +1420,13 @@ function mountObj(canvasName) {
                 if(labelText.length > 8){
                     labelTextSize8 = labelText.substring(0,7).concat(".");
                 }
+                var priv = jQuery(this).next().next().text();
+                if(priv){
+
+                }else{
+                	priv = null;
+                }
+                
                 labelTextSize8 = labelTextSize8.replace("_"," ");
                 labelTextSize8 = ucFirstAllWords(labelTextSize8);
 
@@ -1468,7 +1508,8 @@ function mountObj(canvasName) {
                                 mousePosStage.y - 30,
                                 numSides,
                                 "group" + (+canvasArray[selectedCanvas].countObj++),
-                                "")
+                                "",
+                                priv)
                         );
                         
                     }
@@ -1850,15 +1891,48 @@ function configureGroupListeners(canvasName, group) {
           });
           
         }else{
-            rightClickGroup = this;
-            cmenuCanvas.show(this,e);
-            e.preventDefault();
-            //e.stopPropagation();
-            //e.cancelBubble = true;
+            showContextMenu(this, e);
             return false;
         }
     });
 
+}
+
+function showContextMenu(group, e){
+    canvasName = selectedCanvas;
+    rightClickGroup = group;
+    var temp = [];
+    for ( var i =0; i<  contextMenuCanvasAction.length ;i++){
+        var key = Object.keys(contextMenuCanvasAction[i])[0];
+        var item = contextMenuCanvasAction[i];
+        
+        if(canvasArray[canvasName].workflowType == 'W' || (key.indexOf('Data Output...') !=0 && key.indexOf('Oozie Action Logs') != 0)){
+            if(group.elementType.indexOf('sa_')==0){
+                    temp[temp.length] = item;
+            }else{
+                if( key.indexOf('Edit SuperAction')!=0){
+                    temp[temp.length] = item;
+                }
+            }
+            
+        }
+    }
+    cmenuCanvas = jQuery.contextMenu.create(temp);
+    if(group.elementType.indexOf('sa_')==0){
+        if(group.privilege != null){
+            if(!jQuery("body").find(".context-menu-item:contains('Edit SuperAction')").hasClass("context-menu-item-disabled")){
+                jQuery("body").find(".context-menu-item:contains('Edit SuperAction')").addClass("context-menu-item-disabled");
+            }
+        }else{
+            if(jQuery("body").find(".context-menu-item:contains('Edit SuperAction')").hasClass("context-menu-item-disabled")){
+                jQuery("body").find(".context-menu-item:contains('Edit SuperAction')").removeClass("context-menu-item-disabled")
+            }
+        }
+    }
+    cmenuCanvas.show(group,e);
+    e.preventDefault();
+    //e.stopPropagation();
+    //e.cancelBubble = true;
 }
 
 function createGroup(canvasName, circle0, circle1, polygon, srcImageText, typeText, groupId, arc1,arc2,arc3) {
@@ -1878,7 +1952,7 @@ function createGroup(canvasName, circle0, circle1, polygon, srcImageText, typeTe
          jQuery("#help_"+typeText.getText()).click();
     });
     
-    jQuery("#"+groupId).contextMenu(contextMenuCanvas);
+//    jQuery("#"+groupId).contextMenu(contextMenuCanvas);
 
     var circ0 = circle0.clone();
     var circ = circle1.clone();
@@ -1953,30 +2027,18 @@ function openCanvasModalJS(group, selectedTab){
     });
 
     
-    if(group.elementType != "superactionoutput"){
-    	
-    	//check if start with sa and open a new sub work flow
-        if(group.elementType.startsWith("sa")){
-        	openSubWorkflow(group.elementType);
-        }else{
-        	
-        	if (!group.hasChangedId) {
-    	        openChangeIdModal(group.getId(), imagePath,true);
-    	        group.hasChangedId = true;
-    	    } else {
-    	        openModal(group.getId(), imagePath, selectedTab, group.pageNb);
-    	        changeHelpAnchor(group.pageNb);
-    	    }
-    	
-        }
-    	
+    if (!group.hasChangedId) {
+	openChangeIdModal(group.getId(), imagePath,true);
+	group.hasChangedId = true;
+    } else {
+	openModal(group.getId(), imagePath, selectedTab, group.pageNb);
+	changeHelpAnchor(group.pageNb);
     }
-    
 }
 
 function openChangeIdModalJS(group){
 
-    //group.getChildren()[2].setStroke('white');
+    // group.getChildren()[2].setStroke('white');
     group.getChildren()[0].setFill("white");
     group.getChildren()[1].setFill("white");
     
@@ -2069,8 +2131,9 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
         
         if(this.getParent().getId() != curToolTip){
             jQuery(".tooltipCanvas").remove();
+            var optionButton = '<button style="float:left" onclick="var evt = document.createEvent(\'MouseEvents\');evt.initEvent(\'click\', true, true);showContextMenu(findGroup(\''+this.getParent().getId()+'\'),evt);" >Options</button>';
             curToolTip = this.getParent().getId();
-            var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+this.getParent().tooltipObj+'</div>');
+            var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+optionButton+this.getParent().tooltipObj+'</div>');
             var scrollLeft = jQuery("#flowchart-"+canvasName).scrollLeft();
             var scrollTop = jQuery("#flowchart-"+canvasName).scrollTop();
             help.css("top",(this.getParent().getPosition().y-scrollTop+160)+"px" );
@@ -2111,6 +2174,19 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
     });
 
     return [ polygon, polygonTab, polygonTabImage ];
+}
+
+function findGroup(groupId){
+    var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+    var ans;
+    jQuery.each(polygonLayer.get('.group1'),
+            function(index, value) {
+                if(value.getId() == groupId){
+                    ans = value;
+                    return;
+                }
+            });
+    return ans;
 }
 
 function polygonOnClick(obj,e, canvasName){
@@ -2308,9 +2384,11 @@ function updateActionOutputStatus(groupId, outputType, fileExists, runningStatus
     
     var group = getElement(polygonLayer, groupId);
     
-    group.getChildren()[5].setStroke(getColorOutputType(outputType));
-    group.getChildren()[6].setStroke(getColorRunning(runningStatus));
-    group.getChildren()[7].setStroke(getColorOutputExistence(fileExists));
+    if(getSelectedWorkflowType() == 'W'){
+        group.getChildren()[5].setStroke(getColorOutputType(outputType));
+        group.getChildren()[6].setStroke(getColorRunning(runningStatus));
+        group.getChildren()[7].setStroke(getColorOutputExistence(fileExists));
+    }
     
     group.tooltipObj = tooltip;
     
@@ -2609,6 +2687,10 @@ function getPathFile(canvasName){
 
 function getWorkflowType(canvasName){
     return canvasArray[canvasName].workflowType;
+}
+
+function getSelectedWorkflowType(){
+    return getWorkflowType(selectedCanvas);
 }
 
 /*

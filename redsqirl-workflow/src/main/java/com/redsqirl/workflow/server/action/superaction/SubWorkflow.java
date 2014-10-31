@@ -149,7 +149,6 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 	    ans +="\t<title>"+getName()+" Help</title>\n";
 		ans +="</head>\n";
 		ans +="<body>\n";
-		ans +="\t<h1>"+getName()+"</h1>\n\n";
 		ans += getComment()+"\n\n";
 		ans +="</body>\n";
 		ans +="</html>";
@@ -158,8 +157,7 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 
 	protected String saveXmlOnLocal(File file, Boolean privilege) throws RemoteException{
 		String error = null;
-//		String pattern= "^[a-zA-Z0-9_]*$";
-		String pattern= "sa_[a-zA-Z0-9]*";
+		String pattern= "sa_[a-z0-9]*";
 		logger.info(name+ "  "+name.matches(pattern));
 		logger.info(name+ "  "+name.startsWith("sa_"));
 		if(!name.matches(pattern) || !name.startsWith("sa_")){
@@ -338,7 +336,7 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 			this.privilege = new Boolean(true);
 		}
 		
-		logger.info("privilege '"+this.privilege+"'");
+		logger.info(getName()+" privilege '"+this.privilege+"'");
 		
 		for (int temp = 0; temp < compList.getLength() && error == null; ++temp) {
 

@@ -73,6 +73,7 @@
         var msg_changeelementid_command='#{messages.msg_changeelementid_command}';
         var msg_updateelement_command='#{messages.msg_updateelement_command}';
         var msg_changeworkflowcomment_command='#{messages.msg_changeworkflowcomment_command}';
+        var msg_aggregate_command='#{messages.msg_aggregate_command}';
 		           
 		 var contTabCanvas = 1;
 		 
@@ -215,7 +216,7 @@
 	              contTabCanvas++;
 	              var tabName = "canvas-"+contTabCanvas;
 	              addSubWorkflow(tabName);
-	              addWorkflowTab(tabName);
+	              addWorkflowTab(tabName,"S");
 	              configureCanvas(tabName, true, "S");
 	              setWorkflow(tabName);
 	              validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
@@ -493,10 +494,11 @@
 	    	  closeWorkflowTab(ul, tabName);
 	      }
 	      
-	      function addElementJs(canvasName, path, positions, links, selecteds, reset, workflowType){
+	      function addElementJs(canvasName, path, positions, links, selecteds, reset, workflowType ){
+		 //     alert(positions);
 	          //Add the workflow tab only if the name does not exist yet.
 	          if(document.getElementById(canvasName) == null) {
-	    	      addWorkflowTab(canvasName);
+	    	      addWorkflowTab(canvasName,workflowType);
 	    	      configureCanvas(canvasName, reset, workflowType);
 		    	  setWorkflow(canvasName);
 	    	      addElements(canvasName, positions, selecteds);
@@ -543,13 +545,14 @@
 	      var numTabs = 1;
 	      var nameTabs = {};
 	      
-	      function addWorkflowTab(tabName){
+	      function addWorkflowTab(tabName,type){
 	    	//<![CDATA[
-	    	
+	    	  var tabImage = typeof type == 'undefined' || type == "W" ? "../image/workflow_tab.gif" : "../image/subworkflow_tab.gif"  ;
+	    	  
 	    	  var tabs = jQuery("#canvas-tabs").tabs();
               var ul = jQuery("#canvas-tabs").tabs().find( "ul:first" );
               
-              jQuery( "<li class='locked canvasTabsInactive'><a href='#"+ getCanvasId(tabName) +"' class='canvasTab' onclick=\"jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('"+tabName+"');\">"+ 
+              jQuery( "<li class='locked canvasTabsInactive'><a href='#"+ getCanvasId(tabName) +"' class='canvasTab' onclick=\"jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('"+tabName+"');\"><img src='"+tabImage+"' style='width: 15px;'/>"+ 
             		  tabName +"</a> <span id='"+tabName+"-icon-close' class='ui-icon ui-icon-close' role='presentation' onclick=\"closeWorkflowTab(this, '"+tabName+"')\"></span> </li>" ).appendTo( ul );
               
               var div = "<div id='"+getCanvasId(tabName)+"' class='container-canvas'>"+
@@ -755,6 +758,10 @@
 		    	alert("You need select one object");
 			}
 	    }
+
+	    function refreshRelativeHelp(){
+	    	 jQuery('[id$="refreshRelativeHelp"]').click();
+	    }
 	   	
 	   	/*keyboard shortcuts*/
 	   	
@@ -868,9 +875,21 @@
 			</a4j:region>
 			
 			<a4j:region>
-				<a4j:jsFunction name="openModalAggregate" action="#{canvasBean.openAggregate}" 
-					oncomplete="#{rich:component('modalAggregate')}.show();" >
+				<a4j:jsFunction name="openModalAggregate" action="#{canvasBean.openAggregate}" reRender="errorTable, msnError"
+					oncomplete="if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.show();}" >
 					<a4j:actionparam name="selectedIcons" />
+				</a4j:jsFunction>
+				
+				<a4j:jsFunction name="cloneBeforeAggregate" action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
+					oncomplete="tmpCommandObj.cloneId = data;aggregate();">
+					<a4j:actionparam name="allpositions" />
+				</a4j:jsFunction>
+				
+				<a4j:jsFunction name="aggregate" action="#{canvasBean.aggregate}" data="#{canvasBean.inputNameSubWorkflow}"
+					oncomplete="tmpCommandObj.nameSA = data;if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.hide();deleteAllElements();rebuildJS();refreshRelativeHelp();}" />
+					
+				<a4j:jsFunction name="undoAggregate" action="#{canvasBean.undoAggregate}" >
+					<a4j:actionparam name="nameSA" />
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -1196,7 +1215,7 @@
 
 				<a4j:jsFunction name="openModal"
 					action="#{canvasModalBean.openCanvasModal}"
-					oncomplete="if(#{requestScope['msnError'] == null}){cloneBeforeUpdateElement();checkPageError();}"
+					oncomplete="if(#{requestScope['msnError'] == null} &amp;&amp; #{canvasModalBean.outputTab.showOutputForm == 'Y' or canvasModalBean.listPageSize > 0}){cloneBeforeUpdateElement();checkPageError();}"
 					reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError, errorTable, canvasModalTabPanel, msnErrorPage,tableInteraction">
 					<a4j:actionparam name="paramGroupId" />
 					<a4j:actionparam name="paramPathImage" />
@@ -1238,7 +1257,7 @@
 			<a4j:region>
 				<a4j:jsFunction name="closeChangeIdModal"
 					reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError, errorTable, canvasModalTabPanel"
-					oncomplete="if(#{canvasModalBean.loadMainWindow}){changeModalTitle();changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');cloneBeforeUpdateElement();}else{updateOutputStatus(currentChangeIdGroup);}">
+					oncomplete="if(#{canvasModalBean.loadMainWindow and (canvasModalBean.outputTab.showOutputForm == 'Y' or canvasModalBean.listPageSize > 0) }){changeModalTitle();changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');cloneBeforeUpdateElement();}else{updateOutputStatus(currentChangeIdGroup);}">
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -1922,7 +1941,7 @@
 							style="width: 100%;">
 							<li class="locked canvasTabsInactive"><a
 								href="#flowchart-canvas-1" class="canvasTab"
-								onclick="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('canvas-1');">canvas-1</a>
+								onclick="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('canvas-1');"><img src="../image/workflow_tab.gif" style="width: 15px;"/>canvas-1</a>
 								<span id="canvas-1-icon-close" class="ui-icon ui-icon-close "
 								role="presentation" onclick="closeWorkflowTab(this,'canvas-1')"></span>
 							</li>
@@ -2011,6 +2030,7 @@
 										<ui:repeat value="#{tab.value}" var="action">
 											<span id="spanImagensObj" style="display: none"> <img
 												src="#{action[1]}" class="footerIcon" /> <span>#{action[0]}</span>
+												<span>#{action[2]}</span>
 											</span>
 										</ui:repeat>
 									</div>

@@ -127,7 +127,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 				WorkflowPrefManager.sys_install_package, WorkflowPrefManager
 						.getSysProperty(WorkflowPrefManager.sys_tomcat_path))
 				+ relativePath);
-		if (!f.exists() || !isUserAllowInstall()) {
+		if (!f.exists()) {
 			relativePath = WorkflowPrefManager.getPathSysHelpPref() + "/"
 					+ fname;
 			f = new File(
@@ -157,7 +157,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 				WorkflowPrefManager.sys_install_package, WorkflowPrefManager
 						.getSysProperty(WorkflowPrefManager.sys_tomcat_path))
 				+ relativePath);
-		if (!f.exists() || !isUserAllowInstall()) {
+		if (!f.exists()) {
 			relativePath = WorkflowPrefManager.getPathsysimagepref() + "/"
 					+ fname;
 			f = new File(
@@ -1154,12 +1154,6 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		while (it.hasNext()) {
 			it.next().cleanThisAndAllElementAfter();
 		}
-	}
-
-	protected static boolean isUserAllowInstall() {
-		return WorkflowPrefManager.getSysProperty(
-				WorkflowPrefManager.sys_allow_user_install, "FALSE")
-				.equalsIgnoreCase("true");
 	}
 
 	public List<String> listFilesRecursively(String path) {
