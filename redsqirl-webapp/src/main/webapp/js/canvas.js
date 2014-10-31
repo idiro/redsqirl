@@ -1891,43 +1891,48 @@ function configureGroupListeners(canvasName, group) {
           });
           
         }else{
-            rightClickGroup = this;
-            var temp = [];
-            for ( var i =0; i<  contextMenuCanvasAction.length ;i++){
-            	var key = Object.keys(contextMenuCanvasAction[i])[0];
-            	var item = contextMenuCanvasAction[i];
-            	
-            	if(canvasArray[canvasName].workflowType == 'W' || (key.indexOf('Data Output...') !=0 && key.indexOf('Oozie Action Logs') != 0)){
-            		if(group.elementType.indexOf('sa_')==0){
-            				temp[temp.length] = item;
-            		}else{
-            			if( key.indexOf('Edit SuperAction')!=0){
-            				temp[temp.length] = item;
-            			}
-            		}
-            		
-            	}
-            }
-            cmenuCanvas = jQuery.contextMenu.create(temp);
-            if(group.elementType.indexOf('sa_')==0){
-            	if(group.privilege != null){
-            		if(!jQuery("body").find(".context-menu-item:contains('Edit SuperAction')").hasClass("context-menu-item-disabled")){
-            			jQuery("body").find(".context-menu-item:contains('Edit SuperAction')").addClass("context-menu-item-disabled");
-            		}
-            	}else{
-            		if(jQuery("body").find(".context-menu-item:contains('Edit SuperAction')").hasClass("context-menu-item-disabled")){
-            			jQuery("body").find(".context-menu-item:contains('Edit SuperAction')").removeClass("context-menu-item-disabled")
-            		}
-            	}
-            }
-            cmenuCanvas.show(this,e);
-            e.preventDefault();
-            //e.stopPropagation();
-            //e.cancelBubble = true;
+            showContextMenu(this, e);
             return false;
         }
     });
 
+}
+
+function showContextMenu(group, e){
+    canvasName = selectedCanvas;
+    rightClickGroup = group;
+    var temp = [];
+    for ( var i =0; i<  contextMenuCanvasAction.length ;i++){
+        var key = Object.keys(contextMenuCanvasAction[i])[0];
+        var item = contextMenuCanvasAction[i];
+        
+        if(canvasArray[canvasName].workflowType == 'W' || (key.indexOf('Data Output...') !=0 && key.indexOf('Oozie Action Logs') != 0)){
+            if(group.elementType.indexOf('sa_')==0){
+                    temp[temp.length] = item;
+            }else{
+                if( key.indexOf('Edit SuperAction')!=0){
+                    temp[temp.length] = item;
+                }
+            }
+            
+        }
+    }
+    cmenuCanvas = jQuery.contextMenu.create(temp);
+    if(group.elementType.indexOf('sa_')==0){
+        if(group.privilege != null){
+            if(!jQuery("body").find(".context-menu-item:contains('Edit SuperAction')").hasClass("context-menu-item-disabled")){
+                jQuery("body").find(".context-menu-item:contains('Edit SuperAction')").addClass("context-menu-item-disabled");
+            }
+        }else{
+            if(jQuery("body").find(".context-menu-item:contains('Edit SuperAction')").hasClass("context-menu-item-disabled")){
+                jQuery("body").find(".context-menu-item:contains('Edit SuperAction')").removeClass("context-menu-item-disabled")
+            }
+        }
+    }
+    cmenuCanvas.show(group,e);
+    e.preventDefault();
+    //e.stopPropagation();
+    //e.cancelBubble = true;
 }
 
 function createGroup(canvasName, circle0, circle1, polygon, srcImageText, typeText, groupId, arc1,arc2,arc3) {
@@ -2126,9 +2131,7 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
         
         if(this.getParent().getId() != curToolTip){
             jQuery(".tooltipCanvas").remove();
-            
-            var optionButton = '<button style="float:left" onclick="jQuery(\'#'+
-                this.getParent().getId()+'\').trigger({type:\'mousedown\',which:3});" >Options</button>';
+            var optionButton = '<button style="float:left" onclick="var evt = document.createEvent(\'MouseEvents\');evt.initEvent(\'click\', true, true);showContextMenu(findGroup(\''+this.getParent().getId()+'\'),evt);" >Options</button>';
             curToolTip = this.getParent().getId();
             var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+optionButton+this.getParent().tooltipObj+'</div>');
             var scrollLeft = jQuery("#flowchart-"+canvasName).scrollLeft();
@@ -2171,6 +2174,19 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
     });
 
     return [ polygon, polygonTab, polygonTabImage ];
+}
+
+function findGroup(groupId){
+    var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+    var ans;
+    jQuery.each(polygonLayer.get('.group1'),
+            function(index, value) {
+                if(value.getId() == groupId){
+                    ans = value;
+                    return;
+                }
+            });
+    return ans;
 }
 
 function polygonOnClick(obj,e, canvasName){
