@@ -737,30 +737,16 @@ function deleteElementsJS(listIds, listArrowsIds) {
 	polygonLayer.draw();
 }
 
-function deleteAllElements() {
+//erase all objects from the canvas
+function refreshCanvas() {
 	
-	selectAll(selectedCanvas);
-	
-	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
-	var layer = canvasArray[selectedCanvas].layer;
-
-	jQuery.each(polygonLayer.get('.group1'), function(index, value) {
-		var group = this;
-		deleteLayerChildren(selectedCanvas, group.getId());
-		group.remove();
-	});
-	
-	jQuery.each(layer.getChildren(), function(index, value) {
-        if (value !== undefined && value.isArrow == true) {
-            if (value.label != null){
-                value.label.remove();
-            }
-            value.remove();
-        }
-    });
-	
-	layer.draw();
-	polygonLayer.draw();
+    var layer = canvasArray[selectedCanvas].layer;
+    var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+    
+    layer.removeChildren();
+    polygonLayer.removeChildren();
+    
+	rebuildJS();
 }
 
 // remove the arrows that are outside the standard
