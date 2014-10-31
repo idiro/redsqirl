@@ -79,6 +79,34 @@
   <managed-bean-scope>session</managed-bean-scope>
  </managed-bean>
  
+ <managed-bean>
+	<managed-bean-name>analyticsStoreLoginBean</managed-bean-name>
+	<managed-bean-class>com.redsqirl.analyticsStore.AnalyticsStoreLoginBean</managed-bean-class>
+	<managed-bean-scope>session</managed-bean-scope>
+ </managed-bean>
+ 
+ <managed-bean>
+	<managed-bean-name>analyticsStoreSearchBean</managed-bean-name>
+	<managed-bean-class>com.redsqirl.analyticsStore.AnalyticsStoreSearchBean</managed-bean-class>
+	<managed-bean-scope>request</managed-bean-scope>
+	<managed-property>
+		<property-name>analyticsStoreLoginBean</property-name>
+		<property-class>com.redsqirl.analyticsStore.AnalyticsStoreLoginBean</property-class>
+		<value>#{analyticsStoreLoginBean}</value>
+	</managed-property>
+ </managed-bean>
+ 
+ <managed-bean>
+	<managed-bean-name>analyticsStoreModuleDetailBean</managed-bean-name>
+	<managed-bean-class>com.redsqirl.analyticsStore.AnalyticsStoreModuleDetailBean</managed-bean-class>
+	<managed-bean-scope>request</managed-bean-scope>
+	<managed-property>
+		<property-name>analyticsStoreLoginBean</property-name>
+		<property-class>com.redsqirl.analyticsStore.AnalyticsStoreLoginBean</property-class>
+		<value>#{analyticsStoreLoginBean}</value>
+	</managed-property>
+ </managed-bean>
+ 
  <!-- **************************** NAVIGATION ******************************************************************* -->
  
  <navigation-rule>

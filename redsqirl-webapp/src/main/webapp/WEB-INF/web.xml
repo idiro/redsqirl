@@ -166,5 +166,19 @@
 	<session-config>
 		<session-timeout>30</session-timeout>
 	</session-config>
+	
+	
+	<!-- RedSqirl Login filter -->
+	<filter>
+		<filter-name>AnalyticsStoreLoginFilter</filter-name>
+		<filter-class>com.redsqirl.analyticsStore.AnalyticsStoreLoginFilter</filter-class>
+	</filter>
+	
+	<!-- Set the login filter to secure all the pages in the /secured/* path 
+		of the application -->
+	<filter-mapping>
+		<filter-name>AnalyticsStoreLoginFilter</filter-name>
+		<url-pattern>/secured_redsqirl/*</url-pattern>
+	</filter-mapping>
 
 </web-app>
