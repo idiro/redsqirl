@@ -176,7 +176,8 @@ function configureCanvas(canvasName, reset, workflowType){
     });
     
     canvasArray[canvasName].arrow.on('mouseenter', function(e) {
-        var help = jQuery('<div class="tooltipCanvas" style="background-color:white;">'+this.tooltipArrow+'</div>');
+        var deleteButton = '<button style="float:right" onclick="deleteArrow(selectedCanvas,\''+this.getName()+'\');" >Delete</button>';
+        var help = jQuery('<div class="tooltipCanvas" style="background-color:white;">'+deleteButton+this.tooltipArrow+'</div>');
         help.css("top",(e.pageY-10)+"px" );
         help.css("left",(e.pageX-10)+"px" );
         jQuery("body").append(help);
@@ -2116,8 +2117,11 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
         
         if(this.getParent().getId() != curToolTip){
             jQuery(".tooltipCanvas").remove();
+            
+            var optionButton = '<button style="float:left" onclick="jQuery(\'#'+
+                this.getParent().getId()+'\').trigger({type:\'mousedown\',which:3});" >Options</button>';
             curToolTip = this.getParent().getId();
-            var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+this.getParent().tooltipObj+'</div>');
+            var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+optionButton+this.getParent().tooltipObj+'</div>');
             var scrollLeft = jQuery("#flowchart-"+canvasName).scrollLeft();
             var scrollTop = jQuery("#flowchart-"+canvasName).scrollTop();
             help.css("top",(this.getParent().getPosition().y-scrollTop+160)+"px" );
