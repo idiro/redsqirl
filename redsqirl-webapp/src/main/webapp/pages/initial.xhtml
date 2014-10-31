@@ -33,16 +33,7 @@
 	
 	jQuery(document).ready(function() {
 		 //<![CDATA[
-		 
-		 
-		 jQuery(document).bind('keypress', function (e) {
-			if (e.which == 13) { // Delete
-				jQuery("[id$='idButtonLogin']").click();
-			}
-		});
-		 
-		 
-	
+
 	    var remember = jQuery.cookie('remember');
 	
 	    if (remember == 'true'){
@@ -55,10 +46,23 @@
 	        jQuery('#userLoginForm\\:loginCheck').attr('checked',true);
 	
 	    }
-	
+	   
+	    document.onkeydown = checkKeycode
+
 	
 	  //]]> 
 	});
+	
+	function checkKeycode(e){
+        var keycode;
+        if (window.event) keycode = window.event.keyCode;
+        else if (e) keycode = e.which;
+        // alert("keycode: " + keycode);
+        if (keycode == 13){
+            jQuery("[id$='idButtonLogin']").click();   
+        }
+        return keycode != 13;
+    }
 	
 	function cookiePassword(){
 	    	    	

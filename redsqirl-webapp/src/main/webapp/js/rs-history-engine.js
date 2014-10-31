@@ -145,6 +145,10 @@ function deleteSelected(canvasName){
 	}
 }
 
+function deleteArrow(canvasName,arrowName){
+     canvasArray[canvasName].commandHistory.execute(new CommandDelete("",arrowName));
+}
+
 /********************************************************************/
 /********************************************************************/
 /********************* CommandAddObj ***************************/
