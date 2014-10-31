@@ -1531,12 +1531,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 				tooltip.append("Output Type: " + e.getValue().getTypeName()
 						+ "<br/>");
 
-				if (e.getValue().isPathExists()) {
-					tooltip.append("Output Path: <span style='color:#008B8B'>"
-							+ e.getValue().getPath() + "</span><br/>");
-				} else {
-					tooltip.append("Output Path: <span style='color:#d2691e'>"
-							+ e.getValue().getPath() + "</span><br/>");
+				if("W".equals(workflowType)){
+					if (e.getValue().isPathExists()) {
+						tooltip.append("Output Path: <span style='color:#008B8B'>"
+								+ e.getValue().getPath() + "</span><br/>");
+					} else {
+						tooltip.append("Output Path: <span style='color:#d2691e'>"
+								+ e.getValue().getPath() + "</span><br/>");
+					}
 				}
 				// tooltip.append("Path exist: " + e.getValue().isPathExists() +
 				// "<br/>");
@@ -1822,13 +1824,15 @@ public class CanvasBean extends BaseBean implements Serializable {
 							tooltip.append("Name: " + outputName + "<br/>");
 						}
 						tooltip.append("Type: " + typeName + "<br/>");
-
-						if (e.getValue().isPathExists()) {
-							tooltip.append("Path: <span style='color:#008B8B'>"
-									+ e.getValue().getPath() + "</span><br/>");
-						} else {
-							tooltip.append("Path: <span style='color:#d2691e'>"
-									+ e.getValue().getPath() + "</span><br/>");
+						
+						if("W".equals(workflowType)){
+							if (e.getValue().isPathExists()) {
+								tooltip.append("Path: <span style='color:#008B8B'>"
+										+ e.getValue().getPath() + "</span><br/>");
+							} else {
+								tooltip.append("Path: <span style='color:#d2691e'>"
+										+ e.getValue().getPath() + "</span><br/>");
+							}
 						}
 						// tooltip.append("Path exist: " +
 						// e.getValue().isPathExists() + "<br/>");
