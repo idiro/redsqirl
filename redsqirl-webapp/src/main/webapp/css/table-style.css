@@ -1,0 +1,190 @@
+html,body{
+	height:99% !important;
+	margin-bottom:0px;
+	margin-top:0px;
+	padding-top:5px;
+	padding-bottom:0px;
+}
+
+#website{
+    background-color:BurlyWood;
+    width:1040px;
+    height:100%;
+    margin-left:auto;
+    margin-right:auto;
+    margin-bottom:0px;
+    margin-top:0px;
+    padding-top:0px;
+    padding-bottom:0px;
+}
+
+input {
+	height: 25px;
+	font-size: 14px !important;
+	padding-left:5px;
+	margin-left:5px;
+	margin-right:5px;
+}
+
+.topBar{
+	float:left;
+	width:800px;
+	height:30px;
+	background-color:#d4cfc7;
+	padding-top:5px;
+	margin-top:5px;
+	margin-left:20px;
+	margin-right:5px;
+	margin-bottom:50px;
+}
+
+.leftBar{
+	width:190px;
+	height:calc(100% - 15px);
+	float:left;
+	font-size:20px;
+	background-color:white;
+	margin:5px;
+}
+
+.menuLink{
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    padding-right:55px;
+    padding-top:2px;
+    padding-bottom:2px;
+    color:black !important;
+    text-decoration: none;
+}
+
+.menuGroup{
+}
+
+.formLabel{
+	float:right;
+}
+
+.mainContent{
+	float:left;
+	width:800px;
+    margin-left:20px;
+    margin-right:5px;
+	height: calc(100% - 110px);
+	background-color:white;
+	overflow:auto;
+	padding:5px;
+}
+
+
+.order-table{   
+	border-collapse:collapse;
+	margin-top:20px;
+}
+
+.order-table-header{
+	text-align:center;
+	background:none repeat scroll 0 0 #E5E5E5;
+	border-bottom:1px solid #BBBBBB;
+	padding:16px;
+}
+
+.order-table-odd-row{
+	text-align:center;
+	background:none repeat scroll 0 0 #FFFFFFF;
+	border-top:1px solid #BBBBBB;
+}
+
+.order-table-even-row{
+	text-align:center;
+	background:none repeat scroll 0 0 #F9F9F9;
+	border-top:1px solid #BBBBBB;
+}
+
+#right{
+	float:right;
+	max-width:400px;
+}
+
+#left{
+	float:left;
+    max-width:600px;
+}
+
+h1{
+	text-align:center;
+}
+
+#intro,#package{
+	max-width:1000px;
+	margin:0 auto;
+}
+
+.packageList{
+	margin-left:auto;
+	margin-right:auto;
+}
+
+.packageItem{
+	background-color:#F9F9F9;
+	margin: 10px 10px 10px 10px;
+	width: 360px;
+	float:left;
+	left:auto;
+	font-size:20px;
+}
+
+.packageItem:hover{
+	cursor: pointer;
+}
+
+.packageItem .image{
+	margin-top:5px;
+	margin-left:5px;
+	float:left;
+}
+
+.packageItem .title{
+	margin-top:10px;
+	margin-left:5px;
+	width:50%;
+	float:left;
+	font-size:25px;
+}
+
+.packageItem .license{
+	margin-top:10px;
+	margin-right:10px;
+	width:20%;
+	float:right;
+	text-align:right;
+	font-size:12px;
+}
+
+.packageItem .description{
+	margin-top:5px;
+	margin-left:5px;
+	width:70%;
+	float:left;
+	color:grey;
+	font-size:12px;
+}
+
+.searchBar{
+	width:600px;
+	margin-left:auto;
+	margin-right:auto;
+	margin-top:10px;
+	margin-bottom:10px;
+}
+
+.searchBar input[type="text"]{
+	width:300px;
+}
+
+.iconBT{
+	height:25px;
+}
+
+
+#nav ul li a.active {background:#ff9900; color:#ffffff;} 
