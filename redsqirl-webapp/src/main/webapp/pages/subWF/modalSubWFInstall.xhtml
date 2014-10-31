@@ -41,16 +41,6 @@
 						<f:selectItem id="User" itemLabel="User" itemValue="User" />
 					</h:selectOneRadio>
 				</h:form>
-				<h:form>
-					<br />
-					<h:outputText value="Name" />
-					<br />
-					<h:inputText value="#{subwfBean.name}" />
-					<h:selectOneRadio id="subscriptions" value="#{subwfBean.asSystem}"
-						disabled="!#{subwfBean.admin}">
-						<f:selectItem id="System" itemLabel="System" itemValue="System" />
-						<f:selectItem id="User" itemLabel="User" itemValue="User" />
-					</h:selectOneRadio>
 					<h:outputText value="Privilages" />
 					<h:selectOneRadio id="editable" value="#{subwfBean.privilage}"
 						layout="pageDirection">
@@ -58,8 +48,6 @@
 							itemValue="run" />
 						<f:selectItem id="privilagesEdit" itemLabel="Editable"
 							itemValue="edit" />
-						<f:selectItem id="privilagesLicense" itemLabel="Licensed"
-							itemValue="license" />
 					</h:selectOneRadio>
 				</h:form>
 			</rich:panel>
