@@ -885,7 +885,7 @@
 				</a4j:jsFunction>
 				
 				<a4j:jsFunction name="aggregate" action="#{canvasBean.aggregate}" data="#{canvasBean.inputNameSubWorkflow}"
-					oncomplete="tmpCommandObj.nameSA = data;if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.hide();deleteAllElements();rebuildJS();refreshRelativeHelp();}" />
+					oncomplete="tmpCommandObj.nameSA = data;if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.hide();refreshCanvas();refreshRelativeHelp();}jQuery.unblockUI();" />
 					
 				<a4j:jsFunction name="undoAggregate" action="#{canvasBean.undoAggregate}" >
 					<a4j:actionparam name="nameSA" />
@@ -2520,7 +2520,7 @@
 		</rich:modalPanel>
 	</a4j:region>
 	<a4j:region>
-		<rich:modalPanel id="modalAggregate" width="650" height="450" style="overflow:auto;" resizeable="false">
+		<rich:modalPanel id="modalAggregate" width="450" height="440" style="overflow:auto;" resizeable="false">
 
 			<f:facet name="header">
 				<h:outputText value="#{messages.label_menu_aggregate}" />

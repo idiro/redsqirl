@@ -83,6 +83,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private List<String[]> outputNamesList = new ArrayList<String[]>();
 	private String inputNameSubWorkflow;
 	private List<String> componentIds;
+	private String inputAreaSubWorkflow;
 
 	/**
 	 * 
@@ -2376,7 +2377,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				if(error == null){
 					error = getDf().aggregateElements(getComponentIds(), 
 							getInputNameSubWorkflow(),
-							WorkflowHelpUtils.generateHelp(getInputNameSubWorkflow(), inputsForHelp, outputsForHelp), 
+							WorkflowHelpUtils.generateHelp(getInputNameSubWorkflow(), getInputAreaSubWorkflow() ,inputsForHelp, outputsForHelp), 
 							inputs, outputs);
 					logger.info("Elements: " + getDf().getComponentIds());
 
@@ -2704,6 +2705,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void setComponentIds(List<String> componentIds) {
 		this.componentIds = componentIds;
+	}
+
+	public String getInputAreaSubWorkflow() {
+		return inputAreaSubWorkflow;
+	}
+
+	public void setInputAreaSubWorkflow(String inputAreaSubWorkflow) {
+		this.inputAreaSubWorkflow = inputAreaSubWorkflow;
 	}
 
 }
