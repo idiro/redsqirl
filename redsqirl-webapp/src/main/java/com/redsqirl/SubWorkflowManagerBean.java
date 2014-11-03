@@ -1,6 +1,5 @@
 package com.redsqirl;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.rmi.RemoteException;
@@ -162,7 +161,7 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 		setAsSystem("User");
 		this.actualName = val;
 		setName(val);
-		setPrivilage("run");
+		setPrivilage("edit");
 	}
 
 	/**
@@ -189,29 +188,23 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 	public void refreshSubworkflowsSystemList() {
 		List<String> listSa = saManager.getAvailableSuperActions(null);
 
-		systemSA = new String[listSa.size()];
 		uninstallSysSa = new ArrayList<SelectItem>();
 
 		for (int i = 0; i < listSa.size(); ++i) {
 			String s = listSa.get(i);
-			systemSA[i] = s;
 			uninstallSysSa.add(new SelectItem(s, s));
 		}
 		logger.info("system sa " + systemSA.length);
-		setSystemSA(systemSA);
 	}
 
 	public void refreshSubworkflowsUser() {
 		List<String> listSa = saManager
 				.getAvailableSuperActions(getUserInfoBean().getUserName());
-		userSA = new String[listSa.size()];
 		uninstallUserSa = new ArrayList<SelectItem>();
 		for (int i = 0; i < listSa.size(); ++i) {
 			String s = listSa.get(i);
-			userSA[i] = s;
 			uninstallUserSa.add(new SelectItem(s, s));
 		}
-		setUserSA(userSA);
 	}
 
 	public void deleteSASystem() {
@@ -254,13 +247,10 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 			name = "sa_"+name;
 		}
 		
-		if(!name.contains(".")){
-			name = name+".srs";
-		}
 		swa.setName(name);
-		
-		String error = saManager.export(getUserInfoBean().getUserName(), swa,
-				privilageVal);
+
+		String filePath ="/user/"+getUserInfoBean().getUserName()+"/redsqirl-save/"+name+".srs";
+		String error = saManager.export(filePath, swa, privilageVal);
 
 		if (error != null && !error.isEmpty()) {
 			MessageUseful.addErrorMessage(error);
@@ -270,7 +260,7 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 			logger.info(" " + error);
 		} else {
 			MessageUseful
-					.addInfoMessage("Install Success for " + swa.getName());
+					.addInfoMessage("Export Success for " + swa.getName());
 			HttpServletRequest request = (HttpServletRequest) FacesContext
 					.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnSuccess", "msnSuccess");
