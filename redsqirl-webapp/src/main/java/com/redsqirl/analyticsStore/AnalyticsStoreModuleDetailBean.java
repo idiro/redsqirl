@@ -202,17 +202,11 @@ public class AnalyticsStoreModuleDetailBean implements Serializable{
 		    }
 		}
 	    
-	    System.out.println("installing package: " + packagePath + ": " + key);
-	    
 	    PackageManager pckMng = new PackageManager();
 	    
 	    String user = null;
 	    if (userInstall){
 	    	System.getProperty("user.name");
-	    	System.out.println("installing user package");
-	    }
-	    else{
-	    	System.out.println("installing system package");
 	    }
 	    	
 	    pckMng.addPackage(user, new String[]{packagePath});

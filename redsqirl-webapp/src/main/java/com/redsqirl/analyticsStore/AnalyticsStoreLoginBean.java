@@ -44,8 +44,6 @@ public class AnalyticsStoreLoginBean implements Serializable {
 		try{
 			String uri = getRepoServer()+"rest/login";
 			
-			System.out.println(uri);
-			
 			JSONObject object = new JSONObject();
 			object.put("email", email);
 			object.put("password", password);
@@ -57,8 +55,6 @@ public class AnalyticsStoreLoginBean implements Serializable {
 			   .post(ClientResponse.class, object.toString());
 			String ansServer = response.getEntity(String.class);
 			
-			System.out.println(ansServer);
-
 			try{
 				JSONObject pckObj = new JSONObject(ansServer);
 				loggedIn = pckObj.getBoolean("logged");
