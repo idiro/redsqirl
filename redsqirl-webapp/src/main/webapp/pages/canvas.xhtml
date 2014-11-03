@@ -886,7 +886,7 @@
 				</a4j:jsFunction>
 				
 				<a4j:jsFunction name="aggregate" action="#{canvasBean.aggregate}" data="#{canvasBean.inputNameSubWorkflow}"
-					oncomplete="tmpCommandObj.nameSA = data;if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.hide();refreshCanvas();refreshRelativeHelp();}jQuery.unblockUI();" />
+					oncomplete="tmpCommandObj.nameSA = data;if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.hide();refreshCanvas();refreshRelativeHelp();canvasArray[selectedCanvas].saved=false;}jQuery.unblockUI();" />
 					
 				<a4j:jsFunction name="undoAggregate" action="#{canvasBean.undoAggregate}" >
 					<a4j:actionparam name="nameSA" />
@@ -1269,14 +1269,17 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
 				<a4j:jsFunction name="loadWorkflow" data="#{canvasBean.positions}"
-					oncomplete="addElementJs(data[0],data[1],data[2],data[3],data[4], true, data[5]);setRunning(getSelectedByName(), true);"
+					oncomplete="addElementJs(data[0],data[1],data[2],data[3],data[4], true, data[5]);if(getSelectedWorkflowType() == 'W'){setRunning(getSelectedByName(), true);}"
 					reRender="tabFlowchart,errorTable,msnError" />
 
+                <a4j:jsFunction name="loadSubWorkflowFromCanvas" data="#{canvasBean.positions}"
+                    oncomplete="addElementJs(data[0],data[1],data[2],data[3],data[4], true, data[5]);canvasArray[selectedCanvas].saved=false;"
+                    reRender="tabFlowchart,errorTable,msnError" />
 			</a4j:region>
 			
 			<a4j:region>
 				<a4j:jsFunction name="openSubWorkflow" action="#{canvasBean.openSubWorkflow}" 
-					oncomplete="if(#{requestScope['msnError'] == null} ){loadWorkflow();}" >
+					oncomplete="if(#{requestScope['msnError'] == null} ){loadSubWorkflowFromCanvas();}" >
 					<a4j:actionparam name="nameSubWorkflow" />
 				</a4j:jsFunction>
 			</a4j:region>

@@ -31,6 +31,14 @@
 					</h:selectManyCheckbox>
 				</h:panelGroup>
 
+                <h:panelGroup id="userSAList" layout="block"
+                    style="overflow:auto;height:330px;"
+                    rendered="#{not subwfBean.admin}">
+                    <ui:repeat value="#{subwfBean.uninstallUserSa}" var="item">
+                    #{item.label}<br />
+                    </ui:repeat>
+                </h:panelGroup>
+                
 				<h:panelGrid id="sa_sys_buttons" columns="2"
 					rendered="#{subwfBean.admin}">
 					<rich:panel id="sa_sys_uninstall">
@@ -53,14 +61,6 @@
 					</h:selectManyCheckbox>
 				</h:panelGroup>
 				
-				<h:panelGroup id="userSAList" layout="block"
-					style="overflow:auto;height:330px;"
-					rendered="#{not subwfBean.admin}">
-					<ui:repeat value="#{subwfBean.uninstallUserSa}" var="item">
-                    #{item.label}<br />
-					</ui:repeat>
-				</h:panelGroup>
-				
 				<h:panelGrid id="sa_user_buttons" columns="2" style="vertical-align:bottom;">
 					<rich:panel id="sa_user_uninstall">
 						<a4j:commandButton styleClass="greenButton" value="#{messages.button_sys_uninstall}" 
@@ -71,13 +71,10 @@
 			</rich:panel>
 
 		</h:panelGrid>
-		<h:panelGrid id="sa_main_buttons" columns="2"
-				 style="vertical-align:bottom; horizontal-align:right">
-					<rich:panel id="sa_ok">
-						<a4j:commandButton styleClass="greenButton"
-							value="ok"
-							onclick="#{rich:component('modalSubWfUninstall')}.hide()"/>
-					</rich:panel>
-				</h:panelGrid>
+			<rich:panel id="sa_ok" style="float:right;margin-right:25px;">
+				<a4j:commandButton styleClass="greenButton"
+					value="ok"
+					onclick="#{rich:component('modalSubWfUninstall')}.hide()"/>
+			</rich:panel>
 	</h:form>
 </ui:composition>

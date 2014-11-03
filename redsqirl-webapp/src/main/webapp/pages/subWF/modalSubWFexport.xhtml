@@ -23,48 +23,39 @@
 
 		<div style="width: 270px; height: 200px;">
 
-					<rich:panel id="exportSubWf"
-						style="padding-left:5px; overflow: auto; height:200px;">
+			<rich:panel id="exportSubWf"
+				style="padding-left:5px; overflow: auto; height:200px;">
 
 
-							<h:form id="exportToHDFS">
-								<br/>
-								<h:outputText value="Name" />
-								<br/>
-								<h:inputText value="#{subwfBean.name}"/>
-								<h:selectOneRadio id="exporttype"
-									value="#{subwfBean.asSystem}"
-									disabled="!#{subwfBean.admin}"
-									layout="pageDirection">
-									<f:selectItem id="exportSystem" itemLabel="System" itemValue="System" />
-									<f:selectItem id="exportUser" itemLabel="User" itemValue="User" />
-								</h:selectOneRadio>
-									<br/>
-								<h:outputText value="Privilages" />
-								<h:selectOneRadio id="editable"
-									value="#{subwfBean.privilage}" 
-									layout="pageDirection">
-									<f:selectItem id="privilagesRun" itemLabel="Run Only" itemValue="run" />
-									<f:selectItem id="privilagesEdit" itemLabel="Editable" itemValue="edit" />
-									<f:selectItem id="privilagesLicense" itemLabel="Licensed" itemValue="license" />
-								</h:selectOneRadio>
-							</h:form>
-					</rich:panel>
+					<h:form id="exportToHDFS">
+						<br/>
+						<h:outputText value="Name" />
+						<br/>
+						<h:inputText value="#{subwfBean.name}"/>
+						<br/>
+						<h:outputText value="Privileges" />
+						<h:selectOneRadio id="editable"
+							value="#{subwfBean.privilage}" 
+							layout="pageDirection">
+							<f:selectItem id="privilagesEdit" itemLabel="Editable" itemValue="edit" />
+							<f:selectItem id="privilagesRun" itemLabel="Run Only" itemValue="run" />
+							<f:selectItem id="privilagesLicense" itemLabel="Licensed" itemValue="license" />
+						</h:selectOneRadio>
+					</h:form>
+			</rich:panel>
 
-					<h:panelGrid columns="3">
-						<a4j:commandButton styleClass="greenButton"
-							value="#{messages.button_cancel}" type="button"
-							reRender="errorTable"
-							onclick="#{rich:component('modalSubWfexport')}.hide();" />
-						<a4j:commandButton styleClass="greenButton"
-							value="Export" 
-							reRender="exportSubWf,msnError,errorTable,msnErrorPage,msnSuccess"
-							action="#{subwfBean.exportSa}" 
-							oncomplete="if(#{requestScope['msnError'] == null})#{rich:component('modalSubWfexport')}.hide();"
-							/>
-					</h:panelGrid>
-
-
+			<h:panelGrid columns="3">
+				<a4j:commandButton styleClass="greenButton"
+					value="#{messages.button_cancel}" type="button"
+					reRender="errorTable"
+					onclick="#{rich:component('modalSubWfexport')}.hide();" />
+				<a4j:commandButton styleClass="greenButton"
+					value="Export" 
+					reRender="exportSubWf,msnError,errorTable,msnErrorPage,msnSuccess"
+					action="#{subwfBean.exportSa}" 
+					oncomplete="if(#{requestScope['msnError'] == null})#{rich:component('modalSubWfexport')}.hide();"
+					/>
+			</h:panelGrid>
 
 		</div>
 
