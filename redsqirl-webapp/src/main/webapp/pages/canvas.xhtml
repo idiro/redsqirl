@@ -552,7 +552,7 @@
 	    	  var tabs = jQuery("#canvas-tabs").tabs();
               var ul = jQuery("#canvas-tabs").tabs().find( "ul:first" );
               
-              jQuery( "<li class='locked canvasTabsInactive'><a href='#"+ getCanvasId(tabName) +"' class='canvasTab' onclick=\"jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('"+tabName+"');\"><img src='"+tabImage+"' style='width: 15px;'/>"+ 
+              jQuery( "<li class='locked canvasTabsInactive'><a href='#"+ getCanvasId(tabName) +"' class='canvasTab' onclick=\"jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('"+tabName+"');\"><img src='"+tabImage+"' style='width:15px;padding-right:5px;position:relative;top:3px;'/>"+ 
             		  tabName +"</a> <span id='"+tabName+"-icon-close' class='ui-icon ui-icon-close' role='presentation' onclick=\"closeWorkflowTab(this, '"+tabName+"')\"></span> </li>" ).appendTo( ul );
               
               var div = "<div id='"+getCanvasId(tabName)+"' class='container-canvas'>"+
@@ -1942,26 +1942,25 @@
 					<div id="canvas-tabs">
 						<ul class="ulCssCanvas removeDefaults topBanner"
 							style="width: 100%;">
-							<li class="locked canvasTabsInactive"><a
-								href="#flowchart-canvas-1" class="canvasTab"
-								onclick="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('canvas-1');"><img src="../image/workflow_tab.gif" style="width: 15px;"/>canvas-1</a>
+							<li class="locked canvasTabsInactive">
+								<a href="#flowchart-canvas-1" class="canvasTab"
+									onclick="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('canvas-1');">
+									<img src="../image/workflow_tab.gif" style="width:15px;padding-right:5px;position:relative;top:3px;"/>canvas-1
+								</a>
 								<span id="canvas-1-icon-close" class="ui-icon ui-icon-close "
-								role="presentation" onclick="closeWorkflowTab(this,'canvas-1')"></span>
+									role="presentation" onclick="closeWorkflowTab(this,'canvas-1')">
+								</span>
 							</li>
-							<img src="../image/icons/button-new_canvas.gif" alt="add"
-								style="width: 25px; padding-top: 2px;" id="addtabCanvas" />
-							<img src="../image/icons/button-new_canvas.gif" alt="add"
-								style="display: none" id="addsubtabCanvas" />
+							<img src="../image/icons/button-new_canvas.gif" alt="add" style="width: 25px; padding-top: 2px;" id="addtabCanvas" />
+							<img src="../image/icons/button-new_canvas.gif" alt="add" style="display: none" id="addsubtabCanvas" />
 						</ul>
 
 						<span id="buttonsCanvas1" class="spanButtons">
 							<button class="buttonsArrowsLeft">
-								<img src="../image/icons/button-left_arrow.gif"
-									style="width: 30px;" />
+								<img src="../image/icons/button-left_arrow.gif" style="width: 30px;" />
 							</button>
 							<button class="buttonsArrowsRight">
-								<img src="../image/icons/button-right_arrow.gif"
-									style="width: 30px;" />
+								<img src="../image/icons/button-right_arrow.gif" style="width: 30px;" />
 							</button>
 						</span>
 
