@@ -1867,6 +1867,8 @@ function configureGroupListeners(canvasName, group) {
     });
     
     group.on('click', function(e) {
+    	
+    	//alert(e.button);
         
         jQuery(".tooltipCanvas").remove();
         if(e.button != 2){
@@ -2117,13 +2119,15 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
         
         if(this.getParent().getId() != curToolTip){
             jQuery(".tooltipCanvas").remove();
-            var optionButton = '<button style="float:left" onclick="var evt = document.createEvent(\'MouseEvents\');evt.initEvent(\'click\', true, true);showContextMenu(findGroup(\''+this.getParent().getId()+'\'),evt);" >Options</button>';
-            curToolTip = this.getParent().getId();
-            var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+optionButton+this.getParent().tooltipObj+'</div>');
             var scrollLeft = jQuery("#flowchart-"+canvasName).scrollLeft();
             var scrollTop = jQuery("#flowchart-"+canvasName).scrollTop();
-            help.css("top",(this.getParent().getPosition().y-scrollTop+160)+"px" );
-            help.css("left",(this.getParent().getPosition().x-scrollLeft+80)+"px" );
+            var top = this.getParent().getPosition().y-scrollTop+160;
+            var left = this.getParent().getPosition().x-scrollLeft+80;
+            var optionButton = '<button style="float:left" onclick="buttonFuction(\''+this.getParent().getId()+'\',\''+top+'\',\''+left+'\' );" >Options</button>';
+            curToolTip = this.getParent().getId();
+            var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+optionButton+'&nbsp;&nbsp;'+this.getParent().tooltipObj+'</div>');
+            help.css("top",top+"px" );
+            help.css("left",left+"px" );
             jQuery("body").append(help);
             help.fadeIn("slow");
             
@@ -2160,6 +2164,16 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
     });
 
     return [ polygon, polygonTab, polygonTabImage ];
+}
+
+function buttonFuction(groupId, top, left){
+	
+	var evt = document.createEvent('MouseEvents');
+	evt.initMouseEvent('click', true, true, window, 1, left, top, left, top, false, false, false, false, 2, null);
+	setTimeout(function(){showContextMenu(findGroup(groupId),evt)},100);
+	//findGroup(groupId).fire('click', evt);
+	
+	return false;
 }
 
 function findGroup(groupId){

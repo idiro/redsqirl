@@ -51,6 +51,7 @@ input {
 	margin-left: 0px;
 	margin-right: 0px;
 }
+
 .fileSystem{
 }
 
@@ -81,7 +82,6 @@ input {
 .canvas {
 	border: 0px solid;
 }
-
 
 #tabsFooter li .ui-icon-close {
 	float: left;
@@ -114,7 +114,6 @@ input {
 	border-bottom-left-radius: 4px !important;
 	padding-top:0px !important;
 	padding-bottom:0px !important;
-	
 }
 
 li[aria-selected='false']>a.canvasTab{
@@ -379,7 +378,6 @@ table[id*="msnError"]{
 	overflow:auto;
 }
 
-
 .message {
 	font-size: 12 px;
 	font-weight: bold;
@@ -471,6 +469,7 @@ table[id*="msnError"]{
 	z-index: 9002;
 	font-family: verdana;
 }
+
 /* Use in help files*/
 div#body {
 	background-color: white;
@@ -777,7 +776,6 @@ table.secondtable td {
     border-width:1px !important;
     border-style: solid !important;
     */
-	
 }
 
 /*gradient background on canvas*/
@@ -791,15 +789,12 @@ table.secondtable td {
 #tabs1 {
 	background-color: transparent;
 	border: none;
-	
 }
 
 /*transparent background on tabs*/
 #tabs2 {
 	background-color: transparent;
 	border: none;
-	
-	
 }
 
 #tabsFooter {
@@ -872,7 +867,6 @@ table.secondtable td {
 	line-height:30px;
 	border-bottom-left-radius: 0px;
 	border-bottom-right-radius: 0px;
-
 	border-top-left-radius: 9px;
 	border-top-right-radius: 9px;
 }
@@ -881,10 +875,8 @@ ui-tabs ui-widget ui-widget-content ui-corner-all{
 	border-left: 1px solid #87888c;
 	border-right: 1px solid #87888c;
 	border-bottom: 1px solid #87888c;
-	
 	border-bottom-right-radius: 9px;
 	border-bottom-left-radius: 9px;
-	
 }
 
 /*vertical and horizontal splitter*/
@@ -930,9 +922,7 @@ div.splitter-bar.ui-state-highlight {
 }
 
 /*white selected tab on canvas*/
-#canvas-tabs.ui-tabs .ui-tabs-nav li.ui-tabs-active,#tabRemote.ui-tabs .ui-tabs-nav li.ui-tabs-active
-	{
-	
+#canvas-tabs.ui-tabs .ui-tabs-nav li.ui-tabs-active,#tabRemote.ui-tabs .ui-tabs-nav li.ui-tabs-active {
 	/*background-color: transparent !important;*/
 	border-top-left-radius: 4px;
 	border-top-right-radius: 4px;
@@ -942,8 +932,7 @@ div.splitter-bar.ui-state-highlight {
 	line-height:25px;*/
 }
 
-#canvas-tabs.ui-tabs .ui-tabs-nav li.ui-tabs-active a,#canvas-tabs.ui-tabs .ui-tabs-nav li.ui-state-disabled a,#canvas-tabs.ui-tabs .ui-tabs-nav li.ui-tabs-loading a,#tabRemote.ui-tabs .ui-tabs-nav li.ui-tabs-active a,#tabRemote.ui-tabs .ui-tabs-nav li.ui-state-disabled a,#tabRemote.ui-tabs .ui-tabs-nav li.ui-tabs-loading a
-	{
+#canvas-tabs.ui-tabs .ui-tabs-nav li.ui-tabs-active a,#canvas-tabs.ui-tabs .ui-tabs-nav li.ui-state-disabled a,#canvas-tabs.ui-tabs .ui-tabs-nav li.ui-tabs-loading a,#tabRemote.ui-tabs .ui-tabs-nav li.ui-tabs-active a,#tabRemote.ui-tabs .ui-tabs-nav li.ui-state-disabled a,#tabRemote.ui-tabs .ui-tabs-nav li.ui-tabs-loading a {
 	cursor: pointer;
 	background-color: transparent !important;
 	color: #c5161d;
@@ -956,8 +945,7 @@ div.splitter-bar.ui-state-highlight {
 	vertical-align: middle;
 }
 
-#canvas-tabs.ui-tabs .ui-tabs-nav li a,#tabRemote.ui-tabs .ui-tabs-nav li a
-	{
+#canvas-tabs.ui-tabs .ui-tabs-nav li a,#tabRemote.ui-tabs .ui-tabs-nav li a {
 	/*background-color: transparent !important;*/
 	border-bottom-right-radius: 0px;
 	border-bottom-left-radius: 0px;
@@ -972,6 +960,7 @@ div.splitter-bar.ui-state-highlight {
 	padding-bottom: 0px !important;
 }
 **/
+
 .footerTab{
 	background-color: #c6161d !important;
 	border-bottom-right-radius:0px !important;
@@ -982,8 +971,7 @@ div.splitter-bar.ui-state-highlight {
 	background-color: transparent ;
 }
 
-#tabsFooter.ui-tabs .ui-tabs-nav li.ui-tabs-active a,#tabsFooter.ui-tabs .ui-tabs-nav li.ui-state-disabled a,#tabsFooter.ui-tabs .ui-tabs-nav li.ui-tabs-loading a
-	{
+#tabsFooter.ui-tabs .ui-tabs-nav li.ui-tabs-active a,#tabsFooter.ui-tabs .ui-tabs-nav li.ui-state-disabled a,#tabsFooter.ui-tabs .ui-tabs-nav li.ui-tabs-loading a {
 	height: 32px;
 	line-height: 30px;
 	cursor: pointer;
@@ -1071,7 +1059,6 @@ div.splitter-bar.ui-state-highlight {
 	background-color:transparent;
 	
 }
-
 
 .removeDefaults{
 	margin:0px !important;
@@ -1270,8 +1257,7 @@ div.splitter-bar.ui-state-highlight {
 	border-collapse: collapse !important;
 }
 
-.rich-tabpanel img[src="/redsqirl-webapp/a4j/g/3_3_3.Finalimages/spacer.gif.xhtml"]
-	{
+.rich-tabpanel img[src="/redsqirl-webapp/a4j/g/3_3_3.Finalimages/spacer.gif.xhtml"] {
 	display: none;
 }
 
@@ -1380,8 +1366,7 @@ div.splitter-bar.ui-state-highlight {
 	color: #808080;
 }
 
-.context-menu-theme-default .context-menu-item .context-menu-item-inner
-	{
+.context-menu-theme-default .context-menu-item .context-menu-item-inner {
 	background: none no-repeat fixed 999px 999px;
 	/* Make sure icons don't appear */
 }
