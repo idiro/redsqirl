@@ -222,6 +222,9 @@
 				cmenu.shown=true;
 				$(document).one('click',null,function(){cmenu.hide()}); // Handle a single click to the document to hide the menu
 			}
+			
+			//alert("aaa");
+			
 		},
 		
 		// Find the position where the menu should appear, given an x,y of the click event
