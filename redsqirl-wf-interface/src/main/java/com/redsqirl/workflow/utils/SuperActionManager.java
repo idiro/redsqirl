@@ -28,10 +28,10 @@ public class SuperActionManager {
 
 	private static Logger logger = Logger.getLogger(SuperActionManager.class);
 	
-	public String export(String user ,SubDataFlow toExport , Boolean privilage) throws RemoteException{
+	public String export(String pathHdfs, SubDataFlow toExport , Boolean privilage) throws RemoteException{
 		String error = null;
-		String filePath ="/user/"+user+"/redsqirl-save/"+toExport.getName();
-		error = toExport.save(filePath, privilage);
+		logger.info("Export "+toExport.getName()+" in "+pathHdfs);
+		error = toExport.save(pathHdfs, privilage);
 		return error;
 	}
 	

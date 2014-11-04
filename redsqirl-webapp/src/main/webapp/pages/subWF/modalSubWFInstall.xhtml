@@ -43,10 +43,11 @@
 					<h:outputText value="Privileges" />
 					<h:selectOneRadio id="editable" value="#{subwfBean.privilege}"
 						layout="pageDirection">
-						<f:selectItem id="privilegesRun" itemLabel="Run Only"
-							itemValue="run" />
+
 						<f:selectItem id="privilegesEdit" itemLabel="Editable"
 							itemValue="edit" />
+						<f:selectItem id="privilegesRun" itemLabel="Run Only"
+							itemValue="run" />
 					</h:selectOneRadio>
 				</h:form>
 			</rich:panel>

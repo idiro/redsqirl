@@ -451,4 +451,12 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		this.userPackages = userPackages;
 	}
 
+	public boolean isUserInstall() {
+		return userInstall;
+	}
+
+	public void setUserInstall(boolean userInstall) {
+		this.userInstall = userInstall;
+	}
+
 }

@@ -1,16 +1,20 @@
 package com.redsqirl.workflow.server.action.superaction;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Map.Entry;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -30,9 +34,12 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.idiro.Log;
+import com.idiro.ProjectID;
 import com.idiro.hadoop.NameNodeVar;
 import com.idiro.utils.RandomString;
 import com.idiro.utils.XmlUtils;
+import com.redsqirl.keymanager.ciphers.Decrypter;
+import com.redsqirl.keymanager.ciphers.KeyCipher;
 import com.redsqirl.workflow.server.DataOutput;
 import com.redsqirl.workflow.server.Workflow;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
@@ -96,9 +103,13 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 			String tempPath = WorkflowPrefManager.getPathuserpref() + "/tmp/"
 					+ fileName + "_" + RandomString.getRandomName(4);
 
+			logger.info(filePath);
 			error = saveXmlOnLocal(new File(tempPath),newPrivilege);
 
 			if(error == null){
+				if(!filePath.endsWith(".srs")){
+					filePath = filePath+".srs";
+				}
 				FileSystem fs = NameNodeVar.getFS();
 				fs.moveFromLocalFile(new Path(tempPath), new Path(filePath));
 			}
@@ -292,6 +303,74 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 			logger.debug("System path to search "+name+": "+xmlFile.getPath());
 		}
 		return xmlFile;
+	}
+	
+	@Override
+	public String read(String filePath){
+		String error = null;
+		boolean valid = true;
+		
+		Boolean licensed = getPrivilege();
+		String swLicense= null;
+		
+		
+		String softwareLicenseKey = ProjectID.get().trim().replaceAll("[^A-Za-z0-9]", "").toLowerCase();
+		String softwareLicense = null;
+		
+		String name = null;
+		try {
+			name = getName();
+		} catch (RemoteException e1) {
+			e1.printStackTrace();
+		}
+		
+		if(licensed !=null && licensed){
+			File licenseP = new File(
+					WorkflowPrefManager.getPathSystemLicence());
+			Properties props = new Properties();
+			String licenseKey=null ;
+			if (licenseP.exists()) {
+				try {
+					licenseKey = name;
+					props.load(new FileInputStream(licenseP));
+					licenseKey = licenseKey.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
+					swLicense =  props.getProperty(licenseKey);
+					softwareLicense = props.getProperty(softwareLicenseKey);
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				logger.info(props.toString());
+				
+				logger.info(licenseKey);
+			}
+			
+			if(swLicense ==null){
+					return "There was an error when trying to run "+name;
+			}else{
+				Decrypter dec = new Decrypter();
+				dec.decrypt_key_module(swLicense);
+
+				Map<String,String> keyModule = new HashMap<String,String>();
+				keyModule.put(dec.userName,System.getProperty("user.name"));
+				keyModule.put(dec.name,name);
+				keyModule.put(dec.license,softwareLicense);
+				
+				valid = dec.validateAllValuesModule(keyModule);
+			}
+			
+		}
+			
+		if(!valid){
+			error = "License is invalid for "+name;
+			return error;
+		}
+			
+		//check license 
+		//return error if license invalid
+		
+		return super.read(filePath);
 	}
 
 	public String readMetaData() throws Exception{

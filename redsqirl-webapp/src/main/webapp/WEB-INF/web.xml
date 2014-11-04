@@ -178,7 +178,7 @@
 		of the application -->
 	<filter-mapping>
 		<filter-name>AnalyticsStoreLoginFilter</filter-name>
-		<url-pattern>/secured_redsqirl/*</url-pattern>
+		<url-pattern>/secured/*</url-pattern>
 	</filter-mapping>
 
 </web-app>

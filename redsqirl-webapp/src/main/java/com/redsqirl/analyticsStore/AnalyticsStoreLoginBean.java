@@ -10,6 +10,7 @@ import javax.faces.context.FacesContext;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -53,7 +54,7 @@ public class AnalyticsStoreLoginBean implements Serializable {
 			ClientResponse response = webResource.type("application/json")
 			   .post(ClientResponse.class, object.toString());
 			String ansServer = response.getEntity(String.class);
-
+			
 			try{
 				JSONObject pckObj = new JSONObject(ansServer);
 				loggedIn = pckObj.getBoolean("logged");
@@ -74,7 +75,7 @@ public class AnalyticsStoreLoginBean implements Serializable {
 			ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
 			String originalUrl = (String) externalContext.getRequestParameterMap().get("originalURL");
 			String queryString = (String) externalContext.getRequestParameterMap().get("originalQuery");
-			String url = originalUrl != null && !originalUrl.isEmpty() ? originalUrl : "secured_redsqirl/redsqirl_search.xhtml";
+			String url = originalUrl != null && !originalUrl.isEmpty() ? originalUrl : "secured/search.xhtml";
 			if (queryString != null && !queryString.isEmpty()){
 				url += "?" + queryString;
 			}
@@ -98,8 +99,12 @@ public class AnalyticsStoreLoginBean implements Serializable {
 		return null;
 	}
 	
-	private String getRepoServer(){
-		return "http://localhost:9090/analytics-store/";
+	public String getRepoServer(){
+		String pckServer = WorkflowPrefManager.getPckManagerUri();
+		if(!pckServer.endsWith("/")){
+			pckServer+="/";
+		}
+		return pckServer;
 	}
 
 	/**

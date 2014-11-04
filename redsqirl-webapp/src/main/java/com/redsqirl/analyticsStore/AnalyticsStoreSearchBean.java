@@ -11,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -76,8 +77,12 @@ public class AnalyticsStoreSearchBean implements Serializable{
 		return result;
 	}
 	
-	private String getRepoServer(){
-		return "http://localhost:9090/analytics-store/";
+	public String getRepoServer(){
+		String pckServer = WorkflowPrefManager.getPckManagerUri();
+		if(!pckServer.endsWith("/")){
+			pckServer+="/";
+		}
+		return pckServer;
 	}
 	
 	public String getSearchValue() {

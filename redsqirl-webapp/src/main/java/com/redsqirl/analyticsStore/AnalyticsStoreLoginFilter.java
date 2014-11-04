@@ -27,7 +27,7 @@ public class AnalyticsStoreLoginFilter implements Filter {
      */
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         // Get the loginBean from session attribute
-    	AnalyticsStoreLoginBean loginBean = (AnalyticsStoreLoginBean)((HttpServletRequest)request).getSession().getAttribute("analyticsStorelLoginBean");
+    	AnalyticsStoreLoginBean loginBean = (AnalyticsStoreLoginBean)((HttpServletRequest)request).getSession().getAttribute("analyticsStoreLoginBean");
          
         // For the first application request there is no loginBean in the session so user needs to log n
         // For other requests loginBean is present but we need to check if user has logged in successfully
