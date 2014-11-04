@@ -1,6 +1,5 @@
 package com.redsqirl;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.rmi.RemoteException;
@@ -28,7 +27,7 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 
 	private String name = "";
 	private String actualName = "";
-	private String privilage = "";
+	private String privilege = "";
 	private String pathHDFS = "";
 	private boolean admin = false;
 	private String exists ;
@@ -60,16 +59,16 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 
 		boolean system = asSystem.equals("System");
 		
-		logger.info("privilage : '" + privilage + "'");
+		logger.info("privilage : '" + privilege + "'");
 		Boolean privilageVal = null;
-		if (privilage.equals("edit")) {
+		if (privilege.equals("edit")) {
 
-		} else if (privilage.equals("run")) {
+		} else if (privilege.equals("run")) {
 			privilageVal = new Boolean(false);
-		} else if (privilage.equals("license")) {
+		} else if (privilege.equals("license")) {
 			privilageVal = new Boolean(true);
 		}
-		logger.info(privilage + " + " + privilageVal);
+		logger.info(privilege + " + " + privilageVal);
 		
 		
 		if(!name.startsWith("sa_")){
@@ -162,7 +161,7 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 		setAsSystem("User");
 		this.actualName = val;
 		setName(val);
-		setPrivilage("run");
+		setPrivilege("run");
 	}
 
 	/**
@@ -236,27 +235,22 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 	}
 
 	public void exportSa() throws RemoteException {
-		logger.info("subWorkflow name  " + name);
-		logger.info("subWorkflow name  " + actualName);
 		DataFlowInterface dfi = getworkFlowInterface();
 		SubDataFlow swa = dfi.getSubWorkflow(actualName);
-		logger.info("privilage : '" + privilage + "'");
+		logger.info("privilage : '" + privilege + "'");
 		Boolean privilageVal = null;
-		if (privilage.equals("edit")) {
+		if (privilege.equals("edit")) {
 
-		} else if (privilage.equals("run")) {
+		} else if (privilege.equals("run")) {
 			privilageVal = new Boolean(false);
-		} else if (privilage.equals("license")) {
+		} else if (privilege.equals("license")) {
 			privilageVal = new Boolean(true);
 		}
-		logger.info(privilage + " + " + privilageVal);
+		logger.info(privilege + " + " + privilageVal);
 		if(!name.startsWith("sa_")){
 			name = "sa_"+name;
 		}
 		
-		if(!name.contains(".")){
-			name = name+".srs";
-		}
 		swa.setName(name);
 		
 		String error = saManager.export(getUserInfoBean().getUserName(), swa,
@@ -384,12 +378,12 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 		this.pathHDFS = pathHDFS;
 	}
 
-	public String getPrivilage() {
-		return privilage;
+	public String getPrivilege() {
+		return privilege;
 	}
 
-	public void setPrivilage(String privilage) {
-		this.privilage = privilage;
+	public void setPrivilege(String privilege) {
+		this.privilege = privilege;
 	}
 
 	public String getExists() {
