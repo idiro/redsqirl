@@ -837,6 +837,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 				// idMap.put(nameWorkflowSwp, idMap.get(nameWorkflow));
 				idMap.put(nameWorkflowSwp, new HashMap<String, String>());
 				idMap.remove(nameWorkflow);
+				
+				getMapWorkflowType().put(nameWorkflowSwp, getMapWorkflowType().get(nameWorkflow));
+				getMapWorkflowType().remove(nameWorkflow);
+				
 				nameWorkflow = nameWorkflowSwp;
 			}
 		}
