@@ -49,16 +49,24 @@ var contSaving;
 var tmpCommandObj;
 var stageArrayTab;
 
-var contextMenuCanvasAction = [
-	{'Create Link': function(menuItem,menu){createLink(rightClickGroup.getChildren()[0]);}},
-	{'Rename Object...': function(menuItem,menu){openChangeIdModalJS(rightClickGroup);}},
-	{'Configure...': function(menuItem,menu){openCanvasModalJS(rightClickGroup);}},
-	{'Data Output...': function(menuItem,menu){openCanvasModalJS(rightClickGroup,"outputTab");}},
-	{'Oozie Action Logs': function(menuItem,menu){openWorkflowElementUrl(rightClickGroup.getId());}},
-	{'Edit SuperAction': function(menuItem,menu){if(rightClickGroup.privilege ==null){openSubWorkflow(rightClickGroup.elementType);}}},
-];
 
-var cmenuCanvas = null;
+var menu_createLink = "Create Link";
+var menu_rename = "Rename Object...";
+var menu_configure = "Configure...";
+var menu_dataoutput = "Data Output...";
+var menu_oozieLog = "Oozie Action Logs";
+var menu_editSa = "Edit SuperAction";
+
+var contextMenuCanvasAction = [
+                               {"Create Link": function(menuItem,menu){createLink(rightClickGroup.getChildren()[0]);}},
+                               {"Rename Object...": function(menuItem,menu){openChangeIdModalJS(rightClickGroup);}},
+                               {"Configure...": function(menuItem,menu){openCanvasModalJS(rightClickGroup);}},
+                               {"Data Output...": function(menuItem,menu){openCanvasModalJS(rightClickGroup,"outputTab");}},
+                               {"Oozie Action Logs": function(menuItem,menu){openWorkflowElementUrl(rightClickGroup.getId());}},
+                               {"Edit SuperAction": function(menuItem,menu){if(rightClickGroup.privilege ==null){openSubWorkflow(rightClickGroup.elementType);}}},
+                               ];
+
+var cmenuCanvas = jQuery.contextMenu.create(contextMenuCanvasAction);
 
 window.onload = function() {
     var canvasName = "canvas-1";
@@ -1887,6 +1895,7 @@ function configureGroupListeners(canvasName, group) {
 }
 
 function showContextMenu(group, e){
+	
     canvasName = selectedCanvas;
     rightClickGroup = group;
     var temp = [];
@@ -1894,26 +1903,31 @@ function showContextMenu(group, e){
         var key = Object.keys(contextMenuCanvasAction[i])[0];
         var item = contextMenuCanvasAction[i];
         
-        if(canvasArray[canvasName].workflowType == 'W' || (key.indexOf('Data Output...') !=0 && key.indexOf('Oozie Action Logs') != 0)){
+        if(canvasArray[canvasName].workflowType == 'W' || (key.indexOf(menu_dataoutput) !=0 && key.indexOf(menu_oozieLog) != 0)){
             if(group.elementType.indexOf('sa_')==0){
                     temp[temp.length] = item;
             }else{
-                if( key.indexOf('Edit SuperAction')!=0){
+                if( key.indexOf(menu_editSa)!=0){
                     temp[temp.length] = item;
                 }
             }
             
         }
     }
+    	
+	jQuery("table").find(".context-menu:contains('"+menu_rename+"')").each(function(index) {
+		jQuery(this).closest("table").next(".context-menu-shadow").remove();
+		jQuery(this).closest("table").remove();
+	});
     cmenuCanvas = jQuery.contextMenu.create(temp);
     if(group.elementType.indexOf('sa_')==0){
         if(group.privilege != null){
-            if(!jQuery("body").find(".context-menu-item:contains('Edit SuperAction')").hasClass("context-menu-item-disabled")){
-                jQuery("body").find(".context-menu-item:contains('Edit SuperAction')").addClass("context-menu-item-disabled");
+            if(!jQuery("body").find(".context-menu-item:contains('"+menu_editSa+"')").hasClass("context-menu-item-disabled")){
+                jQuery("body").find(".context-menu-item:contains('"+menu_editSa+"')").addClass("context-menu-item-disabled");
             }
         }else{
-            if(jQuery("body").find(".context-menu-item:contains('Edit SuperAction')").hasClass("context-menu-item-disabled")){
-                jQuery("body").find(".context-menu-item:contains('Edit SuperAction')").removeClass("context-menu-item-disabled")
+            if(jQuery("body").find(".context-menu-item:contains('"+menu_editSa+"')").hasClass("context-menu-item-disabled")){
+                jQuery("body").find(".context-menu-item:contains('"+menu_editSa+"')").removeClass("context-menu-item-disabled")
             }
         }
     }

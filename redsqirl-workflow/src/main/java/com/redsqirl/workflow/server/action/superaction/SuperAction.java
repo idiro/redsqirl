@@ -321,6 +321,7 @@ public class SuperAction extends DataflowAction implements SuperElement{
 		String error = saWf.readFromLocal(saWf.getInstalledMainFile());
 		if(error != null){
 			logger.error("Fail to read superaction "+name+": "+error);
+			throw new RemoteException(error);
 		}else{
 			logger.debug("Workflow elements: "+saWf.getComponentIds());
 

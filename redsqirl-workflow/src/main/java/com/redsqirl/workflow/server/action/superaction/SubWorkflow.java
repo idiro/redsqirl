@@ -306,15 +306,23 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 	}
 	
 	@Override
-	public String read(String filePath){
+	public String readFromLocal(File xmlFile) throws RemoteException {
+		try {
+			readMetaData();
+		} catch (Exception e2) {
+			logger.error("error ",e2);
+		}
+		logger.info("reading suborkflow");
 		String error = null;
 		boolean valid = true;
 		
 		Boolean licensed = getPrivilege();
+		logger.info("privilege "+licensed);
 		String swLicense= null;
 		
 		
 		String softwareLicenseKey = ProjectID.get().trim().replaceAll("[^A-Za-z0-9]", "").toLowerCase();
+		logger.info("license key "+licensed);
 		String softwareLicense = null;
 		
 		String name = null;
@@ -323,6 +331,7 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 		} catch (RemoteException e1) {
 			e1.printStackTrace();
 		}
+		logger.info("subworkflow "+name);
 		
 		if(licensed !=null && licensed){
 			File licenseP = new File(
@@ -343,11 +352,12 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 				}
 				logger.info(props.toString());
 				
-				logger.info(licenseKey);
+				logger.info("key for license "+licenseKey);
+				logger.info("subworkflow license "+swLicense);
 			}
 			
 			if(swLicense ==null){
-					return "There was an error when trying to run "+name;
+					return "There is no license for "+name+" when trying to run ";
 			}else{
 				Decrypter dec = new Decrypter();
 				dec.decrypt_key_module(swLicense);
@@ -370,7 +380,7 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 		//check license 
 		//return error if license invalid
 		
-		return super.read(filePath);
+		return super.readFromLocal(xmlFile);
 	}
 
 	public String readMetaData() throws Exception{
