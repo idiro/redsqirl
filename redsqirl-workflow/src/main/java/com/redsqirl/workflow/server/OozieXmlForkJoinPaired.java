@@ -90,8 +90,8 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				}catch(Exception e){
 					error = e.getMessage();
 				}
-				if(error != null){
-					createSubXmls(oswa.getSubWf(),oswa.getSubWf().getElement(),directory);
+				if(error == null){
+					error = createSubXmls(oswa.getSubWf(),oswa.getSubWf().getElement(),directory);
 				}
 			}
 		}

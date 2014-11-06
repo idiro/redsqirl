@@ -2332,9 +2332,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 		List<String> componentIds = new ArrayList<String>();
 		String[] groupIds = selectedIcons.split(",");
 		for (String groupId : groupIds) {
-			componentIds.add(groupId);
+			componentIds.add(idMap.get(nameWorkflow).get(groupId));
 		}
 		setComponentIds(componentIds);
+		logger.info("Elements: " + getComponentIds());
 
 		if (error != null) {
 			logger.info("Error: " + error);
