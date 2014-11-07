@@ -852,6 +852,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				df.setName(nameWorkflow);
 				msg = df.save(path);
 				Iterator<String> itCompIds = df.getComponentIds().iterator();
+				idMap.get(nameWorkflow).clear();
 				while (itCompIds.hasNext()) {
 					String cur = itCompIds.next();
 					idMap.get(nameWorkflow).put(cur, cur);
@@ -1890,19 +1891,21 @@ public class CanvasBean extends BaseBean implements Serializable {
 			inverseIdMap.put(e.getValue(), e.getKey());
 		}
 
-		Iterator<DataFlowElement> iterator = getDf().getElement().iterator();
-		while (iterator.hasNext()) {
-			DataFlowElement cur = iterator.next();
-			Iterator<String> outIt = cur.getOutputComponent().keySet().iterator();
-			while (outIt.hasNext()) {
-				String outName = outIt.next();
-				Iterator<DataFlowElement> outElIt = cur.getOutputComponent()
-						.get(outName).iterator();
-				while (outElIt.hasNext()) {
-					ans.add(getArrowType(
-							inverseIdMap.get(cur.getComponentId()),
-							inverseIdMap.get(outElIt.next().getComponentId()),
-							outName));
+		if(getDf() != null && getDf().getElement() != null){
+			Iterator<DataFlowElement> iterator = getDf().getElement().iterator();
+			while (iterator.hasNext()) {
+				DataFlowElement cur = iterator.next();
+				Iterator<String> outIt = cur.getOutputComponent().keySet().iterator();
+				while (outIt.hasNext()) {
+					String outName = outIt.next();
+					Iterator<DataFlowElement> outElIt = cur.getOutputComponent()
+							.get(outName).iterator();
+					while (outElIt.hasNext()) {
+						ans.add(getArrowType(
+								inverseIdMap.get(cur.getComponentId()),
+								inverseIdMap.get(outElIt.next().getComponentId()),
+								outName));
+					}
 				}
 			}
 		}
@@ -1942,7 +1945,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			JSONArray jsonElements = new JSONArray();
 			JSONArray jsonLinks = new JSONArray();
 
-			if (getDf() != null) {
+			if (getDf() != null && getDf().getElement() != null) {
 
 				for (DataFlowElement e : getDf().getElement()) {
 					String compId = e.getComponentId();
@@ -1998,7 +2001,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				}
 
 			} else {
-				logger.info("Error getPositions getDf NULL ");
+				logger.warn("Error getPositions getDf NULL or empty");
 			}
 
 			logger.info("getPositions getNameWorkflow " + getNameWorkflow());

@@ -1724,7 +1724,20 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 								getElement(inputs.get(inputName).getKey())
 								.getInputNamePerOutput().get(inputs.get(inputName).getValue())
 								.get(curEl.getComponentId()), curEl.getComponentId());
+						
+						
+						String newAlias = sw.getElement(curEl.getComponentId()).getAliasesPerComponentInput()
+								.get(inputName).getKey();
+						String oldAlias = curEl.getAliasesPerComponentInput().get(
+										inputs.get(inputName).getKey()).getKey();
+
+						
+						sw.getElement(curEl.getComponentId()).replaceInAllInteraction(
+								oldAlias,
+								newAlias);
+
 						sw.getElement(curEl.getComponentId()).replaceInAllInteraction(inputs.get(inputName).getKey(), inputName);
+						
 						positionSuperActionInput.move((int)positionSuperActionInput.getX()+curEl.getX(), 
 								(int)positionSuperActionInput.getY()+curEl.getY());
 						++numberOfInput;
@@ -1773,6 +1786,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			return error;
 		}
 
+		//Remove elements that are in the SuperAction
 		logger.info("Elements before aggregating: "+getComponentIds());
 		try{
 			Iterator<String> itToDel = componentIds.iterator();
@@ -1789,11 +1803,12 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			return error;
 		}
 		
-		
+		//Calculate the position of the new SuperAction
 		positionSuperAction.move(
 				(int)positionSuperAction.getX()/componentIds.size(),
 				(int)positionSuperAction.getY()/componentIds.size());
 
+		//Add the new element
 		String idSA = null;
 		try{
 			idSA = addElement(subworkflowName);
@@ -1803,6 +1818,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			return error;
 		}
 		
+		//Add the new input links
 		DataFlowElement newSA = getElement(idSA);
 		newSA.setPosition((int)positionSuperAction.getX(), (int)positionSuperAction.getY());
 		logger.debug("Elements after aggregating: "+getComponentIds());
@@ -1815,6 +1831,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			addLink(inputs.get(inputName).getValue(), inputs.get(inputName).getKey(), inputName, idSA);
 		}
 
+		//Add the new output links
 		entries = outputs.keySet().iterator();
 		while(entries.hasNext()){
 			String outputName = entries.next();

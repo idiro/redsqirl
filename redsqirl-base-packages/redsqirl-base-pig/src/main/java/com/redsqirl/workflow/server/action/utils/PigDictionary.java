@@ -1060,7 +1060,10 @@ public class PigDictionary extends AbstractDictionary {
 		} else if (typeToBe.equalsIgnoreCase("FLOAT")) {
 			ok = typeGiven.equalsIgnoreCase("NUMBER");
 
-		} else if (typeToBe.equalsIgnoreCase("TYPE")) {
+		} else if (typeToBe.equalsIgnoreCase("LONG")) {
+			ok = typeGiven.equalsIgnoreCase("NUMBER");
+
+		}else if (typeToBe.equalsIgnoreCase("TYPE")) {
 			ok = typeGiven.equalsIgnoreCase("BOOLEAN")
 					|| typeGiven.equalsIgnoreCase("INT")
 					|| typeGiven.equalsIgnoreCase("LONG")

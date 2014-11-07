@@ -889,8 +889,8 @@
 					<a4j:actionparam name="allpositions" />
 				</a4j:jsFunction>
 				
-				<a4j:jsFunction name="aggregate" action="#{canvasBean.aggregate}" data="#{canvasBean.inputNameSubWorkflow}"
-					oncomplete="tmpCommandObj.nameSA = data;if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.hide();refreshCanvas();refreshRelativeHelp();canvasArray[selectedCanvas].saved=false;}jQuery.unblockUI();" />
+				<a4j:jsFunction name="aggregate" action="#{canvasBean.aggregate}" data="#{canvasBean.inputNameSubWorkflow}" reRender="errorTable, msnError"
+					oncomplete="tmpCommandObj.nameSA = data;if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.hide();refreshCanvas();refreshRelativeHelp();}jQuery.unblockUI();" />
 					
 				<a4j:jsFunction name="undoAggregate" action="#{canvasBean.undoAggregate}" >
 					<a4j:actionparam name="nameSA" />
