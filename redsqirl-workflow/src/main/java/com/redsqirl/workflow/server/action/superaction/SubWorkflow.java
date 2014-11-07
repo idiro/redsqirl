@@ -307,13 +307,19 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 	
 	@Override
 	public String readFromLocal(File xmlFile) throws RemoteException {
+		String error = null;
 		try {
-			readMetaData();
+			error = readMetaData();
 		} catch (Exception e2) {
+			error = "Fail to read :"+xmlFile.getPath();
 			logger.error("error ",e2);
 		}
+		
+		if(error != null){
+			return error;
+		}
+		
 		logger.info("reading suborkflow");
-		String error = null;
 		boolean valid = true;
 		
 		Boolean licensed = getPrivilege();

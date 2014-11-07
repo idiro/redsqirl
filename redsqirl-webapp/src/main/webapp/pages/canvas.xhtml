@@ -1257,7 +1257,7 @@
 			<a4j:region>
 				<a4j:jsFunction name="closeChangeIdModal"
 					reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError, errorTable, canvasModalTabPanel"
-					oncomplete="if(#{canvasModalBean.loadMainWindow and (canvasModalBean.outputTab.showOutputForm == 'Y' or canvasModalBean.listPageSize > 0) }){changeModalTitle();changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');cloneBeforeUpdateElement();}else{updateOutputStatus(currentChangeIdGroup);}">
+					oncomplete="if(#{canvasModalBean.loadMainWindow and ((canvasBean.workflowType == 'W' and canvasModalBean.outputTab.showOutputForm == 'Y') or canvasModalBean.listPageSize > 0) }){changeModalTitle();changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');cloneBeforeUpdateElement();}else{updateOutputStatus(currentChangeIdGroup);}">
 				</a4j:jsFunction>
 			</a4j:region>
 

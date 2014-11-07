@@ -1948,17 +1948,16 @@ public class CanvasBean extends BaseBean implements Serializable {
 					String compId = e.getComponentId();
 					String privilege = null;
 					Boolean privilegeObj;
+					
 					try{
 						privilegeObj = null;
-						privilegeObj= ((SuperElement)e).getPrivilege();
+						privilegeObj = ((SuperElement)e).getPrivilege();
 					}catch (Exception epriv){
 						privilegeObj = null;
 					}
 					
-					if(privilegeObj!= null && privilegeObj.booleanValue()){
-						privilege = "true";
-					}else if(privilegeObj != null ){
-						privilege = "false";
+					if(privilegeObj!= null){
+						privilege = privilegeObj.toString().toLowerCase();
 					}
 					
 					logger.info(compId+" privilege "+privilege);
@@ -2191,6 +2190,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 			if (error == null) {
 				df = dfi.getSubWorkflow(newWfName);
+				df.setName(newWfName);
 				logger.info("read " + path);
 				error = df.readFromLocal(new File(path));
 			}

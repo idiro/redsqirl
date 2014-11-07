@@ -1131,7 +1131,7 @@ function checkImg(src){
 
 function addElement(canvasName, elementType, elementImg, posx, posy, numSides, idElement, selecteds,privilege) {
     
-//    alert(privilege);
+    //alert(idElement+": "+privilege);
     
     var polygonLayer = canvasArray[canvasName].polygonLayer;
 
