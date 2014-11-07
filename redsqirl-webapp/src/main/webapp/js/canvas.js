@@ -1545,7 +1545,7 @@ function mountObj(canvasName) {
                     canvasArray[selectedCanvas].polygonLayer.draw();
                 });
 
-                polygonTabFake.on('mouseup',function() {
+                polygonTabFake.on('mouseup',function() {1	
                     document.body.style.cursor = 'default';
                     
                     var polygonTabFakeClone = polygonTabFake.clone();
@@ -1660,7 +1660,7 @@ function getElement(polygonLayer, id) {
 /**
  * 
  * Method to update the new id of element. call by a4j:jsFunction oncomplete add
- * the new Element and retrive the new id.
+ * the new Element and retrieve the new id.
  * 
  */
 function updateTypeObj(canvasName, groupID, elementId) {

@@ -81,7 +81,8 @@
                     <a4j:commandButton
                         styleClass="greenButton"
                         value="#{messages.button_user_install}"
-                        onclick="openInstallPackageModal('true');" />
+                        onclick="openInstallPackageModal('true');" 
+                        action="#{analyticsStoreSearchBean.retrieveAllPackageList}"/>
                 </rich:panel>
                 <rich:panel id="pck_user_uninstall">
                     <a4j:commandButton

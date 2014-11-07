@@ -29,8 +29,13 @@ public class AnalyticsStoreSearchBean implements Serializable{
 	
 	private String message;
 	
-	public List<RedSqirlModule> getAllPackageList() throws SQLException, ClassNotFoundException{
-		
+	List<RedSqirlModule> allPackageList;
+	
+	//FIXME - can not use get otherwise this method is call every time - just call when click in on menu software -> "Install Package"	
+	//public List<RedSqirlModule> getAllPackageList() throws SQLException, ClassNotFoundException{
+	
+	public void retrieveAllPackageList() throws SQLException, ClassNotFoundException{
+	
 		List<RedSqirlModule> result = new ArrayList<RedSqirlModule>();
 		
 		try{
@@ -74,7 +79,7 @@ public class AnalyticsStoreSearchBean implements Serializable{
 			e.printStackTrace();
 		}
 
-		return result;
+		setAllPackageList(result);
 	}
 	
 	public String getRepoServer(){
@@ -108,4 +113,13 @@ public class AnalyticsStoreSearchBean implements Serializable{
 	public void setAnalyticsStoreLoginBean(AnalyticsStoreLoginBean analyticsStoreLoginBean) {
 		this.analyticsStoreLoginBean = analyticsStoreLoginBean;
 	}
+
+	public List<RedSqirlModule> getAllPackageList() {
+		return allPackageList;
+	}
+
+	public void setAllPackageList(List<RedSqirlModule> allPackageList) {
+		this.allPackageList = allPackageList;
+	}
+	
 }
