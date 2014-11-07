@@ -10,7 +10,7 @@
 <script>
 //<![CDATA[
            
-	var file;
+	var fileModalFileHdfs;
 	function dataTableOpenSelectOneRadio(radio, name) {
 	    var id = radio.name.substring(radio.name.lastIndexOf(':'));
 	    var el = radio.form.elements;
@@ -21,14 +21,14 @@
 	        }
 	    }
 	    radio.checked = true;
-	    file = name;
+	    fileModalFileHdfs = name;
 	}
 	
-	function getPath(p){
-		if (!file){
+	function getPathModalFileHdfs(p){
+		if (!fileModalFileHdfs){
 			return p;
 		}
-		return p + "/"+ file;
+		return p + "/"+ fileModalFileHdfs;
 	}
 
 	function selectFileLoadHdfs(isFile, nameFile){
@@ -39,11 +39,10 @@
     
     //Function for saving
     function changeFile(f){
-        file = f;
+        fileModalFileHdfs = f;
     }
     
     function isHDFSFileExists(path){
-        
         var fileExist = false;
         
         var table = jQuery('#divFileHdfs').find("table");
@@ -51,7 +50,7 @@
         var rows = tbody.find("tr");
         rows.each(function(key, value){
             var file2 = jQuery(this).find("td a").html();
-            if ((file == file2) || (file+'.rs' == file2)){
+            if ((fileModalFileHdfs == file2) || (fileModalFileHdfs+'.rs' == file2) || (fileModalFileHdfs+'.srs' == file2)){
                 fileExist = true;
             }
         });
@@ -181,14 +180,14 @@
     		onclick="curTabSelected=getSelectedByName();setSelectedByName(null);#{rich:component('modalFileHdfs')}.hide();"
     		reRender="msnError,errorTable,formMenu"
     		oncomplete="if(#{requestScope['msnError'] == null} ){loadWorkflow();}else{setSelected(curTabSelected);}">
-    		<a4j:actionparam value="getPath('#{browserHdfsBean.path}')" assignTo="#{canvasBean.path}" noEscape="true"/>
+    		<a4j:actionparam value="getPathModalFileHdfs('#{browserHdfsBean.path}')" assignTo="#{canvasBean.path}" noEscape="true"/>
     	</a4j:commandButton>
     	
     	<a4j:commandButton id="hdfsSaveFileBtn" styleClass="greenButton" action="#{canvasBean.checkName}"
     	    value="#{messages.button_ok}" rendered="#{browserHdfsBean.showSave == 'T'}"
-            oncomplete="if(#{requestScope['msnError'] == null} ){ if(! isHDFSFileExists(getPath('#{browserHdfsBean.path}')) || confirm('#{messages.file_already_exists}')){save(getPath('#{browserHdfsBean.path}'));#{rich:component('modalFileHdfs')}.hide();}}"
+            oncomplete="if(#{requestScope['msnError'] == null} ){ if(! isHDFSFileExists(getPathModalFileHdfs('#{browserHdfsBean.path}')) || confirm('#{messages.file_already_exists}')){save(getPathModalFileHdfs('#{browserHdfsBean.path}'));#{rich:component('modalFileHdfs')}.hide();}}"
             reRender="msnError" >
-            <a4j:actionparam value="getPath('#{browserHdfsBean.path}')" assignTo="#{canvasBean.path}" noEscape="true"/>
+            <a4j:actionparam value="getPathModalFileHdfs('#{browserHdfsBean.path}')" assignTo="#{canvasBean.path}" noEscape="true"/>
         </a4j:commandButton>
 	
 	</rich:panel>
