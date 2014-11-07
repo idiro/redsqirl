@@ -1634,6 +1634,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			String subworkflowComment,
 			Map<String,Entry<String,String>> inputs, 
 			Map<String,Entry<String,String>> outputs) throws RemoteException{
+		logger.info("To aggregate: "+componentIds);
 		int posIncr = 150;
 		String error = null;
 		//Create subworkflow object
@@ -1658,6 +1659,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			while(idIt.hasNext()){
 				String cur = idIt.next();
 				if(!componentIds.contains(cur)){
+					logger.info("To remove: "+cur);
 					copy.removeElement(cur);
 				}
 			}
@@ -1671,6 +1673,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		idIt = componentIds.iterator();
 		while(idIt.hasNext()){
 			String cur = idIt.next();
+			logger.info("To copy: "+cur);
 			sw.addElement(copy.getElement(cur));
 			DataFlowElement newEl = sw.getElement(cur);
 			newEl.setPosition(newEl.getX()+posIncr, newEl.getY());
@@ -1773,7 +1776,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			return error;
 		}
 
-		logger.debug("Elements before aggregating: "+getComponentIds());
+		logger.info("Elements before aggregating: "+getComponentIds());
 		try{
 			Iterator<String> itToDel = componentIds.iterator();
 			while(itToDel.hasNext()){

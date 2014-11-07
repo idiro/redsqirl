@@ -28,7 +28,7 @@ public class SubWorkflowOutput extends DataflowAction{
 	
 	private static Map<String,DFELinkProperty> input = new LinkedHashMap<String,DFELinkProperty>();
 
-	public static final String input_name = "";
+	public static final String input_name = "in";
 	
 	public SubWorkflowOutput() throws RemoteException {
 		super(null);
@@ -37,7 +37,7 @@ public class SubWorkflowOutput extends DataflowAction{
 	
 	private static void init() throws RemoteException{
 		if(input.isEmpty()){
-			input.put("",new DataProperty(new LinkedList<Class<? extends DFEOutput>>(), 1, 1));
+			input.put(input_name,new DataProperty(new LinkedList<Class<? extends DFEOutput>>(), 1, 1));
 		}
 	}
 

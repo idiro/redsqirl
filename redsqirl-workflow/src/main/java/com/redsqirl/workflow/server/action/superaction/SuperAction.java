@@ -188,8 +188,8 @@ public class SuperAction extends DataflowAction implements SuperElement{
 				String[] queueArr = queueStr.split(",");
 				Element outputEl = (Element) ((Element) cur)
 						.getElementsByTagName("output").item(0);
-				String outputType = 
-						outputEl.getAttributes().getNamedItem("typename").getNodeValue();
+				String outputType = outputEl.getAttributes()
+						.getNamedItem("typename").getNodeValue();
 
 				DataOutput out = DataOutput.getOutput(outputType);
 				out.read(outputEl);
@@ -236,7 +236,7 @@ public class SuperAction extends DataflowAction implements SuperElement{
 				while(itStack.hasNext()){
 					stack +=itStack.next()+",";
 				}
-				stack.substring(0,stack.length()-1);
+				stack = stack.substring(0,stack.length()-1);
 				stackEl.appendChild(doc.createTextNode(stack));
 				curEl.appendChild(stackEl);
 
@@ -245,6 +245,7 @@ public class SuperAction extends DataflowAction implements SuperElement{
 				attrType.setValue(cur.getValue().getTypeName());
 				outputEl.setAttributeNode(attrType);
 				cur.getValue().write(doc, outputEl);
+				curEl.appendChild(outputEl);
 
 
 				parent.appendChild(curEl);
@@ -361,6 +362,12 @@ public class SuperAction extends DataflowAction implements SuperElement{
 			}
 
 			saWf.updateSuperActionTmpOutputs(tmpOutput);
+			
+			Iterator<DataFlowElement> itDfe = saWf.getElement().iterator();
+			while(itDfe.hasNext()){
+				DataFlowElement cur = itDfe.next();
+				cur.updateOut();
+			}
 
 			swAct.setWfId("sa_"+getComponentId()+"_"+RandomString.getRandomName(8));
 			swAct.setSubWf(saWf);

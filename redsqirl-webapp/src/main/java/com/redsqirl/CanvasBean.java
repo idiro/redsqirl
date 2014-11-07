@@ -837,6 +837,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 				// idMap.put(nameWorkflowSwp, idMap.get(nameWorkflow));
 				idMap.put(nameWorkflowSwp, new HashMap<String, String>());
 				idMap.remove(nameWorkflow);
+				
+				getMapWorkflowType().put(nameWorkflowSwp, getMapWorkflowType().get(nameWorkflow));
+				getMapWorkflowType().remove(nameWorkflow);
+				
 				nameWorkflow = nameWorkflowSwp;
 			}
 		}
@@ -1944,17 +1948,16 @@ public class CanvasBean extends BaseBean implements Serializable {
 					String compId = e.getComponentId();
 					String privilege = null;
 					Boolean privilegeObj;
+					
 					try{
 						privilegeObj = null;
-						privilegeObj= ((SuperElement)e).getPrivilege();
+						privilegeObj = ((SuperElement)e).getPrivilege();
 					}catch (Exception epriv){
 						privilegeObj = null;
 					}
 					
-					if(privilegeObj!= null && privilegeObj.booleanValue()){
-						privilege = "true";
-					}else if(privilegeObj != null ){
-						privilege = "false";
+					if(privilegeObj!= null){
+						privilege = privilegeObj.toString().toLowerCase();
 					}
 					
 					logger.info(compId+" privilege "+privilege);
@@ -2187,6 +2190,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 			if (error == null) {
 				df = dfi.getSubWorkflow(newWfName);
+				df.setName(newWfName);
 				logger.info("read " + path);
 				error = df.readFromLocal(new File(path));
 			}
@@ -2328,9 +2332,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 		List<String> componentIds = new ArrayList<String>();
 		String[] groupIds = selectedIcons.split(",");
 		for (String groupId : groupIds) {
-			componentIds.add(groupId);
+			componentIds.add(idMap.get(nameWorkflow).get(groupId));
 		}
 		setComponentIds(componentIds);
+		logger.info("Elements: " + getComponentIds());
 
 		if (error != null) {
 			logger.info("Error: " + error);

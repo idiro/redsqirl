@@ -14,8 +14,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -39,10 +39,10 @@ import com.idiro.hadoop.NameNodeVar;
 import com.idiro.utils.RandomString;
 import com.idiro.utils.XmlUtils;
 import com.redsqirl.keymanager.ciphers.Decrypter;
-import com.redsqirl.keymanager.ciphers.KeyCipher;
 import com.redsqirl.workflow.server.DataOutput;
 import com.redsqirl.workflow.server.Workflow;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
+import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
@@ -307,13 +307,19 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 	
 	@Override
 	public String readFromLocal(File xmlFile) throws RemoteException {
+		String error = null;
 		try {
-			readMetaData();
+			error = readMetaData();
 		} catch (Exception e2) {
+			error = "Fail to read :"+xmlFile.getPath();
 			logger.error("error ",e2);
 		}
+		
+		if(error != null){
+			return error;
+		}
+		
 		logger.info("reading suborkflow");
-		String error = null;
 		boolean valid = true;
 		
 		Boolean licensed = getPrivilege();
@@ -384,7 +390,7 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 	}
 
 	public String readMetaData() throws Exception{
-
+		String userName = System.getProperty("user.name");
 		tmpOutput = new LinkedHashMap<LinkedList<String>,DFEOutput>();
 		outputSuperAction = new LinkedHashMap<String,DFEOutput>();
 		inputSuperAction = new LinkedHashMap<String, DFELinkProperty>();
@@ -528,6 +534,11 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 						LinkedList<String> newL = new LinkedList<String>();
 						newL.add(compId);
 						newL.add(dataName);
+						if(!SavingState.RECORDED.equals(cur.getSavingState())){
+							cur.generatePath(userName,
+									compId,
+									dataName);
+						}
 						tmpOutput.put(newL, cur);
 					}
 				}
