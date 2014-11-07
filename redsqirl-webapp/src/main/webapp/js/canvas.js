@@ -728,18 +728,18 @@ function deleteElementsJS(listIds, listArrowsIds) {
 
 	
 	jQuery.each(layer.getChildren(), function(index, value) {
-            if (value !== undefined && value.isArrow == true) {
-                if (checkIfExistID(value.getName(), listArrowsIds)) {
-                    
-                    removeLinkBt(value.idOutput, value.nameOutput, value.idInput, value.nameInput);
-                    
-                    if (value.label != null){
-                        value.label.remove();
-                    }
-                    value.remove();
+		if (value !== undefined && value.isArrow == true) {
+			if (checkIfExistID(value.getName(), listArrowsIds)) {
+                
+                removeLinkBt(value.idOutput, value.nameOutput, value.idInput, value.nameInput);
+                
+                if (value.label != null){
+                    value.label.remove();
                 }
+                value.remove();
             }
-        });
+        }
+    });
 	
 	layer.draw();
 	polygonLayer.draw();
