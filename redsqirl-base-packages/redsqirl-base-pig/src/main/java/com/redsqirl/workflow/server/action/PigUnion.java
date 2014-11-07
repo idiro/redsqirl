@@ -372,16 +372,4 @@ public class PigUnion extends PigElement {
 	public final PigUnionConditions gettUnionCond() {
 		return tUnionCond;
 	}
-
-	@Override
-	public Map<String, DFEOutput> getAliases() throws RemoteException {
-
-		Map<String, DFEOutput> aliases = tAliasInt.getAliases();
-
-		if (aliases.isEmpty()) {
-			aliases = super.getAliases();
-		}
-
-		return aliases;
-	}
 }
