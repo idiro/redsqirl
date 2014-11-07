@@ -8,13 +8,13 @@ Getting started
 
 * Download
 
-  {{{./download.html}Download}} our latest stable release.
+  {{{./download.html}Download}} get the latest stable release.
 
 * Prerequisite
 
   * A Linux web server with tomcat 7 installed.
  
-  * A Apache Hadoop cluster fully set up.
+  * Apache Hadoop cluster fully set up.
  
   * Apache Oozie install on top of the cluster
  
@@ -35,9 +35,9 @@ comes with Hive, Pig and Hama process.
 
 * Architecture
 
-   Red Sqirl is composed of the main tomcat service. When you are logging in, it
-will create another service under the logged in user and make key components
-available on RMI. Every back-end actions is done through the user process to
+   Red Sqirl uses tomcat as a web service. When you are logging in, it
+will create another process under as that user and make key components
+available on RMI. Every action on the application is run through the users' process to
 avoid permission conflicts.
 
 * Install
@@ -47,10 +47,11 @@ avoid permission conflicts.
   * Unzip the directory where you want to install it through the tomcat user
 
   * Set up your conf/redsqirl_sys.properties file
+  
+  * Make sure your license is in conf/licenseKey.properties with key and value (redsqirl01=license)
 
-  * Run the script bin/update.sh, it will ask for your tomcat webapps directory
+  * Run the script bin/install.sh, it will ask for your tomcat webapps directory
 
-  * Each Red Sqirl user needs to execute the bin/setup_user.sh script.
 
   []
 
@@ -67,8 +68,8 @@ end_hive_range=100100
 oozie_xmlns=uri\:oozie\:workflow\:0.2
 jobtracker=namenode\:9001
 allow_user_install=true
-admin_user=
-erver=namenode
+admin_user=user1\:user2\:user3\:user4
+server=namenode
 namenode=hdfs\://namenode\:9000
 hive_default_xml=/etc/hive/hive-default.xml
 tomcat_path=/data/apache-tomcat-7.0.42/webapps
@@ -79,18 +80,17 @@ repo_address=http\://dev\:8090/redsqirl-repo/
 oozie_url=http\://namenode\:11000/oozie
 
 
+
 ----------------------------------------
-
-* First user setup
-
-  Each user needs to execute the bin/setup_user.sh script.
 
 * Extras
 
 ** Packages
 
-  You can now install extra functionalities on the system. Please refer to the
+  You can now install extra packaged for the system. Please refer to the
 {{{./packagemanagement.html}Package Management}} section.
+
+
 
 ** System properties
 
@@ -109,15 +109,13 @@ oozie_url=http\://namenode\:11000/oozie
 *----------+--------------+----------------+
 | oozie_xmlns | Apache Oozie xmlns to use | uri:oozie:workflow:0.2 |
 *----------+--------------+----------------+
-| idiroengine_path | HDFS path of idiro engine (needed if you intend to use idiro engine | /ush/lib/idiro-engine |
+| hive_xml | Uri for XML jobs on Oozie | /path/xmlfile |
 *----------+--------------+----------------+
-| hive_xml | Do we still need that? | |
-*----------+--------------+----------------+
-| hive_default_xml | Do we still need that? | |
+| hive_default_xml | Path for where the default hive xml is stored , used for Oozie  | /foo/bar/ |
 *----------+--------------+----------------+
 | allow_user_install | Allow users to install their own packages | true |
 *----------+--------------+----------------+
-| tomcat_path | Why do we need that? | |
+| tomcat_path | Path for tomcat installation  | /path/tomcat/ |
 *----------+--------------+----------------+
 | start_hive_range | Optional, needed for generating a Hive server port for every user| 10000|
 *----------+--------------+----------------+
@@ -148,12 +146,12 @@ oozie_url=http\://namenode\:11000/oozie
 *----------+--------------+----------------+
 | user_rsa_key | Path where to find the user RSA key (default ~/.ssh/id_rsa) | /home/my_user/.ssh/id_rsa |
 *----------+--------------+----------------+
-| backup_path | HDFS path where workflow backup are made (default /user/\{user\}/idm_backup) | |
+| backup_path | HDFS path where workflow backup are made  | default /user/\{user\}/redsqirl_backup |
 *----------+--------------+----------------+
 | number_backup | Number of workflow backup file to keep (default 25) | 50 |
 *----------+--------------+----------------+
 | number_oozie_job_directory_tokeep | Number of oozie jobs to keep per workflows (default 20) | 50 |
 *----------+--------------+----------------+
-| hdfspath_oozie_job | HDFS path where the oozie workflow are writen /user/\{user\}/.idm/jobs | |
+| hdfspath_oozie_job | HDFS path where the oozie workflow are writen | /user/\{user\}/.redsqirl/jobs  |
 *----------+--------------+----------------+
 

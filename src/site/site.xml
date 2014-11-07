@@ -32,18 +32,19 @@
 			<item name="Overview" href="index.html" />
 			<item name="Download" href="download.html" />
 			<item name="Getting started" href="gettingstarted.html" />
+			<item name="Screenshots" href="screenshots.html" />
 			<item name="Package Management Setup" href="packagemanagement.html" />
 		</menu>
 
 		<menu name="Support">
-			<item name="Mailing List" href="mail-lists.html" />
+<!-- 			<item name="Mailing List" href="mail-lists.html" /> -->
+			<item name="Mail Support" href="mailsupport.html" />
 			<item name="Issue Tracking" href="issue-tracking.html" />
-			<item name="Dependencies" href="dependencies.html" />
+			<!-- <item name="Dependencies" href="dependencies.html" /> -->
 		</menu>
 
 		<menu name="Related Projects">
-			<item name="Idiro Engine" href="http://dev/idiro-engine" />
-			<item name="Idiro Technologies" href="http://www.idiro.com/" />
+			<item name="Sqirl Nutcracker" href="http://dev/sqirl-nutcracker" />
 			<item name="Apache Hadoop" href="http://hadoop.apache.org/" />
 			<item name="Apache Oozie" href="http://oozie.apache.org/" />
 			<item name="Apache Hive" href="http://hive.apache.org/" />
@@ -53,7 +54,6 @@
 		<!-- <menu ref="reports"/> -->
 		<menu name="Documentation">
 			<item name="Framework Javadoc" href="apidocs/index.html" />
-			<item name="Idiro Engine Javadoc" href="http://dev/idiro-engine/apidocs/index.html" />
 			<item name="Developing a Package" href="pckdev.html" />
 			<item name="Package Development Tutorials" href="">
 				<item name="Basic Package Development" href="developerDocBsc.html" />

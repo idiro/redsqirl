@@ -175,7 +175,7 @@ public class Decrypter extends KeyCipher {
 					.equals(keysoft.get(name).substring(
 							keysoft.get(name).length() - 3));
 
-			valid &= ans.get(mac).equals(
+			valid &= ans.get(mac).equalsIgnoreCase(
 					keysoft.get(mac).substring(keysoft.get(mac).length() - 8));
 
 			valid &= Integer.valueOf(ans.get(usersNb)).intValue() > Integer
