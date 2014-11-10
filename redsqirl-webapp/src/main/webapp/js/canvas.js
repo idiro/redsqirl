@@ -48,6 +48,7 @@ var indexSaving;
 var contSaving;
 var tmpCommandObj;
 var stageArrayTab;
+var mouseIn = false;
 
 
 var menu_createLink = "Create Link";
@@ -183,13 +184,25 @@ function configureCanvas(canvasName, reset, workflowType){
         stage.draw();
     });
     
+    canvasArray[canvasName].arrow.on('mouseout', function(e) {
+    	mouseIn = false;
+    });
+    
     canvasArray[canvasName].arrow.on('mouseenter', function(e) {
+    	
+    	mouseIn = true;
+    	
         var deleteButton = '<button style="float:right" onclick="deleteArrow(selectedCanvas,\''+this.getName()+'\');" >Delete</button>';
         var help = jQuery('<div class="tooltipCanvas" style="background-color:white;">'+deleteButton+this.tooltipArrow+'</div>');
         help.css("top",(e.pageY-10)+"px" );
         help.css("left",(e.pageX-10)+"px" );
-        jQuery("body").append(help);
-        help.fadeIn("slow");
+        
+        setTimeout(function(){
+        	if(mouseIn){
+        		jQuery("body").append(help);
+                help.fadeIn("slow");
+        	}
+        },200);
         
         var previewPosition = help.position().top + help.height();
         var windowHeight = jQuery(window).height();
@@ -198,11 +211,11 @@ function configureCanvas(canvasName, reset, workflowType){
             help.css("height", windowHeight-help.position().top-20);
         }
         
-        jQuery(".tooltipCanvas").mouseleave(function() {
+        help.mouseleave(function() {
             jQuery(this).remove();
         });
         
-        jQuery(".tooltipCanvas").click(function() {
+        help.click(function() {
             jQuery(this).remove();
         });
         
@@ -728,18 +741,18 @@ function deleteElementsJS(listIds, listArrowsIds) {
 
 	
 	jQuery.each(layer.getChildren(), function(index, value) {
-            if (value !== undefined && value.isArrow == true) {
-                if (checkIfExistID(value.getName(), listArrowsIds)) {
-                    
-                    removeLinkBt(value.idOutput, value.nameOutput, value.idInput, value.nameInput);
-                    
-                    if (value.label != null){
-                        value.label.remove();
-                    }
-                    value.remove();
+		if (value !== undefined && value.isArrow == true) {
+			if (checkIfExistID(value.getName(), listArrowsIds)) {
+                
+                removeLinkBt(value.idOutput, value.nameOutput, value.idInput, value.nameInput);
+                
+                if (value.label != null){
+                    value.label.remove();
                 }
+                value.remove();
             }
-        });
+        }
+    });
 	
 	layer.draw();
 	polygonLayer.draw();
@@ -1506,7 +1519,7 @@ function mountObj(canvasName) {
                     var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+ ucFirstAllWords(labelText.split("_").join(" ")) +'</div>');
                     help.css("top",(e.pageY)+"px" );
                     help.css("left",(e.pageX)+"px" );
-                    jQuery("body").append(help);
+               		jQuery("body").append(help);
                     help.fadeIn("slow");
                 });
                 
@@ -1545,7 +1558,7 @@ function mountObj(canvasName) {
                     canvasArray[selectedCanvas].polygonLayer.draw();
                 });
 
-                polygonTabFake.on('mouseup',function() {
+                polygonTabFake.on('mouseup',function() {1	
                     document.body.style.cursor = 'default';
                     
                     var polygonTabFakeClone = polygonTabFake.clone();
@@ -1660,7 +1673,7 @@ function getElement(polygonLayer, id) {
 /**
  * 
  * Method to update the new id of element. call by a4j:jsFunction oncomplete add
- * the new Element and retrive the new id.
+ * the new Element and retrieve the new id.
  * 
  */
 function updateTypeObj(canvasName, groupID, elementId) {
@@ -2156,6 +2169,8 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
     var stage = canvasArray[canvasName].stage;
     
     polygon.on('mouseenter', function(e) {
+    	
+    	mouseIn = true;
         
         if(this.getParent().getId() != curToolTip){
             jQuery(".tooltipCanvas").remove();
@@ -2168,8 +2183,13 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
             var help = jQuery('<div class="tooltipCanvas" style="background-color:white;" >'+optionButton+'&nbsp;&nbsp;'+this.getParent().tooltipObj+'</div>');
             help.css("top",top+"px" );
             help.css("left",left+"px" );
-            jQuery("body").append(help);
-            help.fadeIn("slow");
+            
+            setTimeout(function(){
+            	if(mouseIn){
+            		jQuery("body").append(help);
+                    help.fadeIn("slow");
+            	}
+            },400);
             
             var previewPosition = help.position().top + help.height();
             var windowHeight = jQuery(window).height();
@@ -2178,12 +2198,12 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
                 help.css("height", windowHeight-help.position().top-20);
             }
             
-            jQuery(".tooltipCanvas").mouseleave(function() {
+            help.mouseleave(function() {
                 jQuery(this).remove();
                 curToolTip = null;
             });
             
-            jQuery(".tooltipCanvas").click(function() {
+            help.click(function() {
                 jQuery(this).remove();
                 curToolTip = null;
             });
@@ -2191,6 +2211,9 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
     });
     
     polygon.on('mouseout', function(e) {
+    	
+    	mouseIn = false;
+    	
         var scrollTop = jQuery("#flowchart-"+canvasName).scrollTop();
         var scrollLeft = jQuery("#flowchart-"+canvasName).scrollLeft();
         if(this.getParent().getPosition().x-scrollLeft+80 > e.pageX){

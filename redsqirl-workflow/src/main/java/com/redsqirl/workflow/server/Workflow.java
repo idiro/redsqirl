@@ -222,14 +222,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		Map<String, String> nameWithClass;
 		try {
 			nameWithClass = getAllWANameWithClassName();
-			
-			Iterator<String> ite = new SuperActionManager().getAvailableSuperActions(System.getProperty("user.name")).iterator();
-			while (ite.hasNext()) {
-				String actionName = ite.next();
-				if(!nameWithClass.containsKey(actionName)){
-					nameWithClass.put(actionName, SuperAction.class.getName());
-				}
-			}
+			List<String> superActions = getSuperActions();
 			
 			String nameMenu = "";
 
@@ -247,7 +240,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 							new_list = new LinkedList<String[]>();
 							menuWA.put(nameMenu, new_list);
 						} else {
-							if (nameWithClass.get(line) != null) {
+							if (nameWithClass.get(line) != null || superActions.contains(line) ) {
 								DataFlowElement dfe = createElementFromClassName(
 										nameWithClass, line);
 								String[] parameters = new String[3];
@@ -295,6 +288,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			Iterator<String> it = nameWithClass.keySet().iterator();
 			while (it.hasNext()) {
 				String actionName = it.next();
+				
+				//logger.info("loadHelp " + actionName);
+				
 				try {
 					DataFlowElement dfe = (DataFlowElement) Class.forName(
 							nameWithClass.get(actionName)).newInstance();
@@ -312,6 +308,10 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					.getText("workflow.loadclassexception"));
 		}
 	}
+	
+	public List<String> getSuperActions(){
+		return new SuperActionManager().getAvailableSuperActions(System.getProperty("user.name"));
+	}
 
 	public String loadMenu(Map<String, List<String>> newMenu) {
 
@@ -321,14 +321,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		Map<String, String> nameWithClass;
 		try {
 			nameWithClass = getAllWANameWithClassName();
-			
-			Iterator<String> ite = new SuperActionManager().getAvailableSuperActions(System.getProperty("user.name")).iterator();
-			while (ite.hasNext()) {
-				String actionName = ite.next();
-				if(!nameWithClass.containsKey(actionName)){
-					nameWithClass.put(actionName, SuperAction.class.getName());
-				}
-			}
+			List<String> superActions = getSuperActions();
 			
 			for (Entry<String, List<String>> cur : newMenu.entrySet()) {
 				LinkedList<String[]> new_list = new LinkedList<String[]>();
@@ -337,7 +330,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					String action = it.next();
 					try {
 						if (action != null && !action.isEmpty()) {
-							if (nameWithClass.get(action) != null) {
+							if (nameWithClass.get(action) != null || superActions.contains(action)) {
 								DataFlowElement dfe = createElementFromClassName(
 										nameWithClass, action);
 
@@ -424,6 +417,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		while (helpit.hasNext()) {
 			String key = helpit.next();
 			try {
+				
+				//logger.info("getRelativeHelp " + key);
+				
 				ans.put(key,
 						new String[] {
 						LocalFileSystem.relativize(curPath,
@@ -444,14 +440,15 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		if (helpSuperAction == null || helpSuperAction.isEmpty()) {
 			helpSuperAction = new LinkedHashMap<String, String[]>();
 			try {
-				Iterator<String> it = new SuperActionManager().getAvailableSuperActions(System.getProperty("user.name")).iterator();
+				Iterator<String> it = getSuperActions().iterator();
 				while (it.hasNext()) {
 					String actionName = it.next();
 					try {
 						DataFlowElement dfe = new SuperAction(actionName);
 
-						helpSuperAction.put(actionName,
-								new String[] { dfe.getHelp(), dfe.getImage() });
+						helpSuperAction.put(actionName,	new String[] { dfe.getHelp(), dfe.getImage() });
+						//logger.info("getRelativeHelpSuperAction " + dfe.getHelp());
+						
 					} catch (Exception e) {
 						logger.error(LanguageManagerWF.getText(
 								"workflow.loadclassfail",
@@ -1727,7 +1724,18 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 								getElement(inputs.get(inputName).getKey())
 								.getInputNamePerOutput().get(inputs.get(inputName).getValue())
 								.get(curEl.getComponentId()), curEl.getComponentId());
-						sw.getElement(curEl.getComponentId()).replaceInAllInteraction(inputs.get(inputName).getKey(), inputName);
+						
+						
+						String newAlias = sw.getElement(curEl.getComponentId()).getAliasesPerComponentInput()
+								.get(inputName).getKey();
+						String oldAlias = curEl.getAliasesPerComponentInput().get(
+										inputs.get(inputName).getKey()).getKey();
+
+						
+						sw.getElement(curEl.getComponentId()).replaceInAllInteraction(
+								oldAlias,
+								newAlias);
+
 						positionSuperActionInput.move((int)positionSuperActionInput.getX()+curEl.getX(), 
 								(int)positionSuperActionInput.getY()+curEl.getY());
 						++numberOfInput;
@@ -1776,6 +1784,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			return error;
 		}
 
+		//Remove elements that are in the SuperAction
 		logger.info("Elements before aggregating: "+getComponentIds());
 		try{
 			Iterator<String> itToDel = componentIds.iterator();
@@ -1792,11 +1801,12 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			return error;
 		}
 		
-		
+		//Calculate the position of the new SuperAction
 		positionSuperAction.move(
 				(int)positionSuperAction.getX()/componentIds.size(),
 				(int)positionSuperAction.getY()/componentIds.size());
 
+		//Add the new element
 		String idSA = null;
 		try{
 			idSA = addElement(subworkflowName);
@@ -1806,6 +1816,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			return error;
 		}
 		
+		//Add the new input links
 		DataFlowElement newSA = getElement(idSA);
 		newSA.setPosition((int)positionSuperAction.getX(), (int)positionSuperAction.getY());
 		logger.debug("Elements after aggregating: "+getComponentIds());
@@ -1818,6 +1829,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			addLink(inputs.get(inputName).getValue(), inputs.get(inputName).getKey(), inputName, idSA);
 		}
 
+		//Add the new output links
 		entries = outputs.keySet().iterator();
 		while(entries.hasNext()){
 			String outputName = entries.next();
@@ -1848,10 +1860,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					getElement(curEl.getComponentId()).replaceInAllInteraction(
 							oldAlias,
 							newAlias);
-
-					getElement(curEl.getComponentId()).replaceInAllInteraction(
-							outputs.get(outputName).getKey(),
-							idSA);
 
 				}
 			}
@@ -1903,7 +1911,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					new Object[] { e.getMessage() });
 		}
 		if (error == null) {
-			if (namesWithClassName.get(waName) == null && !waName.startsWith("sa_")) {
+			if (namesWithClassName.get(waName) == null && !getSuperActions().contains(waName)) {
 				logger.info(namesWithClassName);
 				logger.info(waName);
 				error = LanguageManagerWF.getText(
@@ -2175,6 +2183,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 			while (actionClassName.hasNext()) {
 				String className = actionClassName.next();
+				
+				//logger.info("getAllWANameWithClassName " + className);
+				
 				try {
 					DataflowAction wa = (DataflowAction) Class.forName(className).newInstance();
 					if(!(wa instanceof SuperAction)){
@@ -2185,13 +2196,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				}
 			}
 			
-			Iterator<String> it = new SuperActionManager().getAvailableSuperActions(System.getProperty("user.name")).iterator();
-			while (it.hasNext()) {
-				String actionName = it.next();
-				if(!flowElement.containsKey(actionName)){
-					flowElement.put(actionName, SuperAction.class.getName());
-				}
-			}
 			
 			logger.debug("WorkflowAction found : " + flowElement.toString());
 		}

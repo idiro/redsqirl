@@ -191,7 +191,7 @@ public class PigUnion extends PigElement {
 
 			String remove = getRemoveQueryPiece(out.getPath()) + "\n\n";
 
-			Map<String, DFEOutput> x = getAliases();
+			Map<String, DFEOutput> x = getUnionAliases();
 			Iterator<String> aliasIt = x.keySet().iterator();
 			String load = "";
 			while (aliasIt.hasNext()) {
@@ -259,7 +259,7 @@ public class PigUnion extends PigElement {
 	 */
 	public FieldList getInField(String alias) throws RemoteException {
 		FieldList ans = null;
-		Map<String, DFEOutput> aliases = getAliases();
+		Map<String, DFEOutput> aliases = getUnionAliases();
 		if (aliases.get(alias) != null) {
 			ans = new OrderedFieldList();
 			FieldList mapTable = aliases.get(alias).getFields();
@@ -281,7 +281,7 @@ public class PigUnion extends PigElement {
 	@Override
 	public FieldList getInFields() throws RemoteException {
 		FieldList ans = new OrderedFieldList();
-		Map<String, DFEOutput> aliases = getAliases();
+		Map<String, DFEOutput> aliases = getUnionAliases();
 
 		Iterator<String> it = aliases.keySet().iterator();
 		while (it.hasNext()) {
@@ -337,6 +337,10 @@ public class PigUnion extends PigElement {
 		}
 		return ans;
 	}
+	
+	public Map<String,DFEOutput> getUnionAliases() throws RemoteException{
+		return tAliasInt.getAliases();
+	}
 
 	/**
 	 * Get the new field from the Union Interaction
@@ -371,17 +375,5 @@ public class PigUnion extends PigElement {
 	 */
 	public final PigUnionConditions gettUnionCond() {
 		return tUnionCond;
-	}
-
-	@Override
-	public Map<String, DFEOutput> getAliases() throws RemoteException {
-
-		Map<String, DFEOutput> aliases = tAliasInt.getAliases();
-
-		if (aliases.isEmpty()) {
-			aliases = super.getAliases();
-		}
-
-		return aliases;
 	}
 }

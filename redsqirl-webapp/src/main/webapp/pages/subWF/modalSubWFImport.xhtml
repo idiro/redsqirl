@@ -10,7 +10,7 @@
 <script>
 //<![CDATA[
            
-	var file;
+	var fileModalSubWFImp;
 	function dataTableOpenSelectOneRadioImport(radio, name) {
 	    var id = radio.name.substring(radio.name.lastIndexOf(':'));
 	    var el = radio.form.elements;
@@ -21,17 +21,17 @@
 	        }
 	    }
 	    radio.checked = true;
-	    file = name;
-	    console.log(file);
+	    fileModalSubWFImp = name;
+	    console.log(fileModalSubWFImp);
 	}
 	
-	function getPath(p){
-		if (!file){
+	function getPathModalSubWFImp(p){
+		if (!fileModalSubWFImp){
 			return p;
 		}
-		var path = p + "/" + file;
-	    console.log(file);
-		return p + "/"+ file;
+		var path = p + "/" + fileModalSubWFImp;
+	    console.log(fileModalSubWFImp);
+		return p + "/"+ fileModalSubWFImp;
 	}
 
 	function selectFileLoadHdfsImport(isFile, nameFile){
@@ -39,37 +39,7 @@
         	updateTableHdfsImport(nameFile);
     	}
     }
-    
-    //Function for saving
-    function changeFile(f){
-        file = f;
-    }
-    
-    function isHDFSFileExists(path){
-        
-        var fileExist = false;
-        
-        var table = jQuery('#divFileImportHdfs').find("table");
-        var tbody = table.find("tbody");
-        var rows = tbody.find("tr");
-        rows.each(function(key, value){
-            var file2 = jQuery(this).find("td a").html();
-            if ((file == file2) || (file+'.srs' == file2)){
-                fileExist = true;
-            }
-        });
-        
-        return fileExist;
-    }
 
-    function selectFileSaveHdfs(isFile, nameFile){
-        if (isFile != "true"){
-            updateTableHdfsImport(nameFile);
-        }
-    }
-    
-    var curTabSelected;
-	
 //]]>
 </script>
 
@@ -179,7 +149,7 @@
     		oncomplete="if(#{requestScope['msnError'] == null}){#{rich:component('modalSubWfimport')}.hide();refreshRelativeHelp();}"
     		>
     		<a4j:actionparam name="username" 
-    		value="getPath('#{browserHdfsBean.path}')" 
+    		value="getPathModalSubWFImp('#{browserHdfsBean.path}')" 
     		assignTo="#{subwfBean.pathHDFS}" 
     		noEscape="true"/>
     	</a4j:commandButton>

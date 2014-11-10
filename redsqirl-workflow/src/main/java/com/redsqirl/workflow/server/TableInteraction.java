@@ -611,6 +611,28 @@ public class TableInteraction extends UserInteraction {
 				}
 			}
 		}
+		List<Tree<String>> columns = getTree().getFirstChild("table").getFirstChild("columns").getChildren("column");
+		if(columns != null && !columns.isEmpty()){
+			Iterator<Tree<String>> it = columns.iterator();
+			while(it.hasNext()){
+				Tree<String> column = it.next();
+				try{
+					Iterator<Tree<String>> valueConstraints = column.getFirstChild("constraint").getFirstChild("values")
+							.getChildren("value").iterator();
+					while(valueConstraints.hasNext()){
+						Tree<String> curValue = valueConstraints.next();
+						try{
+							String content = curValue.getFirstChild().getHead();
+							logger.info("replace "+oldName+" by "+newName+" in "+content);
+							curValue.getFirstChild().setHead(
+									content.replaceAll(Pattern.quote(oldName), newName));
+						}catch(NullPointerException e){}
+					}
+				}catch(Exception e){
+					
+				}
+			}
+		}
 	}
 
 	/**

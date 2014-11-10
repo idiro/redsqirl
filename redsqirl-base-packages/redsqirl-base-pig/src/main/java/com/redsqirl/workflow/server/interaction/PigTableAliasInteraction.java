@@ -4,13 +4,13 @@ package com.redsqirl.workflow.server.interaction;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.redsqirl.workflow.server.TableInteraction;
 import com.redsqirl.workflow.server.action.PigElement;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
-import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.utils.PigLanguageManager;
 
 /**
@@ -34,8 +34,6 @@ public class PigTableAliasInteraction extends TableInteraction {
 	table_alias_title = PigLanguageManager
 			.getTextWithoutSpace("pig.table_alias_interaction.alias_column");
 	/** Field Column title */
-
-	private Map<String, DFEOutput> aliasInputMap;
 
 	/* Minimum number of inputs */
 	private int minNumInputs;
@@ -67,42 +65,23 @@ public class PigTableAliasInteraction extends TableInteraction {
 	 * @throws RemoteException
 	 */
 	public void update() throws RemoteException {
-
-		aliasInputMap = new HashMap<String, DFEOutput>();
-
-		Map<String, List<DataFlowElement>> in = hu.getInputComponent();
-
 		boolean rowsEmpty = getValues().isEmpty();
+		
+		Map<String,DFEOutput> aliases = hu.getAliases();
+		if(rowsEmpty){
+			Iterator<String> it = aliases.keySet().iterator();
+			while (it.hasNext()) {
+				String alias = it.next();
+				Map<String, String> row = new HashMap<String, String>();
+				row.put(table_alias_title, alias);
+				row.put(table_input_title, alias);
 
-		Iterator<String> it = in.keySet().iterator();
-		while (it.hasNext()) {
-			Iterator<DataFlowElement> it2 = in.get(it.next()).iterator();
-			while (it2.hasNext()) {
-				DataFlowElement cur = it2.next();
-				String out_id = hu.findNameOf(cur.getOutputComponent(), hu);
-
-				String input = null;
-				if (out_id.isEmpty()) {
-					input = cur.getComponentId();
-
-				} else {
-					input = cur.getComponentId() + "_" + out_id;
-				}
-
-				aliasInputMap.put(input, cur.getDFEOutput().get(out_id));
-
-				if (rowsEmpty) {
-					Map<String, String> row = new HashMap<String, String>();
-					row.put(table_alias_title, input);
-					row.put(table_input_title, input);
-
-					addRow(row);
-				}
+				addRow(row);
 			}
 		}
 
 		updateColumnConstraint(table_input_title, null, null,
-				aliasInputMap.keySet());
+				aliases.keySet());
 
 	}
 
@@ -127,21 +106,22 @@ public class PigTableAliasInteraction extends TableInteraction {
 	 * @throws RemoteException
 	 */
 	public Map<String, DFEOutput> getAliases() throws RemoteException {
-		Map<String, DFEOutput> result = new HashMap<String, DFEOutput>();
-
-		List<Map<String, String>> rows = getValues();
-		if (aliasInputMap == null) {
-			update();
-		}
-		if (aliasInputMap != null) {
-			for (Map<String, String> row : rows) {
-				DFEOutput out = aliasInputMap.get(row.get(table_input_title));
-				result.put(row.get(table_alias_title), out);
-
+		List<Map<String,String>> rows = getValues();
+		Map<String,DFEOutput> ans = null;
+		if(rows != null && !rows.isEmpty()){
+			ans = new LinkedHashMap<String,DFEOutput>();
+			Map<String,DFEOutput> inputs = hu.getAliases();
+			Iterator<Map<String,String>> it = rows.iterator();
+			while(it.hasNext()){
+				Map<String,String> cur = it.next();
+				String input = cur.get(table_input_title);
+				String alias = cur.get(table_alias_title);
+				if(input != null && alias != null){
+					ans.put(alias, inputs.get(input));
+				}
 			}
 		}
-
-		return result;
+		return ans;
 	}
 
 	/**
@@ -161,11 +141,11 @@ public class PigTableAliasInteraction extends TableInteraction {
 				msg = PigLanguageManager
 						.getText("pig.table_alias_interaction.checknumberinput");
 			} else {
-
+				 Map<String, DFEOutput> aliases = hu.getAliases();
 				for (Map<String, String> row : lRow) {
-					if (!aliasInputMap.containsKey(row.get(table_input_title))) {
+					if (!aliases.containsKey(row.get(table_input_title))) {
 						msg = PigLanguageManager
-								.getText("pig.table_alias_interaction.checkvalidinput");
+								.getText("pig.table_alias_interaction.checkvalidinput",new String[]{row.get(table_input_title),aliases.keySet().toString()});
 					}
 				}
 			}

@@ -275,12 +275,20 @@
 				var node = msg.jquery ? msg[0] : msg;
 				var data = {};
 				$(el).data('blockUI.history', data);
-				data.el = node;
-				data.parent = node.parentNode;
-				data.display = node.style.display;
-				data.position = node.style.position;
-				if (data.parent)
-					data.parent.removeChild(node);
+				
+				try{
+				
+					data.el = node;
+					data.parent = node.parentNode;
+					data.display = node.style.display;
+					data.position = node.style.position;
+					if (data.parent)
+						data.parent.removeChild(node);
+				
+				 }catch(exception){
+					 //alert(exception);
+				 }
+				
 			}
 
 			$(el).data('blockUI.onUnblock', opts.onUnblock);

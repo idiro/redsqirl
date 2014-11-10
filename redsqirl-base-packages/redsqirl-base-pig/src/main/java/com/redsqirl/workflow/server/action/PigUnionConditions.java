@@ -111,7 +111,7 @@ public class PigUnionConditions  extends TableInteraction{
 				table_relation_title, 
 				null,
 				1,
-				hu.getAliases().keySet());
+				hu.getUnionAliases().keySet());
 
 		updateEditor(table_op_title,
 				PigDictionary.generateEditor(

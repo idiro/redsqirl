@@ -852,6 +852,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				df.setName(nameWorkflow);
 				msg = df.save(path);
 				Iterator<String> itCompIds = df.getComponentIds().iterator();
+				idMap.get(nameWorkflow).clear();
 				while (itCompIds.hasNext()) {
 					String cur = itCompIds.next();
 					idMap.get(nameWorkflow).put(cur, cur);
@@ -1890,19 +1891,21 @@ public class CanvasBean extends BaseBean implements Serializable {
 			inverseIdMap.put(e.getValue(), e.getKey());
 		}
 
-		Iterator<DataFlowElement> iterator = getDf().getElement().iterator();
-		while (iterator.hasNext()) {
-			DataFlowElement cur = iterator.next();
-			Iterator<String> outIt = cur.getOutputComponent().keySet().iterator();
-			while (outIt.hasNext()) {
-				String outName = outIt.next();
-				Iterator<DataFlowElement> outElIt = cur.getOutputComponent()
-						.get(outName).iterator();
-				while (outElIt.hasNext()) {
-					ans.add(getArrowType(
-							inverseIdMap.get(cur.getComponentId()),
-							inverseIdMap.get(outElIt.next().getComponentId()),
-							outName));
+		if(getDf() != null && getDf().getElement() != null){
+			Iterator<DataFlowElement> iterator = getDf().getElement().iterator();
+			while (iterator.hasNext()) {
+				DataFlowElement cur = iterator.next();
+				Iterator<String> outIt = cur.getOutputComponent().keySet().iterator();
+				while (outIt.hasNext()) {
+					String outName = outIt.next();
+					Iterator<DataFlowElement> outElIt = cur.getOutputComponent()
+							.get(outName).iterator();
+					while (outElIt.hasNext()) {
+						ans.add(getArrowType(
+								inverseIdMap.get(cur.getComponentId()),
+								inverseIdMap.get(outElIt.next().getComponentId()),
+								outName));
+					}
 				}
 			}
 		}
@@ -1942,7 +1945,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			JSONArray jsonElements = new JSONArray();
 			JSONArray jsonLinks = new JSONArray();
 
-			if (getDf() != null) {
+			if (getDf() != null && getDf().getElement() != null) {
 
 				for (DataFlowElement e : getDf().getElement()) {
 					String compId = e.getComponentId();
@@ -1998,7 +2001,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				}
 
 			} else {
-				logger.info("Error getPositions getDf NULL ");
+				logger.warn("Error getPositions getDf NULL or empty");
 			}
 
 			logger.info("getPositions getNameWorkflow " + getNameWorkflow());
@@ -2242,6 +2245,13 @@ public class CanvasBean extends BaseBean implements Serializable {
 		String selectedIcons = params.get("selectedIcons");
 
 		logger.info("openAggregate ids: " + selectedIcons);
+		
+
+		List<String> componentIds = new ArrayList<String>();
+		String[] groupIds = selectedIcons.split(",");
+		for (String groupId : groupIds) {
+			componentIds.add(idMap.get(nameWorkflow).get(groupId));
+		}
 
 		Map<String,String> ansIn = new HashMap<String,String>();
 		Map<String,String> ansOut = new HashMap<String,String>();
@@ -2251,19 +2261,20 @@ public class CanvasBean extends BaseBean implements Serializable {
 			DataFlowElement cur = iterator.next();
 
 
-			if(selectedIcons.contains(cur.getComponentId())){
+			if(componentIds.contains(cur.getComponentId())){
 
 
 				//Get all the inputs
 				for (Map.Entry<String,List<DataFlowElement>> entryInput : cur.getInputComponent().entrySet()) {
 					for (DataFlowElement dfeIn : entryInput.getValue()) {
-						if(!selectedIcons.contains(dfeIn.getComponentId())){
-
+						if(!componentIds.contains(dfeIn.getComponentId())){
+							logger.info(dfeIn.getComponentId() + " is an input");
 							for (Map.Entry<String, Map<String, String>> eOutput : dfeIn.getInputNamePerOutput().entrySet()) {
 
 								for (Map.Entry<String, String> e : eOutput.getValue().entrySet()) {
 
 									if(e.getKey().equals(cur.getComponentId())){
+										logger.info("Found output key related to "+ cur.getComponentId());
 										if(ansIn.containsKey(dfeIn.getComponentId())){
 											if(!ansIn.get(dfeIn.getComponentId()).equals(eOutput.getKey())){
 												if(error == null){
@@ -2284,7 +2295,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				//Get all the outside links
 				for (Map.Entry<String, List<DataFlowElement>> entryOutput : cur.getOutputComponent().entrySet()) {
 					for (DataFlowElement dfeOut : entryOutput.getValue()) {
-						if(!selectedIcons.contains(dfeOut.getComponentId())){
+						if(!componentIds.contains(dfeOut.getComponentId())){
 							if(nextComponents.contains(dfeOut.getComponentId())){
 								if(error == null){
 									error = getMessageResourcesWithParameter("msg_error_agg_output_conflict",new String[]{dfeOut.getComponentId()});
@@ -2329,11 +2340,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 			getOutputNamesList().add(vet);
 		}
 
-		List<String> componentIds = new ArrayList<String>();
-		String[] groupIds = selectedIcons.split(",");
-		for (String groupId : groupIds) {
-			componentIds.add(idMap.get(nameWorkflow).get(groupId));
-		}
 		setComponentIds(componentIds);
 		logger.info("Elements: " + getComponentIds());
 
