@@ -2189,7 +2189,7 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
             		jQuery("body").append(help);
                     help.fadeIn("slow");
             	}
-            },300);
+            },400);
             
             var previewPosition = help.position().top + help.height();
             var windowHeight = jQuery(window).height();
