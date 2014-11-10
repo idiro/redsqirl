@@ -470,12 +470,8 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 
 					update(interaction);
 				} catch (Exception e) {
-					waLogger.error(e);
-					for (int i = 0; i < 6 && i < e.getStackTrace().length; ++i) {
-						waLogger.error(e.getStackTrace()[i].toString());
-					}
 					waLogger.error("Error when updating the element "
-							+ interaction.getId());
+							+ interaction.getId()+": "+e,e);
 				}
 			}
 		} catch (Exception e) {

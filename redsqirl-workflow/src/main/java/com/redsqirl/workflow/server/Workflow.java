@@ -1736,8 +1736,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 								oldAlias,
 								newAlias);
 
-						sw.getElement(curEl.getComponentId()).replaceInAllInteraction(inputs.get(inputName).getKey(), inputName);
-						
 						positionSuperActionInput.move((int)positionSuperActionInput.getX()+curEl.getX(), 
 								(int)positionSuperActionInput.getY()+curEl.getY());
 						++numberOfInput;
@@ -1862,10 +1860,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					getElement(curEl.getComponentId()).replaceInAllInteraction(
 							oldAlias,
 							newAlias);
-
-					getElement(curEl.getComponentId()).replaceInAllInteraction(
-							outputs.get(outputName).getKey(),
-							idSA);
 
 				}
 			}
