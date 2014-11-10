@@ -296,10 +296,23 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 	}
 	
 	public File getInstalledMainFile(){
-		File xmlFile = new File(WorkflowPrefManager.getPathUserSuperAction(System.getProperty("user.name")),name);
-		logger.debug("User path to search "+name+": "+xmlFile.getPath());
-		if(!xmlFile.exists()){
-			xmlFile = new File(WorkflowPrefManager.getPathSysSuperAction(),name);
+		String usPath = WorkflowPrefManager.getPathUserSuperAction(System.getProperty("user.name"));
+		logger.debug("Look at intalled subworkflows in: "+usPath);
+		File xmlFile = null;
+		boolean usFileExist = false;
+		try{
+			xmlFile = new File(usPath,name);
+			logger.debug("User path to search "+name+": "+xmlFile.getPath());
+			usFileExist = xmlFile.exists();
+		}catch(Exception e){
+		}
+		if(!usFileExist){
+			String sysPath = WorkflowPrefManager.getPathSysSuperAction();
+			logger.debug("Look at intalled subworkflows in: "+sysPath);
+			try{
+				xmlFile = new File(WorkflowPrefManager.getPathSysSuperAction(),name);
+			}catch(Exception e){
+			}
 			logger.debug("System path to search "+name+": "+xmlFile.getPath());
 		}
 		return xmlFile;
@@ -309,7 +322,7 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 	public String readFromLocal(File xmlFile) throws RemoteException {
 		String error = null;
 		try {
-			error = readMetaData();
+			error = readMetaData(xmlFile);
 		} catch (Exception e2) {
 			error = "Fail to read :"+xmlFile.getPath();
 			logger.error("error ",e2);
@@ -388,8 +401,12 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 		
 		return super.readFromLocal(xmlFile);
 	}
-
+	
 	public String readMetaData() throws Exception{
+		return readMetaData(getInstalledMainFile());
+	}
+
+	public String readMetaData(File xmlFile) throws Exception{
 		String userName = System.getProperty("user.name");
 		tmpOutput = new LinkedHashMap<LinkedList<String>,DFEOutput>();
 		outputSuperAction = new LinkedHashMap<String,DFEOutput>();
@@ -397,9 +414,7 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 
 		String error = null;
 		
-		File xmlFile = getInstalledMainFile();
-		
-		if(!xmlFile.exists()){
+		if(xmlFile == null || !xmlFile.exists()){
 			return "Super Action "+name+" not found";
 		}
 
