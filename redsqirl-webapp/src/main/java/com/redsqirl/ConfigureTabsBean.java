@@ -22,7 +22,6 @@ import com.redsqirl.dynamictable.SelectableRowFooter;
 import com.redsqirl.dynamictable.SelectableTable;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
-import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.utils.SuperActionManager;
 
 public class ConfigureTabsBean extends BaseBean implements Serializable {
@@ -103,21 +102,12 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 
 		//list of super action
 		List<String> listSuperAction = new SuperActionManager().getAvailableSuperActions(userInfoBean.getUserName());
-
+		logger.info("Available Super Actions: "+listSuperAction);
 		//list of normal action
 		List<String> listAction = new ArrayList<String>();
-		for (Iterator iterator = allWANameWithClassName.entrySet().iterator(); iterator.hasNext();) {
-			Entry<String, String> e = (Entry<String, String>) iterator.next();
-
+		for (Iterator<Entry<String, String>> iterator = allWANameWithClassName.entrySet().iterator(); iterator.hasNext();) {
+			Entry<String, String> e = iterator.next();
 			listAction.add(e.getKey());
-			
-			if(e.getValue().equals("com.redsqirl.workflow.server.action.superaction.SuperAction")){
-				if(!listSuperAction.contains(e.getKey())){
-					iterator.remove();
-					continue;
-				}
-			}
-
 			result.add(e.getKey());
 		}
 
@@ -127,31 +117,27 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 			}
 		}
 
-		setMenuActions(result);
-
-
+		menuActions = new LinkedList<String>();
+		menuActions.addAll(result);
+		logger.info("Available Actions: "+result);
 		menuNull = new SelectableRowFooter(new String[3], getMenuActions());
+		
+		//Action Menu names
 		setTabs(new LinkedList<String>(getMenuWA().keySet()));
-
 		setColumnIds(new LinkedList<String>());
 		getColumnIds().add("Name");
 		setTableGrid(new SelectableTable(columnIds));
 
+		//Set All the menus
 		for (String name : getMenuWA().keySet()) {
+			menuActions = new LinkedList<String>();
+			menuActions.addAll(result);
+			
 			String[] value = new String[1];
 			value[0] = name;
 			retrieveItems(name);
 			getTableGrid().getRows().add(new SelectableRowFooter(value, getMenuActions(), getTarget()));
-		}
-
-		for (int i = 0; i < tableGrid.getRows().size(); i++) {
-			SelectableRowFooter selectableRowFooter = (SelectableRowFooter) tableGrid.getRows().get(i);
-			for (Iterator iterator = selectableRowFooter.getTarget().iterator(); iterator.hasNext();) {
-				String value = (String) iterator.next();
-				if(!listSuperAction.contains(value) && !listAction.contains(value)){
-					iterator.remove();
-				}
-			}
+			logger.info("menu "+name+": "+getMenuActions()+", "+getTarget());
 		}
 
 	}
@@ -198,7 +184,9 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 
 			for (int i = 0; i < items.length; ++i) {
 				items[i] = getMenuWA().get(selectedTab).get(i)[0];
-				target.add(items[i]);
+				if(getMenuActions().contains(items[i])){
+					target.add(items[i]);
+				}
 				if(getMenuActions() != null && getMenuActions().contains(items[i])){
 					getMenuActions().remove(items[i]);
 				}

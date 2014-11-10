@@ -63,8 +63,18 @@ public class HelpBean extends BaseBean implements Serializable {
 	}
 	
 	public void refreshRelativeHelp() throws Exception{
-		DataFlow wf = getworkFlowInterface().getWorkflow("canvas-1");
+		String canvas1 = "canvas-1";
+		boolean toRemove = false;
+		DataFlow wf = getworkFlowInterface().getWorkflow(canvas1);
+		if(wf == null){
+			toRemove = true;
+			getworkFlowInterface().addWorkflow(canvas1);
+			wf = getworkFlowInterface().getWorkflow(canvas1);
+		}
 		mountRelativeHelpSuperAction(wf);
+		if(toRemove){
+			getworkFlowInterface().removeWorkflow(canvas1);
+		}
 	}
 
 	public void mountRelativeHelp(DataFlow wf) throws Exception{
