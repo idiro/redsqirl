@@ -102,7 +102,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 
 		//list of super action
 		List<String> listSuperAction = new SuperActionManager().getAvailableSuperActions(userInfoBean.getUserName());
-		logger.info("Available Super Actions: "+listSuperAction);
+		//logger.info("Available Super Actions: "+listSuperAction);
 		//list of normal action
 		List<String> listAction = new ArrayList<String>();
 		for (Iterator<Entry<String, String>> iterator = allWANameWithClassName.entrySet().iterator(); iterator.hasNext();) {
@@ -119,7 +119,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 
 		menuActions = new LinkedList<String>();
 		menuActions.addAll(result);
-		logger.info("Available Actions: "+result);
+		//logger.info("Available Actions: "+result);
 		menuNull = new SelectableRowFooter(new String[3], getMenuActions());
 		
 		//Action Menu names
@@ -137,7 +137,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 			value[0] = name;
 			retrieveItems(name);
 			getTableGrid().getRows().add(new SelectableRowFooter(value, getMenuActions(), getTarget()));
-			logger.info("menu "+name+": "+getMenuActions()+", "+getTarget());
+			//logger.info("menu "+name+": "+getMenuActions()+", "+getTarget());
 		}
 
 	}
