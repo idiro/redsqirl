@@ -192,7 +192,7 @@ public class PigTableUnionInteraction extends TableInteraction {
 	public void update(List<DFEOutput> in) throws RemoteException {
 
 		updateColumnConstraint(table_relation_title, null, null, hu
-				.getAliases().keySet());
+				.getUnionAliases().keySet());
 
 		updateColumnConstraint(table_field_title,
 				"[a-zA-Z]([A-Za-z0-9_]{0,29})", hu.getAllInputComponent()
@@ -218,7 +218,7 @@ public class PigTableUnionInteraction extends TableInteraction {
 						field));
 			}
 			if (found) {
-				Iterator<String> aliases = hu.getAliases().keySet().iterator();
+				Iterator<String> aliases = hu.getUnionAliases().keySet().iterator();
 				while (aliases.hasNext()) {
 					Map<String, String> curMap = new LinkedHashMap<String, String>();
 					String alias = aliases.next();

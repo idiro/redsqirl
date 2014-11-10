@@ -4,6 +4,7 @@ package com.redsqirl.workflow.server.interaction;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -64,16 +65,13 @@ public class PigTableAliasInteraction extends TableInteraction {
 	 * @throws RemoteException
 	 */
 	public void update() throws RemoteException {
-
-		
-		Map<String,DFEOutput> aliases = getAliases();
-
 		boolean rowsEmpty = getValues().isEmpty();
-
-		Iterator<String> it = aliases.keySet().iterator();
-		while (it.hasNext()) {
-			String alias = it.next();
-			if (rowsEmpty) {
+		
+		Map<String,DFEOutput> aliases = hu.getAliases();
+		if(rowsEmpty){
+			Iterator<String> it = aliases.keySet().iterator();
+			while (it.hasNext()) {
+				String alias = it.next();
 				Map<String, String> row = new HashMap<String, String>();
 				row.put(table_alias_title, alias);
 				row.put(table_input_title, alias);
@@ -108,7 +106,22 @@ public class PigTableAliasInteraction extends TableInteraction {
 	 * @throws RemoteException
 	 */
 	public Map<String, DFEOutput> getAliases() throws RemoteException {
-		return hu.getAliases();
+		List<Map<String,String>> rows = getValues();
+		Map<String,DFEOutput> ans = null;
+		if(rows != null && !rows.isEmpty()){
+			ans = new LinkedHashMap<String,DFEOutput>();
+			Map<String,DFEOutput> inputs = hu.getAliases();
+			Iterator<Map<String,String>> it = rows.iterator();
+			while(it.hasNext()){
+				Map<String,String> cur = it.next();
+				String input = cur.get(table_input_title);
+				String alias = cur.get(table_alias_title);
+				if(input != null && alias != null){
+					ans.put(alias, inputs.get(input));
+				}
+			}
+		}
+		return ans;
 	}
 
 	/**
@@ -128,11 +141,11 @@ public class PigTableAliasInteraction extends TableInteraction {
 				msg = PigLanguageManager
 						.getText("pig.table_alias_interaction.checknumberinput");
 			} else {
-				 Map<String, DFEOutput> aliases = getAliases();
+				 Map<String, DFEOutput> aliases = hu.getAliases();
 				for (Map<String, String> row : lRow) {
 					if (!aliases.containsKey(row.get(table_input_title))) {
 						msg = PigLanguageManager
-								.getText("pig.table_alias_interaction.checkvalidinput");
+								.getText("pig.table_alias_interaction.checkvalidinput",new String[]{row.get(table_input_title),aliases.keySet().toString()});
 					}
 				}
 			}
