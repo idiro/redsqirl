@@ -71,7 +71,7 @@ public class PigJoinRelationInteraction extends TableInteraction {
 		
 		
 		List<Map<String,String>> lRow = getValues();
-		Set<String> relations = hj.getAliases().keySet();
+		Set<String> relations = hj.getJoinAliases().keySet();
 		if( relations.size() != lRow.size()){
 			msg = PigLanguageManager.getText("pig.join_relationship_interaction.checkrownb");
 		}else{
@@ -122,7 +122,7 @@ public class PigJoinRelationInteraction extends TableInteraction {
 	 * @throws RemoteException
 	 */
 	public void update() throws RemoteException {
-		Set<String> tablesIn = hj.getAliases().keySet();
+		Set<String> tablesIn = hj.getJoinAliases().keySet();
 
 		// Remove constraint on first column
 		updateColumnConstraint(
@@ -210,7 +210,7 @@ public class PigJoinRelationInteraction extends TableInteraction {
 				.getFirstChild("output").getFirstChild().getHead()
 				.replace("JOIN", "");
 
-		Set<String> aliases = hj.getAliases().keySet();
+		Set<String> aliases = hj.getJoinAliases().keySet();
 		String join = "";
 		Iterator<Map<String,String>> it = getValues().iterator();
 		if (it.hasNext()) {

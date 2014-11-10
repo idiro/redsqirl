@@ -182,7 +182,7 @@ public class PigJoin extends PigElement {
 		if (getDFEInput() != null) {
 			// Output
 			DFEOutput out = output.values().iterator().next();
-			Map<String, DFEOutput> x = getAliases();
+			Map<String, DFEOutput> x = getJoinAliases();
 			Set<Entry<String, DFEOutput>> p = x.entrySet();
 			Iterator<Entry<String, DFEOutput>> it = p.iterator();
 			String load = "";
@@ -248,21 +248,24 @@ public class PigJoin extends PigElement {
 	 * @throws RemoteException
 	 */
 	public FieldList getInFields() throws RemoteException {
-
 		FieldList ans = new OrderedFieldList();
-		Map<String, DFEOutput> aliases = getAliases();
+		Map<String, DFEOutput> aliases = getJoinAliases();
 
 		Iterator<String> it = aliases.keySet().iterator();
 		while (it.hasNext()) {
 			String alias = it.next();
 			FieldList mapTable = aliases.get(alias).getFields();
-			Iterator<String> itFeat = mapTable.getFieldNames().iterator();
-			while (itFeat.hasNext()) {
-				String cur = itFeat.next();
+			Iterator<String> itField = mapTable.getFieldNames().iterator();
+			while (itField.hasNext()) {
+				String cur = itField.next();
 				ans.addField(alias + "." + cur, mapTable.getFieldType(cur));
 			}
 		}
 		return ans;
+	}
+	
+	public Map<String,DFEOutput> getJoinAliases() throws RemoteException{
+		return tAliasInt.getAliases();
 	}
 
 	/**
