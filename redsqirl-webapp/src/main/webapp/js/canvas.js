@@ -2452,7 +2452,6 @@ function updateActionOutputStatus(groupId, outputType, fileExists, runningStatus
         group.getChildren()[6].setStroke(getColorRunning(runningStatus));
         group.getChildren()[7].setStroke(getColorOutputExistence(fileExists));
     }
-    
     group.tooltipObj = tooltip;
     
     if( noError.toUpperCase() === "FALSE" ){
