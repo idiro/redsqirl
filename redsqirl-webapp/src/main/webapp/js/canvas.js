@@ -201,15 +201,16 @@ function configureCanvas(canvasName, reset, workflowType){
         	if(mouseIn){
         		jQuery("body").append(help);
                 help.fadeIn("slow");
+                
+                var previewPosition = help.position().top + help.height();
+                var windowHeight = jQuery(window).height();
+                if (previewPosition > windowHeight) {
+                    help.css("overflow", "auto");
+                    help.css("height", windowHeight-help.position().top-20);
+                }
+                
         	}
         },200);
-        
-        var previewPosition = help.position().top + help.height();
-        var windowHeight = jQuery(window).height();
-        if (previewPosition > windowHeight) {
-            help.css("overflow", "auto");
-            help.css("height", windowHeight-help.position().top-20);
-        }
         
         help.mouseleave(function() {
             jQuery(this).remove();
@@ -1558,7 +1559,7 @@ function mountObj(canvasName) {
                     canvasArray[selectedCanvas].polygonLayer.draw();
                 });
 
-                polygonTabFake.on('mouseup',function() {1	
+                polygonTabFake.on('mouseup',function() {
                     document.body.style.cursor = 'default';
                     
                     var polygonTabFakeClone = polygonTabFake.clone();
@@ -2188,15 +2189,16 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
             	if(mouseIn){
             		jQuery("body").append(help);
                     help.fadeIn("slow");
+                    
+                    var previewPosition = help.position().top + help.height();
+                    var windowHeight = jQuery(window).height();
+                    if (previewPosition > windowHeight) {
+                        help.css("overflow", "auto");
+                        help.css("height", windowHeight-help.position().top-20);
+                    }
+                    
             	}
             },400);
-            
-            var previewPosition = help.position().top + help.height();
-            var windowHeight = jQuery(window).height();
-            if (previewPosition > windowHeight) {
-                help.css("overflow", "auto");
-                help.css("height", windowHeight-help.position().top-20);
-            }
             
             help.mouseleave(function() {
                 jQuery(this).remove();
