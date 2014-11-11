@@ -663,6 +663,10 @@
 	                deleteSelected(selectedCanvas);
 	            }
 			}
+
+			if (event.keyCode === 8) { //backspace
+				 event.preventDefault();
+			}
             
         });
 	   		
@@ -746,7 +750,6 @@
    		}
 
 	    function updateObjsNameReplace(status){
-		    
 		    //<![CDATA[
 		    for (var i = 0; i < status.length; i++) {
 			    //alert(status[i][0] + "  " + status[i][1]);
@@ -766,87 +769,135 @@
 	    function refreshRelativeHelp(){
 	    	 jQuery('[id$="refreshRelativeHelp"]').click();
 	    }
-	   	
-	   	/*keyboard shortcuts*/
-	   	
-	   	shortcut.add("Ctrl+n",function() {
-	   		jQuery("#formMenu\\:newMenuItem").click();
-	   	});
-	   	
-	   	shortcut.add("Ctrl+o",function() {
-	   		jQuery("#formMenu\\:openMenuItem").click();
-	   	});
-	   	
-	   	shortcut.add("Ctrl+s",function() {
-	   		jQuery("#formMenu\\:saveMenuItem").click();
-	   	});
-	   	
-		shortcut.add("Ctrl+Alt+x",function() {
-			jQuery("#formMenu\\:saveAsMenuItem").click();
-	   	});
-		
-		shortcut.add("Ctrl+Shift+s",function() {
-			jQuery("#formMenu\\:saveAllMenuItem").click();
-	   	});
-		
-		shortcut.add("Ctrl+w",function() {
-			jQuery("#formMenu\\:closeMenuItem").click();
-	   	});
-		
-		shortcut.add("Ctrl+Shift+w",function() {
-			jQuery("#formMenu\\:closeAllMenuItem").click();
-	   	});
-		
-		shortcut.add("Ctrl+a",function() {
-			jQuery("#formMenu\\:selectAllMenuItem").click();
-	   	});
-		
-		shortcut.add("Ctrl+Shift+a",function() {
-			jQuery("#formMenu\\:deselectAllMenuItem").click();
-	   	});
-	   	
-	   	/* Overwrite normal shortcut !!!
-	   	shortcut.add("Ctrl+c",function() {
-            jQuery("#formMenu\\:copyMenuItem").click();
-        });
-        
-        shortcut.add("Ctrl+v",function() {
-            jQuery("#formMenu\\:pasteMenuItem").click();
-        });
-        */
-        shortcut.add("Ctrl+r",function() {
-            jQuery("#formMenu\\:replaceMenuItem").click();
-        });
-	   	
-		shortcut.add("Ctrl+j",function() {
-			jQuery("#formMenu\\:oozieMenuItem").click();
-	   	});
-		
-		shortcut.add("Ctrl+l",function() {
-			jQuery("#formMenu\\:cleanMenuItem").click();
-	   	});
-	   	
-		shortcut.add("Ctrl+r",function() {
-			jQuery("#formMenu\\:runMenuItem").click();
-	   	});
-		
-		shortcut.add("Ctrl+Alt+r",function() {
-			jQuery("#formMenu\\:runSelectedMenuItem").click();
-	   	});
-		
-		shortcut.add("Ctrl+i",function() {
-			jQuery("#formMenu\\:installationMenuItem").click();
-	   	});
-	   	
-	   	shortcut.add("Ctrl+Alt+p",function() {
-            jQuery("#formMenu\\:settingsMenuItem").click();
-        });
 
-	   	function checkPageError(){
+	    function checkPageError(){
 		   	if(jQuery("#msnErrorPageContainer")){
 			 	jQuery("#msnErrorPageContainer").css("z-index", '1000');
 	    	}
 	   	}
+	   	
+	   	
+	   	/*keyboard shortcuts*/
+	   	
+	   	shortcut.add("Ctrl+n",function() {
+	   		if( !jQuery(".rich-mp-container").is(":visible") ){
+		   		jQuery("#formMenu\\:newMenuItem").click();
+	   		}
+	   	});
+	   	
+	   	shortcut.add("Ctrl+o",function() {
+	   		if( !jQuery(".rich-mp-container").is(":visible") ){
+		   		jQuery("#formMenu\\:openMenuItem").click();
+	   		}
+	   	});
+	   	
+	   	shortcut.add("Ctrl+s",function() {
+	   		if( !jQuery(".rich-mp-container").is(":visible") ){
+		   		jQuery("#formMenu\\:saveMenuItem").click();
+	   		}
+	   	});
+	   	
+		shortcut.add("Ctrl+Alt+x",function() {
+			if( !jQuery(".rich-mp-container").is(":visible") ){
+				jQuery("#formMenu\\:saveAsMenuItem").click();
+			}
+	   	});
+		
+		shortcut.add("Ctrl+Shift+s",function() {
+			if( !jQuery(".rich-mp-container").is(":visible") ){
+				jQuery("#formMenu\\:saveAllMenuItem").click();
+			}
+	   	});
+		
+		shortcut.add("Ctrl+w",function() {
+			if( !jQuery(".rich-mp-container").is(":visible") ){
+				jQuery("#formMenu\\:closeMenuItem").click();
+			}
+	   	});
+		
+		shortcut.add("Ctrl+Shift+w",function() {
+			if( !jQuery(".rich-mp-container").is(":visible") ){
+				jQuery("#formMenu\\:closeAllMenuItem").click();
+			}
+	   	});
+		
+		shortcut.add("Ctrl+a",function() {
+			if( !jQuery(".rich-mp-container").is(":visible") ){
+				jQuery("#formMenu\\:selectAllMenuItem").click();
+			}
+	   	});
+		
+		shortcut.add("Ctrl+Shift+a",function() {
+			if( !jQuery(".rich-mp-container").is(":visible") ){
+				jQuery("#formMenu\\:deselectAllMenuItem").click();
+			}
+	   	});
+	   	
+        shortcut.add("Ctrl+h",function() {
+        	if( !jQuery(".rich-mp-container").is(":visible") ){
+	            jQuery("#formMenu\\:replaceMenuItem").click();
+        	}
+        });
+	   	
+		shortcut.add("Ctrl+j",function() {
+			if( !jQuery(".rich-mp-container").is(":visible") ){
+				jQuery("#formMenu\\:oozieMenuItem").click();
+			}
+	   	});
+		
+		shortcut.add("Ctrl+l",function() {
+			if( !jQuery(".rich-mp-container").is(":visible") ){
+				jQuery("#formMenu\\:cleanMenuItem").click();
+			}
+	   	});
+	   	
+		shortcut.add("Ctrl+r",function() {
+			if( !jQuery(".rich-mp-container").is(":visible") ){
+				jQuery("#formMenu\\:runMenuItem").click();
+			}
+	   	});
+		
+		shortcut.add("Ctrl+Alt+r",function() {
+			if( !jQuery(".rich-mp-container").is(":visible") ){
+				jQuery("#formMenu\\:runSelectedMenuItem").click();
+			}
+	   	});
+		
+		shortcut.add("Ctrl+i",function() {
+			if( !jQuery(".rich-mp-container").is(":visible") ){
+				jQuery("#formMenu\\:installationMenuItem").click();
+			}
+	   	});
+	   	
+	   	shortcut.add("Ctrl+Alt+p",function() {
+	   		if( !jQuery(".rich-mp-container").is(":visible") ){
+	            jQuery("#formMenu\\:settingsMenuItem").click();
+	   		}
+        });
+
+	   	shortcut.add("Ctrl+Shift+c",function() {
+	   		if( !jQuery(".rich-mp-container").is(":visible") ){
+	            jQuery("#formMenu\\:copyMenuItem").click();
+	   		}
+	   	});
+        
+        shortcut.add("Ctrl+Shift+v",function() {
+        	if( !jQuery(".rich-mp-container").is(":visible") ){
+            	jQuery("#formMenu\\:pasteMenuItem").click();
+        	}
+        });
+
+        shortcut.add("Ctrl+Shift+z",function() {
+        	if( !jQuery(".rich-mp-container").is(":visible") ){
+            	jQuery("#formMenu\\:undoMenuItem").click();
+        	}
+        });
+
+        shortcut.add("Ctrl+Shift+y",function() {
+        	if( !jQuery(".rich-mp-container").is(":visible") ){
+            	jQuery("#formMenu\\:redoMenuItem").click();
+        	}
+        });
 
 	</script>
 
@@ -1616,7 +1667,6 @@
 										<rich:menuItem id="newSubMenuItem" submitMode="none"
 											value="#{messages.label_menu_new_subcanvas}"
 											onclick="jQuery('#addsubtabCanvas').click();">
-											<h:outputText value="Ctrl+N" class="menuItemHotKey" />
 										</rich:menuItem>
 
 									</rich:menuGroup>
@@ -1673,25 +1723,27 @@
 									<rich:menuItem id="copyMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_copy}"
 										onclick="saveAllPositions(getAllIconPositions());copy(getSelectedIconsCommaDelimited());">
-										<!-- <h:outputText value="Ctrl+C" class="menuItemHotKey"/> -->
+										<h:outputText value="Ctrl+Shift+C" class="menuItemHotKey"/>
 									</rich:menuItem>
 									<rich:menuItem id="pasteMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_paste}"
 										onclick="paste(getSelectedByName());">
-										<!-- <h:outputText value="Ctrl+V" class="menuItemHotKey"/> -->
+										<h:outputText value="Ctrl+Shift+V" class="menuItemHotKey"/>
 									</rich:menuItem>
 									<rich:menuSeparator />
 									<rich:menuItem id="undoMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_undo}" onclick="undo();">
+										<h:outputText value="Ctrl+Shift+Z" class="menuItemHotKey"/>
 									</rich:menuItem>
 									<rich:menuItem id="redoMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_redo}" onclick="redo();">
+										<h:outputText value="Ctrl+Shift+Y" class="menuItemHotKey"/>
 									</rich:menuItem>
 									<rich:menuSeparator />
 									<rich:menuItem id="replaceMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_replace}"
 										onclick="showReplaceAllModal();">
-										<h:outputText value="Ctrl+R" class="menuItemHotKey" />
+										<h:outputText value="Ctrl+H" class="menuItemHotKey" />
 									</rich:menuItem>
 									<rich:menuSeparator />
 									<rich:menuItem submitMode="none"
@@ -1785,7 +1837,6 @@
 											disabled="#{canvasBean.workflowType == 'W'}"
 											onclick="#{rich:component('modalSubWfInstall')}.show();"
 											action="#{subwfBean.mountSubName}">
-											<h:outputText value="Ctrl+I" class="menuItemHotKey" />
 											<f:param name="subWorkflowName"
 												value="#{canvasBean.nameWorkflow}" />
 										</rich:menuItem>
@@ -1793,19 +1844,16 @@
 											value="#{messages.label_menu_uninstall_sub_workflow}"
 											oncomplete="#{rich:component('modalSubWfUninstall')}.show();"
 											action="#{subwfBean.refreshSubworkflowsAllList}">
-											<h:outputText value="Ctrl+I" class="menuItemHotKey" />
 										</rich:menuItem>
 										<rich:menuItem id="importSubWorkflowHDFS" submitMode="ajax"
 											value="#{messages.label_menu_import_sub_workflowfrom_hdfs}"
 											oncomplete="#{rich:component('modalSubWfimport')}.show();">
-											<h:outputText value="Ctrl+I" class="menuItemHotKey" />
 										</rich:menuItem>
 										<rich:menuItem id="exportSubWorkflowHDFS" submitMode="ajax"
 											value="#{messages.label_menu_export_sub_workflowto_hdfs}"
 											disabled="#{canvasBean.workflowType == 'W'}"
 											oncomplete="#{rich:component('modalSubWfexport')}.show();"
 											action="#{subwfBean.mountSubName}">
-											<h:outputText value="Ctrl+I" class="menuItemHotKey" />
 											<f:param name="subWorkflowName"
 												value="#{canvasBean.nameWorkflow}" />
 										</rich:menuItem>
