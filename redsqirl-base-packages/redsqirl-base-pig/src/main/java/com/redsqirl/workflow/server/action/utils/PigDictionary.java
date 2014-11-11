@@ -84,6 +84,33 @@ public class PigDictionary extends AbstractDictionary {
 	protected String getNameFile() {
 		return "functionsPig.txt";
 	}
+	//style=\" border-style: solid;border-width: 1px;\"
+	protected static final String dateFormats = "<table>"
+			+ "<tr bgcolor=\"#ccccff\">"
+		    + "   <th align=left>Date and Time Pattern"
+		    + "   <th align=left>Result"
+		    + "<tr bgcolor=\"#eeeeff\">"
+		    +"    <td><code>\"EEE, MMM d, ''yy\"</code>"
+		    +"    <td><code>Wed, Jul 4, '01</code>"
+		    +" <tr>"
+		    +"     <td><code>\"h:mm a\"</code>"
+		    +"     <td><code>12:08 PM</code>"
+		    +" <tr>"
+		    +"     <td><code>\"EEE, d MMM yyyy HH:mm:ss Z\"</code>"
+		    +"     <td><code>Wed, 4 Jul 2001 12:08:56 -0700</code>"
+		    +" <tr bgcolor=\"#eeeeff\">"
+		    +"     <td><code>\"yyMMddHHmmssZ\"</code>"
+		    +"     <td><code>010704120856-0700</code>"
+		    +" <tr>"
+		    +"     <td><code>\"yyyy-MM-dd'T'HH:mm:ss.SSSZ\"</code>"
+		    +"     <td><code>2001-07-04T12:08:56.235-0700</code>"
+		    +" <tr bgcolor=\"#eeeeff\">"
+		    +"     <td><code>\"yyyy-MM-dd'T'HH:mm:ss.SSSXXX\"</code>"
+		    +"     <td><code>2001-07-04T12:08:56.235-07:00</code>"
+		    +" <tr>"
+		    +"     <td><code>\"YYYY-'W'ww-u\"</code>"
+		    +"     <td><code>2001-W27-3</code>"
+		    +"	</table>";
 
 	/**
 	 * Load the default funtions into a map
@@ -550,6 +577,7 @@ public class PigDictionary extends AbstractDictionary {
 										"@function:ToDate(userstring, format)"
 												+ "@short:Returns a DateTime object according to parameters."
 												+ "@param:userstring The datetime string in the user defined format. @param:formatThe date time format pattern string (see Java SimpleDateFormat class). "
+												+  dateFormats
 												+ "@description:Use the ToDate function to generate a DateTime object."
 												+ "@example: returns 1; @example: returns  3" },
 								new String[] {
@@ -559,6 +587,7 @@ public class PigDictionary extends AbstractDictionary {
 										"@function:ToDate(userstring, format,timezone)"
 												+ "@short:Returns a DateTime object according to parameters."
 												+ "@param:userstring The datetime string in the user defined format. @param:formatThe date time format pattern string (see Java SimpleDateFormat class). @param:timezone The timezone string. Either the UTC offset and the location based format can be used as a parameter, while internally the timezone will be converted to the UTC offset format."
+												+ dateFormats
 												+ "@description:Use the ToDate function to generate a DateTime object."
 												+ "@example: returns 1; @example: returns  3" },
 								new String[] {
@@ -585,7 +614,8 @@ public class PigDictionary extends AbstractDictionary {
 										"STRING",
 										"@function:ToString(datetime,format)"
 												+ "@short:ToString converts the DateTime object to the ISO or the customized string. "
-												+ "@param:datetime A datetime object.@param:format The date time format pattern string (see Java SimpleDateFormat class)."
+												+ "@param:datetime A datetime object.@param:format The date time format pattern string (see Java SimpleDateFormat class). "
+												+ dateFormats
 												+ "@description: Use the ToString function to convert the DateTime to the customized string. "
 												+ "@example: ToString(mydate,'yyyyMMdd') returns '20140923'" },
 								new String[] {
