@@ -142,7 +142,7 @@ public class AnalyticsStoreModuleDetailBean implements Serializable{
 			JSONObject object = new JSONObject();
 			object.put("key", softwareKey);
 			object.put("idModuleVersion", moduleVersion.getIdVersion());
-			object.put("installationType", "USER");
+			object.put("installationType", userInstall ? "USER" : "SYSTEM");
 			object.put("email", analyticsStoreLoginBean.getEmail());
 			object.put("password", analyticsStoreLoginBean.getPassword());
 			
@@ -155,7 +155,7 @@ public class AnalyticsStoreModuleDetailBean implements Serializable{
 			
 			try{
 				JSONObject pckObj = new JSONObject(ansServer);
-				downloadUrl = pckObj.getString("url");
+				downloadUrl = getRepoServer() + pckObj.getString("url");
 				fileName = pckObj.getString("fileName");
 				key = pckObj.getString("key");
 				name = pckObj.getString("name");
@@ -206,7 +206,7 @@ public class AnalyticsStoreModuleDetailBean implements Serializable{
 	    
 	    String user = null;
 	    if (userInstall){
-	    	System.getProperty("user.name");
+	    	user = System.getProperty("user.name");
 	    }
 	    	
 	    pckMng.addPackage(user, new String[]{packagePath});
