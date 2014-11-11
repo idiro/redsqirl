@@ -1401,9 +1401,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public Map<String, String> getReverseIdMap() {
 		Map<String, String> elements = new LinkedHashMap<String, String>();
-		for (Entry<String, String> el : getIdMap().get(getNameWorkflow())
-				.entrySet()) {
-			elements.put(el.getValue(), el.getKey());
+		if(getIdMap().get(getNameWorkflow()) != null){
+			for (Entry<String, String> el : getIdMap().get(getNameWorkflow()).entrySet()) {
+				elements.put(el.getValue(), el.getKey());
+			}
 		}
 		return elements;
 	}
@@ -1450,7 +1451,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			throws Exception {
 
 		String[][] result = null;
-		if (elements != null) {
+		if (elements != null && getDf() != null) {
 
 			result = new String[elements.size()][];
 
