@@ -1882,11 +1882,15 @@ public class PigDictionary extends AbstractDictionary {
 		while (index < expr.length()) {
 			if (expr.charAt(index) == '(') {
 				++count;
-
+				if(count > 1){
+					cleanUp += expr.charAt(index);
+				}
 			} else if (expr.charAt(index) == ')') {
 				--count;
-
-			} else if (count > 0) {
+				if(count > 0){
+					cleanUp += expr.charAt(index);
+				}
+			}else if (count > 0) {
 				cleanUp += expr.charAt(index);
 			}
 			++index;

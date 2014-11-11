@@ -61,7 +61,7 @@
 					reRender="installSubWfParams,msnError,errorTable,msnErrorPage,msnSuccess"
 					action="#{subwfBean.checkExistenceCurrentSubWorkflow}"
 					data="#{subwfBean.exists}"
-					oncomplete="if(data == 'true' || confirm('Sub Workflow already exists,\\nOverwrite the existing one?')){intallSW();}else{#{rich:component('modalSubWfInstall')}.hide();}" />
+					oncomplete="if(data == 'true' || confirm('Sub Workflow already exists,\\nOverwrite the existing one?')){saveAllPositions(getAllIconPositions());intallSW();}else{#{rich:component('modalSubWfInstall')}.hide();}" />
 			</h:panelGrid>
 
 
