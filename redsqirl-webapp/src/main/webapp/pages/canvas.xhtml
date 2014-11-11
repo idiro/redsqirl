@@ -76,6 +76,7 @@
         var msg_aggregate_command='#{messages.msg_aggregate_command}';
 		           
 		 var contTabCanvas = 1;
+		 var lastBlockedRunningWorkflow
 		 
 		 var isResizing = false;
 		           
@@ -552,7 +553,7 @@
 	    	  var tabs = jQuery("#canvas-tabs").tabs();
               var ul = jQuery("#canvas-tabs").tabs().find( "ul:first" );
               
-              jQuery( "<li class='locked canvasTabsInactive'><a href='#"+ getCanvasId(tabName) +"' class='canvasTab' onclick=\"jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('"+tabName+"');\"><img src='"+tabImage+"' style='width:15px;padding-right:5px;position:relative;top:3px;'/>"+ 
+              jQuery( "<li class='locked canvasTabsInactive'><a href='#"+ getCanvasId(tabName) +"' class='canvasTab' onclick=\"setWorkflow('"+tabName+"');\"><img src='"+tabImage+"' style='width:15px;padding-right:5px;position:relative;top:3px;'/>"+ 
             		  tabName +"</a> <span id='"+tabName+"-icon-close' class='ui-icon ui-icon-close' role='presentation' onclick=\"closeWorkflowTab(this, '"+tabName+"')\"></span> </li>" ).appendTo( ul );
               
               var div = "<div id='"+getCanvasId(tabName)+"' class='container-canvas'>"+
@@ -688,13 +689,6 @@
 	        }
 	        return (key != 13);
 	   }
-	   	
-	   	function verifyIfIsRunning(canvas){
-	   		jQuery('#canvas-tabs').unblock();
-	   		if (isRunning(canvas)){
-	   			blockRunningWorkflow();
-	   		}
-	   	}
 	   	
 	   	function menuSave(){
 			if (isSaved(getSelectedByName())){
@@ -998,12 +992,6 @@
 					<a4j:actionparam name="commentWf"
 						assignTo="#{canvasBean.commentWf}" />
 				</a4j:jsFunction>
-
-				<a4j:jsFunction name="updateWfDisplayComment"
-					data="#{canvasBean.savedWfComment}"
-					oncomplete="jQuery('.container-comment-'+getSelectedByName()).html(data);"
-					reRender="errorTable, msnError">
-				</a4j:jsFunction>
 			</a4j:region>
 
 
@@ -1049,9 +1037,15 @@
 			</a4j:region>
 
 			<a4j:region>
+                <a4j:status
+                    onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
+                    onerror="jQuery('#canvas-tabs').unblock();"
+                    onsuccess="jQuery('#canvas-tabs').unblock();"
+                    onstop="jQuery('#canvas-tabs').unblock();" />
+                    
 				<a4j:jsFunction name="setWorkflow"
 					action="#{canvasBean.changeWorkflow}"
-					oncomplete="setSelectedByName('#{canvasBean.nameWorkflow}');updateWfDisplayComment();verifyIfIsRunning(getSelectedByName());changeFooter(getSelectedByName());"
+					oncomplete="setSelectedByName('#{canvasBean.nameWorkflow}');updateWfDisplayComment();if(getSelectedWorkflowType() == 'W'){if(#{canvasBean.running}){setRunning(getSelectedByName(), true);blockRunningWorkflow();}else{updateAllArcsStatus();}}changeFooter(getSelectedByName());"
 					reRender="formMenu,domMessageDivCanvas2,killProcessBtn">
 					<a4j:actionparam name="selectedCanvas"
 						assignTo="#{canvasBean.nameWorkflow}" />
@@ -1273,7 +1267,7 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
 				<a4j:jsFunction name="loadWorkflow" data="#{canvasBean.positions}"
-					oncomplete="addElementJs(data[0],data[1],data[2],data[3],data[4], true, data[5]);if(getSelectedWorkflowType() == 'W'){setRunning(getSelectedByName(), true);}else{updateAllArcsStatus();}"
+					oncomplete="addElementJs(data[0],data[1],data[2],data[3],data[4], true, data[5]);updateAllArcsStatus();"
 					reRender="tabFlowchart,errorTable,msnError" />
 
                 <a4j:jsFunction name="loadSubWorkflowFromCanvas" data="#{canvasBean.positions}"
@@ -1330,8 +1324,7 @@
 			<a4j:region>
 
 				<a4j:status
-					onstart="jQuery('#'+getSelectedById()).block({ message: jQuery('#domMessageDivCanvas2') });resizeBlockUICanvas();"
-					onerror="jQuery('#'+getSelectedById()).unblock();" />
+					onstart="if(lastBlockedRunningWorkflow != null){jQuery('#'+lastBlockedRunningWorkflow).unblock();}lastBlockedRunningWorkflow=getSelectedById();jQuery('#'+getSelectedById()).block({ message: jQuery('#domMessageDivCanvas2') });resizeBlockUICanvas();" />
 
 				<div id="domMessageDivCanvas2" style="display: none;">
 					<img src="../image/icons/waiting.gif" />
@@ -1354,7 +1347,7 @@
 
 				<a4j:jsFunction name="blockRunningWorkflow"
 					action="#{canvasBean.blockRunningWorkflow}"
-					oncomplete="jQuery('#'+getSelectedById()).unblock();if('#{canvasBean.blockingWorkflowName}' == getSelectedByName()){setRunning(getSelectedByName(), false);updateAllArcsStatus();}">
+					oncomplete="if(!#{canvasBean.running} &amp;&amp; lastBlockedRunningWorkflow == getSelectedById()){jQuery('#'+getSelectedById()).unblock();lastBlockedRunningWorkflow =null;setRunning(getSelectedByName(), false);updateAllArcsStatus();}">
 				</a4j:jsFunction>
 
 			</a4j:region>
@@ -1948,7 +1941,7 @@
 							style="width: 100%;">
 							<li class="locked canvasTabsInactive">
 								<a href="#flowchart-canvas-1" class="canvasTab"
-									onclick="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });setWorkflow('canvas-1');">
+									onclick="setWorkflow('canvas-1');">
 									<img src="../image/workflow_tab.gif" style="width:15px;padding-right:5px;position:relative;top:3px;"/>canvas-1
 								</a>
 								<span id="canvas-1-icon-close" class="ui-icon ui-icon-close "
