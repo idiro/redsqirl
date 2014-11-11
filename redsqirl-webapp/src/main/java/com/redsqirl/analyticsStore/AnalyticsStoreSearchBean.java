@@ -31,6 +31,15 @@ public class AnalyticsStoreSearchBean implements Serializable{
 	
 	List<RedSqirlModule> allPackageList;
 	
+	
+	public AnalyticsStoreSearchBean() {
+		try{
+			retrieveAllPackageList();
+		}catch (Exception e){
+			
+		}
+	}
+
 	//FIXME - can not use get otherwise this method is call every time - just call when click in on menu software -> "Install Package"	
 	//public List<RedSqirlModule> getAllPackageList() throws SQLException, ClassNotFoundException{
 	
