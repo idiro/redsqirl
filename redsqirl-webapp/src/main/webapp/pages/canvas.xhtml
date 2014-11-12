@@ -665,8 +665,10 @@
 	            }
 			}
 
-			if (event.keyCode === 8) { //backspace
-				 event.preventDefault();
+			if( !jQuery(".rich-mp-container").is(":visible") ){
+				if (event.keyCode === 8) { //backspace
+					 event.preventDefault();
+				}
 			}
             
         });
