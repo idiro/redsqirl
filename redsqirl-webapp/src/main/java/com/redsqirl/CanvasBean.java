@@ -73,7 +73,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private List<String> emptyList = new LinkedList<String>();
 	private String cloneWFId;
 	private String idsToPaste;
-	private String blockingWorkflowName;
 	private WFCopyBuffer wfCopyBuffer;
 	private ReplaceModal rpModal = new ReplaceModal();
 	private String commentWf = "";
@@ -1080,14 +1079,18 @@ public class CanvasBean extends BaseBean implements Serializable {
 			String name = getDf().getName();
 			logger.info("blockRunningWorkflow: " + name);
 			try {
+				int i = 0;
 				while (name.equals(getDf().getName()) && getDf().isrunning()) {
+					if(i % 4 == 0){
+						logger.info("Workflow "+name+" running.");
+					}
 					Thread.sleep(250);
+					++i;
 				}
 				logger.info("current workflow name: " + name);
 			} catch (Exception e) {
 				logger.info("blockRunningWorkflow error " + e);
 			}
-			blockingWorkflowName = name;
 		} else {
 			logger.info("blockRunningWorkflow getDf() = null");
 		}
@@ -1134,6 +1137,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		boolean running = false;
 		if (df != null) {
 			running = df.isrunning();
+			logger.info(df.getName()+" running: "+running);
 		}
 		return running;
 	}
@@ -2614,13 +2618,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 */
 	public List<String> getEmptyList() {
 		return emptyList;
-	}
-
-	/**
-	 * @return the blockingWorkflowName
-	 */
-	public final String getBlockingWorkflowName() {
-		return blockingWorkflowName;
 	}
 
 	/**

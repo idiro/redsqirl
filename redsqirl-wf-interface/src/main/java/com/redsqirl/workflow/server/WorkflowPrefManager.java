@@ -208,8 +208,10 @@ public class WorkflowPrefManager extends BlockManager {
 			sys_max_workers = "max_workers",
 			/** Job Tracker URL for hadoop */
 			sys_jobtracker = "jobtracker",
-			/** Default queue for hadoop */
-			sys_oozie_queue = "queue",
+			/** Default oozie launcher queue for hadoop */
+			sys_oozie_launcher_queue = "oozie_launcher_queue",
+			/** Default oozie running queue for hadoop */
+			sys_oozie_action_queue="oozie_action_queue",
 			/** Oozie URL */
 			sys_oozie = "oozie_url",
 			/** Oozie xml schema location */

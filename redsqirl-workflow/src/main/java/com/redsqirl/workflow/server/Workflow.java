@@ -1253,7 +1253,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 
 		} catch (Exception e) {
-			error = LanguageManagerWF.getText("workflow.read_failXml");
+			if(e.getMessage() == null || e.getMessage().isEmpty()){
+				error = LanguageManagerWF.getText("workflow.read_failXml");
+			}else{
+				error = e.getMessage();
+			}
 			logger.error(error, e);
 
 		}
@@ -1319,11 +1323,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			logger.debug("create new Action: " + name + " " + id + ": ("
 					+ x + "," + y + ")");
 			addElement(name, id);
+
 			getElement(id).setPosition(x, y);
 			getElement(id).setComment(compComment);
 			error = getElement(id).readValuesXml(
 					((Element) compCur)
 					.getElementsByTagName("interactions").item(0));
+			
 		}
 
 		// Link and data

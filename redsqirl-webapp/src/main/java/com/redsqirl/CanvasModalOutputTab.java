@@ -344,6 +344,11 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 							
 						}
 						
+						if(grid.getRows().isEmpty()){
+							String[] emptyRow = new String[gridTitle.size()];
+							grid.add(emptyRow);
+						}
+						
 						
 					} catch (Exception e) {
 						logger.info("Error when getting data: " + e);

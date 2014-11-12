@@ -60,7 +60,7 @@
                       	<f:facet name="header">
                         	<h:outputText value="#{column}" />
                         </f:facet>
-                        <h:inputText value="#{rowItem.row[ind]}" size="9" onkeyup="nospaces(this);" />
+                        <h:inputText value="#{rowItem.row[ind]}" size="9" onkeyup="nospaces(this);" onkeypress="return disableEnterKey(event);" />
 						<a4j:commandButton title="#{messages.title_dispacts}" action="#{configureTabsBean.retrieveItems}" value="..." reRender="actionsPanel">
 							<f:param name="selected" value="#{rowNb}" />
 						</a4j:commandButton>
