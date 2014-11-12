@@ -107,6 +107,9 @@
         
 <h:form>
      
+    <a4j:jsFunction name="reLoadTabs" reRender="browserTableData" />
+    <a4j:jsFunction name="reLoadDisplayTable" reRender="displayTable" />
+     
     <a4j:region>
         <a4j:jsFunction name="closeCanvasModal" 
                 action="#{canvasModalBean.closeCanvasModal}" />
@@ -137,9 +140,9 @@
         
         <rich:tab id="confTabCM" 
             label="#{messages.label_dynamic_configuration}" 
-            style="border:none;border-collapse:collapse;"
+            style="border:none;border-collapse:collapse;width:100%;"
             rendered="#{canvasModalBean.listPageSize != 0}" 
-            oncomplete="createOptionTitles()">
+            oncomplete="createOptionTitles();reLoadTabs();">
             
         <rich:panel id="panelDynamicForm" style="border:none;overflow:auto;height:465px;width:100%;padding-left: 3px;padding-right: 3px;" >
             
@@ -474,18 +477,18 @@
             
             <h:selectOneRadio id="quickNavigation" styleClass="wizzard_quick_navig" rendered="true" value="#{canvasModalBean.pageToGoTo}" >
                 <f:selectItems value="#{canvasModalBean.reachablePages}" />
-                <a4j:support event="onchange" action="#{canvasModalBean.goToPage}" oncomplete="setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');createOptionTitles();" reRender="canvasModalTabPanel, outputTab, panelDynamicForm, panelBtCanvasModal, browserPanel, browserTableData, msnError" />
+                <a4j:support event="onchange" action="#{canvasModalBean.goToPage}" oncomplete="setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');createOptionTitles();" reRender="canvasModalTabPanel, panelDynamicForm, panelBtCanvasModal, browserPanel, browserTableData, msnError" />
             </h:selectOneRadio>
                     
             <rich:panel id="panelBtCanvasModal" style="border:none; float:right;" >
             
                 <a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="closeDynamicForm();" reRender="panelBtCanvasModal, msnError, errorTable" />
                 
-                <a4j:commandButton action="#{canvasModalBean.previousPage}" styleClass="greenButton" value="#{messages.button_previous}" rendered="#{canvasModalBean.firstPage == 'N'}" reRender="canvasModalTabPanel, outputTab, panelDynamicForm, panelBtCanvasModal, browserPanel, browserTableData, msnError" oncomplete="changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');createOptionTitles();" />
+                <a4j:commandButton action="#{canvasModalBean.previousPage}" styleClass="greenButton" value="#{messages.button_previous}" rendered="#{canvasModalBean.firstPage == 'N'}" reRender="canvasModalTabPanel,  panelDynamicForm, panelBtCanvasModal, browserPanel, browserTableData, msnError" oncomplete="changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');createOptionTitles();" />
                 
-                <a4j:commandButton action="#{canvasModalBean.applyPage}" styleClass="greenButton" value="#{messages.button_apply}" reRender="canvasModalTabPanel, outputTab, panelBtCanvasModal, msnError, msnSuccess, browserTableProp, browserTableData, browserPropLabel, browserPropValue" oncomplete="changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');createOptionTitles();" />
+                <a4j:commandButton action="#{canvasModalBean.applyPage}" styleClass="greenButton" value="#{messages.button_apply}" reRender="canvasModalTabPanel, outputTab, panelBtCanvasModal, msnError, msnSuccess, browserTableProp, browserPropLabel, browserPropValue" oncomplete="changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');createOptionTitles();reLoadTabs();" />
     
-                <a4j:commandButton action="#{canvasModalBean.nextPage}" styleClass="greenButton" value="#{messages.button_next}" rendered="#{canvasModalBean.lastPage == 'N'}" reRender="canvasModalTabPanel, outputTab, panelDynamicForm, panelBtCanvasModal, browserPanel, browserTableData, msnError" oncomplete="changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');createOptionTitles();" />
+                <a4j:commandButton action="#{canvasModalBean.nextPage}" styleClass="greenButton" value="#{messages.button_next}" rendered="#{canvasModalBean.lastPage == 'N'}" reRender="canvasModalTabPanel,  panelDynamicForm, panelBtCanvasModal, browserPanel, browserTableData, msnError" oncomplete="changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');createOptionTitles();" />
                 
                 <a4j:commandButton action="#{canvasModalBean.applyPage}" value="#{messages.button_ok}" oncomplete="if(#{requestScope['msnError'] == null} )closeDynamicForm();" styleClass="greenButton" rendered="#{canvasModalBean.lastPage == 'Y'}" reRender="msnError, errorTable" />
             
@@ -493,7 +496,9 @@
             </h:panelGrid>
          </rich:tab>
             
-            <rich:tab id="outputTab" label="#{messages.label_dynamic_data}" rerender="dataOutputForm,dataDisplayReg,titleDisplay,displayTableDiv" rendered="#{canvasModalBean.outputTab.showOutputForm == 'Y' &amp;&amp; canvasBean.workflowType == 'W' }" >
+            <rich:tab id="outputTab" label="#{messages.label_dynamic_data}"  
+            	rendered="#{canvasModalBean.outputTab.showOutputForm == 'Y' &amp;&amp; canvasBean.workflowType == 'W' }"
+            	oncomplete="setTimeout(function(){reLoadDisplayTable()},500);" >
                 
                 
                 <rich:panel id="dataOutputForm" style="height:465px;border:none;overflow:auto;padding-right: 3px;padding-left: 3px;">
@@ -519,7 +524,7 @@
 	                       	<tr>
 	                       		<td>
 	                       			<a4j:commandLink value="output #{item.name}" action="#{canvasModalBean.outputTab.displayOutput}"
-	                       				reRender="dataOutputForm,dataDisplayReg,titleDisplay,displayTableDiv,outputTab">
+	                       				reRender="displayTable">
 		                                <a4j:actionparam name="outputName" value="#{item.name}" />
 		                            </a4j:commandLink>
 	                       		</td>
@@ -557,33 +562,33 @@
                 <!-- display data -->
                 <a4j:region style="border:none;" id="dataDisplayReg">
                 
-                        <h:outputText  value="#{canvasModalBean.outputTab.nameOutput}" id="titleDisplay" rendered="#{canvasModalBean.outputTab.titles != null}"/>
-                        <br/>
-                        <div id="displayTableDiv" style="width:100%; height:240px; border:1px solid black; overflow-x: hidden;">
-                        
-                            <rich:scrollableDataTable id="displayTable" value="#{canvasModalBean.outputTab.rows}" height="100%"
-                                var="rowData" index="rowDataIndex" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-                                enableContextMenu="false"
-                                onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
-                                rowClasses="even-row, odd-row" >
-                       
-                                <rich:columns value="#{canvasModalBean.outputTab.titles == null? canvasBean.emptyList : canvasModalBean.outputTab.titles}" 
-                                              var="column" 
-                                              index="ind"
-                                              id="column#{ind}"
-                                              sortExpression="#{rowData[ind]}">
-                                    
-                                    <f:facet name="header">
-                                        <h:outputText value="#{column}" />
-                                    </f:facet>
-                                    
-                                    <h:outputText value="#{rowData[ind]}" title="#{rowData[ind]}" />
-                                    
-                                </rich:columns>
-                
-                            </rich:scrollableDataTable>
-                
-                        </div>
+	                <h:outputText value="#{canvasModalBean.outputTab.nameOutput}" id="titleDisplay" rendered="#{canvasModalBean.outputTab.titles != null}"/>
+	                <br/>
+	                <div id="displayTableDiv" style="width:100%; height:240px; border:1px solid black; overflow-x: hidden;">
+	                
+	                    <rich:scrollableDataTable id="displayTable" value="#{canvasModalBean.outputTab.rows}" height="100%"
+	                        var="rowData" index="rowDataIndex" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+	                        enableContextMenu="false"
+	                        onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+	                        rowClasses="even-row, odd-row" >
+	               
+	                        <rich:columns value="#{canvasModalBean.outputTab.titles == null? canvasBean.emptyList : canvasModalBean.outputTab.titles}" 
+	                                      var="column" 
+	                                      index="ind"
+	                                      id="column#{ind}"
+	                                      sortExpression="#{rowData[ind]}">
+	                            
+	                            <f:facet name="header">
+	                                <h:outputText value="#{column}" />
+	                            </f:facet>
+	                            
+	                            <h:outputText value="#{rowData[ind]}" title="#{rowData[ind]}" />
+	                            
+	                        </rich:columns>
+	        
+	                    </rich:scrollableDataTable>
+	        
+	                </div>
                 </a4j:region>
     
                 </rich:panel>
