@@ -20,12 +20,14 @@ import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 
 import org.ajax4jsf.model.KeepAlive;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.utils.PackageManager;
 import com.sun.jersey.api.client.Client;
@@ -46,7 +48,6 @@ public class AnalyticsStoreModuleDetailBean implements Serializable{
 	
 	private List<RedSqirlModule> versionList;
 	
-
 	@PostConstruct
 	public void init() {
 		
@@ -126,7 +127,7 @@ public class AnalyticsStoreModuleDetailBean implements Serializable{
 		return pckObj.has(object) ? pckObj.getString(object) : "";
 	}
 	
-	public void installPackage() throws RemoteException{
+	public String installPackage() throws RemoteException{
 		String downloadUrl = null;
 		String fileName = null;
 		String key = null;
@@ -209,11 +210,20 @@ public class AnalyticsStoreModuleDetailBean implements Serializable{
 	    	user = System.getProperty("user.name");
 	    }
 	    	
-	    pckMng.addPackage(user, new String[]{packagePath});
+	    String error = pckMng.addPackage(user, new String[]{packagePath});
 	    
 	    File file = new File(packagePath);
 		file.delete();
+
+		if (error == null){
+			MessageUseful.addInfoMessage("Packge Installed.");
+			installed = true;
+		}
+		else{
+			MessageUseful.addInfoMessage("Error installing package");
+		}
 		
+		return "";
 		
 	}
 	
