@@ -1693,6 +1693,11 @@
 										onclick="showReplaceAllModal();">
 										<h:outputText value="Ctrl+R" class="menuItemHotKey" />
 									</rich:menuItem>
+									<rich:menuItem id="aggregateMenuItem" submitMode="ajax"
+										value="#{messages.label_menu_aggregate}"
+										onclick="checkOpenModalAggregate()">
+										<h:outputText value="Ctrl+R" class="menuItemHotKey" />
+									</rich:menuItem>
 									<rich:menuSeparator />
 									<rich:menuItem submitMode="none"
 										value="#{messages.label_menu_delete}"
