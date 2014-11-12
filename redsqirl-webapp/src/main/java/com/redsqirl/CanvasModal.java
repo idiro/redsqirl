@@ -257,7 +257,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 		}
 
 		if (dfe == null) {
-			logger.error("The element is null!");
+			logger.info("The element is null!");
 		}else{
 			elementId = getComponentId();
 			logger.info("Element id: "+elementId);
