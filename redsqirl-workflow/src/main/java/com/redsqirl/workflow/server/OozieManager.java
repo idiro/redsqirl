@@ -73,7 +73,9 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 	/** JobTracker link property key */
 	prop_jobtracker = "jobtracker",
 	/** Queue for namenode property key */
-	prop_queue = "queue",
+	prop_launcher_queue = "oozie.launcher.mapred.job.queue.name",
+	/** Default running job queue */
+	prop_action_queue = "default_action_queue",
 	/** User Name property key */
 	prop_user = "user.name",
 	/** Library Path for Oozie property key */
@@ -543,8 +545,10 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 				propSys.getProperty(WorkflowPrefManager.sys_jobtracker));
 		properties.put(prop_namenode,
 				propSys.getProperty(WorkflowPrefManager.sys_namenode));
-		properties.put(prop_queue,
-				propSys.getProperty(WorkflowPrefManager.sys_oozie_queue));
+		properties.put(prop_launcher_queue,
+				propSys.getProperty(WorkflowPrefManager.sys_oozie_launcher_queue));
+		properties.put(prop_action_queue,
+				propSys.getProperty(WorkflowPrefManager.sys_oozie_action_queue));
 		properties.put(prop_workflowpath,
 				propSys.getProperty(WorkflowPrefManager.sys_namenode)
 				+ hdfsWfPath);
