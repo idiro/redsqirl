@@ -114,7 +114,18 @@
                 data="#{canvasModalBean.idGroup}"
                 oncomplete="closeCanvasModal();#{rich:component('canvasModalPanel')}.hide();if(#{canvasModalBean.elementToUpdate}){updateOutputStatus(data);cloneAfterUpdateElement();}else{removeCloneWorkflow(cloneCommandUpdateElementBuffer);if(#{canvasModalBean.loadMainWindow}){updateOutputStatus(data);}}" />
     </a4j:region>
-
+    
+    <a4j:region>
+        <a4j:jsFunction name="openHelpTextEditorModal" 
+                action="#{canvasModalBean.openHelpTextEditorModal}" value=". . ."  
+                reRender="commandText,listFields,listFunctions,listCategories,listOperation,listCategoriesOperation,errorTable,msnError" 
+                oncomplete="#{rich:component('textEditorPanel')}.show();" style="float:right;margin-right:62px;height:46px;">
+                    <a4j:actionparam name="idInteraction" value="#{interCur.id}"/>
+                    <a4j:actionparam  name="rowKey" value="#{rowNb}"/>
+                    <a4j:actionparam  name="column" value="#{column}"/>
+        </a4j:jsFunction>
+    </a4j:region>
+                
     <a4j:region>
         <a4j:status onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModal') });"
                     onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
@@ -316,11 +327,9 @@
                         <h:inputTextarea maxlength="100" cols="90" rows="10" value="#{interCur.editor.textEditorValue}" 
                         	style="resize:none;border:1pxsolid;width:85%;" id="command">
                         	
-                       		<a4j:commandButton action="#{canvasModalBean.openHelpTextEditorModal}" value=". . ."  
-	                        	reRender="commandText,listFields,listFunctions,listCategories,listOperation,listCategoriesOperation,errorTable,msnError" 
-	                            oncomplete="#{rich:component('textEditorPanel')}.show();" style="float:right;margin-right:62px;height:46px;" 
+                       		<a4j:commandButton value=". . ."  
+	                        	onclick="openHelpTextEditorModal('#{interCur.id}');" style="float:right;margin-right:62px;height:46px;" 
 	                            rendered="#{interCur.editor.openPopup == 'Y'}">
-	                            <a4j:actionparam name="idInteraction" value="#{interCur.id}"/>
 							</a4j:commandButton>
                             
                         </h:inputTextarea>
@@ -426,12 +435,8 @@
 												<h:inputText value="#{rowItem.row[ind]}" 
 												       rendered="#{interCur.columnType[column] == 'editor' }" 
 												       styleClass="tableInteractionTextEditor" >
-			                                   	<a4j:commandButton action="#{canvasModalBean.openHelpTextEditorModal}" value="..." style="float:right;width:15%;" 
-			                                   		reRender="commandText,listFields,listFunctions,listCategories,listOperation,listCategoriesOperation,command,tableInteraction,errorTable,msnError" 
-			                                   		oncomplete="#{rich:component('textEditorPanel')}.show();">
-			                                   		<a4j:actionparam  name="idInteraction" value="#{interCur.id}"/>
-			                                           <a4j:actionparam  name="rowKey" value="#{rowNb}"/>
-			                                           <a4j:actionparam  name="column" value="#{column}"/>
+			                                   	<a4j:commandButton onclick="openHelpTextEditorModal('#{interCur.id}','#{rowNb}','#{column}');"
+			                                   	    value="..." style="float:right;width:15%;"> 
 												</a4j:commandButton>
 												</h:inputText>	        								
 			        
