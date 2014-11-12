@@ -66,7 +66,7 @@ public abstract class OozieActionAbs  extends UnicastRemoteObject implements Ooz
 		confName.appendChild(oozieXmlDoc.createTextNode("mapred.job.queue.name"));
 		Element confValue = oozieXmlDoc.createElement("value");
 		confValue.appendChild(oozieXmlDoc.createTextNode(
-				getVar(OozieManager.prop_queue)));
+				getVar(OozieManager.prop_action_queue)));
 
 		Element property = oozieXmlDoc.createElement("property");
 		property.appendChild(confName);
