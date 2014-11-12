@@ -95,18 +95,12 @@ public class PigDictionary extends AbstractDictionary {
 		    +" <tr>"
 		    +"     <td><code>\"h:mm a\"</code>"
 		    +"     <td><code>12:08 PM</code>"
-		    +" <tr>"
-		    +"     <td><code>\"EEE, d MMM yyyy HH:mm:ss Z\"</code>"
-		    +"     <td><code>Wed, 4 Jul 2001 12:08:56 -0700</code>"
 		    +" <tr bgcolor=\"#eeeeff\">"
 		    +"     <td><code>\"yyMMddHHmmssZ\"</code>"
 		    +"     <td><code>010704120856-0700</code>"
 		    +" <tr>"
 		    +"     <td><code>\"yyyy-MM-dd'T'HH:mm:ss.SSSZ\"</code>"
 		    +"     <td><code>2001-07-04T12:08:56.235-0700</code>"
-		    +" <tr bgcolor=\"#eeeeff\">"
-		    +"     <td><code>\"yyyy-MM-dd'T'HH:mm:ss.SSSXXX\"</code>"
-		    +"     <td><code>2001-07-04T12:08:56.235-07:00</code>"
 		    +" <tr>"
 		    +"     <td><code>\"YYYY-'W'ww-u\"</code>"
 		    +"     <td><code>2001-W27-3</code>"
@@ -425,16 +419,14 @@ public class PigDictionary extends AbstractDictionary {
 										"TIMESTAMP,TIMESTAMP",
 										"INT",
 										"@function:DaysBetween(datetime1, datetime2)@short:Returns the number of days between two DateTime objects."
-												+ "@param:datetime1 A datetime object. @param:datetime2 Another datetime object. @description:Use the DaysBetween function to get the number of days between the two given datetime objects."
-												+ "@example: returns 1; @example: returns  3" },
+												+ "@param:datetime1 A datetime object. @param:datetime2 Another datetime object. @description:Use the DaysBetween function to get the number of days between the two given datetime objects."},
 								new String[] {
 										"GetDay()",
 										"TIMESTAMP",
 										"INT",
 										"@function:GetDay(datetime)@short:Returns the day of a month from a DateTime object."
 												+ "@param:datetime A datetime object."
-												+ "@description: Use the GetDay function to extract the day of a month from the given datetime object."
-												+ "@example: returns 1; @example: returns  3" },
+												+ "@description: Use the GetDay function to extract the day of a month from the given datetime object."},
 								new String[] {
 										"GetHour()",
 										"TIMESTAMP",
@@ -442,8 +434,7 @@ public class PigDictionary extends AbstractDictionary {
 										"@function:GetHour(datetime)"
 												+ "@short:Returns the hour of a day from a DateTime object."
 												+ "@param:datetime A datetime object."
-												+ "@description: Use the GetHour function to extract the hour of a day from the given datetime object. "
-												+ "@example: returns 1; @example: returns  3" },
+												+ "@description: Use the GetHour function to extract the hour of a day from the given datetime object. "},
 								new String[] {
 										"GetMilliSecond()",
 										"TIMESTAMP",
@@ -451,8 +442,7 @@ public class PigDictionary extends AbstractDictionary {
 										"@function:GetMilliSecond(datetime)"
 												+ "@short:Returns the millisecond of a second from a DateTime object."
 												+ "@param:datetime A datetime object."
-												+ "@description: Use the GetMilliSecond function to extract the millsecond of a second from the given datetime object."
-												+ "@example: returns 1; @example: returns  3" },
+												+ "@description: Use the GetMilliSecond function to extract the millsecond of a second from the given datetime object."},
 								new String[] {
 										"GetMinute()",
 										"TIMESTAMP",
@@ -460,8 +450,7 @@ public class PigDictionary extends AbstractDictionary {
 										"@function:GetMinute(datetime)"
 												+ "@short:Returns the minute of a hour from a DateTime object."
 												+ "@param:datetime A datetime object."
-												+ "@description: Use the GetMinute function to extract the minute of a hour from the given datetime object. "
-												+ "@example: returns 1; @example: returns  3" },
+												+ "@description: Use the GetMinute function to extract the minute of a hour from the given datetime object. "},
 								new String[] {
 										"GetMonth()",
 										"TIMESTAMP",
@@ -469,8 +458,7 @@ public class PigDictionary extends AbstractDictionary {
 										"@function:GetMonth(datetime)"
 												+ "@short:Returns the month of a year from a DateTime object."
 												+ "@param:datetime A datetime object."
-												+ "@description:Use the GetMonth function to extract the month of a year from the given datetime object. "
-												+ "@example: returns 1; @example: returns  3" },
+												+ "@description:Use the GetMonth function to extract the month of a year from the given datetime object. "},
 								new String[] {
 										"GetSecond()",
 										"TIMESTAMP",
@@ -478,8 +466,7 @@ public class PigDictionary extends AbstractDictionary {
 										"@function:GetSecond(datetime)"
 												+ "@short:Returns the second of a minute from a DateTime object."
 												+ "@param:datetime A datetime object."
-												+ "@description:Use the GetSecond function to extract the second of a minute from the given datetime object. "
-												+ "@example: returns 1; @example: returns  3" },
+												+ "@description:Use the GetSecond function to extract the second of a minute from the given datetime object. "},
 								new String[] {
 										"GetWeek()",
 										"TIMESTAMP",
@@ -487,17 +474,15 @@ public class PigDictionary extends AbstractDictionary {
 										"@function:GetWeek(datetime)"
 												+ "@short:Returns the week of a week year from a DateTime object."
 												+ "@param:datetime A datetime object."
-												+ "@description: Use the GetWeek function to extract the week of a week year from the given datetime object. Note that week year may be different from year. "
-												+ "@example: returns 1; @example: returns  3" },
+												+ "@description: Use the GetWeek function to extract the week of a week year from the given datetime object. Note that week year may be different from year. "},
 								new String[] {
 										"GetWeekYear()",
 										"TIMESTAMP",
 										"INT",
 										"@function:GetWeekYear(datetime)"
-												+ "@short:"
+												+ "@short: Returns the week year from a DateTime object."
 												+ "@param:datetime A datetime object."
-												+ "@description: "
-												+ "@example: returns 1; @example: returns  3" },
+												+ "@description: "},
 								new String[] {
 										"GetYear()",
 										"TIMESTAMP",
@@ -505,8 +490,7 @@ public class PigDictionary extends AbstractDictionary {
 										"@function:GetYear(datetime)"
 												+ "@short:Returns the year from a DateTime object."
 												+ "@param:datetime A datetime object."
-												+ "@description: Use the GetYear function to extract the year from the given datetime object. "
-												+ "@example: returns 1; @example: returns  3" },
+												+ "@description: Use the GetYear function to extract the year from the given datetime object. "},
 								new String[] {
 										"HoursBetween()",
 										"TIMESTAMP,TIMESTAMP",
@@ -514,8 +498,7 @@ public class PigDictionary extends AbstractDictionary {
 										"@function:HoursBetween(datetime1, datetime2)"
 												+ "@short:Returns the number of hours between two DateTime objects."
 												+ "@param:datetime1 A datetime object. @param:datetime2 Another datetime object."
-												+ "@description:Use the HoursBetween function to get the number of hours between the two given datetime objects. "
-												+ "@example: returns 1; @example: returns  3" },
+												+ "@description:Use the HoursBetween function to get the number of hours between the two given datetime objects. "},
 								new String[] {
 										"MilliSecondsBetween()",
 										"TIMESTAMP,TIMESTAMP",
@@ -523,8 +506,7 @@ public class PigDictionary extends AbstractDictionary {
 										"@function:MilliSecondsBetween(datetime1, datetime2)"
 												+ "@short:Returns the number of milliseconds between two DateTime objects."
 												+ "@param:datetime1 A datetime object. @param:datetime2 Another datetime object."
-												+ "@description:Use the MilliSecondsBetween function to get the number of millseconds between the two given datetime objects. "
-												+ "@example: returns 1; @example: returns  3" },
+												+ "@description:Use the MilliSecondsBetween function to get the number of millseconds between the two given datetime objects. "},
 								new String[] {
 										"MinutesBetween()",
 										"TIMESTAMP,TIMESTAMP",
@@ -532,8 +514,7 @@ public class PigDictionary extends AbstractDictionary {
 										"@function:MinutesBetween(datetime1, datetime2)"
 												+ "@short:Returns the number of minutes between two DateTime objects."
 												+ "@param:datetime1 A datetime object. @param:datetime2 Another datetime object."
-												+ "@description:Use the MinutesBetween function to get the number of minutes between the two given datetime objects. "
-												+ "@example: returns 1; @example: returns  3" },
+												+ "@description:Use the MinutesBetween function to get the number of minutes between the two given datetime objects. "},
 								new String[] {
 										"MonthsBetween()",
 										"TIMESTAMP,TIMESTAMP",
@@ -541,8 +522,7 @@ public class PigDictionary extends AbstractDictionary {
 										"@function:MonthsBetween(datetime1, datetime2)"
 												+ "@short:Returns the number of months between two DateTime objects."
 												+ "@param:datetime1 A datetime object. @param:datetime2 Another datetime object."
-												+ "@description:Use the MonthsBetween function to get the number of months between the two given datetime objects. "
-												+ "@example: returns 1; @example: returns  3" },
+												+ "@description:Use the MonthsBetween function to get the number of months between the two given datetime objects. "},
 								new String[] {
 										"SecondsBetween()",
 										"TIMESTAMP,TIMESTAMP",
@@ -550,8 +530,7 @@ public class PigDictionary extends AbstractDictionary {
 										"@function:SecondsBetween(datetime1, datetime2)"
 												+ "@short:Returns the number of seconds between two DateTime objects."
 												+ "@param:datetime1 A datetime object. @param:datetime2 Another datetime object."
-												+ "@description:Use the SecondsBetween function to get the number of seconds between the two given datetime objects. "
-												+ "@example: returns 1; @example: returns  3" },
+												+ "@description:Use the SecondsBetween function to get the number of seconds between the two given datetime objects. "},
 								new String[] {
 										"ToDate()",
 										"LONG",
@@ -559,8 +538,7 @@ public class PigDictionary extends AbstractDictionary {
 										"@function:ToDate(millseconds)"
 												+ "@short:Returns a DateTime object according to parameters."
 												+ "@param:millseconds The offset from 1970-01-01T00:00:00.000Z in terms of the number milliseconds (either positive or negative)."
-												+ "@description:Use the ToDate function to generate a DateTime object."
-												+ "@example: returns 1; @example: returns  3" },
+												+ "@description:Use the ToDate function to generate a DateTime object."},
 								new String[] {
 										"ToDate()",
 										"STRING",
@@ -568,8 +546,7 @@ public class PigDictionary extends AbstractDictionary {
 										"@function:ToDate(iosstring)"
 												+ "@short:Returns a DateTime object according to parameters."
 												+ "@param:iosstring The datetime string in the ISO 8601 format.."
-												+ "@description:Use the ToDate function to generate a DateTime object."
-												+ "@example: returns 1; @example: returns  3" },
+												+ "@description:Use the ToDate function to generate a DateTime object."},
 								new String[] {
 										"ToDate()",
 										"STRING,STRING",
@@ -578,8 +555,7 @@ public class PigDictionary extends AbstractDictionary {
 												+ "@short:Returns a DateTime object according to parameters."
 												+ "@param:userstring The datetime string in the user defined format. @param:formatThe date time format pattern string (see Java SimpleDateFormat class). "
 												+  dateFormats
-												+ "@description:Use the ToDate function to generate a DateTime object."
-												+ "@example: returns 1; @example: returns  3" },
+												+ "@description:Use the ToDate function to generate a DateTime object."},
 								new String[] {
 										"ToDate()",
 										"STRING,STRING,STRING",
@@ -588,8 +564,7 @@ public class PigDictionary extends AbstractDictionary {
 												+ "@short:Returns a DateTime object according to parameters."
 												+ "@param:userstring The datetime string in the user defined format. @param:formatThe date time format pattern string (see Java SimpleDateFormat class). @param:timezone The timezone string. Either the UTC offset and the location based format can be used as a parameter, while internally the timezone will be converted to the UTC offset format."
 												+ dateFormats
-												+ "@description:Use the ToDate function to generate a DateTime object."
-												+ "@example: returns 1; @example: returns  3" },
+												+ "@description:Use the ToDate function to generate a DateTime object."},
 								new String[] {
 										"ToMilliSeconds()",
 										"TIMESTAMP",
@@ -597,8 +572,7 @@ public class PigDictionary extends AbstractDictionary {
 										"@function:ToMilliSeconds(datetime)"
 												+ "@short:Returns the number of milliseconds elapsed since January 1, 1970, 00:00:00.000 GMT for a DateTime object. "
 												+ "@param:datetime A datetime object."
-												+ "@description:Use the ToMilliSeconds function to convert the DateTime to the number of milliseconds that have passed since January 1, 1970 00:00:00.000 GMT."
-												+ "@example: returns 1; @example: returns  3" },
+												+ "@description:Use the ToMilliSeconds function to convert the DateTime to the number of milliseconds that have passed since January 1, 1970 00:00:00.000 GMT."},
 								/* This function does not work when tested new String[] {
 										"ToString()",
 										"TIMESTAMP",
@@ -625,8 +599,7 @@ public class PigDictionary extends AbstractDictionary {
 										"@function:ToUnixTime(datetime)"
 												+ "@short:Returns the Unix Time as long for a DateTime object. UnixTime is the number of seconds elapsed since January 1, 1970, 00:00:00.000 GMT. "
 												+ "@param:datetime A datetime object."
-												+ "@description:Use the ToUnixTime function to convert the DateTime to Unix Time. "
-												+ "@example: returns 1; @example: returns  3" },
+												+ "@description:Use the ToUnixTime function to convert the DateTime to Unix Time. "},
 								new String[] {
 										"WeeksBetween()",
 										"TIMESTAMP,TIMESTAMP",
@@ -634,8 +607,7 @@ public class PigDictionary extends AbstractDictionary {
 										"@function:WeeksBetween(datetime1, datetime2)"
 												+ "@short:Returns the number of weeks between two DateTime objects."
 												+ "@param:datetime1 A datetime object. @param:datetime2 Another datetime object."
-												+ "@description:Use the WeeksBetween function to get the number of weeks between the two given datetime objects. "
-												+ "@example: returns 1; @example: returns  3" },
+												+ "@description:Use the WeeksBetween function to get the number of weeks between the two given datetime objects. "},
 								new String[] {
 										"YearsBetween()",
 										"TIMESTAMP,TIMESTAMP",
@@ -643,8 +615,7 @@ public class PigDictionary extends AbstractDictionary {
 										"@function:YearsBetween(datetime1, datetime2)"
 												+ "@short:Returns the number of years between two DateTime objects."
 												+ "@param:datetime1 A datetime object. @param:datetime2 Another datetime object."
-												+ "@description:Use the YearsBetween function to get the number of years between the two given datetime objects. "
-												+ "@example: returns 1; @example: returns  3" },
+												+ "@description:Use the YearsBetween function to get the number of years between the two given datetime objects. "},
 
 						});
 
