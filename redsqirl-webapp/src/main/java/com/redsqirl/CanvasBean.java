@@ -173,10 +173,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 		try {
 			DataFlow df = getDf();
 			if (df == null) {
-				MessageUseful.addErrorMessage("The workflow '" + nameWorkflow
-						+ "' has not been initialised!");
-				HttpServletRequest request = (HttpServletRequest) FacesContext
-						.getCurrentInstance().getExternalContext().getRequest();
+				MessageUseful.addErrorMessage("The workflow '" + nameWorkflow + "' has not been initialised!");
+				HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 				request.setAttribute("msnError", "msnError");
 			} else if (nameElement != null && paramGroupID != null) {
 				idLastElementInserted = df.addElement(nameElement);
