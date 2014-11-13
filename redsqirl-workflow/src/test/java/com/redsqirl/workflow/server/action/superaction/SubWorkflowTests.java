@@ -281,7 +281,7 @@ public class SubWorkflowTests {
 			components.add(conv1.getComponentId());
 			components.add(conv2.getComponentId());
 			
-			error = w.aggregateElements(components, sName, inputs, outputs);
+			error = w.aggregateElements(components, sName, "",inputs, outputs);
 			assertTrue("Fail to aggregate: "+error, error == null);
 			
 			

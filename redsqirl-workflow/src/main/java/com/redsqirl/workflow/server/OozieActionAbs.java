@@ -87,11 +87,6 @@ public abstract class OozieActionAbs  extends UnicastRemoteObject implements Ooz
 			configuration.appendChild(property);
 		}
 
-		
-	
-//		property.appendChild(confName);
-//		property.appendChild(confValue);
-//		configuration.appendChild(property);
 		subAction.appendChild(configuration);
 	}
 	/**
