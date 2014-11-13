@@ -54,6 +54,26 @@
 					enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
 					rowClasses="even-row, odd-row" tableState="#{sshBean.tableState}" >
 	
+	                
+                    <rich:column style="border-bottom:0px;border-right:0px;"
+                        width="50px;">
+                        <f:facet name="header">
+                            <h:outputText value="" />
+                        </f:facet>
+                        <a4j:commandLink action="#{sshBean.editFileBefore}"
+                            oncomplete="#{rich:component('hdfseditModalPanel')}.show();">
+                            <h:graphicImage value="../image/icons/button-directory-property.gif"
+                                title='#{messages.HdfsInterface_properties_help}'
+                                rendered="#{sshBean.allProps[indexTable]['type'] == 'directory'}"
+                                styleClass="btfileSystem" />
+                            <h:graphicImage value="../image/icons/button-file-property.gif"
+                                title='#{messages.HdfsInterface_properties_help}'
+                                rendered="#{sshBean.allProps[indexTable]['type'] == 'file'}"
+                                styleClass="btfileSystem" />
+                            <f:param name="indexFileEdit" value="#{indexTable}" />
+                        </a4j:commandLink>
+                    </rich:column>
+	
 					<rich:column sortBy="#{sshBean.allProps[indexTable]['name']}" filterBy="#{sshBean.allProps[indexTable]['name']}"
 						style="border-bottom:0px;border-right:0px;">
 						<f:facet name="header">
@@ -74,6 +94,7 @@
                             	</rich:dragSupport>
 	     				</a4j:commandLink>
 					</rich:column>
+					
 					
 					<rich:columns value="#{sshBean.tableGrid.titles == null? canvasBean.emptyList : sshBean.tableGrid.titles}" var="column" index="ind" begin="1"
 						style="border-bottom:0px;border-right:0px;">
