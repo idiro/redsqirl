@@ -12,7 +12,7 @@
 	<groupId>idiro</groupId>
 	<artifactId>redsqirl-wf-interface</artifactId>
 	<packaging>jar</packaging>
-	<version>0.1-SNAPSHOT</version>
+	<version>0.1</version>
 	<name>Red Sqirl Worflow Interface</name>
 	<description>Provide the interface used by Red Sqirl app</description>
 	<url>http://ns.local.net/dev/idiro-wf-interface</url>
