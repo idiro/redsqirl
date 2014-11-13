@@ -6,7 +6,7 @@
 	<groupId>idiro</groupId>
 	<artifactId>redsqirl</artifactId>
 	<name>Red Sqirl</name>
-	<version>0.1-SNAPSHOT</version>
+	<version>0.1</version>
 	<packaging>pom</packaging>
 	<description>${project.name} is a platform</description>
 

@@ -204,7 +204,7 @@
 	              addWorkflow(tabName);
 	              addWorkflowTab(tabName);
 	              configureCanvas(tabName, true, "W");
-	              setWorkflow(tabName);
+	              //setWorkflow(tabName);
 	              validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
 	              resizeCanvas(30,45);
 	              
@@ -219,7 +219,7 @@
 	              addSubWorkflow(tabName);
 	              addWorkflowTab(tabName,"S");
 	              configureCanvas(tabName, true, "S");
-	              setWorkflow(tabName);
+	              //setWorkflow(tabName);
 	              validateArrows(jQuery("#canvas-tabs"),jQuery("#buttonsCanvas1"));
 	              resizeCanvas(30,45);
 	              
@@ -1112,13 +1112,11 @@
 					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
-				<a4j:jsFunction name="addWorkflow"
-					action="#{canvasBean.addWorkflow}">
+				<a4j:jsFunction name="addWorkflow" action="#{canvasBean.addWorkflow}" oncomplete="setWorkflow(getSelectedByName());">
 					<a4j:actionparam name="name" />
 				</a4j:jsFunction>
 
-				<a4j:jsFunction name="addSubWorkflow"
-					action="#{canvasBean.addSubWorkflow}">
+				<a4j:jsFunction name="addSubWorkflow" action="#{canvasBean.addSubWorkflow}" oncomplete="setWorkflow(getSelectedByName());">
 					<a4j:actionparam name="name" />
 				</a4j:jsFunction>
 			</a4j:region>
