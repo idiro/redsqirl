@@ -73,7 +73,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 	/** JobTracker link property key */
 	prop_jobtracker = "jobtracker",
 	/** Queue for namenode property key */
-	prop_launcher_queue = "oozie.launcher.mapred.job.queue.name",
+	prop_launcher_queue = "default_launcher_queue",
 	/** Default running job queue */
 	prop_action_queue = "default_action_queue",
 	/** User Name property key */

@@ -216,7 +216,6 @@ public class WorkflowPrefManager extends BlockManager {
 			sys_oozie = "oozie_url",
 			/** Oozie xml schema location */
 			sys_oozie_xmlns = "oozie_xmlns",
-			// sys_oozie_build_mode = "oozie_build_mode",
 			/** Default Hive XML */
 			sys_hive_default_xml = "hive_default_xml",
 			/** Hive XML */
@@ -231,8 +230,6 @@ public class WorkflowPrefManager extends BlockManager {
 			sys_install_package = "package_dir",
 			/** URL for Package Manager */
 			sys_pack_manager_url = "pack_manager_url",
-			/** Trusted host to packages */
-			sys_pack_download_trust = "trusted_pack_hosts",
 			/** The admin user */
 			sys_admin_user = "admin_user",
 			/** Parallel clause for pig */
@@ -620,20 +617,6 @@ public class WorkflowPrefManager extends BlockManager {
 		}
 		return nbOozieDir;
 
-	}
-
-	/**
-	 * Get the package manager trusted host list to download from
-	 * 
-	 * @return package manager trusted host list to download from
-	 */
-	public static String[] getPackTrustedHost() {
-		String[] trustedURL = new String[0];
-		String pack = getSysProperty(WorkflowPrefManager.sys_pack_download_trust);
-		if (pack != null && !pack.isEmpty()) {
-			trustedURL = pack.split(";");
-		}
-		return trustedURL;
 	}
 
 	/**
