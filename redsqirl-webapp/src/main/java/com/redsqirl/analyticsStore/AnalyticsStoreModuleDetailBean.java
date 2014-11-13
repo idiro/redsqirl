@@ -20,13 +20,13 @@ import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
 
 import org.ajax4jsf.model.KeepAlive;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.idiro.ProjectID;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.utils.PackageManager;
@@ -238,12 +238,17 @@ public class AnalyticsStoreModuleDetailBean implements Serializable{
 			prop.load(input);
 	 
 			// get the property value and print it out
-			return prop.getProperty("redsqirl01snapshot");
+			
+			return prop.getProperty(formatTitle(ProjectID.get()));
 		}
 		catch (Exception e){
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	private String formatTitle(String title){
+		return title.replace("-", "").replace(".", "").replace(" ", "").trim().toLowerCase();
 	}
 	
 	public String getRepoServer(){
