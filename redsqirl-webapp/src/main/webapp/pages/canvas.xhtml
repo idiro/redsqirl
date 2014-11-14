@@ -664,10 +664,15 @@
 	                deleteSelected(selectedCanvas);
 	            }
 			}
+				
+			if (event.keyCode === 8) { //backspace
+				var targ;
+				if (!e) var e = window.event;
+				if (e.target) targ = e.target;
+				else if (e.srcElement) targ = e.srcElement;
 
-			if( !jQuery(".rich-mp-container").is(":visible") ){
-				if (event.keyCode === 8) { //backspace
-					 event.preventDefault();
+				if(targ.tagName == "BODY"){
+					event.preventDefault();
 				}
 			}
             
