@@ -265,59 +265,51 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 		String url = FacesContext.getCurrentInstance().getExternalContext().
 				getRequestParameterMap().get("downloadUrl");
-		String[] trustedURL = 
-				WorkflowPrefManager.getPackTrustedHost();
-		if(trustedURL.length > 0 && !url.contains("/../")){
-			boolean ok = false;
-			for(String curTrust : trustedURL){
-				if(url.startsWith(curTrust)){
-					ok = true;
-				}
-			}
-			if(!ok){
-				error= getMessageResources("pckMng.not_trusted_url");
-			}
-			//Package Name
-			String pckName = url.split("/")[url.split("/").length-1];
-			logger.info("installation of "+pckName);
-			File pckFile = new File("/tmp/"+pckName);
-			if(ok && ((!sys && getUserPackages().contains(pckName)) || (sys && getSystemPackages().contains(pckName)))) {
-				error=  getMessageResources("pckMng.already_installed");
-				ok = false;
-			}
-			if(ok){
-				try {
-					//Download Package
-					URL website = new URL(url);
-					ReadableByteChannel rbc = Channels.newChannel(website.openStream());
-					FileOutputStream fos = new FileOutputStream(pckFile);
-					fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-					fos.close();
-					logger.info("package downloaded to: "+pckFile.getAbsolutePath());
-					//Install Package
-					if(sys){
-						PackageManager sysPckManager = new PackageManager();
-						error = sysPckManager.addPackage(null, 
-								new String[]{pckFile.getAbsolutePath()});
-					}else{
-						HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext()
-								.getSession(false);
-						String user = (String) session.getAttribute("username");
-						error = pckManager.addPackage(user, 
-								new String[]{pckFile.getAbsolutePath()});
-					}
-				} catch (MalformedURLException e) {
-					error="The URL given is Malformed: "+e.getMessage();
-				}catch(FileNotFoundException e){
-					error="Unable to download the package: file not found";
-				}catch (IOException e) {
-					error="Error while downloading the file: "+e.getMessage();
-				}
-				pckFile.delete();
 
-			}
-		}else{
+
+		boolean ok = false;
+
+		if(!ok){
 			error= getMessageResources("pckMng.not_trusted_url");
+		}
+		//Package Name
+		String pckName = url.split("/")[url.split("/").length-1];
+		logger.info("installation of "+pckName);
+		File pckFile = new File("/tmp/"+pckName);
+		if(ok && ((!sys && getUserPackages().contains(pckName)) || (sys && getSystemPackages().contains(pckName)))) {
+			error=  getMessageResources("pckMng.already_installed");
+			ok = false;
+		}
+		if(ok){
+			try {
+				//Download Package
+				URL website = new URL(url);
+				ReadableByteChannel rbc = Channels.newChannel(website.openStream());
+				FileOutputStream fos = new FileOutputStream(pckFile);
+				fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+				fos.close();
+				logger.info("package downloaded to: "+pckFile.getAbsolutePath());
+				//Install Package
+				if(sys){
+					PackageManager sysPckManager = new PackageManager();
+					error = sysPckManager.addPackage(null, 
+							new String[]{pckFile.getAbsolutePath()});
+				}else{
+					HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext()
+							.getSession(false);
+					String user = (String) session.getAttribute("username");
+					error = pckManager.addPackage(user, 
+							new String[]{pckFile.getAbsolutePath()});
+				}
+			} catch (MalformedURLException e) {
+				error="The URL given is Malformed: "+e.getMessage();
+			}catch(FileNotFoundException e){
+				error="Unable to download the package: file not found";
+			}catch (IOException e) {
+				error="Error while downloading the file: "+e.getMessage();
+			}
+			pckFile.delete();
+
 		}
 
 		return error;
