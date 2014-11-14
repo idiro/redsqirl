@@ -60,7 +60,9 @@ public class SSHInterface extends UnicastRemoteObject implements DataStore {
 	 * The properties
 	 */
 	public static final String key_permission = "permission",
-			key_owner = "owner", key_group = "group";
+			key_owner = "owner", key_group = "group",
+					/** Type Key */
+					key_type = "type";
 	/**
 	 * Default path for remote servers to use
 	 */
@@ -96,6 +98,9 @@ public class SSHInterface extends UnicastRemoteObject implements DataStore {
 		String privateKey = WorkflowPrefManager.getRsaPrivate();
 
 		if (paramProp.isEmpty()) {
+			paramProp.put(key_type, new DSParamProperty(
+					"Type of the file: \"directory\" or \"file\"", true, true,
+					false));
 			paramProp.put(key_owner, new DSParamProperty("Owner of the file",
 					true, false, false));
 			paramProp.put(key_group, new DSParamProperty("Group of the file",
@@ -494,6 +499,11 @@ public class SSHInterface extends UnicastRemoteObject implements DataStore {
 		ans.put(key_permission, stats[0]);
 		ans.put(key_owner, stats[1]);
 		ans.put(key_group, stats[2]);
+		if(atr.isDir()){
+			ans.put(key_type, "directory");
+		}else{
+			ans.put(key_type, "file");
+		}
 		logger.debug(ans.toString());
 		return ans;
 	}
@@ -511,11 +521,14 @@ public class SSHInterface extends UnicastRemoteObject implements DataStore {
 	@SuppressWarnings("unchecked")
 	public Map<String, Map<String, String>> getChildrenProperties(String path)
 			throws RemoteException {
-		Map<String, Map<String, String>> ans = new LinkedHashMap<String, Map<String, String>>();
+		
+		Map<String, Map<String, String>> ans = null;
 		Iterator<ChannelSftp.LsEntry> it;
 
 		try {
 			if (channel.lstat(path).isDir()) {
+				ans = new LinkedHashMap<String, Map<String, String>>();
+				
 				it = channel.ls(path).iterator();
 
 				while (it.hasNext()) {

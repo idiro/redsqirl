@@ -61,24 +61,32 @@ public abstract class OozieActionAbs  extends UnicastRemoteObject implements Ooz
 					job_xml));
 			subAction.appendChild(jobXml);
 		}
-
-		Element confName = oozieXmlDoc.createElement("name");
-		confName.appendChild(oozieXmlDoc.createTextNode("mapred.job.queue.name"));
-		Element confValue = oozieXmlDoc.createElement("value");
-		confValue.appendChild(oozieXmlDoc.createTextNode(
-				getVar(OozieManager.prop_action_queue)));
-
-		Element property = oozieXmlDoc.createElement("property");
-		property.appendChild(confName);
-		property.appendChild(confValue);
-
 		Element configuration = oozieXmlDoc.createElement("configuration");
-		configuration.appendChild(property);
-		
-	
-//		property.appendChild(confName);
-//		property.appendChild(confValue);
-//		configuration.appendChild(property);
+		{
+			Element confName = oozieXmlDoc.createElement("name");
+			confName.appendChild(oozieXmlDoc.createTextNode("mapred.job.queue.name"));
+			Element confValue = oozieXmlDoc.createElement("value");
+			confValue.appendChild(oozieXmlDoc.createTextNode(
+					getVar(OozieManager.prop_action_queue)));
+
+			Element property = oozieXmlDoc.createElement("property");
+			property.appendChild(confName);
+			property.appendChild(confValue);
+			configuration.appendChild(property);
+		}
+		{
+			Element confName = oozieXmlDoc.createElement("name");
+			confName.appendChild(oozieXmlDoc.createTextNode("oozie.launcher.mapred.job.queue.name"));
+			Element confValue = oozieXmlDoc.createElement("value");
+			confValue.appendChild(oozieXmlDoc.createTextNode(
+					getVar(OozieManager.prop_launcher_queue)));
+
+			Element property = oozieXmlDoc.createElement("property");
+			property.appendChild(confName);
+			property.appendChild(confValue);
+			configuration.appendChild(property);
+		}
+
 		subAction.appendChild(configuration);
 	}
 	/**
