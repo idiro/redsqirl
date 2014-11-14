@@ -662,12 +662,10 @@
 			if( !jQuery(".rich-mp-container").is(":visible") ){
 				if (e.keyCode == 46) { // Delete
 	                deleteSelected(selectedCanvas);
-	            }
-			}
-
-			if( !jQuery(".rich-mp-container").is(":visible") ){
+	            }					 
+			
 				if (event.keyCode === 8) { //backspace
-					 event.preventDefault();
+		            event.preventDefault();
 				}
 			}
             
