@@ -248,7 +248,7 @@ public class AnalyticsStoreModuleDetailBean implements Serializable{
 	}
 	
 	private String formatTitle(String title){
-		return title.replace("-", "").replace(".", "").replace(" ", "").trim().toLowerCase();
+		return title.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
 	}
 	
 	public String getRepoServer(){
