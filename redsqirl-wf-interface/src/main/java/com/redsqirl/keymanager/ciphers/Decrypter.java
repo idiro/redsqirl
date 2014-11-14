@@ -217,12 +217,14 @@ public class Decrypter extends KeyCipher {
 			valid &= ans.get(userName + "1").substring(0, 1).equals(sysVal);
 
 			// Username
+			if (!sys) {
 			valid &= ans.get(userName + "1").equals(
 					keyModule.get(userName).substring(0, 4));
 
 			valid &= ans.get(userName + "2").equals(
 					keyModule.get(userName).substring(
 							keyModule.get(userName).length() - 3));
+			}
 
 			// name
 			valid &= ans.get(name + "1").equals(

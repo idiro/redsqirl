@@ -14,8 +14,11 @@
 		style="border:1px solid;width:550px;height:278px;" disabled="true" />
 	
 	<br />
-	
-	
-	<a4j:commandButton value="#{messages.button_ok}" onclick="#{rich:component('hiveOpenFileModalPanel')}.hide();" />
+
+	<h:panelGrid columns="1" id="prevHivelBt" style="border:none; float:right;">
+	<a4j:commandButton value="#{messages.button_ok}"
+		styleClass="greenButton"
+		onclick="#{rich:component('hiveOpenFileModalPanel')}.hide();" />
+	</h:panelGrid>
 
 </ui:composition>
