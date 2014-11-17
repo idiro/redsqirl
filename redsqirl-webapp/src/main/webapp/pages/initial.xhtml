@@ -19,9 +19,10 @@
 <title><h:outputText value="#{messages.label_sistem}" /></title>
 
 <link rel="stylesheet" type="text/css" href='#{facesContext.externalContext.requestContextPath}/css/redsqirl.css' />
-<script	src='#{facesContext.externalContext.requestContextPath}/js/jquery-1.9.1.js'	type="text/javascript"></script>
-<script	src='#{facesContext.externalContext.requestContextPath}/js/jquery.cookie.js' type="text/javascript"></script>
-<script	src='#{facesContext.externalContext.requestContextPath}/js/jquery.blockUI.js' type="text/javascript"></script>
+<script	src='#{facesContext.externalContext.requestContextPath}/js/jquery-1.9.1.js'	type="text/javascript" />
+<script	src='#{facesContext.externalContext.requestContextPath}/js/jquery.cookie.js' type="text/javascript" />
+<script	src='#{facesContext.externalContext.requestContextPath}/js/jquery.blockUI.js' type="text/javascript" />
+<script src="#{facesContext.externalContext.requestContextPath}/js/redsqirl.js" type="text/javascript" />
 
 </head>
 
@@ -49,6 +50,7 @@
 	   
 	    document.onkeydown = checkKeycode
 
+	    time = jQuery.now();
 	
 	  //]]> 
 	});
@@ -87,6 +89,13 @@
 
 	function relogin(){
 		jQuery("[id$='idButtonLogin']").click();
+	}
+
+	function checkTime(){
+		var newTime = jQuery.now();
+		if(newTime > time+30*60*1000){
+			location.reload();
+		}
 	}
 
 </script>
@@ -199,7 +208,7 @@
 						    reRender="progressPanel" 
 							styleClass="buttonLogin" 
 							style="position:relative;vertical-align: middle;height:40px;top:-15px;width:107px;"
-							onclick="cookiePassword(); jQuery.blockUI({ message: jQuery('#divProgressBar') }); "
+							onclick="checkTime(); cookiePassword(); jQuery.blockUI({ message: jQuery('#divProgressBar') }); "
 							oncomplete="login('F');"
 							value="#{messages.label_login}" />
 							

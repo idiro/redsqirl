@@ -1,4 +1,6 @@
 
+var time;
+
 function canvasResizeSplitter(){
 	//<![CDATA[
 	
