@@ -139,7 +139,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 			getTableGrid().getRows().add(new SelectableRowFooter(value, getMenuActions(), getTarget()));
 			//logger.info("menu "+name+": "+getMenuActions()+", "+getTarget());
 		}
-
+		menuActions.addAll(result);
 	}
 
 	public Map<String, List<String[]>> getMenuWA() {

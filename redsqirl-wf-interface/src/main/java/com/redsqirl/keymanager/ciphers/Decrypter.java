@@ -65,6 +65,9 @@ public class Decrypter extends KeyCipher {
 	}
 
 	public void decrypt_key_module(String keyModule) {
+		if(keyModule.length() != 24){
+			return;
+		}
 		ans = new HashMap<String, String>();
 
 		int[] indent = new int[4];
@@ -242,6 +245,7 @@ public class Decrypter extends KeyCipher {
 				System.out.println(stck.getClassName() + " "
 						+ stck.getMethodName() + " " + stck.getLineNumber());
 			}
+			valid = false;
 		}
 
 		return valid;
