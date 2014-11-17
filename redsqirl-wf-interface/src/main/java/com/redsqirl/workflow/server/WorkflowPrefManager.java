@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 import com.idiro.BlockManager;
 import com.idiro.hadoop.NameNodeVar;
 import com.redsqirl.workflow.utils.PackageManager;
+import com.redsqirl.workflow.utils.SuperActionManager;
 
 /**
  * Software preference manager.
@@ -362,11 +363,16 @@ public class WorkflowPrefManager extends BlockManager {
 			File libPackage = new File(getUserPackageLibPath(userName));
 			logger.debug(libPackage.getAbsolutePath());
 			libPackage.mkdirs();
-
+			
+			File superactionF = new SuperActionManager().getSuperActionMainDir(userName);
+			superactionF.mkdirs();
+			
 			// Everybody is able to write in this home folder
 			logger.debug("set permissions...");
 			home.setWritable(true, false);
 			home.setReadable(true, false);
+			superactionF.setWritable(true, false);
+			superactionF.setReadable(true, false);
 		}
 
 	}

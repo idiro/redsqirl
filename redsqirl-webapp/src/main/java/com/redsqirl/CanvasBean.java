@@ -40,6 +40,7 @@ import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.JobManager;
+import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 import com.redsqirl.workflow.server.interfaces.SuperElement;
 import com.redsqirl.workflow.utils.SuperActionManager;
 
@@ -2412,18 +2413,31 @@ public class CanvasBean extends BaseBean implements Serializable {
 				}
 
 				if(error == null){
-					error = getDf().aggregateElements(getComponentIds(), 
+					try{
+						SubDataFlow sw = getDf().createSA(getComponentIds(), 
 							getInputNameSubWorkflow(),
 							WorkflowHelpUtils.generateHelp(getInputNameSubWorkflow(), getInputAreaSubWorkflow() ,inputsForHelp, outputsForHelp), 
 							inputs, outputs);
-					logger.info("Elements: " + getDf().getComponentIds());
+						new SuperActionManager().install(getUserInfoBean().getUserName(), sw, null);
+					}catch(Exception e){
+						error = e.getMessage();
+					}
+					
+					if(error == null){
+						error = getDf().aggregateElements(getComponentIds(), 
+							getInputNameSubWorkflow(),
+							inputs, outputs);
+					}
+					if(error == null){
+						logger.info("Elements: " + getDf().getComponentIds());
 
-					Iterator<String> elIt = getDf().getComponentIds().iterator();
-					Map<String, String> idMapWf = idMap.get(getNameWorkflow());
-					idMapWf.clear();
-					while (elIt.hasNext()) {
-						String elCur = elIt.next();
-						idMapWf.put(elCur, elCur);
+						Iterator<String> elIt = getDf().getComponentIds().iterator();
+						Map<String, String> idMapWf = idMap.get(getNameWorkflow());
+						idMapWf.clear();
+						while (elIt.hasNext()) {
+							String elCur = elIt.next();
+							idMapWf.put(elCur, elCur);
+						}
 					}
 				}
 			} catch (RemoteException e) {
