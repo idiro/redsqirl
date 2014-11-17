@@ -63,6 +63,7 @@ import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
+import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 import com.redsqirl.workflow.server.interfaces.SuperElement;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 import com.redsqirl.workflow.utils.SuperActionManager;
@@ -1631,12 +1632,12 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		return error;
 	}
 
-	public String aggregateElements(
+	public SubDataFlow createSA(
 			List<String> componentIds, 
 			String subworkflowName,
 			String subworkflowComment,
 			Map<String,Entry<String,String>> inputs, 
-			Map<String,Entry<String,String>> outputs) throws RemoteException{
+			Map<String,Entry<String,String>> outputs) throws Exception{
 		logger.info("To aggregate: "+componentIds);
 		int posIncr = 150;
 		String error = null;
@@ -1646,7 +1647,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 		SubWorkflow sw = new SubWorkflow(subworkflowName);
 		sw.setComment(subworkflowComment);
-		
+
 		//Copy Elements
 		Workflow copy = null;
 		try{
@@ -1654,132 +1655,139 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}catch(Exception e){
 			error = "Fail to clone the workflow";
 			logger.error(error,e);
-			return error;
 		}
-
-		Iterator<String> idIt = copy.getComponentIds().iterator();
-		try {
-			while(idIt.hasNext()){
-				String cur = idIt.next();
-				if(!componentIds.contains(cur)){
-					logger.info("To remove: "+cur);
-					copy.removeElement(cur);
-				}
-			}
-		} catch (Exception e) {
-			error = "Fail to remove an element";
-			logger.error(error,e);
-			return error;
-		}
-
-
-		idIt = componentIds.iterator();
-		while(idIt.hasNext()){
-			String cur = idIt.next();
-			logger.info("To copy: "+cur);
-			sw.addElement(copy.getElement(cur));
-			DataFlowElement newEl = sw.getElement(cur);
-			newEl.setPosition(newEl.getX()+posIncr, newEl.getY());
-		}
-
-		try{
-			//Create Action inputs
-			Iterator<String> entries = inputs.keySet().iterator();
-			while(entries.hasNext()){
-				String inputName = entries.next();
-
-				//Get the DFEOutput from which we copy the constraint
-				DFEOutput constraint = this.getElement(inputs.get(inputName).getKey())
-						.getDFEOutput().get(inputs.get(inputName).getValue());
-
-				String tmpId = sw.addElement((new SubWorkflowInput()).getName());
-				sw.changeElementId(tmpId, inputName);
-
-				//Update Data Type
-				SubWorkflowInput input = (SubWorkflowInput) sw.getElement(inputName);
-				input.update(input.getInteraction(Source.key_datatype));
-				Tree<String> dataTypeTree = input.getInteraction(Source.key_datatype)
-						.getTree();
-				dataTypeTree.getFirstChild("list").getFirstChild("output").add(constraint.getBrowser());
-
-				//Update Data SubType
-				input.update(input.getInteraction(Source.key_datasubtype));
-				((ListInteraction) input.getInteraction(Source.key_datasubtype))
-				.setValue(constraint.getTypeName());
-
-				//Update header
-				input.update(input.getInteraction(SubWorkflowInput.key_headerInt));
-				InputInteraction header = (InputInteraction) input.getInteraction(SubWorkflowInput.key_headerInt);
-				header.setValue(constraint.getFields().mountStringHeader());
-
-				input.update(input.getInteraction(SubWorkflowInput.key_fieldDefInt));
-
-				input.updateOut();
-
-				Iterator<DataFlowElement> toLinkIt = this.getElement(inputs.get(inputName).getKey()).getOutputComponent()
-						.get(inputs.get(inputName).getValue()).iterator();
-				Point positionSuperActionInput = new Point(0,0);
-				int numberOfInput = 0;
-				while(toLinkIt.hasNext()){
-					DataFlowElement curEl = toLinkIt.next();
-					if(componentIds.contains(curEl.getComponentId())){
-						//Create link
-						sw.addLink(
-								SubWorkflowInput.out_name, 
-								inputName, 
-								getElement(inputs.get(inputName).getKey())
-								.getInputNamePerOutput().get(inputs.get(inputName).getValue())
-								.get(curEl.getComponentId()), curEl.getComponentId());
-						
-						
-						String newAlias = sw.getElement(curEl.getComponentId()).getAliasesPerComponentInput()
-								.get(inputName).getKey();
-						String oldAlias = curEl.getAliasesPerComponentInput().get(
-										inputs.get(inputName).getKey()).getKey();
-
-						
-						sw.getElement(curEl.getComponentId()).replaceInAllInteraction(
-								oldAlias,
-								newAlias);
-
-						positionSuperActionInput.move((int)positionSuperActionInput.getX()+curEl.getX(), 
-								(int)positionSuperActionInput.getY()+curEl.getY());
-						++numberOfInput;
+		if(error == null){
+			Iterator<String> idIt = copy.getComponentIds().iterator();
+			try {
+				while(idIt.hasNext()){
+					String cur = idIt.next();
+					if(!componentIds.contains(cur)){
+						logger.info("To remove: "+cur);
+						copy.removeElement(cur);
 					}
 				}
-				input.setPosition((int) (positionSuperActionInput.getX()/numberOfInput), (int)(positionSuperActionInput.getY()/numberOfInput));
+			} catch (Exception e) {
+				error = "Fail to remove an element";
+				logger.error(error,e);
 			}
-
-			//Create Action outputs
-			entries = outputs.keySet().iterator();
-			while(entries.hasNext()){
-				String outputName = entries.next();
-
-
-				String tmpId = sw.addElement((new SubWorkflowOutput()).getName());
-				sw.changeElementId(tmpId, outputName);
-
-				sw.addLink(
-						outputs.get(outputName).getValue(),
-						outputs.get(outputName).getKey(),
-						SubWorkflowOutput.input_name,
-						outputName);
-				DataFlowElement in = sw.getElement(outputs.get(outputName).getKey());
-				sw.getElement(outputName).setPosition(in.getX()+posIncr, in.getY());
-			}
-		
-		} catch (Exception e) {
-			error = "Fail to create an input or output super action";
-			logger.error(error,e);
-			return error;
 		}
 
-		//Install the subworkflow
-		error = new SuperActionManager().install(System.getProperty("user.name"), sw, null);
+		if(error == null){
+			Iterator<String> idIt = componentIds.iterator();
+			while(idIt.hasNext()){
+				String cur = idIt.next();
+				logger.info("To copy: "+cur);
+				sw.addElement(copy.getElement(cur));
+				DataFlowElement newEl = sw.getElement(cur);
+				newEl.setPosition(newEl.getX()+posIncr, newEl.getY());
+			}
+
+			try{
+				//Create Action inputs
+				Iterator<String> entries = inputs.keySet().iterator();
+				while(entries.hasNext()){
+					String inputName = entries.next();
+
+					//Get the DFEOutput from which we copy the constraint
+					DFEOutput constraint = this.getElement(inputs.get(inputName).getKey())
+							.getDFEOutput().get(inputs.get(inputName).getValue());
+
+					String tmpId = sw.addElement((new SubWorkflowInput()).getName());
+					sw.changeElementId(tmpId, inputName);
+
+					//Update Data Type
+					SubWorkflowInput input = (SubWorkflowInput) sw.getElement(inputName);
+					input.update(input.getInteraction(Source.key_datatype));
+					Tree<String> dataTypeTree = input.getInteraction(Source.key_datatype)
+							.getTree();
+					dataTypeTree.getFirstChild("list").getFirstChild("output").add(constraint.getBrowser());
+
+					//Update Data SubType
+					input.update(input.getInteraction(Source.key_datasubtype));
+					((ListInteraction) input.getInteraction(Source.key_datasubtype))
+					.setValue(constraint.getTypeName());
+
+					//Update header
+					input.update(input.getInteraction(SubWorkflowInput.key_headerInt));
+					InputInteraction header = (InputInteraction) input.getInteraction(SubWorkflowInput.key_headerInt);
+					header.setValue(constraint.getFields().mountStringHeader());
+
+					input.update(input.getInteraction(SubWorkflowInput.key_fieldDefInt));
+
+					input.updateOut();
+
+					Iterator<DataFlowElement> toLinkIt = this.getElement(inputs.get(inputName).getKey()).getOutputComponent()
+							.get(inputs.get(inputName).getValue()).iterator();
+					Point positionSuperActionInput = new Point(0,0);
+					int numberOfInput = 0;
+					while(toLinkIt.hasNext()){
+						DataFlowElement curEl = toLinkIt.next();
+						if(componentIds.contains(curEl.getComponentId())){
+							//Create link
+							sw.addLink(
+									SubWorkflowInput.out_name, 
+									inputName, 
+									getElement(inputs.get(inputName).getKey())
+									.getInputNamePerOutput().get(inputs.get(inputName).getValue())
+									.get(curEl.getComponentId()), curEl.getComponentId());
+
+
+							String newAlias = sw.getElement(curEl.getComponentId()).getAliasesPerComponentInput()
+									.get(inputName).getKey();
+							String oldAlias = curEl.getAliasesPerComponentInput().get(
+									inputs.get(inputName).getKey()).getKey();
+
+
+							sw.getElement(curEl.getComponentId()).replaceInAllInteraction(
+									oldAlias,
+									newAlias);
+
+							positionSuperActionInput.move((int)positionSuperActionInput.getX()+curEl.getX(), 
+									(int)positionSuperActionInput.getY()+curEl.getY());
+							++numberOfInput;
+						}
+					}
+					input.setPosition((int) (positionSuperActionInput.getX()/numberOfInput), (int)(positionSuperActionInput.getY()/numberOfInput));
+				}
+
+				//Create Action outputs
+				entries = outputs.keySet().iterator();
+				while(entries.hasNext()){
+					String outputName = entries.next();
+
+
+					String tmpId = sw.addElement((new SubWorkflowOutput()).getName());
+					sw.changeElementId(tmpId, outputName);
+
+					sw.addLink(
+							outputs.get(outputName).getValue(),
+							outputs.get(outputName).getKey(),
+							SubWorkflowOutput.input_name,
+							outputName);
+					DataFlowElement in = sw.getElement(outputs.get(outputName).getKey());
+					sw.getElement(outputName).setPosition(in.getX()+posIncr, in.getY());
+				}
+
+			} catch (Exception e) {
+				error = "Fail to create an input or output super action";
+				logger.error(error,e);
+			}
+		}
+
 		if(error != null){
-			return error;
+			throw new Exception(error);
 		}
 		
+		return sw;
+	}
+	
+	public String aggregateElements(
+			List<String> componentIds, 
+			String subworkflowName,
+			Map<String,Entry<String,String>> inputs, 
+			Map<String,Entry<String,String>> outputs) throws RemoteException{
+		String error = null;
+		Workflow copy = null;
 		//Replace elements by the subworkflow
 		Point positionSuperAction = new Point(0,0);
 		try{
