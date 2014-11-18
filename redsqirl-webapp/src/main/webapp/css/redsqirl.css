@@ -1129,10 +1129,9 @@ div.splitter-bar.ui-state-highlight {
 
 /*filesystem table*/
 .extdt-content{
-	height: 23em ;
+	height: 23em;
 	/* height: inherit !important; */
 }
-
 
 /*extendeddatatable skin*/
 .even-row {

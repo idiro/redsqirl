@@ -81,9 +81,9 @@ function resizeTables(){
 	
 	jQuery("#errorTable .extdt-content").css("height", jQuery("#tabs-3").height()-35+"px", "important");
 	
-	jQuery("#hiveFileSystem .extdt-content").style("height", jQuery("#tabs-4").height()-160+"px", "important");
+	jQuery("#hdfsFileSystem .extdt-content").style("height", jQuery("#tabs-4").height()-160+"px", "important");
 	
-	jQuery("#hdfsFileSystem .extdt-content").style("height", jQuery("#tabs-7").height()-160+"px", "important");
+	jQuery("#hiveFileSystem .extdt-content").style("height", jQuery("#tabs-5").height()-160+"px", "important");
 	
 	jQuery("#tabRemote .extdt-content").css("height", jQuery("#tabs-8").height()-205+"px", "important");
 
@@ -122,10 +122,9 @@ function onPageReady(){
 	  jQuery("#canvas").css("width", jQuery("#canvas-tabs").width()+'px');
 	  jQuery("#tabsFooter").css("width", jQuery("#canvas-tabs").width()-0+'px');
 	  
-	  
 	  resizeTabs();
 	  
-	  jQuery("#divTabHelp").css("height", jQuery("#tabs-1").height()-56+'px');
+	  //jQuery("#divTabHelp").css("height", jQuery("#tabs-1").height()-56+'px');
 	  
 	  jQuery("#buttonsCanvas1").hide();
 	  jQuery("#buttonsTabs1").hide();
@@ -146,7 +145,8 @@ function onPageReady(){
 	  //configureFooterCss();
 
 	  validateArrowsAll();
-	  resizeTables();
+
+	  //resizeTables();
 	  
 }
 
@@ -307,7 +307,7 @@ function resizeTabs(){
 		jQuery("#tabs-5").css("height", jQuery(".splitter-pane").height()-45+'px');
 	}
 	
-	if(jQuery("#tabs-6").parent("div").attr('id') == jQuery("#tabs1").attr('id')){
+	/*if(jQuery("#tabs-6").parent("div").attr('id') == jQuery("#tabs1").attr('id')){
 		jQuery("#tabs-6").css("height", jQuery("#tabs1").height()-border+'px');
 	}else if(jQuery("#tabs-6").parent("div").attr('id') == jQuery("#tabs2").attr('id')){
 		jQuery("#tabs-6").css("height", jQuery("#tabs2").height()-border+'px');
@@ -330,7 +330,7 @@ function resizeTabs(){
 		jQuery("#tabs-8").css("height", jQuery("#tabFlowchart").height()-border+'px');
 	} else{
 		jQuery("#tabs-8").css("height", jQuery(".splitter-pane").height()-45+'px');
-	}
+	}*/
 	
 	resizeTables();
 	
