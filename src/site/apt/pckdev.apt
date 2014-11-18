@@ -28,8 +28,6 @@ Create a package
 		<target.pck>src/main/pck</target.pck>
 		<maven.build.timestamp.format>yyyy-MM-dd</maven.build.timestamp.format>
 		<timestamp>${maven.build.timestamp}</timestamp>
-		<pck-repo>${basedir}/src/main/pck-repo</pck-repo>
-		<target.pck-repo>${basedir}/target/pck-repo-${project.artifactId}-${project.version}</target.pck-repo>
 	</properties>
 
 	<distributionManagement>
@@ -96,82 +94,6 @@ Create a package
 				</configuration>
 			</plugin>
 
-			<plugin>
-				<groupId>com.google.code.maven-replacer-plugin</groupId>
-				<artifactId>replacer</artifactId>
-				<version>1.5.2</version>
-				<executions>
-					<execution>
-						<id>create-pck-repo-sql</id>
-						<phase>package</phase>
-						<goals>
-							<goal>replace</goal>
-						</goals>
-						<configuration>
-							<file>${pck-repo}/record_repo.sql</file>
-							<outputFile>${target.pck-repo}/record_repo.sql</outputFile>
-							<replacements>
-								<replacement>
-									<token>#{ARTIFACTID}</token>
-									<value>${project.artifactId}</value>
-								</replacement>
-								<replacement>
-									<token>#{NAME}</token>
-									<value>${project.name}</value>
-								</replacement>
-								<replacement>
-									<token>#{DESCRIPTION}</token>
-									<value>${project.description}</value>
-								</replacement>
-								<replacement>
-									<token>#{VERSION}</token>
-									<value>${project.version}</value>
-								</replacement>
-								<replacement>
-									<token>#{TIMESTAMP}</token>
-									<value>${timestamp}</value>
-								</replacement>
-							</replacements>
-							<regex>false</regex>
-						</configuration>
-					</execution>
-					<execution>
-						<id>create-pck-repo-html</id>
-						<phase>package</phase>
-						<goals>
-							<goal>replace</goal>
-						</goals>
-						<configuration>
-							<file>${pck-repo}/Red-Sqirl-hama.html</file>
-							<outputFile>${target.pck-repo}/${project.artifactId}-${project.version}.html</outputFile>
-							<replacements>
-								<replacement>
-									<token>#{ARTIFACTID}</token>
-									<value>${project.artifactId}</value>
-								</replacement>
-								<replacement>
-									<token>#{NAME}</token>
-									<value>${project.name}</value>
-								</replacement>
-								<replacement>
-									<token>#{DESCRIPTION}</token>
-									<value>${project.description}</value>
-								</replacement>
-								<replacement>
-									<token>#{VERSION}</token>
-									<value>${project.version}</value>
-								</replacement>
-								<replacement>
-									<token>#{TIMESTAMP}</token>
-									<value>${timestamp}</value>
-								</replacement>
-							</replacements>
-							<regex>false</regex>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
 
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
@@ -209,24 +131,8 @@ Create a package
 						<configuration>
 							<finalName>${project.artifactId}-${project.version}</finalName>
 							<appendAssemblyId>false</appendAssemblyId>
-							<outputDirectory>${target.pck-repo}</outputDirectory>
 							<descriptors>
 								<descriptor>src/main/assembly/zip_pck.xml</descriptor>
-							</descriptors>
-						</configuration>
-					</execution>
-					<execution>
-						<id>zip_repo</id> 
-						<phase>package</phase> 
-						<goals>
-							<goal>single</goal>
-						</goals>
-						<configuration>
-							<finalName>pck-repo-${project.artifactId}-${project.version}</finalName>
-							<appendAssemblyId>false</appendAssemblyId>
-							<outputDirectory>${project.build.directory}</outputDirectory>
-							<descriptors>
-								<descriptor>src/main/assembly/zip_repo.xml</descriptor>
 							</descriptors>
 						</configuration>
 					</execution>

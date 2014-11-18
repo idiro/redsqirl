@@ -65,6 +65,9 @@ public class Decrypter extends KeyCipher {
 	}
 
 	public void decrypt_key_module(String keyModule) {
+		if(keyModule.length() != 24){
+			return;
+		}
 		ans = new HashMap<String, String>();
 
 		int[] indent = new int[4];
@@ -217,12 +220,14 @@ public class Decrypter extends KeyCipher {
 			valid &= ans.get(userName + "1").substring(0, 1).equals(sysVal);
 
 			// Username
+			if (!sys) {
 			valid &= ans.get(userName + "1").equals(
 					keyModule.get(userName).substring(0, 4));
 
 			valid &= ans.get(userName + "2").equals(
 					keyModule.get(userName).substring(
 							keyModule.get(userName).length() - 3));
+			}
 
 			// name
 			valid &= ans.get(name + "1").equals(
@@ -240,6 +245,7 @@ public class Decrypter extends KeyCipher {
 				System.out.println(stck.getClassName() + " "
 						+ stck.getMethodName() + " " + stck.getLineNumber());
 			}
+			valid = false;
 		}
 
 		return valid;
