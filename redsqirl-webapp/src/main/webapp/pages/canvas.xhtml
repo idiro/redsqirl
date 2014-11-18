@@ -1630,14 +1630,14 @@
 				<a4j:commandLink id="openCanvasScreenHdfs"
 					action="#{hdfsBean.openCanvasScreen}" style="display:none;"
 					reRender="fileSysGridForm"
-					onclick="jQuery('#tabs-7').block({ message: jQuery('#domMessageDiv7') });"
-					oncomplete="jQuery('#tabs-7').unblock();onPageReady()" />
+					onclick="jQuery('#tabs-4').block({ message: jQuery('#domMessageDiv4') });"
+					oncomplete="jQuery('#tabs-4').unblock();onPageReady();" />
 
 				<a4j:commandLink id="openCanvasScreenHive"
 					action="#{hiveBean.openCanvasScreen}" style="display:none;"
 					reRender="fileSysGridFormHive"
-					onclick="jQuery('#tabs-4').block({ message: jQuery('#domMessageDiv4') });"
-					oncomplete="jQuery('#tabs-4').unblock();" />
+					onclick="jQuery('#tabs-5').block({ message: jQuery('#domMessageDiv5') });"
+					oncomplete="jQuery('#tabs-5').unblock();onPageReady();" />
 
 				<a4j:commandLink id="openCanvasScreenSsh"
 					action="#{sshBean.openCanvasScreen}" style="display:none;"
@@ -2215,11 +2215,11 @@
 
 				<div id="tabs2">
 					<ul class="ulCss" id="ulTabs2">
-						<li><a href="#tabs-7"
+						<li><a href="#tabs-4"
 							onclick="jQuery('#helpmain_hdfs').click();return false;"> <h:outputText
 									value="#{messages.label_tab_hadoopfilesystem}" />
 						</a></li>
-						<li><a href="#tabs-4"
+						<li><a href="#tabs-5"
 							onclick="jQuery('#helpmain_hive').click();return false;"> <h:outputText
 									value="#{messages.label_tab_hiveview}" />
 						</a></li>
@@ -2240,16 +2240,16 @@
 						</button>
 					</span>
 
-					<div id="tabs-7" class="tabBorder" style="overflow: hidden;">
+					<div id="tabs-4" class="tabBorder" style="overflow: hidden;">
 						<a4j:region>
 
 							<a4j:status
-								onstart="jQuery('#tabs-7').block({ message: jQuery('#domMessageDiv7') });"
-								onerror="jQuery('#tabs-7').unblock();"
-								onsuccess="jQuery('#tabs-7').unblock();"
-								onstop="jQuery('#tabs-7').unblock();" />
+								onstart="jQuery('#tabs-4').block({ message: jQuery('#domMessageDiv4') });"
+								onerror="jQuery('#tabs-4').unblock();"
+								onsuccess="jQuery('#tabs-4').unblock();"
+								onstop="jQuery('#tabs-4').unblock();" />
 
-							<div id="domMessageDiv7" style="display: none;">
+							<div id="domMessageDiv4" style="display: none;">
 								<img src="../image/icons/waiting.gif" />
 							</div>
 
@@ -2258,15 +2258,15 @@
 							</h:panelGroup>
 						</a4j:region>
 					</div>
-					<div id="tabs-4" class="tabBorder" style="overflow: hidden;">
+					<div id="tabs-5" class="tabBorder" style="overflow: hidden;">
 						<a4j:region>
 
 							<a4j:status
-								onstart="jQuery('#tabs-4').block({ message: jQuery('#domMessageDiv4') });"
-								onerror="jQuery('#tabs-4').unblock();"
-								onsuccess="jQuery('#tabs-4').unblock();" />
+								onstart="jQuery('#tabs-5').block({ message: jQuery('#domMessageDiv5') });"
+								onerror="jQuery('#tabs-5').unblock();"
+								onsuccess="jQuery('#tabs-5').unblock();" />
 
-							<div id="domMessageDiv4" style="display: none;">
+							<div id="domMessageDiv5" style="display: none;">
 								<img src="../image/icons/waiting.gif" />
 							</div>
 
