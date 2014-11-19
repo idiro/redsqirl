@@ -21,7 +21,6 @@
 <body>
 	<a4j:keepAlive beanName = "processManagerBean"/>
 	
-	
 	<div id="processManager" style="min-width: 400px; overflow: hidden; min-height: 250px;">
 		<a4j:form>
 			<div class="pathHeader">
@@ -33,8 +32,8 @@
 				reRender="processManagerTable" oncomplete="resizeTables()" image="../image/icons/button-refresh.gif" title='#{messages.oozie_refresh}' styleClass="fileSystemIcon" />
 			</div>
 		</a4j:form>
+		
 		<a4j:form>
-				
 			
 			<a4j:support event="onchange" rerender="processManagerTable"></a4j:support>
 			
@@ -45,41 +44,8 @@
 				onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
 				rowClasses="even-row, odd-row"
 				tableState="#{processManagerBean.tableState}">
-
-				<rich:column style="border-bottom:0px;border-right:0px;" sortBy="#{item[1]}" filterBy="#{item[1]}"  filterEvent="onchange"
-				filterValue="#{processManagerBean.filterValue}"
-					width="80px;">
-					<f:facet name="header">
-						<h:outputText value="#{messages.label_user}" />
-					</f:facet>
-					<h:outputText value="#{item[1]}" title="#{item[1]}" />
-				</rich:column>
 				
-				<rich:column style="border-bottom:0px;border-right:0px;" sortBy="#{item[1]}" filterBy="#{item[2]}"  filterEvent="onchange"
-					width="300px;">
-					<f:facet name="header">
-						<h:outputText value="#{messages.label_process_name}" />
-					</f:facet>
-					<h:outputText value="#{item[2]}" title="#{item[2]}" />
-				</rich:column>
-				
-				<rich:column style="border-bottom:0px;border-right:0px;" sortBy="#{item[3]}" filterBy="#{item[3]}"  filterEvent="onchange"
-					width="100px;">
-					<f:facet name="header">
-						<h:outputText value="#{messages.label_status}" />
-					</f:facet>
-					<h:outputText value="#{item[3]}" title="#{item[3]}" />
-				</rich:column>
-				
-				<rich:column style="border-bottom:0px;border-right:0px;" sortBy="#{item[4]}" filterBy="#{item[4]}"  filterEvent="onchange"
-					width="200px;">
-					<f:facet name="header">
-						<h:outputText value="#{messages.label_start_date}" />
-					</f:facet>
-					<h:outputText value="#{item[4]}" title="#{item[4]}" />
-				</rich:column>
-				<rich:column style="border-bottom:0px;border-right:0px;"
-					width="60px;">
+				<rich:column style="border-bottom:0px;border-right:0px;" width="60px;">
 					<f:facet name="header">
 						<h:outputText value="" />
 					</f:facet>
@@ -102,8 +68,42 @@
 						<f:param name="id" value="#{item[0]}" />
 					</a4j:commandLink>
 				</rich:column>
+
+				<rich:column style="border-bottom:0px;border-right:0px;" sortBy="#{item[1]}" filterBy="#{item[1]}" filterEvent="onchange"
+					filterValue="#{processManagerBean.filterValue}" width="80px;">
+					<f:facet name="header">
+						<h:outputText value="#{messages.label_user}" />
+					</f:facet>
+					<h:outputText value="#{item[1]}" title="#{item[1]}" />
+				</rich:column>
+				
+				<rich:column style="border-bottom:0px;border-right:0px;" sortBy="#{item[1]}" filterBy="#{item[2]}" filterEvent="onchange"
+					width="300px;">
+					<f:facet name="header">
+						<h:outputText value="#{messages.label_process_name}" />
+					</f:facet>
+					<h:outputText value="#{item[2]}" title="#{item[2]}" />
+				</rich:column>
+				
+				<rich:column style="border-bottom:0px;border-right:0px;" sortBy="#{item[3]}" filterBy="#{item[3]}" filterEvent="onchange"
+					width="100px;">
+					<f:facet name="header">
+						<h:outputText value="#{messages.label_status}" />
+					</f:facet>
+					<h:outputText value="#{item[3]}" title="#{item[3]}" />
+				</rich:column>
+				
+				<rich:column style="border-bottom:0px;border-right:0px;" sortBy="#{item[4]}" filterBy="#{item[4]}" filterEvent="onchange"
+					width="200px;">
+					<f:facet name="header">
+						<h:outputText value="#{messages.label_start_date}" />
+					</f:facet>
+					<h:outputText value="#{item[4]}" title="#{item[4]}" />
+				</rich:column>
+				
 			</rich:extendedDataTable>
 		</a4j:form>
+		
 	</div>
 </body>
 </html>
