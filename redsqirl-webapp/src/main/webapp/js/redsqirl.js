@@ -124,7 +124,7 @@ function onPageReady(){
 	  
 	  resizeTabs();
 	  
-	  //jQuery("#divTabHelp").css("height", jQuery("#tabs-1").height()-56+'px');
+	  jQuery("#divTabHelp").css("height", jQuery("#tabs-1").height()-63+'px');
 	  
 	  jQuery("#buttonsCanvas1").hide();
 	  jQuery("#buttonsTabs1").hide();
@@ -200,6 +200,8 @@ function resizing(){
 	  configureLeft();
 	  
 	  validateArrowsAll();
+	  
+	  jQuery("#divTabHelp").css("height", jQuery("#tabs-1").height()-56+'px');
 
 }
 
