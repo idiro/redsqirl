@@ -99,7 +99,6 @@
     }
 
 </script>
-     
         
     <div id="domMessageDivModal" style="display: none;">
         <img src="../image/icons/waiting.gif" />
@@ -138,7 +137,6 @@
         	reRender="modalOutputBrowser" oncomplete="#{rich:component('modalOutputBrowser')}.show();" >
         	<a4j:actionparam name="openOutputData" assignTo="#{canvasModalBean.outputTab.fileSystem.openOutputData}"/>
         </a4j:jsFunction>
-        
     </a4j:region>
     
     <a4j:region>
@@ -148,7 +146,6 @@
                     
         <a4j:jsFunction name="resetCurrentOutputBrowser" action="#{canvasModalBean.outputTab.resetNameOutput}" oncomplete="updateOutputBrowser()"/>
         <a4j:jsFunction name="updateOutputBrowser" action="#{canvasModalBean.outputTab.updateDFEOutputTable}" oncomplete="reLoadTabs();" />
-        
     </a4j:region>
             
     <div style="width:100%;height:100%;overflow:hidden;" id="canvasModalDiv" >
@@ -332,25 +329,24 @@
                 
                 <!-- helpTextEditor -->
                 <a4j:region id="textEditorInteractionRegion" rendered="#{interCur.displayType == 'helpTextEditor'}">
-                <span id="textEditorInteractionRegion_#{interCurIdx}">
-                    <rich:panel style="border:none;" id="helpTextEditorPanel" >
-                        <h:outputText value="#{messages.label_formula}" />
-                        <br/>
-                        
-                        <h:inputTextarea maxlength="100" cols="90" rows="10" value="#{interCur.editor.textEditorValue}" 
-                        	style="resize:none;border:1pxsolid;width:85%;" id="command">
-                        	
-                       		<a4j:commandButton value=". . ."  
-	                        	onclick="openHelpTextEditorModal('#{interCur.id}');" style="float:right;margin-right:62px;height:46px;" 
-	                            rendered="#{interCur.editor.openPopup == 'Y'}">
-							</a4j:commandButton>
-                            
-                        </h:inputTextarea>
-                        
-                        <br/>
-                        <br/>
-                    </rich:panel>
-                </span>
+	                <span id="textEditorInteractionRegion_#{interCurIdx}">
+	                    <rich:panel style="border:none;" id="helpTextEditorPanel" >
+	                        <h:outputText value="#{messages.label_formula}" />
+	                        <br/>
+	                        
+	                        <h:inputTextarea maxlength="100" cols="90" rows="10" value="#{interCur.editor.textEditorValue}" 
+	                        	style="resize:none;border:1pxsolid;width:93%;" id="command">
+	                        	
+	                       		<a4j:commandLink onclick="openHelpTextEditorModal('#{interCur.id}');"  
+		                            rendered="#{interCur.editor.openPopup == 'Y'}">
+		                            <h:graphicImage url="../image/icons/button-pencil02.gif" style="width:35px;float:right;margin-top:10px;margin-right: 5px;" title="#{messages.label_text_editor}"/>
+								</a4j:commandLink>
+	                        </h:inputTextarea>
+	                        
+	                        <br/>
+	                        <br/>
+	                    </rich:panel>
+                	</span>
                 </a4j:region>
                 
                 <!-- table -->
@@ -448,9 +444,9 @@
 												<h:inputText value="#{rowItem.row[ind]}" 
 												       rendered="#{interCur.columnType[column] == 'editor' }" 
 												       styleClass="tableInteractionTextEditor" >
-			                                   	<a4j:commandButton onclick="openHelpTextEditorModal('#{interCur.id}','#{rowNb}','#{column}');"
-			                                   	    value="..." style="float:right;width:15%;"> 
-												</a4j:commandButton>
+			                                   	<a4j:commandLink onclick="openHelpTextEditorModal('#{interCur.id}','#{rowNb}','#{column}');" >
+			                                   	    <h:graphicImage url="../image/icons/button-pencil.gif" style="width:15px;float:right" title="#{messages.label_text_editor}" />
+												</a4j:commandLink>
 												</h:inputText>	        								
 			        
 			                                </rich:columns>

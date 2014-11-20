@@ -96,7 +96,7 @@ public class HiveTableJoinInteraction extends TableInteraction {
 						new Object[] { rowNb, field });
 			} else {
 				try {
-					if (!HiveDictionary.check(type, HiveDictionary
+					if (!HiveDictionary.check(HiveDictionary.getHiveType(FieldType.valueOf(type)), HiveDictionary
 							.getInstance().getReturnType(op, fields))) {
 						msg = HiveLanguageManager.getText(
 								"hive.join_fields_interaction.typeinvalid",
@@ -134,8 +134,7 @@ public class HiveTableJoinInteraction extends TableInteraction {
 
 			curMap.put(table_op_title, cur);
 			curMap.put(table_feat_title, cur.replaceAll("\\.", "_"));
-			curMap.put(table_type_title,
-					HiveDictionary.getHiveType(feats.getFieldType(cur)));
+			curMap.put(table_type_title,feats.getFieldType(cur).toString() );
 			copyRows.add(curMap);
 		}
 		updateGenerator("copy", copyRows);

@@ -86,6 +86,8 @@ public class PigTableUnionInteraction extends TableInteraction {
 
 			Map<String, List<Map<String, String>>> mapRelationRow = getSubQuery();
 			FieldList mapFieldType = getNewField();
+			
+			logger.info("mapField " + mapFieldType.getFieldNames());
 
 			// Check if we have the right number of list
 			if (mapRelationRow.keySet().size() != hu.gettAliasInt().getValues().size()) {
@@ -123,13 +125,10 @@ public class PigTableUnionInteraction extends TableInteraction {
 											new String[] { row
 													.get(table_field_title) });
 						} else {
-							String fieldName = row.get(table_field_title)
-									.toUpperCase();
-							logger.info("is it contained in map : "
-									+ fieldName);
+							String fieldName = row.get(table_field_title);
+							logger.info("is it contained in map : "	+ fieldName);
 							if (!mapFieldType.containsField(fieldName)) {
-								msg = PigLanguageManager
-										.getText("pig.union_features_interaction.checkfeatimplemented");
+								msg = PigLanguageManager.getText("pig.union_features_interaction.checkfeatimplemented");
 							} else {
 								fieldTitle.add(fieldName);
 								if (!PigDictionary.getType(
