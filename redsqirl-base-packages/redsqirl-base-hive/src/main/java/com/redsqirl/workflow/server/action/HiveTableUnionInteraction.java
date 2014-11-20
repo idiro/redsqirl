@@ -121,11 +121,9 @@ public class HiveTableUnionInteraction extends TableInteraction {
 													.get(table_feat_title) });
 						} else {
 							String fieldName = row.get(table_feat_title);
-							logger.info("is it contained in map : "
-									+ fieldName);
+							logger.info("is it contained in map : "	+ fieldName);
 							if (!mapFeatType.containsField(fieldName)) {
-								msg = HiveLanguageManager
-										.getText("hive.union_fields_interaction.checkfeatimplemented");
+								msg = HiveLanguageManager.getText("hive.union_fields_interaction.checkfeatimplemented");
 							} else {
 								fieldsTitle.add(fieldName);
 								if (!HiveDictionary.getType(
