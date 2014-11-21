@@ -440,7 +440,7 @@ public class MapRedTextType extends MapRedDir {
 
 	@Override
 	protected String getDefaultColor() {
-		return "Chocolate";
+		return "MediumSlateBlue";
 	}
 
 }

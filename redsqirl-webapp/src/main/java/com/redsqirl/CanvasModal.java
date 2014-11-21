@@ -617,7 +617,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 	protected String checkNextPage() throws RemoteException {
 		logger.info("Check page : "+getListPosition());
 		for (int i = 0; i < inters.size(); i++) {
-
 			CanvasModalInteraction cmInter = inters.get(i);
 			cmInter.setUnchanged();
 			boolean interactionChanged = !cmInter.isUnchanged();
@@ -626,7 +625,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 				elementToUpdate = true;
 				cmInter.writeInteraction();
 			}
-
 		}
 		String e = getPageList().get(getListPosition()).checkPage();
 		if(e == null && sourceNode){
@@ -639,14 +637,12 @@ public class CanvasModal extends BaseBean implements Serializable {
 				}
 			}
 		}
-
 		if (e == null) {
 			// Update output only if it is the last page
 			// or an output already exist
 			if (getListPageSize() - 1 == getListPosition()) {
 				e = updateOutputElement();
 				outputTab.mountOutputForm(!sourceNode || dfe.getDFEOutput().size() > 1);
-				
 			}
 		}
 		logger.info("error page -> " + e);

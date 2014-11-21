@@ -103,6 +103,6 @@ public class MapRedCompressedType extends MapRedTextType {
 	 * 
 	 */
 	protected String getDefaultColor() {
-		return "Coral";
+		return "DodgerBlue";
 	}
 }
