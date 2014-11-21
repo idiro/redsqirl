@@ -90,21 +90,19 @@ public class HiveSelect extends HiveElement {
 	public void update(DFEInteraction interaction) throws RemoteException {
 
 		logger.info("Hive Select interaction : " + interaction.getName());
-
+		
 		DFEOutput in = getDFEInput().get(key_input).get(0);
+		String interId = interaction.getId();
 		if (in != null) {
-			if (interaction.getName().equals(condInt.getName())) {
-				logger.info("Hive condition interaction updating");
+			if (interId.equals(key_condition)) {
 				condInt.update();
-			}
-			else if (interaction.getName().equals(tSelInt.getName())) {
-				logger.info("Hive tableSelect interaction updating");
+			} else if (interId.equals(tSelInt.getId())) {
 				tSelInt.update(in);
-			}
-			else if (interaction.getName().equals(orderInt.getName())) {
+			} else if (interId.equals(orderInt.getId())) {
 				orderInt.update();
 			}
 		}
+		
 	}
 	/**
 	 * Get the Query for the select statement

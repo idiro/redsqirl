@@ -152,7 +152,7 @@ public class HiveUnion extends HiveElement {
 			} else if(interId.equals(tAliasInt.getId())){
 				tAliasInt.update();
 			}
-			else if (interaction.getName().equals(orderInt.getName())) {
+			else if (interId.equals(orderInt.getId())) {
 				orderInt.update();
 			}
 		}

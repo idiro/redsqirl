@@ -37,9 +37,12 @@ public class HiveOrderInteraction extends AppendListInteraction{
 	 * @throws RemoteException
 	 */
 	public void update() throws RemoteException{
+		logger.info("update start ");
 		FieldList fields = el.getNewFields();
+		logger.info(fields.toString());
 		setPossibleValues(fields.getFieldNames());
-		
+		logger.info(fields.getFieldNames().toString());
+		logger.info("update end ");
 	}
 	/**
 	 * Get the query piece for the interaction

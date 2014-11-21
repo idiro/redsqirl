@@ -241,7 +241,7 @@ public class HiveTableUnionInteraction extends TableInteraction {
 			Map<String, String> rowCur = rowIt.next();
 			String name = rowCur.get(table_feat_title);
 			String type = rowCur.get(table_type_title);
-			new_fields.addField(name, HiveDictionary.getType(type));
+			new_fields.addField(name, FieldType.valueOf(type));
 		}
 		return new_fields;
 	}
