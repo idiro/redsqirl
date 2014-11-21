@@ -657,13 +657,13 @@
 	         }
 	         lastBlockedRunningWorkflow = null;
 	     }
+	     
 	     function blockRunningWorkflowJS(){
 	         unblockRunningWorkflowJS();
              lastBlockedRunningWorkflow = getSelectedById();
              jQuery('#'+getSelectedById()).block({ message: jQuery('#domMessageDivCanvas2') });
              resizeBlockUICanvas();
          }
-	     
 	     
 	     function selectTab(tabIndex){
 	    	 var tabs = jQuery("#canvas-tabs").tabs();

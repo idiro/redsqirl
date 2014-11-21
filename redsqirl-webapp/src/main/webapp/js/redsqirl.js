@@ -51,8 +51,8 @@ function canvasResizeSplitter(){
 }
 
 function resizeBlockUICanvas(){
-	jQuery(".blockOverlay").css("height", jQuery("#"+selectedCanvas+" canvas:eq(1)").height());
-	jQuery(".blockOverlay").css("width", jQuery("#"+selectedCanvas+" canvas:eq(1)").width());
+	jQuery(".blockOverlay").css("height", jQuery("#container-"+selectedCanvas).find(".kineticjs-content").find("canvas").eq(2).attr("height"));
+	jQuery(".blockOverlay").css("width", jQuery("#container-"+selectedCanvas).find(".kineticjs-content").find("canvas").eq(2).attr("width"));
 }
 
 function resizeBlockUICanvasOnLoad(){

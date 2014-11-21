@@ -79,7 +79,7 @@ public class HiveTypePartition extends HiveType{
 	 */
 	@Override
 	protected String getDefaultColor(){
-		return "SkyBlue"; 
+		return "Coral"; 
 	}
 	/**
 	 * Get the where part of the statement for partitions

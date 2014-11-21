@@ -242,7 +242,7 @@ public class MapRedCtrlATextType extends MapRedDir{
 
 	@Override
 	protected String getDefaultColor() {
-		return "Brown";
+		return "DarkBlue";
 	}
 
 }

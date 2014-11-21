@@ -360,7 +360,7 @@ public class HiveType extends DataOutput{
 	 */
 	@Override
 	protected String getDefaultColor() {
-		return "DodgerBlue";
+		return "Chocolate";
 	}
 	/**
 	 * Check a fields list

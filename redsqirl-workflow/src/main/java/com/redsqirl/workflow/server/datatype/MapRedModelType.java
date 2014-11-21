@@ -209,7 +209,7 @@ public class MapRedModelType extends MapRedDir {
 
 	@Override
 	protected String getDefaultColor() {
-		return "DarkGoldenRod";
+		return "Aqua";
 	}
 
 }
