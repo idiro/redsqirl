@@ -7,6 +7,7 @@ function CommandHistory() {
     this.size_max = 50;
 	this.cur_index = -1;
 	this.hist_stack = new Array();
+	this.saveIndex = -1;
 }
 
 CommandHistory.prototype.undoName = function() {
@@ -48,9 +49,23 @@ CommandHistory.prototype.undo = function() {
 		this.hist_stack[this.cur_index].undo();
 		--this.cur_index;
 		this.update_buttonname();
+		
+		if(this.saveIndex == this.cur_index){
+			var canvasNameStar = jQuery('#canvasNameStar-'+getSelectedByName()).text();
+			if(canvasNameStar[canvasNameStar.length-1] == "*" ){
+				jQuery('#canvasNameStar-'+getSelectedByName()).text(getSelectedByName());
+				jQuery('#updateCanvasNameStar').click();
+			}
+		}else if(this.saveIndex == this.cur_index+1){
+			var canvasNameStar = jQuery('#canvasNameStar-'+getSelectedByName()).text();
+			if(canvasNameStar[canvasNameStar.length-1] != "*" ){
+				jQuery('#canvasNameStar-'+getSelectedByName()).text(getSelectedByName()+"*");
+				jQuery('#updateCanvasNameStar').click();
+			}
+		}
+		
 	}
 };
-
 
 CommandHistory.prototype.redo = function() {
     jQuery(".tooltipCanvas").remove();
@@ -58,7 +73,26 @@ CommandHistory.prototype.redo = function() {
 		++this.cur_index;
 		this.hist_stack[this.cur_index].redo();
 		this.update_buttonname();
+		
+		if(this.saveIndex == this.cur_index){
+			var canvasNameStar = jQuery('#canvasNameStar-'+getSelectedByName()).text();
+			if(canvasNameStar[canvasNameStar.length-1] == "*" ){
+				jQuery('#canvasNameStar-'+getSelectedByName()).text(getSelectedByName());
+				jQuery('#updateCanvasNameStar').click();
+			}
+		}else if(this.saveIndex == this.cur_index-1){
+			var canvasNameStar = jQuery('#canvasNameStar-'+getSelectedByName()).text();
+			if(canvasNameStar[canvasNameStar.length-1] != "*" ){
+				jQuery('#canvasNameStar-'+getSelectedByName()).text(getSelectedByName()+"*");
+				jQuery('#updateCanvasNameStar').click();
+			}
+		}
+		
 	}
+};
+
+CommandHistory.prototype.addSaveHistoric = function() {
+	this.saveIndex = this.cur_index;
 };
 
 CommandHistory.prototype.clean = function(){
@@ -70,7 +104,8 @@ CommandHistory.prototype.clean = function(){
             delete this.hist_stack[0];
             this.hist_stack.shift();
         }
-        this.cur_index -= i; 
+        this.cur_index -= i;
+        this.saveIndex -= i;
     }
 }
 
@@ -85,6 +120,21 @@ CommandHistory.prototype.push_command = function(command) {
 	this.hist_stack[this.cur_index] = command;
 	this.clean();
 	this.update_buttonname();
+	
+	if(this.saveIndex == this.cur_index){
+		var canvasNameStar = jQuery('#canvasNameStar-'+getSelectedByName()).text();
+		if(canvasNameStar[canvasNameStar.length-1] == "*" ){
+			jQuery('#canvasNameStar-'+getSelectedByName()).text(getSelectedByName());
+			jQuery('#updateCanvasNameStar').click();
+		}
+	}else if(this.saveIndex == this.cur_index-1){
+		var canvasNameStar = jQuery('#canvasNameStar-'+getSelectedByName()).text();
+		if(canvasNameStar[canvasNameStar.length-1] != "*" ){
+			jQuery('#canvasNameStar-'+getSelectedByName()).text(getSelectedByName()+"*");
+			jQuery('#updateCanvasNameStar').click();
+		}
+	}
+	
 };
 
 CommandHistory.prototype.execute = function(command) {

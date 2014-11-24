@@ -2735,6 +2735,9 @@ function isRunning(canvasName){
 
 function setSaved(canvasName, value){
     canvasArray[canvasName].saved = value;
+    if(value){
+    	canvasArray[canvasName].commandHistory.addSaveHistoric();
+    }
 }
 
 function isSaved(canvasName){

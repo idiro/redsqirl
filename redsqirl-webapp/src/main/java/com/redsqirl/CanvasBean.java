@@ -2424,10 +2424,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 					}
 					
 					if(error == null){
-						error = getDf().aggregateElements(getComponentIds(), 
-							getInputNameSubWorkflow(),
-							inputs, outputs);
+						error = getDf().aggregateElements(getComponentIds(), getInputNameSubWorkflow(), inputs, outputs);
 					}
+					
 					if(error == null){
 						logger.info("Elements: " + getDf().getComponentIds());
 
@@ -2444,13 +2443,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 				e.printStackTrace();
 				logger.info("Error: " + e,e);
 			}
-
-			if (error != null) {
-				logger.info("Error: " + error);
-				MessageUseful.addErrorMessage(error);
-				HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-				request.setAttribute("msnError", "msnError");
-			}
+			
+		}
+		
+		if (error != null) {
+			logger.info("Error: " + error);
+			MessageUseful.addErrorMessage(error);
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
 		}
 
 	}

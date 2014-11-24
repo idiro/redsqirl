@@ -553,8 +553,8 @@
 	    	  var tabs = jQuery("#canvas-tabs").tabs();
               var ul = jQuery("#canvas-tabs").tabs().find( "ul:first" );
               
-              jQuery( "<li class='locked canvasTabsInactive'><a href='#"+ getCanvasId(tabName) +"' class='canvasTab' onclick=\"setWorkflow('"+tabName+"');\"><img src='"+tabImage+"' style='width:15px;padding-right:5px;position:relative;top:3px;'/>"+ 
-            		  tabName +"</a> <span id='"+tabName+"-icon-close' class='ui-icon ui-icon-close' role='presentation' onclick=\"closeWorkflowTab(this, '"+tabName+"')\"></span> </li>" ).appendTo( ul );
+              jQuery( "<li class='locked canvasTabsInactive'><a href='#"+ getCanvasId(tabName) +"' class='canvasTab' onclick=\"setWorkflow('"+tabName+"');\"><img src='"+tabImage+"' style='width:15px;padding-right:5px;position:relative;top:3px;'/><span id='canvasNameStar-"+tabName+"'>"+ 
+            		  tabName +"</span></a> <span id='"+tabName+"-icon-close' class='ui-icon ui-icon-close' role='presentation' onclick=\"closeWorkflowTab(this, '"+tabName+"')\"></span> </li>" ).appendTo( ul );
               
               var div = "<div id='"+getCanvasId(tabName)+"' class='container-canvas'>"+
 				"<div id='container-"+tabName+"' class='container-"+tabName+"'>"+
@@ -930,6 +930,10 @@
 			<div id="domMessageDivCanvas1" style="display: none;">
 				<img src="../image/icons/waiting.gif" />
 			</div>
+			
+			<a4j:region>
+				<a4j:jsFunction name="updateCanvasNameStar" reRender="canvasNameStar" />
+			</a4j:region>
 
 			<a4j:region id="functionsForSave">
 				<a4j:jsFunction name="openModalSaveWorkflow"
@@ -957,7 +961,8 @@
 				</a4j:jsFunction>
 				
 				<a4j:jsFunction name="aggregate" action="#{canvasBean.aggregate}" data="#{canvasBean.inputNameSubWorkflow}" reRender="errorTable, msnError"
-					oncomplete="tmpCommandObj.nameSA = data;if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.hide();refreshCanvas();refreshRelativeHelp();}jQuery.unblockUI();" />
+					oncomplete="tmpCommandObj.nameSA = data;if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.hide();refreshCanvas();refreshRelativeHelp();}else{undoAggregate(data);}jQuery.unblockUI();" >
+				</a4j:jsFunction>
 					
 				<a4j:jsFunction name="undoAggregate" action="#{canvasBean.undoAggregate}" >
 					<a4j:actionparam name="nameSA" />
@@ -2015,7 +2020,8 @@
 							<li class="locked canvasTabsInactive">
 								<a href="#flowchart-canvas-1" class="canvasTab"
 									onclick="setWorkflow('canvas-1');">
-									<img src="../image/workflow_tab.gif" style="width:15px;padding-right:5px;position:relative;top:3px;"/>canvas-1
+									<img src="../image/workflow_tab.gif" style="width:15px;padding-right:5px;position:relative;top:3px;"/>
+									<span id="canvasNameStar-canvas-1">canvas-1</span>
 								</a>
 								<span id="canvas-1-icon-close" class="ui-icon ui-icon-close "
 									role="presentation" onclick="closeWorkflowTab(this,'canvas-1')">
