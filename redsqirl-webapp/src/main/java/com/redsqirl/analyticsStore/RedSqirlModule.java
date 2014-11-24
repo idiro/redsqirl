@@ -22,6 +22,7 @@ public class RedSqirlModule implements Serializable{
 	private String price;
 	private String validated;
 	private String license;
+	private String type;
 	
 	public int getId() {
 		return id;
@@ -125,5 +126,13 @@ public class RedSqirlModule implements Serializable{
 
 	public void setLicense(String license) {
 		this.license = license;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 }

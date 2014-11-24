@@ -84,7 +84,7 @@ public class AnalyticsStoreModuleDetailBean implements Serializable{
 					pck.setName(getString(pckObj, "name"));
 					pck.setTags(getString(pckObj, "tags"));
 					pck.setImage(getRepoServer() + getString(pckObj, "image"));
-					
+					pck.setType(getString(pckObj, "type"));
 					pck.setVersionNote(getString(pckObj, "versionNote"));
 					pck.setHtmlDescription(getString(pckObj, "htmlDescription"));
 					pck.setDate(getString(pckObj, "date"));
@@ -142,6 +142,7 @@ public class AnalyticsStoreModuleDetailBean implements Serializable{
 			
 			JSONObject object = new JSONObject();
 			object.put("key", softwareKey);
+			object.put("type", moduleVersion.getType());
 			object.put("idModuleVersion", moduleVersion.getIdVersion());
 			object.put("installationType", userInstall ? "USER" : "SYSTEM");
 			object.put("email", analyticsStoreLoginBean.getEmail());
