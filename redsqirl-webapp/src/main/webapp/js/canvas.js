@@ -617,6 +617,8 @@ function dragAndDropGroup(canvasName, obj, e) {
     
     changePositionArrow(canvasName, group);
 
+    layer.draw();
+    polygonLayer.draw();
 }
 
 function getPositionGivenIcons(icons, group){
@@ -904,8 +906,8 @@ function changePositionArrow(canvasName, obj) {
         }
     });
 
-    layer.draw();
-    polygonLayer.draw();
+    //layer.draw();
+    //polygonLayer.draw();
 }
 
 function addLinks(canvasName, positions) {
@@ -1909,7 +1911,7 @@ function configureGroupListeners(canvasName, group) {
         group.setDragBoundFunc(function(pos) {
             return rulesDragAndDropObj(canvasName, pos, 80, 80);
         });
-        canvasArray[canvasName].commandHistory.push_command(new CommandMove(canvasName, canvasArray[canvasName].savePositions, getPositionGivenIcons(getSelectedIcons(),this)));
+        canvasArray[canvasName].commandHistory.push_command(new CommandMove(canvasArray[canvasName].savePositions, getPositionGivenIcons(getSelectedIcons(),this)));
         jQuery(".tooltipCanvas").remove();
         canvasArray[canvasName].savePositions = null;
     });

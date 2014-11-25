@@ -355,9 +355,8 @@ function replaceAll(canvasName,selecteds, oldStr, newStr, changeLabel){
 /********************************************************************/
 /********************************************************************/
 /************************ CommandMove *******************************/
-function CommandMove(canvasName, oldValues,newValues) {
+function CommandMove(oldValues,newValues) {
     Command.call(this);
-    this.canvasName = canvasName;
     this.oldValues = oldValues;
     this.newValues = newValues;
 };
@@ -366,32 +365,43 @@ CommandMove.prototype = Object.create(Command.prototype);
 CommandMove.prototype.constructor = CommandMove;
 
 CommandMove.prototype.undo = function(){
-    var canvasNameCur = this.canvasName;
     jQuery.each(this.oldValues, function(index, value) {
         if(value.elementId !== undefined ){
-            var group = canvasArray[canvasNameCur].polygonLayer.get('#' + value.elementId)[0];
-            //alert(group.getId());
-            //alert(group.getId()+" ("+group.X+","+group.Y+") ("+value.X+","+value.Y+")");
-            group.setPosition(value.X,value.Y);
-            changePositionArrow(canvasNameCur, group);
+            var group = canvasArray[selectedCanvas].polygonLayer.get('#' + value.elementId)[0];
+            if(group !== undefined ){
+            	group.setPosition(value.X,value.Y);
+            	changePositionArrow(selectedCanvas, group);
+            }else{
+            	
+            	var group;
+            	jQuery.each(canvasArray[selectedCanvas].polygonLayer.get('.group1'), function() {
+                    var g = this;
+                    if(g.getId() == value.elementId){
+                    	group = g;
+                    }
+            	});
+                group.setPosition(value.X,value.Y);
+            	changePositionArrow(selectedCanvas, group);
+            	
+            }
         }
     });
-    
-    canvasArray[this.canvasName].polygonLayer.draw();
-    canvasArray[this.canvasName].layer.draw();
+    canvasArray[selectedCanvas].polygonLayer.draw();
+    canvasArray[selectedCanvas].layer.draw();
 };
 
 CommandMove.prototype.redo = function(){
-    var canvasNameCur = this.canvasName;
     jQuery.each(this.newValues, function(index, value) {
         if(value.elementId !== undefined ){
-            var group = canvasArray[canvasNameCur].polygonLayer.get('#' + value.elementId)[0];
-            group.setPosition(value.X,value.Y);
-            changePositionArrow(canvasNameCur, group);
+            var group = canvasArray[selectedCanvas].polygonLayer.get('#' + value.elementId)[0];
+            if(group !== undefined ){
+            	group.setPosition(value.X,value.Y);
+            	changePositionArrow(selectedCanvas, group);
+            }
         }
     });
-    canvasArray[this.canvasName].polygonLayer.draw();
-    canvasArray[this.canvasName].layer.draw();
+    canvasArray[selectedCanvas].polygonLayer.draw();
+    canvasArray[selectedCanvas].layer.draw();
 };
 
 CommandMove.prototype.getName = function(){
