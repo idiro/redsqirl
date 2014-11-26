@@ -538,6 +538,7 @@ function deselectOnClick(canvasName, obj, e) {
 
 function dragAndDropGroup(canvasName, obj, e) {
     
+	var layer = canvasArray[canvasName].layer;
     var polygonLayer = canvasArray[canvasName].polygonLayer;
     var stage = canvasArray[canvasName].stage;
     var background = canvasArray[canvasName].background;

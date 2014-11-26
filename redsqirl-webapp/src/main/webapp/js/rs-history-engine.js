@@ -142,7 +142,18 @@ CommandHistory.prototype.execute = function(command) {
 	command.redo();
 };
 
-
+CommandHistory.prototype.removeLastAction = function() {
+	this.hist_stack.pop();
+	--this.cur_index;
+	this.update_buttonname();
+	if(this.saveIndex == this.cur_index){
+		var canvasNameStar = jQuery('#canvasNameStar-'+getSelectedByName()).text();
+		if(canvasNameStar[canvasNameStar.length-1] == "*" ){
+			jQuery('#canvasNameStar-'+getSelectedByName()).text(getSelectedByName());
+			jQuery('#updateCanvasNameStar').click();
+		}
+	}
+};
 
 function Command(){
 }

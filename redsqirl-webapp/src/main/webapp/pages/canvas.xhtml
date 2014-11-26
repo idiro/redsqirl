@@ -961,7 +961,7 @@
 				</a4j:jsFunction>
 				
 				<a4j:jsFunction name="aggregate" action="#{canvasBean.aggregate}" data="#{canvasBean.inputNameSubWorkflow}" reRender="errorTable, msnError"
-					oncomplete="tmpCommandObj.nameSA = data;if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.hide();refreshCanvas();refreshRelativeHelp();}else{undoAggregate(data);}jQuery.unblockUI();" >
+					oncomplete="tmpCommandObj.nameSA = data;if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.hide();refreshCanvas();refreshRelativeHelp();}else{canvasArray[selectedCanvas].commandHistory.removeLastAction()}jQuery.unblockUI();" >
 				</a4j:jsFunction>
 					
 				<a4j:jsFunction name="undoAggregate" action="#{canvasBean.undoAggregate}" >

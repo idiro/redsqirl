@@ -166,11 +166,17 @@ public class SubWorkflowInput extends AbstractSource{
 
 	@Override
 	public void update(DFEInteraction interaction) throws RemoteException {
+		
+		logger.info("update");
+		
 		String interId = interaction.getId();
 		if (interId.equals(key_headerInt)) {
 			if(output.get(out_name) != null){
 				FieldList fl = output.get(out_name).getFields();
 				if(fl != null && checkIntegrationUserVariables() == null){
+					
+					logger.info("checkIntegrationUserVariables pass");
+					
 					String newVal = "";
 					Iterator<String> it = fl.getFieldNames().iterator();
 					while(it.hasNext()){
@@ -178,6 +184,8 @@ public class SubWorkflowInput extends AbstractSource{
 						newVal += cur+" "+fl.getFieldType(cur).toString()+", ";
 					}
 					headerInt.setValue(newVal.substring(0,newVal.length()-2));
+					
+					logger.info("checkIntegrationUserVariables finesh");
 					
 				}
 			}else{

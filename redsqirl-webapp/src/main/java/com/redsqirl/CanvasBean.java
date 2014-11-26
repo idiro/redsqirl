@@ -2425,17 +2425,18 @@ public class CanvasBean extends BaseBean implements Serializable {
 					
 					if(error == null){
 						error = getDf().aggregateElements(getComponentIds(), getInputNameSubWorkflow(), inputs, outputs);
-					}
-					
-					if(error == null){
-						logger.info("Elements: " + getDf().getComponentIds());
+						if(error != null){
+							new SuperActionManager().uninstall(getUserInfoBean().getUserName(), getInputNameSubWorkflow());
+						}else{
+							logger.info("Elements: " + getDf().getComponentIds());
 
-						Iterator<String> elIt = getDf().getComponentIds().iterator();
-						Map<String, String> idMapWf = idMap.get(getNameWorkflow());
-						idMapWf.clear();
-						while (elIt.hasNext()) {
-							String elCur = elIt.next();
-							idMapWf.put(elCur, elCur);
+							Iterator<String> elIt = getDf().getComponentIds().iterator();
+							Map<String, String> idMapWf = idMap.get(getNameWorkflow());
+							idMapWf.clear();
+							while (elIt.hasNext()) {
+								String elCur = elIt.next();
+								idMapWf.put(elCur, elCur);
+							}
 						}
 					}
 				}
