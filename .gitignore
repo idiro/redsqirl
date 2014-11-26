@@ -4,6 +4,7 @@ redsqirl-webapp/src/main/webapp/pages/packages/
 .classpath
 .project
 .settings
+redsqirl-webapp/.settings
 redsqirl-webapp/src/main/webapp/WEB-INF/classes/
 redsqirl-workflow/idiro.tm.task.in.Preference@73d6776d/
 redsqirl-webapp/src/test/
