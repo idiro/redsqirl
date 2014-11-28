@@ -187,6 +187,7 @@
   	    		jQuery("#buttonstabRemote").hide();
 	  	    	jQuery("#buttonstabRemote").css("left", jQuery("#tabRemote").width()-30+'px');
    				validateArrows(jQuery("#tabRemote"),jQuery("#buttonstabRemote"));
+   				resiziRemoteFileSystem();
 	        });
 
   	    	jQuery("#idtabFlowchart-1").click(function () {
@@ -1636,19 +1637,19 @@
 					action="#{hdfsBean.openCanvasScreen}" style="display:none;"
 					reRender="fileSysGridForm"
 					onclick="jQuery('#tabs-4').block({ message: jQuery('#domMessageDiv4') });"
-					oncomplete="jQuery('#tabs-4').unblock();onPageReady();" />
+					oncomplete="jQuery('#tabs-4').unblock();resiziFileSystem();" />
 
 				<a4j:commandLink id="openCanvasScreenHive"
 					action="#{hiveBean.openCanvasScreen}" style="display:none;"
 					reRender="fileSysGridFormHive"
 					onclick="jQuery('#tabs-5').block({ message: jQuery('#domMessageDiv5') });"
-					oncomplete="jQuery('#tabs-5').unblock();onPageReady();" />
+					oncomplete="jQuery('#tabs-5').unblock();resiziFileSystem();" />
 
 				<a4j:commandLink id="openCanvasScreenSsh"
 					action="#{sshBean.openCanvasScreen}" style="display:none;"
 					reRender="tabs-8, tabRemote, fileSysGridFormSsh, fileSysGridFormSshTab"
 					onclick="jQuery('#tabs-8').block({ message: jQuery('#domMessageDiv8') });"
-					oncomplete="jQuery('#tabs-8').unblock();resizeTables();" />
+					oncomplete="jQuery('#tabs-8').unblock();resiziRemoteFileSystem();" />
 
 				<a4j:commandLink id="openCanvasScreenHdfsBrowser"
 					action="#{browserHdfsBean.openCanvasScreen}" style="display:none;" />
@@ -1966,7 +1967,6 @@
 					</a></li>
 					<button id="changeTabCanvas" style="border: hidden;">&#9660;</button>
 
-
 					<div class="divMenuImage">
 					
 						<span style="cursor: pointer;">
@@ -2009,7 +2009,6 @@
 							onclick="redo();" title="#{messages.label_menu_redo}" />
 						</span>
 					</div>
-
 
 				</ul>
 				<div id="tabFlowchart-1">

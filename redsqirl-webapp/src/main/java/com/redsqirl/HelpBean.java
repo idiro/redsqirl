@@ -149,13 +149,18 @@ public class HelpBean extends BaseBean implements Serializable {
 		String user = (String) session.getAttribute("username");
 		String indexResultPath = WorkflowPrefManager.getPathUserPref(user)+"/lucene/index";
 		File indexDir = new File(indexResultPath);
-		int hits = 100;
-
-		SimpleSearcher searcher = new SimpleSearcher();
-		if(getFieldSearch() != null && !"".equals(getFieldSearch())){
-			logger.info("search " + getFieldSearch());
-			List<String> list = searcher.searchIndex(indexDir, getFieldSearch().trim(), hits);
-			mountListResult(list);
+		if(indexDir.isDirectory() && indexDir.list().length > 0 ){
+			
+			int hits = 100;
+			SimpleSearcher searcher = new SimpleSearcher();
+			if(getFieldSearch() != null && !"".equals(getFieldSearch())){
+				logger.info("search " + getFieldSearch());
+				List<String> list = searcher.searchIndex(indexDir, getFieldSearch().trim(), hits);
+				mountListResult(list);
+			}else{
+				setResult(null);
+			}
+			
 		}else{
 			setResult(null);
 		}

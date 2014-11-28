@@ -150,6 +150,31 @@ function onPageReady(){
 	  
 }
 
+function resiziRemoteFileSystem(){
+	setTimeout(function(){
+		jQuery("div[id$='fileSysGridFormSshTab\\:sshfs\\:sd']").css("height", jQuery("#tabFlowchart").height()-255+"px", "important");
+	},500);
+}
+
+function resiziFileSystem(){
+	
+	var leftSize = jQuery(window).width()*2/3;
+	var topSize = jQuery(".splitter-bar-horizontal").css("top").replace(/[^-\d\.]/g, '');
+	jQuery(".splitter-bar-horizontal").css("width", jQuery(window).width()-jQuery(".splitter-pane").width()-46 +'px').trigger("resize", [topSize]);
+	jQuery("#splitVCanvas").css("height", jQuery(window).height()-100+'px').trigger("resize", [leftSize]);
+	jQuery("#splitHCanvas").css("width", jQuery(window).width()-jQuery("#tabFlowchart").width()-3+'px');
+	jQuery("#splitHCanvas").css("height", jQuery("#splitVCanvas").height()+'px');
+	jQuery("#tabs1").css("width", jQuery("#splitHCanvas").width() +'px');
+	jQuery("#tabs1").css("height", jQuery("#splitHCanvas").height()/2 +'px');
+	jQuery("#tabs2").css("width", jQuery("#splitHCanvas").width()+'px');
+	jQuery("#tabs2").css("height", jQuery("#splitHCanvas").height()/2 +'px');
+	jQuery("#tabs1").children('ul').first().css("left", 0+'px');
+	jQuery("#tabs2").children('ul').first().css("left", 0+'px');
+	
+	resiziRemoteFileSystem();
+	
+}
+
 function configureFooterCss(){
 	
 	//alert("configureFooterCss");
@@ -202,6 +227,8 @@ function resizing(){
 	  validateArrowsAll();
 	  
 	  jQuery("#divTabHelp").css("height", jQuery("#tabs-1").height()-56+'px');
+	  
+	  resiziRemoteFileSystem();
 
 }
 

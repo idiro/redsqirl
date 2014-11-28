@@ -668,7 +668,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		logger.info("defaultPath " + mainlHelpPath);
 
 		File fileIndexResultPath = new File(indexResultPath);
-		if(fileIndexResultPath != null && fileIndexResultPath.isDirectory()){
+		if(fileIndexResultPath != null && fileIndexResultPath.isDirectory() && fileIndexResultPath.list().length > 0){
 			SimpleFileIndexer sfi = new SimpleFileIndexer();
 			File fileUserPath = new File(userPath);
 			if(fileUserPath != null && fileUserPath.isDirectory()){

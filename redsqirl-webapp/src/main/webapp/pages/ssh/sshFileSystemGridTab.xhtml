@@ -9,7 +9,6 @@
 
 	<div id="sshFileSystem" style="min-width: 400px; overflow: hidden; min-height: 300px;">
 		
-		
 		<rich:dragIndicator id="indicator" />
 		<h:form id="fileSysGridFormSshTab">
 			<div class="pathHeader">
@@ -26,22 +25,22 @@
 					<h:graphicImage
 						id="sshbtgo"
 						value="../image/icons/button-search.gif"
-						title='#{messages.canvas_path}' styleClass="bt" />
+						title='#{messages.canvas_path}' styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 			</div>
 
 			<div class="divMenu">
 				<a4j:commandLink action="#{sshBean.goPrevious}"
 					reRender="sshpath,sshfs">
-					<h:graphicImage id="sshbtUndo" value="../image/icons/button-previous.gif" title='#{messages.canvas_previous}' styleClass="bt" />
+					<h:graphicImage id="sshbtUndo" value="../image/icons/button-previous.gif" title='#{messages.canvas_previous}' styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 	
 				<a4j:commandLink action="#{sshBean.goNext}" reRender="sshpath,sshfs" >
-					<h:graphicImage id="sshbtRedo" value="../image/icons/button-next.gif" title='#{messages.canvas_next}' styleClass="bt" />
+					<h:graphicImage id="sshbtRedo" value="../image/icons/button-next.gif" title='#{messages.canvas_next}' styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 				
 				<a4j:commandLink action="#{sshBean.goUp}" reRender="sshpath,sshfs" >
-					<h:graphicImage id="sshbtGoUp" value="../image/icons/button-up.gif" title='#{messages.hdfs_goup}' styleClass="bt" />
+					<h:graphicImage id="sshbtGoUp" value="../image/icons/button-up.gif" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 			</div>
 			
