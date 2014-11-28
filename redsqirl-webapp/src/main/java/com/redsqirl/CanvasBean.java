@@ -835,10 +835,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 				// idMap.put(nameWorkflowSwp, idMap.get(nameWorkflow));
 				idMap.put(nameWorkflowSwp, new HashMap<String, String>());
 				idMap.remove(nameWorkflow);
-				
+
 				getMapWorkflowType().put(nameWorkflowSwp, getMapWorkflowType().get(nameWorkflow));
 				getMapWorkflowType().remove(nameWorkflow);
-				
+
 				nameWorkflow = nameWorkflowSwp;
 			}
 		}
@@ -1450,23 +1450,29 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 * @return
 	 * @throws Exception
 	 */
-	private String[][] getSelectedOutputStatus(Map<String, String> elements)
-			throws Exception {
+	private String[][] getSelectedOutputStatus(Map<String, String> elements) throws Exception {
 
 		String[][] result = null;
 		if (elements != null && getDf() != null) {
-
+			DataFlow dfCur = getDf();
 			result = new String[elements.size()][];
+			
+			try{
 
-			int i = 0;
-			Iterator<String> elSels = getDf().getComponentIds().iterator();
-			while (elSels.hasNext()) {
-				String curId = elSels.next();
-				if (elements.containsKey(curId)) {
-					DataFlowElement dfe = getDf().getElement(curId);
-					result[i++] = getOutputStatus(dfe, elements.get(curId));
+				int i = 0;
+				Iterator<String> elSels = dfCur.getComponentIds().iterator();
+				while (elSels.hasNext()) {
+					String curId = elSels.next();
+					if (elements.containsKey(curId)) {
+						DataFlowElement dfe = dfCur.getElement(curId);
+						result[i++] = getOutputStatus(dfe, elements.get(curId));
+					}
 				}
+
+			}catch(Exception e){
+				logger.error(e,e);
 			}
+
 		}
 
 		return result;
@@ -1835,7 +1841,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 							tooltip.append("Name: " + outputName + "<br/>");
 						}
 						tooltip.append("Type: " + typeName + "<br/>");
-						
+
 						if("W".equals(workflowType)){
 							if (e.getValue().isPathExists()) {
 								tooltip.append("Path: <span style='color:#008B8B'>"
@@ -1955,33 +1961,33 @@ public class CanvasBean extends BaseBean implements Serializable {
 					String compId = e.getComponentId();
 					String privilege = null;
 					Boolean privilegeObj;
-					
+
 					try{
 						privilegeObj = null;
 						privilegeObj = ((SuperElement)e).getPrivilege();
 					}catch (Exception epriv){
 						privilegeObj = null;
 					}
-					
+
 					if(privilegeObj!= null){
 						privilege = privilegeObj.toString().toLowerCase();
 					}
-					
+
 					logger.info(compId+" privilege "+privilege);
 					jsonElements
-							.put(new Object[] {
-									elements.get(compId),
-									e.getName(),
-									LocalFileSystem.relativize(
-											getCurrentPage(), e.getImage()),
+					.put(new Object[] {
+							elements.get(compId),
+							e.getName(),
+							LocalFileSystem.relativize(
+									getCurrentPage(), e.getImage()),
 									e.getX(), 
 									e.getY(),
 									compId ,
 									privilege});
 
 				}
-				
-				
+
+
 				for (DataFlowElement outEl : getDf().getElement()) {
 					String outElId = outEl.getComponentId();
 					Map<String, Map<String, String>> inputsPerOutputs = outEl
@@ -2249,7 +2255,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		String selectedIcons = params.get("selectedIcons");
 
 		logger.info("openAggregate ids: " + selectedIcons);
-		
+
 
 		List<String> componentIds = new ArrayList<String>();
 		String[] groupIds = selectedIcons.split(",");
@@ -2415,14 +2421,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 				if(error == null){
 					try{
 						SubDataFlow sw = getDf().createSA(getComponentIds(), 
-							getInputNameSubWorkflow(),
-							WorkflowHelpUtils.generateHelp(getInputNameSubWorkflow(), getInputAreaSubWorkflow() ,inputsForHelp, outputsForHelp), 
-							inputs, outputs);
+								getInputNameSubWorkflow(),
+								WorkflowHelpUtils.generateHelp(getInputNameSubWorkflow(), getInputAreaSubWorkflow() ,inputsForHelp, outputsForHelp), 
+								inputs, outputs);
 						new SuperActionManager().install(getUserInfoBean().getUserName(), sw, null);
 					}catch(Exception e){
 						error = e.getMessage();
 					}
-					
+
 					if(error == null){
 						error = getDf().aggregateElements(getComponentIds(), getInputNameSubWorkflow(), inputs, outputs);
 						if(error != null){
@@ -2444,9 +2450,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 				e.printStackTrace();
 				logger.info("Error: " + e,e);
 			}
-			
+
 		}
-		
+
 		if (error != null) {
 			logger.info("Error: " + error);
 			MessageUseful.addErrorMessage(error);
@@ -2461,13 +2467,13 @@ public class CanvasBean extends BaseBean implements Serializable {
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String nameSA = params.get("nameSA");
 		String user = getUserInfoBean().getUserName();
-		
+
 		if(nameSA != null){
 			SuperActionManager saManager = new SuperActionManager();
 			saManager.uninstall(user, nameSA);
 		}
 	}
-	
+
 
 	public DataFlow getDf() {
 		return df;
