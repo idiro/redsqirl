@@ -90,7 +90,8 @@ public class SimpleFileIndexer {
 		SimpleFSDirectory d = new SimpleFSDirectory(dir);
 		IndexWriter writer = new IndexWriter(d,new StandardAnalyzer(Version.LUCENE_CURRENT),IndexWriter.MaxFieldLength.LIMITED);
 
-		File INDEXES_DIR = new File(pathA);
+		//File INDEXES_DIR = new File(pathA);
+		
 		Directory indexes[] = new Directory[2];
 		indexes[0] = FSDirectory.open(new File(pathA));
 		indexes[1] = FSDirectory.open(new File(pathB));
@@ -106,6 +107,10 @@ public class SimpleFileIndexer {
 		logger.info(" Merging added indexes ");
 		writer.addIndexesNoOptimize(indexes);
 		logger.info(" Optimizing index ");
+		
+		indexes[0].close();
+		indexes[1].close();
+		
 		writer.optimize();
 		writer.commit();
 		writer.close();

@@ -133,16 +133,14 @@ function configureCanvas(canvasName, reset, workflowType){
     
     // puts a different colour on the canvas before it is opened
     jQuery("#"+canvasContainer).css("background-color", "#FFFAFA");
-    jQuery("#" +  canvasContainer).find(".kineticjs-content").css("background-color", "white");
-    jQuery("#" +  canvasContainer).find(".kineticjs-content").css("background-image", "url('../image/canvas_squirl.png')");
-    jQuery("#" +  canvasContainer).find(".kineticjs-content").css("background-size", "920px");
-    
+    jQuery("#"+canvasContainer).find(".kineticjs-content").css("background-color", "white");
+    jQuery("#"+canvasContainer).find(".kineticjs-content").css("background-image", "url('../image/canvas_squirl.png')");
+    jQuery("#"+canvasContainer).find(".kineticjs-content").css("background-size", "920px");
     
     canvasArray[canvasName].background = background;
 
     // add the background on layer
     layer.add(background);
-    
 
     // dotted rectangle to select objects
     canvasArray[canvasName].rectSelect = new Kinetic.Rect({
@@ -768,8 +766,10 @@ function refreshCanvas() {
     var layer = canvasArray[selectedCanvas].layer;
     var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
     
-    layer.removeChildren();
-    polygonLayer.removeChildren();
+    //layer.removeChildren();
+    //polygonLayer.removeChildren();
+    
+    deleteAllElements();
     
 	rebuildJS();
 }
