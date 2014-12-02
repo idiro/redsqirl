@@ -53,6 +53,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	private String repoWelcomePage;
 	private List<SelectItem> systemPackages;
 	private List<SelectItem> userPackages;
+	private String type;
 
 	public PackageMngBean() throws RemoteException{
 		logger.info("Call PackageMngBean constructor");
@@ -231,6 +232,9 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		logger.info("set Package scope: "+userEnv);
 		userInstall = !"false".equalsIgnoreCase(userEnv);
 		logger.info("scope: "+userInstall);
+		
+		type = FacesContext.getCurrentInstance().getExternalContext().
+				getRequestParameterMap().get("type");
 	}
 
 	public void installPackage() throws RemoteException{
@@ -451,4 +455,11 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		this.userInstall = userInstall;
 	}
 
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
 }

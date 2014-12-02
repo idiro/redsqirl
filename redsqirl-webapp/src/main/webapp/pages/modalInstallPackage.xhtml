@@ -7,6 +7,6 @@
     xmlns:ui="http://java.sun.com/jsf/facelets">
 
 <a4j:loadBundle basename="MessagesResources" var="messages" />
-    <iframe src="#{request.contextPath}/secured/search.xhtml?userInstall=#{packageMngBean.userInstall}"
+    <iframe src="#{request.contextPath}/secured/search.xhtml?userInstall=#{packageMngBean.userInstall}&amp;type=#{packageMngBean.type}"
     	width="880px" height="550px"/>
 </ui:composition>

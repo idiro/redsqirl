@@ -1865,7 +1865,7 @@
 												value="#{canvasBean.nameWorkflow}" />
 										</rich:menuItem>
 										<rich:menuItem id="uninstallSubWorkflow" submitMode="ajax"
-											value="#{messages.label_menu_uninstall_sub_workflow}"
+											value="#{messages.label_menu_manage_sub_workflow}"
 											oncomplete="#{rich:component('modalSubWfUninstall')}.show();"
 											action="#{subwfBean.refreshSubworkflowsAllList}">
 										</rich:menuItem>
@@ -2542,7 +2542,7 @@
 			style="overflow:auto;" resizeable="false">
 
 			<f:facet name="header">
-				<h:outputText value="Uninstall Sub Workflow" />
+				<h:outputText value="Manage Sub Workflows" />
 			</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"

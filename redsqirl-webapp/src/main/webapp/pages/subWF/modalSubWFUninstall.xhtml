@@ -11,13 +11,21 @@
 		<img src="../image/icons/waiting.gif" />
 	</div>
 
-	<a4j:region>
-		<a4j:status
-			onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModalSubWFUninstall') });"
-			onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
-			onstop="jQuery.unblockUI();" />
-	</a4j:region>
 	<h:form>
+		<a4j:region>
+			<a4j:status
+				onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModalSubWFUninstall') });"
+				onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
+				onstop="jQuery.unblockUI();" />
+				
+	        <a4j:jsFunction name="openInstallModelModal"
+	            action="#{packageMngBean.setPackageScope}"
+	            oncomplete="#{rich:component('modalInstallPackage')}.show();">
+	            <a4j:actionparam name="user"/>
+	            <a4j:actionparam name="type"/>
+	        </a4j:jsFunction>
+		</a4j:region>
+	
 		<h:panelGrid id="superactionsList" columns="2">
 			<rich:panel id="systemSa" header="System Super Actions"
 				style="width:270px;height:390px;" bodyClass="maxContent">
@@ -43,6 +51,11 @@
 					rendered="#{subwfBean.admin}">
 					<rich:panel id="sa_sys_uninstall">
 						<a4j:commandButton styleClass="greenButton"
+							value="#{messages.button_sys_install_from_store}"
+							onclick="openInstallModelModal('true', 'model');" 
+                        	action="#{analyticsStoreSearchBean.retrieveAllPackageList}" />
+							
+						<a4j:commandButton styleClass="greenButton"
 							value="#{messages.button_sys_uninstall}"
 							action="#{subwfBean.deleteSASystem}" reRender="systemSA,msnSuccess" 
 							oncomplete="refreshRelativeHelp();" />
@@ -63,6 +76,9 @@
 				
 				<h:panelGrid id="sa_user_buttons" columns="2" style="vertical-align:bottom;">
 					<rich:panel id="sa_user_uninstall">
+						<a4j:commandButton styleClass="greenButton" value="#{messages.button_sys_install_from_store}"
+							onclick="openInstallModelModal('true', 'model');" 
+                        	action="#{analyticsStoreSearchBean.retrieveAllPackageList}"/>
 						<a4j:commandButton styleClass="greenButton" value="#{messages.button_sys_uninstall}" 
 							action="#{subwfBean.deleteSaUser}" oncomplete="refreshRelativeHelp();" reRender="userSaMenu,msnSuccess" />
 					</rich:panel>

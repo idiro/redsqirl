@@ -15,6 +15,7 @@
             action="#{packageMngBean.setPackageScope}"
             oncomplete="#{rich:component('modalInstallPackage')}.show();">
             <a4j:actionparam name="user"/>
+            <a4j:actionparam name="type"/>
         </a4j:jsFunction>
     </a4j:region>
     <h:panelGrid id="packageList" columns="2">
@@ -81,7 +82,7 @@
                     <a4j:commandButton
                         styleClass="greenButton"
                         value="#{messages.button_user_install}"
-                        onclick="openInstallPackageModal('true');" 
+                        onclick="openInstallPackageModal('true', 'package');" 
                         action="#{analyticsStoreSearchBean.retrieveAllPackageList}"/>
                 </rich:panel>
                 <rich:panel id="pck_user_uninstall">

@@ -71,7 +71,19 @@
 								
 								<a4j:commandButton id="installButton" value="#{messages.moduleDetail_install}"
 									action="#{analyticsStoreModuleDetailBean.installPackage}" 
-									rendered="#{!analyticsStoreModuleDetailBean.installed}"
+									rendered="#{!analyticsStoreModuleDetailBean.installed 
+										and analyticsStoreModuleDetailBean.moduleVersion.type == 'package'}"
+									rerender="panel"
+									onclick="jQuery('#moduleDetailDiv').block({ message: jQuery('#domMessageDivCanvas1')});"
+									oncomplete="jQuery('#moduleDetailDiv').unblock();">
+									<f:param name="id" value="#{param['id']}"/>
+									<f:param name="userInstall" value="#{param['userInstall']}"/>
+								</a4j:commandButton>
+								
+								<a4j:commandButton id="getModelButton" value="#{messages.moduleDetail_install_model}"
+									action="#{analyticsStoreModuleDetailBean.installModel}" 
+									rendered="#{!analyticsStoreModuleDetailBean.installed 
+										and analyticsStoreModuleDetailBean.moduleVersion.type == 'model'}"
 									rerender="panel"
 									onclick="jQuery('#moduleDetailDiv').block({ message: jQuery('#domMessageDivCanvas1')});"
 									oncomplete="jQuery('#moduleDetailDiv').unblock();">
