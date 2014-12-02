@@ -11,6 +11,7 @@ import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
+import com.redsqirl.BaseBean;
 import com.redsqirl.CanvasModalOutputTab;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
@@ -24,7 +25,7 @@ import com.redsqirl.workflow.server.interfaces.DataFlowElement;
  * @author etienne
  *
  */
-public abstract class CanvasModalInteraction implements Serializable{
+public abstract class CanvasModalInteraction extends BaseBean implements Serializable{
 	
 
 	/**

@@ -17,6 +17,7 @@ import org.ajax4jsf.model.KeepAlive;
 import org.apache.commons.lang.WordUtils;
 import org.apache.log4j.Logger;
 
+import com.redsqirl.interaction.BrowserInteraction;
 import com.redsqirl.interaction.CanvasModalInteraction;
 import com.redsqirl.interaction.EditorInteraction;
 import com.redsqirl.interaction.SelectedEditor;
@@ -147,6 +148,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 */
 	private List<CanvasModalInteraction> inters = new LinkedList<CanvasModalInteraction>();
 	private CanvasModalInteraction canvasModalInteractionTableInteractionPanel;
+	private CanvasModalInteraction canvasModalInteractionHeaderEditor;
 
 	/**
 	 * List of the table column titles
@@ -704,6 +706,26 @@ public class CanvasModal extends BaseBean implements Serializable {
 			request.setAttribute("msnError", "msnError");
 		}
 	}
+	
+	public void openHeaderEditorPanel() throws RemoteException{
+		logger.info("openHeaderEditorPanel");
+		String idInteraction = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("idInteraction");
+		if(idInteraction != null){
+			logger.info("interaction: " + idInteraction);
+			int indexOf = getPage().getInteractions().indexOf(getPage().getInteraction(idInteraction));
+			CanvasModalInteraction cmInt = inters.get(indexOf);
+			if (cmInt instanceof BrowserInteraction) {
+				logger.info("Header Editor");
+				((BrowserInteraction) cmInt).openHeaderEditor();
+				setCanvasModalInteractionHeaderEditor(cmInt);
+			}
+		}else{
+			logger.info("openHeaderEditorPanel error idInteraction = NULL ");
+			MessageUseful.addErrorMessage(getMessageResources("msg_error_oops"));
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
+		}
+	}
 
 	public void checkFirstPage() {
 		if (getListPosition() == 0) {
@@ -1038,6 +1060,15 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 */
 	public final boolean isElementToUpdate() {
 		return elementToUpdate;
+	}
+
+	public CanvasModalInteraction getCanvasModalInteractionHeaderEditor() {
+		return canvasModalInteractionHeaderEditor;
+	}
+
+	public void setCanvasModalInteractionHeaderEditor(
+			CanvasModalInteraction canvasModalInteractionHeaderEditor) {
+		this.canvasModalInteractionHeaderEditor = canvasModalInteractionHeaderEditor;
 	}
 
 }

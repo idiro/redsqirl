@@ -204,7 +204,7 @@
                 
                 <a4j:region id="inputInteractionRegion" rendered="#{interCur.displayType == 'input'}">
                     <span id="inputInteractionRegion_#{interCurIdx}">
-                        <h:inputText  value="#{interCur.input.inputValue}" maxlength="255" style="width:395px;" styleClass="interModal"
+                        <h:inputText value="#{interCur.input.inputValue}" maxlength="255" style="width:395px;" styleClass="interModal"
                             onkeypress="return disableEnterKey(event);"/>
                     </span>
                 </a4j:region>     
@@ -306,13 +306,19 @@
                                 rowClasses="even-row, odd-row" >
                        
                                 <rich:columns value="#{canvasModalBean.outputTab.titles == null? canvasBean.emptyList : canvasModalBean.outputTab.titles}" 
-                                              var="column" 
-                                              index="ind"
-                                              id="column#{ind}"
-                                              sortExpression="#{rowData[ind]}">
+                                	var="column" index="ind" id="column#{ind}" sortExpression="#{rowData[ind]}">
                                     
                                     <f:facet name="header">
-                                        <h:outputText value="#{column}" />
+                                    	<h:panelGroup>
+	                                    	<a4j:commandLink action="#{canvasModalBean.openHeaderEditorPanel}" oncomplete="#{rich:component('headerEditor')}.show();" 
+				                       			reRender="canvasModalHeaderEditor" rendered="#{ind == 0 &amp;&amp; interCur.browser.updatableHeader == 'true'}" >
+					                            <h:graphicImage url="../image/icons/button-pencil02.gif" style="width:15px;margin-right:8px;" title="#{messages.header_editor}"/>
+					                            <a4j:actionparam name="idInteraction" value="#{interCur.id}"/>
+											</a4j:commandLink>
+	                                        <h:outputText value="#{column}" rendered="#{ind == 0 &amp;&amp; interCur.browser.updatableHeader == 'true'}" 
+	                                        	style="position:relative;top:-6px;" />
+	                                        <h:outputText value="#{column}" rendered="#{ind != 0}" />
+                                        </h:panelGroup>
                                     </f:facet>
                                     
                                     <h:outputText value="#{rowData[ind]}" />
@@ -666,6 +672,23 @@
 	            <h:panelGroup>
 	                <a4j:include viewId="/pages/tableInteractionPanelPopup.xhtml" ajaxRendered="true" />
 	            </h:panelGroup>
+                    
+            </rich:modalPanel>
+            
+            <rich:modalPanel id="headerEditor" width="700" height="450" style="overflow:hidden;" >
+                    
+                    <f:facet name="header">
+                    	<h:outputText value="#{messages.header_editor}" />
+                    </f:facet>
+                    <f:facet name="controls">
+                        <h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+                            style="cursor:pointer;width:22px;"
+                            onclick="#{rich:component('textEditorPanel')}.hide()" />
+                    </f:facet>
+                    
+                    <h:panelGroup>
+                    	<a4j:include viewId="/pages/headerEditor.xhtml" ajaxRendered="true" />
+                    </h:panelGroup>
                     
             </rich:modalPanel>
     

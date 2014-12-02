@@ -1,0 +1,99 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j">
+
+<script>
+//<![CDATA[
+
+	function selectRadio(){
+
+		if(jQuery('[id$="selectHeaderEditor\\:0"]').is(":checked")){
+
+			jQuery('[id$="inputHeaderEditor"]').prop('disabled', false);
+			jQuery('[id$="tableHeaderEditor"]').find("input").prop('disabled', true);
+			
+		}else{
+
+			jQuery('[id$="inputHeaderEditor"]').prop('disabled', true);
+			jQuery('[id$="tableHeaderEditor"]').find("input").prop('disabled', false);
+			
+		}
+			
+   	}
+	
+//]]>
+</script>
+
+	<h:form>
+	
+        <a4j:jsFunction name="mountHeaderEditor" action="#{canvasModalBean.canvasModalInteractionHeaderEditor.mountHeaderEditor}" 
+	       	oncomplete="selectRadio();" reRender="inputHeaderEditorPG, tableHeaderEditorPG" />
+		
+		<h:panelGroup id="canvasModalHeaderEditor" style="width:100%;height:100%;">
+		
+			<table>
+				<tr>
+					<td style="width:10px;padding-bottom:140px;">
+						<h:selectOneRadio id="selectHeaderEditor" value="#{canvasModalBean.canvasModalInteractionHeaderEditor.selectHeaderEditor}" 
+							onchange="mountHeaderEditor();" layout="pageDirection">
+					        <f:selectItem id="input" itemLabel="" itemValue="U" />
+					        <f:selectItem id="table" itemLabel="" itemValue="D" />
+					    </h:selectOneRadio>
+					</td>
+					<td style="width:100%;">
+						
+						<h:panelGroup id="inputHeaderEditorPG" >
+							<h:inputText id="inputHeaderEditor" value="#{canvasModalBean.canvasModalInteractionHeaderEditor.headerFieldsType}" style="width:500px" />
+						</h:panelGroup>
+						
+						<br/><br/>
+						
+						<h:panelGroup id="tableHeaderEditorPG" >
+							<rich:dataTable id="tableHeaderEditor" value="#{canvasModalBean.canvasModalInteractionHeaderEditor.listFieldsType}"
+								var="obj" rowKeyVar="rowNb" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+							    enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
+						        
+						         <rich:column style="border-bottom:0px;border-right:0px;" width="20px;">
+						         	<h:outputText value="#{rowNb+1}" />
+							     </rich:column>
+							     <rich:column style="border-bottom:0px;border-right:0px;" width="20px;">
+						         	<h:inputText value="#{obj.name}" />
+							     </rich:column>
+							     <rich:column style="border-bottom:0px;border-right:0px;" width="20px;">
+						         	<rich:comboBox value="#{obj.type}" width="200" enableManualInput="false" listWidth="150" listHeight="200">
+				                    	<f:selectItems value="#{canvasModalBean.canvasModalInteractionHeaderEditor.fieldTypes}" />
+				                	</rich:comboBox>
+							     </rich:column>
+						        
+						    </rich:dataTable>
+					    </h:panelGroup>
+					    
+					</td>
+				</tr>
+			</table>
+			
+			<br/><br/>
+			
+			<div style="width:100%;height:40px;border:0px solid;overflow-x:hidden;">
+			
+				<a4j:commandButton action="#{canvasModalBean.canvasModalInteractionHeaderEditor.headerEditor}"
+				    styleClass="greenButton" value="#{messages.button_ok}"
+					oncomplete="if(#{requestScope['msnError'] == null} ){canvasModalApply();}"
+					reRender="browserTableData, msnError, errorTable" />
+					
+				<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('headerEditor')}.hide();" 
+					reRender="browserTableData, msnError, errorTable" />
+					
+				<a4j:jsFunction name="canvasModalApply" action="#{canvasModalBean.applyPage}"  
+					reRender="canvasModalTabPanel, outputTab, panelBtCanvasModal, msnError, msnSuccess, browserTableProp, browserPropLabel, browserPropValue" 
+					oncomplete="if(#{requestScope['msnError'] == null} ){changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');createOptionTitles();reLoadTabs();#{rich:component('headerEditor')}.hide();}" />
+				
+			</div>
+	
+		</h:panelGroup>
+	</h:form>
+	
+</ui:composition>

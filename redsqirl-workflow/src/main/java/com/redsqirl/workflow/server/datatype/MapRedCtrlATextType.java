@@ -181,58 +181,13 @@ public class MapRedCtrlATextType extends MapRedDir{
 			if (isPathExists()) {
 
 				FieldList fl = generateFieldsMap(delimiter);
-
-				String error = null;
-				String header = getProperty(key_header);
-				if (header != null && !header.isEmpty()) {
-					logger.info("setFieldsFromHeader --");
-					error = setFieldsFromHeader();
-					if (error != null) {
-						throw new RemoteException(error);
-					}
-				} else {
-					if (fields != null) {
-						logger.debug(fields.getFieldNames());
-						logger.debug(fl.getFieldNames());
-					} else {
-						fields = fl;
-					}
-				}
-
-				if (fields.getSize() != fl.getSize()) {
-					if (header != null && !header.isEmpty()) {
-						error = LanguageManagerWF
-								.getText("mapredtexttype.setheaders.wronglabels");
-					}
+				
+				String error = checkCompatibility(fl,fields);
+				logger.debug(fields.getFieldNames());
+				logger.debug(fl.getFieldNames());
+				if(error != null){
 					fields = fl;
-				} else {
-					Iterator<String> flIt = fl.getFieldNames().iterator();
-					Iterator<String> fieldIt = fields.getFieldNames()
-							.iterator();
-					boolean ok = true;
-					int i = 1;
-					while (flIt.hasNext() && ok) {
-						String nf = flIt.next();
-						String of = fieldIt.next();
-						logger.info("types field " + i + ": "
-								+ fl.getFieldType(nf) + " , "
-								+ fields.getFieldType(of));
-						ok &= canCast(fl.getFieldType(nf),
-								fields.getFieldType(of));
-						if (!ok) {
-							error = LanguageManagerWF.getText(
-									"mapredtexttype.msg_error_cannot_cast",
-									new Object[] { fl.getFieldType(nf),
-											fields.getFieldType(of) });
-						}
-						++i;
-					}
-					if (!ok) {
-						fields = fl;
-						if (error != null) {
-							throw new RemoteException(error);
-						}
-					}
+					throw new RemoteException(error);
 				}
 
 			}
