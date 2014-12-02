@@ -51,9 +51,6 @@ public abstract class MapRedDir extends DataOutput{
 	
 	/** HDFS Interface */
 	protected static HDFSInterface hdfsInt;
-
-	/** Header Key */
-	public final static String key_header = "header";
 	
 
 	protected static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -84,8 +81,6 @@ public abstract class MapRedDir extends DataOutput{
 			hdfsInt = new HDFSInterface();
 		}
 		
-		addProperty(key_header, "");
-
 		fieldsNumberHierarchicalOrder.add(FieldType.INT);
 		fieldsNumberHierarchicalOrder.add(FieldType.LONG);
 		fieldsNumberHierarchicalOrder.add(FieldType.FLOAT);
@@ -103,6 +98,37 @@ public abstract class MapRedDir extends DataOutput{
 		fieldsDateHierarchicalOrder.add(FieldType.TIMESTAMP);
 		fieldsDateHierarchicalOrder.add(FieldType.CATEGORY);
 		fieldsDateHierarchicalOrder.add(FieldType.STRING);
+	}
+	
+	protected String checkCompatibility(FieldList from, FieldList to) throws RemoteException{
+		Iterator<String> flIt = from.getFieldNames().iterator();
+		Iterator<String> fieldIt = to.getFieldNames().iterator();
+		String error = null;
+		boolean ok = true;
+		int i = 1;
+		while (flIt.hasNext() && ok) {
+			String nf = flIt.next();
+			if (!fieldIt.hasNext()){
+				ok = false;
+				error = LanguageManagerWF.getText(
+						"mapredtexttype.msg_error_number_fields");
+			} else{
+				String of = fieldIt.next();
+				logger.info("types field " + i + ": "
+						+ from.getFieldType(nf) + " , "
+						+ to.getFieldType(of));
+				ok &= canCast(from.getFieldType(nf),
+						to.getFieldType(of));
+				if (!ok) {
+					error = LanguageManagerWF.getText(
+							"mapredtexttype.msg_error_cannot_cast",
+							new Object[] { from.getFieldType(nf),
+									to.getFieldType(of) });
+				}
+				++i;
+			}
+		}
+		return error;
 	}
 	
 
@@ -360,136 +386,6 @@ public abstract class MapRedDir extends DataOutput{
 	}
 	
 
-	/**
-	 * Set the fields list of the data set from the header
-	 * 
-	 * @return Error Message
-	 * @throws RemoteException
-	 */
-	protected String setFieldsFromHeader() throws RemoteException {
-
-		logger.info("setFieldsFromHeader()");
-
-		String header = getProperty(key_header);
-		String error = null;
-
-		if (header != null && !header.isEmpty()) {
-
-			String newLabels[] = header.split(",");
-
-			logger.info("setFieldsFromHeader fields " + fields);
-
-			if (header.trim().endsWith(",")) {
-				error = LanguageManagerWF
-						.getText("mapredtexttype.setheaders.wronglabels");
-			}
-
-			FieldList newFL = new OrderedFieldList();
-
-			try {
-
-				if (newLabels[0].trim().split("\\s+").length > 1) {
-
-					logger.info("setFieldsFromHeader if ");
-
-					for (int j = 0; j < newLabels.length && error == null; j++) {
-						String label = newLabels[j].trim();
-						String[] nameType = label.split("\\s+");
-						if (nameType.length != 2) {
-							error = LanguageManagerWF
-									.getText("mapredtexttype.setheaders.wrongpair");
-						} else {
-							logger.info("nameType[1] " + nameType[0] + " "
-									+ nameType[1]);
-
-							if (isVariableName(nameType[0])) {
-
-								try {
-									FieldType ft = FieldType
-											.valueOf(nameType[1].toUpperCase());
-									if (ft == null) {
-										error = LanguageManagerWF
-												.getText(
-														"mapredtexttype.msg_error_type_new_header",
-														new Object[] { nameType[1] });
-									} else {
-										newFL.addField(nameType[0], ft);
-									}
-								} catch (Exception e) {
-									logger.error(e);
-									error = LanguageManagerWF
-											.getText(
-													"mapredtexttype.msg_error_type_new_header",
-													new Object[] { nameType[1] });
-								}
-
-							} else {
-								error = LanguageManagerWF.getText(
-										"mapredtexttype.msg_error_name_header",
-										new Object[] { nameType[0] });
-							}
-
-						}
-					}
-
-				} else {
-
-					logger.info("setFieldsFromHeader else ");
-
-					logger.info("setFieldsFromHeader else error  " + error);
-					// logger.info("setFieldsFromHeader else Fields "+
-					// Fields);
-
-					if (error == null && fields != null
-							&& fields.getFieldNames() != null) {
-						Iterator<String> it = fields.getFieldNames()
-								.iterator();
-						int j = 0;
-						while (it.hasNext() && error == null) {
-							String fieldName = it.next();
-							logger.info("getFieldType fieldName " + fieldName);
-
-							if (isVariableName(newLabels[j].trim())) {
-								newFL.addField(newLabels[j].trim(),
-										fields.getFieldType(fieldName));
-							} else {
-								error = LanguageManagerWF.getText(
-										"mapredtexttype.msg_error_name_header",
-										new Object[] { newLabels[j].trim() });
-								break;
-							}
-
-							++j;
-						}
-					}
-					
-					if(error == null && newFL != null && !newFL.getFieldNames().isEmpty()){
-						header = "";
-						Iterator<String> fieldIt = newFL.getFieldNames().iterator();
-						while(fieldIt.hasNext()){
-							String fieldName = fieldIt.next();
-							header +=","+fieldName+" "+newFL.getFieldType(fieldName).toString();
-						}
-						header = header.substring(1);
-						addProperty(key_header, header);
-					}
-				}
-			} catch (Exception e) {
-				logger.error(e);
-				error = LanguageManagerWF
-						.getText("mapredtexttype.setheaders.typeunknown");
-			}
-
-			if (error == null && !newFL.getFieldNames().isEmpty()) {
-				setFields(newFL);
-			}
-		}
-
-		logger.info("setFieldsFromHeader-error " + error);
-
-		return error;
-	}
-	
 
 	/**
 	 * Generate a column name

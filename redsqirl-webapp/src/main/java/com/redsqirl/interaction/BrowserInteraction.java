@@ -2,15 +2,21 @@ package com.redsqirl.interaction;
 
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.servlet.http.HttpServletRequest;
 
 import com.redsqirl.CanvasModalOutputTab;
 import com.redsqirl.FileSystemBean;
+import com.redsqirl.dynamictable.SelectHeaderType;
+import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.utils.Tree;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 
@@ -25,11 +31,17 @@ public class BrowserInteraction extends CanvasModalInteraction {
 	 * List of the field name
 	 */
 	private List<String> listFields;
+	private List<SelectHeaderType> listFieldsType;
+	private List<SelectItem> fieldTypes;
+	private String headerFieldsType;
+	private String selectHeaderEditor;
 
 	/**
 	 * List of the properties
 	 */
 	private List<SelectItem> listProperties;
+
+	private String updatableHeader;
 
 	/**
 	 * Object that will manage the output and display it. 
@@ -50,6 +62,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 		// clean the map
 		listFields = new LinkedList<String>();
 		listProperties = new LinkedList<SelectItem>();
+		updatableHeader = "false";
 		//logger.info(printTree(tree));
 		try{
 			if (tree.getFirstChild("browse")
@@ -82,6 +95,12 @@ public class BrowserInteraction extends CanvasModalInteraction {
 					}
 				}
 			}
+			if (tree.getFirstChild("browse").getFirstChild("updatable") != null){
+				updatableHeader = tree.getFirstChild("browse").getFirstChild("updatable").getFirstChild().getHead();
+			}
+			
+			logger.info(updatableHeader);
+			
 		}catch(Exception e){
 			logger.info("Exception: "+e.getMessage());
 		}
@@ -110,14 +129,9 @@ public class BrowserInteraction extends CanvasModalInteraction {
 
 	@Override
 	public void writeInteraction() throws RemoteException {
-		inter.getTree().getFirstChild("browse")
-		.getFirstChild("output").removeAllChildren();
-		inter.getTree().getFirstChild("browse")
-		.getFirstChild("output").add("path")
-		.add(getPath());
-		inter.getTree().getFirstChild("browse")
-		.getFirstChild("output").add("name")
-		.add("");
+		inter.getTree().getFirstChild("browse").getFirstChild("output").removeAllChildren();
+		inter.getTree().getFirstChild("browse").getFirstChild("output").add("path").add(getPath());
+		inter.getTree().getFirstChild("browse").getFirstChild("output").add("name").add("");
 
 		Tree<String> myProperty = inter.getTree()
 				.getFirstChild("browse").getFirstChild("output")
@@ -218,6 +232,119 @@ public class BrowserInteraction extends CanvasModalInteraction {
 		}
 	}
 
+	public void openHeaderEditor(){
+
+		logger.info("openHeaderEditor");
+
+		fieldTypes = new ArrayList<SelectItem>();
+		for (FieldType type : FieldType.values()) {
+			fieldTypes.add(new SelectItem(type.toString(), type.toString().toUpperCase() ));
+		}
+		
+		setSelectHeaderEditor(null);
+
+		if(getGridTitles() != null){
+
+			listFieldsType = new ArrayList<SelectHeaderType>();
+			StringBuffer header = new StringBuffer();
+			for (String line : getGridTitles()) {
+				logger.info(line);
+				SelectHeaderType selectHeaderType = new SelectHeaderType();
+				String[] values = line.split(" ");
+				selectHeaderType.setName(values[0]);
+				selectHeaderType.setType(values[1].toUpperCase());
+				listFieldsType.add(selectHeaderType);
+				header.append(","+values[0] + " " + values[1].toUpperCase());
+			}
+
+			setHeaderFieldsType(header.substring(1));
+
+		}
+
+	}
+
+	public void headerEditor(){
+
+		logger.info("headerEditor");
+
+		String error = null;
+		
+		if(getSelectHeaderEditor() != null){
+			listFields = new ArrayList<String>();
+			if(getSelectHeaderEditor().equalsIgnoreCase("U")){
+
+				String[] values = getHeaderFieldsType().split(",");
+				if(values.length == getGridTitles().size()){
+					for (int i = 0; i < values.length; i++) {
+						listFields.add(values[i]);
+					}
+				}else{
+					error = getMessageResources("msg_error_size_header");
+				}
+
+			}else{
+
+				for (SelectHeaderType selectHeaderType : listFieldsType) {
+					StringBuffer result = new StringBuffer();
+					result.append(selectHeaderType.getName());
+					result.append(" ");
+					result.append(selectHeaderType.getType());
+					logger.info(result);
+					listFields.add(result.toString());
+				}
+
+			}
+		}else{
+			error = getMessageResources("msg_error_selected_header");
+		}
+
+		if(error != null){
+			logger.info(error);
+			MessageUseful.addErrorMessage(error);
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
+		}
+
+	}
+
+	public void mountHeaderEditor(){
+
+		logger.info("mountHeaderEditor");
+
+		if(getSelectHeaderEditor() != null && getSelectHeaderEditor().equalsIgnoreCase("U")){
+
+			StringBuffer header = new StringBuffer();
+			for (SelectHeaderType selectHeaderType : listFieldsType) {
+				header.append(","+selectHeaderType.getName() + " " + selectHeaderType.getType().toUpperCase());
+			}
+			setHeaderFieldsType(header.substring(1));
+
+			logger.info("U");
+
+		}else{
+
+			String[] lines = getHeaderFieldsType().split(",");
+			if(lines.length == getGridTitles().size()){
+				listFieldsType = new ArrayList<SelectHeaderType>();
+				for (String line : lines) {
+					SelectHeaderType selectHeaderType = new SelectHeaderType();
+					String[] values = line.split(" ");
+					selectHeaderType.setName(values[0]);
+					if(values.length == 2){
+						selectHeaderType.setType(values[1].toUpperCase());
+					}else{
+						selectHeaderType.setType("");
+					}
+					listFieldsType.add(selectHeaderType);
+				}
+			}
+			
+			logger.info("D");
+
+		}
+
+	}
+
 	/**
 	 * @return the listFields
 	 */
@@ -284,6 +411,46 @@ public class BrowserInteraction extends CanvasModalInteraction {
 	 */
 	public List<String[]> getGridRows() {
 		return modalOutput != null ? modalOutput.getRows():null;
+	}
+
+	public List<SelectItem> getFieldTypes() {
+		return fieldTypes;
+	}
+
+	public void setFieldTypes(List<SelectItem> fieldTypes) {
+		this.fieldTypes = fieldTypes;
+	}
+
+	public List<SelectHeaderType> getListFieldsType() {
+		return listFieldsType;
+	}
+
+	public void setListFieldsType(List<SelectHeaderType> listFieldsType) {
+		this.listFieldsType = listFieldsType;
+	}
+
+	public String getHeaderFieldsType() {
+		return headerFieldsType;
+	}
+
+	public void setHeaderFieldsType(String headerFieldsType) {
+		this.headerFieldsType = headerFieldsType;
+	}
+
+	public String getSelectHeaderEditor() {
+		return selectHeaderEditor;
+	}
+
+	public void setSelectHeaderEditor(String selectHeaderEditor) {
+		this.selectHeaderEditor = selectHeaderEditor;
+	}
+
+	public String getUpdatableHeader() {
+		return updatableHeader;
+	}
+
+	public void setUpdatableHeader(String updatableHeader) {
+		this.updatableHeader = updatableHeader;
 	}
 
 }

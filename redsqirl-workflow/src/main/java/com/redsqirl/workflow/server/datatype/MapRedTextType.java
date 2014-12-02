@@ -70,7 +70,6 @@ public class MapRedTextType extends MapRedDir {
 		return new String[]{"*.mrtxt"};
 	}
 
-
 	/**
 	 * Gernate a path given values
 	 * 
@@ -86,7 +85,6 @@ public class MapRedTextType extends MapRedDir {
 		return "/user/" + userName + "/tmp/redsqirl_" + component + "_" + outputName
 				+ "_" + RandomString.getRandomName(8)+".mrtxt";
 	}
-
 	
 	/**
 	 * Check if the path is a valid path
@@ -163,7 +161,6 @@ public class MapRedTextType extends MapRedDir {
 		super.setFields(fl);
 	}
 
-
 	/**
 	 * Get a Default delimiter from text
 	 * 
@@ -234,77 +231,20 @@ public class MapRedTextType extends MapRedDir {
 				}
 
 				FieldList fl = generateFieldsMap(getChar(getProperty(key_delimiter)));
-				
-				String error = null;
-				String header = getProperty(key_header);
-				if (header != null && !header.isEmpty()) {
-					logger.info("setFieldsFromHeader --");
-					error = setFieldsFromHeader();
-					if (error != null) {
-						if(checkCompatibility(fl,fields) != null){
-							fields = fl;
-						}
-						throw new RemoteException(error);
-					}
-				} else {
-					if(checkCompatibility(fl,fields) != null){
-						fields = fl;
-					}
-					String myHeader = fl.mountStringHeader();
-					addProperty(key_header, myHeader);
-					logger.debug(fields.getFieldNames());
-					logger.debug(fl.getFieldNames());
-				}
-
-				if (fields.getSize() != fl.getSize()) {
-					if (header != null && !header.isEmpty()) {
-						error = LanguageManagerWF
-								.getText("mapredtexttype.setheaders.wronglabels");
-					}
+				if(fields == null || fields.getSize() == 0){
 					fields = fl;
-				} else {
-					error = checkCompatibility(fl,fields);
-					if (error != null) {
-						fields = fl;						
+				}else{
+					String error = checkCompatibility(fl,fields);
+					logger.info(fields.getFieldNames());
+					logger.info(fl.getFieldNames());
+					if(error != null){
+						logger.info(error);
+						fields = fl;
 						throw new RemoteException(error);
 					}
 				}
-
 			}
 		}
-	}
-	
-	private String checkCompatibility(FieldList from, FieldList to) throws RemoteException{
-		Iterator<String> flIt = from.getFieldNames().iterator();
-		Iterator<String> fieldIt = to.getFieldNames()
-				.iterator();
-		String error = null;
-		boolean ok = true;
-		int i = 1;
-		while (flIt.hasNext() && ok) {
-			String nf = flIt.next();
-			if (!fieldIt.hasNext()){
-				ok = false;
-				error = LanguageManagerWF.getText(
-						"mapredtexttype.msg_error_number_fields");
-			}
-			else{
-				String of = fieldIt.next();
-				logger.info("types field " + i + ": "
-						+ from.getFieldType(nf) + " , "
-						+ to.getFieldType(of));
-				ok &= canCast(from.getFieldType(nf),
-						to.getFieldType(of));
-				if (!ok) {
-					error = LanguageManagerWF.getText(
-							"mapredtexttype.msg_error_cannot_cast",
-							new Object[] { from.getFieldType(nf),
-									to.getFieldType(of) });
-				}
-				++i;
-			}
-		}
-		return error;
 	}
 
 	/**
@@ -332,31 +272,9 @@ public class MapRedTextType extends MapRedDir {
 			delimNew = "#" + String.valueOf((int) delimNew.charAt(0));
 		}
 
-		boolean compProps = false;
-		if (dataProperty != null) {
-			String headOld = dataProperty.get(key_header), headNew = props
-					.get(key_header), delimOld = dataProperty
-					.get(key_delimiter);
-			if (headNew == null) {
-				compProps = headOld == null;
-			} else {
-				compProps = headNew.equals(headOld);
-			}
-			if (compProps) {
-				if (delimNew == null) {
-					compProps = delimNew == null;
-				} else {
-					compProps = delimNew.equals(delimOld);
-				}
-			}
-		} else if (props.isEmpty()) {
-			compProps = true;
-		}
-
-		return !(this.getPath() == null || fields == null) && compProps
+		return !(this.getPath() == null || fields == null)
 				&& (this.getPath().equals(path) && fields.equals(fl));
 	}
-
 
 	/**
 	 * Get the character from an ascii value
