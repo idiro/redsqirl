@@ -5,7 +5,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import javax.faces.context.FacesContext;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -49,11 +52,18 @@ public class AnalyticsStoreSearchBean implements Serializable{
 		
 		try{
 			
+			Map<String, String> params = FacesContext.getCurrentInstance().
+					getExternalContext().getRequestParameterMap();
+			String type = params.get("type");
+			
 			String uri = getRepoServer()+"rest/allpackages";
 			
 			JSONObject object = new JSONObject();
 			object.put("software", "RedSqirl");
 			object.put("filter", searchValue);
+			if (type != null && !type.isEmpty()){
+				object.put("type", type);
+			}
 			
 			Client client = Client.create();
 			WebResource webResource = client.resource(uri);
@@ -61,6 +71,8 @@ public class AnalyticsStoreSearchBean implements Serializable{
 			ClientResponse response = webResource.type("application/json")
 			   .post(ClientResponse.class, object.toString());
 			String ansServer = response.getEntity(String.class);
+			
+			System.out.println(ansServer);
 			
 			Set<String> packagesAdded = new HashSet<String>();
 			try{
