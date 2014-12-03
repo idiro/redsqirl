@@ -29,6 +29,7 @@ public class BrowserInteraction extends UserInteraction{
 			int column, int placeInColumn) throws RemoteException {
 		super(id, name, legend, DisplayType.browser, column, placeInColumn);
 	}
+	
 	/**
 	 * Constructor for the browser
 	 * @param id
@@ -44,6 +45,29 @@ public class BrowserInteraction extends UserInteraction{
 		super(id, name, legend, texttip, DisplayType.browser, column, placeInColumn);
 	}
 	
+	public void setEditableHeader(boolean updatable) throws RemoteException{
+		Tree<String> treeDataset = getTree();
+
+		if (treeDataset.getSubTreeList().isEmpty()) {
+			treeDataset.add("browse");
+		}
+		if(treeDataset.getFirstChild("browse").getFirstChild("updatable") != null){
+			treeDataset.getFirstChild("browse").remove("updatable");
+		}
+		treeDataset.getFirstChild("browse").add("updatable").add(Boolean.toString(updatable));
+	}
+	
+	public boolean getEditableHeader(){
+		boolean ans = false;
+		Tree<String> treeDataset = getTree();
+		try{
+			ans = Boolean.valueOf(treeDataset.getFirstChild("browse").getFirstChild("updatable").getFirstChild().getHead());
+		}catch(Exception e){
+			ans = false;
+		}
+		return ans;
+	}
+	
 	/**
 	 * Update the interaction
 	 * 
@@ -57,14 +81,23 @@ public class BrowserInteraction extends UserInteraction{
 		Tree<String> treeDataset = getTree();
 
 		if (treeDataset.getSubTreeList().isEmpty()) {
-			treeDataset.add("browse").add("output");
-			treeDataset.getFirstChild("browse").add("subtype").add(newSubtype);
+			treeDataset.add("browse");
+		}
+		if(treeDataset.getFirstChild("browse").getFirstChild("output") == null){
+			treeDataset.getFirstChild("browse").add("output");
+		}
+		
+		if(treeDataset.getFirstChild("browse").getFirstChild("type") == null){
 			treeDataset.getFirstChild("browse").add("type").add(newType);
-		} else {
-			Tree<String> oldType = treeDataset.getFirstChild("browse")
-					.getFirstChild("type").getFirstChild();
+		}
+		
+		if(treeDataset.getFirstChild("browse").getFirstChild("subtype") == null){
+			treeDataset.getFirstChild("browse").add("subtype").add(newSubtype);
+		}else{
+			Tree<String> oldSubType = treeDataset.getFirstChild("browse")
+					.getFirstChild("subtype").getFirstChild();
 
-			if (oldType != null && !oldType.getHead().equals(newType)) {
+			if (oldSubType != null && !oldSubType.getHead().equals(newSubtype)) {
 				treeDataset.getFirstChild("browse").remove("type");
 				treeDataset.getFirstChild("browse").remove("output");
 				treeDataset.getFirstChild("browse").add("output");

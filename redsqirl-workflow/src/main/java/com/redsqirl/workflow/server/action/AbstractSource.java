@@ -405,6 +405,15 @@ public abstract class AbstractSource extends DataflowAction {
 							logger.info(out.getFields().getFieldNames());
 						}
 						
+						boolean updatable = false;
+						if(getInteraction(key_dataset).getTree()
+								.getFirstChild("browse")
+								.getFirstChild("updatable") != null){
+							updatable = Boolean.valueOf(
+									getInteraction(key_dataset).getTree()
+									.getFirstChild("browse")
+									.getFirstChild("updatable").getFirstChild().getHead());
+						}
 						getInteraction(key_dataset).getTree()
 								.removeAllChildren();
 						getInteraction(key_dataset).getTree()
@@ -415,6 +424,9 @@ public abstract class AbstractSource extends DataflowAction {
 								.getFirstChild("output")
 								.add("name")
 								.add(name);
+						getInteraction(key_dataset).getTree()
+								.getFirstChild("browse")
+								.add("updatable").add(Boolean.toString(updatable));
 					}
 
 					// Check path
