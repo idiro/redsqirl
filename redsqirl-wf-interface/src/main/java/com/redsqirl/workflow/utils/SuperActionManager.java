@@ -110,25 +110,25 @@ public class SuperActionManager {
 	}
 
 	public List<String> getAvailableSuperActions(String user) {
-		File sysSA = getSuperActionMainDir(null);
+//		File sysSA = getSuperActionMainDir(null);
 		File userSA = getSuperActionMainDir(user);
 		// final String pattern= "^[a-zA-Z0-9]*$";
 		final String pattern = "sa_[a-zA-Z0-9]*";
 
 		List<String> ansL = new LinkedList<String>();
-		try {
-			if (sysSA.exists()) {
-				ansL.addAll(Arrays.asList(sysSA.list(new FilenameFilter() {
-
-					@Override
-					public boolean accept(File arg0, String name) {
-						return name.matches(pattern) && name.startsWith("sa_");
-					}
-				})));
-			}
-		} catch (Exception e) {
-			logger.error("error ", e);
-		}
+//		try {
+//			if (sysSA.exists()) {
+//				ansL.addAll(Arrays.asList(sysSA.list(new FilenameFilter() {
+//
+//					@Override
+//					public boolean accept(File arg0, String name) {
+//						return name.matches(pattern) && name.startsWith("sa_");
+//					}
+//				})));
+//			}
+//		} catch (Exception e) {
+//			logger.error("error ", e);
+//		}
 		try {
 			if (userSA.exists()) {
 				ansL.addAll(Arrays.asList(userSA.list(new FilenameFilter() {

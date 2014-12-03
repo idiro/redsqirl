@@ -207,8 +207,14 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 		    	File file = new File("/usr/share/redsqirl/conf/licenseKey.properties");
 	
 		        writer = new BufferedWriter(new FileWriter(file, true));
-		        writer.write(name + "=" + key);
-		        writer.newLine();
+		        
+		        for (String k : key.split(",")){
+		        	if (!k.trim().isEmpty()){
+		        		writer.write(k);
+		 		        writer.newLine();
+		        	}
+		        }
+		       
 		    } catch (Exception e) {
 		    	e.printStackTrace();
 		    } finally {
@@ -236,6 +242,12 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 		
 		String error = null;
 		
+		String user = null;
+		
+		if (userInstall){
+			user = System.getProperty("user.name");
+		}
+		
 		for (String file : folder.list()){
 			
 			System.out.println(file);
@@ -251,7 +263,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 				
 				swa.readFromLocal(new File(folder.getPath() + "/" + file));
 
-				error = saManager.install(System.getProperty("user.name"), swa, true);
+				error = saManager.install(user, swa, true);
 				if (error != null){
 					break;
 				}
@@ -268,11 +280,11 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 		FileUtils.deleteDirectory(new File(extractedPackagePath));
 
 		if (error == null){
-			MessageUseful.addInfoMessage("Packge Installed.");
+			MessageUseful.addInfoMessage("Model Installed.");
 			installed = true;
 		}
 		else{
-			MessageUseful.addInfoMessage("Error installing package: " + error);
+			MessageUseful.addInfoMessage("Error installing model: " + error);
 		}
 		
 		return "";
