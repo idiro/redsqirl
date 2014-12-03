@@ -187,9 +187,8 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 
 	public void refreshSubworkflowsSystemList() {
 		List<String> listSa = saManager.getAvailableSuperActions(null);
-
+		
 		uninstallSysSa = new ArrayList<SelectItem>();
-
 		for (int i = 0; i < listSa.size(); ++i) {
 			String s = listSa.get(i);
 			uninstallSysSa.add(new SelectItem(s, s));
@@ -200,6 +199,7 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 	public void refreshSubworkflowsUser() {
 		List<String> listSa = saManager
 				.getAvailableSuperActions(getUserInfoBean().getUserName());
+		
 		uninstallUserSa = new ArrayList<SelectItem>();
 		for (int i = 0; i < listSa.size(); ++i) {
 			String s = listSa.get(i);
