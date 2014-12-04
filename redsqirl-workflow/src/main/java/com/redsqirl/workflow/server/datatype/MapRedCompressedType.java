@@ -34,6 +34,7 @@ public class MapRedCompressedType extends MapRedTextType {
 	 */
 	public MapRedCompressedType() throws RemoteException {
 		super();
+		setHeaderEditorOnBrowser(true);
 	}
 
 	/**
@@ -44,6 +45,7 @@ public class MapRedCompressedType extends MapRedTextType {
 	 */
 	public MapRedCompressedType(FieldList fields) throws RemoteException {
 		super(fields);
+		setHeaderEditorOnBrowser(true);
 	}
 
 	/**

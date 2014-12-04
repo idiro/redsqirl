@@ -71,6 +71,9 @@ DFEOutput {
 	 */
 	protected Map<String, String> dataProperty = new LinkedHashMap<String, String>();
 	
+	
+	
+	protected boolean headerEditorOnBrowser = false;
 	// public static final String hbase_new_field = "hbase_new_field";
 	/**
 	 * Default Constructor
@@ -563,4 +566,13 @@ DFEOutput {
 				&& dataProperty.equals(props);
 	}
 	
+	@Override
+	public boolean getHeaderEditorOnBrowser() throws RemoteException{
+		return headerEditorOnBrowser;
+	}
+	
+	@Override
+	public void setHeaderEditorOnBrowser(boolean header) throws RemoteException{
+		headerEditorOnBrowser = header;
+	}
 }

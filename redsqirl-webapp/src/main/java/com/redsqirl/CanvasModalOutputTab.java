@@ -94,8 +94,8 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 		this.dfe = dfe;
 		this.datastores = datastores;
 		try {
-			resetNameOutput();
-			updateDFEOutputTable();
+			//resetNameOutput();
+			//updateDFEOutputTable();
 		} catch (Exception e) {
 			logger.info("Exception: " + e.getMessage());
 		}
@@ -279,8 +279,6 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 				logger.info("no output named: " + nameOutput);
 			} else {
 				LinkedList<String> gridTitle = new LinkedList<String>();
-
-
 				List<SelectItem> listExtensions = new LinkedList<SelectItem>();
 				if (dfeOut.getExtensions() != null && dfeOut.getExtensions().length != 0) {
 					String[] listExt = dfeOut.getExtensions();
@@ -302,27 +300,21 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 				getFileSystem().setListExtensions(listExtensions);
 				getFileSystem().updateTable();
 
-
 				if (dfeOut.getFields() != null) {
 
 					try {
-						List<String> outputFieldList = dfeOut.getFields()
-								.getFieldNames();
+						List<String> outputFieldList = dfeOut.getFields().getFieldNames();
 						for (String outputField : outputFieldList) {
 
-							// logger.info("outputFieldureNames " +
-							// outputFieldure);
-							FieldType fieldType = dfeOut.getFields()
-									.getFieldType(outputField);
+							// logger.info("outputFieldureNames " + outputFieldure);
+							FieldType fieldType = dfeOut.getFields().getFieldType(outputField);
 							// logger.info("FieldureType " + FieldureType);
 
-							gridTitle.add(outputField + " "
-									+ fieldType.toString());
+							gridTitle.add(outputField + " "	+ fieldType.toString());
 						}
 						logger.info("grid titles: " + gridTitle);
 					} catch (Exception e) {
-						logger.info("Error when getting the field: "
-								+ e.getMessage());
+						logger.info("Error when getting the field: " + e.getMessage());
 					}
 					grid = new UnselectableTable(gridTitle);
 					try {

@@ -106,27 +106,26 @@ public abstract class MapRedDir extends DataOutput{
 		String error = null;
 		boolean ok = true;
 		int i = 1;
+		if(from.getSize() != to.getSize()){
+			error = LanguageManagerWF.getText(
+					"mapredtexttype.msg_error_number_fields");
+			ok = false;
+		}
 		while (flIt.hasNext() && ok) {
 			String nf = flIt.next();
-			if (!fieldIt.hasNext()){
-				ok = false;
+			String of = fieldIt.next();
+			logger.info("types field " + i + ": "
+					+ from.getFieldType(nf) + " , "
+					+ to.getFieldType(of));
+			ok &= canCast(from.getFieldType(nf),
+					to.getFieldType(of));
+			if (!ok) {
 				error = LanguageManagerWF.getText(
-						"mapredtexttype.msg_error_number_fields");
-			} else{
-				String of = fieldIt.next();
-				logger.info("types field " + i + ": "
-						+ from.getFieldType(nf) + " , "
-						+ to.getFieldType(of));
-				ok &= canCast(from.getFieldType(nf),
-						to.getFieldType(of));
-				if (!ok) {
-					error = LanguageManagerWF.getText(
-							"mapredtexttype.msg_error_cannot_cast",
-							new Object[] { from.getFieldType(nf),
-									to.getFieldType(of) });
-				}
-				++i;
+						"mapredtexttype.msg_error_cannot_cast",
+						new Object[] { from.getFieldType(nf),
+								to.getFieldType(of) });
 			}
+			++i;
 		}
 		return error;
 	}

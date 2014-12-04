@@ -46,6 +46,20 @@ public interface DFEOutput extends Remote {
 	public String getBrowser() throws RemoteException;
 
 	/**
+	 * True if the header (name and type of fields) is editable
+	 * @return
+	 * @throws RemoteException
+	 */
+	public boolean getHeaderEditorOnBrowser() throws RemoteException;
+	
+	/**
+	 * Set editable header
+	 * @param header
+	 * @throws RemoteException
+	 */
+	public void setHeaderEditorOnBrowser(boolean header) throws RemoteException;
+	
+	/**
 	 * Get the colour of the type
 	 * 
 	 * @return colour of type

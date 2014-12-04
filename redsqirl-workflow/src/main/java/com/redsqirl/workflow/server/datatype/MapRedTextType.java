@@ -42,6 +42,7 @@ public class MapRedTextType extends MapRedDir {
 	 */
 	public MapRedTextType() throws RemoteException {
 		super();
+		setHeaderEditorOnBrowser(true);
 	}
 
 	/**
@@ -52,6 +53,7 @@ public class MapRedTextType extends MapRedDir {
 	 */
 	public MapRedTextType(FieldList fields) throws RemoteException {
 		super(fields);
+		setHeaderEditorOnBrowser(true);
 	}
 
 	/**
