@@ -64,7 +64,7 @@ public class PigTextSource extends AbstractSource {
 		initializeDataSubtypeInteraction();
 		addSourcePage();
 		browser.setTextTip(PigLanguageManager.getText("pig.test_source_browser_interaction.header_help"));
-		browser.setEditableHeader(true);
+		//browser.setEditableHeader(true);
 		auditInt= new AppendListInteraction(key_audit,
 			  	PigLanguageManager.getText("pig.audit_interaction.title"),
 			  	PigLanguageManager.getText("pig.audit_interaction.legend"),

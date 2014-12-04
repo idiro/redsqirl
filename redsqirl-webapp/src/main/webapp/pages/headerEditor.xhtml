@@ -5,8 +5,13 @@
 	xmlns:rich="http://richfaces.org/rich"
 	xmlns:a4j="http://richfaces.org/a4j">
 
+<a4j:loadBundle basename="MessagesResources" var="messages" />
+
 <script>
 //<![CDATA[
+           
+    jQuery('[id$="selectHeaderEditor\\:0"]').css("margin-bottom", "35px");
+    jQuery('[id$="inputHeaderEditor"]').prop('disabled', true);
 
 	function selectRadio(){
 
@@ -34,9 +39,13 @@
 		
 		<h:panelGroup id="canvasModalHeaderEditor" style="width:100%;height:100%;">
 		
+			<h2><center><h:outputText value="#{messages.label_headers_type}" /></center></h2>
+			
+			<h:outputText value="#{messages.label_header_table}" />
+		
 			<table>
 				<tr>
-					<td style="width:10px;padding-bottom:140px;">
+					<td style="padding-bottom:230px;">
 						<h:selectOneRadio id="selectHeaderEditor" value="#{canvasModalBean.canvasModalInteractionHeaderEditor.selectHeaderEditor}" 
 							onchange="mountHeaderEditor();" layout="pageDirection">
 					        <f:selectItem id="input" itemLabel="" itemValue="U" />
@@ -46,36 +55,49 @@
 					<td style="width:100%;">
 						
 						<h:panelGroup id="inputHeaderEditorPG" >
-							<h:inputText id="inputHeaderEditor" value="#{canvasModalBean.canvasModalInteractionHeaderEditor.headerFieldsType}" style="width:500px" />
+							<h:outputText value="#{messages.label_change_header}" style="font-weight:bold;" /><br/>
+							<h:outputText value="#{messages.label_header_input}" /><br/>
+							<h:inputText id="inputHeaderEditor" value="#{canvasModalBean.canvasModalInteractionHeaderEditor.headerFieldsType}" 
+								style="width:640px" />
 						</h:panelGroup>
 						
 						<br/><br/>
 						
 						<h:panelGroup id="tableHeaderEditorPG" >
-							<rich:dataTable id="tableHeaderEditor" value="#{canvasModalBean.canvasModalInteractionHeaderEditor.listFieldsType}"
-								var="obj" rowKeyVar="rowNb" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-							    enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
-						        
-						         <rich:column style="border-bottom:0px;border-right:0px;" width="20px;">
-						         	<h:outputText value="#{rowNb+1}" />
-							     </rich:column>
-							     <rich:column style="border-bottom:0px;border-right:0px;" width="20px;">
-						         	<h:inputText value="#{obj.name}" />
-							     </rich:column>
-							     <rich:column style="border-bottom:0px;border-right:0px;" width="20px;">
-						         	<rich:comboBox value="#{obj.type}" width="200" enableManualInput="false" listWidth="150" listHeight="200">
-				                    	<f:selectItems value="#{canvasModalBean.canvasModalInteractionHeaderEditor.fieldTypes}" />
-				                	</rich:comboBox>
-							     </rich:column>
-						        
-						    </rich:dataTable>
+							<h:outputText value="#{messages.label_change_fileds}" style="font-weight:bold;" /><br/>
+							<h:outputText value="#{messages.label_header_table}" /><br/>
+							<div style="height:220px;overflow:auto;" >
+								<rich:dataTable id="tableHeaderEditor" value="#{canvasModalBean.canvasModalInteractionHeaderEditor.listFieldsType}"
+									var="obj" rowKeyVar="rowNb" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+								    enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
+							        
+							         <rich:column style="border-bottom:0px;border-right:0px;" width="20px;">
+								         <f:facet name="header">
+								         </f:facet>
+							         	<h:outputText value="#{rowNb+1}" />
+								     </rich:column>
+								     <rich:column style="border-bottom:0px;border-right:0px;" width="20px;">
+								     	<f:facet name="header">
+								     		<h:outputText value="#{messages.label_name}" />
+								        </f:facet>
+							         	<h:inputText value="#{obj.name}" />
+								     </rich:column>
+								     <rich:column style="border-bottom:0px;border-right:0px;" width="20px;">
+								     	<f:facet name="header">
+								     		<h:outputText value="#{messages.label_type}" />
+								        </f:facet>
+							         	<rich:comboBox value="#{obj.type}" width="200" enableManualInput="false" listWidth="150" listHeight="200">
+					                    	<f:selectItems value="#{canvasModalBean.canvasModalInteractionHeaderEditor.fieldTypes}" />
+					                	</rich:comboBox>
+								     </rich:column>
+							        
+							    </rich:dataTable>
+						    </div>
 					    </h:panelGroup>
 					    
 					</td>
 				</tr>
 			</table>
-			
-			<br/><br/>
 			
 			<div style="width:100%;height:40px;border:0px solid;overflow-x:hidden;">
 			

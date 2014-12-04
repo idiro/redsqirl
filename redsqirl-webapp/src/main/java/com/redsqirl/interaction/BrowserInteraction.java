@@ -43,6 +43,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 
 	private String updatableHeader;
 
+	private DataFlowElement dfe;
 	/**
 	 * Object that will manage the output and display it. 
 	 * It is supposed that a browser element has only one output.
@@ -52,8 +53,9 @@ public class BrowserInteraction extends CanvasModalInteraction {
 	public BrowserInteraction(DFEInteraction dfeInter,DataFlowElement dfe,CanvasModalOutputTab outputTab) throws RemoteException {
 		super(dfeInter);
 		this.modalOutput = outputTab;
-		outputTab.resetNameOutput();
-		outputTab.updateDFEOutputTable();
+		this.dfe = dfe;
+		//outputTab.resetNameOutput();
+		//outputTab.updateDFEOutputTable();
 	}
 
 	@Override
@@ -95,11 +97,6 @@ public class BrowserInteraction extends CanvasModalInteraction {
 					}
 				}
 			}
-			if (tree.getFirstChild("browse").getFirstChild("updatable") != null){
-				updatableHeader = tree.getFirstChild("browse").getFirstChild("updatable").getFirstChild().getHead();
-			}
-			
-			logger.info(updatableHeader);
 			
 		}catch(Exception e){
 			logger.info("Exception: "+e.getMessage());
@@ -124,6 +121,11 @@ public class BrowserInteraction extends CanvasModalInteraction {
 		if(modalOutput != null){
 			modalOutput.resetNameOutput();
 			modalOutput.updateDFEOutputTable();
+			try{
+				updatableHeader = Boolean.toString(dfe.getDFEOutput().get(modalOutput.getNameOutput()).getHeaderEditorOnBrowser());
+			}catch(Exception e){
+				logger.error("Unexpected error: "+e,e);
+			}
 		}
 	}
 
@@ -241,7 +243,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 			fieldTypes.add(new SelectItem(type.toString(), type.toString().toUpperCase() ));
 		}
 		
-		setSelectHeaderEditor(null);
+		setSelectHeaderEditor("D");
 
 		if(getGridTitles() != null){
 
@@ -276,7 +278,12 @@ public class BrowserInteraction extends CanvasModalInteraction {
 				String[] values = getHeaderFieldsType().split(",");
 				if(values.length == getGridTitles().size()){
 					for (int i = 0; i < values.length; i++) {
-						listFields.add(values[i]);
+						String[] nameType = values[i].split(" ");
+						if(nameType.length != 2){
+							listFields.add(nameType[0] + " " + getListFieldsType().get(i).getType());
+						}else{
+							listFields.add(values[i]);
+						}
 					}
 				}else{
 					error = getMessageResources("msg_error_size_header");

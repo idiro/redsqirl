@@ -45,29 +45,6 @@ public class BrowserInteraction extends UserInteraction{
 		super(id, name, legend, texttip, DisplayType.browser, column, placeInColumn);
 	}
 	
-	public void setEditableHeader(boolean updatable) throws RemoteException{
-		Tree<String> treeDataset = getTree();
-
-		if (treeDataset.getSubTreeList().isEmpty()) {
-			treeDataset.add("browse");
-		}
-		if(treeDataset.getFirstChild("browse").getFirstChild("updatable") != null){
-			treeDataset.getFirstChild("browse").remove("updatable");
-		}
-		treeDataset.getFirstChild("browse").add("updatable").add(Boolean.toString(updatable));
-	}
-	
-	public boolean getEditableHeader(){
-		boolean ans = false;
-		Tree<String> treeDataset = getTree();
-		try{
-			ans = Boolean.valueOf(treeDataset.getFirstChild("browse").getFirstChild("updatable").getFirstChild().getHead());
-		}catch(Exception e){
-			ans = false;
-		}
-		return ans;
-	}
-	
 	/**
 	 * Update the interaction
 	 * 
