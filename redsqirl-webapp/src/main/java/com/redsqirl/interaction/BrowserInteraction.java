@@ -134,22 +134,18 @@ public class BrowserInteraction extends CanvasModalInteraction {
 		inter.getTree().getFirstChild("browse").getFirstChild("output").removeAllChildren();
 		inter.getTree().getFirstChild("browse").getFirstChild("output").add("path").add(getPath());
 		inter.getTree().getFirstChild("browse").getFirstChild("output").add("name").add("");
-
-		Tree<String> myProperty = inter.getTree()
-				.getFirstChild("browse").getFirstChild("output")
-				.add("property");
+		
+		inter.getTree().getFirstChild("browse").getFirstChild("output").remove("property");
+		Tree<String> myProperty = inter.getTree().getFirstChild("browse").getFirstChild("output").add("property");
+		
 		for (SelectItem item : listProperties) {
-			logger.info("Add property: " + item.getLabel()
-					+ ": " + item.getValue());
-			myProperty.add(item.getLabel()).add(
-					item.getValue().toString());
+			logger.info("Add property: " + item.getLabel() + ": " + item.getValue());
+			myProperty.add(item.getLabel()).add(item.getValue().toString());
 		}
 
 		for (String nameValue : listFields) {
-			Tree<String> myField = inter.getTree()
-					.getFirstChild("browse")
-					.getFirstChild("output").add("field");
-			String value[] = nameValue.split(" ");
+			Tree<String> myField = inter.getTree().getFirstChild("browse").getFirstChild("output").add("field");
+			String value[] = nameValue.trim().split("\\s+");
 			myField.add("name").add(value[0]);
 			myField.add("type").add(value[1]);
 		}
@@ -252,9 +248,9 @@ public class BrowserInteraction extends CanvasModalInteraction {
 			for (String line : getGridTitles()) {
 				logger.info(line);
 				SelectHeaderType selectHeaderType = new SelectHeaderType();
-				String[] values = line.split(" ");
-				selectHeaderType.setName(values[0]);
-				selectHeaderType.setType(values[1].toUpperCase());
+				String[] values = line.trim().split("\\s+");
+				selectHeaderType.setName(values[0].trim());
+				selectHeaderType.setType(values[1].trim().toUpperCase());
 				listFieldsType.add(selectHeaderType);
 				header.append(","+values[0] + " " + values[1].toUpperCase());
 			}
@@ -278,12 +274,19 @@ public class BrowserInteraction extends CanvasModalInteraction {
 				String[] values = getHeaderFieldsType().split(",");
 				if(values.length == getGridTitles().size()){
 					for (int i = 0; i < values.length; i++) {
-						String[] nameType = values[i].split(" ");
-						if(nameType.length != 2){
-							listFields.add(nameType[0] + " " + getListFieldsType().get(i).getType());
-						}else{
-							listFields.add(values[i]);
+						
+						if(error == null){
+							String[] nameType = values[i].trim().split("\\s+");
+							if(nameType.length == 1){
+								listFields.add(nameType[0].trim() + " " + getListFieldsType().get(i).getType());
+							}else if(nameType.length == 2){
+								listFields.add(values[i].trim());
+							}else if(nameType.length > 2){
+								error = getMessageResources("msg_error_size_header");
+							}
+							
 						}
+						
 					}
 				}else{
 					error = getMessageResources("msg_error_size_header");
@@ -330,15 +333,15 @@ public class BrowserInteraction extends CanvasModalInteraction {
 
 		}else{
 
-			String[] lines = getHeaderFieldsType().split(",");
+			String[] lines = getHeaderFieldsType().trim().split(",");
 			if(lines.length == getGridTitles().size()){
 				listFieldsType = new ArrayList<SelectHeaderType>();
 				for (String line : lines) {
 					SelectHeaderType selectHeaderType = new SelectHeaderType();
-					String[] values = line.split(" ");
-					selectHeaderType.setName(values[0]);
+					String[] values = line.split("\\s+");
+					selectHeaderType.setName(values[0].trim());
 					if(values.length == 2){
-						selectHeaderType.setType(values[1].toUpperCase());
+						selectHeaderType.setType(values[1].trim().toUpperCase());
 					}else{
 						selectHeaderType.setType("");
 					}

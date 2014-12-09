@@ -261,27 +261,18 @@ public abstract class AbstractSource extends DataflowAction {
 					Map<String, String> props = new LinkedHashMap<String, String>();
 					if (error == null) {
 						try {
-							Iterator<Tree<String>> itProp = getInteraction(
-									key_dataset).getTree()
-									.getFirstChild("browse")
-									.getFirstChild("output")
-									.getFirstChild("property").getSubTreeList()
-									.iterator();
+							Iterator<Tree<String>> itProp = getInteraction(key_dataset).getTree().getFirstChild("browse")
+								.getFirstChild("output").getFirstChild("property").getSubTreeList().iterator();
 
-							logger.info("property list size : "
-									+ getInteraction(key_dataset).getTree()
-											.getFirstChild("browse")
-											.getFirstChild("output")
-											.getFirstChild("property")
-											.getSubTreeList().size());
+							logger.info("property list size : "	+ getInteraction(key_dataset).getTree().getFirstChild("browse")
+									.getFirstChild("output").getFirstChild("property").getSubTreeList().size());
 
 							while (itProp.hasNext()) {
 								Tree<String> prop = itProp.next();
 								String name = prop.getHead();
 								String value = prop.getFirstChild().getHead();
 
-								logger.info("out addProperty " + name + " "
-										+ value);
+								logger.info("out addProperty " + name + " "	+ value);
 
 								props.put(name, value);
 							}

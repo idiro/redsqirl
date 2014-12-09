@@ -250,35 +250,6 @@ public class MapRedTextType extends MapRedDir {
 	}
 
 	/**
-	 * Compare the current path , FieldList , properties to others
-	 * 
-	 * @param path
-	 * @param fl
-	 * @param props
-	 * @return <code>true</code> if items are equal else <code>false</code>
-	 */
-	@Override
-	public boolean compare(String path, FieldList fl,
-			Map<String, String> props) {
-		logger.debug("Comparaison MapRed:");
-		logger.debug(this.getPath() + " " + path);
-		try {
-			logger.debug(fields.getFieldNames() + " "
-					+ fl.getFieldNames());
-		} catch (Exception e) {
-		}
-		logger.debug(dataProperty + " " + props);
-
-		String delimNew = props.get(key_delimiter);
-		if (delimNew != null && delimNew.length() == 1) {
-			delimNew = "#" + String.valueOf((int) delimNew.charAt(0));
-		}
-
-		return !(this.getPath() == null || fields == null)
-				&& (this.getPath().equals(path) && fields.equals(fl));
-	}
-
-	/**
 	 * Get the character from an ascii value
 	 * 
 	 * @param asciiCode

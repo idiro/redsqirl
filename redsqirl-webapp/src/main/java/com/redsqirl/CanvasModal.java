@@ -268,8 +268,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 				logger.info("load Main window");
 				try {
 
-					// validate if you can open or not the dynamic form of the
-					// object
+					// validate if you can open or not the dynamic form of the object
 					String error = dfe.checkIn();
 
 					logger.info("error " + error);
@@ -625,7 +624,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 			logger.info(cmInter.getId()+": "+interactionChanged);
 			if (interactionChanged) {
 				elementToUpdate = true;
+				logger.info("Before writing: "+cmInter.printTree(cmInter.getTree()));
 				cmInter.writeInteraction();
+				logger.info("After writing: "+cmInter.printTree(cmInter.getTree()));
 			}
 		}
 		String e = getPageList().get(getListPosition()).checkPage();
@@ -634,9 +635,10 @@ public class CanvasModal extends BaseBean implements Serializable {
 			for (int i = 0; i < inters.size(); i++) {
 				CanvasModalInteraction cmInter = inters.get(i);
 				//if(!cmInter.isUnchanged() && cmInter.getDisplayType().toString().equals(DisplayType.browser.toString())){
-				if(cmInter.getDisplayType().toString().equals(DisplayType.browser.toString())){
+				if(cmInter.getDisplayType().toString().equals(DisplayType.browser.toString()) && !cmInter.isUnchanged()){
 					logger.info("read back browser...");
 					cmInter.readInteraction();
+					logger.info("read back browser: "+cmInter.printTree(cmInter.getTree()));
 				}
 			}
 		}
