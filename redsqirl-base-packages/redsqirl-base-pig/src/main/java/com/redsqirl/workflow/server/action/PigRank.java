@@ -2,11 +2,13 @@ package com.redsqirl.workflow.server.action;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import com.redsqirl.utils.FieldList;
+import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.ListInteraction;
 import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.enumeration.FieldType;
@@ -104,13 +106,14 @@ public class PigRank extends PigElement {
 			query += remove;
 
 			String load = getCurrentName() + " = " + getLoadQueryPiece(in);
+			String loadName = getCurrentName();
 			query += load + ";\n\n";
 
 			String order = orderTypeInt.getValue();
 			order = order.equals("DESCENDING") ? "DESC" : "ASC";
 
 			String ranking = getNextName() + " = RANK "
-					+ getCurrentName() + " by " + rank.getValue();
+					+ loadName + " by " + rank.getValue();
 
 			ranking += " " + order + " ;\n ";
 
@@ -135,14 +138,18 @@ public class PigRank extends PigElement {
 
 	@Override
 	public FieldList getNewField() throws RemoteException {
-		FieldList newFieldList = getInFields().cloneRemote();
-		if(newFieldList != null){
-			String rankValue = rank.getValue();
-			if(rankValue.length() > 24){
-				newFieldList.addField("Rank_"+rankValue.substring(0,24), FieldType.INT);
-			}else{
-				newFieldList.addField("Rank_"+rankValue , FieldType.INT);
-			}
+		FieldList newFieldList = new OrderedFieldList();
+		String rankValue = rank.getValue();
+		if(rankValue.length() > 24){
+			newFieldList.addField("Rank_"+rankValue.substring(0,24), FieldType.INT);
+		}else{
+			newFieldList.addField("Rank_"+rankValue , FieldType.INT);
+		}
+		FieldList inFields = getInFields();
+		Iterator<String> it = inFields.getFieldNames().iterator();
+		while(it.hasNext()){
+			String cur = it.next();
+			newFieldList.addField(cur, inFields.getFieldType(cur));
 		}
 		return newFieldList;
 	}
@@ -179,3 +186,5 @@ public class PigRank extends PigElement {
 	}
 
 }
+
+
