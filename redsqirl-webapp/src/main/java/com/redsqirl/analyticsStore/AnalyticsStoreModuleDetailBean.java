@@ -428,12 +428,11 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 	}
 	
 	public String getRepoServer(){
-//		String pckServer = WorkflowPrefManager.getPckManagerUri();
-//		if(!pckServer.endsWith("/")){
-//			pckServer+="/";
-//		}
-//		return pckServer;
-		return "http://localhost:9090/analytics-store/";
+		String pckServer = WorkflowPrefManager.getPckManagerUri();
+		if(!pckServer.endsWith("/")){
+			pckServer+="/";
+		}
+		return pckServer;
 	}
 
 	public RedSqirlModule getModuleVersion() {
