@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
 
 import org.json.JSONArray;
@@ -32,10 +33,15 @@ public class AnalyticsStoreSearchBean implements Serializable{
 	
 	private String message;
 	
-	List<RedSqirlModule> allPackageList;
+	private List<RedSqirlModule> allPackageList;
 	
 	
 	public AnalyticsStoreSearchBean() {
+		
+	}
+	
+	@PostConstruct
+	public void init(){
 		try{
 			retrieveAllPackageList();
 		}catch (Exception e){
