@@ -53,7 +53,9 @@
 						<a4j:commandButton styleClass="greenButton"
 							value="#{messages.button_sys_install_from_store}"
 							onclick="openInstallModelModal('false', 'model');" 
-                        	action="#{analyticsStoreSearchBean.retrieveAllPackageList}" />
+                        	action="#{analyticsStoreSearchBean.retrieveAllPackageList}">
+                        	<f:param name="type" value="model"/>
+                        </a4j:commandButton>
 							
 						<a4j:commandButton styleClass="greenButton"
 							value="#{messages.button_sys_uninstall}"
@@ -78,7 +80,9 @@
 					<rich:panel id="sa_user_uninstall">
 						<a4j:commandButton styleClass="greenButton" value="#{messages.button_sys_install_from_store}"
 							onclick="openInstallModelModal('true', 'model');" 
-                        	action="#{analyticsStoreSearchBean.retrieveAllPackageList}"/>
+                        	action="#{analyticsStoreSearchBean.retrieveAllPackageList}">
+                        	<f:param name="type" value="model"/>
+                        </a4j:commandButton>
 						<a4j:commandButton styleClass="greenButton" value="#{messages.button_sys_uninstall}" 
 							action="#{subwfBean.deleteSaUser}" oncomplete="refreshRelativeHelp();" reRender="userSaMenu,msnSuccess" />
 					</rich:panel>

@@ -45,7 +45,10 @@
                     <a4j:commandButton
                         styleClass="greenButton"
                         value="#{messages.button_sys_install}"
-                        onclick="openInstallPackageModal('false');" />
+                        onclick="openInstallPackageModal('false');" 
+                        action="#{analyticsStoreSearchBean.retrieveAllPackageList}">
+                        <f:param name="type" value="package"/>
+                   	</a4j:commandButton>
                 </rich:panel>
                 <rich:panel id="pck_sys_uninstall">
                     <a4j:commandButton
@@ -83,7 +86,9 @@
                         styleClass="greenButton"
                         value="#{messages.button_user_install}"
                         onclick="openInstallPackageModal('true', 'package');" 
-                        action="#{analyticsStoreSearchBean.retrieveAllPackageList}"/>
+                        action="#{analyticsStoreSearchBean.retrieveAllPackageList}">
+                        <f:param name="type" value="package"/>
+                   	</a4j:commandButton>
                 </rich:panel>
                 <rich:panel id="pck_user_uninstall">
                     <a4j:commandButton
