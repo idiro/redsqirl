@@ -34,6 +34,7 @@ import org.json.JSONObject;
 import com.idiro.ProjectID;
 import com.idiro.hadoop.NameNodeVar;
 import com.redsqirl.BaseBean;
+import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
@@ -51,6 +52,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 	private static final long serialVersionUID = 1L;
 
 	private AnalyticsStoreLoginBean analyticsStoreLoginBean;
+	private UserInfoBean userInfoBean;
 	private RedSqirlModule moduleVersion;
 	
 	private boolean installed;
@@ -117,7 +119,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 				moduleVersion = versionList.get(0);
 			}
 			
-			String user = System.getProperty("user.name");
+			String user = userInfoBean.getUserName();
 			PackageManager pckMng = new PackageManager();
 			List<String> packagesInstalled = pckMng.getPackageNames(user);
 			
@@ -245,7 +247,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 		String user = null;
 		
 		if (userInstall){
-			user = System.getProperty("user.name");
+			user = userInfoBean.getUserName();
 		}
 		
 		for (String file : folder.list()){
@@ -270,7 +272,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 			}
 			
 			if (file.endsWith(".rs")){
-				NameNodeVar.getFS().copyFromLocalFile(false, new Path(folder.getPath() + "/" + file), new Path("/user/"+System.getProperty("user.name")+"/redsqirl-save/"+file));
+				NameNodeVar.getFS().copyFromLocalFile(false, new Path(folder.getPath() + "/" + file), new Path("/user/"+userInfoBean.getUserName()+"/redsqirl-save/"+file));
 			}
 		}
 	    
@@ -383,7 +385,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 	    
 	    String user = null;
 	    if (userInstall){
-	    	user = System.getProperty("user.name");
+	    	user = userInfoBean.getUserName();
 	    }
 	    	
 	    String error = pckMng.addPackage(user, new String[]{packagePath});

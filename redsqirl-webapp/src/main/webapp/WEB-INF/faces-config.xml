@@ -105,6 +105,11 @@
 		<property-class>com.redsqirl.analyticsStore.AnalyticsStoreLoginBean</property-class>
 		<value>#{analyticsStoreLoginBean}</value>
 	</managed-property>
+	<managed-property>
+		<property-name>userInfoBean</property-name>
+	  	<property-class>com.redsqirl.auth.UserInfoBean</property-class>
+	  	<value>#{userInfoBean}</value>
+	</managed-property>
  </managed-bean>
  
  <!-- **************************** NAVIGATION ******************************************************************* -->
