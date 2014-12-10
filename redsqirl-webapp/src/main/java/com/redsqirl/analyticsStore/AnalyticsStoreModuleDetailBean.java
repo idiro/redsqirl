@@ -469,4 +469,14 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 	public void setInstalled(boolean installed) {
 		this.installed = installed;
 	}
+
+	public UserInfoBean getUserInfoBean() {
+		return userInfoBean;
+	}
+
+	public void setUserInfoBean(UserInfoBean userInfoBean) {
+		this.userInfoBean = userInfoBean;
+	}
+	
+	
 }
