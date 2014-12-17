@@ -43,7 +43,7 @@ import com.redsqirl.workflow.server.connect.HiveInterface;
 	HiveUnionTests.class,
 	HiveJoinTests.class,
 	HiveAggregTests.class,
-	HiveDictionaryTests.class,
+	HiveDictionaryTests.class
 	})
 public class SetupHiveEnvironmentTest {
 

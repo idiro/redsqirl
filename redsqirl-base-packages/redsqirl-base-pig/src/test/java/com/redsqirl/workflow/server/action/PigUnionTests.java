@@ -97,23 +97,23 @@ public class PigUnionTests {
 		{
 			Tree<String> out = tsi.getTree().getFirstChild("table");
 			Tree<String> rowId = out.add("row");
-			rowId.add(PigTableUnionInteraction.table_relation_title).add(relation_from_1);
-			rowId.add(PigTableUnionInteraction.table_field_title).add("ID");
+			rowId.add(PigTableUnionInteraction.table_table_title).add(relation_from_1);
+			rowId.add(PigTableUnionInteraction.table_feat_title).add("ID");
 			rowId.add(PigTableUnionInteraction.table_op_title).add(relation_from_1+".ID");
 			rowId.add(PigTableUnionInteraction.table_type_title).add("STRING");
 			rowId = out.add("row");
-			rowId.add(PigTableUnionInteraction.table_relation_title).add(relation_from_1);
-			rowId.add(PigTableUnionInteraction.table_field_title).add("VALUE");
+			rowId.add(PigTableUnionInteraction.table_table_title).add(relation_from_1);
+			rowId.add(PigTableUnionInteraction.table_feat_title).add("VALUE");
 			rowId.add(PigTableUnionInteraction.table_op_title).add(relation_from_1+".VALUE");
 			rowId.add(PigTableUnionInteraction.table_type_title).add("INT");
 			rowId = out.add("row");
-			rowId.add(PigTableUnionInteraction.table_relation_title).add(relation_from_2);
-			rowId.add(PigTableUnionInteraction.table_field_title).add("ID");
+			rowId.add(PigTableUnionInteraction.table_table_title).add(relation_from_2);
+			rowId.add(PigTableUnionInteraction.table_feat_title).add("ID");
 			rowId.add(PigTableUnionInteraction.table_op_title).add(relation_from_2+".ID");
 			rowId.add(PigTableUnionInteraction.table_type_title).add("STRING");
 			rowId = out.add("row");
-			rowId.add(PigTableUnionInteraction.table_relation_title).add(relation_from_2);
-			rowId.add(PigTableUnionInteraction.table_field_title).add("VALUE");
+			rowId.add(PigTableUnionInteraction.table_table_title).add(relation_from_2);
+			rowId.add(PigTableUnionInteraction.table_feat_title).add("VALUE");
 			rowId.add(PigTableUnionInteraction.table_op_title).add(relation_from_2+".VALUE");
 			rowId.add(PigTableUnionInteraction.table_type_title).add("INT");
 		}

@@ -323,7 +323,7 @@ public class PigAnonymise extends PigElement {
 	 * @throws RemoteException
 	 */
 	@Override
-	public FieldList getNewField() throws RemoteException {
+	public FieldList getNewFields() throws RemoteException {
 		return getInFields();
 	}
 	/**

@@ -2,7 +2,6 @@ package com.redsqirl.workflow.server.action;
 
 
 import java.rmi.RemoteException;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +9,6 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.redsqirl.utils.FieldList;
-import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.DataProperty;
 import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.connect.HiveInterface;
@@ -191,48 +189,8 @@ public class HiveUnion extends HiveElement {
 
 		return query;
 	}
-	/**
-	 * Get the fields that are in the input
-	 * @return input FieldList
-	 * @throws RemoteException
-	 */
-	public FieldList getInFields() throws RemoteException {
-		FieldList ans = new OrderedFieldList();
-		Map<String, DFEOutput> aliases = getAliases();
+	
 
-		Iterator<String> it = aliases.keySet().iterator();
-		while (it.hasNext()) {
-			String alias = it.next();
-			FieldList mapTable = aliases.get(alias).getFields();
-			Iterator<String> itFeat = mapTable.getFieldNames().iterator();
-			while (itFeat.hasNext()) {
-				String cur = itFeat.next();
-				ans.addField(alias + "." + cur, mapTable.getFieldType(cur));
-			}
-		}
-		return ans;
-	}
-
-	/**
-	 * Get the input fields with the alias
-	 * @param alias
-	 * @return FieldList
-	 * @throws RemoteException
-	 */
-	public FieldList getInFields(String alias) throws RemoteException {
-		FieldList ans = null;
-		Map<String, DFEOutput> aliases = getAliases();
-		if(aliases.get(alias) != null){
-			ans = new OrderedFieldList();
-			FieldList mapTable = aliases.get(alias).getFields();
-			Iterator<String> itFeat = mapTable.getFieldNames().iterator();
-			while (itFeat.hasNext()) {
-				String cur = itFeat.next();
-				ans.addField(alias + "." + cur, mapTable.getFieldType(cur));
-			}
-		}
-		return ans;
-	}
 	/**
 	 * Get the field list that are generated from this action
 	 * @return new FieldList

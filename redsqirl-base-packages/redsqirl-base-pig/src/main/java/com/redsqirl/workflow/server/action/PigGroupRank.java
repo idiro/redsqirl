@@ -157,9 +157,9 @@ public class PigGroupRank extends PigElement {
 			//foreach C generate s, $9;
 			query += getNextName()+" = foreach "+loader +" generate ";
 			int i = 0;
-			for(String field : getNewField().getFieldNames()){
+			for(String field : getNewFields().getFieldNames()){
 				++i;
-				if(i == getNewField().getSize()){
+				if(i == getNewFields().getSize()){
 					query += " $"+(i-1)+" as " + field+";\n ";
 				}else {
 					query += field +" as "+field+" ,\n";
@@ -183,7 +183,7 @@ public class PigGroupRank extends PigElement {
 	}
 
 	@Override
-	public FieldList getNewField() throws RemoteException {
+	public FieldList getNewFields() throws RemoteException {
 		FieldList newFieldList = getInFields().cloneRemote();
 		if(newFieldList != null){
 			String rankValue = rank.getValue();

@@ -91,11 +91,11 @@ public class PigCompressTests {
 		{
 			Tree<String> out = tsi.getTree().getFirstChild("table");
 			Tree<String> rowId = out.add("row");
-			rowId.add(PigTableSelectInteraction.table_field_title).add("ID");
+			rowId.add(PigTableSelectInteraction.table_feat_title).add("ID");
 			rowId.add(PigTableSelectInteraction.table_op_title).add("ID");
 			rowId.add(PigTableSelectInteraction.table_type_title).add("STRING");
 			rowId = out.add("row");
-			rowId.add(PigTableSelectInteraction.table_field_title).add("VALUE");
+			rowId.add(PigTableSelectInteraction.table_feat_title).add("VALUE");
 			rowId.add(PigTableSelectInteraction.table_op_title).add("VALUE");
 			rowId.add(PigTableSelectInteraction.table_type_title).add("INT");
 		}

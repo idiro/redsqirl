@@ -2,18 +2,14 @@ package com.redsqirl.workflow.server.interaction;
 
 
 import java.rmi.RemoteException;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.redsqirl.workflow.server.AppendListInteraction;
+import com.redsqirl.workflow.server.action.SqlGroupInteraction;
 import com.redsqirl.workflow.server.action.utils.PigDictionary;
-import com.redsqirl.workflow.server.interfaces.DFEOutput;
 
 
 /**
@@ -21,7 +17,7 @@ import com.redsqirl.workflow.server.interfaces.DFEOutput;
  * @author marcos
  *
  */
-public class PigGroupInteraction extends AppendListInteraction{
+public class PigGroupInteraction extends SqlGroupInteraction{
 	
 	/**
 	 * 
@@ -40,22 +36,9 @@ public class PigGroupInteraction extends AppendListInteraction{
 	 */
 	public PigGroupInteraction(String id, String name, String legend,
 			int column, int placeInColumn) throws RemoteException {
-		super(id, name, legend, column, placeInColumn, false);
+		super(id, name, legend, column, placeInColumn);
 	}
-	/**
-	 * Update the interaction with the input
-	 * @param in
-	 * @throws RemoteException
-	 */
-	public void update(DFEOutput in) throws RemoteException{
-		List<String> posValues = new LinkedList<String>();
-		
-		Iterator<String> it = in.getFields().getFieldNames().iterator();
-		while(it.hasNext()){
-			posValues.add(it.next());
-		}
-		setPossibleValues(posValues);
-	}
+	
 	/**
 	 * Get the query piece that defines the group by
 	 * @param relationName
@@ -116,7 +99,7 @@ public class PigGroupInteraction extends AppendListInteraction{
 		boolean firsElement = groupBy.isEmpty();
 		while (selIt.hasNext()) {
 			Map<String,String> cur = selIt.next();
-			String fieldName = cur.get(PigTableSelectInteraction.table_field_title);
+			String fieldName = cur.get(PigTableSelectInteraction.table_feat_title);
 			String opTitle = cur.get(PigTableSelectInteraction.table_op_title).replace(relationName+".", "");
 			
 			if (!groupByList.contains(fieldName)){
@@ -139,24 +122,5 @@ public class PigGroupInteraction extends AppendListInteraction{
 		
 		return select;
 
-	}
-	/**
-	 * Get the aggregated field
-	 * @param in
-	 * @return Set of aggregated field
-	 * @throws RemoteException
-	 */
-	public Set<String> getAggregationField(DFEOutput in) throws RemoteException{
-		Set<String> aggregationField = new HashSet<String>();
-		
-		in.getFields().getFieldNames();
-		if(in.getFields().getFieldNames().size() > 0){
-			Iterator<String> gIt =in.getFields().getFieldNames().iterator();
-			while (gIt.hasNext()){
-				aggregationField.add(gIt.next());
-			}
-		}
-	
-		return aggregationField;
 	}
 }

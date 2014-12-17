@@ -94,7 +94,7 @@ public abstract class PigBinning extends PigElement{
 	}
 	
 	@Override
-	public FieldList getNewField() throws RemoteException {
+	public FieldList getNewFields() throws RemoteException {
 		FieldList fl = getDFEInput().get(key_input).get(0).getFields().cloneRemote();
 		fl.addField(getNewFeatureName(), getNewFieldType());
 		return fl;

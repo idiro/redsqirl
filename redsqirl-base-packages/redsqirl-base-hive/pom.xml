@@ -175,6 +175,13 @@
 			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
+		
+		<dependency>
+			<groupId>idiro</groupId>
+			<artifactId>redsqirl-sql-abstract</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+		</dependency>
 
 		<!-- TEST -->
 		<dependency>

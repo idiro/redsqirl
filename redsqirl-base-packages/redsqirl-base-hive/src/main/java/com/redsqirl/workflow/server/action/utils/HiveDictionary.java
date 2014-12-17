@@ -27,7 +27,7 @@ import com.redsqirl.workflow.server.interfaces.DFEOutput;
  * @author etienne
  * 
  */
-public class HiveDictionary extends AbstractDictionary {
+public class HiveDictionary extends AbstractDictionary implements SqlDictionary{
 	/** Logegr */
 	private static Logger logger = Logger.getLogger(HiveDictionary.class);
 	/** Logical operators key */
@@ -505,7 +505,7 @@ public class HiveDictionary extends AbstractDictionary {
 										"@function:ELSE(VALUE)@short:Value to be returned when no condition inside a CASE END is found to be true" } });
 	}
 
-	public static FieldType getType(String hiveType) {
+	public FieldType getFieldType(String hiveType) {
 		FieldType ans = null;
 		if (hiveType.equalsIgnoreCase("BIGINT")) {
 			ans = FieldType.LONG;
@@ -515,32 +515,32 @@ public class HiveDictionary extends AbstractDictionary {
 		return ans;
 	}
 
-	/**
-	 * Get the Hive type from a FieldType
-	 * 
-	 * @param feat
-	 * @return type
-	 */
-	public static String getHiveType(FieldType feat) {
-		String fieldType = feat.name();
-		switch (feat) {
-		case LONG:
-			fieldType = "BIGINT";
-			break;
-		case CATEGORY:
-			fieldType = "STRING";
-			break;
-		case CHAR:
-			fieldType = "STRING";
-			break;
-		case DATETIME:
-			fieldType = "TIMESTAMP";
-			break;
-		default:
-			break;
-		}
-		return fieldType;
-	}
+//	/**
+//	 * Get the Hive type from a FieldType
+//	 * 
+//	 * @param feat
+//	 * @return type
+//	 */
+//	public static String getHiveType(FieldType feat) {
+//		String fieldType = feat.name();
+//		switch (feat) {
+//		case LONG:
+//			fieldType = "BIGINT";
+//			break;
+//		case CATEGORY:
+//			fieldType = "STRING";
+//			break;
+//		case CHAR:
+//			fieldType = "STRING";
+//			break;
+//		case DATETIME:
+//			fieldType = "TIMESTAMP";
+//			break;
+//		default:
+//			break;
+//		}
+//		return fieldType;
+//	}
 
 	/**
 	 * Get the return type of an expression
@@ -627,7 +627,7 @@ public class HiveDictionary extends AbstractDictionary {
 			while (itS.hasNext() && type == null) {
 				String feat = itS.next();
 				if (feat.equalsIgnoreCase(expr)) {
-					type = getHiveType(fields.getFieldType(feat));
+					type = getType(fields.getFieldType(feat));
 				}
 			}
 		}
@@ -719,7 +719,7 @@ public class HiveDictionary extends AbstractDictionary {
 	 *         <code>false</code>
 	 */
 
-	public static boolean check(String typeToBe, String typeGiven) {
+	public boolean check(String typeToBe, String typeGiven) {
 		boolean ok = false;
 		if (typeGiven == null || typeToBe == null) {
 			return false;
@@ -840,7 +840,7 @@ public class HiveDictionary extends AbstractDictionary {
 	 * @return EditorInteraction
 	 * @throws RemoteException
 	 */
-	public static EditorInteraction generateEditor(Tree<String> help,
+	public EditorInteraction generateEditor(Tree<String> help,
 			FieldList inFeat) throws RemoteException {
 		logger.debug("generate Editor...");
 		Tree<String> editor = new TreeNonUnique<String>("editor");
@@ -1610,8 +1610,30 @@ public class HiveDictionary extends AbstractDictionary {
 	 * @return <code>true</code> if the name is suitable else <code>false</code>
 	 */
 
-	public static boolean isVariableName(String name) {
+	public boolean isVariableName(String name) {
 		String regex = "[a-zA-Z]+[a-zA-Z0-9_]*";
 		return name.matches(regex);
+	}
+
+	@Override
+	public String getType(FieldType feat) {
+		String fieldType = feat.name();
+		switch (feat) {
+		case LONG:
+			fieldType = "BIGINT";
+			break;
+		case CATEGORY:
+			fieldType = "STRING";
+			break;
+		case CHAR:
+			fieldType = "STRING";
+			break;
+		case DATETIME:
+			fieldType = "TIMESTAMP";
+			break;
+		default:
+			break;
+		}
+		return fieldType;
 	}
 }

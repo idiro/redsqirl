@@ -43,7 +43,7 @@ public class PigTableSelectInteractionTests {
 				logger.debug("3");
 				Tree<String> rowId = out.add("row");
 				logger.debug("4");
-				rowId.add(PigTableSelectInteraction.table_field_title).add("ID");
+				rowId.add(PigTableSelectInteraction.table_feat_title).add("ID");
 				rowId.add(PigTableSelectInteraction.table_op_title).add("ID");
 				rowId.add(PigTableSelectInteraction.table_type_title).add("STRING");
 				logger.debug("5");
@@ -89,7 +89,7 @@ public class PigTableSelectInteractionTests {
 				logger.debug("3");
 				Tree<String> rowId = out.add("row");
 				logger.debug("4");
-				rowId.add(PigTableSelectInteraction.table_field_title).add("VALUE");
+				rowId.add(PigTableSelectInteraction.table_feat_title).add("VALUE");
 				rowId.add(PigTableSelectInteraction.table_op_title).add("VALUE");
 				rowId.add(PigTableSelectInteraction.table_type_title).add("INT");
 				logger.debug("5");

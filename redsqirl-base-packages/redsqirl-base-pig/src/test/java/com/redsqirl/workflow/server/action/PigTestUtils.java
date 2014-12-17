@@ -123,7 +123,7 @@ public class PigTestUtils {
 		dataSetTree.getFirstChild("browse").getFirstChild("output")
 				.add("property").add(MapRedTextType.key_delimiter).add(";");
 		
-		src.getDFEOutput().get("").addProperty(MapRedTextType.key_header, "ID INT, VALUE INT, RAW INT");
+//		src.getDFEOutput().get("").addProperty(MapRedTextType.key_header, "ID INT, VALUE INT, RAW INT");
 
 		Tree<String> field1 = dataSetTree.getFirstChild("browse")
 				.getFirstChild("output").add("field");

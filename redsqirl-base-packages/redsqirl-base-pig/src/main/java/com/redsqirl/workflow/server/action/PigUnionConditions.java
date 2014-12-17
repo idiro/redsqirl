@@ -65,7 +65,7 @@ public class PigUnionConditions  extends TableInteraction{
 			Map<String,String> row = rows.next();
 			try{
 				
-				if( ! PigDictionary.check(
+				if( ! PigDictionary.getInstance().check(
 						"boolean", 
 						PigDictionary.getInstance().getReturnType(
 								row.get(table_op_title),

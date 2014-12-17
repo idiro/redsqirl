@@ -93,17 +93,17 @@ public class PigAggregatorTests {
 			Tree<String> out = tsi.getTree().getFirstChild("table");
 			Tree<String> rowId = out.add("row");
 			if (!groupByAll){
-				rowId.add(PigTableSelectInteraction.table_field_title).add("VALUE_ED");
+				rowId.add(PigTableSelectInteraction.table_feat_title).add("VALUE_ED");
 				rowId.add(PigTableSelectInteraction.table_op_title).add(inAlias + ".VALUE");
 				rowId.add(PigTableSelectInteraction.table_type_title).add("INT");
 				rowId = out.add("row");
 			}
 			if(countDist){
-			rowId.add(PigTableSelectInteraction.table_field_title).add("RAW_ED");
+			rowId.add(PigTableSelectInteraction.table_feat_title).add("RAW_ED");
 			rowId.add(PigTableSelectInteraction.table_op_title).add("COUNT_DISTINCT("+inAlias + ".RAW)");
 			rowId.add(PigTableSelectInteraction.table_type_title).add("INT");
 			}else{
-				rowId.add(PigTableSelectInteraction.table_field_title).add("RAW_ED");
+				rowId.add(PigTableSelectInteraction.table_feat_title).add("RAW_ED");
 				rowId.add(PigTableSelectInteraction.table_op_title).add("SUM("+inAlias + ".RAW)");
 				rowId.add(PigTableSelectInteraction.table_type_title).add("INT");
 			}

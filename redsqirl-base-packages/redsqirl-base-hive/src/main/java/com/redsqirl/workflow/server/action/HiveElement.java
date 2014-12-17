@@ -17,6 +17,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.redsqirl.utils.FieldList;
+import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.utils.TreeNonUnique;
 import com.redsqirl.workflow.server.DataProperty;
@@ -40,7 +41,7 @@ import com.redsqirl.workflow.utils.HiveLanguageManager;
  * @author etienne
  * 
  */
-public abstract class HiveElement extends DataflowAction {
+public abstract class HiveElement extends SqlElement {
 
 	/**
 	 * RMI id
@@ -148,14 +149,6 @@ public abstract class HiveElement extends DataflowAction {
 	 * @throws RemoteException
 	 */
 	public abstract String getQuery() throws RemoteException;
-
-	/**
-	 * Input fields
-	 * 
-	 * @return
-	 * @throws RemoteException
-	 */
-	public abstract FieldList getInFields() throws RemoteException;
 
 	/**
 	 * New fields
@@ -311,6 +304,7 @@ public abstract class HiveElement extends DataflowAction {
 	public HiveGroupByInteraction getGroupingInt() {
 		return groupingInt;
 	}
+	
 	/**
 	 * Get the Group By Fields
 	 * @return Set of group by fields

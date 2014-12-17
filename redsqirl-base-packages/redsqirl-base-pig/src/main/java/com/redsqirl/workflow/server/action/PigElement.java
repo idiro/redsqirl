@@ -45,7 +45,7 @@ import com.redsqirl.workflow.utils.PigLanguageManager;
  * @author marcos
  *
  */
-public abstract class PigElement extends DataflowAction {
+public abstract class PigElement extends SqlElement {
 
 	/**
 	 * 
@@ -230,12 +230,6 @@ public abstract class PigElement extends DataflowAction {
 	 */
 	public abstract FieldList getInFields() throws RemoteException;
 	/**
-	 * Get the new Field
-	 * @return new FieldList
-	 * @throws RemoteException
-	 */
-	public abstract FieldList getNewField() throws RemoteException;
-	/**
 	 * Get the Input Relations
 	 * @return Set of Input relations
 	 * @throws RemoteException
@@ -330,7 +324,7 @@ public abstract class PigElement extends DataflowAction {
 		String error = checkIntegrationUserVariables();
 		logger.info("Error in updae out : "+error);
 		if(error == null){
-			FieldList new_field = getNewField();
+			FieldList new_field = getNewFields();
 			String type = savetypeOutputInt.getValue();
 			DFEOutput out = output.get(key_output);
 			logger.info("new fields "+new_field.getFieldNames());

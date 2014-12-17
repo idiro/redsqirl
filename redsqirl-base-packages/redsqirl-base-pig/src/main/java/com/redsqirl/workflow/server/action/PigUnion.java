@@ -346,8 +346,8 @@ public class PigUnion extends PigElement {
 	 * Get the new field from the Union Interaction
 	 */
 	@Override
-	public FieldList getNewField() throws RemoteException {
-		return tUnionSelInt.getNewField();
+	public FieldList getNewFields() throws RemoteException {
+		return tUnionSelInt.getNewFields();
 	}
 
 	/**

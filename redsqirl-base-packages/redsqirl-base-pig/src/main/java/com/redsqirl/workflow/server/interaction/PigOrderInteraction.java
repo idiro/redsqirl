@@ -3,20 +3,15 @@ package com.redsqirl.workflow.server.interaction;
 
 import java.rmi.RemoteException;
 
-import com.redsqirl.utils.FieldList;
-import com.redsqirl.workflow.server.AppendListInteraction;
 import com.redsqirl.workflow.server.action.PigElement;
+import com.redsqirl.workflow.server.action.SqlOrderInteraction;
 
-public class PigOrderInteraction extends AppendListInteraction{
+public class PigOrderInteraction extends SqlOrderInteraction{
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 7913845575238427401L;
-	/**
-	 * Action that the query belongs to
-	 */
-	private PigElement el;
 
 	/**
 	 * Constructor
@@ -29,19 +24,9 @@ public class PigOrderInteraction extends AppendListInteraction{
 	 */
 	public PigOrderInteraction(String id, String name, String legend,
 			int column, int placeInColumn, PigElement el) throws RemoteException {
-		super(id, name, legend, column, placeInColumn, true);
-		this.el = el;
+		super(id, name, legend, column, placeInColumn, el);
 	}
 	
-	/**
-	 * Update the interaction 
-	 * @throws RemoteException
-	 */
-	public void update() throws RemoteException{
-		FieldList fields = el.getNewField();
-		setPossibleValues(fields.getFieldNames());
-		
-	}
 	/**
 	 * Get the query piece for the interaction
 	 * @param relation

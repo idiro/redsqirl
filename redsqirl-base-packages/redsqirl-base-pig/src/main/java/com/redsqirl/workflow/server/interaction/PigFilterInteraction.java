@@ -4,15 +4,14 @@ package com.redsqirl.workflow.server.interaction;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
-import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.Tree;
-import com.redsqirl.workflow.server.EditorInteraction;
 import com.redsqirl.workflow.server.action.PigElement;
+import com.redsqirl.workflow.server.action.SqlElement;
+import com.redsqirl.workflow.server.action.SqlFilterInteraction;
 import com.redsqirl.workflow.server.action.utils.PigDictionary;
+import com.redsqirl.workflow.server.action.utils.SqlDictionary;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
-import com.redsqirl.workflow.utils.PigLanguageManager;
 
 /**
  * Interaction for storing/checking Pig Latin filter condition.
@@ -20,16 +19,12 @@ import com.redsqirl.workflow.utils.PigLanguageManager;
  * @author marcos
  * 
  */
-public class PigFilterInteraction extends EditorInteraction {
+public class PigFilterInteraction extends SqlFilterInteraction {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 6688812502383438930L;
-	/**
-	 * Action that the query belongs to
-	 */
-	private PigElement el;
 	/**
 	 * Constructor
 	 * @param column
@@ -38,69 +33,17 @@ public class PigFilterInteraction extends EditorInteraction {
 	 * @throws RemoteException
 	 */
 	public PigFilterInteraction(int column,
-			int placeInColumn, PigElement el)
+			int placeInColumn, SqlElement el)
 					throws RemoteException {
-		super(PigElement.key_condition,
-				PigLanguageManager.getText("pig.filter_interaction.title"), 
-				PigLanguageManager.getText("pig.filter_interaction.legend"), 
-				column, 
-				placeInColumn);
-		this.el = el;
+		super(column, placeInColumn, el);
 	}
-	/**
-	 * Check the interaction has no errors
-	 */
+	
 	@Override
-	public String check() {
-		String msg = null;
-		try {
-
-			String condition = getValue();
-			if (condition != null && !condition.isEmpty()) {
-				FieldList f = el.getInFields();
-				logger.debug("Condition: " + condition
-						+ " field list ("
-						+ f.getSize()+") "+f.getFieldNames());
-				String type = null;
-				Set<String> aggregation = null;
-				if(el.groupingInt != null){
-					aggregation = el.groupingInt.getAggregationField(el.getDFEInput().get(PigElement.key_input).get(0));
-					logger.info("aggregation set size : "+ aggregation.size());
-				}
-				type = PigDictionary.getInstance().getReturnType(
-						condition, f,aggregation);
-				if (!type.equalsIgnoreCase("boolean")) {
-					msg = PigLanguageManager.getText("pig.filter_interaction.checkerror",new String[]{type});
-					logger.info(msg);
-
-				}
-			}
-		} catch (Exception e) {
-			msg = PigLanguageManager.getText("pig.filter_interaction.checkexception");
-			logger.error(msg,e);
-
-		}
-		return msg;
+	protected Tree<String> generateEditor() throws RemoteException{
+		return PigDictionary.generateEditor(PigDictionary.getInstance()
+				.createConditionHelpMenu(), el.getInFields(), null).getTree();
 	}
-	/**
-	 * Update the interaction
-	 * @throws RemoteException
-	 */
-	public void update() throws RemoteException {
-
-		try {
-			String output = getValue();
-			tree.remove("editor");
-
-			Tree<String> base = PigDictionary.generateEditor(PigDictionary.getInstance()
-					.createConditionHelpMenu(), el.getInFields(), null).getTree();
-			//logger.debug(base);
-			tree.add(base.getFirstChild("editor"));
-			setValue(output);
-		} catch (Exception ec) {
-			logger.info("There was an error updating " + getName());
-		}
-	}
+	
 	/**
 	 * Get the query piece for a filter
 	 * @param relationName
@@ -173,5 +116,10 @@ public class PigFilterInteraction extends EditorInteraction {
 			}
 		}
 		return where;
+	}
+
+	@Override
+	protected SqlDictionary getDictionary() {
+		return PigDictionary.getInstance();
 	}
 }

@@ -126,6 +126,7 @@
 							<type>${project.packaging}</type>
 						</artifactItem>
 					</artifactItems>
+					<outputDirectory>${generated.pck.dir}/lib/</outputDirectory>
 				</configuration>
 			</execution>
 		</executions>
@@ -173,6 +174,13 @@
 	    <version>${project.version}</version>
 	    <scope>compile</scope>
 	</dependency>
+	<dependency>
+		<groupId>idiro</groupId>
+		<artifactId>redsqirl-sql-abstract</artifactId>
+		<version>${project.version}</version>
+		<scope>compile</scope>
+	</dependency>
+		
 	<!-- TEST -->
 	<dependency>
 	    <groupId>junit</groupId>

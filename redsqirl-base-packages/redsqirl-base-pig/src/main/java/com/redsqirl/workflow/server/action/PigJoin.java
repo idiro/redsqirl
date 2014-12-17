@@ -305,8 +305,8 @@ public class PigJoin extends PigElement {
 	 * @throws RemoteException
 	 */
 	@Override
-	public FieldList getNewField() throws RemoteException {
-		return tJoinInt.getNewField();
+	public FieldList getNewFields() throws RemoteException {
+		return tJoinInt.getNewFields();
 	}
 	
 	/**

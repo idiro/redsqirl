@@ -28,7 +28,7 @@ import com.redsqirl.workflow.server.interfaces.DFEOutput;
  * @author etienne
  * 
  */
-public class PigDictionary extends AbstractDictionary {
+public class PigDictionary extends AbstractDictionary implements SqlDictionary{
 
 	private static Logger logger = Logger.getLogger(PigDictionary.class);
 	/**
@@ -706,7 +706,7 @@ public class PigDictionary extends AbstractDictionary {
 	 *            of the variable type
 	 * @return fieldType of Pig variable
 	 */
-	public static FieldType getType(String pigType) {
+	public FieldType getFieldType(String pigType) {
 		FieldType ans = null;
 		logger.debug("Type of: " + pigType);
 		if (pigType.equalsIgnoreCase("CHARARRAY")) {
@@ -1037,7 +1037,7 @@ public class PigDictionary extends AbstractDictionary {
 	 * @param typeGiven
 	 * @return <code>true</code> if types are equal else <code>false</code>
 	 */
-	public static boolean check(String typeToBe, String typeGiven) {
+	public boolean check(String typeToBe, String typeGiven) {
 		boolean ok = false;
 		logger.debug("type to be : " + typeToBe + " given " + typeGiven);
 		if (typeGiven == null || typeToBe == null) {
@@ -1929,8 +1929,25 @@ public class PigDictionary extends AbstractDictionary {
 	 * @return <code>true</code> if the name is the structure for a variable
 	 *         </code>
 	 */
-	public static boolean isVariableName(String name) {
+	public boolean isVariableName(String name) {
 		String regex = "[a-zA-Z]+[a-zA-Z0-9_]*";
 		return name.matches(regex);
+	}
+	
+	public FieldType getSqlType(String pigType) {
+		return FieldType.valueOf(pigType);
+	}
+
+	@Override
+	public String getType(FieldType feat) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public EditorInteraction generateEditor(Tree<String> help, FieldList inFeat)
+			throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

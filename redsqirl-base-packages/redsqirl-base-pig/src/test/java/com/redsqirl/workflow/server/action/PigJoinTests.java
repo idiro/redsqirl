@@ -99,10 +99,10 @@ public class PigJoinTests {
 			Tree<String> out = jri.getTree().getFirstChild("table");
 			out.remove("row");
 			Tree<String> rowId = out.add("row");
-			rowId.add(PigJoinRelationInteraction.table_relation_title).add(relation_from_1);
+			rowId.add(PigJoinRelationInteraction.table_table_title).add(relation_from_1);
 			rowId.add(PigJoinRelationInteraction.table_feat_title).add(relation_from_1+".ID");
 			rowId = out.add("row");
-			rowId.add(PigJoinRelationInteraction.table_relation_title).add(relation_from_2);
+			rowId.add(PigJoinRelationInteraction.table_table_title).add(relation_from_2);
 			rowId.add(PigJoinRelationInteraction.table_feat_title).add(relation_from_2+".ID");
 		}
 		
@@ -111,16 +111,16 @@ public class PigJoinTests {
 		{
 			Tree<String> out = tsi.getTree().getFirstChild("table");
 			Tree<String> rowId = out.add("row");
-			rowId.add(PigTableJoinInteraction.table_field_title).add("ID");
-			rowId.add(PigTableJoinInteraction.table_op_title).add(relation_from_1+".ID");
+			rowId.add(PigTableJoinInteraction.table_op_title).add("ID");
+			rowId.add(PigTableJoinInteraction.table_feat_title).add(relation_from_1+".ID");
 			rowId.add(PigTableJoinInteraction.table_type_title).add("STRING");
 			rowId = out.add("row");
-			rowId.add(PigTableJoinInteraction.table_field_title).add("VALUE_1");
-			rowId.add(PigTableJoinInteraction.table_op_title).add(relation_from_1+".VALUE");
+			rowId.add(PigTableJoinInteraction.table_op_title).add("VALUE_1");
+			rowId.add(PigTableJoinInteraction.table_feat_title).add(relation_from_1+".VALUE");
 			rowId.add(PigTableJoinInteraction.table_type_title).add("INT");
 			rowId = out.add("row");
-			rowId.add(PigTableJoinInteraction.table_field_title).add("VALUE_2");
-			rowId.add(PigTableJoinInteraction.table_op_title).add(relation_from_2+".VALUE");
+			rowId.add(PigTableJoinInteraction.table_op_title).add("VALUE_2");
+			rowId.add(PigTableJoinInteraction.table_feat_title).add(relation_from_2+".VALUE");
 			rowId.add(PigTableJoinInteraction.table_type_title).add("INT");
 		}
 		

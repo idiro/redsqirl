@@ -14,13 +14,14 @@ import java.util.regex.Pattern;
 
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.OrderedFieldList;
-import com.redsqirl.utils.Tree;
-import com.redsqirl.workflow.server.TableInteraction;
+import com.redsqirl.workflow.server.EditorInteraction;
 import com.redsqirl.workflow.server.action.PigElement;
+import com.redsqirl.workflow.server.action.PigSelect;
+import com.redsqirl.workflow.server.action.SqlTableSelectInteraction;
 import com.redsqirl.workflow.server.action.utils.PigDictionary;
+import com.redsqirl.workflow.server.action.utils.SqlDictionary;
 import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
-import com.redsqirl.workflow.utils.PigLanguageManager;
 
 /**
  * Interaction for selecting columns of the output. The output table has three
@@ -29,7 +30,7 @@ import com.redsqirl.workflow.utils.PigLanguageManager;
  * @author marcos
  * 
  */
-public class PigTableSelectInteraction extends TableInteraction {
+public class PigTableSelectInteraction extends SqlTableSelectInteraction {
 
 	/**
 	 * 
@@ -57,19 +58,6 @@ public class PigTableSelectInteraction extends TableInteraction {
 			gen_operation_count_distinct = "COUNT_DISTINCT",
 			/** AUDIT Generation */
 			gen_operation_audit = "AUDIT";
-	/**
-	 * Element in which the interaction is held
-	 */
-	private PigElement hs;
-	/** Operation Column title */
-	public static final String table_op_title = PigLanguageManager
-			.getTextWithoutSpace("pig.select_features_interaction.op_column"),
-			/** Field Column Title */
-			table_field_title = PigLanguageManager
-			.getTextWithoutSpace("pig.select_features_interaction.feat_column"),
-			/** Type Column title */
-			table_type_title = PigLanguageManager
-			.getTextWithoutSpace("pig.select_features_interaction.type_column");
 
 	/**
 	 * Constructor
@@ -85,9 +73,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 	public PigTableSelectInteraction(String id, String name, String legend,
 			int column, int placeInColumn, PigElement hs)
 					throws RemoteException {
-		super(id, name, legend, column, placeInColumn);
-		this.hs = hs;
-		createColumns();
+		super(id, name, legend, column, placeInColumn, hs);
 	}
 
 	/**
@@ -105,110 +91,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 	public PigTableSelectInteraction(String id, String name, String legend,
 			String texttip, int column, int placeInColumn, PigElement hs)
 					throws RemoteException {
-		super(id, name, legend, texttip, column, placeInColumn);
-		this.hs = hs;
-		createColumns();
-	}
-
-	/**
-	 * Check the interaction for errors
-	 * 
-	 * @return Error Message
-	 * @throws RemoteException
-	 */
-	@Override
-	public String check() throws RemoteException {
-		DFEOutput in = hs.getDFEInput().get(PigElement.key_input).get(0);
-		FieldList fl = null;
-		String msg = super.check();
-
-		if (msg == null) {
-			List<Map<String, String>> lRow = getValues();
-
-			if (lRow == null || lRow.isEmpty()) {
-				msg = PigLanguageManager
-						.getText("pig.select_features_interaction.checkempty");
-			} else {
-				logger.debug("Fields " + in.getFields().getFieldNames());
-				Set<String> fieldGrouped = getFieldGrouped();
-				fl = getInputFieldList(in);
-
-				Iterator<Map<String, String>> rows = lRow.iterator();
-				int rowNb = 0;
-				while (rows.hasNext() && msg == null) {
-					++rowNb;
-					Map<String, String> cur = rows.next();
-					String fieldtype = cur.get(table_type_title);
-					String fieldtitle = cur.get(table_field_title);
-					String fieldoperation = cur.get(table_op_title);
-					logger.debug("checking : " + fieldoperation + " "
-							+ fieldtitle + " ");
-					try {
-						String typeRetuned = PigDictionary.getInstance()
-								.getReturnType(fieldoperation, fl, fieldGrouped);
-						if(logger.isDebugEnabled()){
-							logger.info("type returned : " + typeRetuned);
-						}
-						if (!PigDictionary.check(fieldtype, typeRetuned)) {
-							msg = PigLanguageManager
-									.getText(
-											"pig.select_features_interaction.checkreturntype",
-											new Object[] { rowNb,
-													fieldoperation, typeRetuned,
-													fieldtype });
-						}
-						if(logger.isDebugEnabled()){
-							logger.debug("added : " + fieldoperation
-								+ " to field type list");
-						}
-					} catch (Exception e) {
-						msg = PigLanguageManager
-								.getText("pig.expressionexception");
-					}
-				}
-
-				if (msg == null) {
-					try {
-						// msg = hs.flatDistinctValues().toString();
-					} catch (Exception e) {
-						msg = "Exception " + e.getMessage() + ": \n";
-						for (int i = 0; i < Math.min(e.getStackTrace().length,
-								20); ++i) {
-							msg += e.getStackTrace()[i] + "\n";
-						}
-					}
-				}
-			}
-		}
-
-		return msg;
-	}
-
-	/**
-	 * Check Expression if is acceptable and has a return type
-	 * 
-	 * @param expression
-	 * @param modifier
-	 * @return Error Message
-	 * @throws RemoteException
-	 */
-	public String checkExpression(String expression, String modifier)
-			throws RemoteException {
-		String error = null;
-		try {
-			DFEOutput in = hs.getDFEInput().get(PigElement.key_input).get(0);
-			Set<String> fieldGrouped = getFieldGrouped();
-			FieldList fl = getInputFieldList(in);
-
-			if (PigDictionary.getInstance().getReturnType(expression, fl,
-					fieldGrouped) == null) {
-				error = PigLanguageManager.getText("pig.expressionnull");
-			}
-		} catch (Exception e) {
-			error = PigLanguageManager.getText("pig.expressionexception");
-			logger.error(error, e);
-		}
-		return error;
+		super(id, name, legend, texttip, column, placeInColumn, hs);
 	}
 
 	/**
@@ -279,132 +162,21 @@ public class PigTableSelectInteraction extends TableInteraction {
 		}
 		return fieldGrouped;
 	}
-
-	/**
-	 * Generate an operation with a field
-	 * 
-	 * @param field
-	 * @param operation
-	 * @return Generated operation
-	 */
-	public String addOperation(String field, String operation) {
-		String result = "";
-		if (!operation.isEmpty()) {
-			result = operation + "(" + field + ")";
-		} else {
-			result = field;
-		}
-		return result;
-
+	
+	protected EditorInteraction generateDefaultEditor(FieldList fl) throws RemoteException{
+		return PigDictionary.generateEditor(
+				PigDictionary.getInstance().createDefaultSelectHelpMenu(),
+				fl, ((PigSelect)hs).getDistinctValues());
 	}
-
-	/**
-	 * Update the interaction with the input data
-	 * 
-	 * @param in
-	 * @throws RemoteException
-	 */
-	public void update(DFEOutput in) throws RemoteException {
-		// get Alias
-		logger.info("update table select");
-		String alias = getAlias();
-		logger.info("alias : " + alias);
-		FieldList fl = getInputFieldList(in);
-		// Generate Editor
-		if (hs.getGroupingInt() != null) {
-			logger.info("aggregator");
-			updateEditor(table_op_title, PigDictionary.generateEditor(
-					PigDictionary.getInstance().createGroupSelectHelpMenu(),
-					fl, hs.getDistinctValues()));
-		} else {
-			logger.info("select");
-			updateEditor(table_op_title, PigDictionary.generateEditor(
-					PigDictionary.getInstance().createDefaultSelectHelpMenu(),
-					fl, hs.getDistinctValues()));
-		}
-
-		// Set the Generator
-		logger.info("Set the generator...");
-		removeGenerators();
-
-		// Copy Generator operation
-		List<String> fieldList = fl.getFieldNames();
-		if (hs.getGroupingInt() != null) {
-			logger.info("there is a grouping : "
-					+ hs.getGroupingInt().getValues().size());
-			logger.info("adding other generators");
-			List<String> groupBy = getFieldListGrouped();
-			List<String> operationsList = new LinkedList<String>();
-
-			if (groupBy.size() > 0) {
-				logger.info("add copy");
-				operationsList.add(gen_operation_copy);
-				fieldList.clear();
-				fieldList.addAll(groupBy);
-				addGeneratorRows(gen_operation_copy, fieldList, fl,
-						operationsList, alias);
-				operationsList.clear();
-				addCaseWhenOps(alias,fieldList);
-			}
-
-			fieldList = fl.getFieldNames();
-			fieldList.removeAll(groupBy);
-			operationsList.add(gen_operation_max);
-			addGeneratorRows(gen_operation_max, fieldList, fl, operationsList,
-					alias);
-			operationsList.clear();
-
-			operationsList.add(gen_operation_min);
-			addGeneratorRows(gen_operation_min, fieldList, fl, operationsList,
-					alias);
-			operationsList.clear();
-
-			operationsList.add(gen_operation_avg);
-			addGeneratorRows(gen_operation_avg, fieldList, fl, operationsList,
-					alias);
-			operationsList.clear();
-
-			operationsList.add(gen_operation_sum);
-			addGeneratorRows(gen_operation_sum, fieldList, fl, operationsList,
-					alias);
-			operationsList.clear();
-
-			operationsList.add(gen_operation_count);
-			addGeneratorRows(gen_operation_count, fieldList, fl, operationsList,
-					alias);
-			operationsList.clear();
-
-			operationsList.add(gen_operation_count_distinct);
-			addGeneratorRows(gen_operation_count_distinct, fieldList, fl,
-					operationsList, alias);
-			operationsList.clear();
-
-			operationsList.add(gen_operation_max);
-			operationsList.add(gen_operation_min);
-			operationsList.add(gen_operation_avg);
-			operationsList.add(gen_operation_sum);
-			operationsList.add(gen_operation_count);
-			operationsList.add(gen_operation_count_distinct);
-			addGeneratorRows(gen_operation_audit, fieldList, fl, operationsList,
-					alias);
-
-		} else {
-			List<String> operationsList = new LinkedList<String>();
-			fieldList = in.getFields().getFieldNames();
-			operationsList.add(gen_operation_copy);
-			addGeneratorRows(gen_operation_copy, fieldList, fl, operationsList,
-					"");
-			addCaseWhenOps(alias,fieldList);
-
-		}
-		if(logger.isDebugEnabled()){
-			logger.debug(getTree());
-		}
-		// logger.info("pig tsel tree "+ tree.toString());
+	
+	protected EditorInteraction generateGroupEditor(FieldList fl) throws RemoteException{
+		return PigDictionary.generateEditor(
+				PigDictionary.getInstance().createGroupSelectHelpMenu(),
+				fl, ((PigSelect)hs).getDistinctValues());
 	}
 
 	protected void addCaseWhenOps(String alias,List<String> fields) throws RemoteException {
-		Map<String, List<String>> dist = hs.getDistinctValues();
+		Map<String, List<String>> dist = ((PigSelect)hs).getDistinctValues();
 		if (dist != null) {
 			Iterator<String> it = dist.keySet().iterator();
 			while (it.hasNext()) {
@@ -421,19 +193,19 @@ public class PigTableSelectInteraction extends TableInteraction {
 						allCase +=code;
 						Map<String, String> rowWhen = new LinkedHashMap<String, String>();
 						rowWhen.put(table_op_title, "CASE "+code+" END");
-						rowWhen.put(table_field_title, field.replace(alias + ".", "")+"_"+valCur);
+						rowWhen.put(table_feat_title, field.replace(alias + ".", "")+"_"+valCur);
 						rowWhen.put(table_type_title, "STRING");
 						rowCaseWhen.add(rowWhen);
 
 						Map<String, String> rowWhenElse = new LinkedHashMap<String, String>();
 						rowWhenElse.put(table_op_title, "CASE "+code+" ELSE '' END");
-						rowWhenElse.put(table_field_title, field.replace(alias + ".", "")+"_"+valCur);
+						rowWhenElse.put(table_feat_title, field.replace(alias + ".", "")+"_"+valCur);
 						rowWhenElse.put(table_type_title, "STRING");
 						rowCaseWhenElse.add(rowWhenElse);
 					}
 					Map<String,String> row = new LinkedHashMap<String, String>();
 					row.put(table_op_title, "CASE "+allCase+" END");
-					row.put(table_field_title, field.replace(alias + ".", "")+"_SWITCH");
+					row.put(table_feat_title, field.replace(alias + ".", "")+"_SWITCH");
 					row.put(table_type_title, "STRING");
 					rowAllCaseWhen.add(row);
 					updateGenerator(gen_operation_case_when+field.replace(alias + ".", ""), rowCaseWhen);
@@ -495,9 +267,9 @@ public class PigTableSelectInteraction extends TableInteraction {
 					String optitleRow = addOperation(cur, operation);
 					row.put(table_op_title, optitleRow);
 					if (operation.isEmpty()) {
-						row.put(table_field_title, cur.replace(alias + ".", ""));
+						row.put(table_feat_title, cur.replace(alias + ".", ""));
 					} else {
-						row.put(table_field_title, cur.replace(alias + ".", "")
+						row.put(table_feat_title, cur.replace(alias + ".", "")
 								+ "_" + operation);
 					}
 					if(logger.isDebugEnabled()){
@@ -518,48 +290,6 @@ public class PigTableSelectInteraction extends TableInteraction {
 		}
 		updateGenerator(title, rows);
 
-	}
-
-	/**
-	 * Create Columns for the interaction
-	 * 
-	 * @throws RemoteException
-	 */
-	protected void createColumns() throws RemoteException {
-
-		addColumn(table_op_title, null, null, null);
-
-		addColumn(table_field_title, 1, "[a-zA-Z]([A-Za-z0-9_]{0,29})", null,
-				null);
-
-		List<String> types = new ArrayList<String>(FieldType.values().length);
-		for (FieldType ft : FieldType.values()) {
-			types.add(ft.name());
-		}
-
-		addColumn(table_type_title, null, types, null);
-	}
-
-	/**
-	 * Get the new fields from the interaction
-	 * 
-	 * @return new FieldsList
-	 * @throws RemoteException
-	 */
-	public FieldList getNewFields() throws RemoteException {
-		FieldList new_field = new OrderedFieldList();
-		Iterator<Tree<String>> rowIt = getTree().getFirstChild("table")
-				.getChildren("row").iterator();
-
-		while (rowIt.hasNext()) {
-			Tree<String> rowCur = rowIt.next();
-			String name = rowCur.getFirstChild(table_field_title)
-					.getFirstChild().getHead();
-			String type = rowCur.getFirstChild(table_type_title)
-					.getFirstChild().getHead();
-			new_field.addField(name, FieldType.valueOf(type));
-		}
-		return new_field;
 	}
 
 	/**
@@ -591,7 +321,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 		selIt = getValues().iterator();
 		if (selIt.hasNext()) {
 			Map<String, String> cur = selIt.next();
-			String fieldName = cur.get(table_field_title);
+			String fieldName = cur.get(table_feat_title);
 			String opTitle = cur.get(table_op_title);
 			logger.info(fieldName +" , " + opTitle);
 			if (PigDictionary.getInstance().isAggregatorMethod(opTitle)) {
@@ -608,7 +338,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 
 		while (selIt.hasNext()) {
 			Map<String, String> cur = selIt.next();
-			String fieldName = cur.get(table_field_title);
+			String fieldName = cur.get(table_feat_title);
 			String opTitle = cur.get(table_op_title);
 			logger.info(fieldName +" , " + opTitle);
 
@@ -659,7 +389,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 		List<String> countDistinct = new LinkedList<String>();
 		while (selIt.hasNext()) {
 			Map<String, String> cur = selIt.next();
-			String fieldName = cur.get(table_field_title);
+			String fieldName = cur.get(table_feat_title);
 			String opTitle = cur.get(table_op_title);
 
 			if (PigDictionary.getInstance().isCountDistinctMethod(opTitle)) {
@@ -689,7 +419,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 		selIt = getValues().iterator();
 		if (selIt.hasNext()) {
 			Map<String, String> cur = selIt.next();
-			String fieldName = cur.get(table_field_title);
+			String fieldName = cur.get(table_feat_title);
 			String opTitle = cur.get(table_op_title);
 
 			if (PigDictionary.getInstance().isAggregatorMethod(opTitle)) {
@@ -711,7 +441,7 @@ public class PigTableSelectInteraction extends TableInteraction {
 
 		while (selIt.hasNext()) {
 			Map<String, String> cur = selIt.next();
-			String fieldName = cur.get(table_field_title);
+			String fieldName = cur.get(table_feat_title);
 			String opTitle = cur.get(table_op_title);
 
 			if (PigDictionary.getInstance().isAggregatorMethod(opTitle)) {
@@ -788,5 +518,91 @@ public class PigTableSelectInteraction extends TableInteraction {
 	 */
 	public String getAlias() throws RemoteException {
 		return hs.getAliases().keySet().iterator().next();
+	}
+
+	@Override
+	public void addGenerators(String alias, FieldList fl, DFEOutput in)
+			throws RemoteException {
+		// Copy Generator operation
+				List<String> fieldList = fl.getFieldNames();
+				if (hs.getGroupingInt() != null) {
+					logger.info("there is a grouping : "
+							+ hs.getGroupingInt().getValues().size());
+					logger.info("adding other generators");
+					List<String> groupBy = getFieldListGrouped();
+					List<String> operationsList = new LinkedList<String>();
+
+					if (groupBy.size() > 0) {
+						logger.info("add copy");
+						operationsList.add(gen_operation_copy);
+						fieldList.clear();
+						fieldList.addAll(groupBy);
+						addGeneratorRows(gen_operation_copy, fieldList, fl,
+								operationsList, alias);
+						operationsList.clear();
+						addCaseWhenOps(alias,fieldList);
+					}
+
+					fieldList = fl.getFieldNames();
+					fieldList.removeAll(groupBy);
+					operationsList.add(gen_operation_max);
+					addGeneratorRows(gen_operation_max, fieldList, fl, operationsList,
+							alias);
+					operationsList.clear();
+
+					operationsList.add(gen_operation_min);
+					addGeneratorRows(gen_operation_min, fieldList, fl, operationsList,
+							alias);
+					operationsList.clear();
+
+					operationsList.add(gen_operation_avg);
+					addGeneratorRows(gen_operation_avg, fieldList, fl, operationsList,
+							alias);
+					operationsList.clear();
+
+					operationsList.add(gen_operation_sum);
+					addGeneratorRows(gen_operation_sum, fieldList, fl, operationsList,
+							alias);
+					operationsList.clear();
+
+					operationsList.add(gen_operation_count);
+					addGeneratorRows(gen_operation_count, fieldList, fl, operationsList,
+							alias);
+					operationsList.clear();
+
+					operationsList.add(gen_operation_count_distinct);
+					addGeneratorRows(gen_operation_count_distinct, fieldList, fl,
+							operationsList, alias);
+					operationsList.clear();
+
+					operationsList.add(gen_operation_max);
+					operationsList.add(gen_operation_min);
+					operationsList.add(gen_operation_avg);
+					operationsList.add(gen_operation_sum);
+					operationsList.add(gen_operation_count);
+					operationsList.add(gen_operation_count_distinct);
+					addGeneratorRows(gen_operation_audit, fieldList, fl, operationsList,
+							alias);
+
+				} else {
+					List<String> operationsList = new LinkedList<String>();
+					fieldList = in.getFields().getFieldNames();
+					operationsList.add(gen_operation_copy);
+					addGeneratorRows(gen_operation_copy, fieldList, fl, operationsList,
+							"");
+					addCaseWhenOps(alias,fieldList);
+
+				}
+				if(logger.isDebugEnabled()){
+					logger.debug(getTree());
+				}
+				// logger.info("pig tsel tree "+ tree.toString());
+
+		
+	}
+
+	@Override
+	protected SqlDictionary getDictionary() {
+		return PigDictionary.getInstance();
 	}
 }

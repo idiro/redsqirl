@@ -137,7 +137,7 @@ public class PigRank extends PigElement {
 	}
 
 	@Override
-	public FieldList getNewField() throws RemoteException {
+	public FieldList getNewFields() throws RemoteException {
 		FieldList newFieldList = new OrderedFieldList();
 		String rankValue = rank.getValue();
 		if(rankValue.length() > 24){

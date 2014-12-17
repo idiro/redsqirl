@@ -6,16 +6,12 @@ import java.rmi.RemoteException;
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.AppendListInteraction;
 
-public class HiveOrderInteraction extends AppendListInteraction{
+public class HiveOrderInteraction extends SqlOrderInteraction{
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 7913845575238427401L;
-	/**
-	 * Action that the query belongs to
-	 */
-	private HiveElement el;
 
 	/**
 	 * Constructor
@@ -28,22 +24,9 @@ public class HiveOrderInteraction extends AppendListInteraction{
 	 */
 	public HiveOrderInteraction(String id, String name, String legend,
 			int column, int placeInColumn, HiveElement el) throws RemoteException {
-		super(id, name, legend, column, placeInColumn, true);
-		this.el = el;
+		super(id, name, legend, column, placeInColumn, el);
 	}
 	
-	/**
-	 * Update the interaction 
-	 * @throws RemoteException
-	 */
-	public void update() throws RemoteException{
-		logger.info("update start ");
-		FieldList fields = el.getNewFields();
-		logger.info(fields.toString());
-		setPossibleValues(fields.getFieldNames());
-		logger.info(fields.getFieldNames().toString());
-		logger.info("update end ");
-	}
 	/**
 	 * Get the query piece for the interaction
 	 * @param relation
