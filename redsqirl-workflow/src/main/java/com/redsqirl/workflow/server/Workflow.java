@@ -1945,11 +1945,16 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 		if (error == null) {
 			if (namesWithClassName.get(waName) == null && !getSuperActions().contains(waName)) {
+				DataFlowElement new_wa = new SuperAction();
+				new_wa.setComponentId(componentId);
+				element.add(new_wa);
+				/*
 				logger.info(namesWithClassName);
 				logger.info(waName);
 				error = LanguageManagerWF.getText(
 						"workflow.addElement_actionWaNamenotexist",
 						new Object[] { waName });
+						*/
 			} else {
 				try {
 					logger.debug("initiate the action " + waName + " "
