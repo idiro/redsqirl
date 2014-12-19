@@ -16,7 +16,6 @@ import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.EditorInteraction;
 import com.redsqirl.workflow.server.action.PigElement;
-import com.redsqirl.workflow.server.action.PigSelect;
 import com.redsqirl.workflow.server.action.SqlTableSelectInteraction;
 import com.redsqirl.workflow.server.action.utils.PigDictionary;
 import com.redsqirl.workflow.server.action.utils.SqlDictionary;
@@ -166,17 +165,17 @@ public class PigTableSelectInteraction extends SqlTableSelectInteraction {
 	protected EditorInteraction generateDefaultEditor(FieldList fl) throws RemoteException{
 		return PigDictionary.generateEditor(
 				PigDictionary.getInstance().createDefaultSelectHelpMenu(),
-				fl, ((PigSelect)hs).getDistinctValues());
+				fl, ((PigElement)hs).getDistinctValues());
 	}
 	
 	protected EditorInteraction generateGroupEditor(FieldList fl) throws RemoteException{
 		return PigDictionary.generateEditor(
 				PigDictionary.getInstance().createGroupSelectHelpMenu(),
-				fl, ((PigSelect)hs).getDistinctValues());
+				fl, ((PigElement)hs).getDistinctValues());
 	}
 
 	protected void addCaseWhenOps(String alias,List<String> fields) throws RemoteException {
-		Map<String, List<String>> dist = ((PigSelect)hs).getDistinctValues();
+		Map<String, List<String>> dist = ((PigElement)hs).getDistinctValues();
 		if (dist != null) {
 			Iterator<String> it = dist.keySet().iterator();
 			while (it.hasNext()) {
@@ -325,8 +324,9 @@ public class PigTableSelectInteraction extends SqlTableSelectInteraction {
 			String opTitle = cur.get(table_op_title);
 			logger.info(fieldName +" , " + opTitle);
 			if (PigDictionary.getInstance().isAggregatorMethod(opTitle)) {
-				String tmp = PigDictionary.getBracketContent(opTitle);
-				tmp = tmp.substring(tmp.indexOf('.')+1);
+//				String tmp = PigDictionary.getBracketContent(opTitle);
+//				tmp = tmp.substring(tmp.indexOf('.')+1);
+				String tmp = fieldName;
 				opTitle = opTitle.replace(
 						PigDictionary.getBracketContent(opTitle),
 						groupTableName + "." + tmp);

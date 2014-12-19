@@ -58,7 +58,7 @@ public abstract class SqlFilterInteraction extends EditorInteraction {
 						+ " fields list size : "
 						+ el.getInFields().getSize());
 				String type = null;
-				Set<String> aggregation = new HashSet<String>();
+				Set<String> aggregation = null;
 				if(el.groupingInt != null){
 					aggregation = el.groupingInt.getAggregationFields(el.getDFEInput().get(SqlElement.key_input).get(0));
 					logger.info("aggregation set size : "+ aggregation.size());
