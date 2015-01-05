@@ -16,7 +16,7 @@ import org.junit.runners.Suite.SuiteClasses;
 import com.idiro.Log;
 import com.idiro.ProjectID;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
-import com.redsqirl.workflow.server.action.MrqlAggregatorTests;
+import com.redsqirl.workflow.server.action.MrqlSelectTests;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
 
 
@@ -28,8 +28,8 @@ import com.redsqirl.workflow.server.connect.HDFSInterface;
 //	MrqlJoinRelationInteractionTests.class,
 //	MrqlTableJoinInteractionTests.class,
 //	MrqlTableUnionInteractionTests.class,
-//	MrqlSelectTests.class
-	MrqlAggregatorTests.class
+	MrqlSelectTests.class
+//	MrqlAggregatorTests.class
 //	MrqlUnionTests.class
 //	MrqlJoinTests.class
 //	MrqlWorkflowMngtTests.class,
