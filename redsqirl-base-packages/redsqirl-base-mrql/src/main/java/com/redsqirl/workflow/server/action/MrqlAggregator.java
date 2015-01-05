@@ -59,7 +59,7 @@ public class MrqlAggregator extends MrqlElement {
 				key_grouping,
 				MrqlLanguageManager.getText("mrql.aggregator_group_interaction.title"),
 				MrqlLanguageManager.getText("mrql.aggregator_group_interaction.legend"), 
-				0, 0);
+				0, 0, this);
 
 		page1.addInteraction(groupingInt);
 
@@ -126,7 +126,7 @@ public class MrqlAggregator extends MrqlElement {
 			logger.debug("In and out...");
 			// Output
 			DFEOutput out = output.values().iterator().next();
-			String remove = getRemoveQueryPiece(out.getPath()) + "\n\n";
+//			String remove = getRemoveQueryPiece(out.getPath()) + "\n\n";
 
 			String filter = filterInt.getQueryPieceGroup(getCurrentName());
 
@@ -154,21 +154,21 @@ public class MrqlAggregator extends MrqlElement {
 				filterLoader = loader;
 			}
 			
-			String groupbyForEach = groupingInt.getForEachQueryPiece(filterLoader, tSelInt);
-			String groupbyTableName = getNextName();
+//			String groupbyForEach = groupingInt.getForEachQueryPiece(filterLoader, tSelInt);
+//			String groupbyTableName = getNextName();
 			
 //			String groupbyTableName = filterLoader;
 			
-			if (!groupbyForEach.isEmpty()) {
-				groupbyForEach = groupbyTableName + " = " + groupbyForEach + ";\n\n";
-			}
+//			if (!groupbyForEach.isEmpty()) {
+//				groupbyForEach = groupbyTableName + " = " + groupbyForEach + ";\n\n";
+//			}
 
-			String groupby = groupingInt.getQueryPiece(groupbyTableName);
-			if (!groupby.isEmpty()) {
-				groupby = getNextName() + " = " + groupby + ";\n\n";
-			}
+//			String groupby = groupingInt.getQueryPiece(groupbyTableName);
+//			if (!groupby.isEmpty()) {
+//				groupby = getNextName() + " = " + groupby + ";\n\n";
+//			}
 			
-			String select = tSelInt.getQueryPiece(out, getCurrentName(), groupbyTableName);
+			String select = tSelInt.getQueryPieceAggregator(out);
 			if (!select.isEmpty()) {
 				select = getNextName() + " = " + select + ";\n\n";
 			}
@@ -183,11 +183,11 @@ public class MrqlAggregator extends MrqlElement {
 			if (select.isEmpty()) {
 				logger.info("Nothing to select");
 			} else {
-				query = remove;
-				query += load;
+//				query = remove;
+				query = load;
 				query += filter;
-				query += groupbyForEach;
-				query += groupby;
+//				query += groupbyForEach;
+//				query += groupby;
 				query += select;
 				query += order;
 				query += store;

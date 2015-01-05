@@ -195,7 +195,7 @@ public class MrqlJoin extends MrqlElement {
 			}
 			load += "\n";
 
-			String remove = getRemoveQueryPiece(out.getPath()) + "\n\n";
+//			String remove = getRemoveQueryPiece(out.getPath()) + "\n\n";
 
 //			String from = getCurrentName() + " = " + jrInt.getQueryPiece()
 //					+ ";\n\n";
@@ -219,9 +219,9 @@ public class MrqlJoin extends MrqlElement {
 			if (select.isEmpty()) {
 				logger.debug("Nothing to select");
 			} else {
-				query = remove;
+//				query = remove;
 
-				query += load;
+				query = load;
 
 				query += from;
 						

@@ -186,7 +186,7 @@ public class MrqlUnion extends MrqlElement {
 			// Output
 			DFEOutput out = output.values().iterator().next();
 
-			String remove = getRemoveQueryPiece(out.getPath()) + "\n\n";
+//			String remove = getRemoveQueryPiece(out.getPath()) + "\n\n";
 
 			Map<String, DFEOutput> x = getUnionAliases();
 			Iterator<String> aliasIt = x.keySet().iterator();
@@ -228,9 +228,9 @@ public class MrqlUnion extends MrqlElement {
 			if (select.isEmpty()) {
 				logger.debug("Nothing to select");
 			} else {
-				query = remove;
+//				query = remove;
 
-				query += load;
+				query = load;
 
 				query += select;
 

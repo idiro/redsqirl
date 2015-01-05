@@ -137,7 +137,7 @@ public class MrqlSelect extends MrqlElement {
 				}
 			}
 
-			String remove = getRemoveQueryPiece(out.getPath()) + ";\n\n";
+//			String remove = getRemoveQueryPiece(out.getPath()) + ";\n\n";
 
 			String load = loader + " = " + getLoadQueryPiece(in) + ";\n\n";
 
@@ -157,8 +157,8 @@ public class MrqlSelect extends MrqlElement {
 			if (select.isEmpty()) {
 				logger.debug("Nothing to select");
 			} else {
-				query = remove;
-				query += load;
+//				query = remove;
+				query = load;
 				query += filter;
 				query += select;
 				query += order;

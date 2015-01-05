@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.redsqirl.workflow.server.action.MrqlAggregator;
 import com.redsqirl.workflow.server.action.SqlGroupInteraction;
 import com.redsqirl.workflow.server.action.utils.MrqlDictionary;
 
@@ -25,6 +26,9 @@ public class MrqlGroupInteraction extends SqlGroupInteraction{
 	private static final long serialVersionUID = 539841111561345129L;
 	/**Logger*/
 	protected static Logger logger = Logger.getLogger(MrqlGroupInteraction.class);
+	
+	private MrqlAggregator me;
+	
 	/**
 	 * Constructor
 	 * @param id
@@ -35,8 +39,9 @@ public class MrqlGroupInteraction extends SqlGroupInteraction{
 	 * @throws RemoteException
 	 */
 	public MrqlGroupInteraction(String id, String name, String legend,
-			int column, int placeInColumn) throws RemoteException {
+			int column, int placeInColumn, MrqlAggregator me) throws RemoteException {
 		super(id, name, legend, column, placeInColumn);
+		this.me = me;
 	}
 	
 	/**
@@ -45,7 +50,7 @@ public class MrqlGroupInteraction extends SqlGroupInteraction{
 	 * @return query
 	 * @throws RemoteException
 	 */
-	public String getQueryPiece(String relationName) throws RemoteException{
+	public String getQueryPiece() throws RemoteException{
 		logger.debug("group...");
 		String groupby = "";
 		
@@ -59,10 +64,10 @@ public class MrqlGroupInteraction extends SqlGroupInteraction{
 				groupby += ","+gIt.next();
 			}
 			if(!groupby.isEmpty() || !groupby.equalsIgnoreCase("")){
-				groupby = "GROUP "+relationName+" BY ("+groupby+")";
+				groupby = "GROUP BY ("+groupby+")";
 			} 
 		}else{
-			groupby = "GROUP "+relationName+" ALL";
+			groupby = "GROUP BY ALL";
 			
 		}
 		
@@ -77,42 +82,57 @@ public class MrqlGroupInteraction extends SqlGroupInteraction{
 	 */
 	public String getForEachQueryPiece(String relationName, MrqlTableSelectInteraction selectInteraction) 
 			throws RemoteException{
-		String select = "FOREACH " + relationName + " GENERATE ";
-		Iterator<Map<String,String>> selIt = selectInteraction.getValues().iterator();
-		Iterator<String> groupByIt = getValues().iterator();
-		List<String> groupByList = getValues();
+		String select = "<";
+//		Iterator<String> groupByIt = getValues().iterator();
+//		List<String> groupByList = getValues();
 		
-		String groupBy = "";
-		if (groupByIt.hasNext()){
-			groupBy = groupByIt.next();
-			select += groupBy + " AS " + groupBy;
-		}
-		while (groupByIt.hasNext()) {
-			groupBy = groupByIt.next();
-			select += ", " + groupBy + " AS " + groupBy;
-		}
+//		String groupBy = "";
+//		if (groupByIt.hasNext()){
+//			groupBy = groupByIt.next();
+//			select += groupBy + " AS " + groupBy;
+//		}
+//		while (groupByIt.hasNext()) {
+//			groupBy = groupByIt.next();
+//			select += ", " + groupBy + " AS " + groupBy;
+//		}
 		
-		boolean firsElement = groupBy.isEmpty();
-		while (selIt.hasNext()) {
-			Map<String,String> cur = selIt.next();
-			String fieldName = cur.get(MrqlTableSelectInteraction.table_feat_title);
-			String opTitle = cur.get(MrqlTableSelectInteraction.table_op_title).replace(relationName+".", "");
+		boolean firsElement = true;
+		for (String field : me.getInFields().getFieldNames()){
+			Iterator<Map<String,String>> selIt = selectInteraction.getValues().iterator();
 			
-			if (!groupByList.contains(fieldName)){
+			String fieldName = field;
+			String opTitle = field;
 			
-				if (MrqlDictionary.getInstance().isAggregatorMethod(opTitle)){
-					opTitle = MrqlDictionary.getBracketContent(opTitle);
-				}
-	
-				if (!firsElement){
-					select += ",\n";
-				}
+			while (selIt.hasNext()) {
+				Map<String,String> cur = selIt.next();
+				String f = cur.get(MrqlTableSelectInteraction.table_feat_title);
+				String op = cur.get(MrqlTableSelectInteraction.table_op_title).replace(relationName+".", "");
 				
-				select += "       " + opTitle + " AS "
-						+ fieldName;
-				firsElement = false;
+//				if (!groupByList.contains(fieldName)){
+				
+					if (MrqlDictionary.getInstance().isAggregatorMethod(op)){
+						op = MrqlDictionary.getBracketContent(op);
+					}
+		
+					if (op.equals(field)){
+						fieldName = f;
+						opTitle = op;
+						break;
+						
+					}
+					
+//				}
 			}
+			if (!firsElement){
+				select += ",";
+			}
+			
+			select += opTitle + ":"
+					+ fieldName;
+			firsElement = false;
 		}
+		
+		select += ">";
 
 		logger.debug("for each looks like : " + select);
 		

@@ -2,6 +2,7 @@ package com.redsqirl.workflow.server.interaction;
 
 
 import java.rmi.RemoteException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -9,10 +10,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.OrderedFieldList;
+import com.redsqirl.workflow.server.action.MrqlAggregator;
 import com.redsqirl.workflow.server.action.MrqlElement;
 import com.redsqirl.workflow.server.action.SqlTableSelectInteraction;
 import com.redsqirl.workflow.server.action.utils.MrqlDictionary;
@@ -306,14 +307,14 @@ public class MrqlTableSelectInteraction extends SqlTableSelectInteraction {
 		String alias = getAlias();
 		Iterator<Map<String, String>> selIt = getValues().iterator();
 
-		while (selIt.hasNext()) {
-			Map<String, String> cur = selIt.next();
-			String opTitle = cur.get(table_op_title);
-			if (MrqlDictionary.getInstance().isCountDistinctMethod(opTitle)) {
-				return getQueryPieceCountDistinct(out, tableName,
-						groupTableName);
-			}
-		}
+//		while (selIt.hasNext()) {
+//			Map<String, String> cur = selIt.next();
+//			String opTitle = cur.get(table_op_title);
+//			if (MrqlDictionary.getInstance().isCountDistinctMethod(opTitle)) {
+//				return getQueryPieceCountDistinct(out, tableName,
+//						groupTableName);
+//			}
+//		}
 
 		String features = "";
 		selIt = getValues().iterator();
@@ -361,134 +362,238 @@ public class MrqlTableSelectInteraction extends SqlTableSelectInteraction {
 
 		logger.debug("select looks like : " + select);
 
-		if (hs.getGroupingInt() != null) {
-			List<String> grList = hs.getGroupingInt().getValues();
-			if (grList.size() > 1) {
-				Iterator<String> grListIt = grList.iterator();
-				while (grListIt.hasNext()) {
-					String cur = grListIt.next();
-					select = select.replaceAll(
-							Pattern.quote(alias + "." + cur), "group." + cur);
-				}
-			} else if (grList.size() == 1) {
-				Iterator<String> grListIt = grList.iterator();
-				while (grListIt.hasNext()) {
-					String cur = grListIt.next();
-					select = select.replaceAll(
-							Pattern.quote(alias + "." + cur), "group");
-				}
-			}
-		}
+//		if (hs.getGroupingInt() != null) {
+//			List<String> grList = hs.getGroupingInt().getValues();
+//			if (grList.size() > 1) {
+//				Iterator<String> grListIt = grList.iterator();
+//				while (grListIt.hasNext()) {
+//					String cur = grListIt.next();
+//					select = select.replaceAll(
+//							Pattern.quote(alias + "." + cur), "group." + cur);
+//				}
+//			} else if (grList.size() == 1) {
+//				Iterator<String> grListIt = grList.iterator();
+//				while (grListIt.hasNext()) {
+//					String cur = grListIt.next();
+//					select = select.replaceAll(
+//							Pattern.quote(alias + "." + cur), "group");
+//				}
+//			}
+//		}
 
 		return select;
 	}
-
-	public String getQueryPieceCountDistinct(DFEOutput out, String tableName,
-			String groupTableName) throws RemoteException {
+	
+	/**
+	 * Get the query piece for selecting the values and generating them with new
+	 * names
+	 * 
+	 * @param out
+	 * @param tableName
+	 * @param groupTableName
+	 * @return query
+	 * @throws RemoteException
+	 */
+	public String getQueryPieceAggregator(DFEOutput out) throws RemoteException {
 		logger.debug("select...");
 		String select = "";
 		String alias = getAlias();
 		Iterator<Map<String, String>> selIt = getValues().iterator();
 
-		List<String> countDistinct = new LinkedList<String>();
-		while (selIt.hasNext()) {
-			Map<String, String> cur = selIt.next();
-//			String fieldName = cur.get(table_feat_title);
-			String opTitle = cur.get(table_op_title);
+//		while (selIt.hasNext()) {
+//			Map<String, String> cur = selIt.next();
+//			String opTitle = cur.get(table_op_title);
+//			if (MrqlDictionary.getInstance().isCountDistinctMethod(opTitle)) {
+//				return getQueryPieceCountDistinct(out, tableName,
+//						groupTableName);
+//			}
+//		}
 
-			if (MrqlDictionary.getInstance().isCountDistinctMethod(opTitle)) {
-
-				opTitle = 
-						MrqlDictionary.getBracketContent(opTitle);
-//						groupTableName + "." + fieldName);
-//						MrqlDictionary.getBracketContent(opTitle));
-				logger.info("replaced op "+opTitle);
-				countDistinct.add(opTitle.substring(opTitle.indexOf('.')+1));
-			}
-
-		}
-		if (!countDistinct.isEmpty()) {
-			select += " FOREACH " + tableName + " {\n";
-
-			int cont = 0;
-			for (String e : countDistinct) {
-				select += "a" + cont + " = " + groupTableName + "." + e + ";\n";
-				select += "b" + cont + " = distinct a" + cont + ";\n";
-				cont++;
-			}
-
-		}
-
-		int cont = 0;
+		Map<String, String> operations = new HashMap<String, String>();
+		
+		String features = "";
 		selIt = getValues().iterator();
 		if (selIt.hasNext()) {
 			Map<String, String> cur = selIt.next();
 			String fieldName = cur.get(table_feat_title);
 			String opTitle = cur.get(table_op_title);
-
+			logger.info(fieldName +" , " + opTitle);
 			if (MrqlDictionary.getInstance().isAggregatorMethod(opTitle)) {
-				if (!MrqlDictionary.getInstance().isCountDistinctMethod(opTitle)) {
-					String tmp = MrqlDictionary.getBracketContent(opTitle);
-					tmp = tmp.substring(tmp.indexOf('.')+1);
-					opTitle = opTitle.replace(
-							MrqlDictionary.getBracketContent(opTitle),
-//							groupTableName + "." + fieldName);
-							groupTableName + "." + tmp);
-				} else {
-					opTitle = "COUNT(b" + cont + ")";
-					cont++;
-				}
+//				String tmp = MrqlDictionary.getBracketContent(opTitle);
+//				tmp = tmp.substring(tmp.indexOf('.')+1);
+				String tmp = fieldName;
+				opTitle = opTitle.replace(
+						MrqlDictionary.getBracketContent(opTitle),
+						tmp);
 			}
 
-			select += "GENERATE " + opTitle + " AS " + fieldName;
+//			select = "SELECT ("
+//					+ fieldName;
+			
+			features += "(" + opTitle;
+			
+			operations.put(opTitle, fieldName);
 		}
 
 		while (selIt.hasNext()) {
 			Map<String, String> cur = selIt.next();
 			String fieldName = cur.get(table_feat_title);
 			String opTitle = cur.get(table_op_title);
+			logger.info(fieldName +" , " + opTitle);
 
 			if (MrqlDictionary.getInstance().isAggregatorMethod(opTitle)) {
-				if (!MrqlDictionary.getInstance().isCountDistinctMethod(opTitle)) {
-					String tmp = MrqlDictionary.getBracketContent(opTitle);
-					tmp = tmp.substring(tmp.indexOf('.')+1);
-					opTitle = opTitle.replace(
-							MrqlDictionary.getBracketContent(opTitle),
-							groupTableName + "." + tmp);
-				} else {
-					opTitle = "COUNT(b" + cont + ")";
-					cont++;
-				}
+				opTitle = opTitle.replace(
+						MrqlDictionary.getBracketContent(opTitle),
+						fieldName);
 			}
 
-			select += ",\n       " + opTitle + " AS " + fieldName;
+//			select += ", " + fieldName;
+			features += ", " + opTitle;
+			
+			operations.put(opTitle, fieldName);
 		}
-
-		select += ";}";
+		operations.size();
+		features += ")";
+		
+		
+		MrqlGroupInteraction groupInt = ((MrqlAggregator) hs).getGroupingInt();
+		String s = groupInt.getForEachQueryPiece(alias, this);
+		
+		select += "SELECT " + features;
+		select += " FROM " + s;
+		select += " in " + alias;
+		select += "\n" + groupInt.getQueryPiece();
 
 		logger.debug("select looks like : " + select);
 
-		if (hs.getGroupingInt() != null) {
-			List<String> grList = hs.getGroupingInt().getValues();
-			if (grList.size() > 1) {
-				Iterator<String> grListIt = grList.iterator();
-				while (grListIt.hasNext()) {
-					String cur = grListIt.next();
-					select = select.replaceAll(
-							Pattern.quote(alias + "." + cur), "group." + cur);
-				}
-			} else if (grList.size() == 1) {
-				Iterator<String> grListIt = grList.iterator();
-				while (grListIt.hasNext()) {
-					String cur = grListIt.next();
-					select = select.replaceAll(
-							Pattern.quote(alias + "." + cur), "group");
-				}
-			}
-		}
+//		if (hs.getGroupingInt() != null) {
+//			List<String> grList = hs.getGroupingInt().getValues();
+//			if (grList.size() > 1) {
+//				Iterator<String> grListIt = grList.iterator();
+//				while (grListIt.hasNext()) {
+//					String cur = grListIt.next();
+//					select = select.replaceAll(
+//							Pattern.quote(alias + "." + cur), "group." + cur);
+//				}
+//			} else if (grList.size() == 1) {
+//				Iterator<String> grListIt = grList.iterator();
+//				while (grListIt.hasNext()) {
+//					String cur = grListIt.next();
+//					select = select.replaceAll(
+//							Pattern.quote(alias + "." + cur), "group");
+//				}
+//			}
+//		}
 
 		return select;
 	}
+
+//	public String getQueryPieceCountDistinct(DFEOutput out, String tableName,
+//			String groupTableName) throws RemoteException {
+//		logger.debug("select...");
+//		String select = "";
+//		String alias = getAlias();
+//		Iterator<Map<String, String>> selIt = getValues().iterator();
+//
+//		List<String> countDistinct = new LinkedList<String>();
+//		while (selIt.hasNext()) {
+//			Map<String, String> cur = selIt.next();
+////			String fieldName = cur.get(table_feat_title);
+//			String opTitle = cur.get(table_op_title);
+//
+//			if (MrqlDictionary.getInstance().isCountDistinctMethod(opTitle)) {
+//
+//				opTitle = 
+//						MrqlDictionary.getBracketContent(opTitle);
+////						groupTableName + "." + fieldName);
+////						MrqlDictionary.getBracketContent(opTitle));
+//				logger.info("replaced op "+opTitle);
+//				countDistinct.add(opTitle.substring(opTitle.indexOf('.')+1));
+//			}
+//
+//		}
+//		if (!countDistinct.isEmpty()) {
+//			select += " FOREACH " + tableName + " {\n";
+//
+//			int cont = 0;
+//			for (String e : countDistinct) {
+//				select += "a" + cont + " = " + groupTableName + "." + e + ";\n";
+//				select += "b" + cont + " = distinct a" + cont + ";\n";
+//				cont++;
+//			}
+//
+//		}
+//
+//		int cont = 0;
+//		selIt = getValues().iterator();
+//		if (selIt.hasNext()) {
+//			Map<String, String> cur = selIt.next();
+//			String fieldName = cur.get(table_feat_title);
+//			String opTitle = cur.get(table_op_title);
+//
+//			if (MrqlDictionary.getInstance().isAggregatorMethod(opTitle)) {
+//				if (!MrqlDictionary.getInstance().isCountDistinctMethod(opTitle)) {
+//					String tmp = MrqlDictionary.getBracketContent(opTitle);
+//					tmp = tmp.substring(tmp.indexOf('.')+1);
+//					opTitle = opTitle.replace(
+//							MrqlDictionary.getBracketContent(opTitle),
+////							groupTableName + "." + fieldName);
+//							groupTableName + "." + tmp);
+//				} else {
+//					opTitle = "COUNT(b" + cont + ")";
+//					cont++;
+//				}
+//			}
+//
+//			select += "GENERATE " + opTitle + " AS " + fieldName;
+//		}
+//
+//		while (selIt.hasNext()) {
+//			Map<String, String> cur = selIt.next();
+//			String fieldName = cur.get(table_feat_title);
+//			String opTitle = cur.get(table_op_title);
+//
+//			if (MrqlDictionary.getInstance().isAggregatorMethod(opTitle)) {
+//				if (!MrqlDictionary.getInstance().isCountDistinctMethod(opTitle)) {
+//					String tmp = MrqlDictionary.getBracketContent(opTitle);
+//					tmp = tmp.substring(tmp.indexOf('.')+1);
+//					opTitle = opTitle.replace(
+//							MrqlDictionary.getBracketContent(opTitle),
+//							groupTableName + "." + tmp);
+//				} else {
+//					opTitle = "COUNT(b" + cont + ")";
+//					cont++;
+//				}
+//			}
+//
+//			select += ",\n       " + opTitle + " AS " + fieldName;
+//		}
+//
+//		select += ";}";
+//
+//		logger.debug("select looks like : " + select);
+//
+//		if (hs.getGroupingInt() != null) {
+//			List<String> grList = hs.getGroupingInt().getValues();
+//			if (grList.size() > 1) {
+//				Iterator<String> grListIt = grList.iterator();
+//				while (grListIt.hasNext()) {
+//					String cur = grListIt.next();
+//					select = select.replaceAll(
+//							Pattern.quote(alias + "." + cur), "group." + cur);
+//				}
+//			} else if (grList.size() == 1) {
+//				Iterator<String> grListIt = grList.iterator();
+//				while (grListIt.hasNext()) {
+//					String cur = grListIt.next();
+//					select = select.replaceAll(
+//							Pattern.quote(alias + "." + cur), "group");
+//				}
+//			}
+//		}
+//
+//		return select;
+//	}
 
 	/**
 	 * Generate the query piece for selecting the from the input

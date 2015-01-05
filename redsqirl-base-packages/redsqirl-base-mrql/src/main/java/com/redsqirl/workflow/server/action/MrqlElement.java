@@ -230,8 +230,9 @@ public abstract class MrqlElement extends SqlElement {
 		
 		logger.info("Write properties in file: "+files[1].getName());
 		toWrite = "#!/bin/bash" + System.getProperty("line.separator");
-		toWrite = "echo \"test $1 \""  + System.getProperty("line.separator");
-		toWrite += "/home/hadoop/mrql-0.9.2-incubating-src/bin/mrql.bsp -nodes 2 $1";
+		toWrite = "echo \"File: $1 \""  + System.getProperty("line.separator");
+		toWrite = "help"  + System.getProperty("line.separator");
+		toWrite += "/home/hadoop/mrql-0.9.2-incubating-src/bin/mrql.bsp -nodes 2 -dist $1";
 
 		ok = toWrite != null;
 		if(ok){
