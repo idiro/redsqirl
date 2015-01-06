@@ -624,9 +624,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 			logger.info(cmInter.getId()+": "+interactionChanged);
 			if (interactionChanged) {
 				elementToUpdate = true;
-				//logger.info("Before writing: "+cmInter.printTree(cmInter.getTree()));
 				cmInter.writeInteraction();
-				//logger.info("After writing: "+cmInter.printTree(cmInter.getTree()));
 			}
 		}
 		String e = getPageList().get(getListPosition()).checkPage();
@@ -634,7 +632,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 		if(sourceNode){
 			for (int i = 0; i < inters.size(); i++) {
 				CanvasModalInteraction cmInter = inters.get(i);
-				//if(!cmInter.isUnchanged() && cmInter.getDisplayType().toString().equals(DisplayType.browser.toString())){
 				if(cmInter.getDisplayType().toString().equals(DisplayType.browser.toString()) && !cmInter.isUnchanged()){
 					logger.info("read back browser...");
 					cmInter.readInteraction();
