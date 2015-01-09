@@ -22,9 +22,6 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<idiro-base.version>0.1</idiro-base.version>
-		<idiro-hadoop.version>0.2-SNAPSHOT</idiro-hadoop.version>
-		<idiro-tm.version>0.1</idiro-tm.version>
 		<oozie.version>3.1.3</oozie.version>
 		<prod.resources>src/main/dist</prod.resources>
 		<dist>${project.build.directory}/${project.artifactId}/</dist>
@@ -188,24 +185,6 @@
 	</build>
 	<dependencies>
 		<!-- Idiro Dep -->
-		<dependency>
-			<groupId>idiro</groupId>
-			<artifactId>idiro-base</artifactId>
-			<version>${idiro-base.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>idiro</groupId>
-			<artifactId>idiro-hadoop</artifactId>
-			<version>${idiro-hadoop.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>idiro</groupId>
-			<artifactId>idiro-tm</artifactId>
-			<version>${idiro-tm.version}</version>
-			<scope>compile</scope>
-		</dependency>
 		<dependency>
 			<groupId>idiro</groupId>
 			<artifactId>redsqirl-wf-interface</artifactId>
