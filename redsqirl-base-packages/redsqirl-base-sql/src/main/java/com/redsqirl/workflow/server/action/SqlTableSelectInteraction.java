@@ -304,9 +304,7 @@ public abstract class SqlTableSelectInteraction extends TableInteraction {
 		return "";
 	}
 	
-	public FieldList getInputFieldList(DFEOutput in) throws RemoteException {
-		return hs.getInFields();
-	}
+	public abstract FieldList getInputFieldList(DFEOutput in) throws RemoteException;
 	
 	public Set<String> getFieldGrouped() throws RemoteException {
 		return hs.getGroupByFields();

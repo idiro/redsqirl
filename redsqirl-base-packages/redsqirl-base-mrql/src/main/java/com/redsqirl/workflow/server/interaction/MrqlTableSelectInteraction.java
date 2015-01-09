@@ -99,28 +99,9 @@ public class MrqlTableSelectInteraction extends SqlTableSelectInteraction {
 	 * @return FieldList
 	 * @throws RemoteException
 	 */
+	@Override
 	public FieldList getInputFieldList(DFEOutput in) throws RemoteException {
-		FieldList fl = null;
-
-		// only show what is in grouped interaction
-		if (hs.getGroupingInt() != null) {
-			String alias = getAlias();
-			fl = new OrderedFieldList();
-			logger.debug("Fields " + in.getFields().getFieldNames());
-			Iterator<String> inputFieldIt = in.getFields().getFieldNames()
-					.iterator();
-			while (inputFieldIt.hasNext()) {
-				String nameF = inputFieldIt.next();
-				String nameFwithAlias = alias + "." + nameF;
-				logger.debug(nameF);
-				logger.debug(in.getFields().getFieldType(nameF));
-				fl.addField(nameFwithAlias,
-						in.getFields().getFieldType(nameF));
-			}
-		} else {
-			fl = in.getFields();
-		}
-		return fl;
+		return in.getFields();
 	}
 
 	public Set<String> getFieldGrouped() throws RemoteException {
@@ -154,7 +135,7 @@ public class MrqlTableSelectInteraction extends SqlTableSelectInteraction {
 			logger.info("group interaction is not null");
 			Iterator<String> grInt = hs.getGroupingInt().getValues().iterator();
 			while (grInt.hasNext()) {
-				String field = alias + "." + grInt.next();
+				String field = grInt.next();
 				fieldGrouped.add(field);
 			}
 		}

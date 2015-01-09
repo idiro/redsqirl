@@ -82,7 +82,7 @@ public class MrqlDictionary extends AbstractDictionary implements SqlDictionary{
 	 */
 	@Override
 	protected String getNameFile() {
-		return "functionsPig.txt";
+		return "functionsMrql.txt";
 	}
 	//style=\" border-style: solid;border-width: 1px;\"
 	protected static final String dateFormats = "<table>"
@@ -623,18 +623,18 @@ public class MrqlDictionary extends AbstractDictionary implements SqlDictionary{
 				.put(agregationMethods,
 						new String[][] {
 								new String[] {
-										"COUNT_STAR()",
+										"count_STAR()",
 										"ANY",
 										"NUMBER",
-										"@function:COUNT_STAR( ELEMENT )@short:Computes the number of elements in a bag@param:ELEMENT item to count@description:Use the COUNT_STAR function to compute the number of elements in a bag. COUNT_STAR requires a preceding GROUP ALL statement for global counts and a GROUP BY statement for group counts."
-												+ "COUNT_STAR includes NULL values in the count computation (unlike COUNT, which ignores NULL values)@example: COUNT_STAR(A) returns the frequency of A" },
+										"@function:count_STAR( ELEMENT )@short:Computes the number of elements in a bag@param:ELEMENT item to count@description:Use the count_STAR function to compute the number of elements in a bag. count_STAR requires a preceding GROUP ALL statement for global counts and a GROUP BY statement for group counts."
+												+ "count_STAR includes NULL values in the count computation (unlike count, which ignores NULL values)@example: count_STAR(A) returns the frequency of A" },
 								new String[] {
-										"COUNT()",
+										"count()",
 										"ANY",
 										"INT",
-										"@function:COUNT( ELEMENT )@short:Computes the number of elements in a bag@param:ELEMENT item to count@description:Use the COUNT function to compute the number of elements in a bag. COUNT requires a preceding GROUP ALL statement for global counts and a GROUP BY statement for group counts."
-												+ "The COUNT function follows syntax semantics and ignores nulls. What this means is that a tuple in the bag will not be counted if the FIRST FIELD in this tuple is NULL. If you want to include NULL values in the count computation, use COUNT_STAR."
-												+ "Note: You cannot use the tuple designator (*) with COUNT; that is, COUNT(*) will not work.@example: COUNT(A) returns the frequency of A" },
+										"@function:count( ELEMENT )@short:Computes the number of elements in a bag@param:ELEMENT item to count@description:Use the count function to compute the number of elements in a bag. count requires a preceding GROUP ALL statement for global counts and a GROUP BY statement for group counts."
+												+ "The count function follows syntax semantics and ignores nulls. What this means is that a tuple in the bag will not be counted if the FIRST FIELD in this tuple is NULL. If you want to include NULL values in the count computation, use count_STAR."
+												+ "Note: You cannot use the tuple designator (*) with count; that is, count(*) will not work.@example: count(A) returns the frequency of A" },
 								new String[] {
 										"SUM()",
 										"NUMBER",
@@ -667,12 +667,12 @@ public class MrqlDictionary extends AbstractDictionary implements SqlDictionary{
 										"STRING",
 										"@function:MAX( ELEMENT )@short:Use the MAX function to compute the maximum of a set of numeric values in a single-column bag@param: ELEMENT item to get the maximum@description:Computes the maximum of the numeric values in a single-column bag. MAX requires a preceding GROUP ALL statement for global sums and a GROUP BY statement for group sums@example: MAX(A.id) returns the maximum value of A.id" },
 								new String[] {
-										"COUNT_DISTINCT()",
+										"count_DISTINCT()",
 										"ANY",
 										"INT",
-										"@function:COUNT_DISTINCT( ELEMENT )@short:Computes the number of distinct elements in a bag@param:ELEMENT item to count@description:Use the COUNT_DISTINCT function to compute the number of distinct elements in a bag. COUNT_DISTINCT requires a preceding GROUP ALL statement for global counts and a GROUP BY statement for group counts."
-												+ "The COUNT_DISTINCT function follows syntax semantics and ignores nulls. What this means is that a tuple in the bag will not be counted if the FIRST FIELD in this tuple is NULL. If you want to include NULL values in the count computation, use COUNT_STAR."
-												+ "Note: You cannot use the tuple designator (*) with COUNT_DISTINCT; that is, COUNT_DISTINCT(*) will not work.@example: COUNT_DISTINCT(A) returns the frequency of A" } });
+										"@function:count_DISTINCT( ELEMENT )@short:Computes the number of distinct elements in a bag@param:ELEMENT item to count@description:Use the count_DISTINCT function to compute the number of distinct elements in a bag. count_DISTINCT requires a preceding GROUP ALL statement for global counts and a GROUP BY statement for group counts."
+												+ "The count_DISTINCT function follows syntax semantics and ignores nulls. What this means is that a tuple in the bag will not be counted if the FIRST FIELD in this tuple is NULL. If you want to include NULL values in the count computation, use count_STAR."
+												+ "Note: You cannot use the tuple designator (*) with count_DISTINCT; that is, count_DISTINCT(*) will not work.@example: count_DISTINCT(A) returns the frequency of A" } });
 		functionsMap
 				.put(conditionalOperator,
 						new String[][] {
@@ -709,12 +709,13 @@ public class MrqlDictionary extends AbstractDictionary implements SqlDictionary{
 	public FieldType getFieldType(String pigType) {
 		FieldType ans = null;
 		logger.debug("Type of: " + pigType);
-		if (pigType.equalsIgnoreCase("CHARARRAY")) {
-			ans = FieldType.STRING;
-		} else if (pigType.equalsIgnoreCase("NUMBER")) {
+//		if (pigType.equalsIgnoreCase("CHARARRAY")) {
+//			ans = FieldType.STRING;
+//		} else 
+		if (pigType.equalsIgnoreCase("NUMBER")) {
 			ans = FieldType.DOUBLE;
 		} else {
-			ans = FieldType.valueOf(pigType);
+			ans = FieldType.valueOf(pigType.toUpperCase());
 		}
 		return ans;
 	}
@@ -1464,7 +1465,7 @@ public class MrqlDictionary extends AbstractDictionary implements SqlDictionary{
 	}
 
 	public boolean isCountDistinctMethod(String expr) {
-		return expr.startsWith("COUNT_DISTINCT(");
+		return expr.startsWith("count_DISTINCT(");
 	}
 
 	/**
@@ -1935,12 +1936,12 @@ public class MrqlDictionary extends AbstractDictionary implements SqlDictionary{
 	}
 	
 	public FieldType getSqlType(String pigType) {
-		return FieldType.valueOf(pigType);
+		return FieldType.valueOf(pigType.toUpperCase());
 	}
 
 	@Override
 	public String getType(FieldType feat) {
-		return feat.toString();
+		return feat.toString().toLowerCase();
 	}
 
 	@Override

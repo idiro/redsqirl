@@ -130,7 +130,7 @@ public class MrqlJoinTests {
 		MrqlOrderInteraction oi = mrql.getOrderInt();
 		mrql.update(oi);
 		List<String> values = new ArrayList<String>();
-		values.add("ID");
+//		values.add("ID");
 		oi.setValues(values);
 		
 		ListInteraction ot = (ListInteraction) mrql.getInteraction(MrqlElement.key_order_type);

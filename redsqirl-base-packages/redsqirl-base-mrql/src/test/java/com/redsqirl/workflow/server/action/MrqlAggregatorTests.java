@@ -63,16 +63,18 @@ public class MrqlAggregatorTests {
 		logger.info("update mrql...");
 		MrqlGroupInteraction groupingInt = (MrqlGroupInteraction) mrql.getGroupingInt();
 
-
 		String inAlias = mrql.getAliases().keySet().iterator().next();
 		mrql.update(groupingInt);
 		List<String> val = new LinkedList<String>();
 //		if (!groupByAll){
-			val.add(inAlias + ".ID");
+			val.add("ID");
 //		}
 		groupingInt.setValues(val);
+		groupingInt.getValues();
 		assertTrue("group check : "+groupingInt.check(),groupingInt.check()==null);
-
+		groupingInt.getValues();
+		
+		
 		MrqlFilterInteraction ci = mrql.getFilterInt();
 //		if(filter){
 //			ci.setValue("VALUE < 10");
@@ -80,16 +82,17 @@ public class MrqlAggregatorTests {
 			ci.setValue("");
 //		}
 		assertTrue("condition check : "+ci.check(),ci.check()==null);
-
+		
 		MrqlTableSelectInteraction tsi = mrql.gettSelInt();
 		w.getElement(mrql.getName());
 		mrql.update(tsi);
+		
 		{
 			Tree<String> out = tsi.getTree().getFirstChild("table");
 			Tree<String> rowId = out.add("row");
 //			if (!groupByAll){
 				rowId.add(MrqlTableSelectInteraction.table_feat_title).add("VALUE_ED");
-				rowId.add(MrqlTableSelectInteraction.table_op_title).add("COUNT("+inAlias + ".VALUE)");
+				rowId.add(MrqlTableSelectInteraction.table_op_title).add("count(VALUE)");
 				rowId.add(MrqlTableSelectInteraction.table_type_title).add("INT");
 				rowId = out.add("row");
 //			}
@@ -99,7 +102,7 @@ public class MrqlAggregatorTests {
 //			rowId.add(MrqlTableSelectInteraction.table_type_title).add("INT");
 //			}else{
 				rowId.add(MrqlTableSelectInteraction.table_feat_title).add("RAW_ED");
-				rowId.add(MrqlTableSelectInteraction.table_op_title).add("COUNT("+inAlias + ".RAW)");
+				rowId.add(MrqlTableSelectInteraction.table_op_title).add("count(RAW)");
 				rowId.add(MrqlTableSelectInteraction.table_type_title).add("INT");
 //			}
 		}
@@ -118,17 +121,28 @@ public class MrqlAggregatorTests {
 //		mrql.update(pl);
 //		pl.setValue("1");
 		
+		mrql.getDFEInput().get("in").get(0).getFields();
+		
 		assertTrue("table select : "+tsi.check(),tsi.check()==null);
+		
+		mrql.getDFEInput().get("in").get(0).getFields();
+		
+		
 		UserInteraction gi = mrql.savetypeOutputInt;
 		mrql.update(gi);
+		
+		mrql.getDFEInput().get("in").get(0).getFields();
+		
 		{
 			Tree<String> out = gi.getTree().getFirstChild("list");
 			out.add("output").add("TEXT MAP-REDUCE DIRECTORY");
 		}
 		assertTrue("save check : "+gi.check(),gi.check()==null);
-
+		mrql.getDFEInput().get("in").get(0).getFields();
 		String error = mrql.updateOut();
 		assertTrue("mrql select update: " + error, error == null);
+		
+		mrql.getDFEInput().get("in").get(0).getFields();
 	}
 	
 

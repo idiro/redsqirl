@@ -3,6 +3,7 @@ package com.redsqirl.workflow.server.interaction;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +12,7 @@ import org.apache.log4j.Logger;
 import com.redsqirl.workflow.server.action.MrqlAggregator;
 import com.redsqirl.workflow.server.action.SqlGroupInteraction;
 import com.redsqirl.workflow.server.action.utils.MrqlDictionary;
+import com.redsqirl.workflow.server.interfaces.DFEOutput;
 
 
 /**

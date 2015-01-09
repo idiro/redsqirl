@@ -153,7 +153,7 @@ public class MrqlTableUnionInteraction extends SqlTableUnionInteraction {
 			select += ")";
 			
 			if (it.hasNext()) {
-				select += "\n      UNION ";
+				select += "\n      union ";
 			}
 			
 //			union += ((MrqlUnion) hu).getCurrentName();

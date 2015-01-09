@@ -219,7 +219,7 @@ public class MrqlUnion extends MrqlElement {
 			}
 			load += "\n";
 
-			String select = tUnionSelInt.getQueryPiece(out) + "\n";
+			String select = getCurrentName() + " = " + tUnionSelInt.getQueryPiece(out) + "\n";
 
 			String order = orderInt.getQueryPiece(orderTypeInt.getValue());
 

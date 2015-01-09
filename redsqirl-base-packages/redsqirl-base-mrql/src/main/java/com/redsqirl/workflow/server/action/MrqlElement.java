@@ -231,7 +231,6 @@ public abstract class MrqlElement extends SqlElement {
 		logger.info("Write properties in file: "+files[1].getName());
 		toWrite = "#!/bin/bash" + System.getProperty("line.separator");
 		toWrite = "echo \"File: $1 \""  + System.getProperty("line.separator");
-		toWrite = "help"  + System.getProperty("line.separator");
 		toWrite += "/home/hadoop/mrql-0.9.2-incubating-src/bin/mrql.bsp -nodes 2 -dist $1";
 
 		ok = toWrite != null;
@@ -362,7 +361,7 @@ public abstract class MrqlElement extends SqlElement {
 //		String function = getStoreFunction(delimiter);
 //		logger.info(function);
 		
-		String query = "STORE "+out.getPath() + " FROM " + relationName+ ";";
+		String query = "STORE '"+out.getPath() + "' FROM " + relationName+ ";";
 				
 		return query;
 	}

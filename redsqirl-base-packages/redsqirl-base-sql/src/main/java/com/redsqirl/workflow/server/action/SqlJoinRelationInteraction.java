@@ -181,12 +181,6 @@ public abstract class SqlJoinRelationInteraction extends TableInteraction {
 		// logger.info("input : "+input.toString());
 		return input;
 	}
-	/**
-	 * Get the Query Piece for the join relationship
-	 * @return query piece
-	 * @throws RemoteException
-	 */
-	public abstract String getQueryPiece() throws RemoteException;
 
 	/**
 	 * Check an expression for errors using
