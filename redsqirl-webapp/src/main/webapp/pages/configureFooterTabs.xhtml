@@ -105,7 +105,8 @@
 				<tr>
 					<td>
 						<a4j:commandButton action="#{configureTabsBean.mountMenuActions}" reRender="actionOptionForMenu" 
-							image="../image/icons/button-refresh.gif" title='#{messages.button_refresh}' styleClass="fileSystemIcon"/>
+							image="../image/icons/button-refresh.gif" title='#{messages.button_refresh}' styleClass="fileSystemIcon" 
+							rendered="#{configureTabsBean.index != null &amp;&amp; configureTabsBean.showTab == 'Y' }" />
 					</td>
 					<td>
 				    	<h2>

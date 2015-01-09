@@ -62,7 +62,7 @@ public class PigJoinRelationInteraction extends SqlJoinRelationInteraction {
 			Map<String,String> cur = it.next();
 			String expr = cur.get(table_feat_title);
 			logger.info(expr);
-			
+
 			Iterator<String> namesIt = aliases.iterator();
 			String ans = expr;
 			while(namesIt.hasNext()){
@@ -72,10 +72,10 @@ public class PigJoinRelationInteraction extends SqlJoinRelationInteraction {
 			String relation = cur.get(table_table_title);
 
 			join += " " + relation + " BY " + ans;
-			if (!joinType.isEmpty()) {
-				join += " " + joinType;
-			}
 			if (it.hasNext()) {
+				if (!joinType.isEmpty()) {
+					join += " " + joinType;
+				}
 				join += ",";
 			}
 		}
