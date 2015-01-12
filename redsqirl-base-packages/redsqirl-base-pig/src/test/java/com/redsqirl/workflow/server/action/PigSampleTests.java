@@ -111,31 +111,31 @@ public class PigSampleTests {
 			pig.getDFEOutput().get(PigSelect.key_output).setPath(new_path2);
 
 			logger.info("run...");
-			// OozieClient wc = OozieManager.getInstance().getOc();
+			 OozieClient wc = OozieManager.getInstance().getOc();
 			logger.info("Got Oozie Client");
-			// error = w.run();
-			// assertTrue("Job submition failed: "+error, error == null);
-			// String jobId = w.getOozieJobId();
-			// if(jobId == null){
-			// assertTrue("jobId cannot be null", false);
-			// }
-			// logger.info(jobId);
-			//
-			// // wait until the workflow job finishes printing the status every
-			// 10 seconds
-			// while(
-			// wc.getJobInfo(jobId).getStatus() ==
-			// org.apache.oozie.client.WorkflowJob.Status.RUNNING) {
-			// System.out.println("Workflow job running ...");
-			// logger.info("Workflow job running ...");
-			// Thread.sleep(10 * 1000);
-			// }
-			// logger.info("Workflow job completed ...");
-			// logger.info(wc.getJobInfo(jobId));
-			// error = wc.getJobInfo(jobId).toString();
-			// assertTrue(error, error.contains("SUCCEEDED"));
-//			WorkflowPrefManager.resetSys();
-//			WorkflowPrefManager.resetUser();
+			 error = w.run();
+			 assertTrue("Job submition failed: "+error, error == null);
+			 String jobId = w.getOozieJobId();
+			 if(jobId == null){
+			 assertTrue("jobId cannot be null", false);
+			 }
+			 logger.info(jobId);
+			
+			 // wait until the workflow job finishes printing the status every
+			 // 10 seconds
+			 while(
+			 wc.getJobInfo(jobId).getStatus() ==
+			 org.apache.oozie.client.WorkflowJob.Status.RUNNING) {
+			 System.out.println("Workflow job running ...");
+			 logger.info("Workflow job running ...");
+			 Thread.sleep(10 * 1000);
+			 }
+			 logger.info("Workflow job completed ...");
+			 logger.info(wc.getJobInfo(jobId));
+			 error = wc.getJobInfo(jobId).toString();
+			 assertTrue(error, error.contains("SUCCEEDED"));
+			WorkflowPrefManager.resetSys();
+			WorkflowPrefManager.resetUser();
 			logger.info(WorkflowPrefManager.pathSysHome);
 		} catch (Exception e) {
 			logger.error(e.getMessage());

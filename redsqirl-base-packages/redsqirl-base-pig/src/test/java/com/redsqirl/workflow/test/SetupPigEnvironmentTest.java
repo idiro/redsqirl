@@ -41,27 +41,27 @@ import com.redsqirl.workflow.server.connect.HDFSInterface;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-	PigDictionaryTests.class,
-	PigFilterInteractionTests.class,
-	PigTableSelectInteractionTests.class,
-	PigJoinRelationInteractionTests.class,
-	PigTableJoinInteractionTests.class,
-	PigTableUnionInteractionTests.class,
-	PigSelectTests.class,
-	PigAggregatorTests.class,
-	PigUnionTests.class,
-	PigJoinTests.class,
-	PigSampleTests.class,
-	PigWorkflowMngtTests.class,
-	PigUnionConditionsTests.class,
-	PigAuditTests.class,
-	PigTransposeTests.class,
-	PigAnonymiseTests.class,
-	PigUnanonymiseTests.class,
-	PigCompressTests.class,
+//	PigDictionaryTests.class, ok
+//	PigFilterInteractionTests.class, ok
+//	PigTableSelectInteractionTests.class, ok
+//	PigJoinRelationInteractionTests.class, ok
+//	PigTableJoinInteractionTests.class,ok
+//	PigTableUnionInteractionTests.class, ok
+//	PigSelectTests.class, ok
+//	PigAggregatorTests.class, ok
+//	PigUnionTests.class, ok
+//	PigJoinTests.class, ok
+//	PigSampleTests.class,
+//	PigWorkflowMngtTests.class, ok
+//	PigUnionConditionsTests.class, ok
+//	PigAuditTests.class, ok
+//	PigTransposeTests.class, ok
+//	PigAnonymiseTests.class, ok
+//	PigUnanonymiseTests.class, ok
+//	PigCompressTests.class, ok
 	PigSchemaTests.class,
-	PigUnanonymiseTests.class,
-	PigGroupRankTests.class
+//	PigUnanonymiseTests.class, ok
+//	PigGroupRankTests.class ok
 	})
 public class SetupPigEnvironmentTest {
 

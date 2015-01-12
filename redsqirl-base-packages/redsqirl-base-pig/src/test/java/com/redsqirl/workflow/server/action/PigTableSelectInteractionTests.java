@@ -10,6 +10,7 @@ import com.redsqirl.workflow.server.Workflow;
 import com.redsqirl.workflow.server.action.PigAggregator;
 import com.redsqirl.workflow.server.action.PigSelect;
 import com.redsqirl.workflow.server.action.Source;
+import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.interaction.PigTableSelectInteraction;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.test.TestUtils;
@@ -25,7 +26,8 @@ public class PigTableSelectInteractionTests {
 		String error = null;
 		try{
 			Workflow w = new Workflow("workflow1_"+getClass().getName());
-			DataFlowElement src = PigTestUtils.createSourceEmpty_ID_VALUE(w, TestUtils.getPath(1));
+			HDFSInterface hInt = new HDFSInterface();
+			DataFlowElement src = PigTestUtils.createSrc_ID_VALUE(w, hInt, TestUtils.getPath(1));
 			
 			String idHs = w.addElement((new PigSelect()).getName());
 			PigSelect hs = (PigSelect)w.getElement(idHs);

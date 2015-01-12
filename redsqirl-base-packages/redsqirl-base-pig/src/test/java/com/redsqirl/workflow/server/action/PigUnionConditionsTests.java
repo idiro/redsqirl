@@ -13,6 +13,7 @@ import com.redsqirl.workflow.server.action.PigCompressSource;
 import com.redsqirl.workflow.server.action.PigElement;
 import com.redsqirl.workflow.server.action.PigUnion;
 import com.redsqirl.workflow.server.action.PigUnionConditions;
+import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.test.TestUtils;
 
@@ -26,12 +27,13 @@ public class PigUnionConditionsTests {
 		TestUtils.logTestTitle(getClass().getName()+"#basic");
 		String error = null;
 		try{
+			HDFSInterface hInt = new HDFSInterface();
 			String new_path1 = TestUtils.getPath(1);
 			String new_path2 = TestUtils.getPath(2);
 			
 			Workflow w = new Workflow("workflow1_"+getClass().getName());
-			DataFlowElement src1 = PigTestUtils.createSourceEmpty_ID_VALUE(w,new_path1);
-			DataFlowElement src2 = PigTestUtils.createSourceEmpty_ID_VALUE(w,new_path2);
+			DataFlowElement src1 = PigTestUtils.createSrc_ID_VALUE(w,hInt,new_path1);
+			DataFlowElement src2 = PigTestUtils.createSrc_ID_VALUE(w,hInt,new_path2);
 			
 
 			String idHs = w.addElement((new PigUnion()).getName());
@@ -64,6 +66,8 @@ public class PigUnionConditionsTests {
 			
 			logger.debug("base update...");
 			PigUnionConditions tui = hs.gettUnionCond();
+			
+			hs.gettAliasInt().update();
 			
 			hs.update(tui);
 			logger.debug("table union interaction updated...");

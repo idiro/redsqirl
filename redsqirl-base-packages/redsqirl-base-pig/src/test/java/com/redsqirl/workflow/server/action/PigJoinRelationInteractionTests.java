@@ -12,7 +12,9 @@ import com.redsqirl.workflow.server.Workflow;
 import com.redsqirl.workflow.server.action.PigCompressSource;
 import com.redsqirl.workflow.server.action.PigElement;
 import com.redsqirl.workflow.server.action.PigJoin;
+import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.interaction.PigJoinRelationInteraction;
+import com.redsqirl.workflow.server.interaction.PigTableAliasInteraction;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.test.TestUtils;
 
@@ -31,8 +33,9 @@ Logger logger = Logger.getLogger(getClass());
 			String new_path2 = TestUtils.getPath(2);
 			
 			Workflow w = new Workflow("workflow1_"+getClass().getName());
-			DataFlowElement src1 = PigTestUtils.createSourceEmpty_ID_VALUE(w,new_path1);
-			DataFlowElement src2 = PigTestUtils.createSourceEmpty_ID_VALUE(w,new_path2);
+			HDFSInterface hInt = new HDFSInterface();
+			DataFlowElement src1 = PigTestUtils.createSrc_ID_VALUE(w,hInt, new_path1);
+			DataFlowElement src2 = PigTestUtils.createSrc_ID_VALUE(w,hInt, new_path2);
 			
 			
 			String idHs = w.addElement((new PigJoin()).getName());
@@ -63,6 +66,9 @@ Logger logger = Logger.getLogger(getClass());
 				}
 			}
 			
+			PigTableAliasInteraction tai = hs.gettAliasInt();
+			hs.update(tai);
+			
 			PigJoinRelationInteraction jri = hs.getJrInt();
 			hs.update(jri);
 			{
@@ -76,8 +82,8 @@ Logger logger = Logger.getLogger(getClass());
 				logger.debug("3");
 				Tree<String> rowId = out.add("row");
 				logger.debug("4");
-				rowId.add(PigJoinRelationInteraction.table_table_title).add(alias1+".ID");
-				rowId.add(PigJoinRelationInteraction.table_feat_title).add(alias1);
+				rowId.add(PigJoinRelationInteraction.table_feat_title).add(alias1+".ID");
+				rowId.add(PigJoinRelationInteraction.table_table_title).add(alias1);
 				logger.debug("5");
 				error = jri.check();
 				assertTrue("check1",error != null);
@@ -88,11 +94,11 @@ Logger logger = Logger.getLogger(getClass());
 				logger.debug("3");
 				Tree<String> rowId = out.add("row");
 				logger.debug("4");
-				rowId.add(PigJoinRelationInteraction.table_table_title).add(alias1+".ID");
-				rowId.add(PigJoinRelationInteraction.table_feat_title).add(alias1);
+				rowId.add(PigJoinRelationInteraction.table_feat_title).add(alias1+".ID");
+				rowId.add(PigJoinRelationInteraction.table_table_title).add(alias1);
 				rowId = out.add("row");
-				rowId.add(PigJoinRelationInteraction.table_table_title).add("alias3.ID2");
-				rowId.add(PigJoinRelationInteraction.table_feat_title).add(alias2);
+				rowId.add(PigJoinRelationInteraction.table_feat_title).add("alias3.ID2");
+				rowId.add(PigJoinRelationInteraction.table_table_title).add(alias2);
 				logger.debug("5");
 				error = jri.check();
 				assertTrue("check1",error != null);
@@ -103,11 +109,11 @@ Logger logger = Logger.getLogger(getClass());
 				logger.debug("3");
 				Tree<String> rowId = out.add("row");
 				logger.debug("4");
-				rowId.add(PigJoinRelationInteraction.table_table_title).add(alias1+".ID");
-				rowId.add(PigJoinRelationInteraction.table_feat_title).add(alias1);
+				rowId.add(PigJoinRelationInteraction.table_feat_title).add(alias1+".ID");
+				rowId.add(PigJoinRelationInteraction.table_table_title).add(alias1);
 				rowId = out.add("row");
-				rowId.add(PigJoinRelationInteraction.table_table_title).add(alias2+".ID");
-				rowId.add(PigJoinRelationInteraction.table_feat_title).add("alias3");
+				rowId.add(PigJoinRelationInteraction.table_feat_title).add(alias2+".ID");
+				rowId.add(PigJoinRelationInteraction.table_table_title).add("alias3");
 				logger.debug("5");
 				error = jri.check();
 				assertTrue("check1",error != null);
@@ -118,11 +124,11 @@ Logger logger = Logger.getLogger(getClass());
 				logger.debug("3");
 				Tree<String> rowId = out.add("row");
 				logger.debug("4");
-				rowId.add(PigJoinRelationInteraction.table_table_title).add(alias1+".ID");
-				rowId.add(PigJoinRelationInteraction.table_feat_title).add(alias1);
+				rowId.add(PigJoinRelationInteraction.table_feat_title).add(alias1+".ID");
+				rowId.add(PigJoinRelationInteraction.table_table_title).add(alias1);
 				rowId = out.add("row");
-				rowId.add(PigJoinRelationInteraction.table_table_title).add(alias2+".ID");
-				rowId.add(PigJoinRelationInteraction.table_feat_title).add(alias2);
+				rowId.add(PigJoinRelationInteraction.table_feat_title).add(alias2+".ID");
+				rowId.add(PigJoinRelationInteraction.table_table_title).add(alias2);
 				logger.debug("5");
 				error = jri.check();
 				assertTrue("check1",error == null);

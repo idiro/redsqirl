@@ -1940,14 +1940,12 @@ public class PigDictionary extends AbstractDictionary implements SqlDictionary{
 
 	@Override
 	public String getType(FieldType feat) {
-		// TODO Auto-generated method stub
-		return null;
+		return feat.toString();
 	}
 
 	@Override
 	public EditorInteraction generateEditor(Tree<String> help, FieldList inFeat)
 			throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
+		return generateEditor(help, inFeat, null);
 	}
 }

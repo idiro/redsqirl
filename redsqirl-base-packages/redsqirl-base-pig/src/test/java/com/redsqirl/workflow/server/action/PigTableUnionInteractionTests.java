@@ -12,6 +12,7 @@ import com.redsqirl.workflow.server.Workflow;
 import com.redsqirl.workflow.server.action.PigCompressSource;
 import com.redsqirl.workflow.server.action.PigElement;
 import com.redsqirl.workflow.server.action.PigUnion;
+import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.interaction.PigTableUnionInteraction;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.test.TestUtils;
@@ -29,8 +30,9 @@ public class PigTableUnionInteractionTests {
 			String new_path2 = TestUtils.getPath(2);
 			
 			Workflow w = new Workflow("workflow1_"+getClass().getName());
-			DataFlowElement src1 = PigTestUtils.createSourceEmpty_ID_VALUE(w,new_path1);
-			DataFlowElement src2 = PigTestUtils.createSourceEmpty_ID_VALUE(w,new_path2);
+			HDFSInterface hInt = new HDFSInterface();
+			DataFlowElement src1 = PigTestUtils.createSrc_ID_VALUE(w,hInt,new_path1);
+			DataFlowElement src2 = PigTestUtils.createSrc_ID_VALUE(w,hInt,new_path2);
 			
 
 			String idHs = w.addElement((new PigUnion()).getName());
