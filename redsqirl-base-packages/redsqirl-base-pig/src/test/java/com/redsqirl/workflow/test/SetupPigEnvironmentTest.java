@@ -15,6 +15,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 import com.idiro.Log;
 import com.idiro.ProjectID;
+import com.idiro.hadoop.NameNodeVar;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.action.PigAggregatorTests;
 import com.redsqirl.workflow.server.action.PigAnonymiseTests;
@@ -41,9 +42,9 @@ import com.redsqirl.workflow.server.connect.HDFSInterface;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-	PigDictionaryTests.class,
-	PigFilterInteractionTests.class,
-	PigTableSelectInteractionTests.class,
+	//PigDictionaryTests.class,
+	PigFilterInteractionTests.class
+	/*PigTableSelectInteractionTests.class,
 	PigJoinRelationInteractionTests.class,
 	PigTableJoinInteractionTests.class,
 	PigTableUnionInteractionTests.class,
@@ -61,7 +62,7 @@ import com.redsqirl.workflow.server.connect.HDFSInterface;
 	PigCompressTests.class,
 	PigSchemaTests.class,
 	PigUnanonymiseTests.class,
-	PigGroupRankTests.class
+	PigGroupRankTests.class*/
 	})
 public class SetupPigEnvironmentTest {
 
@@ -104,7 +105,7 @@ public class SetupPigEnvironmentTest {
 //				WorkflowPrefManager.getUserProperty(
 //						WorkflowPrefManager.user_hive+"_"+System.getProperty("user.name")));
 
-
+		NameNodeVar.set(WorkflowPrefManager.getUserProperty(WorkflowPrefManager.sys_namenode));
 		Properties prop = new Properties();
 		try {
 			prop.load(new FileReader(testProp));

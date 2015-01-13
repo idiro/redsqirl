@@ -62,7 +62,7 @@ import com.redsqirl.workflow.utils.PackageManagerTests;
 //	//FIXME Hive Type Tests does not work 
 //	//HiveTypeTests.class, 
 //	HiveTypePartitionTests.class, 
-//	SourceTests.class,
+	SourceTests.class
 //	WorkflowProcessesManagerTests.class,
 //	OozieManagerTests.class,
 //	
@@ -82,7 +82,7 @@ import com.redsqirl.workflow.utils.PackageManagerTests;
 //	SendEmailTests.class,
 //	WorkflowInterfaceTests.class,
 //	SubWorkflowTests.class,
-	SuperActionTests.class
+	//SuperActionTests.class
 })
 public class SetupEnvironmentTest {
 

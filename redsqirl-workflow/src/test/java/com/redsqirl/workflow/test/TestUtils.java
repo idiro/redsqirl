@@ -1,8 +1,14 @@
 package com.redsqirl.workflow.test;
 
+import java.io.IOException;
 import java.util.Arrays;
 
+import org.apache.hadoop.fs.FSDataOutputStream;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
+
+import com.idiro.hadoop.NameNodeVar;
 
 public class TestUtils {
 
@@ -50,4 +56,30 @@ public class TestUtils {
 	static public String getPath(int id) {
 		return "/user/" + user + "/tmp/test_redsqirl_" + id;
 	}
+	
+	public static void createStringIntIntfile(Path p) throws IOException {
+		String content = "A\0012\0013\n";
+		content += "B\0013\0014\n";
+		content += "C\0014\0015\n";
+
+		createHDFSFile(p, content);
+	}
+	
+	public static void createHDFSFile(Path p, String containt) throws IOException {
+		FileSystem fileSystem = NameNodeVar.getFS();
+
+		// Check if the file already exists
+		if (fileSystem.exists(p)) {
+			logger.warn("File " + p.toString() + " already exists");
+			return;
+		}
+
+		// Create a new file and write data to it.
+		fileSystem.mkdirs(p);
+		FSDataOutputStream out = fileSystem.create(new Path(p, "part-0000"));
+		out.write(containt.getBytes());
+		out.close();
+		fileSystem.close();
+	}
+	
 }

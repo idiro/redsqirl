@@ -24,16 +24,17 @@ public class PigTableSelectInteractionTests {
 		TestUtils.logTestTitle(getClass().getName()+"#select");
 		String error = null;
 		try{
+			
 			Workflow w = new Workflow("workflow1_"+getClass().getName());
 			DataFlowElement src = PigTestUtils.createSourceEmpty_ID_VALUE(w, TestUtils.getPath(1));
 			
 			String idHs = w.addElement((new PigSelect()).getName());
 			PigSelect hs = (PigSelect)w.getElement(idHs);
 			
-			error = w.addLink(
-					Source.out_name, src.getComponentId(), 
-					PigSelect.key_input, idHs);
+			error = w.addLink(Source.out_name, src.getComponentId(), PigSelect.key_input, idHs);
 			assertTrue("pig select link: "+error,error == null);
+			
+			logger.info("error " + error);
 			
 			PigTableSelectInteraction tsi = hs.gettSelInt();
 			logger.info("updating table select interaction");
@@ -51,8 +52,6 @@ public class PigTableSelectInteractionTests {
 				assertTrue("check1: "+error,error == null);
 				out.remove("row");
 			}
-			
-			
 			
 		}catch(Exception e){
 			logger.error(e.getMessage());
@@ -100,11 +99,10 @@ public class PigTableSelectInteractionTests {
 			}
 			logger.info(tsi.getTree().toString());
 			
-			
-			
 		}catch(Exception e){
 			logger.error(e.getMessage());
 			assertTrue(e.getMessage(),false);
 		}
 	}
+	
 }

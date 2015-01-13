@@ -159,12 +159,10 @@ public class PigTestUtils {
 	}
 	
 	public static DataFlowElement createSourceEmpty_ID_VALUE(Workflow w,String path) throws Exception{
-		HDFSInterface hInt = new HDFSInterface();
 		
+		HDFSInterface hInt = new HDFSInterface();
 		hInt.delete(path);
-		assertTrue("create "+path,
-				hInt.create(path, getEmptyProperties()) == null
-				);
+		assertTrue("create "+path, hInt.create(path, getEmptyProperties()) == null );
 		String idSource = w.addElement((new PigTextSource()).getName());
 		PigTextSource src = (PigTextSource)w.getElement(idSource);
 
@@ -186,7 +184,6 @@ public class PigTestUtils {
 		
 		String error = src.updateOut();
 		assertTrue("source update: "+error,error == null);
-		
 
 		FieldList fl = new OrderedFieldList();
 		fl.addField("ID", FieldType.STRING);
