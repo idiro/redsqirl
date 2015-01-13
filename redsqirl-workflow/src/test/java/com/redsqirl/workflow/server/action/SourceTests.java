@@ -7,12 +7,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.utils.Tree;
+import com.redsqirl.workflow.server.Workflow;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.connect.HiveInterface;
 import com.redsqirl.workflow.server.datatype.HiveType;
@@ -242,31 +244,41 @@ public class SourceTests {
 			HDFSInterface hInt = new HDFSInterface();
 			String new_path1 = TestUtils.getPath(12);
 			hInt.delete(new_path1);
-			assertTrue("create " + new_path1,
-					hInt.create(new_path1, getColumns()) == null);
-
+			
+			//assertTrue("create " + new_path1, hInt.create(new_path1, getColumns()) == null);
+			
+			TestUtils.createStringIntIntfile(new Path(new_path1));
+			
 			Source src = new Source();
 			String error = "";
 			src.update(src.getInteraction(Source.key_datatype));
-			Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype)
-					.getTree();
-			dataTypeTree.getFirstChild("list").getFirstChild("output")
-					.add(hInt.getBrowserName());
+			Tree<String> dataTypeTree = src.getInteraction(Source.key_datatype).getTree();
+			dataTypeTree.getFirstChild("list").getFirstChild("output").add(hInt.getBrowserName());
 
 			src.update(src.getInteraction(Source.key_datasubtype));
-			Tree<String> dataSubTypeTree = src.getInteraction(
-					Source.key_datasubtype).getTree();
-			dataSubTypeTree.getFirstChild("list").getFirstChild("output")
-					.add(new MapRedTextType().getTypeName());
+			Tree<String> dataSubTypeTree = src.getInteraction(Source.key_datasubtype).getTree();
+			dataSubTypeTree.getFirstChild("list").getFirstChild("output").add(new MapRedTextType().getTypeName());
 
 			src.update(src.getInteraction(Source.key_dataset));
-			Tree<String> dataSetTree = src.getInteraction(Source.key_dataset)
-					.getTree();
-			dataSetTree.getFirstChild("browse").getFirstChild("output")
-					.add("path").add(new_path1);
-			dataSetTree.getFirstChild("browse").getFirstChild("output")
-					.add("property").add(MapRedTextType.key_header)
-					.add("A INT , B INT , C INT");
+			Tree<String> dataSetTree = src.getInteraction(Source.key_dataset).getTree();
+			dataSetTree.getFirstChild("browse").getFirstChild("output").add("path").add(new_path1);
+			//dataSetTree.getFirstChild("browse").getFirstChild("output").add("field");
+			
+				//.add(MapRedTextType.key_header)
+				//.add("A INT , B INT , C INT");
+			
+			Tree<String> field1 = dataSetTree.getFirstChild("browse").getFirstChild("output").add("field");
+			field1.add("name").add("A");
+			field1.add("type").add("STRING");
+
+			Tree<String> field2 = dataSetTree.getFirstChild("browse").getFirstChild("output").add("field");
+			field2.add("name").add("B");
+			field2.add("type").add("INT");
+			
+			Tree<String> field3 = dataSetTree.getFirstChild("browse").getFirstChild("output").add("field");
+			field3.add("name").add("C");
+			field3.add("type").add("INT");
+			
 			src.update(src.getInteraction(Source.key_dataset));
 
 			error = null;

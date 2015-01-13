@@ -236,9 +236,9 @@ public class MapRedTextType extends MapRedDir {
 				if(fields == null || fields.getSize() == 0){
 					fields = fl;
 				}else{
-					String error = checkCompatibility(fl,fields);
 					logger.info(fields.getFieldNames());
 					logger.info(fl.getFieldNames());
+					String error = checkCompatibility(fl,fields);
 					if(error != null){
 						logger.info(error);
 						fields = fl;
