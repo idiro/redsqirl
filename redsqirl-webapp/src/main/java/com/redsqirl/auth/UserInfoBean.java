@@ -163,7 +163,23 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		try {
 			Connection conn = new Connection(hostname);
 			conn.connect();
-
+			
+			if (conn.isAuthMethodAvailable(userName, "publickey")) {
+				logger.debug("--> public key auth method supported by server");
+			} else {
+				logger.debug("--> public key auth method not supported by server");
+			}
+			if (conn.isAuthMethodAvailable(userName, "keyboard-interactive")) {
+				logger.debug("--> keyboard interactive auth method supported by server");
+			} else {
+				logger.debug("--> keyboard interactive auth method not supported by server");
+			}
+			if (conn.isAuthMethodAvailable(userName, "password")) {
+				logger.debug("--> password auth method supported by server");
+			} else {
+				logger.warn("--> password auth method not supported by server");
+			}
+			
 			checkPassword = conn.authenticateWithPassword(userName,
 					password);
 
@@ -228,13 +244,14 @@ public class UserInfoBean extends BaseBean implements Serializable {
 				
 				
 			} catch (Exception e) {
+				logger.error(e.getMessage(),e);
 				setMsnError("Failed to get license");
 				invalidateSession();
 				return "failure";
 			}
 			
 		} catch (IOException e) {
-			logger.error(e.getMessage());
+			logger.error(e.getMessage(),e);
 			invalidateSession();
 			setMsnError("error");
 			return "failure";
