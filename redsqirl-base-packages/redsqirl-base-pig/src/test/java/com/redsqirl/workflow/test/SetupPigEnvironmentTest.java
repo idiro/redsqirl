@@ -38,6 +38,7 @@ import com.redsqirl.workflow.server.action.PigUnionTests;
 import com.redsqirl.workflow.server.action.PigWorkflowMngtTests;
 import com.redsqirl.workflow.server.action.test.PigDictionaryTests;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
+import com.redsqirl.workflow.server.connect.HiveInterface;
 
 
 @RunWith(Suite.class)
@@ -88,24 +89,9 @@ public class SetupPigEnvironmentTest {
 		Log log = new Log();
 		log.put(log4jFile);
 
-		WorkflowPrefManager.getInstance();
 		logger = Logger.getLogger(SetupPigEnvironmentTest.class);
-		File logfile = new File(log4jFile);
-
-		if(logfile.exists()){
-			BufferedReader reader = new BufferedReader(new FileReader(logfile));
-			String line ="";
-			while ((line = reader.readLine()) != null) {
-				logger.info(line);
-			}
-			reader.close();
-		}
 		logger.debug("Log4j initialised");
-//		HiveInterface.setUrl(
-//				WorkflowPrefManager.getUserProperty(
-//						WorkflowPrefManager.user_hive+"_"+System.getProperty("user.name")));
 
-		NameNodeVar.set(WorkflowPrefManager.getUserProperty(WorkflowPrefManager.sys_namenode));
 		Properties prop = new Properties();
 		try {
 			prop.load(new FileReader(testProp));
@@ -121,14 +107,21 @@ public class SetupPigEnvironmentTest {
 
 		File home = new File(testDirOut,"home_project");
 		home.mkdir();
+		WorkflowPrefManager.getInstance();
 		WorkflowPrefManager.changeSysHome(home.getAbsolutePath());
 		WorkflowPrefManager.createUserHome(System.getProperty("user.name"));
 		WorkflowPrefManager.pathSysCfgPref = testProp;
 		WorkflowPrefManager.pathUserCfgPref = testProp;
 		WorkflowPrefManager.setupHome();
-		logger.debug(WorkflowPrefManager.pathSysHome);
-		logger.debug(WorkflowPrefManager.getPathuserpref());
-		logger.debug(WorkflowPrefManager.pathUserCfgPref);	
+		logger.info(WorkflowPrefManager.pathSysHome);
+		logger.info(WorkflowPrefManager.getPathuserpref());
+		logger.info(WorkflowPrefManager.pathUserCfgPref);
+		HiveInterface.setUrl(
+				WorkflowPrefManager.getUserProperty(
+						WorkflowPrefManager.user_hive+"_"+System.getProperty("user.name")));
+		NameNodeVar.set(WorkflowPrefManager.getUserProperty(WorkflowPrefManager.sys_namenode));
+		logger.info("Hive url: " + HiveInterface.getUrl());
+		logger.info("Namenode: " + NameNodeVar.get());
 	}
 	
 	@AfterClass
