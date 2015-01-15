@@ -124,6 +124,7 @@ public class PigTableSelectInteraction extends SqlTableSelectInteraction {
 		return fl;
 	}
 
+	@Override
 	public Set<String> getFieldGrouped() throws RemoteException {
 		Set<String> fieldGrouped = null;
 		// only show what is in grouped interaction
@@ -332,8 +333,7 @@ public class PigTableSelectInteraction extends SqlTableSelectInteraction {
 						groupTableName + "." + tmp);
 			}
 
-			select = "FOREACH " + tableName + " GENERATE " + opTitle + " AS "
-					+ fieldName;
+			select = "FOREACH " + tableName + " GENERATE " + opTitle + " AS " + fieldName;
 		}
 
 		while (selIt.hasNext()) {
@@ -394,12 +394,12 @@ public class PigTableSelectInteraction extends SqlTableSelectInteraction {
 
 			if (PigDictionary.getInstance().isCountDistinctMethod(opTitle)) {
 
-				opTitle = 
-						PigDictionary.getBracketContent(opTitle);
+				opTitle = PigDictionary.getBracketContent(opTitle);
 //						groupTableName + "." + fieldName);
 //						PigDictionary.getBracketContent(opTitle));
-				logger.info("replaced op "+opTitle);
-				countDistinct.add(opTitle.substring(opTitle.indexOf('.')+1));
+				logger.info("replaced op " + opTitle);
+				//countDistinct.add(opTitle.substring(opTitle.indexOf('.')+1));
+				countDistinct.add(fieldName);
 			}
 
 		}

@@ -57,7 +57,7 @@ public class PigWorkflowMngtTests {
 					PigElement.key_output);
 			
 			//Join
-			PigJoin pigJ = (PigJoin) PigJoinTests.createPigWithSrc(w,src1,src2,hInt);
+			PigJoin pigJ = (PigJoin) PigJoinTests.createPigWithSrc(w,src1,src2,hInt,"JOIN");
 			String elementJ = pigJ.getComponentId();
 
 			pigJ.getDFEOutput().get(PigSelect.key_output).setSavingState(SavingState.RECORDED);

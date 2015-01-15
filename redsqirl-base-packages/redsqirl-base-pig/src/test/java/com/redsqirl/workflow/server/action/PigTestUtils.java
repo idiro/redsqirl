@@ -129,7 +129,6 @@ public class PigTestUtils {
 				.getFirstChild("output").add("field");
 		field1.add("name").add("ID");
 		field1.add("type").add("INT");
-
 		Tree<String> field2 = dataSetTree.getFirstChild("browse")
 				.getFirstChild("output").add("field");
 		field2.add("name").add("VALUE");
@@ -138,7 +137,6 @@ public class PigTestUtils {
 				.getFirstChild("output").add("field");
 		field3.add("name").add("RAW");
 		field3.add("type").add("INT");
-		
 		
 		String error = src.updateOut();
 		assertTrue("source update: " + error, error == null);

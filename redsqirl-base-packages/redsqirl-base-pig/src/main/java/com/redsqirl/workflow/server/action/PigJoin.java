@@ -296,7 +296,7 @@ public class PigJoin extends PigElement {
 	 * Get the Join type Interaction
 	 * @return joinTypeInt
 	 */
-	public final DFEInteraction getJoinTypeInt() {
+	public final ListInteraction getJoinTypeInt() {
 		return joinTypeInt;
 	}
 	/**

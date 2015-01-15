@@ -25,7 +25,7 @@ public class PigUnionConditions  extends TableInteraction{
 	 * Pig Union Interaction to which the interaction belogs to
 	 */
 	private PigUnion hu;
-							/**table reliation title*/
+	/**table reliation title*/
 	public static final String table_relation_title = PigLanguageManager.getTextWithoutSpace("pig.union_cond_interaction.relation_column"), 
 			/**table operation title*/
 			table_op_title = PigLanguageManager.getTextWithoutSpace("pig.union_cond_interaction.op_column");
@@ -64,7 +64,7 @@ public class PigUnionConditions  extends TableInteraction{
 		while(rows.hasNext() && msg == null){
 			Map<String,String> row = rows.next();
 			try{
-				
+
 				if( ! PigDictionary.getInstance().check(
 						"boolean", 
 						PigDictionary.getInstance().getReturnType(
@@ -127,14 +127,10 @@ public class PigUnionConditions  extends TableInteraction{
 	 * @return Error Message
 	 * @throws RemoteException
 	 */
-	public String checkExpression(String expression, String modifier)
-			throws RemoteException {
+	public String checkExpression(String expression, String modifier) throws RemoteException {
 		String error = null;
 		try {
-			if (PigDictionary.getInstance().getReturnType(
-					expression,
-					hu.getInFields()
-					) == null) {
+			if (PigDictionary.getInstance().getReturnType(expression, hu.getInFields()) == null) {
 				error = PigLanguageManager.getText("pig.expressionnull");
 			}
 		} catch (Exception e) {

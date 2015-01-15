@@ -104,7 +104,7 @@ public abstract class SqlTableSelectInteraction extends TableInteraction {
 						.getText("sql.select_fields_interaction.checkempty");
 			} else {
 				logger.info("Feats " + in.getFields().getFieldNames());
-				Set<String> featGrouped = getFeatGrouped();
+				Set<String> featGrouped = getFieldGrouped();
 				fl = getInputFieldList(in);
 
 				Iterator<Map<String, String>> rows = lRow.iterator();
@@ -134,6 +134,7 @@ public abstract class SqlTableSelectInteraction extends TableInteraction {
 					} catch (Exception e) {
 						msg = SqlLanguageManager
 								.getText("sql.expressionexception");
+						logger.error(msg,e);
 					}
 				}
 
