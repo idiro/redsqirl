@@ -234,7 +234,7 @@ public class MrqlUnion extends MrqlElement {
 
 				query += select;
 
-				query += order;
+//				query += order;
 				
 				query += ";\n\n";
 

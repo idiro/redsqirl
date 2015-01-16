@@ -122,19 +122,13 @@ public class MrqlDictionaryTests {
 			isBoolean("col4 OR col4 AND col4", fields);
 			isBoolean("(col4 OR col4 ) AND col4", fields);
 			isBoolean("col4 OR ( col4 AND col4 )", fields);
-			isBoolean("NOT col4", fields);
 			isNull("or col4", fields);
-			isNull("col4 NOT", fields);
-			isNull("IS NULL col4", fields);
 			isBoolean("col2 <= col2 ", fields);
 			isBoolean("col2 <= 40 ", fields);
 			isBoolean("col2 < 40 ", fields);
 			isBoolean("col2 > 40 ", fields);
 			isBoolean("col2 >= 40 ", fields);
 			isBoolean("col2 <= col3 ", fields);
-			isBoolean("col2 IS NULL", fields);
-			isBoolean("col2 IS NOT NULL", fields);
-			isBoolean("col2 IS NOT NULL", fields);
 			isNotBoolean("col1 <= col3 ", fields);
 
 		} catch (Exception e) {
@@ -204,7 +198,6 @@ public class MrqlDictionaryTests {
 		FieldList fields = getFields();
 		Set<String> agg = getAgg();
 		try {
-			is("COUNT_STAR(col2)", fields, agg, "NUMBER");
 			//is("(CHARARRAY) count_star(col2)", fields, agg, "CHARARRAY");
 			is("SUM(col2)", fields, agg, "NUMBER");
 			is("AVG(col2)", fields, agg, "NUMBER");

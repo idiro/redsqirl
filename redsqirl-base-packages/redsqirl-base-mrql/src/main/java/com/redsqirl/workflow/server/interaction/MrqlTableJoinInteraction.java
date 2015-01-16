@@ -5,10 +5,10 @@ import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
-import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.action.MrqlJoin;
 import com.redsqirl.workflow.server.action.SqlJoinRelationInteraction;
@@ -70,65 +70,83 @@ public class MrqlTableJoinInteraction extends SqlTableJoinInteraction {
 		Iterator<Tree<String>> selIt = getTree().getFirstChild("table")
 				.getChildren("row").iterator();
 		
-		Map<String, String> operations = new HashMap<String, String>();
+		Map<String, String> aliasMap = new HashMap<String, String>();
+		String from = "";
+		for (Map<String, String> map : ((MrqlJoin) hj).getJrInt().getValues()){
+			String relation = map.get("Relation");
+			String alias = relation + "_alias";
+			from += alias;
+			
+			from += " in " + relation + ",\n";
+			
+			aliasMap.put(relation, alias);
+		}
+		from = from.substring(0, from.length() - 2);
+		
+		
 		
 		if (selIt.hasNext()) {
 			Tree<String> cur = selIt.next();
 			String fieldName = cur.getFirstChild(table_feat_title)
 					.getFirstChild().getHead();
 			
-			select = "SELECT (" + fieldName;
-			
 			String fieldOp = cur.getFirstChild(table_op_title)
 					.getFirstChild().getHead();
 			
-			operations.put(fieldOp, fieldName);
+			for (Entry<String, String> e : aliasMap.entrySet()){
+				if (fieldOp.startsWith(e.getKey())){
+					fieldOp = fieldOp.replace(e.getKey(), e.getValue());
+				}
+				
+			}
+			
+			select = "SELECT <" + fieldName + ":" + fieldOp;
+			
 		}
 		while (selIt.hasNext()) {
 			Tree<String> cur = selIt.next();
 			String fieldName = cur.getFirstChild(table_feat_title)
 					.getFirstChild().getHead();
-			select += ", " + fieldName;
 			
 			String fieldOp = cur.getFirstChild(table_op_title)
 					.getFirstChild().getHead();
 			
-			operations.put(fieldOp, fieldName);
+			for (Entry<String, String> e : aliasMap.entrySet()){
+				if (fieldOp.startsWith(e.getKey())){
+					fieldOp = fieldOp.replace(e.getKey(), e.getValue());
+				}
+				
+			}
+			
+			select += ", " + fieldName + ":" + fieldOp;
 		}
-		select += ")";
+		select += ">";
 		
 		select += " FROM ";
 		
 		String join = "";
 		Iterator<Map<String,String>> it = ((MrqlJoin)hj).getJrInt().getValues().iterator();
 		if (it.hasNext()) {
-			join += " WHERE " + it.next().get(SqlJoinRelationInteraction.table_feat_title);
+			String expr = it.next().get(SqlJoinRelationInteraction.table_feat_title);
+			for (Entry<String, String> e : aliasMap.entrySet()){
+				if (expr.startsWith(e.getKey())){
+					expr = expr.replace(e.getKey(), e.getValue());
+				}
+			}
+			
+			join += " WHERE " + expr;
 		}
 		while (it.hasNext()) {
 			Map<String,String> cur = it.next();
 			String expr = cur.get(SqlJoinRelationInteraction.table_feat_title);
-			join += " = " + expr;
-		}
-		
-		FieldList feats = hj.getInFields();
-		String from = "";
-		for (Map<String, String> map : ((MrqlJoin) hj).getJrInt().getValues()){
-			String relation = map.get("Relation");
-			from += "<";
 			
-			for (String f : feats.getFieldNames()){
-				if (f.startsWith(relation)){
-					String alias = operations.get(f);
-					if (alias == null){
-						alias = f.replace(relation+".", "");
-					}
-					from += f.replace(relation+".", "") + ":" + alias + ",";
+			for (Entry<String, String> e : aliasMap.entrySet()){
+				if (expr.startsWith(e.getKey())){
+					expr = expr.replace(e.getKey(), e.getValue());
 				}
 			}
-			from = from.substring(0, from.length() - 1) + ">";
-			from += " in " + relation + ",\n";
+			join += " = " + expr;
 		}
-		from = from.substring(0, from.length() - 2);
 		
 		return select + from + join;
 	}

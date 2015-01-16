@@ -37,8 +37,6 @@ public class MrqlDictionary extends AbstractDictionary implements SqlDictionary{
 	private static final String logicalOperators = "logicalOperators";
 	/** Key for relational operators */
 	private static final String relationalOperators = "relationalOperators";
-	/** Key for a cast operator */
-	private static final String castOperator = "castOperator";
 	/** Key for arithmetic operation */
 	private static final String arithmeticOperators = "arithmeticOperators";
 	/** Key for utils methods */
@@ -47,12 +45,8 @@ public class MrqlDictionary extends AbstractDictionary implements SqlDictionary{
 	private static final String mathMethods = "mathMethods";
 	/** Key for string Methods */
 	private static final String stringMethods = "stringMethods";
-	/** Key for date methods */
-	private static final String dateMethods = "dateMethods";
 	/** Key for aggregation methods */
 	private static final String agregationMethods = "agregationMethods";
-	/** Key for aggregation methods */
-	private static final String conditionalOperator = "conditionalOperator";
 	/** Instance */
 	private static MrqlDictionary instance;
 
@@ -116,22 +110,8 @@ public class MrqlDictionary extends AbstractDictionary implements SqlDictionary{
 		functionsMap
 				.put(logicalOperators,
 						new String[][] {
-								new String[] {
-										"AND",
-										"BOOLEAN,BOOLEAN",
-										"BOOLEAN",
-										"@function:AND@short:Boolean AND@param:boolean variable@param:boolean variable@description:boolean logic that returns true if the variables are equal@example:TRUE AND TRUE" },
-								new String[] {
-										"OR",
-										"BOOLEAN,BOOLEAN",
-										"BOOLEAN",
-										"@function:OR@short:Boolean OR@param:boolean variable@param:boolean variable@description:boolean logic that returns true if the varables are not the same@example:TRUE OR FALSE" },
-								new String[] {
-										"NOT",
-										",BOOLEAN",
-										"BOOLEAN",
-										"@function:NOT@short:Boolean NOT@param:boolean variable@param:boolean variable@description:boolean logic that returns true if the varables are  not equal@example:TRUE NOT FALSE" } });
-
+				});
+		
 		functionsMap
 				.put(relationalOperators,
 						new String[][] {
@@ -156,34 +136,17 @@ public class MrqlDictionary extends AbstractDictionary implements SqlDictionary{
 										"BOOLEAN",
 										"@function:>@short:Greater than@param:Any value@param:Any value@description:Compare the left value to the right and checks if the left value is greater than the right@example:1>5 returns TRUE" },
 								new String[] {
-										"!=",
+										"<>",
 										"ANY,ANY",
 										"BOOLEAN",
 										"@function:!=@short:Not Equal@param:Any value@param:Any value@description:Compare the left value to the right and checks if the left value is not equal the right@example:1!=5 returns TRUE" },
 								new String[] {
-										"==",
+										"=",
 										"ANY,ANY",
 										"BOOLEAN",
 										"@function:==@short:Equal@param:Any value@param:Any value@description:Compare the left value to the right and checks if the left value is equal the right@example:5==5 returns TRUE" },
-								new String[] {
-										"IS NOT NULL",
-										"ANY,",
-										"BOOLEAN",
-										"@function:IS NOT NULL@short:Is not empty/null@param:Any value@description:Checks the value if it is not null@example:x IS NOT NULL" },
-								new String[] {
-										"IS NULL",
-										"ANY,",
-										"BOOLEAN",
-										"@function:IS NULL@short:Is empty/null@param:Any value@description:Checks the value if it is null@example:x IS NULL" }
 								});
 
-		functionsMap
-				.put(castOperator,
-						new String[][] { new String[] {
-								"()",
-								"TYPE,ANY",
-								"TYPE",
-								"@function:(TYPE)@short:Cast one type to another@param TYPE the type to cast the variable to@description:Cast one type to a target variable@example:(double)A.AGE" } });
 
 		functionsMap.put(arithmeticOperators, new String[][] {
 				new String[] { "+", "NUMBER,NUMBER", "NUMBER" },
@@ -209,12 +172,12 @@ public class MrqlDictionary extends AbstractDictionary implements SqlDictionary{
 										"INT",
 										"@function:ROUND()@short:Returns the value of an expression rounded to an integer@param:DOUBLE@description:Use the ROUND function to return the value of an expression rounded to an integer (if the result type is float) or rounded to a long (if the result type is double)@example:ROUND(4.6) returns 5@example:ROUND(2.3) returns 2" },
 								new String[] {
-										"FLOOR()",
+										"@FLOOR()",
 										"DOUBLE",
 										"INT",
 										"@function:FLOOR()@short:Returns the value of an expression rounded down to the nearest integer@param:DOUBLE@description:Use the FLOOR function to return the value of an expression rounded down to the nearest integer. This function never increases the result value@example:FLOOR(4.6) returns 4@example:FLOOR(2.3) returns 2" },
 								new String[] {
-										"CEIL()",
+										"@CEIL()",
 										"DOUBLE",
 										"INT",
 										"@function:CEIL()@short:Returns the value of an expression rounded up to the nearest integer@param:DOUBLE@description:Use the CEIL function to return the value of an expression rounded up to the nearest integer. This function never decreases the result value@example:CEIL(4.6) returns 5@example:CEIL(2.3) returns 3" },
@@ -224,35 +187,25 @@ public class MrqlDictionary extends AbstractDictionary implements SqlDictionary{
 										"NUMBER",
 										"@function:ABS()@short:Returns the absolute value of an expression@param:DOUBLE@description:Use the ABS function to return the absolute value of an expression. If the result is not negative (x ≥ 0), the result is returned. If the result is negative (x < 0), the negation of the result is returned@example:ABS(-36) returns 36@example:CEIL(5-7) returns 2" },
 								new String[] {
-										"ACOS()",
+										"@ACOS()",
 										"DOUBLE",
 										"DOUBLE",
 										"@function:ACOS()@short:Returns the arc cosine of an expression@param:DOUBLE@description:Use the ACOS function to return the arc cosine of an expression.@example:ACOS(0) returns 90@example:ACOS(0.5) returns 60" },
 								new String[] {
-										"ASIN()",
+										"@ASIN()",
 										"DOUBLE",
 										"DOUBLE",
 										"@function:ASIN()@short:Returns the arc sine of an expression@param:DOUBLE@description:Use the ASIN function to return the arc sine of an expression@example:ASIN(1) returns 90@example:ASIN(0.7071068) returns 45" },
 								new String[] {
-										"ATAN()",
+										"@ATAN()",
 										"DOUBLE",
 										"DOUBLE",
 										"@function:ATAN()@short:Returns the arc tangent of an expression@param:DOUBLE@description:Use the ASIN function to return the arc tangent of an expression@example:ATAN(1) returns 45@example:ATAN(-0.5) returns -26.56505118" },
 								new String[] {
-										"CBRT()",
-										"DOUBLE",
-										"DOUBLE",
-										"@function:CBRT()@short:Returns the cube root of an expression@param:DOUBLE@description:Use the CBRT function to return the cube root of an expression@example:CBRT(3) returns  1.44225 @example:CBRT(726) returns 8.987637" },
-								new String[] {
-										"COS()",
+										"@COS()",
 										"DOUBLE",
 										"DOUBLE",
 										"@function:COS()@short:Returns the trigonometric cosine of an expression@param:DOUBLE@description:Use the COS function to return the trigonometric cosine of an expression@example:COS(45) returns  0.70710678 @example:COS(89) returns 0.01745241" },
-								new String[] {
-										"COSH()",
-										"DOUBLE",
-										"DOUBLE",
-										"@function:COSH()@short:Returns the hyperbolic cosine of an expression@param:DOUBLE@description:Use the COSH function to return the hyperbolic cosine of an expression@example:COSH(45) returns  1.3246106846575 @example:COSH(89) returns 0.01745241" },
 								new String[] {
 										"EXP()",
 										"DOUBLE",
@@ -264,35 +217,22 @@ public class MrqlDictionary extends AbstractDictionary implements SqlDictionary{
 										"DOUBLE",
 										"@function:LOG()@short:Returns the natural logarithm (base e) of an expression@param:DOUBLE@description:Use the LOG function to return the natural logarithm (base e) of an expression@example:LOG(1) returns  0 @example:EXP(89) returns  4.4886363697" },
 								new String[] {
-										"LOG10()",
-										"DOUBLE",
-										"DOUBLE",
-										"@function:LOG10()@short:Returns the base 10 logarithm of an expression@param:DOUBLE@description:Use the LOG10 function to return the base 10 logarithm of an expression@example:LOG10(1) returns  0 @example:EXP10(89) returns  1.9493900066" },
-								new String[] {
-										"SIN()",
+										"@SIN()",
 										"DOUBLE",
 										"DOUBLE",
 										"@function:SIN()@short:Returns the sine of an expression@param:DOUBLE@description:Use the SIN function to return the sine of an expession@example:SIN(90) returns  1 @example:SIN(45) returns  0.70710678" },
 								new String[] {
-										"SINH()",
-										"DOUBLE",
-										"DOUBLE",
-										"@function:SINH()@short:Returns the hyperbolic sine of an expression@param:DOUBLE@description:Use the SINH function to return the hyperbolic sine of an expression@example:SINH(90) returns 2.301298902307@example:SIN(45) returns  0.868670961486" },
-								new String[] {
-										"SQRT()",
+										"@SQRT()",
 										"DOUBLE",
 										"DOUBLE",
 										"@function:SQRT()@short:Returns the positive square root of an expression@param:DOUBLE@description:Use the SQRT function to return the positive square root of an expression@example:SQRT(5) returns 2.2360679775@example:SQRT(45) returns  6.7082039325" },
 								new String[] {
-										"TAN()",
+										"@TAN()",
 										"DOUBLE",
 										"DOUBLE",
 										"@function:TAN()@short:Returns the trignometric tangent of an angle@param:DOUBLE@description:Use the TAN function to return the trignometric tangent of an angle@example:TAN(45) returns 1@example:TAN(30) returns  0.57735027" },
-								new String[] {
-										"TANH()",
-										"DOUBLE",
-										"DOUBLE",
-										"@function:TANH()@short:Returns the hyperbolic tangent of an expression@param:DOUBLE@description:Use the TANH function to return the hyperbolic tangent of an expression@example:TANH(45) returns 0.655794202633@example:TAN(90) returns  0.917152335667" }, });
+								
+								});
 
 		functionsMap
 				.put(stringMethods,
@@ -305,7 +245,7 @@ public class MrqlDictionary extends AbstractDictionary implements SqlDictionary{
 												+ "The index of a string begins with zero (0)@param:LENGTH The index (type integer) of the character following the last character of the substring@description:Use the SUBSTRING function to return a substring from a given string."
 												+ "Given a field named alpha whose value is ABCDEF, to return substring BCD use this statement: SUBSTRING(alpha,1,4). Note that 1 is the index of B (the first character of the substring) and 4 is the index of E (the character following the last character of the substring)@example:SUBSTR('help',1,4) returns 'elp'; @example:SUBSTR('example',6,7) returns  'le'" },
 								new String[] {
-										"CONCAT()",
+										"+",
 										"STRING,STRING",
 										"STRING",
 										"@function:CONCAT( MYSTRING1, MYSTRING2 )"
@@ -316,318 +256,20 @@ public class MrqlDictionary extends AbstractDictionary implements SqlDictionary{
 										+ " If either subexpression is null, the resulting expression is null."
 										+ "@example:CONCAT('hello','world') returns 'helloworld'"},
 								new String[] {
-									"SIZE()",
+									"LENGTH()",
 									"STRING",
 									"LONG",
 									"@function:SIZE(MYSTRING)"
 									+"@short:Computes the number of elements based on any Pig data type."
 									+"@param: MYSTRING"
 									+"@description: Computes the number of elements based on any Pig data type."
-									+"@example: SIZE('hello') returns 5L."
-								},
-								new String[] {
-										"UPPER()",
-										"STRING",
-										"STRING",
-										"@function:UPPER( MYSTRING )@short:Returns a string converted to upper case@param:MYSTRING@description:Use the UPPER function to convert all characters in a string to upper case@example:UPPER('hello') returns 'HELLO'@example:UPPER('Example') returns  'EXAMPLE'" },
-								new String[] {
-										"LOWER()",
-										"STRING",
-										"STRING",
-										"@function:LOWER( MYSTRING )@short:Converts all characters in a string to lower case@param:MYSTRING@description:Use the LOWER function to convert all characters in a string to lower case@example:LOWER('HELLO') returns 'hello'@example:LOWER('Example') returns  'example'" },
-								new String[] {
-										"LCFIRST()",
-										"STRING",
-										"STRING",
-										"@function:LCFIRST( MYSTRING )@short:Converts the first character in a string to lower case@param:MYSTRING@description:Use the LCFIRST function to convert only the first character in a string to lower case@example:LCFIRST('HELLO') returns 'hELLO'@example:LCFIRST('Example') returns  'example'" },
-								new String[] {
-										"UCFIRST()",
-										"STRING",
-										"STRING",
-										"@function:UCFIRST( MYSTRING )@short:Converts the first character in a string to upper case@param:MYSTRING@description:Use the UCFIRST function to convert only the first character in a string to upper case@example:UCFIRST('hELLO') returns 'HELLO'@example:UCFIRST('example') returns  'Example'" },
-								new String[] {
-										"TRIM()",
-										"STRING",
-										"STRING",
-										"@function:TRIM( MYSTRING )@short:Returns a copy of a string with leading and trailing white space removed@param:MYSTRING@description:Use the TRIM function to remove leading and trailing white space from a string@example:TRIM(' hello ') returns 'hello'@example:TRIM(' example ') returns  'example'" },
-								new String[] {
-										"STARTSWITH()",
-										"STRING,STRING",
-										"BOOLEAN",
-										"@function:STARTSWITH(MYSTRING, TESTAGAINST)"
-										+ "@short:Use the STARTSWITH function to determine if the first argument starts with the string in the second. "
-										+ "@param: MYSTRING The string to be tested."
-										+ "@param: TESTAGAINST The string to test against."
-										+ "@description:Use the STARTSWITH function to determine if the first argument starts with the string in the second. "
-										+ "@example: STARTSWITH ('foobar', 'foo') will true, whereas STARTSWITH ('foobar', 'bar') will return false. "
-								},
-								new String[] {
-										"ENDSWITH()",
-										"STRING,STRING",
-										"BOOLEAN",
-										"@function:ENDSWITH(MYSTRING, TESTAGAINST)"
-										+ "@short: Tests inputs to determine if the first argument ends with the string in the second. "
-										+ "@param: MYSTRING The string to be tested."
-										+ "@param: TESTAGAINST The string to test against."
-										+ "@description:Tests inputs to determine if the first argument ends with the string in the second. "
-										+ "@example: ENDSWITH ('foobar', 'foo') will false, whereas ENDSWITH ('foobar', 'bar') will return true. "
-								},
-								new String[] {
-										"EqualsIgnoreCase()",
-										"STRING,STRING",
-										"BOOLEAN",
-										"@function: EqualsIgnoreCase(MYSTRING1,MYSTRING2)"
-										+ "@short: Compares two Strings ignoring case considerations."
-										+ "@param: MYSTRING1"
-										+ "@param: MYSTRING2"
-										+ "@description: Compares two Strings ignoring case considerations. "
-										+ "@example: EqualsIgnoreCase('hello World!', 'Hello world!') returns true."
-								},
-								new String[] {
-										"INDEXOF()",
-										"STRING,STRING,INT",
-										"INT",
-										"@function:INDEXOF( MYSTRING , CHAR , INDEX )@short:Returns the index of the first occurrence of a character in a string. Searching forward from a start index@param:MYSTRING string to search@param:CHAR character to search for@param:INDEX index to start foreward search from@description:Use the INDEXOF function to determine the index of the first occurrence of a character in a string. The forward search for the character begins at the designated start index@example:INDEXOF('hello','e',0) returns 1@example:INDEXOF('example','l',1) returns  5" },
-								new String[] {
-										"LAST_INDEX_OF()",
-										"STRING,CHAR,INT",
-										"INT",
-										"@function:LAST_INDEX_OF( MYSTRING , CHAR , INDEX )@short:Returns the index of the last occurrence of a character in a string. Searching backward from a start index@param:MYSTRING string to search@param:CHAR character to search for@param:INDEX index to start backward search from@description:Use the INDEXOF function to determine the index of the first occurrence of a character in a string. The forward search for the character begins at the designated start index@example:LAST_INDEX_OF('hello','l',0) returns 3@example:LAST_INDEX_OF('eeeee','e',4) returns  4" },
-								new String[] {
-										"REGEX_EXTRACT()",
-										"STRING,STRING,INT",
-										"STRING",
-										"@function:REGEX_EXTRACT( MYSTRING , REGEX , INDEX )"
-										+ "@short:Performs regular expression matching and extracts the matched group defined by an index parameter"
-										+ "@param:MYSTRING string to search"
-										+ "@param:REGEX The regular expression"
-										+ "@param:INDEX The index of the matched group to return"
-										+ "@description:Use the REGEX_EXTRACT function to perform regular expression matching and to extract the matched group defined by the index parameter (where the index is a 1-based parameter.) The function uses Java regular expression form."
-												+ "The function returns a string that corresponds to the matched group in the position specified by the index. If there is no matched expression at that position, NULL is returned."
-												+ "@example:REGEX_EXTRACT('helloworld#8020', '(.*)\\#(.*)', 1) returns 'helloworld'" },
-								new String[] {
-										"REPLACE()",
-										"STRING,STRING,STRING",
-										"INT",
-										"@function:REPLACE(MYSTRING , OLDCHAR , NEWCHAR)@short:Replaces existing characters in a string with new characters@param:MYSTRING string to replace@param:OLDCHAR character to replace@param:NEWCHAR character to replace with@description:Use the REPLACE function to replace existing characters in a string with new characters@example:REPLACE('open source software','software','wiki') returns 'open source wiki'" }, });
+									+"@example: SIZE('hello') returns 5L."}
+							});
 
-		functionsMap
-				.put(dateMethods,
-						new String[][] {
-								new String[] {
-										"DaysBetween()",
-										"TIMESTAMP,TIMESTAMP",
-										"INT",
-										"@function:DaysBetween(datetime1, datetime2)@short:Returns the number of days between two DateTime objects."
-												+ "@param:datetime1 A datetime object. @param:datetime2 Another datetime object. @description:Use the DaysBetween function to get the number of days between the two given datetime objects."},
-								new String[] {
-										"GetDay()",
-										"TIMESTAMP",
-										"INT",
-										"@function:GetDay(datetime)@short:Returns the day of a month from a DateTime object."
-												+ "@param:datetime A datetime object."
-												+ "@description: Use the GetDay function to extract the day of a month from the given datetime object."},
-								new String[] {
-										"GetHour()",
-										"TIMESTAMP",
-										"INT",
-										"@function:GetHour(datetime)"
-												+ "@short:Returns the hour of a day from a DateTime object."
-												+ "@param:datetime A datetime object."
-												+ "@description: Use the GetHour function to extract the hour of a day from the given datetime object. "},
-								new String[] {
-										"GetMilliSecond()",
-										"TIMESTAMP",
-										"INT",
-										"@function:GetMilliSecond(datetime)"
-												+ "@short:Returns the millisecond of a second from a DateTime object."
-												+ "@param:datetime A datetime object."
-												+ "@description: Use the GetMilliSecond function to extract the millsecond of a second from the given datetime object."},
-								new String[] {
-										"GetMinute()",
-										"TIMESTAMP",
-										"INT",
-										"@function:GetMinute(datetime)"
-												+ "@short:Returns the minute of a hour from a DateTime object."
-												+ "@param:datetime A datetime object."
-												+ "@description: Use the GetMinute function to extract the minute of a hour from the given datetime object. "},
-								new String[] {
-										"GetMonth()",
-										"TIMESTAMP",
-										"INT",
-										"@function:GetMonth(datetime)"
-												+ "@short:Returns the month of a year from a DateTime object."
-												+ "@param:datetime A datetime object."
-												+ "@description:Use the GetMonth function to extract the month of a year from the given datetime object. "},
-								new String[] {
-										"GetSecond()",
-										"TIMESTAMP",
-										"INT",
-										"@function:GetSecond(datetime)"
-												+ "@short:Returns the second of a minute from a DateTime object."
-												+ "@param:datetime A datetime object."
-												+ "@description:Use the GetSecond function to extract the second of a minute from the given datetime object. "},
-								new String[] {
-										"GetWeek()",
-										"TIMESTAMP",
-										"INT",
-										"@function:GetWeek(datetime)"
-												+ "@short:Returns the week of a week year from a DateTime object."
-												+ "@param:datetime A datetime object."
-												+ "@description: Use the GetWeek function to extract the week of a week year from the given datetime object. Note that week year may be different from year. "},
-								new String[] {
-										"GetWeekYear()",
-										"TIMESTAMP",
-										"INT",
-										"@function:GetWeekYear(datetime)"
-												+ "@short: Returns the week year from a DateTime object."
-												+ "@param:datetime A datetime object."
-												+ "@description: "},
-								new String[] {
-										"GetYear()",
-										"TIMESTAMP",
-										"INT",
-										"@function:GetYear(datetime)"
-												+ "@short:Returns the year from a DateTime object."
-												+ "@param:datetime A datetime object."
-												+ "@description: Use the GetYear function to extract the year from the given datetime object. "},
-								new String[] {
-										"HoursBetween()",
-										"TIMESTAMP,TIMESTAMP",
-										"INT",
-										"@function:HoursBetween(datetime1, datetime2)"
-												+ "@short:Returns the number of hours between two DateTime objects."
-												+ "@param:datetime1 A datetime object. @param:datetime2 Another datetime object."
-												+ "@description:Use the HoursBetween function to get the number of hours between the two given datetime objects. "},
-								new String[] {
-										"MilliSecondsBetween()",
-										"TIMESTAMP,TIMESTAMP",
-										"INT",
-										"@function:MilliSecondsBetween(datetime1, datetime2)"
-												+ "@short:Returns the number of milliseconds between two DateTime objects."
-												+ "@param:datetime1 A datetime object. @param:datetime2 Another datetime object."
-												+ "@description:Use the MilliSecondsBetween function to get the number of millseconds between the two given datetime objects. "},
-								new String[] {
-										"MinutesBetween()",
-										"TIMESTAMP,TIMESTAMP",
-										"INT",
-										"@function:MinutesBetween(datetime1, datetime2)"
-												+ "@short:Returns the number of minutes between two DateTime objects."
-												+ "@param:datetime1 A datetime object. @param:datetime2 Another datetime object."
-												+ "@description:Use the MinutesBetween function to get the number of minutes between the two given datetime objects. "},
-								new String[] {
-										"MonthsBetween()",
-										"TIMESTAMP,TIMESTAMP",
-										"INT",
-										"@function:MonthsBetween(datetime1, datetime2)"
-												+ "@short:Returns the number of months between two DateTime objects."
-												+ "@param:datetime1 A datetime object. @param:datetime2 Another datetime object."
-												+ "@description:Use the MonthsBetween function to get the number of months between the two given datetime objects. "},
-								new String[] {
-										"SecondsBetween()",
-										"TIMESTAMP,TIMESTAMP",
-										"INT",
-										"@function:SecondsBetween(datetime1, datetime2)"
-												+ "@short:Returns the number of seconds between two DateTime objects."
-												+ "@param:datetime1 A datetime object. @param:datetime2 Another datetime object."
-												+ "@description:Use the SecondsBetween function to get the number of seconds between the two given datetime objects. "},
-								new String[] {
-										"ToDate()",
-										"LONG",
-										"TIMESTAMP",
-										"@function:ToDate(millseconds)"
-												+ "@short:Returns a DateTime object according to parameters."
-												+ "@param:millseconds The offset from 1970-01-01T00:00:00.000Z in terms of the number milliseconds (either positive or negative)."
-												+ "@description:Use the ToDate function to generate a DateTime object."},
-								new String[] {
-										"ToDate()",
-										"STRING",
-										"TIMESTAMP",
-										"@function:ToDate(iosstring)"
-												+ "@short:Returns a DateTime object according to parameters."
-												+ "@param:iosstring The datetime string in the ISO 8601 format.."
-												+ "@description:Use the ToDate function to generate a DateTime object."},
-								new String[] {
-										"ToDate()",
-										"STRING,STRING",
-										"TIMESTAMP",
-										"@function:ToDate(userstring, format)"
-												+ "@short:Returns a DateTime object according to parameters."
-												+ "@param:userstring The datetime string in the user defined format. @param:formatThe date time format pattern string (see Java SimpleDateFormat class). "
-												+  dateFormats
-												+ "@description:Use the ToDate function to generate a DateTime object."},
-								new String[] {
-										"ToDate()",
-										"STRING,STRING,STRING",
-										"TIMESTAMP",
-										"@function:ToDate(userstring, format,timezone)"
-												+ "@short:Returns a DateTime object according to parameters."
-												+ "@param:userstring The datetime string in the user defined format. @param:formatThe date time format pattern string (see Java SimpleDateFormat class). @param:timezone The timezone string. Either the UTC offset and the location based format can be used as a parameter, while internally the timezone will be converted to the UTC offset format."
-												+ dateFormats
-												+ "@description:Use the ToDate function to generate a DateTime object."},
-								new String[] {
-										"ToMilliSeconds()",
-										"TIMESTAMP",
-										"LONG",
-										"@function:ToMilliSeconds(datetime)"
-												+ "@short:Returns the number of milliseconds elapsed since January 1, 1970, 00:00:00.000 GMT for a DateTime object. "
-												+ "@param:datetime A datetime object."
-												+ "@description:Use the ToMilliSeconds function to convert the DateTime to the number of milliseconds that have passed since January 1, 1970 00:00:00.000 GMT."},
-								/* This function does not work when tested new String[] {
-										"ToString()",
-										"TIMESTAMP",
-										"STRING",
-										"@function:ToString()"
-												+ "@short:ToString converts the DateTime object to the ISO or the customized string. "
-												+ "@param:datetime A datetime object."
-												+ "@description: Use the ToString function to convert the DateTime."
-												+ "@example: returns 1; @example: returns  3" },*/
-								new String[] {
-										"ToString()",
-										"TIMESTAMP,STRING",
-										"STRING",
-										"@function:ToString(datetime,format)"
-												+ "@short:ToString converts the DateTime object to the ISO or the customized string. "
-												+ "@param:datetime A datetime object.@param:format The date time format pattern string (see Java SimpleDateFormat class). "
-												+ dateFormats
-												+ "@description: Use the ToString function to convert the DateTime to the customized string. "
-												+ "@example: ToString(mydate,'yyyyMMdd') returns '20140923'" },
-								new String[] {
-										"ToUnixTime()",
-										"TIMESTAMP",
-										"LONG",
-										"@function:ToUnixTime(datetime)"
-												+ "@short:Returns the Unix Time as long for a DateTime object. UnixTime is the number of seconds elapsed since January 1, 1970, 00:00:00.000 GMT. "
-												+ "@param:datetime A datetime object."
-												+ "@description:Use the ToUnixTime function to convert the DateTime to Unix Time. "},
-								new String[] {
-										"WeeksBetween()",
-										"TIMESTAMP,TIMESTAMP",
-										"INT",
-										"@function:WeeksBetween(datetime1, datetime2)"
-												+ "@short:Returns the number of weeks between two DateTime objects."
-												+ "@param:datetime1 A datetime object. @param:datetime2 Another datetime object."
-												+ "@description:Use the WeeksBetween function to get the number of weeks between the two given datetime objects. "},
-								new String[] {
-										"YearsBetween()",
-										"TIMESTAMP,TIMESTAMP",
-										"INT",
-										"@function:YearsBetween(datetime1, datetime2)"
-												+ "@short:Returns the number of years between two DateTime objects."
-												+ "@param:datetime1 A datetime object. @param:datetime2 Another datetime object."
-												+ "@description:Use the YearsBetween function to get the number of years between the two given datetime objects. "},
-
-						});
 
 		functionsMap
 				.put(agregationMethods,
 						new String[][] {
-								new String[] {
-										"count_STAR()",
-										"ANY",
-										"NUMBER",
-										"@function:count_STAR( ELEMENT )@short:Computes the number of elements in a bag@param:ELEMENT item to count@description:Use the count_STAR function to compute the number of elements in a bag. count_STAR requires a preceding GROUP ALL statement for global counts and a GROUP BY statement for group counts."
-												+ "count_STAR includes NULL values in the count computation (unlike count, which ignores NULL values)@example: count_STAR(A) returns the frequency of A" },
 								new String[] {
 										"count()",
 										"ANY",
@@ -651,51 +293,7 @@ public class MrqlDictionary extends AbstractDictionary implements SqlDictionary{
 										"NUMBER",
 										"NUMBER",
 										"@function:MIN( ELEMENT )@short:Use the MIN function to compute the minimum of a set of numeric values in a single-column bag@param: ELEMENT item to get the minimum@description:Computes the minimum of the numeric values in a single-column bag. MIN requires a preceding GROUP ALL statement for global sums and a GROUP BY statement for group sums@example: MIN(A.id) returns the minimum value of A.id" },
-								new String[] {
-										"MAX()",
-										"NUMBER",
-										"NUMBER",
-										"@function:MAX( ELEMENT )@short:Use the MAX function to compute the maximum of a set of numeric values in a single-column bag@param: ELEMENT item to get the maximum@description:Computes the maximum of the numeric values in a single-column bag. MAX requires a preceding GROUP ALL statement for global sums and a GROUP BY statement for group sums@example: MAX(A.id) returns the maximum value of A.id" },
-								new String[] {
-										"MIN()",
-										"STRING",
-										"STRING",
-										"@function:MIN( ELEMENT )@short:Use the MIN function to compute the minimum of a set of numeric values in a single-column bag@param: ELEMENT item to get the minimum@description:Computes the minimum of the numeric values in a single-column bag. MIN requires a preceding GROUP ALL statement for global sums and a GROUP BY statement for group sums@example: MIN(A.id) returns the minimum value of A.id" },
-								new String[] {
-										"MAX()",
-										"STRING",
-										"STRING",
-										"@function:MAX( ELEMENT )@short:Use the MAX function to compute the maximum of a set of numeric values in a single-column bag@param: ELEMENT item to get the maximum@description:Computes the maximum of the numeric values in a single-column bag. MAX requires a preceding GROUP ALL statement for global sums and a GROUP BY statement for group sums@example: MAX(A.id) returns the maximum value of A.id" },
-								new String[] {
-										"count_DISTINCT()",
-										"ANY",
-										"INT",
-										"@function:count_DISTINCT( ELEMENT )@short:Computes the number of distinct elements in a bag@param:ELEMENT item to count@description:Use the count_DISTINCT function to compute the number of distinct elements in a bag. count_DISTINCT requires a preceding GROUP ALL statement for global counts and a GROUP BY statement for group counts."
-												+ "The count_DISTINCT function follows syntax semantics and ignores nulls. What this means is that a tuple in the bag will not be counted if the FIRST FIELD in this tuple is NULL. If you want to include NULL values in the count computation, use count_STAR."
-												+ "Note: You cannot use the tuple designator (*) with count_DISTINCT; that is, count_DISTINCT(*) will not work.@example: count_DISTINCT(A) returns the frequency of A" } });
-		functionsMap
-				.put(conditionalOperator,
-						new String[][] {
-								new String[] {
-										" ? : ",
-										"BOOLEAN,ANY,ANY",
-										"ANY",
-										"@function: TEST ? EXPRESSION1 : EXPRESSION2@short:Returns one of two expressions depending on a condition@param:TEST Any Boolean expression@param:EXPRESSION1 An expression returned if test is true@param:EXPRESSION2 An expression returned if test is false@example: (TRUE) ? ('VALUE1') : ('VALUE2') returns 'VALUE1'" },
-								new String[] {
-										"CASE END",
-										"",
-										"",
-										"@function:CASE END@short:Conditional expression@example: CASE WHEN (A==1) THEN ('A') END" },
-								new String[] {
-										"WHEN THEN",
-										"",
-										"",
-										"@function:WHEN (test) THEN (value)@short: Conditional expression to be used inside a CASE END@param:TEST Any Boolean expression@param:EXPRESSION1 An expression returned if test is true" },
-								new String[] {
-										"ELSE ",
-										"",
-										"",
-										"@function:ELSE(VALUE)@short:Value to be returned when no condition inside a CASE END is found to be true" } });
+								});
 
 	}
 
@@ -871,63 +469,12 @@ public class MrqlDictionary extends AbstractDictionary implements SqlDictionary{
 					}
 				}
 				type = runMethod(expr, fl, false);
-			} else if (isCastOperation(expr)) {
-				logger.debug(expr + ", is an cast operation");
-				type = runCastOperation(expr, fields, nonAggregFeats);
 			}
 		}
 
 		logger.debug("type returning: " + type);
 		return type;
 
-	}
-
-	/**
-	 * Run a cast operation on an expression
-	 * 
-	 * @param expr
-	 * @param fields
-	 * @param fieldAggreg
-	 * @return type
-	 * @throws Exception
-	 */
-	private String runCastOperation(String expr, FieldList fields,
-			Set<String> fieldAggreg) throws Exception {
-		logger.debug("casting");
-		String type = null;
-		List<String[]> methodsFound = findAll(functionsMap.get(castOperator),
-				expr);
-		if (!methodsFound.isEmpty()) {
-			String arg = expr.substring(expr.indexOf("(") + 1,
-					expr.length() - 1).replace(")", ",");
-			String[] argSplit = null;
-			// Find a method with the same number of argument
-			Iterator<String[]> it = methodsFound.iterator();
-			String[] method = null;
-			while (it.hasNext() && method == null) {
-				method = it.next();
-				if (method[0].equals("()")) {
-					argSplit = arg.split(escapeString(",") + "(?![^\\(]*\\))");
-					break;
-				}
-			}
-
-			if (method != null) {
-				// Special case for CAST because it returns a dynamic type
-				logger.debug(expr.trim());
-				logger.debug(method[0].trim());
-				getReturnType(argSplit[0], fields);
-				if (check("TYPE", argSplit[0])) {
-					type = argSplit[0];
-				}
-			}
-		} else {
-			String error = "No method matching " + expr;
-			logger.debug(error);
-			throw new Exception(error);
-		}
-
-		return type;
 	}
 
 	/**
@@ -1215,14 +762,10 @@ public class MrqlDictionary extends AbstractDictionary implements SqlDictionary{
 				functionsMap.get(arithmeticOperators)));
 		help.add(createMenu(new TreeNonUnique<String>("string"),
 				functionsMap.get(stringMethods)));
-		help.add(createMenu(new TreeNonUnique<String>("date"),
-				functionsMap.get(dateMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("math"),
 				functionsMap.get(mathMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("utils"),
 				functionsMap.get(utilsMethods)));
-		help.add(createMenu(new TreeNonUnique<String>("conditional_operator"),
-				functionsMap.get(conditionalOperator)));
 		logger.debug("create Condition Help Menu");
 		return help;
 	}
@@ -1239,8 +782,6 @@ public class MrqlDictionary extends AbstractDictionary implements SqlDictionary{
 				functionsMap.get(arithmeticOperators)));
 		help.add(createMenu(new TreeNonUnique<String>("string"),
 				functionsMap.get(stringMethods)));
-		help.add(createMenu(new TreeNonUnique<String>("date"),
-				functionsMap.get(dateMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("math"),
 				functionsMap.get(mathMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("utils"),
@@ -1249,8 +790,6 @@ public class MrqlDictionary extends AbstractDictionary implements SqlDictionary{
 				functionsMap.get(relationalOperators)));
 		help.add(createMenu(new TreeNonUnique<String>("operation_logic"),
 				functionsMap.get(logicalOperators)));
-		help.add(createMenu(new TreeNonUnique<String>("conditional_operator"),
-				functionsMap.get(conditionalOperator)));
 		logger.debug("create Select Help Menu");
 		return help;
 	}
@@ -1269,8 +808,6 @@ public class MrqlDictionary extends AbstractDictionary implements SqlDictionary{
 				functionsMap.get(agregationMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("string"),
 				functionsMap.get(stringMethods)));
-		help.add(createMenu(new TreeNonUnique<String>("date"),
-				functionsMap.get(dateMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("math"),
 				functionsMap.get(mathMethods)));
 		help.add(createMenu(new TreeNonUnique<String>("integer"),
@@ -1279,8 +816,6 @@ public class MrqlDictionary extends AbstractDictionary implements SqlDictionary{
 				functionsMap.get(relationalOperators)));
 		help.add(createMenu(new TreeNonUnique<String>("operation_logic"),
 				functionsMap.get(logicalOperators)));
-		help.add(createMenu(new TreeNonUnique<String>("conditional_operator"),
-				functionsMap.get(conditionalOperator)));
 		logger.debug("create Group Select Help Menu");
 		return help;
 	}
@@ -1415,17 +950,6 @@ public class MrqlDictionary extends AbstractDictionary implements SqlDictionary{
 	}
 
 	/**
-	 * Check if an expression is a cast operation
-	 * 
-	 * @param expr
-	 * @return <code>true</code> id operation is a cast operation else
-	 *         <code>false</code>
-	 */
-	private boolean isCastOperation(String expr) {
-		return isInList(functionsMap.get(castOperator), expr);
-	}
-
-	/**
 	 * Check if an expression is a conditional operation
 	 * 
 	 * @param expr
@@ -1481,8 +1005,6 @@ public class MrqlDictionary extends AbstractDictionary implements SqlDictionary{
 		} else if (isInList(functionsMap.get(mathMethods), expr)) {
 			return true;
 		} else if (isInList(functionsMap.get(stringMethods), expr)) {
-			return true;
-		} else if (isInList(functionsMap.get(dateMethods), expr)) {
 			return true;
 		}
 		return false;
@@ -1658,7 +1180,7 @@ public class MrqlDictionary extends AbstractDictionary implements SqlDictionary{
 		if (argsTypeExpected[0].isEmpty()
 				&& argsTypeExpected.length - 1 == args.length) {
 			// Left operator
-			logger.debug("left operaor");
+			logger.debug("left operator");
 			ok = true;
 			for (int i = 1; i < argsTypeExpected.length; ++i) {
 				ok &= check(argsTypeExpected[i],
@@ -1775,7 +1297,6 @@ public class MrqlDictionary extends AbstractDictionary implements SqlDictionary{
 			ans = findAll(functionsMap.get(utilsMethods), expr);
 			ans.addAll(findAll(functionsMap.get(mathMethods), expr));
 			ans.addAll(findAll(functionsMap.get(stringMethods), expr));
-			ans.addAll(findAll(functionsMap.get(dateMethods), expr));
 		}
 		logger.debug("found results for : " + expr + " with " + ans.size());
 		return ans;

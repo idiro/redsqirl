@@ -97,33 +97,34 @@ public class MrqlTableUnionInteraction extends SqlTableUnionInteraction {
 	 */
 	public String getQueryPiece(DFEOutput out) throws RemoteException {
 		logger.debug("select...");
-		String select = "";
+//		String select = "";
+		String select = "(";
 		
-		FieldList fields = getNewFields();
-		Iterator<String> it = fields.getFieldNames().iterator();
-		String features = "";
-		if (it.hasNext()) {
-			String featName = it.next();
-			select = "SELECT (" + featName;
-			features += "<" + featName + ":" + featName;
-		}
-		while (it.hasNext()) {
-			String featName = it.next();
-			select += "," + featName;
-			features += "," + featName + ":" + featName;
-		}
-		features += ">";
-		select += ") FROM " + features + " in (";
+//		FieldList fields = getNewFields();
+//		Iterator<String> it = fields.getFieldNames().iterator();
+//		String features = "";
+//		if (it.hasNext()) {
+//			String featName = it.next();
+//			select = "SELECT (" + featName;
+//			features += "<" + featName + ":" + featName;
+//		}
+//		while (it.hasNext()) {
+//			String featName = it.next();
+//			select += "," + featName;
+//			features += "," + featName + ":" + featName;
+//		}
+//		features += ">";
+//		select += ") FROM " + features + " in (";
 		
 
 		Map<String, List<Map<String, String>>> subQuery = getSubQuery();
-		it = subQuery.keySet().iterator();
+		Iterator<String> it = subQuery.keySet().iterator();
 		while (it.hasNext()) {
 			String relationName = it.next();
 			Iterator<Map<String, String>> itTree = subQuery.get(relationName)
 					.iterator();
 			
-			features = "";
+			String features = "";
 			if (itTree.hasNext()) {
 				Map<String, String> fieldTree = itTree.next();
 				String fieldName = fieldTree.get(table_feat_title);
@@ -156,15 +157,9 @@ public class MrqlTableUnionInteraction extends SqlTableUnionInteraction {
 				select += "\n      union ";
 			}
 			
-//			union += ((MrqlUnion) hu).getCurrentName();
-//			if (it.hasNext()) {
-//				union += ", ";
-//			}
 		}
 		select += "\n)";
-//		if (!union.isEmpty()) {
-//			select += ((MrqlUnion) hu).getNextName() + " = UNION " + union + ";";
-//		}
+		
 		return select;
 	}
 
