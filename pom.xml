@@ -1,102 +1,116 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
     http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>idiro</groupId>
-	<artifactId>redsqirl</artifactId>
-	<name>Red Sqirl</name>
-	<version>0.1</version>
-	<packaging>pom</packaging>
-	<description>${project.name} is a platform</description>
+    <modelVersion>4.0.0</modelVersion>
 
-	<modules>
-		<module>redsqirl-wf-interface</module>
-		<module>redsqirl-workflow</module>
-		<module>redsqirl-webapp</module>
-		<module>redsqirl-abstract-packages</module>
-		<module>redsqirl-repo</module>
-	</modules>
+    <properties>
+	<hadoop.version>1.0.4</hadoop.version>
+    </properties>
 
-	<organization>
-		<name>Idiro Technologies</name>
-		<url>http://www.idiro.com</url>
-	</organization>
-	<issueManagement>
-		<system>Redmine</system>
-		<url>http://swift:3000/projects/researchanddevelopment-idm</url>
-	</issueManagement>
+    <groupId>idiro</groupId>
+    <artifactId>redsqirl</artifactId>
+    <version>${hadoop.version}-0.1</version>
+    <name>Red Sqirl</name>
+    <packaging>pom</packaging>
+    <description>${project.name} is a platform</description>
 
-	<distributionManagement>
-		<site>
-			<id>website</id>
-			<url>scp://dev.local.net:/data/html/idm</url>
-		</site>
-	</distributionManagement>
+    <modules>
+	<module>redsqirl-wf-interface</module>
+	<module>redsqirl-workflow</module>
+	<module>redsqirl-abstract-packages</module>
+	<module>redsqirl-webapp</module>
+	<module>redsqirl-install</module>
+    </modules>
 
-	<mailingLists>
-		<mailingList>
-			<name>Project</name>
-			<post>announce@noonecares.com</post>
-			<subscribe>users-subscribe@noonecares.com</subscribe>
-			<unsubscribe>users-unsubscribe@noonecares.com</unsubscribe>
-			<archive>http://noonecares.archive.org</archive>
-		</mailingList>
-		<mailingList>
-			<name>Users</name>
-			<post>announce@noonecares.com</post>
-			<subscribe>users-subscribe@noonecares.com</subscribe>
-			<unsubscribe>users-unsubscribe@noonecares.com</unsubscribe>
-			<archive>http://noonecares.archive.org</archive>
-		</mailingList>
-		<mailingList>
-			<name>Developers</name>
-			<post>announce@noonecares.com</post>
-			<subscribe>users-subscribe@noonecares.com</subscribe>
-			<unsubscribe>users-unsubscribe@noonecares.com</unsubscribe>
-			<archive>http://noonecares.archive.org</archive>
-		</mailingList>
-	</mailingLists>
+    <organization>
+	<name>Idiro Technologies</name>
+	<url>http://www.idiro.com</url>
+    </organization>
+    <issueManagement>
+	<system>Redmine</system>
+	<url>http://swift:3000/projects/researchanddevelopment-idm</url>
+    </issueManagement>
+
+    <distributionManagement>
+	<site>
+	    <id>website</id>
+	    <url>scp://dev.local.net:/data/html/idm</url>
+	</site>
+    </distributionManagement>
+
+    <mailingLists>
+	<mailingList>
+	    <name>Project</name>
+	    <post>announce@noonecares.com</post>
+	    <subscribe>users-subscribe@noonecares.com</subscribe>
+	    <unsubscribe>users-unsubscribe@noonecares.com</unsubscribe>
+	    <archive>http://noonecares.archive.org</archive>
+	</mailingList>
+	<mailingList>
+	    <name>Users</name>
+	    <post>announce@noonecares.com</post>
+	    <subscribe>users-subscribe@noonecares.com</subscribe>
+	    <unsubscribe>users-unsubscribe@noonecares.com</unsubscribe>
+	    <archive>http://noonecares.archive.org</archive>
+	</mailingList>
+	<mailingList>
+	    <name>Developers</name>
+	    <post>announce@noonecares.com</post>
+	    <subscribe>users-subscribe@noonecares.com</subscribe>
+	    <unsubscribe>users-unsubscribe@noonecares.com</unsubscribe>
+	    <archive>http://noonecares.archive.org</archive>
+	</mailingList>
+    </mailingLists>
 
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9.1</version>
-				<configuration>
-					<sourcepath>${basedir}/redsqirl-wf-interface/src/main;${basedir}/redsqirl-workflow/src/main</sourcepath>
-					<show>private</show>
-					<nohelp>true</nohelp>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>javadoc</goal>
-						</goals>
-						<phase>site</phase>
-						<configuration>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<version>2.6</version>
-
-			</plugin>
-		</plugins>
-		<extensions>
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-ssh</artifactId>
-				<version>1.0</version>
-			</extension>
-		</extensions>
-	</build>
-		<!-- <reporting> <plugins> <plugin> <groupId>org.apache.maven.plugins</groupId> 
-		<artifactId>maven-project-info-reports-plugin</artifactId> <version>2.6</version> 
-		</plugin> </plugins> </reporting> -->
+    <build>
+	<extensions>
+	    <extension>
+		<groupId>org.apache.maven.wagon</groupId>
+		<artifactId>wagon-ssh</artifactId>
+		<version>1.0</version>
+	    </extension>
+	</extensions>
+	<plugins>
+	    <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-javadoc-plugin</artifactId>
+		<version>2.9.1</version>
+		<configuration>
+		    <sourcepath>${basedir}/redsqirl-wf-interface/src/main;${basedir}/redsqirl-workflow/src/main</sourcepath>
+		    <show>private</show>
+		    <nohelp>true</nohelp>
+		</configuration>
+		<executions>
+		    <execution>
+			<goals>
+			    <goal>javadoc</goal>
+			</goals>
+			<phase>site</phase>
+			<configuration>
+			</configuration>
+		    </execution>
+		</executions>
+	    </plugin>
+	    <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-dependency-plugin</artifactId>
+		<version>2.6</version>
+	    </plugin>
+	    <plugin>
+		<groupId>idiro.maven</groupId>
+		<artifactId>depman-maven-plugin</artifactId>
+		<version>1.0</version>
+		<executions>
+		    <execution>
+			<phase>process-resources</phase>
+			<goals>
+			    <goal>depman</goal>
+			</goals>
+		    </execution>
+		</executions>
+	    </plugin>
+	</plugins>
+    </build>
 </project>
