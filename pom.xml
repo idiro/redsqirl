@@ -14,7 +14,7 @@
 		<module>redsqirl-wf-interface</module>
 		<module>redsqirl-workflow</module>
 		<module>redsqirl-webapp</module>
-		<module>redsqirl-base-packages</module>
+		<module>redsqirl-abstract-packages</module>
 		<module>redsqirl-repo</module>
 	</modules>
 
