@@ -1,5 +1,0 @@
-mrql_aggregator
-mrql_join
-mrql_select
-mrql_text_source
-mrql_union

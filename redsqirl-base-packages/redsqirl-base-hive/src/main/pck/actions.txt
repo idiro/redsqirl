@@ -1,6 +1,0 @@
-hive_aggregator
-hive_join
-hive_partition_source
-hive_select
-hive_source
-hive_union
