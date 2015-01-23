@@ -83,6 +83,10 @@ public class TableInteraction extends CanvasModalInteraction{
 		tableGeneratorRowToInsert = new LinkedHashMap<String, List<Map<String, String>>>();
 		tableGeneratorMenu = new LinkedList<SelectItem>();
 		boolean isGeneratorMenuInt = true;
+		
+		System.out.println("***************************************");
+		System.out.println(tree.toString());
+		
 		if (tree.getFirstChild("table")
 				.getFirstChild("generator") != null) {
 			List<Tree<String>> list = tree
