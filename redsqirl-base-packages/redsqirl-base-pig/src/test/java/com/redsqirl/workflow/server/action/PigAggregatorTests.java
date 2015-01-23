@@ -68,12 +68,12 @@ public class PigAggregatorTests {
 		logger.info("update pig...");
 		PigGroupInteraction groupingInt = (PigGroupInteraction) pig.getGroupingInt();
 
-
 		pig.update(groupingInt);
 		List<String> val = new LinkedList<String>();
 		if (!groupByAll){
 			val.add("VALUE");
 		}
+
 		groupingInt.setValues(val);
 		assertTrue("group check : "+groupingInt.check(),groupingInt.check()==null);
 
@@ -99,30 +99,30 @@ public class PigAggregatorTests {
 				rowId = out.add("row");
 			}
 			if(countDist){
-			rowId.add(PigTableSelectInteraction.table_feat_title).add("RAW_ED");
-			rowId.add(PigTableSelectInteraction.table_op_title).add("COUNT_DISTINCT("+inAlias + ".RAW)");
-			rowId.add(PigTableSelectInteraction.table_type_title).add("INT");
+				rowId.add(PigTableSelectInteraction.table_feat_title).add("RAW_ED");
+				rowId.add(PigTableSelectInteraction.table_op_title).add("COUNT_DISTINCT("+inAlias + ".RAW)");
+				rowId.add(PigTableSelectInteraction.table_type_title).add("INT");
 			}else{
 				rowId.add(PigTableSelectInteraction.table_feat_title).add("RAW_ED");
 				rowId.add(PigTableSelectInteraction.table_op_title).add("SUM("+inAlias + ".RAW)");
 				rowId.add(PigTableSelectInteraction.table_type_title).add("INT");
 			}
 		}
-		
+
 		PigOrderInteraction oi = pig.getOrderInt();
 		pig.update(oi);
 		List<String> values = new ArrayList<String>();
 		values.add("ID");
 		oi.setValues(values);
-		
+
 		ListInteraction ot = (ListInteraction) pig.getInteraction(PigElement.key_order_type);
 		pig.update(oi);
 		ot.setValue("ASCENDING");
-		
+
 		InputInteraction pl = (InputInteraction) pig.getInteraction(PigElement.key_parallel);
 		pig.update(pl);
 		pl.setValue("1");
-		
+
 		assertTrue("table select : "+tsi.check(),tsi.check()==null);
 		UserInteraction gi = pig.savetypeOutputInt;
 		pig.update(gi);
@@ -135,10 +135,8 @@ public class PigAggregatorTests {
 		String error = pig.updateOut();
 		assertTrue("pig select update: " + error, error == null);
 	}
-	
 
 	public void runWorkflow(boolean filter, boolean groupByAll,boolean countDist) {
-		
 
 		String error = null;
 		String new_path1 = TestUtils.getPath(1);
@@ -165,7 +163,7 @@ public class PigAggregatorTests {
 			logger.info("Got Oozie Client");
 
 			logger.info(pig.getQuery());
-			
+
 			error = w.run();
 			assertTrue("Job submition failed: "+error, error == null);
 			String jobId = w.getOozieJobId();
@@ -192,10 +190,9 @@ public class PigAggregatorTests {
 		} catch (Exception e) {
 			logger.error("something went wrong : " + e.getMessage());
 			assertTrue(e.getMessage(), false);
-
 		}
 	}
-	
+
 	@Test
 	public void basic() {
 		TestUtils.logTestTitle(getClass().getName()+"#basic");

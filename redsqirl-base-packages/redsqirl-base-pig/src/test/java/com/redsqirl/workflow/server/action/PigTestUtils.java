@@ -129,7 +129,6 @@ public class PigTestUtils {
 				.getFirstChild("output").add("field");
 		field1.add("name").add("ID");
 		field1.add("type").add("INT");
-
 		Tree<String> field2 = dataSetTree.getFirstChild("browse")
 				.getFirstChild("output").add("field");
 		field2.add("name").add("VALUE");
@@ -138,7 +137,6 @@ public class PigTestUtils {
 				.getFirstChild("output").add("field");
 		field3.add("name").add("RAW");
 		field3.add("type").add("INT");
-		
 		
 		String error = src.updateOut();
 		assertTrue("source update: " + error, error == null);
@@ -159,12 +157,10 @@ public class PigTestUtils {
 	}
 	
 	public static DataFlowElement createSourceEmpty_ID_VALUE(Workflow w,String path) throws Exception{
-		HDFSInterface hInt = new HDFSInterface();
 		
+		HDFSInterface hInt = new HDFSInterface();
 		hInt.delete(path);
-		assertTrue("create "+path,
-				hInt.create(path, getEmptyProperties()) == null
-				);
+		assertTrue("create "+path, hInt.create(path, getEmptyProperties()) == null );
 		String idSource = w.addElement((new PigTextSource()).getName());
 		PigTextSource src = (PigTextSource)w.getElement(idSource);
 
@@ -186,7 +182,6 @@ public class PigTestUtils {
 		
 		String error = src.updateOut();
 		assertTrue("source update: "+error,error == null);
-		
 
 		FieldList fl = new OrderedFieldList();
 		fl.addField("ID", FieldType.STRING);

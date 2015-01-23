@@ -22,8 +22,6 @@ public class PigJoinRelationInteractionTests {
 
 Logger logger = Logger.getLogger(getClass());
 	
-	
-	
 	@Test
 	public void basic(){
 		TestUtils.logTestTitle(getClass().getName()+"#basic");
@@ -36,7 +34,6 @@ Logger logger = Logger.getLogger(getClass());
 			HDFSInterface hInt = new HDFSInterface();
 			DataFlowElement src1 = PigTestUtils.createSrc_ID_VALUE(w,hInt, new_path1);
 			DataFlowElement src2 = PigTestUtils.createSrc_ID_VALUE(w,hInt, new_path2);
-			
 			
 			String idHs = w.addElement((new PigJoin()).getName());
 			PigJoin hs = (PigJoin)w.getElement(idHs);
@@ -52,7 +49,6 @@ Logger logger = Logger.getLogger(getClass());
 			assertTrue("pig select link 2: "+error,error == null);
 			
 			logger.debug(hs.getDFEInput());
-			
 			
 			String alias1 ="";
 			String alias2 = "";
@@ -135,11 +131,10 @@ Logger logger = Logger.getLogger(getClass());
 				out.remove("row");
 			}
 			
-			
-			
 		}catch(Exception e){
 			logger.error(e.getMessage());
 			assertTrue(e.getMessage(),false);
 		}
 	}
+	
 }

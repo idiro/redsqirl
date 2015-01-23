@@ -173,6 +173,7 @@ public class PigSelectTests {
 			OozieClient wc = OozieManager.getInstance().getOc();
 			logger.info("Got Oozie Client");
 			error = w.run();
+			logger.info("run error " + error);
 			assertTrue("Job submition failed: "+error, error == null);
 			String jobId = w.getOozieJobId();
 			if(jobId == null){
@@ -181,9 +182,7 @@ public class PigSelectTests {
 			logger.info(jobId);
 			
 			// wait until the workflow job finishes printing the status every 10 seconds
-		    while(
-		    		wc.getJobInfo(jobId).getStatus() == 
-		    		org.apache.oozie.client.WorkflowJob.Status.RUNNING) {
+		    while(wc.getJobInfo(jobId).getStatus() == org.apache.oozie.client.WorkflowJob.Status.RUNNING) {
 		    	System.out.println("Workflow job running ...");
 		    	logger.info("Workflow job running ...");
 		        Thread.sleep(10 * 1000);
@@ -230,9 +229,7 @@ public class PigSelectTests {
 			OozieClient wc = OozieManager.getInstance().getOc();
 			
 			// wait until the workflow job finishes printing the status every 10 seconds
-		    while(
-		    		wc.getJobInfo(jobId).getStatus() == 
-		    		org.apache.oozie.client.WorkflowJob.Status.RUNNING) {
+		    while(wc.getJobInfo(jobId).getStatus() == org.apache.oozie.client.WorkflowJob.Status.RUNNING) {
 		        System.out.println("Workflow job running ...");
 		        Thread.sleep(10 * 1000);
 		    }

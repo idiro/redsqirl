@@ -106,6 +106,7 @@ public abstract class MapRedDir extends DataOutput{
 		String error = null;
 		boolean ok = true;
 		int i = 1;
+		logger.info("FROM: " + from.getSize() + "  TO: " + to.getSize());
 		if(from.getSize() != to.getSize()){
 			error = LanguageManagerWF.getText(
 					"mapredtexttype.msg_error_number_fields");
@@ -415,10 +416,8 @@ public abstract class MapRedDir extends DataOutput{
 			List<String[]> schemaList = getSchemaList();
 			Map<String, FieldType> schemaTypeMap = new LinkedHashMap<String, FieldType>();
 			
-			if (lines != null) {							
-				logger.trace("key_delimiter: "
-					+ Pattern
-					.quote(delimiter));
+			if (lines != null) {
+				logger.trace("key_delimiter: " + Pattern.quote(delimiter));
 				for (String line : lines) {
 					boolean full = true;
 					if (!line.trim().isEmpty()) {

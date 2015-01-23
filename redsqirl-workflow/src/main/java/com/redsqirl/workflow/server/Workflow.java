@@ -745,6 +745,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	}
 
 	protected String runWF(List<String> dataFlowElement) throws RemoteException{
+		
+		logger.info("runWF ");
+		
 		String error = null;
 		List<DataFlowElement> toRun = null;
 
@@ -753,7 +756,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}catch(Exception e){
 			error = e.getMessage();
 		}
-
+		logger.info("runWF error: " + error);
 
 		if (error == null && toRun.isEmpty()) {
 			error = LanguageManagerWF.getText("workflow.torun_uptodate");
@@ -763,8 +766,10 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		if (error == null) {
 			try {
 				setOozieJobId(OozieManager.getInstance().run(this, toRun));
+				logger.info("OozieJobId: " + oozieJobId);
 			} catch (Exception e) {
 				error = e.getMessage();
+				logger.info("setOozieJobId error " + e);
 			}
 		}
 

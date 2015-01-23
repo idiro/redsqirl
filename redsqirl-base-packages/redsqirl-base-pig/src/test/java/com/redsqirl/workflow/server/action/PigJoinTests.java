@@ -37,27 +37,26 @@ public class PigJoinTests {
 			Workflow w,
 			DataFlowElement src1,
 			DataFlowElement src2,
-			HDFSInterface hInt) throws RemoteException, Exception{
+			HDFSInterface hInt,
+			String joinType) throws RemoteException, Exception{
+		
 		String error = null;
 		String idHS = w.addElement((new PigJoin()).getName());
 		logger.debug("Pig join: "+idHS);
 		
 		PigJoin pig = (PigJoin) w.getElement(idHS);
+		pig.getJoinTypeInt().setValue(joinType);
 		
 		logger.debug(PigCompressSource.out_name+" "+src1.getComponentId());
 		logger.debug(PigJoin.key_input+" "+idHS);
 		
-		w.addLink(
-				PigCompressSource.out_name, src1.getComponentId(), 
-				PigJoin.key_input, idHS);
+		w.addLink(PigCompressSource.out_name, src1.getComponentId(),PigJoin.key_input, idHS);
 		assertTrue("pig join add input: "+error,error == null);
 		
 		logger.debug(PigCompressSource.out_name+" "+src2.getComponentId());
 		logger.debug(PigJoin.key_input+" "+idHS);
 		
-		w.addLink(
-				PigCompressSource.out_name, src2.getComponentId(), 
-				PigJoin.key_input, idHS);
+		w.addLink(PigCompressSource.out_name, src2.getComponentId(), PigJoin.key_input, idHS);
 		assertTrue("pig join add input: "+error,error == null);
 		
 		String alias1 ="";
@@ -151,8 +150,7 @@ public class PigJoinTests {
 	}
 	
 
-	@Test
-	public void basic(){
+	public void runWorkFlow(String joinType){
 		
 		logger.info("ok");
 		TestUtils.logTestTitle(getClass().getName()+"#basic");
@@ -168,8 +166,8 @@ public class PigJoinTests {
 			hInt.delete(new_path3);
 			
 			DataFlowElement src1 = PigTestUtils.createSrc_ID_VALUE(w,hInt,new_path1);
-			DataFlowElement src2 =  PigTestUtils.createSrc_ID_VALUE(w,hInt,new_path2);
-			DataFlowElement pig = createPigWithSrc(w,src1,src2,hInt);
+			DataFlowElement src2 = PigTestUtils.createSrc_ID_VALUE(w,hInt,new_path2);
+			DataFlowElement pig = createPigWithSrc(w,src1,src2,hInt, joinType);
 
 			pig.getDFEOutput().get(PigJoin.key_output).setSavingState(SavingState.RECORDED);
 			pig.getDFEOutput().get(PigJoin.key_output).setPath(new_path3);
@@ -185,9 +183,7 @@ public class PigJoinTests {
 			logger.info(jobId);
 			
 			// wait until the workflow job finishes printing the status every 10 seconds
-		    while(
-		    		wc.getJobInfo(jobId).getStatus() == 
-		    		org.apache.oozie.client.WorkflowJob.Status.RUNNING) {
+		    while(wc.getJobInfo(jobId).getStatus() == org.apache.oozie.client.WorkflowJob.Status.RUNNING) {
 		        System.out.println("Workflow job running ...");
 		        Thread.sleep(10 * 1000);
 		    }
@@ -199,6 +195,26 @@ public class PigJoinTests {
 			logger.error(e.getMessage());
 			assertTrue(e.getMessage(),false);
 		}
+	}
+	
+	@Test
+	public void basicJoin(){
+		runWorkFlow("JOIN");
+	}
+	
+	@Test
+	public void basicLeftJoin(){
+		runWorkFlow("LEFT OUTER JOIN");
+	}
+	
+	@Test
+	public void basicRightJoin(){
+		runWorkFlow("RIGHT OUTER JOIN");
+	}
+	
+	@Test
+	public void basicFullJoin(){
+		runWorkFlow("FULL OUTER JOIN");
 	}
 	
 }

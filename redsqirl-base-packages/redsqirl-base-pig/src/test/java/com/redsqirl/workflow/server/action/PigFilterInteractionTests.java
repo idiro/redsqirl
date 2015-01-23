@@ -41,7 +41,6 @@ public class PigFilterInteractionTests {
 			hs.update(ci);
 			ci.setValue("VAL < 10");
 			
-			
 			logger.info(hs.getDFEInput().get(PigElement.key_input).get(0).getFields().getFieldNames().toString());
 			error = ci.check();
 			
@@ -51,10 +50,10 @@ public class PigFilterInteractionTests {
 			error = ci.check();
 			assertTrue("check2: "+error,error == null);
 			
-			
 		}catch(Exception e){
 			logger.error(e.getMessage(),e);
 			assertTrue(e.getMessage(),false);
 		}
 	}
+	
 }

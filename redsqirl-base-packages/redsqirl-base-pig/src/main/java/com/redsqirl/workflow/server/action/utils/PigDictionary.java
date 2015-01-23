@@ -738,8 +738,10 @@ public class PigDictionary extends AbstractDictionary implements SqlDictionary{
 			throw new Exception("No expressions to test");
 		}
 		logger.debug("expression is ok");
-		if (nonAggregFeats != null
-				&& !fields.getFieldNames().containsAll(nonAggregFeats)) {
+		logger.info("nonAggregFeats " + nonAggregFeats);
+		logger.info("fields " + fields.getFieldNames().toString());
+		
+		if (nonAggregFeats != null && !fields.getFieldNames().containsAll(nonAggregFeats)) {
 			logger.error("Aggregation fields unknown");
 			throw new Exception("Aggregation fields unknown("
 					+ nonAggregFeats.toString() + "): "

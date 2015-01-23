@@ -15,6 +15,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 import com.idiro.Log;
 import com.idiro.ProjectID;
+import com.idiro.hadoop.NameNodeVar;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.action.PigAggregatorTests;
 import com.redsqirl.workflow.server.action.PigAnonymiseTests;
@@ -37,31 +38,32 @@ import com.redsqirl.workflow.server.action.PigUnionTests;
 import com.redsqirl.workflow.server.action.PigWorkflowMngtTests;
 import com.redsqirl.workflow.server.action.test.PigDictionaryTests;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
+import com.redsqirl.workflow.server.connect.HiveInterface;
 
 
 @RunWith(Suite.class)
-@SuiteClasses({
-//	PigDictionaryTests.class, ok
-//	PigFilterInteractionTests.class, ok
-//	PigTableSelectInteractionTests.class, ok
-//	PigJoinRelationInteractionTests.class, ok
-//	PigTableJoinInteractionTests.class,ok
-//	PigTableUnionInteractionTests.class, ok
-//	PigSelectTests.class, ok
-//	PigAggregatorTests.class, ok
-//	PigUnionTests.class, ok
-//	PigJoinTests.class, ok
-//	PigSampleTests.class,
-//	PigWorkflowMngtTests.class, ok
-//	PigUnionConditionsTests.class, ok
-//	PigAuditTests.class, ok
-//	PigTransposeTests.class, ok
-//	PigAnonymiseTests.class, ok
-//	PigUnanonymiseTests.class, ok
-//	PigCompressTests.class, ok
+@SuiteClasses(		{
+	PigDictionaryTests.class,
+	PigFilterInteractionTests.class,
+	PigTableSelectInteractionTests.class,
+	PigJoinRelationInteractionTests.class,
+	PigTableJoinInteractionTests.class,
+	PigTableUnionInteractionTests.class,
+	PigSelectTests.class,
+	PigAggregatorTests.class,
+	PigUnionTests.class,
+	PigJoinTests.class,
+	PigSampleTests.class,
+	PigWorkflowMngtTests.class,
+	PigUnionConditionsTests.class,
+	PigAuditTests.class,
+	PigTransposeTests.class,
+	PigAnonymiseTests.class,
+	PigUnanonymiseTests.class,
+	PigCompressTests.class,
 	PigSchemaTests.class,
-//	PigUnanonymiseTests.class, ok
-//	PigGroupRankTests.class ok
+	PigUnanonymiseTests.class,
+	PigGroupRankTests.class
 	})
 public class SetupPigEnvironmentTest {
 
@@ -87,23 +89,8 @@ public class SetupPigEnvironmentTest {
 		Log log = new Log();
 		log.put(log4jFile);
 
-		WorkflowPrefManager.getInstance();
 		logger = Logger.getLogger(SetupPigEnvironmentTest.class);
-		File logfile = new File(log4jFile);
-
-		if(logfile.exists()){
-			BufferedReader reader = new BufferedReader(new FileReader(logfile));
-			String line ="";
-			while ((line = reader.readLine()) != null) {
-				logger.info(line);
-			}
-			reader.close();
-		}
 		logger.debug("Log4j initialised");
-//		HiveInterface.setUrl(
-//				WorkflowPrefManager.getUserProperty(
-//						WorkflowPrefManager.user_hive+"_"+System.getProperty("user.name")));
-
 
 		Properties prop = new Properties();
 		try {
@@ -120,14 +107,21 @@ public class SetupPigEnvironmentTest {
 
 		File home = new File(testDirOut,"home_project");
 		home.mkdir();
+		WorkflowPrefManager.getInstance();
 		WorkflowPrefManager.changeSysHome(home.getAbsolutePath());
 		WorkflowPrefManager.createUserHome(System.getProperty("user.name"));
 		WorkflowPrefManager.pathSysCfgPref = testProp;
 		WorkflowPrefManager.pathUserCfgPref = testProp;
 		WorkflowPrefManager.setupHome();
-		logger.debug(WorkflowPrefManager.pathSysHome);
-		logger.debug(WorkflowPrefManager.getPathuserpref());
-		logger.debug(WorkflowPrefManager.pathUserCfgPref);	
+		logger.info(WorkflowPrefManager.pathSysHome);
+		logger.info(WorkflowPrefManager.getPathuserpref());
+		logger.info(WorkflowPrefManager.pathUserCfgPref);
+		HiveInterface.setUrl(
+				WorkflowPrefManager.getUserProperty(
+						WorkflowPrefManager.user_hive+"_"+System.getProperty("user.name")));
+		NameNodeVar.set(WorkflowPrefManager.getUserProperty(WorkflowPrefManager.sys_namenode));
+		logger.info("Hive url: " + HiveInterface.getUrl());
+		logger.info("Namenode: " + NameNodeVar.get());
 	}
 	
 	@AfterClass
@@ -140,9 +134,9 @@ public class SetupPigEnvironmentTest {
 			}
 		}catch (Exception e) {
 			logger.error("something went wrong : " + e.getMessage());
-			
 		}
 		WorkflowPrefManager.resetSys();
 		WorkflowPrefManager.resetUser();
 	}
+	
 }
