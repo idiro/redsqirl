@@ -4,12 +4,12 @@
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	<idiro-tm.version>0.1</idiro-tm.version>
 	<prod.resources>${basedir}/src/main/dist</prod.resources>
-	<dist>${project.build.directory}/${project.artifactId}/</dist>
+	<dist>${project.build.directory}/${project.artifactId}-${project.version}</dist>
 	<zip.xml>${basedir}/src/main/assembly/zip.xml</zip.xml>
-	<dist.lib>${project.build.directory}/${project.artifactId}/lib</dist.lib>
-	<dist.war>${project.build.directory}/${project.artifactId}/war</dist.war>
-	<dist.bin>${project.build.directory}/${project.artifactId}/bin</dist.bin>
-	<dist.conf>${project.build.directory}/${project.artifactId}/conf</dist.conf>
+	<dist.lib>${dist}/lib</dist.lib>
+	<dist.war>${dist}/war</dist.war>
+	<dist.bin>${dist}/bin</dist.bin>
+	<dist.conf>${dist}/conf</dist.conf>
 	<redsqirl-workflow.lib>${basedir}/../redsqirl-workflow/target/redsqirl-workflow/lib</redsqirl-workflow.lib>
 	<redsqirl-base-sql.lib>${basedir}/../redsqirl-abstract-packages/redsqirl-base-sql/target</redsqirl-base-sql.lib>
 	<redsqirl-webapp.war>${basedir}/../redsqirl-webapp/target/war</redsqirl-webapp.war>
@@ -23,14 +23,14 @@
     <parent>
 	<groupId>idiro</groupId>
 	<artifactId>redsqirl</artifactId>
-	<version>${hadoop.version}-0.1</version>
+	<version>0.1</version>
     </parent>
 
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>idiro</groupId>
     <artifactId>redsqirl-install</artifactId>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
     <version>${hadoop.version}-0.1</version>
     <name>Red Sqirl Install</name>
     <description>Create an installer</description>
@@ -182,6 +182,8 @@
 			</goals>
 			<configuration>
 			    <outputDirectory>${project.build.directory}</outputDirectory>
+			    <finalName>redsqirl-${project.version}</finalName>
+			    <appendAssemblyId>false</appendAssemblyId>
 			    <descriptors>
 				<descriptor>${zip.xml}</descriptor>
 			    </descriptors>

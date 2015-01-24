@@ -10,7 +10,7 @@
 
     <groupId>idiro</groupId>
     <artifactId>redsqirl</artifactId>
-    <version>${hadoop.version}-0.1</version>
+    <version>0.1</version>
     <name>Red Sqirl</name>
     <packaging>pom</packaging>
     <description>${project.name} is a platform</description>
