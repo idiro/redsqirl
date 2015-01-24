@@ -10,10 +10,9 @@
 	<dist.war>${dist}/war</dist.war>
 	<dist.bin>${dist}/bin</dist.bin>
 	<dist.conf>${dist}/conf</dist.conf>
-	<redsqirl-workflow.lib>${basedir}/../redsqirl-workflow/target/redsqirl-workflow/lib</redsqirl-workflow.lib>
-	<redsqirl-base-sql.lib>${basedir}/../redsqirl-abstract-packages/redsqirl-base-sql/target</redsqirl-base-sql.lib>
-	<redsqirl-webapp.war>${basedir}/../redsqirl-webapp/target/war</redsqirl-webapp.war>
-	<base-sql.artifact>redsqirl-base-sql-${project.version}.jar</base-sql.artifact>
+	<redsqirl-workflow.lib>${basedir}/../redsqirl-workflow/target/redsqirl-workflow-${project.version}/lib</redsqirl-workflow.lib>
+	<redsqirl-base-sql.lib>${basedir}/../redsqirl-abstract-packages/redsqirl-base-sql/target/redsqirl-base-sql-${project.version}/lib</redsqirl-base-sql.lib>
+	<redsqirl-webapp.war>${basedir}/../redsqirl-webapp/target/redsqirl-webapp-${project.version}/war</redsqirl-webapp.war>
 	<main.resources.script>${basedir}/src/main/resources/scripts</main.resources.script>
 	<main.resources.conf>${basedir}/src/main/resources/conf</main.resources.conf>
 	<hadoop.version>1.0.4</hadoop.version>
@@ -32,7 +31,7 @@
     <artifactId>redsqirl-install</artifactId>
     <packaging>pom</packaging>
     <version>${hadoop.version}-0.1</version>
-    <name>Red Sqirl Install</name>
+    <name>Red Sqirl - Install</name>
     <description>Create an installer</description>
     <url>http://ns.local.net/dev/idiro-wf-interface</url>
 
@@ -112,9 +111,6 @@
 				</resource>
 				<resource>
 				    <directory>${redsqirl-base-sql.lib}</directory>
-				    <includes>
-					<include>${base-sql.artifact}</include>
-				    </includes>
 				</resource>
 			    </resources>
 			</configuration>

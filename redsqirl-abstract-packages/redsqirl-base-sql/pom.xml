@@ -8,7 +8,6 @@
     <properties>
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	<generated.pck.dir>${project.build.directory}/${project.artifactId}-${project.version}/</generated.pck.dir>
-	<resources.pck.dir>src/main/pck</resources.pck.dir>
 	<maven.build.timestamp.format>yyyy-MM-dd</maven.build.timestamp.format>
 	<timestamp>${maven.build.timestamp}</timestamp>
 	<hadoop.version>1.0.4</hadoop.version>
@@ -23,7 +22,7 @@
     <artifactId>redsqirl-base-sql</artifactId>
     <version>${hadoop.version}-0.1</version>
     <packaging>jar</packaging>
-    <name>Red Sqirl Worflow Sql Base Package</name>
+    <name>Red Sqirl - Sql Base Package</name>
     <description>Provide basic sql actions</description>
 
     <distributionManagement>
@@ -100,28 +99,6 @@
 	    </plugin>
 
 	    <!-- Copy dependencies -->
-	    <plugin>
-		<artifactId>maven-resources-plugin</artifactId>
-		<version>2.6</version>
-		<executions>
-		    <execution>
-			<id>copy-resources</id>
-			<phase>package</phase>
-			<goals>
-			    <goal>copy-resources</goal>
-			</goals>
-			<configuration>
-			    <outputDirectory>${generated.pck.dir}</outputDirectory>
-			    <resources>
-				<resource>
-				    <directory>${resources.pck.dir}</directory>
-				    <filtering>true</filtering>
-				</resource>
-			    </resources>
-			</configuration>
-		    </execution>
-		</executions>
-	    </plugin>
 	    <plugin>
 		<groupId>org.apache.maven.plugins</groupId>
 		<artifactId>maven-dependency-plugin</artifactId>

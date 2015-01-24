@@ -13,7 +13,7 @@
 
     <groupId>idiro</groupId>
     <artifactId>redsqirl-abstract-packages</artifactId>
-    <name>Red Sqirl Abstract Packages</name>
+    <name>Red Sqirl - Abstract Packages</name>
     <packaging>pom</packaging>
     <version>${hadoop.version}-0.1</version>
 

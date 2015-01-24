@@ -7,7 +7,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<idiro-tm.version>0.1</idiro-tm.version>
 		<compile.resources>${basedir}/src/main/resources</compile.resources>
-		<dist.war>${project.build.directory}/war</dist.war>
+		<dist.war>${project.build.directory}/${project.artifactId}-${project.version}/war</dist.war>
 		<webXmlFile>${basedir}/src/main/webapp/WEB-INF/web.xml</webXmlFile>
 		<hadoop.version>1.0.4</hadoop.version>
 	</properties>
@@ -22,7 +22,7 @@
 	<artifactId>redsqirl-webapp</artifactId>
 	<packaging>war</packaging>
 	<version>${hadoop.version}-0.1</version>
-	<name>RedSqirl - Web Application</name>
+	<name>Red Sqirl - Web Application</name>
 
 
 
@@ -170,12 +170,6 @@
 				</exclusion>
 			</exclusions>
 			<!-- <scope>runtime</scope> -->
-		</dependency>
-		<dependency>
-			<groupId>idiro</groupId>
-			<artifactId>idiro-tm</artifactId>
-			<version>${idiro-tm.version}</version>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>idiro</groupId>
