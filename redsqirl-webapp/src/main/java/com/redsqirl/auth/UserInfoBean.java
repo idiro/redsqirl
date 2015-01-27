@@ -193,55 +193,64 @@ public class UserInfoBean extends BaseBean implements Serializable {
 			}
 			try {
 				String licence = "";
-				File licenseP = new File(
-						WorkflowPrefManager.getPathSystemLicence());
+				File licenseP = new File(WorkflowPrefManager.getPathSystemLicence());
+				logger.info("path licence " + WorkflowPrefManager.getPathSystemLicence());
 				Properties props = new Properties();
 				logger.info(ProjectID.get());
-				String licenseKey = ProjectID.get().trim();
-				if (licenseP.exists()) {
-					props.load(new FileInputStream(licenseP));
-					logger.info(props.toString());
+				
+				String[] value = ProjectID.get().trim().split("-");
+				if(value != null && value.length > 1){
+					String licenseKey = value[0].replaceAll("[0-9]", "") + value[value.length-1];
 					
-					licenseKey = licenseKey.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
-					logger.info(licenseKey);
-					licence =  props.getProperty(licenseKey);
-				} else {
-					setMsnError("Could not find license key");
-					logger.info("Could not find license key");
+					if (licenseP.exists()) {
+						props.load(new FileInputStream(licenseP));
+						logger.info(props.toString());
+						
+						licenseKey = licenseKey.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
+						logger.info(licenseKey);
+						licence =  props.getProperty(licenseKey);
+					} else {
+						setMsnError("Could not find license key");
+						logger.info("Could not find license key");
+						invalidateSession();
+						return "failure";
+					}
+					
+					if(licence == null || licence.isEmpty()){
+						setMsnError("License key was empty");
+						logger.info("License key was empty");
+						invalidateSession();
+						return "failure";
+					}
+
+					Decrypter decrypt = new Decrypter();
+					decrypt.decrypt(licence);
+					File file = new File(WorkflowPrefManager.getPathUsersFolder());
+					int homes = 0;
+					if(file.exists()){
+						homes = file.list().length;
+					}
+					Map<String,String> params = new HashMap<String,String>();
+					
+					params.put(Decrypter.usersNb, String.valueOf(homes));
+					params.put(Decrypter.mac, decrypt.getMACAddress());
+					params.put(Decrypter.name, licenseKey);
+					
+					boolean valid = decrypt.validateAllValuesSoft(params);
+
+					if(!valid){
+						setMsnError("License Key is Invalid");
+						logger.info("License Key is Invalid");
+						invalidateSession();
+						return "failure";
+					}
+					
+				}else{
+					setMsnError("Project Version is Invalid");
+					logger.info("Project Version is Invalid");
 					invalidateSession();
 					return "failure";
 				}
-				
-				if(licence == null || licence.isEmpty()){
-					setMsnError("License key was empty");
-					logger.info("License key was empty");
-					invalidateSession();
-					return "failure";
-				}
-
-				Decrypter decrypt = new Decrypter();
-				decrypt.decrypt(licence);
-				File file = new File(WorkflowPrefManager.getPathUsersFolder());
-				int homes = 0;
-				if(file.exists()){
-					homes = file.list().length;
-				}
-				Map<String,String> params = new HashMap<String,String>();
-				
-				params.put(Decrypter.usersNb, String.valueOf(homes));
-				params.put(Decrypter.mac, decrypt.getMACAddress());
-				params.put(Decrypter.name, licenseKey);
-				
-				boolean valid = decrypt.validateAllValuesSoft(params);
-
-				if(!valid){
-					setMsnError("License Key is Invalid");
-					logger.info("License Key is Invalid");
-					invalidateSession();
-
-					return "failure";
-				}
-				
 				
 			} catch (Exception e) {
 				logger.error(e.getMessage(),e);

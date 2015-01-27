@@ -51,7 +51,7 @@ public class Decrypter extends KeyCipher {
 				+ indentStr(cipher, key.substring(19, 20), -vals[4]);
 		userNb = Integer.valueOf(
 				cipher.indexOf(nbUser.charAt(0)) * 62
-						+ cipher.indexOf(nbUser.charAt(1))).intValue();
+				+ cipher.indexOf(nbUser.charAt(1))).intValue();
 
 		ans.put(name + "1", appName);
 		ans.put(name + "2", appName2);
@@ -65,6 +65,9 @@ public class Decrypter extends KeyCipher {
 	}
 
 	public void decrypt_key_module(String keyModule) {
+		
+		logger.info("keyModule " + keyModule);
+		
 		if(keyModule.length() != 24){
 			return;
 		}
@@ -171,25 +174,25 @@ public class Decrypter extends KeyCipher {
 		boolean valid = true;
 
 		try {
-			valid &= ans.get(name + "1").equals(
-					keysoft.get(name).substring(0, 3));
+			
+			logger.info("name 1 " + ans.get(name + "1"));
+			logger.info("key name sub 3 " + keysoft.get(name).substring(0, 3));
+			valid &= ans.get(name + "1").equals(keysoft.get(name).substring(0, 3));
 
-			valid &= ans.get(name + "2")
-					.equals(keysoft.get(name).substring(
-							keysoft.get(name).length() - 3));
+			logger.info("name 2 " + ans.get(name + "2"));
+			logger.info("key name lenght-3 " + keysoft.get(name).substring(keysoft.get(name).length() - 3));
+			valid &= ans.get(name + "2").equals(keysoft.get(name).substring(keysoft.get(name).length() - 3));
 
-			valid &= ans.get(mac).equalsIgnoreCase(
-					keysoft.get(mac).substring(keysoft.get(mac).length() - 8));
+			logger.info("mac " + ans.get(mac));
+			logger.info("mac lenght-8 " + keysoft.get(mac).substring(keysoft.get(mac).length() - 8));
+			valid &= ans.get(mac).equalsIgnoreCase(keysoft.get(mac).substring(keysoft.get(mac).length() - 8));
 
-			valid &= Integer.valueOf(ans.get(usersNb)).intValue() > Integer
-					.valueOf(keysoft.get(usersNb)).intValue();
-
+			valid &= Integer.valueOf(ans.get(usersNb)).intValue() > Integer.valueOf(keysoft.get(usersNb)).intValue();
 
 		} catch (Exception e) {
 			StackTraceElement[] stcke = e.getStackTrace();
 			for (StackTraceElement stck : stcke) {
-				System.out.println(stck.getClassName() + " "
-						+ stck.getMethodName() + " " + stck.getLineNumber());
+				System.out.println(stck.getClassName() + " " + stck.getMethodName() + " " + stck.getLineNumber());
 			}
 		}
 
@@ -200,8 +203,7 @@ public class Decrypter extends KeyCipher {
 		boolean valid = true;
 		try {
 
-			boolean sys = Boolean.valueOf(keyModule.get("system"))
-					.booleanValue();
+			boolean sys = Boolean.valueOf(keyModule.get("system")).booleanValue();
 			String sysVal = "";
 			if (sys) {
 				sysVal = "s";
@@ -210,40 +212,48 @@ public class Decrypter extends KeyCipher {
 			}
 
 			// License
-			valid &= ans.get(license + "1").equals(
-					keyModule.get(license).substring(8, 12));
+			logger.info("license 1 " + ans.get(license + "1"));
+			logger.info("license sub 8 12 " + keyModule.get(license).substring(8, 12));
+			valid &= ans.get(license + "1").equals(keyModule.get(license).substring(8, 12));
+			logger.info("1 " + valid);
 
-			valid &= ans.get(license + "2").equals(
-					keyModule.get(license).substring(
-							keyModule.get(license).length() - 3));
+			logger.info("license 2 " + ans.get(license + "2"));
+			logger.info("license lenght-3 " + keyModule.get(license).substring(keyModule.get(license).length() - 3));
+			valid &= ans.get(license + "2").equals(keyModule.get(license).substring(keyModule.get(license).length() - 3));
+			logger.info("2 " + valid);
+			
 			// System
+			logger.info("userName 1 " + ans.get(userName + "1").substring(0, 1));
+			logger.info("sysVal " + sysVal);
 			valid &= ans.get(userName + "1").substring(0, 1).equals(sysVal);
+			logger.info("3 " + valid);
 
 			// Username
 			if (!sys) {
-			valid &= ans.get(userName + "1").equals(
-					keyModule.get(userName).substring(0, 4));
-
-			valid &= ans.get(userName + "2").equals(
-					keyModule.get(userName).substring(
-							keyModule.get(userName).length() - 3));
+				logger.info("userName 1 '" + ans.get(userName + "1")+"'");
+				logger.info("userName sub 4 '" + keyModule.get(userName).substring(0, 4)+"'");
+				valid &= ans.get(userName + "1").equals(keyModule.get(userName).substring(0, 4));
+				logger.info("userName 2 '" + ans.get(userName + "2")+"'");
+				logger.info("userName 2 lengh-3 '" + keyModule.get(userName).substring(keyModule.get(userName).length() - 3)+"'");
+				valid &= ans.get(userName + "2").equals(keyModule.get(userName).substring(keyModule.get(userName).length() - 3));
 			}
 
 			// name
-			valid &= ans.get(name + "1").equals(
-					keyModule.get(name).substring(0, 3));
+			logger.info("name 1 '" + ans.get(name + "1")+"'");
+			logger.info("license sub 3 '" + keyModule.get(name).substring(0, 3)+"'");
+			valid &= ans.get(name + "1").equals(keyModule.get(name).substring(0, 3));
+			logger.info("4 " + valid);
 
-
-			valid &= ans.get(name + "2").equals(
-					keyModule.get(name).substring(
-							keyModule.get(name).length() - 3));
-
+			logger.info("name 2 " + ans.get(name + "2"));
+			logger.info("license lenght-3 " + keyModule.get(name).substring(keyModule.get(name).length() - 3));
+			valid &= ans.get(name + "2").equals(keyModule.get(name).substring(keyModule.get(name).length() - 3));
+			logger.info("5 " + valid);
+			
 
 		} catch (Exception e) {
 			StackTraceElement[] stcke = e.getStackTrace();
 			for (StackTraceElement stck : stcke) {
-				System.out.println(stck.getClassName() + " "
-						+ stck.getMethodName() + " " + stck.getLineNumber());
+				logger.info(stck.getClassName() + " " + stck.getMethodName() + " " + stck.getLineNumber());
 			}
 			valid = false;
 		}

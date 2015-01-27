@@ -29,7 +29,7 @@ public class BaseCommand {
 	private static Logger logger = Logger.getLogger(BaseCommand.class);
 
 	private static List<String> notIncludedJars = new ArrayList<String>();
-	
+
 	/**
 	 * 
 	 * Generate a base command that compiles a classpath containing every class
@@ -47,19 +47,40 @@ public class BaseCommand {
 		try {
 			logger.info(WorkflowPrefManager.pathSysCfgPref);
 			logger.info(WorkflowPrefManager.sysLibPath);
-			File file = new File(
-					WorkflowPrefManager.sysLibPath);
-			// Reading directory contents
-			File[] files = file.listFiles();
 
 			StringBuffer path = new StringBuffer();
+			String[] paths = WorkflowPrefManager.sysLibPath.split(":");
+			if(paths != null && paths.length > 1){
+				File file = new File(paths[0]);
+				logger.info("path0 " + paths[0]);
+				// Reading directory contents
+				File[] files = file.listFiles();
+				for (int i = 0; i < files.length; i++) {
+					path.append(files[i] + ":");
+				}
 
-			for (int i = 0; i < files.length; i++) {
-				path.append(files[i] + ":");
+				File fileAbs = new File(paths[1]);
+				logger.info("path1 " + paths[1]);
+				// Reading directory contents
+				File[] filesAbs = fileAbs.listFiles();
+				for (int i = 0; i < filesAbs.length; i++) {
+					path.append(filesAbs[i] + ":");
+				}
+			}else{
+				File file = new File(WorkflowPrefManager.sysLibPath);
+				logger.info("path " + WorkflowPrefManager.sysLibPath);
+				// Reading directory contents
+				File[] files = file.listFiles();
+				for (int i = 0; i < files.length; i++) {
+					path.append(files[i] + ":");
+				}
 			}
+
 			Properties properties = new Properties();
 			File licenseFile = new File(WorkflowPrefManager.getPathSystemLicence());
 			properties.load(new FileInputStream(licenseFile));
+
+			logger.info("path -> " + path);
 			
 			String p = path.substring(0, path.length() - 1);
 			String packagePath = getPackageClasspath(
@@ -98,25 +119,25 @@ public class BaseCommand {
 						WorkflowPrefManager.sys_allow_user_install, "FALSE")
 						.equalsIgnoreCase("true")) {
 			for (File file : fUser.listFiles()) {
-					String pck = pm.getPackageProperties(file.getAbsolutePath())
-							.getProperty(PackageManager.property_name)
-							+"-"+ pm.getPackageProperties(file.getAbsolutePath()).getProperty(
-									PackageManager.property_version);
-					String pcktrimmed = pck.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
-					String jar = null;
-					for (String s : pm.getFiles(file)){
-						if (s.substring(0,4).equals("lib:")){
-							jar = s.substring(4);
-						}
+				String pck = pm.getPackageProperties(file.getAbsolutePath())
+						.getProperty(PackageManager.property_name)
+						+"-"+ pm.getPackageProperties(file.getAbsolutePath()).getProperty(
+								PackageManager.property_version);
+				String pcktrimmed = pck.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
+				String jar = null;
+				for (String s : pm.getFiles(file)){
+					if (s.substring(0,4).equals("lib:")){
+						jar = s.substring(4);
 					}
-					logger.debug(pcktrimmed+ " , "+jar);
-					if(!valid(userName,pcktrimmed,licenseKeys.getProperty(userName+"_"+pcktrimmed),licenseKeys, softwareKey,false)){
-						notIncludedJars.add("Didnt add "+jar+ " for the user "+userName);
-					}else{
-						logger.debug("Added "+jar+ " for the "+userName);
-						classPath += ":" + userLibPath.getAbsolutePath() + "/" + jar;
-						filesUser.add(jar);						
-					}
+				}
+				logger.debug(pcktrimmed+ " , "+jar);
+				if(!valid(userName,pcktrimmed,licenseKeys.getProperty(userName+"_"+pcktrimmed),licenseKeys, softwareKey,false)){
+					notIncludedJars.add("Didnt add "+jar+ " for the user "+userName);
+				}else{
+					logger.debug("Added "+jar+ " for the "+userName);
+					classPath += ":" + userLibPath.getAbsolutePath() + "/" + jar;
+					filesUser.add(jar);						
+				}
 			}
 		}
 		File fSys = new File(pathSys);
@@ -128,14 +149,18 @@ public class BaseCommand {
 						jar = s.substring(4);
 					}
 				}
-				
+
 				if (!filesUser.contains(jar)) {
 					String pck = pm.getPackageProperties(file.getAbsolutePath())
 							.getProperty(PackageManager.property_name)
 							+"-"+ pm.getPackageProperties(file.getAbsolutePath()).getProperty(
 									PackageManager.property_version);
 					String pcktrimmed = pck.replaceAll("[^A-Za-z0-9 ]", "").toLowerCase();
-					
+
+					logger.info("pcktrimmed " + pcktrimmed);
+					logger.info("licenseKeys system " + licenseKeys.getProperty("system_"+pcktrimmed));
+					logger.info("licenseKeys " + licenseKeys);
+					logger.info("softwareKey " + softwareKey);
 					if(!valid(userName,pcktrimmed , licenseKeys.getProperty("system_"+pcktrimmed),licenseKeys,softwareKey,true)){
 						notIncludedJars.add("Didnt add "+jar+ " for the system lib "+userName);
 					}else{
@@ -220,29 +245,38 @@ public class BaseCommand {
 		return System.getProperties().getProperty("java.rmi.server.codebase",
 				ans);
 	}
-	
-	private static boolean valid(String user , String packageName,String key , Properties licenses , String softwareKey , boolean system){
+
+	private static boolean valid(String user , String packageName, String key , Properties licenses , String softwareKey , boolean system){
 		boolean valid = true;
 		if(key == null|| key.isEmpty()){
 			logger.error("Key empty or Null for "+packageName +"  "+user);
 			return false;
 		}
-		
+
 		if(softwareKey==null || softwareKey.isEmpty()){
 			logger.error("Sofware License empty or Null");
 			return false;
-			
 		}
+		logger.info("softwareKey " + softwareKey);
+		logger.info("key " + key);
+		
+		String[] value = softwareKey.trim().split("-");
+		if(value != null && value.length > 1){
+			softwareKey = value[0].replaceAll("[0-9]", "") + value[value.length-1];
+		}
+		
 		Decrypter dec = new Decrypter();
 		dec.decrypt_key_module(key);
 		String softwareLicense = licenses.getProperty(softwareKey.replaceAll("[^A-Za-z0-9 ]", "").toLowerCase());
-		
+
 		Map<String,String> keyModule = new HashMap<String,String>();
-		
-		
+
+		logger.info("softwareLicense key " + softwareLicense);
 		keyModule.put(Decrypter.license, softwareLicense);
-		keyModule.put(Decrypter.name, packageName);
 		
+		logger.info("packageName " + packageName);
+		keyModule.put(Decrypter.name, packageName);
+
 		String systemVal = system ? "s" : "u";
 		String systemValBoolean = "";
 		if(system){
@@ -252,8 +286,11 @@ public class BaseCommand {
 		}
 		keyModule.put("system", systemValBoolean);
 		keyModule.put(Decrypter.userName, systemVal+user);
-		
+
 		valid = dec.validateAllValuesModule(keyModule);
+		
+		logger.info("valid key " + valid);
+		
 		return valid;
 	}
 
@@ -263,5 +300,5 @@ public class BaseCommand {
 	public static List<String> getNotIncludedJars() {
 		return notIncludedJars;
 	}
-	
+
 }
