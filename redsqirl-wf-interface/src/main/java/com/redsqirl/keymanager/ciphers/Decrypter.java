@@ -248,7 +248,6 @@ public class Decrypter extends KeyCipher {
 			logger.info("license lenght-3 " + keyModule.get(name).substring(keyModule.get(name).length() - 3));
 			valid &= ans.get(name + "2").equals(keyModule.get(name).substring(keyModule.get(name).length() - 3));
 			logger.info("5 " + valid);
-			
 
 		} catch (Exception e) {
 			StackTraceElement[] stcke = e.getStackTrace();
