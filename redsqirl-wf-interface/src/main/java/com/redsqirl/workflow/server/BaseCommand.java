@@ -28,8 +28,6 @@ public class BaseCommand {
 	 */
 	private static Logger logger = Logger.getLogger(BaseCommand.class);
 
-	private static List<String> notIncludedJars = new ArrayList<String>();
-
 	/**
 	 * 
 	 * Generate a base command that compiles a classpath containing every class
@@ -132,7 +130,7 @@ public class BaseCommand {
 				}
 				logger.debug(pcktrimmed+ " , "+jar);
 				if(!valid(userName,pcktrimmed,licenseKeys.getProperty(userName+"_"+pcktrimmed),licenseKeys, softwareKey,false)){
-					notIncludedJars.add("Didnt add "+jar+ " for the user "+userName);
+					
 				}else{
 					logger.debug("Added "+jar+ " for the "+userName);
 					classPath += ":" + userLibPath.getAbsolutePath() + "/" + jar;
@@ -162,7 +160,7 @@ public class BaseCommand {
 					logger.info("licenseKeys " + licenseKeys);
 					logger.info("softwareKey " + softwareKey);
 					if(!valid(userName,pcktrimmed , licenseKeys.getProperty("system_"+pcktrimmed),licenseKeys,softwareKey,true)){
-						notIncludedJars.add("Didnt add "+jar+ " for the system lib "+userName);
+						
 					}else{
 						logger.debug("Added "+jar+ " for the system lib "+userName);
 						classPath += ":" + systemLibPath.getAbsolutePath() + "/" + jar;
@@ -170,8 +168,63 @@ public class BaseCommand {
 				}
 			}
 		}
-
+		
 		return classPath;
+	}
+	
+	public static List<String> getLicenseErrorMsg(String pathUser, String pathSys,Properties licenseKeys, String userName , String softwareKey) throws IOException {
+		File fUser = new File(pathUser);
+		PackageManager pm = new PackageManager();
+		List<String> filesUser = new ArrayList<String>();
+		List<String> errorMsg = new ArrayList<String>();
+		if (fUser.exists()
+				&& WorkflowPrefManager.getSysProperty(
+						WorkflowPrefManager.sys_allow_user_install, "FALSE")
+						.equalsIgnoreCase("true")) {
+			for (File file : fUser.listFiles()) {
+				String pck = pm.getPackageProperties(file.getAbsolutePath())
+						.getProperty(PackageManager.property_name)
+						+"-"+ pm.getPackageProperties(file.getAbsolutePath()).getProperty(
+								PackageManager.property_version);
+				String pcktrimmed = pck.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
+				
+				String tmp = validMsg(userName,pcktrimmed,licenseKeys.getProperty(userName+"_"+pcktrimmed),licenseKeys, softwareKey,false);
+				if(tmp != null){
+					errorMsg.add(tmp);
+				}
+			}
+		}
+		File fSys = new File(pathSys);
+		if (fSys.exists()) {
+			for (File file : fSys.listFiles()) {
+				String jar = null;
+				for (String s : pm.getFiles(file)){
+					if (s.substring(0,4).equals("lib:")){
+						jar = s.substring(4);
+					}
+				}
+
+				if (!filesUser.contains(jar)) {
+					String pck = pm.getPackageProperties(file.getAbsolutePath())
+							.getProperty(PackageManager.property_name)
+							+"-"+ pm.getPackageProperties(file.getAbsolutePath()).getProperty(
+									PackageManager.property_version);
+					String pcktrimmed = pck.replaceAll("[^A-Za-z0-9 ]", "").toLowerCase();
+
+					logger.info("pcktrimmed " + pcktrimmed);
+					logger.info("licenseKeys system " + licenseKeys.getProperty("system_"+pcktrimmed));
+					logger.info("licenseKeys " + licenseKeys);
+					logger.info("softwareKey " + softwareKey);
+					
+					String tmp = validMsg(userName,pcktrimmed , licenseKeys.getProperty("system_"+pcktrimmed),licenseKeys,softwareKey,true);
+					if(tmp != null){
+						errorMsg.add(tmp);
+					}
+				}
+			}
+		}
+
+		return errorMsg;
 	}
 
 	/**
@@ -247,16 +300,20 @@ public class BaseCommand {
 	}
 
 	private static boolean valid(String user , String packageName, String key , Properties licenses , String softwareKey , boolean system){
-		boolean valid = true;
+		return validMsg(user , packageName, key , licenses , softwareKey , system) == null; 
+	}
+	private static String validMsg(String user , String packageName, String key , Properties licenses , String softwareKey , boolean system){
+		String error = null;
 		if(key == null|| key.isEmpty()){
-			logger.error("Key empty or Null for "+packageName +"  "+user);
-			return false;
+			error = "Key empty or Null for "+packageName;
+			return error;
 		}
 
 		if(softwareKey==null || softwareKey.isEmpty()){
-			logger.error("Sofware License empty or Null");
-			return false;
+			error = "Sofware License empty or Null";
+			return error;
 		}
+		
 		logger.info("softwareKey " + softwareKey);
 		logger.info("key " + key);
 		
@@ -287,18 +344,7 @@ public class BaseCommand {
 		keyModule.put("system", systemValBoolean);
 		keyModule.put(Decrypter.userName, systemVal+user);
 
-		valid = dec.validateAllValuesModule(keyModule);
-		
-		logger.info("valid key " + valid);
-		
-		return valid;
-	}
-
-	/**
-	 * @return the notIncludedJars
-	 */
-	public static List<String> getNotIncludedJars() {
-		return notIncludedJars;
+		return dec.validateAllValuesModule(keyModule);
 	}
 
 }

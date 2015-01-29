@@ -2497,6 +2497,13 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 		this.nameWorkflow = nameWorkflow;
 	}
+	
+	public void removeMsgErrorInit() {
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		HttpSession httpSession = (HttpSession) facesContext.getExternalContext().getSession(false);
+		httpSession.removeAttribute("msnErrorInit");
+		logger.info("remove msnErrorInit");
+	}
 
 	public String getParamOutId() {
 		return paramOutId;

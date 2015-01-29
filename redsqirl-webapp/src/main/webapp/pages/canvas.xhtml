@@ -2651,6 +2651,28 @@
 
 		</div>
 	</rich:modalPanel>
+	
+	<a4j:region>
+		<rich:modalPanel id="msnErrorInit" showWhenRendered="#{sessionScope['msnErrorInit'] != null}">
+			<div style="width: 100%; height: 100%; overflow: auto;">
+				<h:form>
+					<dl class="message">
+					<dt class="messageerro" style="padding-left:40px;">
+						<h:outputText value="#{sessionScope['msnErrorInit']}" escape="false" />
+					</dt>
+					</dl>
+					<center>
+					<a4j:commandButton styleClass="greenButton"
+						value="#{messages.button_ok}"
+						onclick="#{rich:component('msnErrorInit')}.hide(); return false;"
+						style="bottom:14%;position:relative;"
+						reRender="msnError, msg, errorTable"
+						action="#{canvasBean.removeMsgErrorInit}" />
+					</center>
+				</h:form>
+			</div>
+		</rich:modalPanel>
+	</a4j:region>
 
 	<rich:modalPanel id="msnSuccess"
 		showWhenRendered="#{requestScope['msnSuccess'] != null}">

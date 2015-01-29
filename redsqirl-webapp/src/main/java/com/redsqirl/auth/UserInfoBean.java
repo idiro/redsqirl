@@ -61,6 +61,8 @@ public class UserInfoBean extends BaseBean implements Serializable {
 	 */
 	private static final int port = 2001;
 
+
+
 	/**
 	 * User name used for this session.
 	 */
@@ -70,6 +72,8 @@ public class UserInfoBean extends BaseBean implements Serializable {
 	 * The password kept until the SSH session is created.
 	 */
 	private transient String password;
+
+
 
 	/**
 	 * An error message.
@@ -91,6 +95,8 @@ public class UserInfoBean extends BaseBean implements Serializable {
 	 */
 	private String forceSignIn = "F";
 
+
+
 	/**
 	 * Current value of the progress bar.
 	 */
@@ -111,6 +117,8 @@ public class UserInfoBean extends BaseBean implements Serializable {
 	 */
 	buildBackend = false;
 
+
+
 	/**
 	 * The server process launched for this user.
 	 */
@@ -127,7 +135,6 @@ public class UserInfoBean extends BaseBean implements Serializable {
 	private transient Session sessionSSH;
 
 	private boolean checkPassword = false;
-	
 	/**
 	 * Init the progress bar.
 	 */
@@ -173,10 +180,11 @@ public class UserInfoBean extends BaseBean implements Serializable {
 				logger.warn("--> password auth method not supported by server");
 			}
 
-			checkPassword = conn.authenticateWithPassword(userName,	password);
+			checkPassword = conn.authenticateWithPassword(userName,
+					password);
 
 			if (!checkPassword) {
-				setMsnError(getMessageResources("error_login"));
+				setMsnError("error");
 				setAlreadySignedInOtherMachine(null);
 
 				logger.info("Authentication Error");
@@ -202,15 +210,15 @@ public class UserInfoBean extends BaseBean implements Serializable {
 						logger.info(licenseKey);
 						licence =  props.getProperty(licenseKey);
 					} else {
-						setMsnError(getMessageResources("error_find_license_key"));
-						logger.info(getMessageResources("error_find_license_key"));
+						setMsnError("Could not find license key");
+						logger.info("Could not find license key");
 						invalidateSession();
 						return "failure";
 					}
 
 					if(licence == null || licence.isEmpty()){
-						setMsnError(getMessageResources("error_license_empty"));
-						logger.info(getMessageResources("error_license_empty"));
+						setMsnError("License key was empty");
+						logger.info("License key was empty");
 						invalidateSession();
 						return "failure";
 					}
@@ -231,22 +239,22 @@ public class UserInfoBean extends BaseBean implements Serializable {
 					boolean valid = decrypt.validateAllValuesSoft(params);
 
 					if(!valid){
-						setMsnError(getMessageResources("error_license_key"));
-						logger.info(getMessageResources("error_license_key"));
+						setMsnError("License Key is Invalid");
+						logger.info("License Key is Invalid");
 						invalidateSession();
 						return "failure";
 					}
 
 				}else{
-					setMsnError(getMessageResources("error_invalid_project_version"));
-					logger.info(getMessageResources("error_invalid_project_version"));
+					setMsnError("Project Version is Invalid");
+					logger.info("Project Version is Invalid");
 					invalidateSession();
 					return "failure";
 				}
 
 			} catch (Exception e) {
 				logger.error(e.getMessage(),e);
-				setMsnError(getMessageResources("error_get_license"));
+				setMsnError("Failed to get license");
 				invalidateSession();
 				return "failure";
 			}
@@ -254,7 +262,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		} catch (IOException e) {
 			logger.error(e.getMessage(),e);
 			invalidateSession();
-			setMsnError(getMessageResources("error_login"));
+			setMsnError("error");
 			return "failure";
 		}
 
@@ -313,12 +321,15 @@ public class UserInfoBean extends BaseBean implements Serializable {
 			password = null;
 		} catch (Exception e) {
 			password = null;
-			setMsnError("Fail to connect through SSH to " + userName + "@localhost");
-			logger.info("Fail to connect through SSH to " + userName + "@localhost");
+			logger.info("Fail to connect through SSH to " + userName
+					+ "@localhost");
+			setMsnError("Fail to connect through SSH to " + userName
+					+ "@localhost");
 			return "failure";
 		}
 
 		return loginWithSessionSSH();
+
 	}
 
 	/**
@@ -334,10 +345,8 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		}
 
 		FacesContext fCtx = FacesContext.getCurrentInstance();
-		HttpSession session = (HttpSession) fCtx.getExternalContext()
-				.getSession(false);
-		ServletContext sc = (ServletContext) fCtx.getExternalContext()
-				.getContext();
+		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
+		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
 
 		//Make sure that tomcat reininitialize the session object after this function.
 		fCtx.getExternalContext().getSessionMap().remove("#{canvasBean}");
@@ -452,6 +461,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		HttpSession session = (HttpSession) fCtx.getExternalContext()
 				.getSession(false);
 
+
 		try {
 			try{
 				registry = LocateRegistry.getRegistry(port);
@@ -560,6 +570,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 					+ e.getMessage());
 			return false;
 		}
+
 	}
 
 	/**
@@ -625,8 +636,10 @@ public class UserInfoBean extends BaseBean implements Serializable {
 	public void invalidateSession() {
 		if(userName != null && checkPassword){
 			FacesContext fCtx = FacesContext.getCurrentInstance();
-			ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
-			Map<String, HttpSession> sessionLoginMap = (Map<String, HttpSession>) sc.getAttribute("sessionLoginMap");
+			ServletContext sc = (ServletContext) fCtx.getExternalContext()
+					.getContext();
+			Map<String, HttpSession> sessionLoginMap = (Map<String, HttpSession>) sc
+					.getAttribute("sessionLoginMap");
 			invalidateSession(sessionLoginMap.get(userName));
 		}
 		checkPassword = false;
@@ -740,6 +753,15 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		sfi.merge(indexResultPath, indexMergeSysPath, indexPckUserPath);
 	}
 
+	/**
+	 * cleanSession
+	 * 
+	 * Method to clean all Session and Context
+	 * 
+	 * @return
+	 * @author Igor.Souza
+	 */
+
 	public String getPassword() {
 		return password;
 	}
@@ -796,10 +818,17 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		this.progressBarEnabled = enabled;
 	}
 
+	/**
+	 * @return the forceSignIn
+	 */
 	public String getForceSignIn() {
 		return forceSignIn;
 	}
 
+	/**
+	 * @param forceSignIn
+	 *            the forceSignIn to set
+	 */
 	public void setForceSignIn(String forceSignIn) {
 		this.forceSignIn = forceSignIn;
 	}
