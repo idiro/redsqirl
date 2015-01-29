@@ -22,9 +22,11 @@ import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
+import com.redsqirl.workflow.server.connect.interfaces.HdfsDataStore;
 import com.redsqirl.workflow.server.connect.interfaces.DataStoreArray;
 import com.redsqirl.workflow.server.connect.interfaces.PropertiesManager;
 import com.redsqirl.workflow.server.interfaces.JobManager;
+import com.redsqirl.workflow.utils.SuperActionManager;
 
 
 /** BaseBean
@@ -152,12 +154,12 @@ public class BaseBean {
 	 * @return DataStore
 	 * @author Igor.Souza
 	 */
-	public DataStore getHDFS() throws RemoteException{
+	public HdfsDataStore getHDFS() throws RemoteException{
 
 		FacesContext fCtx = FacesContext.getCurrentInstance();
 		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
 
-		return (DataStore) session.getAttribute("hdfs");
+		return (HdfsDataStore) session.getAttribute("hdfs");
 	}
 	
 	/** getHDFSBrowser
@@ -203,6 +205,13 @@ public class BaseBean {
 		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
 
 		return (PropertiesManager) session.getAttribute("prefs");
+	}
+	
+	public SuperActionManager getSuperActionManager() throws RemoteException{
+		FacesContext fCtx = FacesContext.getCurrentInstance();
+		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(false);
+
+		return (SuperActionManager) session.getAttribute("samanager");
 	}
 	
 

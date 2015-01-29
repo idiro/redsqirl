@@ -21,6 +21,7 @@ import com.redsqirl.workflow.server.connect.interfaces.DataStore;
 import com.redsqirl.workflow.server.connect.interfaces.DataStoreArray;
 import com.redsqirl.workflow.server.connect.interfaces.PropertiesManager;
 import com.redsqirl.workflow.server.interfaces.JobManager;
+import com.redsqirl.workflow.utils.WfSuperActionManager;
 
 /**
  * Class to start up the server.
@@ -75,6 +76,7 @@ public class ServerMain {
 				String nameHDFS = System.getProperty("user.name")+"@hdfs";
 				String nameHDFSBrowser = System.getProperty("user.name")+"@hdfsbrowser";
 				String namePrefs = System.getProperty("user.name")+"@prefs";
+				String nameSuperActionManager = System.getProperty("user.name")+"@samanager";
 
 				try{
 					registry = LocateRegistry.createRegistry(port);
@@ -142,6 +144,14 @@ public class ServerMain {
 						);
 				
 				logger.info("namePrefs: "+namePrefs);
+				
+
+				logger.info("nameHDFS: "+nameSuperActionManager);
+				
+				registry.rebind(
+						nameSuperActionManager,
+						(DataStore) new WfSuperActionManager()
+						);
 				
 				logger.info("end server main");
 				

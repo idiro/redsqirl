@@ -33,6 +33,7 @@ import com.idiro.utils.RandomString;
 import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.useful.WorkflowHelpUtils;
+import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
@@ -2160,7 +2161,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 						UserInfoBean.class);
 		logger.info("User: " + userInfoBean.getUserName());
 
-		File file = new SuperActionManager().getSuperActionMainDir(userInfoBean
+		File file = WorkflowPrefManager.getSuperActionMainDir(userInfoBean
 				.getUserName());
 		logger.info("file path " + file.getAbsolutePath());
 
@@ -2424,7 +2425,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 								getInputNameSubWorkflow(),
 								WorkflowHelpUtils.generateHelp(getInputNameSubWorkflow(), getInputAreaSubWorkflow() ,inputsForHelp, outputsForHelp), 
 								inputs, outputs);
-						new SuperActionManager().install(getUserInfoBean().getUserName(), sw, null);
+						getSuperActionManager().install(getUserInfoBean().getUserName(), sw, null);
 					}catch(Exception e){
 						error = e.getMessage();
 					}
@@ -2432,7 +2433,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 					if(error == null){
 						error = getDf().aggregateElements(getComponentIds(), getInputNameSubWorkflow(), inputs, outputs);
 						if(error != null){
-							new SuperActionManager().uninstall(getUserInfoBean().getUserName(), getInputNameSubWorkflow());
+							getSuperActionManager().uninstall(getUserInfoBean().getUserName(), getInputNameSubWorkflow());
 						}else{
 							logger.info("Elements: " + getDf().getComponentIds());
 
@@ -2463,14 +2464,13 @@ public class CanvasBean extends BaseBean implements Serializable {
 	}
 
 	// uninstall the super action
-	public void undoAggregate(){
+	public void undoAggregate() throws RemoteException{
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String nameSA = params.get("nameSA");
 		String user = getUserInfoBean().getUserName();
 
 		if(nameSA != null){
-			SuperActionManager saManager = new SuperActionManager();
-			saManager.uninstall(user, nameSA);
+			getSuperActionManager().uninstall(user, nameSA);
 		}
 	}
 

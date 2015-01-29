@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
-import org.apache.pig.builtin.GetMonth;
 
 import com.idiro.ProjectID;
 import com.redsqirl.keymanager.ciphers.Decrypter;

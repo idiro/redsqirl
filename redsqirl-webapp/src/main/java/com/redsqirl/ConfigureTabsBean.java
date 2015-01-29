@@ -101,7 +101,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 		logger.info("User: " + userInfoBean.getUserName());
 
 		//list of super action
-		List<String> listSuperAction = new SuperActionManager().getAvailableSuperActions(userInfoBean.getUserName());
+		List<String> listSuperAction = getSuperActionManager().getAvailableSuperActions(userInfoBean.getUserName());
 		//logger.info("Available Super Actions: "+listSuperAction);
 		//list of normal action
 		List<String> listAction = new ArrayList<String>();

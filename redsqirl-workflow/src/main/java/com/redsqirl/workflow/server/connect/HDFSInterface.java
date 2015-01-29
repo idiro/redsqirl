@@ -1,6 +1,7 @@
 package com.redsqirl.workflow.server.connect;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -28,6 +29,7 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.util.LineReader;
 import org.apache.log4j.Logger;
 
+import com.idiro.check.FileChecker;
 import com.idiro.hadoop.NameNodeVar;
 import com.idiro.hadoop.checker.HdfsFileChecker;
 import com.idiro.tm.task.in.Preference;
@@ -37,6 +39,7 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
+import com.redsqirl.workflow.server.connect.interfaces.HdfsDataStore;
 import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
@@ -46,7 +49,7 @@ import com.redsqirl.workflow.utils.LanguageManagerWF;
  * @author etienne
  * 
  */
-public class HDFSInterface extends UnicastRemoteObject implements DataStore {
+public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore {
 
 	/**
 	 * 
@@ -390,6 +393,74 @@ public class HDFSInterface extends UnicastRemoteObject implements DataStore {
 			}
 			// hChN.close();
 			// hChO.close();
+
+		} catch (IOException e) {
+			logger.error(e.getMessage());
+			error = LanguageManagerWF.getText("HdfsInterface.errormove",
+					new Object[] { e.getMessage() });
+		}
+		if (error != null) {
+			logger.debug(error);
+		}
+		return error;
+	}
+	
+	
+	/**
+	 * Copy from local fs to HDFS
+	 * 
+	 * @param in_path
+	 * @param out_path
+	 * @return Error message
+	 * @throws RemoteException
+	 */
+	@Override
+	public String copyFromLocal(String local_path, String hdfs_path) throws RemoteException{
+		String error = null;
+		try {
+			Path localP = new Path(local_path), hdfsP = new Path(hdfs_path);
+			HdfsFileChecker hChN = new HdfsFileChecker(hdfsP);
+			FileChecker hChO = new FileChecker(new File(local_path));
+			if (!hChN.exists() && hChO.exists()) {
+				FileSystem fs = NameNodeVar.getFS();
+				fs.copyFromLocalFile(false, localP, hdfsP);
+			} else {
+				error = LanguageManagerWF.getText("HdfsInterface.ouputexists");
+			}
+
+		} catch (IOException e) {
+			logger.error(e.getMessage());
+			error = LanguageManagerWF.getText("HdfsInterface.errormove",
+					new Object[] { e.getMessage() });
+		}
+		if (error != null) {
+			logger.debug(error);
+		}
+		return error;
+	}
+	
+	
+	/**
+	 * Copy from HDFS to local
+	 * 
+	 * @param in_path
+	 * @param out_path
+	 * @return Error message
+	 * @throws RemoteException
+	 */
+	@Override
+	public String copyToLocal(String hdfs_path, String local_path) throws RemoteException{
+		String error = null;
+		try {
+			Path localP = new Path(local_path), hdfsP = new Path(hdfs_path);
+			FileChecker hChN = new FileChecker(new File(local_path));
+			HdfsFileChecker hChO = new HdfsFileChecker(hdfsP);
+			if (!hChN.exists() && hChO.exists()) {
+				FileSystem fs = NameNodeVar.getFS();
+				fs.copyToLocalFile(false, localP, hdfsP);
+			} else {
+				error = LanguageManagerWF.getText("HdfsInterface.ouputexists");
+			}
 
 		} catch (IOException e) {
 			logger.error(e.getMessage());
