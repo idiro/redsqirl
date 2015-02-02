@@ -15,7 +15,7 @@
 		<h:outputText value="#{title}" />
 		<br />
 		<h:inputText value="#{hdfsBean.newProp[title]}"
-			disabled="#{hdfsBean.propsParam[title].const}"
+			disabled="#{hdfsBean.propsParam[title].constant}"
 			rendered="#{hdfsBean.propsParam[title].type != 'BOOLEAN'}" />
 			
 		<h:selectOneRadio value="#{hdfsBean.newProp[title]}" 

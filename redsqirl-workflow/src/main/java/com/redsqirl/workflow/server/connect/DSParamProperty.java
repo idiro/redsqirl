@@ -91,7 +91,7 @@ public class DSParamProperty extends UnicastRemoteObject implements
 	 * @return constant <code>true</code> if it constant else <code>false</code>
 	 */
 	@Override
-	public boolean isConst() throws RemoteException {
+	public boolean isConstant() throws RemoteException {
 		return constant;
 	}
 

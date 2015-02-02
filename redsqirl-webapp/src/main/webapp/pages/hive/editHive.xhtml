@@ -17,12 +17,12 @@
 		<br />
 		<h:inputText value="#{hiveBean.allProps[hiveBean.currentFileIndex][title]}" 
 			title="#{hiveBean.propsParam[title].help}"
-			disabled="#{hiveBean.propsParam[title].const}" 
+			disabled="#{hiveBean.propsParam[title].constant}" 
 			rendered="#{hiveBean.propsParam[title].type != 'BOOLEAN'}"
 		/>
 		<h:inputTextarea value="#{hiveBean.allProps[hiveBean.currentFileIndex][title]}" 
 			title="#{hiveBean.propsParam[title].help}"
-			disabled="#{hiveBean.propsParam[title].const}"
+			disabled="#{hiveBean.propsParam[title].constant}"
 			rendered="#{hiveBean.propsParam[title].type == 'BOOLEAN'}"
 			cols="30" rows="10" style="overflow:auto;resize:vertical"
 		/>
