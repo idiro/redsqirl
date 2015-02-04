@@ -393,7 +393,7 @@ public abstract class MapRedDir extends DataOutput{
 	 * @param columnIndex
 	 * @return name
 	 */
-	private String generateColumnName(int columnIndex) {
+	protected String generateColumnName(int columnIndex) {
 		return "FIELD"+(columnIndex+1);
 	}
 	
@@ -478,7 +478,7 @@ public abstract class MapRedDir extends DataOutput{
 
 	}
 	
-	private List<String[]> getSchemaList(){
+	protected List<String[]> getSchemaList(){
 		
 		JSONParser parser = new JSONParser();
 		List<String[]> schemaMap = new ArrayList<String[]>();
