@@ -2,6 +2,8 @@ package com.redsqirl.auth;
 
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.rmi.RemoteException;
@@ -10,9 +12,11 @@ import java.rmi.registry.Registry;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
@@ -23,9 +27,11 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.redsqirl.BaseBean;
+import com.redsqirl.CanvasBean;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.BaseCommand;
 import com.redsqirl.workflow.server.ProcessesManager;
+import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.WorkflowProcessesManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 
@@ -70,9 +76,8 @@ public class ServerProcess {
 
 					ProcessesManager pm = new WorkflowProcessesManager(user);
 					killOldProcess(pm, user);
-					final String command = BaseCommand.getBaseCommand(user,port,ProjectID.get())
-							+ " 1>/dev/null & echo $! 1> "+pm.getPath();
-
+					final String command = BaseCommand.getBaseCommand(user,port,ProjectID.get()) + " 1>/dev/null & echo $! 1> "+pm.getPath();
+					
 					logger.info("getting java");
 					String javahome = getJava();
 					String argJava = " -Xmx1500m ";
@@ -87,9 +92,35 @@ public class ServerProcess {
 
 					channel.getInputStream().close();
 					channel.disconnect();
-					for (String errorJar : BaseCommand.getNotIncludedJars()){
-						MessageUseful.addErrorMessage(errorJar);
+					
+					StringBuffer error = new StringBuffer();
+					
+					Properties properties = new Properties();
+					File licenseFile = new File(WorkflowPrefManager.getPathSystemLicence());
+					properties.load(new FileInputStream(licenseFile));
+					
+					for (String msg : BaseCommand.getLicenseErrorMsg(
+							WorkflowPrefManager.getPathUserPackagePref(user),
+							WorkflowPrefManager.getPathsyspackagepref(),
+							properties,
+							user,
+							ProjectID.get())){
+						error.append(" " + msg + "<br>");
 					}
+					if(!error.toString().isEmpty()){
+						FacesContext facesContext = FacesContext.getCurrentInstance();
+						HttpSession httpSession = (HttpSession) facesContext.getExternalContext().getSession(false);
+						httpSession.setAttribute("msnErrorInit", error.toString());
+						HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+						request.setAttribute("msnError", "msnError");
+						MessageUseful.addErrorMessage(error.toString());
+					}
+					
+					/*for (String errorJar : BaseCommand.getNotIncludedJars()){
+						HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+						request.setAttribute("msnError", "msnError");
+						MessageUseful.addErrorMessage(errorJar);
+					}*/
 
 				} catch (Exception e) {
 					logger.error("Fail to launch the server process");

@@ -2,11 +2,15 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>idiro</groupId>
-	<artifactId>redsqirl-webapp</artifactId>
-	<packaging>war</packaging>
-	<version>0.1</version>
-	<name>Idiro Data Miner - Web Application</name>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<idiro-tm.version>0.1</idiro-tm.version>
+		<compile.resources>${basedir}/src/main/resources</compile.resources>
+		<dist.war>${project.build.directory}/${project.artifactId}-${project.version}/war</dist.war>
+		<webXmlFile>${basedir}/src/main/webapp/WEB-INF/web.xml</webXmlFile>
+		<hadoop.version>1.0.4</hadoop.version>
+	</properties>
 
 	<parent>
 		<groupId>idiro</groupId>
@@ -14,26 +18,12 @@
 		<version>0.1</version>
 	</parent>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<idiro-base.version>0.1</idiro-base.version>
-		<idiro-hadoop.version>0.1</idiro-hadoop.version>
-		<idiro-tm.version>0.1</idiro-tm.version>
-		<oozie.version>3.1.3</oozie.version>
-		<prod.resources>src/main/dist</prod.resources>
-		<dist>${project.build.directory}/${project.artifactId}/</dist>
-		<dist.war>${project.build.directory}/${project.artifactId}/war</dist.war>
-		<dist.lib>${project.build.directory}/${project.artifactId}/lib</dist.lib>
-		<dist.bin>${project.build.directory}/${project.artifactId}/bin</dist.bin>
-		<dist.conf>${project.build.directory}/${project.artifactId}/conf</dist.conf>
-		<java.rmi.server.codebase>${project.artifactId}-${project.version}.jar</java.rmi.server.codebase>
-		<redsqirl-wf-interface.target>${basedir}/../redsqirl-wf-interface/target</redsqirl-wf-interface.target>
-		<redsqirl-wf-interface.jar>redsqirl-wf-interface-0.1-SNAPSHOT.jar</redsqirl-wf-interface.jar>
-		<redsqirl-workflow.target>${basedir}/../redsqirl-workflow/target</redsqirl-workflow.target>
-		<redsqirl-workflow.lib>${redsqirl-workflow.target}/redsqirl-workflow/lib</redsqirl-workflow.lib>
-		<main.resources.script>${basedir}/src/main/resources/scripts</main.resources.script>
-		<main.resources.conf>${basedir}/src/main/resources/conf</main.resources.conf>
-	</properties>
+	<groupId>idiro</groupId>
+	<artifactId>redsqirl-webapp</artifactId>
+	<packaging>war</packaging>
+	<version>${hadoop.version}-0.1</version>
+	<name>Red Sqirl - Web Application</name>
+
 
 
 	<issueManagement>
@@ -93,7 +83,7 @@
 
 		<resources>
 			<resource>
-				<directory>src/main/resources</directory>
+			    <directory>${compile.resources}</directory>
 				<filtering>true</filtering>
 			</resource>
 		</resources>
@@ -123,88 +113,30 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<configuration>
-					<outputDirectory>${dist.war}</outputDirectory>
-					<warName>redsqirl</warName>
-					<warSourceExcludes>pages/packages/**</warSourceExcludes>
-				</configuration>
+			    <groupId>idiro.maven</groupId>
+			    <artifactId>depman-maven-plugin</artifactId>
+			    <version>1.0</version>
+			    <executions>
+				<execution>
+				    <phase>process-resources</phase>
+				    <goals>
+					<goal>depman</goal>
+				    </goals>
+				</execution>
+			    </executions>
 			</plugin>
 
-			<!-- Copy dependencies -->
+
 			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.6</version>
-				<executions>
-					<execution>
-						<id>copy-workflow</id>
-						<phase>package</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${dist.lib}</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${redsqirl-workflow.lib}</directory>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-					<execution>
-						<id>copy-resources-bin</id>
-						<!-- here the phase you need -->
-						<phase>package</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${dist.bin}</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${main.resources.script}</directory>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-					<execution>
-						<id>copy-resources-conf</id>
-						<!-- here the phase you need -->
-						<phase>package</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${dist.conf}</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${main.resources.conf}</directory>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.4</version>
-				<executions>
-					<execution>
-						<id>zip</id> <!-- this is used for inheritance merges -->
-						<phase>package</phase> <!-- bind to the packaging phase -->
-						<goals>
-							<goal>single</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}</outputDirectory>
-							<descriptors>
-								<descriptor>src/main/assembly/zip.xml</descriptor>
-							</descriptors>
-						</configuration>
-					</execution>
-				</executions>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-war-plugin</artifactId>
+			    <configuration>
+				<warSourceDirectory>${basedir}/src/main/webapp</warSourceDirectory>
+				<outputDirectory>${dist.war}</outputDirectory>
+				<warName>redsqirl</warName>
+				<warSourceExcludes>pages/packages/**</warSourceExcludes>
+				<webXml>${webXmlFile}</webXml>
+			    </configuration>
 			</plugin>
 		</plugins>
 	</build>
@@ -212,7 +144,6 @@
 	<dependencies>
 
 		<!-- Idiro Dep -->
-
 		<dependency>
 			<groupId>idiro</groupId>
 			<artifactId>redsqirl-wf-interface</artifactId>
@@ -248,6 +179,19 @@
 			<scope>compile</scope>
 		</dependency>
 
+
+		<!--  Backend -->
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.3</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
+		</dependency>
+		
 		<!-- Other -->
 
 		<dependency>

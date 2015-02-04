@@ -1,0 +1,193 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <properties>
+	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	<idiro-tm.version>0.1</idiro-tm.version>
+	<prod.resources>${basedir}/src/main/dist</prod.resources>
+	<dist>${project.build.directory}/${project.artifactId}-${project.version}</dist>
+	<zip.xml>${basedir}/src/main/assembly/zip.xml</zip.xml>
+	<dist.lib>${dist}/lib</dist.lib>
+	<dist.war>${dist}/war</dist.war>
+	<dist.bin>${dist}/bin</dist.bin>
+	<dist.conf>${dist}/conf</dist.conf>
+	<redsqirl-workflow.lib>${basedir}/../redsqirl-workflow/target/redsqirl-workflow-${project.version}/lib</redsqirl-workflow.lib>
+	<redsqirl-base-sql.lib>${basedir}/../redsqirl-abstract-packages/redsqirl-base-sql/target/redsqirl-base-sql-${project.version}/lib</redsqirl-base-sql.lib>
+	<redsqirl-webapp.war>${basedir}/../redsqirl-webapp/target/redsqirl-webapp-${project.version}/war</redsqirl-webapp.war>
+	<main.resources.script>${basedir}/src/main/resources/scripts</main.resources.script>
+	<main.resources.conf>${basedir}/src/main/resources/conf</main.resources.conf>
+	<hadoop.version>1.0.4</hadoop.version>
+    </properties>
+
+
+    <parent>
+	<groupId>idiro</groupId>
+	<artifactId>redsqirl</artifactId>
+	<version>0.1</version>
+    </parent>
+
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>idiro</groupId>
+    <artifactId>redsqirl-install</artifactId>
+    <packaging>pom</packaging>
+    <version>${hadoop.version}-0.1</version>
+    <name>Red Sqirl - Install</name>
+    <description>Create an installer</description>
+    <url>http://ns.local.net/dev/idiro-wf-interface</url>
+
+    <distributionManagement>
+	<repository>
+	    <id>internal</id>
+	    <name>Internal Release Repository</name>
+	    <url>scp://dev.local.net/var/www/html/apache-archiva-1.3.6/data/repositories/internal</url>
+	</repository>
+
+	<snapshotRepository>
+	    <id>snapshots</id>
+	    <name>Internal Snapshot Repository</name>
+	    <url>scp://dev.local.net/var/www/html/apache-archiva-1.3.6/data/repositories/snapshots</url>
+	</snapshotRepository>
+    </distributionManagement>
+
+    <organization>
+	<name>Idiro Technologies</name>
+	<url>http://www.idiro.com</url>
+    </organization>
+
+    <reporting>
+	<plugins>
+	    <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-project-info-reports-plugin</artifactId>
+		<version>2.6</version>
+	    </plugin>
+	</plugins>
+    </reporting>
+
+    <build>
+	<extensions>
+	    <extension>
+		<groupId>org.apache.maven.wagon</groupId>
+		<artifactId>wagon-ssh</artifactId>
+		<version>1.0</version>
+	    </extension>
+	</extensions>
+	<plugins>
+	    <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-dependency-plugin</artifactId>
+		<version>2.6</version>
+	    </plugin>
+	    <plugin>
+		<groupId>idiro.maven</groupId>
+		<artifactId>depman-maven-plugin</artifactId>
+		<version>1.0</version>
+		<executions>
+		    <execution>
+			<phase>process-resources</phase>
+			<goals>
+			    <goal>depman</goal>
+			</goals>
+		    </execution>
+		</executions>
+	    </plugin>
+
+	    <!-- Copy dependencies -->
+	    <plugin>
+		<artifactId>maven-resources-plugin</artifactId>
+		<version>2.6</version>
+		<executions>
+		    <execution>
+			<id>copy-workflow</id>
+			<phase>package</phase>
+			<goals>
+			    <goal>copy-resources</goal>
+			</goals>
+			<configuration>
+			    <outputDirectory>${dist.lib}</outputDirectory>
+			    <resources>
+				<resource>
+				    <directory>${redsqirl-workflow.lib}</directory>
+				</resource>
+				<resource>
+				    <directory>${redsqirl-base-sql.lib}</directory>
+				</resource>
+			    </resources>
+			</configuration>
+		    </execution>
+		    <execution>
+			<id>copy-webapp</id>
+			<phase>package</phase>
+			<goals>
+			    <goal>copy-resources</goal>
+			</goals>
+			<configuration>
+			    <outputDirectory>${dist.war}</outputDirectory>
+			    <resources>
+				<resource>
+				    <directory>${redsqirl-webapp.war}</directory>
+				</resource>
+			    </resources>
+			</configuration>
+		    </execution>
+
+		    <execution>
+			<id>copy-resources-bin</id>
+			<!-- here the phase you need -->
+			<phase>package</phase>
+			<goals>
+			    <goal>copy-resources</goal>
+			</goals>
+			<configuration>
+			    <outputDirectory>${dist.bin}</outputDirectory>
+			    <resources>
+				<resource>
+				    <directory>${main.resources.script}</directory>
+				</resource>
+			    </resources>
+			</configuration>
+		    </execution>
+		    <execution>
+			<id>copy-resources-conf</id>
+			<!-- here the phase you need -->
+			<phase>package</phase>
+			<goals>
+			    <goal>copy-resources</goal>
+			</goals>
+			<configuration>
+			    <outputDirectory>${dist.conf}</outputDirectory>
+			    <resources>
+				<resource>
+				    <directory>${main.resources.conf}</directory>
+				</resource>
+			    </resources>
+			</configuration>
+		    </execution>
+		</executions>
+	    </plugin>
+	    <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-assembly-plugin</artifactId>
+		<version>2.4</version>
+		<executions>
+		    <execution>
+			<id>zip</id> <!-- this is used for inheritance merges -->
+			<phase>package</phase> <!-- bind to the packaging phase -->
+			<goals>
+			    <goal>single</goal>
+			</goals>
+			<configuration>
+			    <outputDirectory>${project.build.directory}</outputDirectory>
+			    <finalName>redsqirl-${project.version}</finalName>
+			    <appendAssemblyId>false</appendAssemblyId>
+			    <descriptors>
+				<descriptor>${zip.xml}</descriptor>
+			    </descriptors>
+			</configuration>
+		    </execution>
+		</executions>
+	    </plugin>
+
+	</plugins>
+    </build>
+</project>

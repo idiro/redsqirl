@@ -26,13 +26,11 @@ import net.lingala.zip4j.exception.ZipException;
 
 import org.ajax4jsf.model.KeepAlive;
 import org.apache.commons.io.FileUtils;
-import org.apache.hadoop.fs.Path;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.idiro.ProjectID;
-import com.idiro.hadoop.NameNodeVar;
 import com.redsqirl.BaseBean;
 import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.useful.MessageUseful;
@@ -239,7 +237,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 		System.out.println(folder.getPath());
 		
 		
-		SuperActionManager saManager = new SuperActionManager();
+		SuperActionManager saManager = getSuperActionManager();
 		DataFlowInterface dfi = getworkFlowInterface();
 		
 		String error = null;
@@ -272,7 +270,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 			}
 			
 			if (file.endsWith(".rs")){
-				NameNodeVar.getFS().copyFromLocalFile(false, new Path(folder.getPath() + "/" + file), new Path("/user/"+userInfoBean.getUserName()+"/redsqirl-save/"+file));
+				getHDFS().copyFromLocal(folder.getPath() + "/" + file,"/user/"+userInfoBean.getUserName()+"/redsqirl-save/"+file);
 			}
 		}
 	    

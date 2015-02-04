@@ -41,7 +41,7 @@ public interface DataStore extends Remote {
 		 *         <code>false</code>
 		 * @throws RemoteException
 		 */
-		boolean isConst() throws RemoteException;
+		boolean isConstant() throws RemoteException;
 
 		/**
 		 * True if the property can be edited.

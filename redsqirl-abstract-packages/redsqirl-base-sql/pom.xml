@@ -1,27 +1,29 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+    http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
 
     <properties>
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	<idiro-base.version>0.1</idiro-base.version>
+	<generated.pck.dir>${project.build.directory}/${project.artifactId}-${project.version}/</generated.pck.dir>
+	<maven.build.timestamp.format>yyyy-MM-dd</maven.build.timestamp.format>
+	<timestamp>${maven.build.timestamp}</timestamp>
 	<hadoop.version>1.0.4</hadoop.version>
-	<idiro-tm.version>0.1</idiro-tm.version>
     </properties>
 
     <parent>
 	<groupId>idiro</groupId>
-	<artifactId>redsqirl</artifactId>
-	<version>0.1</version>
+	<artifactId>redsqirl-abstract-packages</artifactId>
+	<version>${hadoop.version}-0.1</version>
     </parent>
 
-
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>idiro</groupId>
-    <artifactId>redsqirl-wf-interface</artifactId>
-    <packaging>jar</packaging>
+    <artifactId>redsqirl-base-sql</artifactId>
     <version>${hadoop.version}-0.1</version>
-    <name>Red Sqirl - Interface</name>
-    <description>Provide the interface used by Red Sqirl app</description>
-    <url>http://ns.local.net/dev/idiro-wf-interface</url>
+    <packaging>jar</packaging>
+    <name>Red Sqirl - Sql Base Package</name>
+    <description>Provide basic sql actions</description>
 
     <distributionManagement>
 	<repository>
@@ -49,8 +51,16 @@
 		<artifactId>maven-project-info-reports-plugin</artifactId>
 		<version>2.6</version>
 	    </plugin>
+	    <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-javadoc-plugin</artifactId>
+		<version>2.9</version>
+		<configuration>
+		</configuration>
+	    </plugin>
 	</plugins>
     </reporting>
+
 
     <build>
 
@@ -61,6 +71,8 @@
 		<version>1.0</version>
 	    </extension>
 	</extensions>
+
+
 
 	<plugins>
 	    <plugin>
@@ -85,28 +97,57 @@
 		    </execution>
 		</executions>
 	    </plugin>
+
+	    <!-- Copy dependencies -->
+	    <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-dependency-plugin</artifactId>
+		<version>2.8</version>
+		<executions>
+		    <execution>
+			<id>copy-artifact</id>
+			<phase>package</phase>
+			<goals>
+			    <goal>copy</goal>
+			</goals>
+			<configuration>
+			    <artifactItems>
+				<artifactItem>
+				    <groupId>${project.groupId}</groupId>
+				    <artifactId>${project.artifactId}</artifactId>
+				    <version>${project.version}</version>
+				    <type>${project.packaging}</type>
+				</artifactItem>
+			    </artifactItems>
+			    <outputDirectory>${generated.pck.dir}/lib/</outputDirectory>
+			</configuration>
+		    </execution>
+		</executions>
+	    </plugin>
 	</plugins>
     </build>
 
     <dependencies>
+
 	<dependency>
 	    <groupId>idiro</groupId>
-	    <artifactId>idiro-tm</artifactId>
-	    <version>${idiro-tm.version}</version>
-	    <scope>compile</scope>
+	    <artifactId>redsqirl-workflow</artifactId>
+	    <version>${project.version}</version>
 	</dependency>
-	<dependency>
-	    <groupId>idiro</groupId>
-	    <artifactId>idiro-base</artifactId>
-	    <version>${idiro-base.version}</version>
-	    <scope>compile</scope>
-	</dependency>
+
+	<!-- TEST -->
 	<dependency>
 	    <groupId>junit</groupId>
 	    <artifactId>junit</artifactId>
 	    <version>4.11</version>
-	    <scope>test</scope>
 	</dependency>
+	<dependency>
+	    <groupId>log4j</groupId>
+	    <artifactId>log4j</artifactId>
+	    <version>1.2.12</version>
+	    <scope>compile</scope>
+	</dependency>
+
     </dependencies>
 
 </project>

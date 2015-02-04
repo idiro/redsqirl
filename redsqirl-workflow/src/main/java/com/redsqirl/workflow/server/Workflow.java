@@ -67,6 +67,7 @@ import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 import com.redsqirl.workflow.server.interfaces.SuperElement;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 import com.redsqirl.workflow.utils.SuperActionManager;
+import com.redsqirl.workflow.utils.WfSuperActionManager;
 
 /**
  * Class that manages a workflow.
@@ -310,8 +311,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 	}
 
-	public List<String> getSuperActions(){
-		return new SuperActionManager().getAvailableSuperActions(System.getProperty("user.name"));
+	public List<String> getSuperActions() throws RemoteException{
+		return new WfSuperActionManager().getAvailableSuperActions(System.getProperty("user.name"));
 	}
 
 	public String loadMenu(Map<String, List<String>> newMenu) {

@@ -1,239 +1,238 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-    http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <properties>
+	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	<oozie.version>3.1.3</oozie.version>
+	<prod.resources>src/main/dist</prod.resources>
+	<dist>${project.build.directory}/${project.artifactId}-${project.version}</dist>
+	<dist.lib>${dist}/lib</dist.lib>
+	<java.rmi.server.codebase>${project.artifactId}-${project.version}.jar</java.rmi.server.codebase>
+	<hadoop.version>1.0.4</hadoop.version>
+	<idiro-hadoop.version>${hadoop.version}-0.2-SNAPSHOT</idiro-hadoop.version>
+    </properties>
 
-	<modelVersion>4.0.0</modelVersion>
+    <parent>
 	<groupId>idiro</groupId>
-	<artifactId>redsqirl-workflow</artifactId>
-	<packaging>jar</packaging>
+	<artifactId>redsqirl</artifactId>
 	<version>0.1</version>
-	<name>Idiro Data Miner - Workflow</name>
-	<description>Programme to interact with a Hadoop cluster</description>
-	<url>http://ns.local.net/dev/redsqirl-workflow</url>
+    </parent>
 
-	<parent>
-		<groupId>idiro</groupId>
-		<artifactId>redsqirl</artifactId>
-		<version>0.1</version>
-	</parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>idiro</groupId>
+    <artifactId>redsqirl-workflow</artifactId>
+    <packaging>jar</packaging>
+    <name>Red Sqirl - Workflow</name>
+    <description>Programme to interact with a Hadoop cluster</description>
+    <url>http://ns.local.net/dev/redsqirl-workflow</url>
+    <version>${hadoop.version}-0.1</version>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<oozie.version>3.1.3</oozie.version>
-		<prod.resources>src/main/dist</prod.resources>
-		<dist>${project.build.directory}/${project.artifactId}/</dist>
-		<dist.lib>${project.build.directory}/${project.artifactId}/lib</dist.lib>
-		<java.rmi.server.codebase>${project.artifactId}-${project.version}.jar</java.rmi.server.codebase>
-	</properties>
+    <distributionManagement>
+	<repository>
+	    <id>internal</id>
+	    <name>Internal Release Repository</name>
+	    <url>scp://dev.local.net/var/www/html/apache-archiva-1.3.6/data/repositories/internal</url>
+	</repository>
+	<snapshotRepository>
+	    <id>snapshots</id>
+	    <name>Internal Snapshot Repository</name>
+	    <url>scp://dev.local.net/var/www/html/apache-archiva-1.3.6/data/repositories/snapshots</url>
+	</snapshotRepository>
+    </distributionManagement>
 
-	<distributionManagement>
-		<repository>
-			<id>internal</id>
-			<name>Internal Release Repository</name>
-			<url>scp://dev.local.net/var/www/html/apache-archiva-1.3.6/data/repositories/internal</url>
-		</repository>
-		<snapshotRepository>
-			<id>snapshots</id>
-			<name>Internal Snapshot Repository</name>
-			<url>scp://dev.local.net/var/www/html/apache-archiva-1.3.6/data/repositories/snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
+    <organization>
+	<name>Idiro Technologies</name>
+	<url>http://www.idiro.com</url>
+    </organization>
+    <reporting>
+	<plugins>
+	    <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-project-info-reports-plugin</artifactId>
+		<version>2.6</version>
+	    </plugin>
 
-	<organization>
-		<name>Idiro Technologies</name>
-		<url>http://www.idiro.com</url>
-	</organization>
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>2.6</version>
-			</plugin>
-			<!-- <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9</version>
-				<configuration>
-				</configuration>
-				<reportSets>
-					<reportSet>
-						<id>html</id>
-						<reports>
-							<report>javadoc</report>
-						</reports>
-					</reportSet>
-				</reportSets>
-			</plugin>-->
-		</plugins>
-	</reporting>
+	</plugins>
+    </reporting>
 
-	<build>
-		<extensions>
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-ssh</artifactId>
-				<version>1.0</version>
-			</extension>
-		</extensions>
+    <build>
+	<extensions>
+	    <extension>
+		<groupId>org.apache.maven.wagon</groupId>
+		<artifactId>wagon-ssh</artifactId>
+		<version>1.0</version>
+	    </extension>
+	</extensions>
 
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-			</resource>
-			<resource>
-				<directory>src/test/resources</directory>
-				<filtering>true</filtering>
-			</resource>
-		</resources>
+	<resources>
+	    <resource>
+		<directory>src/main/resources</directory>
+		<filtering>true</filtering>
+	    </resource>
+	    <resource>
+		<directory>src/test/resources</directory>
+		<filtering>true</filtering>
+	    </resource>
+	</resources>
 
-		<plugins>
-		
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-				</configuration>
-			</plugin>
+	<plugins>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.11</version>
-				<dependencies>
-					<dependency>
-						<groupId>org.apache.maven.surefire</groupId>
-						<artifactId>surefire-junit47</artifactId>
-						<version>2.12</version>
-					</dependency>
-				</dependencies>
-			</plugin>
+	    <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-compiler-plugin</artifactId>
+		<version>3.1</version>
+		<configuration>
+		    <source>1.6</source>
+		    <target>1.6</target>
+		</configuration>
+	    </plugin>
+	    <plugin>
+		<groupId>idiro.maven</groupId>
+		<artifactId>depman-maven-plugin</artifactId>
+		<version>1.0</version>
+		<executions>
+		    <execution>
+			<phase>process-resources</phase>
+			<goals>
+			    <goal>depman</goal>
+			</goals>
+		    </execution>
+		</executions>
+	    </plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.3.1</version>
-				<configuration>
-					<outputDirectory>${dist}/lib/</outputDirectory>
-				</configuration>
-			</plugin>
-			<!-- Copy dependencies -->
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.6</version>
-				<executions>
-					<execution>
-						<id>copy-resources</id>
-						<!-- here the phase you need -->
-						<phase>package</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${dist}</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${prod.resources}</directory>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<version>2.6</version>
-				<executions>
-					<execution>
-						<phase>compile</phase>
-						<goals>
-							<goal>analyze-dep-mgt</goal>
-						</goals>
-						<configuration>
-							<ignoreNonCompile>true</ignoreNonCompile>
-							<verbose>true</verbose>
-						</configuration>
-					</execution>
-					<execution>
-						<phase>package</phase>
-						<id>copy-dependencies</id>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${dist.lib}</outputDirectory>
-							<excludeArtifactIds>junit,ant,antlr,antlr-runtime</excludeArtifactIds>
-							<!-- <excludeGroupIds>idiro</excludeGroupIds> -->
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+	    <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-surefire-plugin</artifactId>
+		<version>2.11</version>
+		<dependencies>
+		    <dependency>
+			<groupId>org.apache.maven.surefire</groupId>
+			<artifactId>surefire-junit47</artifactId>
+			<version>2.12</version>
+		    </dependency>
+		</dependencies>
+	    </plugin>
 
-		</plugins>
+	    <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-jar-plugin</artifactId>
+		<version>2.3.1</version>
+		<configuration>
+		    <outputDirectory>${dist.lib}</outputDirectory>
+		</configuration>
+	    </plugin>
+	    <!-- Copy dependencies -->
+	    <plugin>
+		<artifactId>maven-resources-plugin</artifactId>
+		<version>2.6</version>
+		<executions>
+		    <execution>
+			<id>copy-resources</id>
+			<!-- here the phase you need -->
+			<phase>package</phase>
+			<goals>
+			    <goal>copy-resources</goal>
+			</goals>
+			<configuration>
+			    <outputDirectory>${dist}</outputDirectory>
+			    <resources>
+				<resource>
+				    <directory>${prod.resources}</directory>
+				</resource>
+			    </resources>
+			</configuration>
+		    </execution>
+		</executions>
+	    </plugin>
 
-	</build>
-	<dependencies>
-		<!-- Idiro Dep -->
-		<dependency>
-			<groupId>idiro</groupId>
-			<artifactId>redsqirl-wf-interface</artifactId>
-			<version>${project.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>idiro</groupId>
-			<artifactId>redsqirl-sql-abstract</artifactId>
-			<version>${project.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<!-- Other -->
-		<dependency>
-			<groupId>com.yahoo.oozie</groupId>
-			<artifactId>oozie-client</artifactId>
-			<version>${oozie.version}</version>
-			<scope>compile</scope>
-		</dependency>
+	    <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-dependency-plugin</artifactId>
+		<version>2.6</version>
+		<executions>
+		    <execution>
+			<phase>compile</phase>
+			<goals>
+			    <goal>analyze-dep-mgt</goal>
+			</goals>
+			<configuration>
+			    <ignoreNonCompile>true</ignoreNonCompile>
+			    <verbose>true</verbose>
+			</configuration>
+		    </execution>
+		    <execution>
+			<phase>package</phase>
+			<id>copy-dependencies</id>
+			<goals>
+			    <goal>copy-dependencies</goal>
+			</goals>
+			<configuration>
+			    <outputDirectory>${dist.lib}</outputDirectory>
+			    <excludeArtifactIds>junit,ant,antlr,antlr-runtime</excludeArtifactIds>
+			    <!-- <excludeGroupIds>idiro</excludeGroupIds> -->
+			</configuration>
+		    </execution>
+		</executions>
+	    </plugin>
 
-		<dependency>
-			<groupId>commons-cli</groupId>
-			<artifactId>commons-cli</artifactId>
-			<version>1.2</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.googlecode.json-simple</groupId>
-			<artifactId>json-simple</artifactId>
-			<version>1.1</version>
-			<scope>compile</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-compress</artifactId>
-			<version>1.0</version>
-		</dependency>
+	</plugins>
 
-		<!-- TEST -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.11</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.12</version>
-			<scope>compile</scope>
-		</dependency>
-	</dependencies>
+    </build>
+    <dependencies>
+	<!-- Idiro Dep -->
+	<dependency>
+	    <groupId>idiro</groupId>
+	    <artifactId>idiro-hadoop</artifactId>
+	    <version>${idiro-hadoop.version}</version>
+	    <scope>compile</scope>
+	</dependency>
+	<dependency>
+	    <groupId>idiro</groupId>
+	    <artifactId>redsqirl-wf-interface</artifactId>
+	    <version>${project.version}</version>
+	    <scope>compile</scope>
+	</dependency>
+	<!-- Other -->
+	<dependency>
+	    <groupId>com.yahoo.oozie</groupId>
+	    <artifactId>oozie-client</artifactId>
+	    <version>${oozie.version}</version>
+	    <scope>compile</scope>
+	</dependency>
+
+	<dependency>
+	    <groupId>commons-cli</groupId>
+	    <artifactId>commons-cli</artifactId>
+	    <version>1.2</version>
+	    <scope>compile</scope>
+	</dependency>
+	<dependency>
+	    <groupId>com.googlecode.json-simple</groupId>
+	    <artifactId>json-simple</artifactId>
+	    <version>1.1</version>
+	    <scope>compile</scope>
+	</dependency>
+
+	<dependency>
+	    <groupId>org.apache.commons</groupId>
+	    <artifactId>commons-compress</artifactId>
+	    <version>1.0</version>
+	</dependency>
+
+	<!-- TEST -->
+	<dependency>
+	    <groupId>junit</groupId>
+	    <artifactId>junit</artifactId>
+	    <version>4.11</version>
+	    <scope>test</scope>
+	</dependency>
+	<dependency>
+	    <groupId>log4j</groupId>
+	    <artifactId>log4j</artifactId>
+	    <version>1.2.12</version>
+	    <scope>compile</scope>
+	</dependency>
+    </dependencies>
 
 </project>

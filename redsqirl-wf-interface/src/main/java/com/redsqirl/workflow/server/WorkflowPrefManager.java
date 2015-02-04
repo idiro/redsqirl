@@ -15,8 +15,8 @@ import java.util.Properties;
 import org.apache.log4j.Logger;
 //import java.util.prefs.Preferences;
 
+
 import com.idiro.BlockManager;
-import com.idiro.hadoop.NameNodeVar;
 import com.redsqirl.workflow.utils.PackageManager;
 import com.redsqirl.workflow.utils.SuperActionManager;
 
@@ -336,7 +336,6 @@ public class WorkflowPrefManager extends BlockManager {
 			try{
 				logger.info("Call constructor");
 				runner = new WorkflowPrefManager();
-				NameNodeVar.set(getUserProperty(sys_namenode));
 				runner.init = true;
 			}catch(Exception e){
 				runner.init = false;
@@ -364,7 +363,7 @@ public class WorkflowPrefManager extends BlockManager {
 			logger.debug(libPackage.getAbsolutePath());
 			libPackage.mkdirs();
 			
-			File superactionF = new SuperActionManager().getSuperActionMainDir(userName);
+			File superactionF = getSuperActionMainDir(userName);
 			superactionF.mkdirs();
 			
 			// Everybody is able to write in this home folder
@@ -679,6 +678,21 @@ public class WorkflowPrefManager extends BlockManager {
 	 */
 	public static String getPathIconMenu() {
 		return  pathUserPref+ "/icon_menu.txt";
+	}
+	
+	
+
+	public static File getSuperActionMainDir(String user) {
+		File ans = null;
+		if (user != null) {
+			ans = new File(WorkflowPrefManager.getPathUserSuperAction(user));
+		} else {
+			ans = new File(WorkflowPrefManager.getPathSysSuperAction());
+		}
+
+		logger.info("Super action path for "+(user == null? "sys":user)+": "+ans.getPath());
+		
+		return ans;
 	}
 	
 	/**

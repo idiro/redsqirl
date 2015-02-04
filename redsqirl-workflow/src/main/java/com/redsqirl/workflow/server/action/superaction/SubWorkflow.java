@@ -333,7 +333,6 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 		}
 		
 		logger.info("reading suborkflow");
-		boolean valid = true;
 		
 		Boolean licensed = getPrivilege();
 		logger.info("privilege "+licensed);
@@ -386,18 +385,14 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 				keyModule.put(dec.name,name);
 				keyModule.put(dec.license,softwareLicense);
 				
-				valid = dec.validateAllValuesModule(keyModule);
+				error = dec.validateAllValuesModule(keyModule);
 			}
 			
 		}
 			
-		if(!valid){
-			error = "License is invalid for "+name;
+		if(error != null){
 			return error;
 		}
-			
-		//check license 
-		//return error if license invalid
 		
 		return super.readFromLocal(xmlFile);
 	}

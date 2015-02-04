@@ -9,23 +9,23 @@
   <fileSets>
     <fileSet>
       <directory>${dist}/bin</directory>
-      <outputDirectory>${project.artifactId}/bin</outputDirectory>
+      <outputDirectory>redsqirl-${project.version}/bin</outputDirectory>
       <includes>
       	<include>*.sh</include>
       </includes>
-      <fileMode>0755</fileMode>
+      <fileMode>0744</fileMode>
     </fileSet>
     <fileSet>
       <directory>${dist.war}</directory>
-      <outputDirectory>${project.artifactId}/war</outputDirectory>
+      <outputDirectory>redsqirl-${project.version}/war</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>${dist.lib}</directory>
-      <outputDirectory>${project.artifactId}/lib</outputDirectory>
+      <outputDirectory>redsqirl-${project.version}/lib</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>${dist.conf}</directory>
-      <outputDirectory>${project.artifactId}/conf</outputDirectory>
+      <outputDirectory>redsqirl-${project.version}/conf</outputDirectory>
     </fileSet>
   </fileSets>
 </assembly>

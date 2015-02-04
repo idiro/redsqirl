@@ -29,6 +29,7 @@ import com.redsqirl.workflow.server.datatype.MapRedTextType;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.test.TestUtils;
 import com.redsqirl.workflow.utils.SuperActionManager;
+import com.redsqirl.workflow.utils.WfSuperActionManager;
 
 /**
  * 1. Create a Sub Workflow
@@ -231,7 +232,7 @@ public class SubWorkflowTests {
 			assertTrue("Fail to read element subworkflow: "+sw2.getElement().size(), sw2.getElement().size() == 3);
 			
 			//Install
-			SuperActionManager saMan = new SuperActionManager();
+			SuperActionManager saMan = new WfSuperActionManager();
 			saMan.uninstall(userName, sName);
 			error = saMan.install(userName, sw, null);
 			assertTrue("Fail to install subworkflow: "+error, error == null);
@@ -256,7 +257,7 @@ public class SubWorkflowTests {
 		String userName = System.getProperty("user.name");
 		String error = null;
 		try{
-			new SuperActionManager().uninstall(userName, sName);
+			new WfSuperActionManager().uninstall(userName, sName);
 
 			//Create
 			Workflow w = new Workflow("workflowAgg_"+getClass().getName());
