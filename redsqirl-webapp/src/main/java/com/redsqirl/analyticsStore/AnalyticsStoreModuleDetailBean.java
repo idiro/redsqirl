@@ -320,6 +320,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 			object.put("type", moduleVersion.getType());
 			object.put("idModuleVersion", moduleVersion.getIdVersion());
 			object.put("installationType", userInstall ? "USER" : "SYSTEM");
+			object.put("user", userInstall ? userInfoBean.getUserName() : "system");
 			object.put("email", analyticsStoreLoginBean.getEmail());
 			object.put("password", analyticsStoreLoginBean.getPassword());
 			
