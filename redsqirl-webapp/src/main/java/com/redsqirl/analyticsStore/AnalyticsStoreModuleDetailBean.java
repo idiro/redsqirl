@@ -52,6 +52,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 	private AnalyticsStoreLoginBean analyticsStoreLoginBean;
 	private UserInfoBean userInfoBean;
 	private RedSqirlModule moduleVersion;
+	private List<RedSqirlModuleVersionDependency> redSqirlModuleVersionDependency;
 	
 	private boolean installed;
 	private boolean userInstall;
@@ -80,8 +81,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 			Client client = Client.create();
 			WebResource webResource = client.resource(uri);
 	
-			ClientResponse response = webResource.type("application/json")
-			   .post(ClientResponse.class, object.toString());
+			ClientResponse response = webResource.type("application/json").post(ClientResponse.class, object.toString());
 			String ansServer = response.getEntity(String.class);
 			
 			try{
@@ -103,9 +103,11 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 					pck.setPrice(getString(pckObj, "price"));
 					pck.setValidated(getString(pckObj, "validated"));
 					
+					pck.setJson(getString(pckObj, "jsonObject"));
+					
 					versionList.add(pck);
 					
-					if (pckObj.getString("idVersion").equals(version)){
+					if(pckObj.getString("idVersion").equals(version)){
 						moduleVersion = pck;
 					}
 				}
@@ -116,6 +118,20 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 			if (moduleVersion == null){
 				moduleVersion = versionList.get(0);
 			}
+			
+			//dependency
+			JSONArray jsonArray = new JSONArray(moduleVersion.getJson().substring(moduleVersion.getJson().indexOf("["), moduleVersion.getJson().lastIndexOf("]")+1));
+			List<RedSqirlModuleVersionDependency> redSqirlModuleVersionDependencyList = new ArrayList<RedSqirlModuleVersionDependency>();
+			for(int j = 0; j < jsonArray.length();++j){
+				JSONObject jsonObject = jsonArray.getJSONObject(j);
+				RedSqirlModuleVersionDependency redSqirlModuleVersionDependency = new RedSqirlModuleVersionDependency();
+				redSqirlModuleVersionDependency.setModuleName(getString(jsonObject, "moduleName"));
+				redSqirlModuleVersionDependency.setValueStart(getString(jsonObject, "valueStart"));
+				redSqirlModuleVersionDependency.setValueEnd(getString(jsonObject, "valueEnd"));
+				redSqirlModuleVersionDependencyList.add(redSqirlModuleVersionDependency);
+			}
+			setRedSqirlModuleVersionDependency(redSqirlModuleVersionDependencyList);
+			
 			
 			String user = userInfoBean.getUserName();
 			PackageManager pckMng = new PackageManager();
@@ -135,6 +151,10 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 	
 	private String getString(JSONObject pckObj, String object) throws JSONException{
 		return pckObj.has(object) ? pckObj.getString(object) : "";
+	}
+	
+	private JSONObject getJsonObj(JSONObject pckObj, String object) throws JSONException{
+		return pckObj.getJSONObject(object);
 	}
 	
 	public String installModel() throws ZipException, IOException{
@@ -161,8 +181,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 			Client client = Client.create();
 			WebResource webResource = client.resource(uri);
 	
-			ClientResponse response = webResource.type("application/json")
-			   .post(ClientResponse.class, object.toString());
+			ClientResponse response = webResource.type("application/json").post(ClientResponse.class, object.toString());
 			String ansServer = response.getEntity(String.class);
 			
 			System.out.println(ansServer);
@@ -476,6 +495,14 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 	public void setUserInfoBean(UserInfoBean userInfoBean) {
 		this.userInfoBean = userInfoBean;
 	}
-	
+
+	public List<RedSqirlModuleVersionDependency> getRedSqirlModuleVersionDependency() {
+		return redSqirlModuleVersionDependency;
+	}
+
+	public void setRedSqirlModuleVersionDependency(
+			List<RedSqirlModuleVersionDependency> redSqirlModuleVersionDependency) {
+		this.redSqirlModuleVersionDependency = redSqirlModuleVersionDependency;
+	}
 	
 }

@@ -23,6 +23,7 @@ public class RedSqirlModule implements Serializable{
 	private String validated;
 	private String license;
 	private String type;
+	private String json;
 	
 	public int getId() {
 		return id;
@@ -135,4 +136,13 @@ public class RedSqirlModule implements Serializable{
 	public void setType(String type) {
 		this.type = type;
 	}
+
+	public String getJson() {
+		return json;
+	}
+
+	public void setJson(String json) {
+		this.json = json;
+	}
+	
 }
