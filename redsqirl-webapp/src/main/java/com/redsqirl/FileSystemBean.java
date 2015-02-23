@@ -37,6 +37,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 
 	private List<SelectItem> listExtensions;
+	private boolean allowDirectories;
 	private String extensionsSelected;
 	private String openOutputData;
 
@@ -180,8 +181,14 @@ public class FileSystemBean extends BaseBean implements Serializable {
 				allProperties.putAll(mapSSH.get(path));
 				getTableGrid().add(allProperties);
 				getAllProps().add(allProperties);
-
-				if(openOutputData != null && openOutputData.equals("Y")
+				
+				getTableGrid().getRows().get(i).setDisableSelect(false);
+				if (getAllProps().get(i).get("type").equalsIgnoreCase("directory") &&
+						!isAllowDirectories()) {
+					
+					getTableGrid().getRows().get(i).setDisableSelect(false);
+				}
+				else if(openOutputData != null && openOutputData.equals("Y")
 						&& !getAllProps().get(i).get("type").equalsIgnoreCase("directory")){
 					getTableGrid().getRows().get(i).setDisableSelect(false);
 				}else{
@@ -191,7 +198,6 @@ public class FileSystemBean extends BaseBean implements Serializable {
 						getTableGrid().getRows().get(i).setDisableSelect(true);
 					}
 				}
-
 				++i;
 			}
 		}
@@ -787,4 +793,11 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		this.openOutputData = openOutputData;
 	}
 
+	public boolean isAllowDirectories() {
+		return allowDirectories;
+	}
+
+	public void setAllowDirectories(boolean allowDirectories) {
+		this.allowDirectories = allowDirectories;
+	}
 }

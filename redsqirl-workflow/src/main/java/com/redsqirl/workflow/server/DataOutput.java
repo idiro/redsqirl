@@ -575,4 +575,9 @@ DFEOutput {
 	public void setHeaderEditorOnBrowser(boolean header) throws RemoteException{
 		headerEditorOnBrowser = header;
 	}
+	
+	@Override
+	public boolean allowDirectories(){
+		return true;
+	}
 }

@@ -298,6 +298,7 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 					getFileSystem().setExtensionsSelected(listExtensions.get(0).getLabel());
 				}
 				getFileSystem().setListExtensions(listExtensions);
+				getFileSystem().setAllowDirectories(dfeOut.allowDirectories());
 				getFileSystem().updateTable();
 
 				if (dfeOut.getFields() != null) {

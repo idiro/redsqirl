@@ -35,7 +35,7 @@ import com.redsqirl.workflow.utils.LanguageManagerWF;
  * @author etienne
  * 
  */
-public class MapRedPlainTextType extends MapRedCompressedType {
+public class MapRedPlainTextHeaderType extends MapRedPlainTextType {
 
 	/**
 	 * 
@@ -44,7 +44,7 @@ public class MapRedPlainTextType extends MapRedCompressedType {
 	/** Delimiter Key */
 	public final static String key_delimiter = "delimiter";
 	
-	private static Logger logger = Logger.getLogger(MapRedPlainTextType.class);
+	private static Logger logger = Logger.getLogger(MapRedPlainTextHeaderType.class);
 
 
 	/**
@@ -52,7 +52,7 @@ public class MapRedPlainTextType extends MapRedCompressedType {
 	 * 
 	 * @throws RemoteException
 	 */
-	public MapRedPlainTextType() throws RemoteException {
+	public MapRedPlainTextHeaderType() throws RemoteException {
 		super();
 		setHeaderEditorOnBrowser(true);
 	}
@@ -63,7 +63,7 @@ public class MapRedPlainTextType extends MapRedCompressedType {
 	 * @param fields
 	 * @throws RemoteException
 	 */
-	public MapRedPlainTextType(FieldList fields) throws RemoteException {
+	public MapRedPlainTextHeaderType(FieldList fields) throws RemoteException {
 		super(fields);
 		setHeaderEditorOnBrowser(true);
 	}
@@ -76,7 +76,7 @@ public class MapRedPlainTextType extends MapRedCompressedType {
 	 */
 	@Override
 	public String getTypeName() throws RemoteException {
-		return "PLAIN TEXT MAP-REDUCE FILE";
+		return "PLAIN TEXT MAP-REDUCE FILE WITH HEADER";
 	}
 	
 	@Override
@@ -137,6 +137,9 @@ public class MapRedPlainTextType extends MapRedCompressedType {
 		List<Map<String,String>> ans = new LinkedList<Map<String,String>>();
 		Iterator<String> it = selectLine(maxToRead).iterator();
 		
+		if (it.hasNext()){
+			it.next();
+		}
 		while(it.hasNext()){
 			String l = it.next();
 			if(l != null && ! l.isEmpty()){
@@ -342,7 +345,7 @@ public class MapRedPlainTextType extends MapRedCompressedType {
 	public String getDelimiterOrOctal() {
 		String octal = getOctalDelimiter();
 		return octal != null ? octal
-				: getProperty(MapRedPlainTextType.key_delimiter);
+				: getProperty(MapRedPlainTextHeaderType.key_delimiter);
 	}
 
 	@Override
@@ -501,6 +504,15 @@ public class MapRedPlainTextType extends MapRedCompressedType {
 		FieldList fl = new OrderedFieldList();
 		try {
 			
+			List<String> headers = new ArrayList<String>();
+			String lineHeader = this.selectLine(1).get(0);
+				
+			for (String s : lineHeader.split(Pattern
+					.quote(delimiter))) {
+				headers.add(s);
+			}
+			
+			
 			List<String> lines = this.selectLine(2000);
 			Map<String,Set<String>> valueMap = new LinkedHashMap<String,Set<String>>();
 			Map<String,Integer> nbValueMap = new LinkedHashMap<String,Integer>();
@@ -508,6 +520,7 @@ public class MapRedPlainTextType extends MapRedCompressedType {
 			Map<String, FieldType> schemaTypeMap = new LinkedHashMap<String, FieldType>();
 			
 			if (lines != null) {
+				lines.remove(0);
 				logger.trace("key_delimiter: " + Pattern.quote(delimiter));
 				for (String line : lines) {
 					boolean full = true;
@@ -516,7 +529,8 @@ public class MapRedPlainTextType extends MapRedCompressedType {
 						for (String s : line.split(Pattern
 								.quote(delimiter))) {
 
-							String nameColumn = generateColumnName(cont++);
+							String nameColumn;
+							nameColumn = headers.get(cont++);
 							
 							if(!valueMap.containsKey(nameColumn)){
 								valueMap.put(nameColumn, new LinkedHashSet<String>());
@@ -550,9 +564,5 @@ public class MapRedPlainTextType extends MapRedCompressedType {
 
 	}
 	
-	@Override
-	public boolean allowDirectories(){
-		return false;
-	}
 
 }

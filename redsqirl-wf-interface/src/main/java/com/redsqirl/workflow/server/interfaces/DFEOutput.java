@@ -31,6 +31,14 @@ public interface DFEOutput extends Remote {
 	public String[] getExtensions() throws RemoteException;
 	
 	/**
+	 * allow directories.
+	 * 
+	 * @return
+	 * @throws RemoteException
+	 */
+	public boolean allowDirectories() throws RemoteException;
+	
+	/**
 	 * The type name of the DFEOutput
 	 * 
 	 * @return type name for the DFEOutput
