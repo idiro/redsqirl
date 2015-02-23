@@ -46,6 +46,36 @@
 									rendered="#{analyticsStoreModuleDetailBean.showVersionNote}">
 									<h:outputText value="#{analyticsStoreModuleDetailBean.moduleVersion.versionNote}"/>
 								</rich:panel>
+								
+								<h:outputText value="#{messages.moduleDetail_depenedncy}" />
+								
+								<rich:extendedDataTable 
+									value="#{analyticsStoreModuleDetailBean.redSqirlModuleVersionDependency}" var="value"
+									width="100%" height="100px" style="border:none;" onRowMouseOver="this.style.backgroundColor='#f2b97a'"
+									enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
+									rowClasses="even-row, odd-row" >
+								
+									<rich:column>
+										<f:facet name="header">
+											<h:outputText value="#{messages.search_version}" style="padding-right:20px;" />
+										</f:facet>
+										<h:outputText value="#{value.moduleName}" style="padding-right:20px;" />
+									</rich:column>
+									<rich:column>
+										<f:facet name="header">
+											<h:outputText value="#{messages.search_start}" style="padding-right:20px;" />
+										</f:facet>
+									    <h:outputText value="#{value.valueStart}" style="padding-right:20px;" />
+									</rich:column>
+									<rich:column>
+										<f:facet name="header">
+											<h:outputText value="#{messages.search_end}" style="padding-right:20px;" />
+										</f:facet>
+									    <h:outputText value="#{value.valueEnd}" style="padding-right:20px;" />
+									</rich:column>
+					    		</rich:extendedDataTable>
+								
+								<br/>
 													
 								<rich:panel header="#{messages.moduleDetail_versions}">
 									<ui:repeat value="#{analyticsStoreModuleDetailBean.moduleVersionList}" var="value">
