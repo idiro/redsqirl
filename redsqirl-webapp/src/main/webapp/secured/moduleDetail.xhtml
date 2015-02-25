@@ -79,8 +79,7 @@
 													
 								<rich:panel header="#{messages.moduleDetail_versions}">
 									<ui:repeat value="#{analyticsStoreModuleDetailBean.moduleVersionList}" var="value">
-										<h:commandLink value="#{value.versionName}" action="/moduleDetail.xhtml">
-											<f:param name="id" value="#{param['id']}"/>
+										<h:commandLink value="#{value.versionName}" action="#{analyticsStoreModuleDetailBean.selectVersion}">
 											<f:param name="version" value="#{value.idVersion}"/>
 										</h:commandLink><br />
 									</ui:repeat>

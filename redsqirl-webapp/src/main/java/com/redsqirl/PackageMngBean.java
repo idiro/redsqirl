@@ -2,9 +2,11 @@ package com.redsqirl;
 
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -16,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
@@ -27,10 +30,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.idiro.ProjectID;
 import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.utils.PackageManager;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
 
 public class PackageMngBean extends BaseBean implements Serializable{
 
@@ -43,9 +50,9 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 
 	private PackageManager pckManager = new PackageManager();
-	
+
 	private boolean showMain = true;
-	
+
 	private transient boolean userInstall = true;
 	private RedSqirlPackage curPackage;
 	private List<RedSqirlPackage> extPackages;
@@ -210,7 +217,12 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		logger.info("rm sys packages");
 		if(isAdmin()){
 			PackageManager sysPckManager = new PackageManager();
-			logger.info(sysPckManager.removePackage(null,unSysPackage));
+			String error = sysPckManager.removePackage(null,unSysPackage);
+			if(error == null){
+				disable(unSysPackage);
+			}else{
+				logger.info(error);
+			}
 			calcSystemPackages();
 		}
 	}
@@ -218,13 +230,79 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	public void removeUserPackage() throws RemoteException{
 		logger.info("rm user packages");
 		if(isUserAllowInstall()){
-			HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext()
-					.getSession(false);
+			HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
 			String user = (String) session.getAttribute("username");
-			logger.info(pckManager.removePackage(user,unUserPackage));
+			String error = pckManager.removePackage(user,unUserPackage);
+			if(error == null){
+				disable(unUserPackage);
+			}else{
+				logger.info(error);
+			}
 			calcUserPackages();
 		}
 	}
+
+	public void disable(String[] packageName) {
+
+		String softwareKey = getSoftwareKey();
+		
+		try {
+			
+			String uri = getRepoServer()+"rest/installations/disable";
+
+			StringBuffer names = new StringBuffer();
+			for (String value : packageName) {
+				names.append(","+value);
+			}
+			
+			JSONObject object = new JSONObject();
+			object.put("packageName", names.substring(1));
+			object.put("softwareKey", softwareKey);
+
+			Client client = Client.create();
+			WebResource webResource = client.resource(uri);
+
+			ClientResponse response = webResource.type("application/json").post(ClientResponse.class, object.toString());
+			String ansServer = response.getEntity(String.class);
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+	}
+	
+	private String getSoftwareKey(){
+		Properties prop = new Properties();
+		InputStream input = null;
+	 
+		try {
+			input = new FileInputStream(WorkflowPrefManager.pathSystemPref +  "/licenseKey.properties");
+	 
+			// load a properties file
+			prop.load(input);
+	 
+			// get the property value and print it out
+			
+			String licenseKey;
+			String[] value = ProjectID.get().trim().split("-");
+			if(value != null && value.length > 1){
+				licenseKey = value[0].replaceAll("[0-9]", "") + value[value.length-1];
+			}else{
+				licenseKey = ProjectID.get();
+			}
+			
+			return formatTitle(licenseKey) + "=" + prop.getProperty(formatTitle(licenseKey));
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	private String formatTitle(String title){
+		return title.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
+	}
+
 
 	public void setPackageScope(){
 		String userEnv = FacesContext.getCurrentInstance().getExternalContext().
@@ -232,7 +310,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		logger.info("set Package scope: "+userEnv);
 		userInstall = !"false".equalsIgnoreCase(userEnv);
 		logger.info("scope: "+userInstall);
-		
+
 		type = FacesContext.getCurrentInstance().getExternalContext().
 				getRequestParameterMap().get("type");
 	}

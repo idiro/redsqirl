@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"   
+      xmlns:ui="http://java.sun.com/jsf/facelets"   
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:p="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+      
+    <a4j:loadBundle basename="MessagesResources" var="messages" />
+      
+    <head>
+   		<link rel="stylesheet" href="#{facesContext.externalContext.requestContextPath}/css/table-style.css" />
+   		<link rel="icon" type="image/gif" href="../image/logo_redsqirl_favicon.gif" />
+		<link rel="stylesheet" type="text/css" href="#{facesContext.externalContext.requestContextPath}/css/jquery-ui.css" />
+		<script src="#{facesContext.externalContext.requestContextPath}/js/jquery-1.9.1.js" type="text/javascript" />
+	 	<script src='#{facesContext.externalContext.requestContextPath}/js/redsqirl-pck-manager.js' type="text/javascript" />
+		<script src="#{facesContext.externalContext.requestContextPath}/js/jquery.blockUI.js" type="text/javascript" />
+		<script type="text/javascript">
+	   		jQuery.noConflict();
+	    </script>
+    </head>
+    
+    <body>
+ 
+ 		<div id="domMessageDivCanvas1" style="display: none;">
+			<img src="../image/icons/waiting.gif" />
+		</div>
+			
+ 		<div>
+			<h:form>
+				<a4j:outputPanel id="panel" ajaxRendered="true">
+					<h:outputLink value="search.xhtml">Back</h:outputLink><br />
+					
+					<rich:dataTable value="#{analyticsStoreInstallationsBean.tableData.rows}" var="item" rowKeyVar="indexTable">
+					
+						<rich:column sortBy="#{item[0]}">
+							<f:facet name="header">
+								<h:outputText value="#{analyticsStoreInstallationsBean.tableData.titles[0]}"/>
+							</f:facet>
+							<h:outputText value="#{item[0]}" />
+						</rich:column>
+						
+						<rich:column sortBy="#{item[1]}">
+							<f:facet name="header">
+								<h:outputText value="#{analyticsStoreInstallationsBean.tableData.titles[1]}"/>
+							</f:facet>
+							<h:outputText value="#{item[1]}"
+									style="#{item[6] == 'DISABLE' ? 'text-decoration: line-through;' : ''}"
+									title="Key Status: #{item[6]}" />
+							
+							<a4j:commandLink action="#{analyticsStoreInstallationsBean.enable}" 
+								rendered="#{item[6] == 'DISABLE'}" oncomplete="javascript:location.reload(true);"
+								title="#{messages.moduleInstallations_enable}" value="*" 
+								onclick="if(!confirm('Are you sure you want to ENABLE this Installation?')){return false;}" >
+								<f:param name="id" value="#{item[5]}"/>
+							</a4j:commandLink>
+							
+						</rich:column>
+						
+						<rich:column sortBy="#{item[2]}">
+							<f:facet name="header">
+								<h:outputText value="#{analyticsStoreInstallationsBean.tableData.titles[2]}"/>
+							</f:facet>
+							<h:outputText value="#{item[2]}" />
+						</rich:column>
+						
+						<rich:columns value="#{analyticsStoreInstallationsBean.tableData.titles}" begin="4" var="column" index="ind" >
+							<f:facet name="header">
+								<h:outputText value="#{column}" />
+							</f:facet>
+							<h:outputText value="#{item[ind]}" title="#{item[ind]}"/>
+						</rich:columns>
+							
+					</rich:dataTable>
+					
+				</a4j:outputPanel>
+			</h:form>
+		</div>
+		
+	</body>
+</html>
