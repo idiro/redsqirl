@@ -427,7 +427,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		try {
 			luceneIndex();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Fail creating index: "+e.getMessage(),e);
 		}
 
 		return "success";
@@ -668,7 +668,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 	}
 
 	public void luceneIndex() throws Exception {
-		logger.info("luceneIndex ");
+		logger.debug("luceneIndex ");
 
 		String tomcatpath = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path);
 		String installPackage = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_install_package, tomcatpath);
@@ -683,75 +683,65 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		String sysPath = installPackage+WorkflowPrefManager.getPathSysHelpPref();
 		String mainlHelpPath = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path)+"/help";
 
-		logger.info("indexPath " + indexResultPath);
-		logger.info("indexUserPath " + indexPckUserPath);
-		logger.info("indexSystemPath " + indexPckSysPath);
-		logger.info("indexDefaultPath " + indexMainHelpPath);
+		logger.debug("indexPath " + indexResultPath);
+		logger.debug("indexUserPath " + indexPckUserPath);
+		logger.debug("indexSystemPath " + indexPckSysPath);
+		logger.debug("indexDefaultPath " + indexMainHelpPath);
 
-		logger.info("userPath " + userPath);
-		logger.info("systemPath " + sysPath);
-		logger.info("defaultPath " + mainlHelpPath);
+		logger.debug("userPath " + userPath);
+		logger.debug("systemPath " + sysPath);
+		logger.debug("defaultPath " + mainlHelpPath);
 
-		File fileIndexResultPath = new File(indexResultPath);
-		if(fileIndexResultPath != null && fileIndexResultPath.isDirectory() && fileIndexResultPath.list().length > 0){
-			SimpleFileIndexer sfi = new SimpleFileIndexer();
-			File fileUserPath = new File(userPath);
-			if(fileUserPath != null && fileUserPath.isDirectory()){
-				if(fileUserPath.lastModified() > fileIndexResultPath.lastModified()){
-					File fileIndexPckUserPath = new File(indexPckUserPath);
-					if(fileIndexPckUserPath != null){
-						FileUtils.cleanDirectory(fileIndexPckUserPath);
-					}
-					FileUtils.cleanDirectory(fileIndexResultPath);
-					createIndex(indexPckUserPath, userPath);
-					sfi.merge(indexResultPath, indexMergeSysPath, indexPckUserPath);
-				}
-			}
-			File fileSysPath = new File(sysPath);
-			if(fileSysPath != null && fileSysPath.isDirectory()){
-				if(fileSysPath.lastModified() > fileIndexResultPath.lastModified()){
-					File fileIndexPckSysPath = new File(indexPckSysPath);
-					if(fileIndexPckSysPath != null){
-						FileUtils.cleanDirectory(fileIndexPckSysPath);
-					}
-					FileUtils.cleanDirectory(fileIndexResultPath);
-					merge(indexResultPath, indexPckUserPath, indexPckSysPath, indexMainHelpPath, indexMergeSysPath);
-				}
-			}
-		}else{
-			createIndex(indexPckUserPath, userPath);
-			createIndex(indexPckSysPath, sysPath);
-			createIndex(indexMainHelpPath, mainlHelpPath);
-			merge(indexResultPath, indexPckUserPath, indexPckSysPath, indexMainHelpPath, indexMergeSysPath);
-		}
-	}
-
-	public void createIndex(String indexResultPath, String dataPath) throws Exception {
-
-		logger.info("createIndex ");
-
+		boolean userIndexUpdate = createIndex(indexPckUserPath, userPath);
+		
+		
+		boolean sysIndexUpdate = createIndex(indexPckSysPath, sysPath);
+		sysIndexUpdate = createIndex(indexMainHelpPath, mainlHelpPath) || sysIndexUpdate;
 		SimpleFileIndexer sfi = new SimpleFileIndexer();
-		long start = System.currentTimeMillis();
-		File indexDir = new File(indexResultPath);
-		File dataDir = new File(dataPath);
-		String suffix = "html";
-		int numIndex = sfi.index(indexDir, dataDir, suffix);
-
-		logger.info("Total files indexed " + numIndex);
-		logger.info((System.currentTimeMillis() - start));
-	}
-
-	public void merge(String indexResultPath, String indexPckUserPath, String indexPckSysPath, String indexMainHelpPath, String indexMergeSysPath) throws Exception {
-
-		logger.info("merge ");
-
-		SimpleFileIndexer sfi = new SimpleFileIndexer();
+		
 		File fileIndexMergeSysPath = new File(indexMergeSysPath);
-		if(fileIndexMergeSysPath != null && fileIndexMergeSysPath.isDirectory()){
-			FileUtils.cleanDirectory(fileIndexMergeSysPath);
+		if(sysIndexUpdate ||!fileIndexMergeSysPath.isDirectory() 
+				|| fileIndexMergeSysPath.list().length == 0){
+			if(fileIndexMergeSysPath.isDirectory()){
+				FileUtils.cleanDirectory(fileIndexMergeSysPath);
+			}
+			logger.info("Merge: " + indexMergeSysPath);
+			sfi.merge(indexMergeSysPath, indexPckSysPath, indexMainHelpPath);
+
 		}
-		sfi.merge(indexMergeSysPath, indexPckSysPath, indexMainHelpPath);
-		sfi.merge(indexResultPath, indexMergeSysPath, indexPckUserPath);
+		
+		File fileIndexResultPath = new File(indexResultPath);
+		if(userIndexUpdate || sysIndexUpdate || !fileIndexResultPath.isDirectory() 
+				|| fileIndexResultPath.list().length == 0){
+			if(fileIndexResultPath.isDirectory()){
+				FileUtils.cleanDirectory(fileIndexResultPath);
+			}
+			logger.info("Merge: " + indexResultPath);
+			sfi.merge(indexResultPath, indexMergeSysPath, indexPckUserPath);
+		}
+		
+	}
+	
+	public boolean createIndex(String indexFolder, String htmlFolder) throws Exception{
+		String suffix = "html";
+		File fileIndexFolder = new File(indexFolder);
+		File fileHtmlFolder = new File(htmlFolder);
+		boolean generate = !fileIndexFolder.isDirectory() 
+				|| fileIndexFolder.list().length == 0
+				|| fileIndexFolder.lastModified() < fileHtmlFolder.lastModified();
+		
+		if(generate){
+			if(fileIndexFolder.isDirectory()){
+				FileUtils.cleanDirectory(fileIndexFolder);
+			}
+			long start = System.currentTimeMillis();
+			SimpleFileIndexer sfi = new SimpleFileIndexer();
+			logger.info("Index: " + indexFolder);
+			int numIndex = sfi.index(fileIndexFolder, fileHtmlFolder, suffix);
+			logger.info("Total files indexed " + numIndex);
+			logger.info((System.currentTimeMillis() - start));
+		}
+		return generate;
 	}
 
 	/**
