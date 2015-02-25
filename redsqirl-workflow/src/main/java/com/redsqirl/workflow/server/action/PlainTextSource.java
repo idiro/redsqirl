@@ -21,9 +21,9 @@ import com.redsqirl.workflow.server.oozie.PlainTextAction;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
 /**
- * Action that read a Text Map Reduce Directory.
+ * Action that read a Text Map Reduce file.
  * 
- * @author etienne
+ * @author marcos
  * 
  */
 public class PlainTextSource extends AbstractSource {
@@ -112,7 +112,7 @@ public class PlainTextSource extends AbstractSource {
 		DFEOutput out = getDFEOutput().get(out_name);
 		
 		if (out != null && dataSubtype.getValue().equals(new MapRedPlainTextHeaderType().getTypeName())){
-			output.put(no_header_out_name, new MapRedPlainTextHeaderType());
+			output.put(no_header_out_name, new MapRedPlainTextType());
 			output.get(no_header_out_name).setFields(out.getFields());
 			
 			String user = System.getProperty("user.name");
