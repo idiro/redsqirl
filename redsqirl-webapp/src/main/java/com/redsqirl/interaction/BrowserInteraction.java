@@ -246,7 +246,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 
 			listFieldsType = new ArrayList<SelectHeaderType>();
 			StringBuffer header = new StringBuffer();
-			for (String line : getGridTitles()) {
+			for (String line : getGridColumnIds()) {
 				logger.info(line);
 				SelectHeaderType selectHeaderType = new SelectHeaderType();
 				String[] values = line.trim().split("\\s+");
@@ -414,6 +414,10 @@ public class BrowserInteraction extends CanvasModalInteraction {
 	 */
 	public List<String> getGridTitles() {
 		return modalOutput != null ? modalOutput.getTitles():null;
+	}
+	
+	public List<String> getGridColumnIds(){
+		return modalOutput != null ? modalOutput.getGrid().getColumnIds():null;
 	}
 
 	/**
