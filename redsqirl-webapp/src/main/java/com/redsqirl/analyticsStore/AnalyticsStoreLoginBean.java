@@ -34,6 +34,8 @@ public class AnalyticsStoreLoginBean implements Serializable {
 	
 	private int idUser;
 	
+	private String role;
+	
 	/**
 	 * Login operation.
 	 * @return
@@ -58,6 +60,7 @@ public class AnalyticsStoreLoginBean implements Serializable {
 			try{
 				JSONObject pckObj = new JSONObject(ansServer);
 				loggedIn = pckObj.getBoolean("logged");
+				role = pckObj.getString("role");
 				if (loggedIn){
 					idUser = pckObj.getInt("id");
 				}
@@ -126,6 +129,21 @@ public class AnalyticsStoreLoginBean implements Serializable {
 //		return "/initial.xhtml?faces-redirect=true";
 		return "/home.xhtml?faces-redirect=true";
 	}
+	
+	public void logOut() {
+		try {
+			// Disconnect from the provider
+			// Invalidate session
+			ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+//			HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();
+			//this.invalidateSession(request);
+//			FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
+			// Redirect to home page
+			FacesContext.getCurrentInstance().getExternalContext().redirect(externalContext.getRequestContextPath() + "home.xhtml");
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
 
 	// ------------------------------
 	// Getters & Setters
@@ -162,18 +180,12 @@ public class AnalyticsStoreLoginBean implements Serializable {
 		this.idUser = idUser;
 	}
 
-	public void logOut() {
-		try {
-			// Disconnect from the provider
-			// Invalidate session
-			ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-//			HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();
-			//this.invalidateSession(request);
-//			FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
-			// Redirect to home page
-			FacesContext.getCurrentInstance().getExternalContext().redirect(externalContext.getRequestContextPath() + "home.xhtml");
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
+	public String getRole() {
+		return role;
 	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+	
 }
