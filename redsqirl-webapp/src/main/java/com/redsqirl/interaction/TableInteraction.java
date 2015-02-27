@@ -96,7 +96,7 @@ public class TableInteraction extends CanvasModalInteraction{
 				for (Tree<String> tree : list) {
 					String menuName = tree
 							.getFirstChild("title").getFirstChild()
-							.getHead();
+							.getHead().replace('_', ' ');
 					if(isGeneratorMenuInt){
 						try{
 							Integer.valueOf(menuName);
