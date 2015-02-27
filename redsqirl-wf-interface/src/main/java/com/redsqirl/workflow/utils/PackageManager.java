@@ -232,12 +232,16 @@ public class PackageManager extends UnicastRemoteObject {
 		for (int i = 0; i < packStr.length; ++i) {
 			File curPackage = new File(packStr[i]);
 			if (packStr[i].endsWith(".zip")) {
+				
 				String tmp = WorkflowPrefManager.pathSysHome;
 				tmp += "/tmp";
+				logger.info("unzip " + tmp);
 				UnZip uz = new UnZip();
+				logger.info("curPackage " + curPackage);
 				uz.unZipIt(curPackage, new File(tmp));
-				packs[i] = new File(tmp, curPackage.getName().substring(0,
-						curPackage.getName().length() - 4));
+				packs[i] = new File(tmp, curPackage.getName().substring(0, curPackage.getName().length() - 4));
+				logger.info("unzip end " + curPackage.getName().substring(0, curPackage.getName().length() - 4));
+				
 			} else {
 				packs[i] = new File(packStr[i]);
 			}

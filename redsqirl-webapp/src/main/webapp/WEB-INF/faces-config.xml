@@ -112,6 +112,22 @@
 	</managed-property>
  </managed-bean>
  
+ <managed-bean>
+	<managed-bean-name>analyticsStoreInstallationsBean</managed-bean-name>
+	<managed-bean-class>com.redsqirl.analyticsStore.AnalyticsStoreInstallationsBean</managed-bean-class>
+	<managed-bean-scope>request</managed-bean-scope>
+	<managed-property>
+		<property-name>analyticsStoreLoginBean</property-name>
+		<property-class>com.redsqirl.analyticsStore.AnalyticsStoreLoginBean</property-class>
+		<value>#{analyticsStoreLoginBean}</value>
+	</managed-property>
+	<managed-property>
+		<property-name>userInfoBean</property-name>
+	  	<property-class>com.redsqirl.auth.UserInfoBean</property-class>
+	  	<value>#{userInfoBean}</value>
+	</managed-property>
+ </managed-bean>
+ 
  <!-- **************************** NAVIGATION ******************************************************************* -->
  
  <navigation-rule>

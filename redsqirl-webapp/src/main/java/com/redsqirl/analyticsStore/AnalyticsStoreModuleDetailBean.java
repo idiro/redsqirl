@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -149,12 +150,20 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 		}
 	}
 	
-	private String getString(JSONObject pckObj, String object) throws JSONException{
-		return pckObj.has(object) ? pckObj.getString(object) : "";
+	public void selectVersion(){
+		
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String version = params.get("version");
+		for (RedSqirlModule redSqirlModule : versionList) {
+			if(redSqirlModule.getIdVersion() == Integer.parseInt(version)){
+				moduleVersion = redSqirlModule;
+			}
+		}
+		
 	}
 	
-	private JSONObject getJsonObj(JSONObject pckObj, String object) throws JSONException{
-		return pckObj.getJSONObject(object);
+	private String getString(JSONObject pckObj, String object) throws JSONException{
+		return pckObj.has(object) ? pckObj.getString(object) : "";
 	}
 	
 	public String installModel() throws ZipException, IOException{
@@ -163,7 +172,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 		String key = null;
 		String name = null;
 		
-		String softwareKey= getSoftwareKey();
+		String softwareKey = getSoftwareKey();
 		
 		boolean newKey = false;
 		
@@ -326,15 +335,23 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 		String fileName = null;
 		String key = null;
 		String name = null;
+		String licenseKeyProperties = null;
+		String error = null;
 		
-		String softwareKey= getSoftwareKey();
+		String softwareKey = getSoftwareKey();
 		
 		boolean newKey = false;
+		
+		String user = null;
+	    if (userInstall){
+	    	user = userInfoBean.getUserName();
+	    }
 		
 		try{
 			String uri = getRepoServer()+"rest/keymanager";
 			
 			JSONObject object = new JSONObject();
+			object.put("user", user);
 			object.put("key", softwareKey);
 			object.put("type", moduleVersion.getType());
 			object.put("idModuleVersion", moduleVersion.getIdVersion());
@@ -342,6 +359,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 			object.put("user", userInstall ? userInfoBean.getUserName() : "system");
 			object.put("email", analyticsStoreLoginBean.getEmail());
 			object.put("password", analyticsStoreLoginBean.getPassword());
+		    
 			
 			Client client = Client.create();
 			WebResource webResource = client.resource(uri);
@@ -357,6 +375,8 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 				key = pckObj.getString("key");
 				name = pckObj.getString("name");
 				newKey = pckObj.getBoolean("newKey");
+				licenseKeyProperties = pckObj.getString("licenseKeyProperties");
+				error = pckObj.getString("error");
 			} catch (JSONException e){
 				e.printStackTrace();
 			}
@@ -364,63 +384,67 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-
 		
-		String packagePath = System.getProperty("java.io.tmpdir")+ "/" +fileName;
-		
-		try {
-			URL website = new URL(downloadUrl + "&idUser=" + analyticsStoreLoginBean.getIdUser() + "&key=" + softwareKey);
-			ReadableByteChannel rbc = Channels.newChannel(website.openStream());
-			FileOutputStream fos = new FileOutputStream(packagePath);
-			fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-			fos.close();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} 
-		
-		
-		if (newKey){
+		if(error != null && error.isEmpty()){
+			
+			String tmp = WorkflowPrefManager.pathSysHome;
+			String packagePath = tmp + System.getProperty("java.io.tmpdir")+ "/" +fileName;
+			
+			try {
+				URL website = new URL(downloadUrl + "&idUser=" + analyticsStoreLoginBean.getIdUser() + "&key=" + softwareKey);
+				ReadableByteChannel rbc = Channels.newChannel(website.openStream());
+				FileOutputStream fos = new FileOutputStream(packagePath);
+				fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+				fos.close();
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} 
+			
 			BufferedWriter writer = null;
-		    try {
-		    	File file = new File("/usr/share/redsqirl/conf/licenseKey.properties");
-	
-		        writer = new BufferedWriter(new FileWriter(file, true));
-		        writer.write(name + "=" + key);
-		        writer.newLine();
-		    } catch (Exception e) {
-		    	e.printStackTrace();
-		    } finally {
-		    	try {
-		    		writer.close();
-		        } catch (Exception e) {
-		        }
-		    }
-		}
-	    
-	    PackageManager pckMng = new PackageManager();
-	    
-	    String user = null;
-	    if (userInstall){
-	    	user = userInfoBean.getUserName();
-	    }
-	    	
-	    String error = pckMng.addPackage(user, new String[]{packagePath});
-	    
-	    File file = new File(packagePath);
-		file.delete();
+			try {
+				File file = new File("/usr/share/redsqirl/conf/licenseKey.properties");
+				String filepath = file.getAbsolutePath();
+				if(file.exists()){
+					file.delete();
+				}
+				PrintWriter printWriter = new PrintWriter(new File(filepath));
+				printWriter.print(licenseKeyProperties);
+				printWriter.close ();
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					writer.close();
+				} catch (Exception e) {
+				}
+			}
+		    
+		    PackageManager pckMng = new PackageManager();
+		    	
+		    error = pckMng.addPackage(user, new String[]{packagePath});
+		    
+		    File file = new File(packagePath);
+			file.delete();
 
-		if (error == null){
-			MessageUseful.addInfoMessage("Packge Installed.");
-			installed = true;
-		}
-		else{
-			MessageUseful.addInfoMessage("Error installing package: " + error);
+			if (error == null){
+				MessageUseful.addInfoMessage("Packge Installed.");
+				installed = true;
+			}else{
+				MessageUseful.addInfoMessage("Error installing package: " + error);
+			}
+			
+		}else{
+			String value[] = error.split(",");
+			if(value.length > 1){
+				MessageUseful.addInfoMessage("Error installing package: " + getMessageResourcesWithParameter(value[0],new String[]{value[1]}));
+			}else{
+				MessageUseful.addInfoMessage("Error installing package: " + getMessageResources(error));
+			}
 		}
 		
 		return "";
-		
 	}
 	
 	private String getSoftwareKey(){
@@ -435,7 +459,15 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 	 
 			// get the property value and print it out
 			
-			return prop.getProperty(formatTitle(ProjectID.get()));
+			String licenseKey;
+			String[] value = ProjectID.get().trim().split("-");
+			if(value != null && value.length > 1){
+				licenseKey = value[0].replaceAll("[0-9]", "") + value[value.length-1];
+			}else{
+				licenseKey = ProjectID.get();
+			}
+			
+			return prop.getProperty(formatTitle(licenseKey));
 		}
 		catch (Exception e){
 			e.printStackTrace();
