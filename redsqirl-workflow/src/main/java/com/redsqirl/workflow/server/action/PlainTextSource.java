@@ -114,6 +114,8 @@ public class PlainTextSource extends AbstractSource {
 		if (out != null && dataSubtype.getValue().equals(new MapRedPlainTextHeaderType().getTypeName())){
 			output.put(no_header_out_name, new MapRedPlainTextType());
 			output.get(no_header_out_name).setFields(out.getFields());
+			output.get(no_header_out_name).addProperty(MapRedPlainTextType.key_delimiter, 
+					out.getProperty(MapRedPlainTextHeaderType.key_delimiter));
 			
 			String user = System.getProperty("user.name");
 			output.get(no_header_out_name).generatePath(user, this.componentId, no_header_out_name);
