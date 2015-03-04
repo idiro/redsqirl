@@ -238,9 +238,11 @@ public class PackageManager extends UnicastRemoteObject {
 				logger.info("unzip " + tmp);
 				UnZip uz = new UnZip();
 				logger.info("curPackage " + curPackage);
-				uz.unZipIt(curPackage, new File(tmp));
+				File tmpFile = new File(tmp);
+				uz.unZipIt(curPackage, tmpFile);
+				logger.info("tmp " + tmpFile.getAbsolutePath() + " " + tmpFile.exists());
 				packs[i] = new File(tmp, curPackage.getName().substring(0, curPackage.getName().length() - 4));
-				logger.info("unzip end " + curPackage.getName().substring(0, curPackage.getName().length() - 4));
+				logger.info("unzip end " + packs[i].getAbsolutePath() + " " + packs[i].exists());
 				
 			} else {
 				packs[i] = new File(packStr[i]);

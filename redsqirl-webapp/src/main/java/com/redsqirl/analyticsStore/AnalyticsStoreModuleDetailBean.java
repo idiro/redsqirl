@@ -27,6 +27,7 @@ import net.lingala.zip4j.exception.ZipException;
 
 import org.ajax4jsf.model.KeepAlive;
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,7 +50,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 
 
 	private static final long serialVersionUID = 1L;
-
+	
 	private AnalyticsStoreLoginBean analyticsStoreLoginBean;
 	private UserInfoBean userInfoBean;
 	private RedSqirlModule moduleVersion;
@@ -356,10 +357,8 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 			object.put("type", moduleVersion.getType());
 			object.put("idModuleVersion", moduleVersion.getIdVersion());
 			object.put("installationType", userInstall ? "USER" : "SYSTEM");
-			object.put("user", userInstall ? userInfoBean.getUserName() : "system");
 			object.put("email", analyticsStoreLoginBean.getEmail());
 			object.put("password", analyticsStoreLoginBean.getPassword());
-		    
 			
 			Client client = Client.create();
 			WebResource webResource = client.resource(uri);
@@ -388,7 +387,9 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 		if(error != null && error.isEmpty()){
 			
 			String tmp = WorkflowPrefManager.pathSysHome;
-			String packagePath = tmp + System.getProperty("java.io.tmpdir")+ "/" +fileName;
+			String packagePath = tmp + "/tmp/" +fileName;
+			
+			System.out.println("packagePath " + packagePath);
 			
 			try {
 				URL website = new URL(downloadUrl + "&idUser=" + analyticsStoreLoginBean.getIdUser() + "&key=" + softwareKey);
@@ -400,11 +401,11 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
-			} 
+			}
 			
 			BufferedWriter writer = null;
 			try {
-				File file = new File("/usr/share/redsqirl/conf/licenseKey.properties");
+				File file = new File(WorkflowPrefManager.pathSystemLicence);
 				String filepath = file.getAbsolutePath();
 				if(file.exists()){
 					file.delete();
@@ -422,10 +423,11 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 			}
 		    
 		    PackageManager pckMng = new PackageManager();
+		    File file = new File(packagePath);
+		    System.out.println("file packagePath " + file.getAbsolutePath() + " - " + file.exists()+ "'");
 		    	
 		    error = pckMng.addPackage(user, new String[]{packagePath});
 		    
-		    File file = new File(packagePath);
 			file.delete();
 
 			if (error == null){
