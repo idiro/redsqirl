@@ -22,26 +22,26 @@ import com.redsqirl.workflow.server.DataProperty;
 import com.redsqirl.workflow.server.DataflowAction;
 import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
-import com.redsqirl.workflow.server.datatype.MapRedPlainTextHeaderType;
-import com.redsqirl.workflow.server.datatype.MapRedPlainTextType;
+import com.redsqirl.workflow.server.datatype.MapRedTextFileType;
+import com.redsqirl.workflow.server.datatype.MapRedTextFileWithHeaderType;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
-import com.redsqirl.workflow.server.oozie.PlainTextAction;
+import com.redsqirl.workflow.server.oozie.ShellAction;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 /**
  * Action to convert an hdfs dir to a flat file
  * @author marcos
  *
  */
-public class ConvertPlainText extends DataflowAction {
+public class ConvertFileText extends DataflowAction {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 600343170359664918L;
 	
-	private static Logger logger = Logger.getLogger(ConvertPlainText.class);
+	private static Logger logger = Logger.getLogger(ConvertFileText.class);
 
 	public static final String key_output = "",
 			/**Input Key*/
@@ -59,8 +59,8 @@ public class ConvertPlainText extends DataflowAction {
 	 * Constructor
 	 * @throws RemoteException
 	 */
-	public ConvertPlainText() throws RemoteException {
-		super(new PlainTextAction());
+	public ConvertFileText() throws RemoteException {
+		super(new ShellAction());
 		init();
 
 		page1 = addPage(LanguageManagerWF.getText("convert_plain_text_page1.title"),
@@ -76,7 +76,7 @@ public class ConvertPlainText extends DataflowAction {
 	 * @throws RemoteException
 	 */
 	public String getName() throws RemoteException {
-		return "convert_plain_text";
+		return "convert_file_text";
 	}
 	
 	/**
@@ -88,7 +88,7 @@ public class ConvertPlainText extends DataflowAction {
 	protected void init() throws RemoteException{
 		if(input == null){
 			Map<String, DFELinkProperty> in = new LinkedHashMap<String, DFELinkProperty>();
-			in.put(key_input, new DataProperty(MapRedPlainTextHeaderType.class, 1, 1));
+			in.put(key_input, new DataProperty(MapRedTextFileWithHeaderType.class, 1, 1));
 			input = in;
 		}
 	}
@@ -105,7 +105,7 @@ public class ConvertPlainText extends DataflowAction {
 //			logger.info("new fields "+new_field.getFieldNames());
 			
 			if(output.get(key_output) == null){
-				output.put(key_output, new MapRedPlainTextType());
+				output.put(key_output, new MapRedTextFileType());
 			}
 			
 //			output.get(key_output).setFields(new_field);
@@ -203,8 +203,8 @@ public class ConvertPlainText extends DataflowAction {
 		
 		String filesConcatenate = "";
 		
-		String path = this.getDFEInput().get(ConvertPlainText.key_input).get(0).getPath();
-		String pathOutput = this.getDFEOutput().get(ConvertPlainText.key_output).getPath();
+		String path = this.getDFEInput().get(ConvertFileText.key_input).get(0).getPath();
+		String pathOutput = this.getDFEOutput().get(ConvertFileText.key_output).getPath();
 		
 		FileSystem fs;
 		try {
@@ -229,12 +229,18 @@ public class ConvertPlainText extends DataflowAction {
 		catch(IOException e){
 			e.printStackTrace();
 		}
+
+		String hadoopBin = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_hadoop_home);
+		if(hadoopBin == null){
+			hadoopBin = "";
+		}else if(! hadoopBin.isEmpty()){
+			hadoopBin +="/bin/";
+		}
+		hadoopBin += "hadoop";
 		
-		String toWrite = "";
-			
-		toWrite = "#!/bin/bash" + System.getProperty("line.separator");
-		
-		toWrite += "/home/hadoop/bin/hadoop fs -cat " + filesConcatenate + " | /home/hadoop/bin/hadoop fs -put - " + pathOutput;
+		String toWrite = ((ShellAction) getOozieAction()).getShellContent(
+				hadoopBin+" fs -cat " + filesConcatenate + 
+				" | "+hadoopBin+" fs -put - " + pathOutput);
 
 		boolean ok = toWrite != null;
 		if(ok){

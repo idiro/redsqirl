@@ -234,7 +234,9 @@ public class WorkflowPrefManager extends BlockManager {
 			/** The admin user */
 			sys_admin_user = "admin_user",
 			/** Parallel clause for pig */
-			sys_pig_parallel = "pig_parallel";
+			sys_pig_parallel = "pig_parallel",
+			/** The Hadoop Home Folder (with /bin and /conf inside */
+			sys_hadoop_home = "hadoop_home";
 	/** Hive JDBC Url */
 	public static final String user_hive = "hive_jdbc_url",
 			/** Path to Private Key */

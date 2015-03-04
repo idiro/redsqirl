@@ -35,7 +35,7 @@ import com.redsqirl.workflow.utils.LanguageManagerWF;
  * @author etienne
  * 
  */
-public class MapRedPlainTextHeaderType extends MapRedPlainTextType {
+public class MapRedTextFileType extends MapRedHdfs {
 
 	/**
 	 * 
@@ -44,7 +44,7 @@ public class MapRedPlainTextHeaderType extends MapRedPlainTextType {
 	/** Delimiter Key */
 	public final static String key_delimiter = "delimiter";
 	
-	private static Logger logger = Logger.getLogger(MapRedPlainTextHeaderType.class);
+	private static Logger logger = Logger.getLogger(MapRedTextFileType.class);
 
 
 	/**
@@ -52,7 +52,7 @@ public class MapRedPlainTextHeaderType extends MapRedPlainTextType {
 	 * 
 	 * @throws RemoteException
 	 */
-	public MapRedPlainTextHeaderType() throws RemoteException {
+	public MapRedTextFileType() throws RemoteException {
 		super();
 		setHeaderEditorOnBrowser(true);
 	}
@@ -63,7 +63,7 @@ public class MapRedPlainTextHeaderType extends MapRedPlainTextType {
 	 * @param fields
 	 * @throws RemoteException
 	 */
-	public MapRedPlainTextHeaderType(FieldList fields) throws RemoteException {
+	public MapRedTextFileType(FieldList fields) throws RemoteException {
 		super(fields);
 		setHeaderEditorOnBrowser(true);
 	}
@@ -76,7 +76,7 @@ public class MapRedPlainTextHeaderType extends MapRedPlainTextType {
 	 */
 	@Override
 	public String getTypeName() throws RemoteException {
-		return "PLAIN TEXT MAP-REDUCE FILE WITH HEADER";
+		return "TEXT MAP-REDUCE FILE";
 	}
 	
 	@Override
@@ -136,16 +136,13 @@ public class MapRedPlainTextHeaderType extends MapRedPlainTextType {
 	public List<Map<String,String>> select(int maxToRead) throws RemoteException {
 		List<Map<String,String>> ans = new LinkedList<Map<String,String>>();
 		Iterator<String> it = selectLine(maxToRead).iterator();
+		List<String> fieldNames = getFields().getFieldNames();
 		
-		if (it.hasNext()){
-			it.next();
-		}
 		while(it.hasNext()){
 			String l = it.next();
 			if(l != null && ! l.isEmpty()){
 				String[] line = l.split(
 						Pattern.quote(getChar(getProperty(key_delimiter))), -1);
-				List<String> fieldNames = getFields().getFieldNames();
 				if (fieldNames.size() == line.length) {
 					Map<String, String> cur = new LinkedHashMap<String, String>();
 					for (int i = 0; i < line.length; ++i) {
@@ -185,13 +182,15 @@ public class MapRedPlainTextHeaderType extends MapRedPlainTextType {
 	 * @param text
 	 * @return delimiter
 	 */
-	private String getDefaultDelimiter(String text) {
+	protected String getDefaultDelimiter(String text) {
 		if (text.contains("\001")) {
 			return "#1";
 		} else if (text.contains("\002")) {
 			return "#2";
 		} else if (text.contains("|")) {
 			return "#124";
+		} else if (text.contains(",")) {
+			return "#44";
 		}
 		return "#1";
 	}
@@ -345,116 +344,12 @@ public class MapRedPlainTextHeaderType extends MapRedPlainTextType {
 	public String getDelimiterOrOctal() {
 		String octal = getOctalDelimiter();
 		return octal != null ? octal
-				: getProperty(MapRedPlainTextHeaderType.key_delimiter);
+				: getProperty(MapRedTextFileType.key_delimiter);
 	}
 
 	@Override
 	protected String getDefaultColor() {
 		return "MediumSlateBlue";
-	}
-	
-	@Override
-	public String isPathValid(List<String> shouldNotHaveExt, List<String> shouldHaveExt) throws RemoteException {
-		String error = null;
-		HdfsFileChecker hCh = new HdfsFileChecker(getPath());
-		if(shouldHaveExt != null && !shouldHaveExt.isEmpty()){
-			boolean found = false;
-			for(String extCur: shouldHaveExt){
-				found |= getPath().endsWith(extCur);
-			}
-			if(!found){
-				error = LanguageManagerWF.getText(
-						"mapredtexttype.shouldhaveext",
-						new Object[] { getPath(),shouldHaveExt });
-				
-			}
-		}else if(shouldNotHaveExt != null && ! shouldNotHaveExt.isEmpty()){
-			boolean found = false;
-			for(String extCur: shouldNotHaveExt){
-				found |= getPath().endsWith(extCur);
-			}
-			if(found){
-				error = LanguageManagerWF.getText(
-						"mapredtexttype.shouldnothaveext",
-						new Object[] { getPath(),shouldNotHaveExt });
-				
-			}
-		}
-		
-		if (!hCh.isInitialized()) {
-			error = LanguageManagerWF.getText("mapredtexttype.dirisfile");
-		} else {
-			FileSystem fs;
-			try {
-				fs = NameNodeVar.getFS();
-				hCh.setPath(new Path(getPath()).getParent());
-				if (!hCh.isDirectory()) {
-					error = LanguageManagerWF.getText("mapredtexttype.nodir",new String[]{getPath()});
-				}
-				FileStatus[] stat = fs.listStatus(new Path(getPath()),
-						new PathFilter() {
-
-					@Override
-					public boolean accept(Path arg0) {
-						return !arg0.getName().startsWith("_") && !arg0.getName().startsWith(".");
-					}
-				});
-				for (int i = 0; i < stat.length && error == null; ++i) {
-					if (stat[i].isDir()) {
-						error = LanguageManagerWF.getText(
-								"mapredtexttype.notmrdir",
-								new Object[] { getPath() });
-					}else{
-						
-						if(shouldHaveExt != null && !shouldHaveExt.isEmpty()){
-							boolean found = false;
-							for(String extCur: shouldHaveExt){
-								found |= stat[i].getPath().getName().endsWith(extCur);
-							}
-							if(!found){
-								error = LanguageManagerWF.getText(
-										"mapredtexttype.shouldhaveext",
-										new Object[] { getPath(),shouldHaveExt });
-								
-							}
-						}else if(shouldNotHaveExt != null && ! shouldNotHaveExt.isEmpty()){
-							boolean found = false;
-							for(String extCur: shouldNotHaveExt){
-								found |= stat[i].getPath().getName().endsWith(extCur);
-							}
-							if(found){
-								error = LanguageManagerWF.getText(
-										"mapredtexttype.shouldnothaveext",
-										new Object[] { getPath(),shouldNotHaveExt });
-								
-							}
-						}
-						
-						
-						try {
-							hdfsInt.select(stat[i].getPath().toString(),"", 1);
-						} catch (Exception e) {
-							error = LanguageManagerWF
-									.getText("mapredtexttype.notmrdir");
-						}
-					}
-				}
-				try {
-					// fs.close();
-				} catch (Exception e) {
-					logger.error("Fail to close FileSystem: " + e);
-				}
-			} catch (IOException e) {
-
-				error = LanguageManagerWF.getText("unexpectedexception",
-						new Object[] { e.getMessage() });
-
-				logger.error(error);
-			}
-
-		}
-		// hCh.close();
-		return error;
 	}
 	
 	@Override
@@ -504,15 +399,6 @@ public class MapRedPlainTextHeaderType extends MapRedPlainTextType {
 		FieldList fl = new OrderedFieldList();
 		try {
 			
-			List<String> headers = new ArrayList<String>();
-			String lineHeader = this.selectLine(1).get(0);
-				
-			for (String s : lineHeader.split(Pattern
-					.quote(delimiter))) {
-				headers.add(s);
-			}
-			
-			
 			List<String> lines = this.selectLine(2000);
 			Map<String,Set<String>> valueMap = new LinkedHashMap<String,Set<String>>();
 			Map<String,Integer> nbValueMap = new LinkedHashMap<String,Integer>();
@@ -520,7 +406,6 @@ public class MapRedPlainTextHeaderType extends MapRedPlainTextType {
 			Map<String, FieldType> schemaTypeMap = new LinkedHashMap<String, FieldType>();
 			
 			if (lines != null) {
-				lines.remove(0);
 				logger.trace("key_delimiter: " + Pattern.quote(delimiter));
 				for (String line : lines) {
 					boolean full = true;
@@ -529,8 +414,7 @@ public class MapRedPlainTextHeaderType extends MapRedPlainTextType {
 						for (String s : line.split(Pattern
 								.quote(delimiter))) {
 
-							String nameColumn;
-							nameColumn = headers.get(cont++);
+							String nameColumn = generateColumnName(cont++);
 							
 							if(!valueMap.containsKey(nameColumn)){
 								valueMap.put(nameColumn, new LinkedHashSet<String>());
@@ -564,5 +448,9 @@ public class MapRedPlainTextHeaderType extends MapRedPlainTextType {
 
 	}
 	
+	@Override
+	public boolean allowDirectories(){
+		return false;
+	}
 
 }

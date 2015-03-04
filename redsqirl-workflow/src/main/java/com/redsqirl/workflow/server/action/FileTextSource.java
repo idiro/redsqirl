@@ -12,12 +12,11 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.redsqirl.utils.Tree;
-import com.redsqirl.workflow.server.InputInteraction;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
-import com.redsqirl.workflow.server.datatype.MapRedPlainTextHeaderType;
-import com.redsqirl.workflow.server.datatype.MapRedPlainTextType;
+import com.redsqirl.workflow.server.datatype.MapRedTextFileType;
+import com.redsqirl.workflow.server.datatype.MapRedTextFileWithHeaderType;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
-import com.redsqirl.workflow.server.oozie.PlainTextAction;
+import com.redsqirl.workflow.server.oozie.ShellAction;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
 /**
@@ -26,11 +25,11 @@ import com.redsqirl.workflow.utils.LanguageManagerWF;
  * @author marcos
  * 
  */
-public class PlainTextSource extends AbstractSource {
+public class FileTextSource extends AbstractSource {
 
 	private static final long serialVersionUID = 7519928238030041208L;
 	
-	private static Logger logger = Logger.getLogger(PlainTextSource.class);
+	private static Logger logger = Logger.getLogger(FileTextSource.class);
 	
 	/**
 	 * Audit output name
@@ -40,18 +39,13 @@ public class PlainTextSource extends AbstractSource {
 							   no_header_out_name = "out_no_header";
 	
 	/**
-	 * Parallel Interaction
-	 */
-	public InputInteraction parallelInt;
-	
-	/**
 	 * Constructor containing the pages, page checks and interaction
 	 * Initialization
 	 * 
 	 * @throws RemoteException
 	 */
-	public PlainTextSource() throws RemoteException {
-		super(new PlainTextAction());
+	public FileTextSource() throws RemoteException {
+		super(new ShellAction());
 		
 		initializeDataTypeInteraction();
 		initializeDataSubtypeInteraction();
@@ -59,11 +53,11 @@ public class PlainTextSource extends AbstractSource {
 		addSubTypePage();
 		addSourcePage();
 		
-		logger.info("PigPlainTextSource - addSourcePage ");
+		logger.info("PigFileTextSource - addSourcePage ");
 		
 		browser.setTextTip(LanguageManagerWF.getText("pig.test_source_browser_interaction.header_help"));
 		
-		MapRedPlainTextType type = new MapRedPlainTextType();
+		MapRedTextFileType type = new MapRedTextFileType();
 		dataType.setValue(type.getBrowser());
 		
 		checkSubType();
@@ -80,11 +74,11 @@ public class PlainTextSource extends AbstractSource {
 		logger.info("updating data subtype");
 
 		List<String> posValuesSubType = new LinkedList<String>();
-		posValuesSubType.add(new MapRedPlainTextType().getTypeName());
-		posValuesSubType.add(new MapRedPlainTextHeaderType().getTypeName());
+		posValuesSubType.add(new MapRedTextFileType().getTypeName());
+		posValuesSubType.add(new MapRedTextFileWithHeaderType().getTypeName());
 		dataSubtype.setPossibleValues(posValuesSubType);
 			
-		dataSubtype.setValue(new MapRedPlainTextType().getTypeName());
+		dataSubtype.setValue(new MapRedTextFileType().getTypeName());
 	}
 
 	/**
@@ -94,7 +88,7 @@ public class PlainTextSource extends AbstractSource {
 	 * @throws RemoteException
 	 */
 	public String getName() throws RemoteException {
-		return "plain_text_source";
+		return "file_text_source";
 	}
 	
 	
@@ -111,11 +105,11 @@ public class PlainTextSource extends AbstractSource {
 		
 		DFEOutput out = getDFEOutput().get(out_name);
 		
-		if (out != null && dataSubtype.getValue().equals(new MapRedPlainTextHeaderType().getTypeName())){
-			output.put(no_header_out_name, new MapRedPlainTextType());
+		if (out != null && dataSubtype.getValue().equals(new MapRedTextFileWithHeaderType().getTypeName())){
+			output.put(no_header_out_name, new MapRedTextFileType());
 			output.get(no_header_out_name).setFields(out.getFields());
-			output.get(no_header_out_name).addProperty(MapRedPlainTextType.key_delimiter, 
-					out.getProperty(MapRedPlainTextHeaderType.key_delimiter));
+			output.get(no_header_out_name).addProperty(MapRedTextFileType.key_delimiter, 
+					out.getProperty(MapRedTextFileWithHeaderType.key_delimiter));
 			
 			String user = System.getProperty("user.name");
 			output.get(no_header_out_name).generatePath(user, this.componentId, no_header_out_name);
@@ -204,14 +198,19 @@ public class PlainTextSource extends AbstractSource {
 	@Override
 	public boolean writeOozieActionFiles(File[] files) throws RemoteException {
 		logger.info("Write queries in file: " + files[0].getAbsolutePath());
-		String toWrite = "";
-			
-		toWrite = "#!/bin/bash" + System.getProperty("line.separator");
-		
 		String path = getDFEOutput().get(out_name).getPath();
 		String noHeaderPath = getDFEOutput().get(no_header_out_name).getPath();
-		toWrite += "/home/hadoop/bin/hadoop fs -cat " + path + " | sed 1d | /home/hadoop/bin/hadoop fs -put - " + noHeaderPath;
-
+		String hadoopBin = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_hadoop_home);
+		if(hadoopBin == null){
+			hadoopBin = "";
+		}else if(! hadoopBin.isEmpty()){
+			hadoopBin +="/bin/";
+		}
+		hadoopBin += "hadoop";
+		String toWrite = ((ShellAction) getOozieAction()).getShellContent(
+				hadoopBin+" fs -cat " + path + 
+				" | sed 1d | "+hadoopBin+" fs -put - " + noHeaderPath
+				);
 		boolean ok = toWrite != null;
 		if(ok){
 			try {

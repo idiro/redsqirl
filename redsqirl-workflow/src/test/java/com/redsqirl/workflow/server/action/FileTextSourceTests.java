@@ -1,34 +1,9 @@
 package com.redsqirl.workflow.server.action;
 
-import static org.junit.Assert.assertTrue;
 
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.log4j.Logger;
-import org.apache.oozie.client.OozieClient;
-import org.junit.Test;
-
-import com.redsqirl.utils.Tree;
-import com.redsqirl.workflow.server.InputInteraction;
-import com.redsqirl.workflow.server.ListInteraction;
-import com.redsqirl.workflow.server.OozieManager;
-import com.redsqirl.workflow.server.Workflow;
-import com.redsqirl.workflow.server.connect.HDFSInterface;
-import com.redsqirl.workflow.server.datatype.MapRedPlainTextHeaderType;
-import com.redsqirl.workflow.server.datatype.MapRedPlainTextType;
-import com.redsqirl.workflow.server.datatype.MapRedTextType;
-import com.redsqirl.workflow.server.enumeration.SavingState;
-import com.redsqirl.workflow.server.interaction.PigFilterInteraction;
-import com.redsqirl.workflow.server.interaction.PigOrderInteraction;
-import com.redsqirl.workflow.server.interaction.PigTableSelectInteraction;
-import com.redsqirl.workflow.server.interfaces.DataFlowElement;
-import com.redsqirl.workflow.test.TestUtils;
-
-public class PlainTextSourceTests {
-
-	static Logger logger = Logger.getLogger(PlainTextSourceTests.class);
+public class FileTextSourceTests {
+	/*
+	static Logger logger = Logger.getLogger(FileTextSourceTests.class);
 	
 	public static DataFlowElement createPigWithSrc(
 			Workflow w,
@@ -44,7 +19,7 @@ public class PlainTextSourceTests {
 		logger.debug(PigSelect.key_input+" "+idHS);
 		
 		error = w.addLink(
-				PlainTextSource.no_header_out_name, src.getComponentId(), 
+				FileTextSource.no_header_out_name, src.getComponentId(), 
 				PigSelect.key_input, idHS);
 		assertTrue("pig select add link: "+error,error == null);
 		
@@ -126,8 +101,8 @@ public class PlainTextSourceTests {
 			hInt.delete(new_path1);
 			hInt.delete(new_path2);
 
-			String idSource = w.addElement((new PlainTextSource()).getName());
-			PlainTextSource src = (PlainTextSource)w.getElement(idSource);
+			String idSource = w.addElement((new FileTextSource()).getName());
+			FileTextSource src = (FileTextSource)w.getElement(idSource);
 			
 			
 			src.update(src.getInteraction(PigTextSource.key_dataset));
@@ -140,8 +115,8 @@ public class PlainTextSourceTests {
 			subtypeInt.setValue(new MapRedPlainTextHeaderType().getTypeName());
 			
 			src.updateOut();
-			src.getDFEOutput().get(PlainTextSource.out_name);
-			src.getDFEOutput().get(PlainTextSource.no_header_out_name);
+			src.getDFEOutput().get(FileTextSource.out_name);
+			src.getDFEOutput().get(FileTextSource.no_header_out_name);
 			
 			src.getDFEOutput();
 			
@@ -172,5 +147,6 @@ public class PlainTextSourceTests {
 			e.printStackTrace();
 		}
 	}
+	*/
 	
 }

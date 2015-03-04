@@ -1,23 +1,8 @@
 package com.redsqirl.workflow.server.action;
 
-import static org.junit.Assert.assertTrue;
 
-import java.rmi.RemoteException;
-
-import org.apache.log4j.Logger;
-import org.apache.oozie.client.OozieClient;
-import org.junit.Test;
-
-import com.redsqirl.workflow.server.OozieManager;
-import com.redsqirl.workflow.server.Workflow;
-import com.redsqirl.workflow.server.WorkflowPrefManager;
-import com.redsqirl.workflow.server.connect.HDFSInterface;
-import com.redsqirl.workflow.server.enumeration.SavingState;
-import com.redsqirl.workflow.server.interfaces.DataFlowElement;
-import com.redsqirl.workflow.test.TestUtils;
-
-public class ConvertPlainTextTests {
-
+public class ConvertFileTextTests {
+	/*
 	static Logger logger = Logger.getLogger(ConvertPlainTextTests.class);
 
 	public static DataFlowElement createPigWithSrc(Workflow w,
@@ -127,5 +112,5 @@ public class ConvertPlainTextTests {
 			assertTrue("caught exception : "+e.getMessage(), false);
 		}
 	}
-
+	*/
 }
