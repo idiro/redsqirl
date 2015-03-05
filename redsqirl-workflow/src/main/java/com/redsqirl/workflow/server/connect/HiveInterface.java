@@ -198,7 +198,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 						}
 						logger.debug("Launch ... test ");
 
-						String command = "ssh " + nameStore
+						String command = "ssh -o StrictHostKeyChecking=no " + nameStore
 								+ " <<< 'nohup hive --service hiveserver -p "
 								+ port + " > out 2> err < /dev/null & echo $!'";
 
