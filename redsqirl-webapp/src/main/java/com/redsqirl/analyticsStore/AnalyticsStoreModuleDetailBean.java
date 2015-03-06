@@ -27,13 +27,13 @@ import net.lingala.zip4j.exception.ZipException;
 
 import org.ajax4jsf.model.KeepAlive;
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.idiro.ProjectID;
 import com.redsqirl.BaseBean;
+import com.redsqirl.PackageMngBean;
 import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
@@ -135,7 +135,12 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 			setRedSqirlModuleVersionDependency(redSqirlModuleVersionDependencyList);
 			
 			
-			String user = userInfoBean.getUserName();
+			String user = null;
+		    if (userInstall){
+		    	user = userInfoBean.getUserName();
+		    }
+			//String user = userInfoBean.getUserName();
+		    
 			PackageManager pckMng = new PackageManager();
 			List<String> packagesInstalled = pckMng.getPackageNames(user);
 			
@@ -444,6 +449,15 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 			}else{
 				MessageUseful.addInfoMessage("Error installing package: " + getMessageResources(error));
 			}
+		}
+		
+		//update list of packages modalPackage.xhtml
+		FacesContext context = FacesContext.getCurrentInstance();
+		PackageMngBean packageMngBean = (PackageMngBean) context.getApplication().evaluateExpressionGet(context, "#{packageMngBean}", PackageMngBean.class);
+		if (userInstall){
+			packageMngBean.calcUserPackages();
+		}else{
+			packageMngBean.calcSystemPackages();
 		}
 		
 		return "";

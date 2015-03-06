@@ -13,26 +13,20 @@
         <img src="../image/icons/waiting.gif" />
     </div>
 
-    <a4j:region>
-        <a4j:status onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModalSettings') });"
-                    onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
-                    onstop="jQuery.unblockUI();" />
-        <a4j:jsFunction name="storeNewSettings" action="#{settingsBean.storeNewSettings}"
-                oncomplete="jQuery.unblockUI();" reRender="userSettingsTabPanel,sysSettingsTabPanel" />
-        <a4j:jsFunction name="calcSettings" action="#{settingsBean.calcSettings}"
-                oncomplete="jQuery.unblockUI();" reRender="userSettingsTabPanel,sysSettingsTabPanel" />
-    </a4j:region>
-    
+    <a4j:status onstart="jQuery.blockUI({ message: jQuery('#domMessageDivModalSettings') });"
+    	onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();" onstop="jQuery.unblockUI();" />
+    <a4j:jsFunction name="storeNewSettings" action="#{settingsBean.storeNewSettings}"
+    	oncomplete="jQuery.unblockUI();" reRender="userSettingsTabPanel,sysSettingsTabPanel" />
+    <a4j:jsFunction name="calcSettings" action="#{settingsBean.calcSettings}"
+    	oncomplete="jQuery.unblockUI();" reRender="userSettingsTabPanel,sysSettingsTabPanel" />
             
     <div style="width:100%;height: 550px;" >
                 
-        <rich:tabPanel id="settingsTabPanel" style="border:none;"  switchType="ajax">
+        <rich:tabPanel id="settingsTabPanel" style="border:none;" switchType="ajax">
         
             <rich:tab label="#{messages.label_tab_usersetting}" style="border:none;border-collapse:collapse;" >
                 <rich:panel id="userSettingsTabPanel" style="border:1px solid black;padding-left:5px; overflow: auto; height:465px;">
-                
                     <a4j:repeat value="#{settingsBean.userSettings}" var="setting" >
-    
                         <h:outputText value="#{setting[1]}" title="#{setting[2]}" />
                         <br />
                         <h:inputText value="#{setting[3]}" size="100" />
@@ -51,9 +45,8 @@
                     <a4j:commandButton styleClass="greenButton" 
                         value="#{messages.button_ok}" reRender="msnError, errorTable" 
                         onclick="storeNewSettings()"
-                        oncomplete="#{rich:component('modalSettings')}.hide()" />
+                        oncomplete="#{rich:component('modalSettings')}.hide();" />
                 </h:panelGrid>
-        
             </rich:tab>
             
             <rich:tab label="#{messages.label_tab_syssetting}" >
@@ -61,11 +54,9 @@
                 <rich:panel id="sysSettingsTabPanel" style="border:1px solid black;padding-left:5px;overflow: auto;height:465px;">
                 
                     <a4j:repeat value="#{settingsBean.sysSettings}" var="setting" >
-    
                         <h:outputText value="#{setting[1]}" title="#{setting[2]}" />
                         <br />
                         <h:inputText value="#{setting[3]}" size="100" disabled="#{not settingsBean.admin}" />
-                        
                         <br />
                         <br />
                     </a4j:repeat>
@@ -89,6 +80,6 @@
         
     </div>
     
-    </h:form>
+</h:form>
     
 </ui:composition>
