@@ -86,30 +86,9 @@ public class SqirlNutcrackerAction extends OozieActionAbs {
 				confName.appendChild(oozieXmlDoc.createTextNode("oozie.launcher.oozie.libpath"));
 				confValue.appendChild(oozieXmlDoc.createTextNode(path));
 				
-//				for (int i = 0; i < fileStatus.length; ++i) {
-//					if (fileStatus[i].getPath().getName().contains(".jar")) {
-//						String name = fileStatus[i].getPath().toString();
-//						confValue.appendChild(oozieXmlDoc.createTextNode(name+":"));
-//					}
-
 				property.appendChild(confName);
 				property.appendChild(confValue);
 				configuration.appendChild(property);
-
-				// Iterator<String> it = pathToRemove.iterator();
-				// if(it.hasNext()){
-				// Element prepare = oozieXmlDoc.createElement("prepare");
-				// while(it.hasNext()){
-				// Element delete = oozieXmlDoc.createElement("delete");
-				// delete.setAttribute("path", it.next());
-				// prepare.appendChild(delete);
-				// }
-				// java.appendChild(prepare);
-				// }
-
-				// <prepare>
-				// <delete path="[PATH]"/>
-				// </prepare>
 				
 				Element mainClass = oozieXmlDoc.createElement("main-class");
 				mainClass.appendChild(oozieXmlDoc.createTextNode("com.sqirlnutcracker.SqirlNutcrackerMain"));
@@ -120,12 +99,8 @@ public class SqirlNutcrackerAction extends OozieActionAbs {
 				java.appendChild(javaopts);
 
 				Element arg1 = oozieXmlDoc.createElement("arg");
-				arg1.appendChild(oozieXmlDoc.createTextNode("${" + OozieManager.prop_namenode + "}"));
+				arg1.appendChild(oozieXmlDoc.createTextNode("namenode=${" + OozieManager.prop_namenode + "},jobtracker=${"+ OozieManager.prop_jobtracker + "}"));
 				java.appendChild(arg1);
-
-				/*Element arg3 = oozieXmlDoc.createElement("arg");
-				arg3.appendChild(oozieXmlDoc.createTextNode("-nologinit"));
-				java.appendChild(arg3);*/
 
 				Element arg2 = oozieXmlDoc.createElement("arg");
 				String[] filename = fileNames[0].split("/");

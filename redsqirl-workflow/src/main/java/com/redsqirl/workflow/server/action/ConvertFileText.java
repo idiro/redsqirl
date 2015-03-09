@@ -18,17 +18,17 @@ import org.apache.hadoop.fs.PathFilter;
 import org.apache.log4j.Logger;
 
 import com.idiro.hadoop.NameNodeVar;
+import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.DataProperty;
 import com.redsqirl.workflow.server.DataflowAction;
 import com.redsqirl.workflow.server.Page;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.datatype.MapRedTextFileType;
-import com.redsqirl.workflow.server.datatype.MapRedTextFileWithHeaderType;
+import com.redsqirl.workflow.server.datatype.MapRedTextType;
 import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.oozie.ShellAction;
-import com.redsqirl.workflow.utils.LanguageManagerWF;
 /**
  * Action to convert an hdfs dir to a flat file
  * @author marcos
@@ -63,8 +63,9 @@ public class ConvertFileText extends DataflowAction {
 		super(new ShellAction());
 		init();
 
-		page1 = addPage(LanguageManagerWF.getText("convert_plain_text_page1.title"),
+		/* page1 = addPage(LanguageManagerWF.getText("convert_plain_text_page1.title"),
 				LanguageManagerWF.getText("convert_plain_text_page1.legend"), 1);
+				*/
 		logger.info("created page");
 
 		logger.info("added interactions");
@@ -88,7 +89,7 @@ public class ConvertFileText extends DataflowAction {
 	protected void init() throws RemoteException{
 		if(input == null){
 			Map<String, DFELinkProperty> in = new LinkedHashMap<String, DFELinkProperty>();
-			in.put(key_input, new DataProperty(MapRedTextFileWithHeaderType.class, 1, 1));
+			in.put(key_input, new DataProperty(MapRedTextType.class, 1, 1));
 			input = in;
 		}
 	}
@@ -100,16 +101,19 @@ public class ConvertFileText extends DataflowAction {
 		String error = checkIntegrationUserVariables();
 		logger.info("Error in updae out : "+error);
 		if(error == null){
-//			FieldList new_field = getNewFields();
+			DFEOutput in = this.getDFEInput().get(ConvertFileText.key_input).get(0);
+			FieldList new_field = in.getFields().cloneRemote();
 			DFEOutput out = output.get(key_output);
-//			logger.info("new fields "+new_field.getFieldNames());
 			
-			if(output.get(key_output) == null){
-				output.put(key_output, new MapRedTextFileType());
+			if(out == null){
+				out = new MapRedTextFileType();
+				output.put(key_output, out);
+				
 			}
 			
-//			output.get(key_output).setFields(new_field);
-//			output.get(key_output).addProperty(MapRedTextType.key_delimiter, delimiterOutputInt.getValue());
+			out.setFields(new_field);
+			out.addProperty(MapRedTextType.key_delimiter,  
+					in.getProperty(MapRedTextType.key_delimiter));
 			
 		}
 		return error;
@@ -201,34 +205,10 @@ public class ConvertFileText extends DataflowAction {
 		
 		List<String> pathList = new ArrayList<String>();
 		
-		String filesConcatenate = "";
 		
 		String path = this.getDFEInput().get(ConvertFileText.key_input).get(0).getPath();
 		String pathOutput = this.getDFEOutput().get(ConvertFileText.key_output).getPath();
 		
-		FileSystem fs;
-		try {
-			fs = NameNodeVar.getFS();
-			FileStatus[] stat = fs.listStatus(new Path(path),
-					new PathFilter() {
-
-				@Override
-				public boolean accept(Path arg0) {
-					return !arg0.getName().startsWith("_") && !arg0.getName().startsWith(".");
-				}
-			});
-			for (int i = 0; i < stat.length; ++i) {
-				if (!stat[i].isDir()) {
-					String file = stat[i].getPath().toString().replace(fs.getUri().toString(), "");
-					System.out.println(file);
-					pathList.add(file);
-					filesConcatenate += file + " ";
-				}
-			}
-		}
-		catch(IOException e){
-			e.printStackTrace();
-		}
 
 		String hadoopBin = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_hadoop_home);
 		if(hadoopBin == null){
@@ -239,8 +219,8 @@ public class ConvertFileText extends DataflowAction {
 		hadoopBin += "hadoop";
 		
 		String toWrite = ((ShellAction) getOozieAction()).getShellContent(
-				hadoopBin+" fs -cat " + filesConcatenate + 
-				" | "+hadoopBin+" fs -put - " + pathOutput);
+				hadoopBin+" fs -cat " + path + 
+				"/* | "+hadoopBin+" fs -put - " + pathOutput);
 
 		boolean ok = toWrite != null;
 		if(ok){

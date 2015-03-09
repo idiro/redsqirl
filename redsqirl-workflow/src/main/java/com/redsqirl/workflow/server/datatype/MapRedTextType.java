@@ -176,6 +176,8 @@ public class MapRedTextType extends MapRedDir {
 			return "#2";
 		} else if (text.contains("|")) {
 			return "#124";
+		} else if (text.contains(",")) {
+			return "#44";
 		}
 		return "#1";
 	}

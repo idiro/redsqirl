@@ -81,7 +81,7 @@ public class MapRedTextFileType extends MapRedHdfs {
 	
 	@Override
 	public String[] getExtensions() throws RemoteException {
-		return new String[]{"*"};
+		return new String[]{"*","*.txt"};
 	}
 
 	/**
@@ -97,7 +97,7 @@ public class MapRedTextFileType extends MapRedHdfs {
 	public String generatePathStr(String userName, String component,
 			String outputName) throws RemoteException {
 		return "/user/" + userName + "/tmp/redsqirl_" + component + "_" + outputName
-				+ "_" + RandomString.getRandomName(8);
+				+ "_" + RandomString.getRandomName(8)+".txt";
 	}
 	
 	/**
@@ -114,6 +114,45 @@ public class MapRedTextFileType extends MapRedHdfs {
 		return isPathValid(shouldNotHaveExt,null);
 	}
 
+	public String isPathValid(List<String> shouldNotHaveExt, List<String> shouldHaveExt) throws RemoteException {
+		String error = null;
+		HdfsFileChecker hCh = new HdfsFileChecker(getPath());
+		if(shouldHaveExt != null && !shouldHaveExt.isEmpty()){
+			boolean found = false;
+			for(String extCur: shouldHaveExt){
+				found |= getPath().endsWith(extCur);
+			}
+			if(!found){
+				error = LanguageManagerWF.getText(
+						"mapredtexttype.shouldhaveext",
+						new Object[] { getPath(),shouldHaveExt });
+				
+			}
+		}else if(shouldNotHaveExt != null && ! shouldNotHaveExt.isEmpty()){
+			boolean found = false;
+			for(String extCur: shouldNotHaveExt){
+				found |= getPath().endsWith(extCur);
+			}
+			if(found){
+				error = LanguageManagerWF.getText(
+						"mapredtexttype.shouldnothaveext",
+						new Object[] { getPath(),shouldNotHaveExt });
+				
+			}
+		}
+		
+		if (!hCh.isInitialized()) {
+			error = LanguageManagerWF.getText("mapredtexttype.dirisfile");
+		} else {
+			hCh.setPath(new Path(getPath()).getParent());
+			if (!hCh.isFile()) {
+				error = LanguageManagerWF.getText("mapredtextfiletype.nofile",new String[]{getPath()});
+			}
+
+		}
+		return error;
+	}
+	
 	/**
 	 * I
 	 */
