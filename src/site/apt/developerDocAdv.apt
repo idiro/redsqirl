@@ -9,6 +9,7 @@ Create a package
  [[1]]Step 1
 
 	Follow the Tutorial to create the project provided in {{{./pckdev.html}Here}} or download the Example Project. 
+	You can download the resulting project {{{./files/advanced-step1.zip}here}}.
 
  [[2]]Step 2
 
@@ -30,7 +31,10 @@ Create a package
 	To configure the package to run Pig processes  the 'DemoAction' the constructor must be 
 	canged so that it calls the superclass construnctor with a 'new PigAction()'
 
+	You can download the resulting project {{{./files/advanced-step2.zip}here}}.
 +-----------+
+private static Logger logger = Logger.getLogger(DemoAction.class);
+
 public DemoAction() throws RemoteException {
 		super(new PigAction());
 	}
@@ -87,17 +91,18 @@ key_featureTable = "features";
 	
 +-----------+
 public String updateOut() throws RemoteException {
-		String error = checkIntegrationUserVariables();
-		if(error == null){
-			FeatureList new_features = getNewFeatures();
-			if(output.get(key_output) == null){
-				output.put(key_output, new MapRedTextType());
-			}
-			output.get(key_output).setFeatures(new_features);
-			output.get(key_output).addProperty(MapRedTextType.key_delimiter, delimiterOutputInt.getValue());
-		}
-		return error;
+    String error = checkIntegrationUserVariables();
+    if(error == null){
+	FieldList new_features = getNewFeatures();
+	if(output.get(key_output) == null){
+	    output.put(key_output, new MapRedTextType());
 	}
+	output.get(key_output).setFields(new_features);
+	output.get(key_output).addProperty(MapRedTextType.key_delimiter,
+delimiterOutputInt.getValue());
+    }
+    return error;
+}
 +-----------+
 	
 	In every action of Pig it is necessary to set the output type and the delimiter. Pig accepts two types of output which is either text or binary.
@@ -113,19 +118,19 @@ protected ListInteraction savetypeOutputInt;
 	
 +-----------+
 protected void init(int nbInMin, int nbInMax) throws RemoteException{
-		if(input == null){
-			Map<String, DFELinkProperty> in = new LinkedHashMap<String, DFELinkProperty>();
-			in.put(key_input, new DataProperty(MapRedBinaryType.class, nbInMin, nbInMax));
-			input = in;
-		}
-	}
+    if(input == null){
+	Map<String, DFELinkProperty> in = new LinkedHashMap<String, DFELinkProperty>();
+	in.put(key_input, new DataProperty(MapRedCompressedType.class, nbInMin, nbInMax));
+	input = in;
+    }
+}
 +-----------+
 	
 	The features that available on initialization can be different from the output of the action. We have to create two methods to get the input features and the output features.
 	
 +-----------+
-public abstract FeatureList getInFeatures() throws RemoteException;
-public abstract FeatureList getNewFeatures() throws RemoteException;
+public abstract FieldList getNewFeatures() throws RemoteException;
+public abstract FieldList getInFeatures() throws RemoteException;
 +-----------+
 	
 
@@ -155,87 +160,84 @@ public String getRemoveQueryPiece(String out) throws RemoteException{
 	Get the load or storage function for the data
 
 +-----------+
-private String getLoadStoreFuncion(DFEOutput out, String delimiter) throws RemoteException{
-		String function = null;
-		if (out.getTypeName().equals("TEXT MAP-REDUCE DIRECTORY")){
-			function = "PigStorage('"+delimiter+"')";
-		}
-		else if (out.getTypeName().equals("BINARY MAP-REDUCE DIRECTORY")){
-			function = "BinStorage()";
-		}
-		return function;
-	}
+private String getLoadStoreFuncion(DFEOutput out, String delimiter)
+	    throws RemoteException {
+    String function = null;
+    function = "PigStorage('" + delimiter + "')";
+    return function;
+}
 +-----------+
 
 	Get the variable to load with the variable types and return as a string
 
 +-----------+
-public String getLoadQueryPiece(DFEOutput out) throws RemoteException{
-	logger.debug("create load...");
+public String getLoadQueryPiece(DFEOutput out) throws RemoteException {
+    logger.debug("create load...");
 
-	String delimiter = out.getProperty(MapRedTextType.key_delimiter);
-	delimiter = ((MapRedTextType)out).getPigDelimiter();
-	if (delimiter == null){
-		delimiter = default_delimiter;
+    String delimiter = out.getProperty(MapRedTextType.key_delimiter);
+    delimiter = ((MapRedTextType) out).getPigDelimiter();
+    if (delimiter == null) {
+	delimiter = "\001";
+    }
+
+    String function = getLoadStoreFuncion(out, delimiter);
+    String createSelect = "LOAD '" + out.getPath() + "' USING " + function
+	    + " as (";
+
+    Iterator<String> it = out.getFields().getFieldNames().iterator();
+    logger.info("attribute list size : " + out.getFields().getSize());
+    while (it.hasNext()) {
+	String e = it.next();
+	createSelect += e
+		+ ":"
+		+ PigTypeConvert.getPigType(out.getFields()
+			.getFieldType(e));
+	if (it.hasNext()) {
+	    createSelect += ", ";
 	}
+    }
+    createSelect += ")";
 
-	String function = getLoadStoreFuncion(out, delimiter);
-	String createSelect = "LOAD '" + out.getPath() + "' USING "+function+" as (";
-
-	Iterator<String> it = out.getFeatures().getFeaturesNames().iterator();
-	logger.info("attribute list size : "+out.getFeatures().getSize());
-	while (it.hasNext()){
-		String e = it.next();
-		createSelect += e+":"+PigTypeConvert.getPigType(out.getFeatures().getFeatureType(e));
-		if (it.hasNext()){
-			createSelect += ", ";
-		}
-	}
-	createSelect +=")";
-
-	return createSelect;
-	}
+    return createSelect;
+}
 +-----------+
 
 	Get the query piece to store the results
 
 +-----------+
-public String getStoreQueryPiece(DFEOutput out, String relationName) throws RemoteException{
-		MapRedTextType output = (MapRedTextType) getDFEOutput().get(key_output); 
-		String delimiter = output.getPigDelimiter();
+public String getStoreQueryPiece(DFEOutput out, String relationName)
+	    throws RemoteException {
+    MapRedTextType output = (MapRedTextType) getDFEOutput().get("in");
+    String delimiter = output.getPigDelimiter();
 
-		String function = getStoreFunction(delimiter);
-		logger.info(function);
-		return "STORE "+relationName+" INTO '" + out.getPath() + "' USING "+function+";";
-	}
+    String function = getStoreFunction(delimiter);
+    logger.info(function);
+    return "STORE " + relationName + " INTO '" + out.getPath() + "' USING "
+	    + function + ";";
+}
 +-----------+
 
 	Get the storage function that pig should use to store the result with the correct delimiter
 	
 +-----------+
-public String getStoreFunction(String delimiter) throws RemoteException{
-		String type = "";
-		String function = "";
-		if(delimiter==null || delimiter.equalsIgnoreCase("")){
-			delimiter ="|";
-		}
-		try{
-			type = savetypeOutputInt.getTree().getFirstChild("list").getFirstChild("output").getFirstChild().getHead();
-			logger.info("type: "+type);
-			if(type.equalsIgnoreCase("TEXT MAP-REDUCE DIRECTORY")){
-				function = "PigStorage('"+delimiter+"')";
-			}
-			if (type.equalsIgnoreCase("BINARY MAP-REDUCE DIRECTORY")){
-				function = "BinStorage()";
-			}
-			logger.info("Storing via "+function);
-			return function;
-		}catch (Exception e){
-			logger.error("There was an error getting the output type");
-		}
-		return null;
-
-	}
+public String getStoreFunction(String delimiter) throws RemoteException {
+    String type = "";
+    String function = "";
+    if (delimiter == null || delimiter.equalsIgnoreCase("")) {
+	delimiter = "|";
+    }
+    try {
+	type = savetypeOutputInt.getTree().getFirstChild("list")
+		.getFirstChild("output").getFirstChild().getHead();
+	logger.info("type: " + type);
+	function = "PigStorage('" + delimiter + "')";
+	logger.info("Storing via " + function);
+	return function;
+    } catch (Exception e) {
+	logger.error("There was an error getting the output type");
+    }
+    return null;
+}
 +-----------+
 
 	So far we have added functionality for the common query pieces for pig actions , bag numner handling and getting the intput and output maps aswel as updating the output map.
@@ -243,25 +245,28 @@ public String getStoreFunction(String delimiter) throws RemoteException{
 	For this all that needs to be done is to implement the 'writeOozieActionFiles(File[] files)' method. This method 
 	
 +-----------+
+@Override
 public boolean writeOozieActionFiles(File[] files) throws RemoteException {
-		logger.info("Write queries in file: "+files[0].getAbsolutePath());
-		String toWrite = getQuery();
-		boolean ok = toWrite != null;
-		if(ok){
-			logger.info("Content of "+files[0].getName()+": "+toWrite);
-			try {
-				FileWriter fw = new FileWriter(files[0]);
-				BufferedWriter bw = new BufferedWriter(fw);
-				bw.write(toWrite);	
-				bw.close();
+    logger.info("Write queries in file: "+files[0].getAbsolutePath());
+    String toWrite = getQuery();
+    boolean ok = toWrite != null;
+    if(ok){
+	logger.info("Content of "+files[0].getName()+": "+toWrite);
+	try {
+	    FileWriter fw = new FileWriter(files[0]);
+	    BufferedWriter bw = new BufferedWriter(fw);
+	    bw.write(toWrite);  
+	    bw.close();
 
-			} catch (IOException e) {
-				ok = false;
-				logger.error("Fail to write into the file "+files[0].getAbsolutePath());
-			}
-		}
-		return ok;
+	} catch (IOException e) {
+	    ok = false;
+	    logger.error("Fail to write into the file
+"+files[0].getAbsolutePath());
 	}
+    }
+    
+    return ok;
+}
 +-----------+
 	
 	Now that everything is is configured and we have all that is neccessary for a basic action lets take another look at the constructor.
@@ -270,29 +275,29 @@ public boolean writeOozieActionFiles(File[] files) throws RemoteException {
 	
 +-----------+
 public DemoAction() throws RemoteException {
-		super(new PigAction());
-		init(1,1);
+    super(new PigAction());
+    init(1,1);
 
-		delimiterOutputInt = new InputInteraction(
-				key_delimiter,
-				"Pig Delimiter",
-				"Set the delimiter character for the  ", 
-				0, 0);
-		delimiterOutputInt.setRegex("^(#\\d{1,3}|.)?$");
-		delimiterOutputInt.setValue("#1");
+    delimiterOutputInt = new InputInteraction(
+	    key_delimiter,
+	    "Pig Delimiter",
+	    "Set the delimiter character for the  ", 
+	    0, 0);
+    delimiterOutputInt.setRegex("^(#\\d{1,3}|.)?$");
+    delimiterOutputInt.setValue("#1");
 
 
-		savetypeOutputInt = new ListInteraction(
-				key_outputType,
-				"Pig Output Type",
-				"Set the Pig output type of the action", 1, 0);
-		savetypeOutputInt.setDisplayRadioButton(true);
-		List<String> saveTypePos = new LinkedList<String>();
-		saveTypePos.add( new MapRedTextType().getTypeName());
-		saveTypePos.add( new MapRedBinaryType().getTypeName());
-		savetypeOutputInt.setPossibleValues(saveTypePos);
-		savetypeOutputInt.setValue(new MapRedTextType().getTypeName());
-	}
+    savetypeOutputInt = new ListInteraction(
+	    key_outputType,
+	    "Pig Output Type",
+	    "Set the Pig output type of the action", 1, 0);
+    savetypeOutputInt.setDisplayRadioButton(true);
+    List<String> saveTypePos = new LinkedList<String>();
+    saveTypePos.add( new MapRedTextType().getTypeName());
+    saveTypePos.add( new MapRedCompressedType().getTypeName());
+    savetypeOutputInt.setPossibleValues(saveTypePos);
+    savetypeOutputInt.setValue(new MapRedTextType().getTypeName());
+}
 +-----------+
 
 	<<Outcome:>> Project with abstract class complete ready for use.
@@ -308,6 +313,8 @@ public DemoAction() throws RemoteException {
 	
 	This method simply returns the name of the method
 	
+	You can download the resulting project {{{./files/advanced-step3.zip}here}}.
+
 +-----------+
 	public String getName() throws RemoteException {
 		
@@ -318,20 +325,20 @@ public DemoAction() throws RemoteException {
 	This methods simple returns the features that are available from the input.
 
 +-----------+
-	@Override
-	public FeatureList getInFeatures() throws RemoteException {
-		return getDFEInput().get(DemoAction.key_input).get(0).getFeatures();
-	}
+@Override
+public FieldList getInFeatures() throws RemoteException {
+    return getDFEInput().get(DemoAction.key_input).get(0).getFields();
+}
 +-----------+
 
 	This method returns the new features generated from the action , as the action we are implementing is only to sample there should be no new features.
 	Here we simply return the input features.
 	
 +-----------+
-	@Override
-	public FeatureList getNewFeatures() throws RemoteException {
-		return getInFeatures();
-	}
+@Override
+public FieldList getNewFeatures() throws RemoteException {
+    return getInFeatures();
+}
 +-----------+
 
 	Once these methods are implemented , let's implement the only interaction that we need which will inherit from 'InputInteraction'.
@@ -402,6 +409,7 @@ public String check(){
  	Once we have the interaction finished , the final step to complete the 'ActionSample' is to add the last members of the action and write the constructor , update and get query method.
  	Inside the 'ActionSample' class we add need to add the last few members of the action.
  	
+	You can download the resulting project {{{./files/advanced-step4.zip}here}}.
 +-----------+
 //Interaction that was just written
 public SampleInteraction pigsample;
@@ -493,12 +501,13 @@ private Page page1;
  	Once we have these files we should look at the requirements for the package.
  	A package must contain two folder called 'pck' and 'pck-repo' , that are located under src/main of the project. The directory listing should look like this:
  
+	You can download the resulting project {{{./files/advanced-step5.zip}here}}.
+
 -------------------------
 	src/
 	 main/
 	   java/
 	   pck/
-	   pck-repo/
 -------------------------
  	 
  	For the moment lets look at the contents of 'pck' which is the folder that holds the contents of the package .
@@ -515,7 +524,6 @@ private Page page1;
 	     sample.html
 	    images/
 	     sample.gif
-	   pck-repo/
 -------------------------
 	
 	There are two more files required for the package , an 'actions.txt' file that lists the actions in the package , so in this package's 'actions.txt'
@@ -546,57 +554,5 @@ version=${project.version}
 	     sample.gif
 	    actions.txt
 	    package.properties
-	   pck-repo/
 -------------------------
 
-	With the package complete there is only the 'pck-repo' folder to populate. This is for repository managment. It should contain an sql file for adding a record to the repository
-	called 'record_repo.sql' . It's contents is a simple insert statement that is : 
- 
--------------------------
-INSERT INTO redsqirl_pck_mng.redsqirl_packages( 
-      id,
-      name,
-      version,
-      license,
-      price,
-      short_description,
-      html_file,
-      release_notes,
-      package_date,
-      zip_file)
-VALUES(
-      '#{ARTIFACTID}',
-      '#{NAME}',
-      '#{VERSION}',
-      'Apache',
-      '',
-      '#{DESCRIPTION}',
-      '#{ARTIFACTID}-#{VERSION}.html',
-      '',
-      str_to_date('#{TIMESTAMP}','%Y-%m-%d'),
-      '#{ARTIFACTID}-#{VERSION}.zip'
-      );
-
--------------------------
-
-	The final file is a help file for the entire package. The help file title is the name of the package.
-	In this packages case the help file should be 'test.html'.
-	This help file should contain information on the package and general information on the framework used.
-	
-	The final directory listing from within source should be  :
-	
--------------------------
-	src/
-	 main/
-	   java/
-	   pck/
-	    help/
-	     sample.html
-	    images/
-	     sample.gif
-	    actions.txt
-	    package.properties
-	   pck-repo/
-	    test.html
-	    record_repo.sql
--------------------------

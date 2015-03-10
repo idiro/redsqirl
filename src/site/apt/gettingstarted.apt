@@ -58,27 +58,20 @@ avoid permission conflicts.
   Find below an example of a property file.
 
 ----------------------------------------
-
 nutcracker_path=/user/oozie/share/lib/sqirl-nutcracker
-jdbc_hive_server=namenode
-start_hive_range=10003
 hive_xml=/etc/hive/hive-site.xml
-trusted_pack_hosts=http\://dev\:8090/
-end_hive_range=100100
-oozie_xmlns=uri\:oozie\:workflow\:0.2
-jobtracker=namenode\:9001
-allow_user_install=true
-admin_user=user1\:user2\:user3\:user4
-server=namenode
-namenode=hdfs\://namenode\:9000
 hive_default_xml=/etc/hive/hive-default.xml
-tomcat_path=/data/apache-tomcat-7.0.42/webapps
-trusted_host=http\://dev\:8090/
-queue=default
-pack_manager_url=http\://dev\:8090/redsqirl-repo
-repo_address=http\://dev\:8090/redsqirl-repo/
-oozie_url=http\://namenode\:11000/oozie
-
+oozie_launcher_queue=ooziequeue
+oozie_action_queue=default
+tomcat_path=$REDSQIRL_PATH/$TOMCAT_FILE/webapps
+jobtracker=${namenode}\:9022
+namenode=hdfs\://${namenode}\:9000
+oozie_xmlns=uri\:oozie\:workflow\:0.2
+allow_user_install=true
+oozie_url=http\://${namenode}\:11000/oozie
+pack_manager_url=http\://95.45.250.249\:8091/analytics-store
+admin_user=user1\:user2
+hadoop_home=/home/hadoop
 
 
 ----------------------------------------
@@ -103,33 +96,35 @@ oozie_url=http\://namenode\:11000/oozie
 *----------+--------------+----------------+
 | jobtracker | Apache hadoop job tracker | namenode:9001 |
 *----------+--------------+----------------+
-| queue | The queue to use in oozie | default |
-*----------+--------------+----------------+
 | oozie_url | Apache Oozie url | http://namenode:11000/oozie |
 *----------+--------------+----------------+
 | oozie_xmlns | Apache Oozie xmlns to use | uri:oozie:workflow:0.2 |
+*----------+--------------+----------------+
+| oozie_launcher_queue | Queue used for map only Oozie actions that starts the process | ooziequeue |
+*----------+--------------+----------------+
+| oozie_action_queue  | Queue used for the actual processing | default |
+*----------+--------------+----------------+
+| nutcracker_path|Path on hdfs for nutcracker path|/user/oozie/share/lib/sqirl-nutcracker| |
+*----------+--------------+----------------+
+| pack_manager_url | The analytics store URL (REST server) | http\://95.45.250.249\:8091/analytics-store |
+*----------+--------------+----------------+
+| tomcat_path | Path for tomcat installation  | /path/tomcat/ |
+*----------+--------------+----------------+
+| admin_user | ':' list of user that can admin sys package from the UI | user1:user2 |
+*----------+--------------+----------------+
+| allow_user_install | Allow users to install their own packages | true |
+*----------+--------------+----------------+
+| hadoop_home  | The HADOOP_HOME directory where the conf folder and bin folder can be found | /home/hadoop | 
+*----------+--------------+----------------+
+| jdbc_hive_server | The name of the Hive server to use | namenode |
 *----------+--------------+----------------+
 | hive_xml | Uri for XML jobs on Oozie | /path/xmlfile |
 *----------+--------------+----------------+
 | hive_default_xml | Path for where the default hive xml is stored , used for Oozie  | /foo/bar/ |
 *----------+--------------+----------------+
-| allow_user_install | Allow users to install their own packages | true |
-*----------+--------------+----------------+
-| tomcat_path | Path for tomcat installation  | /path/tomcat/ |
-*----------+--------------+----------------+
 | start_hive_range | Optional, needed for generating a Hive server port for every user| 10000|
 *----------+--------------+----------------+
 | end_hive_range | Optional, end of automatic range allocation (excluded)| 10100|
-*----------+--------------+----------------+
-| nutcracker_path|Path on hdfs for nutcracker path|/user/oozie/share/lib/sqirl-nutcracker| |
-*----------+--------------+----------------+
-| jdbc_hive_server | The name of the Hive server to use | namenode |
-*----------+--------------+----------------+
-| trusted_pack_hosts| server URL that you allow the package to be downloaded from | http://localhost|
-*----------+--------------+----------------+
-| admin_user | ':' list of user that can admin sys package from the UI | user1:user2 |
-*----------+--------------+----------------+
-| pack_manager_url | The package manager URL (REST server) | http://localhost:9090 |
 *----------+--------------+----------------+
 |  | | |
 *----------+--------------+----------------+

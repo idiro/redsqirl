@@ -6,6 +6,37 @@
 
     <properties>
 	<hadoop.version>1.0.4</hadoop.version>
+
+	<zip.directory>${project.build.directory}/site/files</zip.directory>
+
+	<zip.ex-multi.xml>${basedir}/src/main/assembly/ex-multi-zip.xml</zip.ex-multi.xml>
+	<zip.ex-multi>${basedir}/redsqirl-examples/multi-interaction</zip.ex-multi>
+	<ex-multi.zipname>multi-interaction</ex-multi.zipname>
+
+	<zip.ex-basic.xml>${basedir}/src/main/assembly/ex-basic-zip.xml</zip.ex-basic.xml>
+	<zip.ex-basic>${basedir}/redsqirl-examples/basic</zip.ex-basic>
+	<ex-basic.zipname>basic</ex-basic.zipname>
+
+	<zip.ex-adv-1.xml>${basedir}/src/main/assembly/ex-adv-1-zip.xml</zip.ex-adv-1.xml>
+	<zip.ex-adv-1>${basedir}/redsqirl-examples/advanced/step1</zip.ex-adv-1>
+	<ex-adv-1.zipname>advanced-step1</ex-adv-1.zipname>
+
+	<zip.ex-adv-2.xml>${basedir}/src/main/assembly/ex-adv-2-zip.xml</zip.ex-adv-2.xml>
+	<zip.ex-adv-2>${basedir}/redsqirl-examples/advanced/step2</zip.ex-adv-2>
+	<ex-adv-2.zipname>advanced-step2</ex-adv-2.zipname>
+
+	<zip.ex-adv-3.xml>${basedir}/src/main/assembly/ex-adv-3-zip.xml</zip.ex-adv-3.xml>
+	<zip.ex-adv-3>${basedir}/redsqirl-examples/advanced/step3</zip.ex-adv-3>
+	<ex-adv-3.zipname>advanced-step3</ex-adv-3.zipname>
+
+	<zip.ex-adv-4.xml>${basedir}/src/main/assembly/ex-adv-4-zip.xml</zip.ex-adv-4.xml>
+	<zip.ex-adv-4>${basedir}/redsqirl-examples/advanced/step4</zip.ex-adv-4>
+	<ex-adv-4.zipname>advanced-step4</ex-adv-4.zipname>
+
+	<zip.ex-adv-5.xml>${basedir}/src/main/assembly/ex-adv-5-zip.xml</zip.ex-adv-5.xml>
+	<zip.ex-adv-5>${basedir}/redsqirl-examples/advanced/step5</zip.ex-adv-5>
+	<ex-adv-5.zipname>advanced-step5</ex-adv-5.zipname>
+
     </properties>
 
     <groupId>idiro</groupId>
@@ -94,6 +125,125 @@
 		</executions>
 	    </plugin>
 	    <plugin>
+		<artifactId>maven-resources-plugin</artifactId>
+		<version>2.7</version>
+		<executions>
+		    <execution>
+			<id>copy-resources</id>
+			<phase>site</phase>
+			<goals>
+			    <goal>copy-resources</goal>
+			</goals>
+			<configuration>
+			    <outputDirectory>${basedir}/target/site/files</outputDirectory>
+			    <resources>          
+				<resource>
+				    <directory>${basedir}/src/site/files</directory>
+				    <filtering>true</filtering>
+				</resource>
+			    </resources>              
+			</configuration>            
+		    </execution>
+		</executions>
+	    </plugin>
+	    <plugin>
+		<artifactId>exec-maven-plugin</artifactId>
+		<groupId>org.codehaus.mojo</groupId>
+		<executions>
+		    <execution>
+			<id>Example Basic Compilation Check</id>
+			<phase>site</phase>
+			<goals>
+			    <goal>exec</goal>
+			</goals>
+			<configuration>
+			    <executable>${basedir}/src/main/scripts/mvn_compile.sh</executable>
+			    <arguments>
+				<argument>${zip.ex-basic}</argument>
+			    </arguments>
+			</configuration>
+		    </execution>
+		    <execution>
+			<id>Example Multi Compilation Check</id>
+			<phase>site</phase>
+			<goals>
+			    <goal>exec</goal>
+			</goals>
+			<configuration>
+			    <executable>${basedir}/src/main/scripts/mvn_compile.sh</executable>
+			    <arguments>
+				<argument>${zip.ex-multi}</argument>
+			    </arguments>
+			</configuration>
+		    </execution>
+		    <execution>
+			<id>Example Adv 1 Compilation Check</id>
+			<phase>site</phase>
+			<goals>
+			    <goal>exec</goal>
+			</goals>
+			<configuration>
+			    <executable>${basedir}/src/main/scripts/mvn_compile.sh</executable>
+			    <arguments>
+				<argument>${zip.ex-adv-1}</argument>
+			    </arguments>
+			</configuration>
+		    </execution>
+		    <execution>
+			<id>Example Adv 2 Compilation Check</id>
+			<phase>site</phase>
+			<goals>
+			    <goal>exec</goal>
+			</goals>
+			<configuration>
+			    <executable>${basedir}/src/main/scripts/mvn_compile.sh</executable>
+			    <arguments>
+				<argument>${zip.ex-adv-2}</argument>
+			    </arguments>
+			</configuration>
+		    </execution>
+		    <execution>
+			<id>Example Adv 3 Compilation Check</id>
+			<phase>site</phase>
+			<goals>
+			    <goal>exec</goal>
+			</goals>
+			<configuration>
+			    <executable>${basedir}/src/main/scripts/mvn_compile.sh</executable>
+			    <arguments>
+				<argument>${zip.ex-adv-3}</argument>
+			    </arguments>
+			</configuration>
+		    </execution>
+		    <execution>
+			<id>Example Adv 4 Compilation Check</id>
+			<phase>site</phase>
+			<goals>
+			    <goal>exec</goal>
+			</goals>
+			<configuration>
+			    <executable>${basedir}/src/main/scripts/mvn_compile.sh</executable>
+			    <arguments>
+				<argument>${zip.ex-adv-4}</argument>
+			    </arguments>
+			</configuration>
+		    </execution>
+		    <execution>
+			<id>Example Adv 5 Compilation Check</id>
+			<phase>site</phase>
+			<goals>
+			    <goal>exec</goal>
+			</goals>
+			<configuration>
+			    <executable>${basedir}/src/main/scripts/mvn_compile.sh</executable>
+			    <arguments>
+				<argument>${zip.ex-adv-5}</argument>
+			    </arguments>
+			</configuration>
+		    </execution>
+		</executions>
+	    </plugin>
+	    <plugin>
 		<groupId>org.apache.maven.plugins</groupId>
 		<artifactId>maven-dependency-plugin</artifactId>
 		<version>2.6</version>
@@ -111,6 +261,119 @@
 		    </execution>
 		</executions>
 	    </plugin>
+	    <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-assembly-plugin</artifactId>
+		<version>2.4</version>
+		<executions>
+		    <execution>
+			<id>zip-ex-basic</id>
+			<phase>site</phase>
+			<goals>
+			    <goal>single</goal>
+			</goals>
+			<configuration>
+			    <outputDirectory>${zip.directory}</outputDirectory>
+			    <finalName>${ex-basic.zipname}</finalName>
+			    <appendAssemblyId>false</appendAssemblyId>
+			    <descriptors>
+				<descriptor>${zip.ex-basic.xml}</descriptor>
+			    </descriptors>
+			</configuration>
+		    </execution>
+		    <execution>
+			<id>zip-ex-multi</id>
+			<phase>site</phase>
+			<goals>
+			    <goal>single</goal>
+			</goals>
+			<configuration>
+			    <outputDirectory>${zip.directory}</outputDirectory>
+			    <finalName>${ex-multi.zipname}</finalName>
+			    <appendAssemblyId>false</appendAssemblyId>
+			    <descriptors>
+				<descriptor>${zip.ex-multi.xml}</descriptor>
+			    </descriptors>
+			</configuration>
+		    </execution>
+		    <execution>
+			<id>zip-ex-adv-1</id>
+			<phase>site</phase>
+			<goals>
+			    <goal>single</goal>
+			</goals>
+			<configuration>
+			    <outputDirectory>${zip.directory}</outputDirectory>
+			    <finalName>${ex-adv-1.zipname}</finalName>
+			    <appendAssemblyId>false</appendAssemblyId>
+			    <descriptors>
+				<descriptor>${zip.ex-adv-1.xml}</descriptor>
+			    </descriptors>
+			</configuration>
+		    </execution>
+		    <execution>
+			<id>zip-ex-adv-2</id>
+			<phase>site</phase>
+			<goals>
+			    <goal>single</goal>
+			</goals>
+			<configuration>
+			    <outputDirectory>${zip.directory}</outputDirectory>
+			    <finalName>${ex-adv-2.zipname}</finalName>
+			    <appendAssemblyId>false</appendAssemblyId>
+			    <descriptors>
+				<descriptor>${zip.ex-adv-2.xml}</descriptor>
+			    </descriptors>
+	    </configuration>
+	</execution>
+	<execution>
+	    <id>zip-ex-adv-3</id>
+	    <phase>site</phase>
+	    <goals>
+		<goal>single</goal>
+	    </goals>
+	    <configuration>
+		<outputDirectory>${zip.directory}</outputDirectory>
+		<finalName>${ex-adv-3.zipname}</finalName>
+		<appendAssemblyId>false</appendAssemblyId>
+		<descriptors>
+		    <descriptor>${zip.ex-adv-3.xml}</descriptor>
+		</descriptors>
+	    </configuration>
+	</execution>
+	<execution>
+	    <id>zip-ex-adv-4</id>
+	    <phase>site</phase>
+	    <goals>
+		<goal>single</goal>
+	    </goals>
+	    <configuration>
+		<outputDirectory>${zip.directory}</outputDirectory>
+		<finalName>${ex-adv-4.zipname}</finalName>
+		<appendAssemblyId>false</appendAssemblyId>
+		<descriptors>
+		    <descriptor>${zip.ex-adv-4.xml}</descriptor>
+		</descriptors>
+	    </configuration>
+	</execution>
+	<execution>
+	    <id>zip-ex-adv-5</id>
+	    <phase>site</phase>
+	    <goals>
+		<goal>single</goal>
+	    </goals>
+	    <configuration>
+		<outputDirectory>${zip.directory}</outputDirectory>
+		<finalName>${ex-adv-5.zipname}</finalName>
+		<appendAssemblyId>false</appendAssemblyId>
+		<descriptors>
+		    <descriptor>${zip.ex-adv-5.xml}</descriptor>
+		</descriptors>
+	    </configuration>
+	</execution>
+    </executions>
+</plugin>
+
 	</plugins>
     </build>
 </project>

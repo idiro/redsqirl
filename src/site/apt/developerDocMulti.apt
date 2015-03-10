@@ -12,6 +12,7 @@ Package Development
 	the first and sencond interaction. There is no value to the action except for the demonstration of the interactivity between interactions.
 	
 	
+	You can download the resulting project {{{./files/multi-interaction.zip}here}}.
 Create a package
 
 
@@ -58,15 +59,15 @@ Create a package
 
 +-----------------+
 public DemoTable(String id, String name, String legend, int column,
-			int placeInColumn) throws RemoteException {
-		super(id, name, legend, column, placeInColumn);
-		//initialize the tree
-		if (tree.isEmpty()) {
-			tree.add("table").add("columns");
-		}
-		//initialize the hdfs
-		hInt = new HDFSInterface();
-	}
+	int placeInColumn) throws RemoteException {
+    super(id, name, legend, column, placeInColumn);
+    //initialize the hdfs
+    hInt = new HDFSInterface();
+    //initialize the tree
+    if (tree.isEmpty()) {
+	tree.add("table").add("columns");
+    }
+}
 +-----------------+
 	
 	This section of the tutorial is for the {update} method of the interaction. It will take the two interactions (list and append) and the input object (DFEOutput)
@@ -75,42 +76,43 @@ public DemoTable(String id, String name, String legend, int column,
 	The first section is to generate columns from the interactions provided.
 	
 +-----------------+
-//the table takes the input ,the list interacion and the append list
-	public void update(DFEOutput in, ListInteraction list,
-			AppendListInteraction append) throws RemoteException {
-		if (list != null && list.getValue() != null) {
-			// TODO add editor
-			//create a column from the value of the list interaction
-			addColumn(list.getValue(), null, null, null);
-		}
-		if (append.getValues() != null && !append.getValues().isEmpty()) {
-			Iterator<String> vals = append.getValues().iterator();
-			while (vals.hasNext()) {
-				//create a column from the values of the append list interaction
-				addColumn(vals.next(), null, null, null);
-			}
-		}
+//update the table takes the input ,the list interacion and the append list
+public void update(DFEOutput in, ListInteraction list,
+	AppendListInteraction append) throws RemoteException {
+    if (list != null && list.getValue() != null) {
+	//create a column from the value of the list interaction
+	addColumn(list.getValue(), null, null, null);
+    }
+    if (append.getValues() != null && !append.getValues().isEmpty()) {
+	Iterator<String> vals = append.getValues().iterator();
+	while (vals.hasNext()) {
+	    //create a column from the values of the append list interaction
+	    addColumn(vals.next(), null, null, null);
+	}
+    }
 +-----------------+
 
 	Get the features from the input and generate a map of features and positions for string reading. 
 	
 +-----------------+
-		//get the input feats
-		Iterator<String> feats = in.getFeatures().getFeaturesNames().iterator();
-		//a map to hold feats and positions
-		Map<String, Integer> featsAndPos = new HashMap<String, Integer>();
-		int pos = 0;
-		// get the columns that we generated from the list and append list interaction
-		List<String> columns = getColumnNames();
-		while (feats.hasNext()) {
-			String feaName = feats.next();
-			if(columns.contains(feaName)){
-				//add acceptable features and their positions
-				featsAndPos.put(feats.next(), pos);
-			}
-			++pos;
-		}
-		
+//get the input path
+    String path = in.getPath();
+    //get the input feats
+    Iterator<String> feats = in.getFields().getFieldNames().iterator();
+    //a map to hold feats and positions
+    Map<String, Integer> featsAndPos = new HashMap<String, Integer>();
+    int pos = 0;
+    // get the columns that we generated from the list and append list
+    // interaction
+    List<String> columns = getColumnNames();
+    while (feats.hasNext()) {
+	String feaName = feats.next();
+	if(columns.contains(feaName)){
+	    //add acceptable features and their positions
+	    featsAndPos.put(feats.next(), pos);
+	}
+	++pos;
+    }
 +-----------------+
 
 	With a map of features and positions generated we can select the data from the input and split them by the delimiter so we can read the data with the selected features.
@@ -124,121 +126,139 @@ public DemoTable(String id, String name, String legend, int column,
 	Once the 'updateGenerator' method is called the update method for 'DemoTable' is completed.
 
 +-----------------+
-		//list of maps that are used for rows
-		List<Map<String, String>> newRows = new LinkedList<Map<String, String>>();
-		//get the delimiter for the input
-		String delimiter = in.getProperties().get(MapRedTextType.key_delimiter);
-		//get the input path
-		String path = in.getPath();
-		//get the data from the input as a list of the rows
-		Iterator<String> result = hInt.select(path, delimiter, 10).iterator();
-		Map<String, String> row = null;
-		while (result.hasNext()) {
-			String entireRow = result.next();
-			if (entireRow != null & !entireRow.isEmpty()) {
-				//split the row on the delimiter
-				String[] rowvals = entireRow.split(delimiter);
-				row = new HashMap<String, String>();
-				Iterator<String> keysIt = featsAndPos.keySet().iterator();
-				while (keysIt.hasNext()) {
-					String key = keysIt.next();
-					//add a cell associated with the current acceptable column/input feature
-					row.put(key, rowvals[featsAndPos.get(key)]);
-				}
-			}
-			//add o to the list of rows
-			newRows.add(row);
-			//reset the row
-			row = null;
-		}
-		//add the rows generated to he interaction under the title 'display'
-		updateGenerator("display", newRows);
+    //list of maps that are used for rows
+    List<Map<String, String>> newRows = new LinkedList<Map<String, String>>();
+    //get the delimiter for the input
+    String delimiter = in.getProperties().get(MapRedTextType.key_delimiter);
 
+    //get the data from the input as a list of the rows
+    Iterator<String> result = hInt.select(path, delimiter, 10).iterator();
+    Map<String, String> row = null;
+    while (result.hasNext()) {
+	String entireRow = result.next();
+	if (entireRow != null & !entireRow.isEmpty()) {
+	    //split the row on the delimiter
+	    String[] rowvals = entireRow.split(delimiter);
+	    row = new HashMap<String, String>();
+	    Iterator<String> keysIt = featsAndPos.keySet().iterator();
+	    while (keysIt.hasNext()) {
+		String key = keysIt.next();
+		//add a cell associated with the current acceptable
+		//column/input feature
+		row.put(key, rowvals[featsAndPos.get(key)]);
+	    }
 	}
+	//add o to the list of rows
+	newRows.add(row);
+	//reset the row
+	row = null;
+    }
+    //add the rows generated to he interaction under the title 'display'
+    updateGenerator("display", newRows);
 
+}
 +-----------------+
 	
 	With the 'DemoTable' class implemented and completed we can return to the 'Demo' action and look at the constructor. The constructor will set the
 	oozie action type , initialize the input map, add three seperate pages for each interaction and add each interaction to a page.
 	
 +-----------------+
-public Demo() throws RemoteException {
-		//Set the Oozie Action type
-		super(new PigAction());
-		//Make Sure input map is useable
-		if (input == null) {
-			Map<String, DFELinkProperty> in = new LinkedHashMap<String, DFELinkProperty>();
-			in.put(key_input, new DataProperty(MapRedTextType.class, 1, 1));
-			input = in;
-		}
-		//Add a page to demo the list interaction
-		page1 = addPage(
-				"Demo List",
-				"This Page will demonstrate a list interaction that contains the list of feature names from the input",
-				1);
-		//initialize the list interaction
-		demoList = new ListInteraction(
-				"demolist",
-				"Demo List ",
-				"Demo List that selects one column from the features from the input",
-				1, 0);
-		//add the list interaction to the page
-		page1.addInteraction(demoList);
-		//add a page for the list interaction
-		page2 = addPage(
-				"Demo Append List",
-				"This page demos appendable list of remaining features from the input",
-				1);
-		//initialize the append list interaction
-		demoappendList = new AppendListInteraction(
-				"dempappendlist",
-				"Demo AppendList",
-				"Select the remaining features from the input for the next step",
-				0, 1);
-		//add append list interaction to the page
-		page2.addInteraction(demoappendList);
-		//add a page for the table interaction
-		page3 = addPage("Demo Table",
-				"This page demonstrates a table interaction", 1);
-		
-		//initialize the demo table interaction
-		demoTable = new DemoTable(
-				"demotable",
-				"Demo Table",
-				"This table Demos the values recieved from the List interaction and the AppendList Interaction by displaying the columns selected in each",
-				1, 0);
-		//add the table interaction to the page
-		page3.addInteraction(demoTable);
+//Demo Pages
+private Page page1, page2, page3;
+//input map
+protected Map<String, DFELinkProperty> input;
+//Demo List Interaction
+public ListInteraction demoList;
+//Demo Append ListInteraction
+public AppendListInteraction demoappendList;
+//Demo Table
+public DemoTable demoTable;
+//Key for referencing the input
+public static String key_input = "in";
 
-	}
+public Demo() throws RemoteException {
+    //Set the Oozie Action type
+    super(new PigAction());
+    //Make Sure input map is useable
+    if (input == null) {
+	Map<String, DFELinkProperty> in = new LinkedHashMap<String,
+DFELinkProperty>();
+	in.put(key_input, new DataProperty(MapRedTextType.class, 1, 1));
+	input = in;
+    }
+    //Add a page to demo the list interaction
+    page1 = addPage(
+	    "Demo List",
+	    "This Page will demonstrate a list interaction that contains the
+list of feature names from the input",
+	    1);
+    //initialize the list interaction
+    demoList = new ListInteraction(
+	    "demolist",
+	    "Demo List ",
+	    "Demo List that selects one column from the features from the
+input",
+	    1, 0);
+    //add the list interaction to the page
+    page1.addInteraction(demoList);
+    //add a page for the list interaction
+    page2 = addPage(
+	    "Demo Append List",
+	    "This page demos appendable list of remaining features from the
+input",
+	    1);
+    //initialize the append list interaction
+    demoappendList = new AppendListInteraction(
+	    "dempappendlist",
+	    "Demo AppendList",
+	    "Select the remaining features from the input for the next
+step",
+	    0, 1);
+    //add append list interaction to the page
+    page2.addInteraction(demoappendList);
+    //add a page for the table interaction
+    page3 = addPage("Demo Table",
+	    "This page demonstrates a table interaction", 1);
+    
+    //initialize the demo table interaction
+    demoTable = new DemoTable(
+	    "demotable",
+	    "Demo Table",
+	    "This table Demos the values recieved from the List interaction
+and the AppendList Interaction by displaying the columns selected in each",
+	    1, 0);
+    //add the table interaction to the page
+    page3.addInteraction(demoTable);
+
+}
 +-----------------+
 
 	There are a few methods that need to be implemented but for this tutorial do not really add any functionalities.  
 
 +-----------------+
-@Override
-	public String getName() throws RemoteException {
-		//return the action name
-		return "demo";
-	}
+    @Override
+    public String getName() throws RemoteException {
+	//return the action name
+	return "demo";
+    }
 
-	@Override
-	public Map<String, DFELinkProperty> getInput() throws RemoteException {
-		//return the input links
-		return input;
-	}
+    @Override
+    public Map<String, DFELinkProperty> getInput() throws RemoteException {
+	//return the input links
+	return input;
+    }
 
-	@Override
-	public String updateOut() throws RemoteException {
-		//for demonstration purposes we leave the output blank
-		return null;
-	}
+    @Override
+    public String updateOut() throws RemoteException {
+	//for demonstration purposes we leave the output blank
+	return null;
+    }
 
-	@Override
-	public boolean writeOozieActionFiles(File[] files) throws RemoteException {
-		//for demonstration purposes we leave the write oozie action blank
-		return false;
-	}
+    @Override
+    public boolean writeOozieActionFiles(File[] files) throws RemoteException {
+	//for demonstration purposes we leave the write oozie action blank
+	return false;
+    }
 +-----------------+
 	
 	The final method of the action is the update mthod which will update all interactions that are contained in the action.
@@ -256,30 +276,30 @@ public Demo() throws RemoteException {
 	
 +-----------------+
 //update method for the action that update all specified interactions
-	@Override
-	public void update(DFEInteraction interaction) throws RemoteException {
-		DFEOutput in = getDFEInput().get(key_input).get(0);
-		//chech that there is inputs available
-		if (in != null) {
-			if (interaction.getId().equals(demoList.getId())) {
-				//set the values to appear in the list
-				demoList.setPossibleValues(in.getFeatures().getFeaturesNames());
-				//set the default value
-				demoList.setValue(in.getFeatures().getFeaturesNames().get(0));
-			} else if (interaction.getId().equals(demoappendList.getId())) {
-				List<String> appendlist = in.getFeatures().getFeaturesNames();
-				appendlist.remove(demoList.getValue());
-				//set the values to appear in the append list
-				demoappendList.setPossibleValues(appendlist);
-				//set the default values to be empty
-				demoappendList.setValues(new LinkedList<String>());
-			} else if (interaction.getId().equals(demoTable.getId())) {
-				//update the table interaction 
-				demoTable.update(in, demoList, demoappendList);
-			}
-		}
-
+@Override
+public void update(DFEInteraction interaction) throws RemoteException {
+    DFEOutput in = getDFEInput().get(key_input).get(0);
+    //chech that there is inputs available
+    if (in != null) {
+	if (interaction.getId().equals(demoList.getId())) {
+	    //set the values to appear in the list
+	    demoList.setPossibleValues(in.getFields().getFieldNames());
+	    //set the default value
+	    demoList.setValue(in.getFields().getFieldNames().get(0));
+	} else if (interaction.getId().equals(demoappendList.getId())) {
+	    List<String> appendlist = in.getFields().getFieldNames();
+	    appendlist.remove(demoList.getValue());
+	    //set the values to appear in the append list
+	    demoappendList.setPossibleValues(appendlist);
+	    //set the default values to be empty
+	    demoappendList.setValues(new LinkedList<String>());
+	} else if (interaction.getId().equals(demoTable.getId())) {
+	    //update the table interaction 
+	    demoTable.update(in, demoList, demoappendList);
 	}
+    }
+
+}
 +-----------------+
 
 	With the last update method complete the entire action is finished and ready for use.

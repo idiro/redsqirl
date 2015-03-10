@@ -1,27 +1,10 @@
-            ------
-            Red Sqirl - Package Development
-            ------
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-What is a package
-	
-	Packages are a group of actions that are used in Red Sqirl to perform specific processes on Red Sqirl. 
-	They generally run on the same platform , e.g,. Pig , Hive 
-	etc. This how Red Sqirl mudualarises its functionalities and manages what is available for the users.
-
-What is in a  Package
-
-	A Package will contain actions that can be used on Red Sqirl once the package is installed. 
-	An action will have two files that are required , these are the help and image files.
-
-Create a package
-
-
-	Create new project as maven give a group id and an artifact id
-
-	Edit pom to add necessary dependencies and configuration for packaging the package 
-	You can download a pom file from {{{./files/pom.xml}here}}.
-
-+---+
+	<groupId>idiro</groupId>
+	<artifactId>rs-ex-basic</artifactId>
+	<version>0.1</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<generated.pck.dir>${project.build.directory}/${project.artifactId}-${project.version}/</generated.pck.dir>
@@ -30,6 +13,11 @@ Create a package
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<redsqirl.version>1.0.4-0.1</redsqirl.version>
 	</properties>
+
+	<organization>
+		<name>Idiro Technologies</name>
+		<url>http://www.idiro.com</url>
+	</organization>
 
 	<reporting>
 		<plugins>
@@ -49,6 +37,14 @@ Create a package
 	</reporting>
 
 	<build>
+
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh</artifactId>
+				<version>1.0</version>
+			</extension>
+		</extensions>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -161,13 +157,4 @@ Create a package
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
-
-+--------------------------------------+
-
-	<<Outcome:>> A project that is ready for creating new actions
-	The skeleton of the project can be found here :  CREATE A LINK (1)
-
-How to deploy a package
-
-Download Example
-
+</project>

@@ -2,6 +2,7 @@
 Package Development
 
 	This Tutorial will show developers how to develop an action with one interaction.
+	You can download the resulting project {{{./files/basic.zip}here}}.
 	
 Create a package
 
@@ -77,22 +78,22 @@ public Map<String, DFELinkProperty> getInput() throws RemoteException {
 +-----------------+
 @Override
 public String updateOut() throws RemoteException {
-	//check interactions for errors
-	String error = checkIntegrationUserVariables();
-	if (error == null) {
-		//get the input features list
-		FeatureList new_features = getDFEInput().get("in").get(0)
-				.getFeatures();
-		if (output.get("out") == null) {
-			//add a new output to the map
-			output.put("out", new MapRedTextType());
-		}
-		//set the features of the output
-		output.get("out").setFeatures(new_features);
-		//add a delimiter to the output
-		output.get("out").addProperty(MapRedTextType.key_delimiter, "|");
+    //check interactions for errors
+    String error = checkIntegrationUserVariables();
+    if (error == null) {
+	//get the input features list
+	FieldList new_features = getDFEInput().get("in").get(0)
+		.getFields();
+	if (output.get("out") == null) {
+	    //add a new output to the map
+	    output.put("out", new MapRedTextType());
 	}
-	return error;
+	//set the features of the output
+	output.get("out").setFields(new_features);
+	//add a delimiter to the output
+	output.get("out").addProperty(MapRedTextType.key_delimiter, "|");
+    }
+    return error;
 }
 +-----------------+
 
@@ -111,69 +112,71 @@ public void update(DFEInteraction interaction) throws RemoteException {
 	
 +-----------------+
 public String getQuery() throws RemoteException {
-	//Create a query string
-	String query = null;
-	//check if the input is null
-	if (getDFEInput() != null) {
-		//get the input for the action
-		DFEOutput in = getDFEInput().get("in").get(0);
-		// Output
-		//get the output for the action
-		DFEOutput out = output.values().iterator().next();
-		//set the bag for loading the data
-		String loader = "READ";
-		//set the load query piece method is explaned below
-		String load = loader + " = LOAD " + getLoadQueryPiece(in) + ";\n\n";
-		//set the sample query piece by getting the value from the sample interaction
-		String sampletxt = "SAMPLEDATA" + " = SAMPLE " + loader + " "
-				+ sample.getValue() + ";\n";
-		//store the results from the sample into the output path 
-		String store = "STORE SAMPLEDATA INTO '" + out.getPath()
-				+ "' USING PigStorage('|');";
-		//build the query string
-		if (sampletxt != null || !sampletxt.isEmpty()) {
-			query = load;
-			query += sampletxt;
-			query += store;
-		}
+    //Create a query string
+    String query = null;
+    //check if the input is null
+    if (getDFEInput() != null) {
+	//get the input for the action
+	DFEOutput in = getDFEInput().get("in").get(0);
+	// Output
+	//get the output for the action
+	DFEOutput out = output.values().iterator().next();
+	//set the bag for loading the data
+	String loader = "READ";
+	//set the load query piece method is explaned below
+	String load = loader + " = LOAD " + getLoadQueryPiece(in) + ";\n\n";
+	//set the sample query piece by getting the value from the sample
+	//interaction
+	String sampletxt = "SAMPLEDATA" + " = SAMPLE " + loader + " "
+		+ sample.getValue() + ";\n";
+	//store the results from the sample into the output path 
+	String store = "STORE SAMPLEDATA INTO '" + out.getPath()
+		+ "' USING PigStorage('|');";
+	//build the query string
+	if (sampletxt != null || !sampletxt.isEmpty()) {
+	    query = load;
+	    query += sampletxt;
+	    query += store;
 	}
-	return query;
+    }
+    return query;
 
 }
 
 public String getLoadQueryPiece(DFEOutput in) throws RemoteException {
-	//get the delimiter
-	String delimiter = in.getProperty(MapRedTextType.key_delimiter);
-	delimiter = ((MapRedTextType) in).getPigDelimiter();
-	//if delimiter is empty assign it one
-	if (delimiter == null) {
-		delimiter = "\001";
+    //get the delimiter
+    String delimiter = in.getProperty(MapRedTextType.key_delimiter);
+    delimiter = ((MapRedTextType) in).getPigDelimiter();
+    //if delimiter is empty assign it one
+    if (delimiter == null) {
+	delimiter = "\001";
+    }
+    //set the pig storage function
+    String function = "PigStorage('" + delimiter + "')";
+    // set the path to load from with the function
+    String createSelect = "'" + in.getPath() + "' USING " + function
+	    + " as (";
+    // get iterator of features from the input
+    Iterator<String> it = in.getFields().getFieldNames().iterator();
+    //iterate over each feature and add them to the 'load as piece'
+    while (it.hasNext()) {
+	String e = it.next();
+	// get the pig type of the feature , may not be string or bigint but
+	// chararray or int
+	createSelect += e
+		+ ":"
+		+ PigTypeConvert.getPigType(in.getFields()
+			.getFieldType(e));
+	if (it.hasNext()) {
+	    createSelect += ", ";
 	}
-	//set the pig storage function
-	String function = "PigStorage('" + delimiter + "')";
-	// set the path to load from with the function
-	String createSelect = "'" + in.getPath() + "' USING " + function
-			+ " as (";
-	// get iterator of features from the input
-	Iterator<String> it = in.getFeatures().getFeaturesNames().iterator();
-	//iterate over each feature and add them to the 'load as piece'
-	while (it.hasNext()) {
-		String e = it.next();
-		// get the pig type of the feature , may not be string or bigint but
-		// chararray or int
-		createSelect += e
-				+ ":"
-				+ PigTypeConvert.getPigType(in.getFeatures()
-						.getFeatureType(e));
-		if (it.hasNext()) {
-			createSelect += ", ";
-		}
-	}
-	//close the query piece
-	createSelect += ")";
-	//return query piece
-	return createSelect;	
+    }
+    //close the query piece
+    createSelect += ")";
+    //return query piece
+    return createSelect;    
 }
+
 +-----------------+
 
 	The Final method to implement is the 'writeOozieActionFiles(File[] files)'. This method writes the query to a file that is needed for the oozie action.
@@ -182,30 +185,30 @@ public String getLoadQueryPiece(DFEOutput in) throws RemoteException {
 +-----------------+
 @Override
 public boolean writeOozieActionFiles(File[] files) throws RemoteException {
-	//get the query
-	String toWrite = getQuery();
-	//check if the query is null
-	boolean ok = toWrite != null;
-	if (ok) {
-		logger.info("Content of " + files[0].getName() + ": " + toWrite);
-		try {
-			//open a file writer with the file given
-			FileWriter fw = new FileWriter(files[0]);
-			//open a buffer writer with the file writer 
-			BufferedWriter bw = new BufferedWriter(fw);
-			//write the query to file
-			bw.write(toWrite);
-			//close the file
-			bw.close();
+    //get the query
+    String toWrite = getQuery();
+    //check if the query is null
+    boolean ok = toWrite != null;
+    if (ok) {
+	logger.info("Content of " + files[0].getName() + ": " + toWrite);
+	try {
+	    //open a file writer with the file given
+	    FileWriter fw = new FileWriter(files[0]);
+	    //open a buffer writer with the file writer 
+	    BufferedWriter bw = new BufferedWriter(fw);
+	    //write the query to file
+	    bw.write(toWrite);
+	    //close the file
+	    bw.close();
 
-		} catch (IOException e) {
-			//set the boolean to false
-			ok = false;
-			logger.error("Fail to write into the file "
-					+ files[0].getAbsolutePath());
-		}
+	} catch (IOException e) {
+	    //set the boolean to false
+	    ok = false;
+	    logger.error("Fail to write into the file "
+		    + files[0].getAbsolutePath());
 	}
-	return false;
+    }
+    return false;
 }
 +-----------------+
 

@@ -44,7 +44,7 @@
 		</menu>
 
 		<menu name="Related Projects">
-			<item name="Sqirl Nutcracker" href="http://dev/sqirl-nutcracker" />
+			<item name="Sqirl Nutcracker" href="http://95.45.250.249/sqirl-nutcracker" />
 			<item name="Apache Hadoop" href="http://hadoop.apache.org/" />
 			<item name="Apache Oozie" href="http://oozie.apache.org/" />
 			<item name="Apache Hive" href="http://hive.apache.org/" />
