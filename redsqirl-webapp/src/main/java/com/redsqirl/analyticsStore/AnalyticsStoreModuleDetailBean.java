@@ -439,6 +439,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 				MessageUseful.addInfoMessage("Packge Installed.");
 				installed = true;
 			}else{
+				disable(packagePath);
 				MessageUseful.addInfoMessage("Error installing package: " + error);
 			}
 			
@@ -502,7 +503,32 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 		}
 		return pckServer;
 	}
+	
+	public void disable(String packageName) {
 
+		String softwareKey = getSoftwareKey();
+		
+		try {
+			
+			String uri = getRepoServer()+"rest/installations/disable";
+			
+			JSONObject object = new JSONObject();
+			object.put("packageName", packageName);
+			object.put("softwareKey", softwareKey);
+
+			Client client = Client.create();
+			WebResource webResource = client.resource(uri);
+
+			ClientResponse response = webResource.type("application/json").post(ClientResponse.class, object.toString());
+			String ansServer = response.getEntity(String.class);
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+	}
+	
+	
 	public RedSqirlModule getModuleVersion() {
 		return moduleVersion;
 	}
