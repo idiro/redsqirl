@@ -681,20 +681,23 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 		String userPath = installPackage+WorkflowPrefManager.getPathUserHelpPref(getUserName());
 		String sysPath = installPackage+WorkflowPrefManager.getPathSysHelpPref();
-		String mainlHelpPath = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path)+"/help";
+		String mainlHelpPath = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path);
+		if(new File(mainlHelpPath,"redsqirl").exists() && new File(mainlHelpPath+"/redsqirl","help").exists()){
+			mainlHelpPath+="/redsqirl/help";
+		}else{
+			mainlHelpPath+="/help";
+		}
 
-		logger.debug("indexPath " + indexResultPath);
-		logger.debug("indexUserPath " + indexPckUserPath);
-		logger.debug("indexSystemPath " + indexPckSysPath);
-		logger.debug("indexDefaultPath " + indexMainHelpPath);
+		logger.info("indexPath " + indexResultPath);
+		logger.info("indexUserPath " + indexPckUserPath);
+		logger.info("indexSystemPath " + indexPckSysPath);
+		logger.info("indexDefaultPath " + indexMainHelpPath);
 
-		logger.debug("userPath " + userPath);
-		logger.debug("systemPath " + sysPath);
-		logger.debug("defaultPath " + mainlHelpPath);
+		logger.info("userPath " + userPath);
+		logger.info("systemPath " + sysPath);
+		logger.info("defaultPath " + mainlHelpPath);
 
 		boolean userIndexUpdate = createIndex(indexPckUserPath, userPath);
-		
-		
 		boolean sysIndexUpdate = createIndex(indexPckSysPath, sysPath);
 		sysIndexUpdate = createIndex(indexMainHelpPath, mainlHelpPath) || sysIndexUpdate;
 		SimpleFileIndexer sfi = new SimpleFileIndexer();

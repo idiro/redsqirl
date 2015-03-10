@@ -282,7 +282,7 @@ public class AnalyticsStoreInstallationsBean extends BaseBean implements Seriali
 		if(error != null && error.isEmpty()){
 
 			String tmp = WorkflowPrefManager.pathSysHome;
-			String packagePath = tmp + System.getProperty("java.io.tmpdir")+ "/" +fileName;
+			String packagePath = tmp + "/tmp/" +fileName;
 
 			try {
 				URL website = new URL(downloadUrl + "&idUser=" + analyticsStoreLoginBean.getIdUser() + "&key=" + softwareKey);
@@ -298,7 +298,7 @@ public class AnalyticsStoreInstallationsBean extends BaseBean implements Seriali
 
 			BufferedWriter writer = null;
 			try {
-				File file = new File("/usr/share/redsqirl/conf/licenseKey.properties");
+				File file = new File(WorkflowPrefManager.pathSystemLicence);
 				String filepath = file.getAbsolutePath();
 				if(file.exists()){
 					file.delete();

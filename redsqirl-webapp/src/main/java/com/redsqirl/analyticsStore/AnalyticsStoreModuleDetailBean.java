@@ -33,6 +33,7 @@ import org.json.JSONObject;
 
 import com.idiro.ProjectID;
 import com.redsqirl.BaseBean;
+import com.redsqirl.PackageMngBean;
 import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
@@ -49,7 +50,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 
 
 	private static final long serialVersionUID = 1L;
-
+	
 	private AnalyticsStoreLoginBean analyticsStoreLoginBean;
 	private UserInfoBean userInfoBean;
 	private RedSqirlModule moduleVersion;
@@ -134,7 +135,12 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 			setRedSqirlModuleVersionDependency(redSqirlModuleVersionDependencyList);
 			
 			
-			String user = userInfoBean.getUserName();
+			String user = null;
+		    if (userInstall){
+		    	user = userInfoBean.getUserName();
+		    }
+			//String user = userInfoBean.getUserName();
+		    
 			PackageManager pckMng = new PackageManager();
 			List<String> packagesInstalled = pckMng.getPackageNames(user);
 			
@@ -356,10 +362,8 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 			object.put("type", moduleVersion.getType());
 			object.put("idModuleVersion", moduleVersion.getIdVersion());
 			object.put("installationType", userInstall ? "USER" : "SYSTEM");
-			object.put("user", userInstall ? userInfoBean.getUserName() : "system");
 			object.put("email", analyticsStoreLoginBean.getEmail());
 			object.put("password", analyticsStoreLoginBean.getPassword());
-		    
 			
 			Client client = Client.create();
 			WebResource webResource = client.resource(uri);
@@ -388,7 +392,9 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 		if(error != null && error.isEmpty()){
 			
 			String tmp = WorkflowPrefManager.pathSysHome;
-			String packagePath = tmp + System.getProperty("java.io.tmpdir")+ "/" +fileName;
+			String packagePath = tmp + "/tmp/" +fileName;
+			
+			System.out.println("packagePath " + packagePath);
 			
 			try {
 				URL website = new URL(downloadUrl + "&idUser=" + analyticsStoreLoginBean.getIdUser() + "&key=" + softwareKey);
@@ -400,11 +406,11 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
-			} 
+			}
 			
 			BufferedWriter writer = null;
 			try {
-				File file = new File("/usr/share/redsqirl/conf/licenseKey.properties");
+				File file = new File(WorkflowPrefManager.pathSystemLicence);
 				String filepath = file.getAbsolutePath();
 				if(file.exists()){
 					file.delete();
@@ -422,16 +428,18 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 			}
 		    
 		    PackageManager pckMng = new PackageManager();
+		    File file = new File(packagePath);
+		    System.out.println("file packagePath " + file.getAbsolutePath() + " - " + file.exists()+ "'");
 		    	
 		    error = pckMng.addPackage(user, new String[]{packagePath});
 		    
-		    File file = new File(packagePath);
 			file.delete();
 
 			if (error == null){
 				MessageUseful.addInfoMessage("Packge Installed.");
 				installed = true;
 			}else{
+				disable(packagePath);
 				MessageUseful.addInfoMessage("Error installing package: " + error);
 			}
 			
@@ -442,6 +450,15 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 			}else{
 				MessageUseful.addInfoMessage("Error installing package: " + getMessageResources(error));
 			}
+		}
+		
+		//update list of packages modalPackage.xhtml
+		FacesContext context = FacesContext.getCurrentInstance();
+		PackageMngBean packageMngBean = (PackageMngBean) context.getApplication().evaluateExpressionGet(context, "#{packageMngBean}", PackageMngBean.class);
+		if (userInstall){
+			packageMngBean.calcUserPackages();
+		}else{
+			packageMngBean.calcSystemPackages();
 		}
 		
 		return "";
@@ -486,7 +503,32 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 		}
 		return pckServer;
 	}
+	
+	public void disable(String packageName) {
 
+		String softwareKey = getSoftwareKey();
+		
+		try {
+			
+			String uri = getRepoServer()+"rest/installations/disable";
+			
+			JSONObject object = new JSONObject();
+			object.put("packageName", packageName);
+			object.put("softwareKey", softwareKey);
+
+			Client client = Client.create();
+			WebResource webResource = client.resource(uri);
+
+			ClientResponse response = webResource.type("application/json").post(ClientResponse.class, object.toString());
+			String ansServer = response.getEntity(String.class);
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+	}
+	
+	
 	public RedSqirlModule getModuleVersion() {
 		return moduleVersion;
 	}

@@ -104,7 +104,7 @@
 										and analyticsStoreModuleDetailBean.moduleVersion.type == 'package'}"
 									rerender="panel"
 									onclick="jQuery('#moduleDetailDiv').block({ message: jQuery('#domMessageDivCanvas1')});"
-									oncomplete="jQuery('#moduleDetailDiv').unblock();">
+									oncomplete="jQuery('#moduleDetailDiv').unblock();alert('To see the changes it is necessary to restart the system')">
 									<f:param name="id" value="#{param['id']}"/>
 									<f:param name="userInstall" value="#{param['userInstall']}"/>
 								</a4j:commandButton>
