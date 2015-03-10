@@ -11,13 +11,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.hadoop.fs.FileStatus;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.fs.PathFilter;
 import org.apache.log4j.Logger;
 
-import com.idiro.hadoop.NameNodeVar;
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.workflow.server.DataProperty;
 import com.redsqirl.workflow.server.DataflowAction;
@@ -203,9 +198,6 @@ public class ConvertFileText extends DataflowAction {
 	public boolean writeOozieActionFiles(File[] files) throws RemoteException {
 		logger.info("Write queries in file: " + files[0].getAbsolutePath());
 		
-		List<String> pathList = new ArrayList<String>();
-		
-		
 		String path = this.getDFEInput().get(ConvertFileText.key_input).get(0).getPath();
 		String pathOutput = this.getDFEOutput().get(ConvertFileText.key_output).getPath();
 		
@@ -219,6 +211,7 @@ public class ConvertFileText extends DataflowAction {
 		hadoopBin += "hadoop";
 		
 		String toWrite = ((ShellAction) getOozieAction()).getShellContent(
+				"export JAVA_HOME=$JAVA_HOME;"+
 				hadoopBin+" fs -cat " + path + 
 				"/* | "+hadoopBin+" fs -put - " + pathOutput);
 

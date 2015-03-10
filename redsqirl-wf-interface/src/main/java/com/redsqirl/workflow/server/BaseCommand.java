@@ -116,55 +116,43 @@ public class BaseCommand {
 						WorkflowPrefManager.sys_allow_user_install, "FALSE")
 						.equalsIgnoreCase("true")) {
 			for (File file : fUser.listFiles()) {
-				String pck = pm.getPackageProperties(file.getAbsolutePath())
+				String pck = PackageManager.getPackageProperties(file.getAbsolutePath())
 						.getProperty(PackageManager.property_name)
-						+"-"+ pm.getPackageProperties(file.getAbsolutePath()).getProperty(
+						+"-"+ PackageManager.getPackageProperties(file.getAbsolutePath()).getProperty(
 								PackageManager.property_version);
 				String pcktrimmed = pck.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
-				String jar = null;
-				for (String s : pm.getFiles(file)){
-					if (s.substring(0,4).equals("lib:")){
-						jar = s.substring(4);
+				if(valid(userName,pcktrimmed,licenseKeys.getProperty(userName+"_"+pcktrimmed),licenseKeys, softwareKey,false)){
+					for (String s : pm.getFiles(file)){
+						if (s.substring(0,4).equals("lib:")){
+							String jar = s.substring(4);
+							logger.debug(pcktrimmed+ " , "+jar);
+							logger.debug("Added "+jar+ " for the "+userName);
+							classPath += ":" + userLibPath.getAbsolutePath() + "/" + jar;
+							filesUser.add(jar);						
+						}
 					}
-				}
-				logger.debug(pcktrimmed+ " , "+jar);
-				if(!valid(userName,pcktrimmed,licenseKeys.getProperty(userName+"_"+pcktrimmed),licenseKeys, softwareKey,false)){
-					
-				}else{
-					logger.debug("Added "+jar+ " for the "+userName);
-					classPath += ":" + userLibPath.getAbsolutePath() + "/" + jar;
-					filesUser.add(jar);						
 				}
 			}
 		}
 		File fSys = new File(pathSys);
 		if (fSys.exists()) {
 			for (File file : fSys.listFiles()) {
-				String jar = null;
-				for (String s : pm.getFiles(file)){
-					if (s.substring(0,4).equals("lib:")){
-						jar = s.substring(4);
-					}
-				}
-
-				if (!filesUser.contains(jar)) {
-					String pck = pm.getPackageProperties(file.getAbsolutePath())
+					String pck = PackageManager.getPackageProperties(file.getAbsolutePath())
 							.getProperty(PackageManager.property_name)
-							+"-"+ pm.getPackageProperties(file.getAbsolutePath()).getProperty(
+							+"-"+ PackageManager.getPackageProperties(file.getAbsolutePath()).getProperty(
 									PackageManager.property_version);
 					String pcktrimmed = pck.replaceAll("[^A-Za-z0-9 ]", "").toLowerCase();
-
-					logger.info("pcktrimmed " + pcktrimmed);
-					logger.info("licenseKeys system " + licenseKeys.getProperty("system_"+pcktrimmed));
-					logger.info("licenseKeys " + licenseKeys);
-					logger.info("softwareKey " + softwareKey);
-					if(!valid(userName,pcktrimmed , licenseKeys.getProperty("system_"+pcktrimmed),licenseKeys,softwareKey,true)){
-						
-					}else{
-						logger.debug("Added "+jar+ " for the system lib "+userName);
-						classPath += ":" + systemLibPath.getAbsolutePath() + "/" + jar;
+					if(valid(userName,pcktrimmed , licenseKeys.getProperty("system_"+pcktrimmed),licenseKeys,softwareKey,true)){
+						for (String s : pm.getFiles(file)){
+							if (s.substring(0,4).equals("lib:")){
+								String jar = s.substring(4);
+								if (!filesUser.contains(jar)) {
+									logger.debug("Added "+jar+ " for the system lib "+userName);
+									classPath += ":" + systemLibPath.getAbsolutePath() + "/" + jar;
+								}
+							}
+						}
 					}
-				}
 			}
 		}
 		

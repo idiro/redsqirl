@@ -52,7 +52,7 @@ public class ShellAction extends OozieActionAbs {
 		shellElement.setAttributeNode(attrXmlns);
 		
 		Element execElement = oozieXmlDoc.createElement("exec");
-		execElement.appendChild(oozieXmlDoc.createTextNode(fileNames[1]));
+		execElement.appendChild(oozieXmlDoc.createTextNode(fileNames[0]));
 		shellElement.appendChild(execElement);
 		
 		
@@ -60,9 +60,11 @@ public class ShellAction extends OozieActionAbs {
 		argumentElement1.appendChild(oozieXmlDoc.createTextNode("${"+OozieManager.prop_user+"}"));
 		shellElement.appendChild(argumentElement1);
 		
-		Element argumentElement2 = oozieXmlDoc.createElement("argument");
-		argumentElement2.appendChild(oozieXmlDoc.createTextNode(fileNames[0].substring(fileNames[0].indexOf("/") + 1, fileNames[0].length()) ));
-		shellElement.appendChild(argumentElement2);
+		if(extraFile){
+			Element argumentElement2 = oozieXmlDoc.createElement("argument");
+			argumentElement2.appendChild(oozieXmlDoc.createTextNode(fileNames[1].substring(fileNames[1].indexOf("/") + 1, fileNames[1].length()) ));
+			shellElement.appendChild(argumentElement2);
+		}
 		
 		Element fileElement = oozieXmlDoc.createElement("file");
 		fileElement.appendChild(oozieXmlDoc.createTextNode(fileNames[0]));
@@ -112,7 +114,9 @@ public class ShellAction extends OozieActionAbs {
 			toWrite += "\trm $EXEC_FILE"+ System.getProperty("line.separator");
 		}
 		toWrite += "else"+ System.getProperty("line.separator");
-		toWrite += "\tEXEC_FILE=$FILE_NAME"+System.getProperty("line.separator");
+		if(extraFile){
+			toWrite += "\tEXEC_FILE=$FILE_NAME"+System.getProperty("line.separator");
+		}
 		toWrite += "\t"+oneCommandToExecute+ System.getProperty("line.separator");
 		toWrite += "fi"+ System.getProperty("line.separator");
 		

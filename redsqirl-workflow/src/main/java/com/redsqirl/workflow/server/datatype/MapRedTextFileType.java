@@ -117,38 +117,38 @@ public class MapRedTextFileType extends MapRedHdfs {
 	public String isPathValid(List<String> shouldNotHaveExt, List<String> shouldHaveExt) throws RemoteException {
 		String error = null;
 		HdfsFileChecker hCh = new HdfsFileChecker(getPath());
-		if(shouldHaveExt != null && !shouldHaveExt.isEmpty()){
-			boolean found = false;
-			for(String extCur: shouldHaveExt){
-				found |= getPath().endsWith(extCur);
-			}
-			if(!found){
-				error = LanguageManagerWF.getText(
-						"mapredtexttype.shouldhaveext",
-						new Object[] { getPath(),shouldHaveExt });
-				
-			}
-		}else if(shouldNotHaveExt != null && ! shouldNotHaveExt.isEmpty()){
-			boolean found = false;
-			for(String extCur: shouldNotHaveExt){
-				found |= getPath().endsWith(extCur);
-			}
-			if(found){
-				error = LanguageManagerWF.getText(
-						"mapredtexttype.shouldnothaveext",
-						new Object[] { getPath(),shouldNotHaveExt });
-				
-			}
-		}
-		
-		if (!hCh.isInitialized()) {
-			error = LanguageManagerWF.getText("mapredtexttype.dirisfile");
-		} else {
-			hCh.setPath(new Path(getPath()).getParent());
-			if (!hCh.isFile()) {
-				error = LanguageManagerWF.getText("mapredtextfiletype.nofile",new String[]{getPath()});
-			}
+		if(getPath() != null){
+			if(shouldHaveExt != null && !shouldHaveExt.isEmpty()){
+				boolean found = false;
+				for(String extCur: shouldHaveExt){
+					found |= getPath().endsWith(extCur);
+				}
+				if(!found){
+					error = LanguageManagerWF.getText(
+							"mapredtexttype.shouldhaveext",
+							new Object[] { getPath(),shouldHaveExt });
 
+				}
+			}else if(shouldNotHaveExt != null && ! shouldNotHaveExt.isEmpty()){
+				boolean found = false;
+				for(String extCur: shouldNotHaveExt){
+					found |= getPath().endsWith(extCur);
+				}
+				if(found){
+					error = LanguageManagerWF.getText(
+							"mapredtexttype.shouldnothaveext",
+							new Object[] { getPath(),shouldNotHaveExt });
+
+				}
+			}
+			if (!hCh.isInitialized()) {
+				error = "internal error";
+			} else {
+				if (hCh.exists() && !hCh.isFile()) {
+					error = LanguageManagerWF.getText("mapredtextfiletype.nofile",new String[]{getPath()});
+				}
+
+			}
 		}
 		return error;
 	}
