@@ -426,10 +426,14 @@ public abstract class AbstractSource extends DataflowAction {
 							if (!out.isPathExists()) {
 								error = LanguageManagerWF
 										.getText("source.pathnotexist");
-							} else if (out.isPathValid() != null) {
-								error = LanguageManagerWF.getText(
-										"source.pathinvalid",
-										new Object[] { out.isPathValid() });
+							} else{
+								String msg = out.isPathValid();
+								logger.info("isPathExists " + msg);
+								if (msg != null) {
+									error = LanguageManagerWF.getText(
+											"source.pathinvalid",
+											new Object[] { msg });
+								}
 							}
 						} catch (Exception e) {
 							error = LanguageManagerWF.getText(
