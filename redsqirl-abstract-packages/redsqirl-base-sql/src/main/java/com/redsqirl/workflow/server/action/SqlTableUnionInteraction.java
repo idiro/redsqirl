@@ -27,7 +27,7 @@ import com.redsqirl.workflow.utils.SqlLanguageManager;
  * @author marcos
  * 
  */
-public abstract class SqlTableUnionInteraction extends TableInteraction {
+public abstract class SqlTableUnionInteraction extends SqlOperationTableInter {
 
 	/**
 	 * 
@@ -249,12 +249,7 @@ public abstract class SqlTableUnionInteraction extends TableInteraction {
 		addColumn(table_feat_title, null, "[a-zA-Z]([A-Za-z0-9_]{0,29})", null,
 				null);
 
-		List<String> types = new ArrayList<String>(FieldType.values().length);
-		for(FieldType ft:FieldType.values()){
-			types.add(ft.name());
-		}
-
-		addColumn(table_type_title, null, types, null);
+		addColumn(table_type_title, null, getTypes(), null);
 
 	}
 	/**
@@ -304,5 +299,4 @@ public abstract class SqlTableUnionInteraction extends TableInteraction {
 		return mapRelationRow;
 	}
 	
-	protected abstract SqlDictionary getDictionary();
 }
