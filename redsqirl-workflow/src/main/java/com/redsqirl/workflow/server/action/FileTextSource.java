@@ -78,7 +78,9 @@ public class FileTextSource extends AbstractSource {
 		posValuesSubType.add(new MapRedTextFileWithHeaderType().getTypeName());
 		dataSubtype.setPossibleValues(posValuesSubType);
 			
-		dataSubtype.setValue(new MapRedTextFileType().getTypeName());
+		if(dataSubtype.getValue() == null || !posValuesSubType.contains(dataSubtype.getValue())){
+			dataSubtype.setValue(new MapRedTextFileType().getTypeName());
+		}
 	}
 
 	/**
