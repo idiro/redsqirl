@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.idiro.utils.RandomString;
 import com.redsqirl.workflow.server.enumeration.FieldType;
 
 /** Class that maintains a list of field in order */
@@ -37,6 +38,9 @@ public class OrderedFieldList extends UnicastRemoteObject implements
 	 */
 	private static Logger logger = Logger.getLogger(OrderedFieldList.class);
 
+	public static String regexOnName = "[a-zA-Z]([A-Za-z0-9_]{0,29})";
+	public static String replaceOnName = "[^\\w]+";
+	
 	/** Default constructor */
 	public OrderedFieldList() throws RemoteException {
 		super();
@@ -85,6 +89,18 @@ public class OrderedFieldList extends UnicastRemoteObject implements
 		
 		if(logger.isDebugEnabled()){
 			logger.debug("addField name " + name + " " + type.toString());
+		}
+		
+		if(!name.matches(regexOnName)){
+			String tmp = name.replaceAll(replaceOnName, "");
+			if(tmp.length() > 30){
+				tmp = tmp.substring(0,30);
+			}
+			if(!tmp.matches(regexOnName)){
+				name = "FIELD_"+RandomString.getRandomName(4);
+			}else{
+				name = tmp;
+			}
 		}
 		
 		if (!field.containsKey(name)) {
