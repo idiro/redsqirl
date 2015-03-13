@@ -1,0 +1,23 @@
+INSERT INTO idm_pck_mng.idm_packages( 
+      id,
+      name,
+      version,
+      license,
+      price,
+      short_description,
+      html_file,
+      release_notes,
+      package_date,
+      zip_file)
+VALUES(
+      'test',
+      'test',
+      '0.1-SNAPSHOT',
+      'Apache',
+      '',
+      '',
+      'test-0.1-SNAPSHOT.html',
+      '',
+      str_to_date('2014-04-17','%Y-%m-%d'),
+      'test-0.1-SNAPSHOT.zip'
+      );

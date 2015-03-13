@@ -32,6 +32,7 @@ Create a package
 	canged so that it calls the superclass construnctor with a 'new PigAction()'
 
 	You can download the resulting project {{{./files/advanced-step2.zip}here}}.
+
 +-----------+
 private static Logger logger = Logger.getLogger(DemoAction.class);
 
