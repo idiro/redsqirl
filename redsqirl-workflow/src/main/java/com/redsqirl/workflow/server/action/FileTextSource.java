@@ -108,13 +108,14 @@ public class FileTextSource extends AbstractSource {
 		DFEOutput out = getDFEOutput().get(out_name);
 		
 		if (out != null && dataSubtype.getValue().equals(new MapRedTextFileWithHeaderType().getTypeName())){
-			output.put(no_header_out_name, new MapRedTextFileType());
+			if(output.get(no_header_out_name) == null){
+				String user = System.getProperty("user.name");
+				output.put(no_header_out_name, new MapRedTextFileType());
+				output.get(no_header_out_name).generatePath(user, this.componentId, no_header_out_name);
+			}
 			output.get(no_header_out_name).setFields(out.getFields());
 			output.get(no_header_out_name).addProperty(MapRedTextFileType.key_delimiter, 
 					out.getProperty(MapRedTextFileWithHeaderType.key_delimiter));
-			
-			String user = System.getProperty("user.name");
-			output.get(no_header_out_name).generatePath(user, this.componentId, no_header_out_name);
 			
 		}
 		else if (output.get(no_header_out_name) != null){
@@ -210,8 +211,9 @@ public class FileTextSource extends AbstractSource {
 		}
 		hadoopBin += "hadoop";
 		String toWrite = ((ShellAction) getOozieAction()).getShellContent(
+				"export JAVA_HOME=$JAVA_HOME;"+
 				hadoopBin+" fs -cat " + path + 
-				" | sed 1d | "+hadoopBin+" fs -put - " + noHeaderPath
+				" | /bin/sed 1d | "+hadoopBin+" fs -put - " + noHeaderPath
 				);
 		boolean ok = toWrite != null;
 		if(ok){
@@ -219,7 +221,7 @@ public class FileTextSource extends AbstractSource {
 				logger.debug("Content of "+files[0]+": "+toWrite);
 				FileWriter fw = new FileWriter(files[0]);
 				BufferedWriter bw = new BufferedWriter(fw);
-				bw.write(toWrite);	
+				bw.write(toWrite);
 				bw.close();
 			} catch (IOException e) {
 				ok = false;
