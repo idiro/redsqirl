@@ -100,6 +100,8 @@ public class ShellAction extends OozieActionAbs {
 			toWrite += "FILE_NAME=$2"+ System.getProperty("line.separator");
 			toWrite += "echo \"File name: $FILE_NAME \""  + System.getProperty("line.separator");
 			toWrite += "cat $FILE_NAME"  + System.getProperty("line.separator");
+			toWrite += "echo "+ System.getProperty("line.separator");
+			toWrite += "echo "+ System.getProperty("line.separator");
 		}
 		toWrite += "if [[ -z `sudo -n true` && `whoami` != \"$USER_NAME\" ]]; then "+ 
 				System.getProperty("line.separator");
