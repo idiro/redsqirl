@@ -623,8 +623,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 	public List<DataFlowElement> subsetToRun(List<String> dataFlowElements) throws Exception{
 
-		String error = null;
-
 		LinkedList<DataFlowElement> elsIn = new LinkedList<DataFlowElement>();
 		if (dataFlowElements.size() < element.size()) {
 			Iterator<DataFlowElement> itIn = getEls(dataFlowElements).iterator();
@@ -641,7 +639,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		// Run only what have not been calculated in the workflow.
 		List<DataFlowElement> toRun = new LinkedList<DataFlowElement>();
 		Iterator<DataFlowElement> itE = elsIn.descendingIterator();
-		while (itE.hasNext() && error == null) {
+		while (itE.hasNext()) {
 			DataFlowElement cur = itE.next();
 			if (cur.getOozieAction() != null && !toRun.contains(cur)) {
 				boolean haveTobeRun = false;
@@ -651,6 +649,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						.getOutputComponent();
 
 				boolean lastElement = outAllComp.size() == 0;
+				//If the current element has output, check if those has to run
 				Iterator<DataFlowElement> itE2 = outAllComp.iterator();
 				while (itE2.hasNext() && !lastElement) {
 					lastElement = !elsIn.contains(itE2.next());
@@ -665,10 +664,10 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					int nbTemporary = 0;
 					while (itOutData.hasNext() && !haveTobeRun) {
 						DFEOutput outC = itOutData.next();
-						if ((outC.getSavingState() != SavingState.TEMPORARY)
+						if ((!SavingState.TEMPORARY.equals(outC.getSavingState()))
 								&& !outC.isPathExists()) {
 							haveTobeRun = true;
-						} else if (outC.getSavingState() == SavingState.TEMPORARY
+						} else if ( SavingState.TEMPORARY.equals(outC.getSavingState())
 								&& !outC.isPathExists()) {
 							++nbTemporary;
 						}
@@ -683,7 +682,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					Iterator<DFEOutput> itOutData = outData.iterator();
 					while (itOutData.hasNext() && !haveTobeRun) {
 						DFEOutput outC = itOutData.next();
-						if ((outC.getSavingState() != SavingState.TEMPORARY)
+						if ((! SavingState.TEMPORARY.equals(outC.getSavingState()))
 								&& !outC.isPathExists()) {
 							haveTobeRun = true;
 						}
@@ -719,26 +718,10 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					// if one element exist and one recorded/buffered does not
 					// send an error
 					cur.cleanDataOut();
-					boolean errorToSend = false;
-					Iterator<DFEOutput> itOutData = outData.iterator();
-					while (itOutData.hasNext() && !haveTobeRun) {
-						DFEOutput outC = itOutData.next();
-						errorToSend = outC.isPathExists();
-					}
-					if (errorToSend) {
-						error = LanguageManagerWF.getText("workflow.run",
-								new Object[] { cur.getComponentId() }) + "\n";
-						logger.info("run errorToSend: " + error);
-					} else {
-						toRun.add(cur);
-					}
+					toRun.add(cur);
 				}
 
 			}
-		}
-
-		if(error != null){
-			throw new Exception(error);
 		}
 
 		return toRun;
