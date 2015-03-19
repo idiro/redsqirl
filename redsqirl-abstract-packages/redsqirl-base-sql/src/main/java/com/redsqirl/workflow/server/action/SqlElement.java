@@ -137,7 +137,7 @@ public abstract class SqlElement extends DataflowAction {
 	 * @throws RemoteException
 	 */
 	public FieldList getInFields() throws RemoteException {
-		FieldList ans = new OrderedFieldList();
+		FieldList ans = new OrderedFieldList(false);
 		Map<String, DFEOutput> aliases = getAliases();
 
 		Iterator<String> it = aliases.keySet().iterator();
@@ -162,7 +162,7 @@ public abstract class SqlElement extends DataflowAction {
 		FieldList ans = null;
 		Map<String, DFEOutput> aliases = getAliases();
 		if(aliases.get(alias) != null){
-			ans = new OrderedFieldList();
+			ans = new OrderedFieldList(false);
 			FieldList mapTable = aliases.get(alias).getFields();
 			Iterator<String> itFeat = mapTable.getFieldNames().iterator();
 			while (itFeat.hasNext()) {

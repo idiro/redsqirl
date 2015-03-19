@@ -16,7 +16,7 @@ import com.redsqirl.workflow.server.enumeration.FieldType;
 
 /** Class that maintains a list of field in order */
 public class OrderedFieldList extends UnicastRemoteObject implements
-		FieldList {
+FieldList {
 	/**
 	 * 
 	 */
@@ -33,6 +33,8 @@ public class OrderedFieldList extends UnicastRemoteObject implements
 	 */
 	private List<String> positions;
 
+	private boolean nameValidation = true;
+
 	/**
 	 * Logger for class
 	 */
@@ -40,22 +42,29 @@ public class OrderedFieldList extends UnicastRemoteObject implements
 
 	public static String regexOnName = "[a-zA-Z]([A-Za-z0-9_]{0,29})";
 	public static String replaceOnName = "[^\\w]+";
-	
+
 	/** Default constructor */
 	public OrderedFieldList() throws RemoteException {
 		super();
 		field = new HashMap<String, FieldType>();
 		positions = new LinkedList<String>();
 	}
-	
+
+
+	public OrderedFieldList(boolean nameValidation) throws RemoteException {
+		super();
+		this.nameValidation = nameValidation;
+		field = new HashMap<String, FieldType>();
+		positions = new LinkedList<String>();
+	}
+
+
 	/** Default constructor */
 	protected OrderedFieldList(Map<String,FieldType>field, List<String> positions) throws RemoteException {
 		super();
 		this.field = field;
 		this.positions = positions;
 	}
-	
-	
 
 	/**
 	 * Check if a Field name is contained in a list
@@ -79,30 +88,32 @@ public class OrderedFieldList extends UnicastRemoteObject implements
 	public FieldType getFieldType(String name) {
 		return field.get(name);
 	}
-	
+
 	/**
 	 * Add a Field to the list
 	 * @param name Name of the Field 
 	 * @param type FieldType of the Field
 	 */
 	public void addField(String name, FieldType type) {
-		
+
 		if(logger.isDebugEnabled()){
 			logger.debug("addField name " + name + " " + type.toString());
 		}
-		
-		if(!name.matches(regexOnName)){
-			String tmp = name.replaceAll(replaceOnName, "");
-			if(tmp.length() > 30){
-				tmp = tmp.substring(0,30);
-			}
-			if(!tmp.matches(regexOnName)){
-				name = "FIELD_"+RandomString.getRandomName(4);
-			}else{
-				name = tmp;
+
+		if(nameValidation){
+			if(!name.matches(regexOnName)){
+				String tmp = name.replaceAll(replaceOnName, "");
+				if(tmp.length() > 30){
+					tmp = tmp.substring(0,30);
+				}
+				if(!tmp.matches(regexOnName)){
+					name = "FIELD_"+RandomString.getRandomName(4);
+				}else{
+					name = tmp;
+				}
 			}
 		}
-		
+
 		if (!field.containsKey(name)) {
 			if(logger.isDebugEnabled()){
 				logger.info("addField  name " + name);
@@ -148,7 +159,7 @@ public class OrderedFieldList extends UnicastRemoteObject implements
 		}
 		return ok;
 	}
-	
+
 	public List<FieldType> getTypes(){
 		List<FieldType> ans = new LinkedList<FieldType>();
 		Iterator<String> it = positions.iterator();
@@ -157,7 +168,7 @@ public class OrderedFieldList extends UnicastRemoteObject implements
 		}
 		return ans;
 	}
-	
+
 	public OrderedFieldList cloneRemote() throws RemoteException{
 		Map<String, FieldType> clField = new HashMap<String, FieldType>();
 		List<String> clPositions = new LinkedList<String>();
@@ -168,7 +179,7 @@ public class OrderedFieldList extends UnicastRemoteObject implements
 
 	@Override
 	public String mountStringHeader() throws RemoteException {
-		
+
 		StringBuffer stringHeader = new StringBuffer();
 		int index = 0;
 		for (String featureName : getFieldNames()) {
@@ -180,8 +191,16 @@ public class OrderedFieldList extends UnicastRemoteObject implements
 			}
 			index++;
 		}
-		
+
 		return stringHeader.toString();
+	}
+
+	public boolean isNameValidation() {
+		return nameValidation;
+	}
+
+	public void setNameValidation(boolean nameValidation) {
+		this.nameValidation = nameValidation;
 	}
 
 }
