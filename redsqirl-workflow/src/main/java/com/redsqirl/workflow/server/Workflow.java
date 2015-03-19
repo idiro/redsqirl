@@ -700,7 +700,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 							Iterator<DataFlowElement> outCIt = outComp.get(
 									searchOut).iterator();
 							while (outCIt.hasNext() && !foundOne) {
-								foundOne = toRun.contains(outCIt.next());
+								foundOne = elsIn.contains(outCIt.next());
 							}
 							if (foundOne) {
 								haveTobeRun = !cur.getDFEOutput()
