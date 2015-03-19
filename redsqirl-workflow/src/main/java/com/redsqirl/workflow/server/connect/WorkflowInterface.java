@@ -288,7 +288,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 		try {
 			// Check if T is instance of Serializeble other throw
 			// CloneNotSupportedException
-			String path = WorkflowPrefManager.getPathtmpfolder() + "/clones/"
+			String path = WorkflowPrefManager.getPathClonefolder()+"/"
 					+ cloneId;
 			
 			File file = new File(path);
@@ -319,7 +319,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	}
 	
 	public void removeClone(String cloneId){
-		String path = WorkflowPrefManager.getPathtmpfolder()+"/clones/"+cloneId;
+		String path = WorkflowPrefManager.getPathClonefolder()+"/"+cloneId;
 		new File(path).delete();
 		wfClones.remove(cloneId);
 	}
@@ -418,8 +418,10 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	 */
 	public void shutdown() throws RemoteException{
 		try {
-			LocalFileSystem.delete(
-					new File(WorkflowPrefManager.getPathtmpfolder()+"/clones"));
+			File[] clones = new File(WorkflowPrefManager.getPathClonefolder()).listFiles();
+			for(File clone:clones){
+				LocalFileSystem.delete(clone);
+			}
 		} catch (IOException e) {
 			logger.error("Failed to remove Clones Folder ",e);
 		}

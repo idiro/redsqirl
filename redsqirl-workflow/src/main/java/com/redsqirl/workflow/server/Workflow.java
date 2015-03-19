@@ -152,9 +152,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		try {
 
 			//Check if T is instance of Serializeble other throw CloneNotSupportedException
-			String path = WorkflowPrefManager.getPathtmpfolder()+"/clones/"+cloneId;
+			String path = WorkflowPrefManager.getPathClonefolder()+"/"+cloneId;
 
-			File clonesFolder = new File(WorkflowPrefManager.getPathtmpfolder()+"/clones");
+			File clonesFolder = new File(WorkflowPrefManager.getPathClonefolder());
 			clonesFolder.mkdir();
 			FileOutputStream output = new FileOutputStream(new File(path));
 

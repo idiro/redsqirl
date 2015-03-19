@@ -8,12 +8,16 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.io.ObjectInputStream.GetField;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
 //import java.util.prefs.Preferences;
+
+
+
 
 
 import com.idiro.BlockManager;
@@ -368,12 +372,23 @@ public class WorkflowPrefManager extends BlockManager {
 			File superactionF = getSuperActionMainDir(userName);
 			superactionF.mkdirs();
 			
+			String installPackage = getSysProperty(sys_install_package, 
+					getSysProperty(sys_tomcat_path));
+			File userHelpTomcat = new File(installPackage+getPathUserHelpPref(userName));
+			File userImageTomcat = new File(installPackage+getPathUserImagePref(userName));
+			userHelpTomcat.mkdirs();
+			userImageTomcat.mkdirs();
+			
 			// Everybody is able to write in this home folder
 			logger.debug("set permissions...");
 			home.setWritable(true, false);
 			home.setReadable(true, false);
 			superactionF.setWritable(true, false);
 			superactionF.setReadable(true, false);
+			userHelpTomcat.setWritable(true,false);
+			userHelpTomcat.setReadable(true,false);
+			userImageTomcat.setWritable(true,false);
+			userImageTomcat.setReadable(true,false);
 		}
 
 	}
@@ -474,6 +489,7 @@ public class WorkflowPrefManager extends BlockManager {
 				logger.warn("Fail to write default properties");
 			}
 		}
+		new File(getPathClonefolder()).mkdirs();
 	}
 
 	/**
@@ -806,6 +822,13 @@ public class WorkflowPrefManager extends BlockManager {
 	 */
 	public static final String getPathtmpfolder() {
 		return pathTmpFolder;
+	}
+	
+	/**
+	 * @return the pathtmpclones
+	 */
+	public static final String getPathClonefolder() {
+		return pathTmpFolder+"/clones";
 	}
 
 	/**
