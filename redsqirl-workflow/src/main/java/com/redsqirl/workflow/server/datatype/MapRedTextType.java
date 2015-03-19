@@ -294,33 +294,6 @@ public class MapRedTextType extends MapRedDir {
 	}
 
 	/**
-	 * Get the delimiter to be used in Pig format
-	 * 
-	 * @return delimiter
-	 */
-	public String getPigDelimiter() {
-		String asciiCode = getProperty(key_delimiter);
-		Character c = null;
-		if (asciiCode == null) {
-			c = '|';
-		} else if (asciiCode != null && asciiCode.startsWith("#")
-				&& asciiCode.length() > 1) {
-			int i = Integer.valueOf(asciiCode.substring(1));
-			c = new Character((char) i);
-		} else if (asciiCode.length() == 1) {
-			c = asciiCode.charAt(0);
-		}
-		
-		String result = null;
-		
-		if (c != null){
-			result = String.valueOf(c);
-		}
-		
-		return result;
-	}
-
-	/**
 	 * Get the delimiter in either octal or decimal notation
 	 * 
 	 * @return

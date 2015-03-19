@@ -353,7 +353,7 @@ public class MapRedTextFileType extends MapRedHdfs {
 	 * 
 	 * @return delimiter
 	 */
-	public String getPigDelimiter() {
+	public String getChar() {
 		String asciiCode = getProperty(key_delimiter);
 		Character c = null;
 		if (asciiCode == null) {
