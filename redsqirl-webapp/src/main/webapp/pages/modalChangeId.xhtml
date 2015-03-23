@@ -7,11 +7,15 @@
 
 <a4j:loadBundle basename="MessagesResources" var="messages" />
 
-        <a4j:region>
+<script>
 
-            <a4j:jsFunction name="changeCurrentElementId"
-                oncomplete="execChangeIdElementCommand('#{canvasModalBean.loadMainWindow}','#{canvasModalBean.idGroup}', '#{canvasModalBean.curElId}' ,'#{canvasModalBean.elementId}', '#{canvasModalBean.curElComment}', '#{canvasModalBean.elementComment}');">
-            </a4j:jsFunction>
+function changeCurrentElementId(){
+	execChangeIdElementCommand('#{canvasModalBean.loadMainWindow}','#{canvasModalBean.idGroup}', '#{canvasModalBean.curElId}' ,'#{canvasModalBean.elementId}', '#{canvasModalBean.curElComment}', jQuery("[id$='elementCommentID']").val());
+}
+
+</script>
+
+        <a4j:region>
             
             <a4j:jsFunction name="changeIdElement"
                 action="#{canvasBean.changeIdElement}"
@@ -32,7 +36,7 @@
 			onkeypress="return enableEnterKey(event, 'changeIdElementBt');" onkeyup="nospaces(this);" />
 		<br/>
 		<h:outputText value="Comment" />
-        <h:inputTextarea label="Comment" value="#{canvasModalBean.elementComment}" style="padding-left: 3px;height:50px;width:250px;"
+        <h:inputTextarea id="elementCommentID" label="Comment" value="#{canvasModalBean.elementComment}" style="padding-left: 3px;height:50px;width:250px;"
             onkeypress="return enableEnterKey(event, 'changeIdElementBt');" />
 	   
 	
