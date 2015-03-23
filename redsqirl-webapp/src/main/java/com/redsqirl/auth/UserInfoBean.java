@@ -698,23 +698,22 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		logger.info("defaultPath " + mainlHelpPath);
 
 		boolean userIndexUpdate = createIndex(indexPckUserPath, userPath);
-		boolean sysIndexUpdate = createIndex(indexPckSysPath, sysPath);
-		sysIndexUpdate = createIndex(indexMainHelpPath, mainlHelpPath) || sysIndexUpdate;
+		boolean sysPckUpdate = createIndex(indexPckSysPath, sysPath);
+		boolean sysMainUpdate = createIndex(indexMainHelpPath, mainlHelpPath);
 		SimpleFileIndexer sfi = new SimpleFileIndexer();
 		
 		File fileIndexMergeSysPath = new File(indexMergeSysPath);
-		if(sysIndexUpdate ||!fileIndexMergeSysPath.isDirectory() 
+		if(sysPckUpdate || sysMainUpdate ||!fileIndexMergeSysPath.isDirectory() 
 				|| fileIndexMergeSysPath.list().length == 0){
 			if(fileIndexMergeSysPath.isDirectory()){
 				FileUtils.cleanDirectory(fileIndexMergeSysPath);
 			}
 			logger.info("Merge: " + indexMergeSysPath);
 			sfi.merge(indexMergeSysPath, indexPckSysPath, indexMainHelpPath);
-
 		}
 		
 		File fileIndexResultPath = new File(indexResultPath);
-		if(userIndexUpdate || sysIndexUpdate || !fileIndexResultPath.isDirectory() 
+		if(userIndexUpdate || sysPckUpdate || sysMainUpdate || !fileIndexResultPath.isDirectory() 
 				|| fileIndexResultPath.list().length == 0){
 			if(fileIndexResultPath.isDirectory()){
 				FileUtils.cleanDirectory(fileIndexResultPath);
@@ -737,6 +736,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 			if(fileIndexFolder.isDirectory()){
 				FileUtils.cleanDirectory(fileIndexFolder);
 			}
+			fileIndexFolder.getParentFile().mkdirs();
 			long start = System.currentTimeMillis();
 			SimpleFileIndexer sfi = new SimpleFileIndexer();
 			logger.info("Index: " + indexFolder);
