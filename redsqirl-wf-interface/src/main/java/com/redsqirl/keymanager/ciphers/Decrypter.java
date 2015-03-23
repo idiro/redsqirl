@@ -23,7 +23,7 @@ public class Decrypter extends KeyCipher {
 	private String key, key2, module1, module2, user, user2;
 	private int userNb;
 
-	private Logger logger = Logger.getLogger(getClass());
+	private static Logger logger = Logger.getLogger(KeyCipher.class);
 
 	public void decrypt(String key) {
 

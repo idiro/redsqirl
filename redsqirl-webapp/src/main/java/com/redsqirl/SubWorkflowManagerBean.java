@@ -21,7 +21,7 @@ import com.redsqirl.workflow.utils.SuperActionManager;
 
 public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 
-	private Logger logger = Logger.getLogger(getClass());
+	private static  Logger logger = Logger.getLogger(SubWorkflowManagerBean.class);
 
 	private String name = "";
 	private String actualName = "";

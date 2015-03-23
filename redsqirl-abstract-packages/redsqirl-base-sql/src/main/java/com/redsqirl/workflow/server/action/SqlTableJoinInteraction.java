@@ -36,7 +36,7 @@ public abstract class SqlTableJoinInteraction extends SqlOperationTableInter {
 	/**
 	 * Logger
 	 */
-	private Logger logger = Logger.getLogger(getClass());
+	private static Logger logger = Logger.getLogger(SqlTableJoinInteraction.class);
 	/**
 	 * Union where the interaction is held
 	 */
