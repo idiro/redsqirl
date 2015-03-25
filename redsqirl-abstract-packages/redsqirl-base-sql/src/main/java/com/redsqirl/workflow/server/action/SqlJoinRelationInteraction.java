@@ -136,7 +136,7 @@ public abstract class SqlJoinRelationInteraction extends TableInteraction {
 	 */
 	public void update() throws RemoteException {
 
-		Set<String> tablesIn = hj.getAliases().keySet();
+		Set<String> tablesIn = hj.getJoinAliases().keySet();
 
 		// Remove constraint on first column
 		updateColumnConstraint(table_table_title, null, 1, tablesIn);
