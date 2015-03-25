@@ -173,5 +173,6 @@ public abstract class SqlElement extends DataflowAction {
 		return ans;
 	}
 
+	public abstract Map<String,DFEOutput> getJoinAliases() throws RemoteException;
 	
 }

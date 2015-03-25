@@ -103,6 +103,13 @@ public class WfSuperActionManager extends UnicastRemoteObject implements SuperAc
 				if (error != null) {
 					mainFile.delete();
 					helpFile.delete();
+				}else{
+					if(user == null){
+						mainFile.setWritable(true,false);
+						mainFile.setReadable(true,false);
+					}
+					helpFile.setWritable(true,false);
+					helpFile.setReadable(true,false);
 				}
 			}
 		}
