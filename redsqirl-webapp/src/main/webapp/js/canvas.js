@@ -55,6 +55,7 @@ var menu_createLink = "Create Link";
 var menu_rename = "Rename Object...";
 var menu_configure = "Configure...";
 var menu_dataoutput = "Data Output...";
+var menu_clean = "Clean the Data";
 var menu_oozieLog = "Oozie Action Logs";
 var menu_editSa = "Edit SuperAction";
 
@@ -63,6 +64,7 @@ var contextMenuCanvasAction = [
                                {"Rename Object...": function(menuItem,menu){openChangeIdModalJS(rightClickGroup);}},
                                {"Configure...": function(menuItem,menu){openCanvasModalJS(rightClickGroup);}},
                                {"Data Output...": function(menuItem,menu){openCanvasModalJS(rightClickGroup,"outputTab");}},
+                               {"Clean the Data":function(menuItem,menu){cleanElementJS(rightClickGroup);}},
                                {"Oozie Action Logs": function(menuItem,menu){openWorkflowElementUrl(rightClickGroup.getId());}},
                                {"Edit SuperAction": function(menuItem,menu){if(rightClickGroup.privilege ==null){openSubWorkflow(rightClickGroup.elementType);}}},
                                ];
@@ -1941,12 +1943,13 @@ function showContextMenu(group, e){
 	
     canvasName = selectedCanvas;
     rightClickGroup = group;
+    //Build the context menu in temp variable and then display it.
     var temp = [];
     for ( var i =0; i<  contextMenuCanvasAction.length ;i++){
         var key = Object.keys(contextMenuCanvasAction[i])[0];
         var item = contextMenuCanvasAction[i];
         
-        if(canvasArray[canvasName].workflowType == 'W' || (key.indexOf(menu_dataoutput) !=0 && key.indexOf(menu_oozieLog) != 0)){
+        if(canvasArray[canvasName].workflowType == 'W' || (key.indexOf(menu_dataoutput) != 0 && key.indexOf(menu_clean) != 0 && key.indexOf(menu_oozieLog) != 0)){
             if(group.elementType.indexOf('sa_')==0){
                     temp[temp.length] = item;
             }else{
@@ -2079,6 +2082,12 @@ function openCanvasModalJS(group, selectedTab){
 	openModal(group.getId(), imagePath, selectedTab, group.pageNb);
 	changeHelpAnchor(group.pageNb);
     }
+}
+
+function cleanElementJS(group){
+	if(group){
+		cleanElement(group.getId());
+	}
 }
 
 function openChangeIdModalJS(group){
