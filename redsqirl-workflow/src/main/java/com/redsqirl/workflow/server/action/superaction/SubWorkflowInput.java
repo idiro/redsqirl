@@ -33,7 +33,7 @@ public class SubWorkflowInput extends AbstractSource{
 	 */
 	private static final long serialVersionUID = 2646594330930112981L;
 	
-	public Logger logger = Logger.getLogger(SubWorkflowInput.class);
+	private static Logger logger = Logger.getLogger(SubWorkflowInput.class);
 	
 	private static Map<String, DFELinkProperty> input = new LinkedHashMap<String, DFELinkProperty>();
 	

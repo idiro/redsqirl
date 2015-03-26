@@ -86,6 +86,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private String inputNameSubWorkflow;
 	private List<String> componentIds;
 	private String inputAreaSubWorkflow;
+	private String idGroup;
 
 	/**
 	 * 
@@ -1242,6 +1243,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		DataFlow wf = getworkFlowInterface().getWorkflow(getNameWorkflow());
 		String groupId = FacesContext.getCurrentInstance().getExternalContext()
 				.getRequestParameterMap().get("idGroup");
+		setIdGroup(groupId);
 		String id = getIdMap().get(getNameWorkflow()).get(groupId);
 		if(id != null && wf != null){
 			wf.getElement(id).cleanDataOut();
@@ -2781,6 +2783,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void setInputAreaSubWorkflow(String inputAreaSubWorkflow) {
 		this.inputAreaSubWorkflow = inputAreaSubWorkflow;
+	}
+
+	public String getIdGroup() {
+		return idGroup;
+	}
+
+	public void setIdGroup(String idGroup) {
+		this.idGroup = idGroup;
 	}
 
 }

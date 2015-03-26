@@ -353,6 +353,10 @@ public class PackageManager extends UnicastRemoteObject {
 		dir = getHelpDir(user);
 		if (!dir.exists()) {
 			dir.mkdirs();
+			if(user == null){
+				dir.setWritable(true,false);
+				dir.setReadable(true,false);
+			}
 		}
 		dir = getImageDir(user);
 		if (!dir.exists()) {

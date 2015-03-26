@@ -20,6 +20,9 @@ import org.apache.log4j.Logger;
 
 
 
+
+
+
 import com.idiro.BlockManager;
 import com.redsqirl.workflow.utils.PackageManager;
 import com.redsqirl.workflow.utils.SuperActionManager;
@@ -357,7 +360,7 @@ public class WorkflowPrefManager extends BlockManager {
 	 */
 	public static void createUserHome(String userName) {
 		File home = new File(getPathUserPref(userName));
-		logger.debug(home.getAbsolutePath());
+		logger.info(home.getAbsolutePath());
 		if (!home.exists()) {
 			home.mkdirs();
 
@@ -390,7 +393,13 @@ public class WorkflowPrefManager extends BlockManager {
 			userImageTomcat.setWritable(true,false);
 			userImageTomcat.setReadable(true,false);
 		}
-
+		File sysSADir = WorkflowPrefManager.getSuperActionMainDir(null);
+		logger.info("path " + sysSADir.getAbsolutePath());
+		if(!sysSADir.exists()){
+			sysSADir.mkdirs();
+			sysSADir.setWritable(true,false);
+			sysSADir.setReadable(true,false);
+		}
 	}
 
 	public static void createUserFooter() {

@@ -7,6 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.redsqirl.workflow.server.DataProperty;
 import com.redsqirl.workflow.server.DataflowAction;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
@@ -25,6 +27,8 @@ public class SubWorkflowOutput extends DataflowAction{
 	 * 
 	 */
 	private static final long serialVersionUID = -800255607454462658L;
+	
+	private static Logger logger = Logger.getLogger(SubWorkflowOutput.class);
 	
 	private static Map<String,DFELinkProperty> input = new LinkedHashMap<String,DFELinkProperty>();
 
