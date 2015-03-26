@@ -34,7 +34,7 @@ public class OozieDagTests {
 			sortedEl.add("start");
 			sortedEl.add("act_1");
 			sortedEl.add("end");
-			logger.debug(dag.elementSorted);
+			logger.info(dag.elementSorted);
 			assertTrue(i+" elementNotSorted",sortedEl.equals(dag.elementSorted));
 			
 			Map<String,Set<String>> inG = new LinkedHashMap<String,Set<String>>();
@@ -44,7 +44,7 @@ public class OozieDagTests {
 			set = new LinkedHashSet<String>();
 			set.add("act_1");
 			inG.put("end", set);
-			logger.debug(dag.graphIn);
+			logger.info(dag.graphIn);
 			assertTrue(i+" in map incorrect",inG.equals(dag.graphIn));
 			
 			Map<String,Set<String>> outG = new LinkedHashMap<String,Set<String>>();
@@ -54,8 +54,8 @@ public class OozieDagTests {
 			set = new LinkedHashSet<String>();
 			set.add("end");
 			outG.put("act_1", set);
-			logger.debug(dag.getGraphOut().toString());
-			logger.debug(dag.getGraphOut().toString());
+			logger.info(dag.getGraphOut().toString());
+			logger.info(dag.getGraphOut().toString());
 			assertTrue(i+" out map incorrect",outG.equals(dag.graphOut));
 		}
 		++i;
@@ -73,7 +73,7 @@ public class OozieDagTests {
 			sortedEl.add("act_1");
 			sortedEl.add("act_2");
 			sortedEl.add("end");
-			logger.debug(dag.elementSorted);
+			logger.info(dag.elementSorted);
 			assertTrue(i+" elementNotSorted",sortedEl.equals(dag.elementSorted));
 			
 			Map<String,Set<String>> inG = new LinkedHashMap<String,Set<String>>();
@@ -86,7 +86,7 @@ public class OozieDagTests {
 			set = new LinkedHashSet<String>();
 			set.add("act_2");
 			inG.put("end", set);
-			logger.debug(dag.graphIn);
+			logger.info(dag.graphIn);
 			assertTrue(i+" in map incorrect",inG.equals(dag.graphIn));
 			
 			Map<String,Set<String>> outG = new LinkedHashMap<String,Set<String>>();
@@ -99,7 +99,7 @@ public class OozieDagTests {
 			set = new LinkedHashSet<String>();
 			set.add("end");
 			outG.put("act_2", set);
-			logger.debug(dag.getGraphOut().toString());
+			logger.info(dag.getGraphOut().toString());
 			assertTrue(i+" out map incorrect",outG.equals(dag.graphOut));
 		}
 		++i;
@@ -132,7 +132,7 @@ public class OozieDagTests {
 			set.add("act_2");
 			set.add("act_3");
 			inG.put("join_end", set);
-			logger.debug(dag.graphIn);
+			logger.info(dag.graphIn);
 			assertTrue(i+" in map incorrect",inG.equals(dag.graphIn));
 			
 			Map<String,Set<String>> outG = new LinkedHashMap<String,Set<String>>();
@@ -153,8 +153,8 @@ public class OozieDagTests {
 			set = new LinkedHashSet<String>();
 			set.add("end");
 			outG.put("join_end", set);
-			logger.debug(outG.toString());
-			logger.debug(dag.getGraphOut().toString());
+			logger.info(outG.toString());
+			logger.info(dag.getGraphOut().toString());
 			assertTrue(i+" out map incorrect",outG.equals(dag.graphOut));
 		}
 		++i;
@@ -173,7 +173,7 @@ public class OozieDagTests {
 			dag.addLink("del_2", "end");
 			dag.addLink("del_3", "end");
 			dag.transform();
-			logger.debug(dag.getGraphOut().toString());
+			logger.info(dag.getGraphOut().toString());
 		}
 		++i;
 		//4
@@ -189,7 +189,7 @@ public class OozieDagTests {
 			dag.addLink("5", "4");
 			dag.addLink("4", "end");
 			dag.transform();
-			logger.debug(dag.getGraphOut().toString());
+			logger.info(dag.getGraphOut().toString());
 		}
 		++i;
 		//5
@@ -208,7 +208,7 @@ public class OozieDagTests {
 			dag.addLink("6", "7");
 			dag.addLink("7", "end");
 			dag.transform();
-			logger.debug(dag.getGraphOut().toString());
+			logger.info(dag.getGraphOut().toString());
 		}
 		++i;
 		//6
@@ -228,7 +228,7 @@ public class OozieDagTests {
 			dag.addLink("6", "end");
 			dag.addLink("8", "end");
 			dag.transform();
-			logger.debug(dag.getGraphOut().toString());
+			logger.info(dag.getGraphOut().toString());
 		}
 		assertTrue(true);
 	}

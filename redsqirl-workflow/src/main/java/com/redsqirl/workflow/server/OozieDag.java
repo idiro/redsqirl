@@ -175,30 +175,46 @@ public class OozieDag {
 		boolean ok = sort();
 
 		if (ok) {
-			logger.debug("graph: " + graphOut);
-			logger.debug("join...");
-			String firstJoin = null;
-			while ((firstJoin = getFirstIregularJoin()) != null) {
-				logger.debug("Add join before: " + firstJoin);
-				String comesFrom = getCommonRootOf(firstJoin);
+			int maxIter = 20;
+			int iter = 0;
+			boolean changed = true;
+			while(iter < maxIter && changed){
+				changed = false;
+				logger.debug("iteration "+iter+": graph: " + graphOut);
+				logger.debug("join...");
+				String firstJoin = null;
+				while ((firstJoin = getFirstIregularJoin()) != null) {
+					changed = true;
+					logger.debug("Add join before: " + firstJoin);
+					String comesFrom = getCommonRootOf(firstJoin);
 
-				logger.debug("Add fork after: " + comesFrom);
+					logger.debug("Add fork after: " + comesFrom);
 
-				moveElementAfterJoin(comesFrom, firstJoin);
-				placeForkAfter(comesFrom, firstJoin, "pair_" + firstJoin);
-				placeJoinBefore(firstJoin, comesFrom, firstJoin);
-				logger.debug(graphOut);
+					moveElementAfterJoin(comesFrom, firstJoin);
+					if(graphOut.get(comesFrom).size() > 1){
+						placeForkAfter(comesFrom, firstJoin, "pair_" + firstJoin);
+						placeJoinBefore(firstJoin, comesFrom, firstJoin);
+					}
+					logger.debug(graphOut);
+				}
+				logger.debug("fork...");
+				String firstFork = null;
+				while ((firstFork = getFirstIregularFork()) != null) {
+					changed = true;
+					logger.debug("Add fork after: " + firstFork);
+					String goTo = getCommonLeafOf(firstFork);
+					logger.debug("Add join before: " + goTo);
+					moveElementAfterJoin(firstFork, goTo);
+					if(graphOut.get(firstFork).size() > 1){
+						placeForkAfter(firstFork, goTo, firstFork);
+						placeJoinBefore(goTo, firstFork, "pair_" + firstFork);
+					}
+					logger.debug(graphOut);
+				}
+				++iter;
 			}
-			logger.debug("fork...");
-			String firstFork = null;
-			while ((firstFork = getFirstIregularFork()) != null) {
-				logger.debug("Add fork after: " + firstFork);
-				String goTo = getCommonLeafOf(firstFork);
-				logger.debug("Add join before: " + goTo);
-				moveElementAfterJoin(firstFork, goTo);
-				placeForkAfter(firstFork, goTo, firstFork);
-				placeJoinBefore(goTo, firstFork, "pair_" + firstFork);
-				logger.debug(graphOut);
+			if(iter == maxIter){
+				logger.warn("Maximum iteration "+maxIter+" reached");
 			}
 		}
 

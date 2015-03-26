@@ -372,9 +372,6 @@ public class SuperAction extends DataflowAction implements SuperElement{
 			swAct.setWfId("sa_"+getComponentId()+"_"+RandomString.getRandomName(8));
 			swAct.setSubWf(saWf);
 		}
-		if(error != null){
-			logger.warn("Fail set up Oozie action: "+error);
-		}
 	}
 
 	@Override
