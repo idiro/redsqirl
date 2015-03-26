@@ -382,10 +382,15 @@ public abstract class MapRedHdfs extends DataOutput{
 			Iterator<String> fieldValueIt = exValue.iterator();
 			while(fieldValueIt.hasNext() && !restart){
 				String fieldValue = fieldValueIt.next();
+				if(fieldValue == null || fieldValue.isEmpty()){
+					continue;
+				}
+				
 				FieldType typeCur = getType(fieldValue);
 				logger.info("Value: "+fieldValue);
 				logger.info("Type ans: "+typeAns);
 				logger.info("Type cur: "+typeCur);
+				
 				if(typeAns == null){
 					typeAns = typeCur;
 				}else if(canCast(typeCur,typeAns)){
@@ -415,7 +420,9 @@ public abstract class MapRedHdfs extends DataOutput{
 			}
 			logger.info(restart);
 		}while(restart);
-
+		if(typeAns == null){
+			typeAns = FieldType.STRING;
+		}
 		if(typeAns.equals(FieldType.STRING)){
 			int nbValues = exValue.size();
 			logger.info(nbValues+" / "+numberOfValues);
