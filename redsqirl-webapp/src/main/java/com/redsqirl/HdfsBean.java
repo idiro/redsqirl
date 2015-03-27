@@ -69,7 +69,7 @@ public class HdfsBean extends FileSystemBean {
 		super.addFileAfter();
 	}*/
 	
-	public void processDrop(DropEvent dropEvent) throws RemoteException { 
+	public void processDrop(DropEvent dropEvent) throws RemoteException {
 		logger.info("processDrop");
 		
 		FacesContext context = FacesContext.getCurrentInstance();
