@@ -1204,6 +1204,7 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 				out.flush();
 			}
 
+			channel.disconnect();
 			session.disconnect();
 		}
 
@@ -1227,7 +1228,6 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 	@Override
 	public String copyToRemote(String lfile, String rfile, String remoteServer) {
 		String error = null;
-		FSDataInputStream fisd = null;
 		try {
 			JSch shell = new JSch();
 			Session session = shell.getSession(System.getProperty("user.name"),
@@ -1240,27 +1240,75 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 			session.setConfig("StrictHostKeyChecking", "no");
 
 			logger.info("session config set");
-			session.connect();
+			session.connect();		
+			
+			Channel channel = session.openChannel("exec");
+			
+			copyInRemote(channel, lfile, rfile);
+			channel.disconnect();
+			session.disconnect();
 
-			boolean ptimestamp = true;
+			return null;
+		} catch (Exception e) {
+			logger.error(e.getMessage(),e);
+		}
+		return error;
+	}
+	
+	private String copyInRemote(Channel channel, String lfile, String rfile){
+		String error = null;
+		try{
+			FileSystem fs = NameNodeVar.getFS();
+			Path src = new Path(lfile);
+			
+			
+			if(fs.getFileStatus(src).isDir()){
+				FileStatus contents[]= fs.listStatus(src);
+				//Make directory in remote
+				channel = channel.getSession().openChannel("exec");
+				((ChannelExec) channel).setCommand("mkdir -p "+rfile);
+				channel.connect();
+				channel.disconnect();
+				for (int i=0; i < contents.length && error == null; i++) {
+					String filename = contents[i].getPath().getName();
+					error = copyInRemote(channel, lfile+"/"+filename, rfile+"/"+filename);
+				}
+			}else{
+				error = copyFileInRemote(channel,lfile, rfile);
+			}
+			
+		}catch(Exception e){
+			error = "Unexpected error when copying file accross: "+e.getMessage();
+			logger.error(error, e);
+		}
+		return error;
+	}
+	
+	private String copyFileInRemote(Channel channel,String lfile, String rfile){
+		FSDataInputStream fisd = null;
+		String error = null;
+		boolean ptimestamp = true;
+		
+		
+		try{
+			FileSystem fs = NameNodeVar.getFS();
 
+			channel = channel.getSession().openChannel("exec");
+			
+			FileStatus fstatus = fs.getFileStatus(new Path(lfile));
 			// exec 'scp -t rfile' remotely
 			String command = "scp " + (ptimestamp ? "-p" : "") + " -t " + rfile;
-			Channel channel = session.openChannel("exec");
 			((ChannelExec) channel).setCommand(command);
+			channel.connect();
 
 			// get I/O streams for remote scp
 			OutputStream out = channel.getOutputStream();
 			InputStream in = channel.getInputStream();
 
-			channel.connect();
 
 			if (checkAck(in) != 0) {
 				return null;
 			}
-
-			FileSystem fs = NameNodeVar.getFS();
-			FileStatus fstatus = fs.getFileStatus(new Path(lfile));
 
 			if (ptimestamp) {
 				command = "T " + (fstatus.getModificationTime() / 1000) + " 0";
@@ -1302,7 +1350,7 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 				out.write(buf, 0, len); // out.flush();
 			}
 			fisd.close();
-			fisd = null;
+
 			// send '\0'
 			buf[0] = 0;
 			out.write(buf, 0, 1);
@@ -1311,18 +1359,9 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 				return null;
 			}
 			out.close();
-
-			channel.disconnect();
-			session.disconnect();
-
-			return null;
-		} catch (Exception e) {
-			System.out.println(e);
-			try {
-				if (fisd != null)
-					fisd.close();
-			} catch (Exception ee) {
-			}
+		}catch(Exception e){
+			error = "Unexpected error when copying file accross: "+e.getMessage();
+			logger.error(error, e);
 		}
 		return error;
 	}

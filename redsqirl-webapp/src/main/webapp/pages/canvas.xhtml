@@ -2653,6 +2653,28 @@
 		</rich:modalPanel>
 	</a4j:region>
 	
+	<a4j:region>
+		<rich:modalPanel id="ssheditModalPanel" width="600" height="500"
+			style="overflow:auto;" resizeable="false">
+
+			<f:facet name="header">
+				<h:outputText value='#{messages.hdfsinterface_edit_file}' />
+			</f:facet>
+			<f:facet name="controls">
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+					style="cursor:pointer;width:22px;"
+					onclick="#{rich:component('ssheditModalPanel')}.hide()" />
+			</f:facet>
+
+			<h:form id="sshform5">
+				<h:panelGrid>
+					<a4j:include viewId="/pages/ssh/editSsh.xhtml" ajaxRendered="true" />
+				</h:panelGrid>
+			</h:form>
+
+		</rich:modalPanel>
+	</a4j:region>
+	
 	<rich:modalPanel id="msnErrorPage"
 		showWhenRendered="#{requestScope['msnErrorPage'] != null}">
 		<div style="width: 100%; height: 100%; overflow: auto;">

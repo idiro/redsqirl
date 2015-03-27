@@ -60,7 +60,7 @@
                             <h:outputText value="" />
                         </f:facet>
                         <a4j:commandLink action="#{sshBean.editFileBefore}"
-                            oncomplete="#{rich:component('hdfseditModalPanel')}.show();">
+                            oncomplete="#{rich:component('ssheditModalPanel')}.show();">
                             <h:graphicImage value="../image/icons/button-directory-property.gif"
                                 title='#{messages.HdfsInterface_properties_help}'
                                 rendered="#{sshBean.allProps[indexTable]['type'] == 'directory'}"
