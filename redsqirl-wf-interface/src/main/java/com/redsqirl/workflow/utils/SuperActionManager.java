@@ -23,6 +23,10 @@ public interface SuperActionManager extends Remote {
 	
 	public String install(String user, SubDataFlow toInstall, Boolean privilege) throws RemoteException;
 
+	public List<String> getSysSuperActions() throws RemoteException;
+	
+	public List<String> getUserSuperActions(String user) throws RemoteException;
+	
 	public List<String> getAvailableSuperActions(String user) throws RemoteException;
 
 	public String uninstall(String user, String name) throws RemoteException;

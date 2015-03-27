@@ -116,27 +116,33 @@ public class WfSuperActionManager extends UnicastRemoteObject implements SuperAc
 
 		return error;
 	}
-
-	public List<String> getAvailableSuperActions(String user) {
-//		File sysSA = WorkflowPrefManager.getSuperActionMainDir(null);
-		File userSA = WorkflowPrefManager.getSuperActionMainDir(user);
-		// final String pattern= "^[a-zA-Z0-9]*$";
+	
+	public List<String> getSysSuperActions() {
+		File sysSA = WorkflowPrefManager.getSuperActionMainDir(null);
 		final String pattern = "sa_[a-zA-Z0-9]*";
 
 		List<String> ansL = new LinkedList<String>();
-//		try {
-//			if (sysSA.exists()) {
-//				ansL.addAll(Arrays.asList(sysSA.list(new FilenameFilter() {
-//
-//					@Override
-//					public boolean accept(File arg0, String name) {
-//						return name.matches(pattern) && name.startsWith("sa_");
-//					}
-//				})));
-//			}
-//		} catch (Exception e) {
-//			logger.error("error ", e);
-//		}
+		try {
+			if (sysSA.exists()) {
+				ansL.addAll(Arrays.asList(sysSA.list(new FilenameFilter() {
+
+					@Override
+					public boolean accept(File arg0, String name) {
+						return name.matches(pattern) && name.startsWith("sa_");
+					}
+				})));
+			}
+		} catch (Exception e) {
+			logger.error("error ", e);
+		}
+		return ansL;
+	}
+	
+	public List<String> getUserSuperActions(String user) {
+		File userSA = WorkflowPrefManager.getSuperActionMainDir(user);
+		final String pattern = "sa_[a-zA-Z0-9]*";
+
+		List<String> ansL = new LinkedList<String>();
 		try {
 			if (userSA.exists()) {
 				ansL.addAll(Arrays.asList(userSA.list(new FilenameFilter() {
@@ -151,7 +157,13 @@ public class WfSuperActionManager extends UnicastRemoteObject implements SuperAc
 			logger.error(e);
 		}
 		return ansL;
+	}
 
+	public List<String> getAvailableSuperActions(String user) {
+		List<String> ansL = new LinkedList<String>();
+		ansL.addAll(getUserSuperActions(user));
+		ansL.addAll(getSysSuperActions());
+		return ansL;
 	}
 
 	public String uninstall(String user, String name) {

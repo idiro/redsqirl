@@ -184,7 +184,7 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 	}
 
 	public void refreshSubworkflowsSystemList() throws RemoteException {
-		List<String> listSa = getSuperActionManager().getAvailableSuperActions(null);
+		List<String> listSa = getSuperActionManager().getSysSuperActions();
 		
 		uninstallSysSa = new ArrayList<SelectItem>();
 		for (int i = 0; i < listSa.size(); ++i) {
@@ -196,7 +196,7 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 
 	public void refreshSubworkflowsUser() throws RemoteException {
 		List<String> listSa = getSuperActionManager()
-				.getAvailableSuperActions(getUserInfoBean().getUserName());
+				.getUserSuperActions(getUserInfoBean().getUserName());
 		
 		uninstallUserSa = new ArrayList<SelectItem>();
 		for (int i = 0; i < listSa.size(); ++i) {

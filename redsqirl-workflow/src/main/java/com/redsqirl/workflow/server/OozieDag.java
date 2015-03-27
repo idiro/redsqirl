@@ -173,48 +173,43 @@ public class OozieDag {
 	public boolean transform() {
 		logger.debug("sort...");
 		boolean ok = sort();
-
+		int iter = 0;
+		int iterMax = 10000;
 		if (ok) {
-			int maxIter = 20;
-			int iter = 0;
-			boolean changed = true;
-			while(iter < maxIter && changed){
-				changed = false;
-				logger.debug("iteration "+iter+": graph: " + graphOut);
-				logger.debug("join...");
-				String firstJoin = null;
-				while ((firstJoin = getFirstIregularJoin()) != null) {
-					changed = true;
-					logger.debug("Add join before: " + firstJoin);
-					String comesFrom = getCommonRootOf(firstJoin);
+			logger.debug("graph: " + graphOut);
+			logger.debug("join...");
+			String firstJoin = null;
+			while ((firstJoin = getFirstIregularJoin()) != null && iter < iterMax) {
+				logger.debug("Add join before: " + firstJoin);
+				String comesFrom = getCommonRootOf(firstJoin);
 
-					logger.debug("Add fork after: " + comesFrom);
+				logger.debug("Add fork after: " + comesFrom);
 
-					moveElementAfterJoin(comesFrom, firstJoin);
-					if(graphOut.get(comesFrom).size() > 1){
-						placeForkAfter(comesFrom, firstJoin, "pair_" + firstJoin);
-						placeJoinBefore(firstJoin, comesFrom, firstJoin);
-					}
-					logger.debug(graphOut);
+				moveElementAfterJoin(comesFrom, firstJoin);
+				if(graphOut.get(comesFrom).size() > 1){
+					placeForkAfter(comesFrom, firstJoin, "pair_" + firstJoin);
+					placeJoinBefore(firstJoin, comesFrom, firstJoin);
 				}
-				logger.debug("fork...");
-				String firstFork = null;
-				while ((firstFork = getFirstIregularFork()) != null) {
-					changed = true;
-					logger.debug("Add fork after: " + firstFork);
-					String goTo = getCommonLeafOf(firstFork);
-					logger.debug("Add join before: " + goTo);
-					moveElementAfterJoin(firstFork, goTo);
-					if(graphOut.get(firstFork).size() > 1){
-						placeForkAfter(firstFork, goTo, firstFork);
-						placeJoinBefore(goTo, firstFork, "pair_" + firstFork);
-					}
-					logger.debug(graphOut);
-				}
+				logger.debug(graphOut);
 				++iter;
 			}
-			if(iter == maxIter){
-				logger.warn("Maximum iteration "+maxIter+" reached");
+			logger.debug("fork...");
+			String firstFork = null;
+			while ((firstFork = getFirstIregularFork()) != null && iter < iterMax) {
+				logger.debug("Add fork after: " + firstFork);
+				String goTo = getCommonLeafOf(firstFork);
+				logger.debug("Add join before: " + goTo);
+				moveElementAfterJoin(firstFork, goTo);
+				if(graphOut.get(firstFork).size() > 1){
+					placeForkAfter(firstFork, goTo, firstFork);
+					placeJoinBefore(goTo, firstFork, "pair_" + firstFork);
+				}
+				logger.debug(graphOut);
+				++iter;
+			}
+			if(iter == iterMax){
+				logger.error("Fail transforming the graph");
+				ok = false;
 			}
 		}
 
@@ -409,11 +404,8 @@ public class OozieDag {
 	protected void placeForkAfter(String element, String join, String name) {
 		String forkName = "fork_" + name;
 		Set<String> outN = new LinkedHashSet<String>();
-		graphOut.put(forkName, outN);
 		Set<String> inN = new LinkedHashSet<String>();
-		graphIn.put(forkName, inN);
 
-		elementSorted.add(elementSorted.indexOf(element) + 1, forkName);
 
 		Set<String> outEl = graphOut.get(element);
 		Iterator<String> itOut = outEl.iterator();
@@ -424,19 +416,25 @@ public class OozieDag {
 			}
 		}
 
-		outEl.removeAll(outN);
-		outEl.add(forkName);
+		
+		if(outN.size() > 1){
+			outEl.removeAll(outN);
+			outEl.add(forkName);
 
-		inN.add(element);
+			inN.add(element);
 
-		Iterator<String> it = outN.iterator();
-		while (it.hasNext()) {
-			String cur = it.next();
-			if (graphIn.get(cur).remove(element)) {
-				graphIn.get(cur).add(forkName);
-			} else {
-				logger.error("Should not happened, graph not well set up");
+			Iterator<String> it = outN.iterator();
+			while (it.hasNext()) {
+				String cur = it.next();
+				if (graphIn.get(cur).remove(element)) {
+					graphIn.get(cur).add(forkName);
+				} else {
+					logger.error("Should not happened, graph not well set up");
+				}
 			}
+			graphOut.put(forkName, outN);
+			graphIn.put(forkName, inN);
+			elementSorted.add(elementSorted.indexOf(element) + 1, forkName);
 		}
 	}
 
@@ -453,11 +451,7 @@ public class OozieDag {
 	protected void placeJoinBefore(String element, String fork, String name) {
 		String joinName = "join_" + name;
 		Set<String> outN = new LinkedHashSet<String>();
-		graphOut.put(joinName, outN);
 		Set<String> inN = new LinkedHashSet<String>();
-		graphIn.put(joinName, inN);
-
-		elementSorted.add(elementSorted.indexOf(element), joinName);
 
 		Set<String> inEl = graphIn.get(element);
 		Iterator<String> itIn = inEl.iterator();
@@ -467,20 +461,25 @@ public class OozieDag {
 				inN.add(cur);
 			}
 		}
+		
+		if(inN.size() > 1){
+			inEl.removeAll(inN);
+			inEl.add(joinName);
 
-		inEl.removeAll(inN);
-		inEl.add(joinName);
+			outN.add(element);
 
-		outN.add(element);
-
-		Iterator<String> it = inN.iterator();
-		while (it.hasNext()) {
-			String cur = it.next();
-			if (graphOut.get(cur).remove(element)) {
-				graphOut.get(cur).add(joinName);
-			} else {
-				logger.error("Should not happened, graph not well set up");
+			Iterator<String> it = inN.iterator();
+			while (it.hasNext()) {
+				String cur = it.next();
+				if (graphOut.get(cur).remove(element)) {
+					graphOut.get(cur).add(joinName);
+				} else {
+					logger.error("Should not happened, graph not well set up");
+				}
 			}
+			graphOut.put(joinName, outN);
+			graphIn.put(joinName, inN);
+			elementSorted.add(elementSorted.indexOf(element), joinName);
 		}
 	}
 
