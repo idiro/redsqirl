@@ -58,6 +58,7 @@ var menu_dataoutput = "Data Output...";
 var menu_clean = "Clean the Data";
 var menu_oozieLog = "Oozie Action Logs";
 var menu_editSa = "Edit SuperAction";
+var menu_refreshSa = "Refresh SuperAction";
 
 var contextMenuCanvasAction = [
                                {"Create Link": function(menuItem,menu){createLink(rightClickGroup.getChildren()[0]);}},
@@ -67,7 +68,7 @@ var contextMenuCanvasAction = [
                                {"Clean the Data":function(menuItem,menu){cleanElementJS(rightClickGroup);}},
                                {"Oozie Action Logs": function(menuItem,menu){openWorkflowElementUrl(rightClickGroup.getId());}},
                                {"Edit SuperAction": function(menuItem,menu){if(rightClickGroup.privilege == null){openSubWorkflow(rightClickGroup.elementType);}}},
-                               {"Refresh SuperAction": function(menuItem,menu){if(rightClickGroup.privilege == null){refreshSubWorkflowJS(rightClickGroup);}}},
+                               {"Refresh SuperAction": function(menuItem,menu){refreshSubWorkflowJS(rightClickGroup);}}
                                ];
 
 var cmenuCanvas = jQuery.contextMenu.create(contextMenuCanvasAction);
@@ -1954,7 +1955,7 @@ function showContextMenu(group, e){
             if(group.elementType.indexOf('sa_')==0){
                     temp[temp.length] = item;
             }else{
-                if( key.indexOf(menu_editSa)!=0){
+                if( key.indexOf(menu_editSa)!=0 && key.indexOf(menu_refreshSa)!=0){
                     temp[temp.length] = item;
                 }
             }

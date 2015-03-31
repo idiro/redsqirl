@@ -61,4 +61,11 @@ public interface SuperElement extends DataFlowElement{
 	 * @throws RemoteException
 	 */
 	String getErrorInstall() throws RemoteException;
+	
+	/**
+	 * read the meta data of super action and update error install message
+	 * @throws RemoteException
+	 */
+	public void readMetadataSuperElement() throws RemoteException;
+	
 }

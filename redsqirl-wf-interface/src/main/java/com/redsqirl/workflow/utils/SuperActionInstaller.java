@@ -42,7 +42,7 @@ public class SuperActionInstaller implements Serializable{
 		helpDir.mkdirs();
 		
 		File mainFile = new File(mainDir, name);
-		File helpFile = new File(helpDir, name);
+		File helpFile = new File(helpDir, name+".html");
 		
 		File tmpMain = new File(WorkflowPrefManager.getPathTmpFolder(user),name);
 		File tmpHelp = new File(WorkflowPrefManager.getPathTmpFolder(user),name+".html");

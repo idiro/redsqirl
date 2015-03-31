@@ -1258,7 +1258,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 		setIdGroup(groupId);
 		String id = getIdMap().get(getNameWorkflow()).get(groupId);
 		if(id != null && wf != null){
-			wf.getElement(id).cleanDataOut();
+			try{
+				((SuperElement)wf.getElement(id)).readMetadataSuperElement();
+			}catch(Exception e){
+				logger.error(e.getMessage(),e);
+			}
 		}
 		
 	}
