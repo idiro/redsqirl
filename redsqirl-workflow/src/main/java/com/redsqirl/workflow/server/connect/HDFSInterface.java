@@ -2,6 +2,7 @@ package com.redsqirl.workflow.server.connect;
 
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -171,19 +172,19 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 		boolean ok = false;
 		if(path != null && !path.isEmpty()){
 			try{
-			HdfsFileChecker fCh = new HdfsFileChecker(path);
-			if (fCh.isDirectory() || fCh.isFile()) {
-				while (history.size() - 1 > cur) {
-					history.remove(history.size() - 1);
+				HdfsFileChecker fCh = new HdfsFileChecker(path);
+				if (fCh.isDirectory() || fCh.isFile()) {
+					while (history.size() - 1 > cur) {
+						history.remove(history.size() - 1);
+					}
+					history.add(new Path(path));
+					++cur;
+					while (history.size() > historyMax) {
+						history.remove(0);
+						--cur;
+					}
+					ok = true;
 				}
-				history.add(new Path(path));
-				++cur;
-				while (history.size() > historyMax) {
-					history.remove(0);
-					--cur;
-				}
-				ok = true;
-			}
 			}catch(Exception e){
 				logger.debug(e.getMessage(),e);
 			}
@@ -404,8 +405,8 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 		}
 		return error;
 	}
-	
-	
+
+
 	/**
 	 * Copy from local fs to HDFS
 	 * 
@@ -438,8 +439,8 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 		}
 		return error;
 	}
-	
-	
+
+
 	/**
 	 * Copy from HDFS to local
 	 * 
@@ -526,7 +527,7 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 			logger.error(e.getMessage(),e);
 		}
 		// fCh.close();
-		
+
 		return ans;
 	}
 
@@ -570,7 +571,7 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 					reader.readLine(line);
 					logger.info("line : " + line);
 					++lineNb;
-					
+
 					FieldType type = fields.getFieldType(fields
 							.getFieldNames().get(i));
 					if (type == FieldType.BOOLEAN) {
@@ -1115,94 +1116,10 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 
 			logger.info("session config set");
 			session.connect();
-
-			// exec 'scp -f rfile' remotely
-			String command = "scp -f " + rfile;
+			
 			Channel channel = session.openChannel("exec");
-			((ChannelExec) channel).setCommand(command);
-
-			// get I/O streams for remote scp
-			OutputStream out = channel.getOutputStream();
-			InputStream in = channel.getInputStream();
-
-			channel.connect();
-
-			byte[] buf = new byte[1024];
-
-			// send '\0'
-			buf[0] = 0;
-			out.write(buf, 0, 1);
-			out.flush();
-
-			while (true) {
-				int c = checkAck(in);
-				if (c != 'C') {
-					break;
-				}
-
-				// read '0644 '
-				in.read(buf, 0, 5);
-
-				long filesize = 0L;
-				while (true) {
-					if (in.read(buf, 0, 1) < 0) {
-						// error
-						break;
-					}
-					if (buf[0] == ' ')
-						break;
-					filesize = filesize * 10L + (long) (buf[0] - '0');
-				}
-
-				String file = null;
-				for (int i = 0;; i++) {
-					in.read(buf, i, 1);
-					if (buf[i] == (byte) 0x0a) {
-						file = new String(buf, 0, i);
-						break;
-					}
-				}
-
-				logger.info("filesize=" + filesize + ", file=" + file);
-
-				// send '\0'
-				buf[0] = 0;
-				out.write(buf, 0, 1);
-				out.flush();
-
-				FileSystem fs = NameNodeVar.getFS();
-
-				FSDataOutputStream fosd = fs.create(new Path(lfile));
-
-				// read a content of lfile
-				int foo;
-				while (true) {
-					if (buf.length < filesize)
-						foo = buf.length;
-					else
-						foo = (int) filesize;
-					foo = in.read(buf, 0, foo);
-					if (foo < 0) {
-						// error
-						break;
-					}
-					fosd.write(buf, 0, foo);
-					filesize -= foo;
-					if (filesize == 0L)
-						break;
-				}
-				fosd.close();
-				// fos=null;
-
-				if (checkAck(in) != 0) {
-					return null;
-				}
-
-				// send '\0'
-				buf[0] = 0;
-				out.write(buf, 0, 1);
-				out.flush();
-			}
+			
+			copyInHDFS(channel, rfile, lfile, remoteServer);
 
 			channel.disconnect();
 			session.disconnect();
@@ -1216,6 +1133,297 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 		}
 		return error;
 	}
+	
+	private String copyInHDFS(Channel channel, String rfile, String lfile, String remoteServer) throws Exception {
+		
+		String error = null;
+		FileSystem fs = NameNodeVar.getFS();
+		
+		SSHInterface sshInt = new SSHInterface(remoteServer, 22);
+		
+		Map<String,String> p = sshInt.getProperties(rfile);
+		if(p.get("type").equals("file")){
+			
+			// exec 'scp -f rfile' remotely
+			String command = "scp -f " + rfile;
+			channel = channel.getSession().openChannel("exec");
+			((ChannelExec) channel).setCommand(command);
+
+			// get I/O streams for remote scp
+			OutputStream out = channel.getOutputStream();
+			InputStream in = channel.getInputStream();
+			
+			logger.info("file " + p.get("type") + " " + lfile);
+			
+			FSDataOutputStream fosd = fs.create(new Path(lfile));
+			
+			channel.connect();
+
+			copyToHDFS(fosd, in, out );
+			
+		}else{
+			
+			if ( !fs.exists(new Path(lfile)) ) {
+				if ( !fs.mkdirs(new Path(lfile)) )  // create the directory
+					error = lfile + ": Cannot create such directory";
+			} else if ( !fs.isDirectory(new Path(lfile)) ) //already exists as a file
+				error = lfile + ": Not a directory";
+			
+			logger.info("create the directory " + lfile);
+			
+			Map<String,Map<String,String>> files = sshInt.getChildrenProperties(rfile);
+			logger.info(files);
+			
+			for (String path : files.keySet()) {
+				Map<String,String> props = files.get(path);
+				
+				logger.info(props.get("type") + " " + path);
+				
+				String fileName = path.replaceFirst(rfile, "");
+				//String fileName = path.substring(path.lastIndexOf("/"));
+				logger.info("fileName " + fileName);
+				
+				if(props.get("type").equals("file")){
+					
+					// exec 'scp -f rfile' remotely
+					String command = "scp -f " + rfile;
+					channel = channel.getSession().openChannel("exec");
+					((ChannelExec) channel).setCommand(command);
+
+					// get I/O streams for remote scp
+					OutputStream out = channel.getOutputStream();
+					InputStream in = channel.getInputStream();
+					
+					logger.info("file " + lfile+fileName);
+					
+					FSDataOutputStream fosd = fs.create(new Path(lfile+fileName));
+					
+					channel.connect();
+
+					copyToHDFS(fosd, in, out );
+					
+				}else{
+					
+					if ( !fs.exists(new Path(lfile+fileName)) ) {
+						if ( !fs.mkdirs(new Path(lfile+fileName)) )  // create the directory
+							error = lfile+fileName + ": Cannot create such directory";
+					} else if ( !fs.isDirectory(new Path(lfile+fileName)) ) //already exists as a file
+						error = lfile+fileName + ": Not a directory";
+					
+					logger.info("create the directory " + lfile+fileName);
+					
+					copyInHDFS(channel, rfile+fileName, lfile+fileName, remoteServer);
+					
+				}
+					
+			}
+			
+		}
+		
+		return error;
+	}
+
+	private String copyToHDFS(FSDataOutputStream fosd,  InputStream in, OutputStream out) throws Exception {
+		String error = null;
+		
+		byte[] buf = new byte[1024];
+
+		// send '\0'
+		buf[0] = 0;
+		out.write(buf, 0, 1);
+		out.flush();
+
+		while (true) {
+			int c = checkAck(in);
+			if (c != 'C') {
+				break;
+			}
+
+			// read '0644 '
+			in.read(buf, 0, 5);
+
+			long filesize = 0L;
+			while (true) {
+				if (in.read(buf, 0, 1) < 0) {
+					// error
+					break;
+				}
+				if (buf[0] == ' ')
+					break;
+				filesize = filesize * 10L + (long) (buf[0] - '0');
+			}
+
+			String file = null;
+			for (int i = 0;; i++) {
+				in.read(buf, i, 1);
+				if (buf[i] == (byte) 0x0a) {
+					file = new String(buf, 0, i);
+					break;
+				}
+			}
+
+			logger.info("filesize=" + filesize + ", file=" + file);
+
+			// send '\0'
+			buf[0] = 0;
+			out.write(buf, 0, 1);
+			out.flush();
+
+			// read a content of lfile
+			int foo;
+			while (true) {
+				if (buf.length < filesize)
+					foo = buf.length;
+				else
+					foo = (int) filesize;
+				foo = in.read(buf, 0, foo);
+				if (foo < 0) {
+					// error
+					break;
+				}
+				fosd.write(buf, 0, foo);
+				filesize -= foo;
+				if (filesize == 0L)
+					break;
+			}
+			fosd.close();
+			// fos=null;
+
+			if (checkAck(in) != 0) {
+				return null;
+			}
+
+			// send '\0'
+			buf[0] = 0;
+			out.write(buf, 0, 1);
+			out.flush();
+		}
+		
+		return error;
+	}
+
+	/*private String copyToHDFS(String lfile,  InputStream in, OutputStream out) throws Exception {
+		
+		String error = null;
+		FileSystem fs = NameNodeVar.getFS();
+		fs.setWorkingDirectory(new Path(lfile));
+		
+		byte[] buf=new byte[1024];
+
+		// initiate copy with acknowledgement (send a \0 byte)
+		buf[0] = 0;
+		out.write(buf, 0, 1);
+		out.flush();
+
+		boolean finished = false;
+		while (!finished) {
+			int c = checkAck(in);
+
+			if ( c == -1 ) {
+				// no more files
+				finished = true;
+				break;
+			}
+
+			if ( c == 'E' ) {
+				// end of receiving a directory
+				finished = true;
+				break;
+			}
+
+			if ( c != 'C' && c != 'D' ) // not a file or a directory to be copied is the response
+				error = "Scp from remote site failed\n";
+
+			// read: mode + length + filename
+			// read '0644 ' or '0755 ' or something similar
+			in.read(buf, 0, 5);
+
+			long filesize=0L;
+			while(true){
+				if(in.read(buf, 0, 1)<0){
+					// error
+					break;
+				}
+				if(buf[0]==' ')break;
+				filesize=filesize*10L+(long)(buf[0]-'0');
+			}
+
+			String rFileName=null;
+			for(int i=0;;i++){
+				in.read(buf, i, 1);
+				if(buf[i]==(byte)0x0a){
+					rFileName=new String(buf, 0, i);
+					break;
+				}
+			}
+			
+			logger.info("rFileName " + rFileName);
+			
+			Path path = new Path(rFileName);
+			
+			// if is a directory
+			if (c == 'D') {
+				
+				logger.info("directory ");
+				logger.info("path "+path.getName());
+				
+				if ( !fs.exists(path) ) {
+					if ( !fs.mkdirs(path) )  // create the directory
+						error = path.toString() + ": Cannot create such directory";
+				} else if ( !fs.isDirectory(path) ) //already exists as a file
+					error = path.toString() + ": Not a directory";
+				
+				fs.setWorkingDirectory(new Path(lfile));
+				if(!lfile.contains(rFileName)){
+					fs.setWorkingDirectory(new Path(lfile+"/"+rFileName));
+				}
+				
+				// send acknowledgement (send a \0 byte)
+				buf[0] = 0;
+				out.write(buf, 0, 1);
+				out.flush();
+				continue;
+			}
+			
+			logger.info("file ");
+			logger.info("path "+path.getName());
+
+			// now we deal with a single file. Let's read it.
+			FSDataOutputStream fos = fs.create(path);
+
+			// send acknowledgement (send a \0 byte)
+			buf[0] = 0;
+			out.write(buf, 0, 1);
+			out.flush();
+
+			int len;
+			while (true) {
+				if ( buf.length < filesize ) len = buf.length;
+				else len = (int)filesize;
+				len = in.read(buf, 0, len);
+				if(len < 0){
+					// error
+					break;
+				}
+				fos.write(buf, 0, len);
+				filesize -= len;
+				if ( filesize == 0L ) break;
+			}
+			fos.close();
+			fos = null;
+
+			if (checkAck(in) !=0 ) 
+				error = "Scp from remote site to file " + path.toString() + " failed\n";
+
+			// send acknowledgement (send a \0 byte)
+			buf[0] = 0;
+			out.write(buf, 0, 1);
+			out.flush();
+		}
+
+		return error;
+	}*/
+
 
 	/**
 	 * Copy file from hdfs to new file on remote server
@@ -1241,9 +1449,9 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 
 			logger.info("session config set");
 			session.connect();		
-			
+
 			Channel channel = session.openChannel("exec");
-			
+
 			copyInRemote(channel, lfile, rfile);
 			channel.disconnect();
 			session.disconnect();
@@ -1254,14 +1462,14 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 		}
 		return error;
 	}
-	
+
 	private String copyInRemote(Channel channel, String lfile, String rfile){
 		String error = null;
 		try{
 			FileSystem fs = NameNodeVar.getFS();
 			Path src = new Path(lfile);
-			
-			
+
+
 			if(fs.getFileStatus(src).isDir()){
 				FileStatus contents[]= fs.listStatus(src);
 				//Make directory in remote
@@ -1276,25 +1484,25 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 			}else{
 				error = copyFileInRemote(channel,lfile, rfile);
 			}
-			
+
 		}catch(Exception e){
 			error = "Unexpected error when copying file accross: "+e.getMessage();
 			logger.error(error, e);
 		}
 		return error;
 	}
-	
+
 	private String copyFileInRemote(Channel channel,String lfile, String rfile){
 		FSDataInputStream fisd = null;
 		String error = null;
 		boolean ptimestamp = true;
-		
-		
+
+
 		try{
 			FileSystem fs = NameNodeVar.getFS();
 
 			channel = channel.getSession().openChannel("exec");
-			
+
 			FileStatus fstatus = fs.getFileStatus(new Path(lfile));
 			// exec 'scp -t rfile' remotely
 			String command = "scp " + (ptimestamp ? "-p" : "") + " -t " + rfile;
