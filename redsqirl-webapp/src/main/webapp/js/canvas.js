@@ -2086,7 +2086,13 @@ function openCanvasModalJS(group, selectedTab){
 
 function cleanElementJS(group){
 	if(group){
-		cleanElement(group.getId());
+		
+		if(!confirm('Are you sure you want to clean the selected object?')){
+			return false;
+		}else{
+			cleanElement(group.getId());
+		}
+		
 	}
 }
 
