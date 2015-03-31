@@ -66,7 +66,8 @@ var contextMenuCanvasAction = [
                                {"Data Output...": function(menuItem,menu){openCanvasModalJS(rightClickGroup,"outputTab");}},
                                {"Clean the Data":function(menuItem,menu){cleanElementJS(rightClickGroup);}},
                                {"Oozie Action Logs": function(menuItem,menu){openWorkflowElementUrl(rightClickGroup.getId());}},
-                               {"Edit SuperAction": function(menuItem,menu){if(rightClickGroup.privilege ==null){openSubWorkflow(rightClickGroup.elementType);}}},
+                               {"Edit SuperAction": function(menuItem,menu){if(rightClickGroup.privilege == null){openSubWorkflow(rightClickGroup.elementType);}}},
+                               {"Refresh SuperAction": function(menuItem,menu){if(rightClickGroup.privilege == null){refreshSubWorkflowJS(rightClickGroup);}}},
                                ];
 
 var cmenuCanvas = jQuery.contextMenu.create(contextMenuCanvasAction);
@@ -2093,6 +2094,12 @@ function cleanElementJS(group){
 			cleanElement(group.getId());
 		}
 		
+	}
+}
+
+function refreshSubWorkflowJS(group){
+	if(group){
+		refreshSubWorkflow(group.getId());
 	}
 }
 

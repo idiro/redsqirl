@@ -61,7 +61,7 @@ public class SuperAction extends DataflowAction implements SuperElement{
 		setName(name);
 	}
 
-	private void readMetadataSuperAction(){
+	public void readMetadataSuperAction(){
 		try{
 			SubWorkflow saw = new SubWorkflow(name);
 			errorInit = saw.readMetaData();

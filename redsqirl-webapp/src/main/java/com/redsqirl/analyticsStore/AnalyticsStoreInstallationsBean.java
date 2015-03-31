@@ -241,13 +241,13 @@ public class AnalyticsStoreInstallationsBean extends BaseBean implements Seriali
 
 		boolean newKey = false;
 
-		String user = redSqirlInstallations.getUserName();
-
 		try{
 			String uri = getRepoServer()+"rest/keymanager";
 
 			JSONObject object = new JSONObject();
-			object.put("user", user);
+			if(redSqirlInstallations.getInstallationType().equalsIgnoreCase("user")){
+				object.put("user", redSqirlInstallations.getUserName());
+			}
 			object.put("key", softwareKey);
 			object.put("type", redSqirlInstallations.getSoftwareModulestype()); //SoftwareModules type
 			object.put("idModuleVersion", redSqirlInstallations.getIdModuleVersion());
@@ -317,6 +317,8 @@ public class AnalyticsStoreInstallationsBean extends BaseBean implements Seriali
 
 			PackageManager pckMng = new PackageManager();
 
+			String user = redSqirlInstallations.getUserName();
+			
 			//remove other installations
 			List<String> packageNames = pckMng.getPackageNames(user);
 			if(packageNames != null && !packageNames.isEmpty()){
