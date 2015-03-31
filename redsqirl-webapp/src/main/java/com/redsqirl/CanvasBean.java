@@ -43,6 +43,7 @@ import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.JobManager;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 import com.redsqirl.workflow.server.interfaces.SuperElement;
+import com.redsqirl.workflow.utils.SuperActionInstaller;
 import com.redsqirl.workflow.utils.SuperActionManager;
 
 public class CanvasBean extends BaseBean implements Serializable {
@@ -2437,7 +2438,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 								getInputNameSubWorkflow(),
 								WorkflowHelpUtils.generateHelp(getInputNameSubWorkflow(), getInputAreaSubWorkflow() ,inputsForHelp, outputsForHelp), 
 								inputs, outputs);
-						getSuperActionManager().install(getUserInfoBean().getUserName(), sw, null);
+						new SuperActionInstaller(getSuperActionManager()).install(getUserInfoBean().getUserName(),false, sw, null);
 					}catch(Exception e){
 						error = e.getMessage();
 					}
@@ -2445,7 +2446,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 					if(error == null){
 						error = getDf().aggregateElements(getComponentIds(), getInputNameSubWorkflow(), inputs, outputs);
 						if(error != null){
-							getSuperActionManager().uninstall(getUserInfoBean().getUserName(), getInputNameSubWorkflow());
+							new SuperActionInstaller(getSuperActionManager()).uninstall(getUserInfoBean().getUserName(), getInputNameSubWorkflow());
 						}else{
 							logger.info("Elements: " + getDf().getComponentIds());
 
@@ -2482,7 +2483,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		String user = getUserInfoBean().getUserName();
 
 		if(nameSA != null){
-			getSuperActionManager().uninstall(user, nameSA);
+			new SuperActionInstaller(getSuperActionManager()).uninstall(user, nameSA);
 		}
 	}
 

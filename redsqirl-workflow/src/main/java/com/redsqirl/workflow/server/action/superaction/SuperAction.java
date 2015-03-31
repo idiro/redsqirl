@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Attr;
@@ -46,8 +47,9 @@ public class SuperAction extends DataflowAction implements SuperElement{
 
 	private Map<String, DFELinkProperty> input = new LinkedHashMap<String, DFELinkProperty>();
 	private Map<LinkedList<String>, DFEOutput> tmpOutput = new LinkedHashMap<LinkedList<String>,DFEOutput>();
+	private Set<String> superElementDependencies = null;
 	private String name = null;
-	private String errorInit = null;
+	private String errorInstall = null;
 
 	private Boolean privilege = null;
 	
@@ -64,16 +66,17 @@ public class SuperAction extends DataflowAction implements SuperElement{
 	private void readMetadataSuperAction(){
 		try{
 			SubWorkflow saw = new SubWorkflow(name);
-			errorInit = saw.readMetaData();
-			if(errorInit == null){
+			errorInstall = saw.readMetaData();
+			if(errorInstall == null){
 				logger.info("Set input and output of the action");
 				input = saw.getInputSuperAction();
 				tmpOutput = saw.getTmpOutput();
 				generateTmpPathsIfNull();
 				output = saw.getOutputSuperAction();
 				privilege = saw.getPrivilege();
+				superElementDependencies = saw.getSuperElementDependencies();
 			}else{
-				logger.info("Error when reading the metadata: "+errorInit);
+				logger.info("Error when reading the metadata: "+errorInstall);
 			}
 		}catch(Exception e){
 			logger.error("Fail to read Super Action Meta data: "+e,e);
@@ -303,7 +306,7 @@ public class SuperAction extends DataflowAction implements SuperElement{
 
 	@Override
 	public String updateOut() throws RemoteException {
-		String error = errorInit != null? errorInit : checkIntegrationUserVariables();
+		String error = errorInstall != null? errorInstall : checkIntegrationUserVariables();
 		if(error == null){
 			((OozieSubWorkflowAction) oozieAction).setSuperElement(this);
 		}
@@ -395,6 +398,20 @@ public class SuperAction extends DataflowAction implements SuperElement{
 	@Override
 	public Boolean getPrivilege() throws RemoteException {
 		return privilege;
+	}
+
+	@Override
+	public Set<String> getSuperElementDependencies() {
+		return superElementDependencies;
+	}
+
+	public void setDependencies(Set<String> dependencies) {
+		this.superElementDependencies = dependencies;
+	}
+	
+	@Override
+	public String getErrorInstall() throws RemoteException {
+		return errorInstall;
 	}
 
 }

@@ -17,6 +17,7 @@ import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
+import com.redsqirl.workflow.utils.SuperActionInstaller;
 import com.redsqirl.workflow.utils.SuperActionManager;
 
 public class SubWorkflowManagerBean extends BaseBean implements Serializable {
@@ -54,7 +55,7 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 		logger.info("subWorkflow actual name  " + actualName);
 		DataFlowInterface dfi = getworkFlowInterface();
 		SubDataFlow swa = dfi.getSubWorkflow(actualName);
-
+		SuperActionInstaller saInst = new SuperActionInstaller(getSuperActionManager());
 		boolean system = asSystem.equals("System");
 		
 		logger.info("privilage : '" + privilege + "'");
@@ -78,9 +79,9 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 		String username = system ? null : getUserInfoBean().getUserName();
 		String error = null;
 		
-		getSuperActionManager().uninstall(username,swa.getName());
+		saInst.uninstall(username,swa.getName());
 		
-		error = getSuperActionManager().install(username, swa, privilageVal);
+		error = saInst.install(getUserInfoBean().getUserName(),system, swa, privilageVal);
 
 		if (error != null && !error.isEmpty()) {
 			MessageUseful.addErrorMessage(error);
@@ -208,8 +209,9 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 	public void deleteSASystem() throws RemoteException {
 		logger.info("delete user sa");
 		if (getAdmin()) {
+			SuperActionInstaller saInst = new SuperActionInstaller(getSuperActionManager());
 			for (String s : getSystemSA()) {
-				getSuperActionManager().uninstall(null, s);
+				saInst.uninstall(null, s);
 			}
 		}
 		refreshSubworkflowsSystemList();
@@ -218,9 +220,10 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 	public void deleteSaUser() throws RemoteException {
 		logger.info("delete user sa");
 		String user = getUserInfoBean().getUserName();
+		SuperActionInstaller saInst = new SuperActionInstaller(getSuperActionManager());
 		for (String s : getUserSA()) {
 			logger.info("delete user sa " + s);
-			getSuperActionManager().uninstall(user, s);
+			saInst.uninstall(user, s);
 		}
 		refreshSubworkflowsUser();
 
