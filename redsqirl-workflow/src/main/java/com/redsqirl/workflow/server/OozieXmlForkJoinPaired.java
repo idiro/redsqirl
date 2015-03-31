@@ -74,6 +74,12 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 			error = createSubXmls(df,list,directory);
 		}
 		
+		if(error != null && error.startsWith(".")){
+			error = "In "+error.substring(1);
+		}else if(error != null){
+			error = error.trim();
+		}
+		
 		return error;
 	}
 	
@@ -94,6 +100,9 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 					error = createSubXmls(oswa.getSubWf(),oswa.getSubWf().getElement(),directory);
 				}
 			}
+		}
+		if(error != null && df != null){
+			error = "."+df.getName()+error;
 		}
 		return error;
 	}
@@ -262,9 +271,9 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				transformer.transform(source, result);
 			}
 		} catch (Exception e) {
-			error = LanguageManagerWF.getText(
+			error =" "+ LanguageManagerWF.getText(
 					"ooziexmlforkjoinpaired.createxml.fail",
-					new Object[] { e.getMessage() });
+					new Object[] { wfId, df==null?"":df.getName(),  e.getMessage()== null?"":e.getMessage() });
 			logger.error(error,e);
 		}
 

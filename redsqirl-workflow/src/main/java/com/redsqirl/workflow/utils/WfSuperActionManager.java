@@ -61,21 +61,20 @@ public class WfSuperActionManager extends UnicastRemoteObject implements SuperAc
 		
 	}
 	
-	public String install(String user, SubDataFlow toInstall, Boolean privilege)
+	public String createInstallFiles(String user, SubDataFlow toInstall, Boolean privilege)
 			throws RemoteException {
 		String name = toInstall.getName();
-		File mainDir = WorkflowPrefManager.getSuperActionMainDir(user);
-		mainDir.mkdirs();
-		File mainFile = new File(mainDir, name);
+		
+		File mainFile = new File(WorkflowPrefManager.getPathTmpFolder(user),name);
+		File helpFile = new File(WorkflowPrefManager.getPathTmpFolder(user),name+".html");
+		
 		String error = null;
 		if (mainFile.exists()) {
-			error = "Super Action '"
-					+ name
-					+ "' already exist, please rename this object or uninstall the super action before trying again.";
-		} else {
-			logger.debug("Check installation file");
-			error = toInstall.check();
+			mainFile.delete();
+			helpFile.delete();
 		}
+		logger.debug("Check installation file");
+		error = toInstall.check();
 
 		if (error == null) {
 			logger.debug("Save main file into: " + mainFile.getPath());
@@ -84,9 +83,6 @@ public class WfSuperActionManager extends UnicastRemoteObject implements SuperAc
 			if (error != null) {
 				mainFile.delete();
 			} else {
-				File helpDir = getSuperActionHelpDir(user);
-				helpDir.mkdirs();
-				File helpFile = new File(helpDir, name + ".html");
 				logger.debug("Save help into: " + helpFile.getPath());
 				String helpContent = toInstall.buildHelpFileContent();
 				try {
@@ -104,11 +100,7 @@ public class WfSuperActionManager extends UnicastRemoteObject implements SuperAc
 					mainFile.delete();
 					helpFile.delete();
 				}else{
-					if(user == null){
-						mainFile.setWritable(true,false);
-						mainFile.setReadable(true,false);
-					}
-					helpFile.setWritable(true,false);
+					mainFile.setWritable(true,false);
 					helpFile.setReadable(true,false);
 				}
 			}
@@ -164,16 +156,6 @@ public class WfSuperActionManager extends UnicastRemoteObject implements SuperAc
 		ansL.addAll(getUserSuperActions(user));
 		ansL.addAll(getSysSuperActions());
 		return ansL;
-	}
-
-	public String uninstall(String user, String name) {
-		File mainFile = new File(WorkflowPrefManager.getSuperActionMainDir(user), name);
-		File helpFile = new File(getSuperActionHelpDir(user), name + ".html");
-
-		mainFile.delete();
-		helpFile.delete();
-
-		return null;
 	}
 
 

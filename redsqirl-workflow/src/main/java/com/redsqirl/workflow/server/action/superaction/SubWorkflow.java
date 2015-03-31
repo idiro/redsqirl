@@ -11,11 +11,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -78,6 +80,8 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 	 * True: need a license key and runnable only
 	 */
 	private Boolean privilege;
+
+	private Set<String> superElementDependencies;
 
 	public SubWorkflow() throws RemoteException {
 		super();
@@ -406,7 +410,7 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 		tmpOutput = new LinkedHashMap<LinkedList<String>,DFEOutput>();
 		outputSuperAction = new LinkedHashMap<String,DFEOutput>();
 		inputSuperAction = new LinkedHashMap<String, DFELinkProperty>();
-
+		superElementDependencies = new LinkedHashSet<String>();
 		String error = null;
 		
 		if(xmlFile == null || !xmlFile.exists()){
@@ -419,7 +423,6 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 		Document doc = dBuilder.parse(xmlFile);
 
 		doc.getDocumentElement().normalize();
-		Element docEL = doc.getDocumentElement();
 		// Needs to do two reading,
 		// for the element and there id
 		// for link all the element
@@ -479,16 +482,23 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 			if(name.startsWith("sa_")){
 				addElement(name, id);
 				SuperAction saCur = (SuperAction) getElement(id);
-				Map<LinkedList<String>, DFEOutput> saTmpOutput = saCur.getTmpOutput();
-				Iterator<Entry<LinkedList<String>,DFEOutput>> itSaCur = saTmpOutput.entrySet().iterator();
-				while(itSaCur.hasNext()){
-					Entry<LinkedList<String>,DFEOutput> curTmpOut = itSaCur.next();
-					LinkedList<String> newList = new LinkedList<String>();
-					newList.addAll(curTmpOut.getKey());
-					newList.addFirst(id);
-					tmpOutput.put(newList, curTmpOut.getValue());
+				if(saCur.getErrorInstall() != null){
+					error = "Error when using "+name+" in "+getName()+": "+saCur.getErrorInstall();
+				}else{
+					superElementDependencies.add(name);
+					superElementDependencies.addAll(saCur.getSuperElementDependencies());
+					Map<LinkedList<String>, DFEOutput> saTmpOutput = saCur.getTmpOutput();
+
+					Iterator<Entry<LinkedList<String>,DFEOutput>> itSaCur = saTmpOutput.entrySet().iterator();
+					while(itSaCur.hasNext()){
+						Entry<LinkedList<String>,DFEOutput> curTmpOut = itSaCur.next();
+						LinkedList<String> newList = new LinkedList<String>();
+						newList.addAll(curTmpOut.getKey());
+						newList.addFirst(id);
+						tmpOutput.put(newList, curTmpOut.getValue());
+					}
+					removeElement(id);
 				}
-				removeElement(id);
 			}else if(name.equals(saIn.getName())){
 				addElement(name, id);
 				SubWorkflowInput inCur = (SubWorkflowInput) getElement(id); 
@@ -558,6 +568,10 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 
 
 		return error;
+	}
+	
+	public Set<String> getSuperElementDependencies(){
+		return superElementDependencies;
 	}
 
 	public void updateSuperActionTmpOutputs(Map<LinkedList<String>,DFEOutput> saOutputs) throws RemoteException{

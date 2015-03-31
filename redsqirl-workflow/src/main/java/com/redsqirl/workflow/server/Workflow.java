@@ -821,7 +821,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				}
 			}
 		} catch (Exception e) {
-			logger.error(e.getMessage());
+			logger.error(e.getMessage(),e);
 		}
 		return running;
 	}

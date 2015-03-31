@@ -4,6 +4,7 @@ import java.io.File;
 import java.rmi.RemoteException;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Sub dataflow class. This dataflow cannot run on its own, but is reusable
@@ -67,5 +68,10 @@ public interface SubDataFlow extends DataFlow{
 	 */
 	Boolean getPrivilege() throws RemoteException;
 
-	
+	/**
+	 * Get the super action needed for this superaction
+	 * @return
+	 * @throws RemoteException
+	 */
+	Set<String> getSuperElementDependencies() throws RemoteException;
 }

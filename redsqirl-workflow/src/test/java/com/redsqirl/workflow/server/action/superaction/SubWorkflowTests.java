@@ -28,6 +28,7 @@ import com.redsqirl.workflow.server.datatype.HiveType;
 import com.redsqirl.workflow.server.datatype.MapRedTextType;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.test.TestUtils;
+import com.redsqirl.workflow.utils.SuperActionInstaller;
 import com.redsqirl.workflow.utils.SuperActionManager;
 import com.redsqirl.workflow.utils.WfSuperActionManager;
 
@@ -233,12 +234,13 @@ public class SubWorkflowTests {
 			
 			//Install
 			SuperActionManager saMan = new WfSuperActionManager();
-			saMan.uninstall(userName, sName);
-			error = saMan.install(userName, sw, null);
+			SuperActionInstaller installer = new SuperActionInstaller(saMan);
+			installer.uninstall(userName, sName);
+			error = installer.install(userName,false, sw, null);
 			assertTrue("Fail to install subworkflow: "+error, error == null);
 			
 			//Uninstall
-			error = saMan.uninstall(userName, sName);
+			error = installer.uninstall(userName, sName);
 			assertTrue("Fail to uninstall subworkflow: "+error, error == null);
 			
 		} catch (Exception e) {
@@ -257,7 +259,8 @@ public class SubWorkflowTests {
 		String userName = System.getProperty("user.name");
 		String error = null;
 		try{
-			new WfSuperActionManager().uninstall(userName, sName);
+			SuperActionInstaller installer = new SuperActionInstaller(new WfSuperActionManager());
+			installer.uninstall(userName, sName);
 
 			//Create
 			Workflow w = new Workflow("workflowAgg_"+getClass().getName());

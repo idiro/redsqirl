@@ -40,6 +40,7 @@ import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 import com.redsqirl.workflow.utils.PackageManager;
+import com.redsqirl.workflow.utils.SuperActionInstaller;
 import com.redsqirl.workflow.utils.SuperActionManager;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -297,7 +298,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 				
 				swa.readFromLocal(new File(folder.getPath() + "/" + file));
 
-				error = saManager.install(user, swa, true);
+				error = new SuperActionInstaller(saManager).install(userInfoBean.getUserName(),!userInstall, swa, true);
 				if (error != null){
 					break;
 				}

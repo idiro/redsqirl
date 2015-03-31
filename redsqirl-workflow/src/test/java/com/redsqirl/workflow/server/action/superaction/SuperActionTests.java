@@ -17,6 +17,7 @@ import com.redsqirl.workflow.server.action.SourceTests;
 import com.redsqirl.workflow.server.connect.HiveInterface;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.test.TestUtils;
+import com.redsqirl.workflow.utils.SuperActionInstaller;
 import com.redsqirl.workflow.utils.SuperActionManager;
 import com.redsqirl.workflow.utils.WfSuperActionManager;
 
@@ -104,8 +105,9 @@ public class SuperActionTests {
 			//Install
 			logger.debug("Install the sub workflow");
 			SuperActionManager saMan = new WfSuperActionManager();
-			saMan.uninstall(userName, sName);
-			error = saMan.install(userName, sw, null);
+			SuperActionInstaller installer = new SuperActionInstaller(saMan);
+			installer.uninstall(userName, sName);
+			error = installer.install(userName,false, sw, null);
 			assertTrue("Fail to install subworkflow: "+error, error == null);
 			
 			
