@@ -63,7 +63,7 @@ public class SuperAction extends DataflowAction implements SuperElement{
 		setName(name);
 	}
 
-	private void readMetadataSuperAction(){
+	public void readMetadataSuperElement(){
 		try{
 			SubWorkflow saw = new SubWorkflow(name);
 			errorInstall = saw.readMetaData();
@@ -93,7 +93,7 @@ public class SuperAction extends DataflowAction implements SuperElement{
 			logger.debug("Set the name...");
 			this.name  = name;
 			logger.debug("Read the metadata of the sub-workflow...");
-			readMetadataSuperAction();
+			readMetadataSuperElement();
 		}
 	}
 

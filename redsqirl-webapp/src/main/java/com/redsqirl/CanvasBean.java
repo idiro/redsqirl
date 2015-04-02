@@ -1276,6 +1276,22 @@ public class CanvasBean extends BaseBean implements Serializable {
 			wf.getElement(id).cleanDataOut();
 		}
 	}
+	
+	public void refreshSubWorkflow() throws RemoteException {
+		
+		DataFlow wf = getworkFlowInterface().getWorkflow(getNameWorkflow());
+		String groupId = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("idGroup");
+		setIdGroup(groupId);
+		String id = getIdMap().get(getNameWorkflow()).get(groupId);
+		if(id != null && wf != null){
+			try{
+				((SuperElement)wf.getElement(id)).readMetadataSuperElement();
+			}catch(Exception e){
+				logger.error(e.getMessage(),e);
+			}
+		}
+		
+	}
 
 	public void regeneratePathsProject() throws RemoteException {
 		logger.info("regenerate paths project");
