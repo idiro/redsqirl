@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -497,6 +498,62 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 			}
 		}
 		return status;
+	}
+	
+	public int getNbElement(DataFlow df)throws RemoteException, Exception {
+		int ans = 0;
+		String jobId = df.getOozieJobId();
+		if (jobId != null) {
+			for (WorkflowAction wfa : oc.getJobInfo(jobId).getActions()) {
+				if(wfa.getName().startsWith("act_")){
+					++ans;
+				}
+			}
+		}
+		return ans;
+	}
+
+	public List<String> getElementsToRun(DataFlow df)throws RemoteException, Exception {
+		List<String> ans = new LinkedList<String>();
+		String jobId = df.getOozieJobId();
+		if (jobId != null) {
+			for (WorkflowAction wfa : oc.getJobInfo(jobId).getActions()) {
+				if(wfa.getName().startsWith("act_") 
+						&& !(WorkflowAction.Status.DONE.equals(wfa.getStatus())
+								|| WorkflowAction.Status.RUNNING.equals(wfa.getStatus()))){
+					ans.add(wfa.getName().substring(4));
+				}
+			}
+		}
+		return ans;
+	}
+	
+	public List<String> getElementsRunning(DataFlow df)throws RemoteException, Exception {
+		List<String> ans = new LinkedList<String>();
+		String jobId = df.getOozieJobId();
+		if (jobId != null) {
+			for (WorkflowAction wfa : oc.getJobInfo(jobId).getActions()) {
+				if(WorkflowAction.Status.RUNNING.equals(wfa.getStatus())
+						&& wfa.getName().startsWith("act_")){
+					ans.add(wfa.getName().substring(4));
+				}
+			}
+		}
+		return ans;
+	}
+
+	public List<String> getElementsDone(DataFlow df)throws RemoteException, Exception {
+		List<String> ans = new LinkedList<String>();
+		String jobId = df.getOozieJobId();
+		if (jobId != null) {
+			for (WorkflowAction wfa : oc.getJobInfo(jobId).getActions()) {
+				if(WorkflowAction.Status.DONE.equals(wfa.getStatus())
+						&& wfa.getName().startsWith("act_")){
+					ans.add(wfa.getName().substring(4));
+				}
+			}
+		}
+		return ans;
 	}
 
 	public String getConsoleElementUrl(DataFlow df, DataFlowElement e)

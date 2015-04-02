@@ -752,8 +752,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				setOozieJobId(OozieManager.getInstance().run(this, toRun));
 				logger.info("OozieJobId: " + oozieJobId);
 			} catch (Exception e) {
-				error = e.getMessage();
-				logger.info("setOozieJobId error " + e);
+				error = "Unexpected error: "+e.getMessage();
+				logger.info("setOozieJobId error: " + error,e);
 			}
 		}
 

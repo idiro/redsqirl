@@ -105,4 +105,39 @@ public interface JobManager extends Remote{
 	 */
 	public String getElementStatus(DataFlow df, DataFlowElement e) throws RemoteException, Exception;
 
+	/**
+	 * Get the number of element to run in this workflow
+	 * @param df
+	 * @return
+	 * @throws RemoteException
+	 * @throws Exception
+	 */
+	public int getNbElement(DataFlow df)throws RemoteException, Exception;
+
+	/**
+	 * Get the list of actions that has to run (all actions - running - done)
+	 * @param df
+	 * @return
+	 * @throws RemoteException
+	 * @throws Exception
+	 */
+	public List<String> getElementsToRun(DataFlow df)throws RemoteException, Exception;
+	
+	/**
+	 * Get the list of actions that are running
+	 * @param df
+	 * @return
+	 * @throws RemoteException
+	 * @throws Exception
+	 */
+	public List<String> getElementsRunning(DataFlow df)throws RemoteException, Exception;
+
+	/**
+	 * Get the list of actions that are done
+	 * @param df
+	 * @return
+	 * @throws RemoteException
+	 * @throws Exception
+	 */
+	public List<String> getElementsDone(DataFlow df)throws RemoteException, Exception;
 }
