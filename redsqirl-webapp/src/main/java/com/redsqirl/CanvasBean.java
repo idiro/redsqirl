@@ -2391,6 +2391,35 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 
 	}
+	
+	public void expand() {
+		String error = null;
+		
+		logger.info("expand ");
+		logger.info("name sub workflow " + getInputNameSubWorkflow());
+		
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String selectedIcons = params.get("selectedIcons");
+
+		logger.info("expand id: " + selectedIcons);
+		
+		try {
+			
+			error = getDf().expand(selectedIcons);
+			
+		} catch (RemoteException e) {
+			e.printStackTrace();
+			logger.info("Error: " + e,e);
+		}
+		
+		if (error != null) {
+			logger.info("Error: " + error);
+			MessageUseful.addErrorMessage(error);
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
+		}
+		
+	}
 
 	public void aggregate() {
 

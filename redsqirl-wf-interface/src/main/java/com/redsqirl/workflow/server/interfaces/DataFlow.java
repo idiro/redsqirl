@@ -261,6 +261,14 @@ public interface DataFlow extends Remote, Cloneable{
 			String subworkflowName,
 			Map<String,Entry<String,String>> inputs, 
 			Map<String,Entry<String,String>> outputs) throws RemoteException;
+	
+	/**
+	 * expand the Element in the current canvas
+	 * @param componentId The components to expand
+	 * @return The error message if any or null
+	 * @throws RemoteException
+	 */
+	public String expand(String componentI) throws RemoteException;
 
 	/**
 	 * Replace in the interaction of all elements 

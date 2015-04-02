@@ -74,6 +74,8 @@
         var msg_updateelement_command='#{messages.msg_updateelement_command}';
         var msg_changeworkflowcomment_command='#{messages.msg_changeworkflowcomment_command}';
         var msg_aggregate_command='#{messages.msg_aggregate_command}';
+        var msg_expand_command='#{messages.msg_expand_command}';
+        
 		           
 		 var contTabCanvas = 1;
 		 var lastBlockedRunningWorkflow
@@ -783,6 +785,14 @@
 			}
 	    }
 
+	    function checkOpenExpand(){
+	    	if(getSelectedIconsCommaDelimited() != ""){
+	    		openExpand(getSelectedIconsCommaDelimited());
+		    }else{
+		    	alert("You need select one object");
+			}
+	    }
+
 	    function refreshRelativeHelp(){
 	    	 jQuery('[id$="refreshRelativeHelp"]').click();
 	    }
@@ -947,6 +957,13 @@
 					oncomplete="#{rich:component('modalFileHdfs')}.show();jQuery('#canvas-tabs').unblock();">
 					<a4j:actionparam name="openCtrl"
 						assignTo="#{browserHdfsBean.showSave}" />
+				</a4j:jsFunction>
+			</a4j:region>
+			
+			<a4j:region>
+				<a4j:jsFunction name="openExpand" action="#{canvasBean.expand}" reRender="errorTable, msnError"
+					oncomplete="if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.show();}" >
+					<a4j:actionparam name="selectedIcons" />
 				</a4j:jsFunction>
 			</a4j:region>
 			
@@ -1799,6 +1816,11 @@
 										onclick="checkOpenModalAggregate()">
 										<h:outputText value="Ctrl+R" class="menuItemHotKey" />
 									</rich:menuItem>
+									<rich:menuItem id="expandMenuItem" submitMode="ajax"
+										value="#{messages.label_menu_expand}"
+										onclick="checkOpenExpand();">
+										<h:outputText value="Ctrl+Shift+R" class="menuItemHotKey" />
+									</rich:menuItem>
 									<rich:menuSeparator />
 									<rich:menuItem submitMode="none"
 										value="#{messages.label_menu_delete}"
@@ -2002,6 +2024,10 @@
 						<span style="cursor: pointer;">
 							<img src="../image/icons/button-aggregate.gif" alt="aggregate" class="shortMenuIcon" 
 								onclick="checkOpenModalAggregate()" title="#{messages.label_menu_aggregate}" />
+						</span>
+						<span style="cursor: pointer;">
+							<img src="../image/icons/button-expand.png" alt="expand" class="shortMenuIcon" 
+								onclick="checkOpenModalAggregate()" title="#{messages.label_menu_expand}" />
 						</span>
 					
 						<span style="cursor: pointer;"> <img

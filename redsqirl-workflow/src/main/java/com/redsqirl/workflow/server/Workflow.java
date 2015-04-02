@@ -729,9 +729,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	}
 
 	protected String runWF(List<String> dataFlowElement) throws RemoteException{
-		
+
 		logger.info("runWF ");
-		
+
 		String error = null;
 		List<DataFlowElement> toRun = null;
 
@@ -1781,6 +1781,70 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		return sw;
 	}
 
+	public String expand(String componentId) throws RemoteException{
+		String error = null;
+		Workflow copy = null;
+		
+		if(getElement(componentId) != null){
+			
+			String subworkflowName = getElement(componentId).getName();
+			
+			try{
+				copy = (Workflow) clone();
+			}catch(Exception e){
+				error = "Fail to clone the workflow";
+				logger.error(error,e);
+				return error;
+			}
+			
+			//List inputs and outputs element
+			List<DataFlowElement> inputs = copy.getElement(componentId).getAllInputComponent();
+			List<DataFlowElement> outputs = copy.getElement(componentId).getAllOutputComponent();
+			
+			
+			//Remove element SuperAction
+			logger.info("super action: " + componentId);
+			try{
+				removeElement(componentId);
+			} catch (Exception e) {
+				error = "Fail to remove element";
+				logger.error(error,e);
+				return error;
+			}
+			
+			SubWorkflow sw = new SubWorkflow();
+			sw.readFromLocal(sw.getInstalledMainFile());
+			
+			//Change Name?
+			for (String id : sw.getComponentIds()) {
+				DataFlowElement df =  sw.getElement(id);
+				
+				if(getElement(df.getComponentId()) != null){
+					//Change Action Name
+					
+					//Change Alias!!!
+					//String newAlias = getElement(curEl.getComponentId()).getAliasesPerComponentInput().get(idSA).getKey();
+					//String oldAlias = curEl.getAliasesPerComponentInput().get(outputs.get(outputName).getKey()).getKey();
+					
+					//df.replaceInAllInteraction(oldAlias, newAlias);
+				}
+				addElement(df);
+			}
+			
+			
+			
+			//Link inputs
+			
+			
+			
+			//Link outputs
+			
+		}
+
+
+		return error;
+	}
+
 	public String aggregateElements(
 			List<String> componentIds, 
 			String subworkflowName,
@@ -1868,7 +1932,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 							copy.getElement(outputs.get(outputName).getKey()).getInputNamePerOutput()
 							.get(outputs.get(outputName).getValue()).get(curEl.getComponentId()),
 							curEl.getComponentId());
-					
+
 					if(error == null){
 
 						String newAlias = getElement(curEl.getComponentId()).getAliasesPerComponentInput().get(idSA).getKey();
@@ -1882,7 +1946,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				}
 			}
 		}
-		
+
 		if(error != null){
 			this.element = copy.element;
 		}
@@ -1943,7 +2007,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				error = LanguageManagerWF.getText(
 						"workflow.addElement_actionWaNamenotexist",
 						new Object[] { waName });
-						*/
+				 */
 			} else {
 				try {
 					logger.debug("initiate the action " + waName + " "
