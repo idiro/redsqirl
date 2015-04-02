@@ -56,6 +56,22 @@ public class OozieDag {
 				addLink(key, elIt.next());
 			}
 		}
+		removeAlliregularLinks();
+	}
+	
+	protected void removeIregularLinks(Iterable<String> nodes){
+		//Remove irregular links if needed....
+		Iterator<String> elsIt = nodes.iterator();
+		while(elsIt.hasNext()){
+			String el = elsIt.next();
+			Iterator<String> linkIt = graphOut.get(el).iterator();
+			while(linkIt.hasNext()){
+				removeIregularLink(el,linkIt.next());
+			}
+		}
+	}
+	protected void removeAlliregularLinks(){
+		//Remove irregular links if needed....
 		Iterator<String> elsIt = graphOut.keySet().iterator();
 		while(elsIt.hasNext()){
 			String el = elsIt.next();
@@ -174,7 +190,7 @@ public class OozieDag {
 		logger.debug("sort...");
 		boolean ok = sort();
 		int iter = 0;
-		int iterMax = 10000;
+		int iterMax = 2*graphOut.size();
 		if (ok) {
 			logger.debug("graph: " + graphOut);
 			logger.debug("join...");
@@ -186,6 +202,7 @@ public class OozieDag {
 				logger.debug("Add fork after: " + comesFrom);
 
 				moveElementAfterJoin(comesFrom, firstJoin);
+				removeAlliregularLinks();
 				if(graphOut.get(comesFrom).size() > 1){
 					placeForkAfter(comesFrom, firstJoin, "pair_" + firstJoin);
 					placeJoinBefore(firstJoin, comesFrom, firstJoin);
@@ -195,11 +212,13 @@ public class OozieDag {
 			}
 			logger.debug("fork...");
 			String firstFork = null;
+			iter = 0;
 			while ((firstFork = getFirstIregularFork()) != null && iter < iterMax) {
 				logger.debug("Add fork after: " + firstFork);
 				String goTo = getCommonLeafOf(firstFork);
 				logger.debug("Add join before: " + goTo);
 				moveElementAfterJoin(firstFork, goTo);
+				removeAlliregularLinks();
 				if(graphOut.get(firstFork).size() > 1){
 					placeForkAfter(firstFork, goTo, firstFork);
 					placeJoinBefore(goTo, firstFork, "pair_" + firstFork);

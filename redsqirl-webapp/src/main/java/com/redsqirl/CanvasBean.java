@@ -89,6 +89,16 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private String inputAreaSubWorkflow;
 	private String idGroup;
 
+
+	/**
+	 * Running workflow progress bar
+	 */
+	private long valueProgressBar;
+	private long totalProgressBar;
+	private List<String> toRunElements;
+	private List<String> runningElements;
+	private List<String> doneElements;
+	
 	/**
 	 * 
 	 * @return
@@ -1082,9 +1092,25 @@ public class CanvasBean extends BaseBean implements Serializable {
 			logger.info("blockRunningWorkflow: " + name);
 			try {
 				int i = 0;
+				if(name.equals(getDf().getName()) && getDf().isrunning()){
+					setTotalProgressBar(2* getOozie().getNbElement(getDf()));
+					runningElements = getOozie().getElementsRunning(getDf());
+					toRunElements = getOozie().getElementsToRun(getDf());
+					doneElements = getOozie().getElementsDone(getDf());
+					setValueProgressBar((2* doneElements.size() + runningElements.size())*100/totalProgressBar);
+				}
 				while (name.equals(getDf().getName()) && getDf().isrunning()) {
-					if(i % 4 == 0){
-						logger.info("Workflow "+name+" running.");
+					if(i % 20 == 0){
+						try{
+							List<String> curRunning = getOozie().getElementsRunning(getDf());
+							if(!curRunning.equals(runningElements)){
+								runningElements = curRunning;
+								toRunElements = getOozie().getElementsToRun(getDf());
+								doneElements = getOozie().getElementsDone(getDf());
+								setValueProgressBar((2* doneElements.size() + runningElements.size())*100/totalProgressBar);
+							}
+						}catch(Exception e){}
+						logger.info("Workflow "+name+" running, "+valueProgressBar+" % / "+totalProgressBar);
 					}
 					Thread.sleep(250);
 					++i;
@@ -2174,11 +2200,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 						UserInfoBean.class);
 		logger.info("User: " + userInfoBean.getUserName());
 
-		File file = WorkflowPrefManager.getSuperActionMainDir(userInfoBean
-				.getUserName());
+		File file = new File(WorkflowPrefManager.getSuperActionMainDir(userInfoBean
+				.getUserName()), nameSubWorkflow);
+		if(!file.exists()){
+			file = new File(WorkflowPrefManager.getSuperActionMainDir(null), nameSubWorkflow);
+		}
 		logger.info("file path " + file.getAbsolutePath());
 
-		loadSubWorkFlowFromLocal(file.getAbsolutePath() + "/" + nameSubWorkflow);
+		loadSubWorkFlowFromLocal(file.getAbsolutePath());
 	}
 
 	/**
@@ -2792,6 +2821,46 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void setIdGroup(String idGroup) {
 		this.idGroup = idGroup;
+	}
+
+	public long getValueProgressBar() {
+		return valueProgressBar;
+	}
+
+	public void setValueProgressBar(long valueProgressBar) {
+		this.valueProgressBar = valueProgressBar;
+	}
+
+	public long getTotalProgressBar() {
+		return totalProgressBar;
+	}
+
+	public void setTotalProgressBar(long totalProgressBar) {
+		this.totalProgressBar = totalProgressBar;
+	}
+
+	public List<String> getToRunElements() {
+		return toRunElements;
+	}
+
+	public void setToRunElements(List<String> toRunElements) {
+		this.toRunElements = toRunElements;
+	}
+
+	public List<String> getRunningElements() {
+		return runningElements;
+	}
+
+	public void setRunningElements(List<String> runningElements) {
+		this.runningElements = runningElements;
+	}
+
+	public List<String> getDoneElements() {
+		return doneElements;
+	}
+
+	public void setDoneElements(List<String> doneElements) {
+		this.doneElements = doneElements;
 	}
 
 }

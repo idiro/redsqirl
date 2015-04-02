@@ -653,17 +653,21 @@
 	      }
 	      
 	     function unblockRunningWorkflowJS(){
+	     	//<![CDATA[
 	         if(lastBlockedRunningWorkflow != null){
 	             jQuery('#'+lastBlockedRunningWorkflow).unblock();
 	         }
 	         lastBlockedRunningWorkflow = null;
+	         //]]>
 	     }
 	     
 	     function blockRunningWorkflowJS(){
+	     	 //<![CDATA[
 	         unblockRunningWorkflowJS();
              lastBlockedRunningWorkflow = getSelectedById();
              jQuery('#'+getSelectedById()).block({ message: jQuery('#domMessageDivCanvas2') });
              resizeBlockUICanvas();
+             //]]>
          }
 	     
 	     function selectTab(tabIndex){
@@ -1419,21 +1423,45 @@
 					onstart="blockRunningWorkflowJS();" />
 
 				<div id="domMessageDivCanvas2" style="display: none;">
+					<h:outputLink id="workflowUrl" value="#{canvasBean.workflowUrl}"
+						target="_blank" style="float:left;margin-left:5px;"
+						rendered="#{canvasBean.workflowUrl != null}">
+						<h:graphicImage
+							value="../image/icons/button-oozie_web_console.gif"
+							title='#{messages.oozie_gotowebconsole}' alt="Oozie Console"
+							class="fileSystemIcon" />
+					</h:outputLink>
 					<img src="../image/icons/waiting.gif" />
 					<h:panelGroup id="right_area" layout="block">
 
-						<h:outputLink id="workflowUrl" value="#{canvasBean.workflowUrl}"
-							target="_blank" style="float:left;margin-left:5px;"
-							rendered="#{canvasBean.workflowUrl != null}">
-							<h:graphicImage
-								value="../image/icons/button-oozie_web_console.gif"
-								title='#{messages.oozie_gotowebconsole}' alt="Oozie Console"
-								class="fileSystemIcon" />
-						</h:outputLink>
+						<br/>
+						<a4j:outputPanel id="runningprogressComponent" rendered="#{canvasBean.running}">
+							<rich:simpleTogglePanel id="toRunActionsList" label="#{messages.toRunActionsList} (#{canvasBean.toRunElements.size()})" switchType="client" rendered="#{canvasBean.running}">
+								<ui:repeat value="#{canvasBean.toRunElements}" var="item">
+	                    			#{item}<br />
+	                			</ui:repeat>
+							</rich:simpleTogglePanel>
+							<rich:simpleTogglePanel id="runningActionsList" label="#{messages.runningActionsList} (#{canvasBean.runningElements.size()})" switchType="client" rendered="#{canvasBean.running}">
+								<ui:repeat value="#{canvasBean.runningElements}" var="item">
+	                    			#{item}<br />
+	                			</ui:repeat>
+							</rich:simpleTogglePanel>
+							<rich:simpleTogglePanel  id="completedActionsList" label="#{messages.completedActionsList} (#{canvasBean.doneElements.size()})" switchType="client" rendered="#{canvasBean.running}">
+								<ui:repeat value="#{canvasBean.doneElements}" var="item">
+	                    			#{item}<br />
+	                			</ui:repeat>
+							</rich:simpleTogglePanel>
+							<rich:progressBar id="idProgBarRunning" interval="500"
+								reRenderAfterComplete="runningprogressComponent" value="#{canvasBean.valueProgressBar}"  minValue="0" maxValue="100" rendered="#{canvasBean.running}">
+							    <h:outputText value="#{canvasBean.valueProgressBar} %" />
+						    </rich:progressBar>
+						</a4j:outputPanel>
 						<a4j:commandButton id="killProcessBtn" styleClass="greenButton"
 							style="float:right;margin-right:5px;" value="Kill Process"
 							action="#{canvasBean.stopRunningWorkflow}"
-							rendered="#{canvasBean.running}" />
+							rendered="#{canvasBean.running}"
+							oncomplete="#{rich:component('idProgBarRunning')}.disable();"
+							reRender="domMessageDivCanvas2, runningprogressComponent" />
 					</h:panelGroup>
 				</div>
 

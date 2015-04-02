@@ -390,7 +390,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 			e.printStackTrace();
 		}
 		
-		if(error != null && error.isEmpty()){
+		if(error == null || error.isEmpty()){
 			
 			String tmp = WorkflowPrefManager.pathSysHome;
 			String packagePath = tmp + "/tmp/" +fileName;

@@ -180,55 +180,62 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 
 				OozieDag od = new OozieDag();
 				od.initWithOutGraph(outEdges);
-				od.transform();
-				logger.debug("graph transformed...");
-				outEdges = od.getGraphOut();
-				// logger.debug(outEdges.toString());
-				Iterator<String> it = outEdges.keySet().iterator();
+				if(!od.transform()){
+					error = "Fail to fork the graph";
+					logger.info(outEdges.toString());
+				}else{
+					logger.debug("graph transformed...");
+					outEdges = od.getGraphOut();
+					// logger.debug(outEdges.toString());
+					Iterator<String> it = outEdges.keySet().iterator();
 
-				// Need to start by the start action
-				firstElements = outEdges.get(startNode);
-				if (firstElements.size() != 1) {
-					error = LanguageManagerWF
-							.getText("ooziexmlforkjoinpaired.createxml.firstelnotone");
-					logger.info("createXml firstElements " + error);
-				} else {
-					Element start = doc.createElement("start");
-					Attr attrStartTo = doc.createAttribute("to");
-					attrStartTo.setValue(firstElements.iterator().next());
-					start.setAttributeNode(attrStartTo);
-					rootElement.appendChild(start);
-				}
-
-				logger.info("createXml 6");
-
-				while (it.hasNext() && error == null) {
-					String cur = it.next();
-					logger.debug("update output of the action node " + cur);
-					Set<String> out = outEdges.get(cur);
-					if (cur.equals(startNode)) {
-
-					} else if (cur.startsWith("join")) {
-						if (out.size() != 1) {
-							error = LanguageManagerWF
-									.getText("ooziexmlforkjoinpaired.createxml.outsizenotone");
-							logger.info("createXml join " + error);
-						} else {
-							createJoinNode(doc, rootElement, cur, out
-									.iterator().next());
-						}
-					} else if (cur.startsWith("fork")) {
-						createForkNode(doc, rootElement, cur, out);
+					// Need to start by the start action
+					firstElements = outEdges.get(startNode);
+					if (firstElements.size() != 1) {
+						error = LanguageManagerWF
+								.getText("ooziexmlforkjoinpaired.createxml.firstelnotone");
+						logger.info("createXml firstElements " + error);
+						logger.info(outEdges.toString());
 					} else {
-						if (out.size() != 1) {
-							error = LanguageManagerWF
-									.getText("ooziexmlforkjoinpaired.createxml.outsizenotone");
-							logger.info("createXml else fork " + error);
+						Element start = doc.createElement("start");
+						Attr attrStartTo = doc.createAttribute("to");
+						attrStartTo.setValue(firstElements.iterator().next());
+						start.setAttributeNode(attrStartTo);
+						rootElement.appendChild(start);
+					}
+
+					logger.info("createXml 6");
+
+					while (it.hasNext() && error == null) {
+						String cur = it.next();
+						logger.debug("update output of the action node " + cur);
+						Set<String> out = outEdges.get(cur);
+						if (cur.equals(startNode)) {
+
+						} else if (cur.startsWith("join")) {
+							if (out.size() != 1) {
+								error = LanguageManagerWF
+										.getText("ooziexmlforkjoinpaired.createxml.outsizenotone");
+								logger.info("createXml join " + error);
+								logger.info(outEdges.toString());
+							} else {
+								createJoinNode(doc, rootElement, cur, out
+										.iterator().next());
+							}
+						} else if (cur.startsWith("fork")) {
+							createForkNode(doc, rootElement, cur, out);
 						} else {
-							Element element = elements.get(cur);
-							createOKNode(doc, element, out.iterator().next());
-							createErrorNode(doc, element, errorNodeName);
-							rootElement.appendChild(element);
+							if (out.size() != 1) {
+								error = LanguageManagerWF
+										.getText("ooziexmlforkjoinpaired.createxml.outsizenotone");
+								logger.info("createXml else fork " + error);
+								logger.info(outEdges.toString());
+							} else {
+								Element element = elements.get(cur);
+								createOKNode(doc, element, out.iterator().next());
+								createErrorNode(doc, element, errorNodeName);
+								rootElement.appendChild(element);
+							}
 						}
 					}
 				}
