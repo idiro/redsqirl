@@ -115,15 +115,6 @@ public interface JobManager extends Remote{
 	public int getNbElement(DataFlow df)throws RemoteException, Exception;
 
 	/**
-	 * Get the list of actions that has to run (all actions - running - done)
-	 * @param df
-	 * @return
-	 * @throws RemoteException
-	 * @throws Exception
-	 */
-	public List<String> getElementsToRun(DataFlow df)throws RemoteException, Exception;
-	
-	/**
 	 * Get the list of actions that are running
 	 * @param df
 	 * @return

@@ -501,31 +501,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 	}
 	
 	public int getNbElement(DataFlow df)throws RemoteException, Exception {
-		int ans = 0;
-		String jobId = df.getOozieJobId();
-		if (jobId != null) {
-			for (WorkflowAction wfa : oc.getJobInfo(jobId).getActions()) {
-				if(wfa.getName().startsWith("act_")){
-					++ans;
-				}
-			}
-		}
-		return ans;
-	}
-
-	public List<String> getElementsToRun(DataFlow df)throws RemoteException, Exception {
-		List<String> ans = new LinkedList<String>();
-		String jobId = df.getOozieJobId();
-		if (jobId != null) {
-			for (WorkflowAction wfa : oc.getJobInfo(jobId).getActions()) {
-				if(wfa.getName().startsWith("act_") 
-						&& !(WorkflowAction.Status.DONE.equals(wfa.getStatus())
-								|| WorkflowAction.Status.RUNNING.equals(wfa.getStatus()))){
-					ans.add(wfa.getName().substring(4));
-				}
-			}
-		}
-		return ans;
+		return df.getNbOozieRunningActions();
 	}
 	
 	public List<String> getElementsRunning(DataFlow df)throws RemoteException, Exception {
@@ -547,7 +523,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 		String jobId = df.getOozieJobId();
 		if (jobId != null) {
 			for (WorkflowAction wfa : oc.getJobInfo(jobId).getActions()) {
-				if(WorkflowAction.Status.DONE.equals(wfa.getStatus())
+				if(WorkflowAction.Status.OK.equals(wfa.getStatus())
 						&& wfa.getName().startsWith("act_")){
 					ans.add(wfa.getName().substring(4));
 				}

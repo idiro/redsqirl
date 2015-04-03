@@ -470,6 +470,11 @@ public interface DataFlow extends Remote, Cloneable{
 	public void setOozieJobId(String oozieJobId) throws RemoteException;
 
 	/**
+	 * Get the Number of element run by oozie the last time
+	 */
+	public int getNbOozieRunningActions() throws RemoteException;
+	
+	/**
 	 * Check if the output of an element is a valid input of an other element
 	 * 
 	 * @param outName
