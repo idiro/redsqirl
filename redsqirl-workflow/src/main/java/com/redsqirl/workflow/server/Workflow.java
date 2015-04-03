@@ -124,6 +124,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 
 	protected boolean saved = false;
 
+	protected int nbOozieRunningActions;
+
 
 
 	/**
@@ -750,6 +752,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		if (error == null) {
 			try {
 				setOozieJobId(OozieManager.getInstance().run(this, toRun));
+				nbOozieRunningActions = toRun.size();
 				logger.info("OozieJobId: " + oozieJobId);
 			} catch (Exception e) {
 				error = "Unexpected error: "+e.getMessage();
@@ -903,16 +906,32 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		Element rootElement = doc.createElement("workflow");
 		doc.appendChild(rootElement);
 
+		{
+			Element jobId = doc.createElement("job-id");
+			String jobIdContent = oozieJobId;
+			if (jobIdContent == null) {
+				jobIdContent = "";
+			}
+			logger.info("Job Id: " + jobIdContent);
+			jobId.appendChild(doc.createTextNode(jobIdContent));
 
-		Element jobId = doc.createElement("job-id");
-		String jobIdContent = oozieJobId;
-		if (jobIdContent == null) {
-			jobIdContent = "";
+
+			rootElement.appendChild(jobId);
 		}
-		logger.info("Job Id: " + jobIdContent);
-		jobId.appendChild(doc.createTextNode(jobIdContent));
-		rootElement.appendChild(jobId);
+		{
+			Element oozieRunningAction = doc.createElement("oozie-running-action");
+			String oozieActionNbContent = String.valueOf(nbOozieRunningActions);
+			if (oozieActionNbContent == null) {
+				oozieActionNbContent = "";
+			}
+			logger.info("Number of Oozie running actions: " + oozieActionNbContent);
+			oozieRunningAction.appendChild(doc.createTextNode(oozieActionNbContent));
 
+
+			rootElement.appendChild(oozieRunningAction);
+		}
+		
+		
 		Element wfComment = doc.createElement("wfcomment");
 		wfComment.appendChild(doc.createTextNode(comment));
 		rootElement.appendChild(wfComment);
@@ -1268,6 +1287,17 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			}
 		} catch (Exception e) {
 		}
+		
+		try {
+			Node nbRunningAction = doc.getElementsByTagName("oozie-running-action").item(0);
+			String nbRunningActionContent = nbRunningAction.getChildNodes().item(0)
+					.getNodeValue();
+			if (!nbRunningActionContent.isEmpty()) {
+				nbOozieRunningActions = Integer.valueOf(nbRunningActionContent);
+			}
+		} catch (Exception e) {
+		}
+		
 
 		comment = "";
 		try {
@@ -2574,6 +2604,11 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 
 		return parameters;
+	}
+
+	@Override
+	public int getNbOozieRunningActions() throws RemoteException {
+		return nbOozieRunningActions;
 	}
 
 }

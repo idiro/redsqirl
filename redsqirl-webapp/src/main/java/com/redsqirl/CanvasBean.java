@@ -95,7 +95,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 */
 	private long valueProgressBar;
 	private long totalProgressBar;
-	private List<String> toRunElements;
 	private List<String> runningElements;
 	private List<String> doneElements;
 	
@@ -1099,24 +1098,23 @@ public class CanvasBean extends BaseBean implements Serializable {
 				if(name.equals(getDf().getName()) && getDf().isrunning()){
 					setTotalProgressBar(2* getOozie().getNbElement(getDf()));
 					runningElements = getOozie().getElementsRunning(getDf());
-					toRunElements = getOozie().getElementsToRun(getDf());
 					doneElements = getOozie().getElementsDone(getDf());
 					setValueProgressBar((2* doneElements.size() + runningElements.size())*100/totalProgressBar);
 				}
 				while (name.equals(getDf().getName()) && getDf().isrunning()) {
-					//if(i % 20 == 0){
+					if(i % 20 == 0){
 						try{
 							List<String> curRunning = getOozie().getElementsRunning(getDf());
 							if(!curRunning.equals(runningElements)){
 								runningElements = curRunning;
-								toRunElements = getOozie().getElementsToRun(getDf());
 								doneElements = getOozie().getElementsDone(getDf());
 								setValueProgressBar((2* doneElements.size() + runningElements.size())*100/totalProgressBar);
+								logger.info("runningElements "+runningElements+" doneElements "+doneElements);
 							}
 						}catch(Exception e){}
 						logger.info("Workflow "+name+" running, "+valueProgressBar+" % / "+totalProgressBar);
-					//}
-					setValueProgressBar(getValueProgressBar()+1);
+					}
+					//setValueProgressBar(getValueProgressBar()+1);
 					Thread.sleep(250);
 					++i;
 				}
@@ -2893,24 +2891,24 @@ public class CanvasBean extends BaseBean implements Serializable {
 		this.totalProgressBar = totalProgressBar;
 	}
 
-	public List<String> getToRunElements() {
-		return toRunElements;
-	}
-
-	public void setToRunElements(List<String> toRunElements) {
-		this.toRunElements = toRunElements;
-	}
-
 	public List<String> getRunningElements() {
 		return runningElements;
 	}
 
+	public int getRunningElementsSize() {
+		return runningElements == null? 0 : runningElements.size();
+	}
+	
 	public void setRunningElements(List<String> runningElements) {
 		this.runningElements = runningElements;
 	}
 
 	public List<String> getDoneElements() {
 		return doneElements;
+	}
+
+	public int getDoneElementsSize() {
+		return doneElements == null? 0 : doneElements.size();
 	}
 
 	public void setDoneElements(List<String> doneElements) {

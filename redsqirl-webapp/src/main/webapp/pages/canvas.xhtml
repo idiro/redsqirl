@@ -653,11 +653,14 @@
               //resizeCanvas(30,45);
               
 	      }
+
+		var runningIntervalID;
 	      
 	     function unblockRunningWorkflowJS(){
 	     	//<![CDATA[
 	         if(lastBlockedRunningWorkflow != null){
 	             jQuery('#'+lastBlockedRunningWorkflow).unblock();
+	             clearInterval(runningIntervalID);
 	         }
 	         lastBlockedRunningWorkflow = null;
 	         //]]>
@@ -669,8 +672,14 @@
              lastBlockedRunningWorkflow = getSelectedById();
              jQuery('#'+getSelectedById()).block({ message: jQuery('#domMessageDivCanvas2') });
              resizeBlockUICanvas();
+
+             runningIntervalID = setInterval(updateProgressBar,5000);
+             setTimeout(updateProgressBar, 100);
+             
              //]]>
          }
+
+         
 	     
 	     function selectTab(tabIndex){
 	    	 var tabs = jQuery("#canvas-tabs").tabs();
@@ -938,7 +947,7 @@
 	<a4j:keepAlive beanName="canvasModalBean" />
 	
 	
-	<a4j:region renderRegionOnly="true">
+	<a4j:region>
 				
 				<div id="domMessageDivCanvas2" style="display: none;">
 					
@@ -956,23 +965,18 @@
 					<h:panelGroup id="right_area" layout="block">
 
 						<br/>
-						<a4j:outputPanel id="runningprogressComponent" >
-							<rich:simpleTogglePanel id="toRunActionsList" label="#{messages.toRunActionsList} " switchType="client" rendered="#{canvasBean.running}">
-								<ui:repeat value="#{canvasBean.toRunElements}" var="item">
-	                    			#{item}<br />
-	                			</ui:repeat>
-							</rich:simpleTogglePanel>
-							<rich:simpleTogglePanel id="runningActionsList" label="#{messages.runningActionsList} " switchType="client" rendered="#{canvasBean.running}">
+						<a4j:outputPanel id="runningprogressComponent"  >
+							<rich:simpleTogglePanel id="runningActionsList" label="#{messages.runningActionsList} (#{canvasBean.runningElementsSize})" switchType="client" >
 								<ui:repeat value="#{canvasBean.runningElements}" var="item">
 	                    			#{item}<br />
 	                			</ui:repeat>
 							</rich:simpleTogglePanel>
-							<rich:simpleTogglePanel  id="completedActionsList" label="#{messages.completedActionsList} " switchType="client" rendered="#{canvasBean.running}">
+							<rich:simpleTogglePanel  id="completedActionsList" label="#{messages.completedActionsList} (#{canvasBean.doneElementsSize})" switchType="client" >
 								<ui:repeat value="#{canvasBean.doneElements}" var="item">
 	                    			#{item}<br />
 	                			</ui:repeat>
 							</rich:simpleTogglePanel>
-							<rich:progressBar id="idProgBarRunning" interval="500" enabled="#{canvasBean.progressBarEnabled}"
+							<rich:progressBar id="idProgBarRunning" interval="5000" enabled="#{canvasBean.progressBarEnabled}"
 								reRenderAfterComplete="runningprogressComponent" value="#{canvasBean.valueProgressBar}"  minValue="0" maxValue="100" >
 							    <h:outputText value="#{canvasBean.valueProgressBar} %" />
 						    </rich:progressBar>
@@ -980,7 +984,6 @@
 						<a4j:commandButton id="killProcessBtn" styleClass="greenButton"
 							style="float:right;margin-right:5px;" value="Kill Process"
 							action="#{canvasBean.stopRunningWorkflow}"
-							rendered="#{canvasBean.running}"
 							oncomplete="#{rich:component('idProgBarRunning')}.disable();"
 							reRender="domMessageDivCanvas2, runningprogressComponent" />
 					</h:panelGroup>
@@ -998,6 +1001,8 @@
 			<div id="domMessageDivCanvas1" style="display: none;">
 				<img src="../image/icons/waiting.gif" />
 			</div>
+			
+			<a4j:jsFunction name="updateProgressBar" reRender="runningprogressComponent" />
 			
 			<a4j:region>
 				<a4j:jsFunction name="updateCanvasNameStar" reRender="canvasNameStar" />
@@ -1534,7 +1539,7 @@
 				<a4j:jsFunction name="runWorkflow"
 					action="#{canvasBean.runWorkflow}"
 					oncomplete="setRunning(getSelectedByName(), true);blockRunningWorkflow();"
-					reRender="formMenu,domMessageDivCanvas2,killProcessBtn,msnError">
+					reRender="formMenu,domMessageDivCanvas2,killProcessBtn,msnError,idProgBarRunning">
 					<a4j:actionparam name="positions" />
 					<a4j:actionparam name="savedFile" />
 					<a4j:actionparam name="select" />
@@ -2067,10 +2072,6 @@
 						<span style="cursor: pointer;">
 							<img src="../image/icons/button-aggregate.gif" alt="aggregate" class="shortMenuIcon" 
 								onclick="checkOpenModalAggregate()" title="#{messages.label_menu_aggregate}" />
-						</span>
-						<span style="cursor: pointer;">
-							<img src="../image/icons/button-expand.png" alt="expand" class="shortMenuIcon" 
-								onclick="checkOpenModalAggregate()" title="#{messages.label_menu_expand}" />
 						</span>
 					
 						<span style="cursor: pointer;"> <img
