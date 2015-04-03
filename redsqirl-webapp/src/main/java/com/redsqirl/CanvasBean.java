@@ -88,7 +88,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private List<String> componentIds;
 	private String inputAreaSubWorkflow;
 	private String idGroup;
-
+	private boolean progressBarEnabled;
 
 	/**
 	 * Running workflow progress bar
@@ -1029,6 +1029,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void runWorkflow() throws Exception {
 		logger.info("runWorkflow");
+		
+		setProgressBarEnabled(true);
+		setValueProgressBar(Long.valueOf(0));
 
 		getDf().setName(getNameWorkflow());
 
@@ -1082,10 +1085,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 			calcWorkflowUrl();
 		}
-
+		
 	}
 
 	public void blockRunningWorkflow() throws Exception {
+		
 		logger.info("blockRunningWorkflow");
 		if (getDf() != null) {
 			String name = getDf().getName();
@@ -1100,7 +1104,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 					setValueProgressBar((2* doneElements.size() + runningElements.size())*100/totalProgressBar);
 				}
 				while (name.equals(getDf().getName()) && getDf().isrunning()) {
-					if(i % 20 == 0){
+					//if(i % 20 == 0){
 						try{
 							List<String> curRunning = getOozie().getElementsRunning(getDf());
 							if(!curRunning.equals(runningElements)){
@@ -1111,7 +1115,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 							}
 						}catch(Exception e){}
 						logger.info("Workflow "+name+" running, "+valueProgressBar+" % / "+totalProgressBar);
-					}
+					//}
+					setValueProgressBar(getValueProgressBar()+1);
 					Thread.sleep(250);
 					++i;
 				}
@@ -1123,6 +1128,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 			logger.info("blockRunningWorkflow getDf() = null");
 		}
 		logger.info("end blockRunningWorkflow ");
+		
+		
+		setProgressBarEnabled(false);
+		
 	}
 
 	public void calcWorkflowUrl() {
@@ -2906,6 +2915,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void setDoneElements(List<String> doneElements) {
 		this.doneElements = doneElements;
+	}
+
+	public boolean isProgressBarEnabled() {
+		return progressBarEnabled;
+	}
+
+	public void setProgressBarEnabled(boolean progressBarEnabled) {
+		this.progressBarEnabled = progressBarEnabled;
 	}
 
 }

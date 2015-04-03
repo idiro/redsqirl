@@ -1,0 +1,30 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j"
+    xmlns:rich="http://richfaces.org/rich"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<a4j:loadBundle basename="MessagesResources" var="messages" />
+
+    <div id="divProgressBar" style="display: none;padding-right:0px;">
+	    <h:form>
+		    <a4j:outputPanel id="progressPanel">
+				<rich:progressBar 
+					value="#{userInfoBean.valueProgressBar}"
+				    enabled="#{userInfoBean.progressBarEnabled}"
+				    reRenderAfterComplete="progressPanel">
+				    <h:outputText value="{value} %" />
+			    </rich:progressBar>
+		    </a4j:outputPanel>
+		    
+		    <a4j:commandButton value="#{messages.button_cancel}"
+		    	onkeypress="return false;"
+				action="#{userInfoBean.cancelLogin}"
+				style="float:right;margin-right:5px;"
+				styleClass="buttonLogin"
+				onclick="blur();window.stop();jQuery.unblockUI();" />
+	    </h:form>
+    </div>
+
+</ui:composition>
