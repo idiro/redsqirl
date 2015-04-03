@@ -66,6 +66,7 @@ import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 import com.redsqirl.workflow.server.interfaces.SuperElement;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
+import com.redsqirl.workflow.utils.SuperActionInstaller;
 import com.redsqirl.workflow.utils.SuperActionManager;
 import com.redsqirl.workflow.utils.WfSuperActionManager;
 
@@ -1781,64 +1782,113 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		return sw;
 	}
 
-	public String expand(String componentId) throws RemoteException{
+	public String expand(String superActionId) throws RemoteException{
 		String error = null;
 		Workflow copy = null;
 		
-		if(getElement(componentId) != null){
-			
-			String subworkflowName = getElement(componentId).getName();
-			
-			try{
-				copy = (Workflow) clone();
-			}catch(Exception e){
-				error = "Fail to clone the workflow";
-				logger.error(error,e);
-				return error;
+		if(getElement(superActionId) != null){
+			return "Element "+superActionId+" does not exist.";
+		}else if(getElement(superActionId).getName().startsWith("sa_")){
+			return "Element "+superActionId+" is not a super action.";
+		}
+		try{
+			copy = (Workflow) clone();
+		}catch(Exception e){
+			error = "Fail to clone the workflow";
+			logger.error(error,e);
+			return error;
+		}
+
+		//List inputs and outputs element
+		Map<String,Map<String,String>> componentWithNamePerInputs = new LinkedHashMap<String,Map<String,String>>();
+		Iterator<DataFlowElement> it = copy.getElement(superActionId).getAllInputComponent().iterator();
+		while(it.hasNext()){
+			DataFlowElement curEl = it.next();
+			Map<String,Map<String,String>> cur = curEl.getInputNamePerOutput();
+			boolean found = false;
+			Iterator<String> itCur = cur.keySet().iterator();
+			while(!found && itCur.hasNext()){
+				String outputCur = itCur.next();
+				Map<String,String> outputMap = cur.get(outputCur);
+				if(outputMap.containsKey(superActionId)){
+					found = true;
+					String input = outputMap.get(superActionId);
+					if(!componentWithNamePerInputs.containsKey(input)){
+						componentWithNamePerInputs.put(input,new LinkedHashMap<String,String>());
+					}
+					componentWithNamePerInputs.get(input).put(curEl.getComponentId(), outputCur);
+				}
 			}
-			
-			//List inputs and outputs element
-			List<DataFlowElement> inputs = copy.getElement(componentId).getAllInputComponent();
-			List<DataFlowElement> outputs = copy.getElement(componentId).getAllOutputComponent();
-			
-			
-			//Remove element SuperAction
-			logger.info("super action: " + componentId);
-			try{
-				removeElement(componentId);
-			} catch (Exception e) {
-				error = "Fail to remove element";
-				logger.error(error,e);
-				return error;
-			}
-			
-			SubWorkflow sw = new SubWorkflow();
-			sw.readFromLocal(sw.getInstalledMainFile());
-			
-			//Change Name?
-			for (String id : sw.getComponentIds()) {
-				DataFlowElement df =  sw.getElement(id);
-				
-				if(getElement(df.getComponentId()) != null){
-					//Change Action Name
-					
-					//Change Alias!!!
-					//String newAlias = getElement(curEl.getComponentId()).getAliasesPerComponentInput().get(idSA).getKey();
-					//String oldAlias = curEl.getAliasesPerComponentInput().get(outputs.get(outputName).getKey()).getKey();
-					
-					//df.replaceInAllInteraction(oldAlias, newAlias);
+		}
+		Map<String,Map<String,String>> componentWithNamePerOutputs = copy.getElement(superActionId).getInputNamePerOutput();
+
+
+		//Remove element SuperAction
+		logger.info("super action: " + superActionId);
+		try{
+			removeElement(superActionId);
+		} catch (Exception e) {
+			error = "Fail to remove element";
+			logger.error(error,e);
+			return error;
+		}
+
+		SubWorkflow sw = new SubWorkflow();
+		sw.readFromLocal(sw.getInstalledMainFile());
+
+		//Change Name?
+		for (String id : sw.getComponentIds()) {
+			DataFlowElement df =  sw.getElement(id);
+			if(getElement(df.getComponentId()) != null 
+					&& (new SubWorkflowInput().getName()).equals(df.getName())
+					&& (new SubWorkflowOutput().getName()).equals(df.getName())
+					){
+				//Change Action Name
+
+				//Change Alias!!!
+				//String newAlias = getElement(curEl.getComponentId()).getAliasesPerComponentInput().get(idSA).getKey();
+				//String oldAlias = curEl.getAliasesPerComponentInput().get(outputs.get(outputName).getKey()).getKey();
+
+				//df.replaceInAllInteraction(oldAlias, newAlias);
+				Iterator<String> itIn = df.getInputComponent().keySet().iterator();
+				while(itIn.hasNext()){
+					String el = itIn.next();
+					List<DataFlowElement> lInCur =  df.getInputComponent().get(el);
+					Iterator<DataFlowElement> itInCur = lInCur.iterator();
+					LinkedList<Integer> lToRemove = new LinkedList<Integer>();
+					int index = 0;
+					while(itInCur.hasNext()){
+						DataFlowElement elCur = itInCur.next();
+						if((new SubWorkflowInput().getName()).equals(elCur.getName())){
+							lToRemove.addFirst(index);
+							Iterator<String> itOrigInput = componentWithNamePerInputs.get(elCur.getComponentId()).keySet().iterator();
+							while(itOrigInput.hasNext()){
+								String elInput = itOrigInput.next();
+								df.addInputComponent(el, getElement(elInput));
+								getElement(elInput).addOutputComponent(
+										componentWithNamePerInputs.get(elCur.getComponentId()).get(elInput), 
+										df);
+							}
+						}else if((new SubWorkflowOutput().getName()).equals(df.getName())){
+							lToRemove.addFirst(index);
+							Iterator<String> itOrigOutput = componentWithNamePerOutputs.get(elCur.getComponentId()).keySet().iterator();
+							while(itOrigOutput.hasNext()){
+								String elOutput = itOrigOutput.next();
+								df.addOutputComponent(el, getElement(elOutput));
+								getElement(elOutput).addInputComponent(
+										componentWithNamePerOutputs.get(elCur.getComponentId()).get(elOutput), 
+										df);
+							}
+						}
+						++index;
+					}
+					for(Integer i : lToRemove){
+						lInCur.remove(i);
+					}
 				}
 				addElement(df);
+
 			}
-			
-			
-			
-			//Link inputs
-			
-			
-			
-			//Link outputs
-			
 		}
 
 
