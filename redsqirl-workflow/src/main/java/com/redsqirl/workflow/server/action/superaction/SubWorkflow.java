@@ -300,21 +300,21 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 	}
 	
 	public File getInstalledMainFile(){
-		String usPath = WorkflowPrefManager.getPathUserSuperAction(System.getProperty("user.name"));
-		logger.debug("Look at intalled subworkflows in: "+usPath);
+		File usPath = WorkflowPrefManager.getSuperActionMainDir(System.getProperty("user.name"));
+		logger.info("Look at intalled subworkflows in: "+usPath);
 		File xmlFile = null;
 		boolean usFileExist = false;
 		try{
 			xmlFile = new File(usPath,name);
-			logger.debug("User path to search "+name+": "+xmlFile.getPath());
+			logger.info("User path to search "+name+": "+xmlFile.getPath());
 			usFileExist = xmlFile.exists();
 		}catch(Exception e){
 		}
 		if(!usFileExist){
-			String sysPath = WorkflowPrefManager.getPathSysSuperAction();
-			logger.debug("Look at intalled subworkflows in: "+sysPath);
+			File sysPath = WorkflowPrefManager.getSuperActionMainDir(null);
+			logger.info("Look at intalled subworkflows in: "+sysPath);
 			try{
-				xmlFile = new File(WorkflowPrefManager.getPathSysSuperAction(),name);
+				xmlFile = new File(sysPath,name);
 			}catch(Exception e){
 			}
 			logger.debug("System path to search "+name+": "+xmlFile.getPath());

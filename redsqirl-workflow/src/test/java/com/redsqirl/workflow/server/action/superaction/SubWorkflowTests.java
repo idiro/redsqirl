@@ -27,6 +27,7 @@ import com.redsqirl.workflow.server.connect.HiveInterface;
 import com.redsqirl.workflow.server.datatype.HiveType;
 import com.redsqirl.workflow.server.datatype.MapRedTextType;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
+import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 import com.redsqirl.workflow.test.TestUtils;
 import com.redsqirl.workflow.utils.SuperActionInstaller;
 import com.redsqirl.workflow.utils.SuperActionManager;
@@ -99,6 +100,7 @@ public class SubWorkflowTests {
 		
 		return input;
 	}
+	
 	public static SubWorkflowInput createInput_ID_VALUE(SubWorkflow w,
 			HDFSInterface hInt,String idInput) throws RemoteException,
 			Exception {
@@ -207,7 +209,7 @@ public class SubWorkflowTests {
 		
 		return sw;
 	}
-
+	
 	@Test
 	public void basicTest(){
 		TestUtils.logTestTitle("SubWorkflowTests#basicTest");
@@ -284,9 +286,70 @@ public class SubWorkflowTests {
 			List<String> components = new LinkedList<String>();
 			components.add(conv1.getComponentId());
 			components.add(conv2.getComponentId());
-			
-			//error = w.aggregateElements(components, sName, "",inputs, outputs);
+
+			SubDataFlow sw = w.createSA(components, sName, "",inputs, outputs);
+			assertTrue("Fail to create SuperAction", sw != null);
+			new SuperActionInstaller(new WfSuperActionManager()).install(System.getProperty("user.name"),false, sw, null);
+			error = w.aggregateElements(components, sName, inputs, outputs);
 			assertTrue("Fail to aggregate: "+error, error == null);
+			
+			
+		} catch (Exception e) {
+			logger.error(e.getMessage(),e);
+			assertTrue(e.toString(), false);
+		}
+	}
+	
+
+	@Test
+	public void expand(){
+		TestUtils.logTestTitle("SubWorkflowTests#expand");
+		String sName = "sa_unittest3";
+
+		String new_path1 =TestUtils.getTablePath(1);
+		String userName = System.getProperty("user.name");
+		String error = null;
+		try{
+			SuperActionInstaller installer = new SuperActionInstaller(new WfSuperActionManager());
+			installer.uninstall(userName, sName);
+
+			//Create
+			Workflow w = new Workflow("workflowAgg_"+getClass().getName());
+			HiveInterface hiveInt = new HiveInterface();
+			HDFSInterface hdfsInt = new HDFSInterface();
+			
+			logger.info("deleted paths if existed");
+			hiveInt.delete(new_path1);
+			
+			DataFlowElement src = SourceTests.createSrc_ID_VALUE(w, hiveInt, new_path1);
+			DataFlowElement conv1 = ConvertTests.createConvertWithSrc(w,src); 
+			DataFlowElement conv2 = ConvertTests.createConvWithConv(w,conv1);
+			
+			Map<String,Entry<String,String>> inputs = new LinkedHashMap<String,Entry<String,String>>();
+			inputs.put("source",new AbstractMap.SimpleEntry<String,String>(src.getComponentId(),Source.out_name));
+			
+
+			Map<String,Entry<String,String>> outputs = new LinkedHashMap<String,Entry<String,String>>();
+			outputs.put("copy",new AbstractMap.SimpleEntry<String,String>(conv2.getComponentId(),Convert.key_output));
+			
+			List<String> components = new LinkedList<String>();
+			components.add(conv1.getComponentId());
+			components.add(conv2.getComponentId());
+			List<String> oldComponents = w.getComponentIds();
+			
+			SubDataFlow sw = w.createSA(components, sName, "",inputs, outputs);
+			assertTrue("Fail to create SuperAction", sw != null);
+			new SuperActionInstaller(new WfSuperActionManager()).install(System.getProperty("user.name"),false, sw, null);
+			error = w.aggregateElements(components, sName, inputs, outputs);
+			assertTrue("Fail to aggregate: "+error, error == null);
+			
+			List<String> saComp = w.getComponentIds();
+			saComp.removeAll(oldComponents);
+			error = w.expand(saComp.get(0));
+			assertTrue("Fail to expand: "+error, error == null);
+			
+			error = w.check();
+			assertTrue("Failure in workflow check: "+error, error == null);
 			
 			
 		} catch (Exception e) {
