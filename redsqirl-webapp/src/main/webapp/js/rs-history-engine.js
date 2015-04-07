@@ -583,3 +583,41 @@ CommandAggregate.prototype.clean = function(){
 function undoRedoAggregate(){
 	canvasArray[selectedCanvas].commandHistory.execute(new CommandAggregate());
 }
+
+
+/********************************************************************/
+/********************************************************************/
+/********************* CommandExpand *****************************/
+function CommandExpand(selectedSAIcons) {
+    Command.call(this);
+    this.selectedSAIcons = selectedSAIcons;
+    this.cloneId = "";
+    this.nameSA = "";
+};
+
+CommandExpand.prototype = Object.create(Command.prototype);
+CommandExpand.prototype.constructor = CommandExpand;
+
+CommandExpand.prototype.undo = function(){
+	//alert("undo");
+	deleteAllElements();
+	replaceWFByClone("",this.cloneId, false);
+};
+
+CommandExpand.prototype.redo = function(){
+	//alert("redo");
+	tmpCommandObj = this;
+	cloneBeforeExpand(getAllIconPositions());
+};
+
+CommandExpand.prototype.getName = function(){
+	return msg_expand_command;
+};
+
+CommandExpand.prototype.clean = function(){
+	removeCloneWorkflow(this.cloneId);
+};
+
+function undoRedoExpand(){
+	canvasArray[selectedCanvas].commandHistory.execute(new CommandExpand(selectedSAIcons));
+}

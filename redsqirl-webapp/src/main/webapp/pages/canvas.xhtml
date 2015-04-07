@@ -679,6 +679,7 @@
              //]]>
          }
 
+	     
          
 	     
 	     function selectTab(tabIndex){
@@ -797,13 +798,15 @@
 		    	alert("You need select one object");
 			}
 	    }
-
-	    function checkOpenExpand(){
-	    	if(getSelectedIconsCommaDelimited() != ""){
-	    		openExpand(getSelectedIconsCommaDelimited());
+	    
+	    function checkExpand(){
+	    	 //<![CDATA[
+	    	if(getSelectedSAIconsCommaDelimited() == getSelectedIconsCommaDelimited()){
+	    		undoRedoExpand(getSelectedSAIconsCommaDelimited());
 		    }else{
-		    	alert("You need select one object");
+		    	alert("You need select one object or select just Super Actions");
 			}
+	    	//]]>
 	    }
 
 	    function refreshRelativeHelp(){
@@ -966,12 +969,12 @@
 
 						<br/>
 						<a4j:outputPanel id="runningprogressComponent"  >
-							<rich:simpleTogglePanel id="runningActionsList" label="#{messages.runningActionsList} (#{canvasBean.runningElementsSize})" switchType="client" >
+							<rich:simpleTogglePanel id="runningActionsList" label="#{messages.runningActionsList} (#{canvasBean.runningElementsSize})" switchType="client" onclick="collapsePanelRunningElementOnClick();" opened="#{canvasBean.runningElementsToggle}" >
 								<ui:repeat value="#{canvasBean.runningElements}" var="item">
 	                    			#{item}<br />
 	                			</ui:repeat>
 							</rich:simpleTogglePanel>
-							<rich:simpleTogglePanel  id="completedActionsList" label="#{messages.completedActionsList} (#{canvasBean.doneElementsSize})" switchType="client" >
+							<rich:simpleTogglePanel id="completedActionsList" label="#{messages.completedActionsList} (#{canvasBean.doneElementsSize})" switchType="client" onclick="collapsePanelCompletedActionsListOnClick();" opened="#{canvasBean.doneElementsToggle}" >
 								<ui:repeat value="#{canvasBean.doneElements}" var="item">
 	                    			#{item}<br />
 	                			</ui:repeat>
@@ -1003,6 +1006,10 @@
 			</div>
 			
 			<a4j:jsFunction name="updateProgressBar" reRender="runningprogressComponent" />
+			<a4j:jsFunction name="collapsePanelRunningElementOnClick" action="#{canvasBean.collapsePanelRunningElement}" reRender="runningprogressComponent" />
+			<a4j:jsFunction name="collapsePanelCompletedActionsListOnClick" action="#{canvasBean.collapsePanelCompletedActionsList}" reRender="runningprogressComponent" />
+			
+			
 			
 			<a4j:region>
 				<a4j:jsFunction name="updateCanvasNameStar" reRender="canvasNameStar" />
@@ -1023,8 +1030,12 @@
 			</a4j:region>
 			
 			<a4j:region>
-				<a4j:jsFunction name="openExpand" action="#{canvasBean.expand}" reRender="errorTable, msnError"
-					oncomplete="if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.show();}" >
+				<a4j:jsFunction name="cloneBeforeExpand" action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
+					oncomplete="tmpCommandObj.cloneId = data;expand(tmpCommandObj.selectedSAIcons);">
+					<a4j:actionparam name="allpositions" />
+				</a4j:jsFunction>
+			
+				<a4j:jsFunction name="expand" action="#{canvasBean.expand}" reRender="errorTable, msnError" >
 					<a4j:actionparam name="selectedIcons" />
 				</a4j:jsFunction>
 			</a4j:region>
@@ -1866,7 +1877,7 @@
 									</rich:menuItem>
 									<rich:menuItem id="expandMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_expand}"
-										onclick="checkOpenExpand();">
+										onclick="checkExpand();">
 										<h:outputText value="Ctrl+Shift+R" class="menuItemHotKey" />
 									</rich:menuItem>
 									<rich:menuSeparator />
