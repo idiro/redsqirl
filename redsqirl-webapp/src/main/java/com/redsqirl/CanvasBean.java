@@ -1100,10 +1100,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 			try {
 				int i = 0;
 				if(name.equals(getDf().getName()) && getDf().isrunning()){
-					setTotalProgressBar(2* getOozie().getNbElement(getDf()));
+					setTotalProgressBar(getOozie().getNbElement(getDf()));
 					runningElements = getOozie().getElementsRunning(getDf());
 					doneElements = getOozie().getElementsDone(getDf());
-					setValueProgressBar((2* doneElements.size() + runningElements.size())*100/totalProgressBar);
+					setValueProgressBar(doneElements.size()*100/totalProgressBar);
 				}
 				while (name.equals(getDf().getName()) && getDf().isrunning()) {
 					if(i % 20 == 0){
@@ -1112,7 +1112,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 							if(!curRunning.equals(runningElements)){
 								runningElements = curRunning;
 								doneElements = getOozie().getElementsDone(getDf());
-								setValueProgressBar((2* doneElements.size() + runningElements.size())*100/totalProgressBar);
+								setValueProgressBar(doneElements.size()*100/totalProgressBar);
 								logger.info("runningElements "+runningElements+" doneElements "+doneElements);
 							}
 						}catch(Exception e){}
@@ -2436,7 +2436,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 		String error = null;
 
 		logger.info("expand ");
-		logger.info("name sub workflow " + getInputNameSubWorkflow());
 
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String selectedIcons = params.get("selectedIcons");
@@ -2445,17 +2444,27 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		try {
 
-			error = getDf().expand(selectedIcons);
-			
-			if(error == null){
-				logger.info("Elements: " + getDf().getComponentIds());
-				Iterator<String> elIt = getDf().getComponentIds().iterator();
-				Map<String, String> idMapWf = idMap.get(getNameWorkflow());
-				idMapWf.clear();
-				while (elIt.hasNext()) {
-					String elCur = elIt.next();
-					idMapWf.put(elCur, elCur);
+			String[] ids = selectedIcons.split(",");
+			if(ids != null && ids.length > 0){
+				for (String id : ids) {
+					if(error == null){
+						error = getDf().expand(idMap.get(getNameWorkflow()).get(id));
+					}else{
+						break;
+					}
 				}
+				
+				if(error == null){
+					logger.info("Elements: " + getDf().getComponentIds());
+					Iterator<String> elIt = getDf().getComponentIds().iterator();
+					Map<String, String> idMapWf = idMap.get(getNameWorkflow());
+					idMapWf.clear();
+					while (elIt.hasNext()) {
+						String elCur = elIt.next();
+						idMapWf.put(elCur, elCur);
+					}
+				}
+				
 			}
 
 		} catch (RemoteException e) {
