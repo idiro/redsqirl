@@ -2446,6 +2446,17 @@ public class CanvasBean extends BaseBean implements Serializable {
 		try {
 
 			error = getDf().expand(selectedIcons);
+			
+			if(error == null){
+				logger.info("Elements: " + getDf().getComponentIds());
+				Iterator<String> elIt = getDf().getComponentIds().iterator();
+				Map<String, String> idMapWf = idMap.get(getNameWorkflow());
+				idMapWf.clear();
+				while (elIt.hasNext()) {
+					String elCur = elIt.next();
+					idMapWf.put(elCur, elCur);
+				}
+			}
 
 		} catch (RemoteException e) {
 			e.printStackTrace();

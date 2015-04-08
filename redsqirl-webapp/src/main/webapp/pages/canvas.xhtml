@@ -1035,7 +1035,8 @@
 					<a4j:actionparam name="allpositions" />
 				</a4j:jsFunction>
 			
-				<a4j:jsFunction name="expand" action="#{canvasBean.expand}" reRender="errorTable, msnError" >
+				<a4j:jsFunction name="expand" action="#{canvasBean.expand}" reRender="errorTable, msnError" 
+					oncomplete="if(#{requestScope['msnError'] == null}){refreshCanvas();}jQuery.unblockUI();" >
 					<a4j:actionparam name="selectedIcons" />
 				</a4j:jsFunction>
 			</a4j:region>

@@ -605,7 +605,6 @@ CommandExpand.prototype.undo = function(){
 };
 
 CommandExpand.prototype.redo = function(){
-	//alert("redo");
 	tmpCommandObj = this;
 	cloneBeforeExpand(getAllIconPositions());
 };
@@ -618,6 +617,6 @@ CommandExpand.prototype.clean = function(){
 	removeCloneWorkflow(this.cloneId);
 };
 
-function undoRedoExpand(){
+function undoRedoExpand(selectedSAIcons){
 	canvasArray[selectedCanvas].commandHistory.execute(new CommandExpand(selectedSAIcons));
 }
