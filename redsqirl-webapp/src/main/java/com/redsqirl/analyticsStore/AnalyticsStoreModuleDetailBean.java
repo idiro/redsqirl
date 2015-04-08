@@ -181,12 +181,18 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 		
 		String softwareKey = getSoftwareKey();
 		
+		String user = null;
+	    if (userInstall){
+	    	user = userInfoBean.getUserName();
+	    }
+		
 		boolean newKey = false;
 		
 		try{
 			String uri = getRepoServer()+"rest/keymanager";
 			
 			JSONObject object = new JSONObject();
+			object.put("user", user);
 			object.put("key", softwareKey);
 			object.put("type", moduleVersion.getType());
 			object.put("idModuleVersion", moduleVersion.getIdVersion());
@@ -276,12 +282,6 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 		DataFlowInterface dfi = getworkFlowInterface();
 		
 		String error = null;
-		
-		String user = null;
-		
-		if (userInstall){
-			user = userInfoBean.getUserName();
-		}
 		
 		for (String file : folder.list()){
 			
