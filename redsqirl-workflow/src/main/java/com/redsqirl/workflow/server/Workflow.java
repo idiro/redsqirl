@@ -1821,6 +1821,15 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}else if(!getElement(superActionId).getName().startsWith("sa_")){
 			return "Element "+superActionId+" is not a super action ("+getElement(superActionId).getName()+").";
 		}
+		
+		SubWorkflow sw = new SubWorkflow(getElement(superActionId).getName());
+		sw.readFromLocal(sw.getInstalledMainFile());
+		if(sw.getPrivilege() != null){
+			error = "This action cannot be expanded due to its privilege setting.";
+			logger.error(error);
+			return error;
+		}
+		
 		try{
 			copy = (Workflow) clone();
 		}catch(Exception e){
@@ -1853,12 +1862,9 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			}
 		}
 		Map<String,Map<String,String>> componentWithNamePerOutputs = copy.getElement(superActionId).getInputNamePerOutput();
-
+		logger.info(componentWithNamePerOutputs);
 		Map<String,String> replaceAliases = new LinkedHashMap<String,String>();
 
-		
-		SubWorkflow sw = new SubWorkflow(getElement(superActionId).getName());
-		sw.readFromLocal(sw.getInstalledMainFile());
 		
 		//Remove element SuperAction
 		logger.info("Remove Super Action: " + superActionId);
@@ -1876,9 +1882,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		for (String id : sw.getComponentIds()) {
 			DataFlowElement df =  sw.getElement(id);
 			logger.info(id);
-			if(getElement(df.getComponentId()) != null 
-					&& (new SubWorkflowInput().getName()).equals(df.getName())
-					&& (new SubWorkflowOutput().getName()).equals(df.getName())
+			if(!(new SubWorkflowInput().getName()).equals(df.getName())
+					&& !(new SubWorkflowOutput().getName()).equals(df.getName())
 					){
 				
 				boolean exist = getElement(df.getComponentId()) != null;
@@ -1897,15 +1902,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					//Iterate through all the input components
 					String inputName = itIn.next();
 					logger.info("input name: "+inputName);
-					List<DataFlowElement> lInCur =  df.getInputComponent().get(inputName);
+					List<DataFlowElement> lInCur =  new LinkedList<DataFlowElement>();
+					lInCur.addAll(df.getInputComponent().get(inputName));
 					Iterator<DataFlowElement> itInCur = lInCur.iterator();
-					LinkedList<Integer> lToRemove = new LinkedList<Integer>();
-					int index = 0;
 					while(itInCur.hasNext()){
 						DataFlowElement elCur = itInCur.next();
 						if((new SubWorkflowInput().getName()).equals(elCur.getName())){
 							//Create new input link
-							lToRemove.addFirst(index);
 							Iterator<String> itOrigInput = componentWithNamePerInputs.get(elCur.getComponentId()).keySet().iterator();
 							while(itOrigInput.hasNext()){
 								String elInput = itOrigInput.next();
@@ -1918,51 +1921,42 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 								//Add alias to replace
 								replaceAliases.put(df.getAliasesPerComponentInput().get(elCur.getComponentId()).getKey(), df.getAliasesPerComponentInput().get(elInput).getKey());
 							}
+							df.getInputComponent().get(inputName).remove(elCur);
 						}
-						++index;
-					}
-					
-					//Remove SuperAction Input/Output link 
-					for(Integer i : lToRemove){
-						lInCur.remove(i);
 					}
 				}
-				//If the element is link to input or output link it to the workflow output/input
 				Iterator<String> itOut = df.getOutputComponent().keySet().iterator();
 				logger.info("link output");
 				while(itOut.hasNext()){
 					//Iterate through all the input components
 					String outputName = itOut.next();
 					logger.info("output name: "+outputName);
-					List<DataFlowElement> lOutCur =  df.getOutputComponent().get(outputName);
+					List<DataFlowElement> lOutCur =   new LinkedList<DataFlowElement>();
+					lOutCur.addAll(df.getOutputComponent().get(outputName));
 					Iterator<DataFlowElement> itOutCur = lOutCur.iterator();
-					LinkedList<Integer> lToRemove = new LinkedList<Integer>();
-					int index = 0;
 					while(itOutCur.hasNext()){
 						DataFlowElement elCur = itOutCur.next();
-						if((new SubWorkflowOutput().getName()).equals(df.getName())){
+						if((new SubWorkflowOutput().getName()).equals(elCur.getName())){
 							//Create new output link
 							logger.info("Create the new output link");
-							lToRemove.addFirst(index);
-							Iterator<String> itOrigOutput = componentWithNamePerOutputs.get(elCur.getComponentId()).keySet().iterator();
-							while(itOrigOutput.hasNext()){
-								String elOutput = itOrigOutput.next();
-								logger.info("Add output: "+outputName+" "+elOutput);
-								df.addOutputComponent(outputName, getElement(elOutput));
-								logger.info("Add input: "+componentWithNamePerOutputs.get(elCur.getComponentId()).get(elOutput)+" "+df.getComponentId());
-								getElement(elOutput).addInputComponent(
-										componentWithNamePerOutputs.get(elCur.getComponentId()).get(elOutput), 
-										df);
-								//Add alias to replace
-								replaceAliases.put(df.getAliasesPerComponentInput().get(elCur.getComponentId()).getKey(), df.getAliasesPerComponentInput().get(elOutput).getKey());
+							try{
+								Iterator<String> itOrigOutput = componentWithNamePerOutputs.get(elCur.getComponentId()).keySet().iterator();
+								while(itOrigOutput.hasNext()){
+									String elOutput = itOrigOutput.next();
+									logger.info("Add output: "+outputName+" "+elOutput);
+									df.addOutputComponent(outputName, getElement(elOutput));
+									logger.info("Add input: "+componentWithNamePerOutputs.get(elCur.getComponentId()).get(elOutput)+" "+df.getComponentId());
+									getElement(elOutput).addInputComponent(
+											componentWithNamePerOutputs.get(elCur.getComponentId()).get(elOutput), 
+											df);
+									//Add alias to replace
+									replaceAliases.put(df.getAliasesPerComponentInput().get(elCur.getComponentId()).getKey(), df.getAliasesPerComponentInput().get(elOutput).getKey());
+								}
+							}catch(Exception e){
+								//Expected if the output is not used in another element
 							}
+							df.getOutputComponent().get(outputName).remove(elCur);
 						}
-						++index;
-					}
-					
-					//Remove SuperAction Input/Output link 
-					for(Integer i : lToRemove){
-						lOutCur.remove(i);
 					}
 				}
 				
