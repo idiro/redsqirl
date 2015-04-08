@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import java.rmi.RemoteException;
 import java.util.AbstractMap;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -210,6 +211,7 @@ public class SubWorkflowTests {
 		return sw;
 	}
 	
+	/*
 	@Test
 	public void basicTest(){
 		TestUtils.logTestTitle("SubWorkflowTests#basicTest");
@@ -299,7 +301,7 @@ public class SubWorkflowTests {
 			assertTrue(e.toString(), false);
 		}
 	}
-	
+	*/
 
 	@Test
 	public void expand(){
@@ -342,11 +344,41 @@ public class SubWorkflowTests {
 			new SuperActionInstaller(new WfSuperActionManager()).install(System.getProperty("user.name"),false, sw, null);
 			error = w.aggregateElements(components, sName, inputs, outputs);
 			assertTrue("Fail to aggregate: "+error, error == null);
+			List<String> aggComponents = w.getComponentIds();
 			
 			List<String> saComp = w.getComponentIds();
 			saComp.removeAll(oldComponents);
 			error = w.expand(saComp.get(0));
 			assertTrue("Fail to expand: "+error, error == null);
+			logger.info("Super action: "+saComp.get(0));
+			logger.info("Old CId: "+oldComponents);
+			logger.info("Aggregate CId: "+aggComponents);
+			logger.info("New CId: "+w.getComponentIds());
+			Iterator<DataFlowElement> itDf = w.getElement().iterator();
+			while(itDf.hasNext()){
+				DataFlowElement cur = itDf.next();
+				Iterator<String> itIn = cur.getInputComponent().keySet().iterator();
+				logger.info("Elements: "+cur.getComponentId());
+				while(itIn.hasNext()){
+					String in = itIn.next();
+					List<String> els = new LinkedList<String>();
+					for(DataFlowElement input: cur.getInputComponent().get(in)){
+						els.add(input.getComponentId());
+					}
+					logger.info("Input "+in+": "+els);
+				}
+				
+				Iterator<String> itOut = cur.getOutputComponent().keySet().iterator();
+				while(itOut.hasNext()){
+					String out = itOut.next();
+					List<String> els = new LinkedList<String>();
+					for(DataFlowElement output: cur.getOutputComponent().get(out)){
+						els.add(output.getComponentId());
+					}
+					logger.info("Output "+out+": "+els);
+				}
+			}
+			
 			
 			error = w.check();
 			assertTrue("Failure in workflow check: "+error, error == null);
