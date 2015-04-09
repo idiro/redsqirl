@@ -89,6 +89,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private String inputAreaSubWorkflow;
 	private String idGroup;
 	private boolean progressBarEnabled;
+	private boolean runningElementsToggle;
+	private boolean doneElementsToggle;
 
 	/**
 	 * Running workflow progress bar
@@ -97,7 +99,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private long totalProgressBar;
 	private List<String> runningElements;
 	private List<String> doneElements;
-	
+
 	/**
 	 * 
 	 * @return
@@ -1028,9 +1030,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void runWorkflow() throws Exception {
 		logger.info("runWorkflow");
-		
+
 		setProgressBarEnabled(true);
 		setValueProgressBar(Long.valueOf(0));
+		setDoneElementsToggle(false);
+		setRunningElementsToggle(false);
 
 		getDf().setName(getNameWorkflow());
 
@@ -1084,11 +1088,11 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 			calcWorkflowUrl();
 		}
-		
+
 	}
 
 	public void blockRunningWorkflow() throws Exception {
-		
+
 		logger.info("blockRunningWorkflow");
 		if (getDf() != null) {
 			String name = getDf().getName();
@@ -1096,10 +1100,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 			try {
 				int i = 0;
 				if(name.equals(getDf().getName()) && getDf().isrunning()){
-					setTotalProgressBar(2* getOozie().getNbElement(getDf()));
+					setTotalProgressBar(getOozie().getNbElement(getDf()));
 					runningElements = getOozie().getElementsRunning(getDf());
 					doneElements = getOozie().getElementsDone(getDf());
-					setValueProgressBar((2* doneElements.size() + runningElements.size())*100/totalProgressBar);
+					setValueProgressBar(doneElements.size()*100/totalProgressBar);
 				}
 				while (name.equals(getDf().getName()) && getDf().isrunning()) {
 					if(i % 20 == 0){
@@ -1108,7 +1112,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 							if(!curRunning.equals(runningElements)){
 								runningElements = curRunning;
 								doneElements = getOozie().getElementsDone(getDf());
-								setValueProgressBar((2* doneElements.size() + runningElements.size())*100/totalProgressBar);
+								setValueProgressBar(doneElements.size()*100/totalProgressBar);
 								logger.info("runningElements "+runningElements+" doneElements "+doneElements);
 							}
 						}catch(Exception e){}
@@ -1126,10 +1130,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 			logger.info("blockRunningWorkflow getDf() = null");
 		}
 		logger.info("end blockRunningWorkflow ");
-		
-		
+
+
 		setProgressBarEnabled(false);
-		
+
 	}
 
 	public void calcWorkflowUrl() {
@@ -1272,7 +1276,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 
 	}
-	
+
 	public void cleanElement() throws RemoteException {
 		DataFlow wf = getworkFlowInterface().getWorkflow(getNameWorkflow());
 		String groupId = FacesContext.getCurrentInstance().getExternalContext()
@@ -1283,9 +1287,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 			wf.getElement(id).cleanDataOut();
 		}
 	}
-	
+
 	public void refreshSubWorkflow() throws RemoteException {
-		
+
 		DataFlow wf = getworkFlowInterface().getWorkflow(getNameWorkflow());
 		String groupId = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("idGroup");
 		setIdGroup(groupId);
@@ -1297,7 +1301,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				logger.error(e.getMessage(),e);
 			}
 		}
-		
+
 	}
 
 	public void regeneratePathsProject() throws RemoteException {
@@ -1519,7 +1523,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		if (elements != null && getDf() != null) {
 			DataFlow dfCur = getDf();
 			result = new String[elements.size()][];
-			
+
 			try{
 
 				int i = 0;
@@ -2427,34 +2431,54 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 
 	}
-	
+
 	public void expand() {
 		String error = null;
-		
+
 		logger.info("expand ");
-		logger.info("name sub workflow " + getInputNameSubWorkflow());
-		
+
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String selectedIcons = params.get("selectedIcons");
 
 		logger.info("expand id: " + selectedIcons);
-		
+
 		try {
-			
-			error = getDf().expand(selectedIcons);
-			
+
+			String[] ids = selectedIcons.split(",");
+			if(ids != null && ids.length > 0){
+				for (String id : ids) {
+					if(error == null){
+						error = getDf().expand(idMap.get(getNameWorkflow()).get(id));
+					}else{
+						break;
+					}
+				}
+				
+				if(error == null){
+					logger.info("Elements: " + getDf().getComponentIds());
+					Iterator<String> elIt = getDf().getComponentIds().iterator();
+					Map<String, String> idMapWf = idMap.get(getNameWorkflow());
+					idMapWf.clear();
+					while (elIt.hasNext()) {
+						String elCur = elIt.next();
+						idMapWf.put(elCur, elCur);
+					}
+				}
+				
+			}
+
 		} catch (RemoteException e) {
 			e.printStackTrace();
 			logger.info("Error: " + e,e);
 		}
-		
+
 		if (error != null) {
 			logger.info("Error: " + error);
 			MessageUseful.addErrorMessage(error);
 			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
 		}
-		
+
 	}
 
 	public void aggregate() {
@@ -2568,6 +2592,22 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 	}
 
+	public void collapsePanelRunningElement(){
+		if(isRunningElementsToggle()){
+			setRunningElementsToggle(false);
+		}else{
+			setRunningElementsToggle(true);
+		}
+	}
+
+	public void collapsePanelCompletedActionsList(){
+		if(isDoneElementsToggle()){
+			setDoneElementsToggle(false);
+		}else{
+			setDoneElementsToggle(true);
+		}
+	}
+
 
 	public DataFlow getDf() {
 		return df;
@@ -2591,7 +2631,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 		this.nameWorkflow = nameWorkflow;
 	}
-	
+
 	public void removeMsgErrorInit() {
 		FacesContext facesContext = FacesContext.getCurrentInstance();
 		HttpSession httpSession = (HttpSession) facesContext.getExternalContext().getSession(false);
@@ -2898,7 +2938,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	public int getRunningElementsSize() {
 		return runningElements == null? 0 : runningElements.size();
 	}
-	
+
 	public void setRunningElements(List<String> runningElements) {
 		this.runningElements = runningElements;
 	}
@@ -2921,6 +2961,22 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void setProgressBarEnabled(boolean progressBarEnabled) {
 		this.progressBarEnabled = progressBarEnabled;
+	}
+
+	public boolean isRunningElementsToggle() {
+		return runningElementsToggle;
+	}
+
+	public void setRunningElementsToggle(boolean runningElementsToggle) {
+		this.runningElementsToggle = runningElementsToggle;
+	}
+
+	public boolean isDoneElementsToggle() {
+		return doneElementsToggle;
+	}
+
+	public void setDoneElementsToggle(boolean doneElementsToggle) {
+		this.doneElementsToggle = doneElementsToggle;
 	}
 
 }

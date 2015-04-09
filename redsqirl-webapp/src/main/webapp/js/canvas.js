@@ -1712,10 +1712,26 @@ function getSelectedIconsCommaDelimited(){
     var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
     var ans = "";
 
-    // update element positions
     jQuery.each(polygonLayer.get('.polygon1'), function(index, value) {
         if(value.selected){
             ans = ans.concat(",",value.getParent().getChildren()[4].getText());
+        }
+    });
+    if(ans.length > 0){
+        return ans.substring(1);
+    }
+    return ans;
+}
+
+function getSelectedSAIconsCommaDelimited(){
+    var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
+    var ans = "";
+
+    jQuery.each(polygonLayer.get('.polygon1'), function(index, value) {
+        if(value.selected){
+        	if(value.getParent().elementType.startsWith("sa")){
+        		ans = ans.concat(",",value.getParent().getChildren()[4].getText());
+        	}
         }
     });
     if(ans.length > 0){
