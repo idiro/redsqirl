@@ -29,6 +29,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
+import org.hsqldb.lib.StringInputStream;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -50,6 +51,7 @@ import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 import com.redsqirl.workflow.server.interfaces.SuperElement;
+import com.redsqirl.workflow.utils.FileStream;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
 /**
@@ -186,6 +188,7 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 			try {
 				logger.debug("Save xml: " + file.getAbsolutePath());
 				file.getParentFile().mkdirs();
+				File tmpFile = new File(file.getAbsoluteFile()+".tmp");
 				Document doc = null;
 				try{
 					doc = saveInXML();
@@ -204,21 +207,21 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 							.newInstance();
 					Transformer transformer = transformerFactory.newTransformer();
 					DOMSource source = new DOMSource(doc);
-					StreamResult result = new StreamResult(file);
+					StreamResult result = new StreamResult(tmpFile);
 					logger.debug(4);
 					transformer.transform(source, result);
 					logger.debug(5);
-
+					
+					FileStream.encryptFile(tmpFile, file);
+					tmpFile.delete();
+					
 					saved = true;
 					logger.debug("file saved successfully");
 				}
 			} catch (Exception e) {
 				error = LanguageManagerWF.getText("workflow.writeXml",
 						new Object[] { e.getMessage() });
-				logger.error(error);
-				for (int i = 0; i < 6 && i < e.getStackTrace().length; ++i) {
-					logger.error(e.getStackTrace()[i].toString());
-				}
+				logger.error(error,e);
 				try {
 					logger.info("Attempt to delete " + file.getAbsolutePath());
 					file.delete();
@@ -420,9 +423,18 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory
 				.newInstance();
 		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-		Document doc = dBuilder.parse(xmlFile);
-
-		doc.getDocumentElement().normalize();
+		
+		Document doc = null;
+		File tmpFile = new File(xmlFile.getAbsolutePath()+".tmp");
+		try{
+			FileStream.decryptFile(xmlFile,tmpFile);
+			doc = dBuilder.parse(tmpFile);
+			doc.getDocumentElement().normalize();
+		}catch(Exception e){
+			doc = dBuilder.parse(xmlFile);
+			doc.getDocumentElement().normalize();
+		}
+		
 		// Needs to do two reading,
 		// for the element and there id
 		// for link all the element
@@ -566,7 +578,7 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 
 		}
 
-
+		tmpFile.delete();
 		return error;
 	}
 	
