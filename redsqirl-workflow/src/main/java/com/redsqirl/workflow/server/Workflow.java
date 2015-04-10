@@ -586,7 +586,28 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 */
 	@Override
 	public String run() throws RemoteException {
-		return run(getIds(element));
+		LinkedList<String> elToRun = new LinkedList<String>();
+		Iterator<DataFlowElement> it = getElement().iterator();
+		while(it.hasNext()){
+			DataFlowElement cur = it.next();
+			if(cur.getAllOutputComponent().size() == 0){
+				boolean toAdd = false;
+				Iterator<DFEOutput> itOutput = cur.getDFEOutput().values().iterator();
+				while(itOutput.hasNext()){
+					DFEOutput outCur = itOutput.next();
+					if(!outCur.isPathExists()){
+						toAdd = true;
+					}else if(SavingState.RECORDED.equals(outCur.getSavingState())){
+						toAdd = false;
+						break;
+					}
+				}
+				if(toAdd){
+					elToRun.add(cur.getComponentId());
+				}
+			}
+		}
+		return run(elToRun);
 	}
 
 	/**
@@ -619,6 +640,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				}
 			} else {
 				elsIn.addAll(getEls(dataFlowElement));
+				
 			}
 
 			error = runWF(dataFlowElement);
