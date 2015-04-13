@@ -367,12 +367,10 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 					licenseKey = name;
 					props.load(new FileInputStream(licenseP));
 					licenseKey = licenseKey.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
-					swLicense =  props.getProperty(licenseKey);
+					swLicense =  props.getProperty(licenseKey,props.getProperty(licenseKey+"srs"));
 					softwareLicense = props.getProperty(softwareLicenseKey);
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
+				} catch(Exception e) {
+					logger.error(e,e);
 				}
 				logger.info(props.toString());
 				
@@ -387,9 +385,9 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 				dec.decrypt_key_module(swLicense);
 
 				Map<String,String> keyModule = new HashMap<String,String>();
-				keyModule.put(dec.userName,System.getProperty("user.name"));
-				keyModule.put(dec.name,name);
-				keyModule.put(dec.license,softwareLicense);
+				keyModule.put(Decrypter.userName,System.getProperty("user.name"));
+				keyModule.put(Decrypter.name,name);
+				keyModule.put(Decrypter.license,softwareLicense);
 				
 				error = dec.validateAllValuesModule(keyModule);
 			}
