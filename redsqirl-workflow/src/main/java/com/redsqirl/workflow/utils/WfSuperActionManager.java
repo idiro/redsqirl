@@ -28,10 +28,10 @@ public class WfSuperActionManager extends UnicastRemoteObject implements SuperAc
 		super();
 	}
 	
-	public String export(String pathHdfs, SubDataFlow toExport , Boolean privilage) throws RemoteException{
+	public String export(String pathHdfs, SubDataFlow toExport , Boolean privilege) throws RemoteException{
 		String error = null;
 		logger.info("Export "+toExport.getName()+" in "+pathHdfs);
-		error = toExport.save(pathHdfs, privilage);
+		error = toExport.save(pathHdfs, privilege);
 		return error;
 	}
 	

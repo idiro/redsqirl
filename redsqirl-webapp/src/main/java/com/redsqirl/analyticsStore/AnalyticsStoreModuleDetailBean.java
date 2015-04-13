@@ -298,7 +298,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 				
 				swa.readFromLocal(new File(folder.getPath() + "/" + file));
 
-				error = new SuperActionInstaller(saManager).install(userInfoBean.getUserName(),!userInstall, swa, true);
+				error = new SuperActionInstaller(saManager).install(userInfoBean.getUserName(),!userInstall, swa, swa.getPrivilege());
 				if (error != null){
 					break;
 				}
