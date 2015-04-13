@@ -29,7 +29,6 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.log4j.Logger;
-import org.hsqldb.lib.StringInputStream;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

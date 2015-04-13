@@ -42,7 +42,6 @@ import org.apache.hadoop.fs.PathFilter;
 import org.apache.log4j.Logger;
 import org.apache.oozie.client.OozieClient;
 import org.apache.oozie.client.WorkflowJob;
-import org.hsqldb.lib.StringInputStream;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -68,8 +67,6 @@ import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 import com.redsqirl.workflow.server.interfaces.SuperElement;
 import com.redsqirl.workflow.utils.FileStream;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
-import com.redsqirl.workflow.utils.SuperActionInstaller;
-import com.redsqirl.workflow.utils.SuperActionManager;
 import com.redsqirl.workflow.utils.WfSuperActionManager;
 
 /**
