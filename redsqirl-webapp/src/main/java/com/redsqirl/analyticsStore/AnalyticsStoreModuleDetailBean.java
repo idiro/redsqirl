@@ -178,6 +178,8 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 		String fileName = null;
 		String key = null;
 		String name = null;
+		String licenseKeyProperties = null;
+		String error = null;
 		
 		String softwareKey = getSoftwareKey();
 		
@@ -215,6 +217,8 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 				key = pckObj.getString("key");
 				name = pckObj.getString("name");
 				newKey = pckObj.getBoolean("newKey");
+				licenseKeyProperties = pckObj.getString("licenseKeyProperties");
+				error = pckObj.getString("error");
 			} catch (JSONException e){
 				e.printStackTrace();
 			}
@@ -243,7 +247,28 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 		
 		
 		if (newKey){
+			
+			
 			BufferedWriter writer = null;
+			try {
+				File file = new File(WorkflowPrefManager.pathSystemLicence);
+				String filepath = file.getAbsolutePath();
+				if(file.exists()){
+					file.delete();
+				}
+				PrintWriter printWriter = new PrintWriter(new File(filepath));
+				printWriter.print(licenseKeyProperties);
+				printWriter.close ();
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					writer.close();
+				} catch (Exception e) {
+				}
+			}
+			
+			/*BufferedWriter writer = null;
 		    try {
 		    	File file = new File("/usr/share/redsqirl/conf/licenseKey.properties");
 	
@@ -263,7 +288,9 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 		    		writer.close();
 		        } catch (Exception e) {
 		        }
-		    }
+		    }*/
+		    
+		    
 		}
 		
 		ZipFile zipFile = new ZipFile(packagePath);
@@ -281,7 +308,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 		SuperActionManager saManager = getSuperActionManager();
 		DataFlowInterface dfi = getworkFlowInterface();
 		
-		String error = null;
+		//String error = null;
 		
 		for (String file : folder.list()){
 			
