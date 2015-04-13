@@ -358,7 +358,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		for (int i = 0; i < nl.getLength(); ++i) {
 			Node cur = nl.item(i);
 			String id = cur.getNodeName();
-			waLogger.debug(componentId + ": loads " + id + "...");
+			waLogger.info(componentId + ": loads " + id + "...");
 			try {
 				DFEInteraction intCur = getInteraction(id);
 				if (intCur != null) {
@@ -372,7 +372,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 		}
 
 		if (error != null) {
-			waLogger.error(error);
+			waLogger.info(error);
 		}
 		return error;
 	}
