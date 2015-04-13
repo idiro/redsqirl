@@ -58,16 +58,16 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 		SuperActionInstaller saInst = new SuperActionInstaller(getSuperActionManager());
 		boolean system = asSystem.equals("System");
 		
-		logger.info("privilage : '" + privilege + "'");
-		Boolean privilageVal = null;
+		logger.info("privilege : '" + privilege + "'");
+		Boolean privilegeVal = null;
 		if (privilege.equals("edit")) {
 
 		} else if (privilege.equals("run")) {
-			privilageVal = new Boolean(false);
+			privilegeVal = new Boolean(false);
 		} else if (privilege.equals("license")) {
-			privilageVal = new Boolean(true);
+			privilegeVal = new Boolean(true);
 		}
-		logger.info(privilege + " + " + privilageVal);
+		logger.info(privilege + " + " + privilegeVal);
 		
 		
 		if(!name.startsWith("sa_")){
@@ -81,7 +81,7 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 		
 		saInst.uninstall(username,swa.getName());
 		
-		error = saInst.install(getUserInfoBean().getUserName(),system, swa, privilageVal);
+		error = saInst.install(getUserInfoBean().getUserName(),system, swa, privilegeVal);
 
 		if (error != null && !error.isEmpty()) {
 			MessageUseful.addErrorMessage(error);
@@ -232,16 +232,16 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 	public void exportSa() throws RemoteException {
 		DataFlowInterface dfi = getworkFlowInterface();
 		SubDataFlow swa = dfi.getSubWorkflow(actualName);
-		logger.info("privilage : '" + privilege + "'");
-		Boolean privilageVal = null;
+		logger.info("privilege : '" + privilege + "'");
+		Boolean privilegeVal = null;
 		if (privilege.equals("edit")) {
 
 		} else if (privilege.equals("run")) {
-			privilageVal = new Boolean(false);
+			privilegeVal = new Boolean(false);
 		} else if (privilege.equals("license")) {
-			privilageVal = new Boolean(true);
+			privilegeVal = new Boolean(true);
 		}
-		logger.info(privilege + " + " + privilageVal);
+		logger.info(privilege + " + " + privilegeVal);
 		if(!name.startsWith("sa_")){
 			name = "sa_"+name;
 		}
@@ -249,7 +249,7 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 		swa.setName(name);
 
 		String filePath ="/user/"+getUserInfoBean().getUserName()+"/redsqirl-save/"+name+".srs";
-		String error = getSuperActionManager().export(filePath, swa, privilageVal);
+		String error = getSuperActionManager().export(filePath, swa, privilegeVal);
 
 		if (error != null && !error.isEmpty()) {
 			MessageUseful.addErrorMessage(error);
