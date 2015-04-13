@@ -92,11 +92,7 @@ public class HDFSInterfaceTests {
 			logger.info(hInt.getProperties(new_path1));
 			assertTrue("delete " + new_path1, hInt.delete(new_path1) == null);
 		} catch (Exception e) {
-			logger.error(e.getMessage());
-			StackTraceElement[] errs = e.getStackTrace();
-			for (StackTraceElement er : errs) {
-				logger.error(er.getFileName() + " , " + er.getLineNumber());
-			}
+			logger.error(e.getMessage(),e);
 			assertTrue(e.getMessage(), false);
 		}
 	}
@@ -108,11 +104,7 @@ public class HDFSInterfaceTests {
 			HDFSInterface hInt = new HDFSInterface();
 			
 		}catch (Exception e){
-			logger.error(e.getMessage());
-			StackTraceElement[] errs = e.getStackTrace();
-			for (StackTraceElement er : errs) {
-				logger.error(er.getFileName() + " , " + er.getLineNumber());
-			}
+			logger.error(e.getMessage(),e);
 			assertTrue(e.getMessage(), false);
 		}
 	}

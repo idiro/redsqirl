@@ -124,14 +124,7 @@ public class ServerProcess {
 
 				} catch (Exception e) {
 					logger.error("Fail to launch the server process");
-					logger.error(e.getMessage());
-					StackTraceElement[] message = e.getStackTrace();
-
-					for (int i = 0; i < message.length; ++i) {
-						logger.info(message[i].getMethodName() + " "
-								+ message[i].getFileName() + " "
-								+ message[i].getLineNumber());
-					}
+					logger.error(e.getMessage(),e);
 
 				}
 				run = true;

@@ -237,19 +237,10 @@ public class HiveInterfaceTests {
 			logger.info(hInt.getDescription("keith_part"));
 			hInt.select(path, "\001", 1);
 		} catch (RemoteException e) {
-			e.printStackTrace();
-			StackTraceElement[] st = e.getStackTrace();
-			for (StackTraceElement el : st) {
-				 logger.error(el.getLineNumber() +
-				 " : "+el.getFileName()+" , "+el.getMethodName());
-			}
+			logger.error(e,e);
 			assertTrue("error : " + e.getMessage(), false);
 		} catch (Exception e) {
-			StackTraceElement[] st = e.getStackTrace();
-			for (StackTraceElement el : st) {
-				logger.error(el.getLineNumber() + " : " + el.getFileName()
-						+ " , " + el.getMethodName());
-			}
+			logger.error(e,e);
 			assertTrue("error : " + e.getMessage(), false);
 		}
 

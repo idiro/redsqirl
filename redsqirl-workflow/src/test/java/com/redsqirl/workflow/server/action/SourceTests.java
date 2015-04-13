@@ -375,11 +375,7 @@ public class SourceTests {
 			logger.info(src.getHelp());
 			logger.info(src.getImage());
 		} catch (Exception e) {
-			StackTraceElement[] messages = e.getStackTrace();
-			for (StackTraceElement el : messages) {
-				logger.info(el.getClassName() + " , " + el.getLineNumber()
-						+ " , " + el.getMethodName());
-			}
+			logger.error(e,e);
 			assertTrue(e.getMessage(), false);
 		}
 	}

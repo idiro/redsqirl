@@ -443,6 +443,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 				jobId = oc.run(conf);
 				logger.debug("Workflow job submitted succesfully");
 			} catch (OozieClientException e) {
+				logger.error(e,e);
 				error = LanguageManagerWF.getText("ooziemanager.launchjob",
 						new Object[] { e.getMessage() });
 			}

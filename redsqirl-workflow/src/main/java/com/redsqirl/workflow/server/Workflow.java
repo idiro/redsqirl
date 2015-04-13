@@ -65,9 +65,8 @@ import com.redsqirl.workflow.server.interfaces.DataFlow;
 import com.redsqirl.workflow.server.interfaces.DataFlowElement;
 import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 import com.redsqirl.workflow.server.interfaces.SuperElement;
+import com.redsqirl.workflow.utils.FileStream;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
-import com.redsqirl.workflow.utils.SuperActionInstaller;
-import com.redsqirl.workflow.utils.SuperActionManager;
 import com.redsqirl.workflow.utils.WfSuperActionManager;
 
 /**
@@ -584,7 +583,28 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 */
 	@Override
 	public String run() throws RemoteException {
-		return run(getIds(element));
+		LinkedList<String> elToRun = new LinkedList<String>();
+		Iterator<DataFlowElement> it = getElement().iterator();
+		while(it.hasNext()){
+			DataFlowElement cur = it.next();
+			if(cur.getAllOutputComponent().size() == 0){
+				boolean toAdd = false;
+				Iterator<DFEOutput> itOutput = cur.getDFEOutput().values().iterator();
+				while(itOutput.hasNext()){
+					DFEOutput outCur = itOutput.next();
+					if(!outCur.isPathExists()){
+						toAdd = true;
+					}else if(SavingState.RECORDED.equals(outCur.getSavingState())){
+						toAdd = false;
+						break;
+					}
+				}
+				if(toAdd){
+					elToRun.add(cur.getComponentId());
+				}
+			}
+		}
+		return run(elToRun);
 	}
 
 	/**
@@ -617,6 +637,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				}
 			} else {
 				elsIn.addAll(getEls(dataFlowElement));
+				
 			}
 
 			error = runWF(dataFlowElement);
@@ -841,6 +862,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	public String save(final String filePath) throws RemoteException {
 		String error = null;
 		File file = null;
+		File tmpFile = null;
 
 		try {
 			String[] path = filePath.split("/");
@@ -848,6 +870,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			String tempPath = WorkflowPrefManager.getPathuserpref() + "/tmp/"
 					+ fileName + "_" + RandomString.getRandomName(4);
 			file = new File(tempPath);
+			tmpFile = new File(tempPath+".tmp");
 			logger.debug("Save xml: " + file.getAbsolutePath());
 			file.getParentFile().mkdirs();
 			Document doc = null;
@@ -866,11 +889,14 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						.newInstance();
 				Transformer transformer = transformerFactory.newTransformer();
 				DOMSource source = new DOMSource(doc);
-				StreamResult result = new StreamResult(file);
+				StreamResult result = new StreamResult(tmpFile);
 				logger.debug(4);
 				transformer.transform(source, result);
 				logger.debug(5);
-
+				
+				FileStream.encryptFile(tmpFile, file);
+				tmpFile.delete();
+				
 				FileSystem fs = NameNodeVar.getFS();
 				fs.moveFromLocalFile(new Path(tempPath), new Path(filePath));
 				// fs.close();
@@ -881,10 +907,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		} catch (Exception e) {
 			error = LanguageManagerWF.getText("workflow.writeXml",
 					new Object[] { e.getMessage() });
-			logger.error(error);
-			for (int i = 0; i < 6 && i < e.getStackTrace().length; ++i) {
-				logger.error(e.getStackTrace()[i].toString());
-			}
+			logger.error(error,e);
 			try {
 				logger.info("Attempt to delete " + file.getAbsolutePath());
 				file.delete();
@@ -1254,10 +1277,21 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory
 					.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(xmlFile);
+			
+			Document doc = null;
+			File tmpFile = new File(xmlFile.getAbsolutePath()+".tmp");
+			try{
+				FileStream.decryptFile(xmlFile,tmpFile);
+				doc = dBuilder.parse(tmpFile);
+				doc.getDocumentElement().normalize();
+			}catch(Exception e){
+				logger.error(e,e);
+				doc = dBuilder.parse(xmlFile);
+				doc.getDocumentElement().normalize();
+			}
 
 			error = readFromXml(doc);
-
+			tmpFile.delete();
 			// This workflow has been saved
 			saved = true;
 

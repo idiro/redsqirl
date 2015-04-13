@@ -141,7 +141,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 					.getUserProperty(WorkflowPrefManager.user_hive);
 		}
 		try {
-			if (!isInit) {
+			if (!isInit && url != null) {
 				logger.info("Init connection to "+url);
 				final String nameStore = url.substring(url.indexOf("://") + 3,
 						url.lastIndexOf(":"));
@@ -1159,7 +1159,7 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 				ans = null;
 			}
 		} catch (Exception e) {
-			logger.error("Unexpected exception: " + e.getStackTrace()[0].toString()+" "+e.getMessage());
+			logger.error("Unexpected exception: " +e.getMessage(),e);
 			ans = null;
 		}
 		return ans;

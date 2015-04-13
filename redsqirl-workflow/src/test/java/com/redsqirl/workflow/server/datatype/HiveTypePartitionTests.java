@@ -88,11 +88,7 @@ public class HiveTypePartitionTests {
 			assertTrue("test 3 size : "+size , size == 1);
 					
 		} catch (Exception e) {
-			logger.error(e.getMessage());
-			for (StackTraceElement s : e.getStackTrace()) {
-				logger.info(s.getFileName() + " : " + s.getLineNumber() + " : "
-						+ s.getMethodName());
-			}
+			logger.error(e.getMessage(),e);
 			assertTrue(e.getMessage(), false);
 		}
 	}

@@ -192,10 +192,7 @@ public class Decrypter extends KeyCipher {
 			valid &= Integer.valueOf(ans.get(usersNb)).intValue() > Integer.valueOf(keysoft.get(usersNb)).intValue();
 
 		} catch (Exception e) {
-			StackTraceElement[] stcke = e.getStackTrace();
-			for (StackTraceElement stck : stcke) {
-				System.out.println(stck.getClassName() + " " + stck.getMethodName() + " " + stck.getLineNumber());
-			}
+			e.printStackTrace();
 		}
 
 		return valid;

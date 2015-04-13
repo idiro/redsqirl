@@ -93,11 +93,7 @@ public class HiveTypeTests {
 			assertTrue("2) Valid " + path1_part, error != null);
 
 		} catch (Exception e) {
-			logger.error(e.getMessage());
-			for (StackTraceElement s : e.getStackTrace()) {
-				logger.info(s.getFileName() + " : " + s.getLineNumber() + " : "
-						+ s.getMethodName());
-			}
+			logger.error(e.getMessage(),e);
 			assertTrue(e.getMessage(), false);
 		}
 	}

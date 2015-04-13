@@ -326,25 +326,34 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				}
 				
 				if (mapO.size() > 0) {
-					String attrNameStr = "delete_" + cur.getComponentId();
-					deleteList.add(cur.getComponentId());
-					// Implement the action
-					Element action = doc.createElement("action");
-					Attr attrName = doc.createAttribute("name");
-					attrName.setValue(attrNameStr);
-					action.setAttributeNode(attrName);
-
+					
 					itS = mapO.keySet().iterator();
-					while (itS.hasNext()) {
+					int index = 1;
+					while (itS.hasNext()){
 						String key = itS.next();
 						DFEOutput o = mapO.get(key);
-						o.oozieRemove(doc, action, directoryToWrite, directoryToWrite.getName(), "delete_" + cur.getComponentId());
-					}
+						String attrNameStr = null;
+						if(mapO.size() > 1){
+							attrNameStr = "delete_" + cur.getComponentId()+"_"+index;
+						}else{
+							attrNameStr = "delete_" + cur.getComponentId();
+						}
+						// Implement the action
+						Element action = doc.createElement("action");
+						{
+							Attr attrName = doc.createAttribute("name");
+							attrName.setValue(attrNameStr);
+							action.setAttributeNode(attrName);
+						}
+						o.oozieRemove(doc, action, directoryToWrite, directoryToWrite.getName(), attrNameStr);
 
-					elements.put(attrNameStr, action);
-					Set<String> actionEnd = new LinkedHashSet<String>();
-					actionEnd.add(endElement);
-					outEdges.put(attrNameStr, actionEnd);
+						elements.put(attrNameStr, action);
+						Set<String> actionEnd = new LinkedHashSet<String>();
+						actionEnd.add(endElement);
+						outEdges.put(attrNameStr, actionEnd);
+						++index;
+					}
+					deleteList.add(cur.getComponentId());
 
 				}
 			}
@@ -402,7 +411,14 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 				while (itIn.hasNext()) {
 					DataFlowElement in = itIn.next();
 					if (deleteList.contains(in.getComponentId())) {
-						out.add("delete_" + in.getComponentId());
+						if(elements.containsKey("delete_" + in.getComponentId())){
+							out.add("delete_" + in.getComponentId());
+						}else{
+							int index = 0;
+							while(elements.containsKey("delete_" + in.getComponentId()+"_"+(++index))){
+								out.add("delete_" + in.getComponentId()+"_"+index);
+							}
+						}
 					}
 				}
 				Iterator<DataFlowElement> itOut = cur.getAllOutputComponent().iterator();

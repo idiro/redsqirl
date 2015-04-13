@@ -387,9 +387,11 @@ public abstract class MapRedHdfs extends DataOutput{
 				}
 				
 				FieldType typeCur = getType(fieldValue);
-				logger.info("Value: "+fieldValue);
-				logger.info("Type ans: "+typeAns);
-				logger.info("Type cur: "+typeCur);
+				if(logger.isDebugEnabled()){
+					logger.debug("Value: "+fieldValue);
+					logger.debug("Type ans: "+typeAns);
+					logger.debug("Type cur: "+typeCur);
+				}
 				
 				if(typeAns == null){
 					typeAns = typeCur;
@@ -418,7 +420,7 @@ public abstract class MapRedHdfs extends DataOutput{
 					}
 				}
 			}
-			logger.info(restart);
+			logger.debug(restart);
 		}while(restart);
 		if(typeAns == null){
 			typeAns = FieldType.STRING;
