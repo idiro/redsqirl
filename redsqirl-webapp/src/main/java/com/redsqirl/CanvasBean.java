@@ -2549,6 +2549,12 @@ public class CanvasBean extends BaseBean implements Serializable {
 					}
 
 					if(error == null){
+						
+						logger.info("getComponentIds: " + getComponentIds());
+						logger.info("getInputNameSubWorkflow: " + getInputNameSubWorkflow());
+						logger.info("inputs: " + inputs);
+						logger.info("outputs: " + outputs);
+						
 						error = getDf().aggregateElements(getComponentIds(), getInputNameSubWorkflow(), inputs, outputs);
 						if(error != null){
 							new SuperActionInstaller(getSuperActionManager()).uninstall(getUserInfoBean().getUserName(), getInputNameSubWorkflow());

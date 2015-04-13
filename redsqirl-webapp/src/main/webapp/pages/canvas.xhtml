@@ -515,8 +515,12 @@
 	      }
 
 	      function addSelectedElement(canvasName, path, positions, links, selecteds){
+		      //try{
 	   	      addElements(canvasName, positions, selecteds);
 	   	      addLinks(canvasName, links);
+		      /* }catch(exception){
+		          alert(exception);
+		      } */
 	      }
 	      
 	      function addLinksJs(canvasName, links){
@@ -952,6 +956,10 @@
 	
 	<a4j:region>
 				
+			<a4j:jsFunction name="updateProgressBar" reRender="runningprogressComponent" />
+			<a4j:jsFunction name="collapsePanelRunningElementOnClick" action="#{canvasBean.collapsePanelRunningElement}" reRender="runningprogressComponent" />
+			<a4j:jsFunction name="collapsePanelCompletedActionsListOnClick" action="#{canvasBean.collapsePanelCompletedActionsList}" reRender="runningprogressComponent" />
+				
 				<div id="domMessageDivCanvas2" style="display: none;">
 					
 					<h:form>
@@ -1005,9 +1013,7 @@
 				<img src="../image/icons/waiting.gif" />
 			</div>
 			
-			<a4j:jsFunction name="updateProgressBar" reRender="runningprogressComponent" />
-			<a4j:jsFunction name="collapsePanelRunningElementOnClick" action="#{canvasBean.collapsePanelRunningElement}" reRender="runningprogressComponent" />
-			<a4j:jsFunction name="collapsePanelCompletedActionsListOnClick" action="#{canvasBean.collapsePanelCompletedActionsList}" reRender="runningprogressComponent" />
+			
 			
 			
 			
@@ -1596,7 +1602,7 @@
 				</a4j:jsFunction>
 
 				<a4j:jsFunction name="rebuildJS" data="#{canvasBean.positions}"
-					oncomplete="addSelectedElement(data[0],data[1],data[2],data[3],data[4]);updateAllArrowColor();updateAllArcsStatus();"
+					oncomplete="setTimeout(function(){addSelectedElement(data[0],data[1],data[2],data[3],data[4])},900);updateAllArrowColor();updateAllArcsStatus();"
 					reRender="tabFlowchart" />
 
 			</a4j:region>
