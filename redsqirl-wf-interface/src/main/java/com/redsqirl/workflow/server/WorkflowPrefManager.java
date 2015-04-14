@@ -361,7 +361,12 @@ public class WorkflowPrefManager extends BlockManager {
 	public static void createUserHome(String userName) {
 		File home = new File(getPathUserPref(userName));
 		logger.info(home.getAbsolutePath());
+
 		if (!home.exists()) {
+			
+			String installPackage = getSysProperty(sys_install_package, 
+					getSysProperty(sys_tomcat_path));
+			
 			home.mkdirs();
 
 			File packageF = new File(getPathUserPackagePref(userName));
@@ -374,9 +379,6 @@ public class WorkflowPrefManager extends BlockManager {
 			
 			File superactionF = getSuperActionMainDir(userName);
 			superactionF.mkdirs();
-			
-			String installPackage = getSysProperty(sys_install_package, 
-					getSysProperty(sys_tomcat_path));
 			File userHelpTomcat = new File(installPackage+getPathUserHelpPref(userName));
 			File userImageTomcat = new File(installPackage+getPathUserImagePref(userName));
 			userHelpTomcat.mkdirs();
@@ -387,14 +389,40 @@ public class WorkflowPrefManager extends BlockManager {
 			home.setWritable(true, false);
 			home.setReadable(true, false);
 			superactionF.setReadable(true, false);
-			userHelpTomcat.setReadable(true,false);
-			userImageTomcat.setReadable(true,false);
 		}
-		File sysSADir = WorkflowPrefManager.getSuperActionMainDir(null);
-		logger.info("path " + sysSADir.getAbsolutePath());
-		if(!sysSADir.exists()){
-			sysSADir.mkdirs();
-			sysSADir.setReadable(true,false);
+		createSysHome();
+	}
+	
+	public static void createSysHome(){
+		String installPackage = getSysProperty(sys_install_package, 
+				getSysProperty(sys_tomcat_path));
+		{
+			File packageF = new File(getPathsyspackagepref());
+			packageF.mkdir();
+		}
+		{
+			File libPackage = new File(getSysPackageLibPath());
+			libPackage.mkdirs();
+		}
+		{
+			File sysSADir = WorkflowPrefManager.getSuperActionMainDir(null);
+			logger.info("path " + sysSADir.getAbsolutePath());
+			if(!sysSADir.exists()){
+				sysSADir.mkdirs();
+				sysSADir.setReadable(true,false);
+			}
+		}
+		{
+			File sysHelpTomcat = new File(installPackage+getPathSysHelpPref());
+			if(!sysHelpTomcat.exists()){
+				sysHelpTomcat.mkdirs();
+			}
+		}
+		{
+			File sysImageTomcat = new File(installPackage+getPathsysimagepref());
+			if(!sysImageTomcat.exists()){
+				sysImageTomcat.mkdirs();
+			}
 		}
 	}
 
