@@ -4,7 +4,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -15,6 +14,8 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -248,7 +249,6 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 		
 		if (newKey){
 			
-			
 			BufferedWriter writer = null;
 			try {
 				File file = new File(WorkflowPrefManager.pathSystemLicence);
@@ -275,43 +275,54 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 		String extractedPackagePath = packagePath.substring(0, packagePath.length()-4);
 		zipFile.extractAll(extractedPackagePath);
 		
-		
 		System.out.println(extractedPackagePath);
 		
 		File folder = new File(extractedPackagePath + "/" +fileName.substring(0, fileName.length()-4));
 		System.out.println(folder.getPath());
 		
-		
 		SuperActionManager saManager = getSuperActionManager();
 		DataFlowInterface dfi = getworkFlowInterface();
-		
-		//String error = null;
-		
-		for (String file : folder.list()){
-			
-			System.out.println(file);
-			
-			if (file.startsWith("sa_") || file.endsWith(".srs")){
-				
-				String workflowName = generateWorkflowName(folder.getPath() + "/" + file);
-				dfi.addSubWorkflow(workflowName);
-				
-				SubDataFlow swa = dfi.getSubWorkflow(workflowName);
-				
-				swa.setName(file.endsWith(".srs") ? file.substring(0, file.length() - 4) : file);
-				
-				swa.readFromLocal(new File(folder.getPath() + "/" + file));
+	
+		List<String> curSuperActions = null;
+		List<String> nextSuperActions = Arrays.asList(folder.list());
+		int iterMax = 20;
+		int iter = 0;
+		do{
+			curSuperActions = nextSuperActions; 
+			nextSuperActions = new LinkedList<String>();
+			for (String file : curSuperActions){
 
-				error = new SuperActionInstaller(saManager).install(userInfoBean.getUserName(),!userInstall, swa, swa.getPrivilege());
-				if (error != null){
-					break;
+				System.out.println(file);
+
+				if (file.startsWith("sa_") || file.endsWith(".srs")){
+
+					String workflowName = generateWorkflowName(folder.getPath() + "/" + file);
+					dfi.addSubWorkflow(workflowName);
+
+					SubDataFlow swa = dfi.getSubWorkflow(workflowName);
+
+					swa.setName(file.endsWith(".srs") ? file.substring(0, file.length() - 4) : file);
+
+					error = swa.readFromLocal(new File(folder.getPath() + "/" + file));
+
+					if (error == null){
+						error = new SuperActionInstaller(saManager).install(userInfoBean.getUserName(),!userInstall, swa, swa.getPrivilege());
+					}
+					
+					dfi.removeWorkflow(workflowName);
+
+					if (error != null){
+						nextSuperActions.add(file);
+						continue;
+					}
+				}
+
+				if (file.endsWith(".rs")){
+					getHDFS().copyFromLocal(folder.getPath() + "/" + file,"/user/"+userInfoBean.getUserName()+"/redsqirl-save/"+file);
 				}
 			}
-			
-			if (file.endsWith(".rs")){
-				getHDFS().copyFromLocal(folder.getPath() + "/" + file,"/user/"+userInfoBean.getUserName()+"/redsqirl-save/"+file);
-			}
-		}
+			++iter;
+		}while(iter < iterMax && ! nextSuperActions.isEmpty() && nextSuperActions.size() < curSuperActions.size());
 	    
 	    File file = new File(packagePath);
 		file.delete();
@@ -327,7 +338,6 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 		}
 		
 		return "";
-
 	}
 	
 	private String generateWorkflowName(String path) {
