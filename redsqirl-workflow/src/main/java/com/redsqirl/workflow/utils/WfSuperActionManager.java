@@ -45,7 +45,13 @@ public class WfSuperActionManager extends UnicastRemoteObject implements SuperAc
 			try{
 				fs.copyToLocalFile(path, dest);
 				String filename = pathHdfs.substring(pathHdfs.lastIndexOf("/"));
-				String filenameReplced = filename.substring(0,filename.indexOf(".srs"));
+				logger.info("filename " + filename);
+				String filenameReplced = "";
+				if(filename.endsWith(".srs")){
+					filenameReplced = filename.substring(0,filename.indexOf(".srs"));
+				}else{
+					filenameReplced = filename;
+				}
 				File file = new File(WorkflowPrefManager.getSuperActionMainDir(user).getAbsolutePath()+filename);
 				File file2 = new File(WorkflowPrefManager.getSuperActionMainDir(user).getAbsolutePath()+filenameReplced);
 				
@@ -53,6 +59,7 @@ public class WfSuperActionManager extends UnicastRemoteObject implements SuperAc
 				
 			} catch (Exception e ){
 				error ="Problem transfering "+pathHdfs+" on HDFS to "+ dest.getName()+" on local filesystem";
+				logger.error("error "+e,e);
 			}
 		}else{
 			error = "Propelem with file :"+path;

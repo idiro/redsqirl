@@ -184,29 +184,27 @@ public class SuperAction extends DataflowAction implements SuperElement{
 			Node cur = nl.item(i);
 
 			try {
-				String queueStr = ((Element) cur)
-						.getElementsByTagName("stack").item(0)
-						.getChildNodes().item(0).getNodeValue();
-
-				String[] queueArr = queueStr.split(",");
-				Element outputEl = (Element) ((Element) cur)
-						.getElementsByTagName("output").item(0);
-				String outputType = outputEl.getAttributes()
-						.getNamedItem("typename").getNodeValue();
+				
+				Element outputEl = (Element) ((Element) cur).getElementsByTagName("output").item(0);
+				String outputType = outputEl.getAttributes().getNamedItem("typename").getNodeValue();
 
 				DataOutput out = DataOutput.getOutput(outputType);
 				out.read(outputEl);
 
-				LinkedList<String> queueCur = new LinkedList<String>();
-				for(int j = 0; j < queueArr.length;++j){
-					queueCur.add(queueArr[j]);
+				try{
+					String queueStr = ((Element) cur).getElementsByTagName("stack").item(0).getChildNodes().item(0).getNodeValue();
+					String[] queueArr = queueStr.split(",");
+					LinkedList<String> queueCur = new LinkedList<String>();
+					for(int j = 0; j < queueArr.length;++j){
+						queueCur.add(queueArr[j]);
+					}
+				}catch(Exception e){
+					logger.warn(e,e);
 				}
 
 			} catch (Exception e) {
-				error = LanguageManagerWF.getText(
-						"dataflowaction.readvaluesxml",
-						new Object[] { componentId });
-				logger.error("error ",e);
+				error = LanguageManagerWF.getText("dataflowaction.readvaluesxml", new Object[] { componentId });
+				logger.error("error "+e,e);
 			}
 		}
 
