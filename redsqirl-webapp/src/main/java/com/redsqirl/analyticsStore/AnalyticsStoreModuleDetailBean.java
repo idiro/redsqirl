@@ -267,29 +267,6 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 				} catch (Exception e) {
 				}
 			}
-			
-			/*BufferedWriter writer = null;
-		    try {
-		    	File file = new File("/usr/share/redsqirl/conf/licenseKey.properties");
-	
-		        writer = new BufferedWriter(new FileWriter(file, true));
-		        
-		        for (String k : key.split(",")){
-		        	if (!k.trim().isEmpty()){
-		        		writer.write(k);
-		 		        writer.newLine();
-		        	}
-		        }
-		       
-		    } catch (Exception e) {
-		    	e.printStackTrace();
-		    } finally {
-		    	try {
-		    		writer.close();
-		        } catch (Exception e) {
-		        }
-		    }*/
-		    
 		    
 		}
 		
