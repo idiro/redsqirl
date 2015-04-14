@@ -386,18 +386,14 @@ public class WorkflowPrefManager extends BlockManager {
 			logger.debug("set permissions...");
 			home.setWritable(true, false);
 			home.setReadable(true, false);
-			superactionF.setWritable(true, false);
 			superactionF.setReadable(true, false);
-			userHelpTomcat.setWritable(true,false);
 			userHelpTomcat.setReadable(true,false);
-			userImageTomcat.setWritable(true,false);
 			userImageTomcat.setReadable(true,false);
 		}
 		File sysSADir = WorkflowPrefManager.getSuperActionMainDir(null);
 		logger.info("path " + sysSADir.getAbsolutePath());
 		if(!sysSADir.exists()){
 			sysSADir.mkdirs();
-			sysSADir.setWritable(true,false);
 			sysSADir.setReadable(true,false);
 		}
 	}
