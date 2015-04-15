@@ -684,8 +684,6 @@
          }
 
 	     
-         
-	     
 	     function selectTab(tabIndex){
 	    	 var tabs = jQuery("#canvas-tabs").tabs();
 	    	 tabs.tabs("option", "active", tabIndex);
@@ -955,13 +953,15 @@
 	
 	<a4j:region>
 				
-			<a4j:jsFunction name="updateProgressBar" reRender="runningprogressComponent" />
-			<a4j:jsFunction name="collapsePanelRunningElementOnClick" action="#{canvasBean.collapsePanelRunningElement}" reRender="runningprogressComponent" />
-			<a4j:jsFunction name="collapsePanelCompletedActionsListOnClick" action="#{canvasBean.collapsePanelCompletedActionsList}" reRender="runningprogressComponent" />
+				<a4j:jsFunction name="collapsePanelRunningElementOnClick" action="#{canvasBean.collapsePanelRunningElement}" reRender="runningprogressComponent" />
+				<a4j:jsFunction name="collapsePanelCompletedActionsListOnClick" action="#{canvasBean.collapsePanelCompletedActionsList}" reRender="runningprogressComponent" />
+								
 				
 				<div id="domMessageDivCanvas2" style="display: none;">
 					
 					<h:form>
+					
+					<a4j:jsFunction name="updateProgressBar" reRender="runningprogressComponent" />
 					
 					<h:outputLink id="workflowUrl" value="#{canvasBean.workflowUrl}"
 						target="_blank" style="float:left;margin-left:5px;"
