@@ -1049,7 +1049,7 @@
 				</a4j:jsFunction>
 				
 				<a4j:jsFunction name="cloneBeforeAggregate" action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
-					oncomplete="tmpCommandObj.cloneId = data;aggregate();">
+					oncomplete="tmpCommandObj.cloneId = data;setTimeout(function(){aggregate()},500);">
 					<a4j:actionparam name="allpositions" />
 				</a4j:jsFunction>
 				
