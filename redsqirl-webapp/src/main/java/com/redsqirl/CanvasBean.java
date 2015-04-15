@@ -1118,7 +1118,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 						}catch(Exception e){}
 						logger.info("Workflow "+name+" running, "+valueProgressBar+" % / "+totalProgressBar);
 					}
-					//setValueProgressBar(getValueProgressBar()+1);
 					Thread.sleep(250);
 					++i;
 				}
@@ -1130,7 +1129,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 			logger.info("blockRunningWorkflow getDf() = null");
 		}
 		logger.info("end blockRunningWorkflow ");
-
 
 		setProgressBarEnabled(false);
 
