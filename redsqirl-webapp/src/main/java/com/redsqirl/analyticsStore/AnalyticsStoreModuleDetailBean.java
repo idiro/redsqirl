@@ -229,7 +229,10 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 		}
 
 		
-		String packagePath = System.getProperty("java.io.tmpdir")+ "/" +fileName;
+		String tmp = WorkflowPrefManager.pathSysHome;
+		String packagePath = tmp + "/tmp/" +fileName;
+		
+		System.out.println("packagePath  " + packagePath);
 		
 		try {
 			URL website = new URL(downloadUrl + "&idUser=" + analyticsStoreLoginBean.getIdUser() + "&key=" + softwareKey);
@@ -273,12 +276,11 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 		ZipFile zipFile = new ZipFile(packagePath);
 		
 		String extractedPackagePath = packagePath.substring(0, packagePath.length()-4);
+		System.out.println("extractedPackagePath  " + extractedPackagePath);
 		zipFile.extractAll(extractedPackagePath);
 		
-		System.out.println(extractedPackagePath);
-		
 		File folder = new File(extractedPackagePath + "/" +fileName.substring(0, fileName.length()-4));
-		System.out.println(folder.getPath());
+		System.out.println("folder.getPath  " + folder.getPath());
 		
 		SuperActionManager saManager = getSuperActionManager();
 		DataFlowInterface dfi = getworkFlowInterface();
