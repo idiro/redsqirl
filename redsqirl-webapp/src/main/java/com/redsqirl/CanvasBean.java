@@ -1637,8 +1637,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 							tooltip.append("<tr><td colspan='1'>" + e.getKey()
 									+ "</td></tr>");
 						}
-						tooltip.append("<tr><td> Fields </td><td> Type </td></tr>");
+						tooltip.append("<tr><td></td><td> Fields </td><td> Type </td></tr>");
 						int row = 0;
+						int index = 1;
 						for (String name : e.getValue().getFields()
 								.getFieldNames()) {
 							if ((row % 2) == 0) {
@@ -1646,11 +1647,13 @@ public class CanvasBean extends BaseBean implements Serializable {
 							} else {
 								tooltip.append("<tr>");
 							}
+							tooltip.append("<td>" + index + "</td>");
 							tooltip.append("<td>" + name + "</td>");
 							tooltip.append("<td>"
 									+ e.getValue().getFields()
 									.getFieldType(name) + "</td></tr>");
 							row++;
+							index++;
 						}
 						tooltip.append("</table>");
 						tooltip.append("<br/>");
@@ -1922,8 +1925,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 						if (e.getValue().getFields() != null
 								&& e.getValue().getFields().getFieldNames() != null) {
 							tooltip.append("<br/>");
-							tooltip.append("<table style='border:1px solid;width:100%;'><tr><td> Name </td><td> Type </td></tr>");
+							tooltip.append("<table style='border:1px solid;width:100%;'><tr><td></td><td> Name </td><td> Type </td></tr>");
 							int row = 0;
+							int index = 1;
 							for (String name : e.getValue().getFields()
 									.getFieldNames()) {
 								if ((row % 2) == 0) {
@@ -1931,12 +1935,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 								} else {
 									tooltip.append("<tr>");
 								}
+								tooltip.append("<td>" + index + "</td>");
 								tooltip.append("<td>" + name + "</td>");
 								tooltip.append("<td>"
 										+ e.getValue().getFields()
 										.getFieldType(name)
 										+ "</td></tr>");
 								row++;
+								index++;
 							}
 							tooltip.append("</table>");
 							tooltip.append("<br/>");
