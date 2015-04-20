@@ -189,6 +189,10 @@ public class SuperAction extends DataflowAction implements SuperElement{
 				String outputType = outputEl.getAttributes().getNamedItem("typename").getNodeValue();
 
 				DataOutput out = DataOutput.getOutput(outputType);
+				if(out == null){
+					error = LanguageManagerWF.getText("dataoutput.unknown", new Object[] { outputType });
+					break;
+				}
 				out.read(outputEl);
 
 				try{
@@ -203,8 +207,8 @@ public class SuperAction extends DataflowAction implements SuperElement{
 				}
 
 			} catch (Exception e) {
-				error = LanguageManagerWF.getText("dataflowaction.readvaluesxml", new Object[] { componentId });
-				logger.error("error "+e,e);
+				//error = LanguageManagerWF.getText("dataflowaction.readvaluesxml", new Object[] { componentId });
+				logger.warn("error "+e,e);
 			}
 		}
 
@@ -228,28 +232,29 @@ public class SuperAction extends DataflowAction implements SuperElement{
 			Iterator<Entry<LinkedList<String>,DFEOutput> > it = tmpOutput.entrySet().iterator();
 			while(it.hasNext()){
 				Entry<LinkedList<String>,DFEOutput> cur = it.next();
+				if(cur.getValue() != null && cur.getValue().getTypeName() != null){
+					Element curEl = doc.createElement("tmpoutput");
 
-				Element curEl = doc.createElement("tmpoutput");
+					Element stackEl = doc.createElement("stack");
+					String stack = "";
+					Iterator<String> itStack = cur.getKey().iterator();
+					while(itStack.hasNext()){
+						stack +=itStack.next()+",";
+					}
+					stack = stack.substring(0,stack.length()-1);
+					stackEl.appendChild(doc.createTextNode(stack));
+					curEl.appendChild(stackEl);
 
-				Element stackEl = doc.createElement("stack");
-				String stack = "";
-				Iterator<String> itStack = cur.getKey().iterator();
-				while(itStack.hasNext()){
-					stack +=itStack.next()+",";
+					Element outputEl = doc.createElement("output");
+					Attr attrType = doc.createAttribute("typename");
+					attrType.setValue(cur.getValue().getTypeName());
+					outputEl.setAttributeNode(attrType);
+					cur.getValue().write(doc, outputEl);
+					curEl.appendChild(outputEl);
+
+
+					parent.appendChild(curEl);
 				}
-				stack = stack.substring(0,stack.length()-1);
-				stackEl.appendChild(doc.createTextNode(stack));
-				curEl.appendChild(stackEl);
-
-				Element outputEl = doc.createElement("output");
-				Attr attrType = doc.createAttribute("typename");
-				attrType.setValue(cur.getValue().getTypeName());
-				outputEl.setAttributeNode(attrType);
-				cur.getValue().write(doc, outputEl);
-				curEl.appendChild(outputEl);
-
-
-				parent.appendChild(curEl);
 			}
 
 		} catch (DOMException dme) {
