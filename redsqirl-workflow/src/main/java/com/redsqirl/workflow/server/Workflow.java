@@ -1251,7 +1251,14 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			if (!fs.isFile(new Path(filePath))) {
 				return "'" + filePath + "' is not a file.";
 			}
-			fs.copyToLocalFile(new Path(filePath), new Path(tempPath));
+			logger.info("filePath  " + filePath);
+			logger.info("tempPath  " + tempPath);
+			/*Process p = Runtime.getRuntime().exec(
+					new String[] { "/bin/bash", "-c", WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_hadoop_home)
+							+"/bin/hadoop fs -copyToLoacal "+filePath+" "+tempPath});
+			p.waitFor();*/
+			
+			fs.copyToLocalFile(false, new Path(filePath), new Path(tempPath));
 
 			File xmlFile = new File(tempPath);
 			error = readFromLocal(xmlFile);
