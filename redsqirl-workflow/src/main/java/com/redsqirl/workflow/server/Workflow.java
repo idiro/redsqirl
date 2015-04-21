@@ -1262,15 +1262,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			}
 			logger.info("filePath  " + filePath);
 			logger.info("tempPath  " + tempPath);
-			
-			/*
-			 * Process p = Runtime.getRuntime().exec( new String[] {
-			 * "/bin/bash", "-c",
-			 * WorkflowPrefManager.getSysProperty(WorkflowPrefManager
-			 * .sys_hadoop_home)
-			 * +"/bin/hadoop fs -copyToLoacal "+filePath+" "+tempPath});
-			 * p.waitFor();
-			 */
 
 			fs.copyToLocalFile(new Path(filePath), new Path(tempPath));
 
@@ -1299,13 +1290,14 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 
 			Document doc = null;
-			File tmpFile = new File(xmlFile.getAbsolutePath() + ".tmp");
-			try {
-				FileStream.decryptFile(xmlFile, tmpFile);
+			File tmpFile = new File(WorkflowPrefManager.getPathtmpfolder()+"/"+xmlFile.getName()+".tmp");
+			try{
+				FileStream.decryptFile(xmlFile,tmpFile);
 				doc = dBuilder.parse(tmpFile);
 				doc.getDocumentElement().normalize();
-			} catch (Exception e) {
-				logger.error(e, e);
+			}catch(Exception e){
+				logger.error(e,e);
+				logger.warn("Error while decrypting file, attempting to read the file as text");
 				doc = dBuilder.parse(xmlFile);
 				doc.getDocumentElement().normalize();
 			}

@@ -10,7 +10,7 @@
 
   <h2>Goals:</h2>
 
-  <ul>
+  <ol>
       <li>Create Ssh Connections to remote
     servers</li>
 
@@ -22,7 +22,7 @@
 
     <li>Learn how to use some of the actions
     that are available in the Pig Package</li>
-  </ul>
+  </ol>
 
 
   <p>The actions footer, is the little frame on the bottom left of
@@ -37,6 +37,8 @@
 
   <h2>Pig Workflow</h2>
 
+  <h3>Copying file from a Remote to HDFS</h3>
+  
   <p>
   The purpose
   of this task is to demonstrate the &ldquo;Remote File
@@ -46,37 +48,18 @@
   and copying files from the remote server to the Hadoop file
   system and to show how one would use the Pig Package to query
   files and get results.</p>
-
-  <p>
-  On the last
-  page of every pig action there are options for the output of the
-  action such as the delimiter to use, or the output type either
-  Text or Binary. It is recommended to only use Text for the moment
-  but you can use any delimiter. The delimiter can be any non alpha
-  numeric value or an ASCII value such as &ldquo;#1&rdquo; which in
-  ASCII value is &ldquo;\001&rdquo;.</p>
-
   
 
-  <ul>
+  <ol>
     <li>Click on Remote File System</li>
-  </ul>
-
-  <ul>
     <li>Click the plus symbol to create a new
     ssh connection to a remote server</li>
-  </ul>
-
-  <ul>
+  	<li><ul>
     <li>Host : keane</li>
-
     <li>Port : (do not
     select)</li>
-
     <li>Save (do not select)</li>
-  </ul>
-
-  <ul>
+  </ul></li>
     <li>change the working directory to
     &ldquo;/tmp/&rdquo; via the path that is above listed
     directories and click the search symbol</li>
@@ -104,10 +87,23 @@
     <li>in the new window click the radio
     button beside the new file that was created and click
     ok.</li>
-  </ul>
+  </ol>
 
+  <h3>Create a Workflow</h3>
 
+  
+  <p>
+  On the last
+  page of every pig action there are options for the output of the
+  action such as the delimiter to use, or the output type either
+  Text or Binary. It is recommended to only use Text for the moment
+  but you can use any delimiter. The delimiter can be any non alpha
+  numeric value or an ASCII value such as &ldquo;#1&rdquo; which in
+  ASCII value is &ldquo;\001&rdquo;.</p>
+  
 
+  <h4>Setup a Source Action</h4>
+  
   <p>This Task will show how the source
   &ldquo;action&rdquo; can be configured to select flat files and
   change the properties such as the delimiter of the file and also
@@ -115,12 +111,9 @@
   workflow needs to be run after each action is configured except
   for source.</p>
 
-  <ul>
+  <ol>
     <li>in the actions footer drag a new source
     icon onto the canvas.</li>
-  </ul>
-
-  <ul>
     <li>double click to open source and select
     hdfs as the data type then click next,</li>
 
@@ -129,28 +122,19 @@
 
     <li>on the data set screen select
     path.</li>
-  </ul>
-
-  <ul>
+    
     <li>click the radio button beside the
     directory that contains the &ldquo;export.txt&rdquo; file and
     then ok</li>
-  </ul>
 
-  <ul>
-    <li>under the property
-    &ldquo;delimiter&rdquo; change the value to be &ldquo;,&rdquo;
-    by typing it in</li>
-
-    <li>under the property &ldquo;header
-    &rdquo; paste &ldquo;subscriber_number String , Friend String ,
+    <li>On the feature title line, click on the edit button and paste &ldquo;subscriber_number String , Friend String ,
     offpeak_voice INT , offpeak_sms INT , offpeak_mms INT
     ,peak_voice INT,peak_sms INT , peak_mms INT , sna_weight INT ,
     subscriber_onnet INT ,friend_onnet INT&rdquo; into the value
     field</li>
 
     <li>click apply and then ok</li>
-  </ul>
+  </ol>
 
   
 
@@ -161,7 +145,8 @@
   name and click ok at the bottom of the page. The default
   extension of a workflow file is &lsquo;.rs&rsquo;</p>
 
-
+  <h4>Setup a Pig Aggregator Action</h4>
+  
   <p>
   Pig
   Aggregator is action where aggregation methods are allowed to be
@@ -170,12 +155,10 @@
   are allowed because this action will group by either the selected
   attributes or all (default if none is selected).</p>
 
-  <ul>
+  <ol>
     <li>drag a pig aggregator action to the
     canvas</li>
-  </ul>
-
-  <ul>
+    
     <li>Create a link between the source that
     was just configured and the new pig aggregator action by
     clicking inside the source action and then clicking on the pig
@@ -214,15 +197,13 @@
     <li>on the top of the screen on the main
     menu, click project and then run to run the
     workflow</li>
-  </ul>
+  </ol>
 
 
-  <ul>
+  <ol>
     <li>Drop another pig aggregator onto the
     canvas</li>
-  </ul>
 
-  <ul>
     <li>Again make a link between the source
     and the new pig aggregator</li>
 
@@ -253,9 +234,9 @@
     <li>once the title is complete
     click ok and next on the page, then click ok on the final
     page</li>
-  </ul>
+  </ol>
 
-  
+  <h4>Perform a Pig Join Action</h4>  
 
   <p>
   To make
@@ -264,12 +245,10 @@
 
   
 
-  <ul>
+  <ol>
     <li>to do this we drop a pig join
     onto the canvas</li>
-  </ul>
-
-  <ul>
+    
     <li>create a link from the pig aggregator
     that contains the sum of &ldquo;total_voice&rdquo; to the new
     pig join action</li>
@@ -280,6 +259,8 @@
 
     <li>double click the pig join and change
     the element if necessary</li>
+	
+	<li>The first page list the table aliases, click next</li>
 
     <li>on the first page we see a generator
     interaction, make sure that &ldquo;copy&rdquo; is selected as
@@ -298,23 +279,18 @@
 
     <li>to specify the fields that we use to
     join click inside the &ldquo;Join_field&rdquo; box on one of
-    and input &ldquo;1&rdquo; inside the editor</li>
-  </ul>
-
-  <ul>
-    <li>This condition will join
+    and input &ldquo;1&rdquo; inside the editor. This condition will join
     the two tables together</li>
-  </ul>
 
-  <ul>
     <li>do the same for the second
     row</li>
 
     <li>click next to proceed to the next page
     and then click ok</li>
-  </ul>
+  </ol>
 
   
+  <h4>Filter a Data set</h4>  
 
   <p>
   Now we want
@@ -322,14 +298,11 @@
   of total voice calls than the average of the entire
   dataset.</p>
 
-  
 
-  <ul>
+  <ol>
     <li>Drop a new pig select action onto the
     canvas</li>
-  </ul>
-
-  <ul>
+    
     <li>create a link from the pig join action
     to the new pig select action</li>
 
@@ -353,17 +326,17 @@
 
     <li>click ok and then finish the
     action by clicking ok</li>
-  </ul>
+  </ol>
 
   
 
-  <h3>Summary of workflow</h3>
+  <h4>Summary of workflow</h4>
 
   
 
   <p>In this workflow we have</p>
 
-  <ul>
+  <ol>
     <li>Configured source for a hdfs
     file</li>
 
@@ -380,7 +353,7 @@
 
     <li>filtered a table with a
     condition</li>
-  </ul>
+  </ol>
 
   
 
