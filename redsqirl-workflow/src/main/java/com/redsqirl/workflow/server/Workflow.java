@@ -1286,13 +1286,14 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			
 			Document doc = null;
-			File tmpFile = new File(xmlFile.getAbsolutePath()+".tmp");
+			File tmpFile = new File(WorkflowPrefManager.getPathtmpfolder()+"/"+xmlFile.getName()+".tmp");
 			try{
 				FileStream.decryptFile(xmlFile,tmpFile);
 				doc = dBuilder.parse(tmpFile);
 				doc.getDocumentElement().normalize();
 			}catch(Exception e){
 				logger.error(e,e);
+				logger.warn("Error while decrypting file, attempting to read the file as text");
 				doc = dBuilder.parse(xmlFile);
 				doc.getDocumentElement().normalize();
 			}
