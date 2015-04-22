@@ -173,6 +173,16 @@ public interface DFEOutput extends Remote {
 	 * @throws RemoteException
 	 */
 	public String isPathValid() throws RemoteException;
+	
+	/**
+	 * True if the path is valid. A path is valid if the path already
+	 * exists, or the path can be created automatically during the execution.
+	 * 
+	 * @param path
+	 * @return error message
+	 * @throws RemoteException
+	 */
+	public String isPathValid(String path) throws RemoteException;
 
 	/**
 	 * True if the path has been auto generated. True if the path has been auto

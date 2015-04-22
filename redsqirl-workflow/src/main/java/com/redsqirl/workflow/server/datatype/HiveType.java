@@ -169,27 +169,27 @@ public class HiveType extends DataOutput{
 	 * @throws RemoteException
 	 */
 	@Override
-	public String isPathValid() throws RemoteException {
+	public String isPathValid(String path) throws RemoteException {
 		String error=null;
-		if(getPath() == null){
+		if(path == null){
 			error = LanguageManagerWF.getText("hivetype.ispathvalid.pathnull");
 		}
-		if(hInt.getTableAndPartitions(getPath()).length > 1){
+		if(hInt.getTableAndPartitions(path).length > 1){
 			error = LanguageManagerWF.getText("hivetype.ispathvalid.partselected");
 			return error;
 		}
 		if (isPathExists()){
-			if(hInt.getTableAndPartitions(getPath()).length > 1){
-				return LanguageManagerWF.getText("hivetype.ispathvalid.noPartitions" , new Object[]{getPath()});
+			if(hInt.getTableAndPartitions(path).length > 1){
+				return LanguageManagerWF.getText("hivetype.ispathvalid.noPartitions" , new Object[]{path});
 			}
-			return hInt.isPathValid(getPath(), fields, false);
+			return hInt.isPathValid(path, fields, false);
 		}else{
 			String regex = "[a-zA-Z_]([A-Za-z0-9_]+)";
-			if (!hInt.getTableAndPartitions(getPath())[0].matches(regex)) {
+			if (!hInt.getTableAndPartitions(path)[0].matches(regex)) {
 				error = LanguageManagerWF.getText("hivetype.ispathvalid.invalid");
 			}
-			if(hInt.getTableAndPartitions(getPath()).length > 1){
-				return LanguageManagerWF.getText("hivetype.ispathvalid.noPartitions" , new Object[]{getPath()});
+			if(hInt.getTableAndPartitions(path).length > 1){
+				return LanguageManagerWF.getText("hivetype.ispathvalid.noPartitions" , new Object[]{path});
 			}
 		}
 		return error;

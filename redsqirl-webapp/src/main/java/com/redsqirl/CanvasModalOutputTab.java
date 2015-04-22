@@ -4,6 +4,7 @@ package com.redsqirl;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 
+import com.redsqirl.dynamictable.FileSystemHistory;
 import com.redsqirl.dynamictable.UnselectableTable;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.enumeration.FieldType;
@@ -81,6 +83,8 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 	 */
 	private boolean sourceNode;
 
+	private LinkedList<FileSystemHistory> pathHistory;
+	private LinkedList<String> paths;
 
 	/**
 	 * Constructor. The constructor will automatically load the first name as
@@ -89,16 +93,34 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 	 * @param dfe
 	 * @throws RemoteException
 	 */
-	public CanvasModalOutputTab(Map<String, FileSystemBean> datastores,
-			DataFlowElement dfe) throws RemoteException {
+	public CanvasModalOutputTab(Map<String, FileSystemBean> datastores,	DataFlowElement dfe) throws RemoteException {
 		this.dfe = dfe;
 		this.datastores = datastores;
-		try {
-			//resetNameOutput();
-			//updateDFEOutputTable();
+
+		/*try {
+			resetNameOutput();
+			updateDFEOutputTable();
 		} catch (Exception e) {
 			logger.info("Exception: " + e.getMessage());
+		}*/
+
+		if(pathHistory == null){
+			pathHistory = new LinkedList<FileSystemHistory>();
+			paths = new LinkedList<String>();
+			Map<String, String> mapHistory = getHDFS().readPathList("paths");
+			for (String path : mapHistory.keySet()) {
+				FileSystemHistory fsh = new FileSystemHistory();
+				fsh.setName(path);
+				String alias = mapHistory.get(path);
+				if(alias.startsWith("/")){
+					alias = alias.substring(1);
+				}
+				fsh.setAlias(alias);
+				pathHistory.addLast(fsh);
+				paths.addLast(path);
+			}
 		}
+
 	}
 
 	/**
@@ -193,10 +215,85 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 					logger.info("Output found: " + getNameOutput() + " - path: " + path);
 				}
 			}
+		}else{
+			DFEOutput output = getOutputFormList().get(0).getDfeOutput(); 
+			if(output.isPathValid(path) != null){
+				String parent = path.substring(0,path.lastIndexOf('/')); 
+				if(output.isPathValid(parent) == null){
+					path = parent;
+					getFileSystem().setPath(path);
+					//Display warning
+					
+					HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+					MessageUseful.addWarnMessage(getMessageResources("warn_hdfs_path"));
+					request.setAttribute("msnSuccess", "msnSuccess");
+					
+				}
+			}
+		}
+		
+		setSourceNode(true);
+		mountPathHistory(path);
+	}
+
+	public void mountPathHistory(String path) throws RemoteException {
+
+		String pathFolder = path.substring(0,path.lastIndexOf("/"));
+
+		if(paths.size() > 10){
+			paths.removeLast();
 		}
 
-		setSourceNode(true);
+		if(!paths.contains(pathFolder)){
+			paths.addFirst(pathFolder);
+		}else{
+			paths.remove(pathFolder);
+			paths.addFirst(pathFolder);
+		}
 
+		FileSystemHistory fsh = new FileSystemHistory();
+		String alias = "";
+		if(pathFolder.endsWith("/")){
+			alias = pathFolder.substring(0, pathFolder.length()-1);
+		}
+		alias = pathFolder.substring(pathFolder.lastIndexOf("/"));
+		fsh.setName(pathFolder);
+		if(alias.startsWith("/")){
+			alias = alias.substring(1);
+		}
+		fsh.setAlias(alias);
+
+		if(pathHistory.size() > 10){
+			pathHistory.removeLast();
+		}
+
+		if(!checkExist(pathHistory, pathFolder)){
+			pathHistory.addFirst(fsh);
+		}else{
+			removePath(pathHistory, pathFolder);
+			pathHistory.addFirst(fsh);
+		}
+
+		getHDFS().savePathList("paths", paths);
+
+	}
+
+	public boolean checkExist(LinkedList<FileSystemHistory> list, String path) throws RemoteException {
+		for (FileSystemHistory fileSystemHistory : list) {
+			if(fileSystemHistory.getName().equalsIgnoreCase(path)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void removePath(LinkedList<FileSystemHistory> list, String path) throws RemoteException {
+		for (Iterator<FileSystemHistory> iterator = list.iterator(); iterator.hasNext();) {
+			FileSystemHistory fileSystemHistory = (FileSystemHistory) iterator.next();
+			if(fileSystemHistory.getName().equalsIgnoreCase(path)){
+				iterator.remove();
+			}
+		}
 	}
 
 	/**
@@ -222,9 +319,9 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 						fileName = "";
 					}
 				}
-				
+
 				logger.info(fileName);
-			
+
 				String regex = "[a-zA-Z]([a-zA-Z0-9_\\.]*)";
 				if (!fileName.matches(regex)) {
 					error = getMessageResources("msg_error_save");
@@ -242,7 +339,7 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 						.getCurrentInstance().getExternalContext().getRequest();
 				request.setAttribute("msnError", "msnError");
 			}
-			
+
 		}
 
 	}
@@ -319,7 +416,7 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 					}
 					grid = new UnselectableTable(gridTitle);
 					try {
-						
+
 						if(dfeOut.isPathExists() && dfeOut.isPathValid() == null){
 							List<Map<String, String>> outputLines = dfeOut.select(Math.max(10, Math.min(200, 2000/gridTitle.size())));
 							if (outputLines != null) {
@@ -334,15 +431,15 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 									grid.add(rowCur);
 								}
 							}
-							
+
 						}
-						
+
 						if(grid.getRows().isEmpty()){
 							String[] emptyRow = new String[gridTitle.size()];
 							grid.add(emptyRow);
 						}
-						
-						
+
+
 					} catch (Exception e) {
 						logger.info("Error when getting data: " + e);
 					}
@@ -484,6 +581,22 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 
 	public void setSourceNode(boolean sourceNode) {
 		this.sourceNode = sourceNode;
+	}
+
+	public LinkedList<FileSystemHistory> getPathHistory() {
+		return pathHistory;
+	}
+
+	public void setPathHistory(LinkedList<FileSystemHistory> pathHistory) {
+		this.pathHistory = pathHistory;
+	}
+
+	public LinkedList<String> getPaths() {
+		return paths;
+	}
+
+	public void setPaths(LinkedList<String> paths) {
+		this.paths = paths;
 	}
 
 }

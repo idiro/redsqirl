@@ -1990,4 +1990,14 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		return displaySelect(history.get(cur), maxToRead);
 	}
 
+	@Override
+	public void savePathList(String repo, List<String> paths) throws RemoteException {
+		
+	}
+
+	@Override
+	public Map<String, String> readPathList(String repo) throws RemoteException {
+		return null;
+	}
+
 }

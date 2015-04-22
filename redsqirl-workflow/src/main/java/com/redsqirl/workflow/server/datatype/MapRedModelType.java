@@ -62,22 +62,22 @@ public class MapRedModelType extends MapRedDir {
 	}
 
 	@Override
-	public String isPathValid() throws RemoteException {
+	public String isPathValid(String path) throws RemoteException {
 		String error = null;
-		HdfsFileChecker hCh = new HdfsFileChecker(getPath());
+		HdfsFileChecker hCh = new HdfsFileChecker(path);
 		if (!hCh.isInitialized() || hCh.isFile()) {
 			error = LanguageManagerWF.getText("mapredtexttype.dirisfile");
 		} else {
-			hCh.setPath(new Path(getPath()).getParent());
+			hCh.setPath(new Path(path).getParent());
 			if (!hCh.isDirectory()) {
-				error = LanguageManagerWF.getText("mapredtexttype.nodir",new String[]{getPath()});
+				error = LanguageManagerWF.getText("mapredtexttype.nodir",new String[]{path});
 			}
 			if(isPathExists()){
-				hCh.setPath(new Path(getPath(), "output"));
+				hCh.setPath(new Path(path, "output"));
 				if (!hCh.isFile()) {
 					error = LanguageManagerWF.getText("mapredmodeltype.nooutput");
 				}
-				hCh.setPath(new Path(getPath(), "_output"));
+				hCh.setPath(new Path(path, "_output"));
 				if (!hCh.isFile()) {
 					error = LanguageManagerWF.getText("mapredmodeltype.no_output");
 				}

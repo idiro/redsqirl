@@ -667,4 +667,15 @@ public class SSHInterface extends UnicastRemoteObject implements DataStore {
 	public List<String> displaySelect(int maxToRead) throws RemoteException {
 		return select(history.get(cur), maxToRead);
 	}
+
+	@Override
+	public void savePathList(String repo, List<String> paths)throws RemoteException {
+		
+	}
+
+	@Override
+	public Map<String, String> readPathList(String repo) throws RemoteException {
+		return null;
+	}
+	
 }

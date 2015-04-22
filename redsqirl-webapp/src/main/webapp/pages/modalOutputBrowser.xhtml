@@ -39,121 +39,148 @@
 //]]>
 </script>
 	<div style="padding:0px;">
-    <a4j:region>
-       <a4j:jsFunction name="modalOutputApplyPage" action="#{canvasModalBean.applyPage}" styleClass="greenButton" value="#{messages.button_apply}" 
-		reRender="panelBtCanvasModal, msnError, errorTable, browserTableProp, browserPropLabel, browserPropValue, browserPath" 
-		oncomplete="jQuery('#canvasModalDiv').unblock();reLoadTabs();" />
-    </a4j:region>
-
-	<a4j:jsFunction name="changePathModalOutput" action="#{canvasModalBean.outputTab.fileSystem.changePath}" />
-	<div class="pathHeader">
-	<h:outputText value="#{messages.label_path}" />
-	<h:inputText id="pathDataOutputBrowser"  styleClass="mainPageTextField"  label="Path" value="#{canvasModalBean.outputTab.fileSystem.path}" 
-		maxlength="255" style="width:395px;" onkeypress="return enableEnterKey(event, 'changePathModalOutputBtn');" />
 	
-	<a4j:commandLink id="changePathModalOutputBtn" action="#{canvasModalBean.outputTab.fileSystem.changePath}" reRender="dataOutputBrowser">
-		<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' styleClass="refreshButton" 
-			 />
-	</a4j:commandLink>
-
-	<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goPrevious}"
-		reRender="pathDataOutputBrowser,dataOutputBrowser">
-		<h:graphicImage value="../image/icons/button-previous.gif" title='#{messages.Interface_previous_help}' styleClass="refreshButton"
-		/>
-	</a4j:commandLink>
+	    <a4j:region>
+	       <a4j:jsFunction name="modalOutputApplyPage" action="#{canvasModalBean.applyPage}" styleClass="greenButton" value="#{messages.button_apply}" 
+			reRender="panelBtCanvasModal, msnError, errorTable, browserTableProp, browserPropLabel, browserPropValue, browserPath" 
+			oncomplete="jQuery('#canvasModalDiv').unblock();reLoadTabs();" />
+	    </a4j:region>
 	
-	<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goNext}"
-		reRender="pathDataOutputBrowser,dataOutputBrowser">
-		<h:graphicImage value="../image/icons/button-next.gif" title='#{messages.Interface_next_help}' styleClass="refreshButton"
-		/>
-	</a4j:commandLink>
+		<a4j:jsFunction name="changePathModalOutput" action="#{canvasModalBean.outputTab.fileSystem.changePath}" />
+		<div class="pathHeader">
+		<h:outputText value="#{messages.label_path}" />
+		<h:inputText id="pathDataOutputBrowser"  styleClass="mainPageTextField"  label="Path" value="#{canvasModalBean.outputTab.fileSystem.path}" 
+			maxlength="255" style="width:395px;" onkeypress="return enableEnterKey(event, 'changePathModalOutputBtn');" />
+		
+		<a4j:commandLink id="changePathModalOutputBtn" action="#{canvasModalBean.outputTab.fileSystem.changePath}" reRender="dataOutputBrowser">
+			<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' styleClass="refreshButton" />
+		</a4j:commandLink>
 	
-	<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goUp}" reRender="pathDataOutputBrowser,dataOutputBrowser">
-		<h:graphicImage value="../image/icons/button-up.gif" title='#{messages.hdfs_goup}' styleClass="refreshButton"
-		/>
-	</a4j:commandLink>
-	</div>
+		<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goPrevious}" reRender="pathDataOutputBrowser,dataOutputBrowser">
+			<h:graphicImage value="../image/icons/button-previous.gif" title='#{messages.Interface_previous_help}' styleClass="refreshButton" />
+		</a4j:commandLink>
+		
+		<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goNext}" reRender="pathDataOutputBrowser,dataOutputBrowser">
+			<h:graphicImage value="../image/icons/button-next.gif" title='#{messages.Interface_next_help}' styleClass="refreshButton" />
+		</a4j:commandLink>
+		
+		<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goUp}" reRender="pathDataOutputBrowser,dataOutputBrowser">
+			<h:graphicImage value="../image/icons/button-up.gif" title='#{messages.hdfs_goup}' styleClass="refreshButton" />
+		</a4j:commandLink>
+		</div>
+		
+		<table width="100%">
+			<tr style="width:100%">
+				<td width="10%" style="padding-right:0px;" >
+				
+					<div style="overflow: auto; height: 265px; border-right:5px solid gray; margin-right:-3px;" >
+						
+						<rich:dataTable value="#{canvasModalBean.outputTab.pathHistory}"
+							var="obj" rowKeyVar="indexTable" width="101%" style="border:none;"
+							onRowMouseOver="this.style.backgroundColor='#f2b97a'" enableContextMenu="false" selectionMode="none"
+							onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'" rowClasses="even-row, odd-row">
+							
+							<rich:column style="border-bottom:0px;border-right:0px;" >
+								<f:facet name="header">
+									<h:outputText value="#{messages.path_history}" />
+								</f:facet>
+								<a4j:commandLink value="#{obj.alias}" title="#{obj.name}" action="#{canvasModalBean.outputTab.fileSystem.selectFileHistory}"
+									reRender="pathDataOutputBrowser,dataOutputBrowser">
+									<f:param name="nameFile" value="#{obj.name}" />
+								</a4j:commandLink>
+							</rich:column>
+							
+						</rich:dataTable>
+						
+					</div>
+					
+				</td>
+				<td width="90%" style="padding-left:0px;">
+					
+					<div style="overflow: auto; height: 265px;" >
 	
-	<div style="width:100%; overflow: auto; height: 265px;" >
-
-		<rich:dataTable id="dataOutputBrowser" value="#{canvasModalBean.outputTab.fileSystem.tableGrid.rows}"
-			var="item" rowKeyVar="indexTable" width="100%" style="border:none;"
-			onRowMouseOver="this.style.backgroundColor='#f2b97a'" enableContextMenu="false" selectionMode="none"
-			onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'" rowClasses="even-row, odd-row">
-	
-			<rich:column style="border-bottom:0px;border-right:0px;" width="35px;">
-				<f:facet name="header">
-					<h:outputText value="" />
-				</f:facet>
-				<h:selectOneRadio value="#{item.selectedStr}" onclick="outPutBrowserSelectOneRadio(this, '#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}');"
-				rendered="#{item.disableSelect}" >
-					<f:selectItem itemValue="true" />
-				</h:selectOneRadio>
-			</rich:column>
-			
-			<rich:column style="border-bottom:0px;border-right:0px;" width="50px;">
-				<f:facet name="header">
-					<h:outputText value="" />
-				</f:facet>
-				<h:graphicImage value="../image/icons/icon-directory.gif" title='#{messages.HdfsInterface_properties_help}' 
-					rendered="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['type'] == 'directory'}" styleClass="btfileSystem" />
-				<h:graphicImage value="../image/icons/icon-file.gif" title='#{messages.HdfsInterface_properties_help}' 
-					rendered="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['type'] == 'file'}" styleClass="btfileSystem" />
-			</rich:column>
-	
-			<rich:column sortBy="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}"
-				style="border-bottom:0px;border-right:0px;">
-				<f:facet name="header">
-					<h:outputText value="#{messages.label_name}" />
-				</f:facet>
-				<a4j:commandLink 
-				    value="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}"
-				    title="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}"
-				    action="#{canvasModalBean.outputTab.fileSystem.selectFile}"
-					reRender="pathDataOutputBrowser,dataOutputBrowser">
-					<f:param name="nameFile" value="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}" />
-				</a4j:commandLink>
-			</rich:column>
-	
-			<rich:columns value="#{canvasModalBean.outputTab.fileSystem.tableGrid.titles == null? canvasBean.emptyList : canvasModalBean.outputTab.fileSystem.tableGrid.titles}" 
-				var="column" index="ind" style="border-bottom:0px;border-right:0px;">
-				<f:facet name="header">
-					<h:outputText value="#{column}" />
-				</f:facet>
-				<div style="word-wrap:break-word;max-width:200px;">
-					<h:outputText value="#{item.row[ind]}" title="#{item.row[ind]}" />
-				</div>
-			</rich:columns>
-	
-		</rich:dataTable>
-
-	</div>
-	
-	<br />
-	
-	<rich:comboBox value="#{canvasModalBean.outputTab.fileSystem.extensionsSelected}" width="200" enableManualInput="false"
-		id="generation" listWidth="150" listHeight="200" rendered="#{not empty canvasModalBean.outputTab.fileSystem.listExtensions}" 
-		onchange="changePathModalOutput();" style="padding-right:20px;float:right;" >
-        <f:selectItems styleClass="interModal" value="#{canvasModalBean.outputTab.fileSystem.listExtensions}" />
-   </rich:comboBox>
-   
-   <br />
-   <br />
-    
-   <rich:panel id="panelBtOutputBrowser" style="border:none; float:right;" >
-   
-    	<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('modalOutputBrowser')}.hide();" />
-    
-    	<a4j:commandButton styleClass="greenButton" 
-    	    action="#{canvasModalBean.outputTab.changePathOutputBrowser}" 
-    	    value="#{messages.button_ok}"
-    		onclick="#{rich:component('modalOutputBrowser')}.hide();" 
-    		reRender="dataOutputForm"
-    		oncomplete="if(#{canvasModalBean.sourceNode}){modalOutputApplyPage();}" >
-    		<a4j:actionparam name="pathFile" value="getPathOutPut('#{canvasModalBean.outputTab.fileSystem.path}')" noEscape="true" />
-    	</a4j:commandButton>
-    	
-    </rich:panel>
+						<rich:dataTable id="dataOutputBrowser" value="#{canvasModalBean.outputTab.fileSystem.tableGrid.rows}"
+							var="item" rowKeyVar="indexTable" width="100%" style="border:none;"
+							onRowMouseOver="this.style.backgroundColor='#f2b97a'" enableContextMenu="false" selectionMode="none"
+							onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'" rowClasses="even-row, odd-row">
+					
+							<rich:column style="border-bottom:0px;border-right:0px;" width="35px;">
+								<f:facet name="header">
+									<h:outputText value="" />
+								</f:facet>
+								<h:selectOneRadio value="#{item.selectedStr}" onclick="outPutBrowserSelectOneRadio(this, '#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}');"
+								rendered="#{item.disableSelect}" >
+									<f:selectItem itemValue="true" />
+								</h:selectOneRadio>
+							</rich:column>
+							
+							<rich:column style="border-bottom:0px;border-right:0px;" width="50px;">
+								<f:facet name="header">
+									<h:outputText value="" />
+								</f:facet>
+								<h:graphicImage value="../image/icons/icon-directory.gif" title='#{messages.HdfsInterface_properties_help}' 
+									rendered="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['type'] == 'directory'}" styleClass="btfileSystem" />
+								<h:graphicImage value="../image/icons/icon-file.gif" title='#{messages.HdfsInterface_properties_help}' 
+									rendered="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['type'] == 'file'}" styleClass="btfileSystem" />
+							</rich:column>
+					
+							<rich:column sortBy="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}"
+								style="border-bottom:0px;border-right:0px;">
+								<f:facet name="header">
+									<h:outputText value="#{messages.label_name}" />
+								</f:facet>
+								<a4j:commandLink 
+								    value="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}"
+								    title="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}"
+								    action="#{canvasModalBean.outputTab.fileSystem.selectFile}"
+									reRender="pathDataOutputBrowser,dataOutputBrowser">
+									<f:param name="nameFile" value="#{canvasModalBean.outputTab.fileSystem.allProps[indexTable]['name']}" />
+								</a4j:commandLink>
+							</rich:column>
+					
+							<rich:columns value="#{canvasModalBean.outputTab.fileSystem.tableGrid.titles == null? canvasBean.emptyList : canvasModalBean.outputTab.fileSystem.tableGrid.titles}" 
+								var="column" index="ind" style="border-bottom:0px;border-right:0px;">
+								<f:facet name="header">
+									<h:outputText value="#{column}" />
+								</f:facet>
+								<div style="word-wrap:break-word;max-width:200px;">
+									<h:outputText value="#{item.row[ind]}" title="#{item.row[ind]}" />
+								</div>
+							</rich:columns>
+					
+						</rich:dataTable>
+				
+					</div>
+					
+				</td>
+			</tr>
+		</table>
+		
+		<br />
+		
+		<rich:comboBox value="#{canvasModalBean.outputTab.fileSystem.extensionsSelected}" width="200" enableManualInput="false"
+			id="generation" listWidth="150" listHeight="200" rendered="#{not empty canvasModalBean.outputTab.fileSystem.listExtensions}" 
+			onchange="changePathModalOutput();" style="padding-right:20px;float:right;" >
+	        <f:selectItems styleClass="interModal" value="#{canvasModalBean.outputTab.fileSystem.listExtensions}" />
+	   </rich:comboBox>
+	   
+	   <br />
+	   <br />
+	    
+	   <rich:panel id="panelBtOutputBrowser" style="border:none; float:right;" >
+	   
+	    	<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('modalOutputBrowser')}.hide();" />
+	    
+	    	<a4j:commandButton styleClass="greenButton" 
+	    	    action="#{canvasModalBean.outputTab.changePathOutputBrowser}" 
+	    	    value="#{messages.button_ok}"
+	    		onclick="#{rich:component('modalOutputBrowser')}.hide();" 
+	    		reRender="dataOutputForm,msnSuccess"
+	    		oncomplete="if(#{canvasModalBean.sourceNode}){modalOutputApplyPage();}" >
+	    		<a4j:actionparam name="pathFile" value="getPathOutPut('#{canvasModalBean.outputTab.fileSystem.path}')" noEscape="true" />
+	    	</a4j:commandButton>
+	    	
+	    </rich:panel>
     
 	</div>
 </ui:composition>

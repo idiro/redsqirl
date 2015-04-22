@@ -299,6 +299,11 @@ DFEOutput {
 	}
 	
 	@Override
+	public String isPathValid() throws RemoteException {
+		return isPathValid(getPath());
+	}
+	
+	@Override
 	public boolean regeneratePath(Boolean copy, String userName, String component,
 			String outputName) throws RemoteException {
 		boolean regen = false;
