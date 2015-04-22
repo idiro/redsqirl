@@ -148,6 +148,23 @@ public interface DataStore extends Remote {
 	void goNext() throws RemoteException;
 
 	/**
+	 * Save a list of path you can retrieve later
+	 * @param repo Repository name
+	 * @param paths The list of path to save 
+	 * @throws RemoteException
+	 */
+	void savePathList(String repo, List<String> paths) throws RemoteException;
+	
+	/**
+	 * Read a path list from disk
+	 * @param repo key: path, value file name
+	 * @return
+	 * @throws RemoteException
+	 */
+	Map<String,String> readPathList(String repo) throws RemoteException;
+	
+	
+	/**
 	 * Get the properties. Get the properties associated with the children of
 	 * the current path.
 	 * 

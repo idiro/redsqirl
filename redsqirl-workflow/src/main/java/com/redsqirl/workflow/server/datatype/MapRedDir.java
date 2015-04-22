@@ -53,29 +53,29 @@ public abstract class MapRedDir extends MapRedHdfs{
 		super(fields);
 	}
 	
-	public String isPathValid(List<String> shouldNotHaveExt, List<String> shouldHaveExt) throws RemoteException {
+	public String isPathValid(String path, List<String> shouldNotHaveExt, List<String> shouldHaveExt) throws RemoteException {
 		String error = null;
-		HdfsFileChecker hCh = new HdfsFileChecker(getPath());
+		HdfsFileChecker hCh = new HdfsFileChecker(path);
 		if(shouldHaveExt != null && !shouldHaveExt.isEmpty()){
 			boolean found = false;
 			for(String extCur: shouldHaveExt){
-				found |= getPath().endsWith(extCur);
+				found |= path.endsWith(extCur);
 			}
 			if(!found){
 				error = LanguageManagerWF.getText(
 						"mapredtexttype.shouldhaveextcompresssile",
-						new Object[] { getPath(),shouldHaveExt });
+						new Object[] { path,shouldHaveExt });
 				
 			}
 		}else if(shouldNotHaveExt != null && ! shouldNotHaveExt.isEmpty()){
 			boolean found = false;
 			for(String extCur: shouldNotHaveExt){
-				found |= getPath().endsWith(extCur);
+				found |= path.endsWith(extCur);
 			}
 			if(found){
 				error = LanguageManagerWF.getText(
 						"mapredtexttype.shouldnothaveextcompresssile",
-						new Object[] { getPath(),shouldNotHaveExt });
+						new Object[] { path,shouldNotHaveExt });
 				
 			}
 		}
@@ -86,13 +86,13 @@ public abstract class MapRedDir extends MapRedHdfs{
 			FileSystem fs;
 			try {
 				fs = NameNodeVar.getFS();
-				hCh.setPath(new Path(getPath()).getParent());
+				hCh.setPath(new Path(path).getParent());
 				if (!hCh.isDirectory()) {
 					error = LanguageManagerWF.getText("mapredtexttype.nodir",new String[]{hCh.getPath().toString()});
 				}
 				
 				if(isPathExists()){
-					FileStatus[] stat = fs.listStatus(new Path(getPath()),
+					FileStatus[] stat = fs.listStatus(new Path(path),
 							new PathFilter() {
 
 						@Override
@@ -104,7 +104,7 @@ public abstract class MapRedDir extends MapRedHdfs{
 						if (stat[i].isDir()) {
 							error = LanguageManagerWF.getText(
 									"mapredtexttype.notmrdir",
-									new Object[] { getPath() });
+									new Object[] { path });
 						}else{
 
 							if(shouldHaveExt != null && !shouldHaveExt.isEmpty()){
@@ -115,7 +115,7 @@ public abstract class MapRedDir extends MapRedHdfs{
 								if(!found){
 									error = LanguageManagerWF.getText(
 											"mapredtexttype.shouldhaveextcompresssile",
-											new Object[] { getPath(),shouldHaveExt });
+											new Object[] { path,shouldHaveExt });
 
 								}
 							}else if(shouldNotHaveExt != null && ! shouldNotHaveExt.isEmpty()){
@@ -126,7 +126,7 @@ public abstract class MapRedDir extends MapRedHdfs{
 								if(found){
 									error = LanguageManagerWF.getText(
 											"mapredtexttype.shouldnothaveextcompresssile",
-											new Object[] { getPath(),shouldNotHaveExt });
+											new Object[] { path,shouldNotHaveExt });
 
 								}
 							}

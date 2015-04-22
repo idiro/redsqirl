@@ -282,6 +282,29 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		}
 
 	}
+	
+	public void selectFileHistory() {
+
+		try {
+
+			Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+			String name = params.get("nameFile");
+
+			logger.info("selectFileHistory " + name);
+
+			if (getDataStore().goTo(name)) {
+				updateTable();
+				logger.info("selectFileHistory updateTable");
+			} else {
+				logger.error("Error: " + name + " this is not a directory");
+			}
+
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			MessageUseful.addErrorMessage(" ");
+		}
+
+	}
 
 
 	/**

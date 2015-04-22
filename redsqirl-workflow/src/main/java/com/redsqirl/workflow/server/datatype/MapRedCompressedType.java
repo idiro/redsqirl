@@ -68,11 +68,11 @@ public class MapRedCompressedType extends MapRedTextType {
 	 * @throws RemoteException
 	 */
 	@Override
-	public String isPathValid() throws RemoteException {
+	public String isPathValid(String path) throws RemoteException {
 		List<String> shouldHaveExt = new LinkedList<String>();
 		shouldHaveExt.add(".bz");
 		shouldHaveExt.add(".bz2");
-		return isPathValid(null,shouldHaveExt);
+		return isPathValid(path,null,shouldHaveExt);
 	}
 	
 	/**

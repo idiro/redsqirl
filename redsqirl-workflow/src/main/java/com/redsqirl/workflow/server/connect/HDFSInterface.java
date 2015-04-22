@@ -1,8 +1,12 @@
 package com.redsqirl.workflow.server.connect;
 
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -10,6 +14,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -39,6 +44,7 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import com.redsqirl.utils.FieldList;
+import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
 import com.redsqirl.workflow.server.connect.interfaces.HdfsDataStore;
 import com.redsqirl.workflow.server.enumeration.FieldType;
@@ -159,6 +165,7 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 		// fCh.close();
 	}
 
+
 	/**
 	 * Go to a path if it exists
 	 * 
@@ -239,6 +246,54 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 		if (haveNext()) {
 			++cur;
 		}
+	}
+
+
+	@Override
+	public void savePathList(String repo, List<String> paths) throws RemoteException {
+
+		logger.info("savePathList ");
+		
+		File pathHistory = new File(WorkflowPrefManager.getPathUserPref(System.getProperty("user.name")),"hdfs_history_"+repo+".txt");
+		String newLine = System.getProperty("line.separator");
+		FileWriter fw;
+		try {
+			fw = new FileWriter(pathHistory);
+			for (String path : paths) {
+				fw.write(path + newLine);
+			}
+			fw.close();
+		} catch (IOException e) {
+			logger.error("error savePathList: ", e);
+		}
+	}
+
+	@Override
+	public Map<String, String> readPathList(String repo) throws RemoteException {
+
+		logger.info("readPathList ");
+		
+		File pathHistory = new File(WorkflowPrefManager.getPathUserPref(System.getProperty("user.name"))+"/hdfs_history_"+repo+".txt");
+		LinkedHashMap<String, String> mapHistory = new LinkedHashMap<String, String>();
+
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(pathHistory));
+			String line = null;
+			while((line = br.readLine()) != null){
+				if(line.endsWith("/")){
+					line = line.substring(0, line.length()-1);
+				}
+				String alias = line.substring(line.lastIndexOf("/"));
+				mapHistory.put(line, alias);
+				logger.info("path " + line);
+				logger.info("alias " + alias);
+			}
+			br.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return mapHistory;
 	}
 
 	/**
@@ -1116,9 +1171,9 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 
 			logger.info("session config set");
 			session.connect();
-			
+
 			Channel channel = session.openChannel("exec");
-			
+
 			copyInHDFS(channel, rfile, lfile, remoteServer);
 
 			channel.disconnect();
@@ -1133,17 +1188,17 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 		}
 		return error;
 	}
-	
+
 	private String copyInHDFS(Channel channel, String rfile, String lfile, String remoteServer) throws Exception {
-		
+
 		String error = null;
 		FileSystem fs = NameNodeVar.getFS();
-		
+
 		SSHInterface sshInt = new SSHInterface(remoteServer, 22);
-		
+
 		Map<String,String> p = sshInt.getProperties(rfile);
 		if(p.get("type").equals("file")){
-			
+
 			// exec 'scp -f rfile' remotely
 			String command = "scp -f " + rfile;
 			channel = channel.getSession().openChannel("exec");
@@ -1152,39 +1207,39 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 			// get I/O streams for remote scp
 			OutputStream out = channel.getOutputStream();
 			InputStream in = channel.getInputStream();
-			
+
 			logger.info("file " + p.get("type") + " " + lfile);
-			
+
 			FSDataOutputStream fosd = fs.create(new Path(lfile));
-			
+
 			channel.connect();
 
 			copyToHDFS(fosd, in, out );
-			
+
 		}else{
-			
+
 			if ( !fs.exists(new Path(lfile)) ) {
 				if ( !fs.mkdirs(new Path(lfile)) )  // create the directory
 					error = lfile + ": Cannot create such directory";
 			} else if ( !fs.isDirectory(new Path(lfile)) ) //already exists as a file
 				error = lfile + ": Not a directory";
-			
+
 			logger.info("create the directory " + lfile);
-			
+
 			Map<String,Map<String,String>> files = sshInt.getChildrenProperties(rfile);
 			logger.info(files);
-			
+
 			for (String path : files.keySet()) {
 				Map<String,String> props = files.get(path);
-				
+
 				logger.info(props.get("type") + " " + path);
-				
+
 				String fileName = path.replaceFirst(rfile, "");
 				//String fileName = path.substring(path.lastIndexOf("/"));
 				logger.info("fileName " + fileName);
-				
+
 				if(props.get("type").equals("file")){
-					
+
 					// exec 'scp -f rfile' remotely
 					String command = "scp -f " + rfile;
 					channel = channel.getSession().openChannel("exec");
@@ -1193,39 +1248,39 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 					// get I/O streams for remote scp
 					OutputStream out = channel.getOutputStream();
 					InputStream in = channel.getInputStream();
-					
+
 					logger.info("file " + lfile+fileName);
-					
+
 					FSDataOutputStream fosd = fs.create(new Path(lfile+fileName));
-					
+
 					channel.connect();
 
 					copyToHDFS(fosd, in, out );
-					
+
 				}else{
-					
+
 					if ( !fs.exists(new Path(lfile+fileName)) ) {
 						if ( !fs.mkdirs(new Path(lfile+fileName)) )  // create the directory
 							error = lfile+fileName + ": Cannot create such directory";
 					} else if ( !fs.isDirectory(new Path(lfile+fileName)) ) //already exists as a file
 						error = lfile+fileName + ": Not a directory";
-					
+
 					logger.info("create the directory " + lfile+fileName);
-					
+
 					copyInHDFS(channel, rfile+fileName, lfile+fileName, remoteServer);
-					
+
 				}
-					
+
 			}
-			
+
 		}
-		
+
 		return error;
 	}
 
 	private String copyToHDFS(FSDataOutputStream fosd,  InputStream in, OutputStream out) throws Exception {
 		String error = null;
-		
+
 		byte[] buf = new byte[1024];
 
 		// send '\0'
@@ -1298,16 +1353,16 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 			out.write(buf, 0, 1);
 			out.flush();
 		}
-		
+
 		return error;
 	}
 
 	/*private String copyToHDFS(String lfile,  InputStream in, OutputStream out) throws Exception {
-		
+
 		String error = null;
 		FileSystem fs = NameNodeVar.getFS();
 		fs.setWorkingDirectory(new Path(lfile));
-		
+
 		byte[] buf=new byte[1024];
 
 		// initiate copy with acknowledgement (send a \0 byte)
@@ -1356,35 +1411,35 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 					break;
 				}
 			}
-			
+
 			logger.info("rFileName " + rFileName);
-			
+
 			Path path = new Path(rFileName);
-			
+
 			// if is a directory
 			if (c == 'D') {
-				
+
 				logger.info("directory ");
 				logger.info("path "+path.getName());
-				
+
 				if ( !fs.exists(path) ) {
 					if ( !fs.mkdirs(path) )  // create the directory
 						error = path.toString() + ": Cannot create such directory";
 				} else if ( !fs.isDirectory(path) ) //already exists as a file
 					error = path.toString() + ": Not a directory";
-				
+
 				fs.setWorkingDirectory(new Path(lfile));
 				if(!lfile.contains(rFileName)){
 					fs.setWorkingDirectory(new Path(lfile+"/"+rFileName));
 				}
-				
+
 				// send acknowledgement (send a \0 byte)
 				buf[0] = 0;
 				out.write(buf, 0, 1);
 				out.flush();
 				continue;
 			}
-			
+
 			logger.info("file ");
 			logger.info("path "+path.getName());
 
@@ -1623,5 +1678,6 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 	public List<String> displaySelect(int maxToRead) throws RemoteException {
 		return select(getPath(),",", maxToRead);
 	}
+
 
 }

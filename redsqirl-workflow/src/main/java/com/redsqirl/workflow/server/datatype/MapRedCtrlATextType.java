@@ -69,20 +69,20 @@ public class MapRedCtrlATextType extends MapRedDir{
 	}
 
 	@Override
-	public String isPathValid() throws RemoteException {
+	public String isPathValid(String path) throws RemoteException {
 		String error = null;
-		HdfsFileChecker hCh = new HdfsFileChecker(getPath());
+		HdfsFileChecker hCh = new HdfsFileChecker(path);
 		if (!hCh.isInitialized() || hCh.isFile()) {
 			error = LanguageManagerWF.getText("mapredtexttype.dirisfile");
 		} else {
 			FileSystem fs;
 			try {
 				fs = NameNodeVar.getFS();
-				hCh.setPath(new Path(getPath()).getParent());
+				hCh.setPath(new Path(path).getParent());
 				if (!hCh.isDirectory()) {
-					error = LanguageManagerWF.getText("mapredtexttype.nodir",new String[]{getPath()});
+					error = LanguageManagerWF.getText("mapredtexttype.nodir",new String[]{path});
 				}
-				FileStatus[] stat = fs.listStatus(new Path(getPath()),
+				FileStatus[] stat = fs.listStatus(new Path(path),
 						new PathFilter() {
 
 					@Override
@@ -94,7 +94,7 @@ public class MapRedCtrlATextType extends MapRedDir{
 					if (stat[i].isDir()) {
 						error = LanguageManagerWF.getText(
 								"mapredtexttype.notmrdir",
-								new Object[] { getPath() });
+								new Object[] { path });
 					} else {
 						try {
 							hdfsInt.select(stat[i].getPath().toString(),"", 1);

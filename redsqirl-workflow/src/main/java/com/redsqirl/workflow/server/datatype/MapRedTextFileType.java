@@ -107,43 +107,43 @@ public class MapRedTextFileType extends MapRedHdfs {
 	 * @throws RemoteException
 	 */
 	@Override
-	public String isPathValid() throws RemoteException {
+	public String isPathValid(String path) throws RemoteException {
 		List<String> shouldNotHaveExt = new LinkedList<String>();
 		shouldNotHaveExt.add(".bz");
 		shouldNotHaveExt.add(".bz2");
-		return isPathValid(shouldNotHaveExt,null);
+		return isPathValid(path, shouldNotHaveExt,null);
 	}
 
-	public String isPathValid(List<String> shouldNotHaveExt, List<String> shouldHaveExt) throws RemoteException {
+	public String isPathValid(String path, List<String> shouldNotHaveExt, List<String> shouldHaveExt) throws RemoteException {
 		String error = null;
-		HdfsFileChecker hCh = new HdfsFileChecker(getPath());
-		if(getPath() != null){
+		HdfsFileChecker hCh = new HdfsFileChecker(path);
+		if(path != null){
 			if(shouldHaveExt != null && !shouldHaveExt.isEmpty()){
 				boolean found = false;
 				for(String extCur: shouldHaveExt){
-					found |= getPath().endsWith(extCur);
+					found |= path.endsWith(extCur);
 				}
 				if(!found){
 					error = LanguageManagerWF.getText(
 							"mapredtexttype.shouldhaveext",
-							new Object[] { getPath(),shouldHaveExt });
+							new Object[] { path,shouldHaveExt });
 
 				}
 			}else if(shouldNotHaveExt != null && ! shouldNotHaveExt.isEmpty()){
 				boolean found = false;
 				for(String extCur: shouldNotHaveExt){
-					found |= getPath().endsWith(extCur);
+					found |= path.endsWith(extCur);
 				}
 				if(found){
 					
 					if(shouldNotHaveExt != null && (shouldNotHaveExt.contains(".bz") || shouldNotHaveExt.contains(".bz2"))){
 						error = LanguageManagerWF.getText(
 								"mapredtexttype.shouldnothaveextcompresssile",
-								new Object[] { getPath(),shouldNotHaveExt });
+								new Object[] { path,shouldNotHaveExt });
 					}else{
 						error = LanguageManagerWF.getText(
 								"mapredtexttype.shouldnothaveext",
-								new Object[] { getPath(),shouldNotHaveExt });
+								new Object[] { path,shouldNotHaveExt });
 					}
 					
 				}
@@ -152,7 +152,7 @@ public class MapRedTextFileType extends MapRedHdfs {
 				error = "internal error";
 			} else {
 				if (hCh.exists() && !hCh.isFile()) {
-					error = LanguageManagerWF.getText("mapredtextfiletype.nofile",new String[]{getPath()});
+					error = LanguageManagerWF.getText("mapredtextfiletype.nofile",new String[]{path});
 				}
 
 			}

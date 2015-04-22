@@ -95,11 +95,11 @@ public class MapRedTextType extends MapRedDir {
 	 * @throws RemoteException
 	 */
 	@Override
-	public String isPathValid() throws RemoteException {
+	public String isPathValid(String path) throws RemoteException {
 		List<String> shouldNotHaveExt = new LinkedList<String>();
 		shouldNotHaveExt.add(".bz");
 		shouldNotHaveExt.add(".bz2");
-		return isPathValid(shouldNotHaveExt,null);
+		return isPathValid(path,shouldNotHaveExt,null);
 	}
 
 	/**
