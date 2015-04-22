@@ -135,10 +135,17 @@ public class MapRedTextFileType extends MapRedHdfs {
 					found |= getPath().endsWith(extCur);
 				}
 				if(found){
-					error = LanguageManagerWF.getText(
-							"mapredtexttype.shouldnothaveext",
-							new Object[] { getPath(),shouldNotHaveExt });
-
+					
+					if(shouldNotHaveExt != null && (shouldNotHaveExt.contains(".bz") || shouldNotHaveExt.contains(".bz2"))){
+						error = LanguageManagerWF.getText(
+								"mapredtexttype.shouldnothaveextcompresssile",
+								new Object[] { getPath(),shouldNotHaveExt });
+					}else{
+						error = LanguageManagerWF.getText(
+								"mapredtexttype.shouldnothaveext",
+								new Object[] { getPath(),shouldNotHaveExt });
+					}
+					
 				}
 			}
 			if (!hCh.isInitialized()) {

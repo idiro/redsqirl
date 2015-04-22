@@ -24,10 +24,10 @@
     
     jQuery(document).on("click", ".stopLink", function(e){
 
-		showTabResult();
-		jQuery("#divTabHelp").scrollTop( 0 );
 		
 	    if(! jQuery('#notMoveHelp').is(':checked')){
+			showTabResult();
+			jQuery("#divTabHelp").scrollTop( 0 );
 			var id = jQuery(this).attr('id');
 			if( historyHelp[historyHelpIndex] != id ){
 	            jQuery("#nextHelp").attr("disabled", true);

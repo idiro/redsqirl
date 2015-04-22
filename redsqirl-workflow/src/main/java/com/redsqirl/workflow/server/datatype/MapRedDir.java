@@ -63,7 +63,7 @@ public abstract class MapRedDir extends MapRedHdfs{
 			}
 			if(!found){
 				error = LanguageManagerWF.getText(
-						"mapredtexttype.shouldhaveext",
+						"mapredtexttype.shouldhaveextcompresssile",
 						new Object[] { getPath(),shouldHaveExt });
 				
 			}
@@ -74,7 +74,7 @@ public abstract class MapRedDir extends MapRedHdfs{
 			}
 			if(found){
 				error = LanguageManagerWF.getText(
-						"mapredtexttype.shouldnothaveext",
+						"mapredtexttype.shouldnothaveextcompresssile",
 						new Object[] { getPath(),shouldNotHaveExt });
 				
 			}
@@ -114,7 +114,7 @@ public abstract class MapRedDir extends MapRedHdfs{
 								}
 								if(!found){
 									error = LanguageManagerWF.getText(
-											"mapredtexttype.shouldhaveext",
+											"mapredtexttype.shouldhaveextcompresssile",
 											new Object[] { getPath(),shouldHaveExt });
 
 								}
@@ -125,7 +125,7 @@ public abstract class MapRedDir extends MapRedHdfs{
 								}
 								if(found){
 									error = LanguageManagerWF.getText(
-											"mapredtexttype.shouldnothaveext",
+											"mapredtexttype.shouldnothaveextcompresssile",
 											new Object[] { getPath(),shouldNotHaveExt });
 
 								}
