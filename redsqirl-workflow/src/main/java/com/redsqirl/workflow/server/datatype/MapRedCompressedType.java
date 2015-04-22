@@ -58,7 +58,7 @@ public class MapRedCompressedType extends MapRedTextType {
 	
 	@Override
 	public String[] getExtensions() throws RemoteException {
-		return new String[]{"*.bz", "*.bz2"};
+		return new String[]{"*.bz2","*.bz"};
 	}
 
 	/**
