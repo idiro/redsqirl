@@ -1382,7 +1382,7 @@
 
 				<a4j:jsFunction name="openModal"
 					action="#{canvasModalBean.openCanvasModal}"
-					oncomplete="if(#{requestScope['msnError'] == null} &amp;&amp; #{canvasModalBean.outputTab.showOutputForm == 'Y' or canvasModalBean.listPageSize > 0}){cloneBeforeUpdateElement();checkPageError();}"
+					oncomplete="if(#{requestScope['msnError'] == null} &amp;&amp; #{canvasModalBean.outputTab.showOutputForm == 'Y' or canvasModalBean.listPageSize > 0}){cloneBeforeUpdateElement();checkPageError();reLoadDisplayTable();}"
 					reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError, errorTable, canvasModalTabPanel, msnErrorPage,tableInteraction">
 					<a4j:actionparam name="paramGroupId" />
 					<a4j:actionparam name="paramPathImage" />
