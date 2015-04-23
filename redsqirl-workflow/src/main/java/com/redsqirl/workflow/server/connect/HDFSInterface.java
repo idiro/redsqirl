@@ -1237,39 +1237,8 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 				String fileName = path.replaceFirst(rfile, "");
 				//String fileName = path.substring(path.lastIndexOf("/"));
 				logger.info("fileName " + fileName);
-
-				if(props.get("type").equals("file")){
-
-					// exec 'scp -f rfile' remotely
-					String command = "scp -f " + rfile;
-					channel = channel.getSession().openChannel("exec");
-					((ChannelExec) channel).setCommand(command);
-
-					// get I/O streams for remote scp
-					OutputStream out = channel.getOutputStream();
-					InputStream in = channel.getInputStream();
-
-					logger.info("file " + lfile+fileName);
-
-					FSDataOutputStream fosd = fs.create(new Path(lfile+fileName));
-
-					channel.connect();
-
-					copyToHDFS(fosd, in, out );
-
-				}else{
-
-					if ( !fs.exists(new Path(lfile+fileName)) ) {
-						if ( !fs.mkdirs(new Path(lfile+fileName)) )  // create the directory
-							error = lfile+fileName + ": Cannot create such directory";
-					} else if ( !fs.isDirectory(new Path(lfile+fileName)) ) //already exists as a file
-						error = lfile+fileName + ": Not a directory";
-
-					logger.info("create the directory " + lfile+fileName);
-
-					copyInHDFS(channel, rfile+fileName, lfile+fileName, remoteServer);
-
-				}
+				
+				copyInHDFS(channel, rfile+fileName, lfile+fileName, remoteServer);
 
 			}
 
