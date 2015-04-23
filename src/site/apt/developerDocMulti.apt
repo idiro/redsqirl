@@ -261,7 +261,7 @@ and the AppendList Interaction by displaying the columns selected in each",
     }
 +-----------------+
 	
-	The final method of the action is the update mthod which will update all interactions that are contained in the action.
+	The final method of the action is the update method which will update all interactions that are contained in the action.
 	It's only parameter is a UserInteraction. This parameter is a way to confirm which interaction is to be updated. 
 	
 	The update for the list interaction (first interaction) is a simple setting of the values to display by getting the input's feature names 
