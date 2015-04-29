@@ -133,8 +133,6 @@ public class SshBean extends FileSystemBean implements Serializable{
 		logger.info("host name: "+getHost());
 		logger.info("port: "+getPort());
 		
-		
-		
 		if (isSelectedSaveSsh()){
 			error = getDataStoreArray().addKnownStore(values);
 		}
@@ -165,7 +163,10 @@ public class SshBean extends FileSystemBean implements Serializable{
 			MessageUseful.addErrorMessage(error);
 			HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
+			usageRecordLog().addError("ERROR NEWSSH", error);
 		}
+		
+		usageRecordLog().addSuccess("NEWSSH");
 	}
 	
 	public void changeTab() throws RemoteException, Exception{

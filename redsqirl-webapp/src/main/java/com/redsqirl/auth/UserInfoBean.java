@@ -159,7 +159,13 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		buildBackend = true;
 		setAlreadySignedInOtherMachine(null);
 		setAlreadySignedIn(null);
+		String licenseKey = null;
+		String licence = "";
 
+		FacesContext fCtx = FacesContext.getCurrentInstance();
+		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
+		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(true);
+		
 		try {
 			Connection conn = new Connection(hostname);
 			conn.connect();
@@ -180,9 +186,8 @@ public class UserInfoBean extends BaseBean implements Serializable {
 				logger.warn("--> password auth method not supported by server");
 			}
 
-			checkPassword = conn.authenticateWithPassword(userName,
-					password);
-
+			checkPassword = conn.authenticateWithPassword(userName,	password);
+			
 			if (!checkPassword) {
 				setMsnError("error");
 				setAlreadySignedInOtherMachine(null);
@@ -192,7 +197,6 @@ public class UserInfoBean extends BaseBean implements Serializable {
 				return "failure";
 			}
 			try {
-				String licence = "";
 				File licenseP = new File(WorkflowPrefManager.getPathSystemLicence());
 				logger.info("path licence " + WorkflowPrefManager.getPathSystemLicence());
 				Properties props = new Properties();
@@ -200,7 +204,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 				String[] value = ProjectID.get().trim().split("-");
 				if(value != null && value.length > 1){
-					String licenseKey = value[0].replaceAll("[0-9]", "") + value[value.length-1];
+					licenseKey = value[0].replaceAll("[0-9]", "") + value[value.length-1];
 
 					if (licenseP.exists()) {
 						props.load(new FileInputStream(licenseP));
@@ -265,10 +269,12 @@ public class UserInfoBean extends BaseBean implements Serializable {
 			setMsnError("error");
 			return "failure";
 		}
-
-		FacesContext fCtx = FacesContext.getCurrentInstance();
-		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
-		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(true);
+		
+		UsageRecordWriter usageRecordLog = new UsageRecordWriter(licence, userName);
+		Map<String, UsageRecordWriter> sessionUsageRecordWriter = new HashMap<String, UsageRecordWriter>();
+		sessionUsageRecordWriter.put(userName, usageRecordLog);
+		sc.setAttribute("usageRecordLog", sessionUsageRecordWriter);
+		
 		@SuppressWarnings("unchecked")
 		Map<String, HttpSession> sessionLoginMap = (Map<String, HttpSession>) sc.getAttribute("sessionLoginMap");
 
@@ -282,6 +288,8 @@ public class UserInfoBean extends BaseBean implements Serializable {
 				setAlreadySignedIn("twice");
 
 				logger.info("Already Authenticated twice");
+				usageRecordLog().addError("ERROR LOGIN", "Already Authenticated twice");
+				
 				return "failure";
 			}else if(forceSignIn.equalsIgnoreCase("T")){
 				//Invalidate the session
@@ -289,14 +297,18 @@ public class UserInfoBean extends BaseBean implements Serializable {
 			}else{
 				setAlreadySignedInOtherMachine("two");
 				logger.info("Already Authenticated two");
+				usageRecordLog().addError("ERROR LOGIN", "Already Authenticated two");
 				return "failure";
 			}
 		}
+		
 		logger.info("update progressbar");
 		setValueProgressBar(5);
 
 		logger.info("validateSecondLogin end");
 
+		usageRecordLog().addSuccess("LOGIN");
+		
 		return init();
 	}
 
@@ -329,7 +341,6 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		}
 
 		return loginWithSessionSSH();
-
 	}
 
 	/**
@@ -590,6 +601,9 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		setAlreadySignedIn(null);
 
 		invalidateSession();
+		
+		usageRecordLog().addSuccess("SIGNOUT");
+		
 		return "signout";
 	}
 

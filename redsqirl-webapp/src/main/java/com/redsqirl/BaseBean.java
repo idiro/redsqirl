@@ -12,18 +12,21 @@ import java.util.Map.Entry;
 import java.util.ResourceBundle;
 
 import javax.faces.context.FacesContext;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
-import com.redsqirl.useful.RedSqirlEntry;
+import com.redsqirl.auth.UsageRecordWriter;
+import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.useful.MessageUseful;
+import com.redsqirl.useful.RedSqirlEntry;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
-import com.redsqirl.workflow.server.connect.interfaces.HdfsDataStore;
 import com.redsqirl.workflow.server.connect.interfaces.DataStoreArray;
+import com.redsqirl.workflow.server.connect.interfaces.HdfsDataStore;
 import com.redsqirl.workflow.server.connect.interfaces.PropertiesManager;
 import com.redsqirl.workflow.server.interfaces.JobManager;
 import com.redsqirl.workflow.utils.SuperActionManager;
@@ -243,7 +246,7 @@ public class BaseBean {
 				}
 				bb_logger.info(f.getAbsolutePath());
 			} catch (Exception e) {
-				//				logger.info("E");
+				//logger.info("E");
 			}
 			
 		}
@@ -253,6 +256,21 @@ public class BaseBean {
 	
 	public boolean checkString(String regex, String value){
 		return value.matches(regex);
+	}
+	
+	public UsageRecordWriter usageRecordLog() {
+		
+		FacesContext context = FacesContext.getCurrentInstance();
+		UserInfoBean userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
+		ServletContext sc = (ServletContext) context.getExternalContext().getContext();
+		Map<String, UsageRecordWriter> sessionUsageRecordWriter = (Map<String, UsageRecordWriter>) sc.getAttribute("usageRecordLog");
+		UsageRecordWriter usageRecordLog = sessionUsageRecordWriter.get(userInfoBean.getUserName());
+		if(usageRecordLog != null){
+			return usageRecordLog;
+		}else{
+			bb_logger.error("usageRecord file not found");
+			return new UsageRecordWriter();
+		}
 	}
 	
 }

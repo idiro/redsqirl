@@ -91,11 +91,13 @@ public class SettingsBean extends BaseBean implements Serializable  {
 		}
 		if(error != null){
 			MessageUseful.addErrorMessage(error);
-			HttpServletRequest request = (HttpServletRequest) FacesContext
-					.getCurrentInstance().getExternalContext().getRequest();
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
+			usageRecordLog().addError("ERROR NEWSETTINGS", error);
 		}
 		calcSettings();
+		
+		usageRecordLog().addSuccess("NEWSETTINGS");
 	}
 
 	private Properties getProps(List<String[]> l){

@@ -78,6 +78,8 @@ public class HdfsBrowserBean extends HdfsBean {
 				getBundleMessage("error.invalid.path");
 			}
 		}
+		
+		usageRecordLog().addSuccess("CREATESAVEFOLDER");
 	}
 
 	@Override

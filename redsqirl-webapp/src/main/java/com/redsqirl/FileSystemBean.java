@@ -225,6 +225,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			updateTable();
 		}
 
+		usageRecordLog().addSuccess("DELETEFILE");
 	}
 
 	/**
@@ -425,12 +426,13 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			MessageUseful.addErrorMessage(error);
 			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
+			usageRecordLog().addError("ERROR COPYMOVEFILE", error);
 		}
 
 		updateTable();
+		
+		usageRecordLog().addSuccess("COPYMOVEFILE");
 	}
-
-
 
 	/**
 	 * copyFileBefore
@@ -655,8 +657,6 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		return resultPath;
 	}
 
-
-
 	public String getCanCopy() throws RemoteException {
 		return getDataStore().canCopy();
 	}
@@ -677,36 +677,29 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		return tableGrid;
 	}
 
-
 	public List<Map<String, String>> getAllProps() {
 		return allProps;
 	}
-
 
 	public List<String> getEditProps() {
 		return editProps;
 	}
 
-
 	public List<String> getCreateProps() {
 		return createProps;
 	}
-
 
 	public void setTableGrid(SelectableTable tableGrid) {
 		this.tableGrid = tableGrid;
 	}
 
-
 	public void setAllProps(List<Map<String, String>> allProps) {
 		this.allProps = allProps;
 	}
 
-
 	public void setEditProps(List<String> editProps) {
 		this.editProps = editProps;
 	}
-
 
 	public void setCreateProps(List<String> createProps) {
 		this.createProps = createProps;
@@ -823,4 +816,5 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	public void setAllowDirectories(boolean allowDirectories) {
 		this.allowDirectories = allowDirectories;
 	}
+	
 }

@@ -337,16 +337,16 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 				installed = true;
 			}
 			else{
-				MessageUseful.addInfoMessage("Error installing model: " + error);
+				MessageUseful.addErrorMessage("Error installing model: " + error);
 			}
 
 
 		}else{
 			String value[] = error.split(",");
 			if(value.length > 1){
-				MessageUseful.addInfoMessage("Error installing model: " + getMessageResourcesWithParameter(value[0],new String[]{value[1]}));
+				MessageUseful.addErrorMessage("Error installing model: " + getMessageResourcesWithParameter(value[0],new String[]{value[1]}));
 			}else{
-				MessageUseful.addInfoMessage("Error installing model: " + getMessageResources(error));
+				MessageUseful.addErrorMessage("Error installing model: " + getMessageResources(error));
 			}
 		}
 
@@ -468,15 +468,15 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 				installed = true;
 			}else{
 				disable(packagePath);
-				MessageUseful.addInfoMessage("Error installing package: " + error);
+				MessageUseful.addErrorMessage("Error installing package: " + error);
 			}
 
 		}else{
 			String value[] = error.split(",");
 			if(value.length > 1){
-				MessageUseful.addInfoMessage("Error installing package: " + getMessageResourcesWithParameter(value[0],new String[]{value[1]}));
+				MessageUseful.addErrorMessage("Error installing package: " + getMessageResourcesWithParameter(value[0],new String[]{value[1]}));
 			}else{
-				MessageUseful.addInfoMessage("Error installing package: " + getMessageResources(error));
+				MessageUseful.addErrorMessage("Error installing package: " + getMessageResources(error));
 			}
 		}
 

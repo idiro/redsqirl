@@ -340,8 +340,12 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		if (error != null){
 			logger.info(error);
 			setError(error);
+			usageRecordLog().addError("ERROR INSTALLPACKAGE", error);
 		}
+		
+		usageRecordLog().addSuccess("INSTALLPACKAGE");
 	}
+	
 	private String installPackage(boolean sys) throws RemoteException{
 		String error = null;
 

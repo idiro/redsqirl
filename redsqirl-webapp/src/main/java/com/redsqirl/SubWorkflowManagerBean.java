@@ -85,17 +85,15 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 
 		if (error != null && !error.isEmpty()) {
 			MessageUseful.addErrorMessage(error);
-			HttpServletRequest request = (HttpServletRequest) FacesContext
-					.getCurrentInstance().getExternalContext().getRequest();
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
 			logger.info(" " + error);
+			usageRecordLog().addError("ERROR INSTALLSUBWORKFLOW", error);
 		} else {
-			MessageUseful
-					.addInfoMessage("Install Success for " + swa.getName());
-			HttpServletRequest request = (HttpServletRequest) FacesContext
-					.getCurrentInstance().getExternalContext().getRequest();
+			MessageUseful.addInfoMessage("Install Success for " + swa.getName());
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnSuccess", "msnSuccess");
-
+			usageRecordLog().addSuccess("INSTALLSUBWORKFLOW");
 		}
 	}
 	
@@ -215,6 +213,8 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 			}
 		}
 		refreshSubworkflowsSystemList();
+		
+		usageRecordLog().addSuccess("DELETESASYSTEM");
 	}
 
 	public void deleteSaUser() throws RemoteException {
@@ -227,6 +227,7 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 		}
 		refreshSubworkflowsUser();
 
+		usageRecordLog().addSuccess("DELETESAUSER");
 	}
 
 	public void exportSa() throws RemoteException {
@@ -253,19 +254,18 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 
 		if (error != null && !error.isEmpty()) {
 			MessageUseful.addErrorMessage(error);
-			HttpServletRequest request = (HttpServletRequest) FacesContext
-					.getCurrentInstance().getExternalContext().getRequest();
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
 			logger.info(" " + error);
+			usageRecordLog().addError("ERROR EXPORTSUPERACTION", error);
 		} else {
 			MessageUseful
 					.addInfoMessage("Export Success for " + swa.getName());
-			HttpServletRequest request = (HttpServletRequest) FacesContext
-					.getCurrentInstance().getExternalContext().getRequest();
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnSuccess", "msnSuccess");
-
+			usageRecordLog().addSuccess("EXPORTSUPERACTION");
 		}
-
+		
 	}
 
 	public void importSa() throws IOException {
@@ -283,14 +283,14 @@ public class SubWorkflowManagerBean extends BaseBean implements Serializable {
 
 			if (error != null && !error.isEmpty()) {
 				MessageUseful.addErrorMessage(error);
-				HttpServletRequest request = (HttpServletRequest) FacesContext
-						.getCurrentInstance().getExternalContext().getRequest();
+				HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 				request.setAttribute("msnError", "msnError");
+				usageRecordLog().addError("ERROR IMPORTSUPERACTION", error);
 			} else {
 				MessageUseful.addInfoMessage("Import Success");
-				HttpServletRequest request = (HttpServletRequest) FacesContext
-						.getCurrentInstance().getExternalContext().getRequest();
+				HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 				request.setAttribute("msnSuccess", "msnSuccess");
+				usageRecordLog().addSuccess("IMPORTSUPERACTION");
 			}
 		}
 

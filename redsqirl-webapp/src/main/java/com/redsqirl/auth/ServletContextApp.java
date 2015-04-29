@@ -3,6 +3,7 @@ package com.redsqirl.auth;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +13,15 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
+import org.quartz.JobBuilder;
+import org.quartz.JobDetail;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.SchedulerFactory;
+import org.quartz.SimpleScheduleBuilder;
+import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
+import org.quartz.impl.StdSchedulerFactory;
 
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
@@ -45,11 +55,13 @@ public class ServletContextApp implements ServletContextListener{
 		context.setAttribute("sessionLoginMap", sessionLoginMap);
 		Registry reg = null ;
 		try {
-			reg= LocateRegistry.createRegistry(2001);
+			reg = LocateRegistry.createRegistry(2001);
 			logger.error("Created registry");
 		} catch (RemoteException e) {
 			logger.info("Got registry");
 		}
+		
+		executeUsageRecordLogJob();
 
 	}
 
@@ -61,8 +73,31 @@ public class ServletContextApp implements ServletContextListener{
 	 * @author Igor.Souza
 	 */
 	public void contextDestroyed(ServletContextEvent contextEvent) {
-
 		logger.info("Context Destroyed");
+	}
+	
+	public void executeUsageRecordLogJob(){
+
+		try {
+
+			JobDetail job = JobBuilder.newJob(UsageRecordLogJob.class).withIdentity("usageRecordLogJob").build();
+
+			Calendar startTime = Calendar.getInstance();
+			startTime.set(java.util.Calendar.HOUR_OF_DAY, 1);
+			startTime.set(java.util.Calendar.MINUTE, 00);
+			startTime.set(java.util.Calendar.SECOND, 0);
+			startTime.set(java.util.Calendar.MILLISECOND, 0);
+			
+			Trigger trigger = TriggerBuilder.newTrigger().startAt(startTime.getTime()).withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInHours(24).repeatForever()).build();
+
+			SchedulerFactory schFactory = new StdSchedulerFactory();
+			Scheduler sch = schFactory.getScheduler();
+			sch.start();
+			sch.scheduleJob(job, trigger);
+
+		} catch (SchedulerException e) {
+			e.printStackTrace();
+		}
 
 	}
 

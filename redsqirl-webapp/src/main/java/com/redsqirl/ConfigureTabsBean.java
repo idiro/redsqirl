@@ -290,8 +290,10 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 			MessageUseful.addErrorMessage(error);
 			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
+			usageRecordLog().addError("ERROR SAVETABS", error);
 		}
 
+		usageRecordLog().addSuccess("SAVETABS");
 	}
 
 	public void cancelChanges() {

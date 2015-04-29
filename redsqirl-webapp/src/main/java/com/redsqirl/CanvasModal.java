@@ -276,6 +276,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 					if (error != null) {
 						MessageUseful.addErrorMessage(error);
 						request.setAttribute("msnError", "msnError");
+						usageRecordLog().addError("ERROR OPENCANVASMODAL", error);
 					} else {
 
 						// mount output tab
@@ -310,6 +311,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 							logger.info("openCanvasModal checkpages before " + e);
 							MessageUseful.addErrorMessage(e);
 							request.setAttribute("msnErrorPage", "msnErrorPage");
+							usageRecordLog().addError("ERROR OPENCANVASMODAL", e);
 						}
 
 						// retrieves the correct page
@@ -341,6 +343,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 				}
 			}
 		}
+		
+		usageRecordLog().addSuccess(dfe.getName(), "OPENCANVASMODAL");
 	}
 	
 	public void closeCanvasModal() throws RemoteException {
@@ -358,6 +362,8 @@ public class CanvasModal extends BaseBean implements Serializable {
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 		}
+		
+		usageRecordLog().addSuccess("CHANGETITLE");
 	}
 
 	/**
@@ -433,14 +439,15 @@ public class CanvasModal extends BaseBean implements Serializable {
 			MessageUseful.addErrorMessage(error);
 			request.setAttribute("msnError", "msnError");
 			setErrorMsg(error);
+			usageRecordLog().addError("ERROR APPLYPAGE", error);
 		}else{
 			updateOutputElement();
 			outputTab.mountOutputForm(!sourceNode || dfe.getDFEOutput().size() > 1);
 			MessageUseful.addInfoMessage(getMessageResources("success_message"));
 			request.setAttribute("msnSuccess", "msnSuccess");
 			setErrorMsg("");
+			usageRecordLog().addSuccess("APPLYPAGE");
 		}
-
 	}
 
 	/**
@@ -461,9 +468,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 			String error = checkNextPage();
 			if (error != null && error.length() > 1) {
 				MessageUseful.addErrorMessage(error);
-				HttpServletRequest request = (HttpServletRequest) FacesContext
-						.getCurrentInstance().getExternalContext().getRequest();
+				HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 				request.setAttribute("msnError", "msnError");
+				usageRecordLog().addError("ERROR NEXTPAGE", error);
 			} else {
 
 				logger.info("check nextPage Ok ");
@@ -483,13 +490,13 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 		} catch (Exception e) {
 			logger.error(e);
-			MessageUseful
-			.addErrorMessage(getMessageResources("msg_error_oops"));
-			HttpServletRequest request = (HttpServletRequest) FacesContext
-					.getCurrentInstance().getExternalContext().getRequest();
+			MessageUseful.addErrorMessage(getMessageResources("msg_error_oops"));
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
+			usageRecordLog().addError("ERROR NEXTPAGE", e.getMessage());
 		}
 
+		usageRecordLog().addSuccess("NEXTPAGE");
 	}
 
 	/**
@@ -504,8 +511,6 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void previousPage() throws RemoteException {
 
 		logger.info("previousPage ");
-		// Save current page
-		// checkNextPage();
 
 		setListPosition(getListPosition() - 1);
 
@@ -515,6 +520,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 		mountInteractionForm();
 
+		usageRecordLog().addSuccess("PREVIOUSPAGE");
 	}
 	
 
@@ -537,12 +543,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 				}
 			}
 			
-			
 			if (error != null) {
 				MessageUseful.addErrorMessage(error);
-				HttpServletRequest request = (HttpServletRequest) FacesContext
-						.getCurrentInstance().getExternalContext().getRequest();
+				HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 				request.setAttribute("msnError", "msnError");
+				usageRecordLog().addError("ERROR GOTOPAGE", error);
 				pageToGoTo = String.valueOf(getListPosition());
 			} else {
 
@@ -559,10 +564,12 @@ public class CanvasModal extends BaseBean implements Serializable {
 			logger.error(e);
 			MessageUseful
 			.addErrorMessage(getMessageResources("msg_error_oops"));
-			HttpServletRequest request = (HttpServletRequest) FacesContext
-					.getCurrentInstance().getExternalContext().getRequest();
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
+			usageRecordLog().addError("ERROR GOTOPAGE", e.getMessage());
 		}
+		
+		usageRecordLog().addSuccess("GOTOPAGE");
 	}
 
 	/**
@@ -678,13 +685,17 @@ public class CanvasModal extends BaseBean implements Serializable {
 				MessageUseful.addErrorMessage(getMessageResources("msg_error_selEditor"));
 				HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 				request.setAttribute("msnError", "msnError");
+				usageRecordLog().addError("ERROR TEXTEDITOR", getMessageResources("msg_error_selEditor"));
 			}
 		}else{
 			logger.info("openHelpTextEditorModal error idInteraction = NULL ");
 			MessageUseful.addErrorMessage(getMessageResources("msg_error_oops"));
 			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
+			usageRecordLog().addError("ERROR TEXTEDITOR", getMessageResources("msg_error_oops"));
 		}
+		
+		usageRecordLog().addSuccess("TEXTEDITOR");
 	}
 
 	public void openTableInteractionPanel() throws RemoteException{
@@ -704,7 +715,10 @@ public class CanvasModal extends BaseBean implements Serializable {
 			MessageUseful.addErrorMessage(getMessageResources("msg_error_oops"));
 			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
+			usageRecordLog().addError("ERROR TABLEINTERACTION", getMessageResources("msg_error_oops"));
 		}
+		
+		usageRecordLog().addSuccess("TABLEINTERACTION");
 	}
 	
 	public void openHeaderEditorPanel() throws RemoteException{
@@ -724,7 +738,10 @@ public class CanvasModal extends BaseBean implements Serializable {
 			MessageUseful.addErrorMessage(getMessageResources("msg_error_oops"));
 			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			request.setAttribute("msnError", "msnError");
+			usageRecordLog().addError("ERROR HEADEREDITOR", getMessageResources("msg_error_oops"));
 		}
+		
+		usageRecordLog().addSuccess("HEADEREDITOR");
 	}
 
 	public void checkFirstPage() {
