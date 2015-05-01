@@ -678,8 +678,8 @@
              jQuery('#'+getSelectedById()).block({ message: jQuery('#domMessageDivCanvas2') });
              resizeBlockUICanvas();
 
-             runningIntervalID = setInterval(updateProgressBar,5000);
-             setTimeout(updateProgressBar, 100);
+             runningIntervalID = setInterval(function(){ updateProgressBar(); },5000);
+             setTimeout(function(){ updateProgressBar(); }, 100);
              
              //]]>
          }
@@ -952,7 +952,7 @@
 
 	<a4j:keepAlive beanName="canvasModalBean" />
 	
-	<a4j:region>
+	<a4j:region renderRegionOnly="true">
 				
 		<a4j:jsFunction name="collapsePanelRunningElementOnClick" action="#{canvasBean.collapsePanelRunningElement}" reRender="runningprogressComponent" />
 		<a4j:jsFunction name="collapsePanelCompletedActionsListOnClick" action="#{canvasBean.collapsePanelCompletedActionsList}" reRender="runningprogressComponent" />
@@ -976,12 +976,12 @@
 	
 					<br/>
 					<a4j:outputPanel id="runningprogressComponent">
-						<rich:simpleTogglePanel id="runningActionsList" label="#{messages.runningActionsList} (#{canvasBean.runningElementsSize})" switchType="client" onclick="collapsePanelRunningElementOnClick();" opened="#{canvasBean.runningElementsToggle}" >
+						<rich:simpleTogglePanel id="runningActionsList" label="Running Actions (#{canvasBean.runningElementsSize})" switchType="client" onclick="collapsePanelRunningElementOnClick();" opened="#{canvasBean.runningElementsToggle}" >
 							<ui:repeat value="#{canvasBean.runningElements}" var="item">
 	                   			#{item}<br />
 	               			</ui:repeat>
 						</rich:simpleTogglePanel>
-						<rich:simpleTogglePanel id="completedActionsList" label="#{messages.completedActionsList} (#{canvasBean.doneElementsSize})" switchType="client" onclick="collapsePanelCompletedActionsListOnClick();" opened="#{canvasBean.doneElementsToggle}" >
+						<rich:simpleTogglePanel id="completedActionsList" label="Actions Completed (#{canvasBean.doneElementsSize})" switchType="client" onclick="collapsePanelCompletedActionsListOnClick();" opened="#{canvasBean.doneElementsToggle}" >
 							<ui:repeat value="#{canvasBean.doneElements}" var="item">
 	                   			#{item}<br />
 	               			</ui:repeat>
