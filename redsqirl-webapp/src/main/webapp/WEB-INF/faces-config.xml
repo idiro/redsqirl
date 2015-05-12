@@ -1,249 +1,253 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <faces-config version="1.2" xmlns="http://java.sun.com/xml/ns/javaee"
- xmlns:xi="http://www.w3.org/2001/XInclude"
- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_1_2.xsd">
- 
- <!-- **************************** CONVERTERS ************************************************************** --> 
- 
- 
-<!-- ***************************** MANAGED BEANS ************************************************************* -->
-		
- <managed-bean>
-  <managed-bean-name>canvasBean</managed-bean-name>
-  <managed-bean-class>com.redsqirl.CanvasBean</managed-bean-class>
-  <managed-bean-scope>session</managed-bean-scope>
- </managed-bean>
- <managed-bean>
-  <managed-bean-name>hdfsBean</managed-bean-name>
-  <managed-bean-class>com.redsqirl.HdfsBean</managed-bean-class>
-  <managed-bean-scope>session</managed-bean-scope>
- </managed-bean>
- <managed-bean>
-  <managed-bean-name>browserHdfsBean</managed-bean-name>
-  <managed-bean-class>com.redsqirl.HdfsBrowserBean</managed-bean-class>
-  <managed-bean-scope>session</managed-bean-scope>
- </managed-bean>
- <managed-bean>
-  <managed-bean-name>hiveBean</managed-bean-name>
-  <managed-bean-class>com.redsqirl.HiveBean</managed-bean-class>
-  <managed-bean-scope>session</managed-bean-scope>
- </managed-bean>
- <managed-bean>
-  <managed-bean-name>sshBean</managed-bean-name>
-  <managed-bean-class>com.redsqirl.SshBean</managed-bean-class>
-  <managed-bean-scope>session</managed-bean-scope>
- </managed-bean>
- <managed-bean>
-  <managed-bean-name>userInfoBean</managed-bean-name>
-  <managed-bean-class>com.redsqirl.auth.UserInfoBean</managed-bean-class>
-  <managed-bean-scope>session</managed-bean-scope>
- </managed-bean>
- <managed-bean>
-  <managed-bean-name>canvasModalBean</managed-bean-name>
-  <managed-bean-class>com.redsqirl.CanvasModal</managed-bean-class>
-  <managed-bean-scope>session</managed-bean-scope>
- </managed-bean>
- <managed-bean>
- 	<managed-bean-name>configureTabsBean</managed-bean-name>
- 	<managed-bean-class>com.redsqirl.ConfigureTabsBean</managed-bean-class>
- 	<managed-bean-scope>session</managed-bean-scope>
- </managed-bean>
- <managed-bean>
- 	<managed-bean-name>processManagerBean</managed-bean-name>
- 	<managed-bean-class>com.redsqirl.ProcessManagerBean</managed-bean-class>
- 	<managed-bean-scope>session</managed-bean-scope>
- </managed-bean>
-<managed-bean>
-  <managed-bean-name>packageMngBean</managed-bean-name>
-  <managed-bean-class>com.redsqirl.PackageMngBean</managed-bean-class>
-  <managed-bean-scope>session</managed-bean-scope>
- </managed-bean>
- <managed-bean>
-  <managed-bean-name>error</managed-bean-name>
-  <managed-bean-class>com.redsqirl.useful.Error</managed-bean-class>
-  <managed-bean-scope>session</managed-bean-scope>
- </managed-bean>
- <managed-bean>
-  <managed-bean-name>helpBean</managed-bean-name>
-  <managed-bean-class>com.redsqirl.HelpBean</managed-bean-class>
-  <managed-bean-scope>session</managed-bean-scope>
- </managed-bean>
- <managed-bean>
-  <managed-bean-name>settingsBean</managed-bean-name>
-  <managed-bean-class>com.redsqirl.SettingsBean</managed-bean-class>
-  <managed-bean-scope>session</managed-bean-scope>
- </managed-bean>
- <managed-bean>
-  <managed-bean-name>subwfBean</managed-bean-name>
-  <managed-bean-class>com.redsqirl.SubWorkflowManagerBean</managed-bean-class>
-  <managed-bean-scope>session</managed-bean-scope>
- </managed-bean>
- 
- <managed-bean>
-	<managed-bean-name>analyticsStoreLoginBean</managed-bean-name>
-	<managed-bean-class>com.redsqirl.analyticsStore.AnalyticsStoreLoginBean</managed-bean-class>
-	<managed-bean-scope>session</managed-bean-scope>
- </managed-bean>
- 
- <managed-bean>
-	<managed-bean-name>analyticsStoreSearchBean</managed-bean-name>
-	<managed-bean-class>com.redsqirl.analyticsStore.AnalyticsStoreSearchBean</managed-bean-class>
-	<managed-bean-scope>session</managed-bean-scope>
-	<managed-property>
-		<property-name>analyticsStoreLoginBean</property-name>
-		<property-class>com.redsqirl.analyticsStore.AnalyticsStoreLoginBean</property-class>
-		<value>#{analyticsStoreLoginBean}</value>
-	</managed-property>
- </managed-bean>
- 
- <managed-bean>
-	<managed-bean-name>analyticsStoreModuleDetailBean</managed-bean-name>
-	<managed-bean-class>com.redsqirl.analyticsStore.AnalyticsStoreModuleDetailBean</managed-bean-class>
-	<managed-bean-scope>request</managed-bean-scope>
-	<managed-property>
-		<property-name>analyticsStoreLoginBean</property-name>
-		<property-class>com.redsqirl.analyticsStore.AnalyticsStoreLoginBean</property-class>
-		<value>#{analyticsStoreLoginBean}</value>
-	</managed-property>
-	<managed-property>
-		<property-name>userInfoBean</property-name>
-	  	<property-class>com.redsqirl.auth.UserInfoBean</property-class>
-	  	<value>#{userInfoBean}</value>
-	</managed-property>
- </managed-bean>
- 
- <managed-bean>
-	<managed-bean-name>analyticsStoreInstallationsBean</managed-bean-name>
-	<managed-bean-class>com.redsqirl.analyticsStore.AnalyticsStoreInstallationsBean</managed-bean-class>
-	<managed-bean-scope>request</managed-bean-scope>
-	<managed-property>
-		<property-name>analyticsStoreLoginBean</property-name>
-		<property-class>com.redsqirl.analyticsStore.AnalyticsStoreLoginBean</property-class>
-		<value>#{analyticsStoreLoginBean}</value>
-	</managed-property>
-	<managed-property>
-		<property-name>userInfoBean</property-name>
-	  	<property-class>com.redsqirl.auth.UserInfoBean</property-class>
-	  	<value>#{userInfoBean}</value>
-	</managed-property>
- </managed-bean>
- 
- <!-- **************************** NAVIGATION ******************************************************************* -->
- 
- <navigation-rule>
-  <from-view-id>/pages/initial.xhtml</from-view-id>
-  <navigation-case>
-   <from-outcome>success</from-outcome>
-   <to-view-id>/pages/canvas.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>failure</from-outcome>
-   <to-view-id>/pages/initial.xhtml</to-view-id>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>loginPage</from-outcome>
-   <to-view-id>/pages/initial.xhtml</to-view-id>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>cancelLogin</from-outcome>
-   <to-view-id>/pages/initial.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
- </navigation-rule>
- 
- <navigation-rule>
-  <from-view-id>/pages/canvas.xhtml</from-view-id>
-  <navigation-case>
-   <from-outcome>signout</from-outcome>
-   <to-view-id>/pages/signout.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>loginPage</from-outcome>
-   <to-view-id>/pages/initial.xhtml</to-view-id>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>reStart</from-outcome>
-   <to-view-id>/pages/restart.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
- </navigation-rule>
- 
- 
- <navigation-rule>
-  <from-view-id>/pages/error.xhtml</from-view-id>
-  <navigation-case>
-   <from-outcome>initial</from-outcome>
-   <to-view-id>/pages/initial.xhtml</to-view-id>
-  </navigation-case>
- </navigation-rule>
- 
- <navigation-rule>
-  <from-view-id>/pages/signout.xhtml</from-view-id>
-  <navigation-case>
-   <from-outcome>signout</from-outcome>
-   <to-view-id>/pages/initial.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
- </navigation-rule>
- 
- <navigation-rule>
-  <from-view-id>/pages/restart.xhtml</from-view-id>
-  <navigation-case>
-   <from-outcome>reStart</from-outcome>
-   <to-view-id>/pages/canvas.xhtml</to-view-id>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>success</from-outcome>
-   <to-view-id>/pages/canvas.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>failure</from-outcome>
-   <to-view-id>/pages/initial.xhtml</to-view-id>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>cancelLogin</from-outcome>
-   <to-view-id>/pages/initial.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
- </navigation-rule>
- 
- <navigation-rule>
-  <from-view-id>/pages/modalInstallPackage.xhtml</from-view-id>
-  <navigation-case>
-   <from-outcome>signout</from-outcome>
-   <to-view-id>/pages/signout.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
-  <navigation-case>
-   <from-outcome>reStart</from-outcome>
-   <to-view-id>/pages/restart.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
- </navigation-rule>
- 
- <navigation-rule>
-  <from-view-id>/pages/progressBar.xhtml</from-view-id>
-  <navigation-case>
-   <from-outcome>cancelLogin</from-outcome>
-   <to-view-id>/pages/initial.xhtml</to-view-id>
-   <redirect/>
-  </navigation-case>
- </navigation-rule>
- 
- <!-- *************************** RESOURCES ********************************************************** -->
- 
- <application>
-  <view-handler>org.ajax4jsf.application.AjaxViewHandler</view-handler>
-  <message-bundle>MessagesResources</message-bundle>
-  <locale-config>
-   <default-locale>en_IE</default-locale>
-   <supported-locale>en_IE</supported-locale>
-  </locale-config>
- </application>
- <lifecycle>
-  <phase-listener>com.redsqirl.auth.AuthorizationListener</phase-listener>
- </lifecycle>
+	xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_1_2.xsd">
+
+	<!-- **************************** CONVERTERS ************************************************************** -->
+
+	<converter>
+		<converter-id>numberConverter</converter-id>
+		<converter-class>com.redsqirl.useful.NumberConverter</converter-class>
+	</converter>
+
+	<!-- ***************************** MANAGED BEANS ************************************************************* -->
+
+	<managed-bean>
+		<managed-bean-name>canvasBean</managed-bean-name>
+		<managed-bean-class>com.redsqirl.CanvasBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	<managed-bean>
+		<managed-bean-name>hdfsBean</managed-bean-name>
+		<managed-bean-class>com.redsqirl.HdfsBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	<managed-bean>
+		<managed-bean-name>browserHdfsBean</managed-bean-name>
+		<managed-bean-class>com.redsqirl.HdfsBrowserBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	<managed-bean>
+		<managed-bean-name>hiveBean</managed-bean-name>
+		<managed-bean-class>com.redsqirl.HiveBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	<managed-bean>
+		<managed-bean-name>sshBean</managed-bean-name>
+		<managed-bean-class>com.redsqirl.SshBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	<managed-bean>
+		<managed-bean-name>userInfoBean</managed-bean-name>
+		<managed-bean-class>com.redsqirl.auth.UserInfoBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	<managed-bean>
+		<managed-bean-name>canvasModalBean</managed-bean-name>
+		<managed-bean-class>com.redsqirl.CanvasModal</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	<managed-bean>
+		<managed-bean-name>configureTabsBean</managed-bean-name>
+		<managed-bean-class>com.redsqirl.ConfigureTabsBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	<managed-bean>
+		<managed-bean-name>processManagerBean</managed-bean-name>
+		<managed-bean-class>com.redsqirl.ProcessManagerBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	<managed-bean>
+		<managed-bean-name>packageMngBean</managed-bean-name>
+		<managed-bean-class>com.redsqirl.PackageMngBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	<managed-bean>
+		<managed-bean-name>error</managed-bean-name>
+		<managed-bean-class>com.redsqirl.useful.Error</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	<managed-bean>
+		<managed-bean-name>helpBean</managed-bean-name>
+		<managed-bean-class>com.redsqirl.HelpBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	<managed-bean>
+		<managed-bean-name>settingsBean</managed-bean-name>
+		<managed-bean-class>com.redsqirl.SettingsBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	<managed-bean>
+		<managed-bean-name>subwfBean</managed-bean-name>
+		<managed-bean-class>com.redsqirl.SubWorkflowManagerBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+
+	<managed-bean>
+		<managed-bean-name>analyticsStoreLoginBean</managed-bean-name>
+		<managed-bean-class>com.redsqirl.analyticsStore.AnalyticsStoreLoginBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+
+	<managed-bean>
+		<managed-bean-name>analyticsStoreSearchBean</managed-bean-name>
+		<managed-bean-class>com.redsqirl.analyticsStore.AnalyticsStoreSearchBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+		<managed-property>
+			<property-name>analyticsStoreLoginBean</property-name>
+			<property-class>com.redsqirl.analyticsStore.AnalyticsStoreLoginBean</property-class>
+			<value>#{analyticsStoreLoginBean}</value>
+		</managed-property>
+	</managed-bean>
+
+	<managed-bean>
+		<managed-bean-name>analyticsStoreModuleDetailBean</managed-bean-name>
+		<managed-bean-class>com.redsqirl.analyticsStore.AnalyticsStoreModuleDetailBean</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>
+		<managed-property>
+			<property-name>analyticsStoreLoginBean</property-name>
+			<property-class>com.redsqirl.analyticsStore.AnalyticsStoreLoginBean</property-class>
+			<value>#{analyticsStoreLoginBean}</value>
+		</managed-property>
+		<managed-property>
+			<property-name>userInfoBean</property-name>
+			<property-class>com.redsqirl.auth.UserInfoBean</property-class>
+			<value>#{userInfoBean}</value>
+		</managed-property>
+	</managed-bean>
+
+	<managed-bean>
+		<managed-bean-name>analyticsStoreInstallationsBean</managed-bean-name>
+		<managed-bean-class>com.redsqirl.analyticsStore.AnalyticsStoreInstallationsBean</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>
+		<managed-property>
+			<property-name>analyticsStoreLoginBean</property-name>
+			<property-class>com.redsqirl.analyticsStore.AnalyticsStoreLoginBean</property-class>
+			<value>#{analyticsStoreLoginBean}</value>
+		</managed-property>
+		<managed-property>
+			<property-name>userInfoBean</property-name>
+			<property-class>com.redsqirl.auth.UserInfoBean</property-class>
+			<value>#{userInfoBean}</value>
+		</managed-property>
+	</managed-bean>
+
+	<!-- **************************** NAVIGATION ******************************************************************* -->
+
+	<navigation-rule>
+		<from-view-id>/pages/initial.xhtml</from-view-id>
+		<navigation-case>
+			<from-outcome>success</from-outcome>
+			<to-view-id>/pages/canvas.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>failure</from-outcome>
+			<to-view-id>/pages/initial.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>loginPage</from-outcome>
+			<to-view-id>/pages/initial.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>cancelLogin</from-outcome>
+			<to-view-id>/pages/initial.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+	</navigation-rule>
+
+	<navigation-rule>
+		<from-view-id>/pages/canvas.xhtml</from-view-id>
+		<navigation-case>
+			<from-outcome>signout</from-outcome>
+			<to-view-id>/pages/signout.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>loginPage</from-outcome>
+			<to-view-id>/pages/initial.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>reStart</from-outcome>
+			<to-view-id>/pages/restart.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+	</navigation-rule>
+
+
+	<navigation-rule>
+		<from-view-id>/pages/error.xhtml</from-view-id>
+		<navigation-case>
+			<from-outcome>initial</from-outcome>
+			<to-view-id>/pages/initial.xhtml</to-view-id>
+		</navigation-case>
+	</navigation-rule>
+
+	<navigation-rule>
+		<from-view-id>/pages/signout.xhtml</from-view-id>
+		<navigation-case>
+			<from-outcome>signout</from-outcome>
+			<to-view-id>/pages/initial.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+	</navigation-rule>
+
+	<navigation-rule>
+		<from-view-id>/pages/restart.xhtml</from-view-id>
+		<navigation-case>
+			<from-outcome>reStart</from-outcome>
+			<to-view-id>/pages/canvas.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>success</from-outcome>
+			<to-view-id>/pages/canvas.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>failure</from-outcome>
+			<to-view-id>/pages/initial.xhtml</to-view-id>
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>cancelLogin</from-outcome>
+			<to-view-id>/pages/initial.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+	</navigation-rule>
+
+	<navigation-rule>
+		<from-view-id>/pages/modalInstallPackage.xhtml</from-view-id>
+		<navigation-case>
+			<from-outcome>signout</from-outcome>
+			<to-view-id>/pages/signout.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>reStart</from-outcome>
+			<to-view-id>/pages/restart.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+	</navigation-rule>
+
+	<navigation-rule>
+		<from-view-id>/pages/progressBar.xhtml</from-view-id>
+		<navigation-case>
+			<from-outcome>cancelLogin</from-outcome>
+			<to-view-id>/pages/initial.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+	</navigation-rule>
+
+	<!-- *************************** RESOURCES ********************************************************** -->
+
+	<application>
+		<view-handler>org.ajax4jsf.application.AjaxViewHandler</view-handler>
+		<message-bundle>MessagesResources</message-bundle>
+		<locale-config>
+			<default-locale>en_IE</default-locale>
+			<supported-locale>en_IE</supported-locale>
+		</locale-config>
+	</application>
+	<lifecycle>
+		<phase-listener>com.redsqirl.auth.AuthorizationListener</phase-listener>
+	</lifecycle>
 </faces-config>

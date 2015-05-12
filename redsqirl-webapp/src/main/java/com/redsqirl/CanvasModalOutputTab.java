@@ -346,7 +346,7 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 
 	/**
 	 * Display the first rows of data available from the given output. An
-	 * outputName parameter is necesseray for running this function.
+	 * outputName parameter is necessary for running this function.
 	 * 
 	 * @throws RemoteException
 	 */
@@ -427,7 +427,7 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 					try {
 
 						if(dfeOut.isPathExists() && dfeOut.isPathValid() == null){
-							List<Map<String, String>> outputLines = dfeOut.select(Math.max(10, Math.min(200, 2000/gridTitle.size())));
+							List<Map<String, String>> outputLines = dfeOut.select(Math.max(10, Math.min(150, 1000/gridTitle.size())));
 							if (outputLines != null) {
 
 								for (Map<String, String> line : outputLines) {

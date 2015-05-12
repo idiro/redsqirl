@@ -326,7 +326,7 @@
 	                                        </h:panelGroup>
 	                                    </f:facet>
 	                                    
-	                                    <h:outputText value="#{rowData[ind]}" />
+	                                    <h:outputText value="#{rowData[ind]}" title="#{rowData[ind]}" converter="numberConverter" />
 	                                    
 	                                </rich:columns>
 	                
@@ -600,7 +600,7 @@
 		                                <h:outputText value="#{column}" />
 		                            </f:facet>
 		                            
-		                            <h:outputText value="#{rowData[ind]}" title="#{rowData[ind]}" />
+		                            <h:outputText value="#{rowData[ind]}" title="#{rowData[ind]}" converter="numberConverter" />
 		                            
 		                        </rich:columns>
 		        
