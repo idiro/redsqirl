@@ -14,6 +14,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.digester.SetRootRule;
 import org.apache.log4j.Logger;
 
 import com.redsqirl.dynamictable.FileSystemHistory;
@@ -85,6 +86,9 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 
 	private LinkedList<FileSystemHistory> pathHistory;
 	private LinkedList<String> paths;
+	
+	private String maxRows;
+	private List<SelectItem> maxNumberRows;
 
 	/**
 	 * Constructor. The constructor will automatically load the first name as
@@ -352,10 +356,19 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 	 */
 	public void displayOutput() throws RemoteException {
 		String outputN = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("outputName");
+		String resetMaxRows = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("resetMaxRows");
+
+		if(resetMaxRows != null && resetMaxRows.equals("Y")){
+			setMaxRows(null);
+		}
 
 		if (outputN != null && !outputN.equalsIgnoreCase("undefined")) {
 			setNameOutput(outputN);
 			logger.info("display out: " + nameOutput);
+			updateDFEOutputTable();
+		}else if(getNameOutput() != null && !getNameOutput().isEmpty()){
+			setNameOutput(getNameOutput());
+			logger.info("display out: " + getNameOutput());
 			updateDFEOutputTable();
 		}else{
 			if(outputFormList != null && !outputFormList.isEmpty()){
@@ -427,7 +440,16 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 					try {
 
 						if(dfeOut.isPathExists() && dfeOut.isPathValid() == null){
-							List<Map<String, String>> outputLines = dfeOut.select(Math.max(10, Math.min(150, 1000/gridTitle.size())));
+							
+							int mRow = Math.max(10, Math.min(150, 1000/gridTitle.size()));
+							mountNumberRowsList(mRow);
+							if(getMaxRows() != null && !getMaxRows().isEmpty()){
+								mRow = Integer.parseInt(getMaxRows()); 
+							}
+							setMaxRows(mRow+"");
+							
+							List<Map<String, String>> outputLines = dfeOut.select(mRow);
+							
 							if (outputLines != null) {
 
 								for (Map<String, String> line : outputLines) {
@@ -455,6 +477,14 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 
 				}
 			}
+		}
+	}
+	
+	public void mountNumberRowsList(int mRow) throws RemoteException {
+		maxNumberRows = new ArrayList<SelectItem>();
+		for (int i = 1; i <= 10; i++) {
+			int value = mRow * i;
+			maxNumberRows.add(new SelectItem(value+"", value+""));
 		}
 	}
 
@@ -529,7 +559,7 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 	/**
 	 * @return the nameOutput
 	 */
-	public final String getNameOutput() {
+	public String getNameOutput() {
 		return nameOutput;
 	}
 
@@ -537,7 +567,7 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 	 * @param nameOutput
 	 *            the nameOutput to set
 	 */
-	public final void setNameOutput(String nameOutput) {
+	public void setNameOutput(String nameOutput) {
 		this.nameOutput = nameOutput;
 		try {
 			typeBrowser = dfe.getDFEOutput().get(nameOutput).getBrowser();
@@ -606,6 +636,22 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 
 	public void setPaths(LinkedList<String> paths) {
 		this.paths = paths;
+	}
+
+	public String getMaxRows() {
+		return maxRows != null ? maxRows : null;
+	}
+
+	public void setMaxRows(String maxRows) {
+		this.maxRows = maxRows;
+	}
+
+	public List<SelectItem> getMaxNumberRows() {
+		return maxNumberRows;
+	}
+
+	public void setMaxNumberRows(List<SelectItem> maxNumberRows) {
+		this.maxNumberRows = maxNumberRows;
 	}
 
 }
