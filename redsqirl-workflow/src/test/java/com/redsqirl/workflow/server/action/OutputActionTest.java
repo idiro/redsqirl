@@ -118,4 +118,11 @@ public class OutputActionTest extends DataOutput{
 		return null;
 	}
 
+
+	@Override
+	public String isPathValid(String path) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
