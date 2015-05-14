@@ -2,20 +2,24 @@ package com.redsqirl.auth;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Properties;
 
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
 import org.apache.log4j.Logger;
 
+import com.idiro.ProjectID;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 
 public class UsageRecordWriter implements Serializable {
@@ -71,7 +75,7 @@ public class UsageRecordWriter implements Serializable {
 	
 	public String getZipPath() throws IOException{
 		DateFormat df = new SimpleDateFormat("yyyyMMdd");
-		return WorkflowPrefManager.pathSysHome+"/usageRecordLog/usageRecordLog"+df.format(new Date())+".zip";
+		return WorkflowPrefManager.pathSysHome+"/usageRecordLog/usageRecordLog"+"-"+getSoftwareKey()+"-"+df.format(new Date())+".zip";
 	}
 	
 	public void addSuccess(String actionType, String description, String message) {
@@ -158,6 +162,38 @@ public class UsageRecordWriter implements Serializable {
 		} catch (ZipException e) {
 			logger.error(e,e);
 		}
+	}
+	
+	private String getSoftwareKey(){
+		Properties prop = new Properties();
+		InputStream input = null;
+
+		try {
+			input = new FileInputStream(WorkflowPrefManager.pathSystemPref + "/licenseKey.properties");
+
+			// load a properties file
+			prop.load(input);
+
+			// get the property value and print it out
+
+			String licenseKey;
+			String[] value = ProjectID.get().trim().split("-");
+			if(value != null && value.length > 1){
+				licenseKey = value[0].replaceAll("[0-9]", "") + value[value.length-1];
+			}else{
+				licenseKey = ProjectID.get();
+			}
+
+			return prop.getProperty(formatTitle(licenseKey));
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+		return null;
+	}
+    
+    private String formatTitle(String title){
+		return title.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
 	}
 
 	public static String getLicenseKey() {

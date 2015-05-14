@@ -73,7 +73,6 @@ public class UsageRecordLogJob implements Job {
 		int r = random.nextInt(High-Low) + Low;
 
 		Calendar startTime = Calendar.getInstance();
-		
 		startTime.set(java.util.Calendar.MINUTE, r);
 		startTime.set(java.util.Calendar.SECOND, r);
 		startTime.set(java.util.Calendar.MILLISECOND, r);
