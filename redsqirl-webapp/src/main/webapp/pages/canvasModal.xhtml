@@ -628,6 +628,10 @@
 		                
 		                <div id="displayTableComboNumberRowsDiv">
 		                
+		                 	<h:outputText value="#{messages.number_rows}" title="#{messages.number_rows}" />
+		                 	
+		                 	<br/>
+		                 	
 			                <rich:comboBox id="displayTableNumberRows" value="#{canvasModalBean.outputTab.maxRows}" width="200" 
 	                           	enableManualInput="false" listWidth="150" listHeight="200" selectFirstOnUpdate="true" >
 		                    	<f:selectItems value="#{canvasModalBean.outputTab.maxNumberRows == null? canvasBean.emptyList : canvasModalBean.outputTab.maxNumberRows}" />
