@@ -97,6 +97,16 @@
          }
     }
 
+    function blockComoBoxNumberRows() {
+    	jQuery('#displayTableComboNumberRowsDiv').block({
+        	message: '<img height="20px" src="../image/icons/waiting.gif" />'
+        });
+    }
+
+    function unBlockComoBoxNumberRows() {
+    	jQuery('#displayTableComboNumberRowsDiv').unblock();
+    }
+
 </script>
         
     <div id="domMessageDivModal" style="display: none;">
@@ -106,8 +116,9 @@
 <h:form>
      
     <a4j:jsFunction name="reLoadTabs" reRender="browserTableData" />
-    <a4j:jsFunction name="reLoadDisplayTable" reRender="displayTable" action="#{canvasModalBean.outputTab.displayOutput}" >
+    <a4j:jsFunction name="reLoadDisplayTable" reRender="displayTable,displayTableNumberRows" action="#{canvasModalBean.outputTab.displayOutput}" >
     	<a4j:actionparam name="outputName" value="#{canvasModalBean.outputTab.outputFormList[0].name}" />
+    	<a4j:actionparam name="resetMaxRows" value="Y" />
     </a4j:jsFunction>
     
     <a4j:region>
@@ -326,7 +337,7 @@
 	                                        </h:panelGroup>
 	                                    </f:facet>
 	                                    
-	                                    <h:outputText value="#{rowData[ind]}" />
+	                                    <h:outputText value="#{rowData[ind]}" title="#{rowData[ind]}" converter="numberConverter" />
 	                                    
 	                                </rich:columns>
 	                
@@ -545,8 +556,9 @@
 		                       	<tr>
 		                       		<td>
 		                       			<a4j:commandLink value="output #{item.name}" action="#{canvasModalBean.outputTab.displayOutput}"
-		                       				reRender="displayTable">
+		                       				reRender="displayTable,displayTableNumberRows">
 			                                <a4j:actionparam name="outputName" value="#{item.name}" />
+			                                <a4j:actionparam name="resetMaxRows" value="Y" />
 			                            </a4j:commandLink>
 		                       		</td>
 		                       		<td>
@@ -589,10 +601,14 @@
 		                
 		                    <rich:scrollableDataTable id="displayTable" value="#{canvasModalBean.outputTab.rows}" height="100%"
 		                        var="rowData" index="rowDataIndex" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-		                        enableContextMenu="false"
+		                        rowKeyVar="rowNb" enableContextMenu="false"
 		                        onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
 		                        rowClasses="even-row, odd-row" >
 		               
+		                		<rich:column style="border-bottom:0px;border-right:0px;" width="25px">
+                                    <h:outputText value="#{rowNb+1}" />
+                                </rich:column>
+              
 		                        <rich:columns value="#{canvasModalBean.outputTab.titles == null? canvasBean.emptyList : canvasModalBean.outputTab.titles}" 
 		                        	var="column" index="ind" id="column#{ind}" sortExpression="#{rowData[ind]}">
 		                            
@@ -600,13 +616,29 @@
 		                                <h:outputText value="#{column}" />
 		                            </f:facet>
 		                            
-		                            <h:outputText value="#{rowData[ind]}" title="#{rowData[ind]}" />
+		                            <h:outputText value="#{rowData[ind]}" title="#{rowData[ind]}" converter="numberConverter" />
 		                            
 		                        </rich:columns>
 		        
 		                    </rich:scrollableDataTable>
 		        
 		                </div>
+		                
+		                <br/>
+		                
+		                <div id="displayTableComboNumberRowsDiv">
+		                
+			                <rich:comboBox id="displayTableNumberRows" value="#{canvasModalBean.outputTab.maxRows}" width="200" 
+	                           	enableManualInput="false" listWidth="150" listHeight="200" selectFirstOnUpdate="true" >
+		                    	<f:selectItems value="#{canvasModalBean.outputTab.maxNumberRows == null? canvasBean.emptyList : canvasModalBean.outputTab.maxNumberRows}" />
+		                    	<a4j:support event="onchange" oncomplete="reLoaDisplayTable();blockComoBoxNumberRows();" reRender="displayTableNumberRows" />
+		                	</rich:comboBox>
+			                
+			                <a4j:jsFunction name="reLoaDisplayTable" action="#{canvasModalBean.outputTab.displayOutput}" oncomplete="unBlockComoBoxNumberRows();" 
+			                	reRender="displayTableDiv, displayTable, displayTableNumberRows" />
+		                
+		                </div>
+		                
 	                </a4j:region>
     
                 </rich:panel>

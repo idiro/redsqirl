@@ -370,29 +370,29 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 				String value = null;
 				String regex = null;
 				try{
-					if(getTree()
-							.getFirstChild("input").getFirstChild("output") != null){
-						value = getTree()
-								.getFirstChild("input").getFirstChild("output").getFirstChild().getHead();
+					if(getTree().getFirstChild("input").getFirstChild("output") != null){
+						value = getTree().getFirstChild("input").getFirstChild("output").getFirstChild().getHead();
 					}
 				}catch(Exception e){
 					value = "";
 				}
-				if(getTree()
-						.getFirstChild("input").getFirstChild("regex") != null){
-					regex = getTree()
-							.getFirstChild("input").getFirstChild("regex").getFirstChild().getHead();
+				if(getTree().getFirstChild("input").getFirstChild("regex") != null && 
+						getTree().getFirstChild("input").getFirstChild("regex").getFirstChild() != null){
+					regex = getTree().getFirstChild("input").getFirstChild("regex").getFirstChild().getHead();
 				}
 				if(regex != null){
+					logger.info("regex " + regex);
 					if(value == null){
 						error = LanguageManagerWF.getText("UserInteraction.valueMatch", new String[]{regex});
 					}else if(!value.matches(regex)){
+						logger.info("value " + value);
 						error = LanguageManagerWF.getText("UserInteraction.valueIncorrectMatch", new String[]{value,regex});
 					}
 				}
 			}catch(Exception e){
 				error = LanguageManagerWF.getText("UserInteraction.treeIncorrect");
 				logger.error(error);
+				logger.error(e,e);
 			}
 		}
 		return error;
