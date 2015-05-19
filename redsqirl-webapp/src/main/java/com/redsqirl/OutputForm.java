@@ -170,16 +170,20 @@ public class OutputForm implements Serializable {
 			logger.info("path: " + completePath);
 			
 			Map<String,String> props = datastores.get(dfeOutput.getBrowser()).getDataStore().getProperties(completePath);
-			
-			if(dfeOutput.isPathExists() && dfeOutput.getSavingState() != SavingState.RECORDED){
-				if(props == null || props.isEmpty()){
-					dfeOutput.moveTo(completePath);
+			try{
+				if(dfeOutput.isPathExists() && dfeOutput.getSavingState() != SavingState.RECORDED){
+					if(props == null || props.isEmpty()){
+						dfeOutput.moveTo(completePath);
+					}else{
+						dfeOutput.remove();
+						dfeOutput.setPath(completePath);
+					}
 				}else{
-					dfeOutput.remove();
 					dfeOutput.setPath(completePath);
 				}
-			}else{
-				dfeOutput.setPath(completePath);
+			}catch(Exception e){
+				logger.warn("Unexpected excepiton: "+e,e);
+				return "An unexpected error occured, please try again";
 			}
 		}
 		

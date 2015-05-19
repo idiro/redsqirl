@@ -107,6 +107,16 @@
     	jQuery('#displayTableComboNumberRowsDiv').unblock();
     }
 
+    function blockSource() {
+    	jQuery('#canvasModalDiv').block({
+        	message: '<img src="../image/icons/waiting.gif" />'
+        });
+    }
+
+    function unBlockSource() {
+    	jQuery('#canvasModalDiv').unblock();
+    }
+
 </script>
         
     <div id="domMessageDivModal" style="display: none;">
@@ -115,7 +125,7 @@
         
 <h:form>
      
-    <a4j:jsFunction name="reLoadTabs" reRender="browserTableData" />
+    <a4j:jsFunction name="reLoadTabs" reRender="browserTableData" oncomplete="unBlockSource();" />
     <a4j:jsFunction name="reLoadDisplayTable" reRender="displayTable,displayTableNumberRows" action="#{canvasModalBean.outputTab.displayOutput}" >
     	<a4j:actionparam name="outputName" value="#{canvasModalBean.outputTab.outputFormList[0].name}" />
     	<a4j:actionparam name="resetMaxRows" value="Y" />
