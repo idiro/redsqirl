@@ -645,11 +645,11 @@
 			                <rich:comboBox id="displayTableNumberRows" value="#{canvasModalBean.outputTab.maxRows}" width="200" 
 	                           	enableManualInput="false" listWidth="150" listHeight="200" selectFirstOnUpdate="true" >
 		                    	<f:selectItems value="#{canvasModalBean.outputTab.maxNumberRows == null? canvasBean.emptyList : canvasModalBean.outputTab.maxNumberRows}" />
-		                    	<a4j:support event="onchange" oncomplete="reLoaDisplayTable();blockComoBoxNumberRows();" reRender="displayTableNumberRows" />
+		                    	<a4j:support event="onchange" oncomplete="reLoadTable();blockComoBoxNumberRows();" reRender="displayTableNumberRows" />
 		                	</rich:comboBox>
 			                
-			                <a4j:jsFunction name="reLoaDisplayTable" action="#{canvasModalBean.outputTab.displayOutput}" oncomplete="unBlockComoBoxNumberRows();" 
-			                	reRender="displayTableDiv, displayTable, displayTableNumberRows" />
+			                <a4j:jsFunction name="reLoadTable" action="#{canvasModalBean.outputTab.displayOutput}" oncomplete="unBlockComoBoxNumberRows();" 
+			                	reRender="displayTable, displayTableNumberRows" />
 		                
 		                </div>
 		                
