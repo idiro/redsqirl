@@ -103,7 +103,7 @@ public class ShellAction extends OozieActionAbs {
 			toWrite += "echo "+ System.getProperty("line.separator");
 			toWrite += "echo "+ System.getProperty("line.separator");
 		}
-		toWrite += "if [[ -z `sudo -n true` && `whoami` != \"$USER_NAME\" ]]; then "+ 
+		toWrite += "if [[ -z \"`sudo -n true`\" && -z \"`sudo -n true 2>&1`\" && `whoami` != \"$USER_NAME\" ]]; then ";
 				System.getProperty("line.separator");
 		if(extraFile){
 			toWrite += "\tEXEC_FILE=`mktemp`" + System.getProperty("line.separator");
