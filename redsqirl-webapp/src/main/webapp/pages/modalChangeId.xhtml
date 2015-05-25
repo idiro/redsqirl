@@ -19,7 +19,7 @@ function changeCurrentElementId(){
             
             <a4j:jsFunction name="changeIdElement"
                 action="#{canvasBean.changeIdElement}"
-                oncomplete="if( #{requestScope['msnError'] == null}){closeChangeIdModal();}jQuery('#canvas-tabs').unblock();"
+                oncomplete="if( #{requestScope['msnError'] == null}){#{rich:component('modalChangeId')}.hide();closeChangeIdModal();}jQuery('#canvas-tabs').unblock();"
                 reRender="msnError,errorTable">
                 <a4j:actionparam name="groupId" />
                 <a4j:actionparam name="elementId" />
@@ -42,7 +42,6 @@ function changeCurrentElementId(){
 	
 		<h:panelGrid columns="1">
 			<a4j:commandButton id="changeIdElementBt" styleClass="greenButton" reRender="msnError, errorTable,newIdElement"
-				onclick="#{rich:component('modalChangeId')}.hide();"
 				oncomplete="changeCurrentElementId();" 
 				value="#{messages.button_ok}"/>
 		</h:panelGrid>

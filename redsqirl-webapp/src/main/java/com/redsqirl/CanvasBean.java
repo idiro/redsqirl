@@ -1778,9 +1778,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 			usageRecordLog().addError("ERROR CHANGEIDELEMENT", error);
 		} else {
 			getIdMap().get(getNameWorkflow()).put(groupId, elementId);
+			usageRecordLog().addSuccess("CHANGEIDELEMENT");
 		}
 		
-		usageRecordLog().addSuccess("CHANGEIDELEMENT");
 	}
 
 	/**

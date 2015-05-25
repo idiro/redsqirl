@@ -16,6 +16,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -125,6 +126,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	protected boolean saved = false;
 
 	protected int nbOozieRunningActions;
+	
+	private static final List<String> keyWords = Arrays.asList("join", "group", "union", "select", "from", "delete", "where", "count");
 
 	/**
 	 * Default Constructor
@@ -1577,6 +1580,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			err = LanguageManagerWF.getText(
 					"workflow.changeElementId_newIDregexfail", new Object[] {
 							newId, regex });
+		} else if (keyWords.contains(newId.toLowerCase())) {
+			err = LanguageManagerWF.getText("workflow.changeElementId_newIDkeywordfail", new Object[] {	newId });
 		} else {
 			if (oldId == null || !oldId.equals(newId)) {
 				Iterator<DataFlowElement> itA = element.iterator();
