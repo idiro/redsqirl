@@ -31,16 +31,16 @@ function changeCurrentElementId(){
             </a4j:jsFunction>
         </a4j:region>
 
-		<h:outputText value="Name" />
-		<h:inputText label="Name" value="#{canvasModalBean.elementId}" size="16" style="padding-left: 3px;" styleClass="interModal" maxlength="15" id="newIdElement" 
+		<h:outputText value="#{messages.obj_newid}" title="#{messages.obj_newid_tk}" />
+		<h:inputText label="Name" value="#{canvasModalBean.elementId}" size="13" style="padding-left: 3px;" styleClass="interModal" maxlength="15" id="newIdElement" 
 			onkeypress="return enableEnterKey(event, 'changeIdElementBt');" onkeyup="nospaces(this);" />
 		<br/>
-		<h:outputText value="Comment" />
-        <h:inputTextarea id="elementCommentID" label="Comment" value="#{canvasModalBean.elementComment}" style="padding-left: 3px;height:50px;width:250px;"
+		<h:outputText value="#{messages.obj_comment}" title="#{messages.obj_comment_tk}" />
+        <h:inputTextarea id="elementCommentID" label="Comment" value="#{canvasModalBean.elementComment}" style="height:50px;width:267px;resize:none;"
             onkeypress="return enableEnterKey(event, 'changeIdElementBt');" />
 	   
 	
-		<h:panelGrid columns="1">
+		<h:panelGrid columns="1" style="border:none; float:right;">
 			<a4j:commandButton id="changeIdElementBt" styleClass="greenButton" reRender="msnError, errorTable,newIdElement"
 				oncomplete="changeCurrentElementId();" 
 				value="#{messages.button_ok}"/>

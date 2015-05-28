@@ -28,94 +28,106 @@
 		}
 			
    	}
+
+	function blockSourceModalHeaderEditor() {
+    	jQuery('#divCanvasModalHeaderEditor').block({
+        	message: '<img src="../image/icons/waiting.gif" />'
+        });
+    }
+
+    function unBlockSourceModalHeaderEditor() {
+    	jQuery('#divCanvasModalHeaderEditor').unblock();
+    }
 	
 //]]>
 </script>
 
 	<h:form>
-	
-        <a4j:jsFunction name="mountHeaderEditor" action="#{canvasModalBean.canvasModalInteractionHeaderEditor.mountHeaderEditor}" 
-	       	oncomplete="selectRadio();" reRender="inputHeaderEditorPG, tableHeaderEditorPG" />
+		<div id="divCanvasModalHeaderEditor">
 		
-		<h:panelGroup id="canvasModalHeaderEditor" style="width:100%;height:100%;">
-		
-			<h2><center><h:outputText value="#{messages.label_headers_type}" /></center></h2>
+	        <a4j:jsFunction name="mountHeaderEditor" action="#{canvasModalBean.canvasModalInteractionHeaderEditor.mountHeaderEditor}" 
+		       	oncomplete="selectRadio();" reRender="inputHeaderEditorPG, tableHeaderEditorPG" />
 			
-			<h:outputText value="#{messages.label_header_table}" />
-		
-			<table>
-				<tr>
-					<td style="padding-bottom:230px;">
-						<h:selectOneRadio id="selectHeaderEditor" value="#{canvasModalBean.canvasModalInteractionHeaderEditor.selectHeaderEditor}" 
-							onchange="mountHeaderEditor();" layout="pageDirection">
-					        <f:selectItem id="input" itemLabel="" itemValue="U" />
-					        <f:selectItem id="table" itemLabel="" itemValue="D" />
-					    </h:selectOneRadio>
-					</td>
-					<td style="width:100%;">
-						
-						<h:panelGroup id="inputHeaderEditorPG" >
-							<h:outputText value="#{messages.label_change_header}" style="font-weight:bold;" /><br/>
-							<h:outputText value="#{messages.label_header_input}" /><br/>
-							<h:inputText id="inputHeaderEditor" value="#{canvasModalBean.canvasModalInteractionHeaderEditor.headerFieldsType}" 
-								style="width:640px" />
-						</h:panelGroup>
-						
-						<br/><br/>
-						
-						<h:panelGroup id="tableHeaderEditorPG" >
-							<h:outputText value="#{messages.label_change_fileds}" style="font-weight:bold;" /><br/>
-							<h:outputText value="#{messages.label_header_table}" /><br/>
-							<div style="height:220px;overflow:auto;" >
-								<rich:dataTable id="tableHeaderEditor" value="#{canvasModalBean.canvasModalInteractionHeaderEditor.listFieldsType}"
-									var="obj" rowKeyVar="rowNb" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
-								    enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
-							        
-							         <rich:column style="border-bottom:0px;border-right:0px;" width="20px;">
-								         <f:facet name="header">
-								         </f:facet>
-							         	<h:outputText value="#{rowNb+1}" />
-								     </rich:column>
-								     <rich:column style="border-bottom:0px;border-right:0px;" width="20px;">
-								     	<f:facet name="header">
-								     		<h:outputText value="#{messages.label_name}" />
-								        </f:facet>
-							         	<h:inputText value="#{obj.name}" />
-								     </rich:column>
-								     <rich:column style="border-bottom:0px;border-right:0px;" width="20px;">
-								     	<f:facet name="header">
-								     		<h:outputText value="#{messages.label_type}" />
-								        </f:facet>
-							         	<rich:comboBox value="#{obj.type}" width="200" enableManualInput="false" listWidth="150" listHeight="200">
-					                    	<f:selectItems value="#{canvasModalBean.canvasModalInteractionHeaderEditor.fieldTypes}" />
-					                	</rich:comboBox>
-								     </rich:column>
-							        
-							    </rich:dataTable>
-						    </div>
-					    </h:panelGroup>
-					    
-					</td>
-				</tr>
-			</table>
+			<h:panelGroup id="canvasModalHeaderEditor" style="width:100%;height:100%;">
 			
-			<div style="width:100%;height:40px;border:0px solid;overflow-x:hidden;">
-			
-				<a4j:commandButton action="#{canvasModalBean.canvasModalInteractionHeaderEditor.headerEditor}"
-				    styleClass="greenButton" value="#{messages.button_ok}"
-					oncomplete="if(#{requestScope['msnError'] == null} ){canvasModalApply();}"
-					reRender="browserTableData, msnError, errorTable" />
-					
-				<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('headerEditor')}.hide();" 
-					reRender="browserTableData, msnError, errorTable" />
-					
-				<a4j:jsFunction name="canvasModalApply" action="#{canvasModalBean.applyPage}"  
-					reRender="canvasModalTabPanel, outputTab, panelBtCanvasModal, msnError, msnSuccess, browserTableProp, browserPropLabel, browserPropValue" 
-					oncomplete="if(#{requestScope['msnError'] == null} ){changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');createOptionTitles();reLoadTabs();#{rich:component('headerEditor')}.hide();}" />
+				<h2><center><h:outputText value="#{messages.label_headers_type}" /></center></h2>
 				
-			</div>
-	
-		</h:panelGroup>
+				<h:outputText value="#{messages.label_header_table}" />
+			
+				<table>
+					<tr>
+						<td style="padding-bottom:230px;">
+							<h:selectOneRadio id="selectHeaderEditor" value="#{canvasModalBean.canvasModalInteractionHeaderEditor.selectHeaderEditor}" 
+								onchange="mountHeaderEditor();" layout="pageDirection">
+						        <f:selectItem id="input" itemLabel="" itemValue="U" />
+						        <f:selectItem id="table" itemLabel="" itemValue="D" />
+						    </h:selectOneRadio>
+						</td>
+						<td style="width:100%;">
+							
+							<h:panelGroup id="inputHeaderEditorPG" >
+								<h:outputText value="#{messages.label_change_header}" style="font-weight:bold;" /><br/>
+								<h:outputText value="#{messages.label_header_input}" /><br/>
+								<h:inputText id="inputHeaderEditor" value="#{canvasModalBean.canvasModalInteractionHeaderEditor.headerFieldsType}" 
+									style="width:640px" />
+							</h:panelGroup>
+							
+							<br/><br/>
+							
+							<h:panelGroup id="tableHeaderEditorPG" >
+								<h:outputText value="#{messages.label_change_fileds}" style="font-weight:bold;" /><br/>
+								<h:outputText value="#{messages.label_header_table}" /><br/>
+								<div style="height:220px;overflow:auto;" >
+									<rich:dataTable id="tableHeaderEditor" value="#{canvasModalBean.canvasModalInteractionHeaderEditor.listFieldsType}"
+										var="obj" rowKeyVar="rowNb" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
+									    enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
+								        
+								         <rich:column style="border-bottom:0px;border-right:0px;" width="20px;">
+									         <f:facet name="header">
+									         </f:facet>
+								         	<h:outputText value="#{rowNb+1}" />
+									     </rich:column>
+									     <rich:column style="border-bottom:0px;border-right:0px;" width="20px;">
+									     	<f:facet name="header">
+									     		<h:outputText value="#{messages.label_name}" />
+									        </f:facet>
+								         	<h:inputText value="#{obj.name}" />
+									     </rich:column>
+									     <rich:column style="border-bottom:0px;border-right:0px;" width="20px;">
+									     	<f:facet name="header">
+									     		<h:outputText value="#{messages.label_type}" />
+									        </f:facet>
+								         	<rich:comboBox value="#{obj.type}" width="200" enableManualInput="false" listWidth="150" listHeight="200">
+						                    	<f:selectItems value="#{canvasModalBean.canvasModalInteractionHeaderEditor.fieldTypes}" />
+						                	</rich:comboBox>
+									     </rich:column>
+								        
+								    </rich:dataTable>
+							    </div>
+						    </h:panelGroup>
+						    
+						</td>
+					</tr>
+				</table>
+				
+				<div style="width:100%;height:40px;border:0px solid;overflow-x:hidden;">
+				
+					<a4j:commandButton action="#{canvasModalBean.canvasModalInteractionHeaderEditor.headerEditor}"
+					    styleClass="greenButton" value="#{messages.button_ok}"
+						oncomplete="if(#{requestScope['msnError'] == null} ){blockSourceModalHeaderEditor();canvasModalApply();}"
+						reRender="browserTableData, msnError, errorTable" />
+						
+					<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('headerEditor')}.hide();" 
+						reRender="browserTableData, msnError, errorTable" />
+						
+					<a4j:jsFunction name="canvasModalApply" action="#{canvasModalBean.applyPage}"  
+						reRender="canvasModalTabPanel, outputTab, panelBtCanvasModal, msnError, msnSuccess, browserTableProp, browserPropLabel, browserPropValue" 
+						oncomplete="if(#{requestScope['msnError'] == null} ){changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');createOptionTitles();reLoadTabs();#{rich:component('headerEditor')}.hide();}unBlockSourceModalHeaderEditor();" />
+					
+				</div>
+		
+			</h:panelGroup>
+		</div>
 	</h:form>
 	
 </ui:composition>
