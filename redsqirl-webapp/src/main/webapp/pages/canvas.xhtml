@@ -2479,14 +2479,13 @@
 
 	<a4j:region>
 		<rich:modalPanel id="modalChangeId" width="300" height="235"
-			style="overflow:auto;" resizeable="true" >
+			style="overflow:auto;" resizeable="false" >
 
 			<f:facet name="header">Change Element Id</f:facet>
 
 			<h:form>
 				<h:panelGroup>
-					<a4j:include viewId="/pages/modalChangeId.xhtml"
-						ajaxRendered="true" />
+					<a4j:include viewId="/pages/modalChangeId.xhtml" ajaxRendered="true" />
 				</h:panelGroup>
 			</h:form>
 

@@ -1252,6 +1252,9 @@ div.splitter-bar.ui-state-highlight {
 	background-image: none;
 	height: 20px;
 	padding-left: 10px;
+	margin-left: -2px;
+	margin-right: -1px;
+	margin-top: -1px;
 }
 
 .rich-mpnl-body {

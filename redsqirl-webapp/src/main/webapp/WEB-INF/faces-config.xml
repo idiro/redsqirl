@@ -131,6 +131,12 @@
 			<value>#{userInfoBean}</value>
 		</managed-property>
 	</managed-bean>
+	
+	<managed-bean>
+		<managed-bean-name>analyticsStoreNewUserBean</managed-bean-name>
+		<managed-bean-class>com.redsqirl.analyticsStore.AnalyticsStoreNewUserBean</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>
+	</managed-bean>
 
 	<!-- **************************** NAVIGATION ******************************************************************* -->
 

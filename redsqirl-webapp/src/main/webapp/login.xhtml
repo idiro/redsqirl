@@ -39,6 +39,12 @@
     
     <body>
 		<h:form id="login-form">
+		
+			<h:panelGroup layout="block" >
+				<h:outputLink value="registerNewUser.xhtml">Create New User</h:outputLink>
+			</h:panelGroup>
+		
+		
 			<h:panelGrid columns="2">
 				<h:outputText value="#{messages.login_email}" class="formLabel"/>
 				<h:panelGroup>

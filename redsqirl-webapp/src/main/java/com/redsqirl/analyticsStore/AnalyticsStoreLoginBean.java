@@ -1,7 +1,10 @@
 package com.redsqirl.analyticsStore;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Properties;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
@@ -10,6 +13,7 @@ import javax.faces.context.FacesContext;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.idiro.ProjectID;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -23,40 +27,43 @@ import com.sun.jersey.api.client.WebResource;
 public class AnalyticsStoreLoginBean implements Serializable {
 
 	private static final long serialVersionUID = 7765876811740798583L;
-	
-//	@NotEmpty (message="{loginBean_null_email}")
+
+	//	@NotEmpty (message="{loginBean_null_email}")
 	private String email;
 
-//	@NotEmpty (message="{loginBean_null_password}")
+	//	@NotEmpty (message="{loginBean_null_password}")
 	private String password;
 
 	private boolean loggedIn;
-	
+
 	private int idUser;
-	
+
 	private String role;
-	
+
 	/**
 	 * Login operation.
 	 * @return
 	 * @throws IOException 
 	 */
 	public String doLogin() throws IOException {
+
+		String softwareKey = getSoftwareKey();
 		
 		try{
 			String uri = getRepoServer()+"rest/login";
-			
+
 			JSONObject object = new JSONObject();
 			object.put("email", email);
 			object.put("password", password);
-			
+			object.put("softwareKey", softwareKey);
+
 			Client client = Client.create();
 			WebResource webResource = client.resource(uri);
-	
+
 			ClientResponse response = webResource.type("application/json")
-			   .post(ClientResponse.class, object.toString());
+					.post(ClientResponse.class, object.toString());
 			String ansServer = response.getEntity(String.class);
-			
+
 			try{
 				JSONObject pckObj = new JSONObject(ansServer);
 				loggedIn = pckObj.getBoolean("logged");
@@ -71,9 +78,9 @@ public class AnalyticsStoreLoginBean implements Serializable {
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-		
+
 		if (loggedIn) {
-			
+
 			// Redirect the user back to where they have been before logging in
 			ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
 			String originalUrl = (String) externalContext.getRequestParameterMap().get("originalURL");
@@ -82,26 +89,26 @@ public class AnalyticsStoreLoginBean implements Serializable {
 			if (queryString != null && !queryString.isEmpty()){
 				url += "?" + queryString;
 			}
-			
+
 			ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
 			ec.redirect(url);
-			
+
 			//FacesContext.getCurrentInstance().getExternalContext().redirect("http://localhost:9090"+url);
-			
+
 			//return "/home.xhtml?faces-redirect=true";
 		}
 
 		// Set login ERROR
-//		FacesMessage msg = new FacesMessage("ERROR MSG", MessageProvider.getValue("login_error_wrong_user_password"));
+		//		FacesMessage msg = new FacesMessage("ERROR MSG", MessageProvider.getValue("login_error_wrong_user_password"));
 		FacesMessage msg = new FacesMessage("ERROR MSG", "login_error_wrong_user_password");
 		msg.setSeverity(FacesMessage.SEVERITY_ERROR);
 		FacesContext.getCurrentInstance().addMessage("login-form:password-input", msg);
-//		FacesContext.getCurrentInstance().validationFailed();
+		//		FacesContext.getCurrentInstance().validationFailed();
 
 		// To to login page
 		return null;
 	}
-	
+
 	public String getRepoServer(){
 		String pckServer = WorkflowPrefManager.getPckManagerUri();
 		if(!pckServer.endsWith("/")){
@@ -117,32 +124,64 @@ public class AnalyticsStoreLoginBean implements Serializable {
 	public String doLogout() {
 		// Set the paremeter indicating that user is logged in to false
 		loggedIn = false;
-//		FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
+		//		FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
 
 		// Set logout message
-//		FacesMessage msg = new FacesMessage(MessageProvider.getValue("login_logout_success"), "INFO MSG");
+		//		FacesMessage msg = new FacesMessage(MessageProvider.getValue("login_logout_success"), "INFO MSG");
 		FacesMessage msg = new FacesMessage("login_logout_success", "INFO MSG");
 		msg.setSeverity(FacesMessage.SEVERITY_INFO);
 		FacesContext.getCurrentInstance().addMessage(null, msg);
 
 		//        return navigationBean.toLogin();
-//		return "/initial.xhtml?faces-redirect=true";
+		//		return "/initial.xhtml?faces-redirect=true";
 		return "/home.xhtml?faces-redirect=true";
 	}
-	
+
 	public void logOut() {
 		try {
 			// Disconnect from the provider
 			// Invalidate session
 			ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-//			HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();
+			//			HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();
 			//this.invalidateSession(request);
-//			FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
+			//			FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
 			// Redirect to home page
 			FacesContext.getCurrentInstance().getExternalContext().redirect(externalContext.getRequestContextPath() + "home.xhtml");
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
+	}
+
+	private String getSoftwareKey(){
+		Properties prop = new Properties();
+		InputStream input = null;
+
+		try {
+			input = new FileInputStream(WorkflowPrefManager.pathSystemPref + "/licenseKey.properties");
+
+			// load a properties file
+			prop.load(input);
+
+			// get the property value and print it out
+
+			String licenseKey;
+			String[] value = ProjectID.get().trim().split("-");
+			if(value != null && value.length > 1){
+				licenseKey = value[0].replaceAll("[0-9]", "") + value[value.length-1];
+			}else{
+				licenseKey = ProjectID.get();
+			}
+
+			return formatTitle(licenseKey) + "=" + prop.getProperty(formatTitle(licenseKey));
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	private String formatTitle(String title){
+		return title.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
 	}
 
 	// ------------------------------
@@ -171,7 +210,7 @@ public class AnalyticsStoreLoginBean implements Serializable {
 	public void setLoggedIn(boolean loggedIn) {
 		this.loggedIn = loggedIn;
 	}
-	
+
 	public int getIdUser() {
 		return idUser;
 	}
@@ -187,5 +226,5 @@ public class AnalyticsStoreLoginBean implements Serializable {
 	public void setRole(String role) {
 		this.role = role;
 	}
-	
+
 }

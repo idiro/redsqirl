@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"   
+      xmlns:ui="http://java.sun.com/jsf/facelets"   
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:p="http://xmlns.jcp.org/jsf/passthrough">
+    
+    <a4j:loadBundle basename="MessagesResources" var="messages" />
+    
+    <head>
+    
+   		<link rel="stylesheet" href="#{facesContext.externalContext.requestContextPath}/css/table-style.css" />
+   		<script src='#{facesContext.externalContext.requestContextPath}/js/jquery-1.9.1.js' type="text/javascript"></script>
+   		<script src='#{facesContext.externalContext.requestContextPath}/js/redsqirl-pck-manager.js' type="text/javascript"></script>
+       	
+    </head>
+
+	<body>
+	
+		<h:form>
+	
+			<h:panelGrid columns="2">
+				<h:outputText value="#{messages.newUser_first_name}" class="formLabel"/>
+				<h:panelGroup>
+					<h:inputText id="first-name-input" value="#{analyticsStoreNewUserBean.firstName}" style="width:400px;"
+						p:placeholder="#{messages.newUser_first_name_desc}"/>
+				</h:panelGroup>
+						
+				<h:outputText value="#{messages.newUser_last_name}" class="formLabel"/>
+				<h:panelGroup>
+					<h:inputText id="last-name-input" value="#{analyticsStoreNewUserBean.lastName}" style="width:400px;"
+						p:placeholder="#{messages.newUser_last_name_desc}"/>
+				</h:panelGroup>
+						
+				<h:outputText value="#{messages.newUser_email}" class="formLabel"/>
+				<h:panelGroup>
+					<h:inputText id="email-input" value="#{analyticsStoreNewUserBean.email}" style="width:400px;"
+						p:placeholder="#{messages.newUser_email_desc}" />
+				</h:panelGroup>
+						
+				<h:outputText value="#{messages.newUser_company}" class="formLabel"/>
+				<h:panelGroup>
+					<h:inputText id="company-input" value="#{analyticsStoreNewUserBean.company}" style="width:400px;"
+						p:placeholder="#{messages.newUser_company_desc}"/>
+				</h:panelGroup>
+						
+				<h:outputText value="#{messages.newUser_password}" class="formLabel"/>
+				<h:panelGroup>
+					<h:inputSecret id="password-input" value="#{analyticsStoreNewUserBean.password}" 
+					style="width:400px;" p:placeholder="#{messages.newUser_password_desc}"/>
+				</h:panelGroup>
+				
+				<h:outputText value="#{messages.newUser_repeat_password}" class="formLabel"/>
+				<h:panelGroup>
+					<h:inputSecret id="repeat-password-input" value="#{analyticsStoreNewUserBean.repeatPassword}" 
+					style="width:400px;" p:placeholder="#{messages.newUser_repeat_password_desc}" />
+				</h:panelGroup>
+			</h:panelGrid>
+			
+			<a4j:commandButton value="#{messages.newUser_register_btn}" action="#{analyticsStoreNewUserBean.createUser}"
+				reRender="msnErrorNewUser" />
+		
+			<rich:messages id="msnErrorNewUser" globalOnly="false" layout="list"
+					styleClass="message" infoClass="messageok" errorClass="messageerro"
+					warnClass="messagealert" showDetail="true" showSummary="false"
+					ajaxRendered="false" />
+		
+		</h:form>
+		
+	</body>
+</html>
