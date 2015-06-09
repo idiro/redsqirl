@@ -38,13 +38,13 @@
 
 		<menu name="Support">
 <!-- 			<item name="Mailing List" href="mail-lists.html" /> -->
-			<item name="Mail Support" href="mailsupport.html" />
-			<item name="Issue Tracking" href="issue-tracking.html" />
+			<item name="Contact Us" href="mailsupport.html" />
+			<!--			<item name="Issue Tracking" href="issue-tracking.html" /> -->
 			<!-- <item name="Dependencies" href="dependencies.html" /> -->
 		</menu>
 
 		<menu name="Related Projects">
-			<item name="Sqirl Nutcracker" href="http://95.45.250.249/sqirl-nutcracker" />
+			<item name="Sqirl Nutcracker" href="http://www.redsqirl.com/sqirl-nutcracker" />
 			<item name="Apache Hadoop" href="http://hadoop.apache.org/" />
 			<item name="Apache Oozie" href="http://oozie.apache.org/" />
 			<item name="Apache Hive" href="http://hive.apache.org/" />

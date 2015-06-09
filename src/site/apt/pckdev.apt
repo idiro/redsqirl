@@ -4,22 +4,22 @@
 
 What is a package
 	
-	Packages are a group of actions that are used in Red Sqirl to perform specific processes on Red Sqirl. 
+	Packages are groups of actions that are used in Red Sqirl to perform specific processes on Red Sqirl. 
 	They generally run on the same platform , e.g,. Pig , Hive 
-	etc. This how Red Sqirl mudualarises its functionalities and manages what is available for the users.
+	etc. This how Red Sqirl modularises its functionalities and manages what is available for the users.
 
-What is in a  Package
+What is in a package
 
-	A Package will contain actions that can be used on Red Sqirl once the package is installed. 
-	An action will have two files that are required , these are the help and image files.
+	A Package will contain actions that can be used on Red Sqirl once it is installed. 
+	An action will be composed of a Java class a help file and an image file.
 
 Create a package
 
 
-	Create new project as maven give a group id and an artifact id
+	In order to create a package, the first step is to set up a {{{https://maven.apache.org/}maven}} project with a unique group and artifact id.
 
-	Edit pom to add necessary dependencies and configuration for packaging the package 
-	You can download a pom file from {{{./files/pom.xml}here}}.
+	A template of a pom file can be downloaded from {{{./files/pom.xml}here}}.
+        You will then need to edit the pom with the necessary dependencies and configuration specific to your package. 
 
 +---+
 	<properties>
@@ -164,10 +164,72 @@ Create a package
 
 +--------------------------------------+
 
-	<<Outcome:>> A project that is ready for creating new actions
-	The skeleton of the project can be found here :  CREATE A LINK (1)
-
 How to deploy a package
 
-Download Example
+ [[1]] Log in to the {{{http://95.45.250.249:8091/analytics-store}Analytics Store}}
 
+ [[2]] Go to the Red Sqirl >> Package
+
+ [[3]] Click on the New Module button
+
+ [[4]] Fill out the form, give an image to your module and click Save
+
+ [[5]] On the new package line, click on "Versions" button
+
+ [[6]] Click on the New Version button
+
+ [[7]] Fill out the form and click save
+
+   * The price field is not used at the moment so you can write "Free"
+
+   * The type access is either PUBLIC, everybody can find and download your package, or PRIVATE, nobody can except you.
+
+   * The file field will expect the zip file produced by the pom
+
+   * If your package depends on another package, please specify in the "dependency" section
+
+How to install a package
+
+* From Red Sqirl
+
+ [[1]] Log in to your Red Sqirl Instance
+
+ [[2]] Click on Software >> Install Package
+
+ [[3]] Choose the scope and click "Install"
+
+ [[4]] Log in with your analytics store details or create your account
+
+ [[5]] Search the package you wish to install
+
+ [[6]] Click install
+
+* Manually
+
+ [[1]] Log in to the {{{http://95.45.250.249:8091/analytics-store}Analytics Store}}
+
+ [[2]] Click on Red Sqirl >> Search
+
+ [[3]] Click on the package you wish to install
+
+ [[4]] Click on Request a key and specify the installation name
+
+ [[5]] Specify the scope (System means that is share by all users) and click 'OK'
+
+ [[6]] Download the zip file
+
+ [[7]] As the installer user execute the script  
+
++--------------------------------------+
+bin/add_package_system.sh ${zip_file}
++--------------------------------------+
+
+ or
+
++--------------------------------------+
+bin/add_package_user.sh ${user_name} ${zip_file}
++--------------------------------------+
+
+ [[8]] Download the licence key file (button on the bottom left of the module table) 
+
+ [[9]] Copy the licence key file after download in conf/licenseKey.properties    

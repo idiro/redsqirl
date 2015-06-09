@@ -175,8 +175,7 @@ private String getLoadStoreFuncion(DFEOutput out, String delimiter)
 public String getLoadQueryPiece(DFEOutput out) throws RemoteException {
     logger.debug("create load...");
 
-    String delimiter = out.getProperty(MapRedTextType.key_delimiter);
-    delimiter = ((MapRedTextType) out).getPigDelimiter();
+    String delimiter = getPigDelimiter(out.getProperty(MapRedTextType.key_delimiter));
     if (delimiter == null) {
 	delimiter = "\001";
     }
@@ -201,6 +200,23 @@ public String getLoadQueryPiece(DFEOutput out) throws RemoteException {
 
     return createSelect;
 }
+/**
+ *   * Get the delimiter to be used in Pig format
+ *	 * 
+ *	     * @return delimiter
+ *		 */
+public static String getPigDelimiter(String asciiCode) {
+    String result = null;
+    if (asciiCode == null || asciiCode.isEmpty()) {
+        result = "|";
+    } else if (asciiCode.length() == 1) {
+        result = asciiCode;
+    }else if (asciiCode.startsWith("#")) {
+        result = String.valueOf( (char) ((int)Integer.valueOf(asciiCode.substring(1))));
+    } 
+    return result;
+}
+
 +-----------+
 
 	Get the query piece to store the results
@@ -209,7 +225,7 @@ public String getLoadQueryPiece(DFEOutput out) throws RemoteException {
 public String getStoreQueryPiece(DFEOutput out, String relationName)
 	    throws RemoteException {
     MapRedTextType output = (MapRedTextType) getDFEOutput().get("in");
-    String delimiter = output.getPigDelimiter();
+    String delimiter = getPigDelimiter(output.getProperty(MapRedTextType.key_delimiter));
 
     String function = getStoreFunction(delimiter);
     logger.info(function);

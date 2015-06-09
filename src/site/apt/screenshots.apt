@@ -5,32 +5,32 @@
 
 Screenshots
 
-	Here are some screenshots showcasing some of RedSqirl's features.
+	Here are a few screenshots showcasing some of Red Sqirl's features.
 
 * Empty Canvas
 
-	This figure displays a blank canvas that is ready to be used for creating workflows.
+	This scheenshot has been taken just after sign in, it displays a blank canvas that is ready to be used for creating workflows.
 
-[./images/emptycanvas.png] RedSqirl with an empty canvas
+[./images/emptycanvas.png] Red Sqirl with an empty canvas
 
 
 * Working Canvas
 
-	An example of workflow that is populted and ready to be run.
+	An example of workflow that is populated and ready to be run.
 
-[./images/workingcanvas.png] RedSqirl with a populted canvas
+[./images/workingcanvas.png] Red Sqirl with a populated canvas
 
 
 * Popups
 		
-	To configure and manage parts of RedSqirl is done by popups
+	An example of browser popup is shown below.
 
 [./images/popups.png] What do interactions and popups look like
 
 
 * Help
 
-	This is an example of help for one action.
+	The dynamic 'help' contains the documentation a user needs for getting started and advanced settings.
 	
 [./images/help.png] There is an extensive help system
 

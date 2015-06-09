@@ -101,8 +101,7 @@ public abstract class DemoAction extends DataflowAction {
 	public String getLoadQueryPiece(DFEOutput out) throws RemoteException {
 		logger.debug("create load...");
 
-		String delimiter = out.getProperty(MapRedTextType.key_delimiter);
-		delimiter = ((MapRedTextType) out).getPigDelimiter();
+		String delimiter = getPigDelimiter(out.getProperty(MapRedTextType.key_delimiter));
 		if (delimiter == null) {
 			delimiter = "\001";
 		}
@@ -128,17 +127,33 @@ public abstract class DemoAction extends DataflowAction {
 		return createSelect;
 	}
 
+	/**
+	 *   * Get the delimiter to be used in Pig format
+	 *	 * 
+	 *	     * @return delimiter
+	 *		 */
+	public static String getPigDelimiter(String asciiCode) {
+		String result = null;
+		if (asciiCode == null || asciiCode.isEmpty()) {
+			result = "|";
+		} else if (asciiCode.length() == 1) {
+			result = asciiCode;
+		}else if (asciiCode.startsWith("#")) {
+			result = String.valueOf( (char) ((int)Integer.valueOf(asciiCode.substring(1))));
+		} 
+
+		return result;
+	}
+
 	public String getStoreQueryPiece(DFEOutput out, String relationName)
-			throws RemoteException {
-		MapRedTextType output = (MapRedTextType) getDFEOutput().get("in");
-		String delimiter = output.getPigDelimiter();
+		throws RemoteException {
+		String delimiter = getPigDelimiter(out.getProperty(MapRedTextType.key_delimiter));
 
 		String function = getStoreFunction(delimiter);
 		logger.info(function);
 		return "STORE " + relationName + " INTO '" + out.getPath() + "' USING "
-				+ function + ";";
+		+ function + ";";
 	}
-
 
 	public String getStoreFunction(String delimiter) throws RemoteException {
 		String type = "";
@@ -148,7 +163,7 @@ public abstract class DemoAction extends DataflowAction {
 		}
 		try {
 			type = savetypeOutputInt.getTree().getFirstChild("list")
-					.getFirstChild("output").getFirstChild().getHead();
+				.getFirstChild("output").getFirstChild().getHead();
 			logger.info("type: " + type);
 			function = "PigStorage('" + delimiter + "')";
 			logger.info("Storing via " + function);
@@ -177,12 +192,12 @@ public abstract class DemoAction extends DataflowAction {
 				logger.error("Fail to write into the file "+files[0].getAbsolutePath());
 			}
 		}
-		
+
 		return ok;
 	}
 
 	private String getLoadStoreFuncion(DFEOutput out, String delimiter)
-			throws RemoteException {
+		throws RemoteException {
 		String function = null;
 		function = "PigStorage('" + delimiter + "')";
 		return function;
@@ -200,7 +215,7 @@ public abstract class DemoAction extends DataflowAction {
 		bagNum++;
 		return "A" + bagNum;
 	}
-	
+
 	public Map<String, DFELinkProperty> getInput() throws RemoteException {
 		return input;
 	}

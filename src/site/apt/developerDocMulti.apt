@@ -256,7 +256,7 @@ and the AppendList Interaction by displaying the columns selected in each",
 
     @Override
     public boolean writeOozieActionFiles(File[] files) throws RemoteException {
-	//for demonstration purposes we leave the write oozie action blank
+	//for demonstration purposes we leave the write Oozie action blank
 	return false;
     }
 +-----------------+

@@ -4,19 +4,19 @@
 
 Getting started
 
-  This document describe how to install and configure Red Sqirl.
+  This document describes how to install and configure Red Sqirl.
 
 * Download
 
-  {{{./download.html}Download}} get the latest stable release.
+  Download from {{{./download.html}here}} to get the latest stable release.
 
 * Prerequisite
 
-  * A Linux web server with tomcat 7 installed.
+  * A Linux web server with Tomcat 7 installed.
  
   * Apache Hadoop cluster fully set up.
  
-  * Apache Oozie install on top of the cluster
+  * Apache Oozie installed on top of the cluster
  
   * An account on the server (or using LDAP) for every user
  
@@ -25,7 +25,7 @@ Getting started
   []  
 
   You will probably need algorithms or software to process the data. Red Sqirl
-comes with Hive, Pig and Hama process.
+comes with Hive, Pig and Hama processes.
 
   * Apache Hive installed
 
@@ -35,27 +35,27 @@ comes with Hive, Pig and Hama process.
 
 * Architecture
 
-   Red Sqirl uses tomcat as a web service. When you are logging in, it
-will create another process under as that user and make key components
+   Red Sqirl uses Tomcat as a web service. When you are logging in, it
+will create another process owned by the logged in user and make key components
 available on RMI. Every action on the application is run through the users' process to
 avoid permission conflicts.
 
 * Install
 
-  * Download
+  [[1]] Download
 
-  * Unzip the directory where you want to install it through the tomcat user
+  [[2]] Unzip the directory where you want to install it through the Tomcat user
 
-  * Set up your conf/redsqirl_sys.properties file
+  [[3]] Set up your conf/redsqirl_sys.properties file
   
-  * Make sure your license is in conf/licenseKey.properties with key and value (redsqirl01=license)
+  [[4]] Make sure your licence is in conf/licenseKey.properties with key and value (redsqirl01=licence)
 
-  * Run the script bin/install.sh, it will ask for your tomcat webapps directory
+  [[5]] Run the script bin/install.sh, it will ask for your Tomcat webapps directory
 
 
   []
 
-  Find below an example of a property file.
+  You will find below an example of a property file.
 
 ----------------------------------------
 nutcracker_path=/user/oozie/share/lib/sqirl-nutcracker
@@ -80,7 +80,7 @@ hadoop_home=/home/hadoop
 
 ** Packages
 
-  You can now install extra packaged for the system. Please refer to the
+  You can now install extra packages for the system. Please refer to the
 {{{./packagemanagement.html}Package Management}} section.
 
 
@@ -96,9 +96,9 @@ hadoop_home=/home/hadoop
 *----------+--------------+----------------+
 | jobtracker | Apache hadoop job tracker | namenode:9001 |
 *----------+--------------+----------------+
-| oozie_url | Apache Oozie url | http://namenode:11000/oozie |
+| oozie_url | Apache Oozie URL | http://namenode:11000/oozie |
 *----------+--------------+----------------+
-| oozie_xmlns | Apache Oozie xmlns to use | uri:oozie:workflow:0.2 |
+| oozie_xmlns | Apache Oozie xmlns | uri:oozie:workflow:0.2 |
 *----------+--------------+----------------+
 | oozie_launcher_queue | Queue used for map only Oozie actions that starts the process | ooziequeue |
 *----------+--------------+----------------+
@@ -108,7 +108,7 @@ hadoop_home=/home/hadoop
 *----------+--------------+----------------+
 | pack_manager_url | The analytics store URL (REST server) | http\://95.45.250.249\:8091/analytics-store |
 *----------+--------------+----------------+
-| tomcat_path | Path for tomcat installation  | /path/tomcat/ |
+| tomcat_path | Path for Tomcat installation  | /path/tomcat/ |
 *----------+--------------+----------------+
 | admin_user | ':' list of user that can admin sys package from the UI | user1:user2 |
 *----------+--------------+----------------+
@@ -145,8 +145,8 @@ hadoop_home=/home/hadoop
 *----------+--------------+----------------+
 | number_backup | Number of workflow backup file to keep (default 25) | 50 |
 *----------+--------------+----------------+
-| number_oozie_job_directory_tokeep | Number of oozie jobs to keep per workflows (default 20) | 50 |
+| number_oozie_job_directory_tokeep | Number of Oozie jobs to keep per workflow (default 20) | 50 |
 *----------+--------------+----------------+
-| hdfspath_oozie_job | HDFS path where the oozie workflow are writen | /user/\{user\}/.redsqirl/jobs  |
+| hdfspath_oozie_job | HDFS path where the Oozie workflows are written | /user/\{user\}/.redsqirl/jobs  |
 *----------+--------------+----------------+
 

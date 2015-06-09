@@ -122,8 +122,7 @@ public class Sample extends DataflowAction{
 
 	public String getLoadQueryPiece(DFEOutput in) throws RemoteException {
 		//get the delimiter
-		String delimiter = in.getProperty(MapRedTextType.key_delimiter);
-		delimiter = ((MapRedTextType) in).getPigDelimiter();
+		String delimiter = getPigDelimiter(in.getProperty(MapRedTextType.key_delimiter));
 		//if delimiter is empty assign it one
 		if (delimiter == null) {
 			delimiter = "\001";
@@ -180,5 +179,23 @@ public class Sample extends DataflowAction{
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * Get the delimiter to be used in Pig format
+	 * 
+	 * @return delimiter
+	 */
+	public static String getPigDelimiter(String asciiCode) {
+		String result = null;
+		if (asciiCode == null || asciiCode.isEmpty()) {
+			result = "|";
+		} else if (asciiCode.length() == 1) {
+			result = asciiCode;
+		}else if (asciiCode.startsWith("#")) {
+			result = String.valueOf( (char) ((int)Integer.valueOf(asciiCode.substring(1))));
+		} 
+		
+		return result;
 	}
 }
