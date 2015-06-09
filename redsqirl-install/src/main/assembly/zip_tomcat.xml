@@ -1,0 +1,35 @@
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+  <id>zip_tomcat</id>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <baseDirectory>..</baseDirectory>
+  <formats>
+    <format>tar.gz</format>
+  </formats>
+  <fileSets>
+    <fileSet>
+      <directory>${dist}/bin</directory>
+      <outputDirectory>redsqirl-${project.version}/bin</outputDirectory>
+      <includes>
+      	<include>*.sh</include>
+      </includes>
+      <fileMode>0744</fileMode>
+    </fileSet>
+    <fileSet>
+      <directory>${dist.war}</directory>
+      <outputDirectory>redsqirl-${project.version}/war</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>${dist.lib}</directory>
+      <outputDirectory>redsqirl-${project.version}/lib</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>${dist.conf}</directory>
+      <outputDirectory>redsqirl-${project.version}/conf</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>${dist.tomcat}</directory>
+      <outputDirectory>redsqirl-${project.version}/apache-tomcat-7.0.42</outputDirectory>
+    </fileSet>
+  </fileSets>
+</assembly>
