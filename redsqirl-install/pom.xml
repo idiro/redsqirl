@@ -12,7 +12,7 @@
 		<dist.war>${dist}/war</dist.war>
 		<dist.bin>${dist}/bin</dist.bin>
 		<dist.conf>${dist}/conf</dist.conf>
-		<dist.tomcat>${dist}/apache-tomcat-7.0.42</dist.tomcat>
+		<dist.tomcat>${dist}/apache-tomcat-7.0.62</dist.tomcat>
 		<redsqirl-workflow.lib>${basedir}/../redsqirl-workflow/target/redsqirl-workflow-${project.version}/lib</redsqirl-workflow.lib>
 		<redsqirl-base-sql.lib>${basedir}/../redsqirl-abstract-packages/redsqirl-base-sql/target/redsqirl-base-sql-${project.version}/lib</redsqirl-base-sql.lib>
 		<redsqirl-webapp.war>${basedir}/../redsqirl-webapp/target/redsqirl-webapp-${project.version}/war</redsqirl-webapp.war>
@@ -110,7 +110,7 @@
 							<executable>scp</executable>
 							<arguments>
 								<argument>-r</argument>
-								<argument>dev:/data/apache-tomcat-7.0.42</argument>
+								<argument>dev:/data/tomcat/apache-tomcat-7.0.62</argument>
 								<argument>${dist}</argument>
 							</arguments>
 						</configuration>
