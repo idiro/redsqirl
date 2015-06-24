@@ -83,7 +83,7 @@
 
 		<resources>
 			<resource>
-			    <directory>${compile.resources}</directory>
+				<directory>${compile.resources}</directory>
 				<filtering>true</filtering>
 			</resource>
 		</resources>
@@ -113,30 +113,30 @@
 				</configuration>
 			</plugin>
 			<plugin>
-			    <groupId>idiro.maven</groupId>
-			    <artifactId>depman-maven-plugin</artifactId>
-			    <version>1.0</version>
-			    <executions>
-				<execution>
-				    <phase>process-resources</phase>
-				    <goals>
-					<goal>depman</goal>
-				    </goals>
-				</execution>
-			    </executions>
+				<groupId>idiro.maven</groupId>
+				<artifactId>depman-maven-plugin</artifactId>
+				<version>1.0</version>
+				<executions>
+					<execution>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>depman</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 
 
 			<plugin>
-			    <groupId>org.apache.maven.plugins</groupId>
-			    <artifactId>maven-war-plugin</artifactId>
-			    <configuration>
-				<warSourceDirectory>${basedir}/src/main/webapp</warSourceDirectory>
-				<outputDirectory>${dist.war}</outputDirectory>
-				<warName>redsqirl</warName>
-				<warSourceExcludes>pages/packages/**</warSourceExcludes>
-				<webXml>${webXmlFile}</webXml>
-			    </configuration>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration>
+					<warSourceDirectory>${basedir}/src/main/webapp</warSourceDirectory>
+					<outputDirectory>${dist.war}</outputDirectory>
+					<warName>redsqirl</warName>
+					<warSourceExcludes>pages/packages/**</warSourceExcludes>
+					<webXml>${webXmlFile}</webXml>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
@@ -180,7 +180,7 @@
 		</dependency>
 
 
-		<!--  Backend -->
+		<!-- Backend -->
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
@@ -191,7 +191,7 @@
 			<artifactId>commons-io</artifactId>
 			<version>2.4</version>
 		</dependency>
-		
+
 		<!-- Other -->
 
 		<dependency>
@@ -269,7 +269,7 @@
 			<artifactId>lucene-core</artifactId>
 			<version>3.5.0</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-client</artifactId>
@@ -289,13 +289,20 @@
 			<artifactId>zip4j</artifactId>
 			<version>1.3.2</version>
 		</dependency>
-		
+
 		<!-- Quartz API -->
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
 			<artifactId>quartz</artifactId>
 			<version>2.0.2</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>18.0</version>
+		</dependency>
+
 
 	</dependencies>
 </project>

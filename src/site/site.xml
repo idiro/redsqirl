@@ -28,6 +28,10 @@
 
 	<body>
 
+		<head>
+			<script src="javascript/site.js" type="text/javascript" ></script>
+		</head>
+
 		<menu name="Red Sqirl">
 			<item name="Overview" href="index.html" />
 			<item name="Download" href="download.html" />

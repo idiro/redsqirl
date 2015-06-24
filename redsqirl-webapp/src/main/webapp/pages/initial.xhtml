@@ -52,7 +52,7 @@
 
 	    time = jQuery.now();
 	
-	  //]]> 
+	  //]]>
 	});
 	
 	function checkKeycode(e){
@@ -104,6 +104,13 @@
 	<img src="./image/login_squirl_background.png" style="width:90%;position:absolute;z-index:0;height:90%;left:6%;min-width:600px;" onError="this.onerror=null;this.src='../image/login_squirl_background.png';" />
 	
 	<ui:include src="/pages/progressBar.xhtml" />
+	
+	<div id="domMessageDivAdmLogin" style="display: none;">
+		<img src="./image/icons/waiting.gif" />
+	</div>
+	
+	
+	
 	<table style="position:relative;left:6%;top:3%; height:87%;" >
 		<tr>
 			<td>
@@ -148,6 +155,13 @@
 								<br />
 								<h:selectBooleanCheckbox id="loginCheck" style="margin-left:160px;" />
 								<h:outputText value="#{messages.label_rememberpassword}" style="color:#FFFFFF" />
+								
+								<a4j:jsFunction name="adminLogin" action="#{userInfoBean.adminLogin}" />
+								<a href="#" onclick="adminLogin();jQuery.blockUI({ message: jQuery('#domMessageDivAdmLogin') });" 
+									style="position:relative;float:right;padding-right:20px;font-size:15px;top:30px;color:white;font-weight:bold;" >
+									<h:outputText value="#{messages.label_admin}" title="#{messages.label_adminLogin}" />
+								</a>
+								
 								<br />
 			
 								<h:inputText id="alreadySignedInOtherMachine" value="#{userInfoBean.alreadySignedInOtherMachine}" style="display:none;" />

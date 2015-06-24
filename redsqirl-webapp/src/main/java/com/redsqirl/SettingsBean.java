@@ -75,7 +75,7 @@ public class SettingsBean extends BaseBean implements Serializable  {
 	public void storeNewSettings(){
 		logger.info("storeNewSettings");
 		String error = null;
-		if(isAdmin()){	
+		if(isAdmin()){
 			try {
 				WorkflowPrefManager.storeSysProperties(getProps(sysSettings));
 			} catch (IOException e) {

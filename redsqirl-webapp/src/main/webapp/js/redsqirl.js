@@ -507,3 +507,17 @@ function changeTableInteractionAnchorUp(){
 function changeTableInteractionAnchorDown(){
 	jQuery("#divTableInteraction").animate({ scrollTop: jQuery("[id$='divTableInteraction']").scrollTop()+30 }, 800);
 }
+
+function enableEnterKey(e, id){
+    var key;
+    if(window.event)
+         key = window.event.keyCode;
+    else
+         key = e.keyCode;
+    
+    if (key == 13){
+    	e.preventDefault();
+    	jQuery("[id$='"+id+"']").click();
+    }
+    return (key != 13);
+}

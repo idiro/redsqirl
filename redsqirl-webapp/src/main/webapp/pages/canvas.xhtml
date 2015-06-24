@@ -462,31 +462,15 @@
 	    			 resizeCanvas(30,30);
 	    		 });
 	    		 
-	    		 window.onbeforeunload = function(){
-	    			 invalidateSession();
-	    		 }
-	    		 
-	    		 //setTimeout(function(){autoSaveAll()}, 10*1000);
+	    		 /* window.onbeforeunload = function(){
+	    			 reinitializeCanvas();
+	    		 } */
+
+	    		 reinitializeCanvas();
 	    		 
 	    	});	//---------- END jQuery function
-	    			
-	    	/* function autoSaveAll(){
-	    		try{
-	    			var currentSelect = getAllIconPositions();
-	                if(allPositionIcons === undefined){
-	                	if(currentSelect !== undefined){
-	                		allPositionIcons = currentSelect;
-	                        saveAllPositions(currentSelect);
-	                	}
-	                }else if(currentSelect !== allPositionIcons){
-	                	allPositionIcons = currentSelect;
-                        saveAllPositions(currentSelect);
-	                }
-                }catch(err){
-                }
-	    		setTimeout(function(){autoSaveAll()},10*60*1000);
-            } */
 
+	    	
 	      function closeTab(arg){
 	    	  jQuery(jQuery( arg ).prev().attr('href')).remove();
 	    	  jQuery( arg ).offsetParent().remove();
@@ -498,12 +482,20 @@
 	    	  closeWorkflowTab(ul, tabName);
 	      }
 	      
-	      function addElementJs(canvasName, path, positions, links, selecteds, reset, workflowType ){
-		 //     alert(positions);
+	      function addElementJs(canvasName, path, positions, links, selecteds, reset, workflowType, forceRefresh ){
+
+	    	  forceRefresh = typeof forceRefresh !== 'undefined' ? forceRefresh : false;
+	    	  canvasExist = typeof canvasArray[canvasName] !== 'undefined' ? true : false;
+		      
+		 	  //alert(positions);
+		 	  
 	          //Add the workflow tab only if the name does not exist yet.
-	          if(document.getElementById(canvasName) == null) {
+	          if(document.getElementById(canvasName) == null &amp;&amp; !canvasExist) {
 	    	      addWorkflowTab(canvasName,workflowType);
 	    	      configureCanvas(canvasName, reset, workflowType);
+		    	  forceRefresh = true;
+	          }
+	          if(forceRefresh) {
 		    	  setWorkflow(canvasName);
 	    	      addElements(canvasName, positions, selecteds);
 	    	      setSaved(canvasName, true);
@@ -722,19 +714,7 @@
 	        return (key != 13);
 	   }
 	   	
-	   	function enableEnterKey(e, id){
-	        var key;
-	        if(window.event)
-	             key = window.event.keyCode;
-	        else
-	             key = e.keyCode;
-	        
-	        if (key == 13){
-	        	e.preventDefault();
-	        	jQuery("[id$='"+id+"']").click();
-	        }
-	        return (key != 13);
-	   }
+	   	
 	   	
 	   	function menuSave(){
 			if (isSaved(getSelectedByName())){
@@ -821,7 +801,14 @@
 			 	jQuery("#msnErrorPageContainer").css("z-index", '1000');
 	    	}
 	   	}
-	   	
+
+	   	function reinitializeCanvasScreen(values){
+			if(values != null){
+				backupAndCloseAll();
+				alert("The page has been refreshed. Your work has been saved in the backup directory.");
+				addWorkflow("canvas-1");
+			}
+		}
 	   	
 	   	/*keyboard shortcuts*/
 	   	
@@ -1442,6 +1429,12 @@
                 <a4j:jsFunction name="loadSubWorkflowFromCanvas" data="#{canvasBean.positions}"
                     oncomplete="addElementJs(data[0],data[1],data[2],data[3],data[4], true, data[5]);canvasArray[selectedCanvas].saved=false;updateAllArcsStatus();"
                     reRender="tabFlowchart,errorTable,msnError" />
+                    
+                <a4j:jsFunction name="rebuildCanvas" data="#{canvasBean.positions}"
+					oncomplete="addElementJs(data[0],data[1],data[2],data[3],data[4], true, data[5],true);updateAllArcsStatus();"
+					reRender="tabFlowchart,errorTable,msnError" />
+                
+                    
 			</a4j:region>
 			
 			<a4j:region>
@@ -1537,8 +1530,7 @@
 			
 			
 			<a4j:region>
-				<a4j:jsFunction name="invalidateSession"
-					action="#{canvasBean.reinitialize}" />
+				<a4j:jsFunction name="reinitializeCanvas" data="#{canvasBean.reinitialize}" oncomplete="reinitializeCanvasScreen(data)" />
 			</a4j:region>
 
 			<a4j:region>
@@ -1568,10 +1560,8 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
 
-				<a4j:jsFunction name="backupAll" action="#{canvasBean.backupAll}"
-					oncomplete="closeWorkflow(getSelectedByName());">
-					<a4j:actionparam name="allpositions" />
-				</a4j:jsFunction>
+				<a4j:jsFunction name="backupAll" action="#{canvasBean.backupAll}"/>
+				<a4j:jsFunction name="backupAndCloseAll" action="#{canvasBean.backupAndCloseAll}"/>
 			</a4j:region>
 
 			<a4j:region>

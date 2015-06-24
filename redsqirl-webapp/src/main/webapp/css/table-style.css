@@ -126,7 +126,10 @@ h1{
 }
 
 .packageItem{
-	background-color:#F9F9F9;
+	background-color:#FFFFFF;
+	box-shadow: 3px 3px 3px #888888;
+	border-radius: 7px !important;
+	border: 1px solid #cc1b1a;
 	margin: 10px 10px 10px 10px;
 	width: 360px;
 	float:left;
@@ -139,26 +142,44 @@ h1{
 }
 
 .packageItem .image{
-	margin-top:5px;
+	margin-top:3px;
 	margin-left:5px;
+	margin-bottom:3px;
 	float:left;
 }
 
 .packageItem .title{
-	margin-top:10px;
+	margin-top:0px;
 	margin-left:5px;
 	width:50%;
 	float:left;
 	font-size:25px;
 }
 
-.packageItem .license{
-	margin-top:10px;
+.packageItem .type{
+	margin-top:0px;
 	margin-right:10px;
+	margin-bottom:0px;
 	width:20%;
 	float:right;
 	text-align:right;
 	font-size:12px;
+}
+
+.packageItem .license{
+	margin-top:10px;
+	margin-right:10px;
+	width:40%;
+	float:right;
+	text-align:right;
+	font-size:12px;
+}
+
+.packageItem .dependency{
+	float: left;
+    font-size: 12px;
+    padding-top: 5px;
+    width: 100%;
 }
 
 .packageItem .description{
@@ -168,6 +189,14 @@ h1{
 	float:left;
 	color:grey;
 	font-size:12px;
+}
+
+.searchBar{
+	width:750px;
+	margin-left:auto;
+	margin-right:auto;
+	margin-top:10px;
+	margin-bottom:10px;
 }
 
 .searchBar{

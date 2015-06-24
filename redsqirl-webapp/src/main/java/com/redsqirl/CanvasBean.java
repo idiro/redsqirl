@@ -138,9 +138,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 			dfi = getworkFlowInterface();
 			if (dfi.getWorkflow(getNameWorkflow()) == null) {
 				dfi.addWorkflow(getNameWorkflow());
-			} else {
-				dfi.removeWorkflow(getNameWorkflow());
-				dfi.addWorkflow(getNameWorkflow());
 			}
 			logger.info("add new Workflow " + getNameWorkflow());
 
@@ -773,10 +770,20 @@ public class CanvasBean extends BaseBean implements Serializable {
 		} catch (RemoteException e) {
 			logger.info("Error backing up all workflows");
 			e.printStackTrace();
-			;
 		}
 	}
 
+	public void backupAndCloseAll() {
+		logger.info("backupAll");
+		updateAllPosition();
+		try {
+			getworkFlowInterface().backupAll();
+			closeAll();
+		} catch (RemoteException e) {
+			logger.info("Error backing up all workflows");
+			e.printStackTrace();
+		}
+	}
 	public void checkName() {
 		String msg = null;
 		String regex = "[a-zA-Z]([a-zA-Z0-9_]*)";
@@ -1246,10 +1253,29 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	}
 
-	public void reinitialize() throws RemoteException {
-		logger.info("Clear workflows");
-
-		for (Entry<String, DataFlow> e : getWorkflowMap().entrySet()) {
+	public String[] getReinitialize() throws RemoteException {
+		logger.info("Reinitialize Canvas");
+		
+		
+		if(getWorkflowMap().entrySet().size() != 1){
+			return reinitializeCanvas();
+		} else if(getWorkflowMap().entrySet().size() == 1){
+			for (Entry<String, DataFlow> e : getWorkflowMap().entrySet()) {
+				if (getworkFlowInterface().getWorkflow(e.getKey()) != null) {
+					if(!e.getKey().equalsIgnoreCase("canvas-1") ||
+							!getworkFlowInterface().getWorkflow(e.getKey()).getComponentIds().isEmpty()){
+						return reinitializeCanvas();
+					}
+				}else{
+					return reinitializeCanvas();
+				}
+			}
+		}
+		
+		
+		return null;
+		
+		/*for (Entry<String, DataFlow> e : getWorkflowMap().entrySet()) {
 			if (getworkFlowInterface().getWorkflow(e.getKey()) != null) {
 				logger.info("removing workflow");
 				getworkFlowInterface().removeWorkflow(e.getKey());
@@ -1263,8 +1289,32 @@ public class CanvasBean extends BaseBean implements Serializable {
 		getWorkflowMap().put(getNameWorkflow(), getDf());
 
 		getIdMap().clear();
-		getIdMap().put(getNameWorkflow(), new HashMap<String, String>());
+		getIdMap().put(getNameWorkflow(), new HashMap<String, String>());*/
 
+	}
+	
+	public String[] reinitializeCanvas() throws RemoteException{
+		
+		String[] res = new String[getWorkflowMap().size()];
+		
+		int i = 0;
+		for (Entry<String, DataFlow> e : getWorkflowMap().entrySet()) {
+			res[i] = e.getKey();
+			logger.info( e.getKey());
+			++i;
+		}
+		
+		Map<String, Map<String, String>> newIdMap = new LinkedHashMap<String, Map<String, String>>(); 
+		for (Iterator<String> iterator = getIdMap().keySet().iterator(); iterator.hasNext();) {
+			String nameWF = (String) iterator.next();
+			newIdMap.put(nameWF, new LinkedHashMap<String, String>());
+			for (Iterator<String> iterator2 = getIdMap().get(nameWF).values().iterator(); iterator2.hasNext();) {
+				String el = (String) iterator2.next();
+				newIdMap.get(nameWF).put(el, el);
+			}
+		}
+		setIdMap(newIdMap);
+		return res;
 	}
 
 	/**
@@ -2041,7 +2091,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
 		String selecteds = (String) sc.getAttribute("selecteds");
 		logger.info("getPositions " + selecteds);
-
+		DataFlow df = getDf();
 		try {
 
 			Map<String, String> elements = getReverseIdMap();
@@ -2049,9 +2099,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 			JSONArray jsonElements = new JSONArray();
 			JSONArray jsonLinks = new JSONArray();
 
-			if (getDf() != null && getDf().getElement() != null) {
+			if (df != null && df.getElement() != null) {
 
-				for (DataFlowElement e : getDf().getElement()) {
+				for (DataFlowElement e : df.getElement()) {
 					String compId = e.getComponentId();
 					String privilege = null;
 					Boolean privilegeObj;
@@ -2082,7 +2132,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				}
 
 
-				for (DataFlowElement outEl : getDf().getElement()) {
+				for (DataFlowElement outEl : df.getElement()) {
 					String outElId = outEl.getComponentId();
 					Map<String, Map<String, String>> inputsPerOutputs = outEl
 							.getInputNamePerOutput();

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j" >
+
+<a4j:loadBundle basename="MessagesResources" var="messages" />
+
+<head>
+
+	<link rel="stylesheet" href="#{facesContext.externalContext.requestContextPath}/css/table-style.css" />
+	<link rel="stylesheet" href='#{facesContext.externalContext.requestContextPath}/css/redsqirl.css' />
+	<script src='#{facesContext.externalContext.requestContextPath}/js/jquery-1.9.1.js' type="text/javascript"></script>
+	<script src='#{facesContext.externalContext.requestContextPath}/js/redsqirl-pck-manager.js' type="text/javascript"></script>
+	<script	src="#{facesContext.externalContext.requestContextPath}/js/redsqirl.js"	type="text/javascript" ></script>
+	
+	<title><h:outputText value="#{messages.label_sistem}" /></title>
+		
+<script>
+
+jQuery.noConflict();
+
+jQuery(function() {
+
+	
+});
+
+</script>
+
+</head>
+
+<body>
+
+	<h:form>
+	
+		<img src="./image/login_squirl_background.png" style="width:90%;position:absolute;z-index:-1;height:90%;left:6%;min-width:600px;" onError="this.onerror=null;this.src='../image/login_squirl_background.png';" />
+		<img src="./image/analytics_store_logo.gif" style="width:180px;" onError="this.onerror=null;this.src='../image/analytics_store_logo.gif';" />
+		
+		<a4j:jsFunction name="installModule" action="#{analyticsStoreLoginBean.installModule}"/>
+		<a4j:jsFunction name="uninstallModule" action="#{analyticsStoreLoginBean.uninstallModule}"/>
+	
+		<table style="position:relative;height:87%;" >
+			<tr>
+				
+				<td style="float:right;position:relative;top:-40px;padding-left: 400px;" >
+				
+					
+					<rich:toolBar>
+						
+						<rich:dropDownMenu>
+		
+							<f:facet name="label">
+								<h:panelGroup>
+									<span onclick="license();"><h:outputText value="#{messages.label_license}" /></span>
+									<a4j:jsFunction name="license" action="#{analyticsStoreLoginBean.license}"/>
+								</h:panelGroup>
+							</f:facet>
+			
+						</rich:dropDownMenu>
+						
+						<rich:dropDownMenu>
+		
+							<f:facet name="label">
+								<h:panelGroup>
+									<h:outputText value="#{messages.label_modules}" />
+								</h:panelGroup>
+							</f:facet>
+							
+							<rich:menuItem submitMode="none">
+								<rich:menuItem submitMode="none" value="#{messages.label_modules_install}" onclick="installModule();" />
+							</rich:menuItem>
+							<rich:menuItem submitMode="none" rendered="#{analyticsStoreLoginBean.showUninstall == 'Y'}" >
+								<rich:menuItem submitMode="none" value="#{messages.label_modules_uninstall}" onclick="uninstallModule();" />
+							</rich:menuItem>
+			
+						</rich:dropDownMenu>
+						
+						<rich:dropDownMenu>
+		
+							<f:facet name="label">
+								<h:panelGroup>
+									<span onclick="setting();"><h:outputText value="#{messages.label_setting_modal}" /></span>
+									<a4j:jsFunction name="setting" action="#{analyticsStoreLoginBean.setting}"/>
+								</h:panelGroup>
+							</f:facet>
+			
+						</rich:dropDownMenu>
+						
+						<rich:toolBarGroup style="padding-left:100px;">
+							<a4j:commandButton value="#{messages.label_menu_signout}" styleClass="signoutButton" ajax="true" action="#{analyticsStoreLoginBean.home}"/>
+						</rich:toolBarGroup>
+					
+					</rich:toolBar>
+					
+				
+				</td>
+				
+			</tr>
+		</table>
+		
+		<table style="width: 100%;" >
+			<tr>
+				<td>
+					<center>
+						<h:outputText value="#{messages.label_modules_install}" style="font-size:50px;position:relative;left:0px;color:#818286;" 
+							title="#{messages.label_modules}"/>
+						<br/><br/>
+					</center>
+				</td>
+			</tr>
+			<tr>
+				<td style="width:1290px;">
+				
+					<center>
+						
+						<h:outputText value="#{messages.label_modules_desc}" title="#{messages.label_modules_desc}" />
+						
+						<br/><br/>
+						
+						<h:selectOneMenu value="#{analyticsStoreLoginBean.selectedTypeModule}" >
+							<f:selectItems value="#{analyticsStoreLoginBean.typeModule}" />
+						</h:selectOneMenu>
+						
+						<br/><br/>
+						
+						<rich:fileUpload fileUploadListener="#{analyticsStoreLoginBean.listenerFileModule}" maxFilesQuantity="1" id="upload" noDuplicate="true"
+		                	immediateUpload="false" acceptedTypes="zip" addLabel="upLoad" listHeight="63px">
+					        <f:facet name="label">
+					        	<h:outputText value="{_KB}KB from {KB}KB uploaded --- {mm}:{ss}" />
+					        </f:facet>
+						</rich:fileUpload>
+						
+						<br/><br/>
+						
+						<a4j:commandButton value="#{messages.button_ok}" action="#{analyticsStoreLoginBean.installModulesOffLine}" styleClass="greenButton" />
+					
+					</center>
+					
+				</td>
+			</tr>
+		</table>
+				
+		<div style="height:100px;width:100%;background:#C0D72F;position:fixed;bottom:0px;" />	
+	
+	</h:form>
+
+</body>
+</html>

@@ -36,6 +36,9 @@
 			<h:panelGroup layout="block" class="packageList">
 				<a4j:repeat value="#{analyticsStoreSearchBean.allPackageList}" var="pck">
 				 	<div class="packageItem" onclick="goToUrl(event, this);">
+	                	<h:panelGroup layout="block" class="type" style="float:right;">
+							<h:outputText value="#{pck.type}"/>
+						</h:panelGroup>
 	                	<h:graphicImage value="#{pck.image}" 
 	                		width="100" height="100" styleClass="image"/>
 					 	<h:panelGroup layout="block" class="title">

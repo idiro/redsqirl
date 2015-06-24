@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+
+  <body>
+
+
+<div>
+<h2>Contact Us</h2>
+<div>
+<h3>Public Channel</h3>
+<p>Post your question on our 
+<a class="externalLink" href="https://groups.google.com/a/redsqirl.com/forum/?hl=en#!forum/user">forum</a> or our public 
+<a class="externalLink" href="mailto:.user@redsqirl.com">mailing list</a>. </p>
+</div>
+<div class="section">
+<h3>Private Channel</h3>
+<p>Alternatively, you can reach us on a more private channel 
+<a class="externalLink" href="mailto:info@redsqirl.com">here</a>.</p>
+</div>
+</div>
+
+<input id="aux" type="hidden" ></input>
+
+<iframe id="emailDownload" src="http://localhost/igor/email.php?p=download" frameborder="0" width="500" height="500"></iframe>
+
+<iframe id="email" src="http://localhost/igor/email.php" frameborder="0" width="500" height="500"></iframe>
+
+
+  </body>
+
+</document>

@@ -1,10 +1,8 @@
 package com.redsqirl.auth;
 
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
 import java.rmi.NotBoundException;
@@ -24,7 +22,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-import org.apache.poi.hssf.record.formula.functions.Proper;
 
 import ch.ethz.ssh2.Connection;
 
@@ -48,8 +45,9 @@ import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 
 public class UserInfoBean extends BaseBean implements Serializable {
 
-	private static Logger logger = Logger.getLogger(UserInfoBean.class);
+	private static final long serialVersionUID = 1L;
 
+	private static Logger logger = Logger.getLogger(UserInfoBean.class);
 
 	/**
 	 * RMI server used.
@@ -61,8 +59,6 @@ public class UserInfoBean extends BaseBean implements Serializable {
 	 */
 	private static final int port = 2001;
 
-
-
 	/**
 	 * User name used for this session.
 	 */
@@ -72,8 +68,6 @@ public class UserInfoBean extends BaseBean implements Serializable {
 	 * The password kept until the SSH session is created.
 	 */
 	private transient String password;
-
-
 
 	/**
 	 * An error message.
@@ -95,8 +89,6 @@ public class UserInfoBean extends BaseBean implements Serializable {
 	 */
 	private String forceSignIn = "F";
 
-
-
 	/**
 	 * Current value of the progress bar.
 	 */
@@ -117,8 +109,6 @@ public class UserInfoBean extends BaseBean implements Serializable {
 	 */
 	buildBackend = false;
 
-
-
 	/**
 	 * The server process launched for this user.
 	 */
@@ -135,6 +125,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 	private transient Session sessionSSH;
 
 	private boolean checkPassword = false;
+
 	/**
 	 * Init the progress bar.
 	 */
@@ -165,7 +156,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		FacesContext fCtx = FacesContext.getCurrentInstance();
 		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
 		HttpSession session = (HttpSession) fCtx.getExternalContext().getSession(true);
-		
+
 		try {
 			Connection conn = new Connection(hostname);
 			conn.connect();
@@ -187,7 +178,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 			}
 
 			checkPassword = conn.authenticateWithPassword(userName,	password);
-			
+
 			if (!checkPassword) {
 				setMsnError("error");
 				setAlreadySignedInOtherMachine(null);
@@ -269,12 +260,12 @@ public class UserInfoBean extends BaseBean implements Serializable {
 			setMsnError("error");
 			return "failure";
 		}
-		
+
 		UsageRecordWriter usageRecordLog = new UsageRecordWriter(licence, userName);
 		Map<String, UsageRecordWriter> sessionUsageRecordWriter = new HashMap<String, UsageRecordWriter>();
 		sessionUsageRecordWriter.put(userName, usageRecordLog);
 		sc.setAttribute("usageRecordLog", sessionUsageRecordWriter);
-		
+
 		@SuppressWarnings("unchecked")
 		Map<String, HttpSession> sessionLoginMap = (Map<String, HttpSession>) sc.getAttribute("sessionLoginMap");
 
@@ -289,7 +280,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 				logger.info("Already Authenticated twice");
 				usageRecordLog().addError("ERROR LOGIN", "Already Authenticated twice");
-				
+
 				return "failure";
 			}else if(forceSignIn.equalsIgnoreCase("T")){
 				//Invalidate the session
@@ -301,14 +292,14 @@ public class UserInfoBean extends BaseBean implements Serializable {
 				return "failure";
 			}
 		}
-		
+
 		logger.info("update progressbar");
 		setValueProgressBar(5);
 
 		logger.info("validateSecondLogin end");
 
 		usageRecordLog().addSuccess("LOGIN");
-		
+
 		return init();
 	}
 
@@ -601,9 +592,9 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		setAlreadySignedIn(null);
 
 		invalidateSession();
-		
+
 		usageRecordLog().addSuccess("SIGNOUT");
-		
+
 		return "signout";
 	}
 
@@ -715,7 +706,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		boolean sysPckUpdate = createIndex(indexPckSysPath, sysPath);
 		boolean sysMainUpdate = createIndex(indexMainHelpPath, mainlHelpPath);
 		SimpleFileIndexer sfi = new SimpleFileIndexer();
-		
+
 		File fileIndexMergeSysPath = new File(indexMergeSysPath);
 		if(sysPckUpdate || sysMainUpdate ||!fileIndexMergeSysPath.isDirectory() 
 				|| fileIndexMergeSysPath.list().length == 0){
@@ -725,7 +716,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 			logger.info("Merge: " + indexMergeSysPath);
 			sfi.merge(indexMergeSysPath, indexPckSysPath, indexMainHelpPath);
 		}
-		
+
 		File fileIndexResultPath = new File(indexResultPath);
 		if(userIndexUpdate || sysPckUpdate || sysMainUpdate || !fileIndexResultPath.isDirectory() 
 				|| fileIndexResultPath.list().length == 0){
@@ -735,9 +726,9 @@ public class UserInfoBean extends BaseBean implements Serializable {
 			logger.info("Merge: " + indexResultPath);
 			sfi.merge(indexResultPath, indexMergeSysPath, indexPckUserPath);
 		}
-		
+
 	}
-	
+
 	public boolean createIndex(String indexFolder, String htmlFolder) throws Exception{
 		String suffix = "html";
 		File fileIndexFolder = new File(indexFolder);
@@ -745,7 +736,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		boolean generate = !fileIndexFolder.isDirectory() 
 				|| fileIndexFolder.list().length == 0
 				|| fileIndexFolder.lastModified() < fileHtmlFolder.lastModified();
-		
+
 		if(generate){
 			if(fileIndexFolder.isDirectory()){
 				FileUtils.cleanDirectory(fileIndexFolder);
@@ -760,6 +751,11 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		}
 		return generate;
 	}
+
+	public String adminLogin(){
+		return "adminLogin";
+	}
+
 
 	/**
 	 * cleanSession

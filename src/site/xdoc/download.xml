@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+
+  <body>
+                             
+        <div>
+		<h2>Download</h2>
+		<p>Email the team to receive the latest Red Sqirl installable version 
+		<a href="mailsupport.html?p=download">here</a>
+		</p>
+	</div>
+
+	<table class="bodyTable" border="1">
+	<tbody>
+	<tr>
+	<th align="left">Version</th>
+	<th align="left">Release Date</th>
+	<th align="left">Source</th>
+	<th align="left">md5sum</th>
+	</tr>
+	
+	<tr>
+	<td align="left"><a href="#">1.0.9</a></td>
+	<td align="left">12 Jul 2015</td>
+	<td align="left">binary *.zip</td>
+	<td align="left">123321123456</td>
+	</tr>
+	<tr>
+	<td align="left"><a href="../../redsqirl-install/target/redsqirl-1.0.4-0.1.tar.gz">2.0.1</a></td>
+	<td align="left">12 Jul 2015</td>
+	<td align="left">source + tomcat *.tar.gz</td>
+	<td align="left">123321123456</td>
+	</tr>
+	<tr>
+	<td align="left"><a href="#">2.0.1</a></td>
+	<td align="left">12 Jul 2015</td>
+	<td align="left">source *.tar.gz</td>
+	<td align="left">123321123456</td>
+	</tr>
+
+	</tbody>
+	</table>
+
+  </body>
+
+</document>

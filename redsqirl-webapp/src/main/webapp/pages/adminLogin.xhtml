@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j" >
+
+<a4j:loadBundle basename="MessagesResources" var="messages" />
+
+<head>
+
+	<link rel="stylesheet" href="#{facesContext.externalContext.requestContextPath}/css/table-style.css" />
+	<link rel="stylesheet" href='#{facesContext.externalContext.requestContextPath}/css/redsqirl.css' />
+	<script src='#{facesContext.externalContext.requestContextPath}/js/jquery-1.9.1.js' type="text/javascript"></script>
+	<script src='#{facesContext.externalContext.requestContextPath}/js/redsqirl-pck-manager.js' type="text/javascript"></script>
+	<script	src="#{facesContext.externalContext.requestContextPath}/js/redsqirl.js"	type="text/javascript" ></script>
+		
+	<title><h:outputText value="#{messages.label_sistem}" /></title>
+		
+<script>
+
+jQuery.noConflict();
+
+jQuery(function() {
+
+	updateStatusOnOffLine();
+	#{rich:component('adminLogin')}.show();
+	
+});
+
+</script>
+
+</head>
+
+<body>
+
+	<img src="./image/login_squirl_background.png" style="width:90%;position:absolute;z-index:-1;height:90%;left:6%;min-width:600px;" onError="this.onerror=null;this.src='../image/login_squirl_background.png';" />
+	<img src="./image/analytics_store_logo.gif" style="width:180px;" onError="this.onerror=null;this.src='../image/analytics_store_logo.gif';" />
+
+	<a4j:jsFunction name="installModule" action="#{analyticsStoreLoginBean.installModule}"/>
+	<a4j:jsFunction name="uninstallModule" action="#{analyticsStoreLoginBean.uninstallModule}"/>
+
+	<table style="position:relative;height:87%;" >
+		<tr>
+			
+			<td style="float:right;position:relative;top:-40px;padding-left: 400px;" >
+			
+				<h:form>
+				
+					<rich:toolBar>
+					
+						<rich:dropDownMenu>
+		
+							<f:facet name="label">
+								<h:panelGroup>
+									<span onclick="license();"><h:outputText value="#{messages.label_license}" /></span>
+									<a4j:jsFunction name="license" action="#{analyticsStoreLoginBean.license}"/>
+								</h:panelGroup>
+							</f:facet>
+			
+						</rich:dropDownMenu>
+						
+						<rich:dropDownMenu>
+		
+							<f:facet name="label">
+								<h:panelGroup>
+									<h:outputText value="#{messages.label_modules}" />
+								</h:panelGroup>
+							</f:facet>
+							
+							<rich:menuItem submitMode="none">
+								<rich:menuItem submitMode="none" value="#{messages.label_modules_install}" onclick="installModule();" />
+							</rich:menuItem>
+							<rich:menuItem submitMode="none" rendered="#{analyticsStoreLoginBean.showUninstall == 'Y'}" >
+								<rich:menuItem submitMode="none" value="#{messages.label_modules_uninstall}" onclick="uninstallModule();" />
+							</rich:menuItem>
+			
+						</rich:dropDownMenu>
+						
+						<rich:dropDownMenu>
+		
+							<f:facet name="label">
+								<h:panelGroup>
+									<span onclick="setting();"><h:outputText value="#{messages.label_setting_modal}" /></span>
+									<a4j:jsFunction name="setting" action="#{analyticsStoreLoginBean.setting}"/>
+								</h:panelGroup>
+							</f:facet>
+			
+						</rich:dropDownMenu>
+						
+						<rich:toolBarGroup style="padding-left:100px;">
+							<a4j:commandButton value="#{messages.label_menu_signout}" styleClass="signoutButton" ajax="true" action="#{analyticsStoreLoginBean.home}"/>
+						</rich:toolBarGroup>
+					
+					</rich:toolBar>
+				
+				</h:form>
+			
+			</td>
+			
+		</tr>
+	</table>
+
+	<rich:modalPanel id="adminLogin" width="500" height="200" style="overflow:auto;" resizeable="false" >
+
+		<f:facet name="header">
+			<h:outputText value='#{messages.label_adminLogin}' />
+		</f:facet>
+
+		<h:form id="admlogin-form">
+		
+			<a4j:jsFunction name="updateStatusOnOffLine" action="#{analyticsStoreLoginBean.init}" reRender="admlogin-form" />
+		
+			<a4j:jsFunction name="showOnline" action="#{analyticsStoreLoginBean.showOnline}" reRender="admlogin-form" >
+				<a4j:actionparam name="selectType" />
+			</a4j:jsFunction>
+		
+			<h:panelGrid columns="2">
+				<h:outputText value="#{messages.type}" class="formLabel"/>
+				<h:selectOneMenu value="#{analyticsStoreLoginBean.selectedTypeLogin}" onchange="showOnline(this.value);" >
+					<f:selectItems value="#{analyticsStoreLoginBean.typeLogin}" />
+				</h:selectOneMenu>
+			
+				<h:outputText value="#{messages.login_email}" class="formLabel" rendered="#{analyticsStoreLoginBean.onLine == 'Y'}"/>
+				<h:outputText value="#{messages.label_username}" class="formLabel" rendered="#{analyticsStoreLoginBean.onLine == 'N'}"/>
+				<h:panelGroup>
+					<h:inputText id="user-input" value="#{analyticsStoreLoginBean.email}" style="width:400px;"
+						onkeypress="return enableEnterKey(event, 'btLoginAS');" />
+					<rich:message for="user-input" />
+				</h:panelGroup>
+						
+				<h:outputText value="#{messages.login_password}" class="formLabel"/>
+				<h:panelGroup>
+					<h:inputSecret id="password-input" value="#{analyticsStoreLoginBean.password}" style="width:400px;" 
+						onkeypress="return enableEnterKey(event, 'btLoginAS');" />
+					<rich:message for="password-input"/>
+				</h:panelGroup>
+			</h:panelGrid>
+					
+			<br/>
+			<center>
+				<a4j:commandButton id="btLoginAS" value="#{messages.login_login_btn}" action="#{analyticsStoreLoginBean.doAdmLogin}" 
+					oncomplete="if(#{requestScope['msnAdmError'] == null}){#{rich:component('adminLogin')}.hide();}" styleClass="greenButton" />
+				
+			 	<a4j:commandButton value="#{messages.button_cancel}" action="#{analyticsStoreLoginBean.home}" styleClass="greenButton" />
+			</center>
+			
+		</h:form>
+
+	</rich:modalPanel>
+	
+	<div style="height:100px;width:100%;background:#C0D72F;position:relative;bottom:55px;" />
+
+</body>
+</html>

@@ -1,6 +1,7 @@
 package com.redsqirl.analyticsStore;
 
 import java.io.Serializable;
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -10,12 +11,14 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.redsqirl.workflow.server.WorkflowPrefManager;
+import com.redsqirl.workflow.utils.PackageManager;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -35,6 +38,13 @@ public class AnalyticsStoreSearchBean implements Serializable{
 	
 	private List<RedSqirlModule> allPackageList;
 	
+	private String showDefaultInstallation;
+	
+	private String defaultInstallation;
+	
+	private List<String> selectedTypes;
+	
+	private List<SelectItem> moduleTypes;
 	
 	public AnalyticsStoreSearchBean() {
 		
@@ -42,11 +52,34 @@ public class AnalyticsStoreSearchBean implements Serializable{
 	
 	@PostConstruct
 	public void init(){
+		
 		try{
 			retrieveAllPackageList();
 		}catch (Exception e){
-			
+			e.printStackTrace();
 		}
+		
+		try {
+			PackageManager pckManager = new PackageManager();
+			
+			if(pckManager.getPackageNames(null).isEmpty()){
+				setShowDefaultInstallation("Y");
+			}else{
+				setShowDefaultInstallation("N");
+			}
+			
+			setDefaultInstallation("Pig Package <br/>");
+			
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		
+		if(moduleTypes == null){
+			moduleTypes = new ArrayList<SelectItem>();
+			moduleTypes.add(new SelectItem("model","Module"));
+			moduleTypes.add(new SelectItem("package","Package"));
+		}
+		
 	}
 
 	public void retrieveAllPackageList() throws SQLException, ClassNotFoundException{
@@ -55,8 +88,7 @@ public class AnalyticsStoreSearchBean implements Serializable{
 		
 		try{
 			
-			Map<String, String> params = FacesContext.getCurrentInstance().
-					getExternalContext().getRequestParameterMap();
+			Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 			String type = params.get("type");
 			
 			String uri = getRepoServer()+"rest/allpackages";
@@ -64,8 +96,12 @@ public class AnalyticsStoreSearchBean implements Serializable{
 			JSONObject object = new JSONObject();
 			object.put("software", "RedSqirl");
 			object.put("filter", searchValue);
+
 			if (type != null && !type.isEmpty()){
 				object.put("type", type);
+			}
+			if(selectedTypes != null && !selectedTypes.isEmpty()){
+				object.put("type", selectedTypes.get(0));
 			}
 			
 			Client client = Client.create();
@@ -89,6 +125,7 @@ public class AnalyticsStoreSearchBean implements Serializable{
 					pck.setName(pckObj.getString("name"));
 					pck.setTags(pckObj.getString("tags"));
 					pck.setImage(getRepoServer() + pckObj.getString("image"));
+					pck.setType(pckObj.getString("type"));
 					
 					if (!packagesAdded.contains(id)){
 						result.add(pck);
@@ -112,6 +149,10 @@ public class AnalyticsStoreSearchBean implements Serializable{
 			pckServer+="/";
 		}
 		return pckServer;
+	}
+	
+	public void installDefaultInstallation(){
+		
 	}
 	
 	public String getSearchValue() {
@@ -144,6 +185,38 @@ public class AnalyticsStoreSearchBean implements Serializable{
 
 	public void setAllPackageList(List<RedSqirlModule> allPackageList) {
 		this.allPackageList = allPackageList;
+	}
+
+	public String getShowDefaultInstallation() {
+		return showDefaultInstallation;
+	}
+
+	public void setShowDefaultInstallation(String showDefaultInstallation) {
+		this.showDefaultInstallation = showDefaultInstallation;
+	}
+
+	public String getDefaultInstallation() {
+		return defaultInstallation;
+	}
+
+	public void setDefaultInstallation(String defaultInstallation) {
+		this.defaultInstallation = defaultInstallation;
+	}
+	
+	public List<SelectItem> getModuleTypes() {
+		return moduleTypes;
+	}
+
+	public void setModuleTypes(List<SelectItem> moduleTypes) {
+		this.moduleTypes = moduleTypes;
+	}
+
+	public List<String> getSelectedTypes() {
+		return selectedTypes;
+	}
+
+	public void setSelectedTypes(List<String> selectedTypes) {
+		this.selectedTypes = selectedTypes;
 	}
 	
 }

@@ -1,7 +1,10 @@
 package com.redsqirl.auth;
 
 
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Calendar;
+import java.util.Properties;
 
 import javax.faces.application.NavigationHandler;
 import javax.faces.context.FacesContext;
@@ -22,11 +25,13 @@ import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
 
+import com.idiro.ProjectID;
 import com.redsqirl.CanvasBean;
 import com.redsqirl.ConfigureTabsBean;
 import com.redsqirl.HelpBean;
 import com.redsqirl.ProcessManagerBean;
 import com.redsqirl.SettingsBean;
+import com.redsqirl.workflow.server.WorkflowPrefManager;
 
 /** AuthorizationListener
  * 
@@ -107,6 +112,14 @@ public class AuthorizationListener implements PhaseListener {
 					nh.handleNavigation(facesContext, null, "loginPage");
 				}
 			}
+			
+			if(isLoginPage){
+				String value = checkIfExistLicense();
+				if(value != null){
+					NavigationHandler nh = facesContext.getApplication().getNavigationHandler();
+					nh.handleNavigation(facesContext, null, value);
+				}
+			}
 
 		}
 
@@ -121,6 +134,48 @@ public class AuthorizationListener implements PhaseListener {
 
 	public PhaseId getPhaseId() {
 		return PhaseId.RESTORE_VIEW;
+	}
+	
+	public String checkIfExistLicense(){
+
+		String softwareKey = getSoftwareKey();
+		if(softwareKey == null ){
+			return "adminLogin";
+		}
+
+		return null;
+	}
+	
+	private String getSoftwareKey(){
+		Properties prop = new Properties();
+		InputStream input = null;
+
+		try {
+			input = new FileInputStream(WorkflowPrefManager.pathSystemPref + "/licenseKey.properties");
+
+			// load a properties file
+			prop.load(input);
+
+			// get the property value and print it out
+
+			String licenseKey;
+			String[] value = ProjectID.get().trim().split("-");
+			if(value != null && value.length > 1){
+				licenseKey = value[0].replaceAll("[0-9]", "") + value[value.length-1];
+			}else{
+				licenseKey = ProjectID.get();
+			}
+
+			return prop.getProperty(formatTitle(licenseKey));
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	private String formatTitle(String title){
+		return title.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
 	}
 
 }
