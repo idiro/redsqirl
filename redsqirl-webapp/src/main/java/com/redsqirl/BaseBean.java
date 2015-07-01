@@ -264,13 +264,19 @@ public class BaseBean {
 		UserInfoBean userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
 		ServletContext sc = (ServletContext) context.getExternalContext().getContext();
 		Map<String, UsageRecordWriter> sessionUsageRecordWriter = (Map<String, UsageRecordWriter>) sc.getAttribute("usageRecordLog");
-		UsageRecordWriter usageRecordLog = sessionUsageRecordWriter.get(userInfoBean.getUserName());
-		if(usageRecordLog != null){
-			return usageRecordLog;
+		if(sessionUsageRecordWriter != null){
+			UsageRecordWriter usageRecordLog = sessionUsageRecordWriter.get(userInfoBean.getUserName());
+			if(usageRecordLog != null){
+				return usageRecordLog;
+			}else{
+				bb_logger.error("usageRecord file not found");
+				return new UsageRecordWriter();
+			}
 		}else{
 			bb_logger.error("usageRecord file not found");
 			return new UsageRecordWriter();
 		}
+		
 	}
 	
 }

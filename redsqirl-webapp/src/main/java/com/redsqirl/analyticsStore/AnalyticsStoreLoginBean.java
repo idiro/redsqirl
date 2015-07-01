@@ -154,7 +154,6 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 			e.printStackTrace();
 		}
 
-
 	}
 
 	/**

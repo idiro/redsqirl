@@ -68,22 +68,21 @@
 	
 	function cookiePassword(){
 	    	    	
-	   	   if (jQuery("#userLoginForm\\:loginCheck").prop("checked")) {
-	   	        var username = jQuery("#userLoginForm\\:username").val();
-	   	        var password = jQuery("#userLoginForm\\:password").val();
-	   	        
-	   	        // set cookies to expire in 14 days
-	   	        jQuery.cookie('username', username, { expires: 14 });
-	   	        jQuery.cookie('password', password, { expires: 14 });
-	   	        jQuery.cookie('remember', true, { expires: 14 });
-	   	    }
-	   	    else
-	   	    {
-	   	        // reset cookies
-	   	        jQuery.cookie('username', null);
-	   	        jQuery.cookie('password', null);
-	   	        jQuery.cookie('remember', null);
-	   	    }
+   	   if (jQuery("#userLoginForm\\:loginCheck").prop("checked")) {
+   	        var username = jQuery("#userLoginForm\\:username").val();
+   	        var password = jQuery("#userLoginForm\\:password").val();
+   	        
+   	        // set cookies to expire in 14 days
+   	        jQuery.cookie('username', username, { expires: 14 });
+   	        jQuery.cookie('password', password, { expires: 14 });
+   	        jQuery.cookie('remember', true, { expires: 14 });
+   	    }
+   	    else {
+   	        // reset cookies
+   	        jQuery.cookie('username', null);
+   	        jQuery.cookie('password', null);
+   	        jQuery.cookie('remember', null);
+   	    }
 		
 	}
 

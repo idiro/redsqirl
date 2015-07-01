@@ -109,6 +109,12 @@ jQuery(function() {
 		<f:facet name="header">
 			<h:outputText value='#{messages.label_adminLogin}' />
 		</f:facet>
+		
+		<h:panelGroup layout="block" >
+			<a href="#" onclick="#{rich:component('registerNewUserModalPanel')}.show();">
+				<h:outputText value='#{messages.label_create_new_user}' />
+			</a>
+		</h:panelGroup>
 
 		<h:form id="admlogin-form">
 		
@@ -142,10 +148,10 @@ jQuery(function() {
 					
 			<br/>
 			<center>
+			 	<a4j:commandButton value="#{messages.button_cancel}" action="#{analyticsStoreLoginBean.home}" styleClass="greenButton" />
+			 	
 				<a4j:commandButton id="btLoginAS" value="#{messages.login_login_btn}" action="#{analyticsStoreLoginBean.doAdmLogin}" 
 					oncomplete="if(#{requestScope['msnAdmError'] == null}){#{rich:component('adminLogin')}.hide();}" styleClass="greenButton" />
-				
-			 	<a4j:commandButton value="#{messages.button_cancel}" action="#{analyticsStoreLoginBean.home}" styleClass="greenButton" />
 			</center>
 			
 		</h:form>
@@ -153,6 +159,28 @@ jQuery(function() {
 	</rich:modalPanel>
 	
 	<div style="height:100px;width:100%;background:#C0D72F;position:relative;bottom:55px;" />
+	
+	
+	<rich:modalPanel id="registerNewUserModalPanel" width="650" height="350"
+		style="overflow:none;" resizeable="false">
+
+		<f:facet name="header">
+			<h:outputText value='#{messages.label_create_new_user_adm}' />
+		</f:facet>
+		<f:facet name="controls">
+			<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
+				style="cursor:pointer;width:22px;"
+				onclick="#{rich:component('registerNewUserModalPanel')}.hide();" />
+		</f:facet>
+
+		<h:form id="sshform5">
+			<h:panelGrid>
+				<a4j:include viewId="/pages/modalCreateNewAdmUser.xhtml" ajaxRendered="true" />
+			</h:panelGrid>
+		</h:form>
+
+	</rich:modalPanel>
+	
 
 </body>
 </html>

@@ -9,7 +9,10 @@ import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -126,6 +129,10 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 	private boolean checkPassword = false;
 
+	public int numberCluster;
+	
+	public String errorNumberCluster;
+	
 	/**
 	 * Init the progress bar.
 	 */
@@ -220,16 +227,31 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 					Decrypter decrypt = new Decrypter();
 					decrypt.decrypt(licence);
-					File file = new File(WorkflowPrefManager.getPathUsersFolder());
+					
+					setNumberCluster(decrypt.getNumberCluster());
+					
+					/*File file = new File(WorkflowPrefManager.getPathUsersFolder());
 					int homes = 0;
 					if(file.exists()){
 						homes = file.list().length;
-					}
+					}*/
+					
 					Map<String,String> params = new HashMap<String,String>();
 
-					params.put(Decrypter.usersNb, String.valueOf(homes));
+					//params.put(Decrypter.clusterNb, String.valueOf(homes));
+					
 					params.put(Decrypter.mac, decrypt.getMACAddress());
 					params.put(Decrypter.name, licenseKey);
+					
+					DateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
+					params.put(Decrypter.date, formatter.format(new Date()));
+
+					if(!decrypt.validateExpiredKey(params)){
+						setMsnError("License Key is expired");
+						logger.info("License Key is expired");
+						invalidateSession();
+						return "failure";
+					}
 
 					boolean valid = decrypt.validateAllValuesSoft(params);
 
@@ -396,6 +418,13 @@ public class UserInfoBean extends BaseBean implements Serializable {
 			return null;
 		}
 
+		if (!succ && getErrorNumberCluster() != null) {
+			getBundleMessage("error_number_cluster");
+			invalidateSession();
+			buildBackend = false;
+			return "failure";
+		}
+		
 		if (!succ) {
 			getBundleMessage("error.rmi.connection");
 			invalidateSession();
@@ -527,6 +556,12 @@ public class UserInfoBean extends BaseBean implements Serializable {
 							dfi.addWorkflow("test");
 							error = false;
 							dfi.removeWorkflow("test");
+							
+							if(dfi.checkNumberCluster(getNumberCluster())){
+								setErrorNumberCluster(getMessageResources("error_number_cluster"));
+								return false;
+							}
+							
 							logger.info("workflow is running ");
 						} catch (Exception e) {
 							logger.info("workflow not running ");
@@ -835,6 +870,22 @@ public class UserInfoBean extends BaseBean implements Serializable {
 	 */
 	public void setForceSignIn(String forceSignIn) {
 		this.forceSignIn = forceSignIn;
+	}
+
+	public int getNumberCluster() {
+		return numberCluster;
+	}
+
+	public void setNumberCluster(int numberCluster) {
+		this.numberCluster = numberCluster;
+	}
+
+	public String getErrorNumberCluster() {
+		return errorNumberCluster;
+	}
+
+	public void setErrorNumberCluster(String errorNumberCluster) {
+		this.errorNumberCluster = errorNumberCluster;
 	}
 
 }

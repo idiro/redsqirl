@@ -18,6 +18,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.idiro.hadoop.NameNodeVar;
 import com.idiro.utils.LocalFileSystem;
 import com.idiro.utils.RandomString;
 import com.redsqirl.workflow.server.DataOutput;
@@ -455,6 +456,17 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 			wf.put(wfName,(Workflow)readCloneFile(id));
 		}
 
+	}
+	
+	public boolean checkNumberCluster(int numberCluster) throws RemoteException{
+		
+		int sizeCluster = NameNodeVar.getNbSlaves();
+		logger.info("sizeCluster " + sizeCluster + " numberCluster " + numberCluster);
+		if(numberCluster >= sizeCluster || sizeCluster == 0){
+			return false;
+		}
+		
+		return true;
 	}
 	
 }

@@ -1,5 +1,10 @@
 package com.redsqirl.keymanager.ciphers;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,35 +14,30 @@ import com.redsqirl.workflow.utils.PMLanguageManager;
 
 public class Decrypter extends KeyCipher {
 	// Software Keys
-	private String appName, appName2, packageName, macAddr, nbUser;
+	private String appName, appName2, macAddr, nbCluster, dateStr;
 
-	public static String encrypt = "encrypt", decrypt = "decrypt",
-			software = "software", module = "module", name = "title",
-			license = "license", modLicense = "modLicense",
-			version = "version", mac = "mac", usersNb = "userNb",
-			userName = "user";
+	public static String encrypt = "encrypt", decrypt = "decrypt", software = "software", module = "module", name = "title", license = "license",
+		modLicense = "modLicense", version = "version", mac = "mac", clusterNb = "clusterNb", userName = "user", date = "date";
 
 	private Map<String, String> ans;
+	
+	public int numberCluster;
 
 	// Module Keys
 	private String key, key2, module1, module2, user, user2;
-	private int userNb;
+	private int clusterNbInt, dateInt;
 
 	private static Logger logger = Logger.getLogger(KeyCipher.class);
 
 	public void decrypt(String key) {
-
 		ans = new HashMap<String, String>();
-
 		int[] indent = new int[4];
-
 		int[] vals = null;
 		while (vals == null) {
 			try {
 				for (int i = 0; i < 4; ++i) {
 					indent[i] = transformBack(key.charAt(i));
 				}
-
 				vals = intCombinations(indent, 5, 3);
 			} catch (Exception e) {
 				vals = null;
@@ -49,17 +49,21 @@ public class Decrypter extends KeyCipher {
 		appName2 = indentStr(cipher, key.substring(7, 10), -vals[1]);
 
 		macAddr = indentStr(cipher, key.substring(10, 18), -vals[2]);
-		nbUser = indentStr(cipher, key.substring(18, 19), -vals[3])
-				+ indentStr(cipher, key.substring(19, 20), -vals[4]);
-		userNb = Integer.valueOf(
-				cipher.indexOf(nbUser.charAt(0)) * 62
-				+ cipher.indexOf(nbUser.charAt(1))).intValue();
+		
+		nbCluster = indentStr(cipher, key.substring(18, 19), -vals[3])	+ indentStr(cipher, key.substring(19, 20), -vals[4]);
+		clusterNbInt = Integer.valueOf(cipher.indexOf(nbCluster.charAt(0)) * 62 + cipher.indexOf(nbCluster.charAt(1))).intValue();
 
+		dateStr = indentStr(cipher, key.substring(20, 21), -vals[2]) + indentStr(cipher, key.substring(21, 22), -vals[3]);
+		dateInt = Integer.valueOf(cipher.indexOf(dateStr.charAt(0)) * 62 + cipher.indexOf(dateStr.charAt(1))).intValue();
+		 
+		
 		ans.put(name + "1", appName);
 		ans.put(name + "2", appName2);
 		ans.put(mac, macAddr);
-		ans.put(usersNb, String.valueOf(userNb));
-
+		ans.put(clusterNb, String.valueOf(clusterNbInt));
+		ans.put(date, String.valueOf(dateInt));
+		
+		setNumberCluster(clusterNbInt);
 	}
 
 	public int transformBack(char t) {
@@ -189,13 +193,32 @@ public class Decrypter extends KeyCipher {
 			logger.info("mac lenght-8 " + keysoft.get(mac).substring(keysoft.get(mac).length() - 8));
 			valid &= ans.get(mac).equalsIgnoreCase(keysoft.get(mac).substring(keysoft.get(mac).length() - 8));
 
-			valid &= Integer.valueOf(ans.get(usersNb)).intValue() > Integer.valueOf(keysoft.get(usersNb)).intValue();
+			//valid &= Integer.valueOf(ans.get(clusterNb)).intValue() > Integer.valueOf(keysoft.get(clusterNb)).intValue();
+			
+			DateFormat formatter = new SimpleDateFormat("yyyy-MMM-dd");
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(formatter.parse(("2015/06/01")));
+			calendar.add(Calendar.DATE, Integer.parseInt(ans.get(date)));
+			valid &= new Date(keysoft.get(date)).before(calendar.getTime());
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		return valid;
+	}
+	
+	public boolean validateExpiredKey(Map<String, String> keysoft) throws ParseException {
+		DateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(formatter.parse(("2015/06/01")));
+	    calendar.add(Calendar.DATE, Integer.parseInt(ans.get(date)));
+	    
+	    logger.info("ans value " + ans.get(date));
+	    logger.info("date1 " + calendar.getTime());
+	    logger.info("date2 " + keysoft.get(date));
+	    
+		return new Date(keysoft.get(date)).before(calendar.getTime());
 	}
 
 	public String validateAllValuesModule(Map<String, String> keyModule) {
@@ -264,6 +287,14 @@ public class Decrypter extends KeyCipher {
 		}
 
 		return error.length() == 0 ? null : error.toString();
+	}
+
+	public int getNumberCluster() {
+		return numberCluster;
+	}
+
+	public void setNumberCluster(int numberCluster) {
+		this.numberCluster = numberCluster;
 	}
 
 }

@@ -30,10 +30,12 @@
 
 	<h:panelGrid columns="2">
 
-		<a4j:commandButton id="editFileAfterOkBtSsh" styleClass="greenButton"	action="#{sshBean.editFileAfter}" oncomplete="resizeTables();"
-			value="#{messages.button_ok}" reRender="hdfsfs"	onclick="#{rich:component('ssheditModalPanel')}.hide()" />
 		<a4j:commandButton styleClass="greenButton"
 			value="#{messages.button_cancel}" type="button" onclick="#{rich:component('ssheditModalPanel')}.hide();" />
+
+		<a4j:commandButton id="editFileAfterOkBtSsh" styleClass="greenButton"	action="#{sshBean.editFileAfter}" oncomplete="resizeTables();"
+			value="#{messages.button_ok}" reRender="hdfsfs"	onclick="#{rich:component('ssheditModalPanel')}.hide()" />
+		
 	</h:panelGrid>
 		
 </h:panelGrid>

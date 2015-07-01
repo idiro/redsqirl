@@ -113,4 +113,13 @@ public interface DataFlowInterface extends Remote{
 	 */
 	public void replaceWFByClone(String id, String wfName,boolean keepClone) throws RemoteException;
 	
+	
+	/**
+	 * check if the size of the cluster is the same in license key
+	 * @param int numberCluster
+	 * @throws RemoteException
+	 */
+	public boolean checkNumberCluster(int numberCluster) throws RemoteException;
+	
+	
 }

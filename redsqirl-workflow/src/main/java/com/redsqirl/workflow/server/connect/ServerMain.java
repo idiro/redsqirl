@@ -63,6 +63,7 @@ public class ServerMain {
 			
 			logger = Logger.getLogger(ServerMain.class);
 			NameNodeVar.set(WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_namenode));
+			NameNodeVar.setJobTracker(WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_jobtracker));
 			logger.info("sys_namenode Path: " + NameNodeVar.get());
 
 			try {

@@ -243,22 +243,24 @@ public class TableInteraction extends CanvasModalInteraction{
 
 	@Override
 	public void writeInteraction() throws RemoteException {
+		
+		logger.info("writeInteraction");
+		
 		inter.getTree().getFirstChild("table").remove("row");
 
 		for (SelectableRow rowV : tableGrid.getRows()) {
 			String[] cur = rowV.getRow();
-			Tree<String> row = inter.getTree()
-					.getFirstChild("table").add("row");
+			Tree<String> row = inter.getTree().getFirstChild("table").add("row");
 			Iterator<String> it = tableGrid.getColumnIds().iterator();
 			int i = 0;
 			while(it.hasNext()) {
 				String column = it.next();
 				String value = cur[i];
 				row.add(column).add(value);
-				logger.debug(column + " -> " + value);
+				logger.info(column + " -> " + value);
 				++i;
 			}
-		}	
+		}
 	}
 
 	@Override

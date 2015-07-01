@@ -30,10 +30,12 @@
 
 	<h:panelGrid columns="2">
 
-		<a4j:commandButton id="editFileAfterOkBt" styleClass="greenButton"	action="#{hdfsBean.editFileAfter}" oncomplete="resizeTables();"
-			value="#{messages.button_ok}" reRender="hdfsfs"	onclick="#{rich:component('hdfseditModalPanel')}.hide()" />
 		<a4j:commandButton styleClass="greenButton"
 			value="#{messages.button_cancel}" type="button" onclick="#{rich:component('hdfseditModalPanel')}.hide();" />
+
+		<a4j:commandButton id="editFileAfterOkBt" styleClass="greenButton"	action="#{hdfsBean.editFileAfter}" oncomplete="resizeTables();"
+			value="#{messages.button_ok}" reRender="hdfsfs"	onclick="#{rich:component('hdfseditModalPanel')}.hide()" />
+		
 	</h:panelGrid>
 		
 </h:panelGrid>

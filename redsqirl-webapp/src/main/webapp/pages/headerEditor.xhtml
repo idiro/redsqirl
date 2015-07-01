@@ -112,17 +112,17 @@
 				
 				<div style="width:100%;height:40px;border:0px solid;overflow-x:hidden;">
 				
-					<a4j:commandButton action="#{canvasModalBean.canvasModalInteractionHeaderEditor.headerEditor}"
-					    styleClass="greenButton" value="#{messages.button_ok}"
-						oncomplete="if(#{requestScope['msnError'] == null} ){blockSourceModalHeaderEditor();canvasModalApply();}"
-						reRender="browserTableData, msnError, errorTable" />
-						
 					<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('headerEditor')}.hide();" 
 						reRender="browserTableData, msnError, errorTable" />
 						
 					<a4j:jsFunction name="canvasModalApply" action="#{canvasModalBean.applyPage}"  
 						reRender="canvasModalTabPanel, outputTab, panelBtCanvasModal, msnError, msnSuccess, browserTableProp, browserPropLabel, browserPropValue" 
 						oncomplete="if(#{requestScope['msnError'] == null} ){changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');createOptionTitles();reLoadTabs();#{rich:component('headerEditor')}.hide();}unBlockSourceModalHeaderEditor();" />
+						
+					<a4j:commandButton action="#{canvasModalBean.canvasModalInteractionHeaderEditor.headerEditor}"
+					    styleClass="greenButton" value="#{messages.button_ok}"
+						oncomplete="if(#{requestScope['msnError'] == null} ){blockSourceModalHeaderEditor();canvasModalApply();}"
+						reRender="browserTableData, msnError, errorTable" />
 					
 				</div>
 		

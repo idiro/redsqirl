@@ -389,7 +389,8 @@
         
                         <h:panelGrid id="table" columns="4" rendered="#{!empty interCur.table.tableGeneratorMenu}">
                         	<h:outputText value="#{messages.label_generation}" />
-                            <rich:comboBox
+							
+							<rich:comboBox
                                 value="#{interCur.table.selectedGenerator}" width="200"
                                 enableManualInput="false" id="generation" listWidth="150"
                                 listHeight="200">
@@ -407,7 +408,7 @@
                             
                         </h:panelGrid>
                         
-                        <a4j:commandLink title="Add new line" action="#{interCur.addNewLine}" reRender="tableInteraction" oncomplete="changeTableInteractionAnchorBottom();">
+                        <a4j:commandLink title="#{messages.label_add_new_line}" action="#{interCur.addNewLine}" reRender="tableInteraction" oncomplete="changeTableInteractionAnchorBottom();">
                             <img id="tableInteractionBtAdd" src="../image/icons/button-plus-small.gif" class="btConfigureFooter" />
                         </a4j:commandLink>
                         
@@ -461,8 +462,8 @@
 			                                        rendered="#{interCur.table.columnType[column] == 'textField' }"
 			                                        styleClass="tableInteractionInput"
 			                                        onkeypress="return disableEnterKey(event);"/>
-			        
-			                                    <rich:comboBox value="#{rowItem.row[ind]}"
+			                                    
+												 <rich:comboBox value="#{rowItem.row[ind]}"
 			                                        selectFirstOnUpdate="false" defaultLabel="Enter some value"
 			                                        width="125" enableManualInput="true" listWidth="150"
 			                                        listHeight="150"

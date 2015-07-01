@@ -28,10 +28,13 @@
 	</a4j:repeat>
 
 	<h:panelGrid columns="2">
-		<a4j:commandButton id="addHdfsBtn" styleClass="greenButton" action="#{hdfsBean.addFileAfter}" value="#{messages.button_ok}"
-			reRender="hdfsfs" onclick="#{rich:component('hdfsaddModalPanel')}.hide()" oncomplete="resizeTables();"/>
+		
 		<a4j:commandButton  styleClass="greenButton" value="#{messages.button_cancel}" type="button" 
 			onclick="#{rich:component('hdfsaddModalPanel')}.hide();" />
+		
+		<a4j:commandButton id="addHdfsBtn" styleClass="greenButton" action="#{hdfsBean.addFileAfter}" value="#{messages.button_ok}"
+			reRender="hdfsfs" onclick="#{rich:component('hdfsaddModalPanel')}.hide()" oncomplete="resizeTables();"/>
+		
 	</h:panelGrid>
 
 </h:panelGrid>
