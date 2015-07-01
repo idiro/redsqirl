@@ -72,7 +72,7 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 	public void init(){
 		
 		try{
-			retrieveAllPackageList();
+			setAllPackageList(new ArrayList<RedSqirlModule>());
 		}catch (Exception e){
 			e.printStackTrace();
 		}
