@@ -21,6 +21,7 @@ import java.util.Properties;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.FileUtils;
@@ -34,6 +35,7 @@ import com.jcraft.jsch.Session;
 import com.redsqirl.BaseBean;
 import com.redsqirl.SimpleFileIndexer;
 import com.redsqirl.keymanager.ciphers.Decrypter;
+import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.WorkflowProcessesManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
@@ -152,6 +154,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 	 */
 	public String login() {
 		logger.info("login");
+		setMsnError(null);
 		cancel = false;
 		checkPassword = false;
 		buildBackend = true;
@@ -159,6 +162,17 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		setAlreadySignedIn(null);
 		String licenseKey = null;
 		String licence = "";
+		
+		if(getUserName() == null || "".equals(getUserName())){
+			setMsnError(getMessageResources("login_error_user_required"));
+			return "failure";
+		}
+		
+		if(getPassword() == null || "".equals(getPassword())){
+			setMsnError(getMessageResources("login_error_password_required"));
+			return "failure";
+		}
+		
 
 		FacesContext fCtx = FacesContext.getCurrentInstance();
 		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
@@ -187,7 +201,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 			checkPassword = conn.authenticateWithPassword(userName,	password);
 
 			if (!checkPassword) {
-				setMsnError("error");
+				setMsnError("Authentication Error");
 				setAlreadySignedInOtherMachine(null);
 
 				logger.info("Authentication Error");
@@ -279,7 +293,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		} catch (IOException e) {
 			logger.error(e.getMessage(),e);
 			invalidateSession();
-			setMsnError("error");
+			setMsnError("error - Please Contact Your Administrator");
 			return "failure";
 		}
 

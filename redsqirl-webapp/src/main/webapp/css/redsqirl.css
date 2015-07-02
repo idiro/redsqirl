@@ -405,9 +405,9 @@ table[id*="msnError"]{
 
 .messageerrologin {
 	background: url("../image/icons/li_msg_error.gif") no-repeat;
-	background-size: 20px;
-	height:35px;
-	padding-left: 20px;
+	background-size: 15px;
+	height:25px;
+	padding-left: 10px;
 	color: #FFFFFF;
 	background-position: top left;
 	overflow:auto;
