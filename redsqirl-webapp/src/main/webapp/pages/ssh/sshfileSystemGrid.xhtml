@@ -10,24 +10,6 @@
 
 <a4j:loadBundle basename="MessagesResources" var="messages" />
 
-<head>
-
-<script>
-
-	
-	function selectFileSsh(isFile, nameFile){
-		if (isFile == "true"){
-			openFileSsh(nameFile);
-		}
-		else{
-			updateTableSsh(nameFile);
-		}
-	}
-
-</script>
-
-</head>
-
 <body>
 	
 
@@ -38,10 +20,6 @@
 		<h:form id="fileSysGridFormSsh">
 			<a4j:jsFunction name="setSelectedRemoteTab" action="#{sshBean.changeTab}" oncomplete="resizeTables();" reRender="sshfs,sshpath" >
 				<a4j:actionparam name="nameTab"/>
-			</a4j:jsFunction>
-			
-			<a4j:jsFunction name="openFile" action="#{sshBean.openFile}" oncomplete="#{rich:component('sshOpenFileModalPanel')}.show();" >
-				<a4j:actionparam name="nameFile"/>
 			</a4j:jsFunction>
 			
 			<a4j:jsFunction name="updateTableSsh" action="#{sshBean.selectFile}" oncomplete="resizeTables()" reRender="sshfs,sshpath">
