@@ -150,6 +150,7 @@
 		<navigation-case>
 			<from-outcome>failure</from-outcome>
 			<to-view-id>/pages/initial.xhtml</to-view-id>
+			<redirect />
 		</navigation-case>
 		<navigation-case>
 			<from-outcome>loginPage</from-outcome>

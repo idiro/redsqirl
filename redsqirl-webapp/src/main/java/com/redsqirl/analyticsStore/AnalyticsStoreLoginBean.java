@@ -300,6 +300,7 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 			object.put("email", email);
 			object.put("password", password);
 			object.put("softwareKey", "");
+			object.put("softwareKeyOwner", getSoftwareKey());
 
 			Client client = Client.create();
 			WebResource webResource = client.resource(uri);
@@ -481,6 +482,10 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 				logger.error("Fail File stream" + e,e);
 			}
 		}
+		
+		HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+		MessageUseful.addInfoMessage(getMessageResources("success_message"));
+		request.setAttribute("msnSuccess", "msnSuccess");
 
 	}
 
@@ -722,8 +727,7 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 
 	private static boolean netIsAvailable() {
 		try {
-			//final URL url = new URL("http://dev2.local.net:8091/analytics-store/");
-			final URL url = new URL("http://localhost:9090/analytics-store/");
+			final URL url = new URL(WorkflowPrefManager.getPckManagerUri());
 			final URLConnection conn = url.openConnection();
 			conn.setConnectTimeout(3000);
 			conn.connect();
