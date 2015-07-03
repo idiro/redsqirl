@@ -198,10 +198,10 @@ public class BaseCommand {
 									PackageManager.property_version);
 					String pcktrimmed = pck.replaceAll("[^A-Za-z0-9 ]", "").toLowerCase();
 
-					logger.info("pcktrimmed " + pcktrimmed);
-					logger.info("licenseKeys system " + licenseKeys.getProperty("system_"+pcktrimmed));
-					logger.info("licenseKeys " + licenseKeys);
-					logger.info("softwareKey " + softwareKey);
+					//logger.info("pcktrimmed " + pcktrimmed);
+					//logger.info("licenseKeys system " + licenseKeys.getProperty("system_"+pcktrimmed));
+					//logger.info("licenseKeys " + licenseKeys);
+					//logger.info("softwareKey " + softwareKey);
 					
 					String tmp = validMsg(userName,pcktrimmed , licenseKeys.getProperty("system_"+pcktrimmed),licenseKeys,softwareKey,true);
 					if(tmp != null){
@@ -301,8 +301,8 @@ public class BaseCommand {
 			return error;
 		}
 		
-		logger.info("softwareKey " + softwareKey);
-		logger.info("key " + key);
+		//logger.info("softwareKey " + softwareKey);
+		//logger.info("key " + key);
 		
 		String[] value = softwareKey.trim().split("-");
 		if(value != null && value.length > 1){
@@ -315,10 +315,10 @@ public class BaseCommand {
 
 		Map<String,String> keyModule = new HashMap<String,String>();
 
-		logger.info("softwareLicense key " + softwareLicense);
+		//logger.info("softwareLicense key " + softwareLicense);
 		keyModule.put(Decrypter.license, softwareLicense);
 		
-		logger.info("packageName " + packageName);
+		//logger.info("packageName " + packageName);
 		keyModule.put(Decrypter.name, packageName);
 
 		String systemVal = system ? "s" : "u";

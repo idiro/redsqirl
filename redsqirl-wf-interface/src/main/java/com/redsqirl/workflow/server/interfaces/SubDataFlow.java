@@ -62,6 +62,13 @@ public interface SubDataFlow extends DataFlow{
 	String readMetaData() throws Exception;
 	
 	/**
+	 * Read only the privilege field
+	 * @return an error message
+	 * @throws Exception
+	 */
+	String readPrivilege() throws Exception;
+	
+	/**
 	 * Get the privileges of the current workflow.
 	 * @return
 	 * @throws RemoteException

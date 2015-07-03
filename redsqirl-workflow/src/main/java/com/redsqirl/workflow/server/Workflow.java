@@ -249,8 +249,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						} else {
 							if (nameWithClass.get(line) != null
 									|| superActions.contains(line)) {
-								DataFlowElement dfe = createElementFromClassName(
-										nameWithClass, line);
+								DataFlowElement dfe = null;
+								if(superActions.contains(line)){
+									dfe = new SuperAction(line,true);
+								}else{
+									dfe = createElementFromClassName(
+											nameWithClass, line);
+								}
 								String[] parameters = new String[3];
 								parameters[0] = line;
 								parameters[1] = dfe.getImage();
@@ -458,7 +463,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				while (it.hasNext()) {
 					String actionName = it.next();
 					try {
-						DataFlowElement dfe = new SuperAction(actionName);
+						DataFlowElement dfe = new SuperAction(actionName,true);
 
 						helpSuperAction.put(actionName,
 								new String[] { dfe.getHelp(), dfe.getImage() });
@@ -2841,7 +2846,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	public String[] setPrivilegeOfClass(DataFlowElement dfe, String name,
 			String[] parameters) throws RemoteException {
 		if (dfe instanceof SuperElement) {
-			((SuperElement) dfe).setName(name);
 			Boolean priv = ((SuperElement) dfe).getPrivilege();
 			logger.info(dfe.getName() + " " + name + " '" + priv + "");
 			if (priv == null) {

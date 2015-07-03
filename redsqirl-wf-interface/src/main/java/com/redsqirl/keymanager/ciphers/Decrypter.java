@@ -72,7 +72,7 @@ public class Decrypter extends KeyCipher {
 
 	public void decrypt_key_module(String keyModule) {
 
-		logger.info("keyModule " + keyModule);
+		//logger.info("keyModule " + keyModule);
 
 		if(keyModule.length() != 24){
 			return;
@@ -181,16 +181,16 @@ public class Decrypter extends KeyCipher {
 
 		try {
 
-			logger.info("name 1 " + ans.get(name + "1"));
-			logger.info("key name sub 3 " + keysoft.get(name).substring(0, 3));
+			//logger.info("name 1 " + ans.get(name + "1"));
+			//logger.info("key name sub 3 " + keysoft.get(name).substring(0, 3));
 			valid &= ans.get(name + "1").equals(keysoft.get(name).substring(0, 3));
 
-			logger.info("name 2 " + ans.get(name + "2"));
-			logger.info("key name lenght-3 " + keysoft.get(name).substring(keysoft.get(name).length() - 3));
+			//logger.info("name 2 " + ans.get(name + "2"));
+			//logger.info("key name lenght-3 " + keysoft.get(name).substring(keysoft.get(name).length() - 3));
 			valid &= ans.get(name + "2").equals(keysoft.get(name).substring(keysoft.get(name).length() - 3));
 
-			logger.info("mac " + ans.get(mac));
-			logger.info("mac lenght-8 " + keysoft.get(mac).substring(keysoft.get(mac).length() - 8));
+			//logger.info("mac " + ans.get(mac));
+			//logger.info("mac lenght-8 " + keysoft.get(mac).substring(keysoft.get(mac).length() - 8));
 			valid &= ans.get(mac).equalsIgnoreCase(keysoft.get(mac).substring(keysoft.get(mac).length() - 8));
 
 			//valid &= Integer.valueOf(ans.get(clusterNb)).intValue() > Integer.valueOf(keysoft.get(clusterNb)).intValue();
@@ -214,9 +214,9 @@ public class Decrypter extends KeyCipher {
 		calendar.setTime(formatter.parse(("2015/06/01")));
 	    calendar.add(Calendar.DATE, Integer.parseInt(ans.get(date)));
 	    
-	    logger.info("ans value " + ans.get(date));
-	    logger.info("date1 " + calendar.getTime());
-	    logger.info("date2 " + keysoft.get(date));
+	    //logger.info("ans value " + ans.get(date));
+	    //logger.info("date1 " + calendar.getTime());
+	    //logger.info("date2 " + keysoft.get(date));
 	    
 		return new Date(keysoft.get(date)).before(calendar.getTime());
 	}
@@ -236,16 +236,16 @@ public class Decrypter extends KeyCipher {
 			if(ans != null){
 				// License
 				if(ans.get(license + "1") != null){
-					logger.info("license 1 " + ans.get(license + "1"));
-					logger.info("license sub 8 12 " + keyModule.get(license).substring(8, 12));
+					//logger.info("license 1 " + ans.get(license + "1"));
+					//logger.info("license sub 8 12 " + keyModule.get(license).substring(8, 12));
 					if(!ans.get(license + "1").equals(keyModule.get(license).substring(8, 12))){
 						error.append(PMLanguageManager.getText("error_module_key_license", new String[] { keyModule.get(name) }));
 					}
 				}
 
 				if(ans.get(license + "2") != null){
-					logger.info("license 2 " + ans.get(license + "2"));
-					logger.info("license lenght-3 " + keyModule.get(license).substring(keyModule.get(license).length() - 3));
+					//logger.info("license 2 " + ans.get(license + "2"));
+					//logger.info("license lenght-3 " + keyModule.get(license).substring(keyModule.get(license).length() - 3));
 					if(!ans.get(license + "2").equals(keyModule.get(license).substring(keyModule.get(license).length() - 3))){
 						error.append(PMLanguageManager.getText("error_module_key_license", new String[] { keyModule.get(name) }));
 					}
@@ -261,16 +261,16 @@ public class Decrypter extends KeyCipher {
 
 				// name
 				if(ans.get(name + "1") != null){
-					logger.info("name 1 '" + ans.get(name + "1")+"'");
-					logger.info("name sub 3 '" + keyModule.get(name).substring(0, 3)+"'");
+					//logger.info("name 1 '" + ans.get(name + "1")+"'");
+					//logger.info("name sub 3 '" + keyModule.get(name).substring(0, 3)+"'");
 					if(!ans.get(name + "1").equals(keyModule.get(name).substring(0, 3))){
 						error.append(PMLanguageManager.getText("error_module_key_name", new String[] { keyModule.get(name) }));
 					}
 				}
 
 				if(ans.get(name + "2") != null){
-					logger.info("name 2 " + ans.get(name + "2"));
-					logger.info("name lenght-3 " + keyModule.get(name).substring(keyModule.get(name).length() - 3));
+					//logger.info("name 2 " + ans.get(name + "2"));
+					//logger.info("name lenght-3 " + keyModule.get(name).substring(keyModule.get(name).length() - 3));
 					if(!ans.get(name + "2").equals(keyModule.get(name).substring(keyModule.get(name).length() - 3))){
 						error.append(PMLanguageManager.getText("error_module_key_name", new String[] { keyModule.get(name) }));
 					}
@@ -280,7 +280,7 @@ public class Decrypter extends KeyCipher {
 				error.append(PMLanguageManager.getText("error_module_key_license", new String[] { keyModule.get(name) }));
 			}
 
-			logger.info("error " + error.toString());
+			//logger.info("error " + error.toString());
 
 		} catch (Exception e) {
 			logger.error(e.getMessage(),e);

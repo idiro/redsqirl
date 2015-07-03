@@ -61,8 +61,31 @@ public class SuperAction extends DataflowAction implements SuperElement{
 	public SuperAction(String name) throws RemoteException {
 		super(new SubWorkflowAction());
 		setName(name);
+		logger.debug("Read the metadata of the sub-workflow...");
+		readMetadataSuperElement();
 	}
-
+	
+	public SuperAction(String name, boolean readPrivilege) throws RemoteException {
+		super(new SubWorkflowAction());
+		setName(name);
+		if(readPrivilege){
+			logger.debug("Read the metadata of the sub-workflow...");
+			readPrivilegeSuperElement();
+		}
+	}
+	public void readPrivilegeSuperElement(){
+		try{
+			SubWorkflow saw = new SubWorkflow(name);
+			errorInstall = saw.readPrivilege();
+			if(errorInstall == null){
+				privilege = saw.getPrivilege();
+			}else{
+				logger.info("Error when reading the metadata: "+errorInstall);
+			}
+		}catch(Exception e){
+			logger.error("Fail to read Super Action Meta data: "+e,e);
+		}
+	}
 	public void readMetadataSuperElement(){
 		try{
 			SubWorkflow saw = new SubWorkflow(name);
@@ -92,8 +115,6 @@ public class SuperAction extends DataflowAction implements SuperElement{
 		}else if(!name.equals(this.name)){
 			logger.debug("Set the name...");
 			this.name  = name;
-			logger.debug("Read the metadata of the sub-workflow...");
-			readMetadataSuperElement();
 		}
 	}
 

@@ -139,9 +139,13 @@ public class HiveInterface extends UnicastRemoteObject implements DataStore {
 		if (url == null) {
 			url = WorkflowPrefManager
 					.getUserProperty(WorkflowPrefManager.user_hive);
+			if(url == null || url.isEmpty()){
+				error = LanguageManagerWF.getText("hiveinterface.nosettings",
+						new Object[] { WorkflowPrefManager.user_hive });
+			}
 		}
 		try {
-			if (!isInit && url != null) {
+			if (!isInit && (url != null && !url.isEmpty())) {
 				logger.info("Init connection to "+url);
 				final String nameStore = url.substring(url.indexOf("://") + 3,
 						url.lastIndexOf(":"));

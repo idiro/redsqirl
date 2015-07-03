@@ -404,6 +404,12 @@ public class WorkflowPrefManager extends BlockManager {
 			}
 		}
 		{
+			File sysTmp = new File(pathSysHome, "tmp");
+			if(!sysTmp.exists()){
+				sysTmp.mkdirs();
+			}
+		}
+		{
 			File sysHelpTomcat = new File(installPackage+getPathSysHelpPref());
 			if(!sysHelpTomcat.exists()){
 				sysHelpTomcat.mkdirs();

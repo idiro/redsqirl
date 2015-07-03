@@ -404,6 +404,55 @@ public class SubWorkflow extends Workflow implements SubDataFlow{
 	public String readMetaData() throws Exception{
 		return readMetaData(getInstalledMainFile());
 	}
+	
+	public String readPrivilege() throws Exception{
+		return readPrivilege(getInstalledMainFile());
+	}
+	public String readPrivilege(File xmlFile) throws Exception{
+
+		tmpOutput = new LinkedHashMap<LinkedList<String>,DFEOutput>();
+		outputSuperAction = new LinkedHashMap<String,DFEOutput>();
+		inputSuperAction = new LinkedHashMap<String, DFELinkProperty>();
+		superElementDependencies = new LinkedHashSet<String>();
+		String error = null;
+		
+		if(xmlFile == null || !xmlFile.exists()){
+			return "Super Action "+name+" not found";
+		}
+
+		DocumentBuilderFactory dbFactory = DocumentBuilderFactory
+				.newInstance();
+		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+		
+		Document doc = null;
+		File tmpFile = new File(WorkflowPrefManager.getPathtmpfolder()+"/"+xmlFile.getName()+".tmp");
+		try{
+			FileStream.decryptFile(xmlFile,tmpFile);
+			doc = dBuilder.parse(tmpFile);
+			doc.getDocumentElement().normalize();
+		}catch(Exception e){
+			logger.warn(e,e);
+			logger.warn("Error while decrypting file, attempting to read the file as text");
+			doc = dBuilder.parse(xmlFile);
+			doc.getDocumentElement().normalize();
+		}
+		
+		String security = doc.getElementsByTagName("security").item(0).getChildNodes().item(0).getTextContent();
+		logger.info("Security "+security);
+		
+		if(security.equals("editable")){
+			this.privilege = null;
+		}else if(security.equals("runnable")){
+			this.privilege = new Boolean(false);
+		}else if (security.equals("licensed")){
+			this.privilege = new Boolean(true);
+		}
+		
+		logger.info(getName()+" privilege '"+this.privilege+"'");
+
+		tmpFile.delete();
+		return error;
+	}
 
 	public String readMetaData(File xmlFile) throws Exception{
 		String userName = System.getProperty("user.name");

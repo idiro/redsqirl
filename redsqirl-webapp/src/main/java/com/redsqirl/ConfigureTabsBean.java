@@ -64,14 +64,18 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 				}
 
 				DataFlow wf = getworkFlowInterface().getWorkflow(workflowNameTmp);
+				logger.info("Load menu...");
 				wf.loadMenu();
+				logger.info("Load relative menu...");
 				menuWA = wf.getRelativeMenu(getCurrentPage());
+				logger.info("Load Action classes");
 				if(allWANameWithClassName == null){
 					allWANameWithClassName = wf.getAllWANameWithClassName();
 					logger.info(allWANameWithClassName.keySet());
 				}
 				getworkFlowInterface().removeWorkflow(workflowNameTmp);
 
+				logger.info("Mount action");
 				mountMenuActions();
 
 				if(getMenuWA().isEmpty()){
@@ -79,7 +83,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 				}else{
 					setIndex(0);
 				}
-
+				logger.info("end...");
 
 			} catch (RemoteException e1) {
 				e1.printStackTrace();
