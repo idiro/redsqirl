@@ -57,6 +57,26 @@
 <script
 	src="#{facesContext.externalContext.requestContextPath}/js/jquery.hotkeys.js"
 	type="text/javascript" />
+	
+	
+<script src="#{facesContext.externalContext.requestContextPath}/js/jquery-textext-master/textext.core.js" type="text/javascript" />
+<script src="#{facesContext.externalContext.requestContextPath}/js/jquery-textext-master/textext.plugin.ajax.js" type="text/javascript" />
+<script src="#{facesContext.externalContext.requestContextPath}/js/jquery-textext-master/textext.plugin.arrow.js" type="text/javascript" />
+<script src="#{facesContext.externalContext.requestContextPath}/js/jquery-textext-master/textext.plugin.autocomplete.js" type="text/javascript" />
+<script src="#{facesContext.externalContext.requestContextPath}/js/jquery-textext-master/textext.plugin.clear.js" type="text/javascript" />
+<script src="#{facesContext.externalContext.requestContextPath}/js/jquery-textext-master/textext.plugin.filter.js" type="text/javascript" />
+<script src="#{facesContext.externalContext.requestContextPath}/js/jquery-textext-master/textext.plugin.focus.js" type="text/javascript" />
+<script src="#{facesContext.externalContext.requestContextPath}/js/jquery-textext-master/textext.plugin.prompt.js" type="text/javascript" />
+<script src="#{facesContext.externalContext.requestContextPath}/js/jquery-textext-master/textext.plugin.suggestions.js" type="text/javascript" />
+<script src="#{facesContext.externalContext.requestContextPath}/js/jquery-textext-master/textext.plugin.tags.js" type="text/javascript" />
+
+<link rel="stylesheet" type="text/css" href="#{facesContext.externalContext.requestContextPath}/css/jquery-textext-master/textext.core.css" />
+<link rel="stylesheet" type="text/css" href="#{facesContext.externalContext.requestContextPath}/css/jquery-textext-master/textext.plugin.arrow.css" />
+<link rel="stylesheet" type="text/css" href="#{facesContext.externalContext.requestContextPath}/css/jquery-textext-master/textext.plugin.autocomplete.css" />
+<link rel="stylesheet" type="text/css" href="#{facesContext.externalContext.requestContextPath}/css/jquery-textext-master/textext.plugin.clear.css" />
+<link rel="stylesheet" type="text/css" href="#{facesContext.externalContext.requestContextPath}/css/jquery-textext-master/textext.plugin.focus.css" />
+<link rel="stylesheet" type="text/css" href="#{facesContext.externalContext.requestContextPath}/css/jquery-textext-master/textext.plugin.prompt.css" />
+<link rel="stylesheet" type="text/css" href="#{facesContext.externalContext.requestContextPath}/css/jquery-textext-master/textext.plugin.tags.css" />
 
 <title><h:outputText value="#{messages.label_sistem}" /></title>
 
@@ -490,7 +510,7 @@
 		 	  //alert(positions);
 		 	  
 	          //Add the workflow tab only if the name does not exist yet.
-	          if(document.getElementById(canvasName) == null &amp;&amp; !canvasExist) {
+	          if(document.getElementById(canvasName) == null || !canvasExist) {
 	    	      addWorkflowTab(canvasName,workflowType);
 	    	      configureCanvas(canvasName, reset, workflowType);
 		    	  forceRefresh = true;
@@ -806,7 +826,7 @@
 			if(values != null){
 				backupAndCloseAll();
 				alert("The page has been refreshed. Your work has been saved in the backup directory.");
-				addWorkflow("canvas-1");
+				//addWorkflow("canvas-1");
 			}
 		}
 	   	
@@ -1561,7 +1581,7 @@
 
 
 				<a4j:jsFunction name="backupAll" action="#{canvasBean.backupAll}"/>
-				<a4j:jsFunction name="backupAndCloseAll" action="#{canvasBean.backupAndCloseAll}"/>
+				<a4j:jsFunction name="backupAndCloseAll" action="#{canvasBean.backupAndCloseAll}" oncomplete="closeAllWorkflowTabs()"/>
 			</a4j:region>
 
 			<a4j:region>
