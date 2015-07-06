@@ -463,11 +463,8 @@
 			                                        styleClass="tableInteractionInput"
 			                                        onkeypress="return disableEnterKey(event);"/>
 												
-												 
-												
 			                                    
 			                                     <h:inputText value="#{rowItem.row[ind]}" styleClass="tableInteractionInput" 
-			                                     	style="width:125px;"
 			                                     	id="combo#{ind}#{rowNb+1}"
 			                                     	rendered="#{interCur.table.columnType[column] == 'comboBox' }" >
 			                                     	 
@@ -482,8 +479,8 @@
 															                textext = jQuery(e.target).textext()[0],
 															                query = (data ? data.query : '') || '' ;
 															
-															            jQuery(this).trigger('setSuggestions', { 
-																            	result : textext.itemManager().filter(list, query) 
+															            jQuery(this).trigger('setSuggestions', {
+																            	result : textext.itemManager().filter(list, query)
 																            }
 															            );
 	
