@@ -92,6 +92,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private boolean progressBarEnabled;
 	private boolean runningElementsToggle;
 	private boolean doneElementsToggle;
+	
+	private String firstTime;
 
 	/**
 	 * Running workflow progress bar
@@ -1253,10 +1255,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	}
 
-	public String[] getReinitialize() throws RemoteException {
-		logger.info("Reinitialize Canvas");
+	public String getReinitialize() throws RemoteException {
 		
-		
+		/*logger.info("Reinitialize Canvas");
 		if(getWorkflowMap().entrySet().size() != 1){
 			return reinitializeCanvas();
 		} else if(getWorkflowMap().entrySet().size() == 1){
@@ -1272,28 +1273,18 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 		}
 		
+		return null;*/
 		
-		return null;
-		
-		/*for (Entry<String, DataFlow> e : getWorkflowMap().entrySet()) {
-			if (getworkFlowInterface().getWorkflow(e.getKey()) != null) {
-				logger.info("removing workflow");
-				getworkFlowInterface().removeWorkflow(e.getKey());
-			}
+		if(getFirstTime() == null){
+			setFirstTime(" ");
+			return null;
 		}
-
-		getworkFlowInterface().addWorkflow("canvas-1");
-		setDf(getworkFlowInterface().getWorkflow("canvas-1"));
-
-		getWorkflowMap().clear();
-		getWorkflowMap().put(getNameWorkflow(), getDf());
-
-		getIdMap().clear();
-		getIdMap().put(getNameWorkflow(), new HashMap<String, String>());*/
+		
+		return " ";
 
 	}
 	
-	public String[] reinitializeCanvas() throws RemoteException{
+	/*public String[] reinitializeCanvas() throws RemoteException{
 		
 		String[] res = new String[getWorkflowMap().size()];
 		
@@ -1315,7 +1306,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 		setIdMap(newIdMap);
 		return res;
-	}
+	}*/
 
 	/**
 	 * openCanvas
@@ -3058,6 +3049,14 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void setDoneElementsToggle(boolean doneElementsToggle) {
 		this.doneElementsToggle = doneElementsToggle;
+	}
+
+	public String getFirstTime() {
+		return firstTime;
+	}
+
+	public void setFirstTime(String firstTime) {
+		this.firstTime = firstTime;
 	}
 
 }
