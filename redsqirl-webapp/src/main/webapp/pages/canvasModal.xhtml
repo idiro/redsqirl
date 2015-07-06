@@ -462,15 +462,40 @@
 			                                        rendered="#{interCur.table.columnType[column] == 'textField' }"
 			                                        styleClass="tableInteractionInput"
 			                                        onkeypress="return disableEnterKey(event);"/>
+												
+												 
+												
 			                                    
-												 <rich:comboBox value="#{rowItem.row[ind]}"
-			                                        selectFirstOnUpdate="false" defaultLabel="Enter some value"
-			                                        width="125" enableManualInput="true" listWidth="150"
-			                                        listHeight="150"
-			                                        rendered="#{interCur.table.columnType[column] == 'comboBox' }"
-			                                        styleClass="tableInteractionInput">
-			                                        <f:selectItems value="#{interCur.table.tableConstraints[column]}" />
-			                                    </rich:comboBox>
+			                                     <h:inputText value="#{rowItem.row[ind]}" styleClass="tableInteractionInput" 
+			                                     	style="width:125px;"
+			                                     	id="combo#{ind}#{rowNb+1}"
+			                                     	rendered="#{interCur.table.columnType[column] == 'comboBox' }" >
+			                                     	 
+			                                     	<script type="text/javascript">
+				                                     	jQuery("[id$='combo#{ind}#{rowNb+1}']").textext({
+														            plugins : 'arrow autocomplete'
+														        }).bind('getSuggestions', function(e, data){
+
+																	try{
+															        	
+															            var list = [ #{interCur.table.tableConstraintsString[column]} ] ,
+															                textext = jQuery(e.target).textext()[0],
+															                query = (data ? data.query : '') || '' ;
+															
+															            jQuery(this).trigger('setSuggestions', { 
+																            	result : textext.itemManager().filter(list, query) 
+																            }
+															            );
+	
+																	}catch(exception){
+																	    alert(exception);
+																	}
+														            
+														        });
+													</script>
+			                                     	 
+			                                     </h:inputText>
+			                                     	 
 			        
 												<h:inputText value="#{rowItem.row[ind]}" 
 												       rendered="#{interCur.columnType[column] == 'editor' }" 
