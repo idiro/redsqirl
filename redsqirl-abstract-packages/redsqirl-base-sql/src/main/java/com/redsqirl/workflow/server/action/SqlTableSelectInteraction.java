@@ -273,7 +273,7 @@ public abstract class SqlTableSelectInteraction extends SqlOperationTableInter {
 		addColumn(table_feat_title, 1, "[a-zA-Z]([A-Za-z0-9_]{0,29})", null,
 				null);
 
-		addColumn(table_type_title, null, getTypes(), null);
+		addColumn(table_type_title, null, hs.getTypes(), null);
 		
 	}
 

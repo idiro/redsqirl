@@ -25,15 +25,6 @@ public abstract class SqlOperationTableInter  extends TableInteraction{
 			throws RemoteException {
 		super(id, name, legend, texttip, column, placeInColumn);
 	}
-	
-	
-	public List<String> getTypes(){
-		List<String> types = new ArrayList<String>(FieldType.values().length);
-		for(FieldType ft:FieldType.values()){
-			types.add(ft.name());
-		}
-		return types;
-	}
 
 	protected abstract SqlDictionary getDictionary();
 }
