@@ -3,8 +3,10 @@ package com.redsqirl.workflow.server.action;
 
 import java.io.File;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,6 +18,7 @@ import com.redsqirl.utils.Tree;
 import com.redsqirl.utils.TreeNonUnique;
 import com.redsqirl.workflow.server.DataflowAction;
 import com.redsqirl.workflow.server.OozieActionAbs;
+import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 
 /**
@@ -175,4 +178,12 @@ public abstract class SqlElement extends DataflowAction {
 
 	public abstract Map<String,DFEOutput> getJoinAliases() throws RemoteException;
 	
+
+	public List<String> getTypes(){
+		List<String> types = new ArrayList<String>(FieldType.values().length);
+		for(FieldType ft:FieldType.values()){
+			types.add(ft.name());
+		}
+		return types;
+	}
 }

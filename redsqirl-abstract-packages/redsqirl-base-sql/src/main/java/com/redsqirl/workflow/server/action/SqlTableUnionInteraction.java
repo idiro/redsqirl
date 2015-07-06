@@ -249,7 +249,7 @@ public abstract class SqlTableUnionInteraction extends SqlOperationTableInter {
 		addColumn(table_feat_title, null, "[a-zA-Z]([A-Za-z0-9_]{0,29})", null,
 				null);
 
-		addColumn(table_type_title, null, getTypes(), null);
+		addColumn(table_type_title, null, hu.getTypes(), null);
 
 	}
 	/**
