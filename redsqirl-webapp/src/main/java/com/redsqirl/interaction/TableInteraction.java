@@ -49,6 +49,8 @@ public class TableInteraction extends CanvasModalInteraction{
 	 * The list of value possible for each field if any
 	 */
 	private Map<String,List<SelectItem>> tableConstraints;
+	
+	private Map<String,String> tableConstraintsString;
 
 	/**
 	 * The list of editors.
@@ -79,6 +81,7 @@ public class TableInteraction extends CanvasModalInteraction{
 	public void readInteraction() throws RemoteException {
 		setTree();
 		tableConstraints = new LinkedHashMap<String, List<SelectItem>>();
+		tableConstraintsString = new LinkedHashMap<String, String>();
 
 		tableGeneratorRowToInsert = new LinkedHashMap<String, List<Map<String, String>>>();
 		tableGeneratorMenu = new LinkedList<SelectItem>();
@@ -219,8 +222,7 @@ public class TableInteraction extends CanvasModalInteraction{
 		}
 	}
 
-	private void mountTableInteractionConstraint(Tree<String> dfeInteractionTree)
-			throws RemoteException {
+	private void mountTableInteractionConstraint(Tree<String> dfeInteractionTree) throws RemoteException {
 		List<SelectItem> listFields = new ArrayList<SelectItem>();
 		if (dfeInteractionTree.getFirstChild("constraint").getFirstChild(
 				"values") != null) {
@@ -238,7 +240,16 @@ public class TableInteraction extends CanvasModalInteraction{
 			}
 			Collections.sort(listFields, new SelectItemComparator());
 			tableConstraints.put(dfeInteractionTree.getFirstChild("title").getFirstChild().getHead(), listFields);
+			tableConstraintsString.put(dfeInteractionTree.getFirstChild("title").getFirstChild().getHead(), calcString(listFields));
 		}
+	}
+	
+	public String calcString(List<SelectItem> listFields){
+		StringBuffer ans = new StringBuffer();
+		for (SelectItem selectItem : listFields) {
+			ans.append(",'"+selectItem.getLabel()+"'");
+		}
+		return ans.toString().substring(1);
 	}
 
 	@Override
@@ -551,6 +562,14 @@ public class TableInteraction extends CanvasModalInteraction{
 
 	public void setSelectedTab(String selectedTab) {
 		this.selectedTab = selectedTab;
+	}
+
+	public Map<String, String> getTableConstraintsString() {
+		return tableConstraintsString;
+	}
+
+	public void setTableConstraintsString(Map<String, String> tableConstraintsString) {
+		this.tableConstraintsString = tableConstraintsString;
 	}
 
 }
