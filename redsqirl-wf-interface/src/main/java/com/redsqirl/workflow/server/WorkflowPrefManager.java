@@ -123,6 +123,10 @@ public class WorkflowPrefManager extends BlockManager {
 			 */
 			pathUserSuperAction = pathUserPref + "/superactions",
 			/**
+			 * The local file storing classes
+			 */
+			pathOutputClasses = pathUserPref + "/.outputclasses.txt",
+			/**
 			 * The local directory to store temporarily workflow. Accessible from
 			 * redsqirl-workflow side.
 			 */
@@ -1063,6 +1067,20 @@ public class WorkflowPrefManager extends BlockManager {
 	 */
 	public static String getPathUserSuperAction(String user) {
 		return getPathUserPref(user)+"/superactions";
+	}
+	
+	/**
+	 * @return the pathUserSuperAction
+	 */
+	public static String getPathOutputClasses() {
+		return pathOutputClasses;
+	}
+	
+	/**
+	 * @return the pathUserSuperAction
+	 */
+	public static String getPathOutputClasses(String user) {
+		return getPathUserPref(user)+"/.outputclasses.txt";
 	}
 
 	/**

@@ -23,6 +23,7 @@ import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.DataOutput;
 import com.redsqirl.workflow.server.connect.HiveInterface;
+import com.redsqirl.workflow.server.connect.interfaces.DataStore;
 import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.server.oozie.HiveAction;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
@@ -100,9 +101,16 @@ public class HiveType extends DataOutput{
 }
 	 */
 	@Override
-	public String getBrowser() throws RemoteException {
+	public String getBrowserName() throws RemoteException {
 		return hInt.getBrowserName();
 	}
+	
+
+	@Override
+	public DataStore getBrowser() throws RemoteException {
+		return hInt;
+	}
+	
 	/**
 	 * Delete the path
 	 * @return Error Message

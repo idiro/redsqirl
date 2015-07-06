@@ -570,7 +570,7 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 	public void setNameOutput(String nameOutput) {
 		this.nameOutput = nameOutput;
 		try {
-			typeBrowser = dfe.getDFEOutput().get(nameOutput).getBrowser();
+			typeBrowser = dfe.getDFEOutput().get(nameOutput).getBrowserName();
 		} catch (Exception e) {
 			logger.warn(nameOutput + " not recognized by object");
 		}

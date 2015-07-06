@@ -1,9 +1,13 @@
 package com.redsqirl.workflow.server.connect;
 
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.rmi.RemoteException;
@@ -71,7 +75,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	 * Map of datastores
 	 */
 	private Map<String,DataStore> datastores;
-
+	
 	/**
 	 * Constructor
 	 * @throws RemoteException
@@ -92,24 +96,60 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 		//Get the browser name used in DataOutput
 		logger.info("Get the output class...");
 		Set<String> browsersFromDataOut = new HashSet<String>();
-		Iterator<String> dataoutputClassName = DataOutput.getAllClassDataOutput().iterator();
-		while(dataoutputClassName.hasNext()){
-			String className = dataoutputClassName.next();
+		Set<String> browserClasses = new HashSet<String>();
+		File outputClassFile = new File(WorkflowPrefManager.getPathOutputClasses());
+		List<String> dataoutputClassName = new LinkedList<String>();
+		if(outputClassFile.exists()){
+			try{
+				BufferedReader br = new BufferedReader(new FileReader(outputClassFile));
+				String line = null;
+				while((line = br.readLine()) != null){
+					dataoutputClassName.add(line);
+				}
+				br.close();
+			}catch(Exception e){
+				logger.error("Error while reading class file",e);
+				outputClassFile.delete();
+			}
+		}
+
+		if(!outputClassFile.exists()){
+			dataoutputClassName = DataOutput.getAllClassDataOutput();
+			try{
+				BufferedWriter bw = new BufferedWriter(new FileWriter(outputClassFile));
+				Iterator<String> dataoutputClassNameIt = dataoutputClassName.iterator();
+				while(dataoutputClassNameIt.hasNext()){
+					bw.write(dataoutputClassNameIt.next());
+					bw.newLine();
+				}
+				bw.close();
+				//Everyone can remove this file
+				outputClassFile.setReadable(true, false);
+				outputClassFile.setWritable(true, false);
+			}catch(Exception e){
+				logger.error("Error while writing class file",e);
+				outputClassFile.delete();
+			}
+			
+		}
+
+		Iterator<String> dataoutputClassNameIt = dataoutputClassName.iterator();
+		while(dataoutputClassNameIt.hasNext()){
+			String className = dataoutputClassNameIt.next();
 			try {
 				DataOutput outNew = (DataOutput) Class.forName(className).newInstance();
 				logger.info(outNew.getTypeName());
-				browsersFromDataOut.add(outNew.getBrowser());
+				browsersFromDataOut.add(outNew.getBrowserName());
+				browserClasses.add(outNew.getBrowser().getClass().getCanonicalName());
 			} catch (Exception e) {
 				logger.error(e,e);
 			}
 		}
-
+		
 		//Return a map containing only the one used in DataOutput
-		Map<String,DataStore> ans = new LinkedHashMap<String,DataStore>();
-		Iterator<String> datastoreClassName = WorkflowPrefManager.getInstance()
-				.getNonAbstractClassesFromSuperClass(
-						DataStore.class.getCanonicalName()).iterator();
 		logger.info("Get the store class...");
+		Map<String,DataStore> ans = new LinkedHashMap<String,DataStore>();
+		Iterator<String> datastoreClassName = browserClasses.iterator();
 		while (datastoreClassName.hasNext()) {
 			String className = datastoreClassName.next();
 			try {

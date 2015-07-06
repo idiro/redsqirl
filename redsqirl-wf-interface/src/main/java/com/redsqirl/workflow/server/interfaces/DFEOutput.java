@@ -11,6 +11,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.redsqirl.utils.FieldList;
+import com.redsqirl.workflow.server.connect.interfaces.DataStore;
 import com.redsqirl.workflow.server.enumeration.SavingState;
 
 /**
@@ -51,7 +52,14 @@ public interface DFEOutput extends Remote {
 	 * 
 	 * @throws RemoteException
 	 */
-	public String getBrowser() throws RemoteException;
+	public String getBrowserName() throws RemoteException;
+	
+	/**
+	 * Get the browser (DataStore class) used for the Type of object.
+	 * @return
+	 * @throws RemoteException
+	 */
+	public DataStore getBrowser() throws RemoteException;
 
 	/**
 	 * True if the header (name and type of fields) is editable

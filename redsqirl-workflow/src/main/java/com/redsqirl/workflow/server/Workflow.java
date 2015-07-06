@@ -1772,7 +1772,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 								Source.key_datatype).getTree();
 						dataTypeTree.getFirstChild("list")
 								.getFirstChild("output")
-								.add(constraint.getBrowser());
+								.add(constraint.getBrowserName());
 
 						logger.info("Update Data Type");
 

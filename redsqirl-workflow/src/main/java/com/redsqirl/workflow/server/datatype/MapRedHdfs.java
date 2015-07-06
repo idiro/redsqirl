@@ -3,7 +3,6 @@ package com.redsqirl.workflow.server.datatype;
 
 
 import java.io.File;
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,10 +15,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.fs.PathFilter;
 import org.apache.log4j.Logger;
 import org.apache.pig.data.DataType;
 import org.json.simple.JSONArray;
@@ -30,12 +27,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.idiro.hadoop.NameNodeVar;
-import com.idiro.hadoop.checker.HdfsFileChecker;
 import com.redsqirl.utils.FieldList;
 import com.redsqirl.utils.OrderedFieldList;
 import com.redsqirl.workflow.server.DataOutput;
 import com.redsqirl.workflow.server.OozieManager;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
+import com.redsqirl.workflow.server.connect.interfaces.DataStore;
 import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
@@ -141,8 +138,13 @@ public abstract class MapRedHdfs extends DataOutput{
 	 * @throws RemoteException
 	 */
 	@Override
-	public String getBrowser() throws RemoteException {
+	public String getBrowserName() throws RemoteException {
 		return hdfsInt.getBrowserName();
+	}
+	
+	@Override
+	public DataStore getBrowser() throws RemoteException {
+		return hdfsInt;
 	}
 
 

@@ -10,6 +10,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.redsqirl.workflow.server.DataOutput;
+import com.redsqirl.workflow.server.connect.interfaces.DataStore;
 
 public class OutputActionTest extends DataOutput{
 
@@ -78,7 +79,12 @@ public class OutputActionTest extends DataOutput{
 
 
 	@Override
-	public String getBrowser() throws RemoteException {
+	public String getBrowserName() throws RemoteException {
+		return null;
+	}
+	
+	@Override
+	public DataStore getBrowser() throws RemoteException {
 		return null;
 	}
 

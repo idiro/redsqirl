@@ -149,7 +149,7 @@ DFEOutput {
 	 */
 	public Tree<String> getTree() throws RemoteException {
 		Tree<String> root = new TreeNonUnique<String>("browse");
-		root.add("type").add(getBrowser());
+		root.add("type").add(getBrowserName());
 		root.add("subtype").add(getTypeName());
 		Tree<String> output = root.add("output");
 		output.add("path").add(getPath());

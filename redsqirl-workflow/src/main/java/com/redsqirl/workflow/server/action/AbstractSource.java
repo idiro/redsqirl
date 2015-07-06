@@ -521,8 +521,8 @@ public abstract class AbstractSource extends DataflowAction {
 				}
 				logger.info("class : " + wa.getClass().getCanonicalName());
 				logger.info("wa type : " + wa.getTypeName());
-				if (wa.getBrowser() != null
-						&& wa.getBrowser().toString().equalsIgnoreCase(type)) {
+				if (wa.getBrowserName() != null
+						&& wa.getBrowserName().toString().equalsIgnoreCase(type)) {
 					posValues.add(wa.getTypeName());
 					if ((wa.getTypeName().equalsIgnoreCase(
 							(new HiveType()).getTypeName()) || wa.getTypeName()

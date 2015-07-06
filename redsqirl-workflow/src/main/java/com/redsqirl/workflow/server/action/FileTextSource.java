@@ -58,7 +58,7 @@ public class FileTextSource extends AbstractSource {
 		browser.setTextTip(LanguageManagerWF.getText("pig.test_source_browser_interaction.header_help"));
 		
 		MapRedTextFileType type = new MapRedTextFileType();
-		dataType.setValue(type.getBrowser());
+		dataType.setValue(type.getBrowserName());
 		
 		checkSubType();
 	}

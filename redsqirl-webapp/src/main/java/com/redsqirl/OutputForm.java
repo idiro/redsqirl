@@ -101,11 +101,11 @@ public class OutputForm implements Serializable {
 	}
 
 	public boolean isHiveBrowser() throws RemoteException{
-		return dfeOutput.getBrowser().equals("HIVE");
+		return dfeOutput.getBrowserName().equals("HIVE");
 	}
 
 	public boolean isHdfsBrowser() throws RemoteException{
-		return dfeOutput.getBrowser().equals("HDFS");
+		return dfeOutput.getBrowserName().equals("HDFS");
 	}
 
 	public String getSavingState() {
@@ -169,7 +169,7 @@ public class OutputForm implements Serializable {
 			completePath += getFile();
 			logger.info("path: " + completePath);
 			
-			Map<String,String> props = datastores.get(dfeOutput.getBrowser()).getDataStore().getProperties(completePath);
+			Map<String,String> props = datastores.get(dfeOutput.getBrowserName()).getDataStore().getProperties(completePath);
 			try{
 				if(dfeOutput.isPathExists() && dfeOutput.getSavingState() != SavingState.RECORDED){
 					if(props == null || props.isEmpty()){

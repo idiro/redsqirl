@@ -774,6 +774,11 @@ public class UserInfoBean extends BaseBean implements Serializable {
 			}
 			logger.info("Merge: " + indexResultPath);
 			sfi.merge(indexResultPath, indexMergeSysPath, indexPckUserPath);
+			try{
+				new File(WorkflowPrefManager.getPathOutputClasses(getUserName())).delete();
+			}catch(Exception e){
+				logger.error("Cannot delete output class",e);
+			}
 		}
 
 	}
