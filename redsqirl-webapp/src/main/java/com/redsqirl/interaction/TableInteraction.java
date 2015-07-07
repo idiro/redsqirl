@@ -66,6 +66,8 @@ public class TableInteraction extends CanvasModalInteraction{
 	 * The list of possible generation 
 	 */
 	private List<SelectItem> tableGeneratorMenu;
+	
+	private List<String> tableGeneratorMenuString;
 
 	/**
 	 * The rows to insert in case of generation
@@ -107,8 +109,7 @@ public class TableInteraction extends CanvasModalInteraction{
 							isGeneratorMenuInt = false;
 						}
 					}
-					logger.info("list value "
-							+ menuName);
+					logger.info("list value "+ menuName);
 					tableGeneratorMenu.add(new SelectItem(menuName,menuName));
 
 					tableGeneratorRowToInsert.put(menuName,
@@ -145,6 +146,12 @@ public class TableInteraction extends CanvasModalInteraction{
 				});
 			}else{
 				Collections.sort(tableGeneratorMenu, new SelectItemComparator());
+			}
+			
+
+			tableGeneratorMenuString = new LinkedList<String>();
+			if(tableGeneratorMenu != null && !tableGeneratorMenu.isEmpty()){
+				tableGeneratorMenuString.add(calcString(tableGeneratorMenu));
 			}
 
 		}
@@ -570,6 +577,14 @@ public class TableInteraction extends CanvasModalInteraction{
 
 	public void setTableConstraintsString(Map<String, String> tableConstraintsString) {
 		this.tableConstraintsString = tableConstraintsString;
+	}
+
+	public List<String> getTableGeneratorMenuString() {
+		return tableGeneratorMenuString;
+	}
+
+	public void setTableGeneratorMenuString(List<String> tableGeneratorMenuString) {
+		this.tableGeneratorMenuString = tableGeneratorMenuString;
 	}
 
 }

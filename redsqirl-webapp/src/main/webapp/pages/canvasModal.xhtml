@@ -390,12 +390,37 @@
                         <h:panelGrid id="table" columns="4" rendered="#{!empty interCur.table.tableGeneratorMenu}">
                         	<h:outputText value="#{messages.label_generation}" />
 							
-							<rich:comboBox
-                                value="#{interCur.table.selectedGenerator}" width="200"
-                                enableManualInput="false" id="generation" listWidth="150"
-                                listHeight="200">
-                                <f:selectItems styleClass="interModal" value="#{interCur.table.tableGeneratorMenu}" />
-                            </rich:comboBox>
+							
+                            
+                            <h:inputText value="#{interCur.table.selectedGenerator}" id="generation" >
+                                  	 
+                                 <script type="text/javascript">
+                                   	jQuery("[id$='generation']").textext({
+								            plugins : 'arrow autocomplete'
+								        }).bind('getSuggestions', function(e, data){
+
+											try{
+									        	
+									            var list =  #{interCur.table.tableGeneratorMenuString}  ,
+									                textext = jQuery(e.target).textext()[0],
+									                query = (data ? data.query : '') || '' ;
+									
+									            jQuery(this).trigger('setSuggestions', {
+										            	result : textext.itemManager().filter(list, query)
+										            }
+									            );
+
+											}catch(exception){
+											    alert(exception);
+											}
+								            
+								        });
+								</script>
+                                  	 
+                            </h:inputText>
+                            
+                            
+                            
     
                             <a4j:commandButton type="submit" styleClass="greenButton" id="tableInteractionGenerationLines"
                                 action="#{interCur.table.generateLines}" value="#{messages.button_ok}" reRender="tableInteraction">
