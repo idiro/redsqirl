@@ -211,9 +211,11 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 			ec.redirect(url);
 		}
 
-		FacesMessage msg = new FacesMessage("ERROR MSG", "login_error_wrong_user_password");
+		MessageUseful.addErrorMessage("login-form:password-input", getMessageResources("login_error_wrong_user_password"));
+		
+		/*FacesMessage msg = new FacesMessage("ERROR MSG", "login_error_wrong_user_password");
 		msg.setSeverity(FacesMessage.SEVERITY_ERROR);
-		FacesContext.getCurrentInstance().addMessage("login-form:password-input", msg);
+		FacesContext.getCurrentInstance().addMessage("login-form:password-input", msg);*/
 
 		// To to login page
 		return null;
