@@ -569,6 +569,8 @@ public class WorkflowPrefManager extends BlockManager {
 		pathOozieJob = pathUserPref + "/jobs";
 		pathWorkflow = pathUserPref + "/workflows";
 		pathUserDFEOutputColour = pathUserPref + "/output_colours.properties";
+		pathUserSuperAction = pathUserPref + "/superactions";
+		pathOutputClasses = pathUserPref + "/.outputclasses.txt";
 		pathUserPackagePref = pathUserPref + "/packages";
 		sysPackageLibPath = pathSysHome + "/lib/packages";
 		userPackageLibPath = pathUserPref + "/lib/packages";
