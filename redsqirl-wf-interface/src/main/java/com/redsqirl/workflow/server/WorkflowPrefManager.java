@@ -408,7 +408,7 @@ public class WorkflowPrefManager extends BlockManager {
 			}
 		}
 		{
-			File sysTmp = new File(pathSysHome, "tmp");
+			File sysTmp = new File(pathSysHome+"/tmp");
 			if(!sysTmp.exists()){
 				sysTmp.mkdirs();
 			}
