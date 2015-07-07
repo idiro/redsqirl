@@ -228,7 +228,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 			e.printStackTrace();
 		}
 
-		if(error == null || error.isEmpty()){
+		if(error == null || "".equals(error)){
 
 			String tmp = WorkflowPrefManager.pathSysHome;
 			String packagePath = tmp + "/tmp/" +fileName;
@@ -332,11 +332,10 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 
 			FileUtils.deleteDirectory(new File(extractedPackagePath));
 
-			if (error == null){
+			if (error == null || "".equals(error)){
 				MessageUseful.addInfoMessage("Model Installed.");
 				installed = true;
-			}
-			else{
+			}else{
 				MessageUseful.addErrorMessage("Error installing model: " + error);
 			}
 
