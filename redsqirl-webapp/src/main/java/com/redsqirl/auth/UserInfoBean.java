@@ -414,6 +414,12 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		logger.info("update progressbar");
 		setValueProgressBar(7);
 
+		try {
+			luceneIndex();
+		} catch (Exception e) {
+			logger.error("Fail creating index: "+e.getMessage(),e);
+		}
+		
 		// error with rmi connection
 		boolean succ = createRegistry();
 
@@ -468,12 +474,6 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		fCtx.getExternalContext().getSessionMap().put("#{hiveBean}", hiveBean);
 		fCtx.getExternalContext().getSessionMap().put("#{sshBean}", sshBean);
 		 */
-
-		try {
-			luceneIndex();
-		} catch (Exception e) {
-			logger.error("Fail creating index: "+e.getMessage(),e);
-		}
 
 		return "success";
 	}
