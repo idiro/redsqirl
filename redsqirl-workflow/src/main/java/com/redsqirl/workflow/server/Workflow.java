@@ -2,11 +2,13 @@ package com.redsqirl.workflow.server;
 
 import java.awt.Point;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -2535,6 +2537,57 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		return true;
 	}
 
+	
+	/**
+	 * List (cannonical class names) all the classes extending DataflowAction.
+	 * 
+	 * If possible, the classes will be read from a file. If not a file will be written for next time.
+	 * 
+	 * @see {@link WorkflowPrefManager#getNonAbstractClassesFromSuperClass(String)}
+	 * @return
+	 */
+	private List<String> getDataflowActionClasses(){
+		File dataFlowActionClassFile = new File(WorkflowPrefManager.getPathDataFlowActionClasses());
+		List<String> dataFlowActionClassName = new LinkedList<String>();
+		if(dataFlowActionClassFile.exists()){
+			try{
+				BufferedReader br = new BufferedReader(new FileReader(dataFlowActionClassFile));
+				String line = null;
+				while((line = br.readLine()) != null){
+					dataFlowActionClassName.add(line);
+				}
+				br.close();
+			}catch(Exception e){
+				logger.error("Error while reading class file",e);
+				dataFlowActionClassFile.delete();
+			}
+		}
+
+		if(!dataFlowActionClassFile.exists()){
+			dataFlowActionClassName = WorkflowPrefManager
+					.getInstance()
+					.getNonAbstractClassesFromSuperClass(
+							DataflowAction.class.getCanonicalName());
+			try{
+				BufferedWriter bw = new BufferedWriter(new FileWriter(dataFlowActionClassFile));
+				Iterator<String> dataoutputClassNameIt = dataFlowActionClassName.iterator();
+				while(dataoutputClassNameIt.hasNext()){
+					bw.write(dataoutputClassNameIt.next());
+					bw.newLine();
+				}
+				bw.close();
+				//Everyone can remove this file
+				dataFlowActionClassFile.setReadable(true, false);
+				dataFlowActionClassFile.setWritable(true, false);
+			}catch(Exception e){
+				logger.error("Error while writing class file",e);
+				dataFlowActionClassFile.delete();
+			}
+			
+		}
+		return dataFlowActionClassName;
+	}
+	
 	/**
 	 * Get all the WorkflowAction available in the jars file.
 	 * 
@@ -2549,16 +2602,13 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 *             if one action cannot be load
 	 */
 	public Map<String, String> getAllWANameWithClassName()
-			throws RemoteException, Exception {
+			throws RemoteException {
 
 		logger.debug("get all the Workflow actions");
 
 		if (flowElement.isEmpty()) {
 
-			Iterator<String> actionClassName = WorkflowPrefManager
-					.getInstance()
-					.getNonAbstractClassesFromSuperClass(
-							DataflowAction.class.getCanonicalName()).iterator();
+			Iterator<String> actionClassName = getDataflowActionClasses().iterator();
 
 			while (actionClassName.hasNext()) {
 				String className = actionClassName.next();
@@ -2597,10 +2647,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		logger.debug("get all the Workflow actions");
 		List<String[]> result = new LinkedList<String[]>();
 
-		Iterator<String> actionClassName = WorkflowPrefManager
-				.getInstance()
-				.getNonAbstractClassesFromSuperClass(
-						DataflowAction.class.getCanonicalName()).iterator();
+		Iterator<String> actionClassName = getAllWANameWithClassName().values().iterator();
 
 		while (actionClassName.hasNext()) {
 			String className = actionClassName.next();

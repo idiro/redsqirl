@@ -123,9 +123,13 @@ public class WorkflowPrefManager extends BlockManager {
 			 */
 			pathUserSuperAction = pathUserPref + "/superactions",
 			/**
-			 * The local file storing classes
+			 * The local file storing output classes
 			 */
 			pathOutputClasses = pathUserPref + "/.outputclasses.txt",
+			/**
+			 * The local file storing dataflow action classes
+			 */
+			pathDataFlowActionClasses = pathUserPref + "/.dataflowactionclasses.txt",
 			/**
 			 * The local directory to store temporarily workflow. Accessible from
 			 * redsqirl-workflow side.
@@ -571,6 +575,7 @@ public class WorkflowPrefManager extends BlockManager {
 		pathUserDFEOutputColour = pathUserPref + "/output_colours.properties";
 		pathUserSuperAction = pathUserPref + "/superactions";
 		pathOutputClasses = pathUserPref + "/.outputclasses.txt";
+		pathDataFlowActionClasses = pathUserPref + "/.dataflowactionclasses.txt";
 		pathUserPackagePref = pathUserPref + "/packages";
 		sysPackageLibPath = pathSysHome + "/lib/packages";
 		userPackageLibPath = pathUserPref + "/lib/packages";
@@ -1083,6 +1088,20 @@ public class WorkflowPrefManager extends BlockManager {
 	 */
 	public static String getPathOutputClasses(String user) {
 		return getPathUserPref(user)+"/.outputclasses.txt";
+	}
+
+	/**
+	 * @return the pathUserSuperAction
+	 */
+	public static String getPathDataFlowActionClasses() {
+		return pathDataFlowActionClasses;
+	}
+	
+	/**
+	 * @return the pathUserSuperAction
+	 */
+	public static String getPathDataFlowActionClasses(String user) {
+		return getPathUserPref(user)+"/.dataflowactionclasses.txt";
 	}
 
 	/**
