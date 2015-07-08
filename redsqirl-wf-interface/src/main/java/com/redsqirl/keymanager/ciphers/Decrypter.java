@@ -195,7 +195,7 @@ public class Decrypter extends KeyCipher {
 
 			//valid &= Integer.valueOf(ans.get(clusterNb)).intValue() > Integer.valueOf(keysoft.get(clusterNb)).intValue();
 			
-			DateFormat formatter = new SimpleDateFormat("yyyy-MMM-dd");
+			DateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(formatter.parse(("2015/06/01")));
 			calendar.add(Calendar.DATE, Integer.parseInt(ans.get(date)));
