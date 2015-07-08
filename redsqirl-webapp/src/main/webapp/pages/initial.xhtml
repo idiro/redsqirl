@@ -168,7 +168,7 @@
 										<br />
 										<br />
 										<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('modalAlreadySignedInOtherMachine')}.hide(); return false;" />
-										<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" onclick="#{rich:component('modalAlreadySignedInOtherMachine')}.hide();invalidateSession();relogin();" />
+										<a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" onclick="#{rich:component('modalAlreadySignedInOtherMachine')}.hide();invalidateSession();" />
 									</center>
 								</rich:modalPanel>
 			
@@ -178,7 +178,7 @@
 										<br />
 										<br />
 										<a4j:commandButton styleClass="greenButton" value="#{messages.button_cancel}" onclick="#{rich:component('modalAlreadySignedIn')}.hide(); return false;" />
-                                        <a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" onclick="#{rich:component('modalAlreadySignedIn')}.hide();invalidateSession();relogin();" />
+                                        <a4j:commandButton styleClass="greenButton" value="#{messages.button_ok}" onclick="#{rich:component('modalAlreadySignedIn')}.hide();invalidateSession();" />
 									</center>
 								</rich:modalPanel>
 			
@@ -200,7 +200,7 @@
 											<td>
 												<rich:messages id="msg" globalOnly="false" layout="list" styleClass="message"
 													infoClass="messageok" errorClass="messageerrologin"
-													warnClass="messagealert" showDetail="true" showSummary="false"  />
+													warnClass="messagealert" showDetail="true" showSummary="false" />
 											</td>
 										</tr>
 									</table>
@@ -226,7 +226,7 @@
 						  <a4j:actionparam name="force" assignTo="#{userInfoBean.forceSignIn}"/>
 						</a4j:jsFunction>
 						
-						<a4j:jsFunction name="invalidateSession" action="#{userInfoBean.invalidateSession}" />
+						<a4j:jsFunction name="invalidateSession" action="#{userInfoBean.invalidateSession}" oncomplete="relogin();" />
 						
 					</center>
 					<br />
