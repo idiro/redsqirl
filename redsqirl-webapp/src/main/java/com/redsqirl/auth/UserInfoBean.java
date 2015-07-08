@@ -414,6 +414,13 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		logger.info("update progressbar");
 		setValueProgressBar(7);
 
+		// Init workflow preference
+		WorkflowPrefManager.getInstance();
+		logger.info("Sys home is : "+WorkflowPrefManager.pathSysHome);
+
+		// Create home folder for this user if it does not exist yet
+		WorkflowPrefManager.createUserHome(userName);
+		
 		try {
 			luceneIndex();
 		} catch (Exception e) {
@@ -526,13 +533,6 @@ public class UserInfoBean extends BaseBean implements Serializable {
 					logger.warn("Object "+bean+" unable to unbind: "+e.getMessage());
 				}
 			}
-
-			// Init workflow preference
-			WorkflowPrefManager.getInstance();
-			logger.info("Sys home is : "+WorkflowPrefManager.pathSysHome);
-
-			// Create home folder for this user if it does not exist yet
-			WorkflowPrefManager.createUserHome(userName);
 
 			if (th != null) {
 				String pid = new WorkflowProcessesManager(userName).getPid();
