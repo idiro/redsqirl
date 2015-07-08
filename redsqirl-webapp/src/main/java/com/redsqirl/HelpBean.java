@@ -63,6 +63,9 @@ public class HelpBean extends BaseBean implements Serializable {
 	}
 	
 	public void refreshRelativeHelp() throws Exception{
+		
+		logger.info("refreshRelativeHelp");
+		
 		String canvas1 = "canvas-1";
 		boolean toRemove = false;
 		DataFlow wf = getworkFlowInterface().getWorkflow(canvas1);

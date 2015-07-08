@@ -71,18 +71,18 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 	public final String xmlns;
 	/** Namenode property key */
 	public static final String prop_namenode = "namenode",
-	/** JobTracker link property key */
-	prop_jobtracker = "jobtracker",
-	/** Queue for namenode property key */
-	prop_launcher_queue = "default_launcher_queue",
-	/** Default running job queue */
-	prop_action_queue = "default_action_queue",
-	/** User Name property key */
-	prop_user = "user_name",
-	/** Library Path for Oozie property key */
-	prop_libpath = "oozie.libpath",
-	/** Main Workflow path property key */
-	prop_workflowpath = "pathWorkflow";
+			/** JobTracker link property key */
+			prop_jobtracker = "jobtracker",
+			/** Queue for namenode property key */
+			prop_launcher_queue = "default_launcher_queue",
+			/** Default running job queue */
+			prop_action_queue = "default_action_queue",
+			/** User Name property key */
+			prop_user = "user_name",
+			/** Library Path for Oozie property key */
+			prop_libpath = "oozie.libpath",
+			/** Main Workflow path property key */
+			prop_workflowpath = "pathWorkflow";
 
 	public static final String oozie_mode_default = "default";
 
@@ -211,20 +211,20 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 				FileStatus[] children = fs.listStatus(hdfsWfPath,
 						new PathFilter() {
 
-							@Override
-							public boolean accept(Path arg0) {
-								return arg0.getName().startsWith(nameWf + "_");
-							}
-						});
+					@Override
+					public boolean accept(Path arg0) {
+						return arg0.getName().startsWith(nameWf + "_");
+					}
+				});
 				Arrays.sort(children, 0, children.length,
 						new Comparator<FileStatus>() {
 
-							@Override
-							public int compare(FileStatus arg0, FileStatus arg1) {
-								return (int) ((arg0.getModificationTime() - arg1
-										.getModificationTime()) / 10000);
-							}
-						});
+					@Override
+					public int compare(FileStatus arg0, FileStatus arg1) {
+						return (int) ((arg0.getModificationTime() - arg1
+								.getModificationTime()) / 10000);
+					}
+				});
 				for (int i = 0; i < children.length - numberToKeep; ++i) {
 					fs.delete(children[i].getPath(), true);
 				}
@@ -273,20 +273,20 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 				FileStatus[] children = fs.listStatus(hdfsWfPath,
 						new PathFilter() {
 
-							@Override
-							public boolean accept(Path arg0) {
-								if (arg0.getName().startsWith(nameWf)) {
-									try {
-										@SuppressWarnings("unused")
-										int i = Integer.valueOf(arg0.getName()
-												.substring(nameWf.length() + 1));
-										return true;
-									} catch (Exception e) {
-									}
-								}
-								return false;
+					@Override
+					public boolean accept(Path arg0) {
+						if (arg0.getName().startsWith(nameWf)) {
+							try {
+								@SuppressWarnings("unused")
+								int i = Integer.valueOf(arg0.getName()
+										.substring(nameWf.length() + 1));
+								return true;
+							} catch (Exception e) {
 							}
-						});
+						}
+						return false;
+					}
+				});
 				for (FileStatus child : children) {
 					number = Math.max(
 							number,
@@ -490,21 +490,26 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 		String jobId = df.getOozieJobId();
 
 		if (jobId != null) {
-			for (WorkflowAction wfa : oc.getJobInfo(jobId).getActions()) {
-				String actionName = "act_" + dfe.getComponentId();
-				if (actionName.equals(wfa.getName())) {
-					status = wfa.getStatus().toString();
-					logger.info("getElementStatus  " + status);
+			try{
+				for (WorkflowAction wfa : oc.getJobInfo(jobId).getActions()) {
+					String actionName = "act_" + dfe.getComponentId();
+					if (actionName.equals(wfa.getName())) {
+						status = wfa.getStatus().toString();
+						logger.info("getElementStatus  " + status);
+					}
 				}
+			}catch(OozieClientException e){
+				logger.error(e,e);
+				throw new Exception(e.getMessage());
 			}
 		}
 		return status;
 	}
-	
+
 	public int getNbElement(DataFlow df)throws RemoteException, Exception {
 		return df.getNbOozieRunningActions();
 	}
-	
+
 	public List<String> getElementsRunning(DataFlow df)throws RemoteException, Exception {
 		List<String> ans = new LinkedList<String>();
 		String jobId = df.getOozieJobId();
@@ -515,6 +520,19 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 					ans.add(wfa.getName().substring(4));
 				}
 			}
+		}
+		return ans;
+	}
+	
+	public boolean jobExists(DataFlow df){
+		boolean ans = false;
+		try{
+			String jobId = df.getOozieJobId();
+			if (jobId != null) {
+				ans = oc.getJobInfo(jobId) != null;
+			}
+		}catch(Exception e){
+			logger.error(e,e);
 		}
 		return ans;
 	}
@@ -584,7 +602,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 		properties.put(prop_user,System.getProperty("user.name"));
 		properties.put(OozieClient.APP_PATH,
 				propSys.getProperty(WorkflowPrefManager.sys_namenode)
-						+ hdfsWfPath);
+				+ hdfsWfPath);
 		properties.put("oozie.use.system.libpath", "true");
 
 		return properties;

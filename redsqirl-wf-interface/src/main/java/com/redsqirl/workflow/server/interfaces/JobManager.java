@@ -131,4 +131,13 @@ public interface JobManager extends Remote{
 	 * @throws Exception
 	 */
 	public List<String> getElementsDone(DataFlow df)throws RemoteException, Exception;
+
+	/**
+	 * true if the last dataflowjob exists
+	 * @param df
+	 * @return
+	 * @throws RemoteException
+	 */
+	public boolean jobExists(DataFlow df) throws RemoteException;
+	
 }

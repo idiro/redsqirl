@@ -2611,7 +2611,7 @@
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
 					style="cursor:pointer;width:22px;"
-					onclick="#{rich:component('modalInstallPackage')}.hide();#{rich:component('modalPackage')}.hide();#{rich:component('modalSubWfUninstall')}.hide();" />
+					onclick="#{rich:component('modalInstallPackage')}.hide();#{rich:component('modalPackage')}.hide();#{rich:component('modalSubWfUninstall')}.hide();refreshRelativeHelp();" />
 			</f:facet>
 			<h:panelGroup>
 				<a4j:include viewId="/pages/modalInstallPackage.xhtml" ajaxRendered="true" />

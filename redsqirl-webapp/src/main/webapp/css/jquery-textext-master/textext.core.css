@@ -8,7 +8,7 @@
 .text-core .text-wrap textarea,
 .text-core .text-wrap input {
   z-index: 1;
-  padding: 0px 1px 4px 0px;
+  padding: 1px 1px 4px 4px;
 /* position: absolute;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;

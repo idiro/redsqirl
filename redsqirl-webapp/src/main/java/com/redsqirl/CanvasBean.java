@@ -92,7 +92,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private boolean progressBarEnabled;
 	private boolean runningElementsToggle;
 	private boolean doneElementsToggle;
-	
+
 	private String firstTime;
 
 	/**
@@ -244,7 +244,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			logger.info(e,e);
 			usageRecordLog().addError("ERROR REMOVEELEMENT", e.getMessage());
 		}
-		
+
 		usageRecordLog().addSuccess("REMOVEELEMENT");
 	}
 
@@ -350,7 +350,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			logger.info(e,e);
 			usageRecordLog().addError("ERROR ADDLINK", e.getMessage());
 		}
-		
+
 		usageRecordLog().addSuccess("ADDLINK");
 	}
 
@@ -491,7 +491,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		usageRecordLog().addSuccess("REMOVELINK");
 
 	}
@@ -600,7 +600,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			request.setAttribute("msnError", "msnError");
 			usageRecordLog().addError("ERROR LOADWORKFLOW", error);
 		}
-		
+
 		usageRecordLog().addSuccess("LOADWORKFLOW");
 	}
 
@@ -686,7 +686,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			request.setAttribute("msnError", "msnError");
 			usageRecordLog().addError("ERROR LOADSUBWORKFLOW", error);
 		}
-		
+
 		usageRecordLog().addSuccess("LOADSUBWORKFLOW");
 	}
 
@@ -899,7 +899,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			request.setAttribute("msnError", "msnError");
 			usageRecordLog().addError("ERROR SAVE", msg);
 		}
-		
+
 		usageRecordLog().addSuccess("SAVE");
 	}
 
@@ -938,7 +938,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			logger.error("Fail closing " + workflowName, e);
 			usageRecordLog().addError("ERROR CLOSEWORKFLOW", e.getMessage());
 		}
-		
+
 		usageRecordLog().addSuccess("CLOSEWORKFLOW");
 	}
 
@@ -962,7 +962,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			wfCopyBuffer = null;
 		}
 		wfCopyBuffer = new WFCopyBuffer(getworkFlowInterface(),	getNameWorkflow(), elements);
-		
+
 		usageRecordLog().addSuccess("COPY");
 	}
 
@@ -986,7 +986,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				logger.info(getIdsToPaste());
 			}
 		}
-		
+
 		usageRecordLog().addSuccess("PASTE");
 	}
 
@@ -1256,7 +1256,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	}
 
 	public String getReinitialize() throws RemoteException {
-		
+
 		/*logger.info("Reinitialize Canvas");
 		if(getWorkflowMap().entrySet().size() != 1){
 			return reinitializeCanvas();
@@ -1272,29 +1272,29 @@ public class CanvasBean extends BaseBean implements Serializable {
 				}
 			}
 		}
-		
+
 		return null;*/
-		
+
 		if(getFirstTime() == null){
 			setFirstTime(" ");
 			return null;
 		}
-		
+
 		return " ";
 
 	}
-	
+
 	/*public String[] reinitializeCanvas() throws RemoteException{
-		
+
 		String[] res = new String[getWorkflowMap().size()];
-		
+
 		int i = 0;
 		for (Entry<String, DataFlow> e : getWorkflowMap().entrySet()) {
 			res[i] = e.getKey();
 			logger.info( e.getKey());
 			++i;
 		}
-		
+
 		Map<String, Map<String, String>> newIdMap = new LinkedHashMap<String, Map<String, String>>(); 
 		for (Iterator<String> iterator = getIdMap().keySet().iterator(); iterator.hasNext();) {
 			String nameWF = (String) iterator.next();
@@ -1339,7 +1339,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		if(id != null && wf != null){
 			wf.getElement(id).cleanDataOut();
 		}
-		
+
 		usageRecordLog().addSuccess("CLEANELEMENT");
 	}
 
@@ -1510,7 +1510,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			} while (size > 0 && ++iter < iterMax);
 		}
 		setDf(null);
-		
+
 		usageRecordLog().addSuccess("CLOSEALL");
 	}
 
@@ -1588,11 +1588,12 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 				int i = 0;
 				Iterator<String> elSels = dfCur.getComponentIds().iterator();
+				boolean checkStatus = getOozie().jobExists(getDf());
 				while (elSels.hasNext()) {
 					String curId = elSels.next();
 					if (elements.containsKey(curId)) {
 						DataFlowElement dfe = dfCur.getElement(curId);
-						result[i++] = getOutputStatus(dfe, elements.get(curId));
+						result[i++] = getOutputStatus(dfe, elements.get(curId),checkStatus);
 					}
 				}
 
@@ -1605,7 +1606,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		return result;
 	}
 
-	private String[] getOutputStatus(DataFlowElement dfe, String groupId)
+	private String[] getOutputStatus(DataFlowElement dfe, String groupId, boolean checkRuningstatus)
 			throws RemoteException {
 
 		logger.info("getOutputStatus");
@@ -1726,10 +1727,12 @@ public class CanvasBean extends BaseBean implements Serializable {
 			if (!dfe.getDFEOutput().isEmpty()) {
 				pathExistsStr = String.valueOf(pathExists);
 			}
-			try {
-				runningStatus = getOozie().getElementStatus(getDf(), dfe);
-			} catch (Exception e1) {
-				logger.info("Error getting the status: " + e1.getMessage(), e1);
+			if(checkRuningstatus){
+				try {
+					runningStatus = getOozie().getElementStatus(getDf(), dfe);
+				} catch (Exception e1) {
+					logger.info("Error getting the status: " + e1.getMessage(), e1);
+				}
 			}
 
 			logger.info("element " + dfe.getComponentId());
@@ -1821,7 +1824,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			getIdMap().get(getNameWorkflow()).put(groupId, elementId);
 			usageRecordLog().addSuccess("CHANGEIDELEMENT");
 		}
-		
+
 	}
 
 	/**
@@ -1846,22 +1849,22 @@ public class CanvasBean extends BaseBean implements Serializable {
 			logger.info("Update status " + groupId);
 			logger.info("Element " + getIdElement(groupId));
 
-			DataFlowElement df = getDf().getElement(getIdElement(groupId));
-			if (df == null) {
+			DataFlowElement dfe = getDf().getElement(getIdElement(groupId));
+			if (dfe == null) {
 				logger.info("getOutputStatus df == null");
 				return new String[0][];
 			}
 
-			Set<String> els = getAllElementAfterForOutput(df);
+			Set<String> els = getAllElementAfterForOutput(dfe);
 			String[][] ans = new String[els.size()][];
 			int i = 0;
 			Map<String, String> gIds = getReverseIdMap();
 			Iterator<String> allCompIt = getDf().getComponentIds().iterator();
+			boolean checkStatus = getOozie().jobExists(getDf());
 			while (allCompIt.hasNext()) {
 				String compCur = allCompIt.next();
 				if (els.contains(compCur)) {
-					ans[i++] = getOutputStatus(getDf().getElement(compCur),
-							gIds.get(compCur));
+					ans[i++] = getOutputStatus(getDf().getElement(compCur),	gIds.get(compCur), checkStatus);
 				}
 			}
 
@@ -2515,7 +2518,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 						break;
 					}
 				}
-				
+
 				if(error == null){
 					logger.info("Elements: " + getDf().getComponentIds());
 					Iterator<String> elIt = getDf().getComponentIds().iterator();
@@ -2526,7 +2529,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 						idMapWf.put(elCur, elCur);
 					}
 				}
-				
+
 			}
 
 		} catch (RemoteException e) {
@@ -2611,16 +2614,16 @@ public class CanvasBean extends BaseBean implements Serializable {
 					}
 
 					if(error == null){
-						
+
 						logger.info("getComponentIds: " + getComponentIds());
 						logger.info("getInputNameSubWorkflow: " + getInputNameSubWorkflow());
 						logger.info("inputs: " + inputs);
 						logger.info("outputs: " + outputs);
-						
+
 						error = getDf().aggregateElements(getComponentIds(), getInputNameSubWorkflow(), inputs, outputs);
-						
+
 						logger.info("aggregateElements  " + error);
-						
+
 						if(error != null){
 							new SuperActionInstaller(getSuperActionManager()).uninstall(getUserInfoBean().getUserName(), getInputNameSubWorkflow());
 						}else{

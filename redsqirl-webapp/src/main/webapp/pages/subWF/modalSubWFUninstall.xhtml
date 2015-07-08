@@ -53,7 +53,7 @@
 						<a4j:commandButton styleClass="greenButton"
 							value="#{messages.button_sys_install_from_store}"
 							onclick="openInstallModelModal('false', 'model');" 
-                        	action="#{analyticsStoreSearchBean.retrieveAllPackageList}">
+                        	action="#{analyticsStoreSearchBean.retrieveAllPackageList}" >
                         	<f:param name="type" value="model"/>
                         </a4j:commandButton>
 							
@@ -80,7 +80,7 @@
 					<rich:panel id="sa_user_uninstall">
 						<a4j:commandButton styleClass="greenButton" value="#{messages.button_sys_install_from_store}"
 							onclick="openInstallModelModal('true', 'model');" 
-                        	action="#{analyticsStoreSearchBean.retrieveAllPackageList}">
+                        	action="#{analyticsStoreSearchBean.retrieveAllPackageList}" >
                         	<f:param name="type" value="model"/>
                         </a4j:commandButton>
 						<a4j:commandButton styleClass="greenButton" value="#{messages.button_sys_uninstall}" 
@@ -91,10 +91,10 @@
 			</rich:panel>
 
 		</h:panelGrid>
-			<rich:panel id="sa_ok" style="float:right;margin-right:25px;">
-				<a4j:commandButton styleClass="greenButton"
-					value="ok"
-					onclick="#{rich:component('modalSubWfUninstall')}.hide()"/>
-			</rich:panel>
+		
+		<rich:panel id="sa_ok" style="float:right;margin-right:25px;">
+			<a4j:commandButton styleClass="greenButton"	value="ok" onclick="#{rich:component('modalSubWfUninstall')}.hide()"/>
+		</rich:panel>
+		
 	</h:form>
 </ui:composition>
