@@ -5,13 +5,19 @@
 SCRIPT_LOCATION=${BASH_SOURCE[0]}
 SCRIPT_PATH="$(cd $(dirname "${SCRIPT_LOCATION}"); pwd -P)/$(basename "${SCRIPT_LOCATION}")"
 SCRIPT_PATH="${SCRIPT_PATH%/*}"
-
-CONF_FILE=${SCRIPT_PATH}/../conf/.internal.conf
+DEFAULT_TOMCAT=$(dirname ${SCRIPT_PATH})/apache-tomcat-7.0.42/webapps
+CONF_FILE=$(dirname ${SCRIPT_PATH})/conf/.internal.conf
+DONOTCONFIRM="FALSE"
 
 source ${CONF_FILE} 2> /dev/null
 if [ -z "${TOMCAT_PATH}" ]; then
-    echo "Please specify the tomcat path where the war should be copied:"
-    read TOMCAT_PATH_CUR
+    if [[ -d ${DEFAULT_TOMCAT} ]]; then
+	TOMCAT_PATH_CUR=${DEFAULT_TOMCAT}
+	DONOTCONFIRM="TRUE"
+    else
+	echo "Please specify the tomcat path where the war should be copied:"
+	read TOMCAT_PATH_CUR
+    fi
 else
     TOMCAT_PATH_CUR=$TOMCAT_PATH
 fi
@@ -22,11 +28,13 @@ if [ ! -d "${TOMCAT_PATH_CUR}" ]; then
    exit;
 fi
 
-echo "Are you sure that ${TOMCAT_PATH_CUR} is a correct destination? [y/N]"
-read CONF
-if [[ "${CONF}" != 'y' && "${CONF}" != 'Y' ]]; then
-    echo Exit from the script
+if [[ ${DONOTCONFIRM} == "FALSE" ]]; then
+    echo "Are you sure that ${TOMCAT_PATH_CUR} is a correct destination? [y/N]"
+    read CONF
+    if [[ "${CONF}" != 'y' && "${CONF}" != 'Y' ]]; then
+	echo Exit from the script
 	exit;
+    fi
 fi
 
 #Read the dynamic conf file and update tomcat_path
