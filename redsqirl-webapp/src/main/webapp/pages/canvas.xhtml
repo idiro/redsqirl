@@ -1423,7 +1423,7 @@
 					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
-				<a4j:jsFunction name="openPackageModal"
+				<a4j:jsFunction name="openPackageModal" action="#{packageMngBean.start}"
 					oncomplete="#{rich:component('modalPackage')}.show();">
 				</a4j:jsFunction>
 			</a4j:region>

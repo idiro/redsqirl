@@ -118,7 +118,7 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 	private List<SelectItem> systemPackages;
 
 	private boolean adm;
-	
+
 	private String showUninstall;
 
 
@@ -212,7 +212,7 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 		}
 
 		MessageUseful.addErrorMessage("login-form:password-input", getMessageResources("login_error_wrong_user_password"));
-		
+
 		/*FacesMessage msg = new FacesMessage("ERROR MSG", "login_error_wrong_user_password");
 		msg.setSeverity(FacesMessage.SEVERITY_ERROR);
 		FacesContext.getCurrentInstance().addMessage("login-form:password-input", msg);*/
@@ -277,11 +277,22 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 			logger.info("Authentication Error");
 			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			MessageUseful.addErrorMessage("admlogin-form:password-input", getMessageResources("login_error_wrong_user_password"));
-			request.setAttribute("msnAdmError", "msnAdmError");
+			request.setAttribute("msnSuccess", "msnSuccess");
 			return null;
 		}
 
-		if(softwareKey == null){
+		logger.info("softwareKey " + softwareKey);
+		String key = null;
+		if(softwareKey != null){
+			String[] ans = softwareKey.split("=");
+			if(ans != null && ans.length > 1){
+				key = ans[1];
+			}
+		}
+		logger.info("Key " + key);
+
+		if(softwareKey == null || softwareKey.isEmpty() || softwareKey.equalsIgnoreCase("null") || key == null || 
+				(key != null && key.isEmpty()) || (key != null && key.equals("null")) ){
 			return license();
 		}else if(pckManager.getPackageNames(null).isEmpty()){
 			return installModule();
@@ -329,7 +340,7 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 		/*if(!loggedIn){
 			logger.info("Authentication Error");
 			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-			request.setAttribute("msnAdmError", "msnAdmError");
+			request.setAttribute("msnSuccess", "msnSuccess");
 			FacesMessage msg = new FacesMessage("ERROR MSG", "login_error_wrong_user_password");
 			msg.setSeverity(FacesMessage.SEVERITY_ERROR);
 			FacesContext.getCurrentInstance().addMessage("admlogin-form:password-input", msg);
@@ -352,7 +363,7 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 			logger.info("Authentication Error");
 
 			/*HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-			request.setAttribute("msnAdmError", "msnAdmError");
+			request.setAttribute("msnSuccess", "msnSuccess");
 			FacesMessage msg = new FacesMessage("ERROR MSG", "login_error_wrong_user_password");
 			msg.setSeverity(FacesMessage.SEVERITY_ERROR);
 			FacesContext.getCurrentInstance().addMessage("admlogin-form:password-input", msg);*/
@@ -391,7 +402,8 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 
 		try{
 
-			String tmp = WorkflowPrefManager.pathSysHome;
+			WorkflowPrefManager wpm = WorkflowPrefManager.getInstance();
+			String tmp = wpm.pathSysHome;
 			String packagePath = tmp + "/tmp/" + item.getFileName();
 
 			setPathFileModule(packagePath);
@@ -434,7 +446,7 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 
 			try{
 				JSONObject pckObj = new JSONObject(ansServer);
-				licenseKeyProperties = pckObj.getString("licenseKeyProperties");
+				licenseKeyProperties = pckObj.has("licenseKeyProperties") ? pckObj.getString("licenseKeyProperties") : null;
 				error = pckObj.getString("error");
 			} catch (JSONException e){
 				logger.error(e,e);
@@ -442,25 +454,35 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 
 			if(error != null && !"".equals(error)){
 				logger.info(error);
+
+				HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+				MessageUseful.addErrorMessage("Error installing package: " + error);
+				request.setAttribute("msnSuccess", "msnSuccess");
+
 			}else{
 
-				BufferedWriter writer = null;
-				try {
-					File file = new File(WorkflowPrefManager.pathSystemLicence);
-					String filepath = file.getAbsolutePath();
-					if(file.exists()){
-						file.delete();
-					}
-					PrintWriter printWriter = new PrintWriter(new File(filepath));
-					printWriter.print(licenseKeyProperties);
-					printWriter.close ();
-				} catch (Exception e) {
-					e.printStackTrace();
-				} finally {
+				if(licenseKeyProperties != null){
+
+					BufferedWriter writer = null;
 					try {
-						writer.close();
+						WorkflowPrefManager wpm = WorkflowPrefManager.getInstance();
+						File file = new File(wpm.pathSystemLicence);
+						String filepath = file.getAbsolutePath();
+						if(file.exists()){
+							file.delete();
+						}
+						PrintWriter printWriter = new PrintWriter(new File(filepath));
+						printWriter.print(licenseKeyProperties);
+						printWriter.close ();
 					} catch (Exception e) {
+						e.printStackTrace();
+					} finally {
+						try {
+							writer.close();
+						} catch (Exception e) {
+						}
 					}
+
 				}
 
 			}
@@ -468,6 +490,10 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 		}catch(Exception e){
 			logger.error(e,e);
 		}
+
+		HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+		MessageUseful.addInfoMessage(getMessageResources("success_message"));
+		request.setAttribute("msnSuccess", "msnSuccess");
 
 	}
 
@@ -478,13 +504,14 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 		File tmpFile = new File(directoryModule,getNameFile()+tmpExtension);
 		if(tmpFile.exists()){
 			try{
-				File permFile = new File(WorkflowPrefManager.getPathSystemLicence());
+				WorkflowPrefManager wpm = WorkflowPrefManager.getInstance();
+				File permFile = new File(wpm.getPathSystemLicence());
 				Files.move(tmpFile, permFile);
 			}catch(Exception e){
 				logger.error("Fail File stream" + e,e);
 			}
 		}
-		
+
 		HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 		MessageUseful.addInfoMessage(getMessageResources("success_message"));
 		request.setAttribute("msnSuccess", "msnSuccess");
@@ -515,10 +542,13 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 				if (error == null){
 					MessageUseful.addInfoMessage(getMessageResources("success_message"));
 					request.setAttribute("msnSuccess", "msnSuccess");
+
+					showUninstall = "Y";
+
 				}else{
 					logger.info("Error installing package: " + error);
 					MessageUseful.addErrorMessage("Error installing package: " + error);
-					request.setAttribute("msnAdmError", "msnAdmError");
+					request.setAttribute("msnSuccess", "msnSuccess");
 				}
 
 			}
@@ -606,7 +636,6 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 		logger.info("addPackageOffLine");
 
 		PackageManager pckMng = new PackageManager();
-
 		String error = pckMng.addPackage(null, new String[]{getPathFileModule()});
 
 		File file = new File(getPathFileModule());
@@ -621,7 +650,6 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 
 	public String getMacAdress(){
 
-		InetAddress ip;
 		try {
 
 			NetworkInterface network = NetworkInterface.getByName("eth0");
@@ -729,7 +757,8 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 
 	private static boolean netIsAvailable() {
 		try {
-			final URL url = new URL(WorkflowPrefManager.getPckManagerUri());
+			WorkflowPrefManager wpm = WorkflowPrefManager.getInstance();
+			final URL url = new URL(wpm.getPckManagerUri());
 			final URLConnection conn = url.openConnection();
 			conn.setConnectTimeout(3000);
 			conn.connect();
@@ -743,7 +772,8 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 
 	public void calcSettings(){
 		logger.info("calcSettings");
-		Properties sysProp = WorkflowPrefManager.getSysProperties();
+		WorkflowPrefManager wpm = WorkflowPrefManager.getInstance();
+		Properties sysProp = wpm.getSysProperties();
 		Properties sysLangProp = WorkflowPrefManager.getSysLangProperties();
 		setSysSettings(getList(sysProp,sysLangProp));
 	}
@@ -811,6 +841,8 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 	public void calcSystemPackages() {
 		logger.info("calcSystemPackages");
 
+		systemPackages = new ArrayList<SelectItem>();
+
 		try{
 
 			PackageManager pckManager = new PackageManager();
@@ -832,18 +864,32 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 
 	public void removeSystemPackage() throws RemoteException{
 		logger.info("removeSystemPackage");
-		if(isAdmin()){
-			PackageManager sysPckManager = new PackageManager();
-			String error = sysPckManager.removePackage(null,unSysPackage);
-			calcSystemPackages();
+		//if(isAdmin()){
+		PackageManager pckManager = new PackageManager();
+		pckManager.removePackage(null,unSysPackage);
+		calcSystemPackages();
+		//}
+
+		MessageUseful.addInfoMessage(getMessageResources("success_message"));
+		HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+		request.setAttribute("msnSuccess", "msnSuccess");
+		
+		if(pckManager.getPackageNames(null).isEmpty()){
+			showUninstall = "N";
+		}else{
+			showUninstall = "Y";
 		}
+
 	}
 
 
 	//Navigation
 
-	public String home(){
-		return "home";
+	public void home() throws IOException{
+
+		ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+		FacesContext.getCurrentInstance().getExternalContext().redirect(externalContext.getRequestContextPath() + "/pages/initial.xhtml");
+
 	}
 
 	public String license(){
@@ -870,6 +916,15 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 	public String uninstallModule(){
 		calcSystemPackages();
 		return "admModulesUninstall";
+	}
+
+	public void updateUninstalMenu() throws RemoteException{
+		PackageManager pckManager = new PackageManager();
+		if(pckManager.getPackageNames(null).isEmpty()){
+			showUninstall = "N";
+		}else{
+			showUninstall = "Y";
+		}
 	}
 
 	public String setting(){
@@ -1068,5 +1123,5 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 	public void setShowUninstall(String showUninstall) {
 		this.showUninstall = showUninstall;
 	}
-	
+
 }

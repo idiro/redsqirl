@@ -104,7 +104,7 @@ jQuery(function() {
 		</tr>
 	</table>
 
-	<rich:modalPanel id="adminLogin" width="500" height="200" style="overflow:auto;" resizeable="false" >
+	<rich:modalPanel id="adminLogin" width="500" height="220" style="overflow:auto;" resizeable="false" >
 
 		<f:facet name="header">
 			<h:outputText value='#{messages.label_adminLogin}' />
@@ -142,6 +142,7 @@ jQuery(function() {
 				<h:panelGroup>
 					<h:inputSecret id="password-input" value="#{analyticsStoreLoginBean.password}" style="width:400px;" 
 						onkeypress="return enableEnterKey(event, 'btLoginAS');" />
+					<br />
 					<rich:message for="password-input"/>
 				</h:panelGroup>
 			</h:panelGrid>
@@ -151,7 +152,7 @@ jQuery(function() {
 			 	<a4j:commandButton value="#{messages.button_cancel}" action="#{analyticsStoreLoginBean.home}" styleClass="greenButton" />
 			 	
 				<a4j:commandButton id="btLoginAS" value="#{messages.login_login_btn}" action="#{analyticsStoreLoginBean.doAdmLogin}" 
-					oncomplete="if(#{requestScope['msnAdmError'] == null}){#{rich:component('adminLogin')}.hide();}" styleClass="greenButton" />
+					oncomplete="if(#{requestScope['msnSuccess'] == null}){#{rich:component('adminLogin')}.hide();}" styleClass="greenButton" />
 			</center>
 			
 		</h:form>

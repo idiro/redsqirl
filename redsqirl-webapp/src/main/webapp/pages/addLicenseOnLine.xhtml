@@ -119,7 +119,7 @@ jQuery(function() {
 						<br/><br/>
 						
 						<a4j:commandButton id="btUpdateLicenseKeyOnLine" value="#{messages.button_ok}" title="#{messages.button_ok}"
-							action="#{analyticsStoreLoginBean.updateLicenseKeyOnLine}" styleClass="greenButton" />
+							action="#{analyticsStoreLoginBean.updateLicenseKeyOnLine}" styleClass="greenButton" reRender="msnSuccess" />
 					</center>
 					
 				</td>
@@ -128,6 +128,20 @@ jQuery(function() {
 		
 		
 		<div style="height:100px;width:100%;background:#C0D72F;position:fixed;bottom:0px;" />
+		
+		<rich:modalPanel id="msnSuccess"
+			showWhenRendered="#{requestScope['msnSuccess'] != null}">
+			<div style="width: 100%; height: 100%; overflow: auto;">
+				<rich:messages id="msgS" globalOnly="false" layout="list"
+					styleClass="message" infoClass="messageok" errorClass="messageerro"
+					warnClass="messagealert" showDetail="true" showSummary="false"
+					ajaxRendered="false" />
+				<a4j:commandButton styleClass="greenButton"
+					value="#{messages.button_ok}"
+					onclick="#{rich:component('msnSuccess')}.hide(); return false;"
+					style="bottom:14%;position:relative;" reRender="msnSuccess, msgS" />
+			</div>
+		</rich:modalPanel>
 	
 	</h:form>
 

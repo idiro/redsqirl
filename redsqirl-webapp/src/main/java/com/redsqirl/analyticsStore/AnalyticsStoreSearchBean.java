@@ -24,6 +24,7 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -181,12 +182,24 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 		redSqirlInstallations.setModule("redsqirl-base-pig");
 		redSqirlInstallations.setModuleVersion("0.1");
 		
+		String error = null;
+		
 		try {
 			
-			installPackage(redSqirlInstallations);
+			error = installPackage(redSqirlInstallations);
 			
 		} catch (RemoteException e) {
 			logger.error(e,e);
+		}
+		
+		if(error != null){
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			MessageUseful.addErrorMessage("Error installing Default package: " + error);
+			request.setAttribute("msnSuccess", "msnSuccess");
+		}else{
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			MessageUseful.addInfoMessage("Packge Installed" + getMessageResources("success_message"));
+			request.setAttribute("msnSuccess", "msnSuccess");
 		}
 		
 	}
@@ -248,9 +261,18 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 
 		if(error != null && error.isEmpty()){
 
-			String tmp = WorkflowPrefManager.pathSysHome;
+			WorkflowPrefManager wpm = WorkflowPrefManager.getInstance();
+			String tmp = wpm.pathSysHome;
 			String packagePath = tmp + "/tmp/" +fileName;
-
+			
+			logger.info("tmp " + tmp);
+			logger.info("packagePath " + packagePath);
+			
+			File p = new File(tmp + "/tmp/");
+			if(!p.exists()){
+				p.mkdir();
+			}
+			
 			try {
 				URL website = new URL(downloadUrl + "&idUser=" + analyticsStoreLoginBean.getIdUser() + "&key=" + softwareKey);
 				ReadableByteChannel rbc = Channels.newChannel(website.openStream());
@@ -258,9 +280,9 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 				fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 				fos.close();
 			} catch (MalformedURLException e) {
-				e.printStackTrace();
+				logger.error(e,e);
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error(e,e);
 			}
 
 			BufferedWriter writer = null;
@@ -274,7 +296,7 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 				printWriter.print(licenseKeyProperties);
 				printWriter.close ();
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(e,e);
 			} finally {
 				try {
 					writer.close();
@@ -301,18 +323,20 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 			File file = new File(packagePath);
 			file.delete();
 
-			if (error == null){
-				MessageUseful.addInfoMessage("Packge Installed.");
+			if (error == null || "".equals(error)){
+				return null;
 			}else{
-				MessageUseful.addInfoMessage("Error installing package: " + error);
+				return "Error installing package: " + error;
 			}
 
 		}else{
-			String value[] = error.split(",");
-			if(value.length > 1){
-				MessageUseful.addInfoMessage("Error installing package: " + getMessageResourcesWithParameter(value[0],new String[]{value[1]}));
-			}else{
-				MessageUseful.addInfoMessage("Error installing package: " + getMessageResources(error));
+			if(error != null && !error.isEmpty()){
+				String value[] = error.split(",");
+				if(value.length > 1){
+					return "Error installing package: " + getMessageResourcesWithParameter(value[0],new String[]{value[1]});
+				}else{
+					return "Error installing package: " + getMessageResources(error);
+				}
 			}
 		}
 

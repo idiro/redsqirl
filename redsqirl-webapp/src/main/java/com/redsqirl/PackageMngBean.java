@@ -76,6 +76,15 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		calcSystemPackages();
 		calcUserPackages();
 	}
+	
+	public void start() throws RemoteException{
+		logger.info("start PackageMngBean");
+		extPackages = new LinkedList<RedSqirlPackage>();
+		systemPackages = new LinkedList<SelectItem>();
+		userPackages = new LinkedList<SelectItem>();
+		calcSystemPackages();
+		calcUserPackages();
+	}
 
 	public void retrievesExtPackages() {
 
