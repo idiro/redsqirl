@@ -147,11 +147,12 @@ jQuery(function() {
 					warnClass="messagealert" showDetail="true" showSummary="false"
 					ajaxRendered="false" />
 				<a4j:commandButton styleClass="greenButton"
-					value="#{messages.button_ok}"
-					onclick="#{rich:component('msnSuccess')}.hide(); return false;"
+					value="#{messages.button_ok}" onclick="#{rich:component('msnSuccess')}.hide(); goModule();"
 					style="bottom:14%;position:relative;" reRender="msnSuccess, msgS" />
 			</div>
 		</rich:modalPanel>
+	
+		<a4j:jsFunction name="goModule" action="#{analyticsStoreLoginBean.installModule}"/>
 	
 	</h:form>
 

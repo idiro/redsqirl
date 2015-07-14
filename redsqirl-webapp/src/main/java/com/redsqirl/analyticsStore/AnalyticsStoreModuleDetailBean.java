@@ -226,6 +226,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 
 		}catch(Exception e){
 			e.printStackTrace();
+			error = "msg_error_oops";
 		}
 
 		if(error == null || "".equals(error)){

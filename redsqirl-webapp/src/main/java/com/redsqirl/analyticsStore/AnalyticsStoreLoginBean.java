@@ -405,6 +405,11 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 			WorkflowPrefManager wpm = WorkflowPrefManager.getInstance();
 			String tmp = wpm.pathSysHome;
 			String packagePath = tmp + "/tmp/" + item.getFileName();
+			
+			File p = new File(tmp + "/tmp/");
+			if(!p.exists()){
+				p.mkdir();
+			}
 
 			setPathFileModule(packagePath);
 			setNameFileModule(item.getFileName());

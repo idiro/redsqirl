@@ -9,11 +9,19 @@ DEFAULT_TOMCAT=$(dirname ${SCRIPT_PATH})/apache-tomcat-7.0.42/webapps
 CONF_FILE=$(dirname ${SCRIPT_PATH})/conf/.internal.conf
 DONOTCONFIRM="FALSE"
 
+TOMCAT_PORT=8080
+
 source ${CONF_FILE} 2> /dev/null
 if [ -z "${TOMCAT_PATH}" ]; then
     if [[ -d ${DEFAULT_TOMCAT} ]]; then
 	TOMCAT_PATH_CUR=${DEFAULT_TOMCAT}
 	DONOTCONFIRM="TRUE"
+	echo "Please specify the tomcat port:"
+        read TOMCAT_PORT
+	if [[  ! "${TOMCAT_PORT}" =~ [0-9]4 ]]; then
+        	echo "port number is invalid "
+                exit;
+        fi
     else
 	echo "Please specify the tomcat path where the war should be copied:"
 	read TOMCAT_PATH_CUR
@@ -60,10 +68,10 @@ if [[ -d "${PREV_DIR_PCK}" ]]; then
     fi
 fi
 
-
-
 #Copy war file
 cp ${SCRIPT_PATH}/../war/* ${TOMCAT_PATH_CUR}
+chmod -R 500 ${TOMCAT_PATH_CUR}/../bin
+sed -i "s#<Connector port=\"8080\"#<Connector port=\"$TOMCAT_PORT\"#g" ${TOMCAT_PATH_CUR}/../conf/server.xml
 
 property_line="path_sys_home=`dirname ${SCRIPT_PATH}`"
 tomcat_conf_dir=`dirname ${TOMCAT_PATH_CUR}`/conf
@@ -72,4 +80,10 @@ if [ -w $tomcat_conf ] ; then
 else
     echo "You don't have permission to write in the directory ${tomcat_conf_dir}."
     echo "RedSqirl needs a idiro.properties file in the former directory containing \"${property_line}\".";
+fi
+
+echo "Installation successful"
+
+if [[ ${DONOTCONFIRM} == "TRUE" ]]; then
+        ${TOMCAT_PATH_CUR}/../bin/./startup.sh
 fi
