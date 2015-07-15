@@ -109,9 +109,36 @@
 						<configuration>
 							<executable>scp</executable>
 							<arguments>
-								<argument>-r</argument>
-								<argument>dev:/data/tomcat/apache-tomcat-7.0.62</argument>
+								<argument>dev:/data/tomcat/apache-tomcat-7.0.62.zip</argument>
 								<argument>${dist}</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>Unzip tomcat</id>
+						<phase>package</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>unzip</executable>
+							<arguments>
+								<argument>${dist}/apache-tomcat-7.0.62.zip</argument>
+								<argument>-d</argument>
+								<argument>${dist}</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>Remove tomcat zip</id>
+						<phase>package</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>rm</executable>
+							<arguments>
+								<argument>${dist}/apache-tomcat-7.0.62.zip</argument>
 							</arguments>
 						</configuration>
 					</execution>
