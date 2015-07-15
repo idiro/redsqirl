@@ -347,10 +347,13 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 				}
 				rows = lRow.iterator();
 				while(rows.hasNext()){
-					possibleValues.add(rows.next().getFirstChild().getHead());
+					try{
+						possibleValues.add(rows.next().getFirstChild().getHead());
+					}catch(Exception e){
+						logger.warn("Fail getting possible value!");
+					}
 				}
 			}catch(Exception e){
-				possibleValues = null;
 				logger.error(LanguageManagerWF.getText("UserInteraction.treeIncorrect"));
 			}
 		}
