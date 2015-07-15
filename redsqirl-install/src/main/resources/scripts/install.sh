@@ -16,9 +16,11 @@ if [ -z "${TOMCAT_PATH}" ]; then
     if [[ -d ${DEFAULT_TOMCAT} ]]; then
 	TOMCAT_PATH_CUR=${DEFAULT_TOMCAT}
 	DONOTCONFIRM="TRUE"
-	echo "Please specify the tomcat port:"
+	echo "Please specify the tomcat port (default 8080):"
         read TOMCAT_PORT
-	if [[  ! "${TOMCAT_PORT}" =~ [0-9]4 ]]; then
+	if [[ -z "${TOMCAT_PORT}" ]]; then
+	    TOMCAT_PORT=8080
+	elif [[  ! "${TOMCAT_PORT}" =~ [0-9]4 ]]; then
         	echo "port number is invalid "
                 exit;
         fi
@@ -82,8 +84,11 @@ else
     echo "RedSqirl needs a idiro.properties file in the former directory containing \"${property_line}\".";
 fi
 
-echo "Installation successful"
+echo "Installation successful..."
 
-if [[ ${DONOTCONFIRM} == "TRUE" ]]; then
-        ${TOMCAT_PATH_CUR}/../bin/./startup.sh
+echo "Do you want to start the web server? [Y/n]"
+read START_R
+if [[ ! "${START_R}" == 'n' && ! "${START_R}" == 'N' ]]; then
+    ${SCRIPT_PATH}/startup.sh
 fi
+
