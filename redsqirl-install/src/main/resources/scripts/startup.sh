@@ -7,6 +7,7 @@ SCRIPT_PATH="$(cd $(dirname "${SCRIPT_LOCATION}"); pwd -P)/$(basename "${SCRIPT_
 SCRIPT_PATH="${SCRIPT_PATH%/*}"
 CONF_FILE=$(dirname ${SCRIPT_PATH})/conf/.internal.conf
 
+echo $CONF_FILE
 source ${CONF_FILE} 2> /dev/null
 TOMCAT_PATH_CUR=$TOMCAT_PATH
 
@@ -17,7 +18,7 @@ if [ ! -d "${TOMCAT_PATH_CUR}" ]; then
 fi
 
 if [[ -z $STARTUP ]]; then
-    STARTUP=$(dirname TOMCAT_PATH_CUR})/bin/startup.sh
+    STARTUP="$(dirname $TOMCAT_PATH_CUR})"/bin/startup.sh
 fi
 
 if [[ -f /tmp/redsqirl.pid ]]; then
@@ -36,6 +37,7 @@ if [[ ! -f $STARTUP ]]; then
 fi
 
 echo "Start Red Sqirl web server..."
-${STARTUP} &
-WEBAPP_PID=$!
+${STARTUP}
+WEBAPP_PID=`ps aux | grep $(dirname $TOMCAT_PATH_CUR}) | grep $USER | head -1 | sed -e 's/\s\+/ /g' | cut -d' ' -f 2`
 echo $WEBAPP_PID > /tmp/redsqirl.pid
+

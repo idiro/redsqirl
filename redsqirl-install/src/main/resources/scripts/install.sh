@@ -80,7 +80,7 @@ tomcat_conf_dir=`dirname ${TOMCAT_PATH_CUR}`/conf
 if [ -w $tomcat_conf ] ; then 
     echo $property_line > ${tomcat_conf_dir}/idiro.properties
 else
-    echo "You don't have permission to write in the directory ${tomcat_conf_dir}."
+    echo "You don\'t have permission to write in the directory ${tomcat_conf_dir}."
     echo "RedSqirl needs a idiro.properties file in the former directory containing \"${property_line}\".";
 fi
 

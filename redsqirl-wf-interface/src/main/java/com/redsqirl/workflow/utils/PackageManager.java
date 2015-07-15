@@ -836,7 +836,7 @@ public class PackageManager extends UnicastRemoteObject {
 	 */
 	public File getHelpDir(String user) {
 		String tomcatpath = WorkflowPrefManager
-				.getSysProperty(WorkflowPrefManager.sys_tomcat_path);
+				.getSysProperty(WorkflowPrefManager.sys_tomcat_path, WorkflowPrefManager.defaultTomcat);
 		String installPackage = WorkflowPrefManager.getSysProperty(
 				WorkflowPrefManager.sys_install_package, tomcatpath);
 		return user == null || user.isEmpty() ? new File(installPackage
@@ -852,7 +852,7 @@ public class PackageManager extends UnicastRemoteObject {
 	 */
 	public File getImageDir(String user) {
 		String tomcatpath = WorkflowPrefManager
-				.getSysProperty(WorkflowPrefManager.sys_tomcat_path);
+				.getSysProperty(WorkflowPrefManager.sys_tomcat_path, WorkflowPrefManager.defaultTomcat);
 		String installPackage = WorkflowPrefManager.getSysProperty(
 				WorkflowPrefManager.sys_install_package, tomcatpath);
 		return user == null || user.isEmpty() ? new File(installPackage

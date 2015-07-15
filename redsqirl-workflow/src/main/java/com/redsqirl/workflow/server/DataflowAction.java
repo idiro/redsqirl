@@ -125,7 +125,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 				+ fname;
 		File f = new File(WorkflowPrefManager.getSysProperty(
 				WorkflowPrefManager.sys_install_package, WorkflowPrefManager
-						.getSysProperty(WorkflowPrefManager.sys_tomcat_path))
+						.getSysProperty(WorkflowPrefManager.sys_tomcat_path, WorkflowPrefManager.defaultTomcat))
 				+ relativePath);
 		if (!f.exists()) {
 			relativePath = WorkflowPrefManager.getPathSysHelpPref() + "/"
@@ -133,7 +133,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			f = new File(
 					WorkflowPrefManager.getSysProperty(
 							WorkflowPrefManager.sys_install_package, WorkflowPrefManager
-									.getSysProperty(WorkflowPrefManager.sys_tomcat_path))
+									.getSysProperty(WorkflowPrefManager.sys_tomcat_path, WorkflowPrefManager.defaultTomcat))
 							+ relativePath);
 		}
 		String absolutePath = f.getAbsoluteFile().getAbsolutePath();
@@ -155,7 +155,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 				+ fname;
 		File f = new File(WorkflowPrefManager.getSysProperty(
 				WorkflowPrefManager.sys_install_package, WorkflowPrefManager
-						.getSysProperty(WorkflowPrefManager.sys_tomcat_path))
+						.getSysProperty(WorkflowPrefManager.sys_tomcat_path, WorkflowPrefManager.defaultTomcat))
 				+ relativePath);
 		if (!f.exists()) {
 			relativePath = WorkflowPrefManager.getPathsysimagepref() + "/"
@@ -163,7 +163,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 			f = new File(
 					WorkflowPrefManager.getSysProperty(
 							WorkflowPrefManager.sys_install_package, WorkflowPrefManager
-									.getSysProperty(WorkflowPrefManager.sys_tomcat_path))
+									.getSysProperty(WorkflowPrefManager.sys_tomcat_path, WorkflowPrefManager.defaultTomcat))
 							+ relativePath);
 		}
 		String absolutePath = f.getAbsoluteFile().getAbsolutePath();
@@ -298,11 +298,11 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 
 		FileChecker help = new FileChecker(
 				WorkflowPrefManager
-						.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
+						.getSysProperty(WorkflowPrefManager.sys_tomcat_path, WorkflowPrefManager.defaultTomcat)
 						+ getHelp());
 		FileChecker image = new FileChecker(
 				WorkflowPrefManager
-						.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
+						.getSysProperty(WorkflowPrefManager.sys_tomcat_path, WorkflowPrefManager.defaultTomcat)
 						+ getImage());
 		if (!help.isFile()) {
 			error = LanguageManagerWF.getText(
