@@ -219,9 +219,11 @@ public class BaseBean {
 	
 
 	public File getCurrentPage(){
-		String currentPage = ((HttpServletRequest) FacesContext
-				.getCurrentInstance().getExternalContext().getRequest())
-				.getRequestURI();
+		
+		bb_logger.info("getCurrentPage ");
+		
+		String currentPage = ((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest()).getRequestURI();
+		
 		File f = null;
 		//		logger.info(currentPage);
 		if (currentPage != null && !currentPage.isEmpty()) {
@@ -234,14 +236,17 @@ public class BaseBean {
 			}
 			currentPage = currentPage.substring(0, pos.get(pos.size() - 1));
 			try {
+				
+				bb_logger.info("tomcatPath " + WorkflowPrefManager.defaultTomcat);
+				
 				f = new File(
 						WorkflowPrefManager
-						.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
+						.getSysProperty(WorkflowPrefManager.sys_tomcat_path,WorkflowPrefManager.defaultTomcat)
 						+ currentPage);
 				if (!f.exists()) {
 					f = new File(
 							WorkflowPrefManager
-							.getSysProperty(WorkflowPrefManager.sys_tomcat_path)
+							.getSysProperty(WorkflowPrefManager.sys_tomcat_path, WorkflowPrefManager.defaultTomcat)
 							+ currentPage.substring(pos.get(1)));
 				}
 				bb_logger.info(f.getAbsolutePath());

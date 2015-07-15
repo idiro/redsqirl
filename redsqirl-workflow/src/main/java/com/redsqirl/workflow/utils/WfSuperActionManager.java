@@ -168,7 +168,7 @@ public class WfSuperActionManager extends UnicastRemoteObject implements SuperAc
 
 	public File getSuperActionHelpDir(String user) {
 		String tomcatpath = WorkflowPrefManager
-				.getSysProperty(WorkflowPrefManager.sys_tomcat_path);
+				.getSysProperty(WorkflowPrefManager.sys_tomcat_path, WorkflowPrefManager.defaultTomcat);
 		String installPackage = WorkflowPrefManager.getSysProperty(
 				WorkflowPrefManager.sys_install_package, tomcatpath);
 		logger.debug("Install Package in: " + installPackage);

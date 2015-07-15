@@ -17,7 +17,7 @@ if [ ! -d "${TOMCAT_PATH_CUR}" ]; then
 fi
 
 if [[ -z $SHUTDOWN ]]; then
-    SHUTDOWN=$(dirname TOMCAT_PATH_CUR})/bin/shutdown.sh
+    SHUTDOWN=$(dirname $TOMCAT_PATH_CUR})/bin/shutdown.sh
 fi
 
 if [[ ! -f $SHUTDOWN ]]; then

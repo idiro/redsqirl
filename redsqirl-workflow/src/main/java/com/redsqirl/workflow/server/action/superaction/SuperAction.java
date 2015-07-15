@@ -169,7 +169,7 @@ public class SuperAction extends DataflowAction implements SuperElement{
 		String absolutePath = "";
 		String imageFile = "/image/superaction.gif";
 		String path = WorkflowPrefManager
-				.getSysProperty(WorkflowPrefManager.sys_tomcat_path);
+				.getSysProperty(WorkflowPrefManager.sys_tomcat_path, WorkflowPrefManager.defaultTomcat);
 		List<String> files = listFilesRecursively(path);
 		for (String file : files) {
 			if (file.contains(imageFile)) {

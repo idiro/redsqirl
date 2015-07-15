@@ -722,7 +722,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 	public void luceneIndex() throws Exception {
 		logger.debug("luceneIndex ");
 
-		String tomcatpath = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path);
+		String tomcatpath = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path, WorkflowPrefManager.defaultTomcat);
 		String installPackage = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_install_package, tomcatpath);
 
 		String indexResultPath = WorkflowPrefManager.getPathUserPref(getUserName())+"/lucene/index";
@@ -733,7 +733,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 		String userPath = installPackage+WorkflowPrefManager.getPathUserHelpPref(getUserName());
 		String sysPath = installPackage+WorkflowPrefManager.getPathSysHelpPref();
-		String mainlHelpPath = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path);
+		String mainlHelpPath = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path, WorkflowPrefManager.defaultTomcat);
 		if(new File(mainlHelpPath,"redsqirl").exists() && new File(mainlHelpPath+"/redsqirl","help").exists()){
 			mainlHelpPath+="/redsqirl/help";
 		}else{
