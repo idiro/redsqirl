@@ -448,6 +448,7 @@ CommandChangeId.prototype.redo = function(){
     currentChangeIdGroup = this.groupId;
     changeIdElement(this.groupId,this.newId,this.newComment);
     updateLabelObj(this.groupId,this.newId);
+    changeModalTitle();
 };
 
 CommandChangeId.prototype.getName = function(){

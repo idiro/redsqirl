@@ -27,7 +27,8 @@ function changeCurrentElementId(){
             </a4j:jsFunction>
             
             <a4j:jsFunction name="changeModalTitle"
-                action="#{canvasModalBean.changeTitle}">
+                action="#{canvasModalBean.changeTitle}"
+                reRender="canvasModalPanel" >
             </a4j:jsFunction>
         </a4j:region>
 
