@@ -261,6 +261,9 @@ public class WorkflowPrefManager extends BlockManager {
 			user_email = "mail_user";
 
 
+	//set defaultTomcat path
+	public static String defaultTomcat = System.getProperty("catalina.base") + "/webapps";
+	
 	private static LocalProperties props;
 
 	/**
@@ -270,10 +273,7 @@ public class WorkflowPrefManager extends BlockManager {
 	 */
 	private WorkflowPrefManager() {
 
-
-
-		String path = System.getProperty("catalina.base") +
-				File.separator + "conf" + File.separator + "idiro.properties";
+		String path = System.getProperty("catalina.base") +	File.separator + "conf" + File.separator + "idiro.properties";
 		logger.info("Get path idiro.properties: "+path);
 
 		InputStream input;
@@ -281,7 +281,6 @@ public class WorkflowPrefManager extends BlockManager {
 			input = new FileInputStream(path);
 			Properties properties = new Properties();
 			properties.load(input);
-
 			pathSysHome = properties.getProperty("path_sys_home");
 		} catch (IOException e) {
 			logger.warn("idiro.properties not found. Using default path_sys_home");
@@ -290,7 +289,7 @@ public class WorkflowPrefManager extends BlockManager {
 
 		logger.info("Get path sys home: "+pathSysHome);
 		changeSysHome(pathSysHome);
-
+		
 		/**
 		 * System lang preference file.These properties are optional and are
 		 * used by the front-end to give a bit more details about user
@@ -298,14 +297,12 @@ public class WorkflowPrefManager extends BlockManager {
 		 * and a #{key}_desc property.
 		 */
 
-		pathSysLangCfgPref = 
-				pathSystemPref + "/redsqirl_sys_lang.properties";
+		pathSysLangCfgPref = pathSystemPref + "/redsqirl_sys_lang.properties";
 
 		/**
 		 * Path users folder
 		 */
-		pathUsersFolder = 
-				pathSysHome + "/users";
+		pathUsersFolder = pathSysHome + "/users";
 		sysPackageLibPath = pathSysHome + "/lib/packages";
 
 		String workflowLibPath = null;
@@ -320,8 +317,7 @@ public class WorkflowPrefManager extends BlockManager {
 
 		if (workflowLibPath == null || workflowLibPath.isEmpty()){
 			sysLibPath = pathSysHome + "/lib";
-		}
-		else{
+		}else{
 			sysLibPath = workflowLibPath;
 		}
 		
@@ -329,10 +325,10 @@ public class WorkflowPrefManager extends BlockManager {
 
 		if (idiroInterfacePath == null || idiroInterfacePath.isEmpty()){
 			interfacePath = pathSysHome + "/lib/redsqirl-wf-interface-0.1-SNAPSHOT.jar";
-		}
-		else{
+		}else{
 			interfacePath = idiroInterfacePath;
 		}
+		
 	}
 
 	/**
@@ -363,8 +359,7 @@ public class WorkflowPrefManager extends BlockManager {
 
 		if (!home.exists()) {
 			
-			String installPackage = getSysProperty(sys_install_package, 
-					getSysProperty(sys_tomcat_path));
+			String installPackage = getSysProperty(sys_install_package,	getSysProperty(sys_tomcat_path,defaultTomcat));
 			
 			home.mkdirs();
 
@@ -393,8 +388,7 @@ public class WorkflowPrefManager extends BlockManager {
 	}
 	
 	public static void createSysHome(){
-		String installPackage = getSysProperty(sys_install_package, 
-				getSysProperty(sys_tomcat_path));
+		String installPackage = getSysProperty(sys_install_package,	getSysProperty(sys_tomcat_path,defaultTomcat));
 		{
 			File packageF = new File(getPathsyspackagepref());
 			packageF.mkdir();

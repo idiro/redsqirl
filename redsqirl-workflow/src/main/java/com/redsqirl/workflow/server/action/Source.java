@@ -56,7 +56,7 @@ public class Source extends AbstractSource {
 	public String getHelp() throws RemoteException {
 		String absolutePath = "";
 		String helpFile = "/help/" + getName().toLowerCase() + ".html";
-		String path = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path);
+		String path = WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_tomcat_path, WorkflowPrefManager.defaultTomcat);
 		List<String> files = listFilesRecursively(path);
 		for (String file : files) {
 			if (file.contains(helpFile)) {
@@ -88,7 +88,7 @@ public class Source extends AbstractSource {
 		String absolutePath = "";
 		String imageFile = "/image/" + getName().toLowerCase() + ".gif";
 		String path = WorkflowPrefManager
-						.getSysProperty(WorkflowPrefManager.sys_tomcat_path);
+						.getSysProperty(WorkflowPrefManager.sys_tomcat_path, WorkflowPrefManager.defaultTomcat);
 		List<String> files = listFilesRecursively(path);
 		for (String file : files) {
 			if (file.contains(imageFile)) {
