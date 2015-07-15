@@ -1541,7 +1541,7 @@
 
 				<a4j:jsFunction name="blockRunningWorkflow"
 					action="#{canvasBean.blockRunningWorkflow}"
-					oncomplete="if(!#{canvasBean.running} &amp;&amp; lastBlockedRunningWorkflow == getSelectedById()){unblockRunningWorkflowJS();setRunning(getSelectedByName(), false);updateAllArcsStatus();}">
+					oncomplete="if(lastBlockedRunningWorkflow == getSelectedById()){unblockRunningWorkflowJS();setRunning(getSelectedByName(), false);updateAllArcsStatus();}">
 				</a4j:jsFunction>
 
 			</a4j:region>
