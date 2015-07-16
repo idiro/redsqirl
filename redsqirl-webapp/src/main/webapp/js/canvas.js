@@ -357,17 +357,19 @@ function createLegend(canvasName) {
     groupLegend.add(labelRec);
     ++contPosition;
     
+    //Arcs Colours Sub Types
     for (var v in arcColoursArray){
             
         var array = arcColoursArray[v];
         
         if (array.length > 0){
+        
             labelTitle = new Kinetic.Text({
                 text : v,
                 fontSize : 10,
                 fill : 'black',
                 fontStyle : 'bold',
-                x : posX + 25,
+                x : posX + 45,
                 y : posY + 20*contPosition
             });
             
@@ -400,8 +402,67 @@ function createLegend(canvasName) {
             }
         }
     }
+    var arc2 = new Kinetic.Shape({
+        drawFunc: function(canvas) {
+            var context = canvas.getContext();
+            var x = 40;
+            var y = 56;
+            var radius = 15;
+            var startAngle = (0.1+0.7) * Math.PI;
+            var endAngle = (0.6+0.7) * Math.PI;
+            var context = canvas.getContext('2d');
+            context.beginPath();
+            context.arc(x, y, radius, startAngle, endAngle, false);
+            canvas.stroke(this);
+        },
+        fill: '#00D2FF',
+        stroke: '#c0c0c0',
+        strokeWidth: 3,
+        draggable:false
+    });
+    groupLegend.add(arc2);
     
-
+    var arc3 = new Kinetic.Shape({
+        drawFunc: function(canvas) {
+            var context = canvas.getContext();
+            var x = 20;
+            var y = 142;
+            var radius = 15;
+            var startAngle = (0.1+0.7*2) * Math.PI;
+            var endAngle = (0.6+0.7*2) * Math.PI;
+            var context = canvas.getContext('2d');
+            context.beginPath();
+            context.arc(x, y, radius, startAngle, endAngle, false);
+            canvas.stroke(this);
+        },
+        fill: '#00D2FF',
+        stroke: '#c0c0c0',
+        strokeWidth: 3,
+        draggable:false
+    });
+    groupLegend.add(arc3);
+    
+	var arc1 = new Kinetic.Shape({
+        drawFunc: function(canvas) {
+            var context = canvas.getContext();
+            var x = 20;
+            var y = 185;
+            var radius = 15;
+            var startAngle = (0.1) * Math.PI;
+            var endAngle = (0.6) * Math.PI;
+            var context = canvas.getContext('2d');
+            context.beginPath();
+            context.arc(x, y, radius, startAngle, endAngle, false);
+            canvas.stroke(this);
+        },
+        fill: '#00D2FF',
+        stroke: '#c0c0c0',
+        strokeWidth: 3,
+        draggable:false
+    });
+    groupLegend.add(arc1);
+    
+	//Link colours
     if (linkTypeColours.length > 0){
         var labelTitle = new Kinetic.Text({
             text : 'Link',
