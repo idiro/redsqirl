@@ -85,11 +85,7 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 
 	private String selectedTypeLogin;
 
-	private String selectedTypeModule;
-
 	private List<SelectItem> typeLogin;
-
-	private List<SelectItem> typeModule;
 
 	private String onLine;
 
@@ -120,7 +116,7 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 	private boolean adm;
 
 	private String showUninstall;
-	
+
 	private String mac;
 
 
@@ -408,7 +404,7 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 			WorkflowPrefManager wpm = WorkflowPrefManager.getInstance();
 			String tmp = wpm.pathSysHome;
 			String packagePath = tmp + "/tmp/" + item.getFileName();
-			
+
 			File p = new File(tmp + "/tmp/");
 			if(!p.exists()){
 				p.mkdir();
@@ -538,105 +534,26 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 
 		try{
 
-			if(getSelectedTypeModule() != null){
+			error = addPackageOffLine();
 
-				if(getSelectedTypeModule().equals("Package")){
-					error = addPackageOffLine();
-				}else{ //module
-					error = addModulesOffLine();
-				}
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			if (error == null){
+				MessageUseful.addInfoMessage(getMessageResources("success_message"));
+				request.setAttribute("msnSuccess", "msnSuccess");
 
-				HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-				if (error == null){
-					MessageUseful.addInfoMessage(getMessageResources("success_message"));
-					request.setAttribute("msnSuccess", "msnSuccess");
+				showUninstall = "Y";
 
-					showUninstall = "Y";
-
-				}else{
-					logger.info("Error installing package: " + error);
-					MessageUseful.addErrorMessage("Error installing package: " + error);
-					request.setAttribute("msnSuccess", "msnSuccess");
-				}
-
+			}else{
+				logger.info("Error installing package: " + error);
+				MessageUseful.addErrorMessage("Error installing package: " + error);
+				request.setAttribute("msnSuccess", "msnSuccess");
 			}
+
 
 		} catch (RemoteException e) {
 			logger.error(e,e);
-		} catch (ZipException e) {
-			logger.error(e,e);
-		} catch (IOException e) {
-			logger.error(e,e);
 		}
 
-	}
-
-	public String addModulesOffLine() throws ZipException, IOException{
-
-		logger.info("addModulesOffLine");
-
-		String error = null;
-
-		ZipFile zipFile = new ZipFile(getPathFileModule());
-
-		String extractedModulePath = getNameFile().substring(0, getPathFileModule().length()-4);
-		logger.info("extractedModulePath  " + extractedModulePath);
-		zipFile.extractAll(extractedModulePath);
-
-
-		File folder = new File(extractedModulePath + "/" + getNameFileModule().substring(0, getNameFileModule().length()-4));
-		logger.info("folder.getPath  " + folder.getPath());
-
-		SuperActionManager saManager = getSuperActionManager();
-		DataFlowInterface dfi = getworkFlowInterface();
-
-		List<String> curSuperActions = null;
-		List<String> nextSuperActions = Arrays.asList(folder.list());
-		int iterMax = 20;
-		int iter = 0;
-		do{
-			curSuperActions = nextSuperActions; 
-			nextSuperActions = new LinkedList<String>();
-			for (String file : curSuperActions){
-
-				logger.info(file);
-
-				if (file.startsWith("sa_") || file.endsWith(".srs")){
-
-					String workflowName = generateWorkflowName(folder.getPath() + "/" + file);
-					dfi.addSubWorkflow(workflowName);
-
-					SubDataFlow swa = dfi.getSubWorkflow(workflowName);
-
-					swa.setName(file.endsWith(".srs") ? file.substring(0, file.length() - 4) : file);
-
-					error = swa.readFromLocal(new File(folder.getPath() + "/" + file));
-
-					if (error == null){
-						error = new SuperActionInstaller(saManager).install(email, true, swa, swa.getPrivilege());
-					}
-
-					dfi.removeWorkflow(workflowName);
-
-					if (error != null){
-						nextSuperActions.add(file);
-						continue;
-					}
-				}
-
-				if (file.endsWith(".rs")){
-					getHDFS().copyFromLocal(folder.getPath() + "/" + file,"/user/" + email + "/redsqirl-save/" + file);
-				}
-			}
-			++iter;
-		}while(iter < iterMax && ! nextSuperActions.isEmpty() && nextSuperActions.size() < curSuperActions.size());
-
-		File file = new File(getNameFile());
-		file.delete();
-
-		FileUtils.deleteDirectory(new File(extractedModulePath));
-
-		return error;
 	}
 
 	public String addPackageOffLine() throws RemoteException{
@@ -881,7 +798,7 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 		MessageUseful.addInfoMessage(getMessageResources("success_message"));
 		HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 		request.setAttribute("msnSuccess", "msnSuccess");
-		
+
 		if(pckManager.getPackageNames(null).isEmpty()){
 			showUninstall = "N";
 		}else{
@@ -910,9 +827,9 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 	}
 
 	public String installModule(){
-		
+
 		String softwareKey = getSoftwareKey();
-		
+
 		String key = null;
 		if(softwareKey != null){
 			String[] ans = softwareKey.split("=");
@@ -920,25 +837,20 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 				key = ans[1];
 			}
 		}
-		
+
 		if(softwareKey == null || softwareKey.isEmpty() || softwareKey.equalsIgnoreCase("null") || key == null || 
 				(key != null && key.isEmpty()) || (key != null && key.equals("null")) ){
 			return license();
 		}else {
-			
+
 			if(getOnLine() != null && getOnLine().equals("Y")){
 				return "modulesOnLine";
 			}else{
-				if(typeModule == null){
-					typeModule = new ArrayList<SelectItem>();
-					typeModule.add(new SelectItem("Package"));
-					typeModule.add(new SelectItem("Model"));
-				}
 				return "modulesOffLine";
 			}
-			
+
 		}
-		
+
 	}
 
 	public String uninstallModule(){
@@ -1056,22 +968,6 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 		this.numberUsers = numberUsers;
 	}
 
-	public String getSelectedTypeModule() {
-		return selectedTypeModule;
-	}
-
-	public void setSelectedTypeModule(String selectedTypeModule) {
-		this.selectedTypeModule = selectedTypeModule;
-	}
-
-	public List<SelectItem> getTypeModule() {
-		return typeModule;
-	}
-
-	public void setTypeModule(List<SelectItem> typeModule) {
-		this.typeModule = typeModule;
-	}
-
 	public String getNameFileModule() {
 		return nameFileModule;
 	}
@@ -1159,5 +1055,5 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 	public void setMac(String mac) {
 		this.mac = mac;
 	}
-	
+
 }
