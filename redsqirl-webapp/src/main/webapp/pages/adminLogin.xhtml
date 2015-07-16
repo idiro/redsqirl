@@ -104,24 +104,24 @@ jQuery(function() {
 		</tr>
 	</table>
 
-	<rich:modalPanel id="adminLogin" width="600" height="320" style="overflow:auto;" resizeable="true" >
+	<rich:modalPanel id="adminLogin" width="600" height="320" style="overflow:auto;" resizeable="false" >
 
 		<f:facet name="header">
 			<h:outputText value='#{messages.label_adminLogin}' />
 		</f:facet>
 		
 		
-		<h:outputText value='#{messages.label_noKeyFound}' rendered="#{analyticsStoreLoginBean.showNoLicense == 'Y'}"/>
+		<p><h:outputText  value='#{messages.label_noKeyFound}' rendered="#{analyticsStoreLoginBean.showNoLicense == 'Y'}"/></p>
 		
 		
-		<h:outputText value='#{messages.label_adminDesc}' />
+		<p><h:outputText style="text-indent:50px !important;"  value='#{messages.label_adminDesc}' /></p>
 		
 		
-		<h:panelGroup layout="block" >
+		<p><h:panelGroup layout="block" >
 			<a href="#" onclick="#{rich:component('registerNewUserModalPanel')}.show();">
 				<h:outputText value='#{messages.label_create_new_user}' />
 			</a>
-		</h:panelGroup>
+		</h:panelGroup></p>
 
 		<h:form id="admlogin-form">
 		
@@ -132,7 +132,7 @@ jQuery(function() {
 			</a4j:jsFunction>
 		
 			<h:panelGrid columns="2">
-				<h:outputText value="#{messages.type}" class="formLabel"/>
+				<h:outputText value="#{messages.label_type}" class="formLabel"/>
 				<h:selectOneMenu value="#{analyticsStoreLoginBean.selectedTypeLogin}" onchange="showOnline(this.value);" >
 					<f:selectItems value="#{analyticsStoreLoginBean.typeLogin}" />
 				</h:selectOneMenu>

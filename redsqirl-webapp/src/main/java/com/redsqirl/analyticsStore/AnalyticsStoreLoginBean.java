@@ -943,9 +943,10 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 		
 		if(softwareKey == null || softwareKey.isEmpty() || softwareKey.equalsIgnoreCase("null") || key == null || 
 				(key != null && key.isEmpty()) || (key != null && key.equals("null")) ){
+			showNoLicense="Y";
 			return license();
 		}else {
-			
+			showNoLicense="N";
 			if(getOnLine() != null && getOnLine().equals("Y")){
 				return "modulesOnLine";
 			}else{
