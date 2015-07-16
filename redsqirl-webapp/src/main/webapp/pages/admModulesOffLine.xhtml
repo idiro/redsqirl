@@ -156,7 +156,7 @@ jQuery(function() {
 					ajaxRendered="false" />
 				<a4j:commandButton styleClass="greenButton"
 					value="#{messages.button_ok}"
-					onclick="#{rich:component('msnSuccess')}.hide(); return false;"
+					onclick="#{rich:component('msnSuccess')}.hide(); jQuery('.rich-fileupload-anc').click(); return false;"
 					style="bottom:14%;position:relative;" reRender="msnSuccess, msgS" />
 			</div>
 		</rich:modalPanel>

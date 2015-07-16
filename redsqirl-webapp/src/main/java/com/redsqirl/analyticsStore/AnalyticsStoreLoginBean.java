@@ -120,6 +120,8 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 	private boolean adm;
 
 	private String showUninstall;
+	
+	private String mac;
 
 
 	@PostConstruct
@@ -330,6 +332,7 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 				}
 			} catch (JSONException e){
 				e.printStackTrace();
+				loggedIn = false;
 			}
 
 		}catch(Exception e){
@@ -901,21 +904,41 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 		if(getOnLine() != null && getOnLine().equals("Y")){
 			return "licensesOnLine";
 		}else{
+			setMac(getMacAdress());
 			return "licensesOffLine";
 		}
 	}
 
 	public String installModule(){
-		if(getOnLine() != null && getOnLine().equals("Y")){
-			return "modulesOnLine";
-		}else{
-			if(typeModule == null){
-				typeModule = new ArrayList<SelectItem>();
-				typeModule.add(new SelectItem("Package"));
-				typeModule.add(new SelectItem("Model"));
+		
+		String softwareKey = getSoftwareKey();
+		
+		String key = null;
+		if(softwareKey != null){
+			String[] ans = softwareKey.split("=");
+			if(ans != null && ans.length > 1){
+				key = ans[1];
 			}
-			return "modulesOffLine";
 		}
+		
+		if(softwareKey == null || softwareKey.isEmpty() || softwareKey.equalsIgnoreCase("null") || key == null || 
+				(key != null && key.isEmpty()) || (key != null && key.equals("null")) ){
+			return license();
+		}else {
+			
+			if(getOnLine() != null && getOnLine().equals("Y")){
+				return "modulesOnLine";
+			}else{
+				if(typeModule == null){
+					typeModule = new ArrayList<SelectItem>();
+					typeModule.add(new SelectItem("Package"));
+					typeModule.add(new SelectItem("Model"));
+				}
+				return "modulesOffLine";
+			}
+			
+		}
+		
 	}
 
 	public String uninstallModule(){
@@ -1129,4 +1152,12 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 		this.showUninstall = showUninstall;
 	}
 
+	public String getMac() {
+		return mac;
+	}
+
+	public void setMac(String mac) {
+		this.mac = mac;
+	}
+	
 }
