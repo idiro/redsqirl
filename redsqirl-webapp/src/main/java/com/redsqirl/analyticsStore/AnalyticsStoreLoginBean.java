@@ -121,11 +121,14 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 
 	private String showUninstall;
 
+	private String showNoLicense;
 
 	@PostConstruct
 	public void init() {
 
 		typeLogin = new ArrayList<SelectItem>();
+		
+		showNoLicense="N";
 
 		//check if there is internet connection
 		if(netIsAvailable()){
@@ -152,6 +155,23 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 
 		} catch (RemoteException e) {
 			e.printStackTrace();
+		}
+		
+		
+		String softwareKey = getSoftwareKey();
+		logger.info("softwareKey " + softwareKey);
+		String key = null;
+		if(softwareKey != null){
+			String[] ans = softwareKey.split("=");
+			if(ans != null && ans.length > 1){
+				key = ans[1];
+			}
+		}
+		logger.info("Key " + key);
+
+		if(softwareKey == null || softwareKey.isEmpty() || softwareKey.equalsIgnoreCase("null") || key == null || 
+				(key != null && key.isEmpty()) || (key != null && key.equals("null")) ){
+			showNoLicense="Y";
 		}
 
 	}
@@ -1127,6 +1147,14 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 
 	public void setShowUninstall(String showUninstall) {
 		this.showUninstall = showUninstall;
+	}
+
+	public String getShowNoLicense() {
+		return showNoLicense;
+	}
+
+	public void setShowNoLicense(String showNoLicense) {
+		this.showNoLicense = showNoLicense;
 	}
 
 }
