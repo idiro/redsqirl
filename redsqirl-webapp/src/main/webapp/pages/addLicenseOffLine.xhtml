@@ -116,6 +116,9 @@ jQuery(function() {
 						<h:outputText value="#{messages.label_license_key_desc}" />
 						
 						<br/><br/>
+						<h:outputText value="#{messages.label_mac}" />
+						<h:outputText value="#{analyticsStoreLoginBean.mac}" style="margin-left:10px" />
+						<br/><br/>
 						
 						<rich:fileUpload fileUploadListener="#{analyticsStoreLoginBean.listenerFile}" maxFilesQuantity="1" id="upload" noDuplicate="true"
 		                	immediateUpload="false" acceptedTypes="properties" addLabel="upLoad" listHeight="63px" >
@@ -147,7 +150,8 @@ jQuery(function() {
 					warnClass="messagealert" showDetail="true" showSummary="false"
 					ajaxRendered="false" />
 				<a4j:commandButton styleClass="greenButton"
-					value="#{messages.button_ok}" onclick="#{rich:component('msnSuccess')}.hide(); goModule();"
+					value="#{messages.button_ok}" 
+					onclick="#{rich:component('msnSuccess')}.hide(); goModule();"
 					style="bottom:14%;position:relative;" reRender="msnSuccess, msgS" />
 			</div>
 		</rich:modalPanel>
