@@ -116,14 +116,15 @@ jQuery(function() {
 		
 		<p><h:outputText style="text-indent:50px !important;"  value='#{messages.label_adminDesc}' /></p>
 		
-		
-		<p><h:panelGroup layout="block" >
-			<a href="#" onclick="#{rich:component('registerNewUserModalPanel')}.show();">
-				<h:outputText value='#{messages.label_create_new_user}' />
-			</a>
-		</h:panelGroup></p>
-
 		<h:form id="admlogin-form">
+		
+			<p>
+				<h:panelGroup layout="block" rendered="#{analyticsStoreLoginBean.onLine == 'Y'}">
+					<a href="#" onclick="#{rich:component('registerNewUserModalPanel')}.show();">
+						<h:outputText value='#{messages.label_create_new_user_adm}' />
+					</a>
+				</h:panelGroup>
+			</p>
 		
 			<a4j:jsFunction name="updateStatusOnOffLine" action="#{analyticsStoreLoginBean.init}" reRender="admlogin-form" />
 		

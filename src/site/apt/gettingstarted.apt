@@ -12,15 +12,13 @@ Getting started
 
 * Prerequisite
 
-  * A Linux web server with Tomcat 7 installed.
+  * A Linux web server.
  
   * Apache Hadoop cluster fully set up.
  
   * Apache Oozie installed on top of the cluster
  
   * An account on the server (or using LDAP) for every user
- 
-  * A rsa key ssh connection setup for every user to connect into the gate of your cluster
 
   []  
 
@@ -42,34 +40,51 @@ avoid permission conflicts.
 
 * Install
 
-  [[1]] Download
+  [[01]] Download the version with tomcat or take a look in the steps 11 and 12
 
-  [[2]] Unzip the directory where you want to install it through the Tomcat user
+  [[02]] Unzip the directory where you want to install it through the Tomcat user
 
-  [[3]] Set up your conf/redsqirl_sys.properties file
+  [[03]] Set up your conf/redsqirl_sys.properties file (take a look in the table below)
   
-  [[4]] Make sure your licence is in conf/licenseKey.properties with key and value (redsqirl01=licence)
+  [[04]] Run the script bin/install.sh, it will ask for your Tomcat webapps port and directory if necessary. This is going to start the tomcat.
 
-  [[5]] Run the script bin/install.sh, it will ask for your Tomcat webapps directory
+  [[05]] Go http://localhost:<portNumber>/redsqirl and check.
 
+  [[06]] Choose between On-line - if the server can connect to the analytics-store server - (step 7) or Off-line(step 10) in the combobox.
+
+  [[07]] At first, you will need to create an Analytics Store user. Then, sign in with your new credentials.
+
+  [[08]] In the License key page you need to input the number of nodes and press ok button. (This is going to generate your license key)
+
+  [[09]] Sign in with your OS details. On the first page follow the Analytics Store link, register an account, go to Red Sqirl installation, new license key, download. Create a license. In the License key page you need to upload your license key file.(licenseKey.properties)
+   
+  [[10]] After this you are already to start using Red Sqirl (Sign-out) or if you want you can install packages.
+
+  [[11]] If you download the zip without tomcat, you need to configure the conf/server.xml and set the port number that you want.
+
+  [[12]] copy the redsqirl.war inside the tomcat/webapp folder and them run (tomcat/bin/startup.sh)
 
   []
 
   You will find below an example of a property file.
 
 ----------------------------------------
+namenode=hdfs\://${namenode}\:9000
+jobtracker=${namenode}\:9022
+oozie_launcher_queue=ooziequeue
+oozie_action_queue=default
+default_action_queue=default
+oozie_url=http\://${namenode}\:11000/oozie
+oozie_xmlns=uri\:oozie\:workflow\:0.2
 nutcracker_path=/user/oozie/share/lib/sqirl-nutcracker
 hive_xml=/etc/hive/hive-site.xml
 hive_default_xml=/etc/hive/hive-default.xml
-oozie_launcher_queue=ooziequeue
-oozie_action_queue=default
-tomcat_path=$REDSQIRL_PATH/$TOMCAT_FILE/webapps
-jobtracker=${namenode}\:9022
-namenode=hdfs\://${namenode}\:9000
-oozie_xmlns=uri\:oozie\:workflow\:0.2
 allow_user_install=true
-oozie_url=http\://${namenode}\:11000/oozie
+start_hive_range=10003
+end_hive_range=100100
+jdbc_hive_server=namenode
 pack_manager_url=http\://95.45.250.249\:8091/analytics-store
+# If your do an offline installation you need at least one admin user
 admin_user=user1\:user2
 hadoop_home=/home/hadoop
 

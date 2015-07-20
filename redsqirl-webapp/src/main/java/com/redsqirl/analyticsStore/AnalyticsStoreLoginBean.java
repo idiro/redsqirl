@@ -500,15 +500,15 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 
 				}
 
+				HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+				MessageUseful.addInfoMessage(getMessageResources("success_message"));
+				request.setAttribute("msnSuccess", "msnSuccess");
+				
 			}
 
 		}catch(Exception e){
 			logger.error(e,e);
 		}
-
-		HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-		MessageUseful.addInfoMessage(getMessageResources("success_message"));
-		request.setAttribute("msnSuccess", "msnSuccess");
 
 	}
 
@@ -532,10 +532,6 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 		request.setAttribute("msnSuccess", "msnSuccess");
 
 	}
-
-	/*public void installModulesOnLine(){
-
-	}*/
 
 	public void installModulesOffLine(){
 
@@ -579,10 +575,6 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 
 		return error;
 	}
-
-	/*public void updateSettings(){
-
-	}*/
 
 	public String getMacAdress(){
 

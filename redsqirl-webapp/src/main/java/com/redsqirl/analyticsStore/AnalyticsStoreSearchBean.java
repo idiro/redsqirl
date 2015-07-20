@@ -63,7 +63,7 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 	
 	private List<String> selectedTypes;
 	
-	private List<SelectItem> moduleTypes;
+	//private List<SelectItem> moduleTypes;
 	
 	public AnalyticsStoreSearchBean() {
 		
@@ -93,11 +93,16 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 			e.printStackTrace();
 		}
 		
-		if(moduleTypes == null){
+		if(selectedTypes == null){
+			selectedTypes = new ArrayList<String>();
+			selectedTypes.add("package");
+		}
+		
+		/*if(moduleTypes == null){
 			moduleTypes = new ArrayList<SelectItem>();
 			moduleTypes.add(new SelectItem("model","Module"));
 			moduleTypes.add(new SelectItem("package","Package"));
-		}
+		}*/
 		
 	}
 
@@ -422,14 +427,6 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 
 	public void setDefaultInstallation(String defaultInstallation) {
 		this.defaultInstallation = defaultInstallation;
-	}
-	
-	public List<SelectItem> getModuleTypes() {
-		return moduleTypes;
-	}
-
-	public void setModuleTypes(List<SelectItem> moduleTypes) {
-		this.moduleTypes = moduleTypes;
 	}
 
 	public List<String> getSelectedTypes() {

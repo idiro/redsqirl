@@ -374,7 +374,7 @@ table[id*="msnError"]{
 	overflow:auto;
 }
 .rich-messages-label{
-	padding-left:10px;
+	/* padding-left:10px; */
 	overflow:auto;
 }
 
@@ -398,7 +398,7 @@ table[id*="msnError"]{
 .messageerro {
 	background: url("../image/icons/li_msg_error.gif") no-repeat;
 	height:35px;
-	padding-left: 20px;
+	padding-left: 30px;
 	background-position: top left;
 	color: #000000;
 }
