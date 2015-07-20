@@ -18,7 +18,7 @@ public interface OozieAction extends Remote{
 	 * Create an Oozie Element
 	 * @param oozieXmlDoc oozie xml document
 	 * @param action the action, parent element
-	 * @param fileNames, the file names with path
+	 * @param fileNames the file names with path
 	 * @throws RemoteException
 	 */
 	void createOozieElement(

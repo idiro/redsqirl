@@ -597,7 +597,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	/**
 	 * Run a workflow
 	 * 
-	 * @return
+	 * @return An error message
 	 * @throws Exception
 	 */
 	@Override
@@ -853,7 +853,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	/**
 	 * Null if it is not running, or the status if it runs
 	 * 
-	 * @return
+	 * @return Null if it is not running, or the status if it runs
 	 */
 	public boolean isrunning() {
 		OozieClient wc = OozieManager.getInstance().getOc();
@@ -875,10 +875,10 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	}
 
 	/**
-	 * Save the xml part of a workflow @see {@link Workflow#save(Path)}
+	 * Save the xml part of a workflow.
 	 * 
-	 * @param file
-	 *            the xml file to write in.
+	 * @param filePath
+	 *            the xml file path to write in.
 	 * @return null if OK, or a description of the error.
 	 * @throws RemoteException
 	 */
@@ -1252,10 +1252,10 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	}
 
 	/**
-	 * Reads the xml part of a workflow @see {@link Workflow#read(Path)}
+	 * Reads the xml part of a workflow.
 	 * 
-	 * @param file
-	 *            the xml file to read from.
+	 * @param filePath
+	 *            the xml file path to read from.
 	 * @return null if OK, or a description of the error.
 	 */
 	public String read(String filePath) {
@@ -2543,8 +2543,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 * 
 	 * If possible, the classes will be read from a file. If not a file will be written for next time.
 	 * 
-	 * @see {@link WorkflowPrefManager#getNonAbstractClassesFromSuperClass(String)}
-	 * @return
+	 * @see com.idiro.BlockManager#getNonAbstractClassesFromSuperClass(String)
+	 * @return The classes that extends DataflowAction
 	 */
 	private List<String> getDataflowActionClasses(){
 		File dataFlowActionClassFile = new File(WorkflowPrefManager.getPathDataFlowActionClasses());
@@ -2593,8 +2593,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 * 
 	 * To find the jars, the method use
 	 * 
-	 * @see {@link WorkflowPrefManager#getNonAbstractClassesFromSuperClass(String)}
-	 *      .
+	 * @see com.idiro.BlockManager#getNonAbstractClassesFromSuperClass(String)
 	 * 
 	 * @return the dictionary: key name @see {@link DataflowAction#getName()} ;
 	 *         value the canonical class name.
@@ -2632,12 +2631,10 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	}
 
 	/**
-	 * Get all the WorkflowAction available in the jars file.
+	 * Get all the WorkflowAction available in the jars file
 	 * 
 	 * To find the jars, the method use
-	 * 
-	 * @see {@link WorkflowPrefManager#getNonAbstractClassesFromSuperClass(String)}
-	 *      .
+	 * @see com.idiro.BlockManager#getNonAbstractClassesFromSuperClass(String)
 	 * 
 	 * @return an array containing the name, image and help of the action
 	 * @throws Exception
@@ -2708,7 +2705,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	 * Get the component its for all elements on the workflow
 	 * 
 	 * @return List of component Ids
-	 * @return {@link RemoteException}
 	 */
 	public List<String> getComponentIds() throws RemoteException {
 		List<String> ans = new LinkedList<String>();

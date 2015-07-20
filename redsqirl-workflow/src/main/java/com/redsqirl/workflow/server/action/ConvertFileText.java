@@ -77,8 +77,6 @@ public class ConvertFileText extends DataflowAction {
 	
 	/**
 	 * Initialise the element
-	 * @param nbInMin
-	 * @param nbInMax
 	 * @throws RemoteException
 	 */
 	protected void init() throws RemoteException{

@@ -13,7 +13,7 @@ public interface DFEInteractionChecker extends Serializable{
 
 	/**
 	 * Check that the interaction is configured correctly and within parameters
-	 * @param Interaction to check
+	 * @param interaction The interaction to check
 	 * @return null if OK, or a short description of the error
 	 * @throws RemoteExeption
 	 */

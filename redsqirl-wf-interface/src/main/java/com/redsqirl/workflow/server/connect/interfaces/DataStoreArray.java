@@ -17,8 +17,7 @@ public interface DataStoreArray extends Remote {
 	 * Get the fields needed for initiating a DataStore. The key is the field
 	 * name and the value a help comment.
 	 * 
-	 * @return {@link java.util.Map<String, String>} of fields that are needed
-	 *         for each data store
+	 * @return Map of fields that are needed for each data store
 	 * @throws RemoteException
 	 */
 	Map<String, String> getFieldsInitNeeded() throws RemoteException;
@@ -27,8 +26,7 @@ public interface DataStoreArray extends Remote {
 	 * Get the fields needed for removing a known DataStore. The key is the
 	 * field name and the value a help comment.
 	 * 
-	 * @return {@link java.util.Map<String, String>} of fields that will be
-	 *         removed
+	 * @return Map of fields that will be removed
 	 * @throws RemoteException
 	 */
 	Map<String, String> getFieldsToRemove() throws RemoteException;
@@ -57,8 +55,7 @@ public interface DataStoreArray extends Remote {
 	/**
 	 * Get the details of the known store
 	 * 
-	 * @return {@link java.util.List<Map<String, String>>} of details of known
-	 *         stores
+	 * @return Map of details of known stores
 	 * @throws RemoteException
 	 */
 	List<Map<String, String>> getKnownStoreDetails() throws RemoteException;
@@ -75,7 +72,7 @@ public interface DataStoreArray extends Remote {
 	/**
 	 * Get the current list of DataStores
 	 * 
-	 * @return {@link java.util.Map<String, DataStore>} of datastores
+	 * @return Map of datastores
 	 * @throws Exception
 	 * @throws RemoteException
 	 */

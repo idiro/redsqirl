@@ -70,7 +70,7 @@ public abstract class SqlElement extends DataflowAction {
 	/**
 	 * Get the query to write into a script
 	 * 
-	 * @return
+	 * @return The query to write into a script
 	 * @throws RemoteException
 	 */
 	public abstract String getQuery() throws RemoteException;

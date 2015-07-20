@@ -29,7 +29,7 @@ public interface DataFlowElement extends Remote{
 
 	/**
 	 * Get an action comment
-	 * @return
+	 * @return The comment
 	 * @throws RemoteException
 	 */
 	public String getComment() throws RemoteException;
@@ -81,8 +81,8 @@ public interface DataFlowElement extends Remote{
 	
 	/**
 	 * Replace in all interaction a string by another
-	 * @param oldName
-	 * @param newName
+	 * @param oldStr
+	 * @param newStr
 	 * @throws RemoteException
 	 */
 	public void replaceInAllInteraction(String oldStr, String newStr)  throws RemoteException;
@@ -142,7 +142,8 @@ public interface DataFlowElement extends Remote{
 
 	/**
 	 * Writes values for this action.
-	 * @param fw
+	 * @param doc The XML document
+	 * @param parent The XML node to insert into
 	 * @return null if OK, or a description of the error
 	 * @throws RemoteException
 	 */
@@ -172,7 +173,7 @@ public interface DataFlowElement extends Remote{
 	
 	/**
 	 * Get the aliases per input component ids
-	 * @return
+	 * @return The aliases per input component ids
 	 * @throws RemoteException
 	 */
 	public Map<String, Entry<String, DFEOutput>> getAliasesPerComponentInput()
@@ -237,7 +238,7 @@ public interface DataFlowElement extends Remote{
 
 	/**
 	 * For each output of this object gives the input ids and the input name related to this object.
-	 * @return
+	 * @return The input name per output
 	 * @throws RemoteException
 	 */
 	public Map<String,Map<String,String>> getInputNamePerOutput() throws RemoteException;

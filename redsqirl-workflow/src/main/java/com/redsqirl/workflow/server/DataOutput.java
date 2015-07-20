@@ -144,7 +144,7 @@ DFEOutput {
 	/**
 	 * Write the browser tree corresponding to this data output
 	 * 
-	 * @return {@link idiro.utils.Tree<String>} for the data output
+	 * @return The data output
 	 * @throws RemoteException
 	 */
 	public Tree<String> getTree() throws RemoteException {
@@ -351,8 +351,7 @@ DFEOutput {
 	/**
 	 * Set the field
 	 * 
-	 * @param field
-	 *            the fields to set
+	 * @param fields The fields to set
 	 */
 	public void setFields(FieldList fields) {
 		this.fields = fields;

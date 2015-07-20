@@ -25,7 +25,7 @@ public interface SuperElement extends DataFlowElement{
 	
 	/**
 	 * List of the super element used inside this superaction
-	 * @return
+	 * @return The list of the super element used inside this superaction
 	 * @throws RemoteException
 	 */
 	Set<String> getSuperElementDependencies() throws RemoteException;

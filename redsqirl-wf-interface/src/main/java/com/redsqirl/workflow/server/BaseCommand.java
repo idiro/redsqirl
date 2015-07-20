@@ -215,12 +215,9 @@ public class BaseCommand {
 	}
 
 	/**
-	 * getRMIHost
-	 * 
-	 * method to retrieve the server host name
+	 * Method to retrieve the server host name.
 	 * 
 	 * @return String
-	 * @author Igor.Souza
 	 */
 	protected static String getRMIHost() {
 		String ans = null;
@@ -243,7 +240,6 @@ public class BaseCommand {
 	 * method to retrieve the path of the main class
 	 * 
 	 * @return String
-	 * @author Igor.Souza
 	 */
 	protected static String getRMICodeBase() {
 		String ans = null;

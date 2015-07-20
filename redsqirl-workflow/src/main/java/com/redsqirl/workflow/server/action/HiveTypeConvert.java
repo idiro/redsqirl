@@ -13,7 +13,7 @@ public class HiveTypeConvert {
 	 * Get the type as a Hive Type
 	 * 
 	 * @param hiveType
-	 * @return {@link com.redsqirl.workflow.server.enumeration.FieldType}
+	 * @return The type
 	 */
 	public static FieldType getType(String hiveType) {
 		FieldType ans = null;

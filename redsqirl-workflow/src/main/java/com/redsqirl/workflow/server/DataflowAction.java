@@ -90,7 +90,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 
 	/**
 	 * Constructor that takes a type of
-	 * {@link diro.workflow.server.interfaces.OozieAction} as an argument
+	 * {@link com.redsqirl.workflow.server.interfaces.OozieAction} as an argument
 	 * 
 	 * @param oozieAction
 	 * @throws RemoteException
@@ -258,8 +258,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	}
 
 	/**
-	 * Check the integration of the variables within the workflow. check the
-	 * workflow entry with @see {@link UserInteraction#guiAns}. This method is
+	 * Check the integration of the variables within the workflow. This method is
 	 * called after a general checking, if this method is calls it means that
 	 * the input and output have the right number required with the right type.
 	 * 
@@ -380,7 +379,8 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	/**
 	 * Writes values for this action.
 	 * 
-	 * @param fw
+	 * @param doc
+	 * @param parent
 	 * @return null if OK, or a description of the error.
 	 * @throws RemoteException
 	 */
@@ -481,8 +481,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	}
 
 	/**
-	 * Update the UserInteraction values @see
-	 * {@link UserInteraction#inputFromAction}
+	 * Update the UserInteraction.
 	 * 
 	 * @param interaction
 	 *            to update
@@ -641,7 +640,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	 * 
 	 * @param map
 	 * @param wa
-	 * @return
+	 * @return The name in which the object is classified
 	 */
 	public String findNameOf(Map<String, List<DataFlowElement>> map,
 			DataFlowElement wa) {
@@ -674,8 +673,8 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 
 	/**
 	 * Add a component in a map. This method is called by @see
-	 * {@link #addInputComponent(String, DataflowAction)} and @see
-	 * {@link #addOutputComponent(String, DataflowAction)}.
+	 * {@link #addInputComponent(String, DataFlowElement)} and @see
+	 * {@link #addOutputComponent(String, DataFlowElement)}.
 	 * 
 	 * @param map
 	 *            the map where to add the element
@@ -699,8 +698,8 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 
 	/**
 	 * Remove a component from a map This method is called by @see
-	 * {@link #removeInputComponent(String, DataflowAction)} and @see
-	 * {@link #removeOutputComponent(String, DataflowAction)}.
+	 * {@link #removeInputComponent(String, DataFlowElement)} and @see
+	 * {@link #removeOutputComponent(String, DataFlowElement)}.
 	 * 
 	 * @param map
 	 *            the map where to remove
@@ -738,7 +737,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	 * @param title
 	 * @param legend
 	 * @param nbColumn
-	 * @return
+	 * @return The new page
 	 * @throws RemoteException
 	 */
 	protected Page addPage(String title, String legend, int nbColumn) {
@@ -766,7 +765,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	 * @param legend
 	 * @param textTip
 	 * @param nbColumn
-	 * @return
+	 * @return The new page.
 	 * @throws RemoteException
 	 */
 	protected Page addPage(String title, String legend, String textTip, int nbColumn) {
@@ -792,7 +791,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	 * @param legend
 	 * @param textTip
 	 * @param nbColumn
-	 * @return
+	 * @return The new page.
 	 * @throws RemoteException
 	 */
 	protected Page addPage(String title, File image, String legend, String textTip, int nbColumn) {
@@ -811,9 +810,8 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	/**
 	 * Get the interaction corresponding to a name
 	 * 
-	 * @param name
-	 *            name of the interaction
-	 * @return
+	 * @param id ID of the interaction
+	 * @return The interaction.
 	 * @throws RemoteException
 	 */
 	public DFEInteraction getInteraction(String id) throws RemoteException {
@@ -831,7 +829,7 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	/**
 	 * Get all the interactions of the action
 	 * 
-	 * @return
+	 * @return All the interactions
 	 * @throws RemoteException
 	 */
 	public List<DFEInteraction> getInteractions() throws RemoteException {
@@ -999,8 +997,9 @@ public abstract class DataflowAction extends UnicastRemoteObject implements
 	}
 
 	/**
-	 * @param position
-	 *            the position to set
+	 * @param x x position
+	 * @param y y position
+	 * 
 	 */
 	@Override
 	public void setPosition(int x, int y) {

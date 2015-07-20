@@ -30,13 +30,13 @@ public interface FieldList extends Remote {
 	/**
 	 * Add a new field to the list
 	 * @param name Name of the new field to be added
-	 * @param type {@link com.redsqirl.workflow.server.enumeration.FieldType} type to be added
+	 * @param type Type to be added
 	 * @throws RemoteException
 	 */
 	public void addField(String name, FieldType type) throws RemoteException;
 	/**
 	 * Get all fields names that are in the list
-	 * @return {@link java.util.List<String>}} of field names
+	 * @return List of field names
 	 * @throws RemoteException
 	 */
 	public List<String> getFieldNames() throws RemoteException;
@@ -49,11 +49,22 @@ public interface FieldList extends Remote {
 
 	/**
 	 * Get the list of types
-	 * @return
+	 * @return The types in order of appearance
 	 * @throws RemoteException
 	 */
 	public List<FieldType> getTypes()throws RemoteException;
 	
+	/**
+	 * Clone the current object
+	 * @return A clone of the object.
+	 * @throws RemoteException
+	 */
 	public FieldList cloneRemote() throws RemoteException;
+	
+	/**
+	 * Create a header with field name and type.
+	 * @return A header "name type" comma delimited.
+	 * @throws RemoteException
+	 */
 	public String mountStringHeader() throws RemoteException;
 }

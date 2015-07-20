@@ -99,7 +99,7 @@ public interface DFEPage extends Remote {
 	 * Get text tip of the page.
 	 * text tip is display when the tip image is hovered.
 	 *  
-	 * @return
+	 * @return The text tip of the page
 	 * @throws RemoteException
 	 */
 	public String getTextTip()throws RemoteException;

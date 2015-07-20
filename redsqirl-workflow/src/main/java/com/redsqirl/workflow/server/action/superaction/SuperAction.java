@@ -242,7 +242,8 @@ public class SuperAction extends DataflowAction implements SuperElement{
 	/**
 	 * Writes values for this action.
 	 * 
-	 * @param fw
+	 * @param doc
+	 * @param parent
 	 * @return null if OK, or a description of the error.
 	 * @throws RemoteException
 	 */

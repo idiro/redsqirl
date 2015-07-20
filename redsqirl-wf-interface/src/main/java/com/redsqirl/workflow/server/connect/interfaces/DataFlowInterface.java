@@ -49,7 +49,7 @@ public interface DataFlowInterface extends Remote{
 	/**
 	 * Get a Workflow
 	 * @param name of workflow to get
-	 * @return {@link com.redsqirl.workflow.server.interfaces.DataFlow} 
+	 * @return The workflow 
 	 * @throws RemoteException
 	 */
 	public DataFlow getWorkflow(String name)throws RemoteException;
@@ -57,7 +57,7 @@ public interface DataFlowInterface extends Remote{
 	/**
 	 * Get a sub Workflow
 	 * @param name
-	 * @return
+	 * @return The subworkflow
 	 * @throws RemoteException
 	 */
 	public SubDataFlow getSubWorkflow(String name) throws RemoteException;
@@ -75,22 +75,22 @@ public interface DataFlowInterface extends Remote{
 	/**
 	 * Return the list of datastore names available
 	 * available to browse
-	 * @return
+	 * @return The names of the browsers available to the user
 	 */
 	public Set<String> getBrowsersName() throws RemoteException;;
 	
 	/**
 	 * Return the given datastore
 	 * @param browserName
-	 * @return
+	 * @return The store requested.
 	 * @throws RemoteException
 	 */
 	public DataStore getBrowser(String browserName) throws RemoteException;
 	
 	/**
 	 * Clone a data flow
-	 * @param from
-	 * @return
+	 * @param wfName The name of the workflow to copy
+	 * @return The clone Id
 	 */
 	public String cloneDataFlow(String wfName) throws RemoteException;
 	
@@ -98,11 +98,11 @@ public interface DataFlowInterface extends Remote{
 	
 	/**
 	 * Copy a subset of a workflow into another.
-	 * @param from
-	 * @param elements
-	 * @param to
+	 * @param from The id of the workflow to copy from 
+	 * @param elements The element ids to copy
+	 * @param to The id of the workflow to copy to
 	 */
-	public void copy(String cloneId, List<String> elements, String wfName) throws RemoteException;
+	public void copy(String from, List<String> elements, String to) throws RemoteException;
 	
 	/**
 	 * Replace an existing workflow by a clone.
@@ -115,8 +115,8 @@ public interface DataFlowInterface extends Remote{
 	
 	
 	/**
-	 * check if the size of the cluster is the same in license key
-	 * @param int numberCluster
+	 * Check if the size of the cluster is lower than what is set in license key
+	 * @param numberCluster The number of nodes declared at the installation
 	 * @throws RemoteException
 	 */
 	public boolean checkNumberCluster(int numberCluster) throws RemoteException;

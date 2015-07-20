@@ -120,7 +120,8 @@ public class TreeNonUnique<T> extends UnicastRemoteObject implements Tree<T>{
 
 	}
 	/**
-	 * @param 
+	 * Compare current element path with the given one
+	 * @param path 
 	 */
 	public boolean comparePath(T[] path){
 		boolean ok = true;
@@ -188,7 +189,6 @@ public class TreeNonUnique<T> extends UnicastRemoteObject implements Tree<T>{
 
 	/**
 	 * @param e
-	 * @return
 	 */
 	public void add(Tree<T> e) throws RemoteException {
 		if(e instanceof TreeNonUnique){
@@ -201,7 +201,6 @@ public class TreeNonUnique<T> extends UnicastRemoteObject implements Tree<T>{
 
 	/**
 	 * @param e
-	 * @return
 	 */
 	public void addFirst(Tree<T> e) throws RemoteException {
 		if(e instanceof TreeNonUnique){
@@ -213,9 +212,9 @@ public class TreeNonUnique<T> extends UnicastRemoteObject implements Tree<T>{
 	}
 
 	/**
-	 * @param arg0
-	 * @return
+	 * Add all the subtree to this head
 	 * @see java.util.Set#addAll(java.util.Collection)
+	 * @param arg0
 	 */
 	public void addAll(Collection<Tree<T>> arg0) throws RemoteException {
 		Iterator<Tree<T>> it = arg0.iterator();

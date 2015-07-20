@@ -50,7 +50,7 @@ public interface DFEInteraction extends Remote {
 	/**
 	 * Get the Display Type of the interaction
 	 * 
-	 * @return {@link com.redsqirl.workflow.server.enumeration.DisplayType}
+	 * @return The display
 	 * @throws RemoteException
 	 */
 	public DisplayType getDisplay() throws RemoteException;
@@ -133,10 +133,11 @@ public interface DFEInteraction extends Remote {
 	 * Get text tip of the interaction.
 	 * text tip is display when the tip image is hovered.
 	 *  
-	 * @return
+	 * @return The text tip of the interaction
 	 * @throws RemoteException
 	 */
 	public String getTextTip()throws RemoteException;
+	
 	/**
 	 * Set the text tip of the interaction
 	 * @param tip
@@ -147,7 +148,7 @@ public interface DFEInteraction extends Remote {
 	/**
 	 * True if the interaction cannot be replaced
 	 *  
-	 * @return
+	 * @return True if the interaction cannot be replaced
 	 * @throws RemoteException
 	 */
 	public boolean isReplaceDisable()throws RemoteException;

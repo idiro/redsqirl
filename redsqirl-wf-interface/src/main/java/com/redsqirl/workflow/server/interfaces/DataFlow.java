@@ -43,7 +43,7 @@ public interface DataFlow extends Remote, Cloneable{
 	/**
 	 * Get the menu loaded with relative path calculated from the input.
 	 * @param curPath
-	 * @return
+	 * @return The menu with relative path.
 	 * @throws RemoteException
 	 */
 	public Map<String,List<String[]>> getRelativeMenu(File curPath) throws RemoteException;
@@ -52,7 +52,7 @@ public interface DataFlow extends Remote, Cloneable{
 	/**
 	 * Get the help html file path relatively to the input for each action name (key).
 	 * @param curPath 
-	 * @return
+	 * @return The help html file path relatively to the input for each action name (key).
 	 */
 	public Map<String,String[]> getRelativeHelp(File curPath) throws RemoteException;
 	
@@ -74,9 +74,8 @@ public interface DataFlow extends Remote, Cloneable{
 	public String check() throws RemoteException;
 
 	/**
-	 * Run a workflow
+	 * Run the workflow
 	 * 
-	 * @param true to cleanup the dependency before launching the process
 	 * @return error message
 	 * @throws Exception
 	 *             an exception with a message if something goes wrong
@@ -84,10 +83,9 @@ public interface DataFlow extends Remote, Cloneable{
 	public String run() throws RemoteException, Exception;
 
 	/**
-	 * Run a workflow
+	 * Run the workflow
 	 * 
-	 * @param list
-	 *            of element to run
+	 * @param dataFlowElement list of element to run
 	 * @return error message
 	 * @throws Exception
 	 *             an exception with a message if something goes wrong
@@ -97,7 +95,7 @@ public interface DataFlow extends Remote, Cloneable{
 	/**
 	 * List the elements to run, removing the actions that already produced the data
 	 * @param dataFlowElements
-	 * @return
+	 * @return List the elements to run
 	 * @throws Exception
 	 */
 	public List<DataFlowElement> subsetToRun(List<String> dataFlowElements) throws Exception;
@@ -187,17 +185,18 @@ public interface DataFlow extends Remote, Cloneable{
 
 	/**
 	 * Generate a unique id that can be used for a new Element
-	 * @return
+	 * @return A new ID.
 	 * @throws RemoteException
 	 */
 	public String generateNewId() throws RemoteException;
 	
 	/**
 	 * Add a WorkflowAction in the Workflow. The element is at the end of the
-	 * workingWA list
+	 * workingWA list.  
+	 * @see com.redsqirl.workflow.server.interfaces.DataFlowElement#getName()
 	 * 
-	 * @param waName
-	 *            the name of the action @see {@link WorkflowAction#getName()}
+	 * @param elementName
+	 *            the name of the action
 	 * @return The new element id
 	 * @throws Exception
 	 *             an exception with a message if something goes wrong
@@ -263,27 +262,28 @@ public interface DataFlow extends Remote, Cloneable{
 			Map<String,Entry<String,String>> outputs) throws RemoteException;
 	
 	/**
-	 * expand the Element in the current canvas
+	 * Expand the Element in the current canvas
 	 * @param componentId The components to expand
 	 * @return The error message if any or null
 	 * @throws RemoteException
 	 */
-	public String expand(String componentI) throws RemoteException;
+	public String expand(String componentId) throws RemoteException;
 
 	/**
-	 * Replace in the interaction of all elements 
+	 * Replace string in the interaction of the given elements 
 	 * @param componentIds
-	 * @param oldName
-	 * @param newName
+	 * @param oldStr String to replace
+	 * @param newStr The replacement
 	 * @throws RemoteException
 	 */
 	public void replaceInAllElements(List<String> componentIds, String oldStr, String newStr)  throws RemoteException;
 	
 	/**
 	 * Get the WorkflowAction corresponding to the componentId.
+	 * @see com.redsqirl.workflow.server.interfaces.DataFlowElement#getComponentId
 	 * 
 	 * @param componentId
-	 *            the componentId @see {@link WorkflowAction#componentId}
+	 *            The id of the action.
 	 * @return a WorkflowAction object or null
 	 */
 	public DataFlowElement getElement(String componentId)
@@ -366,11 +366,11 @@ public interface DataFlow extends Remote, Cloneable{
 	 * 
 	 * To find the jars, the method use
 	 * 
-	 * @see {@link WorkflowPrefManager#getNonAbstractClassesFromSuperClass(String)}
+	 * @see com.redsqirl.workflow.server.WorkflowPrefManager#getNonAbstractClassesFromSuperClass(String)
+	 * @see com.redsqirl.workflow.server.interfaces.DataFlowElement#getName()
 	 *      .
 	 * 
-	 * @return the dictionary: key name @see {@link WorkflowAction#getName()} ;
-	 *         value the canonical class name.
+	 * @return the dictionary: key action name ; value the canonical class name.
 	 * @throws Exception
 	 *             if one action cannot be load
 	 */
@@ -380,13 +380,10 @@ public interface DataFlow extends Remote, Cloneable{
 	/**
 	 * Get all the WorkflowAction available in the jars file.
 	 * 
-	 * To find the jars, the method use
+	 * @see com.redsqirl.workflow.server.WorkflowPrefManager#getNonAbstractClassesFromSuperClass(String)
+	 * @see com.redsqirl.workflow.server.interfaces.DataFlowElement#getName() 
 	 * 
-	 * @see {@link WorkflowPrefManager#getNonAbstractClassesFromSuperClass(String)}
-	 *      .
-	 * 
-	 * @return the dictionary: key name @see {@link WorkflowAction#getName()} ;
-	 *         value the canonical class name.
+	 * @return Array of all the action with name, image path, help path.
 	 * @throws Exception
 	 *             if one action cannot be load
 	 */
@@ -481,12 +478,18 @@ public interface DataFlow extends Remote, Cloneable{
 	 * @param componentIdOut
 	 * @param inName
 	 * @param componentIdIn
-	 * @return
+	 * @return True if a link can be created
 	 * @throws RemoteException
 	 */
 	public boolean check(String outName, String componentIdOut, String inName,
 			String componentIdIn) throws RemoteException;
 
+	/**
+	 * Get the relative help of all the Super Actions
+	 * @param curPath
+	 * @return Get the relative help of all the Super Actions
+	 * @throws RemoteException
+	 */
 	Map<String, String[]> getRelativeHelpSuperAction(File curPath) throws RemoteException;
 
 }

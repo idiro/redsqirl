@@ -108,7 +108,7 @@ public interface JobManager extends Remote{
 	/**
 	 * Get the number of element to run in this workflow
 	 * @param df
-	 * @return
+	 * @return The number of element to run in this workflow
 	 * @throws RemoteException
 	 * @throws Exception
 	 */
@@ -117,7 +117,7 @@ public interface JobManager extends Remote{
 	/**
 	 * Get the list of actions that are running
 	 * @param df
-	 * @return
+	 * @return The list of actions that are running
 	 * @throws RemoteException
 	 * @throws Exception
 	 */
@@ -126,16 +126,16 @@ public interface JobManager extends Remote{
 	/**
 	 * Get the list of actions that are done
 	 * @param df
-	 * @return
+	 * @return The list of actions that are done
 	 * @throws RemoteException
 	 * @throws Exception
 	 */
 	public List<String> getElementsDone(DataFlow df)throws RemoteException, Exception;
 
 	/**
-	 * true if the last dataflowjob exists
+	 * Return true if the last dataflowjob exists
 	 * @param df
-	 * @return
+	 * @return True if the last dataflowjob exists
 	 * @throws RemoteException
 	 */
 	public boolean jobExists(DataFlow df) throws RemoteException;

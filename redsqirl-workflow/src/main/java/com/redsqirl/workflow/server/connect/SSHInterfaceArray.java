@@ -75,7 +75,7 @@ public class SSHInterfaceArray extends UnicastRemoteObject implements DataStoreA
 
 	/**
 	 * Add a DataStore to to the list of DataStores
-	 * @param field containing hostname and port
+	 * @param fields containing hostname and port
 	 * @return hostname
 	 * @throws RemoteException 
 	 * @throws Exception

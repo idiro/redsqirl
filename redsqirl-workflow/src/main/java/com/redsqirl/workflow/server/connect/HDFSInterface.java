@@ -464,8 +464,8 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 	/**
 	 * Copy from local fs to HDFS
 	 * 
-	 * @param in_path
-	 * @param out_path
+	 * @param local_path
+	 * @param hdfs_path
 	 * @return Error message
 	 * @throws RemoteException
 	 */
@@ -498,8 +498,8 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 	/**
 	 * Copy from HDFS to local
 	 * 
-	 * @param in_path
-	 * @param out_path
+	 * @param hdfs_path
+	 * @param local_path
 	 * @return Error message
 	 * @throws RemoteException
 	 */
@@ -1113,7 +1113,7 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 	/**
 	 * 
 	 * @param path
-	 * @return
+	 * @return The Parent name
 	 */
 	public String getRelation(String path) {
 		String[] relation = path.substring(1).split("/");

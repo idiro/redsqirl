@@ -26,7 +26,7 @@ public interface SubDataFlow extends DataFlow{
 	 * Save a file in HDFS with different privileges than the default (none).
 	 * @param filePath
 	 * @param newPrivilege
-	 * @return
+	 * @return An error message or null otherwise
 	 * @throws RemoteException
 	 */
 	String save(String filePath,Boolean newPrivilege) throws RemoteException;
@@ -35,14 +35,14 @@ public interface SubDataFlow extends DataFlow{
 	 * Save the SubDataFlow on the web server.
 	 * @param f
 	 * @param newPrivilege
-	 * @return
+	 * @return An error message or null otherwise
 	 * @throws RemoteException
 	 */
 	String saveLocal(File f,Boolean newPrivilege)  throws RemoteException;
 	
 	/**
 	 * HTML string to write into a file that will be the content of the help.
-	 * @return
+	 * @return HTML help text.
 	 * @throws RemoteException
 	 */
 	String buildHelpFileContent() throws RemoteException;
@@ -56,7 +56,7 @@ public interface SubDataFlow extends DataFlow{
 	
 	/**
 	 * Read only the content of what a SuperAction needs to know (input, output, tmp data).
-	 * @return
+	 * @return An error message
 	 * @throws Exception
 	 */
 	String readMetaData() throws Exception;
@@ -70,14 +70,15 @@ public interface SubDataFlow extends DataFlow{
 	
 	/**
 	 * Get the privileges of the current workflow.
-	 * @return
+	 * Null editable - FALSE runnable - TRUE licensed 
+	 * @return The privileges
 	 * @throws RemoteException
 	 */
 	Boolean getPrivilege() throws RemoteException;
 
 	/**
 	 * Get the super action needed for this superaction
-	 * @return
+	 * @return The super action needed for this Sub Dataflow.
 	 * @throws RemoteException
 	 */
 	Set<String> getSuperElementDependencies() throws RemoteException;

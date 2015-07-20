@@ -226,8 +226,7 @@ public class Page extends UnicastRemoteObject implements DFEPage {
 	/**
 	 * Get the user interactions associated with a name
 	 * 
-	 * @param name
-	 *            interaction name
+	 * @param id interaction id
 	 * @return DFEInteraction
 	 * @throws RemoteException
 	 */

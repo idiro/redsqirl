@@ -62,7 +62,7 @@ public class OozieXmlForkJoinPaired extends OozieXmlCreatorAbs {
 	 * properties and the scripts
 	 * @param df
 	 * @param list
-	 * @param dictionary
+	 * @param directory
 	 * @throws RemoteException
 	 */
 	@Override

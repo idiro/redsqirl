@@ -26,7 +26,7 @@ public interface DFEOutput extends Remote {
 	/**
 	 * get default extensions of the output format.
 	 * 
-	 * @return
+	 * @return Get the default extensions supported 
 	 * @throws RemoteException
 	 */
 	public String[] getExtensions() throws RemoteException;
@@ -34,7 +34,7 @@ public interface DFEOutput extends Remote {
 	/**
 	 * allow directories.
 	 * 
-	 * @return
+	 * @return True if the dataset accept directories as input
 	 * @throws RemoteException
 	 */
 	public boolean allowDirectories() throws RemoteException;
@@ -56,14 +56,14 @@ public interface DFEOutput extends Remote {
 	
 	/**
 	 * Get the browser (DataStore class) used for the Type of object.
-	 * @return
+	 * @return The browser associated with this output.
 	 * @throws RemoteException
 	 */
 	public DataStore getBrowser() throws RemoteException;
 
 	/**
 	 * True if the header (name and type of fields) is editable
-	 * @return
+	 * @return True if the header is editable 
 	 * @throws RemoteException
 	 */
 	public boolean getHeaderEditorOnBrowser() throws RemoteException;
@@ -228,7 +228,6 @@ public interface DFEOutput extends Remote {
 	 * Read the dataOutput attributes from an xml element
 	 * 
 	 * @param parent
-	 * @param doc
 	 * @throws RemoteException
 	 */
 	public void read(Element parent) throws RemoteException;
@@ -270,8 +269,7 @@ public interface DFEOutput extends Remote {
 	/**
 	 * Select the first lines of the output if exists
 	 * 
-	 * @param path
-	 * @param maxToRead
+	 * @param maxToRead The maximum number of record to read
 	 * @return List of Lines from the output
 	 * @throws RemoteException
 	 */

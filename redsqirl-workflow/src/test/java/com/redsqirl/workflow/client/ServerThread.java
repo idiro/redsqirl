@@ -29,12 +29,7 @@ public class ServerThread{
 	}
 
 	/**
-	 * run
-	 * 
-	 * creates thread to server rmi
-	 * 
-	 * @return
-	 * @author Igor.Souza
+	 * Creates thread to kick off a user RMI server.
 	 */
 	public void run() {
 
@@ -99,12 +94,8 @@ public class ServerThread{
 	}
 
 	/**
-	 * kill
+	 * kill method to end the connection with the server rmi
 	 * 
-	 * method to end the connection with the server rmi
-	 * 
-	 * @return
-	 * @author Igor.Souza
 	 */
 	public void kill() {
 		logger.debug("kill attempt");

@@ -152,8 +152,8 @@ public class PackageManager extends UnicastRemoteObject {
 	 * Remove a package
 	 * 
 	 * @param user if user is null or empty it is considered as system
-	 * @param packStr
-	 * @return
+	 * @param packStr List of package to remove
+	 * @return An error messag or null otherwise.
 	 */
 	public String removePackage(String user, String[] packStr) {
 		String error = null;
@@ -338,7 +338,7 @@ public class PackageManager extends UnicastRemoteObject {
 	/**
 	 * Initialize the folders for the packages
 	 * 
-	 * @param sys_package
+	 * @param user
 	 */
 	public void init(String user) {
 		File dir = null;
@@ -371,7 +371,7 @@ public class PackageManager extends UnicastRemoteObject {
 	/**
 	 * Get a list of all packages that are installed
 	 * 
-	 * @param sys_package
+	 * @param user  if user is null or empty it is considered as system
 	 * @return List of installed packages
 	 */
 	private List<File> getAllPackages(String user) {
@@ -468,7 +468,7 @@ public class PackageManager extends UnicastRemoteObject {
 	/**
 	 * Get a List of packages that are installed
 	 * 
-	 * @param root_pack
+	 * @param user  if user is null or empty it is considered as system
 	 * @return List of Packages
 	 */
 	public List<String> getPackageNames(String user) {
@@ -493,7 +493,7 @@ public class PackageManager extends UnicastRemoteObject {
 	/**
 	 * Get a property from the package
 	 * 
-	 * @param root_pack
+	 * @param user  if user is null or empty it is considered as system
 	 * @param packageName
 	 * @param property
 	 * @return Error Message
@@ -522,7 +522,7 @@ public class PackageManager extends UnicastRemoteObject {
 	 * Check that there is no duplicate for the package
 	 * 
 	 * @param pack_name
-	 * @param root_pack
+	 * @param user  if user is null or empty it is considered as system
 	 * @param pack_version
 	 * @param checkVersion
 	 * @return Error Message
@@ -568,7 +568,7 @@ public class PackageManager extends UnicastRemoteObject {
 	 * Check that there is no Help file duplicate
 	 * 
 	 * @param pack
-	 * @param sys_package
+	 * @param user if user is null or empty it is considered as system
 	 * @return Error Message
 	 */
 	public String checkNoHelpFileDuplicate(File pack, String user) {
@@ -583,7 +583,7 @@ public class PackageManager extends UnicastRemoteObject {
 	 * Check that there is no Jar File Duplicate
 	 * 
 	 * @param pack
-	 * @param sys_package
+	 * @param user  if user is null or empty it is considered as system
 	 * @return Error Message
 	 */
 	public String checkNoJarFileDuplicate(File pack, String user) {
@@ -598,7 +598,7 @@ public class PackageManager extends UnicastRemoteObject {
 	 * Check if there is no image duplicate
 	 * 
 	 * @param pack
-	 * @param sys_package
+	 * @param user if user is null or empty it is considered as system
 	 * @return error message
 	 */
 	public String checkNoImageFileDuplicate(File pack, String user) {
@@ -644,7 +644,7 @@ public class PackageManager extends UnicastRemoteObject {
 	 * 
 	 * @param pack
 	 * @param pack_name
-	 * @param sys_package
+	 * @param user if user is null or empty it is considered as system
 	 * @return Error Message
 	 */
 	public String checkNoActionDuplicate(File pack, String pack_name,
@@ -795,7 +795,7 @@ public class PackageManager extends UnicastRemoteObject {
 	 * Get the Directory for a package
 	 * 
 	 * @param packName
-	 * @param sys_package
+	 * @param user if user is null or empty it is considered as system
 	 * @return directory
 	 */
 	public File getPackage(String packName, String user) {
@@ -831,7 +831,7 @@ public class PackageManager extends UnicastRemoteObject {
 	/**
 	 * Get the help directory of the package
 	 * 
-	 * @param sys_package
+	 * @param user if user is null or empty it is considered as system
 	 * @return directory
 	 */
 	public File getHelpDir(String user) {
@@ -847,7 +847,7 @@ public class PackageManager extends UnicastRemoteObject {
 	/**
 	 * Get the image directory of the package
 	 * 
-	 * @param sys_package
+	 * @param user if user is null or empty it is considered as system
 	 * @return directory
 	 */
 	public File getImageDir(String user) {
@@ -864,8 +864,7 @@ public class PackageManager extends UnicastRemoteObject {
 	 * Get the Library directory of either the system or user depending on
 	 * boolean
 	 * 
-	 * @param sys_package
-	 *            is it system package
+	 * @param user if user is null or empty it is considered as system
 	 * @return directory
 	 */
 	public File getLibDir(String user ) {

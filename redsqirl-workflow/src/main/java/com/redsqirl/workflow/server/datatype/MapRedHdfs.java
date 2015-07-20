@@ -134,7 +134,7 @@ public abstract class MapRedHdfs extends DataOutput{
 	/**
 	 * Get the DataBrowser
 	 * 
-	 * @return {@link idiro.workflow.server.enumeration.DataBrowser}
+	 * @return The browser name
 	 * @throws RemoteException
 	 */
 	@Override
@@ -443,7 +443,7 @@ public abstract class MapRedHdfs extends DataOutput{
 	 * 
 	 * @param expr
 	 *            to get FieldType of
-	 * @return {@link com.redsqirl.workflow.server.enumeration.FieldType}
+	 * @return The type of the expression
 	 */
 	public static FieldType getType(String expr) {
 

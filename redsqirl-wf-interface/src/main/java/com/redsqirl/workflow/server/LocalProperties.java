@@ -50,7 +50,7 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 	/**
 	 * Get the lang properties for the System
 	 * 
-	 * @return
+	 * @return The description of the system properties
 	 */
 	public Properties getSysLangProperties() {
 		Properties prop = new Properties();

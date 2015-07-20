@@ -68,7 +68,7 @@ public enum DisplayType {
 	// [output>text]
 	/**
 	 * <pre>
-	 * <code>{@value
+	 * <code>
 	 * editor>[keywords>fields>field>[name>value]]
 	 * 							[type>value]]
 	 * 							[help>submenu>[name>value]
@@ -76,7 +76,6 @@ public enum DisplayType {
 	 * 													[input>value]
 	 * 													[return>value]]]
 	 * 							[output>text]
-	 * }
 	 * </code>
 	 * </pre>
 	 */

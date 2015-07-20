@@ -80,9 +80,9 @@ public class ShellAction extends OozieActionAbs {
 	}
 	
 	/**
-	 * Return the shell varialbe ($EXEC_FILE) or null if no extra file.
+	 * Return the shell file variable ($EXEC_FILE) or null if no extra file.
 	 * This value should be use in the command line parsed in #getShellContent method.
-	 * @return
+	 * @return Return the file name used in the bash script
 	 */
 	public String getShellFileVariable(){
 		if(extraFile){

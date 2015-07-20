@@ -89,7 +89,7 @@ public class EditorInteraction extends UserInteraction{
 	}
 	/**
 	 * Get the value of the Interaction
-	 * @return
+	 * @return The value.
 	 * @throws RemoteException
 	 */
 	public String getValue() throws RemoteException{

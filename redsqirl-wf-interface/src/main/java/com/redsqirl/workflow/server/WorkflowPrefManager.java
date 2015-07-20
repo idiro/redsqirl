@@ -718,7 +718,7 @@ public class WorkflowPrefManager extends BlockManager {
 	/**
 	 * User home directory.
 	 * @param user
-	 * @return
+	 * @return The user home path
 	 */
 	public static String getPathUserPref(String user) {
 		return pathUsersFolder + "/" + user;
@@ -726,15 +726,18 @@ public class WorkflowPrefManager extends BlockManager {
 
 	/**
 	 * User icon menu directory.
-	 * @param user
-	 * @return
+	 * @return The icon menu path
 	 */
 	public static String getPathIconMenu() {
 		return  pathUserPref+ "/icon_menu.txt";
 	}
 	
 	
-
+	/**
+	 * Get the Super Action directory
+	 * @param user
+	 * @return The Super Action directory
+	 */
 	public static File getSuperActionMainDir(String user) {
 		File ans = null;
 		if (user != null) {
@@ -751,7 +754,7 @@ public class WorkflowPrefManager extends BlockManager {
 	/**
 	 * User icon menu directory.
 	 * @param user
-	 * @return
+	 * @return The icon menu path.
 	 */
 	public static String getPathIconMenu(String user) {
 		return getPathUserPref(user) + "/icon_menu.txt";
@@ -760,7 +763,7 @@ public class WorkflowPrefManager extends BlockManager {
 	/**
 	 * User temporary folder.
 	 * @param user
-	 * @return
+	 * @return The tmp folder path.
 	 */
 	public static String getPathTmpFolder(String user) {
 		return getPathUserPref(user) + "/tmp";
@@ -769,7 +772,7 @@ public class WorkflowPrefManager extends BlockManager {
 	/**
 	 * User oozie job folder
 	 * @param user
-	 * @return
+	 * @return The local oozie job path
 	 */
 	public static String getPathOozieJob(String user) {
 		return getPathUserPref(user) + "/jobs";
@@ -778,7 +781,7 @@ public class WorkflowPrefManager extends BlockManager {
 	/**
 	 * User temporary workflow folder.
 	 * @param user
-	 * @return
+	 * @return The temporary workflow folder.
 	 */
 	public static String getPathWorkflow(String user) {
 		return getPathUserPref(user) + "/workflows";
@@ -787,7 +790,7 @@ public class WorkflowPrefManager extends BlockManager {
 	/**
 	 * User property file.
 	 * @param user
-	 * @return
+	 * @return The user property file path.
 	 */
 	public static String getPathUserCfgPref(String user) {
 		return getPathUserPref(user) + "/redsqirl_user.properties";
@@ -796,7 +799,7 @@ public class WorkflowPrefManager extends BlockManager {
 	/**
 	 * User link colour property file.
 	 * @param user
-	 * @return
+	 * @return The user colour property file.
 	 */
 	public static String getPathUserDFEOutputColour(String user) {
 		return getPathUserPref(user) + "/output_colours.properties";
@@ -805,7 +808,7 @@ public class WorkflowPrefManager extends BlockManager {
 	/**
 	 * User package folder.
 	 * @param user
-	 * @return
+	 * @return The user package directory path
 	 */
 	public static String getPathUserPackagePref(String user) {
 		return getPathUserPref(user) + "/packages";
@@ -814,7 +817,7 @@ public class WorkflowPrefManager extends BlockManager {
 	/**
 	 * Lib path folder.
 	 * @param user
-	 * @return
+	 * @return The user package library path.
 	 */
 	public static String getUserPackageLibPath(String user) {
 		return getPathUserPref(user) + "/lib/packages";
@@ -823,7 +826,7 @@ public class WorkflowPrefManager extends BlockManager {
 	/**
 	 * User Image folder from install directory.
 	 * @param user
-	 * @return
+	 * @return The image directory path.
 	 */
 	public static String getPathUserImagePref(String user) {
 		return "/packages/" + user + "/images";
@@ -832,7 +835,7 @@ public class WorkflowPrefManager extends BlockManager {
 	/**
 	 * Help folder from install directory.
 	 * @param user
-	 * @return
+	 * @return The help directory path.
 	 */
 	public static String getPathUserHelpPref(String user) {
 		return "/packages/" + user + "/help";
@@ -937,7 +940,7 @@ public class WorkflowPrefManager extends BlockManager {
 	}
 
 	/**
-	 * @return
+	 * @return The system properties
 	 * @see com.redsqirl.workflow.server.LocalProperties#getSysProperties()
 	 */
 	public static Properties getSysProperties() {
@@ -954,7 +957,7 @@ public class WorkflowPrefManager extends BlockManager {
 	}
 
 	/**
-	 * @return
+	 * @return The description system properties
 	 * @see com.redsqirl.workflow.server.LocalProperties#getSysLangProperties()
 	 */
 	public static Properties getSysLangProperties() {
@@ -962,7 +965,7 @@ public class WorkflowPrefManager extends BlockManager {
 	}
 
 	/**
-	 * @return
+	 * @return The user properties
 	 * @see com.redsqirl.workflow.server.LocalProperties#getUserProperties()
 	 */
 	public static Properties getUserProperties() {
@@ -980,7 +983,7 @@ public class WorkflowPrefManager extends BlockManager {
 
 	/**
 	 * @param user
-	 * @return
+	 * @return The user properties
 	 * @see com.redsqirl.workflow.server.LocalProperties#getUserProperties(java.lang.String)
 	 */
 	public static Properties getUserProperties(String user) {
@@ -989,7 +992,7 @@ public class WorkflowPrefManager extends BlockManager {
 
 	/**
 	 * @param user
-	 * @return
+	 * @return The description of the user properties
 	 * @see com.redsqirl.workflow.server.LocalProperties#getUserLangProperties(java.lang.String)
 	 */
 	public static Properties getUserLangProperties(String user) {
@@ -998,7 +1001,7 @@ public class WorkflowPrefManager extends BlockManager {
 
 	/**
 	 * @param key
-	 * @return
+	 * @return The system property value
 	 * @see com.redsqirl.workflow.server.LocalProperties#getSysProperty(java.lang.String)
 	 */
 	public static String getSysProperty(String key) {
@@ -1008,7 +1011,7 @@ public class WorkflowPrefManager extends BlockManager {
 	/**
 	 * @param key
 	 * @param defaultValue
-	 * @return
+	 * @return The system property value
 	 * @see com.redsqirl.workflow.server.LocalProperties#getSysProperty(java.lang.String, java.lang.String)
 	 */
 	public static String getSysProperty(String key, String defaultValue) {
@@ -1017,7 +1020,7 @@ public class WorkflowPrefManager extends BlockManager {
 
 	/**
 	 * @param key
-	 * @return
+	 * @return The user property value
 	 * @see com.redsqirl.workflow.server.LocalProperties#getUserProperty(java.lang.String)
 	 */
 	public static String getUserProperty(String key) {
@@ -1027,7 +1030,7 @@ public class WorkflowPrefManager extends BlockManager {
 	/**
 	 * @param key
 	 * @param defaultValue
-	 * @return
+	 * @return The user property value
 	 * @see com.redsqirl.workflow.server.LocalProperties#getUserProperty(java.lang.String, java.lang.String)
 	 */
 	public static String getUserProperty(String key, String defaultValue) {
@@ -1043,14 +1046,14 @@ public class WorkflowPrefManager extends BlockManager {
 	
 	/**
 	 * 
-	 * @return
+	 * @return the licence file path
 	 */
 	public static String getPathSystemLicence() {
 		return pathSystemLicence;
 	}
 	/**
 	 * 
-	 * @return
+	 * @return the user folder path
 	 */
 	public static String getPathUsersFolder() {
 		return pathUsersFolder;

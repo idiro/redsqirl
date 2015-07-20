@@ -252,7 +252,7 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 	 * Get a name for a directory to store all the jobs files and configuration
 	 * 
 	 * @param df
-	 * @return
+	 * @return The name for a directory to store all the jobs files and configuration
 	 * @throws RemoteException
 	 */
 	protected String buildFileName(DataFlow df) throws RemoteException {

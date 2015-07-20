@@ -131,7 +131,7 @@ public class AppendListInteraction extends UserInteraction{
 	
 	/**
 	 * Set if the list is sorted or not
-	 * @param checkBox
+	 * @param sorted
 	 * @throws RemoteException
 	 */
 	public void setSorted(boolean sorted) throws RemoteException{
@@ -171,7 +171,7 @@ public class AppendListInteraction extends UserInteraction{
 	
 	/**
 	 * Get the list of possible values that can be used
-	 * @return
+	 * @return The list of possible values that can be used
 	 */
 	public List<String> getPossibleValues(){
 		return getPossibleValuesFromList();

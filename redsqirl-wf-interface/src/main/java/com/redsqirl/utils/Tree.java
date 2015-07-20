@@ -45,28 +45,28 @@ public interface Tree<T> extends Remote{
 	/**
 	 * Find all children that contains an element
 	 * @param element element to search for 
-	 * @return List of {@link idiro.utils.Tree<T>} that contains element
+	 * @return List of Tree that contains element
 	 * @throws RemoteException
 	 */
 	public List<Tree<T>> findInTree(T element) throws RemoteException;
 	/**
 	 * Get a list of children with a specific head
 	 * @param element head to look for
-	 * @return List of {@link idiro.utils.Tree<T>} that contains the head
+	 * @return List of Tree that contains the head
 	 * @throws RemoteException
 	 */
 	public List<Tree<T>> getChildren(T element) throws RemoteException;
 	/**
 	 * Find a list of children with a specific head
 	 * @param element head to look for
-	 * @return List of {@link idiro.utils.Tree<T>} that contains the head
+	 * @return List of Tree that contains the head
 	 * @throws RemoteException
 	 */
 	public List<Tree<T>> findChildren(T element) throws RemoteException;
 	/**
 	 * Get the first child element with a specific head
 	 * @param element head to look for
-	 * @return {@link idiro.utils.Tree<T>} that contains the head
+	 * @return Tree that contains the head
 	 * @throws RemoteException
 	 */
 	public Tree<T> getFirstChild(T element) throws RemoteException;
@@ -74,27 +74,27 @@ public interface Tree<T> extends Remote{
 	/**
 	 * Find the first child element with a specific head
 	 * @param element head to look for
-	 * @return {@link idiro.utils.Tree<T>} that contains the head
+	 * @return Tree that contains the head
 	 * @throws RemoteException
 	 */
 	public Tree<T> findFirstChild(T element) throws RemoteException;
 	/**
 	 * Get the first child element of the tree
-	 * @return {@link idiro.utils.Tree<T>} of the first child
+	 * @return Tree of the first child
 	 * @throws RemoteException
 	 */
 	public Tree<T> getFirstChild() throws RemoteException ;
 	
 	/**
 	 * Add an child element to a tree
-	 * @param e {@link idiro.utils.Tree<T>} to be added to the parent
+	 * @param e Tree to be added to the parent
 	 * 
 	 */
 	public void add(Tree<T> e) throws RemoteException;
 	/**
 	 * Add an head to a tree
 	 * @param element
-	 * @return {@link idiro.utils.Tree<T>} with added head 
+	 * @return Tree with added head 
 	 * @throws RemoteException
 	 */
 	public Tree<T> add(T element) throws RemoteException;
@@ -128,7 +128,7 @@ public interface Tree<T> extends Remote{
 	
 	/**
 	 * Get the parent tree
-	 * @return {@link idiro.utils.Tree<T>} the parent
+	 * @return Parent tree
 	 * @throws RemoteException
 	 */
 	public Tree<T> getParent() throws RemoteException;

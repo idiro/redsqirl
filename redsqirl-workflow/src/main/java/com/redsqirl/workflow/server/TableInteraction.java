@@ -309,7 +309,7 @@ public class TableInteraction extends UserInteraction {
 
 	/**
 	 * Get the possible value for each column that have the constraint
-	 * @return
+	 * @return The possible value for each column that have the constraint.
 	 * @throws RemoteException
 	 */
 	protected Map<String,Set<String>> getColumnsPosValue() throws RemoteException{

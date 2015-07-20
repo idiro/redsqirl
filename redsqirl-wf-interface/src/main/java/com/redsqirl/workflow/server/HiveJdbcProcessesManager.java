@@ -20,7 +20,7 @@ public class HiveJdbcProcessesManager extends ProcessesManager {
 
 	/**
 	 * Get the latest instance of Process Manager for Hive JDBC
-	 * @return {@link com.redsqirl.workflow.server.ProcessesManager} current instance for Hive JDBC
+	 * @return Current instance for Hive JDBC
 	 * @throws IOException
 	 */
 	public ProcessesManager getInstance() throws IOException {

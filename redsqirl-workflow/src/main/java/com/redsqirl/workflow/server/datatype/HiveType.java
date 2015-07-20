@@ -95,10 +95,9 @@ public class HiveType extends DataOutput{
 		return "Hive Table";
 	}
 	/**
-	 * Get the BrowserType
-	 * @return {@link idiro.workflow.server.enumeration.DataBrowser
+	 * Get the Browser Unique Name
+	 * @return The browser name
 	 * @throws RemoteException
-}
 	 */
 	@Override
 	public String getBrowserName() throws RemoteException {

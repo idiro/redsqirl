@@ -172,7 +172,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 	 * Write the properties of this action into a file
 	 * @param doc
 	 * @param t
-	 * @return
+	 * @return The new XML node
 	 * @throws RemoteException
 	 * @throws DOMException
 	 */
@@ -313,7 +313,7 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 
 	/**
 	 * Set the interaction tree
-	 * @param inputToDisplay the inputToDisplay to set
+	 * @param tree
 	 */
 	public final void setTree(Tree<String> tree) {
 		this.tree = tree;

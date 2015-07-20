@@ -52,17 +52,35 @@ avoid permission conflicts.
 
   [[06]] Choose between On-line - if the server can connect to the analytics-store server - (step 7) or Off-line(step 10) in the combobox.
 
-  [[07]] At first, you will need to create an Analytics Store user. Then, sign in with your new credentials.
+  [[07]] On-line
 
-  [[08]] In the License key page you need to input the number of nodes and press ok button. (This is going to generate your license key)
+     [[i]] At first, you will need to create an Analytics Store user. Then, sign in with your new credentials.
 
-  [[09]] Sign in with your OS details. On the first page follow the Analytics Store link, register an account, go to Red Sqirl installation, new license key, download. Create a license. In the License key page you need to upload your license key file.(licenseKey.properties)
-   
-  [[10]] After this you are already to start using Red Sqirl (Sign-out) or if you want you can install packages.
+     [[ii]] In the License key page you need to input the maximum number of nodes that your Hadoop cluster contains and press the ok button. (This is going to generate your license key)
 
-  [[11]] If you download the zip without tomcat, you need to configure the conf/server.xml and set the port number that you want.
+     [[iii]] Install the recommended default package. Go to 8. 
 
-  [[12]] copy the redsqirl.war inside the tomcat/webapp folder and them run (tomcat/bin/startup.sh)
+  [[08]] Off-line
+
+     [[i]] Sign in with your OS details. 
+
+     [[ii]] On the first page follow the Analytics Store link, register an account and sign in.
+
+     [[iii]] Go to Red Sqirl>>Installation, Click on the green button New licence key and fill the form.
+
+     [[iv]] Go to Red Sqirl>>Search, Redsqirl Pig, Request Key as system
+
+     [[v]] Go to Red Sqirl>>Installation, click on the installation you just created, then click on the Download button.
+
+     [[vi]] Download also the Red Sqirl Pig package.
+
+     [[vii]] Go to the installation you just created, and click download. Create a license. In the License key page you need to upload your license key file.(licenseKey.properties)
+
+     [[viii]] Go back to your Red Sqirl tab, upload the licenseKey.properties file you just downloaded and click OK
+
+     [[ix]] Upload the Red Sqirl Pig package (.zip) downloaded in the new page. Go to 8.
+ 
+  [[08]] You can then sign out from the admin page and sign in to your account.
 
   []
 

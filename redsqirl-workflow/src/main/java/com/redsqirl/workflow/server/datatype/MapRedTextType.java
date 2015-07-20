@@ -296,7 +296,7 @@ public class MapRedTextType extends MapRedDir {
 	/**
 	 * Get the delimiter in either octal or decimal notation
 	 * 
-	 * @return
+	 * @return The delimiter in either octal or decimal notation
 	 */
 	public String getDelimiterOrOctal() {
 		String octal = getOctalDelimiter();

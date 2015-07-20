@@ -48,7 +48,8 @@ public class BrowserInteraction extends UserInteraction{
 	/**
 	 * Update the interaction
 	 * 
-	 * @param in
+	 * @param newType New type (Browser name from DataStore class)
+	 * @param newSubtype New Sub type (Output name from DataOutput name)
 	 * @throws RemoteException
 	 */
 	public void update(String newType, String newSubtype) throws RemoteException {

@@ -8,8 +8,8 @@ public interface HdfsDataStore extends DataStore{
 	/**
 	 * Copy from local fs to HDFS
 	 * 
-	 * @param in_path
-	 * @param out_path
+	 * @param local_path The path to copy from
+	 * @param hdfs_path The path to copy to
 	 * @return Error message
 	 * @throws RemoteException
 	 */
@@ -19,8 +19,8 @@ public interface HdfsDataStore extends DataStore{
 	/**
 	 * Copy from HDFS to local
 	 * 
-	 * @param in_path
-	 * @param out_path
+	 * @param hdfs_path The path to copy from
+	 * @param local_path The path to copy to
 	 * @return Error message
 	 * @throws RemoteException
 	 */

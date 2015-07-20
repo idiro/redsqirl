@@ -63,7 +63,7 @@ public interface DataStore extends Remote {
 		/**
 		 * Type associated to the property
 		 * 
-		 * @return {@link com.redsqirl.workflow.server.enumeration.FieldType} of property
+		 * @return Property Type
 		 * @throws RemoteException
 		 */
 		FieldType getType() throws RemoteException;
@@ -71,7 +71,7 @@ public interface DataStore extends Remote {
 	
 	/**
 	 * Name of the browser, it has to be unique for each class.
-	 * @return
+	 * @return The browser name.
 	 * @throws RemoteException
 	 */
 	public String getBrowserName() throws RemoteException;
@@ -103,7 +103,7 @@ public interface DataStore extends Remote {
 	/**
 	 * Default Path where to start from next time
 	 * 
-	 * @return path default
+	 * @param path default
 	 * @throws RemoteException
 	 */
 	void setDefaultPath(String path) throws RemoteException;
@@ -156,19 +156,18 @@ public interface DataStore extends Remote {
 	void savePathList(String repo, List<String> paths) throws RemoteException;
 	
 	/**
-	 * Read a path list from disk
+	 * Read a history of path
 	 * @param repo key: path, value file name
-	 * @return
+	 * @return The history of path saved on the system
 	 * @throws RemoteException
 	 */
 	Map<String,String> readPathList(String repo) throws RemoteException;
 	
 	
 	/**
-	 * Get the properties. Get the properties associated with the children of
-	 * the current path.
+	 * Get all the properties available in this datastore. 
 	 * 
-	 * @return {@link java.util.Map<String, ParamProperty>} of paramater properties
+	 * @return Name of the properties and their settings.
 	 * @throws RemoteException
 	 */
 	Map<String, ParamProperty> getParamProperties() throws RemoteException;
@@ -242,9 +241,9 @@ public interface DataStore extends Remote {
 	 * Select from the given path the n first elements with a delimiter.
 	 * 
 	 * @param path
-	 * @param delimiter
-	 * @param maxToRead
-	 * @return {@link java.util.List<String>} of text from the dataset
+	 * @param delimiter Delimiter to use for separating the fields
+	 * @param maxToRead Maximum number of record to read
+	 * @return Array of Records
 	 * @throws RemoteException
 	 */
 	List<String> select(String path, String delimiter, int maxToRead)
@@ -253,9 +252,9 @@ public interface DataStore extends Remote {
 	/**
 	 * Select from the current path the n first elements with a delimiter.
 	 * 
-	 * @param delimiter
-	 * @param maxToRead
-	 * @return {@link java.util.List<String>} of text from the dataset
+	 * @param delimiter Delimiter to use for separating the fields
+	 * @param maxToRead Maximum number of record to read
+	 * @return Array of Records
 	 * @throws RemoteException
 	 */
 	List<String> select(String delimiter, int maxToRead) throws RemoteException;
@@ -264,10 +263,9 @@ public interface DataStore extends Remote {
 	/**
 	 * ASCII Human readable only select display from the given path the n first elements with a delimiter.
 	 * 
-	 * @param path
-	 * @param delimiter
-	 * @param maxToRead
-	 * @return {@link java.util.List<String>} of text from the dataset
+	 * @param path The path of the dataset
+	 * @param maxToRead Maximum number of record to read
+	 * @return Array of Records
 	 * @throws RemoteException
 	 */
 	List<String> displaySelect(String path, int maxToRead)
@@ -276,9 +274,8 @@ public interface DataStore extends Remote {
 	/**
 	 * ASCII Human readable only select display.
 	 * 
-	 * @param delimiter
 	 * @param maxToRead
-	 * @return {@link java.util.List<String>} of text from the dataset
+	 * @return Array of Records
 	 * @throws RemoteException
 	 */
 	List<String> displaySelect(int maxToRead) throws RemoteException;
@@ -288,7 +285,7 @@ public interface DataStore extends Remote {
 	 * 
 	 * @param path
 	 *            the path in which the properties are extracted
-	 * @return {@link java.util.Map<String, String>} of properties
+	 * @return The current element properties 
 	 * @throws RemoteException
 	 */
 	Map<String, String> getProperties(String path) throws RemoteException;
@@ -296,7 +293,7 @@ public interface DataStore extends Remote {
 	/**
 	 * Get the properties of the current element.
 	 * 
-	 * @return {@link java.util.Map<String, String>} of properties
+	 * @return Current element properties
 	 * @throws RemoteException
 	 */
 	Map<String, String> getProperties() throws RemoteException;
@@ -304,7 +301,7 @@ public interface DataStore extends Remote {
 	/**
 	 * Get the children properties of the current element.
 	 * 
-	 * @return {@link java.util.Map<String, Map<String, String>>} of properties, or null if the object cannot have children.
+	 * @return Children properties of the current element, or null if the object cannot have children.
 	 * @throws RemoteException
 	 */
 	Map<String, Map<String, String>> getChildrenProperties()

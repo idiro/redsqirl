@@ -1,12 +1,9 @@
 package com.redsqirl.keymanager.ciphers;
 
-import java.io.File;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.Random;
-
-import com.jcraft.jsch.Logger;
 
 public abstract class KeyCipher {
 

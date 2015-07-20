@@ -415,8 +415,8 @@ public class OozieDag {
 	 * 
 	 * @param element
 	 *            to join at
-	 * @param fork
-	 *            point ot add the join after
+	 * @param join
+	 *            point to add the join after
 	 * @param name
 	 *            to be added to join to identify join
 	 */

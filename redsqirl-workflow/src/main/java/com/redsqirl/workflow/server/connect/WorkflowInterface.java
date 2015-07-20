@@ -223,8 +223,8 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	
 	/**
 	 * Clone a data flow
-	 * @param from
-	 * @return
+	 * @param wfName The data flow to clone
+	 * @return The id of the clone
 	 */
 	@Override
 	public String cloneDataFlow(String wfName){
@@ -268,9 +268,9 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	
 	/**
 	 * Copy a subset of a workflow into another.
-	 * @param from
-	 * @param elements
-	 * @param to
+	 * @param cloneId The id of the workflow to copy from 
+	 * @param elements The element ids to copy
+	 * @param wfName The id of the workflow to copy to
 	 */
 	public void copy(String cloneId, List<String> elements, String wfName){
 		
@@ -502,7 +502,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 		
 		int sizeCluster = NameNodeVar.getNbSlaves();
 		logger.info("sizeCluster " + sizeCluster + " numberCluster " + numberCluster);
-		if(numberCluster >= sizeCluster || sizeCluster == 0){
+		if(numberCluster < sizeCluster || sizeCluster == 0){
 			return false;
 		}
 		

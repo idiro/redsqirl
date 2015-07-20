@@ -64,7 +64,7 @@ public interface DFELinkProperty extends Remote {
 	 * @param componentId
 	 * @param componentName
 	 * @param outName
-	 * @return
+	 * @return an error message or null
 	 * @throws RemoteException
 	 */
 	public String checkStr(

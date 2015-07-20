@@ -11,15 +11,15 @@ import com.redsqirl.workflow.server.enumeration.FieldType;
 public class PigTypeConvert {
 	/**
 	 * Get the type as FieldType
-	 * @param hiveType
-	 * @return {@link com.redsqirl.workflow.server.enumeration.FieldType}
+	 * @param pigType
+	 * @return The Type
 	 */
-	public static FieldType getType(String hiveType) {
+	public static FieldType getType(String pigType) {
 		FieldType ans = null;
-		if (hiveType.equalsIgnoreCase("CHARARRAY")) {
+		if (pigType.equalsIgnoreCase("CHARARRAY")) {
 			ans = FieldType.STRING;
 		} else {
-			ans = FieldType.valueOf(hiveType);
+			ans = FieldType.valueOf(pigType);
 		}
 		return ans;
 	}
