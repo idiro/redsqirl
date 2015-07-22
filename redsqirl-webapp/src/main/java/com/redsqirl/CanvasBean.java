@@ -2668,21 +2668,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 	}
 
-	public void collapsePanelRunningElement(){
-		if(isRunningElementsToggle()){
-			setRunningElementsToggle(false);
-		}else{
-			setRunningElementsToggle(true);
-		}
-	}
-
-	public void collapsePanelCompletedActionsList(){
-		if(isDoneElementsToggle()){
-			setDoneElementsToggle(false);
-		}else{
-			setDoneElementsToggle(true);
-		}
-	}
+	
 
 	public DataFlow getDf() {
 		return df;

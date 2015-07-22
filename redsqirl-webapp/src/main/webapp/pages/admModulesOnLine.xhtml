@@ -26,8 +26,21 @@ jQuery.noConflict();
 
 jQuery(function() {
 
+	updateDefaultInstallation();
+
+	if(#{analyticsStoreSearchBean.showDefaultInstallation == 'Y'}){
+		#{rich:component('defaultInstallation')}.show();
+	}else{
+		#{rich:component('defaultInstallation')}.hide();
+	}
+
+	jQuery('[id$="moduleIframe"]').contents().find('[id$="searchPckBt"]').click();
 	
 });
+
+function searchJS(){
+	jQuery('[id$="moduleIframe"]').contents().find('[id$="searchPckBt"]').click();
+}
 
 </script>
 
@@ -36,6 +49,8 @@ jQuery(function() {
 <body>
 
 	<h:form>
+	
+	<a4j:jsFunction name="updateDefaultInstallation" action="#{analyticsStoreSearchBean.init}" />
 		
 		<img src="./image/login_squirl_background.png" style="width:90%;position:absolute;z-index:-1;height:90%;left:6%;min-width:600px;" onError="this.onerror=null;this.src='../image/login_squirl_background.png';" />
 		<img src="./image/analytics_store_logo.gif" style="width:180px;" onError="this.onerror=null;this.src='../image/analytics_store_logo.gif';" />
@@ -61,19 +76,19 @@ jQuery(function() {
 			
 						</rich:dropDownMenu>
 						
-						<rich:dropDownMenu>
+						<rich:dropDownMenu itemClass="admMenu">
 		
 							<f:facet name="label">
 								<h:panelGroup>
-									<h:outputText value="#{messages.label_modules}" />
+									<h:outputText value="#{messages.label_packages}" />
 								</h:panelGroup>
 							</f:facet>
 							
 							<rich:menuItem submitMode="none">
-								<rich:menuItem submitMode="none" value="#{messages.label_modules_install}" onclick="installModule();" />
+								<rich:menuItem submitMode="none" value="#{messages.label_package_install}" onclick="installModule();" />
 							</rich:menuItem>
-							<rich:menuItem submitMode="none" rendered="#{analyticsStoreLoginBean.showUninstall == 'Y'}" >
-								<rich:menuItem submitMode="none" value="#{messages.label_modules_uninstall}" onclick="uninstallModule();" />
+							<rich:menuItem submitMode="none" rendered="#{analyticsStoreLoginBean.showUninstall == 'Y'}" id="menuModuleUninstall" >
+								<rich:menuItem submitMode="none" value="#{messages.label_package_uninstall}" onclick="uninstallModule();" />
 							</rich:menuItem>
 			
 						</rich:dropDownMenu>
@@ -106,12 +121,13 @@ jQuery(function() {
 				<td>
 					<center>
 					
-						<h:outputText value="#{messages.label_modules_install}" style="font-size:50px;position:relative;left:0px;color:#818286;" />
+						<h:outputText value="#{messages.label_package_install}" style="font-size:50px;position:relative;left:0px;color:#818286;" 
+							title="#{messages.label_packages}" />
 						
 						<br/><br/>
 					
-						<iframe src="../pages/admSearch.xhtml?userInstall=#{packageMngBean.userInstall}&amp;type=#{packageMngBean.type}"
-    						width="900px" height="600px" style="border:none;" />
+						<iframe id="moduleIframe" src="../pages/admSearch.xhtml?userInstall=false" width="900px" height="600px" style="border:none;" />
+    						
     				</center>
     				
 				</td>
@@ -122,6 +138,58 @@ jQuery(function() {
 		<div style="height:100px;width:100%;background:#C0D72F;position:fixed;bottom:0px;" />
 	
 	</h:form>
+	
+	
+	
+	
+	<rich:modalPanel id="defaultInstallation" width="400" height="200" style="overflow:auto;" resizeable="false" >
+
+		<f:facet name="header">
+			<h:outputText value='#{messages.label_default_installation}' />
+		</f:facet>
+
+		<h:form>
+		
+			<h:panelGrid>
+				<h:outputText value="#{messages.label_default_installation_info}" class="formLabel" />
+				
+				<br/>
+				
+				<h:outputText value="#{analyticsStoreSearchBean.defaultInstallation}" escape="false" />
+			</h:panelGrid>
+					
+			<br/><br/>
+			
+			<center>
+				<a4j:commandButton value="#{messages.button_ok}" action="#{analyticsStoreSearchBean.installDefaultInstallation}" reRender="msnSuccess,menuModule"
+					oncomplete="#{rich:component('defaultInstallation')}.hide();" styleClass="greenButton" />
+				<a4j:commandButton value="#{messages.button_cancel}" oncomplete="#{rich:component('defaultInstallation')}.hide(); searchJS();" 
+					styleClass="greenButton" />
+			</center>
+			
+		</h:form>
+		
+		<h:form>
+		
+			<rich:modalPanel id="msnSuccess"
+				showWhenRendered="#{requestScope['msnSuccess'] != null}">
+				<div style="width: 100%; height: 100%; overflow: auto;">
+					<rich:messages id="msgS" globalOnly="false" layout="list"
+						styleClass="message" infoClass="messageok" errorClass="messageerro"
+						warnClass="messagealert" showDetail="true" showSummary="false"
+						ajaxRendered="false" />
+					<a4j:commandButton styleClass="greenButton"
+						value="#{messages.button_ok}"
+						onclick="#{rich:component('msnSuccess')}.hide(); searchJS();"
+						style="bottom:14%;position:relative;" reRender="msnSuccess, msgS" />
+				</div>
+			</rich:modalPanel>
+		
+		</h:form>
+		
+		
+	</rich:modalPanel>
+	
 
 </body>
 </html>

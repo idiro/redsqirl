@@ -961,8 +961,6 @@
 	
 	<a4j:region renderRegionOnly="true">
 				
-		<a4j:jsFunction name="collapsePanelRunningElementOnClick" action="#{canvasBean.collapsePanelRunningElement}" reRender="runningprogressComponent" />
-		<a4j:jsFunction name="collapsePanelCompletedActionsListOnClick" action="#{canvasBean.collapsePanelCompletedActionsList}" reRender="runningprogressComponent" />
 		
 		<div id="domMessageDivCanvas2" style="display: none;">
 			
@@ -983,12 +981,12 @@
 	
 					<br/>
 					<a4j:outputPanel id="runningprogressComponent">
-						<rich:simpleTogglePanel id="runningActionsList" label="Running Actions (#{canvasBean.runningElementsSize})" switchType="client" onclick="collapsePanelRunningElementOnClick();" opened="#{canvasBean.runningElementsToggle}" >
+						<rich:simpleTogglePanel id="runningActionsList" label="Running Actions (#{canvasBean.runningElementsSize})" switchType="client"  >
 							<ui:repeat value="#{canvasBean.runningElements}" var="item">
 	                   			#{item}<br />
 	               			</ui:repeat>
 						</rich:simpleTogglePanel>
-						<rich:simpleTogglePanel id="completedActionsList" label="Actions Completed (#{canvasBean.doneElementsSize})" switchType="client" onclick="collapsePanelCompletedActionsListOnClick();" opened="#{canvasBean.doneElementsToggle}" >
+						<rich:simpleTogglePanel id="completedActionsList" label="Actions Completed (#{canvasBean.doneElementsSize})" switchType="client"  >
 							<ui:repeat value="#{canvasBean.doneElements}" var="item">
 	                   			#{item}<br />
 	               			</ui:repeat>
@@ -1537,8 +1535,6 @@
 
 				<a4j:status onstart="blockRunningWorkflowJS();" />
 
-				
-
 				<a4j:jsFunction name="blockRunningWorkflow"
 					action="#{canvasBean.blockRunningWorkflow}"
 					oncomplete="if(lastBlockedRunningWorkflow == getSelectedById()){unblockRunningWorkflowJS();setRunning(getSelectedByName(), false);updateAllArcsStatus();}">
@@ -1786,7 +1782,7 @@
 						</a></td>
 						<td style="width: 100%; vertical-align: bottom;"><rich:toolBar>
 
-								<rich:dropDownMenu>
+								<rich:dropDownMenu itemClass="canvasMenu">
 
 									<f:facet name="label">
 										<h:panelGroup>
@@ -1839,7 +1835,7 @@
 
 								</rich:dropDownMenu>
 
-								<rich:dropDownMenu>
+								<rich:dropDownMenu itemClass="canvasMenu">
 
 									<f:facet name="label">
 										<h:panelGroup>
@@ -1901,7 +1897,7 @@
 
 								</rich:dropDownMenu>
 
-								<rich:dropDownMenu>
+								<rich:dropDownMenu itemClass="canvasMenu">
 
 									<f:facet name="label">
 										<h:panelGroup>
@@ -1971,7 +1967,7 @@
 
 								</rich:dropDownMenu>
 
-								<rich:dropDownMenu>
+								<rich:dropDownMenu itemClass="canvasMenu">
 
 									<f:facet name="label">
 										<h:panelGroup>

@@ -26,10 +26,8 @@ function changeCurrentElementId(){
                 <a4j:actionparam name="comment" />
             </a4j:jsFunction>
             
-            <a4j:jsFunction name="changeModalTitle"
-                action="#{canvasModalBean.changeTitle}"
-                reRender="canvasModalPanel" >
-            </a4j:jsFunction>
+            <a4j:jsFunction name="changeModalTitle" action="#{canvasModalBean.changeTitle}" reRender="pageTitle" />
+            
         </a4j:region>
 
 		<h:outputText value="#{messages.obj_newid}" title="#{messages.obj_newid_tk}" />

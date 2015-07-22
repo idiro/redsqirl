@@ -333,7 +333,7 @@ public class AnalyticsStoreInstallationsBean extends BaseBean implements Seriali
 			file.delete();
 
 			if (error == null){
-				MessageUseful.addInfoMessage("Packge Installed.");
+				MessageUseful.addInfoMessage("Package Installed.");
 			}else{
 				MessageUseful.addInfoMessage("Error installing package: " + error);
 			}

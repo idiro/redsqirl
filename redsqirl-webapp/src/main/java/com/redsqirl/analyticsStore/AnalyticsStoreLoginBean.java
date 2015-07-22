@@ -44,6 +44,7 @@ import ch.ethz.ssh2.Connection;
 import com.google.common.io.Files;
 import com.idiro.ProjectID;
 import com.redsqirl.BaseBean;
+import com.redsqirl.SettingsBean;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.utils.PackageManager;
@@ -135,12 +136,7 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 
 		try{
 
-			PackageManager pckManager = new PackageManager();
-			if(pckManager.getPackageNames(null).isEmpty()){
-				showUninstall = "N";
-			}else{
-				showUninstall = "Y";
-			}
+			updateUninstalMenu();
 
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -802,11 +798,11 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 		HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 		request.setAttribute("msnSuccess", "msnSuccess");
 
-		if(pckManager.getPackageNames(null).isEmpty()){
-			showUninstall = "N";
-		}else{
-			showUninstall = "Y";
-		}
+		updateUninstalMenu();
+		
+		FacesContext context = FacesContext.getCurrentInstance();
+		AnalyticsStoreSearchBean analyticsBean = (AnalyticsStoreSearchBean) context.getApplication().evaluateExpressionGet(context, "#{analyticsStoreSearchBean}", AnalyticsStoreSearchBean.class);
+		analyticsBean.updateShowDefaultInstallation();
 
 	}
 
