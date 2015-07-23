@@ -79,14 +79,7 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 		}
 		
 		try {
-			PackageManager pckManager = new PackageManager();
-			
-			if(pckManager.getPackageNames(null).isEmpty()){
-				setShowDefaultInstallation("Y");
-			}else{
-				setShowDefaultInstallation("N");
-			}
-			
+			updateShowDefaultInstallation();			
 			setDefaultInstallation("Pig Package <br/>");
 			
 		} catch (RemoteException e) {
@@ -104,6 +97,15 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 			moduleTypes.add(new SelectItem("package","Package"));
 		}*/
 		
+	}
+	
+	public void updateShowDefaultInstallation() throws RemoteException{
+		PackageManager pckManager = new PackageManager();
+		if(pckManager.getPackageNames(null).isEmpty()){
+			setShowDefaultInstallation("Y");
+		}else{
+			setShowDefaultInstallation("N");
+		}
 	}
 
 	public void retrieveAllPackageList() throws SQLException, ClassNotFoundException{
@@ -203,9 +205,19 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 			request.setAttribute("msnSuccess", "msnSuccess");
 		}else{
 			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-			MessageUseful.addInfoMessage("Packge Installed" + getMessageResources("success_message"));
+			MessageUseful.addInfoMessage("Package Installed");
 			request.setAttribute("msnSuccess", "msnSuccess");
 		}
+		
+		FacesContext context = FacesContext.getCurrentInstance();
+		AnalyticsStoreLoginBean analyticsBean = (AnalyticsStoreLoginBean) context.getApplication().evaluateExpressionGet(context, "#{analyticsStoreLoginBean}", AnalyticsStoreLoginBean.class);
+		try {
+			analyticsBean.updateUninstalMenu();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		
+		setShowDefaultInstallation("N");
 		
 	}
 	

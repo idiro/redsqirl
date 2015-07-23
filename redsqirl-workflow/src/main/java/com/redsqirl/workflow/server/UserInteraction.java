@@ -411,11 +411,10 @@ public class UserInteraction extends UnicastRemoteObject implements DFEInteracti
 		}else{
 			logger.info("interaction : "+getName());
 			List<String> possibleValues = getPossibleValuesFromList();
-			logger.debug(possibleValues);
+			logger.info(possibleValues);
 			try{
-				String value = getTree()
-						.getFirstChild("list").getFirstChild("output").getFirstChild().getHead();
-				logger.debug(value);
+				String value = getTree().getFirstChild("list").getFirstChild("output").getFirstChild().getHead();
+				logger.info(value);
 				if(!possibleValues.contains(value)){
 					error = LanguageManagerWF.getText("UserInteraction.invalidvalue",new Object[]{value});
 				}

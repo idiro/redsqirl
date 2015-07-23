@@ -63,19 +63,19 @@ jQuery(function() {
 			
 						</rich:dropDownMenu>
 						
-						<rich:dropDownMenu>
+						<rich:dropDownMenu itemClass="admMenu">
 		
 							<f:facet name="label">
 								<h:panelGroup>
-									<h:outputText value="#{messages.label_modules}" />
+									<h:outputText value="#{messages.label_packages}" />
 								</h:panelGroup>
 							</f:facet>
 							
 							<rich:menuItem submitMode="none">
-								<rich:menuItem submitMode="none" value="#{messages.label_modules_install}" onclick="installModule();" />
+								<rich:menuItem submitMode="none" value="#{messages.label_package_install}" onclick="installModule();" />
 							</rich:menuItem>
 							<rich:menuItem submitMode="none" rendered="#{analyticsStoreLoginBean.showUninstall == 'Y'}" >
-								<rich:menuItem submitMode="none" value="#{messages.label_modules_uninstall}" onclick="uninstallModule();" />
+								<rich:menuItem submitMode="none" value="#{messages.label_package_uninstall}" onclick="uninstallModule();" />
 							</rich:menuItem>
 			
 						</rich:dropDownMenu>

@@ -390,7 +390,7 @@ table[id*="msnError"]{
 .messageok {
 	background: url("../image/icons/li_msg_ok.gif") no-repeat;
 	background-position: top left;
-	padding-left: 20px;
+	padding-left: 30px;
 	height:35px;
 	color: #336699;
 }
@@ -691,7 +691,7 @@ table.secondtable td {
 .rich-menu-list-border {
 	border: 2px solid #FFFFFF;
 	border-radius: 7px;
-	width: 210px;
+	/* width: 210px; */
 	color: #dadbdd;
 	background-color: #dadbdd;
 }
@@ -703,6 +703,7 @@ table.secondtable td {
 }
 
 .rich-menu-item-hover {
+	border-radius: 7px;
 	background-color: #c62127;
 	border: none;
 	color: #FFFFFF;
@@ -720,9 +721,17 @@ table.secondtable td {
 	border-radius: 7px;
 	color: #dadbdd;
 	background-color: #dadbdd;
-	width: 210px;
+	/* width: 210px; */
 	border: none;
 	background-image: url();
+}
+
+.admMenu{
+	width: 160px !important;
+}
+
+.canvasMenu{
+	width: 210px !important;
 }
 
 .rich-menu-item-icon {

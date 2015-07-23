@@ -464,7 +464,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 			file.delete();
 
 			if (error == null){
-				MessageUseful.addInfoMessage("Packge Installed.");
+				MessageUseful.addInfoMessage("Package Installed.");
 				installed = true;
 			}else{
 				disable(packagePath);
