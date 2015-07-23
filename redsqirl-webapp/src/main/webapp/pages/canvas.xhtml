@@ -708,7 +708,6 @@
 			if( !jQuery(".rich-mp-container").is(":visible") ){
 				if (e.keyCode == 46) { // Delete
 	                deleteSelected(selectedCanvas);
-
 	            }
 			}
 				
@@ -733,8 +732,6 @@
 	             key = e.which;
 	        return (key != 13);
 	   }
-	   	
-	   	
 	   	
 	   	function menuSave(){
 			if (isSaved(getSelectedByName())){
@@ -831,6 +828,10 @@
 		}
 	   	
 	   	/*keyboard shortcuts*/
+	   	
+	   	
+	  
+	   	
 	   	
 	   	shortcut.add("Ctrl+n",function() {
 	   		if( !jQuery(".rich-mp-container").is(":visible") ){
