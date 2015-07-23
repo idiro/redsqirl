@@ -502,11 +502,8 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 		
 		int sizeCluster = NameNodeVar.getNbSlaves();
 		logger.info("sizeCluster " + sizeCluster + " numberCluster " + numberCluster);
-		if(numberCluster < sizeCluster || sizeCluster == 0){
-			return false;
-		}
-		
-		return true;
+		logger.info(numberCluster < sizeCluster || sizeCluster == 0);
+		return numberCluster < sizeCluster || sizeCluster == 0;
 	}
 	
 }
