@@ -284,7 +284,9 @@ public class MapRedTextType extends MapRedDir {
 				&& asciiCode.length() > 1) {
 			result = Integer.toOctalString(Integer.valueOf(asciiCode
 					.substring(1)));
-			if (result.length() == 2) {
+			if (result.length() == 1) {
+				result = "\\00" + result;
+			} else if (result.length() == 2) {
 				result = "\\0" + result;
 			} else {
 				result = "\\" + result;
