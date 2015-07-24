@@ -97,9 +97,39 @@
 									     	<f:facet name="header">
 									     		<h:outputText value="#{messages.label_type}" />
 									        </f:facet>
-								         	<rich:comboBox value="#{obj.type}" width="200" enableManualInput="false" listWidth="150" listHeight="200">
-						                    	<f:selectItems value="#{canvasModalBean.canvasModalInteractionHeaderEditor.fieldTypes}" />
-						                	</rich:comboBox>
+									        
+						                	
+						                	
+						                	<h:inputText value="#{obj.type}" id="combo#{rowNb+1}" style="width:98%;" >
+                                  	 
+			                                 <script type="text/javascript">
+			                                   	jQuery("[id$='combo#{rowNb+1}']").textext({
+											            plugins : 'arrow autocomplete'
+											        }).bind('getSuggestions', function(e, data){
+			
+														try{
+												        	
+												            var list =  #{canvasModalBean.canvasModalInteractionHeaderEditor.fieldTypesString}  ,
+												                textext = jQuery(e.target).textext()[0],
+												                query = (data ? data.query : '') || '' ;
+												
+												            jQuery(this).trigger('setSuggestions', {
+													            	result : textext.itemManager().filter(list, query)
+													            }
+												            );
+			
+														}catch(exception){
+														    //alert(exception);
+														}
+											            
+											        });
+											</script>
+                                  	 
+                            				</h:inputText>
+						                	
+						                	
+						                	
+						                	
 									     </rich:column>
 								        
 								    </rich:dataTable>
