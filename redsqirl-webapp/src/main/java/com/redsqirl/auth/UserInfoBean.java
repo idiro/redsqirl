@@ -569,10 +569,10 @@ public class UserInfoBean extends BaseBean implements Serializable {
 							error = false;
 							dfi.removeWorkflow("test");
 							
-							if(!dfi.checkNumberCluster(getNumberCluster())){
+							/*if(!dfi.checkNumberCluster(getNumberCluster())){
 								setErrorNumberCluster(getMessageResources("error_number_cluster"));
 								return false;
-							}
+							}*/
 							
 							logger.info("workflow is running ");
 						} catch (Exception e) {

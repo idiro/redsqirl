@@ -498,12 +498,12 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 
 	}
 	
-	public boolean checkNumberCluster(int numberCluster) throws RemoteException{
+	public boolean checkNumberCluster(int clusterSizeDeclared) throws RemoteException{
 		
-		int sizeCluster = NameNodeVar.getNbSlaves();
-		logger.info("sizeCluster " + sizeCluster + " numberCluster " + numberCluster);
-		logger.info(numberCluster < sizeCluster || sizeCluster == 0);
-		return numberCluster < sizeCluster || sizeCluster == 0;
+		int clusterSizeReal = NameNodeVar.getNbSlaves();
+		logger.info("sizeCluster " + clusterSizeReal + " numberCluster " + clusterSizeDeclared);
+		logger.info(clusterSizeDeclared >= clusterSizeReal && clusterSizeReal != 0);
+		return clusterSizeDeclared >= clusterSizeReal && clusterSizeReal != 0;
 	}
 	
 }
