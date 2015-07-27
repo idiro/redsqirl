@@ -608,19 +608,24 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			DataFlowElement cur = it.next();
 			if (cur.getAllOutputComponent().size() == 0) {
 				boolean toAdd = false;
+				boolean existRecorded = false;
+				boolean notexistNotTemporary = false;
 				Iterator<DFEOutput> itOutput = cur.getDFEOutput().values()
 						.iterator();
 				while (itOutput.hasNext()) {
 					DFEOutput outCur = itOutput.next();
 					if (!outCur.isPathExists()) {
 						toAdd = true;
+						if(!SavingState.TEMPORARY.equals(outCur.getSavingState())){
+							notexistNotTemporary = true;
+						}
 					} else if (SavingState.RECORDED.equals(outCur
 							.getSavingState())) {
 						toAdd = false;
-						break;
+						existRecorded = true;
 					}
 				}
-				if (toAdd) {
+				if ( (existRecorded && notexistNotTemporary)|| (!existRecorded && toAdd)) {
 					elToRun.add(cur.getComponentId());
 				}
 			}
@@ -688,6 +693,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		Iterator<DataFlowElement> itE = elsIn.descendingIterator();
 		while (itE.hasNext()) {
 			DataFlowElement cur = itE.next();
+			// Never run an element that have no action
 			if (cur.getOozieAction() != null && !toRun.contains(cur)) {
 				boolean haveTobeRun = false;
 				List<DataFlowElement> outAllComp = cur.getAllOutputComponent();
@@ -755,10 +761,6 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 							}
 						}
 					}
-				}
-				// Never run an element that have no action
-				if (cur.getOozieAction() == null) {
-					haveTobeRun = false;
 				}
 				if (haveTobeRun) {
 					// If this element have to be run
