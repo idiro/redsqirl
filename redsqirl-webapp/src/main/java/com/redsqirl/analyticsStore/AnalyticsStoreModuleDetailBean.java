@@ -406,7 +406,7 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 				fileName = pckObj.getString("fileName");
 				key = pckObj.getString("key");
 				name = pckObj.getString("name");
-				newKey = pckObj.getBoolean("newKey");
+				newKey = pckObj.has("newKey") ? pckObj.getBoolean("newKey") : null;
 				licenseKeyProperties = pckObj.getString("licenseKeyProperties");
 				error = pckObj.getString("error");
 			} catch (JSONException e){

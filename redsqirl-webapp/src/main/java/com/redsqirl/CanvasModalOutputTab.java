@@ -220,18 +220,20 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 				}
 			}
 		}else{
-			DFEOutput output = getOutputFormList().get(0).getDfeOutput(); 
-			if(output.isPathValid(path) != null){
-				String parent = path.substring(0,path.lastIndexOf('/')); 
-				if(output.isPathValid(parent) == null){
-					path = parent;
-					getFileSystem().setPath(path);
-					//Display warning
-					
-					HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-					MessageUseful.addWarnMessage(getMessageResources("warn_hdfs_path"));
-					request.setAttribute("msnSuccess", "msnSuccess");
-					
+			if(outputFormList != null && !outputFormList.isEmpty()){
+				DFEOutput output = getOutputFormList().get(0).getDfeOutput(); 
+				if(output.isPathValid(path) != null){
+					String parent = path.substring(0,path.lastIndexOf('/')); 
+					if(output.isPathValid(parent) == null){
+						path = parent;
+						getFileSystem().setPath(path);
+						//Display warning
+						
+						HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+						MessageUseful.addWarnMessage(getMessageResources("warn_hdfs_path"));
+						request.setAttribute("msnSuccess", "msnSuccess");
+						
+					}
 				}
 			}
 		}
