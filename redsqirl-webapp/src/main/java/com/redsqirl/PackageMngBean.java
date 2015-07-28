@@ -271,15 +271,17 @@ public class PackageMngBean extends BaseBean implements Serializable{
 				names.append(","+value);
 			}
 			
-			JSONObject object = new JSONObject();
-			object.put("packageName", names.substring(1));
-			object.put("softwareKey", softwareKey);
+			if(names != null && !"".equals(names.toString())){
+				JSONObject object = new JSONObject();
+				object.put("packageName", names.substring(1));
+				object.put("softwareKey", softwareKey);
 
-			Client client = Client.create();
-			WebResource webResource = client.resource(uri);
+				Client client = Client.create();
+				WebResource webResource = client.resource(uri);
 
-			ClientResponse response = webResource.type("application/json").post(ClientResponse.class, object.toString());
-			String ansServer = response.getEntity(String.class);
+				ClientResponse response = webResource.type("application/json").post(ClientResponse.class, object.toString());
+				String ansServer = response.getEntity(String.class);
+			}
 
 		} catch (JSONException e) {
 			e.printStackTrace();
