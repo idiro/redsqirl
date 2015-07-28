@@ -10,11 +10,18 @@
 <script>
 //<![CDATA[
            
-           function mountComboboxHeaderEditor() {
+          function startHeaderEditor() {
+       	  	jQuery('[id$="selectHeaderEditor\\:0"]').css("margin-bottom", "35px");
+       	  	selectRadio();
+          }
+          
+          function mountComboboxHeaderEditor() {
 
-        	   jQuery('[id$="selectHeaderEditor\\:0"]').css("margin-bottom", "35px");
-        	   selectRadio();
-	 
+			//alert(jQuery(".comboInputClassHeader").parent().attr('class'));
+			//alert(jQuery(".comboInputClassHeader").parent().attr('class') != "text-wrap");
+
+			if(jQuery(".comboInputClassHeader").parent().attr('class') != "text-wrap"){
+       		 
                 jQuery(".comboInputClassHeader").textext({
 		            plugins : 'arrow autocomplete'
 		        }).bind('getSuggestions', function(e, data){
@@ -36,7 +43,9 @@
 		            
 		        });
 
-	 }
+			}
+
+ 		}
    
 
 	function selectRadio(){
@@ -50,6 +59,7 @@
 
 			jQuery('[id$="inputHeaderEditor"]').prop('disabled', true);
 			jQuery('[id$="tableHeaderEditor"]').find("input").prop('disabled', false);
+			mountComboboxHeaderEditor();
 			
 		}
 			
