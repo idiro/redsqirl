@@ -55,6 +55,7 @@ public class PigAction extends OozieActionAbs {
 		
 		Element script = oozieXmlDoc.createElement("script");
 		script.appendChild(oozieXmlDoc.createTextNode(fileNames[0]));
+		pig.appendChild(script);
 		
 		if(arguments != null){
 			Iterator<String> argIt = arguments.iterator();
@@ -66,7 +67,6 @@ public class PigAction extends OozieActionAbs {
 		}
 		logger.info("createOozieElement 2");
 		
-		pig.appendChild(script);
 		action.appendChild(pig);
 		
 		logger.info("createOozieElement 3");
