@@ -80,9 +80,25 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 	}
 	
 	public void storeUserProperties(Properties prop) throws IOException{
-		prop.store(new FileWriter(new File(WorkflowPrefManager.pathUserCfgPref)), "");
+		File userProp = new File(WorkflowPrefManager.pathUserCfgPref);
+		prop.store(new FileWriter(userProp), "");
+		userProp.setWritable(true, true);
+		userProp.setReadable(true, true);
 	}
 
+
+	@Override
+	public Properties getUserLangProperties() throws RemoteException {
+		Properties prop = new Properties();
+		try {
+			prop.load(new FileReader(new File(WorkflowPrefManager.pathUserLangCfgPref)));
+		} catch (Exception e) {
+			logger.error("Error when loading '" + WorkflowPrefManager.pathUserLangCfgPref + "', "
+					+ e.getMessage());
+		}
+		return prop;
+	}
+	
 	/**
 	 * Get the user properties a given user.
 	 * 

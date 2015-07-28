@@ -40,12 +40,14 @@ public class SettingsBean extends BaseBean implements Serializable  {
 		Properties sysLangProp = WorkflowPrefManager.getSysLangProperties();
 		setSysSettings(getList(sysProp,sysLangProp));
 
-		HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
-		String user = (String) session.getAttribute("username");
-		Properties userProp = WorkflowPrefManager.getUserProperties(user);
-		Properties userLangProp = WorkflowPrefManager.getUserLangProperties(user);
-		setUserSettings(getList(userProp,userLangProp));
-		logger.info("setUserSettings "+userProp + " - "+userLangProp);
+		try{
+			Properties userProp = getPrefs().getUserProperties();
+			Properties userLangProp = getPrefs().getUserLangProperties();
+			setUserSettings(getList(userProp,userLangProp));
+			logger.info("setUserSettings "+userProp + " - "+userLangProp);
+		}catch(Exception e){
+			logger.error(e,e);
+		}
 
 	}
 
