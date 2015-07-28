@@ -14,7 +14,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.digester.SetRootRule;
 import org.apache.log4j.Logger;
 
 import com.redsqirl.dynamictable.FileSystemHistory;
@@ -134,10 +133,10 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 		logger.info("resetNameOutput");
 		try {
 			setNameOutput(dfe.getDFEOutput().keySet().iterator().next());
-			logger.info("new name output: " + getNameOutput());
-			logger.info("type browser: " + typeBrowser);
-			logger.info("filesystem existence: " + getFileSystem() != null);
-			logger.info("filesystem names: " + datastores.keySet());
+			//logger.info("new name output: " + getNameOutput());
+			//logger.info("type browser: " + typeBrowser);
+			//logger.info("filesystem existence: " + getFileSystem() != null);
+			//logger.info("filesystem names: " + datastores.keySet());
 		} catch (Exception e) {
 			logger.info("Error when reseting name output: " + e.getMessage());
 		}
