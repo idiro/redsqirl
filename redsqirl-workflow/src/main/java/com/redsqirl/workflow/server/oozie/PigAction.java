@@ -61,6 +61,7 @@ public class PigAction extends OozieActionAbs {
 			while(argIt.hasNext()){
 				Element argument = oozieXmlDoc.createElement("argument");
 				argument.appendChild(oozieXmlDoc.createTextNode(argIt.next()));
+				pig.appendChild(argument);
 			}
 		}
 		logger.info("createOozieElement 2");
