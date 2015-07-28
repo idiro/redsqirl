@@ -133,7 +133,7 @@
     
     <a4j:region>
     	<a4j:jsFunction name="openHeaderEditorPanel" action="#{canvasModalBean.openHeaderEditorPanel}" 
-    		oncomplete="#{rich:component('headerEditor')}.show(); setTimeout(function(){ mountComboboxHeaderEditor(); }, 500); " reRender="canvasModalHeaderEditor">
+    		oncomplete="#{rich:component('headerEditor')}.show(); setTimeout(function(){ startHeaderEditor(); }, 500); " reRender="canvasModalHeaderEditor">
 			<a4j:actionparam name="idInteraction" value="#{interCur.id}"/>
 		</a4j:jsFunction>
     </a4j:region>

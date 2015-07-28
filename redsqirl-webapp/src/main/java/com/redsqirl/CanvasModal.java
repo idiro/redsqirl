@@ -177,6 +177,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 	private List<SelectItem> reachablePages = null;
 
 	public CanvasModal() throws RemoteException{
+		
+		logger.info("CanvasModal");
+		
 		DataFlowInterface dfi = getworkFlowInterface();
 		datastores = new LinkedHashMap<String,FileSystemBean>();
 		Iterator<String> storeName = dfi.getBrowsersName().iterator();
@@ -198,6 +201,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 */
 	public void openCanvasModal() throws RemoteException {
 		logger.info("openCanvasModal");
+		
 		FacesContext context = FacesContext.getCurrentInstance();
 		canvasBean = (CanvasBean) context.getApplication()
 				.evaluateExpressionGet(context, "#{canvasBean}",
@@ -213,7 +217,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 				|| selTab.equalsIgnoreCase("undefined")) {
 			selTab = "confTabCM";
 		}
-		logger.info("selected tab: " + selTab);
+		//logger.info("selected tab: " + selTab);
 		setSelectedTab(selTab);
 
 		// Don't update the element if you it close immediately
@@ -245,7 +249,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 					canvasBean.getNameWorkflow()).getElement(
 							canvasBean.getIdMap().get(canvasBean.getNameWorkflow())
 							.get(idGroup));
-			logger.info("Get element dfe");
+			//logger.info("Get element dfe");
 		} catch (RemoteException e) {
 			logger.error(e.getMessage(),e);
 		}
@@ -262,16 +266,16 @@ public class CanvasModal extends BaseBean implements Serializable {
 			logger.info("The element is null!");
 		}else{
 			elementId = getComponentId();
-			logger.info("Element id: "+elementId);
+			//logger.info("Element id: "+elementId);
 			elementComment = dfe.getComment();
 			if (loadMainWindow) {
-				logger.info("load Main window");
+				//logger.info("load Main window");
 				try {
 
 					// validate if you can open or not the dynamic form of the object
 					String error = dfe.checkIn();
 
-					logger.info("error " + error);
+					//logger.info("error " + error);
 
 					if (error != null) {
 						MessageUseful.addErrorMessage(error);
@@ -327,7 +331,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 
 						checkFirstPage();
 
-						logger.info("List size " + getListPageSize());
+						//logger.info("List size " + getListPageSize());
 
 						checkLastPage();
 
@@ -353,6 +357,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 	}
 
 	public void changeTitle(){
+		
+		logger.info("changeTitle");
+		
 		try {
 			DataFlowElement dfe = getworkFlowInterface().getWorkflow(
 					canvasBean.getNameWorkflow()).getElement(
@@ -374,9 +381,12 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * @throws RemoteException
 	 */
 	protected String updateOutputElement() throws RemoteException {
+		
+		logger.info("update Output Element ");
+		
 		String error = null;
 		try {
-			logger.info("update Output Element ");
+			
 			if (elementToUpdate) {
 				logger.info("Remove element data");
 				dfe.cleanThisAndAllElementAfter();
@@ -394,6 +404,9 @@ public class CanvasModal extends BaseBean implements Serializable {
 	}
 	
 	protected void updateReachablePage(){
+		
+		logger.info("updateReachablePage");
+		
 		reachablePages = new LinkedList<SelectItem>();
 		try{
 			for(int i = 0; i <= getListPosition();++i){
@@ -525,11 +538,14 @@ public class CanvasModal extends BaseBean implements Serializable {
 	
 
 	public void goToPage(){
+		
+		logger.info("goToPage");
+		
 		try {
 			String error = checkNextPage();
 			int pageNb = Integer.valueOf(pageToGoTo);
 			if( pageNb != getListPosition() && (error == null || error.isEmpty())){
-				logger.info("Go to page: "+pageNb);
+				//logger.info("Go to page: "+pageNb);
 				error = null;
 				if(pageNb > getListPosition()){
 					int i = getListPosition();
