@@ -569,6 +569,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 							error = false;
 							dfi.removeWorkflow("test");
 							
+							//FIXME size cluster aws
 							/*if(!dfi.checkNumberCluster(getNumberCluster())){
 								setErrorNumberCluster(getMessageResources("error_number_cluster"));
 								return false;
