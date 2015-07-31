@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -69,13 +70,13 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	 * Map of workflow clones
 	 */
 	private List<String> wfClones = new LinkedList<String>();
-	
-	
+
+
 	/**
 	 * Map of datastores
 	 */
 	private Map<String,DataStore> datastores;
-	
+
 	/**
 	 * Constructor
 	 * @throws RemoteException
@@ -130,7 +131,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 				logger.error("Error while writing class file",e);
 				outputClassFile.delete();
 			}
-			
+
 		}
 
 		Iterator<String> dataoutputClassNameIt = dataoutputClassName.iterator();
@@ -145,7 +146,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 				logger.error(e,e);
 			}
 		}
-		
+
 		//Return a map containing only the one used in DataOutput
 		logger.info("Get the store class...");
 		Map<String,DataStore> ans = new LinkedHashMap<String,DataStore>();
@@ -220,7 +221,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 		}
 		return error;
 	}
-	
+
 	/**
 	 * Clone a data flow
 	 * @param wfName The data flow to clone
@@ -240,7 +241,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 		}
 		return cloneId;
 	}
-	
+
 	@Override
 	public void eraseClone(String cloneId){
 		wfClones.remove(cloneId);
@@ -265,7 +266,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 		}
 		return newId;
 	}
-	
+
 	/**
 	 * Copy a subset of a workflow into another.
 	 * @param cloneId The id of the workflow to copy from 
@@ -273,7 +274,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	 * @param wfName The id of the workflow to copy to
 	 */
 	public void copy(String cloneId, List<String> elements, String wfName){
-		
+
 		if(wfClones.contains(cloneId) && 
 				elements != null && 
 				!elements.isEmpty() && 
@@ -331,7 +332,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 			// CloneNotSupportedException
 			String path = WorkflowPrefManager.getPathClonefolder()+"/"
 					+ cloneId;
-			
+
 			File file = new File(path);
 			FileInputStream fin = null;
 			// create FileInputStream object
@@ -358,7 +359,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 		}
 		return result;
 	}
-	
+
 	public void removeClone(String cloneId){
 		String path = WorkflowPrefManager.getPathClonefolder()+"/"+cloneId;
 		new File(path).delete();
@@ -409,7 +410,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 			throws RemoteException {
 		return (SubDataFlow) wf.get(name);
 	}
-	
+
 	/**
 	 * Get an Instance of the interface
 	 * @return instance
@@ -475,7 +476,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	private Map<String,DataStore> getDatastores() {
 		return datastores;
 	}
-	
+
 	public void replaceWFByClone(String id, String wfName,boolean keepClone) throws RemoteException{
 
 		if(wfClones.contains(id) && wf.containsKey(wfName)){
@@ -487,7 +488,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 		}
 
 	}
-	
+
 	public void copy(String id, String wfName) throws RemoteException{
 
 		if(wfClones.contains(id) && wf.containsKey(wfName)){
@@ -497,13 +498,50 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 		}
 
 	}
-	
+
 	public boolean checkNumberCluster(int clusterSizeDeclared) throws RemoteException{
-		
+
 		int clusterSizeReal = NameNodeVar.getNbSlaves();
 		logger.info("clusterSizeReal " + clusterSizeReal + " clusterSizeDeclared " + clusterSizeDeclared);
 		logger.info(clusterSizeDeclared >= clusterSizeReal && clusterSizeReal != 0);
-		return clusterSizeDeclared >= clusterSizeReal && clusterSizeReal != 0;
+		boolean size = clusterSizeDeclared >= clusterSizeReal;
+		if(clusterSizeReal == 0){
+			
+			try{
+
+				String command =  WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_hadoop_home)+"/bin/yarn node -list -all | grep RUNNING | wc -l";
+				logger.info("command "+command);
+				Process proc = Runtime.getRuntime().exec(new String[] { "/bin/bash", "-c", command});
+				
+				
+				// Read the output
+				BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+				String line = "";
+				while((line = reader.readLine()) != null) {
+					logger.info(line + "\n");
+					clusterSizeReal = Integer.parseInt(line);
+				}
+				proc.waitFor();   
+
+				if(clusterSizeReal != 0){
+					size = clusterSizeDeclared >= clusterSizeReal;
+				}else{
+					size = false;
+				}
+
+				logger.info("clusterSizeReal " + clusterSizeReal + " clusterSizeDeclared " + clusterSizeDeclared);
+				
+			} catch (IOException e) {
+				size = false;
+				logger.error("Failed to check the size of cluster ",e);
+			} catch (InterruptedException e) {
+				size = false;
+				logger.error("Failed to check the size of cluster ",e);
+			}
+
+		}
+
+		return size;
 	}
-	
+
 }
