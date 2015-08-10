@@ -93,7 +93,7 @@ public class ShellAction extends OozieActionAbs {
 	
 	public String getShellContent(String oneCommandToExecute){
 		String toWrite = "#!/bin/bash" + System.getProperty("line.separator");
-		
+		logger.info("Command to execute "+oneCommandToExecute);
 		toWrite += "USER_NAME=$1"+ System.getProperty("line.separator");
 		
 		if(extraFile){
@@ -110,7 +110,7 @@ public class ShellAction extends OozieActionAbs {
 			toWrite += "\tcat $FILE_NAME >> $EXEC_FILE" + System.getProperty("line.separator");
 			toWrite += "\tchmod a+r $EXEC_FILE"+ System.getProperty("line.separator");
 		}
-		toWrite += "\tsudo su $USER_NAME -c \""+oneCommandToExecute+"\""+ 
+		toWrite += "\tsudo su $USER_NAME -c \""+oneCommandToExecute.replaceAll("\"", "\\\\\"")+"\""+ 
 				System.getProperty("line.separator");
 		if(extraFile){
 			toWrite += "\trm $EXEC_FILE"+ System.getProperty("line.separator");
@@ -121,7 +121,7 @@ public class ShellAction extends OozieActionAbs {
 		}
 		toWrite += "\t"+oneCommandToExecute+ System.getProperty("line.separator");
 		toWrite += "fi"+ System.getProperty("line.separator");
-		
+//		logger.info("Command to execute after editions "+toWrite);
 		return toWrite;
 	}
 	
