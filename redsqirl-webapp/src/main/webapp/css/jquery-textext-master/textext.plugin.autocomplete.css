@@ -17,6 +17,7 @@
 }
 .text-core .text-wrap .text-dropdown.text-position-below {
   margin-top: 1px;
+  z-index: 100;
 }
 .text-core .text-wrap .text-dropdown.text-position-above {
   margin-bottom: 1px;

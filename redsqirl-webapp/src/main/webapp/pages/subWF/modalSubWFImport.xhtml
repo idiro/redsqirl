@@ -75,7 +75,7 @@
 	</a4j:commandLink>
 	</div>
 	
-	<div style="width:590px;height:250px;overflow:auto;" id="divFileImportHdfs" >
+	<div style="width:630px;height:250px;overflow:auto;" id="divFileImportHdfs" >
 	
 	   <rich:dataTable id="hdfsfsFileImport" value="#{browserHdfsBean.tableGrid.rows}" var="item" rowKeyVar="indexTable"
             width="99%" height="10px" onRowMouseOver="this.style.backgroundColor='#f2b97a'"
@@ -127,14 +127,43 @@
 
 	</div>
 	
-	<rich:comboBox value="#{browserHdfsBean.extensionsSelected}" width="200" enableManualInput="false"
-		id="types" listWidth="150" listHeight="200"
-		onchange="refreshHdfsImportFileTable();" style="padding-right:20px;float:right;" >
-        <f:selectItems styleClass="interModal" value="#{browserHdfsBean.listExtensions}" />
-    </rich:comboBox>
+	<br />
     
-    <br />
-    <br />
+    				<h:panelGroup style="width:150px" layout="block" >
+                    <h:inputText value="#{browserHdfsBean.extensionsSelected}" id="comboboxTypes" style="width:145px" >
+                                  	 
+	                    <script type="text/javascript">
+	                    	jQuery("[id$='comboboxTypes']").textext({
+						    	plugins : 'arrow autocomplete'
+						    }).bind('getSuggestions', function(e, data){
+	
+							try{
+							        	
+								var list =  #{browserHdfsBean.listExtensionsString}  ,
+							    	textext = jQuery(e.target).textext()[0],
+							        query = (data ? data.query : '') || '' ;
+							
+							        jQuery(this).trigger('setSuggestions', {
+								    	result : textext.itemManager().filter(list, query)
+								    	}
+							        );
+	
+								}catch(exception){
+									alert(exception);
+								}
+						            
+							});
+
+	                    	jQuery("[id$='comboboxTypes']").bind('setFormData', function(e, data, isEmpty){
+	                    		refreshHdfsImportFileTable();
+	                    	});
+							
+						</script>
+                               	 
+                    </h:inputText>
+                    </h:panelGroup>
+                    
+                    
     
     <rich:panel id="panelBtImportHdfs" style="border:none; float:right;" >
         

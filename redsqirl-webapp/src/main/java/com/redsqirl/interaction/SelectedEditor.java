@@ -3,6 +3,7 @@ package com.redsqirl.interaction;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.faces.context.FacesContext;
@@ -75,6 +76,10 @@ public class SelectedEditor extends BaseBean implements Serializable{
 	 * The value
 	 */
 	private String value;
+	
+	private List<String> textEditorFunctionMenuString;
+	
+	private List<String> textEditorOperationMenuString;
 
 
 	/**
@@ -116,9 +121,17 @@ public class SelectedEditor extends BaseBean implements Serializable{
 		logger.info("init...");
 		if(!edit.getTextEditorFunctionMenu().isEmpty()){
 			selectedFunction = edit.getTextEditorFunctionMenu().get(0);
+			List<String> l = new ArrayList<String>();
+			l.add(calcString(edit.getTextEditorFunctionMenu()));
+			setTextEditorFunctionMenuString(l);
+			logger.info("TextEditorFunctionMenu " + getTextEditorFunctionMenuString());
 		}
 		if(!edit.getTextEditorOperationMenu().isEmpty()){
 			selectedOperation = edit.getTextEditorOperationMenu().get(0);
+			List<String> l = new ArrayList<String>();
+			l.add(calcString(edit.getTextEditorOperationMenu()));
+			setTextEditorOperationMenuString(l);
+			logger.info("TextEditorOperationMenu " + getTextEditorOperationMenuString());
 		}
 	}
 
@@ -198,6 +211,14 @@ public class SelectedEditor extends BaseBean implements Serializable{
 
 		return result;
 	}
+	
+	public String calcString(List<String> listFields){
+		StringBuffer ans = new StringBuffer();
+		for (String selectItem : listFields) {
+			ans.append(","+selectItem);
+		}
+		return ans.toString().substring(1);
+	}
 
 
 	/**
@@ -207,14 +228,12 @@ public class SelectedEditor extends BaseBean implements Serializable{
 		return edit;
 	}
 
-
 	/**
 	 * @param edit the edit to set
 	 */
 	public final void setEdit(EditorFromTree edit) {
 		this.edit = edit;
 	}
-
 
 	/**
 	 * @return the confirm
@@ -223,14 +242,12 @@ public class SelectedEditor extends BaseBean implements Serializable{
 		return confirm;
 	}
 
-
 	/**
 	 * @param confirm the confirm to set
 	 */
 	public final void setConfirm(String confirm) {
 		this.confirm = confirm;
 	}
-
 
 	/**
 	 * @return the columnEdit
@@ -239,14 +256,12 @@ public class SelectedEditor extends BaseBean implements Serializable{
 		return columnEdit;
 	}
 
-
 	/**
 	 * @param columnEdit the columnEdit to set
 	 */
 	public final void setColumnEdit(String columnEdit) {
 		this.columnEdit = columnEdit;
 	}
-
 
 	/**
 	 * @return the rowEdit
@@ -255,14 +270,12 @@ public class SelectedEditor extends BaseBean implements Serializable{
 		return rowEdit;
 	}
 
-
 	/**
 	 * @param rowEdit the rowEdit to set
 	 */
 	public final void setRowEdit(int rowEdit) {
 		this.rowEdit = rowEdit;
 	}
-
 
 	/**
 	 * @return the value
@@ -271,14 +284,12 @@ public class SelectedEditor extends BaseBean implements Serializable{
 		return value;
 	}
 
-
 	/**
 	 * @param value the value to set
 	 */
 	public final void setValue(String value) {
 		this.value = value;
 	}
-
 
 	/**
 	 * @return the selectedFunction
@@ -323,4 +334,23 @@ public class SelectedEditor extends BaseBean implements Serializable{
 	public final List<String> getTextEditorOperationMenu() {
 		return edit.getTextEditorOperationMenu();
 	}
+
+	public List<String> getTextEditorFunctionMenuString() {
+		return textEditorFunctionMenuString;
+	}
+
+	public void setTextEditorFunctionMenuString(
+			List<String> textEditorFunctionMenuString) {
+		this.textEditorFunctionMenuString = textEditorFunctionMenuString;
+	}
+
+	public List<String> getTextEditorOperationMenuString() {
+		return textEditorOperationMenuString;
+	}
+
+	public void setTextEditorOperationMenuString(
+			List<String> textEditorOperationMenuString) {
+		this.textEditorOperationMenuString = textEditorOperationMenuString;
+	}
+	
 }

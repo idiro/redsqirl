@@ -1,4 +1,3 @@
-
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="http://java.sun.com/jsf/html"
     xmlns:a4j="http://richfaces.org/a4j"
@@ -149,8 +148,8 @@
     <a4j:region>
         <a4j:jsFunction name="openHelpTextEditorModal" 
                 action="#{canvasModalBean.openHelpTextEditorModal}" value=". . ."  
-                reRender="commandText,listFields,listFunctions,listCategories,listOperation,listCategoriesOperation,errorTable,msnError" 
-                oncomplete="#{rich:component('textEditorPanel')}.show();" style="float:right;margin-right:62px;height:46px;">
+                reRender="commandText,listFields,listFunctions,comboboxListCategories,listOperation,comboboxListCategoriesOperation,errorTable,msnError" 
+                oncomplete="mountComboboxTextEditor('#{canvasModalBean.selEditor.textEditorFunctionMenuString}','#{canvasModalBean.selEditor.textEditorOperationMenuString}');#{rich:component('textEditorPanel')}.show();" style="float:right;margin-right:62px;height:46px;">
                     <a4j:actionparam name="idInteraction" value="#{interCur.id}"/>
                     <a4j:actionparam  name="rowKey" value="#{rowNb}"/>
                     <a4j:actionparam  name="column" value="#{column}"/>
@@ -637,6 +636,8 @@
 	                <br/>
 	                    <table>
 	                    
+	                    	<a4j:jsFunction name="onchangeOutputCombo" action="#{item.updateSavingState}" reRender="dataOutputForm" />
+	                    
 		                    <a4j:repeat value="#{canvasModalBean.outputTab.outputFormList}" var="item" rowKeyVar="index">
 		                        
 		                       	<tr>
@@ -648,12 +649,46 @@
 			                            </a4j:commandLink>
 		                       		</td>
 		                       		<td>
-		                       			<rich:comboBox id="outputCombo" selectFirstOnUpdate="false"
-			                                width="200" value="#{item.savingState}" listWidth="150"
-			                                listHeight="200" enableManualInput="false">
-			                                <f:selectItems value="#{item.savingStateList}" />
-			                                <a4j:support event="onchange" action="#{item.updateSavingState}" reRender="dataOutputForm" />
-			                            </rich:comboBox>
+			                            
+			                            
+			                            
+			                            <h:panelGroup style="width:100px" layout="block" >
+					                    <h:inputText value="#{item.savingState}" id="outputCombo#{index+1}" style="width:95px" >
+					                                  	 
+						                    <script type="text/javascript">
+						                    	jQuery("[id$='outputCombo#{index+1}']").textext({
+											    	plugins : 'arrow autocomplete'
+											    }).bind('getSuggestions', function(e, data){
+						
+												try{
+													
+													var list = #{item.savingStateListString} ,
+												    	textext = jQuery(e.target).textext()[0],
+												        query = (data ? data.query : '') || '' ;
+												
+												        jQuery(this).trigger('setSuggestions', {
+													    	result : textext.itemManager().filter(list, query)
+													    	}
+												        );
+						
+													}catch(exception){
+														alert(exception);
+													}
+											            
+												});
+				
+						                    	jQuery("[id$='outputCombo#{index}']").bind('setFormData', function(e, data, isEmpty){
+						                    		onchangeOutputCombo();
+						                    	});
+						                    	
+											</script>
+					                               	 
+					                    </h:inputText>
+					                    </h:panelGroup>
+			                            
+			                            
+			                            
+			                            
 		                       		</td>
 		                       		<td>
 		                       			<a4j:commandButton value="Select" styleClass="greenButton"
@@ -717,12 +752,45 @@
 		                 	<h:outputText value="#{messages.number_rows}" title="#{messages.number_rows}" />
 		                 	
 		                 	<br/>
-		                 	
-			                <rich:comboBox id="displayTableNumberRows" value="#{canvasModalBean.outputTab.maxRows}" width="200" 
-	                           	enableManualInput="false" listWidth="150" listHeight="200" selectFirstOnUpdate="true" >
-		                    	<f:selectItems value="#{canvasModalBean.outputTab.maxNumberRows == null? canvasBean.emptyList : canvasModalBean.outputTab.maxNumberRows}" />
-		                    	<a4j:support event="onchange" oncomplete="reLoadTable();blockComoBoxNumberRows();" reRender="displayTableNumberRows" />
-		                	</rich:comboBox>
+		                	
+		                	
+		                	<a4j:jsFunction name="onchangeDisplayTableNumberRows" oncomplete="reLoadTable();blockComoBoxNumberRows();" reRender="displayTableNumberRows" />
+		                	
+		                	<h:panelGroup style="width:100px" layout="block" >
+		                    <h:inputText value="#{canvasModalBean.outputTab.maxRows}" id="displayTableNumberRows" style="width:95px" >
+		                                  	 
+			                    <script type="text/javascript">
+			                    	jQuery("[id$='displayTableNumberRows']").textext({
+								    	plugins : 'arrow autocomplete'
+								    }).bind('getSuggestions', function(e, data){
+			
+									try{
+										
+										var list = #{canvasModalBean.outputTab.maxNumberRowsString} ,
+									    	textext = jQuery(e.target).textext()[0],
+									        query = (data ? data.query : '') || '' ;
+									
+									        jQuery(this).trigger('setSuggestions', {
+										    	result : textext.itemManager().filter(list, query)
+										    	}
+									        );
+			
+										}catch(exception){
+											alert(exception);
+										}
+								            
+									});
+	
+			                    	jQuery("[id$='displayTableNumberRows']").bind('setFormData', function(e, data, isEmpty){
+			                    		onchangeDisplayTableNumberRows();
+			                    	});
+			                    	
+								</script>
+		                               	 
+		                    </h:inputText>
+		                    </h:panelGroup>
+		                	
+		                	
 			                
 			                <a4j:jsFunction name="reLoadTable" action="#{canvasModalBean.outputTab.displayOutput}" oncomplete="unBlockComoBoxNumberRows();" 
 			                	reRender="displayTable, displayTableNumberRows" />
@@ -772,9 +840,11 @@
 	            onclick="#{rich:component('textEditorPanel')}.hide()" />
 	    </f:facet>
 	    
-	    <h:panelGroup>
-	        <ui:include src="/pages/canvasModalEditorPopup.xhtml" />
-	    </h:panelGroup>
+	    <h:form>
+		    <h:panelGroup>
+		    	<ui:include src="/pages/canvasModalEditorPopup.xhtml" />
+		    </h:panelGroup>
+	    </h:form>
             
     </rich:modalPanel>
     
