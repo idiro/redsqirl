@@ -2,9 +2,9 @@
 
     <properties>
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	<idiro-base.version>0.1</idiro-base.version>
+	<idiro-base.version>0.2-SNAPSHOT</idiro-base.version>
 	<hadoop.version>1.0.4</hadoop.version>
-	<idiro-tm.version>0.1</idiro-tm.version>
+	<idiro-tm.version>0.2-SNAPSHOT</idiro-tm.version>
     </properties>
 
     <parent>
@@ -91,14 +91,14 @@
     <dependencies>
 	<dependency>
 	    <groupId>idiro</groupId>
-	    <artifactId>idiro-tm</artifactId>
-	    <version>${idiro-tm.version}</version>
+	    <artifactId>idiro-base</artifactId>
+	    <version>${idiro-base.version}</version>
 	    <scope>compile</scope>
 	</dependency>
 	<dependency>
 	    <groupId>idiro</groupId>
-	    <artifactId>idiro-base</artifactId>
-	    <version>${idiro-base.version}</version>
+	    <artifactId>idiro-tm</artifactId>
+	    <version>${idiro-tm.version}</version>
 	    <scope>compile</scope>
 	</dependency>
 	<dependency>

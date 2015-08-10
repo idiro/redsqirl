@@ -33,6 +33,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 	private List<String> listFields;
 	private List<SelectHeaderType> listFieldsType;
 	private List<SelectItem> fieldTypes;
+	private List<String> fieldTypesString;
 	private String headerFieldsType;
 	private String selectHeaderEditor;
 
@@ -230,6 +231,14 @@ public class BrowserInteraction extends CanvasModalInteraction {
 			unchanged = false;
 		}
 	}
+	
+	public String calcString(List<SelectItem> listFields){
+		StringBuffer ans = new StringBuffer();
+		for (SelectItem selectItem : listFields) {
+			ans.append(",'"+selectItem.getLabel()+"'");
+		}
+		return ans.toString().substring(1);
+	}
 
 	public void openHeaderEditor(){
 
@@ -238,6 +247,11 @@ public class BrowserInteraction extends CanvasModalInteraction {
 		fieldTypes = new ArrayList<SelectItem>();
 		for (FieldType type : FieldType.values()) {
 			fieldTypes.add(new SelectItem(type.toString(), type.toString().toUpperCase() ));
+		}
+		
+		fieldTypesString = new LinkedList<String>();
+		if(fieldTypes != null && !fieldTypes.isEmpty()){
+			fieldTypesString.add(calcString(fieldTypes));
 		}
 		
 		setSelectHeaderEditor("D");
@@ -466,6 +480,14 @@ public class BrowserInteraction extends CanvasModalInteraction {
 
 	public void setUpdatableHeader(String updatableHeader) {
 		this.updatableHeader = updatableHeader;
+	}
+
+	public List<String> getFieldTypesString() {
+		return fieldTypesString;
+	}
+
+	public void setFieldTypesString(List<String> fieldTypesString) {
+		this.fieldTypesString = fieldTypesString;
 	}
 
 }

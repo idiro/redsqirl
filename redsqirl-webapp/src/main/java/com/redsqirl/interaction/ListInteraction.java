@@ -33,6 +33,8 @@ public class ListInteraction extends CanvasModalInteraction implements Serializa
 	 */
 	private List<SelectItem> listOptions;
 	
+	private List<String> listOptionsString;
+	
 	/**
 	 * The selected option
 	 */
@@ -60,6 +62,9 @@ public class ListInteraction extends CanvasModalInteraction implements Serializa
 			}
 			if(!listOptions.isEmpty()){
 				selectedListOption = listOptions.get(0).getLabel();
+				
+				listOptionsString = new LinkedList<String>();
+				listOptionsString.add(calcString(listOptions));
 			}
 		}
 
@@ -87,6 +92,14 @@ public class ListInteraction extends CanvasModalInteraction implements Serializa
 		} else {
 			comboBox = "Y";
 		}
+	}
+	
+	public String calcString(List<SelectItem> listFields){
+		StringBuffer ans = new StringBuffer();
+		for (SelectItem selectItem : listFields) {
+			ans.append(",'"+selectItem.getLabel()+"'");
+		}
+		return ans.toString().substring(1);
 	}
 
 	@Override
@@ -151,6 +164,14 @@ public class ListInteraction extends CanvasModalInteraction implements Serializa
 	 */
 	public final void setSelectedListOption(String selectedListOption) {
 		this.selectedListOption = selectedListOption;
+	}
+
+	public List<String> getListOptionsString() {
+		return listOptionsString;
+	}
+
+	public void setListOptionsString(List<String> listOptionsString) {
+		this.listOptionsString = listOptionsString;
 	}
 
 }

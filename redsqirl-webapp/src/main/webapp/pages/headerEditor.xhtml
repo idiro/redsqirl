@@ -10,8 +10,43 @@
 <script>
 //<![CDATA[
            
-    jQuery('[id$="selectHeaderEditor\\:0"]').css("margin-bottom", "35px");
-    selectRadio();
+          function startHeaderEditor() {
+       	  	jQuery('[id$="selectHeaderEditor\\:0"]').css("margin-bottom", "35px");
+       	  	selectRadio();
+          }
+          
+          function mountComboboxHeaderEditor() {
+
+			//alert(jQuery(".comboInputClassHeader").parent().attr('class'));
+			//alert(jQuery(".comboInputClassHeader").parent().attr('class') != "text-wrap");
+
+			if(jQuery(".comboInputClassHeader").parent().attr('class') != "text-wrap"){
+       		 
+                jQuery(".comboInputClassHeader").textext({
+		            plugins : 'arrow autocomplete'
+		        }).bind('getSuggestions', function(e, data){
+
+					try{
+			        	
+			            var list =  #{canvasModalBean.canvasModalInteractionHeaderEditor.fieldTypesString}  ,
+			                textext = jQuery(e.target).textext()[0],
+			                query = (data ? data.query : '') || '' ;
+			
+			            jQuery(this).trigger('setSuggestions', {
+				            	result : textext.itemManager().filter(list, query)
+				            }
+			            );
+
+					}catch(exception){
+					    alert(exception);
+					}
+		            
+		        });
+
+			}
+
+ 		}
+   
 
 	function selectRadio(){
 
@@ -24,6 +59,7 @@
 
 			jQuery('[id$="inputHeaderEditor"]').prop('disabled', true);
 			jQuery('[id$="tableHeaderEditor"]').find("input").prop('disabled', false);
+			mountComboboxHeaderEditor();
 			
 		}
 			
@@ -43,6 +79,7 @@
 </script>
 
 	<h:form>
+	
 		<div id="divCanvasModalHeaderEditor">
 		
 	        <a4j:jsFunction name="mountHeaderEditor" action="#{canvasModalBean.canvasModalInteractionHeaderEditor.mountHeaderEditor}" 
@@ -78,6 +115,7 @@
 								<h:outputText value="#{messages.label_change_fileds}" style="font-weight:bold;" /><br/>
 								<h:outputText value="#{messages.label_header_table}" /><br/>
 								<div style="height:220px;overflow:auto;" >
+									
 									<rich:dataTable id="tableHeaderEditor" value="#{canvasModalBean.canvasModalInteractionHeaderEditor.listFieldsType}"
 										var="obj" rowKeyVar="rowNb" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 									    enableContextMenu="false" onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
@@ -97,9 +135,18 @@
 									     	<f:facet name="header">
 									     		<h:outputText value="#{messages.label_type}" />
 									        </f:facet>
-								         	<rich:comboBox value="#{obj.type}" width="200" enableManualInput="false" listWidth="150" listHeight="200">
-						                    	<f:selectItems value="#{canvasModalBean.canvasModalInteractionHeaderEditor.fieldTypes}" />
-						                	</rich:comboBox>
+									        
+						                	
+						                	
+						                	<h:inputText value="#{obj.type}" styleClass="comboInputClassHeader" style="width:96%;" >
+                                  	 
+			                                
+                                  	 
+                            				</h:inputText>
+						                	
+						                	
+						                	
+						                	
 									     </rich:column>
 								        
 								    </rich:dataTable>

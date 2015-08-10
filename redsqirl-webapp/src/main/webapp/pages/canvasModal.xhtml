@@ -133,7 +133,7 @@
     
     <a4j:region>
     	<a4j:jsFunction name="openHeaderEditorPanel" action="#{canvasModalBean.openHeaderEditorPanel}" 
-    		oncomplete="#{rich:component('headerEditor')}.show();" reRender="canvasModalHeaderEditor">
+    		oncomplete="#{rich:component('headerEditor')}.show(); setTimeout(function(){ startHeaderEditor(); }, 500); " reRender="canvasModalHeaderEditor">
 			<a4j:actionparam name="idInteraction" value="#{interCur.id}"/>
 		</a4j:jsFunction>
     </a4j:region>
@@ -243,10 +243,39 @@
                 <!-- list -->
                 <a4j:region id="listInteractionRegion"  rendered="#{interCur.displayType == 'list'}">
                 <span id="listInteractionRegion_#{interCurIdx}">
-                    <rich:comboBox value="#{interCur.list.selectedListOption}" selectFirstOnUpdate="false" width="200" 
-                        listWidth="150" listHeight="200" enableManualInput="false" rendered="#{interCur.list.comboBox == 'Y'}" >
-                        <f:selectItems value="#{interCur.list.listOptions}" />
-                    </rich:comboBox>
+                    
+                
+                    <h:panelGroup style="width:250px" layout="block" >
+                    <h:inputText value="#{interCur.list.selectedListOption}" id="selectedListOptionCombo#{interCurIdx+1}" 
+                    	rendered="#{interCur.list.comboBox == 'Y'}" style="width:245px" >
+                                  	 
+	                    <script type="text/javascript">
+	                    	jQuery("[id$='selectedListOptionCombo#{interCurIdx+1}']").textext({
+						    	plugins : 'arrow autocomplete'
+						    }).bind('getSuggestions', function(e, data){
+	
+							try{
+							        	
+								var list =  #{interCur.list.listOptionsString}  ,
+							    	textext = jQuery(e.target).textext()[0],
+							        query = (data ? data.query : '') || '' ;
+							
+							        jQuery(this).trigger('setSuggestions', {
+								    	result : textext.itemManager().filter(list, query)
+								    	}
+							        );
+	
+								}catch(exception){
+									alert(exception);
+								}
+						            
+							});
+						</script>
+                               	 
+                    </h:inputText>
+                    </h:panelGroup>
+                    
+                    
                     
                     <h:selectOneRadio value="#{interCur.list.selectedListOption}" rendered="#{interCur.list.comboBox == 'N'}" layout="pageDirection" >
                         <f:selectItems value="#{interCur.list.listOptions}" />
@@ -491,7 +520,7 @@
 			                                    
 			                                     <h:inputText value="#{rowItem.row[ind]}" styleClass="tableInteractionInput" 
 			                                     	id="combo#{ind}#{rowNb+1}"
-			                                     	rendered="#{interCur.table.columnType[column] == 'comboBox' }" >
+			                                     	rendered="#{interCur.table.columnType[column] == 'comboBox' }" style="width:98%" >
 			                                     	 
 			                                     	<script type="text/javascript">
 				                                     	jQuery("[id$='combo#{ind}#{rowNb+1}']").textext({

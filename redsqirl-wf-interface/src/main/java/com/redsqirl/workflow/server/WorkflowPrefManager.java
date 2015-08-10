@@ -517,6 +517,10 @@ public class WorkflowPrefManager extends BlockManager {
 			try {
 				prop.store(new FileWriter(userProp), "");
 				propLang.store(new FileWriter(userPropLang), "");
+				userProp.setWritable(true, true);
+				userProp.setReadable(true, true);
+				userPropLang.setWritable(true, true);
+				userPropLang.setReadable(true, true);
 			} catch (IOException e) {
 				logger.warn("Fail to write default properties");
 			}
@@ -1035,6 +1039,15 @@ public class WorkflowPrefManager extends BlockManager {
 	 */
 	public static String getUserProperty(String key, String defaultValue) {
 		return props.getUserProperty(key, defaultValue);
+	}
+	
+	/**
+	 * Return user property default to system.
+	 * @param key
+	 * @return
+	 */
+	public static String getProperty(String key){
+		return props.getUserProperty(key,props.getSysProperty(key));
 	}
 
 	/**

@@ -2,6 +2,9 @@ package com.redsqirl.workflow.server.oozie;
 
 
 import java.rmi.RemoteException;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
@@ -22,6 +25,8 @@ public class PigAction extends OozieActionAbs {
 	private static final long serialVersionUID = 233700291606047641L;
 	
 	private static Logger logger = Logger.getLogger(PigAction.class);
+	
+	private List<String> arguments = new LinkedList<String>();
 	
 	/**
 	 * Constructor
@@ -50,10 +55,18 @@ public class PigAction extends OozieActionAbs {
 		
 		Element script = oozieXmlDoc.createElement("script");
 		script.appendChild(oozieXmlDoc.createTextNode(fileNames[0]));
+		pig.appendChild(script);
 		
+		if(arguments != null){
+			Iterator<String> argIt = arguments.iterator();
+			while(argIt.hasNext()){
+				Element argument = oozieXmlDoc.createElement("argument");
+				argument.appendChild(oozieXmlDoc.createTextNode(argIt.next()));
+				pig.appendChild(argument);
+			}
+		}
 		logger.info("createOozieElement 2");
 		
-		pig.appendChild(script);
 		action.appendChild(pig);
 		
 		logger.info("createOozieElement 3");
@@ -67,6 +80,20 @@ public class PigAction extends OozieActionAbs {
 	@Override
 	public String[] getFileExtensions() {
 		return new String[]{".pig", ".properties"};
+	}
+
+	/**
+	 * @return the arguments
+	 */
+	public List<String> getArguments() {
+		return arguments;
+	}
+
+	/**
+	 * @param arguments the arguments to set
+	 */
+	public void setArguments(List<String> arguments) {
+		this.arguments = arguments;
 	}
 
 }

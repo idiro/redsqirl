@@ -33,6 +33,12 @@
                         <br />
                         <br />
                     </a4j:repeat>
+                    
+                     <a4j:commandLink title="#{messages.label_add_new_line}" oncomplete="#{rich:component('userNewSettings')}.show();" 
+                     	rendered="#{settingsBean.admin}" >
+		            	<img id="tableInteractionBtAdd" src="../image/icons/button-plus-small.gif" class="btConfigureFooter" />
+		            </a4j:commandLink>
+                    
                 </rich:panel>
                 
                 <h:panelGrid columns="3">
@@ -60,6 +66,12 @@
                         <br />
                         <br />
                     </a4j:repeat>
+                    
+                     <a4j:commandLink title="#{messages.label_add_new_line}" oncomplete="#{rich:component('sysNewSettings')}.show();" 
+                     	rendered="#{settingsBean.admin}" >
+		            	<img id="tableInteractionBtAdd" src="../image/icons/button-plus-small.gif" class="btConfigureFooter" />
+		            </a4j:commandLink>
+			            
                 </rich:panel>
                 
                 <h:panelGrid columns="3">
@@ -81,5 +93,70 @@
     </div>
     
 </h:form>
+
+	<rich:modalPanel id="userNewSettings" width="500" height="300" style="overflow:auto;" resizeable="false" >
+		
+		<h:form>
+		
+			<f:facet name="header">
+				<h:outputText value='#{messages.label_add_new_line}' />
+			</f:facet>
+		
+			<h:panelGrid columns="2">
+			
+				<h:outputText value="#{messages.label_name}" class="formLabel" />
+				<h:inputText value="#{settingsBean.nameSettings}" style="width:400px;" onkeypress="return enableEnterKey(event, 'btAddNewLineUserSettings');" />
+				
+				<h:outputText value="#{messages.label_title_key}" class="formLabel" />
+				<h:inputText value="#{settingsBean.titleSettings}" style="width:400px;" onkeypress="return enableEnterKey(event, 'btAddNewLineUserSettings');" />
+				
+				<h:outputText value="#{messages.label_value}" class="formLabel" />
+				<h:inputText value="#{settingsBean.valueSettings}" style="width:400px;" onkeypress="return enableEnterKey(event, 'btAddNewLineUserSettings');" />
+				
+			</h:panelGrid>
+					
+			<br/><br/>
+	           
+        	<a4j:commandButton id="btAddNewLineUserSettings" value="#{messages.button_ok}" action="#{settingsBean.addNewLineUserSettings}" 
+           		reRender="userSettingsTabPanel,sysSettingsTabPanel" oncomplete="#{rich:component('userNewSettings')}.hide();" />
+           
+            <a4j:commandButton value="#{messages.button_cancel}" oncomplete="#{rich:component('userNewSettings')}.hide();" />
+           
+    	</h:form>
+
+	</rich:modalPanel>
+	
+	<rich:modalPanel id="sysNewSettings" width="500" height="300" style="overflow:auto;" resizeable="false" >
+		
+		<h:form>
+		
+			<f:facet name="header">
+				<h:outputText value='#{messages.label_add_new_line}' />
+			</f:facet>
+		
+			<h:panelGrid columns="2">
+			
+				<h:outputText value="#{messages.label_name}" class="formLabel" />
+				<h:inputText value="#{settingsBean.nameSettings}" style="width:400px;" onkeypress="return enableEnterKey(event, 'btAddNewLineSysSettings');" />
+				
+				<h:outputText value="#{messages.label_title_key}" class="formLabel" />
+				<h:inputText value="#{settingsBean.titleSettings}" style="width:400px;" onkeypress="return enableEnterKey(event, 'btAddNewLineSysSettings');" />
+				
+				<h:outputText value="#{messages.label_value}" class="formLabel" />
+				<h:inputText value="#{settingsBean.valueSettings}" style="width:400px;" onkeypress="return enableEnterKey(event, 'btAddNewLineSysSettings');" />
+				
+			</h:panelGrid>
+					
+			<br/><br/>
+	           
+        	<a4j:commandButton id="btAddNewLineSysSettings" value="#{messages.button_ok}" action="#{settingsBean.addNewLineSysSettings}" 
+           		reRender="userSettingsTabPanel,sysSettingsTabPanel" oncomplete="#{rich:component('sysNewSettings')}.hide();" />
+           
+            <a4j:commandButton value="#{messages.button_cancel}" oncomplete="#{rich:component('sysNewSettings')}.hide();" />
+           
+    	</h:form>
+
+	</rich:modalPanel>
+
     
 </ui:composition>

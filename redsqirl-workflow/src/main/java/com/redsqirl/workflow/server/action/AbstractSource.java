@@ -439,7 +439,7 @@ public abstract class AbstractSource extends DataflowAction {
 							error = LanguageManagerWF.getText(
 									"source.pathexceptions",
 									new Object[] { e.getMessage() });
-							logger.error(error);
+							logger.error(error,e);
 						}
 
 					}
