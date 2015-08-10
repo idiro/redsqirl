@@ -158,14 +158,44 @@
 		
 		<br />
 		
-		<rich:comboBox value="#{canvasModalBean.outputTab.fileSystem.extensionsSelected}" width="200" enableManualInput="false"
-			id="generation" listWidth="150" listHeight="200" rendered="#{not empty canvasModalBean.outputTab.fileSystem.listExtensions}" 
-			onchange="changePathModalOutput();" style="padding-right:20px;float:right;" >
-	        <f:selectItems styleClass="interModal" value="#{canvasModalBean.outputTab.fileSystem.listExtensions}" />
-	   </rich:comboBox>
+		
 	   
-	   <br />
-	   <br />
+	   				<h:panelGroup style="width:150px" layout="block" >
+                    <h:inputText value="#{canvasModalBean.outputTab.fileSystem.extensionsSelected}" 
+                    	id="comboboxExtensionsFilesystem" style="width:145px"
+                    	rendered="#{not empty canvasModalBean.outputTab.fileSystem.listExtensions}" >
+                                  	 
+	                    <script type="text/javascript">
+	                    	jQuery("[id$='comboboxExtensionsFilesystem']").textext({
+						    	plugins : 'arrow autocomplete'
+						    }).bind('getSuggestions', function(e, data){
+	
+							try{
+							        	
+								var list =  #{canvasModalBean.outputTab.fileSystem.listExtensionsString}  ,
+							    	textext = jQuery(e.target).textext()[0],
+							        query = (data ? data.query : '') || '' ;
+							
+							        jQuery(this).trigger('setSuggestions', {
+								    	result : textext.itemManager().filter(list, query)
+								    	}
+							        );
+	
+								}catch(exception){
+									alert(exception);
+								}
+						            
+							});
+
+	                    	jQuery("[id$='comboboxExtensionsFilesystem']").bind('setFormData', function(e, data, isEmpty){
+	                    		changePathModalOutput();
+	                    	});
+							
+						</script>
+                               	 
+                    </h:inputText>
+                    </h:panelGroup>
+	   
 	    
 	   <rich:panel id="panelBtOutputBrowser" style="border:none; float:right;" >
 	   

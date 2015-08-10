@@ -24,6 +24,7 @@ public class OutputForm implements Serializable {
 	private String componentId;
 	private String name;
 	private List<SelectItem> savingStateList = new ArrayList<SelectItem>();
+	private List<String> savingStateListString = new ArrayList<String>();
 	private boolean renderBrowserButton = false;
 	private String savingState;
 	private String path;
@@ -208,4 +209,12 @@ public class OutputForm implements Serializable {
 		this.datastores = datastores;
 	}
 
+	public List<String> getSavingStateListString() {
+		return savingStateListString;
+	}
+
+	public void setSavingStateListString(List<String> savingStateListString) {
+		this.savingStateListString = savingStateListString;
+	}
+	
 }

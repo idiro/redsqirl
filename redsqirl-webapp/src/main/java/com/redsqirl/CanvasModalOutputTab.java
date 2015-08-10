@@ -88,6 +88,7 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 
 	private String maxRows;
 	private List<SelectItem> maxNumberRows;
+	private List<String> maxNumberRowsString;
 
 	/**
 	 * Constructor. The constructor will automatically load the first name as
@@ -151,6 +152,12 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 					outputList.add(new SelectItem(s.toString(), s.toString()));
 				}
 				of.setSavingStateList(outputList);
+				
+				if(outputList != null && !outputList.isEmpty()){
+					of.getSavingStateListString().add(calcString(outputList));
+					of.setSavingStateListString(of.getSavingStateListString());
+				}
+				
 				logger.info("saving state "
 						+ e.getValue().getSavingState().toString());
 				if (e.getValue().getSavingState() == SavingState.RECORDED &&
@@ -423,6 +430,12 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 				getFileSystem().setListExtensions(listExtensions);
 				getFileSystem().setAllowDirectories(dfeOut.allowDirectories());
 				getFileSystem().updateTable();
+				
+				if(listExtensions != null && !listExtensions.isEmpty()){
+					List<String> listExtensionsString = new LinkedList<String>();
+					listExtensionsString.add(calcString(listExtensions));
+					getFileSystem().setListExtensionsString(listExtensionsString);
+				}
 
 				if (dfeOut.getFields() != null) {
 
@@ -483,6 +496,14 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 			}
 		}
 	}
+	
+	public String calcString(List<SelectItem> listFields){
+		StringBuffer ans = new StringBuffer();
+		for (SelectItem selectItem : listFields) {
+			ans.append(",'"+selectItem.getLabel()+"'");
+		}
+		return ans.toString().substring(1);
+	}
 
 	public void mountNumberRowsList(int mRow) throws RemoteException {
 		maxNumberRows = new ArrayList<SelectItem>();
@@ -490,6 +511,12 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 			int value = mRow * i;
 			maxNumberRows.add(new SelectItem(value+"", value+""));
 		}
+		
+		if(maxNumberRows != null && !maxNumberRows.isEmpty()){
+			maxNumberRowsString = new ArrayList<String>();
+			maxNumberRowsString.add(calcString(maxNumberRows));
+		}
+		
 	}
 
 	/**
@@ -659,6 +686,14 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 
 	public void setMaxNumberRows(List<SelectItem> maxNumberRows) {
 		this.maxNumberRows = maxNumberRows;
+	}
+
+	public List<String> getMaxNumberRowsString() {
+		return maxNumberRowsString;
+	}
+
+	public void setMaxNumberRowsString(List<String> maxNumberRowsString) {
+		this.maxNumberRowsString = maxNumberRowsString;
 	}
 
 }

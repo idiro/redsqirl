@@ -8,7 +8,6 @@ import java.util.List;
 
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
@@ -44,6 +43,13 @@ public class HdfsBrowserBean extends HdfsBean {
 		listExtensions.add(new SelectItem("*", "*"));
 		setExtensionsSelected(listExtensions.get(0).getLabel());
 		setListExtensions(listExtensions);
+		
+		List<String> listExtensionsString = new LinkedList<String>();
+		if(listExtensions != null && !listExtensions.isEmpty()){
+			listExtensionsString.add(calcString(listExtensions));
+			setListExtensionsString(listExtensionsString);
+		}
+		
 	}
 
 	/**
@@ -80,6 +86,14 @@ public class HdfsBrowserBean extends HdfsBean {
 		}
 		
 		usageRecordLog().addSuccess("CREATESAVEFOLDER");
+	}
+	
+	public String calcString(List<SelectItem> listFields){
+		StringBuffer ans = new StringBuffer();
+		for (SelectItem selectItem : listFields) {
+			ans.append(",'"+selectItem.getLabel()+"'");
+		}
+		return ans.toString().substring(1);
 	}
 
 	@Override
