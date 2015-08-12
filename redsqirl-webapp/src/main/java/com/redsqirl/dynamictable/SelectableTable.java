@@ -329,4 +329,8 @@ public class SelectableTable extends BaseBean implements Serializable {
 		this.name = name;
 	}
 
+	public void setTitles(List<String> titles) {
+		this.titles = titles;
+	}
+
 }

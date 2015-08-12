@@ -7,6 +7,16 @@
 
 <a4j:loadBundle basename="MessagesResources" var="messages" />
 
+<script>
+    
+    function selectFileSsh(isFile, nameFile){
+    	if (isFile != "true"){
+    		updateTableSsh(nameFile);
+    	}
+    }
+    
+</script>
+
 	<div id="sshFileSystem" style="min-width: 400px; overflow: hidden; min-height: 300px;">
 		
 		<rich:dragIndicator id="indicator" />

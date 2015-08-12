@@ -36,6 +36,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	private LinkedList<String> columnIds;
 	private LinkedList<String> target;
 	private SelectableTable tableGrid = new SelectableTable();
+	private SelectableTable tableGridOld = new SelectableTable();
 	private Integer index;
 	private String showTab = "N";
 	private String workflowNameTmp = "wf-footer-123";
@@ -130,6 +131,16 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 		setTabs(new LinkedList<String>(getMenuWA().keySet()));
 		setColumnIds(new LinkedList<String>());
 		getColumnIds().add("Name");
+		
+		
+		//save old
+		tableGridOld.setColumnIds(tableGrid.getColumnIds());
+		tableGridOld.setTitles(tableGrid.getTitles());
+		tableGridOld.setRows(tableGrid.getRows());
+		tableGridOld.setRowNumber(tableGrid.getRowNumber());
+		tableGridOld.setName(tableGrid.getName());
+		
+		
 		setTableGrid(new SelectableTable(columnIds));
 
 		//Set All the menus
@@ -140,6 +151,9 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 			String[] value = new String[1];
 			value[0] = name;
 			retrieveItems(name);
+			
+			checkOldValues(name);
+			
 			getTableGrid().getRows().add(new SelectableRowFooter(value, getMenuActions(), getTarget()));
 			//logger.info("menu "+name+": "+getMenuActions()+", "+getTarget());
 		}
@@ -198,14 +212,34 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 		}
 		setTarget(target);
 	}
+	
+	public void checkOldValues(String selectedTab){
+		
+		for (int i = 0; i < tableGridOld.getRows().size(); i++) {
+			SelectableRowFooter selectableRowFooter = (SelectableRowFooter) tableGridOld.getRows().get(i);
+			if(selectableRowFooter.getRow()[0].equals(selectedTab)){
+				if(getMenuActions().size() != selectableRowFooter.getActions().size()){
+					setMenuActions(new LinkedList<String>());
+					getMenuActions().addAll(selectableRowFooter.getActions());
+				}
+				if(getTarget().size() != selectableRowFooter.getTarget().size()){
+					setTarget(new LinkedList<String>());
+					getTarget().addAll(selectableRowFooter.getTarget());
+				}
+			}
+		}
+		
+	}
 
 	public void deleteTab() {
 		for (Iterator<SelectableRow> iterator = getTableGrid().getRows().iterator(); iterator.hasNext();) {
 			SelectableRow selectableRow = (SelectableRow) iterator.next();
 			if(selectableRow.isSelected()){
 				iterator.remove();
+				getMenuWA().remove(selectableRow.getRow()[0]);
 			}
 		}
+		
 		setIndex(null);
 	}
 
@@ -373,6 +407,14 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	 */
 	public void setShowTab(String showTab) {
 		this.showTab = showTab;
+	}
+
+	public SelectableTable getTableGridOld() {
+		return tableGridOld;
+	}
+
+	public void setTableGridOld(SelectableTable tableGridOld) {
+		this.tableGridOld = tableGridOld;
 	}
 
 }
