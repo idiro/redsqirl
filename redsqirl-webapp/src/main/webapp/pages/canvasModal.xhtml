@@ -161,11 +161,11 @@
         	onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();" onstop="jQuery.unblockUI();" />
                     
         <a4j:jsFunction name="openModalOutputBrowser" action="#{canvasModalBean.outputTab.updateDFEOutputTable}" 
-        	reRender="modalOutputBrowser" oncomplete="#{rich:component('modalOutputBrowser')}.show();" >
+        	reRender="modalOutputBrowser" oncomplete="mountComboboxExtensionsFilesystem();#{rich:component('modalOutputBrowser')}.show();" >
         	<a4j:actionparam name="openOutputData" assignTo="#{canvasModalBean.outputTab.fileSystem.openOutputData}"/>
         </a4j:jsFunction>
         
-        <a4j:jsFunction name="openModalOutputBrowserCM" reRender="modalOutputBrowser" oncomplete="#{rich:component('modalOutputBrowser')}.show();" >
+        <a4j:jsFunction name="openModalOutputBrowserCM" reRender="modalOutputBrowser" oncomplete="mountComboboxExtensionsFilesystem();#{rich:component('modalOutputBrowser')}.show();" >
         	<a4j:actionparam name="openOutputData" assignTo="#{canvasModalBean.outputTab.fileSystem.openOutputData}"/>
         </a4j:jsFunction>
     </a4j:region>
@@ -528,7 +528,7 @@
 
 																	try{
 															        	
-															            var list = [ #{interCur.table.tableConstraintsString[column]} ] ,
+															            var list = new Array(#{interCur.table.tableConstraintsString[column]}) ,
 															                textext = jQuery(e.target).textext()[0],
 															                query = (data ? data.query : '') || '' ;
 															

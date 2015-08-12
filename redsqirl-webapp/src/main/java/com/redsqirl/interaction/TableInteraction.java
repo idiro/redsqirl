@@ -197,12 +197,8 @@ public class TableInteraction extends CanvasModalInteraction{
 							.replaceAll("\n", "\n\t");
 				}
 				logger.debug(aux);
-				columnType.put(WordUtils.capitalizeFully(
-						tree.getFirstChild("title")
-						.getFirstChild().getHead()
-						.replace("_", " ")), aux);
-				tableColumns.add(tree.getFirstChild("title")
-						.getFirstChild().getHead());
+				columnType.put(WordUtils.capitalizeFully(tree.getFirstChild("title").getFirstChild().getHead().replace("_", " ")), aux);
+				tableColumns.add(tree.getFirstChild("title").getFirstChild().getHead());
 			}
 		}
 		logger.info("Grid column titles: "+tableColumns);
@@ -240,14 +236,15 @@ public class TableInteraction extends CanvasModalInteraction{
 			if (list != null) {
 				// logger.info("list not null: " + list.toString());
 				for (Tree<String> tree : list) {
-					logger.debug("list value " + tree.getFirstChild().getHead());
-					listFields.add(new SelectItem(tree.getFirstChild()
-							.getHead(), tree.getFirstChild().getHead()));
+					logger.info("list value " + tree.getFirstChild().getHead());
+					if(!"".equals(tree.getFirstChild().getHead())){
+						listFields.add(new SelectItem(tree.getFirstChild().getHead(), tree.getFirstChild().getHead()));
+					}
 				}
 			}
 			Collections.sort(listFields, new SelectItemComparator());
 			tableConstraints.put(dfeInteractionTree.getFirstChild("title").getFirstChild().getHead(), listFields);
-			tableConstraintsString.put(dfeInteractionTree.getFirstChild("title").getFirstChild().getHead(), calcString(listFields));
+			tableConstraintsString.put(WordUtils.capitalizeFully(dfeInteractionTree.getFirstChild("title").getFirstChild().getHead().replace("_", " ")), calcString(listFields));
 		}
 	}
 	

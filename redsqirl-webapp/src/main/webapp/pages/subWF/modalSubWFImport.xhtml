@@ -39,6 +39,35 @@
         	updateTableHdfsImport(nameFile);
     	}
     }
+    
+	function mountComboboxTypes(){
+
+    	jQuery("[id$='comboboxTypes']").textext({
+	    	plugins : 'arrow autocomplete'
+	    }).bind('getSuggestions', function(e, data){
+
+		try{
+		        	
+			var list =  #{browserHdfsBean.listExtensionsString}  ,
+		    	textext = jQuery(e.target).textext()[0],
+		        query = (data ? data.query : '') || '' ;
+		
+		        jQuery(this).trigger('setSuggestions', {
+			    	result : textext.itemManager().filter(list, query)
+			    	}
+		        );
+
+			}catch(exception){
+				alert(exception);
+			}
+	            
+		});
+
+    	jQuery("[id$='comboboxTypes']").bind('setFormData', function(e, data, isEmpty){
+    		refreshHdfsImportFileTable();
+    	});
+		
+	}
 
 //]]>
 </script>
@@ -132,33 +161,7 @@
     				<h:panelGroup style="width:150px" layout="block" >
                     <h:inputText value="#{browserHdfsBean.extensionsSelected}" id="comboboxTypes" style="width:145px" >
                                   	 
-	                    <script type="text/javascript">
-	                    	jQuery("[id$='comboboxTypes']").textext({
-						    	plugins : 'arrow autocomplete'
-						    }).bind('getSuggestions', function(e, data){
-	
-							try{
-							        	
-								var list =  #{browserHdfsBean.listExtensionsString}  ,
-							    	textext = jQuery(e.target).textext()[0],
-							        query = (data ? data.query : '') || '' ;
-							
-							        jQuery(this).trigger('setSuggestions', {
-								    	result : textext.itemManager().filter(list, query)
-								    	}
-							        );
-	
-								}catch(exception){
-									alert(exception);
-								}
-						            
-							});
-
-	                    	jQuery("[id$='comboboxTypes']").bind('setFormData', function(e, data, isEmpty){
-	                    		refreshHdfsImportFileTable();
-	                    	});
-							
-						</script>
+	                    
                                	 
                     </h:inputText>
                     </h:panelGroup>
