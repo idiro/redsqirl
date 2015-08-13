@@ -209,8 +209,7 @@ public class SSHInterfaceArray extends UnicastRemoteObject implements DataStoreA
 
 
 	@Override
-	public String removeKnownStore(Map<String, String> fields)
-			throws RemoteException {
+	public String removeKnownStore(Map<String, String> fields) throws RemoteException {
 		return SSHInterface.removeKnownHost(fields.get(hostName));
 	}
 
