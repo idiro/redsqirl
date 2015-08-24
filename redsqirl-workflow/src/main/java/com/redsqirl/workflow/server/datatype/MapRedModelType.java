@@ -145,9 +145,12 @@ public class MapRedModelType extends MapRedDir {
 			super.setPath(path);
 
 			logger.info("setPath() " + path);
-			if (isPathExists()) {
+			
+			List<String> list = this.selectLine(2000);
+			
+			if (list != null) {
 
-				FieldList fl = generateFieldsMap(delimiter);
+				FieldList fl = generateFieldsMap(delimiter, list);
 				
 				String error = checkCompatibility(fl,fields);
 				logger.debug(fields.getFieldNames());

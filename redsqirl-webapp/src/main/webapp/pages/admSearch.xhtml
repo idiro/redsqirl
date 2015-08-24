@@ -50,7 +50,7 @@
 		</h:form>
 				 				
 		<a4j:outputPanel id="out" ajaxRendered="true">
-			<h:panelGroup layout="block" class="packageList">
+			<h:panelGroup layout="block" class="packageList" style="height:550px;overflow:auto;">
 				<a4j:repeat value="#{analyticsStoreSearchBean.allPackageList}" var="pck">
 				 	<div class="packageItem" onclick="goToUrl(event, this);">
 	                	<h:panelGroup layout="block" class="type" style="float:right;">

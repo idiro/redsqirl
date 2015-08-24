@@ -6,6 +6,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,6 @@ import com.redsqirl.dynamictable.SelectableRowFooter;
 import com.redsqirl.dynamictable.SelectableTable;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
-import com.redsqirl.workflow.utils.SuperActionManager;
 
 public class ConfigureTabsBean extends BaseBean implements Serializable {
 
@@ -31,7 +31,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 
 	protected Map<String, List<String[]>> menuWA;
 	private Map<String,String> allWANameWithClassName = null;
-	private LinkedList<String> menuActions;
+	private LinkedHashSet<String> menuActions;
 	private List<String> tabs;
 	private LinkedList<String> columnIds;
 	private LinkedList<String> target;
@@ -44,8 +44,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	/**
 	 * Value to give when index is null
 	 */
-	private SelectableRowFooter menuNull = new SelectableRowFooter(
-			new String[3], getMenuActions());
+	private SelectableRowFooter menuNull = new SelectableRowFooter(new String[3], getMenuActionsAsList());
 
 	private static Logger logger = Logger.getLogger(ConfigureTabsBean.class);
 
@@ -122,10 +121,10 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 			}
 		}
 
-		menuActions = new LinkedList<String>();
+		menuActions = new LinkedHashSet<String>();
 		menuActions.addAll(result);
 		//logger.info("Available Actions: "+result);
-		menuNull = new SelectableRowFooter(new String[3], getMenuActions());
+		menuNull = new SelectableRowFooter(new String[3], getMenuActionsAsList());
 		
 		//Action Menu names
 		setTabs(new LinkedList<String>(getMenuWA().keySet()));
@@ -134,6 +133,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 		
 		
 		//save old
+		tableGridOld = new SelectableTable();
 		tableGridOld.setColumnIds(tableGrid.getColumnIds());
 		tableGridOld.setTitles(tableGrid.getTitles());
 		tableGridOld.setRows(tableGrid.getRows());
@@ -145,16 +145,17 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 
 		//Set All the menus
 		for (String name : getMenuWA().keySet()) {
-			menuActions = new LinkedList<String>();
+			menuActions = new LinkedHashSet<String>();
 			menuActions.addAll(result);
 			
 			String[] value = new String[1];
 			value[0] = name;
+			
 			retrieveItems(name);
 			
 			checkOldValues(name);
 			
-			getTableGrid().getRows().add(new SelectableRowFooter(value, getMenuActions(), getTarget()));
+			getTableGrid().getRows().add(new SelectableRowFooter(value, getMenuActionsAsList(), getTarget()));
 			//logger.info("menu "+name+": "+getMenuActions()+", "+getTarget());
 		}
 		menuActions.addAll(result);
@@ -219,7 +220,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 			SelectableRowFooter selectableRowFooter = (SelectableRowFooter) tableGridOld.getRows().get(i);
 			if(selectableRowFooter.getRow()[0].equals(selectedTab)){
 				if(getMenuActions().size() != selectableRowFooter.getActions().size()){
-					setMenuActions(new LinkedList<String>());
+					setMenuActions(new LinkedHashSet<String>());
 					getMenuActions().addAll(selectableRowFooter.getActions());
 				}
 				if(getTarget().size() != selectableRowFooter.getTarget().size()){
@@ -247,7 +248,7 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 		mountMenuActions();
 		String[] value = new String[1];
 		value[0] = "";
-		getTableGrid().getRows().add(new SelectableRowFooter(value, getMenuActions()));
+		getTableGrid().getRows().add(new SelectableRowFooter(value, getMenuActionsAsList()));
 	}
 
 	public String checkSaveTabs() {
@@ -347,11 +348,19 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 		return list;
 	}
 
-	public LinkedList<String> getMenuActions() {
+	public LinkedList<String> getMenuActionsAsList() {
+		LinkedList<String> l = new LinkedList<String>();
+		if(menuActions != null){
+			l.addAll(menuActions);
+		}
+		return l;
+	}
+	
+	public LinkedHashSet<String> getMenuActions() {
 		return menuActions;
 	}
 
-	public void setMenuActions(LinkedList<String> menuActions) {
+	public void setMenuActions(LinkedHashSet<String> menuActions) {
 		this.menuActions = menuActions;
 	}
 

@@ -218,8 +218,8 @@ public class MapRedTextType extends MapRedDir {
 			super.setPath(path);
 
 			logger.info("setPath() " + path);
-			if (isPathExists()) {
-				List<String> list = selectLine(1);
+			List<String> list = this.selectLine(2000);
+			if (list != null) {
 
 				if (list != null && !list.isEmpty()) {
 					String text = list.get(0);
@@ -232,19 +232,19 @@ public class MapRedTextType extends MapRedDir {
 						super.addProperty(key_delimiter, delimiter);
 					}
 
-				}
 
-				FieldList fl = generateFieldsMap(getChar(getProperty(key_delimiter)));
-				if(fields == null || fields.getSize() == 0){
-					fields = fl;
-				}else{
-					logger.info(fields.getFieldNames());
-					logger.info(fl.getFieldNames());
-					String error = checkCompatibility(fl,fields);
-					if(error != null){
-						logger.info(error);
+					FieldList fl = generateFieldsMap(getChar(getProperty(key_delimiter)), list);
+					if(fields == null || fields.getSize() == 0){
 						fields = fl;
-						throw new RemoteException(error);
+					}else{
+						logger.info(fields.getFieldNames());
+						logger.info(fl.getFieldNames());
+						String error = checkCompatibility(fl,fields);
+						if(error != null){
+							logger.info(error);
+							fields = fl;
+							throw new RemoteException(error);
+						}
 					}
 				}
 			}

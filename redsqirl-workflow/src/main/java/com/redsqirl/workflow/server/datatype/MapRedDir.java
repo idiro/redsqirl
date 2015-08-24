@@ -42,17 +42,17 @@ import com.redsqirl.workflow.utils.LanguageManagerWF;
 public abstract class MapRedDir extends MapRedHdfs{
 
 
-	
+
 	private static Logger logger = Logger.getLogger(MapRedDir.class);
-	
+
 	public MapRedDir() throws RemoteException{
 		super();
 	}
-	
+
 	public MapRedDir(FieldList fields) throws RemoteException {
 		super(fields);
 	}
-	
+
 	public String isPathValid(String path, List<String> shouldNotHaveExt, List<String> shouldHaveExt) throws RemoteException {
 		String error = null;
 		HdfsFileChecker hCh = new HdfsFileChecker(path);
@@ -65,7 +65,7 @@ public abstract class MapRedDir extends MapRedHdfs{
 				error = LanguageManagerWF.getText(
 						"mapredtexttype.shouldhaveextcompresssile",
 						new Object[] { path,shouldHaveExt });
-				
+
 			}
 		}else if(shouldNotHaveExt != null && ! shouldNotHaveExt.isEmpty()){
 			boolean found = false;
@@ -76,10 +76,10 @@ public abstract class MapRedDir extends MapRedHdfs{
 				error = LanguageManagerWF.getText(
 						"mapredtexttype.shouldnothaveextcompresssile",
 						new Object[] { path,shouldNotHaveExt });
-				
+
 			}
 		}
-		
+
 		if (!hCh.isInitialized() || hCh.isFile()) {
 			error = LanguageManagerWF.getText("mapredtexttype.dirisfile");
 		} else{
@@ -90,7 +90,7 @@ public abstract class MapRedDir extends MapRedHdfs{
 				if (!hCh.isDirectory()) {
 					error = LanguageManagerWF.getText("mapredtexttype.nodir",new String[]{hCh.getPath().toString()});
 				}
-				
+
 				if(isPathExists()){
 					FileStatus[] stat = fs.listStatus(new Path(path),
 							new PathFilter() {
@@ -157,50 +157,50 @@ public abstract class MapRedDir extends MapRedHdfs{
 
 	public List<String> selectLine(int maxToRead) throws RemoteException {
 		List<String> ans = null;
-		if (isPathValid() == null && isPathExists()) {
-			try {
-				FileSystem fs = NameNodeVar.getFS();
-				FileStatus[] stat = fs.listStatus(new Path(getPath()),
-						new PathFilter() {
+		//if (isPathValid() == null && isPathExists()) {
+		try {
+			FileSystem fs = NameNodeVar.getFS();
+			FileStatus[] stat = fs.listStatus(new Path(getPath()),
+					new PathFilter() {
 
-					@Override
-					public boolean accept(Path arg0) {
-						return !arg0.getName().startsWith("_") && !arg0.getName().startsWith(".");
-					}
-				});
-				ans = new ArrayList<String>(maxToRead);
-				for (int i = 0; i < stat.length; ++i) {
-					ans.addAll(hdfsInt.select(stat[i].getPath().toString(),
-							",",
-							(maxToRead / stat.length) + 1));
+				@Override
+				public boolean accept(Path arg0) {
+					return !arg0.getName().startsWith("_") && !arg0.getName().startsWith(".");
 				}
-				try {
-					// fs.close();
-				} catch (Exception e) {
-					logger.error("Fail to close FileSystem: " + e);
-				}
-			} catch (IOException e) {
-				String error = "Unexpected error: " + e.getMessage();
-				logger.error(error);
-				ans = null;
+			});
+			ans = new ArrayList<String>(maxToRead);
+			for (int i = 0; i < stat.length; ++i) {
+				ans.addAll(hdfsInt.select(stat[i].getPath().toString(),
+						",",
+						(maxToRead / stat.length) + 1));
 			}
+		} catch (IOException e) {
+			String error = "Unexpected error: " + e.getMessage();
+			logger.error(error);
+			ans = null;
 		}
+		catch (Exception e) {
+			logger.error("Fail to close FileSystem: " + e);
+			ans = null;
+		}
+
+		//}
 		return ans;
 	}
-	
+
 	protected List<String[]> getSchemaList(){
-		
+
 		JSONParser parser = new JSONParser();
 		List<String[]> schemaMap = new ArrayList<String[]>();
-		
+
 		List<String> schemaList;
 		try {
 			schemaList = hdfsInt.select(getPath()+"/.pig_schema", "", 10);
-			
-			
+
+
 			if (schemaList != null && !schemaList.isEmpty()){
 				JSONObject a = (JSONObject) parser.parse(schemaList.get(0));
-				
+
 				JSONArray fields = (JSONArray) a.get("fields");
 				for (int i = 0; i < fields.size(); ++i){
 					JSONObject obj = (JSONObject) fields.get(i);
@@ -213,7 +213,7 @@ public abstract class MapRedDir extends MapRedHdfs{
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		
+
 		return schemaMap;
 	}
 

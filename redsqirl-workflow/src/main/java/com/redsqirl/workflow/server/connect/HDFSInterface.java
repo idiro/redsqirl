@@ -701,8 +701,24 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 			logger.debug(0);
 			logger.debug("sys_namenode PathHDFS: " + NameNodeVar.get());
 			FileSystem fs = NameNodeVar.getFS();
-			logger.debug(1);
 			FileStatus stat = fs.getFileStatus(new Path(path));
+			prop = getProperties(path, stat);
+			logger.debug(1);
+		} catch (IOException e) {
+			logger.error("Error in filesystem");
+			logger.error(e);
+		} catch (Exception e) {
+			logger.error("Not expected exception: " + e);
+			logger.error(e.getMessage());
+		}
+		logger.debug("Properties of " + path + ": " + prop.toString());
+		return prop;
+	}
+	
+	protected Map<String, String> getProperties(String path, FileStatus stat)
+			throws RemoteException {
+		Map<String, String> prop = new LinkedHashMap<String, String>();
+		try{
 			logger.debug(1.5);
 			if (stat == null) {
 				logger.info("File status not available for " + path);
@@ -749,9 +765,6 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 			prop.put(key_permission, stat.getPermission().toString());
 
 			// fs.close();
-		} catch (IOException e) {
-			logger.error("Error in filesystem");
-			logger.error(e);
 		} catch (Exception e) {
 			logger.error("Not expected exception: " + e);
 			logger.error(e.getMessage());
@@ -789,7 +802,7 @@ public class HDFSInterface extends UnicastRemoteObject implements HdfsDataStore 
 
 				for (int i = 0; i < fsA.length; ++i) {
 					String path = fsA[i].getPath().toString();
-					ans.put(path, getProperties(path));
+					ans.put(path, getProperties(path,fsA[i]));
 				}
 			} else {
 				ans = null;

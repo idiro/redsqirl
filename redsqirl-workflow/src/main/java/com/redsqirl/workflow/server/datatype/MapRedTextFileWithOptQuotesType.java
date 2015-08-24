@@ -114,14 +114,13 @@ public class MapRedTextFileWithOptQuotesType extends MapRedTextFileType{
 	 * @throws RemoteException
 	 */
 	@Override
-	protected FieldList generateFieldsMap(String delimiter) throws RemoteException {
+	protected FieldList generateFieldsMap(String delimiter, List<String> lines ) throws RemoteException {
 
 		logger.info("generateFieldsMap --");
 		
 		FieldList fl = new OrderedFieldList();
 		try {
 			
-			List<String> lines = this.selectLine(2000);
 			Map<String,Set<String>> valueMap = new LinkedHashMap<String,Set<String>>();
 			Map<String,Integer> nbValueMap = new LinkedHashMap<String,Integer>();
 			

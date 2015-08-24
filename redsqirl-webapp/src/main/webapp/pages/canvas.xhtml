@@ -631,24 +631,45 @@
           }
 	      
 	      function closeWorkflowTab(tab, tabName){
-	    	//<![CDATA[
-	    	  closeTab(tab);
-	    	  closeWorkflow(tabName);
-	    	  
-	    	  jQuery("#canvas-tabs").tabs( "refresh" );
-	    	  
-	    	  var names = {};
-	    	  var cont = 0;
-	    	  for (var i = 0; i < numTabs; ++i){
-	    		  if (nameTabs[i] != tabName){
-	    			  names[cont++] = nameTabs[i];
-	    		  }
-	    	  }
-	    	  numTabs--;
-	    	  nameTabs = names;
-	    	  selectTab(numTabs-1);
-	    	//]]>
+	      //<![CDATA[
+	    	
+	    	var canvasNameStar = jQuery('#canvasNameStar-'+tabName).text();
+			if(canvasNameStar[canvasNameStar.length-1] == "*" ){
+				if(!confirm('Are you sure you want to close the selected canvas?')){
+			    	return false;
+			    }else{
+			    	closeWorkflowTabJS(tab, tabName);
+				}
+			}else{
+				closeWorkflowTabJS(tab, tabName);
+			}
+			
+	      //]]>
 	      }
+
+	      function closeWorkflowTabJS(tab, tabName){
+	      //<![CDATA[
+	      
+	    	  	closeTab(tab);
+		    	closeWorkflow(tabName);
+		    	  
+		    	jQuery("#canvas-tabs").tabs( "refresh" );
+		    	  
+		    	var names = {};
+		    	var cont = 0;
+		    	for (var i = 0; i < numTabs; ++i){
+		    		if (nameTabs[i] != tabName){
+		    			names[cont++] = nameTabs[i];
+		    		}
+		    	}
+		    	numTabs--;
+		    	nameTabs = names;
+		    	selectTab(numTabs-1);
+	      
+	      
+		  //]]>
+	      }
+	      
 	      
 	      function closeAllWorkflowTabs(){
               var ul = jQuery("#canvas-tabs ul:first li .ui-icon");
@@ -2174,11 +2195,11 @@
 				<ul class="ulCss" id="ulTabFlowchart"
 					style="width: 100%; min-width: 600px;">
 
-					<li class="locked"><a href="#tabFlowchart-1"
-						id="idtabFlowchart-1"
-						onclick="jQuery('#helpmain_canvas').click();return false;"> <h:outputText
-								value="#{messages.label_tab_flowchart}" />
-					</a></li>
+					<li class="locked">
+						<a href="#tabFlowchart-1" id="idtabFlowchart-1"	onclick="jQuery('#helpmain_canvas').click();return false;">
+							<h:outputText value="#{messages.label_tab_flowchart}" />
+						</a>
+					</li>
 					<li class="locked"><a href="#tabs-8" id="idtabs-8"
 						onclick="jQuery('#helpmain_ssh').click();return false;"> <h:outputText
 								value="#{messages.label_tab_remotefilesystem}" />

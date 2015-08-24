@@ -131,7 +131,7 @@ public class MapRedTextFileWithHeaderType extends MapRedTextFileType {
 	 * @throws RemoteException
 	 */
 	@Override
-	protected FieldList generateFieldsMap(String delimiter) throws RemoteException {
+	protected FieldList generateFieldsMap(String delimiter, List<String> lines ) throws RemoteException {
 
 		logger.info("generateFieldsMap --");
 		
@@ -147,7 +147,6 @@ public class MapRedTextFileWithHeaderType extends MapRedTextFileType {
 			}
 			
 			
-			List<String> lines = this.selectLine(2000);
 			Map<String,Set<String>> valueMap = new LinkedHashMap<String,Set<String>>();
 			Map<String,Integer> nbValueMap = new LinkedHashMap<String,Integer>();
 			
