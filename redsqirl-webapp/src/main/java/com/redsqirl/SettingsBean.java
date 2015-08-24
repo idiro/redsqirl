@@ -33,6 +33,12 @@ public class SettingsBean extends BaseBean implements Serializable  {
 
 	private List<String[]> sysSettings = null;
 	private List<String[]> userSettings = null;
+	
+	private String nameSettings;
+
+	private String titleSettings;
+
+	private String valueSettings;
 
 	public void calcSettings(){
 		logger.info("calcSettings");
@@ -133,6 +139,23 @@ public class SettingsBean extends BaseBean implements Serializable  {
 		}
 		return admin;
 	}
+	
+	public void addNewLineSysSettings(){
+		String[] value = {nameSettings, nameSettings, titleSettings, valueSettings};
+		if(nameSettings != null && !"".equals(nameSettings)){
+			getSysSettings().add(value);
+			storeNewSettings();
+		}
+	}
+	
+	public void addNewLineUserSettings(){
+		String[] value = {nameSettings, nameSettings, titleSettings, valueSettings};
+		if(nameSettings != null && !"".equals(nameSettings)){
+			getUserSettings().add(value);
+			storeNewSettings();
+		}
+	}
+	
 
 	/**
 	 * @return the sysSettings
@@ -160,6 +183,30 @@ public class SettingsBean extends BaseBean implements Serializable  {
 	 */
 	public void setUserSettings(List<String[]> userSettings) {
 		this.userSettings = userSettings;
+	}
+
+	public String getNameSettings() {
+		return nameSettings;
+	}
+
+	public void setNameSettings(String nameSettings) {
+		this.nameSettings = nameSettings;
+	}
+
+	public String getTitleSettings() {
+		return titleSettings;
+	}
+
+	public void setTitleSettings(String titleSettings) {
+		this.titleSettings = titleSettings;
+	}
+
+	public String getValueSettings() {
+		return valueSettings;
+	}
+
+	public void setValueSettings(String valueSettings) {
+		this.valueSettings = valueSettings;
 	}
 
 }

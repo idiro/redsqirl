@@ -201,18 +201,14 @@ public class SshBean extends FileSystemBean implements Serializable{
 
 		logger.info("closeTab: "+name);
 
-		boolean removed = false;
 		for (Map<String, String> map : getDataStoreArray().getKnownStoreDetails()){
 			if (map.get("host name").equals(name)){
 				getDataStoreArray().removeKnownStore(map);
-				removed = true;
+				getDataStoreArray().removeStore(name);
 			}
 		}
 
-		if (!removed){
-			getDataStoreArray().removeStore(name);
-		}
-
+		
 		getDataStoreArray().initKnownStores();
 		tabs = new ArrayList<String>();
 		for (Entry<String, DataStore> e : getDataStoreArray().getStores().entrySet()){

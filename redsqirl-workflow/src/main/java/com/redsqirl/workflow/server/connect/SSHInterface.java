@@ -140,20 +140,41 @@ public class SSHInterface extends UnicastRemoteObject implements DataStore {
 	 * @throws Exception
 	 */
 	public static Map<String, DataStore> getHosts() throws Exception {
+		
+		logger.info("getHosts ");
+		
 		Map<String, DataStore> ans = new LinkedHashMap<String, DataStore>();
 		String hosts = known_host.get();
+		
+		logger.info("known_host " + hosts);
+		
 		if (!hosts.isEmpty()) {
+			
+			
 			String[] sp = hosts.split(",");
+			
+			
 			for (int i = 0; i < sp.length; ++i) {
-				String host = sp[i].split(":")[0];
-				int port = Integer.valueOf(sp[i].split(":")[1]);
-				try {
-					ans.put(host, new SSHInterface(host, port));
-				} catch (Exception e) {
-					logger.error("Could not connect to host " + host);
+				
+				if(sp[i] != null && !"".equals(sp[i])){
+					
+					String host = sp[i].split(":")[0];
+					
+					int port = Integer.valueOf(sp[i].split(":")[1]);
+					
+					try {
+						logger.info("host:" + host + "  -  port:" + port);
+						ans.put(host, new SSHInterface(host, port));
+						
+					} catch (Exception e) {
+						logger.error("Could not connect to host " + host);
+					}
+					
 				}
+				
 			}
 		}
+		
 		return ans;
 	}
 
@@ -188,19 +209,28 @@ public class SSHInterface extends UnicastRemoteObject implements DataStore {
 	 * @return Error Message
 	 */
 	public static String removeKnownHost(String host) {
+		
+		logger.info("removeKnownHost " + host);
+		
 		String error = null;
 		if (!getKnownHost().contains(host)) {
-			error = LanguageManagerWF.getText("sshinterface.removeknownhost",
-					new Object[] { host });
+			error = LanguageManagerWF.getText("sshinterface.removeknownhost", new Object[] { host });
 		} else {
 			String new_hosts = "";
 			String hosts = known_host.get();
+			
+			if(hosts.startsWith(",")){
+				hosts = hosts.substring(1);
+			}
+			
 			String[] sp = hosts.split(",");
+			
 			String hostCur = sp[0].split(":")[0];
 			int port = Integer.valueOf(sp[0].split(":")[1]);
 			if (!hostCur.equalsIgnoreCase(host)) {
 				new_hosts = hostCur + ":" + port;
 			}
+			
 			for (int i = 1; i < sp.length; ++i) {
 				hostCur = sp[i].split(":")[0];
 				port = Integer.valueOf(sp[i].split(":")[1]);
@@ -209,7 +239,9 @@ public class SSHInterface extends UnicastRemoteObject implements DataStore {
 				}
 			}
 			known_host.put(new_hosts);
+			
 		}
+		
 		return error;
 	}
 

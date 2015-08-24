@@ -37,6 +37,7 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 
 	private List<SelectItem> listExtensions;
+	private List<String> listExtensionsString;
 	private boolean allowDirectories;
 	private String extensionsSelected;
 	private String openOutputData;
@@ -815,6 +816,14 @@ public class FileSystemBean extends BaseBean implements Serializable {
 
 	public void setAllowDirectories(boolean allowDirectories) {
 		this.allowDirectories = allowDirectories;
+	}
+
+	public List<String> getListExtensionsString() {
+		return listExtensionsString;
+	}
+
+	public void setListExtensionsString(List<String> listExtensionsString) {
+		this.listExtensionsString = listExtensionsString;
 	}
 	
 }

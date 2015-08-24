@@ -1128,7 +1128,7 @@
 					action="#{browserHdfsBean.createSaveFolder}"
 					oncomplete="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });openModalFileHdfs('F');" />
 				<a4j:jsFunction name="openModalFileHdfs" reRender="modalFileHdfs"
-					oncomplete="#{rich:component('modalFileHdfs')}.show();jQuery('#canvas-tabs').unblock();">
+					oncomplete="mountComboboxExtensionsFileSystemModalHDFS();#{rich:component('modalFileHdfs')}.show();jQuery('#canvas-tabs').unblock();">
 					<a4j:actionparam name="openCtrl"
 						assignTo="#{browserHdfsBean.showSave}" />
 				</a4j:jsFunction>
@@ -2089,7 +2089,7 @@
 										</rich:menuItem>
 										<rich:menuItem id="importSubWorkflowHDFS" submitMode="ajax"
 											value="#{messages.label_menu_import_sub_workflowfrom_hdfs}"
-											oncomplete="#{rich:component('modalSubWfimport')}.show();">
+											oncomplete="mountComboboxTypes();#{rich:component('modalSubWfimport')}.show();">
 										</rich:menuItem>
 										<rich:menuItem id="exportSubWorkflowHDFS" submitMode="ajax"
 											value="#{messages.label_menu_export_sub_workflowto_hdfs}"
@@ -2553,8 +2553,7 @@
 
 			<h:form>
 				<h:panelGroup>
-					<a4j:include viewId="/pages/modalFileHdfs.xhtml"
-						ajaxRendered="true" />
+					<a4j:include viewId="/pages/modalFileHdfs.xhtml" ajaxRendered="true" />
 				</h:panelGroup>
 			</h:form>
 

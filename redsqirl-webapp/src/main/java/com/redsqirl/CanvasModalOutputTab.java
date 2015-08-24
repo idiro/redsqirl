@@ -85,9 +85,10 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 
 	private LinkedList<FileSystemHistory> pathHistory;
 	private LinkedList<String> paths;
-	
+
 	private String maxRows;
 	private List<SelectItem> maxNumberRows;
+	private List<String> maxNumberRowsString;
 
 	/**
 	 * Constructor. The constructor will automatically load the first name as
@@ -106,23 +107,6 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 		} catch (Exception e) {
 			logger.info("Exception: " + e.getMessage());
 		}*/
-
-		if(pathHistory == null){
-			pathHistory = new LinkedList<FileSystemHistory>();
-			paths = new LinkedList<String>();
-			Map<String, String> mapHistory = getHDFS().readPathList("paths");
-			for (String path : mapHistory.keySet()) {
-				FileSystemHistory fsh = new FileSystemHistory();
-				fsh.setName(path);
-				String alias = mapHistory.get(path);
-				if(alias.startsWith("/")){
-					alias = alias.substring(1);
-				}
-				fsh.setAlias(alias);
-				pathHistory.addLast(fsh);
-				paths.addLast(path);
-			}
-		}
 
 	}
 
@@ -168,6 +152,12 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 					outputList.add(new SelectItem(s.toString(), s.toString()));
 				}
 				of.setSavingStateList(outputList);
+				
+				if(outputList != null && !outputList.isEmpty()){
+					of.getSavingStateListString().add(calcString(outputList));
+					of.setSavingStateListString(of.getSavingStateListString());
+				}
+				
 				logger.info("saving state "
 						+ e.getValue().getSavingState().toString());
 				if (e.getValue().getSavingState() == SavingState.RECORDED &&
@@ -227,16 +217,16 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 						path = parent;
 						getFileSystem().setPath(path);
 						//Display warning
-						
+
 						HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 						MessageUseful.addWarnMessage(getMessageResources("warn_hdfs_path"));
 						request.setAttribute("msnSuccess", "msnSuccess");
-						
+
 					}
 				}
 			}
 		}
-		
+
 		setSourceNode(true);
 		mountPathHistory(path);
 	}
@@ -279,7 +269,27 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 			pathHistory.addFirst(fsh);
 		}
 
-		getHDFS().savePathList("paths", paths);
+		getFileSystem().getDataStore().savePathList("paths", paths);
+	}
+
+	public void createPathHistory() throws RemoteException{
+
+		if(pathHistory == null){
+			pathHistory = new LinkedList<FileSystemHistory>();
+			paths = new LinkedList<String>();
+			Map<String, String> mapHistory = getFileSystem().getDataStore().readPathList("paths");
+			for (String path : mapHistory.keySet()) {
+				FileSystemHistory fsh = new FileSystemHistory();
+				fsh.setName(path);
+				String alias = mapHistory.get(path);
+				if(alias.startsWith("/")){
+					alias = alias.substring(1);
+				}
+				fsh.setAlias(alias);
+				pathHistory.addLast(fsh);
+				paths.addLast(path);
+			}
+		}
 
 	}
 
@@ -420,6 +430,12 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 				getFileSystem().setListExtensions(listExtensions);
 				getFileSystem().setAllowDirectories(dfeOut.allowDirectories());
 				getFileSystem().updateTable();
+				
+				if(listExtensions != null && !listExtensions.isEmpty()){
+					List<String> listExtensionsString = new LinkedList<String>();
+					listExtensionsString.add(calcString(listExtensions));
+					getFileSystem().setListExtensionsString(listExtensionsString);
+				}
 
 				if (dfeOut.getFields() != null) {
 
@@ -441,16 +457,16 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 					try {
 
 						if(dfeOut.isPathExists() && dfeOut.isPathValid() == null){
-							
+
 							int mRow = Math.max(10, Math.min(150, 1000/gridTitle.size()));
 							mountNumberRowsList(mRow);
 							if(getMaxRows() != null && !getMaxRows().isEmpty()){
 								mRow = Integer.parseInt(getMaxRows()); 
 							}
 							setMaxRows(mRow+"");
-							
+
 							List<Map<String, String>> outputLines = dfeOut.select(mRow);
-							
+
 							if (outputLines != null) {
 
 								for (Map<String, String> line : outputLines) {
@@ -481,12 +497,26 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 		}
 	}
 	
+	public String calcString(List<SelectItem> listFields){
+		StringBuffer ans = new StringBuffer();
+		for (SelectItem selectItem : listFields) {
+			ans.append(",'"+selectItem.getLabel()+"'");
+		}
+		return ans.toString().substring(1);
+	}
+
 	public void mountNumberRowsList(int mRow) throws RemoteException {
 		maxNumberRows = new ArrayList<SelectItem>();
 		for (int i = 1; i <= 10; i++) {
 			int value = mRow * i;
 			maxNumberRows.add(new SelectItem(value+"", value+""));
 		}
+		
+		if(maxNumberRows != null && !maxNumberRows.isEmpty()){
+			maxNumberRowsString = new ArrayList<String>();
+			maxNumberRowsString.add(calcString(maxNumberRows));
+		}
+		
 	}
 
 	/**
@@ -572,6 +602,9 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 		this.nameOutput = nameOutput;
 		try {
 			typeBrowser = dfe.getDFEOutput().get(nameOutput).getBrowserName();
+
+			createPathHistory();
+
 		} catch (Exception e) {
 			logger.warn(nameOutput + " not recognized by object");
 		}
@@ -653,6 +686,14 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 
 	public void setMaxNumberRows(List<SelectItem> maxNumberRows) {
 		this.maxNumberRows = maxNumberRows;
+	}
+
+	public List<String> getMaxNumberRowsString() {
+		return maxNumberRowsString;
+	}
+
+	public void setMaxNumberRowsString(List<String> maxNumberRowsString) {
+		this.maxNumberRowsString = maxNumberRowsString;
 	}
 
 }

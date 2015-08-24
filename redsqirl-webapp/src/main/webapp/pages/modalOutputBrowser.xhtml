@@ -35,6 +35,38 @@
 			return p + "/"+ outputBroswerfile;
 		}
 	}
+
+	function mountComboboxExtensionsFilesystem(){
+
+    	jQuery("[id$='comboboxExtensionsFilesystem']").textext({
+	    	plugins : 'arrow autocomplete'
+	    }).bind('getSuggestions', function(e, data){
+
+		try{
+		        	
+			var list =  #{canvasModalBean.outputTab.fileSystem.listExtensionsString}  ,
+		    	textext = jQuery(e.target).textext()[0],
+		        query = (data ? data.query : '') || '' ;
+		
+		        jQuery(this).trigger('setSuggestions', {
+			    	result : textext.itemManager().filter(list, query)
+			    	}
+		        );
+
+			}catch(exception){
+				alert(exception);
+			}
+	            
+		});
+
+    	jQuery("[id$='comboboxExtensionsFilesystem']").bind('setFormData', function(e, data, isEmpty){
+    		changePathModalOutput();
+    	});
+		
+
+
+		
+	}
 	
 //]]>
 </script>
@@ -47,26 +79,27 @@
 	    </a4j:region>
 	
 		<a4j:jsFunction name="changePathModalOutput" action="#{canvasModalBean.outputTab.fileSystem.changePath}" />
+		
 		<div class="pathHeader">
-		<h:outputText value="#{messages.label_path}" />
-		<h:inputText id="pathDataOutputBrowser"  styleClass="mainPageTextField"  label="Path" value="#{canvasModalBean.outputTab.fileSystem.path}" 
-			maxlength="255" style="width:395px;" onkeypress="return enableEnterKey(event, 'changePathModalOutputBtn');" />
+			<h:outputText value="#{messages.label_path}" />
+			<h:inputText id="pathDataOutputBrowser"  styleClass="mainPageTextField"  label="Path" value="#{canvasModalBean.outputTab.fileSystem.path}" 
+				maxlength="255" style="width:395px;" onkeypress="return enableEnterKey(event, 'changePathModalOutputBtn');" />
+			
+			<a4j:commandLink id="changePathModalOutputBtn" action="#{canvasModalBean.outputTab.fileSystem.changePath}" reRender="dataOutputBrowser">
+				<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' styleClass="refreshButton" />
+			</a4j:commandLink>
 		
-		<a4j:commandLink id="changePathModalOutputBtn" action="#{canvasModalBean.outputTab.fileSystem.changePath}" reRender="dataOutputBrowser">
-			<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' styleClass="refreshButton" />
-		</a4j:commandLink>
-	
-		<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goPrevious}" reRender="pathDataOutputBrowser,dataOutputBrowser">
-			<h:graphicImage value="../image/icons/button-previous.gif" title='#{messages.Interface_previous_help}' styleClass="refreshButton" />
-		</a4j:commandLink>
-		
-		<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goNext}" reRender="pathDataOutputBrowser,dataOutputBrowser">
-			<h:graphicImage value="../image/icons/button-next.gif" title='#{messages.Interface_next_help}' styleClass="refreshButton" />
-		</a4j:commandLink>
-		
-		<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goUp}" reRender="pathDataOutputBrowser,dataOutputBrowser">
-			<h:graphicImage value="../image/icons/button-up.gif" title='#{messages.hdfs_goup}' styleClass="refreshButton" />
-		</a4j:commandLink>
+			<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goPrevious}" reRender="pathDataOutputBrowser,dataOutputBrowser">
+				<h:graphicImage value="../image/icons/button-previous.gif" title='#{messages.Interface_previous_help}' styleClass="refreshButton" />
+			</a4j:commandLink>
+			
+			<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goNext}" reRender="pathDataOutputBrowser,dataOutputBrowser">
+				<h:graphicImage value="../image/icons/button-next.gif" title='#{messages.Interface_next_help}' styleClass="refreshButton" />
+			</a4j:commandLink>
+			
+			<a4j:commandLink action="#{canvasModalBean.outputTab.fileSystem.goUp}" reRender="pathDataOutputBrowser,dataOutputBrowser">
+				<h:graphicImage value="../image/icons/button-up.gif" title='#{messages.hdfs_goup}' styleClass="refreshButton" />
+			</a4j:commandLink>
 		</div>
 		
 		<table width="100%">
@@ -158,14 +191,17 @@
 		
 		<br />
 		
-		<rich:comboBox value="#{canvasModalBean.outputTab.fileSystem.extensionsSelected}" width="200" enableManualInput="false"
-			id="generation" listWidth="150" listHeight="200" rendered="#{not empty canvasModalBean.outputTab.fileSystem.listExtensions}" 
-			onchange="changePathModalOutput();" style="padding-right:20px;float:right;" >
-	        <f:selectItems styleClass="interModal" value="#{canvasModalBean.outputTab.fileSystem.listExtensions}" />
-	   </rich:comboBox>
 	   
-	   <br />
-	   <br />
+	   				<h:panelGroup style="width:150px" layout="block" >
+                    <h:inputText value="#{canvasModalBean.outputTab.fileSystem.extensionsSelected}" 
+                    	id="comboboxExtensionsFilesystem" style="width:145px"
+                    	rendered="#{not empty canvasModalBean.outputTab.fileSystem.listExtensions}" >
+                                  	 
+	                    
+                               	 
+                    </h:inputText>
+                    </h:panelGroup>
+	   
 	    
 	   <rich:panel id="panelBtOutputBrowser" style="border:none; float:right;" >
 	   
