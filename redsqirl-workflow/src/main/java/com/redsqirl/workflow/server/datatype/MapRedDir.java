@@ -77,15 +77,23 @@ public abstract class MapRedDir extends MapRedHdfs{
 					error = LanguageManagerWF.getText("mapredtexttype.nodir",new String[]{hCh.getPath().toString()});
 				}
 
-				if(isPathExists()){
-					FileStatus[] stat = fs.listStatus(new Path(path),
-							new PathFilter() {
+				FileStatus[] stat = null; 
+				if(error != null){
+					try{
+						stat = fs.listStatus(new Path(path),
+								new PathFilter() {
 
-						@Override
-						public boolean accept(Path arg0) {
-							return !arg0.getName().startsWith("_") && !arg0.getName().startsWith(".");
-						}
-					});
+							@Override
+							public boolean accept(Path arg0) {
+								return !arg0.getName().startsWith("_") && !arg0.getName().startsWith(".");
+							}
+						});
+					} catch (Exception e) {
+						stat = null;
+					}
+				}
+							
+				if(stat != null){
 					for (int i = 0; i < stat.length && error == null; ++i) {
 						if (stat[i].isDir()) {
 							error = LanguageManagerWF.getText(

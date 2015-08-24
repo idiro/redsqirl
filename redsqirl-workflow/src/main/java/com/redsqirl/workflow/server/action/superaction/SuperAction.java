@@ -331,11 +331,10 @@ public class SuperAction extends DataflowAction implements SuperElement{
 
 	@Override
 	public String updateOut() throws RemoteException {
-		String error = errorInstall != null? errorInstall : checkIntegrationUserVariables();
-		if(error == null){
+		if(errorInstall == null){
 			((OozieSubWorkflowAction) oozieAction).setSuperElement(this);
 		}
-		return error; 
+		return errorInstall; 
 	}
 
 	@Override

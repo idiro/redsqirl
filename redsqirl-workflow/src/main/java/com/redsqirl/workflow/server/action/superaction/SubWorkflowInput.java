@@ -142,20 +142,18 @@ public class SubWorkflowInput extends AbstractSource{
 
 	@Override
 	public String updateOut() throws RemoteException {
-		String error = checkIntegrationUserVariables();
-		if(error == null){
-			FieldList fl = new OrderedFieldList();
-			Iterator<Map<String,String>> it = defFieldInt.getValues().iterator();
-			while(it.hasNext()){
-				Map<String,String> cur = it.next();
-				fl.addField(cur.get(FieldDefinitionTableInteraction.table_field_title), 
-						FieldType.valueOf(cur.get(FieldDefinitionTableInteraction.table_type_title)));
-			}
-			if(output.get(out_name) == null){
-				output.put(out_name, DataOutput.getOutput(dataSubtype.getValue()));
-			}
-			output.get(out_name).setFields(fl);
+		String error = null;
+		FieldList fl = new OrderedFieldList();
+		Iterator<Map<String,String>> it = defFieldInt.getValues().iterator();
+		while(it.hasNext()){
+			Map<String,String> cur = it.next();
+			fl.addField(cur.get(FieldDefinitionTableInteraction.table_field_title), 
+					FieldType.valueOf(cur.get(FieldDefinitionTableInteraction.table_type_title)));
 		}
+		if(output.get(out_name) == null){
+			output.put(out_name, DataOutput.getOutput(dataSubtype.getValue()));
+		}
+		output.get(out_name).setFields(fl);
 		return error;
 	}
 

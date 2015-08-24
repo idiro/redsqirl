@@ -121,13 +121,13 @@ public class MapRedTextType extends MapRedDir {
 	 */
 	public List<Map<String,String>> select(int maxToRead) throws RemoteException {
 		List<Map<String,String>> ans = new LinkedList<Map<String,String>>();
+		List<String> fieldNames = getFields().getFieldNames();
 		Iterator<String> it = selectLine(maxToRead).iterator();
 		while(it.hasNext()){
 			String l = it.next();
 			if(l != null && ! l.isEmpty()){
 				String[] line = l.split(
 						Pattern.quote(getChar(getProperty(key_delimiter))), -1);
-				List<String> fieldNames = getFields().getFieldNames();
 				if (fieldNames.size() == line.length) {
 					Map<String, String> cur = new LinkedHashMap<String, String>();
 					for (int i = 0; i < line.length; ++i) {

@@ -108,7 +108,6 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	public void mountTable() throws RemoteException {
 		DataStore hInt = getDataStore();
 		logger.info("Started mounting table");
-		setPath(hInt.getPath());
 
 		FacesContext context = FacesContext.getCurrentInstance();
 		UserInfoBean userInfoBean = (UserInfoBean) context.getApplication()
@@ -118,48 +117,42 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		logger.info("update progressbar");
 		userInfoBean.setValueProgressBar(Math.min(100, userInfoBean.getValueProgressBar()+5));
 
-
-		Map<String, Map<String, String>> mapSSH = hInt.getChildrenProperties();
 		setPropsParam(hInt.getParamProperties());
 
-		if (mapSSH != null) {
-			//Set list field
-			LinkedList<String> titles = new LinkedList<String>();
-			LinkedList<String> editProps = new LinkedList<String>();
-			LinkedList<String> createProps = new LinkedList<String>();
+		//Set list field
+		LinkedList<String> titles = new LinkedList<String>();
+		LinkedList<String> editProps = new LinkedList<String>();
+		LinkedList<String> createProps = new LinkedList<String>();
 
-			for (String properties : propsParam.keySet()) {
+		for (String properties : propsParam.keySet()) {
 
-				if (!propsParam.get(properties).editOnly() && !propsParam.get(properties).createOnly()) {
-					titles.add(properties);
-					editProps.add(properties);
-				}else if (propsParam.get(properties).editOnly()) {
-					editProps.add(properties);
-				}else if (propsParam.get(properties).createOnly()) {
-					createProps.add(properties);
-				}
-
+			if (!propsParam.get(properties).editOnly() && !propsParam.get(properties).createOnly()) {
+				titles.add(properties);
+				editProps.add(properties);
+			}else if (propsParam.get(properties).editOnly()) {
+				editProps.add(properties);
+			}else if (propsParam.get(properties).createOnly()) {
+				createProps.add(properties);
 			}
 
-			setTableGrid(new SelectableTable(titles));
-			setEditProps(editProps);
-			setCreateProps(createProps);
-
-			updateTable();
-
-			logger.info("update progressbar");
-			userInfoBean.setValueProgressBar(Math.min(100, userInfoBean.getValueProgressBar()+5));
-
-
 		}
+
+		setTableGrid(new SelectableTable(titles));
+		setEditProps(editProps);
+		setCreateProps(createProps);
+
+		updateTable();
+
+		logger.info("update progressbar");
+		userInfoBean.setValueProgressBar(Math.min(100, userInfoBean.getValueProgressBar()+5));
+
 
 		logger.info("Finished mounting table");
 	}
 
 	public void updateTable() throws RemoteException{
-
+		String oldPath = getPath();
 		setPath(getDataStore().getPath());
-		Map<String, Map<String, String>> mapSSH = getDataStore().getChildrenProperties();
 		
 		String regex = null;
 		if(extensionsSelected != null && !extensionsSelected.isEmpty()){
@@ -167,26 +160,35 @@ public class FileSystemBean extends BaseBean implements Serializable {
 			regex = extensionsSelected.replaceAll(Pattern.quote("."), Matcher.quoteReplacement("\\.")).replaceAll(Pattern.quote("*"), ".*");
 			logger.info("Regex: "+regex);
 		}
+		
 		//Fill rows
-		if (mapSSH != null) {
-			setAllProps(new LinkedList<Map<String,String>>());
-			getTableGrid().getRows().clear();
-			int i = 0;
-			for (String path : mapSSH.keySet()) {
+		if (oldPath == null || ! oldPath.equals(getPath()) || getAllProps() == null || getAllProps().isEmpty() ){
+			Map<String, Map<String, String>> mapSSH = getDataStore().getChildrenProperties();
+			if(mapSSH != null){
+				setAllProps(new LinkedList<Map<String,String>>());
+				getTableGrid().getRows().clear();
+				for (String path : mapSSH.keySet()) {
 
-				String[] aux = path.split("/");
-				String name = aux[aux.length - 1];
+					String[] aux = path.split("/");
+					String childName = aux[aux.length - 1];
 
-				Map<String, String> allProperties = new LinkedHashMap<String, String>();
-				allProperties.put("name", name);
-				allProperties.putAll(mapSSH.get(path));
-				getTableGrid().add(allProperties);
-				getAllProps().add(allProperties);
-				
+					Map<String, String> allProperties = new LinkedHashMap<String, String>();
+					allProperties.put("name", childName);
+					allProperties.putAll(mapSSH.get(path));
+					getTableGrid().add(allProperties);
+					getAllProps().add(allProperties);
+				}
+			}
+		}
+		
+		if(getAllProps() != null){
+			for(int i=0;i < getAllProps().size();++i){
+				String childName = getAllProps().get(i).get("name");
+				getTableGrid().getRows().get(i).setSelected(false);
 				getTableGrid().getRows().get(i).setDisableSelect(false);
 				if (getAllProps().get(i).get("type").equalsIgnoreCase("directory") &&
 						!isAllowDirectories()) {
-					
+
 					getTableGrid().getRows().get(i).setDisableSelect(false);
 				}
 				else if(openOutputData != null && openOutputData.equals("Y")
@@ -194,12 +196,11 @@ public class FileSystemBean extends BaseBean implements Serializable {
 					getTableGrid().getRows().get(i).setDisableSelect(false);
 				}else{
 					if(regex != null){
-						getTableGrid().getRows().get(i).setDisableSelect(name.matches(regex));
+						getTableGrid().getRows().get(i).setDisableSelect(childName.matches(regex));
 					}else{
 						getTableGrid().getRows().get(i).setDisableSelect(true);
 					}
 				}
-				++i;
 			}
 		}
 	}
@@ -241,6 +242,8 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	public void changePath() throws RemoteException {
 		logger.info("changePath: " + getPath());
 		if (getDataStore().goTo(getPath())) {
+			//Force the refresh
+			setPath(null);
 			updateTable();
 		} else {
 			getBundleMessage("error.invalid.path");

@@ -553,8 +553,7 @@ public abstract class AbstractSource extends DataflowAction {
 	 */
 	@Override
 	public String updateOut() throws RemoteException {
-		String error = checkIntegrationUserVariables();
-		return error;
+		return null;
 	}
 
 	/**
