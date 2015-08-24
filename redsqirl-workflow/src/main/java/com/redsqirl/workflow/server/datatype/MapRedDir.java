@@ -42,6 +42,8 @@ import com.redsqirl.workflow.utils.LanguageManagerWF;
 public abstract class MapRedDir extends MapRedHdfs{
 
 
+	/** Delimiter Key */
+	public final static String key_delimiter = "delimiter";
 	
 	private static Logger logger = Logger.getLogger(MapRedDir.class);
 	

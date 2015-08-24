@@ -29,8 +29,6 @@ public class MapRedTextType extends MapRedDir {
 	 * 
 	 */
 	private static final long serialVersionUID = 8260229620701006942L;
-	/** Delimiter Key */
-	public final static String key_delimiter = "delimiter";
 	
 	private static Logger logger = Logger.getLogger(MapRedTextType.class);
 
