@@ -2,19 +2,10 @@ package com.redsqirl.workflow.server.datatype;
 
 
 
-import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
 
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -26,23 +17,18 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import com.idiro.hadoop.NameNodeVar;
 import com.idiro.hadoop.checker.HdfsFileChecker;
 import com.redsqirl.utils.FieldList;
-import com.redsqirl.utils.OrderedFieldList;
-import com.redsqirl.workflow.server.DataOutput;
-import com.redsqirl.workflow.server.OozieManager;
-import com.redsqirl.workflow.server.connect.HDFSInterface;
-import com.redsqirl.workflow.server.enumeration.FieldType;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
 
 public abstract class MapRedDir extends MapRedHdfs{
 
 
-
+	/** Delimiter Key */
+	public final static String key_delimiter = "delimiter";
+	
 	private static Logger logger = Logger.getLogger(MapRedDir.class);
 
 	public MapRedDir() throws RemoteException{

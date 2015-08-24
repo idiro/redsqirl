@@ -36,6 +36,7 @@ public class MapRedCtrlATextType extends MapRedDir{
 	
 	public MapRedCtrlATextType() throws RemoteException {
 		super();
+		dataProperty.put(key_delimiter, "#1");
 	}
 	
 	public MapRedCtrlATextType(FieldList fields) throws RemoteException {
