@@ -515,37 +515,30 @@
 			                                        rendered="#{interCur.table.columnType[column] == 'textField' }"
 			                                        styleClass="tableInteractionInput"
 			                                        onkeypress="return disableEnterKey(event);"/>
+			                                        
+			                                        
+			                                        <h:panelGroup style="width:150px" layout="block" rendered="#{interCur.table.columnType[column] == 'comboBox' }" >
+			                                        <select id="myList" onchange="updated(this);" >
+			                                        		<option></option>
+										              <a4j:repeat value="#{interCur.table.tableConstraints[column]}" var="idx"  >
+													       <h:outputText rendered="#{rowItem.row[ind] == idx.value}" > <option selected="selected"> <h:outputText value="#{idx.value}" /> </option> </h:outputText>
+													       <h:outputText rendered="#{rowItem.row[ind] != idx.value}" > <option> <h:outputText value="#{idx.value}" /> </option> </h:outputText>
+													   </a4j:repeat>
+										             </select>
+										             </h:panelGroup>
+										             
+										            <script type="text/javascript">
+										            function updated(element){
+													    var idx=element.selectedIndex;
+													    var val=element.options[idx].value;
+													    var content=element.options[idx].innerHTML;
+													    jQuery("[id$='combo#{ind}#{rowNb+1}']").val(val);
+													    //alert(val + " " + content);
+													}
+										            </script>
+													<h:inputHidden value="#{rowItem.row[ind]}" id="combo#{ind}#{rowNb+1}" 
+														rendered="#{interCur.table.columnType[column] == 'comboBox' }" />
 												
-			                                    
-			                                     <h:inputText value="#{rowItem.row[ind]}" styleClass="tableInteractionInput" 
-			                                     	id="combo#{ind}#{rowNb+1}"
-			                                     	rendered="#{interCur.table.columnType[column] == 'comboBox' }" style="width:98%" >
-			                                     	 
-			                                     	<script type="text/javascript">
-				                                     	jQuery("[id$='combo#{ind}#{rowNb+1}']").textext({
-														            plugins : 'arrow autocomplete'
-														        }).bind('getSuggestions', function(e, data){
-
-																	try{
-															        	
-															            var list = new Array(#{interCur.table.tableConstraintsString[column]}) ,
-															                textext = jQuery(e.target).textext()[0],
-															                query = (data ? data.query : '') || '' ;
-															
-															            jQuery(this).trigger('setSuggestions', {
-																            	result : textext.itemManager().filter(list, query)
-																            }
-															            );
-	
-																	}catch(exception){
-																	    alert(exception);
-																	}
-														            
-														        });
-													</script>
-			                                     	 
-			                                     </h:inputText>
-			                                     	 
 			        
 												<h:inputText value="#{rowItem.row[ind]}" 
 												       rendered="#{interCur.columnType[column] == 'editor' }" 
