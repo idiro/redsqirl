@@ -5,18 +5,17 @@ import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.richfaces.event.DropEvent;
 
-import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
 import com.redsqirl.workflow.server.connect.interfaces.DataStoreArray;
@@ -29,7 +28,6 @@ import com.redsqirl.workflow.server.connect.interfaces.DataStoreArray;
  */
 public class SshBean extends FileSystemBean implements Serializable{
 
-
 	private static Logger logger = Logger.getLogger(SshBean.class);
 
 	private List<Entry<String, String>> fieldsInitNeededNewSsh = new ArrayList<Entry<String, String>>();
@@ -40,6 +38,7 @@ public class SshBean extends FileSystemBean implements Serializable{
 	private String port;
 	private String selectedTab;
 	private String tableState = new String();
+	private DataStoreArray dsa;
 
 	/** openCanvasScreen
 	 * 
@@ -53,38 +52,31 @@ public class SshBean extends FileSystemBean implements Serializable{
 	public void openCanvasScreen() {
 
 		logger.info("openCanvasScreen sshbean");
-
-		/*FacesContext context = FacesContext.getCurrentInstance();
-		UserInfoBean userInfoBean = (UserInfoBean) context.getApplication()
-				.evaluateExpressionGet(context, "#{userInfoBean}",
-						UserInfoBean.class);
-
-		userInfoBean.setValueProgressBar(51);*/
-
+		
 		try {
 
-			logger.info(getDataStoreArray().initKnownStores());
-
-			tabs = new ArrayList<String>();
-			for (Entry<String, DataStore> e : getDataStoreArray().getStores().entrySet()){
-				tabs.add(e.getKey());
+			dsa = getDataStoreArray();
+			
+			for(Map<String, String> map : dsa.getKnownStoreDetails()){
+				dsa.addStore(map);
 			}
 
+			tabs = new ArrayList<String>();
+			for (Entry<String, DataStore> e : dsa.getStores().entrySet()){
+				tabs.add(e.getKey());
+			}
+			
 			if (!tabs.isEmpty()){
 				setSelectedTab(tabs.get(0));
-				setDataStore(getDataStoreArray().getStores().get(selectedTab));
+				setDataStore(dsa.getStores().get(selectedTab));
 
-				if(getTableGrid() != null && 
-						getTableGrid().getRows() != null &&
-						getTableGrid().getRows().isEmpty()){
+				if(getTableGrid() != null && getTableGrid().getRows() != null && getTableGrid().getRows().isEmpty()){
 					mountTable();
 				}
 			}
 
-			DataStoreArray arr = getDataStoreArray();
-
-			setFieldsInitNeededNewSsh(mapToList(arr.getFieldsInitNeeded()));
-			setFieldsInitNeededTitleKey(mapToList(arr.getFieldsInitNeeded()));
+			setFieldsInitNeededNewSsh(mapToList(dsa.getFieldsInitNeeded()));
+			setFieldsInitNeededTitleKey(mapToList(dsa.getFieldsInitNeeded()));
 
 			for (Entry<String, String> entry : getFieldsInitNeededNewSsh()) {
 				entry.setValue("");
@@ -135,28 +127,27 @@ public class SshBean extends FileSystemBean implements Serializable{
 			logger.info("host name: "+getHost());
 			logger.info("port: "+getPort());
 
-			if (isSelectedSaveSsh()){
-				error = getDataStoreArray().addKnownStore(values);
-			}
-			else{
+			if(isSelectedSaveSsh()){
+				error = dsa.addKnownStore(values);
+			}else{
 				try{
-					getDataStoreArray().addStore(values);
+					dsa.addStore(values);
 				}catch (Exception e){
 					error = "Error trying to add store "+e.getMessage();
 					logger.error(error);
 				}
 			}
 
-			if (error == null){
-				error = getDataStoreArray().initKnownStores();
+			if(error == null){
+				error = dsa.initKnownStores();
 
 				tabs = new ArrayList<String>();
-				for (Entry<String, DataStore> e : getDataStoreArray().getStores().entrySet()){
+				for(Entry<String, DataStore> e : dsa.getStores().entrySet()){
 					tabs.add(e.getKey());
 				}
 
 				setSelectedTab(tabs.get(0));
-				setDataStore(getDataStoreArray().getStores().get(selectedTab));
+				setDataStore(dsa.getStores().get(selectedTab));
 
 				mountTable();
 			}
@@ -185,7 +176,7 @@ public class SshBean extends FileSystemBean implements Serializable{
 
 		logger.info("changeTab: "+name);
 		setSelectedTab(name);
-		setDataStore(getDataStoreArray().getStores().get(name));
+		setDataStore(dsa.getStores().get(name));
 
 		setPath(getDataStore().getPath());
 		logger.info("path: "+getPath());
@@ -201,19 +192,24 @@ public class SshBean extends FileSystemBean implements Serializable{
 
 		logger.info("closeTab: "+name);
 
-		for (Map<String, String> map : getDataStoreArray().getKnownStoreDetails()){
+		dsa.initKnownStores();
+		
+		for(Map<String, String> map : dsa.getKnownStoreDetails()){
 			if (map.get("host name").equals(name)){
-				getDataStoreArray().removeKnownStore(map);
-				getDataStoreArray().removeStore(name);
+				dsa.removeKnownStore(map);
+				dsa.removeStore(name);
 			}
 		}
-
 		
-		getDataStoreArray().initKnownStores();
+		if(dsa.getStores().containsKey(name)){
+			dsa.removeStore(name);
+		}
+		
 		tabs = new ArrayList<String>();
-		for (Entry<String, DataStore> e : getDataStoreArray().getStores().entrySet()){
+		for(Entry<String, DataStore> e : dsa.getStores().entrySet()){
 			tabs.add(e.getKey());
 		}
+		
 	}
 
 	public void processDrop(DropEvent dropEvent) throws RemoteException {
@@ -293,6 +289,14 @@ public class SshBean extends FileSystemBean implements Serializable{
 
 	public void setTableState(String tableState) {
 		this.tableState = tableState;
+	}
+
+	public DataStoreArray getDsa() {
+		return dsa;
+	}
+
+	public void setDsa(DataStoreArray dsa) {
+		this.dsa = dsa;
 	}
 
 }
