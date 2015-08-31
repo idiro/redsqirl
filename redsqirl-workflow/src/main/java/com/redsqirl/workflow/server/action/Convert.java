@@ -204,8 +204,8 @@ public class Convert extends DataflowAction {
 	@Override
 	public String updateOut() throws RemoteException {
 		logger.info("Initialize update out");
-		String error = checkIntegrationUserVariables();
-		if (error == null && output.get(key_output) == null) {
+		String error = null;
+		if (output.get(key_output) == null) {
 			error = LanguageManagerWF.getText("convert.output_null");
 		}
 		if (error == null) {

@@ -107,6 +107,7 @@
 									oncomplete="jQuery('#moduleDetailDiv').unblock();if(#{analyticsStoreModuleDetailBean.showRestartMSG == 'Y'}){alert('To see the changes it is necessary to restart the system');}">
 									<f:param name="id" value="#{param['id']}"/>
 									<f:param name="userInstall" value="#{param['userInstall']}"/>
+									<f:param name="admPage" value="N"/>
 								</a4j:commandButton>
 								
 								<a4j:commandButton id="getModelButton" value="#{messages.moduleDetail_install_model}"

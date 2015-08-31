@@ -100,7 +100,7 @@ public class SubWorkflowOutput extends DataflowAction{
 
 	@Override
 	public String updateOut() throws RemoteException {
-		return checkIntegrationUserVariables();
+		return null;
 	}
 
 	@Override

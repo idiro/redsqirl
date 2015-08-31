@@ -641,7 +641,9 @@ public class OozieManager extends UnicastRemoteObject implements JobManager {
 		Iterator<String> itKey = map.keySet().iterator();
 		while (itKey.hasNext()) {
 			String key = itKey.next();
-			prop.setProperty(key, map.get(key));
+			if(key != null && map.get(key) != null){
+				prop.setProperty(key, map.get(key));
+			}
 		}
 		return prop;
 	}

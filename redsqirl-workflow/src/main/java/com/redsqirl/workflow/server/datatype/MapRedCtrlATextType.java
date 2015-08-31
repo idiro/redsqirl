@@ -36,6 +36,7 @@ public class MapRedCtrlATextType extends MapRedDir{
 	
 	public MapRedCtrlATextType() throws RemoteException {
 		super();
+		dataProperty.put(key_delimiter, "#1");
 	}
 	
 	public MapRedCtrlATextType(FieldList fields) throws RemoteException {
@@ -173,14 +174,17 @@ public class MapRedCtrlATextType extends MapRedDir{
 			return;
 		}
 
+		
 		if (!path.equalsIgnoreCase(oldPath)) {
 
 			super.setPath(path);
+			
+			List<String> list = this.selectLine(2000);
 
 			logger.info("setPath() " + path);
-			if (isPathExists()) {
+			if (list != null) {
 
-				FieldList fl = generateFieldsMap(delimiter);
+				FieldList fl = generateFieldsMap(delimiter, list);
 				
 				String error = checkCompatibility(fl,fields);
 				logger.debug(fields.getFieldNames());

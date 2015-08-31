@@ -22,6 +22,8 @@ import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
@@ -60,6 +62,8 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 
 	private boolean installed;
 	private boolean userInstall;
+	
+	private String showRestartMSG;
 
 	private List<RedSqirlModule> versionList;
 
@@ -378,7 +382,11 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 
 		String user = null;
 		if (userInstall){
-			user = userInfoBean.getUserName();
+			if(userInfoBean.getUserName() != null){
+				user = userInfoBean.getUserName();
+			}else{
+				userInstall = false;
+			}
 		}
 
 		try{
@@ -487,6 +495,15 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 			packageMngBean.calcUserPackages();
 		}else{
 			packageMngBean.calcSystemPackages();
+		}
+		
+
+		String isADMPage = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("admPage");
+		
+		if(isADMPage != null && isADMPage.equals("N")){
+			setShowRestartMSG("N");
+		}else{
+			setShowRestartMSG("Y");
 		}
 
 		return "";
@@ -605,6 +622,14 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 	public void setRedSqirlModuleVersionDependency(
 			List<RedSqirlModuleVersionDependency> redSqirlModuleVersionDependency) {
 		this.redSqirlModuleVersionDependency = redSqirlModuleVersionDependency;
+	}
+
+	public String getShowRestartMSG() {
+		return showRestartMSG;
+	}
+
+	public void setShowRestartMSG(String showRestartMSG) {
+		this.showRestartMSG = showRestartMSG;
 	}
 
 }

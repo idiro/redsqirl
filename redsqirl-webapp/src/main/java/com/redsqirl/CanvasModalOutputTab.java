@@ -456,30 +456,26 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 					grid = new UnselectableTable(gridTitle);
 					try {
 
-						if(dfeOut.isPathExists() && dfeOut.isPathValid() == null){
+						int mRow = Math.max(10, Math.min(150, 1000/gridTitle.size()));
+						mountNumberRowsList(mRow);
+						if(getMaxRows() != null && !getMaxRows().isEmpty()){
+							mRow = Integer.parseInt(getMaxRows()); 
+						}
+						setMaxRows(mRow+"");
 
-							int mRow = Math.max(10, Math.min(150, 1000/gridTitle.size()));
-							mountNumberRowsList(mRow);
-							if(getMaxRows() != null && !getMaxRows().isEmpty()){
-								mRow = Integer.parseInt(getMaxRows()); 
-							}
-							setMaxRows(mRow+"");
+						List<Map<String, String>> outputLines = dfeOut.select(mRow);
 
-							List<Map<String, String>> outputLines = dfeOut.select(mRow);
+						if (outputLines != null) {
 
-							if (outputLines != null) {
-
-								for (Map<String, String> line : outputLines) {
-									int i = 0;
-									String[] rowCur = new String[gridTitle.size()];
-									for (String feat : line.keySet()) {
-										rowCur[i] = line.get(feat);
-										++i;
-									}
-									grid.add(rowCur);
+							for (Map<String, String> line : outputLines) {
+								int i = 0;
+								String[] rowCur = new String[gridTitle.size()];
+								for (String feat : line.keySet()) {
+									rowCur[i] = line.get(feat);
+									++i;
 								}
+								grid.add(rowCur);
 							}
-
 						}
 
 						if(grid.getRows().isEmpty()){

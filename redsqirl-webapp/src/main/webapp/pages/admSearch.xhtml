@@ -50,7 +50,7 @@
 		</h:form>
 				 				
 		<a4j:outputPanel id="out" ajaxRendered="true">
-			<h:panelGroup layout="block" class="packageList">
+			<h:panelGroup layout="block" class="packageList" style="height:550px;overflow:auto;">
 				<a4j:repeat value="#{analyticsStoreSearchBean.allPackageList}" var="pck">
 				 	<div class="packageItem" onclick="goToUrl(event, this);">
 	                	<h:panelGroup layout="block" class="type" style="float:right;">
@@ -59,7 +59,7 @@
 	                	<h:graphicImage value="#{pck.image}" 
 	                		width="100" height="100" styleClass="image"/>
 					 	<h:panelGroup layout="block" class="title">
-							<h:outputLink styleClass="hiddenLink" value="../secured/moduleDetail.xhtml">
+							<h:outputLink styleClass="hiddenLink" value="admModuleDetail.xhtml">
 							    <f:param name="id" value="#{pck.id}" />
 							    <f:param name="userInstall" value="#{packageMngBean.userInstall}" />
 							</h:outputLink>

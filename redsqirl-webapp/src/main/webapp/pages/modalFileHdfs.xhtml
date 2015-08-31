@@ -64,6 +64,35 @@
         }
     }
     
+    function mountComboboxExtensionsFileSystemModalHDFS(){
+
+    	jQuery("[id$='comboboxExtensionsFileSystemModalHDFS']").textext({
+	    	plugins : 'arrow autocomplete'
+	    }).bind('getSuggestions', function(e, data){
+
+		try{
+		        	
+			var list =  #{browserHdfsBean.listExtensionsString} ,
+		    	textext = jQuery(e.target).textext()[0],
+		        query = (data ? data.query : '') || '' ;
+		
+		        jQuery(this).trigger('setSuggestions', {
+			    	result : textext.itemManager().filter(list, query)
+			    	}
+		        );
+
+			}catch(exception){
+				alert(exception);
+			}
+	            
+		});
+
+    	jQuery("[id$='comboboxExtensionsFileSystemModalHDFS']").bind('setFormData', function(e, data, isEmpty){
+    		refreshHdfsOpenFileTable();
+    	});
+		
+    }
+    
 //]]>
 </script>
 
@@ -157,46 +186,19 @@
 
 	</div>
 	
+	<br/>
     
     				<h:panelGroup style="width:150px" layout="block" >
                     <h:inputText value="#{browserHdfsBean.extensionsSelected}" 
                     	id="comboboxExtensionsFileSystemModalHDFS" style="width:145px"
                     	rendered="#{not empty browserHdfsBean.listExtensions &amp;&amp; browserHdfsBean.showSave == 'F'}" >
                                   	 
-	                    <script type="text/javascript">
-	                    	jQuery("[id$='comboboxExtensionsFileSystemModalHDFS']").textext({
-						    	plugins : 'arrow autocomplete'
-						    }).bind('getSuggestions', function(e, data){
-	
-							try{
-							        	
-								var list =  #{browserHdfsBean.listExtensionsString} ,
-							    	textext = jQuery(e.target).textext()[0],
-							        query = (data ? data.query : '') || '' ;
-							
-							        jQuery(this).trigger('setSuggestions', {
-								    	result : textext.itemManager().filter(list, query)
-								    	}
-							        );
-	
-								}catch(exception){
-									alert(exception);
-								}
-						            
-							});
-
-	                    	jQuery("[id$='comboboxExtensionsFileSystemModalHDFS']").bind('setFormData', function(e, data, isEmpty){
-	                    		refreshHdfsOpenFileTable();
-	                    	});
-							
-						</script>
                                	 
                     </h:inputText>
                     </h:panelGroup>
     
     
     
-    <br />
     <br />
     
     <rich:panel id="panelBtFileHdfs" style="border:none; float:right;" >

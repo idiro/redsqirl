@@ -7,17 +7,25 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
+import com.redsqirl.utils.FieldList;
+import com.redsqirl.utils.Tree;
+import com.redsqirl.utils.TreeNonUnique;
+import com.redsqirl.workflow.server.EditorInteraction;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
+import com.redsqirl.workflow.server.interfaces.DFEOutput;
 
 /**
  * Abstract class that checks datatype usage for function and other options
@@ -53,6 +61,143 @@ public abstract class AbstractDictionary {
 	 */
 	protected Map<String, String[][]> functionsMap;
 
+	/**
+	 * Generate an editor for one input
+	 * 
+	 * @param help
+	 * @param in
+	 * @return EditorInteraction
+	 * @throws RemoteException
+	 */
+	public static EditorInteraction generateEditor(Tree<String> help,
+			DFEOutput in) throws RemoteException {
+		List<DFEOutput> lOut = new LinkedList<DFEOutput>();
+		lOut.add(in);
+		return generateEditor(help, lOut);
+	}
+
+	/**
+	 * Generate an editor interaction with a list
+	 * 
+	 * @param help
+	 * @param in
+	 * @return EditorInteraction
+	 * @throws RemoteException
+	 */
+	public static EditorInteraction generateEditor(Tree<String> help,
+			List<DFEOutput> in) throws RemoteException {
+		logger.debug("generate Editor...");
+		Tree<String> editor = new TreeNonUnique<String>("editor");
+		Tree<String> keywords = new TreeNonUnique<String>("keywords");
+		editor.add(keywords);
+		Iterator<DFEOutput> itIn = in.iterator();
+		Set<String> fieldName = new LinkedHashSet<String>();
+		while (itIn.hasNext()) {
+			DFEOutput inCur = itIn.next();
+			Iterator<String> it = inCur.getFields().getFieldNames()
+					.iterator();
+			logger.debug("add fields...");
+			while (it.hasNext()) {
+				String cur = it.next();
+				logger.debug(cur);
+				if (!fieldName.contains(cur)) {
+					Tree<String> word = new TreeNonUnique<String>("word");
+					word.add("name").add(cur);
+					word.add("info").add(
+							inCur.getFields().getFieldType(cur).name());
+					keywords.add(word);
+					fieldName.add(cur);
+				}
+			}
+		}
+		editor.add(help);
+		editor.add("output");
+
+		EditorInteraction ei = new EditorInteraction("autogen", "auto-gen", "",
+				0, 0);
+		ei.getTree().removeAllChildren();
+		ei.getTree().add(editor);
+		return ei;
+	}
+
+	/**
+	 * Generate an EditorInteraction from a FieldList
+	 * 
+	 * @param help
+	 * @param inFeat
+	 * @return EditorInteraction
+	 * @throws RemoteException
+	 */
+	public EditorInteraction generateEditor(Tree<String> help,
+			FieldList inFeat) throws RemoteException {
+		logger.debug("generate Editor...");
+		Tree<String> editor = new TreeNonUnique<String>("editor");
+		Tree<String> keywords = new TreeNonUnique<String>("keywords");
+		editor.add(keywords);
+		Iterator<String> itFeats = inFeat.getFieldNames().iterator();
+		while (itFeats.hasNext()) {
+			String cur = itFeats.next();
+			Tree<String> word = new TreeNonUnique<String>("word");
+			word.add("name").add(cur);
+			word.add("info").add(inFeat.getFieldType(cur).name());
+			keywords.add(word);
+		}
+		editor.add(help);
+		editor.add("output");
+		EditorInteraction ei = new EditorInteraction("autogen", "auto-gen", "",
+				0, 0);
+		ei.getTree().removeAllChildren();
+		ei.getTree().add(editor);
+		return ei;
+	}
+
+	/**
+	 * Generate an EditorInteraction with fieldList
+	 * 
+	 * @param help
+	 * @param inFeat
+	 * @return EditorInteraction
+	 * @throws RemoteException
+	 */
+	public static EditorInteraction generateEditor(Tree<String> help,
+			FieldList inFeat, Map<String, List<String>> extraWords)
+			throws RemoteException {
+		logger.debug("generate Editor...");
+		Tree<String> editor = new TreeNonUnique<String>("editor");
+		Tree<String> keywords = new TreeNonUnique<String>("keywords");
+		editor.add(keywords);
+		Iterator<String> itFeats = inFeat.getFieldNames().iterator();
+		while (itFeats.hasNext()) {
+			String cur = itFeats.next();
+			Tree<String> word = new TreeNonUnique<String>("word");
+			word.add("name").add(cur);
+			word.add("info").add(inFeat.getFieldType(cur).name());
+			keywords.add(word);
+		}
+		if (extraWords != null) {
+			Iterator<String> it = extraWords.keySet().iterator();
+			while (it.hasNext()) {
+				String cur = it.next();
+				Iterator<String> vals = extraWords.get(cur).iterator();
+				while (vals.hasNext()) {
+					String val = vals.next();
+					Tree<String> word = new TreeNonUnique<String>("word");
+					word.add("name").add(cur);
+					word.add("info").add(val);
+					keywords.add(word);
+				}
+			}
+		}
+		editor.add(help);
+		editor.add("output");
+		EditorInteraction ei = new EditorInteraction("autogen", "auto-gen", "",
+				0, 0);
+		ei.getTree().removeAllChildren();
+		ei.getTree().add(editor);
+		return ei;
+	}
+	
+	
 	/**
 	 * Constructor
 	 */
@@ -136,14 +281,6 @@ public abstract class AbstractDictionary {
 				loadFunctionsFile(file);
 			}
 		}
-
-		// for (Entry<String, String[][]> e : functionsMap.entrySet()) {
-		// System.out.println("#" + e.getKey());
-		// for (String[] function : e.getValue()) {
-		// System.out.println(function[0] + ";" + function[1] + ";"
-		// + function[2]);
-		// }
-		// }
 	}
 
 	/**
@@ -163,16 +300,17 @@ public abstract class AbstractDictionary {
 				bw.newLine();
 
 				for (String[] function : e.getValue()) {
-					// logger.info(function[0] + ";" + function[1] + ";"
-					// + function[2]);
-					String tempVal = "There is no Help for " + function[0];
-					try {
-						tempVal = function[3];
-					} catch (Exception exc) {
-
+					String toWrite = "";
+					for(int i = 0; i < function.length;++i){
+						if(i >0){
+							toWrite += ";";
+						}
+						toWrite += function[i];
 					}
-					bw.write(function[0] + ";" + function[1] + ";"
-							+ function[2] + ";" + tempVal);
+					if(function.length < 4){
+						toWrite +=";"+"There is no Help for " + function[0];
+					}
+					bw.write(toWrite);
 					bw.newLine();
 				}
 			}

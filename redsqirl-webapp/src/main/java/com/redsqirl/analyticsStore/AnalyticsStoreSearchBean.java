@@ -97,6 +97,14 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 			moduleTypes.add(new SelectItem("package","Package"));
 		}*/
 		
+		try {
+			retrieveAllPackageList();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		
 	}
 	
 	public void updateShowDefaultInstallation() throws RemoteException{

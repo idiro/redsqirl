@@ -91,24 +91,22 @@ public class ConvertFileText extends DataflowAction {
 	 * Update the output of the action
 	 */
 	public String updateOut() throws RemoteException {
-		String error = checkIntegrationUserVariables();
-		logger.info("Error in updae out : "+error);
-		if(error == null){
-			DFEOutput in = this.getDFEInput().get(ConvertFileText.key_input).get(0);
-			FieldList new_field = in.getFields().cloneRemote();
-			DFEOutput out = output.get(key_output);
-			
-			if(out == null){
-				out = new MapRedTextFileType();
-				output.put(key_output, out);
-				
-			}
-			
-			out.setFields(new_field);
-			out.addProperty(MapRedTextType.key_delimiter,  
-					in.getProperty(MapRedTextType.key_delimiter));
-			
+		String error = null;
+		
+		DFEOutput in = this.getDFEInput().get(ConvertFileText.key_input).get(0);
+		FieldList new_field = in.getFields().cloneRemote();
+		DFEOutput out = output.get(key_output);
+
+		if(out == null){
+			out = new MapRedTextFileType();
+			output.put(key_output, out);
+
 		}
+
+		out.setFields(new_field);
+		out.addProperty(MapRedTextType.key_delimiter,  
+				in.getProperty(MapRedTextType.key_delimiter));
+
 		return error;
 	}
 	

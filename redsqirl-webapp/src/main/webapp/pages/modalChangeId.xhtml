@@ -13,6 +13,14 @@ function changeCurrentElementId(){
 	execChangeIdElementCommand('#{canvasModalBean.loadMainWindow}','#{canvasModalBean.idGroup}', '#{canvasModalBean.curElId}' ,'#{canvasModalBean.elementId}', '#{canvasModalBean.curElComment}', jQuery("[id$='elementCommentID']").val());
 }
 
+jQuery('[id$="elementCommentID"]').keyup(function() {
+    var textarea = jQuery(this);
+    var max = 1000;
+    if (textarea.val().length > max) {
+        textarea.val(textarea.val().substr(0, max));
+    }
+});
+
 </script>
 
         <a4j:region>

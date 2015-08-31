@@ -12,17 +12,48 @@
 
 <head>
 <title> Red Sqirl - Error </title>
-</head>
-<body>
+
+<link rel="stylesheet" type="text/css" href='#{facesContext.externalContext.requestContextPath}/css/redsqirl.css' />
+<script src='#{facesContext.externalContext.requestContextPath}/js/jquery-1.9.1.js' type="text/javascript"></script>
+
+<script>
+
+jQuery.noConflict();
+
+jQuery(function() {
+
+	jQuery("#stackTrace").hide();
 	
-	<h1>Error</h1>
+});
+
+function showStackTrace(){
+	jQuery("#stackTrace").show();
+}
+
+</script>
+
+</head>
+
+
+<body style="overflow:auto;">
+
+
+	<img src="./image/login_squirl_background.png" style="width:90%;position:absolute;z-index:-1;height:90%;left:6%;min-width:600px;" onError="this.onerror=null;this.src='../image/login_squirl_background.png';" />
+	
+	
+	<img src="./image/logo_redsqirl.gif" style="width:130px;padding-left:0%;padding-top:0%;" onError="this.onerror=null;this.src='../image/logo_redsqirl.gif';" />
+	<h1 style="text-align: left;padding-top:0px;padding-left:20px;">Error</h1>
 	<p> An internal error has occurred in this program. Please contact technical support. </p>
+	<p> <h:commandButton value="Show stackTrace" onclick="showStackTrace();" styleClass="greenButton" /> </p>
       
-    <h:inputTextarea value="#{error.stackTrace}" rows="40" cols="80" readonly="true"/>  
+    <h:inputTextarea id="stackTrace" value="#{error.stackTrace}" rows="40" cols="120" readonly="true" style="margin-left:20px;" />
+	
+	<br/><br/>
 	
 	<form>
-		<h:commandButton value="#{messages.button_ok}" action="#{canvasBean.initial}" />
+		<h:commandButton value="#{messages.button_restart}" action="#{canvasBean.initial}" styleClass="greenButton" style="margin-left:20px;" />
 	</form>
+	
 	
 </body>
 </html>

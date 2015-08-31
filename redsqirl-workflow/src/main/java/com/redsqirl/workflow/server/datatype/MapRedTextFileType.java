@@ -281,10 +281,10 @@ public class MapRedTextFileType extends MapRedHdfs {
 			super.setPath(path);
 
 			logger.info("setPath() " + path);
-			if (isPathExists()) {
-				List<String> list = selectLine(1);
+			List<String> list = selectLine(2000);
+			if (list != null) {
 
-				if (list != null && !list.isEmpty()) {
+				if (!list.isEmpty()) {
 					String text = list.get(0);
 
 					if (getProperty(key_delimiter) == null) {
@@ -296,7 +296,7 @@ public class MapRedTextFileType extends MapRedHdfs {
 					}
 				}
 
-				FieldList fl = generateFieldsMap(getChar(getProperty(key_delimiter)));
+				FieldList fl = generateFieldsMap(getChar(getProperty(key_delimiter)),list);
 				if(fields == null || fields.getSize() == 0){
 					fields = fl;
 				}else{
@@ -438,14 +438,13 @@ public class MapRedTextFileType extends MapRedHdfs {
 	 * @return FieldList
 	 * @throws RemoteException
 	 */
-	protected FieldList generateFieldsMap(String delimiter) throws RemoteException {
+	protected FieldList generateFieldsMap(String delimiter,List<String> lines) throws RemoteException {
 
 		logger.info("generateFieldsMap --");
 		
 		FieldList fl = new OrderedFieldList();
 		try {
 			
-			List<String> lines = this.selectLine(2000);
 			Map<String,Set<String>> valueMap = new LinkedHashMap<String,Set<String>>();
 			Map<String,Integer> nbValueMap = new LinkedHashMap<String,Integer>();
 			

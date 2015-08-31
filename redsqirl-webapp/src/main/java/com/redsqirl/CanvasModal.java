@@ -647,9 +647,11 @@ public class CanvasModal extends BaseBean implements Serializable {
 			logger.info(cmInter.getId()+": "+interactionChanged);
 			if (interactionChanged) {
 				elementToUpdate = true;
+				logger.info("write interaction in "+cmInter.getId());
 				cmInter.writeInteraction();
 			}
 		}
+		logger.info("check page...");
 		String e = getPageList().get(getListPosition()).checkPage();
 		//if(e == null && sourceNode){
 		if(sourceNode){
@@ -666,6 +668,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 			// Update output only if it is the last page
 			// or an output already exist
 			if (getListPageSize() - 1 == getListPosition()) {
+				logger.info("updateOutputElement...");
 				e = updateOutputElement();
 				outputTab.mountOutputForm(!sourceNode || dfe.getDFEOutput().size() > 1);
 			}

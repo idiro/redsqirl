@@ -29,10 +29,9 @@
 	                 enableContextMenu="false" 
 	                 onRowMouseOut="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'" >
 	                 
-			 <rich:column style="border-bottom:0px;border-right:0px;"
-			 width="20px;">
-			 <h:outputText value="#{rowNb+1}" />
-			 </rich:column>
+					<rich:column style="border-bottom:0px;border-right:0px;" width="20px;">
+						<h:outputText value="#{rowNb+1}" />
+					</rich:column>
 
                 	<rich:column style="border-bottom:0px;border-right:0px;" width="35px;">
                         <f:facet name="header">
@@ -116,11 +115,10 @@
 			    </tr>
 		    </table>
 
-			<h:panelGroup id="actionOptionForMenu" >
+			<h:panelGroup id="actionOptionForMenu" rendered="#{configureTabsBean.index != null &amp;&amp; configureTabsBean.showTab == 'Y' }">
 		   		<rich:listShuttle sourceValue="#{configureTabsBean.currentFooterMenu.actions}"
 		            targetValue="#{configureTabsBean.currentFooterMenu.target}" var="items" listsHeight="225"
 		            sourceListWidth="145" targetListWidth="145"
-		            rendered="#{configureTabsBean.index != null &amp;&amp; configureTabsBean.showTab == 'Y' }"
 		            copyAllControlLabel="Select all"
 	                      copyControlLabel="Select"
 	                      removeAllControlLabel="Unselect all"

@@ -241,7 +241,7 @@ public abstract class AbstractSource extends DataflowAction {
 
 			@Override
 			public String check(DFEPage page) throws RemoteException {
-				logger.info("check page 3");
+				logger.info("check page 3 " + page.getTitle());
 				String error = null;
 				DataOutput out = null;
 
@@ -553,8 +553,7 @@ public abstract class AbstractSource extends DataflowAction {
 	 */
 	@Override
 	public String updateOut() throws RemoteException {
-		String error = checkIntegrationUserVariables();
-		return error;
+		return null;
 	}
 
 	/**

@@ -150,36 +150,22 @@ public abstract class MapRedHdfs extends DataOutput{
 
 	@Override
 	public boolean isPathExists() throws RemoteException {
+		logger.info("isPathExists ");
+		
 		boolean ok = false;
 		if (getPath() != null) {
 			logger.info("checking if path exists: " + getPath().toString());
-			int again = 10;
 			FileSystem fs = null;
-			while (again > 0) {
-				try {
-					fs = NameNodeVar.getFS();
-					logger.debug("Attempt " + (11 - again) + ": existence "
-							+ getPath());
-					ok = fs.exists(new Path(getPath()));
-					again = 0;
-				} catch (Exception e) {
-					logger.error(e);
-					--again;
-				}
-				try {
-					// fs.close();
-				} catch (Exception e) {
-					logger.error(e);
-				}
-				if (again > 0) {
-					try {
-						Thread.sleep(10);
-					} catch (InterruptedException e1) {
-						logger.error(e1);
-					}
-				}
+			try {
+				fs = NameNodeVar.getFS();
+				ok = fs.exists(new Path(getPath()));
+			} catch (Exception e) {
+				logger.error(e);
 			}
 		}
+		
+		logger.info("isPathExists end ");
+		
 		return ok;
 	}
 	
@@ -271,13 +257,12 @@ public abstract class MapRedHdfs extends DataOutput{
 	 * @return FieldList
 	 * @throws RemoteException
 	 */
-	protected FieldList generateFieldsMap(String delimiter) throws RemoteException {
+	protected FieldList generateFieldsMap(String delimiter, List<String> lines) throws RemoteException {
 
 		logger.info("generateFieldsMap --");
 		
 		FieldList fl = new OrderedFieldList();
 		try {
-			List<String> lines = this.selectLine(2000);
 			Map<String,Set<String>> valueMap = new LinkedHashMap<String,Set<String>>();
 			Map<String,Integer> nbValueMap = new LinkedHashMap<String,Integer>();
 			

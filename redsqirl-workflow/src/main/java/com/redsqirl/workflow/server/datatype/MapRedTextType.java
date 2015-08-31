@@ -29,8 +29,6 @@ public class MapRedTextType extends MapRedDir {
 	 * 
 	 */
 	private static final long serialVersionUID = 8260229620701006942L;
-	/** Delimiter Key */
-	public final static String key_delimiter = "delimiter";
 	
 	private static Logger logger = Logger.getLogger(MapRedTextType.class);
 
@@ -123,13 +121,13 @@ public class MapRedTextType extends MapRedDir {
 	 */
 	public List<Map<String,String>> select(int maxToRead) throws RemoteException {
 		List<Map<String,String>> ans = new LinkedList<Map<String,String>>();
+		List<String> fieldNames = getFields().getFieldNames();
 		Iterator<String> it = selectLine(maxToRead).iterator();
 		while(it.hasNext()){
 			String l = it.next();
 			if(l != null && ! l.isEmpty()){
 				String[] line = l.split(
 						Pattern.quote(getChar(getProperty(key_delimiter))), -1);
-				List<String> fieldNames = getFields().getFieldNames();
 				if (fieldNames.size() == line.length) {
 					Map<String, String> cur = new LinkedHashMap<String, String>();
 					for (int i = 0; i < line.length; ++i) {
@@ -218,8 +216,8 @@ public class MapRedTextType extends MapRedDir {
 			super.setPath(path);
 
 			logger.info("setPath() " + path);
-			if (isPathExists()) {
-				List<String> list = selectLine(1);
+			List<String> list = this.selectLine(2000);
+			if (list != null) {
 
 				if (list != null && !list.isEmpty()) {
 					String text = list.get(0);
@@ -232,19 +230,19 @@ public class MapRedTextType extends MapRedDir {
 						super.addProperty(key_delimiter, delimiter);
 					}
 
-				}
 
-				FieldList fl = generateFieldsMap(getChar(getProperty(key_delimiter)));
-				if(fields == null || fields.getSize() == 0){
-					fields = fl;
-				}else{
-					logger.info(fields.getFieldNames());
-					logger.info(fl.getFieldNames());
-					String error = checkCompatibility(fl,fields);
-					if(error != null){
-						logger.info(error);
+					FieldList fl = generateFieldsMap(getChar(getProperty(key_delimiter)), list);
+					if(fields == null || fields.getSize() == 0){
 						fields = fl;
-						throw new RemoteException(error);
+					}else{
+						logger.info(fields.getFieldNames());
+						logger.info(fl.getFieldNames());
+						String error = checkCompatibility(fl,fields);
+						if(error != null){
+							logger.info(error);
+							fields = fl;
+							throw new RemoteException(error);
+						}
 					}
 				}
 			}
