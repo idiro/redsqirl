@@ -219,6 +219,9 @@ public class FileSystemBean extends BaseBean implements Serializable {
 				logger.info("Delete -" + directory);
 				getDataStore().delete(directory);
 			}
+			
+			//Force the refresh
+			setPath(null);
 			updateTable();
 		}
 
@@ -491,6 +494,8 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	 */
 	public void addFileBefore() throws RemoteException {
 
+		logger.info("addFileBefore");
+		
 		newProp = new LinkedHashMap<String, String>();
 		Iterator<String> it = createProps.iterator();
 		while (it.hasNext()) {
@@ -517,8 +522,9 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		String newDirectory = generatePath(getDataStore().getPath(), getName());
 		getDataStore().create(newDirectory, getNewProp());
 
+		//Force the refresh
+		setPath(null);
 		updateTable();
-
 	}
 
 	/**

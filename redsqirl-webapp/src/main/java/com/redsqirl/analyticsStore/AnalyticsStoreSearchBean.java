@@ -133,9 +133,10 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 
 			if (type != null && !type.isEmpty()){
 				object.put("type", type);
-			}
-			if(selectedTypes != null && !selectedTypes.isEmpty()){
-				object.put("type", selectedTypes.get(0));
+			}else{
+				if(selectedTypes != null && !selectedTypes.isEmpty()){
+					object.put("type", selectedTypes.get(0));
+				}
 			}
 			
 			Client client = Client.create();

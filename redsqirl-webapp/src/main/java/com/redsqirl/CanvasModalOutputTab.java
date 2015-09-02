@@ -373,7 +373,7 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 			setMaxRows(null);
 		}
 
-		if (outputN != null && !outputN.equalsIgnoreCase("undefined")) {
+		if (outputN != null && !outputN.equalsIgnoreCase("undefined") && !outputN.isEmpty()) {
 			setNameOutput(outputN);
 			logger.info("display out: " + nameOutput);
 			updateDFEOutputTable();

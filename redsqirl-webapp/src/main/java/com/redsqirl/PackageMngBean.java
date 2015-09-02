@@ -323,14 +323,13 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 
 	public void setPackageScope(){
-		String userEnv = FacesContext.getCurrentInstance().getExternalContext().
-				getRequestParameterMap().get("user");
+		String userEnv = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("user");
+		
 		logger.info("set Package scope: "+userEnv);
 		userInstall = !"false".equalsIgnoreCase(userEnv);
 		logger.info("scope: "+userInstall);
 
-		type = FacesContext.getCurrentInstance().getExternalContext().
-				getRequestParameterMap().get("type");
+		type = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("type");
 	}
 
 	public void installPackage() throws RemoteException{

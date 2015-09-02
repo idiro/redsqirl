@@ -949,6 +949,17 @@
 				//addWorkflow("canvas-1");
 			}
 		}
+
+
+	   	function setShowInstallPackageModelValue(value){
+	        if(value == 'P'){
+		    	jQuery('[id$="installPackagesMsg"]').show();
+	    		jQuery('[id$="installModelMsg"]').hide();
+	        }else{
+	        	jQuery('[id$="installPackagesMsg"]').hide();
+	    		jQuery('[id$="installModelMsg"]').show();
+	        }
+	    }
 	   	
 	   	/*keyboard shortcuts*/
 	   	
@@ -2287,11 +2298,10 @@
 									<div class="rich-panel-header">Legend</div>
 								</div>
 								<div class="rich-panel" id="panelLegend-canvas-1"
-									style="position: fixed; z-index: 100; display: none; width: 190px; height: 330px">
+									style="position:fixed; z-index:100; display:none; width:190px; height:330px; overflow:auto;">
 									<div class="rich-panel-body" style="overflow: hidden;">
-										<div id="container-legend-canvas-1"
-											class="container-legend-canvas-1"
-											style="overflow: hidden; position: relative; top: 20px;" />
+										<div id="container-legend-canvas-1"	class="container-legend-canvas-1"
+											style="overflow:auto; position:relative; top:20px;" />
 									</div>
 								</div>
 								<div class="rich-panel headerComment"
@@ -2722,7 +2732,12 @@
 	<a4j:region>
 		<rich:modalPanel id="modalInstallPackage" width="900" height="600"
 			resizeable="true">
-			<f:facet name="header">Packages</f:facet>
+			<f:facet name="header">
+				<h:panelGroup>
+					<h:outputText value='#{messages.label_packages}' id="installPackagesMsg" />
+					<h:outputText value='#{messages.label_model}' id="installModelMsg" />
+				</h:panelGroup>
+			</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
 					style="cursor:pointer;width:22px;"

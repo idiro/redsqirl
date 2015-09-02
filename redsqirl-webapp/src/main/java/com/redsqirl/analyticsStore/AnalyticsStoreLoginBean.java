@@ -329,8 +329,8 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 			try{
 				JSONObject pckObj = new JSONObject(ansServer);
 				loggedIn = pckObj.getBoolean("logged");
-				role = pckObj.getString("role");
 				if (loggedIn){
+					role = pckObj.getString("role");
 					idUser = pckObj.getInt("id");
 				}
 			} catch (JSONException e){

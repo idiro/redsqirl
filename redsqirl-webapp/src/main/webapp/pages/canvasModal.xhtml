@@ -125,7 +125,7 @@
 <h:form>
      
     <a4j:jsFunction name="reLoadTabs" reRender="browserTableData" oncomplete="unBlockSource();" />
-    <a4j:jsFunction name="reLoadDisplayTable" reRender="displayTable,displayTableNumberRows" action="#{canvasModalBean.outputTab.displayOutput}" >
+    <a4j:jsFunction name="reLoadDisplayTable" reRender="displayTable,displayTableNumberRows, displayTableNumberRowsPanelGroup" action="#{canvasModalBean.outputTab.displayOutput}" >
     	<a4j:actionparam name="outputName" value="#{canvasModalBean.outputTab.outputFormList[0].name}" />
     	<a4j:actionparam name="resetMaxRows" value="Y" />
     </a4j:jsFunction>
@@ -636,7 +636,7 @@
 		                       	<tr>
 		                       		<td>
 		                       			<a4j:commandLink value="output #{item.name}" action="#{canvasModalBean.outputTab.displayOutput}"
-		                       				reRender="displayTable,displayTableNumberRows">
+		                       				reRender="displayTable,displayTableNumberRows, displayTableNumberRowsPanelGroup">
 			                                <a4j:actionparam name="outputName" value="#{item.name}" />
 			                                <a4j:actionparam name="resetMaxRows" value="Y" />
 			                            </a4j:commandLink>
@@ -746,47 +746,31 @@
 		                 	
 		                 	<br/>
 		                	
+		                	<a4j:jsFunction name="onchangeDisplayTableNumberRows" oncomplete="reLoadTable();blockComoBoxNumberRows();" reRender="displayTableNumberRows, displayTableNumberRowsPanelGroup" />
 		                	
-		                	<a4j:jsFunction name="onchangeDisplayTableNumberRows" oncomplete="reLoadTable();blockComoBoxNumberRows();" reRender="displayTableNumberRows" />
-		                	
-		                	<h:panelGroup style="width:100px" layout="block" >
-		                    <h:inputText value="#{canvasModalBean.outputTab.maxRows}" id="displayTableNumberRows" style="width:95px" >
-		                                  	 
-			                    <script type="text/javascript">
-			                    	jQuery("[id$='displayTableNumberRows']").textext({
-								    	plugins : 'arrow autocomplete'
-								    }).bind('getSuggestions', function(e, data){
-			
-									try{
-										
-										var list = #{canvasModalBean.outputTab.maxNumberRowsString} ,
-									    	textext = jQuery(e.target).textext()[0],
-									        query = (data ? data.query : '') || '' ;
-									
-									        jQuery(this).trigger('setSuggestions', {
-										    	result : textext.itemManager().filter(list, query)
-										    	}
-									        );
-			
-										}catch(exception){
-											alert(exception);
-										}
-								            
-									});
-	
-			                    	jQuery("[id$='displayTableNumberRows']").bind('setFormData', function(e, data, isEmpty){
-			                    		onchangeDisplayTableNumberRows();
-			                    	});
-			                    	
-								</script>
-		                               	 
-		                    </h:inputText>
-		                    </h:panelGroup>
-		                	
-		                	
-			                
-			                <a4j:jsFunction name="reLoadTable" action="#{canvasModalBean.outputTab.displayOutput}" oncomplete="unBlockComoBoxNumberRows();" 
-			                	reRender="displayTable, displayTableNumberRows" />
+		                	<a4j:jsFunction name="reLoadTable" action="#{canvasModalBean.outputTab.displayOutput}" oncomplete="unBlockComoBoxNumberRows();" 
+			                	reRender="displayTable, displayTableNumberRows, displayTableNumberRowsPanelGroup" />
+		                    
+	               			<h:panelGroup style="width:150px" layout="block" id="displayTableNumberRowsPanelGroup" >
+	                        	<select onchange="updatedMaxRows(this);" >
+				            		<a4j:repeat value="#{canvasModalBean.outputTab.maxNumberRows}" var="idx"  >
+										<h:outputText rendered="#{canvasModalBean.outputTab.maxRows == idx.value}" > <option selected="selected"> <h:outputText value="#{idx.value}" /> </option> </h:outputText>
+										<h:outputText rendered="#{canvasModalBean.outputTab.maxRows != idx.value}" > <option> <h:outputText value="#{idx.value}" /> </option> </h:outputText>
+									</a4j:repeat>
+				            	</select>
+				            </h:panelGroup>
+				             
+				            <script type="text/javascript">
+					            function updatedMaxRows(element){
+								    var idx=element.selectedIndex;
+								    var val=element.options[idx].value;
+								    var content=element.options[idx].innerHTML;
+								    jQuery("[id$='displayTableNumberRows']").val(val);
+								    //alert(val + " " + content);
+								    onchangeDisplayTableNumberRows();
+								}
+				            </script>
+							<h:inputHidden value="#{canvasModalBean.outputTab.maxRows}" id="displayTableNumberRows" />
 		                
 		                </div>
 		                
