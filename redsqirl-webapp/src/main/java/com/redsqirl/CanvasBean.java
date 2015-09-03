@@ -978,8 +978,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 	public void paste() throws RemoteException {
 		logger.info("paste");
 		if (wfCopyBuffer != null && getDf() != null) {
-			getworkFlowInterface().copy(wfCopyBuffer.getDfCloneId(),
-					wfCopyBuffer.getElementsToCopy(), getNameWorkflow());
+			getworkFlowInterface().copy(wfCopyBuffer.getDfCloneId(), wfCopyBuffer.getElementsToCopy(), getNameWorkflow());
 			Iterator<String> elIt = getDf().getComponentIds().iterator();
 			Map<String, String> idMapWf = idMap.get(getNameWorkflow());
 			StringBuffer ans = new StringBuffer();

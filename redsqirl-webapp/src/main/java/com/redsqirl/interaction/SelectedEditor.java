@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
@@ -28,58 +29,60 @@ public class SelectedEditor extends BaseBean implements Serializable{
 	private static final long serialVersionUID = 1263101069235275537L;
 
 	private static Logger logger = Logger.getLogger(SelectedEditor.class);
-	
+
 	/**
 	 * The editor
 	 */
 	private EditorFromTree edit;
-	
 
 	/**
 	 * Function selected in the menu
 	 */
 	private String selectedFunction;
-	
+
 	/**
 	 * Operation selected in the menu
 	 */
 	private String selectedOperation;
-	
+
 	/**
 	 * The table interaction from which the editor comes from.
 	 * If this object is null then editInter is not.
 	 */
 	private TableInteraction tableInter;
-	
+
 	/**
 	 * The editor interaction from which the editor comes from.
 	 * If this object is null then tableInter is not.
 	 */
 	private EditorInteraction editInter;
-	
+
 	/**
 	 * "Y" if the validation is a success or "N" if it is a failure.
 	 */
 	private String confirm;
-	
+
 	/**
 	 * The column to edit (null if the object does not derive from a TableInteraction)
 	 */
 	private String columnEdit;
-	
+
 	/**
 	 * The row to edit (null if the object does not derive from a TableInteraction)
 	 */
 	private int rowEdit;
-	
+
 	/**
 	 * The value
 	 */
 	private String value;
-	
+
 	private List<String> textEditorFunctionMenuString;
-	
+
 	private List<String> textEditorOperationMenuString;
+
+	public List<String[]> listFunctionsCombobox = new ArrayList<String[]>();
+	public List<String[]> listOperationCombobox = new ArrayList<String[]>();
 
 
 	/**
@@ -116,7 +119,7 @@ public class SelectedEditor extends BaseBean implements Serializable{
 		this.value = edit.getTextEditorValue();
 		init();
 	}
-	
+
 	private void init(){
 		logger.info("init...");
 		if(!edit.getTextEditorFunctionMenu().isEmpty()){
@@ -125,6 +128,7 @@ public class SelectedEditor extends BaseBean implements Serializable{
 			l.add(calcString(edit.getTextEditorFunctionMenu()));
 			setTextEditorFunctionMenuString(l);
 			logger.info("TextEditorFunctionMenu " + getTextEditorFunctionMenuString());
+			mountComboBoxFunctionsListvalue(selectedFunction);
 		}
 		if(!edit.getTextEditorOperationMenu().isEmpty()){
 			selectedOperation = edit.getTextEditorOperationMenu().get(0);
@@ -132,6 +136,7 @@ public class SelectedEditor extends BaseBean implements Serializable{
 			l.add(calcString(edit.getTextEditorOperationMenu()));
 			setTextEditorOperationMenuString(l);
 			logger.info("TextEditorOperationMenu " + getTextEditorOperationMenuString());
+			mountComboBoxOperationListvalue(selectedOperation);
 		}
 	}
 
@@ -200,18 +205,18 @@ public class SelectedEditor extends BaseBean implements Serializable{
 			request.setAttribute("msnError", "msnError");
 		} else {
 			//if (getConfirm() != null && !getConfirm().equalsIgnoreCase("Y")) {
-				
-				MessageUseful.addInfoMessage(getMessageResources("success_message"));
-				HttpServletRequest request = (HttpServletRequest) FacesContext
-						.getCurrentInstance().getExternalContext().getRequest();
-				request.setAttribute("msnError", "msnError");
+
+			MessageUseful.addInfoMessage(getMessageResources("success_message"));
+			HttpServletRequest request = (HttpServletRequest) FacesContext
+					.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
 			//}
 			result = true;
 		}
 
 		return result;
 	}
-	
+
 	public String calcString(List<String> listFields){
 		StringBuffer ans = new StringBuffer();
 		for (String selectItem : listFields) {
@@ -220,6 +225,25 @@ public class SelectedEditor extends BaseBean implements Serializable{
 		return ans.toString().substring(1);
 	}
 
+	public void mountComboBoxFunctionsListvalue(){
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String nameFunction = params.get("nameFunction");
+		mountComboBoxFunctionsListvalue(nameFunction);
+	}
+	
+	public void mountComboBoxFunctionsListvalue(String value){
+		setListFunctionsCombobox(getEdit().getTextEditorFunctions().get(value));
+	}
+
+	public void mountComboBoxOperationListvalue(){
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String nameOperation = params.get("nameOperation");
+		mountComboBoxOperationListvalue(nameOperation);
+	}
+	
+	public void mountComboBoxOperationListvalue(String value){
+		setListOperationCombobox(getEdit().getTextEditorOperations().get(value));
+	}
 
 	/**
 	 * @return the edit
@@ -352,5 +376,21 @@ public class SelectedEditor extends BaseBean implements Serializable{
 			List<String> textEditorOperationMenuString) {
 		this.textEditorOperationMenuString = textEditorOperationMenuString;
 	}
-	
+
+	public List<String[]> getListFunctionsCombobox() {
+		return listFunctionsCombobox;
+	}
+
+	public void setListFunctionsCombobox(List<String[]> listFunctionsCombobox) {
+		this.listFunctionsCombobox = listFunctionsCombobox;
+	}
+
+	public List<String[]> getListOperationCombobox() {
+		return listOperationCombobox;
+	}
+
+	public void setListOperationCombobox(List<String[]> listOperationCombobox) {
+		this.listOperationCombobox = listOperationCombobox;
+	}
+
 }
