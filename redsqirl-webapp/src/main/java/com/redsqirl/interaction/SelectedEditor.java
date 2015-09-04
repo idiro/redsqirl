@@ -228,6 +228,7 @@ public class SelectedEditor extends BaseBean implements Serializable{
 	public void mountComboBoxFunctionsListvalue(){
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String nameFunction = params.get("nameFunction");
+		setSelectedFunction(nameFunction);
 		mountComboBoxFunctionsListvalue(nameFunction);
 	}
 	
@@ -238,6 +239,7 @@ public class SelectedEditor extends BaseBean implements Serializable{
 	public void mountComboBoxOperationListvalue(){
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String nameOperation = params.get("nameOperation");
+		setSelectedOperation(nameOperation);
 		mountComboBoxOperationListvalue(nameOperation);
 	}
 	

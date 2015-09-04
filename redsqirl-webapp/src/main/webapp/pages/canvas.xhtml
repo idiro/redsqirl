@@ -1035,15 +1035,15 @@
 			}
 	   	});
 	   	
-		shortcut.add("Ctrl+r",function() {
+		shortcut.add("Ctrl+e",function() {
 			if( !jQuery(".rich-mp-container").is(":visible") ){
-				jQuery("#formMenu\\:runMenuItem").click();
+				jQuery("#formMenu\\:runSelectedMenuItem").click();
 			}
 	   	});
 		
-		shortcut.add("Ctrl+Alt+r",function() {
+		shortcut.add("Ctrl+Alt+e",function() {
 			if( !jQuery(".rich-mp-container").is(":visible") ){
-				jQuery("#formMenu\\:runSelectedMenuItem").click();
+				jQuery("#formMenu\\:runMenuItem").click();
 			}
 	   	});
 		
@@ -1082,6 +1082,12 @@
             	jQuery("#formMenu\\:redoMenuItem").click();
         	}
         });
+
+        shortcut.add("Ctrl+Alt+a",function() {
+			if( !jQuery(".rich-mp-container").is(":visible") ){
+				jQuery("#formMenu\\:aggregateMenuItem").click();
+			}
+	   	});
 
 	</script>
 
@@ -1871,7 +1877,7 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
 				<a4j:jsFunction name="pasteJS" action="#{canvasBean.paste}"
-					data="#{canvasBean.idsToPaste}" reRender="errorTable"
+					data="#{canvasBean.idsToPaste}" reRender="msnError"
 					oncomplete="saveAllPositions(getAllIconPositions());rebuildJS(); tmpCommandObj.idsToPaste = data; pasteCloneWorkflow(getAllIconPositions());" />
 			</a4j:region>
 
@@ -2011,7 +2017,7 @@
 									<rich:menuItem id="aggregateMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_aggregate}"
 										onclick="checkOpenModalAggregate()">
-										<h:outputText value="Ctrl+R" class="menuItemHotKey" />
+										<h:outputText value="Ctrl+Alt+a" class="menuItemHotKey" />
 									</rich:menuItem>
 									<rich:menuItem id="expandMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_expand}"
@@ -2047,7 +2053,7 @@
 										onclick="var sels=getSelectedIconsCommaDelimited();if(sels.length > 0){runWorkflow(getIconPositions(),getPathFile(getSelectedByName()),sels)}else{alert('#{messages.run_nothing_selected}')}"
 										reRender="formMenu,domMessageDivCanvas2,killProcessBtn"
 										disabled="#{canvasBean.workflowType == 'S'}">
-										<h:outputText value="Ctrl+Alt+R" class="menuItemHotKey" />
+										<h:outputText value="Ctrl+Alt+e" class="menuItemHotKey" />
 									</rich:menuItem>
 
 									<rich:menuItem id="runSelectedMenuItem" submitMode="ajax"
@@ -2055,7 +2061,7 @@
 										onclick="runWorkflow(getIconPositions(),getPathFile(getSelectedByName()))"
 										reRender="formMenu,domMessageDivCanvas2,killProcessBtn"
 										disabled="#{canvasBean.workflowType == 'S'}">
-										<h:outputText value="Ctrl+R" class="menuItemHotKey" />
+										<h:outputText value="Ctrl+e" class="menuItemHotKey" />
 									</rich:menuItem>
 
 									<rich:menuSeparator />

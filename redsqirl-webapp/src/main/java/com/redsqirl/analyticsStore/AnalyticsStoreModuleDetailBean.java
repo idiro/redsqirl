@@ -85,6 +85,9 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 			if (version != null){
 				object.put("version", version);
 			}
+			if(analyticsStoreLoginBean != null && analyticsStoreLoginBean.getEmail() != null){
+				object.put("user", analyticsStoreLoginBean.getEmail());
+			}
 
 			Client client = Client.create();
 			WebResource webResource = client.resource(uri);

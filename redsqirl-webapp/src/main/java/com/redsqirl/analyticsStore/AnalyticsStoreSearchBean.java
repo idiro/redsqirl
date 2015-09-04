@@ -138,6 +138,9 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 					object.put("type", selectedTypes.get(0));
 				}
 			}
+			if(analyticsStoreLoginBean != null && analyticsStoreLoginBean.getEmail() != null){
+				object.put("user", analyticsStoreLoginBean.getEmail());
+			}
 			
 			Client client = Client.create();
 			WebResource webResource = client.resource(uri);

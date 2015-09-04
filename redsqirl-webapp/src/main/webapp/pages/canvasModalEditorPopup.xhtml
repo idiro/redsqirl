@@ -152,12 +152,12 @@ function mountComboboxTextEditor(obj1, obj2){
 
 	<div id="canvasModalBeanTextEditor" style="width:100%;overflow:auto;height:100%;" >
 	
-		<a4j:jsFunction name="onselectListCategories" reRender="listFunctions,btCompleteFunction" 
+		<a4j:jsFunction name="onselectListCategories" reRender="listFunctions,btCompleteFunction,comboboxListCategories" 
 			action="#{canvasModalBean.selEditor.mountComboBoxFunctionsListvalue}" >
 			<a4j:actionparam name="nameFunction" />
 		</a4j:jsFunction>
 			
-		<a4j:jsFunction name="onselectListCategoriesOperation" reRender="listOperation" 
+		<a4j:jsFunction name="onselectListCategoriesOperation" reRender="listOperation,comboboxListCategoriesOperation" 
 			action="#{canvasModalBean.selEditor.mountComboBoxOperationListvalue}" >
 			<a4j:actionparam name="nameOperation" />
 		</a4j:jsFunction>
