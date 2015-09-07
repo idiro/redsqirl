@@ -485,7 +485,7 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 
 
 					} catch (Exception e) {
-						logger.info("Error when getting data: " + e);
+						logger.info("Error when getting data: " + e,e);
 					}
 
 				}

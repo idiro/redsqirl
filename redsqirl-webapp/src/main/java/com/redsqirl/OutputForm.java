@@ -53,7 +53,7 @@ public class OutputForm implements Serializable {
 			setLink(((DFELinkOutput) dfeOutput).getLink());
 			logger.info("link: "+getLink());
 		}catch(Exception e){
-			logger.info(e,e);
+			//logger.info(e,e);
 		}
 	}
 
