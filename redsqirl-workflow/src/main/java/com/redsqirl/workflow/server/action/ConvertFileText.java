@@ -209,7 +209,7 @@ public class ConvertFileText extends DataflowAction {
 		String toWrite = ((ShellAction) getOozieAction()).getShellContent(
 				"export JAVA_HOME=$JAVA_HOME;"+
 				hadoopBin+" fs -cat " + path + 
-				"/* | "+hadoopBin+" fs -put - " + pathOutput);
+				"/[^_]* | "+hadoopBin+" fs -put - " + pathOutput);
 
 		boolean ok = toWrite != null;
 		if(ok){
