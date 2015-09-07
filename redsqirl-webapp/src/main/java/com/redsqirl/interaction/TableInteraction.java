@@ -14,6 +14,7 @@ import java.util.Map;
 import javax.faces.model.SelectItem;
 
 import org.apache.commons.lang.WordUtils;
+import org.apache.log4j.Logger;
 
 import com.redsqirl.dynamictable.SelectableRow;
 import com.redsqirl.dynamictable.SelectableTable;
@@ -29,10 +30,10 @@ import com.redsqirl.workflow.server.interfaces.DFEInteraction;
 public class TableInteraction extends CanvasModalInteraction{
 
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1876499872304228674L;
+	
+	static protected Logger logger = Logger.getLogger(TableInteraction.class);
+	
 	/**
 	 * The list of rows of the grid.
 	 */
