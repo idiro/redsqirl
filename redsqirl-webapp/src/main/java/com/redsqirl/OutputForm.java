@@ -14,6 +14,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 
 import com.redsqirl.workflow.server.enumeration.SavingState;
+import com.redsqirl.workflow.server.interfaces.DFELinkOutput;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 
 public class OutputForm implements Serializable {
@@ -30,6 +31,7 @@ public class OutputForm implements Serializable {
 	private String path;
 	private String file;
 	private String user;
+	private String link;
 	private Map<String, FileSystemBean> datastores;
 	
 	public OutputForm(Map<String, FileSystemBean> datastores, DFEOutput dfeOutput, String componentId, String name) throws RemoteException{
@@ -47,6 +49,12 @@ public class OutputForm implements Serializable {
 		}
 		setSavingState(dfeOutput.getSavingState().toString());
 		
+		try{
+			setLink(((DFELinkOutput) dfeOutput).getLink());
+			logger.info("link: "+getLink());
+		}catch(Exception e){
+			logger.info(e,e);
+		}
 	}
 
 	public OutputForm() {
@@ -215,6 +223,14 @@ public class OutputForm implements Serializable {
 
 	public void setSavingStateListString(List<String> savingStateListString) {
 		this.savingStateListString = savingStateListString;
+	}
+
+	public String getLink() {
+		return link;
+	}
+
+	public void setLink(String link) {
+		this.link = link;
 	}
 	
 }

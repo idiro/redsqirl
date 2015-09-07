@@ -521,7 +521,6 @@
 	    	      setSaved(canvasName, true);
 	    	      setPathFile(canvasName, path);
 	    	      addLinks(canvasName, links);
-		    	  updateAllArrowColor();
 		    	  resizeCanvas(30,30);
 	          }
 	      }
@@ -556,6 +555,11 @@
 	    	  for (var i = 0; i < status.length; i++) {
 		    	  //alert(status[i][0] + " " + status[i][1] + " " + status[i][2]);
 		    	  updateActionOutputStatus(status[i][0], status[i][1], status[i][2], status[i][3], status[i][4], status[i][5],false);
+		    	  
+		    	  for(var j = 0; j < status[i][6].length;j++) {
+		    	  	updateArrowType(status[i][6][j][0], status[i][6][j][1], status[i][6][j][2], status[i][6][j][3], status[i][6][j][4],false);
+		    	  	updateArrowLabel(status[i][6][j][0], status[i][6][j][1], status[i][6][j][5],false);
+		    	  }
 	    	  }
 		      layer.draw();
 		      polygonLayer.draw();
@@ -1487,18 +1491,6 @@
 			</a4j:region>
 
 			<a4j:region>
-				<a4j:status onerror="jQuery('#canvas-tabs').unblock();"
-					onsuccess="jQuery('#canvas-tabs').unblock();"
-					onstop="jQuery('#canvas-tabs').unblock();" />
-
-				<a4j:jsFunction name="updateAllArrowColor"
-					data="#{canvasBean.allArrows}"
-					oncomplete="updateAllArrowColours('#{canvasBean.nameWorkflow}', data)">
-				</a4j:jsFunction>
-
-			</a4j:region>
-
-			<a4j:region>
 				<a4j:status
 					onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
 					onerror="jQuery('#canvas-tabs').unblock();"
@@ -1723,7 +1715,7 @@
 				</a4j:jsFunction>
 
 				<a4j:jsFunction name="rebuildJS" data="#{canvasBean.positions}"
-					oncomplete="setTimeout(function(){addSelectedElement(data[0],data[1],data[2],data[3],data[4])},900);updateAllArrowColor();updateAllArcsStatus();"
+					oncomplete="setTimeout(function(){addSelectedElement(data[0],data[1],data[2],data[3],data[4])},900);updateAllArcsStatus();"
 					reRender="tabFlowchart" />
 
 			</a4j:region>
@@ -1848,7 +1840,7 @@
 				</a4j:jsFunction>
 
 				<a4j:jsFunction name="rebuildPasteJS" data="#{canvasBean.positions}"
-					oncomplete="addSelectedElement(data[0],data[1],data[2],data[3],data[4]);updateAllArrowColor();updateAllArcsStatus();"
+					oncomplete="addSelectedElement(data[0],data[1],data[2],data[3],data[4]);updateAllArcsStatus();"
 					reRender="tabFlowchart" />
 
 			</a4j:region>

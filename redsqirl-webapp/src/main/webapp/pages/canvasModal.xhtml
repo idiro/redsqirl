@@ -642,11 +642,18 @@
 		                        
 		                       	<tr>
 		                       		<td>
-		                       			<a4j:commandLink value="output #{item.name}" action="#{canvasModalBean.outputTab.displayOutput}"
+		                       			<a4j:commandLink value="output #{item.name}"
+		                       			    rendered="#{item.link == null}" 
+		                       			    action="#{canvasModalBean.outputTab.displayOutput}"
 		                       				reRender="displayTable,displayTableNumberRows">
 			                                <a4j:actionparam name="outputName" value="#{item.name}" />
 			                                <a4j:actionparam name="resetMaxRows" value="Y" />
 			                            </a4j:commandLink>
+			                            <h:outputLink value="#{item.link}"
+			                                rendered="#{item.link != null}"
+			                            	target="blank">
+											<h:outputText value="output #{item.name}" />
+										</h:outputLink>
 		                       		</td>
 		                       		<td>
 			                            

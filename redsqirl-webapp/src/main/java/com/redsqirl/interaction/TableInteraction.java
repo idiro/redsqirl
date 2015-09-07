@@ -236,8 +236,8 @@ public class TableInteraction extends CanvasModalInteraction{
 			if (list != null) {
 				// logger.info("list not null: " + list.toString());
 				for (Tree<String> tree : list) {
-					logger.info("list value " + tree.getFirstChild().getHead());
-					if(!"".equals(tree.getFirstChild().getHead())){
+					if(tree.getFirstChild() != null && ! tree.getFirstChild().getHead().isEmpty()){
+						logger.info("list value " + tree.getFirstChild().getHead());
 						listFields.add(new SelectItem(tree.getFirstChild().getHead(), tree.getFirstChild().getHead()));
 					}
 				}
