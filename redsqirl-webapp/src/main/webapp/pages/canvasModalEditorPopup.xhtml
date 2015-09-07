@@ -83,59 +83,68 @@
 
 function mountComboboxTextEditor(obj1, obj2){
 
-	jQuery("[id$='comboboxListCategories']").textext({
-    	plugins : 'arrow autocomplete'
-    }).bind('getSuggestions', function(e, data){
+	if(jQuery("[id$='comboboxListCategories']").parent().attr('class') != "text-wrap"){
 
-	try{
+		jQuery("[id$='comboboxListCategories']").textext({
+	    	plugins : 'arrow autocomplete'
+	    }).bind('getSuggestions', function(e, data){
 
-		var aux = obj1+"";
-		var myArray = aux.replace(/[\[\]']+/g,'').split(',');
-		var list = myArray ,
-	    	textext = jQuery(e.target).textext()[0],
-	        query = (data ? data.query : '') || '' ;
+		try{
+
+			var aux = obj1+"";
+			var myArray = aux.replace(/[\[\]']+/g,'').split(',');
+			var list = myArray ,
+		    	textext = jQuery(e.target).textext()[0],
+		        query = (data ? data.query : '') || '' ;
+		
+		        jQuery(this).trigger('setSuggestions', {
+			    	result : textext.itemManager().filter(list, query)
+			    	}
+		        );
+
+			}catch(exception){
+				alert(exception);
+			}
+	            
+		});
+
+		jQuery("[id$='comboboxListCategories']").bind('setFormData', function(e, data, isEmpty){
+			onselectListCategories(data);
+		});
+		
+	}
 	
-	        jQuery(this).trigger('setSuggestions', {
-		    	result : textext.itemManager().filter(list, query)
-		    	}
-	        );
 
-		}catch(exception){
-			alert(exception);
-		}
-            
-	});
-
-	jQuery("[id$='comboboxListCategories']").bind('setFormData', function(e, data, isEmpty){
-		onselectListCategories();
-	});
+	if(jQuery("[id$='comboboxListCategoriesOperation']").parent().attr('class') != "text-wrap"){
 	
-	jQuery("[id$='comboboxListCategoriesOperation']").textext({
-    	plugins : 'arrow autocomplete'
-    }).bind('getSuggestions', function(e, data){
-
-	try{
-
-		var aux = obj2+"";
-		var myArray = aux.replace(/[\[\]']+/g,'').split(',');
-		var list = myArray ,
-	    	textext = jQuery(e.target).textext()[0],
-	        query = (data ? data.query : '') || '' ;
+		jQuery("[id$='comboboxListCategoriesOperation']").textext({
+	    	plugins : 'arrow autocomplete'
+	    }).bind('getSuggestions', function(e, data){
 	
-	        jQuery(this).trigger('setSuggestions', {
-		    	result : textext.itemManager().filter(list, query)
-		    	}
-	        );
+		try{
+	
+			var aux = obj2+"";
+			var myArray = aux.replace(/[\[\]']+/g,'').split(',');
+			var list = myArray ,
+		    	textext = jQuery(e.target).textext()[0],
+		        query = (data ? data.query : '') || '' ;
+		
+		        jQuery(this).trigger('setSuggestions', {
+			    	result : textext.itemManager().filter(list, query)
+			    	}
+		        );
+	
+			}catch(exception){
+				alert(exception);
+			}
+	            
+		});
+	
+		jQuery("[id$='comboboxListCategoriesOperation']").bind('setFormData', function(e, data, isEmpty){
+			onselectListCategoriesOperation(data);
+		});
 
-		}catch(exception){
-			alert(exception);
-		}
-            
-	});
-
-	jQuery("[id$='comboboxListCategoriesOperation']").bind('setFormData', function(e, data, isEmpty){
-		onselectListCategoriesOperation();
-	});
+	}
 	
 }
 
@@ -143,8 +152,15 @@ function mountComboboxTextEditor(obj1, obj2){
 
 	<div id="canvasModalBeanTextEditor" style="width:100%;overflow:auto;height:100%;" >
 	
-		<a4j:jsFunction name="onselectListCategories" reRender="listFunctions,btCompleteFunction" />
-		<a4j:jsFunction name="onselectListCategoriesOperation" reRender="listOperation" />
+		<a4j:jsFunction name="onselectListCategories" reRender="listFunctions,btCompleteFunction,comboboxListCategories" 
+			action="#{canvasModalBean.selEditor.mountComboBoxFunctionsListvalue}" >
+			<a4j:actionparam name="nameFunction" />
+		</a4j:jsFunction>
+			
+		<a4j:jsFunction name="onselectListCategoriesOperation" reRender="listOperation,comboboxListCategoriesOperation" 
+			action="#{canvasModalBean.selEditor.mountComboBoxOperationListvalue}" >
+			<a4j:actionparam name="nameOperation" />
+		</a4j:jsFunction>
 
 		<h:inputTextarea maxlength="100" cols="70" rows="10" value="#{canvasModalBean.selEditor.value}"
 			style="resize:none;border:1px solid;width:97%;height:100px;" id="commandText" />
@@ -168,7 +184,7 @@ function mountComboboxTextEditor(obj1, obj2){
 						<br />
 						
 						<rich:extendedDataTable id="listFunctions" var="item" enableContextMenu="false" selectionMode="none" 
-						    value="#{canvasModalBean.selEditor.edit.textEditorFunctions[canvasModalBean.selEditor.selectedFunction]}" 
+						    value="#{canvasModalBean.selEditor.listFunctionsCombobox}" 
 							style="border:0px; height:200px !important;" width="100%" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 							onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'" rowClasses="even-row, odd-row" >
 	
@@ -216,7 +232,7 @@ function mountComboboxTextEditor(obj1, obj2){
 						<br />
 						
 						<rich:extendedDataTable id="listOperation" var="item" enableContextMenu="false" selectionMode="none" 
-							value="#{canvasModalBean.selEditor.edit.textEditorOperations[canvasModalBean.selEditor.selectedOperation]}" 
+							value="#{canvasModalBean.selEditor.listOperationCombobox}" 
 							style="border:0px;height:200px !important; " width="100%" onRowMouseOver="this.style.backgroundColor='#f2b97a'"
 							onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'" rowClasses="even-row, odd-row" >
 

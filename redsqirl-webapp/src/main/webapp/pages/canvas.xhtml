@@ -953,6 +953,17 @@
 				//addWorkflow("canvas-1");
 			}
 		}
+
+
+	   	function setShowInstallPackageModelValue(value){
+	        if(value == 'P'){
+		    	jQuery('[id$="installPackagesMsg"]').show();
+	    		jQuery('[id$="installModelMsg"]').hide();
+	        }else{
+	        	jQuery('[id$="installPackagesMsg"]').hide();
+	    		jQuery('[id$="installModelMsg"]').show();
+	        }
+	    }
 	   	
 	   	/*keyboard shortcuts*/
 	   	
@@ -1028,15 +1039,15 @@
 			}
 	   	});
 	   	
-		shortcut.add("Ctrl+r",function() {
+		shortcut.add("Ctrl+e",function() {
 			if( !jQuery(".rich-mp-container").is(":visible") ){
-				jQuery("#formMenu\\:runMenuItem").click();
+				jQuery("#formMenu\\:runSelectedMenuItem").click();
 			}
 	   	});
 		
-		shortcut.add("Ctrl+Alt+r",function() {
+		shortcut.add("Ctrl+Alt+e",function() {
 			if( !jQuery(".rich-mp-container").is(":visible") ){
-				jQuery("#formMenu\\:runSelectedMenuItem").click();
+				jQuery("#formMenu\\:runMenuItem").click();
 			}
 	   	});
 		
@@ -1075,6 +1086,12 @@
             	jQuery("#formMenu\\:redoMenuItem").click();
         	}
         });
+
+        shortcut.add("Ctrl+Alt+a",function() {
+			if( !jQuery(".rich-mp-container").is(":visible") ){
+				jQuery("#formMenu\\:aggregateMenuItem").click();
+			}
+	   	});
 
 	</script>
 
@@ -1437,8 +1454,7 @@
 					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
-				<a4j:jsFunction name="copy" action="#{canvasBean.copy}"
-					reRender="errorTable">
+				<a4j:jsFunction name="copy" action="#{canvasBean.copy}" reRender="errorTable">
 					<a4j:actionparam name="select" />
 				</a4j:jsFunction>
 			</a4j:region>
@@ -1853,7 +1869,7 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
 				<a4j:jsFunction name="pasteJS" action="#{canvasBean.paste}"
-					data="#{canvasBean.idsToPaste}" reRender="errorTable"
+					data="#{canvasBean.idsToPaste}" reRender="msnError"
 					oncomplete="saveAllPositions(getAllIconPositions());rebuildJS(); tmpCommandObj.idsToPaste = data; pasteCloneWorkflow(getAllIconPositions());" />
 			</a4j:region>
 
@@ -1993,7 +2009,7 @@
 									<rich:menuItem id="aggregateMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_aggregate}"
 										onclick="checkOpenModalAggregate()">
-										<h:outputText value="Ctrl+R" class="menuItemHotKey" />
+										<h:outputText value="Ctrl+Alt+a" class="menuItemHotKey" />
 									</rich:menuItem>
 									<rich:menuItem id="expandMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_expand}"
@@ -2029,7 +2045,7 @@
 										onclick="var sels=getSelectedIconsCommaDelimited();if(sels.length > 0){runWorkflow(getIconPositions(),getPathFile(getSelectedByName()),sels)}else{alert('#{messages.run_nothing_selected}')}"
 										reRender="formMenu,domMessageDivCanvas2,killProcessBtn"
 										disabled="#{canvasBean.workflowType == 'S'}">
-										<h:outputText value="Ctrl+Alt+R" class="menuItemHotKey" />
+										<h:outputText value="Ctrl+Alt+e" class="menuItemHotKey" />
 									</rich:menuItem>
 
 									<rich:menuItem id="runSelectedMenuItem" submitMode="ajax"
@@ -2037,7 +2053,7 @@
 										onclick="runWorkflow(getIconPositions(),getPathFile(getSelectedByName()))"
 										reRender="formMenu,domMessageDivCanvas2,killProcessBtn"
 										disabled="#{canvasBean.workflowType == 'S'}">
-										<h:outputText value="Ctrl+R" class="menuItemHotKey" />
+										<h:outputText value="Ctrl+e" class="menuItemHotKey" />
 									</rich:menuItem>
 
 									<rich:menuSeparator />
@@ -2279,11 +2295,10 @@
 									<div class="rich-panel-header">Legend</div>
 								</div>
 								<div class="rich-panel" id="panelLegend-canvas-1"
-									style="position: fixed; z-index: 100; display: none; width: 190px; height: 330px">
+									style="position:fixed; z-index:100; display:none; width:190px; height:330px; overflow:auto;">
 									<div class="rich-panel-body" style="overflow: hidden;">
-										<div id="container-legend-canvas-1"
-											class="container-legend-canvas-1"
-											style="overflow: hidden; position: relative; top: 20px;" />
+										<div id="container-legend-canvas-1"	class="container-legend-canvas-1"
+											style="overflow:auto; position:relative; top:20px;" />
 									</div>
 								</div>
 								<div class="rich-panel headerComment"
@@ -2697,7 +2712,9 @@
 		<rich:modalPanel id="modalPackage" width="600" height="460"
 			style="overflow:auto;" resizeable="false">
 
-			<f:facet name="header">Packages</f:facet>
+			<f:facet name="header">
+				<h:outputText value="#{messages.label_packages}" />
+			</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
 					style="cursor:pointer;width:22px;"
@@ -2714,7 +2731,12 @@
 	<a4j:region>
 		<rich:modalPanel id="modalInstallPackage" width="900" height="600"
 			resizeable="true">
-			<f:facet name="header">Packages</f:facet>
+			<f:facet name="header">
+				<h:panelGroup>
+					<h:outputText value='#{messages.label_packages}' id="installPackagesMsg" />
+					<h:outputText value='#{messages.label_model}' id="installModelMsg" />
+				</h:panelGroup>
+			</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
 					style="cursor:pointer;width:22px;"
@@ -2750,7 +2772,7 @@
 			style="overflow:auto;" resizeable="false">
 
 			<f:facet name="header">
-				<h:outputText value="Install Sub Workflow" />
+				<h:outputText value="#{messages.label_menu_install_sub_workflow}" />
 			</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
@@ -2770,7 +2792,7 @@
 			style="overflow:auto;" resizeable="false">
 
 			<f:facet name="header">
-				<h:outputText value="Manage Sub Workflows" />
+				<h:outputText value="#{messages.label_menu_manage_sub_workflow}" />
 			</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
@@ -2790,7 +2812,7 @@
 			style="overflow:auto;" resizeable="false">
 
 			<f:facet name="header">
-				<h:outputText value="Export Sub Workflow" />
+				<h:outputText value="#{messages.label_menu_export_sub_workflow}" />
 			</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
@@ -2810,7 +2832,7 @@
 			style="overflow:auto;" resizeable="false">
 
 			<f:facet name="header">
-				<h:outputText value="Export Sub Workflow" />
+				<h:outputText value="#{messages.label_menu_import_sub_workflow}" />
 			</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"

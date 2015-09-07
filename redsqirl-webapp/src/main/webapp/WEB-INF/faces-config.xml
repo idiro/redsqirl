@@ -61,6 +61,11 @@
 		<managed-bean-name>packageMngBean</managed-bean-name>
 		<managed-bean-class>com.redsqirl.PackageMngBean</managed-bean-class>
 		<managed-bean-scope>session</managed-bean-scope>
+		<managed-property>
+			<property-name>analyticsStoreLoginBean</property-name>
+			<property-class>com.redsqirl.analyticsStore.AnalyticsStoreLoginBean</property-class>
+			<value>#{analyticsStoreLoginBean}</value>
+		</managed-property>
 	</managed-bean>
 	<managed-bean>
 		<managed-bean-name>error</managed-bean-name>

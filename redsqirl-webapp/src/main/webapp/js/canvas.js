@@ -2653,7 +2653,7 @@ function updateArrowType(idOutput, idInput, color, type, tooltip,drawCanvas) {
 }
 
 
-function updateArrowLabel(idOutput, idInput, label,drawCanvas) {
+function updateArrowLabel(idOutput, idInput, label, drawCanvas) {
     
     drawCanvas = typeof drawCanvas !== 'undefined' ? drawCanvas : true;
     var layer = canvasArray[selectedCanvas].layer;

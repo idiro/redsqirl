@@ -76,7 +76,8 @@
 		onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
 		onstop="jQuery.unblockUI();" />
 
-	<a4j:jsFunction name="refreshHdfsImportFileTable" action="#{browserHdfsBean.changePath}" reRender="hdfsfsFileImport"/>
+	<a4j:jsFunction name="refreshHdfsImportFileTable" action="#{browserHdfsBean.changePath}" reRender="hdfsfsFileImport" 
+		oncomplete="mountComboboxTypes();" />
 
 	<a4j:jsFunction name="updateTableHdfsImport" action="#{browserHdfsBean.selectFile}" reRender="pathOpenFileImport,hdfsfsFileImport,hdfsImportFileBtn">
 		<a4j:actionparam name="nameFile" />

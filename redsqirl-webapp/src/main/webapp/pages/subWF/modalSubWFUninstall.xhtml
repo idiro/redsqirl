@@ -18,9 +18,8 @@
 				onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
 				onstop="jQuery.unblockUI();" />
 				
-	        <a4j:jsFunction name="openInstallModelModal"
-	            action="#{packageMngBean.setPackageScope}"
-	            oncomplete="#{rich:component('modalInstallPackage')}.show();">
+	        <a4j:jsFunction name="openInstallModelModal" action="#{packageMngBean.setPackageScope}"
+	            oncomplete="setShowInstallPackageModelValue('M');#{rich:component('modalInstallPackage')}.show();">
 	            <a4j:actionparam name="user"/>
 	            <a4j:actionparam name="type"/>
 	        </a4j:jsFunction>

@@ -30,6 +30,8 @@ import com.redsqirl.workflow.server.DataOutput;
 import com.redsqirl.workflow.server.Workflow;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.action.superaction.SubWorkflow;
+import com.redsqirl.workflow.server.action.superaction.SubWorkflowInput;
+import com.redsqirl.workflow.server.action.superaction.SubWorkflowOutput;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
@@ -273,8 +275,10 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	 * @param elements The element ids to copy
 	 * @param wfName The id of the workflow to copy to
 	 */
-	public void copy(String cloneId, List<String> elements, String wfName){
+	public String copy(String cloneId, List<String> elements, String wfName){
 
+		String error = null;
+		
 		if(wfClones.contains(cloneId) && 
 				elements != null && 
 				!elements.isEmpty() && 
@@ -283,42 +287,68 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 				Workflow from = (Workflow) readCloneFile(cloneId);
 				DataFlow to  = wf.get(wfName);
 				Workflow cloneFrom = (Workflow) from.clone();
-				Iterator<DataFlowElement> cloneElIt = cloneFrom.getElement().iterator();
-				List<String> toDelete = new LinkedList<String>();
-				while(cloneElIt.hasNext()){
-					DataFlowElement curEl = cloneElIt.next();
-					if(!elements.contains(curEl.getComponentId())){
-						toDelete.add(curEl.getComponentId());
-					}else{
-						String newName = null;
-						while(newName == null){
-							newName = to.generateNewId();
-							logger.info("new name: "+newName+" in "+ to.getComponentIds()+ " for "+cloneFrom.getComponentIds());
-							if(cloneFrom.getElement(newName) != null){
-								newName = null;
-							}
+				
+				//Check SubWorkflow
+				boolean check = true;
+				if(!(to instanceof SubDataFlow)){
+					Iterator<DataFlowElement> cloneElIt = cloneFrom.getElement().iterator();
+					while(cloneElIt.hasNext() && check){
+						DataFlowElement curEl = cloneElIt.next();
+						if(elements.contains(curEl.getComponentId()) &&
+								( curEl instanceof SubWorkflowInput ||
+										curEl instanceof SubWorkflowOutput
+										)){
+							check = false;
 						}
-						String oldName = curEl.getComponentId();
-						cloneFrom.changeElementId(oldName,newName);
-						cloneFrom.replaceInAllElements(cloneFrom.getComponentIds(), oldName, newName);
-						curEl.setPosition(curEl.getX()+75, curEl.getY()+75);
 					}
 				}
-				Iterator<String> itDel = toDelete.iterator();
-				while(itDel.hasNext()){
-					cloneFrom.removeElement(itDel.next());
+				
+				if(check){
+					
+					//Copy
+					Iterator<DataFlowElement> cloneElIt = cloneFrom.getElement().iterator();
+					List<String> toDelete = new LinkedList<String>();
+					while(cloneElIt.hasNext()){
+						DataFlowElement curEl = cloneElIt.next();
+						if(!elements.contains(curEl.getComponentId())){
+							toDelete.add(curEl.getComponentId());
+						}else{
+							String newName = null;
+							while(newName == null){
+								newName = to.generateNewId();
+								logger.info("new name: "+newName+" in "+ to.getComponentIds()+ " for "+cloneFrom.getComponentIds());
+								if(cloneFrom.getElement(newName) != null){
+									newName = null;
+								}
+							}
+							String oldName = curEl.getComponentId();
+							cloneFrom.changeElementId(oldName,newName);
+							cloneFrom.replaceInAllElements(cloneFrom.getComponentIds(), oldName, newName);
+							curEl.setPosition(curEl.getX()+75, curEl.getY()+75);
+						}
+					}
+					Iterator<String> itDel = toDelete.iterator();
+					while(itDel.hasNext()){
+						cloneFrom.removeElement(itDel.next());
+					}
+					cloneFrom.regeneratePaths(null);
+					Iterator<DataFlowElement> copyElIt = cloneFrom.getElement().iterator();
+					while(copyElIt.hasNext()){
+						DataFlowElement cur = copyElIt.next();
+						to.addElement(cur);
+					}
+					
+				}else{
+					//error SubWorkflow
+					return LanguageManagerWF.getText("copy_subDataFlow_to_workflow");
 				}
-				cloneFrom.regeneratePaths(null);
-				Iterator<DataFlowElement> copyElIt = cloneFrom.getElement().iterator();
-				while(copyElIt.hasNext()){
-					DataFlowElement cur = copyElIt.next();
-					to.addElement(cur);
-				}
+				
 			} catch (Exception e) {
 				logger.error(e.getMessage(),e);
 			}
 		}
-
+		
+		return error;
 	}
 	/**
 	 * Read the clone file

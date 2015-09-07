@@ -162,16 +162,15 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		}
 		
 		//Fill rows
-		if (oldPath == null || ! oldPath.equals(getPath()) || getAllProps() == null || getAllProps().isEmpty() ){
+		if (oldPath == null || !oldPath.equals(getPath()) || getAllProps() == null || getAllProps().isEmpty() || 
+			 (getAllProps() != null && (getTableGrid().getRows() == null || getTableGrid().getRows().isEmpty())) ){
 			Map<String, Map<String, String>> mapSSH = getDataStore().getChildrenProperties();
 			if(mapSSH != null){
 				setAllProps(new LinkedList<Map<String,String>>());
 				getTableGrid().getRows().clear();
 				for (String path : mapSSH.keySet()) {
-
 					String[] aux = path.split("/");
 					String childName = aux[aux.length - 1];
-
 					Map<String, String> allProperties = new LinkedHashMap<String, String>();
 					allProperties.put("name", childName);
 					allProperties.putAll(mapSSH.get(path));
@@ -186,13 +185,9 @@ public class FileSystemBean extends BaseBean implements Serializable {
 				String childName = getAllProps().get(i).get("name");
 				getTableGrid().getRows().get(i).setSelected(false);
 				getTableGrid().getRows().get(i).setDisableSelect(false);
-				if (getAllProps().get(i).get("type").equalsIgnoreCase("directory") &&
-						!isAllowDirectories()) {
-
+				if (getAllProps().get(i).get("type").equalsIgnoreCase("directory") && !isAllowDirectories()) {
 					getTableGrid().getRows().get(i).setDisableSelect(false);
-				}
-				else if(openOutputData != null && openOutputData.equals("Y")
-						&& !getAllProps().get(i).get("type").equalsIgnoreCase("directory")){
+				}else if(openOutputData != null && openOutputData.equals("Y") && !getAllProps().get(i).get("type").equalsIgnoreCase("directory")){
 					getTableGrid().getRows().get(i).setDisableSelect(false);
 				}else{
 					if(regex != null){
@@ -224,6 +219,9 @@ public class FileSystemBean extends BaseBean implements Serializable {
 				logger.info("Delete -" + directory);
 				getDataStore().delete(directory);
 			}
+			
+			//Force the refresh
+			setPath(null);
 			updateTable();
 		}
 
@@ -496,6 +494,8 @@ public class FileSystemBean extends BaseBean implements Serializable {
 	 */
 	public void addFileBefore() throws RemoteException {
 
+		logger.info("addFileBefore");
+		
 		newProp = new LinkedHashMap<String, String>();
 		Iterator<String> it = createProps.iterator();
 		while (it.hasNext()) {
@@ -522,8 +522,9 @@ public class FileSystemBean extends BaseBean implements Serializable {
 		String newDirectory = generatePath(getDataStore().getPath(), getName());
 		getDataStore().create(newDirectory, getNewProp());
 
+		//Force the refresh
+		setPath(null);
 		updateTable();
-
 	}
 
 	/**

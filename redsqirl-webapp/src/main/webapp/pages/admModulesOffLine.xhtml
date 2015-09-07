@@ -124,6 +124,7 @@ jQuery(function() {
 						
 						<rich:fileUpload fileUploadListener="#{analyticsStoreLoginBean.listenerFileModule}" maxFilesQuantity="1" id="upload" noDuplicate="true"
 		                	immediateUpload="false" acceptedTypes="zip" addLabel="upLoad" listHeight="63px">
+					        <a4j:support event="onclear" limitToList="true" reRender="upload"/>
 					        <f:facet name="label">
 					        	<h:outputText value="{_KB}KB from {KB}KB uploaded --- {mm}:{ss}" />
 					        </f:facet>
@@ -138,6 +139,7 @@ jQuery(function() {
 					
 				</td>
 			</tr>
+			
 		</table>
 				
 		<div style="height:100px;width:100%;background:#C0D72F;position:fixed;bottom:0px;" />
