@@ -2660,9 +2660,7 @@ function updateArrowLabel(idOutput, idInput, label, drawCanvas) {
     
     var posx;
     var posy;
-    
     var arrow;
-    
 
     jQuery.each(layer.getChildren(),
         function(index, value) {
@@ -2675,10 +2673,7 @@ function updateArrowLabel(idOutput, idInput, label, drawCanvas) {
                     var x2 = value.getPoints()[1].x
                     var y2 = value.getPoints()[1].y
                     
-                    var angle = Math.atan2(y2 - y1,
-                            x2 - x1);
-                    
-                    
+                    var angle = Math.atan2(y2 - y1, x2 - x1);
                     
                     posx = (x1 + x2 + (Math.cos(angle) * 42))/2  - Math.abs((Math.cos(angle) * label.length*2.7));
                     posy = (y1 + y2 + (Math.sin(angle) * 42))/2;
@@ -2690,6 +2685,10 @@ function updateArrowLabel(idOutput, idInput, label, drawCanvas) {
             }
         }
     );
+    
+    if (arrow.label != null){
+        arrow.label.remove();
+    }
     
     var textLabelObj = new Kinetic.Text({
         text : label,
