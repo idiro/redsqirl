@@ -76,7 +76,7 @@ public class MapRedTextFileType extends MapRedHdfs {
 	 */
 	@Override
 	public String getTypeName() throws RemoteException {
-		return "TEXT MAP-REDUCE FILE";
+		return "HDFS TEXT FILE";
 	}
 	
 	@Override
