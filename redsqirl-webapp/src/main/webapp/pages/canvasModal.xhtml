@@ -517,8 +517,8 @@
 			                                        onkeypress="return disableEnterKey(event);"/>
 			                                        
 			                                        
-			                                        <h:panelGroup style="max-width:100px;" layout="block" rendered="#{interCur.table.columnType[column] == 'comboBox' }" >
-			                                        <select id="myList" onchange="updated(this,'#{ind}#{rowNb+1}');" style="max-width:100px;">
+			                                       <h:panelGroup style="max-width:100px;" layout="block" rendered="#{interCur.table.columnType[column] == 'comboBox' }" >
+			                                        <select id="myList" onchange="updatedComboboxTableInteraction(this,'#{ind}#{rowNb+1}');" style="max-width:100px;">
 			                                        		<option></option>
 										              <a4j:repeat value="#{interCur.table.tableConstraints[column]}" var="idx"  >
 													       <h:outputText rendered="#{rowItem.row[ind] == idx.value}" > <option selected="selected"> <h:outputText value="#{idx.value}" /> </option> </h:outputText>
@@ -528,7 +528,7 @@
 										             </h:panelGroup>
 										             
 										            <script type="text/javascript">
-										            function updated(element, index){
+										            function updatedComboboxTableInteraction(element, index){
 													    var idx=element.selectedIndex;
 													    var val=element.options[idx].value;
 													    var content=element.options[idx].innerHTML;
@@ -537,7 +537,7 @@
 													}
 										            </script>
 										            <div id="combo#{ind}#{rowNb+1}">
-														<h:inputHidden value="#{rowItem.row[ind]}" rendered="#{interCur.table.columnType[column] == 'comboBox' }" />
+														<h:inputText value="#{rowItem.row[ind]}" rendered="#{interCur.table.columnType[column] == 'comboBox' }" />
 													</div>
 			        
 												<h:inputText value="#{rowItem.row[ind]}" 
@@ -546,7 +546,7 @@
 			                                   	<a4j:commandLink onclick="openHelpTextEditorModal('#{interCur.id}','#{rowNb}','#{column}');" >
 			                                   	    <h:graphicImage url="../image/icons/button-pencil.gif" style="width:15px;float:right" title="#{messages.label_text_editor}" />
 												</a4j:commandLink>
-												</h:inputText>	        								
+												</h:inputText>
 			        
 			                                </rich:columns>
 			        

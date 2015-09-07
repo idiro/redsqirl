@@ -2009,7 +2009,7 @@
 									<rich:menuItem id="aggregateMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_aggregate}"
 										onclick="checkOpenModalAggregate()">
-										<h:outputText value="Ctrl+Alt+a" class="menuItemHotKey" />
+										<h:outputText value="Ctrl+Alt+A" class="menuItemHotKey" />
 									</rich:menuItem>
 									<rich:menuItem id="expandMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_expand}"
@@ -2045,7 +2045,7 @@
 										onclick="var sels=getSelectedIconsCommaDelimited();if(sels.length > 0){runWorkflow(getIconPositions(),getPathFile(getSelectedByName()),sels)}else{alert('#{messages.run_nothing_selected}')}"
 										reRender="formMenu,domMessageDivCanvas2,killProcessBtn"
 										disabled="#{canvasBean.workflowType == 'S'}">
-										<h:outputText value="Ctrl+Alt+e" class="menuItemHotKey" />
+										<h:outputText value="Ctrl+Alt+E" class="menuItemHotKey" />
 									</rich:menuItem>
 
 									<rich:menuItem id="runSelectedMenuItem" submitMode="ajax"
@@ -2053,7 +2053,7 @@
 										onclick="runWorkflow(getIconPositions(),getPathFile(getSelectedByName()))"
 										reRender="formMenu,domMessageDivCanvas2,killProcessBtn"
 										disabled="#{canvasBean.workflowType == 'S'}">
-										<h:outputText value="Ctrl+e" class="menuItemHotKey" />
+										<h:outputText value="Ctrl+E" class="menuItemHotKey" />
 									</rich:menuItem>
 
 									<rich:menuSeparator />
