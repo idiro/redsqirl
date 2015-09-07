@@ -106,16 +106,14 @@ jQuery(function() {
 			<tr>
 				<td>
 				
-					<center>
-						<h:outputText value="#{messages.label_setting_modal}" style="font-size:50px;position:relative;left:-80px;color:#818286;" />
-					</center>
+					<h:outputText value="#{messages.label_setting_modal}" style="font-size:50px;position:relative;left:-80px;color:#818286;margin-left:680px;" />
 				
-					<rich:panel id="sysSettingsTabPanel" style="border:none;padding-left:290px;overflow: auto;height:600px;background:none">
+					<div id="sysSettingsTabPanel" style="border:none;padding-left:290px;overflow: auto;height:calc(92% - 300px);position:absolute;background:none;overflow-x:hidden;overflow-y:auto;">
 	                
 	                    <a4j:repeat value="#{analyticsStoreLoginBean.sysSettings}" var="setting" >
 	                        <h:outputText value="#{setting[1]}" title="#{setting[2]}" />
 	                        <br />
-	                        <h:inputText value="#{setting[3]}" size="100" disabled="#{not analyticsStoreLoginBean.adm}" />
+	                        <h:inputText value="#{setting[3]}" size="100" disabled="#{not analyticsStoreLoginBean.adm}" style="margin-right:22px;" />
 	                        <br />
 	                        <br />
 	                    </a4j:repeat>
@@ -124,11 +122,11 @@ jQuery(function() {
 			            	<img id="tableInteractionBtAdd" src="../image/icons/button-plus-small.gif" class="btConfigureFooter" />
 			            </a4j:commandLink>
 	                    
-	                </rich:panel>
+	                </div>
 					
 				</td>
 			</tr>
-			<tr>
+			<tr style="position: fixed; bottom: 110px;" >
 				<td>
 					<a4j:commandButton value="#{messages.button_ok}" action="#{analyticsStoreLoginBean.storeNewSettings}" 
 						styleClass="greenButton" style="margin-left:690px;" />		
