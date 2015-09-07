@@ -172,11 +172,11 @@ public abstract class MapRedDir extends MapRedHdfs{
 			}
 		} catch (IOException e) {
 			String error = "Unexpected error: " + e.getMessage();
-			logger.error(error);
+			logger.error(error, e);
 			ans = null;
 		}
 		catch (Exception e) {
-			logger.error("Fail to close FileSystem: " + e);
+			logger.error("Fail to close FileSystem: " + e, e);
 			ans = null;
 		}
 

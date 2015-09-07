@@ -243,7 +243,7 @@ public class TableInteraction extends CanvasModalInteraction{
 				}
 			}
 			Collections.sort(listFields, new SelectItemComparator());
-			tableConstraints.put(dfeInteractionTree.getFirstChild("title").getFirstChild().getHead(), listFields);
+			tableConstraints.put(WordUtils.capitalizeFully(dfeInteractionTree.getFirstChild("title").getFirstChild().getHead().replace("_", " ")), listFields);
 			tableConstraintsString.put(WordUtils.capitalizeFully(dfeInteractionTree.getFirstChild("title").getFirstChild().getHead().replace("_", " ")), calcString(listFields));
 		}
 	}

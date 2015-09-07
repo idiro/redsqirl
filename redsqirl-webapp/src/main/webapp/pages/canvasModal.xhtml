@@ -517,8 +517,8 @@
 			                                        onkeypress="return disableEnterKey(event);"/>
 			                                        
 			                                        
-			                                        <h:panelGroup style="width:150px" layout="block" rendered="#{interCur.table.columnType[column] == 'comboBox' }" >
-			                                        <select id="myList" onchange="updated(this,'#{ind}#{rowNb+1}');" >
+			                                        <h:panelGroup style="max-width:100px;" layout="block" rendered="#{interCur.table.columnType[column] == 'comboBox' }" >
+			                                        <select id="myList" onchange="updated(this,'#{ind}#{rowNb+1}');" style="max-width:100px;">
 			                                        		<option></option>
 										              <a4j:repeat value="#{interCur.table.tableConstraints[column]}" var="idx"  >
 													       <h:outputText rendered="#{rowItem.row[ind] == idx.value}" > <option selected="selected"> <h:outputText value="#{idx.value}" /> </option> </h:outputText>
