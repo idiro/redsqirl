@@ -66,7 +66,9 @@
 			
 			<a4j:jsFunction name="unselectAll" action="#{hdfsBean.tableGrid.unselectAll}" />
 			
-			<a4j:jsFunction name="openModalCopyMoveHdfs" reRender="copyMovelBt" oncomplete="unselectAll();#{rich:component('modalCopyMoveHdfs')}.show();" />
+			<a4j:jsFunction name="openModalCopyMoveHdfs" reRender="copyMovelBt" oncomplete="unselectAll();#{rich:component('modalCopyMoveHdfs')}.show();" >
+			 <a4j:actionparam name="openCtrlCopyMove" assignTo="#{hdfsBean.showCopyMove}"/>
+			</a4j:jsFunction>
 			
 
 			<div class="pathHeader">
@@ -101,7 +103,7 @@
 				<a4j:commandLink id="hdfslinkCopyModalPanel"
 					action="#{hdfsBean.copyFileBefore}"
 					onclick="if(! validateSrc()){return false;}"
-					oncomplete="openModalCopyMoveHdfs();setShowCopyMoveHiddenValue('C');">
+					oncomplete="openModalCopyMoveHdfs('C');setShowCopyMoveHiddenValue('C');">
 					<h:graphicImage value="../image/icons/button-copy.gif"
 						title='#{messages.HdfsInterface_copy_help}'
 						styleClass="fileSystemIcon" />
@@ -110,7 +112,7 @@
 				<a4j:commandLink id="hdfslinkMoveModalPanel"
 					action="#{hdfsBean.moveFileBefore}"
 					onclick="if(! validateSrc()){return false;}"
-					oncomplete="openModalCopyMoveHdfs();setShowCopyMoveHiddenValue('M');">
+					oncomplete="openModalCopyMoveHdfs('M');setShowCopyMoveHiddenValue('M');">
 					<h:graphicImage value="../image/icons/button-move.gif"
 						title='#{messages.HdfsInterface_move_help}'
 						styleClass="fileSystemIcon" />
