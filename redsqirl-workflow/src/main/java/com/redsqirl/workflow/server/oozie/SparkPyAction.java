@@ -54,7 +54,7 @@ public class SparkPyAction extends ShellAction{
 			String exec = "export JAVA_HOME=$JAVA_HOME;"+ sparkHome+" " +files[1].getName();
 			Iterator<DFEOutput> it = outputs.iterator();
 			while(it.hasNext()){
-				exec += ";"+hadoopHome+"/bin/hadoop fs -chown "+user+" "+it.next().getPath();
+				exec += ";"+hadoopHome+"/bin/hadoop fs -chown -R "+user+" "+it.next().getPath();
 			}
 			
 			String toWrite = getShellContent(exec);

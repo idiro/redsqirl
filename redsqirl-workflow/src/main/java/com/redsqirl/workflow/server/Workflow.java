@@ -2624,6 +2624,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 					}
 				} catch (Exception e) {
 					logger.error("Error instanciating class : " + className);
+					logger.debug(e);
 				}
 			}
 
