@@ -51,7 +51,7 @@ public class SparkPyAction extends ShellAction{
 			}
 			sparkHome += "spark-submit";
 			sparkHome += " --master "+WorkflowPrefManager.getSysProperty(sys_spark_master);
-			String exec = "export JAVA_HOME=$JAVA_HOME;"+ sparkHome+" " +files[1].getName();
+			String exec = "export JAVA_HOME=$JAVA_HOME;"+ sparkHome+" " +"$EXEC_FILE";
 			Iterator<DFEOutput> it = outputs.iterator();
 			while(it.hasNext()){
 				exec += ";"+hadoopHome+"/bin/hadoop fs -chown "+user+" "+it.next().getPath();
