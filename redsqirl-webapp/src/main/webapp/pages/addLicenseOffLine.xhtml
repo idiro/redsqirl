@@ -122,6 +122,7 @@ jQuery(function() {
 						
 						<rich:fileUpload fileUploadListener="#{analyticsStoreLoginBean.listenerFile}" maxFilesQuantity="1" id="upload" noDuplicate="true"
 		                	immediateUpload="false" acceptedTypes="properties" addLabel="upLoad" listHeight="63px" >
+					        <a4j:support event="onclear" limitToList="true" reRender="upload"/>
 					        <f:facet name="label">
 					        	<h:outputText value="{_KB}KB from {KB}KB uploaded --- {mm}:{ss}" />
 					        </f:facet>

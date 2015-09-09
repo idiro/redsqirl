@@ -45,7 +45,8 @@
 				<h:inputText id="hivepath" label="Path" styleClass="mainPageTextField" value="#{hiveBean.path}" maxlength="255" style="width:395px; margin-left:5px; background:white" 
 					onkeypress="return enableEnterKey(event, 'hivefsPathBtn');"/>
 				
-				<a4j:commandLink id="hivefsPathBtn" action="#{hiveBean.changePath}" reRender="hivefs" style="color:#FFFFFF" oncomplete="resizeTables();jQuery('#tabs-5').unblock();">
+				<a4j:commandLink id="hivefsPathBtn" action="#{hiveBean.changePath}" reRender="hivefs" style="color:#FFFFFF" 
+					oncomplete="resizeTables();jQuery('#tabs-5').unblock();" rendered="#{not empty hiveBean.tableGrid.rows}" >
 					<h:graphicImage value="../image/icons/button-search.gif" title="#{messages.filesystem_change_path}" styleClass="refreshButton"/>
 				</a4j:commandLink>
 			</div>
@@ -53,25 +54,28 @@
 			<div class="divMenu">
 				<a4j:commandLink action="#{hiveBean.addFileBefore}"
 					oncomplete="#{rich:component('hiveaddModalPanel')}.show();jQuery('#tabs-5').unblock();"
-					rendered="#{hiveBean.canCreate != null &amp;&amp; hiveBean.canCreate != 'NULL' }">
+					rendered="#{hiveBean.canCreate != null &amp;&amp; hiveBean.canCreate != 'NULL' &amp;&amp; not empty hiveBean.tableGrid.rows}">
 					<h:graphicImage id="hivebtAdd" value="../image/icons/button-plus.gif" title="#{messages.HiveInterface_create_help}" styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 	
 				<a4j:commandLink action="#{hiveBean.deleteFile}" reRender="hivefs" 
 					onclick="if(!confirm('Are you sure you want to delete the selected files?')){return false;}"
-					rendered="#{hiveBean.canDelete != null &amp;&amp; hiveBean.canDelete != 'NULL' }" oncomplete="jQuery('#tabs-5').unblock();">
+					rendered="#{hiveBean.canDelete != null &amp;&amp; hiveBean.canDelete != 'NULL' &amp;&amp; not empty hiveBean.tableGrid.rows }" oncomplete="jQuery('#tabs-5').unblock();">
 					<h:graphicImage id="hivebtDelete" value="../image/icons/button-delete2.gif" title="#{messages.HiveInterface_delete_help}" styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 	
-				<a4j:commandLink action="#{hiveBean.goPrevious}" reRender="hivepath,hivefs" oncomplete="resizeTables();jQuery('#tabs-5').unblock();" >
+				<a4j:commandLink action="#{hiveBean.goPrevious}" reRender="hivepath,hivefs" oncomplete="resizeTables();jQuery('#tabs-5').unblock();"
+					rendered="#{not empty hiveBean.tableGrid.rows}" >
 					<h:graphicImage id="hivebtUndo" value="../image/icons/button-previous.gif" title="#{messages.HiveInterface_previous_help}" styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 	
-				<a4j:commandLink action="#{hiveBean.goNext}" reRender="hivepath,hivefs" oncomplete="resizeTables();jQuery('#tabs-5').unblock();" >
+				<a4j:commandLink action="#{hiveBean.goNext}" reRender="hivepath,hivefs" oncomplete="resizeTables();jQuery('#tabs-5').unblock();"
+					rendered="#{not empty hiveBean.tableGrid.rows}" >
 					<h:graphicImage id="hivebtRedo" value="../image/icons/button-next.gif" title="#{messages.HiveInterface_next_help}" styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 				
-				<a4j:commandLink action="#{hiveBean.goUp}" reRender="hivepath,hivefs" oncomplete="resizeTables();jQuery('#tabs-5').unblock();" >
+				<a4j:commandLink action="#{hiveBean.goUp}" reRender="hivepath,hivefs" oncomplete="resizeTables();jQuery('#tabs-5').unblock();"
+					rendered="#{not empty hiveBean.tableGrid.rows}" >
 					<h:graphicImage id="hivegoup" value="../image/icons/button-up.gif" title='#{messages.hdfs_goup}' styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 			</div>
@@ -82,7 +86,8 @@
 				enableContextMenu="false"
 				onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
 				rowClasses="even-row, odd-row"
-				tableState="#{hiveBean.tableState}">
+				tableState="#{hiveBean.tableState}" 
+				rendered="#{not empty hiveBean.tableGrid.rows}" >
 
 				<rich:column style="border-bottom:0px;border-right:0px;"
 					width="50px;">

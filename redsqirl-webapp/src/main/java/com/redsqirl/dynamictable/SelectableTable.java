@@ -227,7 +227,7 @@ public class SelectableTable extends BaseBean implements Serializable {
 						list.add(lineTmp , list.get(index-i));
 						list.remove(index-i);
 					}else{
-						list.add(lineTmp, list.get(index));
+						list.add(lineTmp-1, list.get(index));
 						list.remove(index+1);
 						++lineTmp;
 					}

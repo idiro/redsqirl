@@ -17,8 +17,7 @@
     function selectFileHdfs(isFile, nameFile){
     	if (isFile == "true"){
     		openFileHdfs(nameFile);
-    	}
-    	else{
+    	} else{
     		updateTableHdfsGrid(nameFile);
     	}
     }
@@ -31,6 +30,17 @@
          }
          return true;
     }
+
+    function setShowCopyMoveHiddenValue(value){
+        if(value == 'C'){
+	    	jQuery('[id$="hdfsinterfaceCopyFileMsg"]').show();
+    		jQuery('[id$="hdfsinterfaceMoveFileMsg"]').hide();
+        }else{
+        	jQuery('[id$="hdfsinterfaceCopyFileMsg"]').hide();
+    		jQuery('[id$="hdfsinterfaceMoveFileMsg"]').show();
+        }
+    }
+
     
 </script>
 
@@ -57,31 +67,29 @@
 			<a4j:jsFunction name="unselectAll" action="#{hdfsBean.tableGrid.unselectAll}" />
 			
 			<a4j:jsFunction name="openModalCopyMoveHdfs" reRender="copyMovelBt" oncomplete="unselectAll();#{rich:component('modalCopyMoveHdfs')}.show();" >
-			    <a4j:actionparam name="openCtrlCopyMove" assignTo="#{hdfsBean.showCopyMove}"/>
+			 <a4j:actionparam name="openCtrlCopyMove" assignTo="#{hdfsBean.showCopyMove}"/>
 			</a4j:jsFunction>
+			
 
 			<div class="pathHeader">
-			<h:outputText value="#{messages.label_path}" />
-			<h:inputText id="hdfspath" label="Path"
-				styleClass="mainPageTextField" value="#{hdfsBean.path}"
-				maxlength="255" style="width:395px; margin-left:5px;"
-				onkeypress="return enableEnterKey(event, 'hdfsfsPathBtn');" />
-
-			<a4j:commandLink id="hdfsfsPathBtn" action="#{hdfsBean.changePath}"
-				reRender="hdfsfs" style="color:#FFFFFF" oncomplete="resizeTables();">
-				<h:graphicImage value="../image/icons/button-search.gif"
-					title='#{messages.filesystem_change_path}'
-					styleClass="refreshButton" />
-			</a4j:commandLink>
+				<h:outputText value="#{messages.label_path}" />
+				<h:inputText id="hdfspath" label="Path"
+					styleClass="mainPageTextField" value="#{hdfsBean.path}"
+					maxlength="255" style="width:395px; margin-left:5px;"
+					onkeypress="return enableEnterKey(event, 'hdfsfsPathBtn');" />
+	
+				<a4j:commandLink id="hdfsfsPathBtn" action="#{hdfsBean.changePath}"
+					reRender="hdfsfs" style="color:#FFFFFF" oncomplete="resizeTables();">
+					<h:graphicImage value="../image/icons/button-search.gif"
+						title='#{messages.filesystem_change_path}'
+						styleClass="refreshButton" />
+				</a4j:commandLink>
 			</div>
 
 			<div class="divMenu">
-				<a4j:commandLink action="#{hdfsBean.addFileBefore}"
-					oncomplete="#{rich:component('hdfsaddModalPanel')}.show()">
-					<h:graphicImage id="hdfsbtAdd"
-						value="../image/icons/button-plus.gif"
-						title='#{messages.HdfsInterface_create_help}'
-						styleClass="fileSystemIcon" />
+				<a4j:commandLink action="#{hdfsBean.addFileBefore}" oncomplete="#{rich:component('hdfsaddModalPanel')}.show();">
+					<h:graphicImage id="hdfsbtAdd" value="../image/icons/button-plus.gif"
+						title='#{messages.HdfsInterface_create_help}' styleClass="fileSystemIcon" />
 				</a4j:commandLink>
 
 				<a4j:commandLink action="#{hdfsBean.deleteFile}" reRender="hdfsfs" oncomplete="resizeTables();" 
@@ -95,7 +103,7 @@
 				<a4j:commandLink id="hdfslinkCopyModalPanel"
 					action="#{hdfsBean.copyFileBefore}"
 					onclick="if(! validateSrc()){return false;}"
-					oncomplete="openModalCopyMoveHdfs('C');">
+					oncomplete="openModalCopyMoveHdfs('C');setShowCopyMoveHiddenValue('C');">
 					<h:graphicImage value="../image/icons/button-copy.gif"
 						title='#{messages.HdfsInterface_copy_help}'
 						styleClass="fileSystemIcon" />
@@ -104,7 +112,7 @@
 				<a4j:commandLink id="hdfslinkMoveModalPanel"
 					action="#{hdfsBean.moveFileBefore}"
 					onclick="if(! validateSrc()){return false;}"
-					oncomplete="openModalCopyMoveHdfs('M');">
+					oncomplete="openModalCopyMoveHdfs('M');setShowCopyMoveHiddenValue('M');">
 					<h:graphicImage value="../image/icons/button-move.gif"
 						title='#{messages.HdfsInterface_move_help}'
 						styleClass="fileSystemIcon" />
@@ -135,6 +143,7 @@
 
 			<div class="fileSystem">
 			<rich:panel style="border:none">
+				
 				<rich:dropSupport id="panelDropSupportHdfs" acceptedTypes="ssh" dropListener="#{hdfsBean.processDrop}" reRender="hdfsfs" oncomplete="resizeTables();"/>
 
 				<rich:extendedDataTable id="hdfsfs"
@@ -146,30 +155,24 @@
 					onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
 					rowClasses="even-row, odd-row" tableState="#{hdfsBean.tableState}">
 
-					<rich:column style="border-bottom:0px;border-right:0px;"
-						width="50px;">
+					<rich:column style="border-bottom:0px;border-right:0px;" width="50px;">
 						<f:facet name="header">
-							<h:selectBooleanCheckbox
-								onclick="selectAllCheckbox(this, /hdfsselect$/);" />
+							<h:selectBooleanCheckbox onclick="selectAllCheckbox(this, /hdfsselect$/);" />
 						</f:facet>
 						<h:selectBooleanCheckbox id="hdfsselect" value="#{item.selected}" />
 					</rich:column>
 
-					<rich:column style="border-bottom:0px;border-right:0px;"
-						width="50px;">
+					<rich:column style="border-bottom:0px;border-right:0px;" width="50px;">
 						<f:facet name="header">
 							<h:outputText value="" />
 						</f:facet>
-						<a4j:commandLink action="#{hdfsBean.editFileBefore}"
-							oncomplete="#{rich:component('hdfseditModalPanel')}.show();">
+						<a4j:commandLink action="#{hdfsBean.editFileBefore}" oncomplete="#{rich:component('hdfseditModalPanel')}.show();">
 							<h:graphicImage value="../image/icons/button-directory-property.gif"
-								title='#{messages.HdfsInterface_properties_help}'
-								rendered="#{hdfsBean.allProps[indexTable]['type'] == 'directory'}"
-								styleClass="btfileSystem" />
+								title='#{messages.HdfsInterface_properties_help}' 
+								rendered="#{hdfsBean.allProps[indexTable]['type'] == 'directory'}" styleClass="btfileSystem" />
 							<h:graphicImage value="../image/icons/button-file-property.gif"
 								title='#{messages.HdfsInterface_properties_help}'
-								rendered="#{hdfsBean.allProps[indexTable]['type'] == 'file'}"
-								styleClass="btfileSystem" />
+								rendered="#{hdfsBean.allProps[indexTable]['type'] == 'file'}" styleClass="btfileSystem" />
 							<f:param name="indexFileEdit" value="#{indexTable}" />
 						</a4j:commandLink>
 					</rich:column>
@@ -181,18 +184,12 @@
 							<h:outputText value="#{messages.label_name}" />
 						</f:facet>
 						<a4j:commandLink value="#{hdfsBean.allProps[indexTable]['name']}"
-							title="#{hdfsBean.allProps[indexTable]['name']}"
-							action="#{hdfsBean.verifyIfIsFile}"
+							title="#{hdfsBean.allProps[indexTable]['name']}" action="#{hdfsBean.verifyIfIsFile}"
 							oncomplete="selectFileHdfs('#{hdfsBean.file}', '#{hdfsBean.allProps[indexTable]['name']}')">
-							<f:param name="nameFile"
-								value="#{hdfsBean.allProps[indexTable]['name']}" />
-							<rich:dragSupport dragIndicator=":indicator"
-								dragValue="#{hdfsBean.allProps[indexTable]['name']}"
-								dragType="hdfs">
-								<rich:dndParam name="label"
-									value="#{hdfsBean.allProps[indexTable]['name']}" />
-								<a4j:actionparam name="file"
-									value="#{hdfsBean.allProps[indexTable]['name']}" />
+							<f:param name="nameFile" value="#{hdfsBean.allProps[indexTable]['name']}" />
+							<rich:dragSupport dragIndicator=":indicator" dragValue="#{hdfsBean.allProps[indexTable]['name']}" dragType="hdfs">
+								<rich:dndParam name="label" value="#{hdfsBean.allProps[indexTable]['name']}" />
+								<a4j:actionparam name="file" value="#{hdfsBean.allProps[indexTable]['name']}" />
 								<a4j:actionparam name="path" value="#{hdfsBean.path}" />
 							</rich:dragSupport>
 						</a4j:commandLink>
@@ -200,9 +197,7 @@
 
 					<rich:columns
 						value="#{hdfsBean.tableGrid.titles == null? canvasBean.emptyList : hdfsBean.tableGrid.titles}"
-						var="column" index="ind" sortBy="#{item.row[ind]}"
-						filterBy="#{item.row[ind]}"
-						style="border-bottom:0px;border-right:0px;">
+						var="column" index="ind" sortBy="#{item.row[ind]}" filterBy="#{item.row[ind]}" style="border-bottom:0px;border-right:0px;">
 						<f:facet name="header">
 							<h:outputText value="#{column}" />
 						</f:facet>
@@ -220,12 +215,14 @@
 			style="overflow:auto;" resizeable="false">
 
 			<f:facet name="header">
-				<h:outputText value='#{messages.hdfsinterface_copy_file}' />
+				<h:panelGroup>
+					<h:outputText value='#{messages.hdfsinterface_copy_file}' id="hdfsinterfaceCopyFileMsg" />
+					<h:outputText value='#{messages.hdfsinterface_move_file}' id="hdfsinterfaceMoveFileMsg" />
+				</h:panelGroup>
 			</f:facet>
 			<f:facet name="controls">
-				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer;width:22px;"
-					onclick="#{rich:component('modalCopyMoveHdfs')}.hide()" />
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:22px;"
+					onclick="#{rich:component('modalCopyMoveHdfs')}.hide();" />
 			</f:facet>
 
 			<h:form>
@@ -265,8 +262,7 @@
 				<h:outputText value='#{messages.hdfsinterface_preview_file}' />
 			</f:facet>
 			<f:facet name="controls">
-				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
-					style="cursor:pointer;width:22px;"
+				<h:graphicImage value="../image/icons/buttonCloseWindow.gif" style="cursor:pointer;width:22px;"
 					onclick="#{rich:component('hdfsOpenFileModalPanel')}.hide()" />
 			</f:facet>
 

@@ -74,7 +74,7 @@ public class MapRedTextFileWithHeaderType extends MapRedTextFileType {
 	 */
 	@Override
 	public String getTypeName() throws RemoteException {
-		return "PLAIN TEXT MAP-REDUCE FILE WITH HEADER";
+		return "HDFS TEXT FILE WITH HEADER";
 	}
 
 	/**

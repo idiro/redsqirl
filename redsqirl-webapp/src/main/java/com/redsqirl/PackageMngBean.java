@@ -31,6 +31,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.idiro.ProjectID;
+import com.redsqirl.analyticsStore.AnalyticsStoreLoginBean;
 import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
@@ -48,7 +49,8 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	private static Logger logger = Logger.getLogger(PackageMngBean.class);
 
-
+	private AnalyticsStoreLoginBean analyticsStoreLoginBean;
+	
 	private PackageManager pckManager = new PackageManager();
 
 	private boolean showMain = true;
@@ -105,6 +107,11 @@ public class PackageMngBean extends BaseBean implements Serializable{
 				if(version != null && !version.isEmpty()){
 					uri += "&version="+version;
 				}
+				
+				if(analyticsStoreLoginBean != null && analyticsStoreLoginBean.getEmail() != null){
+					uri += "&user="+analyticsStoreLoginBean.getEmail();
+				}
+				
 			}else{
 				showMain = true;
 			}
@@ -323,14 +330,13 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 
 	public void setPackageScope(){
-		String userEnv = FacesContext.getCurrentInstance().getExternalContext().
-				getRequestParameterMap().get("user");
+		String userEnv = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("user");
+		
 		logger.info("set Package scope: "+userEnv);
 		userInstall = !"false".equalsIgnoreCase(userEnv);
 		logger.info("scope: "+userInstall);
 
-		type = FacesContext.getCurrentInstance().getExternalContext().
-				getRequestParameterMap().get("type");
+		type = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("type");
 	}
 
 	public void installPackage() throws RemoteException{
@@ -562,4 +568,14 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	public void setType(String type) {
 		this.type = type;
 	}
+
+	public AnalyticsStoreLoginBean getAnalyticsStoreLoginBean() {
+		return analyticsStoreLoginBean;
+	}
+
+	public void setAnalyticsStoreLoginBean(
+			AnalyticsStoreLoginBean analyticsStoreLoginBean) {
+		this.analyticsStoreLoginBean = analyticsStoreLoginBean;
+	}
+	
 }

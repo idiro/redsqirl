@@ -46,7 +46,7 @@ public class MapRedTextFileWithOptQuotesType extends MapRedTextFileType{
 	 */
 	@Override
 	public String getTypeName() throws RemoteException {
-		return "TEXT MAP-REDUCE FILE WITH OPTIONAL QUOTES";
+		return "TEXT FILE WITH OPTIONAL QUOTES";
 	}
 	
 	@Override

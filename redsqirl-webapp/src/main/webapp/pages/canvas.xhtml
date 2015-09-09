@@ -516,12 +516,11 @@
 		    	  forceRefresh = true;
 	          }
 	          if(forceRefresh) {
-		    	  setWorkflow(canvasName);
+		    	  setWorkflowNoArcUpdate(canvasName);
 	    	      addElements(canvasName, positions, selecteds);
 	    	      setSaved(canvasName, true);
 	    	      setPathFile(canvasName, path);
 	    	      addLinks(canvasName, links);
-		    	  updateAllArrowColor();
 		    	  resizeCanvas(30,30);
 	          }
 	      }
@@ -556,6 +555,11 @@
 	    	  for (var i = 0; i < status.length; i++) {
 		    	  //alert(status[i][0] + " " + status[i][1] + " " + status[i][2]);
 		    	  updateActionOutputStatus(status[i][0], status[i][1], status[i][2], status[i][3], status[i][4], status[i][5],false);
+		    	  
+		    	  for(var j = 0; j < status[i][6].length;j++) {
+		    	  	updateArrowType(status[i][6][j][0], status[i][6][j][1], status[i][6][j][2], status[i][6][j][3], status[i][6][j][4],false);
+		    	  	updateArrowLabel(status[i][6][j][0], status[i][6][j][1], status[i][6][j][5],false);
+		    	  }
 	    	  }
 		      layer.draw();
 		      polygonLayer.draw();
@@ -949,6 +953,17 @@
 				//addWorkflow("canvas-1");
 			}
 		}
+
+
+	   	function setShowInstallPackageModelValue(value){
+	        if(value == 'P'){
+		    	jQuery('[id$="installPackagesMsg"]').show();
+	    		jQuery('[id$="installModelMsg"]').hide();
+	        }else{
+	        	jQuery('[id$="installPackagesMsg"]').hide();
+	    		jQuery('[id$="installModelMsg"]').show();
+	        }
+	    }
 	   	
 	   	/*keyboard shortcuts*/
 	   	
@@ -1024,15 +1039,15 @@
 			}
 	   	});
 	   	
-		shortcut.add("Ctrl+r",function() {
+		shortcut.add("Ctrl+e",function() {
 			if( !jQuery(".rich-mp-container").is(":visible") ){
-				jQuery("#formMenu\\:runMenuItem").click();
+				jQuery("#formMenu\\:runSelectedMenuItem").click();
 			}
 	   	});
 		
-		shortcut.add("Ctrl+Alt+r",function() {
+		shortcut.add("Ctrl+Alt+e",function() {
 			if( !jQuery(".rich-mp-container").is(":visible") ){
-				jQuery("#formMenu\\:runSelectedMenuItem").click();
+				jQuery("#formMenu\\:runMenuItem").click();
 			}
 	   	});
 		
@@ -1071,6 +1086,12 @@
             	jQuery("#formMenu\\:redoMenuItem").click();
         	}
         });
+
+        shortcut.add("Ctrl+Alt+a",function() {
+			if( !jQuery(".rich-mp-container").is(":visible") ){
+				jQuery("#formMenu\\:aggregateMenuItem").click();
+			}
+	   	});
 
 	</script>
 
@@ -1339,6 +1360,14 @@
                     onsuccess="jQuery('#canvas-tabs').unblock();"
                     onstop="jQuery('#canvas-tabs').unblock();" />
                     
+                <a4j:jsFunction name="setWorkflowNoArcUpdate"
+					action="#{canvasBean.changeWorkflow}"
+					oncomplete="setSelectedByName('#{canvasBean.nameWorkflow}');updateWfDisplayComment();if(getSelectedWorkflowType() == 'W'){if(#{canvasBean.running}){setRunning(getSelectedByName(), true);blockRunningWorkflow();}else{unblockRunningWorkflowJS();}}changeFooter(getSelectedByName());"
+					reRender="formMenu,domMessageDivCanvas2,killProcessBtn">
+					<a4j:actionparam name="selectedCanvas"
+						assignTo="#{canvasBean.nameWorkflow}" />
+				</a4j:jsFunction>
+                    
 				<a4j:jsFunction name="setWorkflow"
 					action="#{canvasBean.changeWorkflow}"
 					oncomplete="setSelectedByName('#{canvasBean.nameWorkflow}');updateWfDisplayComment();if(getSelectedWorkflowType() == 'W'){if(#{canvasBean.running}){setRunning(getSelectedByName(), true);blockRunningWorkflow();}else{unblockRunningWorkflowJS();updateAllArcsStatus();}}changeFooter(getSelectedByName());"
@@ -1433,8 +1462,7 @@
 					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
-				<a4j:jsFunction name="copy" action="#{canvasBean.copy}"
-					reRender="errorTable">
+				<a4j:jsFunction name="copy" action="#{canvasBean.copy}" reRender="errorTable">
 					<a4j:actionparam name="select" />
 				</a4j:jsFunction>
 			</a4j:region>
@@ -1482,18 +1510,6 @@
 					<a4j:actionparam name="groupOutId" />
 					<a4j:actionparam name="groupInId" />
 					<a4j:actionparam name="outputName" />
-				</a4j:jsFunction>
-
-			</a4j:region>
-
-			<a4j:region>
-				<a4j:status onerror="jQuery('#canvas-tabs').unblock();"
-					onsuccess="jQuery('#canvas-tabs').unblock();"
-					onstop="jQuery('#canvas-tabs').unblock();" />
-
-				<a4j:jsFunction name="updateAllArrowColor"
-					data="#{canvasBean.allArrows}"
-					oncomplete="updateAllArrowColours('#{canvasBean.nameWorkflow}', data)">
 				</a4j:jsFunction>
 
 			</a4j:region>
@@ -1588,7 +1604,7 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
 				<a4j:jsFunction name="renameTab" data="#{canvasBean.positions}"
-					oncomplete="closeCurrentTabWithoutCallingBackend();addElementJs(data[0],data[1],data[2],data[3],data[4], true, data[5]);updateAllArcsStatus();onHideModalSaveWorkflow(true);jQuery.unblockUI();"
+					oncomplete="closeCurrentTabWithoutCallingBackend();addElementJs(data[0],data[1],data[2],data[3],data[4], true, data[5]);onHideModalSaveWorkflow(true);jQuery.unblockUI();"
 					reRender="tabFlowchart" />
 			</a4j:region>
 
@@ -1723,7 +1739,7 @@
 				</a4j:jsFunction>
 
 				<a4j:jsFunction name="rebuildJS" data="#{canvasBean.positions}"
-					oncomplete="setTimeout(function(){addSelectedElement(data[0],data[1],data[2],data[3],data[4])},900);updateAllArrowColor();updateAllArcsStatus();"
+					oncomplete="setTimeout(function(){addSelectedElement(data[0],data[1],data[2],data[3],data[4])},900);updateAllArcsStatus();"
 					reRender="tabFlowchart" />
 
 			</a4j:region>
@@ -1848,7 +1864,7 @@
 				</a4j:jsFunction>
 
 				<a4j:jsFunction name="rebuildPasteJS" data="#{canvasBean.positions}"
-					oncomplete="addSelectedElement(data[0],data[1],data[2],data[3],data[4]);updateAllArrowColor();updateAllArcsStatus();"
+					oncomplete="addSelectedElement(data[0],data[1],data[2],data[3],data[4]);updateAllArcsStatus();"
 					reRender="tabFlowchart" />
 
 			</a4j:region>
@@ -1861,7 +1877,7 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
 				<a4j:jsFunction name="pasteJS" action="#{canvasBean.paste}"
-					data="#{canvasBean.idsToPaste}" reRender="errorTable"
+					data="#{canvasBean.idsToPaste}" reRender="msnError"
 					oncomplete="saveAllPositions(getAllIconPositions());rebuildJS(); tmpCommandObj.idsToPaste = data; pasteCloneWorkflow(getAllIconPositions());" />
 			</a4j:region>
 
@@ -2001,7 +2017,7 @@
 									<rich:menuItem id="aggregateMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_aggregate}"
 										onclick="checkOpenModalAggregate()">
-										<h:outputText value="Ctrl+R" class="menuItemHotKey" />
+										<h:outputText value="Ctrl+Alt+A" class="menuItemHotKey" />
 									</rich:menuItem>
 									<rich:menuItem id="expandMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_expand}"
@@ -2037,7 +2053,7 @@
 										onclick="var sels=getSelectedIconsCommaDelimited();if(sels.length > 0){runWorkflow(getIconPositions(),getPathFile(getSelectedByName()),sels)}else{alert('#{messages.run_nothing_selected}')}"
 										reRender="formMenu,domMessageDivCanvas2,killProcessBtn"
 										disabled="#{canvasBean.workflowType == 'S'}">
-										<h:outputText value="Ctrl+Alt+R" class="menuItemHotKey" />
+										<h:outputText value="Ctrl+Alt+E" class="menuItemHotKey" />
 									</rich:menuItem>
 
 									<rich:menuItem id="runSelectedMenuItem" submitMode="ajax"
@@ -2045,7 +2061,7 @@
 										onclick="runWorkflow(getIconPositions(),getPathFile(getSelectedByName()))"
 										reRender="formMenu,domMessageDivCanvas2,killProcessBtn"
 										disabled="#{canvasBean.workflowType == 'S'}">
-										<h:outputText value="Ctrl+R" class="menuItemHotKey" />
+										<h:outputText value="Ctrl+E" class="menuItemHotKey" />
 									</rich:menuItem>
 
 									<rich:menuSeparator />
@@ -2287,11 +2303,10 @@
 									<div class="rich-panel-header">Legend</div>
 								</div>
 								<div class="rich-panel" id="panelLegend-canvas-1"
-									style="position: fixed; z-index: 100; display: none; width: 190px; height: 330px">
+									style="position:fixed; z-index:100; display:none; width:190px; height:330px; overflow:auto;">
 									<div class="rich-panel-body" style="overflow: hidden;">
-										<div id="container-legend-canvas-1"
-											class="container-legend-canvas-1"
-											style="overflow: hidden; position: relative; top: 20px;" />
+										<div id="container-legend-canvas-1"	class="container-legend-canvas-1"
+											style="overflow:auto; position:relative; top:20px;" />
 									</div>
 								</div>
 								<div class="rich-panel headerComment"
@@ -2705,7 +2720,9 @@
 		<rich:modalPanel id="modalPackage" width="600" height="460"
 			style="overflow:auto;" resizeable="false">
 
-			<f:facet name="header">Packages</f:facet>
+			<f:facet name="header">
+				<h:outputText value="#{messages.label_packages}" />
+			</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
 					style="cursor:pointer;width:22px;"
@@ -2722,7 +2739,12 @@
 	<a4j:region>
 		<rich:modalPanel id="modalInstallPackage" width="900" height="600"
 			resizeable="true">
-			<f:facet name="header">Packages</f:facet>
+			<f:facet name="header">
+				<h:panelGroup>
+					<h:outputText value='#{messages.label_packages}' id="installPackagesMsg" />
+					<h:outputText value='#{messages.label_model}' id="installModelMsg" />
+				</h:panelGroup>
+			</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
 					style="cursor:pointer;width:22px;"
@@ -2758,7 +2780,7 @@
 			style="overflow:auto;" resizeable="false">
 
 			<f:facet name="header">
-				<h:outputText value="Install Sub Workflow" />
+				<h:outputText value="#{messages.label_menu_install_sub_workflow}" />
 			</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
@@ -2778,7 +2800,7 @@
 			style="overflow:auto;" resizeable="false">
 
 			<f:facet name="header">
-				<h:outputText value="Manage Sub Workflows" />
+				<h:outputText value="#{messages.label_menu_manage_sub_workflow}" />
 			</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
@@ -2798,7 +2820,7 @@
 			style="overflow:auto;" resizeable="false">
 
 			<f:facet name="header">
-				<h:outputText value="Export Sub Workflow" />
+				<h:outputText value="#{messages.label_menu_export_sub_workflow}" />
 			</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"
@@ -2818,7 +2840,7 @@
 			style="overflow:auto;" resizeable="false">
 
 			<f:facet name="header">
-				<h:outputText value="Export Sub Workflow" />
+				<h:outputText value="#{messages.label_menu_import_sub_workflow}" />
 			</f:facet>
 			<f:facet name="controls">
 				<h:graphicImage value="../image/icons/buttonCloseWindow.gif"

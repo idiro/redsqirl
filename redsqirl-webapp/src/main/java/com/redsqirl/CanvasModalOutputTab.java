@@ -373,7 +373,7 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 			setMaxRows(null);
 		}
 
-		if (outputN != null && !outputN.equalsIgnoreCase("undefined")) {
+		if (outputN != null && !outputN.equalsIgnoreCase("undefined") && !outputN.isEmpty()) {
 			setNameOutput(outputN);
 			logger.info("display out: " + nameOutput);
 			updateDFEOutputTable();
@@ -485,7 +485,7 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 
 
 					} catch (Exception e) {
-						logger.info("Error when getting data: " + e);
+						logger.info("Error when getting data: " + e,e);
 					}
 
 				}

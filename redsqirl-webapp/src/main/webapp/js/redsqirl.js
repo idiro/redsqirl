@@ -521,3 +521,12 @@ function enableEnterKey(e, id){
     }
     return (key != 13);
 }
+
+function updatedComboboxTableInteraction(element, index){
+    var idx=element.selectedIndex;
+    var val=element.options[idx].value;
+    var content=element.options[idx].innerHTML;
+    jQuery("[id$=combo"+index+"]").children().val(val);
+    //alert(val + " " + content);
+    reLoadInputHidden();
+}

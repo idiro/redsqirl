@@ -162,19 +162,21 @@ public abstract class MapRedDir extends MapRedHdfs{
 					return !arg0.getName().startsWith("_") && !arg0.getName().startsWith(".");
 				}
 			});
-			ans = new ArrayList<String>(maxToRead);
-			for (int i = 0; i < stat.length; ++i) {
-				ans.addAll(hdfsInt.select(stat[i].getPath().toString(),
-						",",
-						(maxToRead / stat.length) + 1));
+			if(stat.length > 0){
+				ans = new ArrayList<String>(maxToRead);
+				for (int i = 0; i < stat.length; ++i) {
+					ans.addAll(hdfsInt.select(stat[i].getPath().toString(),
+							",",
+							(maxToRead / stat.length) + 1));
+				}
 			}
 		} catch (IOException e) {
 			String error = "Unexpected error: " + e.getMessage();
-			logger.error(error);
+			logger.error(error, e);
 			ans = null;
 		}
 		catch (Exception e) {
-			logger.error("Fail to close FileSystem: " + e);
+			logger.error("Fail to close FileSystem: " + e, e);
 			ans = null;
 		}
 

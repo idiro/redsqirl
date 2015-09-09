@@ -102,6 +102,8 @@ public class ShellAction extends OozieActionAbs {
 			toWrite += "cat $FILE_NAME"  + System.getProperty("line.separator");
 			toWrite += "echo "+ System.getProperty("line.separator");
 			toWrite += "echo "+ System.getProperty("line.separator");
+			toWrite += "echo $@"+ System.getProperty("line.separator");
+			
 		}
 		toWrite += "if [[ -z \"`sudo -n true`\" && -z \"`sudo -n true 2>&1`\" && `whoami` != \"$USER_NAME\" ]]; then ";
 				System.getProperty("line.separator");
@@ -109,11 +111,17 @@ public class ShellAction extends OozieActionAbs {
 			toWrite += "\tEXEC_FILE=`mktemp`" + System.getProperty("line.separator");
 			toWrite += "\tcat $FILE_NAME >> $EXEC_FILE" + System.getProperty("line.separator");
 			toWrite += "\tchmod a+r $EXEC_FILE"+ System.getProperty("line.separator");
+			if(getFileExtensions()[1].endsWith(".sh")){
+				toWrite += "\tchmod a+x $EXEC_FILE"+System.getProperty("line.separator");
+			}
 		}
 		toWrite += "\tsudo su $USER_NAME -c \""+oneCommandToExecute.replaceAll("\"", "\\\\\"")+"\""+ 
 				System.getProperty("line.separator");
 		if(extraFile){
 			toWrite += "\trm $EXEC_FILE"+ System.getProperty("line.separator");
+			if(getFileExtensions()[1].endsWith(".sh")){
+				toWrite += "\tchmod +x *.sh"+System.getProperty("line.separator");
+			}
 		}
 		toWrite += "else"+ System.getProperty("line.separator");
 		if(extraFile){
@@ -131,7 +139,7 @@ public class ShellAction extends OozieActionAbs {
 	 */
 	@Override
 	public String[] getFileExtensions() {
-		return new String[]{".sh"};
+		return extraFile ? new String[]{".sh","_func.sh"}:new String[]{".sh"};
 	}
 
 	public boolean isExtraFile() {

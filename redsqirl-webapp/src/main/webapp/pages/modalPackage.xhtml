@@ -11,9 +11,8 @@
     
     <h:form>
     <a4j:region>
-        <a4j:jsFunction name="openInstallPackageModal"
-            action="#{packageMngBean.setPackageScope}"
-            oncomplete="#{rich:component('modalInstallPackage')}.show();">
+        <a4j:jsFunction name="openInstallPackageModal" action="#{packageMngBean.setPackageScope}"
+            oncomplete="setShowInstallPackageModelValue('P');#{rich:component('modalInstallPackage')}.show();">
             <a4j:actionparam name="user"/>
             <a4j:actionparam name="type"/>
         </a4j:jsFunction>

@@ -220,12 +220,24 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 			SelectableRowFooter selectableRowFooter = (SelectableRowFooter) tableGridOld.getRows().get(i);
 			if(selectableRowFooter.getRow()[0].equals(selectedTab)){
 				if(getMenuActions().size() != selectableRowFooter.getActions().size()){
-					setMenuActions(new LinkedHashSet<String>());
-					getMenuActions().addAll(selectableRowFooter.getActions());
+					for (String nameAction : selectableRowFooter.getActions()) {
+						if(!getMenuActions().contains(nameAction)){
+							getMenuActions().add(nameAction);
+							if(getTarget().contains(nameAction)){
+								getTarget().remove(nameAction);
+							}
+						}
+					}
 				}
 				if(getTarget().size() != selectableRowFooter.getTarget().size()){
-					setTarget(new LinkedList<String>());
-					getTarget().addAll(selectableRowFooter.getTarget());
+					for (String nameTargetAction : selectableRowFooter.getTarget()) {
+						if(!getTarget().contains(nameTargetAction)){
+							getTarget().add(nameTargetAction);
+							if(getMenuActions().contains(nameTargetAction)){
+								getMenuActions().remove(nameTargetAction);
+							}
+						}
+					}
 				}
 			}
 		}

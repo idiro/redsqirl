@@ -100,7 +100,8 @@
 		onerror="jQuery.unblockUI();" onsuccess="jQuery.unblockUI();"
 		onstop="jQuery.unblockUI();" />
 
-	<a4j:jsFunction name="refreshHdfsOpenFileTable" action="#{browserHdfsBean.changePath}" reRender="hdfsfsFile"/>
+	<a4j:jsFunction name="refreshHdfsOpenFileTable" action="#{browserHdfsBean.changePath}" reRender="hdfsfsFile" 
+		oncomplete="mountComboboxExtensionsFileSystemModalHDFS();" />
 
 	<a4j:jsFunction name="updateTableHdfs" action="#{browserHdfsBean.selectFile}" reRender="pathOpenFile,hdfsfsFile,hdfsOpenFileBtn">
 		<a4j:actionparam name="nameFile" />

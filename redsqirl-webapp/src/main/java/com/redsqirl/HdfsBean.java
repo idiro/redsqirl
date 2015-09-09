@@ -3,13 +3,11 @@ package com.redsqirl;
 
 import java.rmi.RemoteException;
 
-import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
 
 import org.apache.log4j.Logger;
 import org.richfaces.event.DropEvent;
 
-import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.workflow.server.connect.interfaces.DataStore;
 
 /** HdfsBean
