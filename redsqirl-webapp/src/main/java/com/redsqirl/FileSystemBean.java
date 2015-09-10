@@ -185,16 +185,20 @@ public class FileSystemBean extends BaseBean implements Serializable {
 				String childName = getAllProps().get(i).get("name");
 				getTableGrid().getRows().get(i).setSelected(false);
 				getTableGrid().getRows().get(i).setDisableSelect(false);
-				if (getAllProps().get(i).get("type").equalsIgnoreCase("directory") && !isAllowDirectories()) {
-					getTableGrid().getRows().get(i).setDisableSelect(false);
-				}else if(openOutputData != null && openOutputData.equals("Y") && !getAllProps().get(i).get("type").equalsIgnoreCase("directory")){
-					getTableGrid().getRows().get(i).setDisableSelect(false);
-				}else{
-					if(regex != null){
-						getTableGrid().getRows().get(i).setDisableSelect(childName.matches(regex));
+				try{
+					if (getAllProps().get(i).get("type").equalsIgnoreCase("directory") && !isAllowDirectories()) {
+						getTableGrid().getRows().get(i).setDisableSelect(false);
+					}else if(openOutputData != null && openOutputData.equals("Y") && !getAllProps().get(i).get("type").equalsIgnoreCase("directory")){
+						getTableGrid().getRows().get(i).setDisableSelect(false);
 					}else{
-						getTableGrid().getRows().get(i).setDisableSelect(true);
+						if(regex != null){
+							getTableGrid().getRows().get(i).setDisableSelect(childName.matches(regex));
+						}else{
+							getTableGrid().getRows().get(i).setDisableSelect(true);
+						}
 					}
+				}catch(Exception e){
+					//No Directory Types
 				}
 			}
 		}
