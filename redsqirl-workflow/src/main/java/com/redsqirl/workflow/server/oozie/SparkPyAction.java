@@ -58,7 +58,7 @@ public class SparkPyAction extends ShellAction{
 				exec += ";"+hadoopHome+"/bin/hadoop fs -chown "+user+" "+it.next().getPath();
 			}
 			
-			String toWrite = getShellContent(exec);
+			String toWrite = getShellContent(exec,".py");
 			boolean ok = toWrite != null;
 			if(ok){
 				try {
