@@ -385,6 +385,10 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 		} else if (typeToBe.equalsIgnoreCase("BOOLEAN")) {
 			ok = false;
 		}
+		
+		if(typeGiven.equalsIgnoreCase("ANY")&&typeToBe!=null){
+			ok =true;
+		}
 
 		if (!ok && typeToBe.equalsIgnoreCase(typeGiven)) {
 			ok = true;
