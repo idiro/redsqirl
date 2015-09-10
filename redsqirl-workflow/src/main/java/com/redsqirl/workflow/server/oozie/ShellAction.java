@@ -92,6 +92,10 @@ public class ShellAction extends OozieActionAbs {
 	}
 	
 	public String getShellContent(String oneCommandToExecute){
+		return getShellContent(oneCommandToExecute, "");
+	}
+		
+	public String getShellContent(String oneCommandToExecute, String tempFileExt){
 		String toWrite = "#!/bin/bash" + System.getProperty("line.separator");
 		logger.info("Command to execute "+oneCommandToExecute);
 		toWrite += "USER_NAME=$1"+ System.getProperty("line.separator");
@@ -108,7 +112,7 @@ public class ShellAction extends OozieActionAbs {
 		toWrite += "if [[ -z \"`sudo -n true`\" && -z \"`sudo -n true 2>&1`\" && `whoami` != \"$USER_NAME\" ]]; then \n";
 				System.getProperty("line.separator");
 		if(extraFile){
-			toWrite += "\tEXEC_FILE=`mktemp`" + System.getProperty("line.separator");
+			toWrite += "\tEXEC_FILE=`mktemp`"+tempFileExt + System.getProperty("line.separator");
 			toWrite += "\tcat $FILE_NAME >> $EXEC_FILE" + System.getProperty("line.separator");
 			toWrite += "\tchmod a+r $EXEC_FILE"+ System.getProperty("line.separator");
 			if(getFileExtensions()[1].endsWith(".sh")){
