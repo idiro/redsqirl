@@ -54,6 +54,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	private static Logger logger = Logger.getLogger(CanvasBean.class);
 
+	protected long updateDf = 0;
+	
 	private List<SelectItem> linkPossibilities = new ArrayList<SelectItem>();
 	private String selectedLink;
 	private int nbLinkPossibilities = 0;
@@ -1078,7 +1080,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 		setRunningElementsToggle(false);
 
 		getDf().setName(getNameWorkflow());
-
+		logger.info("getNameWorkflow: " + getNameWorkflow());
+		
 		// Back up the project
 		try {
 			updatePosition();
@@ -1116,12 +1119,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 			request.setAttribute("msnError", "msnError");
 			usageRecordLog().addError("ERROR RUNWORKFLOW", error);
 		} else {
-			String savedFile = FacesContext.getCurrentInstance()
-					.getExternalContext().getRequestParameterMap()
-					.get("savedFile");
-			if (getDf().isSaved() && savedFile != null && !savedFile.isEmpty()
-					&& !savedFile.equals("null")
-					&& !savedFile.equals("undefined")) {
+			String savedFile = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("savedFile");
+			if (getDf().isSaved() && savedFile != null && !savedFile.isEmpty() 
+					&& !savedFile.equals("null") && !savedFile.equals("undefined")) {
 				logger.info("Save the workflow in " + savedFile);
 				logger.info(df.getOozieJobId());
 				getDf().save(savedFile);
@@ -1132,7 +1132,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 		usageRecordLog().addSuccess("RUNWORKFLOW");
 	}
 
-	public void blockRunningWorkflow() throws Exception {
+	//FIXME - remove
+	/*public void blockRunningWorkflow() throws Exception {
 
 		logger.info("blockRunningWorkflow");
 		if (getDf() != null) {
@@ -1146,7 +1147,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 					doneElements = getOozie().getElementsDone(getDf());
 					setValueProgressBar(doneElements.size()*100/totalProgressBar);
 				}
-				while (name.equals(getDf().getName()) && getDf().isrunning()) {
+				while (name.equals(getDf().getName()) && getDf().isrunning() && 250 < System.currentTimeMillis() - updateDf) {
 					if(i % 20 == 0){
 						try{
 							List<String> curRunning = getOozie().getElementsRunning(getDf());
@@ -1173,7 +1174,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 		setProgressBarEnabled(false);
 
-	}
+	}*/
 
 	public void calcWorkflowUrl() {
 
@@ -1218,6 +1219,29 @@ public class CanvasBean extends BaseBean implements Serializable {
 		if (df != null) {
 			running = df.isrunning();
 			logger.info(df.getName()+" running: "+running);
+		}
+		return running;
+	}
+	
+	public boolean isRunningAndUpdate() throws RemoteException {
+
+		logger.info("isRunning");
+
+		DataFlow df = getDf();
+		boolean running = false;
+		if (df != null) {
+			running = df.isrunning();
+			logger.info(df.getName()+" running: "+running);
+			if(running){
+				try {
+					setTotalProgressBar(getOozie().getNbElement(getDf()));
+					runningElements = getOozie().getElementsRunning(getDf());
+					doneElements = getOozie().getElementsDone(getDf());
+					setValueProgressBar(doneElements.size()*100/totalProgressBar);
+				} catch (Exception e) {
+					logger.error(e,e);
+				}
+			}
 		}
 		return running;
 	}
@@ -2736,6 +2760,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void setDf(DataFlow df) {
 		this.df = df;
+		updateDf = System.currentTimeMillis();
 		try {
 			commentWf = df.getComment();
 		} catch (Exception e) {

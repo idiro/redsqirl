@@ -492,11 +492,17 @@
 
 	    	
 	      function closeTab(arg){
+
+	    	  console.log("closeTab");
+		      
 	    	  jQuery(jQuery( arg ).prev().attr('href')).remove();
 	    	  jQuery( arg ).offsetParent().remove();
 	      }
 	      
 	      function menuCloseTab(){
+
+	    	  console.log("menuCloseTab");
+		      
 	    	  var tabName = getSelectedByName();
 	    	  var ul = jQuery("#canvas-tabs ul:first li #"+tabName+"-icon-close");
 	    	  closeWorkflowTab(ul, tabName);
@@ -504,6 +510,8 @@
 	      
 	      function addElementJs(canvasName, path, positions, links, selecteds, reset, workflowType, forceRefresh ){
 
+	    	  console.log("addElementJs");
+	    	  
 	    	  forceRefresh = typeof forceRefresh !== 'undefined' ? forceRefresh : false;
 	    	  canvasExist = typeof canvasArray[canvasName] !== 'undefined' ? true : false;
 		      
@@ -526,6 +534,9 @@
 	      }
 
 	      function addSelectedElement(canvasName, path, positions, links, selecteds){
+
+	    	  console.log("addSelectedElement");
+		      
 		      //try{
 	   	      addElements(canvasName, positions, selecteds);
 	   	      addLinks(canvasName, links);
@@ -535,10 +546,16 @@
 	      }
 	      
 	      function addLinksJs(canvasName, links){
+
+	    	  console.log("addLinksJs");
+		      
 	    	  addLinks(canvasName, links);
 	      }
 	      
 	      function updateCanvasRunningStatus(status){
+
+	    	  console.log("updateCanvasRunningStatus");
+		      
 		      var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
 	    	//<![CDATA[
 	    	  for (var i = 0; i < status.length; i++) {
@@ -549,6 +566,9 @@
 	      }
 
 	      function updateArcStatus(status){
+
+	    	  console.log("updateArcStatus");
+		      
 		      var layer = canvasArray[selectedCanvas].layer;
 		      var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
 	    	//<![CDATA[
@@ -570,6 +590,9 @@
 	      var nameTabs = {};
 	      
 	      function addWorkflowTab(tabName,type){
+
+	    	  console.log("addWorkflowTab");
+		      
 	    	//<![CDATA[
 	    	  var tabImage = typeof type == 'undefined' || type == "W" ? "../image/workflow_tab.gif" : "../image/subworkflow_tab.gif"  ;
 	    	  
@@ -584,8 +607,8 @@
 				"<div class='rich-panel headerLegend' onclick=\"jQuery('#panelLegend-"+tabName+"').toggle();jQuery('#container-comment-"+tabName+"').hide();return false;\"  style='position: fixed; z-index:101; width:60px'>"+
 					"<div class='rich-panel-header'>Legend</div>"+
 				"</div>"+
-				"<div class='rich-panel' id='panelLegend-"+tabName+"'  style='position: fixed; z-index:100; display: none; width:190px; height:330px'>"+
-					"<div class='rich-panel-body' style='overflow:hidden;'>"+
+				"<div class='rich-panel' id='panelLegend-"+tabName+"' style='position: fixed; z-index:100; display: none; width:190px; '>"+
+					"<div class='rich-panel-body' style='overflow:auto;'>"+
 						"<div id='container-legend-"+tabName+"' class='container-legend-"+tabName+"' style='overflow:hidden; position: relative; top:20px;'/>"+
 					"</div>"+
 	        	"</div>"+
@@ -614,6 +637,8 @@
           function closeCurrentTabWithoutCallingBackend(){
             //<![CDATA[
             
+            console.log("closeCurrentTabWithoutCallingBackend");
+            
               var tabName = getSelectedByName();
               var tab = jQuery("#canvas-tabs ul:first li #"+tabName+"-icon-close");
               
@@ -637,6 +662,8 @@
 	      function closeWorkflowTab(tab, tabName){
 	      //<![CDATA[
 	    	
+	    	console.log("closeWorkflowTab");
+	    	
 	    	var canvasNameStar = jQuery('#canvasNameStar-'+tabName).text();
 			if(canvasNameStar[canvasNameStar.length-1] == "*" ){
 				if(!confirm('Are you sure you want to close the selected canvas?')){
@@ -653,6 +680,8 @@
 
 	      function closeWorkflowTabJS(tab, tabName){
 	      //<![CDATA[
+	      
+	      console.log("closeWorkflowTabJS");
 	      
 	    	  	closeTab(tab);
 		    	closeWorkflow(tabName);
@@ -676,6 +705,9 @@
 	      
 	      
 	      function closeAllWorkflowTabs(){
+
+	    	  console.log("closeAllWorkflowTabs");
+		      
               var ul = jQuery("#canvas-tabs ul:first li .ui-icon");
               
               jQuery.each(ul, function(index, value){
@@ -699,39 +731,84 @@
 	      
 	     function unblockRunningWorkflowJS(){
 	     	//<![CDATA[
+
+	    	 try{
+	    	 
+		         
 	         if(lastBlockedRunningWorkflow != null){
+	        	 console.log("unblockRunningWorkflowJS ", lastBlockedRunningWorkflow);
 	             jQuery('#'+lastBlockedRunningWorkflow).unblock();
-	         }
+
+	             try{
+	            	 
+	     			if(jQuery('[id$="domMessageDivCanvas2Form"]')){
+	     	        	#{rich:component('idProgBarRunning')}.disable();
+	     			}
+
+	     	     }catch(exception){
+	     		     	alert("c " + exception);
+	     		     }
+	             
+	         }else{
+		    	 console.log("unblockRunningWorkflowJS");
+		     }
+
+	    	 }catch(exception){
+			     	alert("a " + exception);
+			     }
+
+	    	 try{
+		     
 	         lastBlockedRunningWorkflow = null;
 	         clearInterval(runningIntervalID);
-	         #{rich:component('idProgBarRunning')}.disable();
-	         //]]>
+
+	     }catch(exception){
+		     	alert("b " + exception);
+		     }
+	         
+			
+	    	
+	         
+	     	         //]]>
 	     }
+
 	     
 	     function blockRunningWorkflowJS(){
 	     	 //<![CDATA[
 	         unblockRunningWorkflowJS();
+	         
              lastBlockedRunningWorkflow = getSelectedById();
-             jQuery('#'+getSelectedById()).block({ message: jQuery('#domMessageDivCanvas2') });
+             
+	    	 console.log("blockRunningWorkflowJS" , lastBlockedRunningWorkflow);
+
+			try{
+	    	 
+             jQuery('#'+lastBlockedRunningWorkflow).block({ message: jQuery('#domMessageDivCanvas2') });
+
+	     	}catch(exception){
+		     	alert("d " + lastBlockedRunningWorkflow + " " + exception);
+		     }
+             
              resizeBlockUICanvas();
 
-             runningIntervalID = setInterval(function(){ updateProgressBar(); },5000);
+             runningIntervalID = setInterval(function(){ updateProgressBar(); },1000);
              setTimeout(function(){ updateProgressBar(); }, 100);
              
              //]]>
          }
-
 	     
 	     function selectTab(tabIndex){
+
+	    	 console.log("selectTab");
+		     
 	    	 var tabs = jQuery("#canvas-tabs").tabs();
 	    	 tabs.tabs("option", "active", tabIndex);
 	    	 setWorkflow(nameTabs[tabIndex]);
 	     }
-
-	    
 		    
         jQuery(document).bind('keydown', function (e) {
 
+        	console.log("jquery bind keydown");
         	
 			if( !jQuery(".rich-mp-container").is(":visible") ){
 				if (e.keyCode == 46) { // Delete
@@ -852,6 +929,9 @@
         });
 	   		
 	   	function disableEnterKey(e){
+
+	   		console.log("disableEnterKey");
+		   	
 	        var key;
 	        if(window.event)
 	             key = window.event.keyCode;
@@ -861,6 +941,9 @@
 	   }
 	   	
 	   	function menuSave(){
+
+	   		console.log("menuSave");
+		   	
 			if (isSaved(getSelectedByName())){
 				save(getPathFile(getSelectedByName()));
 	   		}
@@ -870,10 +953,16 @@
 	   	}
 
 	   	function importSubWorkflow(){
+
+	   		console.log("importSubWorkflow");
+		   	
 			openModalImportSubworkflow();
 		}
 	   	
 	   	function configureTabsRemote(){
+
+	   		console.log("configureTabsRemote");
+		   	
 		    var tabsRemote = jQuery("#tabRemote").tabs().scrollabletab();
 
 		  	/* tabsRemote.find(".ui-tabs-nav").sortable({
@@ -891,6 +980,9 @@
 
 
 	   	function configureFooter(){
+
+	   		console.log("configureFooter");
+		   	
    		 var tabsFooter = jQuery("#tabsFooter").tabs().scrollabletab();
 
    	  		  /* tabsFooter.find(".ui-tabs-nav").sortable({
@@ -910,6 +1002,9 @@
    		}
 
 	    function updateObjsNameReplace(status){
+
+	    	console.log("updateObjsNameReplace");
+		    
 		    //<![CDATA[
 		    for (var i = 0; i < status.length; i++) {
 			    //alert(status[i][0] + "  " + status[i][1]);
@@ -919,6 +1014,9 @@
 		}
 
 	    function checkOpenModalAggregate(){
+
+	    	console.log("checkOpenModalAggregate");
+		    
 	    	if(getSelectedIconsCommaDelimited() != ""){
 	    		openModalAggregate(getSelectedIconsCommaDelimited());
 		    }else{
@@ -927,6 +1025,9 @@
 	    }
 	    
 	    function checkExpand(){
+
+	    	console.log("checkExpand");
+		    
 	    	 //<![CDATA[
 	    	if(getSelectedSAIconsCommaDelimited() == getSelectedIconsCommaDelimited()){
 	    		undoRedoExpand(getSelectedSAIconsCommaDelimited());
@@ -937,16 +1038,25 @@
 	    }
 
 	    function refreshRelativeHelp(){
+
+	    	console.log("refreshRelativeHelp");
+		    
 	    	 jQuery('[id$="refreshRelativeHelp"]').click();
 	    }
 
 	    function checkPageError(){
+
+	    	console.log("checkPageError");
+		    
 		   	if(jQuery("#msnErrorPageContainer")){
 			 	jQuery("#msnErrorPageContainer").css("z-index", '1000');
 	    	}
 	   	}
 
 	   	function reinitializeCanvasScreen(values){
+
+	   		console.log("reinitializeCanvasScreen");
+		   	
 			if(values != null){
 				backupAndCloseAll();
 				alert("The page has been refreshed. Your work has been saved in the backup directory.");
@@ -956,6 +1066,9 @@
 
 
 	   	function setShowInstallPackageModelValue(value){
+
+	   		console.log("setShowInstallPackageModelValue");
+		   	
 	        if(value == 'P'){
 		    	jQuery('[id$="installPackagesMsg"]').show();
 	    		jQuery('[id$="installModelMsg"]').hide();
@@ -1105,9 +1218,10 @@
 		
 		<div id="domMessageDivCanvas2" style="display: none;">
 			
-			<h:form>
+			<h:form id="domMessageDivCanvas2Form">
 			
-				<a4j:jsFunction name="updateProgressBar" reRender="runningprogressComponent" />
+				<a4j:jsFunction name="updateProgressBar" reRender="runningprogressComponent" 
+					data="#{canvasBean.runningAndUpdate}" oncomplete="console.log('updateProgressBar'); if(!data){unblockRunningWorkflowJS();setRunning(getSelectedByName(), false);updateAllArcsStatus();}"  />
 				
 				<h:outputLink id="workflowUrl" value="#{canvasBean.workflowUrl}"
 					target="_blank" style="float:left;margin-left:5px;"
@@ -1165,12 +1279,12 @@
 			<a4j:region id="functionsForSave">
 				<a4j:jsFunction name="openModalSaveWorkflow"
 					action="#{browserHdfsBean.createSaveFolder}"
-					oncomplete="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });openModalFileHdfs('T');" />
+					oncomplete="console.log('openModalSaveWorkflow'); jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });openModalFileHdfs('T');" />
 				<a4j:jsFunction name="openModalLoadWorkflow"
 					action="#{browserHdfsBean.createSaveFolder}"
-					oncomplete="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });openModalFileHdfs('F');" />
+					oncomplete="console.log('openModalLoadWorkflow'); jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });openModalFileHdfs('F');" />
 				<a4j:jsFunction name="openModalFileHdfs" reRender="modalFileHdfs"
-					oncomplete="mountComboboxExtensionsFileSystemModalHDFS();#{rich:component('modalFileHdfs')}.show();jQuery('#canvas-tabs').unblock();">
+					oncomplete="console.log('openModalFileHdfs'); mountComboboxExtensionsFileSystemModalHDFS();#{rich:component('modalFileHdfs')}.show();jQuery('#canvas-tabs').unblock();">
 					<a4j:actionparam name="openCtrl"
 						assignTo="#{browserHdfsBean.showSave}" />
 				</a4j:jsFunction>
@@ -1178,29 +1292,29 @@
 			
 			<a4j:region>
 				<a4j:jsFunction name="cloneBeforeExpand" action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
-					oncomplete="tmpCommandObj.cloneId = data;expand(tmpCommandObj.selectedSAIcons);">
+					oncomplete="console.log('cloneBeforeExpand'); tmpCommandObj.cloneId = data;expand(tmpCommandObj.selectedSAIcons);">
 					<a4j:actionparam name="allpositions" />
 				</a4j:jsFunction>
 			
 				<a4j:jsFunction name="expand" action="#{canvasBean.expand}" reRender="errorTable, msnError" 
-					oncomplete="if(#{requestScope['msnError'] == null}){refreshCanvas();}jQuery.unblockUI();" >
+					oncomplete="console.log('expand'); if(#{requestScope['msnError'] == null}){refreshCanvas();}jQuery.unblockUI();" >
 					<a4j:actionparam name="selectedIcons" />
 				</a4j:jsFunction>
 			</a4j:region>
 			
 			<a4j:region>
 				<a4j:jsFunction name="openModalAggregate" action="#{canvasBean.openAggregate}" reRender="errorTable, msnError"
-					oncomplete="if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.show();}" >
+					oncomplete="console.log('openModalAggregate'); if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.show();}" >
 					<a4j:actionparam name="selectedIcons" />
 				</a4j:jsFunction>
 				
 				<a4j:jsFunction name="cloneBeforeAggregate" action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
-					oncomplete="tmpCommandObj.cloneId = data;aggregate();">
+					oncomplete="console.log('cloneBeforeAggregate'); tmpCommandObj.cloneId = data;aggregate();">
 					<a4j:actionparam name="allpositions" />
 				</a4j:jsFunction>
 				
 				<a4j:jsFunction name="aggregate" action="#{canvasBean.aggregate}" data="#{canvasBean.inputNameSubWorkflow}" reRender="errorTable, msnError"
-					oncomplete="tmpCommandObj.nameSA = data;if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.hide();refreshCanvas();refreshRelativeHelp();}else{canvasArray[selectedCanvas].commandHistory.removeLastAction()}jQuery.unblockUI();" >
+					oncomplete="console.log('aggregate'); tmpCommandObj.nameSA = data;if(#{requestScope['msnError'] == null}){#{rich:component('modalAggregate')}.hide();refreshCanvas();refreshRelativeHelp();}else{canvasArray[selectedCanvas].commandHistory.removeLastAction()}jQuery.unblockUI();" >
 				</a4j:jsFunction>
 					
 				<a4j:jsFunction name="undoAggregate" action="#{canvasBean.undoAggregate}" >
@@ -1210,13 +1324,12 @@
 
 			<a4j:region>
 				<a4j:jsFunction name="openModalImportSubworkflow"
-					oncomplete="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });openModalFileHdfs('F');">
+					oncomplete="console.log('openModalImportSubworkflow'); jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });openModalFileHdfs('F');">
 				</a4j:jsFunction>
 			</a4j:region>
 
 			<a4j:region renderRegionOnly="true">
-				<a4j:jsFunction name="saveAllPositions"
-					action="#{canvasBean.updateAllPosition}">
+				<a4j:jsFunction name="saveAllPositions" action="#{canvasBean.updateAllPosition}">
 					<a4j:actionparam name="allpositions" />
 				</a4j:jsFunction>
 			</a4j:region>
@@ -1229,7 +1342,7 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
 				<a4j:jsFunction name="closeAll" action="#{canvasBean.closeAll}"
-					oncomplete="closeAllWorkflowTabs()" />
+					oncomplete="console.log('closeAll'); closeAllWorkflowTabs()" />
 			</a4j:region>
 
 			<a4j:region>
@@ -1239,8 +1352,8 @@
 					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
-				<a4j:jsFunction name="reRenderFooter" oncomplete="mountFooter();" reRender="tabsFooterForm" />
-				<a4j:jsFunction name="mountFooter" oncomplete="configureFooter();mountObj('#{canvasBean.nameWorkflow}')" />
+				<a4j:jsFunction name="reRenderFooter" oncomplete="console.log('reRenderFooter'); mountFooter();" reRender="tabsFooterForm" />
+				<a4j:jsFunction name="mountFooter" oncomplete="console.log('mountFooter'); configureFooter();mountObj('#{canvasBean.nameWorkflow}')" />
 			</a4j:region>
 
 			<a4j:region>
@@ -1252,7 +1365,7 @@
 
 				<a4j:jsFunction name="updateOutputStatus"
 					data="#{canvasBean.outputStatus}"
-					oncomplete="updateArcStatus(data);" reRender="errorTable, msnError">
+					oncomplete="console.log('updateOutputStatus'); updateArcStatus(data);" reRender="errorTable, msnError">
 					<a4j:actionparam name="groupId" />
 				</a4j:jsFunction>
 
@@ -1267,7 +1380,7 @@
 
 				<a4j:jsFunction name="updateSelectedOutputStatus"
 					data="#{canvasBean.selectedOutputStatus}"
-					oncomplete="updateArcStatus(data);" reRender="errorTable, msnError">
+					oncomplete="console.log('updateSelectedOutputStatus'); updateArcStatus(data);" reRender="errorTable, msnError">
 					<a4j:actionparam name="select" />
 				</a4j:jsFunction>
 			</a4j:region>
@@ -1281,7 +1394,7 @@
 
 				<a4j:jsFunction name="updateWfComment"
 					action="#{canvasBean.updateWfComment}"
-					oncomplete="updateWfDisplayComment()">
+					oncomplete="console.log('updateWfComment'); updateWfDisplayComment()">
 					<a4j:actionparam name="commentWf"
 						assignTo="#{canvasBean.commentWf}" />
 				</a4j:jsFunction>
@@ -1291,7 +1404,7 @@
 			<a4j:region>
 				<a4j:jsFunction name="updateWfDisplayComment"
 					data="#{canvasBean.savedWfComment}"
-					oncomplete="jQuery('.container-comment-'+getSelectedByName()).html(data);"
+					oncomplete="console.log('updateWfDisplayComment'); jQuery('.container-comment-'+getSelectedByName()).html(data);"
 					reRender="errorTable, msnError">
 				</a4j:jsFunction>
 			</a4j:region>
@@ -1305,7 +1418,7 @@
 
 				<a4j:jsFunction name="updateWfComment"
 					action="#{canvasBean.updateWfComment}"
-					oncomplete="updateWfDisplayComment()">
+					oncomplete="console.log('updateWfComment'); updateWfDisplayComment()">
 					<a4j:actionparam name="commentWf"
 						assignTo="#{canvasBean.commentWf}" />
 				</a4j:jsFunction>
@@ -1322,7 +1435,7 @@
 				<a4j:jsFunction name="openWorkflowElementUrl"
 					action="#{canvasBean.calcWorkflowElementUrl}"
 					data="#{canvasBean.workflowElementUrl}"
-					oncomplete="window.open(data,'_blank')" reRender="errorTable">
+					oncomplete="console.log('openWorkflowElementUrl'); window.open(data,'_blank')" reRender="errorTable">
 					<a4j:actionparam name="groupId" />
 				</a4j:jsFunction>
 			</a4j:region>
@@ -1336,7 +1449,7 @@
 
 				<a4j:jsFunction name="updateAllArcsStatus"
 					data="#{canvasBean.allOutputStatus}"
-					oncomplete="updateArcStatus(data);jQuery('#canvas-tabs').unblock();"
+					oncomplete="console.log('updateAllArcsStatus'); updateArcStatus(data);jQuery('#canvas-tabs').unblock();"
 					reRender="errorTable" />
 			</a4j:region>
 
@@ -1349,7 +1462,7 @@
 
 				<a4j:jsFunction name="updateRunningStatus"
 					data="#{canvasBean.runningStatus}"
-					oncomplete="updateCanvasRunningStatus(data);jQuery('#canvas-tabs').unblock();"
+					oncomplete="console.log('updateRunningStatus'); updateCanvasRunningStatus(data);jQuery('#canvas-tabs').unblock();"
 					reRender="errorTable, msnError" />
 			</a4j:region>
 
@@ -1362,7 +1475,7 @@
                     
                 <a4j:jsFunction name="setWorkflowNoArcUpdate"
 					action="#{canvasBean.changeWorkflow}"
-					oncomplete="setSelectedByName('#{canvasBean.nameWorkflow}');updateWfDisplayComment();if(getSelectedWorkflowType() == 'W'){if(#{canvasBean.running}){setRunning(getSelectedByName(), true);blockRunningWorkflow();}else{unblockRunningWorkflowJS();}}changeFooter(getSelectedByName());"
+					oncomplete="console.log('setWorkflowNoArcUpdate', '#{canvasBean.nameWorkflow}'); setSelectedByName('#{canvasBean.nameWorkflow}');updateWfDisplayComment();if(getSelectedWorkflowType() == 'W'){if(#{canvasBean.running}){setRunning(getSelectedByName(), true);blockRunningWorkflowJS();}else{unblockRunningWorkflowJS();}}changeFooter(getSelectedByName());"
 					reRender="formMenu,domMessageDivCanvas2,killProcessBtn">
 					<a4j:actionparam name="selectedCanvas"
 						assignTo="#{canvasBean.nameWorkflow}" />
@@ -1370,10 +1483,9 @@
                     
 				<a4j:jsFunction name="setWorkflow"
 					action="#{canvasBean.changeWorkflow}"
-					oncomplete="setSelectedByName('#{canvasBean.nameWorkflow}');updateWfDisplayComment();if(getSelectedWorkflowType() == 'W'){if(#{canvasBean.running}){setRunning(getSelectedByName(), true);blockRunningWorkflow();}else{unblockRunningWorkflowJS();updateAllArcsStatus();}}changeFooter(getSelectedByName());"
+					oncomplete="console.log('setWorkflow' , '#{canvasBean.nameWorkflow}' ); setSelectedByName('#{canvasBean.nameWorkflow}');updateWfDisplayComment();if(getSelectedWorkflowType() == 'W'){if(#{canvasBean.running}){setRunning(getSelectedByName(), true);blockRunningWorkflowJS();}else{unblockRunningWorkflowJS();updateAllArcsStatus();}}changeFooter(getSelectedByName());"
 					reRender="formMenu,domMessageDivCanvas2,killProcessBtn">
-					<a4j:actionparam name="selectedCanvas"
-						assignTo="#{canvasBean.nameWorkflow}" />
+					<a4j:actionparam name="selectedCanvas" assignTo="#{canvasBean.nameWorkflow}" />
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -1384,11 +1496,11 @@
 					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
-				<a4j:jsFunction name="addWorkflow" action="#{canvasBean.addWorkflow}" oncomplete="setWorkflow(getSelectedByName());">
+				<a4j:jsFunction name="addWorkflow" action="#{canvasBean.addWorkflow}" oncomplete="console.log('addWorkflow'); setWorkflow(getSelectedByName());">
 					<a4j:actionparam name="name" />
 				</a4j:jsFunction>
 
-				<a4j:jsFunction name="addSubWorkflow" action="#{canvasBean.addSubWorkflow}" oncomplete="setWorkflow(getSelectedByName());">
+				<a4j:jsFunction name="addSubWorkflow" action="#{canvasBean.addSubWorkflow}" oncomplete="console.log('addSubWorkflow'); setWorkflow(getSelectedByName());">
 					<a4j:actionparam name="name" />
 				</a4j:jsFunction>
 			</a4j:region>
@@ -1418,7 +1530,6 @@
 					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
-
 				<a4j:jsFunction name="removeElement"
 					action="#{canvasBean.removeElement}">
 					<a4j:actionparam name="paramGroupID" />
@@ -1429,7 +1540,7 @@
 				<a4j:jsFunction name="addElementBt"
 					action="#{canvasBean.addElement}"
 					data="#{canvasBean.idLastElementInserted}"
-					oncomplete="tmpCommandObj.elementId = data;">
+					oncomplete="console.log('addElementBt'); tmpCommandObj.elementId = data;">
 					<a4j:actionparam name="paramNameElement" />
 					<a4j:actionparam name="paramGroupID" />
 					<a4j:actionparam name="paramIdElement" />
@@ -1446,7 +1557,7 @@
 
 				<a4j:jsFunction name="saveWorkflow" action="#{canvasBean.save}"
 					reRender="errorTable"
-					oncomplete="if(document.getElementById('#{canvasBean.nameWorkflow}') == null){renameTab();} else {onHideModalSaveWorkflow(true);jQuery('#canvas-tabs').unblock();}">
+					oncomplete="console.log('saveWorkflow'); if(document.getElementById('canvasNameStar-#{canvasBean.nameWorkflow}') == null){renameTab();} else {onHideModalSaveWorkflow(true);jQuery('#canvas-tabs').unblock();}">
 					<a4j:actionparam name="nameWorkflow" />
 					<a4j:actionparam name="pathFile" />
 					<a4j:actionparam name="positions" />
@@ -1472,7 +1583,7 @@
 				<a4j:status onerror="jQuery('#canvas-tabs').unblock();" />
 
 				<a4j:jsFunction name="addLinkBt" data="#{canvasBean.result}"
-					oncomplete="updateLink(data[0], data[1], data[2]);
+					oncomplete="console.log('addLinkBt'); updateLink(data[0], data[1], data[2]);
                 	updateArrowColor('#{canvasBean.paramOutId}','#{canvasBean.paramInId}', '#{canvasBean.nameOutput}');" />
 			</a4j:region>
 
@@ -1480,8 +1591,8 @@
 				<a4j:status onerror="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
-				<a4j:jsFunction name="addLinkWhenUniq"
-					action="#{canvasBean.addLink}" oncomplete="addLinkBt();" />
+				<a4j:jsFunction name="addLinkWhenUniq" action="#{canvasBean.addLink}" 
+					oncomplete="console.log('addLinkWhenUniq'); addLinkBt();" />
 			</a4j:region>
 
 			<a4j:region>
@@ -1491,7 +1602,7 @@
 
 				<a4j:jsFunction name="addLinkModalBt"
 					action="#{canvasBean.updateLinkPossibilities}"
-					oncomplete="if(#{canvasBean.nbLinkPossibilities} == 1){addLinkWhenUniq();}else{jQuery('#canvas-tabs').unblock();#{rich:component('modalSelectLink')}.show();};"
+					oncomplete="console.log('addLinkModalBt'); if(#{canvasBean.nbLinkPossibilities} == 1){addLinkWhenUniq();}else{jQuery('#canvas-tabs').unblock();#{rich:component('modalSelectLink')}.show();};"
 					reRender="selectLinkList">
 					<a4j:actionparam name="paramOutId" assignTo="#{canvasBean.paramOutId}" />
 					<a4j:actionparam name="paramInId" assignTo="#{canvasBean.paramInId}" />
@@ -1506,7 +1617,7 @@
 
 				<a4j:jsFunction name="updateArrowColor"
 					data="#{canvasBean.arrowType}"
-					oncomplete="updateArrowType(data[0], data[1], data[2], data[3], data[4]);updateArrowLabel(data[0], data[1], data[5]);">
+					oncomplete="console.log('updateArrowColor'); updateArrowType(data[0], data[1], data[2], data[3], data[4]);updateArrowLabel(data[0], data[1], data[5]);">
 					<a4j:actionparam name="groupOutId" />
 					<a4j:actionparam name="groupInId" />
 					<a4j:actionparam name="outputName" />
@@ -1523,7 +1634,7 @@
 
 				<a4j:jsFunction name="openModal"
 					action="#{canvasModalBean.openCanvasModal}"
-					oncomplete="if(#{requestScope['msnError'] == null} &amp;&amp; #{canvasModalBean.outputTab.showOutputForm == 'Y' or canvasModalBean.listPageSize > 0}){cloneBeforeUpdateElement();checkPageError();reLoadDisplayTable();}"
+					oncomplete="console.log('openModal'); if(#{requestScope['msnError'] == null} &amp;&amp; #{canvasModalBean.outputTab.showOutputForm == 'Y' or canvasModalBean.listPageSize > 0}){cloneBeforeUpdateElement();checkPageError();reLoadDisplayTable();}"
 					reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError, errorTable, canvasModalTabPanel, msnErrorPage,tableInteraction">
 					<a4j:actionparam name="paramGroupId" />
 					<a4j:actionparam name="paramPathImage" />
@@ -1539,10 +1650,9 @@
 					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
-
 				<a4j:jsFunction name="openChangeIdModal"
 					action="#{canvasModalBean.openCanvasModal}"
-					oncomplete="if( #{requestScope['msnError'] == null}){#{rich:component('modalChangeId')}.show();}"
+					oncomplete="console.log('openChangeIdModal'); if( #{requestScope['msnError'] == null}){#{rich:component('modalChangeId')}.show();}"
 					reRender="msnError, errorTable, newIdElement">
 					<a4j:actionparam name="paramGroupId" />
 					<a4j:actionparam name="paramPathImage" />
@@ -1558,14 +1668,14 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
 				<a4j:jsFunction name="openPackageModal" action="#{packageMngBean.start}"
-					oncomplete="#{rich:component('modalPackage')}.show();">
+					oncomplete="console.log('openPackageModal'); #{rich:component('modalPackage')}.show();">
 				</a4j:jsFunction>
 			</a4j:region>
 
 			<a4j:region>
 				<a4j:jsFunction name="closeChangeIdModal"
 					reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError, errorTable, canvasModalTabPanel"
-					oncomplete="if(#{canvasModalBean.loadMainWindow and ((canvasBean.workflowType == 'W' and canvasModalBean.outputTab.showOutputForm == 'Y') or canvasModalBean.listPageSize > 0) }){changeModalTitle();changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');cloneBeforeUpdateElement();}else{updateOutputStatus(currentChangeIdGroup);}">
+					oncomplete="console.log('closeChangeIdModal'); if(#{canvasModalBean.loadMainWindow and ((canvasBean.workflowType == 'W' and canvasModalBean.outputTab.showOutputForm == 'Y') or canvasModalBean.listPageSize > 0) }){changeModalTitle();changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');cloneBeforeUpdateElement();}else{updateOutputStatus(currentChangeIdGroup);}">
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -1577,15 +1687,15 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
 				<a4j:jsFunction name="loadWorkflow" data="#{canvasBean.positions}"
-					oncomplete="unblockRunningWorkflowJS();addElementJs(data[0],data[1],data[2],data[3],data[4], true, data[5]);updateAllArcsStatus();"
+					oncomplete="console.log('loadWorkflow'); unblockRunningWorkflowJS();addElementJs(data[0],data[1],data[2],data[3],data[4], true, data[5]);updateAllArcsStatus();"
 					reRender="tabFlowchart,errorTable,msnError" />
 
                 <a4j:jsFunction name="loadSubWorkflowFromCanvas" data="#{canvasBean.positions}"
-                    oncomplete="addElementJs(data[0],data[1],data[2],data[3],data[4], true, data[5]);canvasArray[selectedCanvas].saved=false;updateAllArcsStatus();"
+                    oncomplete="console.log('loadSubWorkflowFromCanvas'); addElementJs(data[0],data[1],data[2],data[3],data[4], true, data[5]);canvasArray[selectedCanvas].saved=false;updateAllArcsStatus();"
                     reRender="tabFlowchart,errorTable,msnError" />
                     
                 <a4j:jsFunction name="rebuildCanvas" data="#{canvasBean.positions}"
-					oncomplete="addElementJs(data[0],data[1],data[2],data[3],data[4], true, data[5],true);updateAllArcsStatus();"
+					oncomplete="console.log('rebuildCanvas'); addElementJs(data[0],data[1],data[2],data[3],data[4], true, data[5],true);updateAllArcsStatus();"
 					reRender="tabFlowchart,errorTable,msnError" />
                 
                     
@@ -1593,7 +1703,7 @@
 			
 			<a4j:region>
 				<a4j:jsFunction name="openSubWorkflow" action="#{canvasBean.openSubWorkflow}" 
-					oncomplete="if(#{requestScope['msnError'] == null} ){loadSubWorkflowFromCanvas();}" >
+					oncomplete="console.log('openSubWorkflow'); if(#{requestScope['msnError'] == null} ){loadSubWorkflowFromCanvas();}" >
 					<a4j:actionparam name="nameSubWorkflow" />
 				</a4j:jsFunction>
 			</a4j:region>
@@ -1604,7 +1714,7 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
 				<a4j:jsFunction name="renameTab" data="#{canvasBean.positions}"
-					oncomplete="closeCurrentTabWithoutCallingBackend();addElementJs(data[0],data[1],data[2],data[3],data[4], true, data[5]);onHideModalSaveWorkflow(true);jQuery.unblockUI();"
+					oncomplete="console.log('renameTab'); closeCurrentTabWithoutCallingBackend();addElementJs(data[0],data[1],data[2],data[3],data[4], true, data[5]);onHideModalSaveWorkflow(true);jQuery.unblockUI();"
 					reRender="tabFlowchart" />
 			</a4j:region>
 
@@ -1631,9 +1741,8 @@
 					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
-
 				<a4j:jsFunction name="cleanElement" action="#{canvasBean.cleanElement}" 
-					data="#{canvasBean.idGroup}" oncomplete="updateOutputStatus(data)">
+					data="#{canvasBean.idGroup}" oncomplete="console.log('cleanElement'); updateOutputStatus(data)">
 					<a4j:actionparam name="idGroup" />
 				</a4j:jsFunction>
 			</a4j:region>
@@ -1646,9 +1755,8 @@
 					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
-
 				<a4j:jsFunction name="refreshSubWorkflow" action="#{canvasBean.refreshSubWorkflow}" 
-					data="#{canvasBean.idGroup}" oncomplete="updateOutputStatus(data)">
+					data="#{canvasBean.idGroup}" oncomplete="console.log('refreshSubWorkflow'); updateOutputStatus(data)">
 					<a4j:actionparam name="idGroup" />
 				</a4j:jsFunction>
 			</a4j:region>
@@ -1666,23 +1774,11 @@
 				</a4j:jsFunction>
 			</a4j:region>
 
-
-			<a4j:region>
-
-				<a4j:status onstart="blockRunningWorkflowJS();" />
-
-				<a4j:jsFunction name="blockRunningWorkflow"
-					action="#{canvasBean.blockRunningWorkflow}"
-					oncomplete="if(lastBlockedRunningWorkflow == getSelectedById()){unblockRunningWorkflowJS();setRunning(getSelectedByName(), false);updateAllArcsStatus();}">
-				</a4j:jsFunction>
-
-			</a4j:region>
-			
-			
 			
 			
 			<a4j:region>
-				<a4j:jsFunction name="reinitializeCanvas" data="#{canvasBean.reinitialize}" oncomplete="reinitializeCanvasScreen(data)" />
+				<a4j:jsFunction name="reinitializeCanvas" data="#{canvasBean.reinitialize}" 
+					oncomplete="console.log('reinitializeCanvas'); reinitializeCanvasScreen(data)" />
 			</a4j:region>
 
 			<a4j:region>
@@ -1695,7 +1791,7 @@
 
 				<a4j:jsFunction name="runWorkflow"
 					action="#{canvasBean.runWorkflow}"
-					oncomplete="setRunning(getSelectedByName(), true);blockRunningWorkflow();"
+					oncomplete="console.log('runWorkflow', getSelectedByName()); setRunning(getSelectedByName(), true);blockRunningWorkflowJS();"
 					reRender="formMenu,domMessageDivCanvas2,killProcessBtn,msnError,idProgBarRunning">
 					<a4j:actionparam name="positions" />
 					<a4j:actionparam name="savedFile" />
@@ -1711,9 +1807,9 @@
 					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
-
 				<a4j:jsFunction name="backupAll" action="#{canvasBean.backupAll}"/>
-				<a4j:jsFunction name="backupAndCloseAll" action="#{canvasBean.backupAndCloseAll}" oncomplete="closeAllWorkflowTabs()"/>
+				<a4j:jsFunction name="backupAndCloseAll" action="#{canvasBean.backupAndCloseAll}" 
+					oncomplete="console.log('backupAndCloseAll'); closeAllWorkflowTabs();"/>
 			</a4j:region>
 
 			<a4j:region>
@@ -1726,12 +1822,12 @@
 
 				<a4j:jsFunction name="deleteElements"
 					action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
-					oncomplete="tmpCommandObj.cloneId = data;deleteElementsJS(tmpCommandObj.selecteds, tmpCommandObj.selectedArrows)">
+					oncomplete="console.log('deleteElements'); tmpCommandObj.cloneId = data;deleteElementsJS(tmpCommandObj.selecteds, tmpCommandObj.selectedArrows)">
 					<a4j:actionparam name="allpositions" />
 				</a4j:jsFunction>
 
 				<a4j:jsFunction name="replaceWFByClone"
-					action="#{canvasBean.replaceWFByClone}" oncomplete="rebuildJS();"
+					action="#{canvasBean.replaceWFByClone}" oncomplete="console.log('replaceWFByClone'); rebuildJS();"
 					reRender="errorTable,tabFlowchart">
 					<a4j:actionparam name="selectedItens" />
 					<a4j:actionparam name="idCloneMap" />
@@ -1739,14 +1835,14 @@
 				</a4j:jsFunction>
 
 				<a4j:jsFunction name="rebuildJS" data="#{canvasBean.positions}"
-					oncomplete="setTimeout(function(){addSelectedElement(data[0],data[1],data[2],data[3],data[4])},900);updateAllArcsStatus();"
+					oncomplete="console.log('rebuildJS'); setTimeout(function(){addSelectedElement(data[0],data[1],data[2],data[3],data[4])},900);updateAllArcsStatus();"
 					reRender="tabFlowchart" />
 
 			</a4j:region>
 
 			<a4j:region>
 				<a4j:jsFunction name="showReplaceAllModal" reRender="errorTable"
-					oncomplete="#{rich:component('modalReplaceAll')}.show()">
+					oncomplete="console.log('showReplaceAllModal'); #{rich:component('modalReplaceAll')}.show()">
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -1759,7 +1855,7 @@
 
 				<a4j:jsFunction name="replaceAllJS"
 					action="#{canvasBean.replaceAll}" reRender="errorTable"
-					oncomplete="updateSelectedElementLegend(tmpCommandObj.selecteds);updateAllArcsStatus();">
+					oncomplete="console.log('replaceAllJS'); updateSelectedElementLegend(tmpCommandObj.selecteds);updateAllArcsStatus();">
 					<a4j:actionparam name="select" />
 					<a4j:actionparam name="oldStr" />
 					<a4j:actionparam name="newStr" />
@@ -1768,7 +1864,7 @@
 
 				<a4j:jsFunction name="rebuildElementsFromClone"
 					action="#{canvasBean.replaceWFByClone}"
-					oncomplete="rebuildReplaceJS();" reRender="errorTable,tabFlowchart">
+					oncomplete="console.log('rebuildElementsFromClone'); rebuildReplaceJS();" reRender="errorTable,tabFlowchart">
 					<a4j:actionparam name="selectedItens" />
 					<a4j:actionparam name="idCloneMap" />
 					<a4j:actionparam name="keepClone" />
@@ -1776,7 +1872,7 @@
 
 				<a4j:jsFunction name="rebuildReplaceJS"
 					data="#{canvasBean.positions}"
-					oncomplete="updateSelectedElementLegend(tmpCommandObj.selecteds);updateSelectedOutputStatus(tmpCommandObj.selecteds);"
+					oncomplete="console.log('rebuildReplaceJS'); updateSelectedElementLegend(tmpCommandObj.selecteds);updateSelectedOutputStatus(tmpCommandObj.selecteds);"
 					reRender="tabFlowchart" />
 			</a4j:region>
 
@@ -1789,7 +1885,7 @@
 
 				<a4j:jsFunction name="updateSelectedElementLegend"
 					data="#{canvasBean.selectedElementLegend}"
-					oncomplete="updateObjsNameReplace(data);"
+					oncomplete="console.log('updateSelectedElementLegend'); updateObjsNameReplace(data);"
 					reRender="errorTable, msnError">
 					<a4j:actionparam name="select" />
 				</a4j:jsFunction>
@@ -1804,7 +1900,7 @@
 
 				<a4j:jsFunction name="replaceJS"
 					action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
-					oncomplete="tmpCommandObj.cloneId = data; replaceAllJS(tmpCommandObj.selecteds, tmpCommandObj.oldStr, tmpCommandObj.newStr, tmpCommandObj.changeLabel );">
+					oncomplete="console.log('replaceJS'); tmpCommandObj.cloneId = data; replaceAllJS(tmpCommandObj.selecteds, tmpCommandObj.oldStr, tmpCommandObj.newStr, tmpCommandObj.changeLabel );">
 					<a4j:actionparam name="allpositions" />
 				</a4j:jsFunction>
 			</a4j:region>
@@ -1818,13 +1914,13 @@
 
 				<a4j:jsFunction name="cloneBeforeUpdateElement"
 					action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
-					oncomplete="cloneCommandUpdateElementBuffer = data;createOptionTitles();#{rich:component('canvasModalPanel')}.show();">
+					oncomplete="console.log('cloneBeforeUpdateElement'); cloneCommandUpdateElementBuffer = data;createOptionTitles();#{rich:component('canvasModalPanel')}.show();">
 					<a4j:actionparam name="allpositions" />
 				</a4j:jsFunction>
 
 				<a4j:jsFunction name="cloneAfterUpdateElement"
 					action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
-					oncomplete="stackUpdateElement('#{canvasModalBean.idGroup}', cloneCommandUpdateElementBuffer,data);">
+					oncomplete="console.log('cloneAfterUpdateElement'); stackUpdateElement('#{canvasModalBean.idGroup}', cloneCommandUpdateElementBuffer,data);">
 					<a4j:actionparam name="allpositions" />
 				</a4j:jsFunction>
 			</a4j:region>
@@ -1851,20 +1947,20 @@
 
 				<a4j:jsFunction name="pasteCloneWorkflow"
 					action="#{canvasBean.cloneWorkflow}" data="#{canvasBean.cloneWFId}"
-					oncomplete="tmpCommandObj.cloneId = data;">
+					oncomplete="console.log('pasteCloneWorkflow'); tmpCommandObj.cloneId = data;">
 					<a4j:actionparam name="allpositions" />
 				</a4j:jsFunction>
 
 				<a4j:jsFunction name="undoPasteCloneWorkflow"
 					action="#{canvasBean.replaceWFByClone}"
-					oncomplete="rebuildPasteJS();" reRender="errorTable,tabFlowchart">
+					oncomplete="console.log('undoPasteCloneWorkflow'); rebuildPasteJS();" reRender="errorTable,tabFlowchart">
 					<a4j:actionparam name="selectedItens" />
 					<a4j:actionparam name="idCloneMap" />
 					<a4j:actionparam name="keepClone" />
 				</a4j:jsFunction>
 
 				<a4j:jsFunction name="rebuildPasteJS" data="#{canvasBean.positions}"
-					oncomplete="addSelectedElement(data[0],data[1],data[2],data[3],data[4]);updateAllArcsStatus();"
+					oncomplete="console.log('rebuildPasteJS'); addSelectedElement(data[0],data[1],data[2],data[3],data[4]);updateAllArcsStatus();"
 					reRender="tabFlowchart" />
 
 			</a4j:region>
@@ -1878,7 +1974,7 @@
 
 				<a4j:jsFunction name="pasteJS" action="#{canvasBean.paste}"
 					data="#{canvasBean.idsToPaste}" reRender="msnError"
-					oncomplete="saveAllPositions(getAllIconPositions());rebuildJS(); tmpCommandObj.idsToPaste = data; pasteCloneWorkflow(getAllIconPositions());" />
+					oncomplete="console.log('pasteJS'); saveAllPositions(getAllIconPositions());rebuildJS(); tmpCommandObj.idsToPaste = data; pasteCloneWorkflow(getAllIconPositions());" />
 			</a4j:region>
 
 			<a4j:region>
@@ -1887,19 +1983,19 @@
 					action="#{hdfsBean.openCanvasScreen}" style="display:none;"
 					reRender="fileSysGridForm"
 					onclick="jQuery('#tabs-4').block({ message: jQuery('#domMessageDiv4') });"
-					oncomplete="jQuery('#tabs-4').unblock();resiziFileSystem();" />
+					oncomplete="console.log('openCanvasScreenHdfs'); jQuery('#tabs-4').unblock();resiziFileSystem();" />
 
 				<a4j:commandLink id="openCanvasScreenHive"
 					action="#{hiveBean.openCanvasScreen}" style="display:none;"
 					reRender="fileSysGridFormHive"
 					onclick="jQuery('#tabs-5').block({ message: jQuery('#domMessageDiv5') });"
-					oncomplete="jQuery('#tabs-5').unblock();resiziFileSystem();" />
+					oncomplete="console.log('openCanvasScreenHive'); jQuery('#tabs-5').unblock();resiziFileSystem();" />
 
 				<a4j:commandLink id="openCanvasScreenSsh"
 					action="#{sshBean.openCanvasScreen}" style="display:none;"
 					reRender="tabs-8, tabRemote, fileSysGridFormSsh, fileSysGridFormSshTab"
 					onclick="jQuery('#tabs-8').block({ message: jQuery('#domMessageDiv8') });"
-					oncomplete="jQuery('#tabs-8').unblock();resiziRemoteFileSystem();" />
+					oncomplete="console.log('openCanvasScreenSsh'); jQuery('#tabs-8').unblock();resiziRemoteFileSystem();" />
 
 				<a4j:commandLink id="openCanvasScreenHdfsBrowser"
 					action="#{browserHdfsBean.openCanvasScreen}" style="display:none;" />
@@ -2303,8 +2399,8 @@
 									<div class="rich-panel-header">Legend</div>
 								</div>
 								<div class="rich-panel" id="panelLegend-canvas-1"
-									style="position:fixed; z-index:100; display:none; width:190px; height:330px; overflow:auto;">
-									<div class="rich-panel-body" style="overflow: hidden;">
+									style="position:fixed; z-index:100; display:none; width:190px; overflow:auto;">
+									<div class="rich-panel-body" style="overflow: auto;">
 										<div id="container-legend-canvas-1"	class="container-legend-canvas-1"
 											style="overflow:auto; position:relative; top:20px;" />
 									</div>
