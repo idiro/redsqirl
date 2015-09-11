@@ -623,8 +623,6 @@
 	                <br/>
 	                    <table>
 	                    
-	                    	<a4j:jsFunction name="onchangeOutputCombo" action="#{item.updateSavingState}" reRender="dataOutputForm" />
-	                    
 		                    <a4j:repeat value="#{canvasModalBean.outputTab.outputFormList}" var="item" rowKeyVar="index">
 		                        
 		                       	<tr>
@@ -671,11 +669,13 @@
 											            
 												});
 				
-						                    	jQuery("[id$='outputCombo#{index}']").bind('setFormData', function(e, data, isEmpty){
+						                    	jQuery("[id$='outputCombo#{index+1}']").bind('setFormData', function(e, data, isEmpty){
 						                    		onchangeOutputCombo();
 						                    	});
 						                    	
 											</script>
+											
+											<a4j:jsFunction name="onchangeOutputCombo" action="#{item.updateSavingState}" reRender="dataOutputForm" />
 					                               	 
 					                    </h:inputText>
 					                    </h:panelGroup>

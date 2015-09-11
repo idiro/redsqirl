@@ -861,12 +861,16 @@
 	   }
 	   	
 	   	function menuSave(){
-			if (isSaved(getSelectedByName())){
-				save(getPathFile(getSelectedByName()));
-	   		}
-	   		else{
+
+	   		var name = getSelectedByName();
+			if (isSaved(name)){
+				if(!isRunning(name)){
+					save(getPathFile(name));
+			   	}
+	   		} else{
 	   			openModalSaveWorkflow();
 	   		}
+	   		
 	   	}
 
 	   	function importSubWorkflow(){
@@ -1446,7 +1450,7 @@
 
 				<a4j:jsFunction name="saveWorkflow" action="#{canvasBean.save}"
 					reRender="errorTable"
-					oncomplete="if(document.getElementById('#{canvasBean.nameWorkflow}') == null){renameTab();} else {onHideModalSaveWorkflow(true);jQuery('#canvas-tabs').unblock();}">
+					oncomplete="renameTab();">
 					<a4j:actionparam name="nameWorkflow" />
 					<a4j:actionparam name="pathFile" />
 					<a4j:actionparam name="positions" />

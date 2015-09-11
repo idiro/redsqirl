@@ -73,6 +73,7 @@ public class HdfsBrowserBean extends HdfsBean {
 		
 		if (getDataStore().goTo(newPath)) {
 			logger.info("createSaveFolder path is ok");
+			setPath(null);
 			updateTable();
 		} else {
 			getDataStore().create(newPath, new LinkedHashMap<String, String>());
