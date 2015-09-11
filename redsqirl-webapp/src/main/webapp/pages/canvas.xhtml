@@ -524,7 +524,7 @@
 		    	  forceRefresh = true;
 	          }
 	          if(forceRefresh) {
-		    	  setWorkflowNoArcUpdate(canvasName);
+		    	  setWorkflow(canvasName);
 	    	      addElements(canvasName, positions, selecteds);
 	    	      setSaved(canvasName, true);
 	    	      setPathFile(canvasName, path);
@@ -599,8 +599,8 @@
 	    	  var tabs = jQuery("#canvas-tabs").tabs();
               var ul = jQuery("#canvas-tabs").tabs().find( "ul:first" );
               
-              jQuery( "<li class='locked canvasTabsInactive'><a href='#"+ getCanvasId(tabName) +"' class='canvasTab' onclick=\"setWorkflow('"+tabName+"');\"><img src='"+tabImage+"' style='width:15px;padding-right:5px;position:relative;top:3px;'/><span id='canvasNameStar-"+tabName+"'>"+ 
-            		  tabName +"</span></a> <span id='"+tabName+"-icon-close' class='ui-icon ui-icon-close' role='presentation' onclick=\"closeWorkflowTab(this, '"+tabName+"')\"></span> </li>" ).appendTo( ul );
+              jQuery( "<li class='locked canvasTabsInactive'><a href='#"+ getCanvasId(tabName) +"' class='canvasTab' onclick=\"setWorkflow('"+tabName+"');return false;\"><img src='"+tabImage+"' style='width:15px;padding-right:5px;position:relative;top:3px;'/><span id='canvasNameStar-"+tabName+"'>"+ 
+            		  tabName +"</span></a> <span id='"+tabName+"-icon-close' class='ui-icon ui-icon-close' role='presentation' onclick=\"closeWorkflowTab(this, '"+tabName+"'); return false;\"></span> </li>" ).appendTo( ul );
               
               var div = "<div id='"+getCanvasId(tabName)+"' class='container-canvas'>"+
 				"<div id='container-"+tabName+"' class='container-"+tabName+"'>"+
@@ -728,6 +728,7 @@
 	      }
 
 		var runningIntervalID;
+		var copyRunningMsgIdx = 0;
 	      
 	     function unblockRunningWorkflowJS(){
 	     	//<![CDATA[
@@ -735,20 +736,11 @@
 	    	 try{
 	    	 
 		         
-	         if(lastBlockedRunningWorkflow != null){
+	         if(lastBlockedRunningWorkflow){
 	        	 console.log("unblockRunningWorkflowJS ", lastBlockedRunningWorkflow);
 	             jQuery('#'+lastBlockedRunningWorkflow).unblock();
-
-	             try{
-	            	 
-	     			if(jQuery('[id$="domMessageDivCanvas2Form"]')){
-	     	        	#{rich:component('idProgBarRunning')}.disable();
-	     			}
-
-	     	     }catch(exception){
-	     		     	alert("c " + exception);
-	     		     }
-	             
+	             try{disableProgressBar();}catch(exception){}
+	             try{jQuery('#domMessageRunning'+ copyRunningMsgIdx).remove();}catch(exception){}
 	         }else{
 		    	 console.log("unblockRunningWorkflowJS");
 		     }
@@ -782,16 +774,19 @@
 	    	 console.log("blockRunningWorkflowJS" , lastBlockedRunningWorkflow);
 
 			try{
-	    	 
-             jQuery('#'+lastBlockedRunningWorkflow).block({ message: jQuery('#domMessageDivCanvas2') });
-
+	    	 var origDiv = document.getElementById('domMessageRunning');
+	    	 var newDiv = document.createElement("div");
+	    	 newDiv.id = 'domMessageRunning'+ (++copyRunningMsgIdx);
+	    	 newDiv.style.display = "none";
+	    	 newDiv.innerHTML = origDiv.innerHTML;
+             jQuery('#'+lastBlockedRunningWorkflow).block({ message: newDiv });
 	     	}catch(exception){
 		     	alert("d " + lastBlockedRunningWorkflow + " " + exception);
 		     }
              
              resizeBlockUICanvas();
 
-             runningIntervalID = setInterval(function(){ updateProgressBar(); },1000);
+             runningIntervalID = setInterval(function(){ updateProgressBar(); },1500);
              setTimeout(function(){ updateProgressBar(); }, 100);
              
              //]]>
@@ -1215,13 +1210,14 @@
 	
 	<a4j:region renderRegionOnly="true">
 				
-		
-		<div id="domMessageDivCanvas2" style="display: none;">
-			
-			<h:form id="domMessageDivCanvas2Form">
+					
+		<div id="domMessageRunning" style="display: none;">
+			<h:form id="domMessageRunningForm">
 			
 				<a4j:jsFunction name="updateProgressBar" reRender="runningprogressComponent" 
-					data="#{canvasBean.runningAndUpdate}" oncomplete="console.log('updateProgressBar'); if(!data){unblockRunningWorkflowJS();setRunning(getSelectedByName(), false);updateAllArcsStatus();}"  />
+					data="#{canvasBean.runningAndUpdate}" oncomplete="console.log('updateProgressBar: ',data[0],data[1],getSelectedByName()); if(data[0] == 'false' &amp;&amp; data[1] == getSelectedByName()){unblockRunningWorkflowJS();setRunning(getSelectedByName(), false);console.log('updateArcsAfterRunning: ',data[0],data[1],getSelectedByName());updateAllArcsStatus();}"  />
+				<a4j:jsFunction name="disableProgressBar" reRender="idProgBarRunning" 
+				     oncomplete="try{#{rich:component('idProgBarRunning')}.disable();}catch(exception){}"/>
 				
 				<h:outputLink id="workflowUrl" value="#{canvasBean.workflowUrl}"
 					target="_blank" style="float:left;margin-left:5px;"
@@ -1254,8 +1250,7 @@
 					<a4j:commandButton id="killProcessBtn" styleClass="greenButton"
 						style="float:right;margin-right:5px;" value="Kill Process"
 						action="#{canvasBean.stopRunningWorkflow}"
-						oncomplete="#{rich:component('idProgBarRunning')}.disable();"
-						reRender="domMessageDivCanvas2, runningprogressComponent" />
+						oncomplete="#{rich:component('idProgBarRunning')}.disable();" />
 				</h:panelGroup>
 			
 			</h:form>
@@ -1473,18 +1468,10 @@
                     onsuccess="jQuery('#canvas-tabs').unblock();"
                     onstop="jQuery('#canvas-tabs').unblock();" />
                     
-                <a4j:jsFunction name="setWorkflowNoArcUpdate"
-					action="#{canvasBean.changeWorkflow}"
-					oncomplete="console.log('setWorkflowNoArcUpdate', '#{canvasBean.nameWorkflow}'); setSelectedByName('#{canvasBean.nameWorkflow}');updateWfDisplayComment();if(getSelectedWorkflowType() == 'W'){if(#{canvasBean.running}){setRunning(getSelectedByName(), true);blockRunningWorkflowJS();}else{unblockRunningWorkflowJS();}}changeFooter(getSelectedByName());"
-					reRender="formMenu,domMessageDivCanvas2,killProcessBtn">
-					<a4j:actionparam name="selectedCanvas"
-						assignTo="#{canvasBean.nameWorkflow}" />
-				</a4j:jsFunction>
-                    
 				<a4j:jsFunction name="setWorkflow"
 					action="#{canvasBean.changeWorkflow}"
-					oncomplete="console.log('setWorkflow' , '#{canvasBean.nameWorkflow}' ); setSelectedByName('#{canvasBean.nameWorkflow}');updateWfDisplayComment();if(getSelectedWorkflowType() == 'W'){if(#{canvasBean.running}){setRunning(getSelectedByName(), true);blockRunningWorkflowJS();}else{unblockRunningWorkflowJS();updateAllArcsStatus();}}changeFooter(getSelectedByName());"
-					reRender="formMenu,domMessageDivCanvas2,killProcessBtn">
+					oncomplete="selectedCanvas='#{canvasBean.nameWorkflow}';console.log('setWorkflow', getSelectedByName(), getSelectedWorkflowType(), #{canvasBean.running} );updateWfDisplayComment();if(getSelectedWorkflowType() == 'W'){if(#{canvasBean.running} == true){setRunning(getSelectedByName(), true);blockRunningWorkflowJS();}else{unblockRunningWorkflowJS();updateAllArcsStatus();}}else{updateAllArcsStatus();}changeFooter(getSelectedByName());"
+					>
 					<a4j:actionparam name="selectedCanvas" assignTo="#{canvasBean.nameWorkflow}" />
 				</a4j:jsFunction>
 			</a4j:region>
@@ -1687,15 +1674,15 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
 				<a4j:jsFunction name="loadWorkflow" data="#{canvasBean.positions}"
-					oncomplete="console.log('loadWorkflow'); unblockRunningWorkflowJS();addElementJs(data[0],data[1],data[2],data[3],data[4], true, data[5]);updateAllArcsStatus();"
+					oncomplete="console.log('loadWorkflow'); unblockRunningWorkflowJS();addElementJs(data[0],data[1],data[2],data[3],data[4], true, data[5]);"
 					reRender="tabFlowchart,errorTable,msnError" />
 
                 <a4j:jsFunction name="loadSubWorkflowFromCanvas" data="#{canvasBean.positions}"
-                    oncomplete="console.log('loadSubWorkflowFromCanvas'); addElementJs(data[0],data[1],data[2],data[3],data[4], true, data[5]);canvasArray[selectedCanvas].saved=false;updateAllArcsStatus();"
+                    oncomplete="console.log('loadSubWorkflowFromCanvas'); addElementJs(data[0],data[1],data[2],data[3],data[4], true, data[5]);canvasArray[selectedCanvas].saved=false;"
                     reRender="tabFlowchart,errorTable,msnError" />
                     
                 <a4j:jsFunction name="rebuildCanvas" data="#{canvasBean.positions}"
-					oncomplete="console.log('rebuildCanvas'); addElementJs(data[0],data[1],data[2],data[3],data[4], true, data[5],true);updateAllArcsStatus();"
+					oncomplete="console.log('rebuildCanvas'); addElementJs(data[0],data[1],data[2],data[3],data[4], true, data[5],true);"
 					reRender="tabFlowchart,errorTable,msnError" />
                 
                     
@@ -1784,7 +1771,7 @@
 			<a4j:region>
 
 				<a4j:status
-					onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivcanvas-tabs') });"
+					onstart="jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });"
 					onerror="jQuery('#canvas-tabs').unblock();"
 					onsuccess="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
@@ -1792,7 +1779,7 @@
 				<a4j:jsFunction name="runWorkflow"
 					action="#{canvasBean.runWorkflow}"
 					oncomplete="console.log('runWorkflow', getSelectedByName()); setRunning(getSelectedByName(), true);blockRunningWorkflowJS();"
-					reRender="formMenu,domMessageDivCanvas2,killProcessBtn,msnError,idProgBarRunning">
+					reRender="msnError">
 					<a4j:actionparam name="positions" />
 					<a4j:actionparam name="savedFile" />
 					<a4j:actionparam name="select" />
@@ -2147,7 +2134,7 @@
 									<rich:menuItem id="runMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_runitems}"
 										onclick="var sels=getSelectedIconsCommaDelimited();if(sels.length > 0){runWorkflow(getIconPositions(),getPathFile(getSelectedByName()),sels)}else{alert('#{messages.run_nothing_selected}')}"
-										reRender="formMenu,domMessageDivCanvas2,killProcessBtn"
+										reRender="formMenu"
 										disabled="#{canvasBean.workflowType == 'S'}">
 										<h:outputText value="Ctrl+Alt+E" class="menuItemHotKey" />
 									</rich:menuItem>
@@ -2155,7 +2142,7 @@
 									<rich:menuItem id="runSelectedMenuItem" submitMode="ajax"
 										value="#{messages.label_menu_runproject}"
 										onclick="runWorkflow(getIconPositions(),getPathFile(getSelectedByName()))"
-										reRender="formMenu,domMessageDivCanvas2,killProcessBtn"
+										reRender="formMenu"
 										disabled="#{canvasBean.workflowType == 'S'}">
 										<h:outputText value="Ctrl+E" class="menuItemHotKey" />
 									</rich:menuItem>

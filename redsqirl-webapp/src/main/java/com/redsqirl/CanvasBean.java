@@ -1223,13 +1223,15 @@ public class CanvasBean extends BaseBean implements Serializable {
 		return running;
 	}
 	
-	public boolean isRunningAndUpdate() throws RemoteException {
+	public String[] getRunningAndUpdate() throws RemoteException {
 
 		logger.info("isRunning");
 
 		DataFlow df = getDf();
+		String name = "";
 		boolean running = false;
 		if (df != null) {
+			name = df.getName();
 			running = df.isrunning();
 			logger.info(df.getName()+" running: "+running);
 			if(running){
@@ -1243,7 +1245,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 				}
 			}
 		}
-		return running;
+		return new String[]{Boolean.toString(running),name};
 	}
 
 	public void stopRunningWorkflow() throws RemoteException, Exception {
