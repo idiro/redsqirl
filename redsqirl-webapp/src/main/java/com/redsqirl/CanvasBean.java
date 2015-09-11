@@ -1348,15 +1348,17 @@ public class CanvasBean extends BaseBean implements Serializable {
 		logger.info("cleanCanvasProject");
 
 		DataFlow wf = getworkFlowInterface().getWorkflow(getNameWorkflow());
-		String error = wf.cleanProject();
-		if (error != null) {
-			MessageUseful.addErrorMessage(error);
-			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-			request.setAttribute("msnError", "msnError");
-			usageRecordLog().addError("ERROR CLEANCANVASPROJECT", error);
+		if(wf != null){
+			String error = wf.cleanProject();
+			if (error != null) {
+				MessageUseful.addErrorMessage(error);
+				HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+				request.setAttribute("msnError", "msnError");
+				usageRecordLog().addError("ERROR CLEANCANVASPROJECT", error);
+			}
+			usageRecordLog().addSuccess("CLEANCANVASPROJECT");
 		}
-
-		usageRecordLog().addSuccess("CLEANCANVASPROJECT");
+		
 	}
 
 	public void cleanElement() throws RemoteException {

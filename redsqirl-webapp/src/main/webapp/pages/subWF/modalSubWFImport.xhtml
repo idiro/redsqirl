@@ -79,7 +79,8 @@
 	<a4j:jsFunction name="refreshHdfsImportFileTable" action="#{browserHdfsBean.changePath}" reRender="hdfsfsFileImport" 
 		oncomplete="mountComboboxTypes();" />
 
-	<a4j:jsFunction name="updateTableHdfsImport" action="#{browserHdfsBean.selectFile}" reRender="pathOpenFileImport,hdfsfsFileImport,hdfsImportFileBtn">
+	<a4j:jsFunction name="updateTableHdfsImport" action="#{browserHdfsBean.selectFile}" 
+		reRender="pathOpenFileImport,hdfsfsFileImport,hdfsImportFileBtn" oncomplete="mountComboboxTypes();" >
 		<a4j:actionparam name="nameFile" />
 	</a4j:jsFunction>
 	<div class="pathHeader">
@@ -87,20 +88,23 @@
 	<h:inputText id="pathOpenFileImport" styleClass="mainPageTextField" label="Path" value="#{browserHdfsBean.path}"
 		maxlength="255" style="width:395px;" onkeypress="return enableEnterKey(event, 'changePathLoadHdfsBtnImport');"/>
 		
-	<a4j:commandLink id="changePathLoadHdfsBtnImport" action="#{browserHdfsBean.changePath}" reRender="pathOpenFileImport,hdfsfsFileImport,hdfsImportFileBtn">
+	<a4j:commandLink id="changePathLoadHdfsBtnImport" action="#{browserHdfsBean.changePath}" 
+		reRender="pathOpenFileImport,hdfsfsFileImport,hdfsImportFileBtn" oncomplete="mountComboboxTypes();" >
 		<h:graphicImage value="../image/icons/button-search.gif" title='#{messages.filesystem_change_path}' styleClass="refreshButton" />
 	</a4j:commandLink>
 	
-	<a4j:commandLink action="#{browserHdfsBean.goPrevious}"
-		reRender="pathOpenFileImport,hdfsfsFileImport,hdfsImportFileBtn">
+	<a4j:commandLink action="#{browserHdfsBean.goPrevious}"	reRender="pathOpenFileImport,hdfsfsFileImport,hdfsImportFileBtn"
+		oncomplete="mountComboboxTypes();" >
 		<h:graphicImage id="btPrev" value="../image/icons/button-previous.gif" title='#{messages.HdfsInterface_previous_help}' styleClass="refreshButton" />
 	</a4j:commandLink>
 	
-	<a4j:commandLink action="#{browserHdfsBean.goNext}" reRender="pathOpenFileImport,hdfsfsFileImport,hdfsImportFileBtn">
+	<a4j:commandLink action="#{browserHdfsBean.goNext}" reRender="pathOpenFileImport,hdfsfsFileImport,hdfsImportFileBtn"
+		oncomplete="mountComboboxTypes();" >
 		<h:graphicImage id="btNext" value="../image/icons/button-next.gif" title='#{messages.HdfsInterface_next_help}' styleClass="refreshButton" />
 	</a4j:commandLink>
 	
-	<a4j:commandLink action="#{browserHdfsBean.goUp}" reRender="pathOpenFileImport,hdfsfsFileImport,hdfsImportFileBtn">
+	<a4j:commandLink action="#{browserHdfsBean.goUp}" reRender="pathOpenFileImport,hdfsfsFileImport,hdfsImportFileBtn"
+		oncomplete="mountComboboxTypes();" >
 		<h:graphicImage id="browserHdfsBeanGoup" value="../image/icons/button-up.gif" title='#{messages.hdfs_goup}' styleClass="refreshButton" style="bt" />
 	</a4j:commandLink>
 	</div>
