@@ -610,8 +610,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 				boolean toAdd = false;
 				boolean existRecorded = false;
 				boolean notexistNotTemporary = false;
-				Iterator<DFEOutput> itOutput = cur.getDFEOutput().values()
-						.iterator();
+				Collection<DFEOutput> outputList = cur.getDFEOutput().values();
+				Iterator<DFEOutput> itOutput = outputList.iterator();
 				while (itOutput.hasNext()) {
 					DFEOutput outCur = itOutput.next();
 					if (!outCur.isPathExists()) {
@@ -625,7 +625,7 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 						existRecorded = true;
 					}
 				}
-				if ( (existRecorded && notexistNotTemporary)|| (!existRecorded && toAdd)) {
+				if ( (existRecorded && notexistNotTemporary)|| (!existRecorded && toAdd) || outputList.isEmpty()) {
 					elToRun.add(cur.getComponentId());
 				}
 			}
