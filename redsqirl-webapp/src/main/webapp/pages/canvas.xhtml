@@ -730,20 +730,20 @@
 
 	    
 		    
-        jQuery(document).bind('keydown', function (e) {
+        jQuery(document).bind('keydown', function (event) {
 
         	
 			if( !jQuery(".rich-mp-container").is(":visible") ){
-				if (e.keyCode == 46) { // Delete
+				if (event.keyCode == 46) { // Delete
 	                deleteSelected(selectedCanvas);
 	            }
 			}
 				
 			if (event.keyCode === 8) { //backspace
 				var targ;
-				if (!e) var e = window.event;
-				if (e.target) targ = e.target;
-				else if (e.srcElement) targ = e.srcElement;
+				if (!event) var event = window.event;
+				if (event.target) targ = event.target;
+				else if (event.srcElement) targ = event.srcElement;
 
 				if(targ.tagName == "BODY"){
 					event.preventDefault();

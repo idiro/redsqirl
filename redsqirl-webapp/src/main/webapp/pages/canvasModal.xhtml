@@ -511,13 +511,14 @@
 			                                        <h:outputText value="#{column}" />
 			                                    </f:facet>
 			        
-			                                    <h:inputText value="#{rowItem.row[ind]}"
+			                                    <h:inputText value="#{rowItem.row[ind]}" onchange="reLoadInputTextField();" id="textField#{ind}#{rowNb+1}"
 			                                        rendered="#{interCur.table.columnType[column] == 'textField' }"
 			                                        styleClass="tableInteractionInput"
 			                                        onkeypress="return disableEnterKey(event);"/>
+			                                    <a4j:jsFunction name="reLoadInputTextField" reRender="textField#{ind}#{rowNb+1}" />
 			                                        
 			                                        
-			                                        <h:panelGroup style="max-width:100px;" layout="block" rendered="#{interCur.table.columnType[column] == 'comboBox' }" >
+			                                    <h:panelGroup style="max-width:100px;" layout="block" rendered="#{interCur.table.columnType[column] == 'comboBox' }" >
 			                                        <select onchange="updatedComboboxTableInteraction(this,'#{ind}#{rowNb+1}');" style="max-width:100px;">
 			                                        	<option></option>
 										            	<a4j:repeat value="#{interCur.table.tableConstraints[column]}" var="idx"  >
@@ -530,17 +531,18 @@
 														<h:inputHidden value="#{rowItem.row[ind]}" id="combo#{ind}#{rowNb}ans"/>
 													</div>
 													
-													</h:panelGroup>
-													
 													<a4j:jsFunction name="reLoadInputHidden" reRender="combo#{ind}#{rowNb}ans" />
+												</h:panelGroup>
+													
 			        
-												<h:inputText value="#{rowItem.row[ind]}" 
-												       rendered="#{interCur.columnType[column] == 'editor' }" 
-												       styleClass="tableInteractionTextEditor" >
-			                                   	<a4j:commandLink onclick="openHelpTextEditorModal('#{interCur.id}','#{rowNb}','#{column}');" >
-			                                   	    <h:graphicImage url="../image/icons/button-pencil.gif" style="width:15px;float:right" title="#{messages.label_text_editor}" />
-												</a4j:commandLink>
+												<h:inputText value="#{rowItem.row[ind]}" rendered="#{interCur.columnType[column] == 'editor' }" 
+												    styleClass="tableInteractionTextEditor" onchange="reLoadInputEditor();"
+												    id="editor#{ind}#{rowNb+1}" >
+				                                   	<a4j:commandLink onclick="openHelpTextEditorModal('#{interCur.id}','#{rowNb}','#{column}');" >
+				                                   	    <h:graphicImage url="../image/icons/button-pencil.gif" style="width:15px;float:right" title="#{messages.label_text_editor}" />
+													</a4j:commandLink>
 												</h:inputText>
+												<a4j:jsFunction name="reLoadInputEditor" reRender="editor#{ind}#{rowNb+1}" />
 			        
 			                                </rich:columns>
 			        
