@@ -199,7 +199,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	 * @author Igor.Souza
 	 * @throws RemoteException
 	 */
-	public void openCanvasModal() throws RemoteException {
+	public String[] getOpenCanvasModal() throws RemoteException {
 		logger.info("openCanvasModal");
 		
 		FacesContext context = FacesContext.getCurrentInstance();
@@ -349,6 +349,14 @@ public class CanvasModal extends BaseBean implements Serializable {
 		}
 		
 		usageRecordLog().addSuccess(dfe.getName(), "OPENCANVASMODAL");
+		
+		return new String[]{Boolean.toString(loadMainWindow && ((canvasBean.getWorkflowType().equals("W") && getOutputTab().getShowOutputForm().equals("Y") || getListPageSize() > 0))),
+				Integer.toString(getListPageSize()),
+				getIdGroup(),
+				getCurElId(),
+				getCurElComment(),
+				Boolean.toString(loadMainWindow)
+				};
 	}
 	
 	public void closeCanvasModal() throws RemoteException {

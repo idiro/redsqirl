@@ -64,7 +64,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 	private String paramOutId;
 	private String paramInId;
 	private String paramNameLink;
-	private String[] result;
 	private String nameOutput;
 	private Map<String, Map<String, String>> idMap;
 	private Map<String, Map<String, String>> idMapClone = new LinkedHashMap<String, Map<String, String>>();
@@ -323,8 +322,12 @@ public class CanvasBean extends BaseBean implements Serializable {
 	 */
 	public void addLink() {
 
-		logger.info("addLink");
+	}
+	
+	public String[] getResultAfterAddingLink(){
 
+		logger.info("addLink");
+		String[] ans = new String[3];
 		String idElementA = getIdMap().get(getNameWorkflow()).get(getParamOutId());
 		String idElementB = getIdMap().get(getNameWorkflow()).get(getParamInId());
 
@@ -344,7 +347,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 			df.addLink(nameElementA, dfeObjA.getComponentId(), nameElementB, dfeObjB.getComponentId());
 
-			setResult(new String[] { getParamNameLink(), nameElementA, nameElementB });
+			ans = new String[] { getParamNameLink(), nameElementA, nameElementB };
 			setNameOutput(nameElementA);
 
 		} catch (RemoteException e) {
@@ -356,6 +359,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 		}
 
 		usageRecordLog().addSuccess("ADDLINK");
+		
+		return ans;
 	}
 
 	public String getLinkLabel(String nameElementA, DataFlowElement dfeObjA, DataFlowElement dfeObjB) {
@@ -2067,62 +2072,68 @@ public class CanvasBean extends BaseBean implements Serializable {
 			DataFlowElement dfIn = getDf().getElement(
 					getIdMap().get(getNameWorkflow()).get(groupInId));
 			if (df != null && df.getDFEOutput() != null) {
-				for (Entry<String, DFEOutput> e : df.getDFEOutput().entrySet()) {
-					if (e.getKey().equals(outputName)) {
-						color = e.getValue().getColour();
-						typeName = e.getValue().getTypeName();
-
-						tooltip.append("<center><span style='font-size:15px;'>"
-								+ df.getComponentId() + " -> "
-								+ dfIn.getComponentId()
-								+ "</span></center><br/>");
-						if (!outputName.isEmpty()) {
-							tooltip.append("Name: " + outputName + "<br/>");
+				DFEOutput outputCur = df.getDFEOutput().get(outputName);
+				//Attempt to calculate outputName if it has not been given
+				if(outputCur == null){
+					String dfInId = dfIn.getComponentId();
+					boolean found = false;
+					Map<String,List<DataFlowElement>> posNames = df.getOutputComponent();
+					Iterator<String> nameIt = posNames.keySet().iterator();
+					while(nameIt.hasNext() && !found){
+						outputName = nameIt.next();
+						Iterator<DataFlowElement> elIt = posNames.get(outputName).iterator();
+						while(elIt.hasNext() && !found){
+							found = dfInId.equals(elIt.next().getComponentId());
 						}
-						tooltip.append("Type: " + typeName + "<br/>");
-
-						if("W".equals(workflowType)){
-							if (e.getValue().isPathExists()) {
-								tooltip.append("Path: <span style='color:#008B8B'>"
-										+ e.getValue().getPath() + "</span><br/>");
-							} else {
-								tooltip.append("Path: <span style='color:#d2691e'>"
-										+ e.getValue().getPath() + "</span><br/>");
-							}
-						}
-						// tooltip.append("Path exist: " +
-						// e.getValue().isPathExists() + "<br/>");
-
-						if (e.getValue().getFields() != null
-								&& e.getValue().getFields().getFieldNames() != null) {
-							tooltip.append("<br/>");
-							tooltip.append("<table style='border:1px solid;width:100%;'><tr><td></td><td> Name </td><td> Type </td></tr>");
-							int row = 0;
-							int index = 1;
-							for (String name : e.getValue().getFields()
-									.getFieldNames()) {
-								if ((row % 2) == 0) {
-									tooltip.append("<tr class='odd-row'>");
-								} else {
-									tooltip.append("<tr>");
-								}
-								tooltip.append("<td>" + index + "</td>");
-								tooltip.append("<td>" + name + "</td>");
-								tooltip.append("<td>"
-										+ e.getValue().getFields()
-										.getFieldType(name)
-										+ "</td></tr>");
-								row++;
-								index++;
-							}
-							tooltip.append("</table>");
-							tooltip.append("<br/>");
-						}
-
-						logger.info(e.getKey() + " - " + color);
-						label = getLinkLabel(outputName, df, dfIn);
-						break;
 					}
+					if(found){
+						outputCur = df.getDFEOutput().get(outputName);
+					}
+				}
+				if (outputCur != null) {
+					color = outputCur.getColour();
+					typeName = outputCur.getTypeName();
+
+					tooltip.append("<center><span style='font-size:15px;'>"
+							+ df.getComponentId() + " -> "
+							+ dfIn.getComponentId()
+							+ "</span></center><br/>");
+					if (!outputName.isEmpty()) {
+						tooltip.append("Name: " + outputName + "<br/>");
+					}
+					tooltip.append("Type: " + typeName + "<br/>");
+
+					// tooltip.append("Path exist: " +
+					// outputCur.isPathExists() + "<br/>");
+
+					if (outputCur.getFields() != null
+							&& outputCur.getFields().getFieldNames() != null) {
+						tooltip.append("<br/>");
+						tooltip.append("<table style='border:1px solid;width:100%;'><tr><td></td><td> Name </td><td> Type </td></tr>");
+						int row = 0;
+						int index = 1;
+						for (String name : outputCur.getFields()
+								.getFieldNames()) {
+							if ((row % 2) == 0) {
+								tooltip.append("<tr class='odd-row'>");
+							} else {
+								tooltip.append("<tr>");
+							}
+							tooltip.append("<td>" + index + "</td>");
+							tooltip.append("<td>" + name + "</td>");
+							tooltip.append("<td>"
+									+ outputCur.getFields()
+									.getFieldType(name)
+									+ "</td></tr>");
+							row++;
+							index++;
+						}
+						tooltip.append("</table>");
+						tooltip.append("<br/>");
+					}
+
+					logger.info(outputName + " - " + color);
+					label = getLinkLabel(outputName, df, dfIn);
 				}
 			}
 		} else {
@@ -2812,14 +2823,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 
 	public void setParamNameLink(String paramNameLink) {
 		this.paramNameLink = paramNameLink;
-	}
-
-	public String[] getResult() {
-		return result;
-	}
-
-	public void setResult(String[] result) {
-		this.result = result;
 	}
 
 	public List<SelectItem> getLinkPossibilities() {

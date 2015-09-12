@@ -232,11 +232,13 @@ CommandAddObj.prototype = Object.create(Command.prototype);
 CommandAddObj.prototype.constructor = CommandAddObj;
 
 CommandAddObj.prototype.undo = function(){
+    console.timeStamp("CommandAddObj.undo begin");
 	deleteElementsJS(this.groupId, "");
+	console.timeStamp("CommandAddObj.undo end");
 };
 
 CommandAddObj.prototype.redo = function(){
-	
+	console.timeStamp("CommandAddObj.redo begin");
 	addElement(this.canvasName,
 			this.elementType,
 			this.elementImg,
@@ -251,7 +253,7 @@ CommandAddObj.prototype.redo = function(){
     addElementBt(this.elementType,this.groupId,this.elementId);
     updateTypeObj(this.canvasName, this.groupId, this.groupId);
 	canvasArray[this.canvasName].polygonLayer.draw();
-	
+	console.timeStamp("CommandAddObj.redo end");
 };
 
 CommandAddObj.prototype.getName = function(){
@@ -273,12 +275,17 @@ CommandAddArrow.prototype = Object.create(Command.prototype);
 CommandAddArrow.prototype.constructor = CommandAddArrow;
 
 CommandAddArrow.prototype.undo = function(){
+    console.timeStamp("CommandAddArrow.undo begin");
 	deleteElementsJS("", this.name);
+	console.timeStamp("CommandAddArrow.undo end");
 };
 
 CommandAddArrow.prototype.redo = function(){
+    console.timeStamp("CommandAddArrow.redo begin");
+    //!ADD A LINK ON BACK-END
 	addLink(this.canvasName, this.outId, this.inId);
-	updateAllArrowColor();
+	updateArrowColor('#{canvasBean.paramOutId}','#{canvasBean.paramInId}', '#{canvasBean.nameOutput}');
+	console.timeStamp("CommandAddArrow.redo end");
 };
 
 CommandAddArrow.prototype.getName = function(){
@@ -299,10 +306,13 @@ CommandPaste.prototype = Object.create(Command.prototype);
 CommandPaste.prototype.constructor = CommandPaste;
 
 CommandPaste.prototype.undo = function(){
+    console.timeStamp("CommandPaste.prototype.undo begin");
 	deleteElementsJS(this.idsToPaste, "");
+	console.timeStamp("CommandPaste.prototype.undo end");
 };
 
 CommandPaste.prototype.redo = function(){
+    console.timeStamp("CommandPaste.prototype.redo begin");
 	tmpCommandObj = this;
 	if(this.cloneId.empty()){
 		//generate clone inside
@@ -311,6 +321,7 @@ CommandPaste.prototype.redo = function(){
 		//use clone
 		undoPasteCloneWorkflow(this.selecteds, this.cloneId, true);
 	}
+	console.timeStamp("CommandPaste.prototype.redo end");
 };
 
 CommandPaste.prototype.getName = function(){
@@ -341,14 +352,17 @@ CommandReplaceAll.prototype = Object.create(Command.prototype);
 CommandReplaceAll.prototype.constructor = CommandReplaceAll;
 
 CommandReplaceAll.prototype.undo = function(){
+    console.timeStamp("CommandReplaceAll.prototype.undo begin");
 	tmpCommandObj = this;
 	rebuildElementsFromClone(this.selecteds, this.cloneId,false);
-	
+	console.timeStamp("CommandReplaceAll.prototype.undo end");
 };
 
 CommandReplaceAll.prototype.redo = function(){
+    console.timeStamp("CommandReplaceAll.prototype.redo begin");
 	tmpCommandObj = this;
 	replaceJS(getAllIconPositions());
+	console.timeStamp("CommandReplaceAll.prototype.redo end");
 };
 
 CommandReplaceAll.prototype.getName = function(){
@@ -376,6 +390,7 @@ CommandMove.prototype = Object.create(Command.prototype);
 CommandMove.prototype.constructor = CommandMove;
 
 CommandMove.prototype.undo = function(){
+    console.timeStamp("CommandMove.prototype.undo begin");
     jQuery.each(this.oldValues, function(index, value) {
         if(value.elementId !== undefined ){
             var group = canvasArray[selectedCanvas].polygonLayer.get('#' + value.elementId)[0];
@@ -399,9 +414,11 @@ CommandMove.prototype.undo = function(){
     });
     canvasArray[selectedCanvas].polygonLayer.draw();
     canvasArray[selectedCanvas].layer.draw();
+    console.timeStamp("CommandMove.prototype.undo end");
 };
 
 CommandMove.prototype.redo = function(){
+    console.timeStamp("CommandMove.prototype.redo begin");
     jQuery.each(this.newValues, function(index, value) {
         if(value.elementId !== undefined ){
             var group = canvasArray[selectedCanvas].polygonLayer.get('#' + value.elementId)[0];
@@ -413,6 +430,7 @@ CommandMove.prototype.redo = function(){
     });
     canvasArray[selectedCanvas].polygonLayer.draw();
     canvasArray[selectedCanvas].layer.draw();
+    console.timeStamp("CommandMove.prototype.redo end");
 };
 
 CommandMove.prototype.getName = function(){
@@ -437,18 +455,22 @@ CommandChangeId.prototype = Object.create(Command.prototype);
 CommandChangeId.prototype.constructor = CommandChangeId;
 
 CommandChangeId.prototype.undo = function(){
+    console.timeStamp("CommandChangeId.prototype.undo begin");
     jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });
     currentChangeIdGroup = this.groupId;
     changeIdElement(this.groupId,this.oldId,this.oldComment);
     updateLabelObj(this.groupId,this.oldId);
+    console.timeStamp("CommandChangeId.prototype.undo end");
 };
 
 CommandChangeId.prototype.redo = function(){
+    console.timeStamp("CommandChangeId.prototype.redo begin");
     jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });
     currentChangeIdGroup = this.groupId;
     changeIdElement(this.groupId,this.newId,this.newComment);
     updateLabelObj(this.groupId,this.newId);
     changeModalTitle();
+    console.timeStamp("CommandChangeId.prototype.redo end");
 };
 
 CommandChangeId.prototype.getName = function(){
@@ -456,8 +478,10 @@ CommandChangeId.prototype.getName = function(){
 };
 
 function execChangeIdElementCommand(loadMainWindow , groupId, oldId, newId, oldComment, newComment){
+    console.timeStamp("execChangeIdElementCommand begin");
 	if(oldId != newId || oldComment != newComment){
 		if(oldId != newId ){
+		    changeModalTitle();
 			if(!(loadMainWindow==='true')){
 				if (!confirm(msg_confirm_changeid)) {
 					return false;
@@ -472,6 +496,7 @@ function execChangeIdElementCommand(loadMainWindow , groupId, oldId, newId, oldC
         changeIdElement(groupId,newId,newComment);
         updateLabelObj(groupId,newId);
     }
+    console.timeStamp("execChangeIdElementCommand end");
 }
 
 
@@ -492,14 +517,17 @@ CommandUpdateElement.prototype = Object.create(Command.prototype);
 CommandUpdateElement.prototype.constructor = CommandUpdateElement;
 
 CommandUpdateElement.prototype.undo = function(){
+    console.timeStamp("CommandUpdateElement.prototype.undo begin");
     tmpCommandObj = this;
     rebuildElementsFromClone(this.selecteds, this.beforeCloneId,true);
-    
+    console.timeStamp("CommandUpdateElement.prototype.undo end");
 };
 
 CommandUpdateElement.prototype.redo = function(){
+    console.timeStamp("CommandUpdateElement.prototype.redo begin");
     tmpCommandObj = this;
     rebuildElementsFromClone(this.selecteds, this.afterCloneId,true);
+    console.timeStamp("CommandUpdateElement.prototype.redo end");
 };
 
 CommandUpdateElement.prototype.getName = function(){
@@ -530,11 +558,15 @@ CommandChangeCommentWf.prototype = Object.create(Command.prototype);
 CommandChangeCommentWf.prototype.constructor = CommandChangeCommentWf;
 
 CommandChangeCommentWf.prototype.undo = function(){
+    console.timeStamp("CommandChangeCommentWf.prototype.undo begin");
     updateWfComment(this.oldComment);
+    console.timeStamp("CommandChangeCommentWf.prototype.undo end");
 };
 
 CommandChangeCommentWf.prototype.redo = function(){
+    console.timeStamp("CommandChangeCommentWf.prototype.redo begin");
     updateWfComment(this.newComment);
+    console.timeStamp("CommandChangeCommentWf.prototype.redo end");
 };
 
 CommandChangeCommentWf.prototype.getName = function(){
@@ -542,10 +574,12 @@ CommandChangeCommentWf.prototype.getName = function(){
 };
 
 function execChangeCommentWfCommand(oldComment, newComment){
+    console.timeStamp("execChangeCommentWfCommand begin");
     if(oldComment != newComment){
         canvasArray[selectedCanvas].commandHistory.execute(
         new CommandChangeCommentWf(oldComment, newComment));
     }
+    console.timeStamp("execChangeCommentWfCommand end");
 }
 
 /********************************************************************/
@@ -561,16 +595,20 @@ CommandAggregate.prototype = Object.create(Command.prototype);
 CommandAggregate.prototype.constructor = CommandAggregate;
 
 CommandAggregate.prototype.undo = function(){
+    console.timeStamp("CommandAggregate.prototype.undo begin");
 	//alert("undo");
 	deleteAllElements();
 	replaceWFByClone("",this.cloneId, false);
 	undoAggregate(this.nameSA);
+	console.timeStamp("CommandAggregate.prototype.undo end");
 };
 
 CommandAggregate.prototype.redo = function(){
+    console.timeStamp("CommandAggregate.prototype.redo begin");
 	//alert("redo");
 	tmpCommandObj = this;
 	cloneBeforeAggregate(getAllIconPositions());
+	console.timeStamp("CommandAggregate.prototype.redo end");
 };
 
 CommandAggregate.prototype.getName = function(){
@@ -600,14 +638,18 @@ CommandExpand.prototype = Object.create(Command.prototype);
 CommandExpand.prototype.constructor = CommandExpand;
 
 CommandExpand.prototype.undo = function(){
+    console.timeStamp("CommandExpand.prototype.undo begin");
 	//alert("undo");
 	deleteAllElements();
 	replaceWFByClone("",this.cloneId, false);
+	console.timeStamp("CommandExpand.prototype.undo end");
 };
 
 CommandExpand.prototype.redo = function(){
+    console.timeStamp("CommandExpand.prototype.redo begin");
 	tmpCommandObj = this;
 	cloneBeforeExpand(getAllIconPositions());
+	console.timeStamp("CommandExpand.prototype.redo end");
 };
 
 CommandExpand.prototype.getName = function(){

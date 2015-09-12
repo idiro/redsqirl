@@ -10,7 +10,7 @@
 <script>
 
 function changeCurrentElementId(){
-	execChangeIdElementCommand('#{canvasModalBean.loadMainWindow}','#{canvasModalBean.idGroup}', '#{canvasModalBean.curElId}' ,'#{canvasModalBean.elementId}', '#{canvasModalBean.curElComment}', jQuery("[id$='elementCommentID']").val());
+	execChangeIdElementCommand(canvasModalParam[5],canvasModalParam[2], canvasModalParam[3] ,'#{canvasModalBean.elementId}', canvasModalParam[4], jQuery("[id$='elementCommentID']").val());
 }
 
 jQuery('[id$="elementCommentID"]').keyup(function() {

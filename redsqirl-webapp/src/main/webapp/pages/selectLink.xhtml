@@ -14,8 +14,8 @@
 	   		</h:selectOneRadio>
 	   		
 	   		<h:panelGrid columns="2">
-		   		<a4j:commandButton action="#{canvasBean.addLink}" value="#{messages.button_ok}" styleClass="greenButton"
-					oncomplete="#{rich:component('modalSelectLink')}.hide();jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });addLinkBt()"/>
+		   		<a4j:commandButton value="#{messages.button_ok}" styleClass="greenButton"
+					onclick="#{rich:component('modalSelectLink')}.hide();jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });addLinkBt()"/>
 				<a4j:commandButton value="#{messages.button_cancel}" styleClass="greenButton"
 				    onclick="removeLink('#{canvasBean.paramNameLink}'); #{rich:component('modalSelectLink')}.hide();"/>
 			</h:panelGrid>

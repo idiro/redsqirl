@@ -500,6 +500,10 @@ function setPropValueFocus(index){
 }
 
 function changeHelpAnchor(index){
+	setTimeout(function() {changeHelpAnchorPriv(index)}, 1);
+}
+
+function changeHelpAnchorPriv(index){
 	index++;
 	jQuery("#tabs-1").scrollTop( 0 );
 	if(jQuery("#page"+index).position()){

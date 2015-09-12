@@ -1054,7 +1054,7 @@
 		   	
 			if(values != null){
 				backupAndCloseAll();
-				alert("The page has been refreshed. Your work has been saved in the backup directory.");
+				setTimeout(function() {alert("The page has been refreshed. Your work has been saved in the backup directory.");}, 1);
 				//addWorkflow("canvas-1");
 			}
 		}
@@ -1214,8 +1214,8 @@
 		<div id="domMessageRunning" style="display: none;">
 			<h:form id="domMessageRunningForm">
 			
-				<a4j:jsFunction name="updateProgressBar" reRender="runningprogressComponent" 
-					data="#{canvasBean.runningAndUpdate}" oncomplete="console.log('updateProgressBar: ',data[0],data[1],getSelectedByName()); if(data[0] == 'false' &amp;&amp; data[1] == getSelectedByName()){unblockRunningWorkflowJS();setRunning(getSelectedByName(), false);console.log('updateArcsAfterRunning: ',data[0],data[1],getSelectedByName());updateAllArcsStatus();}"  />
+				<a4j:jsFunction name="updateProgressBar" reRender="runningActionsList, completedActionsList, domMessageRunningFormTitle" 
+					data="#{canvasBean.runningAndUpdate}" oncomplete="if(data === undefined || !data[1]){unblockRunningWorkflowJS();}else{console.log('updateProgressBar: ',data[0],data[1],getSelectedByName()); if(data[0] == 'false' &amp;&amp; data[1] == getSelectedByName()){unblockRunningWorkflowJS();setRunning(getSelectedByName(), false);console.log('updateArcsAfterRunning: ',data[0],data[1],getSelectedByName());updateAllArcsStatus();}}"  />
 				<a4j:jsFunction name="disableProgressBar" reRender="idProgBarRunning" 
 				     oncomplete="try{#{rich:component('idProgBarRunning')}.disable();}catch(exception){}"/>
 				
@@ -1229,15 +1229,16 @@
 				</h:outputLink>
 				<img src="../image/icons/waiting.gif" />
 				<h:panelGroup id="right_area" layout="block">
-	
+					<br/>
+					<h:outputText id="domMessageRunningFormTitle" value="#{canvasBean.nameWorkflow}" style="test-align:center;font-weight: bold;font-size:16px;" />
 					<br/>
 					<a4j:outputPanel id="runningprogressComponent">
-						<rich:simpleTogglePanel id="runningActionsList" label="Running Actions (#{canvasBean.runningElementsSize})" switchType="client"  >
+						<rich:simpleTogglePanel id="runningActionsList" label="Running Actions (#{canvasBean.runningElementsSize})" switchType="client" style="max-height: 90px;overflow:auto;" >
 							<ui:repeat value="#{canvasBean.runningElements}" var="item">
 	                   			#{item}<br />
 	               			</ui:repeat>
 						</rich:simpleTogglePanel>
-						<rich:simpleTogglePanel id="completedActionsList" label="Actions Completed (#{canvasBean.doneElementsSize})" switchType="client"  >
+						<rich:simpleTogglePanel id="completedActionsList" label="Actions Completed (#{canvasBean.doneElementsSize})" switchType="client" style="max-height: 90px;overflow:auto;"  >
 							<ui:repeat value="#{canvasBean.doneElements}" var="item">
 	                   			#{item}<br />
 	               			</ui:repeat>
@@ -1567,21 +1568,14 @@
 
 			<a4j:region>
 
-				<a4j:status onerror="jQuery('#canvas-tabs').unblock();" />
-
-				<a4j:jsFunction name="addLinkBt" data="#{canvasBean.result}"
-					oncomplete="console.log('addLinkBt'); updateLink(data[0], data[1], data[2]);
-                	updateArrowColor('#{canvasBean.paramOutId}','#{canvasBean.paramInId}', '#{canvasBean.nameOutput}');" />
-			</a4j:region>
-
-			<a4j:region>
 				<a4j:status onerror="jQuery('#canvas-tabs').unblock();"
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
-				<a4j:jsFunction name="addLinkWhenUniq" action="#{canvasBean.addLink}" 
-					oncomplete="console.log('addLinkWhenUniq'); addLinkBt();" />
+				<a4j:jsFunction name="addLinkBt" data="#{canvasBean.resultAfterAddingLink}"
+					oncomplete="console.log('addLinkBt'); updateLink(data[0], data[1], data[2]);
+                	updateArrowColor('#{canvasBean.paramOutId}','#{canvasBean.paramInId}', '#{canvasBean.nameOutput}');" />
 			</a4j:region>
-
+			
 			<a4j:region>
 
 				<a4j:status
@@ -1589,7 +1583,7 @@
 
 				<a4j:jsFunction name="addLinkModalBt"
 					action="#{canvasBean.updateLinkPossibilities}"
-					oncomplete="console.log('addLinkModalBt'); if(#{canvasBean.nbLinkPossibilities} == 1){addLinkWhenUniq();}else{jQuery('#canvas-tabs').unblock();#{rich:component('modalSelectLink')}.show();};"
+					oncomplete="console.log('addLinkModalBt'); if(#{canvasBean.nbLinkPossibilities} == 1){addLinkBt();}else{jQuery('#canvas-tabs').unblock();#{rich:component('modalSelectLink')}.show();};"
 					reRender="selectLinkList">
 					<a4j:actionparam name="paramOutId" assignTo="#{canvasBean.paramOutId}" />
 					<a4j:actionparam name="paramInId" assignTo="#{canvasBean.paramInId}" />
@@ -1620,8 +1614,8 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
 				<a4j:jsFunction name="openModal"
-					action="#{canvasModalBean.openCanvasModal}"
-					oncomplete="console.log('openModal'); if(#{requestScope['msnError'] == null} &amp;&amp; #{canvasModalBean.outputTab.showOutputForm == 'Y' or canvasModalBean.listPageSize > 0}){cloneBeforeUpdateElement();checkPageError();reLoadDisplayTable();}"
+					data="#{canvasModalBean.openCanvasModal}"
+					oncomplete="canvasModalParam = data;console.log('openModal'); if(#{requestScope['msnError'] == null} &amp;&amp; data[0] == 'true'){cloneBeforeUpdateElement();checkPageError();reLoadDisplayTable();}"
 					reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError, errorTable, canvasModalTabPanel, msnErrorPage,tableInteraction">
 					<a4j:actionparam name="paramGroupId" />
 					<a4j:actionparam name="paramPathImage" />
@@ -1638,12 +1632,19 @@
 					onstop="jQuery('#canvas-tabs').unblock();" />
 
 				<a4j:jsFunction name="openChangeIdModal"
-					action="#{canvasModalBean.openCanvasModal}"
-					oncomplete="console.log('openChangeIdModal'); if( #{requestScope['msnError'] == null}){#{rich:component('modalChangeId')}.show();}"
+					data="#{canvasModalBean.openCanvasModal}"
+					oncomplete="canvasModalParam = data;console.log('openChangeIdModal'); if( #{requestScope['msnError'] == null}){#{rich:component('modalChangeId')}.show();}"
 					reRender="msnError, errorTable, newIdElement">
 					<a4j:actionparam name="paramGroupId" />
 					<a4j:actionparam name="paramPathImage" />
 					<a4j:actionparam name="paramLoadMainWindow" />
+				</a4j:jsFunction>
+			</a4j:region>
+
+			<a4j:region>
+				<a4j:jsFunction name="closeChangeIdModal"
+					reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError, errorTable, canvasModalTabPanel"
+					oncomplete="console.log('closeChangeIdModal'); if(canvasModalParam[0] == 'true'){changeHelpAnchor(canvasModalParam[1]);setPageNb(canvasModalParam[2],canvasModalParam[1]);cloneBeforeUpdateElement();}else{updateOutputStatus(currentChangeIdGroup);}">
 				</a4j:jsFunction>
 			</a4j:region>
 
@@ -1656,13 +1657,6 @@
 
 				<a4j:jsFunction name="openPackageModal" action="#{packageMngBean.start}"
 					oncomplete="console.log('openPackageModal'); #{rich:component('modalPackage')}.show();">
-				</a4j:jsFunction>
-			</a4j:region>
-
-			<a4j:region>
-				<a4j:jsFunction name="closeChangeIdModal"
-					reRender="pageTitle, panelDynamicForm, panelBtCanvasModal, msnError, errorTable, canvasModalTabPanel"
-					oncomplete="console.log('closeChangeIdModal'); if(#{canvasModalBean.loadMainWindow and ((canvasBean.workflowType == 'W' and canvasModalBean.outputTab.showOutputForm == 'Y') or canvasModalBean.listPageSize > 0) }){changeModalTitle();changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');cloneBeforeUpdateElement();}else{updateOutputStatus(currentChangeIdGroup);}">
 				</a4j:jsFunction>
 			</a4j:region>
 

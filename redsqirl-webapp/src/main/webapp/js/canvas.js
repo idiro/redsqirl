@@ -49,7 +49,7 @@ var contSaving;
 var tmpCommandObj;
 var stageArrayTab;
 var mouseIn = false;
-
+var canvasModalParam;
 
 var menu_createLink = "Create Link";
 var menu_rename = "Rename Object...";
