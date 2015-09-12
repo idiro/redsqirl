@@ -72,7 +72,8 @@ fi
 
 #Copy war file
 cp ${SCRIPT_PATH}/../war/* ${TOMCAT_PATH_CUR}
-chmod -R 500 ${TOMCAT_PATH_CUR}/../bin
+chmod 500 ${TOMCAT_PATH_CUR}/../bin
+chmod 700 ${TOMCAT_PATH_CUR}/../bin/*.sh
 sed -i "s#<Connector port=\"8080\"#<Connector port=\"$TOMCAT_PORT\"#g" ${TOMCAT_PATH_CUR}/../conf/server.xml
 
 property_line="path_sys_home=`dirname ${SCRIPT_PATH}`"

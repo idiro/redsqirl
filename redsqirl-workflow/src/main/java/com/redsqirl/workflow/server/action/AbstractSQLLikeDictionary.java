@@ -15,10 +15,10 @@ import com.redsqirl.utils.Tree;
 import com.redsqirl.workflow.server.EditorInteraction;
 import com.redsqirl.workflow.server.enumeration.FieldType;
 
-public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
-	
+public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
+
 	private static Logger logger = Logger.getLogger(AbstractSQLLikeDictionary.class);
-	
+
 	/**
 	 * Key for logical operators
 	 */
@@ -27,90 +27,49 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 	protected static final String relationalOperators = "relationalOperators";
 	/** Key for arithmetic operation */
 	protected static final String arithmeticOperators = "arithmeticOperators";
-	
 
 	/**
 	 * Load the default funtions into a map
 	 */
 	protected void loadStandardOperators(String operatorEqual) {
 
-		if(functionsMap == null){
+		if (functionsMap == null) {
 			functionsMap = new HashMap<String, String[][]>();
 		}
 
-		functionsMap
-				.put(logicalOperators,
-						new String[][] {
-								new String[] {
-										"AND",
-										"BOOLEAN,BOOLEAN",
-										"BOOLEAN",
-										"@function:AND@short:Boolean AND@param:boolean variable@param:boolean variable@description:boolean logic that returns true if the variables are equal@example:TRUE AND TRUE" },
-								new String[] {
-										"OR",
-										"BOOLEAN,BOOLEAN",
-										"BOOLEAN",
-										"@function:OR@short:Boolean OR@param:boolean variable@param:boolean variable@description:boolean logic that returns true if the varables are not the same@example:TRUE OR FALSE" },
-								new String[] {
-										"NOT",
-										",BOOLEAN",
-										"BOOLEAN",
-										"@function:NOT@short:Boolean NOT@param:boolean variable@param:boolean variable@description:boolean logic that returns true if the varables are  not equal@example:TRUE NOT FALSE" } });
+		functionsMap.put(logicalOperators,
+				new String[][] { new String[] { "AND", "BOOLEAN,BOOLEAN", "BOOLEAN",
+						"@function:AND@short:Boolean AND@param:boolean variable@param:boolean variable@description:boolean logic that returns true if the variables are equal@example:TRUE AND TRUE" },
+				new String[] { "OR", "BOOLEAN,BOOLEAN", "BOOLEAN",
+						"@function:OR@short:Boolean OR@param:boolean variable@param:boolean variable@description:boolean logic that returns true if the varables are not the same@example:TRUE OR FALSE" },
+				new String[] { "NOT", ",BOOLEAN", "BOOLEAN",
+						"@function:NOT@short:Boolean NOT@param:boolean variable@param:boolean variable@description:boolean logic that returns true if the varables are  not equal@example:TRUE NOT FALSE" } });
 
-		functionsMap
-				.put(relationalOperators,
-						new String[][] {
-								new String[] {
-										"<=",
-										"ANY,ANY",
-										"BOOLEAN",
-										"@function:<=@short:Less or equal@param:Any value@param:Any value@description:Compare the left value to the right and checks if the right value is less or equal to the right@example:1<=5 returns TRUE" },
-								new String[] {
-										">=",
-										"ANY,ANY",
-										"BOOLEAN",
-										"@function:>=@short:Greater or equal@param:Any value@param:Any value@description:Compare the left value to the right and checks if the left value is greater or equal to the right@example:5>=1 returns TRUE" },
-								new String[] {
-										"<",
-										"ANY,ANY",
-										"BOOLEAN",
-										"@function:<@short:Less than@param:Any value@param:Any value@description:Compare the left value to the right and checks if the left value is less than the right@example:1<5 returns TRUE" },
-								new String[] {
-										">",
-										"ANY,ANY",
-										"BOOLEAN",
-										"@function:>@short:Greater than@param:Any value@param:Any value@description:Compare the left value to the right and checks if the left value is greater than the right@example:1>5 returns TRUE" },
-								new String[] {
-										"!=",
-										"ANY,ANY",
-										"BOOLEAN",
-										"@function:!=@short:Not Equal@param:Any value@param:Any value@description:Compare the left value to the right and checks if the left value is not equal the right@example:1!=5 returns TRUE" },
-								new String[] {
-										operatorEqual,
-										"ANY,ANY",
-										"BOOLEAN",
-										"@function:==@short:Equal@param:Any value@param:Any value@description:Compare the left value to the right and checks if the left value is equal the right@example:5==5 returns TRUE" },
-								new String[] {
-										"IS NOT NULL",
-										"ANY,",
-										"BOOLEAN",
-										"@function:IS NOT NULL@short:Is not empty/null@param:Any value@description:Checks the value if it is not null@example:x IS NOT NULL" },
-								new String[] {
-										"IS NULL",
-										"ANY,",
-										"BOOLEAN",
-										"@function:IS NULL@short:Is empty/null@param:Any value@description:Checks the value if it is null@example:x IS NULL" }
-								});
-				
+		functionsMap.put(relationalOperators,
+				new String[][] { new String[] { "<=", "ANY,ANY", "BOOLEAN",
+						"@function:<=@short:Less or equal@param:Any value@param:Any value@description:Compare the left value to the right and checks if the right value is less or equal to the right@example:1<=5 returns TRUE" },
+				new String[] { ">=", "ANY,ANY", "BOOLEAN",
+						"@function:>=@short:Greater or equal@param:Any value@param:Any value@description:Compare the left value to the right and checks if the left value is greater or equal to the right@example:5>=1 returns TRUE" },
+				new String[] { "<", "ANY,ANY", "BOOLEAN",
+						"@function:<@short:Less than@param:Any value@param:Any value@description:Compare the left value to the right and checks if the left value is less than the right@example:1<5 returns TRUE" },
+				new String[] { ">", "ANY,ANY", "BOOLEAN",
+						"@function:>@short:Greater than@param:Any value@param:Any value@description:Compare the left value to the right and checks if the left value is greater than the right@example:1>5 returns TRUE" },
+				new String[] { "!=", "ANY,ANY", "BOOLEAN",
+						"@function:!=@short:Not Equal@param:Any value@param:Any value@description:Compare the left value to the right and checks if the left value is not equal the right@example:1!=5 returns TRUE" },
+				new String[] { operatorEqual, "ANY,ANY", "BOOLEAN",
+						"@function:==@short:Equal@param:Any value@param:Any value@description:Compare the left value to the right and checks if the left value is equal the right@example:5==5 returns TRUE" },
+				new String[] { "IS NOT NULL", "ANY,", "BOOLEAN",
+						"@function:IS NOT NULL@short:Is not empty/null@param:Any value@description:Checks the value if it is not null@example:x IS NOT NULL" },
+				new String[] { "IS NULL", "ANY,", "BOOLEAN",
+						"@function:IS NULL@short:Is empty/null@param:Any value@description:Checks the value if it is null@example:x IS NULL" } });
 
-		functionsMap.put(arithmeticOperators, new String[][] {
-				new String[] { "+", "NUMBER,NUMBER...", "NUMBER" },
-				new String[] { "-", "NUMBER,NUMBER...", "NUMBER" },
-				new String[] { "*", "NUMBER,NUMBER...", "NUMBER" },
-				new String[] { "/", "NUMBER,NUMBER...", "NUMBER" },
-				new String[] { "%", "NUMBER,NUMBER...", "NUMBER" } });
+		functionsMap.put(arithmeticOperators,
+				new String[][] { new String[] { "+", "NUMBER,NUMBER...", "NUMBER" },
+						new String[] { "-", "NUMBER,NUMBER...", "NUMBER" },
+						new String[] { "*", "NUMBER,NUMBER...", "NUMBER" },
+						new String[] { "/", "NUMBER,NUMBER...", "NUMBER" },
+						new String[] { "%", "NUMBER,NUMBER...", "NUMBER" } });
 	}
-
 
 	/**
 	 * Get the return type of a pig based expression
@@ -124,8 +83,8 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 	 * @return type of the expression
 	 * @throws Exception
 	 */
-	public String getReturnType(String expr, final FieldList fields,
-			final Set<String> nonAggregFeats) throws Exception {
+	public String getReturnType(String expr, final FieldList fields, final Set<String> nonAggregFeats)
+			throws Exception {
 		if (expr == null || expr.trim().isEmpty()) {
 			logger.error("No expressions to test");
 			throw new Exception("No expressions to test");
@@ -133,11 +92,10 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 		logger.debug("expression is ok");
 		logger.info("nonAggregFeats " + nonAggregFeats);
 		logger.info("fields " + fields.getFieldNames().toString());
-		
+
 		if (nonAggregFeats != null && !fields.getFieldNames().containsAll(nonAggregFeats)) {
 			logger.error("Aggregation fields unknown");
-			throw new Exception("Aggregation fields unknown("
-					+ nonAggregFeats.toString() + "): "
+			throw new Exception("Aggregation fields unknown(" + nonAggregFeats.toString() + "): "
 					+ fields.getFieldNames().toString());
 		}
 		logger.debug("aggreg and feats ok");
@@ -208,8 +166,7 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 			}
 		}
 
-		logger.debug("if expression is an operator or function if type null : "
-				+ type + " " + expr);
+		logger.debug("if expression is an operator or function if type null : " + type + " " + expr);
 		if (type == null) {
 			logger.debug("checking all types of functions");
 			if (isLogicalOperation(expr)) {
@@ -257,8 +214,7 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 				FieldList fl = fields;
 				if (nonAggregFeats != null) {
 					fl = new OrderedFieldList(false);
-					Iterator<String> fieldAggIterator = nonAggregFeats
-							.iterator();
+					Iterator<String> fieldAggIterator = nonAggregFeats.iterator();
 					while (fieldAggIterator.hasNext()) {
 						String nameF = fieldAggIterator.next();
 						fl.addField(nameF, fields.getFieldType(nameF));
@@ -275,15 +231,18 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 		return type;
 
 	}
-	
+
 	protected abstract boolean isCastOperation(String expr);
-	protected abstract String runCastOperation(String expr, FieldList fields,
-			Set<String> fieldAggreg) throws Exception;
+
+	protected abstract String runCastOperation(String expr, FieldList fields, Set<String> fieldAggreg) throws Exception;
+
 	protected abstract boolean isConditionalOperation(String expr);
-	protected abstract String runConditionalOperation(String expr, FieldList fields,
-			Set<String> fieldAggreg) throws Exception;
+
+	protected abstract String runConditionalOperation(String expr, FieldList fields, Set<String> fieldAggreg)
+			throws Exception;
+
 	protected abstract List<String> getMethodMenus(boolean aggregMethod);
-	
+
 	/**
 	 * Check if a expression is a non aggregation method
 	 * 
@@ -294,12 +253,12 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 	public boolean isNonAggMethod(String expr) {
 		boolean ans = false;
 		Iterator<String> it = getMethodMenus(false).iterator();
-		while(it.hasNext() && !ans){
-			ans = isInList(functionsMap.get(it.next()),expr);
+		while (it.hasNext() && !ans) {
+			ans = isInList(functionsMap.get(it.next()), expr);
 		}
 		return ans;
 	}
-	
+
 	/**
 	 * Check if a expression is a non aggregation method
 	 * 
@@ -310,12 +269,12 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 	public boolean isAggregatorMethod(String expr) {
 		boolean ans = false;
 		Iterator<String> it = getMethodMenus(true).iterator();
-		while(it.hasNext() && !ans){
-			ans = isInList(functionsMap.get(it.next()),expr);
+		while (it.hasNext() && !ans) {
+			ans = isInList(functionsMap.get(it.next()), expr);
 		}
 		return ans;
 	}
-	
+
 	/**
 	 * Get the return type using an empty list for aggregation
 	 * 
@@ -324,8 +283,7 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 	 * @return type
 	 * @throws Exception
 	 */
-	public String getReturnType(String expr, FieldList fields)
-			throws Exception {
+	public String getReturnType(String expr, FieldList fields) throws Exception {
 		return getReturnType(expr, fields, null);
 	}
 
@@ -344,15 +302,17 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 		}
 		typeGiven = typeGiven.trim();
 		typeToBe = typeToBe.trim();
-
-		if (typeToBe.equalsIgnoreCase("ANY")) {
+		
+		if (typeGiven.equalsIgnoreCase("ANY") && typeToBe != null) {
+			ok = true;
+		}else if (typeToBe.equalsIgnoreCase("ANY")) {
 			ok = true;
 		} else if (typeToBe.equalsIgnoreCase("NUMBER")) {
-			ok = typeGiven.equals("DOUBLE") || typeGiven.equals("FLOAT")
-					|| typeGiven.equals("LONG") || typeGiven.equals("INT");
+			ok = typeGiven.equals("DOUBLE") || typeGiven.equals("FLOAT") || typeGiven.equals("LONG")
+					|| typeGiven.equals("INT");
 		} else if (typeToBe.equalsIgnoreCase("DOUBLE")) {
-			ok = typeGiven.equals("NUMBER") || typeGiven.equals("FLOAT")
-					|| typeGiven.equals("LONG") || typeGiven.equals("INT");
+			ok = typeGiven.equals("NUMBER") || typeGiven.equals("FLOAT") || typeGiven.equals("LONG")
+					|| typeGiven.equals("INT");
 
 		} else if (typeToBe.equalsIgnoreCase("INT")) {
 			ok = typeGiven.equalsIgnoreCase("NUMBER");
@@ -363,35 +323,31 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 		} else if (typeToBe.equalsIgnoreCase("LONG")) {
 			ok = typeGiven.equalsIgnoreCase("NUMBER");
 
-		}else if (typeToBe.equalsIgnoreCase("TYPE")) {
-			ok = typeGiven.equalsIgnoreCase("BOOLEAN")
-					|| typeGiven.equalsIgnoreCase("INT")
-					|| typeGiven.equalsIgnoreCase("LONG")
-					|| typeGiven.equalsIgnoreCase("FLOAT")
-					|| typeGiven.equalsIgnoreCase("DOUBLE")
-					|| typeGiven.equalsIgnoreCase("STRING")
-					|| typeGiven.equalsIgnoreCase("CHAR")
-					|| typeGiven.equalsIgnoreCase("DATETIME");
+		} else if (typeToBe.equalsIgnoreCase("TYPE")) {
+			ok = typeGiven.equalsIgnoreCase("BOOLEAN") || typeGiven.equalsIgnoreCase("INT")
+					|| typeGiven.equalsIgnoreCase("LONG") || typeGiven.equalsIgnoreCase("FLOAT")
+					|| typeGiven.equalsIgnoreCase("DOUBLE") || typeGiven.equalsIgnoreCase("STRING")
+					|| typeGiven.equalsIgnoreCase("CHAR") || typeGiven.equalsIgnoreCase("DATETIME");
 
 		} else if (typeToBe.equalsIgnoreCase("DATETIME")) {
 			ok = typeGiven.equals("DATE");
 		} else if (typeToBe.equalsIgnoreCase("TIMESTAMP")) {
 			ok = typeGiven.equals("DATE") || typeGiven.equals("DATETIME");
 		} else if (typeToBe.equalsIgnoreCase("CATEGORY")) {
-			ok = typeGiven.equals("STRING") || typeGiven.equals("CHAR")
-					|| typeGiven.equals("INT");
+			ok = typeGiven.equals("STRING") || typeGiven.equals("CHAR") || typeGiven.equals("INT");
 		} else if (typeToBe.equalsIgnoreCase("STRING")) {
 			ok = typeGiven.equals("CATEGORY") || typeGiven.equals("CHAR");
 		} else if (typeToBe.equalsIgnoreCase("BOOLEAN")) {
 			ok = false;
 		}
 
+		
+
 		if (!ok && typeToBe.equalsIgnoreCase(typeGiven)) {
 			ok = true;
 		}
 		return ok;
 	}
-
 
 	/**
 	 * Create Menu with help from list
@@ -402,10 +358,9 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 	 * @throws RemoteException
 	 */
 
-	protected static Tree<String> createMenu(Tree<String> root, String[][] list)
-			throws RemoteException {
-		
-		if(list != null){
+	protected static Tree<String> createMenu(Tree<String> root, String[][] list) throws RemoteException {
+
+		if (list != null) {
 			for (String elStr[] : list) {
 				Tree<String> suggestion = root.add("suggestion");
 				suggestion.add("name").add(elStr[0]);
@@ -434,8 +389,7 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 		}
 		String cleanUp = trimExp.replaceAll("\\(.*\\)", "()").trim();
 
-		return cleanUp.startsWith("NOT ") || cleanUp.contains(" OR ")
-				|| cleanUp.contains(" AND ");
+		return cleanUp.startsWith("NOT ") || cleanUp.contains(" OR ") || cleanUp.contains(" AND ");
 	}
 
 	/**
@@ -447,8 +401,7 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 	 * @return <code>true</code> if operation ran ok else <code>false</code>
 	 * @throws Exception
 	 */
-	protected boolean runLogicalOperation(String expr, FieldList fields,
-			Set<String> aggregFeat) throws Exception {
+	protected boolean runLogicalOperation(String expr, FieldList fields, Set<String> aggregFeat) throws Exception {
 
 		logger.debug("logical operator ");
 		String[] split = expr.split("OR|AND");
@@ -458,21 +411,13 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 			String cur = split[i].trim();
 			if (cur.startsWith("(")) {
 
-				while (!cur.endsWith(")")
-						&& countMatches(cur, "(") != countMatches(cur, ")")
-						&& i < split.length) {
+				while (!cur.endsWith(")") && countMatches(cur, "(") != countMatches(cur, ")") && i < split.length) {
 					cur += " AND " + split[++i].trim();
 				}
 
-				ok = check(
-						"BOOLEAN",
-						getReturnType(cur.substring(1, cur.length() - 1),
-								fields, aggregFeat));
+				ok = check("BOOLEAN", getReturnType(cur.substring(1, cur.length() - 1), fields, aggregFeat));
 			} else if (cur.startsWith("NOT ")) {
-				ok = check(
-						"BOOLEAN",
-						getReturnType(cur.substring(4, cur.length()).trim(),
-								fields, aggregFeat));
+				ok = check("BOOLEAN", getReturnType(cur.substring(4, cur.length()).trim(), fields, aggregFeat));
 			} else {
 				ok = check("BOOLEAN", getReturnType(cur, fields, aggregFeat));
 			}
@@ -486,7 +431,6 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 		return ok;
 	}
 
-	
 	/**
 	 * Check if expression is a relational operation
 	 * 
@@ -508,10 +452,8 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 	 *         <code>false</code>
 	 * @throws Exception
 	 */
-	protected boolean runRelationalOperation(String expr, FieldList fields,
-			Set<String> aggregFeat) throws Exception {
-		return runOperation(functionsMap.get(relationalOperators), expr,
-				fields, aggregFeat);
+	protected boolean runRelationalOperation(String expr, FieldList fields, Set<String> aggregFeat) throws Exception {
+		return runOperation(functionsMap.get(relationalOperators), expr, fields, aggregFeat);
 	}
 
 	/**
@@ -534,13 +476,10 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 	 * @return <code>true</code> if operation ran ok else <code>false</code>
 	 * @throws Exception
 	 */
-	protected boolean runArithmeticOperation(String expr, FieldList fields,
-			Set<String> aggregFeat) throws Exception {
-		return runOperation(functionsMap.get(arithmeticOperators), expr,
-				fields, aggregFeat);
+	protected boolean runArithmeticOperation(String expr, FieldList fields, Set<String> aggregFeat) throws Exception {
+		return runOperation(functionsMap.get(arithmeticOperators), expr, fields, aggregFeat);
 	}
-	
-	
+
 	/**
 	 * Run a method to check if it runs ok
 	 * 
@@ -550,13 +489,11 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 	 * @return <cod>true</code> if method runs ok else <cod>false</code>
 	 * @throws Exception
 	 */
-	protected String runMethod(String expr, FieldList fields,
-			boolean isAggregMethod) throws Exception {
+	protected String runMethod(String expr, FieldList fields, boolean isAggregMethod) throws Exception {
 		String type = null;
 		List<String[]> methodsFound = findAllMethod(expr, isAggregMethod);
 		if (!methodsFound.isEmpty()) {
-			String arg = expr.substring(expr.indexOf("(") + 1,
-					expr.lastIndexOf(")"));
+			String arg = expr.substring(expr.indexOf("(") + 1, expr.lastIndexOf(")"));
 			logger.debug("argument " + arg);
 			String[] argSplit = null;
 			int sizeSearched = -1;
@@ -565,44 +502,38 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 			String[] method = null;
 			while (it.hasNext() && type == null) {
 				method = it.next();
-				logger.debug("method " + method[0] + " " + method[1] + " "
-						+ method[2]);
+				logger.debug("method " + method[0] + " " + method[1] + " " + method[2]);
 
-				String delimiter = method[0].substring(
-						method[0].indexOf("(") + 1, method[0].lastIndexOf(")"));
+				String delimiter = method[0].substring(method[0].indexOf("(") + 1, method[0].lastIndexOf(")"));
 				logger.debug("delimiter " + delimiter);
 				if (delimiter.isEmpty()) {
 					delimiter = ",";
 				}
-				argSplit = arg
-						.split(escapeString(delimiter) + "(?![^\\(]*\\))");
+				argSplit = arg.split(escapeString(delimiter) + "(?![^\\(]*\\))");
 				sizeSearched = argSplit.length;
 				logger.debug("argsplit last el" + argSplit[sizeSearched - 1]);
 				logger.debug("argsplit size : " + sizeSearched);
 				logger.debug("test " + method[1].trim().isEmpty());
-				logger.debug("test "
-						+ expr.trim().equalsIgnoreCase(method[0].trim()));
-				if (method[1].trim().isEmpty()
-						&& expr.trim().equalsIgnoreCase(method[0].trim())) {
+				logger.debug("test " + expr.trim().equalsIgnoreCase(method[0].trim()));
+				if (method[1].trim().isEmpty() && expr.trim().equalsIgnoreCase(method[0].trim())) {
 					// Hard-copy method
 					type = method[2];
 				} else {
-					int methodArgs = method[1].isEmpty() ? 0 : method[1]
-							.split(",").length;
-					
+					int methodArgs = method[1].isEmpty() ? 0 : method[1].split(",").length;
+
 					if (sizeSearched != methodArgs && !(method[1].endsWith("...") && sizeSearched > methodArgs)) {
 						method = null;
 					}
 				}
-				
+
 				if (type == null && method != null && check(method, argSplit, fields)) {
 					type = method[2];
 				}
-				
+
 			}
 			if (type == null) {
-				String error = "No method " + methodsFound.get(0)[0] + " with "
-						+ sizeSearched + " arguments, expr:" + expr;
+				String error = "No method " + methodsFound.get(0)[0] + " with " + sizeSearched + " arguments, expr:"
+						+ expr;
 				logger.debug(error);
 			}
 		} else {
@@ -623,8 +554,8 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 	 * @return <cod>true</code> if operation runs ok else <cod>false</code>
 	 * @throws Exception
 	 */
-	protected boolean runOperation(String[][] list, String expr,
-			FieldList fields, Set<String> aggregFeat) throws Exception {
+	protected boolean runOperation(String[][] list, String expr, FieldList fields, Set<String> aggregFeat)
+			throws Exception {
 		boolean ok = false;
 		String[] method = AbstractSQLLikeDictionary.find(list, expr);
 		if (method != null) {
@@ -663,15 +594,14 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 	 */
 	protected static boolean isInList(String[][] list, String expr) {
 		String cleanUp = removeBracketContent(expr);
-		if(logger.isDebugEnabled()){
+		if (logger.isDebugEnabled()) {
 			logger.debug(cleanUp);
 		}
 		boolean found = false;
 		int i = 0;
 		while (!found && list.length > i) {
-			String regex = getRegexToFind(removeBracketContent(list[i][0]
-					.trim()));
-			if(logger.isDebugEnabled()){
+			String regex = getRegexToFind(removeBracketContent(list[i][0].trim()));
+			if (logger.isDebugEnabled()) {
 				logger.debug("Is " + cleanUp + " contains " + regex);
 			}
 			found = cleanUp.matches(regex);
@@ -682,8 +612,8 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 	}
 
 	/**
-	 * Check if the arguments passed to a method are the same in the field
-	 * list and are acceptable by the method
+	 * Check if the arguments passed to a method are the same in the field list
+	 * and are acceptable by the method
 	 * 
 	 * @param method
 	 * @param args
@@ -692,43 +622,40 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 	 * @throws Exception
 	 */
 
-	protected boolean check(String[] method, String[] args, FieldList fields)
-			throws Exception {
+	protected boolean check(String[] method, String[] args, FieldList fields) throws Exception {
 		boolean ok = false;
 		String[] argsTypeExpected = method[1].split(",");
 		logger.debug("check");
-		if (argsTypeExpected[0].isEmpty()
-				&& argsTypeExpected.length - 1 == args.length) {
+		if (argsTypeExpected[0].isEmpty() && argsTypeExpected.length - 1 == args.length) {
 			// Left operator
 			logger.debug("left operator");
 			ok = true;
 			for (int i = 1; i < argsTypeExpected.length; ++i) {
-				ok &= check(argsTypeExpected[i],
-						getReturnType(args[i - 1], fields));
+				ok &= check(argsTypeExpected[i], getReturnType(args[i - 1], fields));
 			}
-		} else if (argsTypeExpected[argsTypeExpected.length - 1].isEmpty()
-				&& argsTypeExpected.length - 1 == args.length) {
+		} else
+			if (argsTypeExpected[argsTypeExpected.length - 1].isEmpty() && argsTypeExpected.length - 1 == args.length) {
 			// Right operator
 			ok = true;
 			logger.debug("right operator");
 			for (int i = 0; i < argsTypeExpected.length - 1; ++i) {
-				ok &= check(argsTypeExpected[i],
-						getReturnType(args[i], fields));
+				ok &= check(argsTypeExpected[i], getReturnType(args[i], fields));
 			}
-		} else if (argsTypeExpected.length == args.length || 
-				(args.length > argsTypeExpected.length && argsTypeExpected[argsTypeExpected.length -1].endsWith("..."))) {
+		} else if (argsTypeExpected.length == args.length || (args.length > argsTypeExpected.length
+				&& argsTypeExpected[argsTypeExpected.length - 1].endsWith("..."))) {
 			ok = true;
 			for (int i = 0; i < args.length; ++i) {
 				logger.debug("only one arg : " + argsTypeExpected.length);
 				logger.debug("fields " + fields.getFieldNames());
 				logger.debug("arg " + args[i]);
 				logger.debug("return type : " + getReturnType(args[i], fields));
-				if(i >= argsTypeExpected.length -1 && argsTypeExpected[argsTypeExpected.length -1].endsWith("...")){
-					ok &= check(argsTypeExpected[argsTypeExpected.length -1].substring(0,argsTypeExpected[argsTypeExpected.length -1].length()-3),
+				if (i >= argsTypeExpected.length - 1 && argsTypeExpected[argsTypeExpected.length - 1].endsWith("...")) {
+					ok &= check(
+							argsTypeExpected[argsTypeExpected.length - 1].substring(0,
+									argsTypeExpected[argsTypeExpected.length - 1].length() - 3),
 							getReturnType(args[i], fields));
-				}else{
-					ok &= check(argsTypeExpected[i],
-						getReturnType(args[i], fields));
+				} else {
+					ok &= check(argsTypeExpected[i], getReturnType(args[i], fields));
 				}
 			}
 		}
@@ -740,8 +667,7 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 			for (int i = 1; i < args.length; ++i) {
 				arg += "," + args[i];
 			}
-			String error = "Method " + method[0]
-					+ " does not accept parameter(s) " + arg;
+			String error = "Method " + method[0] + " does not accept parameter(s) " + arg;
 			logger.debug(error);
 		}
 
@@ -762,8 +688,7 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 		String[] ans = null;
 		String search = removeBracketContent(expression.trim());
 		while (!found && list.length > i) {
-			String regex = getRegexToFind(removeBracketContent(list[i][0]
-					.trim()));
+			String regex = getRegexToFind(removeBracketContent(list[i][0].trim()));
 			logger.trace("equals? " + search + " " + regex);
 
 			if (found = search.matches(regex)) {
@@ -773,11 +698,9 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 			++i;
 		}
 		if (ans != null) {
-			logger.debug("expr " + expression + ", to search: " + search
-					+ ", found: " + ans[0]);
+			logger.debug("expr " + expression + ", to search: " + search + ", found: " + ans[0]);
 		} else {
-			logger.debug("expr " + expression + ", to search: " + search
-					+ ", found: null");
+			logger.debug("expr " + expression + ", to search: " + search + ", found: null");
 		}
 		return ans;
 	}
@@ -795,19 +718,17 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 		List<String[]> ans = new LinkedList<String[]>();
 		String search = removeBracketContent(method.trim());
 		while (list.length > i) {
-			String regex = getRegexToFind(removeBracketContent(list[i][0]
-					.trim()));
+			String regex = getRegexToFind(removeBracketContent(list[i][0].trim()));
 			if (search.matches(regex)) {
 				ans.add(list[i]);
 			}
 
 			++i;
 		}
-		logger.debug("expr " + method + ", to search: " + search + ", found: "
-				+ ans.size());
+		logger.debug("expr " + method + ", to search: " + search + ", found: " + ans.size());
 		return ans;
 	}
-	
+
 	/**
 	 * Find all methods for an expression checking for aggregation methods
 	 * 
@@ -818,10 +739,10 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 	protected List<String[]> findAllMethod(String expr, boolean aggregMethod) {
 		List<String[]> ans = null;
 		Iterator<String> it = getMethodMenus(aggregMethod).iterator();
-		while(it.hasNext()){
-			if(ans == null){
+		while (it.hasNext()) {
+			if (ans == null) {
 				ans = findAll(functionsMap.get(it.next()), expr);
-			}else{
+			} else {
 				ans.addAll(findAll(functionsMap.get(it.next()), expr));
 			}
 		}
@@ -902,15 +823,15 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 		while (index < expr.length()) {
 			if (expr.charAt(index) == '(') {
 				++count;
-				if(count > 1){
+				if (count > 1) {
 					cleanUp += expr.charAt(index);
 				}
 			} else if (expr.charAt(index) == ')') {
 				--count;
-				if(count > 0){
+				if (count > 0) {
 					cleanUp += expr.charAt(index);
 				}
-			}else if (count > 0) {
+			} else if (count > 0) {
 				cleanUp += expr.charAt(index);
 			}
 			++index;
@@ -970,13 +891,13 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 		}
 		return regex;
 	}
-	
+
 	/**
 	 * Check the name is a varialble name
 	 * 
 	 * @param name
-	 * @return <code>true</code> if the name is the structure for a variable
-	 *         </code>
+	 * @return <code>true</code> if the name is the structure for a
+	 *         variable </code>
 	 */
 	public boolean isVariableName(String name) {
 		String regex = "[a-zA-Z]+[a-zA-Z0-9_]*";
@@ -984,8 +905,7 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary{
 	}
 
 	@Override
-	public EditorInteraction generateEditor(Tree<String> help, FieldList inFeat)
-			throws RemoteException {
+	public EditorInteraction generateEditor(Tree<String> help, FieldList inFeat) throws RemoteException {
 		return generateEditor(help, inFeat, null);
 	}
 }
