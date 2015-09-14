@@ -131,7 +131,7 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 			object.put("software", "RedSqirl");
 			object.put("filter", searchValue);
 
-			if (type != null && !type.isEmpty()){
+			if (type != null && !type.isEmpty() && !type.equals("undefined")){
 				object.put("type", type);
 			}else{
 				if(selectedTypes != null && !selectedTypes.isEmpty()){
