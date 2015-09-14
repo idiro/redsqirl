@@ -739,7 +739,7 @@
 	         if(lastBlockedRunningWorkflow){
 	        	 console.log("unblockRunningWorkflowJS ", lastBlockedRunningWorkflow);
 	             jQuery('#'+lastBlockedRunningWorkflow).unblock();
-	             try{disableProgressBar();}catch(exception){}
+	             try{DMRDIV_disableProgressBar();}catch(exception){}
 	             try{jQuery('#domMessageRunning'+ copyRunningMsgIdx).remove();}catch(exception){}
 	         }else{
 		    	 console.log("unblockRunningWorkflowJS");
@@ -778,7 +778,10 @@
 	    	 var newDiv = document.createElement("div");
 	    	 newDiv.id = 'domMessageRunning'+ (++copyRunningMsgIdx);
 	    	 newDiv.style.display = "none";
-	    	 newDiv.innerHTML = origDiv.innerHTML;
+	    	 if(copyRunningMsgIdx == 1){
+	    	     origDiv.innerHTML = origDiv.innerHTML.replace(/DMRDIV_/g,'DORDIV_');
+	    	 }
+	    	 newDiv.innerHTML = origDiv.innerHTML.replace(/DORDIV_/g,'DMRDIV_');;
              jQuery('#'+lastBlockedRunningWorkflow).block({ message: newDiv });
 	     	}catch(exception){
 		     	alert("d " + lastBlockedRunningWorkflow + " " + exception);
@@ -786,8 +789,8 @@
              
              resizeBlockUICanvas();
 
-             runningIntervalID = setInterval(function(){ updateProgressBar(); },1500);
-             setTimeout(function(){ updateProgressBar(); }, 100);
+             runningIntervalID = setInterval(function(){ DMRDIV_updateProgressBar(); },1500);
+             setTimeout(function(){ DMRDIV_updateProgressBar(); }, 100);
              
              //]]>
          }
@@ -1215,14 +1218,14 @@
 				
 					
 		<div id="domMessageRunning" style="display: none;">
-			<h:form id="domMessageRunningForm">
+			<h:form id="DMRDIV_Form">
 			
-				<a4j:jsFunction name="updateProgressBar" reRender="runningActionsList, completedActionsList, domMessageRunningFormTitle" 
+				<a4j:jsFunction name="DMRDIV_updateProgressBar" reRender="DMRDIV_runningActionsList, DMRDIV_completedActionsList, DMRDIV_FormTitle" 
 					data="#{canvasBean.runningAndUpdate}" oncomplete="if(data === undefined || !data[1]){unblockRunningWorkflowJS();}else{console.log('updateProgressBar: ',data[0],data[1],getSelectedByName()); if(data[0] == 'false' &amp;&amp; data[1] == getSelectedByName()){unblockRunningWorkflowJS();setRunning(getSelectedByName(), false);console.log('updateArcsAfterRunning: ',data[0],data[1],getSelectedByName());updateAllArcsStatus();}}"  />
-				<a4j:jsFunction name="disableProgressBar" reRender="idProgBarRunning" 
-				     oncomplete="try{#{rich:component('idProgBarRunning')}.disable();}catch(exception){}"/>
+				<a4j:jsFunction name="DMRDIV_disableProgressBar" reRender="DMRDIV_idProgBarRunning" 
+				     oncomplete="try{#{rich:component('DMRDIV_idProgBarRunning')}.disable();}catch(exception){}"/>
 				
-				<h:outputLink id="workflowUrl" value="#{canvasBean.workflowUrl}"
+				<h:outputLink id="DMRDIV_workflowUrl" value="#{canvasBean.workflowUrl}"
 					target="_blank" style="float:left;margin-left:5px;"
 					rendered="#{canvasBean.workflowUrl != null}">
 					<h:graphicImage
@@ -1231,30 +1234,30 @@
 						class="fileSystemIcon" />
 				</h:outputLink>
 				<img src="../image/icons/waiting.gif" />
-				<h:panelGroup id="right_area" layout="block">
+				<h:panelGroup id="DMRDIV_right_area" layout="block">
 					<br/>
-					<h:outputText id="domMessageRunningFormTitle" value="#{canvasBean.nameWorkflow}" style="test-align:center;font-weight: bold;font-size:16px;" />
+					<h:outputText id="DMRDIV_FormTitle" value="#{canvasBean.nameWorkflow}" style="test-align:center;font-weight: bold;font-size:16px;" />
 					<br/>
-					<a4j:outputPanel id="runningprogressComponent">
-						<rich:simpleTogglePanel id="runningActionsList" label="Running Actions (#{canvasBean.runningElementsSize})" switchType="client" style="max-height: 90px;overflow:auto;" >
+					<a4j:outputPanel id="DMRDIV_runningprogressComponent">
+						<rich:simpleTogglePanel id="DMRDIV_runningActionsList" label="Running Actions (#{canvasBean.runningElementsSize})" switchType="client" style="max-height: 90px;overflow:auto;" >
 							<ui:repeat value="#{canvasBean.runningElements}" var="item">
 	                   			#{item}<br />
 	               			</ui:repeat>
 						</rich:simpleTogglePanel>
-						<rich:simpleTogglePanel id="completedActionsList" label="Actions Completed (#{canvasBean.doneElementsSize})" switchType="client" style="max-height: 90px;overflow:auto;"  >
+						<rich:simpleTogglePanel id="DMRDIV_completedActionsList" label="Actions Completed (#{canvasBean.doneElementsSize})" switchType="client" style="max-height: 90px;overflow:auto;"  >
 							<ui:repeat value="#{canvasBean.doneElements}" var="item">
 	                   			#{item}<br />
 	               			</ui:repeat>
 						</rich:simpleTogglePanel>
-						<rich:progressBar id="idProgBarRunning" interval="5000" enabled="#{canvasBean.progressBarEnabled}"
-							reRenderAfterComplete="runningprogressComponent" value="#{canvasBean.valueProgressBar}" minValue="0" maxValue="100" >
+						<rich:progressBar id="DMRDIV_idProgBarRunning" interval="5000" enabled="#{canvasBean.progressBarEnabled}"
+							reRenderAfterComplete="DMRDIV_runningprogressComponent" value="#{canvasBean.valueProgressBar}" minValue="0" maxValue="100" >
 						    <h:outputText value="#{canvasBean.valueProgressBar} %" />
 					    </rich:progressBar>
 					</a4j:outputPanel>
-					<a4j:commandButton id="killProcessBtn" styleClass="greenButton"
+					<a4j:commandButton id="DMRDIV_killProcessBtn" styleClass="greenButton"
 						style="float:right;margin-right:5px;" value="Kill Process"
 						action="#{canvasBean.stopRunningWorkflow}"
-						oncomplete="#{rich:component('idProgBarRunning')}.disable();" />
+						oncomplete="#{rich:component('DMRDIV_idProgBarRunning')}.disable();" />
 				</h:panelGroup>
 			
 			</h:form>
