@@ -16,6 +16,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -44,7 +45,6 @@ import ch.ethz.ssh2.Connection;
 import com.google.common.io.Files;
 import com.idiro.ProjectID;
 import com.redsqirl.BaseBean;
-import com.redsqirl.SettingsBean;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.utils.PackageManager;
@@ -189,8 +189,8 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 			try{
 				JSONObject pckObj = new JSONObject(ansServer);
 				loggedIn = pckObj.getBoolean("logged");
-				role = pckObj.getString("role");
 				if (loggedIn){
+					role = pckObj.getString("role");
 					idUser = pckObj.getInt("id");
 				}
 			} catch (JSONException e){
@@ -222,6 +222,17 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 		msg.setSeverity(FacesMessage.SEVERITY_ERROR);
 		FacesContext.getCurrentInstance().addMessage("login-form:password-input", msg);*/
 
+		
+		FacesContext context = FacesContext.getCurrentInstance();
+		AnalyticsStoreSearchBean analyticsStoreSearchBean = (AnalyticsStoreSearchBean) context.getApplication().evaluateExpressionGet(context, "#{analyticsStoreSearchBean}", AnalyticsStoreSearchBean.class);
+		try {
+			analyticsStoreSearchBean.retrieveAllPackageList();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		
 		// To to login page
 		return null;
 	}

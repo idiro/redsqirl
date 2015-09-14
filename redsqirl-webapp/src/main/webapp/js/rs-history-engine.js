@@ -283,6 +283,7 @@ CommandAddArrow.prototype.undo = function(){
 CommandAddArrow.prototype.redo = function(){
     console.timeStamp("CommandAddArrow.redo begin");
     //!ADD A LINK ON BACK-END
+    addLinkBt();
 	addLink(this.canvasName, this.outId, this.inId);
 	updateArrowColor('#{canvasBean.paramOutId}','#{canvasBean.paramInId}', '#{canvasBean.nameOutput}');
 	console.timeStamp("CommandAddArrow.redo end");
