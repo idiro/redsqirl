@@ -136,23 +136,26 @@ public class MapRedCtrlATextType extends MapRedDir{
 			throws RemoteException {
 		List<Map<String,String>> ans = new LinkedList<Map<String,String>>();
 		String patternStr = Pattern.quote(delimiter);
-		Iterator<String> it = selectLine(maxToRead).iterator();
-		while(it.hasNext()){
-			String l = it.next();
-			String[] line = l.split(patternStr,-1);
-			List<String> fieldNames = getFields().getFieldNames(); 
-			if(fieldNames.size() == line.length){
-				Map<String,String> cur = new LinkedHashMap<String,String>();
-				for(int i = 0; i < line.length; ++i){
-					cur.put(fieldNames.get(i),line[i]);
+		List<String> selectLine = selectLine(maxToRead);
+		if(selectLine != null){
+			Iterator<String> it = selectLine.iterator();
+			while(it.hasNext()){
+				String l = it.next();
+				String[] line = l.split(patternStr,-1);
+				List<String> fieldNames = getFields().getFieldNames(); 
+				if(fieldNames.size() == line.length){
+					Map<String,String> cur = new LinkedHashMap<String,String>();
+					for(int i = 0; i < line.length; ++i){
+						cur.put(fieldNames.get(i),line[i]);
+					}
+					ans.add(cur);
+				}else{
+					logger.error("The line size ("+line.length+
+							") is not compatible to the number of fields ("+fieldNames.size()+").");
+					logger.error("Error line: "+l);
+					ans = null;
+					break;
 				}
-				ans.add(cur);
-			}else{
-				logger.error("The line size ("+line.length+
-						") is not compatible to the number of fields ("+fieldNames.size()+").");
-				logger.error("Error line: "+l);
-				ans = null;
-				break;
 			}
 		}
 		return ans;

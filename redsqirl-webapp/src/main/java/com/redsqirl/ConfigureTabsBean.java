@@ -330,7 +330,16 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 				getworkFlowInterface().removeWorkflow(workflowNameTmp);
 				setTabs(new LinkedList<String>(getMenuWA().keySet()));
 
-				showTab = "N";
+				//showTab = "N";
+				
+				tableGrid.unselectAll();
+				
+				if(getMenuWA().isEmpty()){
+					setIndex(null);
+				}else{
+					setIndex(0);
+				}
+				
 			} catch (RemoteException e1) {
 				e1.printStackTrace();
 
