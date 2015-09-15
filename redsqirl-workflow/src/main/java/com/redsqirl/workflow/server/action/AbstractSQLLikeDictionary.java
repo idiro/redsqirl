@@ -187,6 +187,9 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 				if (runArithmeticOperation(expr, fields, nonAggregFeats)) {
 					type = "NUMBER";
 				}
+			} else if (isCastOperation(expr)) {
+				logger.info(expr + ", is an cast operation");
+				type = runCastOperation(expr, fields, nonAggregFeats);
 			} else if (isAggregatorMethod(expr)) {
 				if (nonAggregFeats == null) {
 					throw new Exception("Cannot use aggregation method");
@@ -221,9 +224,6 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 					}
 				}
 				type = runMethod(expr, fl, false);
-			} else if (isCastOperation(expr)) {
-				logger.info(expr + ", is an cast operation");
-				type = runCastOperation(expr, fields, nonAggregFeats);
 			}
 		}
 
