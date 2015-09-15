@@ -733,35 +733,29 @@
 	     function unblockRunningWorkflowJS(){
 	     	//<![CDATA[
 
-	    	 try{
-	    	 
 		         
 	         if(lastBlockedRunningWorkflow){
 	        	 console.log("unblockRunningWorkflowJS ", lastBlockedRunningWorkflow);
 	             jQuery('#'+lastBlockedRunningWorkflow).unblock();
 	             try{DMRDIV_disableProgressBar();}catch(exception){}
 	             try{jQuery('#domMessageRunning'+ copyRunningMsgIdx).remove();}catch(exception){}
+
+	             //remove star if necessary
+	             var canvasNameStar = jQuery('#canvasNameStar-'+getSelectedByName()).text();
+	             if(canvasNameStar[canvasNameStar.length-1] == "*" ){
+	 				jQuery('#canvasNameStar-'+getSelectedByName()).text(getSelectedByName());
+	 				updateCanvasNameStar();
+	 			 }
+	             
 	         }else{
 		    	 console.log("unblockRunningWorkflowJS");
 		     }
 
-	    	 }catch(exception){
-			     	alert("a " + exception);
-			     }
 
-	    	 try{
-		     
 	         lastBlockedRunningWorkflow = null;
 	         clearInterval(runningIntervalID);
-
-	     }catch(exception){
-		     	alert("b " + exception);
-		     }
 	         
-			
-	    	
-	         
-	     	         //]]>
+	     	//]]>
 	     }
 
 	     
@@ -1220,7 +1214,7 @@
 		<div id="domMessageRunning" style="display: none;">
 			<h:form id="DMRDIV_Form">
 			
-				<a4j:jsFunction name="DMRDIV_updateProgressBar" reRender="DMRDIV_runningActionsList, DMRDIV_completedActionsList, DMRDIV_FormTitle" 
+				<a4j:jsFunction name="DMRDIV_updateProgressBar" reRender="DMRDIV_runningActionsList, DMRDIV_completedActionsList, DMRDIV_FormTitle, DMRDIV_idProgBarRunning" 
 					data="#{canvasBean.runningAndUpdate}" oncomplete="if(data === undefined || !data[1]){unblockRunningWorkflowJS();}else{console.log('updateProgressBar: ',data[0],data[1],getSelectedByName()); if(data[0] == 'false' &amp;&amp; data[1] == getSelectedByName()){unblockRunningWorkflowJS();setRunning(getSelectedByName(), false);console.log('updateArcsAfterRunning: ',data[0],data[1],getSelectedByName());updateAllArcsStatus();}}"  />
 				<a4j:jsFunction name="DMRDIV_disableProgressBar" reRender="DMRDIV_idProgBarRunning" 
 				     oncomplete="try{#{rich:component('DMRDIV_idProgBarRunning')}.disable();}catch(exception){}"/>

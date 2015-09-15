@@ -449,12 +449,19 @@ public class WorkflowPrefManager extends BlockManager {
 				
 				PrintWriter s = new PrintWriter(file);
 
+				//default values
+				
+				s.println("menu:Utils");
+				s.println("source");
+				s.println("send_email");
+				s.println("convert");
+				
 				PackageManager p = new PackageManager();
 				List<String> listActions = p.getActions(userName);
-
-				if(listActions.contains("pig_text_source") || listActions.contains("pig_select") || 
-						listActions.contains("pig_join") || listActions.contains("pig_aggregator") || 
-						listActions.contains("pig_union") ){
+				
+				//pig
+				
+				if(listActions.contains("pig_text_source")){
 					s.println("menu:Pig");
 				}
 
@@ -464,17 +471,77 @@ public class WorkflowPrefManager extends BlockManager {
 				if(listActions.contains("pig_select")){
 					s.println("pig_select");
 				}
-				if(listActions.contains("pig_join")){
-					s.println("pig_join");
-				}
 				if(listActions.contains("pig_aggregator")){
 					s.println("pig_aggregator");
+				}
+				if(listActions.contains("pig_join")){
+					s.println("pig_join");
 				}
 				if(listActions.contains("pig_union")){
 					s.println("pig_union");
 				}
+				if(listActions.contains("pig_audit")){
+					s.println("pig_audit");
+				}
+				if(listActions.contains("pig_rank")){
+					s.println("pig_rank");
+				}
+				if(listActions.contains("pig_group_rank")){
+					s.println("pig_group_rank");
+				}
+				if(listActions.contains("pig_volume_binning")){
+					s.println("pig_volume_binning");
+				}
+				if(listActions.contains("pig_value_binning")){
+					s.println("pig_value_binning");
+				}
+				if(listActions.contains("pig_correlation")){
+					s.println("pig_correlation");
+				}
+				
+				//spark
+				
+				if(listActions.contains("spark_text_source")){
+					s.println("menu:Spark");
+				}
 
-				if(listActions.contains("hama_logistic_regression") || listActions.contains("hama_kmeans") ||
+				if(listActions.contains("spark_text_source")){
+					s.println("spark_text_source");
+				}
+				if(listActions.contains("spark_select")){
+					s.println("spark_select");
+				}
+				if(listActions.contains("spark_aggregator")){
+					s.println("spark_aggregator");
+				}
+				if(listActions.contains("spark_join")){
+					s.println("spark_join");
+				}
+				if(listActions.contains("spark_union")){
+					s.println("spark_union");
+				}
+				if(listActions.contains("spark_audit")){
+					s.println("spark_audit");
+				}
+				if(listActions.contains("spark_rank")){
+					s.println("spark_rank");
+				}
+				if(listActions.contains("spark_group_rank")){
+					s.println("spark_group_rank");
+				}
+				if(listActions.contains("spark_volume_binning")){
+					s.println("spark_volume_binning");
+				}
+				if(listActions.contains("spark_value_binning")){
+					s.println("spark_value_binning");
+				}
+				if(listActions.contains("spark_correlation")){
+					s.println("spark_correlation");
+				}
+				
+				//hama
+				
+				/*if(listActions.contains("hama_logistic_regression") || listActions.contains("hama_kmeans") ||
 						listActions.contains("Page_Rank_Action") ){
 					s.println("menu:Model");
 				}
@@ -487,11 +554,7 @@ public class WorkflowPrefManager extends BlockManager {
 				}
 				if(listActions.contains("Page_Rank_Action")){
 					s.println("Page_Rank_Action");
-				}
-
-				s.println("menu:Utils");
-				s.println("send_email");
-				s.println("convert");
+				}*/
 
 				s.close();
 
