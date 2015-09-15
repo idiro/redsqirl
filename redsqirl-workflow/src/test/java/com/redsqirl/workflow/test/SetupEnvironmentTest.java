@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.Properties;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -17,33 +16,10 @@ import org.junit.runners.Suite.SuiteClasses;
 import com.idiro.Log;
 import com.idiro.ProjectID;
 import com.idiro.hadoop.NameNodeVar;
-import com.redsqirl.utils.OrderedFieldListTests;
-import com.redsqirl.utils.TreeTests;
-import com.redsqirl.workflow.client.CreateWorkflowTests;
-import com.redsqirl.workflow.server.AppendListInteractionTests;
-import com.redsqirl.workflow.server.EditorInteractionTests;
-import com.redsqirl.workflow.server.InputInteractionTests;
-import com.redsqirl.workflow.server.ListInteractionTests;
-import com.redsqirl.workflow.server.OozieDagTests;
-import com.redsqirl.workflow.server.OozieManagerTests;
-import com.redsqirl.workflow.server.TableInteractionTests;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
-import com.redsqirl.workflow.server.WorkflowProcessesManagerTests;
-import com.redsqirl.workflow.server.WorkflowTests;
-import com.redsqirl.workflow.server.action.ActionTests;
-import com.redsqirl.workflow.server.action.ConvertTests;
-import com.redsqirl.workflow.server.action.SendEmailTests;
-import com.redsqirl.workflow.server.action.SourceTests;
-import com.redsqirl.workflow.server.action.superaction.SubWorkflowTests;
-import com.redsqirl.workflow.server.action.superaction.SuperActionTests;
 import com.redsqirl.workflow.server.connect.HDFSInterface;
 import com.redsqirl.workflow.server.connect.HiveInterface;
-import com.redsqirl.workflow.server.connect.interfaces.HDFSInterfaceTests;
-import com.redsqirl.workflow.server.connect.interfaces.SSHInterfaceArrayTests;
-import com.redsqirl.workflow.server.connect.interfaces.WorkflowInterfaceTests;
-import com.redsqirl.workflow.server.datatype.HiveTypePartitionTests;
-import com.redsqirl.workflow.utils.AbstractDictionaryTests;
-import com.redsqirl.workflow.utils.PackageManagerTests;
+import com.redsqirl.workflow.server.datatype.HDFSTypeTests;
 
 
 @RunWith(Suite.class)
@@ -62,7 +38,7 @@ import com.redsqirl.workflow.utils.PackageManagerTests;
 //	//FIXME Hive Type Tests does not work 
 //	//HiveTypeTests.class, 
 //	HiveTypePartitionTests.class, 
-	SourceTests.class
+//	SourceTests.class
 //	WorkflowProcessesManagerTests.class,
 //	OozieManagerTests.class,
 //	
@@ -76,7 +52,7 @@ import com.redsqirl.workflow.utils.PackageManagerTests;
 //	EditorInteractionTests.class,
 //	TableInteractionTests.class,
 //	//FIXME Test only done for keith user...
-//	//HDFSTypeTests.class,
+	HDFSTypeTests.class,
 //	PackageManagerTests.class,
 //	AbstractDictionaryTests.class,
 //	SendEmailTests.class,
