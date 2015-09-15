@@ -2228,6 +2228,8 @@ function setPageNb(groupId, pageNb){
 	
 	//console.log("setPageNb");
 	
+	console.log(groupId, pageNb);
+	
     var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
     var group = getElement(polygonLayer, groupId);
     group.pageNb = pageNb;
@@ -2236,6 +2238,8 @@ function setPageNb(groupId, pageNb){
 function openCanvasModalJS(group, selectedTab){
 	
 	//console.log("openCanvasModalJS");
+	
+	console.log(group.getId(), group.pageNb);
 
     group.getChildren()[0].setFill("white");
     group.getChildren()[1].setFill("white");
@@ -2253,11 +2257,13 @@ function openCanvasModalJS(group, selectedTab){
 
     
     if (!group.hasChangedId) {
-	openChangeIdModal(group.getId(), imagePath,true);
-	group.hasChangedId = true;
+    	console.log("changeID");
+    	openChangeIdModal(group.getId(), imagePath,true);
+    	group.hasChangedId = true;
     } else {
-	openModal(group.getId(), imagePath, selectedTab, group.pageNb);
-	changeHelpAnchor(group.pageNb);
+    	console.log("open", group.pageNb);
+    	openModal(group.getId(), imagePath, selectedTab, group.pageNb);
+    	changeHelpAnchor(group.pageNb);
     }
 }
 
