@@ -230,7 +230,7 @@ public abstract class AbstractDictionary {
 					while ((line = br.readLine()) != null
 							&& !line.startsWith("#")) {
 						if (!line.trim().isEmpty()) {
-							String[] function = line.split(";");
+							String[] function = line.split(";",-1);
 							// logger.info(line);
 							functions.add(function);
 						}
