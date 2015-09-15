@@ -20,16 +20,54 @@ public class PigTestUtils {
 
 		// Check if the file already exists
 		if (fileSystem.exists(p)) {
-			logger.warn("File " + p.toString() + " already exists");
-			return;
+			if(fileSystem.listStatus(p).length>0){
+				logger.warn("File " + p.toString() + " already exists");
+				return;
+			}
+		}else{
+			fileSystem.mkdirs(p);
 		}
 
 		// Create a new file and write data to it.
-		fileSystem.mkdirs(p);
+		
+		
 		FSDataOutputStream out = fileSystem.create(new Path(p, "part-0000"));
 		out.write(containt.getBytes());
 		out.close();
 		fileSystem.close();
+	}
+	
+	public static void writeContent(Path p ,String file, String content) throws IOException{
+		FileSystem fs = NameNodeVar.getFS();
+		
+		if(fs.exists(p)){
+			FSDataOutputStream out = fs.create(new Path(p, file));
+			out.write(content.getBytes());
+			out.close();
+			fs.close();
+		}
+	}
+	
+	public static void createHFDSdir(String path ) throws IOException{
+		FileSystem fs = NameNodeVar.getFS();
+		Path p = new Path(path);
+		if(fs.exists(p)){
+			logger.warn("Dir " + p.toString() + " already exists");
+			return;
+		}
+		fs.mkdirs(p);
+		fs.close();
+	}
+	
+	public static int getPathSize(Path p) throws IOException{
+		FileSystem fs  = NameNodeVar.getFS();
+		int psize = 0;
+		if (fs.exists(p)){
+			psize = fs.listStatus(p).length;
+		}
+		
+		return psize;
+		
 	}
 	
 	public static void createStringIntString_text_file(Path p) throws IOException {

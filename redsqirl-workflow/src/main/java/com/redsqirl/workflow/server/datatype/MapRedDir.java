@@ -5,7 +5,17 @@ package com.redsqirl.workflow.server.datatype;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+
 import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -147,13 +157,21 @@ public abstract class MapRedDir extends MapRedHdfs{
 		}
 		// hCh.close();
 		return error;
-	}	
+	}
 
+	public static <K,V> HashMap<V,K> reverse(Map<K,V> map) {
+	    HashMap<V,K> rev = new HashMap<V, K>();
+	    for(Map.Entry<K,V> entry : map.entrySet())
+	        rev.put(entry.getValue(), entry.getKey());
+	    return rev;
+	}
+	
 	public List<String> selectLine(int maxToRead) throws RemoteException {
 		List<String> ans = null;
 		//if (isPathValid() == null && isPathExists()) {
 		try {
 			FileSystem fs = NameNodeVar.getFS();
+			
 			FileStatus[] stat = fs.listStatus(new Path(getPath()),
 					new PathFilter() {
 
@@ -162,13 +180,45 @@ public abstract class MapRedDir extends MapRedHdfs{
 					return !arg0.getName().startsWith("_") && !arg0.getName().startsWith(".");
 				}
 			});
+			
 			if(stat.length > 0){
 				ans = new ArrayList<String>(maxToRead);
-				for (int i = 0; i < stat.length; ++i) {
-					ans.addAll(hdfsInt.select(stat[i].getPath().toString(),
-							",",
-							(maxToRead / stat.length) + 1));
+				int i =0;
+				int numFiles=0;
+				
+				
+				Map<Long,FileStatus> fileblocks = new TreeMap<Long,FileStatus>();
+				
+				for (int k = 0 ; k < stat.length; ++k){
+					fileblocks.put(stat[i].getLen(),stat[i] );
 				}
+				
+				
+				
+				Map<Long,FileStatus> treeMap = new TreeMap<Long, FileStatus>(fileblocks);
+				HashMap<FileStatus, Long> fileasKeys = reverse(treeMap);
+				logger.info(fileblocks.toString());
+				Iterator<FileStatus> fbIter = fileasKeys.keySet().iterator();
+				
+				while(fbIter.hasNext() && ans.size() < maxToRead){
+					FileStatus file = fbIter.next();
+					logger.info(ans.size()+" is the size of the return list "+i+" "+fileblocks.size()+" "+(maxToRead - ans.size())+" "+ (maxToRead / fileblocks.size())+" "+file.getBlockSize()+" "+file.getLen());
+					numFiles = stat.length - i;
+					if(i < 10){
+						ans.addAll(hdfsInt.select(file.getPath().toString(),
+							",",
+							Math.min(maxToRead - ans.size(), (maxToRead / Math.min(fileblocks.size(),10)) + 1)));
+					}else{
+						ans.addAll(hdfsInt.select(file.getPath().toString(),
+								",",
+								maxToRead - ans.size()));
+					}
+					++i;
+					
+				}
+//				for (int j = 0; i < stat.length && ans.size() < maxToRead; ++i) {
+					
+//				}
 			}
 		} catch (IOException e) {
 			String error = "Unexpected error: " + e.getMessage();
@@ -181,6 +231,7 @@ public abstract class MapRedDir extends MapRedHdfs{
 		}
 
 		//}
+		logger.info("Ans size after update "+ans.size());
 		return ans;
 	}
 
