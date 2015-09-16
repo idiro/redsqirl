@@ -191,7 +191,7 @@ public abstract class MapRedDir extends MapRedHdfs{
 				//Get the 10 biggest files
 				Iterator<Map.Entry<FileStatus,Long>> fbIter = filesSortedBySize.iterator();
 				List<Map.Entry<FileStatus,Long>> biggestFiles = new LinkedList<Map.Entry<FileStatus,Long>>();
-				while(fbIter.hasNext() && i < 10){
+				while(fbIter.hasNext() && i < 10 && filesSortedBySize.size() - numberFiles > i ){
 					biggestFiles.add(fbIter.next());
 					++i;
 				}
