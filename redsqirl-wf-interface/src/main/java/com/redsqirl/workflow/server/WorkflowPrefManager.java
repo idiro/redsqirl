@@ -454,7 +454,10 @@ public class WorkflowPrefManager extends BlockManager {
 				s.println("menu:Utils");
 				s.println("source");
 				s.println("send_email");
-				s.println("convert");
+				s.println("file_text_source");
+				s.println("convert_file_text");
+				s.println("superactioninput");
+				s.println("superactionoutput");
 				
 				PackageManager p = new PackageManager();
 				List<String> listActions = p.getActions(userName);
