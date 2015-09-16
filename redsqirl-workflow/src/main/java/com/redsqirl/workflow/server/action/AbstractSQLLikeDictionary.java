@@ -387,8 +387,7 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 		if (trimExp.startsWith("(") && trimExp.endsWith(")")) {
 			trimExp = trimExp.substring(1, trimExp.length() - 1);
 		}
-		String cleanUp = trimExp.replaceAll("\\(.*\\)", "()").trim();
-
+		String cleanUp = removeBracketContent(trimExp);
 		return cleanUp.startsWith("NOT ") || cleanUp.contains(" OR ") || cleanUp.contains(" AND ");
 	}
 
