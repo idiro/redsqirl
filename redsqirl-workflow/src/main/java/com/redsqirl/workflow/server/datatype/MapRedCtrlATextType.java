@@ -71,56 +71,9 @@ public class MapRedCtrlATextType extends MapRedDir{
 
 	@Override
 	public String isPathValid(String path) throws RemoteException {
-		String error = null;
-		HdfsFileChecker hCh = new HdfsFileChecker(path);
-		if (!hCh.isInitialized() || hCh.isFile()) {
-			error = LanguageManagerWF.getText("mapredtexttype.dirisfile");
-		} else {
-			FileSystem fs;
-			try {
-				fs = NameNodeVar.getFS();
-				hCh.setPath(new Path(path).getParent());
-				if (!hCh.isDirectory()) {
-					error = LanguageManagerWF.getText("mapredtexttype.nodir",new String[]{path});
-				}
-				FileStatus[] stat = fs.listStatus(new Path(path),
-						new PathFilter() {
-
-					@Override
-					public boolean accept(Path arg0) {
-						return !arg0.getName().startsWith("_");
-					}
-				});
-				for (int i = 0; i < stat.length && error == null; ++i) {
-					if (stat[i].isDir()) {
-						error = LanguageManagerWF.getText(
-								"mapredtexttype.notmrdir",
-								new Object[] { path });
-					} else {
-						try {
-							hdfsInt.select(stat[i].getPath().toString(),"", 1);
-						} catch (Exception e) {
-							error = LanguageManagerWF
-									.getText("mapredtexttype.notmrdir");
-						}
-					}
-				}
-				try {
-					// fs.close();
-				} catch (Exception e) {
-					logger.error("Fail to close FileSystem: " + e);
-				}
-			} catch (IOException e) {
-
-				error = LanguageManagerWF.getText("unexpectedexception",
-						new Object[] { e.getMessage() });
-
-				logger.error(error);
-			}
-
-		}
-		// hCh.close();
-		return error;
+		List<String> shouldHaveExt = new LinkedList<String>();
+		shouldHaveExt.add(".mrctra");
+		return isPathValid(path,null,shouldHaveExt);
 	}
 
 	@Override
