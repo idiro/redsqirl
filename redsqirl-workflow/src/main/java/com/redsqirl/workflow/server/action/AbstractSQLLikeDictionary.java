@@ -837,6 +837,37 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 		}
 		return cleanUp;
 	}
+	
+	/**
+	 * Get the content of the first expression between bracket
+	 * 
+	 * @param expr
+	 * @return content
+	 */
+	public static String getFirstBracketContent(String expr) {
+		int count = 0;
+		int index = 0;
+		String cleanUp = "";
+		while (index < expr.length()) {
+			if (expr.charAt(index) == '(') {
+				++count;
+				if (count > 1) {
+					cleanUp += expr.charAt(index);
+				}
+			} else if (expr.charAt(index) == ')') {
+				--count;
+				if (count > 0) {
+					cleanUp += expr.charAt(index);
+				}else{
+					break;
+				}
+			} else if (count > 0) {
+				cleanUp += expr.charAt(index);
+			}
+			++index;
+		}
+		return cleanUp;
+	}
 
 	/**
 	 * Get the content of the brackets delimited by comma
