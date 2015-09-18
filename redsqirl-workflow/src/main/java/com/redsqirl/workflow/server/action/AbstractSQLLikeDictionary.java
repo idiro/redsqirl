@@ -188,7 +188,7 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 					type = "NUMBER";
 				}
 			} else if (isCastOperation(expr)) {
-				logger.info(expr + ", is an cast operation");
+				logger.debug(expr + ", is an cast operation");
 				type = runCastOperation(expr, fields, nonAggregFeats);
 			} else if (isAggregatorMethod(expr)) {
 				if (nonAggregFeats == null) {
@@ -296,7 +296,7 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 	 */
 	public boolean check(String typeToBe, String typeGiven) {
 		boolean ok = false;
-		logger.info("type to be : " + typeToBe + " given " + typeGiven);
+		logger.debug("type to be : " + typeToBe + " given " + typeGiven);
 		if (typeGiven == null || typeToBe == null) {
 			return false;
 		}
@@ -508,9 +508,9 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 				if (delimiter.isEmpty()) {
 					delimiter = ",";
 				}
-				argSplit = arg.split(escapeString(delimiter) + "(?![^\\(]*\\))");
+				argSplit = getArguments(arg,delimiter);
 				sizeSearched = argSplit.length;
-				logger.debug("argsplit last el" + argSplit[sizeSearched - 1]);
+				logger.debug("argsplit last: " + argSplit[sizeSearched - 1]);
 				logger.debug("argsplit size : " + sizeSearched);
 				logger.debug("test " + method[1].trim().isEmpty());
 				logger.debug("test " + expr.trim().equalsIgnoreCase(method[0].trim()));
@@ -578,7 +578,7 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 
 		if (!ok) {
 			String error = "Error in expression: '" + expr + "'";
-			logger.debug(error);
+			logger.info(error);
 		}
 		logger.debug("operation ok : " + ok);
 		return ok;
@@ -644,9 +644,9 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 				&& argsTypeExpected[argsTypeExpected.length - 1].endsWith("..."))) {
 			ok = true;
 			for (int i = 0; i < args.length; ++i) {
-				logger.debug("only one arg : " + argsTypeExpected.length);
-				logger.debug("fields " + fields.getFieldNames());
+				logger.debug("Arg number: "+(i+1)+" / " + argsTypeExpected.length);
 				logger.debug("arg " + args[i]);
+				logger.debug("fields " + fields.getFieldNames());
 				logger.debug("return type : " + getReturnType(args[i], fields));
 				if (i >= argsTypeExpected.length - 1 && argsTypeExpected[argsTypeExpected.length - 1].endsWith("...")) {
 					ok &= check(
@@ -880,6 +880,7 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 		int count = 0;
 		int index = 0;
 		String cleanUp = "";
+		List<String> ans = new LinkedList<String>();
 		while (index < expr.length()) {
 			if (expr.charAt(index) == '(') {
 				++count;
@@ -891,14 +892,43 @@ public abstract class AbstractSQLLikeDictionary extends AbstractDictionary {
 				if (count > 0) {
 					cleanUp += ')';
 				} else {
-					cleanUp += ',';
+					ans.add(cleanUp);
+					cleanUp = "";
 				}
 			} else if (count > 0) {
 				cleanUp += expr.charAt(index);
 			}
 			++index;
 		}
-		return cleanUp.substring(0, cleanUp.length() - 1).split(",");
+		return ans.toArray(new String[ans.size()]);
+	}
+	
+	public static String[] getArguments(String arguments, String delimiter) {
+		int count = 0;
+		int index = 0;
+		String cleanUp = "";
+		List<String> ans = new LinkedList<String>();
+		int delIndex = arguments.indexOf(delimiter);
+		while (index < arguments.length() && delIndex > -1) {
+			if(delIndex == index){
+				delIndex = arguments.indexOf(delimiter,index+1);
+				if(count == 0){
+					ans.add(cleanUp);
+					cleanUp="";
+					++index;
+					continue;
+				}
+			}else if (arguments.charAt(index) == '(') {
+				++count;
+			}else if (arguments.charAt(index) == ')') {
+				--count;
+			}
+			cleanUp += arguments.charAt(index);
+			++index;
+		}
+		ans.add(cleanUp+arguments.substring(index));
+		
+		return ans.toArray(new String[ans.size()]);
 	}
 
 	/**
