@@ -15,7 +15,7 @@
 	   		
 	   		<h:panelGrid columns="2">
 		   		<a4j:commandButton value="#{messages.button_ok}" styleClass="greenButton"
-					onclick="#{rich:component('modalSelectLink')}.hide();jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') });addLinkBt()"/>
+					onclick="#{rich:component('modalSelectLink')}.hide();jQuery('#canvas-tabs').block({ message: jQuery('#domMessageDivCanvas1') }); setTimeout(function(){ addLinkBt();},250) "/>
 				<a4j:commandButton value="#{messages.button_cancel}" styleClass="greenButton"
 				    onclick="removeLink('#{canvasBean.paramNameLink}'); #{rich:component('modalSelectLink')}.hide();"/>
 			</h:panelGrid>
