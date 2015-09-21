@@ -242,36 +242,21 @@
                 <a4j:region id="listInteractionRegion"  rendered="#{interCur.displayType == 'list'}">
                 <span id="listInteractionRegion_#{interCurIdx}">
                     
-                
-                    <h:panelGroup style="width:250px" layout="block" >
-                    <h:inputText value="#{interCur.list.selectedListOption}" id="selectedListOptionCombo#{interCurIdx+1}" 
-                    	rendered="#{interCur.list.comboBox == 'Y'}" style="width:245px" >
-                                  	 
-	                    <script type="text/javascript">
-	                    	jQuery("[id$='selectedListOptionCombo#{interCurIdx+1}']").textext({
-						    	plugins : 'arrow autocomplete'
-						    }).bind('getSuggestions', function(e, data){
-	
-							try{
-							        	
-								var list =  #{interCur.list.listOptionsString}  ,
-							    	textext = jQuery(e.target).textext()[0],
-							        query = (data ? data.query : '') || '' ;
-							
-							        jQuery(this).trigger('setSuggestions', {
-								    	result : textext.itemManager().filter(list, query)
-								    	}
-							        );
-	
-								}catch(exception){
-									alert(exception);
-								}
-						            
-							});
-						</script>
-                               	 
-                    </h:inputText>
-                    </h:panelGroup>
+                    
+                     <h:panelGroup style="max-width:100px;" layout="block" rendered="#{interCur.list.comboBox == 'Y'}" >
+                     	<select onchange="updatedComboboxListInteraction(this,'#{interCurIdx+1}');" style="max-width:100px;">
+			            	<a4j:repeat value="#{interCur.list.listOptions}" var="idx"  >
+								<h:outputText rendered="#{interCur.list.selectedListOption == idx.value}" > <option selected="selected"> <h:outputText value="#{idx.value}" /> </option> </h:outputText>
+						    	<h:outputText rendered="#{interCur.list.selectedListOption != idx.value}" > <option> <h:outputText value="#{idx.value}" /> </option> </h:outputText>
+							</a4j:repeat>
+			            </select>
+			            
+			            <div id="listInteraction#{interCurIdx+1}">
+							<h:inputHidden value="#{interCur.list.selectedListOption}" id="listInteraction#{interCurIdx+1}ans"/>
+						</div>
+						
+						<a4j:jsFunction name="reLoadlistInteractionInputHidden" reRender="listInteraction#{interCurIdx+1}ans" />
+					</h:panelGroup>
                     
                     
                     

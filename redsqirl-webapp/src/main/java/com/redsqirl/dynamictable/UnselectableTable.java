@@ -2,11 +2,15 @@ package com.redsqirl.dynamictable;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import javax.faces.context.FacesContext;
 
 import org.apache.commons.lang.WordUtils;
 
@@ -92,6 +96,23 @@ public class UnselectableTable implements Serializable{
 		}
 		return ans;
 	}
+	
+	/*public void sortScrollableDataTable(){
+
+		final String nameColumnToSort = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("nameColumnToSort");
+		if(nameColumnToSort != null && rows != null && !rows.isEmpty()){
+			final int indexCol = getColumnIds().indexOf(nameColumnToSort.toUpperCase());
+			if(indexCol != -1){
+				final int asc = rows.get(0)[indexCol].compareTo(rows.get(rows.size()-1)[indexCol]) < 0 ? -1 : 1;
+				Collections.sort(getRows(),new Comparator<String[]>() {
+					public int compare(String[] aux1, String[] aux2) {
+						return asc*aux1[indexCol].compareTo(aux2[indexCol]);
+					}
+				});
+			}
+		}
+
+	}*/
 
 	/**
 	 * @return the columnIds

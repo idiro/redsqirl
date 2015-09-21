@@ -44,7 +44,7 @@
 
 		try{
 		        	
-			var list =  #{canvasModalBean.outputTab.fileSystem.listExtensionsString}  ,
+			var list =  #{canvasModalBean.outputTab.fileSystem.listExtensionsString == null ? canvasBean.emptyList : canvasModalBean.outputTab.fileSystem.listExtensionsString}  ,
 		    	textext = jQuery(e.target).textext()[0],
 		        query = (data ? data.query : '') || '' ;
 		

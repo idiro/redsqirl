@@ -257,10 +257,26 @@ public class ConfigureTabsBean extends BaseBean implements Serializable {
 	}
 
 	public void createTab() throws RemoteException, Exception {
-		mountMenuActions();
+
+		LinkedList<String> result = new LinkedList<String>();
+		FacesContext context = FacesContext.getCurrentInstance();
+		UserInfoBean userInfoBean = (UserInfoBean) context.getApplication().evaluateExpressionGet(context, "#{userInfoBean}", UserInfoBean.class);
+		//list of super action
+		List<String> listSuperAction = getSuperActionManager().getAvailableSuperActions(userInfoBean.getUserName());
+		//list of normal action
+		for (Iterator<Entry<String, String>> iterator = allWANameWithClassName.entrySet().iterator(); iterator.hasNext();) {
+			Entry<String, String> e = iterator.next();
+			result.add(e.getKey());
+		}
+		for (String name : listSuperAction) {
+			if(!result.contains(name)){
+				result.add(name);
+			}
+		}
+		
 		String[] value = new String[1];
 		value[0] = "";
-		getTableGrid().getRows().add(new SelectableRowFooter(value, getMenuActionsAsList()));
+		getTableGrid().getRows().add(new SelectableRowFooter(value, result));
 	}
 
 	public String checkSaveTabs() {

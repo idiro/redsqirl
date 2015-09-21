@@ -346,11 +346,14 @@ public class CanvasModal extends BaseBean implements Serializable {
 					logger.error(e.getMessage());
 				}
 			}
+			
+			if(dfe.getName() != null){
+				usageRecordLog().addSuccess(dfe.getName(), "OPENCANVASMODAL");
+			}
+			
 		}
 		
-		usageRecordLog().addSuccess(dfe.getName(), "OPENCANVASMODAL");
-		
-		logger.info("listPage:"+ Integer.toString(getListPageSize()) + " getIdGroup:" + getIdGroup()+ " getCurElId:"+getCurElId()+ " getCurElComment:"+getCurElComment());
+		//logger.info("listPage:"+ Integer.toString(getListPageSize()) + " getIdGroup:" + getIdGroup()+ " getCurElId:"+getCurElId()+ " getCurElComment:"+getCurElComment());
 		
 		return new String[]{Boolean.toString(loadMainWindow && ((canvasBean.getWorkflowType().equals("W") && getOutputTab().getShowOutputForm().equals("Y") || getListPageSize() > 0))),
 				Integer.toString(pageNb),

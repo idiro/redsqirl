@@ -546,3 +546,12 @@ function updatedComboboxTableInteraction(element, index){
     //alert(val + " " + content);
     reLoadInputHidden();
 }
+
+function updatedComboboxListInteraction(element, index){
+    var idx=element.selectedIndex;
+    var val=element.options[idx].value;
+    var content=element.options[idx].innerHTML;
+    jQuery("[id$=listInteraction"+index+"]").children().val(val);
+    //alert(val + " " + content);
+    reLoadlistInteractionInputHidden();
+}
