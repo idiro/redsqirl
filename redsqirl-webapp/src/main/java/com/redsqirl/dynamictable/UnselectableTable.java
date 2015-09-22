@@ -97,7 +97,7 @@ public class UnselectableTable implements Serializable{
 		return ans;
 	}
 	
-	public void sortScrollableDataTable(){
+	public void sortModalOutputTab(){
 
 		final String nameColumnToSort = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("nameColumnToSort");
 		if(nameColumnToSort != null && rows != null && !rows.isEmpty()){

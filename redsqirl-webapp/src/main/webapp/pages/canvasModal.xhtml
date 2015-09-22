@@ -719,7 +719,8 @@
 		                		<rich:column style="border-bottom:0px;border-right:0px;" width="25px">
                                     <h:outputText value="#{rowNb+1}" />
                                 </rich:column>
-              
+
+		                        
 		                        <rich:columns value="#{canvasModalBean.outputTab.titles == null? canvasBean.emptyList : canvasModalBean.outputTab.titles}" 
 		                        	var="column" index="ind" id="column#{ind}" sortExpression="#{rowData[ind]}">
 		                            
