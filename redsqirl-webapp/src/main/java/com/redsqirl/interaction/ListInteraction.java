@@ -53,12 +53,16 @@ public class ListInteraction extends CanvasModalInteraction implements Serializa
 
 		if (list != null) {
 			for (Tree<String> tree : list) {
-				logger.info("list value "
-						+ tree.getFirstChild().getHead());
-				listOptions
-						.add(new SelectItem(tree.getFirstChild()
-								.getHead(), tree.getFirstChild()
-								.getHead()));
+				try{
+					logger.info("list value "
+							+ tree.getFirstChild().getHead());
+					listOptions
+					.add(new SelectItem(tree.getFirstChild()
+							.getHead(), tree.getFirstChild()
+							.getHead()));
+				}catch(Exception e){
+					logger.warn("Cannot get possible value from "+inter.getId());
+				}
 			}
 			if(!listOptions.isEmpty()){
 				selectedListOption = listOptions.get(0).getLabel();
