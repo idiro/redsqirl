@@ -613,22 +613,31 @@
 		                        
 		                       	<tr>
 		                       		<td>
-		                       			<a4j:commandLink value="output #{item.name}"
-		                       			    rendered="#{item.link == null}" 
-		                       			    action="#{canvasModalBean.outputTab.displayOutput}"
-		                       				reRender="displayTable,displayTableNumberRows, displayTableNumberRowsPanelGroup">
-			                                <a4j:actionparam name="outputName" value="#{item.name}" />
-			                                <a4j:actionparam name="resetMaxRows" value="Y" />
-			                            </a4j:commandLink>
-			                            <h:outputLink value="#{item.link}"
-			                                rendered="#{item.link != null}"
-			                            	target="blank">
-											<h:outputText value="output #{item.name}" />
-										</h:outputLink>
+		                       		
+		                       			<h:panelGroup layout="block" >
+		                       		
+			                       			<a4j:commandLink value="output #{item.name}"
+			                       			    rendered="#{item.link == null &amp;&amp; item.showGridDataOutput == 'Y'}" 
+			                       			    action="#{canvasModalBean.outputTab.displayOutput}"
+			                       				reRender="displayTable,displayTableNumberRows, displayTableNumberRowsPanelGroup">
+				                                <a4j:actionparam name="outputName" value="#{item.name}" />
+				                                <a4j:actionparam name="resetMaxRows" value="Y" />
+				                            </a4j:commandLink>
+				                            <h:outputText value="output #{item.name}" style="padding-left:30px;"
+				                            	rendered="#{item.link == null &amp;&amp; item.showGridDataOutput == 'N'}" />
+				                            
+				                            <h:graphicImage value="../image/icons/external_link.png" rendered="#{item.link != null}" 
+				                            	style="height:15px;padding-right:10px;" />
+				                            <h:outputLink value="#{item.link}"
+				                                rendered="#{item.link != null}"
+				                            	target="blank">
+												<h:outputText value="output #{item.name}" />
+											</h:outputLink>
+										
+										</h:panelGroup>
+										
 		                       		</td>
 		                       		<td>
-			                            
-			                            
 			                            
 			                            <h:panelGroup style="width:100px" layout="block" >
 					                    <h:inputText value="#{item.savingState}" id="outputCombo#{index+1}" style="width:95px" >
@@ -704,7 +713,8 @@
 		                        var="rowData" index="rowDataIndex" width="100%" style="border:none;" onRowMouseOver="this.style.backgroundColor='#F1F1F1'"
 		                        rowKeyVar="rowNb" enableContextMenu="false"
 		                        onRowMouseOut="this.style.backgroundColor='#{a4jSkin.rowBackgroundColor}'"
-		                        rowClasses="even-row, odd-row" >
+		                        rowClasses="even-row, odd-row" 
+		                        rendered="#{canvasModalBean.outputTab.showGridDataOutput == 'Y'}" >
 		               
 		                		<rich:column style="border-bottom:0px;border-right:0px;" width="25px">
                                     <h:outputText value="#{rowNb+1}" />

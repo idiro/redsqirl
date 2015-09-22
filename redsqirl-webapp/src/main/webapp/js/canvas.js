@@ -1221,7 +1221,7 @@ function addElements(canvasName, positions, selecteds) {
 					positionsArrays[i][2], positionsArrays[i][3],
 					positionsArrays[i][4],
 					numSides,
-					positionsArrays[i][0], selecteds,positionsArrays[i][6]);
+					positionsArrays[i][0], selecteds,positionsArrays[i][6], positionsArrays[i][7]);
 			maxX = Math.max(maxX,positionsArrays[i][3]);
 			maxY = Math.max(maxY,positionsArrays[i][4]);
 			//updateIdObj(positionsArrays[i][0], positionsArrays[i][0]);
@@ -1258,7 +1258,7 @@ function checkImg(src){
    });
 }
 
-function addElement(canvasName, elementType, elementImg, posx, posy, numSides, idElement, selecteds,privilege) {
+function addElement(canvasName, elementType, elementImg, posx, posy, numSides, idElement, selecteds, privilege, externalLink) {
     
 	//console.log("addElement");
 	
@@ -1427,6 +1427,10 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
     group.elementType = elementType;
     
     group.privilege = privilege;
+    
+    //alert(externalLink);
+    
+    group.externalLink = externalLink
     
     return group;
 }
@@ -2109,6 +2113,8 @@ function showContextMenu(group, e){
 	
 	//console.log("showContextMenu");
 	
+	//alert(group.externalLink);
+	
     canvasName = selectedCanvas;
     rightClickGroup = group;
     //Build the context menu in temp variable and then display it.
@@ -2127,6 +2133,10 @@ function showContextMenu(group, e){
             }
             
         }
+    }
+    
+    if(group.externalLink != null){
+    	temp[temp.length] = {"External Link": function(menuItem,menu){window.open(group.externalLink,'_blank');}};
     }
     	
 	jQuery("table").find(".context-menu:contains('"+menu_rename+"')").each(function(index) {

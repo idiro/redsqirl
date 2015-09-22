@@ -90,6 +90,8 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 	private List<SelectItem> maxNumberRows;
 	private List<String> maxNumberRowsString;
 
+	public String showGridDataOutput = "Y";
+	
 	/**
 	 * Constructor. The constructor will automatically load the first name as
 	 * current name used.
@@ -235,6 +237,10 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 
 		String pathFolder = path.substring(0,path.lastIndexOf("/"));
 
+		if(pathFolder.isEmpty()){
+			pathFolder = path;
+		}
+		
 		if(paths.size() > 10){
 			paths.removeLast();
 		}
@@ -252,6 +258,11 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 			alias = pathFolder.substring(0, pathFolder.length()-1);
 		}
 		alias = pathFolder.substring(pathFolder.lastIndexOf("/"));
+		
+		if(alias.isEmpty()){
+			alias = pathFolder;
+		}
+		
 		fsh.setName(pathFolder);
 		if(alias.startsWith("/")){
 			alias = alias.substring(1);
@@ -404,10 +415,12 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 		logger.info("updateDFEOutputTable");
 		if (dfe.getDFEOutput() == null) {
 			logger.info("No output map");
+			setShowGridDataOutput("N");
 		} else {
 			DFEOutput dfeOut = dfe.getDFEOutput().get(nameOutput);
 			if (dfeOut == null) {
 				logger.info("no output named: " + nameOutput);
+				setShowGridDataOutput("N");
 			} else {
 				LinkedList<String> gridTitle = new LinkedList<String>();
 				List<SelectItem> listExtensions = new LinkedList<SelectItem>();
@@ -457,7 +470,7 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 					grid = new UnselectableTable(gridTitle);
 					try {
 
-						int mRow = Math.max(10, Math.min(150, 1000/gridTitle.size()));
+						int mRow = Math.max(10, Math.min(150, 1000/(gridTitle.size()+1) ));
 						mountNumberRowsList(mRow);
 						if(getMaxRows() != null && !getMaxRows().isEmpty()){
 							mRow = Integer.parseInt(getMaxRows()); 
@@ -482,6 +495,9 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 						if(grid.getRows().isEmpty()){
 							String[] emptyRow = new String[gridTitle.size()];
 							grid.add(emptyRow);
+							setShowGridDataOutput("N");
+						}else{
+							setShowGridDataOutput("Y");
 						}
 
 
@@ -691,6 +707,14 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 
 	public void setMaxNumberRowsString(List<String> maxNumberRowsString) {
 		this.maxNumberRowsString = maxNumberRowsString;
+	}
+
+	public String getShowGridDataOutput() {
+		return showGridDataOutput;
+	}
+
+	public void setShowGridDataOutput(String showGridDataOutput) {
+		this.showGridDataOutput = showGridDataOutput;
 	}
 
 }

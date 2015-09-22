@@ -34,6 +34,8 @@ public class OutputForm implements Serializable {
 	private String link;
 	private Map<String, FileSystemBean> datastores;
 	
+	public String showGridDataOutput = "Y";
+	
 	public OutputForm(Map<String, FileSystemBean> datastores, DFEOutput dfeOutput, String componentId, String name) throws RemoteException{
 		this.datastores = datastores;
 		this.dfeOutput = dfeOutput;
@@ -55,6 +57,14 @@ public class OutputForm implements Serializable {
 		}catch(Exception e){
 			//logger.info(e,e);
 		}
+		
+		List<Map<String, String>> outputLines = dfeOutput.select(1);
+		if(outputLines != null && !outputLines.isEmpty()){
+			setShowGridDataOutput("Y");
+		}else{
+			setShowGridDataOutput("N");
+		}
+		
 	}
 
 	public OutputForm() {
@@ -231,6 +241,14 @@ public class OutputForm implements Serializable {
 
 	public void setLink(String link) {
 		this.link = link;
+	}
+
+	public String getShowGridDataOutput() {
+		return showGridDataOutput;
+	}
+
+	public void setShowGridDataOutput(String showGridDataOutput) {
+		this.showGridDataOutput = showGridDataOutput;
 	}
 	
 }

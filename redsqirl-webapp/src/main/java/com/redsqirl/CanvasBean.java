@@ -36,6 +36,7 @@ import com.redsqirl.useful.WorkflowHelpUtils;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
 import com.redsqirl.workflow.server.connect.interfaces.DataFlowInterface;
 import com.redsqirl.workflow.server.enumeration.SavingState;
+import com.redsqirl.workflow.server.interfaces.DFELinkOutput;
 import com.redsqirl.workflow.server.interfaces.DFELinkProperty;
 import com.redsqirl.workflow.server.interfaces.DFEOutput;
 import com.redsqirl.workflow.server.interfaces.DataFlow;
@@ -1773,19 +1774,16 @@ public class CanvasBean extends BaseBean implements Serializable {
 			}
 
 			for (Entry<String, DFEOutput> e : dfe.getDFEOutput().entrySet()) {
-				if (e.getValue().getFields() != null
-						&& e.getValue().getFields().getFieldNames() != null) {
+				if (e.getValue().getFields() != null && e.getValue().getFields().getFieldNames() != null && !e.getValue().getFields().getFieldNames().isEmpty()) {
 					tooltip.append("<br/>");
 					tooltip.append("<table style='border:1px solid;width:100%;'>");
 					if (e.getKey() != null) {
-						tooltip.append("<tr><td colspan='1'>" + e.getKey()
-								+ "</td></tr>");
+						tooltip.append("<tr><td colspan='1'>" + e.getKey() + "</td></tr>");
 					}
 					tooltip.append("<tr><td></td><td> Fields </td><td> Type </td></tr>");
 					int row = 0;
 					int index = 1;
-					for (String name : e.getValue().getFields()
-							.getFieldNames()) {
+					for (String name : e.getValue().getFields().getFieldNames()) {
 						if ((row % 2) == 0) {
 							tooltip.append("<tr class='odd-row'>");
 						} else {
@@ -1793,9 +1791,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 						}
 						tooltip.append("<td>" + index + "</td>");
 						tooltip.append("<td>" + name + "</td>");
-						tooltip.append("<td>"
-								+ e.getValue().getFields()
-								.getFieldType(name) + "</td></tr>");
+						tooltip.append("<td>" + e.getValue().getFields().getFieldType(name) + "</td></tr>");
 						row++;
 						index++;
 					}
@@ -2187,6 +2183,21 @@ public class CanvasBean extends BaseBean implements Serializable {
 					String privilege = null;
 					Boolean privilegeObj;
 
+					String externalLink = null;
+					for (String name : e.getDFEOutput().keySet()) {
+						DFEOutput dfeOut  = e.getDFEOutput().get(name);
+						String link = null;
+						try{
+							link = ((DFELinkOutput) dfeOut).getLink();
+						} catch(Exception exc){
+							//logger.error("");
+						}
+						if(link != null){
+							externalLink = link;
+							break;
+						}
+					}
+					
 					try{
 						privilegeObj = null;
 						privilegeObj = ((SuperElement)e).getPrivilege();
@@ -2208,7 +2219,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 									e.getX(), 
 									e.getY(),
 									compId ,
-									privilege});
+									privilege,
+									externalLink
+								});
 
 				}
 
