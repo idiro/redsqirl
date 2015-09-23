@@ -23,7 +23,7 @@ public class UnselectableTable implements Serializable{
 
 	private List<String> columnIds;
 	private List<String> titles;
-	private List<String[]> rows;
+	private List<Object[]> rows;
 
 
 	/**
@@ -33,7 +33,7 @@ public class UnselectableTable implements Serializable{
 	public UnselectableTable(LinkedList<String> columnIds) {
 		super();
 		this.columnIds = columnIds;
-		this.rows = new LinkedList<String[]>();
+		this.rows = new LinkedList<Object[]>();
 		updateTitles();
 	}
 
@@ -52,18 +52,18 @@ public class UnselectableTable implements Serializable{
 	 * @param columnIds
 	 * @param rows
 	 */
-	public UnselectableTable(LinkedList<String> columnIds, LinkedList<String[]> rows) {
+	public UnselectableTable(LinkedList<String> columnIds, LinkedList<Object[]> rows) {
 		super();
 		this.columnIds = columnIds;
 		this.rows = rows;
 	}
 
 
-	public String getValueRow(int rowNb, int columnNb){
+	public Object getValueRow(int rowNb, int columnNb){
 		return rows.get(rowNb)[columnNb];
 	}
 
-	public String getValueRow(int rowNb, String column){
+	public Object getValueRow(int rowNb, String column){
 		return rows.get(rowNb)[columnIds.indexOf(column)];
 	}
 
@@ -87,17 +87,18 @@ public class UnselectableTable implements Serializable{
 
 	public Map<String,String> getRow(int index){
 		Map<String,String> ans = null;
-		String[] row = rows.get(index);
+		Object[] row = rows.get(index);
 		if(row != null){
 			ans = new LinkedHashMap<String,String>();
 			for(int i = 0; i < columnIds.size();++i){
-				ans.put(columnIds.get(i), row[i]);
+				ans.put(columnIds.get(i), row[i].toString() );
 			}
 		}
 		return ans;
 	}
 	
-	public void sortModalOutputTab(){
+	//FIXME REMOVE
+	/*public void sortModalOutputTab(){
 
 		final String nameColumnToSort = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("nameColumnToSort");
 		if(nameColumnToSort != null && rows != null && !rows.isEmpty()){
@@ -121,7 +122,7 @@ public class UnselectableTable implements Serializable{
 			}
 		}
 
-	}
+	}*/
 
 	/**
 	 * @return the columnIds
@@ -140,13 +141,13 @@ public class UnselectableTable implements Serializable{
 	/**
 	 * @return the rows
 	 */
-	public List<String[]> getRows() {
+	public List<Object[]> getRows() {
 		return rows;
 	}
 	/**
 	 * @param rows the rows to set
 	 */
-	public void setRows(List<String[]> rows) {
+	public void setRows(List<Object[]> rows) {
 		this.rows = rows;
 	}
 
@@ -155,7 +156,7 @@ public class UnselectableTable implements Serializable{
 	 * @return
 	 * @see java.util.List#add(java.lang.Object)
 	 */
-	public boolean add(String[] e) {
+	public boolean add(Object[] e) {
 		return rows.add(e);
 	}
 
@@ -182,7 +183,7 @@ public class UnselectableTable implements Serializable{
 	 * @return
 	 * @see java.util.List#remove(int)
 	 */
-	public String[] remove(int index) {
+	public Object[] remove(int index) {
 		return rows.remove(index);
 	}
 

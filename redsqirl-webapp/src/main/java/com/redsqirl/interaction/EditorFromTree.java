@@ -292,7 +292,7 @@ public class EditorFromTree implements Serializable{
 	 * @return
 	 * @see com.redsqirl.dynamictable.UnselectableTable#getRows()
 	 */
-	public List<String[]> getTextEditorFieldsRows() {
+	public List<Object[]> getTextEditorFieldsRows() {
 		return textEditorFields.getRows();
 	}
 

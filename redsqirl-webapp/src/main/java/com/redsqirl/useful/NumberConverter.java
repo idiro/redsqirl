@@ -32,7 +32,8 @@ public class NumberConverter implements Converter, Serializable {
 				}
 			}
 		}
-		return (String) value;
+		
+		return value.toString();
 	}
 
 }

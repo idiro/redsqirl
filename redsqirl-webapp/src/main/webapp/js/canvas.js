@@ -1258,7 +1258,7 @@ function checkImg(src){
    });
 }
 
-function addElement(canvasName, elementType, elementImg, posx, posy, numSides, idElement, selecteds, privilege, externalLink) {
+function addElement(canvasName, elementType, elementImg, posx, posy, numSides, idElement, selecteds, privilege) {
     
 	//console.log("addElement");
 	
@@ -1427,10 +1427,6 @@ function addElement(canvasName, elementType, elementImg, posx, posy, numSides, i
     group.elementType = elementType;
     
     group.privilege = privilege;
-    
-    //alert(externalLink);
-    
-    group.externalLink = externalLink
     
     return group;
 }
@@ -2690,7 +2686,7 @@ function getColorRunning(status){
 	}
 }
 
-function updateActionOutputStatus(groupId, outputType, fileExists, runningStatus, tooltip, noError, drawCanvas) {
+function updateActionOutputStatus(groupId, outputType, fileExists, runningStatus, tooltip, noError, drawCanvas, externalLink) {
     
 	//console.log("updateActionOutputStatus");
 	
@@ -2707,6 +2703,8 @@ function updateActionOutputStatus(groupId, outputType, fileExists, runningStatus
         group.getChildren()[7].setStroke(getColorOutputExistence(fileExists));
     }
     group.tooltipObj = tooltip;
+    
+    group.externalLink = externalLink;
     
     if( noError.toUpperCase() === "FALSE" ){
        //Add error icon

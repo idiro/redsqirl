@@ -573,8 +573,11 @@
 		      var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
 	    	//<![CDATA[
 	    	  for (var i = 0; i < status.length; i++) {
+
+					//alert(status[i][7]);
+		    	  
 		    	  //alert(status[i][0] + " " + status[i][1] + " " + status[i][2]);
-		    	  updateActionOutputStatus(status[i][0], status[i][1], status[i][2], status[i][3], status[i][4], status[i][5],false);
+		    	  updateActionOutputStatus(status[i][0], status[i][1], status[i][2], status[i][3], status[i][4], status[i][5],false, status[i][7]);
 		    	  
 		    	  for(var j = 0; j < status[i][6].length;j++) {
 		    	  	updateArrowType(status[i][6][j][0], status[i][6][j][1], status[i][6][j][2], status[i][6][j][3], status[i][6][j][4],false);

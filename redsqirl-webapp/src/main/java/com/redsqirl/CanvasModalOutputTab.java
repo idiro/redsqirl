@@ -481,15 +481,41 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 
 						if (outputLines != null) {
 
-							for (Map<String, String> line : outputLines) {
+							/*for (Map<String, String> line : outputLines) {
 								int i = 0;
-								String[] rowCur = new String[gridTitle.size()];
+								Object[] rowCur = new Object[gridTitle.size()];
 								for (String feat : line.keySet()) {
 									rowCur[i] = line.get(feat);
 									++i;
 								}
 								grid.add(rowCur);
+							}*/
+							
+							for (Map<String, String> line : outputLines) {
+								int i = 0;
+								int j = 0;
+								Object[] rowCur = new Object[gridTitle.size()];
+								for (String feat : line.keySet()) {
+									String title = gridTitle.get(j);
+									String[] type = title.split(" ");
+									
+									if(type[1].equalsIgnoreCase("string")){
+										rowCur[i] = line.get(feat);
+									}else if(type[1].equalsIgnoreCase("float")){
+										rowCur[i] = Float.parseFloat(line.get(feat));
+									}else if(type[1].equalsIgnoreCase("double")){
+										rowCur[i] = Double.parseDouble(line.get(feat));
+									}else if(type[1].equalsIgnoreCase("int")){
+										rowCur[i] = Integer.parseInt(line.get(feat));
+									}
+									
+									++i;
+									++j;
+								}
+								grid.add(rowCur);
 							}
+							
+							
 						}
 
 						if(grid.getRows().isEmpty()){
@@ -657,7 +683,7 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 	 * @return
 	 * @see com.redsqirl.dynamictable.UnselectableTable#getRows()
 	 */
-	public List<String[]> getRows() {
+	public List<Object[]> getRows() {
 		return grid == null ? null : grid.getRows();
 	}
 

@@ -1699,6 +1699,9 @@ public class CanvasBean extends BaseBean implements Serializable {
 		StringBuffer tooltip = new StringBuffer();
 		String errorOut = null;
 		String[][] arrows = null;
+		
+		String externalLink = null;
+		
 		if (dfe != null && dfe.getDFEOutput() != null) {
 
 			tooltip.append("<center><span style='font-size:15px;'>"
@@ -1771,9 +1774,10 @@ public class CanvasBean extends BaseBean implements Serializable {
 				// tooltip.append("Path exist: " + e.getValue().isPathExists() +
 				// "<br/>");
 
-			}
+			//}
 
-			for (Entry<String, DFEOutput> e : dfe.getDFEOutput().entrySet()) {
+			//for (Entry<String, DFEOutput> e : dfe.getDFEOutput().entrySet()) {
+				
 				if (e.getValue().getFields() != null && e.getValue().getFields().getFieldNames() != null && !e.getValue().getFields().getFieldNames().isEmpty()) {
 					tooltip.append("<br/>");
 					tooltip.append("<table style='border:1px solid;width:100%;'>");
@@ -1798,6 +1802,21 @@ public class CanvasBean extends BaseBean implements Serializable {
 					tooltip.append("</table>");
 					tooltip.append("<br/>");
 				}
+				
+				
+				
+				DFEOutput dfeOut  = e.getValue();
+				String link = null;
+				try{
+					link = ((DFELinkOutput) dfeOut).getLink();
+				} catch(Exception exc){
+					//logger.error("");
+				}
+				if(link != null){
+					externalLink = link;
+				}
+
+				
 			}
 			  
 			arrows = new String[dfe.getAllOutputComponent().size()][];
@@ -1816,7 +1835,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 					++i;
 				}
 			}
-			
 			
 
 			if (!dfe.getDFEOutput().isEmpty()) {
@@ -1840,7 +1858,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 		
 		return new Object[]{ groupId, outputType, pathExistsStr,
 				runningStatus, tooltip.toString(),
-				Boolean.toString(errorOut == null), arrows };
+				Boolean.toString(errorOut == null), arrows, externalLink };
 	}
 
 	/**
@@ -2183,7 +2201,8 @@ public class CanvasBean extends BaseBean implements Serializable {
 					String privilege = null;
 					Boolean privilegeObj;
 
-					String externalLink = null;
+					//FIXME REMOVE
+					/*String externalLink = null;
 					for (String name : e.getDFEOutput().keySet()) {
 						DFEOutput dfeOut  = e.getDFEOutput().get(name);
 						String link = null;
@@ -2196,7 +2215,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 							externalLink = link;
 							break;
 						}
-					}
+					}*/
 					
 					try{
 						privilegeObj = null;
@@ -2219,8 +2238,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 									e.getX(), 
 									e.getY(),
 									compId ,
-									privilege,
-									externalLink
+									privilege
 								});
 
 				}
