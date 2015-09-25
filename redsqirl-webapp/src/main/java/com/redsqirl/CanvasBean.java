@@ -1138,50 +1138,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 		usageRecordLog().addSuccess("RUNWORKFLOW");
 	}
 
-	//FIXME - remove
-	/*public void blockRunningWorkflow() throws Exception {
-
-		logger.info("blockRunningWorkflow");
-		if (getDf() != null) {
-			String name = getDf().getName();
-			logger.info("blockRunningWorkflow: " + name);
-			try {
-				int i = 0;
-				if(name.equals(getDf().getName()) && getDf().isrunning()){
-					setTotalProgressBar(getOozie().getNbElement(getDf()));
-					runningElements = getOozie().getElementsRunning(getDf());
-					doneElements = getOozie().getElementsDone(getDf());
-					setValueProgressBar(doneElements.size()*100/totalProgressBar);
-				}
-				while (name.equals(getDf().getName()) && getDf().isrunning() && 250 < System.currentTimeMillis() - updateDf) {
-					if(i % 20 == 0){
-						try{
-							List<String> curRunning = getOozie().getElementsRunning(getDf());
-							if(!curRunning.equals(runningElements)){
-								runningElements = curRunning;
-								doneElements = getOozie().getElementsDone(getDf());
-								setValueProgressBar(doneElements.size()*100/totalProgressBar);
-								logger.info("runningElements "+runningElements+" doneElements "+doneElements);
-							}
-						}catch(Exception e){}
-						logger.info("Workflow "+name+" running, "+valueProgressBar+" % / "+totalProgressBar);
-					}
-					Thread.sleep(250);
-					++i;
-				}
-				logger.info("current workflow name: " + name);
-			} catch (Exception e) {
-				logger.info("blockRunningWorkflow error " + e);
-			}
-		} else {
-			logger.info("blockRunningWorkflow getDf() = null");
-		}
-		logger.info("end blockRunningWorkflow ");
-
-		setProgressBarEnabled(false);
-
-	}*/
-
 	public void calcWorkflowUrl() {
 
 		logger.info("calcWorkflowUrl");
@@ -2200,22 +2156,6 @@ public class CanvasBean extends BaseBean implements Serializable {
 					String compId = e.getComponentId();
 					String privilege = null;
 					Boolean privilegeObj;
-
-					//FIXME REMOVE
-					/*String externalLink = null;
-					for (String name : e.getDFEOutput().keySet()) {
-						DFEOutput dfeOut  = e.getDFEOutput().get(name);
-						String link = null;
-						try{
-							link = ((DFELinkOutput) dfeOut).getLink();
-						} catch(Exception exc){
-							//logger.error("");
-						}
-						if(link != null){
-							externalLink = link;
-							break;
-						}
-					}*/
 					
 					try{
 						privilegeObj = null;

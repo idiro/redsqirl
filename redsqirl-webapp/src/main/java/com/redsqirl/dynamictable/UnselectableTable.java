@@ -97,32 +97,6 @@ public class UnselectableTable implements Serializable{
 		return ans;
 	}
 	
-	//FIXME REMOVE
-	/*public void sortModalOutputTab(){
-
-		final String nameColumnToSort = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("nameColumnToSort");
-		if(nameColumnToSort != null && rows != null && !rows.isEmpty()){
-			final int indexCol = getColumnIds().indexOf(nameColumnToSort.toUpperCase());
-			if(indexCol != -1){
-				//final int asc = rows.get(0)[indexCol].compareTo(rows.get(rows.size()-1)[indexCol]) < 0 ? -1 : 1;
-				final int asc = rows.get(0)[indexCol].compareTo(rows.get(rows.size()-1)[indexCol]);
-				if(asc < 0 ){
-					Collections.sort(getRows(),new Comparator<String[]>() {
-						public int compare(String[] aux1, String[] aux2) {
-							return aux1[indexCol].compareTo(aux2[indexCol]);
-						}
-					});
-				}else{
-					Collections.sort(getRows(),new Comparator<String[]>() {
-						public int compare(String[] aux1, String[] aux2) {
-							return aux2[indexCol].compareTo(aux1[indexCol]);
-						}
-					});
-				}
-			}
-		}
-
-	}*/
 
 	/**
 	 * @return the columnIds

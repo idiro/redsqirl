@@ -26,6 +26,9 @@ public class SessionListener implements HttpSessionListener{
 		ServletContext sc = session.getServletContext();
 		Map<String, HttpSession> sessionLoginMap = (Map<String, HttpSession>) sc.getAttribute("sessionLoginMap");
 		String userName = (String) session.getAttribute("username");
+
+		Map<String, UsageRecordWriter> sessionUsageRecordWriter = (Map<String, UsageRecordWriter>) sc.getAttribute("usageRecordLog");
+		usageRecordLog(userName, sessionUsageRecordWriter).addSuccess("SESSIONTIMEOUT");
 		
 		try{
 			ServerProcess th = (ServerProcess) session.getAttribute("serverThread");
@@ -64,6 +67,21 @@ public class SessionListener implements HttpSessionListener{
 			sessionLoginMap.remove(userName);
 		}else{
 			logger.warn("No "+userName+" to remove from session login map.");
+		}
+
+	}
+
+	public UsageRecordWriter usageRecordLog(String userName, Map<String, UsageRecordWriter> sessionUsageRecordWriter) {
+
+		if(sessionUsageRecordWriter != null){
+			UsageRecordWriter usageRecordLog = sessionUsageRecordWriter.get(userName);
+			if(usageRecordLog != null){
+				return usageRecordLog;
+			}else{
+				return new UsageRecordWriter();
+			}
+		}else{
+			return new UsageRecordWriter();
 		}
 
 	}
