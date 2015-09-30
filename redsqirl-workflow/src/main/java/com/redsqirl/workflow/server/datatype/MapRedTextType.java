@@ -121,9 +121,9 @@ public class MapRedTextType extends MapRedDir {
 	 */
 	public List<Map<String,String>> select(int maxToRead) throws RemoteException {
 		List<Map<String,String>> ans = new LinkedList<Map<String,String>>();
-		List<String> fieldNames = getFields().getFieldNames();
 		List<String> selectLine = selectLine(maxToRead);
-		if(selectLine != null){
+		if(selectLine != null && getFields() != null){
+			List<String> fieldNames = getFields().getFieldNames();
 			Iterator<String> it = selectLine.iterator();
 			while(it.hasNext()){
 				String l = it.next();
