@@ -4,6 +4,7 @@ package com.redsqirl.workflow.server.connect.interfaces;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.redsqirl.workflow.server.interfaces.DataFlow;
@@ -122,5 +123,10 @@ public interface DataFlowInterface extends Remote{
 	 */
 	public boolean checkNumberCluster(int numberCluster) throws RemoteException;
 	
+	public void backupAllWorkflowsToOpen(String name) throws RemoteException;
+	
+	public List<String[]> loadMapCanvasToOpen(String name) throws RemoteException;
+	
+	public void setWorkflowPath(String name, String path) throws RemoteException;
 	
 }

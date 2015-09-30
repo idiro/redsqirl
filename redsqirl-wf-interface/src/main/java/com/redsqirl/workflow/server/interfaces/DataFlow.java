@@ -16,7 +16,7 @@ import com.redsqirl.workflow.server.WorkflowPrefManager;
  * 
  */
 public interface DataFlow extends Remote, Cloneable{
-
+	
 	/**
 	 * Load the icon menu.
 	 * 
@@ -492,4 +492,10 @@ public interface DataFlow extends Remote, Cloneable{
 	 */
 	Map<String, String[]> getRelativeHelpSuperAction(File curPath) throws RemoteException;
 
+	public String backupAllWorkflowsBeforeClose() throws RemoteException;
+	
+	public String getPath() throws RemoteException;
+
+	public void setPath(String path) throws RemoteException;
+	
 }

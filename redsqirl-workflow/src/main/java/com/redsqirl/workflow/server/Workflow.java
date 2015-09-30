@@ -131,6 +131,8 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	
 	private static final List<String> keyWords = Arrays.asList("join", "group", "union", "select", "from", "delete", "where", "count");
 
+	protected String path;
+	
 	/**
 	 * Default Constructor
 	 * 
@@ -1242,6 +1244,38 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			logger.warn("Failed cleaning up backup directory");
 		}
 
+	}
+	
+	public String backupAllWorkflowsBeforeClose() throws RemoteException {
+		String path = WorkflowPrefManager.getBackupPath();
+		try {
+			FileSystem fs = NameNodeVar.getFS();
+			fs.mkdirs(new Path(path));
+			// fs.close();
+		} catch (Exception e) {
+			logger.warn(e.getMessage());
+			logger.warn("Fail creating backup directory");
+		}
+		path = getBackupName(path);
+		boolean save_swp = isSaved();
+		String error = save(path);
+		
+		saved = save_swp;
+
+		try {
+			if (error != null) {
+				logger.warn("Fail to back up: " + error);
+				FileSystem fs = NameNodeVar.getFS();
+				fs.delete(new Path(path), false);
+			}
+			logger.info("Clean up back up");
+			cleanUpBackup();
+		} catch (Exception e) {
+			logger.warn(e.getMessage());
+			logger.warn("Failed cleaning up backup directory");
+		}
+		
+		return path;
 	}
 
 	/**
@@ -2911,6 +2945,16 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 	@Override
 	public int getNbOozieRunningActions() throws RemoteException {
 		return nbOozieRunningActions;
+	}
+
+	@Override
+	public String getPath() {
+		return path;
+	}
+
+	@Override
+	public void setPath(String path) {
+		this.path = path;
 	}
 
 }

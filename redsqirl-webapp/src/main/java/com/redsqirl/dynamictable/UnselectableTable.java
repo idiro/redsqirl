@@ -139,7 +139,7 @@ public class UnselectableTable implements Serializable{
 	 * @return
 	 * @see java.util.List#addAll(java.util.Collection)
 	 */
-	public boolean addAll(Collection<? extends String[]> c) {
+	public boolean addAll(Collection<? extends Object[]> c) {
 		return rows.addAll(c);
 	}
 

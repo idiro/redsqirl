@@ -487,9 +487,42 @@
 	    		 } */
 
 	    		 reinitializeCanvas();
+
+
+	    		 //re open canvas
+	    		 //delay(20000);
+	    		 //closeAllWorkflowTabs();
+	    		 //delay(3000);
+	    		 //reOpenCanvas();
+
 	    		 
 	    	});	//---------- END jQuery function
 
+
+		    function reOpenCanvasJS(status){
+			//<![CDATA[
+				console.log("reOpenCanvasJS");
+
+				//delay(10000);
+				
+				for (var i = 0; i < status.length; i++) {
+					console.log(status[i][1]);
+					//alert(status[i][1]);
+					//delay(8000);
+					unblockRunningWorkflowJS();
+					addElementJs(status[i][0],status[i][1],status[i][2],status[i][3],status[i][4], true, status[i][5]);
+					reOpenCanvasLoadWorkflow();
+				}
+				
+			    //]]>
+			}
+
+		    function delay(ms){
+			    ms += new Date().getTime();
+			    while (new Date() > ms){
+				    
+				}
+		    }
 	    	
 	      function closeTab(arg){
 
@@ -1332,6 +1365,12 @@
 					<a4j:actionparam name="allpositions" />
 				</a4j:jsFunction>
 			</a4j:region>
+			
+			<a4j:region renderRegionOnly="true">
+				<a4j:jsFunction name="backupAllWorkflowsBeforeCloseToOpen" action="#{canvasBean.backupAllWorkflowsBeforeCloseToOpen}">
+					<a4j:actionparam name="allpositions" />
+				</a4j:jsFunction>
+			</a4j:region>
 
 			<a4j:region>
 				<a4j:status
@@ -1682,6 +1721,9 @@
 					oncomplete="console.log('rebuildCanvas'); addElementJs(data[0],data[1],data[2],data[3],data[4], true, data[5],true);"
 					reRender="tabFlowchart,errorTable,msnError" />
                 
+                <a4j:jsFunction name="reOpenCanvas" data="#{canvasBean.buildLoadMapCanvasToOpen}" oncomplete="console.log('reOpenCanvas'); reOpenCanvasJS(data);" />
+                
+                <a4j:jsFunction name="reOpenCanvasLoadWorkflow" reRender="tabFlowchart,errorTable,msnError" />
                     
 			</a4j:region>
 			

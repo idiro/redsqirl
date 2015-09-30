@@ -6,11 +6,13 @@ import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
+import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashSet;
@@ -20,6 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
@@ -88,6 +91,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 		datastores = WorkflowInterface.getAllClassDataStore();
 	}
 
+	protected Map<String, String> mapCanvasToOpen;
 
 	/**
 	 * Get a List of output classes for data to be held in
@@ -278,7 +282,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	public String copy(String cloneId, List<String> elements, String wfName){
 
 		String error = null;
-		
+
 		if(wfClones.contains(cloneId) && 
 				elements != null && 
 				!elements.isEmpty() && 
@@ -287,7 +291,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 				Workflow from = (Workflow) readCloneFile(cloneId);
 				DataFlow to  = wf.get(wfName);
 				Workflow cloneFrom = (Workflow) from.clone();
-				
+
 				//Check SubWorkflow
 				boolean check = true;
 				if(!(to instanceof SubDataFlow)){
@@ -302,9 +306,9 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 						}
 					}
 				}
-				
+
 				if(check){
-					
+
 					//Copy
 					Iterator<DataFlowElement> cloneElIt = cloneFrom.getElement().iterator();
 					List<String> toDelete = new LinkedList<String>();
@@ -337,17 +341,17 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 						DataFlowElement cur = copyElIt.next();
 						to.addElement(cur);
 					}
-					
+
 				}else{
 					//error SubWorkflow
 					return LanguageManagerWF.getText("copy_subDataFlow_to_workflow");
 				}
-				
+
 			} catch (Exception e) {
 				logger.error(e.getMessage(),e);
 			}
 		}
-		
+
 		return error;
 	}
 	/**
@@ -413,6 +417,14 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 	public DataFlow getWorkflow(String name){
 		return wf.get(name);
 	}
+	
+	public void setWorkflowPath(String name, String path){
+		try {
+			wf.get(name).setPath(path);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+	}
 
 
 
@@ -458,6 +470,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 		}
 		return instance;
 	}
+
 	/**
 	 * Backup all workflows that are open
 	 */
@@ -474,6 +487,92 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 			}
 		}
 	}
+
+	/**
+	 * Backup all workflows before log out to open when login
+	 */
+	public void backupAllWorkflowsToOpen(String name) throws RemoteException{
+		logger.info ("backupAllWorkflowsToOpen ");
+
+		mapCanvasToOpen = new LinkedHashMap<String, String>();
+
+		Iterator<String> itWorkflow = wf.keySet().iterator();
+		while(itWorkflow.hasNext()){
+			String workflowNameCur = itWorkflow.next();
+			logger.info("backup "+workflowNameCur);
+			try {
+				wf.get(workflowNameCur).setName(workflowNameCur);
+				
+				if(wf.get(workflowNameCur).getPath() != null){
+					mapCanvasToOpen.put(workflowNameCur, wf.get(workflowNameCur).getPath());
+				}else{
+					String path = wf.get(workflowNameCur).backupAllWorkflowsBeforeClose();
+					mapCanvasToOpen.put(workflowNameCur, path);
+				}
+
+			} catch (Exception e) {
+				logger.warn("Error backing up workflow "+workflowNameCur);
+			}
+		}
+
+		if(!mapCanvasToOpen.isEmpty()){
+			saveMapCanvasToOpen(name);
+		}
+	}
+
+	public String saveMapCanvasToOpen(String name) throws RemoteException {
+		logger.info ("saveMapCanvasToOpen ");
+		
+		String error = null;
+		
+		File path = new File(WorkflowPrefManager.pathUsersFolder+"/"+name+"/loadCanvas.txt");
+		logger.info ("saveMapCanvasToOpen path " + path);
+		
+		try {
+			
+			if (!path.exists()) {
+				path.createNewFile();
+	        }
+			
+			FileWriter fw = new FileWriter(path.getAbsoluteFile(), false);
+			
+			BufferedWriter bw = new BufferedWriter(fw);
+			for (Entry<String,String> e : mapCanvasToOpen.entrySet()) {
+				bw.write(e.getKey() + "," + e.getValue()+"\n");
+			}
+            bw.close();
+
+		} catch (Exception e) {
+			error = LanguageManagerWF.getText("workflow.saveMapCanvasToOpen");
+		}
+
+		return error;
+	}
+
+	public List<String[]> loadMapCanvasToOpen(String name) throws RemoteException {
+		logger.info ("loadMapCanvasToOpen ");
+		
+		List<String[]> result = new LinkedList<String[]>();
+
+		File path = new File(WorkflowPrefManager.pathUsersFolder+"/"+name+"/loadCanvas.txt");
+		
+		try {
+			
+			BufferedReader br = new BufferedReader(new FileReader(path));
+			String line;
+			while ((line = br.readLine()) != null) {
+				String[] ans = line.split(",");
+				result.add(ans);
+			}
+			br.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return result;
+	}
+
 	/**
 	 * Close all workflows
 	 * @throws RemoteExeption
@@ -536,14 +635,14 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 		logger.info(clusterSizeDeclared >= clusterSizeReal && clusterSizeReal != 0);
 		boolean size = clusterSizeDeclared >= clusterSizeReal;
 		if(clusterSizeReal == 0){
-			
+
 			try{
 
 				String command =  WorkflowPrefManager.getSysProperty(WorkflowPrefManager.sys_hadoop_home)+"/bin/yarn node -list -all | grep RUNNING | wc -l";
 				logger.info("command "+command);
 				Process proc = Runtime.getRuntime().exec(new String[] { "/bin/bash", "-c", command});
-				
-				
+
+
 				// Read the output
 				BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
 				String line = "";
@@ -560,7 +659,7 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 				}
 
 				logger.info("clusterSizeReal " + clusterSizeReal + " clusterSizeDeclared " + clusterSizeDeclared);
-				
+
 			} catch (IOException e) {
 				size = false;
 				logger.error("Failed to check the size of cluster ",e);
@@ -573,5 +672,14 @@ public class WorkflowInterface extends UnicastRemoteObject implements DataFlowIn
 
 		return size;
 	}
+
+	public Map<String, String> getMapCanvasToOpen() {
+		return mapCanvasToOpen;
+	}
+
+	public void setMapCanvasToOpen(Map<String, String> mapCanvasToOpen) {
+		this.mapCanvasToOpen = mapCanvasToOpen;
+	}
+
 
 }
