@@ -283,12 +283,16 @@ public class BaseCommand {
 	}
 
 	private static boolean valid(String user , String packageName, String key , Properties licenses , String softwareKey , boolean system){
+		logger.info("valid: user " + user + " packageName " + packageName);
 		return validMsg(user , packageName, key , licenses , softwareKey , system) == null; 
 	}
 	private static String validMsg(String user , String packageName, String key , Properties licenses , String softwareKey , boolean system){
 		String error = null;
+		
+		logger.info("validMsg: user " + user + " packageName " + packageName);
+		
 		if(key == null|| key.isEmpty()){
-			error = "Key empty or Null for "+packageName;
+			error = "Key empty or Null for package: "+packageName +" and user: " + user;
 			return error;
 		}
 

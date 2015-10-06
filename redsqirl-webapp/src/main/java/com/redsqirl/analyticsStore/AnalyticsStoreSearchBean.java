@@ -46,57 +46,57 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 5119862157796243985L;
-	
+
 	private static Logger logger = Logger.getLogger(AnalyticsStoreSearchBean.class);
-	
+
 	private AnalyticsStoreLoginBean analyticsStoreLoginBean;
-	
+
 	private String searchValue;
-	
+
 	private String message;
-	
+
 	private List<RedSqirlModule> allPackageList;
-	
+
 	private String showDefaultInstallation;
-	
+
 	private String defaultInstallation;
-	
+
 	private List<String> selectedTypes;
-	
+
 	//private List<SelectItem> moduleTypes;
-	
+
 	public AnalyticsStoreSearchBean() {
-		
+
 	}
-	
+
 	@PostConstruct
 	public void init(){
-		
+
 		try{
 			setAllPackageList(new ArrayList<RedSqirlModule>());
 		}catch (Exception e){
 			e.printStackTrace();
 		}
-		
+
 		try {
 			updateShowDefaultInstallation();			
 			setDefaultInstallation("Pig Package <br/>");
-			
+
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
-		
+
 		if(selectedTypes == null){
 			selectedTypes = new ArrayList<String>();
 			selectedTypes.add("package");
 		}
-		
+
 		/*if(moduleTypes == null){
 			moduleTypes = new ArrayList<SelectItem>();
 			moduleTypes.add(new SelectItem("model","Module"));
 			moduleTypes.add(new SelectItem("package","Package"));
 		}*/
-		
+
 		try {
 			retrieveAllPackageList();
 		} catch (SQLException e) {
@@ -104,9 +104,9 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
-	
+
 	public void updateShowDefaultInstallation() throws RemoteException{
 		PackageManager pckManager = new PackageManager();
 		if(pckManager.getPackageNames(null).isEmpty()){
@@ -117,16 +117,16 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 	}
 
 	public void retrieveAllPackageList() throws SQLException, ClassNotFoundException{
-	
+
 		List<RedSqirlModule> result = new ArrayList<RedSqirlModule>();
-		
+
 		try{
-			
+
 			Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 			String type = params.get("type");
-			
+
 			String uri = getRepoServer()+"rest/allpackages";
-			
+
 			JSONObject object = new JSONObject();
 			object.put("software", "RedSqirl");
 			object.put("filter", searchValue);
@@ -134,29 +134,39 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 			if (type != null && !type.isEmpty() && !type.equals("undefined")){
 				object.put("type", type);
 			}else{
-				if(selectedTypes != null && !selectedTypes.isEmpty()){
+				String originalQuery = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("originalQuery");
+				if(type == null && originalQuery != null){
+					String[] ans = originalQuery.split("type");
+					String res = ans[1].replace("=", "");
+					if(!res.equals("undefined")){
+						object.put("type", ans[1].replace("=", ""));
+					}else if(selectedTypes != null && !selectedTypes.isEmpty()){
+						object.put("type", selectedTypes.get(0));
+					}
+				}else if(selectedTypes != null && !selectedTypes.isEmpty()){
 					object.put("type", selectedTypes.get(0));
 				}
 			}
+			
 			if(analyticsStoreLoginBean != null && analyticsStoreLoginBean.getEmail() != null){
 				object.put("user", analyticsStoreLoginBean.getEmail());
 			}
-			
+
 			Client client = Client.create();
 			WebResource webResource = client.resource(uri);
-	
+
 			ClientResponse response = webResource.type("application/json")
-			   .post(ClientResponse.class, object.toString());
+					.post(ClientResponse.class, object.toString());
 			String ansServer = response.getEntity(String.class);
-			
+
 			System.out.println(ansServer);
-			
+
 			Set<String> packagesAdded = new HashSet<String>();
 			try{
 				JSONArray pckArray = new JSONArray(ansServer);
 				for(int i = 0; i < pckArray.length();++i){
 					JSONObject pckObj = pckArray.getJSONObject(i);
-					
+
 					RedSqirlModule pck = new RedSqirlModule();
 					String id = pckObj.getString("id");
 					pck.setId(Integer.valueOf(id));
@@ -164,7 +174,7 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 					pck.setTags(pckObj.getString("tags"));
 					pck.setImage(getRepoServer() + pckObj.getString("image"));
 					pck.setType(pckObj.getString("type"));
-					
+
 					if (!packagesAdded.contains(id)){
 						result.add(pck);
 						packagesAdded.add(id);
@@ -180,7 +190,7 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 
 		setAllPackageList(result);
 	}
-	
+
 	public String getRepoServer(){
 		String pckServer = WorkflowPrefManager.getPckManagerUri();
 		if(!pckServer.endsWith("/")){
@@ -188,29 +198,29 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 		}
 		return pckServer;
 	}
-	
+
 	public void installDefaultInstallation(){
-		
+
 		RedSqirlInstallations redSqirlInstallations = new RedSqirlInstallations();
-		
+
 		redSqirlInstallations.setInstallationType("system");
 		redSqirlInstallations.setSoftwareModulestype("package");
 		redSqirlInstallations.setIdModuleVersion("0");
 		redSqirlInstallations.setUserName("");
-		
+
 		redSqirlInstallations.setModule("redsqirl-base-pig");
 		redSqirlInstallations.setModuleVersion("0.1");
-		
+
 		String error = null;
-		
+
 		try {
-			
+
 			error = installPackage(redSqirlInstallations);
-			
+
 		} catch (RemoteException e) {
 			logger.error(e,e);
 		}
-		
+
 		if(error != null){
 			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 			MessageUseful.addErrorMessage("Error installing Default package: " + error);
@@ -220,7 +230,7 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 			MessageUseful.addInfoMessage("Package Installed");
 			request.setAttribute("msnSuccess", "msnSuccess");
 		}
-		
+
 		FacesContext context = FacesContext.getCurrentInstance();
 		AnalyticsStoreLoginBean analyticsBean = (AnalyticsStoreLoginBean) context.getApplication().evaluateExpressionGet(context, "#{analyticsStoreLoginBean}", AnalyticsStoreLoginBean.class);
 		try {
@@ -228,11 +238,11 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
-		
+
 		setShowDefaultInstallation("N");
-		
+
 	}
-	
+
 	public String installPackage(RedSqirlInstallations redSqirlInstallations) throws RemoteException{
 		String downloadUrl = null;
 		String fileName = null;
@@ -258,7 +268,7 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 			object.put("installationType", redSqirlInstallations.getInstallationType()); //User or System
 			object.put("email", analyticsStoreLoginBean.getEmail());
 			object.put("password", analyticsStoreLoginBean.getPassword());
-			
+
 			if(redSqirlInstallations.getIdModuleVersion().equals("0")){
 				object.put("module", redSqirlInstallations.getModule());
 				object.put("version", redSqirlInstallations.getModuleVersion());
@@ -293,15 +303,15 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 			WorkflowPrefManager wpm = WorkflowPrefManager.getInstance();
 			String tmp = wpm.pathSysHome;
 			String packagePath = tmp + "/tmp/" +fileName;
-			
+
 			logger.info("tmp " + tmp);
 			logger.info("packagePath " + packagePath);
-			
+
 			File p = new File(tmp + "/tmp/");
 			if(!p.exists()){
 				p.mkdir();
 			}
-			
+
 			try {
 				URL website = new URL(downloadUrl + "&idUser=" + analyticsStoreLoginBean.getIdUser() + "&key=" + softwareKey);
 				ReadableByteChannel rbc = Channels.newChannel(website.openStream());
@@ -336,7 +346,7 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 			PackageManager pckMng = new PackageManager();
 
 			String user = redSqirlInstallations.getUserName();
-			
+
 			//remove other installations
 			List<String> packageNames = pckMng.getPackageNames(user);
 			if(packageNames != null && !packageNames.isEmpty()){
@@ -371,7 +381,7 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 
 		return "";
 	}
-	
+
 	private String getSoftwareKey(){
 		Properties prop = new Properties();
 		InputStream input = null;
@@ -403,8 +413,8 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 	private String formatTitle(String title){
 		return title.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
 	}
-	
-	
+
+
 	public String getSearchValue() {
 		return searchValue;
 	}
@@ -460,5 +470,5 @@ public class AnalyticsStoreSearchBean extends BaseBean implements Serializable{
 	public void setSelectedTypes(List<String> selectedTypes) {
 		this.selectedTypes = selectedTypes;
 	}
-	
+
 }

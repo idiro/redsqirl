@@ -5,11 +5,12 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<idiro-tm.version>0.1</idiro-tm.version>
+		<idiro-tm.version>0.2-SNAPSHOT</idiro-tm.version>
 		<compile.resources>${basedir}/src/main/resources</compile.resources>
-		<dist.war>${project.build.directory}/${project.artifactId}-${project.version}/war</dist.war>
+		<dist.war>${project.build.directory}/${project.artifactId}-${project.version}-${hadoop.version}/war</dist.war>
 		<webXmlFile>${basedir}/src/main/webapp/WEB-INF/web.xml</webXmlFile>
 		<hadoop.version>1.0.4</hadoop.version>
+		<idiro-hadoop.classifier>${hadoop.version}</idiro-hadoop.classifier>
 	</properties>
 
 	<parent>
@@ -21,7 +22,7 @@
 	<groupId>idiro</groupId>
 	<artifactId>redsqirl-webapp</artifactId>
 	<packaging>war</packaging>
-	<version>${hadoop.version}-0.1</version>
+	<version>0.1</version>
 	<name>Red Sqirl - Web Application</name>
 
 
@@ -112,19 +113,8 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>idiro.maven</groupId>
-				<artifactId>depman-maven-plugin</artifactId>
-				<version>1.0</version>
-				<executions>
-					<execution>
-						<phase>process-resources</phase>
-						<goals>
-							<goal>depman</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+			
+			
 
 
 			<plugin>
@@ -170,6 +160,7 @@
 					<artifactId>jsp-api-2.1</artifactId>
 				</exclusion>
 			</exclusions>
+			<classifier>${idiro-hadoop.classifier}</classifier>
 			<!-- <scope>runtime</scope> -->
 		</dependency>
 		<dependency>
