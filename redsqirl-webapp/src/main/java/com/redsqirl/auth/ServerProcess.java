@@ -76,6 +76,7 @@ public class ServerProcess {
 
 					ProcessesManager pm = new WorkflowProcessesManager(user);
 					killOldProcess(pm, user);
+					logger.info("ProjectID " + ProjectID.get());
 					final String command = BaseCommand.getBaseCommand(user,port,ProjectID.get()) + " 1>/dev/null & echo $! 1> "+pm.getPath();
 					
 					logger.info("getting java");
@@ -83,10 +84,8 @@ public class ServerProcess {
 					String argJava = " -Xmx1500m ";
 					logger.info("opening channel");
 					Channel channel = session.openChannel("exec");
-					logger.info("command to launch:\n" + javahome
-							+ argJava + command);
-					((ChannelExec) channel).setCommand(javahome + argJava
-							+ command);
+					logger.info("command to launch:\n" + javahome + argJava + command);
+					((ChannelExec) channel).setCommand(javahome + argJava + command);
 					logger.info("connecting channel");
 					channel.connect();
 

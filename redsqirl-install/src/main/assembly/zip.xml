@@ -9,7 +9,7 @@
   <fileSets>
     <fileSet>
       <directory>${dist}/bin</directory>
-      <outputDirectory>redsqirl-${project.version}/bin</outputDirectory>
+      <outputDirectory>redsqirl-${project.version}-${hadoop.version}/bin</outputDirectory>
       <includes>
       	<include>*.sh</include>
       </includes>
@@ -17,15 +17,15 @@
     </fileSet>
     <fileSet>
       <directory>${dist.war}</directory>
-      <outputDirectory>redsqirl-${project.version}/war</outputDirectory>
+      <outputDirectory>redsqirl-${project.version}-${hadoop.version}/war</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>${dist.lib}</directory>
-      <outputDirectory>redsqirl-${project.version}/lib</outputDirectory>
+      <outputDirectory>redsqirl-${project.version}-${hadoop.version}/lib</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>${dist.conf}</directory>
-      <outputDirectory>redsqirl-${project.version}/conf</outputDirectory>
+      <outputDirectory>redsqirl-${project.version}-${hadoop.version}/conf</outputDirectory>
     </fileSet>
   </fileSets>
 </assembly>
