@@ -451,7 +451,7 @@ public class AnalyticsStoreLoginBean extends BaseBean implements Serializable {
 
 			JSONObject object = new JSONObject();
 			object.put("numberUsers", numberUsers);
-			object.put("version", "0.5");
+			object.put("version", "0.1");
 			object.put("mac", getMacAdress());
 			object.put("installationName", getHostName());
 			object.put("email", email);

@@ -3,8 +3,9 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<idiro-tm.version>0.1</idiro-tm.version>
 		<prod.resources>${basedir}/src/main/dist</prod.resources>
-		<dist>${project.build.directory}/${project.artifactId}-${project.version}-${hadoop.version}</dist>
+		<dist>${project.build.directory}/${project.artifactId}-${project.version}</dist>
 		<zip.xml>${basedir}/src/main/assembly/zip.xml</zip.xml>
 		<zip_tomcat.xml>${basedir}/src/main/assembly/zip_tomcat.xml</zip_tomcat.xml>
 		<dist.lib>${dist}/lib</dist.lib>
@@ -12,9 +13,9 @@
 		<dist.bin>${dist}/bin</dist.bin>
 		<dist.conf>${dist}/conf</dist.conf>
 		<dist.tomcat>${dist}/apache-tomcat-7.0.62</dist.tomcat>
-		<redsqirl-workflow.lib>${basedir}/../redsqirl-workflow/target/redsqirl-workflow-${project.version}-${hadoop.version}/lib</redsqirl-workflow.lib>
-		<redsqirl-base-sql.lib>${basedir}/../redsqirl-abstract-packages/redsqirl-base-sql/target/redsqirl-base-sql-${project.version}-${hadoop.version}/lib</redsqirl-base-sql.lib>
-		<redsqirl-webapp.war>${basedir}/../redsqirl-webapp/target/redsqirl-webapp-${project.version}-${hadoop.version}/war</redsqirl-webapp.war>
+		<redsqirl-workflow.lib>${basedir}/../redsqirl-workflow/target/redsqirl-workflow-${project.version}/lib</redsqirl-workflow.lib>
+		<redsqirl-base-sql.lib>${basedir}/../redsqirl-abstract-packages/redsqirl-base-sql/target/redsqirl-base-sql-${project.version}/lib</redsqirl-base-sql.lib>
+		<redsqirl-webapp.war>${basedir}/../redsqirl-webapp/target/redsqirl-webapp-${project.version}/war</redsqirl-webapp.war>
 		<main.resources.script>${basedir}/src/main/resources/scripts</main.resources.script>
 		<main.resources.conf>${basedir}/src/main/resources/conf</main.resources.conf>
 		<hadoop.version>1.0.4</hadoop.version>
@@ -24,7 +25,7 @@
 	<parent>
 		<groupId>idiro</groupId>
 		<artifactId>redsqirl</artifactId>
-		<version>0.5</version>
+		<version>0.1</version>
 	</parent>
 
 
@@ -32,7 +33,7 @@
 	<groupId>idiro</groupId>
 	<artifactId>redsqirl-install</artifactId>
 	<packaging>pom</packaging>
-	<version>0.5</version>
+	<version>${hadoop.version}-0.1</version>
 	<name>Red Sqirl - Install</name>
 	<description>Create an installer</description>
 	<url>http://ns.local.net/dev/idiro-wf-interface</url>
@@ -80,8 +81,19 @@
 				<artifactId>maven-dependency-plugin</artifactId>
 				<version>2.6</version>
 			</plugin>
-			
-			
+			<plugin>
+				<groupId>idiro.maven</groupId>
+				<artifactId>depman-maven-plugin</artifactId>
+				<version>1.0</version>
+				<executions>
+					<execution>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>depman</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 
 			<plugin>
 				<artifactId>exec-maven-plugin</artifactId>
@@ -219,7 +231,7 @@
 						</goals>
 						<configuration>
 							<outputDirectory>${project.build.directory}</outputDirectory>
-							<finalName>redsqirl-${project.version}-${hadoop.version}</finalName>
+							<finalName>redsqirl-${project.version}</finalName>
 							<appendAssemblyId>false</appendAssemblyId>
 							<descriptors>
 								<descriptor>${zip.xml}</descriptor>
@@ -234,7 +246,7 @@
 						</goals>
 						<configuration>
 							<outputDirectory>${project.build.directory}</outputDirectory>
-							<finalName>redsqirl-${project.version}-${hadoop.version}</finalName>
+							<finalName>redsqirl-${project.version}</finalName>
 							<descriptors>
 								<descriptor>${zip_tomcat.xml}</descriptor>
 							</descriptors>
