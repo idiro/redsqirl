@@ -3,7 +3,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<idiro-base.version>0.2-SNAPSHOT</idiro-base.version>
+		<idiro-base.version>0.2</idiro-base.version>
 		<hadoop.version>1.0.4</hadoop.version>
 		<idiro-tm.version>0.2-SNAPSHOT</idiro-tm.version>
 	</properties>
@@ -11,7 +11,7 @@
 	<parent>
 		<groupId>idiro</groupId>
 		<artifactId>redsqirl</artifactId>
-		<version>0.1</version>
+		<version>0.5</version>
 	</parent>
 
 
@@ -19,7 +19,7 @@
 	<groupId>idiro</groupId>
 	<artifactId>redsqirl-wf-interface</artifactId>
 	<packaging>jar</packaging>
-	<version>0.1</version>
+	<version>0.5</version>
 	<name>Red Sqirl - Interface</name>
 	<description>Provide the interface used by Red Sqirl app</description>
 	<url>http://ns.local.net/dev/idiro-wf-interface</url>

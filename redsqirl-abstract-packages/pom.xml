@@ -4,20 +4,19 @@
 
 	<properties>
 		<hadoop.version>1.0.4</hadoop.version>
-		<idiro-hadoop.classifier>${hadoop.version}</idiro-hadoop.classifier>
 	</properties>
 
 	<parent>
 		<groupId>idiro</groupId>
 		<artifactId>redsqirl</artifactId>
-		<version>0.1</version>
+		<version>0.5</version>
 	</parent>
 
 	<groupId>idiro</groupId>
 	<artifactId>redsqirl-abstract-packages</artifactId>
 	<name>Red Sqirl - Abstract Packages</name>
 	<packaging>pom</packaging>
-	<version>0.1</version>
+	<version>0.5</version>
 
 
 	<modules>
@@ -29,7 +28,7 @@
 			<groupId>idiro</groupId>
 			<artifactId>redsqirl-workflow</artifactId>
 			<version>${project.version}</version>
-			<classifier>${idiro-hadoop.classifier}</classifier>
+			<classifier>${hadoop.version}</classifier>
 		</dependency>
 	</dependencies>
 	

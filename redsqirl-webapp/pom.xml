@@ -16,13 +16,13 @@
 	<parent>
 		<groupId>idiro</groupId>
 		<artifactId>redsqirl</artifactId>
-		<version>0.1</version>
+		<version>0.5</version>
 	</parent>
 
 	<groupId>idiro</groupId>
 	<artifactId>redsqirl-webapp</artifactId>
 	<packaging>war</packaging>
-	<version>0.1</version>
+	<version>0.5</version>
 	<name>Red Sqirl - Web Application</name>
 
 

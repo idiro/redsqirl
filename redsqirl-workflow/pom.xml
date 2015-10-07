@@ -9,14 +9,14 @@
 		<dist>${project.build.directory}/${project.artifactId}-${project.version}-${hadoop.version}</dist>
 		<dist.lib>${dist}/lib</dist.lib>
 		<hadoop.version>1.0.4</hadoop.version>
-		<idiro-hadoop.version>0.2-SNAPSHOT</idiro-hadoop.version>
+		<idiro-hadoop.version>0.2</idiro-hadoop.version>
 		<idiro-hadoop.classifier>${hadoop.version}</idiro-hadoop.classifier>
 	</properties>
 
 	<parent>
 		<groupId>idiro</groupId>
 		<artifactId>redsqirl</artifactId>
-		<version>0.1</version>
+		<version>0.5</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
@@ -26,7 +26,7 @@
 	<name>Red Sqirl - Workflow</name>
 	<description>Programme to interact with a Hadoop cluster</description>
 	<url>http://ns.local.net/dev/redsqirl-workflow</url>
-	<version>0.1</version>
+	<version>0.5</version>
 
 	<distributionManagement>
 		<repository>
@@ -107,6 +107,13 @@
 				<version>2.3.1</version>
 				<configuration>
 					<outputDirectory>${dist.lib}</outputDirectory>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<classifier>${hadoop.version}</classifier>
 				</configuration>
 			</plugin>
 			

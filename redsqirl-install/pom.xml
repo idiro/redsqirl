@@ -24,7 +24,7 @@
 	<parent>
 		<groupId>idiro</groupId>
 		<artifactId>redsqirl</artifactId>
-		<version>0.1</version>
+		<version>0.5</version>
 	</parent>
 
 
@@ -32,7 +32,7 @@
 	<groupId>idiro</groupId>
 	<artifactId>redsqirl-install</artifactId>
 	<packaging>pom</packaging>
-	<version>0.1</version>
+	<version>0.5</version>
 	<name>Red Sqirl - Install</name>
 	<description>Create an installer</description>
 	<url>http://ns.local.net/dev/idiro-wf-interface</url>

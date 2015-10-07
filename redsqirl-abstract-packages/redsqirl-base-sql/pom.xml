@@ -17,11 +17,11 @@
 	<parent>
 		<groupId>idiro</groupId>
 		<artifactId>redsqirl-abstract-packages</artifactId>
-		<version>0.1</version>
+		<version>0.5</version>
 	</parent>
 
 	<artifactId>redsqirl-base-sql</artifactId>
-	<version>0.1</version>
+	<version>0.5</version>
 	<packaging>jar</packaging>
 	<name>Red Sqirl - Sql Base Package</name>
 	<description>Provide basic sql actions</description>
