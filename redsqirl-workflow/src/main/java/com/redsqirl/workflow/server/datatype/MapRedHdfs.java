@@ -55,6 +55,8 @@ public abstract class MapRedHdfs extends DataOutput{
 	protected static SimpleDateFormat datetimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
 	protected static SimpleDateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+	
+	protected static SimpleDateFormat timestampFormatAlt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
 
 
 	protected List<FieldType> fieldsNumberHierarchicalOrder = new LinkedList<FieldType>();
@@ -432,8 +434,11 @@ public abstract class MapRedHdfs extends DataOutput{
 	 */
 	public static FieldType getType(String expr) {
 
+		
+		
 		FieldType type = null;
-		if (expr.equalsIgnoreCase("TRUE") || expr.equalsIgnoreCase("FALSE")) {
+		if(expr.isEmpty()){
+		}else if (expr.equalsIgnoreCase("TRUE") || expr.equalsIgnoreCase("FALSE")) {
 			type = FieldType.BOOLEAN;
 		} else {
 			if(expr.length() == 1){
@@ -489,7 +494,15 @@ public abstract class MapRedHdfs extends DataOutput{
 				} catch (Exception e) {
 				}
 			}
-
+			
+			if (type == null) {
+				try {
+					timestampFormatAlt.parse(expr);
+					type = FieldType.TIMESTAMP;
+				} catch (Exception e) {
+				}
+			}
+			
 			if (type == null) {
 				type = FieldType.STRING;
 			}

@@ -6,7 +6,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Iterator;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 
