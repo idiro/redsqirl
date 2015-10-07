@@ -471,6 +471,9 @@ public class WorkflowPrefManager extends BlockManager {
 				if(listActions.contains("pig_text_source")){
 					s.println("pig_text_source");
 				}
+				if(listActions.contains("pig_compress_source")){
+					s.println("pig_compress_source");
+				}
 				if(listActions.contains("pig_select")){
 					s.println("pig_select");
 				}

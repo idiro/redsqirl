@@ -242,7 +242,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 			PackageManager sysPckManager = new PackageManager();
 			String error = sysPckManager.removePackage(null,unSysPackage);
 			if(error == null){
-				disable(unSysPackage);
+				disable(unSysPackage, null);
 			}else{
 				logger.info(error);
 			}
@@ -257,7 +257,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 			String user = (String) session.getAttribute("username");
 			String error = pckManager.removePackage(user,unUserPackage);
 			if(error == null){
-				disable(unUserPackage);
+				disable(unUserPackage, user);
 			}else{
 				logger.info(error);
 			}
@@ -265,7 +265,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		}
 	}
 
-	public void disable(String[] packageName) {
+	public void disable(String[] packageName, String user) {
 
 		String softwareKey = getSoftwareKey();
 		
@@ -282,6 +282,9 @@ public class PackageMngBean extends BaseBean implements Serializable{
 				JSONObject object = new JSONObject();
 				object.put("packageName", names.substring(1));
 				object.put("softwareKey", softwareKey);
+				if(user != null && !"".equals(user)){
+					object.put("user", user);
+				}
 
 				Client client = Client.create();
 				WebResource webResource = client.resource(uri);
