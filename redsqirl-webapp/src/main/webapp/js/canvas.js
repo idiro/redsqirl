@@ -252,9 +252,9 @@ function configureCanvas(canvasName, reset, workflowType){
                             if (value.isArrow == true) {
                                 value.setStroke(value.originalColor);
                                 value.selected = false;
-                                layer.draw();
                             }
                         });
+                        layer.draw();
                     }
                     canvasArray[canvasName].clickArrow = false;
                 }
@@ -755,16 +755,17 @@ function selectAll(canvasName) {
         value.getParent().getChildren()[0].setFill("#FFDB99");
         value.getParent().getChildren()[1].setFill("#FFDB99");
         value.selected = true;
-        polygonLayer.draw();
     });
 
     jQuery.each(layer.getChildren(), function(index, value) {
         if (value.isArrow == true) {
             value.setStroke("red");
             value.selected = true;
-            layer.draw();
         }
     });
+    
+    polygonLayer.draw();
+    layer.draw();
 
 }
 
@@ -781,17 +782,13 @@ function deselectAll(canvasName) {
         value.getParent().getChildren()[1].setFill("white");
         value.selected = false;
     });
-    try{
-        polygonLayer.draw();
-    }catch(exception){
-        //alert(exception);
-    }
     jQuery.each(layer.getChildren(), function(index, value) {
         if (value.isArrow == true) {
             value.setStroke(value.originalColor);
             value.selected = false;
         }
     });
+    polygonLayer.draw();
     layer.draw();
 
 }
@@ -815,32 +812,41 @@ function deleteElementsJS(listIds, listArrowsIds) {
 	
 	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
 	var layer = canvasArray[selectedCanvas].layer;
-
-	jQuery.each(polygonLayer.get('.group1'), function(index, value) {
-		var group = this;
-		
-		if(checkIfExistID(group.getId(),listIds)){
-			removeElement(group.getId());
-			deleteLayerChildren(selectedCanvas, group.getId());
-			group.destroy();
-		}
-		
-	});
-
-	
-	jQuery.each(layer.getChildren(), function(index, value) {
-		if (value !== undefined && value.isArrow == true) {
-			if (checkIfExistID(value.getName(), listArrowsIds)) {
-                
-                removeLinkBt(value.idOutput, value.nameOutput, value.idInput, value.nameInput);
-                
-                if (value.label != null){
-                    value.label.destroy();
-                }
-                value.destroy();
-            }
+    
+    if(listIds){
+        var toDelete = []; 
+        var iter=-1;
+	    jQuery.each(polygonLayer.get('.group1'), function(index, value) {
+		    var group = this;
+		    if(checkIfExistID(group.getId(),listIds)){
+			     deleteLayerChildren(selectedCanvas, group.getId());
+			     toDelete[++iter] = group;
+		    }
+	    });
+        for(iter = 0; iter < toDelete.length;++iter){
+            removeElement(toDelete[iter].getId());
+            toDelete[iter].destroy();
         }
-    });
+    }
+
+	if(listArrowsIds){
+	    var toDelete = [];
+	    var iter=-1;
+    	jQuery.each(layer.getChildren(), function(index, value) {
+		    if (value !== undefined && value.isArrow == true) {
+			    if (checkIfExistID(value.getName(), listArrowsIds)) {
+                    removeLinkBt(value.idOutput, value.nameOutput, value.idInput, value.nameInput);
+                    toDelete[++iter] = value;
+                }
+            }
+        });
+        for(iter = 0; iter <  toDelete.length;++iter){
+            if (toDelete[iter].label){
+                toDelete[iter].label.destroy();
+            }
+            toDelete[iter].destroy();
+        }
+    }
 	
 	layer.draw();
 	polygonLayer.draw();
@@ -870,21 +876,28 @@ function deleteAllElements() {
 	
 	var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
 	var layer = canvasArray[selectedCanvas].layer;
-
+    
+	var toDelete = [];
+	var iter=-1;
 	jQuery.each(polygonLayer.get('.group1'), function(index, value) {
 		var group = this;
 		deleteLayerChildren(selectedCanvas, group.getId());
-		group.destroy();
+		toDelete[++iter] = group;
 	});
+	for(iter = 0; iter <  toDelete.length;++iter){
+        toDelete[iter].destroy();
+    }
 	
+	toDelete = [];
+	iter=-1;
 	jQuery.each(layer.getChildren(), function(index, value) {
         if (value !== undefined && value.isArrow == true) {
-            if (value.label != null){
-                value.label.destroy();
-            }
-            value.destroy();
+            toDelete[++iter] = value;
         }
     });
+	for(iter = 0; iter <  toDelete.length;++iter){
+        toDelete[iter].destroy();
+    }
 	
 	//layer.draw();
 	//polygonLayer.draw();
@@ -894,21 +907,18 @@ function deleteAllElements() {
 function deleteArrowOutsideStandard(canvasName) {
 	
 	//console.log("deleteArrowOutsideStandard");
-	
+	var toDelete = [];
+	var iter=-1;
     var layer = canvasArray[canvasName].layer;
-    var listSize = layer.getChildren().size();
-    for ( var i = 0; i < listSize; i++) {
         jQuery.each(layer.getChildren(), function(index, value) {
-            if (value !== undefined) {
-                if (value.isArrow && (value.idOutput == null || value.idInput == null)) {
-                    if (value.label != null){
-                        value.label.destroy();
-                    }
-                    value.destroy();
-                    return false;
+            if (value) {
+                if (value.isArrow && (!value.idOutput||!value.idInput)) {
+                    toDelete[++iter] = value;
                 }
             }
         });
+    for(iter = 0; iter <  toDelete.length;++iter){
+        toDelete[iter].destroy();
     }
 }
 
@@ -934,24 +944,23 @@ function getCircleLineIntersectionPoint(pointAx, pointAy, pointBx, pointBy,
 
 function deleteLayerChildren(canvasName, idGroup) {
     
-	//console.log("deleteLayerChildren");
-	
-    var layer = canvasArray[canvasName].layer;
-
-    var listSize = layer.getChildren().size();
-    for ( var i = 0; i < listSize; i++) {
-        jQuery.each(layer.getChildren(),
+    var toDelete = []; 
+    var iter=-1;
+	console.log("deleteLayerChildren");
+        jQuery.each(canvasArray[canvasName].layer.getChildren(),
             function(index, value) {
-                if (value !== undefined && value.isArrow == true) {
+                if (value && value.isArrow == true) {
+                    console.log(value.idOutput+","+value.idInput);
                     if (value.idOutput == idGroup || value.idInput == idGroup){
-                        if (value.label != null){
-                            value.label.destroy();
-                        }
-                        value.destroy();
-                        return false;
+                        toDelete[++iter] = value;
                     }
                 }
             });
+    for(iter = 0; iter <  toDelete.length;++iter){
+        if (toDelete[iter].label){
+            toDelete[iter].label.destroy();
+        }
+        toDelete[iter].destroy();
     }
 }
 
@@ -1015,15 +1024,15 @@ function addLinks(canvasName, positions) {
     var linkArrays = JSON.parse(positions);
 
     for ( var i = 0; i < linkArrays.length; i++) {
-        addLink(canvasName, linkArrays[i][0], linkArrays[i][2]);
+        addLink(canvasName, linkArrays[i][0], linkArrays[i][2],false);
         updateLink("arrow" + linkArrays[i][0] + "-" + linkArrays[i][2],linkArrays[i][1] , linkArrays[i][3]);
     }
 }
 
-function addLink(canvasName, outId, inId) {
+function addLink(canvasName, outId, inId,updateLayer) {
 	
 	//console.log("addLink");
-	
+	updateLayer = typeof updateLayer !== 'undefined' ? updateLayer : true;
     // out
     var layer = canvasArray[canvasName].layer;
     var polygonLayer = canvasArray[canvasName].polygonLayer;
@@ -1050,9 +1059,11 @@ function addLink(canvasName, outId, inId) {
     arrowClone.idOutput = outId;
     arrowClone.isArrow = true;
     layer.add(arrowClone);
-    layer.draw();
-    polygonLayer.draw();
-
+    
+    if(updateLayer){
+       layer.draw();
+       polygonLayer.draw();
+    }
     
     return arrowClone;
 }
@@ -1240,9 +1251,6 @@ function addElements(canvasName, positions, selecteds) {
        canvasArray[canvasName].stage.setHeight(maxY + 100);
        canvasArray[canvasName].background.setHeight(maxY + 100);
     }
-    
-    polygonLayer.draw();
-    canvasArray[canvasName].stage.draw();
     
     /*}catch(exception){
         alert(exception);
@@ -1775,16 +1783,7 @@ function clearCanvas() {
 	//console.log("clearCanvas");
 	
     canvasArray[selectedCanvas].polygonLayer.destroyChildren();
-    
-    jQuery.each(canvasArray[selectedCanvas].layer.getChildren(), function(index, value) {
-        if (value.isArrow == true) {
-            if (value.label != null){
-                value.label.destroy();
-            }
-            value.destroy();
-        }
-    });
-    
+    canvasArray[selectedCanvas].layer.destroyChildren();
     canvasArray[selectedCanvas].stage.draw();
 }
 
@@ -1876,15 +1875,13 @@ function getSelectedArrowsCommaDelimited(){
     var listSize = layer.getChildren().size();
     var ans = "";
     
-    for ( var i = 0; i < listSize; i++) {
-        jQuery.each(layer.getChildren(), function(index, value) {
-            if (value !== undefined && value.isArrow == true) {
-                if (value.selected) {
-                    ans = ans.concat(",",value.getName());
-                }
+    jQuery.each(layer.getChildren(), function(index, value) {
+        if (value !== undefined && value.isArrow == true) {
+            if (value.selected) {
+                ans = ans.concat(",",value.getName());
             }
-        });
-    }
+        }
+    });
     if(ans.length > 0){
         return ans.substring(1);
     }
@@ -2839,8 +2836,8 @@ function updateArrowLabel(idOutput, idInput, label, drawCanvas) {
         }
     );
     
-    if (arrow.label != null){
-        arrow.label.remove();
+    if (arrow.label){
+        arrow.label.destroy();
     }
     
     var textLabelObj = new Kinetic.Text({

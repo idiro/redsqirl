@@ -569,26 +569,24 @@
 	    	      setPathFile(canvasName, path);
 	    	      addLinks(canvasName, links);
 		    	  resizeCanvas(30,30);
+		    	  
+	   	          canvasArray[canvasName].layer.draw();
+                  canvasArray[canvasName].polygonLayer.draw();
+                  canvasArray[canvasName].stage.draw();
 	          }
+	          
 	      }
 
 	      function addSelectedElement(canvasName, path, positions, links, selecteds){
 
 	    	  console.log("addSelectedElement");
 		      
-		      //try{
 	   	      addElements(canvasName, positions, selecteds);
 	   	      addLinks(canvasName, links);
-		      /* }catch(exception){
-		          alert(exception);
-		      } */
-	      }
-	      
-	      function addLinksJs(canvasName, links){
-
-	    	  console.log("addLinksJs");
-		      
-	    	  addLinks(canvasName, links);
+	   	      canvasArray[canvasName].layer.draw();
+              canvasArray[canvasName].polygonLayer.draw();
+              canvasArray[canvasName].stage.draw();
+    
 	      }
 	      
 	      function updateCanvasRunningStatus(status){
