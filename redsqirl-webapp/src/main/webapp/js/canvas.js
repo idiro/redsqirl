@@ -171,7 +171,7 @@ function configureCanvas(canvasName, reset, workflowType){
     configureStage(canvasName);
 
     canvasArray[canvasName].arrow.on('click', function(e) {
-        jQuery(".tooltipCanvas").remove();
+        jQuery(".tooltipCanvas").destroy();
 
         if (!e.ctrlKey) {
             jQuery.each(layer.getChildren(), function(index, value) {
@@ -263,7 +263,7 @@ function configureCanvas(canvasName, reset, workflowType){
             canvasArray[canvasName].down = false;
             canvasArray[canvasName].moving = false;
             canvasArray[canvasName].select = rectSelectAllObj(canvasName, e);
-            canvasArray[canvasName].rectSelect.remove();
+            canvasArray[canvasName].rectSelect.destroy();
 
             layer.draw();
             polygonLayer.draw();
@@ -321,7 +321,7 @@ function createLegend(canvasName) {
     });
         
     groupLegend.on('dragstart dragmove', function(e) {
-        canvasArray[canvasName].rectSelect.remove();
+        canvasArray[canvasName].rectSelect.destroy();
     });
         
     
@@ -822,7 +822,7 @@ function deleteElementsJS(listIds, listArrowsIds) {
 		if(checkIfExistID(group.getId(),listIds)){
 			removeElement(group.getId());
 			deleteLayerChildren(selectedCanvas, group.getId());
-			group.remove();
+			group.destroy();
 		}
 		
 	});
@@ -835,9 +835,9 @@ function deleteElementsJS(listIds, listArrowsIds) {
                 removeLinkBt(value.idOutput, value.nameOutput, value.idInput, value.nameInput);
                 
                 if (value.label != null){
-                    value.label.remove();
+                    value.label.destroy();
                 }
-                value.remove();
+                value.destroy();
             }
         }
     });
@@ -854,8 +854,8 @@ function refreshCanvas() {
     var layer = canvasArray[selectedCanvas].layer;
     var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
     
-    //layer.removeChildren();
-    //polygonLayer.removeChildren();
+    //layer.destroyChildren();
+    //polygonLayer.destroyChildren();
     
     deleteAllElements();
     
@@ -874,15 +874,15 @@ function deleteAllElements() {
 	jQuery.each(polygonLayer.get('.group1'), function(index, value) {
 		var group = this;
 		deleteLayerChildren(selectedCanvas, group.getId());
-		group.remove();
+		group.destroy();
 	});
 	
 	jQuery.each(layer.getChildren(), function(index, value) {
         if (value !== undefined && value.isArrow == true) {
             if (value.label != null){
-                value.label.remove();
+                value.label.destroy();
             }
-            value.remove();
+            value.destroy();
         }
     });
 	
@@ -902,9 +902,9 @@ function deleteArrowOutsideStandard(canvasName) {
             if (value !== undefined) {
                 if (value.isArrow && (value.idOutput == null || value.idInput == null)) {
                     if (value.label != null){
-                        value.label.remove();
+                        value.label.destroy();
                     }
-                    value.remove();
+                    value.destroy();
                     return false;
                 }
             }
@@ -945,9 +945,9 @@ function deleteLayerChildren(canvasName, idGroup) {
                 if (value !== undefined && value.isArrow == true) {
                     if (value.idOutput == idGroup || value.idInput == idGroup){
                         if (value.label != null){
-                            value.label.remove();
+                            value.label.destroy();
                         }
-                        value.remove();
+                        value.destroy();
                         return false;
                     }
                 }
@@ -1448,7 +1448,7 @@ function ready(canvasName) {
     // control of the rectangle to select objects on the screen
     canvasArray[canvasName].moving = false;
 
-    stage.remove();
+    stage.destroy();
 
     // main stage
     stage = new Kinetic.Stage({
@@ -1673,7 +1673,7 @@ function mountObj(canvasName) {
                     polygonTabFakeClone.name = nameObj;
                     polygonTabFakeClone.setAbsolutePosition(polygonTabFake.posInitX,polygonTabFake.posInitY);
                     layerTab.add(polygonTabFakeClone);
-                    this.remove();
+                    this.destroy();
                     
                     layerTab.draw();
                     canvasArray[selectedCanvas].polygonLayer.draw();
@@ -1686,7 +1686,7 @@ function mountObj(canvasName) {
                     polygonTabFakeClone = nameObj;
                     polygonTabFakeClone.setAbsolutePosition(polygonTabFake.posInitX,polygonTabFake.posInitY);
                     layerTab.add(polygonTabFakeClone);
-                    this.remove();
+                    this.destroy();
                     
                     layerTab.draw();
                 });
@@ -1774,14 +1774,14 @@ function clearCanvas() {
 	
 	//console.log("clearCanvas");
 	
-    canvasArray[selectedCanvas].polygonLayer.removeChildren();
+    canvasArray[selectedCanvas].polygonLayer.destroyChildren();
     
     jQuery.each(canvasArray[selectedCanvas].layer.getChildren(), function(index, value) {
         if (value.isArrow == true) {
             if (value.label != null){
-                value.label.remove();
+                value.label.destroy();
             }
-            value.remove();
+            value.destroy();
         }
     });
     
@@ -2049,7 +2049,7 @@ function configureStage(canvasName) {
     stage.on("mouseup", function(e) {
         canvasArray[canvasName].moving = false;
         canvasArray[canvasName].select = rectSelectAllObj(canvasName, e);
-        rectSelect.remove();
+        rectSelect.destroy();
     });
 }
 
@@ -2070,7 +2070,7 @@ function configureGroupListeners(canvasName, group) {
         if(canvasArray[canvasName].savePositions == null){
             canvasArray[canvasName].savePositions = getPositionGivenIcons(getSelectedIcons(),this);
         }
-        canvasArray[canvasName].rectSelect.remove();
+        canvasArray[canvasName].rectSelect.destroy();
         dragAndDropGroup(canvasName, this, e);
         group.getChildren()[2].off('click');
         jQuery(".tooltipCanvas").remove();
@@ -2561,7 +2561,7 @@ function updateLabelObj(groupId, newGroupId,drawCanvas) {
     for ( var i = 0; i < group.getChildren().length && !end; i++) {
         //alert(group.getChildren()[i].getId());
         if (group.getChildren()[i].getId() == oldIdLabel) {
-            group.getChildren()[i].remove();
+            group.getChildren()[i].destroy();
             end = true;
         }
     }
@@ -2724,7 +2724,7 @@ function updateActionOutputStatus(groupId, outputType, fileExists, runningStatus
     }else{
        jQuery.each(group.getChildren(), function(index, value) {
             if(value.getId() === 'error_img'){
-               group.getChildren()[index].remove();
+               group.getChildren()[index].destroy();
             }
        });
     }
@@ -2788,7 +2788,7 @@ function updateArrowType(idOutput, idInput, color, type, tooltip,drawCanvas) {
     if (!existLegend){
         coloursArray[coloursArray.length] = [type, color];
         
-        canvasArray[selectedCanvas].legend.remove();
+        canvasArray[selectedCanvas].legend.destroy();
         var width = type.length * 8;
         if (width > canvasArray[selectedCanvas].legendWidth){
             canvasArray[selectedCanvas].legendWidth = width;
@@ -2929,9 +2929,9 @@ function removeLink(name) {
     for ( var i = 0; i < layer.getChildren().length; i++) {
         var arrow = layer.getChildren()[i];
         if (arrow.getName() == name) {
-            arrow.remove();
+            arrow.destroy();
             if (arrow.label != null){
-                arrow.label.remove();
+                arrow.label.destroy();
             }
             layer.draw();
             return;
@@ -2967,6 +2967,10 @@ function redo(){
 
 function getCanvasId(canvasName){
     return "flowchart-"+canvasName;
+}
+
+function getCanvasNameFromId(canvasId){
+    return canvasId.substring(10);
 }
 
 function setSelectedByName(selected){

@@ -524,10 +524,16 @@
 				}
 		    }
 	    	
-	      function closeTab(arg){
+	      function closeTab(arg,canvasName){
 
 	    	  console.log("closeTab");
 		      
+		      if(typeof canvasName !== 'undefined'){
+	    	  	//alert(canvasName);
+	    	  	canvasArray[canvasName].stage.destroy();
+	    	  	canvasArray[canvasName].legendStage.destroy();
+	    	  	delete canvasArray[canvasName];
+	    	  }
 	    	  jQuery(jQuery( arg ).prev().attr('href')).remove();
 	    	  jQuery( arg ).offsetParent().remove();
 	      }
@@ -678,7 +684,7 @@
               var tabName = getSelectedByName();
               var tab = jQuery("#canvas-tabs ul:first li #"+tabName+"-icon-close");
               
-              closeTab(tab);
+              closeTab(tab,tabName);
               
               jQuery("#canvas-tabs").tabs( "refresh" );
               
@@ -719,7 +725,7 @@
 	      
 	      console.log("closeWorkflowTabJS");
 	      
-	    	  	closeTab(tab);
+	    	  	closeTab(tab,tabName);
 		    	closeWorkflow(tabName);
 		    	  
 		    	jQuery("#canvas-tabs").tabs( "refresh" );
@@ -741,7 +747,7 @@
 	      
 	      
 	      function closeAllWorkflowTabs(){
-
+          //<![CDATA[
 	    	  console.log("closeAllWorkflowTabs");
 		      
               var ul = jQuery("#canvas-tabs ul:first li .ui-icon");
@@ -749,7 +755,14 @@
               jQuery.each(ul, function(index, value){
             	  closeTab(value);
               });
-             
+              
+              var arrayLength = canvasArray.length;
+              for (var i = 0; i < arrayLength;++i) {
+	    	  	 canvasArray[i].stage.destroy();
+	    	  	 canvasArray[i].legendStage.destroy();
+	    	  	 delete canvasArray[i];
+              }
+	    	  
               contTabCanvas = 0;
               numTabs = 0;
     	      nameTabs = {};
@@ -760,7 +773,7 @@
               //setWorkflow("canvas-1");
 
               //resizeCanvas(30,45);
-              
+          //]]>
 	      }
 
 		var runningIntervalID;
