@@ -496,33 +496,30 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 								int j = 0;
 								Object[] rowCur = new Object[gridTitle.size()];
 								for (String feat : line.keySet()) {
-									String title = gridTitle.get(j);
-									
-									if(title != null && !"".equals(title)){
-										String[] type = title.split(" ");
-										
-										if(type != null && type.length > 0){
-											
-											if(type[1].equalsIgnoreCase("float")){
-												rowCur[i] = Float.parseFloat(line.get(feat));
-											}else if(type[1].equalsIgnoreCase("double")){
-												rowCur[i] = Double.parseDouble(line.get(feat));
-											}else if(type[1].equalsIgnoreCase("int")){
-												rowCur[i] = Integer.parseInt(line.get(feat));
-											}else {
-												rowCur[i] = line.get(feat);
+									if(feat != null ){
+										String title = gridTitle.get(j);
+										if(title != null && !"".equals(title)){
+											String[] type = title.split(" ");
+											if(type != null && type.length > 0 && line.get(feat) != null && !line.get(feat).isEmpty()){
+												if(type[1].equalsIgnoreCase("float")){
+													rowCur[i] = Float.parseFloat(line.get(feat));
+												}else if(type[1].equalsIgnoreCase("double")){
+													rowCur[i] = Double.parseDouble(line.get(feat));
+												}else if(type[1].equalsIgnoreCase("int")){
+													rowCur[i] = Integer.parseInt(line.get(feat));
+												}else {
+													rowCur[i] = line.get(feat);
+												}
+											}else{
+												rowCur[i] = "";
 											}
-											
 										}
+										++i;
+										++j;
 									}
-									
-									++i;
-									++j;
 								}
 								grid.add(rowCur);
 							}
-							
-							
 						}
 
 						if(grid.getRows().isEmpty()){
