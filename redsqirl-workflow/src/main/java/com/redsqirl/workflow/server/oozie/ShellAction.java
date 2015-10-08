@@ -118,9 +118,8 @@ public class ShellAction extends OozieActionAbs {
 		}
 		toWrite += "\tsudo su $USER_NAME -c \""+oneCommandToExecute.replaceAll("\"", "\\\\\"")+"\""+ 
 				System.getProperty("line.separator");
-		toWrite += "\tpopd"+System.getProperty("line.separator");
 		if(extraFile){
-		
+			toWrite += "\tpopd"+System.getProperty("line.separator");		
 			toWrite += "\trm -rf $EXEC_DIR"+ System.getProperty("line.separator");
 		}
 		toWrite += "else"+ System.getProperty("line.separator");
