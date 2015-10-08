@@ -497,17 +497,23 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 								Object[] rowCur = new Object[gridTitle.size()];
 								for (String feat : line.keySet()) {
 									String title = gridTitle.get(j);
-									String[] type = title.split(" ");
 									
-									
-									if(type[1].equalsIgnoreCase("float")){
-										rowCur[i] = Float.parseFloat(line.get(feat));
-									}else if(type[1].equalsIgnoreCase("double")){
-										rowCur[i] = Double.parseDouble(line.get(feat));
-									}else if(type[1].equalsIgnoreCase("int")){
-										rowCur[i] = Integer.parseInt(line.get(feat));
-									}else {
-										rowCur[i] = line.get(feat);
+									if(title != null && !"".equals(title)){
+										String[] type = title.split(" ");
+										
+										if(type != null && type.length > 0){
+											
+											if(type[1].equalsIgnoreCase("float")){
+												rowCur[i] = Float.parseFloat(line.get(feat));
+											}else if(type[1].equalsIgnoreCase("double")){
+												rowCur[i] = Double.parseDouble(line.get(feat));
+											}else if(type[1].equalsIgnoreCase("int")){
+												rowCur[i] = Integer.parseInt(line.get(feat));
+											}else {
+												rowCur[i] = line.get(feat);
+											}
+											
+										}
 									}
 									
 									++i;

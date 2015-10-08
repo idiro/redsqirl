@@ -181,31 +181,39 @@ public class MapRedTextFileType extends MapRedHdfs {
 	 */
 	public List<Map<String,String>> select(int maxToRead) throws RemoteException {
 		List<Map<String,String>> ans = new LinkedList<Map<String,String>>();
-		Iterator<String> it = selectLine(maxToRead).iterator();
-		List<String> fieldNames = getFields().getFieldNames();
 		
-		while(it.hasNext()){
-			String l = it.next();
-			if(l != null && ! l.isEmpty()){
-				String[] line = l.split(
-						Pattern.quote(getChar(getProperty(key_delimiter))), -1);
-				if (fieldNames.size() == line.length) {
-					Map<String, String> cur = new LinkedHashMap<String, String>();
-					for (int i = 0; i < line.length; ++i) {
-						cur.put(fieldNames.get(i), line[i]);
+		List<String> list = selectLine(maxToRead);
+		
+		if(list != null){
+			
+			List<String> fieldNames = getFields().getFieldNames();
+			Iterator<String> it = list.iterator();
+			
+			while(it.hasNext()){
+				String l = it.next();
+				if(l != null && ! l.isEmpty()){
+					String[] line = l.split(
+							Pattern.quote(getChar(getProperty(key_delimiter))), -1);
+					if (fieldNames.size() == line.length) {
+						Map<String, String> cur = new LinkedHashMap<String, String>();
+						for (int i = 0; i < line.length; ++i) {
+							cur.put(fieldNames.get(i), line[i]);
+						}
+						ans.add(cur);
+					} else {
+						logger.error("The line size (" + line.length
+								+ ") is not compatible to the number of fields ("
+								+ fieldNames.size() + "). " + "The splitter is '"
+								+ getChar(getProperty(key_delimiter)) + "'.");
+						logger.error("Error line: " + l);
+						ans = null;
+						break;
 					}
-					ans.add(cur);
-				} else {
-					logger.error("The line size (" + line.length
-							+ ") is not compatible to the number of fields ("
-							+ fieldNames.size() + "). " + "The splitter is '"
-							+ getChar(getProperty(key_delimiter)) + "'.");
-					logger.error("Error line: " + l);
-					ans = null;
-					break;
 				}
 			}
+			
 		}
+		
 		return ans;
 	}
 
