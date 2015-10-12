@@ -640,13 +640,13 @@ function dragAndDropGroup(canvasName, obj, e) {
 
                     if (group.getX() != positionX) {
                         newX = value.getX() + differenceX;
-                    } else if (group.getX() == positionX) {
+                    } else{
                         newX = group.getX();
                     }
 
                     if (group.getY() != positionY) {
                         newY = value.getY() + differenceY;
-                    } else if (group.getY() == positionY) {
+                    } else{
                         newY = group.getY();
                     }
 
@@ -967,10 +967,8 @@ function deleteLayerChildren(canvasName, idGroup) {
 function changePositionArrow(canvasName, obj) {
     
 	//console.log("changePositionArrow");
-	
     var polygonLayer = canvasArray[canvasName].polygonLayer;
     var layer = canvasArray[canvasName].layer;
-
     var group = obj;
     var idGroup = obj.getId();
     
@@ -979,7 +977,7 @@ function changePositionArrow(canvasName, obj) {
             if (value.idOutput == idGroup) {
                 value.getPoints()[0].x = group.getX() + 40;
                 value.getPoints()[0].y = group.getY() + 50;
-
+   
                 var g = getElement(polygonLayer, value.idInput);
 
                 if (g !== undefined) {
@@ -994,15 +992,7 @@ function changePositionArrow(canvasName, obj) {
 
                     updatePositionArrow(value, newPoint, newPoint2, 20, 10, angle);
                 }
-
-            }
-        }
-    });
-
-    jQuery.each(layer.getChildren(), function(index, value) {
-        if (value.isArrow == true) {
-            if (value.idInput == idGroup) {
-
+            }else if (value.idInput == idGroup) {
                 var newPoint = getArrowPositions(value, group, 47);
                 var newPoint2 = getArrowPositions(value, group, 60);
                 
@@ -1012,9 +1002,6 @@ function changePositionArrow(canvasName, obj) {
             }
         }
     });
-
-    //layer.draw();
-    //polygonLayer.draw();
 }
 
 function addLinks(canvasName, positions) {
@@ -1914,9 +1901,11 @@ function getAllIconPositions(){
         var polygonLayer = value.polygonLayer;
         var positions = {};
         // update element positions
-        for ( var i = 0; i < polygonLayer.getChildren().length; i++) {
-            var element = polygonLayer.getChildren()[i];
-            positions[element.getId()] = [ element.getX(), element.getY() ];
+        if(polygonLayer){
+            for ( var i = 0; i < polygonLayer.getChildren().length; i++) {
+                var element = polygonLayer.getChildren()[i];
+                positions[element.getId()] = [ element.getX(), element.getY() ];
+            }
         }
         canvasPos[index] = positions;
     });
@@ -2730,6 +2719,17 @@ function updateActionOutputStatus(groupId, outputType, fileExists, runningStatus
         polygonLayer.draw();
     }
 
+}
+
+function updateActionOutputStatusUntilItDoesntFail(groupId, outputType, fileExists, runningStatus, tooltip, noError, drawCanvas, externalLink){
+    console.log("updateActionOutputStatusUntilItDoesntFail");
+    setTimeout(function(){
+        try{
+           updateActionOutputStatus(groupId, outputType, fileExists, runningStatus, tooltip, noError, drawCanvas, externalLink);
+        }catch(e){
+           updateActionOutputStatusUntilItDoesntFail(groupId, outputType, fileExists, runningStatus, tooltip, noError, drawCanvas, externalLink);
+        }
+    },200);
 }
 
 function updateActionRunningStatus(groupId, status, fileExists,drawCanvas) {
