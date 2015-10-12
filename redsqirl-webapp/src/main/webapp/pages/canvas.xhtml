@@ -563,15 +563,13 @@
 		    	  forceRefresh = true;
 	          }
 	          if(forceRefresh) {
-		    	  setWorkflow(canvasName);
 	    	      addElements(canvasName, positions, selecteds);
+	    	      addLinks(canvasName, links);
+		    	  setWorkflow(canvasName);
 	    	      setSaved(canvasName, true);
 	    	      setPathFile(canvasName, path);
-	    	      addLinks(canvasName, links);
 		    	  resizeCanvas(30,30);
-		    	  
-	   	          canvasArray[canvasName].layer.draw();
-                  canvasArray[canvasName].polygonLayer.draw();
+
                   canvasArray[canvasName].stage.draw();
 	          }
 	          
@@ -605,24 +603,24 @@
 	      function updateArcStatus(status){
 
 	    	  console.log("updateArcStatus");
-		      
-		      var layer = canvasArray[selectedCanvas].layer;
-		      var polygonLayer = canvasArray[selectedCanvas].polygonLayer;
 	    	//<![CDATA[
 	    	  for (var i = 0; i < status.length; i++) {
 
-					//alert(status[i][7]);
-		    	  
+				   //alert(status[i][7]);
+		    	  //console.log("updateActionRunningStatus");
 		    	  //alert(status[i][0] + " " + status[i][1] + " " + status[i][2]);
-		    	  updateActionOutputStatus(status[i][0], status[i][1], status[i][2], status[i][3], status[i][4], status[i][5],false, status[i][7]);
+		    	  try{
+		    	       updateActionOutputStatus(status[i][0], status[i][1], status[i][2], status[i][3], status[i][4], status[i][5],false, status[i][7]);
+		    	  }catch(e){
+		    	       updateActionOutputStatusUntilItDoesntFail(status[i][0], status[i][1], status[i][2], status[i][3], status[i][4], status[i][5],true, status[i][7]);
+		    	  }
 		    	  
 		    	  for(var j = 0; j < status[i][6].length;j++) {
 		    	  	updateArrowType(status[i][6][j][0], status[i][6][j][1], status[i][6][j][2], status[i][6][j][3], status[i][6][j][4],false);
 		    	  	updateArrowLabel(status[i][6][j][0], status[i][6][j][1], status[i][6][j][5],false);
 		    	  }
 	    	  }
-		      layer.draw();
-		      polygonLayer.draw();
+		      canvasArray[selectedCanvas].stage.draw();
 	    	//]]>
 	      }
 	      
