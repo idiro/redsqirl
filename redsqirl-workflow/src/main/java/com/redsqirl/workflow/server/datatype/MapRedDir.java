@@ -195,23 +195,23 @@ public abstract class MapRedDir extends MapRedHdfs{
 					biggestFiles.add(fbIter.next());
 					++i;
 				}
-				
 				//Read the n-1 files
 				while(fbIter.hasNext() && (i-10) < numberFiles){
 					Map.Entry<FileStatus,Long> cur = fbIter.next();
 					FileStatus file = cur.getKey();
 					ans.addAll(hdfsInt.select(file.getPath().toString(),
 							",",
-							(maxToRead - ans.size())/Math.min(numberFiles, filesSortedBySize.size())));
+							
+							(int) Math.ceil(maxToRead - ans.size()/Math.min(numberFiles, filesSortedBySize.size())))
+							);
 					++i;
 				}
-				
 				//Read the biggest files
 				Iterator<Map.Entry<FileStatus,Long>>  biggerFiles = biggestFiles.iterator();
 				while(biggerFiles.hasNext() && ans.size() < maxToRead){
 					Map.Entry<FileStatus,Long> cur = biggerFiles.next();
 					FileStatus file = cur.getKey();
-					logger.info(ans.size()+" is the size of the return list.");
+					logger.info(ans.size()+" is the size of the return list. -- biggest ");
 					ans.addAll(hdfsInt.select(file.getPath().toString(),
 							",",
 							maxToRead - ans.size()));
