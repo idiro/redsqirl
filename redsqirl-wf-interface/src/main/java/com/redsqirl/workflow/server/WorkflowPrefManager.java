@@ -4,18 +4,25 @@ package com.redsqirl.workflow.server;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.rmi.RemoteException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
 //import java.util.prefs.Preferences;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import com.idiro.BlockManager;
+import com.redsqirl.workflow.settings.SettingMenu;
 import com.redsqirl.workflow.utils.PackageManager;
 
 /**
@@ -265,6 +272,8 @@ public class WorkflowPrefManager extends BlockManager {
 	public static String defaultTomcat = System.getProperty("catalina.base") + "/webapps";
 	
 	private static LocalProperties props;
+	
+	private static Map<String,SettingMenu> settingMenu = null;
 
 	/**
 	 * Constructor.
@@ -282,6 +291,7 @@ public class WorkflowPrefManager extends BlockManager {
 			Properties properties = new Properties();
 			properties.load(input);
 			pathSysHome = properties.getProperty("path_sys_home");
+			readSettingMenu();
 		} catch (IOException e) {
 			logger.warn("idiro.properties not found. Using default path_sys_home");
 			pathSysHome = "/usr/share/redsqirl";
@@ -331,6 +341,7 @@ public class WorkflowPrefManager extends BlockManager {
 		
 	}
 
+	
 	/**
 	 * 
 	 * @return Returns the single allowed instance of ProcessRunner
@@ -347,7 +358,33 @@ public class WorkflowPrefManager extends BlockManager {
 		}
 		return runner;
 	}
+	
+	public String getPluginSetting(String name){
+		String[] packageName = name.split("\\.",2);
+		if(getSettingMenu().containsKey(packageName[0])){
+			return getSettingMenu().get(packageName[0]).getPropertyValue(packageName[1]);
+		}
+		return null;
+	}
 
+	public static Map<String, SettingMenu> getSettingMenu(){
+		return settingMenu;
+	}
+	
+	public static void readSettingMenu(){
+		Map<String, SettingMenu> ans = new HashMap<String,SettingMenu>();
+		File[] userPackages = new File(pathUserPackagePref).listFiles();
+		for(int i = 0; i < userPackages.length;++i){
+			try{
+				Reader r = new FileReader(new File(userPackages[i],"settings.json"));
+				JSONTokener tokener = new JSONTokener(r);
+				JSONObject json = new JSONObject(tokener);
+				ans.put(userPackages[i].getName(), new SettingMenu(userPackages[i].getName(), json));
+			}catch(Exception e){}
+		}
+		settingMenu = ans;
+	}
+	
 	/**
 	 * Create the given user redsqirl home directory if it does not exist.
 	 * 

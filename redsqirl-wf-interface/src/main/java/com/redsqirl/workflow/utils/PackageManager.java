@@ -11,11 +11,15 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
@@ -48,15 +52,19 @@ public class PackageManager extends UnicastRemoteObject {
 	image_dir = "images",
 	/** Lib directory name */
 	lib_dir = "lib",
-	/** Action list file nmae */
+	/** Action list file name */
 	action_file = "actions.txt",
+	/** Footer file name */
+	footer_file = "footer.txt",
 	/** List of files name of file */
 	list_files = "files.txt",
 	
 	/**
 	 * Properies file name
 	 */
-	properties_file = "package.properties";
+	properties_file = "package.properties",
+	lang_file = "lang.properties",
+	settings_file = "settings.json";
 
 	public static String property_version = "version",
 			property_name = "packageName";
@@ -301,6 +309,12 @@ public class PackageManager extends UnicastRemoteObject {
 								+ "/" + action_file, newPack.getAbsolutePath()
 								+ "/" + action_file);
 						LocalFileSystem.copyfile(packs[i].getAbsolutePath()
+								+ "/" + footer_file, newPack.getAbsolutePath()
+								+ "/" + footer_file);
+						LocalFileSystem.copyfile(packs[i].getAbsolutePath()
+								+ "/" + settings_file, newPack.getAbsolutePath()
+								+ "/" + settings_file);
+						LocalFileSystem.copyfile(packs[i].getAbsolutePath()
 								+ "/" + properties_file,
 								newPack.getAbsolutePath() + "/"
 										+ properties_file);
@@ -313,6 +327,29 @@ public class PackageManager extends UnicastRemoteObject {
 						LocalFileSystem.copyfile(packs[i].getAbsolutePath()
 								+ "/" + lib_dir, getLibDir(user)
 								.getAbsolutePath());
+						Properties langProp = WorkflowPrefManager.getProps().getSysLangProperties();
+						Properties prop = new Properties();
+						try {
+							prop.load(new FileReader(new File(packs[i].getAbsolutePath()
+									+ "/" + lang_file)));
+						} catch (Exception e) {
+							logger.error("Error when loading '" + WorkflowPrefManager.pathSysLangCfgPref + "', "
+									+ e.getMessage());
+						}
+						langProp.putAll(prop);
+						WorkflowPrefManager.getProps().storeSysLangProperties(langProp);
+
+						
+						Date date= new Date();
+						long time = date.getTime();
+						Timestamp ts = new Timestamp(time);
+						try{
+							BufferedWriter bw = new BufferedWriter(new FileWriter(new File(newPack.getAbsolutePath() + "/"
+									+ properties_file),true));
+							bw.write("install_timestamp="+ts.toString()+"\n");
+							bw.close();
+						}catch(Exception e){}
+						
 					} catch (IOException e) {
 						logger.info("Fail when writing files/directory in package");
 					}
@@ -415,6 +452,19 @@ public class PackageManager extends UnicastRemoteObject {
 
 		return ans;
 	}
+	
+	public Map<String,Timestamp> getTimestampPackages(String user){
+		List<File> pack = getAllPackages(user);
+		Map<String,Timestamp> ans = new HashMap<String,Timestamp>();
+		Iterator<File> it = pack.iterator();
+		while(it.hasNext()){
+			File cur = it.next();
+			ans.put(cur.getName(), Timestamp.valueOf(
+					(String) getPackageProperties(cur.getAbsolutePath()).get("install_timestamp")));
+		}
+		
+		return ans;
+	}
 
 	/**
 	 * Check if the package is a valid package
@@ -434,11 +484,14 @@ public class PackageManager extends UnicastRemoteObject {
 						|| children[i].getName().equals(image_dir) || children[i]
 						.getName().equals(lib_dir)) && children[i]
 							.isDirectory())
-						|| (children[i].getName().equals(action_file) || children[i]
-								.getName().equals(properties_file)
+						|| (children[i].getName().equals(action_file) 
+						|| children[i].getName().equals(properties_file)
+						|| children[i].getName().equals(footer_file)
+						|| children[i].getName().equals(settings_file)
+						|| children[i].getName().equals(lang_file)
 								&& children[i].isFile());
 			}
-			ok &= children.length == 5;
+			ok &= children.length == 8;
 			if (!ok) {
 				error = PMLanguageManager
 						.getText("PackageManager.wrongStructure");

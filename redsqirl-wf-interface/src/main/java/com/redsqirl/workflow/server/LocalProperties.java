@@ -46,6 +46,10 @@ public class LocalProperties extends UnicastRemoteObject implements PropertiesMa
 		prop.store(new FileWriter(new File(WorkflowPrefManager.pathSysCfgPref)), "");
 	}
 	
+	public void storeSysLangProperties(Properties prop) throws IOException{
+		prop.store(new FileWriter(new File(WorkflowPrefManager.pathSysLangCfgPref)), "");
+	}
+	
 
 	/**
 	 * Get the lang properties for the System

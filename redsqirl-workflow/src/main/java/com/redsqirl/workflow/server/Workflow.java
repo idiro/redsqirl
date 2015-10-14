@@ -15,6 +15,7 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,10 +25,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -70,6 +73,7 @@ import com.redsqirl.workflow.server.interfaces.SubDataFlow;
 import com.redsqirl.workflow.server.interfaces.SuperElement;
 import com.redsqirl.workflow.utils.FileStream;
 import com.redsqirl.workflow.utils.LanguageManagerWF;
+import com.redsqirl.workflow.utils.PackageManager;
 import com.redsqirl.workflow.utils.WfSuperActionManager;
 
 /**
@@ -525,7 +529,12 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 			// File file = new File(menuDir.getAbsolutePath() + "/icon_menu.txt"
 			// );
 			PrintWriter s = new PrintWriter(menuDir);
-
+            try{
+            	Date date= new Date();
+            	long time = date.getTime();
+            	Timestamp ts = new Timestamp(time);
+            	s.println("#"+ts.toString());
+            }catch(Exception e){}
 			for (Entry<String, List<String[]>> e : menuWA.entrySet()) {
 				s.println("menu:" + e.getKey());
 				for (String[] string : e.getValue()) {
@@ -545,6 +554,48 @@ public class Workflow extends UnicastRemoteObject implements DataFlow {
 		}
 
 		return error;
+	}
+	
+	public Timestamp getLastFooterUpdate(){
+		File menuDir = new File(WorkflowPrefManager.getPathIconMenu());
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(menuDir));
+			String timestamp = br.readLine();
+			br.close();
+			if(timestamp == null || !timestamp.startsWith("#")){
+				return null;
+			}else{
+				return Timestamp.valueOf(timestamp.substring(1));
+			}
+		}catch(Exception e){
+			
+		}
+		return null;
+	}
+	
+	public Set<String> getNewPackages(){
+		Timestamp lastFooter = getLastFooterUpdate();
+		String user = System.getProperty("user.name");
+		
+		Set<String> ans = new LinkedHashSet<String>();
+		try{
+			Map<String,Timestamp> pckTimestamps = new PackageManager().getTimestampPackages(user);
+			if(lastFooter == null){
+				return pckTimestamps.keySet();
+			}		
+
+			Iterator<String> it = pckTimestamps.keySet().iterator();
+			while(it.hasNext()){
+				String cur = it.next();
+				if(lastFooter.before(pckTimestamps.get(cur))){
+					ans.add(cur);
+				}
+			}
+		}catch(Exception e){
+			logger.warn(e,e);
+		}
+		
+		return ans;
 	}
 
 	/**
