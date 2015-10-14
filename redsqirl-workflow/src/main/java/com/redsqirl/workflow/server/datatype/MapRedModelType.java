@@ -24,7 +24,7 @@ public class MapRedModelType extends MapRedDir {
 	private static final long serialVersionUID = -2256801373086895177L;
 
 	private static Logger logger = Logger.getLogger(MapRedModelType.class);
-	
+
 	private String delimiter = new String(new char[] { '\001' });
 
 	public MapRedModelType() throws RemoteException {
@@ -97,28 +97,30 @@ public class MapRedModelType extends MapRedDir {
 	}
 
 	@Override
-	public List<Map<String, String>> select(int maxToRead)
-			throws RemoteException {
+	public List<Map<String, String>> select(int maxToRead) throws RemoteException {
 		List<Map<String, String>> ans = new LinkedList<Map<String, String>>();
 		String patternStr = Pattern.quote(delimiter);
-		Iterator<String> it = selectLine(maxToRead).iterator();
-		while (it.hasNext()) {
-			String l = it.next();
-			String[] line = l.split(patternStr, -1);
-			List<String> fieldNames = getFields().getFieldNames();
-			if (fieldNames.size() == line.length) {
-				Map<String, String> cur = new LinkedHashMap<String, String>();
-				for (int i = 0; i < line.length; ++i) {
-					cur.put(fieldNames.get(i), line[i]);
+		List<String> list = selectLine(maxToRead);
+		if(list != null){
+			Iterator<String> it = list.iterator();
+			while (it.hasNext()) {
+				String l = it.next();
+				String[] line = l.split(patternStr, -1);
+				List<String> fieldNames = getFields().getFieldNames();
+				if (fieldNames.size() == line.length) {
+					Map<String, String> cur = new LinkedHashMap<String, String>();
+					for (int i = 0; i < line.length; ++i) {
+						cur.put(fieldNames.get(i), line[i]);
+					}
+					ans.add(cur);
+				} else {
+					logger.error("The line size (" + line.length
+							+ ") is not compatible to the number of fields ("
+							+ fieldNames.size() + ").");
+					logger.error("Error line: " + l);
+					ans = null;
+					break;
 				}
-				ans.add(cur);
-			} else {
-				logger.error("The line size (" + line.length
-						+ ") is not compatible to the number of fields ("
-						+ fieldNames.size() + ").");
-				logger.error("Error line: " + l);
-				ans = null;
-				break;
 			}
 		}
 		return ans;
@@ -145,13 +147,13 @@ public class MapRedModelType extends MapRedDir {
 			super.setPath(path);
 
 			logger.info("setPath() " + path);
-			
+
 			List<String> list = this.selectLine(2000);
-			
+
 			if (list != null) {
 
 				FieldList fl = generateFieldsMap(delimiter, list);
-				
+
 				String error = checkCompatibility(fl,fields);
 				logger.debug(fields.getFieldNames());
 				logger.debug(fl.getFieldNames());
