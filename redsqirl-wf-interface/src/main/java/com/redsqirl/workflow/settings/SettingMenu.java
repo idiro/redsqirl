@@ -195,4 +195,16 @@ public class SettingMenu {
 		}
 		return ans;
 	}
+
+	public Map<String, Setting> getProperties() {
+		return properties;
+	}
+
+	public Map<String, SettingMenu> getMenu() {
+		return menu;
+	}
+
+	public Setting.Scope getScopeMenu() {
+		return scopeMenu;
+	}
 }
