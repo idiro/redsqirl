@@ -254,7 +254,7 @@ function configureCanvas(canvasName, reset, workflowType){
                                 value.selected = false;
                             }
                         });
-                        layer.draw();
+                        //layer.draw();
                     }
                     canvasArray[canvasName].clickArrow = false;
                 }
@@ -554,16 +554,17 @@ function rectSelectAllObj(canvasName, e) {
                     value.getChildren()[0].setFill("#FFDB99");
                     value.getChildren()[1].setFill("#FFDB99");
                     value.getChildren()[2].selected = true;
-                    polygonLayer.draw();
+                    //polygonLayer.draw();
                     canvasArray[canvasName].select = true;
                 } else {
                     if (!e.ctrlKey && !canvasArray[canvasName].dragDropGroup) {
                         value.getChildren()[2].setStroke(value.getChildren()[1].originaColor);
                         value.getChildren()[2].selected = false;
-                        polygonLayer.draw();
+                        //polygonLayer.draw();
                     }
                 }
             });
+    polygonLayer.draw();
 
     return canvasArray[canvasName].select;
 }
@@ -589,9 +590,9 @@ function deselectOnClick(canvasName, obj, e) {
             if (value.isArrow == true) {
                 value.setStroke(value.originalColor);
                 value.selected = false;
-                layer.draw();
             }
         });
+        layer.draw();
     }
 
     canvasArray[canvasName].dragDropGroup = false;
@@ -1497,8 +1498,8 @@ function ready(canvasName) {
             deselectOnClick(canvasName, this, e);
         });
 
-        polygonLayer.draw();
     });
+    polygonLayer.draw();
 
 }
 
