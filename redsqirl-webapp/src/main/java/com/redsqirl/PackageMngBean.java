@@ -32,6 +32,7 @@ import org.json.JSONObject;
 
 import com.idiro.ProjectID;
 import com.redsqirl.analyticsStore.AnalyticsStoreLoginBean;
+import com.redsqirl.analyticsStore.RedSqirlModule;
 import com.redsqirl.auth.UserInfoBean;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
@@ -60,15 +61,15 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	private List<RedSqirlPackage> extPackages;
 	private String[] unUserPackage,	unSysPackage;
 	private String repoWelcomePage;
-	private List<SelectItem> systemPackages;
-	private List<SelectItem> userPackages;
+	private List<RedSqirlModule> systemPackages;
+	private List<RedSqirlModule> userPackages;
 	private String type;
 
 	public PackageMngBean() throws RemoteException{
 		logger.info("Call PackageMngBean constructor");
 		extPackages = new LinkedList<RedSqirlPackage>();
-		systemPackages = new LinkedList<SelectItem>();
-		userPackages = new LinkedList<SelectItem>();
+		systemPackages = new LinkedList<RedSqirlModule>();
+		userPackages = new LinkedList<RedSqirlModule>();
 		
 		/*
 		retrievesExtPackages();
@@ -82,8 +83,8 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	public void start() throws RemoteException{
 		logger.info("start PackageMngBean");
 		extPackages = new LinkedList<RedSqirlPackage>();
-		systemPackages = new LinkedList<SelectItem>();
-		userPackages = new LinkedList<SelectItem>();
+		systemPackages = new LinkedList<RedSqirlModule>();
+		userPackages = new LinkedList<RedSqirlModule>();
 		calcSystemPackages();
 		calcUserPackages();
 	}
@@ -211,11 +212,16 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	public void calcSystemPackages() throws RemoteException{
 		logger.info("sys package");
 		Iterator<String> it = pckManager.getPackageNames(null).iterator();
-		List<SelectItem> result = new LinkedList<SelectItem>();
+		List<RedSqirlModule> result = new LinkedList<RedSqirlModule>();
 		while(it.hasNext()){
 			String pck = it.next();
 			String version = pckManager.getPackageProperty(null, pck, PackageManager.property_version);
-			result.add(new SelectItem(pck,pck+"-"+version));
+			
+			RedSqirlModule rdm = new RedSqirlModule();
+			rdm.setImage("");
+			rdm.setName(pck);
+			
+			result.add(rdm);
 		}
 		setSystemPackages(result);
 	}
@@ -226,12 +232,17 @@ public class PackageMngBean extends BaseBean implements Serializable{
 				.getSession(false);
 		String user = (String) session.getAttribute("username");
 		Iterator<String> it = pckManager.getPackageNames(user).iterator();
-		List<SelectItem> result = new LinkedList<SelectItem>();
+		List<RedSqirlModule> result = new LinkedList<RedSqirlModule>();
 		while(it.hasNext()){
 			String pck = it.next();
 			String version = pckManager.getPackageProperty(user, pck, PackageManager.property_version);
-			logger.info("User Package: "+pck+"-"+version);
-			result.add(new SelectItem(pck,pck+"-"+version));
+			
+			RedSqirlModule rdm = new RedSqirlModule();
+			rdm.setImage("");
+			rdm.setName(pck);
+			
+			result.add(rdm);
+			
 		}
 		setUserPackages(result);
 	}
@@ -540,19 +551,11 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		this.repoWelcomePage = repoWelcomePage;
 	}
 
-	public List<SelectItem> getSystemPackages() {
-		return systemPackages;
-	}
-
-	public List<SelectItem> getUserPackages() {
+	public List<RedSqirlModule> getUserPackages() {
 		return userPackages;
 	}
 
-	public void setSystemPackages(List<SelectItem> systemPackages) {
-		this.systemPackages = systemPackages;
-	}
-
-	public void setUserPackages(List<SelectItem> userPackages) {
+	public void setUserPackages(List<RedSqirlModule> userPackages) {
 		this.userPackages = userPackages;
 	}
 
@@ -579,6 +582,14 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	public void setAnalyticsStoreLoginBean(
 			AnalyticsStoreLoginBean analyticsStoreLoginBean) {
 		this.analyticsStoreLoginBean = analyticsStoreLoginBean;
+	}
+
+	public List<RedSqirlModule> getSystemPackages() {
+		return systemPackages;
+	}
+
+	public void setSystemPackages(List<RedSqirlModule> systemPackages) {
+		this.systemPackages = systemPackages;
 	}
 	
 }
