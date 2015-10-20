@@ -86,7 +86,7 @@ public abstract class MapRedDir extends MapRedHdfs{
 				}
 
 				FileStatus[] stat = null; 
-				if(error != null){
+				if(error == null){
 					try{
 						stat = fs.listStatus(new Path(path),
 								new PathFilter() {
@@ -98,6 +98,9 @@ public abstract class MapRedDir extends MapRedHdfs{
 						});
 					} catch (Exception e) {
 						stat = null;
+						error = LanguageManagerWF.getText(
+								"mapredtexttype.notmrdir",
+								new Object[] { path });
 					}
 				}
 							
