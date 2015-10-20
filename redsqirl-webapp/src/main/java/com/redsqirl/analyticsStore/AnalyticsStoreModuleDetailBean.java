@@ -506,7 +506,9 @@ public class AnalyticsStoreModuleDetailBean extends BaseBean implements Serializ
 		if(isADMPage != null && isADMPage.equals("N")){
 			setShowRestartMSG("N");
 		}else{
-			setShowRestartMSG("Y");
+			if(error == null || error.isEmpty()){
+				setShowRestartMSG("Y");
+			}
 		}
 
 		return "";
