@@ -189,6 +189,8 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 			} else {
 				setShowOutputForm("Y");
 			}
+		} else {			
+			setShowOutputForm("N");
 		}
 
 	}
