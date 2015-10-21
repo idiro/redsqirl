@@ -470,20 +470,21 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 						logger.info("Error when getting the field: " + e.getMessage());
 					}
 					grid = new UnselectableTable(gridTitle);
-					try {
+					if(dfeOut.isPathValid() == null){
+						try {
 
-						int mRow = Math.max(10, Math.min(150, 1000/(gridTitle.size()+1) ));
-						mountNumberRowsList(mRow);
-						if(getMaxRows() != null && !getMaxRows().isEmpty()){
-							mRow = Integer.parseInt(getMaxRows()); 
-						}
-						setMaxRows(mRow+"");
+							int mRow = Math.max(10, Math.min(150, 1000/(gridTitle.size()+1) ));
+							mountNumberRowsList(mRow);
+							if(getMaxRows() != null && !getMaxRows().isEmpty()){
+								mRow = Integer.parseInt(getMaxRows()); 
+							}
+							setMaxRows(mRow+"");
 
-						List<Map<String, String>> outputLines = dfeOut.select(mRow);
+							List<Map<String, String>> outputLines = dfeOut.select(mRow);
 
-						if (outputLines != null) {
+							if (outputLines != null) {
 
-							/*for (Map<String, String> line : outputLines) {
+								/*for (Map<String, String> line : outputLines) {
 								int i = 0;
 								Object[] rowCur = new Object[gridTitle.size()];
 								for (String feat : line.keySet()) {
@@ -492,51 +493,52 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 								}
 								grid.add(rowCur);
 							}*/
-							
-							for (Map<String, String> line : outputLines) {
-								int i = 0;
-								int j = 0;
-								Object[] rowCur = new Object[gridTitle.size()];
-								for (String feat : line.keySet()) {
-									if(feat != null ){
-										String title = gridTitle.get(j);
-										if(title != null && !"".equals(title)){
-											String[] type = title.split(" ");
-											if(type != null && type.length > 0 && line.get(feat) != null && !line.get(feat).isEmpty()){
-												if(type[1].equalsIgnoreCase("float")){
-													rowCur[i] = Float.parseFloat(line.get(feat));
-												}else if(type[1].equalsIgnoreCase("double")){
-													rowCur[i] = Double.parseDouble(line.get(feat));
-												}else if(type[1].equalsIgnoreCase("int")){
-													rowCur[i] = Integer.parseInt(line.get(feat));
-												}else {
-													rowCur[i] = line.get(feat);
+
+								for (Map<String, String> line : outputLines) {
+									int i = 0;
+									int j = 0;
+									Object[] rowCur = new Object[gridTitle.size()];
+									for (String feat : line.keySet()) {
+										if(feat != null ){
+											String title = gridTitle.get(j);
+											if(title != null && !"".equals(title)){
+												String[] type = title.split(" ");
+												if(type != null && type.length > 0 && line.get(feat) != null && !line.get(feat).isEmpty()){
+													if(type[1].equalsIgnoreCase("float")){
+														rowCur[i] = Float.parseFloat(line.get(feat));
+													}else if(type[1].equalsIgnoreCase("double")){
+														rowCur[i] = Double.parseDouble(line.get(feat));
+													}else if(type[1].equalsIgnoreCase("int")){
+														rowCur[i] = Integer.parseInt(line.get(feat));
+													}else {
+														rowCur[i] = line.get(feat);
+													}
+												}else{
+													rowCur[i] = "";
 												}
-											}else{
-												rowCur[i] = "";
 											}
+											++i;
+											++j;
 										}
-										++i;
-										++j;
 									}
+									grid.add(rowCur);
 								}
-								grid.add(rowCur);
 							}
+
+							if(grid.getRows().isEmpty()){
+								String[] emptyRow = new String[gridTitle.size()];
+								grid.add(emptyRow);
+								setShowGridDataOutput("N");
+							}else{
+								setShowGridDataOutput("Y");
+							}
+
+
+						} catch (Exception e) {
+							logger.info("Error when getting data: " + e,e);
 						}
 
-						if(grid.getRows().isEmpty()){
-							String[] emptyRow = new String[gridTitle.size()];
-							grid.add(emptyRow);
-							setShowGridDataOutput("N");
-						}else{
-							setShowGridDataOutput("Y");
-						}
-
-
-					} catch (Exception e) {
-						logger.info("Error when getting data: " + e,e);
 					}
-
 				}
 			}
 		}
