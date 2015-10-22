@@ -72,7 +72,7 @@ public class MapRedCompressedType extends MapRedTextType {
 		List<String> shouldHaveExt = new LinkedList<String>();
 		shouldHaveExt.add(".bz");
 		shouldHaveExt.add(".bz2");
-		return isPathValid(path,null,shouldHaveExt);
+		return isPathValid(path,null,shouldHaveExt,true);
 	}
 	
 	/**
