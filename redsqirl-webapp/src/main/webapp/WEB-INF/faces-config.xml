@@ -484,6 +484,22 @@
 			<to-view-id>/pages/admSettings.xhtml</to-view-id>
 		</navigation-case>
 	</navigation-rule>
+	
+	<navigation-rule>
+		<from-view-id>/pages/modalPackage.xhtml</from-view-id>
+		<navigation-case>
+			<from-outcome>success</from-outcome>
+			<to-view-id>/pages/packageSettings.xhtml</to-view-id>
+		</navigation-case>
+	</navigation-rule>
+	
+	<navigation-rule>
+		<from-view-id>/pages/packageSettings.xhtml</from-view-id>
+		<navigation-case>
+			<from-outcome>success</from-outcome>
+			<to-view-id>/pages/modalPackage.xhtml</to-view-id>
+		</navigation-case>
+	</navigation-rule>
 
 	<!-- *************************** RESOURCES ********************************************************** -->
 

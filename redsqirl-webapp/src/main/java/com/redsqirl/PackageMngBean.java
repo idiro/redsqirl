@@ -15,13 +15,15 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import javax.faces.context.FacesContext;
-import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -34,8 +36,11 @@ import com.idiro.ProjectID;
 import com.redsqirl.analyticsStore.AnalyticsStoreLoginBean;
 import com.redsqirl.analyticsStore.RedSqirlModule;
 import com.redsqirl.auth.UserInfoBean;
+import com.redsqirl.dynamictable.SettingsControl;
 import com.redsqirl.useful.MessageUseful;
 import com.redsqirl.workflow.server.WorkflowPrefManager;
+import com.redsqirl.workflow.settings.Setting;
+import com.redsqirl.workflow.settings.SettingMenu;
 import com.redsqirl.workflow.utils.PackageManager;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -51,7 +56,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	private static Logger logger = Logger.getLogger(PackageMngBean.class);
 
 	private AnalyticsStoreLoginBean analyticsStoreLoginBean;
-	
+
 	private PackageManager pckManager = new PackageManager();
 
 	private boolean showMain = true;
@@ -65,21 +70,27 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	private List<RedSqirlModule> userPackages;
 	private String type;
 
+	private List<SettingsControl> listSubMenu = new ArrayList<SettingsControl>();
+	private List<Setting> listSetting = new ArrayList<Setting>();
+	private List<String> path;
+	private String nameNewTemplate;
+
+
 	public PackageMngBean() throws RemoteException{
 		logger.info("Call PackageMngBean constructor");
 		extPackages = new LinkedList<RedSqirlPackage>();
 		systemPackages = new LinkedList<RedSqirlModule>();
 		userPackages = new LinkedList<RedSqirlModule>();
-		
+
 		/*
 		retrievesExtPackages();
 		retrievesRepoWelcomePage();
-		*/
-		
+		 */
+
 		calcSystemPackages();
 		calcUserPackages();
 	}
-	
+
 	public void start() throws RemoteException{
 		logger.info("start PackageMngBean");
 		extPackages = new LinkedList<RedSqirlPackage>();
@@ -108,11 +119,11 @@ public class PackageMngBean extends BaseBean implements Serializable{
 				if(version != null && !version.isEmpty()){
 					uri += "&version="+version;
 				}
-				
+
 				if(analyticsStoreLoginBean != null && analyticsStoreLoginBean.getEmail() != null){
 					uri += "&user="+analyticsStoreLoginBean.getEmail();
 				}
-				
+
 			}else{
 				showMain = true;
 			}
@@ -216,11 +227,11 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		while(it.hasNext()){
 			String pck = it.next();
 			String version = pckManager.getPackageProperty(null, pck, PackageManager.property_version);
-			
+
 			RedSqirlModule rdm = new RedSqirlModule();
 			rdm.setImage("");
 			rdm.setName(pck);
-			
+
 			result.add(rdm);
 		}
 		setSystemPackages(result);
@@ -228,23 +239,133 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	public void calcUserPackages() throws RemoteException{
 		logger.info("user packages");
-		HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext()
-				.getSession(false);
+		HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
 		String user = (String) session.getAttribute("username");
 		Iterator<String> it = pckManager.getPackageNames(user).iterator();
 		List<RedSqirlModule> result = new LinkedList<RedSqirlModule>();
 		while(it.hasNext()){
 			String pck = it.next();
 			String version = pckManager.getPackageProperty(user, pck, PackageManager.property_version);
-			
+
 			RedSqirlModule rdm = new RedSqirlModule();
 			rdm.setImage("");
 			rdm.setName(pck);
-			
+
 			result.add(rdm);
-			
+
 		}
 		setUserPackages(result);
+	}
+
+	public String packageSettings() throws RemoteException{
+
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String name = params.get("name");
+
+		WorkflowPrefManager.readSettingMenu();
+
+		if(path == null){
+			path = new ArrayList<String>();
+		}
+
+		mountPath(name);
+
+		return "success";
+	}
+
+	public void mountPath(String name) throws RemoteException{
+
+		if(path.contains(name)){
+			boolean removeValue = false;
+			for (Iterator<String> iterator = path.iterator(); iterator.hasNext();) {
+				String value = (String) iterator.next();
+				if(value.equals(name)){
+					removeValue = true;
+					continue;
+				}
+				if(removeValue){
+					iterator.remove();
+				}
+			}
+		}else{
+			path.add(name);
+		}
+
+		SettingMenu s = mountPackageSettings(path);
+
+		listSubMenu = new ArrayList<SettingsControl>();
+		for (Entry<String, SettingMenu> settingsMenu : s.getMenu().entrySet()) {
+			SettingsControl sc = new SettingsControl();
+			if(settingsMenu.getValue().isTemplate()){
+				sc.setTemplate("Y");
+			}else{
+				sc.setTemplate("N");
+			}
+			sc.setName(settingsMenu.getKey());
+			listSubMenu.add(sc);
+		}
+
+		listSetting = new ArrayList<Setting>();
+		if(!s.isTemplate()){
+			for (Entry<String, Setting> setting : s.getProperties().entrySet()) {
+				listSetting.add(setting.getValue());
+			}
+		}
+		
+	}
+
+	public void navigationPackageSettings() throws RemoteException{
+
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String name = params.get("name");
+
+		mountPath(name);
+	}
+
+	public SettingMenu mountPackageSettings(List<String> path) throws RemoteException{
+		SettingMenu cur = null;
+		Map<String, SettingMenu> curMap = WorkflowPrefManager.getSettingMenu();
+		Iterator<String> itPath = path.iterator();
+		if(itPath.hasNext()){
+			cur = curMap.get(itPath.next());
+		}
+		while(itPath.hasNext()){
+			cur = cur.getMenu().get(itPath.next());
+		}
+		return cur;
+	}
+
+	public String saveSettings() throws RemoteException{
+
+		return "success";
+	}
+	
+	public void admNewTemplate() throws RemoteException{
+		
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String name = params.get("name");
+
+		path.add(name);
+		
+		SettingMenu s = mountPackageSettings(path);
+		
+		StringBuffer newPath = new StringBuffer();
+		for (String value : getPath()) {
+			newPath.append(value+".");
+		}
+		newPath.append(getNameNewTemplate());
+		
+		List<String> result = new ArrayList<String>();
+		for (Entry<String, Setting> setting : s.getProperties().entrySet()) {
+			result.add(newPath.toString() +"."+ setting.getKey() +"="+ setting.getValue().getDefaultValue());
+			logger.info("newPath " + newPath.toString() +"."+ setting.getKey() +"="+ setting.getValue().getDefaultValue());
+		}
+		
+		setNameNewTemplate(null);
+	}
+
+	public String cancelSettings() throws RemoteException{
+		return "success";
 	}
 
 	public void removeSystemPackage() throws RemoteException{
@@ -279,16 +400,16 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	public void disable(String[] packageName, String user) {
 
 		String softwareKey = getSoftwareKey();
-		
+
 		try {
-			
+
 			String uri = getRepoServer()+"rest/installations/disable";
 
 			StringBuffer names = new StringBuffer();
 			for (String value : packageName) {
 				names.append(","+value);
 			}
-			
+
 			if(names != null && !"".equals(names.toString())){
 				JSONObject object = new JSONObject();
 				object.put("packageName", names.substring(1));
@@ -309,19 +430,19 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		}
 
 	}
-	
+
 	private String getSoftwareKey(){
 		Properties prop = new Properties();
 		InputStream input = null;
-	 
+
 		try {
 			input = new FileInputStream(WorkflowPrefManager.pathSystemPref +  "/licenseKey.properties");
-	 
+
 			// load a properties file
 			prop.load(input);
-	 
+
 			// get the property value and print it out
-			
+
 			String licenseKey;
 			String[] value = ProjectID.get().trim().split("-");
 			if(value != null && value.length > 1){
@@ -329,7 +450,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 			}else{
 				licenseKey = ProjectID.get();
 			}
-			
+
 			return formatTitle(licenseKey) + "=" + prop.getProperty(formatTitle(licenseKey));
 		}
 		catch (Exception e){
@@ -337,7 +458,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		}
 		return null;
 	}
-	
+
 	private String formatTitle(String title){
 		return title.replaceAll("[^A-Za-z0-9]", "").toLowerCase();
 	}
@@ -345,7 +466,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	public void setPackageScope(){
 		String userEnv = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("user");
-		
+
 		logger.info("set Package scope: "+userEnv);
 		userInstall = !"false".equalsIgnoreCase(userEnv);
 		logger.info("scope: "+userInstall);
@@ -380,10 +501,10 @@ public class PackageMngBean extends BaseBean implements Serializable{
 			setError(error);
 			usageRecordLog().addError("ERROR INSTALLPACKAGE", error);
 		}
-		
+
 		usageRecordLog().addSuccess("INSTALLPACKAGE");
 	}
-	
+
 	private String installPackage(boolean sys) throws RemoteException{
 		String error = null;
 
@@ -591,5 +712,37 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	public void setSystemPackages(List<RedSqirlModule> systemPackages) {
 		this.systemPackages = systemPackages;
 	}
-	
+
+	public List<SettingsControl> getListSubMenu() {
+		return listSubMenu;
+	}
+
+	public void setListSubMenu(List<SettingsControl> listSubMenu) {
+		this.listSubMenu = listSubMenu;
+	}
+
+	public List<Setting> getListSetting() {
+		return listSetting;
+	}
+
+	public void setListSetting(List<Setting> listSetting) {
+		this.listSetting = listSetting;
+	}
+
+	public List<String> getPath() {
+		return path;
+	}
+
+	public void setPath(List<String> path) {
+		this.path = path;
+	}
+
+	public String getNameNewTemplate() {
+		return nameNewTemplate;
+	}
+
+	public void setNameNewTemplate(String nameNewTemplate) {
+		this.nameNewTemplate = nameNewTemplate;
+	}
+
 }

@@ -19,14 +19,13 @@
     </a4j:region>
     <h:panelGrid id="packageList" columns="2">
         
-        <rich:panel id="systemPck" header="System Packages"
-            style="width:270px;height:390px;" bodyClass="maxContent">
+        <rich:panel id="systemPck" header="System Packages" style="width:375px;height:530px;" bodyClass="maxContent">
             
            
-            <h:panelGroup id="sysPckList" layout="block" style="overflow:auto;height:330px;" class="packageList">
+            <h:panelGroup id="sysPckList" layout="block" style="overflow:auto;height:460px;" class="packageList">
                 <ui:repeat value="#{packageMngBean.systemPackages}" var="pck">
                     
-                     <br />
+                    <br />
                     
                     <div class="packageItem" >
 	                	<h:panelGroup layout="block" class="type" style="float:right;">
@@ -35,13 +34,16 @@
 		                        styleClass="greenButton"
 		                        value="#{messages.button_sys_uninstall}"
 		                        action="#{packageMngBean.removeSystemPackage}"
-		                        reRender="sysPckList" />
+		                        reRender="sysPckList" >
+		                    	<f:param name="name" value="#{pck.name}" />
+		                    </a4j:commandButton>
                         
 	                        <a4j:commandButton
 		                        styleClass="greenButton"
-		                        value="#{messages.button_sys_uninstall}"
-		                        action="#{packageMngBean.removeSystemPackage}"
-		                        reRender="sysPckList" />
+		                        value="#{messages.button_package_settings}"
+		                        action="#{packageMngBean.packageSettings}" >
+		                        <f:param name="name" value="#{pck.name}" />
+		                    </a4j:commandButton>
 							
 						</h:panelGroup>
 	                	<h:graphicImage value="#{pck.image}" width="100" height="100" styleClass="image"/>
@@ -70,11 +72,10 @@
             
         </rich:panel>
         
-        <rich:panel id="userPck" header="User Packages"
-            style="width:270px;height:390px;" bodyClass="maxContent">
+        <rich:panel id="userPck" header="User Packages" style="width:375px;height:530px;" bodyClass="maxContent">
             
            
-            <h:panelGroup id="usPckList" layout="block" style="overflow:auto;height:330px;" >
+            <h:panelGroup id="usPckList" layout="block" style="overflow:auto;height:460px;" >
                 <ui:repeat value="#{packageMngBean.userPackages}" var="pck">
                 
                 	<br />
@@ -86,13 +87,16 @@
 		                        styleClass="greenButton"
 		                        value="#{messages.button_user_uninstall}"
 		                        action="#{packageMngBean.removeUserPackage}"
-		                        reRender="usPckList" />
+		                        reRender="usPckList" >
+		                        <f:param name="name" value="#{pck.name}" />
+		                    </a4j:commandButton>
                         
 	                        <a4j:commandButton
 		                        styleClass="greenButton"
-		                        value="#{messages.button_user_uninstall}"
-		                        action="#{packageMngBean.removeUserPackage}"
-		                        reRender="usPckList" />
+		                        value="#{messages.button_package_settings}"
+		                        action="#{packageMngBean.packageSettings}" >
+		                        <f:param name="name" value="#{pck.name}" />
+		                    </a4j:commandButton>
 							
 						</h:panelGroup>
 	                	<h:graphicImage value="#{pck.image}" width="100" height="100" styleClass="image"/>

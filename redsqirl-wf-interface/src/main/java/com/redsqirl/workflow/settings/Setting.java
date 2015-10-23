@@ -30,30 +30,30 @@ public class Setting implements Serializable{
 	protected String value;
 	protected String description;
 	protected String label;
-	protected String default_value;
+	protected String defaultValue;
 	protected Type type;
 	protected Checker checker;
 	
-	public Setting(Scope scope, String default_value) {
+	public Setting(Scope scope, String defaultValue) {
 		super();
 		this.scope = scope;
-		this.default_value = default_value;
+		this.defaultValue = defaultValue;
 		this.type = Type.STRING;
 	}
 
-	public Setting(Scope scope, String default_value,
+	public Setting(Scope scope, String defaultValue,
 			Type type) {
 		super();
 		this.scope = scope;
-		this.default_value = default_value;
+		this.defaultValue = defaultValue;
 		this.type = type;
 	}
 
-	public Setting(Scope scope, String default_value,
+	public Setting(Scope scope, String defaultValue,
 			Type type, Checker checker) {
 		super();
 		this.scope = scope;
-		this.default_value = default_value;
+		this.defaultValue = defaultValue;
 		this.type = type;
 		this.checker = checker;
 	}
@@ -82,7 +82,7 @@ public class Setting implements Serializable{
 	}
 	
 	public String getValue() {
-		return value == null ? default_value:value;
+		return value == null ? defaultValue : value;
 	}
 
 	public void setValue(String value) {
@@ -97,14 +97,14 @@ public class Setting implements Serializable{
 		this.scope = scope;
 	}
 	
-	public String getDefault_value() {
-		return default_value;
+	public String getDefaultValue() {
+		return defaultValue;
 	}
-	
-	public void setDefault_value(String default_value) {
-		this.default_value = default_value;
+
+	public void setDefaultValue(String defaultValue) {
+		this.defaultValue = defaultValue;
 	}
-	
+
 	public Type getType() {
 		return type;
 	}
