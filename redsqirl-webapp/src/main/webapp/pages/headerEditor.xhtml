@@ -135,17 +135,9 @@
 									     	<f:facet name="header">
 									     		<h:outputText value="#{messages.label_type}" />
 									        </f:facet>
-									        
-						                	
 						                	
 						                	<h:inputText value="#{obj.type}" styleClass="comboInputClassHeader" style="width:96%;" >
-                                  	 
-			                                
-                                  	 
                             				</h:inputText>
-						                	
-						                	
-						                	
 						                	
 									     </rich:column>
 								        
@@ -164,11 +156,11 @@
 						
 					<a4j:jsFunction name="canvasModalApply" action="#{canvasModalBean.applyPage}"  
 						reRender="canvasModalTabPanel, outputTab, panelBtCanvasModal, msnError, msnSuccess, browserTableProp, browserPropLabel, browserPropValue" 
-						oncomplete="if(#{requestScope['msnError'] == null} ){changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');createOptionTitles();reLoadTabs();#{rich:component('headerEditor')}.hide();}unBlockSourceModalHeaderEditor();" />
+						oncomplete="if(#{requestScope['msnError'] == null} ){changeHelpAnchor('#{canvasModalBean.listPosition}');setPageNb('#{canvasModalBean.idGroup}','#{canvasModalBean.listPosition}');createOptionTitles();reLoadTabs();#{rich:component('headerEditor')}.hide();}unBlockSourceModalHeaderEditor();mountComboboxHeaderEditor();" />
 						
 					<a4j:commandButton action="#{canvasModalBean.canvasModalInteractionHeaderEditor.headerEditor}"
 					    styleClass="greenButton" value="#{messages.button_ok}"
-						oncomplete="if(#{requestScope['msnError'] == null} ){blockSourceModalHeaderEditor();canvasModalApply();}"
+						oncomplete="if(#{requestScope['msnError'] == null} ){blockSourceModalHeaderEditor();canvasModalApply();}mountComboboxHeaderEditor();"
 						reRender="browserTableData, msnError, errorTable" />
 					
 				</div>
