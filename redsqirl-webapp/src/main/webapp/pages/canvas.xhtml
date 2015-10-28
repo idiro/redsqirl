@@ -621,6 +621,9 @@
 		    	  }
 	    	  }
 		      canvasArray[selectedCanvas].stage.draw();
+		      
+		      console.log("updateArcStatus END");
+		      
 	    	//]]>
 	      }
 	      
@@ -820,10 +823,10 @@
 	    	 if(copyRunningMsgIdx == 1){
 	    	     origDiv.innerHTML = origDiv.innerHTML.replace(/DMRDIV_/g,'DORDIV_');
 	    	 }
-	    	 newDiv.innerHTML = origDiv.innerHTML.replace(/DORDIV_/g,'DMRDIV_');;
+	    	 newDiv.innerHTML = origDiv.innerHTML.replace(/DORDIV_/g,'DMRDIV_');
              jQuery('#'+lastBlockedRunningWorkflow).block({ message: newDiv });
-	     	}catch(exception){
-		     	alert("d " + lastBlockedRunningWorkflow + " " + exception);
+	     	 }catch(exception){
+		     	//alert("d " + lastBlockedRunningWorkflow + " " + exception);
 		     }
              
              resizeBlockUICanvas();
