@@ -1260,7 +1260,7 @@
 				
 					
 		<div id="domMessageRunning" style="display: none;">
-			<h:form id="DMRDIV_Form">
+			<h:form>
 			
 				<a4j:jsFunction name="DMRDIV_updateProgressBar" reRender="DMRDIV_runningActionsList, DMRDIV_completedActionsList, DMRDIV_FormTitle, DMRDIV_idProgBarRunning" 
 					data="#{canvasBean.runningAndUpdate}" oncomplete="if(data === undefined || !data[1]){unblockRunningWorkflowJS();}else{console.log('updateProgressBar: ',data[0],data[1],getSelectedByName()); if(data[0] == 'false' &amp;&amp; data[1] == getSelectedByName()){unblockRunningWorkflowJS();setRunning(getSelectedByName(), false);console.log('updateArcsAfterRunning: ',data[0],data[1],getSelectedByName());updateAllArcsStatus();}}"  />
@@ -1286,7 +1286,7 @@
 	                   			#{item}<br />
 	               			</ui:repeat>
 						</rich:simpleTogglePanel>
-						<rich:simpleTogglePanel id="DMRDIV_completedActionsList" label="Actions Completed (#{canvasBean.doneElementsSize})" switchType="client" style="max-height: 90px;overflow:auto;"  >
+						<rich:simpleTogglePanel id="DMRDIV_completedActionsList" label="Actions Completed (#{canvasBean.doneElementsSize})" switchType="client" style="max-height: 90px;overflow:auto;" >
 							<ui:repeat value="#{canvasBean.doneElements}" var="item">
 	                   			#{item}<br />
 	               			</ui:repeat>
