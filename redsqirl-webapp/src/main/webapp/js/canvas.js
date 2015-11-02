@@ -2726,13 +2726,15 @@ function updateActionOutputStatus(groupId, outputType, fileExists, runningStatus
 
 }
 
-function updateActionOutputStatusUntilItDoesntFail(groupId, outputType, fileExists, runningStatus, tooltip, noError, drawCanvas, externalLink){
+function updateActionOutputStatusUntilItDoesntFail(groupId, outputType, fileExists, runningStatus, tooltip, noError, drawCanvas, externalLink, cnt){
     console.log("updateActionOutputStatusUntilItDoesntFail");
     setTimeout(function(){
         try{
            updateActionOutputStatus(groupId, outputType, fileExists, runningStatus, tooltip, noError, drawCanvas, externalLink);
         }catch(e){
-           updateActionOutputStatusUntilItDoesntFail(groupId, outputType, fileExists, runningStatus, tooltip, noError, drawCanvas, externalLink);
+           if(cnt < 5*60){
+        	   updateActionOutputStatusUntilItDoesntFail(groupId, outputType, fileExists, runningStatus, tooltip, noError, drawCanvas, externalLink,++cnt);
+           }
         }
     },200);
 }

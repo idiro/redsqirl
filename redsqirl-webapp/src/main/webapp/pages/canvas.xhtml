@@ -612,7 +612,7 @@
 		    	  try{
 		    	       updateActionOutputStatus(status[i][0], status[i][1], status[i][2], status[i][3], status[i][4], status[i][5],false, status[i][7]);
 		    	  }catch(e){
-		    	       updateActionOutputStatusUntilItDoesntFail(status[i][0], status[i][1], status[i][2], status[i][3], status[i][4], status[i][5],true, status[i][7]);
+		    	       updateActionOutputStatusUntilItDoesntFail(status[i][0], status[i][1], status[i][2], status[i][3], status[i][4], status[i][5],true, status[i][7], 0);
 		    	  }
 		    	  
 		    	  for(var j = 0; j < status[i][6].length;j++) {
