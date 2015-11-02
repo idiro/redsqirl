@@ -252,7 +252,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 					//params.put(Decrypter.clusterNb, String.valueOf(homes));
 					
-					params.put(Decrypter.mac, decrypt.getMACAddress());
+					//params.put(Decrypter.mac, decrypt.getMACAddress());
 					params.put(Decrypter.name, licenseKey);
 					
 					DateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
