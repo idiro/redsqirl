@@ -27,8 +27,13 @@
                     
                     <br />
                     
-                    <div class="packageItem" >
-	                	<h:panelGroup layout="block" class="type" style="float:right;">
+                    <div class="packageItemInstall" >
+	                	
+	                	<h:graphicImage value="#{pck.image}" width="100" height="100" styleClass="image"/>
+					 	<h:panelGroup layout="block" class="title">
+							<h:outputText value="#{pck.name}"/>
+						</h:panelGroup>
+	                	<h:panelGroup layout="block" class="license" style="float:right;">
 							
 							<a4j:commandButton
 		                        styleClass="greenButton"
@@ -45,10 +50,6 @@
 		                        <f:param name="name" value="#{pck.name}" />
 		                    </a4j:commandButton>
 							
-						</h:panelGroup>
-	                	<h:graphicImage value="#{pck.image}" width="100" height="100" styleClass="image"/>
-					 	<h:panelGroup layout="block" class="title">
-							<h:outputText value="#{pck.name}"/>
 						</h:panelGroup>
 						
 					 </div>
@@ -81,7 +82,12 @@
                 	<br />
                     
                     <div class="packageItem" >
-	                	<h:panelGroup layout="block" class="type" style="float:right;">
+	                	
+	                	<h:graphicImage value="#{pck.image}" width="100" height="100" styleClass="image"/>
+					 	<h:panelGroup layout="block" class="title">
+							<h:outputText value="#{pck.name}"/>
+						</h:panelGroup>
+	                	<h:panelGroup layout="block" class="license" style="float:right;">
 							
 							<a4j:commandButton
 		                        styleClass="greenButton"
@@ -98,10 +104,6 @@
 		                        <f:param name="name" value="#{pck.name}" />
 		                    </a4j:commandButton>
 							
-						</h:panelGroup>
-	                	<h:graphicImage value="#{pck.image}" width="100" height="100" styleClass="image"/>
-					 	<h:panelGroup layout="block" class="title">
-							<h:outputText value="#{pck.name}"/>
 						</h:panelGroup>
 						
 					 </div>

@@ -229,7 +229,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 			String version = pckManager.getPackageProperty(null, pck, PackageManager.property_version);
 
 			RedSqirlModule rdm = new RedSqirlModule();
-			rdm.setImage("");
+			rdm.setImage("../pages/packages/images/spark_audit.gif");
 			rdm.setName(pck);
 
 			result.add(rdm);
@@ -246,13 +246,12 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		while(it.hasNext()){
 			String pck = it.next();
 			String version = pckManager.getPackageProperty(user, pck, PackageManager.property_version);
-
+			
 			RedSqirlModule rdm = new RedSqirlModule();
 			rdm.setImage("");
 			rdm.setName(pck);
 
 			result.add(rdm);
-
 		}
 		setUserPackages(result);
 	}
@@ -311,7 +310,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 				listSetting.add(setting.getValue());
 			}
 		}
-		
+
 	}
 
 	public void navigationPackageSettings() throws RemoteException{
@@ -339,28 +338,28 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 		return "success";
 	}
-	
+
 	public void admNewTemplate() throws RemoteException{
-		
+
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String name = params.get("name");
 
 		path.add(name);
-		
+
 		SettingMenu s = mountPackageSettings(path);
-		
+
 		StringBuffer newPath = new StringBuffer();
 		for (String value : getPath()) {
 			newPath.append(value+".");
 		}
 		newPath.append(getNameNewTemplate());
-		
+
 		List<String> result = new ArrayList<String>();
 		for (Entry<String, Setting> setting : s.getProperties().entrySet()) {
 			result.add(newPath.toString() +"."+ setting.getKey() +"="+ setting.getValue().getDefaultValue());
 			logger.info("newPath " + newPath.toString() +"."+ setting.getKey() +"="+ setting.getValue().getDefaultValue());
 		}
-		
+
 		setNameNewTemplate(null);
 	}
 
@@ -370,7 +369,14 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	public void removeSystemPackage() throws RemoteException{
 		logger.info("rm sys packages");
-		if(isAdmin()){
+
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String name = params.get("name");
+
+		if(isAdmin() && name != null){
+
+			unSysPackage = new String[]{name};
+
 			PackageManager sysPckManager = new PackageManager();
 			String error = sysPckManager.removePackage(null,unSysPackage);
 			if(error == null){
@@ -384,7 +390,14 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	public void removeUserPackage() throws RemoteException{
 		logger.info("rm user packages");
-		if(isUserAllowInstall()){
+
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String name = params.get("name");
+
+		if(isUserAllowInstall() && name != null){
+
+			unUserPackage = new String[]{name};
+
 			HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
 			String user = (String) session.getAttribute("username");
 			String error = pckManager.removePackage(user,unUserPackage);
