@@ -372,6 +372,7 @@ public class CanvasModal extends BaseBean implements Serializable {
 	public void closeCanvasModal() throws RemoteException {
 		logger.info("closeCanvasModal");
 		loadMainWindow = false;
+		outputTab = null;
 	}
 
 	public void changeTitle(){

@@ -1,10 +1,13 @@
 package com.redsqirl.keymanager.ciphers;
 
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,7 +30,7 @@ public class Decrypter extends KeyCipher {
 	private String key, key2, module1, module2, user, user2;
 	private int clusterNbInt, dateInt;
 
-	private static Logger logger = Logger.getLogger(KeyCipher.class);
+	private static Logger logger = Logger.getLogger(Decrypter.class);
 
 	public void decrypt(String key) {
 		ans = new HashMap<String, String>();
@@ -184,14 +187,20 @@ public class Decrypter extends KeyCipher {
 			//logger.info("name 1 " + ans.get(name + "1"));
 			//logger.info("key name sub 3 " + keysoft.get(name).substring(0, 3));
 			valid &= ans.get(name + "1").equals(keysoft.get(name).substring(0, 3));
+			//logger.info("valid name 1 " + valid);
 
 			//logger.info("name 2 " + ans.get(name + "2"));
 			//logger.info("key name lenght-3 " + keysoft.get(name).substring(keysoft.get(name).length() - 3));
 			valid &= ans.get(name + "2").equals(keysoft.get(name).substring(keysoft.get(name).length() - 3));
+			//logger.info("valid name 2 " + valid);
 
 			//logger.info("mac " + ans.get(mac));
 			//logger.info("mac lenght-8 " + keysoft.get(mac).substring(keysoft.get(mac).length() - 8));
-			valid &= ans.get(mac).equalsIgnoreCase(keysoft.get(mac).substring(keysoft.get(mac).length() - 8));
+			
+			//valid &= ans.get(mac).equalsIgnoreCase(keysoft.get(mac).substring(keysoft.get(mac).length() - 8));
+			valid &= validateMacAddress(ans.get(mac));
+			
+			//logger.info("valid mac " + valid);
 
 			//valid &= Integer.valueOf(ans.get(clusterNb)).intValue() > Integer.valueOf(keysoft.get(clusterNb)).intValue();
 			
@@ -200,12 +209,44 @@ public class Decrypter extends KeyCipher {
 			calendar.setTime(formatter.parse(("2015/06/01")));
 			calendar.add(Calendar.DATE, Integer.parseInt(ans.get(date)));
 			valid &= new Date(keysoft.get(date)).before(calendar.getTime());
+			//logger.info("valid date " + valid);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		return valid;
+	}
+	
+	private boolean validateMacAddress(String macTocheck) throws ParseException {
+		
+		byte[] mac = null;
+		try {
+			
+			logger.info("validateMacAddress " + macTocheck);
+			
+			Enumeration<NetworkInterface> networks = NetworkInterface.getNetworkInterfaces();
+			while (networks.hasMoreElements()) {
+				NetworkInterface network = networks.nextElement();
+				mac = network.getHardwareAddress();
+				StringBuilder sbMac = new StringBuilder();
+				for (int i = 0; i < mac.length; ++i) {
+					sbMac.append(String.format("%02X", mac[i]));
+				}
+				
+				logger.info("MacAddress " + sbMac.substring(sbMac.length() - 8));
+				
+				if(macTocheck.equals(sbMac.substring(sbMac.length() - 8))){
+					return true;
+				}
+				
+			}
+
+		} catch (SocketException e) {
+			e.printStackTrace();
+		}
+		
+		return false;
 	}
 	
 	public boolean validateExpiredKey(Map<String, String> keysoft) throws ParseException {

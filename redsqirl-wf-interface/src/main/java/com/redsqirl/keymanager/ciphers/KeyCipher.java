@@ -15,17 +15,21 @@ public abstract class KeyCipher {
 
 		byte[] mac = null;
 		try {
-			Enumeration<NetworkInterface> networks = NetworkInterface
+			
+			/*Enumeration<NetworkInterface> networks = NetworkInterface
 					.getNetworkInterfaces();
 			while (networks.hasMoreElements() && mac == null) {
 				NetworkInterface network = networks.nextElement();
 				mac = network.getHardwareAddress();
-			}
+			}*/
+			
+			
+			NetworkInterface network = NetworkInterface.getByName("eth0");
+			mac = network.getHardwareAddress();
+			
 
 		} catch (SocketException e) {
-
 			e.printStackTrace();
-
 		}
 
 		StringBuilder sbMac = new StringBuilder();

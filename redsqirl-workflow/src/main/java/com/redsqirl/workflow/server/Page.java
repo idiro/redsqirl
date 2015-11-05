@@ -130,7 +130,6 @@ public class Page extends UnicastRemoteObject implements DFEPage {
 		this.legend = legend;
 		this.textTip = textTip;
 		this.nbColumn = nbColumn;
-		setChecker(new PageCheckerDefault());
 	}
 
 	/**
@@ -292,9 +291,27 @@ public class Page extends UnicastRemoteObject implements DFEPage {
 	 * @return Error message
 	 */
 	public String checkPage() throws RemoteException {
-		String error = null;
-		if (checker != null) {
+		String error = checkInteractions();
+		if (error == null && checker != null) {
 			error = checker.check(this);
+		}
+		return error;
+	}
+	
+	protected String checkInteractions() throws RemoteException {
+		logger.debug("Check page "+getTitle());
+		String error = "";
+		Iterator<DFEInteraction> it = getInteractions().iterator();
+		while(it.hasNext()){
+			DFEInteraction eInt = it.next();
+			logger.debug("check interaction "+eInt.getId());
+			String loc_error = eInt.check();
+			if(loc_error != null){
+				error += eInt.getName()+": "+loc_error +"\n";
+			}
+		}
+		if(error.isEmpty()){
+			error = null;
 		}
 		return error;
 	}
