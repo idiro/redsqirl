@@ -612,7 +612,7 @@
 		    	  try{
 		    	       updateActionOutputStatus(status[i][0], status[i][1], status[i][2], status[i][3], status[i][4], status[i][5],false, status[i][7]);
 		    	  }catch(e){
-		    	       updateActionOutputStatusUntilItDoesntFail(status[i][0], status[i][1], status[i][2], status[i][3], status[i][4], status[i][5],true, status[i][7]);
+		    	       updateActionOutputStatusUntilItDoesntFail(status[i][0], status[i][1], status[i][2], status[i][3], status[i][4], status[i][5],true, status[i][7], 0);
 		    	  }
 		    	  
 		    	  for(var j = 0; j < status[i][6].length;j++) {
@@ -621,6 +621,9 @@
 		    	  }
 	    	  }
 		      canvasArray[selectedCanvas].stage.draw();
+		      
+		      console.log("updateArcStatus END");
+		      
 	    	//]]>
 	      }
 	      
@@ -820,10 +823,10 @@
 	    	 if(copyRunningMsgIdx == 1){
 	    	     origDiv.innerHTML = origDiv.innerHTML.replace(/DMRDIV_/g,'DORDIV_');
 	    	 }
-	    	 newDiv.innerHTML = origDiv.innerHTML.replace(/DORDIV_/g,'DMRDIV_');;
+	    	 newDiv.innerHTML = origDiv.innerHTML.replace(/DORDIV_/g,'DMRDIV_');
              jQuery('#'+lastBlockedRunningWorkflow).block({ message: newDiv });
-	     	}catch(exception){
-		     	alert("d " + lastBlockedRunningWorkflow + " " + exception);
+	     	 }catch(exception){
+		     	//alert("d " + lastBlockedRunningWorkflow + " " + exception);
 		     }
              
              resizeBlockUICanvas();
@@ -1257,7 +1260,7 @@
 				
 					
 		<div id="domMessageRunning" style="display: none;">
-			<h:form id="DMRDIV_Form">
+			<h:form>
 			
 				<a4j:jsFunction name="DMRDIV_updateProgressBar" reRender="DMRDIV_runningActionsList, DMRDIV_completedActionsList, DMRDIV_FormTitle, DMRDIV_idProgBarRunning" 
 					data="#{canvasBean.runningAndUpdate}" oncomplete="if(data === undefined || !data[1]){unblockRunningWorkflowJS();}else{console.log('updateProgressBar: ',data[0],data[1],getSelectedByName()); if(data[0] == 'false' &amp;&amp; data[1] == getSelectedByName()){unblockRunningWorkflowJS();setRunning(getSelectedByName(), false);console.log('updateArcsAfterRunning: ',data[0],data[1],getSelectedByName());updateAllArcsStatus();}}"  />
@@ -1283,7 +1286,7 @@
 	                   			#{item}<br />
 	               			</ui:repeat>
 						</rich:simpleTogglePanel>
-						<rich:simpleTogglePanel id="DMRDIV_completedActionsList" label="Actions Completed (#{canvasBean.doneElementsSize})" switchType="client" style="max-height: 90px;overflow:auto;"  >
+						<rich:simpleTogglePanel id="DMRDIV_completedActionsList" label="Actions Completed (#{canvasBean.doneElementsSize})" switchType="client" style="max-height: 90px;overflow:auto;" >
 							<ui:repeat value="#{canvasBean.doneElements}" var="item">
 	                   			#{item}<br />
 	               			</ui:repeat>
@@ -1497,6 +1500,21 @@
 				<a4j:jsFunction name="updateAllArcsStatus"
 					data="#{canvasBean.allOutputStatus}"
 					oncomplete="console.log('updateAllArcsStatus'); updateArcStatus(data);jQuery('#canvas-tabs').unblock();"
+					reRender="errorTable" />
+				
+				<a4j:jsFunction name="regeneratePathsProject"
+					action="#{canvasBean.regeneratePathsProject}"
+					oncomplete="console.log('regeneratePathsProject');updateAllArcsStatus();"
+					reRender="errorTable" />
+				
+				<a4j:jsFunction name="regeneratePathsProjectMove"
+					action="#{canvasBean.regeneratePathsProjectMove}"
+					oncomplete="console.log('regeneratePathsProjectMove');updateAllArcsStatus();"
+					reRender="errorTable" />
+				
+				<a4j:jsFunction name="regeneratePathsProjectCopy"
+					action="#{canvasBean.regeneratePathsProjectCopy}"
+					oncomplete="console.log('regeneratePathsProjectCopy');updateAllArcsStatus();"
 					reRender="errorTable" />
 			</a4j:region>
 
@@ -2217,18 +2235,15 @@
 										disabled="#{canvasBean.workflowType == 'S'}">
 										<rich:menuItem submitMode="ajax"
 											value="#{messages.label_menu_regenerate_project}"
-											action="#{canvasBean.regeneratePathsProject}"
-											oncomplete="updateAllArcsStatus();" />
+											onclick="regeneratePathsProject()" />
 
 										<rich:menuItem submitMode="ajax"
 											value="#{messages.label_menu_regeneratemove_project}"
-											action="#{canvasBean.regeneratePathsProjectMove}"
-											oncomplete="updateAllArcsStatus();" />
+											onclick="regeneratePathsProjectMove()" />
 
 										<rich:menuItem submitMode="ajax"
 											value="#{messages.label_menu_regeneratecopy_project}"
-											action="#{canvasBean.regeneratePathsProjectCopy}"
-											oncomplete="updateAllArcsStatus();" />
+											onclick="regeneratePathsProjectCopy()" />
 
 									</rich:menuGroup>
 
@@ -2846,7 +2861,7 @@
 	</a4j:region>
 
 	<a4j:region>
-		<rich:modalPanel id="modalPackage" width="600" height="460"
+		<rich:modalPanel id="modalPackage" width="800" height="600"
 			style="overflow:auto;" resizeable="false">
 
 			<f:facet name="header">

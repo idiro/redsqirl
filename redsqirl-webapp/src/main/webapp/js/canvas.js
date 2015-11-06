@@ -254,7 +254,7 @@ function configureCanvas(canvasName, reset, workflowType){
                                 value.selected = false;
                             }
                         });
-                        layer.draw();
+                        //layer.draw();
                     }
                     canvasArray[canvasName].clickArrow = false;
                 }
@@ -554,16 +554,17 @@ function rectSelectAllObj(canvasName, e) {
                     value.getChildren()[0].setFill("#FFDB99");
                     value.getChildren()[1].setFill("#FFDB99");
                     value.getChildren()[2].selected = true;
-                    polygonLayer.draw();
+                    //polygonLayer.draw();
                     canvasArray[canvasName].select = true;
                 } else {
                     if (!e.ctrlKey && !canvasArray[canvasName].dragDropGroup) {
                         value.getChildren()[2].setStroke(value.getChildren()[1].originaColor);
                         value.getChildren()[2].selected = false;
-                        polygonLayer.draw();
+                        //polygonLayer.draw();
                     }
                 }
             });
+    polygonLayer.draw();
 
     return canvasArray[canvasName].select;
 }
@@ -589,9 +590,9 @@ function deselectOnClick(canvasName, obj, e) {
             if (value.isArrow == true) {
                 value.setStroke(value.originalColor);
                 value.selected = false;
-                layer.draw();
             }
         });
+        layer.draw();
     }
 
     canvasArray[canvasName].dragDropGroup = false;
@@ -1497,8 +1498,8 @@ function ready(canvasName) {
             deselectOnClick(canvasName, this, e);
         });
 
-        polygonLayer.draw();
     });
+    polygonLayer.draw();
 
 }
 
@@ -2050,6 +2051,7 @@ function configureGroupListeners(canvasName, group) {
     
     group.on('dragstart', function(e) {
         canvasArray[canvasName].savePositions = getPositionGivenIcons(getSelectedIcons(),this);
+        deselectOnClick(canvasName, group.getChildren()[2], e);
     });
     
     group.on('dragmove', function(e) {
@@ -2427,14 +2429,17 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
     	
         var scrollTop = jQuery("#flowchart-"+canvasName).scrollTop();
         var scrollLeft = jQuery("#flowchart-"+canvasName).scrollLeft();
-        if(this.getParent().getPosition().x-scrollLeft+80 > e.pageX){
-            jQuery(".tooltipCanvas").remove();
-            curToolTip = null;
+        if(this && this.getParent()){
+        	if(this.getParent().getPosition().x-scrollLeft+80 > e.pageX){
+                jQuery(".tooltipCanvas").remove();
+                curToolTip = null;
+            }
+            if(this.getParent().getPosition().y-scrollTop+160 > e.pageY){
+                jQuery(".tooltipCanvas").remove();
+                curToolTip = null;
+            }
         }
-        if(this.getParent().getPosition().y-scrollTop+160 > e.pageY){
-            jQuery(".tooltipCanvas").remove();
-            curToolTip = null;
-        }
+        
     });
 
     return [ polygon, polygonTab, polygonTabImage ];
@@ -2721,13 +2726,15 @@ function updateActionOutputStatus(groupId, outputType, fileExists, runningStatus
 
 }
 
-function updateActionOutputStatusUntilItDoesntFail(groupId, outputType, fileExists, runningStatus, tooltip, noError, drawCanvas, externalLink){
+function updateActionOutputStatusUntilItDoesntFail(groupId, outputType, fileExists, runningStatus, tooltip, noError, drawCanvas, externalLink, cnt){
     console.log("updateActionOutputStatusUntilItDoesntFail");
     setTimeout(function(){
         try{
            updateActionOutputStatus(groupId, outputType, fileExists, runningStatus, tooltip, noError, drawCanvas, externalLink);
         }catch(e){
-           updateActionOutputStatusUntilItDoesntFail(groupId, outputType, fileExists, runningStatus, tooltip, noError, drawCanvas, externalLink);
+           if(cnt < 5*60){
+        	   updateActionOutputStatusUntilItDoesntFail(groupId, outputType, fileExists, runningStatus, tooltip, noError, drawCanvas, externalLink,++cnt);
+           }
         }
     },200);
 }

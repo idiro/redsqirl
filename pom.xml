@@ -47,7 +47,7 @@
 
     <groupId>idiro</groupId>
     <artifactId>redsqirl</artifactId>
-    <version>0.1</version>
+    <version>0.6</version>
     <name>Red Sqirl</name>
     <packaging>pom</packaging>
     <description>${project.name} is a platform</description>

@@ -130,9 +130,9 @@ public class UserInfoBean extends BaseBean implements Serializable {
 	private boolean checkPassword = false;
 
 	public int numberCluster;
-	
+
 	public String errorNumberCluster;
-	
+
 	/**
 	 * Init the progress bar.
 	 */
@@ -160,17 +160,17 @@ public class UserInfoBean extends BaseBean implements Serializable {
 		setAlreadySignedIn(null);
 		String licenseKey = null;
 		String licence = "";
-		
+
 		if(getUserName() == null || "".equals(getUserName())){
 			setMsnError(getMessageResources("login_error_user_required"));
 			return "failure";
 		}
-		
+
 		if(getPassword() == null || "".equals(getPassword())){
 			setMsnError(getMessageResources("login_error_password_required"));
 			return "failure";
 		}
-		
+
 
 		FacesContext fCtx = FacesContext.getCurrentInstance();
 		ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
@@ -239,22 +239,22 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 					Decrypter decrypt = new Decrypter();
 					decrypt.decrypt(licence);
-					
+
 					setNumberCluster(decrypt.getNumberCluster());
-					
+
 					/*File file = new File(WorkflowPrefManager.getPathUsersFolder());
 					int homes = 0;
 					if(file.exists()){
 						homes = file.list().length;
 					}*/
-					
+
 					Map<String,String> params = new HashMap<String,String>();
 
 					//params.put(Decrypter.clusterNb, String.valueOf(homes));
-					
-					params.put(Decrypter.mac, decrypt.getMACAddress());
+
+					//params.put(Decrypter.mac, decrypt.getMACAddress());
 					params.put(Decrypter.name, licenseKey);
-					
+
 					DateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
 					params.put(Decrypter.date, formatter.format(new Date()));
 
@@ -418,13 +418,13 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 		// Create home folder for this user if it does not exist yet
 		WorkflowPrefManager.createUserHome(userName);
-		
+
 		try {
 			luceneIndex();
 		} catch (Exception e) {
 			logger.error("Fail creating index: "+e.getMessage(),e);
 		}
-		
+
 		// error with rmi connection
 		boolean succ = createRegistry();
 
@@ -449,7 +449,7 @@ public class UserInfoBean extends BaseBean implements Serializable {
 			buildBackend = false;
 			return "failure";
 		}
-		
+
 		if (!succ) {
 			getBundleMessage("error.rmi.connection");
 			invalidateSession();
@@ -568,13 +568,13 @@ public class UserInfoBean extends BaseBean implements Serializable {
 							dfi.addWorkflow("test");
 							error = false;
 							dfi.removeWorkflow("test");
-							
+
 							//FIXME size cluster aws
 							if(!dfi.checkNumberCluster(getNumberCluster())){
 								setErrorNumberCluster(getMessageResources("error_number_cluster"));
 								return false;
 							}
-							
+
 							logger.info("workflow is running ");
 						} catch (Exception e) {
 							logger.info("workflow not running ");
@@ -688,15 +688,18 @@ public class UserInfoBean extends BaseBean implements Serializable {
 	 * Method that will clean up the session objects once the user has finished with it.
 	 */
 	public void invalidateSession() {
-		if(userName != null && checkPassword){
-			FacesContext fCtx = FacesContext.getCurrentInstance();
-			ServletContext sc = (ServletContext) fCtx.getExternalContext()
-					.getContext();
-			Map<String, HttpSession> sessionLoginMap = (Map<String, HttpSession>) sc
-					.getAttribute("sessionLoginMap");
-			invalidateSession(sessionLoginMap.get(userName));
+		try{
+			if(userName != null && checkPassword){
+				FacesContext fCtx = FacesContext.getCurrentInstance();
+				ServletContext sc = (ServletContext) fCtx.getExternalContext().getContext();
+				Map<String, HttpSession> sessionLoginMap = (Map<String, HttpSession>) sc.getAttribute("sessionLoginMap");
+				invalidateSession(sessionLoginMap.get(userName));
+			}
+			checkPassword = false;
+
+		}catch(Exception e){
+			logger.info(e,e);
 		}
-		checkPassword = false;
 	}
 
 	public void sshDisconnect(){
@@ -767,7 +770,8 @@ public class UserInfoBean extends BaseBean implements Serializable {
 
 		File fileIndexResultPath = new File(indexResultPath);
 		if(userIndexUpdate || sysPckUpdate || sysMainUpdate || !fileIndexResultPath.isDirectory() 
-				|| fileIndexResultPath.list().length == 0){
+				|| fileIndexResultPath.list().length == 0
+				|| fileIndexResultPath.lastModified() < fileIndexMergeSysPath.lastModified()){
 			if(fileIndexResultPath.isDirectory()){
 				FileUtils.cleanDirectory(fileIndexResultPath);
 			}

@@ -107,15 +107,15 @@ public class SettingMenu {
 			try{
 				JSONObject settingObj = settingArray.getJSONObject(i);
 				String property = settingObj.getString("property");
-				String default_value =  settingObj.getString("default");
+				String defaultValue =  settingObj.getString("default");
 				Setting.Scope scope =  readScope(settingObj);
 				Setting.Type type =  readType(settingObj);
 				Setting.Checker validator = readChecker(settingObj);
 
 				String propertyName = path+"."+property;
-				properties.put(property, new Setting(scope,default_value,type,validator));
-				properties.get(property).setDescription(langProperties.getProperty(propertyName+"_desc"));
-				properties.get(property).setLabel(langProperties.getProperty(propertyName+"_label"));
+				properties.put(property, new Setting(scope,defaultValue,type,validator));
+				properties.get(property).setDescription(langProperties.getProperty(propertyName+"_desc",propertyName));
+				properties.get(property).setLabel(langProperties.getProperty(propertyName+"_label",propertyName));
 				switch(scope){
 				case ANY:
 					String sysProp = sysProperties.getProperty(propertyName);
@@ -194,5 +194,17 @@ public class SettingMenu {
 			logger.warn("Class "+checker+" cannot be instanced: "+e,e);
 		}
 		return ans;
+	}
+
+	public Map<String, Setting> getProperties() {
+		return properties;
+	}
+
+	public Map<String, SettingMenu> getMenu() {
+		return menu;
+	}
+
+	public Setting.Scope getScopeMenu() {
+		return scopeMenu;
 	}
 }

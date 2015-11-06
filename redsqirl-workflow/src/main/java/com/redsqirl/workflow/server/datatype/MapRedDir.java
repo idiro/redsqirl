@@ -48,6 +48,10 @@ public abstract class MapRedDir extends MapRedHdfs{
 	}
 
 	public String isPathValid(String path, List<String> shouldNotHaveExt, List<String> shouldHaveExt) throws RemoteException {
+		return isPathValid(path, shouldNotHaveExt, shouldHaveExt,false);
+	}
+		
+	public String isPathValid(String path, List<String> shouldNotHaveExt, List<String> shouldHaveExt, boolean fileExtension) throws RemoteException {
 		String error = null;
 		HdfsFileChecker hCh = new HdfsFileChecker(path);
 		if(shouldHaveExt != null && !shouldHaveExt.isEmpty()){
@@ -86,7 +90,7 @@ public abstract class MapRedDir extends MapRedHdfs{
 				}
 
 				FileStatus[] stat = null; 
-				if(error != null){
+				if(error == null){
 					try{
 						stat = fs.listStatus(new Path(path),
 								new PathFilter() {
@@ -98,6 +102,9 @@ public abstract class MapRedDir extends MapRedHdfs{
 						});
 					} catch (Exception e) {
 						stat = null;
+						error = LanguageManagerWF.getText(
+								"mapredtexttype.notmrdir",
+								new Object[] { path });
 					}
 				}
 							
@@ -108,28 +115,29 @@ public abstract class MapRedDir extends MapRedHdfs{
 									"mapredtexttype.notmrdir",
 									new Object[] { path });
 						}else{
+							if(fileExtension){
+								if(shouldHaveExt != null && !shouldHaveExt.isEmpty()){
+									boolean found = false;
+									for(String extCur: shouldHaveExt){
+										found |= stat[i].getPath().getName().endsWith(extCur);
+									}
+									if(!found){
+										error = LanguageManagerWF.getText(
+												"mapredtexttype.shouldhaveextcompresssile",
+												new Object[] { path,shouldHaveExt });
 
-							if(shouldHaveExt != null && !shouldHaveExt.isEmpty()){
-								boolean found = false;
-								for(String extCur: shouldHaveExt){
-									found |= stat[i].getPath().getName().endsWith(extCur);
-								}
-								if(!found){
-									error = LanguageManagerWF.getText(
-											"mapredtexttype.shouldhaveextcompresssile",
-											new Object[] { path,shouldHaveExt });
+									}
+								}else if(shouldNotHaveExt != null && ! shouldNotHaveExt.isEmpty()){
+									boolean found = false;
+									for(String extCur: shouldNotHaveExt){
+										found |= stat[i].getPath().getName().endsWith(extCur);
+									}
+									if(found){
+										error = LanguageManagerWF.getText(
+												"mapredtexttype.shouldnothaveextcompresssile",
+												new Object[] { path,shouldNotHaveExt });
 
-								}
-							}else if(shouldNotHaveExt != null && ! shouldNotHaveExt.isEmpty()){
-								boolean found = false;
-								for(String extCur: shouldNotHaveExt){
-									found |= stat[i].getPath().getName().endsWith(extCur);
-								}
-								if(found){
-									error = LanguageManagerWF.getText(
-											"mapredtexttype.shouldnothaveextcompresssile",
-											new Object[] { path,shouldNotHaveExt });
-
+									}
 								}
 							}
 

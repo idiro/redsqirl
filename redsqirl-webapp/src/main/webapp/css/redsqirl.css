@@ -1282,6 +1282,7 @@ div.splitter-bar.ui-state-highlight {
 	background-color: #006400 !important;
 	color: white !important;
 	font-weight: bold;
+	cursor: pointer;
 }
 
 .rich-tabpanel {
@@ -1481,4 +1482,67 @@ select {
     border-radius: 4px;
     background-color: rgba(0,0,0,.5);
     box-shadow: 0 0 1px rgba(255,255,255,.5);
+}
+
+
+.packageItemInstall{
+	background-color:#FFFFFF;
+	box-shadow: 3px 3px 3px #888888;
+	border-radius: 7px !important;
+	border: 1px solid #cc1b1a;
+	margin: 10px 10px 10px 10px;
+	width: 360px;
+	float:left;
+	left:auto;
+	font-size:20px;
+}
+
+.packageItemInstall .image{
+	margin-top:3px;
+	margin-left:5px;
+	margin-bottom:3px;
+	float:left;
+}
+
+.packageItemInstall .title{
+	margin-top:10px;
+	margin-left:20px;
+	width:60%;
+	float:left;
+	font-size:25px;
+}
+
+.packageItemInstall .type{
+	margin-top:20px;
+	margin-right:10px;
+	margin-bottom:0px;
+	width:20%;
+	float:right;
+	text-align:right;
+	font-size:12px;
+}
+
+.packageItemInstall .license{
+	margin-top:15px;
+	margin-right:60px;
+	width:40%;
+	float:right;
+	text-align:right;
+	font-size:12px;
+}
+
+.packageItemInstall .dependency{
+	float: left;
+    font-size: 12px;
+    padding-top: 5px;
+    width: 100%;
+}
+
+.packageItemInstall .description{
+	margin-top:5px;
+	margin-left:5px;
+	width:70%;
+	float:left;
+	color:grey;
+	font-size:12px;
 }

@@ -2042,7 +2042,7 @@ public class CanvasBean extends BaseBean implements Serializable {
 			return ans;
 
 		} catch (Exception e) {
-			logger.info("Error " + e + " - " + e.getMessage());
+			logger.info("Error "+ e,e);
 			MessageUseful
 			.addErrorMessage(getMessageResources("msg_error_oops"));
 			HttpServletRequest request = (HttpServletRequest) FacesContext
