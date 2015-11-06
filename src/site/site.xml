@@ -36,6 +36,7 @@
 			<item name="Overview" href="index.html" />
 			<item name="Download" href="download.html" />
 			<item name="Getting started" href="gettingstarted.html" />
+			<item name="Administration Guide" href="adminGuide.html" />
 			<item name="Screenshots" href="screenshots.html" />
 			<item name="Package Management Setup" href="packagemanagement.html" />
 		</menu>

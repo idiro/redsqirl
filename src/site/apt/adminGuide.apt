@@ -1,0 +1,73 @@
+            ------
+            Red Sqirl - Administration Guide
+            ------
+
+Administration Guide
+
+* Installation
+
+ Before the installation, you should know that Red Sqirl has an online
+repository and takes advantage of it. Module management become
+easier if the repository is available and can be done directly from the Red
+Sqirl application. If the repository is not available only the administrator can
+install manually new modules. You can find the installation instructions in
+{{{./gettingstarted.html}Getting Started}}.
+
+* Start and Shutdown
+
+ Scripts to start and shutdown are accessible in the bin directory. Do not use
+the tomcat start and shutdown scripts as they do not handle well shutdown.
+
+* Configuration
+
+ System properties are readable by everyone, only the Web application OS user
+can modify on command line. Everyone in the "admin" property can modify the file
+in the Red Sqirl web-application.
+
+ User properties can only be read and writen by the user.
+
+* User and Security
+
+ In Red Sqirl security is managed on the OS level. It means the application only
+allow what the user can do on command line. In order to enforce this property
+Red Sqirl use {{{https://en.wikipedia.org/wiki/Secure_Shell}SSH}} and
+{{{http://docs.oracle.com/javase/7/docs/technotes/guides/rmi/}RMI}}. A process
+is created on localhost for every user through SSH. The web application send RMI
+request to the user specific process. When signing out the user process is
+killed. A user cannot have more than two processes running at the same time and
+therefore one cannot sign in simultaneously two times with the same login.
+
+* Job Management
+
+ At the time of writing, jobs executed on Red Sqirl are exclusively managed by
+{{{http://oozie.apache.org/}Apache Oozie}}. The jobs can be suspended, killed,
+resumed through Oozie. Red Sqirl provides also those features through its UI.
+Red Sqirl enable users to change the execution queues for every user, the master
+processes (Oozie Map only job) run in the launch queue. The action
+queue manage the actual data processing jobs. See settings in the
+{{{./gettingstarted.html} Getting Started}}.
+
+* Package Management
+
+ If the Red Sqirl application can reach the repository, packages can be
+installed through the interface. In the administration view, go to the Package
+page. In the user view, you can install uninstall plugin through
+Project>Manage Packages or Project>Sub-Workflow>Manage Models.
+
+ If the Red Sqirl application cannot reach the internet, the installation of a
+package has to follow several steps
+
+ * Go on the analytics store and login
+
+ * Go in Search, choose your package and install
+
+ * Download the source and the license file
+
+ * Go in the administration view
+
+ * Licence tab: upload the corresponding file
+
+ * Package view: upload the corresponding file
+
+ []
+
