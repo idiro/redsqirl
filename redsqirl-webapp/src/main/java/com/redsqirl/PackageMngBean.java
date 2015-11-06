@@ -16,6 +16,8 @@ import java.nio.channels.ReadableByteChannel;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,6 +29,7 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.WordUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -74,6 +77,10 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	private List<Setting> listSetting = new ArrayList<Setting>();
 	private List<String> path;
 	private String nameNewTemplate;
+	private String packageSelected;
+	
+	private List<String[]> sysSettings = null;
+	private List<String[]> userSettings = null;
 
 
 	public PackageMngBean() throws RemoteException{
@@ -248,7 +255,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 			String version = pckManager.getPackageProperty(user, pck, PackageManager.property_version);
 			
 			RedSqirlModule rdm = new RedSqirlModule();
-			rdm.setImage("");
+			rdm.setImage("../pages/packages/images/pig_audit.gif");
 			rdm.setName(pck);
 
 			result.add(rdm);
@@ -339,6 +346,14 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		return "success";
 	}
 
+	public void openAdmNewTemplate() throws RemoteException{
+		
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String name = params.get("name");
+		
+		setPackageSelected(name);
+	}
+	
 	public void admNewTemplate() throws RemoteException{
 
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
@@ -354,17 +369,104 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		}
 		newPath.append(getNameNewTemplate());
 
-		List<String> result = new ArrayList<String>();
+		sysSettings = new ArrayList<String[]>();
+		calcSettings();
+		
 		for (Entry<String, Setting> setting : s.getProperties().entrySet()) {
-			result.add(newPath.toString() +"."+ setting.getKey() +"="+ setting.getValue().getDefaultValue());
+			String nameSettings = newPath.toString() +"."+ setting.getKey();
+			String[] value = {nameSettings, nameSettings, nameSettings, setting.getValue().getDefaultValue()};
+			sysSettings.add(value);
 			logger.info("newPath " + newPath.toString() +"."+ setting.getKey() +"="+ setting.getValue().getDefaultValue());
 		}
 
+		storeNewSettings(sysSettings);
+		
+		setPackageSelected(null);
 		setNameNewTemplate(null);
+		
+		WorkflowPrefManager.readSettingMenu();
+		
+		mountPath(name);
+	}
+	
+	public void calcSettings(){
+		logger.info("calcSettings");
+		Properties sysProp = WorkflowPrefManager.getSysProperties();
+		Properties sysLangProp = WorkflowPrefManager.getSysLangProperties();
+		setSysSettings(getList(sysProp,sysLangProp));
+
+		/*try{
+			Properties userProp = getPrefs().getUserProperties();
+			Properties userLangProp = getPrefs().getUserLangProperties();
+			setUserSettings(getList(userProp,userLangProp));
+			logger.info("setUserSettings "+userProp + " - "+userLangProp);
+		}catch(Exception e){
+			logger.error(e,e);
+		}*/
+
+	}
+	
+	private List<String[]> getList(Properties value, Properties lang){
+		List<String[]> ans = new LinkedList<String[]>();
+		Iterator<Object> keyIt = value.keySet().iterator();
+		while(keyIt.hasNext()){
+			String key = keyIt.next().toString();
+			String[] newP = new String[4];
+			newP[0] = key;
+			newP[1] = lang.getProperty(key+"_label",WordUtils.capitalizeFully(key.replace("_", " ")));
+			newP[2] = lang.getProperty(key+"_desc",newP[1]);
+			newP[3] = value.getProperty(key);
+			//logger.info("value "+value.getProperty(key));
+			ans.add(newP);
+		}
+		Collections.sort(ans, new Comparator<String[]>() {
+			@Override
+			public int compare(String[] o1, String[] o2) {
+				return o1[1].compareTo(o2[1]);
+			}
+		});
+		
+		return ans;
 	}
 
 	public String cancelSettings() throws RemoteException{
 		return "success";
+	}
+	
+	public void storeNewSettings(List<String[]> sysSettings){
+		logger.info("storeNewSettings");
+		String error = null;
+		if(isAdmin()){
+			try {
+				WorkflowPrefManager.storeSysProperties(getProps(sysSettings));
+			} catch (IOException e) {
+				error = e.getMessage();
+			}
+		}
+		/*if(error == null){
+			try {
+				getPrefs().storeUserProperties(getProps(userSettings));
+			} catch (IOException e) {
+				error = e.getMessage();
+			}
+		}*/
+		if(error != null){
+			MessageUseful.addErrorMessage(error);
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
+			usageRecordLog().addError("ERROR NEWSETTINGS", error);
+		}
+		
+	}
+	
+	private Properties getProps(List<String[]> l){
+		Properties prop = new Properties();
+		Iterator<String[]> it = l.iterator();
+		while(it.hasNext()){
+			String[] cur = it.next();
+			prop.put(cur[0], cur[3]);
+		}
+		return prop;
 	}
 
 	public void removeSystemPackage() throws RemoteException{
@@ -756,6 +858,30 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	public void setNameNewTemplate(String nameNewTemplate) {
 		this.nameNewTemplate = nameNewTemplate;
+	}
+
+	public String getPackageSelected() {
+		return packageSelected;
+	}
+
+	public void setPackageSelected(String packageSelected) {
+		this.packageSelected = packageSelected;
+	}
+
+	public List<String[]> getSysSettings() {
+		return sysSettings;
+	}
+
+	public void setSysSettings(List<String[]> sysSettings) {
+		this.sysSettings = sysSettings;
+	}
+
+	public List<String[]> getUserSettings() {
+		return userSettings;
+	}
+
+	public void setUserSettings(List<String[]> userSettings) {
+		this.userSettings = userSettings;
 	}
 
 }

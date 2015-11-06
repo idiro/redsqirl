@@ -34,7 +34,7 @@
 		     		<f:param name="name" value="#{sc.name}" />
 		     	</a4j:commandLink>
 		     	
-		     	<a4j:commandLink title="#{messages.label_add_new_line}" oncomplete="#{rich:component('admNewTemplate')}.show();" rendered="#{sc.template == 'Y'}" >
+		     	<a4j:commandLink title="#{messages.label_add_new_line}" action="#{packageMngBean.openAdmNewTemplate}" oncomplete="#{rich:component('admNewTemplate')}.show();" rendered="#{sc.template == 'Y'}" >
 			    	<img src="../image/icons/button-plus-small.gif" class="btConfigureFooter" />
 			    	<f:param name="name" value="#{sc.name}" />
 			    </a4j:commandLink>
@@ -84,7 +84,9 @@
 			
 			<center>
 				<a4j:commandButton value="#{messages.button_ok}" action="#{packageMngBean.admNewTemplate}" reRender="pathSetting, listSubMenuSettings, listSettingSettings"
-					oncomplete="#{rich:component('admNewTemplate')}.hide();" styleClass="greenButton" />
+					oncomplete="#{rich:component('admNewTemplate')}.hide();" styleClass="greenButton" >
+					<f:param name="name" value="#{packageMngBean.packageSelected}" />
+					</a4j:commandButton>
 				<a4j:commandButton value="#{messages.button_cancel}" oncomplete="#{rich:component('admNewTemplate')}.hide();" styleClass="greenButton" />
 			</center>
 			
