@@ -35,9 +35,17 @@ public class SuperActionInstaller implements Serializable{
 	}
 	
 	public String install(String user, boolean system, SubDataFlow toInstall, Boolean privilege) throws RemoteException{
+		return install(user, system, toInstall, privilege, null);
+	}
+	
+	public String install(String user, boolean system, SubDataFlow toInstall, Boolean privilege,String packageName) throws RemoteException{
 		String name = toInstall.getName();
 		File mainDir = WorkflowPrefManager.getSuperActionMainDir(system?null:user);
 		mainDir.mkdirs();
+		if(packageName != null){
+			mainDir = new File(mainDir,packageName);
+		}
+		
 		File helpDir = mng.getSuperActionHelpDir(system?null:user);
 		helpDir.mkdirs();
 		

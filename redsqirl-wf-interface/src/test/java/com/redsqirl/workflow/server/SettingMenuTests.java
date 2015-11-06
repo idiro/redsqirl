@@ -19,7 +19,6 @@ public class SettingMenuTests {
 						"	{"+
 						"	    \"property\":\"spark_home\","+
 						"	    \"scope\":\"system\","+
-						"	    \"optional\":\"false\","+
 						"	    \"default\":\"/home/hadoop/spark\","+
 						"	    \"type\":\"STRING\","+
 						"	    \"Validator\":\"com.redsqirl.mypackage.MyClass.class\""+
@@ -27,7 +26,6 @@ public class SettingMenuTests {
 						"	{"+
 						"	    \"property\":\"spark_master\","+
 						"	    \"scope\":\"user\","+
-						"	    \"optional\":\"true\","+
 						"	    \"default\":\"yarn-cluster2\""+
 						"	}"+
 						"    ],"+
