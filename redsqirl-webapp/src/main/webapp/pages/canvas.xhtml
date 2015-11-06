@@ -612,7 +612,7 @@
 		    	  try{
 		    	       updateActionOutputStatus(status[i][0], status[i][1], status[i][2], status[i][3], status[i][4], status[i][5],false, status[i][7]);
 		    	  }catch(e){
-		    	       updateActionOutputStatusUntilItDoesntFail(status[i][0], status[i][1], status[i][2], status[i][3], status[i][4], status[i][5],true, status[i][7]);
+		    	       updateActionOutputStatusUntilItDoesntFail(status[i][0], status[i][1], status[i][2], status[i][3], status[i][4], status[i][5],true, status[i][7], 0);
 		    	  }
 		    	  
 		    	  for(var j = 0; j < status[i][6].length;j++) {
@@ -621,6 +621,9 @@
 		    	  }
 	    	  }
 		      canvasArray[selectedCanvas].stage.draw();
+		      
+		      console.log("updateArcStatus END");
+		      
 	    	//]]>
 	      }
 	      
@@ -820,10 +823,10 @@
 	    	 if(copyRunningMsgIdx == 1){
 	    	     origDiv.innerHTML = origDiv.innerHTML.replace(/DMRDIV_/g,'DORDIV_');
 	    	 }
-	    	 newDiv.innerHTML = origDiv.innerHTML.replace(/DORDIV_/g,'DMRDIV_');;
+	    	 newDiv.innerHTML = origDiv.innerHTML.replace(/DORDIV_/g,'DMRDIV_');
              jQuery('#'+lastBlockedRunningWorkflow).block({ message: newDiv });
-	     	}catch(exception){
-		     	alert("d " + lastBlockedRunningWorkflow + " " + exception);
+	     	 }catch(exception){
+		     	//alert("d " + lastBlockedRunningWorkflow + " " + exception);
 		     }
              
              resizeBlockUICanvas();
@@ -1257,7 +1260,7 @@
 				
 					
 		<div id="domMessageRunning" style="display: none;">
-			<h:form id="DMRDIV_Form">
+			<h:form>
 			
 				<a4j:jsFunction name="DMRDIV_updateProgressBar" reRender="DMRDIV_runningActionsList, DMRDIV_completedActionsList, DMRDIV_FormTitle, DMRDIV_idProgBarRunning" 
 					data="#{canvasBean.runningAndUpdate}" oncomplete="if(data === undefined || !data[1]){unblockRunningWorkflowJS();}else{console.log('updateProgressBar: ',data[0],data[1],getSelectedByName()); if(data[0] == 'false' &amp;&amp; data[1] == getSelectedByName()){unblockRunningWorkflowJS();setRunning(getSelectedByName(), false);console.log('updateArcsAfterRunning: ',data[0],data[1],getSelectedByName());updateAllArcsStatus();}}"  />
@@ -1283,7 +1286,7 @@
 	                   			#{item}<br />
 	               			</ui:repeat>
 						</rich:simpleTogglePanel>
-						<rich:simpleTogglePanel id="DMRDIV_completedActionsList" label="Actions Completed (#{canvasBean.doneElementsSize})" switchType="client" style="max-height: 90px;overflow:auto;"  >
+						<rich:simpleTogglePanel id="DMRDIV_completedActionsList" label="Actions Completed (#{canvasBean.doneElementsSize})" switchType="client" style="max-height: 90px;overflow:auto;" >
 							<ui:repeat value="#{canvasBean.doneElements}" var="item">
 	                   			#{item}<br />
 	               			</ui:repeat>

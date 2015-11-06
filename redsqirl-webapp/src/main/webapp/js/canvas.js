@@ -2051,6 +2051,7 @@ function configureGroupListeners(canvasName, group) {
     
     group.on('dragstart', function(e) {
         canvasArray[canvasName].savePositions = getPositionGivenIcons(getSelectedIcons(),this);
+        deselectOnClick(canvasName, group.getChildren()[2], e);
     });
     
     group.on('dragmove', function(e) {
@@ -2428,14 +2429,17 @@ function createPolygon(imgTab, posInitX, poxInitY, numSides, canvasName) {
     	
         var scrollTop = jQuery("#flowchart-"+canvasName).scrollTop();
         var scrollLeft = jQuery("#flowchart-"+canvasName).scrollLeft();
-        if(this.getParent().getPosition().x-scrollLeft+80 > e.pageX){
-            jQuery(".tooltipCanvas").remove();
-            curToolTip = null;
+        if(this && this.getParent()){
+        	if(this.getParent().getPosition().x-scrollLeft+80 > e.pageX){
+                jQuery(".tooltipCanvas").remove();
+                curToolTip = null;
+            }
+            if(this.getParent().getPosition().y-scrollTop+160 > e.pageY){
+                jQuery(".tooltipCanvas").remove();
+                curToolTip = null;
+            }
         }
-        if(this.getParent().getPosition().y-scrollTop+160 > e.pageY){
-            jQuery(".tooltipCanvas").remove();
-            curToolTip = null;
-        }
+        
     });
 
     return [ polygon, polygonTab, polygonTabImage ];
@@ -2722,13 +2726,15 @@ function updateActionOutputStatus(groupId, outputType, fileExists, runningStatus
 
 }
 
-function updateActionOutputStatusUntilItDoesntFail(groupId, outputType, fileExists, runningStatus, tooltip, noError, drawCanvas, externalLink){
+function updateActionOutputStatusUntilItDoesntFail(groupId, outputType, fileExists, runningStatus, tooltip, noError, drawCanvas, externalLink, cnt){
     console.log("updateActionOutputStatusUntilItDoesntFail");
     setTimeout(function(){
         try{
            updateActionOutputStatus(groupId, outputType, fileExists, runningStatus, tooltip, noError, drawCanvas, externalLink);
         }catch(e){
-           updateActionOutputStatusUntilItDoesntFail(groupId, outputType, fileExists, runningStatus, tooltip, noError, drawCanvas, externalLink);
+           if(cnt < 5*60){
+        	   updateActionOutputStatusUntilItDoesntFail(groupId, outputType, fileExists, runningStatus, tooltip, noError, drawCanvas, externalLink,++cnt);
+           }
         }
     },200);
 }
