@@ -13,7 +13,6 @@
   <ol>
       <li>Create Ssh Connections to remote
     servers</li>
-
     <li>Copying files from remote servers to
     Hadoop File system</li>
 
@@ -55,24 +54,23 @@
     <li>Click the plus symbol to create a new
     ssh connection to a remote server</li>
   	<li><ul>
-    <li>Host : keane</li>
-    <li>Port : (do not
-    select)</li>
+    <li>Host : localhost</li>
+    <li>Port : (do not select)</li>
+    <li>Password : Give your password</li>
     <li>Save (do not select)</li>
   </ul></li>
-    <li>change the working directory to
-    &ldquo;/tmp/&rdquo; via the path that is above listed
-    directories and click the search symbol</li>
+    <li>change the working directory to tutorialdata in the Red Sqirl home
+    directory via the path that is above listed directories and click the search
+    symbol</li>
 
-    <li>drag the hadoop file system tab to the
-    other tabs above (Hive View , Errors etc.)</li>
 
     <li>from the remote file system tab that
-    should display the &ldquo;/tmp/&rdquo; directory on keane ,
-    drag the file &ldquo;export.txt&rdquo; to the hadoop file
+    should display the &ldquo;/${redsqirl_home}/tutorialdata/&rdquo; directory
+    on localhost ,
+    drag the file &ldquo;pig_tutorial_data.txt&rdquo; to the hadoop file
     system tab.</li>
 
-    <li>locate the &ldquo;export.txt&rdquo;
+    <li>locate the &ldquo;pig_tutorial_data.txt&rdquo;
     file on the hadoop file system tab (might have to click the
     search beside the current path)</li>
 
@@ -81,25 +79,26 @@
     name.</li>
 
     <li>click the checkbox beside the
-    &ldquo;export.txt&rdquo; file and then click the move symbol
+    &ldquo;pig_tutorial_data.txt&rdquo; file and then click the move symbol
     under the current working directory.</li>
 
     <li>in the new window click the radio
     button beside the new file that was created and click
     ok.</li>
   </ol>
-
+  -->
+  <p>You will need one file to complete this tutorial.
+  <ul>
+      <li>pig_tutorial_data.txt</li>
+  </ul>
+ Transfer this file onto the hadoop file system into a new directory.
+ </p>
   <h3>Create a Workflow</h3>
-
-  
-  <p>
-  On the last
-  page of every pig action there are options for the output of the
-  action such as the delimiter to use, or the output type either
-  Text or Binary. It is recommended to only use Text for the moment
-  but you can use any delimiter. The delimiter can be any non alpha
-  numeric value or an ASCII value such as &ldquo;#1&rdquo; which in
-  ASCII value is &ldquo;\001&rdquo;.</p>
+ 
+  <p>On the last page of every pig action there are options for the output of
+  the action such as the delimiter to use, or the output type either Text or
+  Compressed.  The delimiter can be any non alpha numeric value or an ASCII
+  value such as &ldquo;#1&rdquo; which in ASCII value is &ldquo;\001&rdquo;.</p>
   
 
   <h4>Setup a Source Action</h4>

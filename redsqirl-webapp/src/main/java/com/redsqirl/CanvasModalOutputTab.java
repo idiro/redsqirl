@@ -1,6 +1,7 @@
 package com.redsqirl;
 
 
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.Map.Entry;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
@@ -105,12 +107,12 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 		this.dfe = dfe;
 		this.datastores = datastores;
 
-		/*try {
+		try {
 			resetNameOutput();
 			updateDFEOutputTable();
 		} catch (Exception e) {
 			logger.info("Exception: " + e.getMessage());
-		}*/
+		}
 
 	}
 
@@ -607,6 +609,67 @@ public class CanvasModalOutputTab extends BaseBean implements Serializable {
 			request.setAttribute("msnError", "msnError");
 		}
 
+	}
+	
+
+	public String downloadFile() {
+
+	    try {
+
+	    	if(nameOutput == null){
+	    		return "";
+	    	}
+	    	DFEOutput dfeOut = dfe.getDFEOutput().get(nameOutput);
+	    	if(grid == null || getRows() == null || getRows().isEmpty() || dfeOut == null || !dfeOut.isPathExists()){
+	    		return "";
+	    	}
+
+	    	String filename = dfe.getComponentId()+"_"+nameOutput+".csv";
+	    	if(nameOutput.isEmpty()){
+	    		filename = dfe.getComponentId()+".csv";
+	    	}
+	        FacesContext fc = FacesContext.getCurrentInstance();
+	        HttpServletResponse response = (HttpServletResponse) fc.getExternalContext().getResponse();
+
+	        response.reset();
+	        response.setContentType("text/comma-separated-values");
+	        response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+
+	        OutputStream output = response.getOutputStream();
+
+	        Iterator<String> it = grid.getColumnIds().iterator();
+	        while(it.hasNext()){
+	        	output.write(it.next().split(" ")[0].getBytes());
+	        	if(it.hasNext()){
+	        		output.write(",".getBytes());
+	        	}
+	        }
+	        output.write("\n".getBytes());
+
+	        for (Object[] objS : getRows()) {
+	        	for(int i = 0; i < objS.length;++i){
+	        		if(i > 0){
+	        			output.write(",".getBytes());
+	        		}
+	        		if(objS[i] == null){
+	        		}else if(objS[i] instanceof String){
+	        			output.write(("\""+objS[i]+"\"").getBytes());
+	        		}else{
+	        			output.write(objS[i].toString().getBytes());
+	        		}
+	        	}
+	        	output.write("\n".getBytes());
+	        }
+
+	        output.flush();
+	        output.close();
+
+	        fc.responseComplete();
+
+	    } catch (Exception e) {
+	        logger.error(e,e);
+	    }
+	    return "";
 	}
 
 	/**

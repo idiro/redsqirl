@@ -125,7 +125,7 @@
 <h:form>
      
     <a4j:jsFunction name="reLoadTabs" reRender="browserTableData" oncomplete="unBlockSource();" />
-    <a4j:jsFunction name="reLoadDisplayTable" reRender="displayTable,displayTableNumberRows, displayTableNumberRowsPanelGroup" action="#{canvasModalBean.outputTab.displayOutput}" >
+    <a4j:jsFunction name="reLoadDisplayTable" reRender="displayTable,displayTableNumberRows, displayTableNumberRowsPanelGroup, downloadcsvbutton" action="#{canvasModalBean.outputTab.displayOutput}" >
     	<a4j:actionparam name="outputName" value="#{canvasModalBean.outputTab.outputFormList[0].name}" />
     	<a4j:actionparam name="resetMaxRows" value="Y" />
     </a4j:jsFunction>
@@ -619,7 +619,7 @@
 			                       			<a4j:commandLink value="output #{item.name}"
 			                       			    rendered="#{item.link == null &amp;&amp; item.showGridDataOutput == 'Y'}" 
 			                       			    action="#{canvasModalBean.outputTab.displayOutput}"
-			                       				reRender="displayTable,displayTableNumberRows, displayTableNumberRowsPanelGroup">
+			                       				reRender="displayTable,displayTableNumberRows, displayTableNumberRowsPanelGroup,downloadcsvbutton">
 				                                <a4j:actionparam name="outputName" value="#{item.name}" />
 				                                <a4j:actionparam name="resetMaxRows" value="Y" />
 				                            </a4j:commandLink>
@@ -706,6 +706,7 @@
 	                <a4j:region style="border:none;" id="dataDisplayReg">
 	                
 		                <h:outputText value="#{canvasModalBean.outputTab.nameOutput}" id="titleDisplay" rendered="#{canvasModalBean.outputTab.titles != null}"/>
+		                <h:commandButton  id="downloadcsvbutton" style="float:right" value="#{messages.button_download_csv}" styleClass="greenButton" action="#{canvasModalBean.outputTab.downloadFile}" rendered="#{canvasModalBean.outputTab.showGridDataOutput == 'Y'}" />
 		                <br/>
 		                <div id="displayTableDiv" style="width:100%; height:240px; border:1px solid black; overflow-x: hidden;">
 		                
@@ -748,7 +749,7 @@
 		                	<a4j:jsFunction name="onchangeDisplayTableNumberRows" oncomplete="reLoadTable();blockComoBoxNumberRows();" reRender="displayTableNumberRows, displayTableNumberRowsPanelGroup" />
 		                	
 		                	<a4j:jsFunction name="reLoadTable" action="#{canvasModalBean.outputTab.displayOutput}" oncomplete="unBlockComoBoxNumberRows();" 
-			                	reRender="displayTable, displayTableNumberRows, displayTableNumberRowsPanelGroup" >
+			                	reRender="displayTable, displayTableNumberRows, displayTableNumberRowsPanelGroup, downloadcsvbutton" >
 			                	<a4j:actionparam name="selectedComboBox" value="Y" />
 			                </a4j:jsFunction>
 		                    

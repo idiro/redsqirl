@@ -2,32 +2,39 @@
 
 <html>
 <head>
-  <title>Hama Tutorial</title>
+  <title>Machine Learning Tutorial</title>
 </head>
 
 <body>
-  <h1>Hama Tutorial</h1>
+  <h1>Machine Learning Tutorial</h1>
 
-  <h2>Hama Workflow</h2>
+  <p>This workflow will demonstarte how to run a Logistic Regression in Red
+  Sqirl. The Spark Logistic Regression from the SparkML package or the Hama
+  Logistic Regression from the Hama package can be used.
+  </p>
 
-  
+  <p>You will need two files to complete this tutorial.
+  <ul>
+      <li>ml_tutorial_training_data.txt</li>
+      <li>ml_tutorial_prediction_data.txt</li>
+  </ul>
+  Transfer these files onto the hadoop file system into two new
+  directories.
+  </p>      
 
-  <p>This workflow will demonstrate the Hama
+  <h2>Hama/Spark Workflow</h2>
+
+
+  <p>This workflow will demonstrate the Hama/Spark
   Logistic regression action. This action allows us to run logistic
   regression over a data set. It&rsquo;s inputs are the training
   set and the prediction dataset. That means that two source
   actions are needed.</p>
 
-  <p>There are two files in the /tmp/ directory
-  on keane called training.txt and the other prediction.txt.
-  Transfer these files onto the hadoop file system into two new
-  directories as performed in the previous tutorial. Use
-  &ldquo;,&rdquo; as the delimiter in both source actions but use
-  &ldquo;id STRING , height FLOAT, colour String, age INT , churner
-  INT&rdquo; as the header for the &ldquo;training,txt&rdquo; file,
-  and use &ldquo;id STRING , height FLOAT, colour String, age
-  INT&rdquo; as the header for the &ldquo;prediction.txt&rdquo;
-  file,</p>
+  <p> Use &ldquo;,&rdquo; as the delimiter and
+  &ldquo;ID STRING, SEPAL_LENGTH FLOAT, SEPAL_WIDTH FLOAT, PETAL_LENGTH FLOAT,
+  PETAL_WIDTH FLOAT, SPECIES CATEGORY &rdquo; as the header in both source
+  actions.</p>
 
   
 
@@ -38,7 +45,7 @@
 
   <ul>
     <li>create the two source actions with the
-    two files provided on keane</li>
+    two files provided</li>
 
     <li>On the actions footer below click the
     actions property Icon</li>
@@ -49,16 +56,16 @@
     symbol</li>
 
     <li>once in a configurable tab , click the
-    checkbox beside &ldquo;hama_logistic_regression&rdquo; and then
+    checkbox beside &ldquo;hama_logistic_regression&rdquo;/&ldquo;spark_logistic_regression&rdquo; and then
     ok</li>
 
     <li>make sure you are on tab that was just
-    configures to include hama logistic regression and drag it to
+    configures to include hama/spark logistic regression and drag it to
     the canvas</li>
 
     <li>select the source that is set to use
-    the &ldquo;training.txt&rdquo; file and create a link to the
-    new &ldquo;hama LR&rdquo; action.</li>
+    the training file and create a link to the
+    new &ldquo;hama LR&rdquo;/&ldquo;spark LR&rdquo; action.</li>
   </ul>
 
   <ul>
@@ -69,8 +76,8 @@
 
   <ul>
     <li>select the source that is set to use
-    the &ldquo;prediction.txt&rdquo; file and create a link to the
-    &ldquo;hama LR&rdquo; action</li>
+    the prediction file and create a link to the
+    &ldquo;hama LR&rdquo;/&ldquo;spark LR&rdquo; action</li>
   </ul>
 
   <ul>
@@ -79,7 +86,7 @@
   </ul>
 
   <ul>
-    <li>once the &ldquo;hama LR&rdquo; action
+    <li>once the &ldquo;hama LR&rdquo;/&ldquo;spark LR&rdquo; action
     has the two required inputs , open it and change the element id
     if required</li>
 
@@ -90,16 +97,16 @@
     churner</li>
 
     <li>in the Id interaction select
-    id</li>
+    ID</li> 
 
     <li>finally in the Label Value interaction
-    input 1 as the value</li>
+    input &ldquo;Iris-setosa&rdquo; as the value without quotes.</li>
 
     <li>click next to see the Model settings
     such as predictors and parameters for running the
     model.</li>
 
-    <li>For the purposes of the is tutorial we
+    <li>For the purposes of the tutorial we
     will leave these interactions alone and just click next and
     ok</li>
   </ul>

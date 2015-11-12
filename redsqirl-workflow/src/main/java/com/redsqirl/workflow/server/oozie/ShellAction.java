@@ -95,6 +95,7 @@ public class ShellAction extends OozieActionAbs {
 		String toWrite = "#!/bin/bash" + System.getProperty("line.separator");
 		logger.info("Command to execute "+oneCommandToExecute);
 		toWrite += "USER_NAME=$1"+ System.getProperty("line.separator");
+		toWrite += "export HADOOP_USER_NAME=$USER_NAME"+ System.getProperty("line.separator");
 		
 		if(extraFile){
 			toWrite += "FILE_NAME=$2"+ System.getProperty("line.separator");

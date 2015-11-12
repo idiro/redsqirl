@@ -12,24 +12,35 @@ Getting started
 
 * Prerequisite
 
-  * A Linux web server.
+  * A Linux web server
  
-  * Apache Hadoop cluster fully set up.
+  * Apache Hadoop cluster fully set up
  
-  * Apache Oozie installed on top of the cluster
+  * Apache Oozie installed
  
   * An account on the server (or using LDAP) for every user
+
+  * SSH on the web server with password authentication enable for localhost
+
+  * HDFS Home directory for each user (/user/${user})
+
+  * Access for every user to run the hadoop command
 
   []  
 
   You will probably need algorithms or software to process the data. Red Sqirl
-comes with Hive, Pig and Hama processes.
+has packages for Spark, Hive, Pig and Hama processes. One or several of those
+projects should be installed on the cluster.
 
   * Apache Hive installed
 
   * Apache Pig installed
 
   * Apache Hama installed
+
+  * Apache Spark installed
+
+  []
 
 * Architecture
 

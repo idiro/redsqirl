@@ -43,6 +43,10 @@
 	<zip.ex-adv-5>${basedir}/redsqirl-examples/advanced/step5</zip.ex-adv-5>
 	<ex-adv-5.zipname>advanced-step5</ex-adv-5.zipname>
 
+	<webapp.help>${basedir}/redsqirl-webapp/src/main/webapp/help</webapp.help>
+	<webapp.helpimg>${basedir}/redsqirl-webapp/src/main/webapp/helpimages</webapp.helpimg>
+	<userguide>../../../../../target/site/help</userguide>
+	<userguideimg>${basedir}/target/site/helpimages</userguideimg>
     </properties>
 
     <groupId>idiro</groupId>
@@ -144,7 +148,7 @@
 		<version>2.7</version>
 		<executions>
 		    <execution>
-			<id>copy-resources</id>
+			<id>copy-resources-file</id>
 			<phase>site</phase>
 			<goals>
 			    <goal>copy-resources</goal>
@@ -158,6 +162,57 @@
 				</resource>
 			    </resources>              
 			</configuration>            
+		    </execution>
+		    <execution>
+			<id>copy-resources-userguide-img</id>
+			<phase>site</phase>
+			<goals>
+			    <goal>copy-resources</goal>
+			</goals>
+			<configuration>
+			    <outputDirectory>${userguideimg}</outputDirectory>
+			    <resources>          
+				<resource>
+				    <directory>${webapp.helpimg}</directory>
+				    <filtering>true</filtering>
+				</resource>
+			    </resources>              
+			</configuration>            
+		    </execution>
+
+		</executions>
+	    </plugin>
+	    <plugin>
+		<groupId>com.google.code.maven-replacer-plugin</groupId>
+		<artifactId>replacer</artifactId>
+		<version>1.5.2</version>
+		<configuration>
+		    <replacements>
+			<replacement>
+			    <token>return false</token>
+			    <value>return true</value>
+			</replacement>         
+			<replacement>
+			    <token>&lt;head&gt;</token>
+			    <value>&lt;head&gt;&lt;link rel="stylesheet" type="text/css" href="../css/redsqirl.css"&gt;</value>
+			</replacement>         
+		    </replacements>
+		    <regex>false</regex>
+		</configuration>
+		<executions>
+		    <execution>
+			<id>copy-resources-userguide</id>
+			<phase>site</phase>
+			<goals>
+			    <goal>replace</goal>
+			</goals>                   
+			<configuration>
+			    <basedir>${webapp.help}</basedir>
+			     <includes>
+				 <inputFilePattern>*.html</inputFilePattern>
+			     </includes>
+			    <outputDir>${userguide}</outputDir>
+			</configuration>
 		    </execution>
 		</executions>
 	    </plugin>
