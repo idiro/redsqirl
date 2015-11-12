@@ -98,7 +98,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 					}
 				}
 			}
-			
+
 		}catch(Exception e){
 			logger.info("Exception: "+e.getMessage());
 		}
@@ -135,11 +135,11 @@ public class BrowserInteraction extends CanvasModalInteraction {
 		inter.getTree().getFirstChild("browse").getFirstChild("output").removeAllChildren();
 		inter.getTree().getFirstChild("browse").getFirstChild("output").add("path").add(getPath());
 		inter.getTree().getFirstChild("browse").getFirstChild("output").add("name").add("");
-		
+
 		inter.getTree().getFirstChild("browse").getFirstChild("output").remove("property");
 		inter.getTree().getFirstChild("browse").getFirstChild("output").remove("field");
 		Tree<String> myProperty = inter.getTree().getFirstChild("browse").getFirstChild("output").add("property");
-		
+
 		for (SelectItem item : listProperties) {
 			logger.info("Add property: " + item.getLabel() + ": " + item.getValue());
 			myProperty.add(item.getLabel()).add(item.getValue().toString());
@@ -147,9 +147,13 @@ public class BrowserInteraction extends CanvasModalInteraction {
 
 		for (String nameValue : listFields) {
 			Tree<String> myField = inter.getTree().getFirstChild("browse").getFirstChild("output").add("field");
-			String value[] = nameValue.trim().split("\\s+");
-			myField.add("name").add(value[0]);
-			myField.add("type").add(value[1]);
+			if(nameValue != null){
+				String value[] = nameValue.trim().split("\\s+");
+				if(value != null && value.length > 1){
+					myField.add("name").add(value[0]);
+					myField.add("type").add(value[1]);
+				}
+			}
 		}
 	}
 
@@ -231,7 +235,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 			unchanged = false;
 		}
 	}
-	
+
 	public String calcString(List<SelectItem> listFields){
 		StringBuffer ans = new StringBuffer();
 		for (SelectItem selectItem : listFields) {
@@ -248,12 +252,12 @@ public class BrowserInteraction extends CanvasModalInteraction {
 		for (FieldType type : FieldType.values()) {
 			fieldTypes.add(new SelectItem(type.toString(), type.toString().toUpperCase() ));
 		}
-		
+
 		fieldTypesString = new LinkedList<String>();
 		if(fieldTypes != null && !fieldTypes.isEmpty()){
 			fieldTypesString.add(calcString(fieldTypes));
 		}
-		
+
 		setSelectHeaderEditor("D");
 
 		if(getGridTitles() != null){
@@ -281,7 +285,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 		logger.info("headerEditor");
 
 		String error = null;
-		
+
 		if(getSelectHeaderEditor() != null){
 			listFields = new ArrayList<String>();
 			if(getSelectHeaderEditor().equalsIgnoreCase("U")){
@@ -289,7 +293,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 				String[] values = getHeaderFieldsType().split(",");
 				if(values.length == getGridTitles().size()){
 					for (int i = 0; i < values.length; i++) {
-						
+
 						if(error == null){
 							String[] nameType = values[i].trim().split("\\s+");
 							if(nameType.length == 1){
@@ -299,9 +303,9 @@ public class BrowserInteraction extends CanvasModalInteraction {
 							}else if(nameType.length > 2){
 								error = getMessageResources("msg_error_size_header");
 							}
-							
+
 						}
-						
+
 					}
 				}else{
 					error = getMessageResources("msg_error_size_header");
@@ -363,7 +367,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 					listFieldsType.add(selectHeaderType);
 				}
 			}
-			
+
 			logger.info("D");
 
 		}
@@ -429,7 +433,7 @@ public class BrowserInteraction extends CanvasModalInteraction {
 	public List<String> getGridTitles() {
 		return modalOutput != null ? modalOutput.getTitles():null;
 	}
-	
+
 	public List<String> getGridColumnIds(){
 		return modalOutput != null ? modalOutput.getGrid().getColumnIds():null;
 	}

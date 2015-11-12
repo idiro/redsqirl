@@ -36,7 +36,7 @@
 						<span class='ui-icon ui-icon-close' onclick="closeTab(this);closeServer('#{tab}');"></span> </li>
 				</ui:repeat>
 				
-				<a4j:commandButton image="../image/icons/button-new_canvas.gif" action="#{sshBean.openNewSsh}" oncomplete="#{rich:component('modalNewSsh')}.show()" 
+				<a4j:commandButton image="../image/icons/button-new_canvas.gif" action="#{sshBean.openNewSsh}" oncomplete="#{rich:component('modalNewSsh')}.show();openSshPopUp();" 
 					style="border:hidden;width:25px;" rerender="modalNewSsh"/>
 			</ul>
 				
@@ -61,7 +61,7 @@
 	</h:panelGroup>
 	
 	<a4j:region>
-		<rich:modalPanel id="modalNewSsh" width="300" height="250" style="overflow:auto;" resizeable="false">
+		<rich:modalPanel id="modalNewSsh" width="300" height="270" style="overflow:auto;" resizeable="false">
 	
 			<f:facet name="header">Configuration</f:facet>
 			<f:facet name="controls">

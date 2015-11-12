@@ -120,6 +120,44 @@ public class SSHInterface extends UnicastRemoteObject implements DataStore {
 		channel = (ChannelSftp) session.openChannel("sftp");
 		open();
 	}
+	
+	/**
+	 * Constructor
+	 * 
+	 * @param host
+	 *            to connect too
+	 * @param port
+	 *            to connect through
+	 * @throws Exception
+	 */
+	public SSHInterface(String host, int port, String password) throws Exception {
+		super();
+		pathDataDefault = new Preference<String>(prefs,
+				"Default path of ssh for the host " + host, "");
+		String privateKey = WorkflowPrefManager.getRsaPrivate();
+
+		if (paramProp.isEmpty()) {
+			paramProp.put(key_type, new DSParamProperty(
+					"Type of the file: \"directory\" or \"file\"", true, true,
+					false));
+			paramProp.put(key_owner, new DSParamProperty("Owner of the file",
+					true, false, false));
+			paramProp.put(key_group, new DSParamProperty("Group of the file",
+					true, false, false));
+			paramProp.put(key_permission, new DSParamProperty(
+					"Permission associated to the file", true, false, false));
+		}
+
+		JSch jsch = new JSch();
+		Session session = jsch.getSession(System.getProperty("user.name"), host, port);
+		session.setPassword(password);
+		session.setConfig("StrictHostKeyChecking", "no");
+		session.connect();
+		logger.debug("Connection established.");
+		logger.debug("Creating SFTP Channel...");
+		channel = (ChannelSftp) session.openChannel("sftp");
+		open();
+	}
 
 	public static Set<String> getKnownHost() {
 		Set<String> ans = new LinkedHashSet<String>();

@@ -12,14 +12,17 @@
            
           function startHeaderEditor() {
        	  	jQuery('[id$="selectHeaderEditor\\:0"]').css("margin-bottom", "35px");
-       	  	selectRadio();
+       	 	//setTimeout(function(){ selectRadio();  }, 500);
+       	 	selectRadio();
           }
           
-          function mountComboboxHeaderEditor() {
+          /* function mountComboboxHeaderEditor() {
 
 			//alert(jQuery(".comboInputClassHeader").parent().attr('class'));
 			//alert(jQuery(".comboInputClassHeader").parent().attr('class') != "text-wrap");
 
+			console.log("mountComboboxHeaderEditor");
+			
 			if(jQuery(".comboInputClassHeader").parent().attr('class') != "text-wrap"){
        		 
                 jQuery(".comboInputClassHeader").textext({
@@ -36,6 +39,8 @@
 				            	result : textext.itemManager().filter(list, query)
 				            }
 			            );
+			            
+			            console.log("build comobox end");
 
 					}catch(exception){
 					    alert(exception);
@@ -43,10 +48,31 @@
 		            
 		        });
 
+			}else{
+				console.log("error build comobox");
 			}
 
- 		}
+ 		} */
+ 		
+ 		function updatedFieldTypes(element, index){
+		    var idx=element.selectedIndex;
+		    var val=element.options[idx].value;
+		    var content=element.options[idx].innerHTML;
+		    jQuery("[id$=displayFieldTypes"+index+"]").children().val(val);
+		    //alert(val + " " + content);
+		    onchangeDisplayTableHeaderEditor();
+		}
    
+          
+    function selectBlock(){
+  	  if(jQuery('[id$="selectHeaderEditor\\:0"]').is(":checked")){
+			jQuery('[id$="inputHeaderEditor"]').prop('disabled', false);
+			jQuery('[id$="tableHeaderEditor"]').find("input").prop('disabled', true);
+		}else{
+			jQuery('[id$="inputHeaderEditor"]').prop('disabled', true);
+			jQuery('[id$="tableHeaderEditor"]').find("input").prop('disabled', false);
+		}
+    }
 
 	function selectRadio(){
 
@@ -59,7 +85,7 @@
 
 			jQuery('[id$="inputHeaderEditor"]').prop('disabled', true);
 			jQuery('[id$="tableHeaderEditor"]').find("input").prop('disabled', false);
-			mountComboboxHeaderEditor();
+			//mountComboboxHeaderEditor();
 			
 		}
 			
@@ -136,8 +162,20 @@
 									     		<h:outputText value="#{messages.label_type}" />
 									        </f:facet>
 						                	
-						                	<h:inputText value="#{obj.type}" styleClass="comboInputClassHeader" style="width:96%;" >
-                            				</h:inputText>
+                            				
+                            				<h:panelGroup layout="block" id="displayFieldTypesGroup#{rowNb}" >
+					                        	<select onchange="updatedFieldTypes(this, '#{rowNb}');" >
+					                        		<a4j:repeat value="#{canvasModalBean.canvasModalInteractionHeaderEditor.fieldTypes}" var="idx"  >
+														<h:outputText rendered="#{obj.type == idx.value}" > <option selected="selected"> <h:outputText value="#{idx.value}" /> </option> </h:outputText>
+														<h:outputText rendered="#{obj.type != idx.value}" > <option> <h:outputText value="#{idx.value}" /> </option> </h:outputText>
+													</a4j:repeat>
+								            	</select>
+								            </h:panelGroup>
+								            
+								            <div id="displayFieldTypes#{rowNb}">
+												<h:inputHidden value="#{obj.type}" id="displayFieldTypes#{rowNb}ans" />
+											</div>
+											<a4j:jsFunction name="onchangeDisplayTableHeaderEditor" reRender="displayFieldTypes#{rowNb}ans" />
 						                	
 									     </rich:column>
 								        
@@ -148,6 +186,8 @@
 						</td>
 					</tr>
 				</table>
+				
+				
 				
 				<div style="height:40px;border:0px solid;overflow-x:hidden;float:right;margin-right:5px;">
 				

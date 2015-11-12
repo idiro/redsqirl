@@ -26,9 +26,7 @@ public class SSHInterfaceArray extends UnicastRemoteObject implements DataStoreA
 	/**
 	 * Host name Key
 	 */
-	public static final String hostName = "host name",
-			/**Port Key*/
-			port = "port";
+	public static final String hostName = "host name", port = "port" , password = "password";
 	
 	/**
 	 * Map of available DataStores
@@ -81,8 +79,7 @@ public class SSHInterfaceArray extends UnicastRemoteObject implements DataStoreA
 	 * @throws Exception
 	 */
 	@Override
-	public String addStore(Map<String, String> fields)
-			throws RemoteException, Exception {
+	public String addStore(Map<String, String> fields) throws RemoteException, Exception {
 		
 		String host = fields.get(hostName);
 		
@@ -101,7 +98,14 @@ public class SSHInterfaceArray extends UnicastRemoteObject implements DataStoreA
 			}
 		}
 		
-		SSHInterface sshInt = new SSHInterface(host, pInt);
+		SSHInterface sshInt = null;
+		
+		if(fields.get(password) != null){
+			sshInt = new SSHInterface(host, pInt, fields.get(password));
+		}else{
+			sshInt = new SSHInterface(host, pInt);
+		}
+		
 		stores.put(host,sshInt);
 		
 		return host;
