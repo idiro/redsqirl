@@ -78,9 +78,9 @@ public class HDFSTypeTests {
 			}
 			
 			valuesMap= new HashMap<String, String>();
-			valuesMap.put("FIELD1", "A0");
-			valuesMap.put("FIELD2", "0");
-			valuesMap.put("FIELD3", "B0");
+			valuesMap.put("FIELD1", "A10");
+			valuesMap.put("FIELD2", "10");
+			valuesMap.put("FIELD3", "B10");
 			
 			MapRedTextType bin = new MapRedTextType();
 			logger.info("Setting path for file "+text_file_dir);
@@ -91,7 +91,7 @@ public class HDFSTypeTests {
 			List<String> firstLine = bin.selectLine(1);
 			logger.info(firstLine.toString());
 			assertTrue("lineLine size "+firstLine.size(),firstLine.size() == 1);
-			assertTrue("line "+firstLine.get(0),firstLine.get(0).equals("A0|0|B0"));
+			assertTrue("line "+firstLine.get(0),firstLine.get(0).equals("A10|10|B10"));
 			
 			List<Map<String, String>> first = bin.select(1);
 			logger.info(first.toString()+" "+first.size());
