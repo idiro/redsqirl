@@ -86,7 +86,7 @@
 				<a4j:commandButton value="#{messages.button_ok}" action="#{packageMngBean.admNewTemplate}" reRender="pathSetting, listSubMenuSettings, listSettingSettings"
 					oncomplete="#{rich:component('admNewTemplate')}.hide();" styleClass="greenButton" >
 					<f:param name="name" value="#{packageMngBean.packageSelected}" />
-					</a4j:commandButton>
+				</a4j:commandButton>
 				<a4j:commandButton value="#{messages.button_cancel}" oncomplete="#{rich:component('admNewTemplate')}.hide();" styleClass="greenButton" />
 			</center>
 			
