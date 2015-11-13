@@ -1065,6 +1065,15 @@ public class WorkflowPrefManager extends BlockManager {
 	public static void storeSysProperties(Properties prop) throws IOException {
 		props.storeSysProperties(prop);
 	}
+	
+	/**
+	 * @param prop
+	 * @throws IOException
+	 * 
+	 */
+	public static void deleteSysProperties(Properties prop) throws IOException {
+		props.getSysProperties().remove(prop);
+	}
 
 	/**
 	 * @return The description system properties

@@ -28,14 +28,23 @@
 	    <br/>
 	    
 	    <h:panelGroup layout="block" id="listSubMenuSettings" >
+	    
+	    	<a4j:commandLink title="#{messages.label_add_template}" action="#{packageMngBean.openAddNewTemplate}" oncomplete="#{rich:component('addNewTemplate')}.show();" rendered="#{packageMngBean.template == 'Y'}" >
+		    	<img src="../image/icons/button-plus-small.gif" />
+		    	<f:param name="name" value="#{packageMngBean.pathPosition}" />
+		    </a4j:commandLink>
+		    
+		    <br/>
+	    	<br/>
+	    
 		    <ui:repeat value="#{packageMngBean.listSubMenu}" var="sc">
 		     	<a4j:commandLink value="#{sc.name}" action="#{packageMngBean.navigationPackageSettings}" reRender="pathSetting, listSubMenuSettings, listSettingSettings" 
 		     		style="padding:5px;color:black;text-decoration:none;border:2px solid black;" >
 		     		<f:param name="name" value="#{sc.name}" />
 		     	</a4j:commandLink>
 		     	
-		     	<a4j:commandLink title="#{messages.label_add_new_line}" action="#{packageMngBean.openAdmNewTemplate}" oncomplete="#{rich:component('admNewTemplate')}.show();" rendered="#{sc.template == 'Y'}" >
-			    	<img src="../image/icons/button-plus-small.gif" class="btConfigureFooter" />
+		     	<a4j:commandLink title="#{messages.label_remove_template}" action="#{packageMngBean.removeNewTemplate}" rendered="#{sc.template == 'Y'}" >
+			    	<img src="../image/icons/button-delete-small.gif" />
 			    	<f:param name="name" value="#{sc.name}" />
 			    </a4j:commandLink>
 		     	
@@ -67,27 +76,27 @@
     </h:form>
     
     
-    <rich:modalPanel id="admNewTemplate" width="250" height="150" style="overflow:auto;" resizeable="false" >
+    <rich:modalPanel id="addNewTemplate" width="250" height="150" style="overflow:auto;" resizeable="false" >
 
 		<f:facet name="header">
-			<h:outputText value='#{messages.label_admNewTemplate}' />
+			<h:outputText value='#{messages.label_addNewTemplate}' />
 		</f:facet>
 
 		<h:form>
 		
 			<h:panelGrid>
-				<h:outputText value="#{messages.label_admNewTemplate_name}" />
+				<h:outputText value="#{messages.label_addNewTemplate_name}" />
 				<h:inputText value="#{packageMngBean.nameNewTemplate}" />
 			</h:panelGrid>
 					
 			<br/><br/>
 			
 			<center>
-				<a4j:commandButton value="#{messages.button_ok}" action="#{packageMngBean.admNewTemplate}" reRender="pathSetting, listSubMenuSettings, listSettingSettings"
-					oncomplete="#{rich:component('admNewTemplate')}.hide();" styleClass="greenButton" >
+				<a4j:commandButton value="#{messages.button_ok}" action="#{packageMngBean.addNewTemplate}" reRender="pathSetting, listSubMenuSettings, listSettingSettings"
+					oncomplete="#{rich:component('addNewTemplate')}.hide();" styleClass="greenButton" >
 					<f:param name="name" value="#{packageMngBean.packageSelected}" />
 				</a4j:commandButton>
-				<a4j:commandButton value="#{messages.button_cancel}" oncomplete="#{rich:component('admNewTemplate')}.hide();" styleClass="greenButton" />
+				<a4j:commandButton value="#{messages.button_cancel}" oncomplete="#{rich:component('addNewTemplate')}.hide();" styleClass="greenButton" />
 			</center>
 			
 		</h:form>

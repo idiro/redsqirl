@@ -77,10 +77,11 @@ public class PackageMngBean extends BaseBean implements Serializable{
 	private List<Setting> listSetting = new ArrayList<Setting>();
 	private List<String> path;
 	private String nameNewTemplate;
+	private String pathPosition;
 	private String packageSelected;
-	
 	private List<String[]> sysSettings = null;
 	private List<String[]> userSettings = null;
+	private String template;
 
 
 	public PackageMngBean() throws RemoteException{
@@ -253,7 +254,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		while(it.hasNext()){
 			String pck = it.next();
 			String version = pckManager.getPackageProperty(user, pck, PackageManager.property_version);
-			
+
 			RedSqirlModule rdm = new RedSqirlModule();
 			rdm.setImage("../pages/packages/images/pig_audit.gif");
 			rdm.setName(pck);
@@ -273,6 +274,8 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		if(path == null){
 			path = new ArrayList<String>();
 		}
+
+		setPathPosition(name);
 
 		mountPath(name);
 
@@ -299,15 +302,36 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 		SettingMenu s = mountPackageSettings(path);
 
+		if(s.isTemplate()){
+			setTemplate("Y");
+		}else{
+			setTemplate("N");
+		}
+
 		listSubMenu = new ArrayList<SettingsControl>();
 		for (Entry<String, SettingMenu> settingsMenu : s.getMenu().entrySet()) {
 			SettingsControl sc = new SettingsControl();
-			if(settingsMenu.getValue().isTemplate()){
+
+			/*if(settingsMenu.getValue().isTemplate()){
+				sc.setTemplate("Y");
+			}else{
+				sc.setTemplate("N");
+			}*/
+
+			if(s.isTemplate()){
 				sc.setTemplate("Y");
 			}else{
 				sc.setTemplate("N");
 			}
-			sc.setName(settingsMenu.getKey());
+
+			String n = null;
+			if(settingsMenu.getKey().contains(".")){
+				n = settingsMenu.getKey().substring(settingsMenu.getKey().lastIndexOf(".")+1, settingsMenu.getKey().length());
+			}else{
+				n = settingsMenu.getKey();
+			}
+			
+			sc.setName(n);
 			listSubMenu.add(sc);
 		}
 
@@ -324,6 +348,8 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String name = params.get("name");
+
+		setPathPosition(name);
 
 		mountPath(name);
 	}
@@ -346,20 +372,20 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		return "success";
 	}
 
-	public void openAdmNewTemplate() throws RemoteException{
-		
+	public void openAddNewTemplate() throws RemoteException{
+
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String name = params.get("name");
-		
+
 		setPackageSelected(name);
 	}
-	
-	public void admNewTemplate() throws RemoteException{
+
+	public void addNewTemplate() throws RemoteException{
 
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		String name = params.get("name");
 
-		path.add(name);
+		//path.add(name);
 
 		SettingMenu s = mountPackageSettings(path);
 
@@ -371,7 +397,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 		sysSettings = new ArrayList<String[]>();
 		calcSettings();
-		
+
 		for (Entry<String, Setting> setting : s.getProperties().entrySet()) {
 			String nameSettings = newPath.toString() +"."+ setting.getKey();
 			String[] value = {nameSettings, nameSettings, nameSettings, setting.getValue().getDefaultValue()};
@@ -380,15 +406,73 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		}
 
 		storeNewSettings(sysSettings);
-		
+
 		setPackageSelected(null);
 		setNameNewTemplate(null);
-		
+
 		WorkflowPrefManager.readSettingMenu();
-		
+
 		mountPath(name);
 	}
-	
+
+	public void removeNewTemplate() throws RemoteException{
+
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		String name = params.get("name");
+
+		SettingMenu s = mountPackageSettings(path);
+
+		StringBuffer pathToDelete = new StringBuffer();
+		for (String value : getPath()) {
+			pathToDelete.append(value+".");
+		}
+		pathToDelete.append(name);
+
+		List<String[]> deleteSettings = new ArrayList<String[]>();
+		for (Entry<String, Setting> setting : s.getProperties().entrySet()) {
+			String nameSettings = pathToDelete.toString() +"."+ setting.getKey();
+			String[] value = {nameSettings, nameSettings, nameSettings, setting.getValue().getDefaultValue()};
+			deleteSettings.add(value);
+			logger.info("newPath " + pathToDelete.toString() +"."+ setting.getKey() +"="+ setting.getValue().getDefaultValue());
+		}
+
+		String error = null;
+
+		try {
+			WorkflowPrefManager.deleteSysProperties(getProps(deleteSettings));
+		} catch (IOException e) {
+			error = e.getMessage();
+		}
+
+		if(error != null){
+			MessageUseful.addErrorMessage(error);
+			HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+			request.setAttribute("msnError", "msnError");
+			usageRecordLog().addError("ERROR DELETESETTINGS", error);
+		}else{
+
+			if(path.contains(name)){
+				boolean removeValue = false;
+				for (Iterator<String> iterator = path.iterator(); iterator.hasNext();) {
+					String value = (String) iterator.next();
+					if(value.equals(name)){
+						removeValue = true;
+						iterator.remove();
+						continue;
+					}
+					if(removeValue){
+						iterator.remove();
+					}
+				}
+			}
+
+		}
+
+		WorkflowPrefManager.readSettingMenu();
+
+		mountPath(getPathPosition());
+	}
+
 	public void calcSettings(){
 		logger.info("calcSettings");
 		Properties sysProp = WorkflowPrefManager.getSysProperties();
@@ -405,7 +489,7 @@ public class PackageMngBean extends BaseBean implements Serializable{
 		}*/
 
 	}
-	
+
 	private List<String[]> getList(Properties value, Properties lang){
 		List<String[]> ans = new LinkedList<String[]>();
 		Iterator<Object> keyIt = value.keySet().iterator();
@@ -425,14 +509,14 @@ public class PackageMngBean extends BaseBean implements Serializable{
 				return o1[1].compareTo(o2[1]);
 			}
 		});
-		
+
 		return ans;
 	}
 
 	public String cancelSettings() throws RemoteException{
 		return "success";
 	}
-	
+
 	public void storeNewSettings(List<String[]> sysSettings){
 		logger.info("storeNewSettings");
 		String error = null;
@@ -456,9 +540,9 @@ public class PackageMngBean extends BaseBean implements Serializable{
 			request.setAttribute("msnError", "msnError");
 			usageRecordLog().addError("ERROR NEWSETTINGS", error);
 		}
-		
+
 	}
-	
+
 	private Properties getProps(List<String[]> l){
 		Properties prop = new Properties();
 		Iterator<String[]> it = l.iterator();
@@ -882,6 +966,22 @@ public class PackageMngBean extends BaseBean implements Serializable{
 
 	public void setUserSettings(List<String[]> userSettings) {
 		this.userSettings = userSettings;
+	}
+
+	public String getTemplate() {
+		return template;
+	}
+
+	public void setTemplate(String template) {
+		this.template = template;
+	}
+
+	public String getPathPosition() {
+		return pathPosition;
+	}
+
+	public void setPathPosition(String pathPosition) {
+		this.pathPosition = pathPosition;
 	}
 
 }
